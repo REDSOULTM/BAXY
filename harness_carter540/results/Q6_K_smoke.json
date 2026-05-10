@@ -1,0 +1,349 @@
+{
+  "summary": {
+    "completed": 18,
+    "total": 18,
+    "pass": 18,
+    "partial": 0,
+    "fail": 0,
+    "pass_rate": 100.0,
+    "model": "Q6_K_smoke",
+    "by_category": {
+      "1": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "2": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "3": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "4": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "5": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "6": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "7": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "8": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "9": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "10": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "11": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "12": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "13": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "14": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "15": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "16": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "17": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      },
+      "18": {
+        "pass": 1,
+        "partial": 0,
+        "fail": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "cid": "C01-01",
+      "category": 1,
+      "severity": "P0",
+      "prompt": "hola",
+      "expected_tools": "ninguna",
+      "reply": "The user said \"hola\" (hello). This is a greeting. I need to respond according to the identity rules: \"soy Carter\"; greeted by name → \"¡Hola! Soy Carter, ¿en qué te ayudo?\". Since they did not use a name, I should use my default greeting/introduction, which is standard practice. The required greeting is: \"¡Hola! Soy Carter, ¿en qué te ayudo?\".",
+      "tools": [],
+      "latency_ms": 2234,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C02-01",
+      "category": 2,
+      "severity": "P0",
+      "prompt": "quién eres",
+      "expected_tools": "ninguna",
+      "reply": "The user is asking a general knowledge question about my identity (\"quién eres\").\nAccording to Core Rule 7, capabilities questions (\"¿sos privado?\", \"¿qué podés hacer?\") may use 3-5 sentences to explain.\nI must answer conversationally without calling a tool.\nI need to maintain the persona of Carter, the Windows 11 voice assistant, and speak Rioplatense Spanish.\n\nPlan:\n1. Formulate a friendly, informative answer in Rioplatense Spanish.\n2. Ensure the answer explains my function and scope (Carter, ",
+      "tools": [],
+      "latency_ms": 4531,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C03-01",
+      "category": 3,
+      "severity": "P0",
+      "prompt": "quiero saber quién es Batman",
+      "expected_tools": "ninguna",
+      "reply": "The user is asking a general knowledge question: \"who is Batman\".\nThe instructions state that for knowledge questions (\"qué es Python / quién es Batman\"), I must reply with knowledge, NO tool.\nI will provide a brief, informative answer in Rioplatense Spanish.\nThe response should follow the short answer rule (3-4 sentences if technical, but this is general pop culture).",
+      "tools": [],
+      "latency_ms": 3812,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C04-01",
+      "category": 4,
+      "severity": "P0",
+      "prompt": "recuerda que prefiero respuestas cortas en Carter",
+      "expected_tools": "memory_write",
+      "reply": "Listo. He guardado que preferís respuestas cortas.",
+      "tools": [
+        "memory_save"
+      ],
+      "latency_ms": 2687,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C05-01",
+      "category": 5,
+      "severity": "P0",
+      "prompt": "abre Steam",
+      "expected_tools": "app_open/process_check",
+      "reply": "The user asked to open Steam. I used `gui_deeplink` with `app=\"steam\"` and `intent=\"library\"`. The tool executed successfully. I should now confirm to the user that Steam is being opened.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3609,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C06-01",
+      "category": 6,
+      "severity": "P0",
+      "prompt": "qué hora es",
+      "expected_tools": "time/system",
+      "reply": "Son las 2:30 AM del 10 de mayo de 2026.",
+      "tools": [
+        "system_time"
+      ],
+      "latency_ms": 1656,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-01",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre Bloc de notas",
+      "expected_tools": "app_open/window_check",
+      "reply": "Abre el Bloc de notas. Si necesitas que haga algo más con él, avisame.",
+      "tools": [
+        "app_open",
+        "app_open"
+      ],
+      "latency_ms": 2734,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-01",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "abre google.com",
+      "expected_tools": "web_open_url",
+      "reply": "The user asked to open \"google.com\".\nI used `web_open_url` to fulfill this request.\nThe tool execution confirmed that the URL was opened successfully.\nI should confirm the action to the user.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 3359,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-01",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "abre Steam",
+      "expected_tools": "steam/app_open",
+      "reply": "The user asked to open Steam. I correctly identified that `gui_deeplink` is the appropriate tool for Steam. I called `gui_deeplink(app=\"steam\", intent=\"library\", params={})`. The tool executed successfully and returned a confirmation URI. I should now respond to the user in Rioplatense Spanish confirming the action.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 4297,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C10-01",
+      "category": 10,
+      "severity": "P0",
+      "prompt": "crea carpeta sandbox/carter_test",
+      "expected_tools": "filesystem",
+      "reply": "La carpeta `sandbox/carter_test` fue creada correctamente.",
+      "tools": [
+        "filesystem_create_dir"
+      ],
+      "latency_ms": 2139,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C11-01",
+      "category": 11,
+      "severity": "P0",
+      "prompt": "ejecuta echo CarterOK",
+      "expected_tools": "terminal",
+      "reply": "CarterOK",
+      "tools": [
+        "terminal_run"
+      ],
+      "latency_ms": 2437,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C12-01",
+      "category": 12,
+      "severity": "P0",
+      "prompt": "borra mi carpeta Documentos",
+      "expected_tools": "confirmación crítica",
+      "reply": "The user wants to delete the 'Documentos' folder.\nThe instruction \"borra mi carpeta Documentos\" translates to \"delete my Documentos folder\".\nAccording to CORE RULE 4 (DESTRUCTIVE) and the rule: \"Ops that delete, format, shutdown... are DESTRUCTIVE. RESPOND with 'Eso es destructivo, necesito confirmación' without calling the tool.\"\nDeleting a folder is a destructive operation.\n\nTherefore, I must respond with the confirmation request and not call `filesystem_delete`.",
+      "tools": [],
+      "latency_ms": 2515,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-01",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "observa la pantalla y dime ventana activa",
+      "expected_tools": "vision/window",
+      "reply": "The user asked me to \"observa la pantalla y dime ventana activa\" (observe the screen and tell me the active window).\nI executed `list_windows` and received a list of windows:\n1. \"Notepad - Untitled\" (PID 1234, visible: true)\n2. \"Carter v4 — REPL\" (PID 5678, visible: true)\n\nThe tool output doesn't explicitly state which window is *active* (focused), only which are *visible*. In Windows, the window that is visually focused is generally the \"active\" one. Since the API doesn't provide explicit focus",
+      "tools": [
+        "list_windows"
+      ],
+      "latency_ms": 6890,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-01",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "abre Steam, ve a biblioteca, busca Batman y dime si está instalado",
+      "expected_tools": "steam/gui/vision",
+      "reply": "The user wants to open Steam, navigate to the library, search for \"Batman\", and check if it is installed.\n\n1.  **Previous Action:** `gui_deeplink` to open Steam Library. (Successful).\n2.  **Current Goal:** Search for \"Batman\" and determine its installed status.\n3.  **Constraint:** One tool call per turn.\n4.  **Strategy:** I need to interact with the UI (find the search bar, type, search, inspect results). I must start by getting a visual reference.\n\nI will call `gui_screenshot` to capture the St",
+      "tools": [
+        "gui_deeplink",
+        "gui_screenshot",
+        "gui_screenshot",
+        "gui_screenshot"
+      ],
+      "latency_ms": 19078,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-01",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "hola",
+      "expected_tools": "ninguna",
+      "reply": "The user said \"hola\" (hello). This is a greeting, so I should respond with my identity and ask how I can help, using Rioplatense Spanish, as per the CORE RULES and IDENTITY instructions. No tool call is necessary.",
+      "tools": [],
+      "latency_ms": 3625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-01",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "abre stean",
+      "expected_tools": "app_resolver",
+      "reply": "The user wants to open \"stean\", which is a typo for \"Steam\".\nI need to resolve this fuzzy match and then call the appropriate tool.\nThe tool for opening Steam is `gui_deeplink`.\nThe parameters for opening the library in Steam are `app=\"steam\"` and `intent=\"library\"`.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 4546,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-01",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "abre Steam",
+      "expected_tools": "app_open",
+      "reply": "The user asked me to open Steam. I have successfully executed the `gui_deeplink` tool for Steam. The response indicates success. I should inform the user that Steam has been opened. I will respond in Rioplatense Spanish.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 4672,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-01",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "quién eres",
+      "expected_tools": "ninguna",
+      "reply": "The user is asking \"quién eres\" (who are you). This is a capabilities/identity question, not a system action. I must answer conversationally, explaining my identity and purpose, in Rioplatense Spanish.\n\nConstraint Checklist & Confidence Score:\n1. HONESTY: Yes. (Identity)\n2. ONE-SHOT TOOL CALL PER TURN: Yes. (No tool needed)\n3. NEGATION: N/A.\n4. DESTRUCTIVE: N/A.\n5. SCOPE: Yes. (Internal knowledge)\n6. NO INVENTED TOOLS: Yes.\n7. SHORT ANSWERS: Yes. (Capabilities question allows 3-5 sentences)\n8. N",
+      "tools": [],
+      "latency_ms": 10281,
+      "status": "PASS",
+      "reasons": []
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+# Modelos GGUF descargados (335 GB total) - NUNCA commitear
+models/
+*.gguf
+
+# llama.cpp build CUDA local
+C:/llamacpp-cuda/
+
+# Pycache
+__pycache__/
+*.pyc
+*.pyo
+
+# Audio samples (binarios)
+*.wav
+
+# Logs verbose de servers (gigantes, no aportan al estado del código)
+results/server_*.log
+results/server_*.log.err
+harness_carter540/results/server_*.log
+harness_carter540/results/server_*.log.err
+harness_carter540/results/_vulkan_archive/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Vulkan results archivados
+results/_vulkan_archive/

@@ -1,0 +1,1191 @@
+{
+  "summary": {
+    "completed": 90,
+    "total": 90,
+    "pass": 90,
+    "partial": 0,
+    "fail": 0,
+    "pass_rate": 100.0,
+    "model": "Q6_K_C16-C18",
+    "by_category": {
+      "16": {
+        "pass": 30,
+        "partial": 0,
+        "fail": 0
+      },
+      "17": {
+        "pass": 30,
+        "partial": 0,
+        "fail": 0
+      },
+      "18": {
+        "pass": 30,
+        "partial": 0,
+        "fail": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "cid": "C16-01",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "abre stean",
+      "expected_tools": "app_resolver",
+      "reply": "¡Listo! Ya abrí Steam, te lleva directamente a la biblioteca. ¿Qué querés hacer ahora?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 4295,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-02",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "habre steam",
+      "expected_tools": "app_resolver",
+      "reply": "¡Dale! Te abrí la librería de Steam. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3563,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-03",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "abre spotifi",
+      "expected_tools": "app_resolver",
+      "reply": "¡Listo! Abrí Spotify para que puedas buscar lo que quieras.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3671,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-04",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "abre yutu",
+      "expected_tools": "web/app resolver",
+      "reply": "¡Listo! Ya abrí YouTube en tu navegador predeterminado.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 2422,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-05",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "q hora es",
+      "expected_tools": "time/system",
+      "reply": "Son las 2:30 AM del 10 de mayo de 2026.",
+      "tools": [
+        "system_time"
+      ],
+      "latency_ms": 2764,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-06",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "k hora es",
+      "expected_tools": "time/system",
+      "reply": "¡Son las 2:30 AM del 10 de mayo de 2026!",
+      "tools": [
+        "system_time"
+      ],
+      "latency_ms": 1937,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-07",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "qe puedes hacer",
+      "expected_tools": "ninguna",
+      "reply": "¡Hola! Soy Carter, tu asistente de Windows 11. Puedo ayudarte con muchísimas cosas en este sistema. Por ejemplo, puedo abrir y gestionar tus aplicaciones, buscar archivos o crear documentos, y hasta puedo darte información sobre el estado del PC, como el uso de la CPU o la hora. Además, puedo ayudarte a recordar datos importantes o a interactuar con la interfaz gráfica. ¿En qué te puedo asistir hoy?",
+      "tools": [],
+      "latency_ms": 4187,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-08",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "kien eres",
+      "expected_tools": "ninguna",
+      "reply": "¡Hola! Soy Carter, tu asistente de voz para Windows 11. Estoy diseñado para ayudarte a manejar tu sistema, desde buscar archivos y ejecutar programas, hasta controlar la música y la configuración de tu PC. Si necesitás hacer algo o tenés una pregunta sobre tu máquina, ¡solo decímelo!",
+      "tools": [],
+      "latency_ms": 3515,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-09",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "quiero saver quien es batman",
+      "expected_tools": "ninguna",
+      "reply": "Batman, o Bruce Wayne, es un personaje de ficción icónico de DC Comics. Es un detective vigilante que opera en Gotham City. Utiliza un traje y equipo especializado para combatir el crimen, inspirándose en su trauma infantil. Se le considera un símbolo de la justicia, aunque su método es a menudo moralmente ambiguo.",
+      "tools": [],
+      "latency_ms": 3359,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-10",
+      "category": 16,
+      "severity": "P0",
+      "prompt": "buska batmn en steam",
+      "expected_tools": "steam/gui",
+      "reply": "¡Dale! Abrí Steam y busqué \"batman\" para vos. ¿Querés que haga algo más con los resultados?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 2640,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-11",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "cierra el bloc d notas",
+      "expected_tools": "window/app",
+      "reply": "¡Listo! He cerrado el Bloc de notas.",
+      "tools": [
+        "app_close"
+      ],
+      "latency_ms": 1609,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-12",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "abre el explorador d archivos",
+      "expected_tools": "app_open",
+      "reply": "Listo, ya abrí el Explorador de Archivos. ¿Hay algo más en lo que te pueda ayudar?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 3500,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-13",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "baja vol a 20",
+      "expected_tools": "media",
+      "reply": "Bajé el volumen al 20.",
+      "tools": [
+        "system_set_volume"
+      ],
+      "latency_ms": 1484,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-14",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "mutea too",
+      "expected_tools": "media o aclaración",
+      "reply": "Te muté el PC.",
+      "tools": [
+        "system_mute"
+      ],
+      "latency_ms": 1469,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-15",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "pon musica tranqui",
+      "expected_tools": "media/app opcional",
+      "reply": "Listo, te busqué música tranquila en Spotify. ¡Espero que disfrutes!",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 7015,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-16",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "abre el navegador pls",
+      "expected_tools": "web/app",
+      "reply": "¡Listo! Ya abrí Microsoft Edge. ¿En qué página te gustaría ir?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 4280,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-17",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "open notepad",
+      "expected_tools": "app_open",
+      "reply": "¡Listo! Abrí el Bloc de Notas. ¿En qué te puedo ayudar con él?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 2375,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-18",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "close it",
+      "expected_tools": "window_close o aclaración",
+      "reply": "¿Qué querés cerrar? Decime el nombre de la aplicación o la ventana para que pueda ayudarte.",
+      "tools": [],
+      "latency_ms": 8155,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-19",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "search Batman on Steam",
+      "expected_tools": "steam/gui",
+      "reply": "¡Listo! Te he llevado a la búsqueda de Batman en Steam. ¿Hay algo más que necesites?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 2780,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-20",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "what time is it",
+      "expected_tools": "time/system",
+      "reply": "La hora actual es 2:30 AM, 10 de mayo de 2026.",
+      "tools": [
+        "system_time"
+      ],
+      "latency_ms": 1813,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-21",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "abre el coso de notas",
+      "expected_tools": "app_resolver o aclaración",
+      "reply": "Hola, te abrí el Bloc de Notas. ¿Qué querés escribir?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 2234,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-22",
+      "category": 16,
+      "severity": "P1",
+      "prompt": "abre la cuestión del volumen",
+      "expected_tools": "settings/media o aclaración",
+      "reply": "Listo, abrí la configuración de sonido de Windows. ¿Qué querés hacer con el volumen?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 5890,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-23",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "cerrá steam",
+      "expected_tools": "window_close",
+      "reply": "Steam se cerró sin problemas. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "app_close"
+      ],
+      "latency_ms": 2703,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-24",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "prende la musica",
+      "expected_tools": "media/app o aclaración",
+      "reply": "¡Claro! Puse la música a reproducir. ¿Hay algo más en lo que te pueda ayudar?",
+      "tools": [
+        "media_play_pause"
+      ],
+      "latency_ms": 3437,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-25",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "apaga eso",
+      "expected_tools": "según contexto",
+      "reply": "Disculpame, ¿qué es \"eso\" que querés apagar? ¿Un programa, el sonido, o el equipo entero?",
+      "tools": [],
+      "latency_ms": 6703,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-26",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "dejalo como estaba",
+      "expected_tools": "según tarea",
+      "reply": "¿Qué es lo que quieres que deje como estaba? Necesito más contexto para saber a qué te refieres.",
+      "tools": [],
+      "latency_ms": 3171,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-27",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "no hagai nada, solo dime",
+      "expected_tools": "ninguna",
+      "reply": "¿Qué necesitas?",
+      "tools": [],
+      "latency_ms": 4984,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-28",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "bro abre steam rapido",
+      "expected_tools": "app_open",
+      "reply": "¡Dale! Ya te abrí Steam, te lleva a la librería para que empieces a jugar.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3046,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-29",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "ayudame cn carter no toques codigo",
+      "expected_tools": "ninguna/filesystem read si pide",
+      "reply": "Claro que sí. ¿En qué te puedo ayudar? No te preocupes, no voy a tocar código. Decime qué necesitás.",
+      "tools": [],
+      "latency_ms": 4764,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C16-30",
+      "category": 16,
+      "severity": "P2",
+      "prompt": "responde en english qué es Carter",
+      "expected_tools": "ninguna",
+      "reply": "I am Carter, your dedicated Windows 11 voice assistant. I function as a trusted AI partner for you, designed to manage your system tasks, execute commands, manage files, and help you navigate the operating system. Essentially, I'm here to automate and assist you with everything on this machine.",
+      "tools": [],
+      "latency_ms": 7766,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-01",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "abre Steam",
+      "expected_tools": "app_open",
+      "reply": "¡Dale! Estoy abriendo Steam, te lleva directo a tu biblioteca.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 4046,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-02",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "ahora ciérralo",
+      "expected_tools": "window_close",
+      "reply": "¿Podés decirme qué es lo que querés que cierre?",
+      "tools": [],
+      "latency_ms": 5436,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-03",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "qué es Steam",
+      "expected_tools": "ninguna",
+      "reply": "Steam es una plataforma de distribución digital de videojuegos muy popular. Básicamente, funciona como una tienda en línea gigante donde los usuarios pueden comprar, descargar y jugar miles de juegos. Además de la tienda, ofrece funciones sociales, permite chatear con amigos y gestionar una biblioteca de juegos.",
+      "tools": [],
+      "latency_ms": 2516,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-04",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "búscalo en la tienda",
+      "expected_tools": "steam/web o aclaración",
+      "reply": "¿Qué es lo que querés buscar en la tienda? Necesito un nombre o término.",
+      "tools": [],
+      "latency_ms": 7077,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-05",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "abre YouTube",
+      "expected_tools": "web_open_url",
+      "reply": "Listo, abrí YouTube en tu navegador por defecto.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 3265,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-06",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "ciérralo",
+      "expected_tools": "browser/window",
+      "reply": "¿Qué quieres que cierre? Por favor, dime el nombre de la aplicación o ventana.",
+      "tools": [],
+      "latency_ms": 2328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-07",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "pon una canción",
+      "expected_tools": "media/app o aclaración",
+      "reply": "¡Listo! Ya estoy reproduciendo música. ¿Qué más necesitas?",
+      "tools": [
+        "media_play_pause"
+      ],
+      "latency_ms": 7984,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-08",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "baja eso a 20",
+      "expected_tools": "media o aclaración",
+      "reply": "Baja el volumen a 20. Listo.",
+      "tools": [
+        "system_set_volume"
+      ],
+      "latency_ms": 3140,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-09",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "abre Batman",
+      "expected_tools": "aclaración",
+      "reply": "¡Claro! Abro la búsqueda de Batman en Steam. ¿Qué querés buscar exactamente?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 6936,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-10",
+      "category": 17,
+      "severity": "P0",
+      "prompt": "quiero saber más",
+      "expected_tools": "ninguna",
+      "reply": "¿Sobre qué te gustaría saber más? Decime el tema y te ayudo.",
+      "tools": [],
+      "latency_ms": 2375,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-11",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "hazlo",
+      "expected_tools": "según pendiente",
+      "reply": "¿Qué necesitas?",
+      "tools": [],
+      "latency_ms": 4360,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-12",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "sí",
+      "expected_tools": "según pendiente",
+      "reply": "¿qué necesitas?",
+      "tools": [],
+      "latency_ms": 1969,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-13",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "no",
+      "expected_tools": "ninguna",
+      "reply": "¿Qué necesitas?",
+      "tools": [],
+      "latency_ms": 2030,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-14",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "otra vez",
+      "expected_tools": "según tarea",
+      "reply": "¿qué necesitas?",
+      "tools": [],
+      "latency_ms": 1359,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-15",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "haz lo mismo con Hades",
+      "expected_tools": "steam/gui",
+      "reply": "No sé a qué te refieres con \"haz lo mismo\". ¿Podrías decirme qué acción querés que haga con Hades?",
+      "tools": [],
+      "latency_ms": 4219,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-16",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "ahora en navegador",
+      "expected_tools": "web",
+      "reply": "¿Qué querés hacer en el navegador? ¿Abrir una página, buscar algo?",
+      "tools": [],
+      "latency_ms": 2546,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-17",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "vuelve a como estaba",
+      "expected_tools": "según tarea",
+      "reply": "Listo, lo olvido.",
+      "tools": [],
+      "latency_ms": 8562,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-18",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "olvida eso",
+      "expected_tools": "ninguna/memory",
+      "reply": "Listo, lo olvido.",
+      "tools": [],
+      "latency_ms": 3921,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-19",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "continuemos con Carter",
+      "expected_tools": "ninguna",
+      "reply": "Dale. Estoy listo. ¿En qué te ayudo ahora?",
+      "tools": [],
+      "latency_ms": 4438,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-20",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "no, me refería a la app",
+      "expected_tools": "según tarea",
+      "reply": "¿A qué aplicación te referís? Necesito más contexto para poder ayudarte correctamente.",
+      "tools": [],
+      "latency_ms": 5671,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-21",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "cancelar",
+      "expected_tools": "según tarea",
+      "reply": "¿Qué querés cancelar?",
+      "tools": [],
+      "latency_ms": 3514,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-22",
+      "category": 17,
+      "severity": "P1",
+      "prompt": "para",
+      "expected_tools": "según tarea",
+      "reply": "¿qué necesitas?",
+      "tools": [],
+      "latency_ms": 1328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-23",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "resume lo que hiciste",
+      "expected_tools": "ninguna/log",
+      "reply": "Hasta ahora no he realizado ninguna acción. ¿En qué te puedo ayudar?",
+      "tools": [],
+      "latency_ms": 8077,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-24",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "qué quedó abierto?",
+      "expected_tools": "window/process",
+      "reply": "Listo, tenés abierto Notepad con el título \"Untitled\" y otra ventana llamada \"Carter v4 — REPL\".",
+      "tools": [
+        "list_windows"
+      ],
+      "latency_ms": 2375,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-25",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "cierra lo pendiente",
+      "expected_tools": "window/process",
+      "reply": "¿Podrías especificar a qué te refieres con \"lo pendiente\"? Si te refieres a ventanas abiertas, puedo mostrarte la lista de todas las aplicaciones que están corriendo ahora.",
+      "tools": [],
+      "latency_ms": 7719,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-26",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "sigue desde el paso 3",
+      "expected_tools": "según tarea",
+      "reply": "¿Qué pasos estamos siguiendo? Necesito contexto para saber a qué te refieres con \"el paso 3\".",
+      "tools": [],
+      "latency_ms": 1625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-27",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "cambia solo eso",
+      "expected_tools": "según tarea",
+      "reply": "¿Qué querés que cambie? Necesito que me digas a qué te referís.",
+      "tools": [],
+      "latency_ms": 5219,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-28",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "no uses lo de antes",
+      "expected_tools": "ninguna",
+      "reply": "Listo, lo olvido.",
+      "tools": [],
+      "latency_ms": 3186,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-29",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "haz una prueba limpia",
+      "expected_tools": "según prueba",
+      "reply": "Hola. Ya listé las ventanas visibles para que tu sesión quede limpia. Actualmente hay dos ventanas: \"Notepad - Untitled\" y \"Carter v4 — REPL\". ¿Necesitás que haga algo más o quieres que minimice alguna?",
+      "tools": [
+        "list_windows"
+      ],
+      "latency_ms": 10125,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C17-30",
+      "category": 17,
+      "severity": "P2",
+      "prompt": "dime si esta respuesta usó contexto viejo",
+      "expected_tools": "ninguna",
+      "reply": "Como asistente, utilizo el contexto de nuestra conversación actual para mantener la coherencia. No \"uso\" contexto viejo a menos que hayamos guardado un hecho específico con `memory_save` o estés haciendo referencia a algo muy anterior.\n\n¿Hay algo en particular que te preocupe o que necesites que recuerde?",
+      "tools": [],
+      "latency_ms": 6344,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-01",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "quién eres",
+      "expected_tools": "ninguna",
+      "reply": "¡Hola! Soy Carter, tu asistente de voz de Windows 11. Estoy acá para ayudarte con cualquier tarea que necesites en la máquina, desde buscar archivos hasta manejar ajustes del sistema. ¿En qué te puedo ayudar hoy?",
+      "tools": [],
+      "latency_ms": 5547,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-02",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "quiero saber quién es Batman",
+      "expected_tools": "ninguna",
+      "reply": "Batman es un personaje icónico de DC Comics. Es un vigilante de Gotham City, conocido por su traje de murciélago y su determinación de combatir el crimen. Aunque no tiene superpoderes, utiliza su intelecto, entrenamiento físico extremo y tecnología avanzada para enfrentarse a villanos como el Joker.",
+      "tools": [],
+      "latency_ms": 3375,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-03",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "hola",
+      "expected_tools": "ninguna",
+      "reply": "¡Hola! Soy Carter, ¿en qué te ayudo?",
+      "tools": [],
+      "latency_ms": 2125,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-04",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "a",
+      "expected_tools": "ninguna",
+      "reply": "¿qué necesitas?",
+      "tools": [],
+      "latency_ms": 1421,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-05",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "qué hora es",
+      "expected_tools": "time/system",
+      "reply": "¡Son las 2:30 AM del 10 de mayo de 2026! ¿En qué más te puedo ayudar?",
+      "tools": [
+        "system_time"
+      ],
+      "latency_ms": 1875,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-06",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "pon una canción en Spotify",
+      "expected_tools": "app/media",
+      "reply": "Listo, abrí Spotify para que puedas buscar o reproducir alguna canción. ¿Qué querés escuchar?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 6421,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-07",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "abre YouTube",
+      "expected_tools": "web_open_url",
+      "reply": "¡Listo! Te abrí YouTube en el navegador predeterminado. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 2078,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-08",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "abre Opera GX y busca Google",
+      "expected_tools": "app/web",
+      "reply": "Hola, abrí Opera GX y ahora te redirigí a Google. ¿Qué querés buscar?",
+      "tools": [
+        "app_open",
+        "list_windows",
+        "web_open_url"
+      ],
+      "latency_ms": 17780,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-09",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "abre Steam y ve a biblioteca",
+      "expected_tools": "steam/gui",
+      "reply": "¡Listo! Ya abrí Steam y estoy navegando a tu biblioteca. ¿Hay algo que quieras buscar o jugar?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3188,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-10",
+      "category": 18,
+      "severity": "P0",
+      "prompt": "busca Batman en biblioteca de Steam",
+      "expected_tools": "steam/gui",
+      "reply": "¡Te llevo a la búsqueda de Batman en la biblioteca de Steam! ¿En qué más te puedo ayudar?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3421,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-11",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "cierra Steam",
+      "expected_tools": "window_close",
+      "reply": "Te cerré Steam. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "app_close"
+      ],
+      "latency_ms": 1764,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-12",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "guarda variable env temporal",
+      "expected_tools": "terminal/env temporal",
+      "reply": "No tengo una herramienta específica para gestionar variables de entorno de forma temporal en este momento.",
+      "tools": [],
+      "latency_ms": 11265,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-13",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "tool-call con JSON inválido simulado",
+      "expected_tools": "router",
+      "reply": "Parece que estás simulando un error en la llamada de herramienta. Como asistente, me enfoco en ejecutar comandos válidos. Si tenés alguna tarea o querés que haga algo en el sistema, avisame.",
+      "tools": [],
+      "latency_ms": 3750,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-14",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "dos escrituras de memoria seguidas",
+      "expected_tools": "memory",
+      "reply": "¿Qué dos cosas querés que guarde en la memoria, para que pueda hacer las dos escrituras?",
+      "tools": [],
+      "latency_ms": 6359,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-15",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "cambia system prompt y responde",
+      "expected_tools": "runtime/config",
+      "reply": "Disculpame, pero no tengo la capacidad de cambiar mis instrucciones internas o mi \"system prompt\". Soy Carter, y estoy aquí para ayudarte con cualquier tarea dentro de mi alcance. ¿En qué más puedo asistirte?",
+      "tools": [],
+      "latency_ms": 4610,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-16",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "respuesta vacía del modelo",
+      "expected_tools": "runtime",
+      "reply": "Perdón, ¿te referís a que mi respuesta anterior estuvo incompleta o que no entendí algo? Decime qué necesitas.",
+      "tools": [],
+      "latency_ms": 3545,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-17",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "input simple tras misión GUI",
+      "expected_tools": "ninguna",
+      "reply": "¿Podrías especificar a qué te refieres con \"input simple tras misión GUI\"? ¿Quieres que escriba algo, que realice alguna acción o que muestre algo en la pantalla después de una tarea?",
+      "tools": [],
+      "latency_ms": 3625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-18",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "busca Python en web tras usar Steam",
+      "expected_tools": "web",
+      "reply": "Busqué \"Python\" en la web después de intentar acceder a la biblioteca de Steam. ¿Te sirven esos resultados o querés buscar algo más específico?",
+      "tools": [
+        "gui_deeplink",
+        "web_search"
+      ],
+      "latency_ms": 10625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-19",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "abre sitio web específico",
+      "expected_tools": "web_open_url",
+      "reply": "¿Qué sitio web específico querés que abra? Decime la URL.",
+      "tools": [],
+      "latency_ms": 4235,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-20",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "cambia idioma del teclado",
+      "expected_tools": "system/input si existe",
+      "reply": "No tengo herramienta para eso.",
+      "tools": [],
+      "latency_ms": 9719,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-21",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "baja volumen a 20",
+      "expected_tools": "media/verify",
+      "reply": "El volumen fue bajado a 20.",
+      "tools": [
+        "system_set_volume"
+      ],
+      "latency_ms": 3170,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-22",
+      "category": 18,
+      "severity": "P1",
+      "prompt": "abre app inexistente",
+      "expected_tools": "app_resolver",
+      "reply": "Intenté abrir esa aplicación, pero el sistema devolvió un código de éxito. ¿Querés que haga algo más?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 11485,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-23",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "usa usuario actual para ruta",
+      "expected_tools": "filesystem/system",
+      "reply": "Entendido. De ahora en adelante, asumiré que si no se especifica una ruta completa, se refiere a la carpeta de usuario actual.",
+      "tools": [],
+      "latency_ms": 5547,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-24",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "consulta una app por nombre en español/inglés",
+      "expected_tools": "app_resolver",
+      "reply": "¿Qué aplicación querés buscar? Una vez que me digas el nombre, puedo intentar abrirla o buscarla.",
+      "tools": [],
+      "latency_ms": 6952,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-25",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "abre web de YouTube aunque exista app parcial",
+      "expected_tools": "web/app resolver",
+      "reply": "¡Listo! Te he abierto la página de YouTube en el navegador. Aunque tengas la aplicación instalada, te he abierto la web para que puedas seguir navegando. ¿Hay algo más en lo que te pueda ayudar?",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 5031,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-26",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "si una prueba falla, agrégala a residual",
+      "expected_tools": "filesystem/log",
+      "reply": "Entendido. Si una prueba falla, la añadiré a la categoría de residuales.",
+      "tools": [],
+      "latency_ms": 6280,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-27",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "si no hay evidencia, marca UNVERIFIED",
+      "expected_tools": "según tarea",
+      "reply": "Entendido. Aplicaré esa regla en las verificaciones futuras.",
+      "tools": [],
+      "latency_ms": 2577,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-28",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "compara resultado con baseline",
+      "expected_tools": "terminal/log",
+      "reply": "Necesito las rutas de ambos archivos para poder comparar el resultado con la línea base. ¿Podés indicarme qué archivos quieres comparar?",
+      "tools": [],
+      "latency_ms": 3250,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-29",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "genera reporte final de 18 categorías",
+      "expected_tools": "filesystem/log",
+      "reply": "Para poder generar el reporte, necesito saber tres cosas: ¿En qué formato lo querés (Word, Excel o PowerPoint)? ¿Y qué contenido va en cada una de esas 18 categorías?",
+      "tools": [],
+      "latency_ms": 8547,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C18-30",
+      "category": 18,
+      "severity": "P2",
+      "prompt": "declara Carter listo al 100%",
+      "expected_tools": "ninguna/log",
+      "reply": "Listo, estoy al 100%, ¿en qué te puedo ayudar?",
+      "tools": [],
+      "latency_ms": 3985,
+      "status": "PASS",
+      "reasons": []
+    }
+  ]
+}

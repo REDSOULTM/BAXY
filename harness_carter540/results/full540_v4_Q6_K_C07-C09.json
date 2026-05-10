@@ -1,0 +1,1258 @@
+{
+  "summary": {
+    "completed": 90,
+    "total": 90,
+    "pass": 88,
+    "partial": 0,
+    "fail": 2,
+    "pass_rate": 97.78,
+    "model": "Q6_K_C07-C09",
+    "by_category": {
+      "7": {
+        "pass": 29,
+        "partial": 0,
+        "fail": 1
+      },
+      "8": {
+        "pass": 30,
+        "partial": 0,
+        "fail": 0
+      },
+      "9": {
+        "pass": 29,
+        "partial": 0,
+        "fail": 1
+      }
+    }
+  },
+  "results": [
+    {
+      "cid": "C07-01",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre Bloc de notas",
+      "expected_tools": "app_open/window_check",
+      "reply": "Hola, ya abrí el Bloc de notas. ¿Hay algo que quieras escribir o hacer con él?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 984,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-02",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "cierra Bloc de notas",
+      "expected_tools": "window_close",
+      "reply": "Cerré el Bloc de notas.",
+      "tools": [
+        "app_close"
+      ],
+      "latency_ms": 3640,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-03",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre Calculadora",
+      "expected_tools": "app_open/window_check",
+      "reply": "¡Listo! Acabo de abrir la Calculadora. ¿En qué te puedo ayudar con ella?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 1889,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-04",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "cierra Calculadora",
+      "expected_tools": "window_close",
+      "reply": "Cerré la Calculadora.",
+      "tools": [
+        "app_close"
+      ],
+      "latency_ms": 1500,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-05",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre Explorador de archivos",
+      "expected_tools": "app_open/window_check",
+      "reply": "¡Listo! Abrí el Explorador de archivos de Windows. ¿Necesitas que haga algo con él?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 3406,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-06",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre Descargas en el Explorador",
+      "expected_tools": "filesystem/app_open",
+      "reply": "Te abrí la carpeta de Descargas en el Explorador de Windows.",
+      "tools": [
+        "filesystem_open"
+      ],
+      "latency_ms": 3688,
+      "status": "FAIL",
+      "reasons": [
+        "tool requerida 'app_open' no llamada (got ['filesystem_open'])"
+      ]
+    },
+    {
+      "cid": "C07-07",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre Configuración de Windows",
+      "expected_tools": "app_open/settings",
+      "reply": "¡Dale! Te abrí Configuración de Windows. ¿Qué necesitás hacer ahí?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3186,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-08",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre configuración de sonido",
+      "expected_tools": "settings/app_open",
+      "reply": "Abriendo la configuración de sonido de Windows ahora mismo.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 4000,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-09",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "revisa si Chrome está abierto",
+      "expected_tools": "process/window_check",
+      "reply": "Sí, Chrome está abierto. Se encontró un proceso llamado `chrome.exe`.",
+      "tools": [
+        "list_processes"
+      ],
+      "latency_ms": 3078,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-10",
+      "category": 7,
+      "severity": "P0",
+      "prompt": "abre Chrome",
+      "expected_tools": "app_resolver/app_open",
+      "reply": "¡Listo! Ya abrí Google Chrome. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 1436,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-11",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "cierra Chrome solo si lo abriste en esta prueba",
+      "expected_tools": "window_close",
+      "reply": "No tengo la capacidad de saber si fui yo quien abrió Chrome específicamente en esta prueba. Si querés que lo cierre, te lo puedo hacer, pero necesito que me confirmes si estás seguro.",
+      "tools": [],
+      "latency_ms": 11577,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-12",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "abre Opera GX si está instalado",
+      "expected_tools": "app_resolver",
+      "reply": "¡Claro! Ya estoy abriendo Opera GX. Si ya estaba abierto, te lo trae al frente.",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 2281,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-13",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "abre Discord si está instalado",
+      "expected_tools": "app_resolver",
+      "reply": "¡Listo! Discord se está abriendo.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 2968,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-14",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "revisa ventanas abiertas",
+      "expected_tools": "window_list",
+      "reply": "¡Claro! En este momento tienes dos ventanas abiertas: \"Notepad - Untitled\" y \"Carter v4 — REPL\". ¿Hay algo más en lo que te pueda ayudar?",
+      "tools": [
+        "list_windows"
+      ],
+      "latency_ms": 2000,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-15",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "pon foco en Bloc de notas",
+      "expected_tools": "window_focus",
+      "reply": "Listo, el Bloc de notas está enfocado. ¿Necesitas hacer algo más con él?",
+      "tools": [
+        "window_manage"
+      ],
+      "latency_ms": 4235,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-16",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "minimiza la ventana activa",
+      "expected_tools": "window_manage",
+      "reply": "Lo minimicé.",
+      "tools": [
+        "list_windows",
+        "window_manage"
+      ],
+      "latency_ms": 16468,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-17",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "restaura la última ventana minimizada por Carter",
+      "expected_tools": "window_manage",
+      "reply": "Perdona, para restaurar la ventana necesito saber su título o al menos una parte del mismo. ¿Podés decirme cómo se llama la ventana que querés restaurar?",
+      "tools": [],
+      "latency_ms": 7015,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-18",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "maximiza Calculadora",
+      "expected_tools": "window_manage",
+      "reply": "Listo, he maximizado la Calculadora.",
+      "tools": [
+        "window_arrange"
+      ],
+      "latency_ms": 1827,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-19",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "mueve Notepad a la izquierda",
+      "expected_tools": "window_manage/gui",
+      "reply": "Listo, moví Notepad a la mitad izquierda de la pantalla.",
+      "tools": [
+        "window_arrange"
+      ],
+      "latency_ms": 4390,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-20",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "abre dos ventanas livianas lado a lado: Notepad y Calculadora",
+      "expected_tools": "app/window_manage",
+      "reply": "¡Listo! Abrí Notepad y la Calculadora, y las acomodé una al lado de la otra.",
+      "tools": [
+        "app_open",
+        "app_open",
+        "window_arrange"
+      ],
+      "latency_ms": 10093,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-21",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "cierra lo que abriste en esta prueba",
+      "expected_tools": "window_close",
+      "reply": "En este momento tengo abiertas las ventanas \"Notepad - Untitled\" y \"Carter v4 — REPL\". ¿Cuál de ellas querés que cierre?",
+      "tools": [
+        "list_windows"
+      ],
+      "latency_ms": 17985,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-22",
+      "category": 7,
+      "severity": "P1",
+      "prompt": "mata el proceso de Steam con fuerza",
+      "expected_tools": "confirmación crítica",
+      "reply": "Eso es destructivo, necesito confirmación.",
+      "tools": [],
+      "latency_ms": 2733,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-23",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "cierra Steam de forma normal",
+      "expected_tools": "window_close/process",
+      "reply": "Steam se cerró de forma normal.",
+      "tools": [
+        "app_close"
+      ],
+      "latency_ms": 3531,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-24",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "abre Administrador de tareas",
+      "expected_tools": "app_open",
+      "reply": "Administrador de tareas se abrió. ¿Necesitas revisar algo en particular?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 1875,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-25",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "dime qué app está en primer plano",
+      "expected_tools": "window_check",
+      "reply": "Estoy viendo dos ventanas activas: \"Notepad - Untitled\" y \"Carter v4 — REPL\". Parece que \"Carter v4 — REPL\" es la ventana que está en uso ahora mismo.",
+      "tools": [
+        "list_windows"
+      ],
+      "latency_ms": 8328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-26",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "si hay una ventana de error, dime su texto",
+      "expected_tools": "vision/uia",
+      "reply": "Si hay una ventana de error o un modal activo, te lo describo. Pero ahora, solo veo una ventana de Notepad con el texto 'hola' en el editor, sin errores visibles. ¿Hay algo más que necesites ver?",
+      "tools": [
+        "vision_describe_dialog"
+      ],
+      "latency_ms": 9421,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-27",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "abre una app inexistente llamada XyzCarterFake",
+      "expected_tools": "app_resolver",
+      "reply": "Listo, estoy intentando abrir la aplicación XyzCarterFake. Si no la encontré, el sistema lo notificará.",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 12860,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-28",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "abre la app predeterminada de música",
+      "expected_tools": "app_resolver",
+      "reply": "¡Claro! Abrí la aplicación de música predeterminada. ¿Necesitas que haga algo más con ella?",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 6686,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-29",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "no abras nada, solo dime si Spotify está instalado",
+      "expected_tools": "app_resolver",
+      "reply": "No lo sé, solo puedo confirmar si el proceso de Spotify está actualmente en ejecución. En este momento, no lo está.",
+      "tools": [
+        "list_processes"
+      ],
+      "latency_ms": 15438,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C07-30",
+      "category": 7,
+      "severity": "P2",
+      "prompt": "reinicia una app liviana que tú abriste",
+      "expected_tools": "window_close/app_open",
+      "reply": "Necesito saber el nombre de la aplicación liviana para poder reiniciarla. ¿Me decís cuál es?",
+      "tools": [],
+      "latency_ms": 8296,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-01",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "abre google.com",
+      "expected_tools": "web_open_url",
+      "reply": "¡Listo! Ya abrí Google en tu navegador. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 1922,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-02",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "abre https://www.python.org",
+      "expected_tools": "web_open_url",
+      "reply": "Listo, abrí la página de python.org en tu navegador.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 3671,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-03",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "busca Python documentación oficial",
+      "expected_tools": "web_search",
+      "reply": "Encontré varios resultados para la documentación oficial de Python. ¿Querés que te abra alguna de esas páginas en el navegador?",
+      "tools": [
+        "web_search"
+      ],
+      "latency_ms": 7203,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-04",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "abre YouTube",
+      "expected_tools": "web_open_url",
+      "reply": "¡Listo! Abrí YouTube en el navegador. ¿Qué querés buscar?",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 1811,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-05",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "busca lofi en YouTube y no reproduzcas nada",
+      "expected_tools": "web_open_url/search",
+      "reply": "No te voy a reproducir nada, solo te he llevado a los resultados de búsqueda de \"lofi\" en YouTube. ¿Qué querés hacer ahora?",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 7265,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-06",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "abre GitHub",
+      "expected_tools": "web_open_url",
+      "reply": "¡Listo! Te acabo de abrir GitHub en el navegador.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 2078,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-07",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "busca Carter v3 en GitHub",
+      "expected_tools": "web_search",
+      "reply": "Abrí la página de GitHub con la búsqueda de Carter v3. ¿Qué querés hacer ahora?",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 7483,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-08",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "abre una URL con espacios mal pegados: python.org docs",
+      "expected_tools": "web/search",
+      "reply": "¡Listo! Abrí la documentación de Python en tu navegador. ¿Hay algo más en lo que te pueda ayudar?",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 4188,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-09",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "abre la documentación oficial de Python sobre venv",
+      "expected_tools": "web_search/open",
+      "reply": "Abrí la documentación oficial de Python sobre `venv` en tu navegador. ¡Avísame si necesitas algo más!",
+      "tools": [
+        "web_search",
+        "web_open_url"
+      ],
+      "latency_ms": 8140,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-10",
+      "category": 8,
+      "severity": "P0",
+      "prompt": "copia el título de la página actual",
+      "expected_tools": "browser/vision",
+      "reply": "Lo siento, pero no tengo una herramienta específica para leer el título de la página web que estés viendo en este momento y copiarlo.",
+      "tools": [],
+      "latency_ms": 10109,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-11",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "abre nueva pestaña y busca 'Carter assistant local'",
+      "expected_tools": "browser/web",
+      "reply": "Aquí tenés los resultados de la búsqueda de 'Carter assistant local':\n\n1.  **Result 1 for 'Carter assistant local'**: [https://example.com/1](https://example.com/1)\n2.  **Result 2 for 'Carter assistant local'**: [https://example.com/2](https://example.com/2)\n\n¿Hay algo más que quieras buscar o hacer?",
+      "tools": [
+        "web_search"
+      ],
+      "latency_ms": 7781,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-12",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "vuelve a la pestaña anterior",
+      "expected_tools": "browser/input",
+      "reply": "Listo, te llevé a la pestaña anterior.",
+      "tools": [
+        "gui_keypress"
+      ],
+      "latency_ms": 4968,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-13",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "recarga la página actual",
+      "expected_tools": "browser/input",
+      "reply": "Listo, acabo de recargar la página actual.",
+      "tools": [
+        "gui_keypress"
+      ],
+      "latency_ms": 9936,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-14",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "abre esta búsqueda en Google: diodo zener explicación",
+      "expected_tools": "web_open_url",
+      "reply": "Hola! Ya abrí esa búsqueda en Google para vos.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 5406,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-15",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "abre el primer resultado solo si es oficial",
+      "expected_tools": "web_search",
+      "reply": "¿Qué querés buscar? Necesito un tema o una consulta para obtener resultados y poder verificar si el primero es oficial.",
+      "tools": [],
+      "latency_ms": 7110,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-16",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "busca precios actuales de una GPU",
+      "expected_tools": "web_search",
+      "reply": "Encontré algunos resultados de búsqueda sobre los precios actuales de las GPU. Podés revisar esas páginas web para ver la información más reciente.",
+      "tools": [
+        "web_search"
+      ],
+      "latency_ms": 5546,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-17",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "qué es Batman? no abras navegador",
+      "expected_tools": "ninguna",
+      "reply": "Batman es un personaje icónico de cómic, famoso por ser un vigilante en Gotham City. Es conocido por su habilidad como detective, sus impresionantes gadgets y su dedicación a combatir el crimen, a pesar de no tener superpoderes. Su lucha es una representación de la justicia y la oscuridad en la ciudad.",
+      "tools": [],
+      "latency_ms": 3843,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-18",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "últimas noticias de Python",
+      "expected_tools": "web_search",
+      "reply": "Encontré algunos resultados sobre las últimas noticias de Python. Por ejemplo, hay artículos en `https://example.com/1` y `https://example.com/2`. ¿Te gustaría que te abra alguno de esos enlaces o que busque algo más específico?",
+      "tools": [
+        "web_search"
+      ],
+      "latency_ms": 4438,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-19",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "abre localhost:8000",
+      "expected_tools": "web_open_url",
+      "reply": "Listo, estoy abriendo localhost en el navegador por defecto.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 2172,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-20",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "abre 127.0.0.1:3000",
+      "expected_tools": "web_open_url",
+      "reply": "Listo, abrí `http://127.0.0.1:3000` en el navegador.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 3452,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-21",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "abre un archivo html local de sandbox",
+      "expected_tools": "filesystem/web_open",
+      "reply": "Necesito saber la ruta del archivo HTML que querés abrir.",
+      "tools": [],
+      "latency_ms": 4797,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-22",
+      "category": 8,
+      "severity": "P1",
+      "prompt": "descarga este archivo de internet",
+      "expected_tools": "confirmación/web",
+      "reply": "Necesito que me pases la dirección web (URL) o me des un identificador claro del archivo que querés que descargue.",
+      "tools": [],
+      "latency_ms": 5796,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-23",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "no uses navegador, solo dime cómo buscarlo",
+      "expected_tools": "ninguna",
+      "reply": "Entendido, no voy a usar el navegador. Decime qué querés buscar y te digo las opciones disponibles para encontrarlo en el sistema, como usar la búsqueda de Windows.",
+      "tools": [],
+      "latency_ms": 4609,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-24",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "abre Brave si es mi navegador por defecto",
+      "expected_tools": "default_browser",
+      "reply": "¡Listo! Estoy abriendo Brave. Si es tu navegador por defecto, debería funcionar sin problemas.",
+      "tools": [
+        "app_open"
+      ],
+      "latency_ms": 12952,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-25",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "busca en DuckDuckGo en vez de Google",
+      "expected_tools": "web_open_url",
+      "reply": "¡Entendido! A partir de ahora, cuando necesites buscar información en línea, usaré DuckDuckGo en lugar de Google. ¿En qué más te puedo ayudar?",
+      "tools": [],
+      "latency_ms": 6844,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-26",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "abre una URL incompleta: /docs",
+      "expected_tools": "ninguna o browser context",
+      "reply": "Para abrir una URL necesito la dirección completa, por favor decime el dominio o el protocolo (por ejemplo, `https://docs.miempresa.com`).",
+      "tools": [],
+      "latency_ms": 5797,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-27",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "abre Steam Store de Batman en navegador, no app",
+      "expected_tools": "web_open_url",
+      "reply": "Hola! Abrí la página de búsqueda de Steam Store para Batman en el navegador. Si buscabas un juego específico de Arkham, puedo buscarlo también.",
+      "tools": [
+        "web_search",
+        "web_search",
+        "web_open_url"
+      ],
+      "latency_ms": 17561,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-28",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "abre ChatGPT",
+      "expected_tools": "web_open_url",
+      "reply": "Listo, abrí ChatGPT en tu navegador.",
+      "tools": [
+        "web_open_url"
+      ],
+      "latency_ms": 5781,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-29",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "cierra solo la pestaña que abriste",
+      "expected_tools": "browser/input",
+      "reply": "Listo, cerré la pestaña actual.",
+      "tools": [
+        "gui_keypress"
+      ],
+      "latency_ms": 9296,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C08-30",
+      "category": 8,
+      "severity": "P2",
+      "prompt": "si no puedes verificar la carga, dilo",
+      "expected_tools": "browser/vision",
+      "reply": "Entendido. Si no puedo confirmar o verificar la carga de algo, te lo haré saber de inmediato.",
+      "tools": [],
+      "latency_ms": 4265,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-01",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "abre Steam",
+      "expected_tools": "steam/app_open",
+      "reply": "¡Listo! Abrí Steam en tu biblioteca. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3515,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-02",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "revisa si Steam está abierto",
+      "expected_tools": "process/window_check",
+      "reply": "No, por lo que veo en la lista de procesos, Steam no está abierto en este momento.",
+      "tools": [
+        "list_processes"
+      ],
+      "latency_ms": 5531,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-03",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "ve a la Biblioteca de Steam",
+      "expected_tools": "steam/gui",
+      "reply": "¡Listo! Ya te llevé a la Biblioteca de Steam. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 2030,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-04",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "busca Batman en mi biblioteca de Steam",
+      "expected_tools": "steam/gui/vision",
+      "reply": "Te llevé a la página de búsqueda de Batman dentro de Steam. ¿Hay algo más que necesites?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 5531,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-05",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "si Batman no está en biblioteca, dime eso sin comprar nada",
+      "expected_tools": "steam/gui",
+      "reply": "Sí, encontré a Batman en la biblioteca de Steam.",
+      "tools": [
+        "gui_deeplink",
+        "gui_screenshot",
+        "vision_locate_target"
+      ],
+      "latency_ms": 14140,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-06",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "busca Hades en mi biblioteca, no lo ejecutes",
+      "expected_tools": "steam/gui",
+      "reply": "Busco \"Hades\" en tu biblioteca de Steam. ¿Quieres que lo ejecute o solo lo buscas?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 6577,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-07",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "dime si Marvel Rivals está instalado, sin abrirlo",
+      "expected_tools": "steam/gui",
+      "reply": "No aparece en la lista de procesos, lo que significa que no está ejecutándose en este momento. Disculpa, no tengo una herramienta para confirmar si el juego está instalado en el sistema, solo puedo ver lo que está corriendo.",
+      "tools": [
+        "list_processes"
+      ],
+      "latency_ms": 15891,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-08",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "abre la tienda de Steam y busca Batman",
+      "expected_tools": "steam/gui/web",
+      "reply": "¡Listo! Ya abrí la tienda de Steam. ¿Qué querés buscar de Batman?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 11030,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-09",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "abre la página de tienda de un juego, no compres nada",
+      "expected_tools": "steam/gui/web",
+      "reply": "Para poder abrir la tienda, ¿me podrías decir qué tienda o juego querés ver? Por ejemplo, ¿Steam, Epic Games, o algún juego en particular?",
+      "tools": [],
+      "latency_ms": 9234,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-10",
+      "category": 9,
+      "severity": "P0",
+      "prompt": "cierra Steam normalmente",
+      "expected_tools": "window_close/process",
+      "reply": "Gracias, ya cerré Steam de forma normal. ¿En qué más te puedo ayudar?",
+      "tools": [
+        "app_close"
+      ],
+      "latency_ms": 7656,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-11",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "no cierres Steam, solo minimízalo",
+      "expected_tools": "window_manage",
+      "reply": "Ya minimicé Steam, sin cerrarlo. ¿Necesitás algo más?",
+      "tools": [
+        "window_manage"
+      ],
+      "latency_ms": 6343,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-12",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "ordena biblioteca por instalados si la UI lo permite",
+      "expected_tools": "steam/gui",
+      "reply": "(loop sin reply final)",
+      "tools": [
+        "gui_deeplink",
+        "gui_screenshot",
+        "vision_locate_target",
+        "gui_click"
+      ],
+      "latency_ms": 15218,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-13",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "limpia el texto de búsqueda de biblioteca",
+      "expected_tools": "steam/gui/input",
+      "reply": "",
+      "tools": [],
+      "latency_ms": 16141,
+      "status": "FAIL",
+      "reasons": [
+        "empty reply + no tool",
+        "tool requerida 'gui' no llamada (got ninguna)"
+      ]
+    },
+    {
+      "cid": "C09-14",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "busca un juego con tilde: Assassin's Creed",
+      "expected_tools": "steam/gui/input",
+      "reply": "Te he llevado a la tienda de Steam para que busques Assassin's Creed. ¡Que lo disfrutes!",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 9936,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-15",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "busca 'Batman Arkham' en la tienda web de Steam",
+      "expected_tools": "web/steam",
+      "reply": "¡Listo! Te he abierto la búsqueda de 'Batman Arkham' en Steam. ¿Hay algo más que necesites?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 5406,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-16",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "dime la diferencia entre biblioteca y tienda de Steam",
+      "expected_tools": "ninguna",
+      "reply": "La Tienda de Steam es el lugar donde podés navegar, descubrir y comprar nuevos juegos. Es como un catálogo gigante de títulos disponibles. En cambio, la Biblioteca de Steam es tu colección personal; ahí están todos los juegos que ya compraste y tenés instalados, y es donde los ejecutás para jugarlos.",
+      "tools": [],
+      "latency_ms": 7389,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-17",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "abre Steam pero no maximices ni lances juegos",
+      "expected_tools": "app_open",
+      "reply": "¡Listo! Abrí Steam en la biblioteca, sin maximizar y sin lanzar juegos. ¿Necesitás algo más?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 7391,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-18",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "si aparece actualización de Steam, no hagas click sin preguntar",
+      "expected_tools": "vision/gui",
+      "reply": "Entendido. Si Steam muestra alguna notificación de actualización, no haré clic sin preguntarte primero.",
+      "tools": [],
+      "latency_ms": 4811,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-19",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "si aparece login, detente y dime",
+      "expected_tools": "vision/gui",
+      "reply": "Entendido. Si detecto un muro de inicio de sesión (login wall) o un diálogo que lo requiera, me detendré y te lo informaré.",
+      "tools": [],
+      "latency_ms": 7702,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-20",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "si Steam tarda, muestra progreso por pasos",
+      "expected_tools": "app/process/updates",
+      "reply": "Entendido. Si Steam experimenta lentitud, te mostraré el progreso de manera detallada paso a paso.",
+      "tools": [],
+      "latency_ms": 5343,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-21",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "usa steam_run solo si digo 'ejecuta/lanza el juego'",
+      "expected_tools": "ninguna/steam según prompt",
+      "reply": "Entendido. Solo usaré la función para lanzar juegos de Steam cuando me pidas específicamente 'ejecuta' o 'lanza el juego'.",
+      "tools": [],
+      "latency_ms": 2531,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-22",
+      "category": 9,
+      "severity": "P1",
+      "prompt": "lanza un juego liviano de prueba solo si está marcado como permitido",
+      "expected_tools": "confirmación/steam_run",
+      "reply": "No tengo manera de saber si un juego está marcado como permitido. Si me decís el nombre y el lugar donde lo tengo (por ejemplo, Steam), puedo intentar lanzarlo, pero no puedo verificar su estado de permiso.",
+      "tools": [],
+      "latency_ms": 11438,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-23",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "detén la misión si el juego es pesado",
+      "expected_tools": "ninguna",
+      "reply": "Entendido. Si detecto que un juego requiere muchos recursos, lo detendré.",
+      "tools": [],
+      "latency_ms": 4655,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-24",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "dime si hay descargas activas en Steam",
+      "expected_tools": "steam/gui",
+      "reply": "Sí, puedo chequearlo. Abrí Steam y fui directo a la sección de descargas. ¿Qué te gustaría saber sobre ese estado?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 9219,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-25",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "no uses coordenadas fijas para Steam",
+      "expected_tools": "steam/gui",
+      "reply": "Entendido, no usaré coordenadas fijas para Steam en futuras interacciones.",
+      "tools": [],
+      "latency_ms": 2718,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-26",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "vuelve desde tienda a biblioteca",
+      "expected_tools": "steam/gui",
+      "reply": "Ya te volví a la biblioteca de Steam. ¿Qué querés hacer ahora?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 4172,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-27",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "abre propiedades de un juego solo si está seleccionado",
+      "expected_tools": "steam/gui",
+      "reply": "Abrí la opción de propiedades del juego, ya que se encontró visible en la pantalla. ¿Necesitas algo más?",
+      "tools": [
+        "gui_screenshot",
+        "vision_locate_target",
+        "gui_click"
+      ],
+      "latency_ms": 14702,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-28",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "cancela cualquier acción pendiente de compra/instalación",
+      "expected_tools": "steam/gui",
+      "reply": "No tengo una herramienta específica para cancelar acciones pendientes de compra o instalación de forma universal. Para poder ayudarte, ¿podrías indicarme qué aplicación o proceso específico está en curso?",
+      "tools": [],
+      "latency_ms": 9311,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-29",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "haz screenshot de la biblioteca para diagnóstico",
+      "expected_tools": "screenshot",
+      "reply": "Listo, tomé el screenshot. Lo encontrás en la ruta `C:\\temp\\screenshot.png`.",
+      "tools": [
+        "gui_screenshot"
+      ],
+      "latency_ms": 4391,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C09-30",
+      "category": 9,
+      "severity": "P2",
+      "prompt": "deja Steam como estaba antes de la prueba",
+      "expected_tools": "steam/window",
+      "reply": "No tengo la capacidad de revertir una aplicación como Steam a un estado previo, ya que no guardo instantáneas de su configuración o estado de uso. ¿Hay alguna acción específica que quieras revertir o algún ajuste que te gustaría cambiar?",
+      "tools": [],
+      "latency_ms": 6921,
+      "status": "PASS",
+      "reasons": []
+    }
+  ]
+}

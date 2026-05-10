@@ -1,0 +1,252 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "system_info",
+      "description": "Lee info del sistema (lectura, no destructivo). metric: 'time'|'cpu'|'ram'|'gpu'|'disk'|'battery'|'volume'.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": ["time", "cpu", "ram", "gpu", "disk", "battery", "volume"]
+          }
+        },
+        "required": ["metric"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "system_control",
+      "description": "Acciones de control del sistema. action: 'set_volume'(level)|'mute'(state)|'shutdown'|'reboot'. shutdown/reboot son DESTRUCTIVAS.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["set_volume", "mute", "shutdown", "reboot"]},
+          "level": {"type": "integer", "minimum": 0, "maximum": 100},
+          "state": {"type": "boolean"}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "app",
+      "description": "Gestión de apps Windows. action: 'open'(name) abre app por nombre exe; 'close'(name) cierra; 'uninstall'(name) DESTRUCTIVO. Para apps con deeplink (steam/spotify/discord/slack/vscode/ms-settings/ms-windows-store/obsidian) preferir gui_action(deeplink).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["open", "close", "uninstall"]},
+          "name": {"type": "string"}
+        },
+        "required": ["action", "name"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "gui",
+      "description": "Acciones GUI/visión. action: 'screenshot'|'click'(x,y)|'type'(text)|'keypress'(keys)|'check_blockers'|'locate'(target_description: encuentra elemento visible)|'describe_dialog'|'universal_action'(action='click'|'type'|'scroll'|'select', target). Usar locate antes de click cuando no se sabe coords.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["screenshot", "click", "type", "keypress", "check_blockers", "locate", "describe_dialog", "universal_action"]},
+          "x": {"type": "integer"},
+          "y": {"type": "integer"},
+          "text": {"type": "string"},
+          "keys": {"type": "string"},
+          "target_description": {"type": "string"},
+          "target": {"type": "string"},
+          "sub_action": {"type": "string", "enum": ["click", "type", "scroll", "select"]}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "gui_deeplink",
+      "description": "Abre directamente sección de apps con URI scheme: steam, spotify, discord, slack, vscode, ms-settings, ms-windows-store, obsidian. params es dict con args específicos (ej query, intent).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "app": {"type": "string", "enum": ["steam", "spotify", "discord", "slack", "vscode", "ms-settings", "ms-windows-store", "obsidian"]},
+          "intent": {"type": "string"},
+          "params": {"type": "object"}
+        },
+        "required": ["app", "intent"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "window",
+      "description": "Gestión de ventanas. action: 'list'|'manage'(action_type, title)|'arrange'(layout).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["list", "manage", "arrange"]},
+          "action_type": {"type": "string", "enum": ["focus", "minimize", "maximize", "restore", "close"]},
+          "title": {"type": "string"},
+          "layout": {"type": "string"}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "process",
+      "description": "Lista procesos activos del sistema (read-only).",
+      "parameters": {"type": "object", "properties": {}, "required": []}
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "filesystem",
+      "description": "Operaciones de filesystem. action: 'list'(path)|'read'(path)|'write'(path,content)|'delete'(path) DESTRUCTIVO|'rename'(src,dst)|'copy'(src,dst)|'move'(src,dst)|'create_dir'(path)|'search'(query,path)|'diff'(path)|'archive'(src,dst)|'unarchive'(src,dst)|'open'(path: abre con app default).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["list", "read", "write", "delete", "rename", "copy", "move", "create_dir", "search", "diff", "archive", "unarchive", "open"]},
+          "path": {"type": "string"},
+          "src": {"type": "string"},
+          "dst": {"type": "string"},
+          "content": {"type": "string"},
+          "query": {"type": "string"}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "web",
+      "description": "Acciones web. action: 'open_url'(url) abre en navegador|'search'(query) busca|'fetch'(url) descarga contenido.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["open_url", "search", "fetch"]},
+          "url": {"type": "string"},
+          "query": {"type": "string"}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "terminal_run",
+      "description": "Ejecuta un comando en terminal. command es nombre del binario (ej 'echo','python','git','pip','pytest','nvidia-smi'). args es lista de argumentos. NO usar para 'dir/ls/type/cat' (usar filesystem).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {"type": "string"},
+          "args": {"type": "array", "items": {"type": "string"}}
+        },
+        "required": ["command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "memory",
+      "description": "Memoria persistente. action: 'save'(key,value)|'recall'(key)|'delete'(key) borra entrada|'list_all' lista todo. Para 'olvida X' usar action=delete con key=X.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["save", "recall", "delete", "list_all"]},
+          "key": {"type": "string"},
+          "value": {"type": "string"}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "media",
+      "description": "Control de media playback. action: 'play_pause'|'next'|'prev'|'volume_up'|'volume_down'.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["play_pause", "next", "prev", "volume_up", "volume_down"]}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "clipboard",
+      "description": "Portapapeles. action: 'read'|'write'(content).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["read", "write"]},
+          "content": {"type": "string"}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "office",
+      "description": "Office docs. action: 'word_open'(path)|'create'(format='docx'|'pptx'|'xlsx', path).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["word_open", "create"]},
+          "path": {"type": "string"},
+          "format": {"type": "string", "enum": ["docx", "pptx", "xlsx"]}
+        },
+        "required": ["action"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "registry",
+      "description": "Windows registry (read-only). action: 'read'(hive,key_path,value_name)|'list_keys'(hive,key_path).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {"type": "string", "enum": ["read", "list_keys"]},
+          "hive": {"type": "string"},
+          "key_path": {"type": "string"},
+          "value_name": {"type": "string"}
+        },
+        "required": ["action", "hive", "key_path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "skill_load",
+      "description": "Carga skill por nombre.",
+      "parameters": {
+        "type": "object",
+        "properties": {"name": {"type": "string"}},
+        "required": ["name"]
+      }
+    }
+  }
+]
