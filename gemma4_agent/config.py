@@ -1,0 +1,89 @@
+"""Runtime configuration for the standalone Gemma 4 agent."""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
+
+
+PACKAGE_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = PACKAGE_ROOT.parent
+
+
+@dataclass(frozen=True)
+class AgentConfig:
+    server_url: str = "http://127.0.0.1:8080"
+    model: str = "gemma-4"
+    llama_server_exe: Path = Path("C:/llamacpp-cuda/bin/llama-server.exe")
+    model_path: Path = PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q6_K.gguf"
+    mmproj_path: Path = PROJECT_ROOT / "models" / "E4B" / "mmproj-F16.gguf"
+    temperature: float = 1.0
+    top_p: float = 0.95
+    top_k: int = 64
+    min_p: Optional[float] = None
+    repeat_penalty: float = 1.0
+    max_tokens: int = 1280
+    context_size: int = 16384
+    request_timeout_s: float = 180.0
+    max_agent_turns: int = 8
+    parse_tool_calls: bool = True
+    parallel_tool_calls: bool = False
+    enable_thinking: bool = False
+    reasoning_format: str = ""
+    agent_mode: str = "auto"
+    enable_tracing: bool = True
+    memory_path: Path = PACKAGE_ROOT / "data" / "memory.json"
+    captures_dir: Path = PACKAGE_ROOT / "captures"
+    trace_path: Path = PACKAGE_ROOT / "data" / "traces.jsonl"
+
+    @property
+    def chat_url(self) -> str:
+        return f"{self.server_url.rstrip('/')}/v1/chat/completions"
+
+    @property
+    def health_url(self) -> str:
+        return f"{self.server_url.rstrip('/')}/health"
+
+    @classmethod
+    def from_env(cls) -> "AgentConfig":
+        memory_raw = os.environ.get("GEMMA4_AGENT_MEMORY")
+        captures_raw = os.environ.get("GEMMA4_AGENT_CAPTURES")
+        llama_raw = os.environ.get("GEMMA4_LLAMA_SERVER_EXE")
+        model_raw = os.environ.get("GEMMA4_MODEL_PATH")
+        mmproj_raw = os.environ.get("GEMMA4_MMPROJ_PATH")
+        min_p_raw = os.environ.get("GEMMA4_AGENT_MIN_P")
+        trace_raw = os.environ.get("GEMMA4_AGENT_TRACE_PATH") or os.environ.get("GEMMA4_AGENT_TRACE")
+        return cls(
+            server_url=os.environ.get("GEMMA4_AGENT_SERVER", cls.server_url),
+            model=os.environ.get("GEMMA4_AGENT_MODEL", cls.model),
+            llama_server_exe=Path(llama_raw) if llama_raw else cls.llama_server_exe,
+            model_path=Path(model_raw) if model_raw else cls.model_path,
+            mmproj_path=Path(mmproj_raw) if mmproj_raw else cls.mmproj_path,
+            temperature=float(os.environ.get("GEMMA4_AGENT_TEMPERATURE", cls.temperature)),
+            top_p=float(os.environ.get("GEMMA4_AGENT_TOP_P", cls.top_p)),
+            top_k=int(os.environ.get("GEMMA4_AGENT_TOP_K", cls.top_k)),
+            min_p=float(min_p_raw) if min_p_raw not in {None, ""} else cls.min_p,
+            repeat_penalty=float(os.environ.get("GEMMA4_AGENT_REPEAT_PENALTY", cls.repeat_penalty)),
+            max_tokens=int(os.environ.get("GEMMA4_AGENT_MAX_TOKENS", cls.max_tokens)),
+            context_size=int(os.environ.get("GEMMA4_AGENT_CONTEXT", cls.context_size)),
+            request_timeout_s=float(os.environ.get("GEMMA4_AGENT_TIMEOUT", cls.request_timeout_s)),
+            max_agent_turns=int(os.environ.get("GEMMA4_AGENT_MAX_TURNS", cls.max_agent_turns)),
+            parse_tool_calls=_env_bool("GEMMA4_AGENT_PARSE_TOOL_CALLS", cls.parse_tool_calls),
+            parallel_tool_calls=_env_bool("GEMMA4_AGENT_PARALLEL_TOOL_CALLS", cls.parallel_tool_calls),
+            enable_thinking=_env_bool("GEMMA4_AGENT_ENABLE_THINKING", cls.enable_thinking),
+            reasoning_format=os.environ.get("GEMMA4_AGENT_REASONING_FORMAT", cls.reasoning_format),
+            agent_mode=os.environ.get("GEMMA4_AGENT_MODE", cls.agent_mode),
+            enable_tracing=_env_bool("GEMMA4_AGENT_TRACING", cls.enable_tracing),
+            memory_path=Path(memory_raw) if memory_raw else cls.memory_path,
+            captures_dir=Path(captures_raw) if captures_raw else cls.captures_dir,
+            trace_path=Path(trace_raw) if trace_raw else cls.trace_path,
+        )
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().casefold() in {"1", "true", "yes", "on", "si"}

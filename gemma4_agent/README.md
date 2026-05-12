@@ -1,0 +1,203 @@
+# Gemma4 Agent
+
+Agente local desde cero para Gemma 4 en Windows. Usa `llama-server`
+OpenAI-compatible, tools reales, memoria explicita y entradas multimodales.
+
+## Ejecutar
+
+```powershell
+& "C:\llamacpp-cuda\bin\llama-server.exe" `
+    -m "models\E4B\gemma-4-E4B-it-Q6_K.gguf" `
+    --mmproj "models\E4B\mmproj-F16.gguf" `
+    --jinja --port 8080 -ngl 99 -c 16384 `
+    --parallel 1 --ctx-checkpoints 1 --flash-attn on
+
+python -m gemma4_agent.chat
+```
+
+El agente tambien puede levantar el servidor:
+
+```powershell
+python -m gemma4_agent.chat --start-server
+```
+
+El tamano de contexto del ejemplo se controla con `GEMMA4_AGENT_CONTEXT`.
+Para 6-16 GB VRAM, `16384` es el perfil diario razonable. Usa 32768/65536/128000
+solo cuando la VRAM y la latencia lo permitan.
+
+## Multimodal
+
+```powershell
+python -m gemma4_agent.chat --image .\foto.png
+python -m gemma4_agent.chat --audio .\audio.wav
+```
+
+Dentro del chat:
+
+```text
+/image C:\ruta\captura.png
+/audio C:\ruta\voz.wav
+```
+
+Las screenshots tomadas con `gui_screenshot` se reinyectan como imagen en el
+siguiente turno para que Gemma 4 pueda razonar visualmente.
+
+## Memoria
+
+La memoria vive en `gemma4_agent/data/memory.json`. El prompt instruye al
+modelo a usar `memory(action="save")` solo cuando el usuario lo pide explicitamente.
+
+Ejemplos:
+
+```text
+recorda que prefiero respuestas cortas
+que recordas de mi?
+olvida mi preferencia de respuestas cortas
+```
+
+## Tools compuestas incluidas
+
+- `system`: hora, procesos, CPU/RAM/GPU, disco, bateria, brillo, power.
+- `audio`: volumen, mute, dispositivos.
+- `app`: buscar/abrir/cerrar/desinstalar apps dinamicas.
+- `steam`: biblioteca, tienda dentro del cliente, juegos instalados, buscar en biblioteca, abrir pagina de tienda por AppID, lanzar/buscar/instalar.
+- `window`: listar, activa, foco, cerrar, minimizar/maximizar/restaurar, mover.
+- `gui`: screenshot, click, doble click, right click, type, hotkeys, scroll, drag.
+- `vision`: puente a vision nativa Gemma 4 via screenshot reinyectado.
+- `browser`: abrir/navegar, buscar, YouTube play, pausa media, titulo activo.
+- `web`: buscar, leer paginas e investigar con fuentes extraidas.
+- `uia`: Windows UI Automation para arbol, buscar, click, foco y set_value.
+- `filesystem`: list/read/write/search/delete/copy/move/rename/mkdir/diff/archive/open.
+- `package`: winget list/search/install/uninstall.
+- `clipboard`: read/write.
+- `terminal`: run.
+- `memory`: save/recall/list/delete.
+- `verify`: app_opened/file_exists/window_exists/clipboard_contains.
+
+Este prototipo no tiene capa de confirmacion de seguridad por pedido del
+usuario. Las tools ejecutan directamente lo solicitado.
+
+## Resolucion dinamica de apps
+
+`app(action="open", name="Steam")` no usa una tabla fija de aliases. El resolver busca en:
+
+- ejecutables disponibles por `PATH`
+- accesos directos del Start Menu y escritorio
+- `Get-StartApps` para apps UWP/Store
+- registro de programas instalados
+- bibliotecas Steam (`appmanifest_*.acf`)
+- manifiestos de Epic Games
+- busqueda profunda por `.exe` en carpetas comunes si los indices rapidos no encuentran nada
+
+Tambien existe `app(action="search", query="...")` para inspeccionar candidatos antes de abrirlos.
+
+## Misiones compuestas
+
+El agente puede encadenar tools. Ejemplo:
+
+```text
+abre Steam, ve a mi biblioteca y busca Doom Eternal ahi dentro,
+luego ve a Opera y busca Doom en Google
+```
+
+Secuencia esperada:
+
+```text
+steam(action="search_library", query="Doom Eternal")
+browser(action="search", browser="Opera", engine="google", query="Doom")
+```
+
+Para Steam store:
+
+```text
+steam(action="store_page", query="Marvel Rivals")
+```
+
+Eso resuelve un AppID cuando puede y abre `steam://store/<appid>` en el cliente
+de Steam. Si no resuelve AppID, abre la busqueda de tienda dentro del cliente y
+marca el resultado como no verificado.
+
+## Modos de uso
+
+Por defecto `GEMMA4_AGENT_MODE=auto`. El router elige:
+
+- `fast_action`: preguntas simples y acciones cortas, sin thinking.
+- `deep_action`: misiones compuestas en orden, con thinking privado.
+- `vision_action`: imagen/screenshot -> razonamiento visual -> UIA/GUI -> verificacion.
+- `audio_mode`: entrada de audio, sin inventar si la transcripcion no es clara.
+- `research`: investigacion con `web(...)`, fuentes y thinking privado.
+
+Tambien se puede forzar:
+
+```powershell
+python -m gemma4_agent.chat --mode research
+$env:GEMMA4_AGENT_MODE = "deep_action"
+```
+
+El historial limpia campos/tags de reasoning antes de guardarlos. Esto permite
+activar thinking en tareas profundas sin contaminar los turnos siguientes.
+
+## Verificacion y honestidad
+
+Todas las tools devuelven campos normalizados:
+
+```json
+{
+  "status": "done | attempted | needs_verification | failed",
+  "verified": true,
+  "evidence": "..."
+}
+```
+
+`ok=true` significa que la tool pudo ejecutarse, no necesariamente que el
+objetivo del usuario quedo completado. Para GUI, navegador y media el agente
+debe verificar con `uia`, `gui`, `vision`, `window`, `verify` o `web` antes de
+afirmar que termino.
+
+Para investigar en internet se usa `web(action="research", query="...")`.
+`browser(action="search")` solo abre resultados visibles en el navegador.
+El proveedor de busqueda vive detras de `GEMMA4_WEB_SEARCH_PROVIDER`; por ahora
+el backend implementado es `duckduckgo_html`.
+
+`app(action="close")` intenta cerrar primero ventanas que coincidan con el
+nombre visible y despues procesos resueltos desde accesos directos, registro o
+rutas instaladas. Si no cierra nada, devuelve `ok=false`; ya no marca como
+exito un `taskkill` que no encontro el proceso.
+
+## Opciones de llama-server
+
+El cliente envia parametros compatibles con llama.cpp para Gemma 4:
+
+- `GEMMA4_AGENT_PARSE_TOOL_CALLS=true` por defecto.
+- `GEMMA4_AGENT_PARALLEL_TOOL_CALLS=false` por defecto para mantener acciones de PC en orden.
+- `GEMMA4_AGENT_ENABLE_THINKING=false` sigue siendo el default global, pero el router puede activar thinking por turno en `deep_action`, `vision_action` y `research`.
+- `GEMMA4_AGENT_REASONING_FORMAT` vacio por defecto; solo se envia si lo defines.
+- `GEMMA4_AGENT_MIN_P` es opcional. Si no lo defines no se envia, para quedar alineado con los parametros oficiales principales de Gemma 4 (`temperature=1.0`, `top_p=0.95`, `top_k=64`).
+- `GEMMA4_AGENT_CONTEXT=16384` controla el `-c` usado por `--start-server`.
+
+Las schemas de tools compuestas incluyen `enum` en `action` para reducir
+llamadas ambiguas o acciones inventadas por el modelo, y
+`additionalProperties=false` para desalentar argumentos fuera del contrato.
+Ademas hay validacion runtime: si Gemma manda una accion fuera del enum o
+argumentos desconocidos, la tool no se ejecuta y recibe un error estructurado.
+Si una version vieja de `llama-server` rechaza opciones nuevas del request, el
+cliente reintenta automaticamente sin esas opciones especificas.
+
+## Trazas y evaluacion
+
+Cada turno genera una linea JSONL en `gemma4_agent/data/traces.jsonl` con:
+
+- modo elegido
+- resumen del input sin volcar base64 completo
+- respuestas del LLM
+- tool calls/resultados
+- final o error
+
+Esto permite crear evaluaciones offline sin abrir apps ni controlar el PC.
+Se puede desactivar con:
+
+```powershell
+$env:GEMMA4_AGENT_TRACING = "false"
+```
+
+La ruta se puede cambiar con `GEMMA4_AGENT_TRACE_PATH`.

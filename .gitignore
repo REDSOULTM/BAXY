@@ -10,6 +10,11 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Gemma4 agent runtime outputs
+gemma4_agent/captures/
+gemma4_agent/data/
+gemma4_agent/logs/
+
 # Audio samples (binarios)
 *.wav
 
