@@ -13,7 +13,7 @@ from .llm_client import LLMClient
 from .memory import MemoryStore
 from .modes import AgentMode, choose_mode
 from .multimodal import image_part, user_content
-from .planner import MissionPlan, plan_mission
+from .planner import MissionPlan, plan_mission, select_tool_names
 from .reasoning import sanitize_assistant_message, sanitize_text
 from .state import AgentState
 from .tools import ToolRegistry
@@ -48,49 +48,15 @@ print the private plan or chain-of-thought. If an action affects visible UI,
 prefer uia(...) first, then gui/vision screenshots when UI Automation cannot
 reach the control.
 
-The tool catalog is intentionally compound to reduce context. Choose the
-correct group and set `action`:
-- app(action=search/open/close/uninstall)
-- steam(action=open/library/store/list_games/launch_game/search_library/search_store/store_page/install)
-- filesystem(action=list/read/write/search/delete/copy/move/rename/mkdir/diff/archive/unarchive/open)
-- gui(action=screenshot/click/double_click/right_click/type/keypress/hotkey/scroll/drag/wait_for/locate_text/click_text)
-- window(action=list/active/focus/close/minimize/maximize/restore/move_resize)
-- vision(action=describe_screen/find_element/ocr/compare_before_after)
-- browser(action=open/search/youtube_play/media_pause/media_stop/active_tab_title/click/find)
-- web(action=search/read/research/open)
-- uia(action=tree/find/click/focus/set_value)
-- system(action=time/processes/cpu_ram_gpu/disk/battery/brightness_get/brightness_set/shutdown/restart/sleep)
-- audio(action=get_volume/set_volume/mute/devices/set_default/media_play_pause/media_stop/next/previous)
-- package(action=list/search/install/uninstall)
-- clipboard(action=read/write)
-- terminal(action=run)
-- memory(action=save/recall/list/delete)
-- verify(action=app_opened/file_exists/window_exists/clipboard_contains)
-- state(action=resources/cleanup_plan/cleanup/checkpoint/checkpoints/rollback_plan/rollback/note)
-- input(action=language_list/keyboard_layouts/current_keyboard/set_language_list/switch_keyboard)
-- env(action=get/set/delete/list)
-- registry(action=query/export/import/add/delete/backup)
-- download(action=fetch/hash/signature)
-- email(action=status/draft/send)
-- reminder(action=status/create/list/delete)
-- browser_real(action=status/open/goto/tabs/click/fill/press/text/screenshot/evaluate/connect_cdp/close)
-- knowledge(action=status/ingest/search/list/delete)
-- office(action=status/create_presentation/edit_presentation/create_document/edit_document/create_spreadsheet/edit_spreadsheet/export_pdf/inspect/open)
-- audio_device(action=status/list/set_default/set_default_communications/set_app_route/get_app_routes/snapshot/restore)
-- notification(action=status/toast_now/toast_schedule/timer_start/timer_cancel/timer_list/alarm_create/alarm_cancel/alarm_list/reminder_create/reminder_update/reminder_delete/reminder_list/notify_sound/delete)
-- routine(action=status/create/list/enable/disable/delete/run_now/simulate/history)
-- media(action=status/play/pause/resume/play_pause/stop/next/previous/queue_add/queue_clear/queue_list/now_playing/volume_for_app/open_local/search_local_library/cast_lan)
-- source_manager(action=status/save/list/search/read/delete/snapshot_file)
-- dependency(action=status/list/verify/explain_missing/install/repair)
-- contacts(action=status/create/list/search/delete/update/import_vcard/export_vcard)
-- notes_tasks(action=status/note_create/note_list/note_search/note_update/note_delete/task_create/task_list/task_search/task_complete/task_update/task_delete/search/list/delete)
-- local_calendar(action=status/event_create/event_list/event_update/event_delete/ics_export/ics_import)
-- habit_tracker(action=status/create/list/log/stats/delete)
-- local_search(action=status/search/recent)
-- printer_scanner(action=status/printers_list/printer_default_get/printer_default_set/print_queue/print_file/cancel_job/scanners_list/scan_document)
-- desktop_layout(action=status/windows/displays/snapshot/restore)
-- backup_sync(action=status/backup_create/list/restore/dedupe)
-- safety(action=status/pending/confirm/cancel)
+The runtime sends only the relevant compound tools for the current turn. Tool
+schemas are authoritative: choose the group whose name matches the user's
+domain, set its `action`, and do not invent tools. Common groups include:
+app, steam, browser, browser_real, web, media, audio, audio_device, office,
+filesystem, gui, uia, vision, window, system, clipboard, terminal, memory,
+state, verify, input, env, registry, download, email, reminder, knowledge,
+notification, routine, source_manager, dependency, contacts, notes_tasks,
+local_calendar, habit_tracker, local_search, printer_scanner, desktop_layout,
+backup_sync, package, and safety.
 
 For apps and games, use app(action="open", name="<user-facing name>") or
 steam(action="launch_game", query="<game>") for installed Steam games. The
@@ -276,7 +242,12 @@ class Gemma4Agent:
             parallel_tool_calls=mode.parallel_tool_calls,
             max_tokens=mode.max_tokens,
         )
-        self.history.append({"role": "user", "content": content})
+        selected_tool_names = select_tool_names(content, plan, safety_enabled=self.config.enable_safety)
+        selected_schemas = self.tools.schemas_for_names(selected_tool_names)
+        self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
+        _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
+        self._compact_completed_history()
+        self.history.append({"role": "user", "content": _compact_live_content(content)})
         events: list[ToolEvent] = []
 
         for _turn in range(self.config.max_agent_turns):
@@ -290,15 +261,36 @@ class Gemma4Agent:
             try:
                 resp = self.client.chat(
                     self._messages(mode, plan),
-                    tools=self.tools.schemas,
+                    tools=selected_schemas,
                     enable_thinking=mode.enable_thinking,
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=mode.max_tokens,
                 )
             except Exception as exc:
-                _progress(progress, "error", error=str(exc), tools=len(events))
-                self.trace.event(turn_id, "llm_error", error=str(exc), tool_events=len(events))
-                return AgentReply(content="", tool_events=events, error=str(exc))
+                if _looks_like_context_overflow(str(exc)):
+                    _progress(progress, "context_retry", error=str(exc), tools=len(events))
+                    self.trace.event(turn_id, "context_retry", error=str(exc), tool_events=len(events))
+                    self._compact_active_history_for_retry()
+                    selected_schemas = self.tools.schemas_for_names(selected_tool_names[:8])
+                    try:
+                        resp = self.client.chat(
+                            self._messages(mode, plan),
+                            tools=selected_schemas,
+                            enable_thinking=mode.enable_thinking,
+                            parallel_tool_calls=mode.parallel_tool_calls,
+                            max_tokens=mode.max_tokens,
+                        )
+                    except Exception as retry_exc:
+                        _progress(progress, "error", error=str(retry_exc), tools=len(events))
+                        self.trace.event(turn_id, "llm_error", error=str(retry_exc), tool_events=len(events), after_context_retry=True)
+                        return AgentReply(content="", tool_events=events, error=str(retry_exc))
+                    else:
+                        self.trace.event(turn_id, "context_retry_ok", schema_count=len(selected_schemas))
+                        _progress(progress, "context_retry_ok", tools=len(events), schema_count=len(selected_schemas))
+                else:
+                    _progress(progress, "error", error=str(exc), tools=len(events))
+                    self.trace.event(turn_id, "llm_error", error=str(exc), tool_events=len(events))
+                    return AgentReply(content="", tool_events=events, error=str(exc))
 
             choice = (resp.get("choices") or [{}])[0]
             raw_msg = choice.get("message") or {}
@@ -327,6 +319,7 @@ class Gemma4Agent:
                 mission = evaluate_mission(events, assistant_content, plan)
                 self.history.append({"role": "assistant", "content": assistant_content})
                 self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events), mission=mission)
+                self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
 
@@ -354,7 +347,7 @@ class Gemma4Agent:
                 self.history.append({
                     "role": "tool",
                     "tool_call_id": raw_call.get("id", f"call_{name}"),
-                    "content": json.dumps(result, ensure_ascii=False),
+                    "content": json.dumps(_compact_tool_result(name, args, result), ensure_ascii=False),
                 })
 
                 image_path = result.get("image_path")
@@ -369,6 +362,7 @@ class Gemma4Agent:
         mission = evaluate_mission(events, final, plan)
         self.history.append({"role": "assistant", "content": final})
         self.trace.event(turn_id, "max_turns", content=final, tool_events=len(events), mission=mission)
+        self._compact_completed_history()
         _progress(progress, "max_turns", tools=len(events), mission=mission)
         return AgentReply(content=final, tool_events=events, mission=mission)
 
@@ -384,6 +378,44 @@ class Gemma4Agent:
             "role": "user",
             "content": [image_part(path), {"type": "text", "text": text}],
         })
+
+    def _compact_completed_history(self) -> None:
+        """Keep future turns small after a completed tool cycle."""
+
+        compacted: list[dict[str, Any]] = []
+        for msg in self.history:
+            role = str(msg.get("role") or "")
+            if role == "tool":
+                continue
+            if role == "assistant" and msg.get("tool_calls"):
+                continue
+            if role not in {"user", "assistant"}:
+                continue
+            compacted.append({"role": role, "content": _compact_history_content(msg.get("content"))})
+        self.history = compacted[-18:]
+
+    def _compact_active_history_for_retry(self) -> None:
+        """Aggressive fallback when llama-server reports context overflow."""
+
+        trimmed: list[dict[str, Any]] = []
+        for msg in self.history[-10:]:
+            role = str(msg.get("role") or "")
+            if role == "tool":
+                trimmed.append({
+                    "role": "tool",
+                    "tool_call_id": str(msg.get("tool_call_id") or "call_compacted"),
+                    "content": _middle_ellipsis(str(msg.get("content") or ""), 1200),
+                })
+            elif role == "assistant":
+                clean = {"role": "assistant", "content": _middle_ellipsis(str(msg.get("content") or ""), 1200)}
+                if msg.get("tool_calls"):
+                    clean["tool_calls"] = _compact_json(msg.get("tool_calls"), max_items=4, max_string=500)
+                trimmed.append(clean)
+            elif role == "user":
+                trimmed.append({"role": "user", "content": _compact_history_content(msg.get("content"))})
+        while trimmed and trimmed[0].get("role") == "tool":
+            trimmed.pop(0)
+        self.history = trimmed
 
     def _guard_unverified_final(self, content: str, events: list[ToolEvent]) -> str:
         if not events:
@@ -403,6 +435,138 @@ class Gemma4Agent:
             f"(status={status or 'desconocido'}, verified={verified}, evidence={evidence})."
         )
         return content.rstrip() + note
+
+
+LIVE_TEXT_LIMIT = 10000
+HISTORY_TEXT_LIMIT = 3500
+TOOL_RESULT_LIMIT = 3500
+
+
+def _compact_live_content(content: str | list[dict[str, Any]]) -> str | list[dict[str, Any]]:
+    if isinstance(content, str):
+        return _middle_ellipsis(content, LIVE_TEXT_LIMIT)
+    out: list[dict[str, Any]] = []
+    for item in content:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") == "text":
+            out.append({"type": "text", "text": _middle_ellipsis(str(item.get("text") or ""), LIVE_TEXT_LIMIT)})
+        else:
+            out.append(item)
+    return out
+
+
+def _compact_history_content(content: Any) -> str:
+    if isinstance(content, str):
+        return _middle_ellipsis(content, HISTORY_TEXT_LIMIT)
+    if isinstance(content, list):
+        parts: list[str] = []
+        omitted_media = 0
+        for item in content:
+            if not isinstance(item, dict):
+                continue
+            kind = str(item.get("type") or "")
+            if kind == "text":
+                parts.append(str(item.get("text") or ""))
+            elif kind in {"image_url", "input_audio"}:
+                omitted_media += 1
+        suffix = f"\n[{omitted_media} multimodal item(s) omitted from history]" if omitted_media else ""
+        return _middle_ellipsis("\n".join(parts).strip() + suffix, HISTORY_TEXT_LIMIT)
+    return _middle_ellipsis(str(content or ""), HISTORY_TEXT_LIMIT)
+
+
+def _compact_tool_result(name: str, args: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+    compacted = _compact_json(result, max_items=5, max_string=700)
+    if _json_len(compacted) <= TOOL_RESULT_LIMIT:
+        return compacted if isinstance(compacted, dict) else {"value": compacted}
+
+    core_keys = (
+        "ok",
+        "status",
+        "verified",
+        "completion_status",
+        "error",
+        "tool",
+        "action",
+        "evidence",
+        "path",
+        "url",
+        "image_path",
+        "title",
+        "selected_title",
+        "level",
+        "query",
+        "matched_game",
+        "local_match_verified",
+        "visual_verified",
+        "playback_verified",
+        "content_verified",
+        "resource",
+        "checkpoint",
+    )
+    core: dict[str, Any] = {
+        "tool": name,
+        "args": _compact_json(args, max_items=5, max_string=300),
+        "context_compacted": True,
+    }
+    for key in core_keys:
+        if key in result:
+            core[key] = _compact_json(result[key], max_items=4, max_string=500)
+    for key, value in result.items():
+        if isinstance(value, list):
+            core[f"{key}_count"] = len(value)
+            core[key] = _compact_json(value[:3], max_items=3, max_string=350)
+        elif isinstance(value, dict) and key not in core:
+            core[f"{key}_keys"] = list(value.keys())[:12]
+    return _compact_json(core, max_items=6, max_string=600)
+
+
+def _compact_json(value: Any, *, max_items: int, max_string: int, depth: int = 0) -> Any:
+    if depth > 5:
+        return _middle_ellipsis(str(value), max_string)
+    if isinstance(value, str):
+        return _middle_ellipsis(value, max_string)
+    if value is None or isinstance(value, (bool, int, float)):
+        return value
+    if isinstance(value, list):
+        out = [_compact_json(item, max_items=max_items, max_string=max_string, depth=depth + 1) for item in value[:max_items]]
+        if len(value) > max_items:
+            out.append({"_omitted": len(value) - max_items})
+        return out
+    if isinstance(value, dict):
+        limit = 80 if depth == 0 else max_items
+        items = list(value.items())
+        out: dict[str, Any] = {}
+        for key, item in items[:limit]:
+            out[str(key)] = _compact_json(item, max_items=max_items, max_string=max_string, depth=depth + 1)
+        if len(items) > limit:
+            out["_omitted_keys"] = len(items) - limit
+        return out
+    return _middle_ellipsis(str(value), max_string)
+
+
+def _json_len(value: Any) -> int:
+    try:
+        return len(json.dumps(value, ensure_ascii=False, default=str))
+    except TypeError:
+        return len(str(value))
+
+
+def _looks_like_context_overflow(message: str) -> bool:
+    low = message.casefold()
+    return "exceeds the available context size" in low or "context size" in low and "exceed" in low
+
+
+def _middle_ellipsis(text: str, limit: int) -> str:
+    if len(text) <= limit:
+        return text
+    keep_start = max(0, limit // 2)
+    keep_end = max(0, limit - keep_start - 80)
+    return (
+        text[:keep_start].rstrip()
+        + f"\n...[omitted {len(text) - keep_start - keep_end} chars to keep context under limit]...\n"
+        + text[-keep_end:].lstrip()
+    )
 
 
 def _parse_args(raw: Any) -> dict[str, Any]:

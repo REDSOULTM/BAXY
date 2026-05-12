@@ -12,6 +12,7 @@ import json
 from .config import AgentConfig
 from .memory import MemoryStore
 from .modes import choose_mode
+from .planner import plan_mission, select_tool_names
 from .reasoning import sanitize_text
 from .state import AgentState
 from .tools import ToolRegistry
@@ -37,6 +38,10 @@ def main() -> int:
     duplicate_count = len(names) - len(set(names))
     steam_schema = next(schema for schema in tools.schemas if schema["function"]["name"] == "steam")
     steam_actions = steam_schema["function"]["parameters"]["properties"]["action"].get("enum", [])
+    steam_plan = plan_mission("abre steam, ve a mi biblioteca y busca doom eternal ahi dentro")
+    steam_subset = select_tool_names("abre steam, ve a mi biblioteca y busca doom eternal ahi dentro", steam_plan, safety_enabled=config.enable_safety)
+    casual_plan = plan_mission("quien es batman")
+    casual_subset = select_tool_names("quien es batman", casual_plan, safety_enabled=config.enable_safety)
 
     checks = {
         "schema_count": len(names),
@@ -47,6 +52,9 @@ def main() -> int:
             for schema in tools.schemas
         ),
         "steam_has_store_page": "store_page" in steam_actions,
+        "dynamic_subset_steam": steam_subset,
+        "dynamic_subset_steam_schema_count": len(tools.schemas_for_names(steam_subset)),
+        "dynamic_subset_casual": casual_subset,
         "mode_fast": choose_mode("quien es batman", "auto", config.max_tokens).name,
         "mode_deep": choose_mode("abre steam, luego ve a mi biblioteca y despues busca doom", "auto", config.max_tokens).name,
         "mode_research": choose_mode("investiga el nuevo juego de Batman con fuentes", "auto", config.max_tokens).name,

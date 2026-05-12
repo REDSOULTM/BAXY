@@ -76,6 +76,10 @@ class ProgressDisplay:
                 suffix = f" | {self._steps} pasos" if self._steps else ""
                 self._message = f"Planificando{suffix}"
                 self._progress = max(self._progress, 0.06)
+            elif event == "tool_subset":
+                count = int(payload.get("schema_count") or 0)
+                self._message = f"Seleccionando {count} tool(s) relevantes"
+                self._progress = max(self._progress, 0.09)
             elif event == "llm_start":
                 self._turn = int(payload.get("turn") or 0)
                 self._tools = int(payload.get("tools") or self._tools)
@@ -100,6 +104,12 @@ class ProgressDisplay:
             elif event == "image_injected":
                 self._message = "Imagen devuelta a Gemma para verificacion"
                 self._progress = min(0.95, max(self._progress, 0.76))
+            elif event == "context_retry":
+                self._message = "Compactando contexto y reintentando"
+                self._progress = max(self._progress, 0.20)
+            elif event == "context_retry_ok":
+                self._message = "Contexto compactado"
+                self._progress = max(self._progress, 0.30)
             elif event in {"final", "max_turns"}:
                 self._message = "Listo"
                 self._tools = int(payload.get("tools") or self._tools)

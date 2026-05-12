@@ -1102,6 +1102,18 @@ class ToolRegistry:
     def schemas(self) -> list[dict[str, Any]]:
         return COMPOUND_TOOL_SCHEMAS
 
+    @property
+    def schema_names(self) -> list[str]:
+        return [str(schema.get("function", {}).get("name", "")) for schema in COMPOUND_TOOL_SCHEMAS]
+
+    def schemas_for_names(self, names: list[str] | tuple[str, ...] | set[str]) -> list[dict[str, Any]]:
+        wanted = {str(name) for name in names}
+        return [
+            schema
+            for schema in COMPOUND_TOOL_SCHEMAS
+            if str(schema.get("function", {}).get("name", "")) in wanted
+        ]
+
     def execute(self, name: str, args: dict[str, Any] | None) -> dict[str, Any]:
         clean_args = dict(args or {})
         confirmed = bool(clean_args.pop("confirmed", False))
