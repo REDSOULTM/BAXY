@@ -30,6 +30,39 @@ Los huecos mas importantes que aparecieron en pruebas reales son:
 Servicios externos quedan separados al final. Para ahora, el foco local deberia
 ser P0/P1.
 
+## Aplicacion En Codigo
+
+### 2026-05-12: Primer Corte P0 Local
+
+Implementado en el agente:
+
+- `office`: `status`, `create_presentation`, `create_document`,
+  `create_spreadsheet`, `inspect`, `open`; editing/export devuelven
+  `needs_implementation` hasta tener manejo seguro por plantilla.
+- `audio_device`: `status/list/snapshot` y `set_default` preparado para helper
+  local SoundVolumeView. Si falta helper devuelve `needs_dependency`.
+- `notification`: estado, notificacion inmediata y scheduling via Windows
+  Scheduled Tasks para timers/alarmas/reminders locales.
+- `routine`: crear/listar/enable/disable/delete/run_now de rutinas manuales
+  con steps de tools.
+- `media`: wrapper compuesto para YouTube/local files/media keys.
+
+Verificado:
+
+- Catalogo subio de 26 a 31 tools.
+- `office(create_presentation)` creo un `.pptx` real en `data/generated`.
+- `routine(create)` + `routine(run_now)` ejecuto una tool real (`system.time`).
+- `eval_smoke` pasa con `missing=[]` y `duplicate_count=0`.
+
+Pendiente del P0:
+
+- `browser_real_visible`: ya existe `browser_real(headless=false)` y CDP, pero
+  falta una experiencia pulida para adjuntarse al navegador visible del usuario.
+- `audio_device`: falta instalar/configurar helper local para que `set_default`
+  cambie realmente AUX/Focusrite.
+- `notification`: falta historial completo y UI de administracion.
+- `routine`: faltan triggers persistentes/event-driven; ahora `run_now` es real.
+
 ## Fuentes Base
 
 - Alexa Built-in Intent Library: categorias Books, Calendar, Cinema Showtimes,

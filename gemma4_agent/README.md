@@ -104,6 +104,11 @@ olvida mi preferencia de respuestas cortas
 - `reminder`: recordatorios locales en state o Graph si hay auth.
 - `browser_real`: Playwright headless para leer/clickear paginas con precision.
 - `knowledge`: RAG local SQLite/FTS5 para documentos de texto.
+- `office`: PowerPoint/Word/Excel local via python-pptx/python-docx/openpyxl cuando esten instalados.
+- `audio_device`: dispositivos de audio predeterminados/routing con helper local como SoundVolumeView.
+- `notification`: timers, alarmas, recordatorios y notificaciones locales con Scheduled Tasks.
+- `routine`: automatizaciones locales reutilizables y `run_now` con steps de tools.
+- `media`: musica/video/local files sobre YouTube, media keys y archivos locales.
 - `safety`: confirmaciones pendientes para acciones riesgosas cuando se activa.
 
 Este prototipo no tiene capa de confirmacion de seguridad por pedido del

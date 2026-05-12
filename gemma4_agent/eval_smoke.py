@@ -29,6 +29,7 @@ def main() -> int:
         "system", "audio", "app", "steam", "window", "gui", "vision", "browser", "web", "uia",
         "filesystem", "package", "clipboard", "terminal", "memory", "verify", "state", "input",
         "env", "registry", "download", "email", "reminder", "browser_real", "knowledge", "safety",
+        "office", "audio_device", "notification", "routine", "media",
     }
     missing = sorted(expected - set(names))
     duplicate_count = len(names) - len(set(names))
@@ -58,6 +59,11 @@ def main() -> int:
         "browser_real_status": tools.execute("browser_real", {"action": "status"}),
         "email_status": tools.execute("email", {"action": "status"}),
         "knowledge_status": tools.execute("knowledge", {"action": "status"}),
+        "office_status": tools.execute("office", {"action": "status"}),
+        "audio_device_status": tools.execute("audio_device", {"action": "status"}),
+        "notification_status": tools.execute("notification", {"action": "status"}),
+        "routine_status": tools.execute("routine", {"action": "status"}),
+        "media_status": tools.execute("media", {"action": "status"}),
         "safety_status": tools.execute("safety", {"action": "status"}),
     }
     if args.web:

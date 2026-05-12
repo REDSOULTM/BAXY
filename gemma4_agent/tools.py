@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qs, quote_plus, unquote, urlparse
 
+from .domain_tools import audio_device_tool, media_tool, notification_tool, office_tool, routine_tool
 from .knowledge import KnowledgeStore
 from .memory import MemoryStore
 from .ops_tools import browser_real_tool, download_tool, email_tool, env_tool, input_tool, ocr_find_text, ocr_image, registry_tool, reminder_tool, state_tool
@@ -127,6 +128,11 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "reminder": ["status", "create", "list", "delete"],
     "browser_real": ["status", "open", "goto", "tabs", "click", "fill", "press", "text", "screenshot", "evaluate", "connect_cdp", "close"],
     "knowledge": ["status", "ingest", "search", "list", "delete"],
+    "office": ["status", "create_presentation", "edit_presentation", "create_document", "edit_document", "create_spreadsheet", "edit_spreadsheet", "export_pdf", "inspect", "open"],
+    "audio_device": ["status", "list", "set_default", "set_default_communications", "set_app_route", "get_app_routes", "snapshot", "restore"],
+    "notification": ["status", "toast_now", "toast_schedule", "timer_start", "timer_cancel", "timer_list", "alarm_create", "alarm_cancel", "alarm_list", "reminder_create", "reminder_update", "reminder_delete", "reminder_list", "notify_sound", "delete"],
+    "routine": ["status", "create", "list", "enable", "disable", "delete", "run_now", "simulate", "history"],
+    "media": ["status", "play", "pause", "resume", "play_pause", "stop", "next", "previous", "queue_add", "queue_clear", "queue_list", "now_playing", "volume_for_app", "open_local", "search_local_library", "cast_lan"],
     "safety": ["status", "pending", "confirm", "cancel"],
 }
 
@@ -1025,6 +1031,11 @@ class ToolRegistry:
             "reminder": self.t_reminder,
             "browser_real": self.t_browser_real,
             "knowledge": self.t_knowledge,
+            "office": self.t_office,
+            "audio_device": self.t_audio_device,
+            "notification": self.t_notification,
+            "routine": self.t_routine,
+            "media": self.t_media,
             "safety": self.t_safety,
             "system_time": self.system_time,
             "list_processes": self.list_processes,
@@ -1648,6 +1659,24 @@ class ToolRegistry:
         if action == "delete":
             return self.knowledge.delete(str(args.get("doc_id") or ""))
         return _err("unknown knowledge action", action=action)
+
+    def t_office(self, args: dict[str, Any]) -> dict[str, Any]:
+        return office_tool(args, self.state)
+
+    def t_audio_device(self, args: dict[str, Any]) -> dict[str, Any]:
+        return audio_device_tool(args, self.state)
+
+    def t_notification(self, args: dict[str, Any]) -> dict[str, Any]:
+        return notification_tool(args, self.state)
+
+    def t_routine(self, args: dict[str, Any]) -> dict[str, Any]:
+        return routine_tool(args, self.state, executor=self.execute)
+
+    def t_media(self, args: dict[str, Any]) -> dict[str, Any]:
+        local_args = dict(args)
+        if _action(local_args) == "open_local":
+            local_args["action"] = "play"
+        return media_tool(local_args, self.execute)
 
     def t_safety(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="status")
@@ -2724,6 +2753,11 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "reminder", "description": "Compound reminder tool. Actions: status, create, list, delete. Default backend stores local reminders in agent state; graph backend requires Microsoft Graph auth and returns needs_user if missing.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "backend": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}, "due": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "browser_real", "description": "Compound real browser automation tool using Playwright. Actions: status, open, goto, tabs, click, fill, press, text, screenshot, evaluate, connect_cdp, close. It keeps persistent sessions by session_id and runs headless by default; connect_cdp can attach to a browser started with remote debugging.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "session_id": {"type": "string"}, "page_id": {"type": "integer"}, "url": {"type": "string"}, "query": {"type": "string"}, "endpoint": {"type": "string"}, "selector": {"type": "string"}, "text": {"type": "string"}, "value": {"type": "string"}, "key": {"type": "string"}, "script": {"type": "string"}, "headless": {"type": "boolean"}, "new_tab": {"type": "boolean"}, "screenshot": {"type": "boolean"}, "full_page": {"type": "boolean"}, "wait_until": {"type": "string"}, "timeout_sec": {"type": "integer"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "knowledge", "description": "Compound local RAG/knowledge-base tool. Actions: status, ingest, search, list, delete. Uses local SQLite FTS5 only; ingest supports text files and explicit text, no cloud embeddings.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "text": {"type": "string"}, "source": {"type": "string"}, "title": {"type": "string"}, "query": {"type": "string"}, "doc_id": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "office", "description": "Compound local Office document tool. Actions: status, create_presentation, edit_presentation, create_document, edit_document, create_spreadsheet, edit_spreadsheet, export_pdf, inspect, open. Use create_presentation for PowerPoint requests; returns needs_dependency if python-pptx/python-docx/openpyxl/LibreOffice are missing.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "title": {"type": "string"}, "topic": {"type": "string"}, "content": {"type": "string"}, "body": {"type": "string"}, "slides": {"type": "array", "items": {"type": "object"}}, "rows": {"type": "array", "items": {"type": "array", "items": {}}}, "template": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "audio_device", "description": "Compound Windows audio device/routing tool. Actions: status, list, set_default, set_default_communications, set_app_route, get_app_routes, snapshot, restore. Default device changes need a local helper such as SoundVolumeView and create checkpoints.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "device": {"type": "string"}, "app": {"type": "string"}, "checkpoint_id": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "notification", "description": "Compound local notification/timer/alarm/reminder tool. Actions: status, toast_now, toast_schedule, timer_start, timer_cancel, timer_list, alarm_create, alarm_cancel, alarm_list, reminder_create, reminder_update, reminder_delete, reminder_list, notify_sound, delete. Uses Windows Scheduled Tasks for persistent local notifications.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}, "message": {"type": "string"}, "due": {"type": "string"}, "time": {"type": "string"}, "seconds": {"type": "integer"}, "minutes": {"type": "integer"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "task_name": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "routine", "description": "Compound local routine/automation tool. Actions: status, create, list, enable, disable, delete, run_now, simulate, history. A routine stores a trigger and ordered steps like [{tool:'audio', args:{action:'set_volume', level:20}}]. Persistent triggers are planned; run_now executes immediately.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "label": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "trigger": {"type": "string"}, "enabled": {"type": "boolean"}, "steps": {"type": "array", "items": {"type": "object"}}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "media", "description": "Compound media playback tool. Actions: status, play, pause, resume, play_pause, stop, next, previous, queue_add, queue_clear, queue_list, now_playing, volume_for_app, open_local, search_local_library, cast_lan. Use this instead of raw browser/audio for music/video requests.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "song": {"type": "string"}, "title": {"type": "string"}, "provider": {"type": "string"}, "path": {"type": "string"}, "app": {"type": "string"}, "level": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "safety", "description": "Compound safety confirmation tool. Actions: status, pending, confirm, cancel. If another tool returns needs_confirmation, ask the user and then call safety(action='confirm', confirmation_id='...') only after explicit approval.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "confirmation_id": {"type": "string"}, "id": {"type": "string"}, "include_resolved": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "package", "description": "Compound package manager tool via winget. Actions: list, search, install, uninstall. This prototype executes directly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "clipboard", "description": "Compound clipboard tool. Actions: read, write.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "content": {"type": "string"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},

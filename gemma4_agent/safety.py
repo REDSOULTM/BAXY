@@ -29,6 +29,14 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
         return SafetyDecision(True, "system_power_or_setting", f"system.{action} changes system state")
     if tool == "audio" and action in {"set_default"}:
         return SafetyDecision(True, "system_audio_device", "changing default audio device affects system settings")
+    if tool == "audio_device" and action in {"set_default", "set_default_communications", "set_app_route", "restore"}:
+        return SafetyDecision(True, "system_audio_device", "changing audio devices/routing affects system settings")
+    if tool == "office" and action in {"edit_presentation", "edit_document", "edit_spreadsheet", "export_pdf"}:
+        return SafetyDecision(True, "document_mutation", f"office.{action} can modify user documents")
+    if tool == "notification" and action not in {"status", "list", "timer_list", "alarm_list", "reminder_list"}:
+        return SafetyDecision(True, "scheduled_notification", f"notification.{action} can create/cancel local scheduled tasks")
+    if tool == "routine" and action in {"create", "enable", "disable", "delete", "run_now"}:
+        return SafetyDecision(True, "automation", f"routine.{action} can run or persist multi-step automation")
     if tool == "registry" and action in {"add", "delete", "import"}:
         return SafetyDecision(True, "registry_mutation", f"registry.{action} changes Windows registry")
     if tool == "env" and action in {"set", "delete"} and str(args.get("scope") or "process").casefold() in {"user", "machine"}:
