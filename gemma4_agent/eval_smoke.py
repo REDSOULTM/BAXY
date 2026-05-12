@@ -30,6 +30,8 @@ def main() -> int:
         "filesystem", "package", "clipboard", "terminal", "memory", "verify", "state", "input",
         "env", "registry", "download", "email", "reminder", "browser_real", "knowledge", "safety",
         "office", "audio_device", "notification", "routine", "media",
+        "source_manager", "dependency", "contacts", "notes_tasks", "local_calendar",
+        "habit_tracker", "local_search", "printer_scanner", "desktop_layout", "backup_sync",
     }
     missing = sorted(expected - set(names))
     duplicate_count = len(names) - len(set(names))
@@ -64,6 +66,16 @@ def main() -> int:
         "notification_status": tools.execute("notification", {"action": "status"}),
         "routine_status": tools.execute("routine", {"action": "status"}),
         "media_status": tools.execute("media", {"action": "status"}),
+        "source_manager_status": tools.execute("source_manager", {"action": "status"}),
+        "dependency_status": tools.execute("dependency", {"action": "status"}),
+        "contacts_status": tools.execute("contacts", {"action": "status"}),
+        "notes_tasks_status": tools.execute("notes_tasks", {"action": "status"}),
+        "local_calendar_status": tools.execute("local_calendar", {"action": "status"}),
+        "habit_tracker_status": tools.execute("habit_tracker", {"action": "status"}),
+        "local_search_status": tools.execute("local_search", {"action": "status"}),
+        "printer_scanner_status": tools.execute("printer_scanner", {"action": "status"}),
+        "desktop_layout_status": tools.execute("desktop_layout", {"action": "status"}),
+        "backup_sync_status": tools.execute("backup_sync", {"action": "status"}),
         "safety_status": tools.execute("safety", {"action": "status"}),
     }
     if args.web:

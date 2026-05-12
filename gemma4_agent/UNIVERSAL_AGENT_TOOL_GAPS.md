@@ -63,6 +63,39 @@ Pendiente del P0:
 - `notification`: falta historial completo y UI de administracion.
 - `routine`: faltan triggers persistentes/event-driven; ahora `run_now` es real.
 
+### 2026-05-12: Lote De Tools Pequenas Locales
+
+Implementado en el agente:
+
+- `source_manager`: guardar/listar/buscar/leer/borrar fuentes y snapshots de
+  archivos locales.
+- `dependency`: diagnostico de modulos/binarios locales y hints de instalacion.
+- `contacts`: contactos locales basicos.
+- `notes_tasks`: notas y tareas locales.
+- `local_calendar`: eventos offline y export ICS.
+- `habit_tracker`: habitos con logs locales.
+- `local_search`: busqueda local por nombre y contenido pequeno.
+- `printer_scanner`: discovery de impresoras, default y cola con PowerShell.
+- `desktop_layout`: snapshot de ventanas/monitores.
+- `backup_sync`: backups ZIP locales registrados en state.
+
+Verificado:
+
+- Catalogo subio de 31 a 41 tools.
+- `source_manager(snapshot_file)`, `contacts(create)`, `notes_tasks(note_create)`,
+  `notes_tasks(task_create)`, `local_calendar(event_create)`,
+  `habit_tracker(create)`, `local_search(search)` y
+  `backup_sync(backup_create)` pasaron smoke funcional.
+
+Pendiente de estas tools:
+
+- Import/export vCard completo.
+- Import ICS y update robusto de eventos.
+- Restore/dedupe de backups.
+- Restore de desktop layout.
+- Print/scan real, no solo discovery/cola.
+- Instalacion automatica de dependencias, si se decide permitirla con safety.
+
 ## Fuentes Base
 
 - Alexa Built-in Intent Library: categorias Books, Calendar, Cinema Showtimes,

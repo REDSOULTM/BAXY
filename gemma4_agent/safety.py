@@ -37,6 +37,14 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
         return SafetyDecision(True, "scheduled_notification", f"notification.{action} can create/cancel local scheduled tasks")
     if tool == "routine" and action in {"create", "enable", "disable", "delete", "run_now"}:
         return SafetyDecision(True, "automation", f"routine.{action} can run or persist multi-step automation")
+    if tool in {"contacts", "notes_tasks", "local_calendar", "habit_tracker", "source_manager"} and action not in {"status", "list", "search", "read", "get", "sources", "notes", "tasks", "event_list", "stats"}:
+        return SafetyDecision(True, "local_state_change", f"{tool}.{action} changes local agent state")
+    if tool == "backup_sync" and action in {"backup_create", "restore", "dedupe"}:
+        return SafetyDecision(True, "backup_or_restore", f"backup_sync.{action} can create or restore file backups")
+    if tool == "printer_scanner" and action in {"printer_default_set", "print_file", "cancel_job", "scan_document"}:
+        return SafetyDecision(True, "printer_scanner_action", f"printer_scanner.{action} affects printers/scanners")
+    if tool == "desktop_layout" and action in {"restore"}:
+        return SafetyDecision(True, "desktop_layout_change", "desktop_layout.restore changes visible window layout")
     if tool == "registry" and action in {"add", "delete", "import"}:
         return SafetyDecision(True, "registry_mutation", f"registry.{action} changes Windows registry")
     if tool == "env" and action in {"set", "delete"} and str(args.get("scope") or "process").casefold() in {"user", "machine"}:

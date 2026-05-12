@@ -109,6 +109,16 @@ olvida mi preferencia de respuestas cortas
 - `notification`: timers, alarmas, recordatorios y notificaciones locales con Scheduled Tasks.
 - `routine`: automatizaciones locales reutilizables y `run_now` con steps de tools.
 - `media`: musica/video/local files sobre YouTube, media keys y archivos locales.
+- `source_manager`: fuentes/citas/snapshots locales para investigacion.
+- `dependency`: diagnostico de dependencias locales y hints de instalacion.
+- `contacts`: contactos locales.
+- `notes_tasks`: notas, listas y tareas locales.
+- `local_calendar`: eventos offline e ICS export.
+- `habit_tracker`: habitos y logs locales.
+- `local_search`: busqueda local por nombre/contenido pequeno.
+- `printer_scanner`: impresoras, default y colas.
+- `desktop_layout`: snapshots de ventanas/monitores.
+- `backup_sync`: backups ZIP locales registrados en state.
 - `safety`: confirmaciones pendientes para acciones riesgosas cuando se activa.
 
 Este prototipo no tiene capa de confirmacion de seguridad por pedido del

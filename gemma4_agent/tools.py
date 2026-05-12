@@ -22,7 +22,23 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qs, quote_plus, unquote, urlparse
 
-from .domain_tools import audio_device_tool, media_tool, notification_tool, office_tool, routine_tool
+from .domain_tools import (
+    audio_device_tool,
+    backup_sync_tool,
+    contacts_tool,
+    dependency_tool,
+    desktop_layout_tool,
+    habit_tracker_tool,
+    local_calendar_tool,
+    local_search_tool,
+    media_tool,
+    notes_tasks_tool,
+    notification_tool,
+    office_tool,
+    printer_scanner_tool,
+    routine_tool,
+    source_manager_tool,
+)
 from .knowledge import KnowledgeStore
 from .memory import MemoryStore
 from .ops_tools import browser_real_tool, download_tool, email_tool, env_tool, input_tool, ocr_find_text, ocr_image, registry_tool, reminder_tool, state_tool
@@ -133,6 +149,16 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "notification": ["status", "toast_now", "toast_schedule", "timer_start", "timer_cancel", "timer_list", "alarm_create", "alarm_cancel", "alarm_list", "reminder_create", "reminder_update", "reminder_delete", "reminder_list", "notify_sound", "delete"],
     "routine": ["status", "create", "list", "enable", "disable", "delete", "run_now", "simulate", "history"],
     "media": ["status", "play", "pause", "resume", "play_pause", "stop", "next", "previous", "queue_add", "queue_clear", "queue_list", "now_playing", "volume_for_app", "open_local", "search_local_library", "cast_lan"],
+    "source_manager": ["status", "save", "add", "list", "sources", "search", "read", "get", "delete", "snapshot_file"],
+    "dependency": ["status", "list", "verify", "explain_missing", "install", "repair"],
+    "contacts": ["status", "create", "add", "list", "search", "delete", "update", "import_vcard", "export_vcard"],
+    "notes_tasks": ["status", "note_create", "create_note", "note_list", "notes", "note_search", "note_update", "note_delete", "task_create", "create_task", "task_list", "tasks", "task_search", "task_complete", "task_update", "task_delete", "search", "list", "delete"],
+    "local_calendar": ["status", "event_create", "event_list", "event_update", "event_delete", "ics_export", "ics_import", "list", "delete"],
+    "habit_tracker": ["status", "create", "list", "log", "stats", "delete"],
+    "local_search": ["status", "search", "recent"],
+    "printer_scanner": ["status", "printers_list", "printer_default_get", "printer_default_set", "print_queue", "print_file", "cancel_job", "scanners_list", "scan_document", "list"],
+    "desktop_layout": ["status", "windows", "list_windows", "displays", "snapshot", "restore"],
+    "backup_sync": ["status", "backup_create", "list", "restore", "dedupe"],
     "safety": ["status", "pending", "confirm", "cancel"],
 }
 
@@ -1036,6 +1062,16 @@ class ToolRegistry:
             "notification": self.t_notification,
             "routine": self.t_routine,
             "media": self.t_media,
+            "source_manager": self.t_source_manager,
+            "dependency": self.t_dependency,
+            "contacts": self.t_contacts,
+            "notes_tasks": self.t_notes_tasks,
+            "local_calendar": self.t_local_calendar,
+            "habit_tracker": self.t_habit_tracker,
+            "local_search": self.t_local_search,
+            "printer_scanner": self.t_printer_scanner,
+            "desktop_layout": self.t_desktop_layout,
+            "backup_sync": self.t_backup_sync,
             "safety": self.t_safety,
             "system_time": self.system_time,
             "list_processes": self.list_processes,
@@ -1677,6 +1713,36 @@ class ToolRegistry:
         if _action(local_args) == "open_local":
             local_args["action"] = "play"
         return media_tool(local_args, self.execute)
+
+    def t_source_manager(self, args: dict[str, Any]) -> dict[str, Any]:
+        return source_manager_tool(args, self.state)
+
+    def t_dependency(self, args: dict[str, Any]) -> dict[str, Any]:
+        return dependency_tool(args)
+
+    def t_contacts(self, args: dict[str, Any]) -> dict[str, Any]:
+        return contacts_tool(args, self.state)
+
+    def t_notes_tasks(self, args: dict[str, Any]) -> dict[str, Any]:
+        return notes_tasks_tool(args, self.state)
+
+    def t_local_calendar(self, args: dict[str, Any]) -> dict[str, Any]:
+        return local_calendar_tool(args, self.state)
+
+    def t_habit_tracker(self, args: dict[str, Any]) -> dict[str, Any]:
+        return habit_tracker_tool(args, self.state)
+
+    def t_local_search(self, args: dict[str, Any]) -> dict[str, Any]:
+        return local_search_tool(args)
+
+    def t_printer_scanner(self, args: dict[str, Any]) -> dict[str, Any]:
+        return printer_scanner_tool(args)
+
+    def t_desktop_layout(self, args: dict[str, Any]) -> dict[str, Any]:
+        return desktop_layout_tool(args, self.state, self.execute)
+
+    def t_backup_sync(self, args: dict[str, Any]) -> dict[str, Any]:
+        return backup_sync_tool(args, self.state)
 
     def t_safety(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="status")
@@ -2758,6 +2824,16 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "notification", "description": "Compound local notification/timer/alarm/reminder tool. Actions: status, toast_now, toast_schedule, timer_start, timer_cancel, timer_list, alarm_create, alarm_cancel, alarm_list, reminder_create, reminder_update, reminder_delete, reminder_list, notify_sound, delete. Uses Windows Scheduled Tasks for persistent local notifications.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}, "message": {"type": "string"}, "due": {"type": "string"}, "time": {"type": "string"}, "seconds": {"type": "integer"}, "minutes": {"type": "integer"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "task_name": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "routine", "description": "Compound local routine/automation tool. Actions: status, create, list, enable, disable, delete, run_now, simulate, history. A routine stores a trigger and ordered steps like [{tool:'audio', args:{action:'set_volume', level:20}}]. Persistent triggers are planned; run_now executes immediately.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "label": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "trigger": {"type": "string"}, "enabled": {"type": "boolean"}, "steps": {"type": "array", "items": {"type": "object"}}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "media", "description": "Compound media playback tool. Actions: status, play, pause, resume, play_pause, stop, next, previous, queue_add, queue_clear, queue_list, now_playing, volume_for_app, open_local, search_local_library, cast_lan. Use this instead of raw browser/audio for music/video requests.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "song": {"type": "string"}, "title": {"type": "string"}, "provider": {"type": "string"}, "path": {"type": "string"}, "app": {"type": "string"}, "level": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "source_manager", "description": "Compound local source/citation manager. Actions: status, save, add, list, sources, search, read, get, delete, snapshot_file. Stores source titles, URLs, snippets and file snapshots in local state for later citation/research.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "title": {"type": "string"}, "url": {"type": "string"}, "source": {"type": "string"}, "text": {"type": "string"}, "content": {"type": "string"}, "path": {"type": "string"}, "query": {"type": "string"}, "limit": {"type": "integer"}, "max_chars": {"type": "integer"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "dependency", "description": "Compound local dependency diagnostics. Actions: status, list, verify, explain_missing, install, repair. Reports Python modules/binaries needed by tools and gives install hints; install is advisory unless explicitly handled elsewhere.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "dependency": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "contacts", "description": "Compound local contacts tool. Actions: status, create, add, list, search, delete, update, import_vcard, export_vcard. Stores contacts locally in agent state.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "name": {"type": "string"}, "email": {"type": "string"}, "phone": {"type": "string"}, "notes": {"type": "string"}, "query": {"type": "string"}, "limit": {"type": "integer"}, "include_closed": {"type": "boolean"}, "path": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "notes_tasks", "description": "Compound local notes/tasks tool. Actions include note_create/list/search/update/delete and task_create/list/search/complete/update/delete. Stores notes and tasks in local state.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}, "content": {"type": "string"}, "query": {"type": "string"}, "due": {"type": "string"}, "tags": {"type": "string"}, "limit": {"type": "integer"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "local_calendar", "description": "Compound local calendar/ICS tool. Actions: status, event_create, event_list, event_update, event_delete, ics_export, ics_import, list, delete. Stores offline calendar events in local state.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "title": {"type": "string"}, "start": {"type": "string"}, "end": {"type": "string"}, "due": {"type": "string"}, "location": {"type": "string"}, "notes": {"type": "string"}, "path": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "habit_tracker", "description": "Compound local habit tracker. Actions: status, create, list, log, stats, delete. Stores habits and logs locally.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "name": {"type": "string"}, "title": {"type": "string"}, "frequency": {"type": "string"}, "at": {"type": "string"}, "value": {}, "note": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "local_search", "description": "Compound local search tool. Actions: status, search, recent. Searches file names and optionally small text file contents under a local root without cloud.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "root": {"type": "string"}, "query": {"type": "string"}, "pattern": {"type": "string"}, "limit": {"type": "integer"}, "recursive": {"type": "boolean"}, "include_content": {"type": "boolean"}, "max_bytes": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "printer_scanner", "description": "Compound local printer/scanner tool. Actions: status, printers_list, printer_default_get, printer_default_set, print_queue, print_file, cancel_job, scanners_list, scan_document, list. Current implementation focuses on printer discovery and queues.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "printer": {"type": "string"}, "path": {"type": "string"}, "job_id": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "desktop_layout", "description": "Compound desktop layout tool. Actions: status, windows, list_windows, displays, snapshot, restore. Snapshots visible windows/monitors into checkpoints; restore is planned.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "limit": {"type": "integer"}, "checkpoint_id": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "backup_sync", "description": "Compound local backup tool. Actions: status, backup_create, list, restore, dedupe. Creates ZIP backups and registers them in state; restore/dedupe are planned.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "src": {"type": "string"}, "path": {"type": "string"}, "dst": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "safety", "description": "Compound safety confirmation tool. Actions: status, pending, confirm, cancel. If another tool returns needs_confirmation, ask the user and then call safety(action='confirm', confirmation_id='...') only after explicit approval.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "confirmation_id": {"type": "string"}, "id": {"type": "string"}, "include_resolved": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "package", "description": "Compound package manager tool via winget. Actions: list, search, install, uninstall. This prototype executes directly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "clipboard", "description": "Compound clipboard tool. Actions: read, write.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "content": {"type": "string"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
