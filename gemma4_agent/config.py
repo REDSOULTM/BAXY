@@ -34,9 +34,11 @@ class AgentConfig:
     reasoning_format: str = ""
     agent_mode: str = "auto"
     enable_tracing: bool = True
+    enable_safety: bool = False
     memory_path: Path = PACKAGE_ROOT / "data" / "memory.json"
     captures_dir: Path = PACKAGE_ROOT / "captures"
     trace_path: Path = PACKAGE_ROOT / "data" / "traces.jsonl"
+    state_path: Path = PACKAGE_ROOT / "data" / "state.json"
 
     @property
     def chat_url(self) -> str:
@@ -55,6 +57,7 @@ class AgentConfig:
         mmproj_raw = os.environ.get("GEMMA4_MMPROJ_PATH")
         min_p_raw = os.environ.get("GEMMA4_AGENT_MIN_P")
         trace_raw = os.environ.get("GEMMA4_AGENT_TRACE_PATH") or os.environ.get("GEMMA4_AGENT_TRACE")
+        state_raw = os.environ.get("GEMMA4_AGENT_STATE")
         return cls(
             server_url=os.environ.get("GEMMA4_AGENT_SERVER", cls.server_url),
             model=os.environ.get("GEMMA4_AGENT_MODEL", cls.model),
@@ -76,9 +79,11 @@ class AgentConfig:
             reasoning_format=os.environ.get("GEMMA4_AGENT_REASONING_FORMAT", cls.reasoning_format),
             agent_mode=os.environ.get("GEMMA4_AGENT_MODE", cls.agent_mode),
             enable_tracing=_env_bool("GEMMA4_AGENT_TRACING", cls.enable_tracing),
+            enable_safety=_env_bool("GEMMA4_AGENT_SAFETY", cls.enable_safety),
             memory_path=Path(memory_raw) if memory_raw else cls.memory_path,
             captures_dir=Path(captures_raw) if captures_raw else cls.captures_dir,
             trace_path=Path(trace_raw) if trace_raw else cls.trace_path,
+            state_path=Path(state_raw) if state_raw else cls.state_path,
         )
 
 

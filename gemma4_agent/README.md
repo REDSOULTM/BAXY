@@ -21,6 +21,20 @@ El agente tambien puede levantar el servidor:
 python -m gemma4_agent.chat --start-server
 ```
 
+Tambien hay un launcher local inspirado en Jarvis, sin auth/web/voz/camara:
+
+```powershell
+python -m gemma4_agent.launcher
+python -m gemma4_agent.launcher chat
+python -m gemma4_agent.launcher status
+python -m gemma4_agent.launcher smoke
+python -m gemma4_agent.launcher shortcut
+```
+
+El launcher permite abrir el chat con `--start-server`, ver diagnostico local,
+ejecutar smoke tests, iniciar solo `llama-server`, abrir carpetas de runtime y
+crear un `.cmd` en el escritorio.
+
 El tamano de contexto del ejemplo se controla con `GEMMA4_AGENT_CONTEXT`.
 Para 6-16 GB VRAM, `16384` es el perfil diario razonable. Usa 32768/65536/128000
 solo cuando la VRAM y la latencia lo permitan.
@@ -37,15 +51,23 @@ Dentro del chat:
 ```text
 /image C:\ruta\captura.png
 /audio C:\ruta\voz.wav
+/progress
 ```
 
 Las screenshots tomadas con `gui_screenshot` se reinyectan como imagen en el
 siguiente turno para que Gemma 4 pueda razonar visualmente.
 
+El chat muestra una barra de progreso mientras Gemma piensa y ejecuta tools:
+modo elegido, pasos planeados, turno actual y tool activa. Se puede apagar con
+`python -m gemma4_agent.chat --no-progress` o alternar dentro del chat con
+`/progress`.
+
 ## Memoria
 
-La memoria vive en `gemma4_agent/data/memory.json`. El prompt instruye al
-modelo a usar `memory(action="save")` solo cuando el usuario lo pide explicitamente.
+La memoria vive en `gemma4_agent/data/memory.json`. El estado operativo vive en
+`gemma4_agent/data/state.json` y guarda recursos abiertos, checkpoints y notas
+tecnicas de rollback/cleanup. El prompt instruye al modelo a usar
+`memory(action="save")` solo cuando el usuario lo pide explicitamente.
 
 Ejemplos:
 
@@ -63,7 +85,7 @@ olvida mi preferencia de respuestas cortas
 - `steam`: biblioteca, tienda dentro del cliente, juegos instalados, buscar en biblioteca, abrir pagina de tienda por AppID, lanzar/buscar/instalar.
 - `window`: listar, activa, foco, cerrar, minimizar/maximizar/restaurar, mover.
 - `gui`: screenshot, click, doble click, right click, type, hotkeys, scroll, drag.
-- `vision`: puente a vision nativa Gemma 4 via screenshot reinyectado.
+- `vision`: OCR local con Tesseract y puente a vision nativa Gemma 4 via screenshot reinyectado.
 - `browser`: abrir/navegar, buscar, YouTube play, pausa media, titulo activo.
 - `web`: buscar, leer paginas e investigar con fuentes extraidas.
 - `uia`: Windows UI Automation para arbol, buscar, click, foco y set_value.
@@ -73,9 +95,32 @@ olvida mi preferencia de respuestas cortas
 - `terminal`: run.
 - `memory`: save/recall/list/delete.
 - `verify`: app_opened/file_exists/window_exists/clipboard_contains.
+- `state`: recursos abiertos, cleanup plan/cleanup, checkpoints y rollback.
+- `input`: idioma/layout de teclado de Windows.
+- `env`: variables de entorno process/user/machine.
+- `registry`: query/export/import/add/delete/backup con backup antes de mutar.
+- `download`: descarga, SHA256 y Authenticode.
+- `email`: status/draft/send via Microsoft Graph si hay token.
+- `reminder`: recordatorios locales en state o Graph si hay auth.
+- `browser_real`: Playwright headless para leer/clickear paginas con precision.
+- `knowledge`: RAG local SQLite/FTS5 para documentos de texto.
+- `safety`: confirmaciones pendientes para acciones riesgosas cuando se activa.
 
 Este prototipo no tiene capa de confirmacion de seguridad por pedido del
-usuario. Las tools ejecutan directamente lo solicitado.
+usuario. Por defecto `GEMMA4_AGENT_SAFETY=false`, asi las tools ejecutan
+directamente lo solicitado, pero las acciones que tocan estado del PC intentan
+dejar evidencia tecnica, checkpoint o cleanup cuando es razonable.
+
+La safety layer ya existe y se puede activar:
+
+```powershell
+$env:GEMMA4_AGENT_SAFETY = "true"
+```
+
+Con safety activa, acciones como borrar, instalar/desinstalar, cerrar apps,
+registro, variables persistentes o comandos riesgosos devuelven
+`needs_confirmation` y quedan pendientes en `state.json`. Luego se confirma con
+`safety(action="confirm", confirmation_id="...")`.
 
 ## Resolucion dinamica de apps
 
@@ -156,8 +201,25 @@ afirmar que termino.
 
 Para investigar en internet se usa `web(action="research", query="...")`.
 `browser(action="search")` solo abre resultados visibles en el navegador.
+Para control real de paginas se usa `browser_real(...)`, basado en Playwright
+headless y sesiones persistentes por `session_id`; si Playwright o Chromium no
+estan disponibles, devuelve `needs_user/needs_dependency` en vez de fingir.
+Tambien puede conectarse por CDP a un navegador iniciado con remote debugging:
+`browser_real(action="connect_cdp", endpoint="http://127.0.0.1:9222")`.
 El proveedor de busqueda vive detras de `GEMMA4_WEB_SEARCH_PROVIDER`; por ahora
 el backend implementado es `duckduckgo_html`.
+
+## RAG local
+
+`knowledge` usa SQLite FTS5 local. No usa embeddings cloud.
+
+```text
+knowledge(action="ingest", path="docs/Contrato.md")
+knowledge(action="search", query="condiciones del contrato")
+```
+
+Soporta texto plano (`.txt`, `.md`, `.json`, `.csv`, `.log`, `.py`, `.ps1`,
+`.yaml`, `.yml`). Para PDF/DOCX todavia conviene extraer texto primero.
 
 `app(action="close")` intenta cerrar primero ventanas que coincidan con el
 nombre visible y despues procesos resueltos desde accesos directos, registro o
@@ -192,6 +254,8 @@ Cada turno genera una linea JSONL en `gemma4_agent/data/traces.jsonl` con:
 - respuestas del LLM
 - tool calls/resultados
 - final o error
+- `mission_status`: PASS, PARTIAL, FAILED, UNVERIFIED o NEEDS_USER
+- plan deterministico del turno, con pasos esperados y tools sugeridas
 
 Esto permite crear evaluaciones offline sin abrir apps ni controlar el PC.
 Se puede desactivar con:

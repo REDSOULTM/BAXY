@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
+from typing import Any
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -28,6 +31,141 @@ PALETTE = {
     "ok": "\033[32m",
     "reset": "\033[0m",
 }
+
+
+class ProgressDisplay:
+    FRAMES = "|/-\\"
+
+    def __init__(self, enabled: bool = True) -> None:
+        self.enabled = enabled and sys.stdout.isatty()
+        self._lock = threading.Lock()
+        self._running = False
+        self._thread: threading.Thread | None = None
+        self._start = 0.0
+        self._frame = 0
+        self._progress = 0.03
+        self._message = "Pensando"
+        self._mode = ""
+        self._tools = 0
+        self._steps = 0
+        self._turn = 0
+        self._max_turns = 0
+
+    def start(self) -> None:
+        if not self.enabled:
+            return
+        with self._lock:
+            self._running = True
+            self._start = time.time()
+            self._progress = 0.03
+            self._message = "Preparando turno"
+            self._tools = 0
+            self._steps = 0
+            self._turn = 0
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+        self._thread.start()
+
+    def update(self, event: str, payload: dict[str, Any]) -> None:
+        if not self.enabled:
+            return
+        with self._lock:
+            if event == "start":
+                self._mode = str(payload.get("mode") or "")
+                self._steps = int(payload.get("steps") or 0)
+                self._max_turns = int(payload.get("max_turns") or 0)
+                suffix = f" | {self._steps} pasos" if self._steps else ""
+                self._message = f"Planificando{suffix}"
+                self._progress = max(self._progress, 0.06)
+            elif event == "llm_start":
+                self._turn = int(payload.get("turn") or 0)
+                self._tools = int(payload.get("tools") or self._tools)
+                self._message = "Gemma pensando"
+                self._progress = max(self._progress, min(0.72, 0.12 + max(self._turn - 1, 0) * 0.10))
+            elif event == "llm_response":
+                tool_calls = int(payload.get("tool_calls") or 0)
+                self._message = f"Gemma eligio {tool_calls} tool(s)" if tool_calls else "Preparando respuesta"
+                self._progress = max(self._progress, 0.55 if tool_calls else 0.88)
+            elif event == "tool_start":
+                self._tools = max(self._tools, int(payload.get("index") or self._tools + 1) - 1)
+                name = str(payload.get("name") or "tool")
+                detail = _tool_detail(payload.get("args"))
+                self._message = f"Tool {name}{detail}"
+                self._progress = min(0.90, max(self._progress + 0.05, 0.60))
+            elif event == "tool_end":
+                self._tools = max(self._tools, int(payload.get("index") or self._tools))
+                name = str(payload.get("name") or "tool")
+                status = str(payload.get("status") or ("ok" if payload.get("ok") else "error"))
+                self._message = f"Tool {name} -> {status}"
+                self._progress = min(0.94, max(self._progress + 0.04, 0.66))
+            elif event == "image_injected":
+                self._message = "Imagen devuelta a Gemma para verificacion"
+                self._progress = min(0.95, max(self._progress, 0.76))
+            elif event in {"final", "max_turns"}:
+                self._message = "Listo"
+                self._tools = int(payload.get("tools") or self._tools)
+                self._progress = 1.0
+            elif event == "error":
+                self._message = "Error del LLM"
+                self._progress = 1.0
+
+    def finish(self) -> None:
+        if not self.enabled:
+            return
+        with self._lock:
+            self._running = False
+            self._progress = 1.0
+        if self._thread:
+            self._thread.join(timeout=0.5)
+        self._clear_line()
+
+    def _loop(self) -> None:
+        while True:
+            with self._lock:
+                if not self._running:
+                    break
+                line = self._render_line()
+                self._frame += 1
+            width = max(40, shutil.get_terminal_size((100, 20)).columns)
+            sys.stdout.write("\r" + line[: width - 1].ljust(width - 1))
+            sys.stdout.flush()
+            time.sleep(0.12)
+
+    def _render_line(self) -> str:
+        elapsed = int(time.time() - self._start) if self._start else 0
+        width = 18
+        filled = min(width, max(0, int(self._progress * width)))
+        bar = "#" * filled + "-" * (width - filled)
+        pct = int(self._progress * 100)
+        frame = self.FRAMES[self._frame % len(self.FRAMES)]
+        meta = []
+        if self._mode:
+            meta.append(self._mode)
+        if self._steps:
+            meta.append(f"{self._steps} pasos")
+        if self._tools:
+            meta.append(f"{self._tools} tools")
+        if self._turn and self._max_turns:
+            meta.append(f"turno {self._turn}/{self._max_turns}")
+        suffix = " | " + " | ".join(meta) if meta else ""
+        return f"{PALETTE['system']}{frame} [{bar}] {pct:3d}% {self._message} ({elapsed}s){suffix}{PALETTE['reset']}"
+
+    def _clear_line(self) -> None:
+        width = max(40, shutil.get_terminal_size((100, 20)).columns)
+        sys.stdout.write("\r" + " " * (width - 1) + "\r")
+        sys.stdout.flush()
+
+
+def _tool_detail(raw_args: Any) -> str:
+    if not isinstance(raw_args, dict):
+        return ""
+    for key in ("action", "query", "name", "path", "url", "command"):
+        value = raw_args.get(key)
+        if value:
+            text = str(value)
+            if len(text) > 36:
+                text = "..." + text[-33:]
+            return f"({text})"
+    return ""
 
 
 def enable_ansi() -> None:
@@ -114,6 +252,7 @@ def main() -> int:
     parser.add_argument("--mode", default=None, help="Modo: auto, fast_action, deep_action, vision_action, audio_mode, research")
     parser.add_argument("--no-health", action="store_true", help="No verificar /health antes de iniciar")
     parser.add_argument("--start-server", action="store_true", help="Levantar llama-server si no responde")
+    parser.add_argument("--no-progress", action="store_true", help="Desactivar barra de progreso del chat")
     args = parser.parse_args()
 
     enable_ansi()
@@ -133,11 +272,13 @@ def main() -> int:
 
     pending_images = [p for raw in args.image if (p := _path(raw))]
     pending_audios = [p for raw in args.audio if (p := _path(raw))]
+    progress_enabled = not args.no_progress
 
     print(f"{PALETTE['ok']}Gemma4 agent listo en {config.server_url}{PALETTE['reset']}")
-    print(f"{PALETTE['system']}Comandos: /quit /clear /image <path> /audio <path> /memory /tools{PALETTE['reset']}")
-    print(f"{PALETTE['system']}Tools reales: {len(agent.tools.schemas)} | Mode: {config.agent_mode} | Trace: {config.trace_path}{PALETTE['reset']}")
-    print(f"{PALETTE['system']}Memory: {config.memory_path}{PALETTE['reset']}\n")
+    print(f"{PALETTE['system']}Comandos: /quit /clear /image <path> /audio <path> /memory /tools /state /cleanup /progress{PALETTE['reset']}")
+    print(f"{PALETTE['system']}Tools reales: {len(agent.tools.schemas)} | Mode: {config.agent_mode} | Safety: {config.enable_safety} | Trace: {config.trace_path}{PALETTE['reset']}")
+    print(f"{PALETTE['system']}Memory: {config.memory_path}{PALETTE['reset']}")
+    print(f"{PALETTE['system']}State: {config.state_path}{PALETTE['reset']}\n")
 
     while True:
         try:
@@ -163,6 +304,19 @@ def main() -> int:
                 print(schema["function"]["name"])
             print()
             continue
+        if low == "/state":
+            print(agent.tools.execute("state", {"action": "resources", "include_closed": False}))
+            print()
+            continue
+        if low == "/cleanup":
+            print(agent.tools.execute("state", {"action": "cleanup"}))
+            print()
+            continue
+        if low == "/progress":
+            progress_enabled = not progress_enabled
+            state = "activada" if progress_enabled else "desactivada"
+            print(f"{PALETTE['system']}Barra de progreso {state}.{PALETTE['reset']}\n")
+            continue
         if low.startswith("/image "):
             p = _path(user[7:])
             if p:
@@ -176,7 +330,12 @@ def main() -> int:
                 print(f"{PALETTE['system']}Audio adjunto al proximo turno: {p}{PALETTE['reset']}\n")
             continue
 
-        reply = agent.run_text(user, images=pending_images, audios=pending_audios)
+        progress = ProgressDisplay(enabled=progress_enabled)
+        progress.start()
+        try:
+            reply = agent.run_text(user, images=pending_images, audios=pending_audios, progress=progress.update)
+        finally:
+            progress.finish()
         pending_images = []
         pending_audios = []
 

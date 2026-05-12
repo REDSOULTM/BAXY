@@ -13,6 +13,7 @@ from .config import AgentConfig
 from .memory import MemoryStore
 from .modes import choose_mode
 from .reasoning import sanitize_text
+from .state import AgentState
 from .tools import ToolRegistry
 
 
@@ -22,9 +23,13 @@ def main() -> int:
     args = parser.parse_args()
 
     config = AgentConfig.from_env()
-    tools = ToolRegistry(MemoryStore(config.memory_path), config.captures_dir)
+    tools = ToolRegistry(MemoryStore(config.memory_path), config.captures_dir, AgentState(config.state_path), safety_enabled=config.enable_safety)
     names = [schema["function"]["name"] for schema in tools.schemas]
-    expected = {"system", "audio", "app", "steam", "window", "gui", "vision", "browser", "web", "uia", "filesystem", "package", "clipboard", "terminal", "memory", "verify"}
+    expected = {
+        "system", "audio", "app", "steam", "window", "gui", "vision", "browser", "web", "uia",
+        "filesystem", "package", "clipboard", "terminal", "memory", "verify", "state", "input",
+        "env", "registry", "download", "email", "reminder", "browser_real", "knowledge", "safety",
+    }
     missing = sorted(expected - set(names))
     duplicate_count = len(names) - len(set(names))
     steam_schema = next(schema for schema in tools.schemas if schema["function"]["name"] == "steam")
@@ -46,6 +51,14 @@ def main() -> int:
         "invalid_arg_rejected": tools.execute("verify", {"action": "file_exists", "path": __file__, "extra": "x"}),
         "system_time": tools.execute("system", {"action": "time"}),
         "file_verify": tools.execute("verify", {"action": "file_exists", "path": __file__}),
+        "state_resources": tools.execute("state", {"action": "resources"}),
+        "env_process_get": tools.execute("env", {"action": "get", "scope": "process", "name": "PATH"}),
+        "input_language_list": tools.execute("input", {"action": "language_list"}),
+        "download_hash": tools.execute("download", {"action": "hash", "path": __file__}),
+        "browser_real_status": tools.execute("browser_real", {"action": "status"}),
+        "email_status": tools.execute("email", {"action": "status"}),
+        "knowledge_status": tools.execute("knowledge", {"action": "status"}),
+        "safety_status": tools.execute("safety", {"action": "status"}),
     }
     if args.web:
         checks["web_search"] = tools.execute("web", {"action": "search", "query": "Gemma 4 Google model card", "limit": 2})

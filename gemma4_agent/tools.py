@@ -22,7 +22,11 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qs, quote_plus, unquote, urlparse
 
+from .knowledge import KnowledgeStore
 from .memory import MemoryStore
+from .ops_tools import browser_real_tool, download_tool, email_tool, env_tool, input_tool, ocr_find_text, ocr_image, registry_tool, reminder_tool, state_tool
+from .safety import classify_tool_call
+from .state import AgentState
 
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
@@ -114,6 +118,16 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "terminal": ["run"],
     "memory": ["save", "recall", "list", "delete"],
     "verify": ["app_opened", "file_exists", "window_exists", "clipboard_contains"],
+    "state": ["resources", "cleanup_plan", "cleanup", "checkpoint", "checkpoints", "rollback_plan", "rollback", "note"],
+    "input": ["language_list", "keyboard_layouts", "current_keyboard", "set_language_list", "switch_keyboard"],
+    "env": ["get", "set", "delete", "list"],
+    "registry": ["query", "export", "import", "add", "delete", "backup"],
+    "download": ["fetch", "hash", "signature"],
+    "email": ["status", "draft", "send"],
+    "reminder": ["status", "create", "list", "delete"],
+    "browser_real": ["status", "open", "goto", "tabs", "click", "fill", "press", "text", "screenshot", "evaluate", "connect_cdp", "close"],
+    "knowledge": ["status", "ingest", "search", "list", "delete"],
+    "safety": ["status", "pending", "confirm", "cancel"],
 }
 
 
@@ -695,6 +709,7 @@ $s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:GEMMA4_SHORTCUT)
 
 def _candidate_close_exes(name: str, matches: list[AppCandidate]) -> list[str]:
     candidates: list[str] = []
+    query_tokens = [token for token in _fold(name).split() if len(token) >= 3]
 
     def add(exe: str | None) -> None:
         if not exe:
@@ -709,6 +724,9 @@ def _candidate_close_exes(name: str, matches: list[AppCandidate]) -> list[str]:
 
     for match in matches:
         score = max(_score(name, match.name), _score(name, Path(match.launch).stem))
+        if score < 55:
+            continue
+        tokens = sorted(set(query_tokens + [token for token in _fold(match.name).split() if len(token) >= 3]))
         launch = Path(match.launch.strip().strip('"'))
         if launch.suffix.lower() == ".lnk":
             target = _shortcut_target(launch)
@@ -721,7 +739,18 @@ def _candidate_close_exes(name: str, matches: list[AppCandidate]) -> list[str]:
                             add(exe.name)
                 except OSError:
                     pass
-        elif launch.suffix.lower() == ".exe":
+                install_roots = [target_path.parent, target_path.parent.parent]
+                for root in install_roots:
+                    if not root or not root.is_dir():
+                        continue
+                    try:
+                        for exe in list(root.glob("*.exe"))[:40]:
+                            folded = _fold(f"{exe.stem} {exe.parent.name}")
+                            if any(token in folded for token in tokens) or _score(root.name, match.name) >= 70:
+                                add(exe.name)
+                    except OSError:
+                        pass
+        elif launch.suffix.lower() == ".exe" and (match.source != "PATH" or score >= 75):
             add(launch.name)
         if match.process_name and (match.source != "PATH" or score >= 75):
             add(match.process_name)
@@ -962,10 +991,13 @@ def _looks_like_uninstaller(path: Path) -> bool:
 
 
 class ToolRegistry:
-    def __init__(self, memory: MemoryStore, captures_dir: Path):
+    def __init__(self, memory: MemoryStore, captures_dir: Path, state: AgentState | None = None, safety_enabled: bool = False):
         self.memory = memory
         self.captures_dir = captures_dir
         self.captures_dir.mkdir(parents=True, exist_ok=True)
+        self.state = state or AgentState(self.captures_dir.parent / "data" / "state.json")
+        self.knowledge = KnowledgeStore(self.state.path.parent / "knowledge.sqlite")
+        self.safety_enabled = safety_enabled
         self.apps = AppResolver()
         self._impls: dict[str, ToolFn] = {
             "system": self.t_system,
@@ -984,6 +1016,16 @@ class ToolRegistry:
             "terminal": self.t_terminal,
             "memory": self.t_memory,
             "verify": self.t_verify,
+            "state": self.t_state,
+            "input": self.t_input,
+            "env": self.t_env,
+            "registry": self.t_registry,
+            "download": self.t_download,
+            "email": self.t_email,
+            "reminder": self.t_reminder,
+            "browser_real": self.t_browser_real,
+            "knowledge": self.t_knowledge,
+            "safety": self.t_safety,
             "system_time": self.system_time,
             "list_processes": self.list_processes,
             "list_windows": self.list_windows,
@@ -1014,7 +1056,8 @@ class ToolRegistry:
         return COMPOUND_TOOL_SCHEMAS
 
     def execute(self, name: str, args: dict[str, Any] | None) -> dict[str, Any]:
-        clean_args = args or {}
+        clean_args = dict(args or {})
+        confirmed = bool(clean_args.pop("confirmed", False))
         impl = self._impls.get(name)
         if not impl:
             return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))
@@ -1029,6 +1072,21 @@ class ToolRegistry:
                     expected_schema=_parameters_for_tool(name),
                 ),
             )
+        if self.safety_enabled and not confirmed and name != "safety":
+            decision = classify_tool_call(name, clean_args)
+            if decision.requires_confirmation:
+                pending = self.state.create_confirmation(name, clean_args, decision.reason, decision.risk)
+                return _normalize_tool_result(
+                    name,
+                    clean_args,
+                    _err(
+                        "confirmation required",
+                        status="needs_confirmation",
+                        verified=False,
+                        completion_status="needs_confirmation",
+                        confirmation=pending.get("confirmation"),
+                    ),
+                )
         try:
             result = impl(clean_args)
         except Exception as exc:
@@ -1097,15 +1155,18 @@ class ToolRegistry:
         query = str(args.get("query") or args.get("name") or "").strip()
         if action == "open":
             os.startfile("steam://open/main")  # type: ignore[attr-defined]
-            return _ok(action=action, uri="steam://open/main")
+            resource = self.state.register_resource("steam", "Steam", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"})
+            return _ok(action=action, uri="steam://open/main", resource=resource.get("resource"))
         if action == "library":
             os.startfile("steam://open/games")  # type: ignore[attr-defined]
-            return _ok(action=action, uri="steam://open/games")
+            resource = self.state.register_resource("steam", "Steam library", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"})
+            return _ok(action=action, uri="steam://open/games", resource=resource.get("resource"))
         if action == "store":
             if query:
                 return self.t_steam({**args, "action": "store_page", "query": query})
             os.startfile("steam://store")  # type: ignore[attr-defined]
-            return _ok(action=action, uri="steam://store")
+            resource = self.state.register_resource("steam", "Steam store", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"})
+            return _ok(action=action, uri="steam://store", resource=resource.get("resource"))
         if action == "list_games":
             games = [c.as_dict() for c in self.apps._from_steam()]
             return _ok(games=games, count=len(games))
@@ -1119,6 +1180,7 @@ class ToolRegistry:
                 if appid:
                     uri = f"steam://nav/games/details/{appid}"
                     os.startfile(uri)  # type: ignore[attr-defined]
+                    resource = self.state.register_resource("steam", f"Steam library: {best.name}", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"}, metadata={"uri": uri, "match": best.as_dict()})
                     time.sleep(float(args.get("delay_sec", 2.5)))
                     focus = self.window_control("focus", "Steam")
                     time.sleep(0.5)
@@ -1130,6 +1192,7 @@ class ToolRegistry:
                             uri=uri,
                             matched_game=best.as_dict(),
                             alternatives=[m.as_dict() for m in matches[1:5]],
+                            resource=resource.get("resource"),
                             local_match_verified=True,
                             visual_verified=False,
                             completion_status="opened_matching_steam_library_detail",
@@ -1140,6 +1203,7 @@ class ToolRegistry:
                     )
 
             os.startfile("steam://open/games")  # type: ignore[attr-defined]
+            resource = self.state.register_resource("steam", f"Steam library search: {query}", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"}, metadata={"query": query})
             time.sleep(float(args.get("delay_sec", 2.5)))
             focus = self.window_control("focus", "Steam")
             time.sleep(0.5)
@@ -1152,6 +1216,7 @@ class ToolRegistry:
                     action=action,
                     query=query,
                     uri="steam://open/games",
+                    resource=resource.get("resource"),
                     attempted=True,
                     keyboard_attempted=True,
                     visual_verified=False,
@@ -1168,7 +1233,8 @@ class ToolRegistry:
             if not matches:
                 return _err("steam game not found", query=query)
             os.startfile(matches[0].launch)  # type: ignore[attr-defined]
-            return _ok(query=query, launched=matches[0].as_dict(), alternatives=[m.as_dict() for m in matches[1:]])
+            resource = self.state.register_resource("steam_game", matches[0].name, cleanup_tool="app", cleanup_args={"action": "close", "name": matches[0].name}, metadata={"launch": matches[0].launch})
+            return _ok(query=query, launched=matches[0].as_dict(), alternatives=[m.as_dict() for m in matches[1:]], resource=resource.get("resource"))
         if action in {"search_store", "store_page"}:
             if not query:
                 return _err("missing search query")
@@ -1214,15 +1280,46 @@ class ToolRegistry:
             return self.gui_drag(args)
         if action == "wait_for":
             return self.gui_wait_for(args)
-        if action in {"locate_text", "click_text", "locate_image"}:
+        if action in {"locate_text", "click_text"}:
             shot = self.gui_screenshot(args)
-            shot["note"] = f"{action} requires Gemma 4 vision on the returned screenshot."
-            shot["target"] = args.get("text") or args.get("target") or args.get("image")
+            target = str(args.get("text") or args.get("target") or "")
+            if not shot.get("ok") or not target:
+                shot["target"] = target
+                return shot
+            found = ocr_find_text(Path(str(shot["image_path"])), target, lang=str(args.get("lang") or "spa+eng"), min_conf=int(args.get("min_conf", 25)))
+            found = _attach_screenshot(found, shot)
+            if action == "click_text" and found.get("found") and found.get("matches"):
+                match = found["matches"][0]
+                click = self.gui_click({"x": int(match["center_x"]) + int(shot.get("left", 0)), "y": int(match["center_y"]) + int(shot.get("top", 0))})
+                found["click"] = click
+                found["clicked"] = click.get("ok", False)
+            return found
+        if action == "locate_image":
+            shot = self.gui_screenshot(args)
+            shot["note"] = "locate_image returns a screenshot for Gemma 4 visual reasoning; template matching is not implemented."
+            shot["target"] = args.get("image") or args.get("target")
             return shot
         return _err("unknown gui action", action=action)
 
     def t_vision(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="describe_screen")
+        image_path = Path(str(args.get("image_path") or "")).expanduser() if args.get("image_path") else None
+        if action == "ocr":
+            shot = {"ok": True, "image_path": str(image_path)} if image_path else self.gui_screenshot(args)
+            if not shot.get("ok"):
+                return shot
+            result = ocr_image(Path(str(shot["image_path"])), lang=str(args.get("lang") or "spa+eng"), min_conf=int(args.get("min_conf", 35)))
+            return _attach_screenshot(result, shot)
+        if action == "find_element":
+            shot = {"ok": True, "image_path": str(image_path)} if image_path else self.gui_screenshot(args)
+            if not shot.get("ok"):
+                return shot
+            target = str(args.get("target") or args.get("text") or "")
+            if target:
+                result = ocr_find_text(Path(str(shot["image_path"])), target, lang=str(args.get("lang") or "spa+eng"), min_conf=int(args.get("min_conf", 25)))
+                return _attach_screenshot(result, shot)
+            shot["note"] = "No target text was provided; screenshot captured for Gemma 4 native visual reasoning."
+            return shot
         shot = self.gui_screenshot(args)
         shot["vision_action"] = action
         shot["target"] = args.get("target") or args.get("text")
@@ -1392,6 +1489,7 @@ class ToolRegistry:
             uri = _steam_store_uri(appid)
             url = _steam_store_url(appid, str((matched or {}).get("name") or query))
             os.startfile(uri)  # type: ignore[attr-defined]
+            resource = self.state.register_resource("steam", f"Steam store: {query}", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"}, metadata={"appid": appid, "uri": uri, "store_url": url})
             return _ok(
                 action=str(args.get("action") or "store_page"),
                 query=query,
@@ -1401,6 +1499,7 @@ class ToolRegistry:
                 opened_in="steam_client",
                 matched=matched,
                 match_source=source,
+                resource=resource.get("resource"),
                 content_verified=True,
                 visual_verified=False,
                 completion_status="opened_steam_client_store_page",
@@ -1411,12 +1510,14 @@ class ToolRegistry:
         search_url = f"https://store.steampowered.com/search/?term={quote_plus(query)}"
         uri = _steam_openurl_uri(search_url)
         os.startfile(uri)  # type: ignore[attr-defined]
+        resource = self.state.register_resource("steam", f"Steam store search: {query}", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"}, metadata={"uri": uri, "store_url": search_url})
         return _ok(
             action=str(args.get("action") or "store_page"),
             query=query,
             uri=uri,
             store_url=search_url,
             opened_in="steam_client",
+            resource=resource.get("resource"),
             content_verified=False,
             visual_verified=False,
             completion_status="opened_steam_client_store_search_unverified",
@@ -1506,6 +1607,76 @@ class ToolRegistry:
         if action == "clipboard_contains":
             return self.verify_clipboard_contains(args)
         return _err("unknown verify action", action=action)
+
+    def t_state(self, args: dict[str, Any]) -> dict[str, Any]:
+        return state_tool(args, self.state, self.execute)
+
+    def t_input(self, args: dict[str, Any]) -> dict[str, Any]:
+        return input_tool(args, self.state)
+
+    def t_env(self, args: dict[str, Any]) -> dict[str, Any]:
+        return env_tool(args, self.state)
+
+    def t_registry(self, args: dict[str, Any]) -> dict[str, Any]:
+        return registry_tool(args, self.state)
+
+    def t_download(self, args: dict[str, Any]) -> dict[str, Any]:
+        return download_tool(args, self.state)
+
+    def t_email(self, args: dict[str, Any]) -> dict[str, Any]:
+        return email_tool(args, self.state)
+
+    def t_reminder(self, args: dict[str, Any]) -> dict[str, Any]:
+        return reminder_tool(args, self.state)
+
+    def t_browser_real(self, args: dict[str, Any]) -> dict[str, Any]:
+        return browser_real_tool(args, self.state, self.captures_dir)
+
+    def t_knowledge(self, args: dict[str, Any]) -> dict[str, Any]:
+        action = _action(args, default="search")
+        if action == "status":
+            return self.knowledge.status()
+        if action == "ingest":
+            path = str(args.get("path") or "").strip()
+            if path:
+                return self.knowledge.ingest_file(Path(path).expanduser(), title=str(args.get("title") or "") or None)
+            return self.knowledge.ingest_text(str(args.get("text") or ""), source=str(args.get("source") or "user_text"), title=str(args.get("title") or "") or None)
+        if action == "search":
+            return self.knowledge.search(str(args.get("query") or ""), limit=int(args.get("limit", 5)))
+        if action == "list":
+            return self.knowledge.list_documents(limit=int(args.get("limit", 100)))
+        if action == "delete":
+            return self.knowledge.delete(str(args.get("doc_id") or ""))
+        return _err("unknown knowledge action", action=action)
+
+    def t_safety(self, args: dict[str, Any]) -> dict[str, Any]:
+        action = _action(args, default="status")
+        if action == "status":
+            return _ok(enabled=self.safety_enabled)
+        if action == "pending":
+            return self.state.list_confirmations(include_resolved=bool(args.get("include_resolved", False)))
+        confirmation_id = str(args.get("confirmation_id") or args.get("id") or "").strip()
+        if action == "cancel":
+            if not confirmation_id:
+                return _err("missing confirmation_id")
+            return self.state.resolve_confirmation(confirmation_id, "cancelled")
+        if action == "confirm":
+            if not confirmation_id:
+                pending = self.state.list_confirmations().get("confirmations", [])
+                if len(pending) == 1:
+                    confirmation_id = str(pending[0]["id"])
+            if not confirmation_id:
+                return _err("missing confirmation_id")
+            item_result = self.state.get_confirmation(confirmation_id)
+            if not item_result.get("ok"):
+                return item_result
+            item = item_result["confirmation"]
+            if item.get("status") != "pending":
+                return _err("confirmation is not pending", confirmation=item)
+            result = self.execute(str(item["tool"]), {**dict(item.get("args") or {}), "confirmed": True})
+            self.state.resolve_confirmation(confirmation_id, "confirmed", result)
+            return _ok(confirmation_id=confirmation_id, executed_tool=item["tool"], executed_args=item.get("args"), result=result)
+        return _err("unknown safety action", action=action)
 
     def system_time(self, args: dict[str, Any]) -> dict[str, Any]:
         now = datetime.now()
@@ -1755,11 +1926,23 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         if not matches:
             return _err("app not found", query=name, searched_sources=["PATH", "Start Menu", "StartApps", "Registry", "Steam", "Epic"])
         best = matches[0]
+        preexisting = self.verify_app_opened({"name": name})
         self.apps.open(best)
+        resource = None
+        if not preexisting.get("found"):
+            resource = self.state.register_resource(
+                "app",
+                name,
+                cleanup_tool="app",
+                cleanup_args={"action": "close", "name": name},
+                metadata={"resolved": best.as_dict()},
+            ).get("resource")
         return _ok(
             query=name,
             opened=best.as_dict(),
             alternatives=[m.as_dict() for m in matches[1:5]],
+            preexisting=bool(preexisting.get("found")),
+            resource=resource,
             status="attempted",
             verified=False,
             completion_status="launch_requested",
@@ -1817,6 +2000,26 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         matches = self.apps.find(query, limit=limit, refresh=bool(args.get("refresh", False)))
         return _ok(query=query, matches=[m.as_dict() for m in matches])
 
+    def _backup_path_for(self, path: Path) -> Path:
+        safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(path.resolve()))[-120:]
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        return self.state.path.parent / "file_backups" / f"{stamp}_{safe}"
+
+    def _checkpoint_existing_path(self, label: str, path: Path) -> dict[str, Any]:
+        if not path.exists():
+            return self.state.checkpoint(label, rollback=[{"tool": "filesystem", "args": {"action": "delete", "path": str(path), "recursive": True}}])
+        backup = self._backup_path_for(path)
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        if path.is_dir():
+            shutil.copytree(path, backup, dirs_exist_ok=True)
+        else:
+            shutil.copy2(path, backup)
+        rollback = [
+            {"tool": "filesystem", "args": {"action": "delete", "path": str(path), "recursive": True}},
+            {"tool": "filesystem", "args": {"action": "copy", "src": str(backup), "dst": str(path), "overwrite": True}},
+        ]
+        return self.state.checkpoint(label, rollback=rollback, metadata={"backup": str(backup), "path": str(path.resolve())})
+
     def filesystem_list(self, args: dict[str, Any]) -> dict[str, Any]:
         path = Path(str(args.get("path", ".")).strip() or ".").expanduser()
         limit = int(args.get("limit", 80))
@@ -1848,9 +2051,10 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             return _err("empty path")
         path = Path(raw_path).expanduser()
         content = str(args.get("content", ""))
+        checkpoint = self._checkpoint_existing_path(f"filesystem write {path}", path)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
-        return _ok(path=str(path.resolve()), bytes=len(content.encode("utf-8")))
+        return _ok(path=str(path.resolve()), bytes=len(content.encode("utf-8")), checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_search(self, args: dict[str, Any]) -> dict[str, Any]:
         root = Path(str(args.get("root", ".")).strip() or ".").expanduser()
@@ -1874,6 +2078,7 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         if not path.exists():
             return _err("path does not exist", path=str(path))
         resolved = path.resolve()
+        checkpoint = self._checkpoint_existing_path(f"filesystem delete {resolved}", path)
         if path.is_dir():
             if not recursive:
                 path.rmdir()
@@ -1881,19 +2086,20 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
                 shutil.rmtree(path)
         else:
             path.unlink()
-        return _ok(deleted=str(resolved), recursive=recursive)
+        return _ok(deleted=str(resolved), recursive=recursive, checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_copy(self, args: dict[str, Any]) -> dict[str, Any]:
         src = Path(str(args.get("src") or args.get("source") or "")).expanduser()
         dst = Path(str(args.get("dst") or args.get("dest") or args.get("destination") or "")).expanduser()
         if not str(src) or not str(dst):
             return _err("missing src/dst")
+        checkpoint = self._checkpoint_existing_path(f"filesystem copy to {dst}", dst)
         if src.is_dir():
             shutil.copytree(src, dst, dirs_exist_ok=bool(args.get("overwrite", False)))
         else:
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
-        return _ok(src=str(src.resolve()), dst=str(dst.resolve()))
+        return _ok(src=str(src.resolve()), dst=str(dst.resolve()), checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_move(self, args: dict[str, Any]) -> dict[str, Any]:
         src = Path(str(args.get("src") or args.get("source") or "")).expanduser()
@@ -1901,8 +2107,12 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         if not str(src) or not str(dst):
             return _err("missing src/dst")
         dst.parent.mkdir(parents=True, exist_ok=True)
+        checkpoint = self.state.checkpoint(
+            f"filesystem move {src} to {dst}",
+            rollback=[{"tool": "filesystem", "args": {"action": "move", "src": str(dst), "dst": str(src)}}],
+        )
         moved = shutil.move(str(src), str(dst))
-        return _ok(src=str(src), dst=str(Path(moved).resolve()))
+        return _ok(src=str(src), dst=str(Path(moved).resolve()), checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_rename(self, args: dict[str, Any]) -> dict[str, Any]:
         src = Path(str(args.get("src") or args.get("path") or "")).expanduser()
@@ -1914,15 +2124,20 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             dst = src.with_name(new_name)
         else:
             return _err("missing src/new_name")
+        checkpoint = self.state.checkpoint(
+            f"filesystem rename {src} to {dst}",
+            rollback=[{"tool": "filesystem", "args": {"action": "rename", "src": str(dst), "dst": str(src)}}],
+        )
         src.rename(dst)
-        return _ok(src=str(src.resolve()), dst=str(dst.resolve()))
+        return _ok(src=str(src.resolve()), dst=str(dst.resolve()), checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_mkdir(self, args: dict[str, Any]) -> dict[str, Any]:
         path = Path(str(args.get("path", "")).strip()).expanduser()
         if not str(path):
             return _err("empty path")
+        checkpoint = self._checkpoint_existing_path(f"filesystem mkdir {path}", path)
         path.mkdir(parents=True, exist_ok=True)
-        return _ok(path=str(path.resolve()))
+        return _ok(path=str(path.resolve()), checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_diff(self, args: dict[str, Any]) -> dict[str, Any]:
         left = Path(str(args.get("left") or args.get("a") or "")).expanduser()
@@ -1939,6 +2154,7 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         dst = Path(str(args.get("dst") or args.get("archive") or "")).expanduser()
         if not src.exists() or not str(dst):
             return _err("missing src/dst", src=str(src), dst=str(dst))
+        checkpoint = self._checkpoint_existing_path(f"filesystem archive {dst}", dst)
         dst.parent.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zf:
             if src.is_dir():
@@ -1947,16 +2163,17 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
                         zf.write(file, file.relative_to(src.parent))
             else:
                 zf.write(src, src.name)
-        return _ok(src=str(src.resolve()), archive=str(dst.resolve()))
+        return _ok(src=str(src.resolve()), archive=str(dst.resolve()), checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_unarchive(self, args: dict[str, Any]) -> dict[str, Any]:
         archive = Path(str(args.get("archive") or args.get("src") or "")).expanduser()
         dst = Path(str(args.get("dst") or args.get("destination") or ".")).expanduser()
         if not archive.is_file():
             return _err("archive not found", archive=str(archive))
+        checkpoint = self._checkpoint_existing_path(f"filesystem unarchive {dst}", dst)
         dst.mkdir(parents=True, exist_ok=True)
         shutil.unpack_archive(str(archive), str(dst))
-        return _ok(archive=str(archive.resolve()), dst=str(dst.resolve()))
+        return _ok(archive=str(archive.resolve()), dst=str(dst.resolve()), checkpoint=checkpoint.get("checkpoint"))
 
     def filesystem_open(self, args: dict[str, Any]) -> dict[str, Any]:
         path = Path(str(args.get("path", "")).strip()).expanduser()
@@ -1972,9 +2189,11 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
         opened = webbrowser.open(url)
+        resource = self.state.register_resource("browser_url", url, cleanup_tool=None, cleanup_args={}, metadata={"url": url, "opened": opened})
         return _ok(
             url=url,
             opened=opened,
+            resource=resource.get("resource"),
             status="attempted",
             verified=False,
             content_verified=False,
@@ -2490,12 +2709,22 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "app", "description": "Compound installed app/game tool with dynamic discovery. Actions: search, open, close, uninstall. Use user-facing name, not hardcoded exe names.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}, "limit": {"type": "integer"}, "refresh": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "steam", "description": "Compound Steam tool. Actions: open, library, store, list_games, launch_game, search_library, search_store, store_page, install. Use library for 've a mi biblioteca'. Use store_page/search_store for 'pagina de la tienda de X'; it resolves an AppID and opens steam://store/<appid> inside the Steam client, not a normal browser. search_library first matches local Steam metadata and opens the matching library detail by AppID; otherwise it attempts GUI search and returns unverified with screenshot. Use query/name for game title or appid for direct install.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "name": {"type": "string"}, "appid": {"type": "string"}, "delay_sec": {"type": "number"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "window", "description": "Compound window management tool. Actions: list, active, focus, close, minimize, maximize, restore, move_resize. Use title/query to target a window.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "title": {"type": "string"}, "query": {"type": "string"}, "x": {"type": "integer"}, "y": {"type": "integer"}, "width": {"type": "integer"}, "height": {"type": "integer"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "gui", "description": "Compound GUI/mouse/keyboard tool. Actions: screenshot, click, double_click, right_click, type, keypress, hotkey, scroll, drag, wait_for, locate_text, click_text, locate_image. locate/click text captures screenshot for Gemma 4 vision.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "x": {"type": "integer"}, "y": {"type": "integer"}, "x1": {"type": "integer"}, "y1": {"type": "integer"}, "x2": {"type": "integer"}, "y2": {"type": "integer"}, "text": {"type": "string"}, "keys": {"type": "string"}, "hotkey": {"type": "string"}, "amount": {"type": "integer"}, "target": {"type": "string"}, "image": {"type": "string"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "vision", "description": "Compound Gemma-4-vision bridge. Actions: describe_screen, find_element, ocr, compare_before_after. Captures screenshot and re-injects it as native Gemma 4 image input.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "target": {"type": "string"}, "text": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "gui", "description": "Compound GUI/mouse/keyboard tool. Actions: screenshot, click, double_click, right_click, type, keypress, hotkey, scroll, drag, wait_for, locate_text, click_text, locate_image. locate_text/click_text use local OCR when available and return screen coordinates.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "x": {"type": "integer"}, "y": {"type": "integer"}, "x1": {"type": "integer"}, "y1": {"type": "integer"}, "x2": {"type": "integer"}, "y2": {"type": "integer"}, "text": {"type": "string"}, "keys": {"type": "string"}, "hotkey": {"type": "string"}, "amount": {"type": "integer"}, "target": {"type": "string"}, "image": {"type": "string"}, "lang": {"type": "string"}, "min_conf": {"type": "integer"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "vision", "description": "Compound Gemma-4-vision/OCR bridge. Actions: describe_screen, find_element, ocr, compare_before_after. OCR uses local Tesseract if available; screenshots are also re-injected for native Gemma 4 visual reasoning.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "target": {"type": "string"}, "text": {"type": "string"}, "image_path": {"type": "string"}, "lang": {"type": "string"}, "min_conf": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "browser", "description": "Compound browser control tool. Actions: open, search, youtube_play, media_pause, media_stop, active_tab_title, click, find, research. open/search mainly navigate the browser and are not proof of reading content. Use web(action='research') for real investigation. youtube_play opens a direct YouTube video when possible and should be used for 'pon/reproduce una cancion'. media_pause/media_stop pause current playback; use them for 'para el video'. If browser is provided, opens that browser app first and navigates there via GUI; do not use browser='YouTube' because YouTube is a site, not a browser.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "url": {"type": "string"}, "query": {"type": "string"}, "song": {"type": "string"}, "title": {"type": "string"}, "engine": {"type": "string"}, "browser": {"type": "string"}, "target": {"type": "string"}, "delay_sec": {"type": "number"}, "post_open_delay_sec": {"type": "number"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "web", "description": "Compound web research tool. Actions: search, read, research, open. search returns search results with snippets; read fetches and extracts a page; research searches and reads several sources. Use this for 'investiga', current facts, sources, or when the user expects an answer from the internet. Use browser only when the goal is to open/navigate a visible browser.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "url": {"type": "string"}, "limit": {"type": "integer"}, "search_limit": {"type": "integer"}, "read_limit": {"type": "integer"}, "per_page_chars": {"type": "integer"}, "max_chars": {"type": "integer"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "uia", "description": "Compound Windows UI Automation tool. Actions: tree, find, click, focus, set_value. Prefer this before raw GUI clicks when interacting with standard Windows app controls because it returns names, control types, automation ids, bounds and clickable points. Use window/title to scope to an app window and query/text/target to find controls.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "text": {"type": "string"}, "target": {"type": "string"}, "window": {"type": "string"}, "title": {"type": "string"}, "value": {"type": "string"}, "text_value": {"type": "string"}, "limit": {"type": "integer"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "filesystem", "description": "Compound filesystem tool. Actions: list, read, write, search, delete, copy, move, rename, mkdir, diff, archive, unarchive, open.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "src": {"type": "string"}, "dst": {"type": "string"}, "source": {"type": "string"}, "destination": {"type": "string"}, "content": {"type": "string"}, "root": {"type": "string"}, "pattern": {"type": "string"}, "recursive": {"type": "boolean"}, "new_name": {"type": "string"}, "left": {"type": "string"}, "right": {"type": "string"}, "archive": {"type": "string"}, "limit": {"type": "integer"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "filesystem", "description": "Compound filesystem tool. Actions: list, read, write, search, delete, copy, move, rename, mkdir, diff, archive, unarchive, open. Mutating actions create local checkpoints with rollback plans when possible.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "src": {"type": "string"}, "dst": {"type": "string"}, "source": {"type": "string"}, "destination": {"type": "string"}, "content": {"type": "string"}, "root": {"type": "string"}, "pattern": {"type": "string"}, "recursive": {"type": "boolean"}, "overwrite": {"type": "boolean"}, "new_name": {"type": "string"}, "left": {"type": "string"}, "right": {"type": "string"}, "archive": {"type": "string"}, "limit": {"type": "integer"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "state", "description": "Compound operational state tool. Actions: resources, cleanup_plan, cleanup, checkpoint, checkpoints, rollback_plan, rollback, note. Tracks resources opened by the agent and reversible checkpoints; cleanup executes registered cleanup tools.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "resource_id": {"type": "string"}, "checkpoint_id": {"type": "string"}, "label": {"type": "string"}, "text": {"type": "string"}, "include_closed": {"type": "boolean"}, "rollback": {"type": "array", "items": {"type": "object"}}, "metadata": {"type": "object"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "input", "description": "Compound keyboard/language tool. Actions: language_list, keyboard_layouts, current_keyboard, set_language_list, switch_keyboard. Uses Windows language APIs; changes are checkpointed so they can be rolled back.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "language_tag": {"type": "string"}, "language_tags": {"type": "array", "items": {"type": "string"}}, "force": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "env", "description": "Compound environment variable tool. Actions: get, set, delete, list. scope is process, user, or machine. process affects only this agent session; user/machine are persistent Windows environment scopes and changes create rollback checkpoints.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "scope": {"type": "string"}, "name": {"type": "string"}, "value": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "registry", "description": "Compound safe registry tool. Actions: query, export, import, add, delete, backup. add/delete export a .reg backup first and create rollback checkpoints.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "key": {"type": "string"}, "path": {"type": "string"}, "name": {"type": "string"}, "value_name": {"type": "string"}, "type": {"type": "string"}, "data": {"type": "string"}, "value": {"type": "string"}, "file": {"type": "string"}, "dst": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "download", "description": "Compound download/integrity tool. Actions: fetch, hash, signature. fetch uses Invoke-WebRequest, then SHA256 and Authenticode for executables; without expected hash or valid signature it returns needs_verification.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "url": {"type": "string"}, "path": {"type": "string"}, "dst": {"type": "string"}, "sha256": {"type": "string"}, "expected_sha256": {"type": "string"}, "algorithm": {"type": "string"}, "overwrite": {"type": "boolean"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "email", "description": "Compound email tool. Actions: status, draft, send. Real sending uses Microsoft Graph sendMail only when GEMMA4_GRAPH_TOKEN or MS_GRAPH_TOKEN is configured; otherwise returns needs_user instead of pretending.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "to": {"type": "string"}, "subject": {"type": "string"}, "body": {"type": "string"}, "save_to_sent": {"type": "boolean"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "reminder", "description": "Compound reminder tool. Actions: status, create, list, delete. Default backend stores local reminders in agent state; graph backend requires Microsoft Graph auth and returns needs_user if missing.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "backend": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}, "due": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "browser_real", "description": "Compound real browser automation tool using Playwright. Actions: status, open, goto, tabs, click, fill, press, text, screenshot, evaluate, connect_cdp, close. It keeps persistent sessions by session_id and runs headless by default; connect_cdp can attach to a browser started with remote debugging.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "session_id": {"type": "string"}, "page_id": {"type": "integer"}, "url": {"type": "string"}, "query": {"type": "string"}, "endpoint": {"type": "string"}, "selector": {"type": "string"}, "text": {"type": "string"}, "value": {"type": "string"}, "key": {"type": "string"}, "script": {"type": "string"}, "headless": {"type": "boolean"}, "new_tab": {"type": "boolean"}, "screenshot": {"type": "boolean"}, "full_page": {"type": "boolean"}, "wait_until": {"type": "string"}, "timeout_sec": {"type": "integer"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "knowledge", "description": "Compound local RAG/knowledge-base tool. Actions: status, ingest, search, list, delete. Uses local SQLite FTS5 only; ingest supports text files and explicit text, no cloud embeddings.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "text": {"type": "string"}, "source": {"type": "string"}, "title": {"type": "string"}, "query": {"type": "string"}, "doc_id": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "safety", "description": "Compound safety confirmation tool. Actions: status, pending, confirm, cancel. If another tool returns needs_confirmation, ask the user and then call safety(action='confirm', confirmation_id='...') only after explicit approval.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "confirmation_id": {"type": "string"}, "id": {"type": "string"}, "include_resolved": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "package", "description": "Compound package manager tool via winget. Actions: list, search, install, uninstall. This prototype executes directly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "clipboard", "description": "Compound clipboard tool. Actions: read, write.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "content": {"type": "string"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "terminal", "description": "Compound terminal tool. Action: run. Direct command execution with command, args, cwd, timeout_sec, shell.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "command": {"type": "string"}, "args": {"type": "array", "items": {"type": "string"}}, "cwd": {"type": "string"}, "timeout_sec": {"type": "integer"}, "shell": {"type": "boolean"}}, "required": ["action", "command"]}}},

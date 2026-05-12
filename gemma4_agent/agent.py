@@ -5,16 +5,22 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .config import AgentConfig
+from .evaluator import evaluate_mission
 from .llm_client import LLMClient
 from .memory import MemoryStore
 from .modes import AgentMode, choose_mode
 from .multimodal import image_part, user_content
+from .planner import MissionPlan, plan_mission
 from .reasoning import sanitize_assistant_message, sanitize_text
+from .state import AgentState
 from .tools import ToolRegistry
 from .tracing import TraceLogger, summarize_content
+
+
+ProgressCallback = Callable[[str, dict[str, Any]], None]
 
 
 SYSTEM_PROMPT = """You are a local Windows agent powered by Gemma 4.
@@ -60,6 +66,16 @@ correct group and set `action`:
 - terminal(action=run)
 - memory(action=save/recall/list/delete)
 - verify(action=app_opened/file_exists/window_exists/clipboard_contains)
+- state(action=resources/cleanup_plan/cleanup/checkpoint/checkpoints/rollback_plan/rollback/note)
+- input(action=language_list/keyboard_layouts/current_keyboard/set_language_list/switch_keyboard)
+- env(action=get/set/delete/list)
+- registry(action=query/export/import/add/delete/backup)
+- download(action=fetch/hash/signature)
+- email(action=status/draft/send)
+- reminder(action=status/create/list/delete)
+- browser_real(action=status/open/goto/tabs/click/fill/press/text/screenshot/evaluate/connect_cdp/close)
+- knowledge(action=status/ingest/search/list/delete)
+- safety(action=status/pending/confirm/cancel)
 
 For apps and games, use app(action="open", name="<user-facing name>") or
 steam(action="launch_game", query="<game>") for installed Steam games. The
@@ -80,6 +96,9 @@ For internet research, current facts, sources, or requests like "investiga",
 use web(action="research", query="<topic>") and answer from the returned source
 excerpts. browser(action="search"|"open") only navigates a visible browser; it
 does not mean you have read or researched the content.
+For precise web page control or reading page text, prefer browser_real(...).
+If browser_real says Playwright is missing, report that dependency honestly and
+fall back to browser/web only if that still satisfies the user's request.
 
 For YouTube/music requests, distinguish searching from playing. If the user
 asks to play/put/reproduce a song, music, or a video on YouTube, use
@@ -116,16 +135,27 @@ Tool sequence:
 2. browser(action="search", browser="Opera", engine="google", query="Doom")
 3. reply with what was attempted and any unverified GUI state.
 
-This prototype intentionally has NO safety confirmation layer. Do not ask for
-confirmation only because an action is destructive. If the user asks for an
-available action, execute it directly. Ask for clarification only when the
-target or arguments are actually missing.
+The safety layer is configurable. If a tool returns needs_confirmation, stop
+and ask the user to confirm the specific pending action. Do not bypass it. If
+safety is disabled by configuration, tools execute directly.
+Even without confirmation prompts, use the technical rollback/cleanup tools
+when state is changed: filesystem/env/registry/download create checkpoints or
+resources; state(action="cleanup") and state(action="rollback") can undo known
+resources/checkpoints when a mission asks for cleanup or recovery. Do not
+promise perfect rollback if a tool result only provides a partial rollback plan.
+
+Email and Graph-backed reminders require an existing Microsoft Graph token in
+GEMMA4_GRAPH_TOKEN or MS_GRAPH_TOKEN. If auth is missing, email/reminder must
+return NEEDS_USER; never pretend a message or reminder was sent.
 
 Persistent memory rule: call memory(action="save") only when the user
 explicitly says "remember", "recorda", "guarda en memoria", "mi preferencia
 es", or equivalent. Do not save casual chat, temporary facts, secrets, or
 one-off instructions unless the user explicitly asks. Use memory(action="recall")
 or memory(action="list") when the user asks what you remember.
+Knowledge/RAG rule: use knowledge(action="ingest") only when the user asks to
+store documents or build a local knowledge base. Use knowledge(action="search")
+when the user asks about previously ingested local documents.
 
 Multimodal rule: if the user attaches an image or audio, use that input as
 evidence. If you call gui(action="screenshot") or vision(...), the runtime will
@@ -148,47 +178,61 @@ class AgentReply:
     content: str
     tool_events: list[ToolEvent] = field(default_factory=list)
     error: str | None = None
+    mission: dict[str, Any] | None = None
 
 
 class Gemma4Agent:
     def __init__(self, config: AgentConfig | None = None):
         self.config = config or AgentConfig.from_env()
         self.memory = MemoryStore(self.config.memory_path)
+        self.state = AgentState(self.config.state_path)
         self.client = LLMClient(self.config)
-        self.tools = ToolRegistry(self.memory, self.config.captures_dir)
+        self.tools = ToolRegistry(self.memory, self.config.captures_dir, self.state, safety_enabled=self.config.enable_safety)
         self.trace = TraceLogger(self.config.trace_path, self.config.enable_tracing)
         self.history: list[dict[str, Any]] = []
 
     def clear(self) -> None:
         self.history.clear()
 
-    def _system_message(self, mode: AgentMode | None = None) -> dict[str, str]:
+    def _system_message(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> dict[str, str]:
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
+        plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
         return {
             "role": "system",
-            "content": f"{SYSTEM_PROMPT}{mode_hint}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{SYSTEM_PROMPT}{mode_hint}{plan_hint}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
-    def _messages(self, mode: AgentMode | None = None) -> list[dict[str, Any]]:
-        return [self._system_message(mode), *self.history]
+    def _messages(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> list[dict[str, Any]]:
+        return [self._system_message(mode, plan), *self.history]
 
     def run_text(
         self,
         text: str,
         images: list[Path] | None = None,
         audios: list[Path] | None = None,
+        progress: ProgressCallback | None = None,
     ) -> AgentReply:
         content = user_content(text, images=images, audios=audios)
-        return self.run_content(content)
+        return self.run_content(content, progress=progress)
 
-    def run_content(self, content: str | list[dict[str, Any]]) -> AgentReply:
+    def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
+        plan = plan_mission(content)
         turn_id = self.trace.new_turn_id()
+        _progress(
+            progress,
+            "start",
+            mode=mode.name,
+            steps=len(plan.steps),
+            thinking=mode.enable_thinking,
+            max_turns=self.config.max_agent_turns,
+        )
         self.trace.event(
             turn_id,
             "request_start",
             mode=mode.name,
             content=summarize_content(content),
+            mission_plan=plan.as_dict(),
             thinking=mode.enable_thinking,
             parallel_tool_calls=mode.parallel_tool_calls,
             max_tokens=mode.max_tokens,
@@ -197,15 +241,23 @@ class Gemma4Agent:
         events: list[ToolEvent] = []
 
         for _turn in range(self.config.max_agent_turns):
+            _progress(
+                progress,
+                "llm_start",
+                turn=_turn + 1,
+                max_turns=self.config.max_agent_turns,
+                tools=len(events),
+            )
             try:
                 resp = self.client.chat(
-                    self._messages(mode),
+                    self._messages(mode, plan),
                     tools=self.tools.schemas,
                     enable_thinking=mode.enable_thinking,
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=mode.max_tokens,
                 )
             except Exception as exc:
+                _progress(progress, "error", error=str(exc), tools=len(events))
                 self.trace.event(turn_id, "llm_error", error=str(exc), tool_events=len(events))
                 return AgentReply(content="", tool_events=events, error=str(exc))
 
@@ -222,13 +274,22 @@ class Gemma4Agent:
                 tool_call_count=len(raw_tool_calls),
                 stripped_reasoning=any(k in raw_msg for k in ("reasoning", "reasoning_content", "reasoning_details")),
             )
+            _progress(
+                progress,
+                "llm_response",
+                turn=_turn + 1,
+                tool_calls=len(raw_tool_calls),
+                tools=len(events),
+            )
 
             if not raw_tool_calls:
                 assistant_content = sanitize_text(assistant_content)
                 assistant_content = self._guard_unverified_final(assistant_content, events)
+                mission = evaluate_mission(events, assistant_content, plan)
                 self.history.append({"role": "assistant", "content": assistant_content})
-                self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events))
-                return AgentReply(content=assistant_content, tool_events=events)
+                self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events), mission=mission)
+                _progress(progress, "final", tools=len(events), mission=mission)
+                return AgentReply(content=assistant_content, tool_events=events, mission=mission)
 
             self.history.append(msg)
 
@@ -238,9 +299,19 @@ class Gemma4Agent:
                 name = fn.get("name", "")
                 args = _parse_args(fn.get("arguments", {}))
                 self.trace.event(turn_id, "tool_call", name=name, args=args)
+                _progress(progress, "tool_start", name=name, args=args, index=len(events) + 1)
                 result = self.tools.execute(name, args)
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
+                _progress(
+                    progress,
+                    "tool_end",
+                    name=name,
+                    ok=bool(result.get("ok")),
+                    status=str(result.get("status") or ""),
+                    verified=result.get("verified"),
+                    index=len(events),
+                )
                 self.history.append({
                     "role": "tool",
                     "tool_call_id": raw_call.get("id", f"call_{name}"),
@@ -252,12 +323,15 @@ class Gemma4Agent:
                     image_results.append((Path(str(image_path)), result))
 
             for image_path, result in image_results:
+                _progress(progress, "image_injected", path=str(image_path))
                 self._inject_tool_image(image_path, result)
 
         final = "No pude terminar la tarea dentro del limite de turnos."
+        mission = evaluate_mission(events, final, plan)
         self.history.append({"role": "assistant", "content": final})
-        self.trace.event(turn_id, "max_turns", content=final, tool_events=len(events))
-        return AgentReply(content=final, tool_events=events)
+        self.trace.event(turn_id, "max_turns", content=final, tool_events=len(events), mission=mission)
+        _progress(progress, "max_turns", tools=len(events), mission=mission)
+        return AgentReply(content=final, tool_events=events, mission=mission)
 
     def _inject_tool_image(self, path: Path, result: dict[str, Any]) -> None:
         if not path.exists():
@@ -304,3 +378,12 @@ def _parse_args(raw: Any) -> dict[str, Any]:
         except json.JSONDecodeError:
             return {"_raw": raw}
     return {"value": raw}
+
+
+def _progress(callback: ProgressCallback | None, event: str, **payload: Any) -> None:
+    if callback is None:
+        return
+    try:
+        callback(event, payload)
+    except Exception:
+        pass
