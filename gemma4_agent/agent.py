@@ -302,6 +302,10 @@ class Gemma4Agent:
         # turn when the conversation has just been compacted. Resets per-clear.
         self._summarize_last_run_turn: int = -10
         self._turn_counter: int = 0
+        # Diagnostics for the current turn (visible in traces; surfaced to the
+        # user only when the final reply looks empty so they are not left in
+        # the dark).
+        self._explicit_plan_status: dict[str, Any] = {}
 
     def clear(self) -> None:
         self.history.clear()
@@ -417,6 +421,7 @@ class Gemma4Agent:
         # call when the request is multi-step or the user asked for a plan.
         self._explicit_plan_text = ""
         self._explicit_plan_steps = []
+        self._explicit_plan_status = {}
         try:
             from .explicit_plan import generate_plan, should_plan
             if raw_text and should_plan(raw_text, len(plan.steps)):
@@ -428,14 +433,18 @@ class Gemma4Agent:
                 if result.get("ok") and result.get("plan"):
                     self._explicit_plan_text = str(result["plan"])
                     self._explicit_plan_steps = list(result.get("steps") or [])
+                    self._explicit_plan_status = {"state": "ready", "step_count": len(self._explicit_plan_steps)}
                     self.trace.event(turn_id, "explicit_plan_ready",
                                      step_count=len(self._explicit_plan_steps),
                                      plan_chars=len(self._explicit_plan_text))
                 elif result.get("skipped"):
+                    self._explicit_plan_status = {"state": "skipped", "reason": "model_said_no_plan"}
                     self.trace.event(turn_id, "explicit_plan_skipped", reason="model_said_no_plan")
                 elif not result.get("ok"):
+                    self._explicit_plan_status = {"state": "failed", "error": result.get("error")}
                     self.trace.event(turn_id, "explicit_plan_failed", error=result.get("error"))
         except Exception as exc:
+            self._explicit_plan_status = {"state": "error", "error": str(exc)}
             self.trace.event(turn_id, "explicit_plan_error", error=str(exc))
         _progress(
             progress,
@@ -532,6 +541,8 @@ class Gemma4Agent:
             if not raw_tool_calls:
                 assistant_content = sanitize_text(assistant_content)
                 assistant_content = self._guard_unverified_final(assistant_content, events)
+                assistant_content = self._guard_phrase_confirm(assistant_content)
+                assistant_content = self._guard_plan_status(assistant_content)
                 mission = evaluate_mission(events, assistant_content, plan)
                 self.history.append({"role": "assistant", "content": assistant_content})
                 # Subset summary: which sent tools were actually used vs idle.
@@ -576,17 +587,32 @@ class Gemma4Agent:
             for raw_call in raw_tool_calls:
                 fn = raw_call.get("function") or {}
                 name = fn.get("name", "")
-                args = _parse_args(fn.get("arguments", {}))
+                args, parse_error = _parse_args(fn.get("arguments", {}))
                 in_subset = name in subset_set
-                self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset)
+                self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset, parse_error=parse_error)
                 if not in_subset:
                     # Router miss: the model picked a tool that the subset did not
                     # include. The model can still call any tool because the schema
                     # sent has additionalProperties=false but the registry holds
                     # every tool. Logging this lets us tune the router later.
                     self.trace.event(turn_id, "router_miss", name=name, sent=sorted(subset_set))
-                _progress(progress, "tool_start", name=name, args=args, index=len(events) + 1)
-                result = self.tools.execute(name, args)
+                # Short-circuit if the LLM sent malformed JSON. Surface a clear
+                # error message instead of passing dirty args to the tool. This
+                # closes the loop: Gemma sees exactly what was wrong and can fix
+                # the next call without us guessing what it meant.
+                if parse_error:
+                    result = {
+                        "ok": False,
+                        "status": "failed",
+                        "verified": False,
+                        "error": f"tool args parse error: {parse_error}. Re-emit the call with valid JSON for the 'arguments' field.",
+                        "tool": name,
+                        "evidence": "malformed_json_args",
+                    }
+                    self.trace.event(turn_id, "tool_args_parse_error", name=name, parse_error=parse_error)
+                else:
+                    _progress(progress, "tool_start", name=name, args=args, index=len(events) + 1)
+                    result = self.tools.execute(name, args)
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
                 # Only count REAL failures for replanning. needs_user* and
@@ -849,6 +875,70 @@ class Gemma4Agent:
             "\n\nNota: la ultima tool no dejo evidencia suficiente de finalizacion "
             f"(status={status or 'desconocido'}, verified={verified}, evidence={evidence})."
         )
+        return content.rstrip() + note
+
+    def _guard_phrase_confirm(self, content: str) -> str:
+        """If phrase-triggered routines fired but the assistant reply does not
+        acknowledge them, prepend a brief confirmation so the user is never
+        left wondering whether the saved action ran.
+
+        Heuristic: a reply is considered "acknowledging" if any of the labels
+        or phrases of the fires appears in the content (folded), or if the
+        reply already contains common ack tokens ('hecho', 'listo', 'done',
+        'ejecut', 'ya').
+        """
+        if not self._phrase_fires:
+            return content
+        folded = _fold_match(content)
+        ack_tokens = ("hecho", "listo", "done", "ejecut", "completed", "fini", " ya ")
+        already_ack = any(tok in folded for tok in ack_tokens)
+        mentions_any = False
+        for fire in self._phrase_fires:
+            label = _fold_match(str(fire.get("label") or ""))
+            phrase = _fold_match(str(fire.get("phrase") or ""))
+            if (label and label in folded) or (phrase and phrase in folded):
+                mentions_any = True
+                break
+        if already_ack or mentions_any:
+            return content
+        # Build a short, neutral prefix listing what fired.
+        summaries: list[str] = []
+        for fire in self._phrase_fires:
+            label = fire.get("label") or "rutina"
+            results = fire.get("results") or []
+            ok = sum(1 for r in results if r.get("ok"))
+            total = len(results)
+            timed_out = sum(1 for r in results if r.get("timed_out"))
+            suffix = ""
+            if timed_out:
+                suffix = f" ({timed_out} con timeout)"
+            elif ok < total:
+                suffix = f" ({total - ok} con error)"
+            summaries.append(f"{label} {ok}/{total} pasos{suffix}")
+        prefix = "Ejecute tu rutina: " + "; ".join(summaries) + ".\n\n"
+        self.trace.event(self.trace.new_turn_id(), "phrase_confirm_injected",
+                         fires=len(self._phrase_fires))
+        return prefix + content
+
+    def _guard_plan_status(self, content: str) -> str:
+        """Surface explicit-plan failures to the user only when the reply is
+        suspiciously empty (<30 chars). Plan being SKIPPED is silent because
+        that's the LLM rejecting the planning step for good reasons.
+
+        Failed/error states matter though: if the planner LLM call timed out
+        or returned malformed output AND the agent's main reply is empty,
+        the user would otherwise get a confusing one-liner. We tack on a
+        single-sentence note so they know something was attempted.
+        """
+        status = self._explicit_plan_status or {}
+        state = str(status.get("state") or "")
+        if state not in {"failed", "error"}:
+            return content
+        if len(content.strip()) >= 30:
+            return content
+        err = str(status.get("error") or "unknown error")
+        note = f"\n\nNota: intente generar un plan explicito para tu pedido pero fallo ({err[:120]}). Si quieres, repiteme la peticion o pasame el detalle paso a paso."
+        self.trace.event(self.trace.new_turn_id(), "plan_status_surfaced", state=state)
         return content.rstrip() + note
 
 
@@ -1143,18 +1233,33 @@ def _middle_ellipsis(text: str, limit: int) -> str:
     )
 
 
-def _parse_args(raw: Any) -> dict[str, Any]:
+def _parse_args(raw: Any) -> tuple[dict[str, Any], str | None]:
+    """Parse a tool-call arguments field.
+
+    Returns (args_dict, parse_error). parse_error is None on success; otherwise
+    it's a short human-readable string suitable for surfacing to the LLM. The
+    args_dict always returns something callable so the caller can still log a
+    placeholder, but in the error case the caller MUST short-circuit and not
+    invoke the tool with sucky data.
+    """
     if isinstance(raw, dict):
-        return raw
+        return raw, None
     if raw is None:
-        return {}
+        return {}, None
     if isinstance(raw, str):
+        raw_trim = raw.strip()
+        if not raw_trim:
+            return {}, None
         try:
-            parsed = json.loads(raw)
-            return parsed if isinstance(parsed, dict) else {"value": parsed}
-        except json.JSONDecodeError:
-            return {"_raw": raw}
-    return {"value": raw}
+            parsed = json.loads(raw_trim)
+            if isinstance(parsed, dict):
+                return parsed, None
+            return {"value": parsed}, None
+        except json.JSONDecodeError as exc:
+            # Surface the column so Gemma can see what it sent wrong.
+            preview = raw_trim if len(raw_trim) <= 200 else raw_trim[:200] + "..."
+            return {"_raw_invalid_json": preview}, f"invalid_json: {exc.msg} at pos {exc.pos}"
+    return {"value": raw}, f"unsupported_args_type: {type(raw).__name__}"
 
 
 def _progress(callback: ProgressCallback | None, event: str, **payload: Any) -> None:

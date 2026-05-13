@@ -455,6 +455,74 @@ def test_h2_3_semantic_router_transient_retry() -> bool:
     return True
 
 
+def test_h3_1_phrase_confirm_prepends_when_unack() -> bool:
+    """If phrase fires but the reply does not mention them, _guard_phrase_confirm prepends a confirm."""
+    from gemma4_agent.agent import Gemma4Agent
+    agent = Gemma4Agent()
+    agent._phrase_fires = [{
+        "label": "modo gaming", "phrase": "modo gaming",
+        "results": [{"tool": "audio", "ok": True}, {"tool": "app", "ok": True}],
+    }]
+    # Reply that doesn't mention the routine.
+    out = agent._guard_phrase_confirm("Esto es solo una respuesta cualquiera.")
+    assert "Ejecute tu rutina" in out, out
+    # Reply that already acknowledges via 'hecho' should be left alone.
+    out2 = agent._guard_phrase_confirm("Hecho, ya cambie todo.")
+    assert "Ejecute tu rutina" not in out2
+    # Reply that mentions the label should be left alone.
+    out3 = agent._guard_phrase_confirm("Aplique tu modo gaming sin problema.")
+    assert "Ejecute tu rutina" not in out3
+    print("H3.1 phrase confirm guard: OK")
+    return True
+
+
+def test_h3_2_plan_status_surfaces_only_on_short_reply() -> bool:
+    """_guard_plan_status only touches the reply when plan failed AND reply is short."""
+    from gemma4_agent.agent import Gemma4Agent
+    agent = Gemma4Agent()
+    # Plan failed + short reply -> note appended.
+    agent._explicit_plan_status = {"state": "failed", "error": "timeout"}
+    short = "ok"
+    out = agent._guard_plan_status(short)
+    assert "intente generar un plan" in out, out
+    # Plan failed + long reply -> untouched.
+    long_reply = "x" * 200
+    out2 = agent._guard_plan_status(long_reply)
+    assert "intente generar un plan" not in out2
+    # Plan skipped -> never surfaced.
+    agent._explicit_plan_status = {"state": "skipped"}
+    out3 = agent._guard_plan_status("hola")
+    assert out3 == "hola"
+    # Plan ready -> never surfaced.
+    agent._explicit_plan_status = {"state": "ready", "step_count": 4}
+    out4 = agent._guard_plan_status("ok")
+    assert out4 == "ok"
+    print("H3.2 plan status guard: OK")
+    return True
+
+
+def test_h3_3_parse_args_distinguishes_malformed() -> bool:
+    """_parse_args returns (args, error) and signals malformed JSON clearly."""
+    from gemma4_agent.agent import _parse_args
+    args, err = _parse_args({"x": 1})
+    assert args == {"x": 1} and err is None
+    args, err = _parse_args('{"x": 1}')
+    assert args == {"x": 1} and err is None
+    args, err = _parse_args("")
+    assert args == {} and err is None
+    args, err = _parse_args(None)
+    assert args == {} and err is None
+    # The bad case: malformed JSON gives a clear error string AND a flagged dict.
+    args, err = _parse_args('{"x": ')
+    assert err is not None and "invalid_json" in err
+    assert "_raw_invalid_json" in args
+    # Non-string non-dict gets a clear unsupported_args_type message.
+    args, err = _parse_args(12345)
+    assert err is not None and "unsupported_args_type" in err
+    print("H3.3 _parse_args malformed JSON detection: OK")
+    return True
+
+
 def test_g2_compaction_disabled_keeps_truncation() -> bool:
     """When summarization is disabled, _compact_completed_history still truncates."""
     import os
@@ -487,6 +555,9 @@ def main() -> int:
         test_h2_1_experience_prune_max_records,
         test_h2_2_summarization_cooldown_helper,
         test_h2_3_semantic_router_transient_retry,
+        test_h3_1_phrase_confirm_prepends_when_unack,
+        test_h3_2_plan_status_surfaces_only_on_short_reply,
+        test_h3_3_parse_args_distinguishes_malformed,
         test_g2_compaction_disabled_keeps_truncation,
     ]
     failures: list[str] = []

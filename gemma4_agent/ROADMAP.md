@@ -334,6 +334,54 @@ en el codigo real (no especulacion):
 Verificado: 62 tools, eval_smoke missing=[] duplicate_count=0,
 test_router 61/61, test_gx_features 17/17.
 
+## H2 — Memoria y bookkeeping (2026-05-13)
+
+Tres fixes para que el agente envejezca bien tras meses de uso.
+
+| ID | Que cambio | Archivo |
+|---|---|---|
+| H2.1 | `ExperienceMemory.prune(max_records, max_age_days)` con auto-trigger cada 50 inserts. Defaults 5000 records / 180 dias; override via `GEMMA4_EXPERIENCE_MAX_RECORDS` y `GEMMA4_EXPERIENCE_MAX_AGE_DAYS`. `stats()` expone budgets. | `experience.py` |
+| H2.2 | Summarization con cooldown. `_compact_completed_history` se llama 3 veces por turno; sin cooldown, cada una podia disparar otro LLM round-trip. Nuevo `_summarization_cooldown_turns()` (default 6, override `GEMMA4_AGENT_SUMMARIZATION_COOLDOWN`). Cuando bloquea, hace truncate-only. `clear()` resetea contador. | `agent.py` |
+| H2.3 | Semantic router con retry tras failures transitorios. `_STATE` ahora separa `permanently_disabled` (ImportError) de `last_error`/`attempt_count`. Hasta 3 reintentos con cooldown de 120s entre intentos. `status()` expone attempts y last_error. | `semantic_router.py` |
+
+Tests (17 -> 20):
+- `test_h2_1_experience_prune_max_records`: 12 inserts con limit=5, mantiene los 5 mas recientes.
+- `test_h2_2_summarization_cooldown_helper`: defaults, env override, fallback a 6 cuando bogus.
+- `test_h2_3_semantic_router_transient_retry`: patcha SentenceTransformer para fallar la primera y exito la segunda, confirma que NO marca permanent.
+
+Verificado: 62 tools, eval_smoke limpio, test_router 61/61, test_gx_features 20/20.
+
+## H3 — UX del chat (2026-05-13)
+
+Tres fixes para que el usuario nunca quede colgado sin saber que pasa.
+
+| ID | Que cambio | Archivo |
+|---|---|---|
+| H3.1 | `_guard_phrase_confirm` post-LLM. Si una rutina por frase se ejecuto y el LLM **no la menciona** en la respuesta (sin tokens 'hecho/listo/done' ni mencion del label o phrase), el agente **prepend** un mensaje corto: `Ejecute tu rutina: <label> N/M pasos.` Asi el usuario siempre sabe que su trigger se disparo aunque Gemma lo ignore. | `agent.py` |
+| H3.2 | `_guard_plan_status` solo aparece cuando el explicit plan FALLO (no skipped) **y** la respuesta final es muy corta (<30 chars). Eso evita el caso confuso "pedi algo multi-step, el planner timeout, y el agente solo dijo 'ok'". `_explicit_plan_status` se traza siempre. | `agent.py` |
+| H3.3 | `_parse_args` ahora devuelve `(args, parse_error)`. Si la tool-call tiene JSON malformado, **no llamamos** a la tool con datos sucios. En su lugar emitimos un tool_result sintetico con `status=failed` y mensaje claro: `tool args parse error: invalid_json: ... Re-emit the call with valid JSON`. Asi Gemma sabe exactamente que arreglar en la siguiente iteracion. Traceado como `tool_args_parse_error`. | `agent.py` |
+
+Tests (20 -> 23):
+- `test_h3_1_phrase_confirm_prepends_when_unack`: prefix se agrega cuando no hay ack; se omite si la respuesta dice 'hecho' o menciona el label.
+- `test_h3_2_plan_status_surfaces_only_on_short_reply`: solo aparece con plan failed + reply <30 chars; skipped y ready no producen ruido.
+- `test_h3_3_parse_args_distinguishes_malformed`: tupla devuelta correctamente para dict/string-json/empty/None/malformed/no-string.
+
+Verificado: 62 tools, eval_smoke limpio, test_router 61/61, test_gx_features 23/23.
+
+**Estado del chat de texto al cierre de H1+H2+H3:**
+
+- 23 tests funcionales, 61 tests de router, 62 tools.
+- Sin LLM calls que cuelguen al agente (timeouts por call).
+- Sin tools intermedias que mienten "listo" sin verify.
+- Sin rutinas que ejecuten en silencio (siempre confirmadas).
+- Sin replan disparado por blocked-on-input.
+- Sin malformed JSON pasado a tools.
+- Sin experience memory que crece infinito.
+- Sin summarization disparada cada turno.
+- Sin semantic router muerto para siempre tras un fail transitorio.
+
+Listo para empezar voz (F1) o camara (F2) cuando se decida.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):
