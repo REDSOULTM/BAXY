@@ -69,6 +69,43 @@ CASES: list[Case] = [
 
     # Cleanup expected
     Case("cierra todo lo que abriste", must_include=("state",)),
+
+    # ---- Multi-language (English) ----
+    Case("open Steam and go to my library", must_include=("steam",)),
+    Case("play Billie Jean on YouTube", must_include=("media",)),
+    Case("turn down the volume", must_include=("audio",)),
+    Case("open Chrome and search for the weather", must_include=("browser",)),
+    Case("read this PDF and summarize it", must_include=("document",)),
+    Case("ping google.com", must_include=("network",)),
+    Case("turn off the living room light", must_include=("smart_home",)),
+    Case("run the project tests", must_include=("developer",)),
+    Case("analyze this csv and plot a histogram", must_include=("data_analysis",)),
+    Case("organize my photos by date", must_include=("photo_library",)),
+    Case("verify if the claim 'python is interpreted' is true", must_include=("fact_check",)),
+    Case("close the application", must_include=("app",)),
+
+    # ---- Multi-language (Portuguese) ----
+    Case("abra o Steam e va para minha biblioteca", must_include=("steam",)),
+    Case("toque uma musica no YouTube", must_include=("media",)),
+    Case("baixe o volume", must_include=("audio",)),
+    Case("leia este pdf e resuma", must_include=("document",)),
+    Case("apague a luz da sala", must_include=("smart_home",)),
+    Case("organize minhas fotos por data", must_include=("photo_library",)),
+
+    # ---- Multi-language (French) ----
+    Case("ouvre Steam et va dans ma bibliotheque", must_include=("steam",)),
+    Case("joue une chanson sur YouTube", must_include=("media",)),
+    Case("baisse le volume", must_include=("audio",)),
+    Case("lis ce pdf et resume-le", must_include=("document",)),
+    Case("eteins la lumiere du salon", must_include=("smart_home",)),
+    Case("organise mes photos par date", must_include=("photo_library",)),
+
+    # ---- Multi-language (Italian) ----
+    Case("apri Steam e vai alla mia libreria", must_include=("steam",)),
+    Case("riproduci una canzone su YouTube", must_include=("media",)),
+    Case("abbassa il volume", must_include=("audio",)),
+    Case("leggi questo pdf e riassumilo", must_include=("document",)),
+    Case("spegni la luce del soggiorno", must_include=("smart_home",)),
 ]
 
 

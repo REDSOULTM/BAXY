@@ -153,6 +153,61 @@ Primera entrega: tool routing.
 Verificado: eval_smoke missing=[] duplicate_count=0 (61 tools).
 test_router 32/32 passing.
 
+## Pulido P4.5 — multi-idioma + semantic fallback (2026-05-13)
+
+User pidio que el router funcione para todos los idiomas y formas de
+hablar. Investigamos como lo hacen 10 competidores:
+
+| Proyecto | Filtra por turno? | Como | Multi-idioma |
+|---|---|---|---|
+| Jarvis local | si | keywords + intents + categorias, max 8, fallback a todas | no |
+| open-interpreter | no | 1 tool universal `execute()` | no |
+| OpenHands | no | skills por keyword/regex, MCP estatico | no |
+| goose | **no, envia todas** | -- | no |
+| Agent-S | si | introspeccion Python + filtro por plataforma | no |
+| OS-Copilot | **si, embeddings** | `similarity_search_with_score(k=10)` Chroma | no |
+| AutoGPT | no | grupos/permisos, no por turno | no |
+| autogen | no | `bind_tools` una vez | no |
+| LangGraph | no | bind al compilar el grafo | no |
+| Mark-XXXIX | no | planner LLM elige plan | **si** |
+| openclaw | no | allowlist policy, no semantico | no |
+
+Conclusion: la mayoria envia todas (10-30 tools); el que mejor lo hace
+es OS-Copilot con embeddings semanticos.
+
+**Decision: hibrido E1.** Mantener keywords (rapido, deterministico) +
+fallback semantico cuando keywords no matchean (multi-idioma automatico).
+
+**Cambios:**
+- planner.py: keywords extendidas a ES+EN+PT+FR+IT en TODAS las tools
+  (~60 regex con alternancias multi-idioma). Ej: `smart_home` matchea
+  (turn on|turn off|enciende|apaga|apague|allumer|eteindre|accendere|
+  spegnere) + (light|luz|lumiere|luce).
+- planner.py: `document` ahora gana sobre `office` cuando hay verbo de
+  lectura (read|lee|leia|lis|leggi|...) + extension (pdf|docx|...).
+  Reemplaza "office" en el subset porque "lee este pdf" no es crear,
+  es leer.
+- planner.py: `select_tool_names` con fallback semantico. Cuando los
+  keywords no matchean nada y el mensaje no es casual/saludo, llama
+  `semantic_router.suggest_tools_semantic(query, k=12)`.
+- planner.py: guard anti-falsos-positivos. El fallback NO se dispara
+  para saludos (hola, hi, ciao, bonjour, ola, bom dia, gracias, thanks,
+  obrigado, merci, grazie, etc) ni para mensajes de <=3 palabras sin
+  signo de pregunta.
+- **semantic_router.py NUEVO**: usa `sentence-transformers/paraphrase-
+  multilingual-MiniLM-L12-v2` (50+ idiomas, ~120MB). Cosine similarity
+  contra descripciones cortas de las 61 tools. Lazy-load, cache en
+  memoria. Disable via env GEMMA4_SEMANTIC_FALLBACK=false. Override
+  modelo via GEMMA4_SEMANTIC_MODEL.
+- agent.py: trace event `tool_subset` ahora incluye flag
+  `semantic_fallback` para medir cuanto se usa.
+- test_router.py: extendido de 32 a 61 tests (added EN/PT/FR/IT). Cubre
+  steam, media, audio, browser, document, smart_home, photo_library en
+  cuatro idiomas extra. Pasa 61/61.
+
+Verificado: 61 tools, eval_smoke missing=[] duplicate_count=0.
+test_router 61/61 passing en ES+EN+PT+FR+IT.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):

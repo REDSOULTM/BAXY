@@ -316,8 +316,9 @@ class Gemma4Agent:
             max_tokens=mode.max_tokens,
         )
         selected_tool_names = select_tool_names(content, plan, safety_enabled=self.config.enable_safety)
+        semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
         selected_schemas = self.tools.schemas_for_names(selected_tool_names)
-        self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
+        self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
         self._compact_completed_history()
         self.history.append({"role": "user", "content": _compact_live_content(content)})

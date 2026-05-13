@@ -77,14 +77,45 @@ def plan_mission(content: str | list[dict[str, Any]]) -> MissionPlan:
 
 
 def select_tool_names(content: str | list[dict[str, Any]], plan: MissionPlan, *, safety_enabled: bool = False) -> list[str]:
-    """Return a small, ordered tool subset for the current turn."""
+    """Return a small, ordered tool subset for the current turn.
 
-    text = _fold_text(_content_text(content))
+    Strategy:
+    1. Keyword match (cheap, deterministic, multi-language regex).
+    2. If keywords found nothing, fall back to semantic similarity over
+       multilingual sentence embeddings (semantic_router.suggest_tools_semantic).
+       This covers languages and wordings the regex keywords don't have.
+    3. If both came up empty, return [] (or ["safety"] when enabled).
+    """
+    raw_text = _content_text(content)
+    text = _fold_text(raw_text)
     names: list[str] = []
     for step in plan.steps:
         names.extend(step.suggested_tools)
     if not names:
         names.extend(_suggest_tools(text))
+
+    semantic_fallback_used = False
+    if not names and raw_text.strip():
+        # Skip the fallback for casual / conversational messages where the model
+        # should answer directly without tools. Heuristics:
+        # - very short (<=3 words) and no question mark.
+        # - greeting / smalltalk pattern.
+        word_count = len(raw_text.split())
+        casual = re.search(
+            r"^\s*(hola|hello|hi|hey|hola!|buenos dias|buenas tardes|buenas noches|buen dia|"
+            r"good morning|good afternoon|good evening|"
+            r"ola|bom dia|boa tarde|boa noite|"
+            r"bonjour|bonsoir|salut|"
+            r"ciao|buongiorno|buonasera|"
+            r"gracias|thanks|thank you|obrigado|merci|grazie|"
+            r"que tal|how are you|como estas|como estan|tudo bem|ca va|come stai)\b",
+            _fold_text(raw_text),
+        )
+        if not casual and (word_count > 3 or "?" in raw_text or "?" in raw_text):
+            from .semantic_router import suggest_tools_semantic
+            names = suggest_tools_semantic(raw_text, k=12)
+            semantic_fallback_used = bool(names)
+
     if not names:
         return ["safety"] if safety_enabled else []
 
@@ -96,7 +127,14 @@ def select_tool_names(content: str | list[dict[str, Any]], plan: MissionPlan, *,
         expanded.append("state")
     if safety_enabled:
         expanded.append("safety")
-    return _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
+    capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
+    # Stash signal on the function so the agent can record it in traces.
+    select_tool_names._last_fallback_used = semantic_fallback_used  # type: ignore[attr-defined]
+    return capped
+
+
+# Default attribute, overwritten on each call.
+select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
 
 
 def _content_text(content: str | list[dict[str, Any]]) -> str:
@@ -123,148 +161,411 @@ def _split_steps(text: str) -> list[str]:
 
 
 def _suggest_tools(step: str) -> list[str]:
+    """Keyword-based tool router. Multi-language by lemma-ish keyword groups.
+
+    The folded text drops accents (NFKD + combining strip) so we can match
+    "música" and "musica" with the same pattern. Keywords are grouped in 5
+    languages (ES, EN, PT, FR, IT) for the most common verbs/nouns. The
+    embedding fallback in select_tool_names handles whatever this misses.
+    """
     low = _fold_text(step)
     tools: list[str] = []
 
-    if "steam" in low or re.search(r"\bbiblioteca\b|\btienda\b", low):
+    # steam (proper noun, identical in all langs)
+    if "steam" in low or re.search(r"\b(biblioteca|tienda|library|store|loja|bibliotheque|biblioteca)\b", low):
         tools.append("steam")
-    if re.search(r"\b(youtube|cancion|musica|video|reproduce|ponme|pon|pausa|reanuda|resume|play|stop|siguiente|anterior)\b", low):
+    # media: song / video / play / pause
+    if re.search(r"\b(youtube|cancion|musica|video|reproduce|ponme|pon|pausa|reanuda|resume|play|stop|siguiente|anterior|"
+                 r"music|song|track|playlist|next|previous|skip|pause|"
+                 r"musica|cancao|musique|chanson|musica|canzone|"
+                 r"jouer|joue|reproduire|riprodurre|riprodurre)\b", low):
         tools.append("media")
-    if re.search(r"\bvolumen|mute|silencio|audio\b", low):
+    # audio: volume / mute
+    if re.search(r"\b(volumen|mute|silencio|audio|sonido|"
+                 r"volume|silence|sound|"
+                 r"som|silencio|"
+                 r"son|silence|"
+                 r"volume|silenzio|suono)\b", low):
         tools.append("audio")
-    if re.search(r"\b(dispositivo de audio|salida de audio|entrada de audio|altavoz|altavoces|microfono|focusrite|aux|realtek|hyperx|scarlett)\b", low):
+    # audio_device
+    if re.search(r"\b(dispositivo de audio|salida de audio|entrada de audio|altavoz|altavoces|microfono|"
+                 r"focusrite|aux|realtek|hyperx|scarlett|"
+                 r"audio device|audio output|audio input|speaker|speakers|microphone|mic|"
+                 r"dispositivo de audio|saida de audio|entrada de audio|alto-falante|microfone|"
+                 r"sortie audio|entree audio|haut-parleur|micro|"
+                 r"dispositivo audio|altoparlante|microfono)\b", low):
         tools.append("audio_device")
 
-    if re.search(r"\b(opera|chrome|edge|firefox|youtube|google|navegador|browser|web|pagina|url|tab|pestana)\b", low):
+    # browser
+    if re.search(r"\b(opera|chrome|edge|firefox|youtube|google|navegador|browser|web|pagina|page|url|tab|pestana|"
+                 r"website|site|navigateur|onglet|"
+                 r"navegador|aba|"
+                 r"sito|browser)\b", low):
         tools.append("browser")
-        if re.search(r"\blee\b|\binvestiga\b|\bextrae\b|\bcontenido\b|\bfuente\b|\bnoticia\b|\bactual\b", low):
+        if re.search(r"\b(lee|leer|investiga|investigar|extrae|extraer|contenido|fuente|noticia|actual|"
+                     r"read|research|extract|content|source|news|current|latest|"
+                     r"ler|pesquisar|conteudo|noticia|atual|"
+                     r"lire|rechercher|extraire|contenu|source|nouvelle|actuel|"
+                     r"leggere|cercare|estrarre|contenuto|fonte|notizia|attuale)\b", low):
             tools.append("web")
             tools.append("browser_real")
-    if re.search(r"\b(investiga|fuentes|citas|source|snapshot|referencia|guarda fuente)\b", low):
+    if re.search(r"\b(investiga|investigar|fuentes|citas|source|snapshot|referencia|guarda fuente|"
+                 r"research|cite|citation|reference|save source|"
+                 r"pesquisar|fontes|citacao|referencia|"
+                 r"rechercher|sources|citation|reference|"
+                 r"cercare|fonti|citazione|riferimento)\b", low):
         tools.extend(["web", "source_manager"])
 
-    if re.search(r"\b(archivo|carpeta|directorio|escribe|crea|borra|copia|mueve|renombra|zip|extrae|descomprime)\b", low):
+    # filesystem
+    if re.search(r"\b(archivo|carpeta|directorio|escribe|crea|borra|copia|mueve|renombra|zip|extrae|descomprime|"
+                 r"file|folder|directory|write|create|delete|copy|move|rename|extract|unzip|"
+                 r"arquivo|pasta|diretorio|escrever|criar|apagar|copiar|mover|renomear|extrair|"
+                 r"fichier|dossier|repertoire|ecrire|creer|supprimer|copier|deplacer|renommer|extraire|"
+                 r"file|cartella|directory|scrivere|creare|cancellare|copiare|spostare|rinominare|estrarre)\b", low):
         tools.append("filesystem")
-    if re.search(r"\b(powerpoint|presentacion|diapositiva|pptx|word|docx|excel|xlsx|spreadsheet|hoja de calculo|pdf)\b", low):
+    # office
+    if re.search(r"\b(powerpoint|presentacion|diapositiva|pptx|word|docx|excel|xlsx|spreadsheet|hoja de calculo|pdf|"
+                 r"presentation|slide|slides|spreadsheet|workbook|sheet|"
+                 r"apresentacao|planilha|folha de calculo|"
+                 r"presentation|tableur|feuille de calcul|"
+                 r"presentazione|foglio di calcolo)\b", low):
         tools.append("office")
-    if re.search(r"\b(csv|tabla|grafico|estadistica|analisis de datos|limpia datos)\b", low):
+    if re.search(r"\b(csv|tabla|grafico|estadistica|analisis de datos|limpia datos|"
+                 r"table|chart|graph|statistics|data analysis|clean data|"
+                 r"tabela|estatistica|analise de dados|"
+                 r"tableau|graphique|statistique|analyse de donnees|"
+                 r"tabella|grafico|statistica|analisi dei dati)\b", low):
         tools.extend(["filesystem", "office"])
 
-    if re.search(r"\babre|abrir|cierra|cerrar|app|programa|juego\b", low) and "steam" not in low:
+    # app
+    if re.search(r"\b(abre|abrir|cierra|cerrar|app|programa|juego|"
+                 r"open|close|launch|quit|exit|program|application|game|"
+                 r"abrir|fechar|programa|jogo|"
+                 r"ouvrir|fermer|application|programme|jeu|"
+                 r"aprire|chiudere|programma|gioco)\b", low) and "steam" not in low:
         tools.append("app")
-    if re.search(r"\bclick|clic|teclea|escribe en pantalla|pantalla|boton\b", low):
+    # gui/uia/vision: click/type/screen
+    if re.search(r"\b(click|clic|teclea|teclear|escribe en pantalla|pantalla|boton|"
+                 r"type|screen|button|"
+                 r"clique|digitar|tela|botao|"
+                 r"clic|cliquer|taper|ecran|bouton|"
+                 r"cliccare|digitare|schermo|pulsante)\b", low):
         tools.extend(["uia", "gui", "vision"])
-    if re.search(r"\bregistro|registry|regedit\b", low):
+    if re.search(r"\b(registro|registry|regedit)\b", low):
         tools.append("registry")
-    if re.search(r"\bvariable de entorno|env\b", low):
+    if re.search(r"\b(variable de entorno|environment variable|env var|variavel de ambiente|variable d.environnement|variabile d.ambiente|\benv\b)\b", low):
         tools.append("env")
-    if re.search(r"\bdescarga|download|sha256|hash|firma\b", low):
+    if re.search(r"\b(descarga|descargar|download|sha256|hash|firma|"
+                 r"baixar|baixe|"
+                 r"telecharger|"
+                 r"scaricare)\b", low):
         tools.append("download")
 
-    if re.search(r"\b(recuerda|recorda|guarda en memoria|memoria)\b", low):
+    if re.search(r"\b(recuerda|recorda|guarda en memoria|memoria|"
+                 r"remember|remind me|save to memory|memory|"
+                 r"lembra|lembre|salva na memoria|memoria|"
+                 r"souviens|memorise|memoire|"
+                 r"ricorda|salva in memoria|memoria)\b", low):
         tools.append("memory")
-    if re.search(r"\b(documento|rag|conocimiento|knowledge base|base de conocimiento)\b", low):
+    if re.search(r"\b(documento|rag|conocimiento|knowledge base|base de conocimiento|"
+                 r"document|knowledge|"
+                 r"documento|conhecimento|base de conhecimento|"
+                 r"document|connaissance|base de connaissance|"
+                 r"documento|conoscenza|base di conoscenza)\b", low):
         tools.extend(["memory", "knowledge"])
-    if re.search(r"\b(dependencia|dependency|libreria|modulo|instala dependencia|falta)\b", low):
+    if re.search(r"\b(dependencia|dependency|libreria|modulo|instala dependencia|falta|missing|"
+                 r"dependencia|biblioteca|modulo|faltando|"
+                 r"dependance|bibliotheque|module|manquant|"
+                 r"dipendenza|libreria|modulo|mancante)\b", low):
         tools.append("dependency")
-    if re.search(r"\b(contacto|telefono|email de|correo de|vcard)\b", low):
+    if re.search(r"\b(contacto|telefono|email de|correo de|vcard|"
+                 r"contact|phone|email of|"
+                 r"contato|telefone|email de|"
+                 r"contact|telephone|courriel|"
+                 r"contatto|telefono|email)\b", low):
         tools.append("contacts")
-    if re.search(r"\b(nota|tarea|lista|checklist|pendiente)\b", low):
+    if re.search(r"\b(nota|tarea|lista|checklist|pendiente|"
+                 r"note|task|todo|"
+                 r"nota|tarefa|lista|pendente|"
+                 r"note|tache|liste|"
+                 r"nota|compito|lista|pendente)\b", low):
         tools.append("notes_tasks")
-    if re.search(r"\b(calendario|agenda|evento|ics)\b", low):
+    if re.search(r"\b(calendario|agenda|evento|ics|"
+                 r"calendar|event|"
+                 r"calendario|agenda|evento|"
+                 r"calendrier|agenda|evenement|"
+                 r"calendario|agenda|evento)\b", low):
         tools.append("local_calendar")
-    if re.search(r"\b(habito|racha|streak)\b", low):
+    if re.search(r"\b(habito|racha|streak|habit|hobby|costume|"
+                 r"habitude|habito|abitudine)\b", low):
         tools.append("habit_tracker")
-    if re.search(r"\b(busca en mis archivos|encuentra archivo|buscar archivo|reciente)\b", low):
+    if re.search(r"\b(busca en mis archivos|encuentra archivo|buscar archivo|reciente|"
+                 r"search files|find file|recent files|"
+                 r"buscar arquivo|encontrar arquivo|recente|"
+                 r"chercher fichier|trouver fichier|recent|"
+                 r"cercare file|trovare file|recente)\b", low):
         tools.append("local_search")
-    if re.search(r"\b(impresora|imprime|imprimir|cola de impresion|scanner|escaner|escanear)\b", low):
+    if re.search(r"\b(impresora|imprime|imprimir|cola de impresion|scanner|escaner|escanear|"
+                 r"printer|print|print queue|scan|"
+                 r"impressora|imprimir|fila de impressao|escanear|"
+                 r"imprimante|imprimer|file d.impression|numeriser|"
+                 r"stampante|stampare|coda di stampa|scansionare)\b", low):
         tools.append("printer_scanner")
-    if re.search(r"\b(monitor|pantallas|layout|ventanas|escritorio|workspace)\b", low):
+    if re.search(r"\b(monitor|pantallas|layout|ventanas|escritorio|workspace|"
+                 r"monitor|screen|window|desktop|"
+                 r"monitor|telas|janelas|area de trabalho|"
+                 r"moniteur|ecran|fenetre|bureau|"
+                 r"monitor|finestra|scrivania)\b", low):
         tools.append("desktop_layout")
-    if re.search(r"\b(backup|respaldo|copia de seguridad|restore|restaurar|dedupe|duplicados)\b", low):
+    if re.search(r"\b(backup|respaldo|copia de seguridad|restore|restaurar|dedupe|duplicados|"
+                 r"backup|restore|deduplicate|duplicates|"
+                 r"backup|copia de seguranca|restaurar|duplicados|"
+                 r"sauvegarde|restaurer|doublons|"
+                 r"backup|salvataggio|ripristinare|duplicati)\b", low):
         tools.append("backup_sync")
-    if re.search(r"\b(timer|temporizador|alarma|avisame|notificacion|recordatorio)\b", low):
+    if re.search(r"\b(timer|temporizador|alarma|avisame|notificacion|recordatorio|"
+                 r"alarm|reminder|notify|notification|"
+                 r"temporizador|alarme|notificacao|lembrete|"
+                 r"minuteur|alarme|notification|rappel|"
+                 r"timer|allarme|notifica|promemoria)\b", low):
         tools.append("notification")
-    if re.search(r"\b(rutina|automatiza|automatizacion|cuando pase|cada vez)\b", low):
+    if re.search(r"\b(rutina|automatiza|automatizacion|cuando pase|cada vez|"
+                 r"routine|automate|automation|whenever|every time|"
+                 r"rotina|automatizar|automacao|"
+                 r"routine|automatiser|automatisation|"
+                 r"routine|automatizzare|automazione)\b", low):
         tools.append("routine")
-    if re.search(r"\b(mail|email|correo|enviar mensaje)\b", low):
+    if re.search(r"\b(mail|email|correo|enviar mensaje|"
+                 r"send mail|send email|message|"
+                 r"correio|enviar mensagem|"
+                 r"courriel|envoyer mail|message|"
+                 r"posta|inviare email|messaggio)\b", low):
         tools.append("email")
-    if re.search(r"\b(recordatorio graph|microsoft todo|to do)\b", low):
+    if re.search(r"\b(recordatorio graph|microsoft todo|to do|todoist|tarea pendiente cloud)\b", low):
         tools.append("reminder")
 
-    if re.search(r"\bproceso|cpu|ram|gpu|disco|bateria|hora\b", low):
+    if re.search(r"\b(proceso|process|processus|processo|cpu|ram|gpu|disco|disk|disque|bateria|battery|hora|time|tempo|heure)\b", low):
         tools.append("system")
-    if re.search(r"\b(portapapeles|clipboard|copiar al portapapeles|pega)\b", low):
+    if re.search(r"\b(portapapeles|clipboard|copiar al portapapeles|pega|paste|"
+                 r"area de transferencia|colar|"
+                 r"presse-papiers|coller|"
+                 r"appunti|incollare)\b", low):
         tools.append("clipboard")
-    if re.search(r"\b(terminal|powershell|cmd|comando|ejecuta)\b", low):
+    if re.search(r"\b(terminal|powershell|cmd|comando|ejecuta|"
+                 r"shell|command|run|execute|"
+                 r"comando|executar|"
+                 r"commande|executer|"
+                 r"comando|eseguire)\b", low):
         tools.append("terminal")
-    if re.search(r"\b(teclado|idioma|layout|language|input method)\b", low):
+    if re.search(r"\b(teclado|idioma|layout|language|input method|"
+                 r"keyboard|language|"
+                 r"teclado|idioma|"
+                 r"clavier|langue|"
+                 r"tastiera|lingua)\b", low):
         tools.append("input")
-    if re.search(r"\b(winget|paquete|instalar app|desinstalar)\b", low):
+    if re.search(r"\b(winget|paquete|instalar app|desinstalar|"
+                 r"package|install app|uninstall|"
+                 r"pacote|instalar app|desinstalar|"
+                 r"paquet|installer app|desinstaller|"
+                 r"pacchetto|installare app|disinstallare)\b", low):
         tools.append("package")
 
-    # ---- Tools added in phases C/D/F3 ----
+    # ---- Tools added in phases C/D/F3 (multi-lang) ----
     # developer: code, tests, lint, git, dev server
-    if re.search(r"\b(repositorio|repo|tests|test |pytest|unitarias|lint|format|formato|prettier|black|ruff|eslint|git status|git diff|git log|dev server|servidor de desarrollo|npm run|yarn|pnpm|cargo|go test|build)\b", low):
+    if re.search(r"\b(repositorio|repo|tests|test|pytest|unitarias|lint|format|formato|prettier|black|ruff|eslint|"
+                 r"git status|git diff|git log|dev server|servidor de desarrollo|"
+                 r"npm run|yarn|pnpm|cargo|go test|build|compile|"
+                 r"unit test|coverage|"
+                 r"serveur de developpement|"
+                 r"servidor de desenvolvimento|"
+                 r"servitore di sviluppo)\b", low):
         tools.append("developer")
-    # device_settings: wifi/bluetooth/display/power
-    if re.search(r"\b(wifi|red wifi|red inalambrica|ssid|bluetooth|monitor|monitores|display|resolucion|plan de energia|power plan|economizador|alto rendimiento|brillo)\b", low):
+    # device_settings
+    if re.search(r"\b(wifi|wi-fi|red wifi|red inalambrica|ssid|bluetooth|monitor|monitores|display|resolucion|"
+                 r"plan de energia|power plan|economizador|alto rendimiento|brillo|brightness|"
+                 r"redes sem fio|"
+                 r"reseau sans fil|luminosite|"
+                 r"reti wireless|luminosita)\b", low):
         tools.append("device_settings")
-    # game_launcher: epic/gog/xbox/riot (steam already separate)
+    # game_launcher
     if re.search(r"\b(epic|epic games|gog|galaxy gog|xbox|xbox app|microsoft store game|riot|league of legends|valorant|battle\.net|battlenet)\b", low):
         tools.append("game_launcher")
-    # media_edit: ffmpeg trim/transcode/normalize/etc
-    if re.search(r"\b(recorta|recortar|cortar video|trim|convierte el video|convierte el audio|transcodifica|extrae audio|subtitulos|normaliza audio|miniatura|thumbnail|ffmpeg)\b", low):
+    # media_edit
+    if re.search(r"\b(recorta|recortar|cortar video|trim|convierte el video|convierte el audio|transcodifica|extrae audio|subtitulos|normaliza audio|miniatura|thumbnail|ffmpeg|"
+                 r"crop video|cut video|transcode|extract audio|subtitles|normalize audio|"
+                 r"cortar video|recortar video|extrair audio|legendas|"
+                 r"couper video|extraire audio|sous-titres|"
+                 r"tagliare video|estrarre audio|sottotitoli)\b", low):
         tools.append("media_edit")
-    # maintenance: windows update, defender, firewall, event logs, services
-    if re.search(r"\b(windows update|defender|antivirus|escaneo|firewall|event log|visor de eventos|servicio|servicios de windows|punto de restauracion|restore point|disk cleanup|cleanmgr|limpieza de disco)\b", low):
+    # maintenance
+    if re.search(r"\b(windows update|defender|antivirus|escaneo|firewall|event log|visor de eventos|servicio|"
+                 r"servicios de windows|punto de restauracion|restore point|disk cleanup|cleanmgr|limpieza de disco|"
+                 r"scan|virus|service|services|"
+                 r"servico|ponto de restauracao|limpeza de disco|"
+                 r"service|point de restauration|nettoyage de disque|"
+                 r"servizio|punto di ripristino|pulizia disco)\b", low):
         tools.append("maintenance")
-    # watcher: file/url polling
-    if re.search(r"\b(vigila|vigilar|monitorea|monitorear|cuando cambie|cuando se modifique|avisame cuando|watcher)\b", low):
+    # watcher
+    if re.search(r"\b(vigila|vigilar|monitorea|monitorear|cuando cambie|cuando se modifique|avisame cuando|watcher|"
+                 r"watch|monitor|when changes|notify me when|"
+                 r"vigiar|monitorar|me avise quando|"
+                 r"surveiller|monitorer|previens-moi quand|"
+                 r"sorvegliare|monitorare|avvisami quando)\b", low):
         tools.append("watcher")
-    # job_manager: long subprocess
-    if re.search(r"\b(en segundo plano|background job|tarea larga|corre en paralelo|deja corriendo|job manager)\b", low):
+    # job_manager
+    if re.search(r"\b(en segundo plano|background job|tarea larga|corre en paralelo|deja corriendo|job manager|"
+                 r"in background|long-running|run in parallel|"
+                 r"em segundo plano|tarefa longa|"
+                 r"en arriere-plan|tache longue|"
+                 r"in background|attivita lunga)\b", low):
         tools.append("job_manager")
-    # network: ping/dns/port/connections
-    if re.search(r"\b(ping|hacer ping|traceroute|tracert|dns|resolver dominio|abre el puerto|puerto cerrado|conexiones activas|ip publica|public ip|public_ip|wireshark)\b", low):
+    # network
+    if re.search(r"\b(ping|hacer ping|traceroute|tracert|dns|resolver dominio|abre el puerto|puerto cerrado|"
+                 r"conexiones activas|ip publica|public ip|public_ip|wireshark|"
+                 r"resolve domain|port check|active connections|"
+                 r"resolver dominio|porta|conexoes ativas|ip publico|"
+                 r"resoudre domaine|port|connexions actives|ip publique|"
+                 r"risolvere dominio|porta|connessioni attive|ip pubblico)\b", low):
         tools.append("network")
-    # data_analysis: csv/pandas/plots
-    if re.search(r"\b(csv|pandas|describe|histograma|grafica|grafico de dispersion|scatter|plot|distribucion|estadistica descriptiva)\b", low):
+    # data_analysis
+    if re.search(r"\b(csv|pandas|describe|histograma|grafica|grafico de dispersion|scatter|plot|distribucion|"
+                 r"estadistica descriptiva|histogram|chart|graph|distribution|descriptive statistics|"
+                 r"estatistica descritiva|"
+                 r"histogramme|graphique|distribution|"
+                 r"istogramma|grafico|distribuzione)\b", low):
         tools.append("data_analysis")
-    # fact_check: verify claim
-    if re.search(r"\b(verifica|verificar|es cierto|es verdad|fact check|fact-check|contradice|contradicen|respaldan|fuente lo confirma|fuente lo dice|afirmacion|afirmaci[óo]n)\b", low):
+    # fact_check
+    if re.search(r"\b(verifica|verificar|es cierto|es verdad|fact check|fact-check|contradice|contradicen|respaldan|"
+                 r"fuente lo confirma|fuente lo dice|afirmacion|"
+                 r"verify|true|false|claim|contradict|support|"
+                 r"verificar|verdade|afirmacao|contradiz|"
+                 r"verifier|vrai|faux|affirmation|contredire|"
+                 r"verificare|vero|falso|affermazione|contraddire)\b", low):
         tools.append("fact_check")
-    # photo_library: photos, exif, organize
-    if re.search(r"\b(fotos|foto|imagenes del telefono|exif|miniaturas de fotos|organiza fotos|agrupa por fecha|biblioteca de fotos|raw fotos)\b", low):
+    # photo_library
+    if re.search(r"\b(fotos|foto|imagenes del telefono|exif|miniaturas de fotos|organiza fotos|agrupa por fecha|biblioteca de fotos|raw fotos|"
+                 r"photos|photo|pictures|images|thumbnail|organize photos|group by date|photo library|"
+                 r"fotos|imagens|miniaturas|organizar fotos|biblioteca de fotos|"
+                 r"photos|images|miniature|organiser photos|bibliotheque de photos|"
+                 r"foto|immagini|miniatura|organizzare foto|libreria foto)\b", low):
         tools.append("photo_library")
-    # container: docker
-    if re.search(r"\b(docker|contenedor|contenedores|docker-compose|compose up|compose down|imagen docker)\b", low):
+    # container
+    if re.search(r"\b(docker|contenedor|contenedores|docker-compose|compose up|compose down|imagen docker|"
+                 r"container|containers|docker image|"
+                 r"contentor|conteiner|imagem docker|"
+                 r"contenant|conteneurs|image docker|"
+                 r"contenitore|contenitori|immagine docker)\b", low):
         tools.append("container")
-    # database: sqlite/postgres/mysql
-    if re.search(r"\b(sqlite|base de datos|database|postgres|postgresql|mysql|mariadb|select \*|consulta sql|query sql)\b", low):
+    # database
+    if re.search(r"\b(sqlite|base de datos|database|postgres|postgresql|mysql|mariadb|select \*|consulta sql|query sql|"
+                 r"sql query|"
+                 r"banco de dados|consulta sql|"
+                 r"base de donnees|requete sql|"
+                 r"base di dati|interrogazione sql)\b", low):
         tools.append("database")
-    # creative_local: comfyui/stable diffusion
-    if re.search(r"\b(comfyui|stable diffusion|genera imagen|generar imagen|sdxl|flux\.1|flux1|workflow de comfyui|prompt para imagen)\b", low):
+    # creative_local
+    if re.search(r"\b(comfyui|stable diffusion|genera imagen|generar imagen|sdxl|flux\.1|flux1|workflow de comfyui|prompt para imagen|"
+                 r"generate image|create image|image prompt|"
+                 r"gerar imagem|criar imagem|"
+                 r"generer image|creer image|"
+                 r"generare immagine|creare immagine)\b", low):
         tools.append("creative_local")
-    # form_filler: live web forms
-    if re.search(r"\b(rellena el formulario|llena el formulario|completa el formulario|envia formulario|submit form|form fill)\b", low):
+    # form_filler
+    if re.search(r"\b(rellena el formulario|llena el formulario|completa el formulario|envia formulario|submit form|form fill|"
+                 r"fill form|fill the form|complete the form|submit the form|"
+                 r"preencher formulario|enviar formulario|"
+                 r"remplir formulaire|envoyer formulaire|"
+                 r"compilare modulo|inviare modulo)\b", low):
         tools.append("form_filler")
         tools.append("browser_real")
-    # peripheral: usb/controllers/HID
-    if re.search(r"\b(usb|controles |controles$|control xbox|gamepad|joystick|joypad|periferico|periferal|joy-con|dualshock|dualsense|administrador de dispositivos|device manager|hid)\b", low):
+    # peripheral
+    if re.search(r"\b(usb|controles |controles$|control xbox|gamepad|joystick|joypad|periferico|periferal|joy-con|"
+                 r"dualshock|dualsense|administrador de dispositivos|device manager|hid|"
+                 r"controllers|controller|peripheral|peripherals|"
+                 r"perifericos|gerenciador de dispositivos|"
+                 r"manettes|peripheriques|gestionnaire de peripheriques|"
+                 r"controlli|periferiche|gestione dispositivi)\b", low):
         tools.append("peripheral")
-    # accessibility: magnifier/narrator
-    if re.search(r"\b(lupa|magnifier|narrador|narrator|alto contraste|high contrast|accesibilidad|dictado)\b", low):
+    # accessibility
+    if re.search(r"\b(lupa|magnifier|narrador|narrator|alto contraste|high contrast|accesibilidad|dictado|"
+                 r"accessibility|dictation|"
+                 r"acessibilidade|narrador|lupa|ditado|"
+                 r"accessibilite|loupe|narrateur|dictee|"
+                 r"accessibilita|lente|narratore|dettatura)\b", low):
         tools.append("accessibility")
-    # study: flashcards / spaced repetition
-    if re.search(r"\b(flashcard|flashcards|tarjeta de estudio|repaso espaciado|spaced repetition|anki|deck de estudio|repeticion espaciada)\b", low):
+    # study
+    if re.search(r"\b(flashcard|flashcards|tarjeta de estudio|repaso espaciado|spaced repetition|anki|deck de estudio|repeticion espaciada|"
+                 r"flashcard|study card|spaced rep|deck|"
+                 r"cartao de estudo|repeticao espacada|"
+                 r"carte d.etude|repetition espacee|"
+                 r"carta di studio|ripetizione spaziata)\b", low):
         tools.append("study")
-    # smart_home: home assistant local
-    if re.search(r"\b(home assistant|domotica|luz del|enciende la luz|apaga la luz|escena cine|escena de luces|termostato|sensor de temperatura|hass|mqtt|persianas)\b", low):
+    # smart_home: any (turn|switch|encender|apagar) + (light|luz|lumiere|luce) anywhere wins.
+    # Plus brand keywords (home assistant, hass, mqtt, etc).
+    _smart_home_action = re.search(
+        r"\b(enciende|encender|enciendan|"
+        r"apaga|apague|apaguen|apagar|"
+        r"prende|prender|prendan|"
+        r"acende|acender|"
+        r"turn on|turn off|switch on|switch off|"
+        r"allumer|allume|allumez|allumes|"
+        r"eteindre|eteins|eteint|eteignez|"
+        r"accendere|accendi|accendete|"
+        r"spegnere|spegni|spegnete)\b",
+        low,
+    )
+    _smart_home_target = re.search(
+        r"\b(luz|luces|lampara|lamparas|light|lights|lamp|lamps|"
+        r"luz|luzes|lampada|"
+        r"lumiere|lumieres|lampe|"
+        r"luce|luci|lampada)\b",
+        low,
+    )
+    if (_smart_home_action and _smart_home_target) or re.search(
+        r"\b(home assistant|domotica|escena cine|escena de luces|"
+        r"termostato|sensor de temperatura|hass|mqtt|persianas|"
+        r"smart home|home automation|scene|thermostat|blinds|"
+        r"automacao residencial|cena|"
+        r"domotique|scene|stores|"
+        r"domotica|scena|tapparelle)\b",
+        low,
+    ):
         tools.append("smart_home")
-    # document: parse PDF/DOCX/XLSX/PPTX
-    if re.search(r"\b(lee este pdf|extrae del pdf|resume el pdf|extrae tablas|ocr|escaneado|parsear documento|parsear pdf|parsear docx|extract_text|parse documento)\b", low):
+    # document: (read|extract|summarize verb) + (pdf|docx|xlsx|pptx|html|documento) wins.
+    _doc_verb = re.search(
+        r"\b(lee|leer|leyendo|lea|leas|"
+        r"extrae|extraer|extraigo|extrayendo|"
+        r"resume|resumir|resumiendo|resumelo|"
+        r"resumi|resuma|resumas|"
+        r"parsea|parsear|parseando|"
+        r"ocr|escaneado|escaneada|"
+        r"read|reading|"
+        r"extract|extracting|"
+        r"summarize|summarise|summarizing|summarising|"
+        r"parse|parsing|"
+        r"ler|lendo|leia|"
+        r"extrair|extraindo|"
+        r"resumir|resumindo|"
+        r"lire|lit|lis|lisez|lisant|"
+        r"extraire|extrait|extrayant|"
+        r"resumer|resumant|"
+        r"leggere|leggo|leggi|leggendo|"
+        r"estrarre|estraggo|estraendo|"
+        r"riassumere|riassumi|riassumendo|riassumilo)\b",
+        low,
+    )
+    _doc_target = re.search(r"\b(pdf|docx|xlsx|pptx|html?|documento|document|documents)\b", low)
+    if (_doc_verb and _doc_target) or re.search(
+        r"\b(extrae tablas|extract tables|extract_text|"
+        r"extrair tabelas|"
+        r"extraire tableaux|"
+        r"estrarre tabelle)\b",
+        low,
+    ):
         tools.append("document")
+        # "read|extract|summarize <doc>" wins over "office" (which is for creation).
+        if "office" in tools:
+            tools.remove("office")
 
     return _dedupe(tools)
 
