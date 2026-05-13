@@ -382,6 +382,87 @@ Verificado: 62 tools, eval_smoke limpio, test_router 61/61, test_gx_features 23/
 
 Listo para empezar voz (F1) o camara (F2) cuando se decida.
 
+## V2+V3 — Re-audit y limpieza de diagnostics (2026-05-13)
+
+Tras decir "el chat esta solido", el user pregunto si estaba seguro. Lo
+revise honestamente y la respuesta fue NO: nunca corri el agente contra
+llama-server real ni revalide los hallazgos del audit original. Aqui el
+resultado de re-verificar uno por uno.
+
+### V3 — Pyright + ruff sobre el core
+
+Instale pyright 1.1.409 y ruff 0.15.12. Corri **solo** sobre los archivos
+del chat de texto core: agent.py, llm_client.py, experience.py,
+explicit_plan.py, subagent.py, semantic_router.py, planner.py.
+
+- **Pyright**: 3 errores reales antes, 0 al cerrar.
+  - 2 falsos positivos en `_compact_json` (variables `out` con tipos
+    distintos en bloques separados) -> renombradas a `list_out`/`dict_out`.
+  - 1 real en `semantic_router.suggest_tools_semantic`: el `@` entre
+    NDArrays podia inferirse como NDArray[bool_]. Cast explicito a
+    `np.float32` resuelve la ambiguedad.
+- **Ruff F (pyflakes)**: All checks passed. Sin imports muertos, sin
+  variables sin usar, sin re-imports.
+- Ruff E501 (185 line-too-long) ignorado: regex multi-idioma y schemas de
+  tools son largos por diseno.
+
+### V2 — Re-auditoria de los 11 hallazgos del audit original
+
+Score: **11 cerrados, 2 parciales, 4 abiertos** (corregido a **12
+cerrados, 2 parciales, 3 abiertos** tras el fix #13).
+
+| # | Hallazgo | Estado | Evidencia (archivo:cambio) |
+|---|---|---|---|
+| 1 | Phrase trigger sin timeout | CERRADO | `_run_with_timeout` H1.2 |
+| 2 | Compaction agresiva | CERRADO | cooldown H2.2 |
+| 3 | Rowid mismatch sqlite-vec multi-proceso | ABIERTO (sincronico hoy) | n/a |
+| 4 | Replan infinito | CERRADO | `replan_done` 1 vez por turno |
+| 5 | Guard unverified solo al final | CERRADO | `unverified_intermediate_warning` H1.3 |
+| 6 | Subagent close sin sync | ABIERTO (sincronico hoy) | n/a |
+| 7 | Semantic recall silent | PARCIAL | logged pero usuario no ve |
+| 8 | Experience memory sin limite | CERRADO | `prune()` H2.1 |
+| 9 | Malformed JSON args | CERRADO | tupla `(args, parse_error)` H3.3 |
+| 10 | LLM timeout summarization | CERRADO | `timeout_s=60` H1.1 |
+| 11 | Semantic router muere para siempre | CERRADO | retry transient H2.3 |
+| 12 | Phrase trigger sin feedback | CERRADO | `_guard_phrase_confirm` H3.1 |
+| 13 | Subset truncation rigida a 8 | CERRADO esta sesion | `keep_count = max(4, len/2)`, traceado |
+| 14 | Plan skipped silencioso | PARCIAL | logged + nota cuando reply <30 chars |
+| 15 | LLM ignora rutina | CERRADO | force-prepend H3.1 |
+| 16 | Summarization sesga hacia tail | ABIERTO (tradeoff de diseno) | n/a |
+| 17 | Replan trigger ambiguo | CERRADO | `needs_*` filtrados H1.5 |
+
+### Estado honesto al cierre
+
+**Lo que SI esta validado:**
+- 23 tests funcionales aislados pasan.
+- 61 tests del router multi-idioma pasan.
+- 62 tools registradas, eval_smoke limpio.
+- Pyright 0 errors en el core de chat.
+- Ruff pyflakes 0 errors.
+- 12 de los 17 hallazgos del audit original cerrados con evidencia.
+
+**Lo que NO esta validado:**
+- Ningun turno corrido contra llama-server real. Los tests mockean el LLM.
+- No medi latencia ni budget de tokens real.
+- Sesion larga (30+ turnos) no probada — el cooldown de summarization
+  esta cubierto por test unitario, no por flujo real.
+- 3 hallazgos quedan abiertos: #3 (rowid race en multi-proceso, no aplica
+  hoy), #6 (subagent close, idem), #16 (summarization tail-bias, tradeoff
+  de diseno).
+- Tools reales con efectos secundarios (set_app_route, smart_home,
+  app.open) no fueron disparadas end-to-end por una rutina G6 en una
+  corrida con llama-server.
+
+**Lo que falta para decir "100% solido":**
+- V1: arrancar llama-server y correr una bateria manual de 10-15 prompts
+  que cubra cada feature. Sin eso, hay riesgo real de bugs que solo
+  aparecen en runtime.
+- V4: test de stress de 30+ turnos para validar summarization +
+  experience pruning + cooldown en una corrida.
+
+Hasta que V1+V4 se hagan, el agente esta **"validado unitariamente"**, no
+"validado end-to-end".
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):

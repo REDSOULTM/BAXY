@@ -185,7 +185,9 @@ def suggest_tools_semantic(query: str, *, k: int = 12, min_score: float = 0.25) 
         return []
     import numpy as np
     q_emb = _STATE.model.encode([query], normalize_embeddings=True, show_progress_bar=False)[0]  # type: ignore[union-attr]
-    scores = np.asarray(_STATE.tool_embeddings) @ np.asarray(q_emb)
+    tool_emb = np.asarray(_STATE.tool_embeddings, dtype=np.float32)
+    q_emb_arr = np.asarray(q_emb, dtype=np.float32)
+    scores = tool_emb @ q_emb_arr
     ranked = np.argsort(-scores)
     names = _STATE.tool_names or []
     out: list[str] = []

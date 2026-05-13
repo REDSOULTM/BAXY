@@ -496,7 +496,13 @@ class Gemma4Agent:
                     _progress(progress, "context_retry", error=str(exc), tools=len(events))
                     self.trace.event(turn_id, "context_retry", error=str(exc), tool_events=len(events))
                     self._compact_active_history_for_retry()
-                    selected_schemas = self.tools.schemas_for_names(selected_tool_names[:8])
+                    # Drop the lowest-priority half of the subset, keeping at
+                    # least 4. The planner already orders by priority (utility
+                    # tools last), so this preserves the most relevant ones.
+                    keep_count = max(4, len(selected_tool_names) // 2)
+                    retry_tool_names = selected_tool_names[:keep_count]
+                    self.trace.event(turn_id, "subset_truncate_retry", original=len(selected_tool_names), kept=len(retry_tool_names))
+                    selected_schemas = self.tools.schemas_for_names(retry_tool_names)
                     try:
                         resp = self.client.chat(
                             self._messages(mode, plan),
@@ -1193,19 +1199,19 @@ def _compact_json(value: Any, *, max_items: int, max_string: int, depth: int = 0
     if value is None or isinstance(value, (bool, int, float)):
         return value
     if isinstance(value, list):
-        out = [_compact_json(item, max_items=max_items, max_string=max_string, depth=depth + 1) for item in value[:max_items]]
+        list_out: list[Any] = [_compact_json(item, max_items=max_items, max_string=max_string, depth=depth + 1) for item in value[:max_items]]
         if len(value) > max_items:
-            out.append({"_omitted": len(value) - max_items})
-        return out
+            list_out.append({"_omitted": len(value) - max_items})
+        return list_out
     if isinstance(value, dict):
         limit = 80 if depth == 0 else max_items
         items = list(value.items())
-        out: dict[str, Any] = {}
+        dict_out: dict[str, Any] = {}
         for key, item in items[:limit]:
-            out[str(key)] = _compact_json(item, max_items=max_items, max_string=max_string, depth=depth + 1)
+            dict_out[str(key)] = _compact_json(item, max_items=max_items, max_string=max_string, depth=depth + 1)
         if len(items) > limit:
-            out["_omitted_keys"] = len(items) - limit
-        return out
+            dict_out["_omitted_keys"] = len(items) - limit
+        return dict_out
     return _middle_ellipsis(str(value), max_string)
 
 
