@@ -153,6 +153,101 @@ def test_g4_subagent_with_mock_parent() -> bool:
     return True
 
 
+def test_g6_phrase_trigger_creation_validation() -> bool:
+    """on_phrase requires a phrase of >=3 chars."""
+    from gemma4_agent.memory import MemoryStore
+    from gemma4_agent.state import AgentState
+    from gemma4_agent.tools import ToolRegistry
+    memory = MemoryStore(Path(__file__).parent / "data" / "memory.json")
+    state = AgentState(Path(__file__).parent / "data" / "state.json")
+    reg = ToolRegistry(memory=memory, captures_dir=Path(__file__).parent / "captures", state=state)
+    r = reg.execute("routine", {
+        "action": "create",
+        "name": "test phrase short",
+        "trigger": {"type": "on_phrase", "phrase": "hi"},
+        "steps": [{"tool": "system", "args": {"action": "time"}}],
+    })
+    assert not r.get("ok"), "should reject 2-char phrase"
+    r = reg.execute("routine", {
+        "action": "create",
+        "name": "test phrase missing",
+        "trigger": {"type": "on_phrase"},
+        "steps": [{"tool": "system", "args": {"action": "time"}}],
+    })
+    assert not r.get("ok"), "should reject missing phrase"
+    print("G6 phrase_trigger validation: OK")
+    return True
+
+
+def test_g6_active_phrase_triggers_returns_enabled() -> bool:
+    """Create one routine, ensure active_phrase_triggers lists it; disable, ensure it disappears."""
+    import time
+    from gemma4_agent.memory import MemoryStore
+    from gemma4_agent.state import AgentState
+    from gemma4_agent.tools import ToolRegistry
+    from gemma4_agent.domain_tools import active_phrase_triggers
+    memory = MemoryStore(Path(__file__).parent / "data" / "memory.json")
+    state = AgentState(Path(__file__).parent / "data" / "state.json")
+    reg = ToolRegistry(memory=memory, captures_dir=Path(__file__).parent / "captures", state=state)
+    unique_label = f"test_g6_phrase_{int(time.time())}"
+    unique_phrase = f"buenisimas noches g6 {int(time.time())}"
+    create = reg.execute("routine", {
+        "action": "create",
+        "name": unique_label,
+        "trigger": {"type": "on_phrase", "phrase": unique_phrase},
+        "steps": [{"tool": "system", "args": {"action": "time"}}],
+    })
+    assert create.get("ok"), f"create failed: {create}"
+    routine_id = (create.get("routine") or {}).get("id")
+    listed = active_phrase_triggers(state)
+    assert any(r["id"] == routine_id for r in listed), "should be listed as active"
+    matching = [r for r in listed if r["id"] == routine_id]
+    assert matching[0]["phrase"] == unique_phrase
+    # Disable and re-check
+    disable = reg.execute("routine", {"action": "disable", "id": routine_id})
+    assert disable.get("ok"), disable
+    listed_after = active_phrase_triggers(state)
+    assert not any(r["id"] == routine_id for r in listed_after), "disabled should not list"
+    # Cleanup
+    reg.execute("routine", {"action": "delete", "id": routine_id})
+    print("G6 active_phrase_triggers respects enabled flag: OK")
+    return True
+
+
+def test_g6_phrase_hook_fires_on_match() -> bool:
+    """Create a phrase routine; calling run_content with matching text should fire it
+    BEFORE the LLM is invoked. We mock the LLM to return a final no-tool reply so we
+    don't depend on llama-server."""
+    import time
+    from gemma4_agent.agent import Gemma4Agent
+
+    fake = _fake_chat_factory(["Hecho: registre tu rutina y la ejecute."])
+    agent = Gemma4Agent()
+    # Create routine
+    phrase = f"phrase_hook_test_{int(time.time())}"
+    create = agent.tools.execute("routine", {
+        "action": "create",
+        "name": "g6 phrase test",
+        "trigger": {"type": "on_phrase", "phrase": phrase},
+        "steps": [{"tool": "system", "args": {"action": "time"}}],
+    })
+    if not create.get("ok"):
+        print(f"  routine create failed: {create}")
+        return False
+    routine_id = (create.get("routine") or {}).get("id")
+    try:
+        with patch("gemma4_agent.llm_client.LLMClient.chat", side_effect=lambda msgs, tools=None, **kw: fake(msgs)):
+            reply = agent.run_text(f"buenas, {phrase} y dime la hora")
+        assert agent._phrase_fires, "phrase fires list should be non-empty"
+        fire = agent._phrase_fires[0]
+        assert fire["phrase"] == phrase
+        assert any(r.get("ok") for r in fire["results"]), "at least one step should have ok=True"
+    finally:
+        agent.tools.execute("routine", {"action": "delete", "id": routine_id})
+    print("G6 phrase hook fires before LLM: OK")
+    return True
+
+
 def test_g2_compaction_disabled_keeps_truncation() -> bool:
     """When summarization is disabled, _compact_completed_history still truncates."""
     import os
@@ -173,6 +268,9 @@ def main() -> int:
         test_g3_replan_give_up,
         test_g4_subagent_no_parent,
         test_g4_subagent_with_mock_parent,
+        test_g6_phrase_trigger_creation_validation,
+        test_g6_active_phrase_triggers_returns_enabled,
+        test_g6_phrase_hook_fires_on_match,
         test_g2_compaction_disabled_keeps_truncation,
     ]
     failures: list[str] = []

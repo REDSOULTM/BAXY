@@ -69,6 +69,19 @@ empty history and only the tools you pass in `tools=[...]` (subset). Do
 NOT use subagent for the main user request; that's the parent's job. Do
 not chain subagents recursively unless the user explicitly asks.
 
+Voice-command-like routines rule (on_phrase): when the user wants the
+agent to react to a saved phrase ("cuando te diga buenas noches apaga
+las luces", "every time I say focus mode, turn off Spotify and open
+VS Code", etc), use routine(action="create",
+trigger={"type": "on_phrase", "phrase": "<keyword>"},
+steps=[{"tool": "...", "args": {...}}, ...]). The phrase match is
+case-insensitive and accent-folded; choose a phrase of at least 3 chars
+that the user would not say by accident. Once saved, the runtime fires
+the routine BEFORE you see the message; if a "Phrase-triggered routines
+already executed this turn" block appears in the system context, do NOT
+re-run the same steps — just confirm briefly in natural language what
+got done. Disable with routine(action="disable") or routine(action="delete").
+
 Smart home rule: local Home Assistant control uses smart_home(...). Requires
 GEMMA4_HASS_TOKEN env var (long-lived access token from your HA profile);
 set GEMMA4_HASS_HOST if HA is not at homeassistant.local:8123. If status
@@ -284,6 +297,7 @@ class Gemma4Agent:
         self._recent_recalls: list[dict[str, Any]] = []
         self._explicit_plan_text: str = ""
         self._explicit_plan_steps: list[str] = []
+        self._phrase_fires: list[dict[str, Any]] = []
 
     def clear(self) -> None:
         self.history.clear()
@@ -298,9 +312,11 @@ class Gemma4Agent:
         recall_section = f"\n\n{recall_hint}" if recall_hint else ""
         explicit_block = _format_explicit_plan(self._explicit_plan_text)
         explicit_section = f"\n\n{explicit_block}" if explicit_block else ""
+        phrase_section = _format_phrase_fires(self._phrase_fires)
+        phrase_section = f"\n\n{phrase_section}" if phrase_section else ""
         return {
             "role": "system",
-            "content": f"{SYSTEM_PROMPT}{mode_hint}{plan_hint}{explicit_section}{recall_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{SYSTEM_PROMPT}{mode_hint}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
     def _messages(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> list[dict[str, Any]]:
@@ -320,9 +336,50 @@ class Gemma4Agent:
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         turn_id = self.trace.new_turn_id()
+        # Phrase-triggered routines: check the user's plain text against
+        # saved on_phrase routines BEFORE the LLM call. Each matching routine
+        # runs its steps once; the results are inlined into the system prompt
+        # so Gemma can confirm naturally without re-running the tools.
+        self._phrase_fires = []
+        raw_text_early = _extract_user_text(content)
+        if raw_text_early:
+            try:
+                from .domain_tools import active_phrase_triggers
+                folded_input = _fold_match(raw_text_early)
+                for routine in active_phrase_triggers(self.state):
+                    needle = _fold_match(str(routine.get("phrase") or ""))
+                    if not needle or needle not in folded_input:
+                        continue
+                    step_results: list[dict[str, Any]] = []
+                    for step in routine.get("steps") or []:
+                        if not isinstance(step, dict):
+                            step_results.append({"ok": False, "error": "invalid step"})
+                            continue
+                        tname = str(step.get("tool") or "").strip()
+                        targs = step.get("args") if isinstance(step.get("args"), dict) else {}
+                        if not tname or tname == "routine":
+                            step_results.append({"ok": False, "error": "invalid or recursive tool", "tool": tname})
+                            continue
+                        result = self.tools.execute(tname, targs)
+                        step_results.append({"tool": tname, "ok": bool(result.get("ok")), "error": result.get("error")})
+                    fire = {
+                        "routine_id": routine.get("id"),
+                        "label": routine.get("label"),
+                        "phrase": routine.get("phrase"),
+                        "results": step_results,
+                    }
+                    self._phrase_fires.append(fire)
+                    self.trace.event(turn_id, "phrase_trigger_fired",
+                                     routine_id=routine.get("id"),
+                                     phrase=routine.get("phrase"),
+                                     step_count=len(step_results),
+                                     ok_count=sum(1 for r in step_results if r.get("ok")))
+            except Exception as exc:
+                self.trace.event(turn_id, "phrase_trigger_error", error=str(exc))
+
         # Semantic memory: recall similar past turns. Hint-only, never blocks.
         self._recent_recalls = []
-        raw_text = _extract_user_text(content)
+        raw_text = raw_text_early
         try:
             from .semantic_router import embed as _embed_text
             if raw_text and len(raw_text.split()) >= 2:
@@ -741,6 +798,39 @@ def _extract_user_text(content: str | list[dict[str, Any]]) -> str:
         if isinstance(item, dict) and item.get("type") == "text":
             parts.append(str(item.get("text") or ""))
     return " ".join(parts).strip()
+
+
+def _fold_match(text: str) -> str:
+    """Lowercase + drop combining marks for substring matching."""
+    import unicodedata
+    folded = unicodedata.normalize("NFKD", text.casefold())
+    return "".join(ch for ch in folded if not unicodedata.combining(ch))
+
+
+def _format_phrase_fires(fires: list[dict[str, Any]]) -> str:
+    """Render fired phrase-triggered routines for the system prompt.
+
+    Each entry has {label, phrase, steps_run, results}. We tell Gemma the
+    routine already executed and ask it to confirm briefly to the user in
+    natural language — no need to call the tools again.
+    """
+    if not fires:
+        return ""
+    lines = ["# Phrase-triggered routines already executed this turn"]
+    lines.append("These routines fired BEFORE you got the message because the user's text matched their saved phrase. Do NOT re-run their steps. Acknowledge briefly to the user what was done, then handle the rest of the message normally.")
+    for fire in fires:
+        label = fire.get("label") or "routine"
+        phrase = fire.get("phrase") or ""
+        oks = sum(1 for r in (fire.get("results") or []) if r.get("ok"))
+        total = len(fire.get("results") or [])
+        lines.append(f"- {label} (phrase='{phrase}') -> {oks}/{total} steps ok")
+        for r in (fire.get("results") or [])[:6]:
+            tool = r.get("tool", "?")
+            ok = r.get("ok")
+            err = r.get("error") if not ok else ""
+            extra = f" error={err}" if err else ""
+            lines.append(f"   step: tool={tool} ok={ok}{extra}")
+    return "\n".join(lines)
 
 
 def _summarization_enabled() -> bool:

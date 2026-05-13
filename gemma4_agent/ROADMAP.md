@@ -239,6 +239,61 @@ Verificado:
 - Dashboard de observability.
 - Voice + Camera (F1/F2 explicitamente diferidas por decision del user).
 
+## G6 — rutinas por frase ("Alexa-like text triggers", 2026-05-13)
+
+Usuario pidio que el agente reaccione a frases tipo "cuando te diga X
+haz Y", como las rutinas de Alexa pero solo por texto.
+
+**Implementacion:**
+
+- `routine_tool` acepta un nuevo trigger type `on_phrase` (alias `on_keyword`)
+  con campo `phrase` (>=3 chars, validado al crear). Ejemplo:
+  ```text
+  routine(action="create",
+    name="gamer_mode",
+    trigger={"type": "on_phrase", "phrase": "modo gaming"},
+    steps=[
+      {"tool": "audio", "args": {"action": "set_volume", "level": 30}},
+      {"tool": "app", "args": {"action": "open", "name": "Discord"}}
+    ])
+  ```
+- `routine.status` ahora reporta `on_phrase` en su lista de triggers
+  disponibles + nota explicativa.
+- Nuevo helper publico `domain_tools.active_phrase_triggers(state)` que
+  lista las rutinas `on_phrase` abiertas y habilitadas.
+- `Gemma4Agent.run_content` ejecuta el hook **antes** del LLM call:
+  - Extrae texto plano del input, lo normaliza (case + acentos via NFKD).
+  - Por cada rutina activa, verifica substring case-insensitive de la
+    frase guardada.
+  - Si matchea, ejecuta los `steps` directamente via `self.tools.execute`
+    y guarda los resultados en `self._phrase_fires`.
+  - Logged como `phrase_trigger_fired` event en `traces.jsonl`.
+- `_system_message` inyecta un bloque "Phrase-triggered routines already
+  executed this turn" que le dice a Gemma que NO re-ejecute los steps;
+  solo confirme brevemente al usuario que hizo.
+- Router `_suggest_tools` agrega keywords ES+EN+PT+FR+IT: "cuando te diga",
+  "si te digo", "cada vez que diga", "when i say", "every time i say",
+  "quando eu disser", "quand je dis", "quando dico", etc. → `routine`.
+- SYSTEM_PROMPT tiene una regla nueva "Voice-command-like routines rule"
+  explicando como construir el trigger y como reportar lo ya ejecutado.
+
+**Tests (test_gx_features.py):**
+- `test_g6_phrase_trigger_creation_validation`: rechaza phrase <3 chars y
+  phrase ausente.
+- `test_g6_active_phrase_triggers_returns_enabled`: create -> listed,
+  disable -> not listed.
+- `test_g6_phrase_hook_fires_on_match`: crea routine, llama run_text con
+  texto que matchea, verifica `_phrase_fires` se pobla y los steps
+  retornaron `ok=True`. LLM mockeado para no depender de llama-server.
+
+Verificado: 62 tools, eval_smoke missing=[] duplicate_count=0,
+test_router 61/61, test_gx_features 11/11.
+
+**Diferencia conceptual:** esto NO es un wake-word (eso es F1 voice_io,
+diferido). G6 reacciona a frases en el chat de texto, ejecuta los steps
+y deja que Gemma confirme con prosa natural. Es la pieza que falta para
+parecerse a Alexa **sin** microfono.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):

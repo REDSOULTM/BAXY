@@ -330,10 +330,13 @@ def _suggest_tools(step: str) -> list[str]:
                  r"timer|allarme|notifica|promemoria)\b", low):
         tools.append("notification")
     if re.search(r"\b(rutina|automatiza|automatizacion|cuando pase|cada vez|"
+                 r"cuando te diga|cuando le diga|si te digo|si digo|cada vez que diga|"
+                 r"si te escribo|cuando escriba|cuando escribas|cuando ponga|"
                  r"routine|automate|automation|whenever|every time|"
-                 r"rotina|automatizar|automacao|"
-                 r"routine|automatiser|automatisation|"
-                 r"routine|automatizzare|automazione)\b", low):
+                 r"when i say|whenever i say|every time i say|if i say|"
+                 r"rotina|automatizar|automacao|quando eu disser|sempre que eu disser|"
+                 r"routine|automatiser|automatisation|quand je dis|chaque fois que je dis|"
+                 r"routine|automatizzare|automazione|quando dico|ogni volta che dico)\b", low):
         tools.append("routine")
     if re.search(r"\b(mail|email|correo|enviar mensaje|"
                  r"send mail|send email|message|"

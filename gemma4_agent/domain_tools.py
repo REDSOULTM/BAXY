@@ -252,11 +252,12 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         return _ok(
             local_state=True,
             run_now=bool(executor),
-            triggers=["manual", "cron", "once", "on_app_open", "on_app_close", "on_process_start", "on_process_exit"],
+            triggers=["manual", "cron", "once", "on_app_open", "on_app_close", "on_process_start", "on_process_exit", "on_phrase"],
             persistent_triggers=True,
-            backend="windows_scheduled_tasks + watcher poll",
+            backend="windows_scheduled_tasks + watcher poll + chat phrase hook",
             deferred_triggers=["on_file_change", "on_network_event"],
             deferred_reason="File change triggers belong to the watcher tool directly; network events need ETW subscription.",
+            on_phrase_note="on_phrase routines fire when the user message contains the configured phrase (case-insensitive, accents folded). The agent confirms the action briefly after firing.",
         )
     if action == "list":
         resources = state.list_resources(include_closed=bool(args.get("include_closed", False))).get("resources", [])
@@ -283,12 +284,20 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         trigger = args.get("trigger") if isinstance(args.get("trigger"), dict) else {"type": str(args.get("trigger") or "manual")}
         trigger_type = str(trigger.get("type") or "manual").casefold()
         process_triggers = {"on_app_open", "on_app_close", "on_process_start", "on_process_exit"}
-        if trigger_type not in {"manual", "cron", "once"} | process_triggers:
+        phrase_triggers = {"on_phrase", "on_keyword"}
+        if trigger_type not in {"manual", "cron", "once"} | process_triggers | phrase_triggers:
             return _err(
-                f"trigger type '{trigger_type}' is not implemented yet; supported: manual, cron, once, on_app_open, on_app_close",
+                f"trigger type '{trigger_type}' is not implemented yet; supported: manual, cron, once, on_app_open, on_app_close, on_phrase",
                 status="needs_implementation",
                 deferred=trigger_type,
             )
+        # Validate on_phrase config eagerly so a bad routine doesn't slip into state.
+        if trigger_type in phrase_triggers:
+            phrase = str(trigger.get("phrase") or trigger.get("keyword") or "").strip()
+            if not phrase:
+                return _err(f"trigger '{trigger_type}' requires phrase=<text>")
+            if len(phrase) < 3:
+                return _err("on_phrase requires a phrase of at least 3 chars to avoid spurious matches")
         task_name = None
         watcher_id = None
         if trigger_type in {"cron", "once"}:
@@ -4700,6 +4709,35 @@ def _document_compare(args: dict[str, Any]) -> dict[str, Any]:
         diff_lines=len(diff),
         diff_preview="\n".join(diff[:200]),
     )
+
+
+def active_phrase_triggers(state: AgentState) -> list[dict[str, Any]]:
+    """Return enabled on_phrase routines for the chat hook.
+
+    Each item has {id, label, phrase, steps, fold} so the caller can match
+    against the user's (folded) input cheaply. Disabled or closed routines
+    are skipped.
+    """
+    out: list[dict[str, Any]] = []
+    for resource in state._load().get("resources", {}).values():
+        if resource.get("kind") != "routine" or resource.get("status") != "open":
+            continue
+        meta = resource.get("metadata") or {}
+        if str(meta.get("trigger_type") or "").casefold() not in {"on_phrase", "on_keyword"}:
+            continue
+        if meta.get("enabled") is False:
+            continue
+        trigger = meta.get("trigger") or {}
+        phrase = str(trigger.get("phrase") or trigger.get("keyword") or "").strip()
+        if not phrase:
+            continue
+        out.append({
+            "id": str(resource.get("id") or ""),
+            "label": str(resource.get("label") or ""),
+            "phrase": phrase,
+            "steps": meta.get("steps") or [],
+        })
+    return out
 
 
 def _routine_task_name(label: str) -> str:
