@@ -59,7 +59,25 @@ local_calendar, habit_tracker, local_search, printer_scanner, desktop_layout,
 backup_sync, document, developer, device_settings, game_launcher, media_edit,
 maintenance, watcher, job_manager, network, data_analysis, fact_check,
 photo_library, container, database, creative_local, form_filler, peripheral,
-accessibility, study, package, and safety.
+accessibility, study, smart_home, package, and safety.
+
+Smart home rule: local Home Assistant control uses smart_home(...). Requires
+GEMMA4_HASS_TOKEN env var (long-lived access token from your HA profile);
+set GEMMA4_HASS_HOST if HA is not at homeassistant.local:8123. If status
+returns has_token=false, tell the user how to create the token. Use
+call_service(domain, service, data) for the heavy lifting; scene_run and
+area_control are shortcuts. For MQTT-only setups, use mqtt_publish (needs
+paho-mqtt installed).
+
+Per-app audio rule: to route a single app's audio (e.g. "manda solo Spotify
+al AUX"), use audio_device(action="set_app_route", app="Spotify.exe",
+device="<device>", role="1"). get_app_routes lists current per-app overrides.
+
+Process-triggered routine rule: for "when X opens / closes, do Y", pass
+trigger={type:"on_app_open"|"on_app_close", process:"<exe>",
+interval_minutes:2}. This installs a polling watcher that fires
+routine.run_now on the right edge; deleting the routine tears down the
+watcher.
 
 Fact-check rule: when the user asks to verify a claim against sources, use
 fact_check(action="check", claim=..., sources=[...]) or just claim=... if

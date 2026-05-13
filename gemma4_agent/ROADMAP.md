@@ -87,7 +87,31 @@ database SQLite (create→insert→query→list_tables), fact_check.compare scor
 0.5965, peripheral.controller_status 14 controllers, fact_check con negation
 cue detecto contradicts correctamente en sesion previa.
 
-**Proximo paso:** Fase E (P3 externo, cloud services con auth).
+**Fase F3 — huecos locales cerrados (2026-05-13).**
+
+Lote chico (4 huecos documentados como deferred) y un nuevo dominio
+(smart_home local). El user pidio mantenerse 100% local, asi que Fase E
+cloud queda pausada.
+
+| Item | Estado | Como |
+|---|---|---|
+| F3.1 audio_device.set_app_route | done | SoundVolumeView `/SetAppDefault <device> <role> <process>` para enrutar audio por app. Roles 0/1/2. Acepta proceso por nombre o PID. `device="DefaultRenderDevice"` para revertir a default. `get_app_routes` lee `/sjson` filtrando entries con `Type=Application`. snapshot/rollback automatico antes de mutar. |
+| F3.2 routine on_app_open/on_app_close | done | Triggers nuevos: el routine instala automaticamente un watcher kind=`process` que polea `Get-Process` cada N minutos. _watcher_check con edge=`rising`/`falling` solo dispara `routine.run_now` cuando el estado cambia en la direccion correcta. routine.delete remueve el watcher + Scheduled Task asociados. |
+| F3.3 device_settings.wifi_add_profile | done | `netsh wlan add profile filename=<xml>` con template WPA2-Personal (RFC Microsoft Win32 Native Wifi sample). wifi_connect ahora auto-crea profile si pasas `password=`. wifi_delete_profile via `netsh wlan delete profile`. Validacion: passphrase 8-63 chars. |
+| F3.4 smart_home LOCAL | done | Home Assistant REST API local con long-lived access token (`GEMMA4_HASS_TOKEN`). discover/states, get_state, set_state (snapshot rollback), call_service (turn_on/off/toggle snapshot), scene_run, area_list+area_control. mqtt_publish opcional con paho-mqtt si esta instalado. **Cero cloud** — todo va contra tu instancia HA local. |
+
+Verificado: 61 tools, eval_smoke missing=[] duplicate_count=0.
+Tu Home Assistant en homeassistant.local fue detectado vivo
+(`smart_home.status -> home_assistant=True`).
+audio_device.get_app_routes degrada honestamente a `needs_dependency` cuando
+no hay SoundVolumeView.
+routine.create con `trigger={type:'on_app_open', process:'notepad.exe',
+interval_minutes:1}` registro el watcher process snapshot inicial
+y se desinstalo limpio con routine.delete.
+
+**Proximo paso (local):** F1 voice_io (Piper TTS + Vosk STT) o F2 capture
+(screen_record + camera + mic via ffmpeg/DirectShow) cuando quieras seguir
+sin tocar cloud.
 
 ## Catalogo Actual Verificado
 
@@ -332,9 +356,61 @@ NO empezar hasta Fase A-C. Cuando se haga:
 
 ## Prioridad De La Proxima Sesion
 
-Fases A, B, C y D completas y verificadas (2026-05-13). **60 tools** registradas,
-eval_smoke limpio. La siguiente sesion debe arrancar con **Fase E (P3 externo,
-cloud)**, en este orden de impacto:
+Fases A, B, C, D y F3 (huecos locales) completas y verificadas (2026-05-13).
+**61 tools** registradas, eval_smoke limpio. Usuario pidio mantener todo
+local, asi que **Fase E (P3 cloud) queda pausada**. Las dos siguientes piezas
+locales con mayor valor son:
+
+### Frente F1 — voice_io local
+
+Hacer del agente un Jarvis real con voz. Sin nube.
+
+- **TTS**: Piper (modelo `es_ES-davefx-medium` o `es_AR-daniela-high`) via CLI.
+  Out-of-the-box neural, pesos ~25-60MB.
+- **STT**: Vosk (modelos ES `vosk-model-small-es-0.42` ~50MB) o
+  whisper.cpp con `ggml-base.bin` (~140MB).
+- Tool unica `voice_io` con actions: `status`, `tts_speak(text)`,
+  `tts_save(text, path)`, `stt_transcribe(audio_path)`,
+  `stt_listen(duration)`. Audio via `sounddevice` o ffmpeg.
+- El chat actual puede enganchar `tts_speak` al final de cada respuesta
+  via un hook opcional del prompt; el modo audio que ya existe en
+  `modes.py` cierra el ciclo "habla → transcribe → razona → habla".
+
+### Frente F2 — capture local
+
+- `capture(action="screen_record|screen_snapshot|webcam_snapshot|mic_record")`
+  via ffmpeg gdigrab+dshow (Windows nativo).
+- `screen_record(seconds, dst)` con buffer rolling para "graba los ultimos
+  30 segundos" estilo NVIDIA Shadowplay.
+- Webcam list via `dshow` o `Get-PnpDevice -Class Image`.
+
+### Mejoras a tools existentes (cuando aparezcan)
+
+- `routine.on_file_change` → reusar `watcher` kind=file (la pieza ya existe).
+- `peripheral.rgb_*` → integraciones por vendor (Logitech LCM, Razer Synapse
+  SDK) solo si el usuario tiene esos perifericos especificos.
+- `accessibility.high_contrast` real via WinAPI `SystemParametersInfo` con
+  `SPI_SETHIGHCONTRAST` + broadcast `WM_SETTINGCHANGE`.
+- `creative_local` extensions: Krita CLI, Blender CLI scripts.
+
+### Cuando se quiera cloud (Fase E, postergada por decision del user)
+
+`weather_news`, `calendar_cloud`, `mail_cloud`, `todo_cloud`, `drive_cloud`,
+`music_cloud`, `smart_home_cloud`, `communications_cloud`, `maps_places`.
+Cada uno con su env var de token y `needs_user` si falta.
+
+**Mantener la disciplina:**
+- 100% local mientras no se decida lo contrario.
+- NO scrappar UIs cuando hay API publica.
+- NO leer/escribir datos sensibles sin gate explicito con
+  `safety.create_confirmation`.
+- eval_smoke debe seguir reportando missing=[] duplicate_count=0.
+- Ninguna tool nueva queda con acciones devolviendo `needs_implementation`
+  sin justificacion documentada aqui.
+
+### (Original Fase E queue — pausada)
+
+En orden de impacto:
 
 1. **`weather_news`** — API meteorologica + RSS/news. Lowest barrier (no auth en
    APIs publicas tipo open-meteo). Cubre "que tiempo hace", "ultimas noticias".

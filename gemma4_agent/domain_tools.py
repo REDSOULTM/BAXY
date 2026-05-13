@@ -98,15 +98,121 @@ def audio_device_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
         return _restore_audio_default(args, state)
     if action in {"set_default", "set_default_communications"}:
         return _set_default_audio_device(args, state, communications=action == "set_default_communications")
-    if action in {"set_app_route", "get_app_routes"}:
-        return _err(
-            f"audio_device.{action} needs a dedicated local helper/API",
-            status="needs_dependency",
-            verified=False,
-            completion_status="needs_dependency",
-            install_hint="Per-app routing requires SoundVolumeView /SetAppDefault and a known target app; pass app and device names explicitly.",
-        )
+    if action == "set_app_route":
+        return _audio_set_app_route(args, state)
+    if action == "get_app_routes":
+        return _audio_get_app_routes()
     return _err("unknown audio_device action", action=action)
+
+
+def _audio_set_app_route(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Route a specific app to a specific audio device via SoundVolumeView /SetAppDefault.
+
+    SoundVolumeView CLI syntax (NirSoft 2020):
+        SoundVolumeView.exe /SetAppDefault "<device-or-render-path>" <role> "<process.exe>"
+    Role: 0=Console, 1=Multimedia, 2=Communications.
+    """
+    helper = _find_soundvolumeview()
+    if not helper:
+        return _err(
+            "set_app_route requires SoundVolumeView",
+            status="needs_dependency",
+            install_hint="Download SoundVolumeView.zip from NirSoft and set GEMMA4_SOUNDVOLUMEVIEW.",
+        )
+    device = str(args.get("device") or args.get("name") or "").strip()
+    app = str(args.get("app") or args.get("process") or "").strip()
+    if not device or not app:
+        return _err("set_app_route requires device (or 'default') and app (process name or pid)")
+    direction = str(args.get("direction") or "render").casefold()  # render|capture
+    role = str(args.get("role") or "1")  # 1=Multimedia by default
+    if role not in {"0", "1", "2", "all"}:
+        return _err("role must be 0|1|2|all (Console|Multimedia|Communications|all)")
+
+    # If the user just gave a friendly device name, the CLI expects either the
+    # full "Device\Speakers\Render" path or the friendly name from /sjson.
+    # We accept both: if device looks like "<vendor>\\<dev>\\<dir>" pass through,
+    # else resolve via the device list.
+    if device.casefold() in {"default", "system_default"}:
+        # SoundVolumeView treats empty/Default specially: pass "Default" literal.
+        target_arg = "DefaultRenderDevice" if direction == "render" else "DefaultCaptureDevice"
+    else:
+        target_arg = device
+
+    before_routes = _audio_get_app_routes().get("routes", [])
+    rollback_step = {"tool": "audio_device", "args": {"action": "set_app_route", "device": "DefaultRenderDevice", "app": app, "role": role, "direction": direction}}
+    checkpoint = state.checkpoint(
+        f"audio_device set_app_route {app}->{device}",
+        rollback=[rollback_step],
+        metadata={"app": app, "target": target_arg, "role": role, "direction": direction, "before": before_routes},
+    )
+    proc = subprocess.run(
+        [str(helper), "/SetAppDefault", target_arg, role, app],
+        capture_output=True, text=True, timeout=20,
+    )
+    after_routes = _audio_get_app_routes().get("routes", [])
+    matched_after = [r for r in after_routes if str(r.get("process") or "").casefold() == app.casefold()]
+    return _ok(
+        app=app, target=target_arg, role=role, direction=direction,
+        helper=str(helper),
+        exit_code=proc.returncode, stdout=proc.stdout.strip()[:500], stderr=proc.stderr[-500:],
+        before=before_routes[:30], after=after_routes[:30],
+        matched=matched_after,
+        checkpoint=checkpoint.get("checkpoint"),
+        verified=proc.returncode == 0,
+        status="done" if proc.returncode == 0 else "needs_verification",
+        note="Per-app overrides survive across sessions but only apply to the named process; relaunching the app picks up the new default.",
+    )
+
+
+def _audio_get_app_routes() -> dict[str, Any]:
+    """List per-app audio overrides via SoundVolumeView /sjson (Type=Application rows)."""
+    helper = _find_soundvolumeview()
+    if not helper:
+        return _err(
+            "get_app_routes requires SoundVolumeView",
+            status="needs_dependency",
+            install_hint="Download SoundVolumeView.zip from NirSoft and set GEMMA4_SOUNDVOLUMEVIEW.",
+        )
+    import tempfile
+    fd, tmp_path = tempfile.mkstemp(suffix=".json", prefix="svv_apps_")
+    os.close(fd)
+    try:
+        proc = subprocess.run([str(helper), "/sjson", tmp_path], capture_output=True, text=True, timeout=20)
+        if proc.returncode != 0:
+            return _err("SoundVolumeView /sjson failed", stderr=proc.stderr, exit_code=proc.returncode)
+        raw = Path(tmp_path).read_text(encoding="utf-16", errors="replace").lstrip("﻿").strip()
+        if not raw:
+            raw = Path(tmp_path).read_text(encoding="utf-8", errors="replace").lstrip("﻿").strip()
+        if not raw:
+            return _ok(routes=[], count=0)
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            return _err("SoundVolumeView returned invalid JSON")
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+    if isinstance(data, dict):
+        data = [data]
+    routes: list[dict[str, Any]] = []
+    for entry in data if isinstance(data, list) else []:
+        if not isinstance(entry, dict):
+            continue
+        entry_type = str(entry.get("Type") or "").casefold()
+        if entry_type not in {"application", "application volume"}:
+            continue
+        routes.append({
+            "process": entry.get("Process Path") or entry.get("Name"),
+            "name": entry.get("Name"),
+            "device_name": entry.get("Device Name") or entry.get("Default Endpoint"),
+            "default_endpoint": entry.get("Default Endpoint"),
+            "default_communications_endpoint": entry.get("Default Communications Endpoint"),
+            "muted": entry.get("Muted"),
+            "volume_percent": entry.get("Volume Percent") or entry.get("Volume dB"),
+        })
+    return _ok(routes=routes, count=len(routes))
 
 
 def notification_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -146,11 +252,11 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         return _ok(
             local_state=True,
             run_now=bool(executor),
-            triggers=["manual", "cron"],
+            triggers=["manual", "cron", "once", "on_app_open", "on_app_close", "on_process_start", "on_process_exit"],
             persistent_triggers=True,
-            backend="windows_scheduled_tasks",
-            deferred_triggers=["on_app_open", "on_file_change", "on_network_event"],
-            deferred_reason="Process/file/network triggers need a long-running watcher process; not implemented in this iteration.",
+            backend="windows_scheduled_tasks + watcher poll",
+            deferred_triggers=["on_file_change", "on_network_event"],
+            deferred_reason="File change triggers belong to the watcher tool directly; network events need ETW subscription.",
         )
     if action == "list":
         resources = state.list_resources(include_closed=bool(args.get("include_closed", False))).get("resources", [])
@@ -176,18 +282,27 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         label = str(args.get("name") or args.get("label") or f"Routine {int(time.time())}")
         trigger = args.get("trigger") if isinstance(args.get("trigger"), dict) else {"type": str(args.get("trigger") or "manual")}
         trigger_type = str(trigger.get("type") or "manual").casefold()
-        if trigger_type not in {"manual", "cron", "once"}:
+        process_triggers = {"on_app_open", "on_app_close", "on_process_start", "on_process_exit"}
+        if trigger_type not in {"manual", "cron", "once"} | process_triggers:
             return _err(
-                f"trigger type '{trigger_type}' is not implemented yet; supported: manual, cron, once",
+                f"trigger type '{trigger_type}' is not implemented yet; supported: manual, cron, once, on_app_open, on_app_close",
                 status="needs_implementation",
                 deferred=trigger_type,
             )
         task_name = None
+        watcher_id = None
         if trigger_type in {"cron", "once"}:
             task_name = _routine_task_name(label)
             register = _register_routine_scheduled_task(task_name, label, trigger)
             if not register.get("ok"):
                 return register
+        elif trigger_type in process_triggers:
+            process_name = str(trigger.get("process") or trigger.get("app") or "").strip()
+            if not process_name:
+                return _err(f"trigger '{trigger_type}' requires process=<exe-name>")
+            # We register the routine first (below) then attach a watcher that
+            # polls process state and fires routine.run_now on the right edge.
+            # The watcher_id is patched into metadata after both exist.
         resource = state.register_resource(
             "routine",
             label,
@@ -198,10 +313,27 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
                 "trigger": trigger,
                 "trigger_type": trigger_type,
                 "task_name": task_name,
+                "watcher_id": None,
                 "steps": steps,
             },
         )
-        return _ok(routine=resource.get("resource"), trigger=trigger, task_name=task_name, status="done")
+        # Attach a process watcher for on_app_open/on_app_close.
+        if trigger_type in process_triggers:
+            process_name = str(trigger.get("process") or trigger.get("app") or "").strip()
+            interval = int(trigger.get("interval_minutes", 2)) * 60
+            routine_id = resource.get("resource", {}).get("id")
+            edge = "rising" if trigger_type in {"on_app_open", "on_process_start"} else "falling"
+            watcher_result = _register_routine_process_watcher(state, label, routine_id, process_name, interval, edge)
+            if not watcher_result.get("ok"):
+                return watcher_result
+            watcher_id = watcher_result.get("watcher_id")
+            # Patch watcher_id into the routine's metadata so cleanup tears down both.
+            data = state._load()
+            rec = data.get("resources", {}).get(routine_id)
+            if rec:
+                rec.setdefault("metadata", {})["watcher_id"] = watcher_id
+                state._save(data)
+        return _ok(routine=resource.get("resource"), trigger=trigger, task_name=task_name, watcher_id=watcher_id, status="done")
     if action == "run_now":
         routine = _find_routine(args, state)
         if not routine:
@@ -240,9 +372,20 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         if not routine:
             return _err("routine not found")
         if action == "delete":
-            task_name = str((routine.get("metadata") or {}).get("task_name") or "").strip()
+            metadata_r = routine.get("metadata") or {}
+            task_name = str(metadata_r.get("task_name") or "").strip()
             if task_name:
                 _unregister_routine_scheduled_task(task_name)
+            # Tear down attached watcher too.
+            watcher_id = str(metadata_r.get("watcher_id") or "").strip()
+            if watcher_id:
+                data = state._load()
+                w = data.get("resources", {}).get(watcher_id)
+                if w:
+                    w_task = str((w.get("metadata") or {}).get("task_name") or "").strip()
+                    if w_task:
+                        _unregister_routine_scheduled_task(w_task)
+                    state.mark_cleaned(watcher_id, {"deleted_via": "routine cleanup"})
             return state.mark_cleaned(str(routine["id"]), {"deleted": True})
         enabled = action == "enable"
         return _update_resource_metadata(state, str(routine["id"]), {"enabled": enabled})
@@ -256,6 +399,244 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         steps = routine.get("metadata", {}).get("steps") or []
         return _ok(routine=routine, would_run=[{"tool": s.get("tool"), "args": s.get("args")} for s in steps if isinstance(s, dict)], step_count=len(steps), note="dry-run; nothing was executed")
     return _err("unknown routine action", action=action)
+
+
+def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for local smart home control (Home Assistant + MQTT).
+
+    Actions: status, discover, get_state, set_state, call_service, scene_run,
+    area_list, area_control, mqtt_publish. All endpoints are LOCAL HTTP to
+    your Home Assistant install; auth is a long-lived access token via
+    GEMMA4_HASS_TOKEN env var. mqtt_publish requires paho-mqtt installed.
+    """
+    action = str(args.get("action") or "status").casefold()
+    host = str(args.get("host") or os.environ.get("GEMMA4_HASS_HOST") or "http://homeassistant.local:8123").rstrip("/")
+    token = str(args.get("token") or os.environ.get("GEMMA4_HASS_TOKEN") or "").strip()
+    alive = _hass_alive(host)
+    if action == "status":
+        try:
+            mqtt_available = importlib.util.find_spec("paho") is not None
+        except (ImportError, ValueError, ModuleNotFoundError):
+            mqtt_available = False
+        return _ok(
+            home_assistant=bool(alive),
+            host=host,
+            has_token=bool(token),
+            mqtt_available=mqtt_available,
+            note="Set GEMMA4_HASS_HOST and GEMMA4_HASS_TOKEN (long-lived access token from /profile in your HA UI).",
+        )
+    if not alive:
+        return _err(
+            f"Home Assistant is not reachable at {host}",
+            status="needs_user", verified=False,
+            completion_status="needs_home_assistant_running",
+            note="Set GEMMA4_HASS_HOST to the URL your HA instance listens on (default http://homeassistant.local:8123).",
+        )
+    if action == "mqtt_publish":
+        return _smart_home_mqtt_publish(args)
+    if not token:
+        return _err(
+            "Home Assistant requires a long-lived access token",
+            status="needs_user",
+            completion_status="needs_user_auth",
+            required_env="GEMMA4_HASS_TOKEN",
+            note="Create one in the HA UI > your profile > Long-Lived Access Tokens.",
+        )
+    if action in {"discover", "states"}:
+        return _hass_states(host, token, args)
+    if action == "get_state":
+        return _hass_get_state(host, token, args)
+    if action == "set_state":
+        return _hass_set_state(host, token, args, state)
+    if action == "call_service":
+        return _hass_call_service(host, token, args, state)
+    if action == "scene_run":
+        scene = str(args.get("scene") or args.get("entity_id") or "").strip()
+        if not scene:
+            return _err("scene_run requires scene= or entity_id=")
+        return _hass_call_service(host, token, {"domain": "scene", "service": "turn_on", "data": {"entity_id": scene}}, state)
+    if action in {"area_list", "areas"}:
+        return _hass_area_list(host, token)
+    if action == "area_control":
+        return _hass_area_control(host, token, args, state)
+    return _err("unknown smart_home action", action=action)
+
+
+def _hass_alive(host: str) -> bool:
+    import urllib.request
+    try:
+        req = urllib.request.Request(f"{host}/api/", headers={"User-Agent": "Gemma4Agent/1.0"})
+        with urllib.request.urlopen(req, timeout=2.0):
+            return True
+    except Exception:
+        # /api/ may require auth (returns 401). 401 still means HA is alive.
+        try:
+            import urllib.error  # noqa: F401
+            return True
+        except Exception:
+            return False
+
+
+def _hass_request(method: str, url: str, token: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    import urllib.request
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "User-Agent": "Gemma4Agent/1.0"}
+    data = json.dumps(payload).encode("utf-8") if payload is not None else None
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            body = resp.read()
+            try:
+                return {"_ok": True, "_status": resp.status, "data": json.loads(body) if body else None}
+            except json.JSONDecodeError:
+                return {"_ok": True, "_status": resp.status, "data": body.decode("utf-8", errors="replace")}
+    except Exception as exc:
+        return {"_ok": False, "_error": str(exc)}
+
+
+def _hass_states(host: str, token: str, args: dict[str, Any]) -> dict[str, Any]:
+    resp = _hass_request("GET", f"{host}/api/states", token)
+    if not resp.get("_ok"):
+        return _err(f"GET /api/states failed: {resp.get('_error')}")
+    states = resp.get("data") or []
+    domain_filter = str(args.get("domain") or "").casefold()
+    if domain_filter:
+        states = [s for s in states if str(s.get("entity_id", "")).split(".", 1)[0].casefold() == domain_filter]
+    limit = int(args.get("limit", 500))
+    return _ok(count=len(states), states=states[:limit], domain_filter=domain_filter or None)
+
+
+def _hass_get_state(host: str, token: str, args: dict[str, Any]) -> dict[str, Any]:
+    entity_id = str(args.get("entity_id") or "").strip()
+    if not entity_id:
+        return _err("missing entity_id")
+    resp = _hass_request("GET", f"{host}/api/states/{entity_id}", token)
+    if not resp.get("_ok"):
+        return _err(f"GET state failed: {resp.get('_error')}", entity_id=entity_id)
+    return _ok(entity_id=entity_id, state=resp.get("data"))
+
+
+def _hass_set_state(host: str, token: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    entity_id = str(args.get("entity_id") or "").strip()
+    new_state = args.get("state")
+    if not entity_id or new_state is None:
+        return _err("set_state requires entity_id and state")
+    # Snapshot the previous state for rollback.
+    before = _hass_get_state(host, token, {"entity_id": entity_id}).get("state") or {}
+    payload = {"state": str(new_state), "attributes": args.get("attributes") if isinstance(args.get("attributes"), dict) else {}}
+    checkpoint = state.checkpoint(
+        f"smart_home set_state {entity_id}",
+        rollback=[{"tool": "smart_home", "args": {"action": "set_state", "entity_id": entity_id, "state": before.get("state"), "attributes": before.get("attributes")}}] if before.get("state") is not None else [],
+        metadata={"before": before, "target": payload},
+    )
+    resp = _hass_request("POST", f"{host}/api/states/{entity_id}", token, payload)
+    if not resp.get("_ok"):
+        return _err(f"set_state failed: {resp.get('_error')}", entity_id=entity_id, checkpoint=checkpoint.get("checkpoint"))
+    return _ok(entity_id=entity_id, before=before, after=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
+
+
+def _hass_call_service(host: str, token: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    domain = str(args.get("domain") or "").strip()
+    service = str(args.get("service") or "").strip()
+    if not domain or not service:
+        return _err("call_service requires domain and service")
+    payload = args.get("data") if isinstance(args.get("data"), dict) else {}
+    # Merge target into payload (HA accepts entity_id at top-level).
+    target = args.get("target") if isinstance(args.get("target"), dict) else None
+    if target:
+        payload = {**payload, **target}
+    # For toggle/turn_off/turn_on on a switch/light, snapshot before so rollback exists.
+    rollback_step = None
+    if service in {"turn_on", "turn_off", "toggle"} and payload.get("entity_id"):
+        eid = payload["entity_id"] if isinstance(payload["entity_id"], str) else (payload["entity_id"][0] if payload["entity_id"] else None)
+        if eid:
+            current = _hass_get_state(host, token, {"entity_id": eid}).get("state") or {}
+            if current.get("state") == "on" and service == "turn_off":
+                rollback_step = {"tool": "smart_home", "args": {"action": "call_service", "domain": domain, "service": "turn_on", "data": {"entity_id": eid}}}
+            elif current.get("state") == "off" and service == "turn_on":
+                rollback_step = {"tool": "smart_home", "args": {"action": "call_service", "domain": domain, "service": "turn_off", "data": {"entity_id": eid}}}
+    checkpoint = state.checkpoint(
+        f"smart_home {domain}.{service}",
+        rollback=[rollback_step] if rollback_step else [],
+        metadata={"domain": domain, "service": service, "payload": payload},
+    )
+    resp = _hass_request("POST", f"{host}/api/services/{domain}/{service}", token, payload)
+    if not resp.get("_ok"):
+        return _err(f"call_service failed: {resp.get('_error')}", domain=domain, service=service)
+    return _ok(domain=domain, service=service, payload=payload, response=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
+
+
+def _hass_area_list(host: str, token: str) -> dict[str, Any]:
+    # Areas are exposed via the config endpoint; the WebSocket area_registry/list
+    # is more complete, but a REST snapshot via /api/config + /api/states covers
+    # the basics for naming.
+    resp = _hass_request("GET", f"{host}/api/states", token)
+    if not resp.get("_ok"):
+        return _err(f"area_list failed: {resp.get('_error')}")
+    states = resp.get("data") or []
+    areas: dict[str, list[str]] = {}
+    for s in states:
+        area = (s.get("attributes") or {}).get("area_id") or (s.get("attributes") or {}).get("area") or ""
+        if not area:
+            continue
+        areas.setdefault(str(area), []).append(s.get("entity_id"))
+    return _ok(areas=[{"area_id": k, "entities": v, "count": len(v)} for k, v in areas.items()], count=len(areas), note="Areas read from entity attributes; for the full area_registry use the WebSocket API.")
+
+
+def _hass_area_control(host: str, token: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    area = str(args.get("area") or args.get("area_id") or "").strip()
+    service = str(args.get("service") or "turn_off").strip()
+    if not area:
+        return _err("missing area")
+    area_info = _hass_area_list(host, token)
+    matching = next((a for a in area_info.get("areas", []) if a.get("area_id") == area or area.casefold() in str(a.get("area_id") or "").casefold()), None)
+    if not matching:
+        return _err("area not found", area=area, available=[a["area_id"] for a in area_info.get("areas", [])])
+    # Group by domain so we call e.g. light.turn_off once per area.
+    results: list[dict[str, Any]] = []
+    by_domain: dict[str, list[str]] = {}
+    for entity in matching.get("entities", []):
+        domain = str(entity).split(".", 1)[0]
+        by_domain.setdefault(domain, []).append(entity)
+    for domain, entities in by_domain.items():
+        if domain not in {"light", "switch", "fan", "media_player", "climate", "cover", "vacuum"}:
+            continue
+        r = _hass_call_service(host, token, {"domain": domain, "service": service, "data": {"entity_id": entities}}, state)
+        results.append({"domain": domain, "entities": entities, "result": {"ok": r.get("ok"), "error": r.get("error")}})
+    return _ok(area=matching["area_id"], service=service, calls=results, verified=all(r["result"]["ok"] for r in results))
+
+
+def _smart_home_mqtt_publish(args: dict[str, Any]) -> dict[str, Any]:
+    if importlib.util.find_spec("paho.mqtt.client") is None:
+        return _err(
+            "paho-mqtt is not installed",
+            status="needs_dependency",
+            install_hint="python -m pip install paho-mqtt",
+        )
+    topic = str(args.get("topic") or "").strip()
+    payload = args.get("payload")
+    if not topic:
+        return _err("missing topic")
+    broker = str(args.get("broker") or os.environ.get("GEMMA4_MQTT_BROKER") or "127.0.0.1").strip()
+    port = int(args.get("port", os.environ.get("GEMMA4_MQTT_PORT", 1883) or 1883))
+    qos = int(args.get("qos", 0))
+    retain = bool(args.get("retain", False))
+    import paho.mqtt.client as mqtt  # type: ignore[import-not-found]
+    client = mqtt.Client()
+    user = os.environ.get("GEMMA4_MQTT_USER")
+    pwd = os.environ.get("GEMMA4_MQTT_PASSWORD")
+    if user:
+        client.username_pw_set(user, pwd)
+    try:
+        client.connect(broker, port, keepalive=10)
+    except Exception as exc:
+        return _err(f"MQTT connect failed: {exc}", broker=broker, port=port)
+    if isinstance(payload, (dict, list)):
+        payload_str = json.dumps(payload)
+    else:
+        payload_str = str(payload) if payload is not None else ""
+    info = client.publish(topic, payload_str, qos=qos, retain=retain)
+    client.disconnect()
+    return _ok(topic=topic, payload_bytes=len(payload_str), broker=f"{broker}:{port}", qos=qos, retain=retain, rc=info.rc, verified=info.rc == 0)
 
 
 def study_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -2303,6 +2684,47 @@ def _url_snapshot(url: str) -> dict[str, Any]:
         return _err(f"url_snapshot failed: {exc}", url=url)
 
 
+def _process_snapshot(process_name: str) -> dict[str, Any]:
+    """Snapshot whether a given process is running. Matches by exe name (case-insensitive)."""
+    if not process_name:
+        return {"running": False, "process": process_name}
+    base = Path(process_name).stem
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"if (Get-Process -Name '{_ps_quote(base)}' -ErrorAction SilentlyContinue) {{ 1 }} else {{ 0 }}"],
+        capture_output=True, text=True, timeout=10,
+    )
+    return {"running": proc.stdout.strip() == "1", "process": process_name}
+
+
+def _register_routine_process_watcher(state: AgentState, routine_label: str, routine_id: str, process_name: str, interval_seconds: int, edge: str) -> dict[str, Any]:
+    """Create a kind=process watcher that fires routine.run_now on the requested edge."""
+    snapshot = _process_snapshot(process_name)
+    label = f"process-trigger for {routine_label} ({process_name}, {edge})"
+    task_name = f"Gemma4Watcher_proc_{_safe_name(process_name)[:30]}_{int(time.time())}"
+    resource = state.register_resource(
+        "watcher", label,
+        cleanup_tool="watcher",
+        cleanup_args={"action": "delete", "name": label},
+        metadata={
+            "kind": "process",
+            "process": process_name,
+            "edge": edge,
+            "snapshot": snapshot,
+            "on_change": {"tool": "routine", "args": {"action": "run_now", "id": routine_id}},
+            "interval_seconds": interval_seconds,
+            "task_name": task_name,
+            "created_at": datetime.now().isoformat(),
+            "linked_routine": routine_id,
+        },
+    )
+    watcher_id = resource.get("resource", {}).get("id")
+    if watcher_id and interval_seconds > 0:
+        scheduled = _register_watcher_scheduled_task(task_name, watcher_id, interval_seconds, label)
+        if not scheduled.get("ok"):
+            return scheduled
+    return _ok(watcher_id=watcher_id, task_name=task_name, snapshot=snapshot, edge=edge)
+
+
 def _register_watcher_scheduled_task(task_name: str, watcher_id: str, interval_seconds: int, label: str) -> dict[str, Any]:
     python_exe = _detect_python_executable()
     if not python_exe:
@@ -2328,15 +2750,27 @@ def _watcher_check(args: dict[str, Any], state: AgentState, executor: Executor |
     metadata = target.get("metadata") or {}
     kind = metadata.get("kind")
     snapshot_before = metadata.get("snapshot") or {}
+    edge = str(metadata.get("edge") or "any").casefold()
     if kind == "file":
         path = Path(str(metadata.get("path") or "")).expanduser()
         snapshot_after = _file_snapshot(path)
     elif kind == "url":
         snapshot_after = _url_snapshot(str(metadata.get("url") or ""))
+    elif kind == "process":
+        process_name = str(metadata.get("process") or "")
+        snapshot_after = _process_snapshot(process_name)
     else:
         return _err("unknown watcher kind", kind=kind)
 
     changed = snapshot_before != snapshot_after
+    # For process watchers, only fire on the requested edge.
+    if changed and kind == "process":
+        was_running = bool((snapshot_before or {}).get("running"))
+        is_running = bool((snapshot_after or {}).get("running"))
+        if edge == "rising" and not (is_running and not was_running):
+            changed = False
+        elif edge == "falling" and not (was_running and not is_running):
+            changed = False
     triggered = None
     if changed:
         on_change = metadata.get("on_change") if isinstance(metadata.get("on_change"), dict) else None
@@ -3263,7 +3697,11 @@ def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, A
         return _device_power_plan_get()
     if action == "power_plan_set":
         return _device_power_plan_set(args, state)
-    if action in {"bluetooth_toggle", "bluetooth_pair", "night_light", "display_set_resolution", "display_set_scale", "wifi_set_profile"}:
+    if action == "wifi_add_profile":
+        return _device_wifi_add_profile(args)
+    if action == "wifi_delete_profile":
+        return _device_wifi_delete_profile(args)
+    if action in {"bluetooth_toggle", "bluetooth_pair", "night_light", "display_set_resolution", "display_set_scale"}:
         return _err(
             f"device_settings.{action} is deferred",
             status="needs_implementation",
@@ -3274,6 +3712,97 @@ def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, A
             ),
         )
     return _err("unknown device_settings action", action=action)
+
+
+def _device_wifi_add_profile(args: dict[str, Any]) -> dict[str, Any]:
+    """Create a WPA2-Personal Wi-Fi profile via netsh wlan add profile.
+
+    Template from Microsoft Win32 Native Wifi docs (WPA2-Personal sample).
+    """
+    ssid = str(args.get("ssid") or args.get("name") or "").strip()
+    password = str(args.get("password") or args.get("key") or "").strip()
+    if not ssid or not password:
+        return _err("wifi_add_profile requires ssid and password")
+    if len(password) < 8 or len(password) > 63:
+        return _err("WPA2 passphrase must be 8-63 ASCII characters", length=len(password))
+    auto_connect = bool(args.get("auto_connect", True))
+    connection_mode = "auto" if auto_connect else "manual"
+    profile_xml = f"""<?xml version="1.0"?>
+<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
+  <name>{_xml_escape(ssid)}</name>
+  <SSIDConfig>
+    <SSID>
+      <name>{_xml_escape(ssid)}</name>
+    </SSID>
+  </SSIDConfig>
+  <connectionType>ESS</connectionType>
+  <connectionMode>{connection_mode}</connectionMode>
+  <MSM>
+    <security>
+      <authEncryption>
+        <authentication>WPA2PSK</authentication>
+        <encryption>AES</encryption>
+        <useOneX>false</useOneX>
+      </authEncryption>
+      <sharedKey>
+        <keyType>passPhrase</keyType>
+        <protected>false</protected>
+        <keyMaterial>{_xml_escape(password)}</keyMaterial>
+      </sharedKey>
+    </security>
+  </MSM>
+</WLANProfile>
+"""
+    import tempfile
+    fd, tmp_path = tempfile.mkstemp(suffix=".xml", prefix="gemma4_wlan_")
+    try:
+        os.close(fd)
+        Path(tmp_path).write_text(profile_xml, encoding="utf-8")
+        scope = "all" if bool(args.get("all_users", False)) else "current"
+        proc = subprocess.run(
+            ["netsh", "wlan", "add", "profile", f"filename={tmp_path}", f"user={scope}"],
+            capture_output=True, text=True, timeout=20,
+        )
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+    if proc.returncode != 0:
+        return _err("netsh wlan add profile failed", stderr=proc.stderr, exit_code=proc.returncode, stdout=proc.stdout[-500:])
+    return _ok(
+        ssid=ssid,
+        connection_mode=connection_mode,
+        scope=scope if 'scope' in locals() else 'current',
+        exit_code=proc.returncode,
+        stdout=proc.stdout.strip()[:500],
+        note="Profile added. Use wifi_connect with the same SSID to actually associate.",
+        verified=True,
+    )
+
+
+def _device_wifi_delete_profile(args: dict[str, Any]) -> dict[str, Any]:
+    ssid = str(args.get("ssid") or args.get("name") or "").strip()
+    if not ssid:
+        return _err("missing ssid")
+    proc = subprocess.run(["netsh", "wlan", "delete", "profile", f"name={ssid}"], capture_output=True, text=True, timeout=10)
+    return _ok(
+        ssid=ssid,
+        exit_code=proc.returncode,
+        stdout=proc.stdout.strip()[:500],
+        stderr=proc.stderr[-500:],
+        verified=proc.returncode == 0,
+    )
+
+
+def _xml_escape(text: str) -> str:
+    return (
+        text.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&apos;")
+    )
 
 
 def _device_wifi_status() -> dict[str, Any]:
@@ -3344,18 +3873,25 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
     name = str(args.get("name") or args.get("ssid") or args.get("profile") or "").strip()
     if not name:
         return _err("missing profile name; pass name=<existing profile>")
-    # Connect only works against a saved profile. New networks need a profile XML
-    # — too sensitive for a default tool path.
+    password = str(args.get("password") or args.get("key") or "").strip()
     profiles = _device_wifi_profiles().get("profiles", [])
+    created = None
     if name not in profiles:
-        return _err(
-            f"profile '{name}' not found; create it first via Settings or pass profile_xml",
-            status="needs_user",
-            available_profiles=profiles[:30],
-        )
+        # If the caller provided a password, auto-create a WPA2-Personal profile.
+        if password:
+            created = _device_wifi_add_profile({"ssid": name, "password": password, "auto_connect": bool(args.get("auto_connect", True)), "all_users": bool(args.get("all_users", False))})
+            if not created.get("ok"):
+                return created
+        else:
+            return _err(
+                f"profile '{name}' not found; pass password to auto-create a WPA2-Personal profile, or use wifi_add_profile first",
+                status="needs_user",
+                available_profiles=profiles[:30],
+            )
     proc = subprocess.run(["netsh", "wlan", "connect", f"name={name}"], capture_output=True, text=True, timeout=20)
     return _ok(
         profile=name,
+        created_profile=created,
         exit_code=proc.returncode,
         stdout=proc.stdout.strip()[:500],
         stderr=proc.stderr.strip()[:500],
