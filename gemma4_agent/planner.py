@@ -202,6 +202,70 @@ def _suggest_tools(step: str) -> list[str]:
         tools.append("input")
     if re.search(r"\b(winget|paquete|instalar app|desinstalar)\b", low):
         tools.append("package")
+
+    # ---- Tools added in phases C/D/F3 ----
+    # developer: code, tests, lint, git, dev server
+    if re.search(r"\b(repositorio|repo|tests|test |pytest|unitarias|lint|format|formato|prettier|black|ruff|eslint|git status|git diff|git log|dev server|servidor de desarrollo|npm run|yarn|pnpm|cargo|go test|build)\b", low):
+        tools.append("developer")
+    # device_settings: wifi/bluetooth/display/power
+    if re.search(r"\b(wifi|red wifi|red inalambrica|ssid|bluetooth|monitor|monitores|display|resolucion|plan de energia|power plan|economizador|alto rendimiento|brillo)\b", low):
+        tools.append("device_settings")
+    # game_launcher: epic/gog/xbox/riot (steam already separate)
+    if re.search(r"\b(epic|epic games|gog|galaxy gog|xbox|xbox app|microsoft store game|riot|league of legends|valorant|battle\.net|battlenet)\b", low):
+        tools.append("game_launcher")
+    # media_edit: ffmpeg trim/transcode/normalize/etc
+    if re.search(r"\b(recorta|recortar|cortar video|trim|convierte el video|convierte el audio|transcodifica|extrae audio|subtitulos|normaliza audio|miniatura|thumbnail|ffmpeg)\b", low):
+        tools.append("media_edit")
+    # maintenance: windows update, defender, firewall, event logs, services
+    if re.search(r"\b(windows update|defender|antivirus|escaneo|firewall|event log|visor de eventos|servicio|servicios de windows|punto de restauracion|restore point|disk cleanup|cleanmgr|limpieza de disco)\b", low):
+        tools.append("maintenance")
+    # watcher: file/url polling
+    if re.search(r"\b(vigila|vigilar|monitorea|monitorear|cuando cambie|cuando se modifique|avisame cuando|watcher)\b", low):
+        tools.append("watcher")
+    # job_manager: long subprocess
+    if re.search(r"\b(en segundo plano|background job|tarea larga|corre en paralelo|deja corriendo|job manager)\b", low):
+        tools.append("job_manager")
+    # network: ping/dns/port/connections
+    if re.search(r"\b(ping|hacer ping|traceroute|tracert|dns|resolver dominio|abre el puerto|puerto cerrado|conexiones activas|ip publica|public ip|public_ip|wireshark)\b", low):
+        tools.append("network")
+    # data_analysis: csv/pandas/plots
+    if re.search(r"\b(csv|pandas|describe|histograma|grafica|grafico de dispersion|scatter|plot|distribucion|estadistica descriptiva)\b", low):
+        tools.append("data_analysis")
+    # fact_check: verify claim
+    if re.search(r"\b(verifica|verificar|es cierto|es verdad|fact check|fact-check|contradice|contradicen|respaldan|fuente lo confirma|fuente lo dice|afirmacion|afirmaci[óo]n)\b", low):
+        tools.append("fact_check")
+    # photo_library: photos, exif, organize
+    if re.search(r"\b(fotos|foto|imagenes del telefono|exif|miniaturas de fotos|organiza fotos|agrupa por fecha|biblioteca de fotos|raw fotos)\b", low):
+        tools.append("photo_library")
+    # container: docker
+    if re.search(r"\b(docker|contenedor|contenedores|docker-compose|compose up|compose down|imagen docker)\b", low):
+        tools.append("container")
+    # database: sqlite/postgres/mysql
+    if re.search(r"\b(sqlite|base de datos|database|postgres|postgresql|mysql|mariadb|select \*|consulta sql|query sql)\b", low):
+        tools.append("database")
+    # creative_local: comfyui/stable diffusion
+    if re.search(r"\b(comfyui|stable diffusion|genera imagen|generar imagen|sdxl|flux\.1|flux1|workflow de comfyui|prompt para imagen)\b", low):
+        tools.append("creative_local")
+    # form_filler: live web forms
+    if re.search(r"\b(rellena el formulario|llena el formulario|completa el formulario|envia formulario|submit form|form fill)\b", low):
+        tools.append("form_filler")
+        tools.append("browser_real")
+    # peripheral: usb/controllers/HID
+    if re.search(r"\b(usb|controles |controles$|control xbox|gamepad|joystick|joypad|periferico|periferal|joy-con|dualshock|dualsense|administrador de dispositivos|device manager|hid)\b", low):
+        tools.append("peripheral")
+    # accessibility: magnifier/narrator
+    if re.search(r"\b(lupa|magnifier|narrador|narrator|alto contraste|high contrast|accesibilidad|dictado)\b", low):
+        tools.append("accessibility")
+    # study: flashcards / spaced repetition
+    if re.search(r"\b(flashcard|flashcards|tarjeta de estudio|repaso espaciado|spaced repetition|anki|deck de estudio|repeticion espaciada)\b", low):
+        tools.append("study")
+    # smart_home: home assistant local
+    if re.search(r"\b(home assistant|domotica|luz del|enciende la luz|apaga la luz|escena cine|escena de luces|termostato|sensor de temperatura|hass|mqtt|persianas)\b", low):
+        tools.append("smart_home")
+    # document: parse PDF/DOCX/XLSX/PPTX
+    if re.search(r"\b(lee este pdf|extrae del pdf|resume el pdf|extrae tablas|ocr|escaneado|parsear documento|parsear pdf|parsear docx|extract_text|parse documento)\b", low):
+        tools.append("document")
+
     return _dedupe(tools)
 
 
@@ -244,34 +308,87 @@ def _related_tools(name: str, text: str) -> list[str]:
         return ["state"]
     if name == "printer_scanner":
         return ["dependency"]
+    # ---- Phase C/D/F3 tools ----
+    if name == "developer":
+        return ["terminal", "filesystem", "verify"]
+    if name == "device_settings":
+        return ["state", "verify"]
+    if name == "game_launcher":
+        return ["app", "window", "verify"]
+    if name == "media_edit":
+        return ["filesystem", "dependency"]
+    if name == "maintenance":
+        return ["state", "verify"]
+    if name == "watcher":
+        return ["state"]
+    if name == "job_manager":
+        return ["state", "terminal"]
+    if name == "network":
+        return ["state"]
+    if name == "data_analysis":
+        return ["filesystem", "dependency"]
+    if name == "fact_check":
+        return ["knowledge", "web", "source_manager"]
+    if name == "photo_library":
+        return ["filesystem", "dependency"]
+    if name == "container":
+        return ["terminal", "dependency"]
+    if name == "database":
+        return ["filesystem"]
+    if name == "creative_local":
+        return ["filesystem", "dependency"]
+    if name == "form_filler":
+        return ["browser_real", "state", "safety"]
+    if name == "peripheral":
+        return ["state"]
+    if name == "accessibility":
+        return ["state"]
+    if name == "study":
+        return ["state"]
+    if name == "smart_home":
+        return ["state", "dependency"]
+    if name == "document":
+        return ["filesystem", "knowledge", "dependency"]
     return []
+
+
+_PRIMARY_TOOLS = {
+    # Strong domain anchors: keep these high when matched.
+    "steam", "media", "browser_real", "browser", "web",
+    "office", "document", "knowledge", "fact_check",
+    "filesystem", "app", "window", "gui", "uia", "vision",
+    "audio", "audio_device",
+    "system", "terminal", "clipboard",
+    "developer", "device_settings", "game_launcher", "media_edit",
+    "maintenance", "network", "data_analysis", "container", "database",
+    "photo_library", "creative_local", "form_filler", "peripheral",
+    "accessibility", "study", "smart_home",
+    "memory", "notification", "routine", "watcher", "job_manager",
+    "contacts", "notes_tasks", "local_calendar", "habit_tracker",
+    "local_search", "printer_scanner", "desktop_layout", "backup_sync",
+    "source_manager", "email", "reminder",
+    "registry", "env", "input", "download", "package",
+}
+_UTILITY_TOOLS = {"verify": 90, "state": 91, "dependency": 92, "safety": 99}
 
 
 def _cap_tools(names: list[str], limit: int) -> list[str]:
     if len(names) <= limit:
         return names
-    priority = {
-        "steam": 0,
-        "app": 1,
-        "media": 2,
-        "audio": 3,
-        "audio_device": 4,
-        "browser_real": 5,
-        "browser": 6,
-        "web": 7,
-        "filesystem": 8,
-        "office": 9,
-        "gui": 10,
-        "uia": 11,
-        "vision": 12,
-        "window": 13,
-        "verify": 90,
-        "state": 91,
-        "dependency": 92,
-        "safety": 99,
-    }
+    # Tier policy:
+    # - Primary tools (those that matched a keyword or are a related dep) keep
+    #   their original position (so earliest-mentioned wins).
+    # - Utility tools (verify/state/dependency/safety) go to the back regardless.
+    # - Anything not classified gets a mid-tier slot at 50.
     indexed = list(enumerate(names))
-    indexed.sort(key=lambda pair: (priority.get(pair[1], 50), pair[0]))
+    def rank(pair: tuple[int, str]) -> tuple[int, int]:
+        order, name = pair
+        if name in _UTILITY_TOOLS:
+            return (_UTILITY_TOOLS[name], order)
+        if name in _PRIMARY_TOOLS:
+            return (order, order)  # original mention order
+        return (50, order)
+    indexed.sort(key=rank)
     selected = {name for _, name in indexed[:limit]}
     return [name for name in names if name in selected]
 

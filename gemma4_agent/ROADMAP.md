@@ -113,6 +113,46 @@ y se desinstalo limpio con routine.delete.
 (screen_record + camera + mic via ffmpeg/DirectShow) cuando quieras seguir
 sin tocar cloud.
 
+## Pulido P4 — tool routing (2026-05-13)
+
+Antes de tocar modalidades nuevas, el usuario pidio pulir el nucleo.
+Primera entrega: tool routing.
+
+**Hallazgos previos al pulido:**
+- `_suggest_tools` solo conocia las tools originales (Fase A). Las 21 tools
+  agregadas en C/D/F3 (developer, fact_check, smart_home, etc) nunca se
+  preseleccionaban — el modelo las descubria solo si el catalogo completo
+  llegaba a sobrar en su contexto.
+- El cap de prioridad cubria 17 tools nombradas + un default 50; las
+  nuevas competian sin tiebreaker ni manejo de utility tier.
+- Sin telemetria de routing miss: no podiamos saber si Gemma se desviaba
+  del subset enviado.
+- Sin tests del router: cualquier cambio era a ciegas.
+
+**Cambios:**
+- planner.py `_suggest_tools` extendido con regexes para las 21 nuevas
+  tools, incluyendo aliases ES (controles, lupa, conexiones activas,
+  vigila, recorta video, etc).
+- `_related_tools` documenta las dependencias semanticas de cada tool
+  nueva (developer -> terminal+filesystem+verify, fact_check ->
+  knowledge+web+source_manager, form_filler -> browser_real+state+safety,
+  smart_home -> state+dependency, document -> filesystem+knowledge+
+  dependency, etc).
+- `_cap_tools` reescrito con tabla tier-based:
+  - primary (matched o relacionada): keep mention order
+  - utility (verify/state/dependency/safety): siempre al final
+  - unclassified: mid-tier 50
+- agent.py emite traces nuevos por turno:
+  - `tool_call` ahora incluye `in_subset` boolean
+  - `router_miss` cuando Gemma llama una tool fuera del subset enviado
+  - `router_stats` al terminar el turno: subset_size, used_count,
+    unused_count, used, unused
+- test_router.py: 32 queries reales con `must_include` / `must_exclude`.
+  Pasa 32/32 con el router actualizado.
+
+Verificado: eval_smoke missing=[] duplicate_count=0 (61 tools).
+test_router 32/32 passing.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):

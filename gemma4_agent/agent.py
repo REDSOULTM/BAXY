@@ -391,6 +391,16 @@ class Gemma4Agent:
                 assistant_content = self._guard_unverified_final(assistant_content, events)
                 mission = evaluate_mission(events, assistant_content, plan)
                 self.history.append({"role": "assistant", "content": assistant_content})
+                # Subset summary: which sent tools were actually used vs idle.
+                used_tools = {e.name for e in events}
+                router_stats = {
+                    "subset_size": len(selected_tool_names),
+                    "used_count": len(used_tools),
+                    "unused_count": len(set(selected_tool_names) - used_tools),
+                    "used": sorted(used_tools),
+                    "unused": sorted(set(selected_tool_names) - used_tools),
+                }
+                self.trace.event(turn_id, "router_stats", **router_stats)
                 self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events), mission=mission)
                 self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
@@ -399,11 +409,19 @@ class Gemma4Agent:
             self.history.append(msg)
 
             image_results: list[tuple[Path, dict[str, Any]]] = []
+            subset_set = set(selected_tool_names)
             for raw_call in raw_tool_calls:
                 fn = raw_call.get("function") or {}
                 name = fn.get("name", "")
                 args = _parse_args(fn.get("arguments", {}))
-                self.trace.event(turn_id, "tool_call", name=name, args=args)
+                in_subset = name in subset_set
+                self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset)
+                if not in_subset:
+                    # Router miss: the model picked a tool that the subset did not
+                    # include. The model can still call any tool because the schema
+                    # sent has additionalProperties=false but the registry holds
+                    # every tool. Logging this lets us tune the router later.
+                    self.trace.event(turn_id, "router_miss", name=name, sent=sorted(subset_set))
                 _progress(progress, "tool_start", name=name, args=args, index=len(events) + 1)
                 result = self.tools.execute(name, args)
                 events.append(ToolEvent(name=name, args=args, result=result))
