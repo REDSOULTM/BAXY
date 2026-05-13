@@ -258,6 +258,1566 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     return _err("unknown routine action", action=action)
 
 
+def study_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for local flashcards + SM-2 spaced repetition.
+
+    Actions: status, deck_create, deck_list, deck_delete, card_add,
+    card_list, card_delete, due, review (grade card with q in 0..5), stats.
+    Storage: SQLite at <state_dir>/study.sqlite. SM-2 per Wozniak 1990.
+    """
+    action = str(args.get("action") or "status").casefold()
+    db_path = state.path.parent / "study.sqlite"
+    conn = _study_connect(db_path)
+    try:
+        if action == "status":
+            cur = conn.cursor()
+            decks = cur.execute("SELECT COUNT(*) FROM decks").fetchone()[0]
+            cards = cur.execute("SELECT COUNT(*) FROM cards").fetchone()[0]
+            due_today = cur.execute("SELECT COUNT(*) FROM cards WHERE due_at <= ?", (_today_iso(),)).fetchone()[0]
+            return _ok(db=str(db_path), decks=decks, cards=cards, due_today=due_today, algorithm="SM-2 (Wozniak 1990)")
+        if action == "deck_create":
+            return _study_deck_create(conn, args)
+        if action == "deck_list":
+            return _study_deck_list(conn)
+        if action == "deck_delete":
+            return _study_deck_delete(conn, args)
+        if action == "card_add":
+            return _study_card_add(conn, args)
+        if action == "card_list":
+            return _study_card_list(conn, args)
+        if action == "card_delete":
+            return _study_card_delete(conn, args)
+        if action == "due":
+            return _study_due(conn, args)
+        if action == "review":
+            return _study_review(conn, args)
+        if action == "stats":
+            return _study_stats(conn, args)
+        return _err("unknown study action", action=action)
+    finally:
+        conn.close()
+
+
+def _study_connect(db_path: Path):
+    import sqlite3
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS decks (
+            id TEXT PRIMARY KEY, name TEXT NOT NULL, created_at TEXT NOT NULL
+        )"""
+    )
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS cards (
+            id TEXT PRIMARY KEY,
+            deck_id TEXT NOT NULL,
+            front TEXT NOT NULL,
+            back TEXT NOT NULL,
+            ef REAL NOT NULL DEFAULT 2.5,
+            interval_days INTEGER NOT NULL DEFAULT 0,
+            repetitions INTEGER NOT NULL DEFAULT 0,
+            due_at TEXT NOT NULL,
+            last_reviewed_at TEXT,
+            last_grade INTEGER,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY(deck_id) REFERENCES decks(id)
+        )"""
+    )
+    conn.commit()
+    return conn
+
+
+def _today_iso() -> str:
+    return time.strftime("%Y-%m-%d")
+
+
+def _study_deck_create(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    name = str(args.get("name") or "").strip()
+    if not name:
+        return _err("missing deck name")
+    import uuid
+    deck_id = f"deck_{uuid.uuid4().hex[:10]}"
+    conn.execute("INSERT INTO decks(id, name, created_at) VALUES (?, ?, ?)", (deck_id, name, _today_iso()))
+    conn.commit()
+    return _ok(deck_id=deck_id, name=name)
+
+
+def _study_deck_list(conn: Any) -> dict[str, Any]:
+    rows = conn.execute("SELECT id, name, created_at FROM decks ORDER BY created_at DESC").fetchall()
+    decks = []
+    for row in rows:
+        card_count = conn.execute("SELECT COUNT(*) FROM cards WHERE deck_id = ?", (row["id"],)).fetchone()[0]
+        due_count = conn.execute("SELECT COUNT(*) FROM cards WHERE deck_id = ? AND due_at <= ?", (row["id"], _today_iso())).fetchone()[0]
+        decks.append({"deck_id": row["id"], "name": row["name"], "created_at": row["created_at"], "cards": card_count, "due_today": due_count})
+    return _ok(decks=decks, count=len(decks))
+
+
+def _study_deck_delete(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    deck_id = str(args.get("deck_id") or args.get("id") or "").strip()
+    if not deck_id:
+        return _err("missing deck_id")
+    conn.execute("DELETE FROM cards WHERE deck_id = ?", (deck_id,))
+    cur = conn.execute("DELETE FROM decks WHERE id = ?", (deck_id,))
+    conn.commit()
+    return _ok(deck_id=deck_id, deleted=cur.rowcount)
+
+
+def _study_card_add(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    deck_id = str(args.get("deck_id") or "").strip()
+    front = str(args.get("front") or args.get("question") or "").strip()
+    back = str(args.get("back") or args.get("answer") or "").strip()
+    if not deck_id or not front or not back:
+        return _err("card_add requires deck_id, front, back")
+    if not conn.execute("SELECT id FROM decks WHERE id = ?", (deck_id,)).fetchone():
+        return _err("deck not found", deck_id=deck_id)
+    import uuid
+    card_id = f"card_{uuid.uuid4().hex[:10]}"
+    conn.execute(
+        "INSERT INTO cards(id, deck_id, front, back, ef, interval_days, repetitions, due_at, created_at) VALUES (?, ?, ?, ?, 2.5, 0, 0, ?, ?)",
+        (card_id, deck_id, front, back, _today_iso(), _today_iso()),
+    )
+    conn.commit()
+    return _ok(card_id=card_id, deck_id=deck_id, front=front, back=back, due_at=_today_iso())
+
+
+def _study_card_list(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    deck_id = str(args.get("deck_id") or "").strip()
+    if deck_id:
+        rows = conn.execute("SELECT id, deck_id, front, back, ef, interval_days, repetitions, due_at, last_grade FROM cards WHERE deck_id = ? ORDER BY due_at", (deck_id,)).fetchall()
+    else:
+        rows = conn.execute("SELECT id, deck_id, front, back, ef, interval_days, repetitions, due_at, last_grade FROM cards ORDER BY due_at LIMIT 500").fetchall()
+    cards = [dict(row) for row in rows]
+    return _ok(cards=cards, count=len(cards))
+
+
+def _study_card_delete(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    card_id = str(args.get("card_id") or args.get("id") or "").strip()
+    if not card_id:
+        return _err("missing card_id")
+    cur = conn.execute("DELETE FROM cards WHERE id = ?", (card_id,))
+    conn.commit()
+    return _ok(card_id=card_id, deleted=cur.rowcount)
+
+
+def _study_due(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    deck_id = str(args.get("deck_id") or "").strip()
+    limit = int(args.get("limit", 20))
+    if deck_id:
+        rows = conn.execute("SELECT id, deck_id, front, back, ef, interval_days, repetitions, due_at FROM cards WHERE deck_id = ? AND due_at <= ? ORDER BY due_at LIMIT ?", (deck_id, _today_iso(), limit)).fetchall()
+    else:
+        rows = conn.execute("SELECT id, deck_id, front, back, ef, interval_days, repetitions, due_at FROM cards WHERE due_at <= ? ORDER BY due_at LIMIT ?", (_today_iso(), limit)).fetchall()
+    return _ok(due_cards=[dict(row) for row in rows], count=len(rows), today=_today_iso())
+
+
+def _study_review(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Apply SM-2 to a single card's grade q in 0..5."""
+    card_id = str(args.get("card_id") or args.get("id") or "").strip()
+    q = args.get("q") if args.get("q") is not None else args.get("grade")
+    if not card_id or q is None:
+        return _err("review requires card_id and q (0..5)")
+    try:
+        q = int(q)
+    except (TypeError, ValueError):
+        return _err("q must be an integer 0..5")
+    if not (0 <= q <= 5):
+        return _err("q out of range; must be 0..5")
+    row = conn.execute("SELECT * FROM cards WHERE id = ?", (card_id,)).fetchone()
+    if not row:
+        return _err("card not found", card_id=card_id)
+    ef = float(row["ef"])
+    interval = int(row["interval_days"])
+    repetitions = int(row["repetitions"])
+    # SM-2 EF update happens regardless of q (per Wozniak 1990).
+    ef = max(1.3, ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)))
+    if q < 3:
+        repetitions = 0
+        interval = 1
+    else:
+        if repetitions == 0:
+            interval = 1
+        elif repetitions == 1:
+            interval = 6
+        else:
+            interval = max(1, round(interval * ef))
+        repetitions += 1
+    from datetime import datetime as _dt, timedelta as _td
+    due_at = (_dt.today() + _td(days=interval)).strftime("%Y-%m-%d")
+    conn.execute(
+        "UPDATE cards SET ef = ?, interval_days = ?, repetitions = ?, due_at = ?, last_reviewed_at = ?, last_grade = ? WHERE id = ?",
+        (ef, interval, repetitions, due_at, _today_iso(), q, card_id),
+    )
+    conn.commit()
+    return _ok(card_id=card_id, q=q, ef=round(ef, 4), interval_days=interval, repetitions=repetitions, due_at=due_at)
+
+
+def _study_stats(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    deck_id = str(args.get("deck_id") or "").strip()
+    where_clause = "WHERE deck_id = ?" if deck_id else ""
+    params: tuple[Any, ...] = (deck_id,) if deck_id else tuple()
+    total = conn.execute(f"SELECT COUNT(*) FROM cards {where_clause}", params).fetchone()[0]
+    due_today = conn.execute(f"SELECT COUNT(*) FROM cards {where_clause + (' AND ' if where_clause else 'WHERE ')}due_at <= ?", (*params, _today_iso())).fetchone()[0]
+    avg_ef = conn.execute(f"SELECT AVG(ef) FROM cards {where_clause}", params).fetchone()[0] or 2.5
+    new_cards = conn.execute(f"SELECT COUNT(*) FROM cards {where_clause + (' AND ' if where_clause else 'WHERE ')}repetitions = 0", params).fetchone()[0]
+    return _ok(deck_id=deck_id or None, total=total, due_today=due_today, new=new_cards, avg_ef=round(float(avg_ef), 4))
+
+
+def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for Windows accessibility features.
+
+    Actions: status, magnifier_start, magnifier_stop, narrator_start,
+    narrator_stop, dictation_status, settings_panel. High Contrast toggle
+    via registry is fragile and shows a Windows confirmation dialog; we
+    instead point the user at the keyboard shortcut LAlt+LShift+PrtSc and
+    expose settings_panel to open the Settings page.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            magnifier_running=_process_running("Magnify.exe"),
+            narrator_running=_process_running("Narrator.exe"),
+            note="High Contrast toggle is deferred (requires registry + WM_SETTINGCHANGE broadcast). Use action=settings_panel to open the Accessibility Settings instead.",
+        )
+    if action == "magnifier_start":
+        return _accessibility_launch("magnify.exe", state, kind="magnifier")
+    if action == "magnifier_stop":
+        return _accessibility_kill("Magnify.exe", state, kind="magnifier")
+    if action == "narrator_start":
+        return _accessibility_launch("narrator.exe", state, kind="narrator")
+    if action == "narrator_stop":
+        return _accessibility_kill("Narrator.exe", state, kind="narrator")
+    if action == "dictation_status":
+        # Windows speech recognition runs under sapisvc / WindowsSpeechRecognition.
+        return _ok(
+            speech_service=_process_running("WindowsSpeech.exe") or _process_running("speech_runtime.exe"),
+            shortcut="Win+H starts dictation in Windows 11.",
+            note="Programmatic toggle requires the WinRT SpeechRecognizer namespace; not exposed here.",
+        )
+    if action in {"settings_panel", "open_settings"}:
+        # ms-settings:easeofaccess opens the Accessibility settings page.
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", "Start-Process 'ms-settings:easeofaccess'"], capture_output=True, text=True, timeout=10)
+        return _ok(opened=proc.returncode == 0, uri="ms-settings:easeofaccess", verified=proc.returncode == 0)
+    if action in {"high_contrast_on", "high_contrast_off", "high_contrast_toggle"}:
+        return _err(
+            f"accessibility.{action} is deferred; the safe path is the shortcut Left Alt + Left Shift + Print Screen which shows a confirmation dialog.",
+            status="needs_user",
+            note="If you want programmatic toggle, open ms-settings:easeofaccess-highcontrast (via accessibility settings_panel).",
+        )
+    return _err("unknown accessibility action", action=action)
+
+
+def _process_running(exe_name: str) -> bool:
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"if (Get-Process -Name '{_ps_quote(Path(exe_name).stem)}' -ErrorAction SilentlyContinue) {{ 1 }} else {{ 0 }}"],
+        capture_output=True, text=True, timeout=10,
+    )
+    return proc.stdout.strip() == "1"
+
+
+def _accessibility_launch(exe: str, state: AgentState, *, kind: str) -> dict[str, Any]:
+    try:
+        proc = subprocess.Popen([exe], creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
+    except FileNotFoundError:
+        return _err(f"{exe} not found on PATH", status="needs_user")
+    state.register_resource(
+        f"accessibility_{kind}", exe,
+        cleanup_tool="accessibility",
+        cleanup_args={"action": f"{kind}_stop"},
+        metadata={"exe": exe, "pid": proc.pid, "started_at": datetime.now().isoformat()},
+    )
+    return _ok(kind=kind, exe=exe, pid=proc.pid, verified=True, note=f"{kind} started; close via {kind}_stop.")
+
+
+def _accessibility_kill(exe: str, state: AgentState, *, kind: str) -> dict[str, Any]:
+    proc = subprocess.run(["taskkill", "/F", "/IM", exe], capture_output=True, text=True, timeout=15)
+    killed = proc.returncode == 0
+    # Mark any matching resource as cleaned.
+    for res in _resources_by_kind(state, f"accessibility_{kind}", include_closed=False):
+        state.mark_cleaned(str(res["id"]), {"killed": killed})
+    return _ok(kind=kind, exe=exe, killed=killed, exit_code=proc.returncode, stderr=proc.stderr[-500:])
+
+
+def peripheral_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for USB, HID controllers and device manager state.
+
+    Actions: status, usb_list, hid_list, controller_status,
+    device_manager_problems, device_disable, device_enable. Vendor RGB APIs
+    are deferred (Logitech/Razer/Corsair each ship their own SDK).
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            powershell=bool(shutil.which("powershell")),
+            backend="windows_pnp",
+            note="USB/HID via Get-PnpDevice. Vendor RGB profiles are deferred.",
+        )
+    if action == "usb_list":
+        return _peripheral_usb_list(args)
+    if action == "hid_list":
+        return _peripheral_hid_list(args)
+    if action == "controller_status":
+        return _peripheral_controller_status()
+    if action in {"device_manager_problems", "problems"}:
+        return _peripheral_device_problems()
+    if action in {"device_disable", "device_enable"}:
+        return _peripheral_device_toggle(action, args, state)
+    if action in {"rgb_profile_set", "rgb_list", "rgb_set_color"}:
+        return _err(
+            f"peripheral.{action} is deferred; vendor SDKs (Logitech G HUB, Razer Synapse, Corsair iCUE) each ship their own API/services",
+            status="needs_implementation",
+            note="If a vendor exposes a stable CLI or HTTP endpoint, we can add a specific binding later.",
+        )
+    return _err("unknown peripheral action", action=action)
+
+
+def _peripheral_usb_list(args: dict[str, Any]) -> dict[str, Any]:
+    only_present = bool(args.get("only_present", True))
+    flag = "-PresentOnly" if only_present else ""
+    script = f"Get-PnpDevice {flag} | Where-Object {{ $_.Class -eq 'USB' -or $_.Class -eq 'USBDevice' -or $_.InstanceId -like 'USB*' }} | Select-Object FriendlyName,Class,Status,InstanceId,Manufacturer | ConvertTo-Json -Depth 3"
+    return _peripheral_run_json(script, "devices")
+
+
+def _peripheral_hid_list(args: dict[str, Any]) -> dict[str, Any]:
+    only_present = bool(args.get("only_present", True))
+    flag = "-PresentOnly" if only_present else ""
+    script = f"Get-PnpDevice {flag} -Class HIDClass | Select-Object FriendlyName,Class,Status,InstanceId,Manufacturer | ConvertTo-Json -Depth 3"
+    return _peripheral_run_json(script, "devices")
+
+
+def _peripheral_controller_status() -> dict[str, Any]:
+    script = r"""
+$kw = @('Xbox','Controller','Gamepad','Wheel','DualShock','DualSense','Joystick','Joy-Con')
+$matches = Get-PnpDevice -PresentOnly | Where-Object {
+  $name = $_.FriendlyName
+  foreach ($k in $kw) { if ($name -and $name -match $k) { return $true } }
+  return $false
+} | Select-Object FriendlyName,Class,Status,InstanceId,Manufacturer
+$matches | ConvertTo-Json -Depth 3
+"""
+    return _peripheral_run_json(script, "controllers")
+
+
+def _peripheral_device_problems() -> dict[str, Any]:
+    script = "Get-PnpDevice -PresentOnly | Where-Object { $_.Status -ne 'OK' } | Select-Object FriendlyName,Class,Status,Problem,ProblemDescription,InstanceId | ConvertTo-Json -Depth 3"
+    return _peripheral_run_json(script, "problems")
+
+
+def _peripheral_run_json(script: str, field: str) -> dict[str, Any]:
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+    if proc.returncode != 0:
+        return _err("Get-PnpDevice failed", stderr=proc.stderr)
+    raw = proc.stdout.strip()
+    if not raw:
+        return _ok(**{field: [], "count": 0})
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _err("Get-PnpDevice returned invalid JSON", raw=raw[:500])
+    if isinstance(data, dict):
+        data = [data]
+    return _ok(**{field: data, "count": len(data)})
+
+
+def _peripheral_device_toggle(action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    instance_id = str(args.get("instance_id") or args.get("id") or "").strip()
+    if not instance_id:
+        return _err("missing instance_id (use usb_list/hid_list to find it)")
+    verb = "Disable" if action == "device_disable" else "Enable"
+    reverse = "device_enable" if action == "device_disable" else "device_disable"
+    checkpoint = state.checkpoint(
+        f"peripheral {action} {instance_id}",
+        rollback=[{"tool": "peripheral", "args": {"action": reverse, "instance_id": instance_id}}],
+        metadata={"action": action, "instance_id": instance_id},
+    )
+    script = f"{verb}-PnpDevice -InstanceId '{_ps_quote(instance_id)}' -Confirm:$false"
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
+    return _ok(
+        action=action, instance_id=instance_id,
+        exit_code=proc.returncode, stdout=proc.stdout.strip()[:500], stderr=proc.stderr[-2000:],
+        checkpoint=checkpoint.get("checkpoint"),
+        verified=proc.returncode == 0,
+        note="Disable/Enable PnP usually requires admin elevation; if exit_code != 0 the agent likely lacks the privilege.",
+    )
+
+
+def form_filler_tool(args: dict[str, Any], state: AgentState, executor: Executor) -> dict[str, Any]:
+    """Compound tool to fill HTML forms with a review gate before submit.
+
+    Actions: status, discover, plan, apply, submit. Works on top of an
+    existing browser_real session (pass session_id). discover scans the
+    current page for form fields and their labels. plan matches a values
+    dict (field_label -> value) against discovered fields without writing.
+    apply executes the plan via browser_real.fill / click. submit clicks
+    the submit button only when confirmed=true; otherwise it returns
+    needs_confirmation with a screenshot for the user to verify.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            note="Requires an existing browser_real session (use browser_real.open or attach_visible first).",
+            backend="browser_real_orchestration",
+            review_gate_default=True,
+        )
+    session_id = str(args.get("session_id") or "default")
+    if action == "discover":
+        return _form_discover(session_id, executor)
+    if action == "plan":
+        return _form_plan(session_id, args, executor)
+    if action == "apply":
+        return _form_apply(session_id, args, executor)
+    if action == "submit":
+        return _form_submit(session_id, args, executor, state)
+    return _err("unknown form_filler action", action=action)
+
+
+def _form_discover(session_id: str, executor: Executor) -> dict[str, Any]:
+    script = r"""
+() => {
+  function bestLabel(el) {
+    if (el.id) {
+      const lbl = document.querySelector(`label[for="${el.id}"]`);
+      if (lbl) return lbl.innerText.trim();
+    }
+    const parentLbl = el.closest('label');
+    if (parentLbl) return parentLbl.innerText.trim();
+    const aria = el.getAttribute('aria-label');
+    if (aria) return aria.trim();
+    const placeholder = el.getAttribute('placeholder');
+    if (placeholder) return placeholder.trim();
+    return '';
+  }
+  function cssPath(el) {
+    if (el.id) return `#${CSS.escape(el.id)}`;
+    if (el.name) return `${el.tagName.toLowerCase()}[name="${el.name}"]`;
+    const parts = [];
+    let node = el;
+    while (node && node.nodeType === 1 && parts.length < 6) {
+      let part = node.tagName.toLowerCase();
+      if (node.className && typeof node.className === 'string') {
+        const cls = node.className.trim().split(/\s+/).slice(0, 2).join('.');
+        if (cls) part += '.' + cls;
+      }
+      parts.unshift(part);
+      node = node.parentElement;
+    }
+    return parts.join(' > ');
+  }
+  const fields = [];
+  const inputs = document.querySelectorAll('input, select, textarea');
+  for (const el of inputs) {
+    if (el.type === 'hidden') continue;
+    fields.push({
+      selector: cssPath(el),
+      tag: el.tagName.toLowerCase(),
+      type: el.type || el.tagName.toLowerCase(),
+      name: el.name || '',
+      id: el.id || '',
+      label: bestLabel(el),
+      placeholder: el.getAttribute('placeholder') || '',
+      required: el.required || false,
+      value: (el.type === 'password') ? '<hidden>' : (el.value || ''),
+    });
+  }
+  const submits = [];
+  document.querySelectorAll('button[type="submit"], input[type="submit"], button:not([type])').forEach(b => {
+    submits.push({ selector: cssPath(b), text: (b.innerText || b.value || '').trim() });
+  });
+  return { fields, submits };
+}
+"""
+    result = executor("browser_real", {"action": "evaluate", "session_id": session_id, "script": script})
+    if not result.get("ok"):
+        return result
+    value = result.get("value") or {}
+    return _ok(
+        session_id=session_id,
+        fields=value.get("fields") or [],
+        field_count=len(value.get("fields") or []),
+        submits=value.get("submits") or [],
+        url=result.get("url"),
+        title=result.get("title"),
+    )
+
+
+def _form_plan(session_id: str, args: dict[str, Any], executor: Executor) -> dict[str, Any]:
+    values = args.get("values") if isinstance(args.get("values"), dict) else {}
+    if not values:
+        return _err("plan requires values={'field label or name': value}")
+    discover = _form_discover(session_id, executor)
+    if not discover.get("ok"):
+        return discover
+    fields = discover.get("fields", [])
+    plan: list[dict[str, Any]] = []
+    unmatched: list[str] = []
+    for key, val in values.items():
+        match = _form_match_field(key, fields)
+        if not match:
+            unmatched.append(str(key))
+            continue
+        plan.append({"selector": match["selector"], "label": match.get("label") or match.get("name") or match.get("placeholder"), "tag": match["tag"], "type": match["type"], "value": val})
+    return _ok(
+        session_id=session_id,
+        plan=plan, plan_size=len(plan),
+        unmatched=unmatched, unmatched_count=len(unmatched),
+        submits=discover.get("submits", []),
+        url=discover.get("url"), title=discover.get("title"),
+    )
+
+
+def _form_match_field(query: str, fields: list[dict[str, Any]]) -> dict[str, Any] | None:
+    q = query.casefold().strip()
+    if not q:
+        return None
+    # 1. Exact match on label / name / id / placeholder.
+    for f in fields:
+        for key in ("label", "name", "id", "placeholder"):
+            if str(f.get(key) or "").casefold() == q:
+                return f
+    # 2. Substring.
+    for f in fields:
+        for key in ("label", "name", "id", "placeholder"):
+            if q in str(f.get(key) or "").casefold():
+                return f
+    return None
+
+
+def _form_apply(session_id: str, args: dict[str, Any], executor: Executor) -> dict[str, Any]:
+    plan = args.get("plan") if isinstance(args.get("plan"), list) else None
+    if plan is None:
+        # If only values were passed, build the plan first.
+        if args.get("values"):
+            built = _form_plan(session_id, args, executor)
+            if not built.get("ok"):
+                return built
+            plan = built.get("plan", [])
+        else:
+            return _err("apply requires plan (list) or values (dict)")
+    if not plan:
+        return _err("plan is empty; nothing to apply")
+    applied: list[dict[str, Any]] = []
+    failed: list[dict[str, Any]] = []
+    for step in plan:
+        selector = str(step.get("selector") or "").strip()
+        value = step.get("value")
+        tag = str(step.get("type") or step.get("tag") or "").casefold()
+        if not selector:
+            failed.append({"step": step, "error": "missing selector"})
+            continue
+        if tag in {"checkbox", "radio"}:
+            should_check = bool(value)
+            current = executor("browser_real", {"action": "evaluate", "session_id": session_id, "script": f"() => {{ const el = document.querySelector({json.dumps(selector)}); return el ? el.checked : null; }}"})
+            if current.get("ok") and bool(current.get("value")) != should_check:
+                result = executor("browser_real", {"action": "click", "session_id": session_id, "selector": selector})
+            else:
+                result = {"ok": True, "noop": True}
+        elif tag == "select" or step.get("tag") == "select":
+            # For <select>, use JS to set the value option.
+            script = f"""() => {{ const el = document.querySelector({json.dumps(selector)}); if (!el) return false; el.value = {json.dumps(str(value))}; el.dispatchEvent(new Event('change', {{bubbles: true}})); return true; }}"""
+            result = executor("browser_real", {"action": "evaluate", "session_id": session_id, "script": script})
+        else:
+            result = executor("browser_real", {"action": "fill", "session_id": session_id, "selector": selector, "value": str(value)})
+        (applied if result.get("ok") else failed).append({"step": step, "result": {"ok": result.get("ok"), "error": result.get("error")}})
+    return _ok(
+        session_id=session_id,
+        applied=len(applied), failed=len(failed),
+        applied_details=applied, failed_details=failed,
+        verified=not failed,
+    )
+
+
+def _form_submit(session_id: str, args: dict[str, Any], executor: Executor, state: AgentState) -> dict[str, Any]:
+    confirmed = bool(args.get("confirmed", False))
+    selector = str(args.get("selector") or "").strip()
+    if not confirmed:
+        # Capture a screenshot + summary so the user can verify before submit.
+        screenshot = executor("browser_real", {"action": "screenshot", "session_id": session_id})
+        discover = _form_discover(session_id, executor)
+        pending = state.create_confirmation(
+            "form_filler",
+            {"action": "submit", "session_id": session_id, "selector": selector, "confirmed": True},
+            reason="Submitting a form to the live website. Verify the values are correct.",
+            risk="medium",
+        )
+        return _err(
+            "form submission requires confirmation; review the screenshot then call safety(confirm,...) or re-call submit with confirmed=true",
+            status="needs_confirmation", verified=False,
+            completion_status="needs_user_confirmation",
+            screenshot=screenshot.get("image_path"),
+            current_fields=[{"label": f.get("label") or f.get("name"), "value": f.get("value")} for f in discover.get("fields", [])],
+            url=screenshot.get("url"),
+            confirmation=pending.get("confirmation"),
+        )
+    if selector:
+        result = executor("browser_real", {"action": "click", "session_id": session_id, "selector": selector})
+    else:
+        # Try to find a submit button automatically.
+        discover = _form_discover(session_id, executor)
+        submits = discover.get("submits", [])
+        if not submits:
+            return _err("no submit button found; pass selector explicitly")
+        result = executor("browser_real", {"action": "click", "session_id": session_id, "selector": submits[0]["selector"]})
+    return _ok(session_id=session_id, submit_result=result, verified=result.get("ok"))
+
+
+def creative_local_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for local generative ML backends (ComfyUI primarily).
+
+    Actions: status, submit, result, wait, queue, interrupt, models. Talks to
+    a local ComfyUI HTTP server (default http://127.0.0.1:8188). Returns
+    needs_user with the launch command if not reachable.
+    """
+    action = str(args.get("action") or "status").casefold()
+    host = str(args.get("host") or os.environ.get("GEMMA4_COMFYUI_HOST") or "http://127.0.0.1:8188").rstrip("/")
+    if action == "status":
+        alive = _comfy_alive(host)
+        return _ok(
+            comfyui=alive,
+            host=host,
+            launch_instruction="Start ComfyUI manually: `python main.py` from your ComfyUI install. Set GEMMA4_COMFYUI_HOST if it listens on a different port.",
+        )
+    if not _comfy_alive(host):
+        return _err(
+            f"ComfyUI is not reachable at {host}",
+            status="needs_user", verified=False,
+            completion_status="needs_comfyui_running",
+            launch_instruction="Start ComfyUI from its install dir (`python main.py`) and re-call.",
+        )
+    if action == "submit":
+        return _comfy_submit(host, args, state)
+    if action == "result":
+        return _comfy_result(host, args)
+    if action == "wait":
+        return _comfy_wait(host, args)
+    if action == "queue":
+        return _comfy_queue(host)
+    if action == "interrupt":
+        return _comfy_interrupt(host)
+    if action == "models":
+        return _comfy_models(host)
+    return _err("unknown creative_local action", action=action)
+
+
+def _comfy_alive(host: str) -> bool:
+    import urllib.request
+    try:
+        req = urllib.request.Request(f"{host}/system_stats", headers={"User-Agent": "Gemma4Agent/1.0"})
+        with urllib.request.urlopen(req, timeout=2.0):
+            return True
+    except Exception:
+        return False
+
+
+def _comfy_post_json(host: str, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+    import urllib.request
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(f"{host}{path}", data=data, headers={"Content-Type": "application/json", "User-Agent": "Gemma4Agent/1.0"}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            body = resp.read()
+            return json.loads(body) if body else {}
+    except Exception as exc:
+        return {"_error": str(exc)}
+
+
+def _comfy_get_json(host: str, path: str) -> dict[str, Any]:
+    import urllib.request
+    req = urllib.request.Request(f"{host}{path}", headers={"User-Agent": "Gemma4Agent/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            body = resp.read()
+            return json.loads(body) if body else {}
+    except Exception as exc:
+        return {"_error": str(exc)}
+
+
+def _comfy_submit(host: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    workflow = args.get("workflow")
+    workflow_path = str(args.get("workflow_path") or args.get("path") or "").strip()
+    if not workflow and workflow_path:
+        p = Path(workflow_path).expanduser()
+        if not p.is_file():
+            return _err("workflow_path not found", path=str(p))
+        try:
+            workflow = json.loads(p.read_text(encoding="utf-8", errors="replace"))
+        except json.JSONDecodeError as exc:
+            return _err(f"workflow JSON invalid: {exc}", path=str(p))
+    if not isinstance(workflow, dict):
+        return _err("submit requires workflow (dict) or workflow_path (json file). ComfyUI 'API format' JSON expected.")
+    client_id = str(args.get("client_id") or "gemma4-agent")
+    payload = {"prompt": workflow, "client_id": client_id}
+    response = _comfy_post_json(host, "/prompt", payload)
+    if response.get("_error"):
+        return _err(f"submit failed: {response['_error']}")
+    prompt_id = response.get("prompt_id")
+    if not prompt_id:
+        return _err("ComfyUI did not return a prompt_id", response=response)
+    state.register_resource(
+        "comfy_prompt",
+        f"comfy {prompt_id}",
+        metadata={"prompt_id": prompt_id, "client_id": client_id, "host": host, "submitted_at": datetime.now().isoformat()},
+    )
+    return _ok(prompt_id=prompt_id, client_id=client_id, host=host, response=response, note="Use action=wait or action=result to retrieve outputs.")
+
+
+def _comfy_result(host: str, args: dict[str, Any]) -> dict[str, Any]:
+    prompt_id = str(args.get("prompt_id") or args.get("id") or "").strip()
+    if not prompt_id:
+        return _err("missing prompt_id")
+    data = _comfy_get_json(host, f"/history/{prompt_id}")
+    if data.get("_error"):
+        return _err(f"result fetch failed: {data['_error']}")
+    record = data.get(prompt_id)
+    if not record:
+        return _ok(prompt_id=prompt_id, status="pending", note="No history entry yet; the prompt may still be running.")
+    outputs = record.get("outputs") or {}
+    saved_images: list[dict[str, Any]] = []
+    for node_id, node_output in outputs.items():
+        for img in node_output.get("images") or []:
+            saved_images.append({"node_id": node_id, "filename": img.get("filename"), "subfolder": img.get("subfolder"), "type": img.get("type")})
+    return _ok(prompt_id=prompt_id, status=record.get("status", {}).get("status_str"), outputs=outputs, images=saved_images, verified=True)
+
+
+def _comfy_wait(host: str, args: dict[str, Any]) -> dict[str, Any]:
+    prompt_id = str(args.get("prompt_id") or args.get("id") or "").strip()
+    if not prompt_id:
+        return _err("missing prompt_id")
+    timeout = float(args.get("timeout_sec", 300))
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        data = _comfy_get_json(host, f"/history/{prompt_id}")
+        if not data.get("_error") and prompt_id in data:
+            return _comfy_result(host, {"prompt_id": prompt_id})
+        time.sleep(2.0)
+    return _err("timeout waiting for prompt to finish", prompt_id=prompt_id, timeout_sec=timeout, status="needs_verification")
+
+
+def _comfy_queue(host: str) -> dict[str, Any]:
+    data = _comfy_get_json(host, "/queue")
+    if data.get("_error"):
+        return _err(f"queue fetch failed: {data['_error']}")
+    return _ok(running=len(data.get("queue_running") or []), pending=len(data.get("queue_pending") or []), data=data)
+
+
+def _comfy_interrupt(host: str) -> dict[str, Any]:
+    response = _comfy_post_json(host, "/interrupt", {})
+    if response.get("_error"):
+        return _err(f"interrupt failed: {response['_error']}")
+    return _ok(interrupted=True, response=response)
+
+
+def _comfy_models(host: str) -> dict[str, Any]:
+    data = _comfy_get_json(host, "/object_info")
+    if data.get("_error"):
+        return _err(f"object_info fetch failed: {data['_error']}")
+    return _ok(node_types=len(data), sample=list(data.keys())[:30])
+
+
+def database_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for local databases.
+
+    Actions: status, list_tables, schema, query (read-only SELECT), execute
+    (mutating), export_csv. Drivers: sqlite (stdlib), postgres (psycopg if
+    available), mysql (mysql-connector or pymysql if available). For postgres/
+    mysql, pass connection params per call (host, port, user, password, db).
+    Mutating actions (execute) are not auto-checkpointed because they could
+    span millions of rows; the agent must confirm explicitly.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            sqlite=True,
+            psycopg=importlib.util.find_spec("psycopg") is not None or importlib.util.find_spec("psycopg2") is not None,
+            mysql_connector=importlib.util.find_spec("mysql.connector") is not None,
+            pymysql=importlib.util.find_spec("pymysql") is not None,
+            note="SQLite is always available. Postgres needs psycopg or psycopg2; MySQL needs mysql-connector-python or pymysql.",
+        )
+    driver = str(args.get("driver") or "sqlite").casefold()
+    try:
+        conn, cleanup = _database_connect(driver, args)
+    except Exception as exc:
+        return _err(f"connect failed: {exc}", driver=driver)
+    try:
+        if action == "list_tables":
+            return _database_list_tables(conn, driver)
+        if action == "schema":
+            return _database_schema(conn, driver, args)
+        if action == "query":
+            return _database_query(conn, args)
+        if action == "execute":
+            return _database_execute(conn, args)
+        if action == "export_csv":
+            return _database_export_csv(conn, args, state)
+        return _err("unknown database action", action=action)
+    finally:
+        cleanup()
+
+
+def _database_connect(driver: str, args: dict[str, Any]):
+    if driver == "sqlite":
+        import sqlite3
+        path_raw = str(args.get("path") or args.get("database") or "").strip()
+        if not path_raw:
+            return None, lambda: None
+        path = Path(path_raw).expanduser()
+        if not path.is_file() and not bool(args.get("create", False)):
+            raise FileNotFoundError(f"SQLite file not found: {path} (pass create=true to allow creating)")
+        conn = sqlite3.connect(str(path))
+        conn.row_factory = sqlite3.Row
+        return conn, conn.close
+    if driver == "postgres":
+        if importlib.util.find_spec("psycopg") is not None:
+            import psycopg  # type: ignore[import-not-found]
+            conn = psycopg.connect(
+                host=args.get("host", "localhost"),
+                port=int(args.get("port", 5432)),
+                user=args.get("user"),
+                password=args.get("password"),
+                dbname=args.get("database") or args.get("db"),
+            )
+        elif importlib.util.find_spec("psycopg2") is not None:
+            import psycopg2  # type: ignore[import-not-found]
+            import psycopg2.extras  # type: ignore[import-not-found]
+            conn = psycopg2.connect(
+                host=args.get("host", "localhost"),
+                port=int(args.get("port", 5432)),
+                user=args.get("user"),
+                password=args.get("password"),
+                dbname=args.get("database") or args.get("db"),
+                cursor_factory=psycopg2.extras.RealDictCursor,
+            )
+        else:
+            raise RuntimeError("neither psycopg nor psycopg2 is installed")
+        return conn, conn.close
+    if driver == "mysql":
+        if importlib.util.find_spec("mysql.connector") is not None:
+            import mysql.connector  # type: ignore[import-not-found]
+            conn = mysql.connector.connect(
+                host=args.get("host", "localhost"),
+                port=int(args.get("port", 3306)),
+                user=args.get("user"),
+                password=args.get("password"),
+                database=args.get("database") or args.get("db"),
+            )
+        elif importlib.util.find_spec("pymysql") is not None:
+            import pymysql  # type: ignore[import-not-found]
+            conn = pymysql.connect(
+                host=args.get("host", "localhost"),
+                port=int(args.get("port", 3306)),
+                user=args.get("user"),
+                password=args.get("password"),
+                database=args.get("database") or args.get("db"),
+                cursorclass=pymysql.cursors.DictCursor,
+            )
+        else:
+            raise RuntimeError("neither mysql-connector-python nor pymysql is installed")
+        return conn, conn.close
+    raise RuntimeError(f"unsupported driver: {driver}")
+
+
+def _database_list_tables(conn: Any, driver: str) -> dict[str, Any]:
+    cur = conn.cursor()
+    if driver == "sqlite":
+        cur.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view') ORDER BY name")
+    elif driver == "postgres":
+        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog','information_schema') ORDER BY table_name")
+    else:  # mysql
+        cur.execute("SHOW TABLES")
+    rows = cur.fetchall()
+    tables: list[str] = []
+    for row in rows:
+        if hasattr(row, "keys"):
+            values = list(row.values()) if hasattr(row, "values") else list(dict(row).values())
+            if values:
+                tables.append(str(values[0]))
+        elif isinstance(row, (list, tuple)) and row:
+            tables.append(str(row[0]))
+    return _ok(driver=driver, tables=tables, count=len(tables))
+
+
+def _database_schema(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, Any]:
+    table = str(args.get("table") or "").strip()
+    if not table:
+        return _err("missing table name")
+    cur = conn.cursor()
+    if driver == "sqlite":
+        cur.execute(f"PRAGMA table_info({table})")
+        columns = [{"name": r[1], "type": r[2], "notnull": bool(r[3]), "default": r[4], "pk": bool(r[5])} for r in cur.fetchall()]
+    elif driver == "postgres":
+        cur.execute("SELECT column_name, data_type, is_nullable, column_default FROM information_schema.columns WHERE table_name = %s ORDER BY ordinal_position", (table,))
+        columns = [{"name": r[0] if isinstance(r, (list, tuple)) else r["column_name"], "type": r[1] if isinstance(r, (list, tuple)) else r["data_type"]} for r in cur.fetchall()]
+    else:
+        cur.execute(f"DESCRIBE {table}")
+        columns = [{"name": (r[0] if isinstance(r, (list, tuple)) else r.get("Field")), "type": (r[1] if isinstance(r, (list, tuple)) else r.get("Type"))} for r in cur.fetchall()]
+    return _ok(driver=driver, table=table, columns=columns)
+
+
+def _database_query(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    sql = str(args.get("sql") or args.get("query") or "").strip()
+    if not sql:
+        return _err("missing sql")
+    if not _is_read_only_sql(sql):
+        return _err(
+            "query is restricted to read-only statements (SELECT, WITH, EXPLAIN, PRAGMA, SHOW). Use execute(...) for mutations.",
+            status="needs_user",
+        )
+    cur = conn.cursor()
+    cur.execute(sql)
+    try:
+        rows = cur.fetchall()
+    except Exception:
+        rows = []
+    columns = [d[0] for d in cur.description] if cur.description else []
+    serialized: list[dict[str, Any]] = []
+    for row in rows[: int(args.get("limit", 200))]:
+        if isinstance(row, dict):
+            serialized.append({k: _scalarize(v) for k, v in row.items()})
+        elif hasattr(row, "keys"):
+            serialized.append({k: _scalarize(row[k]) for k in row.keys()})
+        else:
+            serialized.append({columns[i] if i < len(columns) else f"col{i}": _scalarize(v) for i, v in enumerate(row)})
+    return _ok(sql=sql, columns=columns, row_count=len(rows), rows=serialized)
+
+
+def _database_execute(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+    sql = str(args.get("sql") or args.get("query") or "").strip()
+    if not sql:
+        return _err("missing sql")
+    if _is_read_only_sql(sql):
+        return _err("execute is for mutations; use query(...) for SELECT")
+    cur = conn.cursor()
+    cur.execute(sql)
+    try:
+        conn.commit()
+    except Exception:
+        pass
+    rowcount = cur.rowcount if hasattr(cur, "rowcount") else None
+    return _ok(sql=sql, rowcount=rowcount, verified=True)
+
+
+def _database_export_csv(conn: Any, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    sql = str(args.get("sql") or args.get("query") or "").strip()
+    if not sql or not _is_read_only_sql(sql):
+        return _err("export_csv requires a read-only SQL query")
+    dst_raw = str(args.get("dst") or args.get("output") or "").strip()
+    if dst_raw:
+        dst = Path(dst_raw).expanduser()
+    else:
+        dst = state.path.parent / "database_exports" / f"export_{int(time.time())}.csv"
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    cur = conn.cursor()
+    cur.execute(sql)
+    rows = cur.fetchall()
+    columns = [d[0] for d in cur.description] if cur.description else []
+    import csv
+    with dst.open("w", encoding="utf-8", newline="") as fh:
+        writer = csv.writer(fh)
+        writer.writerow(columns)
+        for row in rows:
+            if isinstance(row, dict):
+                writer.writerow([_scalarize(row.get(c)) for c in columns])
+            elif hasattr(row, "keys"):
+                writer.writerow([_scalarize(row[c]) for c in columns])
+            else:
+                writer.writerow([_scalarize(v) for v in row])
+    return _ok(sql=sql, dst=str(dst), rows=len(rows), verified=dst.is_file())
+
+
+def _is_read_only_sql(sql: str) -> bool:
+    s = sql.strip().casefold()
+    # Strip leading comments and whitespace.
+    while s.startswith("--") or s.startswith("/*"):
+        if s.startswith("--"):
+            s = s.split("\n", 1)[1].strip() if "\n" in s else ""
+        else:
+            end = s.find("*/")
+            s = s[end + 2:].strip() if end >= 0 else ""
+    return s.startswith(("select", "with", "explain", "pragma", "show", "describe"))
+
+
+def _scalarize(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
+def container_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for Docker / docker-compose.
+
+    Actions: status, ps, ps_all, images, inspect, logs, start, stop, restart,
+    exec, compose_up, compose_down, compose_ps. Returns needs_dependency if
+    docker is not on PATH. exec accepts an explicit command list and runs
+    docker exec; we do not wrap arbitrary shells.
+    """
+    action = str(args.get("action") or "status").casefold()
+    docker = shutil.which("docker") or shutil.which("docker.exe")
+    if action == "status":
+        return _ok(
+            docker=bool(docker), docker_path=docker,
+            install_hint="winget install Docker.DockerDesktop",
+        )
+    if not docker:
+        return _err(
+            "docker is not installed or not on PATH",
+            status="needs_dependency", verified=False,
+            install_hint="winget install Docker.DockerDesktop",
+        )
+    if action in {"ps", "ps_all"}:
+        return _container_ps(docker, action == "ps_all")
+    if action == "images":
+        return _container_images(docker)
+    if action == "inspect":
+        return _container_inspect(docker, args)
+    if action == "logs":
+        return _container_logs(docker, args)
+    if action in {"start", "stop", "restart"}:
+        return _container_lifecycle(docker, action, args, state)
+    if action == "exec":
+        return _container_exec(docker, args)
+    if action == "compose_up":
+        return _container_compose(docker, "up", args)
+    if action == "compose_down":
+        return _container_compose(docker, "down", args)
+    if action == "compose_ps":
+        return _container_compose(docker, "ps", args)
+    return _err("unknown container action", action=action)
+
+
+def _container_ps(docker: str, all_containers: bool) -> dict[str, Any]:
+    cmd = [docker, "ps", "--format", "{{json .}}"]
+    if all_containers:
+        cmd.insert(2, "-a")
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+    if proc.returncode != 0:
+        return _err("docker ps failed", stderr=proc.stderr, exit_code=proc.returncode)
+    containers: list[dict[str, Any]] = []
+    for line in proc.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            containers.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return _ok(containers=containers, count=len(containers))
+
+
+def _container_images(docker: str) -> dict[str, Any]:
+    proc = subprocess.run([docker, "images", "--format", "{{json .}}"], capture_output=True, text=True, timeout=20)
+    if proc.returncode != 0:
+        return _err("docker images failed", stderr=proc.stderr)
+    images: list[dict[str, Any]] = []
+    for line in proc.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            images.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return _ok(images=images, count=len(images))
+
+
+def _container_inspect(docker: str, args: dict[str, Any]) -> dict[str, Any]:
+    target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
+    if not target:
+        return _err("missing container name/id")
+    proc = subprocess.run([docker, "inspect", target], capture_output=True, text=True, timeout=20)
+    if proc.returncode != 0:
+        return _err("docker inspect failed", stderr=proc.stderr, target=target)
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return _err("inspect returned invalid JSON", raw=proc.stdout[:500])
+    return _ok(target=target, inspect=data)
+
+
+def _container_logs(docker: str, args: dict[str, Any]) -> dict[str, Any]:
+    target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
+    if not target:
+        return _err("missing container name/id")
+    tail = int(args.get("tail", 100))
+    proc = subprocess.run([docker, "logs", "--tail", str(tail), target], capture_output=True, text=True, timeout=30)
+    return _ok(target=target, tail=tail, exit_code=proc.returncode, stdout=proc.stdout[-8000:], stderr=proc.stderr[-2000:])
+
+
+def _container_lifecycle(docker: str, action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
+    if not target:
+        return _err("missing container name/id")
+    reverse = {"start": "stop", "stop": "start", "restart": "restart"}.get(action)
+    checkpoint = state.checkpoint(
+        f"container {action} {target}",
+        rollback=[{"tool": "container", "args": {"action": reverse, "name": target}}] if reverse else [],
+        metadata={"target": target, "action": action},
+    )
+    proc = subprocess.run([docker, action, target], capture_output=True, text=True, timeout=60)
+    return _ok(
+        action=action, target=target,
+        exit_code=proc.returncode, stdout=proc.stdout.strip()[:500], stderr=proc.stderr[-1000:],
+        checkpoint=checkpoint.get("checkpoint"),
+        verified=proc.returncode == 0,
+    )
+
+
+def _container_exec(docker: str, args: dict[str, Any]) -> dict[str, Any]:
+    target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
+    cmd = args.get("command")
+    if not target:
+        return _err("missing container name/id")
+    if isinstance(cmd, str):
+        cmd_list = cmd.split()
+    elif isinstance(cmd, list):
+        cmd_list = [str(p) for p in cmd]
+    else:
+        return _err("command must be string or list")
+    if not cmd_list:
+        return _err("command is empty")
+    proc = subprocess.run([docker, "exec", target, *cmd_list], capture_output=True, text=True, timeout=int(args.get("timeout_sec", 60)))
+    return _ok(target=target, command=cmd_list, exit_code=proc.returncode, stdout=proc.stdout[-8000:], stderr=proc.stderr[-2000:], verified=proc.returncode == 0)
+
+
+def _container_compose(docker: str, subcommand: str, args: dict[str, Any]) -> dict[str, Any]:
+    cwd = str(args.get("cwd") or args.get("path") or "").strip() or None
+    extra = args.get("args") if isinstance(args.get("args"), list) else []
+    cmd = [docker, "compose", subcommand]
+    if subcommand == "up":
+        cmd.append("-d")
+    if subcommand == "ps":
+        cmd.extend(["--format", "json"])
+    cmd.extend(str(a) for a in extra)
+    proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=int(args.get("timeout_sec", 180)))
+    return _ok(subcommand=subcommand, cwd=cwd, command=cmd, exit_code=proc.returncode, stdout=proc.stdout[-6000:], stderr=proc.stderr[-2000:], verified=proc.returncode == 0)
+
+
+def photo_library_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for local photo/video libraries.
+
+    Actions: status, scan, exif, group_by_date, thumbnails, find_by_date.
+    Requires Pillow (PIL). Defers any face-recognition/embedding work.
+    """
+    action = str(args.get("action") or "status").casefold()
+    pil_available = importlib.util.find_spec("PIL") is not None
+    if action == "status":
+        return _ok(
+            pillow=pil_available,
+            install_hint="python -m pip install Pillow",
+            note="EXIF parsing and thumbnails require Pillow; scan/find_by_date work without it for filename listings only.",
+        )
+    if action == "scan":
+        return _photo_scan(args)
+    if not pil_available:
+        return _err(
+            "Pillow is not installed",
+            status="needs_dependency", verified=False,
+            install_hint="python -m pip install Pillow",
+        )
+    if action == "exif":
+        return _photo_exif(args)
+    if action == "group_by_date":
+        return _photo_group_by_date(args, state)
+    if action == "thumbnails":
+        return _photo_thumbnails(args, state)
+    if action == "find_by_date":
+        return _photo_find_by_date(args)
+    return _err("unknown photo_library action", action=action)
+
+
+_PHOTO_EXTS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".tif", ".tiff", ".webp", ".bmp", ".gif"}
+
+
+def _photo_scan(args: dict[str, Any]) -> dict[str, Any]:
+    root_raw = str(args.get("root") or args.get("path") or "").strip()
+    if not root_raw:
+        root = Path.home() / "Pictures"
+    else:
+        root = Path(root_raw).expanduser()
+    if not root.exists():
+        return _err("root not found", root=str(root))
+    limit = int(args.get("limit", 1000))
+    photos: list[dict[str, Any]] = []
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix.casefold() not in _PHOTO_EXTS:
+            continue
+        try:
+            stat = path.stat()
+            photos.append({"path": str(path), "name": path.name, "size": stat.st_size, "mtime": stat.st_mtime})
+        except OSError:
+            continue
+        if len(photos) >= limit:
+            break
+    return _ok(root=str(root), count=len(photos), photos=photos[:200], note=f"{len(photos)} photos found (preview limited to 200).")
+
+
+def _photo_open_exif(path: Path) -> dict[str, Any]:
+    try:
+        from PIL import Image, ExifTags
+    except ImportError:
+        return {"error": "PIL not available"}
+    try:
+        with Image.open(path) as img:
+            exif_raw = img._getexif() or {}
+            named: dict[str, Any] = {}
+            for tag_id, value in exif_raw.items():
+                tag_name = ExifTags.TAGS.get(tag_id, f"Tag{tag_id}")
+                if isinstance(value, bytes):
+                    try:
+                        value = value.decode("utf-8", errors="replace")
+                    except Exception:
+                        value = repr(value)
+                if isinstance(value, dict):
+                    # nested (GPS, etc); flatten one level
+                    nested = {}
+                    for k, v in value.items():
+                        name = ExifTags.GPSTAGS.get(k, f"GPS{k}") if tag_name == "GPSInfo" else str(k)
+                        nested[name] = str(v) if not isinstance(v, (int, float, str, bool, type(None))) else v
+                    value = nested
+                if not isinstance(value, (int, float, str, bool, dict, list, type(None))):
+                    value = str(value)
+                named[tag_name] = value
+            return {"size": img.size, "format": img.format, "mode": img.mode, "exif": named}
+    except Exception as exc:
+        return {"error": f"failed to read: {exc}"}
+
+
+def _photo_exif(args: dict[str, Any]) -> dict[str, Any]:
+    path_raw = str(args.get("path") or "").strip()
+    if not path_raw:
+        return _err("missing path")
+    path = Path(path_raw).expanduser()
+    if not path.is_file():
+        return _err("file not found", path=str(path))
+    info = _photo_open_exif(path)
+    if info.get("error"):
+        return _err(info["error"], path=str(path))
+    return _ok(path=str(path), **info)
+
+
+def _photo_extract_date(path: Path) -> str | None:
+    """Try EXIF DateTimeOriginal/DateTime, fallback to file mtime."""
+    info = _photo_open_exif(path)
+    exif = info.get("exif") or {}
+    for key in ("DateTimeOriginal", "DateTimeDigitized", "DateTime"):
+        raw = exif.get(key)
+        if isinstance(raw, str) and len(raw) >= 10:
+            # EXIF format: "YYYY:MM:DD HH:MM:SS"
+            return raw[:10].replace(":", "-")
+    try:
+        return time.strftime("%Y-%m-%d", time.localtime(path.stat().st_mtime))
+    except OSError:
+        return None
+
+
+def _photo_group_by_date(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    root_raw = str(args.get("root") or "").strip()
+    if not root_raw:
+        return _err("missing root")
+    root = Path(root_raw).expanduser()
+    if not root.is_dir():
+        return _err("root not a directory", root=str(root))
+    out_raw = str(args.get("output") or args.get("dst") or "").strip()
+    if not out_raw:
+        out = state.path.parent / "photos_by_date"
+    else:
+        out = Path(out_raw).expanduser()
+    out.mkdir(parents=True, exist_ok=True)
+    mode = str(args.get("mode") or "copy").casefold()  # copy|move|symlink|dry_run
+    granularity = str(args.get("granularity") or "month").casefold()  # year|month|day
+    dry_run = mode == "dry_run"
+    moved = 0
+    skipped = 0
+    plan: list[dict[str, str]] = []
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix.casefold() not in _PHOTO_EXTS:
+            continue
+        date = _photo_extract_date(path)
+        if not date:
+            skipped += 1
+            continue
+        if granularity == "year":
+            subdir_name = date[:4]
+        elif granularity == "day":
+            subdir_name = date
+        else:
+            subdir_name = date[:7]  # YYYY-MM
+        target_dir = out / subdir_name
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target = target_dir / path.name
+        if target.exists():
+            target = _next_available_path(target)
+        plan.append({"src": str(path), "dst": str(target), "date": date})
+        if dry_run:
+            moved += 1
+            continue
+        try:
+            if mode == "move":
+                shutil.move(str(path), str(target))
+            elif mode == "symlink":
+                target.symlink_to(path)
+            else:
+                shutil.copy2(str(path), str(target))
+            moved += 1
+        except (OSError, shutil.Error):
+            skipped += 1
+    return _ok(root=str(root), output=str(out), mode=mode, granularity=granularity, processed=moved, skipped=skipped, plan_preview=plan[:30], total_plan=len(plan))
+
+
+def _photo_thumbnails(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    from PIL import Image
+    root_raw = str(args.get("root") or "").strip()
+    if not root_raw:
+        return _err("missing root")
+    root = Path(root_raw).expanduser()
+    if not root.exists():
+        return _err("root not found", root=str(root))
+    out_raw = str(args.get("output") or args.get("dst") or "").strip()
+    if not out_raw:
+        out = state.path.parent / "thumbnails"
+    else:
+        out = Path(out_raw).expanduser()
+    out.mkdir(parents=True, exist_ok=True)
+    size_arg = args.get("size", 256)
+    if isinstance(size_arg, (list, tuple)) and len(size_arg) == 2:
+        size = (int(size_arg[0]), int(size_arg[1]))
+    else:
+        n = int(size_arg)
+        size = (n, n)
+    created: list[str] = []
+    failed: list[dict[str, str]] = []
+    limit = int(args.get("limit", 1000))
+    sources = [path for path in root.rglob("*") if path.is_file() and path.suffix.casefold() in _PHOTO_EXTS]
+    for path in sources[:limit]:
+        target = out / f"{path.stem}_thumb.jpg"
+        try:
+            with Image.open(path) as img:
+                img.thumbnail(size, Image.Resampling.LANCZOS)
+                img.convert("RGB").save(target, "JPEG", quality=85)
+            created.append(str(target))
+        except Exception as exc:
+            failed.append({"src": str(path), "error": str(exc)})
+    return _ok(root=str(root), output=str(out), size=size, created=len(created), failed=len(failed), failed_details=failed[:10])
+
+
+def _photo_find_by_date(args: dict[str, Any]) -> dict[str, Any]:
+    root_raw = str(args.get("root") or "").strip()
+    if not root_raw:
+        return _err("missing root")
+    year = args.get("year")
+    month = args.get("month")
+    if year is None:
+        return _err("missing year")
+    target_prefix = f"{int(year):04d}"
+    if month is not None:
+        target_prefix += f"-{int(month):02d}"
+    root = Path(root_raw).expanduser()
+    matches: list[dict[str, Any]] = []
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix.casefold() not in _PHOTO_EXTS:
+            continue
+        date = _photo_extract_date(path)
+        if date and date.startswith(target_prefix):
+            matches.append({"path": str(path), "date": date})
+        if len(matches) >= int(args.get("limit", 500)):
+            break
+    return _ok(root=str(root), filter=target_prefix, count=len(matches), photos=matches[:200])
+
+
+def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor: Executor | None = None) -> dict[str, Any]:
+    """Compound tool for lexical claim verification against local sources.
+
+    Actions:
+      - status
+      - check(claim, sources=[paths|ids|texts]?, use_knowledge=true)
+      - compare(claim, text)
+    Strategy: TF-IDF + cosine similarity per-chunk against the claim. We do
+    NOT call an LLM here; we return ranked snippets so Gemma can write the
+    final verdict from real evidence. Stance heuristic (supports/contradicts/
+    no_evidence) is rule-based on negation cues, not an ML model.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            backend="tfidf_cosine + bm25_fts5",
+            note="Lexical only; no LLM call inside the tool. The agent itself writes the verdict from ranked snippets.",
+        )
+    if action == "compare":
+        claim = str(args.get("claim") or "").strip()
+        text = str(args.get("text") or "").strip()
+        if not claim or not text:
+            return _err("compare requires claim and text")
+        chunks = _fact_check_chunks(text)
+        ranked = _fact_check_rank(claim, [{"source": "<inline>", "title": "inline", "text": ch} for ch in chunks])
+        return _ok(claim=claim, matches=ranked[:10], evaluated=len(chunks))
+    if action != "check":
+        return _err("unknown fact_check action", action=action)
+
+    claim = str(args.get("claim") or "").strip()
+    if not claim:
+        return _err("missing claim")
+    sources_arg = args.get("sources") if isinstance(args.get("sources"), list) else []
+    use_knowledge = bool(args.get("use_knowledge", True))
+    limit = int(args.get("limit", 10))
+
+    candidates: list[dict[str, Any]] = []
+
+    # 1. Explicit sources: each entry can be a path, a resource id (res_*), or a text body.
+    for entry in sources_arg:
+        text = ""
+        label = "<inline>"
+        path = None
+        if isinstance(entry, dict):
+            text = str(entry.get("text") or "")
+            label = str(entry.get("source") or entry.get("title") or "inline")
+            path = entry.get("path")
+        elif isinstance(entry, str):
+            stripped = entry.strip()
+            if stripped.startswith("res_"):
+                resource = state._load().get("resources", {}).get(stripped)
+                if resource:
+                    meta = resource.get("metadata") or {}
+                    text = str(meta.get("text") or "")
+                    label = str(resource.get("label") or stripped)
+                    if not text and meta.get("path") and Path(str(meta["path"])).is_file():
+                        text = Path(str(meta["path"])).read_text(encoding="utf-8", errors="replace")[:50000]
+            elif Path(stripped).exists() and Path(stripped).is_file():
+                text = Path(stripped).read_text(encoding="utf-8", errors="replace")[:50000]
+                label = Path(stripped).name
+                path = stripped
+            else:
+                text = stripped
+                label = "inline"
+        if not text:
+            continue
+        for ch in _fact_check_chunks(text):
+            candidates.append({"source": label, "title": label, "text": ch, "path": path})
+
+    # 2. Local RAG: top-k from knowledge if requested.
+    if use_knowledge and knowledge_executor:
+        kn = knowledge_executor("knowledge", {"action": "search", "query": claim, "limit": limit})
+        for row in kn.get("results", []) if isinstance(kn, dict) else []:
+            snip = str(row.get("snippet") or "").replace("[", "").replace("]", "")
+            if snip:
+                candidates.append({"source": row.get("source") or row.get("title") or "knowledge", "title": row.get("title"), "text": snip})
+
+    if not candidates:
+        return _ok(
+            claim=claim,
+            verdict="no_evidence",
+            evaluated=0,
+            note="No sources provided and knowledge search returned nothing. Pass sources=[...] or ingest documents first via knowledge(ingest) / document(ingest_to_knowledge).",
+            matches=[],
+        )
+
+    ranked = _fact_check_rank(claim, candidates)
+    top = ranked[:limit]
+    # Verdict heuristic:
+    # - If best score >= 0.35 and no negation context, lean supports.
+    # - If best score >= 0.35 and negation/contradiction cue near match, lean contradicts.
+    # - Else no_evidence.
+    if not top:
+        verdict = "no_evidence"
+    else:
+        best = top[0]
+        if best["score"] >= 0.35:
+            verdict = "contradicts" if best.get("negation_signal") else "supports"
+        elif best["score"] >= 0.18:
+            verdict = "weakly_supports"
+        else:
+            verdict = "no_evidence"
+    return _ok(
+        claim=claim,
+        verdict=verdict,
+        evaluated=len(candidates),
+        matches=top,
+        note="Verdict is a lexical heuristic; treat as one signal, not ground truth. Inspect matches and write a final answer with citations.",
+    )
+
+
+_NEGATION_CUES_EN = {"not", "no", "never", "false", "untrue", "wrong", "incorrect", "deny", "denies", "denied", "refute", "refuted"}
+_NEGATION_CUES_ES = {"no", "nunca", "falso", "falsa", "incorrecto", "incorrecta", "niega", "niegan", "negado", "desmentido", "rechaza", "rechazado"}
+
+
+def _fact_check_chunks(text: str) -> list[str]:
+    """Sentence-level chunks (rough split on . ! ? newlines, then merge short)."""
+    raw = re.split(r"(?<=[\.!?])\s+|\n{2,}", text)
+    chunks: list[str] = []
+    buf = ""
+    for sent in raw:
+        sent = sent.strip()
+        if not sent:
+            continue
+        if len(buf) + len(sent) < 600:
+            buf = f"{buf} {sent}".strip()
+        else:
+            if buf:
+                chunks.append(buf)
+            buf = sent
+    if buf:
+        chunks.append(buf)
+    return chunks
+
+
+def _fact_check_rank(claim: str, candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """TF-IDF + cosine similarity. Pure-Python, no sklearn dependency."""
+    import math
+    from collections import Counter
+    def tokenize(text: str) -> list[str]:
+        return re.findall(r"[\wÀ-ſ]{2,}", text.casefold())
+    claim_tokens = tokenize(claim)
+    if not claim_tokens or not candidates:
+        return []
+    # Build vocabulary and DF over candidates + claim.
+    docs = [tokenize(c["text"]) for c in candidates]
+    df: Counter[str] = Counter()
+    for doc in docs + [claim_tokens]:
+        for term in set(doc):
+            df[term] += 1
+    n_docs = len(docs) + 1
+
+    def tfidf_vector(tokens: list[str]) -> dict[str, float]:
+        if not tokens:
+            return {}
+        tf = Counter(tokens)
+        total = len(tokens)
+        return {t: (count / total) * math.log((n_docs + 1) / (df.get(t, 1) + 1) + 1.0) for t, count in tf.items()}
+
+    def cosine(a: dict[str, float], b: dict[str, float]) -> float:
+        if not a or not b:
+            return 0.0
+        # Iterate over the smaller dict for the dot product.
+        small, large = (a, b) if len(a) <= len(b) else (b, a)
+        dot = sum(v * large.get(k, 0.0) for k, v in small.items())
+        na = math.sqrt(sum(v * v for v in a.values()))
+        nb = math.sqrt(sum(v * v for v in b.values()))
+        return dot / (na * nb) if na and nb else 0.0
+
+    claim_vec = tfidf_vector(claim_tokens)
+    claim_token_set = set(claim_tokens)
+    negation_cues = _NEGATION_CUES_EN | _NEGATION_CUES_ES
+
+    ranked: list[dict[str, Any]] = []
+    for cand, tokens in zip(candidates, docs):
+        score = cosine(claim_vec, tfidf_vector(tokens))
+        # Detect negation cues within a 6-token window of any claim term in the chunk.
+        negation_signal = False
+        for i, tok in enumerate(tokens):
+            if tok not in claim_token_set:
+                continue
+            window = tokens[max(0, i - 6): i + 7]
+            if any(w in negation_cues for w in window):
+                negation_signal = True
+                break
+        ranked.append({
+            "source": cand.get("source"),
+            "title": cand.get("title"),
+            "path": cand.get("path"),
+            "score": round(float(score), 4),
+            "negation_signal": negation_signal,
+            "snippet": cand["text"][:400],
+        })
+    ranked.sort(key=lambda r: -r["score"])
+    return ranked
+
+
 def data_analysis_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """Compound tool for CSV/Excel local data analysis.
 

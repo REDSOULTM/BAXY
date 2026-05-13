@@ -67,7 +67,27 @@ Nuevos modulos runner: [routine_runner.py](routine_runner.py),
 [watcher_runner.py](watcher_runner.py) — Scheduled Tasks los invocan para
 disparar acciones diferidas sin agente en ejecucion.
 
-**Proximo paso:** Fase D (P2 verticales).
+**Fase D — P2 verticales completas (2026-05-13).**
+
+| Item | Estado | Como |
+|---|---|---|
+| D1 fact_check | done | TF-IDF + cosine similarity puro Python (sin sklearn). Negation cues EN+ES detectados con ventana de 6 tokens. Verdict heuristico supports/weakly_supports/contradicts/no_evidence; el agente escribe el verdict final desde los snippets rankeados (no llama LLM dentro de la tool). compare(claim, text) y check(claim, sources?, use_knowledge=true) que lee de knowledge.search via executor. |
+| D2 photo_library | done | Pillow para EXIF (DateTimeOriginal/DateTime con fallback mtime) y thumbnails (LANCZOS). scan funciona sin Pillow. group_by_date copia/mueve/symlink con granularity year/month/day. find_by_date filtra por YYYY-MM prefix. Face-recognition deferred. |
+| D3 container | done | docker CLI wrapper con --format json. start/stop/restart con checkpoint rollback. exec acepta command list explicito (no shell wrap). compose_up/down/ps. Returns needs_dependency si docker no esta en PATH. |
+| D4 database | done | SQLite (stdlib), Postgres (psycopg/psycopg2), MySQL (mysql-connector/pymysql). query restringido a SELECT/WITH/EXPLAIN/PRAGMA/SHOW; execute para mutaciones. list_tables, schema, export_csv. Driver selection por arg `driver=sqlite|postgres|mysql`. |
+| D5 creative_local | done | Bridge a ComfyUI HTTP local (default :8188). submit→POST /prompt, wait→poll /history/<id>, queue, interrupt, models→/object_info. Returns needs_user con launch instruction si server no responde. Set GEMMA4_COMFYUI_HOST para override. |
+| D6 form_filler | done | Orquesta browser_real. discover via page.evaluate (selectores CSS path, label resolution via <label for=>, parent <label>, aria-label, placeholder). plan matchea values dict con discovered fields (exact + substring). apply ejecuta fill/click/select. **submit requiere confirmed=true; sin ello devuelve needs_confirmation con screenshot + summary de campos** — gate explicito para evitar submits silenciosos. |
+| D7 peripheral | done | Get-PnpDevice para usb_list, hid_list, controller_status (keywords Xbox/Controller/DualSense/Joystick/Joy-Con), device_manager_problems (Status != OK). device_disable/enable con rollback checkpoint. RGB vendor SDKs deferred con razon. |
+| D8 accessibility | done | magnifier_start/stop y narrator_start/stop via Popen + taskkill. settings_panel abre `ms-settings:easeofaccess`. dictation_status reporta servicio. high_contrast deferred — el camino seguro es Left Alt + Left Shift + Print Screen (confirmacion del usuario). |
+| D9 study | done | Flashcards + SM-2 spaced repetition (Wozniak 1990): EF' = EF + (0.1 - (5-q)(0.08+(5-q)*0.02)), EF floor 1.3, intervalos 1/6/round(I*EF), reset reps cuando q<3. Storage SQLite en `<state_dir>/study.sqlite`. decks, cards, due, review(q 0..5), stats. |
+
+Verificado al cierre Fase D: **60 tools**, eval_smoke missing=[] duplicate_count=0.
+Probado end-to-end: study (SM-2 EF 2.5→2.6→2.7, q=1 reset reps=0 EF=2.16),
+database SQLite (create→insert→query→list_tables), fact_check.compare score
+0.5965, peripheral.controller_status 14 controllers, fact_check con negation
+cue detecto contradicts correctamente en sesion previa.
+
+**Proximo paso:** Fase E (P3 externo, cloud services con auth).
 
 ## Catalogo Actual Verificado
 
@@ -312,35 +332,43 @@ NO empezar hasta Fase A-C. Cuando se haga:
 
 ## Prioridad De La Proxima Sesion
 
-Fases A, B y C completas y verificadas (2026-05-13). 51 tools registradas,
-eval_smoke limpio. La siguiente sesion debe arrancar con **Fase D (P2
-verticales)**, en este orden de impacto:
+Fases A, B, C y D completas y verificadas (2026-05-13). **60 tools** registradas,
+eval_smoke limpio. La siguiente sesion debe arrancar con **Fase E (P3 externo,
+cloud)**, en este orden de impacto:
 
-1. **`fact_check`** — claim vs sources, compara contra ingest en knowledge.
-   Cierra el ciclo de `source_manager` + `web.research` + `document`.
-2. **`photo_library`** — EXIF, group_by_date, thumbnails via Pillow. Util
-   para "ordena mis fotos del viaje".
-3. **`container`** — Docker CLI wrapper (ps, up, down, logs, exec). Solo si
-   `docker` esta en PATH; sino `needs_dependency`.
-4. **`database`** — SQLite local connect/query/export. Postgres/MySQL opcional
-   si `psycopg`/`mysql.connector` disponibles.
-5. **`creative_local`** — pipe a ComfyUI/Stable Diffusion si esta instalado;
-   sino `needs_dependency` con install hint.
-6. **`form_filler`** — orquesta browser_real_visible + review obligatorio
-   antes de submit. Requiere safety habilitada para el submit final.
-7. **`peripheral`** — USB list, controller status. RGB vendor APIs deferidas.
-8. **`accessibility`** — magnifier/narrator/high_contrast toggles + dictation
-   status. Acciones reversibles via state checkpoints.
-9. **`study`** — flashcards + spaced repetition local en SQLite. Opcional
-   bridge a AnkiConnect si Anki esta corriendo.
+1. **`weather_news`** — API meteorologica + RSS/news. Lowest barrier (no auth en
+   APIs publicas tipo open-meteo). Cubre "que tiempo hace", "ultimas noticias".
+2. **`calendar_cloud`** — Microsoft Graph Calendar + Google Calendar. El user
+   ya tiene patron `GEMMA4_GRAPH_TOKEN` del email tool — reutilizar.
+3. **`mail_cloud`** — extender el `email` tool actual con read inbox / search
+   inbox / reply. Hoy solo envia.
+4. **`todo_cloud`** — Microsoft To Do + Google Tasks. Mismo patron de token.
+5. **`drive_cloud`** — OneDrive + Google Drive. Solo search/read/upload (sin
+   share por seguridad).
+6. **`music_cloud`** — Spotify Web API (Client Credentials para search, OAuth
+   para playback). YouTube Music via private endpoints (fragil — diferir).
+7. **`smart_home_cloud`** — Home Assistant local primero (deja `smart_home` ya
+   propuesto), luego SmartThings/Tuya como bridges separados.
+8. **`communications_cloud`** — Telegram (Bot API), Discord (webhooks),
+   Slack (incoming webhooks). Sin leer mensajes en esta sesion (privacidad).
+9. **`maps_places`** — OpenStreetMap/Nominatim primero (sin token), Google
+   Maps Places API si el usuario provee key.
 
-Despues de D viene **Fase E (P3 externo)**: calendar_cloud, mail_cloud,
-todo_cloud, drive_cloud, music_cloud, smart_home_cloud, weather_news,
-communications_cloud. Cada uno con su propio token y `needs_user` si falta.
+Despues de E quedaria solo lo deferido:
+- `voice_io` (TTS+STT con Vosk/Piper locales o cloud)
+- `capture` (camara/microfono — diferido por decision de producto)
+- `creative_local` extensions: bridge a Krita/Blender/GIMP CLI
+- Mejoras a tools existentes: `routine.on_app_open` real, `dns_set` con
+  profile XML, `audio_device.set_app_route`.
 
-**Mantener la disciplina:** ninguna tool nueva queda con acciones devolviendo
-`needs_implementation` sin justificacion documentada aqui. eval_smoke debe
-seguir reportando missing=[] duplicate_count=0.
+**Mantener la disciplina:**
+- Cada cloud tool con su env var documentada y `needs_user` si falta token.
+- NO scrappar UIs cuando hay API publica.
+- NO leer/escribir datos sensibles (correos, mensajes privados) sin gate
+  explicito con `safety.create_confirmation`.
+- eval_smoke debe seguir reportando missing=[] duplicate_count=0.
+- Ninguna tool nueva queda con acciones devolviendo `needs_implementation`
+  sin justificacion documentada aqui.
 
 ## Como Validar Cada Cierre
 

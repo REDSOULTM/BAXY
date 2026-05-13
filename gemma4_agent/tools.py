@@ -32,10 +32,16 @@ from .domain_tools import (
     local_calendar_tool,
     local_search_tool,
     media_tool,
+    accessibility_tool,
+    container_tool,
+    creative_local_tool,
     data_analysis_tool,
+    database_tool,
     developer_tool,
     device_settings_tool,
     document_tool,
+    fact_check_tool,
+    form_filler_tool,
     game_launcher_tool,
     job_manager_tool,
     maintenance_tool,
@@ -44,9 +50,12 @@ from .domain_tools import (
     notes_tasks_tool,
     notification_tool,
     office_tool,
+    peripheral_tool,
+    photo_library_tool,
     printer_scanner_tool,
     routine_tool,
     source_manager_tool,
+    study_tool,
     watcher_tool,
 )
 from .knowledge import KnowledgeStore
@@ -179,6 +188,15 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "job_manager": ["status", "start", "list", "log", "status_of", "info", "cancel", "stop", "kill"],
     "network": ["status", "ping", "traceroute", "dns_get", "dns_set", "dns_resolve", "resolve", "port_check", "connections", "public_ip", "firewall_allow", "firewall_block", "firewall_remove"],
     "data_analysis": ["status", "csv_profile", "csv_describe", "csv_query", "csv_head", "csv_to_xlsx", "plot_histogram", "plot_scatter", "plot_line"],
+    "fact_check": ["status", "check", "compare"],
+    "photo_library": ["status", "scan", "exif", "group_by_date", "thumbnails", "find_by_date"],
+    "container": ["status", "ps", "ps_all", "images", "inspect", "logs", "start", "stop", "restart", "exec", "compose_up", "compose_down", "compose_ps"],
+    "database": ["status", "list_tables", "schema", "query", "execute", "export_csv"],
+    "creative_local": ["status", "submit", "result", "wait", "queue", "interrupt", "models"],
+    "form_filler": ["status", "discover", "plan", "apply", "submit"],
+    "peripheral": ["status", "usb_list", "hid_list", "controller_status", "device_manager_problems", "problems", "device_disable", "device_enable", "rgb_profile_set", "rgb_list", "rgb_set_color"],
+    "accessibility": ["status", "magnifier_start", "magnifier_stop", "narrator_start", "narrator_stop", "dictation_status", "settings_panel", "open_settings", "high_contrast_on", "high_contrast_off", "high_contrast_toggle"],
+    "study": ["status", "deck_create", "deck_list", "deck_delete", "card_add", "card_list", "card_delete", "due", "review", "stats"],
     "safety": ["status", "pending", "confirm", "cancel"],
 }
 
@@ -1102,6 +1120,15 @@ class ToolRegistry:
             "job_manager": self.t_job_manager,
             "network": self.t_network,
             "data_analysis": self.t_data_analysis,
+            "fact_check": self.t_fact_check,
+            "photo_library": self.t_photo_library,
+            "container": self.t_container,
+            "database": self.t_database,
+            "creative_local": self.t_creative_local,
+            "form_filler": self.t_form_filler,
+            "peripheral": self.t_peripheral,
+            "accessibility": self.t_accessibility,
+            "study": self.t_study,
             "safety": self.t_safety,
             "system_time": self.system_time,
             "list_processes": self.list_processes,
@@ -1810,6 +1837,33 @@ class ToolRegistry:
 
     def t_data_analysis(self, args: dict[str, Any]) -> dict[str, Any]:
         return data_analysis_tool(args, self.state)
+
+    def t_fact_check(self, args: dict[str, Any]) -> dict[str, Any]:
+        return fact_check_tool(args, self.state, knowledge_executor=self.execute)
+
+    def t_photo_library(self, args: dict[str, Any]) -> dict[str, Any]:
+        return photo_library_tool(args, self.state)
+
+    def t_container(self, args: dict[str, Any]) -> dict[str, Any]:
+        return container_tool(args, self.state)
+
+    def t_database(self, args: dict[str, Any]) -> dict[str, Any]:
+        return database_tool(args, self.state)
+
+    def t_creative_local(self, args: dict[str, Any]) -> dict[str, Any]:
+        return creative_local_tool(args, self.state)
+
+    def t_form_filler(self, args: dict[str, Any]) -> dict[str, Any]:
+        return form_filler_tool(args, self.state, executor=self.execute)
+
+    def t_peripheral(self, args: dict[str, Any]) -> dict[str, Any]:
+        return peripheral_tool(args, self.state)
+
+    def t_accessibility(self, args: dict[str, Any]) -> dict[str, Any]:
+        return accessibility_tool(args, self.state)
+
+    def t_study(self, args: dict[str, Any]) -> dict[str, Any]:
+        return study_tool(args, self.state)
 
     def t_backup_sync(self, args: dict[str, Any]) -> dict[str, Any]:
         return backup_sync_tool(args, self.state)
@@ -2914,6 +2968,15 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "job_manager", "description": "Compound generic job tracker. Actions: status, start, list, log, status_of, cancel. start spawns a detached subprocess, redirects stdout/stderr to a log file, registers in state with PID. cancel uses taskkill /T to terminate the process tree. log returns tailed lines. Useful for any long-running command not tied to a specific tool.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "command": {}, "cwd": {"type": "string"}, "label": {"type": "string"}, "job_id": {"type": "string"}, "id": {"type": "string"}, "tail": {"type": "integer"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "network", "description": "Compound network diagnostics tool. Actions: status, ping, traceroute, dns_get, dns_set, dns_resolve, port_check, connections, public_ip. dns_set snapshots the previous DNS list per adapter for rollback (pass addresses=['AUTO'] to restore automatic DNS). firewall_allow/block/remove are intentionally NOT exposed; use terminal(netsh advfirewall) explicitly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "host": {"type": "string"}, "target": {"type": "string"}, "name": {"type": "string"}, "port": {"type": "integer"}, "count": {"type": "integer"}, "max_hops": {"type": "integer"}, "adapter": {"type": "string"}, "addresses": {"type": "array"}, "state": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "data_analysis", "description": "Compound local data analysis tool using pandas + matplotlib. Actions: status, csv_profile, csv_describe, csv_query, csv_head, csv_to_xlsx, plot_histogram, plot_scatter, plot_line. csv_query uses pandas .query() expressions. Plots write PNG to data_analysis/ under state dir; matplotlib uses the Agg headless backend. Returns needs_dependency if pandas/matplotlib are missing.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "sep": {"type": "string"}, "query": {"type": "string"}, "limit": {"type": "integer"}, "n": {"type": "integer"}, "dst": {"type": "string"}, "column": {"type": "string"}, "x": {"type": "string"}, "y": {"type": "string"}, "x_col": {"type": "string"}, "y_col": {"type": "string"}, "bins": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "fact_check", "description": "Compound lexical fact-check tool. Actions: status, check, compare. TF-IDF + cosine similarity per chunk against the claim plus a negation-cue heuristic (EN+ES). Returns a verdict (supports / weakly_supports / contradicts / no_evidence) and ranked snippets. NO LLM call inside the tool: the agent writes the final answer with citations from the ranked matches. check accepts sources=[paths|ids|inline_texts] and reads from local knowledge by default.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "claim": {"type": "string"}, "text": {"type": "string"}, "sources": {"type": "array"}, "use_knowledge": {"type": "boolean"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "photo_library", "description": "Compound tool for local photo libraries. Actions: status, scan, exif, group_by_date, thumbnails, find_by_date. Requires Pillow for EXIF and thumbnails; scan works without it. group_by_date copies/moves/symlinks photos into YYYY-MM (or year|day) subfolders under output, using EXIF DateTimeOriginal with mtime fallback. Face-recognition and embeddings are intentionally deferred.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "root": {"type": "string"}, "output": {"type": "string"}, "dst": {"type": "string"}, "limit": {"type": "integer"}, "mode": {"type": "string", "enum": ["copy", "move", "symlink", "dry_run"]}, "granularity": {"type": "string", "enum": ["year", "month", "day"]}, "size": {}, "year": {"type": "integer"}, "month": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "container", "description": "Compound Docker / docker-compose wrapper. Actions: status, ps, ps_all, images, inspect, logs, start, stop, restart, exec, compose_up, compose_down, compose_ps. Returns needs_dependency if docker is not on PATH. start/stop/restart create a rollback checkpoint with the reverse action. exec runs an explicit command list inside the container (no shell wrapping).", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "id": {"type": "string"}, "container": {"type": "string"}, "command": {}, "tail": {"type": "integer"}, "cwd": {"type": "string"}, "path": {"type": "string"}, "args": {"type": "array"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "database", "description": "Compound database tool. Actions: status, list_tables, schema, query (SELECT-only), execute (mutating), export_csv. driver=sqlite|postgres|mysql. SQLite uses stdlib; Postgres needs psycopg or psycopg2; MySQL needs mysql-connector-python or pymysql. query is restricted to read-only statements; execute is for INSERT/UPDATE/DELETE/DDL.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "driver": {"type": "string", "enum": ["sqlite", "postgres", "mysql"]}, "path": {"type": "string"}, "database": {"type": "string"}, "db": {"type": "string"}, "host": {"type": "string"}, "port": {"type": "integer"}, "user": {"type": "string"}, "password": {"type": "string"}, "table": {"type": "string"}, "sql": {"type": "string"}, "query": {"type": "string"}, "limit": {"type": "integer"}, "dst": {"type": "string"}, "output": {"type": "string"}, "create": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "creative_local", "description": "Compound bridge to a local ComfyUI server (default http://127.0.0.1:8188). Actions: status, submit (POST /prompt with API-format workflow), result (GET /history/<id>), wait (poll until done), queue (GET /queue), interrupt (POST /interrupt), models (GET /object_info). Returns needs_user with launch instructions if the server is not reachable. Set GEMMA4_COMFYUI_HOST to override the host.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "host": {"type": "string"}, "workflow": {"type": "object"}, "workflow_path": {"type": "string"}, "path": {"type": "string"}, "client_id": {"type": "string"}, "prompt_id": {"type": "string"}, "id": {"type": "string"}, "timeout_sec": {"type": "number"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "form_filler", "description": "Compound HTML form orchestrator on top of browser_real. Actions: status, discover, plan, apply, submit. discover scans the current page for input/select/textarea + their labels/placeholders. plan matches values={label_or_name: value} against the discovered fields without writing. apply executes fill/click via browser_real. submit clicks a submit button only when confirmed=true; otherwise it returns needs_confirmation with a screenshot so the user can verify before sending the form.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "session_id": {"type": "string"}, "values": {"type": "object"}, "plan": {"type": "array"}, "selector": {"type": "string"}, "confirmed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "peripheral", "description": "Compound USB/HID tool via Get-PnpDevice. Actions: status, usb_list, hid_list, controller_status (matches Xbox/PlayStation/Joy-Con/etc keywords), device_manager_problems (Status != OK), device_disable, device_enable. Vendor RGB SDKs (Logitech/Razer/Corsair) are deferred. device_disable/enable creates a rollback checkpoint and usually requires admin elevation.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "instance_id": {"type": "string"}, "id": {"type": "string"}, "only_present": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "accessibility", "description": "Compound Windows accessibility tool. Actions: status, magnifier_start/stop, narrator_start/stop, dictation_status, settings_panel (opens ms-settings:easeofaccess). High Contrast toggle is deferred because programmatic toggling requires registry write + WM_SETTINGCHANGE broadcast; the safe path is the keyboard shortcut Left Alt + Left Shift + Print Screen.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "study", "description": "Compound flashcards + SM-2 spaced repetition tool. Actions: status, deck_create, deck_list, deck_delete, card_add, card_list, card_delete, due, review (grade q in 0..5), stats. SM-2 algorithm per Wozniak 1990: EF' = EF + (0.1 - (5-q)*(0.08 + (5-q)*0.02)) with EF floor 1.3; intervals 1, 6, then I_n = round(I_{n-1} * EF). When q<3, restart repetitions but keep EF. Storage: SQLite at <state_dir>/study.sqlite.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "deck_id": {"type": "string"}, "card_id": {"type": "string"}, "id": {"type": "string"}, "front": {"type": "string"}, "back": {"type": "string"}, "question": {"type": "string"}, "answer": {"type": "string"}, "q": {"type": "integer"}, "grade": {"type": "integer"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "safety", "description": "Compound safety confirmation tool. Actions: status, pending, confirm, cancel. If another tool returns needs_confirmation, ask the user and then call safety(action='confirm', confirmation_id='...') only after explicit approval.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "confirmation_id": {"type": "string"}, "id": {"type": "string"}, "include_resolved": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "package", "description": "Compound package manager tool via winget. Actions: list, search, install, uninstall. This prototype executes directly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "clipboard", "description": "Compound clipboard tool. Actions: read, write.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "content": {"type": "string"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
