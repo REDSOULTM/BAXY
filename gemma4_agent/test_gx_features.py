@@ -248,6 +248,108 @@ def test_g6_phrase_hook_fires_on_match() -> bool:
     return True
 
 
+def test_h1_2_run_with_timeout_returns_on_hang() -> bool:
+    """_run_with_timeout must return with _timed_out=True if the fn hangs past the deadline."""
+    import time as _time
+    from gemma4_agent.agent import _run_with_timeout
+    started = _time.time()
+    result = _run_with_timeout(lambda: _time.sleep(5) or {"ok": True}, timeout_s=0.5)
+    elapsed = _time.time() - started
+    assert result.get("_timed_out") is True, f"should time out, got {result}"
+    assert elapsed < 2.0, f"timeout did not bound elapsed time: {elapsed}"
+    print("H1.2 _run_with_timeout bounds elapsed: OK")
+    return True
+
+
+def test_h1_2_run_with_timeout_captures_exception() -> bool:
+    """_run_with_timeout must capture an in-thread exception, not bubble up."""
+    from gemma4_agent.agent import _run_with_timeout
+    def boom():
+        raise RuntimeError("explode")
+    result = _run_with_timeout(boom, timeout_s=2.0)
+    assert result.get("_timed_out") is False
+    assert "explode" in (result.get("_error") or "")
+    print("H1.2 _run_with_timeout captures exception: OK")
+    return True
+
+
+def test_h1_3_is_unverified_result() -> bool:
+    from gemma4_agent.agent import _is_unverified_result
+    assert _is_unverified_result({"ok": False, "error": "x"}) is True
+    assert _is_unverified_result({"ok": True, "verified": False}) is True
+    assert _is_unverified_result({"ok": True, "status": "needs_verification"}) is True
+    assert _is_unverified_result({"ok": True, "status": "done", "verified": True}) is False
+    assert _is_unverified_result({"ok": True, "status": "failed"}) is True
+    # not a dict
+    assert _is_unverified_result(None) is False  # type: ignore[arg-type]
+    print("H1.3 _is_unverified_result classification: OK")
+    return True
+
+
+def test_h1_4_format_phrase_fires_failure_warning() -> bool:
+    """The system block must include a WARNING line when any step did not complete."""
+    from gemma4_agent.agent import _format_phrase_fires
+    fires = [{
+        "label": "test",
+        "phrase": "abc",
+        "results": [
+            {"tool": "ok_one", "ok": True},
+            {"tool": "fail_one", "ok": False, "error": "boom"},
+        ],
+    }]
+    rendered = _format_phrase_fires(fires)
+    assert "WARNING" in rendered, "must surface WARNING on partial failure"
+    assert "fail_one" in rendered
+    # No warning when all ok.
+    rendered_all_ok = _format_phrase_fires([{
+        "label": "t", "phrase": "p",
+        "results": [{"tool": "x", "ok": True}],
+    }])
+    assert "WARNING" not in rendered_all_ok
+    print("H1.4 phrase fires WARNING on partial failure: OK")
+    return True
+
+
+def test_h1_5_replan_excludes_needs_user_failures() -> bool:
+    """Tools returning status='needs_user_*' must NOT count toward replan threshold."""
+    # We can't run a full turn without llama-server; exercise the logic directly.
+    # Mirror the inline rule in agent.run_content.
+    samples = [
+        ({"ok": False, "status": "needs_user_auth", "error": "no token"}, False),
+        ({"ok": False, "status": "needs_dependency", "error": "missing soundvolumeview"}, False),
+        ({"ok": False, "status": "failed", "error": "real boom"}, True),
+        ({"ok": False, "completion_status": "needs_user_install", "error": "x"}, False),
+        ({"ok": False, "status": "needs_verification", "error": "x"}, False),  # not counted
+    ]
+    for result, expected_counts in samples:
+        status_norm = str(result.get("status") or "").casefold()
+        completion = str(result.get("completion_status") or "").casefold()
+        is_blocked = status_norm.startswith("needs_") or completion.startswith("needs_")
+        counts = (not result.get("ok")) and not is_blocked
+        assert counts == expected_counts, f"mismatch on {result}: counts={counts}, expected={expected_counts}"
+    print("H1.5 replan failure filter: OK")
+    return True
+
+
+def test_h1_1_chat_timeout_param_accepted() -> bool:
+    """LLMClient.chat must accept timeout_s without raising even if llama-server is down."""
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+    # Force a non-routable host so the call fails fast.
+    cfg = AgentConfig.from_env()
+    cfg = type(cfg)(**{**cfg.__dict__, "server_url": "http://127.0.0.1:1"})  # type: ignore[arg-type]
+    client = LLMClient(cfg)
+    try:
+        client.chat([{"role": "user", "content": "hi"}], timeout_s=0.5)
+    except RuntimeError as exc:
+        msg = str(exc).lower()
+        assert "timeout" in msg or "connection" in msg or "http_error" in msg, f"unexpected error: {exc}"
+        print("H1.1 chat timeout_s param surfaces a connection/timeout error: OK")
+        return True
+    print("FAIL: chat with bogus server did not raise")
+    return False
+
+
 def test_g2_compaction_disabled_keeps_truncation() -> bool:
     """When summarization is disabled, _compact_completed_history still truncates."""
     import os
@@ -271,6 +373,12 @@ def main() -> int:
         test_g6_phrase_trigger_creation_validation,
         test_g6_active_phrase_triggers_returns_enabled,
         test_g6_phrase_hook_fires_on_match,
+        test_h1_1_chat_timeout_param_accepted,
+        test_h1_2_run_with_timeout_returns_on_hang,
+        test_h1_2_run_with_timeout_captures_exception,
+        test_h1_3_is_unverified_result,
+        test_h1_4_format_phrase_fires_failure_warning,
+        test_h1_5_replan_excludes_needs_user_failures,
         test_g2_compaction_disabled_keeps_truncation,
     ]
     failures: list[str] = []

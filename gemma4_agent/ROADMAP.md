@@ -294,6 +294,46 @@ diferido). G6 reacciona a frases en el chat de texto, ejecuta los steps
 y deja que Gemma confirme con prosa natural. Es la pieza que falta para
 parecerse a Alexa **sin** microfono.
 
+## H1 — Hardening del chat de texto (timeouts + guards de honestidad, 2026-05-13)
+
+Auditamos el nucleo de chat tras 8 sesiones de features (A..G6). Hallazgos
+en el codigo real (no especulacion):
+
+- LLM chat no aceptaba override de timeout por-call. Llamadas auxiliares
+  (summarization, planner, replan) heredaban el global de 180s.
+- Phrase trigger ejecutaba steps **sin** timeout. Una tool colgada en una
+  rutina bloqueaba el turno entero antes de que Gemma viera el mensaje.
+- Guard `_guard_unverified_final` solo aplicaba al final del turno. Si una
+  tool fallaba a mitad y luego el LLM seguia llamando mas tools, el fallo
+  desaparecia del radar y el agente podia decir "listo" sobre algo que
+  fallo.
+- `_format_phrase_fires` mostraba `ok=False` y errores pero **no obligaba**
+  al LLM a reportarlos honestamente al usuario.
+- `failure_log` para replan contaba CUALQUIER `ok=False`, incluyendo
+  `needs_user_auth` y `needs_dependency`, que son blocked-on-input y no
+  fallos del plan. Replan se disparaba en falsos positivos.
+
+**Fixes:**
+
+| ID | Que cambio | Archivo |
+|---|---|---|
+| H1.1 | `LLMClient.chat()` acepta `timeout_s` por-call. Las llamadas auxiliares usan 45s (planner/replan) y 60s (summarization). HTTP/socket timeouts se traducen a `RuntimeError('llm_timeout: ...')` en vez de URLError obscuro. | `llm_client.py`, `agent.py` |
+| H1.2 | Cada step de phrase_trigger corre con `_run_with_timeout` (default 30s, override `GEMMA4_PHRASE_STEP_TIMEOUT_S`). Si vence, `step_results` recibe `timed_out=True` y la rutina sigue al siguiente step. Si el step lanza excepcion, `exception=True`. Implementacion via ThreadPoolExecutor con `shutdown(wait=False)` para no bloquear el turno por un worker colgado. | `agent.py` |
+| H1.3 | Despues de cada batch de tool calls del LLM, si **alguna** tool retorno unverified/failed/needs_verification, insertamos un mensaje `role=user` efimero al historial: `[system note] In the previous step, these tools returned unverified/failed results: ... Do NOT claim those actions are complete`. Gemma no puede ignorarlo en el siguiente turno. Traceado como `unverified_intermediate_warning`. | `agent.py` + helper `_is_unverified_result` |
+| H1.4 | `_format_phrase_fires` agrega un bloque WARNING explicito cuando >=1 step fallo: `"WARNING: N of M steps did NOT complete. You MUST tell the user honestly which actions did not run. Do not say 'listo' or 'done' for the failed steps."` Diferencia entre `ok=False` y `timed_out`. | `agent.py` |
+| H1.5 | El `failure_log` que cuenta para replan **excluye** results cuyo `status` o `completion_status` empieza con `needs_`. Esos casos no se arreglan replanificando (necesitan accion del usuario). Traceado como `failure_excluded_from_replan`. | `agent.py` |
+
+**Tests nuevos (test_gx_features.py, 11 -> 17):**
+- `test_h1_1_chat_timeout_param_accepted`: el parametro existe y reporta error claro contra servidor inalcanzable.
+- `test_h1_2_run_with_timeout_returns_on_hang`: una funcion que duerme 5s con timeout=0.5s retorna en <2s con `_timed_out=True`.
+- `test_h1_2_run_with_timeout_captures_exception`: excepciones en el thread se capturan en `_error`, no se propagan.
+- `test_h1_3_is_unverified_result`: la clasificacion `ok=False`, `verified=False`, `status=needs_verification`, `status=failed` activa el guard; `status=done` no.
+- `test_h1_4_format_phrase_fires_failure_warning`: el bloque incluye "WARNING" cuando hay un step fallido, no cuando todos son ok.
+- `test_h1_5_replan_excludes_needs_user_failures`: `needs_user_auth`, `needs_dependency`, `needs_verification` NO cuentan para replan; `failed` si.
+
+Verificado: 62 tools, eval_smoke missing=[] duplicate_count=0,
+test_router 61/61, test_gx_features 17/17.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):

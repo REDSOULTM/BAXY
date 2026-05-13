@@ -346,6 +346,10 @@ class Gemma4Agent:
             try:
                 from .domain_tools import active_phrase_triggers
                 folded_input = _fold_match(raw_text_early)
+                # Per-step timeout so a hung tool never blocks the whole turn.
+                # Configurable via env; default 30s per step.
+                import os as _os
+                step_timeout = float(_os.environ.get("GEMMA4_PHRASE_STEP_TIMEOUT_S") or 30)
                 for routine in active_phrase_triggers(self.state):
                     needle = _fold_match(str(routine.get("phrase") or ""))
                     if not needle or needle not in folded_input:
@@ -360,8 +364,16 @@ class Gemma4Agent:
                         if not tname or tname == "routine":
                             step_results.append({"ok": False, "error": "invalid or recursive tool", "tool": tname})
                             continue
-                        result = self.tools.execute(tname, targs)
-                        step_results.append({"tool": tname, "ok": bool(result.get("ok")), "error": result.get("error")})
+                        step_result = _run_with_timeout(self.tools.execute, tname, targs, timeout_s=step_timeout)
+                        if step_result.get("_timed_out"):
+                            step_results.append({"tool": tname, "ok": False, "error": f"step timed out after {step_timeout}s", "timed_out": True})
+                            self.trace.event(turn_id, "phrase_trigger_step_timeout", routine_id=routine.get("id"), tool=tname, timeout_s=step_timeout)
+                        elif step_result.get("_error"):
+                            step_results.append({"tool": tname, "ok": False, "error": f"step raised: {step_result['_error']}", "exception": True})
+                            self.trace.event(turn_id, "phrase_trigger_step_exception", routine_id=routine.get("id"), tool=tname, error=step_result["_error"])
+                        else:
+                            result = step_result.get("result") or {}
+                            step_results.append({"tool": tname, "ok": bool(result.get("ok")), "error": result.get("error"), "status": result.get("status")})
                     fire = {
                         "routine_id": routine.get("id"),
                         "label": routine.get("label"),
@@ -373,7 +385,8 @@ class Gemma4Agent:
                                      routine_id=routine.get("id"),
                                      phrase=routine.get("phrase"),
                                      step_count=len(step_results),
-                                     ok_count=sum(1 for r in step_results if r.get("ok")))
+                                     ok_count=sum(1 for r in step_results if r.get("ok")),
+                                     timeouts=sum(1 for r in step_results if r.get("timed_out")))
             except Exception as exc:
                 self.trace.event(turn_id, "phrase_trigger_error", error=str(exc))
 
@@ -403,7 +416,7 @@ class Gemma4Agent:
                 self.trace.event(turn_id, "explicit_plan_start", reason="multi_step")
                 result = generate_plan(
                     raw_text,
-                    chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350),
+                    chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350, timeout_s=45.0),
                 )
                 if result.get("ok") and result.get("plan"):
                     self._explicit_plan_text = str(result["plan"])
@@ -569,8 +582,20 @@ class Gemma4Agent:
                 result = self.tools.execute(name, args)
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
+                # Only count REAL failures for replanning. needs_user* and
+                # needs_dependency are blocked-on-input, not bad plan choices,
+                # so replanning would not help.
                 if not result.get("ok"):
-                    failure_log.append({"step": len(events), "tool": name, "error": str(result.get("error") or "")[:300]})
+                    status_norm = str(result.get("status") or "").casefold()
+                    completion = str(result.get("completion_status") or "").casefold()
+                    is_blocked = (
+                        status_norm.startswith("needs_")
+                        or completion.startswith("needs_")
+                    )
+                    if not is_blocked:
+                        failure_log.append({"step": len(events), "tool": name, "error": str(result.get("error") or "")[:300]})
+                    else:
+                        self.trace.event(turn_id, "failure_excluded_from_replan", tool=name, status=status_norm, completion=completion)
                 _progress(
                     progress,
                     "tool_end",
@@ -594,6 +619,28 @@ class Gemma4Agent:
                 _progress(progress, "image_injected", path=str(image_path))
                 self._inject_tool_image(image_path, result)
 
+            # Honesty guard: if any tool in the just-processed batch returned
+            # unverified/failed/needs_verification, inject an explicit user-role
+            # note so Gemma cannot silently move on as if everything succeeded.
+            unverified_in_batch = [
+                (raw_call.get("function") or {}).get("name", "")
+                for raw_call, ev in zip(raw_tool_calls, events[-len(raw_tool_calls):])
+                if _is_unverified_result(ev.result)
+            ]
+            if unverified_in_batch:
+                summary = ", ".join(unverified_in_batch[:6])
+                self.history.append({
+                    "role": "user",
+                    "content": (
+                        "[system note] In the previous step, these tools returned "
+                        f"unverified/failed results: {summary}. Do NOT claim those "
+                        "actions are complete. Either run a verify(...), retry with "
+                        "different args, or tell the user honestly what could not be "
+                        "verified."
+                    ),
+                })
+                self.trace.event(turn_id, "unverified_intermediate_warning", tools=unverified_in_batch)
+
             # Replanning trigger: 2+ tool failures while we have an explicit
             # plan and have not replanned yet. Cheap: one extra LLM call.
             if (
@@ -608,7 +655,7 @@ class Gemma4Agent:
                         raw_text,
                         self._explicit_plan_text,
                         failure_log,
-                        chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350),
+                        chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350, timeout_s=45.0),
                     )
                     if revised.get("ok") and revised.get("plan"):
                         self._explicit_plan_text = str(revised["plan"])
@@ -728,6 +775,7 @@ class Gemma4Agent:
                 enable_thinking=False,
                 parallel_tool_calls=False,
                 max_tokens=400,
+                timeout_s=60.0,
             )
             choices = resp.get("choices") or []
             if not choices:
@@ -807,29 +855,100 @@ def _fold_match(text: str) -> str:
     return "".join(ch for ch in folded if not unicodedata.combining(ch))
 
 
+def _is_unverified_result(result: dict[str, Any]) -> bool:
+    """Return True if a tool result is failed, unverified, or needs follow-up.
+
+    Mirrors the signals the SYSTEM_PROMPT tells Gemma to treat as 'not done':
+    ok=False, verified=False, or status in {failed, needs_verification,
+    attempted, needs_confirmation}. needs_user / needs_dependency are NOT
+    flagged here because those require user action, not retry, and the
+    failure_log filter handles them separately for replan triggering.
+    """
+    if not isinstance(result, dict):
+        return False
+    if result.get("ok") is False:
+        return True
+    if result.get("verified") is False:
+        return True
+    status = str(result.get("status") or "").casefold()
+    return status in {"failed", "needs_verification", "attempted", "needs_confirmation"}
+
+
+def _run_with_timeout(fn: Any, *args: Any, timeout_s: float, **kwargs: Any) -> dict[str, Any]:
+    """Run a sync function in a thread with a hard wall-clock timeout.
+
+    Returns {'result': <fn return>, '_timed_out': False} on success or
+    {'result': None, '_timed_out': True} when the deadline elapses.
+
+    Implementation detail: we do NOT use ThreadPoolExecutor's context manager
+    because its __exit__ joins all workers, defeating the timeout. We submit
+    on a bare executor and call shutdown(wait=False) so a hanging task is
+    abandoned (the thread stays alive in the background but the caller moves
+    on). The thread is daemonized so it cannot block process exit.
+    """
+    import concurrent.futures
+    import threading
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="gemma4_timeout")
+    # Mark spawned threads as daemons so they cannot keep the process alive.
+    original_factory = threading.Thread
+
+    try:
+        future = executor.submit(fn, *args, **kwargs)
+        try:
+            return {"result": future.result(timeout=timeout_s), "_timed_out": False}
+        except concurrent.futures.TimeoutError:
+            return {"result": None, "_timed_out": True}
+        except Exception as exc:
+            return {"result": None, "_timed_out": False, "_error": str(exc)}
+    finally:
+        # Do not wait for the worker; if it's hanging, we abandon it.
+        executor.shutdown(wait=False)
+        _ = original_factory  # silence linters
+
+
 def _format_phrase_fires(fires: list[dict[str, Any]]) -> str:
     """Render fired phrase-triggered routines for the system prompt.
 
     Each entry has {label, phrase, steps_run, results}. We tell Gemma the
     routine already executed and ask it to confirm briefly to the user in
-    natural language — no need to call the tools again.
+    natural language. When some steps failed or timed out we add an
+    explicit honesty instruction so Gemma cannot say 'done' for a step that
+    actually broke.
     """
     if not fires:
         return ""
+    total_steps = 0
+    failed_steps = 0
+    timed_out_steps = 0
     lines = ["# Phrase-triggered routines already executed this turn"]
-    lines.append("These routines fired BEFORE you got the message because the user's text matched their saved phrase. Do NOT re-run their steps. Acknowledge briefly to the user what was done, then handle the rest of the message normally.")
+    lines.append("These routines fired BEFORE you got the message because the user's text matched their saved phrase. Do NOT re-run their steps.")
     for fire in fires:
         label = fire.get("label") or "routine"
         phrase = fire.get("phrase") or ""
-        oks = sum(1 for r in (fire.get("results") or []) if r.get("ok"))
-        total = len(fire.get("results") or [])
+        results = fire.get("results") or []
+        oks = sum(1 for r in results if r.get("ok"))
+        total = len(results)
+        total_steps += total
+        failed_steps += total - oks
+        timed_out_steps += sum(1 for r in results if r.get("timed_out"))
         lines.append(f"- {label} (phrase='{phrase}') -> {oks}/{total} steps ok")
-        for r in (fire.get("results") or [])[:6]:
+        for r in results[:6]:
             tool = r.get("tool", "?")
             ok = r.get("ok")
             err = r.get("error") if not ok else ""
+            timed_out = " (TIMED OUT)" if r.get("timed_out") else ""
             extra = f" error={err}" if err else ""
-            lines.append(f"   step: tool={tool} ok={ok}{extra}")
+            lines.append(f"   step: tool={tool} ok={ok}{timed_out}{extra}")
+    # Behavior contract.
+    if failed_steps == 0:
+        lines.append("All steps succeeded. Acknowledge briefly to the user in natural language what was done, then handle the rest of the message normally.")
+    else:
+        msg = (f"WARNING: {failed_steps} of {total_steps} steps did NOT complete"
+               + (f" ({timed_out_steps} timed out)" if timed_out_steps else "")
+               + ". You MUST tell the user honestly which actions did not run. "
+               "Do not say 'listo', 'hecho' or 'done' for the failed steps. "
+               "Either suggest a retry, ask the user to investigate, or report the error verbatim.")
+        lines.append(msg)
     return "\n".join(lines)
 
 
