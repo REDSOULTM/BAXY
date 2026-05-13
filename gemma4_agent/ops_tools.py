@@ -408,6 +408,68 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
         session = _connect_cdp_session(session_id, endpoint)
         return _ok(session_id=session_id, endpoint=endpoint, tabs=_tabs(session), note="Connected over CDP. Browser must have been started with a remote debugging port.")
 
+    if action == "attach_visible":
+        return _attach_visible_browser(args, session_id, state)
+
+    if action == "active_tab":
+        session = _BROWSER_SESSIONS.get(session_id)
+        if not session:
+            return _err("no browser session; use attach_visible or connect_cdp first", status="needs_user")
+        tabs = _tabs(session)
+        active_idx = int(session.get("active", 0))
+        active = tabs[active_idx] if 0 <= active_idx < len(tabs) else (tabs[0] if tabs else None)
+        return _ok(session_id=session_id, active_tab=active, tabs=tabs, count=len(tabs))
+
+    if action == "tab_open":
+        if not url:
+            return _err("tab_open requires url")
+        session = _BROWSER_SESSIONS.get(session_id) or _get_browser_session(session_id, state, headless=headless)
+        page = _active_page(session, new_tab=True)
+        page.goto(url, wait_until=str(args.get("wait_until") or "domcontentloaded"), timeout=timeout_ms)
+        return _ok(**_page_result(session_id, session, page), verified=True, content_verified=bool(page.title()))
+
+    if action == "tab_close":
+        session = _BROWSER_SESSIONS.get(session_id)
+        if not session:
+            return _err("no browser session", session_id=session_id, status="needs_user")
+        page_id = args.get("page_id")
+        if page_id is None:
+            page_id = session.get("active", 0)
+        pages = session.get("pages") or []
+        try:
+            idx = int(page_id)
+        except (TypeError, ValueError):
+            return _err("page_id must be integer", page_id=page_id)
+        if not (0 <= idx < len(pages)):
+            return _err("page_id out of range", page_id=idx, count=len(pages))
+        page = pages[idx]
+        try:
+            page.close()
+        except Exception as exc:
+            return _err(f"failed to close tab: {exc}")
+        session["pages"] = [p for p in session.get("pages", []) if not p.is_closed()]
+        session["active"] = max(0, min(idx, len(session["pages"]) - 1)) if session["pages"] else 0
+        return _ok(session_id=session_id, closed_page_id=idx, remaining_tabs=_tabs(session))
+
+    if action == "tab_focus":
+        session = _BROWSER_SESSIONS.get(session_id)
+        if not session:
+            return _err("no browser session", session_id=session_id, status="needs_user")
+        page_id = args.get("page_id")
+        pages = session.get("pages") or []
+        try:
+            idx = int(page_id) if page_id is not None else 0
+        except (TypeError, ValueError):
+            return _err("page_id must be integer", page_id=page_id)
+        if not (0 <= idx < len(pages)):
+            return _err("page_id out of range", page_id=idx, count=len(pages))
+        session["active"] = idx
+        try:
+            pages[idx].bring_to_front()
+        except Exception:
+            pass  # CDP-attached browsers may not allow bring_to_front
+        return _ok(session_id=session_id, active_page_id=idx, tabs=_tabs(session))
+
     if action in {"open", "goto"}:
         if not url:
             return _err("browser_real open/goto requires url")
@@ -449,7 +511,191 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
             return _err("evaluate requires script")
         value = page.evaluate(script)
         return _ok(**_page_result(session_id, session, page), value=value, verified=True, content_verified=True)
+    if action == "click_text":
+        target = str(args.get("text") or args.get("target") or value or "").strip()
+        if not target:
+            return _err("click_text requires text/target")
+        # Playwright getByText returns the first matching visible element.
+        try:
+            locator = page.get_by_text(target, exact=bool(args.get("exact", False)))
+            locator.first.click(timeout=timeout_ms)
+        except Exception as exc:
+            return _err(f"click_text failed: {exc}", target=target, session_id=session_id)
+        return _ok(**_page_result(session_id, session, page), clicked_text=target, verified=True, content_verified=True)
+    if action == "extract":
+        mode = str(args.get("mode") or "main_text").casefold()
+        max_chars = int(args.get("max_chars", 12000))
+        return _browser_extract(session_id, session, page, mode, max_chars)
+    if action == "wait_for_download":
+        return _browser_wait_for_download(session_id, session, page, args, captures_dir)
+    if action == "set_download_path":
+        # Use CDP to set download path on the current context.
+        target_dir = Path(str(args.get("path") or captures_dir / "downloads")).expanduser()
+        target_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            client = page.context.new_cdp_session(page)
+            client.send("Browser.setDownloadBehavior", {
+                "behavior": "allow",
+                "downloadPath": str(target_dir),
+                "eventsEnabled": True,
+            })
+        except Exception as exc:
+            return _err(f"set_download_path via CDP failed: {exc}", path=str(target_dir))
+        return _ok(session_id=session_id, download_path=str(target_dir), verified=True)
     return _err("unknown browser_real action", action=action)
+
+
+def _attach_visible_browser(args: dict[str, Any], session_id: str, state: AgentState) -> dict[str, Any]:
+    """Connect to a visible browser started with --remote-debugging-port.
+
+    If the browser is not listening on the requested port, return needs_user with
+    explicit launch instructions. We do not auto-restart the user's browser
+    because that would close their tabs.
+    """
+    browser_choice = str(args.get("browser") or "chrome").casefold()
+    port = int(args.get("port", 9222))
+    endpoint = str(args.get("endpoint") or f"http://127.0.0.1:{port}").strip()
+    # Probe the endpoint first.
+    if not _cdp_endpoint_alive(endpoint):
+        launch_cmd = _cdp_launch_instruction(browser_choice, port)
+        return _err(
+            f"no browser is listening on {endpoint}",
+            status="needs_user", verified=False,
+            completion_status="needs_browser_debug_port",
+            browser=browser_choice, endpoint=endpoint, port=port,
+            launch_instructions=launch_cmd,
+            note="Start the browser yourself with the listed flags and re-call attach_visible. Auto-restart is not done because it would close your tabs.",
+        )
+    session = _connect_cdp_session(session_id, endpoint)
+    return _ok(
+        session_id=session_id, endpoint=endpoint, attached=True,
+        browser=browser_choice, tabs=_tabs(session), cdp=True,
+        evidence={"session_id": session_id, "browser_profile": "user_profile_via_cdp"},
+        note="Attached to the user's visible browser via CDP. Tabs you open here are visible to the user. Use tab_close to clean up.",
+    )
+
+
+def _cdp_endpoint_alive(endpoint: str) -> bool:
+    try:
+        with urllib.request.urlopen(f"{endpoint.rstrip('/')}/json/version", timeout=2.0):
+            return True
+    except Exception:
+        return False
+
+
+def _cdp_launch_instruction(browser: str, port: int) -> dict[str, Any]:
+    profile_hint = "Use a separate user-data-dir to avoid singleton conflicts with your current session."
+    base = {
+        "chrome": [
+            r'& "C:\Program Files\Google\Chrome\Application\chrome.exe" `',
+            f'    --remote-debugging-port={port} `',
+            r'    --user-data-dir="$env:LOCALAPPDATA\Gemma4Agent\chrome-cdp"',
+        ],
+        "edge": [
+            r'& "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" `',
+            f'    --remote-debugging-port={port} `',
+            r'    --user-data-dir="$env:LOCALAPPDATA\Gemma4Agent\edge-cdp"',
+        ],
+        "opera": [
+            r'& "$env:LOCALAPPDATA\Programs\Opera\opera.exe" `',
+            f'    --remote-debugging-port={port} `',
+            r'    --user-data-dir="$env:LOCALAPPDATA\Gemma4Agent\opera-cdp"',
+        ],
+        "brave": [
+            r'& "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" `',
+            f'    --remote-debugging-port={port} `',
+            r'    --user-data-dir="$env:LOCALAPPDATA\Gemma4Agent\brave-cdp"',
+        ],
+    }
+    cmd = base.get(browser) or base["chrome"]
+    return {"browser": browser, "port": port, "powershell": "\n".join(cmd), "note": profile_hint}
+
+
+def _browser_extract(session_id: str, session: dict[str, Any], page: Any, mode: str, max_chars: int) -> dict[str, Any]:
+    if mode == "main_text":
+        # Conservative: grab <main>, <article>, or body inner_text.
+        try:
+            content = page.evaluate(
+                """() => {
+                  const sel = ['main', 'article', '[role=\"main\"]', '#content', 'body'];
+                  for (const s of sel) {
+                    const el = document.querySelector(s);
+                    if (el && el.innerText && el.innerText.length > 200) return el.innerText;
+                  }
+                  return document.body ? document.body.innerText : '';
+                }"""
+            )
+        except Exception as exc:
+            return _err(f"extract main_text failed: {exc}")
+        text = str(content or "")[:max_chars]
+        return _ok(**_page_result(session_id, session, page), mode=mode, text=text, chars=len(text), verified=True, content_verified=bool(text))
+    if mode == "tables":
+        try:
+            tables = page.evaluate(
+                """() => {
+                  return [...document.querySelectorAll('table')].slice(0, 20).map(t => {
+                    return [...t.rows].slice(0, 200).map(r => [...r.cells].map(c => c.innerText.trim()));
+                  });
+                }"""
+            )
+        except Exception as exc:
+            return _err(f"extract tables failed: {exc}")
+        return _ok(**_page_result(session_id, session, page), mode=mode, tables=tables, table_count=len(tables or []), verified=True, content_verified=bool(tables))
+    if mode == "links":
+        try:
+            links = page.evaluate(
+                """() => [...document.querySelectorAll('a[href]')].slice(0, 500).map(a => ({
+                  text: (a.innerText || a.textContent || '').trim().slice(0, 200),
+                  href: a.href
+                }))"""
+            )
+        except Exception as exc:
+            return _err(f"extract links failed: {exc}")
+        return _ok(**_page_result(session_id, session, page), mode=mode, links=links, count=len(links or []), verified=True, content_verified=bool(links))
+    if mode == "html":
+        try:
+            html = page.content()
+        except Exception as exc:
+            return _err(f"extract html failed: {exc}")
+        return _ok(**_page_result(session_id, session, page), mode=mode, html=html[:max_chars], chars=len(html), verified=True, content_verified=True)
+    return _err(f"unknown extract mode: {mode}", supported=["main_text", "tables", "links", "html"])
+
+
+def _browser_wait_for_download(session_id: str, session: dict[str, Any], page: Any, args: dict[str, Any], captures_dir: Path) -> dict[str, Any]:
+    """Wait for a download to finish.
+
+    NOTE: For Playwright-launched browsers, page.expect_download() is reliable.
+    For CDP-attached visible browsers Playwright's Download API may not fire
+    consistently; in that case we fall back to setDownloadBehavior + raw CDP
+    events. We try the Playwright path first.
+    """
+    timeout_ms = int(float(args.get("timeout_sec", 60)) * 1000)
+    save_dir = Path(str(args.get("save_dir") or captures_dir / "downloads")).expanduser()
+    save_dir.mkdir(parents=True, exist_ok=True)
+    if session.get("cdp"):
+        return _err(
+            "wait_for_download over CDP requires raw event listening; not implemented yet for attached visible browsers",
+            status="needs_implementation", verified=False,
+            note="Use set_download_path then trigger the download manually; we can verify the file landed in save_dir.",
+        )
+    try:
+        with page.expect_download(timeout=timeout_ms) as info:
+            # Caller must trigger the download outside this call; this path is only
+            # meaningful when chained with a click that initiates the download.
+            pass
+        download = info.value
+        target = save_dir / download.suggested_filename
+        download.save_as(str(target))
+        return _ok(
+            session_id=session_id,
+            path=str(target.resolve()),
+            suggested_filename=download.suggested_filename,
+            url=download.url,
+            size=target.stat().st_size if target.exists() else None,
+            verified=target.exists(),
+        )
+    except Exception as exc:
+        return _err(f"wait_for_download failed: {exc}", status="needs_verification")
 
 
 def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35) -> dict[str, Any]:

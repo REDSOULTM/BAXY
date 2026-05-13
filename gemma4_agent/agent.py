@@ -56,7 +56,21 @@ filesystem, gui, uia, vision, window, system, clipboard, terminal, memory,
 state, verify, input, env, registry, download, email, reminder, knowledge,
 notification, routine, source_manager, dependency, contacts, notes_tasks,
 local_calendar, habit_tracker, local_search, printer_scanner, desktop_layout,
-backup_sync, package, and safety.
+backup_sync, document, package, and safety.
+
+Document ingestion rule: if the user asks to read, summarize, extract text/
+tables/images from, or analyze a PDF/DOCX/XLSX/PPTX/HTML file, use
+document(action="extract_text|extract_tables|extract_images|ocr_pdf|summarize|
+ingest_to_knowledge|compare_documents"). Prefer this over filesystem.read for
+binary office formats. document.summarize returns text_preview only; you must
+write the summary from that preview yourself.
+
+Visible browser rule: for tasks like "compra esto", "rellena este formulario"
+or any web action where the user expects the work to happen in their own
+visible browser, call browser_real(action="attach_visible", browser="chrome|
+edge|opera|brave"). If it returns needs_user with launch_instructions, relay
+those instructions and stop — do not start a hidden headless browser silently,
+and do not pretend you attached.
 
 For apps and games, use app(action="open", name="<user-facing name>") or
 steam(action="launch_game", query="<game>") for installed Steam games. The
