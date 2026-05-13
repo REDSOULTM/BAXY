@@ -350,6 +350,111 @@ def test_h1_1_chat_timeout_param_accepted() -> bool:
     return False
 
 
+def test_h2_1_experience_prune_max_records() -> bool:
+    """Insert >max_records rows; prune keeps only the newest."""
+    import os
+    from gemma4_agent.experience import ExperienceMemory
+    from gemma4_agent.semantic_router import embed
+    path = Path(__file__).parent / "data" / "test_experience_prune.sqlite"
+    if path.exists():
+        path.unlink()
+    os.environ["GEMMA4_EXPERIENCE_MAX_RECORDS"] = "5"
+    os.environ["GEMMA4_EXPERIENCE_MAX_AGE_DAYS"] = "0"  # disable age-based for this test
+    try:
+        mem = ExperienceMemory(path)
+        for i in range(12):
+            r = mem.record(
+                turn_id=f"t-{i}", user_input=f"turno numero {i}",
+                tools_used=["x"], outcome="ok", mission_status="PASS",
+                summary=f"s{i}", embed_fn=embed,
+            )
+            assert r.get("ok"), r
+        before_count = mem.stats()["experience_count"]
+        assert before_count == 12, f"should have 12 before prune, got {before_count}"
+        pruned = mem.prune()
+        assert pruned.get("ok"), pruned
+        after_count = mem.stats()["experience_count"]
+        assert after_count == 5, f"should keep 5 after prune, got {after_count}"
+        # Ensure the oldest were dropped, not the newest.
+        recalls = mem.recall("turno numero 11", embed_fn=embed, k=1)
+        assert recalls, "newest record should still be recallable"
+        mem.close()
+    finally:
+        os.environ.pop("GEMMA4_EXPERIENCE_MAX_RECORDS", None)
+        os.environ.pop("GEMMA4_EXPERIENCE_MAX_AGE_DAYS", None)
+        path.unlink(missing_ok=True)
+    print("H2.1 experience prune by max_records: OK")
+    return True
+
+
+def test_h2_2_summarization_cooldown_helper() -> bool:
+    import os
+    from gemma4_agent.agent import _summarization_cooldown_turns
+    assert _summarization_cooldown_turns() == 6
+    os.environ["GEMMA4_AGENT_SUMMARIZATION_COOLDOWN"] = "20"
+    try:
+        assert _summarization_cooldown_turns() == 20
+    finally:
+        os.environ.pop("GEMMA4_AGENT_SUMMARIZATION_COOLDOWN", None)
+    os.environ["GEMMA4_AGENT_SUMMARIZATION_COOLDOWN"] = "bogus"
+    try:
+        assert _summarization_cooldown_turns() == 6, "fallback on parse error"
+    finally:
+        os.environ.pop("GEMMA4_AGENT_SUMMARIZATION_COOLDOWN", None)
+    print("H2.2 summarization cooldown helper: OK")
+    return True
+
+
+def test_h2_3_semantic_router_transient_retry() -> bool:
+    """If the model load raises a transient error, _STATE should record it and allow
+    a retry after cooldown — without becoming permanently_disabled."""
+    from gemma4_agent import semantic_router as sr
+    # Reset state to known.
+    sr._STATE.model = None
+    sr._STATE.tool_embeddings = None
+    sr._STATE.permanently_disabled = False
+    sr._STATE.attempt_count = 0
+    sr._STATE.last_attempt_ts = 0.0
+    sr._STATE.last_error = ""
+
+    # Patch SentenceTransformer to raise once, then succeed.
+    import sentence_transformers
+    original = sentence_transformers.SentenceTransformer
+    calls = {"n": 0}
+    class FakeModel:
+        def encode(self, texts, normalize_embeddings=False, show_progress_bar=False):
+            import numpy as _np
+            return _np.zeros((len(texts), 384), dtype="float32")
+    def fake_st(name):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("transient disk full")
+        return FakeModel()
+    sentence_transformers.SentenceTransformer = fake_st  # type: ignore[assignment]
+    try:
+        ok1 = sr._ensure_loaded()
+        assert ok1 is False, "first call should fail transient"
+        assert sr._STATE.permanently_disabled is False, "transient should NOT mark permanent"
+        assert "transient disk full" in sr._STATE.last_error
+        # Cooldown should block the immediate retry.
+        ok_blocked = sr._ensure_loaded()
+        assert ok_blocked is False
+        # Bypass cooldown by resetting last_attempt_ts.
+        sr._STATE.last_attempt_ts = 0.0
+        ok2 = sr._ensure_loaded()
+        assert ok2 is True, f"second call should succeed; state={sr._STATE}"
+    finally:
+        sentence_transformers.SentenceTransformer = original  # type: ignore[assignment]
+        # Reset for downstream tests.
+        sr._STATE.model = None
+        sr._STATE.tool_embeddings = None
+        sr._STATE.permanently_disabled = False
+        sr._STATE.attempt_count = 0
+        sr._STATE.last_error = ""
+    print("H2.3 semantic router transient retry: OK")
+    return True
+
+
 def test_g2_compaction_disabled_keeps_truncation() -> bool:
     """When summarization is disabled, _compact_completed_history still truncates."""
     import os
@@ -379,6 +484,9 @@ def main() -> int:
         test_h1_3_is_unverified_result,
         test_h1_4_format_phrase_fires_failure_warning,
         test_h1_5_replan_excludes_needs_user_failures,
+        test_h2_1_experience_prune_max_records,
+        test_h2_2_summarization_cooldown_helper,
+        test_h2_3_semantic_router_transient_retry,
         test_g2_compaction_disabled_keeps_truncation,
     ]
     failures: list[str] = []

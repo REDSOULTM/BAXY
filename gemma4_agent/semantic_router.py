@@ -95,10 +95,19 @@ class _State:
     model: Any | None = None
     tool_names: list[str] | None = None
     tool_embeddings: Any | None = None  # np.ndarray
-    disabled: bool = False
+    permanently_disabled: bool = False  # set only when the lib is missing
+    last_attempt_ts: float = 0.0
+    last_error: str = ""
+    attempt_count: int = 0
 
 
 _STATE = _State()
+
+# Retry policy for transient failures (e.g. disk full, network blip on first
+# model download): wait at least RETRY_COOLDOWN_S before trying again, up to
+# RETRY_MAX_ATTEMPTS. After that we give up for the process lifetime.
+_RETRY_COOLDOWN_S = 120
+_RETRY_MAX_ATTEMPTS = 3
 
 
 def is_enabled() -> bool:
@@ -112,35 +121,52 @@ def is_enabled() -> bool:
 def _ensure_loaded(known_tool_names: list[str] | None = None) -> bool:
     """Lazy-load the model and pre-compute tool description embeddings.
 
-    Returns False if loading failed (model missing, network blocked, etc) so the
-    caller can skip the fallback silently. We only print to stderr once per
-    process.
+    Returns False if loading failed (model missing, network blocked, etc). On
+    transient failures we record the error and allow a retry after a cooldown.
+    On a permanent failure (sentence-transformers not installed) we mark the
+    state permanently disabled.
     """
-    if _STATE.disabled:
+    if _STATE.permanently_disabled:
         return False
     if _STATE.model is not None and _STATE.tool_embeddings is not None:
         return True
+    # Cooldown gate: do not retry too often.
+    import time as _time
+    now = _time.time()
+    if _STATE.attempt_count > 0 and (now - _STATE.last_attempt_ts) < _RETRY_COOLDOWN_S:
+        return False
+    if _STATE.attempt_count >= _RETRY_MAX_ATTEMPTS:
+        # Give up after a few transient failures. Will reset only if the
+        # process is restarted.
+        _STATE.permanently_disabled = True
+        return False
+    _STATE.attempt_count += 1
+    _STATE.last_attempt_ts = now
     try:
         from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
-    except ImportError:
-        _STATE.disabled = True
+    except ImportError as exc:
+        # Library is missing -> permanent (a restart won't fix it without
+        # the user installing the package).
+        _STATE.permanently_disabled = True
+        _STATE.last_error = f"ImportError: {exc}"
         return False
     model_name = os.environ.get("GEMMA4_SEMANTIC_MODEL") or _MODEL_NAME_DEFAULT
     try:
         model = SentenceTransformer(model_name)
-    except Exception:
-        _STATE.disabled = True
+    except Exception as exc:
+        _STATE.last_error = f"SentenceTransformer init failed: {exc}"
         return False
     names = known_tool_names or list(TOOL_DESCRIPTIONS.keys())
     descriptions = [TOOL_DESCRIPTIONS.get(name, name) for name in names]
     try:
         embeddings = model.encode(descriptions, normalize_embeddings=True, show_progress_bar=False)
-    except Exception:
-        _STATE.disabled = True
+    except Exception as exc:
+        _STATE.last_error = f"encode failed: {exc}"
         return False
     _STATE.model = model
     _STATE.tool_names = names
     _STATE.tool_embeddings = embeddings
+    _STATE.last_error = ""
     return True
 
 
@@ -194,7 +220,9 @@ def embed(text: str) -> Any | None:
 def status() -> dict[str, Any]:
     return {
         "enabled": is_enabled(),
-        "disabled": _STATE.disabled,
+        "disabled": _STATE.permanently_disabled,
+        "attempts": _STATE.attempt_count,
+        "last_error": _STATE.last_error,
         "model_loaded": _STATE.model is not None,
         "model_name": os.environ.get("GEMMA4_SEMANTIC_MODEL") or _MODEL_NAME_DEFAULT,
         "tool_count": len(_STATE.tool_names) if _STATE.tool_names else len(TOOL_DESCRIPTIONS),

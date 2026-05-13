@@ -298,10 +298,16 @@ class Gemma4Agent:
         self._explicit_plan_text: str = ""
         self._explicit_plan_steps: list[str] = []
         self._phrase_fires: list[dict[str, Any]] = []
+        # Summarization cooldown so we don't spend an extra LLM call every
+        # turn when the conversation has just been compacted. Resets per-clear.
+        self._summarize_last_run_turn: int = -10
+        self._turn_counter: int = 0
 
     def clear(self) -> None:
         self.history.clear()
         self._recent_recalls = []
+        self._summarize_last_run_turn = -10
+        self._turn_counter = 0
 
     def _system_message(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> dict[str, str]:
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
@@ -333,6 +339,7 @@ class Gemma4Agent:
         return self.run_content(content, progress=progress)
 
     def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
+        self._turn_counter += 1
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         turn_id = self.trace.new_turn_id()
@@ -727,6 +734,18 @@ class Gemma4Agent:
         estimated = sum(len(_message_text_estimate(m)) for m in self.history)
         if estimated <= threshold or len(self.history) <= 8:
             return
+        # Cooldown: do not call the LLM for summarization more than once every
+        # N turns. _compact_completed_history is called multiple times within
+        # the same turn (after the final, on retry, on max_turns); without a
+        # cooldown each call could trigger an extra LLM round-trip.
+        cooldown_turns = _summarization_cooldown_turns()
+        if (self._turn_counter - self._summarize_last_run_turn) < cooldown_turns:
+            self.trace.event(self.trace.new_turn_id(), "summarization_cooldown_skip",
+                             since_last=self._turn_counter - self._summarize_last_run_turn,
+                             cooldown=cooldown_turns)
+            # We still keep the cheap truncation so context does not explode.
+            self.history = self.history[-18:]
+            return
         keep_tail = 6
         head = self.history[:-keep_tail]
         tail = self.history[-keep_tail:]
@@ -740,6 +759,7 @@ class Gemma4Agent:
             "content": f"[Conversation summary so far]\n{summary_text}",
         }
         self.history = [summary_msg, *tail]
+        self._summarize_last_run_turn = self._turn_counter
 
     def _summarize_history_block(self, messages: list[dict[str, Any]]) -> str:
         """Ask Gemma 4 to compress the given message block into ~200 words.
@@ -959,6 +979,20 @@ def _summarization_enabled() -> bool:
     if raw in {"0", "false", "no", "off"}:
         return False
     return True
+
+
+def _summarization_cooldown_turns() -> int:
+    """Minimum number of turns between two LLM-summarization calls.
+
+    Default 6. Override via env GEMMA4_AGENT_SUMMARIZATION_COOLDOWN.
+    """
+    import os
+    raw = (os.environ.get("GEMMA4_AGENT_SUMMARIZATION_COOLDOWN") or "").strip()
+    try:
+        n = int(raw)
+        return n if n >= 0 else 6
+    except ValueError:
+        return 6
 
 
 def _message_text_estimate(message: dict[str, Any]) -> str:

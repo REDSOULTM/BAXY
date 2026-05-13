@@ -27,6 +27,11 @@ from pathlib import Path
 from typing import Any
 
 _EMBED_DIM = 384
+# Defaults for housekeeping. Override via env GEMMA4_EXPERIENCE_MAX_RECORDS /
+# GEMMA4_EXPERIENCE_MAX_AGE_DAYS. Auto-prune fires every N inserts (cheap).
+_DEFAULT_MAX_RECORDS = 5000
+_DEFAULT_MAX_AGE_DAYS = 180
+_AUTO_PRUNE_EVERY = 50
 
 
 def is_enabled() -> bool:
@@ -34,6 +39,24 @@ def is_enabled() -> bool:
     if raw in {"0", "false", "no", "off"}:
         return False
     return True
+
+
+def _max_records() -> int:
+    raw = (os.environ.get("GEMMA4_EXPERIENCE_MAX_RECORDS") or "").strip()
+    try:
+        n = int(raw)
+        return n if n > 0 else _DEFAULT_MAX_RECORDS
+    except ValueError:
+        return _DEFAULT_MAX_RECORDS
+
+
+def _max_age_days() -> int:
+    raw = (os.environ.get("GEMMA4_EXPERIENCE_MAX_AGE_DAYS") or "").strip()
+    try:
+        n = int(raw)
+        return n if n > 0 else _DEFAULT_MAX_AGE_DAYS
+    except ValueError:
+        return _DEFAULT_MAX_AGE_DAYS
 
 
 @dataclass
@@ -130,9 +153,71 @@ class ExperienceMemory:
             payload = _vec_blob(vec)
             conn.execute("INSERT INTO experience_vec(rowid, embedding) VALUES (?, ?)", (rowid, payload))
             conn.commit()
-            return {"ok": True, "id": rowid, "turn_id": turn_id}
+            pruned = None
+            # Cheap auto-prune: every N inserts check if we're over budget.
+            if rowid and rowid % _AUTO_PRUNE_EVERY == 0:
+                pruned = self.prune()
+            return {"ok": True, "id": rowid, "turn_id": turn_id, "pruned": pruned}
         except Exception as exc:
             return {"ok": False, "error": f"record_failed: {exc}"}
+
+    def prune(self, *, max_records: int | None = None, max_age_days: int | None = None) -> dict[str, Any]:
+        """Drop experiences over budget. Returns counts. Safe to call any time.
+
+        - max_records: keeps the N most recent rows. Defaults from env.
+        - max_age_days: drops rows older than this. Defaults from env.
+        Both are applied; whichever drops more wins.
+        """
+        conn = self._open()
+        if conn is None:
+            return {"ok": False, "skipped": "sqlite_vec_unavailable"}
+        keep_n = int(max_records if max_records is not None else _max_records())
+        keep_days = int(max_age_days if max_age_days is not None else _max_age_days())
+        try:
+            total = conn.execute("SELECT COUNT(*) FROM experiences").fetchone()[0]
+            cutoff_ts = None
+            age_dropped = 0
+            if keep_days > 0:
+                cutoff_struct = time.gmtime(time.time() - keep_days * 86400)
+                cutoff_ts = time.strftime("%Y-%m-%dT%H:%M:%S", cutoff_struct)
+                # Find ids to drop (sqlite-vec virtual tables can't DELETE via
+                # subqueries on a different table, so do it in two passes).
+                ids_age = [row[0] for row in conn.execute(
+                    "SELECT id FROM experiences WHERE ts < ?", (cutoff_ts,)
+                ).fetchall()]
+                if ids_age:
+                    placeholders = ",".join("?" * len(ids_age))
+                    conn.execute(f"DELETE FROM experiences WHERE id IN ({placeholders})", ids_age)
+                    conn.execute(f"DELETE FROM experience_vec WHERE rowid IN ({placeholders})", ids_age)
+                    age_dropped = len(ids_age)
+            size_dropped = 0
+            if keep_n > 0:
+                # Drop oldest beyond the budget.
+                remaining = conn.execute("SELECT COUNT(*) FROM experiences").fetchone()[0]
+                if remaining > keep_n:
+                    excess = remaining - keep_n
+                    ids_excess = [row[0] for row in conn.execute(
+                        "SELECT id FROM experiences ORDER BY id ASC LIMIT ?", (excess,)
+                    ).fetchall()]
+                    if ids_excess:
+                        placeholders = ",".join("?" * len(ids_excess))
+                        conn.execute(f"DELETE FROM experiences WHERE id IN ({placeholders})", ids_excess)
+                        conn.execute(f"DELETE FROM experience_vec WHERE rowid IN ({placeholders})", ids_excess)
+                        size_dropped = len(ids_excess)
+            conn.commit()
+            final = conn.execute("SELECT COUNT(*) FROM experiences").fetchone()[0]
+            return {
+                "ok": True,
+                "before": int(total),
+                "after": int(final),
+                "age_dropped": int(age_dropped),
+                "size_dropped": int(size_dropped),
+                "max_records": keep_n,
+                "max_age_days": keep_days,
+                "cutoff_ts": cutoff_ts,
+            }
+        except Exception as exc:
+            return {"ok": False, "error": f"prune_failed: {exc}"}
 
     # ------------------------------------------------------------ public reads
 
@@ -201,6 +286,9 @@ class ExperienceMemory:
                 "experience_count": int(count),
                 "last_recorded": last["ts"] if last else None,
                 "dim": _EMBED_DIM,
+                "max_records": _max_records(),
+                "max_age_days": _max_age_days(),
+                "auto_prune_every": _AUTO_PRUNE_EVERY,
             }
         except Exception as exc:
             return {"available": False, "error": str(exc)}
