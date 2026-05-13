@@ -258,6 +258,1962 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     return _err("unknown routine action", action=action)
 
 
+def data_analysis_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for CSV/Excel local data analysis.
+
+    Actions: status, csv_profile, csv_describe, csv_query, csv_head, csv_to_xlsx,
+    plot_histogram, plot_scatter, plot_line. Uses pandas + matplotlib only;
+    returns needs_dependency if missing.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            pandas=importlib.util.find_spec("pandas") is not None,
+            matplotlib=importlib.util.find_spec("matplotlib") is not None,
+            openpyxl=importlib.util.find_spec("openpyxl") is not None,
+            install_hint="python -m pip install pandas matplotlib openpyxl",
+        )
+    if importlib.util.find_spec("pandas") is None:
+        return _err(
+            "pandas is not installed",
+            status="needs_dependency", verified=False,
+            install_hint="python -m pip install pandas matplotlib openpyxl",
+        )
+    if action == "csv_profile":
+        return _data_csv_profile(args)
+    if action == "csv_describe":
+        return _data_csv_describe(args)
+    if action == "csv_query":
+        return _data_csv_query(args)
+    if action == "csv_head":
+        return _data_csv_head(args)
+    if action == "csv_to_xlsx":
+        return _data_csv_to_xlsx(args, state)
+    if action in {"plot_histogram", "plot_scatter", "plot_line"}:
+        return _data_plot(action, args, state)
+    return _err("unknown data_analysis action", action=action)
+
+
+def _data_load_df(args: dict[str, Any]):
+    import pandas as pd
+    path_raw = str(args.get("path") or "").strip()
+    if not path_raw:
+        return None, _err("missing path")
+    path = Path(path_raw).expanduser()
+    if not path.is_file():
+        return None, _err("file not found", path=str(path))
+    sep = str(args.get("sep") or ",")
+    try:
+        if path.suffix.casefold() in {".xlsx", ".xls"}:
+            df = pd.read_excel(path)
+        else:
+            df = pd.read_csv(path, sep=sep)
+    except Exception as exc:
+        return None, _err(f"failed to load: {exc}", path=str(path))
+    return df, None
+
+
+def _data_csv_profile(args: dict[str, Any]) -> dict[str, Any]:
+    df, err = _data_load_df(args)
+    if err:
+        return err
+    cols = []
+    for col in df.columns:
+        s = df[col]
+        cols.append({
+            "name": str(col),
+            "dtype": str(s.dtype),
+            "non_null": int(s.notna().sum()),
+            "null": int(s.isna().sum()),
+            "unique": int(s.nunique(dropna=True)),
+        })
+    return _ok(
+        path=str(args.get("path")),
+        rows=int(len(df)),
+        columns=int(len(df.columns)),
+        column_profile=cols,
+        memory_bytes=int(df.memory_usage(index=True, deep=True).sum()),
+    )
+
+
+def _data_csv_describe(args: dict[str, Any]) -> dict[str, Any]:
+    df, err = _data_load_df(args)
+    if err:
+        return err
+    desc = df.describe(include="all").fillna("").to_dict()
+    return _ok(path=str(args.get("path")), rows=int(len(df)), describe=desc)
+
+
+def _data_csv_query(args: dict[str, Any]) -> dict[str, Any]:
+    df, err = _data_load_df(args)
+    if err:
+        return err
+    query = str(args.get("query") or "").strip()
+    if not query:
+        return _err("missing query (pandas .query() expression)")
+    try:
+        result = df.query(query)
+    except Exception as exc:
+        return _err(f"query failed: {exc}", query=query)
+    limit = int(args.get("limit", 50))
+    return _ok(
+        path=str(args.get("path")), query=query,
+        matched_rows=int(len(result)),
+        preview=result.head(limit).to_dict(orient="records"),
+    )
+
+
+def _data_csv_head(args: dict[str, Any]) -> dict[str, Any]:
+    df, err = _data_load_df(args)
+    if err:
+        return err
+    n = int(args.get("n", 10))
+    return _ok(path=str(args.get("path")), n=n, rows=df.head(n).to_dict(orient="records"))
+
+
+def _data_csv_to_xlsx(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    df, err = _data_load_df(args)
+    if err:
+        return err
+    if importlib.util.find_spec("openpyxl") is None:
+        return _err("openpyxl is required to write .xlsx", status="needs_dependency", install_hint="python -m pip install openpyxl")
+    dst_raw = str(args.get("dst") or "").strip()
+    if dst_raw:
+        dst = Path(dst_raw).expanduser()
+    else:
+        dst = state.path.parent / "data_analysis" / f"export_{int(time.time())}.xlsx"
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        df.to_excel(dst, index=False)
+    except Exception as exc:
+        return _err(f"to_excel failed: {exc}", dst=str(dst))
+    return _ok(path=str(args.get("path")), dst=str(dst), rows=int(len(df)), verified=dst.is_file())
+
+
+def _data_plot(kind: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    if importlib.util.find_spec("matplotlib") is None:
+        return _err("matplotlib is not installed", status="needs_dependency", install_hint="python -m pip install matplotlib")
+    df, err = _data_load_df(args)
+    if err:
+        return err
+    import matplotlib
+    matplotlib.use("Agg")  # headless backend; safe even when DISPLAY exists
+    import matplotlib.pyplot as plt
+    dst_raw = str(args.get("dst") or "").strip()
+    if dst_raw:
+        dst = Path(dst_raw).expanduser()
+    else:
+        dst = state.path.parent / "data_analysis" / f"{kind}_{int(time.time())}.png"
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(8, 5))
+    try:
+        if kind == "plot_histogram":
+            col = str(args.get("column") or "")
+            if col not in df.columns:
+                return _err("column not found", column=col, available=[str(c) for c in df.columns])
+            df[col].dropna().hist(ax=ax, bins=int(args.get("bins", 20)))
+            ax.set_title(f"Histogram of {col}")
+            ax.set_xlabel(col)
+            ax.set_ylabel("count")
+        elif kind == "plot_scatter":
+            x = str(args.get("x") or args.get("x_col") or "")
+            y = str(args.get("y") or args.get("y_col") or "")
+            if x not in df.columns or y not in df.columns:
+                return _err("x/y column not found", x=x, y=y, available=[str(c) for c in df.columns])
+            ax.scatter(df[x], df[y])
+            ax.set_xlabel(x); ax.set_ylabel(y); ax.set_title(f"{y} vs {x}")
+        elif kind == "plot_line":
+            x = str(args.get("x") or args.get("x_col") or "")
+            y = str(args.get("y") or args.get("y_col") or "")
+            if x not in df.columns or y not in df.columns:
+                return _err("x/y column not found", x=x, y=y, available=[str(c) for c in df.columns])
+            ax.plot(df[x], df[y])
+            ax.set_xlabel(x); ax.set_ylabel(y); ax.set_title(f"{y} over {x}")
+        fig.tight_layout()
+        fig.savefig(dst, dpi=120)
+    except Exception as exc:
+        return _err(f"plot failed: {exc}")
+    finally:
+        plt.close(fig)
+    return _ok(path=str(args.get("path")), dst=str(dst), kind=kind, verified=dst.is_file(), size=dst.stat().st_size if dst.is_file() else 0)
+
+
+def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for network diagnostics.
+
+    Actions: status, ping(host), traceroute(host), dns_get, dns_set(adapter,
+    addresses, snapshot=True), dns_resolve(name), port_check(host, port),
+    connections, public_ip. Writing actions (dns_set) snapshot the previous
+    config so they can be rolled back via state.rollback.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            powershell=bool(shutil.which("powershell")),
+            ping=bool(shutil.which("ping")),
+            tracert=bool(shutil.which("tracert")),
+            backend="windows_net",
+            note="dns_set requires the adapter name from dns_get and snapshots the previous list.",
+        )
+    if action == "ping":
+        return _network_ping(args)
+    if action == "traceroute":
+        return _network_traceroute(args)
+    if action == "dns_get":
+        return _network_dns_get(args)
+    if action == "dns_set":
+        return _network_dns_set(args, state)
+    if action in {"dns_resolve", "resolve"}:
+        return _network_dns_resolve(args)
+    if action == "port_check":
+        return _network_port_check(args)
+    if action == "connections":
+        return _network_connections(args)
+    if action == "public_ip":
+        return _network_public_ip()
+    if action in {"firewall_allow", "firewall_block", "firewall_remove"}:
+        return _err(
+            f"network.{action} is intentionally not exposed; modifying firewall rules requires explicit terminal commands",
+            status="needs_user",
+        )
+    return _err("unknown network action", action=action)
+
+
+def _network_ping(args: dict[str, Any]) -> dict[str, Any]:
+    host = str(args.get("host") or args.get("target") or "").strip()
+    if not host:
+        return _err("missing host")
+    count = int(args.get("count", 4))
+    proc = subprocess.run(["ping", "-n", str(count), host], capture_output=True, text=True, timeout=30)
+    return _ok(host=host, count=count, exit_code=proc.returncode, stdout=proc.stdout[-3000:], reachable=proc.returncode == 0)
+
+
+def _network_traceroute(args: dict[str, Any]) -> dict[str, Any]:
+    host = str(args.get("host") or args.get("target") or "").strip()
+    if not host:
+        return _err("missing host")
+    max_hops = int(args.get("max_hops", 20))
+    proc = subprocess.run(["tracert", "-h", str(max_hops), host], capture_output=True, text=True, timeout=120)
+    return _ok(host=host, max_hops=max_hops, exit_code=proc.returncode, stdout=proc.stdout[-4000:])
+
+
+def _network_dns_get(args: dict[str, Any]) -> dict[str, Any]:
+    adapter = str(args.get("adapter") or "").strip()
+    cmd = "Get-DnsClientServerAddress | Where-Object { $_.ServerAddresses } | Select-Object InterfaceAlias,AddressFamily,ServerAddresses | ConvertTo-Json -Depth 3"
+    if adapter:
+        cmd = f"Get-DnsClientServerAddress -InterfaceAlias '{_ps_quote(adapter)}' | Select-Object InterfaceAlias,AddressFamily,ServerAddresses | ConvertTo-Json -Depth 3"
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], capture_output=True, text=True, timeout=15)
+    if proc.returncode != 0:
+        return _err("dns_get failed", stderr=proc.stderr)
+    raw = proc.stdout.strip()
+    if not raw:
+        return _ok(adapters=[], count=0)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _err("dns_get invalid JSON", raw=raw[:500])
+    if isinstance(data, dict):
+        data = [data]
+    return _ok(adapters=data, count=len(data))
+
+
+def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    adapter = str(args.get("adapter") or "").strip()
+    if not adapter:
+        return _err("missing adapter (use dns_get first)")
+    addresses = args.get("addresses") if isinstance(args.get("addresses"), list) else None
+    if not addresses:
+        return _err("missing addresses (list of DNS server IPs)")
+    addresses = [str(a) for a in addresses if str(a).strip()]
+    before = _network_dns_get({"adapter": adapter})
+    rollback_addrs: list[str] = []
+    for adapter_info in before.get("adapters", []):
+        if str(adapter_info.get("InterfaceAlias", "")).casefold() == adapter.casefold() and adapter_info.get("AddressFamily") == 2:
+            rollback_addrs = adapter_info.get("ServerAddresses") or []
+            break
+    rollback_step = {"tool": "network", "args": {"action": "dns_set", "adapter": adapter, "addresses": rollback_addrs or ["AUTO"]}}
+    checkpoint = state.checkpoint(
+        f"dns_set {adapter}",
+        rollback=[rollback_step] if rollback_addrs else [],
+        metadata={"before": before, "target_addresses": addresses},
+    )
+    if addresses == ["AUTO"] or addresses == ["auto"]:
+        # Restore automatic DNS.
+        cmd = f"Set-DnsClientServerAddress -InterfaceAlias '{_ps_quote(adapter)}' -ResetServerAddresses"
+    else:
+        addr_list = ",".join(f"'{a}'" for a in addresses)
+        cmd = f"Set-DnsClientServerAddress -InterfaceAlias '{_ps_quote(adapter)}' -ServerAddresses ({addr_list})"
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], capture_output=True, text=True, timeout=15)
+    after = _network_dns_get({"adapter": adapter})
+    return _ok(
+        adapter=adapter, target=addresses, before=rollback_addrs, after=after,
+        exit_code=proc.returncode, stderr=proc.stderr[-1000:],
+        checkpoint=checkpoint.get("checkpoint"),
+        verified=proc.returncode == 0,
+    )
+
+
+def _network_dns_resolve(args: dict[str, Any]) -> dict[str, Any]:
+    name = str(args.get("name") or args.get("host") or "").strip()
+    if not name:
+        return _err("missing name")
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"Resolve-DnsName '{_ps_quote(name)}' -ErrorAction SilentlyContinue | Select-Object Name,Type,IPAddress,NameHost,TTL | ConvertTo-Json -Depth 3"],
+        capture_output=True, text=True, timeout=15,
+    )
+    if proc.returncode != 0 and not proc.stdout.strip():
+        return _err("dns_resolve failed", stderr=proc.stderr, name=name)
+    raw = proc.stdout.strip()
+    if not raw:
+        return _ok(name=name, records=[], count=0)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _err("dns_resolve invalid JSON", raw=raw[:500])
+    if isinstance(data, dict):
+        data = [data]
+    return _ok(name=name, records=data, count=len(data))
+
+
+def _network_port_check(args: dict[str, Any]) -> dict[str, Any]:
+    host = str(args.get("host") or args.get("target") or "").strip()
+    port = args.get("port")
+    if not host or port is None:
+        return _err("missing host or port")
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"Test-NetConnection -ComputerName '{_ps_quote(host)}' -Port {int(port)} -InformationLevel Quiet -WarningAction SilentlyContinue"],
+        capture_output=True, text=True, timeout=20,
+    )
+    reachable = (proc.stdout or "").strip().casefold() == "true"
+    return _ok(host=host, port=int(port), reachable=reachable, exit_code=proc.returncode)
+
+
+def _network_connections(args: dict[str, Any]) -> dict[str, Any]:
+    state_filter = str(args.get("state") or "Established").strip()
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"Get-NetTCPConnection -State {state_filter} -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,OwningProcess | ConvertTo-Json -Depth 3"],
+        capture_output=True, text=True, timeout=20,
+    )
+    if proc.returncode != 0:
+        return _err("connections query failed", stderr=proc.stderr)
+    raw = proc.stdout.strip()
+    if not raw:
+        return _ok(connections=[], count=0, state=state_filter)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _err("connections invalid JSON", raw=raw[:500])
+    if isinstance(data, dict):
+        data = [data]
+    return _ok(connections=data, count=len(data), state=state_filter)
+
+
+def _network_public_ip() -> dict[str, Any]:
+    import urllib.request
+    try:
+        req = urllib.request.Request("https://api.ipify.org", headers={"User-Agent": "Gemma4Agent/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return _ok(ip=resp.read().decode("utf-8").strip(), source="api.ipify.org", verified=True)
+    except Exception as exc:
+        return _err(f"public_ip failed: {exc}")
+
+
+def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | None = None) -> dict[str, Any]:
+    """Compound tool for file/url watchers.
+
+    Actions:
+      - status
+      - watch_file(path, on_change={tool, args})
+      - watch_url(url, on_change={tool, args}, interval_seconds?)
+      - list
+      - check(watcher_id) -> evaluate now without scheduling
+      - delete(watcher_id)
+    Watchers persist in state as kind=watcher with a snapshot (mtime+size for
+    files, content hash for URLs). The schedule is registered as a Scheduled
+    Task invoking `python -m gemma4_agent.watcher_runner`.
+    """
+    action = str(args.get("action") or "list").casefold()
+    if action == "status":
+        return _ok(backend="windows_scheduled_tasks", runner_module="gemma4_agent.watcher_runner")
+    if action == "list":
+        watchers = _resources_by_kind(state, "watcher", include_closed=bool(args.get("include_closed", False)))
+        return _ok(watchers=watchers, count=len(watchers))
+    if action == "delete":
+        target = _find_resource(args, state, "watcher")
+        if not target:
+            return _err("watcher not found")
+        task_name = str((target.get("metadata") or {}).get("task_name") or "").strip()
+        if task_name:
+            _unregister_routine_scheduled_task(task_name)
+        return state.mark_cleaned(str(target["id"]), {"deleted": True})
+    if action == "check":
+        return _watcher_check(args, state, executor)
+    if action == "watch_file":
+        return _watcher_register_file(args, state)
+    if action == "watch_url":
+        return _watcher_register_url(args, state)
+    return _err("unknown watcher action", action=action)
+
+
+def _watcher_register_file(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    path_raw = str(args.get("path") or "").strip()
+    if not path_raw:
+        return _err("missing path")
+    target = Path(path_raw).expanduser()
+    if not target.exists():
+        return _err("watch_file target does not exist (create it first or use watch_url)", path=str(target))
+    on_change = args.get("on_change") if isinstance(args.get("on_change"), dict) else None
+    interval = int(args.get("interval_seconds", 60))
+    snapshot = _file_snapshot(target)
+    label = f"watch_file {target.name}"
+    task_name = f"Gemma4Watcher_{_safe_name(target.stem)[:30]}_{int(time.time())}"
+    resource = state.register_resource(
+        "watcher", label,
+        cleanup_tool="watcher",
+        cleanup_args={"action": "delete", "name": label},
+        metadata={
+            "kind": "file",
+            "path": str(target),
+            "snapshot": snapshot,
+            "on_change": on_change,
+            "interval_seconds": interval,
+            "task_name": task_name,
+            "created_at": datetime.now().isoformat(),
+        },
+    )
+    rid = resource.get("resource", {}).get("id")
+    if rid and interval > 0:
+        register = _register_watcher_scheduled_task(task_name, rid, interval, label)
+        if not register.get("ok"):
+            return register
+    return _ok(watcher=resource.get("resource"), task_name=task_name, snapshot=snapshot)
+
+
+def _watcher_register_url(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    url = str(args.get("url") or "").strip()
+    if not url:
+        return _err("missing url")
+    on_change = args.get("on_change") if isinstance(args.get("on_change"), dict) else None
+    interval = int(args.get("interval_seconds", 300))
+    snapshot = _url_snapshot(url)
+    if not snapshot.get("ok"):
+        return snapshot
+    label = f"watch_url {url[:50]}"
+    task_name = f"Gemma4Watcher_url_{int(time.time())}"
+    resource = state.register_resource(
+        "watcher", label,
+        cleanup_tool="watcher",
+        cleanup_args={"action": "delete", "name": label},
+        metadata={
+            "kind": "url",
+            "url": url,
+            "snapshot": snapshot,
+            "on_change": on_change,
+            "interval_seconds": interval,
+            "task_name": task_name,
+            "created_at": datetime.now().isoformat(),
+        },
+    )
+    rid = resource.get("resource", {}).get("id")
+    if rid and interval > 0:
+        register = _register_watcher_scheduled_task(task_name, rid, interval, label)
+        if not register.get("ok"):
+            return register
+    return _ok(watcher=resource.get("resource"), task_name=task_name, snapshot=snapshot)
+
+
+def _file_snapshot(path: Path) -> dict[str, Any]:
+    try:
+        stat = path.stat()
+        return {"exists": True, "mtime": stat.st_mtime, "size": stat.st_size}
+    except OSError:
+        return {"exists": False}
+
+
+def _url_snapshot(url: str) -> dict[str, Any]:
+    import urllib.request
+    import hashlib as _hashlib
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Gemma4Agent/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            body = resp.read(2_000_000)
+            digest = _hashlib.sha256(body).hexdigest()
+            return {"ok": True, "status_code": resp.status, "sha256": digest, "bytes": len(body), "captured_at": datetime.now().isoformat()}
+    except Exception as exc:
+        return _err(f"url_snapshot failed: {exc}", url=url)
+
+
+def _register_watcher_scheduled_task(task_name: str, watcher_id: str, interval_seconds: int, label: str) -> dict[str, Any]:
+    python_exe = _detect_python_executable()
+    if not python_exe:
+        return _err("no python executable found", status="needs_dependency")
+    arg_line = f'-m gemma4_agent.watcher_runner --id "{watcher_id}"'
+    minutes = max(1, interval_seconds // 60)
+    ps = f"""
+$Action = New-ScheduledTaskAction -Execute '{_ps_quote(python_exe)}' -Argument '{_ps_quote(arg_line)}'
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes {minutes})
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -StartWhenAvailable
+Register-ScheduledTask -TaskName '{_ps_quote(task_name)}' -TaskPath '\\Gemma4Agent\\' -Action $Action -Trigger $Trigger -Settings $Settings -Description '{_ps_quote(label)}' -Force | Out-Null
+"""
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, timeout=30)
+    if proc.returncode != 0:
+        return _err("failed to register watcher scheduled task", stderr=proc.stderr, exit_code=proc.returncode)
+    return _ok(task_name=task_name, interval_minutes=minutes)
+
+
+def _watcher_check(args: dict[str, Any], state: AgentState, executor: Executor | None) -> dict[str, Any]:
+    target = _find_resource(args, state, "watcher")
+    if not target:
+        return _err("watcher not found")
+    metadata = target.get("metadata") or {}
+    kind = metadata.get("kind")
+    snapshot_before = metadata.get("snapshot") or {}
+    if kind == "file":
+        path = Path(str(metadata.get("path") or "")).expanduser()
+        snapshot_after = _file_snapshot(path)
+    elif kind == "url":
+        snapshot_after = _url_snapshot(str(metadata.get("url") or ""))
+    else:
+        return _err("unknown watcher kind", kind=kind)
+
+    changed = snapshot_before != snapshot_after
+    triggered = None
+    if changed:
+        on_change = metadata.get("on_change") if isinstance(metadata.get("on_change"), dict) else None
+        if on_change and executor:
+            tool = str(on_change.get("tool") or "").strip()
+            tool_args = on_change.get("args") if isinstance(on_change.get("args"), dict) else {}
+            if tool and tool != "watcher":
+                triggered = {"tool": tool, "args": tool_args, "result": executor(tool, tool_args)}
+        # Update snapshot.
+        data = state._load()
+        rec = data.get("resources", {}).get(str(target["id"]))
+        if rec:
+            rec["metadata"]["snapshot"] = snapshot_after
+            rec["metadata"]["last_change"] = datetime.now().isoformat()
+            state._save(data)
+    return _ok(
+        watcher_id=str(target["id"]),
+        kind=kind,
+        changed=changed,
+        snapshot_before=snapshot_before,
+        snapshot_after=snapshot_after,
+        triggered=triggered,
+    )
+
+
+def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for tracking long-running jobs (subprocess-based).
+
+    Actions:
+      - status
+      - start(command, cwd?, label?) -> registers a job + Popen
+      - list
+      - log(job_id, tail?) -> read job log
+      - status_of(job_id) -> alive/exited
+      - cancel(job_id) -> kill process tree
+    Distinct from `developer.start_dev_server` which is specialized for dev
+    servers. job_manager is generic.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(backend="subprocess+state", note="Jobs are tracked in state.json with PID, log path, label.")
+    if action == "list":
+        jobs = _resources_by_kind(state, "job", include_closed=bool(args.get("include_closed", False)))
+        for job in jobs:
+            pid = (job.get("metadata") or {}).get("pid")
+            if pid:
+                job["alive"] = _pid_alive(int(pid))
+        return _ok(jobs=jobs, count=len(jobs))
+    if action == "start":
+        return _job_manager_start(args, state)
+    if action == "log":
+        return _job_manager_log(args, state)
+    if action in {"status_of", "info"}:
+        job = _find_resource(args, state, "job")
+        if not job:
+            return _err("job not found")
+        pid = (job.get("metadata") or {}).get("pid")
+        return _ok(job=job, alive=_pid_alive(int(pid)) if pid else None)
+    if action in {"cancel", "stop", "kill"}:
+        return _job_manager_cancel(args, state)
+    return _err("unknown job_manager action", action=action)
+
+
+def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    command = args.get("command")
+    if isinstance(command, str):
+        cmd = command.split()
+    elif isinstance(command, list):
+        cmd = [str(part) for part in command]
+    else:
+        return _err("command must be a string or list")
+    if not cmd:
+        return _err("command is empty")
+    cwd = str(args.get("cwd") or "").strip() or None
+    label = str(args.get("label") or " ".join(cmd)[:80]).strip()
+    log_dir = state.path.parent / "jobs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / f"job_{_safe_name(label)[:30]}_{int(time.time())}.log"
+    log_file = log_path.open("w", encoding="utf-8")
+    creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    try:
+        proc = subprocess.Popen(cmd, cwd=cwd, stdout=log_file, stderr=subprocess.STDOUT, creationflags=creationflags)
+    except OSError as exc:
+        return _err(f"failed to start job: {exc}", command=cmd, cwd=cwd)
+    resource = state.register_resource(
+        "job", label,
+        cleanup_tool="job_manager",
+        cleanup_args={"action": "cancel"},
+        metadata={"cmd": cmd, "cwd": cwd, "pid": proc.pid, "log": str(log_path), "started_at": datetime.now().isoformat()},
+    )
+    rid = resource.get("resource", {}).get("id")
+    if rid:
+        data = state._load()
+        rec = data.get("resources", {}).get(rid)
+        if rec:
+            rec["cleanup_args"] = {"action": "cancel", "job_id": rid}
+            state._save(data)
+    return _ok(job_id=rid, pid=proc.pid, cmd=cmd, log=str(log_path))
+
+
+def _job_manager_log(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    job = _find_resource(args, state, "job")
+    if not job:
+        return _err("job not found")
+    log_path = Path((job.get("metadata") or {}).get("log") or "")
+    if not log_path.is_file():
+        return _err("job log not found", log=str(log_path))
+    tail = int(args.get("tail", 100))
+    try:
+        text = log_path.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        return _err(f"failed to read log: {exc}", log=str(log_path))
+    lines = text.splitlines()
+    return _ok(job_id=str(job["id"]), log=str(log_path), lines=lines[-tail:], total_lines=len(lines))
+
+
+def _job_manager_cancel(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    job = _find_resource(args, state, "job")
+    if not job:
+        return _err("job not found")
+    pid = (job.get("metadata") or {}).get("pid")
+    if not pid:
+        return _err("job has no pid")
+    try:
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/F", "/PID", str(pid), "/T"], capture_output=True, text=True, timeout=10)
+        else:
+            os.kill(int(pid), 15)
+    except Exception as exc:
+        return _err(f"failed to kill pid {pid}: {exc}", pid=pid)
+    state.mark_cleaned(str(job["id"]), {"killed": True, "pid": pid})
+    return _ok(job_id=str(job["id"]), pid=pid, killed=True)
+
+
+def _pid_alive(pid: int) -> bool:
+    if os.name == "nt":
+        proc = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", f"if (Get-Process -Id {pid} -ErrorAction SilentlyContinue) {{ 1 }} else {{ 0 }}"],
+            capture_output=True, text=True, timeout=10,
+        )
+        return proc.returncode == 0 and proc.stdout.strip() == "1"
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def maintenance_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for Windows maintenance and security diagnostics.
+
+    Actions:
+      - status
+      - windows_update_status
+      - defender_status
+      - defender_quick_scan
+      - firewall_status
+      - event_logs_query(log, source?, level?, hours?, limit?)
+      - services_list, service_status(name), service_start(name), service_stop(name)
+      - disk_cleanup_describe   (manual hint, no execution)
+      - restore_point_create(description?)
+    Long scans, registry mutations, and update install are NOT exposed; the
+    user must use terminal(...) explicitly for those.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            powershell=bool(shutil.which("powershell")),
+            backend="windows_native",
+            note="Mutating maintenance actions (cleanup execution, update install) require explicit terminal commands.",
+        )
+    if action == "windows_update_status":
+        return _maintenance_windows_update_status()
+    if action == "defender_status":
+        return _maintenance_defender_status()
+    if action == "defender_quick_scan":
+        return _maintenance_defender_quick_scan(state)
+    if action == "firewall_status":
+        return _maintenance_firewall_status()
+    if action == "event_logs_query":
+        return _maintenance_event_logs(args)
+    if action in {"services_list", "services"}:
+        return _maintenance_services_list(args)
+    if action == "service_status":
+        return _maintenance_service_status(args)
+    if action in {"service_start", "service_stop"}:
+        return _maintenance_service_control(action, args, state)
+    if action == "disk_cleanup_describe":
+        return _ok(
+            note="Run `cleanmgr /sageset:1` once to choose categories, then `cleanmgr /sagerun:1` to apply. We do not run this automatically.",
+            command_describe=["cleanmgr", "/sageset:1"],
+            command_apply=["cleanmgr", "/sagerun:1"],
+            status="needs_user",
+        )
+    if action == "restore_point_create":
+        return _maintenance_restore_point_create(args)
+    return _err("unknown maintenance action", action=action)
+
+
+def _maintenance_windows_update_status() -> dict[str, Any]:
+    script = r"""
+$results = $null
+try {
+  $au = New-Object -ComObject Microsoft.Update.AutoUpdate
+  $results = $au.Results
+} catch {}
+$hist = $null
+try {
+  $session = New-Object -ComObject Microsoft.Update.Session
+  $searcher = $session.CreateUpdateSearcher()
+  $count = $searcher.GetTotalHistoryCount()
+  if ($count -gt 0) {
+    $hist = $searcher.QueryHistory(0, [Math]::Min($count, 10)) | ForEach-Object {
+      [PSCustomObject]@{ Title=$_.Title; Date=$_.Date; ResultCode=$_.ResultCode; Operation=$_.Operation }
+    }
+  }
+} catch {}
+[PSCustomObject]@{
+  last_install_success = if ($results) { $results.LastInstallationSuccessDate } else { $null }
+  last_search_success  = if ($results) { $results.LastSearchSuccessDate } else { $null }
+  history              = $hist
+} | ConvertTo-Json -Depth 4
+"""
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
+    if proc.returncode != 0:
+        return _err("windows_update_status failed", stderr=proc.stderr)
+    try:
+        data = json.loads(proc.stdout or "null")
+    except json.JSONDecodeError:
+        return _err("windows_update_status invalid JSON", raw=proc.stdout[:500])
+    return _ok(**(data or {}))
+
+
+def _maintenance_defender_status() -> dict[str, Any]:
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command",
+         "Get-MpComputerStatus | Select-Object AntivirusEnabled,RealTimeProtectionEnabled,AntispywareEnabled,AMServiceEnabled,FullScanAge,QuickScanAge,AntivirusSignatureLastUpdated,DefenderSignaturesOutOfDate | ConvertTo-Json -Depth 3"],
+        capture_output=True, text=True, timeout=20,
+    )
+    if proc.returncode != 0:
+        return _err("Get-MpComputerStatus failed", stderr=proc.stderr)
+    try:
+        data = json.loads(proc.stdout) if proc.stdout.strip() else {}
+    except json.JSONDecodeError:
+        return _err("defender_status invalid JSON", raw=proc.stdout[:500])
+    return _ok(defender=data)
+
+
+def _maintenance_defender_quick_scan(state: AgentState) -> dict[str, Any]:
+    state.note("Defender QuickScan requested", metadata={"started_at": datetime.now().isoformat()})
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", "Start-MpScan -ScanType QuickScan"],
+        capture_output=True, text=True, timeout=900,
+    )
+    return _ok(
+        scan="QuickScan",
+        exit_code=proc.returncode,
+        stdout=proc.stdout[-2000:],
+        stderr=proc.stderr[-2000:],
+        verified=proc.returncode == 0,
+        status="done" if proc.returncode == 0 else "needs_verification",
+    )
+
+
+def _maintenance_firewall_status() -> dict[str, Any]:
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command",
+         "Get-NetFirewallProfile | Select-Object Name,Enabled,DefaultInboundAction,DefaultOutboundAction | ConvertTo-Json"],
+        capture_output=True, text=True, timeout=15,
+    )
+    if proc.returncode != 0:
+        return _err("firewall_status failed", stderr=proc.stderr)
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return _err("firewall_status invalid JSON", raw=proc.stdout[:500])
+    if isinstance(data, dict):
+        data = [data]
+    return _ok(profiles=data, count=len(data))
+
+
+def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
+    log = str(args.get("log") or "System").strip()
+    level = args.get("level")  # 1=Critical 2=Error 3=Warning 4=Information
+    hours = int(args.get("hours", 24))
+    limit = int(args.get("limit", 50))
+    filt = {"LogName": log, "StartTime": "{StartTime}"}
+    if level is not None:
+        filt["Level"] = int(level)
+    ht = ";".join(f"{k}='{v}'" if k != "Level" else f"{k}={v}" for k, v in filt.items())
+    # Build hashtable inline; using PowerShell since it's safer than building string.
+    cmd = (
+        f"$start = (Get-Date).AddHours(-{hours}); "
+        f"$f = @{{ LogName='{log}'; StartTime=$start"
+        f"{'' if level is None else f'; Level={int(level)}'}"
+        f" }}; "
+        f"Get-WinEvent -FilterHashtable $f -MaxEvents {limit} -ErrorAction SilentlyContinue | "
+        f"Select-Object TimeCreated,Id,LevelDisplayName,ProviderName,Message | ConvertTo-Json -Depth 3"
+    )
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], capture_output=True, text=True, timeout=30)
+    if proc.returncode != 0:
+        return _err("event_logs_query failed", stderr=proc.stderr)
+    raw = proc.stdout.strip()
+    if not raw:
+        return _ok(log=log, events=[], count=0, hours=hours)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _err("event_logs_query invalid JSON", raw=raw[:500])
+    if isinstance(data, dict):
+        data = [data]
+    return _ok(log=log, events=data, count=len(data), hours=hours)
+
+
+def _maintenance_services_list(args: dict[str, Any]) -> dict[str, Any]:
+    name = str(args.get("name") or args.get("query") or "*").strip()
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"Get-Service -Name '{_ps_quote(name)}' -ErrorAction SilentlyContinue | Select-Object Name,DisplayName,Status,StartType | ConvertTo-Json"],
+        capture_output=True, text=True, timeout=20,
+    )
+    if proc.returncode != 0:
+        return _err("services_list failed", stderr=proc.stderr)
+    raw = proc.stdout.strip()
+    if not raw:
+        return _ok(services=[], count=0)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _err("services_list invalid JSON", raw=raw[:500])
+    if isinstance(data, dict):
+        data = [data]
+    return _ok(services=data, count=len(data))
+
+
+def _maintenance_service_status(args: dict[str, Any]) -> dict[str, Any]:
+    name = str(args.get("name") or "").strip()
+    if not name:
+        return _err("missing service name")
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"Get-Service -Name '{_ps_quote(name)}' -ErrorAction SilentlyContinue | Select-Object Name,DisplayName,Status,StartType | ConvertTo-Json"],
+        capture_output=True, text=True, timeout=15,
+    )
+    if proc.returncode != 0:
+        return _err("service_status failed", stderr=proc.stderr)
+    try:
+        data = json.loads(proc.stdout) if proc.stdout.strip() else None
+    except json.JSONDecodeError:
+        data = None
+    if not data:
+        return _err("service not found", name=name)
+    return _ok(service=data)
+
+
+def _maintenance_service_control(action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    name = str(args.get("name") or "").strip()
+    if not name:
+        return _err("missing service name")
+    verb = "Start" if action == "service_start" else "Stop"
+    before = _maintenance_service_status({"name": name})
+    if not before.get("ok"):
+        return before
+    checkpoint = state.checkpoint(
+        f"service {action} {name}",
+        rollback=[{"tool": "maintenance", "args": {"action": "service_stop" if action == "service_start" else "service_start", "name": name}}],
+        metadata={"before": before.get("service")},
+    )
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"{verb}-Service -Name '{_ps_quote(name)}'"],
+        capture_output=True, text=True, timeout=30,
+    )
+    after = _maintenance_service_status({"name": name})
+    return _ok(
+        action=action, name=name,
+        before=before.get("service"),
+        after=after.get("service"),
+        exit_code=proc.returncode,
+        stderr=proc.stderr[-1000:],
+        checkpoint=checkpoint.get("checkpoint"),
+        verified=proc.returncode == 0,
+    )
+
+
+def _maintenance_restore_point_create(args: dict[str, Any]) -> dict[str, Any]:
+    description = str(args.get("description") or "Gemma4 Agent restore point").strip()
+    # System Restore must be enabled on the system drive for this to work.
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", f"Checkpoint-Computer -Description '{_ps_quote(description)}' -RestorePointType MODIFY_SETTINGS"],
+        capture_output=True, text=True, timeout=120,
+    )
+    if proc.returncode != 0:
+        return _err(
+            "Checkpoint-Computer failed; System Restore may be disabled or rate-limited (1 per 24h on consumer Windows)",
+            stderr=proc.stderr, exit_code=proc.returncode,
+            status="needs_user",
+            note="Enable System Protection on the system drive via Settings > System > About > Advanced system settings.",
+        )
+    return _ok(description=description, exit_code=proc.returncode, verified=True)
+
+
+def media_edit_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for ffmpeg-based audio/video editing.
+
+    Actions: status, trim, concat, extract_audio, subtitles_extract, normalize,
+    thumbnail, transcode, probe. Each action returns the output path, ffmpeg
+    exit code, and the command run.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        ffmpeg = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
+        ffprobe = shutil.which("ffprobe") or shutil.which("ffprobe.exe")
+        return _ok(
+            ffmpeg=bool(ffmpeg), ffmpeg_path=ffmpeg,
+            ffprobe=bool(ffprobe), ffprobe_path=ffprobe,
+            install_hint="winget install Gyan.FFmpeg",
+        )
+    ffmpeg = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
+    if not ffmpeg:
+        return _err(
+            "ffmpeg is not installed",
+            status="needs_dependency",
+            install_hint="winget install Gyan.FFmpeg",
+        )
+    if action == "probe":
+        return _media_edit_probe(args)
+    if action == "trim":
+        return _media_edit_trim(ffmpeg, args, state)
+    if action == "concat":
+        return _media_edit_concat(ffmpeg, args, state)
+    if action == "extract_audio":
+        return _media_edit_extract_audio(ffmpeg, args, state)
+    if action == "subtitles_extract":
+        return _media_edit_subtitles_extract(ffmpeg, args, state)
+    if action == "normalize":
+        return _media_edit_normalize(ffmpeg, args, state)
+    if action == "thumbnail":
+        return _media_edit_thumbnail(ffmpeg, args, state)
+    if action == "transcode":
+        return _media_edit_transcode(ffmpeg, args, state)
+    return _err("unknown media_edit action", action=action)
+
+
+def _media_edit_probe(args: dict[str, Any]) -> dict[str, Any]:
+    ffprobe = shutil.which("ffprobe") or shutil.which("ffprobe.exe")
+    if not ffprobe:
+        return _err("ffprobe is not installed", status="needs_dependency", install_hint="winget install Gyan.FFmpeg")
+    path = _media_edit_input(args)
+    if isinstance(path, dict):
+        return path
+    proc = subprocess.run(
+        [ffprobe, "-v", "error", "-print_format", "json", "-show_format", "-show_streams", str(path)],
+        capture_output=True, text=True, timeout=60,
+    )
+    if proc.returncode != 0:
+        return _err("ffprobe failed", stderr=proc.stderr, exit_code=proc.returncode)
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return _err("ffprobe returned invalid JSON", raw=proc.stdout[:500])
+    return _ok(path=str(path), probe=data)
+
+
+def _media_edit_input(args: dict[str, Any]) -> Path | dict[str, Any]:
+    raw = str(args.get("path") or args.get("input") or args.get("src") or "").strip()
+    if not raw:
+        return _err("missing input path")
+    path = Path(raw).expanduser()
+    if not path.is_file():
+        return _err("input file not found", path=str(path))
+    return path
+
+
+def _media_edit_output(args: dict[str, Any], state: AgentState, src: Path, suffix: str) -> Path:
+    raw = str(args.get("output") or args.get("dst") or args.get("out") or "").strip()
+    if raw:
+        p = Path(raw).expanduser()
+    else:
+        out_dir = state.path.parent / "media_edit"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        p = out_dir / f"{_safe_name(src.stem)}_{int(time.time())}{suffix}"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _run_ffmpeg(ffmpeg: str, cmd: list[str], timeout: int = 600) -> dict[str, Any]:
+    proc = subprocess.run([ffmpeg, "-y", "-hide_banner", "-loglevel", "error", *cmd], capture_output=True, text=True, timeout=timeout)
+    return {
+        "exit_code": proc.returncode,
+        "stdout": (proc.stdout or "")[-3000:],
+        "stderr": (proc.stderr or "")[-3000:],
+        "command": ["ffmpeg", *cmd],
+    }
+
+
+def _media_edit_trim(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    src = _media_edit_input(args)
+    if isinstance(src, dict):
+        return src
+    start = str(args.get("start") or "0").strip()
+    duration = str(args.get("duration") or "").strip()
+    end = str(args.get("end") or "").strip()
+    out = _media_edit_output(args, state, src, src.suffix)
+    cmd: list[str] = ["-ss", start, "-i", str(src)]
+    if duration:
+        cmd.extend(["-t", duration])
+    elif end:
+        cmd.extend(["-to", end])
+    cmd.extend(["-c", "copy", str(out)])
+    result = _run_ffmpeg(ffmpeg, cmd)
+    return _ok(path=str(out), src=str(src), start=start, duration=duration or None, end=end or None, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+
+
+def _media_edit_concat(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    inputs = args.get("inputs") if isinstance(args.get("inputs"), list) else []
+    if len(inputs) < 2:
+        return _err("concat requires at least 2 inputs")
+    paths: list[Path] = []
+    for raw in inputs:
+        p = Path(str(raw)).expanduser()
+        if not p.is_file():
+            return _err("concat input not found", path=str(p))
+        paths.append(p)
+    out = _media_edit_output(args, state, paths[0], paths[0].suffix)
+    # ffmpeg concat demuxer expects a list file.
+    list_file = out.with_suffix(".concat.txt")
+    list_file.write_text("\n".join(f"file '{p.as_posix()}'" for p in paths) + "\n", encoding="utf-8")
+    cmd = ["-f", "concat", "-safe", "0", "-i", str(list_file), "-c", "copy", str(out)]
+    result = _run_ffmpeg(ffmpeg, cmd)
+    try:
+        list_file.unlink()
+    except OSError:
+        pass
+    return _ok(path=str(out), inputs=[str(p) for p in paths], verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+
+
+def _media_edit_extract_audio(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    src = _media_edit_input(args)
+    if isinstance(src, dict):
+        return src
+    fmt = str(args.get("format") or "mp3").lower()
+    if fmt not in {"mp3", "aac", "wav", "flac", "ogg", "m4a"}:
+        return _err(f"unsupported audio format: {fmt}", supported=["mp3", "aac", "wav", "flac", "ogg", "m4a"])
+    out = _media_edit_output(args, state, src, f".{fmt}")
+    codec_map = {"mp3": "libmp3lame", "aac": "aac", "wav": "pcm_s16le", "flac": "flac", "ogg": "libvorbis", "m4a": "aac"}
+    cmd = ["-i", str(src), "-vn", "-c:a", codec_map[fmt], str(out)]
+    result = _run_ffmpeg(ffmpeg, cmd)
+    return _ok(path=str(out), src=str(src), format=fmt, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+
+
+def _media_edit_subtitles_extract(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    src = _media_edit_input(args)
+    if isinstance(src, dict):
+        return src
+    track = int(args.get("track", 0))
+    out = _media_edit_output(args, state, src, ".srt")
+    cmd = ["-i", str(src), "-map", f"0:s:{track}", str(out)]
+    result = _run_ffmpeg(ffmpeg, cmd)
+    if result["exit_code"] != 0:
+        return _ok(
+            path=str(out), src=str(src), track=track,
+            verified=False, status="needs_verification",
+            note="No embedded subtitle track at that index, or ffmpeg cannot extract this codec.",
+            **result,
+        )
+    return _ok(path=str(out), src=str(src), track=track, verified=out.is_file() and out.stat().st_size > 0, size=out.stat().st_size if out.is_file() else 0, **result)
+
+
+def _media_edit_normalize(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    src = _media_edit_input(args)
+    if isinstance(src, dict):
+        return src
+    out = _media_edit_output(args, state, src, src.suffix)
+    # EBU R128 loudnorm: I=-23 LUFS, TP=-2 dB, LRA=7. Single-pass.
+    cmd = ["-i", str(src), "-af", "loudnorm=I=-23:TP=-2:LRA=7", str(out)]
+    result = _run_ffmpeg(ffmpeg, cmd, timeout=900)
+    return _ok(path=str(out), src=str(src), filter="loudnorm I=-23 TP=-2 LRA=7", verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+
+
+def _media_edit_thumbnail(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    src = _media_edit_input(args)
+    if isinstance(src, dict):
+        return src
+    at = str(args.get("at") or args.get("time") or "00:00:01").strip()
+    out = _media_edit_output(args, state, src, ".png")
+    cmd = ["-ss", at, "-i", str(src), "-frames:v", "1", str(out)]
+    result = _run_ffmpeg(ffmpeg, cmd)
+    return _ok(path=str(out), src=str(src), at=at, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+
+
+def _media_edit_transcode(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    src = _media_edit_input(args)
+    if isinstance(src, dict):
+        return src
+    fmt = str(args.get("format") or "mp4").lower()
+    crf = int(args.get("crf", 23))
+    preset = str(args.get("preset") or "medium")
+    out = _media_edit_output(args, state, src, f".{fmt}")
+    if fmt in {"mp4", "mkv", "webm"}:
+        vcodec = "libvpx-vp9" if fmt == "webm" else "libx264"
+        acodec = "libopus" if fmt == "webm" else "aac"
+        cmd = ["-i", str(src), "-c:v", vcodec, "-preset", preset, "-crf", str(crf), "-c:a", acodec, str(out)]
+    else:
+        return _err(f"unsupported transcode format: {fmt}", supported=["mp4", "mkv", "webm"])
+    result = _run_ffmpeg(ffmpeg, cmd, timeout=1800)
+    return _ok(path=str(out), src=str(src), format=fmt, crf=crf, preset=preset, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+
+
+def game_launcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | None = None) -> dict[str, Any]:
+    """Compound tool for non-Steam game launchers.
+
+    Actions:
+      - status
+      - discover(launcher?) -> {epic, gog, xbox, riot} games found on disk
+      - launch(launcher, game) -> opens by URI/shortcut/exe
+      - open_store_page(launcher, query) -> deferred
+      - open_library_page(launcher) -> opens launcher window
+    Steam is handled by the existing `steam` tool; we do not duplicate it here.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        epic_dir = _epic_manifests_dir()
+        return _ok(
+            launchers={
+                "epic": epic_dir is not None,
+                "gog": _gog_registry_has_games(),
+                "xbox": True,  # always queryable via Get-StartApps
+                "riot": _riot_install_db() is not None,
+            },
+            epic_manifest_dir=str(epic_dir) if epic_dir else None,
+            note="Steam is handled by the dedicated `steam` tool.",
+        )
+    if action in {"discover", "list", "discover_games"}:
+        return _game_launcher_discover(args)
+    if action == "launch":
+        return _game_launcher_launch(args, state, executor)
+    if action == "open_library_page":
+        launcher = str(args.get("launcher") or "").casefold()
+        if not executor:
+            return _err("open_library_page requires executor", status="needs_implementation")
+        target = {
+            "epic": "com.epicgames.launcher://store",
+            "gog": "goggalaxy://",
+            "xbox": "ms-windows-store://home",
+        }.get(launcher)
+        if not target:
+            return _err(f"launcher '{launcher}' not supported for library page", status="needs_user")
+        return executor("web", {"action": "open", "url": target})
+    if action == "open_store_page":
+        return _err(
+            "game_launcher.open_store_page is deferred; each store needs its own URI scheme and search",
+            status="needs_implementation",
+            note="Use browser_real or steam(store_page) instead.",
+        )
+    return _err("unknown game_launcher action", action=action)
+
+
+def _epic_manifests_dir() -> Path | None:
+    candidates = [
+        Path(os.environ.get("ProgramData", "C:/ProgramData")) / "Epic" / "EpicGamesLauncher" / "Data" / "Manifests",
+        Path("C:/ProgramData/Epic/EpicGamesLauncher/Data/Manifests"),
+    ]
+    for c in candidates:
+        if c.is_dir():
+            return c
+    return None
+
+
+def _gog_registry_has_games() -> bool:
+    proc = subprocess.run(
+        ["reg", "query", r"HKLM\SOFTWARE\WOW6432Node\GOG.com\Games"],
+        capture_output=True, text=True, timeout=10,
+    )
+    return proc.returncode == 0 and bool(proc.stdout.strip())
+
+
+def _riot_install_db() -> Path | None:
+    candidates = [
+        Path(os.environ.get("ProgramData", "C:/ProgramData")) / "Riot Games" / "RiotClientInstalls.json",
+    ]
+    for c in candidates:
+        if c.is_file():
+            return c
+    return None
+
+
+def _game_launcher_discover(args: dict[str, Any]) -> dict[str, Any]:
+    launcher = str(args.get("launcher") or "").casefold()
+    results: dict[str, list[dict[str, Any]]] = {"epic": [], "gog": [], "xbox": [], "riot": []}
+    if not launcher or launcher == "epic":
+        results["epic"] = _discover_epic_games()
+    if not launcher or launcher == "gog":
+        results["gog"] = _discover_gog_games()
+    if not launcher or launcher == "xbox":
+        results["xbox"] = _discover_xbox_games()
+    if not launcher or launcher == "riot":
+        results["riot"] = _discover_riot_games()
+    total = sum(len(v) for v in results.values())
+    return _ok(games=results, total=total, launcher_filter=launcher or None)
+
+
+def _discover_epic_games() -> list[dict[str, Any]]:
+    manifests_dir = _epic_manifests_dir()
+    if not manifests_dir:
+        return []
+    games: list[dict[str, Any]] = []
+    for item in manifests_dir.glob("*.item"):
+        try:
+            data = json.loads(item.read_text(encoding="utf-8", errors="replace"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        games.append({
+            "launcher": "epic",
+            "app_name": data.get("AppName"),
+            "display_name": data.get("DisplayName"),
+            "install_location": data.get("InstallLocation"),
+            "launch_executable": data.get("LaunchExecutable"),
+            "catalog_namespace": data.get("CatalogNamespace"),
+            "catalog_item_id": data.get("CatalogItemId"),
+            "manifest": str(item),
+        })
+    return games
+
+
+def _discover_gog_games() -> list[dict[str, Any]]:
+    proc = subprocess.run(
+        ["reg", "query", r"HKLM\SOFTWARE\WOW6432Node\GOG.com\Games", "/s"],
+        capture_output=True, text=True, timeout=20,
+    )
+    if proc.returncode != 0:
+        return []
+    games_by_id: dict[str, dict[str, Any]] = {}
+    current_id: str | None = None
+    for line in proc.stdout.splitlines():
+        line = line.rstrip()
+        m = re.match(r".*\\Games\\(\d+)$", line)
+        if m:
+            current_id = m.group(1)
+            games_by_id.setdefault(current_id, {"launcher": "gog", "game_id": current_id})
+            continue
+        if current_id and "REG_SZ" in line:
+            parts = line.strip().split(None, 2)
+            if len(parts) >= 3:
+                key, _, value = parts[0], parts[1], parts[2]
+                games_by_id[current_id][key.casefold()] = value
+    games = []
+    for gid, data in games_by_id.items():
+        games.append({
+            "launcher": "gog",
+            "game_id": gid,
+            "name": data.get("gamename"),
+            "exe": data.get("exe"),
+            "exepath": data.get("exepath"),
+            "path": data.get("path"),
+            "launch_command": data.get("launchcommand"),
+        })
+    return games
+
+
+def _discover_xbox_games() -> list[dict[str, Any]]:
+    # Get-AppxPackage with publisher filters Microsoft.Gaming or Microsoft.* gives
+    # us UWP/Store games. We avoid system apps by filtering for HasNonRemovablePackage=$false.
+    script = r"""
+$apps = Get-AppxPackage | Where-Object {
+  $_.SignatureKind -eq 'Store' -and
+  ($_.PackageFamilyName -like '*Game*' -or $_.Name -like '*Gaming*' -or $_.Name -match 'Xbox|Halo|Forza|Minecraft|Sea Of Thieves|Gears|Age Of Empires')
+} | Select-Object Name,PackageFullName,PackageFamilyName,InstallLocation,Version,Publisher
+$apps | ConvertTo-Json -Depth 4
+"""
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
+    raw = proc.stdout.strip()
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return []
+    if isinstance(data, dict):
+        data = [data]
+    games = []
+    for app in data if isinstance(data, list) else []:
+        games.append({
+            "launcher": "xbox",
+            "name": app.get("Name"),
+            "package_full_name": app.get("PackageFullName"),
+            "package_family_name": app.get("PackageFamilyName"),
+            "install_location": app.get("InstallLocation"),
+            "version": app.get("Version"),
+            "publisher": app.get("Publisher"),
+            "launch_uri": f"shell:AppsFolder\\{app.get('PackageFamilyName')}!App",
+        })
+    return games
+
+
+def _discover_riot_games() -> list[dict[str, Any]]:
+    db_path = _riot_install_db()
+    if not db_path:
+        return []
+    try:
+        data = json.loads(db_path.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    products = data.get("associated_client") or {}
+    games = []
+    for product_path, client_path in products.items():
+        games.append({
+            "launcher": "riot",
+            "product_path": product_path,
+            "client_path": client_path,
+            "name": Path(product_path).name,
+        })
+    return games
+
+
+def _game_launcher_launch(args: dict[str, Any], state: AgentState, executor: Executor | None) -> dict[str, Any]:
+    launcher = str(args.get("launcher") or "").casefold()
+    query = str(args.get("game") or args.get("query") or args.get("name") or "").strip()
+    if not launcher:
+        return _err("missing launcher (epic|gog|xbox|riot)")
+    if not query:
+        return _err("missing game name/query")
+
+    discovery = _game_launcher_discover({"launcher": launcher})
+    games = discovery.get("games", {}).get(launcher, [])
+    q = query.casefold()
+    chosen = None
+    for game in games:
+        name_fields = (game.get("display_name") or game.get("name") or game.get("app_name") or "")
+        if q in str(name_fields).casefold():
+            chosen = game
+            break
+    if not chosen:
+        return _err(
+            f"no {launcher} game matching '{query}'",
+            status="needs_user",
+            available=[g.get("display_name") or g.get("name") for g in games][:30],
+        )
+
+    if launcher == "epic":
+        # Epic supports a launch URI: com.epicgames.launcher://apps/<AppName>?action=launch&silent=true
+        app_name = chosen.get("app_name")
+        if not app_name:
+            return _err("epic game has no AppName in manifest", chosen=chosen)
+        uri = f"com.epicgames.launcher://apps/{app_name}?action=launch&silent=true"
+        os.startfile(uri) if os.name == "nt" else webbrowser.open(uri)
+        state.register_resource(
+            "game_session", chosen.get("display_name") or app_name,
+            metadata={"launcher": "epic", "app_name": app_name, "uri": uri, "started_at": datetime.now().isoformat()},
+        )
+        return _ok(launcher="epic", game=chosen, uri=uri, verified=False, status="attempted", note="Epic launcher should open and start the game; verify via window list.")
+    if launcher == "gog":
+        exe = chosen.get("exe") or chosen.get("path")
+        if not exe:
+            return _err("gog game has no exe registered", chosen=chosen)
+        exe_path = Path(exe).expanduser()
+        if not exe_path.is_file():
+            return _err("gog exe path not found", path=str(exe_path))
+        if os.name == "nt":
+            os.startfile(exe_path)
+        state.register_resource(
+            "game_session", chosen.get("name") or exe,
+            metadata={"launcher": "gog", "game_id": chosen.get("game_id"), "exe": str(exe_path), "started_at": datetime.now().isoformat()},
+        )
+        return _ok(launcher="gog", game=chosen, exe=str(exe_path), verified=False, status="attempted")
+    if launcher == "xbox":
+        uri = chosen.get("launch_uri")
+        if not uri:
+            return _err("xbox app has no launch URI", chosen=chosen)
+        os.startfile(uri) if os.name == "nt" else webbrowser.open(uri)
+        state.register_resource(
+            "game_session", chosen.get("name") or uri,
+            metadata={"launcher": "xbox", "uri": uri, "package_family_name": chosen.get("package_family_name"), "started_at": datetime.now().isoformat()},
+        )
+        return _ok(launcher="xbox", game=chosen, uri=uri, verified=False, status="attempted")
+    if launcher == "riot":
+        client = chosen.get("client_path")
+        if not client or not Path(client).is_file():
+            return _err("riot client path missing", chosen=chosen)
+        os.startfile(client) if os.name == "nt" else webbrowser.open(Path(client).as_uri())
+        state.register_resource(
+            "game_session", chosen.get("name") or client,
+            metadata={"launcher": "riot", "client": client, "started_at": datetime.now().isoformat()},
+        )
+        return _ok(launcher="riot", game=chosen, client=client, verified=False, status="attempted")
+    return _err(f"launcher '{launcher}' not supported")
+
+
+def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for WiFi, Bluetooth, displays and power plans.
+
+    Actions:
+      - status
+      - wifi_status, wifi_list, wifi_scan, wifi_connect(name), wifi_disconnect
+      - bluetooth_status
+      - display_list
+      - power_plan_list, power_plan_get, power_plan_set(name|guid)
+    Toggles for Bluetooth and night_light are deferred: they require either
+    elevated service management or fragile registry hacks. Returning
+    needs_implementation is the honest answer.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            netsh=bool(shutil.which("netsh")),
+            powercfg=bool(shutil.which("powercfg")),
+            powershell=bool(shutil.which("powershell")),
+            note="WiFi via netsh, displays via WMI, power plans via powercfg. Bluetooth toggle and night_light are deferred (needs elevated/registry hacks).",
+        )
+    if action == "wifi_status":
+        return _device_wifi_status()
+    if action in {"wifi_list", "wifi_profiles"}:
+        return _device_wifi_profiles()
+    if action == "wifi_scan":
+        return _device_wifi_scan()
+    if action == "wifi_connect":
+        return _device_wifi_connect(args)
+    if action == "wifi_disconnect":
+        return _device_wifi_disconnect()
+    if action == "bluetooth_status":
+        return _device_bluetooth_status()
+    if action == "display_list":
+        return _device_display_list()
+    if action in {"power_plan_list", "power_plans"}:
+        return _device_power_plan_list()
+    if action == "power_plan_get":
+        return _device_power_plan_get()
+    if action == "power_plan_set":
+        return _device_power_plan_set(args, state)
+    if action in {"bluetooth_toggle", "bluetooth_pair", "night_light", "display_set_resolution", "display_set_scale", "wifi_set_profile"}:
+        return _err(
+            f"device_settings.{action} is deferred",
+            status="needs_implementation",
+            note=(
+                "Bluetooth toggle needs Btagservice control or a UWP runtime;"
+                " night_light needs a fragile CloudStore registry write;"
+                " display resolution needs IADLXDisplayServices or DISPLAY_DEVICE Win32 calls."
+            ),
+        )
+    return _err("unknown device_settings action", action=action)
+
+
+def _device_wifi_status() -> dict[str, Any]:
+    proc = subprocess.run(["netsh", "wlan", "show", "interfaces"], capture_output=True, text=True, timeout=15)
+    if proc.returncode != 0:
+        return _err("netsh wlan show interfaces failed", stderr=proc.stderr, exit_code=proc.returncode)
+    fields: dict[str, str] = {}
+    for line in proc.stdout.splitlines():
+        if ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        fields[key.strip().casefold()] = value.strip()
+    # netsh localizes keys; map both english and spanish.
+    def pick(*keys: str) -> Any:
+        for k in keys:
+            if fields.get(k.casefold()) is not None:
+                return fields.get(k.casefold())
+        return None
+    return _ok(
+        ssid=pick("ssid"),
+        state=pick("state", "estado"),
+        signal=pick("signal", "se�al"),
+        radio_type=pick("radio type", "tipo de radio"),
+        bssid=pick("bssid"),
+        receive_rate_mbps=pick("receive rate (mbps)", "velocidad de recepci�n (mbps)"),
+        transmit_rate_mbps=pick("transmit rate (mbps)", "velocidad de transmisi�n (mbps)"),
+        raw=fields,
+    )
+
+
+def _device_wifi_profiles() -> dict[str, Any]:
+    proc = subprocess.run(["netsh", "wlan", "show", "profiles"], capture_output=True, text=True, timeout=15)
+    if proc.returncode != 0:
+        return _err("netsh wlan show profiles failed", stderr=proc.stderr)
+    profiles: list[str] = []
+    for line in proc.stdout.splitlines():
+        if "All User Profile" in line or "Perfil de todos los usuarios" in line:
+            _, _, name = line.partition(":")
+            name = name.strip()
+            if name:
+                profiles.append(name)
+    return _ok(profiles=profiles, count=len(profiles))
+
+
+def _device_wifi_scan() -> dict[str, Any]:
+    # netsh wlan show networks lists currently visible SSIDs.
+    proc = subprocess.run(["netsh", "wlan", "show", "networks", "mode=bssid"], capture_output=True, text=True, timeout=20)
+    if proc.returncode != 0:
+        return _err("netsh wlan show networks failed", stderr=proc.stderr)
+    networks: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for line in proc.stdout.splitlines():
+        s = line.strip()
+        if s.startswith("SSID ") and ":" in s:
+            if current:
+                networks.append(current)
+            _, _, ssid = s.partition(":")
+            current = {"ssid": ssid.strip()}
+        elif current is not None and ":" in s:
+            key, _, value = s.partition(":")
+            current[key.strip().casefold()] = value.strip()
+    if current:
+        networks.append(current)
+    return _ok(networks=networks[:50], count=len(networks))
+
+
+def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
+    name = str(args.get("name") or args.get("ssid") or args.get("profile") or "").strip()
+    if not name:
+        return _err("missing profile name; pass name=<existing profile>")
+    # Connect only works against a saved profile. New networks need a profile XML
+    # — too sensitive for a default tool path.
+    profiles = _device_wifi_profiles().get("profiles", [])
+    if name not in profiles:
+        return _err(
+            f"profile '{name}' not found; create it first via Settings or pass profile_xml",
+            status="needs_user",
+            available_profiles=profiles[:30],
+        )
+    proc = subprocess.run(["netsh", "wlan", "connect", f"name={name}"], capture_output=True, text=True, timeout=20)
+    return _ok(
+        profile=name,
+        exit_code=proc.returncode,
+        stdout=proc.stdout.strip()[:500],
+        stderr=proc.stderr.strip()[:500],
+        verified=proc.returncode == 0,
+        status="done" if proc.returncode == 0 else "needs_verification",
+    )
+
+
+def _device_wifi_disconnect() -> dict[str, Any]:
+    proc = subprocess.run(["netsh", "wlan", "disconnect"], capture_output=True, text=True, timeout=10)
+    return _ok(exit_code=proc.returncode, stdout=proc.stdout.strip(), verified=proc.returncode == 0)
+
+
+def _device_bluetooth_status() -> dict[str, Any]:
+    script = (
+        "Get-PnpDevice -Class Bluetooth -ErrorAction SilentlyContinue | "
+        "Select-Object FriendlyName,Status,Class,InstanceId | ConvertTo-Json -Depth 3"
+    )
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+    if proc.returncode != 0:
+        return _err("bluetooth status query failed", stderr=proc.stderr)
+    raw = proc.stdout.strip()
+    if not raw:
+        return _ok(devices=[], count=0, note="No Bluetooth class devices found.")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _err("bluetooth status returned invalid JSON", raw=raw[:500])
+    if isinstance(data, dict):
+        data = [data]
+    # Also check the Bluetooth Support Service for radio state.
+    svc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command", "Get-Service bthserv -ErrorAction SilentlyContinue | Select-Object Status,Name,StartType | ConvertTo-Json"],
+        capture_output=True, text=True, timeout=10,
+    )
+    service_info = None
+    if svc.returncode == 0 and svc.stdout.strip():
+        try:
+            service_info = json.loads(svc.stdout)
+        except json.JSONDecodeError:
+            pass
+    return _ok(devices=data, count=len(data), bthserv=service_info)
+
+
+def _device_display_list() -> dict[str, Any]:
+    script = r"""
+$mons = Get-CimInstance -Namespace root\cimv2 -ClassName Win32_DesktopMonitor | Select-Object Name,ScreenWidth,ScreenHeight,DeviceID,Status
+$ctrls = Get-CimInstance -ClassName Win32_VideoController | Select-Object Name,CurrentHorizontalResolution,CurrentVerticalResolution,CurrentRefreshRate,DriverVersion,VideoModeDescription
+[PSCustomObject]@{ monitors=$mons; controllers=$ctrls } | ConvertTo-Json -Depth 4
+"""
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+    if proc.returncode != 0:
+        return _err("display_list failed", stderr=proc.stderr)
+    try:
+        data = json.loads(proc.stdout) if proc.stdout.strip() else {}
+    except json.JSONDecodeError:
+        return _err("display_list returned invalid JSON", raw=proc.stdout[:500])
+    return _ok(data=data)
+
+
+def _device_power_plan_list() -> dict[str, Any]:
+    proc = subprocess.run(["powercfg", "/list"], capture_output=True, text=True, timeout=10)
+    if proc.returncode != 0:
+        return _err("powercfg /list failed", stderr=proc.stderr)
+    plans: list[dict[str, Any]] = []
+    for line in proc.stdout.splitlines():
+        # GUID de plan de energ�a:  381b4222-f694-41f0-9685-ff5bb260df2e  (Equilibrado) *
+        m = re.search(r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\s*\(([^)]+)\)\s*(\*?)", line, re.IGNORECASE)
+        if m:
+            plans.append({"guid": m.group(1), "name": m.group(2), "active": m.group(3) == "*"})
+    return _ok(plans=plans, count=len(plans))
+
+
+def _device_power_plan_get() -> dict[str, Any]:
+    proc = subprocess.run(["powercfg", "/getactivescheme"], capture_output=True, text=True, timeout=10)
+    if proc.returncode != 0:
+        return _err("powercfg /getactivescheme failed", stderr=proc.stderr)
+    m = re.search(r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\s*\(([^)]+)\)", proc.stdout, re.IGNORECASE)
+    if not m:
+        return _ok(raw=proc.stdout.strip())
+    return _ok(guid=m.group(1), name=m.group(2), active=True)
+
+
+def _device_power_plan_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    target = str(args.get("guid") or args.get("name") or args.get("plan") or "").strip()
+    if not target:
+        return _err("missing guid or name")
+    plans = _device_power_plan_list().get("plans", [])
+    chosen = None
+    for plan in plans:
+        if plan["guid"].casefold() == target.casefold() or target.casefold() in plan["name"].casefold():
+            chosen = plan
+            break
+    if not chosen:
+        return _err("power plan not found", target=target, available=[(p["name"], p["guid"]) for p in plans])
+    before = _device_power_plan_get()
+    checkpoint = state.checkpoint(
+        "power plan change",
+        rollback=[{"tool": "device_settings", "args": {"action": "power_plan_set", "guid": before.get("guid")}}] if before.get("guid") else [],
+        metadata={"before": before, "target": chosen},
+    )
+    proc = subprocess.run(["powercfg", "/setactive", chosen["guid"]], capture_output=True, text=True, timeout=10)
+    after = _device_power_plan_get()
+    return _ok(
+        target=chosen,
+        before=before,
+        after=after,
+        exit_code=proc.returncode,
+        checkpoint=checkpoint.get("checkpoint"),
+        verified=proc.returncode == 0 and (after.get("guid") or "").casefold() == chosen["guid"].casefold(),
+    )
+
+
+def developer_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound tool for developer workflows: detect, test, lint, format, git, dev_server.
+
+    Actions:
+      - status
+      - project_detect(path?)
+      - run_tests(path?, args?)
+      - run_lint(path?)
+      - run_format(path?)
+      - git_status(path?)
+      - git_diff(path?, staged?)
+      - git_log(path?, limit?)
+      - start_dev_server(path?, command?)
+      - stop_dev_server(server_id?)
+      - list_dev_servers
+    Mutating git actions (git_commit/push) are intentionally NOT implemented:
+    the agent must use terminal(...) explicitly so the user sees the command.
+    """
+    action = str(args.get("action") or "status").casefold()
+    if action == "status":
+        return _ok(
+            git=bool(shutil.which("git")),
+            python=bool(shutil.which("python") or shutil.which("py")),
+            node=bool(shutil.which("node")),
+            npm=bool(shutil.which("npm")),
+            yarn=bool(shutil.which("yarn")),
+            pnpm=bool(shutil.which("pnpm")),
+            cargo=bool(shutil.which("cargo")),
+            go=bool(shutil.which("go")),
+            pytest=bool(shutil.which("pytest")),
+            ruff=bool(shutil.which("ruff")),
+            black=bool(shutil.which("black")),
+            note="Use project_detect first; run_tests/lint/format then dispatch by detected stack.",
+        )
+    if action == "project_detect":
+        return _developer_project_detect(args)
+    if action == "run_tests":
+        return _developer_run("tests", args)
+    if action == "run_lint":
+        return _developer_run("lint", args)
+    if action == "run_format":
+        return _developer_run("format", args)
+    if action == "git_status":
+        return _developer_git(["status", "--short", "--branch"], args)
+    if action == "git_diff":
+        cmd = ["diff"]
+        if bool(args.get("staged", False)):
+            cmd.append("--staged")
+        return _developer_git(cmd, args)
+    if action == "git_log":
+        limit = int(args.get("limit", 10))
+        return _developer_git(["log", "--oneline", f"-{limit}"], args)
+    if action == "start_dev_server":
+        return _developer_start_dev_server(args, state)
+    if action == "stop_dev_server":
+        return _developer_stop_dev_server(args, state)
+    if action == "list_dev_servers":
+        servers = _resources_by_kind(state, "dev_server", include_closed=bool(args.get("include_closed", False)))
+        return _ok(servers=servers, count=len(servers))
+    if action in {"git_commit", "git_push"}:
+        return _err(
+            f"developer.{action} is intentionally not implemented; use terminal(...) so the command is visible to the user",
+            status="needs_user",
+            note="Mutating git actions should be explicit, not hidden behind a tool wrapper.",
+        )
+    return _err("unknown developer action", action=action)
+
+
+def _developer_project_root(args: dict[str, Any]) -> Path:
+    raw = str(args.get("path") or args.get("root") or "").strip()
+    return Path(raw).expanduser() if raw else Path.cwd()
+
+
+def _developer_project_detect(args: dict[str, Any]) -> dict[str, Any]:
+    root = _developer_project_root(args)
+    if not root.exists():
+        return _err("path not found", path=str(root))
+    markers = {
+        "package.json": "node",
+        "pyproject.toml": "python",
+        "setup.py": "python",
+        "requirements.txt": "python",
+        "Cargo.toml": "rust",
+        "go.mod": "go",
+        "pom.xml": "java",
+        "build.gradle": "java",
+        "Gemfile": "ruby",
+        "composer.json": "php",
+        "CMakeLists.txt": "cmake",
+    }
+    detected: list[dict[str, Any]] = []
+    for marker, stack in markers.items():
+        path = root / marker
+        if path.is_file():
+            detected.append({"marker": marker, "stack": stack, "path": str(path)})
+    # Node sub-detection: detect package manager.
+    node_pm = None
+    if any(d["stack"] == "node" for d in detected):
+        if (root / "pnpm-lock.yaml").is_file():
+            node_pm = "pnpm"
+        elif (root / "yarn.lock").is_file():
+            node_pm = "yarn"
+        elif (root / "package-lock.json").is_file():
+            node_pm = "npm"
+        else:
+            node_pm = "npm"  # default
+    # Python sub-detection: poetry vs pip.
+    python_pm = None
+    if any(d["stack"] == "python" for d in detected):
+        if (root / "poetry.lock").is_file():
+            python_pm = "poetry"
+        elif (root / "uv.lock").is_file():
+            python_pm = "uv"
+        else:
+            python_pm = "pip"
+    is_git = (root / ".git").exists()
+    return _ok(
+        root=str(root),
+        is_git=is_git,
+        detected=detected,
+        stacks=sorted({d["stack"] for d in detected}),
+        node_package_manager=node_pm,
+        python_package_manager=python_pm,
+    )
+
+
+def _developer_run(kind: str, args: dict[str, Any]) -> dict[str, Any]:
+    detect = _developer_project_detect(args)
+    if not detect.get("ok"):
+        return detect
+    stacks = detect.get("stacks") or []
+    root = Path(detect["root"])
+    extra_args = args.get("args") if isinstance(args.get("args"), list) else []
+    timeout = int(args.get("timeout_sec", 300))
+    # Pick a command for the (stack, kind) pair. We use the first matched stack
+    # in priority order: python > node > rust > go.
+    priority = ["python", "node", "rust", "go", "java", "ruby", "php"]
+    chosen_stack = next((s for s in priority if s in stacks), None)
+    if not chosen_stack:
+        return _err("no recognized stack to run for", kind=kind, detected=stacks, status="needs_user")
+    cmd = _developer_command(chosen_stack, kind, detect, extra_args)
+    if not cmd:
+        return _err(
+            f"developer.{kind} not wired for stack '{chosen_stack}'",
+            stack=chosen_stack, kind=kind,
+            status="needs_implementation",
+            note="Pass explicit command via args=[...] to terminal(...) instead.",
+        )
+    proc = subprocess.run(cmd, cwd=str(root), capture_output=True, text=True, timeout=timeout)
+    return _ok(
+        stack=chosen_stack, kind=kind,
+        command=cmd, cwd=str(root),
+        exit_code=proc.returncode,
+        stdout=(proc.stdout or "")[-4000:],
+        stderr=(proc.stderr or "")[-2000:],
+        passed=proc.returncode == 0,
+        verified=proc.returncode == 0,
+        status="done" if proc.returncode == 0 else "needs_verification",
+    )
+
+
+def _developer_command(stack: str, kind: str, detect: dict[str, Any], extra: list[Any]) -> list[str] | None:
+    if stack == "python":
+        if kind == "tests":
+            return ["pytest", *map(str, extra)]
+        if kind == "lint":
+            if shutil.which("ruff"):
+                return ["ruff", "check", "."]
+            if shutil.which("flake8"):
+                return ["flake8"]
+        if kind == "format":
+            if shutil.which("ruff"):
+                return ["ruff", "format", "."]
+            if shutil.which("black"):
+                return ["black", "."]
+    if stack == "node":
+        pm = detect.get("node_package_manager") or "npm"
+        if kind == "tests":
+            return [pm, "test", *map(str, extra)]
+        if kind == "lint":
+            return [pm, "run", "lint"]
+        if kind == "format":
+            return [pm, "run", "format"]
+    if stack == "rust":
+        if kind == "tests":
+            return ["cargo", "test"]
+        if kind == "lint":
+            return ["cargo", "clippy"]
+        if kind == "format":
+            return ["cargo", "fmt"]
+    if stack == "go":
+        if kind == "tests":
+            return ["go", "test", "./..."]
+        if kind == "lint":
+            return ["go", "vet", "./..."]
+        if kind == "format":
+            return ["gofmt", "-w", "."]
+    return None
+
+
+def _developer_git(git_args: list[str], args: dict[str, Any]) -> dict[str, Any]:
+    git = shutil.which("git")
+    if not git:
+        return _err("git is not installed", status="needs_dependency", install_hint="winget install Git.Git")
+    root = _developer_project_root(args)
+    proc = subprocess.run([git, *git_args], cwd=str(root), capture_output=True, text=True, timeout=30)
+    return _ok(
+        cwd=str(root),
+        command=["git", *git_args],
+        exit_code=proc.returncode,
+        stdout=(proc.stdout or "")[-6000:],
+        stderr=(proc.stderr or "")[-2000:],
+        verified=proc.returncode == 0,
+        status="done" if proc.returncode == 0 else "needs_verification",
+    )
+
+
+def _developer_start_dev_server(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    root = _developer_project_root(args)
+    if not root.exists():
+        return _err("path not found", path=str(root))
+    explicit = args.get("command")
+    if isinstance(explicit, list) and explicit:
+        cmd = [str(part) for part in explicit]
+    elif isinstance(explicit, str) and explicit.strip():
+        cmd = explicit.split()
+    else:
+        detect = _developer_project_detect({"path": str(root)})
+        if not detect.get("ok"):
+            return detect
+        stacks = detect.get("stacks") or []
+        if "node" in stacks:
+            pm = detect.get("node_package_manager") or "npm"
+            cmd = [pm, "run", "dev"]
+        elif "python" in stacks:
+            # No universal dev command for python; the user must pass command=.
+            return _err(
+                "no default dev command for python; pass command='uvicorn app:app --reload' or similar",
+                stack="python",
+                status="needs_user",
+            )
+        else:
+            return _err("no default dev command for detected stack", stacks=stacks, status="needs_user")
+    log_dir = state.path.parent / "dev_servers"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / f"dev_{int(time.time())}.log"
+    log_file = log_path.open("w", encoding="utf-8")
+    creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    proc = subprocess.Popen(cmd, cwd=str(root), stdout=log_file, stderr=subprocess.STDOUT, creationflags=creationflags)
+    resource = state.register_resource(
+        "dev_server",
+        f"{cmd[0]} {' '.join(cmd[1:])}",
+        cleanup_tool="developer",
+        cleanup_args={"action": "stop_dev_server"},
+        metadata={"cmd": cmd, "cwd": str(root), "pid": proc.pid, "log": str(log_path), "started_at": datetime.now().isoformat()},
+    )
+    # The cleanup_args needs the server_id, but we only have it after registration.
+    # Patch it in-place.
+    rid = resource.get("resource", {}).get("id")
+    if rid:
+        data = state._load()
+        rec = data.get("resources", {}).get(rid)
+        if rec:
+            rec["cleanup_args"] = {"action": "stop_dev_server", "server_id": rid}
+            state._save(data)
+    return _ok(
+        server_id=rid, pid=proc.pid, cmd=cmd, cwd=str(root),
+        log=str(log_path),
+        note="Process detached; use list_dev_servers to inspect and stop_dev_server to terminate.",
+    )
+
+
+def _developer_stop_dev_server(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    server_id = str(args.get("server_id") or args.get("id") or "").strip()
+    pid = args.get("pid")
+    target = None
+    if server_id:
+        target = state._load().get("resources", {}).get(server_id)
+    elif pid is not None:
+        for res in state._load().get("resources", {}).values():
+            if res.get("kind") == "dev_server" and (res.get("metadata") or {}).get("pid") == int(pid):
+                target = res
+                break
+    else:
+        # Stop the most recent open dev_server.
+        opens = _resources_by_kind(state, "dev_server", include_closed=False)
+        target = opens[-1] if opens else None
+    if not target:
+        return _err("no dev_server found", status="needs_user")
+    pid = (target.get("metadata") or {}).get("pid")
+    if not pid:
+        return _err("dev_server has no pid", target=target)
+    killed = False
+    try:
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/F", "/PID", str(pid), "/T"], capture_output=True, text=True, timeout=10)
+        else:
+            os.kill(int(pid), 15)
+        killed = True
+    except Exception as exc:
+        return _err(f"failed to kill pid {pid}: {exc}", pid=pid)
+    state.mark_cleaned(str(target["id"]), {"killed": killed, "pid": pid})
+    return _ok(server_id=str(target["id"]), pid=pid, killed=killed, verified=killed)
+
+
 def document_tool(args: dict[str, Any], state: AgentState, knowledge_executor: Executor | None = None) -> dict[str, Any]:
     """Compound tool for PDF/DOCX/XLSX/PPTX/HTML parsing and ingestion.
 

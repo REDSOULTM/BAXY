@@ -32,13 +32,22 @@ from .domain_tools import (
     local_calendar_tool,
     local_search_tool,
     media_tool,
+    data_analysis_tool,
+    developer_tool,
+    device_settings_tool,
     document_tool,
+    game_launcher_tool,
+    job_manager_tool,
+    maintenance_tool,
+    media_edit_tool,
+    network_tool,
     notes_tasks_tool,
     notification_tool,
     office_tool,
     printer_scanner_tool,
     routine_tool,
     source_manager_tool,
+    watcher_tool,
 )
 from .knowledge import KnowledgeStore
 from .memory import MemoryStore
@@ -161,6 +170,15 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "desktop_layout": ["status", "windows", "list_windows", "displays", "snapshot", "restore"],
     "backup_sync": ["status", "backup_create", "list", "restore", "dedupe", "verify"],
     "document": ["status", "extract_text", "extract_tables", "extract_images", "ocr_pdf", "summarize", "ingest_to_knowledge", "compare_documents"],
+    "developer": ["status", "project_detect", "run_tests", "run_lint", "run_format", "git_status", "git_diff", "git_log", "git_commit", "git_push", "start_dev_server", "stop_dev_server", "list_dev_servers"],
+    "device_settings": ["status", "wifi_status", "wifi_list", "wifi_profiles", "wifi_scan", "wifi_connect", "wifi_disconnect", "bluetooth_status", "bluetooth_toggle", "bluetooth_pair", "display_list", "display_set_resolution", "display_set_scale", "power_plan_list", "power_plans", "power_plan_get", "power_plan_set", "night_light", "wifi_set_profile"],
+    "game_launcher": ["status", "discover", "list", "discover_games", "launch", "open_store_page", "open_library_page"],
+    "media_edit": ["status", "probe", "trim", "concat", "extract_audio", "subtitles_extract", "normalize", "thumbnail", "transcode"],
+    "maintenance": ["status", "windows_update_status", "defender_status", "defender_quick_scan", "firewall_status", "event_logs_query", "services_list", "services", "service_status", "service_start", "service_stop", "disk_cleanup_describe", "restore_point_create"],
+    "watcher": ["status", "list", "watch_file", "watch_url", "check", "delete"],
+    "job_manager": ["status", "start", "list", "log", "status_of", "info", "cancel", "stop", "kill"],
+    "network": ["status", "ping", "traceroute", "dns_get", "dns_set", "dns_resolve", "resolve", "port_check", "connections", "public_ip", "firewall_allow", "firewall_block", "firewall_remove"],
+    "data_analysis": ["status", "csv_profile", "csv_describe", "csv_query", "csv_head", "csv_to_xlsx", "plot_histogram", "plot_scatter", "plot_line"],
     "safety": ["status", "pending", "confirm", "cancel"],
 }
 
@@ -1075,6 +1093,15 @@ class ToolRegistry:
             "desktop_layout": self.t_desktop_layout,
             "backup_sync": self.t_backup_sync,
             "document": self.t_document,
+            "developer": self.t_developer,
+            "device_settings": self.t_device_settings,
+            "game_launcher": self.t_game_launcher,
+            "media_edit": self.t_media_edit,
+            "maintenance": self.t_maintenance,
+            "watcher": self.t_watcher,
+            "job_manager": self.t_job_manager,
+            "network": self.t_network,
+            "data_analysis": self.t_data_analysis,
             "safety": self.t_safety,
             "system_time": self.system_time,
             "list_processes": self.list_processes,
@@ -1756,6 +1783,33 @@ class ToolRegistry:
 
     def t_document(self, args: dict[str, Any]) -> dict[str, Any]:
         return document_tool(args, self.state, knowledge_executor=self.execute)
+
+    def t_developer(self, args: dict[str, Any]) -> dict[str, Any]:
+        return developer_tool(args, self.state)
+
+    def t_device_settings(self, args: dict[str, Any]) -> dict[str, Any]:
+        return device_settings_tool(args, self.state)
+
+    def t_game_launcher(self, args: dict[str, Any]) -> dict[str, Any]:
+        return game_launcher_tool(args, self.state, executor=self.execute)
+
+    def t_media_edit(self, args: dict[str, Any]) -> dict[str, Any]:
+        return media_edit_tool(args, self.state)
+
+    def t_maintenance(self, args: dict[str, Any]) -> dict[str, Any]:
+        return maintenance_tool(args, self.state)
+
+    def t_watcher(self, args: dict[str, Any]) -> dict[str, Any]:
+        return watcher_tool(args, self.state, executor=self.execute)
+
+    def t_job_manager(self, args: dict[str, Any]) -> dict[str, Any]:
+        return job_manager_tool(args, self.state)
+
+    def t_network(self, args: dict[str, Any]) -> dict[str, Any]:
+        return network_tool(args, self.state)
+
+    def t_data_analysis(self, args: dict[str, Any]) -> dict[str, Any]:
+        return data_analysis_tool(args, self.state)
 
     def t_backup_sync(self, args: dict[str, Any]) -> dict[str, Any]:
         return backup_sync_tool(args, self.state)
@@ -2851,6 +2905,15 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "desktop_layout", "description": "Compound desktop layout tool. Actions: status, windows, list_windows, displays, snapshot, restore. Snapshots top-level windows with rect/pid/process via Win32 EnumWindows+GetWindowRect; restore replays positions via MoveWindow. Pass snapshot_id or explicit windows list to restore.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "limit": {"type": "integer"}, "snapshot_id": {"type": "string"}, "checkpoint_id": {"type": "string"}, "windows": {"type": "array"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "backup_sync", "description": "Compound local backup tool. Actions: status, backup_create, list, restore, dedupe, verify. Creates ZIP backups, restores them with overwrite|skip|rename policy, finds duplicate files by SHA256, and verifies ZIP integrity.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "src": {"type": "string"}, "path": {"type": "string"}, "dst": {"type": "string"}, "id": {"type": "string"}, "backup_id": {"type": "string"}, "to": {"type": "string"}, "conflict": {"type": "string", "enum": ["overwrite", "skip", "rename"]}, "preview": {"type": "boolean"}, "min_size_bytes": {"type": "integer"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "document", "description": "Compound document ingestion tool for PDF/DOCX/XLSX/PPTX/HTML and plain text. Actions: status, extract_text, extract_tables, extract_images, ocr_pdf, summarize, ingest_to_knowledge, compare_documents. Each backend reports needs_dependency separately (pypdf for PDF text, pdfplumber for PDF tables, python-docx for DOCX, openpyxl for XLSX, python-pptx for PPTX, beautifulsoup4 for HTML, Tesseract+PyMuPDF or pdf2image for ocr_pdf). summarize does NOT call an LLM; it returns text_preview so the agent itself summarizes.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "a": {"type": "string"}, "b": {"type": "string"}, "left": {"type": "string"}, "right": {"type": "string"}, "out_dir": {"type": "string"}, "title": {"type": "string"}, "max_chars": {"type": "integer"}, "preview_chars": {"type": "integer"}, "lang": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "developer", "description": "Compound developer workflow tool. Actions: status, project_detect, run_tests, run_lint, run_format, git_status, git_diff, git_log, start_dev_server, stop_dev_server, list_dev_servers. project_detect inspects path for package.json, pyproject.toml, Cargo.toml, go.mod, etc. and reports stack + package manager. run_tests/lint/format dispatch by stack (pytest/ruff for python, npm/yarn/pnpm for node, cargo for rust, go for go). git_commit and git_push are intentionally NOT exposed; use terminal(...) explicitly so the user sees the command. start_dev_server spawns a detached subprocess and registers it in state for stop_dev_server to kill via taskkill /T.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "root": {"type": "string"}, "args": {"type": "array"}, "limit": {"type": "integer"}, "staged": {"type": "boolean"}, "command": {}, "server_id": {"type": "string"}, "pid": {"type": "integer"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "device_settings", "description": "Compound tool for WiFi, Bluetooth, displays and power plans. Actions: status, wifi_status, wifi_list, wifi_scan, wifi_connect, wifi_disconnect, bluetooth_status, display_list, power_plan_list, power_plan_get, power_plan_set. wifi_connect requires an existing profile (creating new profile XML is not exposed). bluetooth_toggle, night_light, display_set_resolution are deferred because they require elevated service control or fragile registry hacks. power_plan_set snapshots the previous plan for rollback.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "ssid": {"type": "string"}, "profile": {"type": "string"}, "adapter": {"type": "string"}, "guid": {"type": "string"}, "plan": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "game_launcher", "description": "Compound tool for non-Steam game launchers. Actions: status, discover, launch, open_library_page. discover scans Epic .item manifests, GOG registry, Xbox UWP packages, and Riot install DB. launch uses launcher-specific URIs (com.epicgames.launcher://, shell:AppsFolder, GOG exe, Riot client). Steam is handled by the separate `steam` tool.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "launcher": {"type": "string", "enum": ["epic", "gog", "xbox", "riot"]}, "game": {"type": "string"}, "query": {"type": "string"}, "name": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "media_edit", "description": "Compound ffmpeg-based audio/video editing tool. Actions: status, probe, trim, concat, extract_audio, subtitles_extract, normalize, thumbnail, transcode. Returns needs_dependency if ffmpeg is missing. normalize uses EBU R128 loudnorm (I=-23 LUFS, TP=-2 dB, LRA=7). transcode supports mp4/mkv/webm with libx264/libvpx-vp9. extract_audio supports mp3/aac/wav/flac/ogg/m4a.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "input": {"type": "string"}, "src": {"type": "string"}, "output": {"type": "string"}, "out": {"type": "string"}, "dst": {"type": "string"}, "inputs": {"type": "array"}, "start": {"type": "string"}, "duration": {"type": "string"}, "end": {"type": "string"}, "at": {"type": "string"}, "time": {"type": "string"}, "format": {"type": "string"}, "track": {"type": "integer"}, "crf": {"type": "integer"}, "preset": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "maintenance", "description": "Compound Windows maintenance/security tool. Actions: status, windows_update_status, defender_status, defender_quick_scan, firewall_status, event_logs_query, services_list, service_status, service_start, service_stop, disk_cleanup_describe, restore_point_create. defender_quick_scan blocks until done (up to 15min). disk_cleanup_describe returns the cleanmgr command but does NOT execute it. restore_point_create requires System Protection enabled and is rate-limited to 1/24h on consumer Windows. service_start/stop creates a rollback checkpoint with the reverse action.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "log": {"type": "string"}, "level": {"type": "integer"}, "hours": {"type": "integer"}, "limit": {"type": "integer"}, "name": {"type": "string"}, "query": {"type": "string"}, "description": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "watcher", "description": "Compound file/url watcher tool. Actions: status, list, watch_file, watch_url, check, delete. watch_file/url store a snapshot (mtime+size for files, sha256 of body for urls) and schedule a Scheduled Task that runs gemma4_agent.watcher_runner on the given interval. When the snapshot changes, the optional on_change={tool, args} is dispatched. check evaluates a watcher immediately without waiting for the schedule.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "path": {"type": "string"}, "url": {"type": "string"}, "on_change": {"type": "object"}, "interval_seconds": {"type": "integer"}, "name": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "job_manager", "description": "Compound generic job tracker. Actions: status, start, list, log, status_of, cancel. start spawns a detached subprocess, redirects stdout/stderr to a log file, registers in state with PID. cancel uses taskkill /T to terminate the process tree. log returns tailed lines. Useful for any long-running command not tied to a specific tool.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "command": {}, "cwd": {"type": "string"}, "label": {"type": "string"}, "job_id": {"type": "string"}, "id": {"type": "string"}, "tail": {"type": "integer"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "network", "description": "Compound network diagnostics tool. Actions: status, ping, traceroute, dns_get, dns_set, dns_resolve, port_check, connections, public_ip. dns_set snapshots the previous DNS list per adapter for rollback (pass addresses=['AUTO'] to restore automatic DNS). firewall_allow/block/remove are intentionally NOT exposed; use terminal(netsh advfirewall) explicitly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "host": {"type": "string"}, "target": {"type": "string"}, "name": {"type": "string"}, "port": {"type": "integer"}, "count": {"type": "integer"}, "max_hops": {"type": "integer"}, "adapter": {"type": "string"}, "addresses": {"type": "array"}, "state": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "data_analysis", "description": "Compound local data analysis tool using pandas + matplotlib. Actions: status, csv_profile, csv_describe, csv_query, csv_head, csv_to_xlsx, plot_histogram, plot_scatter, plot_line. csv_query uses pandas .query() expressions. Plots write PNG to data_analysis/ under state dir; matplotlib uses the Agg headless backend. Returns needs_dependency if pandas/matplotlib are missing.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "sep": {"type": "string"}, "query": {"type": "string"}, "limit": {"type": "integer"}, "n": {"type": "integer"}, "dst": {"type": "string"}, "column": {"type": "string"}, "x": {"type": "string"}, "y": {"type": "string"}, "x_col": {"type": "string"}, "y_col": {"type": "string"}, "bins": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "safety", "description": "Compound safety confirmation tool. Actions: status, pending, confirm, cancel. If another tool returns needs_confirmation, ask the user and then call safety(action='confirm', confirmation_id='...') only after explicit approval.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "confirmation_id": {"type": "string"}, "id": {"type": "string"}, "include_resolved": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "package", "description": "Compound package manager tool via winget. Actions: list, search, install, uninstall. This prototype executes directly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "clipboard", "description": "Compound clipboard tool. Actions: read, write.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "content": {"type": "string"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},

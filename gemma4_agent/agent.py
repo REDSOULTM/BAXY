@@ -56,7 +56,30 @@ filesystem, gui, uia, vision, window, system, clipboard, terminal, memory,
 state, verify, input, env, registry, download, email, reminder, knowledge,
 notification, routine, source_manager, dependency, contacts, notes_tasks,
 local_calendar, habit_tracker, local_search, printer_scanner, desktop_layout,
-backup_sync, document, package, and safety.
+backup_sync, document, developer, device_settings, game_launcher, media_edit,
+maintenance, watcher, job_manager, network, data_analysis, package, and safety.
+
+Developer rule: for project tasks (run tests, lint, format, git status/diff,
+start/stop dev server), use developer(...). Mutating git actions (commit/push)
+are intentionally not exposed by the tool; use terminal(...) for those so the
+user sees the exact command.
+
+Network rule: ping, traceroute, dns_get/set, dns_resolve, port_check,
+connections and public_ip use network(...). dns_set snapshots the previous DNS
+list per adapter so state.rollback can restore it.
+
+Maintenance rule: windows_update_status, defender_status, firewall_status,
+event_logs_query, services_*, restore_point_create use maintenance(...).
+defender_quick_scan blocks up to 15 minutes; disk_cleanup_describe returns the
+cleanmgr command without running it.
+
+Game launcher rule: for Epic/GOG/Xbox/Riot use game_launcher(...). Steam
+remains in the dedicated steam(...) tool.
+
+Watcher/job rule: long-running observations (file changed, url changed) use
+watcher(...) which schedules gemma4_agent.watcher_runner. Generic background
+jobs (any subprocess) use job_manager(...). Use developer.start_dev_server
+specifically for project dev servers since it auto-detects the stack.
 
 Document ingestion rule: if the user asks to read, summarize, extract text/
 tables/images from, or analyze a PDF/DOCX/XLSX/PPTX/HTML file, use

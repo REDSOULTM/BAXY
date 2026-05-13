@@ -44,7 +44,30 @@ Verificado end-to-end (probado en esta sesion):
 - `browser_real.attach_visible` sin browser activo → degrade correcto a `needs_user` con launch_instructions.
 - `document` PPTX + XLSX extract + `ingest_to_knowledge` → 1 chunk → `knowledge.search` encontro.
 
-**Proximo paso:** Fase C local (P1).
+**Fase C — P1 locales completas (2026-05-13).**
+
+| Item | Estado | Como |
+|---|---|---|
+| C3 developer | done | project_detect por markers (package.json, pyproject.toml, Cargo.toml, go.mod, etc) + sub-deteccion del package manager (npm/yarn/pnpm/poetry/uv). run_tests/lint/format dispatch por stack. git_status/diff/log read-only; git_commit/push intencionalmente NO expuestos (terminal explicito). start/stop_dev_server con Popen detached + PID en state + taskkill /T. |
+| C1 device_settings | done | netsh wlan (status/list/scan/connect/disconnect, localizacion ES+EN), Get-PnpDevice -Class Bluetooth + bthserv status, Win32_VideoController + Win32_DesktopMonitor, powercfg /list/setactive con rollback. bluetooth_toggle/night_light/display_set_resolution deferred con razon documentada. |
+| C2 game_launcher | done | Epic via `.item` manifests en `%ProgramData%\Epic\EpicGamesLauncher\Data\Manifests`, GOG via `HKLM\SOFTWARE\WOW6432Node\GOG.com\Games`, Xbox via Get-AppxPackage + shell:AppsFolder URI, Riot via `RiotClientInstalls.json`. launch usa URIs nativos (com.epicgames.launcher://, shell:AppsFolder!App, exe directo). Steam queda en su tool dedicada. |
+| C7 media_edit | done | ffmpeg wrapper para trim (`-ss/-t -c copy`), concat (concat demuxer + list file), extract_audio (mp3/aac/wav/flac/ogg/m4a), subtitles_extract, normalize (loudnorm EBU R128 I=-23 TP=-2 LRA=7), thumbnail (frames:v 1), transcode (libx264/libvpx-vp9), probe (ffprobe -show_streams). |
+| C5 maintenance | done | windows_update_status via COM `Microsoft.Update.AutoUpdate` + history, defender_status via Get-MpComputerStatus, defender_quick_scan via Start-MpScan, firewall_status via Get-NetFirewallProfile, event_logs_query via Get-WinEvent -FilterHashtable, services_list/start/stop con checkpoint+rollback, restore_point_create via Checkpoint-Computer. disk_cleanup describe-only (no ejecuta). |
+| C8 watcher + job_manager | done | watcher: file (mtime+size) y url (sha256 body) snapshots, Scheduled Task que invoca gemma4_agent.watcher_runner cada N minutos; on_change dispara un tool+args. job_manager: subprocess.Popen detached con log + PID en state, cancel via taskkill /T. _pid_alive helper para listing. |
+| C4 network | done | ping/tracert, dns_get/set (con snapshot+rollback automatico, addresses=['AUTO'] para volver a DHCP), dns_resolve via Resolve-DnsName, port_check via Test-NetConnection, connections via Get-NetTCPConnection, public_ip via api.ipify.org. firewall_allow/block intencionalmente NO expuestos. |
+| C6 data_analysis | done | pandas para csv/xlsx + matplotlib Agg headless. csv_profile (dtypes, nulls, unique), csv_describe (statistics), csv_query (.query()), csv_head, csv_to_xlsx, plot_histogram/scatter/line a PNG. needs_dependency si falta pandas/matplotlib. |
+
+Verificado al cierre Fase C: 51 tools, eval_smoke missing=[] duplicate_count=0.
+Probado end-to-end: network.public_ip→IP real, dns_resolve→10 records,
+game_launcher.discover→17 juegos (Epic+Xbox+Riot), maintenance.defender_status
+con AntivirusEnabled=True, data_analysis pipeline (CSV→profile→query→plot PNG),
+job_manager pipeline (start→alive→cancel→killed).
+
+Nuevos modulos runner: [routine_runner.py](routine_runner.py),
+[watcher_runner.py](watcher_runner.py) — Scheduled Tasks los invocan para
+disparar acciones diferidas sin agente en ejecucion.
+
+**Proximo paso:** Fase D (P2 verticales).
 
 ## Catalogo Actual Verificado
 
@@ -289,24 +312,35 @@ NO empezar hasta Fase A-C. Cuando se haga:
 
 ## Prioridad De La Proxima Sesion
 
-Fase A y B ya estan completas y verificadas en sesion 2026-05-13. La siguiente
-sesion debe arrancar con **Fase C local (P1)**, en este orden:
+Fases A, B y C completas y verificadas (2026-05-13). 51 tools registradas,
+eval_smoke limpio. La siguiente sesion debe arrancar con **Fase D (P2
+verticales)**, en este orden de impacto:
 
-1. **C3 `developer`** — desbloquea trabajo tecnico real (run_tests / git_status /
-   start_dev_server con PID en `state`). El usuario es ingeniero; este es el
-   gap mas valioso para sus propias tareas.
-2. **C1 `device_settings`** — wifi/bluetooth/display/power; cubre la queja
-   "cambia a este WiFi", "baja brillo".
-3. **C2 `game_launcher`** — Epic/GOG/Xbox manifest scan. Steam ya esta cubierto.
-4. **C7 `media_edit`** — ffmpeg trim/transcode/normalize; util para video local.
-5. **C5 `maintenance`** — windows_update_status / defender_status / disk_cleanup
-   con safety fuerte. NO scans largos.
-6. **C8 `watcher` + `job_manager`** — base para tareas largas.
-7. **C4 `network`** — diagnostico (ping/dns/firewall_status); sin escribir reglas.
-8. **C6 `data_analysis`** — CSV profile/plots con pandas+matplotlib.
+1. **`fact_check`** — claim vs sources, compara contra ingest en knowledge.
+   Cierra el ciclo de `source_manager` + `web.research` + `document`.
+2. **`photo_library`** — EXIF, group_by_date, thumbnails via Pillow. Util
+   para "ordena mis fotos del viaje".
+3. **`container`** — Docker CLI wrapper (ps, up, down, logs, exec). Solo si
+   `docker` esta en PATH; sino `needs_dependency`.
+4. **`database`** — SQLite local connect/query/export. Postgres/MySQL opcional
+   si `psycopg`/`mysql.connector` disponibles.
+5. **`creative_local`** — pipe a ComfyUI/Stable Diffusion si esta instalado;
+   sino `needs_dependency` con install hint.
+6. **`form_filler`** — orquesta browser_real_visible + review obligatorio
+   antes de submit. Requiere safety habilitada para el submit final.
+7. **`peripheral`** — USB list, controller status. RGB vendor APIs deferidas.
+8. **`accessibility`** — magnifier/narrator/high_contrast toggles + dictation
+   status. Acciones reversibles via state checkpoints.
+9. **`study`** — flashcards + spaced repetition local en SQLite. Opcional
+   bridge a AnkiConnect si Anki esta corriendo.
 
-Mantener la disciplina: ninguna tool nueva queda con acciones devolviendo
-`needs_implementation` sin justificacion documentada en este roadmap.
+Despues de D viene **Fase E (P3 externo)**: calendar_cloud, mail_cloud,
+todo_cloud, drive_cloud, music_cloud, smart_home_cloud, weather_news,
+communications_cloud. Cada uno con su propio token y `needs_user` si falta.
+
+**Mantener la disciplina:** ninguna tool nueva queda con acciones devolviendo
+`needs_implementation` sin justificacion documentada aqui. eval_smoke debe
+seguir reportando missing=[] duplicate_count=0.
 
 ## Como Validar Cada Cierre
 
