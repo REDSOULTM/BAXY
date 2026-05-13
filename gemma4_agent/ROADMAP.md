@@ -208,6 +208,37 @@ fallback semantico cuando keywords no matchean (multi-idioma automatico).
 Verificado: 61 tools, eval_smoke missing=[] duplicate_count=0.
 test_router 61/61 passing en ES+EN+PT+FR+IT.
 
+## G1..G5 — cerrar la brecha vs competidores (2026-05-13)
+
+Despues de auditar 10 competidores (OpenHands, goose, OS-Copilot, Agent-S,
+open-interpreter, AutoGPT, autogen, langgraph, Mark-XXXIX, openclaw)
+implementamos los 5 huecos mas grandes. **62 tools** (+1 subagent).
+
+| Feature | Estado | Como (verificable en codigo) |
+|---|---|---|
+| G1 memoria semantica de experiencias | done | `experience.py`: SQLite + sqlite-vec virtual table `experience_vec(embedding float[384])`. Cada turno cerrado se embebe (multilingual-MiniLM) y se persiste con `tools_used`, `mission_status`, `summary`. Disable via `GEMMA4_EXPERIENCE_MEMORY=false`. |
+| G5 RAG turn-1 sobre conversaciones | done | `Gemma4Agent.run_content` hace `experience.recall(query, k=3)` antes del LLM call. Resultados se renderizan via `format_recall_for_prompt` y se inyectan al SYSTEM_PROMPT como bullets `past[d=X]: "..." -> tools=[...] status=PASS`. Hint-only, nunca bloquea. Logged como `experience_recall` event. |
+| G2 compactacion por summarization | done | `_compact_completed_history` estima uso de contexto (chars/3); si >75% del budget, pide a Gemma 4 mismo que resuma los N mensajes mas viejos en ~200 palabras (max_tokens=400), reemplaza el head con `[Conversation summary so far]` y conserva las ultimas 6. Falla -> degrada a truncate. Disable via `GEMMA4_AGENT_SUMMARIZATION=false`. |
+| G3 plan explicito + replanning | done | `explicit_plan.py`: `should_plan(text, det_steps)` heuristica (deterministic_steps >= 2, o usuario dice "plan", o >= 3 verbos imperativos). Si dispara, genera plan numerado max 8 pasos (con instruccion `NO_PLAN_NEEDED` para que el LLM decline tareas triviales). El plan se inyecta al SYSTEM_PROMPT como `# Explicit Plan`. **Replan automatico** cuando se acumulan 2+ tool failures en el turno: pide plan revisado o `GIVE_UP: <razon>`. Disable via `GEMMA4_AGENT_EXPLICIT_PLAN=false`. |
+| G4 subagents | done | `subagent.py` + tool `subagent`. `subagent(action="run", task=..., tools=[...], max_turns=4)` arranca una instancia fresca de `Gemma4Agent` con config clonada (max_agent_turns acotado), history vacio. `tools=[...]` filtra schemas que ve el child via wrapper de `schemas_for_names`. Sin parent agent wired -> degrade honesto a `needs_implementation`. |
+
+Verificado:
+- 62 tools, eval_smoke missing=[] duplicate_count=0.
+- test_router 61/61 (ES+EN+PT+FR+IT).
+- test_gx_features 8/8 (record/recall, parse plan, generate plan con
+  mock, replan give-up, subagent sin parent, subagent con parent mock,
+  summarization toggleable).
+- experience.sqlite + experience_vec funcionan end-to-end con queries
+  reales tipo "abre steam y mira mi biblioteca" recuperando una
+  experiencia previa de Steam con d=0.90.
+
+**Lo que NO hicimos esta vez (pendiente para sesion futura):**
+- MCP support (la pieza mas grande que falta vs Goose/OpenHands/AutoGPT).
+- Subagents paralelos (la implementacion actual es sincrona).
+- Best-of-N rollouts a la Agent-S.
+- Dashboard de observability.
+- Voice + Camera (F1/F2 explicitamente diferidas por decision del user).
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):

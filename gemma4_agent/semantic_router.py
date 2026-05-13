@@ -176,6 +176,21 @@ def warm_up() -> None:
     _ensure_loaded()
 
 
+def embed(text: str) -> Any | None:
+    """Return a normalized embedding for `text` using the cached model.
+
+    Returns None if the model isn't available (no sentence-transformers, or
+    network blocked on first download). The embedding is L2-normalized so
+    cosine distance == 2 - 2*dot. Dimension is the model's native output
+    (384 for paraphrase-multilingual-MiniLM-L12-v2).
+    """
+    if not text.strip():
+        return None
+    if not _ensure_loaded():
+        return None
+    return _STATE.model.encode([text], normalize_embeddings=True, show_progress_bar=False)[0]  # type: ignore[union-attr]
+
+
 def status() -> dict[str, Any]:
     return {
         "enabled": is_enabled(),

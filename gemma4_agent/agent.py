@@ -59,7 +59,15 @@ local_calendar, habit_tracker, local_search, printer_scanner, desktop_layout,
 backup_sync, document, developer, device_settings, game_launcher, media_edit,
 maintenance, watcher, job_manager, network, data_analysis, fact_check,
 photo_library, container, database, creative_local, form_filler, peripheral,
-accessibility, study, smart_home, package, and safety.
+accessibility, study, smart_home, subagent, package, and safety.
+
+Subagent rule: use subagent(action="run", task="<focused instruction>",
+max_turns=4) only when the parent task has a clearly bounded sub-task
+that benefits from a fresh, smaller context (e.g. "scan my Steam library
+and return only games tagged metroidvania"). The child agent starts with
+empty history and only the tools you pass in `tools=[...]` (subset). Do
+NOT use subagent for the main user request; that's the parent's job. Do
+not chain subagents recursively unless the user explicitly asks.
 
 Smart home rule: local Home Assistant control uses smart_home(...). Requires
 GEMMA4_HASS_TOKEN env var (long-lived access token from your HA profile);
@@ -266,18 +274,33 @@ class Gemma4Agent:
         self.state = AgentState(self.config.state_path)
         self.client = LLMClient(self.config)
         self.tools = ToolRegistry(self.memory, self.config.captures_dir, self.state, safety_enabled=self.config.enable_safety)
+        # Wire subagent delegation: the `subagent` tool needs to spawn a fresh
+        # Gemma4Agent. We give the registry a back-reference so it can call us.
+        self.tools.parent_agent = self  # type: ignore[attr-defined]
         self.trace = TraceLogger(self.config.trace_path, self.config.enable_tracing)
+        from .experience import ExperienceMemory
+        self.experience = ExperienceMemory(self.config.memory_path.parent / "experience.sqlite")
         self.history: list[dict[str, Any]] = []
+        self._recent_recalls: list[dict[str, Any]] = []
+        self._explicit_plan_text: str = ""
+        self._explicit_plan_steps: list[str] = []
 
     def clear(self) -> None:
         self.history.clear()
+        self._recent_recalls = []
 
     def _system_message(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> dict[str, str]:
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
+        from .experience import format_recall_for_prompt
+        from .explicit_plan import format_for_prompt as _format_explicit_plan
+        recall_hint = format_recall_for_prompt(self._recent_recalls)
+        recall_section = f"\n\n{recall_hint}" if recall_hint else ""
+        explicit_block = _format_explicit_plan(self._explicit_plan_text)
+        explicit_section = f"\n\n{explicit_block}" if explicit_block else ""
         return {
             "role": "system",
-            "content": f"{SYSTEM_PROMPT}{mode_hint}{plan_hint}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{SYSTEM_PROMPT}{mode_hint}{plan_hint}{explicit_section}{recall_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
     def _messages(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> list[dict[str, Any]]:
@@ -297,6 +320,46 @@ class Gemma4Agent:
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         turn_id = self.trace.new_turn_id()
+        # Semantic memory: recall similar past turns. Hint-only, never blocks.
+        self._recent_recalls = []
+        raw_text = _extract_user_text(content)
+        try:
+            from .semantic_router import embed as _embed_text
+            if raw_text and len(raw_text.split()) >= 2:
+                self._recent_recalls = self.experience.recall(raw_text, embed_fn=_embed_text, k=3)
+                if self._recent_recalls:
+                    self.trace.event(turn_id, "experience_recall",
+                                     query=raw_text[:200],
+                                     count=len(self._recent_recalls),
+                                     ids=[r["id"] for r in self._recent_recalls],
+                                     distances=[r["distance"] for r in self._recent_recalls])
+        except Exception as exc:
+            self.trace.event(turn_id, "experience_recall_failed", error=str(exc))
+
+        # Explicit Planner -> Executor (Goose-style). Only spend the extra LLM
+        # call when the request is multi-step or the user asked for a plan.
+        self._explicit_plan_text = ""
+        self._explicit_plan_steps = []
+        try:
+            from .explicit_plan import generate_plan, should_plan
+            if raw_text and should_plan(raw_text, len(plan.steps)):
+                self.trace.event(turn_id, "explicit_plan_start", reason="multi_step")
+                result = generate_plan(
+                    raw_text,
+                    chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350),
+                )
+                if result.get("ok") and result.get("plan"):
+                    self._explicit_plan_text = str(result["plan"])
+                    self._explicit_plan_steps = list(result.get("steps") or [])
+                    self.trace.event(turn_id, "explicit_plan_ready",
+                                     step_count=len(self._explicit_plan_steps),
+                                     plan_chars=len(self._explicit_plan_text))
+                elif result.get("skipped"):
+                    self.trace.event(turn_id, "explicit_plan_skipped", reason="model_said_no_plan")
+                elif not result.get("ok"):
+                    self.trace.event(turn_id, "explicit_plan_failed", error=result.get("error"))
+        except Exception as exc:
+            self.trace.event(turn_id, "explicit_plan_error", error=str(exc))
         _progress(
             progress,
             "start",
@@ -323,6 +386,8 @@ class Gemma4Agent:
         self._compact_completed_history()
         self.history.append({"role": "user", "content": _compact_live_content(content)})
         events: list[ToolEvent] = []
+        failure_log: list[dict[str, Any]] = []
+        replan_done = False
 
         for _turn in range(self.config.max_agent_turns):
             _progress(
@@ -403,6 +468,26 @@ class Gemma4Agent:
                 }
                 self.trace.event(turn_id, "router_stats", **router_stats)
                 self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events), mission=mission)
+                # Persist this turn into semantic experience memory (hint-only,
+                # never blocks). Best-effort: failure is logged and swallowed.
+                try:
+                    from .semantic_router import embed as _embed_text
+                    raw_text = _extract_user_text(content)
+                    used_tools = sorted({e.name for e in events})
+                    mission_status = (mission or {}).get("mission_status") if isinstance(mission, dict) else None
+                    rec = self.experience.record(
+                        turn_id=turn_id,
+                        user_input=raw_text,
+                        tools_used=used_tools,
+                        outcome=assistant_content[:1000],
+                        mission_status=mission_status,
+                        summary=assistant_content[:400],
+                        embed_fn=_embed_text,
+                    )
+                    if rec.get("ok"):
+                        self.trace.event(turn_id, "experience_recorded", id=rec.get("id"))
+                except Exception as exc:
+                    self.trace.event(turn_id, "experience_record_failed", error=str(exc))
                 self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
@@ -427,6 +512,8 @@ class Gemma4Agent:
                 result = self.tools.execute(name, args)
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
+                if not result.get("ok"):
+                    failure_log.append({"step": len(events), "tool": name, "error": str(result.get("error") or "")[:300]})
                 _progress(
                     progress,
                     "tool_end",
@@ -450,6 +537,34 @@ class Gemma4Agent:
                 _progress(progress, "image_injected", path=str(image_path))
                 self._inject_tool_image(image_path, result)
 
+            # Replanning trigger: 2+ tool failures while we have an explicit
+            # plan and have not replanned yet. Cheap: one extra LLM call.
+            if (
+                not replan_done
+                and self._explicit_plan_text
+                and len(failure_log) >= 2
+            ):
+                self.trace.event(turn_id, "replan_start", failures=len(failure_log))
+                try:
+                    from .explicit_plan import replan
+                    revised = replan(
+                        raw_text,
+                        self._explicit_plan_text,
+                        failure_log,
+                        chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350),
+                    )
+                    if revised.get("ok") and revised.get("plan"):
+                        self._explicit_plan_text = str(revised["plan"])
+                        self._explicit_plan_steps = list(revised.get("steps") or [])
+                        replan_done = True
+                        self.trace.event(turn_id, "replan_ready",
+                                         step_count=len(self._explicit_plan_steps),
+                                         give_up=bool(revised.get("give_up")))
+                    else:
+                        self.trace.event(turn_id, "replan_failed", error=revised.get("error"))
+                except Exception as exc:
+                    self.trace.event(turn_id, "replan_error", error=str(exc))
+
         final = "No pude terminar la tarea dentro del limite de turnos."
         mission = evaluate_mission(events, final, plan)
         self.history.append({"role": "assistant", "content": final})
@@ -472,8 +587,18 @@ class Gemma4Agent:
         })
 
     def _compact_completed_history(self) -> None:
-        """Keep future turns small after a completed tool cycle."""
+        """Keep future turns small after a completed tool cycle.
 
+        Two-stage strategy inspired by OpenHands:
+        1. Cheap pass: drop tool messages and tool_calls, shorten strings.
+        2. If estimated context usage is still > 75% of context_size, ask
+           Gemma 4 itself to summarize the oldest half of the conversation
+           into a single 'summary so far' assistant message. The most recent
+           turns are kept verbatim.
+
+        Bypassed entirely with GEMMA4_AGENT_SUMMARIZATION=false. Stage 1 always
+        runs as a safety net even when summarization is disabled.
+        """
         compacted: list[dict[str, Any]] = []
         for msg in self.history:
             role = str(msg.get("role") or "")
@@ -484,7 +609,80 @@ class Gemma4Agent:
             if role not in {"user", "assistant"}:
                 continue
             compacted.append({"role": role, "content": _compact_history_content(msg.get("content"))})
-        self.history = compacted[-18:]
+        self.history = compacted[-30:]
+
+        if not _summarization_enabled():
+            self.history = self.history[-18:]
+            return
+
+        # Stage 2: if the cleaned-up history is still large, summarize the
+        # oldest half. We keep the last 6 messages verbatim to preserve
+        # immediate context.
+        budget_chars = self.config.context_size * 3  # ~3 chars per token, conservative
+        threshold = int(budget_chars * 0.75)
+        estimated = sum(len(_message_text_estimate(m)) for m in self.history)
+        if estimated <= threshold or len(self.history) <= 8:
+            return
+        keep_tail = 6
+        head = self.history[:-keep_tail]
+        tail = self.history[-keep_tail:]
+        summary_text = self._summarize_history_block(head)
+        if not summary_text:
+            # Fall back to hard truncate when summarization couldn't run.
+            self.history = self.history[-18:]
+            return
+        summary_msg = {
+            "role": "assistant",
+            "content": f"[Conversation summary so far]\n{summary_text}",
+        }
+        self.history = [summary_msg, *tail]
+
+    def _summarize_history_block(self, messages: list[dict[str, Any]]) -> str:
+        """Ask Gemma 4 to compress the given message block into ~200 words.
+
+        Best-effort: returns '' on any LLM failure so the caller falls back
+        to plain truncation.
+        """
+        if not messages:
+            return ""
+        # Render the block as plain prose; do NOT include role markers like
+        # 'tool' that would confuse the summarizer.
+        rendered_parts: list[str] = []
+        for msg in messages:
+            role = str(msg.get("role") or "user")
+            text = _message_text_estimate(msg)
+            if not text.strip():
+                continue
+            rendered_parts.append(f"{role}: {text[:1200]}")
+        rendered = "\n".join(rendered_parts)[:12000]
+        prompt = (
+            "Resume la siguiente conversacion en espanol en aproximadamente "
+            "200 palabras. Conserva: 1) lo que el usuario pidio en cada turno, "
+            "2) que tools se usaron y con que resultado, 3) decisiones tomadas, "
+            "4) datos concretos que el usuario aporto (paths, nombres, ids). "
+            "Omite saludos, formato decorativo y razonamientos internos. "
+            "Devuelve solo el resumen, sin titulos.\n\n"
+            f"CONVERSACION:\n{rendered}\n\nRESUMEN:"
+        )
+        try:
+            resp = self.client.chat(
+                [{"role": "user", "content": prompt}],
+                tools=None,
+                enable_thinking=False,
+                parallel_tool_calls=False,
+                max_tokens=400,
+            )
+            choices = resp.get("choices") or []
+            if not choices:
+                return ""
+            msg = choices[0].get("message") or {}
+            summary = str(msg.get("content") or "").strip()
+            # Strip any leaked thinking tags or assistant role prefix.
+            from .reasoning import sanitize_text
+            return sanitize_text(summary)[:2000]
+        except Exception as exc:
+            self.trace.event(self.trace.new_turn_id(), "summarization_failed", error=str(exc))
+            return ""
 
     def _compact_active_history_for_retry(self) -> None:
         """Aggressive fallback when llama-server reports context overflow."""
@@ -532,6 +730,47 @@ class Gemma4Agent:
 LIVE_TEXT_LIMIT = 10000
 HISTORY_TEXT_LIMIT = 3500
 TOOL_RESULT_LIMIT = 3500
+
+
+def _extract_user_text(content: str | list[dict[str, Any]]) -> str:
+    """Return the plain-text portion of the user content (no images/audio)."""
+    if isinstance(content, str):
+        return content.strip()
+    parts: list[str] = []
+    for item in content:
+        if isinstance(item, dict) and item.get("type") == "text":
+            parts.append(str(item.get("text") or ""))
+    return " ".join(parts).strip()
+
+
+def _summarization_enabled() -> bool:
+    """Compaction by LLM summarization. Default on; disable with GEMMA4_AGENT_SUMMARIZATION=false."""
+    import os
+    raw = (os.environ.get("GEMMA4_AGENT_SUMMARIZATION") or "").strip().casefold()
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return True
+
+
+def _message_text_estimate(message: dict[str, Any]) -> str:
+    """Return a flat string representation of a chat message for token budgeting."""
+    content = message.get("content")
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        chunks: list[str] = []
+        for item in content:
+            if isinstance(item, dict):
+                if item.get("type") == "text":
+                    chunks.append(str(item.get("text") or ""))
+                elif item.get("type") == "image_url":
+                    chunks.append("[image]")
+                elif item.get("type") == "input_audio":
+                    chunks.append("[audio]")
+        return " ".join(chunks)
+    if content is None:
+        return ""
+    return str(content)
 
 
 def _compact_live_content(content: str | list[dict[str, Any]]) -> str | list[dict[str, Any]]:

@@ -199,6 +199,7 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "accessibility": ["status", "magnifier_start", "magnifier_stop", "narrator_start", "narrator_stop", "dictation_status", "settings_panel", "open_settings", "high_contrast_on", "high_contrast_off", "high_contrast_toggle"],
     "study": ["status", "deck_create", "deck_list", "deck_delete", "card_add", "card_list", "card_delete", "due", "review", "stats"],
     "smart_home": ["status", "discover", "states", "get_state", "set_state", "call_service", "scene_run", "area_list", "areas", "area_control", "mqtt_publish"],
+    "subagent": ["status", "run"],
     "safety": ["status", "pending", "confirm", "cancel"],
 }
 
@@ -1132,6 +1133,7 @@ class ToolRegistry:
             "accessibility": self.t_accessibility,
             "study": self.t_study,
             "smart_home": self.t_smart_home,
+            "subagent": self.t_subagent,
             "safety": self.t_safety,
             "system_time": self.system_time,
             "list_processes": self.list_processes,
@@ -1870,6 +1872,28 @@ class ToolRegistry:
 
     def t_smart_home(self, args: dict[str, Any]) -> dict[str, Any]:
         return smart_home_tool(args, self.state)
+
+    def t_subagent(self, args: dict[str, Any]) -> dict[str, Any]:
+        action = _action(args, default="run")
+        parent = getattr(self, "parent_agent", None)
+        if parent is None:
+            return _err("subagent requires a running parent agent; cannot delegate from this context",
+                        status="needs_implementation", verified=False)
+        if action == "status":
+            return _ok(
+                backend="gemma4_agent.subagent",
+                ready=True,
+                note="Delegate a focused task to a fresh child agent. Pass max_turns (1..10) and optional tools=[...].",
+            )
+        if action != "run":
+            return _err(f"unknown subagent action: {action}")
+        task = str(args.get("task") or args.get("instruction") or "").strip()
+        if not task:
+            return _err("subagent.run requires task=<instruction>")
+        tools_filter = args.get("tools") if isinstance(args.get("tools"), list) else None
+        max_turns = int(args.get("max_turns", 4))
+        from .subagent import run_subagent
+        return run_subagent(parent, task, tools_filter=tools_filter, max_turns=max_turns)
 
     def t_backup_sync(self, args: dict[str, Any]) -> dict[str, Any]:
         return backup_sync_tool(args, self.state)
@@ -2984,6 +3008,7 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "accessibility", "description": "Compound Windows accessibility tool. Actions: status, magnifier_start/stop, narrator_start/stop, dictation_status, settings_panel (opens ms-settings:easeofaccess). High Contrast toggle is deferred because programmatic toggling requires registry write + WM_SETTINGCHANGE broadcast; the safe path is the keyboard shortcut Left Alt + Left Shift + Print Screen.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "study", "description": "Compound flashcards + SM-2 spaced repetition tool. Actions: status, deck_create, deck_list, deck_delete, card_add, card_list, card_delete, due, review (grade q in 0..5), stats. SM-2 algorithm per Wozniak 1990: EF' = EF + (0.1 - (5-q)*(0.08 + (5-q)*0.02)) with EF floor 1.3; intervals 1, 6, then I_n = round(I_{n-1} * EF). When q<3, restart repetitions but keep EF. Storage: SQLite at <state_dir>/study.sqlite.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "deck_id": {"type": "string"}, "card_id": {"type": "string"}, "id": {"type": "string"}, "front": {"type": "string"}, "back": {"type": "string"}, "question": {"type": "string"}, "answer": {"type": "string"}, "q": {"type": "integer"}, "grade": {"type": "integer"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "smart_home", "description": "Compound local smart-home control via Home Assistant REST + optional MQTT publish. Actions: status, discover (or states), get_state(entity_id), set_state, call_service(domain, service, data, target), scene_run(scene), area_list, area_control(area, service), mqtt_publish(topic, payload). All endpoints are LOCAL to your Home Assistant. Auth via env GEMMA4_HASS_TOKEN (long-lived access token from your HA profile). Set GEMMA4_HASS_HOST to override the URL. mqtt_publish needs paho-mqtt; broker via GEMMA4_MQTT_BROKER/PORT/USER/PASSWORD. set_state and call_service snapshot the previous state for rollback when possible.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "host": {"type": "string"}, "token": {"type": "string"}, "entity_id": {"type": "string"}, "state": {}, "attributes": {"type": "object"}, "domain": {"type": "string"}, "service": {"type": "string"}, "data": {"type": "object"}, "target": {"type": "object"}, "scene": {"type": "string"}, "area": {"type": "string"}, "area_id": {"type": "string"}, "limit": {"type": "integer"}, "topic": {"type": "string"}, "payload": {}, "broker": {"type": "string"}, "port": {"type": "integer"}, "qos": {"type": "integer"}, "retain": {"type": "boolean"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "subagent", "description": "Delegate a focused task to a fresh child Gemma4 agent. Actions: status, run(task, tools?, max_turns?). The child starts with empty history and runs at most max_turns (default 4, max 10). tools=[...] restricts which tool schemas the child sees. Use this for bounded sub-tasks the parent wants to keep out of its own context (e.g. 'find which Steam games are tagged metroidvania'). Do NOT chain subagents recursively unless the user asks.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "task": {"type": "string"}, "instruction": {"type": "string"}, "tools": {"type": "array", "items": {"type": "string"}}, "max_turns": {"type": "integer"}, "enable_thinking": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "safety", "description": "Compound safety confirmation tool. Actions: status, pending, confirm, cancel. If another tool returns needs_confirmation, ask the user and then call safety(action='confirm', confirmation_id='...') only after explicit approval.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "confirmation_id": {"type": "string"}, "id": {"type": "string"}, "include_resolved": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "package", "description": "Compound package manager tool via winget. Actions: list, search, install, uninstall. This prototype executes directly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "clipboard", "description": "Compound clipboard tool. Actions: read, write.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "content": {"type": "string"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
