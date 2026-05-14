@@ -1249,3 +1249,25 @@ Cosas a recordar para la proxima sesion:
 - J2 fact extraction esta OFF por defecto. Para activarlo: `set GEMMA4_AGENT_FACT_EXTRACTION=true`. Costo: 1 LLM call extra por turno (con cooldown). Verifica con `/recall` que los hechos guardados son sensatos antes de dejarlo on en una sesion larga.
 - J5 parallel esta OFF por defecto porque varias tools comparten estado (filesystem, registry, apps_index, MCP clients). Solo activar (`set GEMMA4_AGENT_PARALLEL_TOOLS=true`) si tu workflow tipico tiene tool_calls genuinamente independientes (e.g., `web` + `knowledge.search`).
 - J1 cross-encoder requiere `sentence-transformers` y un primer download del modelo (~80MB). Si la dep falta o el download falla 3 veces, queda permanently_disabled hasta reiniciar el proceso.
+
+## Fase K — close jarvis-personal-ai gaps round 2 (2026-05-14)
+
+Despues de la auditoria contra la lista revisada del competidor (26 features
+de las cuales nos enfocamos en RAG/tools/memoria/contexto, omitiendo voz, UI
+web y camara), se identificaron 3 brechas/mejoras que vale la pena replicar:
+
+| Item | Modulo | Toggle env | Default | Notas |
+|---|---|---|---|---|
+| K1 Chat history persistente entre sesiones | `sessions.py` (nuevo) + `chat.py` (`/sessions`, `/load <id>`, `/new`, `/title <txt>`) | `GEMMA4_AGENT_SESSIONS`, `GEMMA4_AGENT_SESSIONS_DIR` | ON | Cada `python -m gemma4_agent.chat` arranca con una `Session` nueva. Cada turno (user+assistant) se persiste en `~/.gemma4/sessions/<id>.json`. Auto-title con 1 LLM call al primer turno (timeout 10 s, max 30 tokens) y fallback a heuristica de primeras 6 palabras si la LLM falla o esta deshabilitada. `/load <id>` carga la session previa pero el agente arranca con history vacio (los turnos son referencia para el usuario, no se reinyectan al SYSTEM_PROMPT — eso evita perder coherencia con el contrato local-only). |
+| K2 Tool timeline export | `timeline.py` (nuevo) + wrapper `TimelineWriter` en `chat.py` | `GEMMA4_AGENT_TIMELINE`, `GEMMA4_AGENT_TIMELINE_DIR` | ON | Forwarder que envuelve el `progress` callback y escribe cada event como JSONL en `~/.gemma4/timeline/<session_id>-turn<NNN>.jsonl`. Truncacion segura: strings > 600 chars marcados con `...[trunc]`, listas > 20 items recortadas, dicts grandes serializados como string. Util para inspeccion post-mortem o render externo. |
+| K3 Dynamic context budgets proporcionales | `agent.py` (`_compute_context_budget` nuevo, `_compact_completed_history` reescrito para usarlo) | hereda `GEMMA4_AGENT_CONTEXT` ya existente | — | Reemplaza las constantes `[-30:]` y `[-18:]` y el `keep_tail = 6` por valores derivados de `context_size`. Reserva 30% del context window para el siguiente turno y dedica 70% a history. Numbers: ctx=4K -> soft 17 / hard 8 / keep_tail 4 / threshold 6450; ctx=32K -> 137/68/27/51608; ctx=200K -> 200/100/30/cap 1.575M chars. Conservative cap superior de 200 mensajes evita que ctx muy grandes consuman memoria sin limite. |
+
+Tests: 42/42 pasando (`gemma4_agent.test_gx_features` incluye 6 nuevos
+K1-K3). 61/61 router. pyright 0 errors en modulos tocados. eval_smoke 62
+schemas, missing=[].
+
+Resumen jarvis-personal-ai post K1-K3 (omitiendo UI web, voz, camara):
+
+- **18/23 features cubiertas o mejores** (RAG con rerank, parallel tools, memory, plan/replan, subagents, doc processing, semantic experience recall, summarization, personas, project context, fact extraction, sessions, timeline, dynamic budgets).
+- **2 deferidas a F1**: stop-generation mid-stream (CLI lo aprueba con Ctrl+C; importa solo con UI), strong identity lock (parcial via SYSTEM_PROMPT + personas).
+- **2 rechazadas por decision**: multi-model analysis (rompe local-only), dynamic skills runtime (riesgo de exec arbitrario, prefiero tools fijas y auditables).

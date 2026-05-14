@@ -720,7 +720,8 @@ def test_j4_project_context_walks_up() -> bool:
         found = find_context_file(sub)
         assert found is not None and found.name == "JARVIS.md", f"walk-up failed: {found}"
         ctx = load_context(sub)
-        assert ctx["found"] and ctx["chars"] > 0
+        chars = ctx.get("chars")
+        assert ctx["found"] and isinstance(chars, int) and chars > 0
         rendered = format_for_prompt(ctx)
         assert "regla 1" in rendered and "Project context" in rendered
     finally:
@@ -794,6 +795,111 @@ def test_j5_parallel_executor_preserves_order_and_calls_each() -> bool:
     return True
 
 
+def test_k1_session_roundtrip() -> bool:
+    import tempfile
+    from gemma4_agent.sessions import Session, SessionStore, SessionTurn
+    root = Path(tempfile.mkdtemp(prefix="g_sess_"))
+    try:
+        store = SessionStore(root)
+        s = Session.new(title="Test session")
+        s.turns.append(SessionTurn(role="user", content="hola"))
+        s.turns.append(SessionTurn(role="assistant", content="hola que tal", tool_count=1))
+        save = store.save(s)
+        assert save["ok"] and save["turns"] == 2, save
+        loaded = store.load(s.id)
+        assert loaded is not None and loaded.title == "Test session"
+        assert len(loaded.turns) == 2 and loaded.turns[1].tool_count == 1
+        listing = store.list_sessions()
+        assert any(entry["id"] == s.id for entry in listing)
+        deleted = store.delete(s.id)
+        assert deleted["ok"] and deleted["existed"]
+        assert store.load(s.id) is None
+    finally:
+        import shutil
+        shutil.rmtree(root, ignore_errors=True)
+    print("K1 session save/load/list/delete: OK")
+    return True
+
+
+def test_k1_auto_title_heuristic_fallback() -> bool:
+    from gemma4_agent.sessions import auto_title
+    title = auto_title("Quiero abrir Steam y buscar Hades en mi biblioteca", chat_fn=None, max_words=4)
+    assert title and len(title.split()) <= 4
+    empty = auto_title("", chat_fn=None)
+    assert empty == "(sin titulo)"
+    print("K1 auto_title heuristic fallback: OK")
+    return True
+
+
+def test_k1_session_disabled_env() -> bool:
+    import os
+    from gemma4_agent.sessions import is_enabled
+    os.environ["GEMMA4_AGENT_SESSIONS"] = "false"
+    assert is_enabled() is False
+    os.environ.pop("GEMMA4_AGENT_SESSIONS", None)
+    assert is_enabled() is True
+    print("K1 sessions env toggle: OK")
+    return True
+
+
+def test_k2_timeline_writes_jsonl() -> bool:
+    import tempfile
+    from gemma4_agent.timeline import TimelineWriter
+    root = Path(tempfile.mkdtemp(prefix="g_tl_"))
+    captured: list[tuple[str, dict[str, Any]]] = []
+
+    def inner(event: str, payload: dict[str, Any]) -> None:
+        captured.append((event, payload))
+
+    try:
+        w = TimelineWriter(session_id="abc", turn_index=2, inner=inner, root=root)
+        w("tool_start", {"name": "web", "args": {"q": "x"}, "index": 1})
+        w("tool_end", {"name": "web", "ok": True, "status": "done", "index": 1})
+        w.close()
+        files = list(root.glob("*.jsonl"))
+        assert len(files) == 1, files
+        lines = files[0].read_text(encoding="utf-8").strip().splitlines()
+        assert len(lines) == 2
+        first = json.loads(lines[0])
+        assert first["event"] == "tool_start" and first["payload"]["name"] == "web"
+        assert [e[0] for e in captured] == ["tool_start", "tool_end"], "inner cb must also fire"
+    finally:
+        import shutil
+        shutil.rmtree(root, ignore_errors=True)
+    print("K2 timeline writes jsonl + forwards inner: OK")
+    return True
+
+
+def test_k2_timeline_disabled_env() -> bool:
+    import os
+    from gemma4_agent.timeline import is_enabled
+    os.environ["GEMMA4_AGENT_TIMELINE"] = "false"
+    assert is_enabled() is False
+    os.environ.pop("GEMMA4_AGENT_TIMELINE", None)
+    assert is_enabled() is True
+    print("K2 timeline env toggle: OK")
+    return True
+
+
+def test_k3_context_budget_scales_with_size() -> bool:
+    from gemma4_agent.agent import _compute_context_budget
+    small = _compute_context_budget(4096)
+    mid = _compute_context_budget(32768)
+    big = _compute_context_budget(200000)
+    assert small["soft_cap_messages"] < mid["soft_cap_messages"] < big["soft_cap_messages"]
+    assert small["keep_tail_messages"] < mid["keep_tail_messages"] <= big["keep_tail_messages"]
+    assert small["summarize_threshold_chars"] < mid["summarize_threshold_chars"] < big["summarize_threshold_chars"]
+    # hard_cap <= soft_cap always
+    for b in (small, mid, big):
+        assert b["hard_cap_messages"] <= b["soft_cap_messages"]
+    # very tiny context still produces sane numbers
+    tiny = _compute_context_budget(512)
+    assert tiny["soft_cap_messages"] >= 10
+    assert tiny["hard_cap_messages"] >= 6
+    print("K3 context budget scales 4K..200K: OK")
+    return True
+
+
 def test_j5_sequential_handles_parse_error() -> bool:
     from gemma4_agent.agent import Gemma4Agent
 
@@ -852,6 +958,12 @@ def main() -> int:
         test_j5_parallel_tools_default_off,
         test_j5_parallel_executor_preserves_order_and_calls_each,
         test_j5_sequential_handles_parse_error,
+        test_k1_session_roundtrip,
+        test_k1_auto_title_heuristic_fallback,
+        test_k1_session_disabled_env,
+        test_k2_timeline_writes_jsonl,
+        test_k2_timeline_disabled_env,
+        test_k3_context_budget_scales_with_size,
     ]
     failures: list[str] = []
     for t in tests:

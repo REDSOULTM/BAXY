@@ -954,6 +954,7 @@ class Gemma4Agent:
         Bypassed entirely with GEMMA4_AGENT_SUMMARIZATION=false. Stage 1 always
         runs as a safety net even when summarization is disabled.
         """
+        budget = _compute_context_budget(self.config.context_size)
         compacted: list[dict[str, Any]] = []
         for msg in self.history:
             role = str(msg.get("role") or "")
@@ -964,39 +965,33 @@ class Gemma4Agent:
             if role not in {"user", "assistant"}:
                 continue
             compacted.append({"role": role, "content": _compact_history_content(msg.get("content"))})
-        self.history = compacted[-30:]
+        self.history = compacted[-budget["soft_cap_messages"]:]
 
         if not _summarization_enabled():
-            self.history = self.history[-18:]
+            self.history = self.history[-budget["hard_cap_messages"]:]
             return
 
         # Stage 2: if the cleaned-up history is still large, summarize the
-        # oldest half. We keep the last 6 messages verbatim to preserve
-        # immediate context.
-        budget_chars = self.config.context_size * 3  # ~3 chars per token, conservative
-        threshold = int(budget_chars * 0.75)
+        # oldest half. We keep the last `keep_tail` messages verbatim. Both
+        # the byte threshold and the keep_tail scale with context_size, so a
+        # 4K model summarizes early while a 200K model can keep long history.
+        threshold = budget["summarize_threshold_chars"]
         estimated = sum(len(_message_text_estimate(m)) for m in self.history)
-        if estimated <= threshold or len(self.history) <= 8:
+        if estimated <= threshold or len(self.history) <= budget["keep_tail_messages"] + 2:
             return
-        # Cooldown: do not call the LLM for summarization more than once every
-        # N turns. _compact_completed_history is called multiple times within
-        # the same turn (after the final, on retry, on max_turns); without a
-        # cooldown each call could trigger an extra LLM round-trip.
         cooldown_turns = _summarization_cooldown_turns()
         if (self._turn_counter - self._summarize_last_run_turn) < cooldown_turns:
             self.trace.event(self.trace.new_turn_id(), "summarization_cooldown_skip",
                              since_last=self._turn_counter - self._summarize_last_run_turn,
                              cooldown=cooldown_turns)
-            # We still keep the cheap truncation so context does not explode.
-            self.history = self.history[-18:]
+            self.history = self.history[-budget["hard_cap_messages"]:]
             return
-        keep_tail = 6
+        keep_tail = budget["keep_tail_messages"]
         head = self.history[:-keep_tail]
         tail = self.history[-keep_tail:]
         summary_text = self._summarize_history_block(head)
         if not summary_text:
-            # Fall back to hard truncate when summarization couldn't run.
-            self.history = self.history[-18:]
+            self.history = self.history[-budget["hard_cap_messages"]:]
             return
         summary_msg = {
             "role": "assistant",
@@ -1400,6 +1395,46 @@ def _fact_extraction_cooldown_turns() -> int:
         return n if n >= 0 else 5
     except ValueError:
         return 5
+
+
+def _compute_context_budget(context_size: int) -> dict[str, int]:
+    """Proportional context budget that adapts to the model size.
+
+    Reserves ~30% of the context window for the *next* turn (system prompt,
+    new user input, fresh tool results, and the assistant reply). The other
+    ~70% is available for retained history. From that 70% we derive:
+
+      - soft_cap_messages: post cheap-pass truncation (drop tool roles).
+      - hard_cap_messages: final fallback truncation when summarization is
+        off, fails, or is in cooldown.
+      - keep_tail_messages: how many last messages to keep verbatim around
+        the LLM-generated summary.
+      - summarize_threshold_chars: when total history exceeds this many
+        chars we trigger a Stage-2 summarization.
+
+    The formulas scale roughly linearly with `context_size` but stay bounded
+    so very small (1K) or very large (1M) models still produce sensible
+    numbers. Char-to-token ratio is conservative (~3 chars/token).
+    """
+    ctx = max(1024, int(context_size or 16384))
+    history_tokens = int(ctx * 0.70)
+    history_chars = history_tokens * 3
+    # 1 conversational round (user+assistant) averages ~300-1200 chars after
+    # the cheap-pass. Use a soft anchor of 500 chars/message for budgeting.
+    avg_msg_chars = 500
+    soft_cap = max(10, min(history_chars // avg_msg_chars, 200))
+    hard_cap = max(6, soft_cap // 2)
+    keep_tail = max(4, min(soft_cap // 5, 30))
+    threshold = int(history_chars * 0.75)
+    return {
+        "context_size": ctx,
+        "history_tokens": history_tokens,
+        "history_chars": history_chars,
+        "soft_cap_messages": soft_cap,
+        "hard_cap_messages": hard_cap,
+        "keep_tail_messages": keep_tail,
+        "summarize_threshold_chars": threshold,
+    }
 
 
 def _parallel_tools_enabled() -> bool:

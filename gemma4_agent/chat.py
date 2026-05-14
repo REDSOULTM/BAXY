@@ -16,9 +16,13 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from gemma4_agent.agent import Gemma4Agent
     from gemma4_agent.config import AgentConfig
+    from gemma4_agent.sessions import Session, SessionStore, auto_title, is_enabled as sessions_enabled
+    from gemma4_agent.timeline import TimelineWriter, is_enabled as timeline_enabled
 else:
     from .agent import Gemma4Agent
     from .config import AgentConfig
+    from .sessions import Session, SessionStore, auto_title, is_enabled as sessions_enabled
+    from .timeline import TimelineWriter, is_enabled as timeline_enabled
 
 
 PALETTE = {
@@ -284,11 +288,25 @@ def main() -> int:
     pending_audios = [p for raw in args.audio if (p := _path(raw))]
     progress_enabled = not args.no_progress
 
+    session_store: SessionStore | None = None
+    current_session: Session | None = None
+    if sessions_enabled():
+        try:
+            session_store = SessionStore()
+            current_session = Session.new()
+        except OSError as exc:
+            print(f"{PALETTE['system']}Sessions desactivado: {exc}{PALETTE['reset']}")
+            session_store = None
+
     print(f"{PALETTE['ok']}Gemma4 agent listo en {config.server_url}{PALETTE['reset']}")
-    print(f"{PALETTE['system']}Comandos: /quit /clear /image <path> /audio <path> /memory /tools /state /cleanup /progress /persona [name]{PALETTE['reset']}")
+    print(f"{PALETTE['system']}Comandos: /quit /clear /image <path> /audio <path> /memory /tools /state /cleanup /progress /persona [name] /sessions /load <id> /new /title <txt>{PALETTE['reset']}")
     print(f"{PALETTE['system']}Tools reales: {len(agent.tools.schemas)} | Mode: {config.agent_mode} | Safety: {config.enable_safety} | Trace: {config.trace_path}{PALETTE['reset']}")
     print(f"{PALETTE['system']}Memory: {config.memory_path}{PALETTE['reset']}")
-    print(f"{PALETTE['system']}State: {config.state_path}{PALETTE['reset']}\n")
+    print(f"{PALETTE['system']}State: {config.state_path}{PALETTE['reset']}")
+    if session_store and current_session:
+        print(f"{PALETTE['system']}Session: {current_session.id} (nuevo) | dir: {session_store.root}{PALETTE['reset']}\n")
+    else:
+        print()
 
     while True:
         try:
@@ -341,6 +359,57 @@ def main() -> int:
                 else:
                     print(f"{PALETTE['system']}Error: {result.get('error')}. Disponibles: {', '.join(result.get('available', []))}{PALETTE['reset']}\n")
             continue
+        if low == "/sessions":
+            if not session_store:
+                print(f"{PALETTE['system']}Sessions desactivado.{PALETTE['reset']}\n")
+                continue
+            entries = session_store.list_sessions(limit=20)
+            if not entries:
+                print(f"{PALETTE['system']}No hay sessions guardadas en {session_store.root}{PALETTE['reset']}\n")
+            else:
+                print(f"{PALETTE['system']}Sessions (mas recientes primero):{PALETTE['reset']}")
+                for entry in entries:
+                    mark = " (actual)" if current_session and entry["id"] == current_session.id else ""
+                    print(f"{PALETTE['system']}  {entry['id']}  [{entry['updated_at']}]  ({entry['turn_count']}t)  {entry['title']}{mark}{PALETTE['reset']}")
+                print()
+            continue
+        if low.startswith("/load "):
+            if not session_store:
+                print(f"{PALETTE['system']}Sessions desactivado.{PALETTE['reset']}\n")
+                continue
+            sid = user[6:].strip()
+            loaded = session_store.load(sid)
+            if not loaded:
+                print(f"{PALETTE['error']}No se encontro session: {sid}{PALETTE['reset']}\n")
+                continue
+            current_session = loaded
+            print(f"{PALETTE['system']}Session cargada: {loaded.id} - {loaded.title} ({len(loaded.turns)} turnos){PALETTE['reset']}")
+            print(f"{PALETTE['system']}Resumen de turnos:{PALETTE['reset']}")
+            for turn in loaded.turns[-6:]:
+                preview = turn.content[:100].replace("\n", " ")
+                print(f"{PALETTE['system']}  [{turn.role}] {preview}{PALETTE['reset']}")
+            print(f"{PALETTE['system']}(El agente arranca con history vacio; los turnos son referencia para vos.){PALETTE['reset']}\n")
+            continue
+        if low == "/new":
+            if not session_store:
+                print(f"{PALETTE['system']}Sessions desactivado.{PALETTE['reset']}\n")
+                continue
+            current_session = Session.new()
+            agent.clear()
+            print(f"{PALETTE['system']}Nueva session: {current_session.id}. Contexto del agente limpiado.{PALETTE['reset']}\n")
+            continue
+        if low.startswith("/title "):
+            if not session_store or not current_session:
+                print(f"{PALETTE['system']}Sessions desactivado.{PALETTE['reset']}\n")
+                continue
+            new_title = user[7:].strip()
+            if not new_title:
+                print(f"{PALETTE['error']}Uso: /title <texto>{PALETTE['reset']}\n")
+                continue
+            current_session.title = new_title
+            session_store.save(current_session)
+            print(f"{PALETTE['system']}Titulo: {new_title}{PALETTE['reset']}\n")
+            continue
         if low.startswith("/image "):
             p = _path(user[7:])
             if p:
@@ -356,10 +425,22 @@ def main() -> int:
 
         progress = ProgressDisplay(enabled=progress_enabled)
         progress.start()
+        progress_cb: Any = progress.update
+        timeline_writer: TimelineWriter | None = None
+        if timeline_enabled() and current_session is not None:
+            turn_idx = len(current_session.turns) // 2 + 1
+            timeline_writer = TimelineWriter(
+                session_id=current_session.id,
+                turn_index=turn_idx,
+                inner=progress.update,
+            )
+            progress_cb = timeline_writer
         try:
-            reply = agent.run_text(user, images=pending_images, audios=pending_audios, progress=progress.update)
+            reply = agent.run_text(user, images=pending_images, audios=pending_audios, progress=progress_cb)
         finally:
             progress.finish()
+            if timeline_writer is not None:
+                timeline_writer.close()
         pending_images = []
         pending_audios = []
 
@@ -372,6 +453,28 @@ def main() -> int:
             print(f"{PALETTE['error']}LLM error: {reply.error}{PALETTE['reset']}\n")
         else:
             print(f"{PALETTE['assistant']}gemma4>{PALETTE['reset']} {reply.content}\n")
+
+        if session_store and current_session:
+            from .sessions import SessionTurn
+            current_session.turns.append(SessionTurn(role="user", content=user))
+            current_session.turns.append(SessionTurn(
+                role="assistant",
+                content=reply.content or "",
+                tool_count=len(reply.tool_events),
+            ))
+            if current_session.title == "(sin titulo)" and len(current_session.turns) <= 2:
+                try:
+                    title = auto_title(
+                        user,
+                        chat_fn=lambda msgs: agent.client.chat(
+                            msgs, tools=None, enable_thinking=False,
+                            parallel_tool_calls=False, max_tokens=30, timeout_s=10.0,
+                        ),
+                    )
+                    current_session.title = title
+                except Exception:
+                    pass
+            session_store.save(current_session)
 
     return 0
 
