@@ -729,6 +729,92 @@ vision + audio. Bajaria a Gemma 3n E2B (~1.5 GB) y movemos mmproj a
 CPU offload — pero entonces la latencia se dispara y el "Jarvis
 local" deja de sentirse instantaneo.
 
+## TriggerCMD bulk import (2026-05-14)
+
+User pidio que el agente importe sus rutinas existentes de TriggerCMD
+(JSON con `trigger`/`voice`/`command`/`offCommand`/`ground`/
+`allowParams`/...) como on_phrase routines G6.
+
+Mapeo:
+- `voice` -> `trigger.phrase`
+- `command` -> step `terminal(command=..., shell=True)`
+- `offCommand` (si existe) -> segunda routine `<voice> off`
+- `ground=background` -> `timeout_sec=5` (no esperamos completion)
+- `allowParams=true` -> SKIP con razon (parametrizados se hacen a
+  mano por ahora, segun decision del user)
+
+### Forma de usarlo
+
+Tres formas, todas comparten la misma logica:
+
+```powershell
+# 1) CLI directo
+python -m gemma4_agent.import_triggercmd C:\TriggerCMD\commands.json
+
+# 2) Dry-run sin escribir nada
+python -m gemma4_agent.import_triggercmd C:\TriggerCMD\commands.json --dry-run
+
+# 3) Desde el chat con Gemma
+# Le pides "importa mis rutinas de TriggerCMD" y el agente llama:
+#   routine(action="import", source="triggercmd",
+#           json_path="C:/TriggerCMD/commands.json")
+```
+
+### Defensa en profundidad contra comandos destructivos
+
+Las dos capas que protegen al user de disparos accidentales:
+
+**Capa 1: auto-disable al importar.**
+`_looks_destructive(command)` detecta tokens como `shutdown`,
+`reboot`, `logoff`, `format`, `diskpart`, `rmdir /s`, `del /q`,
+`del /f`, `cipher /w`, `Stop-Computer`, `Restart-Computer`,
+`Remove-Item`, `uninstall`, etc. Las rutinas que matchean se
+importan con `enabled=False`. El user las habilita una por una con
+`routine(action="enable", id=...)` cuando confia.
+
+**Capa 2: guard de hipotetico/pregunta en el phrase hook.**
+Cuando una rutina activa es destructive (segun la misma deteccion),
+el hook descarta el match si:
+- El mensaje del user incluye `?` (pregunta).
+- Empieza con un hypothetical: "que pasa si", "what if",
+  "que ocurre si", "y si digo", "is it ok if", etc.
+
+Casos cubiertos (probados en runtime real):
+- `"reboot"` -> dispara
+- `"reboot please"` -> dispara
+- `"que pasa si digo reboot?"` -> NO dispara
+- `"what if i say reboot"` -> NO dispara
+
+Caso NO cubierto (limitacion honesta):
+- `"no quiero reboot"` -> dispararia si la rutina esta habilitada.
+  La negacion sintactica no se detecta. Mitigacion: capa 1
+  mantiene la rutina deshabilitada hasta que el user la habilite
+  explicitamente.
+
+### Tests (24 -> 27)
+
+- `test_triggercmd_import_basic`: imports 2 simples (`notepad`,
+  `reboot`), skips 3 (allowParams, empty cmd, short voice). Verifica
+  que `reboot` queda `enabled=False` y `notepad` `enabled=True`.
+- `test_triggercmd_destructive_detection`: 7 cases positivos
+  (shutdown, format, rmdir /s, etc) y 4 negativos (notepad, spotify,
+  ahk launcher, echo).
+- `test_triggercmd_import_off_routine`: entry con `offCommand`
+  genera dos routines (`<voice>` y `<voice> off`).
+- `test_triggercmd_import_duplicate_skipped`: re-import del mismo
+  payload no duplica routines.
+
+### Limitaciones documentadas
+
+- `allowParams=true` no soportado (deferred a manual).
+- `voiceReply` ignorado (el SYSTEM_PROMPT de G6 ya pide a Gemma
+  confirmar; no necesitamos plantilla fija).
+- Negacion sintactica ("no", "nunca") no detectada en el hook (la
+  capa 1 deshabilitada-por-default es la mitigacion real).
+- Comandos con cwd implicito pueden no funcionar como en TriggerCMD
+  si tienen rutas relativas; recomendado siempre full path en el
+  comando original.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):

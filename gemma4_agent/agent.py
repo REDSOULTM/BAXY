@@ -382,7 +382,8 @@ class Gemma4Agent:
         raw_text_early = _extract_user_text(content)
         if raw_text_early:
             try:
-                from .domain_tools import active_phrase_triggers
+                from .domain_tools import (_looks_destructive,
+                                            active_phrase_triggers)
                 folded_input = _fold_match(raw_text_early)
                 # Per-step timeout so a hung tool never blocks the whole turn.
                 # Configurable via env; default 30s per step.
@@ -392,6 +393,38 @@ class Gemma4Agent:
                     needle = _fold_match(str(routine.get("phrase") or ""))
                     if not needle or needle not in folded_input:
                         continue
+                    # Extra safety for destructive routines: do NOT fire if the
+                    # user message looks like a question or hypothetical that
+                    # merely *mentions* the phrase. We check the steps for a
+                    # destructive command token; if found, require the message
+                    # to NOT contain a question mark and NOT start with a
+                    # hypothetical opener ("que pasa si", "what if", "como se",
+                    # "how do i", etc).
+                    steps_for_routine = routine.get("steps") or []
+                    is_destructive = False
+                    for step in steps_for_routine:
+                        if isinstance(step, dict):
+                            cmd = (step.get("args") or {}).get("command", "") if isinstance(step.get("args"), dict) else ""
+                            if cmd:
+                                hit, _ = _looks_destructive(str(cmd))
+                                if hit:
+                                    is_destructive = True
+                                    break
+                    if is_destructive:
+                        if "?" in raw_text_early:
+                            self.trace.event(turn_id, "phrase_trigger_skipped_destructive_question",
+                                             routine_id=routine.get("id"), phrase=routine.get("phrase"))
+                            continue
+                        hypotheticals = ("que pasa si", "que ocurre si", "que sucede si",
+                                          "y si digo", "y si pongo", "y si escribo",
+                                          "what if", "what happens if",
+                                          "how do i", "how would i",
+                                          "is it ok if", "is it safe to")
+                        starts_hypothetical = any(folded_input.startswith(h) for h in hypotheticals)
+                        if starts_hypothetical:
+                            self.trace.event(turn_id, "phrase_trigger_skipped_destructive_hypothetical",
+                                             routine_id=routine.get("id"), phrase=routine.get("phrase"))
+                            continue
                     step_results: list[dict[str, Any]] = []
                     for step in routine.get("steps") or []:
                         if not isinstance(step, dict):

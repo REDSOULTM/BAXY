@@ -246,6 +246,207 @@ def notification_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
     return _err("unknown notification action", action=action)
 
 
+# Commands that imply destructive or system-altering side effects. If a
+# TriggerCMD entry's command matches one of these tokens (case-insensitive,
+# word-boundary), the imported routine is created with enabled=false and the
+# report flags it. The user must explicitly call routine(action="enable").
+# This is conservative on purpose: a few false positives are acceptable when
+# the alternative is accidental shutdowns.
+_DESTRUCTIVE_COMMAND_TOKENS = (
+    "shutdown",      # /s, /r, /h
+    "reboot",
+    "logoff",
+    "format",        # format C:
+    "diskpart",
+    "rmdir /s",
+    "rd /s",
+    "del /q",
+    "del /f",
+    "erase /q",
+    "erase /f",
+    "cipher /w",
+    "powercfg /h off",
+    "wmic os reboot",
+    "wmic os shutdown",
+    "stop-computer",
+    "restart-computer",
+    "remove-item",   # PowerShell rm -rf
+    "uninstall",
+)
+
+
+def _looks_destructive(command: str) -> tuple[bool, list[str]]:
+    """Return (is_destructive, matched_tokens) for a command line."""
+    low = " " + command.casefold() + " "
+    matches: list[str] = []
+    for token in _DESTRUCTIVE_COMMAND_TOKENS:
+        needle = " " + token.casefold() + " " if " " in token else token.casefold()
+        if needle in low or low.find(" " + needle.split()[0]) >= 0 and needle in low:
+            matches.append(token)
+    # Word-boundary single-word check (handles `notepad` not matching even if it
+    # contains 'shut down' impossibly).
+    import re as _re
+    boundary_hits = [t for t in _DESTRUCTIVE_COMMAND_TOKENS if _re.search(r"\b" + _re.escape(t) + r"\b", command, _re.IGNORECASE)]
+    matches = sorted(set(matches + boundary_hits))
+    return bool(matches), matches
+
+
+def import_triggercmd_entries(
+    entries: list[dict[str, Any]],
+    state: AgentState,
+    *,
+    overwrite_same_phrase: bool = False,
+    auto_disable_destructive: bool = True,
+) -> dict[str, Any]:
+    """Convert a TriggerCMD commands.json into Gemma4 on_phrase routines.
+
+    Mapping:
+      voice    -> trigger.phrase
+      command  -> step terminal(command=<command>)
+      ground   -> shell=true (foreground/background both run via shell)
+      offCommand -> a second on_phrase routine named '<voice> off' that
+                    fires when the user says e.g. 'apaga modo cine'.
+
+    Entries with allowParams=true are SKIPPED with reason in the report
+    (per user decision: parametrized routines are manual for now).
+    Entries with missing/empty voice or command are skipped with reason.
+
+    The function is pure-ish: it only writes to state via routine_tool
+    create calls. Returns a structured report so the caller can display
+    what worked and what didn't.
+    """
+    import json as _json
+    if not isinstance(entries, list):
+        return _err("triggercmd payload must be a list of entries")
+    existing_phrases: set[str] = set()
+    if not overwrite_same_phrase:
+        for r in active_phrase_triggers(state):
+            existing_phrases.add(str(r.get("phrase") or "").casefold())
+
+    imported: list[dict[str, Any]] = []
+    skipped: list[dict[str, Any]] = []
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            skipped.append({"index": index, "reason": "not_an_object"})
+            continue
+        trigger_name = str(entry.get("trigger") or "").strip()
+        voice = str(entry.get("voice") or "").strip()
+        command = str(entry.get("command") or "").strip()
+        off_command = str(entry.get("offCommand") or "").strip()
+        ground = str(entry.get("ground") or "foreground").strip().casefold()
+        # Skip rules.
+        if not command:
+            skipped.append({"index": index, "trigger": trigger_name, "reason": "empty_command"})
+            continue
+        if not voice:
+            skipped.append({"index": index, "trigger": trigger_name, "reason": "empty_voice"})
+            continue
+        if len(voice) < 3:
+            skipped.append({"index": index, "trigger": trigger_name, "voice": voice, "reason": "voice_too_short"})
+            continue
+        allow_params = str(entry.get("allowParams") or "").strip().casefold()
+        if allow_params in {"true", "1", "yes"}:
+            skipped.append({
+                "index": index,
+                "trigger": trigger_name,
+                "voice": voice,
+                "reason": "allowParams_true_needs_manual_setup",
+                "note": "Parametrized commands (e.g. 'Netflix Stranger Things') must be created by hand for now.",
+            })
+            continue
+        if not overwrite_same_phrase and voice.casefold() in existing_phrases:
+            skipped.append({"index": index, "trigger": trigger_name, "voice": voice, "reason": "phrase_already_in_use"})
+            continue
+        existing_phrases.add(voice.casefold())
+
+        # Safety layer: detect destructive commands and import them disabled
+        # by default. User must explicitly call routine(action="enable").
+        destructive_on, dangerous_tokens_on = _looks_destructive(command)
+        enabled_on = not (auto_disable_destructive and destructive_on)
+
+        # ON routine: voice -> command.
+        on_label = trigger_name or f"triggercmd_{index}"
+        on_payload = {
+            "action": "create",
+            "name": on_label,
+            "trigger": {"type": "on_phrase", "phrase": voice},
+            "steps": [{"tool": "terminal", "args": _terminal_args_for(command, ground)}],
+            "enabled": enabled_on,
+        }
+        on_result = routine_tool(on_payload, state, executor=None)
+        if not on_result.get("ok"):
+            skipped.append({"index": index, "trigger": trigger_name, "reason": "create_failed", "error": on_result.get("error")})
+            continue
+        report_item: dict[str, Any] = {
+            "trigger": trigger_name,
+            "phrase": voice,
+            "routine_id": (on_result.get("routine") or {}).get("id"),
+            "command": command,
+            "ground": ground,
+            "enabled": enabled_on,
+        }
+        if destructive_on:
+            report_item["destructive_tokens"] = dangerous_tokens_on
+            report_item["note"] = (
+                "Imported DISABLED because the command looks destructive "
+                f"(matched: {', '.join(dangerous_tokens_on)}). Enable with "
+                f"routine(action='enable', id='{report_item['routine_id']}') only when sure."
+            )
+
+        # OFF routine: only if offCommand is set. Phrase is "<voice> off" by
+        # default; the user can rename later if they want a different keyword.
+        if off_command:
+            off_voice = f"{voice} off"
+            if not overwrite_same_phrase and off_voice.casefold() in existing_phrases:
+                report_item["off_skipped"] = "phrase_already_in_use"
+            else:
+                existing_phrases.add(off_voice.casefold())
+                off_label = f"{on_label} (off)"
+                destructive_off, dangerous_tokens_off = _looks_destructive(off_command)
+                enabled_off = not (auto_disable_destructive and destructive_off)
+                off_payload = {
+                    "action": "create",
+                    "name": off_label,
+                    "trigger": {"type": "on_phrase", "phrase": off_voice},
+                    "steps": [{"tool": "terminal", "args": _terminal_args_for(off_command, ground)}],
+                    "enabled": enabled_off,
+                }
+                off_result = routine_tool(off_payload, state, executor=None)
+                if off_result.get("ok"):
+                    report_item["off_routine_id"] = (off_result.get("routine") or {}).get("id")
+                    report_item["off_phrase"] = off_voice
+                    report_item["off_enabled"] = enabled_off
+                    if destructive_off:
+                        report_item["off_destructive_tokens"] = dangerous_tokens_off
+                else:
+                    report_item["off_skipped"] = f"create_failed: {off_result.get('error')}"
+
+        imported.append(report_item)
+
+    return _ok(
+        imported=imported,
+        imported_count=len(imported),
+        skipped=skipped,
+        skipped_count=len(skipped),
+        total_input=len(entries),
+        note="Run routine(action='list') to see all routines. Disable with routine(action='disable', id=...) or delete with routine(action='delete', id=...).",
+    )
+
+
+def _terminal_args_for(command: str, ground: str) -> dict[str, Any]:
+    """Build the terminal tool args for a TriggerCMD command line.
+
+    TriggerCMD commands are full Windows command lines with quoted paths
+    (e.g. `"C:\\TriggerCMD Comandos\\Volumen.ahk" 50`). We pass them as a
+    single shell command with shell=True so cmd.exe handles the quoting.
+    background ground means we don't wait for completion; we model that
+    with a short timeout (1s) since the terminal tool always runs sync.
+    """
+    if ground == "background":
+        return {"command": command, "shell": True, "timeout_sec": 5}
+    return {"command": command, "shell": True, "timeout_sec": 60}
+
+
 def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | None = None) -> dict[str, Any]:
     action = str(args.get("action") or "list").casefold()
     if action == "status":
@@ -258,11 +459,42 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
             deferred_triggers=["on_file_change", "on_network_event"],
             deferred_reason="File change triggers belong to the watcher tool directly; network events need ETW subscription.",
             on_phrase_note="on_phrase routines fire when the user message contains the configured phrase (case-insensitive, accents folded). The agent confirms the action briefly after firing.",
+            import_sources=["triggercmd"],
+            import_note="Use routine(action='import', source='triggercmd', json_path='<file>') or entries=[...] to bulk-create on_phrase routines from a TriggerCMD export. allowParams=true entries are skipped for manual setup.",
         )
     if action == "list":
         resources = state.list_resources(include_closed=bool(args.get("include_closed", False))).get("resources", [])
         routines = [_enrich_routine_resource(r) for r in resources if r.get("kind") == "routine"]
         return _ok(routines=routines, count=len(routines))
+    if action == "import":
+        source = str(args.get("source") or "triggercmd").strip().casefold()
+        if source != "triggercmd":
+            return _err(f"import source '{source}' not supported; only triggercmd for now")
+        # Accept either a path to the JSON file or an inline `entries` array.
+        raw_entries = args.get("entries")
+        json_path = str(args.get("json_path") or args.get("path") or "").strip()
+        if not raw_entries and not json_path:
+            return _err("routine.import requires either entries=[...] or json_path='<file>.json'")
+        if raw_entries is None and json_path:
+            p = Path(json_path).expanduser()
+            if not p.is_file():
+                return _err(f"json_path does not exist: {p}")
+            try:
+                raw_entries = json.loads(p.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                return _err(f"invalid JSON at {p}: {exc}")
+        if isinstance(raw_entries, str):
+            try:
+                raw_entries = json.loads(raw_entries)
+            except json.JSONDecodeError as exc:
+                return _err(f"entries string is not valid JSON: {exc}")
+        if not isinstance(raw_entries, list):
+            return _err("triggercmd entries must be a JSON array")
+        return import_triggercmd_entries(
+            raw_entries,
+            state,
+            overwrite_same_phrase=bool(args.get("overwrite_same_phrase", False)),
+        )
     if action == "create":
         steps = args.get("steps") or []
         if isinstance(steps, str):

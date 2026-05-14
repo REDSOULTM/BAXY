@@ -523,6 +523,114 @@ def test_h3_3_parse_args_distinguishes_malformed() -> bool:
     return True
 
 
+def test_triggercmd_import_basic() -> bool:
+    """A small TriggerCMD payload imports the simple commands and skips allowParams=true.
+
+    Also verifies that destructive commands (shutdown) are imported DISABLED
+    by default for safety.
+    """
+    import tempfile
+    from gemma4_agent.domain_tools import import_triggercmd_entries
+    from gemma4_agent.state import AgentState
+    state_path = Path(tempfile.mktemp(prefix="g_triggercmd_state_", suffix=".json"))
+    state = AgentState(state_path)
+    entries = [
+        {"trigger": "Notepad", "command": "notepad", "ground": "foreground", "voice": "notepad"},
+        {"trigger": "Reboot", "command": "shutdown /r /t 10", "ground": "background", "voice": "reboot"},
+        {"trigger": "WithParams", "command": "x.bat", "ground": "foreground", "voice": "withparams", "allowParams": "true"},
+        {"trigger": "Empty cmd", "command": "", "voice": "empty", "ground": "foreground"},
+        {"trigger": "Too short", "command": "echo hi", "voice": "x", "ground": "foreground"},
+    ]
+    result = import_triggercmd_entries(entries, state)
+    assert result["ok"], result
+    assert result["imported_count"] == 2, f"expected 2 imported, got {result['imported_count']}"
+    assert result["skipped_count"] == 3, f"expected 3 skipped, got {result['skipped_count']}"
+    reasons = {s["reason"] for s in result["skipped"]}
+    assert "allowParams_true_needs_manual_setup" in reasons
+    assert "empty_command" in reasons
+    assert "voice_too_short" in reasons
+    # Destructive safety: shutdown imported disabled.
+    by_phrase = {item["phrase"]: item for item in result["imported"]}
+    assert by_phrase["reboot"]["enabled"] is False, "reboot should be disabled by default"
+    assert "shutdown" in by_phrase["reboot"]["destructive_tokens"]
+    assert by_phrase["notepad"]["enabled"] is True, "notepad should stay enabled"
+    state_path.unlink(missing_ok=True)
+    print("triggercmd import basic + destructive auto-disable OK")
+    return True
+
+
+def test_triggercmd_destructive_detection() -> bool:
+    """_looks_destructive flags common destructive command lines."""
+    from gemma4_agent.domain_tools import _looks_destructive
+    # Positive cases: should be flagged.
+    for cmd in [
+        "shutdown /r /t 10",
+        "shutdown /s /f /t 0",
+        "Stop-Computer",
+        "Restart-Computer -Force",
+        "format C:",
+        "rmdir /s /q C:\\important",
+        "del /q somefolder",
+    ]:
+        hit, tokens = _looks_destructive(cmd)
+        assert hit, f"should detect destructive: {cmd}"
+        assert tokens, f"should return tokens for: {cmd}"
+    # Negative cases: should NOT be flagged.
+    for cmd in [
+        "notepad",
+        "start spotify:playlist:abc",
+        '"C:\\Program Files\\AutoHotkey\\v2\\AutoHotkey.exe" "C:\\Volumen.ahk" 50',
+        "echo hello",
+    ]:
+        hit, tokens = _looks_destructive(cmd)
+        assert not hit, f"should NOT detect destructive: {cmd} (got {tokens})"
+    print("triggercmd destructive detection OK")
+    return True
+
+
+def test_triggercmd_import_off_routine() -> bool:
+    """When entry has offCommand, a second on_phrase routine is created with '<voice> off'."""
+    import tempfile
+    from gemma4_agent.domain_tools import (active_phrase_triggers,
+                                            import_triggercmd_entries)
+    from gemma4_agent.state import AgentState
+    state_path = Path(tempfile.mktemp(prefix="g_triggercmd_state_", suffix=".json"))
+    state = AgentState(state_path)
+    entries = [
+        {"trigger": "Modo Cine", "command": "start_cine.bat", "offCommand": "stop_cine.bat",
+         "ground": "foreground", "voice": "modo cine"},
+    ]
+    result = import_triggercmd_entries(entries, state)
+    assert result["imported_count"] == 1, result
+    item = result["imported"][0]
+    assert item.get("off_phrase") == "modo cine off", item
+    # Verify both phrases now active.
+    phrases = {r["phrase"] for r in active_phrase_triggers(state)}
+    assert "modo cine" in phrases
+    assert "modo cine off" in phrases
+    state_path.unlink(missing_ok=True)
+    print("triggercmd import off-routine OK")
+    return True
+
+
+def test_triggercmd_import_duplicate_skipped() -> bool:
+    """Re-importing the same payload skips dupes unless overwrite_same_phrase=True."""
+    import tempfile
+    from gemma4_agent.domain_tools import import_triggercmd_entries
+    from gemma4_agent.state import AgentState
+    state_path = Path(tempfile.mktemp(prefix="g_triggercmd_state_", suffix=".json"))
+    state = AgentState(state_path)
+    entries = [{"trigger": "Notepad", "command": "notepad", "ground": "foreground", "voice": "notepad"}]
+    first = import_triggercmd_entries(entries, state)
+    assert first["imported_count"] == 1
+    second = import_triggercmd_entries(entries, state)
+    assert second["imported_count"] == 0, second
+    assert second["skipped"][0]["reason"] == "phrase_already_in_use"
+    state_path.unlink(missing_ok=True)
+    print("triggercmd import duplicate detection OK")
+    return True
+
+
 def test_g2_compaction_disabled_keeps_truncation() -> bool:
     """When summarization is disabled, _compact_completed_history still truncates."""
     import os
@@ -558,6 +666,10 @@ def main() -> int:
         test_h3_1_phrase_confirm_prepends_when_unack,
         test_h3_2_plan_status_surfaces_only_on_short_reply,
         test_h3_3_parse_args_distinguishes_malformed,
+        test_triggercmd_import_basic,
+        test_triggercmd_destructive_detection,
+        test_triggercmd_import_off_routine,
+        test_triggercmd_import_duplicate_skipped,
         test_g2_compaction_disabled_keeps_truncation,
     ]
     failures: list[str] = []
