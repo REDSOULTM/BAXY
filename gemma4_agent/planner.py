@@ -329,15 +329,41 @@ def _suggest_tools(step: str) -> list[str]:
                  r"minuteur|alarme|notification|rappel|"
                  r"timer|allarme|notifica|promemoria)\b", low):
         tools.append("notification")
+    # Routine triggers including phrase-based ("cuando te diga X haz Y"
+    # Alexa-style). We accept several common typos for "cuando" / "diga"
+    # ("cuanto", "dija", "diega") because users mistype these often.
     if re.search(r"\b(rutina|automatiza|automatizacion|cuando pase|cada vez|"
-                 r"cuando te diga|cuando le diga|si te digo|si digo|cada vez que diga|"
+                 r"cuando te diga|cuando te dija|cuanto te diga|cuanto te dija|"
+                 r"cuando le diga|si te digo|si digo|cada vez que diga|"
                  r"si te escribo|cuando escriba|cuando escribas|cuando ponga|"
+                 r"quiero que aprietes|quiero que apriete|quiero que presiones|"
+                 r"quiero que pulses|quiero que ejecutes|"
+                 r"recuerda esto|recuerda lo siguiente|registra esta rutina|"
                  r"routine|automate|automation|whenever|every time|"
                  r"when i say|whenever i say|every time i say|if i say|"
+                 r"remember this|save this routine|"
                  r"rotina|automatizar|automacao|quando eu disser|sempre que eu disser|"
                  r"routine|automatiser|automatisation|quand je dis|chaque fois que je dis|"
                  r"routine|automatizzare|automazione|quando dico|ogni volta che dico)\b", low):
         tools.append("routine")
+    # Bare phrase-trigger declaration: user describes a future action without
+    # using "routine" verbatim. Matches sentences like "que aprietes <key>",
+    # "press <key> when i say", "presiona <tecla>". These nudge the keyword
+    # router toward `routine` so Gemma sees the tool in the subset.
+    if re.search(r"\b(que aprietes|que apriete|que presiones|que pulses|"
+                 r"press the .* key|press the .* button|"
+                 r"aperte a tecla|appuie sur la touche|premi il tasto)\b", low):
+        if "routine" not in tools:
+            tools.append("routine")
+        # gui covers keypress / hotkey actions the routine will probably
+        # invoke as a step.
+        for needed in ("gui", "uia"):
+            if needed not in tools:
+                tools.append(needed)
+    # Direct "tecla de" / "media key" requests should also surface gui.
+    if re.search(r"\btecla(s)? de\b|\bmedia key\b|\bplay.?pause\b|\bvolume up\b|\bvolume down\b", low):
+        if "gui" not in tools:
+            tools.append("gui")
     if re.search(r"\b(mail|email|correo|enviar mensaje|"
                  r"send mail|send email|message|"
                  r"correio|enviar mensagem|"

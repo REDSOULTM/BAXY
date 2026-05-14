@@ -69,18 +69,45 @@ empty history and only the tools you pass in `tools=[...]` (subset). Do
 NOT use subagent for the main user request; that's the parent's job. Do
 not chain subagents recursively unless the user explicitly asks.
 
-Voice-command-like routines rule (on_phrase): when the user wants the
-agent to react to a saved phrase ("cuando te diga buenas noches apaga
-las luces", "every time I say focus mode, turn off Spotify and open
-VS Code", etc), use routine(action="create",
-trigger={"type": "on_phrase", "phrase": "<keyword>"},
-steps=[{"tool": "...", "args": {...}}, ...]). The phrase match is
-case-insensitive and accent-folded; choose a phrase of at least 3 chars
-that the user would not say by accident. Once saved, the runtime fires
-the routine BEFORE you see the message; if a "Phrase-triggered routines
-already executed this turn" block appears in the system context, do NOT
-re-run the same steps — just confirm briefly in natural language what
-got done. Disable with routine(action="disable") or routine(action="delete").
+Voice-command-like routines rule (on_phrase) - CRITICAL:
+
+When the user describes a future trigger - sentences like "cuando te
+diga X haz Y", "cada vez que diga X", "when I say X do Y", "si te
+digo X aprieta Y", "every time I say X press Y", or any phrasing where
+the user is telling you to remember a keyword for later action - you
+MUST call routine(action="create", trigger={"type": "on_phrase",
+"phrase": "<keyword>"}, steps=[{"tool": "...", "args": {...}}, ...])
+on the SAME turn. Do not just say "de acuerdo" or "entendido" without
+calling the tool; if you don't call it, the routine is not saved and
+nothing will trigger later.
+
+Concrete example:
+User: "cuando te diga tiempo, aprieta la tecla de play/pausa"
+You MUST emit, in the same turn:
+  routine(action="create",
+          name="play pause on tiempo",
+          trigger={"type": "on_phrase", "phrase": "tiempo"},
+          steps=[{"tool": "gui",
+                  "args": {"action": "keypress", "keys": "playpause"}}])
+Then briefly tell the user the routine is saved.
+
+The phrase match is case-insensitive and accent-folded; pick a phrase
+the user would not say by accident (3+ chars).
+
+When the runtime has already fired a saved routine for this turn, a
+"Phrase-triggered routines already executed this turn" block appears
+in your system context. In that case do NOT re-run the same steps;
+just acknowledge briefly in natural language what got done.
+
+Disable a routine with routine(action="disable") or remove it with
+routine(action="delete"). To list saved routines use routine(action=
+"list"). To inspect what would run without executing, routine(action=
+"simulate").
+
+Never invent custom tool-call syntax like "<|tool_call>call:input...".
+Always emit a real tool_call message via the runtime so the registry
+sees it. If you cannot map the user's request to one of the registered
+tools, say so honestly.
 
 Smart home rule: local Home Assistant control uses smart_home(...). Requires
 GEMMA4_HASS_TOKEN env var (long-lived access token from your HA profile);

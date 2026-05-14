@@ -2186,17 +2186,53 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
                 cleanup_args={"action": "close", "name": name},
                 metadata={"resolved": best.as_dict()},
             ).get("resource")
+        # Auto-verify: wait briefly and re-check if a process/window with the
+        # target name is now present. Steam-launched games can take longer to
+        # show a window, so we also accept the resolved exe name. If
+        # auto-verify succeeds, surface status=done so the LLM does not say
+        # "could not verify" when the app actually opened. The user can
+        # disable this with GEMMA4_APP_OPEN_AUTOVERIFY=false (e.g. for slow
+        # Steam launches where the verification window would always be too
+        # short).
+        import os as _os
+        autoverify = (_os.environ.get("GEMMA4_APP_OPEN_AUTOVERIFY") or "").strip().casefold()
+        verified = False
+        verify_evidence: dict[str, Any] = {}
+        if autoverify not in {"false", "0", "no", "off"}:
+            try:
+                wait_s = float(_os.environ.get("GEMMA4_APP_OPEN_AUTOVERIFY_WAIT_S") or "2.5")
+            except ValueError:
+                wait_s = 2.5
+            time.sleep(max(0.0, min(wait_s, 10.0)))
+            post = self.verify_app_opened({"name": name})
+            if post.get("found"):
+                verified = True
+                verify_evidence = {"verify_app_opened_after_wait_s": wait_s, "match": post.get("match")}
+            else:
+                # Also try matching by the resolved exe/process name when the
+                # friendly name differs from the actual window (e.g. "Marvel
+                # Rivals" -> "MarvelRivals.exe").
+                process_hint = best.process_name or ""
+                if process_hint and process_hint.casefold() != name.casefold():
+                    post2 = self.verify_app_opened({"name": process_hint})
+                    if post2.get("found"):
+                        verified = True
+                        verify_evidence = {"verify_app_opened_via_process": process_hint, "match": post2.get("match")}
         return _ok(
             query=name,
             opened=best.as_dict(),
             alternatives=[m.as_dict() for m in matches[1:5]],
             preexisting=bool(preexisting.get("found")),
             resource=resource,
-            status="attempted",
-            verified=False,
-            completion_status="launch_requested",
-            evidence={"resolved_target": best.as_dict()},
-            note="Windows was asked to open the resolved app. Use verify(action='app_opened') or window(action='active') if the user needs confirmation.",
+            status=("done" if verified else "attempted"),
+            verified=verified,
+            completion_status=("launch_verified" if verified else "launch_requested"),
+            evidence={"resolved_target": best.as_dict(), **verify_evidence},
+            note=(
+                "Auto-verify confirmed a window or process matching the requested app."
+                if verified
+                else "Launch sent to Windows but no window matched within the auto-verify window. The app may still be loading (Steam/Epic games can take 10-30s); call verify(action='app_opened') again if needed."
+            ),
         )
 
     def app_close(self, args: dict[str, Any]) -> dict[str, Any]:

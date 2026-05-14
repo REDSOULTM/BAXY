@@ -463,6 +463,113 @@ cerrados, 2 parciales, 3 abiertos** tras el fix #13).
 Hasta que V1+V4 se hagan, el agente esta **"validado unitariamente"**, no
 "validado end-to-end".
 
+## V1-partial — runtime real revelo 2 bugs (2026-05-13)
+
+El user corrio `python -m gemma4_agent.chat` por primera vez contra
+llama-server real y aparecieron dos bugs que los tests unitarios no
+detectaron. Esto es el primer paso de V1.
+
+### Bug A: phrase trigger no se crea
+
+Transcripcion real:
+- User: "Cuanto te dija tiempo quiero que aprietes la tecla de parar video"
+- Agente: "De acuerdo. Cuando me digas la palabra clave, presionare..."
+- User: "tiempo"
+- Agente: "Quieres que presione ahora o establecer rutina?"
+- User: "quiero que la dejes lista"
+- Agente: ejecuto `notes_tasks(task_create)` (incorrecto)
+- User: "tiempo"
+- Agente: emitio `<|tool_call>call:input{key_code:91}<tool_call|>` literal
+  (sintaxis inventada, no es un tool_call valido)
+- Resultado: nada se ejecuto pero el agente dijo "Presione la tecla".
+
+Causas:
+1. Tipos del user ("Cuanto te dija") no matcheaban el regex del router
+   ("cuando te diga") asi que `routine` no entro al subset.
+2. La regla del SYSTEM_PROMPT estaba diluida en un parrafo y no era
+   imperativa: no decia "MUST call routine(create)".
+3. Sin ejemplo concreto end-to-end de "cuando te diga X aprieta Y".
+
+Fixes:
+- `planner.py:_suggest_tools`: agregue tipos de "cuando/cuanto te
+  diga/dija", verbos imperativos "que aprietes/presiones/pulses/
+  ejecutes", "recuerda esto/registra esta rutina", y equivalentes en
+  EN/PT/FR/IT. Tambien anclo `gui` y `uia` al subset cuando aparecen
+  estos triggers porque la rutina probablemente necesita keypress.
+- `planner.py`: nuevo bloque que detecta "tecla de" / "media key" /
+  "play.?pause" y agrega `gui` al subset.
+- `agent.py` SYSTEM_PROMPT: reescribi la regla on_phrase como MUST
+  con un ejemplo literal de la llamada `routine(action="create"...)`
+  para "cuando te diga tiempo, aprieta play/pausa". Tambien linea
+  explicita: "Never invent custom tool-call syntax like
+  `<|tool_call>...`". Hubiera evitado el output malformado.
+
+Verificado: con `Cuanto te dija tiempo quiero que aprietes la tecla
+de parar video` el router ahora trae `routine + gui + uia + media`
+al subset.
+
+### Bug B: app.open con verified=False induce desconfianza
+
+Transcripcion real:
+- User: "abre marvel rivals"
+- Agente: ejecuto `app({'action':'open','name':'Marvel Rivals'})`
+- Tool retorno `status=attempted verified=False completion_status=launch_requested`
+- Agente: "Intente abrir Marvel Rivals pero no pude verificar que se
+  haya abierto correctamente"
+- User confirmo: "Si abrio el juego pero dijo..."
+
+Causa: `app_open` retornaba sin auto-verificar. El guard
+`_is_unverified_result` (H1.3) inyectaba la nota de advertencia, y
+Gemma la pasaba al usuario como "no pude verificar". El problema:
+Steam-launched games tardan 2-30s en abrir su ventana; entre el
+`os.startfile` y el render hay un gap que la herramienta no esperaba.
+
+Fix:
+- `tools.py:app_open`: tras lanzar la app, espera 2.5s (configurable
+  via `GEMMA4_APP_OPEN_AUTOVERIFY_WAIT_S`) y reintenta
+  `verify_app_opened`. Si encuentra ventana coincidente, status=done
+  verified=True completion_status=launch_verified. Si no encuentra,
+  intenta tambien con el `process_name` resuelto (e.g. "MarvelRivals.exe"
+  para "Marvel Rivals"). Si aun asi nada matchea, vuelve a status=
+  attempted como antes pero con nota mas precisa explicando que Steam
+  games pueden tardar 10-30s.
+- Disable con `GEMMA4_APP_OPEN_AUTOVERIFY=false`.
+
+eval_smoke: 62 tools, missing=[] duplicate_count=0.
+test_router: 61/61. test_gx_features: 23/23.
+
+## Pendiente para proxima sesion (V1 + V4 completos)
+
+Estos son los 5 puntos que el user pidio especificamente atacar en la
+proxima sesion, copiados literal:
+
+> Lo que NO esta validado:
+> - Ningun turno corrido contra llama-server real. Todos los tests
+>   mockean el LLM. Los bugs runtime-only no estan detectados.
+> - No medi latencia real por turno con todas las features encadenadas.
+> - No medi token budget real de Gemma 4 ES. El threshold de
+>   summarization usa chars * 3 como aproximacion sin haber medido.
+> - No hay test de stress de 30+ turnos para validar que summarization
+>   + experience pruning + cooldown funcionan acumulativamente.
+> - Tools con side effects reales (smart_home, set_app_route, app.open)
+>   nunca disparadas end-to-end por una rutina G6.
+
+**Update tras esta sesion:** Bugs A y B son el primer paso del primer
+punto (V1 contra llama-server real). Esta sesion el user reporto los
+errores tras correr el agente; quedan los otros 4 puntos para la
+proxima.
+
+Plan sugerido para la proxima sesion:
+1. V1 manual completo: 10-15 prompts cubriendo cada feature; capturar
+   trazas reales en `data/traces.jsonl` y revisar.
+2. V4 stress: script mock que simula 30+ turnos para tocar
+   summarization + pruning + cooldown en una corrida.
+3. Medir latencia por turno (timestamp diff en traces).
+4. Medir chars/token ratio real de Gemma 4 ES con un prompt conocido
+   contra el endpoint `/tokenize` de llama-server.
+5. Probar G6 phrase trigger end-to-end con una rutina que llame
+   `app.open` o `smart_home.call_service`.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):
