@@ -570,6 +570,165 @@ Plan sugerido para la proxima sesion:
 5. Probar G6 phrase trigger end-to-end con una rutina que llame
    `app.open` o `smart_home.call_service`.
 
+## Analisis de VRAM 6 GB con vision + voz (2026-05-14)
+
+User pregunto si todo cabe en 6 GB VRAM con vision y voz obligatorias.
+Respuesta corta: **si cabe pero con margen apretado y un riesgo
+documentado de memory leak en llama.cpp**.
+
+### Nomenclatura
+
+El modelo es oficialmente **Gemma 3n E4B**, no "Gemma 4 E4B" (los
+archivos en `models/E4B/gemma-4-*` tienen ese nombre por convencion
+interna del repo). 3n = familia 3 nano/mobile con Per-Layer
+Embeddings; E4B = 4 billion effective parameters. Mas info y fuentes
+abajo.
+
+### Audio nativo en Gemma 3n - cambia el juego
+
+Segun ai.google.dev/gemma/docs/capabilities/audio: Gemma 3n incluye
+un audio encoder integrado en el modelo principal (Universal Speech
+Model). Genera 1 token cada 160ms de audio (~6 tokens/s). Entrenado
+en 140+ idiomas.
+
+Implicaciones:
+- **No necesitamos whisper.cpp** para STT basico. El modelo lo hace.
+- Tu `multimodal.py` ya envia `input_audio` en formato OpenAI; el
+  endpoint de llama-server lo procesa con el mismo binario.
+- WER de Gemma 3n vs Whisper-Large: 13.0 vs 4.4 (medium.com/ajjay.k).
+  Peor para transcripcion verbatim, suficiente para comandos de
+  Jarvis-style. Para dictado largo y critico, agregar Whisper sigue
+  siendo mejor opcion.
+
+Costo VRAM del audio encoder: **0 GB extra** (esta integrado en el
+modelo, no en un mmproj separado).
+
+### Tabla de VRAM consolidada
+
+Fuentes: unsloth.ai/docs/models/gemma-4, knightli.com Gemma 4 quant
+table, llama.cpp issue #21690, rhasspy/piper#121.
+
+| Componente | VRAM | Notas |
+|---|---|---|
+| Gemma 3n E4B Q4_K_M | ~3.9 GB | "sweet spot" para 6 GB |
+| Gemma 3n E4B UD-Q4_K_XL | ~4.2 GB | quant dinamico de unsloth; mejor calidad mismo tamaño |
+| Gemma 3n E4B Q5_K_M | ~4.6 GB | calidad alta |
+| Gemma 3n E4B Q6_K (config actual) | ~5.3 GB | NO cabe en 6 GB con mmproj |
+| Gemma 3n E4B Q8_0 | ~6.8 GB | solo 8+ GB cards |
+| Gemma 3n E2B Q4_K_M | ~1.5 GB | mucho margen pero reasoning notablemente peor |
+| mmproj F16 (vision) | ~1.0 GB | obligatorio si quieres screenshots/imagenes |
+| Audio encoder | 0 GB | integrado en el modelo principal |
+| KV cache 8k context | ~0.2 GB | crece linealmente con context_size |
+| KV cache 16k context (default actual) | ~0.4 GB | |
+| Piper TTS | 0 GB VRAM, 50 MB RAM | piper en CPU es 5x mas rapido que GPU (rhasspy#121) |
+| MiniLM embedder (fallback router) | 0 GB VRAM, 60 MB RAM | forzar CPU con CUDA_VISIBLE_DEVICES="" |
+| Whisper.cpp base (opcional, no necesario con 3n nativo) | 0.5-0.9 GB | solo si WER de Gemma 3n no alcanza |
+| Windows desktop @1080p | 0.4-0.7 GB | tipico Intel/AMD/NVIDIA WDDM |
+
+### Calculo final para 6 GB VRAM (vision + voz activas)
+
+```
+Gemma 3n E4B Q4_K_M:    3.9 GB
+mmproj F16:             1.0 GB
+KV cache 8k:            0.2 GB
+Audio encoder:          0.0 GB (integrado)
+                        -------
+Subtotal agente:        5.1 GB
+
+Windows desktop:        ~0.5 GB
+                        -------
+TOTAL pico:             ~5.6 GB / 6 GB
+```
+
+**Cabe con ~400 MB de margen.** Pero hay un riesgo documentado.
+
+### Riesgo: memory leak de mmproj en llama.cpp
+
+[ggml-org/llama.cpp issue #21690](https://github.com/ggml-org/llama.cpp/issues/21690)
+documenta que Gemma 3/4 con mmproj sufre un leak gradual de VRAM:
+~6.4 MiB por request de imagen mas ~46 MiB de RSS por request en host
+memory (cuBLAS workspace caching).
+
+Implicacion practica: tras ~60-80 imagenes procesadas en una sesion,
+los 400 MB de margen estan consumidos y el siguiente request OOM.
+
+Mitigaciones:
+1. **Restart periodico** del llama-server. El launcher ya soporta
+   `--start-server`; agregar reciclaje cada N requests de vision.
+2. **Disable vision por sesion**: arrancar sin `--mmproj` cuando la
+   sesion es solo texto + audio. Re-arrancar con mmproj solo cuando
+   el usuario lo pide.
+3. **Cargar Gemma 3n E4B Q5_K_M no es viable** en 6 GB con mmproj.
+
+### Configuracion recomendada por perfil de VRAM
+
+Variables de entorno a setear (no auto-detect por ahora; el user lo
+configura manualmente segun su GPU).
+
+**6 GB VRAM (RTX 2060 / 3050 / 4050 mobile)**:
+```powershell
+$env:GEMMA4_MODEL_PATH = "models\E4B\gemma-4-E4B-it-Q4_K_M.gguf"
+$env:GEMMA4_MMPROJ_PATH = "models\E4B\mmproj-F16.gguf"
+$env:GEMMA4_AGENT_CONTEXT = "8192"
+$env:CUDA_VISIBLE_DEVICES = ""  # para Piper + MiniLM en CPU
+```
+
+**8 GB VRAM (RTX 3060 / 3070 / 4060)**:
+```powershell
+$env:GEMMA4_MODEL_PATH = "models\E4B\gemma-4-E4B-it-Q5_K_M.gguf"
+$env:GEMMA4_AGENT_CONTEXT = "16384"
+```
+
+**12+ GB VRAM (RTX 3060 12GB / 4070 / 4080)**:
+```powershell
+# Default actual ya funciona: Q6_K + 16k context
+```
+
+**16+ GB VRAM (RTX 4080 / 4090 / 4060 Ti 16GB - la actual del user)**:
+```powershell
+$env:GEMMA4_MODEL_PATH = "models\E4B\gemma-4-E4B-it-Q8_0.gguf"
+$env:GEMMA4_AGENT_CONTEXT = "32768"
+```
+
+### Voz local concretamente
+
+**STT (speech-to-text)**:
+- **Default**: usar el audio encoder nativo de Gemma 3n via el endpoint
+  `/v1/chat/completions` con `input_audio` (ya soportado en
+  `multimodal.py`). Sin VRAM extra.
+- **Solo si la calidad no alcanza**: instalar whisper.cpp base
+  multilingual quantizado Q5_1 (~57 MB en disco, ~570 MB RAM en CPU).
+  Eso es F1 voice_io en el roadmap original.
+
+**TTS (text-to-speech)**:
+- **Piper** con un voice model espanol (es_AR-daniela o es_ES-davefx).
+  Pesos ~25-60 MB. Corre en CPU. Latencia: 100-300 ms para una frase
+  de 50 palabras en CPU moderno (Ryzen 5/i5+). GPU es 5x mas lento
+  (rhasspy#121).
+
+### Conclusion para 6 GB
+
+Cabe si:
+- Bajamos a Q4_K_M.
+- Bajamos contexto a 8k.
+- Forzamos Piper + MiniLM en CPU.
+- Aceptamos restart periodico de llama-server o disable vision en
+  sesiones largas para evitar el leak.
+- Usamos el audio encoder nativo de Gemma 3n (no whisper) para STT
+  basico.
+
+Performance esperada en 6 GB:
+- 15-25 tokens/s de generacion (Q4_K_M en RTX 2060/3050).
+- Latencia primer token: ~600-900 ms.
+- Audio processing: 6 tokens/s, asi que 5 segundos de audio -> 30
+  tokens de input. Latencia de transcripcion incluida en el turn
+  normal (no es un paso aparte).
+
+Si el user solo tiene 4 GB VRAM o menos: no es viable mantener
+vision + audio. Bajaria a Gemma 3n E2B (~1.5 GB) y movemos mmproj a
+CPU offload — pero entonces la latencia se dispara y el "Jarvis
+local" deja de sentirse instantaneo.
+
 ## Catalogo Actual Verificado
 
 42 tools registradas en [tools.py](tools.py) (`ToolRegistry._impls`):
