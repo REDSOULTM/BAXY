@@ -284,9 +284,9 @@ class MainWindow(QMainWindow):
 
     def _apply_settings_live(self, data: dict) -> None:
         env = data.get("env") or {}
-        # Apply what we can without restart:
-        persona = env.get("GEMMA4_AGENT_PERSONA")
         agent = self.worker.get_agent()
+        # Persona — applied to running agent + HUD.
+        persona = env.get("GEMMA4_AGENT_PERSONA")
         if persona and agent is not None:
             try:
                 agent.set_persona(persona)
@@ -294,13 +294,41 @@ class MainWindow(QMainWindow):
                 self.log.append(f"persona -> {persona}", "sys")
             except Exception as exc:
                 self.log.append(f"persona switch failed: {exc}", "err")
-        model_alias = env.get("GEMMA4_MODEL")
+        # Model alias — refreshes HUD only; the running agent keeps its own model.
+        model_alias = env.get("GEMMA4_AGENT_MODEL")
         if model_alias:
             self.hud.set_model(model_alias)
+        # Agent mode / max_turns / safety can be applied live by rewriting the
+        # frozen AgentConfig (it's a dataclass; we use dataclasses.replace).
+        if agent is not None:
+            from dataclasses import replace
+            try:
+                changes: dict[str, Any] = {}
+                if env.get("GEMMA4_AGENT_MODE"):
+                    changes["agent_mode"] = env["GEMMA4_AGENT_MODE"]
+                if env.get("GEMMA4_AGENT_MAX_TURNS"):
+                    changes["max_agent_turns"] = int(env["GEMMA4_AGENT_MAX_TURNS"])
+                if env.get("GEMMA4_AGENT_SAFETY") is not None:
+                    changes["enable_safety"] = env["GEMMA4_AGENT_SAFETY"].lower() in {"1", "true", "yes", "on"}
+                if changes:
+                    agent.config = replace(agent.config, **changes)
+                    agent.tools.safety_enabled = agent.config.enable_safety
+                    self.log.append(f"applied live: {', '.join(changes)}", "sys")
+            except Exception as exc:
+                self.log.append(f"live apply failed: {exc}", "err")
 
     def _restart_worker(self) -> None:
         self.log.append("Restarting agent...", "sys")
         old = self.worker
+        # Disconnect all signals from the old worker so dangling slots don't
+        # fire after we abandon it. Each disconnect is wrapped because Qt
+        # raises if a connection was never established.
+        for sig in (old.state_changed, old.log, old.connection_changed,
+                    old.reply_ready, old.llm_error, old.progress):
+            try:
+                sig.disconnect()
+            except TypeError:
+                pass
         old.stop()
         old.wait(2000)
         # build a new worker

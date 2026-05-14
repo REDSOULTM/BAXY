@@ -29,7 +29,8 @@ class MemoryStore:
         return data
 
     def _save(self, data: dict[str, Any]) -> None:
-        self.path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        from .state import atomic_write_json
+        atomic_write_json(self.path, data)
 
     def save(self, key: str, value: str) -> dict[str, Any]:
         key = key.strip()

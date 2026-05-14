@@ -175,11 +175,13 @@ class ToolExplorer(QDialog):
         except (json.JSONDecodeError, ValueError) as exc:
             self._out.setPlainText(f"args error: {exc}")
             return
-        try:
-            res = agent.tools.execute(self._current_tool, args)
-        except Exception as exc:
-            self._out.setPlainText(f"exec raised: {exc}")
-            return
+        # Run on worker thread so a slow tool (web, browser_real, knowledge.search
+        # cold-load) does not freeze the dialog.
+        self._out.setPlainText(f"running {self._current_tool}({args}) ...")
+        from .async_tool import run_tool_async
+        run_tool_async(agent.tools.execute, self._current_tool, args, self._render_result)
+
+    def _render_result(self, res: dict) -> None:
         try:
             self._out.setPlainText(json.dumps(res, ensure_ascii=False, indent=2, default=str))
         except Exception:

@@ -51,6 +51,8 @@ class LLMClient:
         }
         if self.config.min_p is not None:
             body["min_p"] = self.config.min_p
+        if self.config.seed is not None and int(self.config.seed) >= 0:
+            body["seed"] = int(self.config.seed)
         if self.config.reasoning_format:
             body["reasoning_format"] = self.config.reasoning_format
         if tools:

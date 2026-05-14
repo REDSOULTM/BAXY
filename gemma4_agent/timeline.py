@@ -107,26 +107,31 @@ class TimelineWriter:
             self._fh = None
 
 
-def _safe_payload(payload: dict[str, Any]) -> dict[str, Any]:
-    """Truncate large strings/dicts so the timeline file stays scannable."""
-    if not isinstance(payload, dict):
-        return {"raw": str(payload)[:500]}
-    out: dict[str, Any] = {}
-    for key, value in payload.items():
-        if isinstance(value, str):
-            out[key] = value if len(value) <= 600 else value[:600] + "...[trunc]"
-        elif isinstance(value, (int, float, bool)) or value is None:
-            out[key] = value
-        elif isinstance(value, (list, tuple)):
-            out[key] = [
-                v if isinstance(v, (int, float, bool, type(None))) or (isinstance(v, str) and len(v) <= 200)
-                else str(v)[:200] + "...[trunc]" if isinstance(v, str)
-                else str(v)[:200]
-                for v in value[:20]
-            ]
-        elif isinstance(value, dict):
-            rendered = str(value)
-            out[key] = rendered if len(rendered) <= 600 else rendered[:600] + "...[trunc]"
-        else:
-            out[key] = str(value)[:300]
-    return out
+def _safe_payload(payload: Any, *, depth: int = 0) -> Any:
+    """Recursive truncation that preserves JSON structure.
+
+    - Strings > 600 chars: tail-trim with `...[trunc]`.
+    - Lists/tuples: first 20 items, each recursed.
+    - Dicts: every value recursed (up to depth 5 — beyond that, stringify).
+    - Other scalars: passthrough.
+
+    The point of preserving structure (vs the prior aggressive str() flattening)
+    is so tools-aware consumers can still pretty-print nested tool_calls,
+    args, and results from the JSONL.
+    """
+    if depth > 5:
+        s = str(payload)
+        return s if len(s) <= 300 else s[:300] + "...[trunc]"
+    if payload is None or isinstance(payload, (bool, int, float)):
+        return payload
+    if isinstance(payload, str):
+        return payload if len(payload) <= 600 else payload[:600] + "...[trunc]"
+    if isinstance(payload, (list, tuple)):
+        return [_safe_payload(item, depth=depth + 1) for item in list(payload)[:20]]
+    if isinstance(payload, dict):
+        out: dict[str, Any] = {}
+        for key, value in payload.items():
+            out[str(key)] = _safe_payload(value, depth=depth + 1)
+        return out
+    s = str(payload)
+    return s if len(s) <= 300 else s[:300] + "...[trunc]"

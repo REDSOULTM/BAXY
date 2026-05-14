@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 import uuid
 from dataclasses import dataclass
@@ -12,6 +13,20 @@ from typing import Any
 
 def _now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+
+def atomic_write_json(path: Path, data: Any) -> None:
+    """Write JSON to `path` atomically.
+
+    Writes to a sibling `.tmp` file then os.replace()s it onto the target,
+    which is atomic on POSIX and on NTFS (Windows). Prevents truncated JSONs
+    when the process crashes mid-write.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    text = json.dumps(data, ensure_ascii=False, indent=2)
+    tmp.write_text(text, encoding="utf-8")
+    os.replace(tmp, path)
 
 
 @dataclass
@@ -37,7 +52,7 @@ class AgentState:
         return data
 
     def _save(self, data: dict[str, Any]) -> None:
-        self.path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        atomic_write_json(self.path, data)
 
     def register_resource(
         self,

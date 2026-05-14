@@ -44,7 +44,7 @@ TOGGLES = [
     ("GEMMA4_AGENT_SESSIONS",           "K1 Persistent chat sessions",           True),
     ("GEMMA4_AGENT_TIMELINE",           "K2 Tool timeline JSONL export",         True),
     ("GEMMA4_AGENT_SUMMARIZATION",      "G2 LLM-summarization compaction",       True),
-    ("GEMMA4_AGENT_TRACE",              "Tracing to JSONL",                      True),
+    ("GEMMA4_AGENT_TRACING",            "Tracing to JSONL (trace.jsonl)",        True),
 ]
 
 
@@ -60,8 +60,8 @@ def load_persisted() -> dict:
 
 def save_persisted(data: dict) -> None:
     try:
-        SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        SETTINGS_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        from ..state import atomic_write_json
+        atomic_write_json(SETTINGS_PATH, data)
     except OSError:
         pass
 
@@ -186,15 +186,15 @@ class SettingsDialog(QDialog):
         self._server_url.setFont(mono(9))
         lay.addRow(self._lbl("llama-server URL"), self._server_url)
 
-        self._model_alias = QLineEdit(str(os.environ.get("GEMMA4_MODEL") or ""))
+        self._model_alias = QLineEdit(str(os.environ.get("GEMMA4_AGENT_MODEL") or ""))
         self._model_alias.setStyleSheet(line_edit_qss())
         self._model_alias.setFont(mono(9))
         self._model_alias.setPlaceholderText("optional alias — e.g. gemma-3-e4b-it.Q6_K")
         lay.addRow(self._lbl("Model alias"), self._model_alias)
 
-        self._gguf_path = QLineEdit(str(os.environ.get("GEMMA4_GGUF_PATH") or ""))
+        self._gguf_path = QLineEdit(str(os.environ.get("GEMMA4_MODEL_PATH") or ""))
         self._gguf_path.setStyleSheet(line_edit_qss())
-        self._gguf_path.setPlaceholderText(".gguf path (read by external launcher)")
+        self._gguf_path.setPlaceholderText(".gguf path — passed to launcher / used by agent.config")
         gguf_row = QHBoxLayout()
         gguf_row.addWidget(self._gguf_path, stretch=1)
         browse = QPushButton("...")
@@ -257,12 +257,24 @@ class SettingsDialog(QDialog):
 
         self._max_turns = QSpinBox()
         self._max_turns.setRange(1, 64)
-        self._max_turns.setValue(int(getattr(cfg, "max_turns", 10) or 10))
+        self._max_turns.setValue(int(getattr(cfg, "max_agent_turns", 10) or 10))
         lay.addRow(self._lbl("Max turns per request"), self._max_turns)
 
         self._enable_safety = QCheckBox("Safety filter on")
         self._enable_safety.setChecked(bool(getattr(cfg, "enable_safety", False)))
         lay.addRow(self._lbl(""), self._enable_safety)
+
+        warn = QLabel(
+            "⚠ Safety OFF means destructive tools (filesystem.delete, terminal\n"
+            "with risky commands, registry add/delete, system shutdown, package\n"
+            "install/uninstall, etc.) run WITHOUT confirmation. Recommended ON\n"
+            "for unattended sessions; OFF only if you trust every prompt you give\n"
+            "and you watch every turn."
+        )
+        warn.setFont(mono(8))
+        warn.setStyleSheet(f"color: {C.ACC2};")
+        warn.setWordWrap(True)
+        lay.addRow(warn)
 
         return w
 
@@ -273,6 +285,8 @@ class SettingsDialog(QDialog):
         lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(16, 16, 16, 16)
         lay.setSpacing(10)
+
+        cfg = self._agent_config
 
         info = QLabel(
             "Sampling parameters passed to llama-server. Lower temperature\n"
@@ -288,44 +302,45 @@ class SettingsDialog(QDialog):
         self._temperature = QDoubleSpinBox()
         self._temperature.setRange(0.0, 2.0)
         self._temperature.setSingleStep(0.05)
-        self._temperature.setValue(float(os.environ.get("GEMMA4_TEMPERATURE", "0.7") or "0.7"))
+        self._temperature.setValue(float(os.environ.get("GEMMA4_AGENT_TEMPERATURE") or getattr(cfg, "temperature", None) or 1.0))
         lay.addRow(self._lbl("temperature"), self._temperature)
 
         self._top_p = QDoubleSpinBox()
         self._top_p.setRange(0.0, 1.0)
         self._top_p.setSingleStep(0.05)
-        self._top_p.setValue(float(os.environ.get("GEMMA4_TOP_P", "0.95") or "0.95"))
+        self._top_p.setValue(float(os.environ.get("GEMMA4_AGENT_TOP_P") or getattr(cfg, "top_p", None) or 0.95))
         lay.addRow(self._lbl("top_p"), self._top_p)
 
         self._top_k = QSpinBox()
         self._top_k.setRange(0, 200)
-        self._top_k.setValue(int(os.environ.get("GEMMA4_TOP_K", "40") or "40"))
+        self._top_k.setValue(int(os.environ.get("GEMMA4_AGENT_TOP_K") or getattr(cfg, "top_k", None) or 64))
         lay.addRow(self._lbl("top_k"), self._top_k)
 
         self._min_p = QDoubleSpinBox()
         self._min_p.setRange(0.0, 1.0)
         self._min_p.setSingleStep(0.01)
-        self._min_p.setValue(float(os.environ.get("GEMMA4_MIN_P", "0.05") or "0.05"))
-        lay.addRow(self._lbl("min_p"), self._min_p)
+        cfg_min_p = getattr(cfg, "min_p", None)
+        self._min_p.setValue(float(os.environ.get("GEMMA4_AGENT_MIN_P") or cfg_min_p or 0.0))
+        lay.addRow(self._lbl("min_p (0 = disabled)"), self._min_p)
 
         self._repeat_penalty = QDoubleSpinBox()
         self._repeat_penalty.setRange(0.5, 2.0)
         self._repeat_penalty.setSingleStep(0.05)
-        self._repeat_penalty.setValue(float(os.environ.get("GEMMA4_REPEAT_PENALTY", "1.1") or "1.1"))
+        self._repeat_penalty.setValue(float(os.environ.get("GEMMA4_AGENT_REPEAT_PENALTY") or getattr(cfg, "repeat_penalty", None) or 1.0))
         lay.addRow(self._lbl("repeat_penalty"), self._repeat_penalty)
 
         self._seed = QSpinBox()
         self._seed.setRange(-1, 2_147_483_647)
-        self._seed.setValue(int(os.environ.get("GEMMA4_SEED", "-1") or "-1"))
+        self._seed.setValue(int(os.environ.get("GEMMA4_AGENT_SEED", "-1") or "-1"))
         self._seed.setSpecialValueText("-1  (random)")
         lay.addRow(self._lbl("seed"), self._seed)
 
         self._enable_thinking = QCheckBox("Allow Gemma to expose chain-of-thought (slower)")
-        self._enable_thinking.setChecked(_env_truthy("GEMMA4_ENABLE_THINKING", False))
+        self._enable_thinking.setChecked(_env_truthy("GEMMA4_AGENT_ENABLE_THINKING", bool(getattr(cfg, "enable_thinking", False))))
         lay.addRow(self._lbl(""), self._enable_thinking)
 
         self._parallel_tool_calls = QCheckBox("Let model emit multiple tool_calls per turn")
-        self._parallel_tool_calls.setChecked(_env_truthy("GEMMA4_PARALLEL_TOOL_CALLS", True))
+        self._parallel_tool_calls.setChecked(_env_truthy("GEMMA4_AGENT_PARALLEL_TOOL_CALLS", bool(getattr(cfg, "parallel_tool_calls", False))))
         lay.addRow(self._lbl(""), self._parallel_tool_calls)
 
         return w
@@ -338,9 +353,11 @@ class SettingsDialog(QDialog):
         lay.setContentsMargins(16, 16, 16, 16)
         lay.setSpacing(10)
 
+        cfg = self._agent_config
+
         info = QLabel(
-            "Higher-level behaviour knobs. These adjust how the agent uses tools,\n"
-            "how aggressive context compaction is, and how strict honesty guards are."
+            "Higher-level behaviour knobs that the agent actually reads.\n"
+            "Strict honesty and auto-replan are always on (built into the loop)."
         )
         info.setFont(mono(8))
         info.setStyleSheet(f"color: {C.TEXT_DIM};")
@@ -358,26 +375,27 @@ class SettingsDialog(QDialog):
 
         self._tool_timeout = QSpinBox()
         self._tool_timeout.setRange(5, 600)
-        self._tool_timeout.setValue(int(os.environ.get("GEMMA4_AGENT_TOOL_TIMEOUT", "60") or "60"))
-        lay.addRow(self._lbl("tool timeout (s)"), self._tool_timeout)
+        self._tool_timeout.setValue(int(os.environ.get("GEMMA4_PHRASE_STEP_TIMEOUT_S", "30") or "30"))
+        lay.addRow(self._lbl("phrase-trigger step timeout (s)"), self._tool_timeout)
 
         self._chat_timeout = QSpinBox()
         self._chat_timeout.setRange(5, 600)
-        self._chat_timeout.setValue(int(os.environ.get("GEMMA4_AGENT_CHAT_TIMEOUT", "180") or "180"))
-        lay.addRow(self._lbl("LLM chat timeout (s)"), self._chat_timeout)
+        self._chat_timeout.setValue(int(os.environ.get("GEMMA4_AGENT_TIMEOUT", str(int(getattr(cfg, "request_timeout_s", 180)))) or "180"))
+        lay.addRow(self._lbl("LLM request timeout (s)"), self._chat_timeout)
 
         self._max_experience = QSpinBox()
         self._max_experience.setRange(50, 100_000)
-        self._max_experience.setValue(int(os.environ.get("GEMMA4_AGENT_EXPERIENCE_MAX", "5000") or "5000"))
+        self._max_experience.setValue(int(os.environ.get("GEMMA4_EXPERIENCE_MAX_RECORDS", "5000") or "5000"))
         lay.addRow(self._lbl("max experience records"), self._max_experience)
 
-        self._strict_honesty = QCheckBox("Strict honesty: never claim unverified actions succeeded")
-        self._strict_honesty.setChecked(_env_truthy("GEMMA4_AGENT_STRICT_HONESTY", True))
-        lay.addRow(self._lbl(""), self._strict_honesty)
-
-        self._auto_replan = QCheckBox("Auto-replan after 2+ tool failures with explicit plan")
-        self._auto_replan.setChecked(_env_truthy("GEMMA4_AGENT_AUTO_REPLAN", True))
-        lay.addRow(self._lbl(""), self._auto_replan)
+        note = QLabel(
+            "Honesty guards (unverified detection, phrase-confirm, plan status)\n"
+            "are always on. Auto-replan triggers after 2+ tool failures when\n"
+            "an explicit plan exists; toggling it off is not exposed."
+        )
+        note.setFont(mono(8))
+        note.setStyleSheet(f"color: {C.TEXT_DIM};")
+        lay.addRow(note)
 
         return w
 
@@ -401,10 +419,10 @@ class SettingsDialog(QDialog):
         self._stt_provider = QComboBox()
         self._stt_provider.setStyleSheet(combo_qss())
         self._stt_provider.addItems(["whisper.cpp (local)", "whisper-python (local)", "vosk (local)", "browser (online)", "off"])
-        self._stt_provider.setCurrentText(os.environ.get("GEMMA4_STT_PROVIDER", "whisper.cpp (local)"))
+        self._stt_provider.setCurrentText(os.environ.get("GEMMA4_AGENT_STT_PROVIDER", "whisper.cpp (local)"))
         lay.addRow(self._lbl("STT provider"), self._stt_provider)
 
-        self._stt_model = QLineEdit(str(os.environ.get("GEMMA4_STT_MODEL", "ggml-base.bin")))
+        self._stt_model = QLineEdit(str(os.environ.get("GEMMA4_AGENT_STT_MODEL", "ggml-base.bin")))
         self._stt_model.setStyleSheet(line_edit_qss())
         self._stt_model.setFont(mono(9))
         self._stt_model.setPlaceholderText("e.g. ggml-base.bin / faster-whisper-small / vosk-model-en-us-0.42")
@@ -413,16 +431,16 @@ class SettingsDialog(QDialog):
         self._stt_language = QComboBox()
         self._stt_language.setStyleSheet(combo_qss())
         self._stt_language.addItems(["auto", "es", "en", "pt", "fr", "it", "de", "ja", "zh"])
-        self._stt_language.setCurrentText(os.environ.get("GEMMA4_STT_LANGUAGE", "auto"))
+        self._stt_language.setCurrentText(os.environ.get("GEMMA4_AGENT_STT_LANGUAGE", "auto"))
         lay.addRow(self._lbl("STT language"), self._stt_language)
 
         self._tts_provider = QComboBox()
         self._tts_provider.setStyleSheet(combo_qss())
         self._tts_provider.addItems(["piper (local)", "edge-tts (online)", "elevenlabs (online)", "browser SAPI (Windows)", "off"])
-        self._tts_provider.setCurrentText(os.environ.get("GEMMA4_TTS_PROVIDER", "piper (local)"))
+        self._tts_provider.setCurrentText(os.environ.get("GEMMA4_AGENT_TTS_PROVIDER", "piper (local)"))
         lay.addRow(self._lbl("TTS provider"), self._tts_provider)
 
-        self._tts_voice = QLineEdit(str(os.environ.get("GEMMA4_TTS_VOICE", "es_AR-daniela-high")))
+        self._tts_voice = QLineEdit(str(os.environ.get("GEMMA4_AGENT_TTS_VOICE", "es_AR-daniela-high")))
         self._tts_voice.setStyleSheet(line_edit_qss())
         self._tts_voice.setFont(mono(9))
         self._tts_voice.setPlaceholderText("voice id — depends on provider")
@@ -432,16 +450,16 @@ class SettingsDialog(QDialog):
         self._tts_rate = QDoubleSpinBox()
         self._tts_rate.setRange(0.5, 2.0)
         self._tts_rate.setSingleStep(0.1)
-        self._tts_rate.setValue(float(os.environ.get("GEMMA4_TTS_RATE", "1.0") or "1.0"))
+        self._tts_rate.setValue(float(os.environ.get("GEMMA4_AGENT_TTS_RATE", "1.0") or "1.0"))
         lay.addRow(self._lbl("TTS speech rate"), self._tts_rate)
 
-        self._wake_word = QLineEdit(str(os.environ.get("GEMMA4_WAKE_WORD", "gemma")))
+        self._wake_word = QLineEdit(str(os.environ.get("GEMMA4_AGENT_WAKE_WORD", "gemma")))
         self._wake_word.setStyleSheet(line_edit_qss())
         self._wake_word.setFont(mono(9))
         lay.addRow(self._lbl("Wake word"), self._wake_word)
 
         self._wake_word_on = QCheckBox("Wake word enabled (passive listening)")
-        self._wake_word_on.setChecked(_env_truthy("GEMMA4_WAKE_WORD_ENABLED", False))
+        self._wake_word_on.setChecked(_env_truthy("GEMMA4_AGENT_WAKE_WORD_ENABLED", False))
         lay.addRow(self._lbl(""), self._wake_word_on)
 
         warn = QLabel("Voice runtime not wired yet — settings are persisted for future activation.")
@@ -612,10 +630,11 @@ class SettingsDialog(QDialog):
     # ------------------------------------------------------------------
     def _gather(self) -> dict:
         env: dict[str, str] = {}
+        # Connection tab — names must match `config.AgentConfig.from_env`.
         if self._model_alias.text().strip():
-            env["GEMMA4_MODEL"] = self._model_alias.text().strip()
+            env["GEMMA4_AGENT_MODEL"] = self._model_alias.text().strip()
         if self._gguf_path.text().strip():
-            env["GEMMA4_GGUF_PATH"] = self._gguf_path.text().strip()
+            env["GEMMA4_MODEL_PATH"] = self._gguf_path.text().strip()
         env["GEMMA4_AGENT_SERVER"] = self._server_url.text().strip() or "http://127.0.0.1:8080"
         env["GEMMA4_AGENT_CONTEXT"] = str(int(self._ctx_size.value()))
         env["GEMMA4_AGENT_MAX_TOKENS"] = str(int(self._max_tokens.value()))
@@ -625,38 +644,38 @@ class SettingsDialog(QDialog):
         env["GEMMA4_AGENT_SAFETY"] = "true" if self._enable_safety.isChecked() else "false"
         env["GEMMA4_AGENT_MEMORY"] = self._memory_path.text().strip()
         env["GEMMA4_AGENT_STATE"] = self._state_path.text().strip()
-        env["GEMMA4_AGENT_TRACE_FILE"] = self._trace_path.text().strip()
+        env["GEMMA4_AGENT_TRACE_PATH"] = self._trace_path.text().strip()
         env["GEMMA4_AGENT_SESSIONS_DIR"] = self._sess_dir.text().strip()
         env["GEMMA4_AGENT_TIMELINE_DIR"] = self._tl_dir.text().strip()
 
-        # Sampling tab
-        env["GEMMA4_TEMPERATURE"]     = f"{self._temperature.value():.3f}"
-        env["GEMMA4_TOP_P"]           = f"{self._top_p.value():.3f}"
-        env["GEMMA4_TOP_K"]           = str(int(self._top_k.value()))
-        env["GEMMA4_MIN_P"]           = f"{self._min_p.value():.3f}"
-        env["GEMMA4_REPEAT_PENALTY"]  = f"{self._repeat_penalty.value():.3f}"
-        env["GEMMA4_SEED"]            = str(int(self._seed.value()))
-        env["GEMMA4_ENABLE_THINKING"] = "true" if self._enable_thinking.isChecked() else "false"
-        env["GEMMA4_PARALLEL_TOOL_CALLS"] = "true" if self._parallel_tool_calls.isChecked() else "false"
+        # Sampling tab — names must match `config.AgentConfig.from_env`.
+        env["GEMMA4_AGENT_TEMPERATURE"]         = f"{self._temperature.value():.3f}"
+        env["GEMMA4_AGENT_TOP_P"]               = f"{self._top_p.value():.3f}"
+        env["GEMMA4_AGENT_TOP_K"]               = str(int(self._top_k.value()))
+        env["GEMMA4_AGENT_MIN_P"]               = f"{self._min_p.value():.3f}"
+        env["GEMMA4_AGENT_REPEAT_PENALTY"]      = f"{self._repeat_penalty.value():.3f}"
+        env["GEMMA4_AGENT_SEED"]                = str(int(self._seed.value()))
+        env["GEMMA4_AGENT_ENABLE_THINKING"]     = "true" if self._enable_thinking.isChecked() else "false"
+        env["GEMMA4_AGENT_PARALLEL_TOOL_CALLS"] = "true" if self._parallel_tool_calls.isChecked() else "false"
 
-        # Behaviour tab
+        # Behaviour tab — only env vars actually consumed by the agent.
         env["GEMMA4_AGENT_SUMMARIZATION_COOLDOWN"]   = str(int(self._summarization_cooldown.value()))
         env["GEMMA4_AGENT_FACT_EXTRACTION_COOLDOWN"] = str(int(self._fact_cooldown.value()))
-        env["GEMMA4_AGENT_TOOL_TIMEOUT"]             = str(int(self._tool_timeout.value()))
-        env["GEMMA4_AGENT_CHAT_TIMEOUT"]             = str(int(self._chat_timeout.value()))
-        env["GEMMA4_AGENT_EXPERIENCE_MAX"]           = str(int(self._max_experience.value()))
-        env["GEMMA4_AGENT_STRICT_HONESTY"]           = "true" if self._strict_honesty.isChecked() else "false"
-        env["GEMMA4_AGENT_AUTO_REPLAN"]              = "true" if self._auto_replan.isChecked() else "false"
+        env["GEMMA4_AGENT_TIMEOUT"]                  = str(int(self._chat_timeout.value()))
+        env["GEMMA4_EXPERIENCE_MAX_RECORDS"]         = str(int(self._max_experience.value()))
+        env["GEMMA4_PHRASE_STEP_TIMEOUT_S"]          = str(int(self._tool_timeout.value()))
 
-        # Transcription tab
-        env["GEMMA4_STT_PROVIDER"]      = self._stt_provider.currentText()
-        env["GEMMA4_STT_MODEL"]         = self._stt_model.text().strip()
-        env["GEMMA4_STT_LANGUAGE"]      = self._stt_language.currentText()
-        env["GEMMA4_TTS_PROVIDER"]      = self._tts_provider.currentText()
-        env["GEMMA4_TTS_VOICE"]         = self._tts_voice.text().strip()
-        env["GEMMA4_TTS_RATE"]          = f"{self._tts_rate.value():.2f}"
-        env["GEMMA4_WAKE_WORD"]         = self._wake_word.text().strip()
-        env["GEMMA4_WAKE_WORD_ENABLED"] = "true" if self._wake_word_on.isChecked() else "false"
+        # Transcription tab — voice runtime is not wired yet, but persisted
+        # for future activation. These are read by the future voice module;
+        # all under the GEMMA4_AGENT_ prefix so they live in one namespace.
+        env["GEMMA4_AGENT_STT_PROVIDER"]      = self._stt_provider.currentText()
+        env["GEMMA4_AGENT_STT_MODEL"]         = self._stt_model.text().strip()
+        env["GEMMA4_AGENT_STT_LANGUAGE"]      = self._stt_language.currentText()
+        env["GEMMA4_AGENT_TTS_PROVIDER"]      = self._tts_provider.currentText()
+        env["GEMMA4_AGENT_TTS_VOICE"]         = self._tts_voice.text().strip()
+        env["GEMMA4_AGENT_TTS_RATE"]          = f"{self._tts_rate.value():.2f}"
+        env["GEMMA4_AGENT_WAKE_WORD"]         = self._wake_word.text().strip()
+        env["GEMMA4_AGENT_WAKE_WORD_ENABLED"] = "true" if self._wake_word_on.isChecked() else "false"
 
         toggles: dict[str, bool] = {}
         for env_key, cb in self._toggles_checks.items():

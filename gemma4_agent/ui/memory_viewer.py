@@ -261,12 +261,17 @@ class MemoryDialog(QDialog):
         agent = self._agent_getter()
         if agent is None:
             return
-        try:
-            res = agent.tools.execute("knowledge", {"action": "search", "query": self._kn_query.text().strip(), "limit": 8})
-        except Exception as exc:
-            self._kn_view.setPlainText(f"error: {exc}")
+        q = self._kn_query.text().strip()
+        if not q:
             return
-        self._kn_view.setPlainText(json.dumps(res, ensure_ascii=False, indent=2))
+        self._kn_view.setPlainText(f"searching '{q}' ...")
+        from .async_tool import run_tool_async
+        run_tool_async(
+            agent.tools.execute,
+            "knowledge",
+            {"action": "search", "query": q, "limit": 8},
+            lambda res: self._kn_view.setPlainText(json.dumps(res, ensure_ascii=False, indent=2, default=str)),
+        )
 
     # ------------------------------------------------------------------
     def refresh_all(self) -> None:

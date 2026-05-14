@@ -307,8 +307,14 @@ class TriggersDialog(QDialog):
         if not self._current_id:
             QMessageBox.information(self, "Save first", "Save the trigger before running.")
             return
-        res = self._tool_exec("routine", {"action": "run_now", "id": self._current_id})
-        self._status.setText(f"run_now -> {res}")
+        self._status.setText(f"running trigger {self._current_id} ...")
+        from .async_tool import run_tool_async
+        run_tool_async(
+            self._tool_exec,
+            "routine",
+            {"action": "run_now", "id": self._current_id},
+            lambda res: self._status.setText(f"run_now -> {res}"),
+        )
 
     def _on_delete(self) -> None:
         if not self._current_id:

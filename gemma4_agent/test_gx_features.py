@@ -900,6 +900,130 @@ def test_k3_context_budget_scales_with_size() -> bool:
     return True
 
 
+def test_audit_atomic_write_replaces_existing() -> bool:
+    """state.atomic_write_json must not leave .tmp files and must overwrite."""
+    import tempfile
+    from gemma4_agent.state import atomic_write_json
+    root = Path(tempfile.mkdtemp(prefix="g_atomic_"))
+    try:
+        target = root / "x.json"
+        atomic_write_json(target, {"a": 1})
+        assert target.is_file()
+        assert not (root / "x.json.tmp").exists(), "leftover tmp"
+        # Overwrite
+        atomic_write_json(target, {"b": 2})
+        data = json.loads(target.read_text(encoding="utf-8"))
+        assert data == {"b": 2}
+    finally:
+        import shutil
+        shutil.rmtree(root, ignore_errors=True)
+    print("AUDIT atomic_write_json overwrite + no leftover .tmp: OK")
+    return True
+
+
+def test_audit_settings_env_names_match_config() -> bool:
+    """Every env var Settings persists must be readable by AgentConfig.from_env
+    or by a documented helper in the agent. Hubo bugs MAJOR donde Settings
+    escribia keys con prefijos distintos a los que config esperaba."""
+    import os as _os
+    saved_env = dict(_os.environ)
+    try:
+        # Pretend the user set non-default values for everything
+        _os.environ.update({
+            "GEMMA4_AGENT_SERVER":             "http://test:1234",
+            "GEMMA4_AGENT_MODEL":              "gemma-test-alias",
+            "GEMMA4_MODEL_PATH":               "X:/dummy.gguf",
+            "GEMMA4_AGENT_CONTEXT":            "20480",
+            "GEMMA4_AGENT_MAX_TOKENS":         "999",
+            "GEMMA4_AGENT_TEMPERATURE":        "0.42",
+            "GEMMA4_AGENT_TOP_P":              "0.88",
+            "GEMMA4_AGENT_TOP_K":              "33",
+            "GEMMA4_AGENT_MIN_P":              "0.07",
+            "GEMMA4_AGENT_REPEAT_PENALTY":     "1.15",
+            "GEMMA4_AGENT_SEED":               "42",
+            "GEMMA4_AGENT_ENABLE_THINKING":    "true",
+            "GEMMA4_AGENT_PARALLEL_TOOL_CALLS": "true",
+            "GEMMA4_AGENT_MODE":               "deep_action",
+            "GEMMA4_AGENT_MAX_TURNS":          "12",
+            "GEMMA4_AGENT_SAFETY":             "true",
+            "GEMMA4_AGENT_TIMEOUT":            "240",
+            "GEMMA4_AGENT_TRACING":            "false",
+        })
+        from gemma4_agent.config import AgentConfig
+        cfg = AgentConfig.from_env()
+        assert cfg.server_url == "http://test:1234"
+        assert cfg.model == "gemma-test-alias"
+        assert str(cfg.model_path).endswith("dummy.gguf")
+        assert cfg.context_size == 20480
+        assert cfg.max_tokens == 999
+        assert abs(cfg.temperature - 0.42) < 1e-6
+        assert abs(cfg.top_p - 0.88) < 1e-6
+        assert cfg.top_k == 33
+        assert cfg.min_p is not None and abs(cfg.min_p - 0.07) < 1e-6
+        assert abs(cfg.repeat_penalty - 1.15) < 1e-6
+        assert int(cfg.seed) == 42
+        assert cfg.enable_thinking is True
+        assert cfg.parallel_tool_calls is True
+        assert cfg.agent_mode == "deep_action"
+        assert cfg.max_agent_turns == 12
+        assert cfg.enable_safety is True
+        assert abs(cfg.request_timeout_s - 240.0) < 1e-6
+        assert cfg.enable_tracing is False
+    finally:
+        _os.environ.clear()
+        _os.environ.update(saved_env)
+    print("AUDIT settings env names match AgentConfig.from_env: OK")
+    return True
+
+
+def test_audit_experience_recent_exists() -> bool:
+    """experience.ExperienceMemory.recent(limit=N) must exist (was a ghost)."""
+    import tempfile
+    from gemma4_agent.experience import ExperienceMemory
+    path = Path(tempfile.mktemp(prefix="g_exp_recent_", suffix=".sqlite"))
+    try:
+        mem = ExperienceMemory(path)
+        # Method must be callable; with no records returns [].
+        assert callable(getattr(mem, "recent", None)), "recent() should be a method"
+        out = mem.recent(limit=5)
+        assert isinstance(out, list)
+        mem.close()
+    finally:
+        path.unlink(missing_ok=True)
+    print("AUDIT experience.recent() exists: OK")
+    return True
+
+
+def test_audit_timeline_safe_payload_preserves_dicts() -> bool:
+    """_safe_payload must keep nested dicts as dicts, not flatten to str."""
+    from gemma4_agent.timeline import _safe_payload
+    payload = {
+        "name": "web",
+        "args": {"action": "search", "query": "hola"},
+        "result": {"ok": True, "results": [{"title": "x"}, {"title": "y"}]},
+    }
+    out = _safe_payload(payload)
+    assert isinstance(out, dict)
+    assert isinstance(out["args"], dict)
+    assert out["args"]["action"] == "search"
+    assert isinstance(out["result"], dict)
+    assert isinstance(out["result"]["results"], list)
+    assert isinstance(out["result"]["results"][0], dict)
+    print("AUDIT timeline _safe_payload preserves dict structure: OK")
+    return True
+
+
+def test_audit_planner_question_mark_inverted_supported() -> bool:
+    """Planner heuristic should treat ¿ (Spanish inverted) as a question marker."""
+    from gemma4_agent.planner import plan_mission, select_tool_names
+    p = plan_mission("¿que tools tengo disponibles?")
+    out = select_tool_names("¿que tools tengo disponibles?", p)
+    # Mostly we want it to NOT crash and to handle the inverted ? path.
+    assert isinstance(out, list)
+    print("AUDIT planner accepts inverted question mark: OK")
+    return True
+
+
 def test_u1_ui_modules_importable() -> bool:
     """All ui/ submodules import without side effects (PyQt6 required)."""
     try:
@@ -1009,6 +1133,11 @@ def main() -> int:
         test_k3_context_budget_scales_with_size,
         test_u1_ui_modules_importable,
         test_u1_hud_state_setters,
+        test_audit_atomic_write_replaces_existing,
+        test_audit_settings_env_names_match_config,
+        test_audit_experience_recent_exists,
+        test_audit_timeline_safe_payload_preserves_dicts,
+        test_audit_planner_question_mark_inverted_supported,
     ]
     failures: list[str] = []
     for t in tests:

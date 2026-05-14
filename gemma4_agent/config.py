@@ -24,6 +24,7 @@ class AgentConfig:
     top_k: int = 64
     min_p: Optional[float] = None
     repeat_penalty: float = 1.0
+    seed: int = -1  # -1 = random per request
     max_tokens: int = 1280
     context_size: int = 16384
     request_timeout_s: float = 180.0
@@ -67,8 +68,9 @@ class AgentConfig:
             temperature=float(os.environ.get("GEMMA4_AGENT_TEMPERATURE", cls.temperature)),
             top_p=float(os.environ.get("GEMMA4_AGENT_TOP_P", cls.top_p)),
             top_k=int(os.environ.get("GEMMA4_AGENT_TOP_K", cls.top_k)),
-            min_p=float(min_p_raw) if min_p_raw not in {None, ""} else cls.min_p,
+            min_p=(float(min_p_raw) if min_p_raw else cls.min_p),
             repeat_penalty=float(os.environ.get("GEMMA4_AGENT_REPEAT_PENALTY", cls.repeat_penalty)),
+            seed=int(os.environ.get("GEMMA4_AGENT_SEED", cls.seed)),
             max_tokens=int(os.environ.get("GEMMA4_AGENT_MAX_TOKENS", cls.max_tokens)),
             context_size=int(os.environ.get("GEMMA4_AGENT_CONTEXT", cls.context_size)),
             request_timeout_s=float(os.environ.get("GEMMA4_AGENT_TIMEOUT", cls.request_timeout_s)),

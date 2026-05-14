@@ -95,11 +95,15 @@ class Session:
         for t in raw_turns:
             if not isinstance(t, dict):
                 continue
+            try:
+                tc = int(t.get("tool_count") or 0)
+            except (TypeError, ValueError):
+                tc = 0
             turns.append(SessionTurn(
                 role=str(t.get("role") or ""),
                 content=str(t.get("content") or ""),
                 ts=str(t.get("ts") or ""),
-                tool_count=int(t.get("tool_count") or 0),
+                tool_count=tc,
             ))
         return cls(
             id=str(data.get("id") or uuid.uuid4().hex[:12]),
@@ -122,13 +126,11 @@ class SessionStore:
         return self.root / f"{safe}.json"
 
     def save(self, session: Session) -> dict[str, Any]:
+        from .state import atomic_write_json
         session.updated_at = _now_iso()
         path = self._path(session.id)
         try:
-            path.write_text(
-                json.dumps(session.to_dict(), ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
+            atomic_write_json(path, session.to_dict())
         except OSError as exc:
             return {"ok": False, "error": str(exc), "path": str(path)}
         return {"ok": True, "id": session.id, "path": str(path), "turns": len(session.turns)}

@@ -20,6 +20,7 @@ import queue
 import threading
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from PyQt6.QtCore import QObject, QThread, pyqtSignal
@@ -45,6 +46,7 @@ class AgentWorker(QThread):
         super().__init__(parent)
         self._inbox: queue.Queue[_TurnRequest] = queue.Queue()
         self._running = True
+        self._stop_event = threading.Event()
         self._agent: Any = None
         self._config: Any = None
         self._health_timer_thread: threading.Thread | None = None
@@ -57,6 +59,7 @@ class AgentWorker(QThread):
 
     def stop(self) -> None:
         self._running = False
+        self._stop_event.set()
         # Inject a sentinel so the queue.get unblocks
         self._inbox.put(_TurnRequest(text="__stop__", images=[], audios=[]))
 
@@ -99,10 +102,12 @@ class AgentWorker(QThread):
             self.log.emit(f"llama-server NOT responding at {self._config.server_url}", "err")
             self.state_changed.emit("OFFLINE")
 
-        # background health polling every 8s
+        # background health polling every 8s, but interruptible via stop_event
         def _health_loop() -> None:
             while self._running:
-                time.sleep(8.0)
+                # Interruptible sleep so stop() shuts the thread down promptly.
+                if self._stop_event.wait(timeout=8.0):
+                    return
                 if self._agent is None:
                     continue
                 try:
@@ -111,12 +116,18 @@ class AgentWorker(QThread):
                     ok = False
                 if ok != self._last_connected:
                     self._last_connected = ok
-                    self.connection_changed.emit(ok)
-                    self.log.emit(
-                        f"Server {'ONLINE' if ok else 'OFFLINE'} at {self._config.server_url}",
-                        "ok" if ok else "err",
-                    )
-                self.health_status.emit({"connected": ok, "server_url": self._config.server_url})
+                    try:
+                        self.connection_changed.emit(ok)
+                        self.log.emit(
+                            f"Server {'ONLINE' if ok else 'OFFLINE'} at {self._config.server_url}",
+                            "ok" if ok else "err",
+                        )
+                    except RuntimeError:
+                        return  # receiver gone
+                try:
+                    self.health_status.emit({"connected": ok, "server_url": self._config.server_url})
+                except RuntimeError:
+                    return
 
         self._health_timer_thread = threading.Thread(
             target=_health_loop, name="gemma4-health", daemon=True
@@ -188,8 +199,8 @@ class AgentWorker(QThread):
                 self.log.emit(req.text, "you")
                 reply = self._agent.run_text(
                     req.text,
-                    images=[__import__("pathlib").Path(p) for p in req.images] if req.images else None,
-                    audios=[__import__("pathlib").Path(p) for p in req.audios] if req.audios else None,
+                    images=[Path(p) for p in req.images] if req.images else None,
+                    audios=[Path(p) for p in req.audios] if req.audios else None,
                     progress=self._progress_forwarder,
                 )
                 content = getattr(reply, "content", "")

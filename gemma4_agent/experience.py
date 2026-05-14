@@ -273,6 +273,45 @@ class ExperienceMemory:
         except Exception:
             return []
 
+    def recent(self, *, limit: int = 20) -> list[dict[str, Any]]:
+        """Return the N most recent experiences ordered by id desc.
+
+        Unlike `recall`, this does NOT require an embedding — it's a plain
+        chronological list for the UI/inspection. Returns [] if disabled or
+        sqlite-vec is unavailable.
+        """
+        if not is_enabled():
+            return []
+        conn = self._open()
+        if conn is None:
+            return []
+        try:
+            cur = conn.execute(
+                "SELECT id, turn_id, ts, user_input, tools_used, mission_status, summary "
+                "FROM experiences ORDER BY id DESC LIMIT ?",
+                (max(1, int(limit)),),
+            )
+            results: list[dict[str, Any]] = []
+            for row in cur.fetchall():
+                tools_used: list[str] = []
+                try:
+                    tools_used = json.loads(row["tools_used"] or "[]")
+                except json.JSONDecodeError:
+                    pass
+                results.append({
+                    "id": row["id"],
+                    "turn_id": row["turn_id"],
+                    "ts": row["ts"],
+                    "user_input": row["user_input"],
+                    "tools_used": tools_used,
+                    "mission_status": row["mission_status"],
+                    "summary": row["summary"],
+                    "distance": None,
+                })
+            return results
+        except Exception:
+            return []
+
     def stats(self) -> dict[str, Any]:
         conn = self._open()
         if conn is None:

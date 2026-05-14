@@ -1121,19 +1121,27 @@ class Gemma4Agent:
             return ""
 
     def _compact_active_history_for_retry(self) -> None:
-        """Aggressive fallback when llama-server reports context overflow."""
+        """Aggressive fallback when llama-server reports context overflow.
 
+        Uses `_compute_context_budget(context_size)` to decide how many tail
+        messages to keep and how aggressively to ellipsize tool/assistant
+        contents. Keeps the budget tight (~30% of `hard_cap_messages`) so
+        the retry has room for the new turn.
+        """
+        budget = _compute_context_budget(self.config.context_size)
+        tail_count = max(4, budget["hard_cap_messages"] // 3)
+        ellipsize_to = max(400, budget["history_chars"] // tail_count // 2)
         trimmed: list[dict[str, Any]] = []
-        for msg in self.history[-10:]:
+        for msg in self.history[-tail_count:]:
             role = str(msg.get("role") or "")
             if role == "tool":
                 trimmed.append({
                     "role": "tool",
                     "tool_call_id": str(msg.get("tool_call_id") or "call_compacted"),
-                    "content": _middle_ellipsis(str(msg.get("content") or ""), 1200),
+                    "content": _middle_ellipsis(str(msg.get("content") or ""), ellipsize_to),
                 })
             elif role == "assistant":
-                clean = {"role": "assistant", "content": _middle_ellipsis(str(msg.get("content") or ""), 1200)}
+                clean = {"role": "assistant", "content": _middle_ellipsis(str(msg.get("content") or ""), ellipsize_to)}
                 if msg.get("tool_calls"):
                     clean["tool_calls"] = _compact_json(msg.get("tool_calls"), max_items=4, max_string=500)
                 trimmed.append(clean)
@@ -1630,9 +1638,15 @@ def _parse_args(raw: Any) -> tuple[dict[str, Any], str | None]:
 
 
 def _progress(callback: ProgressCallback | None, event: str, **payload: Any) -> None:
+    """Forward a progress event. Errors in the user callback are swallowed
+    but logged to stderr so they don't go fully silent."""
     if callback is None:
         return
     try:
         callback(event, payload)
-    except Exception:
-        pass
+    except Exception as exc:
+        try:
+            import sys
+            print(f"[progress callback error in event={event}]: {exc}", file=sys.stderr)
+        except Exception:
+            pass

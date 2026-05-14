@@ -111,7 +111,7 @@ def select_tool_names(content: str | list[dict[str, Any]], plan: MissionPlan, *,
             r"que tal|how are you|como estas|como estan|tudo bem|ca va|come stai)\b",
             _fold_text(raw_text),
         )
-        if not casual and (word_count > 3 or "?" in raw_text or "?" in raw_text):
+        if not casual and (word_count > 3 or "?" in raw_text or "¿" in raw_text):
             from .semantic_router import suggest_tools_semantic
             names = suggest_tools_semantic(raw_text, k=12)
             semantic_fallback_used = bool(names)
