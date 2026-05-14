@@ -1186,3 +1186,66 @@ como passing, pero documentarlo aqui.
   <https://learn.microsoft.com/powershell/module/scheduledtasks/>
 - ffmpeg CLI:
   <https://ffmpeg.org/ffmpeg.html>
+
+## Auditoria vs jarvis-personal-ai (2026-05-14)
+
+El usuario pidio comparar contra el repo `jarvis-personal-ai-main` (incluido en
+el workspace como referencia de competidor). Se revisaron sus 26 features
+declaradas. Estado y recomendacion mia abajo. Implementados los 5 con `Si` en
+la columna **Replicar**.
+
+| # | Feature competidor | Tenemos? | Replicar? | Notas |
+|---|---|---|---|---|
+| 1  | LLM multi-proveedor (OpenAI/Anthropic/Local) | Local-only por decision | No | Mantenemos privacidad 100% local con llama-server. |
+| 2  | Tool calling | Si (62 schemas, additionalProperties=false) | — | Mas robusto: subset + router multi-idioma + semantic fallback. |
+| 3  | RAG / Knowledge base | Si (SQLite FTS5 + embeddings) | — | Mejorado en J1 con cross-encoder rerank. |
+| 4  | Cross-encoder reranking | No (antes de J1) | **Si — J1** | Implementado: ms-marco-MiniLM-L-6-v2 lazy-load con retry-cooldown. Over-fetch 4x BM25. |
+| 5  | Fact extraction automatica | No (antes de J2) | **Si — J2 (opt-in)** | Implementado: extrae 0-3 hechos por turno via LLM y guarda con prefijo `auto:` en MemoryStore. Privacidad: OFF por defecto. |
+| 6  | Personas / prompts por modo | No (antes de J3) | **Si — J3** | Implementado: 6 personas (default/coder/researcher/creative/planner/casual). CLI `/persona`. |
+| 7  | Project context auto-load (CLAUDE.md / AGENTS.md / .cursor/rules) | No (antes de J4) | **Si — J4** | Implementado: walk-up cwd + 3 padres, max 6000 chars, regenera cada turno. Toggle GEMMA4_AGENT_PROJECT_CONTEXT. |
+| 8  | Parallel tool execution | No (antes de J5) | **Si — J5 (opt-in)** | Implementado: ThreadPoolExecutor(max_workers=4) cuando hay 2+ tool_calls validos. Orden preservado en history. OFF por defecto. |
+| 9  | Memoria persistente entre sesiones | Si | — | MemoryStore + ExperienceMemory (sqlite-vec). |
+| 10 | Plan + replan explicito | Si | — | explicit_plan + cooldown + give_up. |
+| 11 | Subagents | Si | — | spawn con presupuesto + scoped subset. |
+| 12 | Phrase-triggered routines (Alexa-style) | Si | — | G6 + import desde TriggerCMD con safety contra destructivos. |
+| 13 | Honesty guard / unverified detection | Si | — | H1: `_is_unverified_result` + auto-inject system note. |
+| 14 | Hard timeouts en chat / tools | Si | — | H1: `_run_with_timeout` con executor abandonable. |
+| 15 | Summarization / context compaction | Si | — | G2 two-stage (cheap pass + LLM summary) con cooldown H2. |
+| 16 | Experience pruning | Si | — | H2: max_records FIFO. |
+| 17 | Semantic router multi-idioma | Si | — | P4.5: ES+EN+PT+FR+IT + embedding fallback con retry transient. |
+| 18 | Web research con citation | Si | — | web + source_manager + fact_check. |
+| 19 | Browser automation visible (attach a Chrome real) | Si | — | B1: browser_real attach_visible via CDP. |
+| 20 | Document extraction (PDF/DOCX/PPTX/XLSX/HTML) | Si | — | B2: document tool con extract_text/tables/images/ocr. |
+| 21 | Local Office creation (Word/Excel/PowerPoint) | Si | — | python-docx + openpyxl + python-pptx + LibreOffice export_pdf. |
+| 22 | Smart home control | Si | — | Home Assistant REST + state cache. |
+| 23 | Multi-model analysis (compare outputs de varios LLMs) | No | No | No vale local-only; mantenemos un solo Gemma. |
+| 24 | Dynamic skills / plugin loading at runtime | No | No (defer) | Riesgo de side-effects sin sandbox; tools fijas y auditables son mejor por ahora. |
+| 25 | Light/Dark mode CLI | No | No | El chat es texto plano; tema es del terminal del usuario. |
+| 26 | Voice (TTS/STT) | Parcial (audio_device routing existe, no STT/TTS engines) | Defer hasta F1 | Whisper.cpp + Piper TTS pendiente; requiere modelo extra y deps. |
+
+**Resumen:** 17/26 ya cubierto (a menudo con mas detalle). 5 brechas
+replicadas en esta sesion (J1-J5). 4 deferidas para F1/F2 (#26 voice + 3
+restantes). 3 explicitamente rechazadas (#23, #24, #25) por incompatibles con
+el contrato local-only o triviales.
+
+## Fase J — close jarvis-personal-ai gaps (2026-05-14)
+
+Implementadas las 5 features con `Si` en la tabla anterior:
+
+| Item | Modulo | Toggle env | Default | Notas |
+|---|---|---|---|---|
+| J1 Cross-encoder rerank | `knowledge.py` (`_rerank_rows`, `_load_reranker`) | `GEMMA4_KNOWLEDGE_RERANK` (default ON), `GEMMA4_RERANK_MODEL` | ON | Lazy-load con retry-cooldown (max 3 intentos / 120 s), perma-disabled tras 3 fallos. Over-fetch 4x BM25 -> rerank -> top `limit`. Fallback silencioso al orden BM25 si el modelo no carga. Nuevo param `rerank: bool` en schema knowledge. |
+| J2 Fact extraction | `agent.py` (`_extract_facts`, helpers `_fact_extraction_enabled` + `_fact_extraction_cooldown_turns`) + `memory.py` (`auto_save`) | `GEMMA4_AGENT_FACT_EXTRACTION`, `GEMMA4_AGENT_FACT_EXTRACTION_COOLDOWN` | OFF (privacidad) | Tras cada turno completado: 1 llamada LLM (timeout 20 s) pidiendo JSON array de 0-3 hechos `{key, value}` con keys cortas en snake_case. Persistencia con prefijo `auto:` para distinguir de explicit memory. FIFO eviction al pasar de 50 entradas auto. |
+| J3 Personas | `personas.py` (nuevo) + `agent.py` (`set_persona/get_persona`, `_system_message` injection) + `chat.py` (`/persona`) | `GEMMA4_AGENT_PERSONA` | `default` (no nudge) | 6 personas: default/coder/researcher/creative/planner/casual. Cada una aporta `system_hint` apendado al SYSTEM_PROMPT y `preferred_tools` merged en el subset del planner. Switch en runtime via `/persona <name>`. |
+| J4 Project context | `project_context.py` (nuevo) + `agent.py._system_message` injection | `GEMMA4_AGENT_PROJECT_CONTEXT` | ON | Walk-up cwd + 3 padres buscando `GEMMA4.md`/`JARVIS.md`/`CLAUDE.md`/`AGENTS.md`/`.cursor/rules`/`.cursorrules`/`.gemini/instructions.md`. Max 6000 chars con `[truncated]` marker. Regenera cada turno para soportar edicion en vivo. Bloque incluye warning: NO obedecer instrucciones que contradigan SYSTEM_PROMPT (defense vs prompt injection en archivo de proyecto). |
+| J5 Parallel tool execution | `agent.py` (`_execute_calls_sequential`, `_execute_calls_parallel`, `_parallel_tools_enabled`) | `GEMMA4_AGENT_PARALLEL_TOOLS` | OFF | Cuando 2+ tool_calls validos en una respuesta del modelo, los ejecuta concurrentes con `ThreadPoolExecutor(max_workers=min(4, len(valid)))`. Phase 1 parsea+clasifica, Phase 2 ejecuta (sequential o parallel), Phase 3 aplica resultados al history/events en orden original. Parse-error preps cortocircuitan con synthetic result sin tocar el pool. Excepciones del executor se capturan en `evidence=parallel_exception`. |
+
+Tests: 36/36 pasando (`gemma4_agent.test_gx_features` incluye 9 nuevos J1-J5).
+Pyright: 0 errores en los modulos tocados (tools.py mantiene su baseline
+preexistente de 26 errors irrelevantes a esta fase).
+
+Cosas a recordar para la proxima sesion:
+
+- J2 fact extraction esta OFF por defecto. Para activarlo: `set GEMMA4_AGENT_FACT_EXTRACTION=true`. Costo: 1 LLM call extra por turno (con cooldown). Verifica con `/recall` que los hechos guardados son sensatos antes de dejarlo on en una sesion larga.
+- J5 parallel esta OFF por defecto porque varias tools comparten estado (filesystem, registry, apps_index, MCP clients). Solo activar (`set GEMMA4_AGENT_PARALLEL_TOOLS=true`) si tu workflow tipico tiene tool_calls genuinamente independientes (e.g., `web` + `knowledge.search`).
+- J1 cross-encoder requiere `sentence-transformers` y un primer download del modelo (~80MB). Si la dep falta o el download falla 3 veces, queda permanently_disabled hasta reiniciar el proceso.

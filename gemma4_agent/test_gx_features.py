@@ -642,6 +642,178 @@ def test_g2_compaction_disabled_keeps_truncation() -> bool:
     return True
 
 
+def test_j1_knowledge_rerank_fallback_without_model() -> bool:
+    """Rerank silently falls back to BM25 ordering when the model can't load."""
+    from gemma4_agent import knowledge as kn
+    saved = kn._RERANK_STATE.copy()
+    try:
+        kn._RERANK_STATE.update({"model": None, "permanently_disabled": True, "last_error": "forced"})
+        rows = [
+            {"id": 1, "title": "A", "snippet": "ratio of pies", "rank": -2.0, "source": "x", "score": 2.0},
+            {"id": 2, "title": "B", "snippet": "kernel methods", "rank": -1.0, "source": "x", "score": 1.0},
+        ]
+        out, info = kn._rerank_rows("kernel methods explained", rows, limit=2)
+        assert out == rows, "fallback should return BM25 order"
+        assert info["used"] is False
+        assert info.get("skipped") == "model_unavailable"
+    finally:
+        kn._RERANK_STATE.clear()
+        kn._RERANK_STATE.update(saved)
+    print("J1 rerank fallback when model disabled: OK")
+    return True
+
+
+def test_j2_memory_auto_save_prefixes_and_caps() -> bool:
+    """auto_save stamps keys with 'auto:' and evicts oldest beyond max_total."""
+    import tempfile
+    from gemma4_agent.memory import MemoryStore
+    p = Path(tempfile.mktemp(prefix="g_mem_", suffix=".json"))
+    try:
+        store = MemoryStore(p)
+        r = store.auto_save([{"key": "favorite_color", "value": "blue"}])
+        assert r["ok"] and r["added"] == ["auto:favorite_color"], r
+        # cap test
+        for i in range(5):
+            store.auto_save([{"key": f"k{i}", "value": f"v{i}"}], max_total=3)
+        items = store._load()["items"]
+        auto_keys = [k for k in items if k.startswith("auto:")]
+        assert len(auto_keys) <= 3, f"auto-cap broken: {auto_keys}"
+    finally:
+        p.unlink(missing_ok=True)
+    print("J2 auto_save prefixes + caps: OK")
+    return True
+
+
+def test_j2_fact_extraction_env_default_off() -> bool:
+    import os
+    from gemma4_agent.agent import _fact_extraction_enabled
+    os.environ.pop("GEMMA4_AGENT_FACT_EXTRACTION", None)
+    assert _fact_extraction_enabled() is False, "fact extraction must default OFF"
+    os.environ["GEMMA4_AGENT_FACT_EXTRACTION"] = "true"
+    assert _fact_extraction_enabled() is True
+    os.environ.pop("GEMMA4_AGENT_FACT_EXTRACTION", None)
+    print("J2 fact extraction default OFF: OK")
+    return True
+
+
+def test_j3_personas_registry_has_six() -> bool:
+    from gemma4_agent.personas import PERSONAS, get, list_names
+    names = list_names()
+    for required in ("default", "coder", "researcher", "creative", "planner", "casual"):
+        assert required in names, f"missing persona: {required}"
+    assert get("coder").name == "coder"
+    assert get("nonexistent").name == "default", "unknown persona must fall back to default"
+    assert "developer" in PERSONAS["coder"].preferred_tools
+    print("J3 personas registry: OK")
+    return True
+
+
+def test_j4_project_context_walks_up() -> bool:
+    import tempfile
+    from gemma4_agent.project_context import find_context_file, load_context, format_for_prompt
+    root = Path(tempfile.mkdtemp(prefix="g_pctx_"))
+    try:
+        sub = root / "a" / "b"
+        sub.mkdir(parents=True)
+        marker = root / "JARVIS.md"
+        marker.write_text("regla 1: usa python\n", encoding="utf-8")
+        found = find_context_file(sub)
+        assert found is not None and found.name == "JARVIS.md", f"walk-up failed: {found}"
+        ctx = load_context(sub)
+        assert ctx["found"] and ctx["chars"] > 0
+        rendered = format_for_prompt(ctx)
+        assert "regla 1" in rendered and "Project context" in rendered
+    finally:
+        import shutil
+        shutil.rmtree(root, ignore_errors=True)
+    print("J4 project context walks up + renders: OK")
+    return True
+
+
+def test_j4_project_context_disabled_env() -> bool:
+    import os
+    from gemma4_agent.project_context import is_enabled
+    os.environ["GEMMA4_AGENT_PROJECT_CONTEXT"] = "false"
+    assert is_enabled() is False
+    os.environ.pop("GEMMA4_AGENT_PROJECT_CONTEXT", None)
+    assert is_enabled() is True
+    print("J4 project context env toggle: OK")
+    return True
+
+
+def test_j5_parallel_tools_default_off() -> bool:
+    import os
+    from gemma4_agent.agent import _parallel_tools_enabled
+    os.environ.pop("GEMMA4_AGENT_PARALLEL_TOOLS", None)
+    assert _parallel_tools_enabled() is False, "parallel tools must default OFF"
+    os.environ["GEMMA4_AGENT_PARALLEL_TOOLS"] = "true"
+    assert _parallel_tools_enabled() is True
+    os.environ.pop("GEMMA4_AGENT_PARALLEL_TOOLS", None)
+    print("J5 parallel tools default OFF: OK")
+    return True
+
+
+def test_j5_parallel_executor_preserves_order_and_calls_each() -> bool:
+    """Run _execute_calls_parallel with a fake registry; assert order + every call ran."""
+    import threading
+    import time
+    from gemma4_agent.agent import Gemma4Agent
+
+    class FakeRegistry:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+            self._lock = threading.Lock()
+
+        def execute(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
+            time.sleep(0.02)
+            with self._lock:
+                self.calls.append(name)
+            return {"ok": True, "name": name, "args": args}
+
+    fake = FakeRegistry()
+    prepared = [
+        {"raw_call": {}, "name": "alpha", "args": {"i": 0}, "parse_error": ""},
+        {"raw_call": {}, "name": "beta", "args": {"i": 1}, "parse_error": ""},
+        {"raw_call": {}, "name": "gamma", "args": {"i": 2}, "parse_error": ""},
+    ]
+
+    # Construct a bare agent shell without going through __init__ (avoids LLM client).
+    agent = Gemma4Agent.__new__(Gemma4Agent)
+    agent.tools = fake  # type: ignore[attr-defined]
+
+    agent._execute_calls_parallel(prepared, None, 0)
+    # Original prep order preserved
+    assert [p["name"] for p in prepared] == ["alpha", "beta", "gamma"]
+    # Each prep got a result
+    for prep in prepared:
+        assert prep["result"]["ok"] is True
+        assert prep["result"]["name"] == prep["name"]
+    # All three executed
+    assert sorted(fake.calls) == ["alpha", "beta", "gamma"]
+    print("J5 parallel executor preserves order + runs each: OK")
+    return True
+
+
+def test_j5_sequential_handles_parse_error() -> bool:
+    from gemma4_agent.agent import Gemma4Agent
+
+    class NeverCalled:
+        def execute(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
+            raise AssertionError("must not execute when parse_error is set")
+
+    agent = Gemma4Agent.__new__(Gemma4Agent)
+    agent.tools = NeverCalled()  # type: ignore[attr-defined]
+    prepared = [
+        {"raw_call": {}, "name": "x", "args": {}, "parse_error": "bad json: expecting value"},
+    ]
+    agent._execute_calls_sequential(prepared, None, 0)
+    res = prepared[0]["result"]
+    assert res["ok"] is False
+    assert res["evidence"] == "malformed_json_args"
+    print("J5 sequential parse-error short-circuit: OK")
+    return True
+
+
 def main() -> int:
     tests = [
         test_g1_experience_record_and_recall,
@@ -671,6 +843,15 @@ def main() -> int:
         test_triggercmd_import_off_routine,
         test_triggercmd_import_duplicate_skipped,
         test_g2_compaction_disabled_keeps_truncation,
+        test_j1_knowledge_rerank_fallback_without_model,
+        test_j2_memory_auto_save_prefixes_and_caps,
+        test_j2_fact_extraction_env_default_off,
+        test_j3_personas_registry_has_six,
+        test_j4_project_context_walks_up,
+        test_j4_project_context_disabled_env,
+        test_j5_parallel_tools_default_off,
+        test_j5_parallel_executor_preserves_order_and_calls_each,
+        test_j5_sequential_handles_parse_error,
     ]
     failures: list[str] = []
     for t in tests:

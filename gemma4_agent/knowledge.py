@@ -1,13 +1,102 @@
-"""Local document knowledge base using SQLite FTS5."""
+"""Local document knowledge base using SQLite FTS5.
+
+Optionally reranks retrieval results with a local cross-encoder
+(default `cross-encoder/ms-marco-MiniLM-L-6-v2`, ~80MB) when called
+with `rerank=True`. The cross-encoder is lazy-loaded with the same
+retry-on-transient policy as `semantic_router._STATE`. Disable with
+env `GEMMA4_KNOWLEDGE_RERANK=false`.
+"""
 
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+_RERANK_MODEL_DEFAULT = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+_RERANK_STATE: dict[str, Any] = {
+    "model": None,
+    "permanently_disabled": False,
+    "last_attempt_ts": 0.0,
+    "last_error": "",
+    "attempt_count": 0,
+}
+_RERANK_RETRY_COOLDOWN_S = 120
+_RERANK_RETRY_MAX = 3
+
+
+def _rerank_enabled() -> bool:
+    raw = (os.environ.get("GEMMA4_KNOWLEDGE_RERANK") or "").strip().casefold()
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return True
+
+
+def _load_reranker() -> Any | None:
+    """Lazy-load the cross-encoder model. None on failure (transient or perma)."""
+    if _RERANK_STATE["permanently_disabled"]:
+        return None
+    if _RERANK_STATE["model"] is not None:
+        return _RERANK_STATE["model"]
+    import time as _time
+    now = _time.time()
+    if _RERANK_STATE["attempt_count"] > 0 and (now - _RERANK_STATE["last_attempt_ts"]) < _RERANK_RETRY_COOLDOWN_S:
+        return None
+    if _RERANK_STATE["attempt_count"] >= _RERANK_RETRY_MAX:
+        _RERANK_STATE["permanently_disabled"] = True
+        return None
+    _RERANK_STATE["attempt_count"] += 1
+    _RERANK_STATE["last_attempt_ts"] = now
+    try:
+        from sentence_transformers import CrossEncoder  # type: ignore[import-not-found]
+    except ImportError as exc:
+        _RERANK_STATE["permanently_disabled"] = True
+        _RERANK_STATE["last_error"] = f"ImportError: {exc}"
+        return None
+    model_name = os.environ.get("GEMMA4_RERANK_MODEL") or _RERANK_MODEL_DEFAULT
+    try:
+        model = CrossEncoder(model_name)
+    except Exception as exc:
+        _RERANK_STATE["last_error"] = f"CrossEncoder init failed: {exc}"
+        return None
+    _RERANK_STATE["model"] = model
+    _RERANK_STATE["last_error"] = ""
+    return model
+
+
+def _rerank_rows(query: str, rows: list[dict[str, Any]], limit: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Re-rank rows by cross-encoder score against `query`. Returns (rows, info)."""
+    info: dict[str, Any] = {"used": False, "model": _RERANK_MODEL_DEFAULT}
+    if not rows:
+        return rows[:limit], info
+    if not _rerank_enabled():
+        info["skipped"] = "disabled_by_env"
+        return rows[:limit], info
+    model = _load_reranker()
+    if model is None:
+        info["skipped"] = "model_unavailable"
+        info["last_error"] = _RERANK_STATE["last_error"]
+        return rows[:limit], info
+    pairs = [(query, str(row.get("snippet") or row.get("title") or "")) for row in rows]
+    try:
+        scores = model.predict(pairs, show_progress_bar=False)
+    except Exception as exc:
+        info["skipped"] = f"predict_failed: {exc}"
+        return rows[:limit], info
+    indexed = list(enumerate(rows))
+    indexed.sort(key=lambda pair: -float(scores[pair[0]]))
+    reranked: list[dict[str, Any]] = []
+    for original_idx, row in indexed[:limit]:
+        out = dict(row)
+        out["rerank_score"] = round(float(scores[original_idx]), 4)
+        reranked.append(out)
+    info["used"] = True
+    info["candidate_count"] = len(rows)
+    return reranked, info
 
 
 def _now() -> str:
@@ -78,10 +167,22 @@ class KnowledgeStore:
         text = path.read_text(encoding="utf-8", errors="replace")
         return self.ingest_text(text, source=str(path.resolve()), title=title or path.name)
 
-    def search(self, query: str, *, limit: int = 5) -> dict[str, Any]:
+    def search(self, query: str, *, limit: int = 5, rerank: bool | None = None) -> dict[str, Any]:
+        """BM25 + optional cross-encoder rerank.
+
+        rerank=None: auto (uses env GEMMA4_KNOWLEDGE_RERANK, default on).
+        rerank=True: force rerank (errors if model unavailable -> falls back).
+        rerank=False: BM25 only, skip rerank cost.
+
+        When rerank is active, we retrieve `limit * 4` BM25 candidates (max 40)
+        and then re-rank with the cross-encoder, returning the top `limit`.
+        """
         query = query.strip()
         if not query:
             return {"ok": False, "error": "missing query"}
+        do_rerank = _rerank_enabled() if rerank is None else bool(rerank)
+        # Over-fetch for the reranker to have material to work with.
+        bm25_limit = max(1, min(40, limit * 4)) if do_rerank else max(1, min(20, limit))
         fts_query = _fts_query(query)
         with self._connect() as conn:
             rows = conn.execute(
@@ -93,14 +194,22 @@ class KnowledgeStore:
                 ORDER BY rank
                 LIMIT ?
                 """,
-                (fts_query, max(1, min(20, limit))),
+                (fts_query, bm25_limit),
             ).fetchall()
+        bm25_rows = [dict(row) for row in rows]
+        if do_rerank and bm25_rows:
+            final_rows, rerank_info = _rerank_rows(query, bm25_rows, limit)
+        else:
+            final_rows = bm25_rows[:limit]
+            rerank_info = {"used": False, "skipped": "off_by_caller_or_env" if not do_rerank else "no_candidates"}
         return {
             "ok": True,
             "query": query,
-            "results": [dict(row) for row in rows],
-            "count": len(rows),
-            "content_verified": bool(rows),
+            "results": final_rows,
+            "count": len(final_rows),
+            "bm25_candidates": len(bm25_rows),
+            "rerank": rerank_info,
+            "content_verified": bool(final_rows),
         }
 
     def list_documents(self, *, limit: int = 100) -> dict[str, Any]:

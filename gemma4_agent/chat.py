@@ -285,7 +285,7 @@ def main() -> int:
     progress_enabled = not args.no_progress
 
     print(f"{PALETTE['ok']}Gemma4 agent listo en {config.server_url}{PALETTE['reset']}")
-    print(f"{PALETTE['system']}Comandos: /quit /clear /image <path> /audio <path> /memory /tools /state /cleanup /progress{PALETTE['reset']}")
+    print(f"{PALETTE['system']}Comandos: /quit /clear /image <path> /audio <path> /memory /tools /state /cleanup /progress /persona [name]{PALETTE['reset']}")
     print(f"{PALETTE['system']}Tools reales: {len(agent.tools.schemas)} | Mode: {config.agent_mode} | Safety: {config.enable_safety} | Trace: {config.trace_path}{PALETTE['reset']}")
     print(f"{PALETTE['system']}Memory: {config.memory_path}{PALETTE['reset']}")
     print(f"{PALETTE['system']}State: {config.state_path}{PALETTE['reset']}\n")
@@ -326,6 +326,20 @@ def main() -> int:
             progress_enabled = not progress_enabled
             state = "activada" if progress_enabled else "desactivada"
             print(f"{PALETTE['system']}Barra de progreso {state}.{PALETTE['reset']}\n")
+            continue
+        if low == "/persona" or low.startswith("/persona "):
+            from .personas import list_names
+            arg = user[len("/persona"):].strip()
+            if not arg:
+                current = agent.get_persona()
+                print(f"{PALETTE['system']}Persona actual: {current['persona']} ({current['description']}){PALETTE['reset']}")
+                print(f"{PALETTE['system']}Disponibles: {', '.join(list_names())}{PALETTE['reset']}\n")
+            else:
+                result = agent.set_persona(arg)
+                if result.get("ok"):
+                    print(f"{PALETTE['system']}Persona cambiada a '{result['persona']}': {result['description']}{PALETTE['reset']}\n")
+                else:
+                    print(f"{PALETTE['system']}Error: {result.get('error')}. Disponibles: {', '.join(result.get('available', []))}{PALETTE['reset']}\n")
             continue
         if low.startswith("/image "):
             p = _path(user[7:])

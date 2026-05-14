@@ -43,6 +43,44 @@ class MemoryStore:
         self._save(data)
         return {"ok": True, "key": key, "value": value}
 
+    def auto_save(self, facts: list[dict[str, str]], *, max_total: int = 50) -> dict[str, Any]:
+        """Persist facts extracted automatically (without explicit user request).
+
+        Each fact is dict {key, value}. We prefix the key with 'auto:' so the
+        user can tell auto-learned facts from explicit ones, and we cap the
+        total auto-saved facts at `max_total` (FIFO eviction of oldest).
+        """
+        data = self._load()
+        items = data.setdefault("items", {})
+        added: list[str] = []
+        skipped: list[dict[str, Any]] = []
+        for fact in facts:
+            key = str(fact.get("key", "")).strip()
+            value = str(fact.get("value", "")).strip()
+            if not key or not value:
+                skipped.append({"reason": "empty_key_or_value", "fact": fact})
+                continue
+            stamped_key = key if key.startswith("auto:") else f"auto:{key}"
+            items[stamped_key] = {
+                "value": value,
+                "updated_at": datetime.now().isoformat(timespec="seconds"),
+                "source": "auto_extracted",
+            }
+            added.append(stamped_key)
+        # Evict oldest auto:* entries if we exceed the cap. Explicit (non-auto)
+        # entries are never touched.
+        auto_keys = [k for k in items if k.startswith("auto:")]
+        if len(auto_keys) > max_total:
+            sorted_auto = sorted(
+                ((k, items[k].get("updated_at", "")) for k in auto_keys),
+                key=lambda pair: pair[1],
+            )
+            to_drop = len(auto_keys) - max_total
+            for k, _ in sorted_auto[:to_drop]:
+                items.pop(k, None)
+        self._save(data)
+        return {"ok": True, "added": added, "skipped": skipped, "total_auto": sum(1 for k in items if k.startswith("auto:"))}
+
     def recall(self, query: str | None = None) -> dict[str, Any]:
         data = self._load()
         items = data.get("items", {})

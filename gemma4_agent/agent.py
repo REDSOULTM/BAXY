@@ -328,23 +328,55 @@ class Gemma4Agent:
         # Summarization cooldown so we don't spend an extra LLM call every
         # turn when the conversation has just been compacted. Resets per-clear.
         self._summarize_last_run_turn: int = -10
+        self._fact_extract_last_run_turn: int = -10
         self._turn_counter: int = 0
         # Diagnostics for the current turn (visible in traces; surfaced to the
         # user only when the final reply looks empty so they are not left in
         # the dark).
         self._explicit_plan_status: dict[str, Any] = {}
+        # Persona: nudges system prompt + preferred tools. Default = no nudge.
+        from .personas import from_env as _persona_from_env
+        self._persona = _persona_from_env()
 
     def clear(self) -> None:
         self.history.clear()
         self._recent_recalls = []
         self._summarize_last_run_turn = -10
+        self._fact_extract_last_run_turn = -10
         self._turn_counter = 0
+
+    def set_persona(self, name: str) -> dict[str, Any]:
+        """Switch the agent's persona by name. Returns the new persona info or an error dict."""
+        from .personas import PERSONAS, get
+        if name and name.strip().casefold() not in PERSONAS:
+            return {"ok": False, "error": f"unknown persona: {name!r}", "available": sorted(PERSONAS.keys())}
+        self._persona = get(name)
+        return {
+            "ok": True,
+            "persona": self._persona.name,
+            "description": self._persona.description,
+            "preferred_tools": list(self._persona.preferred_tools),
+            "tone": self._persona.tone,
+        }
+
+    def get_persona(self) -> dict[str, Any]:
+        return {
+            "persona": self._persona.name,
+            "description": self._persona.description,
+            "preferred_tools": list(self._persona.preferred_tools),
+            "tone": self._persona.tone,
+        }
 
     def _system_message(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> dict[str, str]:
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
+        persona_hint = f"\n\n{self._persona.system_hint}" if self._persona.system_hint else ""
         from .experience import format_recall_for_prompt
         from .explicit_plan import format_for_prompt as _format_explicit_plan
+        from .project_context import format_for_prompt as _format_project_context
+        from .project_context import load_context
+        project_block = _format_project_context(load_context())
+        project_section = f"\n\n{project_block}" if project_block else ""
         recall_hint = format_recall_for_prompt(self._recent_recalls)
         recall_section = f"\n\n{recall_hint}" if recall_hint else ""
         explicit_block = _format_explicit_plan(self._explicit_plan_text)
@@ -353,7 +385,7 @@ class Gemma4Agent:
         phrase_section = f"\n\n{phrase_section}" if phrase_section else ""
         return {
             "role": "system",
-            "content": f"{SYSTEM_PROMPT}{mode_hint}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{SYSTEM_PROMPT}{mode_hint}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
     def _messages(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> list[dict[str, Any]]:
@@ -526,8 +558,18 @@ class Gemma4Agent:
         )
         selected_tool_names = select_tool_names(content, plan, safety_enabled=self.config.enable_safety)
         semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
+        # Persona nudge: ensure the persona's preferred tools are in the
+        # subset. Append without duplicating; _cap_tools later trims if it
+        # blows the limit. Default persona has no preferred tools so this is
+        # a no-op for most users.
+        if self._persona.preferred_tools:
+            existing = set(selected_tool_names)
+            for tool_name in self._persona.preferred_tools:
+                if tool_name not in existing:
+                    selected_tool_names.append(tool_name)
+                    existing.add(tool_name)
         selected_schemas = self.tools.schemas_for_names(selected_tool_names)
-        self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback)
+        self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback, persona=self._persona.name)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
         self._compact_completed_history()
         self.history.append({"role": "user", "content": _compact_live_content(content)})
@@ -642,6 +684,27 @@ class Gemma4Agent:
                         self.trace.event(turn_id, "experience_recorded", id=rec.get("id"))
                 except Exception as exc:
                     self.trace.event(turn_id, "experience_record_failed", error=str(exc))
+                # Fact extraction: opt-in via env. Cooldown so we do not call
+                # the LLM every turn. Skips short / trivial turns.
+                if _fact_extraction_enabled():
+                    cooldown = _fact_extraction_cooldown_turns()
+                    if (self._turn_counter - self._fact_extract_last_run_turn) >= cooldown:
+                        raw_text_now = _extract_user_text(content)
+                        if raw_text_now and len(raw_text_now.split()) >= 5:
+                            try:
+                                facts = self._extract_facts(raw_text_now, assistant_content)
+                                if facts:
+                                    save_result = self.memory.auto_save(facts)
+                                    self.trace.event(turn_id, "facts_extracted",
+                                                     count=len(facts),
+                                                     added=save_result.get("added"),
+                                                     total_auto=save_result.get("total_auto"))
+                                    self._fact_extract_last_run_turn = self._turn_counter
+                                else:
+                                    self.trace.event(turn_id, "facts_extraction_empty")
+                                    self._fact_extract_last_run_turn = self._turn_counter
+                            except Exception as exc:
+                                self.trace.event(turn_id, "facts_extraction_failed", error=str(exc))
                 self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
@@ -650,6 +713,9 @@ class Gemma4Agent:
 
             image_results: list[tuple[Path, dict[str, Any]]] = []
             subset_set = set(selected_tool_names)
+
+            # Phase 1: parse + classify all calls (no execution yet).
+            prepared: list[dict[str, Any]] = []
             for raw_call in raw_tool_calls:
                 fn = raw_call.get("function") or {}
                 name = fn.get("name", "")
@@ -657,33 +723,32 @@ class Gemma4Agent:
                 in_subset = name in subset_set
                 self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset, parse_error=parse_error)
                 if not in_subset:
-                    # Router miss: the model picked a tool that the subset did not
-                    # include. The model can still call any tool because the schema
-                    # sent has additionalProperties=false but the registry holds
-                    # every tool. Logging this lets us tune the router later.
                     self.trace.event(turn_id, "router_miss", name=name, sent=sorted(subset_set))
-                # Short-circuit if the LLM sent malformed JSON. Surface a clear
-                # error message instead of passing dirty args to the tool. This
-                # closes the loop: Gemma sees exactly what was wrong and can fix
-                # the next call without us guessing what it meant.
-                if parse_error:
-                    result = {
-                        "ok": False,
-                        "status": "failed",
-                        "verified": False,
-                        "error": f"tool args parse error: {parse_error}. Re-emit the call with valid JSON for the 'arguments' field.",
-                        "tool": name,
-                        "evidence": "malformed_json_args",
-                    }
-                    self.trace.event(turn_id, "tool_args_parse_error", name=name, parse_error=parse_error)
-                else:
-                    _progress(progress, "tool_start", name=name, args=args, index=len(events) + 1)
-                    result = self.tools.execute(name, args)
+                prepared.append({
+                    "raw_call": raw_call,
+                    "name": name,
+                    "args": args,
+                    "parse_error": parse_error,
+                })
+
+            # Phase 2: execute. Parallel when enabled, multiple valid calls
+            # and the LLM did not request a strict order.
+            parallel_ok = _parallel_tools_enabled() and sum(1 for p in prepared if not p["parse_error"]) >= 2
+            if parallel_ok:
+                self.trace.event(turn_id, "tools_parallel_start", count=len(prepared))
+                self._execute_calls_parallel(prepared, progress, len(events))
+            else:
+                self._execute_calls_sequential(prepared, progress, len(events))
+
+            # Phase 3: apply results in original order to events, history,
+            # traces, failure log, image collection.
+            for prep in prepared:
+                name = prep["name"]
+                args = prep["args"]
+                raw_call = prep["raw_call"]
+                result = prep.get("result") or {}
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
-                # Only count REAL failures for replanning. needs_user* and
-                # needs_dependency are blocked-on-input, not bad plan choices,
-                # so replanning would not help.
                 if not result.get("ok"):
                     status_norm = str(result.get("status") or "").casefold()
                     completion = str(result.get("completion_status") or "").casefold()
@@ -776,6 +841,93 @@ class Gemma4Agent:
         _progress(progress, "max_turns", tools=len(events), mission=mission)
         return AgentReply(content=final, tool_events=events, mission=mission)
 
+    def _execute_calls_sequential(
+        self,
+        prepared: list[dict[str, Any]],
+        progress: ProgressCallback | None,
+        base_count: int,
+    ) -> None:
+        """Run prepared tool calls one by one, populating prep['result'].
+
+        Mirrors the original single-thread behavior: emit tool_start before
+        each execute, short-circuit malformed-args preps with a synthetic
+        result. Phase-3 in the main loop handles tool_end / history append.
+        """
+        for index, prep in enumerate(prepared):
+            name = prep["name"]
+            args = prep["args"]
+            parse_error = prep["parse_error"]
+            if parse_error:
+                prep["result"] = {
+                    "ok": False,
+                    "status": "failed",
+                    "verified": False,
+                    "error": (
+                        f"tool args parse error: {parse_error}. Re-emit the call "
+                        "with valid JSON for the 'arguments' field."
+                    ),
+                    "tool": name,
+                    "evidence": "malformed_json_args",
+                }
+                continue
+            _progress(progress, "tool_start", name=name, args=args, index=base_count + index + 1)
+            prep["result"] = self.tools.execute(name, args)
+
+    def _execute_calls_parallel(
+        self,
+        prepared: list[dict[str, Any]],
+        progress: ProgressCallback | None,
+        base_count: int,
+    ) -> None:
+        """Run prepared tool calls concurrently with a small thread pool.
+
+        max_workers=4. Parse-error preps get a synthetic result without a
+        thread submission. Order is preserved because phase-3 iterates
+        `prepared` in original order; we just fill prep['result'] from each
+        completed future.
+        """
+        import concurrent.futures
+        valid_preps: list[tuple[int, dict[str, Any]]] = []
+        for index, prep in enumerate(prepared):
+            if prep["parse_error"]:
+                prep["result"] = {
+                    "ok": False,
+                    "status": "failed",
+                    "verified": False,
+                    "error": (
+                        f"tool args parse error: {prep['parse_error']}. Re-emit "
+                        "the call with valid JSON for the 'arguments' field."
+                    ),
+                    "tool": prep["name"],
+                    "evidence": "malformed_json_args",
+                }
+            else:
+                valid_preps.append((index, prep))
+        if not valid_preps:
+            return
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=min(4, len(valid_preps)),
+            thread_name_prefix="gemma4_par_tool",
+        ) as pool:
+            future_to_prep: dict[Any, dict[str, Any]] = {}
+            for index, prep in valid_preps:
+                _progress(progress, "tool_start", name=prep["name"], args=prep["args"], index=base_count + index + 1)
+                future = pool.submit(self.tools.execute, prep["name"], prep["args"])
+                future_to_prep[future] = prep
+            for future in concurrent.futures.as_completed(future_to_prep):
+                prep = future_to_prep[future]
+                try:
+                    prep["result"] = future.result()
+                except Exception as exc:
+                    prep["result"] = {
+                        "ok": False,
+                        "status": "failed",
+                        "verified": False,
+                        "error": f"tool raised in parallel exec: {exc}",
+                        "tool": prep["name"],
+                        "evidence": "parallel_exception",
+                    }
+
     def _inject_tool_image(self, path: Path, result: dict[str, Any]) -> None:
         if not path.exists():
             return
@@ -852,6 +1004,78 @@ class Gemma4Agent:
         }
         self.history = [summary_msg, *tail]
         self._summarize_last_run_turn = self._turn_counter
+
+    def _extract_facts(self, user_text: str, assistant_text: str) -> list[dict[str, str]]:
+        """Ask Gemma to extract 0-3 small facts about the user from this turn.
+
+        Returns a list of {key, value} dicts. Empty list when nothing is worth
+        saving (the LLM is instructed to return [] for trivial turns). Best
+        effort: any JSON parse failure or LLM error returns [].
+
+        We do NOT pass the existing memory to the LLM - this is a stateless
+        single-turn extraction. Dedup happens in memory.auto_save (same key
+        overwrites the older value).
+        """
+        prompt = (
+            "Extrae 0 a 3 hechos pequenos sobre el usuario de este turno. "
+            "Solo extrae si son hechos persistentes y utiles para futuras "
+            "conversaciones: preferencias claras (idioma, hora, dispositivos), "
+            "datos personales que el usuario menciono explicitamente (nombre, "
+            "rol, ubicacion), o contexto recurrente (proyecto en el que trabaja, "
+            "apps que usa). NO extraigas cosas efimeras (lo que pidio en este "
+            "turno, lo que estas haciendo ahora). NO inventes. Si nada califica, "
+            "devuelve exactamente '[]'.\n\n"
+            "Formato de respuesta: JSON array de objetos con keys 'key' (slug "
+            "corto snake_case) y 'value' (frase de menos de 100 chars). "
+            "Ejemplo: [{\"key\":\"idioma\",\"value\":\"prefiere espanol\"},"
+            "{\"key\":\"editor\",\"value\":\"usa VS Code\"}]. Responde SOLO el "
+            "array JSON, sin markdown ni texto extra.\n\n"
+            f"Turno del usuario:\n{user_text[:1500]}\n\n"
+            f"Respuesta del asistente:\n{assistant_text[:1500]}\n\n"
+            "JSON:"
+        )
+        try:
+            resp = self.client.chat(
+                [{"role": "user", "content": prompt}],
+                tools=None,
+                enable_thinking=False,
+                parallel_tool_calls=False,
+                max_tokens=200,
+                timeout_s=20.0,
+            )
+        except Exception:
+            return []
+        choices = resp.get("choices") or []
+        if not choices:
+            return []
+        raw = str((choices[0].get("message") or {}).get("content") or "").strip()
+        from .reasoning import sanitize_text
+        cleaned = sanitize_text(raw).strip()
+        # The LLM sometimes wraps in ```json ... ``` despite instructions.
+        if cleaned.startswith("```"):
+            cleaned = cleaned.strip("`")
+            if cleaned.lower().startswith("json"):
+                cleaned = cleaned[4:].lstrip()
+        # Try to find the array bracket if there is prose around it.
+        start = cleaned.find("[")
+        end = cleaned.rfind("]")
+        if start < 0 or end < 0 or end < start:
+            return []
+        try:
+            parsed = json.loads(cleaned[start:end + 1])
+        except json.JSONDecodeError:
+            return []
+        if not isinstance(parsed, list):
+            return []
+        facts: list[dict[str, str]] = []
+        for item in parsed[:3]:
+            if not isinstance(item, dict):
+                continue
+            key = str(item.get("key", "")).strip()
+            value = str(item.get("value", "")).strip()
+            if key and value and len(value) <= 200:
+                facts.append({"key": key, "value": value})
+        return facts
 
     def _summarize_history_block(self, messages: list[dict[str, Any]]) -> str:
         """Ask Gemma 4 to compress the given message block into ~200 words.
@@ -1149,6 +1373,48 @@ def _summarization_cooldown_turns() -> int:
         return n if n >= 0 else 6
     except ValueError:
         return 6
+
+
+def _fact_extraction_enabled() -> bool:
+    """Auto fact extraction. OFF by default (privacy).
+
+    Enable with GEMMA4_AGENT_FACT_EXTRACTION=true. When on, after each
+    completed turn the agent asks Gemma to extract 0-3 small facts about
+    the user (preferences, identifiers, recurring context) and saves them
+    to memory with `auto:` prefix.
+    """
+    import os
+    raw = (os.environ.get("GEMMA4_AGENT_FACT_EXTRACTION") or "").strip().casefold()
+    return raw in {"1", "true", "yes", "on", "si"}
+
+
+def _fact_extraction_cooldown_turns() -> int:
+    """Min turns between two fact-extraction LLM calls.
+
+    Default 5. Override via env GEMMA4_AGENT_FACT_EXTRACTION_COOLDOWN.
+    """
+    import os
+    raw = (os.environ.get("GEMMA4_AGENT_FACT_EXTRACTION_COOLDOWN") or "").strip()
+    try:
+        n = int(raw)
+        return n if n >= 0 else 5
+    except ValueError:
+        return 5
+
+
+def _parallel_tools_enabled() -> bool:
+    """Run multiple tool calls in the same batch concurrently.
+
+    OFF by default: most local tools share state (filesystem, registry,
+    apps_index, MCP clients) and ordering can matter for the model. Enable
+    explicitly with GEMMA4_AGENT_PARALLEL_TOOLS=true. When on AND the model
+    emitted >=2 valid tool calls in one assistant message, they run on a
+    small ThreadPoolExecutor (max_workers=4). Order is preserved when the
+    results are stitched back into history.
+    """
+    import os
+    raw = (os.environ.get("GEMMA4_AGENT_PARALLEL_TOOLS") or "").strip().casefold()
+    return raw in {"1", "true", "yes", "on", "si"}
 
 
 def _message_text_estimate(message: dict[str, Any]) -> str:
