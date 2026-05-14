@@ -900,6 +900,49 @@ def test_k3_context_budget_scales_with_size() -> bool:
     return True
 
 
+def test_u1_ui_modules_importable() -> bool:
+    """All ui/ submodules import without side effects (PyQt6 required)."""
+    try:
+        from gemma4_agent.ui import theme, metrics, hud, log_widget, metric_bar
+        from gemma4_agent.ui import panels, sessions_panel, settings, triggers
+        from gemma4_agent.ui import memory_viewer, tool_explorer, agent_thread, main_window
+        from gemma4_agent.ui import app as ui_app
+    except ImportError as exc:
+        print(f"UI import skipped: {exc}")
+        return True  # PyQt6 not installed in this env — not a regression
+    # smoke: STATE_TABLE keys
+    assert "INITIALISING" in theme.STATE_TABLE
+    assert "SPEAKING" in theme.STATE_TABLE
+    # settings has the tabs we promised
+    assert hasattr(settings, "TOGGLES")
+    assert len(settings.TOGGLES) >= 6
+    print("U1 UI modules import + theme/settings shape: OK")
+    return True
+
+
+def test_u1_hud_state_setters() -> bool:
+    """HudCanvas accepts all states without crashing (no Qt event loop)."""
+    try:
+        import os as _os
+        _os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        from PyQt6.QtWidgets import QApplication
+        from gemma4_agent.ui.hud import HudCanvas
+        from gemma4_agent.ui.theme import STATE_TABLE
+    except ImportError:
+        print("U1 HUD test skipped (no PyQt6)")
+        return True
+    app = QApplication.instance() or QApplication([])
+    hud = HudCanvas()
+    for state in STATE_TABLE.keys():
+        hud.set_state(state)
+        assert hud.state == state
+    hud.set_persona("coder")
+    hud.set_model("gemma-3n-e4b-it.Q6_K")
+    hud.set_connected(True)
+    print("U1 HUD state cycling: OK")
+    return True
+
+
 def test_j5_sequential_handles_parse_error() -> bool:
     from gemma4_agent.agent import Gemma4Agent
 
@@ -964,6 +1007,8 @@ def main() -> int:
         test_k2_timeline_writes_jsonl,
         test_k2_timeline_disabled_env,
         test_k3_context_budget_scales_with_size,
+        test_u1_ui_modules_importable,
+        test_u1_hud_state_setters,
     ]
     failures: list[str] = []
     for t in tests:

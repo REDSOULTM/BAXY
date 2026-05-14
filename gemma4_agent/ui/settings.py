@@ -1,0 +1,695 @@
+"""Settings dialog — everything configurable.
+
+Tabs:
+  CONNECTION  llama-server URL, model path, max tokens, context size
+  AGENT       mode, persona, max turns
+  TOGGLES     env-var toggles for J1-J5 + K1-K3 features
+  PATHS       memory.json, trace.jsonl, sessions dir, timeline dir
+  PROMPT      view and override SYSTEM_PROMPT (read-only by default)
+  ABOUT       version, build info, links
+
+Changes are written to a `~/.gemma4/gui.json` file and to os.environ at
+runtime. The agent must be restarted to pick up server/model/path changes
+— a "Restart agent" button is provided at the bottom.
+"""
+from __future__ import annotations
+
+import json
+import os
+import sys
+from pathlib import Path
+
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
+    QFrame, QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QPushButton,
+    QSpinBox, QTabWidget, QVBoxLayout, QWidget,
+)
+
+from .theme import (
+    C, button_qss, combo_qss, line_edit_qss, mono, panel_qss, text_edit_qss,
+)
+
+
+SETTINGS_PATH = Path.home() / ".gemma4" / "gui.json"
+
+
+# Env-var toggles surfaced in the UI. Each is (env_name, label, default_on).
+TOGGLES = [
+    ("GEMMA4_AGENT_FACT_EXTRACTION",    "J2 Fact extraction (post-turn)",       False),
+    ("GEMMA4_KNOWLEDGE_RERANK",         "J1 Cross-encoder rerank in knowledge.search", True),
+    ("GEMMA4_AGENT_PARALLEL_TOOLS",     "J5 Parallel tool execution",            False),
+    ("GEMMA4_AGENT_PROJECT_CONTEXT",    "J4 Auto-load project context",          True),
+    ("GEMMA4_AGENT_SESSIONS",           "K1 Persistent chat sessions",           True),
+    ("GEMMA4_AGENT_TIMELINE",           "K2 Tool timeline JSONL export",         True),
+    ("GEMMA4_AGENT_SUMMARIZATION",      "G2 LLM-summarization compaction",       True),
+    ("GEMMA4_AGENT_TRACE",              "Tracing to JSONL",                      True),
+]
+
+
+def load_persisted() -> dict:
+    if not SETTINGS_PATH.is_file():
+        return {}
+    try:
+        data = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def save_persisted(data: dict) -> None:
+    try:
+        SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        SETTINGS_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except OSError:
+        pass
+
+
+def apply_to_env(data: dict) -> None:
+    """Push values to os.environ so the next agent init reads them."""
+    env = data.get("env") or {}
+    for k, v in env.items():
+        if v in (None, ""):
+            os.environ.pop(str(k), None)
+        else:
+            os.environ[str(k)] = str(v)
+    # toggles
+    toggles = data.get("toggles") or {}
+    for k, v in toggles.items():
+        os.environ[str(k)] = "true" if v else "false"
+
+
+class SettingsDialog(QDialog):
+    apply_clicked = pyqtSignal(dict)
+    restart_clicked = pyqtSignal()
+
+    def __init__(
+        self,
+        *,
+        agent_config: object | None = None,
+        current_persona: str = "default",
+        personas_available: list[str] | None = None,
+        parent: QWidget | None = None,
+    ) -> None:
+        super().__init__(parent)
+        self.setWindowTitle("GEMMA4  ·  SETTINGS")
+        self.setMinimumSize(720, 560)
+        self._agent_config = agent_config
+        self._cur_persona = current_persona
+        self._personas = personas_available or ["default", "coder", "researcher", "creative", "planner", "casual"]
+        self.setStyleSheet(f"""
+            QDialog {{ background: {C.BG}; }}
+            QLabel {{ color: {C.TEXT}; }}
+            QTabWidget::pane {{ border: 1px solid {C.BORDER}; background: {C.PANEL}; }}
+            QTabBar::tab {{
+                background: {C.DARK};
+                color: {C.TEXT_DIM};
+                padding: 6px 16px;
+                margin-right: 1px;
+                border: 1px solid {C.BORDER};
+                border-bottom: none;
+                font-family: 'Courier New';
+                font-size: 8pt;
+                font-weight: bold;
+            }}
+            QTabBar::tab:selected {{
+                background: {C.PANEL};
+                color: {C.PRI};
+                border-bottom: 1px solid {C.PANEL};
+            }}
+            QCheckBox {{ color: {C.TEXT}; spacing: 8px; font-family: 'Consolas'; font-size: 9pt; }}
+            QSpinBox {{ background: #000d14; color: {C.TEXT}; border: 1px solid {C.BORDER};
+                       border-radius: 3px; padding: 3px; }}
+        """)
+        self._build()
+
+    def _build(self) -> None:
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(12, 12, 12, 12)
+        lay.setSpacing(8)
+
+        # Title
+        title = QLabel("◈  CONFIGURATION  —  ALL SUBSYSTEMS")
+        title.setFont(mono(12, True))
+        title.setStyleSheet(f"color: {C.PRI}; padding-bottom: 6px; border-bottom: 1px solid {C.BORDER};")
+        lay.addWidget(title)
+
+        tabs = QTabWidget()
+        tabs.addTab(self._tab_connection(),    "CONNECTION")
+        tabs.addTab(self._tab_agent(),         "AGENT")
+        tabs.addTab(self._tab_sampling(),      "SAMPLING")
+        tabs.addTab(self._tab_behaviour(),     "BEHAVIOUR")
+        tabs.addTab(self._tab_transcription(), "TRANSCRIPT")
+        tabs.addTab(self._tab_toggles(),       "TOGGLES")
+        tabs.addTab(self._tab_paths(),         "PATHS")
+        tabs.addTab(self._tab_prompt(),        "PROMPT")
+        tabs.addTab(self._tab_about(),         "ABOUT")
+        lay.addWidget(tabs, stretch=1)
+
+        # Footer buttons
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+
+        restart = QPushButton("⟳  RESTART AGENT")
+        restart.setStyleSheet(button_qss(primary=True))
+        restart.setFixedHeight(32)
+        restart.setCursor(Qt.CursorShape.PointingHandCursor)
+        restart.clicked.connect(self._on_restart)
+        btn_row.addWidget(restart)
+
+        cancel = QPushButton("CANCEL")
+        cancel.setStyleSheet(button_qss())
+        cancel.setFixedHeight(32)
+        cancel.clicked.connect(self.reject)
+        btn_row.addWidget(cancel)
+
+        apply = QPushButton("APPLY")
+        apply.setStyleSheet(button_qss(primary=True))
+        apply.setFixedHeight(32)
+        apply.clicked.connect(self._on_apply)
+        btn_row.addWidget(apply)
+        lay.addLayout(btn_row)
+
+    # ------------------------------------------------------------------
+    def _tab_connection(self) -> QWidget:
+        w = QWidget()
+        lay = QFormLayout(w)
+        lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(10)
+
+        cfg = self._agent_config
+
+        self._server_url = QLineEdit(str(getattr(cfg, "server_url", "http://127.0.0.1:8080")))
+        self._server_url.setStyleSheet(line_edit_qss())
+        self._server_url.setFont(mono(9))
+        lay.addRow(self._lbl("llama-server URL"), self._server_url)
+
+        self._model_alias = QLineEdit(str(os.environ.get("GEMMA4_MODEL") or ""))
+        self._model_alias.setStyleSheet(line_edit_qss())
+        self._model_alias.setFont(mono(9))
+        self._model_alias.setPlaceholderText("optional alias — e.g. gemma-3-e4b-it.Q6_K")
+        lay.addRow(self._lbl("Model alias"), self._model_alias)
+
+        self._gguf_path = QLineEdit(str(os.environ.get("GEMMA4_GGUF_PATH") or ""))
+        self._gguf_path.setStyleSheet(line_edit_qss())
+        self._gguf_path.setPlaceholderText(".gguf path (read by external launcher)")
+        gguf_row = QHBoxLayout()
+        gguf_row.addWidget(self._gguf_path, stretch=1)
+        browse = QPushButton("...")
+        browse.setFixedWidth(32)
+        browse.setStyleSheet(button_qss())
+        browse.clicked.connect(self._browse_gguf)
+        gguf_row.addWidget(browse)
+        wrap = QWidget(); wrap.setLayout(gguf_row)
+        lay.addRow(self._lbl("GGUF path"), wrap)
+
+        self._ctx_size = QSpinBox()
+        self._ctx_size.setRange(1024, 1_000_000)
+        self._ctx_size.setSingleStep(1024)
+        self._ctx_size.setValue(int(getattr(cfg, "context_size", 16384) or 16384))
+        lay.addRow(self._lbl("Context size (tokens)"), self._ctx_size)
+
+        self._max_tokens = QSpinBox()
+        self._max_tokens.setRange(64, 32768)
+        self._max_tokens.setValue(int(getattr(cfg, "max_tokens", 1024) or 1024))
+        lay.addRow(self._lbl("max_tokens per reply"), self._max_tokens)
+
+        info = QLabel(
+            "Tip: the agent talks to a llama-server you start separately.\n"
+            "Changes here require RESTART AGENT to take effect."
+        )
+        info.setFont(mono(8))
+        info.setStyleSheet(f"color: {C.TEXT_DIM};")
+        lay.addRow(info)
+
+        return w
+
+    def _browse_gguf(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(self, "Select GGUF model", str(Path.home()), "GGUF (*.gguf);;All (*)")
+        if path:
+            self._gguf_path.setText(path)
+
+    # ------------------------------------------------------------------
+    def _tab_agent(self) -> QWidget:
+        w = QWidget()
+        lay = QFormLayout(w)
+        lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(10)
+
+        cfg = self._agent_config
+
+        self._mode_combo = QComboBox()
+        self._mode_combo.setStyleSheet(combo_qss())
+        for m in ("auto", "fast_action", "deep_action", "research", "vision_action", "audio_mode"):
+            self._mode_combo.addItem(m)
+        self._mode_combo.setCurrentText(str(getattr(cfg, "agent_mode", "auto") or "auto"))
+        lay.addRow(self._lbl("Agent mode"), self._mode_combo)
+
+        self._persona_combo = QComboBox()
+        self._persona_combo.setStyleSheet(combo_qss())
+        for p in self._personas:
+            self._persona_combo.addItem(p)
+        self._persona_combo.setCurrentText(self._cur_persona)
+        lay.addRow(self._lbl("Persona"), self._persona_combo)
+
+        self._max_turns = QSpinBox()
+        self._max_turns.setRange(1, 64)
+        self._max_turns.setValue(int(getattr(cfg, "max_turns", 10) or 10))
+        lay.addRow(self._lbl("Max turns per request"), self._max_turns)
+
+        self._enable_safety = QCheckBox("Safety filter on")
+        self._enable_safety.setChecked(bool(getattr(cfg, "enable_safety", False)))
+        lay.addRow(self._lbl(""), self._enable_safety)
+
+        return w
+
+    # ------------------------------------------------------------------
+    def _tab_sampling(self) -> QWidget:
+        w = QWidget()
+        lay = QFormLayout(w)
+        lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(10)
+
+        info = QLabel(
+            "Sampling parameters passed to llama-server. Lower temperature\n"
+            "gives more deterministic output. top_p+top_k narrow the candidate\n"
+            "pool. min_p prunes low-probability tokens after temperature."
+        )
+        info.setFont(mono(8))
+        info.setStyleSheet(f"color: {C.TEXT_DIM};")
+        lay.addRow(info)
+
+        from PyQt6.QtWidgets import QDoubleSpinBox
+
+        self._temperature = QDoubleSpinBox()
+        self._temperature.setRange(0.0, 2.0)
+        self._temperature.setSingleStep(0.05)
+        self._temperature.setValue(float(os.environ.get("GEMMA4_TEMPERATURE", "0.7") or "0.7"))
+        lay.addRow(self._lbl("temperature"), self._temperature)
+
+        self._top_p = QDoubleSpinBox()
+        self._top_p.setRange(0.0, 1.0)
+        self._top_p.setSingleStep(0.05)
+        self._top_p.setValue(float(os.environ.get("GEMMA4_TOP_P", "0.95") or "0.95"))
+        lay.addRow(self._lbl("top_p"), self._top_p)
+
+        self._top_k = QSpinBox()
+        self._top_k.setRange(0, 200)
+        self._top_k.setValue(int(os.environ.get("GEMMA4_TOP_K", "40") or "40"))
+        lay.addRow(self._lbl("top_k"), self._top_k)
+
+        self._min_p = QDoubleSpinBox()
+        self._min_p.setRange(0.0, 1.0)
+        self._min_p.setSingleStep(0.01)
+        self._min_p.setValue(float(os.environ.get("GEMMA4_MIN_P", "0.05") or "0.05"))
+        lay.addRow(self._lbl("min_p"), self._min_p)
+
+        self._repeat_penalty = QDoubleSpinBox()
+        self._repeat_penalty.setRange(0.5, 2.0)
+        self._repeat_penalty.setSingleStep(0.05)
+        self._repeat_penalty.setValue(float(os.environ.get("GEMMA4_REPEAT_PENALTY", "1.1") or "1.1"))
+        lay.addRow(self._lbl("repeat_penalty"), self._repeat_penalty)
+
+        self._seed = QSpinBox()
+        self._seed.setRange(-1, 2_147_483_647)
+        self._seed.setValue(int(os.environ.get("GEMMA4_SEED", "-1") or "-1"))
+        self._seed.setSpecialValueText("-1  (random)")
+        lay.addRow(self._lbl("seed"), self._seed)
+
+        self._enable_thinking = QCheckBox("Allow Gemma to expose chain-of-thought (slower)")
+        self._enable_thinking.setChecked(_env_truthy("GEMMA4_ENABLE_THINKING", False))
+        lay.addRow(self._lbl(""), self._enable_thinking)
+
+        self._parallel_tool_calls = QCheckBox("Let model emit multiple tool_calls per turn")
+        self._parallel_tool_calls.setChecked(_env_truthy("GEMMA4_PARALLEL_TOOL_CALLS", True))
+        lay.addRow(self._lbl(""), self._parallel_tool_calls)
+
+        return w
+
+    # ------------------------------------------------------------------
+    def _tab_behaviour(self) -> QWidget:
+        w = QWidget()
+        lay = QFormLayout(w)
+        lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(10)
+
+        info = QLabel(
+            "Higher-level behaviour knobs. These adjust how the agent uses tools,\n"
+            "how aggressive context compaction is, and how strict honesty guards are."
+        )
+        info.setFont(mono(8))
+        info.setStyleSheet(f"color: {C.TEXT_DIM};")
+        lay.addRow(info)
+
+        self._summarization_cooldown = QSpinBox()
+        self._summarization_cooldown.setRange(0, 50)
+        self._summarization_cooldown.setValue(int(os.environ.get("GEMMA4_AGENT_SUMMARIZATION_COOLDOWN", "6") or "6"))
+        lay.addRow(self._lbl("summarization cooldown turns"), self._summarization_cooldown)
+
+        self._fact_cooldown = QSpinBox()
+        self._fact_cooldown.setRange(0, 50)
+        self._fact_cooldown.setValue(int(os.environ.get("GEMMA4_AGENT_FACT_EXTRACTION_COOLDOWN", "5") or "5"))
+        lay.addRow(self._lbl("fact extraction cooldown"), self._fact_cooldown)
+
+        self._tool_timeout = QSpinBox()
+        self._tool_timeout.setRange(5, 600)
+        self._tool_timeout.setValue(int(os.environ.get("GEMMA4_AGENT_TOOL_TIMEOUT", "60") or "60"))
+        lay.addRow(self._lbl("tool timeout (s)"), self._tool_timeout)
+
+        self._chat_timeout = QSpinBox()
+        self._chat_timeout.setRange(5, 600)
+        self._chat_timeout.setValue(int(os.environ.get("GEMMA4_AGENT_CHAT_TIMEOUT", "180") or "180"))
+        lay.addRow(self._lbl("LLM chat timeout (s)"), self._chat_timeout)
+
+        self._max_experience = QSpinBox()
+        self._max_experience.setRange(50, 100_000)
+        self._max_experience.setValue(int(os.environ.get("GEMMA4_AGENT_EXPERIENCE_MAX", "5000") or "5000"))
+        lay.addRow(self._lbl("max experience records"), self._max_experience)
+
+        self._strict_honesty = QCheckBox("Strict honesty: never claim unverified actions succeeded")
+        self._strict_honesty.setChecked(_env_truthy("GEMMA4_AGENT_STRICT_HONESTY", True))
+        lay.addRow(self._lbl(""), self._strict_honesty)
+
+        self._auto_replan = QCheckBox("Auto-replan after 2+ tool failures with explicit plan")
+        self._auto_replan.setChecked(_env_truthy("GEMMA4_AGENT_AUTO_REPLAN", True))
+        lay.addRow(self._lbl(""), self._auto_replan)
+
+        return w
+
+    # ------------------------------------------------------------------
+    def _tab_transcription(self) -> QWidget:
+        w = QWidget()
+        lay = QFormLayout(w)
+        lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(10)
+
+        info = QLabel(
+            "Speech-to-text (STT) and text-to-speech (TTS) settings.\n"
+            "Voice is not enabled yet — these prepare the backend for when audio mode\n"
+            "ships. All providers below are LOCAL when applicable."
+        )
+        info.setFont(mono(8))
+        info.setStyleSheet(f"color: {C.TEXT_DIM};")
+        lay.addRow(info)
+
+        self._stt_provider = QComboBox()
+        self._stt_provider.setStyleSheet(combo_qss())
+        self._stt_provider.addItems(["whisper.cpp (local)", "whisper-python (local)", "vosk (local)", "browser (online)", "off"])
+        self._stt_provider.setCurrentText(os.environ.get("GEMMA4_STT_PROVIDER", "whisper.cpp (local)"))
+        lay.addRow(self._lbl("STT provider"), self._stt_provider)
+
+        self._stt_model = QLineEdit(str(os.environ.get("GEMMA4_STT_MODEL", "ggml-base.bin")))
+        self._stt_model.setStyleSheet(line_edit_qss())
+        self._stt_model.setFont(mono(9))
+        self._stt_model.setPlaceholderText("e.g. ggml-base.bin / faster-whisper-small / vosk-model-en-us-0.42")
+        lay.addRow(self._lbl("STT model"), self._stt_model)
+
+        self._stt_language = QComboBox()
+        self._stt_language.setStyleSheet(combo_qss())
+        self._stt_language.addItems(["auto", "es", "en", "pt", "fr", "it", "de", "ja", "zh"])
+        self._stt_language.setCurrentText(os.environ.get("GEMMA4_STT_LANGUAGE", "auto"))
+        lay.addRow(self._lbl("STT language"), self._stt_language)
+
+        self._tts_provider = QComboBox()
+        self._tts_provider.setStyleSheet(combo_qss())
+        self._tts_provider.addItems(["piper (local)", "edge-tts (online)", "elevenlabs (online)", "browser SAPI (Windows)", "off"])
+        self._tts_provider.setCurrentText(os.environ.get("GEMMA4_TTS_PROVIDER", "piper (local)"))
+        lay.addRow(self._lbl("TTS provider"), self._tts_provider)
+
+        self._tts_voice = QLineEdit(str(os.environ.get("GEMMA4_TTS_VOICE", "es_AR-daniela-high")))
+        self._tts_voice.setStyleSheet(line_edit_qss())
+        self._tts_voice.setFont(mono(9))
+        self._tts_voice.setPlaceholderText("voice id — depends on provider")
+        lay.addRow(self._lbl("TTS voice"), self._tts_voice)
+
+        from PyQt6.QtWidgets import QDoubleSpinBox
+        self._tts_rate = QDoubleSpinBox()
+        self._tts_rate.setRange(0.5, 2.0)
+        self._tts_rate.setSingleStep(0.1)
+        self._tts_rate.setValue(float(os.environ.get("GEMMA4_TTS_RATE", "1.0") or "1.0"))
+        lay.addRow(self._lbl("TTS speech rate"), self._tts_rate)
+
+        self._wake_word = QLineEdit(str(os.environ.get("GEMMA4_WAKE_WORD", "gemma")))
+        self._wake_word.setStyleSheet(line_edit_qss())
+        self._wake_word.setFont(mono(9))
+        lay.addRow(self._lbl("Wake word"), self._wake_word)
+
+        self._wake_word_on = QCheckBox("Wake word enabled (passive listening)")
+        self._wake_word_on.setChecked(_env_truthy("GEMMA4_WAKE_WORD_ENABLED", False))
+        lay.addRow(self._lbl(""), self._wake_word_on)
+
+        warn = QLabel("Voice runtime not wired yet — settings are persisted for future activation.")
+        warn.setFont(mono(7))
+        warn.setStyleSheet(f"color: {C.ACC2};")
+        lay.addRow(warn)
+        return w
+
+    # ------------------------------------------------------------------
+    def _tab_toggles(self) -> QWidget:
+        w = QWidget()
+        lay = QVBoxLayout(w)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(8)
+
+        title = QLabel("FEATURE TOGGLES  (env vars applied at next agent restart)")
+        title.setFont(mono(8, True))
+        title.setStyleSheet(f"color: {C.TEXT_MED};")
+        lay.addWidget(title)
+
+        self._toggles_checks: dict[str, QCheckBox] = {}
+        for env, label, default in TOGGLES:
+            cb = QCheckBox(f"{label}  [{env}]")
+            cb.setChecked(_env_truthy(env, default))
+            self._toggles_checks[env] = cb
+            lay.addWidget(cb)
+        lay.addStretch()
+        return w
+
+    # ------------------------------------------------------------------
+    def _tab_paths(self) -> QWidget:
+        w = QWidget()
+        lay = QFormLayout(w)
+        lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(10)
+
+        cfg = self._agent_config
+
+        def _path_row(initial: str) -> tuple[QWidget, QLineEdit]:
+            le = QLineEdit(initial)
+            le.setStyleSheet(line_edit_qss())
+            le.setFont(mono(8))
+            br = QPushButton("...")
+            br.setFixedWidth(32)
+            br.setStyleSheet(button_qss())
+            row = QHBoxLayout()
+            row.setContentsMargins(0, 0, 0, 0)
+            row.addWidget(le, stretch=1)
+            row.addWidget(br)
+            ww = QWidget(); ww.setLayout(row)
+            def _pick():
+                p, _ = QFileDialog.getSaveFileName(self, "Choose path", initial)
+                if p:
+                    le.setText(p)
+            br.clicked.connect(_pick)
+            return ww, le
+
+        mp = str(getattr(cfg, "memory_path", "memory.json") or "memory.json")
+        mp_w, self._memory_path = _path_row(mp)
+        lay.addRow(self._lbl("memory.json"), mp_w)
+
+        sp = str(getattr(cfg, "state_path", "state.json") or "state.json")
+        sp_w, self._state_path = _path_row(sp)
+        lay.addRow(self._lbl("state.json"), sp_w)
+
+        tp = str(getattr(cfg, "trace_path", "trace.jsonl") or "trace.jsonl")
+        tp_w, self._trace_path = _path_row(tp)
+        lay.addRow(self._lbl("trace.jsonl"), tp_w)
+
+        sess_dir = QLineEdit(str(os.environ.get("GEMMA4_AGENT_SESSIONS_DIR") or str(Path.home() / ".gemma4" / "sessions")))
+        sess_dir.setStyleSheet(line_edit_qss())
+        sess_dir.setFont(mono(8))
+        lay.addRow(self._lbl("Sessions dir"), sess_dir)
+        self._sess_dir = sess_dir
+
+        tl_dir = QLineEdit(str(os.environ.get("GEMMA4_AGENT_TIMELINE_DIR") or str(Path.home() / ".gemma4" / "timeline")))
+        tl_dir.setStyleSheet(line_edit_qss())
+        tl_dir.setFont(mono(8))
+        lay.addRow(self._lbl("Timeline dir"), tl_dir)
+        self._tl_dir = tl_dir
+
+        return w
+
+    # ------------------------------------------------------------------
+    def _tab_prompt(self) -> QWidget:
+        w = QWidget()
+        lay = QVBoxLayout(w)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(8)
+
+        title = QLabel("SYSTEM PROMPT (read-only preview of current core prompt)")
+        title.setFont(mono(8, True))
+        title.setStyleSheet(f"color: {C.TEXT_MED};")
+        lay.addWidget(title)
+
+        try:
+            from ..agent import SYSTEM_PROMPT
+            text = SYSTEM_PROMPT
+        except Exception as exc:
+            text = f"<could not load: {exc}>"
+
+        edit = QPlainTextEdit()
+        edit.setPlainText(text)
+        edit.setReadOnly(True)
+        edit.setFont(QFont("Consolas", 9))
+        edit.setStyleSheet(text_edit_qss())
+        lay.addWidget(edit, stretch=1)
+
+        hint = QLabel(
+            "To override, edit gemma4_agent/agent.py SYSTEM_PROMPT. Persona and "
+            "project_context hints are appended automatically at runtime."
+        )
+        hint.setFont(mono(8))
+        hint.setStyleSheet(f"color: {C.TEXT_DIM};")
+        hint.setWordWrap(True)
+        lay.addWidget(hint)
+        return w
+
+    # ------------------------------------------------------------------
+    def _tab_about(self) -> QWidget:
+        w = QWidget()
+        lay = QVBoxLayout(w)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(12)
+
+        title = QLabel("GEMMA4-MARK-I")
+        title.setFont(mono(20, True))
+        title.setStyleSheet(f"color: {C.PRI};")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        sub = QLabel("Local AI agent · Just A Rather Very Intelligent System")
+        sub.setFont(mono(9))
+        sub.setStyleSheet(f"color: {C.TEXT_DIM};")
+        sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(sub)
+
+        sep = QFrame(); sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet(f"color: {C.BORDER};")
+        lay.addWidget(sep)
+
+        from .. import agent as agent_mod
+        info = QLabel(
+            f"Python: {sys.version.split()[0]}\n"
+            f"Settings file: {SETTINGS_PATH}\n"
+            f"Agent module: {Path(agent_mod.__file__).parent}\n"
+        )
+        info.setFont(mono(8))
+        info.setStyleSheet(f"color: {C.TEXT};")
+        lay.addWidget(info)
+        lay.addStretch()
+
+        credits = QLabel("Aesthetic inspired by MARK XXXIX (FatihMakes).\nAll inference is LOCAL.")
+        credits.setFont(mono(8))
+        credits.setStyleSheet(f"color: {C.TEXT_DIM};")
+        credits.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(credits)
+        return w
+
+    # ------------------------------------------------------------------
+    def _lbl(self, text: str) -> QLabel:
+        l = QLabel(text)
+        l.setFont(mono(9))
+        l.setStyleSheet(f"color: {C.TEXT_MED}; background: transparent;")
+        return l
+
+    # ------------------------------------------------------------------
+    def _gather(self) -> dict:
+        env: dict[str, str] = {}
+        if self._model_alias.text().strip():
+            env["GEMMA4_MODEL"] = self._model_alias.text().strip()
+        if self._gguf_path.text().strip():
+            env["GEMMA4_GGUF_PATH"] = self._gguf_path.text().strip()
+        env["GEMMA4_AGENT_SERVER"] = self._server_url.text().strip() or "http://127.0.0.1:8080"
+        env["GEMMA4_AGENT_CONTEXT"] = str(int(self._ctx_size.value()))
+        env["GEMMA4_AGENT_MAX_TOKENS"] = str(int(self._max_tokens.value()))
+        env["GEMMA4_AGENT_MODE"] = self._mode_combo.currentText()
+        env["GEMMA4_AGENT_PERSONA"] = self._persona_combo.currentText()
+        env["GEMMA4_AGENT_MAX_TURNS"] = str(int(self._max_turns.value()))
+        env["GEMMA4_AGENT_SAFETY"] = "true" if self._enable_safety.isChecked() else "false"
+        env["GEMMA4_AGENT_MEMORY"] = self._memory_path.text().strip()
+        env["GEMMA4_AGENT_STATE"] = self._state_path.text().strip()
+        env["GEMMA4_AGENT_TRACE_FILE"] = self._trace_path.text().strip()
+        env["GEMMA4_AGENT_SESSIONS_DIR"] = self._sess_dir.text().strip()
+        env["GEMMA4_AGENT_TIMELINE_DIR"] = self._tl_dir.text().strip()
+
+        # Sampling tab
+        env["GEMMA4_TEMPERATURE"]     = f"{self._temperature.value():.3f}"
+        env["GEMMA4_TOP_P"]           = f"{self._top_p.value():.3f}"
+        env["GEMMA4_TOP_K"]           = str(int(self._top_k.value()))
+        env["GEMMA4_MIN_P"]           = f"{self._min_p.value():.3f}"
+        env["GEMMA4_REPEAT_PENALTY"]  = f"{self._repeat_penalty.value():.3f}"
+        env["GEMMA4_SEED"]            = str(int(self._seed.value()))
+        env["GEMMA4_ENABLE_THINKING"] = "true" if self._enable_thinking.isChecked() else "false"
+        env["GEMMA4_PARALLEL_TOOL_CALLS"] = "true" if self._parallel_tool_calls.isChecked() else "false"
+
+        # Behaviour tab
+        env["GEMMA4_AGENT_SUMMARIZATION_COOLDOWN"]   = str(int(self._summarization_cooldown.value()))
+        env["GEMMA4_AGENT_FACT_EXTRACTION_COOLDOWN"] = str(int(self._fact_cooldown.value()))
+        env["GEMMA4_AGENT_TOOL_TIMEOUT"]             = str(int(self._tool_timeout.value()))
+        env["GEMMA4_AGENT_CHAT_TIMEOUT"]             = str(int(self._chat_timeout.value()))
+        env["GEMMA4_AGENT_EXPERIENCE_MAX"]           = str(int(self._max_experience.value()))
+        env["GEMMA4_AGENT_STRICT_HONESTY"]           = "true" if self._strict_honesty.isChecked() else "false"
+        env["GEMMA4_AGENT_AUTO_REPLAN"]              = "true" if self._auto_replan.isChecked() else "false"
+
+        # Transcription tab
+        env["GEMMA4_STT_PROVIDER"]      = self._stt_provider.currentText()
+        env["GEMMA4_STT_MODEL"]         = self._stt_model.text().strip()
+        env["GEMMA4_STT_LANGUAGE"]      = self._stt_language.currentText()
+        env["GEMMA4_TTS_PROVIDER"]      = self._tts_provider.currentText()
+        env["GEMMA4_TTS_VOICE"]         = self._tts_voice.text().strip()
+        env["GEMMA4_TTS_RATE"]          = f"{self._tts_rate.value():.2f}"
+        env["GEMMA4_WAKE_WORD"]         = self._wake_word.text().strip()
+        env["GEMMA4_WAKE_WORD_ENABLED"] = "true" if self._wake_word_on.isChecked() else "false"
+
+        toggles: dict[str, bool] = {}
+        for env_key, cb in self._toggles_checks.items():
+            toggles[env_key] = cb.isChecked()
+
+        return {"env": env, "toggles": toggles}
+
+    def _on_apply(self) -> None:
+        data = self._gather()
+        save_persisted(data)
+        apply_to_env(data)
+        self.apply_clicked.emit(data)
+        self.accept()
+
+    def _on_restart(self) -> None:
+        data = self._gather()
+        save_persisted(data)
+        apply_to_env(data)
+        self.restart_clicked.emit()
+        self.accept()
+
+
+def _env_truthy(name: str, default: bool) -> bool:
+    raw = (os.environ.get(name) or "").strip().casefold()
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
+def apply_persisted_on_startup() -> None:
+    """Called at app launch to push the last saved env to os.environ."""
+    data = load_persisted()
+    if data:
+        apply_to_env(data)

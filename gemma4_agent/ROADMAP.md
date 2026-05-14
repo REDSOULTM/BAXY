@@ -1271,3 +1271,48 @@ Resumen jarvis-personal-ai post K1-K3 (omitiendo UI web, voz, camara):
 - **18/23 features cubiertas o mejores** (RAG con rerank, parallel tools, memory, plan/replan, subagents, doc processing, semantic experience recall, summarization, personas, project context, fact extraction, sessions, timeline, dynamic budgets).
 - **2 deferidas a F1**: stop-generation mid-stream (CLI lo aprueba con Ctrl+C; importa solo con UI), strong identity lock (parcial via SYSTEM_PROMPT + personas).
 - **2 rechazadas por decision**: multi-model analysis (rompe local-only), dynamic skills runtime (riesgo de exec arbitrario, prefiero tools fijas y auditables).
+
+## Fase U — Jarvis-style desktop GUI (2026-05-14)
+
+Construida una GUI PyQt6 local estilo Mark XXXIX en `gemma4_agent/ui/`. Una sola corrida: `python -m gemma4_agent.ui`. Sin servidor, sin npm, sin browser — todo en proceso.
+
+| Modulo | Que hace |
+|---|---|
+| ui/theme.py            | Paleta cyan Jarvis, STATE_TABLE (10 estados con simbolo+color), QSS helpers, `symbol_font()` (Segoe UI Symbol fallback). |
+| ui/metrics.py          | `SysMetrics` thread daemon que samplea CPU/MEM/NET/GPU/TMP/DISK cada 1.5s. nvidia-smi + rocm-smi + WMI (Windows) + sensors_temperatures (Linux). |
+| ui/hud.py              | **HudCanvas** — el centerpiece. 60fps. 3 anillos giratorios con velocidades diferentes, halo radial pulsante, 2 scanners arc cruzandose, tick marks cada 10° con labels grados, brackets esquineros, crosshair, particulas radiales en SPEAKING/THINKING, waveform animado, pulse rings expanding, datos hex orbitando, telemetria CPU·OK MEM·OK NET·ON etc, orbe interior con iris+highlight, metadata strip (modelo / persona / conexion). |
+| ui/metric_bar.py       | Barras CPU/MEM/GPU/NET/DISK/TMP con thresholds amber>65% red>85%. |
+| ui/log_widget.py       | LogWidget typewriter (4ms/char) coloreado por tag: you/ai/tool/ok/err/sys/file/warn. Thread-safe via signal. |
+| ui/agent_thread.py     | AgentWorker QThread. Health poll cada 8s. Emite signals: state_changed/progress/log/reply_ready/llm_error/connection_changed. |
+| ui/panels.py           | Header (titulo+reloj+brand+date), Left panel (SYS MONITOR + UP/PROC/OS + CONTEXT BUDGET + status badges), Right panel (LOG + 5 action buttons + COMMAND INPUT con attach), Footer (shortcuts + session id). |
+| ui/sessions_panel.py   | Sidebar overlay K1. Search filter, double-click loads, NEW/RENAME/DELETE/LOAD. |
+| ui/settings.py         | **9 tabs**: CONNECTION (server URL, model alias, GGUF path, ctx, max_tokens), AGENT (mode, persona, max turns, safety), SAMPLING (temperature, top_p/top_k, min_p, repeat_penalty, seed, enable_thinking, parallel_tool_calls), BEHAVIOUR (cooldowns, timeouts, experience max, strict honesty, auto-replan), TRANSCRIPT (STT provider/model/language, TTS provider/voice/rate, wake word), TOGGLES (8 env-var feature toggles J1-J5+K1-K3+G2+TRACE), PATHS, PROMPT (SYSTEM_PROMPT readonly), ABOUT. Persistido a `~/.gemma4/gui.json`. |
+| ui/triggers.py         | Editor TriggerCMD-style. CRUD + run_now + Import JSON. Reusa la tool `routine` con safety contra destructivos. |
+| ui/memory_viewer.py    | 3 tabs: PERSISTENT (CRUD MemoryStore), EXPERIENCE (semantic recall sobre sqlite-vec), KNOWLEDGE (search con rerank J1). |
+| ui/tool_explorer.py    | Browser de las 62 tools con search filter + schema preview + run form para invocar cualquier action manualmente. |
+| ui/main_window.py      | Ensambla todo. 8 shortcuts (F11, Ctrl+L/N/,/T/M/E/Shift+S). |
+| ui/app.py              | Splash boot animado + entry point. |
+
+**Estados HUD**: INITIALISING / IDLE / LISTENING / THINKING / PROCESSING / EXECUTING / SPEAKING / ERROR / MUTED / OFFLINE — cada uno con color, simbolo blinking y velocidades de animacion propios.
+
+**Configurable desde la GUI** (pedido explicito del usuario):
+- Modelo Gemma (alias + GGUF path + context size)
+- Server URL + max_tokens
+- Sampling completo (temperature/top_p/top_k/min_p/repeat_penalty/seed/thinking/parallel_tool_calls)
+- Modo agente + Persona + max_turns + safety
+- Comportamiento (cooldowns, timeouts, experience max, strict honesty, auto-replan)
+- Transcripcion (STT/TTS providers/models/voice/rate + wake word)
+- 8 toggles env-var (J1-J5, K1-K3, G2, TRACE)
+- Paths (memory/state/trace/sessions/timeline)
+- Phrase triggers (CRUD + import TriggerCMD JSON)
+- Memory (add/delete/clear/search semantico)
+- Tools (browse + run manual)
+
+**Validacion:**
+- 44/44 tests pasando (2 nuevos U1).
+- pyright 0 errores en `ui/`.
+- eval_smoke missing=[], 62 schemas.
+- HUD verificado renderizando los 9+ estados.
+- MainWindow construye sin crash con worker stub (offscreen test).
+
+**Como lanzar:** `python -m gemma4_agent.ui` (requiere `pip install PyQt6`).
