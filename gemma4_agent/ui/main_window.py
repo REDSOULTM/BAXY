@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from PyQt6.QtCore import QSize, Qt, QTimer
+from PyQt6.QtCore import QSize, Qt, QThread, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
@@ -31,6 +31,111 @@ from .triggers import TriggersDialog
 
 _DEFAULT_W, _DEFAULT_H = 1280, 820
 _MIN_W, _MIN_H = 1000, 700
+
+
+class ServerBootWorker(QThread):
+    """Arranca llama-server en background sin bloquear la GUI.
+
+    Emite:
+      - log(text, tag) durante el boot
+      - finished_with_result(result_str) cuando termina: "started", "external",
+        "missing_files", "timeout", "skipped_standby", "already_running"
+    """
+    log = pyqtSignal(str, str)
+    finished_with_result = pyqtSignal(str)
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+
+    def run(self) -> None:
+        # Imports locales para no cargar el manager si la GUI nunca dispara boot.
+        try:
+            from ..config import AgentConfig
+            from ..llama_server import LlamaServerManager, port_in_use
+            from ..profiles import apply_profile_to_env, get_active_profile
+        except Exception as exc:
+            self.log.emit(f"server boot failed at import: {exc}", "err")
+            self.finished_with_result.emit("missing_files")
+            return
+
+        profile = get_active_profile()
+        if not profile.server_running:
+            self.log.emit(
+                f"profile {profile.display_name} has server off; skipping boot",
+                "sys",
+            )
+            self.finished_with_result.emit("skipped_standby")
+            return
+
+        # Aplicar env vars del perfil ANTES de construir AgentConfig para que
+        # el comando del server vea context/mmproj coherentes.
+        apply_profile_to_env(profile)
+        config = AgentConfig.from_env()
+
+        if port_in_use():
+            # Server externo en :8080. Respetamos.
+            self.log.emit(
+                "external llama-server detected on :8080; NOT touching it",
+                "warn",
+            )
+            # Check context mismatch (mismo helper que en _apply_profile)
+            try:
+                from ..llama_server import get_external_server_context
+                ext_ctx = get_external_server_context()
+                if ext_ctx is not None and ext_ctx < int(profile.context_size):
+                    self.log.emit(
+                        f"external server has -c={ext_ctx} but profile "
+                        f"{profile.name} asks for {profile.context_size}; "
+                        "long prompts will be truncated by the server",
+                        "warn",
+                    )
+            except Exception:
+                pass
+            self.finished_with_result.emit("external")
+            return
+
+        # Verificar archivos
+        if not config.llama_server_exe.exists():
+            self.log.emit(
+                f"llama-server.exe not found at {config.llama_server_exe}",
+                "err",
+            )
+            self.finished_with_result.emit("missing_files")
+            return
+        if not config.model_path.exists():
+            self.log.emit(
+                f"model not found at {config.model_path}",
+                "err",
+            )
+            self.finished_with_result.emit("missing_files")
+            return
+
+        self.log.emit(
+            f"booting llama-server (profile={profile.display_name}, "
+            f"ctx={profile.context_size})...",
+            "sys",
+        )
+        manager = LlamaServerManager(config=config)
+        result = manager.start(profile, wait_health=True, timeout_s=90)
+        if result == "started":
+            self.log.emit("llama-server ready", "ok")
+        elif result == "timeout":
+            self.log.emit(
+                "llama-server did not become healthy in 90s; "
+                "check logs/llama-server.err.log",
+                "warn",
+            )
+        elif result == "missing_files":
+            self.log.emit("llama-server cannot start: missing files", "err")
+        elif result == "external":
+            # raza: detectamos externo durante el spawn
+            self.log.emit(
+                "external llama-server appeared during boot; respecting it",
+                "warn",
+            )
+        elif result == "already_running":
+            self.log.emit("llama-server already running for this profile", "sys")
+        self.finished_with_result.emit(result)
 
 
 class MainWindow(QMainWindow):
@@ -86,6 +191,22 @@ class MainWindow(QMainWindow):
         _sc("Ctrl+T",         self._open_triggers)
         _sc("Ctrl+M",         self._open_memory)
         _sc("Ctrl+E",         self._open_tools)
+        # Fase V — cycle profiles
+        _sc("Ctrl+Shift+G",   self._cycle_profile)
+
+        # Fase V — wire profile selector buttons + apply initial active profile
+        self._llama_manager = None  # type: ignore[assignment]  # lazy init
+        self._profile_watcher = None  # type: ignore[assignment]  # lazy init
+        self._wire_profile_buttons()
+        self._refresh_profile_selector()
+        # Start watcher if persisted auto-config has enabled=True
+        try:
+            from .settings import load_persisted
+            auto_cfg = (load_persisted().get("profiles_auto") or {})
+            if auto_cfg.get("enabled"):
+                self._reconfigure_profile_watcher(auto_cfg)
+        except Exception:
+            pass
 
         # Bootstrap sessions
         try:
@@ -99,6 +220,13 @@ class MainWindow(QMainWindow):
 
         # Kick off worker
         self.worker.start()
+
+        # Auto-arrancar llama-server si el perfil lo pide y no hay server vivo
+        self._server_boot_thread: ServerBootWorker | None = None
+        self._server_booting: bool = False
+        # Refrescar estado del input por si arranca en STANDBY persistido
+        QTimer.singleShot(0, self._refresh_chat_input_blocked)
+        QTimer.singleShot(50, self._maybe_autostart_server)
 
     # ------------------------------------------------------------------
     def _build(self) -> None:
@@ -196,6 +324,18 @@ class MainWindow(QMainWindow):
     def _on_send(self, text: str) -> None:
         if not text.strip():
             return
+        # Bloquear si el server esta booting
+        if self._server_booting:
+            self.log.append("Server is booting, please wait...", "warn")
+            return
+        # Fase V — bloquear envio si profile activo es STANDBY
+        try:
+            from ..profiles import get_active_profile
+            if get_active_profile().name == "standby":
+                self.log.append("Server offline — switch profile to chat.", "warn")
+                return
+        except Exception:
+            pass
         # log appears in worker via log signal (you tag)
         if self._current_session is not None:
             from ..sessions import SessionTurn
@@ -283,6 +423,13 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _apply_settings_live(self, data: dict) -> None:
+        # Fase V — start/stop profile watcher according to auto-config
+        try:
+            auto = data.get("profiles_auto") or {}
+            self._reconfigure_profile_watcher(auto)
+        except Exception as exc:
+            self.log.append(f"watcher reconfigure failed: {exc}", "err")
+
         env = data.get("env") or {}
         agent = self.worker.get_agent()
         # Persona — applied to running agent + HUD.
@@ -473,9 +620,346 @@ class MainWindow(QMainWindow):
         self.log.append("log cleared", "sys")
 
     # ------------------------------------------------------------------
+    # Fase V — VRAM profiles
+    # ------------------------------------------------------------------
+    def _wire_profile_buttons(self) -> None:
+        """Conecta los 4 botones del selector con _on_profile_button_clicked."""
+        buttons: dict[str, Any] = self._left_h.get("profile_buttons") or {}
+        for full_name, btn in buttons.items():
+            # Lambdas capturan el nombre por argumento por defecto
+            btn.clicked.connect(lambda _=False, n=full_name: self._on_profile_button_clicked(n))
+            # Tooltip
+            try:
+                from ..profiles import PROFILES
+                p = PROFILES[full_name]
+                btn.setToolTip(
+                    f"{p.display_name}  -  ~{p.est_vram_mb} MB est.\n\n{p.description}\n\n"
+                    "Hotkey: Ctrl+Shift+G para ciclar."
+                )
+            except Exception:
+                pass
+
+    def _refresh_profile_selector(self) -> None:
+        """Pinta el boton activo y los demas mas apagados."""
+        try:
+            from ..profiles import get_active_profile
+            active = get_active_profile().name
+        except Exception:
+            active = "balanced"
+        buttons: dict[str, Any] = self._left_h.get("profile_buttons") or {}
+        for full_name, btn in buttons.items():
+            is_active = (full_name == active)
+            if is_active:
+                btn.setStyleSheet(
+                    f"QPushButton {{ background: {C.PANEL2}; color: {C.PRI}; "
+                    f"border: 1px solid {C.PRI}; border-radius: 2px; padding: 2px; }}"
+                )
+            else:
+                btn.setStyleSheet(
+                    f"QPushButton {{ background: {C.PANEL2}; color: {C.TEXT_DIM}; "
+                    f"border: 1px solid {C.BORDER}; border-radius: 2px; padding: 2px; }}"
+                    f"QPushButton:hover {{ color: {C.PRI}; border-color: {C.BORDER_A}; }}"
+                )
+
+    def _on_profile_button_clicked(self, name: str) -> None:
+        """Click en una pildora -> aplica perfil con confirmacion solo para STANDBY."""
+        from ..profiles import PROFILES, get_active_profile
+
+        if name not in PROFILES:
+            return
+        profile = PROFILES[name]
+        current = get_active_profile().name
+        if current == name:
+            self.log.append(f"profile already active: {profile.display_name}", "sys")
+            return
+
+        # Solo STANDBY pide confirmacion
+        if name == "standby":
+            reply = QMessageBox.question(
+                self, "Standby?",
+                "Esto apagara llama-server. La GUI sigue viva pero el chat dejara "
+                "de responder. Cualquier mensaje mostrara 'Server offline'.\n\nContinuar?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if reply != QMessageBox.StandardButton.Yes:
+                return
+
+        # Light con modelo chico ausente -> warning amber + fallback
+        if name == "light":
+            try:
+                from ..profiles import light_model_configured, light_model_missing
+                if light_model_missing():
+                    path = light_model_configured() or "(no configurado)"
+                    QMessageBox.warning(
+                        self, "Light model missing",
+                        f"Light profile pide un GGUF chico (ej. gemma-3n-e2b-it.Q4_K_M.gguf) "
+                        f"en:\n  {path}\n\n"
+                        "El archivo no existe. Voy a aplicar el perfil igual usando tu modelo "
+                        "principal con context=4096 como fallback. Para usar el modelo chico "
+                        "real: bajalo y poneo en esa ruta, o cambia la ruta en "
+                        "Settings -> PROFILES.",
+                    )
+                    self.log.append(
+                        f"WARNING light_model_path missing ({path}); falling back to main model with ctx=4096",
+                        "warn",
+                    )
+            except Exception:
+                pass
+
+        self._apply_profile(name)
+
+    def _apply_profile(self, name: str) -> None:
+        """Persiste perfil + aplica env vars + reinicia server y worker."""
+        from ..profiles import (
+            PROFILES, apply_profile_to_env, get_active_profile, set_active_profile,
+        )
+        if name not in PROFILES:
+            return
+        try:
+            set_active_profile(name)
+        except (ValueError, OSError) as exc:
+            self.log.append(f"profile persist failed: {exc}", "err")
+            return
+        profile = get_active_profile()
+        apply_profile_to_env(profile)
+        self.log.append(f"profile -> {profile.display_name} (ctx={profile.context_size})", "sys")
+
+        # Server: stop/start segun server_running. NO matamos servers externos.
+        try:
+            from ..llama_server import LlamaServerManager, port_in_use
+            if self._llama_manager is None:
+                cfg = self.worker.get_config()
+                self._llama_manager = LlamaServerManager(config=cfg)
+            mgr = self._llama_manager
+            if not profile.server_running:
+                # Standby -> apagar server (si nuestro). External no se toca.
+                if mgr.is_external_server() or (not mgr.is_running() and port_in_use()):
+                    self.log.append(
+                        "external llama-server detected; profile flags will NOT reach it",
+                        "warn",
+                    )
+                else:
+                    mgr.stop()
+                self.hud.set_state("OFFLINE")
+            else:
+                # Hay que (re)arrancar con flags del perfil. Si hay externo, respetar.
+                if port_in_use() and not mgr.is_running():
+                    self.log.append(
+                        "external llama-server detected on :8080; applying env vars and "
+                        "restarting worker, but NOT restarting the external server",
+                        "warn",
+                    )
+                    # Tarea 2 — check context mismatch
+                    try:
+                        from ..llama_server import get_external_server_context
+                        ext_ctx = get_external_server_context()
+                        if ext_ctx is not None and ext_ctx < int(profile.context_size):
+                            self.log.append(
+                                f"external server has -c={ext_ctx} but profile "
+                                f"{profile.name} asks for {profile.context_size}; "
+                                "long prompts will be truncated by the server",
+                                "warn",
+                            )
+                    except Exception:
+                        pass
+                else:
+                    mgr.restart(profile, wait_health=False)
+                    # mgr.restart() puede haber detectado externo durante el restart;
+                    # surface el mismatch msg si quedo seteado en el manager.
+                    try:
+                        if mgr.is_external_server():
+                            msg = mgr.external_context_mismatch_msg()
+                            if msg:
+                                self.log.append(msg, "warn")
+                    except Exception:
+                        pass
+                self.hud.set_state("IDLE")
+        except Exception as exc:
+            self.log.append(f"server transition failed: {exc}", "err")
+
+        # Restart worker para que el agente recoja los nuevos env vars
+        try:
+            self._restart_worker()
+        except Exception as exc:
+            self.log.append(f"worker restart failed: {exc}", "err")
+
+        self._refresh_profile_selector()
+        self._refresh_chat_input_blocked()
+
+    def _maybe_autostart_server(self) -> None:
+        """Arranca llama-server si: perfil != STANDBY, no hay server vivo,
+        y no hay un boot ya en curso.
+
+        Llamado 50ms despues de mostrar la GUI para que el primer paint termine
+        antes de que el QThread del server compita por CPU.
+        """
+        if self._server_booting:
+            return
+        try:
+            from ..llama_server import port_in_use
+            from ..profiles import get_active_profile
+        except Exception as exc:
+            self.log.append(f"autostart: import failed: {exc}", "err")
+            return
+
+        profile = get_active_profile()
+        if not profile.server_running:
+            # STANDBY: dejar OFFLINE como esta
+            self.hud.set_state("OFFLINE")
+            return
+
+        if port_in_use():
+            # Ya hay algo (nuestro previo o externo). No bootear.
+            self.log.append(
+                "llama-server already responding on :8080; not booting",
+                "sys",
+            )
+            self.hud.set_state("IDLE")
+            return
+
+        # Boot real
+        self._server_booting = True
+        self.hud.set_state("INITIALISING")
+        self._refresh_chat_input_blocked()
+        self._server_boot_thread = ServerBootWorker(self)
+        self._server_boot_thread.log.connect(self._on_log)
+        self._server_boot_thread.finished_with_result.connect(self._on_server_boot_finished)
+        self._server_boot_thread.start()
+
+    def _on_server_boot_finished(self, result: str) -> None:
+        self._server_booting = False
+        # Liberar referencia al thread para que se limpie
+        thread = self._server_boot_thread
+        self._server_boot_thread = None
+        if thread is not None:
+            try:
+                thread.wait(500)
+            except Exception:
+                pass
+
+        if result == "started" or result == "external" or result == "already_running":
+            self.hud.set_state("IDLE")
+        elif result == "skipped_standby":
+            self.hud.set_state("OFFLINE")
+        elif result in {"timeout", "missing_files"}:
+            self.hud.set_state("ERROR")
+        else:
+            self.hud.set_state("IDLE")
+        self._refresh_chat_input_blocked()
+
+    def _refresh_chat_input_blocked(self) -> None:
+        """Actualiza el placeholder del input + (des)habilitacion segun estado del server."""
+        try:
+            input_widget = self._right_h.get("input")
+            send_btn = self._right_h.get("send_btn")
+        except Exception:
+            return
+        if self._server_booting:
+            if input_widget is not None:
+                input_widget.setEnabled(False)
+                input_widget.setPlaceholderText("Server is booting, please wait...")
+            if send_btn is not None:
+                send_btn.setEnabled(False)
+            return
+        # No booteando: estado normal segun perfil
+        try:
+            from ..profiles import get_active_profile
+            is_standby = (get_active_profile().name == "standby")
+        except Exception:
+            is_standby = False
+        if input_widget is not None:
+            input_widget.setEnabled(not is_standby)
+            input_widget.setPlaceholderText(
+                "Server offline — switch profile to chat" if is_standby
+                else "Talk to GEMMA4..."
+            )
+        if send_btn is not None:
+            send_btn.setEnabled(not is_standby)
+
+    def _reconfigure_profile_watcher(self, auto_cfg: dict[str, Any]) -> None:
+        """Aplica config de auto-switch: arranca o para el thread del watcher."""
+        from ..profile_watcher import ProfileWatcher, WatcherConfig
+
+        # Stop existente si lo hay
+        if self._profile_watcher is not None:
+            try:
+                self._profile_watcher.stop(timeout_s=2.0)
+            except Exception:
+                pass
+            self._profile_watcher = None
+
+        if not auto_cfg.get("enabled"):
+            self.log.append("auto-switch watcher: disabled", "sys")
+            return
+
+        cfg = WatcherConfig(
+            enabled=True,
+            downgrade_to=str(auto_cfg.get("downgrade_to") or "light"),
+            restore_to=str(auto_cfg.get("restore_to") or "balanced"),
+            game_watchlist=list(auto_cfg.get("game_watchlist") or []),
+            trigger_on_game=bool(auto_cfg.get("trigger_on_game", True)),
+            trigger_on_gpu=bool(auto_cfg.get("trigger_on_gpu", False)),
+            trigger_on_ram=bool(auto_cfg.get("trigger_on_ram", False)),
+        )
+        self._profile_watcher = ProfileWatcher(cfg, on_change=self._on_watcher_change)
+        self._profile_watcher.start()
+        self.log.append(
+            f"auto-switch watcher: enabled (down->{cfg.downgrade_to} on triggers, up->{cfg.restore_to})",
+            "sys",
+        )
+
+    def _on_watcher_change(self, name: str, reason: str) -> None:
+        """Callback del thread watcher. Llamado desde thread no-GUI.
+
+        Solo loggea y refresca el selector. NO arrancamos llama-server desde
+        aca para no bloquear el thread; el usuario vera el cambio al proximo
+        request (env vars ya estan aplicados).
+        """
+        # Marshalling a GUI thread: schedule a QTimer 0-shot
+        from PyQt6.QtCore import QTimer
+        def _do() -> None:
+            self.log.append(f"watcher -> {name} ({reason})", "sys")
+            self._refresh_profile_selector()
+        QTimer.singleShot(0, _do)
+
+    def _cycle_profile(self) -> None:
+        """Ctrl+Shift+G: PERF -> BAL -> LIGHT -> STDBY -> PERF."""
+        from PyQt6.QtWidgets import QToolTip
+        from ..profiles import PROFILE_NAMES, get_active_profile
+        order: list[str] = [str(n) for n in PROFILE_NAMES]
+        current = get_active_profile().name
+        try:
+            idx = order.index(current)
+        except ValueError:
+            idx = 0
+        nxt = order[(idx + 1) % len(order)]
+        # Aplicar pasa por el handler estandar (incluye confirm de STANDBY)
+        self._on_profile_button_clicked(nxt)
+        # Feedback visual: tooltip flotante 2s
+        try:
+            from PyQt6.QtCore import QPoint
+            pos = self.mapToGlobal(QPoint(self.width() // 2, 80))
+            QToolTip.showText(pos, f"Profile: {nxt.upper()}", self)
+        except Exception:
+            pass
+
+    # ------------------------------------------------------------------
     def closeEvent(self, a0: Any) -> None:  # type: ignore[override]
         try:
             self._metrics.stop()
+        except Exception:
+            pass
+        # Fase V — stop watcher cleanly
+        try:
+            if self._profile_watcher is not None:
+                self._profile_watcher.stop(timeout_s=2.0)
+        except Exception:
+            pass
+        # Stop server boot thread cleanly (no force-kill; espera breve)
+        try:
+            if self._server_boot_thread is not None and self._server_boot_thread.isRunning():
+                self._server_boot_thread.wait(2000)
         except Exception:
             pass
         try:

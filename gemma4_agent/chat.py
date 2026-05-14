@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
-import subprocess
 import sys
 import threading
 import time
@@ -205,48 +204,51 @@ def _print_server_help(config: AgentConfig) -> None:
     print(f"\n{PALETTE['system']}O ejecutá el agente con --start-server para levantarlo automáticamente.{PALETTE['reset']}")
 
 
-def _start_llama_server(config: AgentConfig, agent: Gemma4Agent) -> bool:
-    llama = config.llama_server_exe.resolve()
-    model = config.model_path.resolve()
-    mmproj = config.mmproj_path.resolve()
-    missing = [str(p) for p in (llama, model, mmproj) if not p.exists()]
-    if missing:
-        print(f"{PALETTE['error']}No puedo iniciar llama-server; faltan archivos:{PALETTE['reset']}")
-        for path in missing:
-            print(f"  {path}")
+def _start_llama_server(config: AgentConfig) -> bool:
+    """Delega en LlamaServerManager + perfil activo. True si quedo healthy.
+
+    El manager internamente hace su propio health-check, asi que no necesitamos
+    la instancia del agente. Antes la firma pedia el agent para usar
+    agent.client.health(); ahora es vestigio del refactor.
+    """
+    from .llama_server import LlamaServerManager, port_in_use
+    from .profiles import apply_profile_to_env, get_active_profile
+
+    profile = get_active_profile()
+    if not profile.server_running:
+        print(f"{PALETTE['system']}Perfil {profile.display_name}: server off; no se arranca.{PALETTE['reset']}")
         return False
 
-    cmd = [
-        str(llama),
-        "-m", str(model),
-        "--mmproj", str(mmproj),
-        "--jinja",
-        "--port", "8080",
-        "-ngl", "99",
-        "-c", str(config.context_size),
-        "--parallel", "1",
-        "--ctx-checkpoints", "1",
-        "--flash-attn", "on",
-    ]
-    log_dir = Path(__file__).resolve().parent / "logs"
-    log_dir.mkdir(exist_ok=True)
-    stdout_path = log_dir / "llama-server.out.log"
-    stderr_path = log_dir / "llama-server.err.log"
-    stdout = stdout_path.open("a", encoding="utf-8", errors="replace")
-    stderr = stderr_path.open("a", encoding="utf-8", errors="replace")
-    subprocess.Popen(
-        cmd,
-        cwd=str(Path(__file__).resolve().parents[1]),
-        stdout=stdout,
-        stderr=stderr,
-        creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+    # Aplicar env vars del perfil al entorno (afecta a llama_command y al worker)
+    apply_profile_to_env(profile)
+
+    # Si hay externo, NO matar; solo loggear y devolver True (sigue funcional).
+    if port_in_use():
+        print(f"{PALETTE['system']}llama-server externo detectado en :8080 (no se reconfigurara).{PALETTE['reset']}")
+        return True
+
+    print(
+        f"{PALETTE['system']}Iniciando llama-server "
+        f"(profile={profile.name}, ctx={profile.context_size})...{PALETTE['reset']}"
     )
-    print(f"{PALETTE['system']}Iniciando llama-server; logs en {stdout_path}{PALETTE['reset']}")
-    for _ in range(90):
-        if agent.client.health(timeout_s=1.0):
-            return True
-        time.sleep(1)
-    print(f"{PALETTE['error']}llama-server no quedó listo tras 90s. Revisá {stderr_path}{PALETTE['reset']}")
+    manager = LlamaServerManager(config=config)
+    result = manager.start(profile, wait_health=True, timeout_s=90)
+    if result == "started":
+        return True
+    if result == "already_running":
+        return True
+    if result == "external":
+        return True
+    if result == "missing_files":
+        print(f"{PALETTE['error']}No puedo iniciar llama-server: faltan archivos.{PALETTE['reset']}")
+        print(f"  llama-server.exe: {config.llama_server_exe}")
+        print(f"  model:            {config.model_path}")
+        return False
+    log_dir = Path(__file__).resolve().parent / "logs"
+    print(
+        f"{PALETTE['error']}llama-server no quedo listo en 90s. "
+        f"Revisa {log_dir / 'llama-server.err.log'}{PALETTE['reset']}"
+    )
     return False
 
 
@@ -265,7 +267,8 @@ def main() -> int:
     parser.add_argument("--audio", action="append", default=[], help="Adjuntar audio al primer turno")
     parser.add_argument("--mode", default=None, help="Modo: auto, fast_action, deep_action, vision_action, audio_mode, research")
     parser.add_argument("--no-health", action="store_true", help="No verificar /health antes de iniciar")
-    parser.add_argument("--start-server", action="store_true", help="Levantar llama-server si no responde")
+    parser.add_argument("--start-server", action="store_true", help="(Compatibilidad) Levantar llama-server si no responde. Hoy es el default.")
+    parser.add_argument("--no-start-server", action="store_true", help="No intentar levantar llama-server automaticamente")
     parser.add_argument("--no-progress", action="store_true", help="Desactivar barra de progreso del chat")
     args = parser.parse_args()
 
@@ -278,9 +281,12 @@ def main() -> int:
 
     agent = Gemma4Agent(config)
     if not args.no_health and not agent.client.health():
-        if args.start_server and _start_llama_server(config, agent):
-            pass
-        else:
+        # Auto-arrancar por default (puede deshabilitarse con --no-start-server).
+        # --start-server se mantiene por compatibilidad pero ya no es necesario.
+        if args.no_start_server:
+            _print_server_help(config)
+            return 2
+        if not _start_llama_server(config):
             _print_server_help(config)
             return 2
 

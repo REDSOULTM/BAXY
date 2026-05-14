@@ -149,6 +149,35 @@ def build_left_panel() -> tuple[QWidget, dict[str, Any]]:
     budget_bar = MetricBar("CTX", C.PRI)
     lay.addWidget(budget_bar)
 
+    # Fase V — Profile selector
+    prof_label = QLabel("▸ VRAM PROFILE")
+    prof_label.setFont(mono(7, True))
+    prof_label.setStyleSheet(f"color: {C.TEXT_MED}; background: transparent;")
+    lay.addWidget(prof_label)
+
+    prof_row = QHBoxLayout()
+    prof_row.setContentsMargins(0, 0, 0, 0)
+    prof_row.setSpacing(2)
+    prof_buttons: dict[str, QPushButton] = {}
+    for code, full in (("PERF", "performance"), ("BAL", "balanced"),
+                       ("LIGHT", "light"), ("STDBY", "standby")):
+        btn = QPushButton(code)
+        btn.setFont(mono(6, True))
+        btn.setFixedHeight(20)
+        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn.setProperty("profile_name", full)
+        btn.setProperty("active", False)
+        # styling es manejado por main_window cuando cambia el activo
+        btn.setStyleSheet(
+            f"QPushButton {{ background: {C.PANEL2}; color: {C.TEXT_DIM}; "
+            f"border: 1px solid {C.BORDER}; border-radius: 2px; padding: 2px; }}"
+            f"QPushButton:hover {{ color: {C.PRI}; border-color: {C.BORDER_A}; }}"
+        )
+        prof_row.addWidget(btn, stretch=1)
+        prof_buttons[full] = btn
+    prof_wrap = QWidget(); prof_wrap.setLayout(prof_row)
+    lay.addWidget(prof_wrap)
+
     lay.addStretch()
 
     # Status badges
@@ -174,6 +203,7 @@ def build_left_panel() -> tuple[QWidget, dict[str, Any]]:
         "bar_net": bar_net, "bar_disk": bar_disk, "bar_tmp": bar_tmp,
         "uptime_lbl": uptime, "procs_lbl": procs, "os_lbl": osl,
         "budget_bar": budget_bar, "badges": badges,
+        "profile_buttons": prof_buttons,
     }
     return w, handles
 

@@ -11,13 +11,14 @@ import argparse
 import os
 import subprocess
 import sys
-import time
 from pathlib import Path
 from typing import Sequence
 
 from . import __version__
 from .config import AgentConfig, PACKAGE_ROOT, PROJECT_ROOT
+from .llama_server import LlamaServerManager, port_in_use
 from .llm_client import LLMClient
+from .profiles import apply_profile_to_env, get_active_profile
 from .tools import COMPOUND_TOOL_SCHEMAS
 
 
@@ -107,67 +108,58 @@ def print_status(args: argparse.Namespace) -> int:
     return 0
 
 
-def llama_command(config: AgentConfig) -> list[str]:
-    return [
-        str(config.llama_server_exe.resolve()),
-        "-m",
-        str(config.model_path.resolve()),
-        "--mmproj",
-        str(config.mmproj_path.resolve()),
-        "--jinja",
-        "--port",
-        "8080",
-        "-ngl",
-        "99",
-        "-c",
-        str(config.context_size),
-        "--parallel",
-        "1",
-        "--ctx-checkpoints",
-        "1",
-        "--flash-attn",
-        "on",
-    ]
-
-
 def start_server(args: argparse.Namespace, *, wait: bool = True) -> int:
+    """Arranca llama-server usando el LlamaServerManager + perfil activo."""
     config = config_with_args(args)
-    if health_status(config, timeout_s=1.0):
-        print(color("ok", f"llama-server ya esta online en {config.server_url}"))
+
+    # Aplicar perfil activo al entorno antes de construir el comando
+    profile = get_active_profile()
+    apply_profile_to_env(profile)
+
+    # Standby: nada que arrancar
+    if not profile.server_running:
+        print(color("warn", f"Active profile is {profile.display_name} (server off). Skipping."))
         return 0
 
-    missing = [p for p in (config.llama_server_exe, config.model_path, config.mmproj_path) if not p.exists()]
+    # Server externo: respetar
+    if port_in_use():
+        print(color("warn",
+            "Detected an external llama-server on :8080. NOT killing or "
+            "reconfiguring it. Profile flags will not be applied to it."
+        ))
+        return 0
+
+    missing = [p for p in (config.llama_server_exe, config.model_path) if not p.exists()]
     if missing:
         print(color("error", "No puedo iniciar llama-server; faltan archivos:"))
         for path in missing:
             print(f"  {path}")
         return 2
 
-    log_dir = PACKAGE_ROOT / "logs"
-    log_dir.mkdir(parents=True, exist_ok=True)
-    stdout_path = log_dir / "llama-server.out.log"
-    stderr_path = log_dir / "llama-server.err.log"
-    stdout = stdout_path.open("a", encoding="utf-8", errors="replace")
-    stderr = stderr_path.open("a", encoding="utf-8", errors="replace")
-    creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-    subprocess.Popen(
-        llama_command(config),
-        cwd=str(PROJECT_ROOT),
-        stdout=stdout,
-        stderr=stderr,
-        creationflags=creationflags,
-    )
-    print(color("dim", f"Iniciando llama-server; logs en {stdout_path}"))
-    if not wait:
+    manager = LlamaServerManager(config=config)
+    timeout_s = max(1, int(getattr(args, "timeout", 90)))
+    print(color("dim",
+        f"Iniciando llama-server (profile={profile.name}, ctx={profile.context_size}); "
+        f"logs en {(PACKAGE_ROOT / 'logs' / 'llama-server.out.log')}"
+    ))
+    result = manager.start(profile, wait_health=wait, timeout_s=timeout_s)
+    if result == "started":
+        print(color("ok", f"llama-server listo en {config.server_url}"))
         return 0
-
-    for _ in range(max(1, int(getattr(args, "timeout", 90)))):
-        if health_status(config, timeout_s=1.0):
-            print(color("ok", f"llama-server listo en {config.server_url}"))
-            return 0
-        time.sleep(1)
-
-    print(color("error", f"llama-server no quedo listo. Revisa {stderr_path}"))
+    if result == "already_running":
+        print(color("ok", f"llama-server ya estaba online en {config.server_url}"))
+        return 0
+    if result == "external":
+        # connect_ex race; tratamos como warning
+        print(color("warn", "Server externo detectado tras intentar arrancar; respetado."))
+        return 0
+    if result == "missing_files":
+        print(color("error", "Faltan archivos para arrancar llama-server."))
+        return 2
+    if result == "skipped_standby":
+        return 0
+    # timeout u otros
+    print(color("error", "llama-server no quedo listo. Revisa los logs en gemma4_agent/logs/."))
     return 3
 
 

@@ -1316,3 +1316,115 @@ Construida una GUI PyQt6 local estilo Mark XXXIX en `gemma4_agent/ui/`. Una sola
 - MainWindow construye sin crash con worker stub (offscreen test).
 
 **Como lanzar:** `python -m gemma4_agent.ui` (requiere `pip install PyQt6`).
+
+## Fase V — perfiles dinamicos de VRAM (2026-05-14)
+
+Cuatro perfiles fijos que cambian context_size, modelo, vision (mmproj),
+rerank, parallel_tools y fact_extraction de forma atomica. Reusable como
+"gaming mode" sin tener que entrar a Settings y reiniciar a mano.
+
+### Perfiles default
+
+| Perfil | ctx | vision | rerank | parallel_tools | fact_extr | server | est_vram_mb |
+|---|---|---|---|---|---|---|---|
+| Performance | 32K | ON | ON | ON | ON | running | 7500 |
+| Balanced (default) | 16K | ON | ON | OFF | OFF | running | 5500 |
+| Light | 4K | OFF (mmproj sin cargar) | OFF | OFF | OFF | running | 3800 |
+| Standby | 4K | OFF | OFF | OFF | OFF | **stopped** | 0 |
+
+Los `est_vram_mb` son solo display en UI; no se usan para decisiones.
+Numeros derivados del INFORME_ARQUITECTURA_6GB.md (recalibrados pre-merge
+para reflejar la arquitectura recomendada: E2B-Q4+mmproj para Balanced,
+E4B-Q4+mmproj para Performance, E2B-Q4 sin mmproj para Light).
+
+### Decisiones tomadas
+
+- **Control hibrido.** Manual por default (4 pildoras en panel izquierdo +
+  hotkey global Ctrl+Shift+G). Auto-switch es opt-in en Settings -> PROFILES.
+- **Server arrancado por Gemma4** via nuevo `LlamaServerManager`. Si detecta
+  server externo en :8080 (socket.connect_ex), NO lo mata: aplica env vars
+  y reinicia el worker, loggea warning amber tanto en stderr como en el
+  activity log. Para usuarios que tenian su propio llama-server arrancado a mano.
+- **Modelo chico de Light lo baja el usuario manualmente.** Si LIGHT esta
+  activo y `light_model_path` apunta a un archivo inexistente, la GUI muestra
+  QMessageBox warning amber con la ruta esperada y cae al modelo principal
+  con context=4096 como fallback. `GEMMA4_MODEL_PATH` NO se sobreescribe.
+- **Histeresis 30s/60s.** Watcher exige condicion sostenida 30s para bajar
+  y ausencia sostenida 60s para subir. Sin oscilaciones.
+- **Solo STANDBY pide confirmacion.** Los otros cambios son inmediatos
+  (decision del usuario para reducir friccion).
+- **GPU usage per-proceso** via `nvidia-smi pmon -c 1 -s u`, excluyendo el
+  PID/comando que contenga "llama-server" (asi nuestra propia generacion
+  no cuenta como "GPU ocupada"). Costo: subprocess ~50ms cada 10s.
+
+### Modulos involucrados
+
+- `gemma4_agent/profiles.py` — Profile dataclass, PROFILES dict (4 perfiles),
+  `detect_vram_mb()` (nvidia-smi -> rocm-smi -> None), `recommend_profile()`,
+  `get_active_profile()` (lee `~/.gemma4/active_profile.txt`),
+  `set_active_profile()` (atomic write), `apply_profile_to_env()`,
+  `load_overrides()`/`save_overrides()` (`~/.gemma4/profiles.json`).
+- `gemma4_agent/llama_server.py` — `LlamaServerManager` con
+  start/stop/restart/is_running/current_profile/is_external_server.
+  Detecta server externo via `port_in_use(127.0.0.1, 8080)`.
+- `gemma4_agent/profile_watcher.py` — Thread daemon con `threading.Event.wait`
+  (no `time.sleep`). Tres condiciones opt-in: game (psutil), gpu (pmon),
+  ram (psutil). Histeresis 30s/60s. Callback `on_change(name, reason)`
+  que la GUI marshalla al main thread via `QTimer.singleShot(0, ...)`.
+- `gemma4_agent/launcher.py` — `start_server` ahora delega en
+  LlamaServerManager y respeta el perfil activo. Maneja external/standby
+  /missing_files/timeout explicitamente.
+- `gemma4_agent/config.py` — `AgentConfig.from_env()` ahora aplica el
+  perfil persistido (`active_profile.txt`) cuando NINGUN env var del perfil
+  esta seteado todavia. Cubre el caso "primer arranque tras reboot, GUI no
+  clickeo nada todavia". Respeta seteos manuales del usuario.
+- `gemma4_agent/ui/panels.py` — Selector de 4 pildoras en panel izquierdo.
+  Tooltip por hover con description + est_vram_mb.
+- `gemma4_agent/ui/main_window.py` — Wiring del selector, hotkey
+  Ctrl+Shift+G (cicla PERF -> BAL -> LIGHT -> STDBY), confirmacion solo para
+  STANDBY, warning amber para LIGHT con modelo chico ausente, bloqueo de
+  chat input cuando perfil activo es STANDBY ("Server offline — switch
+  profile to chat."), reconfiguracion del watcher al guardar settings.
+- `gemma4_agent/ui/settings.py` — Nuevo tab PROFILES con tres secciones:
+  DETECCION (VRAM medida + perfil recomendado + redetectar),
+  AUTO-SWITCH (opt-in master + 3 sub-toggles + dropdowns down/up +
+  textarea editable game_watchlist), PERFILES (tabla 5 filas x 3 cols
+  editable, boton "RESTAURAR DEFAULTS"). Persiste auto config en
+  `gui.json -> profiles_auto`, overrides en `profiles.json`.
+
+### Configurabilidad expuesta
+
+| Cosa | Donde se lee | Donde se setea |
+|---|---|---|
+| Perfil activo | `~/.gemma4/active_profile.txt` (una linea) | Selector GUI + `set_active_profile()` |
+| Overrides de perfiles | `~/.gemma4/profiles.json` | Tab PROFILES -> tabla editable -> Apply |
+| Auto-switch config | `~/.gemma4/gui.json` key `profiles_auto` | Tab PROFILES -> AUTO-SWITCH |
+| Game watchlist | dentro de `profiles_auto.game_watchlist` (list) | Tab PROFILES -> textarea |
+| Env vars escritos por el perfil | `os.environ` (volatil) | `apply_profile_to_env(profile)` |
+| `GEMMA4_AGENT_CONTEXT` | `AgentConfig.from_env` | perfil + Settings -> CONNECTION |
+| `GEMMA4_KNOWLEDGE_RERANK` | `knowledge.py::_load_reranker` | perfil + Settings -> TOGGLES |
+| `GEMMA4_AGENT_PARALLEL_TOOLS` | `agent.py::_parallel_tools_enabled` | perfil + Settings -> TOGGLES |
+| `GEMMA4_AGENT_FACT_EXTRACTION` | `agent.py::_fact_extraction_enabled` | perfil + Settings -> TOGGLES |
+| `GEMMA4_MMPROJ_PATH=""` | `llama_server.py::llama_command` (omite `--mmproj`) | perfil (vision_enabled=False) |
+| `GEMMA4_MODEL_PATH` | `AgentConfig.from_env` + `llama_command` | perfil.model_path si el archivo existe; sino usuario |
+
+### Validacion
+
+- 57/57 tests passing (49 previos + 8 nuevos V1-V8).
+- Tests cubren: recommend by vram (V1), atomic set/get (V2), apply complete (V3),
+  CRITICAL round-trip via AgentConfig (V4), histeresis 30s/60s (V5),
+  standby no arranca server (V6), external server no se mata (V7),
+  light con modelo missing cae bien (V8).
+- pyright 0 errors en archivos nuevos y modificados.
+- UI modules importables sin display (QT_QPA_PLATFORM=offscreen).
+
+### Limitaciones conocidas
+
+- No hay auto-download del GGUF chico de Light. El usuario lo baja a mano
+  y configura la ruta en Settings -> PROFILES -> tabla -> `model` (col Light).
+- No exponemos un toggle para cantidad de perfiles; siempre son 4.
+- Si el usuario tiene un server externo corriendo, la app aplica env vars
+  y reinicia su worker, pero el server externo conserva sus propias flags.
+  El usuario ve el warning amber en activity log.
+- `detect_vram_mb()` no usa dxdiag fallback (parseo poco fiable). Sin
+  nvidia-smi ni rocm-smi -> None -> recommend_profile devuelve "balanced".

@@ -51,6 +51,18 @@ class AgentConfig:
 
     @classmethod
     def from_env(cls) -> "AgentConfig":
+        # Fase V: si existe ~/.gemma4/active_profile.txt y los env vars
+        # individuales no han sido seteados todavia en esta sesion, aplicar
+        # el perfil persistido a os.environ antes de leerlo. Esto cubre el
+        # caso "primer arranque tras reboot, GUI no clickeo nada todavia".
+        # NO sobreescribe env vars ya presentes (respeta seteos manuales).
+        try:
+            _apply_persisted_profile_if_unset()
+        except Exception:
+            # Falla silenciosa: si profiles.py rompe algo, AgentConfig debe
+            # seguir construyendose con los defaults/env existentes.
+            pass
+
         memory_raw = os.environ.get("GEMMA4_AGENT_MEMORY")
         captures_raw = os.environ.get("GEMMA4_AGENT_CAPTURES")
         llama_raw = os.environ.get("GEMMA4_LLAMA_SERVER_EXE")
@@ -94,3 +106,33 @@ def _env_bool(name: str, default: bool) -> bool:
     if raw is None:
         return default
     return raw.strip().casefold() in {"1", "true", "yes", "on", "si"}
+
+
+# Fase V: env vars escritos por apply_profile_to_env. Si NINGUNO esta seteado
+# en os.environ pero hay un active_profile.txt persistido, aplicamos el perfil.
+_PROFILE_OWNED_ENV = (
+    "GEMMA4_AGENT_CONTEXT",
+    "GEMMA4_KNOWLEDGE_RERANK",
+    "GEMMA4_AGENT_PARALLEL_TOOLS",
+    "GEMMA4_AGENT_FACT_EXTRACTION",
+    "GEMMA4_ACTIVE_PROFILE",
+)
+
+
+def _apply_persisted_profile_if_unset() -> None:
+    """Aplica el perfil persistido si los env vars del perfil no estan seteados.
+
+    No sobreescribe nada que ya este en os.environ; respeta seteos manuales
+    del usuario via shell o de Settings.apply_to_env.
+    """
+    # Si CUALQUIERA de los env vars del perfil ya esta seteado, asumimos que
+    # alguien (Settings, profile_watcher, shell) ya tomo el control.
+    for key in _PROFILE_OWNED_ENV:
+        if key in os.environ:
+            return
+    # Lazy import para evitar ciclo (profiles importa state, state no importa
+    # config, pero por las dudas hacemos late binding).
+    from .profiles import apply_profile_to_env, get_active_profile
+
+    profile = get_active_profile()
+    apply_profile_to_env(profile)

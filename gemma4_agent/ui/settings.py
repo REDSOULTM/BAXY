@@ -141,6 +141,7 @@ class SettingsDialog(QDialog):
         tabs.addTab(self._tab_sampling(),      "SAMPLING")
         tabs.addTab(self._tab_behaviour(),     "BEHAVIOUR")
         tabs.addTab(self._tab_transcription(), "TRANSCRIPT")
+        tabs.addTab(self._tab_profiles(),      "PROFILES")
         tabs.addTab(self._tab_toggles(),       "TOGGLES")
         tabs.addTab(self._tab_paths(),         "PATHS")
         tabs.addTab(self._tab_prompt(),        "PROMPT")
@@ -469,6 +470,265 @@ class SettingsDialog(QDialog):
         return w
 
     # ------------------------------------------------------------------
+    def _tab_profiles(self) -> QWidget:
+        """Fase V — PROFILES tab: detection, auto-switch, editable defaults."""
+        from PyQt6.QtWidgets import QPlainTextEdit, QTableWidget, QTableWidgetItem
+        from ..profiles import PROFILES, detect_vram_mb, load_overrides, recommend_profile, save_overrides
+
+        w = QWidget()
+        outer = QVBoxLayout(w)
+        outer.setContentsMargins(16, 16, 16, 16)
+        outer.setSpacing(14)
+
+        # --- DETECCION ---
+        det_title = QLabel("◇  DETECCION DE HARDWARE")
+        det_title.setFont(mono(8, True))
+        det_title.setStyleSheet(f"color: {C.PRI}; border-bottom: 1px solid {C.BORDER};")
+        outer.addWidget(det_title)
+
+        det_row = QHBoxLayout()
+        self._prof_vram_lbl = QLabel("VRAM detectada: ...")
+        self._prof_vram_lbl.setFont(mono(9))
+        self._prof_vram_lbl.setStyleSheet(f"color: {C.TEXT};")
+        det_row.addWidget(self._prof_vram_lbl, stretch=1)
+
+        redetect_btn = QPushButton("REDETECTAR")
+        redetect_btn.setStyleSheet(button_qss())
+        redetect_btn.setFixedHeight(28)
+        redetect_btn.clicked.connect(self._on_prof_redetect)
+        det_row.addWidget(redetect_btn)
+        det_wrap = QWidget(); det_wrap.setLayout(det_row)
+        outer.addWidget(det_wrap)
+
+        self._prof_rec_lbl = QLabel("Perfil recomendado: ...")
+        self._prof_rec_lbl.setFont(mono(9))
+        self._prof_rec_lbl.setStyleSheet(f"color: {C.TEXT_MED};")
+        outer.addWidget(self._prof_rec_lbl)
+
+        # Initial detect (sin bloquear UI: subprocess es rapido y opt-in)
+        self._on_prof_redetect()
+
+        # --- AUTO-SWITCH ---
+        auto_title = QLabel("◇  AUTO-SWITCH (opt-in)")
+        auto_title.setFont(mono(8, True))
+        auto_title.setStyleSheet(f"color: {C.PRI}; border-bottom: 1px solid {C.BORDER};")
+        outer.addWidget(auto_title)
+
+        persisted = load_persisted()
+        auto = persisted.get("profiles_auto") or {}
+
+        self._prof_auto_master = QCheckBox(
+            "Cambiar perfil automaticamente cuando..."
+        )
+        self._prof_auto_master.setChecked(bool(auto.get("enabled", False)))
+        outer.addWidget(self._prof_auto_master)
+
+        self._prof_auto_game = QCheckBox(
+            "  Detecto un juego corriendo (proceso en watchlist)"
+        )
+        self._prof_auto_game.setChecked(bool(auto.get("trigger_on_game", True)))
+        outer.addWidget(self._prof_auto_game)
+
+        self._prof_auto_gpu = QCheckBox(
+            "  GPU >70% por mas de 30s (sin contar Gemma4)"
+        )
+        self._prof_auto_gpu.setChecked(bool(auto.get("trigger_on_gpu", False)))
+        outer.addWidget(self._prof_auto_gpu)
+
+        self._prof_auto_ram = QCheckBox(
+            "  RAM >85%"
+        )
+        self._prof_auto_ram.setChecked(bool(auto.get("trigger_on_ram", False)))
+        outer.addWidget(self._prof_auto_ram)
+
+        sw_row = QHBoxLayout()
+        sw_row.addWidget(QLabel("Cambiar a:"))
+        self._prof_auto_down = QComboBox()
+        self._prof_auto_down.setStyleSheet(combo_qss())
+        for n in ("light", "balanced", "standby"):
+            self._prof_auto_down.addItem(n)
+        self._prof_auto_down.setCurrentText(str(auto.get("downgrade_to", "light")))
+        sw_row.addWidget(self._prof_auto_down)
+        sw_row.addSpacing(12)
+        sw_row.addWidget(QLabel("Volver a:"))
+        self._prof_auto_up = QComboBox()
+        self._prof_auto_up.setStyleSheet(combo_qss())
+        for n in ("balanced", "performance"):
+            self._prof_auto_up.addItem(n)
+        self._prof_auto_up.setCurrentText(str(auto.get("restore_to", "balanced")))
+        sw_row.addWidget(self._prof_auto_up)
+        sw_row.addStretch()
+        sw_wrap = QWidget(); sw_wrap.setLayout(sw_row)
+        outer.addWidget(sw_wrap)
+
+        wl_label = QLabel("Procesos que disparan auto-switch (uno por linea):")
+        wl_label.setFont(mono(8))
+        wl_label.setStyleSheet(f"color: {C.TEXT_DIM};")
+        outer.addWidget(wl_label)
+
+        self._prof_auto_wl = QPlainTextEdit()
+        self._prof_auto_wl.setFont(mono(8))
+        self._prof_auto_wl.setStyleSheet(text_edit_qss())
+        self._prof_auto_wl.setFixedHeight(70)
+        wl_default = "\n".join(auto.get("game_watchlist", [
+            "steam.exe", "RobloxPlayer.exe", "javaw.exe", "FortniteClient-Win64-Shipping.exe",
+        ]))
+        self._prof_auto_wl.setPlainText(wl_default)
+        outer.addWidget(self._prof_auto_wl)
+
+        # --- PERFILES (tabla editable) ---
+        tbl_title = QLabel("◇  PERFILES  (edita y guarda; STANDBY no editable)")
+        tbl_title.setFont(mono(8, True))
+        tbl_title.setStyleSheet(f"color: {C.PRI}; border-bottom: 1px solid {C.BORDER};")
+        outer.addWidget(tbl_title)
+
+        overrides = load_overrides()
+        fields = (
+            ("context_size", "ctx"),
+            ("vision_enabled", "vision"),
+            ("rerank_enabled", "rerank"),
+            ("parallel_tools", "parallel"),
+            ("model_path", "model"),
+        )
+        cols = ("performance", "balanced", "light")  # standby omitido
+
+        self._prof_table = QTableWidget(len(fields), len(cols))
+        self._prof_table.setHorizontalHeaderLabels([PROFILES[c].display_name for c in cols])
+        self._prof_table.setVerticalHeaderLabels([f[1] for f in fields])
+        self._prof_table.setStyleSheet(
+            f"QTableWidget {{ background: {C.PANEL}; color: {C.TEXT}; "
+            f"gridline-color: {C.BORDER}; }}"
+        )
+        for r, (field_name, _) in enumerate(fields):
+            for c, prof_name in enumerate(cols):
+                base = PROFILES[prof_name]
+                override = (overrides.get(prof_name) or {}).get(field_name)
+                if override is not None:
+                    val = override
+                else:
+                    val = getattr(base, field_name)
+                if isinstance(val, bool):
+                    item = QTableWidgetItem("true" if val else "false")
+                elif val is None:
+                    item = QTableWidgetItem("")
+                else:
+                    item = QTableWidgetItem(str(val))
+                self._prof_table.setItem(r, c, item)
+        outer.addWidget(self._prof_table)
+
+        restore_btn = QPushButton("RESTAURAR DEFAULTS")
+        restore_btn.setStyleSheet(button_qss())
+        restore_btn.setFixedHeight(28)
+        restore_btn.clicked.connect(self._on_prof_restore_defaults)
+        outer.addWidget(restore_btn)
+
+        # Hotkey hint
+        hk = QLabel("Hotkey global: Ctrl+Shift+G  cicla PERF -> BAL -> LIGHT -> STDBY")
+        hk.setFont(mono(7))
+        hk.setStyleSheet(f"color: {C.TEXT_DIM};")
+        outer.addWidget(hk)
+
+        # Note about Light model
+        light_note = QLabel(
+            "Light usa el GGUF que pongas en `model` arriba. Si lo dejas vacio, "
+            "usa el modelo principal con context=4096. Bajalo a mano (ej. gemma-3n-e2b-it.Q4_K_M.gguf)."
+        )
+        light_note.setFont(mono(7))
+        light_note.setStyleSheet(f"color: {C.ACC2};")
+        light_note.setWordWrap(True)
+        outer.addWidget(light_note)
+
+        return w
+
+    def _on_prof_redetect(self) -> None:
+        from ..profiles import detect_vram_mb, recommend_profile
+        mb = detect_vram_mb()
+        if mb is None:
+            self._prof_vram_lbl.setText("VRAM detectada: no detectada (nvidia-smi/rocm-smi no respondio)")
+            rec = "balanced"
+        else:
+            self._prof_vram_lbl.setText(f"VRAM detectada: {mb} MB")
+            rec = recommend_profile(mb)
+        self._prof_rec_lbl.setText(f"Perfil recomendado: {rec.upper()}")
+
+    def _on_prof_restore_defaults(self) -> None:
+        from PyQt6.QtWidgets import QTableWidgetItem
+        from ..profiles import PROFILES
+        cols = ("performance", "balanced", "light")
+        fields = ("context_size", "vision_enabled", "rerank_enabled", "parallel_tools", "model_path")
+        for r, field_name in enumerate(fields):
+            for c, prof_name in enumerate(cols):
+                val = getattr(PROFILES[prof_name], field_name)
+                if isinstance(val, bool):
+                    item = QTableWidgetItem("true" if val else "false")
+                elif val is None:
+                    item = QTableWidgetItem("")
+                else:
+                    item = QTableWidgetItem(str(val))
+                self._prof_table.setItem(r, c, item)
+
+    def _gather_profiles(self) -> tuple[dict, dict]:
+        """Reads the profiles tab. Returns (auto_config_dict, overrides_dict).
+
+        overrides_dict goes to ~/.gemma4/profiles.json via save_overrides.
+        auto_config_dict goes inside gui.json under key "profiles_auto".
+        """
+        from typing import Any as _Any
+        auto: dict[str, _Any] = {
+            "enabled": self._prof_auto_master.isChecked(),
+            "trigger_on_game": self._prof_auto_game.isChecked(),
+            "trigger_on_gpu": self._prof_auto_gpu.isChecked(),
+            "trigger_on_ram": self._prof_auto_ram.isChecked(),
+            "downgrade_to": self._prof_auto_down.currentText(),
+            "restore_to": self._prof_auto_up.currentText(),
+            "game_watchlist": [
+                line.strip() for line in self._prof_auto_wl.toPlainText().splitlines()
+                if line.strip()
+            ],
+        }
+        # Overrides table -> dict[prof_name][field_name] = value
+        cols = ("performance", "balanced", "light")
+        fields = (
+            ("context_size", int),
+            ("vision_enabled", bool),
+            ("rerank_enabled", bool),
+            ("parallel_tools", bool),
+            ("model_path", str),
+        )
+        from ..profiles import PROFILES
+        overrides: dict[str, dict[str, _Any]] = {}
+        for c, prof_name in enumerate(cols):
+            base = PROFILES[prof_name]
+            row: dict[str, _Any] = {}
+            for r, (field_name, ftype) in enumerate(fields):
+                item = self._prof_table.item(r, c)
+                if item is None:
+                    continue
+                raw = item.text().strip()
+                if not raw and field_name == "model_path":
+                    # Vacio == None. Solo guardamos override si difiere del base.
+                    if base.model_path is not None:
+                        row[field_name] = None
+                    continue
+                if not raw:
+                    continue
+                try:
+                    if ftype is bool:
+                        val: _Any = raw.lower() in {"true", "1", "yes", "on"}
+                    elif ftype is int:
+                        val = int(raw)
+                    else:
+                        val = raw
+                except (ValueError, TypeError):
+                    continue
+                # Solo guardar si difiere del default
+                if getattr(base, field_name) != val:
+                    row[field_name] = val
+            if row:
+                overrides[prof_name] = row
+        return auto, overrides
+
+    # ------------------------------------------------------------------
     def _tab_toggles(self) -> QWidget:
         w = QWidget()
         lay = QVBoxLayout(w)
@@ -685,6 +945,14 @@ class SettingsDialog(QDialog):
 
     def _on_apply(self) -> None:
         data = self._gather()
+        # Fase V — persist profiles_auto + overrides
+        try:
+            auto, overrides = self._gather_profiles()
+            data["profiles_auto"] = auto
+            from ..profiles import save_overrides
+            save_overrides(overrides)
+        except Exception:
+            pass
         save_persisted(data)
         apply_to_env(data)
         self.apply_clicked.emit(data)
@@ -692,6 +960,13 @@ class SettingsDialog(QDialog):
 
     def _on_restart(self) -> None:
         data = self._gather()
+        try:
+            auto, overrides = self._gather_profiles()
+            data["profiles_auto"] = auto
+            from ..profiles import save_overrides
+            save_overrides(overrides)
+        except Exception:
+            pass
         save_persisted(data)
         apply_to_env(data)
         self.restart_clicked.emit()

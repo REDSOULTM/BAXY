@@ -1087,6 +1087,299 @@ def test_j5_sequential_handles_parse_error() -> bool:
     return True
 
 
+# ====================================================================
+# Fase V — VRAM profiles (Performance / Balanced / Light / Standby)
+# ====================================================================
+
+
+def test_profiles_recommend_by_vram() -> bool:
+    from gemma4_agent.profiles import recommend_profile
+    assert recommend_profile(16384) == "performance"
+    assert recommend_profile(12000) == "performance"
+    assert recommend_profile(11999) == "balanced"
+    assert recommend_profile(10240) == "balanced"
+    assert recommend_profile(8000) == "balanced"
+    assert recommend_profile(7999) == "light"
+    assert recommend_profile(6144) == "light"
+    assert recommend_profile(4000) == "light"
+    assert recommend_profile(3999) == "balanced"  # asume CPU/integrada
+    assert recommend_profile(0) == "balanced"
+    assert recommend_profile(None) == "balanced"
+    print("V1 recommend_profile by vram: OK")
+    return True
+
+
+def test_profiles_set_and_get_active() -> bool:
+    import os
+    import tempfile
+    from pathlib import Path as _Path
+    from gemma4_agent import profiles as profmod
+
+    # Redirigir a temp para no pisar el real del usuario
+    tmpdir = tempfile.mkdtemp(prefix="gemma4_test_profile_")
+    target = _Path(tmpdir) / "active_profile.txt"
+    original = profmod.ACTIVE_PROFILE_PATH
+    profmod.ACTIVE_PROFILE_PATH = target
+    try:
+        profmod.set_active_profile("light")
+        # No debe quedar archivo .tmp leftover
+        leftovers = list(target.parent.glob("*.tmp"))
+        assert not leftovers, f"leftover .tmp files: {leftovers}"
+        p = profmod.get_active_profile()
+        assert p.name == "light"
+        assert p.context_size == 4096
+        # set invalido -> ValueError
+        try:
+            profmod.set_active_profile("nope")
+            assert False, "should have raised"
+        except ValueError:
+            pass
+    finally:
+        profmod.ACTIVE_PROFILE_PATH = original
+        try:
+            target.unlink()
+        except OSError:
+            pass
+        try:
+            target.parent.rmdir()
+        except OSError:
+            pass
+    print("V2 set_active / get_active roundtrip: OK")
+    return True
+
+
+def test_profiles_apply_to_env_complete() -> bool:
+    import os
+    from gemma4_agent.profiles import PROFILES, apply_profile_to_env
+
+    # Backup env
+    saved = {
+        k: os.environ.get(k) for k in (
+            "GEMMA4_AGENT_CONTEXT", "GEMMA4_KNOWLEDGE_RERANK",
+            "GEMMA4_MMPROJ_PATH", "GEMMA4_AGENT_PARALLEL_TOOLS",
+            "GEMMA4_AGENT_FACT_EXTRACTION", "GEMMA4_ACTIVE_PROFILE",
+        )
+    }
+    try:
+        # Limpiar para empezar fresco
+        for k in saved:
+            os.environ.pop(k, None)
+
+        apply_profile_to_env(PROFILES["light"])
+        assert os.environ["GEMMA4_AGENT_CONTEXT"] == "4096"
+        assert os.environ["GEMMA4_KNOWLEDGE_RERANK"] == "false"
+        assert os.environ["GEMMA4_MMPROJ_PATH"] == ""
+        assert os.environ["GEMMA4_AGENT_PARALLEL_TOOLS"] == "false"
+        assert os.environ["GEMMA4_AGENT_FACT_EXTRACTION"] == "false"
+        assert os.environ["GEMMA4_ACTIVE_PROFILE"] == "light"
+
+        # Switch a performance
+        apply_profile_to_env(PROFILES["performance"])
+        assert os.environ["GEMMA4_AGENT_CONTEXT"] == "32768"
+        assert os.environ["GEMMA4_KNOWLEDGE_RERANK"] == "true"
+        assert os.environ["GEMMA4_AGENT_PARALLEL_TOOLS"] == "true"
+        assert os.environ["GEMMA4_AGENT_FACT_EXTRACTION"] == "true"
+        # vision_enabled=True NO sobreescribe GEMMA4_MMPROJ_PATH; respeta el
+        # que haya. Como en este test lo dejamos "" antes, debe seguir "".
+        # (En vida real el usuario tendria un path valido en su gui.json.)
+        assert os.environ["GEMMA4_MMPROJ_PATH"] == ""
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+    print("V3 apply_profile_to_env complete: OK")
+    return True
+
+
+def test_profiles_round_trip_via_agentconfig() -> bool:
+    """CRITICAL: cada perfil aplicado -> AgentConfig.from_env() ve el cambio.
+
+    Hubiera atrapado el bug de env var mismatch del audit anterior.
+    """
+    import os
+    from gemma4_agent.profiles import PROFILES, apply_profile_to_env
+    from gemma4_agent.config import AgentConfig
+
+    saved = {
+        k: os.environ.get(k) for k in (
+            "GEMMA4_AGENT_CONTEXT", "GEMMA4_KNOWLEDGE_RERANK",
+            "GEMMA4_MMPROJ_PATH", "GEMMA4_AGENT_PARALLEL_TOOLS",
+            "GEMMA4_AGENT_FACT_EXTRACTION", "GEMMA4_ACTIVE_PROFILE",
+            "GEMMA4_MODEL_PATH",
+        )
+    }
+    try:
+        expected_ctx = {"performance": 32768, "balanced": 16384, "light": 4096, "standby": 4096}
+        for name, profile in PROFILES.items():
+            for k in saved:
+                os.environ.pop(k, None)
+            apply_profile_to_env(profile)
+            cfg = AgentConfig.from_env()
+            assert cfg.context_size == expected_ctx[name], \
+                f"{name}: expected ctx={expected_ctx[name]} got {cfg.context_size}"
+            # Active profile env recorded
+            assert os.environ.get("GEMMA4_ACTIVE_PROFILE") == name
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+    print("V4 round-trip apply -> AgentConfig: OK")
+    return True
+
+
+def test_profile_watcher_hysteresis() -> bool:
+    from unittest.mock import patch
+    from gemma4_agent.profile_watcher import (
+        ProfileWatcher, WatcherConfig, _Sample,
+    )
+    # Construimos un watcher SIN llamar start() (no queremos thread real).
+    cfg = WatcherConfig(
+        enabled=True, downgrade_to="light", restore_to="balanced",
+        trigger_on_game=False, trigger_on_gpu=True, trigger_on_ram=False,
+    )
+
+    # Clock controlable
+    clock_t = [0.0]
+    def fake_clock() -> float:
+        return clock_t[0]
+
+    changes: list[tuple[str, str]] = []
+    watcher = ProfileWatcher(cfg, on_change=lambda n, r: changes.append((n, r)), clock=fake_clock)
+
+    # Mockeamos set_active_profile y apply_profile_to_env para no tocar
+    # archivos reales del usuario, y _sample para devolver lo que queremos.
+    def gpu_sample(pct: float) -> _Sample:
+        return _Sample(has_game=False, gpu_pct=pct, ram_pct=None)
+
+    with patch("gemma4_agent.profile_watcher.set_active_profile"), \
+         patch("gemma4_agent.profile_watcher.apply_profile_to_env"), \
+         patch("gemma4_agent.profile_watcher.get_active_profile") as get_active:
+        from gemma4_agent.profiles import PROFILES
+        get_active.return_value = PROFILES["balanced"]
+
+        # Solo 20s al 80% -> NO debe cambiar todavia
+        with patch.object(watcher, "_sample", return_value=gpu_sample(80.0)):
+            for sec in range(0, 21, 10):
+                clock_t[0] = float(sec)
+                watcher._tick()
+        assert not changes, f"unexpected switch after 20s: {changes}"
+
+        # Continua al 80% hasta llegar a 30s -> debe bajar a light
+        with patch.object(watcher, "_sample", return_value=gpu_sample(80.0)):
+            clock_t[0] = 30.0
+            watcher._tick()
+        assert changes and changes[-1][0] == "light", f"expected light switch, got {changes}"
+
+        # Ahora baja a 20% (sin trigger) -- get_active devuelve light ahora
+        get_active.return_value = PROFILES["light"]
+        watcher._watcher_state = "downgraded"
+        prior_changes = len(changes)
+        # 30s sin trigger NO basta (necesita 60)
+        with patch.object(watcher, "_sample", return_value=gpu_sample(20.0)):
+            for sec in range(40, 71, 10):
+                clock_t[0] = float(sec)
+                watcher._tick()
+        assert len(changes) == prior_changes, f"unexpected upgrade after 30s clear"
+
+        # Necesitamos que la ventana de samples LIMPIOS cubra 60s.
+        # Samples limpios estan a t=40,50,60,70. A t=100 el oldest limpio
+        # sigue siendo 40 -> 100-40=60s. Eso ancla la ventana.
+        with patch.object(watcher, "_sample", return_value=gpu_sample(20.0)):
+            clock_t[0] = 100.0
+            watcher._tick()
+        assert changes[-1][0] == "balanced", f"expected balanced restore, got {changes}"
+
+    print("V5 watcher hysteresis 30s/60s: OK")
+    return True
+
+
+def test_standby_profile_does_not_start_server() -> bool:
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.llama_server import LlamaServerManager
+    from gemma4_agent.profiles import PROFILES
+
+    manager = LlamaServerManager.__new__(LlamaServerManager)
+    manager._proc = None  # type: ignore[attr-defined]
+    manager._current_profile = None  # type: ignore[attr-defined]
+    manager._external_detected = False  # type: ignore[attr-defined]
+
+    with patch("gemma4_agent.llama_server.subprocess.Popen") as popen:
+        result = manager.start(PROFILES["standby"], wait_health=False)
+    assert result == "skipped_standby"
+    popen.assert_not_called()
+    print("V6 standby does not start server: OK")
+    return True
+
+
+def test_external_server_detected_not_killed() -> bool:
+    from unittest.mock import patch
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import LlamaServerManager
+    from gemma4_agent.profiles import PROFILES
+
+    # Construir manager manualmente para no leer env del usuario
+    cfg = AgentConfig()  # defaults
+    manager = LlamaServerManager.__new__(LlamaServerManager)
+    manager._config = cfg  # type: ignore[attr-defined]
+    manager._proc = None  # type: ignore[attr-defined]
+    manager._current_profile = None  # type: ignore[attr-defined]
+    manager._external_detected = False  # type: ignore[attr-defined]
+    from pathlib import Path as _Path
+    manager._log_dir = _Path("/tmp/g4_test_logs")  # type: ignore[attr-defined]
+
+    with patch("gemma4_agent.llama_server.port_in_use", return_value=True), \
+         patch("gemma4_agent.llama_server.subprocess.Popen") as popen:
+        result = manager.start(PROFILES["performance"], wait_health=False)
+
+    assert result == "external", f"expected 'external', got {result!r}"
+    popen.assert_not_called()
+    assert manager.is_external_server() is True
+    assert manager.current_profile() is None
+    print("V7 external server detected, not killed: OK")
+    return True
+
+
+def test_light_profile_missing_model_falls_back() -> bool:
+    """Light con model_path inexistente -> ctx=4096 aplicado pero
+    GEMMA4_MODEL_PATH no se sobreescribe."""
+    import os
+    from dataclasses import replace
+    from gemma4_agent.profiles import PROFILES, apply_profile_to_env
+
+    saved_model = os.environ.get("GEMMA4_MODEL_PATH")
+    saved_ctx = os.environ.get("GEMMA4_AGENT_CONTEXT")
+    saved_mmproj = os.environ.get("GEMMA4_MMPROJ_PATH")
+    try:
+        # Setear un modelo "actual" del usuario
+        os.environ["GEMMA4_MODEL_PATH"] = "C:/fake/user/model.gguf"
+
+        # Crear un Light con model_path que NO existe
+        light_bad = replace(PROFILES["light"], model_path="C:/nope/inexistente.gguf")
+        apply_profile_to_env(light_bad)
+
+        # Context si se aplica
+        assert os.environ["GEMMA4_AGENT_CONTEXT"] == "4096"
+        # vision off -> mmproj vaciado
+        assert os.environ["GEMMA4_MMPROJ_PATH"] == ""
+        # model path NO sobreescrito (queda el del usuario)
+        assert os.environ["GEMMA4_MODEL_PATH"] == "C:/fake/user/model.gguf", \
+            "model_path should NOT be overwritten when profile path is missing"
+    finally:
+        for k, v in (("GEMMA4_MODEL_PATH", saved_model),
+                     ("GEMMA4_AGENT_CONTEXT", saved_ctx),
+                     ("GEMMA4_MMPROJ_PATH", saved_mmproj)):
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+    print("V8 light missing model falls back: OK")
+    return True
+
+
 def main() -> int:
     tests = [
         test_g1_experience_record_and_recall,
@@ -1138,6 +1431,15 @@ def main() -> int:
         test_audit_experience_recent_exists,
         test_audit_timeline_safe_payload_preserves_dicts,
         test_audit_planner_question_mark_inverted_supported,
+        # Fase V — VRAM profiles
+        test_profiles_recommend_by_vram,
+        test_profiles_set_and_get_active,
+        test_profiles_apply_to_env_complete,
+        test_profiles_round_trip_via_agentconfig,
+        test_profile_watcher_hysteresis,
+        test_standby_profile_does_not_start_server,
+        test_external_server_detected_not_killed,
+        test_light_profile_missing_model_falls_back,
     ]
     failures: list[str] = []
     for t in tests:
