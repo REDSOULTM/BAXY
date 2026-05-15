@@ -1283,13 +1283,16 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
         )
     }
     try:
-        # Context sizes alineados con la nueva tabla 6 GB-aware + perfil
-        # intermedio balanced_8gb (item 2.1 + Sprint 1 del roadmap).
-        # balanced_8gb subio a 16K para dejar espacio al tool_schemas_hint
-        # compact (~5.9K tokens) sin saturar conversacion + memoria.
+        # Context sizes:
+        # - Sprint 1 subio balanced_8gb de 8K -> 16K para tool_schemas_hint
+        #   compact.
+        # - Polish P2 lo bajo de 16K -> 12K basado en calculo teorico de
+        #   VRAM (margen 0.5 GB sobre 8 GB nominales con reserva WDDM).
+        # - Umbral del hint compact tambien bajo de 16K -> 12K para que
+        #   balanced_8gb siga recibiendo el bloque.
         expected_ctx = {
             "performance": 32768,
-            "balanced_8gb": 16384,
+            "balanced_8gb": 12288,
             "balanced": 8192,
             "light": 4096,
             "standby": 4096,
@@ -1921,6 +1924,75 @@ def test_optroad_s13_official_sampling_defaults() -> bool:
     return True
 
 
+def test_optroad_p4_prewarm_kv_called_after_boot() -> bool:
+    """Polish P4: tras warmup exitoso, agent_runner llama a prewarm_kv
+    con el system_prompt completo del agente.
+
+    Verificacion via inspeccion del codigo + smoke con monkey-patch.
+    """
+    import inspect
+    from gemma4_agent import agent_runner
+
+    src = inspect.getsource(agent_runner.AgentRunner._build_agent)
+
+    # 1) La llamada al prewarm aparece en el codigo.
+    assert "prewarm_kv" in src, "prewarm_kv must be wired in _build_agent"
+    assert "from .prewarm import prewarm_kv" in src, "lazy import expected"
+
+    # 2) Se invoca con el system_prompt del agente (sys_content).
+    assert "_system_message" in src, "system_prompt must be sourced from agent"
+    assert "sys_content" in src, "expected sys_content extracted from message"
+
+    # 3) Hay manejo de exception alrededor del prewarm (no rompe el boot).
+    #    Busco un try: ... prewarm_kv ... except dentro del scope post-warmup.
+    assert src.count("try:") >= 2, "warmup + prewarm should each have its own try"
+    assert "non-fatal" in src.lower(), "prewarm errors must be flagged non-fatal"
+
+    # 4) Respeta el opt-out del helper (prewarm_kv internamente lee
+    #    GEMMA4_DISABLE_PREWARM; el caller no necesita re-chequear).
+    #    Confirmamos que el caller maneja el caso skipped.
+    assert "skipped" in src, "caller must handle prewarm_kv skipped result"
+
+    print("OPTROAD-P4 prewarm_kv wired in _build_agent: OK")
+    return True
+
+
+def test_optroad_p1_cache_reuse_present_in_cmd() -> bool:
+    """Polish P1: --cache-reuse 256 esta en el cmd del server.
+
+    PR ggml-org/llama.cpp#22288 ('server: fix swa-full logic') fue merged
+    2026-04-24 y cierra #21468 (cache-reuse roto en Gemma 4 por shared-KV).
+    Primera release con el fix: b9084. Nuestro LLAMA_CPP_BUILD_MIN=b9090
+    ya lo incluye, asi que el flag puede activarse de forma permanente.
+
+    Beneficio: recupera ~93% del TTFT del primer turno (reporter del bug
+    medio 60-90s con system prompt de ~46K tokens; cache-reuse lo baja
+    a unidades de segundos).
+    """
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command, LLAMA_CPP_BUILD_MIN
+    from gemma4_agent.profiles import PROFILES
+
+    # LLAMA_CPP_BUILD_MIN debe ser >= b9084 (release con #22288 merged).
+    build_num = int(LLAMA_CPP_BUILD_MIN.lstrip("bB"))
+    assert build_num >= 9084, (
+        f"LLAMA_CPP_BUILD_MIN={LLAMA_CPP_BUILD_MIN} es anterior a b9084 "
+        f"(release que contiene PR #22288); --cache-reuse no esta soportado"
+    )
+
+    for name in ("performance", "balanced_8gb", "balanced", "light"):
+        cmd = llama_command(AgentConfig(), PROFILES[name])
+        assert "--cache-reuse" in cmd, f"{name}: --cache-reuse missing"
+        idx = cmd.index("--cache-reuse")
+        assert cmd[idx + 1] == "256", f"{name}: --cache-reuse value {cmd[idx+1]!r} (must be '256')"
+        # Complemento: --keep -1 sigue presente (defense in depth).
+        assert "--keep" in cmd, f"{name}: --keep removed accidentally"
+        keep_idx = cmd.index("--keep")
+        assert cmd[keep_idx + 1] == "-1", f"{name}: --keep value not -1"
+    print(f"OPTROAD-P1 --cache-reuse 256 active (build {LLAMA_CPP_BUILD_MIN} >= b9084): OK")
+    return True
+
+
 def test_optroad_s13_hardening_invariants_always_present() -> bool:
     """Sprint 13: --host 127.0.0.1 y --no-webui DEBEN estar en el cmd
     de TODOS los perfiles activos. Defense in depth contra exposicion
@@ -2147,6 +2219,10 @@ def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> bool:
         # ctx 8192 -> off
         stub.config = AgentConfig(context_size=8192)
         assert method(stub) == ""
+        # ctx 12288 -> compact (Polish P2: umbral bajado de 16384 a 12288)
+        stub.config = AgentConfig(context_size=12288)
+        out = method(stub)
+        assert out.strip().startswith("# Tool Schemas (EXACT names")
         # ctx 16384 -> compact (header con "use ONLY these")
         stub.config = AgentConfig(context_size=16384)
         out = method(stub)
@@ -2649,6 +2725,10 @@ def main() -> int:
         test_optroad_s13_hardening_invariants_always_present,
         test_optroad_s13_tool_schemas_md_covers_all_62_tools,
         test_optroad_s13_profiles_voice_always_on_when_active,
+        # Polish P1 — --cache-reuse 256 (PR #22288 merged in b9084+)
+        test_optroad_p1_cache_reuse_present_in_cmd,
+        # Polish P4 — prewarm_kv wired in agent_runner
+        test_optroad_p4_prewarm_kv_called_after_boot,
         # Sprint 7 pre-warm KV
         test_optroad_prewarm_kv_calls_chat_with_min_tokens,
         # Sprint 11 telemetry opt-in

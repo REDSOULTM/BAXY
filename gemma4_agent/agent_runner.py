@@ -376,6 +376,54 @@ class AgentRunner:
             warmup_err = str(exc)
 
         if warmup_ok:
+            # Polish P4 / Sprint 7: pre-warm del KV cache con el system
+            # prompt completo del agente (system prompt + tool_schemas_hint
+            # + memoria). El warmup de arriba ya forzo load_tensors a
+            # terminar, pero NO calento el KV con el prefix real que el
+            # usuario va a usar en su primer turno. Con PR #22288 merged
+            # (Polish P1) + --cache-reuse 256 activo, este prewarm le da
+            # al server la oportunidad de cachear el prefix entero antes
+            # de que entre el primer turno real. Beneficio esperado:
+            # primer turno real ~unidades de segundos vs ~30s+ sin prewarm.
+            #
+            # Best-effort: si falla, NO cambia el estado del agente. El
+            # primer turno simplemente paga el TTFT completo.
+            try:
+                from .prewarm import prewarm_kv
+                # Construir el system_prompt real que el agente usaria. Le
+                # pasamos mode=None/plan=None para que sea el prompt base
+                # mas el tool_schemas_hint (que sera lo mas pesado del
+                # prefix). Tools=None: el catalogo ya esta en el system
+                # prompt como bloque markdown EXACT.
+                sys_msg = self._agent._system_message(mode=None, plan=None)
+                sys_content = sys_msg.get("content", "")
+                prewarm_result = prewarm_kv(
+                    self._agent.client,
+                    sys_content,
+                    tools=None,
+                    timeout_s=90.0,
+                    publish=BUS.publish,
+                )
+                if prewarm_result.get("ok"):
+                    elapsed = prewarm_result.get("elapsed_s", 0)
+                    _publish_activity(
+                        "SYSTEM",
+                        f"KV prewarm done in {elapsed:.1f}s ({len(sys_content)} chars)",
+                    )
+                elif prewarm_result.get("skipped"):
+                    _publish_activity(
+                        "SYSTEM",
+                        f"KV prewarm skipped: {prewarm_result.get('reason')}",
+                    )
+                else:
+                    _publish_activity(
+                        "SYSTEM",
+                        f"KV prewarm failed (non-fatal): {prewarm_result.get('error', 'unknown')}",
+                    )
+            except Exception as exc:  # noqa: BLE001
+                # Cualquier fallo del prewarm es NO bloqueante.
+                _publish_activity("SYSTEM", f"KV prewarm crashed (non-fatal): {exc}")
+
             self._warmed_up = True
             _publish_activity("SYSTEM", f"llama-server online · {cfg.server_url}")
             emit_stage(BUS.publish, "ready",
