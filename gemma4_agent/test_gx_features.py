@@ -1872,6 +1872,59 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_telemetry_opt_in_default_off() -> bool:
+    """Sprint 11: telemetria OFF por default; ON solo si env var setea."""
+    import os
+    import tempfile
+    from pathlib import Path as _P
+    from gemma4_agent.telemetry import TelemetryStore, is_enabled, ENV_FLAG
+
+    saved = os.environ.get(ENV_FLAG)
+    try:
+        # Default: OFF
+        os.environ.pop(ENV_FLAG, None)
+        assert is_enabled() is False
+        # Algunos otros valores que NO deben encender
+        for v in ("0", "false", "no", "off", ""):
+            os.environ[ENV_FLAG] = v
+            assert is_enabled() is False, f"{v!r} should NOT enable"
+        # Valores aceptados
+        for v in ("1", "true", "yes", "on", "enabled", "True", "YES"):
+            os.environ[ENV_FLAG] = v
+            assert is_enabled() is True, f"{v!r} should enable"
+
+        # TelemetryStore creado en disco: si no encendemos, no escribe nada
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = _P(tmp) / "test_telemetry.sqlite"
+            store = TelemetryStore(db_path)
+            os.environ.pop(ENV_FLAG, None)
+            assert store.enable_if_configured() is False
+            assert not db_path.exists(), "DB file should not be created when OFF"
+
+            # Encender + grabar + verificar
+            os.environ[ENV_FLAG] = "true"
+            assert store.enable_if_configured() is True
+            assert db_path.exists(), "DB file must be created when enabled"
+            store.record_incident(kind="vision_threshold", severity="warn",
+                                  payload={"image_count": 40})
+            store.record_turn(ttft_ms=850, tokens_completion=120, tps=14.2,
+                              tool_call_count=2, tool_call_errors=0)
+            store.record_voice(kind="stt", duration_ms=1200, rtf=0.18)
+            summary = store.summarize_last_24h()
+            assert summary["enabled"] is True
+            assert summary["turns"]["count"] == 1
+            assert summary["incidents"].get("vision_threshold") == 1
+            assert summary["voice"].get("stt", {}).get("count") == 1
+    finally:
+        if saved is None:
+            os.environ.pop(ENV_FLAG, None)
+        else:
+            os.environ[ENV_FLAG] = saved
+
+    print("OPTROAD-S11 telemetry opt-in flow: OK")
+    return True
+
+
 def test_optroad_hardening_flags_in_server_cmd() -> bool:
     """Sprint 12: --host 127.0.0.1, --no-webui, y --api-key opt-in."""
     import os
@@ -2196,6 +2249,8 @@ def main() -> int:
         test_optroad_is_experimental_quant_detects_mxfp4,
         # 2.2 speculative decoding opt-in
         test_optroad_spec_draft_flag_only_in_performance,
+        # Sprint 11 telemetry opt-in
+        test_optroad_telemetry_opt_in_default_off,
         # Sprint 12 hardening llama-server
         test_optroad_hardening_flags_in_server_cmd,
         test_optroad_hardening_client_headers_include_auth,
