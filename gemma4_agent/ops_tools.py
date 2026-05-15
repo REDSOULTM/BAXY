@@ -11,6 +11,7 @@ import re
 import shutil
 import subprocess
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any, Callable
@@ -144,7 +145,12 @@ $items | ConvertTo-Json -Depth 4
         if proc.returncode != 0:
             return _err("failed to set language list", stderr=_truncate(proc.stderr, 2000), checkpoint=checkpoint.get("checkpoint"))
         return _ok(action=action, language_tags=tags, checkpoint=checkpoint.get("checkpoint"), result=_json_or_text(proc.stdout))
-    return _err("unknown input action", action=action)
+    return _err(
+        "unknown input action", action=action,
+        valid_actions=["language_list", "keyboard_layouts", "current_keyboard",
+                       "set_language_list", "switch_keyboard"],
+        status="needs_user",
+    )
 
 
 def env_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -545,15 +551,33 @@ Invoke-WebRequest -Uri $env:GEMMA4_DOWNLOAD_URL -OutFile $env:GEMMA4_DOWNLOAD_PA
     )
 
 
+_EMAIL_RECIPIENT_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+
 def email_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "status").casefold()
     token = os.environ.get("GEMMA4_GRAPH_TOKEN") or os.environ.get("MS_GRAPH_TOKEN")
     if action == "status":
         return _ok(provider="microsoft_graph", has_token=bool(token), auth_env_vars=["GEMMA4_GRAPH_TOKEN", "MS_GRAPH_TOKEN"])
     if action == "draft":
-        return state.note("email draft", metadata={"to": args.get("to"), "subject": args.get("subject"), "body": args.get("body")})
+        to_list = _string_list(args.get("to"))
+        subject = str(args.get("subject") or "").strip()
+        body = str(args.get("body") or "").strip()
+        if not to_list and not subject and not body:
+            return _err(
+                "draft requires at least one of: to, subject, body",
+                status="needs_user",
+            )
+        return state.note(
+            "email draft",
+            metadata={"to": to_list, "subject": subject, "body": body},
+        )
     if action != "send":
-        return _err("unknown email action", action=action)
+        return _err(
+            "unknown email action", action=action,
+            valid_actions=["status", "draft", "send"],
+            status="needs_user",
+        )
     if not token:
         return _err(
             "missing Microsoft Graph token",
@@ -566,6 +590,16 @@ def email_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     to = _string_list(args.get("to"))
     if not to:
         return _err("missing email recipient", status="needs_user", verified=False)
+    # VALIDACION de formato email para cada destinatario. Microsoft Graph
+    # rechaza con error oscuro si el formato es invalido; mejor abortar
+    # temprano con hint claro.
+    invalid_recipients = [addr for addr in to if not _EMAIL_RECIPIENT_RE.match(addr)]
+    if invalid_recipients:
+        return _err(
+            f"invalid email recipient(s): {invalid_recipients}",
+            status="needs_user", verified=False,
+            hint="recipients must match user@host.tld",
+        )
     payload = {
         "message": {
             "subject": str(args.get("subject") or ""),
@@ -580,11 +614,36 @@ def email_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
         method="POST",
     )
+    timeout = max(5, min(int(args.get("timeout_sec", 30)), 120))
     try:
-        with urllib.request.urlopen(req, timeout=int(args.get("timeout_sec", 30))) as resp:
-            return _ok(provider="microsoft_graph", status_code=resp.status, sent=True, to=to)
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return _ok(
+                provider="microsoft_graph", status_code=resp.status,
+                sent=True, to=to, recipient_count=len(to),
+            )
+    except urllib.error.HTTPError as exc:
+        # Graph devuelve detalles en el body para HTTP errors. Leerlos
+        # ayuda al LLM a entender el problema (token expired, scope falta).
+        body_text = ""
+        try:
+            body_text = exc.read().decode("utf-8", errors="replace")[:500]
+        except Exception:
+            pass
+        return _err(
+            f"Microsoft Graph sendMail HTTP {exc.code}: {exc.reason}",
+            provider="microsoft_graph", to=to, status_code=exc.code,
+            response_body=body_text,
+            status="needs_user" if exc.code in {401, 403} else "failed",
+            hint=(
+                "refresh GEMMA4_GRAPH_TOKEN; required scope is Mail.Send"
+                if exc.code in {401, 403} else None
+            ),
+        )
     except Exception as exc:
-        return _err(f"Microsoft Graph sendMail failed: {exc}", provider="microsoft_graph", to=to)
+        return _err(
+            f"Microsoft Graph sendMail failed: {type(exc).__name__}: {exc}",
+            provider="microsoft_graph", to=to, status="failed",
+        )
 
 
 def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -599,10 +658,14 @@ def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "delete":
         rid = str(args.get("id") or args.get("resource_id") or "").strip()
         if not rid:
-            return _err("missing reminder id")
+            return _err("missing reminder id", status="needs_user")
         return state.mark_cleaned(rid, {"deleted": True})
     if action != "create":
-        return _err("unknown reminder action", action=action)
+        return _err(
+            "unknown reminder action", action=action,
+            valid_actions=["status", "list", "create", "delete"],
+            status="needs_user",
+        )
     if backend == "graph":
         return _err(
             "Microsoft Graph To Do/Calendar auth is not configured in this local prototype",
@@ -613,13 +676,37 @@ def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         )
     title = str(args.get("title") or args.get("text") or "").strip()
     if not title:
-        return _err("missing reminder title/text")
+        return _err("missing reminder title/text", status="needs_user")
+    # VALIDACION due si vino (ISO 8601 esperado).
+    due_raw = args.get("due")
+    due_normalized: str | None = None
+    if due_raw is not None:
+        s = str(due_raw).strip()
+        if s:
+            # Acepta YYYY-MM-DD y YYYY-MM-DDTHH:MM[:SS]; rechaza language natural.
+            if re.match(r"^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?)?$", s):
+                due_normalized = s + ("T00:00:00" if "T" not in s else "")
+            else:
+                try:
+                    from datetime import datetime as _dt
+                    _dt.fromisoformat(s)
+                    due_normalized = s
+                except ValueError:
+                    return _err(
+                        f"reminder due {s!r} is not ISO 8601",
+                        status="needs_user",
+                        hint="pass YYYY-MM-DD or YYYY-MM-DDTHH:MM; resolve relative dates in the agent",
+                    )
     resource = state.register_resource(
         "reminder",
         title,
-        metadata={"due": args.get("due"), "backend": "state", "text": args.get("text") or title},
+        metadata={"due": due_normalized, "backend": "state", "text": args.get("text") or title},
     )
-    return _ok(reminder=resource.get("resource"), backend="state", note="Stored locally as agent state; no OS notification was scheduled.")
+    return _ok(
+        reminder=resource.get("resource"), backend="state",
+        note="Stored locally as agent state; no OS notification was scheduled.",
+        due=due_normalized,
+    )
 
 
 def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Path) -> dict[str, Any]:
@@ -870,7 +957,15 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
         except Exception as exc:
             return _err(f"set_download_path via CDP failed: {exc}", path=str(target_dir))
         return _ok(session_id=session_id, download_path=str(target_dir), verified=True)
-    return _err("unknown browser_real action", action=action)
+    return _err(
+        "unknown browser_real action", action=action,
+        valid_actions=[
+            "status", "close", "tabs", "connect_cdp", "attach_visible",
+            "active_tab", "tab_open", "tab_close", "tab_focus", "open", "goto",
+            "click", "fill", "press", "text", "screenshot", "evaluate",
+        ],
+        status="needs_user",
+    )
 
 
 def _attach_visible_browser(args: dict[str, Any], session_id: str, state: AgentState) -> dict[str, Any]:

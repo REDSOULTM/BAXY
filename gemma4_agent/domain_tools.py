@@ -121,9 +121,20 @@ def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "open":
         path = _existing_path(args)
         if not path:
-            return _err("missing or invalid path")
-        os.startfile(path) if os.name == "nt" else webbrowser.open(path.as_uri())
-        return _ok(path=str(path.resolve()), opened=True)
+            return _err("missing or invalid path", status="needs_user")
+        try:
+            if os.name == "nt":
+                os.startfile(path)  # type: ignore[attr-defined]
+            else:
+                webbrowser.open(path.as_uri())
+        except OSError as exc:
+            return _err(
+                f"failed to open office file: {exc}",
+                path=str(path), status="failed",
+                hint="no application registered to open this extension?",
+            )
+        return _ok(path=str(path.resolve()), opened=True, verified=False,
+                   note="Open requested; verification not performed (would require UIA).")
     if action in {"edit_presentation", "edit_document", "edit_spreadsheet", "export_pdf"}:
         return _err(
             f"office.{action} is not implemented yet",
@@ -132,7 +143,15 @@ def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             completion_status="needs_implementation",
             note="Creation and inspection are implemented first; editing/export need template-specific handling.",
         )
-    return _err("unknown office action", action=action)
+    return _err(
+        "unknown office action", action=action,
+        valid_actions=[
+            "status", "create_presentation", "create_document",
+            "create_spreadsheet", "inspect", "open",
+            "edit_presentation", "edit_document", "edit_spreadsheet", "export_pdf",
+        ],
+        status="needs_user",
+    )
 
 
 def audio_device_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -174,7 +193,14 @@ def audio_device_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
         return _audio_set_app_route(args, state)
     if action == "get_app_routes":
         return _audio_get_app_routes()
-    return _err("unknown audio_device action", action=action)
+    return _err(
+        "unknown audio_device action", action=action,
+        valid_actions=[
+            "status", "list", "snapshot", "set_default", "set_default_app",
+            "set_app_route", "rollback",
+        ],
+        status="needs_user",
+    )
 
 
 def _audio_set_app_route(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -315,7 +341,17 @@ def notification_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
         return _update_notification(args, state, kind="local_reminder")
     if action in {"timer_update", "alarm_update", "notification_update"}:
         return _update_notification(args, state, kind=_kind_for_notification_action(action.replace("_update", "")))
-    return _err("unknown notification action", action=action)
+    return _err(
+        "unknown notification action", action=action,
+        valid_actions=[
+            "status", "history", "list", "timer_list", "alarm_list", "reminder_list",
+            "toast_now", "notify_sound", "timer_start", "alarm_create",
+            "reminder_create", "toast_schedule", "timer_cancel", "alarm_cancel",
+            "reminder_delete", "delete", "reminder_update", "timer_update",
+            "alarm_update", "notification_update",
+        ],
+        status="needs_user",
+    )
 
 
 # Commands that imply destructive or system-altering side effects. If a
@@ -711,7 +747,14 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
             return _err("routine not found")
         steps = routine.get("metadata", {}).get("steps") or []
         return _ok(routine=routine, would_run=[{"tool": s.get("tool"), "args": s.get("args")} for s in steps if isinstance(s, dict)], step_count=len(steps), note="dry-run; nothing was executed")
-    return _err("unknown routine action", action=action)
+    return _err(
+        "unknown routine action", action=action,
+        valid_actions=[
+            "status", "create", "list", "enable", "disable", "run_now",
+            "delete", "import_triggercmd", "logs",
+        ],
+        status="needs_user",
+    )
 
 
 def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -772,7 +815,14 @@ def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _hass_area_list(host, token)
     if action == "area_control":
         return _hass_area_control(host, token, args, state)
-    return _err("unknown smart_home action", action=action)
+    return _err(
+        "unknown smart_home action", action=action,
+        valid_actions=[
+            "status", "discover", "states", "service_call", "mqtt_publish",
+            "automation_trigger",
+        ],
+        status="needs_user",
+    )
 
 
 def _hass_alive(host: str) -> bool:
@@ -991,7 +1041,15 @@ def study_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             return _study_review(conn, args)
         if action == "stats":
             return _study_stats(conn, args)
-        return _err("unknown study action", action=action)
+        return _err(
+            "unknown study action", action=action,
+            valid_actions=[
+                "status", "deck_create", "deck_list", "deck_delete",
+                "card_add", "card_list", "card_review", "card_delete",
+                "due_cards", "stats",
+            ],
+            status="needs_user",
+        )
     finally:
         conn.close()
 
@@ -1201,7 +1259,16 @@ def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
             status="needs_user",
             note="If you want programmatic toggle, open ms-settings:easeofaccess-highcontrast (via accessibility settings_panel).",
         )
-    return _err("unknown accessibility action", action=action)
+    return _err(
+        "unknown accessibility action", action=action,
+        valid_actions=[
+            "status", "magnifier_start", "magnifier_stop",
+            "narrator_start", "narrator_stop",
+            "high_contrast_on", "high_contrast_off",
+            "color_filter_on", "color_filter_off",
+        ],
+        status="needs_user",
+    )
 
 
 def _process_running(exe_name: str) -> bool:
@@ -1268,7 +1335,14 @@ def peripheral_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             status="needs_implementation",
             note="If a vendor exposes a stable CLI or HTTP endpoint, we can add a specific binding later.",
         )
-    return _err("unknown peripheral action", action=action)
+    return _err(
+        "unknown peripheral action", action=action,
+        valid_actions=[
+            "status", "usb_list", "hid_list", "controller_status",
+            "device_manager_problems", "device_disable", "device_enable",
+        ],
+        status="needs_user",
+    )
 
 
 def _peripheral_usb_list(args: dict[str, Any]) -> dict[str, Any]:
@@ -1373,7 +1447,13 @@ def form_filler_tool(args: dict[str, Any], state: AgentState, executor: Executor
         return _form_apply(session_id, args, executor)
     if action == "submit":
         return _form_submit(session_id, args, executor, state)
-    return _err("unknown form_filler action", action=action)
+    return _err(
+        "unknown form_filler action", action=action,
+        valid_actions=[
+            "status", "discover", "fill", "submit", "verify",
+        ],
+        status="needs_user",
+    )
 
 
 def _form_discover(session_id: str, executor: Executor) -> dict[str, Any]:
@@ -1600,7 +1680,14 @@ def creative_local_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
         return _comfy_interrupt(host)
     if action == "models":
         return _comfy_models(host)
-    return _err("unknown creative_local action", action=action)
+    return _err(
+        "unknown creative_local action", action=action,
+        valid_actions=[
+            "status", "list_models", "txt2img", "img2img", "queue_status",
+            "interrupt",
+        ],
+        status="needs_user",
+    )
 
 
 def _comfy_alive(host: str) -> bool:
@@ -1753,7 +1840,11 @@ def database_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             return _database_execute(conn, driver, args, state)
         if action == "export_csv":
             return _database_export_csv(conn, driver, args, state)
-        return _err("unknown database action", action=action)
+        return _err(
+            "unknown database action", action=action,
+            valid_actions=["status", "list_tables", "schema", "query"],
+            status="needs_user",
+        )
     finally:
         cleanup()
 
@@ -2059,7 +2150,15 @@ def container_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _container_compose(docker, "down", args)
     if action == "compose_ps":
         return _container_compose(docker, "ps", args)
-    return _err("unknown container action", action=action)
+    return _err(
+        "unknown container action", action=action,
+        valid_actions=[
+            "status", "ps", "ps_all", "images", "inspect", "logs",
+            "start", "stop", "restart", "pause", "unpause", "rm",
+            "compose_up", "compose_down", "compose_ps",
+        ],
+        status="needs_user",
+    )
 
 
 def _container_ps(docker: str, all_containers: bool) -> dict[str, Any]:
@@ -2200,7 +2299,14 @@ def photo_library_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
         return _photo_thumbnails(args, state)
     if action == "find_by_date":
         return _photo_find_by_date(args)
-    return _err("unknown photo_library action", action=action)
+    return _err(
+        "unknown photo_library action", action=action,
+        valid_actions=[
+            "status", "scan", "exif", "group_by_date", "group_by_location",
+            "find_duplicates", "thumbnail",
+        ],
+        status="needs_user",
+    )
 
 
 _PHOTO_EXTS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".tif", ".tiff", ".webp", ".bmp", ".gif"}
@@ -2431,7 +2537,11 @@ def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor:
         ranked = _fact_check_rank(claim, [{"source": "<inline>", "title": "inline", "text": ch} for ch in chunks])
         return _ok(claim=claim, matches=ranked[:10], evaluated=len(chunks))
     if action != "check":
-        return _err("unknown fact_check action", action=action)
+        return _err(
+            "unknown fact_check action", action=action,
+            valid_actions=["status", "check", "compare"],
+            status="needs_user",
+        )
 
     claim = str(args.get("claim") or "").strip()
     if not claim:
@@ -2635,7 +2745,14 @@ def data_analysis_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
         return _data_csv_to_xlsx(args, state)
     if action in {"plot_histogram", "plot_scatter", "plot_line"}:
         return _data_plot(action, args, state)
-    return _err("unknown data_analysis action", action=action)
+    return _err(
+        "unknown data_analysis action", action=action,
+        valid_actions=[
+            "status", "csv_describe", "csv_filter", "csv_group_agg",
+            "csv_plot", "csv_export", "csv_join", "json_describe",
+        ],
+        status="needs_user",
+    )
 
 
 def _data_load_df(args: dict[str, Any]):
@@ -2831,7 +2948,14 @@ def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             f"network.{action} is intentionally not exposed; modifying firewall rules requires explicit terminal commands",
             status="needs_user",
         )
-    return _err("unknown network action", action=action)
+    return _err(
+        "unknown network action", action=action,
+        valid_actions=[
+            "status", "ping", "traceroute", "dns_get", "dns_set",
+            "dns_lookup", "speedtest", "wifi_info", "active_connections",
+        ],
+        status="needs_user",
+    )
 
 
 def _network_ping(args: dict[str, Any]) -> dict[str, Any]:
@@ -3023,7 +3147,14 @@ def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         return _watcher_register_file(args, state)
     if action == "watch_url":
         return _watcher_register_url(args, state)
-    return _err("unknown watcher action", action=action)
+    return _err(
+        "unknown watcher action", action=action,
+        valid_actions=[
+            "status", "list", "watch_file", "watch_url", "check",
+            "disable", "enable", "delete",
+        ],
+        status="needs_user",
+    )
 
 
 def _watcher_register_file(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -3265,7 +3396,14 @@ def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _ok(job=job, alive=_pid_alive(int(pid)) if pid else None)
     if action in {"cancel", "stop", "kill"}:
         return _job_manager_cancel(args, state)
-    return _err("unknown job_manager action", action=action)
+    return _err(
+        "unknown job_manager action", action=action,
+        valid_actions=[
+            "status", "start", "list", "log", "status_of", "cancel",
+            "wait", "remove",
+        ],
+        status="needs_user",
+    )
 
 
 def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -3448,7 +3586,16 @@ def maintenance_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         )
     if action == "restore_point_create":
         return _maintenance_restore_point_create(args)
-    return _err("unknown maintenance action", action=action)
+    return _err(
+        "unknown maintenance action", action=action,
+        valid_actions=[
+            "status", "windows_update_status", "defender_status",
+            "defender_scan", "disk_cleanup_describe", "firewall_status",
+            "service_status", "service_action", "event_logs_query",
+            "restore_point_create",
+        ],
+        status="needs_user",
+    )
 
 
 def _maintenance_windows_update_status() -> dict[str, Any]:
@@ -3726,7 +3873,14 @@ def media_edit_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _media_edit_thumbnail(ffmpeg, args, state)
     if action == "transcode":
         return _media_edit_transcode(ffmpeg, args, state)
-    return _err("unknown media_edit action", action=action)
+    return _err(
+        "unknown media_edit action", action=action,
+        valid_actions=[
+            "status", "probe", "trim", "concat", "extract_audio",
+            "subtitles_extract", "normalize", "thumbnail", "transcode",
+        ],
+        status="needs_user",
+    )
 
 
 def _media_edit_probe(args: dict[str, Any]) -> dict[str, Any]:
@@ -3946,7 +4100,13 @@ def game_launcher_tool(args: dict[str, Any], state: AgentState, executor: Execut
             status="needs_implementation",
             note="Use browser_real or steam(store_page) instead.",
         )
-    return _err("unknown game_launcher action", action=action)
+    return _err(
+        "unknown game_launcher action", action=action,
+        valid_actions=[
+            "status", "discover", "launch", "open_launcher", "store_search",
+        ],
+        status="needs_user",
+    )
 
 
 def _epic_manifests_dir() -> Path | None:
@@ -4243,7 +4403,17 @@ def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, A
                 " display resolution needs IADLXDisplayServices or DISPLAY_DEVICE Win32 calls."
             ),
         )
-    return _err("unknown device_settings action", action=action)
+    return _err(
+        "unknown device_settings action", action=action,
+        valid_actions=[
+            "status", "wifi_status", "wifi_profiles", "wifi_scan",
+            "wifi_connect", "wifi_disconnect", "wifi_add_profile",
+            "wifi_delete_profile", "bluetooth_status", "bluetooth_devices",
+            "displays", "display_set_primary",
+            "power_plans", "power_plan_active", "power_plan_set",
+        ],
+        status="needs_user",
+    )
 
 
 def _device_wifi_add_profile(args: dict[str, Any]) -> dict[str, Any]:
@@ -4616,7 +4786,15 @@ def developer_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             status="needs_user",
             note="Mutating git actions should be explicit, not hidden behind a tool wrapper.",
         )
-    return _err("unknown developer action", action=action)
+    return _err(
+        "unknown developer action", action=action,
+        valid_actions=[
+            "status", "project_detect", "run_tests", "run_build",
+            "lint", "format", "git_status", "git_log", "git_diff",
+            "git_branch", "git_commit",
+        ],
+        status="needs_user",
+    )
 
 
 def _developer_project_root(args: dict[str, Any]) -> Path:
@@ -4934,7 +5112,14 @@ def document_tool(args: dict[str, Any], state: AgentState, knowledge_executor: E
         return knowledge_executor("knowledge", {"action": "ingest", "title": title, "source": path_raw, "text": text})
     if action == "compare_documents":
         return _document_compare(args)
-    return _err("unknown document action", action=action)
+    return _err(
+        "unknown document action", action=action,
+        valid_actions=[
+            "status", "extract_text", "extract_tables", "extract_images",
+            "ocr_pdf", "summarize", "ingest_to_knowledge", "compare_documents",
+        ],
+        status="needs_user",
+    )
 
 
 def _document_extract_text(args: dict[str, Any]) -> dict[str, Any]:
@@ -5522,7 +5707,14 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
             status="needs_implementation", verified=False,
             note=("volume_for_app needs SoundVolumeView /SetAppVolume" if action == "volume_for_app" else "cast_lan needs UPnP/DLNA backend (deferred)"),
         )
-    return _err("unknown media action", action=action)
+    return _err(
+        "unknown media action", action=action,
+        valid_actions=[
+            "status", "play", "pause", "resume", "play_pause",
+            "stop", "next", "previous", "now_playing",
+        ],
+        status="needs_user",
+    )
 
 
 def _media_play_local(path_raw: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -5665,7 +5857,11 @@ def _media_queue(action: str, args: dict[str, Any], state: AgentState) -> dict[s
             },
         )
         return _ok(queue_item=resource.get("resource"))
-    return _err("unknown queue action", action=action)
+    return _err(
+        "unknown queue action", action=action,
+        valid_actions=["enqueue", "dequeue", "list", "clear", "current"],
+        status="needs_user",
+    )
 
 
 def _media_search_local_library(args: dict[str, Any]) -> dict[str, Any]:
@@ -5735,7 +5931,14 @@ def source_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
     if action == "delete":
         source = _find_resource(args, state, "source")
         return state.mark_cleaned(str(source["id"]), {"deleted": True}) if source else _err("source not found")
-    return _err("unknown source_manager action", action=action)
+    return _err(
+        "unknown source_manager action", action=action,
+        valid_actions=[
+            "status", "save", "add", "list", "source_get", "source_delete",
+            "bibtex_export",
+        ],
+        status="needs_user",
+    )
 
 
 def dependency_tool(args: dict[str, Any]) -> dict[str, Any]:
@@ -5758,7 +5961,11 @@ def dependency_tool(args: dict[str, Any]) -> dict[str, Any]:
             dependency=item or name,
             install_hint=(item or {}).get("install_hint") or "Use package/terminal explicitly if you want installation.",
         )
-    return _err("unknown dependency action", action=action)
+    return _err(
+        "unknown dependency action", action=action,
+        valid_actions=["status", "list", "verify", "explain_missing"],
+        status="needs_user",
+    )
 
 
 # Regex laxas; el objetivo no es validar email/phone "correctos" sino
@@ -6671,7 +6878,14 @@ def printer_scanner_tool(args: dict[str, Any]) -> dict[str, Any]:
         return _scanners_list()
     if action == "scan_document":
         return _scanner_scan(args)
-    return _err("unknown printer_scanner action", action=action)
+    return _err(
+        "unknown printer_scanner action", action=action,
+        valid_actions=[
+            "status", "printers_list", "printer_default_get",
+            "printer_default_set", "print_file", "scan_status",
+        ],
+        status="needs_user",
+    )
 
 
 def _printer_set_default(args: dict[str, Any]) -> dict[str, Any]:
@@ -6874,7 +7088,15 @@ def desktop_layout_tool(args: dict[str, Any], state: AgentState, executor: Execu
         return _ok(snapshot=checkpoint.get("checkpoint"), windows=windows, count=len(windows))
     if action == "restore":
         return _desktop_layout_restore(args, state)
-    return _err("unknown desktop_layout action", action=action)
+    return _err(
+        "unknown desktop_layout action", action=action,
+        valid_actions=[
+            "status", "windows", "list_windows", "displays",
+            "save_snapshot", "restore_snapshot", "list_snapshots",
+            "delete_snapshot", "arrange",
+        ],
+        status="needs_user",
+    )
 
 
 def _enum_windows_with_rect(limit: int) -> list[dict[str, Any]]:
@@ -7064,7 +7286,14 @@ def backup_sync_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _backup_dedupe(args)
     if action == "verify":
         return _backup_verify(args, state)
-    return _err("unknown backup_sync action", action=action)
+    return _err(
+        "unknown backup_sync action", action=action,
+        valid_actions=[
+            "status", "backup_create", "list", "restore",
+            "dedup_scan", "sync",
+        ],
+        status="needs_user",
+    )
 
 
 def _backup_resolve(args: dict[str, Any], state: AgentState) -> tuple[Path | None, dict[str, Any] | None]:
