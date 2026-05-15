@@ -1852,6 +1852,25 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_is_experimental_quant_detects_mxfp4() -> bool:
+    """Item 1.9: MXFP4_MOE detectado como experimental."""
+    from gemma4_agent.model_info import is_experimental_quant
+    # Casos positivos
+    f1, p1 = is_experimental_quant("models/26B-A4B/gemma-4-26B-A4B-it-MXFP4_MOE.gguf")
+    assert f1 is True and p1 == "mxfp4_moe", f"got {(f1, p1)}"
+    f2, _ = is_experimental_quant("any-name-with-MXFP4-prefix.gguf")
+    assert f2 is True
+    # Casos negativos
+    f3, p3 = is_experimental_quant("models/E4B/gemma-4-E4B-it-Q4_K_M.gguf")
+    assert f3 is False and p3 is None
+    f4, _ = is_experimental_quant("models/E4B/gemma-4-E4B-it-Q6_K.gguf")
+    assert f4 is False
+    f5, _ = is_experimental_quant("unsloth-UD-Q4_K_XL.gguf")
+    assert f5 is False
+    print("OPTROAD-1.9 experimental quant detection: OK")
+    return True
+
+
 def test_optroad_compile_tools_to_markdown_exact_shape() -> bool:
     """Item 1.8: compile_tools_to_markdown_exact produce el formato EXACT."""
     from gemma4_agent.tools import COMPOUND_TOOL_SCHEMAS, compile_tools_to_markdown_exact
@@ -2034,6 +2053,8 @@ def main() -> int:
         test_optroad_vision_counter_fires_callback_at_threshold,
         # 1.8 tool schemas EXACT en Markdown
         test_optroad_compile_tools_to_markdown_exact_shape,
+        # 1.9 deteccion de cuantizaciones experimentales (MXFP4_MOE)
+        test_optroad_is_experimental_quant_detects_mxfp4,
     ]
     failures: list[str] = []
     for t in tests:

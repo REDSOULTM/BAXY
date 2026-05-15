@@ -104,6 +104,37 @@ def build_model_info(
     )
 
 
+# ---------------------------------------------------------------------------
+# 1.9 — Feature-flag de cuantizaciones experimentales en Gemma 4.
+#
+# Item I1 + Bloque A3 del informe de optimizacion externa. Unsloth retiro
+# MXFP4 de sus quants base (Q2_K_XL, Q3_K_XL, Q4_K_XL) por degradacion en
+# tensores criticos (attn_gate, attn_q, ssm_alpha/beta). El usuario del repo
+# YA tiene gemma-4-26B-A4B-it-MXFP4_MOE.gguf bajado; no queremos prohibirlo
+# pero si avisar cuando lo carga.
+# ---------------------------------------------------------------------------
+
+# Patrones de cuantizaciones experimentales / desaconsejadas. Substring
+# matching (case-insensitive). MXFP4_MOE es el caso primario.
+EXPERIMENTAL_QUANT_PATTERNS: tuple[str, ...] = (
+    "mxfp4_moe",  # pure MXFP4 MoE; calidad inferior a UD-Q4_K_XL segun Unsloth
+    "mxfp4",      # otros builds MXFP4 (excluyendo pure MXFP4_MOE arriba)
+)
+
+
+def is_experimental_quant(gguf_path: str | Path) -> tuple[bool, str | None]:
+    """Detecta si el GGUF usa una cuantizacion marcada como experimental.
+
+    Returns (flagged, pattern_matched). Si no hay match: (False, None).
+    El caller decide que hacer (warning, gate, etc).
+    """
+    name = Path(str(gguf_path)).name.casefold()
+    for pat in EXPERIMENTAL_QUANT_PATTERNS:
+        if pat in name:
+            return True, pat
+    return False, None
+
+
 def mock_model_info() -> ModelInfo:
     """Return a deterministic placeholder used when the agent runs in dry-run.
 

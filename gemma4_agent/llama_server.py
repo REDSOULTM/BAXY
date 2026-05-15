@@ -417,6 +417,22 @@ class LlamaServerManager:
         # ejecutar el binario si no esta presente).
         check_llama_build(exe)
 
+        # Item 1.9 / Bloque A3: avisar si el modelo es MXFP4 (experimental).
+        try:
+            from .model_info import is_experimental_quant
+            flagged, pattern = is_experimental_quant(str(model))
+            if flagged:
+                logger.warning(
+                    "Loading EXPERIMENTAL quantization (%s) for %s. Unsloth "
+                    "retired MXFP4 from base quants (Q2_K_XL, Q3_K_XL, "
+                    "Q4_K_XL) due to degradation on critical tensors "
+                    "(attn_gate, attn_q, ssm_alpha/beta). Quality may be "
+                    "lower than UD-Q4_K_XL of same size.",
+                    pattern, model.name,
+                )
+        except Exception as exc:
+            logger.debug("experimental quant check failed: %s", exc)
+
         # Tear down si habia uno con perfil distinto
         if self.is_running():
             self.stop()
