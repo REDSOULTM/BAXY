@@ -1,4 +1,5 @@
 import type { ConvState } from '../types';
+import type { VisionThreshold } from '../hooks/useEventStream';
 import { Icon } from './Icon';
 
 interface Props {
@@ -9,6 +10,11 @@ interface Props {
   onOpenSessions: () => void;
   onNewSession: () => void;
   onHelp: () => void;
+  /** Mostrar banner amber arriba con accion "recycle llama-server" cuando
+   *  el counter de imagenes cruza el threshold del mmproj leak (#21690). */
+  visionThreshold?: VisionThreshold | null;
+  onRecycleServer?: () => void;
+  onDismissVisionWarning?: () => void;
 }
 
 /* topbar action set per spec: sessions / + new / settings (labeled) / help.
@@ -18,8 +24,42 @@ export function TopBar({
   convState, clock, connected,
   onOpenSettings, onOpenSessions,
   onNewSession, onHelp,
+  visionThreshold, onRecycleServer, onDismissVisionWarning,
 }: Props) {
   return (
+    <>
+      {visionThreshold && (
+        <div
+          className="vision-banner"
+          role="alert"
+          aria-live="polite"
+        >
+          <span className="vision-banner-msg">
+            vision leak · <b>{visionThreshold.imageCount}/{visionThreshold.threshold}</b>{' '}
+            imagenes procesadas · recyclar llama-server recomendado{' '}
+            <span className="vision-banner-issue">({visionThreshold.issue})</span>
+          </span>
+          {onRecycleServer && (
+            <button
+              type="button"
+              className="vision-banner-btn"
+              onClick={onRecycleServer}
+            >
+              recycle now
+            </button>
+          )}
+          {onDismissVisionWarning && (
+            <button
+              type="button"
+              className="vision-banner-dismiss"
+              onClick={onDismissVisionWarning}
+              aria-label="dismiss warning"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      )}
     <div className="bar top">
       <div className="left">
         <span className="title">
@@ -65,5 +105,6 @@ export function TopBar({
         <span className="clock">{clock}</span>
       </div>
     </div>
+    </>
   );
 }

@@ -22,6 +22,7 @@ const SETTINGS_TABS = [
   { id: 'transcript', label: 'transcript' },
   { id: 'voice',      label: 'voice' },
   { id: 'profiles',   label: 'profiles' },
+  { id: 'optim',      label: 'optim' },
   { id: 'toggles',    label: 'toggles' },
   { id: 'paths',      label: 'paths' },
   { id: 'prompt',     label: 'prompt' },
@@ -57,6 +58,12 @@ export interface SettingsConfig {
   factExtraction: boolean; crossEncoderRerank: boolean; parallelToolExec: boolean;
   autoLoadCtx: boolean; persistentSessions: boolean; toolTimeline: boolean;
   summarization: boolean; tracing: boolean;
+  // optim (roadmap Gemma 4 — palancas avanzadas)
+  disablePrewarm: boolean;     // GEMMA4_DISABLE_PREWARM
+  telemetry: boolean;          // GEMMA4_TELEMETRY
+  kvType: string;              // GEMMA4_LLAMA_KV_TYPE ("" | "f16" | "q8_0" | "q4_0")
+  specDraftModel: string;      // GEMMA4_SPEC_DRAFT_MODEL (path)
+  llamaApiKey: string;         // GEMMA4_LLAMA_API_KEY
   // paths
   memoryJson: string; stateJson: string; traceJsonl: string;
   sessionsDir: string; timelineDir: string;
@@ -83,6 +90,8 @@ const DEFAULTS: SettingsConfig = {
   factExtraction: false, crossEncoderRerank: true, parallelToolExec: false,
   autoLoadCtx: false, persistentSessions: true, toolTimeline: true,
   summarization: true, tracing: true,
+  disablePrewarm: false, telemetry: false, kvType: '',
+  specDraftModel: '', llamaApiKey: '',
   memoryJson: '~/gemma4/data/memory.json', stateJson: '~/gemma4/data/state.json',
   traceJsonl: '~/gemma4/data/traces.jsonl', sessionsDir: '~/.gemma4/sessions',
   timelineDir: '~/.gemma4/timeline',
@@ -660,6 +669,121 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
   );
 }
 
+/* ---- OPTIM: palancas low-level del roadmap Gemma 4 ----
+   GEMMA4_DISABLE_PREWARM, GEMMA4_TELEMETRY, GEMMA4_LLAMA_KV_TYPE,
+   GEMMA4_SPEC_DRAFT_MODEL, GEMMA4_LLAMA_API_KEY. Cambios requieren restart
+   del agente para aplicarse en el llama-server. */
+const KV_TYPE_OPTIONS: SelectOption[] = [
+  { value: '', label: '(default · f16)' },
+  { value: 'f16', label: 'f16 · sin quantizacion' },
+  { value: 'q8_0', label: 'q8_0 · ~50% menos VRAM' },
+  { value: 'q4_0', label: 'q4_0 · ~75% menos VRAM (calidad ↓)' },
+];
+
+function OptimTab({ c, set }: { c: SettingsConfig; set: Setter }) {
+  return (
+    <STSection>
+      <STTip>
+        palancas low-level del runtime de llama.cpp y del prewarm. solo cambialas
+        si seguis una guia de optimizacion concreta o tenes una razon concreta.
+        cambios mal aplicados pueden degradar throughput o causar OOM.{' '}
+        <b className="bone">restart agent</b> aplica los cambios.
+      </STTip>
+
+      <div className="toggle-list">
+        <div className="toggle-list-row">
+          <div>
+            <div className="toggle-label">
+              disable kv cache prewarm at boot
+              <span className="needs-restart">needs restart</span>
+            </div>
+            <div className="toggle-sub">
+              opt-out del prewarm. el primer turn paga ttft del prefill (60-90s).
+              util solo si el prewarm causa problemas.
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span className="env mono">GEMMA4_DISABLE_PREWARM</span>
+            <Toggle
+              value={c.disablePrewarm}
+              onChange={(v) => set('disablePrewarm')(v as boolean)}
+              ariaLabel="disable prewarm"
+            />
+          </div>
+        </div>
+
+        <div className="toggle-list-row">
+          <div>
+            <div className="toggle-label">
+              enable local telemetry (sqlite)
+              <span className="needs-restart">needs restart</span>
+            </div>
+            <div className="toggle-sub">
+              opt-in. escribe turns/voice/incidents en ~/.gemma4/telemetry.sqlite.
+              solo local, sin red.
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span className="env mono">GEMMA4_TELEMETRY</span>
+            <Toggle
+              value={c.telemetry}
+              onChange={(v) => set('telemetry')(v as boolean)}
+              ariaLabel="telemetry"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="st-sub-head" style={{ marginTop: 16 }}>llama-server</div>
+      <Field
+        label="kv cache type"
+        hint="quantizacion del kv cache. util en perfiles light/balanced con context grandes."
+      >
+        <Select
+          value={c.kvType}
+          options={KV_TYPE_OPTIONS}
+          onChange={(v) => set('kvType')(v)}
+          ariaLabel="kv cache type"
+        />
+      </Field>
+
+      <Field
+        label="speculative draft model"
+        hint="path al modelo draft (q4_k_m de 1-2b) para speculative decoding. solo activo si el perfil tambien lo permite. vacio = off."
+      >
+        <input
+          type="text"
+          className="st-input"
+          value={c.specDraftModel}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => set('specDraftModel')(e.target.value)}
+          placeholder="(empty = disabled)"
+        />
+      </Field>
+
+      <Field
+        label="llama-server api key"
+        hint="si seteado, llama-server requiere authorization: bearer <key> en cada request. hardening sprint 12."
+      >
+        <input
+          type="password"
+          className="st-input"
+          value={c.llamaApiKey}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => set('llamaApiKey')(e.target.value)}
+          placeholder="(empty = no auth)"
+          autoComplete="new-password"
+        />
+      </Field>
+
+      <STTip>
+        env vars equivalentes:{' '}
+        <span className="env mono">GEMMA4_LLAMA_KV_TYPE</span>{' · '}
+        <span className="env mono">GEMMA4_SPEC_DRAFT_MODEL</span>{' · '}
+        <span className="env mono">GEMMA4_LLAMA_API_KEY</span>.
+      </STTip>
+    </STSection>
+  );
+}
+
 interface ToggleSpec { key: keyof SettingsConfig; label: string; env: string; sub?: string; }
 const TOGGLES: ToggleSpec[] = [
   { key: 'factExtraction',     label: 'fact extraction (post-turn)',              env: 'GEMMA4_AGENT_FACT_EXTRACTION' },
@@ -917,6 +1041,7 @@ export function SettingsPanel({ onClose, profile, onProfile }: Props) {
               {tab === 'transcript' && <TranscriptTab c={config} set={set} />}
               {tab === 'voice'      && <VoiceTab      c={config} set={set} />}
               {tab === 'profiles'   && <ProfilesTab   c={config} set={set} profile={profile} onProfile={onProfile} />}
+              {tab === 'optim'      && <OptimTab      c={config} set={set} />}
               {tab === 'toggles'    && <TogglesTab    c={config} set={set} />}
               {tab === 'paths'      && <PathsTab      c={config} set={set} />}
               {tab === 'prompt'     && <PromptTab />}

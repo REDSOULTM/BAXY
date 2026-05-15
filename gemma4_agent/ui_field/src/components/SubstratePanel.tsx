@@ -29,7 +29,10 @@ const INITIAL_HARDWARE: HardwareInfo = {
   gpu: 'unknown', gpu_vram_gb: 0,
 };
 
-const PROFILES = ['perf', 'bal', 'light', 'stdby'] as const;
+// `bal8` = balanced_8gb (E4B UD-Q4_K_XL, ctx 16K, ~7.2 GB VRAM).
+// Orden de mas a menos VRAM. El backend acepta los aliases tal cual o
+// expandidos (profiles.set_active_profile mapea `bal8` -> `balanced_8gb`).
+const PROFILES = ['perf', 'bal8', 'bal', 'light', 'stdby'] as const;
 
 function fmtK(n: number): string {
   return `${(n / 1000).toFixed(1)}k`;

@@ -1361,3 +1361,61 @@ button, input, textarea { font: inherit; color: inherit; }
   border-radius: 2px;
   vertical-align: middle;
 }
+
+/* ---- vision_threshold banner (mmproj leak warning #21690) ---------- */
+/* Aparece sobre la TopBar cuando el contador de imagenes cruza el umbral.
+   Tono amber para destacar sin alarmar; click en "recycle now" llama a
+   POST /agent/recycle_server. Se renderiza al inicio del .shell asi no
+   tenemos que cambiar el flex-direction de .bar.top (que es flex-row). */
+.vision-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: #2a1f06;
+  border-bottom: 1px solid #5a3f1d;
+  color: #ffcf6a;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.vision-banner-msg {
+  flex: 1;
+  text-transform: lowercase;
+}
+.vision-banner-msg b {
+  color: #ffe49a;
+  font-weight: 600;
+}
+.vision-banner-issue {
+  color: #b88a4b;
+  font-size: 10px;
+}
+.vision-banner-btn {
+  background: transparent;
+  border: 1px solid #b88a4b;
+  color: #ffcf6a;
+  padding: 3px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.vision-banner-btn:hover {
+  background: rgba(255, 207, 106, 0.12);
+  color: #ffe49a;
+}
+.vision-banner-dismiss {
+  background: transparent;
+  border: none;
+  color: #b88a4b;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.vision-banner-dismiss:hover {
+  color: #ffe49a;
+}

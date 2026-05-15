@@ -359,6 +359,20 @@ _TOGGLE_ENV_MAP: dict[str, str] = {
     "tracing":            "GEMMA4_AGENT_TRACING",
 }
 
+# OPTIM tab — palancas low-level del roadmap Gemma 4. Mismo concepto que
+# _TOGGLE_ENV_MAP pero estas son una mezcla: dos toggles boolean + tres
+# strings (combo / path / api key). Separar el mapping evita que un futuro
+# rename de keys arrastre al otro grupo.
+_OPTIM_TOGGLE_ENV_MAP: dict[str, str] = {
+    "disablePrewarm": "GEMMA4_DISABLE_PREWARM",
+    "telemetry":      "GEMMA4_TELEMETRY",
+}
+_OPTIM_STRING_ENV_MAP: dict[str, str] = {
+    "kvType":         "GEMMA4_LLAMA_KV_TYPE",
+    "specDraftModel": "GEMMA4_SPEC_DRAFT_MODEL",
+    "llamaApiKey":    "GEMMA4_LLAMA_API_KEY",
+}
+
 
 def _apply_toggle_env_vars(settings: dict[str, Any]) -> None:
     """Write each toggle into os.environ as the env var that the agent reads.
@@ -368,6 +382,21 @@ def _apply_toggle_env_vars(settings: dict[str, Any]) -> None:
     for ui_key, env_name in _TOGGLE_ENV_MAP.items():
         if ui_key in settings:
             os.environ[env_name] = "true" if bool(settings[ui_key]) else "false"
+    # Optim tab toggles (mismo formato boolean -> "true"/"false")
+    for ui_key, env_name in _OPTIM_TOGGLE_ENV_MAP.items():
+        if ui_key in settings:
+            os.environ[env_name] = "true" if bool(settings[ui_key]) else "false"
+    # Optim tab strings: si el valor es vacio, BORRAR la env var (semantica
+    # "off" = no setear). Caso contrario, asignar el string tal cual.
+    for ui_key, env_name in _OPTIM_STRING_ENV_MAP.items():
+        if ui_key not in settings:
+            continue
+        val = settings[ui_key]
+        text = "" if val is None else str(val).strip()
+        if not text:
+            os.environ.pop(env_name, None)
+        else:
+            os.environ[env_name] = text
 
 
 def _ts_now() -> str:
@@ -1188,8 +1217,14 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         try:
             from .profiles import get_active_profile
             p = get_active_profile()
+            # Reverse-lookup: nombre completo -> alias UI. Si no hay alias
+            # mapeado, devolvemos el nombre tal cual (los usuarios power que
+            # editan ~/.gemma4/active_profile.txt a mano lo ven literal).
+            reverse = {v: k for k, v in _PROFILE_UI_ALIASES.items()}
+            ui_alias = reverse.get(p.name, p.name)
             return {
-                "active": p.name,
+                "active": ui_alias,
+                "active_full": p.name,
                 "display_name": p.display_name,
                 "context_size": p.context_size,
                 "server_running": p.server_running,
@@ -1200,17 +1235,34 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
     class _ProfileChange(BaseModel):
         name: str
 
+    # Alias UI (chips React) -> nombre completo de profiles.py. El frontend usa
+    # abreviaciones de 4-6 chars (`perf`, `bal8`, `bal`, `light`, `stdby`) por
+    # razones de layout; profiles.set_active_profile espera los nombres
+    # completos. Sin este mapeo el PUT /profile devolvia 422 ("unknown profile").
+    _PROFILE_UI_ALIASES: dict[str, str] = {
+        "perf":  "performance",
+        "bal8":  "balanced_8gb",
+        "bal":   "balanced",
+        "light": "light",
+        "stdby": "standby",
+    }
+
     @app.put("/profile")
     def put_profile(body: _ProfileChange) -> Any:
         """Switch the active VRAM profile. Persists to ~/.gemma4 + applies
         env vars so the next agent restart picks them up. Does NOT restart
         llama-server here — that requires a heavier orchestration we save
         for later. The activity log entry tells the user to restart for
-        the new context size to take effect."""
+        the new context size to take effect.
+
+        Acepta tanto los nombres completos (`balanced_8gb`) como los aliases
+        que usa la UI React (`bal8`).
+        """
         try:
             from .profiles import (apply_profile_to_env, get_active_profile,
                                     set_active_profile)
-            name = body.name.strip().lower()
+            raw = body.name.strip().lower()
+            name = _PROFILE_UI_ALIASES.get(raw, raw)
             set_active_profile(name)
             p = get_active_profile()
             apply_profile_to_env(p)

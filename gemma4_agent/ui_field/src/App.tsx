@@ -84,6 +84,30 @@ export default function App() {
     localStorage.setItem('field.surface', activeSurface);
   }, [activeSurface]);
 
+  // vision_threshold warning: el banner aparece cuando llega el evento
+  // del WS; visionDismissedAt guarda el image_count que el usuario ya
+  // cerro para que un mismo aviso no reaparezca cada render — solo si
+  // el counter cruza un nuevo umbral en el futuro reaparece.
+  const [visionDismissedAt, setVisionDismissedAt] = useState<number | null>(null);
+  const effectiveVisionThreshold = (stream.visionThreshold
+    && (visionDismissedAt === null
+      || stream.visionThreshold.imageCount > visionDismissedAt))
+    ? stream.visionThreshold
+    : null;
+  const onRecycleServer = useCallback(async () => {
+    try {
+      const r = await fetch('/agent/recycle_server', { method: 'POST' });
+      if (!r.ok) throw new Error(`status ${r.status}`);
+      // recycle reseteo el counter en el backend; ocultamos el banner local.
+      setVisionDismissedAt(stream.visionThreshold?.imageCount ?? null);
+    } catch (e) {
+      toastError(`recycle failed · ${String(e).replace(/^Error: /, '')}`);
+    }
+  }, [stream.visionThreshold]);
+  const onDismissVisionWarning = useCallback(() => {
+    setVisionDismissedAt(stream.visionThreshold?.imageCount ?? null);
+  }, [stream.visionThreshold]);
+
   // persist profile so the chip selection survives reloads, AND propagate
   // the change to the backend so set_active_profile + apply_profile_to_env
   // pick up the new VRAM profile. happens on every change including the
@@ -188,8 +212,8 @@ export default function App() {
         setOpenPanel('tools');
       } else if (k === 'g' && e.shiftKey) {
         e.preventDefault();
-        // cycle perf → bal → light → stdby → perf
-        const cycle = ['perf', 'bal', 'light', 'stdby'];
+        // cycle perf -> bal8 -> bal -> light -> stdby -> perf
+        const cycle = ['perf', 'bal8', 'bal', 'light', 'stdby'];
         const idx = cycle.indexOf(profile);
         const next = cycle[(idx + 1) % cycle.length] ?? 'bal';
         setProfile(next);
@@ -301,6 +325,9 @@ export default function App() {
         onOpenSessions={() => setOpenPanel('sessions')}
         onNewSession={onNewSession}
         onHelp={onHelp}
+        visionThreshold={effectiveVisionThreshold}
+        onRecycleServer={onRecycleServer}
+        onDismissVisionWarning={onDismissVisionWarning}
       />
       <div className="cols">
         <div className="col left">

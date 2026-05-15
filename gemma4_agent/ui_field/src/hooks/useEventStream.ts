@@ -41,6 +41,15 @@ export interface BootStage {
   error: string | null;
 }
 
+/** Estado del mitigador del mmproj leak (issue #21690). null = no se cruzo
+ *  el umbral; cuando se cruza, la UI muestra un banner amber con el conteo
+ *  + boton para llamar a POST /agent/recycle_server. */
+export interface VisionThreshold {
+  imageCount: number;
+  threshold: number;
+  issue: string;
+}
+
 export interface EventStreamState {
   connected: boolean;
   convState: ConvState;
@@ -56,6 +65,8 @@ export interface EventStreamState {
   agent: AgentStatus;
   /** what's currently loading. */
   bootStage: BootStage | null;
+  /** mmproj leak warning (#21690); null mientras no se cruzo el umbral. */
+  visionThreshold: VisionThreshold | null;
 }
 
 const MAX_ENTRIES = 80;
@@ -71,6 +82,7 @@ const INITIAL: EventStreamState = {
   session: null,
   agent: { built: false, healthy: false, ready: false },
   bootStage: null,
+  visionThreshold: null,
 };
 
 /** subscribe to the FastAPI WS at `/events`. mirrors the server's BUS events
@@ -156,14 +168,22 @@ export function useEventStream(): EventStreamState {
 
       ws.onmessage = (ev) => {
         if (cancelled) return;
-        let parsed: ServerEvent | { type: 'heartbeat' };
+        let parsed: ServerEvent | { type: 'heartbeat' } | { kind: string; [k: string]: unknown };
         try {
           parsed = JSON.parse(ev.data);
         } catch {
           return;
         }
-        if (parsed.type === 'heartbeat') return;
-        setState((prev) => reduce(prev, parsed as ServerEvent));
+        // Normalizacion: el BUS publica eventos con `kind` (prewarm.py,
+        // multimodal.py) o con `type` (boot_progress.py, agent_runner.py).
+        // Aceptamos ambos y el reducer matchea sobre el discriminante
+        // resuelto.
+        const rec = parsed as Record<string, unknown>;
+        if (rec.type === 'heartbeat') return;
+        if (!rec.type && typeof rec.kind === 'string') {
+          rec.type = rec.kind;
+        }
+        setState((prev) => reduce(prev, rec as ServerEvent));
       };
 
       ws.onerror = () => {
@@ -236,14 +256,44 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
         ...prev,
         agent: { built: ev.built, healthy: ev.healthy, ready: ev.ready },
       };
-    case 'boot_stage':
+    case 'boot_stage': {
+      // El shape extendido (prewarm.py) trae elapsed_s/ok/system_prompt_chars
+      // en lugar de label/progress. Construimos un label legible asi la UI
+      // (FieldCenter placeholder + log) muestra info util sin caso especial.
+      let label = ev.label ?? null;
+      let progress = ev.progress ?? null;
+      const error = ev.error ?? null;
+      if (!label) {
+        if (ev.stage === 'prewarm_start') {
+          const chars = typeof ev.system_prompt_chars === 'number'
+            ? ` (${ev.system_prompt_chars} chars)` : '';
+          label = `prewarm · warming KV cache${chars}`;
+        } else if (ev.stage === 'prewarm_done') {
+          const dt = typeof ev.elapsed_s === 'number' ? ` in ${ev.elapsed_s.toFixed(1)}s` : '';
+          if (ev.ok) {
+            label = `prewarm · KV cache primed${dt}`;
+            progress = 1;
+          } else if (error) {
+            label = `prewarm · failed${dt}`;
+          } else {
+            label = `prewarm · empty result${dt}`;
+          }
+        } else {
+          label = ev.stage;
+        }
+      }
       return {
         ...prev,
-        bootStage: {
-          stage: ev.stage,
-          label: ev.label,
-          progress: ev.progress,
-          error: ev.error,
+        bootStage: { stage: ev.stage, label, progress, error },
+      };
+    }
+    case 'vision_threshold_reached':
+      return {
+        ...prev,
+        visionThreshold: {
+          imageCount: ev.image_count,
+          threshold: ev.threshold,
+          issue: ev.issue,
         },
       };
     case 'log_clear':

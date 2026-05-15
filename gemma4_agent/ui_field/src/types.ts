@@ -101,12 +101,35 @@ export type ServerEvent =
        *  are coming up so the UI can show what's actually loading instead of
        *  a single opaque "loading…". `progress` is 0..100 when known; null
        *  otherwise. `error` non-null means the stage failed and the chat
-       *  input should surface a retry button. */
+       *  input should surface a retry button.
+       *
+       *  Campos opcionales (label/progress/error) porque algunos publicadores
+       *  (prewarm.py) emiten un shape mas simple: {stage, elapsed_s, ok,
+       *  system_prompt_chars}. El reducer normaliza ambos. */
       type: 'boot_stage';
       stage: string;
-      label: string;
-      progress: number | null;
-      error: string | null;
+      label?: string | null;
+      progress?: number | null;
+      error?: string | null;
+      // shape extendido del prewarm
+      elapsed_s?: number;
+      ok?: boolean;
+      system_prompt_chars?: number;
+      msg?: string;
+    }
+  | {
+      /** El contador de imagenes cruzo el umbral del mmproj leak
+       *  (issue ggml-org/llama.cpp#21690). La UI debe mostrar un banner
+       *  amber con accion "recycle llama-server" hasta que el server sea
+       *  reciclado (POST /agent/recycle_server).
+       *
+       *  El BUS publica con `kind: 'vision_threshold_reached'`; useEventStream
+       *  copia kind a type antes del reducer, asi el discriminante funciona
+       *  con la misma forma que el resto del union. */
+      type: 'vision_threshold_reached';
+      image_count: number;
+      threshold: number;
+      issue: string;
     }
   /** wipe the activity log everywhere — fired by POST /log/clear. */
   | { type: 'log_clear' };
