@@ -111,12 +111,29 @@ python -m gemma4_agent.skills_registry load install-steam-game
 `GEMMA4_SKILLS_OFF=1` desactiva todo el sistema (menu vacío, `skill_load`
 retorna `skills disabled`).
 
-## Skills incluidos
+## Skills incluidos (10)
 
 | Folder | Priority | Cuándo |
 |---|---|---|
 | `purchase-guard/` | **critical** | Universal: jamás clickear "Buy"/"Comprar"/"Subscribe" sin "sí" explícito |
-| `install-steam-game/` | high | Usuario pide "instalá/abrí/jugá X" donde X es juego Steam |
+| `install-steam-game/` | high | Usuario pide "instalá/abrí/jugá X" donde X es juego Steam (requires Steam en PATH) |
 | `safe-file-cleanup/` | high | Usuario pide "borrá X", "limpiá Y". Preview antes de delete. |
+| `backup-then-clean/` | high | Usuario pide "limpiá pero hacé backup". ZIP + SHA256 antes de borrar. |
+| `research-and-summarize/` | medium | Usuario pide "investigá X", "buscá info en internet". Multi-source con citas honestas. |
+| `screenshot-and-analyze/` | medium | Usuario pide "qué ves", "leé la pantalla". Capture + vision/OCR. |
+| `debug-app-crash/` | medium | Usuario pide "por qué crasheó X", "X se colgó". Event Viewer + WER + logs. |
+| `schedule-recurring-task/` | medium | Usuario pide "todas las mañanas/horas/lunes Y". Cron/phrase/app_open triggers. |
 | `voice-record-transcribe/` | medium | Usuario pide "grabá audio", "transcribí lo que dije" |
 | `new-development-project/` | low | Usuario pide "creá proyecto Python/Node/etc" |
+
+## Cuándo NO crear más skills
+
+Si tu workflow:
+- Es 1 sola tool → usar la tool directo, no skill.
+- Es definición de término → usar microagent.
+- Es regla de uso de una tool específica → usar `TOOL_RULES` en `agent.py`.
+- Es especulativo ("por si alguien quiere") → NO crear. Esperar evidencia.
+
+Las skills son **deuda técnica**: si la tool subyacente cambia firma, la
+skill queda obsoleta. Cada una agrega ~50-80 tokens al system_prompt en
+cada turn. Pensar antes de crear.
