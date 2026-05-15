@@ -397,6 +397,22 @@ class StreamingSTT:
 
         Configura cpu_threads = max(4, min(8, N_physical - 2)) y sincroniza
         OMP_NUM_THREADS (informe sec. 10.1, 10.7).
+
+        ============================================================
+        DEFERRED — item 2.3 del optimization_roadmap.md:
+        NVIDIA Parakeet-TDT-0.6B-v3 como backend STT alternativo.
+        Pros: RTF muy alto, multilingue nativo (25 idiomas eu, español
+        incluido), modelo RNN-T optimizado streaming.
+        Cons:
+          - Requiere dep nueva pesada (nemo-toolkit ~1 GB de wheels),
+            ROMPE la restriccion "cero deps pesadas" del brief.
+          - Licencia NVIDIA Community Model License: requiere revision
+            legal del dev antes de usar comercialmente.
+          - WER es-MX no medido contra Common Voice 17.
+        Decision: DEFERRED hasta que (a) dev acepte la dep, (b) revise
+        licencia, (c) tenga set de A/B con jiwer contra Whisper-small.
+        Mientras tanto Whisper-small int8 CPU sigue como STT primario.
+        ============================================================
         """
         try:
             from faster_whisper import WhisperModel
