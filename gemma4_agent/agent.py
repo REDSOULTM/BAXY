@@ -790,6 +790,15 @@ class Gemma4Agent:
         failure_log: list[dict[str, Any]] = []
         replan_done = False
 
+        # Loop detector: registra cada tool execution con result canonicalizado y
+        # detecta 5 patrones de stuck (repeat, unknown_tool, ping_pong, circuit
+        # breaker, vision_not_found). Two-tier escalation: warning -> critical.
+        # Vive por-turn (un user request); se evita carry-over que confunda al
+        # LLM entre preguntas distintas.
+        from .loop_detection import LoopState
+        loop_state = LoopState()
+        loop_aborted = False  # se setea True si detectamos critical
+
         for _turn in range(self.config.max_agent_turns):
             _progress(
                 progress,
@@ -963,6 +972,14 @@ class Gemma4Agent:
                 result = prep.get("result") or {}
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
+                # Loop detector: record y check antes de seguir con la siguiente
+                # tool de este batch. exists=True salvo que el result diga
+                # "unknown tool" en el error (tool no registrada). El detector
+                # filtra timestamps/pids del result_sig para no confundir polling
+                # legitimo con loop.
+                err_str = str(result.get("error") or "")
+                tool_exists = not err_str.startswith("unknown tool:")
+                loop_state.record(name, args, exists=tool_exists, result=result)
                 if not result.get("ok"):
                     status_norm = str(result.get("status") or "").casefold()
                     completion = str(result.get("completion_status") or "").casefold()
@@ -1019,6 +1036,31 @@ class Gemma4Agent:
                 })
                 self.trace.event(turn_id, "unverified_intermediate_warning", tools=unverified_in_batch)
 
+            # Loop detector check: si critical, abort el outer for y produci un
+            # reply honesto. Si warning, inyecta el mensaje al historial para que
+            # el LLM lo vea en el proximo client.chat() y corrija solo.
+            stuck = loop_state.detect_stuck()
+            if stuck is not None:
+                self.trace.event(
+                    turn_id, "loop_detector",
+                    level=stuck.level, pattern=stuck.pattern, detail=stuck.detail,
+                )
+                _progress(progress, "loop_detector",
+                          level=stuck.level, pattern=stuck.pattern)
+                if stuck.level == "critical":
+                    self.history.append({
+                        "role": "user",
+                        "content": stuck.message,
+                    })
+                    loop_aborted = True
+                    break  # sale del outer `for _turn in range(max_agent_turns)`
+                else:
+                    # warning: nudge al LLM, sigue el loop normal
+                    self.history.append({
+                        "role": "user",
+                        "content": stuck.message,
+                    })
+
             # Replanning trigger: 2+ tool failures while we have an explicit
             # plan and have not replanned yet. Cheap: one extra LLM call.
             if (
@@ -1047,10 +1089,19 @@ class Gemma4Agent:
                 except Exception as exc:
                     self.trace.event(turn_id, "replan_error", error=str(exc))
 
-        final = "No pude terminar la tarea dentro del limite de turnos."
+        if loop_aborted:
+            final = (
+                "Detecte que estaba repitiendo la misma accion sin avanzar. "
+                "Corte para no quemar tiempo. Decime que querias lograr o "
+                "probemos otra estrategia."
+            )
+            reason = "loop_aborted"
+        else:
+            final = "No pude terminar la tarea dentro del limite de turnos."
+            reason = "max_turns"
         mission = evaluate_mission(events, final, plan)
         self.history.append({"role": "assistant", "content": final})
-        self.trace.event(turn_id, "max_turns", content=final, tool_events=len(events), mission=mission)
+        self.trace.event(turn_id, reason, content=final, tool_events=len(events), mission=mission)
         self._compact_completed_history()
         _progress(progress, "max_turns", tools=len(events), mission=mission)
         return AgentReply(content=final, tool_events=events, mission=mission)

@@ -1,0 +1,329 @@
+"""Tests para loop_detection.LoopState.
+
+NO toca la GUI ni el LLM ni el llama-server. Mockea results sintéticos para
+exercer cada uno de los 5 patrones de stuck.
+
+Run with:
+    python -m gemma4_agent.test_loop_detection
+    pytest gemma4_agent/test_loop_detection.py -q
+"""
+from __future__ import annotations
+
+import os
+import sys
+
+from .loop_detection import (
+    GLOBAL_CIRCUIT_BREAKER,
+    PING_PONG_WINDOW,
+    REPEAT_CRITICAL,
+    REPEAT_WARNING,
+    UNKNOWN_TOOL_LIMIT,
+    VISION_NOT_FOUND_LIMIT,
+    LoopState,
+    StuckSignal,
+    _hash_tool_call,
+    _result_signature,
+)
+
+
+# --------------------------------------------------------------------- helpers
+def _record_n(state: LoopState, n: int, tool: str = "app",
+              args: dict | None = None, result: dict | None = None,
+              exists: bool = True) -> None:
+    """Helper: registra n tool calls identicos para forzar repeat patterns."""
+    if args is None:
+        args = {"action": "open", "name": "Steam"}
+    if result is None:
+        result = {"ok": True, "verified": True}
+    for _ in range(n):
+        state.record(tool, args, exists=exists, result=result)
+
+
+# ----------------------------------------------------------------- result_sig
+def test_result_signature_stable() -> bool:
+    a = {"ok": True, "verified": True, "value": 42}
+    b = {"verified": True, "ok": True, "value": 42}  # mismo contenido, otro orden
+    assert _result_signature(a) == _result_signature(b)
+    return True
+
+
+def test_result_signature_filters_noise() -> bool:
+    """Polling legitimo cambia timestamps/pids/latencias pero la firma debe
+    quedar igual para no confundirse con loop."""
+    a = {"ok": True, "ts": "12:00:00", "pid": 1234, "latency_ms": 50, "value": 1}
+    b = {"ok": True, "ts": "12:00:05", "pid": 5678, "latency_ms": 200, "value": 1}
+    assert _result_signature(a) == _result_signature(b), (
+        "result_signature deberia filtrar ts/pid/latency_ms"
+    )
+    return True
+
+
+def test_result_signature_different_payload() -> bool:
+    a = {"ok": True, "value": 1}
+    b = {"ok": True, "value": 2}
+    assert _result_signature(a) != _result_signature(b)
+    return True
+
+
+def test_hash_includes_args_and_sig() -> bool:
+    h1 = _hash_tool_call("app", {"name": "Steam"}, "sig1")
+    h2 = _hash_tool_call("app", {"name": "Opera"}, "sig1")
+    h3 = _hash_tool_call("app", {"name": "Steam"}, "sig2")
+    assert h1 != h2 and h1 != h3 and h2 != h3
+    return True
+
+
+# -------------------------------------------------------------- generic_repeat
+def test_generic_repeat_warning_at_three() -> bool:
+    s = LoopState()
+    _record_n(s, REPEAT_WARNING)  # 3 identicas
+    sig = s.detect_stuck()
+    assert sig is not None
+    assert sig.level == "warning"
+    assert sig.pattern == "generic_repeat"
+    assert sig.detail["tool"] == "app"
+    return True
+
+
+def test_generic_repeat_critical_at_five() -> bool:
+    s = LoopState()
+    _record_n(s, REPEAT_CRITICAL)  # 5 identicas
+    sig = s.detect_stuck()
+    assert sig is not None
+    assert sig.level == "critical"
+    assert sig.pattern == "generic_repeat"
+    return True
+
+
+def test_generic_repeat_below_threshold_returns_none() -> bool:
+    s = LoopState()
+    _record_n(s, REPEAT_WARNING - 1)  # 2 identicas, debajo del umbral
+    assert s.detect_stuck() is None
+    return True
+
+
+# ---------------------------------------------------- polling no dispara loop
+def test_polling_distinct_results_does_not_trigger() -> bool:
+    """Llamar 5 veces system.processes con results distintos NO debe disparar
+    generic_repeat porque el result canonicalizado cambia cada vez."""
+    s = LoopState()
+    for i in range(REPEAT_CRITICAL):
+        s.record(
+            "system",
+            {"action": "processes"},
+            exists=True,
+            # campos NO filtrados que cambian -> firma distinta
+            result={"ok": True, "processes": [{"name": f"p{i}", "cpu": i}]},
+        )
+    sig = s.detect_stuck()
+    assert sig is None, f"polling no deberia disparar loop, pero disparo: {sig}"
+    return True
+
+
+def test_polling_with_only_noise_does_trigger() -> bool:
+    """Si lo unico que cambia entre calls son timestamps/pids (filtrados),
+    el detector SI lo trata como repeat porque la semantica es la misma."""
+    s = LoopState()
+    for i in range(REPEAT_CRITICAL):
+        s.record(
+            "system",
+            {"action": "time"},
+            exists=True,
+            result={"ok": True, "ts": f"12:00:{i:02d}", "pid": 1000 + i,
+                    "latency_ms": i * 10},
+        )
+    sig = s.detect_stuck()
+    assert sig is not None, "ts/pid/latency cambiando son ruido, debe disparar"
+    assert sig.level == "critical"
+    return True
+
+
+# ------------------------------------------------------- unknown_tool_repeat
+def test_unknown_tool_repeat_critical() -> bool:
+    s = LoopState()
+    for _ in range(UNKNOWN_TOOL_LIMIT):
+        s.record("nonexistent_tool", {}, exists=False,
+                 result={"ok": False, "error": "unknown tool: nonexistent_tool"})
+    sig = s.detect_stuck()
+    assert sig is not None
+    assert sig.level == "critical"
+    assert sig.pattern == "unknown_tool"
+    assert sig.detail["tool"] == "nonexistent_tool"
+    return True
+
+
+def test_unknown_tool_below_limit_returns_none() -> bool:
+    s = LoopState()
+    s.record("phantom", {}, exists=False, result={"ok": False, "error": "unknown tool: phantom"})
+    s.record("phantom", {}, exists=False, result={"ok": False, "error": "unknown tool: phantom"})
+    assert s.detect_stuck() is None
+    return True
+
+
+# ----------------------------------------------------------------- ping_pong
+def test_ping_pong_critical() -> bool:
+    s = LoopState()
+    # A -> B -> A -> B -> A -> B (PING_PONG_WINDOW = 6)
+    for i in range(PING_PONG_WINDOW):
+        if i % 2 == 0:
+            s.record("app", {"action": "open", "name": "X"},
+                     exists=True, result={"ok": True, "tag": "A"})
+        else:
+            s.record("verify", {"action": "app_opened", "name": "X"},
+                     exists=True, result={"ok": True, "tag": "B"})
+    sig = s.detect_stuck()
+    assert sig is not None
+    assert sig.pattern == "ping_pong"
+    assert sig.level == "critical"
+    return True
+
+
+def test_ping_pong_three_tools_no_alternation() -> bool:
+    """A -> B -> C -> A -> B -> C NO es ping_pong (3 hashes distintos)."""
+    s = LoopState()
+    for i in range(PING_PONG_WINDOW):
+        tag = ["A", "B", "C"][i % 3]
+        s.record(f"tool_{tag}", {}, exists=True,
+                 result={"ok": True, "tag": tag})
+    sig = s.detect_stuck()
+    # No es ping_pong; podria ser otra cosa o None. No deberia ser ping_pong.
+    assert sig is None or sig.pattern != "ping_pong"
+    return True
+
+
+# ---------------------------------------------------------- circuit breaker
+def test_global_circuit_breaker_critical() -> bool:
+    s = LoopState()
+    for i in range(GLOBAL_CIRCUIT_BREAKER):
+        # results todos distintos para no disparar repeat antes
+        s.record("system", {"i": i}, exists=True,
+                 result={"ok": True, "n": i})
+    sig = s.detect_stuck()
+    assert sig is not None
+    assert sig.pattern == "circuit_breaker"
+    assert sig.level == "critical"
+    assert sig.detail["count"] >= GLOBAL_CIRCUIT_BREAKER
+    return True
+
+
+# ---------------------------------------------------------- vision not found
+def test_vision_not_found_repeat() -> bool:
+    s = LoopState()
+    for i in range(VISION_NOT_FOUND_LIMIT):
+        s.record("vision", {"action": "locate", "target": "Comprar"},
+                 exists=True,
+                 # screenshot_path cambia cada vez (distinto path), pero el
+                 # patron semantico visible=False se acumula
+                 result={"ok": True, "visible": False, "screenshot_path": f"/tmp/{i}.png"})
+    sig = s.detect_stuck()
+    assert sig is not None
+    assert sig.pattern == "vision_not_found"
+    assert sig.level == "critical"
+    return True
+
+
+def test_vision_visible_true_resets_counter() -> bool:
+    s = LoopState()
+    # 2 not found, despues 1 found, despues 2 not found = no debe disparar
+    s.record("vision", {"target": "x"}, exists=True, result={"visible": False})
+    s.record("vision", {"target": "x"}, exists=True, result={"visible": False})
+    s.record("vision", {"target": "x"}, exists=True, result={"visible": True})
+    s.record("vision", {"target": "x"}, exists=True, result={"visible": False})
+    s.record("vision", {"target": "x"}, exists=True, result={"visible": False})
+    assert s.vision_not_found_count == 2, (
+        f"expected 2 (despues del reset por visible=True), got {s.vision_not_found_count}"
+    )
+    return True
+
+
+# ---------------------------------------------------------- evidence reset
+def test_evidence_resets_warning_count() -> bool:
+    s = LoopState()
+    # 3 identicas -> warning, warning_count = 1
+    _record_n(s, REPEAT_WARNING)
+    sig = s.detect_stuck()
+    assert sig is not None and sig.level == "warning"
+    assert s.warning_count == 1
+    # Evidencia de progreso resetea warning_count
+    s.record_evidence("app:Steam")
+    assert s.warning_count == 0
+    assert "app:Steam" in s.evidence_keys_changed
+    return True
+
+
+# ---------------------------------------------------------- opt-out env var
+def test_detector_disabled_via_env() -> bool:
+    """GEMMA4_LOOP_DETECTOR_OFF=1 deshabilita todas las detecciones."""
+    os.environ["GEMMA4_LOOP_DETECTOR_OFF"] = "1"
+    try:
+        s = LoopState()
+        _record_n(s, REPEAT_CRITICAL)  # 5 identicas - deberia ser critical
+        assert s.detect_stuck() is None, "opt-out deberia devolver None siempre"
+    finally:
+        os.environ.pop("GEMMA4_LOOP_DETECTOR_OFF", None)
+    return True
+
+
+# ---------------------------------------------------------- reset()
+def test_reset_clears_all_state() -> bool:
+    s = LoopState()
+    _record_n(s, REPEAT_WARNING)
+    s.record_evidence("file:/tmp/x")
+    assert s.global_count > 0 and s.evidence_keys_changed
+    s.reset()
+    assert s.global_count == 0
+    assert len(s.history) == 0
+    assert not s.evidence_keys_changed
+    assert s.warning_count == 0
+    assert s.vision_not_found_count == 0
+    return True
+
+
+# ============================================================================
+# Runner standalone
+# ============================================================================
+TESTS = [
+    test_result_signature_stable,
+    test_result_signature_filters_noise,
+    test_result_signature_different_payload,
+    test_hash_includes_args_and_sig,
+    test_generic_repeat_warning_at_three,
+    test_generic_repeat_critical_at_five,
+    test_generic_repeat_below_threshold_returns_none,
+    test_polling_distinct_results_does_not_trigger,
+    test_polling_with_only_noise_does_trigger,
+    test_unknown_tool_repeat_critical,
+    test_unknown_tool_below_limit_returns_none,
+    test_ping_pong_critical,
+    test_ping_pong_three_tools_no_alternation,
+    test_global_circuit_breaker_critical,
+    test_vision_not_found_repeat,
+    test_vision_visible_true_resets_counter,
+    test_evidence_resets_warning_count,
+    test_detector_disabled_via_env,
+    test_reset_clears_all_state,
+]
+
+
+def main() -> int:
+    failures = 0
+    for t in TESTS:
+        try:
+            ok = t()
+            if not ok:
+                print(f"[FAIL] {t.__name__}: returned falsy")
+                failures += 1
+        except AssertionError as exc:
+            print(f"[FAIL] {t.__name__}: {exc}")
+            failures += 1
+        except Exception as exc:  # noqa: BLE001
+            print(f"[ERROR] {t.__name__}: {type(exc).__name__}: {exc}")
+            failures += 1
+    total = len(TESTS)
+    passed = total - failures
+    print(f"\n{passed}/{total} pass")
+    return 0 if failures == 0 else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
