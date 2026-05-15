@@ -65,6 +65,12 @@ DEFAULT_CLOSE_PHRASES = (
     "gracias", "listo", "ya esta", "ya está", "cancelar", "stop",
 )
 
+# Margen hacia atras del fin del wake-word reportado por Vosk. Vosk tiene
+# jitter de ~50ms en sus word timestamps; sin margen, el snapshot puede
+# comer el primer fonema del comando ("abre" -> "bre"). Informe sec. 7.4.
+# Constante de modulo para que sea trivialmente ajustable y testeable.
+WAKE_SAFETY_MARGIN_S = 0.05
+
 
 def _normalize_phrase(text: str) -> str:
     import unicodedata
@@ -315,16 +321,18 @@ class VoiceController:
         if self._beep_on_wake:
             self._play_beep()
 
-        # tail_s ya viene calculado correctamente por wake.py. Solo lo
-        # clampeamos al tamano del ring buffer (5s).
+        # Ampliar el snapshot WAKE_SAFETY_MARGIN_S hacia atras del fin del
+        # wake-word reportado por Vosk para no comer el principio del comando
+        # (informe sec. 7.4). El strip del wake-word residual queda en
+        # stt._postprocess_text como defensa en profundidad.
         snapshot_audio: np.ndarray | None = None
         if tail_s > 0.05:
-            tail_s = min(tail_s, 5.0)
+            safe_tail_s = min(5.0, max(0.0, tail_s) + WAKE_SAFETY_MARGIN_S)
             try:
-                snapshot_audio = self._audio.snapshot_tail(tail_s)
+                snapshot_audio = self._audio.snapshot_tail(safe_tail_s)
                 logger.info(
-                    "wake snapshot: tail=%.2fs snap_samples=%d",
-                    tail_s, snapshot_audio.size,
+                    "snapshot tail=%.3fs (+%.3fs margin) snap_samples=%d",
+                    tail_s, WAKE_SAFETY_MARGIN_S, snapshot_audio.size,
                 )
             except Exception as exc:
                 logger.warning("snapshot_tail failed: %s", exc)

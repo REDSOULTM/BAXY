@@ -190,7 +190,11 @@ def test_g6_active_phrase_triggers_returns_enabled() -> bool:
     from gemma4_agent.domain_tools import active_phrase_triggers
     memory = MemoryStore(Path(__file__).parent / "data" / "memory.json")
     state = AgentState(Path(__file__).parent / "data" / "state.json")
-    reg = ToolRegistry(memory=memory, captures_dir=Path(__file__).parent / "captures", state=state)
+    # safety_enabled=False: este test ejercita el lifecycle (create/disable/delete)
+    # de una routine, no la politica de confirmacion. El default cambio a True en
+    # la refactor CC-101 (gating duro de routine.create); para que el test mida
+    # lo que dice medir (active_phrase_triggers respeta enabled), saltamos el gate.
+    reg = ToolRegistry(memory=memory, captures_dir=Path(__file__).parent / "captures", state=state, safety_enabled=False)
     unique_label = f"test_g6_phrase_{int(time.time())}"
     unique_phrase = f"buenisimas noches g6 {int(time.time())}"
     create = reg.execute("routine", {
@@ -1292,7 +1296,7 @@ def test_profile_watcher_hysteresis() -> bool:
     # Mockeamos set_active_profile y apply_profile_to_env para no tocar
     # archivos reales del usuario, y _sample para devolver lo que queremos.
     def gpu_sample(pct: float) -> _Sample:
-        return _Sample(has_game=False, gpu_pct=pct, ram_pct=None)
+        return _Sample(has_game=False, gpu_pct=pct, ram_pct=None, vram_pct=None)
 
     with patch("gemma4_agent.profile_watcher.set_active_profile"), \
          patch("gemma4_agent.profile_watcher.apply_profile_to_env"), \
