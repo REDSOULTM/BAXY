@@ -1872,6 +1872,81 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_prewarm_kv_calls_chat_with_min_tokens() -> bool:
+    """Sprint 7: prewarm dispara una request al cliente con max_tokens=1."""
+    import os
+    from gemma4_agent.prewarm import prewarm_kv, prewarm_enabled, ENV_OPT_OUT
+
+    saved = os.environ.get(ENV_OPT_OUT)
+    try:
+        # Default: enabled
+        os.environ.pop(ENV_OPT_OUT, None)
+        assert prewarm_enabled() is True
+        # Opt-out via env
+        os.environ[ENV_OPT_OUT] = "true"
+        assert prewarm_enabled() is False
+        # Cualquier otro valor: enabled
+        os.environ[ENV_OPT_OUT] = "no"
+        assert prewarm_enabled() is True
+        os.environ.pop(ENV_OPT_OUT, None)
+
+        # Fake client que captura el call
+        captured = {}
+
+        class FakeClient:
+            def chat(self, messages, tools=None, max_tokens=None, timeout_s=None):
+                captured["messages"] = messages
+                captured["max_tokens"] = max_tokens
+                captured["timeout_s"] = timeout_s
+                return {"choices": [{"message": {"content": "."}}]}
+
+        events: list[dict] = []
+        result = prewarm_kv(
+            FakeClient(),
+            "You are a local agent.",
+            publish=lambda e: events.append(e),
+        )
+        assert result["ok"] is True
+        assert "elapsed_s" in result
+        assert captured["max_tokens"] == 1, "must be 1 to minimize generation cost"
+        assert captured["messages"][0]["role"] == "system"
+        assert captured["messages"][0]["content"] == "You are a local agent."
+        assert captured["messages"][1]["role"] == "user"
+        # Eventos al bus
+        stages = [e.get("stage") for e in events]
+        assert "prewarm_start" in stages
+        assert "prewarm_done" in stages
+
+        # Caso skip por env opt-out
+        os.environ[ENV_OPT_OUT] = "true"
+        result_skip = prewarm_kv(FakeClient(), "ignored")
+        assert result_skip.get("skipped") is True
+        assert result_skip.get("reason") == "disabled_by_env"
+
+        # Caso prompt vacio: skip silencioso
+        os.environ.pop(ENV_OPT_OUT, None)
+        result_empty = prewarm_kv(FakeClient(), "   ")
+        assert result_empty.get("skipped") is True
+        assert result_empty.get("reason") == "empty_prompt"
+
+        # Caso de excepcion del cliente: no propaga, devuelve ok=False
+        class BrokenClient:
+            def chat(self, **kwargs):
+                raise RuntimeError("simulated server error")
+
+        result_err = prewarm_kv(BrokenClient(), "x" * 100, publish=lambda e: None)
+        assert result_err["ok"] is False
+        assert "error" in result_err
+    finally:
+        if saved is None:
+            os.environ.pop(ENV_OPT_OUT, None)
+        else:
+            os.environ[ENV_OPT_OUT] = saved
+
+    print("OPTROAD-S7 prewarm_kv: OK")
+    return True
+
+
 def test_optroad_telemetry_opt_in_default_off() -> bool:
     """Sprint 11: telemetria OFF por default; ON solo si env var setea."""
     import os
@@ -2249,6 +2324,8 @@ def main() -> int:
         test_optroad_is_experimental_quant_detects_mxfp4,
         # 2.2 speculative decoding opt-in
         test_optroad_spec_draft_flag_only_in_performance,
+        # Sprint 7 pre-warm KV
+        test_optroad_prewarm_kv_calls_chat_with_min_tokens,
         # Sprint 11 telemetry opt-in
         test_optroad_telemetry_opt_in_default_off,
         # Sprint 12 hardening llama-server
