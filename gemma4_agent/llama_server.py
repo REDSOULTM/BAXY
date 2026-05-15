@@ -236,6 +236,14 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "1",
         "--flash-attn",
         "on",
+        # --keep -1: defensa mientras issue #21468 (cache-reuse roto en
+        # Gemma 4 por arquitectura shared-KV) este abierto. Preserva todo
+        # el system prompt entre turnos, evita que context shifts tiren la
+        # prefix cache. PR #22288 candidato a merge; una vez merged, este
+        # flag deja de ser critico pero no daña tenerlo.
+        # Item I1 #3 + Bloque D1 del informe de optimizacion externa.
+        "--keep",
+        "-1",
     ]
 
     # VRAM-tight perfiles (balanced, light): --no-mmap para evitar
