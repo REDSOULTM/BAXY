@@ -3612,7 +3612,11 @@ _apply_action_enums(COMPOUND_TOOL_SCHEMAS)
 # ---------------------------------------------------------------------------
 
 
-def compile_tools_to_markdown_exact(schemas: list[dict[str, Any]] | None = None) -> str:
+def compile_tools_to_markdown_exact(
+    schemas: list[dict[str, Any]] | None = None,
+    *,
+    compact: bool = False,
+) -> str:
     """Renderiza COMPOUND_TOOL_SCHEMAS como Markdown estilo "AGENTS.md".
 
     El formato sigue la convencion de Daniel Farina (OpenCode):
@@ -3627,6 +3631,9 @@ def compile_tools_to_markdown_exact(schemas: list[dict[str, Any]] | None = None)
 
     Argumentos:
       schemas: lista opcional; por default usa COMPOUND_TOOL_SCHEMAS.
+      compact: si True, omite descripciones largas y limita enums a 5
+               valores. Reduce ~60% del tamaño. Usar en perfiles con
+               contexto <16K (light, balanced, balanced_8gb).
 
     Returns:
       String Markdown. Si no hay schemas, devuelve string vacio.
@@ -3635,13 +3642,21 @@ def compile_tools_to_markdown_exact(schemas: list[dict[str, Any]] | None = None)
     if not sch:
         return ""
 
-    lines: list[str] = [
-        "# Tool Schemas (EXACT parameter names - you MUST use these exactly)",
-        "",
-        "Each tool below shows its EXACT parameter names and types. Do NOT invent",
-        "parameter names. Use ONLY the action values shown in the enum (when present).",
-        "",
-    ]
+    if compact:
+        lines: list[str] = [
+            "# Tool Schemas (EXACT names - use ONLY these)",
+            "",
+        ]
+    else:
+        lines = [
+            "# Tool Schemas (EXACT parameter names - you MUST use these exactly)",
+            "",
+            "Each tool below shows its EXACT parameter names and types. Do NOT invent",
+            "parameter names. Use ONLY the action values shown in the enum (when present).",
+            "",
+        ]
+
+    enum_cap = 5 if compact else 10
 
     for entry in sch:
         fn = (entry.get("function") or {}) if isinstance(entry, dict) else {}
@@ -3656,11 +3671,17 @@ def compile_tools_to_markdown_exact(schemas: list[dict[str, Any]] | None = None)
         required = set(params.get("required") or [])
 
         lines.append(f"## {name}")
-        if desc:
+        if desc and not compact:
             lines.append(desc)
+        elif desc and compact:
+            # Solo primera oracion en compact.
+            first_sentence = desc.split(".")[0].strip()
+            if first_sentence:
+                lines.append(first_sentence + ".")
         if props:
-            lines.append("")
-            lines.append("Parameters:")
+            if not compact:
+                lines.append("")
+                lines.append("Parameters:")
             # Ordena: required primero, despues alfabetico.
             keys_required = [k for k in props.keys() if k in required]
             keys_optional = [k for k in props.keys() if k not in required]
@@ -3673,12 +3694,12 @@ def compile_tools_to_markdown_exact(schemas: list[dict[str, Any]] | None = None)
                 bullet = f"- {key} ({tname}, {tag})"
                 enum = spec.get("enum")
                 if isinstance(enum, list) and enum:
-                    enum_preview = ", ".join(repr(v) for v in enum[:10])
-                    if len(enum) > 10:
+                    enum_preview = ", ".join(repr(v) for v in enum[:enum_cap])
+                    if len(enum) > enum_cap:
                         enum_preview += ", ..."
                     bullet += f": one of [{enum_preview}]"
                 items = spec.get("items")
-                if isinstance(items, dict) and items.get("type"):
+                if isinstance(items, dict) and items.get("type") and not compact:
                     bullet += f" (items: {items.get('type')})"
                 lines.append(bullet)
         lines.append("")  # blank line entre tools

@@ -1284,10 +1284,12 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
     }
     try:
         # Context sizes alineados con la nueva tabla 6 GB-aware + perfil
-        # intermedio balanced_8gb (item 2.1 del optimization_roadmap.md).
+        # intermedio balanced_8gb (item 2.1 + Sprint 1 del roadmap).
+        # balanced_8gb subio a 16K para dejar espacio al tool_schemas_hint
+        # compact (~5.9K tokens) sin saturar conversacion + memoria.
         expected_ctx = {
             "performance": 32768,
-            "balanced_8gb": 8192,
+            "balanced_8gb": 16384,
             "balanced": 8192,
             "light": 4096,
             "standby": 4096,
@@ -1872,6 +1874,76 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> bool:
+    """Sprint 1: agent._tool_schemas_hint elige full/compact/off por
+    el context_size del perfil activo.
+
+    Verifica el branching sin construir un Gemma4Agent completo (que
+    requiere LLM, memory, etc.). Construimos un stub minimo.
+    """
+    import os
+    from gemma4_agent.config import AgentConfig
+
+    saved = {
+        "mode": os.environ.get("GEMMA4_TOOL_SCHEMAS_HINT_MODE"),
+        "legacy": os.environ.get("GEMMA4_DISABLE_TOOL_SCHEMAS_HINT"),
+    }
+    try:
+        os.environ.pop("GEMMA4_TOOL_SCHEMAS_HINT_MODE", None)
+        os.environ.pop("GEMMA4_DISABLE_TOOL_SCHEMAS_HINT", None)
+
+        # Stub que reusa el metodo de Gemma4Agent sin instanciar uno real.
+        from gemma4_agent.agent import Gemma4Agent
+        method = Gemma4Agent._tool_schemas_hint
+
+        class _Stub:
+            pass
+        stub = _Stub()
+
+        # ctx 4096 -> off
+        stub.config = AgentConfig(context_size=4096)
+        assert method(stub) == ""
+        # ctx 8192 -> off
+        stub.config = AgentConfig(context_size=8192)
+        assert method(stub) == ""
+        # ctx 16384 -> compact (header con "use ONLY these")
+        stub.config = AgentConfig(context_size=16384)
+        out = method(stub)
+        assert out.strip().startswith("# Tool Schemas (EXACT names")
+        # ctx 32768 -> full (header largo)
+        stub.config = AgentConfig(context_size=32768)
+        out = method(stub)
+        assert "you MUST use these exactly" in out
+
+        # Override env: force off en cualquier ctx
+        os.environ["GEMMA4_TOOL_SCHEMAS_HINT_MODE"] = "off"
+        stub = _Stub()
+        stub.config = AgentConfig(context_size=32768)
+        assert method(stub) == ""
+        # Force compact en ctx chico
+        os.environ["GEMMA4_TOOL_SCHEMAS_HINT_MODE"] = "compact"
+        stub = _Stub()
+        stub.config = AgentConfig(context_size=4096)
+        out = method(stub)
+        assert "EXACT names" in out
+        # Legacy off env var
+        os.environ.pop("GEMMA4_TOOL_SCHEMAS_HINT_MODE", None)
+        os.environ["GEMMA4_DISABLE_TOOL_SCHEMAS_HINT"] = "true"
+        stub = _Stub()
+        stub.config = AgentConfig(context_size=32768)
+        assert method(stub) == ""
+    finally:
+        for k, v in saved.items():
+            envk = f"GEMMA4_TOOL_SCHEMAS_HINT_MODE" if k == "mode" else "GEMMA4_DISABLE_TOOL_SCHEMAS_HINT"
+            if v is None:
+                os.environ.pop(envk, None)
+            else:
+                os.environ[envk] = v
+
+    print("OPTROAD-S1 tool_schemas_hint mode selection: OK")
+    return True
+
+
 def test_optroad_prewarm_kv_calls_chat_with_min_tokens() -> bool:
     """Sprint 7: prewarm dispara una request al cliente con max_tokens=1."""
     import os
@@ -2324,6 +2396,8 @@ def main() -> int:
         test_optroad_is_experimental_quant_detects_mxfp4,
         # 2.2 speculative decoding opt-in
         test_optroad_spec_draft_flag_only_in_performance,
+        # Sprint 1 tool_schemas_hint mode selection
+        test_optroad_tool_schemas_hint_selects_mode_by_ctx,
         # Sprint 7 pre-warm KV
         test_optroad_prewarm_kv_calls_chat_with_min_tokens,
         # Sprint 11 telemetry opt-in

@@ -111,7 +111,7 @@ PROFILES: dict[str, Profile] = {
     "balanced_8gb": Profile(
         name="balanced_8gb",
         display_name="Balanced 8GB",
-        context_size=8192,
+        context_size=16384,
         model_path=_E4B_UD_Q4_K_XL,
         vision_enabled=False,
         rerank_enabled=True,
@@ -122,15 +122,16 @@ PROFILES: dict[str, Profile] = {
         description=(
             "Perfil para 8 GB VRAM (RTX 3060 Ti, 4060, 2080). "
             "E4B-UD-Q4_K_XL (Pareto frontier KLD segun Unsloth/localbench), "
-            "context 8K, vision OFF, rerank ON, voice ON (CPU). "
-            "Requiere descarga manual del GGUF; si falta, cae al modelo "
-            "del usuario (env var) y el UI muestra warning amber. "
-            "Item 2.1 del optimization_roadmap.md."
+            "context 16K (espacio para tool_schemas_hint compact + history), "
+            "vision OFF, rerank ON, voice ON (CPU). Requiere descarga manual "
+            "del GGUF; si falta, cae al modelo del usuario (env var). "
+            "Item 2.1 + Sprint 1 del optimization_roadmap.md."
         ),
-        # E4B-UD-Q4_K_XL (~5.6 GB cargado proyectado por Unsloth) + KV F16
-        # 8K (~0.35 GB) ~= 5.95 GB total app. + reserva WDDM 1.5 GB = ~7.45 GB
-        # fisicos. Entra holgado en 8 GB, no entra en 6 GB con la reserva.
-        est_vram_mb=5950,
+        # E4B-UD-Q4_K_XL (~5.6 GB cargado) + KV F16 16K (~0.70 GB) = ~6.30 GB
+        # total app. + reserva WDDM 1.5 GB = ~7.80 GB fisicos. Entra en 8 GB.
+        # Si el tool_schemas_hint compact (~5.9K tokens) ocupa parte del ctx,
+        # quedan ~10K tokens para conversacion + memoria.
+        est_vram_mb=6300,
     ),
     "balanced": Profile(
         name="balanced",
