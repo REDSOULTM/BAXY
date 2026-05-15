@@ -284,6 +284,62 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                 "--cache-type-v", kv_type_env,
             ])
 
+    # Speculative decoding opt-in via env var (item 2.2 del roadmap).
+    #
+    # Bloque D3 del informe externo: speculative decoding E2B-draft -> E4B/
+    # 26B-A4B-target funciona con --spec-draft-model en llama.cpp upstream.
+    # Acceptance rate estimado 40-60% en Carter (sin medir). VRAM: solo viable
+    # en perfil `performance` con VRAM >=12 GB; E2B-Q4 ~1.85 GB + E4B-Q4 ~5.6 GB
+    # = 7.45 GB no entra en 6 GB.
+    #
+    # ADVERTENCIA: bench externo hackmd.io/ODXuOQNzSiyUITz7g9mtBw mide que en
+    # RTX 3090 con Qwen3.6-35B-A3B speculative resulta MAS LENTO que baseline
+    # (139.9 -> 65.0 tok/s). Lo activamos solo si el usuario lo opta-in y
+    # avisamos del riesgo. Si acceptance < 50% en la maquina, dejar off.
+    spec_draft_env = (os.environ.get("GEMMA4_SPEC_DRAFT_MODEL") or "").strip()
+    if spec_draft_env:
+        if profile.name != "performance":
+            logger.warning(
+                "GEMMA4_SPEC_DRAFT_MODEL set but profile=%s; speculative "
+                "decoding requires the 'performance' profile (VRAM budget). "
+                "Ignoring.",
+                profile.name,
+            )
+        else:
+            draft_path = Path(spec_draft_env).expanduser()
+            if not draft_path.is_file():
+                logger.warning(
+                    "GEMMA4_SPEC_DRAFT_MODEL=%s does not exist; ignoring "
+                    "speculative decoding.",
+                    spec_draft_env,
+                )
+            else:
+                logger.warning("=" * 70)
+                logger.warning(
+                    "Speculative decoding ENABLED: draft=%s. Bench externo "
+                    "hackmd #ODXuOQNzSiyUITz7g9mtBw measured speedup as "
+                    "NEGATIVE on consumer Ampere (RTX 30xx) with some quants. "
+                    "Run llama-bench --model-draft to confirm tok/s gain "
+                    "before relying on this in production.",
+                    draft_path.name,
+                )
+                logger.warning("=" * 70)
+                cmd.extend(["--model-draft", str(draft_path.resolve())])
+                # Flags adicionales con defaults conservadores. Si el usuario
+                # los sobreescribe via env var, respetamos.
+                n_max = (os.environ.get("GEMMA4_SPEC_DRAFT_N_MAX") or "16").strip()
+                n_min = (os.environ.get("GEMMA4_SPEC_DRAFT_N_MIN") or "0").strip()
+                draft_ngl = (os.environ.get("GEMMA4_SPEC_DRAFT_NGL") or "99").strip()
+                try:
+                    int(n_max); int(n_min); int(draft_ngl)
+                    cmd.extend([
+                        "--draft-max", n_max,
+                        "--draft-min", n_min,
+                        "--gpu-layers-draft", draft_ngl,
+                    ])
+                except ValueError:
+                    logger.warning("invalid spec-draft numeric env var; ignoring extra flags")
+
     # Vision: solo agregar --mmproj si el perfil lo permite y hay path real
     if profile.vision_enabled:
         mmproj_env = os.environ.get("GEMMA4_MMPROJ_PATH")

@@ -1872,6 +1872,61 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_spec_draft_flag_only_in_performance() -> bool:
+    """Item 2.2: speculative decoding via env var solo se activa en
+    perfil performance y si el archivo existe."""
+    import os
+    import tempfile
+    from pathlib import Path as _P
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    # Cleanup
+    saved = os.environ.get("GEMMA4_SPEC_DRAFT_MODEL")
+
+    try:
+        # Caso 1: env var SIN setear -> sin --model-draft
+        os.environ.pop("GEMMA4_SPEC_DRAFT_MODEL", None)
+        cfg = AgentConfig()
+        cmd = llama_command(cfg, PROFILES["performance"])
+        assert "--model-draft" not in cmd, "must not add --model-draft when env unset"
+
+        # Caso 2: env var pero archivo inexistente -> ignorado
+        os.environ["GEMMA4_SPEC_DRAFT_MODEL"] = "C:/does/not/exist_xyz.gguf"
+        cmd = llama_command(cfg, PROFILES["performance"])
+        assert "--model-draft" not in cmd, "missing file should be ignored"
+
+        # Caso 3: archivo existe pero perfil != performance -> ignorado
+        with tempfile.NamedTemporaryFile(suffix=".gguf", delete=False) as tf:
+            tf.write(b"fake gguf")
+            tmp_path = tf.name
+        try:
+            os.environ["GEMMA4_SPEC_DRAFT_MODEL"] = tmp_path
+            cmd = llama_command(cfg, PROFILES["balanced"])
+            assert "--model-draft" not in cmd, "balanced should reject spec draft"
+            cmd = llama_command(cfg, PROFILES["light"])
+            assert "--model-draft" not in cmd, "light should reject spec draft"
+            # Caso 4: archivo existe Y perfil = performance -> activo
+            cmd = llama_command(cfg, PROFILES["performance"])
+            assert "--model-draft" in cmd, "performance should accept spec draft"
+            idx = cmd.index("--model-draft")
+            assert cmd[idx + 1] == str(_P(tmp_path).resolve())
+            assert "--draft-max" in cmd
+            assert "--draft-min" in cmd
+            assert "--gpu-layers-draft" in cmd
+        finally:
+            os.unlink(tmp_path)
+    finally:
+        if saved is None:
+            os.environ.pop("GEMMA4_SPEC_DRAFT_MODEL", None)
+        else:
+            os.environ["GEMMA4_SPEC_DRAFT_MODEL"] = saved
+
+    print("OPTROAD-2.2 spec_draft opt-in only in performance + file exists: OK")
+    return True
+
+
 def test_optroad_is_experimental_quant_detects_mxfp4() -> bool:
     """Item 1.9: MXFP4_MOE detectado como experimental."""
     from gemma4_agent.model_info import is_experimental_quant
@@ -2075,6 +2130,8 @@ def main() -> int:
         test_optroad_compile_tools_to_markdown_exact_shape,
         # 1.9 deteccion de cuantizaciones experimentales (MXFP4_MOE)
         test_optroad_is_experimental_quant_detects_mxfp4,
+        # 2.2 speculative decoding opt-in
+        test_optroad_spec_draft_flag_only_in_performance,
     ]
     failures: list[str] = []
     for t in tests:
