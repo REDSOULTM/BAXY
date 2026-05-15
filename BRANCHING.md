@@ -55,6 +55,8 @@ estable, se mergea a `main` con `--no-ff` + tag de release.
 
 ## Tags activos
 
+- `v0.9.0` — primer release consolidado en `main` post-merge (Fases 1+2+3 + polish).
+- `v0.9.1` — patch: profiles.balanced_8gb ctx 16K (medido) + Task Scheduler upstream.
 - `backup/pre-merge-feature-20260515` — snapshot del feature antes del merge a main.
 - `backup/pre-merge-main-20260515` — snapshot de `feat/ui-field-react` (main efectivo previo) antes del merge.
 
