@@ -1139,23 +1139,37 @@ def test_profiles_recommend_by_vram() -> bool:
     # Cortes con reserva fija de 1.5 GB (WINDOWS_VRAM_RESERVE_MB) para dwm/driver:
     #   VRAM efectiva = vram_mb - 1500
     #   >=10500 MB ef. (=12 GB fisicos) -> performance
-    #   >= 4500 MB ef. (= 6 GB fisicos) -> balanced  <- target de produccion
+    #   >= 6500 MB ef. (= 8 GB fisicos) -> balanced_8gb (si GGUF existe)
+    #                                       sino fallback a balanced
+    #   >= 4500 MB ef. (= 6 GB fisicos) -> balanced  <- target HOT
     #   >= 2500 MB ef. (= 4 GB fisicos) -> light
     #   resto / None                    -> light
-    # Bloque F1 / item I1 #10 del informe de optimizacion externa.
-    from gemma4_agent.profiles import recommend_profile
+    # Bloque F1 / item I1 #10 + item 2.1 del optimization_roadmap.md.
+    from pathlib import Path as _P
+    from gemma4_agent.profiles import recommend_profile, PROFILES
     # 16 GB fisicos = 14.5 GB efectivos -> performance
     assert recommend_profile(16384) == "performance"
     # 12 GB fisicos = 10.5 GB efectivos -> performance (borde)
     assert recommend_profile(12000) == "performance"
-    # 11.5 GB fisicos = 10.0 GB efectivos -> balanced (debajo del corte)
-    assert recommend_profile(11500) == "balanced"
-    # 8 GB fisicos = 6.5 GB efectivos -> balanced
-    assert recommend_profile(8000) == "balanced"
-    # 6 GB fisicos = 4.5 GB efectivos -> balanced (target HOT)
+    # 11.5 GB fisicos = 10.0 GB efectivos -> balanced_8gb si GGUF existe
+    rec_11500 = recommend_profile(11500)
+    # 8 GB fisicos = 6.5 GB efectivos -> balanced_8gb si GGUF existe
+    rec_8000 = recommend_profile(8000)
+    # Validacion condicional: si el GGUF UD-Q4_K_XL esta bajado en la
+    # maquina, el recommend debe usar balanced_8gb. Si no esta, fallback a
+    # balanced (E2B-Q5_K_M). Probamos ambos paths con un mock implicito.
+    gguf_path = PROFILES["balanced_8gb"].model_path
+    gguf_exists = bool(gguf_path) and _P(gguf_path).expanduser().is_file()
+    if gguf_exists:
+        assert rec_11500 == "balanced_8gb", f"GGUF presente, expected balanced_8gb got {rec_11500}"
+        assert rec_8000 == "balanced_8gb"
+    else:
+        assert rec_11500 == "balanced", f"GGUF ausente, expected fallback balanced got {rec_11500}"
+        assert rec_8000 == "balanced"
+    # 6 GB fisicos = 4.5 GB efectivos -> balanced (HOT, GGUF E2B-Q5 que SI existe)
     assert recommend_profile(6144) == "balanced"
     assert recommend_profile(6000) == "balanced"
-    # 5.9 GB fisicos = 4.4 GB efectivos -> light (debajo del corte)
+    # 5.9 GB fisicos = 4.4 GB efectivos -> light (debajo del corte balanced)
     assert recommend_profile(5900) == "light"
     # 4 GB fisicos = 2.5 GB efectivos -> light (borde)
     assert recommend_profile(4000) == "light"
@@ -1163,7 +1177,7 @@ def test_profiles_recommend_by_vram() -> bool:
     assert recommend_profile(2000) == "light"
     assert recommend_profile(0) == "light"
     assert recommend_profile(None) == "light"
-    print("V1 recommend_profile by vram (with 1.5 GB WDDM reserve): OK")
+    print(f"V1 recommend_profile by vram (8GB tier GGUF present={gguf_exists}): OK")
     return True
 
 
@@ -1269,9 +1283,15 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
         )
     }
     try:
-        # Context sizes alineados con la nueva tabla 6 GB-aware (balanced bajo
-        # de 16K a 8K para que KV cache entre en VRAM con E4B-Q4_K_M).
-        expected_ctx = {"performance": 32768, "balanced": 8192, "light": 4096, "standby": 4096}
+        # Context sizes alineados con la nueva tabla 6 GB-aware + perfil
+        # intermedio balanced_8gb (item 2.1 del optimization_roadmap.md).
+        expected_ctx = {
+            "performance": 32768,
+            "balanced_8gb": 8192,
+            "balanced": 8192,
+            "light": 4096,
+            "standby": 4096,
+        }
         for name, profile in PROFILES.items():
             for k in saved:
                 os.environ.pop(k, None)

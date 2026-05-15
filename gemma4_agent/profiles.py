@@ -37,7 +37,7 @@ from typing import Any
 from .state import atomic_write_json
 
 
-PROFILE_NAMES = ("performance", "balanced", "light", "standby")
+PROFILE_NAMES = ("performance", "balanced_8gb", "balanced", "light", "standby")
 
 ACTIVE_PROFILE_PATH = Path.home() / ".gemma4" / "active_profile.txt"
 PROFILES_OVERRIDES_PATH = Path.home() / ".gemma4" / "profiles.json"
@@ -82,6 +82,11 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _E2B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q4_K_M.gguf")  # 4.46 GB cargado
 _E2B_Q5_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q5_K_M.gguf")  # 4.70 GB cargado
 _E4B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q4_K_M.gguf")  # 6.10 GB cargado
+# Recomendado por el informe externo (Item I1 #2 / Bloque A1) como Pareto
+# frontier para 8 GB de VRAM. Requiere descarga manual desde
+# huggingface.co/unsloth/gemma-4-E4B-it-GGUF (~4.7 GB). Si el archivo no
+# existe, apply_profile_to_env() cae al modelo del usuario via env var.
+_E4B_UD_Q4_K_XL = str(_PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-UD-Q4_K_XL.gguf")
 
 
 PROFILES: dict[str, Profile] = {
@@ -102,6 +107,30 @@ PROFILES: dict[str, Profile] = {
             "Usa el modelo principal del usuario (Q6_K o superior)."
         ),
         est_vram_mb=7500,
+    ),
+    "balanced_8gb": Profile(
+        name="balanced_8gb",
+        display_name="Balanced 8GB",
+        context_size=8192,
+        model_path=_E4B_UD_Q4_K_XL,
+        vision_enabled=False,
+        rerank_enabled=True,
+        parallel_tools=False,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        description=(
+            "Perfil para 8 GB VRAM (RTX 3060 Ti, 4060, 2080). "
+            "E4B-UD-Q4_K_XL (Pareto frontier KLD segun Unsloth/localbench), "
+            "context 8K, vision OFF, rerank ON, voice ON (CPU). "
+            "Requiere descarga manual del GGUF; si falta, cae al modelo "
+            "del usuario (env var) y el UI muestra warning amber. "
+            "Item 2.1 del optimization_roadmap.md."
+        ),
+        # E4B-UD-Q4_K_XL (~5.6 GB cargado proyectado por Unsloth) + KV F16
+        # 8K (~0.35 GB) ~= 5.95 GB total app. + reserva WDDM 1.5 GB = ~7.45 GB
+        # fisicos. Entra holgado en 8 GB, no entra en 6 GB con la reserva.
+        est_vram_mb=5950,
     ),
     "balanced": Profile(
         name="balanced",
@@ -236,22 +265,28 @@ def recommend_profile(vram_mb: int | None) -> str:
     """Sugiere perfil segun VRAM detectada.
 
     Aplica una reserva fija de WINDOWS_VRAM_RESERVE_MB (1.5 GB) al valor
-    reportado por nvidia-smi antes de mapear, porque Windows 11 + driver
-    consumen esa cantidad antes de que el server arranque. Cortes en VRAM
-    *efectiva* (post-reserva):
+    reportado por nvidia-smi antes de mapear. Cortes en VRAM *efectiva*:
 
-    >=10500 MB efectiva (>=12 GB fisicos) -> performance
-    >= 4500 MB efectiva (>= 6 GB fisicos) -> balanced
-    >= 2500 MB efectiva (>= 4 GB fisicos) -> light
-    resto / None                          -> light (voice CPU sigue ON)
+    >=10500 MB ef. (>=12 GB fisicos) -> performance
+    >= 6500 MB ef. (>= 8 GB fisicos) -> balanced_8gb (si el GGUF existe;
+                                       sino cae a balanced)
+    >= 4500 MB ef. (>= 6 GB fisicos) -> balanced
+    >= 2500 MB ef. (>= 4 GB fisicos) -> light
+    resto / None                     -> light (voice CPU sigue ON)
     """
     if vram_mb is None:
-        # Sin GPU detectable: light es el mas conservador. Voice CPU
-        # sigue andando aunque el LLM corra en CPU lento o falle.
         return "light"
     effective = max(0, int(vram_mb) - WINDOWS_VRAM_RESERVE_MB)
     if effective >= 10500:
         return "performance"
+    if effective >= 6500:
+        # Item 2.1: si el archivo UD-Q4_K_XL esta presente, balanced_8gb;
+        # sino caemos a balanced (E2B-Q5_K_M) para no recomendar un perfil
+        # con missing model.
+        candidate = PROFILES["balanced_8gb"].model_path
+        if candidate and Path(candidate).expanduser().is_file():
+            return "balanced_8gb"
+        return "balanced"
     if effective >= 4500:
         return "balanced"
     if effective >= 2500:
