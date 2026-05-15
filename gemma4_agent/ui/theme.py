@@ -8,8 +8,6 @@ Every color is a hex string. Use `qcol(C.PRI, alpha)` to get a QColor.
 """
 from __future__ import annotations
 
-from typing import Any
-
 from PyQt6.QtGui import QColor, QFont
 
 
@@ -227,7 +225,3 @@ def combo_qss() -> str:
             border: none;
         }}
     """
-
-
-# Convenience for typing
-ANYDICT = dict[str, Any]

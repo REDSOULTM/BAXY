@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 import zipfile
 from pathlib import Path
@@ -32,7 +31,6 @@ VOSK_MODEL_URL = f"https://alphacephei.com/vosk/models/{VOSK_MODEL_NAME}.zip"
 VOSK_MODEL_DIR = Path.home() / ".gemma4" / "models" / VOSK_MODEL_NAME
 
 WAKE_VOCAB = '["gemma", "hey gemma", "[unk]"]'
-WAKE_PHRASES = {"gemma", "hey gemma"}
 WAKE_DEBOUNCE_S = 2.0
 
 # Confidence minimo por word para aceptar un wake.

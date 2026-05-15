@@ -10,8 +10,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from PyQt6.QtCore import QObject, QSize, Qt, QThread, QTimer, pyqtSignal
-from PyQt6.QtGui import QFont, QKeySequence, QShortcut
+from PyQt6.QtCore import QObject, Qt, QThread, QTimer, pyqtSignal
+from PyQt6.QtGui import QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
     QSizePolicy, QVBoxLayout, QWidget,
@@ -253,14 +253,7 @@ class MainWindow(QMainWindow):
             pass
 
         # Bootstrap sessions
-        try:
-            from ..sessions import is_enabled as sessions_on
-            if sessions_on():
-                self._session_store = self._SessionStore_cls()
-                self._current_session = self._Session_cls.new()
-                self._update_footer_session()
-        except Exception:
-            pass
+        self._ensure_session_store()
 
         # Kick off worker
         self.worker.start()
@@ -276,6 +269,14 @@ class MainWindow(QMainWindow):
         self._voice_controller: Any = None
         self._voice_bridge: VoiceBridge | None = None
         QTimer.singleShot(100, self._maybe_enable_voice)
+
+        # Warmup post-conexion: precarga SentenceTransformer + hidrata KV cache
+        # del llama-server con un prompt fantasma de 1 token. Sin esto, el
+        # primer turn por voz tarda ~15s solo cargando el embedder semantico,
+        # ademas del prefill del system prompt.
+        # Bloquea el input de chat hasta que AMBAS tareas terminen.
+        self._warmup_kicked: bool = False
+        self._warmup_pending: int = 0  # contador de tasks de warmup en vuelo
 
     # ------------------------------------------------------------------
     def _build(self) -> None:
@@ -377,6 +378,10 @@ class MainWindow(QMainWindow):
         if self._server_booting:
             self.log.append("Server is booting, please wait...", "warn")
             return
+        # Bloquear si los modelos todavia estan en warmup
+        if self._warmup_pending > 0:
+            self.log.append("Warming up models, please wait...", "warn")
+            return
         # Fase V — bloquear envio si profile activo es STANDBY
         try:
             from ..profiles import get_active_profile
@@ -420,6 +425,78 @@ class MainWindow(QMainWindow):
             if cfg is not None:
                 model = getattr(cfg, "model", None) or "gemma-3n-e4b-it"
                 self.hud.set_model(str(model))
+            # Warmup post-conexion (one-shot)
+            if not self._warmup_kicked:
+                self._warmup_kicked = True
+                QTimer.singleShot(0, self._kick_warmup)
+
+    def _kick_warmup(self) -> None:
+        """Dispara warmup en threads daemon: precarga embedder semantico +
+        hidrata KV cache del llama-server. El input de chat queda bloqueado
+        hasta que ambas tareas terminen.
+
+        Esto elimina el delay de ~15-20s que el usuario ve la PRIMERA vez
+        que habla o escribe, causado por:
+        1) SentenceTransformer (paraphrase-multilingual-MiniLM-L12-v2)
+           cargando desde HuggingFace + tokenizer + pesos (~12s).
+        2) llama-server haciendo prefill del system prompt + tools schema
+           (~3-5s para 3K tokens).
+        """
+        import threading
+
+        # Marcar dos tareas pendientes ANTES de lanzar threads.
+        # _refresh_chat_input_blocked usara _warmup_pending para bloquear.
+        self._warmup_pending = 2
+        self._refresh_chat_input_blocked()
+
+        def _done() -> None:
+            """Marca una tarea de warmup completa (en GUI thread)."""
+            self._warmup_pending = max(0, self._warmup_pending - 1)
+            self._refresh_chat_input_blocked()
+
+        def _warm_embedder() -> None:
+            try:
+                from ..semantic_router import _ensure_loaded
+                t0 = __import__("time").monotonic()
+                ok = _ensure_loaded()
+                dt = __import__("time").monotonic() - t0
+                self._on_log(
+                    f"warmup: semantic embedder {'ready' if ok else 'skipped'} ({dt:.1f}s)",
+                    "sys",
+                )
+            except Exception as exc:
+                self._on_log(f"warmup: embedder failed: {exc}", "warn")
+            finally:
+                # Marshall a GUI thread para tocar widgets seguros
+                QTimer.singleShot(0, _done)
+
+        def _warm_llama() -> None:
+            try:
+                agent = self.worker.get_agent()
+                if agent is None or agent.client is None:
+                    return
+                t0 = __import__("time").monotonic()
+                # 1 token max, sin tools, sin thinking -> minimo costo de
+                # generacion. Lo que importa es que el server compute el
+                # prefill del system prompt + plantilla de chat (queda en
+                # KV cache, el siguiente prompt reutiliza el prefix).
+                agent.client.chat(
+                    [{"role": "user", "content": "."}],
+                    tools=None,
+                    enable_thinking=False,
+                    parallel_tool_calls=False,
+                    max_tokens=1,
+                    timeout_s=30.0,
+                )
+                dt = __import__("time").monotonic() - t0
+                self._on_log(f"warmup: llama-server KV cache primed ({dt:.1f}s)", "sys")
+            except Exception as exc:
+                self._on_log(f"warmup: llama prefill failed: {exc}", "warn")
+            finally:
+                QTimer.singleShot(0, _done)
+
+        threading.Thread(target=_warm_embedder, daemon=True, name="gemma4-warm-embed").start()
+        threading.Thread(target=_warm_llama, daemon=True, name="gemma4-warm-llm").start()
 
     def _on_reply(self, content: str, events: list[Any]) -> None:
         if self._current_session is not None and self._session_store is not None:
@@ -554,6 +631,11 @@ class MainWindow(QMainWindow):
             except Exception as exc:
                 self.log.append(f"live apply failed: {exc}", "err")
 
+        # Audit fix U-2: sessions toggle should take effect without restart.
+        # Toggles checkbox writes GEMMA4_AGENT_SESSIONS; rerun the bootstrap
+        # so the store gets created/dropped without needing _restart_worker.
+        self._ensure_session_store()
+
     def _restart_worker(self) -> None:
         self.log.append("Restarting agent...", "sys")
         old = self.worker
@@ -683,6 +765,31 @@ class MainWindow(QMainWindow):
         sess_lbl = self._footer_h.get("sess_lbl")
         if sess_lbl is not None and self._current_session is not None:
             sess_lbl.setText(f"session: {self._current_session.id}  ·  {self._current_session.title[:32]}")
+
+    def _ensure_session_store(self) -> None:
+        """Inicializa o tira el session store segun GEMMA4_AGENT_SESSIONS actual.
+
+        Audit fix U-2: antes la inicializacion era solo en __init__, asi que
+        toggling K1 desde Settings requeria restart. Ahora _apply_settings_live
+        llama esto despues de aplicar env y la session arranca/se descarta sin
+        restart del worker.
+        """
+        try:
+            from ..sessions import is_enabled as sessions_on
+            enabled = sessions_on()
+        except Exception:
+            enabled = False
+        if enabled and self._session_store is None:
+            try:
+                self._session_store = self._SessionStore_cls()
+                self._current_session = self._Session_cls.new()
+                self._update_footer_session()
+            except Exception:
+                self._session_store = None
+                self._current_session = None
+        elif not enabled and self._session_store is not None:
+            self._session_store = None
+            self._current_session = None
 
     # ------------------------------------------------------------------
     def _attach_image(self) -> None:
@@ -922,9 +1029,14 @@ class MainWindow(QMainWindow):
         # StreamingTTS at __init__ time. Without this, the user can pick a
         # different STT model or TTS voice in Settings and APPLY would persist
         # the choice but never apply it to the running runtime.
+        # "auto" no es un model size valido para faster-whisper. Lo tratamos
+        # como "dejar que stt.py use su default" -> NO exportar al env.
         stt_model = voice_cfg.get("stt_model")
-        if stt_model:
+        if stt_model and str(stt_model).strip().lower() not in {"", "auto"}:
             os.environ["GEMMA4_VOICE_STT_MODEL"] = str(stt_model)
+        else:
+            # Borrar cualquier valor stale (incluido "auto" de sesiones previas)
+            os.environ.pop("GEMMA4_VOICE_STT_MODEL", None)
         tts_voice = voice_cfg.get("tts_voice")
         if tts_voice:
             os.environ["GEMMA4_VOICE_TTS_VOICE"] = str(tts_voice)
@@ -956,6 +1068,19 @@ class MainWindow(QMainWindow):
         self.log.append("voice: enabling (Vosk + faster-whisper + Piper loading...)", "sys")
         # Cargar en thread aparte para no bloquear GUI (la carga puede tomar 1-3s)
         from PyQt6.QtCore import QThread
+        # Audit fix W-3: si quedo un _voice_loader de un toggle anterior
+        # (off -> on -> off -> on), limpiarlo antes de crear el nuevo. Evita
+        # memory leak acumulativo en sesiones largas.
+        prev_loader = getattr(self, "_voice_loader", None)
+        if prev_loader is not None:
+            try:
+                if prev_loader.isRunning():
+                    prev_loader.quit()
+                    prev_loader.wait(2000)
+                prev_loader.deleteLater()
+            except Exception:
+                pass
+            self._voice_loader = None
         class _Loader(QThread):
             def __init__(self, ctrl, parent):  # noqa: ANN001
                 super().__init__(parent)
@@ -1005,6 +1130,10 @@ class MainWindow(QMainWindow):
         # StreamingSTT/StreamingTTS read those env vars only in __init__.
         if running and profile_allows:
             new_stt = str(voice_cfg.get("stt_model") or "").strip()
+            # "auto" -> "" (= dejar default de stt.py). Normaliza para que
+            # comparar contra cur_stt no dispare restart en falso.
+            if new_stt.lower() == "auto":
+                new_stt = ""
             new_tts = str(voice_cfg.get("tts_voice") or "").strip()
             cur_stt = os.environ.get("GEMMA4_VOICE_STT_MODEL", "").strip()
             cur_tts = os.environ.get("GEMMA4_VOICE_TTS_VOICE", "").strip()
@@ -1046,6 +1175,14 @@ class MainWindow(QMainWindow):
             self._voice_bridge = None
         self.log.append("voice: disabled", "sys")
 
+    # States considered "interesting" enough to log in the activity panel.
+    # The transient WAKE_DETECTED, FOLLOWUP, IDLE_DISABLED transitions are
+    # noise during a normal turn (5-8 lines per turn). Only the meaningful
+    # phase transitions surface to the user.
+    _VOICE_LOG_STATES = frozenset({
+        "IDLE_LISTENING", "LISTENING", "THINKING", "SPEAKING", "FAILED",
+    })
+
     def _on_voice_state_main(self, state: str) -> None:
         """Recibido en main thread via signal -- seguro tocar la GUI directo."""
         self._voice_state = state
@@ -1065,7 +1202,8 @@ class MainWindow(QMainWindow):
             self.hud.set_state(hud_state)
         except Exception:
             pass
-        self.log.append(f"voice -> {state}", "sys")
+        if state in self._VOICE_LOG_STATES:
+            self.log.append(f"voice -> {state}", "sys" if state != "FAILED" else "err")
 
     def _on_voice_partial_main(self, text: str) -> None:
         try:
@@ -1188,7 +1326,17 @@ class MainWindow(QMainWindow):
             if send_btn is not None:
                 send_btn.setEnabled(False)
             return
-        # No booteando: estado normal segun perfil
+        # Warmup pendiente: el embedder semantico y/o el prefill del KV cache
+        # del llama-server todavia estan corriendo. Bloquear input para que
+        # el usuario no mande prompts que se demoren ~15-20s en arrancar.
+        if self._warmup_pending > 0:
+            if input_widget is not None:
+                input_widget.setEnabled(False)
+                input_widget.setPlaceholderText("Warming up models, please wait...")
+            if send_btn is not None:
+                send_btn.setEnabled(False)
+            return
+        # No booteando ni warmup-ing: estado normal segun perfil
         try:
             from ..profiles import get_active_profile
             is_standby = (get_active_profile().name == "standby")
@@ -1224,9 +1372,10 @@ class MainWindow(QMainWindow):
             downgrade_to=str(auto_cfg.get("downgrade_to") or "light"),
             restore_to=str(auto_cfg.get("restore_to") or "balanced"),
             game_watchlist=list(auto_cfg.get("game_watchlist") or []),
-            trigger_on_game=bool(auto_cfg.get("trigger_on_game", True)),
+            trigger_on_game=bool(auto_cfg.get("trigger_on_game", False)),
             trigger_on_gpu=bool(auto_cfg.get("trigger_on_gpu", False)),
             trigger_on_ram=bool(auto_cfg.get("trigger_on_ram", False)),
+            trigger_on_vram=bool(auto_cfg.get("trigger_on_vram", True)),
         )
         self._profile_watcher = ProfileWatcher(cfg, on_change=self._on_watcher_change)
         self._profile_watcher.start()
@@ -1293,6 +1442,17 @@ class MainWindow(QMainWindow):
             self._stop_voice_controller()
         except Exception:
             pass
+        # Audit fix W-3: drain _voice_loader QThread if still alive.
+        loader = getattr(self, "_voice_loader", None)
+        if loader is not None:
+            try:
+                if loader.isRunning():
+                    loader.quit()
+                    loader.wait(2000)
+                loader.deleteLater()
+            except Exception:
+                pass
+            self._voice_loader = None
         try:
             self.worker.stop()
             self.worker.wait(1500)

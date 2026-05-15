@@ -54,11 +54,6 @@ S_SPEAKING = "SPEAKING"
 S_FOLLOWUP = "FOLLOWUP"
 S_FAILED = "FAILED"
 
-ALL_STATES = {
-    S_IDLE_DISABLED, S_IDLE_LISTENING, S_WAKE_DETECTED, S_LISTENING,
-    S_TRANSCRIBING, S_THINKING, S_SPEAKING, S_FOLLOWUP, S_FAILED,
-}
-
 
 # Timeouts (segundos)
 WAKE_FEEDBACK_MS = 200  # cyan brillante antes de LISTENING
@@ -470,13 +465,16 @@ class VoiceController:
         self._stt_thread.start()
 
     def _stop_stt_thread(self) -> None:
+        """Senaliza al thread de STT que pare y espera join.
+
+        BUG FIX (2026-05-14): la version anterior NULIFICABA self._on_partial
+        y self._on_final aqui como "defensa" contra eventos straggler. Eso
+        provocaba que el SIGUIENTE wake encontrara _on_final=None y se
+        colgara en THINKING (porque _start_stt_thread llama esto primero).
+        Solucion correcta: el thread STT ya respeta _stt_stop_event y el
+        _stt_chunk_iter sale limpio; no hace falta destruir callbacks.
+        """
         self._stt_stop_event.set()
-        # Nullify callbacks BEFORE joining: if Whisper is mid-transcribe (1-3s
-        # on CPU) the thread can still emit STTEvent right up until join
-        # returns. Clearing the callbacks ensures any straggler events become
-        # no-ops instead of writing to a session that may have already changed.
-        self._on_partial = None
-        self._on_final = None
         if self._stt_thread is not None:
             # 5s margin: whisper int8 on CPU typically finishes within 1-3s.
             self._stt_thread.join(timeout=5.0)
@@ -504,7 +502,12 @@ class VoiceController:
             self._wake.reset()
             return
         if self._on_final is None:
-            logger.warning("_handle_final: on_final callback is None!")
+            logger.warning("_handle_final: on_final callback is None! freeing controller")
+            # Sin callback no podemos entregar el texto. Volver a IDLE para no
+            # quedar pegado en THINKING (sintoma reportado: voz se cuelga
+            # tras la primera transcripcion).
+            self._set_state(S_IDLE_LISTENING)
+            self._wake.reset()
             return
         logger.info("_handle_final: invoking on_final callback")
         try:

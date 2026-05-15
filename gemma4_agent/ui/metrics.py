@@ -7,7 +7,6 @@ Returns -1.0 when the metric is unavailable; the UI renders "N/A".
 from __future__ import annotations
 
 import platform
-import re
 import subprocess
 import threading
 import time

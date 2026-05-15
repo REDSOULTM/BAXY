@@ -8,12 +8,13 @@ Sequence:
 """
 from __future__ import annotations
 
+import logging
+import os
 import sys
-from pathlib import Path
 
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont, QPainter, QPen
-from PyQt6.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget
 
 from .main_window import MainWindow
 from .settings import apply_persisted_on_startup
@@ -95,7 +96,27 @@ class SplashWidget(QWidget):
             p.fillRect(40 + (self._shown_lines * 2), 170 + self._shown_lines * 18 - 8, 8, 2, qcol(C.PRI))
 
 
+def _setup_logging() -> None:
+    """Configura logging para que los logger.info sean visibles en consola.
+
+    Default level = INFO. Override con GEMMA4_LOG_LEVEL=DEBUG/WARNING/etc.
+    Si ya hay handlers configurados (otro caller), no toca nada.
+    """
+    root = logging.getLogger()
+    if root.handlers:
+        return
+    level_name = (os.environ.get("GEMMA4_LOG_LEVEL") or "INFO").upper()
+    level = getattr(logging, level_name, logging.INFO)
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        datefmt="%H:%M:%S",
+        stream=sys.stderr,
+    )
+
+
 def main() -> int:
+    _setup_logging()
     apply_persisted_on_startup()
     existing = QApplication.instance()
     app = existing if isinstance(existing, QApplication) else QApplication(sys.argv)

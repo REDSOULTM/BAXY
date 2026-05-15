@@ -355,6 +355,33 @@ def _score(query: str, candidate: str) -> int:
     overlap = len(q_words & c_words)
     if overlap:
         return 40 + int(30 * overlap / len(q_words))
+    # Fuzzy fallback: el usuario puede haber dictado mal por voz
+    # ("Saint Rose" en vez de "Saints Row") o con typos. Usamos difflib
+    # SequenceMatcher.ratio() sobre la frase completa Y sobre cada par
+    # de words. Si alguna coincidencia parcial supera el umbral, devolvemos
+    # un score bajo pero positivo para que el candidato no se descarte.
+    import difflib
+    full_ratio = difflib.SequenceMatcher(None, q, c).ratio()
+    if full_ratio >= 0.7:
+        # Mapeo lineal: 0.7 -> 35, 1.0 -> 70. Suficiente para entrar al
+        # ranking pero no para vencer un startswith/contiene del 75-90.
+        return int(35 + (full_ratio - 0.7) * (70 - 35) / 0.3)
+    # Word-pair fuzzy: si cualquier word del query tiene una similar
+    # (>=0.75) en el candidato, sumamos credito. "saint" vs "saints" = 0.91;
+    # "rose" vs "row" = 0.57 (no califica solo). Pero si AL MENOS UN word
+    # del query encuentra match difuso, devolvemos un score modesto.
+    matched_words = 0
+    for qw in q_words:
+        if len(qw) < 3:
+            continue
+        for cw in c_words:
+            if len(cw) < 3:
+                continue
+            if difflib.SequenceMatcher(None, qw, cw).ratio() >= 0.75:
+                matched_words += 1
+                break
+    if matched_words:
+        return 20 + int(20 * matched_words / max(1, len(q_words)))
     return 0
 
 
@@ -3060,29 +3087,3 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
 
 _apply_action_enums(COMPOUND_TOOL_SCHEMAS)
 
-
-TOOL_SCHEMAS: list[dict[str, Any]] = [
-    {"type": "function", "function": {"name": "system_time", "description": "Return current local system time.", "parameters": {"type": "object", "properties": {}, "required": []}}},
-    {"type": "function", "function": {"name": "list_processes", "description": "List running Windows processes.", "parameters": {"type": "object", "properties": {"limit": {"type": "integer", "default": 40}}, "required": []}}},
-    {"type": "function", "function": {"name": "list_windows", "description": "List visible windows and titles.", "parameters": {"type": "object", "properties": {"limit": {"type": "integer", "default": 30}}, "required": []}}},
-    {"type": "function", "function": {"name": "app_search", "description": "Search installed apps/games dynamically across PATH, Start Menu shortcuts, Windows StartApps, uninstall registry, common executable roots, Steam libraries, and Epic manifests. Use when unsure what app name resolves to.", "parameters": {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer", "default": 10}, "refresh": {"type": "boolean", "default": False}}, "required": ["query"]}}},
-    {"type": "function", "function": {"name": "app_open", "description": "Open an installed app/game by dynamic discovery. The resolver searches PATH, Start Menu, Windows apps, registry, common exe folders, Steam, and Epic; no fixed app alias list is required.", "parameters": {"type": "object", "properties": {"name": {"type": "string"}, "refresh": {"type": "boolean", "default": False}}, "required": ["name"]}}},
-    {"type": "function", "function": {"name": "app_close", "description": "Close an app/game by resolving its installed executable or process name, then using taskkill.", "parameters": {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}}},
-    {"type": "function", "function": {"name": "filesystem_list", "description": "List files and folders in a path.", "parameters": {"type": "object", "properties": {"path": {"type": "string", "default": "."}, "limit": {"type": "integer", "default": 80}}, "required": []}}},
-    {"type": "function", "function": {"name": "filesystem_read", "description": "Read a UTF-8 text file.", "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "max_chars": {"type": "integer", "default": 12000}}, "required": ["path"]}}},
-    {"type": "function", "function": {"name": "filesystem_write", "description": "Write a UTF-8 text file, creating parent folders as needed.", "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "content": {"type": "string"}}, "required": ["path", "content"]}}},
-    {"type": "function", "function": {"name": "filesystem_search", "description": "Search files recursively by glob pattern under a root.", "parameters": {"type": "object", "properties": {"root": {"type": "string", "default": "."}, "pattern": {"type": "string", "default": "*"}, "limit": {"type": "integer", "default": 50}}, "required": []}}},
-    {"type": "function", "function": {"name": "filesystem_delete", "description": "Delete a file or directory. Direct execution prototype: no confirmation layer.", "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "recursive": {"type": "boolean", "default": False}}, "required": ["path"]}}},
-    {"type": "function", "function": {"name": "web_open_url", "description": "Open a URL in the default browser.", "parameters": {"type": "object", "properties": {"url": {"type": "string"}}, "required": ["url"]}}},
-    {"type": "function", "function": {"name": "terminal_run", "description": "Run a terminal command. Direct execution prototype: no confirmation layer.", "parameters": {"type": "object", "properties": {"command": {"type": "string"}, "args": {"type": "array", "items": {"type": "string"}, "default": []}, "cwd": {"type": "string"}, "timeout_sec": {"type": "integer", "default": 60}, "shell": {"type": "boolean", "default": True}}, "required": ["command"]}}},
-    {"type": "function", "function": {"name": "clipboard_read", "description": "Read Windows clipboard text.", "parameters": {"type": "object", "properties": {"max_chars": {"type": "integer", "default": 4000}}, "required": []}}},
-    {"type": "function", "function": {"name": "clipboard_write", "description": "Write text to Windows clipboard.", "parameters": {"type": "object", "properties": {"content": {"type": "string"}}, "required": ["content"]}}},
-    {"type": "function", "function": {"name": "gui_screenshot", "description": "Take a screenshot of the current desktop. The agent will send the image back to Gemma 4 for visual reasoning.", "parameters": {"type": "object", "properties": {}, "required": []}}},
-    {"type": "function", "function": {"name": "gui_click", "description": "Click a screen coordinate in pixels.", "parameters": {"type": "object", "properties": {"x": {"type": "integer"}, "y": {"type": "integer"}}, "required": ["x", "y"]}}},
-    {"type": "function", "function": {"name": "gui_type", "description": "Type text into the focused UI element.", "parameters": {"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]}}},
-    {"type": "function", "function": {"name": "gui_keypress", "description": "Send a key or shortcut. Examples: ENTER, ESC, CTRL+L, CTRL+A, CTRL+C, CTRL+V, ALT+F4.", "parameters": {"type": "object", "properties": {"keys": {"type": "string"}}, "required": ["keys"]}}},
-    {"type": "function", "function": {"name": "memory_save", "description": "Save persistent memory ONLY when the user explicitly asks to remember or save a preference/fact.", "parameters": {"type": "object", "properties": {"key": {"type": "string"}, "value": {"type": "string"}}, "required": ["key", "value"]}}},
-    {"type": "function", "function": {"name": "memory_recall", "description": "Recall persistent memory by optional query.", "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": []}}},
-    {"type": "function", "function": {"name": "memory_list", "description": "List all persistent memory items.", "parameters": {"type": "object", "properties": {}, "required": []}}},
-    {"type": "function", "function": {"name": "memory_delete", "description": "Delete a persistent memory item by key. Use key='*' to clear all memory if user explicitly asks.", "parameters": {"type": "object", "properties": {"key": {"type": "string"}}, "required": ["key"]}}},
-]

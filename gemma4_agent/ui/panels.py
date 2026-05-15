@@ -6,11 +6,10 @@ The right panel hosts ActivityLog + input row + drop zone + actions.
 from __future__ import annotations
 
 import time
-from pathlib import Path
 from typing import Any, Callable
 
-from PyQt6.QtCore import QSize, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QFont, QKeySequence, QShortcut
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget,
 )

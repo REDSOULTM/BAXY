@@ -11,7 +11,7 @@ import subprocess
 import time
 import webbrowser
 import zipfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -7137,7 +7137,7 @@ def _events_to_ics(events: list[dict[str, Any]]) -> str:
         lines.extend([
             "BEGIN:VEVENT",
             f"UID:{uid}@gemma4-agent",
-            f"DTSTAMP:{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}",
+            f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
             f"DTSTART:{start}",
             f"DTEND:{end}",
             f"SUMMARY:{_ics_escape(title)}",
