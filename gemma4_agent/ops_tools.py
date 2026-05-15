@@ -82,8 +82,18 @@ def state_tool(args: dict[str, Any], state: AgentState, execute: Executor) -> di
     if action == "note":
         raw_meta = args.get("metadata")
         meta: dict[str, Any] = raw_meta if isinstance(raw_meta, dict) else {}
-        return state.note(str(args.get("text") or ""), metadata=meta)
-    return _err("unknown state action", action=action)
+        text = str(args.get("text") or "").strip()
+        if not text:
+            return _err("state.note requires non-empty text", status="needs_user")
+        return state.note(text, metadata=meta)
+    return _err(
+        "unknown state action", action=action,
+        valid_actions=[
+            "resources", "cleanup_plan", "cleanup", "checkpoint", "checkpoints",
+            "rollback_plan", "rollback", "note",
+        ],
+        status="needs_user",
+    )
 
 
 def input_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -406,22 +416,48 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 def download_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "fetch").casefold()
     if action == "hash":
-        path = Path(str(args.get("path") or "")).expanduser()
+        path_raw = str(args.get("path") or "").strip()
+        if not path_raw:
+            return _err("hash requires path", status="needs_user")
+        path = Path(path_raw).expanduser()
         return _file_hash(path, str(args.get("algorithm") or "SHA256"))
     if action == "signature":
-        path = Path(str(args.get("path") or "")).expanduser()
+        path_raw = str(args.get("path") or "").strip()
+        if not path_raw:
+            return _err("signature requires path", status="needs_user")
+        path = Path(path_raw).expanduser()
         return _authenticode_signature(path)
     if action != "fetch":
-        return _err("unknown download action", action=action)
+        return _err(
+            "unknown download action", action=action,
+            valid_actions=["fetch", "hash", "signature"],
+            status="needs_user",
+        )
 
     url = str(args.get("url") or "").strip()
     if not url:
-        return _err("missing url")
+        return _err("missing url", status="needs_user")
+    # VALIDACION: solo http/https. file:// y ftp:// son riesgos de seguridad.
+    if not url.startswith(("http://", "https://")):
+        return _err(
+            "download.fetch only supports http/https",
+            url=url, status="needs_user",
+        )
     dst_raw = str(args.get("path") or args.get("dst") or "").strip()
     dst = Path(dst_raw).expanduser() if dst_raw else _download_default_path(state, url)
     if dst.exists() and not bool(args.get("overwrite", False)):
-        return _err("download target already exists", path=str(dst), status="needs_user", verified=False)
-    dst.parent.mkdir(parents=True, exist_ok=True)
+        return _err(
+            "download target already exists",
+            path=str(dst), status="needs_user", verified=False,
+            hint="pass overwrite=true to replace",
+        )
+    try:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        return _err(
+            "cannot create download directory",
+            path=str(dst.parent), reason=str(exc), status="needs_user",
+        )
 
     env = os.environ.copy()
     env["GEMMA4_DOWNLOAD_URL"] = url
@@ -431,9 +467,39 @@ $ErrorActionPreference = "Stop"
 Invoke-WebRequest -Uri $env:GEMMA4_DOWNLOAD_URL -OutFile $env:GEMMA4_DOWNLOAD_PATH -UseBasicParsing
 [PSCustomObject]@{ path=$env:GEMMA4_DOWNLOAD_PATH; bytes=(Get-Item $env:GEMMA4_DOWNLOAD_PATH).Length } | ConvertTo-Json
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=int(args.get("timeout_sec", 300)))
+    timeout = max(5, min(int(args.get("timeout_sec", 300)), 1800))
+    try:
+        proc = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", script],
+            env=env, capture_output=True, text=True, timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return _err(
+            f"download timed out after {timeout}s",
+            url=url, path=str(dst), status="timeout",
+        )
+    except OSError as exc:
+        return _err(
+            f"download spawn failed: {exc}",
+            url=url, path=str(dst), status="failed",
+        )
     if proc.returncode != 0:
         return _err("download failed", url=url, path=str(dst), stderr=_truncate(proc.stderr, 2000), exit_code=proc.returncode)
+    # VERIFICACION: el archivo debe existir y tener bytes > 0 despues de la descarga.
+    if not dst.is_file():
+        return _err(
+            "download reported success but target file is missing",
+            url=url, path=str(dst), status="failed",
+        )
+    try:
+        actual_bytes = dst.stat().st_size
+    except OSError:
+        actual_bytes = 0
+    if actual_bytes == 0:
+        return _err(
+            "download produced empty file",
+            url=url, path=str(dst), status="failed",
+        )
 
     hash_result = _file_hash(dst, "SHA256")
     expected = str(args.get("sha256") or args.get("expected_sha256") or "").strip().casefold()
@@ -611,10 +677,16 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
 
     if action == "tab_open":
         if not url:
-            return _err("tab_open requires url")
-        session = _BROWSER_SESSIONS.get(session_id) or _get_browser_session(session_id, state, headless=headless)
-        page = _active_page(session, new_tab=True)
-        page.goto(url, wait_until=str(args.get("wait_until") or "domcontentloaded"), timeout=timeout_ms)
+            return _err("tab_open requires url", status="needs_user")
+        try:
+            session = _BROWSER_SESSIONS.get(session_id) or _get_browser_session(session_id, state, headless=headless)
+            page = _active_page(session, new_tab=True)
+            page.goto(url, wait_until=str(args.get("wait_until") or "domcontentloaded"), timeout=timeout_ms)
+        except Exception as exc:
+            return _err(
+                f"tab_open failed: {type(exc).__name__}: {exc}",
+                url=url, session_id=session_id, status="failed",
+            )
         return _ok(**_page_result(session_id, session, page), verified=True, content_verified=bool(page.title()))
 
     if action == "tab_close":
@@ -661,16 +733,26 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
 
     if action in {"open", "goto"}:
         if not url:
-            return _err("browser_real open/goto requires url")
+            return _err("browser_real open/goto requires url", status="needs_user")
         try:
             session = _get_browser_session(session_id, state, headless=headless)
         except RuntimeError as exc:
             return _err(str(exc), session_id=session_id, status="needs_user")
-        page = _active_page(session, new_tab=bool(args.get("new_tab", action == "open")))
-        page.goto(url, wait_until=str(args.get("wait_until") or "domcontentloaded"), timeout=timeout_ms)
+        try:
+            page = _active_page(session, new_tab=bool(args.get("new_tab", action == "open")))
+            page.goto(url, wait_until=str(args.get("wait_until") or "domcontentloaded"), timeout=timeout_ms)
+        except Exception as exc:
+            return _err(
+                f"navigation failed: {type(exc).__name__}: {exc}",
+                url=url, session_id=session_id,
+                status="failed" if "Timeout" not in type(exc).__name__ else "timeout",
+            )
         result = _page_result(session_id, session, page)
         if bool(args.get("screenshot", False)):
-            result.update(_page_screenshot(page, captures_dir, bool(args.get("full_page", False))))
+            try:
+                result.update(_page_screenshot(page, captures_dir, bool(args.get("full_page", False))))
+            except Exception:
+                pass
         return _ok(**result, verified=True, content_verified=bool(result.get("title")))
 
     session = _BROWSER_SESSIONS.get(session_id)
@@ -680,23 +762,59 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
 
     if action == "click":
         if not selector:
-            return _err("click requires selector")
-        page.click(selector, timeout=timeout_ms)
+            return _err("click requires selector", status="needs_user")
+        try:
+            page.click(selector, timeout=timeout_ms)
+        except Exception as exc:
+            return _err(
+                f"click failed: {type(exc).__name__}: {exc}",
+                selector=selector, session_id=session_id,
+                status="failed" if "Timeout" not in type(exc).__name__ else "timeout",
+                hint="check selector exists and is visible; try a more specific CSS or XPath",
+            )
         return _ok(**_page_result(session_id, session, page), clicked=selector, verified=True, content_verified=True)
     if action == "fill":
         if not selector:
-            return _err("fill requires selector")
-        page.fill(selector, value, timeout=timeout_ms)
+            return _err("fill requires selector", status="needs_user")
+        try:
+            page.fill(selector, value, timeout=timeout_ms)
+        except Exception as exc:
+            return _err(
+                f"fill failed: {type(exc).__name__}: {exc}",
+                selector=selector, session_id=session_id,
+                status="failed" if "Timeout" not in type(exc).__name__ else "timeout",
+            )
         return _ok(**_page_result(session_id, session, page), filled=selector, chars=len(value), verified=True, content_verified=True)
     if action == "press":
         key = str(args.get("key") or value or "Enter")
-        page.press(selector or "body", key, timeout=timeout_ms)
+        try:
+            page.press(selector or "body", key, timeout=timeout_ms)
+        except Exception as exc:
+            return _err(
+                f"press failed: {type(exc).__name__}: {exc}",
+                selector=selector or "body", key=key, session_id=session_id,
+                status="failed" if "Timeout" not in type(exc).__name__ else "timeout",
+            )
         return _ok(**_page_result(session_id, session, page), pressed=key, selector=selector or "body", verified=True, content_verified=True)
     if action == "text":
-        text = page.inner_text(selector or "body", timeout=timeout_ms)[: int(args.get("max_chars", 8000))]
+        try:
+            text = page.inner_text(selector or "body", timeout=timeout_ms)[: int(args.get("max_chars", 8000))]
+        except Exception as exc:
+            return _err(
+                f"text extraction failed: {type(exc).__name__}: {exc}",
+                selector=selector or "body", session_id=session_id,
+                status="failed" if "Timeout" not in type(exc).__name__ else "timeout",
+            )
         return _ok(**_page_result(session_id, session, page), text=text, verified=True, content_verified=True)
     if action == "screenshot":
-        return _ok(**_page_result(session_id, session, page), **_page_screenshot(page, captures_dir, bool(args.get("full_page", False))), verified=True)
+        try:
+            shot = _page_screenshot(page, captures_dir, bool(args.get("full_page", False)))
+        except Exception as exc:
+            return _err(
+                f"screenshot failed: {type(exc).__name__}: {exc}",
+                session_id=session_id, status="failed",
+            )
+        return _ok(**_page_result(session_id, session, page), **shot, verified=True)
     if action == "evaluate":
         script = str(args.get("script") or "")
         if not script:

@@ -1832,7 +1832,13 @@ class ToolRegistry:
         query = str(args.get("query") or "").strip()
         browser = str(args.get("browser") or "").strip()
         if action == "open":
-            result = self.web_open_url({"url": args.get("url") or query})
+            url = str(args.get("url") or "").strip() or query
+            if not url:
+                return _err(
+                    "browser.open requires url or query",
+                    status="needs_user", action=action,
+                )
+            result = self.web_open_url({"url": url})
             result.update(content_verified=False, completion_status="opened_url")
             return result
         if action in {"youtube_play", "play_youtube", "play_media"}:
@@ -1842,6 +1848,11 @@ class ToolRegistry:
         if action in {"media_stop", "stop_video"}:
             return self.audio_media_control({"action": "media_stop"})
         if action == "search":
+            if not query:
+                return _err(
+                    "browser.search requires non-empty query",
+                    status="needs_user", action=action,
+                )
             engine = str(args.get("engine") or "google").casefold()
             browser_is_youtube_app = "youtube" in _fold(browser)
             if browser_is_youtube_app and _looks_like_music_request(query):
@@ -1870,19 +1881,39 @@ class ToolRegistry:
             shot["note"] = f"Use Gemma 4 vision to {action} in browser."
             shot["target"] = args.get("target") or query
             return shot
-        return _err("unknown browser action", action=action)
+        return _err(
+            "unknown browser action", action=action,
+            valid_actions=[
+                "open", "search", "youtube_play", "media_pause", "media_stop",
+                "research", "read", "active_tab_title", "click", "find",
+            ],
+            status="needs_user",
+        )
 
     def t_web(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="search")
         if action in {"search", "search_web"}:
+            # VALIDACION: web_search sin query es no-op silencioso.
+            if not str(args.get("query") or "").strip():
+                return _err("web.search requires non-empty query", status="needs_user")
             return self.web_search(args)
         if action == "open":
+            if not str(args.get("url") or "").strip():
+                return _err("web.open requires url", status="needs_user")
             return self.web_open_url(args)
         if action == "read":
+            if not str(args.get("url") or "").strip():
+                return _err("web.read requires url", status="needs_user")
             return self.web_read(args)
         if action == "research":
+            if not str(args.get("query") or "").strip():
+                return _err("web.research requires query", status="needs_user")
             return self.web_research(args)
-        return _err("unknown web action", action=action)
+        return _err(
+            "unknown web action", action=action,
+            valid_actions=["search", "search_web", "open", "read", "research"],
+            status="needs_user",
+        )
 
     def t_uia(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="tree")
@@ -1896,7 +1927,11 @@ class ToolRegistry:
             return self.uia_focus(args)
         if action in {"set_value", "type"}:
             return self.uia_set_value(args)
-        return _err("unknown uia action", action=action)
+        return _err(
+            "unknown uia action", action=action,
+            valid_actions=["tree", "find", "click", "focus", "set_value", "type"],
+            status="needs_user",
+        )
 
     def browser_youtube_play(self, args: dict[str, Any]) -> dict[str, Any]:
         target = self._youtube_play_target(args)
@@ -2342,13 +2377,28 @@ class ToolRegistry:
     def t_safety(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="status")
         if action == "status":
-            return _ok(enabled=self.safety_enabled)
+            pending = self.state.list_confirmations().get("confirmations", [])
+            return _ok(
+                enabled=self.safety_enabled,
+                pending_count=len(pending),
+                pending_ids=[str(p.get("id")) for p in pending[:5]],
+            )
         if action == "pending":
             return self.state.list_confirmations(include_resolved=bool(args.get("include_resolved", False)))
         confirmation_id = str(args.get("confirmation_id") or args.get("id") or "").strip()
         if action == "cancel":
             if not confirmation_id:
-                return _err("missing confirmation_id")
+                # Si hay UNA sola pending, auto-elegirla (mismo patron que confirm).
+                pending = self.state.list_confirmations().get("confirmations", [])
+                if len(pending) == 1:
+                    confirmation_id = str(pending[0]["id"])
+                else:
+                    return _err(
+                        "missing confirmation_id (multiple or zero pending)",
+                        status="needs_user",
+                        pending_count=len(pending),
+                        pending_ids=[str(p.get("id")) for p in pending[:5]],
+                    )
             return self.state.resolve_confirmation(confirmation_id, "cancelled")
         if action == "confirm":
             if not confirmation_id:
@@ -2356,17 +2406,38 @@ class ToolRegistry:
                 if len(pending) == 1:
                     confirmation_id = str(pending[0]["id"])
             if not confirmation_id:
-                return _err("missing confirmation_id")
+                pending = self.state.list_confirmations().get("confirmations", [])
+                return _err(
+                    "missing confirmation_id (multiple or zero pending)",
+                    status="needs_user",
+                    pending_count=len(pending),
+                    pending_ids=[str(p.get("id")) for p in pending[:5]],
+                    hint="pass id=... or call safety(action=pending) to list ids",
+                )
             item_result = self.state.get_confirmation(confirmation_id)
             if not item_result.get("ok"):
                 return item_result
             item = item_result["confirmation"]
             if item.get("status") != "pending":
-                return _err("confirmation is not pending", confirmation=item)
+                return _err(
+                    "confirmation is not pending",
+                    confirmation=item, status="needs_user",
+                    hint="confirmation may have been already confirmed/cancelled/expired",
+                )
             result = self.execute(str(item["tool"]), {**dict(item.get("args") or {}), "confirmed": True})
             self.state.resolve_confirmation(confirmation_id, "confirmed", result)
-            return _ok(confirmation_id=confirmation_id, executed_tool=item["tool"], executed_args=item.get("args"), result=result)
-        return _err("unknown safety action", action=action)
+            return _ok(
+                confirmation_id=confirmation_id,
+                executed_tool=item["tool"],
+                executed_args=item.get("args"),
+                result=result,
+                executed_ok=bool(result.get("ok")),
+            )
+        return _err(
+            "unknown safety action", action=action,
+            valid_actions=["status", "pending", "confirm", "cancel"],
+            status="needs_user",
+        )
 
     def system_time(self, args: dict[str, Any]) -> dict[str, Any]:
         now = datetime.now()
@@ -3509,10 +3580,27 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
     def web_open_url(self, args: dict[str, Any]) -> dict[str, Any]:
         url = str(args.get("url", "")).strip()
         if not url:
-            return _err("empty url")
+            return _err("empty url", status="needs_user")
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
-        opened = webbrowser.open(url)
+        # VALIDACION: parsear y verificar que tiene host. Sin esto, urls
+        # como "https:// " o "https://hola mundo" pasan a webbrowser.open
+        # que las ejecuta como query del default browser.
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        if not parsed.hostname:
+            return _err(
+                "url has no host component",
+                url=url, status="needs_user",
+                hint="pass a full URL with a hostname, e.g. https://example.com",
+            )
+        try:
+            opened = webbrowser.open(url)
+        except Exception as exc:  # noqa: BLE001
+            return _err(
+                f"webbrowser.open failed: {type(exc).__name__}: {exc}",
+                url=url, status="failed",
+            )
         resource = self.state.register_resource("browser_url", url, cleanup_tool=None, cleanup_args={}, metadata={"url": url, "opened": opened})
         return _ok(
             url=url,
@@ -3546,11 +3634,33 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
     def web_read(self, args: dict[str, Any]) -> dict[str, Any]:
         url = str(args.get("url") or "").strip()
         if not url:
-            return _err("missing url")
+            return _err("missing url", status="needs_user")
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
         limit = max(1000, min(40000, int(args.get("max_chars", 12000))))
-        fetched = _http_get_text(url, timeout=int(args.get("timeout_sec", 12)))
+        timeout = max(1, min(int(args.get("timeout_sec", 12)), 60))
+        # try/except: _http_get_text puede tirar URLError (DNS/connection/SSRF
+        # block), HTTPError (4xx/5xx), socket.timeout, ssl errors, etc.
+        try:
+            fetched = _http_get_text(url, timeout=timeout)
+        except urllib.error.HTTPError as exc:
+            return _err(
+                f"HTTP {exc.code}: {exc.reason}",
+                url=url, status_code=exc.code,
+                status="failed" if exc.code >= 500 else "needs_user",
+            )
+        except urllib.error.URLError as exc:
+            reason = str(exc.reason if hasattr(exc, "reason") else exc)
+            return _err(
+                f"URL error: {reason}",
+                url=url, status="failed",
+                hint="check connectivity, DNS, or that the host is publicly reachable",
+            )
+        except Exception as exc:  # noqa: BLE001
+            return _err(
+                f"web_read failed: {type(exc).__name__}: {exc}",
+                url=url, status="failed",
+            )
         text = fetched["text"]
         readable = _html_to_text(text, limit=limit)
         title = _extract_title(text)
@@ -3689,8 +3799,39 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
                 return gate
         argv = [command] + [str(x) for x in cmd_args]
         run_arg: str | list[str] = subprocess.list2cmdline(argv) if shell else argv
+        # Cap timeout para evitar que el LLM se autobloquee con timeout=3600.
+        timeout = max(1, min(timeout, 600))
         started = time.monotonic()
-        proc = subprocess.run(run_arg, cwd=cwd, shell=shell, capture_output=True, text=True, timeout=timeout)
+        # try/except: antes TimeoutExpired propagaba y mataba el turn entero.
+        # Tambien FileNotFoundError (command no existe) y OSError ahora se
+        # convierten en _err estructurado.
+        try:
+            proc = subprocess.run(
+                run_arg, cwd=cwd, shell=shell,
+                capture_output=True, text=True, timeout=timeout,
+            )
+        except subprocess.TimeoutExpired as exc:
+            elapsed_ms = int((time.monotonic() - started) * 1000)
+            return _err(
+                f"command timed out after {timeout}s",
+                command=run_arg, cwd=cwd, timeout_sec=timeout,
+                elapsed_ms=elapsed_ms,
+                stdout=_truncate((exc.stdout or "").strip() if exc.stdout else "", 1000),
+                stderr=_truncate((exc.stderr or "").strip() if exc.stderr else "", 1000),
+                status="timeout",
+            )
+        except FileNotFoundError:
+            return _err(
+                f"command not found: {command!r}",
+                command=command, cwd=cwd,
+                status="needs_user",
+                hint="check spelling or pass full path; on Windows you may need to include .exe",
+            )
+        except OSError as exc:
+            return _err(
+                f"command failed to spawn: {type(exc).__name__}: {exc}",
+                command=run_arg, cwd=cwd, status="failed",
+            )
         elapsed_ms = int((time.monotonic() - started) * 1000)
         # T2-terminal-stdout-truncate-stderr-008: caps configurables.
         max_stdout = int(args.get("max_stdout_chars", 6000))
@@ -3718,6 +3859,7 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             stdout=_truncate(stdout_full, max_stdout),
             stderr=_truncate(stderr_full, max_stderr),
             log_path=log_path,
+            success=proc.returncode == 0,
         )
 
     def clipboard_read(self, args: dict[str, Any]) -> dict[str, Any]:

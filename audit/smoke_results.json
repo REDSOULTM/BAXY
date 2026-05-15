@@ -1048,7 +1048,7 @@
     "actual_status": "failed",
     "ok": true,
     "note": "read public",
-    "error": "URLError: <urlopen error timed out>",
+    "error": "URL error: timed out",
     "bypass_test": false
   },
   {
@@ -1061,7 +1061,7 @@
     "actual_status": "failed",
     "ok": true,
     "note": "T2-014 SSRF guard blocks loopback",
-    "error": "URLError: <urlopen error refused: target host is private/loopback (127.0.0.1); pass allow_private=True to override>",
+    "error": "URL error: refused: target host is private/loopback (127.0.0.1); pass allow_private=True to override",
     "bypass_test": false
   },
   {
@@ -1074,7 +1074,7 @@
     "actual_status": "failed",
     "ok": true,
     "note": "T2-014 SSRF guard blocks cloud metadata",
-    "error": "URLError: <urlopen error refused: target host is private/loopback (169.254.169.254); pass allow_private=True to override>",
+    "error": "URL error: refused: target host is private/loopback (169.254.169.254); pass allow_private=True to override",
     "bypass_test": false
   },
   {
