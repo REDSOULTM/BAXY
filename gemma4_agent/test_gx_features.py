@@ -1136,25 +1136,34 @@ def test_j5_sequential_handles_parse_error() -> bool:
 
 
 def test_profiles_recommend_by_vram() -> bool:
-    # Cortes actualizados a la nueva tabla:
-    #   >=12 GB -> performance, >=6 GB -> balanced, >=4 GB -> light, resto -> light.
-    # El objetivo de produccion es 6 GB de VRAM minimo, asi que ese es el
-    # corte donde entra balanced (E4B-Q4_K_M con KV q8_0).
+    # Cortes con reserva fija de 1.5 GB (WINDOWS_VRAM_RESERVE_MB) para dwm/driver:
+    #   VRAM efectiva = vram_mb - 1500
+    #   >=10500 MB ef. (=12 GB fisicos) -> performance
+    #   >= 4500 MB ef. (= 6 GB fisicos) -> balanced  <- target de produccion
+    #   >= 2500 MB ef. (= 4 GB fisicos) -> light
+    #   resto / None                    -> light
+    # Bloque F1 / item I1 #10 del informe de optimizacion externa.
     from gemma4_agent.profiles import recommend_profile
+    # 16 GB fisicos = 14.5 GB efectivos -> performance
     assert recommend_profile(16384) == "performance"
+    # 12 GB fisicos = 10.5 GB efectivos -> performance (borde)
     assert recommend_profile(12000) == "performance"
-    assert recommend_profile(11999) == "balanced"
-    assert recommend_profile(10240) == "balanced"
+    # 11.5 GB fisicos = 10.0 GB efectivos -> balanced (debajo del corte)
+    assert recommend_profile(11500) == "balanced"
+    # 8 GB fisicos = 6.5 GB efectivos -> balanced
     assert recommend_profile(8000) == "balanced"
-    assert recommend_profile(7999) == "balanced"
-    assert recommend_profile(6144) == "balanced"  # target de 6 GB cae en balanced
+    # 6 GB fisicos = 4.5 GB efectivos -> balanced (target HOT)
+    assert recommend_profile(6144) == "balanced"
     assert recommend_profile(6000) == "balanced"
-    assert recommend_profile(5999) == "light"     # <6 GB cae a light
+    # 5.9 GB fisicos = 4.4 GB efectivos -> light (debajo del corte)
+    assert recommend_profile(5900) == "light"
+    # 4 GB fisicos = 2.5 GB efectivos -> light (borde)
     assert recommend_profile(4000) == "light"
-    assert recommend_profile(3999) == "light"     # CPU/integrada -> light (voice CPU sigue ON)
+    # CPU/integrada o GPU muy chica -> light
+    assert recommend_profile(2000) == "light"
     assert recommend_profile(0) == "light"
     assert recommend_profile(None) == "light"
-    print("V1 recommend_profile by vram: OK")
+    print("V1 recommend_profile by vram (with 1.5 GB WDDM reserve): OK")
     return True
 
 

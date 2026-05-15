@@ -223,24 +223,38 @@ def detect_vram_mb() -> int | None:
     return None
 
 
+# Reserva fija de VRAM para Windows/WDDM + driver buffers + headroom CUDA.
+# El informe de auditoria externa (Bloque F1, item I1 #10) cita evidencia
+# anecdotica de foros Microsoft / Tom's Hardware de 0.6-1.2 GB para dwm.exe
+# mas 150-400 MB para buffers de driver. Reservamos 1.5 GB como cifra
+# conservadora para que un usuario con 6 GB fisicos y Chrome abierto NO
+# sufra OOM al arrancar el server.
+WINDOWS_VRAM_RESERVE_MB = 1500
+
+
 def recommend_profile(vram_mb: int | None) -> str:
     """Sugiere perfil segun VRAM detectada.
 
-    Cortes alineados a los model_path defaults:
-    >=12000 -> performance (Q6_K o superior, contexto 32K)
-    >=6000  -> balanced    (E4B-Q4_K_M, contexto 8K, voice ON, vision OFF)
-    >=4000  -> light       (E2B-Q4_K_M, contexto 4K, voice ON)
-    <4000 o None -> light  (mejor que rehusar; voice CPU sigue funcionando)
+    Aplica una reserva fija de WINDOWS_VRAM_RESERVE_MB (1.5 GB) al valor
+    reportado por nvidia-smi antes de mapear, porque Windows 11 + driver
+    consumen esa cantidad antes de que el server arranque. Cortes en VRAM
+    *efectiva* (post-reserva):
+
+    >=10500 MB efectiva (>=12 GB fisicos) -> performance
+    >= 4500 MB efectiva (>= 6 GB fisicos) -> balanced
+    >= 2500 MB efectiva (>= 4 GB fisicos) -> light
+    resto / None                          -> light (voice CPU sigue ON)
     """
     if vram_mb is None:
         # Sin GPU detectable: light es el mas conservador. Voice CPU
         # sigue andando aunque el LLM corra en CPU lento o falle.
         return "light"
-    if vram_mb >= 12000:
+    effective = max(0, int(vram_mb) - WINDOWS_VRAM_RESERVE_MB)
+    if effective >= 10500:
         return "performance"
-    if vram_mb >= 6000:
+    if effective >= 4500:
         return "balanced"
-    if vram_mb >= 4000:
+    if effective >= 2500:
         return "light"
     return "light"
 
