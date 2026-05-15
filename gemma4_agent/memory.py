@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+import threading
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,7 @@ from typing import Any
 @dataclass
 class MemoryStore:
     path: Path
+    _lock: threading.RLock = field(default_factory=threading.RLock, init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -36,13 +38,14 @@ class MemoryStore:
         key = key.strip()
         if not key:
             return {"ok": False, "error": "empty key"}
-        data = self._load()
-        data["items"][key] = {
-            "value": value,
-            "updated_at": datetime.now().isoformat(timespec="seconds"),
-        }
-        self._save(data)
-        return {"ok": True, "key": key, "value": value}
+        with self._lock:
+            data = self._load()
+            data["items"][key] = {
+                "value": value,
+                "updated_at": datetime.now().isoformat(timespec="seconds"),
+            }
+            self._save(data)
+            return {"ok": True, "key": key, "value": value}
 
     def auto_save(self, facts: list[dict[str, str]], *, max_total: int = 50) -> dict[str, Any]:
         """Persist facts extracted automatically (without explicit user request).
@@ -51,40 +54,42 @@ class MemoryStore:
         user can tell auto-learned facts from explicit ones, and we cap the
         total auto-saved facts at `max_total` (FIFO eviction of oldest).
         """
-        data = self._load()
-        items = data.setdefault("items", {})
-        added: list[str] = []
-        skipped: list[dict[str, Any]] = []
-        for fact in facts:
-            key = str(fact.get("key", "")).strip()
-            value = str(fact.get("value", "")).strip()
-            if not key or not value:
-                skipped.append({"reason": "empty_key_or_value", "fact": fact})
-                continue
-            stamped_key = key if key.startswith("auto:") else f"auto:{key}"
-            items[stamped_key] = {
-                "value": value,
-                "updated_at": datetime.now().isoformat(timespec="seconds"),
-                "source": "auto_extracted",
-            }
-            added.append(stamped_key)
-        # Evict oldest auto:* entries if we exceed the cap. Explicit (non-auto)
-        # entries are never touched.
-        auto_keys = [k for k in items if k.startswith("auto:")]
-        if len(auto_keys) > max_total:
-            sorted_auto = sorted(
-                ((k, items[k].get("updated_at", "")) for k in auto_keys),
-                key=lambda pair: pair[1],
-            )
-            to_drop = len(auto_keys) - max_total
-            for k, _ in sorted_auto[:to_drop]:
-                items.pop(k, None)
-        self._save(data)
-        return {"ok": True, "added": added, "skipped": skipped, "total_auto": sum(1 for k in items if k.startswith("auto:"))}
+        with self._lock:
+            data = self._load()
+            items = data.setdefault("items", {})
+            added: list[str] = []
+            skipped: list[dict[str, Any]] = []
+            for fact in facts:
+                key = str(fact.get("key", "")).strip()
+                value = str(fact.get("value", "")).strip()
+                if not key or not value:
+                    skipped.append({"reason": "empty_key_or_value", "fact": fact})
+                    continue
+                stamped_key = key if key.startswith("auto:") else f"auto:{key}"
+                items[stamped_key] = {
+                    "value": value,
+                    "updated_at": datetime.now().isoformat(timespec="seconds"),
+                    "source": "auto_extracted",
+                }
+                added.append(stamped_key)
+            # Evict oldest auto:* entries if we exceed the cap. Explicit (non-auto)
+            # entries are never touched.
+            auto_keys = [k for k in items if k.startswith("auto:")]
+            if len(auto_keys) > max_total:
+                sorted_auto = sorted(
+                    ((k, items[k].get("updated_at", "")) for k in auto_keys),
+                    key=lambda pair: pair[1],
+                )
+                to_drop = len(auto_keys) - max_total
+                for k, _ in sorted_auto[:to_drop]:
+                    items.pop(k, None)
+            self._save(data)
+            return {"ok": True, "added": added, "skipped": skipped, "total_auto": sum(1 for k in items if k.startswith("auto:"))}
 
     def recall(self, query: str | None = None) -> dict[str, Any]:
-        data = self._load()
-        items = data.get("items", {})
+        with self._lock:
+            data = self._load()
+            items = data.get("items", {})
         if not query:
             return {"ok": True, "items": items}
         q = query.casefold()
@@ -95,20 +100,22 @@ class MemoryStore:
         return {"ok": True, "query": query, "items": matches}
 
     def delete(self, key: str) -> dict[str, Any]:
-        data = self._load()
-        items = data.get("items", {})
-        if key == "*":
-            count = len(items)
-            data["items"] = {}
+        with self._lock:
+            data = self._load()
+            items = data.get("items", {})
+            if key == "*":
+                count = len(items)
+                data["items"] = {}
+                self._save(data)
+                return {"ok": True, "deleted": count}
+            existed = key in items
+            items.pop(key, None)
             self._save(data)
-            return {"ok": True, "deleted": count}
-        existed = key in items
-        items.pop(key, None)
-        self._save(data)
-        return {"ok": True, "key": key, "existed": existed}
+            return {"ok": True, "key": key, "existed": existed}
 
     def prompt_summary(self) -> str:
-        items = self._load().get("items", {})
+        with self._lock:
+            items = self._load().get("items", {})
         if not items:
             return "No persistent memory saved."
         lines = []

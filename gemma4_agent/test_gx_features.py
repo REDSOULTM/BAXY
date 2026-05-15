@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+import numpy as np  # used by Fase W voice tests
+
 
 def _fake_chat_factory(responses: list[str]):
     """Return a chat() mock that yields the canned responses in order."""
@@ -976,6 +978,43 @@ def test_audit_settings_env_names_match_config() -> bool:
     return True
 
 
+def test_audit_jsonstore_concurrent_writes() -> bool:
+    """Two concurrent register_resource calls don't lose data.
+
+    Regression test for the RLock added to AgentState/MemoryStore/SessionStore.
+    Without the lock, parallel tool execution (J5) could lose writes when two
+    tools called register_resource simultaneously (last writer wins on the
+    full file, dropping the other's mutation).
+    """
+    import shutil
+    import tempfile
+    import threading
+    from gemma4_agent.state import AgentState
+
+    root = Path(tempfile.mkdtemp(prefix="g_lock_"))
+    try:
+        state = AgentState(path=root / "state.json")
+
+        def worker(idx: int) -> None:
+            state.register_resource(kind="test", label=f"res_{idx}")
+
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        loaded = state._load()
+        resources = loaded.get("resources", {})
+        assert len(resources) == 10, f"expected 10 resources, got {len(resources)}"
+        labels = {r.get("label") for r in resources.values()}
+        assert labels == {f"res_{i}" for i in range(10)}, f"labels lost: {labels}"
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+    print("AUDIT JSONStore concurrent writes preserve all data: OK")
+    return True
+
+
 def test_audit_experience_recent_exists() -> bool:
     """experience.ExperienceMemory.recent(limit=N) must exist (was a ghost)."""
     import tempfile
@@ -1268,10 +1307,16 @@ def test_profile_watcher_hysteresis() -> bool:
                 watcher._tick()
         assert not changes, f"unexpected switch after 20s: {changes}"
 
-        # Continua al 80% hasta llegar a 30s -> debe bajar a light
+        # Continua al 80% hasta llegar a 30s -> debe encolar bajada a light.
+        # Audit fix #5: el _tick ya NO llama on_change directo; encola
+        # en _pending y el caller drena con apply_pending() al fin de turno.
         with patch.object(watcher, "_sample", return_value=gpu_sample(80.0)):
             clock_t[0] = 30.0
             watcher._tick()
+        assert watcher._pending == ("light", "gpu=80.0%"), \
+            f"expected pending=('light', 'gpu=80.0%'), got {watcher._pending}"
+        applied = watcher.apply_pending()
+        assert applied is True
         assert changes and changes[-1][0] == "light", f"expected light switch, got {changes}"
 
         # Ahora baja a 20% (sin trigger) -- get_active devuelve light ahora
@@ -1284,6 +1329,7 @@ def test_profile_watcher_hysteresis() -> bool:
                 clock_t[0] = float(sec)
                 watcher._tick()
         assert len(changes) == prior_changes, f"unexpected upgrade after 30s clear"
+        assert watcher._pending is None, f"unexpected pending: {watcher._pending}"
 
         # Necesitamos que la ventana de samples LIMPIOS cubra 60s.
         # Samples limpios estan a t=40,50,60,70. A t=100 el oldest limpio
@@ -1291,6 +1337,9 @@ def test_profile_watcher_hysteresis() -> bool:
         with patch.object(watcher, "_sample", return_value=gpu_sample(20.0)):
             clock_t[0] = 100.0
             watcher._tick()
+        assert watcher._pending == ("balanced", "triggers cleared"), \
+            f"expected pending=('balanced', 'triggers cleared'), got {watcher._pending}"
+        watcher.apply_pending()
         assert changes[-1][0] == "balanced", f"expected balanced restore, got {changes}"
 
     print("V5 watcher hysteresis 30s/60s: OK")
@@ -1380,6 +1429,363 @@ def test_light_profile_missing_model_falls_back() -> bool:
     return True
 
 
+# ====================================================================
+# Fase W — Voice (wake-word + STT streaming + TTS streaming + SSE)
+# ====================================================================
+
+
+def test_sse_streaming_yields_deltas_in_order() -> bool:
+    """V-SSE-1: mock urlopen con frames SSE, verificar deltas en orden + final."""
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+
+    # SSE frames simulando llama-server stream
+    frames = [
+        b'data: {"choices":[{"delta":{"content":"Hola"}}]}\n\n',
+        b'data: {"choices":[{"delta":{"content":" mundo"}}]}\n\n',
+        b'data: {"choices":[{"delta":{"content":"."},"finish_reason":"stop"}]}\n\n',
+        b'data: [DONE]\n\n',
+    ]
+    # urllib.request.urlopen devuelve un objeto iterable por lineas
+    fake_resp = MagicMock()
+    fake_resp.__iter__ = lambda self: iter(frames)
+    fake_resp.close = MagicMock()
+
+    cfg = AgentConfig()
+    client = LLMClient(cfg)
+    with patch("urllib.request.urlopen", return_value=fake_resp):
+        events = list(client.chat_stream(messages=[{"role": "user", "content": "hi"}]))
+
+    deltas = [e for e in events if e["type"] == "delta"]
+    final_events = [e for e in events if e["type"] == "final"]
+    assert len(deltas) == 3, f"expected 3 deltas, got {len(deltas)}: {deltas}"
+    assert deltas[0]["content_delta"] == "Hola"
+    assert deltas[1]["content_delta"] == " mundo"
+    assert deltas[2]["content_delta"] == "."
+    assert len(final_events) == 1
+    final = final_events[0]
+    assert final["content"] == "Hola mundo."
+    assert final["finish_reason"] == "stop"
+    assert final["tool_calls"] == []
+    print("W-SSE deltas + final reconstructed: OK")
+    return True
+
+
+def test_voice_wake_detector_matches_phrases() -> bool:
+    """Mock Vosk recognizer; verificar callback se llama solo para 'gemma' y 'hey gemma'.
+
+    Despues del fix "abre Steam → abre este", el 3er parametro del callback
+    es tail_s (cuanto audio del ring buffer queda DESPUES del wake), calculado
+    como result_duration_s - wake_end_relative_s.
+    """
+    from unittest.mock import MagicMock
+    from gemma4_agent.voice.wake import WakeDetector
+
+    fires: list[tuple[str, float, float]] = []
+    # Firma actual: on_wake(phrase, wall_clock_ts, tail_s)
+    det = WakeDetector(on_wake=lambda phrase, ts, tail_s: fires.append((phrase, ts, tail_s)))
+
+    # Inyectar recognizer mock directamente (bypass load() que lee modelo de disco)
+    rec = MagicMock()
+    det._rec = rec
+    det._loaded = True
+
+    # Caso 1: "gemma" con start=0.30 end=0.62. Le damos 1.0s de audio (16000 samples)
+    # antes de que Vosk emita el Result. tail_s = 1.0 - (0.62-0.30) = 0.68
+    rec.AcceptWaveform.return_value = True
+    rec.Result.return_value = '{"text": "gemma", "result": [{"word":"gemma","start":0.30,"end":0.62,"conf":0.9}]}'
+    det.feed(np.zeros(16000, dtype=np.int16))  # 1.0s
+    assert len(fires) == 1 and fires[0][0] == "gemma"
+    assert abs(fires[0][2] - 0.68) < 0.01, f"expected tail≈0.68 got {fires[0][2]}"
+
+    # Caso 2: "hey gemma" con start_first=0.10 end_last_gemma=0.88. 1.5s audio.
+    # tail_s = 1.5 - (0.88-0.10) = 0.72
+    det._last_fire_at = 0.0  # reset debounce
+    rec.Result.return_value = '{"text": "hey gemma", "result": [{"word":"hey","start":0.10,"end":0.40,"conf":0.9},{"word":"gemma","start":0.50,"end":0.88,"conf":0.9}]}'
+    det.feed(np.zeros(24000, dtype=np.int16))  # 1.5s
+    assert len(fires) == 2 and fires[1][0] == "hey gemma"
+    assert abs(fires[1][2] - 0.72) < 0.01, f"expected tail≈0.72 got {fires[1][2]}"
+
+    # Caso 3: "tema" (palabra random) -> no fire
+    det._last_fire_at = 0.0
+    rec.Result.return_value = '{"text": "tema musical"}'
+    det.feed(np.zeros(16000, dtype=np.int16))
+    assert len(fires) == 2, f"unexpected wake from 'tema': {fires}"
+
+    # Caso 4: partial result (AcceptWaveform=False) -> no fire incluso con match
+    rec.AcceptWaveform.return_value = False
+    rec.Result.return_value = '{"text": "gemma"}'
+    det.feed(np.zeros(16000, dtype=np.int16))
+    assert len(fires) == 2, "partial result should not fire wake"
+
+    # Caso 5: result sin word timestamps -> DESCARTADO (no podemos validar conf).
+    det._last_fire_at = 0.0
+    rec.AcceptWaveform.return_value = True
+    rec.Result.return_value = '{"text": "gemma"}'  # sin "result" array
+    det.feed(np.zeros(16000, dtype=np.int16))
+    assert len(fires) == 2, f"result sin word-conf debe descartarse, got {fires}"
+
+    # Caso 6: result con "gemma" pero conf baja -> DESCARTADO (falso positivo).
+    det._last_fire_at = 0.0
+    rec.Result.return_value = '{"text": "gemma", "result": [{"word":"gemma","start":0.0,"end":0.5,"conf":0.5}]}'
+    det.feed(np.zeros(16000, dtype=np.int16))
+    assert len(fires) == 2, f"conf 0.5 debe descartarse, got {fires}"
+
+    # Caso 7: result con "gemma" conf alta + audio largo POST-wake. start=0.0 end=0.7
+    # 2.0s audio -> tail_s = 2.0 - (0.7-0.0) = 1.3
+    det._last_fire_at = 0.0
+    rec.Result.return_value = '{"text": "gemma", "result": [{"word":"gemma","start":0.0,"end":0.7,"conf":0.95}]}'
+    det.feed(np.zeros(32000, dtype=np.int16))  # 2.0s
+    assert len(fires) == 3
+    assert abs(fires[2][2] - 1.3) < 0.01, f"expected tail≈1.3 got {fires[2][2]}"
+
+    # Caso 8: BUG ANTI-WRAP. Vosk re-zerea timestamps cada ~10min mientras
+    # nuestro contador externo seguia creciendo (el bug viejo). Con el nuevo
+    # diseno, samples_since_last_result se resetea con cada AcceptWaveform=True,
+    # asi que aunque Vosk reportara wake_end=0.5 despues de horas, tail_s seria
+    # correcto. Simulamos: dos wakes consecutivos, el segundo NO debe heredar
+    # un tail inflado del primero.
+    det._last_fire_at = 0.0
+    rec.Result.return_value = '{"text": "gemma", "result": [{"word":"gemma","start":0.0,"end":0.5,"conf":0.95}]}'
+    det.feed(np.zeros(8000, dtype=np.int16))  # 0.5s -> tail_s=0.0
+    assert len(fires) == 4
+    assert abs(fires[3][2] - 0.0) < 0.01, f"expected tail≈0.0 (audio == wake), got {fires[3][2]}"
+    # Sin meter mas chunks, el samples_since_last_result fue reseteado a 0.
+    # Si simulamos un NUEVO Result con timestamps que parecen acumulativos
+    # (Vosk no se rezeo) pero con poco audio nuevo, el tail debe reflejar
+    # SOLO el audio nuevo.
+    det._last_fire_at = 0.0
+    rec.Result.return_value = '{"text": "gemma", "result": [{"word":"gemma","start":5.0,"end":5.5,"conf":0.95}]}'
+    det.feed(np.zeros(16000, dtype=np.int16))  # 1.0s nuevo -> tail = 1.0 - 0.5 = 0.5
+    assert len(fires) == 5
+    assert abs(fires[4][2] - 0.5) < 0.01, f"expected tail≈0.5 (audio - wake_relative), got {fires[4][2]}"
+    print("W1 wake matches + tail_s calculation: OK")
+    return True
+
+
+def test_voice_state_machine_wake_to_listening_to_transcribing() -> bool:
+    """Simular eventos en el controller sin cargar modelos reales."""
+    import numpy as np
+    from unittest.mock import MagicMock
+    from gemma4_agent.voice.controller import (
+        VoiceController, S_IDLE_LISTENING, S_LISTENING, S_TRANSCRIBING,
+        S_WAKE_DETECTED, S_THINKING, WAKE_FEEDBACK_MS,
+    )
+
+    states: list[str] = []
+    ctrl = VoiceController(on_state=states.append, beep_on_wake=False)
+    # Forzar estado IDLE_LISTENING sin llamar enable()
+    ctrl._state = S_IDLE_LISTENING
+
+    # Mockear los subcomponentes para evitar I/O real
+    ctrl._wake = MagicMock()
+    ctrl._stt = MagicMock()
+    ctrl._tts = MagicMock()
+    ctrl._tts.feed_text = MagicMock(return_value=0)
+
+    # 1. Detectamos wake -> WAKE_DETECTED
+    ctrl._on_wake_detected("gemma", 0.0)
+    assert ctrl._state == S_WAKE_DETECTED
+    # Esperar a que el timer de 200ms dispare _enter_listening
+    import time as _time
+    _time.sleep((WAKE_FEEDBACK_MS / 1000.0) + 0.1)
+    assert ctrl._state == S_LISTENING, f"expected LISTENING got {ctrl._state}"
+
+    # 2. STT emite Partial -> TRANSCRIBING (esto lo hace el thread STT real;
+    #    simulamos directo)
+    ctrl._cancel_timer()
+    ctrl._set_state(S_TRANSCRIBING)
+    assert ctrl._state == S_TRANSCRIBING
+
+    # 3. Final text -> THINKING
+    finals: list[str] = []
+    ctrl._on_final = finals.append
+    ctrl._handle_final("apaga la luz")
+    assert ctrl._state == S_THINKING
+    assert finals == ["apaga la luz"]
+    print("W2 state machine WAKE->LISTENING->TRANSCRIBING->THINKING: OK")
+    return True
+
+
+def test_voice_state_machine_listening_timeout_5s() -> bool:
+    """Sin speech_started en 5s -> vuelve a IDLE_LISTENING silenciosamente."""
+    from unittest.mock import MagicMock, patch
+    from gemma4_agent.voice.controller import (
+        VoiceController, S_LISTENING, S_IDLE_LISTENING,
+    )
+    states: list[str] = []
+    ctrl = VoiceController(on_state=states.append, beep_on_wake=False)
+    ctrl._wake = MagicMock()
+    ctrl._stt = MagicMock()
+    ctrl._tts = MagicMock()
+    ctrl._state = S_LISTENING
+
+    # Acelerar el timeout (5s real seria muy lento). Parcheamos LISTENING_TIMEOUT_S.
+    with patch("gemma4_agent.voice.controller.LISTENING_TIMEOUT_S", 0.2):
+        ctrl._start_listening_timeout()
+        import time as _time
+        _time.sleep(0.5)
+
+    assert ctrl._state == S_IDLE_LISTENING, f"expected IDLE_LISTENING got {ctrl._state}"
+    # Verifica que el wake reset se llamo (parte del cleanup)
+    ctrl._wake.reset.assert_called()
+    print("W3 listening timeout returns to IDLE silently: OK")
+    return True
+
+
+def test_voice_state_machine_followup_close_phrase() -> bool:
+    """En FOLLOWUP, recibir final 'gracias' -> IDLE_LISTENING sin enviar al agente."""
+    from unittest.mock import MagicMock
+    from gemma4_agent.voice.controller import (
+        VoiceController, S_FOLLOWUP, S_IDLE_LISTENING,
+    )
+    sent_to_agent: list[str] = []
+    ctrl = VoiceController(on_final=sent_to_agent.append, beep_on_wake=False)
+    ctrl._wake = MagicMock()
+    ctrl._stt = MagicMock()
+    ctrl._tts = MagicMock()
+    ctrl._state = S_FOLLOWUP
+
+    ctrl._handle_final("gracias")
+    assert ctrl._state == S_IDLE_LISTENING
+    assert sent_to_agent == [], "close phrase should NOT be sent to agent"
+
+    # Pero si el final es otra cosa, SI se manda
+    ctrl._state = S_FOLLOWUP
+    ctrl._handle_final("apaga la luz")
+    assert sent_to_agent == ["apaga la luz"]
+    print("W4 followup close phrase exits silently: OK")
+    return True
+
+
+def test_voice_disabled_in_light_profile() -> bool:
+    """Apply LIGHT profile -> voice controller deberia poder llamarse disable()."""
+    from unittest.mock import MagicMock
+    from gemma4_agent.voice.controller import (
+        VoiceController, S_IDLE_DISABLED, S_IDLE_LISTENING,
+    )
+    ctrl = VoiceController(beep_on_wake=False)
+    # Mock TODOS los subcomponentes ANTES de llamar enable/disable
+    ctrl._wake = MagicMock(); ctrl._wake.load = MagicMock(return_value=True)
+    ctrl._wake.unload = MagicMock()
+    ctrl._stt = MagicMock(); ctrl._stt.load = MagicMock(return_value=True)
+    ctrl._stt.unload = MagicMock()
+    ctrl._tts = MagicMock(); ctrl._tts.load = MagicMock(return_value=True)
+    ctrl._tts.unload = MagicMock()
+    ctrl._audio = MagicMock(); ctrl._audio.start = MagicMock(return_value=True)
+    ctrl._audio.stop = MagicMock()
+
+    # Estado fresco
+    ctrl._state = S_IDLE_DISABLED
+    assert ctrl.enable() is True
+    assert ctrl._state == S_IDLE_LISTENING
+
+    # Disable libera modelos
+    ctrl.disable()
+    assert ctrl._state == S_IDLE_DISABLED
+    ctrl._wake.unload.assert_called()
+    ctrl._stt.unload.assert_called()
+    ctrl._tts.unload.assert_called()
+    ctrl._audio.stop.assert_called()
+    print("W5 disable() unloads all models: OK")
+    return True
+
+
+def test_tts_sentence_chunker_flushes_on_punctuation() -> bool:
+    """feed_text con tokens; assertear que solo oraciones cerradas se encolan."""
+    from gemma4_agent.voice.tts import StreamingTTS, _split_sentences
+
+    # Test del splitter puro primero
+    sentences, rest = _split_sentences("Hola. Como estas")
+    assert sentences == ["Hola."], f"got {sentences}"
+    assert rest == "Como estas"
+
+    sentences, rest = _split_sentences("Hola. Adios! Listo.")
+    # SENTENCE_END_RE requiere space O EOL despues del signo. "Adios!" sin space
+    # final no cierra al final de string -- es ok porque flush() lo agarra.
+    # Aca verificamos que al menos cierra las dos con espacio.
+    assert "Hola." in sentences
+    # Tercera oracion sin espacio final queda en rest
+    assert rest.endswith("Listo.") or "Listo" in rest, f"got rest={rest!r}"
+
+    # Test del feed_text via StreamingTTS sin cargar Piper real
+    tts = StreamingTTS()
+    tts._loaded = True  # bypass load()
+    tts._muted = False
+
+    encolados: list[str] = []
+    # Reemplazar la queue por una list
+    class FakeQueue:
+        def put(self, item):
+            encolados.append(item)
+    tts._queue = FakeQueue()  # type: ignore[assignment]
+
+    # Texto en chunks pequenos: solo cierra cuando aparece "." + espacio
+    tts.feed_text("Hola")
+    assert encolados == []  # sin cierre todavia
+    tts.feed_text(" mundo")
+    assert encolados == []  # idem
+    tts.feed_text(". Como ")
+    # "Hola mundo. " cierra; "Como " queda en buffer
+    assert len(encolados) == 1
+    assert "Hola mundo." in encolados[0]
+    print("W6 sentence chunker flushes on '. ' boundary: OK")
+    return True
+
+
+def test_stt_auto_fallback_to_base_when_slow() -> bool:
+    """fallback_to_base() restaura modelo previo si la recarga falla.
+
+    Antes este test verificaba que transcribe_stream dispara el fallback en
+    runtime. Tras el refactor de transcribe_stream (post-bug runtime
+    20:40:52 donde el fallback espureo se disparaba cada partial), el
+    fallback se aisla a un metodo explicito y solo el caller decide cuando
+    invocarlo. Aqui validamos la garantia critica: si el reload del modelo
+    base falla, el StreamingSTT NO queda roto -- restaura el modelo previo.
+    """
+    from unittest.mock import MagicMock
+    from gemma4_agent.voice.stt import StreamingSTT
+
+    stt = StreamingSTT()
+    stt._loaded = True
+    stt._model_size = "small"
+    prior_whisper = MagicMock()
+    stt._whisper = prior_whisper
+
+    # Forzar que load() falle al intentar cargar 'base'
+    stt.load = MagicMock(return_value=False)  # type: ignore[method-assign]
+
+    ok = stt.fallback_to_base()
+    assert ok is False, "fallback should return False when load fails"
+    assert stt._model_size == "small", f"size should be restored to small, got {stt._model_size}"
+    assert stt._whisper is prior_whisper, "whisper should be restored to previous instance"
+    assert stt._loaded is True, "loaded flag should be restored"
+    print("W7 STT fallback restores prior model on failed reload: OK")
+    return True
+
+
+def test_voice_close_phrase_normalization() -> bool:
+    """Las frases de cierre matchean con accents folded e case-insensitive."""
+    from unittest.mock import MagicMock
+    from gemma4_agent.voice.controller import (
+        VoiceController, S_FOLLOWUP, S_IDLE_LISTENING,
+    )
+    sent: list[str] = []
+    ctrl = VoiceController(
+        on_final=sent.append,
+        close_phrases=["gracias", "ya está", "ListO"],
+        beep_on_wake=False,
+    )
+    ctrl._wake = MagicMock(); ctrl._stt = MagicMock(); ctrl._tts = MagicMock()
+    ctrl._state = S_FOLLOWUP
+    ctrl._handle_final("YA ESTA")  # uppercase + sin acento -> normaliza igual
+    assert ctrl._state == S_IDLE_LISTENING
+    assert sent == []
+    print("W8 close phrase normalization (case + accents): OK")
+    return True
+
+
 def main() -> int:
     tests = [
         test_g1_experience_record_and_recall,
@@ -1428,6 +1834,7 @@ def main() -> int:
         test_u1_hud_state_setters,
         test_audit_atomic_write_replaces_existing,
         test_audit_settings_env_names_match_config,
+        test_audit_jsonstore_concurrent_writes,
         test_audit_experience_recent_exists,
         test_audit_timeline_safe_payload_preserves_dicts,
         test_audit_planner_question_mark_inverted_supported,
@@ -1440,6 +1847,16 @@ def main() -> int:
         test_standby_profile_does_not_start_server,
         test_external_server_detected_not_killed,
         test_light_profile_missing_model_falls_back,
+        # Fase W — voice + SSE
+        test_sse_streaming_yields_deltas_in_order,
+        test_voice_wake_detector_matches_phrases,
+        test_voice_state_machine_wake_to_listening_to_transcribing,
+        test_voice_state_machine_listening_timeout_5s,
+        test_voice_state_machine_followup_close_phrase,
+        test_voice_disabled_in_light_profile,
+        test_tts_sentence_chunker_flushes_on_punctuation,
+        test_stt_auto_fallback_to_base_when_slow,
+        test_voice_close_phrase_normalization,
     ]
     failures: list[str] = []
     for t in tests:

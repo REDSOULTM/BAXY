@@ -179,6 +179,11 @@ class ProfileWatcher:
         self._samples: deque[tuple[float, _Sample]] = deque(maxlen=64)
         # Estado: en qual perfil estamos por decision del watcher
         self._watcher_state: str = "idle"  # "idle" (sin downgrade) | "downgraded"
+        # Audit fix #5: en lugar de aplicar env vars inmediato (que puede
+        # corromper un turno en vuelo), el watcher encola la decision aqui y
+        # el caller invoca apply_pending() en un momento seguro (fin-de-turno).
+        self._pending: Optional[tuple[str, str]] = None  # (profile_name, reason)
+        self._pending_lock = threading.Lock()
 
     def start(self) -> None:
         if not self._cfg.enabled:
@@ -280,13 +285,38 @@ class ProfileWatcher:
                     self._watcher_state = "downgraded"
                     return
                 reason = self._condition_reason(sample)
-                self._switch_to(self._cfg.downgrade_to, reason)
+                self._queue_switch(self._cfg.downgrade_to, reason)
                 self._watcher_state = "downgraded"
         elif self._watcher_state == "downgraded":
             # Solo subimos si NO hay condicion activa por 60s
             if self._sustained(UPGRADE_SUSTAIN_S, condition=False):
-                self._switch_to(self._cfg.restore_to, "triggers cleared")
+                self._queue_switch(self._cfg.restore_to, "triggers cleared")
                 self._watcher_state = "idle"
+
+    def _queue_switch(self, name: str, reason: str) -> None:
+        """Encola el cambio de perfil en lugar de aplicarlo ya.
+
+        El caller (UI) drena via apply_pending() en un momento seguro
+        (fin-de-turno) para no corromper un request en vuelo.
+        """
+        with self._pending_lock:
+            self._pending = (name, reason)
+        logger.info("ProfileWatcher queued switch to %s (reason: %s)", name, reason)
+
+    def apply_pending(self, *, force: bool = False) -> bool:
+        """Aplica el switch encolado (si hay). Retorna True si se aplico.
+
+        `force=True` permite al caller (boton manual de la GUI) saltar el
+        gating de fin-de-turno; equivale al comportamiento pre-fix.
+        """
+        with self._pending_lock:
+            pending = self._pending
+            self._pending = None
+        if pending is None:
+            return False
+        name, reason = pending
+        self._switch_to(name, reason)
+        return True
 
     def _run(self) -> None:
         # Loop principal: usar Event.wait para que stop() interrumpa rapido

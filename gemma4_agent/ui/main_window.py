@@ -455,6 +455,14 @@ class MainWindow(QMainWindow):
                     self._voice_controller.enable()
                 except Exception:
                     pass
+        # Fase V — drain any profile switch queued by the watcher mid-turn.
+        # Aplicar env vars solo entre turnos garantiza que el LLM no vea
+        # contexto cambiado a medio request.
+        if self._profile_watcher is not None:
+            try:
+                self._profile_watcher.apply_pending()
+            except Exception as exc:
+                self.log.append(f"profile apply_pending failed: {exc}", "warn")
 
     def _on_llm_error(self, msg: str) -> None:
         self.log.append(msg, "err")

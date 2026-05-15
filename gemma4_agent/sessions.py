@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
@@ -118,6 +119,7 @@ class SessionStore:
     def __init__(self, root: Path | None = None) -> None:
         self.root = root or sessions_dir()
         self.root.mkdir(parents=True, exist_ok=True)
+        self._lock = threading.RLock()
 
     def _path(self, session_id: str) -> Path:
         safe = "".join(c for c in session_id if c.isalnum())[:32]
@@ -127,55 +129,59 @@ class SessionStore:
 
     def save(self, session: Session) -> dict[str, Any]:
         from .state import atomic_write_json
-        session.updated_at = _now_iso()
-        path = self._path(session.id)
-        try:
-            atomic_write_json(path, session.to_dict())
-        except OSError as exc:
-            return {"ok": False, "error": str(exc), "path": str(path)}
-        return {"ok": True, "id": session.id, "path": str(path), "turns": len(session.turns)}
+        with self._lock:
+            session.updated_at = _now_iso()
+            path = self._path(session.id)
+            try:
+                atomic_write_json(path, session.to_dict())
+            except OSError as exc:
+                return {"ok": False, "error": str(exc), "path": str(path)}
+            return {"ok": True, "id": session.id, "path": str(path), "turns": len(session.turns)}
 
     def load(self, session_id: str) -> Session | None:
-        path = self._path(session_id)
-        if not path.is_file():
-            return None
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            return None
+        with self._lock:
+            path = self._path(session_id)
+            if not path.is_file():
+                return None
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                return None
         if not isinstance(data, dict):
             return None
         return Session.from_dict(data)
 
     def delete(self, session_id: str) -> dict[str, Any]:
-        path = self._path(session_id)
-        existed = path.is_file()
-        try:
-            if existed:
-                path.unlink()
-        except OSError as exc:
-            return {"ok": False, "error": str(exc), "id": session_id}
-        return {"ok": True, "id": session_id, "existed": existed}
+        with self._lock:
+            path = self._path(session_id)
+            existed = path.is_file()
+            try:
+                if existed:
+                    path.unlink()
+            except OSError as exc:
+                return {"ok": False, "error": str(exc), "id": session_id}
+            return {"ok": True, "id": session_id, "existed": existed}
 
     def list_sessions(self, limit: int = 50) -> list[dict[str, Any]]:
         """Return sessions sorted by updated_at descending (most recent first)."""
         out: list[dict[str, Any]] = []
-        for path in self.root.glob("*.json"):
-            try:
-                data = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
-                continue
-            if not isinstance(data, dict):
-                continue
-            turns = data.get("turns") or []
-            out.append({
-                "id": str(data.get("id") or path.stem),
-                "title": str(data.get("title") or "(sin titulo)"),
-                "created_at": str(data.get("created_at") or ""),
-                "updated_at": str(data.get("updated_at") or ""),
-                "turn_count": len(turns) if isinstance(turns, list) else 0,
-                "path": str(path),
-            })
+        with self._lock:
+            for path in self.root.glob("*.json"):
+                try:
+                    data = json.loads(path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    continue
+                if not isinstance(data, dict):
+                    continue
+                turns = data.get("turns") or []
+                out.append({
+                    "id": str(data.get("id") or path.stem),
+                    "title": str(data.get("title") or "(sin titulo)"),
+                    "created_at": str(data.get("created_at") or ""),
+                    "updated_at": str(data.get("updated_at") or ""),
+                    "turn_count": len(turns) if isinstance(turns, list) else 0,
+                    "path": str(path),
+                })
         out.sort(key=lambda d: d.get("updated_at") or "", reverse=True)
         return out[:limit]
 

@@ -33,12 +33,16 @@ class SysMetrics:
         self._last_net = psutil.net_io_counters()
         self._last_net_t = time.time()
         self._running = True
+        self._stop_event = threading.Event()
         self._interval = interval
         self._thread = threading.Thread(target=self._loop, daemon=True, name="gemma4-sysmetrics")
         self._thread.start()
 
-    def stop(self) -> None:
+    def stop(self, *, join_timeout: float = 2.0) -> None:
+        self._stop_event.set()
         self._running = False
+        if self._thread.is_alive():
+            self._thread.join(timeout=join_timeout)
 
     def _loop(self) -> None:
         while self._running:
@@ -46,7 +50,8 @@ class SysMetrics:
                 self._update()
             except Exception:
                 pass
-            time.sleep(self._interval)
+            if self._stop_event.wait(self._interval):
+                break
 
     def _update(self) -> None:
         cpu = psutil.cpu_percent(interval=None)
