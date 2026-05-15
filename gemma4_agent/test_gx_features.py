@@ -1874,6 +1874,144 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_sse_streaming_interleaved_tool_calls() -> bool:
+    """Sprint 5: streaming SSE de tool_calls intercalados con texto +
+    thoughts, validando que (a) los deltas llegan en orden, (b) el frame
+    final tiene tool_calls normalizados, (c) la mezcla content+tool_call
+    en el mismo turno se preserva.
+
+    Corresponde al patron interleaved del PR #21418 mergeado: el modelo
+    puede emitir texto (reasoning visible), un tool_call, mas texto, otro
+    tool_call, etc. en el mismo turno.
+    """
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+
+    # Simulamos un turno: pensamiento -> tool_call -> mas texto -> finish
+    frames = [
+        b'data: {"choices":[{"delta":{"role":"assistant","content":null}}]}\n\n',
+        b'data: {"choices":[{"delta":{"content":"Voy a leer el archivo."}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"id":"call_1","type":"function","function":{"name":"filesystem","arguments":""}}]}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"{\\"action\\":\\"read\\","}}]}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"\\"path\\":\\"C:/x.txt\\"}"}}]}}]}\n\n',
+        b'data: {"choices":[{"finish_reason":"tool_calls","delta":{}}]}\n\n',
+        b'data: [DONE]\n\n',
+    ]
+    fake_resp = MagicMock()
+    fake_resp.__iter__ = lambda self: iter(frames)
+    fake_resp.close = MagicMock()
+
+    client = LLMClient(AgentConfig())
+    with patch("urllib.request.urlopen", return_value=fake_resp):
+        events = list(client.chat_stream(messages=[{"role": "user", "content": "lee x.txt"}]))
+
+    deltas = [e for e in events if e["type"] == "delta"]
+    final_events = [e for e in events if e["type"] == "final"]
+    # 1 content delta + 3 tool_call deltas = 4 events
+    assert len(deltas) >= 2, f"expected >=2 deltas, got {len(deltas)}: {deltas}"
+    # Al menos uno con content y al menos uno con tool_call_delta
+    has_content = any(d.get("content_delta") for d in deltas)
+    has_tc = any(d.get("tool_call_delta") for d in deltas)
+    assert has_content, "expected at least one content delta"
+    assert has_tc, "expected at least one tool_call delta"
+    # Frame final reconstruido
+    assert len(final_events) == 1
+    final = final_events[0]
+    assert final["finish_reason"] == "tool_calls"
+    assert final["content"] == "Voy a leer el archivo."
+    assert len(final["tool_calls"]) == 1
+    tc = final["tool_calls"][0]
+    assert tc["id"] == "call_1"
+    assert tc["function"]["name"] == "filesystem"
+    # Argumentos NORMALIZADOS (Sprint 1.4): el string fragmentado se
+    # reensambla y normaliza a dict.
+    args = tc["function"]["arguments"]
+    assert isinstance(args, dict), f"args must be dict after normalize: {args!r}"
+    assert args.get("action") == "read"
+    assert args.get("path") == "C:/x.txt"
+    print("OPTROAD-S5-a SSE interleaved content+tool_call: OK")
+    return True
+
+
+def test_optroad_sse_tool_call_args_with_literal_braces() -> bool:
+    """Sprint 5 + item 1.4: args con `{` y `}` literales no rompen el
+    parser cliente. Caso del issue #21384.
+    """
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+
+    # Tool call con args que contienen braces literales (regex pattern).
+    # llama-server fragmenta el JSON en chunks; el cliente debe reensamblar
+    # y normalizar.
+    args_full = '{"action":"search","pattern":"\\\\d{3,5}","path":"C:/${USER}/logs"}'
+    chunk1 = args_full[:30]
+    chunk2 = args_full[30:]
+
+    import json as _json
+    frames = [
+        f'data: {_json.dumps({"choices":[{"delta":{"tool_calls":[{"index":0,"id":"c1","type":"function","function":{"name":"filesystem","arguments":chunk1}}]}}]})}\n\n'.encode(),
+        f'data: {_json.dumps({"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":chunk2}}]}}]})}\n\n'.encode(),
+        b'data: {"choices":[{"finish_reason":"tool_calls","delta":{}}]}\n\n',
+        b'data: [DONE]\n\n',
+    ]
+    fake_resp = MagicMock()
+    fake_resp.__iter__ = lambda self: iter(frames)
+    fake_resp.close = MagicMock()
+
+    client = LLMClient(AgentConfig())
+    with patch("urllib.request.urlopen", return_value=fake_resp):
+        events = list(client.chat_stream(messages=[{"role": "user", "content": "x"}]))
+
+    final = next(e for e in events if e["type"] == "final")
+    tc = final["tool_calls"][0]
+    args = tc["function"]["arguments"]
+    assert isinstance(args, dict), f"args must be dict: {args!r}"
+    assert args["action"] == "search"
+    assert args["pattern"] == "\\d{3,5}"  # regex con braces preservadas
+    assert args["path"] == "C:/${USER}/logs"  # var con $ preservada
+    print("OPTROAD-S5-b SSE tool_call args with braces normalized: OK")
+    return True
+
+
+def test_optroad_sse_multiple_parallel_tool_calls() -> bool:
+    """Sprint 5 + item C3: el modelo emite MULTIPLES tool_calls en el
+    mismo turno (parallel_tool_calls). Cada uno debe llegar normalizado
+    y indexado correctamente.
+    """
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+
+    frames = [
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"id":"a","type":"function","function":{"name":"filesystem","arguments":"{\\"action\\":\\"list\\"}"}}]}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":1,"id":"b","type":"function","function":{"name":"system","arguments":"{\\"action\\":\\"time\\"}"}}]}}]}\n\n',
+        b'data: {"choices":[{"finish_reason":"tool_calls","delta":{}}]}\n\n',
+        b'data: [DONE]\n\n',
+    ]
+    fake_resp = MagicMock()
+    fake_resp.__iter__ = lambda self: iter(frames)
+    fake_resp.close = MagicMock()
+
+    client = LLMClient(AgentConfig())
+    with patch("urllib.request.urlopen", return_value=fake_resp):
+        events = list(client.chat_stream(messages=[{"role": "user", "content": "x"}]))
+
+    final = next(e for e in events if e["type"] == "final")
+    tcs = final["tool_calls"]
+    assert len(tcs) == 2, f"expected 2 tool_calls, got {len(tcs)}"
+    # Orden por index
+    assert tcs[0]["id"] == "a"
+    assert tcs[0]["function"]["name"] == "filesystem"
+    assert tcs[0]["function"]["arguments"] == {"action": "list"}
+    assert tcs[1]["id"] == "b"
+    assert tcs[1]["function"]["name"] == "system"
+    assert tcs[1]["function"]["arguments"] == {"action": "time"}
+    print("OPTROAD-S5-c SSE multiple parallel tool_calls: OK")
+    return True
+
+
 def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> bool:
     """Sprint 1: agent._tool_schemas_hint elige full/compact/off por
     el context_size del perfil activo.
@@ -2398,6 +2536,10 @@ def main() -> int:
         test_optroad_spec_draft_flag_only_in_performance,
         # Sprint 1 tool_schemas_hint mode selection
         test_optroad_tool_schemas_hint_selects_mode_by_ctx,
+        # Sprint 5 streaming SSE interleaved + edge cases
+        test_optroad_sse_streaming_interleaved_tool_calls,
+        test_optroad_sse_tool_call_args_with_literal_braces,
+        test_optroad_sse_multiple_parallel_tool_calls,
         # Sprint 7 pre-warm KV
         test_optroad_prewarm_kv_calls_chat_with_min_tokens,
         # Sprint 11 telemetry opt-in
