@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (
 )
 
 from .agent_thread import AgentWorker
+from .bus_bridge import EventBusBridge
 from .hud import HudCanvas
 from .log_widget import LogWidget
 from .memory_viewer import MemoryDialog
@@ -223,6 +224,17 @@ class MainWindow(QMainWindow):
         self.worker.llm_error.connect(self._on_llm_error)
         self.worker.progress.connect(self._on_progress)
 
+        # EventBus bridge: BUS in-process -> Qt signals (main-thread safe).
+        # Cubre eventos que publican modulos no-Qt (prewarm, multimodal,
+        # boot_progress, telemetry, agent_runner) y que la GUI hasta ahora
+        # ignoraba porque solo escuchaba pyqtSignals del AgentWorker.
+        self._bus_bridge = EventBusBridge(self)
+        self._bus_bridge.boot_stage.connect(self._on_bus_boot_stage)
+        self._bus_bridge.vision_threshold.connect(self._on_bus_vision_threshold)
+        self._bus_bridge.activity.connect(self._on_bus_activity)
+        self._bus_bridge.agent_state.connect(self._on_bus_agent_state)
+        self._bus_bridge.attach()
+
         # Shortcuts
         def _sc(seq: str, fn: Any) -> None:
             s = QShortcut(QKeySequence(seq), self)
@@ -406,6 +418,102 @@ class MainWindow(QMainWindow):
     def _on_log(self, text: str, tag: str) -> None:
         self.log.append(text, tag)
 
+    # ------------------------------------------------------------------
+    # EventBus slots — eventos del BUS in-process rebotados a main thread
+    # por EventBusBridge. Tipicamente solo se reflejan en el activity log;
+    # vision_threshold ademas dispara un banner persistente.
+    # ------------------------------------------------------------------
+    def _on_bus_boot_stage(self, event: dict[str, Any]) -> None:
+        """Eventos de boot_stage: prewarm_start/done + llama_spawn/metadata/
+        layers/offload/listening/health. Los traducimos a un log breve."""
+        stage = str(event.get("stage") or "")
+        if stage == "prewarm_start":
+            chars = event.get("system_prompt_chars")
+            extra = f" ({chars} chars sys prompt)" if isinstance(chars, int) else ""
+            self._on_log(f"prewarm: warming KV cache{extra}", "sys")
+        elif stage == "prewarm_done":
+            elapsed = event.get("elapsed_s")
+            ok = bool(event.get("ok"))
+            dt = f" in {elapsed:.1f}s" if isinstance(elapsed, (int, float)) else ""
+            err = event.get("error")
+            if ok:
+                self._on_log(f"prewarm: KV cache primed{dt}", "ok")
+            elif err:
+                self._on_log(f"prewarm: failed{dt} — {err}", "warn")
+            else:
+                self._on_log(f"prewarm: server returned empty{dt}", "warn")
+        elif stage in ("llama_spawn", "llama_metadata", "llama_layers",
+                       "llama_offload", "llama_listening", "llama_health"):
+            label = str(event.get("label") or stage)
+            progress = event.get("progress")
+            if isinstance(progress, (int, float)):
+                self._on_log(f"boot[{stage}]: {label} ({progress*100:.0f}%)", "sys")
+            else:
+                self._on_log(f"boot[{stage}]: {label}", "sys")
+
+    def _on_bus_vision_threshold(self, event: dict[str, Any]) -> None:
+        """Disparado cuando el contador de imagenes cruza
+        IMAGE_RELAUNCH_THRESHOLD (issue ggml-org/llama.cpp#21690).
+        Loggeamos warn + activamos banner persistente."""
+        count = event.get("image_count")
+        thr = event.get("threshold")
+        issue = event.get("issue") or "llama.cpp#21690"
+        self._on_log(
+            f"vision: image counter reached {count}/{thr} — server recycle suggested ({issue})",
+            "warn",
+        )
+        self._show_vision_banner(count, thr, issue)
+
+    def _on_bus_activity(self, event: dict[str, Any]) -> None:
+        """Activity events publicados por agent_runner (mayoria son para la
+        UI React via WS). En la GUI Qt los mostramos como log informativo
+        para no perder visibilidad de operaciones internas."""
+        entry = event.get("entry") or {}
+        if not isinstance(entry, dict):
+            return
+        src = str(entry.get("src") or "agent")
+        msg = str(entry.get("msg") or "")
+        if not msg:
+            return
+        # Mapear src a tag de log. Mantener bajo perfil — son ruidosos.
+        tag_map = {
+            "BOOT": "sys", "SYSTEM": "sys", "USER": "you",
+            "ASSISTANT": "ai", "TOOL": "tool", "ERROR": "err",
+        }
+        tag = tag_map.get(src.upper(), "sys")
+        self._on_log(f"[{src}] {msg}", tag)
+
+    def _on_bus_agent_state(self, event: dict[str, Any]) -> None:
+        """Agent lifecycle del runner FastAPI: built/healthy/ready flags.
+        En Qt no usamos AgentRunner directamente, pero si llega el evento
+        (porque alguien arranca el server FastAPI en paralelo) lo logueamos
+        para coherencia."""
+        built = event.get("built")
+        healthy = event.get("healthy")
+        ready = event.get("ready")
+        self._on_log(
+            f"agent state: built={built} healthy={healthy} ready={ready}",
+            "sys",
+        )
+
+    def _show_vision_banner(self, count: Any, thr: Any, issue: str) -> None:
+        """Activa el banner amber en header indicando que llama-server
+        deberia reciclarse para evitar el leak del mmproj. Se autoremueve
+        al hacer click. No bloquea la UI."""
+        banner = self._header_h.get("vision_banner") if isinstance(self._header_h, dict) else None
+        if banner is None:
+            return
+        banner.setText(
+            f"⚠ vision leak — {count}/{thr} imagenes procesadas · "
+            f"recyclar llama-server (issue {issue}) · click para ocultar"
+        )
+        banner.setVisible(True)
+
+    def _hide_vision_banner(self) -> None:
+        banner = self._header_h.get("vision_banner") if isinstance(self._header_h, dict) else None
+        if banner is not None:
+            banner.setVisible(False)
+
     def _on_connection_changed(self, ok: bool) -> None:
         self.hud.set_connected(ok)
         # also update brand badge color in header
@@ -471,25 +579,30 @@ class MainWindow(QMainWindow):
                 QTimer.singleShot(0, _done)
 
         def _warm_llama() -> None:
+            # Usa el prewarm oficial del Sprint 7 (gemma4_agent.prewarm) que
+            # ademas publica eventos boot_stage al BUS — el EventBusBridge los
+            # rebota a Qt para que aparezcan en el HUD/log. Respeta el opt-out
+            # GEMMA4_DISABLE_PREWARM.
             try:
+                from ..prewarm import prewarm_kv
+                from ..events_bus import BUS
                 agent = self.worker.get_agent()
                 if agent is None or agent.client is None:
                     return
-                t0 = __import__("time").monotonic()
-                # 1 token max, sin tools, sin thinking -> minimo costo de
-                # generacion. Lo que importa es que el server compute el
-                # prefill del system prompt + plantilla de chat (queda en
-                # KV cache, el siguiente prompt reutiliza el prefix).
-                agent.client.chat(
-                    [{"role": "user", "content": "."}],
+                sys_msg = agent._system_message(mode=None, plan=None) if hasattr(agent, "_system_message") else {"content": ""}
+                sys_content = sys_msg.get("content", "") if isinstance(sys_msg, dict) else ""
+                result = prewarm_kv(
+                    agent.client,
+                    sys_content,
                     tools=None,
-                    enable_thinking=False,
-                    parallel_tool_calls=False,
-                    max_tokens=1,
                     timeout_s=30.0,
+                    publish=BUS.publish,
                 )
-                dt = __import__("time").monotonic() - t0
-                self._on_log(f"warmup: llama-server KV cache primed ({dt:.1f}s)", "sys")
+                # El bridge ya muestra el evento boot_stage prewarm_done; aca
+                # solo logueamos en caso de skip explicito (opt-out) o si el
+                # cliente no soporta chat() (cosa rara).
+                if result.get("skipped"):
+                    self._on_log("warmup: prewarm disabled by GEMMA4_DISABLE_PREWARM", "sys")
             except Exception as exc:
                 self._on_log(f"warmup: llama prefill failed: {exc}", "warn")
             finally:
@@ -1431,6 +1544,11 @@ class MainWindow(QMainWindow):
     def closeEvent(self, a0: Any) -> None:  # type: ignore[override]
         try:
             self._metrics.stop()
+        except Exception:
+            pass
+        # Desconectar bridge del BUS (idempotente)
+        try:
+            self._bus_bridge.detach()
         except Exception:
             pass
         # Fase V — stop watcher cleanly

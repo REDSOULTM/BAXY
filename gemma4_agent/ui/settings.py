@@ -142,6 +142,7 @@ class SettingsDialog(QDialog):
         tabs.addTab(self._tab_behaviour(),     "BEHAVIOUR")
         tabs.addTab(self._tab_voice(),         "VOICE")
         tabs.addTab(self._tab_profiles(),      "PROFILES")
+        tabs.addTab(self._tab_optim(),         "OPTIM")
         tabs.addTab(self._tab_toggles(),       "TOGGLES")
         tabs.addTab(self._tab_paths(),         "PATHS")
         tabs.addTab(self._tab_prompt(),        "PROMPT")
@@ -841,6 +842,139 @@ class SettingsDialog(QDialog):
         return auto, overrides
 
     # ------------------------------------------------------------------
+    def _tab_optim(self) -> QWidget:
+        """Tab OPTIM — env vars del roadmap de optimizacion Gemma 4.
+
+        Estas no son toggles de features de la app, son palancas avanzadas
+        para tunear el llama-server / agente. Aplican al proximo restart.
+        """
+        w = QWidget()
+        lay = QVBoxLayout(w)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(8)
+
+        title = QLabel("OPTIMIZATION  (advanced — env vars applied at next restart)")
+        title.setFont(mono(8, True))
+        title.setStyleSheet(f"color: {C.TEXT_MED};")
+        lay.addWidget(title)
+
+        warn = QLabel(
+            "Estos toggles son palancas low-level del runtime de llama.cpp y "
+            "del prewarm. Solo cambialos si sabes que estas haciendo o seguis "
+            "una guia de optimizacion concreta. Cambios mal aplicados pueden "
+            "degradar throughput o causar OOM."
+        )
+        warn.setFont(mono(7))
+        warn.setStyleSheet(f"color: {C.ACC2};")
+        warn.setWordWrap(True)
+        lay.addWidget(warn)
+
+        # --- Disable prewarm ---
+        self._optim_disable_prewarm = QCheckBox(
+            "Disable KV cache prewarm at boot  [GEMMA4_DISABLE_PREWARM]"
+        )
+        self._optim_disable_prewarm.setChecked(
+            _env_truthy("GEMMA4_DISABLE_PREWARM", False)
+        )
+        self._optim_disable_prewarm.setToolTip(
+            "Opt-out del prewarm. Default OFF (prewarm activo).\n"
+            "Si lo activas, el primer turn paga el TTFT del prefill (60-90s con\n"
+            "system prompt grande). Util solo si el prewarm causa problemas."
+        )
+        lay.addWidget(self._optim_disable_prewarm)
+
+        # --- Telemetry ---
+        self._optim_telemetry = QCheckBox(
+            "Enable local telemetry (SQLite)  [GEMMA4_TELEMETRY]"
+        )
+        self._optim_telemetry.setChecked(
+            _env_truthy("GEMMA4_TELEMETRY", False)
+        )
+        self._optim_telemetry.setToolTip(
+            "Opt-in. Default OFF.\n"
+            "Cuando esta ON, escribe turns/voice/incidents en\n"
+            "~/.gemma4/telemetry.sqlite. Solo local. Aplicar requiere\n"
+            "restart del agente."
+        )
+        lay.addWidget(self._optim_telemetry)
+
+        # --- KV type ---
+        kv_row = QHBoxLayout()
+        kv_lbl = QLabel("KV cache type  [GEMMA4_LLAMA_KV_TYPE]:")
+        kv_lbl.setFont(mono(8))
+        kv_lbl.setStyleSheet(f"color: {C.TEXT_MED};")
+        kv_row.addWidget(kv_lbl)
+        self._optim_kv_type = QComboBox()
+        self._optim_kv_type.setStyleSheet(combo_qss())
+        for opt in ("", "f16", "q8_0", "q4_0"):
+            self._optim_kv_type.addItem(opt or "(default f16)")
+        current_kv = (os.environ.get("GEMMA4_LLAMA_KV_TYPE") or "").strip().lower()
+        if current_kv in {"f16", "q8_0", "q4_0"}:
+            self._optim_kv_type.setCurrentText(current_kv)
+        else:
+            self._optim_kv_type.setCurrentIndex(0)
+        self._optim_kv_type.setToolTip(
+            "Quantizacion del KV cache. f16=default, q8_0=~50% menos VRAM,\n"
+            "q4_0=~75% menos VRAM (con perdida de calidad notable). Util en\n"
+            "perfiles light/balanced con contexts grandes."
+        )
+        kv_row.addWidget(self._optim_kv_type, stretch=1)
+        lay.addLayout(kv_row)
+
+        # --- Spec decoding model ---
+        spec_row = QHBoxLayout()
+        spec_lbl = QLabel("Speculative draft model  [GEMMA4_SPEC_DRAFT_MODEL]:")
+        spec_lbl.setFont(mono(8))
+        spec_lbl.setStyleSheet(f"color: {C.TEXT_MED};")
+        spec_row.addWidget(spec_lbl)
+        self._optim_spec_draft = QLineEdit(
+            str(os.environ.get("GEMMA4_SPEC_DRAFT_MODEL") or "")
+        )
+        self._optim_spec_draft.setStyleSheet(line_edit_qss())
+        self._optim_spec_draft.setFont(mono(8))
+        self._optim_spec_draft.setPlaceholderText("(empty = disabled)")
+        self._optim_spec_draft.setToolTip(
+            "Path al modelo draft (Q4_K_M de 1-2B) para speculative decoding.\n"
+            "Solo se activa si el perfil tambien lo permite. Empty = OFF."
+        )
+        spec_pick = QPushButton("...")
+        spec_pick.setFixedWidth(28)
+        spec_pick.setStyleSheet(button_qss())
+        def _pick_spec() -> None:
+            p, _ = QFileDialog.getOpenFileName(
+                self, "Choose draft model (.gguf)", "", "GGUF (*.gguf);;All (*.*)"
+            )
+            if p:
+                self._optim_spec_draft.setText(p)
+        spec_pick.clicked.connect(_pick_spec)
+        spec_row.addWidget(self._optim_spec_draft, stretch=1)
+        spec_row.addWidget(spec_pick)
+        lay.addLayout(spec_row)
+
+        # --- llama-server API key ---
+        api_row = QHBoxLayout()
+        api_lbl = QLabel("llama-server API key  [GEMMA4_LLAMA_API_KEY]:")
+        api_lbl.setFont(mono(8))
+        api_lbl.setStyleSheet(f"color: {C.TEXT_MED};")
+        api_row.addWidget(api_lbl)
+        self._optim_api_key = QLineEdit(
+            str(os.environ.get("GEMMA4_LLAMA_API_KEY") or "")
+        )
+        self._optim_api_key.setEchoMode(QLineEdit.EchoMode.Password)
+        self._optim_api_key.setStyleSheet(line_edit_qss())
+        self._optim_api_key.setFont(mono(8))
+        self._optim_api_key.setPlaceholderText("(empty = no auth)")
+        self._optim_api_key.setToolTip(
+            "Si seteado, llama-server requiere Authorization: Bearer <key>\n"
+            "en cada request. Cliente y server lo aplican automaticamente.\n"
+            "Sprint 12 hardening."
+        )
+        api_row.addWidget(self._optim_api_key, stretch=1)
+        lay.addLayout(api_row)
+
+        lay.addStretch()
+        return w
+
     def _tab_toggles(self) -> QWidget:
         w = QWidget()
         lay = QVBoxLayout(w)
@@ -1040,6 +1174,21 @@ class SettingsDialog(QDialog):
         toggles: dict[str, bool] = {}
         for env_key, cb in self._toggles_checks.items():
             toggles[env_key] = cb.isChecked()
+
+        # Optim tab — env vars del roadmap de optimizacion.
+        # Disable prewarm va como toggle (env truthy parseado por prewarm.py).
+        toggles["GEMMA4_DISABLE_PREWARM"] = self._optim_disable_prewarm.isChecked()
+        toggles["GEMMA4_TELEMETRY"] = self._optim_telemetry.isChecked()
+        # KV type combobox: vacio o "(default f16)" = unset
+        kv_text = self._optim_kv_type.currentText().strip().lower()
+        if kv_text in {"f16", "q8_0", "q4_0"}:
+            env["GEMMA4_LLAMA_KV_TYPE"] = kv_text
+        else:
+            env["GEMMA4_LLAMA_KV_TYPE"] = ""  # apply_to_env borra del environ
+        # Spec draft model path (vacio = OFF)
+        env["GEMMA4_SPEC_DRAFT_MODEL"] = self._optim_spec_draft.text().strip()
+        # API key (vacio = no auth)
+        env["GEMMA4_LLAMA_API_KEY"] = self._optim_api_key.text().strip()
 
         return {"env": env, "toggles": toggles}
 

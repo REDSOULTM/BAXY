@@ -26,9 +26,18 @@ _RIGHT_W = 360
 # ---------------------------------------------------------------------------
 def build_header() -> tuple[QWidget, dict[str, Any]]:
     w = QWidget()
-    w.setFixedHeight(58)
+    # Altura total = 58 (linea principal) + 22 (banner condicional). Cuando
+    # el banner esta oculto no consume el alto extra porque le ponemos
+    # setVisible(False); el layout se reajusta solo.
     w.setStyleSheet(f"background: {C.DARK}; border-bottom: 1px solid {C.BORDER_B};")
-    lay = QHBoxLayout(w)
+    outer = QVBoxLayout(w)
+    outer.setContentsMargins(0, 0, 0, 0)
+    outer.setSpacing(0)
+
+    top = QWidget()
+    top.setFixedHeight(58)
+    top.setStyleSheet("background: transparent;")
+    lay = QHBoxLayout(top)
     lay.setContentsMargins(16, 0, 16, 0)
 
     def _lbl(txt: str, color: str = C.TEXT_MED, font_size: int = 8) -> QLabel:
@@ -70,7 +79,30 @@ def build_header() -> tuple[QWidget, dict[str, Any]]:
     right_col.addWidget(date)
     lay.addLayout(right_col)
 
-    handles: dict[str, Any] = {"clock_lbl": clock, "date_lbl": date, "brand_lbl": left_brand}
+    # Top bar montado. Banner amber va debajo (oculto por default).
+    outer.addWidget(top)
+
+    # Banner amber para advertencias como vision_threshold_reached
+    # (issue ggml-org/llama.cpp#21690). Oculto por default; main_window
+    # lo muestra cuando recibe el evento del BUS via EventBusBridge.
+    vision_banner = QPushButton("")
+    vision_banner.setFont(mono(7, True))
+    vision_banner.setVisible(False)
+    vision_banner.setCursor(Qt.CursorShape.PointingHandCursor)
+    vision_banner.setStyleSheet(
+        f"QPushButton {{ color: #0a0a0a; background: {C.ACC2}; "
+        f"border: none; padding: 4px 10px; }} "
+        f"QPushButton:hover {{ background: #ffd166; }}"
+    )
+
+    handles: dict[str, Any] = {
+        "clock_lbl": clock, "date_lbl": date, "brand_lbl": left_brand,
+        "vision_banner": vision_banner,
+    }
+
+    # Click en el banner -> ocultar (es informativo, no bloqueante)
+    vision_banner.clicked.connect(lambda _=False: vision_banner.setVisible(False))
+    outer.addWidget(vision_banner)
 
     def _tick() -> None:
         clock.setText(time.strftime("%H:%M:%S"))
@@ -158,8 +190,10 @@ def build_left_panel() -> tuple[QWidget, dict[str, Any]]:
     prof_row.setContentsMargins(0, 0, 0, 0)
     prof_row.setSpacing(2)
     prof_buttons: dict[str, QPushButton] = {}
-    for code, full in (("PERF", "performance"), ("BAL", "balanced"),
-                       ("LIGHT", "light"), ("STDBY", "standby")):
+    # B8GB = balanced_8gb (perfil para 8 GB VRAM, E4B UD-Q4_K_XL).
+    # Orden: de mas a menos VRAM (Performance, Balanced 8GB, Balanced, Light, Standby).
+    for code, full in (("PERF", "performance"), ("B8GB", "balanced_8gb"),
+                       ("BAL", "balanced"), ("LIGHT", "light"), ("STDBY", "standby")):
         btn = QPushButton(code)
         btn.setFont(mono(6, True))
         btn.setFixedHeight(20)
