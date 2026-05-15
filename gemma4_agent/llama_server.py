@@ -248,16 +248,41 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
 
     # VRAM-tight perfiles (balanced, light): --no-mmap para evitar
     # double-buffer entre RAM mapeada y VRAM (critico con budget apretado).
-    #
-    # NO usamos --cache-type-k/v q8_0 aqui: la doc del repo
-    # (documentacion/04_vram_y_hardware/README.md) advierte explicitamente
-    # contra KV quant en Gemma 4 sin medir, citando un localbench benchmark
-    # que reporto KL 0.377 para Gemma 4 26B con q8_0 KV (vs Qwen <0.04).
-    # E4B/E2B no son MoE como el 26B pero el riesgo esta sin validar.
-    # Una pasada del bench Carter 540 con KV q8_0 confirmaria si se puede
-    # activar; mientras tanto, F16 default.
     if profile.name in {"balanced", "light"}:
         cmd.append("--no-mmap")
+
+    # KV cache quantization (opt-in via GEMMA4_LLAMA_KV_TYPE). Default: F16.
+    # El informe de optimizacion externa (Bloque B1, item I1 #5, TL;DR-6)
+    # advierte contra KV quant en Gemma 4 sin medir:
+    #   localbench (2026-04): KL 0.377 con q8_0 KV en 26B-A4B
+    #                         (vs Qwen <0.04), KL 0.108 en 31B Q8_0.
+    # Si el usuario aun asi lo activa por env var, lo respetamos pero con
+    # WARNING grande. Solo aceptamos valores conocidos por llama.cpp.
+    _ALLOWED_KV_TYPES = {"f16", "f32", "bf16", "q8_0", "q5_1", "q5_0", "q4_1", "q4_0"}
+    kv_type_env = (os.environ.get("GEMMA4_LLAMA_KV_TYPE") or "").strip().lower()
+    if kv_type_env:
+        if kv_type_env not in _ALLOWED_KV_TYPES:
+            logger.warning(
+                "GEMMA4_LLAMA_KV_TYPE=%r is not a recognized llama.cpp KV "
+                "type; ignoring. Allowed: %s.",
+                kv_type_env, sorted(_ALLOWED_KV_TYPES),
+            )
+        else:
+            if kv_type_env not in {"f16", "f32", "bf16"}:
+                logger.warning("=" * 70)
+                logger.warning(
+                    "KV cache quantization enabled by env var: %s. "
+                    "localbench (2026-04) measured KL 0.377 for Gemma 4 "
+                    "26B-A4B with q8_0 KV (vs Qwen <0.04). Quality may "
+                    "degrade on long-context / tool-call tasks. Recommended: "
+                    "leave unset (F16 default) until benchmarked on Carter 540.",
+                    kv_type_env,
+                )
+                logger.warning("=" * 70)
+            cmd.extend([
+                "--cache-type-k", kv_type_env,
+                "--cache-type-v", kv_type_env,
+            ])
 
     # Vision: solo agregar --mmproj si el perfil lo permite y hay path real
     if profile.vision_enabled:
