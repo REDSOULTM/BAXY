@@ -23,13 +23,14 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import socket
 import subprocess
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from .config import AgentConfig, PACKAGE_ROOT, PROJECT_ROOT
 from .profiles import Profile
@@ -94,6 +95,106 @@ def port_in_use(host: str = "127.0.0.1", port: int = 8080, timeout: float = 0.3)
             sock.close()
         except OSError:
             pass
+
+
+# Build minimo requerido para soporte correcto de tool-calling en Gemma 4.
+# Esta constante refleja el roadmap del informe de auditoria (item I1 #1):
+# llama.cpp b9090+ contiene los PRs #21418 (parser dedicado Gemma 4),
+# #21326 y #21343 (tokenizer + token spam fixes). Builds anteriores producen
+# tool_calls con tokens corruptos o argumentos serializados como string.
+#
+# CUDA 13.2 esta bloqueado por advertencia de Unsloth (2026-04-11): produce
+# poor outputs en cualquier GGUF de Gemma 4. Recomendar CUDA 13.1 o 12.x.
+LLAMA_CPP_BUILD_MIN = "b9090"
+CUDA_RUNTIME_BLOCKED = "13.2"
+
+
+_BUILD_CHECK_DONE: bool = False
+
+
+def check_llama_build(exe_path: Path) -> dict[str, Any]:
+    """Lee version + build de llama-server y emite warnings si corresponde.
+
+    Llamada idempotente: se ejecuta una sola vez por proceso (controlada
+    por _BUILD_CHECK_DONE). Si llama-server no esta disponible, retorna
+    un dict con `available=False` sin levantar excepciones (el caller
+    decide como manejar el missing exe).
+
+    Returns dict con keys: available, build, cuda, raw, warnings.
+    """
+    global _BUILD_CHECK_DONE
+    info: dict[str, Any] = {
+        "available": False,
+        "build": None,
+        "cuda": None,
+        "raw": None,
+        "warnings": [],
+    }
+    if _BUILD_CHECK_DONE:
+        return info
+    _BUILD_CHECK_DONE = True
+
+    if not exe_path.is_file():
+        info["warnings"].append(f"llama-server exe not found: {exe_path}")
+        return info
+
+    try:
+        proc = subprocess.run(
+            [str(exe_path), "--version"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        info["warnings"].append(f"llama-server --version failed: {exc}")
+        return info
+
+    raw = (proc.stdout or "") + (proc.stderr or "")
+    info["available"] = True
+    info["raw"] = raw[:500]
+
+    # Detectar build: formato tipico "version: <N> (<sha>)" o "build = <N>"
+    # llama-server suele imprimir "version: 6593 (abc1234)" en stderr.
+    build_match = re.search(r"\b(?:version|build)\s*[:=]?\s*(\d{3,5})\b", raw, re.IGNORECASE)
+    if build_match:
+        info["build"] = f"b{build_match.group(1)}"
+        try:
+            current_n = int(build_match.group(1))
+            min_n = int(LLAMA_CPP_BUILD_MIN.lstrip("bB"))
+            if current_n < min_n:
+                msg = (
+                    f"llama-server build {info['build']} is older than {LLAMA_CPP_BUILD_MIN}. "
+                    "Gemma 4 tool calling requires PRs #21418, #21326, #21343 (merged in b9090+). "
+                    "Older builds produce corrupted tool_calls."
+                )
+                info["warnings"].append(msg)
+                logger.warning(msg)
+        except ValueError:
+            pass
+
+    # Detectar CUDA runtime: formato "cuda runtime: 13.1" o "CUDA: 13.2"
+    cuda_match = re.search(r"cuda(?:\s+runtime)?\s*[:=]?\s*(\d+\.\d+)", raw, re.IGNORECASE)
+    if cuda_match:
+        info["cuda"] = cuda_match.group(1)
+        if info["cuda"] == CUDA_RUNTIME_BLOCKED:
+            msg = (
+                f"CUDA runtime {info['cuda']} detected. Unsloth (2026-04-11) "
+                "explicitly warns: 'Do NOT use CUDA 13.2 runtime for any GGUF "
+                "as it will cause poor outputs.' Downgrade to CUDA 13.1 or 12.x."
+            )
+            info["warnings"].append(msg)
+            logger.warning("=" * 70)
+            logger.warning(msg)
+            logger.warning("=" * 70)
+
+    if info["build"] is None and info["cuda"] is None:
+        info["warnings"].append(
+            "Could not parse build/CUDA from llama-server --version output. "
+            "Tool calling may be unreliable on Gemma 4. Update to b9090+."
+        )
+
+    return info
 
 
 def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
@@ -270,6 +371,12 @@ class LlamaServerManager:
                 exe, model,
             )
             return "missing_files"
+
+        # Chequeo de build una vez por proceso. Solo se ejecuta cuando vamos a
+        # arrancar nuestro server (no en path "external" ni "missing_files",
+        # para no interferir con tests que mockean subprocess y para no
+        # ejecutar el binario si no esta presente).
+        check_llama_build(exe)
 
         # Tear down si habia uno con perfil distinto
         if self.is_running():
