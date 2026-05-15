@@ -1874,6 +1874,109 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_s13_no_mmproj_when_vision_off() -> bool:
+    """Sprint 13: si profile.vision_enabled=False, --mmproj NO debe
+    aparecer en el cmd del server.
+
+    TL;DR MAL #b del informe externo: "usar mmproj F16 a la vez que
+    tiene visión OFF en balanced/light — el F16 cabe en disco pero
+    introduce el path de leak de #21690 si se carga incluso por error".
+    """
+    import os
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    saved = os.environ.get("GEMMA4_MMPROJ_PATH")
+    try:
+        # Aunque el usuario tenga GEMMA4_MMPROJ_PATH apuntando a un archivo,
+        # si vision_enabled=False, el cmd NO debe pasarlo.
+        os.environ["GEMMA4_MMPROJ_PATH"] = "C:/some/mmproj.gguf"
+        for name in ("balanced", "balanced_8gb", "light"):
+            assert PROFILES[name].vision_enabled is False, f"{name} should have vision off"
+            cmd = llama_command(AgentConfig(), PROFILES[name])
+            assert "--mmproj" not in cmd, f"{name}: --mmproj must NOT be in cmd when vision_enabled=False"
+    finally:
+        if saved is None:
+            os.environ.pop("GEMMA4_MMPROJ_PATH", None)
+        else:
+            os.environ["GEMMA4_MMPROJ_PATH"] = saved
+    print("OPTROAD-S13-a no --mmproj when vision OFF: OK")
+    return True
+
+
+def test_optroad_s13_official_sampling_defaults() -> bool:
+    """Sprint 13: AgentConfig defaults son EXACTAMENTE los oficiales
+    Google para Gemma 4: T=1.0, top_p=0.95, top_k=64, repeat_penalty=1.0,
+    max_tokens=1280. TL;DR MEJOR #(a) del informe externo.
+    """
+    from gemma4_agent.config import AgentConfig
+    cfg = AgentConfig()
+    assert cfg.temperature == 1.0, f"T must be 1.0 (Google official); got {cfg.temperature}"
+    assert cfg.top_p == 0.95, f"top_p must be 0.95; got {cfg.top_p}"
+    assert cfg.top_k == 64, f"top_k must be 64; got {cfg.top_k}"
+    assert cfg.repeat_penalty == 1.0, f"repeat_penalty must be 1.0; got {cfg.repeat_penalty}"
+    assert cfg.max_tokens == 1280, f"max_tokens must be 1280; got {cfg.max_tokens}"
+    print("OPTROAD-S13-b Google official sampling defaults preserved: OK")
+    return True
+
+
+def test_optroad_s13_hardening_invariants_always_present() -> bool:
+    """Sprint 13: --host 127.0.0.1 y --no-webui DEBEN estar en el cmd
+    de TODOS los perfiles activos. Defense in depth contra exposicion
+    accidental por LAN (Sprint 12 del roadmap)."""
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    for name in ("performance", "balanced_8gb", "balanced", "light"):
+        cmd = llama_command(AgentConfig(), PROFILES[name])
+        assert "--host" in cmd, f"{name}: --host missing"
+        idx = cmd.index("--host")
+        assert cmd[idx + 1] == "127.0.0.1", f"{name}: --host value {cmd[idx+1]} (must be 127.0.0.1)"
+        assert "--no-webui" in cmd, f"{name}: --no-webui missing"
+    print("OPTROAD-S13-c hardening invariants in all active profiles: OK")
+    return True
+
+
+def test_optroad_s13_tool_schemas_md_covers_all_62_tools() -> bool:
+    """Sprint 13: compile_tools_to_markdown_exact debe listar las 62
+    tools, no solo las primeras. Verifica que ninguna queda fuera del
+    bloque EXACT por bug del walker."""
+    from gemma4_agent.tools import COMPOUND_TOOL_SCHEMAS, compile_tools_to_markdown_exact
+    md_full = compile_tools_to_markdown_exact()
+    md_compact = compile_tools_to_markdown_exact(compact=True)
+    tool_names = [s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS]
+    # Al menos 50 tools (el bench dice 62; algunos pueden tener nombres
+    # duplicados por ser aliases del mismo dispatcher).
+    assert len(tool_names) >= 50, f"expected >=50 tools, got {len(tool_names)}"
+    # Cada tool debe aparecer como heading ## en ambos modos
+    missing_full = [n for n in tool_names if f"## {n}" not in md_full]
+    missing_compact = [n for n in tool_names if f"## {n}" not in md_compact]
+    assert not missing_full, f"full mode missing tools: {missing_full}"
+    assert not missing_compact, f"compact mode missing tools: {missing_compact}"
+    print(f"OPTROAD-S13-d all {len(tool_names)} tools covered in markdown: OK")
+    return True
+
+
+def test_optroad_s13_profiles_voice_always_on_when_active() -> bool:
+    """Sprint 13: voice (Whisper CPU + Piper CPU) DEBE estar ON en
+    todos los perfiles con server_running=True. El brief explicito del
+    usuario: 'voice debe estar disponible en todos los perfiles'."""
+    from gemma4_agent.profiles import PROFILES
+    for name, p in PROFILES.items():
+        if p.server_running:
+            assert getattr(p, "voice_enabled", False) is True, (
+                f"{name} has server_running=True but voice_enabled=False; "
+                "user requirement: voice must be ON for all active profiles"
+            )
+        else:
+            # standby: no LLM, no voice (correct)
+            pass
+    print("OPTROAD-S13-e voice ON for all server-running profiles: OK")
+    return True
+
+
 def test_optroad_sse_streaming_interleaved_tool_calls() -> bool:
     """Sprint 5: streaming SSE de tool_calls intercalados con texto +
     thoughts, validando que (a) los deltas llegan en orden, (b) el frame
@@ -2540,6 +2643,12 @@ def main() -> int:
         test_optroad_sse_streaming_interleaved_tool_calls,
         test_optroad_sse_tool_call_args_with_literal_braces,
         test_optroad_sse_multiple_parallel_tool_calls,
+        # Sprint 13 — push gemma4_agent toward 100% pass-rate
+        test_optroad_s13_no_mmproj_when_vision_off,
+        test_optroad_s13_official_sampling_defaults,
+        test_optroad_s13_hardening_invariants_always_present,
+        test_optroad_s13_tool_schemas_md_covers_all_62_tools,
+        test_optroad_s13_profiles_voice_always_on_when_active,
         # Sprint 7 pre-warm KV
         test_optroad_prewarm_kv_calls_chat_with_min_tokens,
         # Sprint 11 telemetry opt-in
