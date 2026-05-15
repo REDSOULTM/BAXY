@@ -85,7 +85,7 @@ Generado en sesión autónoma 2026-05-15.
 - [PASS] `maintenance` firewall_status → expect=ok, got=ok
 - [PASS] `maintenance` T2-025 PS injection rejected → expect=needs_user, got=needs_user
 - [PASS] `maintenance` event_logs_query happy → expect=ok, got=ok
-- [PASS] `maintenance` T2-026 defender returns job_id (got status=running, job_id=res_de5f02ceec)
+- [PASS] `maintenance` T2-026 defender returns job_id (got status=running, job_id=res_9d355348e3)
 - [PASS] `maintenance` T2-027 disk_cleanup_describe no exec arrays
 
 ## gui

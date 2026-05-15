@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -m gemma4_agent.test_router)"
+      "Bash(python -m gemma4_agent.test_router)",
+      "Bash(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits)",
+      "Bash(tasklist /FI \"IMAGENAME eq llama-cli.exe\")",
+      "Bash(tasklist /FI \"IMAGENAME eq llama-server.exe\")"
     ]
   }
 }
