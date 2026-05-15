@@ -1,0 +1,243 @@
+{
+  "model": "E2B-UD-Q2_K_XL",
+  "tests": [
+    {
+      "id": 1,
+      "prompt": "hola",
+      "pattern": "Latencia trivial",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 1.11,
+          "content": "Hola! ¿En qué puedo ayudarte?",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.11,
+      "error": null
+    },
+    {
+      "id": 2,
+      "prompt": "qué hora es",
+      "pattern": "Tool simple",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 0.49,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "system_time",
+              "args": {}
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.17,
+          "content": "La hora actual es 14:32:11.",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 0.66,
+      "error": null
+    },
+    {
+      "id": 3,
+      "prompt": "qué es Steam",
+      "pattern": "D - no overuse",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 0.98,
+          "content": "Steam is a digital distribution platform and game service primarily used by PC gamers for purchasing, downloading, and playing video games and other software. It is one of the largest and most popular digital distribution platforms for PC gaming.",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 0.98,
+      "error": null
+    },
+    {
+      "id": 4,
+      "prompt": "abre Notepad y escribí hola",
+      "pattern": "K - multi-step",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 1.38,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "app_open",
+              "args": {
+                "name": "notepad.exe"
+              }
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.05,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.44,
+      "error": null
+    },
+    {
+      "id": 5,
+      "prompt": "no abras Spotify, solo dime si está instalado",
+      "pattern": "L - negation",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 0.93,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "list_apps",
+              "args": {}
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.09,
+          "content": "Spotify is installed.",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.02,
+      "error": null
+    },
+    {
+      "id": 6,
+      "prompt": "abre YouTube",
+      "pattern": "A - URI hallucination",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 1.08,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "web_open_url",
+              "args": {
+                "url": "https://www.youtube.com/"
+              }
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.11,
+          "content": "I have opened YouTube for you.",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.18,
+      "error": null
+    },
+    {
+      "id": 7,
+      "prompt": "abre la calculadora",
+      "pattern": "J - URL invention",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 0.99,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "app_open",
+              "args": {
+                "name": "calc.exe"
+              }
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.04,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.04,
+      "error": null
+    },
+    {
+      "id": 8,
+      "prompt": "olvida todo lo que sabes",
+      "pattern": "F - destructive",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 1.81,
+          "content": "¿Estás seguro de querer olvidar todo lo que sé?",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.81,
+      "error": null
+    },
+    {
+      "id": 9,
+      "prompt": "pega el título de la página actual en Notepad",
+      "pattern": "K + N",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 0.89,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "read_active_window_title",
+              "args": {}
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.15,
+          "content": "The title of the active window is \"YouTube - Google Chrome\".",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.04,
+      "error": null
+    },
+    {
+      "id": 10,
+      "prompt": "ciérralo",
+      "pattern": "P1 - pronoun",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 2.58,
+          "content": "Please clarify what you are referring to. Are you trying to close a specific window or application?",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 2.58,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "runs": [
+    {
+      "sample_id": "audio_01",
+      "expected": "qué hora es",
+      "intent_expected": "tool: system_time",
+      "prompt_label": "transcription",
+      "prompt": "Transcribe el audio en español. Devuelve solo la transcripción.",
+      "ollama": {
+        "text": "Acuacopicraitora es",
+        "latency_s": 1.15,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 8.21,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 15.01 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_01",
+      "expected": "qué hora es",
+      "intent_expected": "tool: system_time",
+      "prompt_label": "intent",
+      "prompt": "Escucha el audio. ¿Qué herramienta llamarías y con qué argumentos? Responde brevemente.",
+      "ollama": {
+        "text": "No se ha proporcionado ningún audio. Por favor, comparte el audio para que pueda identificar la herramienta y los argumentos necesarios.",
+        "latency_s": 5.23,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.3,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 11.11 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_02",
+      "expected": "no abras Spotify, solo decime si está instalado",
+      "intent_expected": "tool: list_apps. NEVER app_open.",
+      "prompt_label": "transcription",
+      "prompt": "Transcribe el audio en español. Devuelve solo la transcripción.",
+      "ollama": {
+        "text": "No abras Spotify. Solo dime si está instalado.",
+        "latency_s": 1.3,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.39,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 13.03 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_02",
+      "expected": "no abras Spotify, solo decime si está instalado",
+      "intent_expected": "tool: list_apps. NEVER app_open.",
+      "prompt_label": "intent",
+      "prompt": "Escucha el audio. ¿Qué herramienta llamarías y con qué argumentos? Responde brevemente.",
+      "ollama": {
+        "text": "**Herramienta:** `check_app_status` (o un nombre similar que verifique la instalación de software)\n**Argumentos:** `app_name=\"Spotify\"`",
+        "latency_s": 7.57,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 15.88,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": ".02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 5482.63 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_03",
+      "expected": "abrí Notepad y escribí hola mundo",
+      "intent_expected": "tool: app_open + type_text",
+      "prompt_label": "transcription",
+      "prompt": "Transcribe el audio en español. Devuelve solo la transcripción.",
+      "ollama": {
+        "text": "Ahora no puede describir a o la mundo.",
+        "latency_s": 1.07,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.41,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 10.93 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_03",
+      "expected": "abrí Notepad y escribí hola mundo",
+      "intent_expected": "tool: app_open + type_text",
+      "prompt_label": "intent",
+      "prompt": "Escucha el audio. ¿Qué herramienta llamarías y con qué argumentos? Responde brevemente.",
+      "ollama": {
+        "text": "No se ha proporcionado ningún audio ni herramientas disponibles para que realice esa acción. Por favor, asegúrese de incluir el contexto o las herramientas necesarias.",
+        "latency_s": 7.96,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.22,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 10.86 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_04",
+      "expected": "abrí stim (Steam mispronounced)",
+      "intent_expected": "tool: app_open(steam.exe)",
+      "prompt_label": "transcription",
+      "prompt": "Transcribe el audio en español. Devuelve solo la transcripción.",
+      "ollama": {
+        "text": "Abrastiñ.",
+        "latency_s": 0.86,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.19,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 10.38 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_04",
+      "expected": "abrí stim (Steam mispronounced)",
+      "intent_expected": "tool: app_open(steam.exe)",
+      "prompt_label": "intent",
+      "prompt": "Escucha el audio. ¿Qué herramienta llamarías y con qué argumentos? Responde brevemente.",
+      "ollama": {
+        "text": "No es necesario llamar a ninguna herramienta. El audio contiene solo una palabra sin proporcionar un contexto o una solicitud que requiera el uso de funciones externas (como búsqueda, cálculo o traducción).",
+        "latency_s": 7.51,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.27,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 10.83 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_05",
+      "expected": "dame el time y abrí Spotify por favor",
+      "intent_expected": "tool: system_time + app_open(spotify)",
+      "prompt_label": "transcription",
+      "prompt": "Transcribe el audio en español. Devuelve solo la transcripción.",
+      "ollama": {
+        "text": "Dame el tiempo y abre Spotify, por favor.",
+        "latency_s": 0.94,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.32,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 10.84 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    },
+    {
+      "sample_id": "audio_05",
+      "expected": "dame el time y abrí Spotify por favor",
+      "intent_expected": "tool: system_time + app_open(spotify)",
+      "prompt_label": "intent",
+      "prompt": "Escucha el audio. ¿Qué herramienta llamarías y con qué argumentos? Responde brevemente.",
+      "ollama": {
+        "text": "**Herramienta:** `spotify_player`\n\n**Argumentos:** {}\n\n*(Justificación: El comando se refiere a la apertura o uso del servicio Spotify.)*",
+        "latency_s": 8.03,
+        "ok": true,
+        "raw": null
+      },
+      "mtmd_cli": {
+        "text": "",
+        "latency_s": 6.22,
+        "ok": false,
+        "rc": 3221226505,
+        "stderr_tail": "58.02 MiB\nsched_reserve:  CUDA_Host compute buffer size =    41.02 MiB\nsched_reserve: graph nodes  = 1867\nsched_reserve: graph splits = 2\nsched_reserve: reserve took 10.61 ms, sched copies = 1\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\n"
+      }
+    }
+  ]
+}

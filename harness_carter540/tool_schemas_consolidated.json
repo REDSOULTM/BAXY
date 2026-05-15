@@ -72,7 +72,7 @@
     "type": "function",
     "function": {
       "name": "gui_deeplink",
-      "description": "Abre directamente sección de apps con URI scheme: steam, spotify, discord, slack, vscode, ms-settings, ms-windows-store, obsidian. params es dict con args específicos (ej query, intent).",
+      "description": "PRIMARIA para apps nativas con URI scheme: steam, spotify, discord, slack, vscode, ms-settings, ms-windows-store, obsidian. SIEMPRE preferir esta tool antes que `web` o `filesystem` cuando el usuario menciona estas apps. Para Steam: 'biblioteca'/'library' (intent=library), 'tienda'/'store' (intent=store), 'busca X'/'search' (intent=search, params={query:X}). NO usar web_search para queries Steam — usar gui_deeplink(steam, search). NO usar filesystem para chequear si juego está instalado — usar gui_deeplink(steam, library) + gui(screenshot+locate).",
       "parameters": {
         "type": "object",
         "properties": {

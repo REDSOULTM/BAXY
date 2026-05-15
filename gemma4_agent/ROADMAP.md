@@ -1428,3 +1428,148 @@ E4B-Q4+mmproj para Performance, E2B-Q4 sin mmproj para Light).
   El usuario ve el warning amber en activity log.
 - `detect_vram_mb()` no usa dxdiag fallback (parseo poco fiable). Sin
   nvidia-smi ni rocm-smi -> None -> recommend_profile devuelve "balanced".
+
+## Fase W — Voz local (wake-word + STT streaming + TTS streaming) (2026-05-14)
+
+Hablarle al agente con "gemma" / "hey gemma", transcribir en streaming, y que
+conteste por voz mientras el LLM genera tokens. Todo 100% CPU. Diseno y
+restricciones vienen del INFORME_ARQUITECTURA_6GB.md secciones 2 y 6.
+
+### Arquitectura
+
+```
+mic --(int16 16k 30ms)--> AudioCapture (PortAudio thread)
+                                |
+                                +--> WakeDetector (Vosk small es)  while IDLE_LISTENING
+                                |        |
+                                |        +--(on wake)--> beep + HUD --(200ms)--> LISTENING
+                                |
+                                +--> StreamingSTT  (faster-whisper small int8 + Silero VAD)
+                                              |
+                                              +--(partial)--> GUI placeholder
+                                              +--(final)----> agent (via on_send)
+                                                                |
+                                              [LLM streaming SSE]
+                                                                |
+                                              +--(deltas)----> StreamingTTS (Piper)
+                                                                  |
+                                                                  +--(audio)--> speaker
+```
+
+Estados de la state machine:
+`IDLE_DISABLED | IDLE_LISTENING | WAKE_DETECTED | LISTENING | TRANSCRIBING
+| THINKING | SPEAKING | FOLLOWUP | FAILED`.
+
+### Decisiones tomadas (no replantear)
+
+- **Wake-word**: ambas frases "gemma" y "hey gemma" siempre activas, Vosk
+  small es-0.42 (~40 MB) con vocabulario restringido. Debounce 2 s para
+  evitar falsos positivos en cadena.
+- **STT**: faster-whisper `small` int8 en CPU + Silero VAD. language="es"
+  fijo. beam_size=1 default, 5 si audio >5 s. condition_on_previous_text=False.
+- **Endpoint**: VAD detecta silencio 400 ms tras hablar -> final. Techo
+  absoluto 15 s desde inicio de habla. Timeout 5 s pre-habla.
+- **Auto-fallback**: si la primera transcribe de >=1 s tarda >3 s, baja a
+  `base`. Persiste via `GEMMA4_VOICE_STT_MODEL`.
+- **TTS**: Piper VITS+ONNX CPU, voz default `es_MX-claude-high`. Sentence-
+  chunking del stream del LLM (`.!?;¡¿\n\n` cierra oracion). Worker thread
+  FIFO; productor LLM no bloquea.
+- **Follow-up window**: 5 s tras TTS (configurable 0/5/10 s) donde se puede
+  hablar sin wake-word. HUD muestra cyan suave. Close phrases: "gracias",
+  "listo", "ya esta", "cancelar", "stop" (normalizadas case + accents).
+- **Feedback wake**: beep 80 ms 600 Hz + HUD parpadeo cyan brillante. TTS "si"
+  como toggle opcional (default OFF).
+- **Voz por perfil**: PERF y BAL -> voice on (si usuario lo habilito en
+  Settings). LIGHT y STANDBY -> voice off, modelos liberados de RAM.
+- **No es_AR oficial**: Piper no tiene voz rioplatense. Default es_MX-claude-high
+  (acento neutro latino). Usuario puede fine-tunear o agregar voz custom en
+  `~/.gemma4/models/piper/`.
+
+### Modulos nuevos
+
+| Modulo | Responsabilidad |
+|---|---|
+| `voice/audio_io.py` | sounddevice wrapper + ring buffer 5 s. 16 kHz mono int16 chunks de 30 ms. |
+| `voice/wake.py` | WakeDetector Vosk con descarga consensuada del modelo. `model_exists()`/`download_model()` para la UI. |
+| `voice/stt.py` | StreamingSTT con faster-whisper + Silero VAD. transcribe_stream() yields STTEvent (partial/final/timeout/error). Auto-fallback a base. |
+| `voice/tts.py` | StreamingTTS con Piper. feed_text() acumula y encola oraciones a worker thread; sentence splitter respeta signos invertidos espanoles. `installed_voices()` para el dropdown. URLs hardcoded a HuggingFace. |
+| `voice/controller.py` | VoiceController con state machine completa + callbacks. Componentes en threads dedicados, comunicacion via Queue/callbacks. enable()/disable()/trigger_manual()/set_tts_muted(). |
+
+### Pre-requisito implementado: SSE en `llm_client.py`
+
+Nuevo metodo `chat_stream()` que devuelve Iterator de:
+- `{"type": "delta", "content_delta": str, "tool_call_delta": dict|None}`
+- `{"type": "final", "finish_reason": str, "content": str, "tool_calls": list}`
+
+Acumula tool_call fragments (id/name/arguments) que llama-server envia en
+pieces. agent.py sigue usando `chat()` no-stream — el unico consumer de
+`chat_stream` por ahora es el TTS de la GUI (Fase W). Migrar `agent.py` a
+streaming es Fase posterior fuera de scope.
+
+### GUI
+
+- **Tab VOICE** nuevo en SettingsDialog: enable master, feedback (beep/HUD/TTS),
+  input device, STT model, TTS voice, follow-up window, close phrases editables,
+  TTS muted.
+- **MainWindow**: auto-arranca el VoiceController 100 ms despues del primer
+  paint si `voice.enabled` esta en gui.json y el perfil lo permite. Loading
+  en QThread aparte para no bloquear GUI (carga 1-3 s).
+- **HUD**: `IDLE_LISTENING` -> `IDLE`, `LISTENING/WAKE_DETECTED/FOLLOWUP` ->
+  `LISTENING`, `TRANSCRIBING` -> `PROCESSING`, `THINKING` -> `THINKING`,
+  `SPEAKING` -> `SPEAKING`, `FAILED` -> `ERROR`.
+- **Input placeholder** durante transcripcion muestra el partial gris.
+- Al recibir Final del STT, llama `_on_send(text)` igual que tipear manualmente.
+
+### Lifecycle por perfil
+
+`_apply_profile` (Fase V) ahora tambien orquesta voz:
+- PERF/BAL + `voice.enabled` -> `voice_controller.enable()`
+- LIGHT/STANDBY -> `voice_controller.shutdown()` (libera modelos de RAM,
+  no solo pausa).
+- Override manual del usuario en Settings se respeta hasta que lo cambie.
+
+### Dependencias agregadas
+
+- `vosk` 0.3.45 (wake-word)
+- `faster-whisper` 1.2.1 (STT)
+- `silero-vad` 6.2.1 (VAD)
+- `piper-tts` 1.4.2 (TTS)
+- `sounddevice` (ya estaba)
+
+Lazy import por modulo. Si una falla, el subsistema correspondiente queda en
+FAILED pero el resto sigue funcionando.
+
+### Validacion
+
+- **66/66 tests passing**. 9 nuevos Fase W: W-SSE deltas, W1 wake matching,
+  W2 state machine wake->listening->transcribing, W3 listening timeout 5 s,
+  W4 followup close phrase, W5 disable() unloads, W6 sentence chunker,
+  W7 auto-fallback to base, W8 normalization.
+- **pyright 0 errors** en archivos nuevos y tocados.
+- **Imports en runtime real verificados** (vosk + faster_whisper + silero_vad
+  + piper + sounddevice cargan limpio en Windows Python 3.10).
+
+### Caveat documentado
+
+Si el llama-server tarda >3 s en responder a la primera peticion (cold start
+del KV cache, primera generacion), el TTS va a tener una pausa visible entre
+`THINKING` y `SPEAKING`. **No es bug, es fisica del sistema**: el TTS no
+puede arrancar a hablar hasta que el LLM emite el primer token, y ese first-
+token depende de la latencia del servidor. Mitigaciones cuando se quiera:
+- Pre-warm: hacer una request dummy al server tras arrancar (no implementado).
+- Filler audio: el TTS dice "mmm" mientras espera (no implementado).
+- Streaming del LLM (`chat_stream`): ya listo, falta que `agent.py` lo use.
+
+### Limitaciones conocidas
+
+- **agent.py todavia no usa streaming**: SSE existe en `llm_client.chat_stream`
+  pero el loop del agente sigue siendo no-stream. Para que el TTS arranque al
+  primer token hay que migrar el loop (fase posterior).
+- **Voz es_AR no oficial en Piper**: usar es_MX-claude-high o fine-tunear.
+- **Vosk small es-0.42 es lo mejor disponible para wake offline en espanol**:
+  hay un small/big version, big es ~1.4 GB y no vale el ratio para wake-word.
+- **TTS no soporta tono emocional**: Piper es de tono fijo. Para "Alexa tier"
+  alcanza pero no es expresivo como Kokoro/XTTS (que estan fuera del budget
+  CPU sub-segundo segun el INFORME).
+- **Listening timeout fijo a 5 s** post-wake, no configurable en esta version.
+  Si el usuario suele callarse, agregar slider en VOICE tab (futuro).

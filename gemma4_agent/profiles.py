@@ -62,69 +62,87 @@ class Profile:
     parallel_tools: bool  # J5 backend parallel tool execution
     fact_extraction: bool
     server_running: bool
+    # Voice ON/OFF por perfil. Whisper + Piper corren en CPU (0 VRAM), asi
+    # que la decision por defecto es "ON en todos los perfiles con server".
+    # standby fuerza voice_enabled=False (no hay LLM al que entregar el texto).
+    # El usuario sigue teniendo un master switch en Settings que prevalece.
+    voice_enabled: bool
     description: str
     est_vram_mb: int  # display only; not used for decisions
 
 
 # Defaults — copiados aqui para que sean editables sin tocar profiles.json.
 # El usuario puede sobreescribir cualquier campo via Settings > Profiles.
+# Paths default a los GGUF reales del repo. Numeros entre parentesis son
+# VRAM cargada real medida en RTX 4060 Ti (idle ~1.2 GB incluido), CSV en
+# documentacion/datos_crudos/vram_real_medida.csv. NO confundir con "delta
+# del modelo" (peso del modelo vs idle Windows): el cargado es lo que el
+# usuario ve en nvidia-smi y es el que cuenta para el budget.
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+_E2B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q4_K_M.gguf")  # 4.46 GB cargado
+_E2B_Q5_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q5_K_M.gguf")  # 4.70 GB cargado
+_E4B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q4_K_M.gguf")  # 6.10 GB cargado
+
+
 PROFILES: dict[str, Profile] = {
     "performance": Profile(
         name="performance",
         display_name="Performance",
         context_size=32768,
-        model_path=None,  # usuario configura modelo principal
+        model_path=None,  # usuario configura modelo principal (Q6_K u otro grande)
         vision_enabled=True,
         rerank_enabled=True,
         parallel_tools=True,
         fact_extraction=True,
         server_running=True,
+        voice_enabled=True,
         description=(
             "Maximo rendimiento. Context 32K, vision ON, rerank ON, "
-            "parallel tools ON, fact extraction ON. Para 12+ GB VRAM."
+            "parallel tools ON, fact extraction ON, voice ON. Para 12+ GB VRAM. "
+            "Usa el modelo principal del usuario (Q6_K o superior)."
         ),
-        # Racional: E4B-Q4_K_M (5.0) + mmproj F16 (0.92) + KV F16 8K (0.70)
-        # ~= 6.6 GB con margen. Si el usuario tiene mas VRAM y sube ctx a 32K,
-        # el KV crece pero sigue dentro del rango target. Numero del INFORME.
         est_vram_mb=7500,
     ),
     "balanced": Profile(
         name="balanced",
         display_name="Balanced",
-        context_size=16384,
-        model_path=None,
-        vision_enabled=True,
+        context_size=8192,
+        model_path=_E2B_Q5_K_M,  # 4.70 GB cargado real (NO E4B-Q4_K_M, que mide 6.10 GB y NO entra en 6 GB)
+        vision_enabled=False,    # mmproj F16 (0.9 GB) rompe el budget de 6 GB
         rerank_enabled=True,
         parallel_tools=False,
         fact_extraction=False,
         server_running=True,
+        voice_enabled=True,
         description=(
-            "Equilibrio diario. Context 16K, vision ON, rerank ON, "
-            "parallel tools OFF, fact extraction OFF. Para 8-12 GB VRAM."
+            "Perfil objetivo para 6 GB VRAM. E2B-Q5_K_M (mejor calidad que "
+            "Q4_K_M y misma familia que light), context 8K, vision OFF, "
+            "rerank ON, voice ON (CPU). Racional: 4.70 GB cargado + KV F16 8K "
+            "(~0.40) = ~5.1 GB. Holgura ~0.9 GB sobre 6 GB nominales."
         ),
-        # Racional: arquitectura recomendada del INFORME para 6 GB:
-        # E2B-Q4 (3.29) + mmproj (0.92) + KV F16 4K (0.35) = 4.56 GB de modelo,
-        # ~5.5 GB con overhead Windows + CUDA reserve.
-        est_vram_mb=5500,
+        # E2B-Q5_K_M (4.70) + KV F16 8K (~0.40) ~= 5.10 GB. Sin KV quant
+        # porque la doc del repo (04_vram_y_hardware) advierte contra q8_0 KV
+        # en Gemma 4 sin medir.
+        est_vram_mb=5100,
     ),
     "light": Profile(
         name="light",
         display_name="Light",
         context_size=4096,
-        model_path=None,  # usuario puede setear path a modelo chico
+        model_path=_E2B_Q4_K_M,  # 4.46 GB cargado: cabe con holgura en 4-6 GB
         vision_enabled=False,
         rerank_enabled=False,
         parallel_tools=False,
         fact_extraction=False,
         server_running=True,
+        voice_enabled=True,
         description=(
-            "Modo gaming/heavy app. Context 4K, vision OFF (mmproj sin "
-            "cargar), rerank OFF, modelo chico si esta configurado. "
-            "Para 4-8 GB VRAM o cuando necesitas liberar GPU."
+            "Modo gaming/4 GB VRAM. E2B-Q4_K_M, context 4K, vision OFF, "
+            "rerank OFF, voice ON (CPU). 4.46 GB cargado + KV F16 4K "
+            "(~0.20) = ~4.66 GB. Deja ~1.3 GB libres en 6 GB para juego."
         ),
-        # Racional: E2B-Q4 sin mmproj + KV F16 4K ~= 3.6 GB. El resto de la
-        # 6 GB queda libre para juego/app heavy. Numero del INFORME.
-        est_vram_mb=3800,
+        # E2B-Q4_K_M (4.46) + KV F16 4K (~0.20) ~= 4.66 GB.
+        est_vram_mb=4700,
     ),
     "standby": Profile(
         name="standby",
@@ -136,10 +154,12 @@ PROFILES: dict[str, Profile] = {
         parallel_tools=False,
         fact_extraction=False,
         server_running=False,
+        voice_enabled=False,  # sin LLM no hay a quien hablarle
         description=(
             "llama-server apagado. La GUI sigue viva (memory viewer, "
             "sessions, triggers, tool explorer non-LLM). El chat muestra "
-            "'Server offline — switch profile to chat.' VRAM ~0."
+            "'Server offline — switch profile to chat.' VRAM ~0. Voice OFF "
+            "porque no hay LLM al que entregar el texto."
         ),
         est_vram_mb=0,
     ),
@@ -206,30 +226,44 @@ def detect_vram_mb() -> int | None:
 def recommend_profile(vram_mb: int | None) -> str:
     """Sugiere perfil segun VRAM detectada.
 
-    >=12000 -> performance
-    8000-11999 -> balanced
-    4000-7999 -> light
-    <4000 o None -> balanced (asume CPU/integrada, usuario decide)
+    Cortes alineados a los model_path defaults:
+    >=12000 -> performance (Q6_K o superior, contexto 32K)
+    >=6000  -> balanced    (E4B-Q4_K_M, contexto 8K, voice ON, vision OFF)
+    >=4000  -> light       (E2B-Q4_K_M, contexto 4K, voice ON)
+    <4000 o None -> light  (mejor que rehusar; voice CPU sigue funcionando)
     """
     if vram_mb is None:
-        return "balanced"
+        # Sin GPU detectable: light es el mas conservador. Voice CPU
+        # sigue andando aunque el LLM corra en CPU lento o falle.
+        return "light"
     if vram_mb >= 12000:
         return "performance"
-    if vram_mb >= 8000:
+    if vram_mb >= 6000:
         return "balanced"
     if vram_mb >= 4000:
         return "light"
-    return "balanced"
+    return "light"
 
 
 def get_active_profile() -> Profile:
     """Lee ~/.gemma4/active_profile.txt y devuelve el Profile correspondiente.
 
-    Default: balanced. Si el archivo no existe o contiene un nombre invalido,
-    devuelve balanced y NO escribe nada (lazy).
+    Si el archivo no existe (primer arranque del usuario), detecta VRAM una
+    vez y persiste el perfil recomendado. Asi la app arranca con el perfil
+    correcto sin pedirle al usuario que vaya a Settings.
+
+    Default fallback: balanced (si no se puede detectar VRAM).
     """
     if not ACTIVE_PROFILE_PATH.is_file():
-        return PROFILES["balanced"]
+        # Primera vez: detecta y persiste. Si falla, queda en balanced sin
+        # escribir nada (asi en la proxima ejecucion vuelve a intentar).
+        try:
+            vram_mb = detect_vram_mb()
+            recommended = recommend_profile(vram_mb)
+            set_active_profile(recommended)
+            return _profile_with_overrides(PROFILES[recommended])
+        except (OSError, ValueError):
+            return PROFILES["balanced"]
     try:
         name = ACTIVE_PROFILE_PATH.read_text(encoding="utf-8").strip().casefold()
     except OSError:
@@ -291,8 +325,8 @@ def _profile_with_overrides(base: Profile) -> Profile:
     allowed: dict[str, Any] = {}
     for field_name in (
         "context_size", "model_path", "vision_enabled", "rerank_enabled",
-        "parallel_tools", "fact_extraction", "est_vram_mb", "display_name",
-        "description",
+        "parallel_tools", "fact_extraction", "voice_enabled", "est_vram_mb",
+        "display_name", "description",
     ):
         if field_name in these:
             allowed[field_name] = these[field_name]
@@ -344,6 +378,10 @@ def apply_profile_to_env(profile: Profile) -> None:
     os.environ["GEMMA4_AGENT_PARALLEL_TOOLS"] = "true" if profile.parallel_tools else "false"
     os.environ["GEMMA4_AGENT_FACT_EXTRACTION"] = "true" if profile.fact_extraction else "false"
     os.environ["GEMMA4_ACTIVE_PROFILE"] = profile.name
+    # Voice toggle por perfil. main_window y voice_runner leen esto + el
+    # master switch del usuario en Settings (voice.enabled). La AND de los
+    # dos es lo que enciende voice.
+    os.environ["GEMMA4_VOICE_PROFILE_ALLOWS"] = "true" if profile.voice_enabled else "false"
 
     # Vision: cadena vacia significa "no cargar mmproj". launcher.py debe
     # detectar este caso y omitir --mmproj del comando.

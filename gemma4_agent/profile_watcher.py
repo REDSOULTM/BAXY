@@ -44,6 +44,11 @@ UPGRADE_SUSTAIN_S = 60
 TICK_INTERVAL_S = 10  # cada 10s sampleamos psutil/nvidia-smi
 GPU_THRESHOLD_PCT = 70
 RAM_THRESHOLD_PCT = 85
+# VRAM ocupada por procesos que NO son llama-server. Si supera este umbral,
+# significa que algo pesado esta usando la GPU (juego, render, training) y
+# convien bajar el perfil para liberarle VRAM. 40% de 6GB = ~2.4GB, valor que
+# un cliente de Steam idle NO alcanza (~200MB) pero cualquier juego moderno si.
+VRAM_THRESHOLD_PCT = 40
 
 
 @dataclass
@@ -52,9 +57,12 @@ class WatcherConfig:
     downgrade_to: str = "light"
     restore_to: str = "balanced"
     game_watchlist: list[str] = field(default_factory=list)
-    trigger_on_game: bool = True
+    trigger_on_game: bool = False  # nombre-based: opt-in solo si el user lo quiere
     trigger_on_gpu: bool = False
     trigger_on_ram: bool = False
+    # Recomendado: detecta automaticamente CUALQUIER cosa pesada en GPU
+    # (juego, render, transcoding, training) sin depender de listas de nombres.
+    trigger_on_vram: bool = True
 
 
 @dataclass
@@ -62,6 +70,7 @@ class _Sample:
     has_game: bool
     gpu_pct: float | None  # None si no se pudo medir
     ram_pct: float | None
+    vram_pct: float | None  # VRAM ocupada por procesos que NO son llama-server
 
 
 def _list_processes() -> set[str]:
@@ -138,6 +147,60 @@ def _gpu_pct_excluding_llama() -> float | None:
     return total_sm / count
 
 
+def _vram_pct_excluding_llama() -> float | None:
+    """Devuelve % de VRAM ocupada por procesos que NO son llama-server.
+
+    Estrategia:
+    1. `nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits` -> total MB
+    2. `nvidia-smi --query-compute-apps=process_name,used_memory --format=csv,noheader,nounits`
+       -> lista de (proceso, MB usados). Sumamos todo excepto llama-server.
+    3. Devolvemos (suma_externa / total) * 100.
+
+    Devuelve None si nvidia-smi no esta disponible o el formato no parsea.
+    """
+    try:
+        total_res = subprocess.run(
+            ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=3, check=False,
+        )
+        if total_res.returncode != 0 or not total_res.stdout.strip():
+            return None
+        total_mb = float(total_res.stdout.strip().splitlines()[0].strip())
+        if total_mb <= 0:
+            return None
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError, ValueError):
+        return None
+
+    try:
+        apps_res = subprocess.run(
+            ["nvidia-smi", "--query-compute-apps=process_name,used_memory", "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=3, check=False,
+        )
+        if apps_res.returncode != 0:
+            return None
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+        return None
+
+    external_mb = 0.0
+    for line in apps_res.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        # "name, mb" — el name puede tener espacios pero no comas
+        parts = [p.strip() for p in line.rsplit(",", 1)]
+        if len(parts) != 2:
+            continue
+        name, mb_str = parts
+        if "llama-server" in name.lower():
+            continue
+        try:
+            external_mb += float(mb_str)
+        except ValueError:
+            continue
+
+    return (external_mb / total_mb) * 100.0
+
+
 def _game_in_watchlist(watchlist: Iterable[str]) -> str | None:
     """True si algun proceso corriendo coincide con la watchlist (case-insensitive).
 
@@ -210,7 +273,8 @@ class ProfileWatcher:
         has_game = bool(_game_in_watchlist(self._cfg.game_watchlist)) if self._cfg.trigger_on_game else False
         gpu_pct = _gpu_pct_excluding_llama() if self._cfg.trigger_on_gpu else None
         ram_pct = _ram_pct() if self._cfg.trigger_on_ram else None
-        return _Sample(has_game=has_game, gpu_pct=gpu_pct, ram_pct=ram_pct)
+        vram_pct = _vram_pct_excluding_llama() if self._cfg.trigger_on_vram else None
+        return _Sample(has_game=has_game, gpu_pct=gpu_pct, ram_pct=ram_pct, vram_pct=vram_pct)
 
     def _condition_active(self, sample: _Sample) -> bool:
         """True si alguna condicion habilitada esta cumplida ahora mismo."""
@@ -219,6 +283,8 @@ class ProfileWatcher:
         if self._cfg.trigger_on_gpu and sample.gpu_pct is not None and sample.gpu_pct > GPU_THRESHOLD_PCT:
             return True
         if self._cfg.trigger_on_ram and sample.ram_pct is not None and sample.ram_pct > RAM_THRESHOLD_PCT:
+            return True
+        if self._cfg.trigger_on_vram and sample.vram_pct is not None and sample.vram_pct > VRAM_THRESHOLD_PCT:
             return True
         return False
 
@@ -231,6 +297,8 @@ class ProfileWatcher:
             bits.append(f"gpu={sample.gpu_pct:.1f}%")
         if self._cfg.trigger_on_ram and sample.ram_pct is not None and sample.ram_pct > RAM_THRESHOLD_PCT:
             bits.append(f"ram={sample.ram_pct:.1f}%")
+        if self._cfg.trigger_on_vram and sample.vram_pct is not None and sample.vram_pct > VRAM_THRESHOLD_PCT:
+            bits.append(f"vram_ext={sample.vram_pct:.1f}%")
         return ", ".join(bits) if bits else "no triggers"
 
     def _sustained(self, window_s: float, condition: bool) -> bool:

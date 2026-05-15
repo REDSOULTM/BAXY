@@ -984,12 +984,16 @@ class MainWindow(QMainWindow):
         self._refresh_profile_selector()
         self._refresh_chat_input_blocked()
 
-        # Fase W — voice on PERF/BAL, off en LIGHT/STDBY (respeta override manual)
+        # Voice sync: el perfil define voice_enabled explicitamente
+        # (light/balanced/performance => True por default; standby => False).
+        # AND con el master switch del usuario en Settings (voice.enabled).
+        # En 6 GB de VRAM voice corre en CPU (Whisper + Piper), asi que esta
+        # ON tambien en light - libera VRAM del LLM pero no toca audio.
         try:
             from .settings import load_persisted
             voice_cfg = (load_persisted().get("voice") or {})
             user_wants_voice = bool(voice_cfg.get("enabled"))
-            profile_allows = profile.server_running and profile.name in {"performance", "balanced"}
+            profile_allows = profile.server_running and bool(getattr(profile, "voice_enabled", True))
             if profile_allows and user_wants_voice and self._voice_controller is None:
                 self._start_voice_controller(voice_cfg)
             elif not profile_allows and self._voice_controller is not None:
@@ -1009,8 +1013,12 @@ class MainWindow(QMainWindow):
             voice_cfg = (load_persisted().get("voice") or {})
             if not voice_cfg.get("enabled"):
                 return
-            if not get_active_profile().server_running:
-                # LIGHT con server off / STANDBY -> no arrancar voz
+            profile = get_active_profile()
+            if not profile.server_running:
+                # STANDBY -> no arrancar voz (no hay LLM al que entregar texto).
+                return
+            if not bool(getattr(profile, "voice_enabled", True)):
+                # Perfil con voice_enabled=False explicito (raro pero permitido).
                 return
         except Exception as exc:
             self.log.append(f"voice config read failed: {exc}", "err")

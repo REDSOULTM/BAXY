@@ -175,8 +175,10 @@ def render_active_bench():
             for r in results[-2:]:
                 color = PALETTE["ok"] if r.get("status") == "PASS" else (PALETTE["warn"] if r.get("status") == "PARTIAL" else PALETTE["fail"])
                 print(f"    {color}[{r.get('cid')}] {r.get('status')} ({r.get('latency_ms')}ms){PALETTE['reset']}\033[K")
-                print(f"      {PALETTE['user']}prompt:{PALETTE['reset']} {r.get('prompt', '')[:90]}\033[K")
-                reply = (r.get("reply") or "").replace("\n", " ")[:120]
+                prompt = r.get('prompt', '')
+                print(f"      {PALETTE['user']}prompt:{PALETTE['reset']} {prompt[:140]}{'...' if len(prompt) > 140 else ''}\033[K")
+                reply_raw = (r.get("reply") or "").replace("\n", " ")
+                reply = reply_raw[:400] + ("..." if len(reply_raw) > 400 else "")
                 print(f"      {PALETTE['asst']}reply:{PALETTE['reset']}  {reply}\033[K")
                 if r.get("tools"):
                     print(f"      {PALETTE['tool']}tools:{PALETTE['reset']}  {r.get('tools')}\033[K")

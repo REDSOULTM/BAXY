@@ -170,6 +170,14 @@ class StreamingTTS:
     def is_loaded(self) -> bool:
         return self._loaded
 
+    def is_busy(self) -> bool:
+        """True while there's queued text waiting to play or currently being
+        synthesised. used by the controller to keep SPEAKING (and therefore
+        the mic mute) active until Piper is fully done — without this the
+        controller goes back to IDLE_LISTENING the instant `flush()` returns
+        and the tail of the spoken sentence leaks into Vosk as echo."""
+        return self._running and not self._queue.empty()
+
     def set_muted(self, muted: bool) -> None:
         self._muted = bool(muted)
 

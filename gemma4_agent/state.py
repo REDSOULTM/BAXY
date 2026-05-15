@@ -97,6 +97,77 @@ class AgentState:
         selected = [res for res in selected if res.get("cleanup_tool")]
         return {"ok": True, "cleanup_items": selected, "count": len(selected)}
 
+    def update_resource(
+        self,
+        resource_id: str,
+        *,
+        metadata_patch: dict[str, Any] | None = None,
+        cleanup_args_patch: dict[str, Any] | None = None,
+        status: str | None = None,
+        label: str | None = None,
+    ) -> dict[str, Any]:
+        """Atomic patch of a resource (metadata, cleanup_args, status).
+
+        Useful when more than `metadata` needs to be touched in the same
+        transaction (e.g. job_manager sets cleanup_args after creation).
+        """
+        with self._lock:
+            data = self._load()
+            resource = data.get("resources", {}).get(resource_id)
+            if not resource:
+                return {"ok": False, "error": "resource not found", "resource_id": resource_id}
+            if metadata_patch:
+                metadata = resource.setdefault("metadata", {})
+                metadata.update(metadata_patch)
+            if cleanup_args_patch:
+                cleanup_args = resource.setdefault("cleanup_args", {})
+                cleanup_args.update(cleanup_args_patch)
+            if status:
+                resource["status"] = status
+            if label is not None:
+                resource["label"] = str(label)
+            self._save(data)
+            return {"ok": True, "resource": resource}
+
+    def update_resource_metadata(
+        self,
+        resource_id: str,
+        patch: dict[str, Any],
+        *,
+        append_lists: tuple[str, ...] = (),
+        max_append: int | None = None,
+    ) -> dict[str, Any]:
+        """Atomic read-modify-save of a resource's metadata.
+
+        `patch` keys override (or set) entries inside resource["metadata"].
+        Keys listed in `append_lists` are treated as list-append targets
+        (the patched value must itself be a list); `max_append` trims the
+        oldest entries when given.
+
+        CC-102 / T3-routine-state-private-api-029: este es el reemplazo
+        público del idiom `state._load(); ...; state._save(data)` que
+        antes saltaba el RLock entre read y write.
+        """
+        with self._lock:
+            data = self._load()
+            resource = data.get("resources", {}).get(resource_id)
+            if not resource:
+                return {"ok": False, "error": "resource not found", "resource_id": resource_id}
+            metadata = resource.setdefault("metadata", {})
+            for key, value in patch.items():
+                if key in append_lists and isinstance(value, list):
+                    current = metadata.get(key)
+                    if not isinstance(current, list):
+                        current = []
+                    current = current + list(value)
+                    if max_append is not None and max_append >= 0:
+                        current = current[-max_append:]
+                    metadata[key] = current
+                else:
+                    metadata[key] = value
+            self._save(data)
+            return {"ok": True, "resource": resource}
+
     def mark_cleaned(self, resource_id: str, result: dict[str, Any] | None = None) -> dict[str, Any]:
         with self._lock:
             data = self._load()

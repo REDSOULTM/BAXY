@@ -178,7 +178,11 @@ def _preprocess(audio_int16: np.ndarray) -> np.ndarray:
     if sos is not False:
         try:
             from scipy.signal import sosfilt
-            audio = sosfilt(sos, audio).astype(np.float32)
+            # sosfilt returns ndarray when zi is not provided, but the scipy
+            # type stub declares the union shape — the cast keeps pyright
+            # happy without changing runtime behaviour.
+            filtered = np.asarray(sosfilt(sos, audio), dtype=np.float32)
+            audio = filtered
         except Exception as exc:
             logger.debug("sosfilt failed (%s); skipping HPF", exc)
     peak = float(np.max(np.abs(audio))) if audio.size else 0.0
@@ -217,7 +221,10 @@ class _SileroVAD:
             self._failed = True
             return False
         try:
-            torch.set_num_threads(1)  # importante en CPU (informe 5.4)
+            # torch.set_num_threads exists at runtime but isn't in the
+            # public re-exports torch declares for the stub, so pyright
+            # flags it as a private import; suppress is correct here.
+            torch.set_num_threads(1)  # type: ignore[attr-defined]  # importante en CPU (informe 5.4)
             self._model = load_silero_vad(onnx=True)
             self._get_speech_timestamps = get_speech_timestamps
             self._loaded = True
@@ -565,6 +572,8 @@ class StreamingSTT:
         kwargs = dict(_get_transcribe_kwargs(duration_s))
         if prefix is not None:
             kwargs["prefix"] = prefix
+        if self._whisper is None:
+            return [], "", False, "model_not_loaded", float("nan")
         try:
             segments_gen, _info = self._whisper.transcribe(audio_f32, **kwargs)
             segments = list(segments_gen)

@@ -17,7 +17,10 @@ class AgentConfig:
     server_url: str = "http://127.0.0.1:8080"
     model: str = "gemma-4"
     llama_server_exe: Path = Path("C:/llamacpp-cuda/bin/llama-server.exe")
-    model_path: Path = PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q6_K.gguf"
+    # Default conservador: E4B-Q4_K_M (4.6 GB) entra en 6 GB de VRAM con KV q8_0.
+    # El usuario puede sobreescribir con GEMMA4_MODEL_PATH (por ej. Q6_K para
+    # desarrollo con 12+ GB) o cambiando el perfil a Performance.
+    model_path: Path = PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q4_K_M.gguf"
     mmproj_path: Path = PROJECT_ROOT / "models" / "E4B" / "mmproj-F16.gguf"
     temperature: float = 1.0
     top_p: float = 0.95

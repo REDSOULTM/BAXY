@@ -181,6 +181,123 @@ def run_smoke(args: argparse.Namespace) -> int:
     return subprocess.run(cmd, cwd=str(PROJECT_ROOT)).returncode
 
 
+def run_ui(args: argparse.Namespace) -> int:
+    """Open the Field UI.
+
+    Modes:
+      default        — pywebview window (native, like the legacy PyQt6 GUI)
+      --browser      — open the system default browser
+      --no-window    — server only, no GUI (useful for headless dev)
+      --legacy-ui    — fall back to the PyQt6 GUI that lived here before
+    """
+    if getattr(args, "legacy_ui", False):
+        cmd = [sys.executable, "-m", "gemma4_agent.ui"]
+        return subprocess.run(cmd, cwd=str(PROJECT_ROOT)).returncode
+
+    # Web UI path: import locally so users who only need the legacy GUI
+    # don't pay the fastapi/uvicorn import cost on every launcher invocation.
+    try:
+        import uvicorn
+    except ImportError:
+        print(color("error", "fastapi/uvicorn no estan instalados."))
+        print(color("dim", "  pip install fastapi uvicorn"))
+        return 2
+
+    from .server import create_app, UI_DIST
+
+    if not (UI_DIST / "index.html").exists():
+        print(color("warn", f"UI bundle no encontrado en {UI_DIST}."))
+        print(color("dim", "  cd gemma4_agent/ui_field && pnpm install && pnpm run build"))
+        print(color("dim", "  o usa --legacy-ui para abrir la GUI PyQt6 anterior."))
+        return 2
+
+    config = config_with_args(args)
+    app = create_app(config)
+    host = getattr(args, "host", "127.0.0.1")
+    port = int(getattr(args, "port", 8765))
+    url = f"http://{host}:{port}/"
+
+    no_window = bool(getattr(args, "no_window", False))
+    use_browser = bool(getattr(args, "browser", False))
+
+    # ---- headless: just block on uvicorn in this thread ----
+    if no_window and not use_browser:
+        print(color("dim", f"field UI (headless) · {url} · ctrl-c para salir"))
+        uvicorn.run(app, host=host, port=port, log_level="warning")
+        return 0
+
+    # ---- shared server thread for both browser and window modes ----
+    # uvicorn.Server lets us run it cleanly inside a daemon thread and shut
+    # it down when the GUI exits. plain `uvicorn.run` doesn't return until
+    # killed, which is fine in headless but blocks the GUI event loop.
+    import threading
+    server_config = uvicorn.Config(app, host=host, port=port, log_level="warning")
+    server = uvicorn.Server(server_config)
+
+    server_thread = threading.Thread(target=server.run, name="field-uvicorn", daemon=True)
+    server_thread.start()
+
+    # wait for the port to bind before we open the GUI — otherwise the window
+    # may show an "ERR_CONNECTION_REFUSED" flash on first paint.
+    import socket
+    import time
+    deadline = time.monotonic() + 8.0
+    while time.monotonic() < deadline:
+        try:
+            with socket.create_connection((host, port), timeout=0.2):
+                break
+        except OSError:
+            time.sleep(0.1)
+    else:
+        print(color("error", "el server local no levanto a tiempo."))
+        return 3
+
+    if use_browser:
+        import webbrowser
+        webbrowser.open(url)
+        print(color("ok", f"abriendo {url} en el browser"))
+        print(color("dim", "ctrl-c para detener el server"))
+        try:
+            server_thread.join()
+        except KeyboardInterrupt:
+            server.should_exit = True
+        return 0
+
+    # ---- pywebview window mode (default) ----
+    try:
+        import webview  # type: ignore
+    except ImportError:
+        print(color("warn", "pywebview no esta instalado; cayendo a modo browser."))
+        print(color("dim", "  pip install pywebview"))
+        import webbrowser
+        webbrowser.open(url)
+        try:
+            server_thread.join()
+        except KeyboardInterrupt:
+            server.should_exit = True
+        return 0
+
+    print(color("ok", f"abriendo ventana · {url}"))
+    webview.create_window(
+        "gemma 4 · field",
+        url,
+        width=1320,
+        height=860,
+        min_size=(1024, 700),
+        background_color="#0A0E14",
+    )
+    try:
+        # webview.start() blocks on the main thread until the window closes.
+        # http_server=False because uvicorn already serves the dist/ bundle.
+        webview.start(http_server=False)
+    finally:
+        # tell uvicorn to wind down. daemon=True would kill it on exit too,
+        # but a clean shutdown gives the WS connections a chance to close.
+        server.should_exit = True
+        server_thread.join(timeout=3.0)
+    return 0
+
+
 def open_path(args: argparse.Namespace) -> int:
     target = getattr(args, "target", "project")
     config = config_with_args(args)
@@ -294,6 +411,15 @@ def build_parser() -> argparse.ArgumentParser:
     smoke = sub.add_parser("smoke", help="Ejecutar smoke tests locales sin LLM")
     smoke.add_argument("--web", action="store_true")
 
+    ui = sub.add_parser("ui", help="Abrir la Field UI (ventana nativa por defecto)")
+    ui.add_argument("--legacy-ui", action="store_true", help="Abrir la GUI PyQt6 anterior")
+    ui.add_argument("--browser", action="store_true",
+                    help="Abrir en el browser del sistema en lugar de una ventana nativa")
+    ui.add_argument("--no-window", action="store_true",
+                    help="Solo levantar el server, sin ventana ni browser (headless)")
+    ui.add_argument("--host", default="127.0.0.1")
+    ui.add_argument("--port", type=int, default=8765)
+
     open_cmd = sub.add_parser("open", help="Abrir carpetas utiles")
     open_cmd.add_argument("target", choices=["project", "package", "data", "captures", "logs"], nargs="?", default="project")
 
@@ -317,6 +443,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return start_server(args, wait=not args.no_wait)
     if args.command == "smoke":
         return run_smoke(args)
+    if args.command == "ui":
+        return run_ui(args)
     if args.command == "open":
         return open_path(args)
     if args.command == "shortcut":

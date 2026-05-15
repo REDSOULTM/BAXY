@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import time
 import unicodedata
+import urllib.error
 import urllib.request
 import webbrowser
 import zipfile
@@ -59,6 +60,7 @@ from .domain_tools import (
     study_tool,
     watcher_tool,
 )
+from ._ps import parse_ps_json
 from .knowledge import KnowledgeStore
 from .memory import MemoryStore
 from .ops_tools import browser_real_tool, download_tool, email_tool, env_tool, input_tool, ocr_find_text, ocr_image, registry_tool, reminder_tool, state_tool
@@ -89,10 +91,121 @@ def _err(message: str, **kwargs: Any) -> dict[str, Any]:
     return {"ok": False, "error": message, **kwargs}
 
 
+# ----------------------------------------------------------------------
+# Pre-validators: corren ANTES del safety classifier para que inputs
+# obviamente inválidos no exijan confirmación al usuario (UX).
+# Cada validator recibe el args dict ya validado contra el schema, y
+# devuelve None si está OK, o un dict `_err(...)` si hay que rechazar.
+# ----------------------------------------------------------------------
+
+_RX_HHMM_LOCAL = re.compile(r"^[0-2]\d:[0-5]\d$")
+
+
+def _prevalidate_notification(args: dict[str, Any]) -> dict[str, Any] | None:
+    """Rechaza `time`/`due` con formato no reconocible antes de gatear."""
+    action = str(args.get("action") or "").casefold()
+    if action not in {"alarm_create", "reminder_create", "timer_start", "toast_schedule"}:
+        return None
+    if args.get("seconds") is not None or args.get("minutes") is not None:
+        return None
+    raw = str(args.get("due") or args.get("time") or "").strip()
+    if not raw:
+        return None
+    # ISO datetime aceptado, HH:MM aceptado, todo lo demás rechazado.
+    if _RX_HHMM_LOCAL.fullmatch(raw):
+        return None
+    try:
+        from datetime import datetime as _dt
+        _dt.fromisoformat(raw.replace("Z", "+00:00"))
+        return None
+    except ValueError:
+        return _err(
+            f"invalid time/due format: {raw!r} (use ISO datetime or HH:MM)",
+            status="needs_user",
+            time=raw,
+        )
+
+
+def _prevalidate_backup_sync(args: dict[str, Any]) -> dict[str, Any] | None:
+    """Detecta zip-slip antes de pedir confirmación: si el zip tiene entries
+    fuera del dst, rechazamos directamente."""
+    import zipfile
+    from pathlib import Path as _P
+    action = str(args.get("action") or "").casefold()
+    if action != "restore":
+        return None
+    src_raw = str(args.get("path") or args.get("backup") or args.get("src") or "").strip()
+    if not src_raw:
+        return None
+    src = _P(src_raw).expanduser()
+    if not src.is_file():
+        return None  # otro código maneja el "not found"
+    dst_raw = str(args.get("dst") or args.get("to") or "").strip()
+    if not dst_raw:
+        return None
+    dst = _P(dst_raw).expanduser().resolve()
+    try:
+        with zipfile.ZipFile(src, "r") as zf:
+            for entry in zf.infolist():
+                candidate = (dst / entry.filename).resolve()
+                if candidate != dst and dst not in candidate.parents:
+                    return _err(
+                        f"zip contains entries outside dst (zip-slip); refused before confirmation: {entry.filename!r}",
+                        status="failed",
+                        verified=False,
+                        backup=str(src),
+                        dst=str(dst),
+                        bad_entry=entry.filename,
+                    )
+    except (zipfile.BadZipFile, OSError) as exc:
+        # No es nuestro trabajo aquí; deja que el flujo principal lo reporte.
+        return None
+    return None
+
+
+_PRE_VALIDATORS: dict[str, Any] = {
+    "notification": _prevalidate_notification,
+    "backup_sync": _prevalidate_backup_sync,
+}
+
+
+_SENSITIVE_KEY_RX = re.compile(r"(password|token|key|secret|api[_-]?key|auth)", re.IGNORECASE)
+
+
+def _redact_sensitive(value: Any, depth: int = 0) -> Any:
+    """CC-105: redacta cualquier key que matchee passwords/tokens/secrets.
+
+    Recursivo (capado en 6 niveles) para dicts anidados (p.ej. args.payload).
+    Listas también se inspeccionan. Las strings sensibles se reemplazan por
+    '***REDACTED***'.
+    """
+    if depth > 6:
+        return value
+    if isinstance(value, dict):
+        out: dict[str, Any] = {}
+        for k, v in value.items():
+            if isinstance(k, str) and _SENSITIVE_KEY_RX.search(k):
+                # Mantenemos info de presencia pero ocultamos el contenido.
+                out[k] = "***REDACTED***" if v not in (None, "") else v
+            else:
+                out[k] = _redact_sensitive(v, depth + 1)
+        return out
+    if isinstance(value, list):
+        return [_redact_sensitive(v, depth + 1) for v in value]
+    return value
+
+
 def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
     result.setdefault("tool", name)
     if args.get("action") and "action" not in result:
         result["action"] = str(args["action"])
+    # CC-105 / CC-credential-args-traced-105: redacción de keys sensibles
+    # antes de que el resultado llegue a traces/jsonl o se devuelva al LLM.
+    # Mutamos el dict result in-place a través de un walk recursivo.
+    redacted = _redact_sensitive(result)
+    if isinstance(redacted, dict) and redacted is not result:
+        result.clear()
+        result.update(redacted)
 
     ok = bool(result.get("ok", False))
     unverified = _has_unverified_signal(result)
@@ -721,11 +834,18 @@ $items | ConvertTo-Json -Depth 3
                 out.append(AppCandidate(name, "epic", exe, "file", Path(exe).name))
         return out
 
-    def open(self, candidate: AppCandidate) -> None:
-        if candidate.launch_type in {"uri", "shell"}:
+    def open(self, candidate: AppCandidate) -> dict[str, Any]:
+        # T2-app-startfile-no-error-042: capturamos OSError y devolvemos
+        # un dict estructurado con detalle del candidate.
+        try:
             os.startfile(candidate.launch)  # type: ignore[attr-defined]
-        else:
-            os.startfile(candidate.launch)  # type: ignore[attr-defined]
+        except OSError as exc:
+            return {
+                "ok": False,
+                "error": f"os.startfile failed: {exc}",
+                "candidate": {"name": candidate.name, "launch": str(candidate.launch), "launch_type": candidate.launch_type},
+            }
+        return {"ok": True, "candidate": {"name": candidate.name, "launch": str(candidate.launch), "launch_type": candidate.launch_type}}
 
 
 def _acf_value(text: str, key: str) -> str | None:
@@ -988,7 +1108,58 @@ def _youtube_title_near_video_id(text: str, video_id: str) -> str | None:
         return match.group(1)
 
 
-def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000) -> dict[str, Any]:
+def _is_private_host(host: str) -> bool:
+    """T2-web-no-redirect-cap-014: rechaza loopback/RFC1918/link-local."""
+    import ipaddress
+    import socket
+    if not host:
+        return False
+    host_norm = host.split(":", 1)[0].strip("[]")
+    if host_norm.lower() in {"localhost", "ip6-localhost", "ip6-loopback"}:
+        return True
+    # Si es IP literal, comprobamos directamente.
+    try:
+        ip = ipaddress.ip_address(host_norm)
+        return ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast
+    except ValueError:
+        pass
+    # Si es hostname, resolvemos y comprobamos cada IP.
+    try:
+        infos = socket.getaddrinfo(host_norm, None)
+    except socket.gaierror:
+        return False
+    for info in infos:
+        sockaddr = info[4]
+        if not sockaddr:
+            continue
+        try:
+            ip = ipaddress.ip_address(sockaddr[0])
+        except (ValueError, IndexError):
+            continue
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
+            return True
+    return False
+
+
+class _SSRFGuardRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Cap redirect count and re-validate each redirect target host."""
+
+    max_redirections = 5
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        from urllib.parse import urlparse
+        host = urlparse(newurl).hostname or ""
+        if _is_private_host(host):
+            raise urllib.error.HTTPError(newurl, 451, f"refused redirect to private host: {host}", headers, fp)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000, allow_private: bool = False) -> dict[str, Any]:
+    # T2-web-no-redirect-cap-014: SSRF guard pre-request y en redirects.
+    from urllib.parse import urlparse
+    host = urlparse(url).hostname or ""
+    if not allow_private and _is_private_host(host):
+        raise urllib.error.URLError(f"refused: target host is private/loopback ({host}); pass allow_private=True to override")
     req = urllib.request.Request(
         url,
         headers={
@@ -997,7 +1168,8 @@ def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000) -> d
             "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
         },
     )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
+    opener = urllib.request.build_opener(_SSRFGuardRedirectHandler()) if not allow_private else urllib.request.build_opener()
+    with opener.open(req, timeout=timeout) as resp:
         raw = resp.read(max_bytes)
         content_type = resp.headers.get("content-type", "")
         charset_match = re.search(r"charset=([^;\s]+)", content_type, re.I)
@@ -1091,7 +1263,7 @@ def _looks_like_uninstaller(path: Path) -> bool:
 
 
 class ToolRegistry:
-    def __init__(self, memory: MemoryStore, captures_dir: Path, state: AgentState | None = None, safety_enabled: bool = False):
+    def __init__(self, memory: MemoryStore, captures_dir: Path, state: AgentState | None = None, safety_enabled: bool = True):
         self.memory = memory
         self.captures_dir = captures_dir
         self.captures_dir.mkdir(parents=True, exist_ok=True)
@@ -1186,6 +1358,21 @@ class ToolRegistry:
             "memory_list": self.memory_list,
             "memory_delete": self.memory_delete,
         }
+        # T3-browser_real-global-session-dict-039: al inicio del proceso, las
+        # browser_real resources del run anterior son stale (el dict global
+        # _BROWSER_SESSIONS está vacío). Las marcamos como cerradas para
+        # evitar cleanup_plan/state.cleanup contra sesiones que no existen.
+        self._prune_stale_browser_sessions()
+
+    def _prune_stale_browser_sessions(self) -> None:
+        try:
+            resources = self.state.list_resources(include_closed=False).get("resources", [])
+        except (OSError, ValueError):
+            return
+        for res in resources:
+            if res.get("kind") == "browser_real" and res.get("status") == "open":
+                rid = str(res.get("id"))
+                self.state.mark_cleaned(rid, {"pruned_on_startup": True, "reason": "no live session"})
 
     @property
     def schemas(self) -> list[dict[str, Any]]:
@@ -1205,6 +1392,11 @@ class ToolRegistry:
 
     def execute(self, name: str, args: dict[str, Any] | None) -> dict[str, Any]:
         clean_args = dict(args or {})
+        # CC-101: campos internos NUNCA aceptan inyección desde el LLM —
+        # los filtramos antes de cualquier validación. El runner de routines
+        # los reintroduce vía `execute_routine_step` (ver más abajo).
+        for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create"):
+            clean_args.pop(forbidden, None)
         confirmed = bool(clean_args.pop("confirmed", False))
         impl = self._impls.get(name)
         if not impl:
@@ -1220,10 +1412,19 @@ class ToolRegistry:
                     expected_schema=_parameters_for_tool(name),
                 ),
             )
+        # Pre-validation hook: corre ANTES del classifier para que inputs
+        # claramente inválidos no exijan confirmación al usuario (UX). Los
+        # validators son pure-functions que devuelven un dict de error (con
+        # `ok=False`) o None. Si devuelve error: short-circuit.
+        validator = _PRE_VALIDATORS.get(name)
+        if validator is not None:
+            err = validator(clean_args)
+            if err is not None:
+                return _normalize_tool_result(name, clean_args, err)
         if self.safety_enabled and not confirmed and name != "safety":
             decision = classify_tool_call(name, clean_args)
             if decision.requires_confirmation:
-                pending = self.state.create_confirmation(name, clean_args, decision.reason, decision.risk)
+                pending = self.state.create_confirmation(name, _redact_sensitive(clean_args), decision.reason, decision.risk)
                 return _normalize_tool_result(
                     name,
                     clean_args,
@@ -1235,8 +1436,47 @@ class ToolRegistry:
                         confirmation=pending.get("confirmation"),
                     ),
                 )
+        # CC-101: reinyectamos `confirmed` despues de validar para que los
+        # gates duros (terminal/system/package/database/backup_sync/filesystem)
+        # puedan respetar la confirmacion previa sin chocar con el schema.
+        impl_args = dict(clean_args)
+        if confirmed:
+            impl_args["confirmed"] = True
         try:
-            result = impl(clean_args)
+            result = impl(impl_args)
+        except Exception as exc:
+            result = _err(f"{type(exc).__name__}: {exc}")
+        return _normalize_tool_result(name, clean_args, result)
+
+    def execute_routine_step(self, name: str, args: dict[str, Any] | None, *, confirmed_at_create: bool) -> dict[str, Any]:
+        """Dispatcher para pasos de routines/watchers.
+
+        Inyecta `routine_context=True` y `confirmed_at_create` después de
+        pasar por la validación de schema. Estos kwargs son invisibles al LLM
+        (no aparecen en COMPOUND_TOOL_SCHEMAS y `execute()` los filtra).
+        """
+        clean_args = dict(args or {})
+        for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create"):
+            clean_args.pop(forbidden, None)
+        impl = self._impls.get(name)
+        if not impl:
+            return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))
+        clean_args, validation_errors = _coerce_and_validate_tool_args(name, clean_args)
+        if validation_errors:
+            return _normalize_tool_result(
+                name,
+                clean_args,
+                _err(
+                    "invalid tool arguments",
+                    validation_errors=validation_errors,
+                    expected_schema=_parameters_for_tool(name),
+                ),
+            )
+        impl_args = dict(clean_args)
+        impl_args["routine_context"] = True
+        impl_args["confirmed_at_create"] = bool(confirmed_at_create)
+        try:
+            result = impl(impl_args)
         except Exception as exc:
             result = _err(f"{type(exc).__name__}: {exc}")
         return _normalize_tool_result(name, clean_args, result)
@@ -1261,12 +1501,24 @@ class ToolRegistry:
             return self.system_brightness_get(args)
         if action == "brightness_set":
             return self.system_brightness_set(args)
-        if action == "shutdown":
-            return self.terminal_run({"command": "shutdown", "args": ["/s", "/t", str(int(args.get("delay_sec", 0)))], "timeout_sec": 10})
-        if action == "restart":
-            return self.terminal_run({"command": "shutdown", "args": ["/r", "/t", str(int(args.get("delay_sec", 0)))], "timeout_sec": 10})
-        if action == "sleep":
-            return self.terminal_run({"command": "rundll32.exe", "args": ["powrprof.dll,SetSuspendState", "0,1,0"], "timeout_sec": 10})
+        if action in ("shutdown", "restart", "sleep"):
+            # CC-101 / T1-system-shutdown-no-confirmation-002: gate duro.
+            gate = self._hard_gate(
+                tool_name="system",
+                action=action,
+                args=args,
+                reason=f"system.{action} will power-off/restart/suspend the machine",
+                risk="critical",
+                routine_context=bool(args.get("routine_context")),
+                confirmed_at_create=bool(args.get("confirmed_at_create")),
+            )
+            if gate is not None:
+                return gate
+            if action == "shutdown":
+                return self.terminal_run({"command": "shutdown", "args": ["/s", "/t", str(int(args.get("delay_sec", 0)))], "timeout_sec": 10, "_internal_safe": True})
+            if action == "restart":
+                return self.terminal_run({"command": "shutdown", "args": ["/r", "/t", str(int(args.get("delay_sec", 0)))], "timeout_sec": 10, "_internal_safe": True})
+            return self.terminal_run({"command": "rundll32.exe", "args": ["powrprof.dll,SetSuspendState", "0,1,0"], "timeout_sec": 10, "_internal_safe": True})
         return _err("unknown system action", action=action)
 
     def t_audio(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -1435,10 +1687,31 @@ class ToolRegistry:
                 shot["target"] = target
                 return shot
             found = ocr_find_text(Path(str(shot["image_path"])), target, lang=str(args.get("lang") or "spa+eng"), min_conf=int(args.get("min_conf", 25)))
+            # CC-106 / CC-window-virtualscreen-coords-106: añade screen_x/screen_y
+            # (pre-traducidos) a cada match para que el LLM pueda clickear sin
+            # re-aplicar shot.left/top. center_x/center_y siguen siendo image-local.
+            shot_left = int(shot.get("left", 0))
+            shot_top = int(shot.get("top", 0))
+            enriched_matches = []
+            for match in found.get("matches") or []:
+                if isinstance(match, dict) and "center_x" in match and "center_y" in match:
+                    enriched = dict(match)
+                    enriched["screen_x"] = int(match["center_x"]) + shot_left
+                    enriched["screen_y"] = int(match["center_y"]) + shot_top
+                    enriched["coord_space"] = "image_local"
+                    enriched_matches.append(enriched)
+                else:
+                    enriched_matches.append(match)
+            if enriched_matches:
+                found["matches"] = enriched_matches
             found = _attach_screenshot(found, shot)
             if action == "click_text" and found.get("found") and found.get("matches"):
                 match = found["matches"][0]
-                click = self.gui_click({"x": int(match["center_x"]) + int(shot.get("left", 0)), "y": int(match["center_y"]) + int(shot.get("top", 0))})
+                # Usamos screen_x/screen_y si están; caída a la traducción manual si no.
+                if isinstance(match, dict) and "screen_x" in match and "screen_y" in match:
+                    click = self.gui_click({"x": int(match["screen_x"]), "y": int(match["screen_y"])})
+                else:
+                    click = self.gui_click({"x": int(match["center_x"]) + shot_left, "y": int(match["center_y"]) + shot_top})
                 found["click"] = click
                 found["clicked"] = click.get("ok", False)
             return found
@@ -1709,13 +1982,25 @@ class ToolRegistry:
         action = _action(args, default="search")
         name = str(args.get("name") or args.get("query") or "").strip()
         if action == "list":
-            return self.terminal_run({"command": "winget", "args": ["list"], "timeout_sec": 120})
+            return self.terminal_run({"command": "winget", "args": ["list"], "timeout_sec": 120, "_internal_safe": True})
         if action == "search":
-            return self.terminal_run({"command": "winget", "args": ["search", name], "timeout_sec": 120})
-        if action == "install":
-            return self.terminal_run({"command": "winget", "args": ["install", "--accept-source-agreements", "--accept-package-agreements", name], "timeout_sec": 1800})
-        if action == "uninstall":
-            return self.terminal_run({"command": "winget", "args": ["uninstall", name], "timeout_sec": 900})
+            return self.terminal_run({"command": "winget", "args": ["search", name], "timeout_sec": 120, "_internal_safe": True})
+        if action in ("install", "uninstall"):
+            # CC-101 / T2-package-install-no-confirm-043: gate duro.
+            gate = self._hard_gate(
+                tool_name="package",
+                action=action,
+                args=args,
+                reason=f"package.{action} will modify installed software via winget: {name}",
+                risk="high",
+                routine_context=bool(args.get("routine_context")),
+                confirmed_at_create=bool(args.get("confirmed_at_create")),
+            )
+            if gate is not None:
+                return gate
+            if action == "install":
+                return self.terminal_run({"command": "winget", "args": ["install", "--accept-source-agreements", "--accept-package-agreements", name], "timeout_sec": 1800, "_internal_safe": True})
+            return self.terminal_run({"command": "winget", "args": ["uninstall", name], "timeout_sec": 900, "_internal_safe": True})
         return _err("unknown package action", action=action)
 
     def t_clipboard(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -1982,10 +2267,11 @@ class ToolRegistry:
             f"Select-Object -First {limit} ProcessName,MainWindowTitle,Id | ConvertTo-Json -Depth 3"
         )
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=15)
-        raw = proc.stdout.strip()
-        if not raw:
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok:
+            return _err("list_windows invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
+        if data is None:
             return _ok(windows=[])
-        data = json.loads(raw)
         if isinstance(data, dict):
             data = [data]
         windows = [
@@ -2002,12 +2288,20 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
 [PSCustomObject]@{ cpu=$cpu; os=$os; gpu=$gpu } | ConvertTo-Json -Depth 4
 """
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
-        return _ok(info=json.loads(proc.stdout), exit_code=proc.returncode)
+        # CC-103: parse defensivo.
+        ok, info = parse_ps_json(proc.stdout)
+        if not ok:
+            return _err("system_cpu_ram_gpu invalid JSON", stdout=info, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
+        return _ok(info=info, exit_code=proc.returncode)
 
     def system_disk(self, args: dict[str, Any]) -> dict[str, Any]:
         script = "Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID,DriveType,Size,FreeSpace,VolumeName | ConvertTo-Json -Depth 3"
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
-        data = json.loads(proc.stdout) if proc.stdout.strip() else []
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok:
+            return _err("system_disk invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
+        if data is None:
+            data = []
         if isinstance(data, dict):
             data = [data]
         return _ok(disks=data, exit_code=proc.returncode)
@@ -2015,14 +2309,18 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
     def system_battery(self, args: dict[str, Any]) -> dict[str, Any]:
         script = "Get-CimInstance Win32_Battery | Select-Object Name,EstimatedChargeRemaining,BatteryStatus | ConvertTo-Json -Depth 3"
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
-        raw = proc.stdout.strip()
-        return _ok(battery=json.loads(raw) if raw else None, exit_code=proc.returncode)
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok:
+            return _err("system_battery invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
+        return _ok(battery=data, exit_code=proc.returncode)
 
     def system_brightness_get(self, args: dict[str, Any]) -> dict[str, Any]:
         script = "Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness | Select-Object CurrentBrightness | ConvertTo-Json"
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
-        raw = proc.stdout.strip()
-        return _ok(brightness=json.loads(raw) if raw else None, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok:
+            return _err("system_brightness_get invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
+        return _ok(brightness=data, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def system_brightness_set(self, args: dict[str, Any]) -> dict[str, Any]:
         level = max(0, min(100, int(args.get("level", 50))))
@@ -2141,7 +2439,10 @@ $p=Get-Process -Id $pid32 -ErrorAction SilentlyContinue
 [PSCustomObject]@{ hwnd=$h.ToInt64(); title=$sb.ToString(); pid=$pid32; process=$p.ProcessName } | ConvertTo-Json
 """
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
-        return _ok(active=json.loads(proc.stdout), exit_code=proc.returncode)
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok:
+            return _err("window_active invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
+        return _ok(active=data, exit_code=proc.returncode)
 
     def window_control(self, action: str, title_query: str) -> dict[str, Any]:
         if not title_query:
@@ -2174,7 +2475,11 @@ switch ($action) {
 [PSCustomObject]@{ ok=$true; action=$action; title=$p.MainWindowTitle; process=$p.ProcessName; pid=$p.Id; hwnd=$h.ToInt64() } | ConvertTo-Json
 """
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
-        data = json.loads(proc.stdout) if proc.stdout.strip() else {"ok": False, "error": proc.stderr}
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok:
+            data = {"ok": False, "error": _truncate(proc.stderr, 1000)}
+        elif data is None:
+            data = {"ok": False, "error": proc.stderr}
         return _ok(result=data, exit_code=proc.returncode)
 
     def window_move_resize(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -2202,7 +2507,11 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
 [PSCustomObject]@{ ok=$true; title=$p.MainWindowTitle; process=$p.ProcessName; x=$env:GEMMA4_X; y=$env:GEMMA4_Y; width=$env:GEMMA4_W; height=$env:GEMMA4_H } | ConvertTo-Json
 """
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
-        data = json.loads(proc.stdout) if proc.stdout.strip() else {"ok": False, "error": proc.stderr}
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok:
+            data = {"ok": False, "error": _truncate(proc.stderr, 1000)}
+        elif data is None:
+            data = {"ok": False, "error": proc.stderr}
         return _ok(result=data, exit_code=proc.returncode)
 
     def app_open(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -2214,7 +2523,14 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             return _err("app not found", query=name, searched_sources=["PATH", "Start Menu", "StartApps", "Registry", "Steam", "Epic"])
         best = matches[0]
         preexisting = self.verify_app_opened({"name": name})
-        self.apps.open(best)
+        open_result = self.apps.open(best)
+        if not open_result.get("ok"):
+            return _err(
+                open_result.get("error") or "failed to open app",
+                query=name,
+                candidate=open_result.get("candidate"),
+                status="failed",
+            )
         resource = None
         if not preexisting.get("found"):
             resource = self.state.register_resource(
@@ -2401,6 +2717,18 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         if not path.exists():
             return _err("path does not exist", path=str(path))
         resolved = path.resolve()
+        # CC-101: gate duro para filesystem.delete.
+        gate = self._hard_gate(
+            tool_name="filesystem",
+            action="delete",
+            args=args,
+            reason=f"Deleting {resolved} (recursive={recursive})",
+            risk="high",
+            routine_context=bool(args.get("routine_context")),
+            confirmed_at_create=bool(args.get("confirmed_at_create")),
+        )
+        if gate is not None:
+            return gate
         checkpoint = self._checkpoint_existing_path(f"filesystem delete {resolved}", path)
         if path.is_dir():
             if not recursive:
@@ -2416,9 +2744,16 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         dst = Path(str(args.get("dst") or args.get("dest") or args.get("destination") or "")).expanduser()
         if not str(src) or not str(dst):
             return _err("missing src/dst")
+        overwrite = bool(args.get("overwrite", False))
+        # T2-filesystem-copy-overwrite-semantics-003: honra overwrite=false en archivos.
+        if not src.is_dir() and dst.exists() and not overwrite:
+            return _err(
+                "destination exists; pass overwrite=true to replace",
+                src=str(src), dst=str(dst), status="needs_user",
+            )
         checkpoint = self._checkpoint_existing_path(f"filesystem copy to {dst}", dst)
         if src.is_dir():
-            shutil.copytree(src, dst, dirs_exist_ok=bool(args.get("overwrite", False)))
+            shutil.copytree(src, dst, dirs_exist_ok=overwrite)
         else:
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
@@ -2467,6 +2802,15 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         right = Path(str(args.get("right") or args.get("b") or "")).expanduser()
         if not left.is_file() or not right.is_file():
             return _err("left/right must be existing files", left=str(left), right=str(right))
+        # T2-filesystem-diff-no-size-limit-004: cap a 50 MB combinados.
+        max_bytes = int(args.get("max_bytes", 50 * 1024 * 1024))
+        total = left.stat().st_size + right.stat().st_size
+        if total > max_bytes:
+            return _err(
+                f"files too large for in-memory diff ({total} bytes > {max_bytes}); use developer.git_diff or terminal(diff)",
+                left=str(left), right=str(right), total_bytes=total, max_bytes=max_bytes,
+                status="needs_user",
+            )
         a = left.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True)
         b = right.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True)
         diff = "".join(difflib.unified_diff(a, b, fromfile=str(left), tofile=str(right), n=3))
@@ -2477,6 +2821,29 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         dst = Path(str(args.get("dst") or args.get("archive") or "")).expanduser()
         if not src.exists() or not str(dst):
             return _err("missing src/dst", src=str(src), dst=str(dst))
+        # T2-filesystem-archive-no-mitigation-005: caps de entries y bytes.
+        max_files = int(args.get("max_files", 50_000))
+        max_bytes = int(args.get("max_bytes", 5 * 1024 * 1024 * 1024))
+        if src.is_dir():
+            file_count = 0
+            byte_count = 0
+            for f in src.rglob("*"):
+                if f.is_file():
+                    file_count += 1
+                    if file_count > max_files:
+                        return _err(
+                            f"archive exceeds max_files cap ({max_files}); refine src or pass higher max_files",
+                            src=str(src), max_files=max_files, status="needs_user",
+                        )
+                    try:
+                        byte_count += f.stat().st_size
+                    except OSError:
+                        pass
+                    if byte_count > max_bytes:
+                        return _err(
+                            f"archive exceeds max_bytes cap ({max_bytes} bytes)",
+                            src=str(src), max_bytes=max_bytes, status="needs_user",
+                        )
         checkpoint = self._checkpoint_existing_path(f"filesystem archive {dst}", dst)
         dst.parent.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zf:
@@ -2607,28 +2974,116 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             note="Use the returned source excerpts to answer. Mention uncertainty when source_count is low or failures exist.",
         )
 
+    def _hard_gate(
+        self,
+        *,
+        tool_name: str,
+        action: str,
+        args: dict[str, Any],
+        reason: str,
+        risk: str = "high",
+        routine_context: bool = False,
+        confirmed_at_create: bool = False,
+    ) -> dict[str, Any] | None:
+        """CC-101: gate de confirmación independiente de `safety_enabled`.
+
+        Pattern alineado con `form_filler._form_submit`. Devuelve `None` si
+        la llamada está autorizada para proseguir; devuelve un dict
+        `needs_confirmation` en caso contrario.
+
+        `routine_context` y `confirmed_at_create` son inyectados por el
+        dispatcher cuando la step proviene de una routine/watcher: NUNCA
+        aparecen en `COMPOUND_TOOL_SCHEMAS` (filtrados en `execute`).
+        """
+        if bool(args.get("confirmed")):
+            return None
+        if routine_context:
+            if confirmed_at_create:
+                return None
+            return _err(
+                f"{tool_name}.{action} blocked: routine step missing confirmed_at_create",
+                status="blocked_needs_confirmation",
+                tool=tool_name,
+                action=action,
+            )
+        pending = self.state.create_confirmation(
+            tool_name,
+            _redact_sensitive(
+                {**{k: v for k, v in args.items() if k not in {"routine_context", "confirmed_at_create"}}, "confirmed": True}
+            ),
+            reason=reason,
+            risk=risk,
+        )
+        return _err(
+            f"{tool_name}.{action} requires confirmation; call safety(confirm, id=...) or re-call with confirmed=true",
+            status="needs_confirmation",
+            verified=False,
+            completion_status="needs_user_confirmation",
+            confirmation=pending.get("confirmation"),
+        )
+
     def terminal_run(self, args: dict[str, Any]) -> dict[str, Any]:
         command = str(args.get("command", "")).strip()
         cmd_args = args.get("args", [])
         cwd = args.get("cwd") or None
         timeout = int(args.get("timeout_sec", 60))
-        shell = bool(args.get("shell", True))
+        shell = bool(args.get("shell", False))  # CC-101 / T2-terminal-shell-true-default-006
         if not command:
             return _err("empty command")
         if not isinstance(cmd_args, list):
             cmd_args = [str(cmd_args)]
+        # T2-terminal-no-cwd-validation-007: validar cwd si se pasó.
+        if cwd:
+            cwd_path = Path(str(cwd)).expanduser()
+            if not cwd_path.is_dir():
+                return _err("cwd does not exist", cwd=str(cwd), status="needs_user")
+            cwd = str(cwd_path)
+        # CC-101: gate duro para terminal_run cuando lo invoca el LLM.
+        # Llamadas internas con propósito conocido pasan `_internal_safe=True`
+        # (read-only/listing); ese flag es invisible al schema.
+        if not bool(args.get("_internal_safe")):
+            gate = self._hard_gate(
+                tool_name="terminal",
+                action="run",
+                args=args,
+                reason=f"Run command via terminal: {command} {cmd_args}",
+                risk="high",
+                routine_context=bool(args.get("routine_context")),
+                confirmed_at_create=bool(args.get("confirmed_at_create")),
+            )
+            if gate is not None:
+                return gate
         argv = [command] + [str(x) for x in cmd_args]
         run_arg: str | list[str] = subprocess.list2cmdline(argv) if shell else argv
         started = time.monotonic()
         proc = subprocess.run(run_arg, cwd=cwd, shell=shell, capture_output=True, text=True, timeout=timeout)
         elapsed_ms = int((time.monotonic() - started) * 1000)
+        # T2-terminal-stdout-truncate-stderr-008: caps configurables.
+        max_stdout = int(args.get("max_stdout_chars", 6000))
+        max_stderr = int(args.get("max_stderr_chars", 3000))
+        stdout_full = proc.stdout.strip()
+        stderr_full = proc.stderr.strip()
+        # Si trunca, persistimos a logfile dentro de captures_dir para forensics.
+        log_path: str | None = None
+        if len(stdout_full) > max_stdout or len(stderr_full) > max_stderr:
+            log_file = self.captures_dir / f"terminal_{int(started)}_{proc.returncode}.log"
+            try:
+                log_file.write_text(
+                    f"# command: {run_arg}\n# exit: {proc.returncode}\n# elapsed_ms: {elapsed_ms}\n\n"
+                    f"## STDOUT\n{stdout_full}\n\n## STDERR\n{stderr_full}\n",
+                    encoding="utf-8",
+                )
+                log_path = str(log_file)
+            except OSError:
+                pass
         return _ok(
             command=run_arg,
             cwd=str(Path(cwd).resolve()) if cwd else str(Path.cwd()),
             exit_code=proc.returncode,
             elapsed_ms=elapsed_ms,
-            stdout=_truncate(proc.stdout.strip(), 6000),
-            stderr=_truncate(proc.stderr.strip(), 3000),
+            stdout=_truncate(stdout_full, max_stdout),
+            stderr=_truncate(stderr_full, max_stderr),
+            log_path=log_path,
         )
 
     def clipboard_read(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -2841,28 +3296,59 @@ if ($action -eq "set_value") {
         return self._uia_run(args, "set_value")
 
     def gui_screenshot(self, args: dict[str, Any]) -> dict[str, Any]:
+        # T3-gui-screenshot-virtual-screen-011: param `monitor=primary|all|<index>`.
+        # Default sigue siendo `all` (VirtualScreen) por compatibilidad.
+        monitor_raw = str(args.get("monitor") or "all").strip().casefold()
+        if monitor_raw == "primary":
+            mode = "primary"
+        elif monitor_raw == "all":
+            mode = "all"
+        elif monitor_raw.isdigit():
+            mode = f"index:{int(monitor_raw)}"
+        else:
+            return _err("invalid monitor; use primary|all|<index>", monitor=monitor_raw, status="needs_user")
         name = f"screenshot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         path = self.captures_dir / name
         env = os.environ.copy()
         env["GEMMA4_SCREENSHOT_PATH"] = str(path)
+        env["GEMMA4_SCREENSHOT_MODE"] = mode
         script = r"""
 $path = $env:GEMMA4_SCREENSHOT_PATH
+$mode = $env:GEMMA4_SCREENSHOT_MODE
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-$bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
+if ($mode -eq 'primary') {
+  $screen = [System.Windows.Forms.Screen]::PrimaryScreen
+  $bounds = $screen.Bounds
+} elseif ($mode.StartsWith('index:')) {
+  $idx = [int]$mode.Substring(6)
+  $screens = [System.Windows.Forms.Screen]::AllScreens
+  if ($idx -lt 0 -or $idx -ge $screens.Count) {
+    [PSCustomObject]@{ ok=$false; error=("monitor index out of range; have {0} screens" -f $screens.Count) } | ConvertTo-Json
+    exit 0
+  }
+  $bounds = $screens[$idx].Bounds
+} else {
+  $bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
+}
 $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
 $gfx = [System.Drawing.Graphics]::FromImage($bmp)
 $gfx.CopyFromScreen($bounds.Left, $bounds.Top, 0, 0, $bmp.Size)
 $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
 $gfx.Dispose()
 $bmp.Dispose()
-[PSCustomObject]@{ path=$path; width=$bounds.Width; height=$bounds.Height; left=$bounds.Left; top=$bounds.Top } | ConvertTo-Json
+[PSCustomObject]@{ path=$path; width=$bounds.Width; height=$bounds.Height; left=$bounds.Left; top=$bounds.Top; mode=$mode } | ConvertTo-Json
 """
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=20)
         if proc.returncode != 0:
             return _err("screenshot failed", stderr=_truncate(proc.stderr.strip(), 2000))
-        data = json.loads(proc.stdout)
-        return _ok(image_path=str(Path(data["path"]).resolve()), width=data["width"], height=data["height"], left=data["left"], top=data["top"])
+        # CC-103: parse defensivo.
+        ok, data = parse_ps_json(proc.stdout)
+        if not ok or not isinstance(data, dict):
+            return _err("screenshot invalid JSON", stdout=data if isinstance(data, str) else None, stderr=_truncate(proc.stderr, 1000))
+        if data.get("ok") is False:
+            return _err(str(data.get("error") or "screenshot failed"), status="needs_user")
+        return _ok(image_path=str(Path(data["path"]).resolve()), width=data["width"], height=data["height"], left=data["left"], top=data["top"], monitor=mode)
 
     def gui_click(self, args: dict[str, Any]) -> dict[str, Any]:
         x = int(args.get("x") or 0)
@@ -2960,11 +3446,26 @@ Start-Sleep -Milliseconds 120
 
     def gui_type(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))
+        # T3-gui-type-no-sanitization-010: escapar SendKeys control chars.
+        # `+^%~(){}[]` son modificadores/grupos; los envolvemos en `{}` para que
+        # SendKeys los tipee literalmente. El orden importa: hay que escapar `{`
+        # primero para evitar doble-wrap.
+        if not bool(args.get("raw_sendkeys", False)):
+            mapping = {"{": "{{}", "}": "{}}", "+": "{+}", "^": "{^}", "%": "{%}",
+                       "~": "{~}", "(": "{(}", ")": "{)}", "[": "{[}", "]": "{]}"}
+            escaped = []
+            for ch in text:
+                escaped.append(mapping.get(ch, ch))
+            text_to_send = "".join(escaped)
+        else:
+            text_to_send = text
         script = "Add-Type -AssemblyName System.Windows.Forms; $t=[Console]::In.ReadToEnd(); [System.Windows.Forms.SendKeys]::SendWait($t)"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], input=text, capture_output=True, text=True, timeout=20)
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], input=text_to_send, capture_output=True, text=True, timeout=20)
         return _ok(chars=len(text), exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def gui_keypress(self, args: dict[str, Any]) -> dict[str, Any]:
+        # CC-100 / T3-gui-keypress-sendkeys-injection-009: env-var indirection
+        # para nunca f-stringear `keys` en el script PS.
         keys = str(args.get("keys", "")).strip()
         if not keys:
             return _err("empty keys")
@@ -2979,8 +3480,9 @@ Start-Sleep -Milliseconds 120
             "CTRL+V": "^v",
             "ALT+F4": "%{F4}",
         }.get(keys.upper(), keys)
-        script = f"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('{sendkeys}')"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
+        env = {**os.environ, "GEMMA4_KEYS": sendkeys}
+        script = "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait($env:GEMMA4_KEYS)"
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
         return _ok(keys=keys, sendkeys=sendkeys, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def verify_app_opened(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -3032,20 +3534,20 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "app", "description": "Compound installed app/game tool with dynamic discovery. Actions: search, open, close, uninstall. Use user-facing name, not hardcoded exe names.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}, "limit": {"type": "integer"}, "refresh": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "steam", "description": "Compound Steam tool. Actions: open, library, store, list_games, launch_game, search_library, search_store, store_page, install. Use library for 've a mi biblioteca'. Use store_page/search_store for 'pagina de la tienda de X'; it resolves an AppID and opens steam://store/<appid> inside the Steam client, not a normal browser. search_library first matches local Steam metadata and opens the matching library detail by AppID; otherwise it attempts GUI search and returns unverified with screenshot. Use query/name for game title or appid for direct install.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "name": {"type": "string"}, "appid": {"type": "string"}, "delay_sec": {"type": "number"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "window", "description": "Compound window management tool. Actions: list, active, focus, close, minimize, maximize, restore, move_resize. Use title/query to target a window.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "title": {"type": "string"}, "query": {"type": "string"}, "x": {"type": "integer"}, "y": {"type": "integer"}, "width": {"type": "integer"}, "height": {"type": "integer"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "gui", "description": "Compound GUI/mouse/keyboard tool. Actions: screenshot, click, double_click, right_click, type, keypress, hotkey, scroll, drag, wait_for, locate_text, click_text, locate_image. locate_text/click_text use local OCR when available and return screen coordinates.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "x": {"type": "integer"}, "y": {"type": "integer"}, "x1": {"type": "integer"}, "y1": {"type": "integer"}, "x2": {"type": "integer"}, "y2": {"type": "integer"}, "text": {"type": "string"}, "keys": {"type": "string"}, "hotkey": {"type": "string"}, "amount": {"type": "integer"}, "target": {"type": "string"}, "image": {"type": "string"}, "lang": {"type": "string"}, "min_conf": {"type": "integer"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "gui", "description": "Compound GUI/mouse/keyboard tool. Actions: screenshot, click, double_click, right_click, type, keypress, hotkey, scroll, drag, wait_for, locate_text, click_text, locate_image. locate_text/click_text use local OCR when available and return screen_x/screen_y (screen-space coordinates, pre-translated); raw center_x/center_y are image-local. screenshot accepts monitor='primary'|'all'|'<index>' (default 'all'=VirtualScreen). type escapes SendKeys metacharacters (+^%~(){}[]) by default; pass raw_sendkeys=true to send control sequences literally.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "x": {"type": "integer"}, "y": {"type": "integer"}, "x1": {"type": "integer"}, "y1": {"type": "integer"}, "x2": {"type": "integer"}, "y2": {"type": "integer"}, "text": {"type": "string"}, "keys": {"type": "string"}, "hotkey": {"type": "string"}, "amount": {"type": "integer"}, "target": {"type": "string"}, "image": {"type": "string"}, "lang": {"type": "string"}, "min_conf": {"type": "integer"}, "timeout_sec": {"type": "integer"}, "monitor": {"type": "string"}, "raw_sendkeys": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "vision", "description": "Compound Gemma-4-vision/OCR bridge. Actions: describe_screen, find_element, ocr, compare_before_after. OCR uses local Tesseract if available; screenshots are also re-injected for native Gemma 4 visual reasoning.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "target": {"type": "string"}, "text": {"type": "string"}, "image_path": {"type": "string"}, "lang": {"type": "string"}, "min_conf": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "browser", "description": "Compound browser control tool. Actions: open, search, youtube_play, media_pause, media_stop, active_tab_title, click, find, research. open/search mainly navigate the browser and are not proof of reading content. Use web(action='research') for real investigation. youtube_play opens a direct YouTube video when possible and should be used for 'pon/reproduce una cancion'. media_pause/media_stop pause current playback; use them for 'para el video'. If browser is provided, opens that browser app first and navigates there via GUI; do not use browser='YouTube' because YouTube is a site, not a browser.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "url": {"type": "string"}, "query": {"type": "string"}, "song": {"type": "string"}, "title": {"type": "string"}, "engine": {"type": "string"}, "browser": {"type": "string"}, "target": {"type": "string"}, "delay_sec": {"type": "number"}, "post_open_delay_sec": {"type": "number"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "web", "description": "Compound web research tool. Actions: search, read, research, open. search returns search results with snippets; read fetches and extracts a page; research searches and reads several sources. Use this for 'investiga', current facts, sources, or when the user expects an answer from the internet. Use browser only when the goal is to open/navigate a visible browser.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "url": {"type": "string"}, "limit": {"type": "integer"}, "search_limit": {"type": "integer"}, "read_limit": {"type": "integer"}, "per_page_chars": {"type": "integer"}, "max_chars": {"type": "integer"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "uia", "description": "Compound Windows UI Automation tool. Actions: tree, find, click, focus, set_value. Prefer this before raw GUI clicks when interacting with standard Windows app controls because it returns names, control types, automation ids, bounds and clickable points. Use window/title to scope to an app window and query/text/target to find controls.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "query": {"type": "string"}, "text": {"type": "string"}, "target": {"type": "string"}, "window": {"type": "string"}, "title": {"type": "string"}, "value": {"type": "string"}, "text_value": {"type": "string"}, "limit": {"type": "integer"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "filesystem", "description": "Compound filesystem tool. Actions: list, read, write, search, delete, copy, move, rename, mkdir, diff, archive, unarchive, open. Mutating actions create local checkpoints with rollback plans when possible.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "src": {"type": "string"}, "dst": {"type": "string"}, "source": {"type": "string"}, "destination": {"type": "string"}, "content": {"type": "string"}, "root": {"type": "string"}, "pattern": {"type": "string"}, "recursive": {"type": "boolean"}, "overwrite": {"type": "boolean"}, "new_name": {"type": "string"}, "left": {"type": "string"}, "right": {"type": "string"}, "archive": {"type": "string"}, "limit": {"type": "integer"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "state", "description": "Compound operational state tool. Actions: resources, cleanup_plan, cleanup, checkpoint, checkpoints, rollback_plan, rollback, note. Tracks resources opened by the agent and reversible checkpoints; cleanup executes registered cleanup tools.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "resource_id": {"type": "string"}, "checkpoint_id": {"type": "string"}, "label": {"type": "string"}, "text": {"type": "string"}, "include_closed": {"type": "boolean"}, "rollback": {"type": "array", "items": {"type": "object"}}, "metadata": {"type": "object"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "filesystem", "description": "Compound filesystem tool. Actions: list, read, write, search, delete, copy, move, rename, mkdir, diff, archive, unarchive, open. Mutating actions create local checkpoints with rollback plans when possible. delete requires confirmed=true (hard gate). copy honors overwrite=false (returns needs_user if dst exists). diff has a max_bytes cap (default 50MB combined); archive has max_files (50000) and max_bytes (5GB) caps to avoid runaway operations.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "src": {"type": "string"}, "dst": {"type": "string"}, "source": {"type": "string"}, "destination": {"type": "string"}, "content": {"type": "string"}, "root": {"type": "string"}, "pattern": {"type": "string"}, "recursive": {"type": "boolean"}, "overwrite": {"type": "boolean"}, "new_name": {"type": "string"}, "left": {"type": "string"}, "right": {"type": "string"}, "archive": {"type": "string"}, "limit": {"type": "integer"}, "max_chars": {"type": "integer"}, "max_bytes": {"type": "integer"}, "max_files": {"type": "integer"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "state", "description": "Compound operational state tool. Actions: resources, cleanup_plan, cleanup, checkpoint, checkpoints, rollback_plan, rollback, note. Tracks resources opened by the agent and reversible checkpoints; cleanup executes registered cleanup tools. WARNING: state(action='rollback') executes every stored rollback step verbatim via this tool's registry, including destructive ones (e.g. filesystem.delete to undo a copy). Prefer state(action='rollback_plan') first to review the steps, then explicit rollback.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "resource_id": {"type": "string"}, "checkpoint_id": {"type": "string"}, "label": {"type": "string"}, "text": {"type": "string"}, "include_closed": {"type": "boolean"}, "rollback": {"type": "array", "items": {"type": "object"}}, "metadata": {"type": "object"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "input", "description": "Compound keyboard/language tool. Actions: language_list, keyboard_layouts, current_keyboard, set_language_list, switch_keyboard. Uses Windows language APIs; changes are checkpointed so they can be rolled back.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "language_tag": {"type": "string"}, "language_tags": {"type": "array", "items": {"type": "string"}}, "force": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "env", "description": "Compound environment variable tool. Actions: get, set, delete, list. scope is process, user, or machine. process affects only this agent session; user/machine are persistent Windows environment scopes and changes create rollback checkpoints.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "scope": {"type": "string"}, "name": {"type": "string"}, "value": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "registry", "description": "Compound safe registry tool. Actions: query, export, import, add, delete, backup. add/delete export a .reg backup first and create rollback checkpoints.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "key": {"type": "string"}, "path": {"type": "string"}, "name": {"type": "string"}, "value_name": {"type": "string"}, "type": {"type": "string"}, "data": {"type": "string"}, "value": {"type": "string"}, "file": {"type": "string"}, "dst": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "download", "description": "Compound download/integrity tool. Actions: fetch, hash, signature. fetch uses Invoke-WebRequest, then SHA256 and Authenticode for executables; without expected hash or valid signature it returns needs_verification.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "url": {"type": "string"}, "path": {"type": "string"}, "dst": {"type": "string"}, "sha256": {"type": "string"}, "expected_sha256": {"type": "string"}, "algorithm": {"type": "string"}, "overwrite": {"type": "boolean"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "email", "description": "Compound email tool. Actions: status, draft, send. Real sending uses Microsoft Graph sendMail only when GEMMA4_GRAPH_TOKEN or MS_GRAPH_TOKEN is configured; otherwise returns needs_user instead of pretending.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "to": {"type": "string"}, "subject": {"type": "string"}, "body": {"type": "string"}, "save_to_sent": {"type": "boolean"}, "timeout_sec": {"type": "integer"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "reminder", "description": "Compound reminder tool. Actions: status, create, list, delete. Default backend stores local reminders in agent state; graph backend requires Microsoft Graph auth and returns needs_user if missing.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "backend": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}, "due": {"type": "string"}, "id": {"type": "string"}, "resource_id": {"type": "string"}, "include_closed": {"type": "boolean"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "browser_real", "description": "Compound real browser automation tool using Playwright. Actions: status, open, goto, tabs, click, fill, press, text, screenshot, evaluate, connect_cdp, close, attach_visible, active_tab, tab_open, tab_close, tab_focus, click_text, extract, wait_for_download, set_download_path. attach_visible connects to the user's Chrome/Edge/Opera/Brave only if it's already running with --remote-debugging-port=9222; otherwise returns needs_user with the launch command. extract supports mode=main_text|tables|links|html. wait_for_download requires the click that triggers the download to happen inside the same call chain.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "session_id": {"type": "string"}, "page_id": {"type": "integer"}, "url": {"type": "string"}, "query": {"type": "string"}, "endpoint": {"type": "string"}, "browser": {"type": "string"}, "port": {"type": "integer"}, "selector": {"type": "string"}, "text": {"type": "string"}, "value": {"type": "string"}, "key": {"type": "string"}, "script": {"type": "string"}, "headless": {"type": "boolean"}, "new_tab": {"type": "boolean"}, "screenshot": {"type": "boolean"}, "full_page": {"type": "boolean"}, "wait_until": {"type": "string"}, "timeout_sec": {"type": "integer"}, "max_chars": {"type": "integer"}, "mode": {"type": "string"}, "exact": {"type": "boolean"}, "target": {"type": "string"}, "save_dir": {"type": "string"}, "path": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "browser_real", "description": "Compound real browser automation tool using Playwright. Actions: status, open, goto, tabs, click, fill, press, text, screenshot, evaluate, connect_cdp, close, attach_visible, active_tab, tab_open, tab_close, tab_focus, click_text, extract, wait_for_download, set_download_path. attach_visible connects to the user's Chrome/Edge/Opera/Brave only if it's already running with --remote-debugging-port=9222; otherwise returns needs_user with the launch command. extract supports mode=main_text|tables|links|html. wait_for_download requires the click that triggers the download to happen inside the same call chain; ALSO not supported for CDP-attached visible sessions (Browser.downloadProgress raw event listening is not wired) — use the user's browser download manager directly in that case.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "session_id": {"type": "string"}, "page_id": {"type": "integer"}, "url": {"type": "string"}, "query": {"type": "string"}, "endpoint": {"type": "string"}, "browser": {"type": "string"}, "port": {"type": "integer"}, "selector": {"type": "string"}, "text": {"type": "string"}, "value": {"type": "string"}, "key": {"type": "string"}, "script": {"type": "string"}, "headless": {"type": "boolean"}, "new_tab": {"type": "boolean"}, "screenshot": {"type": "boolean"}, "full_page": {"type": "boolean"}, "wait_until": {"type": "string"}, "timeout_sec": {"type": "integer"}, "max_chars": {"type": "integer"}, "mode": {"type": "string"}, "exact": {"type": "boolean"}, "target": {"type": "string"}, "save_dir": {"type": "string"}, "path": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "knowledge", "description": "Compound local RAG/knowledge-base tool. Actions: status, ingest, search, list, delete. Uses local SQLite FTS5 + optional cross-encoder rerank (ms-marco-MiniLM-L-6-v2, ~80MB, lazy-loaded). Pass rerank=true/false to override the env default GEMMA4_KNOWLEDGE_RERANK. With rerank, we over-fetch 4x BM25 candidates and re-rank with the cross-encoder for higher precision on >50 docs.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "text": {"type": "string"}, "source": {"type": "string"}, "title": {"type": "string"}, "query": {"type": "string"}, "doc_id": {"type": "string"}, "limit": {"type": "integer"}, "rerank": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "office", "description": "Compound local Office document tool. Actions: status, create_presentation, edit_presentation, create_document, edit_document, create_spreadsheet, edit_spreadsheet, export_pdf, inspect, open. Use create_presentation for PowerPoint requests; returns needs_dependency if python-pptx/python-docx/openpyxl/LibreOffice are missing.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "path": {"type": "string"}, "title": {"type": "string"}, "topic": {"type": "string"}, "content": {"type": "string"}, "body": {"type": "string"}, "slides": {"type": "array", "items": {"type": "object"}}, "rows": {"type": "array", "items": {"type": "array", "items": {}}}, "template": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "audio_device", "description": "Compound Windows audio device/routing tool. Actions: status, list, set_default, set_default_communications, set_app_route, get_app_routes, snapshot, restore. set_default uses SoundVolumeView roles 0+1 (Console+Multimedia); set_default_communications uses role 2. set_app_route uses /SetAppDefault and accepts app=<process.exe or PID>, device=<friendly name|DefaultRenderDevice|DefaultCaptureDevice>, role=0|1|2|all, direction=render|capture. get_app_routes lists per-app overrides via /sjson. snapshot/restore save and replay per-role defaults.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "device": {"type": "string"}, "app": {"type": "string"}, "process": {"type": "string"}, "role": {"type": "string"}, "direction": {"type": "string"}, "checkpoint_id": {"type": "string"}, "snapshot": {"type": "string"}}, "required": ["action"]}}},
@@ -3086,7 +3588,7 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "safety", "description": "Compound safety confirmation tool. Actions: status, pending, confirm, cancel. If another tool returns needs_confirmation, ask the user and then call safety(action='confirm', confirmation_id='...') only after explicit approval.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "confirmation_id": {"type": "string"}, "id": {"type": "string"}, "include_resolved": {"type": "boolean"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "package", "description": "Compound package manager tool via winget. Actions: list, search, install, uninstall. This prototype executes directly.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "clipboard", "description": "Compound clipboard tool. Actions: read, write.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "content": {"type": "string"}, "max_chars": {"type": "integer"}}, "required": ["action"]}}},
-    {"type": "function", "function": {"name": "terminal", "description": "Compound terminal tool. Action: run. Direct command execution with command, args, cwd, timeout_sec, shell.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "command": {"type": "string"}, "args": {"type": "array", "items": {"type": "string"}}, "cwd": {"type": "string"}, "timeout_sec": {"type": "integer"}, "shell": {"type": "boolean"}}, "required": ["action", "command"]}}},
+    {"type": "function", "function": {"name": "terminal", "description": "Compound terminal tool. Action: run. Direct command execution with command, args, cwd, timeout_sec, shell. shell defaults to false (safer; pass shell=true only when you need shell expansion). Any terminal.run call requires confirmed=true (hard gate). cwd is validated for existence; max_stdout_chars/max_stderr_chars cap output preview and full output spills to captures_dir log.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "command": {"type": "string"}, "args": {"type": "array", "items": {"type": "string"}}, "cwd": {"type": "string"}, "timeout_sec": {"type": "integer"}, "shell": {"type": "boolean"}, "max_stdout_chars": {"type": "integer"}, "max_stderr_chars": {"type": "integer"}}, "required": ["action", "command"]}}},
     {"type": "function", "function": {"name": "memory", "description": "Compound persistent memory tool. Actions: save, recall, list, delete. Save only when user explicitly asks to remember/store something.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "key": {"type": "string"}, "value": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "verify", "description": "Compound verification tool. Actions: app_opened, file_exists, window_exists, clipboard_contains. Use after actions when user needs confirmation.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}, "path": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}}, "required": ["action"]}}},
 ]

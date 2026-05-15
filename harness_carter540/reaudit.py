@@ -27,8 +27,10 @@ def main():
     changed = []
     for r in d["results"]:
         case = CaseStub(cid=r["cid"], category=r["category"], expected_tools=r["expected_tools"])
-        # Reconstruct tool_calls from "tools" list (just names, args lost in storage)
-        tool_calls = [{"name": n} for n in r.get("tools", [])]
+        # For consolidated runs, prefer tools_legacy (translated for auditor compatibility)
+        # For individual runs, just use tools.
+        tool_names_for_audit = r.get("tools_legacy") or r.get("tools", [])
+        tool_calls = [{"name": n} for n in tool_names_for_audit]
         new_audit = audit_case(case, r.get("reply", ""), tool_calls, r.get("latency_ms", 0))
         old_status = r.get("status")
         new_status = new_audit["status"]

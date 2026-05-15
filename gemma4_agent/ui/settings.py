@@ -617,10 +617,22 @@ class SettingsDialog(QDialog):
         self._prof_auto_master.setChecked(bool(auto.get("enabled", False)))
         outer.addWidget(self._prof_auto_master)
 
-        self._prof_auto_game = QCheckBox(
-            "  Detecto un juego corriendo (proceso en watchlist)"
+        # Trigger por VRAM externa: detecta CUALQUIER cosa pesada en GPU
+        # (juego, render, transcoding, training local) sin lista de nombres.
+        # Recomendado y default-on.
+        self._prof_auto_vram = QCheckBox(
+            "  Otro proceso usa >40% de VRAM (juegos, render, edicion video)"
         )
-        self._prof_auto_game.setChecked(bool(auto.get("trigger_on_game", True)))
+        self._prof_auto_vram.setChecked(bool(auto.get("trigger_on_vram", True)))
+        outer.addWidget(self._prof_auto_vram)
+
+        self._prof_auto_game = QCheckBox(
+            "  Detecto un proceso de la watchlist abajo"
+        )
+        # Default ahora False: la watchlist por nombre es opcional; el trigger
+        # por VRAM cubre el caso real (algo pesado corriendo) sin hardcodear
+        # nombres de procesos comunes como steam.exe.
+        self._prof_auto_game.setChecked(bool(auto.get("trigger_on_game", False)))
         outer.addWidget(self._prof_auto_game)
 
         self._prof_auto_gpu = QCheckBox(
@@ -682,6 +694,7 @@ class SettingsDialog(QDialog):
             ("vision_enabled", "vision"),
             ("rerank_enabled", "rerank"),
             ("parallel_tools", "parallel"),
+            ("voice_enabled", "voice"),
             ("model_path", "model"),
         )
         cols = ("performance", "balanced", "light")  # standby omitido
@@ -722,10 +735,13 @@ class SettingsDialog(QDialog):
         hk.setStyleSheet(f"color: {C.TEXT_DIM};")
         outer.addWidget(hk)
 
-        # Note about Light model
+        # Note about Light/Balanced models
         light_note = QLabel(
-            "Light usa el GGUF que pongas en `model` arriba. Si lo dejas vacio, "
-            "usa el modelo principal con context=4096. Bajalo a mano (ej. gemma-3n-e2b-it.Q4_K_M.gguf)."
+            "Light default: models/E2B/gemma-4-E2B-it-Q4_K_M.gguf (~4.66 GB VRAM total, ctx 4K). "
+            "Balanced default: models/E2B/gemma-4-E2B-it-Q5_K_M.gguf (~5.10 GB VRAM total, ctx 8K). "
+            "Performance: usa GEMMA4_MODEL_PATH (tu modelo principal, E4B-Q6_K o superior, 12+ GB VRAM). "
+            "Voice (Whisper+Piper) corre en CPU y por defecto esta ON en los 3 perfiles activos. "
+            "Numeros de VRAM medidos en RTX 4060 Ti; documentacion/datos_crudos/vram_real_medida.csv."
         )
         light_note.setFont(mono(7))
         light_note.setStyleSheet(f"color: {C.ACC2};")
@@ -749,7 +765,7 @@ class SettingsDialog(QDialog):
         from PyQt6.QtWidgets import QTableWidgetItem
         from ..profiles import PROFILES
         cols = ("performance", "balanced", "light")
-        fields = ("context_size", "vision_enabled", "rerank_enabled", "parallel_tools", "model_path")
+        fields = ("context_size", "vision_enabled", "rerank_enabled", "parallel_tools", "voice_enabled", "model_path")
         for r, field_name in enumerate(fields):
             for c, prof_name in enumerate(cols):
                 val = getattr(PROFILES[prof_name], field_name)
@@ -770,6 +786,7 @@ class SettingsDialog(QDialog):
         from typing import Any as _Any
         auto: dict[str, _Any] = {
             "enabled": self._prof_auto_master.isChecked(),
+            "trigger_on_vram": self._prof_auto_vram.isChecked(),
             "trigger_on_game": self._prof_auto_game.isChecked(),
             "trigger_on_gpu": self._prof_auto_gpu.isChecked(),
             "trigger_on_ram": self._prof_auto_ram.isChecked(),
@@ -787,6 +804,7 @@ class SettingsDialog(QDialog):
             ("vision_enabled", bool),
             ("rerank_enabled", bool),
             ("parallel_tools", bool),
+            ("voice_enabled", bool),
             ("model_path", str),
         )
         from ..profiles import PROFILES

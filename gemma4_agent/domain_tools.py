@@ -15,6 +15,19 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from ._ps import (
+    PSValidationError,
+    RX_DAY_OF_WEEK,
+    RX_HHMM,
+    RX_ISO_DATETIME,
+    RX_LOG_NAME,
+    RX_SQL_IDENT,
+    RX_TCP_STATE,
+    is_ipv4,
+    is_ipv6,
+    parse_ps_json,
+    ps_safe_literal,
+)
 from .state import AgentState
 
 
@@ -27,6 +40,65 @@ def _ok(**kwargs: Any) -> dict[str, Any]:
 
 def _err(message: str, **kwargs: Any) -> dict[str, Any]:
     return {"ok": False, "error": message, **kwargs}
+
+
+_SENSITIVE_KEY_RX = re.compile(r"(password|token|key|secret|api[_-]?key|auth)", re.IGNORECASE)
+
+
+def _redact_credentials(value: Any, depth: int = 0) -> Any:
+    """CC-105: paralelo a tools._redact_sensitive. Redacta keys sensibles
+    recursivamente hasta profundidad 6."""
+    if depth > 6:
+        return value
+    if isinstance(value, dict):
+        out: dict[str, Any] = {}
+        for k, v in value.items():
+            if isinstance(k, str) and _SENSITIVE_KEY_RX.search(k):
+                out[k] = "***REDACTED***" if v not in (None, "") else v
+            else:
+                out[k] = _redact_credentials(v, depth + 1)
+        return out
+    if isinstance(value, list):
+        return [_redact_credentials(v, depth + 1) for v in value]
+    return value
+
+
+def _hard_gate(
+    state: AgentState,
+    *,
+    tool: str,
+    action: str,
+    args: dict[str, Any],
+    reason: str,
+    risk: str = "high",
+) -> dict[str, Any] | None:
+    """CC-101: gate duro replicable desde domain_tools (sin ToolRegistry).
+
+    Devuelve None si la llamada está autorizada; un dict needs_confirmation
+    si no. Respeta routine_context + confirmed_at_create como opt-out.
+    """
+    if bool(args.get("confirmed")):
+        return None
+    if bool(args.get("routine_context")):
+        if bool(args.get("confirmed_at_create")):
+            return None
+        return _err(
+            f"{tool}.{action} blocked: routine step missing confirmed_at_create",
+            status="blocked_needs_confirmation",
+            tool=tool,
+            action=action,
+        )
+    safe_args = _redact_credentials(
+        {**{k: v for k, v in args.items() if k not in {"routine_context", "confirmed_at_create"}}, "confirmed": True}
+    )
+    pending = state.create_confirmation(tool, safe_args, reason=reason, risk=risk)
+    return _err(
+        f"{tool}.{action} requires confirmation; call safety(confirm, id=...) or re-call with confirmed=true",
+        status="needs_confirmation",
+        verified=False,
+        completion_status="needs_user_confirmation",
+        confirmation=pending.get("confirmation"),
+    )
 
 
 def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -276,18 +348,17 @@ _DESTRUCTIVE_COMMAND_TOKENS = (
 
 
 def _looks_destructive(command: str) -> tuple[bool, list[str]]:
-    """Return (is_destructive, matched_tokens) for a command line."""
-    low = " " + command.casefold() + " "
-    matches: list[str] = []
-    for token in _DESTRUCTIVE_COMMAND_TOKENS:
-        needle = " " + token.casefold() + " " if " " in token else token.casefold()
-        if needle in low or low.find(" " + needle.split()[0]) >= 0 and needle in low:
-            matches.append(token)
-    # Word-boundary single-word check (handles `notepad` not matching even if it
-    # contains 'shut down' impossibly).
-    import re as _re
-    boundary_hits = [t for t in _DESTRUCTIVE_COMMAND_TOKENS if _re.search(r"\b" + _re.escape(t) + r"\b", command, _re.IGNORECASE)]
-    matches = sorted(set(matches + boundary_hits))
+    """Return (is_destructive, matched_tokens) for a command line.
+
+    T3-routine-looks-destructive-broken-cond-030: el primer loop legacy
+    simplificaba a `needle in low` y duplicaba el chequeo word-boundary
+    de abajo. Removido; sólo queda la versión regex word-boundary.
+    """
+    matches = [
+        t for t in _DESTRUCTIVE_COMMAND_TOKENS
+        if re.search(r"\b" + re.escape(t) + r"\b", command, re.IGNORECASE)
+    ]
+    matches = sorted(set(matches))
     return bool(matches), matches
 
 
@@ -572,12 +643,8 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
             if not watcher_result.get("ok"):
                 return watcher_result
             watcher_id = watcher_result.get("watcher_id")
-            # Patch watcher_id into the routine's metadata so cleanup tears down both.
-            data = state._load()
-            rec = data.get("resources", {}).get(routine_id)
-            if rec:
-                rec.setdefault("metadata", {})["watcher_id"] = watcher_id
-                state._save(data)
+            # CC-102: usa API pública atómica.
+            state.update_resource_metadata(routine_id, {"watcher_id": watcher_id})
         return _ok(routine=resource.get("resource"), trigger=trigger, task_name=task_name, watcher_id=watcher_id, status="done")
     if action == "run_now":
         routine = _find_routine(args, state)
@@ -709,18 +776,19 @@ def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _hass_alive(host: str) -> bool:
+    # T3-smart_home-alive-always-true-031: distingue HTTPError (servidor vivo
+    # con 401/403) de URLError/timeout (servidor caído).
+    import urllib.error
     import urllib.request
     try:
         req = urllib.request.Request(f"{host}/api/", headers={"User-Agent": "Gemma4Agent/1.0"})
         with urllib.request.urlopen(req, timeout=2.0):
             return True
-    except Exception:
-        # /api/ may require auth (returns 401). 401 still means HA is alive.
-        try:
-            import urllib.error  # noqa: F401
-            return True
-        except Exception:
-            return False
+    except urllib.error.HTTPError as exc:
+        # Cualquier HTTP code legítimo significa que HA responde.
+        return exc.code in (200, 401, 403, 404)
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return False
 
 
 def _hass_request(method: str, url: str, token: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -1672,11 +1740,11 @@ def database_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         if action == "schema":
             return _database_schema(conn, driver, args)
         if action == "query":
-            return _database_query(conn, args)
+            return _database_query(conn, driver, args)
         if action == "execute":
-            return _database_execute(conn, args)
+            return _database_execute(conn, driver, args, state)
         if action == "export_csv":
-            return _database_export_csv(conn, args, state)
+            return _database_export_csv(conn, driver, args, state)
         return _err("unknown database action", action=action)
     finally:
         cleanup()
@@ -1770,9 +1838,18 @@ def _database_list_tables(conn: Any, driver: str) -> dict[str, Any]:
 
 
 def _database_schema(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, Any]:
-    table = str(args.get("table") or "").strip()
-    if not table:
+    table_raw = str(args.get("table") or "").strip()
+    if not table_raw:
         return _err("missing table name")
+    # CC-017 / T2-database-schema-fstring-injection-017: validar identifier.
+    try:
+        table = ps_safe_literal(table_raw, RX_SQL_IDENT)
+    except PSValidationError:
+        return _err(
+            "invalid table identifier (allowed: letters/digits/underscore, optional schema.table)",
+            table=table_raw,
+            status="needs_user",
+        )
     cur = conn.cursor()
     if driver == "sqlite":
         cur.execute(f"PRAGMA table_info({table})")
@@ -1786,39 +1863,95 @@ def _database_schema(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, 
     return _ok(driver=driver, table=table, columns=columns)
 
 
-def _database_query(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+def _apply_readonly(conn: Any, driver: str) -> None:
+    """CC-018: aplica read-only a nivel de driver para la duración del query.
+    SQLite -> PRAGMA query_only=1
+    Postgres -> SET TRANSACTION READ ONLY (en transacción explícita)
+    MySQL -> SET SESSION TRANSACTION READ ONLY
+    Si el driver no soporta la operación, la silenciamos (best-effort).
+    """
+    cur = conn.cursor()
+    try:
+        if driver == "sqlite":
+            cur.execute("PRAGMA query_only = 1")
+        elif driver == "postgres":
+            cur.execute("BEGIN")
+            cur.execute("SET TRANSACTION READ ONLY")
+        elif driver == "mysql":
+            cur.execute("SET SESSION TRANSACTION READ ONLY")
+    except Exception:
+        pass
+
+
+def _release_readonly(conn: Any, driver: str) -> None:
+    cur = conn.cursor()
+    try:
+        if driver == "sqlite":
+            cur.execute("PRAGMA query_only = 0")
+        elif driver == "postgres":
+            try:
+                conn.commit()
+            except Exception:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+        elif driver == "mysql":
+            cur.execute("SET SESSION TRANSACTION READ WRITE")
+    except Exception:
+        pass
+
+
+def _database_query(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, Any]:
     sql = str(args.get("sql") or args.get("query") or "").strip()
     if not sql:
         return _err("missing sql")
+    # Pre-check informativo; el enforcement real es a nivel de driver.
     if not _is_read_only_sql(sql):
         return _err(
             "query is restricted to read-only statements (SELECT, WITH, EXPLAIN, PRAGMA, SHOW). Use execute(...) for mutations.",
             status="needs_user",
         )
-    cur = conn.cursor()
-    cur.execute(sql)
+    # CC-018 / T2-database-readonly-heuristic-018: driver-level enforcement.
+    _apply_readonly(conn, driver)
     try:
-        rows = cur.fetchall()
-    except Exception:
-        rows = []
-    columns = [d[0] for d in cur.description] if cur.description else []
-    serialized: list[dict[str, Any]] = []
-    for row in rows[: int(args.get("limit", 200))]:
-        if isinstance(row, dict):
-            serialized.append({k: _scalarize(v) for k, v in row.items()})
-        elif hasattr(row, "keys"):
-            serialized.append({k: _scalarize(row[k]) for k in row.keys()})
-        else:
-            serialized.append({columns[i] if i < len(columns) else f"col{i}": _scalarize(v) for i, v in enumerate(row)})
-    return _ok(sql=sql, columns=columns, row_count=len(rows), rows=serialized)
+        cur = conn.cursor()
+        cur.execute(sql)
+        try:
+            rows = cur.fetchall()
+        except Exception:
+            rows = []
+        columns = [d[0] for d in cur.description] if cur.description else []
+        serialized: list[dict[str, Any]] = []
+        for row in rows[: int(args.get("limit", 200))]:
+            if isinstance(row, dict):
+                serialized.append({k: _scalarize(v) for k, v in row.items()})
+            elif hasattr(row, "keys"):
+                serialized.append({k: _scalarize(row[k]) for k in row.keys()})
+            else:
+                serialized.append({columns[i] if i < len(columns) else f"col{i}": _scalarize(v) for i, v in enumerate(row)})
+        return _ok(sql=sql, columns=columns, row_count=len(rows), rows=serialized)
+    finally:
+        _release_readonly(conn, driver)
 
 
-def _database_execute(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
+def _database_execute(conn: Any, driver: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     sql = str(args.get("sql") or args.get("query") or "").strip()
     if not sql:
         return _err("missing sql")
     if _is_read_only_sql(sql):
         return _err("execute is for mutations; use query(...) for SELECT")
+    # CC-101 / CC-019: gate duro independiente de safety_enabled.
+    gate = _hard_gate(
+        state,
+        tool="database",
+        action="execute",
+        args=args,
+        reason=f"database.execute will mutate the database: {sql[:200]}",
+        risk="high",
+    )
+    if gate is not None:
+        return gate
     cur = conn.cursor()
     cur.execute(sql)
     try:
@@ -1826,10 +1959,10 @@ def _database_execute(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     except Exception:
         pass
     rowcount = cur.rowcount if hasattr(cur, "rowcount") else None
-    return _ok(sql=sql, rowcount=rowcount, verified=True)
+    return _ok(sql=sql, driver=driver, rowcount=rowcount, verified=True)
 
 
-def _database_export_csv(conn: Any, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+def _database_export_csv(conn: Any, driver: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     sql = str(args.get("sql") or args.get("query") or "").strip()
     if not sql or not _is_read_only_sql(sql):
         return _err("export_csv requires a read-only SQL query")
@@ -1839,22 +1972,26 @@ def _database_export_csv(conn: Any, args: dict[str, Any], state: AgentState) -> 
     else:
         dst = state.path.parent / "database_exports" / f"export_{int(time.time())}.csv"
     dst.parent.mkdir(parents=True, exist_ok=True)
-    cur = conn.cursor()
-    cur.execute(sql)
-    rows = cur.fetchall()
-    columns = [d[0] for d in cur.description] if cur.description else []
-    import csv
-    with dst.open("w", encoding="utf-8", newline="") as fh:
-        writer = csv.writer(fh)
-        writer.writerow(columns)
-        for row in rows:
-            if isinstance(row, dict):
-                writer.writerow([_scalarize(row.get(c)) for c in columns])
-            elif hasattr(row, "keys"):
-                writer.writerow([_scalarize(row[c]) for c in columns])
-            else:
-                writer.writerow([_scalarize(v) for v in row])
-    return _ok(sql=sql, dst=str(dst), rows=len(rows), verified=dst.is_file())
+    _apply_readonly(conn, driver)
+    try:
+        cur = conn.cursor()
+        cur.execute(sql)
+        rows = cur.fetchall()
+        columns = [d[0] for d in cur.description] if cur.description else []
+        import csv
+        with dst.open("w", encoding="utf-8", newline="") as fh:
+            writer = csv.writer(fh)
+            writer.writerow(columns)
+            for row in rows:
+                if isinstance(row, dict):
+                    writer.writerow([_scalarize(row.get(c)) for c in columns])
+                elif hasattr(row, "keys"):
+                    writer.writerow([_scalarize(row[c]) for c in columns])
+                else:
+                    writer.writerow([_scalarize(v) for v in row])
+        return _ok(sql=sql, driver=driver, dst=str(dst), rows=len(rows), verified=dst.is_file())
+    finally:
+        _release_readonly(conn, driver)
 
 
 def _is_read_only_sql(sql: str) -> bool:
@@ -2550,13 +2687,24 @@ def _data_csv_query(args: dict[str, Any]) -> dict[str, Any]:
     query = str(args.get("query") or "").strip()
     if not query:
         return _err("missing query (pandas .query() expression)")
+    # T2-data_analysis-pandas-query-eval-035: rechazar `@` (local var access) y
+    # backticked column names (parsea con eval). Forzar engine='numexpr' si
+    # disponible (más restrictivo); fallback al python engine sólo si numexpr
+    # no está y la query no contiene caracteres peligrosos.
+    if "@" in query or "`" in query:
+        return _err(
+            "query contains '@' or backticks; refused for safety. Use plain column names and operators.",
+            query=query,
+            status="needs_user",
+        )
+    engine = "numexpr" if importlib.util.find_spec("numexpr") is not None else "python"
     try:
-        result = df.query(query)
-    except Exception as exc:
-        return _err(f"query failed: {exc}", query=query)
+        result = df.query(query, engine=engine)
+    except (ValueError, SyntaxError, KeyError, TypeError) as exc:
+        return _err(f"query failed: {exc}", query=query, engine=engine)
     limit = int(args.get("limit", 50))
     return _ok(
-        path=str(args.get("path")), query=query,
+        path=str(args.get("path")), query=query, engine=engine,
         matched_rows=int(len(result)),
         preview=result.head(limit).to_dict(orient="records"),
     )
@@ -2736,13 +2884,26 @@ def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         rollback=[rollback_step] if rollback_addrs else [],
         metadata={"before": before, "target_addresses": addresses},
     )
+    # CC-100 / T2-network-dns-set-injection-033: validar cada IP antes de
+    # interpolar; adapter va por env-var; addresses van también via env-var
+    # como string separado por comas.
     if addresses == ["AUTO"] or addresses == ["auto"]:
-        # Restore automatic DNS.
-        cmd = f"Set-DnsClientServerAddress -InterfaceAlias '{_ps_quote(adapter)}' -ResetServerAddresses"
+        env = {**os.environ, "GEMMA4_DNS_ADAPTER": adapter}
+        cmd = "Set-DnsClientServerAddress -InterfaceAlias $env:GEMMA4_DNS_ADAPTER -ResetServerAddresses"
     else:
-        addr_list = ",".join(f"'{a}'" for a in addresses)
-        cmd = f"Set-DnsClientServerAddress -InterfaceAlias '{_ps_quote(adapter)}' -ServerAddresses ({addr_list})"
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], capture_output=True, text=True, timeout=15)
+        for addr in addresses:
+            if not (is_ipv4(addr) or is_ipv6(addr)):
+                return _err(f"invalid DNS address: {addr!r}", status="needs_user")
+        env = {
+            **os.environ,
+            "GEMMA4_DNS_ADAPTER": adapter,
+            "GEMMA4_DNS_ADDRS": ",".join(addresses),
+        }
+        cmd = (
+            "$addrs = $env:GEMMA4_DNS_ADDRS -split ','; "
+            "Set-DnsClientServerAddress -InterfaceAlias $env:GEMMA4_DNS_ADAPTER -ServerAddresses $addrs"
+        )
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], env=env, capture_output=True, text=True, timeout=15)
     after = _network_dns_get({"adapter": adapter})
     return _ok(
         adapter=adapter, target=addresses, before=rollback_addrs, after=after,
@@ -2788,20 +2949,23 @@ def _network_port_check(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _network_connections(args: dict[str, Any]) -> dict[str, Any]:
-    state_filter = str(args.get("state") or "Established").strip()
+    # CC-100 / T2-network-connections-state-no-allowlist-034: enum allowlist.
+    state_filter_raw = str(args.get("state") or "Established").strip()
+    try:
+        state_filter = ps_safe_literal(state_filter_raw, RX_TCP_STATE)
+    except PSValidationError as exc:
+        return _err(f"invalid state filter: {exc}", status="needs_user")
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"Get-NetTCPConnection -State {state_filter} -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,OwningProcess | ConvertTo-Json -Depth 3"],
         capture_output=True, text=True, timeout=20,
     )
     if proc.returncode != 0:
         return _err("connections query failed", stderr=proc.stderr)
-    raw = proc.stdout.strip()
-    if not raw:
+    ok_parse, data = parse_ps_json(proc.stdout)
+    if not ok_parse:
+        return _err("connections invalid JSON", raw=data)
+    if data is None:
         return _ok(connections=[], count=0, state=state_filter)
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        return _err("connections invalid JSON", raw=raw[:500])
     if isinstance(data, dict):
         data = [data]
     return _ok(connections=data, count=len(data), state=state_filter)
@@ -3037,13 +3201,11 @@ def _watcher_check(args: dict[str, Any], state: AgentState, executor: Executor |
             tool_args = on_change.get("args") if isinstance(on_change.get("args"), dict) else {}
             if tool and tool != "watcher":
                 triggered = {"tool": tool, "args": tool_args, "result": executor(tool, tool_args)}
-        # Update snapshot.
-        data = state._load()
-        rec = data.get("resources", {}).get(str(target["id"]))
-        if rec:
-            rec["metadata"]["snapshot"] = snapshot_after
-            rec["metadata"]["last_change"] = datetime.now().isoformat()
-            state._save(data)
+        # CC-102: actualización atómica del snapshot.
+        state.update_resource_metadata(
+            str(target["id"]),
+            {"snapshot": snapshot_after, "last_change": datetime.now().isoformat()},
+        )
     return _ok(
         watcher_id=str(target["id"]),
         kind=kind,
@@ -3095,7 +3257,12 @@ def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     command = args.get("command")
     if isinstance(command, str):
-        cmd = command.split()
+        # T2-job_manager-start-no-shell-flag-046: respeta quoting con shlex.
+        import shlex
+        try:
+            cmd = shlex.split(command, posix=False)
+        except ValueError as exc:
+            return _err(f"invalid command quoting: {exc}", command=command, status="needs_user")
     elif isinstance(command, list):
         cmd = [str(part) for part in command]
     else:
@@ -3121,11 +3288,8 @@ def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any
     )
     rid = resource.get("resource", {}).get("id")
     if rid:
-        data = state._load()
-        rec = data.get("resources", {}).get(rid)
-        if rec:
-            rec["cleanup_args"] = {"action": "cancel", "job_id": rid}
-            state._save(data)
+        # CC-102: cleanup_args via API pública.
+        state.update_resource(rid, cleanup_args_patch={"action": "cancel", "job_id": rid})
     return _ok(job_id=rid, pid=proc.pid, cmd=cmd, log=str(log_path))
 
 
@@ -3152,15 +3316,54 @@ def _job_manager_cancel(args: dict[str, Any], state: AgentState) -> dict[str, An
     pid = (job.get("metadata") or {}).get("pid")
     if not pid:
         return _err("job has no pid")
+    # CC-104: verify PID identity before taskkill.
+    cmd = (job.get("metadata") or {}).get("cmd") or []
+    expected = str(cmd[0]) if isinstance(cmd, list) and cmd else None
+    matches, current_name = _pid_owned_by(int(pid), expected)
+    if not matches:
+        return _err(
+            "pid_recycled: refused to kill PID held by a different process",
+            pid=pid,
+            expected_exe=expected,
+            current_name=current_name,
+            status="needs_user",
+        )
     try:
         if os.name == "nt":
             subprocess.run(["taskkill", "/F", "/PID", str(pid), "/T"], capture_output=True, text=True, timeout=10)
         else:
             os.kill(int(pid), 15)
-    except Exception as exc:
+    except (subprocess.SubprocessError, ProcessLookupError, PermissionError, OSError) as exc:
         return _err(f"failed to kill pid {pid}: {exc}", pid=pid)
     state.mark_cleaned(str(job["id"]), {"killed": True, "pid": pid})
     return _ok(job_id=str(job["id"]), pid=pid, killed=True)
+
+
+def _pid_owned_by(pid: int, expected_exe_basename: str | None) -> tuple[bool, str | None]:
+    """CC-104: Returns (matches, current_name). On Windows queries Get-Process
+    and compares ProcessName against the expected basename (without extension).
+    `matches` is True only if both checks succeed; False if PID does not exist
+    OR is a different process. `current_name` may be None when unknown.
+    """
+    if os.name != "nt":
+        try:
+            os.kill(int(pid), 0)
+            return True, None
+        except (ProcessLookupError, PermissionError, OSError):
+            return False, None
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-Command",
+         f"$p = Get-Process -Id {int(pid)} -ErrorAction SilentlyContinue; "
+         f"if ($p) {{ $p.ProcessName }} else {{ '' }}"],
+        capture_output=True, text=True, timeout=10,
+    )
+    name = proc.stdout.strip()
+    if not name:
+        return False, None
+    if not expected_exe_basename:
+        return True, name
+    expected = Path(expected_exe_basename).stem.casefold()
+    return name.casefold() == expected or name.casefold().startswith(expected), name
 
 
 def _pid_alive(pid: int) -> bool:
@@ -3217,11 +3420,17 @@ def maintenance_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action in {"service_start", "service_stop"}:
         return _maintenance_service_control(action, args, state)
     if action == "disk_cleanup_describe":
+        # T2-maintenance-disk-cleanup-cmd-list-027: no devolvemos arrays
+        # ejecutables, solo prosa. El LLM no puede copy-pegar a terminal.
         return _ok(
-            note="Run `cleanmgr /sageset:1` once to choose categories, then `cleanmgr /sagerun:1` to apply. We do not run this automatically.",
-            command_describe=["cleanmgr", "/sageset:1"],
-            command_apply=["cleanmgr", "/sagerun:1"],
+            note=(
+                "Disk cleanup must be run manually by the user. First run cleanmgr /sageset:1 in an "
+                "elevated terminal to pick categories, then cleanmgr /sagerun:1 to apply. This tool "
+                "intentionally does NOT return executable command arrays — the operation deletes "
+                "selected categories irreversibly."
+            ),
             status="needs_user",
+            verified=False,
         )
     if action == "restore_point_create":
         return _maintenance_restore_point_create(args)
@@ -3278,18 +3487,40 @@ def _maintenance_defender_status() -> dict[str, Any]:
 
 
 def _maintenance_defender_quick_scan(state: AgentState) -> dict[str, Any]:
+    """T2-maintenance-defender-scan-timeout-026: lanzar como job para no
+    bloquear el agente hasta 15 minutos. El usuario puede sondear con
+    `job_manager.status_of` o cancelarlo."""
     state.note("Defender QuickScan requested", metadata={"started_at": datetime.now().isoformat()})
-    proc = subprocess.run(
-        ["powershell", "-NoProfile", "-Command", "Start-MpScan -ScanType QuickScan"],
-        capture_output=True, text=True, timeout=900,
+    log_dir = state.path.parent / "logs" / "jobs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / f"defender_quick_scan_{int(time.time())}.log"
+    cmd = ["powershell", "-NoProfile", "-Command", "Start-MpScan -ScanType QuickScan"]
+    creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    with log_path.open("wb") as fh:
+        proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT, creationflags=creationflags)
+    resource = state.register_resource(
+        "job",
+        "defender_quick_scan",
+        cleanup_tool="job_manager",
+        cleanup_args={"action": "cancel"},
+        metadata={
+            "cmd": cmd,
+            "pid": proc.pid,
+            "log": str(log_path),
+            "started_at": datetime.now().isoformat(),
+            "kind_label": "defender_quick_scan",
+        },
     )
+    rid = resource.get("resource", {}).get("id")
+    if rid:
+        state.update_resource(rid, cleanup_args_patch={"action": "cancel", "job_id": rid})
     return _ok(
         scan="QuickScan",
-        exit_code=proc.returncode,
-        stdout=proc.stdout[-2000:],
-        stderr=proc.stderr[-2000:],
-        verified=proc.returncode == 0,
-        status="done" if proc.returncode == 0 else "needs_verification",
+        job_id=rid,
+        pid=proc.pid,
+        log=str(log_path),
+        status="running",
+        note="Defender scan running in background; poll job_manager.status_of or job_manager.log to follow progress.",
     )
 
 
@@ -3311,33 +3542,36 @@ def _maintenance_firewall_status() -> dict[str, Any]:
 
 
 def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
-    log = str(args.get("log") or "System").strip()
+    # CC-100 / T2-maintenance-event-log-injection-025: validamos log contra
+    # allowlist estricta y pasamos por env-var. hours/limit/level se castean.
+    log_raw = str(args.get("log") or "System").strip()
+    try:
+        log = ps_safe_literal(log_raw, RX_LOG_NAME)
+    except PSValidationError as exc:
+        return _err(f"invalid log name: {exc}", log=log_raw, status="needs_user")
     level = args.get("level")  # 1=Critical 2=Error 3=Warning 4=Information
-    hours = int(args.get("hours", 24))
-    limit = int(args.get("limit", 50))
-    filt: dict[str, Any] = {"LogName": log, "StartTime": "{StartTime}"}
-    if level is not None:
-        filt["Level"] = int(level)
-    ht = ";".join(f"{k}='{v}'" if k != "Level" else f"{k}={v}" for k, v in filt.items())
-    # Build hashtable inline; using PowerShell since it's safer than building string.
+    try:
+        hours = int(args.get("hours", 24))
+        limit = int(args.get("limit", 50))
+        level_int = int(level) if level is not None else None
+    except (TypeError, ValueError):
+        return _err("invalid hours/limit/level (must be integers)", status="needs_user")
+    env = {**os.environ, "GEMMA4_LOG_NAME": log}
+    level_clause = "" if level_int is None else f"; Level={level_int}"
     cmd = (
         f"$start = (Get-Date).AddHours(-{hours}); "
-        f"$f = @{{ LogName='{log}'; StartTime=$start"
-        f"{'' if level is None else f'; Level={int(level)}'}"
-        f" }}; "
+        f"$f = @{{ LogName=$env:GEMMA4_LOG_NAME; StartTime=$start{level_clause} }}; "
         f"Get-WinEvent -FilterHashtable $f -MaxEvents {limit} -ErrorAction SilentlyContinue | "
         f"Select-Object TimeCreated,Id,LevelDisplayName,ProviderName,Message | ConvertTo-Json -Depth 3"
     )
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], capture_output=True, text=True, timeout=30)
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], env=env, capture_output=True, text=True, timeout=30)
     if proc.returncode != 0:
         return _err("event_logs_query failed", stderr=proc.stderr)
-    raw = proc.stdout.strip()
-    if not raw:
+    ok_parse, data = parse_ps_json(proc.stdout)
+    if not ok_parse:
+        return _err("event_logs_query invalid JSON", raw=data)
+    if data is None:
         return _ok(log=log, events=[], count=0, hours=hours)
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        return _err("event_logs_query invalid JSON", raw=raw[:500])
     if isinstance(data, dict):
         data = [data]
     return _ok(log=log, events=data, count=len(data), hours=hours)
@@ -3554,7 +3788,12 @@ def _media_edit_concat(ffmpeg: str, args: dict[str, Any], state: AgentState) -> 
     out = _media_edit_output(args, state, paths[0], paths[0].suffix)
     # ffmpeg concat demuxer expects a list file.
     list_file = out.with_suffix(".concat.txt")
-    list_file.write_text("\n".join(f"file '{p.as_posix()}'" for p in paths) + "\n", encoding="utf-8")
+    # T2-media_edit-concat-list-injection-045: escape `'` como `'\''` per
+    # ffmpeg concat demuxer docs.
+    list_file.write_text(
+        "\n".join(f"file '{p.as_posix().replace(chr(39), chr(39) + chr(92) + chr(39) + chr(39))}'" for p in paths) + "\n",
+        encoding="utf-8",
+    )
     cmd = ["-f", "concat", "-safe", "0", "-i", str(list_file), "-c", "copy", str(out)]
     result = _run_ffmpeg(ffmpeg, cmd)
     try:
@@ -4515,7 +4754,15 @@ def _developer_start_dev_server(args: dict[str, Any], state: AgentState) -> dict
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"dev_{int(time.time())}.log"
     log_file = log_path.open("w", encoding="utf-8")
-    creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    # T3-developer-start-no-creationflags-detach-037: detach del agent process
+    # group para que el dev server sobreviva al cierre del agente.
+    creationflags = 0
+    if os.name == "nt":
+        creationflags = (
+            subprocess.CREATE_NO_WINDOW
+            | subprocess.CREATE_NEW_PROCESS_GROUP
+            | getattr(subprocess, "DETACHED_PROCESS", 0)
+        )
     proc = subprocess.Popen(cmd, cwd=str(root), stdout=log_file, stderr=subprocess.STDOUT, creationflags=creationflags)
     resource = state.register_resource(
         "dev_server",
@@ -4525,14 +4772,10 @@ def _developer_start_dev_server(args: dict[str, Any], state: AgentState) -> dict
         metadata={"cmd": cmd, "cwd": str(root), "pid": proc.pid, "log": str(log_path), "started_at": datetime.now().isoformat()},
     )
     # The cleanup_args needs the server_id, but we only have it after registration.
-    # Patch it in-place.
+    # CC-102: patch atómico vía API pública.
     rid = resource.get("resource", {}).get("id")
     if rid:
-        data = state._load()
-        rec = data.get("resources", {}).get(rid)
-        if rec:
-            rec["cleanup_args"] = {"action": "stop_dev_server", "server_id": rid}
-            state._save(data)
+        state.update_resource(rid, cleanup_args_patch={"action": "stop_dev_server", "server_id": rid})
     return _ok(
         server_id=rid, pid=proc.pid, cmd=cmd, cwd=str(root),
         log=str(log_path),
@@ -4560,6 +4803,19 @@ def _developer_stop_dev_server(args: dict[str, Any], state: AgentState) -> dict[
     pid = (target.get("metadata") or {}).get("pid")
     if not pid:
         return _err("dev_server has no pid", target=target)
+    # CC-104 / T3-developer-stop-no-pid-alive-check-036: verificar identidad
+    # antes de matar (Windows recicla PIDs).
+    cmd = (target.get("metadata") or {}).get("cmd") or []
+    expected = str(cmd[0]) if cmd else None
+    matches, current_name = _pid_owned_by(int(pid), expected)
+    if not matches:
+        return _err(
+            "pid_recycled: refused to kill PID held by a different process",
+            pid=pid,
+            expected_exe=expected,
+            current_name=current_name,
+            status="needs_user",
+        )
     killed = False
     try:
         if os.name == "nt":
@@ -4567,7 +4823,7 @@ def _developer_stop_dev_server(args: dict[str, Any], state: AgentState) -> dict[
         else:
             os.kill(int(pid), 15)
         killed = True
-    except Exception as exc:
+    except (subprocess.SubprocessError, ProcessLookupError, PermissionError, OSError) as exc:
         return _err(f"failed to kill pid {pid}: {exc}", pid=pid)
     state.mark_cleaned(str(target["id"]), {"killed": killed, "pid": pid})
     return _ok(server_id=str(target["id"]), pid=pid, killed=killed, verified=killed)
@@ -5002,22 +5258,41 @@ def _routine_task_name(label: str) -> str:
 
 
 def _register_routine_scheduled_task(task_name: str, routine_label: str, trigger: dict[str, Any]) -> dict[str, Any]:
-    """Register a Scheduled Task that invokes the routine_runner module."""
+    """Register a Scheduled Task that invokes the routine_runner module.
+
+    CC-100: python_exe / task_name / routine_label / arg_line se pasan por
+    env-var; el script PS los referencia con $env:GEMMA4_* y nunca f-stringea
+    valores controlados.
+    """
     python_exe = _detect_python_executable()
     if not python_exe:
         return _err("no python executable found for scheduled task", status="needs_dependency", verified=False)
-    # Use label resolution at fire time; the runner accepts --label or --id.
-    arg_line = f'-m gemma4_agent.routine_runner --label "{routine_label}"'
     trigger_ps = _build_routine_trigger_ps(trigger)
     if not trigger_ps:
         return _err(f"invalid routine trigger: {trigger}", trigger=trigger)
-    ps = f"""
-$Action = New-ScheduledTaskAction -Execute '{_ps_quote(python_exe)}' -Argument '{_ps_quote(arg_line)}'
-$Trigger = {trigger_ps}
-$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -StartWhenAvailable
-Register-ScheduledTask -TaskName '{_ps_quote(task_name)}' -TaskPath '\\Gemma4Agent\\' -Action $Action -Trigger $Trigger -Settings $Settings -Description 'Gemma4 routine: {_ps_quote(routine_label)}' -Force | Out-Null
-"""
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, timeout=30)
+    # Validamos task_name contra el patrón que produce _routine_task_name.
+    try:
+        safe_task_name = ps_safe_literal(task_name, re.compile(r"^Gemma4Routine_[A-Za-z0-9_]+$"))
+    except PSValidationError as exc:
+        return _err(f"invalid task name: {exc}", task_name=task_name)
+    env = {
+        **os.environ,
+        "GEMMA4_ROUTINE_TASK": safe_task_name,
+        "GEMMA4_ROUTINE_PY": python_exe,
+        "GEMMA4_ROUTINE_LABEL": routine_label,
+    }
+    ps = (
+        "$exe = $env:GEMMA4_ROUTINE_PY\n"
+        "$label = $env:GEMMA4_ROUTINE_LABEL\n"
+        "$task = $env:GEMMA4_ROUTINE_TASK\n"
+        "$labelEsc = $label -replace '\"', '\\\"'\n"
+        "$argLine = ('-m gemma4_agent.routine_runner --label \"{0}\"' -f $labelEsc)\n"
+        "$Action = New-ScheduledTaskAction -Execute $exe -Argument $argLine\n"
+        f"$Trigger = {trigger_ps}\n"
+        "$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -StartWhenAvailable\n"
+        "Register-ScheduledTask -TaskName $task -TaskPath '\\Gemma4Agent\\' -Action $Action -Trigger $Trigger -Settings $Settings -Force | Out-Null\n"
+    )
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], env=env, capture_output=True, text=True, timeout=30)
     if proc.returncode != 0:
         return _err("failed to register routine scheduled task", stderr=proc.stderr, exit_code=proc.returncode)
     return _ok(task_name=task_name, trigger=trigger)
@@ -5030,29 +5305,55 @@ def _unregister_routine_scheduled_task(task_name: str) -> dict[str, Any]:
 
 
 def _build_routine_trigger_ps(trigger: dict[str, Any]) -> str | None:
-    """Translate a trigger dict into the PowerShell expression for the trigger."""
+    """Translate a trigger dict into the PowerShell expression for the trigger.
+
+    CC-100 / T3-routine-cron-trigger-ps-injection-028: cualquier valor que se
+    interpole en el script PS debe pasar por allowlist regex. Si no encaja,
+    devolvemos None (el caller surface como error de validación).
+    """
     ttype = str(trigger.get("type") or "manual").casefold()
     if ttype == "manual":
         return None
     if ttype == "once":
-        at = str(trigger.get("at") or "").strip()
-        if not at:
+        at_raw = str(trigger.get("at") or "").strip()
+        if not at_raw:
+            return None
+        try:
+            at = ps_safe_literal(at_raw, RX_ISO_DATETIME)
+        except PSValidationError:
             return None
         return f"New-ScheduledTaskTrigger -Once -At (Get-Date '{at}')"
     if ttype == "cron":
         cadence = str(trigger.get("cadence") or trigger.get("every") or "daily").casefold()
-        at = str(trigger.get("at") or "09:00").strip()
+        at_raw = str(trigger.get("at") or "09:00").strip()
+        try:
+            at = ps_safe_literal(at_raw, RX_HHMM)
+        except PSValidationError:
+            return None
         if cadence == "daily":
             return f"New-ScheduledTaskTrigger -Daily -At '{at}'"
         if cadence == "weekly":
             raw_days = trigger.get("days_of_week")
-            days: list[Any] = raw_days if isinstance(raw_days, list) else ["Monday"]
-            days_str = ",".join(str(d) for d in days)
+            days_iter: list[Any] = raw_days if isinstance(raw_days, list) else ["Monday"]
+            safe_days: list[str] = []
+            for d in days_iter:
+                try:
+                    safe_days.append(ps_safe_literal(str(d), RX_DAY_OF_WEEK))
+                except PSValidationError:
+                    return None
+            if not safe_days:
+                return None
+            days_str = ",".join(safe_days)
             return f"New-ScheduledTaskTrigger -Weekly -DaysOfWeek {days_str} -At '{at}'"
         if cadence == "hourly":
             return f"New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Hours 1)"
         if cadence == "minutes":
-            n = int(trigger.get("interval_minutes", 5))
+            try:
+                n = int(trigger.get("interval_minutes", 5))
+            except (TypeError, ValueError):
+                return None
+            if n <= 0:
+                return None
             return f"New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes {n})"
     return None
 
@@ -5095,17 +5396,13 @@ def _enrich_routine_resource(resource: dict[str, Any]) -> dict[str, Any]:
 
 
 def _append_routine_run(state: AgentState, resource_id: str, run_record: dict[str, Any]) -> None:
-    data = state._load()
-    resource = data.get("resources", {}).get(resource_id)
-    if not resource:
-        return
-    metadata = resource.setdefault("metadata", {})
-    history = list(metadata.get("history") or [])
-    history.append(run_record)
-    # Keep last 50 runs to avoid unbounded growth.
-    metadata["history"] = history[-50:]
-    metadata["last_run"] = run_record
-    state._save(data)
+    # CC-102: atomic append con cap a 50 entries.
+    state.update_resource_metadata(
+        resource_id,
+        {"history": [run_record], "last_run": run_record},
+        append_lists=("history",),
+        max_append=50,
+    )
 
 
 def _routine_history(state: AgentState, routine: dict[str, Any] | None, *, limit: int = 20) -> dict[str, Any]:
@@ -5464,11 +5761,7 @@ def _contacts_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if not updates:
         return _err("no updatable fields provided", supported=["name", "email", "phone", "notes"])
     if "name" in updates:
-        data = state._load()
-        rec = data.get("resources", {}).get(str(contact["id"]))
-        if rec:
-            rec["label"] = str(updates["name"])
-            state._save(data)
+        state.update_resource(str(contact["id"]), label=str(updates["name"]))
     return _update_resource_metadata(state, str(contact["id"]), updates)
 
 
@@ -5701,12 +5994,8 @@ def _calendar_event_update(args: dict[str, Any], state: AgentState) -> dict[str,
     if not updates:
         return _err("no updatable fields provided", supported=["title", "start", "end", "location", "notes"])
     if "title" in updates:
-        # Also update label so listings reflect the new title.
-        data = state._load()
-        rec = data.get("resources", {}).get(str(event["id"]))
-        if rec:
-            rec["label"] = str(updates["title"])
-            state._save(data)
+        # CC-102: label patch atómico.
+        state.update_resource(str(event["id"]), label=str(updates["title"]))
     return _update_resource_metadata(state, str(event["id"]), updates)
 
 
@@ -6369,10 +6658,25 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _err("conflict policy must be overwrite|skip|rename")
     preview_only = bool(args.get("preview", False))
 
+    # CC-101 / T2-backup_sync-restore-overwrite: gate duro si overwrite y no es preview.
+    if conflict_policy == "overwrite" and not preview_only:
+        gate = _hard_gate(
+            state,
+            tool="backup_sync",
+            action="restore",
+            args=args,
+            reason=f"restore with overwrite will replace existing files at {dst}",
+            risk="high",
+        )
+        if gate is not None:
+            return gate
+
     extracted: list[dict[str, Any]] = []
     skipped: list[dict[str, Any]] = []
     renamed: list[dict[str, Any]] = []
     overwritten: list[dict[str, Any]] = []
+    blocked: list[dict[str, Any]] = []
+    dst_resolved = dst.resolve()
 
     try:
         with zipfile.ZipFile(backup_path, "r") as archive:
@@ -6384,10 +6688,15 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                     total_entries=len(entries),
                 )
             for entry in entries:
-                if entry.is_dir():
-                    (dst / entry.filename).mkdir(parents=True, exist_ok=True)
+                # CC-021 / T2-backup_sync-zip-slip-021: contención bajo dst.
+                candidate = (dst / entry.filename).resolve()
+                if candidate != dst_resolved and dst_resolved not in candidate.parents:
+                    blocked.append({"name": entry.filename, "reason": "zip-slip outside dst"})
                     continue
-                final_target = dst / entry.filename
+                if entry.is_dir():
+                    candidate.mkdir(parents=True, exist_ok=True)
+                    continue
+                final_target = candidate
                 final_target.parent.mkdir(parents=True, exist_ok=True)
                 if final_target.exists():
                     if conflict_policy == "skip":
@@ -6395,7 +6704,7 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                         continue
                     if conflict_policy == "rename":
                         final_target = _next_available_path(final_target)
-                        renamed.append({"from": entry.filename, "to": str(final_target.relative_to(dst))})
+                        renamed.append({"from": entry.filename, "to": str(final_target.relative_to(dst_resolved))})
                     elif conflict_policy == "overwrite":
                         overwritten.append({"name": entry.filename})
                 with archive.open(entry, "r") as src_fh, final_target.open("wb") as dst_fh:
@@ -6403,6 +6712,15 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 extracted.append({"name": entry.filename, "size": entry.file_size, "dst": str(final_target)})
     except (zipfile.BadZipFile, OSError) as exc:
         return _err(f"restore failed: {exc}", backup=str(backup_path), dst=str(dst))
+    if blocked:
+        # Si bloqueamos al menos uno, devolvemos status=failed para que el agente
+        # surface el incidente; el resto extraído se reporta igual.
+        return _err(
+            f"restore blocked {len(blocked)} entries that would escape dst (zip-slip)",
+            backup=str(backup_path), dst=str(dst),
+            blocked=blocked[:50], extracted_count=len(extracted),
+            extracted=extracted[:50], status="failed",
+        )
 
     return _ok(
         backup=str(backup_path), dst=str(dst), conflict_policy=conflict_policy,
@@ -6907,23 +7225,93 @@ def _audio_verify_default(defaults_after: dict[str, str], requested_name: str, e
 
 
 def _show_message_box(title: str, text: str) -> dict[str, Any]:
-    script = f"Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('{_ps_quote(text)}','{_ps_quote(title)}')"
-    return _run_detached_powershell(script)
+    # CC-100: env-var indirection. _run_detached_powershell no acepta env,
+    # así que invocamos Popen directo con env extendido.
+    env = {**os.environ, "GEMMA4_MSG_TITLE": title, "GEMMA4_MSG_TEXT": text}
+    script = (
+        "Add-Type -AssemblyName PresentationFramework; "
+        "[System.Windows.MessageBox]::Show($env:GEMMA4_MSG_TEXT, $env:GEMMA4_MSG_TITLE)"
+    )
+    proc = subprocess.Popen(
+        ["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", script],
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+    )
+    return {"pid": proc.pid}
+
+
+def _ensure_notification_runner(state: AgentState) -> Path:
+    """Escribe (si no existe) el runner PS fijo que muestra notificaciones
+    leyendo título/texto del JSON persistido por _schedule_notification.
+
+    El runner es estático: nada del LLM se interpola dentro.
+    """
+    runner_path = state.path.parent / "notifications" / "_runner.ps1"
+    runner_path.parent.mkdir(parents=True, exist_ok=True)
+    expected = (
+        "param([Parameter(Mandatory=$true)][string]$TaskName)\n"
+        "$ErrorActionPreference = 'Stop'\n"
+        "Add-Type -AssemblyName PresentationFramework\n"
+        "$payload = Join-Path $PSScriptRoot ($TaskName + '.json')\n"
+        "if (-not (Test-Path $payload)) { exit 1 }\n"
+        "$data = Get-Content -Raw -Encoding UTF8 $payload | ConvertFrom-Json\n"
+        "$title = [string]$data.title\n"
+        "$text = [string]$data.text\n"
+        "[System.Windows.MessageBox]::Show($text, $title) | Out-Null\n"
+    )
+    try:
+        if not runner_path.is_file() or runner_path.read_text(encoding="utf-8") != expected:
+            runner_path.write_text(expected, encoding="utf-8")
+    except OSError:
+        pass
+    return runner_path
 
 
 def _schedule_notification(args: dict[str, Any], state: AgentState, *, kind: str) -> dict[str, Any]:
     title = str(args.get("title") or kind.title()).strip()
     text = str(args.get("text") or args.get("message") or title).strip()
-    due = _notification_due(args)
+    try:
+        due = _notification_due(args)
+    except _NotificationDueError as exc:
+        return _err(str(exc), status="needs_user")
     task_name = f"Gemma4Agent_{kind}_{int(time.time())}"
-    display_script = f"Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show('{_ps_quote(text)}','{_ps_quote(title)}')"
-    ps = f"""
-$Action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -WindowStyle Hidden -Command "{display_script}"'
-$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date '{due.strftime('%Y-%m-%d %H:%M:%S')}')
+    # CC-100 / T2-notification-ps-injection-023: el title/text vienen del LLM.
+    # Persistimos el mensaje en un JSON dentro del state-dir y registramos la
+    # Scheduled Task apuntando a un runner fijo que lo lee por id. Así nada
+    # controlado por el LLM se f-stringea dentro del script PS.
+    runner = _ensure_notification_runner(state)
+    payload_dir = state.path.parent / "notifications"
+    payload_dir.mkdir(parents=True, exist_ok=True)
+    payload_path = payload_dir / f"{task_name}.json"
+    payload_path.write_text(
+        json.dumps({"title": title, "text": text, "kind": kind, "task_name": task_name}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    # Validamos due y task_name antes de embeber (allowlists estrictas).
+    try:
+        due_literal = ps_safe_literal(due.strftime("%Y-%m-%d %H:%M:%S"), RX_ISO_DATETIME)
+        safe_task_name = ps_safe_literal(task_name, re.compile(r"^Gemma4Agent_[A-Za-z0-9_]+$"))
+    except PSValidationError as exc:
+        return _err(f"invalid schedule parameters: {exc}")
+    env = {
+        **os.environ,
+        "GEMMA4_NOTIF_TASK": safe_task_name,
+        "GEMMA4_NOTIF_DUE": due_literal,
+        "GEMMA4_NOTIF_RUNNER": str(runner),
+    }
+    ps = r"""
+$task = $env:GEMMA4_NOTIF_TASK
+$due  = $env:GEMMA4_NOTIF_DUE
+$runner = $env:GEMMA4_NOTIF_RUNNER
+$argLine = ('-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "{0}" -TaskName "{1}"' -f $runner, $task)
+$Action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $argLine
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date $due)
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -StartWhenAvailable
-Register-ScheduledTask -TaskName '{_ps_quote(task_name)}' -TaskPath '\\Gemma4Agent\\' -Action $Action -Trigger $Trigger -Settings $Settings -Description '{_ps_quote(text)}' -Force | Out-Null
+Register-ScheduledTask -TaskName $task -TaskPath '\Gemma4Agent\' -Action $Action -Trigger $Trigger -Settings $Settings -Force | Out-Null
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, timeout=30)
+    proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], env=env, capture_output=True, text=True, timeout=30)
     if proc.returncode != 0:
         return _err("failed to register scheduled notification", stderr=proc.stderr, exit_code=proc.returncode)
     resource = state.register_resource(
@@ -7053,6 +7441,10 @@ def _kind_for_notification_action(action: str) -> str:
     return "notification"
 
 
+class _NotificationDueError(ValueError):
+    """T2-notification-no-due-validation-024: parsing inválido sin fallback silencioso."""
+
+
 def _notification_due(args: dict[str, Any]) -> datetime:
     seconds = args.get("seconds")
     minutes = args.get("minutes")
@@ -7061,12 +7453,23 @@ def _notification_due(args: dict[str, Any]) -> datetime:
     if minutes is not None:
         return datetime.now() + timedelta(minutes=max(1, int(minutes)))
     raw = str(args.get("due") or args.get("time") or "").strip()
-    if raw:
-        try:
-            return datetime.fromisoformat(raw.replace("Z", "+00:00")).astimezone().replace(tzinfo=None)
-        except ValueError:
-            pass
-    return datetime.now() + timedelta(minutes=5)
+    if not raw:
+        # Sin due/time/seconds/minutes: mantenemos default explícito.
+        return datetime.now() + timedelta(minutes=5)
+    # ISO completo.
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00")).astimezone().replace(tzinfo=None)
+    except ValueError:
+        pass
+    # HH:MM como atajo: hoy si futuro, mañana si pasó.
+    if re.fullmatch(r"[0-2]\d:[0-5]\d", raw):
+        hh, mm = raw.split(":")
+        now = datetime.now()
+        candidate = now.replace(hour=int(hh), minute=int(mm), second=0, microsecond=0)
+        if candidate <= now:
+            candidate = candidate + timedelta(days=1)
+        return candidate
+    raise _NotificationDueError(f"unrecognized due/time format: {raw!r} (use ISO datetime or HH:MM)")
 
 
 def _find_routine(args: dict[str, Any], state: AgentState) -> dict[str, Any] | None:
@@ -7082,14 +7485,11 @@ def _find_routine(args: dict[str, Any], state: AgentState) -> dict[str, Any] | N
 
 
 def _update_resource_metadata(state: AgentState, resource_id: str, updates: dict[str, Any]) -> dict[str, Any]:
-    data = state._load()
-    resource = data.get("resources", {}).get(resource_id)
-    if not resource:
+    # CC-102: delega en la API pública atómica.
+    result = state.update_resource_metadata(resource_id, updates)
+    if not result.get("ok"):
         return _err("resource not found", resource_id=resource_id)
-    metadata = resource.setdefault("metadata", {})
-    metadata.update(updates)
-    state._save(data)
-    return _ok(resource=resource)
+    return _ok(resource=result.get("resource"))
 
 
 def _resources_by_kind(state: AgentState, kinds: str | list[str], include_closed: bool = False) -> list[dict[str, Any]]:

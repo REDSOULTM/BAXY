@@ -252,8 +252,16 @@ class VoiceController:
     # ------------------------------------------------------------------
 
     def begin_tts(self) -> None:
-        """Transicion THINKING -> SPEAKING. Llamar al primer delta del LLM."""
-        if self._state == S_THINKING:
+        """Transicion -> SPEAKING. Llamar al primer delta del LLM.
+
+        Originalmente solo cubria THINKING -> SPEAKING (turno disparado por voz).
+        Ahora tambien acepta IDLE_LISTENING / FOLLOWUP / WAKE_DETECTED como
+        origen: cuando el usuario tipea en lugar de hablar, el controller
+        nunca paso por THINKING y se quedaba pegado escuchando mientras Piper
+        emitia la respuesta -> Vosk capturaba su propia voz como wake.
+        SPEAKING descarta audio entrante (ver `_on_audio_chunk`), asi que
+        forzar la transicion aqui es el anti-echo natural del controller."""
+        if self._state in {S_THINKING, S_IDLE_LISTENING, S_FOLLOWUP, S_WAKE_DETECTED}:
             self._set_state(S_SPEAKING)
 
     def feed_tts_chunk(self, chunk: str) -> None:
@@ -268,14 +276,34 @@ class VoiceController:
                 pass
 
     def end_tts(self) -> None:
-        """LLM termino: flush ultima oracion y mover a FOLLOWUP o IDLE."""
+        """LLM termino: flush ultima oracion, esperar a que Piper termine, y
+        mover a FOLLOWUP o IDLE. La espera es lo que evita el eco — si
+        volviéramos al estado de escucha mientras la cola TTS sigue
+        reproduciendo, Vosk capturaría el final de la frase como audio del
+        usuario y lo trataría como nuevo wake. La transición ocurre en un
+        thread daemon para no bloquear al caller (que típicamente corre
+        en el agent_runner thread)."""
         self._tts.flush()
-        if self._followup_s > 0:
-            self._set_state(S_FOLLOWUP)
-            self._start_followup_timer()
-        else:
-            self._set_state(S_IDLE_LISTENING)
-            self._wake.reset()
+        def _wait_and_transition() -> None:
+            # cap absoluto por seguridad — una frase larga típica son 6-10s,
+            # pero si algo se cuelga no queremos quedar pegados en SPEAKING.
+            deadline = time.monotonic() + 30.0
+            while time.monotonic() < deadline:
+                if not self._tts.is_busy():
+                    break
+                time.sleep(0.1)
+            # ya esta tranquilo — volver al estado correcto
+            if self._followup_s > 0:
+                self._set_state(S_FOLLOWUP)
+                self._start_followup_timer()
+            else:
+                self._set_state(S_IDLE_LISTENING)
+                self._wake.reset()
+        threading.Thread(
+            target=_wait_and_transition,
+            name="VoiceTtsWait",
+            daemon=True,
+        ).start()
 
     # ------------------------------------------------------------------
     # Internals — wake + STT

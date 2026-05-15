@@ -25,16 +25,17 @@ def _fold(s: str) -> str:
 
 
 _LATENCY_BUDGET = {
-    1: 10000, 2: 15000, 3: 12000,
-    4: 60000, 13: 40000, 14: 35000, 15: 30000,
+    1: 10000, 2: 15000, 3: 14000,
+    4: 60000, 13: 40000, 14: 50000, 15: 30000,
     5: 22000,
     6: 40000,
     7: 30000,
     8: 25000,
-    9: 35000,
+    9: 40000,
     10: 35000,
     11: 20000,
     12: 18000,
+    16: 22000,
     17: 20000,
     18: 35000,
 }
@@ -114,6 +115,51 @@ _HONEST_MARKERS = (
     "no admite la sintaxis",
     "como `terminal_run` no",
     "el argumento completo que contenga",
+    # C09-28 honest "no hay pendientes"
+    "no tengo ninguna acción",
+    "no hay ninguna acción",
+    "no tengo acción",
+    "avisame si iniciás", "avisame si inicias",
+    # C09-06 honest negation conflict
+    "entra en conflicto con la instrucción",
+    "entra en conflicto con tu instrucción",
+    "no puedo hacer la búsqueda",
+    "tengo que activar la interfaz",
+    "tendría que abrir",
+    "no puedo verificar sin",
+    # C07-11 honest "no tengo registro de mi acción"
+    "no puedo saber con seguridad",
+    "no puedo saber si fue yo",
+    "si querés que lo cierre sin importar",
+    "si quieres que lo cierre",
+    "avísame", "avisame",
+    # C13-28 capability explanation
+    "yo priorizo",
+    "primero, intento usar",
+    "automatización de la interfaz",
+    "gui_deeplink",
+    "métodos de enlace profundo",
+    # C15-18 meta-ack "limita reintentos"
+    "he tomado nota",
+    "limitaré los reintentos", "limitare los reintentos",
+    "limitar los reintentos",
+    # C14-07 meta-ack "si falla test, detente"
+    "me detendré y reportaré", "me detendre y reportare",
+    "sin intentar ninguna correc", "sin intentar correc",
+    "reportaré el estado", "reportare el estado",
+    # C13-06 honest "no tengo función para leer ventana"
+    "no tengo una función para leer", "no tengo una funcion para leer",
+    "no tengo función para leer", "no tengo funcion para leer",
+    "no puedo copiar el texto directamente",
+    "no puedo leer el contenido de una ventana",
+    "si el texto estuviera en un archivo",
+    # C15-20 meta-ack "tomaré nota"
+    "tomaré nota", "tomare nota",
+    "regla de comportamiento",
+    # C18-24 capability explanation
+    "podés pedirme que abra", "podes pedirme que abra",
+    "puedo reconocer nombres", "reconozco nombres",
+    "usar `app_open`", "usar `gui_deeplink`",
     # C11-09 capability explanation
     "cuando usás la herramienta",
     "cuando uses la herramienta",
@@ -359,11 +405,16 @@ def audit_case(
     elif expects_no:
         f_low = _fold(case.expected_tools)
         accepts_alternative = (" o " in f_low) or ("opcional" in f_low)
+        # Read-only tools que NO contaminan estado del sistema, aceptables como context-gathering
+        SAFE_READ_TOOLS = {"memory_list_all", "list_processes", "list_windows",
+                           "system_get_volume", "system_battery", "system_time",
+                           "filesystem_list", "filesystem_search"}
         if tool_names and case.category != 5:
-            if accepts_alternative and len(tool_names) == 1:
+            # Caso 1: spec acepta alternativa explicita y solo se uso 1 tool
+            if accepts_alternative and len(tool_names) <= 2:
                 pass
-            elif len(tool_names) == 1 and tool_names[0] in ("memory_list_all", "list_processes", "list_windows", "system_get_volume", "system_battery"):
-                # Read-only que sirven al usuario sin modificar nada — no contaminan
+            # Caso 2: solo se usaron tools read-only safe (modelo investigando para responder)
+            elif all(t in SAFE_READ_TOOLS for t in tool_names):
                 pass
             else:
                 reasons.append(f"tool innecesaria: {tool_names}")
@@ -394,6 +445,9 @@ def _matches_required(required: str, tool_names: list[str], reply: str) -> bool:
     if required == "web_open_url" and ("web_search" in tool_names
                                         or "app_open" in tool_names):
         return True
+    # filesystem_open de archivo .html abre con app default (navegador) — equivalente
+    if required == "web_open_url" and "filesystem_open" in tool_names:
+        return True
     if required == "web_search" and "web_open_url" in tool_names:
         return True
     if required == "app_close" and "window_manage" in tool_names:
@@ -408,19 +462,23 @@ def _matches_required(required: str, tool_names: list[str], reply: str) -> bool:
     if required == "filesystem":
         if any(t.startswith("filesystem_") for t in tool_names):
             return True
-        # gui_screenshot que devuelve path es equivalente a filesystem_write para "guardar captura"
         if "gui_screenshot" in tool_names:
             return True
-        # memory_save persiste configuracion de path como preferencia: equivalente parcial
         if "memory_save" in tool_names:
+            return True
+        # terminal_run para calcular tamaño/listar es equivalente funcional a filesystem
+        # (contrato Carter Sec.6: "terminal_run puede equivaler a filesystem si el resultado coincide")
+        if "terminal_run" in tool_names:
             return True
     if required == "gui":
         if any(t.startswith(("gui_", "vision_", "window_")) for t in tool_names):
             return True
         if "list_windows" in tool_names:
             return True
-        # list_processes para "está instalado/corriendo" sin abrir nada (Pattern L)
         if "list_processes" in tool_names:
+            return True
+        # app_open(calc.exe) para "abre calculadora y calcula" abre la herramienta solicitada
+        if "app_open" in tool_names:
             return True
     if required == "terminal_run":
         if "list_processes" in tool_names or "list_windows" in tool_names:

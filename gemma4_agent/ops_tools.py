@@ -210,9 +210,20 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         backup = registry_tool({"action": "backup", "key": key}, state)
         value_type = str(args.get("type") or "REG_SZ")
         data = str(args.get("data") or args.get("value") or "")
-        rollback = [{"tool": "registry", "args": {"action": "import", "file": backup.get("file")}}] if backup.get("ok") else [
-            {"tool": "registry", "args": {"action": "delete", "key": key, "name": name}}
-        ]
+        if backup.get("ok"):
+            rollback = [{"tool": "registry", "args": {"action": "import", "file": backup.get("file")}}]
+        else:
+            # T2-registry-backup-trust-015: solo permitimos fallback-to-delete
+            # si confirmamos que la clave/valor NO existía antes del add.
+            pre = _run_cmd(["reg", "query", key, "/v", name], timeout=15)
+            if pre.get("ok"):
+                # Existía un valor previo y el backup falló: rehusamos para no
+                # destruirlo accidentalmente con un rollback-to-delete.
+                return _err(
+                    "registry backup failed but the value already exists; refusing to proceed (rollback would destroy the existing value)",
+                    key=key, name=name, backup=backup, status="needs_user",
+                )
+            rollback = [{"tool": "registry", "args": {"action": "delete", "key": key, "name": name}}]
         checkpoint = state.checkpoint(f"registry {key}\\{name} before add", rollback=rollback, metadata={"backup": backup})
         result = _run_cmd(["reg", "add", key, "/v", name, "/t", value_type, "/d", data, "/f"], timeout=30)
         result.update(backup=backup, checkpoint=checkpoint.get("checkpoint"), registry_key=key, value_name=name)
@@ -268,8 +279,16 @@ Invoke-WebRequest -Uri $env:GEMMA4_DOWNLOAD_URL -OutFile $env:GEMMA4_DOWNLOAD_PA
     actual = str(hash_result.get("hash") or "").casefold()
     hash_verified = bool(expected and actual and expected == actual)
     sig_result = _authenticode_signature(dst) if dst.suffix.casefold() in {".exe", ".msi", ".ps1", ".dll"} else {}
-    signature_verified = sig_result.get("status") == "Valid"
-    verified = hash_verified or signature_verified
+    # T2-download-signature-trust-016: Authenticode 'Valid' NO promueve a verified=True;
+    # solo el hash explicit-expected lo hace. La firma queda como signal informativo
+    # para que el agente la presente al usuario.
+    signature_present = sig_result.get("status") == "Valid" if sig_result else False
+    signer_subject = None
+    if isinstance(sig_result, dict):
+        signer_cert = sig_result.get("signer_certificate") or {}
+        if isinstance(signer_cert, dict):
+            signer_subject = signer_cert.get("Subject") or signer_cert.get("subject")
+    verified = hash_verified
     resource = state.register_resource(
         "download",
         str(dst.name),
@@ -285,11 +304,17 @@ Invoke-WebRequest -Uri $env:GEMMA4_DOWNLOAD_URL -OutFile $env:GEMMA4_DOWNLOAD_PA
         expected_sha256=expected or None,
         hash_verified=hash_verified,
         signature=sig_result or None,
-        signature_verified=signature_verified,
+        signature_present=signature_present,
+        signer_subject=signer_subject,
         verified=verified,
         status="done" if verified else "needs_verification",
         completion_status="download_verified" if verified else "download_unverified",
         resource=resource.get("resource"),
+        note=(
+            "Hash matched expected SHA256." if verified else
+            "verified=False: provide expected_sha256 from a trusted source. "
+            "Authenticode-Valid signatures alone are not promoted to verified=True."
+        ),
     )
 
 
@@ -476,7 +501,10 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
     if action in {"open", "goto"}:
         if not url:
             return _err("browser_real open/goto requires url")
-        session = _get_browser_session(session_id, state, headless=headless)
+        try:
+            session = _get_browser_session(session_id, state, headless=headless)
+        except RuntimeError as exc:
+            return _err(str(exc), session_id=session_id, status="needs_user")
         page = _active_page(session, new_tab=bool(args.get("new_tab", action == "open")))
         page.goto(url, wait_until=str(args.get("wait_until") or "domcontentloaded"), timeout=timeout_ms)
         result = _page_result(session_id, session, page)
@@ -512,6 +540,24 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
         script = str(args.get("script") or "")
         if not script:
             return _err("evaluate requires script")
+        # T3-browser_real-evaluate-arbitrary-js-038: si la sesión es CDP
+        # (browser visible del usuario), exigir confirmación. En sesiones
+        # headless propias del agente, pass-through.
+        if session.get("cdp") and not bool(args.get("confirmed")):
+            pending = state.create_confirmation(
+                "browser_real",
+                {**{k: v for k, v in args.items() if k not in {"routine_context", "confirmed_at_create"}}, "confirmed": True},
+                reason=f"Running JS in attached visible browser (CDP) — cookies and session tokens are exposed. Script preview: {script[:200]}",
+                risk="high",
+            )
+            return _err(
+                "evaluate on CDP-attached browser requires confirmation",
+                status="needs_confirmation",
+                verified=False,
+                completion_status="needs_user_confirmation",
+                confirmation=pending.get("confirmation"),
+                session_id=session_id,
+            )
         value = page.evaluate(script)
         return _ok(**_page_result(session_id, session, page), value=value, verified=True, content_verified=True)
     if action == "click_text":
@@ -767,8 +813,15 @@ def _playwright() -> Any:
 
 
 def _get_browser_session(session_id: str, state: AgentState, *, headless: bool) -> dict[str, Any]:
+    # T3-browser_real-headless-fixed-after-open-040: si la sesión existe con
+    # otro headless, fallar rápido.
     session = _BROWSER_SESSIONS.get(session_id)
     if session:
+        if session.get("headless") != headless:
+            raise RuntimeError(
+                f"session {session_id!r} already open with headless={session.get('headless')}; "
+                f"close it first or pass session_id explicitly"
+            )
         return session
     pw = _playwright()
     browser = pw.chromium.launch(headless=headless)

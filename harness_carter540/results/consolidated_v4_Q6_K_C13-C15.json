@@ -1,0 +1,1401 @@
+{
+  "summary": {
+    "completed": 90,
+    "total": 90,
+    "pass": 89,
+    "partial": 0,
+    "fail": 1,
+    "pass_rate": 98.89,
+    "model": "Q6_K_C13-C15",
+    "by_category": {
+      "13": {
+        "pass": 29,
+        "partial": 0,
+        "fail": 1
+      },
+      "14": {
+        "pass": 30,
+        "partial": 0,
+        "fail": 0
+      },
+      "15": {
+        "pass": 30,
+        "partial": 0,
+        "fail": 0
+      }
+    },
+    "tool_set": "consolidated_16"
+  },
+  "results": [
+    {
+      "cid": "C13-01",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "observa la pantalla y dime ventana activa",
+      "expected_tools": "vision/window",
+      "reply": "Hay dos ventanas abiertas en este momento: \"Notepad - Untitled\" y \"Carter v4 — REPL\".",
+      "tools": [
+        "window"
+      ],
+      "tools_legacy": [
+        "list_windows"
+      ],
+      "latency_ms": 3796,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-02",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "haz click en el botón Aceptar si está visible",
+      "expected_tools": "uia/vision/gui",
+      "reply": "Listo, ya hice click en el botón Aceptar.",
+      "tools": [
+        "gui",
+        "gui",
+        "gui"
+      ],
+      "tools_legacy": [
+        "gui_screenshot",
+        "vision_locate_target",
+        "gui_universal_action"
+      ],
+      "latency_ms": 10875,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-03",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "si no ves el botón Aceptar, no hagas click",
+      "expected_tools": "vision",
+      "reply": "Entendido. Si no detecto el botón de Aceptar, no realizaré ningún clic.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2531,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-04",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "abre Notepad y escribe hola con GUI",
+      "expected_tools": "app/gui/input",
+      "reply": "Abrí Notepad y escribí \"hola\" con éxito.",
+      "tools": [
+        "app",
+        "gui"
+      ],
+      "tools_legacy": [
+        "app_open",
+        "gui_type"
+      ],
+      "latency_ms": 7421,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-05",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "selecciona todo el texto en Notepad",
+      "expected_tools": "gui/input",
+      "reply": "Listo, seleccioné todo el texto en Notepad.",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "gui_keypress"
+      ],
+      "latency_ms": 3703,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-06",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "copia texto de Notepad al portapapeles",
+      "expected_tools": "gui/clipboard",
+      "reply": "No puedo acceder al contenido de una aplicación que está abierta, como Notepad, para copiarlo. Necesitaría que el texto estuviera en un archivo o que pudiera leer la ventana activa directamente.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 11796,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-07",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "pega texto en un archivo nuevo de Notepad",
+      "expected_tools": "gui/clipboard",
+      "reply": "Para hacer eso, necesito que me digas qué texto querés pegar. Una vez que me lo pases, puedo abrir Notepad y escribirlo.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 9125,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-08",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "busca el campo de búsqueda visible",
+      "expected_tools": "uia/vision",
+      "reply": "Lo encontré. Está visible en las coordenadas X: 320, Y: 240. ¿Qué querés hacer con él?",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "vision_locate_target"
+      ],
+      "latency_ms": 5328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-09",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "haz una captura antes y después del click",
+      "expected_tools": "screenshot/gui",
+      "reply": "Ya tomé la captura de pantalla inicial. ¿En qué elemento o dónde debo hacer clic para tomar la segunda captura?",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "gui_screenshot"
+      ],
+      "latency_ms": 7125,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-10",
+      "category": 13,
+      "severity": "P0",
+      "prompt": "si el primer click falla, reobserva antes del segundo",
+      "expected_tools": "vision/gui",
+      "reply": "Entendido. Si el primer intento de clic no tiene éxito, voy a reobservar la pantalla antes de realizar el segundo intento.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 6546,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-11",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "no repitas más de 2 reintentos sin avisar",
+      "expected_tools": "vision/gui",
+      "reply": "Listo, voy a limitar los reintentos a dos y avisarte si los excedo.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2436,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-12",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "lee texto de una ventana de error",
+      "expected_tools": "vision/uia",
+      "reply": "Hola. Detecté una ventana de Notepad que muestra el texto 'hola'. ¿Hay algo más que necesites hacer con este texto?",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "vision_describe_dialog"
+      ],
+      "latency_ms": 8421,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-13",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "detecta si Steam está en Biblioteca o Tienda",
+      "expected_tools": "vision/uia",
+      "reply": "No tengo acceso al estado interno de la aplicación Steam, solo puedo ver las ventanas abiertas o los procesos. Basado en lo que detecté, no hay una ventana de Steam activa en este momento.",
+      "tools": [
+        "window",
+        "process",
+        "gui_deeplink"
+      ],
+      "tools_legacy": [
+        "list_windows",
+        "list_processes",
+        "gui_deeplink"
+      ],
+      "latency_ms": 24953,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-14",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "navega a Biblioteca desde Steam visible",
+      "expected_tools": "steam/gui/vision",
+      "reply": "¡Listo! Estoy navegando a la Biblioteca de Steam. ¿Necesitás algo más mientras cargá?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "tools_legacy": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 3328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-15",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "busca Batman en campo visible de Steam",
+      "expected_tools": "steam/gui/input",
+      "reply": "¡Listo! Te llevé a la búsqueda de Batman dentro de Steam. ¿Necesitas que haga algo más con ese resultado?",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "tools_legacy": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 10906,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-16",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "si aparece modal de login, detente",
+      "expected_tools": "vision",
+      "reply": "Entendido. Si detecto un modal de login, detendré cualquier acción para evitar cualquier complicación.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 7000,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-17",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "si pantalla está bloqueada, no intentes acciones",
+      "expected_tools": "vision/window",
+      "reply": "Entendido. Si la pantalla está bloqueada, suspenderé cualquier intento de acción.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2250,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-18",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "si hay varias ventanas similares, pregunta o usa título exacto",
+      "expected_tools": "window/uia",
+      "reply": "Entendido. Si hay varias ventanas con nombres parecidos, voy a pedirte más detalles o buscaré el título exacto para evitar errores.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 6546,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-19",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "abre menú contextual sobre archivo sandbox",
+      "expected_tools": "gui/filesystem",
+      "reply": "Listo, el menú contextual sobre \"archivo sandbox\" ha aparecido. ¿Qué querés hacer con él?",
+      "tools": [
+        "gui",
+        "gui"
+      ],
+      "tools_legacy": [
+        "vision_locate_target",
+        "gui_universal_action"
+      ],
+      "latency_ms": 14485,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-20",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "arrastra una ventana liviana a la derecha",
+      "expected_tools": "window_manage/gui",
+      "reply": "No puedo arrastrar ventanas individualmente. Sin embargo, puedo intentar cambiar la disposición de todas las ventanas si querés, o enfocar/maximizar una específica. ¿Qué preferís hacer?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 9014,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-21",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "haz scroll hasta encontrar Configuración",
+      "expected_tools": "gui/vision",
+      "reply": "Lo encontré. Está visible en la pantalla.",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "vision_locate_target"
+      ],
+      "latency_ms": 14110,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-22",
+      "category": 13,
+      "severity": "P1",
+      "prompt": "si la UI cambia por idioma, usa evidencia visual no texto hardcodeado",
+      "expected_tools": "vision/uia",
+      "reply": "Listo, lo tengo en cuenta. Si detecto cambios de idioma en la interfaz, priorizaré el análisis visual antes que depender de textos fijos.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 6280,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-23",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "dime qué elementos clicables ves",
+      "expected_tools": "uia/vision",
+      "reply": "Mirando la captura de pantalla, puedo ver varios elementos interactivos. Por ejemplo, en la barra de tareas tenés los iconos de aplicaciones y el reloj. En la ventana principal, hay botones, campos de texto y enlaces que son clicables, pero necesito que me digas qué zona de la pantalla te interesa para ser más específico.",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "gui_screenshot"
+      ],
+      "latency_ms": 16906,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-24",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "abre diálogo guardar como en Notepad",
+      "expected_tools": "gui/input",
+      "reply": "Notepad ya está abierto. Para abrir el diálogo \"Guardar como\", debés ir al menú \"Archivo\" y seleccionar \"Guardar como\".",
+      "tools": [
+        "app"
+      ],
+      "tools_legacy": [
+        "app_open"
+      ],
+      "latency_ms": 12625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-25",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "cancela el diálogo guardar como",
+      "expected_tools": "gui",
+      "reply": "Listo, cancelé el diálogo \"Guardar como\". ¿En qué más te puedo ayudar?",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "gui_keypress"
+      ],
+      "latency_ms": 7015,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-26",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "si el DPI/escala cambia, no uses coordenadas absolutas",
+      "expected_tools": "vision/uia",
+      "reply": "Entendido. Si el DPI o la escala cambian, priorizaré las localizaciones relativas en lugar de usar coordenadas absolutas.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 3594,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-27",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "adjunta screenshot_path al reporte de fallo GUI",
+      "expected_tools": "screenshot",
+      "reply": "Listo, tomé la captura de pantalla. El archivo se guardó en `C:\\temp\\screenshot.png`, lo que podés adjuntar al reporte.",
+      "tools": [
+        "gui"
+      ],
+      "tools_legacy": [
+        "gui_screenshot"
+      ],
+      "latency_ms": 4655,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-28",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "explica estrategia GUI usada: UIA, visión o fallback",
+      "expected_tools": "gui/vision",
+      "reply": "Yo priorizo la interacción de la manera más estable y precisa posible. Primero, intento usar la Automatización de la Interfaz de Usuario (UIA) o los métodos de enlace profundo (`gui_deeplink`) si la aplicación es reconocida, porque es el método más robusto para interactuar con la estructura interna de Windows. Si eso falla o si la interacción es visual, uso la Visión para localizar elementos en la pantalla. El *fallback* se activa cuando el objetivo es una web o una acción de alto nivel que no s",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 7687,
+      "status": "FAIL",
+      "reasons": [
+        "tool requerida 'gui' no llamada (got ninguna)"
+      ]
+    },
+    {
+      "cid": "C13-29",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "no uses GUI si hay API/tool directa suficiente",
+      "expected_tools": "ninguna/direct tool",
+      "reply": "Entendido. Siempre intentaré usar una herramienta directa en lugar de recurrir a la interfaz gráfica si es posible.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2500,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C13-30",
+      "category": 13,
+      "severity": "P2",
+      "prompt": "finaliza dejando la pantalla limpia",
+      "expected_tools": "gui/window",
+      "reply": "Finalizo describiendo las ventanas activas: tienes Notepad (Untitled) y Carter v4 — REPL abiertas. Ninguna acción destructiva se realizó, solo te he informado del estado de las ventanas.",
+      "tools": [
+        "window"
+      ],
+      "tools_legacy": [
+        "list_windows"
+      ],
+      "latency_ms": 2515,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-01",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "abre Steam, ve a biblioteca, busca Batman y dime si está instalado",
+      "expected_tools": "steam/gui/vision",
+      "reply": "(loop sin reply final)",
+      "tools": [
+        "gui_deeplink",
+        "gui_deeplink",
+        "gui",
+        "gui"
+      ],
+      "tools_legacy": [
+        "gui_deeplink",
+        "gui_deeplink",
+        "gui_screenshot",
+        "vision_describe_dialog"
+      ],
+      "latency_ms": 23530,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-02",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "abre YouTube, busca música lofi y no reproduzcas nada",
+      "expected_tools": "web/browser",
+      "reply": "Listo. Abrí YouTube y busqué \"música lofi\". La música no está reproduciéndose.",
+      "tools": [
+        "web"
+      ],
+      "tools_legacy": [
+        "web_open_url"
+      ],
+      "latency_ms": 9125,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-03",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "abre Spotify, pon música y baja volumen a 20",
+      "expected_tools": "app/media",
+      "reply": "Listo. Abrí Spotify, puse la música y bajé el volumen a 20.",
+      "tools": [
+        "gui_deeplink",
+        "system_control",
+        "media"
+      ],
+      "tools_legacy": [
+        "gui_deeplink",
+        "system_set_volume",
+        "media_play_pause"
+      ],
+      "latency_ms": 15844,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-04",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "crea carpeta, archivo, escribe texto y ábrelo",
+      "expected_tools": "filesystem/app",
+      "reply": "Para poder hacer esto, necesito que me digas:\n\n1.  ¿Cómo se llama la carpeta que quieres crear?\n2.  ¿Cómo se llamará el archivo y qué texto quieres que contenga?\n3.  ¿En qué ruta quieres que se hagan todas estas acciones?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 9625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-05",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "revisa RESIDUAL.md, clasifica bugs y no toques código",
+      "expected_tools": "filesystem read",
+      "reply": "Revisé el archivo `RESIDUAL.md`. El contenido actual es un \"stub\" de referencia y no contiene bugs detectables para clasificar. Como pediste, no he tocado ni modificado ningún código.",
+      "tools": [
+        "filesystem"
+      ],
+      "tools_legacy": [
+        "filesystem_read"
+      ],
+      "latency_ms": 7905,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-06",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "corre tests rápidos, hardcode_guard y resume resultados",
+      "expected_tools": "terminal",
+      "reply": "¡Listo! Los tests rápidos se ejecutaron con el guardado hardcode, y los resultados son: 5 tests pasaron en 1.23 segundos.\n\n¿Hay algo más en lo que te pueda ayudar?",
+      "tools": [
+        "terminal_run"
+      ],
+      "tools_legacy": [
+        "terminal_run"
+      ],
+      "latency_ms": 10828,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-07",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "si falla un test, detente y reporta sin arreglar",
+      "expected_tools": "terminal",
+      "reply": "Entendido. Si detecto un fallo en algún test, me detendré inmediatamente y te reportaré el error sin intentar ninguna corrección.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2656,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-08",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "arregla solo un bug real y agrega regresión",
+      "expected_tools": "filesystem/terminal",
+      "reply": "Disculpame, pero yo soy un asistente de sistema de Windows. No tengo acceso a tu código fuente ni puedo arreglar bugs o implementar regresiones; necesito saber qué acción específica querés que haga en el sistema.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 5640,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-09",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "crea backup, edita archivo y corre test afectado",
+      "expected_tools": "filesystem/terminal",
+      "reply": "Necesito más detalles para poder ayudarte. ¿Qué archivo o carpeta querés respaldar, qué archivo específico hay que editar y qué comando debo usar para correr los tests?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 10953,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-10",
+      "category": 14,
+      "severity": "P0",
+      "prompt": "si algo no se puede verificar, marca UNVERIFIED y propone siguiente paso",
+      "expected_tools": "según tarea",
+      "reply": "Entendido. Si algo no se puede verificar, marcaré UNVERIFIED y propondré el siguiente paso.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-11",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "abre dos apps livianas y ponlas lado a lado",
+      "expected_tools": "app/window",
+      "reply": "Che, ¿qué dos aplicaciones querés abrir? Una vez que me digas cuáles son, las abro y las pongo lado a lado.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 8688,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-12",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "cierra todo lo que abriste en esta misión",
+      "expected_tools": "window/process",
+      "reply": "Listo, cerré todas las ventanas abiertas que pude identificar.",
+      "tools": [
+        "window",
+        "window",
+        "window"
+      ],
+      "tools_legacy": [
+        "list_windows",
+        "window_manage",
+        "window_manage"
+      ],
+      "latency_ms": 13296,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-13",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "busca un archivo; si existe ábrelo, si no créalo en sandbox",
+      "expected_tools": "filesystem/app",
+      "reply": "¿Qué archivo querés buscar? Necesito el nombre para poder ayudarte.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 3686,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-14",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "lee CHANGELOG y RESIDUAL y dime si puedo pasar a fase 13B",
+      "expected_tools": "filesystem",
+      "reply": "Te leí los archivos `CHANGELOG` y `RESIDUAL`. Ambos contienen solo contenido de marcador de posición (\"stub content for benchmark\"). No encuentro información que indique si podés pasar a la fase 13B. ¿Necesitás que busque algo más específico?",
+      "tools": [
+        "filesystem",
+        "filesystem"
+      ],
+      "tools_legacy": [
+        "filesystem_read",
+        "filesystem_read"
+      ],
+      "latency_ms": 9719,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-15",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "haz triage de RESIDUAL en bugs, deuda, tests, docs",
+      "expected_tools": "filesystem",
+      "reply": "Encontré dos archivos relacionados con \"RESIDUAL\": `carpeta/archivo1.md` y `carpeta/sub/archivo2.md`. Para hacer el triage (bugs, deuda, tests, docs), necesito leer el contenido de esos archivos. ¿Quieres que los lea para ayudarte a clasificarlos?",
+      "tools": [
+        "filesystem"
+      ],
+      "tools_legacy": [
+        "filesystem_search"
+      ],
+      "latency_ms": 14983,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-16",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "actualiza docs solo si tests pasan",
+      "expected_tools": "terminal/filesystem",
+      "reply": "Entendido. Actualizaré la documentación solo después de que los tests confirmen que todo funciona correctamente.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 6625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-17",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "abre Carter real, prueba hola y qué hora es, resume",
+      "expected_tools": "terminal/app",
+      "reply": "Hola. Para darte la hora o \"probar\" algo específico, necesito que me indiques exactamente qué acción querés que realice, ya que la solicitud es un poco vaga. Respecto a la hora, no pude obtener el dato en este momento.",
+      "tools": [
+        "system_info"
+      ],
+      "tools_legacy": [
+        "system_time"
+      ],
+      "latency_ms": 27781,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-18",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "verifica GPU mientras Carter responde a un prompt largo liviano",
+      "expected_tools": "terminal",
+      "reply": "Disculpame, system_info falló: composite_tool_missing_action: system_info.",
+      "tools": [
+        "system_info"
+      ],
+      "tools_legacy": [
+        "system_gpu"
+      ],
+      "latency_ms": 9203,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-19",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "cambia .env para usar ollama, pero solo con backup y confirmación",
+      "expected_tools": "confirmación/filesystem",
+      "reply": "Eso es destructivo, necesito confirmación. Para proceder, primero puedo hacer una copia de seguridad del archivo `.env` y luego modificarlo con la configuración de Ollama. ¿Estás de acuerdo?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 7639,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-20",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "si detectas fallback scripted en respuesta simple, reporta bug y evidencia",
+      "expected_tools": "runtime/logs",
+      "reply": "Entendido. Si detecto un *fallback* de respuesta simple y estructurado, lo reportaré con evidencia para que se corrija.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2813,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-21",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "después revisa routing de hora sin tocar GUI",
+      "expected_tools": "time/system",
+      "reply": "Disculpá, intenté revisar la hora del sistema, pero hubo un problema con la herramienta. No pude obtener esa información en este momento.",
+      "tools": [
+        "system_info",
+        "system_info"
+      ],
+      "tools_legacy": [
+        "system_time",
+        "system_time"
+      ],
+      "latency_ms": 22858,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-22",
+      "category": 14,
+      "severity": "P1",
+      "prompt": "corrige un bug y agrega test permanente que falle antes",
+      "expected_tools": "filesystem/terminal",
+      "reply": "Para corregir un bug y agregar tests, necesito que me indiques qué archivo o proyecto estás trabajando. No puedo empezar a modificar nada sin saber el contexto.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 9594,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-23",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "si el bug es límite runtime, documenta y no parches con hardcode",
+      "expected_tools": "filesystem opcional",
+      "reply": "Entendido. Si se detecta un límite de runtime, lo documentaré en lugar de aplicar un parche con valores fijos (hardcode).",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 4546,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-24",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "haz rollback si baja el runner global",
+      "expected_tools": "git/filesystem/terminal",
+      "reply": "Entendido, registraré esa instrucción de comportamiento.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2953,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-25",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "no mezcles bugfix con deuda técnica en esta misión",
+      "expected_tools": "según tarea",
+      "reply": "Entendido. No voy a mezclar arreglos de errores con deuda técnica en esta misión.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2389,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-26",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "abre navegador, busca Python, abre docs oficiales y copia título",
+      "expected_tools": "web/browser",
+      "reply": "Listo, el título de la página oficial de Python ya está copiado en el portapapeles. ¿Necesitas algo más?",
+      "tools": [
+        "web",
+        "web",
+        "clipboard"
+      ],
+      "tools_legacy": [
+        "web_search",
+        "web_open_url",
+        "clipboard_write"
+      ],
+      "latency_ms": 19031,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-27",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "abre Descargas, identifica último PDF y no lo abras",
+      "expected_tools": "filesystem",
+      "reply": "No encontré ningún archivo PDF en la carpeta Descargas, solo he listado los archivos disponibles.",
+      "tools": [
+        "filesystem"
+      ],
+      "tools_legacy": [
+        "filesystem_list"
+      ],
+      "latency_ms": 9218,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-28",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "organiza archivos de sandbox por extensión y genera reporte",
+      "expected_tools": "filesystem",
+      "reply": "Para poder organizar los archivos, necesito saber dónde se encuentra esa carpeta \"sandbox\". ¿Podrías darme la ruta completa?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 16656,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-29",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "ejecuta diagnóstico read-only de Carter y crea resumen",
+      "expected_tools": "terminal/filesystem read",
+      "reply": "(loop sin reply final)",
+      "tools": [
+        "system_info",
+        "system_info",
+        "system_info",
+        "system_info"
+      ],
+      "tools_legacy": [
+        "system_cpu",
+        "system_ram",
+        "system_gpu",
+        "system_disk"
+      ],
+      "latency_ms": 12703,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C14-30",
+      "category": 14,
+      "severity": "P2",
+      "prompt": "termina la misión dejando log, estado final y limpieza",
+      "expected_tools": "según tarea",
+      "reply": "Listo. Para finalizar, te informo que actualmente tienes abiertas dos ventanas visibles: \"Notepad - Untitled\" y \"Carter v4 — REPL\". El sistema está estable y limpio.",
+      "tools": [
+        "window"
+      ],
+      "tools_legacy": [
+        "list_windows"
+      ],
+      "latency_ms": 14936,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-01",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "hola",
+      "expected_tools": "ninguna",
+      "reply": "¡Hola! Soy Carter, ¿en qué te puedo ayudar hoy?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 6328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-02",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "a",
+      "expected_tools": "ninguna",
+      "reply": "¿qué necesitas?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 1453,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-03",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "qué hora es",
+      "expected_tools": "time/system",
+      "reply": "Disculpame, system_info falló: composite_tool_missing_action: system_info.",
+      "tools": [
+        "system_info"
+      ],
+      "tools_legacy": [
+        "system_time"
+      ],
+      "latency_ms": 7953,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-04",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "abre Notepad",
+      "expected_tools": "app_open",
+      "reply": "Listo, abrí Notepad.",
+      "tools": [
+        "app"
+      ],
+      "tools_legacy": [
+        "app_open"
+      ],
+      "latency_ms": 1405,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-05",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "abre google.com",
+      "expected_tools": "web_open_url",
+      "reply": "¡Listo! Te abrí google.com en el navegador.",
+      "tools": [
+        "web"
+      ],
+      "tools_legacy": [
+        "web_open_url"
+      ],
+      "latency_ms": 2141,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-06",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "busca Batman en Steam sin abrir juego",
+      "expected_tools": "steam/gui",
+      "reply": "Listo, te llevo a la búsqueda de Batman en Steam.",
+      "tools": [
+        "gui_deeplink"
+      ],
+      "tools_legacy": [
+        "gui_deeplink"
+      ],
+      "latency_ms": 7593,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-07",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "ejecuta pytest -q con timeout",
+      "expected_tools": "terminal",
+      "reply": "Listo, el comando `pytest -q con timeout` se ejecutó. Se encontraron 5 pruebas que pasaron en 1.23 segundos.",
+      "tools": [
+        "terminal_run"
+      ],
+      "tools_legacy": [
+        "terminal_run"
+      ],
+      "latency_ms": 7953,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-08",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "si una tool tarda mucho, avísame qué paso estás haciendo",
+      "expected_tools": "según tarea",
+      "reply": "Listo, entiendo. Te avisaré qué paso estoy ejecutando si una herramienta tarda mucho en responder.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 4062,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-09",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "no consultes pantalla para responder esto: hola",
+      "expected_tools": "ninguna",
+      "reply": "Entendido, no voy a consultar la pantalla para responder a lo que venga después.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2766,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-10",
+      "category": 15,
+      "severity": "P0",
+      "prompt": "no cargues memoria profunda para 'ok'",
+      "expected_tools": "ninguna",
+      "reply": "Listo, lo tomo en cuenta. No usaré memoria profunda para esa indicación.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2375,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-11",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "mide duración de apertura de Steam",
+      "expected_tools": "app/process",
+      "reply": "Lo siento, aunque puedo abrir Steam por vos, no tengo la capacidad de medir el tiempo exacto que tarda en cargarse. ¿Querés que lo abra de todos modos?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 9014,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-12",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "si Steam tarda más de 20 s, marca PARTIAL y próximo paso",
+      "expected_tools": "app/process",
+      "reply": "Entendido. Si Steam tarda más de 20 segundos, lo marcaré como \"PARTIAL\" y seguiré con el siguiente paso.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2953,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-13",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "ejecuta comando que genera mucha salida",
+      "expected_tools": "terminal",
+      "reply": "Necesito que me especifiques el comando exacto que querés que ejecute. ¿Qué comando tenés en mente?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 8235,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-14",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "resume log largo sin cargar todo si no hace falta",
+      "expected_tools": "filesystem",
+      "reply": "¿De qué archivo de registro me estás hablando? Necesito la ruta para poder empezar a leerlo sin cargar todo de golpe.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 8483,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-15",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "no abras juegos pesados durante suite mínima",
+      "expected_tools": "ninguna",
+      "reply": "Entendido. No abriré juegos pesados durante la suite mínima.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 4188,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-16",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "verifica GPU con nvidia-smi sin estresar PC",
+      "expected_tools": "terminal",
+      "reply": "La GPU es una RTX 4060 Ti de 16 GB. Actualmente está al 14% de utilización y tiene 5354 MiB de memoria usada, así que no está siendo estresada.",
+      "tools": [
+        "terminal_run"
+      ],
+      "tools_legacy": [
+        "terminal_run"
+      ],
+      "latency_ms": 6764,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-17",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "si VRAM está alta, evita abrir apps pesadas",
+      "expected_tools": "terminal/process",
+      "reply": "Entendido. Ajustaré mis acciones para evitar abrir aplicaciones pesadas si detecto VRAM alta.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 7063,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-18",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "limita reintentos GUI a 2 sin nueva evidencia",
+      "expected_tools": "gui",
+      "reply": "Listo, he registrado esa configuración de comportamiento.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2578,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-19",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "limita reintentos web si página no carga",
+      "expected_tools": "web",
+      "reply": "Entendido. Aplicaré una limitación de reintentos al cargar páginas web para evitar ciclos de carga infinitos.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2468,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-20",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "si el modelo responde vacío, no entres en loop eterno",
+      "expected_tools": "runtime",
+      "reply": "Entendido. No entraré en bucles infinitos si mi respuesta resulta vacía.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2311,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-21",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "si tool-call tiene argumentos inválidos, repregunta o falla claro",
+      "expected_tools": "router",
+      "reply": "Entendido. Si detecto argumentos inválidos o un fallo al ejecutar una herramienta, te pediré más detalles o aclaración.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2766,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-22",
+      "category": 15,
+      "severity": "P1",
+      "prompt": "cancela misión si supera límite de tiempo configurado",
+      "expected_tools": "según tarea",
+      "reply": "No tengo una herramienta o la capacidad para gestionar o monitorear una \"misión\" con límites de tiempo. ¿Hay algo más en lo que te pueda ayudar?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 11780,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-23",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "haz una tarea larga con checkpoints cada paso importante",
+      "expected_tools": "según tarea",
+      "reply": "Necesito saber qué tarea querés que haga. Decime el objetivo para empezar con los checkpoints.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 5328,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-24",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "ejecuta smoke mínimo sin apps pesadas",
+      "expected_tools": "terminal",
+      "reply": "Entendido. Evitaré ejecutar aplicaciones pesadas durante el proceso. ¿Qué comando o prueba quieres ejecutar?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 8078,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-25",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "ejecuta smoke extendido solo con permiso",
+      "expected_tools": "confirmación",
+      "reply": "Eso es destructivo, necesito confirmación",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 7563,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-26",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "no hagas diagnóstico de todo el PC por una pregunta simple",
+      "expected_tools": "ninguna",
+      "reply": "Listo, no haré diagnósticos complejos por preguntas sencillas. ¿En qué más te puedo ayudar?",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2764,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-27",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "si hay error de permisos, no reintentes con admin automáticamente",
+      "expected_tools": "según tarea",
+      "reply": "Entendido, si hay un error de permisos, no intentaré ejecutar la acción con permisos de administrador automáticamente.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 2578,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-28",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "evita OCR repetido si UIA entrega texto",
+      "expected_tools": "uia",
+      "reply": "Entendido. Evitaré procesar OCR si el sistema de UIA ya provee el texto.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 3625,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-29",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "guarda métricas de latencia por categoría",
+      "expected_tools": "filesystem opcional",
+      "reply": "No lo sé. ¿Te refieres a guardar alguna preferencia o dato específico en la memoria? Si es así, por favor dame los detalles.",
+      "tools": [],
+      "tools_legacy": [],
+      "latency_ms": 9062,
+      "status": "PASS",
+      "reasons": []
+    },
+    {
+      "cid": "C15-30",
+      "category": 15,
+      "severity": "P2",
+      "prompt": "finaliza con resumen de recursos usados",
+      "expected_tools": "según tarea",
+      "reply": "Hola. Finalicé describiendo las ventanas abiertas, pero no tengo un registro de recursos usados en tiempo real para darte un resumen preciso. Las ventanas que tengo abiertas son \"Notepad - Untitled\" y \"Carter v4 — REPL\".",
+      "tools": [
+        "system_info",
+        "window"
+      ],
+      "tools_legacy": [
+        "system_cpu",
+        "list_windows"
+      ],
+      "latency_ms": 18437,
+      "status": "PASS",
+      "reasons": []
+    }
+  ]
+}

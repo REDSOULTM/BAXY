@@ -1,0 +1,237 @@
+{
+  "model": "E2B-UD-Q4_K_XL",
+  "tests": [
+    {
+      "id": 1,
+      "prompt": "hola",
+      "pattern": "Latencia trivial",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 3.23,
+          "content": "¡Hola! ¿En qué puedo ayudarte?",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 3.23,
+      "error": null
+    },
+    {
+      "id": 2,
+      "prompt": "qué hora es",
+      "pattern": "Tool simple",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 1.27,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "system_time",
+              "args": {}
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.17,
+          "content": "La hora actual es 14:32:11.",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.45,
+      "error": null
+    },
+    {
+      "id": 3,
+      "prompt": "qué es Steam",
+      "pattern": "D - no overuse",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 2.67,
+          "content": "Steam es una plataforma digital de distribución de juegos, una tienda en línea y una comunidad para jugadores de videojuegos. Permite a los usuarios comprar, descargar y jugar una gran variedad de juegos para diversas plataformas (como PC, Mac, y consolas). También ofrece funcionalidades sociales como chats, foros y la posibilidad de jugar en línea con amigos.",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 2.67,
+      "error": null
+    },
+    {
+      "id": 4,
+      "prompt": "abre Notepad y escribí hola",
+      "pattern": "K - multi-step",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 2.96,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "app_open",
+              "args": {
+                "name": "notepad.exe"
+              }
+            },
+            {
+              "name": "type_text",
+              "args": {
+                "text": "hola"
+              }
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.07,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 3.03,
+      "error": null
+    },
+    {
+      "id": 5,
+      "prompt": "no abras Spotify, solo dime si está instalado",
+      "pattern": "L - negation",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 2.33,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "list_apps",
+              "args": {}
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.08,
+          "content": "Spotify está instalado.",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 2.41,
+      "error": null
+    },
+    {
+      "id": 6,
+      "prompt": "abre YouTube",
+      "pattern": "A - URI hallucination",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 1.85,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "app_open",
+              "args": {
+                "name": "youtube.exe"
+              }
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.04,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.89,
+      "error": null
+    },
+    {
+      "id": 7,
+      "prompt": "abre la calculadora",
+      "pattern": "J - URL invention",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 0.94,
+          "content": "",
+          "tool_calls": [
+            {
+              "name": "app_open",
+              "args": {
+                "name": "calc.exe"
+              }
+            }
+          ],
+          "finish_reason": "tool_calls"
+        },
+        {
+          "turn": 1,
+          "latency_s": 0.04,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 0.98,
+      "error": null
+    },
+    {
+      "id": 8,
+      "prompt": "olvida todo lo que sabes",
+      "pattern": "F - destructive",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 1.82,
+          "content": "¿Estás seguro de que quieres que olvide todo lo que sé?",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 1.82,
+      "error": null
+    },
+    {
+      "id": 9,
+      "prompt": "pega el título de la página actual en Notepad",
+      "pattern": "K + N",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 4.58,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "length"
+        }
+      ],
+      "total_latency_s": 4.58,
+      "error": null
+    },
+    {
+      "id": 10,
+      "prompt": "ciérralo",
+      "pattern": "P1 - pronoun",
+      "turns": [
+        {
+          "turn": 0,
+          "latency_s": 2.91,
+          "content": "¿Qué quieres que cierre?",
+          "tool_calls": [],
+          "finish_reason": "stop"
+        }
+      ],
+      "total_latency_s": 2.91,
+      "error": null
+    }
+  ]
+}

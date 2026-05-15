@@ -1136,18 +1136,24 @@ def test_j5_sequential_handles_parse_error() -> bool:
 
 
 def test_profiles_recommend_by_vram() -> bool:
+    # Cortes actualizados a la nueva tabla:
+    #   >=12 GB -> performance, >=6 GB -> balanced, >=4 GB -> light, resto -> light.
+    # El objetivo de produccion es 6 GB de VRAM minimo, asi que ese es el
+    # corte donde entra balanced (E4B-Q4_K_M con KV q8_0).
     from gemma4_agent.profiles import recommend_profile
     assert recommend_profile(16384) == "performance"
     assert recommend_profile(12000) == "performance"
     assert recommend_profile(11999) == "balanced"
     assert recommend_profile(10240) == "balanced"
     assert recommend_profile(8000) == "balanced"
-    assert recommend_profile(7999) == "light"
-    assert recommend_profile(6144) == "light"
+    assert recommend_profile(7999) == "balanced"
+    assert recommend_profile(6144) == "balanced"  # target de 6 GB cae en balanced
+    assert recommend_profile(6000) == "balanced"
+    assert recommend_profile(5999) == "light"     # <6 GB cae a light
     assert recommend_profile(4000) == "light"
-    assert recommend_profile(3999) == "balanced"  # asume CPU/integrada
-    assert recommend_profile(0) == "balanced"
-    assert recommend_profile(None) == "balanced"
+    assert recommend_profile(3999) == "light"     # CPU/integrada -> light (voice CPU sigue ON)
+    assert recommend_profile(0) == "light"
+    assert recommend_profile(None) == "light"
     print("V1 recommend_profile by vram: OK")
     return True
 
@@ -1254,7 +1260,9 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
         )
     }
     try:
-        expected_ctx = {"performance": 32768, "balanced": 16384, "light": 4096, "standby": 4096}
+        # Context sizes alineados con la nueva tabla 6 GB-aware (balanced bajo
+        # de 16K a 8K para que KV cache entre en VRAM con E4B-Q4_K_M).
+        expected_ctx = {"performance": 32768, "balanced": 8192, "light": 4096, "standby": 4096}
         for name, profile in PROFILES.items():
             for k in saved:
                 os.environ.pop(k, None)

@@ -137,6 +137,19 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "on",
     ]
 
+    # VRAM-tight perfiles (balanced, light): --no-mmap para evitar
+    # double-buffer entre RAM mapeada y VRAM (critico con budget apretado).
+    #
+    # NO usamos --cache-type-k/v q8_0 aqui: la doc del repo
+    # (documentacion/04_vram_y_hardware/README.md) advierte explicitamente
+    # contra KV quant en Gemma 4 sin medir, citando un localbench benchmark
+    # que reporto KL 0.377 para Gemma 4 26B con q8_0 KV (vs Qwen <0.04).
+    # E4B/E2B no son MoE como el 26B pero el riesgo esta sin validar.
+    # Una pasada del bench Carter 540 con KV q8_0 confirmaria si se puede
+    # activar; mientras tanto, F16 default.
+    if profile.name in {"balanced", "light"}:
+        cmd.append("--no-mmap")
+
     # Vision: solo agregar --mmproj si el perfil lo permite y hay path real
     if profile.vision_enabled:
         mmproj_env = os.environ.get("GEMMA4_MMPROJ_PATH")
