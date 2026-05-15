@@ -256,17 +256,91 @@ Subset del roadmap de 13 sprints que se puede aplicar sin tocar archivos prohibi
 | Deps nuevas | **0** |
 | Constraint `agent.py` | **No tocado en toda la sesión** |
 
-## Sprints de Fase 3 que NO se aplicaron (requieren tocar `agent.py` o decisión externa)
+## Sprints de Fase 3 que NO se aplicaron en la primera tanda (continuación)
 
-| Sprint | Por qué pendiente |
+Tras autorización del usuario aplicamos los siguientes:
+
+## Sprint 1 — Inyección de tool_schemas_hint en agent.py — APPLIED
+- **Commit**: `c6ed18f feat(agent): Sprint 1 — inject tool_schemas_hint into system prompt`.
+- **Archivos**: `gemma4_agent/agent.py`, `gemma4_agent/tools.py` (variante compact), `gemma4_agent/profiles.py` (ctx balanced_8gb 8K→16K), `test_gx_features.py`.
+- **Cambios**:
+  - `Gemma4Agent._tool_schemas_hint()` con auto-selección por ctx: `full` (≥32K), `compact` (≥16K), `off` (<16K). Cache a nivel-instancia.
+  - `compile_tools_to_markdown_exact(compact=True)`: variante 49% más chica (~5.9K tokens vs 11.6K).
+  - `balanced_8gb`: ctx 8K→16K para acomodar el hint compact. VRAM total app sube de 5.95 a 6.30 GB; sigue entrando en 8 GB nominales.
+  - Overrides env: `GEMMA4_TOOL_SCHEMAS_HINT_MODE=full|compact|off|auto`, legacy `GEMMA4_DISABLE_TOOL_SCHEMAS_HINT=true`.
+- **Validación**: 143/143 + 84/84.
+
+## Sprint 4 — Wiring vision_relaunch callback — APPLIED
+- **Commit**: `f5819bc feat(agent_runner): Sprint 4 — wire vision_relaunch callback`.
+- **Archivos**: `gemma4_agent/agent_runner.py`.
+- **Cambios**: `AgentRunner._server_manager` ahora persiste la referencia. Tras boot exitoso del server, registramos `set_vision_relaunch_callback(...)` que invoca `manager.recycle_for_vision_leak()` al cruzar el umbral de 40 imágenes (item 1.7).
+- **Validación**: 143/143 + 84/84.
+
+## Sprint 5 — Streaming SSE interleaved + edge cases — APPLIED
+- **Commit**: `a2f7afd test: Sprint 5 — SSE streaming interleaved tool_calls integration`.
+- **Archivos**: `test_gx_features.py` (+3 tests).
+- **Cobertura nueva**:
+  - Patrón interleaved (texto + tool_call + texto en mismo turno).
+  - Args con `{`/`}` literales fragmentados en chunks SSE (#21384).
+  - Múltiples tool_calls paralelos en chunks separados.
+- **Validación**: 143/143 + 87/87.
+
+## Sprint 8/9 — Upstream PR watch script — APPLIED + ACTION DISCOVERED
+- **Commit**: `feat(audit): Sprint 8/9 — upstream PR/issue watch script`.
+- **Archivo nuevo**: `audit/check_upstream_prs.py` + `audit/upstream_pr_snapshot.json`.
+- **Tracking** de 6 issues/PRs upstream relevantes a Gemma 4.
+- **HALLAZGO CRÍTICO 2026-05-15**: el primer run del script reportó que **#22288 está MERGED** (fix de `--cache-reuse` para Gemma 4). El issue #21468 cerrado como consecuencia. Esto significa que el `--keep -1` que aplicamos en 1.3 sigue siendo útil pero ya **no es defensa contra issue activo, sino complemento**. El dev puede considerar re-habilitar `--cache-reuse` cuando confirme la build mínima requerida.
+- **Validación**: 143/143 + 87/87.
+
+## Sprint 13 — Regression guards del propio gemma4_agent — APPLIED
+- **Commit**: `1874797 test: Sprint 13 — regression guards for gemma4_agent invariants`.
+- **Archivos**: `test_gx_features.py` (+5 tests).
+- **Reenfoque del Sprint**: NO replicamos el harness Carter en gemma4_agent (decisión explícita del usuario: "esto es Gemma 4 Agent, no Carter"). En su lugar, agregamos tests defensivos que aseguran que los invariantes del informe externo NO se rompan en cambios futuros.
+- **5 tests nuevos**:
+  - a) `--mmproj` NO presente cuando vision=False (TL;DR MAL #b).
+  - b) Sampling oficial Google preservado en AgentConfig defaults (TL;DR MEJOR #a).
+  - c) `--host 127.0.0.1` y `--no-webui` en todos los perfiles activos (Sprint 12).
+  - d) Las 62 tools listadas en compile_tools_to_markdown_exact (full + compact).
+  - e) voice_enabled=True en todos los perfiles con server_running=True (req del usuario).
+- **Validación**: 143/143 + **92/92**.
+
+---
+
+## Resumen Fase 3 — completo
+
+| Sprint | Item del roadmap | Status | Commit | Tests |
+|---|---|---|---|---|
+| 12 | Hardening llama-server | APPLIED | `6108973` | +2 |
+| 6 | `/agent/recycle_server` endpoint | APPLIED | `2afc5cd` | n/a |
+| 11 | Telemetría opt-in | APPLIED | `fbdaed3` | +1 |
+| 7 | Pre-warm KV (helper) | APPLIED (helper) | `c84aef6` | +1 |
+| 1 | Inyección tool_schemas_hint | APPLIED | `c6ed18f` | +1 |
+| 4 | Wiring vision_relaunch | APPLIED | `f5819bc` | n/a |
+| 5 | Streaming SSE interleaved | APPLIED | `a2f7afd` | +3 |
+| 8/9 | Upstream PR watch | APPLIED + finding | `4d28e91` | n/a |
+| 13 | Regression guards | APPLIED | `1874797` | +5 |
+
+**9/13 sprints del roadmap aplicados.**
+
+Sprints todavía pendientes (requieren bench horas o decisión externa):
+- **2**: A/B Carter UD-Q4_K_XL vs E2B-Q5_K_M. Requiere bajar GGUF (~4.7 GB) + bench overnight.
+- **3**: Bench Carter Q4_K_M vs Q5_K_M. Bench overnight.
+- **10**: Implementación final speculative decoding. Helper opt-in en 2.2 listo; falta A/B real.
+
+Estos 3 son **trabajo de bench**, no de código. La infraestructura está completa.
+
+---
+
+## Estado final tras toda la sesión (Fase 1 + 2 + 3)
+
+| Métrica | Baseline → Final |
 |---|---|
-| 1 — Inyección de tool schemas EXACT al system prompt | Requiere editar `agent.py:388` (3 líneas). Helper ya listo (1.8). |
-| 2 — A/B bench Carter de UD-Q4_K_XL vs E2B-Q5_K_M | Requiere bajar GGUF + correr bench (horas). |
-| 3 — Bench Carter en Q4_K_M y Q5_K_M | Horas. Mejor overnight. |
-| 4 — Wiring del callback vision_relaunch en agent_runner | Toca archivo del flujo de arranque; preferible para sesión con dev. |
-| 5 — Verificación empírica streaming SSE con interleaved | Tools listas; falta test end-to-end con server real. |
-| 8 — Re-evaluar PR #22288 (cache-reuse) | Esperar 30 días. |
-| 9 — Re-evaluar MTP drafters upstream | Esperar 30 días. |
-| 10 — Implementación final speculative decoding 8 GB+ | Helper en 2.2 listo; falta A/B real. |
-| 13 — Push Carter 99.81 → 100% | Requiere análisis caso por caso. |
+| Tests del repo | 71/71 → **92/92 PASS** (+21 tests nuevos) |
+| Smoke Modo A | **143/143 PASS** (sin regresión en ninguna fase) |
+| Anti-bypass | **6/6 PASS** |
+| Commits totales | **27** (1 WIP + 26 trabajo/docs) |
+| Archivos nuevos | `_ps.py`, `telemetry.py`, `prewarm.py`, `audit/check_upstream_prs.py`, `audit/upstream_pr_snapshot.json` |
+| Deps nuevas | **0** |
+| Setup del dev (Q6_K) | **Preservado** durante toda la sesión |
+| Hallazgo crítico vía upstream watch | **PR #22288 MERGED** → `--cache-reuse` reparado para Gemma 4 |
 
