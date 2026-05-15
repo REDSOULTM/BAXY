@@ -1017,7 +1017,11 @@ foreach ($lang in (Get-WinUserLanguageList)) {
 }
 $items | ConvertTo-Json -Depth 4
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+    # timeout 20 -> 8s + try/except.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("language list timeout", reason="powershell_timeout")
     if proc.returncode != 0:
         return _err("failed to read language list", stderr=_truncate(proc.stderr, 2000), exit_code=proc.returncode)
     data = _json_or_text(proc.stdout)
@@ -1046,7 +1050,12 @@ public class KeyboardNative {
 $hkl = [KeyboardNative]::GetKeyboardLayout(0).ToInt64()
 [PSCustomObject]@{ hkl=("0x{0:X}" -f $hkl); language_id=("0x{0:X4}" -f ($hkl -band 0xffff)) } | ConvertTo-Json
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=15)
+    # timeout 15 -> 6s. Add-Type ya cachea el assembly tras primer uso;
+    # GetKeyboardLayout es instant. 6s da headroom 10x.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=6)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("keyboard read timeout", reason="powershell_timeout")
     if proc.returncode != 0:
         return _err("failed to read current keyboard", stderr=_truncate(proc.stderr, 2000), exit_code=proc.returncode)
     return _ok(current=_json_or_text(proc.stdout), language_list=_windows_language_list().get("languages", []))
@@ -1084,7 +1093,13 @@ if ($action -eq "set") { [Environment]::SetEnvironmentVariable($name,$value,$tar
 $v=[Environment]::GetEnvironmentVariable($name,$target)
 [PSCustomObject]@{ name=$name; scope=$target; value=$v; exists=($null -ne $v) } | ConvertTo-Json
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=20)
+    # timeout 20 -> 10s + try/except. SetEnvironmentVariable es instant;
+    # GetEnvironmentVariables del scope Machine sobre HKLM puede tardar
+    # 2-5s con muchas vars; 10s es generoso.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("environment operation timeout", scope=target, reason="powershell_timeout")
     if proc.returncode != 0:
         return _err("environment operation failed", stderr=_truncate(proc.stderr, 2000), exit_code=proc.returncode, scope=target)
     data = _json_or_text(proc.stdout)
@@ -1120,22 +1135,32 @@ def _file_hash(path: Path, algorithm: str) -> dict[str, Any]:
     if not path.is_file():
         return _err("file not found", path=str(path))
     algo = algorithm.upper()
-    proc = subprocess.run(
-        ["powershell", "-NoProfile", "-Command", f"Get-FileHash -Algorithm {algo} -LiteralPath $env:GEMMA4_HASH_PATH | ConvertTo-Json"],
-        env={**os.environ, "GEMMA4_HASH_PATH": str(path)},
-        capture_output=True,
-        text=True,
-        timeout=30,
-    )
-    if proc.returncode == 0 and proc.stdout.strip():
-        data = _json_or_text(proc.stdout)
-        if isinstance(data, dict):
-            return _ok(path=str(path.resolve()), algorithm=algo, hash=str(data.get("Hash") or "").lower())
-    h = hashlib.new(algo.lower())
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            h.update(chunk)
-    return _ok(path=str(path.resolve()), algorithm=algo, hash=h.hexdigest(), fallback="python_hashlib")
+    # Preferir hashlib in-process (~10-50ms para 10MB) sobre PowerShell
+    # Get-FileHash (~600ms cold-start). Solo caemos a PS si hashlib falla
+    # con el nombre del algoritmo (raro).
+    try:
+        h = hashlib.new(algo.lower())
+        with path.open("rb") as fh:
+            for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+                h.update(chunk)
+        return _ok(path=str(path.resolve()), algorithm=algo, hash=h.hexdigest(), source="hashlib")
+    except (ValueError, OSError) as exc:
+        # hashlib no soporta este algoritmo o falla I/O. Intentar PowerShell.
+        try:
+            proc = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", f"Get-FileHash -Algorithm {algo} -LiteralPath $env:GEMMA4_HASH_PATH | ConvertTo-Json"],
+                env={**os.environ, "GEMMA4_HASH_PATH": str(path)},
+                capture_output=True,
+                text=True,
+                timeout=15,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return _err(f"file hash failed: {exc}", path=str(path), source="hashlib_and_ps_timeout")
+        if proc.returncode == 0 and proc.stdout.strip():
+            data = _json_or_text(proc.stdout)
+            if isinstance(data, dict):
+                return _ok(path=str(path.resolve()), algorithm=algo, hash=str(data.get("Hash") or "").lower(), source="powershell")
+        return _err(f"file hash failed: {exc}", path=str(path))
 
 
 def _authenticode_signature(path: Path) -> dict[str, Any]:
@@ -1143,7 +1168,12 @@ def _authenticode_signature(path: Path) -> dict[str, Any]:
         return _err("file not found", path=str(path))
     env = {**os.environ, "GEMMA4_SIG_PATH": str(path)}
     script = "Get-AuthenticodeSignature -LiteralPath $env:GEMMA4_SIG_PATH | Select-Object Status,StatusMessage,SignerCertificate,Path | ConvertTo-Json -Depth 4"
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=30)
+    # timeout 30 -> 12s + try/except. signature check normalmente <2s; los
+    # que requieren CRL revocation pueden tardar 3-8s. 12s es suficiente.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=12)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("signature check timeout", path=str(path), reason="powershell_timeout")
     if proc.returncode != 0:
         return _err("signature check failed", stderr=_truncate(proc.stderr, 2000), exit_code=proc.returncode)
     data = _json_or_text(proc.stdout)

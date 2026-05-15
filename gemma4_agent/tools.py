@@ -2431,7 +2431,13 @@ $os = Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySi
 $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,DriverVersion
 [PSCustomObject]@{ cpu=$cpu; os=$os; gpu=$gpu } | ConvertTo-Json -Depth 4
 """
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+        # timeout 20 -> 10s. CIM Win32_VideoController es el mas lento (1-3s
+        # en sistemas con varios GPUs/displays); 10s da headroom 3x. Si tarda
+        # mas hay algo serio mal en WMI.
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("system_cpu_ram_gpu timeout", reason="powershell_cim_timeout")
         # CC-103: parse defensivo.
         ok, info = parse_ps_json(proc.stdout)
         if not ok:
@@ -2439,8 +2445,35 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
         return _ok(info=info, exit_code=proc.returncode)
 
     def system_disk(self, args: dict[str, Any]) -> dict[str, Any]:
+        # Preferir psutil.disk_partitions + usage (~5ms, in-process). El CIM
+        # query normalmente tarda <1s pero spawn de PowerShell paga ~300ms
+        # de cold-start. psutil es 60x mas rapido y no spawnea procesos.
+        try:
+            import psutil
+            disks: list[dict[str, Any]] = []
+            for part in psutil.disk_partitions(all=False):
+                try:
+                    usage = psutil.disk_usage(part.mountpoint)
+                    disks.append({
+                        "DeviceID": part.device.rstrip("\\/"),
+                        "Mountpoint": part.mountpoint,
+                        "Size": usage.total,
+                        "FreeSpace": usage.free,
+                        "VolumeName": part.fstype,
+                    })
+                except (PermissionError, OSError):
+                    continue
+            if disks:
+                return _ok(disks=disks, source="psutil")
+        except Exception:
+            pass
+
         script = "Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID,DriveType,Size,FreeSpace,VolumeName | ConvertTo-Json -Depth 3"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+        # timeout 20s -> 8s (CIM normalmente <1s; si tarda mas, abort).
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _ok(disks=[], source="powershell_timeout")
         ok, data = parse_ps_json(proc.stdout)
         if not ok:
             return _err("system_disk invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
@@ -2448,7 +2481,7 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
             data = []
         if isinstance(data, dict):
             data = [data]
-        return _ok(disks=data, exit_code=proc.returncode)
+        return _ok(disks=data, exit_code=proc.returncode, source="powershell")
 
     def system_battery(self, args: dict[str, Any]) -> dict[str, Any]:
         script = "Get-CimInstance Win32_Battery | Select-Object Name,EstimatedChargeRemaining,BatteryStatus | ConvertTo-Json -Depth 3"
@@ -2516,9 +2549,16 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
 
     def audio_devices(self, args: dict[str, Any]) -> dict[str, Any]:
         script = "Get-PnpDevice -Class AudioEndpoint | Select-Object FriendlyName,Status,InstanceId | ConvertTo-Json -Depth 3"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=15)
+        # timeout 15 -> 8s + try/except (antes una excepcion subia y mataba el turn).
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _ok(devices=[], note="audio_devices timeout/error", source="powershell_timeout")
         raw = proc.stdout.strip()
-        data = json.loads(raw) if raw else []
+        try:
+            data = json.loads(raw) if raw else []
+        except json.JSONDecodeError:
+            return _err("audio_devices invalid JSON", stdout=_truncate(raw, 1000), stderr=_truncate(proc.stderr, 1000))
         if isinstance(data, dict):
             data = [data]
         return _ok(devices=data, exit_code=proc.returncode)
@@ -3300,14 +3340,46 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         )
 
     def clipboard_read(self, args: dict[str, Any]) -> dict[str, Any]:
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", "Get-Clipboard -Raw"], capture_output=True, text=True, timeout=10)
-        return _ok(content=_truncate(proc.stdout, int(args.get("max_chars", 4000))), exit_code=proc.returncode)
+        max_chars = int(args.get("max_chars", 4000))
+        # Tk built-in: ~30ms vs PowerShell Get-Clipboard ~400-800ms.
+        try:
+            import tkinter
+            root = tkinter.Tk()
+            root.withdraw()
+            try:
+                content = root.clipboard_get()
+            except tkinter.TclError:
+                content = ""
+            root.destroy()
+            return _ok(content=_truncate(content, max_chars), source="tkinter")
+        except Exception:
+            pass
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", "Get-Clipboard -Raw"], capture_output=True, text=True, timeout=5)
+        except (OSError, subprocess.TimeoutExpired):
+            return _ok(content="", source="powershell_timeout")
+        return _ok(content=_truncate(proc.stdout, max_chars), exit_code=proc.returncode, source="powershell")
 
     def clipboard_write(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("content", ""))
+        # Tk built-in: instant (~10ms). PowerShell paga ~400ms cold-start.
+        try:
+            import tkinter
+            root = tkinter.Tk()
+            root.withdraw()
+            root.clipboard_clear()
+            root.clipboard_append(text)
+            root.update()  # asegurar que el sistema vea el contenido
+            root.destroy()
+            return _ok(wrote_chars=len(text), source="tkinter")
+        except Exception:
+            pass
         script = "$txt = [Console]::In.ReadToEnd(); Set-Clipboard -Value $txt"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], input=text, capture_output=True, text=True, timeout=10)
-        return _ok(wrote_chars=len(text), exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], input=text, capture_output=True, text=True, timeout=5)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("clipboard_write timeout", source="powershell_timeout")
+        return _ok(wrote_chars=len(text), exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000), source="powershell")
 
     def _uia_run(self, args: dict[str, Any], action: str) -> dict[str, Any]:
         env = os.environ.copy()
@@ -3673,7 +3745,12 @@ Start-Sleep -Milliseconds 120
         else:
             text_to_send = text
         script = "Add-Type -AssemblyName System.Windows.Forms; $t=[Console]::In.ReadToEnd(); [System.Windows.Forms.SendKeys]::SendWait($t)"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], input=text_to_send, capture_output=True, text=True, timeout=20)
+        # timeout 20 -> 8s. SendKeys es sincrono; textos cortos terminan en
+        # <500ms. 8s permite textos largos (~5K chars) sin bloquear el turn.
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], input=text_to_send, capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("gui_type timeout", chars=len(text), reason="sendkeys_timeout")
         return _ok(chars=len(text), exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def gui_keypress(self, args: dict[str, Any]) -> dict[str, Any]:

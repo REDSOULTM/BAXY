@@ -1304,7 +1304,12 @@ def _peripheral_device_problems() -> dict[str, Any]:
 
 
 def _peripheral_run_json(script: str, field: str) -> dict[str, Any]:
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+    # timeout 20 -> 10s + try/except. Get-PnpDevice puede tardar 2-6s con
+    # muchos devices; 10s da headroom 2x.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("Get-PnpDevice timeout", field=field, reason="powershell_timeout")
     if proc.returncode != 0:
         return _err("Get-PnpDevice failed", stderr=proc.stderr)
     raw = proc.stdout.strip()
@@ -3162,7 +3167,13 @@ $Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (Ne
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -StartWhenAvailable
 Register-ScheduledTask -TaskName '{_ps_quote(task_name)}' -TaskPath '\\Gemma4Agent\\' -Action $Action -Trigger $Trigger -Settings $Settings -Description '{_ps_quote(label)}' -Force | Out-Null
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, timeout=30)
+    # timeout 30 -> 15s + try/except. Register-ScheduledTask normalmente
+    # <3s; 15s suficiente. Sin try/except, una corrupcion del Task Scheduler
+    # mataba el turn entero.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, timeout=15)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("schedule task timeout", task_name=task_name, reason="taskscheduler_timeout")
     if proc.returncode != 0:
         return _err("failed to register watcher scheduled task", stderr=proc.stderr, exit_code=proc.returncode)
     return _ok(task_name=task_name, interval_minutes=minutes)
@@ -3464,7 +3475,12 @@ try {
   history              = $hist
 } | ConvertTo-Json -Depth 4
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
+    # try/except: Microsoft.Update.Session COM puede colgarse si el servicio
+    # wuauserv esta detenido o el sistema esta en estado WU corrupto.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("windows update query timeout", reason="wuauserv_unresponsive")
     if proc.returncode != 0:
         return _err("windows_update_status failed", stderr=proc.stderr)
     try:
@@ -3567,7 +3583,13 @@ def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
         f"Get-WinEvent -FilterHashtable $f -MaxEvents {limit} -ErrorAction SilentlyContinue | "
         f"Select-Object TimeCreated,Id,LevelDisplayName,ProviderName,Message | ConvertTo-Json -Depth 3"
     )
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], env=env, capture_output=True, text=True, timeout=30)
+    # Get-WinEvent puede tardar varios segundos en logs grandes; timeout=30
+    # razonable. Agregamos try/except para no propagar TimeoutExpired al
+    # caller del tool.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], env=env, capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("Get-WinEvent timeout", log=log, hours=hours, reason="event_log_too_large")
     if proc.returncode != 0:
         return _err("event_logs_query failed", stderr=proc.stderr)
     ok_parse, data = parse_ps_json(proc.stdout)
@@ -4042,7 +4064,13 @@ $apps = Get-AppxPackage | Where-Object {
 } | Select-Object Name,PackageFullName,PackageFamilyName,InstallLocation,Version,Publisher
 $apps | ConvertTo-Json -Depth 4
 """
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
+    # try/except: Get-AppxPackage puede tardar 5-15s en sistemas con
+    # cientos de apps UWP. 30s razonable; no queremos propagar timeout
+    # al caller del tool.
+    try:
+        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired):
+        return []
     raw = proc.stdout.strip()
     if not raw:
         return []
@@ -4310,7 +4338,13 @@ def _xml_escape(text: str) -> str:
 
 
 def _device_wifi_status() -> dict[str, Any]:
-    proc = subprocess.run(["netsh", "wlan", "show", "interfaces"], capture_output=True, text=True, timeout=15)
+    # timeout 15 -> 6s + try/except. netsh wlan show interfaces normalmente
+    # tarda <500ms; si Wlansvc esta caido o sin adaptador, mejor abortar
+    # rapido que bloquear 15s.
+    try:
+        proc = subprocess.run(["netsh", "wlan", "show", "interfaces"], capture_output=True, text=True, timeout=6)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("netsh wlan timeout", reason="wlansvc_unresponsive")
     if proc.returncode != 0:
         return _err("netsh wlan show interfaces failed", stderr=proc.stderr, exit_code=proc.returncode)
     fields: dict[str, str] = {}
@@ -4338,7 +4372,10 @@ def _device_wifi_status() -> dict[str, Any]:
 
 
 def _device_wifi_profiles() -> dict[str, Any]:
-    proc = subprocess.run(["netsh", "wlan", "show", "profiles"], capture_output=True, text=True, timeout=15)
+    try:
+        proc = subprocess.run(["netsh", "wlan", "show", "profiles"], capture_output=True, text=True, timeout=6)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("netsh wlan timeout", reason="wlansvc_unresponsive")
     if proc.returncode != 0:
         return _err("netsh wlan show profiles failed", stderr=proc.stderr)
     profiles: list[str] = []
@@ -4353,7 +4390,12 @@ def _device_wifi_profiles() -> dict[str, Any]:
 
 def _device_wifi_scan() -> dict[str, Any]:
     # netsh wlan show networks lists currently visible SSIDs.
-    proc = subprocess.run(["netsh", "wlan", "show", "networks", "mode=bssid"], capture_output=True, text=True, timeout=20)
+    # timeout 20 -> 10s: el scan puede tardar 2-8s segun el adaptador y
+    # cuantas redes visibles haya. 10s es suficiente headroom.
+    try:
+        proc = subprocess.run(["netsh", "wlan", "show", "networks", "mode=bssid"], capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        return _err("netsh wlan scan timeout", reason="wlansvc_unresponsive")
     if proc.returncode != 0:
         return _err("netsh wlan show networks failed", stderr=proc.stderr)
     networks: list[dict[str, Any]] = []
