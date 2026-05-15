@@ -3,11 +3,26 @@
 from __future__ import annotations
 
 import json
+import os
 import urllib.error
 import urllib.request
 from typing import Any, Iterator
 
 from .config import AgentConfig
+
+
+def _request_headers(content_type: str = "application/json", sse: bool = False) -> dict[str, str]:
+    """Sprint 12 hardening: si GEMMA4_LLAMA_API_KEY esta seteado, añade
+    el header Authorization: Bearer <key> que llama-server espera cuando
+    arranca con --api-key. Si no esta seteado, headers sin Authorization
+    (el server tampoco lo va a pedir)."""
+    headers: dict[str, str] = {"Content-Type": content_type}
+    if sse:
+        headers["Accept"] = "text/event-stream"
+    api_key = (os.environ.get("GEMMA4_LLAMA_API_KEY") or "").strip()
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    return headers
 
 
 class LLMClient:
@@ -133,7 +148,7 @@ class LLMClient:
         req = urllib.request.Request(
             self.config.chat_url,
             data=json.dumps(body).encode("utf-8"),
-            headers={"Content-Type": "application/json", "Accept": "text/event-stream"},
+            headers=_request_headers(sse=True),
         )
         try:
             resp = urllib.request.urlopen(req, timeout=timeout)
@@ -232,7 +247,7 @@ class LLMClient:
         req = urllib.request.Request(
             self.config.chat_url,
             data=json.dumps(body).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers=_request_headers(),
         )
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:

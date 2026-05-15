@@ -1872,6 +1872,70 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_hardening_flags_in_server_cmd() -> bool:
+    """Sprint 12: --host 127.0.0.1, --no-webui, y --api-key opt-in."""
+    import os
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    saved_key = os.environ.get("GEMMA4_LLAMA_API_KEY")
+    try:
+        # Sin api key: --host y --no-webui presentes, --api-key ausente
+        os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        cmd = llama_command(AgentConfig(), PROFILES["balanced"])
+        assert "--host" in cmd, "--host must be present"
+        host_idx = cmd.index("--host")
+        assert cmd[host_idx + 1] == "127.0.0.1", "host must be loopback"
+        assert "--no-webui" in cmd, "--no-webui must be present"
+        assert "--api-key" not in cmd, "no api-key when env unset"
+
+        # Con api key seteada: --api-key presente con el valor
+        os.environ["GEMMA4_LLAMA_API_KEY"] = "test-secret-123"
+        cmd = llama_command(AgentConfig(), PROFILES["balanced"])
+        assert "--api-key" in cmd
+        key_idx = cmd.index("--api-key")
+        assert cmd[key_idx + 1] == "test-secret-123"
+    finally:
+        if saved_key is None:
+            os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        else:
+            os.environ["GEMMA4_LLAMA_API_KEY"] = saved_key
+
+    print("OPTROAD-S12-a server hardening flags: OK")
+    return True
+
+
+def test_optroad_hardening_client_headers_include_auth() -> bool:
+    """Sprint 12: el cliente envia Authorization si GEMMA4_LLAMA_API_KEY esta."""
+    import os
+    from gemma4_agent.llm_client import _request_headers
+
+    saved = os.environ.get("GEMMA4_LLAMA_API_KEY")
+    try:
+        os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        h = _request_headers()
+        assert "Authorization" not in h
+        assert h["Content-Type"] == "application/json"
+
+        h_sse = _request_headers(sse=True)
+        assert "Authorization" not in h_sse
+        assert h_sse["Accept"] == "text/event-stream"
+
+        os.environ["GEMMA4_LLAMA_API_KEY"] = "another-secret"
+        h = _request_headers()
+        assert h["Authorization"] == "Bearer another-secret"
+        h_sse = _request_headers(sse=True)
+        assert h_sse["Authorization"] == "Bearer another-secret"
+    finally:
+        if saved is None:
+            os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        else:
+            os.environ["GEMMA4_LLAMA_API_KEY"] = saved
+    print("OPTROAD-S12-b client headers Bearer auth: OK")
+    return True
+
+
 def test_optroad_spec_draft_flag_only_in_performance() -> bool:
     """Item 2.2: speculative decoding via env var solo se activa en
     perfil performance y si el archivo existe."""
@@ -2132,6 +2196,9 @@ def main() -> int:
         test_optroad_is_experimental_quant_detects_mxfp4,
         # 2.2 speculative decoding opt-in
         test_optroad_spec_draft_flag_only_in_performance,
+        # Sprint 12 hardening llama-server
+        test_optroad_hardening_flags_in_server_cmd,
+        test_optroad_hardening_client_headers_include_auth,
     ]
     failures: list[str] = []
     for t in tests:

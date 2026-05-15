@@ -224,8 +224,16 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "-m",
         str(model_path.resolve()),
         "--jinja",
+        # Sprint 12 — hardening: forzar bind a loopback. El brief del
+        # proyecto es "100% local"; jamas debe escuchar en 0.0.0.0.
+        "--host",
+        "127.0.0.1",
         "--port",
         "8080",
+        # Sprint 12 — deshabilitar el webui interno de llama-server.
+        # El cliente tiene UI propia (PyQt6 + React UI Field); el webui
+        # interno es superficie de ataque innecesaria.
+        "--no-webui",
         "-ngl",
         "99",
         "-c",
@@ -245,6 +253,17 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "--keep",
         "-1",
     ]
+
+    # Sprint 12 — API key opt-in via env var. Si GEMMA4_LLAMA_API_KEY esta
+    # seteado, el server exige Authorization: Bearer <key> en cada request.
+    # No lo forzamos por default para no romper el flujo "el agente Python
+    # habla con llama-server en localhost"; pero si el usuario expone el
+    # puerto a otra red local (errores de config), esto provee defense in
+    # depth. El cliente llm_client.py debe leer el mismo env var y mandar
+    # el header — ver test que verifica round-trip.
+    api_key_env = (os.environ.get("GEMMA4_LLAMA_API_KEY") or "").strip()
+    if api_key_env:
+        cmd.extend(["--api-key", api_key_env])
 
     # VRAM-tight perfiles (balanced, light): --no-mmap para evitar
     # double-buffer entre RAM mapeada y VRAM (critico con budget apretado).
