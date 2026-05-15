@@ -1852,6 +1852,48 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_compile_tools_to_markdown_exact_shape() -> bool:
+    """Item 1.8: compile_tools_to_markdown_exact produce el formato EXACT."""
+    from gemma4_agent.tools import COMPOUND_TOOL_SCHEMAS, compile_tools_to_markdown_exact
+    md = compile_tools_to_markdown_exact()
+    # Header obligatorio
+    assert "# Tool Schemas (EXACT parameter names" in md
+    # Cada tool aparece como heading nivel 2
+    tool_names = [s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS]
+    for name in tool_names[:5]:
+        assert f"## {name}" in md, f"missing heading for {name}"
+    # Hay un campo REQUIRED visible al menos
+    assert "REQUIRED" in md
+    # No crashea con lista vacia
+    assert compile_tools_to_markdown_exact([]) == ""
+    # Schema sintetico
+    fake = [{
+        "type": "function",
+        "function": {
+            "name": "fake_tool",
+            "description": "Fake one",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string", "enum": ["read", "write"]},
+                    "path": {"type": "string"},
+                    "count": {"type": "integer"},
+                },
+                "required": ["action", "path"],
+            },
+        },
+    }]
+    md2 = compile_tools_to_markdown_exact(fake)
+    assert "## fake_tool" in md2
+    assert "- action (string, REQUIRED)" in md2
+    assert "- path (string, REQUIRED)" in md2
+    assert "- count (integer, optional)" in md2
+    # Enum reflejado
+    assert "'read'" in md2 and "'write'" in md2
+    print("OPTROAD-1.8 tool schemas EXACT markdown: OK")
+    return True
+
+
 def test_optroad_vision_counter_fires_callback_at_threshold() -> bool:
     """Item 1.7: el counter de imagenes dispara el callback en el umbral.
 
@@ -1990,6 +2032,8 @@ def main() -> int:
         test_optroad_normalize_tool_calls_list_response,
         # 1.7 vision counter para mmproj leak mitigation (#21690)
         test_optroad_vision_counter_fires_callback_at_threshold,
+        # 1.8 tool schemas EXACT en Markdown
+        test_optroad_compile_tools_to_markdown_exact_shape,
     ]
     failures: list[str] = []
     for t in tests:
