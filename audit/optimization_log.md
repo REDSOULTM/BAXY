@@ -115,3 +115,70 @@
 - Anti-bypass: 6/6 → **6/6 PASS**
 - Commits Fase 1: **9 commits** sobre `feature/gemma4-optimization-roadmap` (+ snapshot WIP `1106273` antes).
 
+---
+
+# Fase 2 — Decisiones de producto
+
+Resolvemos las 4 decisiones documentadas en `optimization_roadmap.md`.
+
+## 2.1 — Perfil `balanced_8gb` con UD-Q4_K_XL E4B — APPLIED
+- **Decisión tomada**: en lugar de cambiar el default de `balanced` (que rompería 6 GB con la reserva WDDM), **crear un perfil intermedio** para 8 GB de VRAM.
+- **Commit**: `cec6725 feat(profiles): new balanced_8gb profile with UD-Q4_K_XL E4B`.
+- **Archivos**: `gemma4_agent/profiles.py`, `gemma4_agent/test_gx_features.py`, `gemma4_agent/ui/settings.py`.
+- **Cambios**:
+  - Nuevo `PROFILES["balanced_8gb"]` apuntando a `models/E4B/gemma-4-E4B-it-UD-Q4_K_XL.gguf`, ctx 8K, vision OFF, rerank ON, voice ON.
+  - `recommend_profile` con nuevo corte 6500 MB efectivos (8 GB físicos) → `balanced_8gb` si el GGUF existe, fallback a `balanced` si no.
+  - GUI tabla de perfiles editable: 3 → 4 columnas.
+  - Tests V1/V4 actualizados con el tier intermedio. Detección defensiva si el GGUF está/no está.
+- **Acción pendiente del dev**: bajar `unsloth/gemma-4-E4B-it-GGUF:UD-Q4_K_XL` (~4.7 GB) a `models/E4B/gemma-4-E4B-it-UD-Q4_K_XL.gguf` para activar el perfil en máquinas de 8 GB.
+- **Validación**: 143/143 + 78/78.
+
+## 2.2 — Speculative decoding opt-in via env var — APPLIED
+- **Decisión tomada**: feature-flag **OFF-by-default**, opt-in via `GEMMA4_SPEC_DRAFT_MODEL`.
+- **Commit**: `bcf105e feat(llama_server): opt-in speculative decoding via env var`.
+- **Archivos**: `gemma4_agent/llama_server.py`, `gemma4_agent/test_gx_features.py`.
+- **Cambios**:
+  - Env vars: `GEMMA4_SPEC_DRAFT_MODEL` (path), `GEMMA4_SPEC_DRAFT_N_MAX` (16), `GEMMA4_SPEC_DRAFT_N_MIN` (0), `GEMMA4_SPEC_DRAFT_NGL` (99).
+  - Solo se activa si: archivo existe + perfil `performance` (VRAM 12+ GB requerida).
+  - Warning grande citando bench hackmd #ODXuOQNzSiyUITz7g9mtBw (negative speedup en consumer Ampere).
+  - Si perfil ≠ performance o archivo falta: ignorado con info-level log.
+- **Validación**: 143/143 + 79/79. Test cubre 4 casos (unset / file missing / wrong profile / activación).
+- **Acción pendiente**: el dev (con 16 GB) puede experimentar bajando un draft E2B-Q4 y correr `llama-bench --model-draft` para medir acceptance rate antes de habilitar en producción.
+
+## 2.3 — STT alternativo (Parakeet-TDT-0.6B-v3) — DEFERRED
+- **Razones**:
+  - Rompe "cero deps pesadas" del brief (NeMo toolkit ~1 GB de wheels).
+  - Licencia NVIDIA Community Model License necesita revisión legal.
+  - WER es-MX vs Whisper-small no medido.
+- **Commit**: `16b3919 docs(voice): formalize DEFERRED for items 2.3 and 2.4`.
+- **Archivos**: docstring formal en `gemma4_agent/voice/stt.py:StreamingSTT.load`.
+- **Re-evaluar cuando**: el dev acepte la dep + licencia + tenga set de bench Common Voice 17 es-MX con jiwer.
+
+## 2.4 — TTS alternativo (Kokoro-82M-es) — DEFERRED
+- **Razones**:
+  - Latencia primer chunk CPU 600-1200 ms viola el SLA "≤1 s primer fonema" del brief.
+  - Requiere dep nueva (kokoro-onnx).
+  - Voces es-MX/es-AR no son oficiales (parche comunitario).
+- **Commit**: `16b3919` (mismo).
+- **Archivos**: docstring formal en `gemma4_agent/voice/tts.py:StreamingTTS`.
+- **Re-evaluar cuando**: feedback explícito de usuarios pidiendo voz más natural.
+
+---
+
+## Resumen Fase 2
+
+| Item | Status | Commit | Validación |
+|---|---|---|---|
+| 2.1 balanced_8gb (UD-Q4_K_XL E4B) | APPLIED | `cec6725` | 143/143 + 78/78 |
+| 2.2 Speculative decoding opt-in | APPLIED | `bcf105e` | 143/143 + 79/79 |
+| 2.3 Parakeet STT | DEFERRED | `16b3919` | n/a |
+| 2.4 Kokoro TTS | DEFERRED | `16b3919` | n/a |
+
+**4/4 decisiones resueltas**: 2 APPLIED (con código y tests), 2 DEFERRED (con justificación en docstring).
+
+**Baseline → Fase 2 final**:
+- Tests del repo: 78/78 → **79/79 PASS** (+1 test nuevo para spec decoding)
+- Smoke Modo A: **143/143 PASS** (sin regresión)
+- Anti-bypass: **6/6 PASS**
+- Commits Fase 2: **3 commits** sobre Fase 1.
+
