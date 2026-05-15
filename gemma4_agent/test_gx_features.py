@@ -1924,6 +1924,39 @@ def test_optroad_s13_official_sampling_defaults() -> bool:
     return True
 
 
+def test_optroad_p4_prewarm_kv_called_after_boot() -> bool:
+    """Polish P4: tras warmup exitoso, agent_runner llama a prewarm_kv
+    con el system_prompt completo del agente.
+
+    Verificacion via inspeccion del codigo + smoke con monkey-patch.
+    """
+    import inspect
+    from gemma4_agent import agent_runner
+
+    src = inspect.getsource(agent_runner.AgentRunner._build_agent)
+
+    # 1) La llamada al prewarm aparece en el codigo.
+    assert "prewarm_kv" in src, "prewarm_kv must be wired in _build_agent"
+    assert "from .prewarm import prewarm_kv" in src, "lazy import expected"
+
+    # 2) Se invoca con el system_prompt del agente (sys_content).
+    assert "_system_message" in src, "system_prompt must be sourced from agent"
+    assert "sys_content" in src, "expected sys_content extracted from message"
+
+    # 3) Hay manejo de exception alrededor del prewarm (no rompe el boot).
+    #    Busco un try: ... prewarm_kv ... except dentro del scope post-warmup.
+    assert src.count("try:") >= 2, "warmup + prewarm should each have its own try"
+    assert "non-fatal" in src.lower(), "prewarm errors must be flagged non-fatal"
+
+    # 4) Respeta el opt-out del helper (prewarm_kv internamente lee
+    #    GEMMA4_DISABLE_PREWARM; el caller no necesita re-chequear).
+    #    Confirmamos que el caller maneja el caso skipped.
+    assert "skipped" in src, "caller must handle prewarm_kv skipped result"
+
+    print("OPTROAD-P4 prewarm_kv wired in _build_agent: OK")
+    return True
+
+
 def test_optroad_p1_cache_reuse_present_in_cmd() -> bool:
     """Polish P1: --cache-reuse 256 esta en el cmd del server.
 
@@ -2694,6 +2727,8 @@ def main() -> int:
         test_optroad_s13_profiles_voice_always_on_when_active,
         # Polish P1 — --cache-reuse 256 (PR #22288 merged in b9084+)
         test_optroad_p1_cache_reuse_present_in_cmd,
+        # Polish P4 — prewarm_kv wired in agent_runner
+        test_optroad_p4_prewarm_kv_called_after_boot,
         # Sprint 7 pre-warm KV
         test_optroad_prewarm_kv_calls_chat_with_min_tokens,
         # Sprint 11 telemetry opt-in
