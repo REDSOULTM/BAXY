@@ -85,7 +85,7 @@ Generado en sesión autónoma 2026-05-15.
 - [PASS] `maintenance` firewall_status → expect=ok, got=ok
 - [PASS] `maintenance` T2-025 PS injection rejected → expect=needs_user, got=needs_user
 - [PASS] `maintenance` event_logs_query happy → expect=ok, got=ok
-- [PASS] `maintenance` T2-026 defender returns job_id (got status=running, job_id=res_6e75d991eb)
+- [PASS] `maintenance` T2-026 defender returns job_id (got status=running, job_id=res_ca5fd2b616)
 - [PASS] `maintenance` T2-027 disk_cleanup_describe no exec arrays
 
 ## gui
@@ -171,7 +171,7 @@ Generado en sesión autónoma 2026-05-15.
 - [PASS] `env` get → expect=any, got=ok
 
 ## registry
-- [PASS] `registry` query → expect=any, got=failed
+- [PASS] `registry` query → expect=any, got=ok
 
 ## email
 - [PASS] `email` status → expect=any, got=ok
@@ -205,7 +205,7 @@ Generado en sesión autónoma 2026-05-15.
 - [PASS] `local_calendar` event_list → expect=any, got=ok
 
 ## habit_tracker
-- [PASS] `habit_tracker` stats → expect=any, got=failed
+- [PASS] `habit_tracker` stats → expect=any, got=needs_user
 
 ## local_search
 - [PASS] `local_search` status → expect=any, got=ok

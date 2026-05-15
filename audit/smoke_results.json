@@ -1460,7 +1460,7 @@
       "key": "HKLM\\SOFTWARE\\Microsoft\\Windows"
     },
     "expect": "any",
-    "actual_status": "failed",
+    "actual_status": "ok",
     "ok": true,
     "note": "query",
     "error": null,
@@ -1604,7 +1604,7 @@
       "action": "stats"
     },
     "expect": "any",
-    "actual_status": "failed",
+    "actual_status": "needs_user",
     "ok": true,
     "note": "stats",
     "error": "habit not found",

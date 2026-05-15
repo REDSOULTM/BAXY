@@ -2151,21 +2151,65 @@ class ToolRegistry:
             return self.knowledge.status()
         if action == "ingest":
             path = str(args.get("path") or "").strip()
+            title = str(args.get("title") or "").strip() or None
             if path:
-                return self.knowledge.ingest_file(Path(path).expanduser(), title=str(args.get("title") or "") or None)
-            return self.knowledge.ingest_text(str(args.get("text") or ""), source=str(args.get("source") or "user_text"), title=str(args.get("title") or "") or None)
+                # VALIDACION temprana: si el path no existe, devolver error
+                # estructurado en vez de propagar IOError desde knowledge.
+                p = Path(path).expanduser()
+                if not p.exists():
+                    return _err(
+                        "knowledge ingest path does not exist", path=str(p),
+                        status="needs_user",
+                    )
+                if not p.is_file():
+                    return _err(
+                        "knowledge ingest path is not a file", path=str(p),
+                        status="needs_user",
+                        hint="for directories, ingest each file individually",
+                    )
+                return self.knowledge.ingest_file(p, title=title)
+            # No path: ingest_text. Validar que hay contenido.
+            text = str(args.get("text") or "").strip()
+            if not text:
+                return _err(
+                    "knowledge ingest requires either path or non-empty text",
+                    status="needs_user",
+                )
+            return self.knowledge.ingest_text(
+                text,
+                source=str(args.get("source") or "user_text"),
+                title=title,
+            )
         if action == "search":
+            query = str(args.get("query") or "").strip()
+            if not query:
+                return _err("knowledge search requires non-empty query", status="needs_user")
             rerank_arg = args.get("rerank")
+            try:
+                limit = max(1, min(int(args.get("limit", 5)), 50))
+            except (TypeError, ValueError):
+                limit = 5
             return self.knowledge.search(
-                str(args.get("query") or ""),
-                limit=int(args.get("limit", 5)),
+                query,
+                limit=limit,
                 rerank=None if rerank_arg is None else bool(rerank_arg),
             )
         if action == "list":
-            return self.knowledge.list_documents(limit=int(args.get("limit", 100)))
+            try:
+                limit = max(1, min(int(args.get("limit", 100)), 1000))
+            except (TypeError, ValueError):
+                limit = 100
+            return self.knowledge.list_documents(limit=limit)
         if action == "delete":
-            return self.knowledge.delete(str(args.get("doc_id") or ""))
-        return _err("unknown knowledge action", action=action)
+            doc_id = str(args.get("doc_id") or "").strip()
+            if not doc_id:
+                return _err("knowledge delete requires doc_id", status="needs_user")
+            return self.knowledge.delete(doc_id)
+        return _err(
+            "unknown knowledge action", action=action,
+            valid_actions=["status", "ingest", "search", "list", "delete"],
+            status="needs_user",
+        )
 
     def t_office(self, args: dict[str, Any]) -> dict[str, Any]:
         return office_tool(args, self.state)

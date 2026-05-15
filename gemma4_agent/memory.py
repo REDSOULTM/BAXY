@@ -3,11 +3,39 @@
 from __future__ import annotations
 
 import json
+import re
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+
+# Bounds defensivos para evitar que memory.json crezca sin control. Los limites
+# son generosos pero finitos: el caso normal es <100 facts de <500 chars cada uno.
+MAX_KEY_LEN = 200
+MAX_VALUE_LEN = 8000
+MAX_TOTAL_ITEMS = 500  # explicit; el cap de auto: es aparte (max_total kwarg)
+
+
+# Caracteres de control invisibles que no deberian estar en keys/values porque
+# rompen el rendering del prompt y del log. Permitimos \n y \t.
+_INVALID_CONTROL_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _sanitize_key(raw: str) -> str:
+    """Normaliza una key: strip + colapsar whitespace + drop control chars."""
+    if not raw:
+        return ""
+    cleaned = _INVALID_CONTROL_CHARS.sub("", raw).strip()
+    # Colapsar whitespace interno para que "foo  bar" == "foo bar".
+    return " ".join(cleaned.split())
+
+
+def _sanitize_value(raw: str) -> str:
+    if not raw:
+        return ""
+    return _INVALID_CONTROL_CHARS.sub("", raw)
 
 
 @dataclass
@@ -23,7 +51,7 @@ class MemoryStore:
             return {"items": {}}
         try:
             data = json.loads(self.path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, OSError):
             return {"items": {}}
         if not isinstance(data, dict):
             return {"items": {}}
@@ -35,17 +63,50 @@ class MemoryStore:
         atomic_write_json(self.path, data)
 
     def save(self, key: str, value: str) -> dict[str, Any]:
-        key = key.strip()
-        if not key:
-            return {"ok": False, "error": "empty key"}
+        # SANITIZACION + VALIDACION: control chars rompen el rendering del
+        # prompt; tamaños unbounded permiten al LLM tirar MB de basura.
+        clean_key = _sanitize_key(key)
+        if not clean_key:
+            return {"ok": False, "error": "empty key", "status": "needs_user"}
+        if len(clean_key) > MAX_KEY_LEN:
+            return {
+                "ok": False,
+                "error": f"key too long ({len(clean_key)} > {MAX_KEY_LEN} chars)",
+                "status": "needs_user",
+                "hint": "use a shorter key; the value can be larger",
+            }
+        clean_value = _sanitize_value(value or "")
+        if len(clean_value) > MAX_VALUE_LEN:
+            return {
+                "ok": False,
+                "error": f"value too long ({len(clean_value)} > {MAX_VALUE_LEN} chars)",
+                "status": "needs_user",
+                "hint": "split the fact into smaller pieces or use knowledge.ingest for documents",
+            }
         with self._lock:
             data = self._load()
-            data["items"][key] = {
-                "value": value,
+            items = data.setdefault("items", {})
+            # CAP TOTAL: si ya estamos al limite Y la key es nueva, evict la
+            # entry mas vieja (por updated_at). Explicit pueden eliminar a
+            # auto:* y viceversa — el cap es global porque el storage es uno.
+            if clean_key not in items and len(items) >= MAX_TOTAL_ITEMS:
+                oldest = min(
+                    items.items(),
+                    key=lambda pair: pair[1].get("updated_at", "") if isinstance(pair[1], dict) else "",
+                )
+                items.pop(oldest[0], None)
+                evicted = oldest[0]
+            else:
+                evicted = None
+            items[clean_key] = {
+                "value": clean_value,
                 "updated_at": datetime.now().isoformat(timespec="seconds"),
             }
             self._save(data)
-            return {"ok": True, "key": key, "value": value}
+            return {
+                "ok": True, "key": clean_key, "value": clean_value,
+                "total": len(items), "evicted": evicted,
+            }
 
     def auto_save(self, facts: list[dict[str, str]], *, max_total: int = 50) -> dict[str, Any]:
         """Persist facts extracted automatically (without explicit user request).
@@ -100,18 +161,20 @@ class MemoryStore:
         return {"ok": True, "query": query, "items": matches}
 
     def delete(self, key: str) -> dict[str, Any]:
+        # Normalizar key igual que en save() para que delete sea simetrico.
+        clean = _sanitize_key(key) if key != "*" else "*"
         with self._lock:
             data = self._load()
             items = data.get("items", {})
-            if key == "*":
+            if clean == "*":
                 count = len(items)
                 data["items"] = {}
                 self._save(data)
-                return {"ok": True, "deleted": count}
-            existed = key in items
-            items.pop(key, None)
+                return {"ok": True, "deleted": count, "scope": "all"}
+            existed = clean in items
+            items.pop(clean, None)
             self._save(data)
-            return {"ok": True, "key": key, "existed": existed}
+            return {"ok": True, "key": clean, "existed": existed, "deleted": 1 if existed else 0}
 
     def prompt_summary(self) -> str:
         with self._lock:

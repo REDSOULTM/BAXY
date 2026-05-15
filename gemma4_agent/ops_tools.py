@@ -143,26 +143,89 @@ def env_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     name = str(args.get("name") or "").strip()
     target = _env_target(scope)
     if not target:
-        return _err("invalid env scope", scope=scope)
+        return _err(
+            "invalid env scope", scope=scope,
+            valid_scopes=["process", "user", "machine"], status="needs_user",
+        )
 
     if action == "list":
         if scope == "process":
             items = [{"name": key, "value": value} for key, value in sorted(os.environ.items())]
-            return _ok(scope=scope, variables=items[: int(args.get("limit", 200))], count=len(items))
-        return _env_ps("list", target, "", "")
+            limit = int(args.get("limit", 200))
+            return _ok(
+                scope=scope, variables=items[:limit], count=len(items),
+                truncated=len(items) > limit, source="os.environ",
+            )
+        # CONSISTENCIA: _env_ps devuelve {scope, result, exit_code}. Para
+        # uniformidad con el path de process, normalizamos a {variables, count}.
+        ps_result = _env_ps("list", target, "", "")
+        if not ps_result.get("ok"):
+            return ps_result
+        raw = ps_result.get("result")
+        items_list: list[dict[str, Any]] = []
+        if isinstance(raw, list):
+            for item in raw:
+                if isinstance(item, dict) and item.get("Name"):
+                    items_list.append({"name": str(item["Name"]), "value": str(item.get("Value") or "")})
+        return _ok(
+            scope=scope, variables=items_list, count=len(items_list),
+            truncated=False, source="powershell",
+        )
+
     if not name:
-        return _err("missing env var name")
+        return _err("missing env var name", action=action, status="needs_user")
+
+    # VALIDACION nombre: no permitir caracteres invalidos que SetEnvironmentVariable
+    # rechaza silenciosamente o convierte en bug raro.
+    if "=" in name or "\x00" in name:
+        return _err(
+            "invalid env var name (contains '=' or NUL)",
+            name=name, status="needs_user",
+        )
+
     if action == "get":
         if scope == "process":
-            return _ok(scope=scope, name=name, value=os.environ.get(name), exists=name in os.environ)
-        return _env_ps("get", target, name, "")
+            value = os.environ.get(name)
+            return _ok(
+                scope=scope, name=name, value=value, exists=value is not None,
+                source="os.environ",
+            )
+        ps_result = _env_ps("get", target, name, "")
+        if not ps_result.get("ok"):
+            return ps_result
+        raw = ps_result.get("result") or {}
+        if isinstance(raw, dict):
+            return _ok(
+                scope=scope, name=name,
+                value=raw.get("value"),
+                exists=bool(raw.get("exists")),
+                source="powershell",
+            )
+        return _ok(scope=scope, name=name, value=None, exists=False, source="powershell")
+
     if action in {"set", "delete"}:
         previous = env_tool({"action": "get", "scope": scope, "name": name}, state)
         value = "" if action == "delete" else str(args.get("value") or "")
-        rollback_value = previous.get("value")
+        # IDEMPOTENCIA: si la operacion es no-op (set a mismo valor, delete de
+        # algo que no existe), evitamos crear un checkpoint redundante.
+        prev_value = previous.get("value")
+        prev_exists = bool(previous.get("exists"))
+        if action == "delete" and not prev_exists:
+            return _ok(
+                scope=scope, name=name, action=action,
+                noop=True, note="env var did not exist; nothing to delete",
+                value=None, exists=False,
+            )
+        if action == "set" and prev_exists and prev_value == value:
+            return _ok(
+                scope=scope, name=name, action=action,
+                noop=True, note="env var already has requested value",
+                value=value, exists=True,
+            )
+
         rollback_args = {"action": "delete", "scope": scope, "name": name}
-        if rollback_value is not None:
-            rollback_args = {"action": "set", "scope": scope, "name": name, "value": rollback_value}
+        if prev_value is not None and prev_exists:
+            rollback_args = {"action": "set", "scope": scope, "name": name, "value": prev_value}
         checkpoint = state.checkpoint(
             f"env {scope}:{name} before {action}",
             rollback=[{"tool": "env", "args": rollback_args}],
@@ -173,11 +236,36 @@ def env_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 os.environ.pop(name, None)
             else:
                 os.environ[name] = value
-            return _ok(scope=scope, name=name, action=action, checkpoint=checkpoint.get("checkpoint"), value=os.environ.get(name))
+            # VERIFICACION post-mutation:
+            current = os.environ.get(name)
+            expected = None if action == "delete" else value
+            verified = current == expected
+            return _ok(
+                scope=scope, name=name, action=action,
+                checkpoint=checkpoint.get("checkpoint"),
+                value=current, verified=verified,
+                source="os.environ",
+            )
         result = _env_ps("delete" if action == "delete" else "set", target, name, value)
         result["checkpoint"] = checkpoint.get("checkpoint")
+        # VERIFICACION post-mutation para machine/user scope.
+        if result.get("ok"):
+            post = env_tool({"action": "get", "scope": scope, "name": name}, state)
+            current = post.get("value")
+            expected = None if action == "delete" else value
+            result["verified"] = current == expected
+            result["value"] = current
         return result
-    return _err("unknown env action", action=action)
+    return _err(
+        "unknown env action", action=action,
+        valid_actions=["get", "set", "delete", "list"], status="needs_user",
+    )
+
+
+_VALID_REG_TYPES = {
+    "REG_SZ", "REG_EXPAND_SZ", "REG_BINARY", "REG_DWORD", "REG_QWORD",
+    "REG_MULTI_SZ", "REG_NONE",
+}
 
 
 def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -191,31 +279,83 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         cmd = ["reg", "query", key]
         if name:
             cmd.extend(["/v", name])
-        return _run_cmd(cmd, timeout=20)
+        result = _run_cmd(cmd, timeout=15)  # antes 20, suficiente.
+        # CONSISTENCIA: reg query devuelve exit 1 si la clave/valor no existe.
+        # Esto NO es un error del agente; es informacion semantica. Convertir
+        # a _ok(exists=False) para que el LLM distinga "registry call broken"
+        # de "key not present".
+        if not result.get("ok"):
+            stderr_lower = str(result.get("stderr") or "").lower()
+            if (
+                "no se puede encontrar" in stderr_lower
+                or "unable to find" in stderr_lower
+                or "el sistema no puede encontrar" in stderr_lower
+                or result.get("exit_code") == 1
+            ):
+                return _ok(
+                    key=key, name=name or None, exists=False,
+                    note="Registry key/value does not exist.",
+                    source="reg.exe",
+                )
+            return result
+        return _ok(**result, key=key, name=name or None, exists=True, source="reg.exe")
+
     if action in {"export", "backup"}:
         out = str(args.get("file") or args.get("dst") or "").strip()
         path = Path(out).expanduser() if out else _registry_backup_path(state, key)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        result = _run_cmd(["reg", "export", key, str(path), "/y"], timeout=30)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            return _err("cannot create backup directory", path=str(path.parent), reason=str(exc))
+        result = _run_cmd(["reg", "export", key, str(path), "/y"], timeout=20)
+        # VERIFICACION: reg export puede devolver returncode 0 pero no
+        # escribir el archivo (clave inaccesible, permisos). Chequear que
+        # el .reg existe y tiene contenido.
+        if result.get("ok"):
+            if not path.is_file() or path.stat().st_size == 0:
+                return _err(
+                    "reg export reported success but backup file is missing/empty",
+                    key=key, file=str(path), status="failed",
+                )
         result.update(file=str(path.resolve()), registry_key=key)
         return result
+
     if action == "import":
         file_path = Path(str(args.get("file") or args.get("path") or "")).expanduser()
         if not file_path.is_file():
-            return _err("registry import file not found", file=str(file_path))
-        return _run_cmd(["reg", "import", str(file_path)], timeout=30)
+            return _err("registry import file not found", file=str(file_path), status="needs_user")
+        if file_path.stat().st_size == 0:
+            return _err("registry import file is empty", file=str(file_path), status="failed")
+        return _run_cmd(["reg", "import", str(file_path)], timeout=20)
+
     if action == "add":
         if not name:
             return _err("missing registry value name")
-        backup = registry_tool({"action": "backup", "key": key}, state)
-        value_type = str(args.get("type") or "REG_SZ")
+        value_type = str(args.get("type") or "REG_SZ").upper()
+        # VALIDACION: el LLM puede pasar tipos invalidos. reg.exe devuelve
+        # error obscuro; lo atrapamos antes con un mensaje claro.
+        if value_type not in _VALID_REG_TYPES:
+            return _err(
+                f"invalid registry value type: {value_type!r}",
+                valid_types=sorted(_VALID_REG_TYPES), status="needs_user",
+            )
         data = str(args.get("data") or args.get("value") or "")
+        # VALIDACION cruzada type/data: REG_DWORD/REG_QWORD requieren numero.
+        if value_type in {"REG_DWORD", "REG_QWORD"}:
+            try:
+                int(data, 0)  # base 0 -> acepta "0x..." y decimal
+            except (ValueError, TypeError):
+                return _err(
+                    f"{value_type} requires integer data; got {data!r}",
+                    type=value_type, data=data, status="needs_user",
+                )
+        backup = registry_tool({"action": "backup", "key": key}, state)
         if backup.get("ok"):
             rollback = [{"tool": "registry", "args": {"action": "import", "file": backup.get("file")}}]
         else:
             # T2-registry-backup-trust-015: solo permitimos fallback-to-delete
             # si confirmamos que la clave/valor NO existía antes del add.
-            pre = _run_cmd(["reg", "query", key, "/v", name], timeout=15)
+            pre = _run_cmd(["reg", "query", key, "/v", name], timeout=10)
             if pre.get("ok"):
                 # Existía un valor previo y el backup falló: rehusamos para no
                 # destruirlo accidentalmente con un rollback-to-delete.
@@ -225,9 +365,18 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 )
             rollback = [{"tool": "registry", "args": {"action": "delete", "key": key, "name": name}}]
         checkpoint = state.checkpoint(f"registry {key}\\{name} before add", rollback=rollback, metadata={"backup": backup})
-        result = _run_cmd(["reg", "add", key, "/v", name, "/t", value_type, "/d", data, "/f"], timeout=30)
-        result.update(backup=backup, checkpoint=checkpoint.get("checkpoint"), registry_key=key, value_name=name)
+        result = _run_cmd(["reg", "add", key, "/v", name, "/t", value_type, "/d", data, "/f"], timeout=20)
+        # VERIFICACION post-add: re-query para confirmar que el valor quedo.
+        verified = False
+        if result.get("ok"):
+            post = _run_cmd(["reg", "query", key, "/v", name], timeout=10)
+            verified = bool(post.get("ok"))
+        result.update(
+            backup=backup, checkpoint=checkpoint.get("checkpoint"),
+            registry_key=key, value_name=name, type=value_type, verified=verified,
+        )
         return result
+
     if action == "delete":
         backup = registry_tool({"action": "backup", "key": key}, state)
         rollback = [{"tool": "registry", "args": {"action": "import", "file": backup.get("file")}}] if backup.get("ok") else []
@@ -236,10 +385,22 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         if name:
             cmd.extend(["/v", name])
         cmd.append("/f")
-        result = _run_cmd(cmd, timeout=30)
-        result.update(backup=backup, checkpoint=checkpoint.get("checkpoint"), registry_key=key, value_name=name or None)
+        result = _run_cmd(cmd, timeout=20)
+        # VERIFICACION post-delete: re-query debe devolver exit 1.
+        verified = False
+        if result.get("ok"):
+            post_cmd = ["reg", "query", key]
+            if name:
+                post_cmd.extend(["/v", name])
+            post = _run_cmd(post_cmd, timeout=10)
+            verified = not post.get("ok")  # absent means deleted
+        result.update(
+            backup=backup, checkpoint=checkpoint.get("checkpoint"),
+            registry_key=key, value_name=name or None, verified=verified,
+        )
         return result
-    return _err("unknown registry action", action=action)
+    return _err("unknown registry action", action=action,
+                valid_actions=["query", "export", "backup", "import", "add", "delete"])
 
 
 def download_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:

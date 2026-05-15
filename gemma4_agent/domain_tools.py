@@ -5761,6 +5761,22 @@ def dependency_tool(args: dict[str, Any]) -> dict[str, Any]:
     return _err("unknown dependency action", action=action)
 
 
+# Regex laxas; el objetivo no es validar email/phone "correctos" sino
+# rechazar valores claramente invalidos (caracteres de control, ints crudos).
+_EMAIL_BASIC_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+_PHONE_BASIC_RE = re.compile(r"^[\d\s\-\+\(\)]+$")
+_CONTROL_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _clean_contact_field(value: Any) -> str | None:
+    """Normaliza un campo de contacto: strip + drop control chars + tipo str.
+    Devuelve None si el valor es vacio o no convertible."""
+    if value is None:
+        return None
+    s = _CONTROL_CHARS_RE.sub("", str(value)).strip()
+    return s or None
+
+
 def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "list").casefold()
     if action == "status":
@@ -5768,22 +5784,81 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "list":
         return _ok(contacts=_resources_by_kind(state, "contact", include_closed=bool(args.get("include_closed", False))))
     if action in {"create", "add"}:
-        name = str(args.get("name") or "").strip()
+        name = _clean_contact_field(args.get("name"))
         if not name:
-            return _err("missing contact name")
+            return _err("missing contact name", status="needs_user")
+        email = _clean_contact_field(args.get("email"))
+        phone = _clean_contact_field(args.get("phone"))
+        notes = _clean_contact_field(args.get("notes"))
+        # VALIDACION laxa de formato: si el LLM pasa email=123 o phone="abc",
+        # devolvemos status=needs_user con el motivo. NO rechazamos formatos
+        # no convencionales (internacionales, extensiones) — solo lo
+        # claramente roto.
+        if email and not _EMAIL_BASIC_RE.match(email):
+            return _err(
+                f"invalid email format: {email!r}",
+                hint="expected user@host.tld; omit field to skip", status="needs_user",
+            )
+        if phone and not _PHONE_BASIC_RE.match(phone):
+            return _err(
+                f"invalid phone format: {phone!r}",
+                hint="digits + (space/dash/+/parens) only; use _vcard for international formats",
+                status="needs_user",
+            )
+        # CHEQUEO UNICIDAD: contactos con mismo nombre ya existentes generan
+        # un warning explicito (no rechazo) para que el LLM decida que hacer.
+        existing = [
+            c for c in _resources_by_kind(state, "contact", include_closed=False)
+            if (c.get("metadata") or {}).get("name", "").strip().casefold() == name.casefold()
+        ]
         resource = state.register_resource(
-            "contact",
-            name,
-            metadata={"name": name, "email": args.get("email"), "phone": args.get("phone"), "notes": args.get("notes"), "created_at": datetime.now().isoformat()},
+            "contact", name,
+            metadata={
+                "name": name, "email": email, "phone": phone, "notes": notes,
+                "created_at": datetime.now().isoformat(),
+            },
         )
-        return _ok(contact=resource.get("resource"))
+        out = _ok(contact=resource.get("resource"))
+        if existing:
+            out["duplicate_warning"] = {
+                "count": len(existing),
+                "existing_ids": [c.get("id") for c in existing[:5]],
+                "note": (
+                    "A contact with the same name already exists. Use action=update "
+                    "instead if you want to modify it, or proceed with create for a "
+                    "separate entry."
+                ),
+            }
+        return out
     if action == "search":
-        query = str(args.get("query") or args.get("name") or "").casefold()
-        matches = [c for c in _resources_by_kind(state, "contact", include_closed=True) if query in json.dumps(c, ensure_ascii=False).casefold()]
-        return _ok(matches=matches[: int(args.get("limit", 10))], count=len(matches))
+        query = (_clean_contact_field(args.get("query") or args.get("name")) or "").casefold()
+        if not query:
+            return _err("missing query/name", status="needs_user")
+        try:
+            limit = max(1, min(int(args.get("limit", 10)), 100))
+        except (TypeError, ValueError):
+            limit = 10
+        # MATCHING ESTRUCTURADO: en vez de JSON-blob substring (que matchea
+        # ids, timestamps, basura), comparar contra los campos del metadata
+        # de forma explicita.
+        matches: list[dict[str, Any]] = []
+        for c in _resources_by_kind(state, "contact", include_closed=True):
+            meta = c.get("metadata") or {}
+            haystacks = [
+                str(meta.get("name") or ""),
+                str(meta.get("email") or ""),
+                str(meta.get("phone") or ""),
+                str(meta.get("notes") or ""),
+                str(c.get("label") or ""),
+            ]
+            if any(query in h.casefold() for h in haystacks):
+                matches.append(c)
+        return _ok(matches=matches[:limit], count=len(matches), query=query)
     if action == "delete":
         contact = _find_resource(args, state, "contact")
-        return state.mark_cleaned(str(contact["id"]), {"deleted": True}) if contact else _err("contact not found")
+        if not contact:
+            return _err("contact not found", status="needs_user")
+        return state.mark_cleaned(str(contact["id"]), {"deleted": True})
     if action == "update":
         return _contacts_update(args, state)
     if action == "export_vcard":
@@ -5792,7 +5867,14 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _contacts_import_vcard(args, state)
     if action == "resolve_recipient":
         return _contacts_resolve_recipient(args, state)
-    return _err("unknown contacts action", action=action)
+    return _err(
+        "unknown contacts action", action=action,
+        valid_actions=[
+            "status", "list", "create", "add", "search", "delete", "update",
+            "export_vcard", "import_vcard", "resolve_recipient",
+        ],
+        status="needs_user",
+    )
 
 
 def _contacts_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -5813,16 +5895,36 @@ def _contacts_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 def _contacts_export_vcard(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     contacts = _resources_by_kind(state, "contact", include_closed=False)
     if not contacts:
-        return _err("no contacts to export")
+        return _err("no contacts to export", status="needs_user")
     path_raw = str(args.get("path") or "").strip()
     if path_raw:
         path = Path(path_raw).expanduser()
     else:
         path = state.path.parent / "generated" / f"contacts_{time.strftime('%Y%m%d_%H%M%S')}.vcf"
-    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        return _err("cannot create export directory", path=str(path.parent), reason=str(exc))
     body = "\r\n".join(_contact_to_vcard(c) for c in contacts) + "\r\n"
-    path.write_text(body, encoding="utf-8")
-    return _ok(path=str(path.resolve()), exported=len(contacts))
+    try:
+        path.write_text(body, encoding="utf-8")
+    except (PermissionError, OSError) as exc:
+        return _err(
+            "vcard write failed", path=str(path), reason=str(exc),
+            status="needs_user" if isinstance(exc, PermissionError) else "failed",
+        )
+    # VERIFICACION post-write.
+    try:
+        size = path.stat().st_size
+    except OSError:
+        size = -1
+    if size != len(body.encode("utf-8")):
+        return _err(
+            "vcard write incomplete", path=str(path),
+            expected_bytes=len(body.encode("utf-8")), actual_bytes=size,
+            status="failed",
+        )
+    return _ok(path=str(path.resolve()), exported=len(contacts), bytes=size, verified=True)
 
 
 def _contact_to_vcard(contact: dict[str, Any]) -> str:
@@ -5962,18 +6064,82 @@ def _contacts_resolve_recipient(args: dict[str, Any], state: AgentState) -> dict
     return _ok(query=query, matches=matches, count=len(matches), best=matches[0] if matches else None)
 
 
+def _parse_due_iso(value: Any) -> tuple[str | None, str | None]:
+    """Intenta normalizar un `due` a ISO 8601. Devuelve (iso_str_or_None, error_msg_or_None).
+
+    Acepta:
+      - "2026-05-20" -> "2026-05-20T00:00:00"
+      - "2026-05-20T15:30" -> "2026-05-20T15:30:00"
+      - ya-ISO -> passthrough
+      - None / "" -> (None, None)  (sin due es valido)
+
+    Rechaza strings de lenguaje natural ("mañana", "tomorrow") con un mensaje
+    claro para que el LLM resuelva el delta antes de llamar.
+    """
+    if value is None:
+        return None, None
+    if isinstance(value, str):
+        s = value.strip()
+        if not s:
+            return None, None
+        # Patron ISO laxo: YYYY-MM-DD opcional T HH:MM[:SS]
+        if re.match(r"^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?)?$", s):
+            if "T" not in s:
+                s = s + "T00:00:00"
+            elif s.count(":") == 1:
+                s = s + ":00"
+            return s, None
+        # Intentar parsear como datetime (cubre microseconds, timezones).
+        try:
+            datetime.fromisoformat(s)
+            return s, None
+        except ValueError:
+            pass
+        return None, (
+            f"due value {s!r} is not ISO 8601. Pass YYYY-MM-DD or YYYY-MM-DDTHH:MM; "
+            "for relative dates ('tomorrow', 'next week') resolve the absolute "
+            "date in the agent before calling."
+        )
+    return None, f"due must be a string, got {type(value).__name__}"
+
+
 def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "list").casefold()
     if action == "status":
         return _ok(notes=len(_resources_by_kind(state, "note")), tasks=len(_resources_by_kind(state, "task")))
     if action in {"note_create", "create_note"}:
-        title = str(args.get("title") or "Nota").strip()
+        title = str(args.get("title") or "").strip() or "Nota"
         text = str(args.get("text") or args.get("content") or "").strip()
+        # WARNING (no error) si la nota es vacia. La nota se crea igual pero
+        # el LLM ve que algo raro pasa y puede corregir en el siguiente turn.
+        if not text and title == "Nota":
+            return _err(
+                "note_create needs at least title or text",
+                hint="pass title='...' or text='...'", status="needs_user",
+            )
         resource = state.register_resource("note", title, metadata={"title": title, "text": text, "tags": args.get("tags"), "created_at": datetime.now().isoformat()})
-        return _ok(note=resource.get("resource"))
+        out = _ok(note=resource.get("resource"))
+        if not text:
+            out["warning"] = "note created with empty text"
+        return out
     if action in {"task_create", "create_task"}:
-        title = str(args.get("title") or args.get("text") or "Tarea").strip()
-        resource = state.register_resource("task", title, metadata={"title": title, "text": args.get("text"), "due": args.get("due"), "status": "open", "created_at": datetime.now().isoformat()})
+        title = str(args.get("title") or args.get("text") or "").strip()
+        if not title:
+            return _err(
+                "task_create requires title or text", status="needs_user",
+            )
+        due_raw = args.get("due")
+        due_iso, due_err = _parse_due_iso(due_raw)
+        if due_err:
+            return _err(due_err, value=due_raw, status="needs_user")
+        resource = state.register_resource(
+            "task", title,
+            metadata={
+                "title": title, "text": args.get("text"),
+                "due": due_iso, "status": "open",
+                "created_at": datetime.now().isoformat(),
+            },
+        )
         return _ok(task=resource.get("resource"))
     if action in {"note_list", "notes", "list"}:
         return _ok(notes=_resources_by_kind(state, "note", include_closed=bool(args.get("include_closed", False))))
@@ -5981,24 +6147,63 @@ def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _ok(tasks=_resources_by_kind(state, "task", include_closed=bool(args.get("include_closed", False))))
     if action in {"note_search", "task_search", "search"}:
         kinds = ["note", "task"] if action == "search" else ["note"] if action.startswith("note") else ["task"]
-        query = str(args.get("query") or "").casefold()
-        matches = [r for r in _resources_by_kind(state, kinds, include_closed=True) if query in json.dumps(r, ensure_ascii=False).casefold()]
-        return _ok(matches=matches[: int(args.get("limit", 10))], count=len(matches))
+        query = str(args.get("query") or "").strip().casefold()
+        if not query:
+            return _err("missing query", status="needs_user")
+        try:
+            limit = max(1, min(int(args.get("limit", 10)), 100))
+        except (TypeError, ValueError):
+            limit = 10
+        # MATCHING ESTRUCTURADO en campos relevantes (title/text/tags), no
+        # sobre el JSON entero (que incluye ids, timestamps).
+        matches: list[dict[str, Any]] = []
+        for r in _resources_by_kind(state, kinds, include_closed=True):
+            meta = r.get("metadata") or {}
+            haystacks = [
+                str(meta.get("title") or ""),
+                str(meta.get("text") or ""),
+                str(meta.get("tags") or ""),
+                str(r.get("label") or ""),
+            ]
+            if any(query in h.casefold() for h in haystacks):
+                matches.append(r)
+        return _ok(matches=matches[:limit], count=len(matches), query=query)
     if action == "task_complete":
         task = _find_resource(args, state, "task")
-        return _update_resource_metadata(state, str(task["id"]), {"status": "completed", "completed_at": datetime.now().isoformat()}) if task else _err("task not found")
+        if not task:
+            return _err("task not found", status="needs_user")
+        return _update_resource_metadata(state, str(task["id"]), {"status": "completed", "completed_at": datetime.now().isoformat()})
     if action in {"note_delete", "task_delete", "delete"}:
         resource = _find_resource(args, state, ["note", "task"])
-        return state.mark_cleaned(str(resource["id"]), {"deleted": True}) if resource else _err("note/task not found")
+        if not resource:
+            return _err("note/task not found", status="needs_user")
+        return state.mark_cleaned(str(resource["id"]), {"deleted": True})
     if action in {"note_update", "task_update"}:
         resource = _find_resource(args, state, "note" if action.startswith("note") else "task")
         if not resource:
-            return _err("note/task not found")
+            return _err("note/task not found", status="needs_user")
         updates = {k: args[k] for k in ("title", "text", "content", "due", "tags") if k in args}
         if "content" in updates and "text" not in updates:
             updates["text"] = updates.pop("content")
+        # Validar due si vino en el update.
+        if "due" in updates:
+            due_iso, due_err = _parse_due_iso(updates["due"])
+            if due_err:
+                return _err(due_err, value=updates["due"], status="needs_user")
+            updates["due"] = due_iso
+        if not updates:
+            return _err("no updatable fields provided", status="needs_user",
+                        supported=["title", "text", "content", "due", "tags"])
         return _update_resource_metadata(state, str(resource["id"]), updates)
-    return _err("unknown notes_tasks action", action=action)
+    return _err(
+        "unknown notes_tasks action", action=action,
+        valid_actions=[
+            "status", "note_create", "task_create", "note_list", "task_list",
+            "note_search", "task_search", "search", "task_complete",
+            "note_delete", "task_delete", "note_update", "task_update",
+        ],
+        status="needs_user",
+    )
 
 
 def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -6008,24 +6213,84 @@ def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
     if action in {"event_list", "list"}:
         return _ok(events=_resources_by_kind(state, "calendar_event", include_closed=bool(args.get("include_closed", False))))
     if action == "event_create":
-        title = str(args.get("title") or "Evento").strip()
-        start = str(args.get("start") or args.get("due") or datetime.now().isoformat())
-        end = str(args.get("end") or "")
-        resource = state.register_resource("calendar_event", title, metadata={"title": title, "start": start, "end": end, "location": args.get("location"), "notes": args.get("notes")})
+        title = str(args.get("title") or "").strip()
+        if not title:
+            return _err("event_create requires title", status="needs_user")
+        # VALIDACION start/end como ISO. Antes acepta cualquier string lo que
+        # rompe ics_export y comparaciones temporales downstream.
+        start_raw = args.get("start") or args.get("due")
+        if start_raw is None:
+            start_iso = datetime.now().isoformat(timespec="seconds")
+        else:
+            start_iso, err = _parse_due_iso(start_raw)
+            if err:
+                return _err(err, field="start", value=start_raw, status="needs_user")
+            if start_iso is None:
+                start_iso = datetime.now().isoformat(timespec="seconds")
+        end_raw = args.get("end")
+        end_iso: str | None
+        if end_raw:
+            end_iso, err = _parse_due_iso(end_raw)
+            if err:
+                return _err(err, field="end", value=end_raw, status="needs_user")
+        else:
+            end_iso = None
+        # SANITY: end debe ser >= start si ambos estan presentes.
+        if end_iso:
+            try:
+                if datetime.fromisoformat(end_iso) < datetime.fromisoformat(start_iso):
+                    return _err(
+                        "event end is before start",
+                        start=start_iso, end=end_iso, status="needs_user",
+                    )
+            except ValueError:
+                pass
+        resource = state.register_resource(
+            "calendar_event", title,
+            metadata={
+                "title": title, "start": start_iso, "end": end_iso,
+                "location": args.get("location"), "notes": args.get("notes"),
+                "created_at": datetime.now().isoformat(timespec="seconds"),
+            },
+        )
         return _ok(event=resource.get("resource"))
     if action in {"event_delete", "delete"}:
         event = _find_resource(args, state, "calendar_event")
-        return state.mark_cleaned(str(event["id"]), {"deleted": True}) if event else _err("event not found")
+        if not event:
+            return _err("event not found", status="needs_user")
+        return state.mark_cleaned(str(event["id"]), {"deleted": True})
     if action == "ics_export":
         events = _resources_by_kind(state, "calendar_event")
+        if not events:
+            return _err("no events to export", status="needs_user")
         path = _calendar_export_path(args, state)
-        path.write_text(_events_to_ics(events), encoding="utf-8")
-        return _ok(path=str(path.resolve()), events=len(events))
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            return _err("cannot create export directory", path=str(path.parent), reason=str(exc))
+        body = _events_to_ics(events)
+        try:
+            path.write_text(body, encoding="utf-8")
+        except (PermissionError, OSError) as exc:
+            return _err("ics write failed", path=str(path), reason=str(exc),
+                        status="needs_user" if isinstance(exc, PermissionError) else "failed")
+        try:
+            size = path.stat().st_size
+        except OSError:
+            size = -1
+        return _ok(path=str(path.resolve()), events=len(events), bytes=size, verified=size > 0)
     if action == "event_update":
         return _calendar_event_update(args, state)
     if action == "ics_import":
         return _calendar_ics_import(args, state)
-    return _err("unknown local_calendar action", action=action)
+    return _err(
+        "unknown local_calendar action", action=action,
+        valid_actions=[
+            "status", "event_list", "event_create", "event_delete",
+            "event_update", "ics_export", "ics_import",
+        ],
+        status="needs_user",
+    )
 
 
 def _calendar_event_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -6167,6 +6432,9 @@ def _ics_normalize_datetime(value: str) -> str:
     return v
 
 
+_VALID_HABIT_FREQUENCIES = {"daily", "weekly", "monthly", "weekdays", "custom"}
+
+
 def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "list").casefold()
     if action == "status":
@@ -6176,26 +6444,94 @@ def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     if action == "create":
         name = str(args.get("name") or args.get("title") or "").strip()
         if not name:
-            return _err("missing habit name")
-        resource = state.register_resource("habit", name, metadata={"name": name, "frequency": args.get("frequency") or "daily", "logs": []})
+            return _err("missing habit name", status="needs_user")
+        frequency = str(args.get("frequency") or "daily").lower()
+        if frequency not in _VALID_HABIT_FREQUENCIES:
+            return _err(
+                f"invalid frequency: {frequency!r}",
+                valid=sorted(_VALID_HABIT_FREQUENCIES), status="needs_user",
+            )
+        resource = state.register_resource(
+            "habit", name,
+            metadata={
+                "name": name, "frequency": frequency, "logs": [],
+                "created_at": datetime.now().isoformat(timespec="seconds"),
+            },
+        )
         return _ok(habit=resource.get("resource"))
     if action == "log":
         habit = _find_resource(args, state, "habit")
         if not habit:
-            return _err("habit not found")
+            return _err("habit not found", status="needs_user")
+        # VALIDACION del campo `at` como ISO antes de persistir; si el LLM
+        # pasa "hoy" como string, _parse_due_iso lo rechaza con un mensaje
+        # claro en vez de guardarlo y romper stats downstream.
+        at_raw = args.get("at")
+        if at_raw is None:
+            at_iso = datetime.now().isoformat(timespec="seconds")
+        else:
+            at_iso, err = _parse_due_iso(at_raw)
+            if err:
+                return _err(err, field="at", value=at_raw, status="needs_user")
+            if at_iso is None:
+                at_iso = datetime.now().isoformat(timespec="seconds")
         logs = list(habit.setdefault("metadata", {}).get("logs") or [])
-        logs.append({"at": str(args.get("at") or datetime.now().isoformat()), "value": args.get("value", True), "note": args.get("note")})
+        logs.append({
+            "at": at_iso,
+            "value": args.get("value", True),
+            "note": args.get("note"),
+        })
         return _update_resource_metadata(state, str(habit["id"]), {"logs": logs})
     if action == "stats":
         habit = _find_resource(args, state, "habit")
         if not habit:
-            return _err("habit not found")
-        logs = habit.get("metadata", {}).get("logs") or []
-        return _ok(habit=habit, log_count=len(logs), last=logs[-1] if logs else None)
+            return _err("habit not found", status="needs_user")
+        meta = habit.get("metadata", {}) or {}
+        logs = meta.get("logs") or []
+        # Calculo de streak basico para "daily": dias consecutivos contando
+        # desde la fecha mas reciente hacia atras. Para otras frecuencias no
+        # calculamos streak (semantica ambigua).
+        streak = 0
+        if logs and meta.get("frequency") == "daily":
+            try:
+                seen_dates: set[str] = set()
+                for entry in logs:
+                    at_val = str(entry.get("at") or "")
+                    if at_val:
+                        seen_dates.add(at_val[:10])  # YYYY-MM-DD
+                if seen_dates:
+                    sorted_dates = sorted(seen_dates, reverse=True)
+                    most_recent = sorted_dates[0]
+                    today = datetime.now().date().isoformat()
+                    cur = datetime.fromisoformat(most_recent).date()
+                    today_d = datetime.fromisoformat(today).date()
+                    # streak empieza solo si el log mas reciente es de hoy o ayer
+                    if (today_d - cur).days <= 1:
+                        streak = 1
+                        for i in range(1, len(sorted_dates)):
+                            next_d = datetime.fromisoformat(sorted_dates[i]).date()
+                            if (cur - next_d).days == 1:
+                                streak += 1
+                                cur = next_d
+                            else:
+                                break
+            except (ValueError, TypeError):
+                streak = 0
+        return _ok(
+            habit=habit, log_count=len(logs),
+            last=logs[-1] if logs else None,
+            current_streak=streak, frequency=meta.get("frequency"),
+        )
     if action == "delete":
         habit = _find_resource(args, state, "habit")
-        return state.mark_cleaned(str(habit["id"]), {"deleted": True}) if habit else _err("habit not found")
-    return _err("unknown habit_tracker action", action=action)
+        if not habit:
+            return _err("habit not found", status="needs_user")
+        return state.mark_cleaned(str(habit["id"]), {"deleted": True})
+    return _err(
+        "unknown habit_tracker action", action=action,
+        valid_actions=["status", "list", "create", "log", "stats", "delete"],
+        status="needs_user",
+    )
 
 
 def local_search_tool(args: dict[str, Any]) -> dict[str, Any]:
@@ -6205,37 +6541,95 @@ def local_search_tool(args: dict[str, Any]) -> dict[str, Any]:
     if action == "search":
         root = Path(str(args.get("root") or Path.home())).expanduser()
         if not root.exists():
-            return _err("root not found", root=str(root))
+            return _err("root not found", root=str(root), status="needs_user")
+        if not root.is_dir():
+            return _err("root is not a directory", root=str(root), status="needs_user")
         query = str(args.get("query") or "").casefold()
         pattern = str(args.get("pattern") or "*")
-        limit = int(args.get("limit", 50))
+        try:
+            limit = max(1, min(int(args.get("limit", 50)), 500))
+        except (TypeError, ValueError):
+            limit = 50
         include_content = bool(args.get("include_content", False))
+        # BUDGET: rglob sin limite sobre Home puede caminar 500K archivos.
+        try:
+            budget_s = float(args.get("budget_s", 10.0))
+        except (TypeError, ValueError):
+            budget_s = 10.0
+        budget_s = max(1.0, min(budget_s, 60.0))
+        deadline = time.time() + budget_s
+        max_visited = int(args.get("max_visited", 50000))
         results = []
+        visited = 0
+        skipped_io = 0
         try:
             iterator = root.rglob(pattern) if bool(args.get("recursive", True)) else root.glob(pattern)
             for path in iterator:
-                if len(results) >= limit:
+                visited += 1
+                if len(results) >= limit or visited > max_visited:
                     break
-                name_hit = query in path.name.casefold() if query else True
-                content_hit = False
-                snippet = ""
-                if include_content and path.is_file() and path.stat().st_size < int(args.get("max_bytes", 2_000_000)):
-                    try:
-                        text = path.read_text(encoding="utf-8", errors="replace")
-                        idx = text.casefold().find(query)
-                        content_hit = idx >= 0
-                        snippet = text[max(0, idx - 80): idx + 180] if content_hit else ""
-                    except OSError:
-                        pass
-                if name_hit or content_hit:
-                    results.append({"path": str(path), "is_file": path.is_file(), "size": path.stat().st_size if path.is_file() else None, "snippet": snippet})
+                if time.time() > deadline:
+                    break
+                try:
+                    name_hit = query in path.name.casefold() if query else True
+                    content_hit = False
+                    snippet = ""
+                    is_file = path.is_file()
+                    file_size = path.stat().st_size if is_file else None
+                    # BINARY GUARD: si include_content + archivo > max_bytes
+                    # ya lo salta. Ademas guard contra binarios reales:
+                    # leemos primero los 512 bytes para detectar NUL.
+                    if include_content and is_file and file_size is not None and file_size < int(args.get("max_bytes", 2_000_000)):
+                        try:
+                            with path.open("rb") as fh:
+                                head = fh.read(512)
+                            if b"\x00" not in head:
+                                text = path.read_text(encoding="utf-8", errors="replace")
+                                idx = text.casefold().find(query)
+                                content_hit = idx >= 0
+                                snippet = text[max(0, idx - 80): idx + 180] if content_hit else ""
+                        except (PermissionError, OSError):
+                            skipped_io += 1
+                    if name_hit or content_hit:
+                        results.append({
+                            "path": str(path), "is_file": is_file,
+                            "size": file_size, "snippet": snippet,
+                        })
+                except (PermissionError, OSError):
+                    skipped_io += 1
+                    continue
         except OSError as exc:
             return _err(f"search failed: {exc}", root=str(root))
-        return _ok(results=results, count=len(results), root=str(root))
+        truncated = (
+            len(results) >= limit
+            or visited > max_visited
+            or time.time() > deadline
+        )
+        return _ok(
+            results=results, count=len(results), root=str(root),
+            truncated=truncated, visited=visited, skipped_io=skipped_io,
+        )
     if action == "recent":
         root = Path(str(args.get("root") or Path.home())).expanduser()
-        files = []
+        if not root.exists() or not root.is_dir():
+            return _err("root not found or not a directory", root=str(root), status="needs_user")
+        try:
+            limit = max(1, min(int(args.get("limit", 20)), 200))
+        except (TypeError, ValueError):
+            limit = 20
+        # BUDGET: rglob igual que en search.
+        try:
+            budget_s = float(args.get("budget_s", 10.0))
+        except (TypeError, ValueError):
+            budget_s = 10.0
+        deadline = time.time() + max(1.0, min(budget_s, 60.0))
+        max_visited = int(args.get("max_visited", 50000))
+        files: list[tuple[float, Path]] = []
+        visited = 0
         for path in root.rglob(str(args.get("pattern") or "*")):
+            visited += 1
+            if visited > max_visited or time.time() > deadline:
+                break
             if path.is_file():
                 try:
                     files.append((path.stat().st_mtime, path))
@@ -6244,8 +6638,15 @@ def local_search_tool(args: dict[str, Any]) -> dict[str, Any]:
             if len(files) > 5000:
                 break
         files.sort(reverse=True)
-        return _ok(files=[{"path": str(p), "modified": datetime.fromtimestamp(ts).isoformat()} for ts, p in files[: int(args.get("limit", 20))]])
-    return _err("unknown local_search action", action=action)
+        return _ok(
+            files=[{"path": str(p), "modified": datetime.fromtimestamp(ts).isoformat()} for ts, p in files[:limit]],
+            visited=visited,
+            truncated=visited > max_visited or time.time() > deadline,
+        )
+    return _err(
+        "unknown local_search action", action=action,
+        valid_actions=["status", "search", "recent"], status="needs_user",
+    )
 
 
 def printer_scanner_tool(args: dict[str, Any]) -> dict[str, Any]:
