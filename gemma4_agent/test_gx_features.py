@@ -1283,13 +1283,16 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
         )
     }
     try:
-        # Context sizes alineados con la nueva tabla 6 GB-aware + perfil
-        # intermedio balanced_8gb (item 2.1 + Sprint 1 del roadmap).
-        # balanced_8gb subio a 16K para dejar espacio al tool_schemas_hint
-        # compact (~5.9K tokens) sin saturar conversacion + memoria.
+        # Context sizes:
+        # - Sprint 1 subio balanced_8gb de 8K -> 16K para tool_schemas_hint
+        #   compact.
+        # - Polish P2 lo bajo de 16K -> 12K basado en calculo teorico de
+        #   VRAM (margen 0.5 GB sobre 8 GB nominales con reserva WDDM).
+        # - Umbral del hint compact tambien bajo de 16K -> 12K para que
+        #   balanced_8gb siga recibiendo el bloque.
         expected_ctx = {
             "performance": 32768,
-            "balanced_8gb": 16384,
+            "balanced_8gb": 12288,
             "balanced": 8192,
             "light": 4096,
             "standby": 4096,
@@ -2183,6 +2186,10 @@ def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> bool:
         # ctx 8192 -> off
         stub.config = AgentConfig(context_size=8192)
         assert method(stub) == ""
+        # ctx 12288 -> compact (Polish P2: umbral bajado de 16384 a 12288)
+        stub.config = AgentConfig(context_size=12288)
+        out = method(stub)
+        assert out.strip().startswith("# Tool Schemas (EXACT names")
         # ctx 16384 -> compact (header con "use ONLY these")
         stub.config = AgentConfig(context_size=16384)
         out = method(stub)

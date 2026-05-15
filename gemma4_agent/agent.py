@@ -421,14 +421,14 @@ class Gemma4Agent:
             ctx = int(self.config.context_size or 0)
             # full: solo en perfiles con ctx >=32K (performance). El hint
             # full es ~11.6K tokens, ~35% de un context 32K — aceptable.
-            # compact: ~5.9K tokens. Solo en ctx >=16K (balanced_8gb,
-            # performance) para que queden >=10K tokens libres para
-            # conversacion + memoria.
-            # off: ctx <16K (balanced, light) — el catalogo nativo de
-            # tools via --jinja sigue siendo el camino, sin overhead extra.
+            # compact: ~5.9K tokens. Activo en ctx >=12K (balanced_8gb post
+            # Polish P2 que bajo de 16K -> 12K por VRAM tight) para que
+            # queden >=6K tokens libres para conversacion + memoria.
+            # off: ctx <12K (balanced 8K, light 4K) — el catalogo nativo
+            # de tools via --jinja sigue siendo el camino sin overhead.
             if ctx >= 32768:
                 mode = "full"
-            elif ctx >= 16384:
+            elif ctx >= 12288:
                 mode = "compact"
             else:
                 return ""

@@ -111,7 +111,7 @@ PROFILES: dict[str, Profile] = {
     "balanced_8gb": Profile(
         name="balanced_8gb",
         display_name="Balanced 8GB",
-        context_size=16384,
+        context_size=12288,
         model_path=_E4B_UD_Q4_K_XL,
         vision_enabled=False,
         rerank_enabled=True,
@@ -122,16 +122,33 @@ PROFILES: dict[str, Profile] = {
         description=(
             "Perfil para 8 GB VRAM (RTX 3060 Ti, 4060, 2080). "
             "E4B-UD-Q4_K_XL (Pareto frontier KLD segun Unsloth/localbench), "
-            "context 16K (espacio para tool_schemas_hint compact + history), "
-            "vision OFF, rerank ON, voice ON (CPU). Requiere descarga manual "
-            "del GGUF; si falta, cae al modelo del usuario (env var). "
-            "Item 2.1 + Sprint 1 del optimization_roadmap.md."
+            "context 12K (margen 0.5 GB sobre VRAM tight 8 GB), vision OFF, "
+            "rerank ON, voice ON (CPU). Requiere descarga manual del GGUF; "
+            "si falta, cae al modelo del usuario (env var). "
+            "Item 2.1 + Sprint 1 + Polish P2 del optimization_roadmap.md."
         ),
-        # E4B-UD-Q4_K_XL (~5.6 GB cargado) + KV F16 16K (~0.70 GB) = ~6.30 GB
-        # total app. + reserva WDDM 1.5 GB = ~7.80 GB fisicos. Entra en 8 GB.
-        # Si el tool_schemas_hint compact (~5.9K tokens) ocupa parte del ctx,
-        # quedan ~10K tokens para conversacion + memoria.
-        est_vram_mb=6300,
+        # Calculo teorico de VRAM (Polish P2; GGUF UD-Q4_K_XL no descargado
+        # en maquina del dev al cierre de la sesion, asi que el numero
+        # final esta basado en proyecciones del informe externo Bloque A1
+        # + formula KV cache del Bloque F2):
+        #
+        #   E4B-UD-Q4_K_XL cargado:           ~4.7 GB
+        #   KV F16 ctx 12288 (con flash-attn): ~0.52 GB (SWA reduce a ~50%)
+        #   compute buffer + proceso overhead: ~0.80 GB
+        #   = total app:                      ~6.02 GB
+        #   + reserva WDDM Windows:            1.50 GB
+        #   = VRAM fisica requerida:          ~7.52 GB
+        #
+        # Sobre 8 GB nominales -> margen ~0.48 GB. Antes con ctx 16K
+        # eran ~7.7 GB con margen ~0.3 GB; el peligro era OOM si el
+        # usuario tenia Chrome/Discord abiertos.
+        #
+        # Con ctx 12K queda espacio para:
+        #   - tool_schemas_hint compact:       ~5.9K tokens
+        #   - SYSTEM_PROMPT + persona + mode:  ~1.5K tokens
+        #   - history + memory + plan:         residual ~4.5K tokens
+        # Suficiente para conversacion media (~10 turnos antes de ctx-shift).
+        est_vram_mb=6020,
     ),
     "balanced": Profile(
         name="balanced",
