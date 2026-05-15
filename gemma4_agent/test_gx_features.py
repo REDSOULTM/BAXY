@@ -1921,6 +1921,42 @@ def test_optroad_s13_official_sampling_defaults() -> bool:
     return True
 
 
+def test_optroad_p1_cache_reuse_present_in_cmd() -> bool:
+    """Polish P1: --cache-reuse 256 esta en el cmd del server.
+
+    PR ggml-org/llama.cpp#22288 ('server: fix swa-full logic') fue merged
+    2026-04-24 y cierra #21468 (cache-reuse roto en Gemma 4 por shared-KV).
+    Primera release con el fix: b9084. Nuestro LLAMA_CPP_BUILD_MIN=b9090
+    ya lo incluye, asi que el flag puede activarse de forma permanente.
+
+    Beneficio: recupera ~93% del TTFT del primer turno (reporter del bug
+    medio 60-90s con system prompt de ~46K tokens; cache-reuse lo baja
+    a unidades de segundos).
+    """
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command, LLAMA_CPP_BUILD_MIN
+    from gemma4_agent.profiles import PROFILES
+
+    # LLAMA_CPP_BUILD_MIN debe ser >= b9084 (release con #22288 merged).
+    build_num = int(LLAMA_CPP_BUILD_MIN.lstrip("bB"))
+    assert build_num >= 9084, (
+        f"LLAMA_CPP_BUILD_MIN={LLAMA_CPP_BUILD_MIN} es anterior a b9084 "
+        f"(release que contiene PR #22288); --cache-reuse no esta soportado"
+    )
+
+    for name in ("performance", "balanced_8gb", "balanced", "light"):
+        cmd = llama_command(AgentConfig(), PROFILES[name])
+        assert "--cache-reuse" in cmd, f"{name}: --cache-reuse missing"
+        idx = cmd.index("--cache-reuse")
+        assert cmd[idx + 1] == "256", f"{name}: --cache-reuse value {cmd[idx+1]!r} (must be '256')"
+        # Complemento: --keep -1 sigue presente (defense in depth).
+        assert "--keep" in cmd, f"{name}: --keep removed accidentally"
+        keep_idx = cmd.index("--keep")
+        assert cmd[keep_idx + 1] == "-1", f"{name}: --keep value not -1"
+    print(f"OPTROAD-P1 --cache-reuse 256 active (build {LLAMA_CPP_BUILD_MIN} >= b9084): OK")
+    return True
+
+
 def test_optroad_s13_hardening_invariants_always_present() -> bool:
     """Sprint 13: --host 127.0.0.1 y --no-webui DEBEN estar en el cmd
     de TODOS los perfiles activos. Defense in depth contra exposicion
@@ -2649,6 +2685,8 @@ def main() -> int:
         test_optroad_s13_hardening_invariants_always_present,
         test_optroad_s13_tool_schemas_md_covers_all_62_tools,
         test_optroad_s13_profiles_voice_always_on_when_active,
+        # Polish P1 — --cache-reuse 256 (PR #22288 merged in b9084+)
+        test_optroad_p1_cache_reuse_present_in_cmd,
         # Sprint 7 pre-warm KV
         test_optroad_prewarm_kv_calls_chat_with_min_tokens,
         # Sprint 11 telemetry opt-in

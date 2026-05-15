@@ -244,14 +244,26 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "1",
         "--flash-attn",
         "on",
-        # --keep -1: defensa mientras issue #21468 (cache-reuse roto en
-        # Gemma 4 por arquitectura shared-KV) este abierto. Preserva todo
-        # el system prompt entre turnos, evita que context shifts tiren la
-        # prefix cache. PR #22288 candidato a merge; una vez merged, este
-        # flag deja de ser critico pero no daña tenerlo.
-        # Item I1 #3 + Bloque D1 del informe de optimizacion externa.
+        # --keep -1: preserva todo el system prompt entre turnos. Origen:
+        # defensa contra issue #21468 (cache-reuse roto en Gemma 4 por
+        # shared-KV). El PR #22288 ("server: fix swa-full logic") fue
+        # MERGED 2026-04-24 y aparece desde la release b9084. Nuestro
+        # LLAMA_CPP_BUILD_MIN=b9090 ya lo incluye, asi que --cache-reuse
+        # esta operativo en Gemma 4. --keep -1 queda como complemento que
+        # ayuda a la prefix cache aun cuando cache-reuse esta activo.
+        # Item I1 #3 + Bloque D1 + Polish P1 del optimization_roadmap.md.
         "--keep",
         "-1",
+        # --cache-reuse 256: ahora que PR #22288 cerro #21468 en upstream,
+        # el server puede reutilizar prefijos coincidentes del KV cache
+        # entre turnos. Esto recupera el ~93% de TTFT que el bug costaba
+        # en el primer turno con system prompt grande (medido por el
+        # reporter de #21468 con ~46K tokens). Valor 256: tamano minimo
+        # de match en tokens (default del flag); subir reduce overhead
+        # del scan pero baja chance de hit.
+        # Polish P1 del optimization_roadmap.md.
+        "--cache-reuse",
+        "256",
     ]
 
     # Sprint 12 — API key opt-in via env var. Si GEMMA4_LLAMA_API_KEY esta
