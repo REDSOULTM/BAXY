@@ -140,7 +140,7 @@ class SettingsDialog(QDialog):
         tabs.addTab(self._tab_agent(),         "AGENT")
         tabs.addTab(self._tab_sampling(),      "SAMPLING")
         tabs.addTab(self._tab_behaviour(),     "BEHAVIOUR")
-        tabs.addTab(self._tab_transcription(), "TRANSCRIPT")
+        tabs.addTab(self._tab_voice(),         "VOICE")
         tabs.addTab(self._tab_profiles(),      "PROFILES")
         tabs.addTab(self._tab_toggles(),       "TOGGLES")
         tabs.addTab(self._tab_paths(),         "PATHS")
@@ -401,7 +401,12 @@ class SettingsDialog(QDialog):
         return w
 
     # ------------------------------------------------------------------
-    def _tab_transcription(self) -> QWidget:
+    def _tab_voice(self) -> QWidget:
+        """Fase W — VOICE tab: wake-word, STT, TTS, follow-up."""
+        from PyQt6.QtWidgets import QPlainTextEdit
+        persisted = load_persisted()
+        voice = persisted.get("voice") or {}
+
         w = QWidget()
         lay = QFormLayout(w)
         lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -409,65 +414,154 @@ class SettingsDialog(QDialog):
         lay.setSpacing(10)
 
         info = QLabel(
-            "Speech-to-text (STT) and text-to-speech (TTS) settings.\n"
-            "Voice is not enabled yet — these prepare the backend for when audio mode\n"
-            "ships. All providers below are LOCAL when applicable."
+            "Voz local: Vosk (wake) + faster-whisper (STT) + Piper (TTS). Todo CPU.\n"
+            "Cambios requieren toggle off/on para tomar efecto. Los modelos se\n"
+            "descargan al primer uso con tu consentimiento."
         )
         info.setFont(mono(8))
         info.setStyleSheet(f"color: {C.TEXT_DIM};")
         lay.addRow(info)
 
-        self._stt_provider = QComboBox()
-        self._stt_provider.setStyleSheet(combo_qss())
-        self._stt_provider.addItems(["whisper.cpp (local)", "whisper-python (local)", "vosk (local)", "browser (online)", "off"])
-        self._stt_provider.setCurrentText(os.environ.get("GEMMA4_AGENT_STT_PROVIDER", "whisper.cpp (local)"))
-        lay.addRow(self._lbl("STT provider"), self._stt_provider)
+        self._voice_enabled = QCheckBox("Enable voice (master switch)")
+        self._voice_enabled.setChecked(bool(voice.get("enabled", False)))
+        lay.addRow(self._lbl(""), self._voice_enabled)
 
-        self._stt_model = QLineEdit(str(os.environ.get("GEMMA4_AGENT_STT_MODEL", "ggml-base.bin")))
-        self._stt_model.setStyleSheet(line_edit_qss())
-        self._stt_model.setFont(mono(9))
-        self._stt_model.setPlaceholderText("e.g. ggml-base.bin / faster-whisper-small / vosk-model-en-us-0.42")
-        lay.addRow(self._lbl("STT model"), self._stt_model)
+        # Wake-words: locked por ahora a ambas frases
+        wake_lbl = QLabel("Wake words: 'gemma' AND 'hey gemma' (both active)")
+        wake_lbl.setFont(mono(8))
+        wake_lbl.setStyleSheet(f"color: {C.TEXT_MED};")
+        lay.addRow(self._lbl("Wake words"), wake_lbl)
 
-        self._stt_language = QComboBox()
-        self._stt_language.setStyleSheet(combo_qss())
-        self._stt_language.addItems(["auto", "es", "en", "pt", "fr", "it", "de", "ja", "zh"])
-        self._stt_language.setCurrentText(os.environ.get("GEMMA4_AGENT_STT_LANGUAGE", "auto"))
-        lay.addRow(self._lbl("STT language"), self._stt_language)
+        # Feedback
+        fb_row = QHBoxLayout()
+        self._voice_fb_beep = QCheckBox("Beep")
+        self._voice_fb_beep.setChecked(bool(voice.get("feedback_beep", True)))
+        self._voice_fb_hud = QCheckBox("HUD blink")
+        self._voice_fb_hud.setChecked(bool(voice.get("feedback_hud", True)))
+        self._voice_fb_tts = QCheckBox('TTS "sí"')
+        self._voice_fb_tts.setChecked(bool(voice.get("feedback_tts_si", False)))
+        for c in (self._voice_fb_beep, self._voice_fb_hud, self._voice_fb_tts):
+            fb_row.addWidget(c)
+        fb_row.addStretch()
+        fb_wrap = QWidget(); fb_wrap.setLayout(fb_row)
+        lay.addRow(self._lbl("Wake feedback"), fb_wrap)
 
-        self._tts_provider = QComboBox()
-        self._tts_provider.setStyleSheet(combo_qss())
-        self._tts_provider.addItems(["piper (local)", "edge-tts (online)", "elevenlabs (online)", "browser SAPI (Windows)", "off"])
-        self._tts_provider.setCurrentText(os.environ.get("GEMMA4_AGENT_TTS_PROVIDER", "piper (local)"))
-        lay.addRow(self._lbl("TTS provider"), self._tts_provider)
+        # Input device dropdown
+        self._voice_device = QComboBox()
+        self._voice_device.setStyleSheet(combo_qss())
+        self._voice_device.addItem("(default)")
+        try:
+            from ..voice.audio_io import list_input_devices
+            for d in list_input_devices():
+                label = f"{d['index']}: {d['name']}"
+                self._voice_device.addItem(label, userData=d["index"])
+        except Exception:
+            pass
+        current_dev = voice.get("input_device")
+        if isinstance(current_dev, int):
+            for i in range(self._voice_device.count()):
+                if self._voice_device.itemData(i) == current_dev:
+                    self._voice_device.setCurrentIndex(i)
+                    break
+        lay.addRow(self._lbl("Input device"), self._voice_device)
 
-        self._tts_voice = QLineEdit(str(os.environ.get("GEMMA4_AGENT_TTS_VOICE", "es_AR-daniela-high")))
-        self._tts_voice.setStyleSheet(line_edit_qss())
-        self._tts_voice.setFont(mono(9))
-        self._tts_voice.setPlaceholderText("voice id — depends on provider")
-        lay.addRow(self._lbl("TTS voice"), self._tts_voice)
+        # STT model
+        self._voice_stt_model = QComboBox()
+        self._voice_stt_model.setStyleSheet(combo_qss())
+        for m in ("auto", "small", "base", "tiny"):
+            self._voice_stt_model.addItem(m)
+        self._voice_stt_model.setCurrentText(str(voice.get("stt_model", "auto")))
+        lay.addRow(self._lbl("STT model (CPU)"), self._voice_stt_model)
 
-        from PyQt6.QtWidgets import QDoubleSpinBox
-        self._tts_rate = QDoubleSpinBox()
-        self._tts_rate.setRange(0.5, 2.0)
-        self._tts_rate.setSingleStep(0.1)
-        self._tts_rate.setValue(float(os.environ.get("GEMMA4_AGENT_TTS_RATE", "1.0") or "1.0"))
-        lay.addRow(self._lbl("TTS speech rate"), self._tts_rate)
+        # TTS voice
+        self._voice_tts_voice = QComboBox()
+        self._voice_tts_voice.setStyleSheet(combo_qss())
+        try:
+            from ..voice.tts import DEFAULT_VOICE, PIPER_VOICE_URLS, installed_voices
+            known = list(PIPER_VOICE_URLS.keys())
+            installed = installed_voices()
+            for v in known:
+                label = v + ("  (installed)" if v in installed else "  (download on first use)")
+                self._voice_tts_voice.addItem(label, userData=v)
+            for v in installed:
+                if v not in known:
+                    self._voice_tts_voice.addItem(f"{v}  (custom)", userData=v)
+        except Exception:
+            self._voice_tts_voice.addItem("es_MX-claude-high", userData="es_MX-claude-high")
+        current_v = voice.get("tts_voice", "es_MX-claude-high")
+        for i in range(self._voice_tts_voice.count()):
+            if self._voice_tts_voice.itemData(i) == current_v:
+                self._voice_tts_voice.setCurrentIndex(i)
+                break
+        lay.addRow(self._lbl("TTS voice"), self._voice_tts_voice)
 
-        self._wake_word = QLineEdit(str(os.environ.get("GEMMA4_AGENT_WAKE_WORD", "gemma")))
-        self._wake_word.setStyleSheet(line_edit_qss())
-        self._wake_word.setFont(mono(9))
-        lay.addRow(self._lbl("Wake word"), self._wake_word)
+        # Follow-up window
+        self._voice_followup = QComboBox()
+        self._voice_followup.setStyleSheet(combo_qss())
+        for opt in ("Off", "5s", "10s"):
+            self._voice_followup.addItem(opt)
+        followup_s = float(voice.get("followup_seconds", 5.0) or 0.0)
+        if followup_s == 0:
+            self._voice_followup.setCurrentText("Off")
+        elif followup_s == 10:
+            self._voice_followup.setCurrentText("10s")
+        else:
+            self._voice_followup.setCurrentText("5s")
+        lay.addRow(self._lbl("Follow-up window"), self._voice_followup)
 
-        self._wake_word_on = QCheckBox("Wake word enabled (passive listening)")
-        self._wake_word_on.setChecked(_env_truthy("GEMMA4_AGENT_WAKE_WORD_ENABLED", False))
-        lay.addRow(self._lbl(""), self._wake_word_on)
+        # Close phrases
+        cp_label = QLabel("Frases de cierre del follow-up (una por linea):")
+        cp_label.setFont(mono(8))
+        cp_label.setStyleSheet(f"color: {C.TEXT_DIM};")
+        lay.addRow(cp_label)
+        self._voice_close_phrases = QPlainTextEdit()
+        self._voice_close_phrases.setFont(mono(8))
+        self._voice_close_phrases.setStyleSheet(text_edit_qss())
+        self._voice_close_phrases.setFixedHeight(70)
+        default_cp = "\n".join(voice.get(
+            "close_phrases",
+            ["gracias", "listo", "ya está", "cancelar", "stop"],
+        ))
+        self._voice_close_phrases.setPlainText(default_cp)
+        lay.addRow(self._voice_close_phrases)
 
-        warn = QLabel("Voice runtime not wired yet — settings are persisted for future activation.")
-        warn.setFont(mono(7))
-        warn.setStyleSheet(f"color: {C.ACC2};")
-        lay.addRow(warn)
+        # TTS muted
+        self._voice_tts_muted = QCheckBox("Mute TTS (siguen funcionando wake + STT)")
+        self._voice_tts_muted.setChecked(bool(voice.get("tts_muted", False)))
+        lay.addRow(self._lbl(""), self._voice_tts_muted)
+
+        note = QLabel(
+            "El voice controller arranca/para automaticamente al cambiar de perfil:\n"
+            "  PERF y BAL -> ON ;  LIGHT y STANDBY -> OFF.\n"
+            "Tu override manual via 'Enable voice' persiste hasta que vuelvas a tocarlo."
+        )
+        note.setFont(mono(8))
+        note.setStyleSheet(f"color: {C.ACC2};")
+        lay.addRow(note)
+
         return w
+
+    def _gather_voice(self) -> dict:
+        seconds_text = self._voice_followup.currentText()
+        followup_s = {"Off": 0.0, "5s": 5.0, "10s": 10.0}.get(seconds_text, 5.0)
+        # Input device: itemData es int (index) o None ("(default)")
+        dev_idx = self._voice_device.currentData()
+        close_phrases = [
+            line.strip() for line in self._voice_close_phrases.toPlainText().splitlines()
+            if line.strip()
+        ]
+        return {
+            "enabled": self._voice_enabled.isChecked(),
+            "feedback_beep": self._voice_fb_beep.isChecked(),
+            "feedback_hud": self._voice_fb_hud.isChecked(),
+            "feedback_tts_si": self._voice_fb_tts.isChecked(),
+            "input_device": dev_idx if isinstance(dev_idx, int) else None,
+            "stt_model": self._voice_stt_model.currentText(),
+            "tts_voice": self._voice_tts_voice.currentData() or "es_MX-claude-high",
+            "followup_seconds": followup_s,
+            "close_phrases": close_phrases,
+            "tts_muted": self._voice_tts_muted.isChecked(),
+        }
 
     # ------------------------------------------------------------------
     def _tab_profiles(self) -> QWidget:
@@ -925,18 +1019,6 @@ class SettingsDialog(QDialog):
         env["GEMMA4_EXPERIENCE_MAX_RECORDS"]         = str(int(self._max_experience.value()))
         env["GEMMA4_PHRASE_STEP_TIMEOUT_S"]          = str(int(self._tool_timeout.value()))
 
-        # Transcription tab — voice runtime is not wired yet, but persisted
-        # for future activation. These are read by the future voice module;
-        # all under the GEMMA4_AGENT_ prefix so they live in one namespace.
-        env["GEMMA4_AGENT_STT_PROVIDER"]      = self._stt_provider.currentText()
-        env["GEMMA4_AGENT_STT_MODEL"]         = self._stt_model.text().strip()
-        env["GEMMA4_AGENT_STT_LANGUAGE"]      = self._stt_language.currentText()
-        env["GEMMA4_AGENT_TTS_PROVIDER"]      = self._tts_provider.currentText()
-        env["GEMMA4_AGENT_TTS_VOICE"]         = self._tts_voice.text().strip()
-        env["GEMMA4_AGENT_TTS_RATE"]          = f"{self._tts_rate.value():.2f}"
-        env["GEMMA4_AGENT_WAKE_WORD"]         = self._wake_word.text().strip()
-        env["GEMMA4_AGENT_WAKE_WORD_ENABLED"] = "true" if self._wake_word_on.isChecked() else "false"
-
         toggles: dict[str, bool] = {}
         for env_key, cb in self._toggles_checks.items():
             toggles[env_key] = cb.isChecked()
@@ -953,6 +1035,11 @@ class SettingsDialog(QDialog):
             save_overrides(overrides)
         except Exception:
             pass
+        # Fase W — persist voice config
+        try:
+            data["voice"] = self._gather_voice()
+        except Exception:
+            pass
         save_persisted(data)
         apply_to_env(data)
         self.apply_clicked.emit(data)
@@ -965,6 +1052,10 @@ class SettingsDialog(QDialog):
             data["profiles_auto"] = auto
             from ..profiles import save_overrides
             save_overrides(overrides)
+        except Exception:
+            pass
+        try:
+            data["voice"] = self._gather_voice()
         except Exception:
             pass
         save_persisted(data)

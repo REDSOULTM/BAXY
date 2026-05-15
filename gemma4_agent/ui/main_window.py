@@ -6,10 +6,11 @@ Owns the AgentWorker thread and wires its signals to the UI.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
-from PyQt6.QtCore import QSize, Qt, QThread, QTimer, pyqtSignal
+from PyQt6.QtCore import QObject, QSize, Qt, QThread, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
@@ -31,6 +32,49 @@ from .triggers import TriggersDialog
 
 _DEFAULT_W, _DEFAULT_H = 1280, 820
 _MIN_W, _MIN_H = 1000, 700
+
+
+# Frases que Whisper alucina con audio corto/ruidoso. Vienen de entrenamiento
+# con YouTube/podcasts. Si el final_text es solo una de estas (modulo
+# normalizacion), lo descartamos y no se lo enviamos al LLM.
+_WHISPER_HALLUCINATIONS = {
+    "suscribete", "suscríbete", "isuscribete", "isuscríbete",
+    "gracias por ver", "gracias por ver el video",
+    "subtitulos por la comunidad de amara.org",
+    "subtitulos creados por la comunidad de amara.org",
+    "subtitulado por", "subtitulado por la comunidad de amara.org",
+    "amara.org", "thanks for watching", "thank you for watching",
+    "subscribe", "like and subscribe", "like and subscribe!",
+    ".", "...", "!", "?", "you", "thank you",
+    "translation by", "transcripcion",
+}
+
+
+def _is_whisper_hallucination(text: str) -> bool:
+    """True si el texto coincide con frases tipicas de alucinacion de Whisper."""
+    if not text:
+        return True
+    import unicodedata
+    norm = unicodedata.normalize("NFKD", text.strip().casefold())
+    norm = "".join(ch for ch in norm if not unicodedata.combining(ch))
+    norm = norm.strip("¡¿!?.,;:")
+    if not norm or len(norm) < 2:
+        return True
+    return norm in _WHISPER_HALLUCINATIONS
+
+
+class VoiceBridge(QObject):
+    """Recibe callbacks del VoiceController desde threads no-GUI y los reemite
+    como pyqtSignal. Qt marshalla a main thread automaticamente cuando una
+    senal cruza threads (default QueuedConnection).
+
+    Sin esto, QTimer.singleShot(0, fn) desde el thread STT/audio NO ejecuta
+    `fn` en el main thread y los handlers de la GUI se descartan silenciosamente.
+    """
+    state_changed = pyqtSignal(str)
+    partial = pyqtSignal(str)
+    final = pyqtSignal(str)
+    failed = pyqtSignal(str)
 
 
 class ServerBootWorker(QThread):
@@ -228,6 +272,11 @@ class MainWindow(QMainWindow):
         QTimer.singleShot(0, self._refresh_chat_input_blocked)
         QTimer.singleShot(50, self._maybe_autostart_server)
 
+        # Fase W — voice controller (lazy-init)
+        self._voice_controller: Any = None
+        self._voice_bridge: VoiceBridge | None = None
+        QTimer.singleShot(100, self._maybe_enable_voice)
+
     # ------------------------------------------------------------------
     def _build(self) -> None:
         central = QWidget()
@@ -390,9 +439,32 @@ class MainWindow(QMainWindow):
                     pass
             self._session_store.save(self._current_session)
             self._update_footer_session()
+        # Fase W — si la voz esta activa, hablar la respuesta + cerrar el turno
+        # para que el controller vuelva a IDLE_LISTENING y acepte el proximo wake.
+        if self._voice_controller is not None and content:
+            try:
+                # SPEAKING transient: alimentamos al TTS oracion por oracion
+                self._voice_controller.begin_tts()
+                self._voice_controller.feed_tts_chunk(content)
+                self._voice_controller.end_tts()
+            except Exception as exc:
+                self.log.append(f"voice TTS dispatch failed: {exc}", "warn")
+                # Forzar vuelta a idle aunque el TTS falle, para no quedar THINKING
+                try:
+                    self._voice_controller.disable()
+                    self._voice_controller.enable()
+                except Exception:
+                    pass
 
     def _on_llm_error(self, msg: str) -> None:
         self.log.append(msg, "err")
+        # Fase W — si la voz esta en THINKING esperando reply, sacarla a IDLE
+        # para que el siguiente wake-word funcione.
+        if self._voice_controller is not None:
+            try:
+                self._voice_controller.end_tts()
+            except Exception:
+                pass
 
     def _on_progress(self, event: str, payload: dict) -> None:
         # Reserved for future panels (timeline live view, etc.)
@@ -429,6 +501,16 @@ class MainWindow(QMainWindow):
             self._reconfigure_profile_watcher(auto)
         except Exception as exc:
             self.log.append(f"watcher reconfigure failed: {exc}", "err")
+
+        # Fase W — start/stop voice controller when 'Enable voice' changes
+        # ENTRE turnos. Sin este bloque solo se activaba en el boot inicial
+        # via _maybe_enable_voice, no cuando el usuario marca el checkbox
+        # mid-sesion y pega APPLY.
+        try:
+            voice_cfg = data.get("voice") or {}
+            self._reconfigure_voice(voice_cfg)
+        except Exception as exc:
+            self.log.append(f"voice reconfigure failed: {exc}", "err")
 
         env = data.get("env") or {}
         agent = self.worker.get_agent()
@@ -787,6 +869,242 @@ class MainWindow(QMainWindow):
         self._refresh_profile_selector()
         self._refresh_chat_input_blocked()
 
+        # Fase W — voice on PERF/BAL, off en LIGHT/STDBY (respeta override manual)
+        try:
+            from .settings import load_persisted
+            voice_cfg = (load_persisted().get("voice") or {})
+            user_wants_voice = bool(voice_cfg.get("enabled"))
+            profile_allows = profile.server_running and profile.name in {"performance", "balanced"}
+            if profile_allows and user_wants_voice and self._voice_controller is None:
+                self._start_voice_controller(voice_cfg)
+            elif not profile_allows and self._voice_controller is not None:
+                self._stop_voice_controller()
+        except Exception as exc:
+            self.log.append(f"voice profile-sync failed: {exc}", "warn")
+
+    # ------------------------------------------------------------------
+    # Fase W — voice integration
+    # ------------------------------------------------------------------
+
+    def _maybe_enable_voice(self) -> None:
+        """Si el usuario habilito voice en gui.json y el perfil lo permite, arranca."""
+        try:
+            from .settings import load_persisted
+            from ..profiles import get_active_profile
+            voice_cfg = (load_persisted().get("voice") or {})
+            if not voice_cfg.get("enabled"):
+                return
+            if not get_active_profile().server_running:
+                # LIGHT con server off / STANDBY -> no arrancar voz
+                return
+        except Exception as exc:
+            self.log.append(f"voice config read failed: {exc}", "err")
+            return
+        self._start_voice_controller(voice_cfg)
+
+    def _start_voice_controller(self, voice_cfg: dict[str, Any]) -> None:
+        if self._voice_controller is not None:
+            return
+        try:
+            from ..voice.controller import VoiceController
+        except Exception as exc:
+            self.log.append(f"voice module unavailable: {exc}", "err")
+            return
+        # Bridge VOICE-tab selectors to the env vars consumed by StreamingSTT /
+        # StreamingTTS at __init__ time. Without this, the user can pick a
+        # different STT model or TTS voice in Settings and APPLY would persist
+        # the choice but never apply it to the running runtime.
+        stt_model = voice_cfg.get("stt_model")
+        if stt_model:
+            os.environ["GEMMA4_VOICE_STT_MODEL"] = str(stt_model)
+        tts_voice = voice_cfg.get("tts_voice")
+        if tts_voice:
+            os.environ["GEMMA4_VOICE_TTS_VOICE"] = str(tts_voice)
+        # Crear bridge ANTES del controller. Sus signals viven en main thread
+        # (porque self es el parent = MainWindow). Cross-thread auto-marshall.
+        self._voice_bridge = VoiceBridge(self)
+        self._voice_bridge.state_changed.connect(self._on_voice_state_main)
+        self._voice_bridge.partial.connect(self._on_voice_partial_main)
+        self._voice_bridge.final.connect(self._on_voice_final_main)
+        self._voice_bridge.failed.connect(self._on_voice_failed_main)
+        bridge = self._voice_bridge  # captura por closure
+        try:
+            controller = VoiceController(
+                on_state=lambda s: bridge.state_changed.emit(s),
+                on_partial=lambda t: bridge.partial.emit(t),
+                on_final=lambda t: bridge.final.emit(t),
+                on_tts_chunk=None,
+                on_failed=lambda r: bridge.failed.emit(r),
+                followup_seconds=float(voice_cfg.get("followup_seconds") or 0.0),
+                close_phrases=voice_cfg.get("close_phrases") or (),
+                beep_on_wake=bool(voice_cfg.get("feedback_beep", True)),
+                device=voice_cfg.get("input_device"),
+            )
+            controller.set_tts_muted(bool(voice_cfg.get("tts_muted", False)))
+        except Exception as exc:
+            self.log.append(f"voice controller create failed: {exc}", "err")
+            return
+        self._voice_controller = controller
+        self.log.append("voice: enabling (Vosk + faster-whisper + Piper loading...)", "sys")
+        # Cargar en thread aparte para no bloquear GUI (la carga puede tomar 1-3s)
+        from PyQt6.QtCore import QThread
+        class _Loader(QThread):
+            def __init__(self, ctrl, parent):  # noqa: ANN001
+                super().__init__(parent)
+                self.ctrl = ctrl
+                self.ok = False
+            def run(self) -> None:
+                self.ok = self.ctrl.enable()
+        loader = _Loader(controller, self)
+        def _done() -> None:
+            if loader.ok:
+                self.log.append("voice: ready (say 'gemma' or 'hey gemma')", "ok")
+            else:
+                self.log.append("voice: failed to enable; check logs", "err")
+                comps = controller.get_failed_components()
+                for c in comps:
+                    self.log.append(f"voice: {c}", "warn")
+        loader.finished.connect(_done)
+        loader.start()
+        self._voice_loader = loader  # keep alive
+
+    def _reconfigure_voice(self, voice_cfg: dict[str, Any]) -> None:
+        """Aplica cambios de voice config en vivo (mid-sesion).
+
+        Triggered desde _apply_settings_live cuando el usuario pega APPLY
+        en el tab VOICE. Maneja 3 casos:
+          1. user marco enabled=True y no hay controller -> arrancarlo
+             (si el perfil lo permite).
+          2. user desmarco enabled=False y hay controller -> pararlo.
+          3. user dejo enabled=True y el controller corre -> aplicar
+             cambios live de mute_tts (sin restart).
+        """
+        user_wants = bool(voice_cfg.get("enabled"))
+        running = self._voice_controller is not None
+        try:
+            from ..profiles import get_active_profile
+            profile_allows = get_active_profile().server_running
+        except Exception:
+            profile_allows = True
+
+        if user_wants and not running and profile_allows:
+            self._start_voice_controller(voice_cfg)
+            return
+        if not user_wants and running:
+            self._stop_voice_controller()
+            return
+        # If stt_model or tts_voice changed, we must rebuild the controller —
+        # StreamingSTT/StreamingTTS read those env vars only in __init__.
+        if running and profile_allows:
+            new_stt = str(voice_cfg.get("stt_model") or "").strip()
+            new_tts = str(voice_cfg.get("tts_voice") or "").strip()
+            cur_stt = os.environ.get("GEMMA4_VOICE_STT_MODEL", "").strip()
+            cur_tts = os.environ.get("GEMMA4_VOICE_TTS_VOICE", "").strip()
+            if (new_stt and new_stt != cur_stt) or (new_tts and new_tts != cur_tts):
+                self.log.append("voice: STT/TTS model changed -> restart controller", "sys")
+                self._stop_voice_controller()
+                self._start_voice_controller(voice_cfg)
+                return
+        if running and self._voice_controller is not None:
+            # Solo aplicar lo que se puede sin restart: mute TTS y follow-up window
+            try:
+                self._voice_controller.set_tts_muted(bool(voice_cfg.get("tts_muted", False)))
+            except Exception:
+                pass
+            try:
+                self._voice_controller.set_followup_seconds(
+                    float(voice_cfg.get("followup_seconds") or 0.0)
+                )
+            except Exception:
+                pass
+            try:
+                self._voice_controller.set_close_phrases(voice_cfg.get("close_phrases") or ())
+            except Exception:
+                pass
+
+    def _stop_voice_controller(self) -> None:
+        if self._voice_controller is None:
+            return
+        try:
+            self._voice_controller.shutdown()
+        except Exception as exc:
+            self.log.append(f"voice shutdown error: {exc}", "warn")
+        self._voice_controller = None
+        if self._voice_bridge is not None:
+            try:
+                self._voice_bridge.deleteLater()
+            except Exception:
+                pass
+            self._voice_bridge = None
+        self.log.append("voice: disabled", "sys")
+
+    def _on_voice_state_main(self, state: str) -> None:
+        """Recibido en main thread via signal -- seguro tocar la GUI directo."""
+        self._voice_state = state
+        hud_map = {
+            "IDLE_LISTENING": "IDLE",
+            "WAKE_DETECTED": "LISTENING",
+            "LISTENING": "LISTENING",
+            "TRANSCRIBING": "PROCESSING",
+            "THINKING": "THINKING",
+            "SPEAKING": "SPEAKING",
+            "FOLLOWUP": "LISTENING",
+            "IDLE_DISABLED": "IDLE",
+            "FAILED": "ERROR",
+        }
+        hud_state = hud_map.get(state, "IDLE")
+        try:
+            self.hud.set_state(hud_state)
+        except Exception:
+            pass
+        self.log.append(f"voice -> {state}", "sys")
+
+    def _on_voice_partial_main(self, text: str) -> None:
+        try:
+            inp = self._right_h.get("input")
+            if inp is not None:
+                inp.setPlaceholderText(f"  …{text}")
+        except Exception:
+            pass
+
+    def _on_voice_final_main(self, text: str) -> None:
+        """Signal main thread -> el STT entrego texto final -> mandar al agente."""
+        import logging as _logging
+        _logging.getLogger("gemma4_agent.ui.main_window").info(
+            "_on_voice_final_main got text=%r (in GUI thread)", text,
+        )
+        # Filtro anti-alucinacion de Whisper: textos cortos sin acento real
+        # ("Suscribete", "Gracias por ver", "subtitulos", etc) son frecuentes
+        # con audio corto/ruidoso. Los descartamos para no enviar basura al LLM.
+        if _is_whisper_hallucination(text):
+            self.log.append(f"voice heard (descartado, posible alucinacion): {text}", "warn")
+            # Fix BUG-J: el controller quedo en THINKING. Hay que liberarlo
+            # para que el proximo wake-word funcione. end_tts() sin
+            # feed_tts_chunk va directo a FOLLOWUP/IDLE_LISTENING.
+            if self._voice_controller is not None:
+                try:
+                    self._voice_controller.end_tts()
+                except Exception:
+                    pass
+            return
+        self.log.append(f"voice heard: {text}", "user")
+        try:
+            inp = self._right_h.get("input")
+            if inp is not None:
+                inp.setPlaceholderText("Talk to GEMMA4...")
+        except Exception:
+            pass
+        self._on_send(text)
+
+    def _on_voice_failed_main(self, reason: str) -> None:
+        self.log.append(f"voice failed: {reason}", "err")
+        if self._voice_controller is not None:
+            try:
+                if getattr(self, "_voice_state", None) in ("TRANSCRIBING", "THINKING"):
+                    self._voice_controller.end_tts()
+            except Exception:
+                pass
+
     def _maybe_autostart_server(self) -> None:
         """Arranca llama-server si: perfil != STANDBY, no hay server vivo,
         y no hay un boot ya en curso.
@@ -960,6 +1278,11 @@ class MainWindow(QMainWindow):
         try:
             if self._server_boot_thread is not None and self._server_boot_thread.isRunning():
                 self._server_boot_thread.wait(2000)
+        except Exception:
+            pass
+        # Fase W — shutdown voice
+        try:
+            self._stop_voice_controller()
         except Exception:
             pass
         try:
