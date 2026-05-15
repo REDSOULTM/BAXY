@@ -1807,6 +1807,75 @@ def test_voice_close_phrase_normalization() -> bool:
     return True
 
 
+# ============================================================================
+# Roadmap optimizacion — item 1.4: parser robusto de tool_call.arguments
+# (issue ggml-org/llama.cpp #21384 — args con `{` / `}` literales)
+# ============================================================================
+
+
+def test_optroad_normalize_tool_call_arguments_dict() -> bool:
+    from gemma4_agent.llm_client import normalize_tool_call_arguments
+    out = normalize_tool_call_arguments({"path": "C:/x", "count": 3})
+    assert out == {"path": "C:/x", "count": 3}
+    # None y vacios.
+    assert normalize_tool_call_arguments(None) == {}
+    assert normalize_tool_call_arguments("") == {}
+    print("OPTROAD-1.4-a dict passthrough + empty: OK")
+    return True
+
+
+def test_optroad_normalize_tool_call_arguments_braces() -> bool:
+    """Issue #21384: args serializados como string con `{` y `}` literales."""
+    from gemma4_agent.llm_client import normalize_tool_call_arguments
+    # Caso 1: args como string JSON valido (path con braces).
+    s = '{"path": "C:/Users/${USER}/file.txt", "pattern": "\\\\d{3}"}'
+    out = normalize_tool_call_arguments(s)
+    assert out["path"] == "C:/Users/${USER}/file.txt"
+    assert out["pattern"] == "\\d{3}"
+    # Caso 2: doble-stringificado (JSON-of-JSON).
+    inner = '{"a": 1, "b": "x"}'
+    double = json.dumps(inner)  # '"{\\"a\\": 1, ...}"'
+    out2 = normalize_tool_call_arguments(double)
+    assert out2 == {"a": 1, "b": "x"}, f"got {out2!r}"
+    print("OPTROAD-1.4-b braces + double-string: OK")
+    return True
+
+
+def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
+    """Args completamente rotos: deben caer en _raw, NO levantar."""
+    from gemma4_agent.llm_client import normalize_tool_call_arguments
+    out = normalize_tool_call_arguments("not even close to JSON {")
+    assert "_raw" in out and "_parse_error" in out
+    # No debe perder el contenido original
+    assert "not even close" in out["_raw"]
+    print("OPTROAD-1.4-c malformed → _raw with error: OK")
+    return True
+
+
+def test_optroad_normalize_tool_calls_list_response() -> bool:
+    """Aplicacion sobre el formato OpenAI completo."""
+    from gemma4_agent.llm_client import normalize_tool_calls_list
+    tcs = [
+        {
+            "id": "call_1",
+            "type": "function",
+            "function": {"name": "filesystem", "arguments": '{"action": "read", "path": "C:/x"}'},
+        },
+        {
+            "id": "call_2",
+            "type": "function",
+            "function": {"name": "terminal", "arguments": {"action": "run", "command": "echo"}},
+        },
+    ]
+    out = normalize_tool_calls_list(tcs)
+    assert out[0]["function"]["arguments"] == {"action": "read", "path": "C:/x"}
+    assert out[1]["function"]["arguments"] == {"action": "run", "command": "echo"}
+    # Lista vacia.
+    assert normalize_tool_calls_list([]) == []
+    print("OPTROAD-1.4-d list + mixed shapes: OK")
+    return True
+
+
 def main() -> int:
     tests = [
         test_g1_experience_record_and_recall,
@@ -1878,6 +1947,11 @@ def main() -> int:
         test_tts_sentence_chunker_flushes_on_punctuation,
         test_stt_auto_fallback_to_base_when_slow,
         test_voice_close_phrase_normalization,
+        # Roadmap optimizacion — 1.4 parser tool_call.arguments robusto (#21384)
+        test_optroad_normalize_tool_call_arguments_dict,
+        test_optroad_normalize_tool_call_arguments_braces,
+        test_optroad_normalize_tool_call_arguments_malformed,
+        test_optroad_normalize_tool_calls_list_response,
     ]
     failures: list[str] = []
     for t in tests:
