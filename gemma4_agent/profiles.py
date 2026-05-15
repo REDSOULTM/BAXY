@@ -111,7 +111,7 @@ PROFILES: dict[str, Profile] = {
     "balanced_8gb": Profile(
         name="balanced_8gb",
         display_name="Balanced 8GB",
-        context_size=12288,
+        context_size=16384,
         model_path=_E4B_UD_Q4_K_XL,
         vision_enabled=False,
         rerank_enabled=True,
@@ -122,33 +122,39 @@ PROFILES: dict[str, Profile] = {
         description=(
             "Perfil para 8 GB VRAM (RTX 3060 Ti, 4060, 2080). "
             "E4B-UD-Q4_K_XL (Pareto frontier KLD segun Unsloth/localbench), "
-            "context 12K (margen 0.5 GB sobre VRAM tight 8 GB), vision OFF, "
-            "rerank ON, voice ON (CPU). Requiere descarga manual del GGUF; "
-            "si falta, cae al modelo del usuario (env var). "
-            "Item 2.1 + Sprint 1 + Polish P2 del optimization_roadmap.md."
+            "context 16K (margen 0.8 GB sobre 8 GB con GGUF medido), "
+            "vision OFF, rerank ON, voice ON (CPU). El GGUF "
+            "gemma-4-E4B-it-UD-Q4_K_XL.gguf ya esta descargado en models/E4B/."
         ),
-        # Calculo teorico de VRAM (Polish P2; GGUF UD-Q4_K_XL no descargado
-        # en maquina del dev al cierre de la sesion, asi que el numero
-        # final esta basado en proyecciones del informe externo Bloque A1
-        # + formula KV cache del Bloque F2):
+        # Calculo de VRAM actualizado con tamaño real medido (Polish session
+        # post-descarga). El informe externo proyectaba ~4.7 GB cargado pero
+        # el binario real es 4.77 GiB en disco, lo que mapea a ~5.0 GB cargado
+        # en VRAM por overhead llama-server (compute buffer + headers).
         #
-        #   E4B-UD-Q4_K_XL cargado:           ~4.7 GB
-        #   KV F16 ctx 12288 (con flash-attn): ~0.52 GB (SWA reduce a ~50%)
-        #   compute buffer + proceso overhead: ~0.80 GB
-        #   = total app:                      ~6.02 GB
+        #   E4B-UD-Q4_K_XL en disco:           4.77 GiB
+        #   -> cargado en VRAM (~+5% overhead): ~5.00 GB
+        #   KV F16 ctx 16384 (con flash-attn): ~0.70 GB (SWA reduce ~50%)
+        #   = total app:                      ~5.70 GB
         #   + reserva WDDM Windows:            1.50 GB
-        #   = VRAM fisica requerida:          ~7.52 GB
+        #   = VRAM fisica requerida:          ~7.20 GB
         #
-        # Sobre 8 GB nominales -> margen ~0.48 GB. Antes con ctx 16K
-        # eran ~7.7 GB con margen ~0.3 GB; el peligro era OOM si el
-        # usuario tenia Chrome/Discord abiertos.
+        # Sobre 8 GB nominales -> margen ~0.80 GB. Aceptable incluso con
+        # Chrome/Discord abiertos (cada uno ~0.2 GB de WDDM extra).
         #
-        # Con ctx 12K queda espacio para:
+        # Con ctx 16K queda espacio para:
         #   - tool_schemas_hint compact:       ~5.9K tokens
         #   - SYSTEM_PROMPT + persona + mode:  ~1.5K tokens
-        #   - history + memory + plan:         residual ~4.5K tokens
-        # Suficiente para conversacion media (~10 turnos antes de ctx-shift).
-        est_vram_mb=6020,
+        #   - history + memory + plan:         residual ~9K tokens
+        # Suficiente para conversaciones largas (~20 turnos antes de ctx-shift).
+        #
+        # MEDICION EMPIRICA PENDIENTE: cuando el dev tenga el server en
+        # idle (sin Q6_K dev model corriendo), correr:
+        #   "C:/llamacpp-cuda/bin/llama-server.exe" \
+        #     -m models/E4B/gemma-4-E4B-it-UD-Q4_K_XL.gguf \
+        #     -c 16384 -ngl 99 --flash-attn on --host 127.0.0.1 --port 8080
+        # y comparar nvidia-smi --query-gpu=memory.used antes/durante.
+        # Si peak > 6.5 GB efectivo (=8 GB - 1.5 WDDM), bajar a ctx 12K.
+        est_vram_mb=5700,
     ),
     "balanced": Profile(
         name="balanced",

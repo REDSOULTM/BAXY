@@ -1287,12 +1287,14 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
         # - Sprint 1 subio balanced_8gb de 8K -> 16K para tool_schemas_hint
         #   compact.
         # - Polish P2 lo bajo de 16K -> 12K basado en calculo teorico de
-        #   VRAM (margen 0.5 GB sobre 8 GB nominales con reserva WDDM).
-        # - Umbral del hint compact tambien bajo de 16K -> 12K para que
-        #   balanced_8gb siga recibiendo el bloque.
+        #   VRAM (proyeccion 4.7 GB del informe, margen 0.5 GB tight).
+        # - Post-descarga real (GGUF 4.77 GiB medido): VRAM proyectada
+        #   ~7.20 GB en 8 GB nominales con margen 0.80 GB. Revertido a 16K.
+        # - El umbral del hint compact queda en >=12K (mas permisivo que
+        #   estricto a 16K; no hace daño).
         expected_ctx = {
             "performance": 32768,
-            "balanced_8gb": 12288,
+            "balanced_8gb": 16384,
             "balanced": 8192,
             "light": 4096,
             "standby": 4096,
