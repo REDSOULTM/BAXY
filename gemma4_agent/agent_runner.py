@@ -300,31 +300,46 @@ class AgentRunner:
         # user thinks the agent is thinking — the regression captured in
         # screenshots: "loading weights 199/199" + BertModel LOAD REPORT
         # appearing AFTER the user sent their first message.
-        # We import lazily so the import cost itself only runs when the
-        # boot path actually exercises it.
+        #
+        # PERF: el _ensure_loaded toma 6-8s (BertModel + 62 embeddings). Antes
+        # era SECUENCIAL con el health check + warmup del llama-server (los
+        # 6.3s gap voice_ready -> warming_up del log). Ahora lo lanzamos en
+        # un thread separado para que corra en paralelo con el llama-server
+        # warmup. Si el thread termina antes que el warmup, el agente tiene
+        # el router listo. Si tarda mas, el primer turn cae al keyword
+        # routing como fallback (que ya existe) hasta que el router termine.
         try:
             from . import semantic_router
         except Exception as exc:
             logger.warning("semantic_router import failed (rerank disabled): %s", exc)
             semantic_router = None  # type: ignore[assignment]
         if semantic_router is not None and semantic_router.is_enabled():
-            _publish_activity("BOOT", "loading semantic router · BertModel + tool embeddings")
+            _publish_activity("BOOT", "loading semantic router · BertModel + tool embeddings (background)")
             emit_stage(BUS.publish, "rerank_load",
-                       "loading semantic router · BertModel + tool embeddings")
-            try:
-                tool_names = [
-                    s.get("function", {}).get("name") or s.get("name") or ""
-                    for s in self._agent.tools.schemas
-                ]
-                tool_names = [t for t in tool_names if t]
-                # _ensure_loaded triggers the SentenceTransformer load AND
-                # pre-computes the tool description embeddings, which is the
-                # other half of the first-turn cost.
-                semantic_router._ensure_loaded(known_tool_names=tool_names)
-            except Exception as exc:
-                # rerank is not load-bearing — log and keep going. The agent
-                # falls back to keyword routing when the model isn't loaded.
-                logger.warning("semantic router warmup failed: %s", exc)
+                       "loading semantic router · BertModel + tool embeddings (background)")
+            tool_names_for_router = [
+                s.get("function", {}).get("name") or s.get("name") or ""
+                for s in self._agent.tools.schemas
+            ]
+            tool_names_for_router = [t for t in tool_names_for_router if t]
+
+            def _bg_warmup_router() -> None:
+                try:
+                    semantic_router._ensure_loaded(known_tool_names=tool_names_for_router)
+                    emit_stage(BUS.publish, "rerank_load",
+                               "semantic router ready",
+                               progress=100.0)
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("semantic router warmup failed: %s", exc)
+                    emit_stage(BUS.publish, "rerank_load",
+                               f"semantic router failed: {exc}",
+                               error=str(exc))
+
+            threading.Thread(
+                target=_bg_warmup_router,
+                name="gemma4-router-warmup",
+                daemon=True,
+            ).start()
 
         # health check against llama-server. /health responds 200 as soon as
         # the binary is bound to the port — that's BEFORE load_tensors has

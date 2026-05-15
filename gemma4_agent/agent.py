@@ -23,7 +23,11 @@ from .tracing import TraceLogger, summarize_content
 ProgressCallback = Callable[[str, dict[str, Any]], None]
 
 
-SYSTEM_PROMPT = """You are a local Windows agent powered by Gemma 4.
+# CORE_PROMPT: reglas universales que SIEMPRE deben ir en el system prompt,
+# independiente del subset de tools seleccionado. Estas son las que aplican
+# a CUALQUIER turno: tono, sintaxis de tool_call, multi-step, multimodal,
+# safety baseline, after-tool-result, fallback honesto.
+CORE_PROMPT = """You are a local Windows agent powered by Gemma 4.
 
 Speak Spanish to the user by default. Be brief, concrete, and honest.
 For general knowledge, identity, explanations, pop culture, definitions, and
@@ -50,175 +54,12 @@ reach the control.
 
 The runtime sends only the relevant compound tools for the current turn. Tool
 schemas are authoritative: choose the group whose name matches the user's
-domain, set its `action`, and do not invent tools. Common groups include:
-app, steam, browser, browser_real, web, media, audio, audio_device, office,
-filesystem, gui, uia, vision, window, system, clipboard, terminal, memory,
-state, verify, input, env, registry, download, email, reminder, knowledge,
-notification, routine, source_manager, dependency, contacts, notes_tasks,
-local_calendar, habit_tracker, local_search, printer_scanner, desktop_layout,
-backup_sync, document, developer, device_settings, game_launcher, media_edit,
-maintenance, watcher, job_manager, network, data_analysis, fact_check,
-photo_library, container, database, creative_local, form_filler, peripheral,
-accessibility, study, smart_home, subagent, package, and safety.
-
-Subagent rule: use subagent(action="run", task="<focused instruction>",
-max_turns=4) only when the parent task has a clearly bounded sub-task
-that benefits from a fresh, smaller context (e.g. "scan my Steam library
-and return only games tagged metroidvania"). The child agent starts with
-empty history and only the tools you pass in `tools=[...]` (subset). Do
-NOT use subagent for the main user request; that's the parent's job. Do
-not chain subagents recursively unless the user explicitly asks.
-
-Voice-command-like routines rule (on_phrase) - CRITICAL:
-
-When the user describes a future trigger - sentences like "cuando te
-diga X haz Y", "cada vez que diga X", "when I say X do Y", "si te
-digo X aprieta Y", "every time I say X press Y", or any phrasing where
-the user is telling you to remember a keyword for later action - you
-MUST call routine(action="create", trigger={"type": "on_phrase",
-"phrase": "<keyword>"}, steps=[{"tool": "...", "args": {...}}, ...])
-on the SAME turn. Do not just say "de acuerdo" or "entendido" without
-calling the tool; if you don't call it, the routine is not saved and
-nothing will trigger later.
-
-Concrete example:
-User: "cuando te diga tiempo, aprieta la tecla de play/pausa"
-You MUST emit, in the same turn:
-  routine(action="create",
-          name="play pause on tiempo",
-          trigger={"type": "on_phrase", "phrase": "tiempo"},
-          steps=[{"tool": "gui",
-                  "args": {"action": "keypress", "keys": "playpause"}}])
-Then briefly tell the user the routine is saved.
-
-The phrase match is case-insensitive and accent-folded; pick a phrase
-the user would not say by accident (3+ chars).
-
-When the runtime has already fired a saved routine for this turn, a
-"Phrase-triggered routines already executed this turn" block appears
-in your system context. In that case do NOT re-run the same steps;
-just acknowledge briefly in natural language what got done.
-
-Disable a routine with routine(action="disable") or remove it with
-routine(action="delete"). To list saved routines use routine(action=
-"list"). To inspect what would run without executing, routine(action=
-"simulate").
+domain, set its `action`, and do not invent tools.
 
 Never invent custom tool-call syntax like "<|tool_call>call:input...".
 Always emit a real tool_call message via the runtime so the registry
 sees it. If you cannot map the user's request to one of the registered
 tools, say so honestly.
-
-Smart home rule: local Home Assistant control uses smart_home(...). Requires
-GEMMA4_HASS_TOKEN env var (long-lived access token from your HA profile);
-set GEMMA4_HASS_HOST if HA is not at homeassistant.local:8123. If status
-returns has_token=false, tell the user how to create the token. Use
-call_service(domain, service, data) for the heavy lifting; scene_run and
-area_control are shortcuts. For MQTT-only setups, use mqtt_publish (needs
-paho-mqtt installed).
-
-Per-app audio rule: to route a single app's audio (e.g. "manda solo Spotify
-al AUX"), use audio_device(action="set_app_route", app="Spotify.exe",
-device="<device>", role="1"). get_app_routes lists current per-app overrides.
-
-Process-triggered routine rule: for "when X opens / closes, do Y", pass
-trigger={type:"on_app_open"|"on_app_close", process:"<exe>",
-interval_minutes:2}. This installs a polling watcher that fires
-routine.run_now on the right edge; deleting the routine tears down the
-watcher.
-
-Fact-check rule: when the user asks to verify a claim against sources, use
-fact_check(action="check", claim=..., sources=[...]) or just claim=... if
-the content has already been ingested into knowledge. fact_check is lexical
-only (TF-IDF + cosine + negation heuristic); write the final verdict yourself
-from the ranked matches, do not parrot the heuristic verdict.
-
-Form-fill rule: for live web forms, first call browser_real.attach_visible or
-browser_real.open, then form_filler(discover) -> plan -> apply -> submit.
-form_filler.submit returns needs_confirmation by default; pass confirmed=true
-only after the user explicitly approves the captured screenshot + field
-summary.
-
-Study rule: for flashcards, use study(...). The SM-2 algorithm picks the next
-due date automatically; just call review with q in 0..5 after the user grades
-their recall.
-
-Developer rule: for project tasks (run tests, lint, format, git status/diff,
-start/stop dev server), use developer(...). Mutating git actions (commit/push)
-are intentionally not exposed by the tool; use terminal(...) for those so the
-user sees the exact command.
-
-Network rule: ping, traceroute, dns_get/set, dns_resolve, port_check,
-connections and public_ip use network(...). dns_set snapshots the previous DNS
-list per adapter so state.rollback can restore it.
-
-Maintenance rule: windows_update_status, defender_status, firewall_status,
-event_logs_query, services_*, restore_point_create use maintenance(...).
-defender_quick_scan blocks up to 15 minutes; disk_cleanup_describe returns the
-cleanmgr command without running it.
-
-Game launcher rule: for Epic/GOG/Xbox/Riot use game_launcher(...). Steam
-remains in the dedicated steam(...) tool.
-
-Watcher/job rule: long-running observations (file changed, url changed) use
-watcher(...) which schedules gemma4_agent.watcher_runner. Generic background
-jobs (any subprocess) use job_manager(...). Use developer.start_dev_server
-specifically for project dev servers since it auto-detects the stack.
-
-Document ingestion rule: if the user asks to read, summarize, extract text/
-tables/images from, or analyze a PDF/DOCX/XLSX/PPTX/HTML file, use
-document(action="extract_text|extract_tables|extract_images|ocr_pdf|summarize|
-ingest_to_knowledge|compare_documents"). Prefer this over filesystem.read for
-binary office formats. document.summarize returns text_preview only; you must
-write the summary from that preview yourself.
-
-Visible browser rule: for tasks like "compra esto", "rellena este formulario"
-or any web action where the user expects the work to happen in their own
-visible browser, call browser_real(action="attach_visible", browser="chrome|
-edge|opera|brave"). If it returns needs_user with launch_instructions, relay
-those instructions and stop — do not start a hidden headless browser silently,
-and do not pretend you attached.
-
-For apps and games, use app(action="open", name="<user-facing name>") or
-steam(action="launch_game", query="<game>") for installed Steam games. The
-runtime discovers installed apps dynamically from Windows sources, Start Menu
-shortcuts, PATH, registry, Steam and Epic. Do not require hardcoded exe names
-unless the user gives one.
-If the user says "abre Steam y ve a mi biblioteca", use
-steam(action="library"), not steam(action="open"). If the user says "busca X
-en mi biblioteca de Steam", use steam(action="search_library", query="X").
-If the user asks for the Steam store page of a game/app, use
-steam(action="store_page", query="X") or steam(action="search_store", query="X").
-Do not open a normal web browser for Steam store tasks unless the user asks for
-the web browser specifically. Do not split "ponme en la pagina de la tienda de
-X" into store then ask; open the target page in the Steam client directly when
-possible.
-
-For internet research, current facts, sources, or requests like "investiga",
-use web(action="research", query="<topic>") and answer from the returned source
-excerpts. browser(action="search"|"open") only navigates a visible browser; it
-does not mean you have read or researched the content.
-For precise web page control or reading page text, prefer browser_real(...).
-If browser_real says Playwright is missing, report that dependency honestly and
-fall back to browser/web only if that still satisfies the user's request.
-
-For YouTube/music requests, distinguish searching from playing. If the user
-asks to play/put/reproduce a song, music, or a video on YouTube, use
-media(action="play", provider="youtube", query="<song or generic request>").
-If media is unavailable, fall back to browser(action="youtube_play", query=...).
-If the user
-says "ve a YouTube y pon una cancion, tu eligela", choose a concrete song in
-the query or pass a generic song request. Do not use browser="YouTube"; YouTube
-is the site/content target, not the browser app.
-If the user says "para el video", "pausa el video", "para la musica", or
-"pausa la cancion", they mean stop/pause current playback. Use
-media(action="pause") or audio(action="media_play_pause"). Do not search for a
-video.
-The Spanish word "para" is ambiguous. Do not hard-code every phrase containing
-"para" as a stop command. Use playback controls only when the user clearly means
-pause/stop media from context or wording. If ambiguous, ask a brief clarification.
-Never reinterpret "para el video" as "search for a video" unless the user
-explicitly asks to search/find/open a video.
 
 After a tool result, answer from the real result. Never claim that something
 was completed if no tool ran or if the tool returned an error.
@@ -226,10 +67,7 @@ Every tool result has status, verified and evidence. Treat ok=true as "the
 tool ran", not automatically "the user goal is complete". If status is failed,
 attempted, or needs_verification, or verified=false, do not claim completion.
 Either continue with verify/uia/gui/vision/web as appropriate, or tell the user
-exactly what was attempted and what evidence is missing. If browser(search/open)
-returns content_verified=false, say that you opened the URL or search results;
-do not claim that you researched, read, watched, or found specific content
-unless web(...) or another tool returned extracted content.
+exactly what was attempted and what evidence is missing.
 
 Example multi-step:
 User: "abre Steam, ve a mi biblioteca y busca Doom Eternal ahi dentro, luego ve
@@ -248,40 +86,11 @@ resources; state(action="cleanup") and state(action="rollback") can undo known
 resources/checkpoints when a mission asks for cleanup or recovery. Do not
 promise perfect rollback if a tool result only provides a partial rollback plan.
 
-Email and Graph-backed reminders require an existing Microsoft Graph token in
-GEMMA4_GRAPH_TOKEN or MS_GRAPH_TOKEN. If auth is missing, email/reminder must
-return NEEDS_USER; never pretend a message or reminder was sent.
-
-Office/document rule: if the user asks for a PowerPoint, Word document, Excel
-file, spreadsheet, or PDF export, use office(...). Do not say there is no tool
-for PowerPoint. If office returns needs_dependency, report the missing local
-dependency and the install hint.
-
-Audio device rule: for requests like "cambia a AUX", "usa Focusrite", "cambia
-el dispositivo de audio", use audio_device(...), not audio(set_default). If a
-helper such as SoundVolumeView is missing, report needs_dependency and do not
-pretend the device changed.
-
-Timers/alarms/routines rule: use notification(...) for local timers, alarms,
-reminders and immediate notifications. Use routine(...) when the user asks for
-a reusable automation or a sequence to run now/later.
-
-Small local organization rule: use contacts(...) for local contacts,
-notes_tasks(...) for notes/lists/tasks, local_calendar(...) for offline events
-and ICS export, habit_tracker(...) for habits, source_manager(...) for saving
-sources/citations, local_search(...) for local file search, dependency(...) for
-missing tool dependencies, printer_scanner(...) for printer discovery/queues,
-desktop_layout(...) for window/monitor snapshots, and backup_sync(...) for ZIP
-backups. If an action returns needs_implementation, say exactly what is missing.
-
 Persistent memory rule: call memory(action="save") only when the user
 explicitly says "remember", "recorda", "guarda en memoria", "mi preferencia
 es", or equivalent. Do not save casual chat, temporary facts, secrets, or
 one-off instructions unless the user explicitly asks. Use memory(action="recall")
 or memory(action="list") when the user asks what you remember.
-Knowledge/RAG rule: use knowledge(action="ingest") only when the user asks to
-store documents or build a local knowledge base. Use knowledge(action="search")
-when the user asks about previously ingested local documents.
 
 Multimodal rule: if the user attaches an image or audio, use that input as
 evidence. If you call gui(action="screenshot") or vision(...), the runtime will
@@ -290,6 +99,289 @@ clicking or typing.
 
 If a necessary tool is missing, say "no tengo herramienta para eso" and stop.
 Never output special tokens or thinking tags."""
+
+
+# TOOL_RULES: reglas especificas que aplican solo cuando esa tool (o un alias)
+# esta en el subset del turn. La clave es el nombre de la tool tal como
+# aparece en COMPOUND_TOOL_SCHEMAS; el valor es el texto de la regla.
+#
+# Cuando _system_message recibe selected_tool_names, recorre este dict y
+# concatena solo las reglas cuya tool esta en el subset. Esto reduce ~7K chars
+# del CORE prompt sin perder capacidad: si el LLM va a usar smart_home, la
+# regla aparece junto con el schema; si no la va a usar, no paga el prefill.
+TOOL_RULES: dict[str, str] = {
+    "subagent": (
+        "Subagent rule: use subagent(action=\"run\", task=\"<focused instruction>\", "
+        "max_turns=4) only when the parent task has a clearly bounded sub-task "
+        "that benefits from a fresh, smaller context (e.g. \"scan my Steam library "
+        "and return only games tagged metroidvania\"). The child agent starts with "
+        "empty history and only the tools you pass in `tools=[...]` (subset). Do "
+        "NOT use subagent for the main user request; that's the parent's job. Do "
+        "not chain subagents recursively unless the user explicitly asks."
+    ),
+    "routine": (
+        "Voice-command-like routines rule (on_phrase) - CRITICAL:\n\n"
+        "When the user describes a future trigger - sentences like \"cuando te "
+        "diga X haz Y\", \"cada vez que diga X\", \"when I say X do Y\", \"si te "
+        "digo X aprieta Y\", \"every time I say X press Y\", or any phrasing where "
+        "the user is telling you to remember a keyword for later action - you "
+        "MUST call routine(action=\"create\", trigger={\"type\": \"on_phrase\", "
+        "\"phrase\": \"<keyword>\"}, steps=[{\"tool\": \"...\", \"args\": {...}}, ...]) "
+        "on the SAME turn. Do not just say \"de acuerdo\" or \"entendido\" without "
+        "calling the tool; if you don't call it, the routine is not saved and "
+        "nothing will trigger later.\n\n"
+        "Concrete example:\n"
+        "User: \"cuando te diga tiempo, aprieta la tecla de play/pausa\"\n"
+        "You MUST emit, in the same turn:\n"
+        "  routine(action=\"create\",\n"
+        "          name=\"play pause on tiempo\",\n"
+        "          trigger={\"type\": \"on_phrase\", \"phrase\": \"tiempo\"},\n"
+        "          steps=[{\"tool\": \"gui\",\n"
+        "                  \"args\": {\"action\": \"keypress\", \"keys\": \"playpause\"}}])\n"
+        "Then briefly tell the user the routine is saved.\n\n"
+        "The phrase match is case-insensitive and accent-folded; pick a phrase "
+        "the user would not say by accident (3+ chars).\n\n"
+        "When the runtime has already fired a saved routine for this turn, a "
+        "\"Phrase-triggered routines already executed this turn\" block appears "
+        "in your system context. In that case do NOT re-run the same steps; "
+        "just acknowledge briefly in natural language what got done.\n\n"
+        "Disable a routine with routine(action=\"disable\") or remove it with "
+        "routine(action=\"delete\"). To list saved routines use routine(action="
+        "\"list\"). To inspect what would run without executing, routine(action="
+        "\"simulate\").\n\n"
+        "Process-triggered routine rule: for \"when X opens / closes, do Y\", pass "
+        "trigger={type:\"on_app_open\"|\"on_app_close\", process:\"<exe>\", "
+        "interval_minutes:2}. This installs a polling watcher that fires "
+        "routine.run_now on the right edge; deleting the routine tears down the "
+        "watcher."
+    ),
+    "smart_home": (
+        "Smart home rule: local Home Assistant control uses smart_home(...). Requires "
+        "GEMMA4_HASS_TOKEN env var (long-lived access token from your HA profile); "
+        "set GEMMA4_HASS_HOST if HA is not at homeassistant.local:8123. If status "
+        "returns has_token=false, tell the user how to create the token. Use "
+        "call_service(domain, service, data) for the heavy lifting; scene_run and "
+        "area_control are shortcuts. For MQTT-only setups, use mqtt_publish (needs "
+        "paho-mqtt installed)."
+    ),
+    "audio_device": (
+        "Per-app audio rule: to route a single app's audio (e.g. \"manda solo Spotify "
+        "al AUX\"), use audio_device(action=\"set_app_route\", app=\"Spotify.exe\", "
+        "device=\"<device>\", role=\"1\"). get_app_routes lists current per-app overrides.\n\n"
+        "Audio device rule: for requests like \"cambia a AUX\", \"usa Focusrite\", \"cambia "
+        "el dispositivo de audio\", use audio_device(...), not audio(set_default). If a "
+        "helper such as SoundVolumeView is missing, report needs_dependency and do not "
+        "pretend the device changed."
+    ),
+    "fact_check": (
+        "Fact-check rule: when the user asks to verify a claim against sources, use "
+        "fact_check(action=\"check\", claim=..., sources=[...]) or just claim=... if "
+        "the content has already been ingested into knowledge. fact_check is lexical "
+        "only (TF-IDF + cosine + negation heuristic); write the final verdict yourself "
+        "from the ranked matches, do not parrot the heuristic verdict."
+    ),
+    "form_filler": (
+        "Form-fill rule: for live web forms, first call browser_real.attach_visible or "
+        "browser_real.open, then form_filler(discover) -> plan -> apply -> submit. "
+        "form_filler.submit returns needs_confirmation by default; pass confirmed=true "
+        "only after the user explicitly approves the captured screenshot + field "
+        "summary."
+    ),
+    "study": (
+        "Study rule: for flashcards, use study(...). The SM-2 algorithm picks the next "
+        "due date automatically; just call review with q in 0..5 after the user grades "
+        "their recall."
+    ),
+    "developer": (
+        "Developer rule: for project tasks (run tests, lint, format, git status/diff, "
+        "start/stop dev server), use developer(...). Mutating git actions (commit/push) "
+        "are intentionally not exposed by the tool; use terminal(...) for those so the "
+        "user sees the exact command."
+    ),
+    "network": (
+        "Network rule: ping, traceroute, dns_get/set, dns_resolve, port_check, "
+        "connections and public_ip use network(...). dns_set snapshots the previous DNS "
+        "list per adapter so state.rollback can restore it."
+    ),
+    "maintenance": (
+        "Maintenance rule: windows_update_status, defender_status, firewall_status, "
+        "event_logs_query, services_*, restore_point_create use maintenance(...). "
+        "defender_quick_scan blocks up to 15 minutes; disk_cleanup_describe returns the "
+        "cleanmgr command without running it."
+    ),
+    "game_launcher": (
+        "Game launcher rule: for Epic/GOG/Xbox/Riot use game_launcher(...). Steam "
+        "remains in the dedicated steam(...) tool."
+    ),
+    "watcher": (
+        "Watcher/job rule: long-running observations (file changed, url changed) use "
+        "watcher(...) which schedules gemma4_agent.watcher_runner. Generic background "
+        "jobs (any subprocess) use job_manager(...). Use developer.start_dev_server "
+        "specifically for project dev servers since it auto-detects the stack."
+    ),
+    "document": (
+        "Document ingestion rule: if the user asks to read, summarize, extract text/"
+        "tables/images from, or analyze a PDF/DOCX/XLSX/PPTX/HTML file, use "
+        "document(action=\"extract_text|extract_tables|extract_images|ocr_pdf|summarize|"
+        "ingest_to_knowledge|compare_documents\"). Prefer this over filesystem.read for "
+        "binary office formats. document.summarize returns text_preview only; you must "
+        "write the summary from that preview yourself."
+    ),
+    "browser_real": (
+        "Visible browser rule: for tasks like \"compra esto\", \"rellena este formulario\" "
+        "or any web action where the user expects the work to happen in their own "
+        "visible browser, call browser_real(action=\"attach_visible\", browser=\"chrome|"
+        "edge|opera|brave\"). If it returns needs_user with launch_instructions, relay "
+        "those instructions and stop — do not start a hidden headless browser silently, "
+        "and do not pretend you attached.\n\n"
+        "For precise web page control or reading page text, prefer browser_real(...). "
+        "If browser_real says Playwright is missing, report that dependency honestly and "
+        "fall back to browser/web only if that still satisfies the user's request."
+    ),
+    "app": (
+        "For apps and games, use app(action=\"open\", name=\"<user-facing name>\"). "
+        "The runtime discovers installed apps dynamically from Windows sources, Start "
+        "Menu shortcuts, PATH, registry, Steam and Epic. Do not require hardcoded exe "
+        "names unless the user gives one."
+    ),
+    "steam": (
+        "Steam rule: for installed Steam games use steam(action=\"launch_game\", "
+        "query=\"<game>\"). If the user says \"abre Steam y ve a mi biblioteca\", use "
+        "steam(action=\"library\"), not steam(action=\"open\"). If the user says \"busca X "
+        "en mi biblioteca de Steam\", use steam(action=\"search_library\", query=\"X\"). "
+        "If the user asks for the Steam store page of a game/app, use "
+        "steam(action=\"store_page\", query=\"X\") or steam(action=\"search_store\", query=\"X\"). "
+        "Do not open a normal web browser for Steam store tasks unless the user asks for "
+        "the web browser specifically. Do not split \"ponme en la pagina de la tienda de "
+        "X\" into store then ask; open the target page in the Steam client directly when "
+        "possible."
+    ),
+    "web": (
+        "For internet research, current facts, sources, or requests like \"investiga\", "
+        "use web(action=\"research\", query=\"<topic>\") and answer from the returned source "
+        "excerpts. browser(action=\"search\"|\"open\") only navigates a visible browser; it "
+        "does not mean you have read or researched the content."
+    ),
+    "media": (
+        "For YouTube/music requests, distinguish searching from playing. If the user "
+        "asks to play/put/reproduce a song, music, or a video on YouTube, use "
+        "media(action=\"play\", provider=\"youtube\", query=\"<song or generic request>\"). "
+        "If media is unavailable, fall back to browser(action=\"youtube_play\", query=...). "
+        "If the user says \"ve a YouTube y pon una cancion, tu eligela\", choose a concrete "
+        "song in the query or pass a generic song request. Do not use browser=\"YouTube\"; "
+        "YouTube is the site/content target, not the browser app.\n\n"
+        "If the user says \"para el video\", \"pausa el video\", \"para la musica\", or "
+        "\"pausa la cancion\", they mean stop/pause current playback. Use "
+        "media(action=\"pause\") or audio(action=\"media_play_pause\"). Do not search for a "
+        "video.\n\n"
+        "The Spanish word \"para\" is ambiguous. Do not hard-code every phrase containing "
+        "\"para\" as a stop command. Use playback controls only when the user clearly "
+        "means pause/stop media from context or wording. If ambiguous, ask a brief "
+        "clarification. Never reinterpret \"para el video\" as \"search for a video\" "
+        "unless the user explicitly asks to search/find/open a video."
+    ),
+    "browser": (
+        "browser(action=\"search\"|\"open\") only navigates a visible browser; it does not "
+        "mean you have read or researched the content. If browser(search/open) returns "
+        "content_verified=false, say that you opened the URL or search results; do not "
+        "claim that you researched, read, watched, or found specific content unless "
+        "web(...) or another tool returned extracted content."
+    ),
+    "email": (
+        "Email and Graph-backed reminders require an existing Microsoft Graph token in "
+        "GEMMA4_GRAPH_TOKEN or MS_GRAPH_TOKEN. If auth is missing, email must return "
+        "NEEDS_USER; never pretend a message was sent."
+    ),
+    "reminder": (
+        "Graph-backed reminders require an existing Microsoft Graph token in "
+        "GEMMA4_GRAPH_TOKEN or MS_GRAPH_TOKEN. If auth is missing, reminder must return "
+        "NEEDS_USER; never pretend a reminder was scheduled."
+    ),
+    "office": (
+        "Office/document rule: if the user asks for a PowerPoint, Word document, Excel "
+        "file, spreadsheet, or PDF export, use office(...). Do not say there is no tool "
+        "for PowerPoint. If office returns needs_dependency, report the missing local "
+        "dependency and the install hint."
+    ),
+    "notification": (
+        "Timers/alarms/routines rule: use notification(...) for local timers, alarms, "
+        "reminders and immediate notifications. Use routine(...) when the user asks for "
+        "a reusable automation or a sequence to run now/later."
+    ),
+    "knowledge": (
+        "Knowledge/RAG rule: use knowledge(action=\"ingest\") only when the user asks to "
+        "store documents or build a local knowledge base. Use knowledge(action=\"search\") "
+        "when the user asks about previously ingested local documents."
+    ),
+    # Tools de "small local organization" comparten una regla compacta.
+    "contacts": (
+        "Local organization rule: contacts(...) for local contacts, notes_tasks(...) "
+        "for notes/lists/tasks, local_calendar(...) for offline events and ICS export, "
+        "habit_tracker(...) for habits, source_manager(...) for saving sources/citations, "
+        "local_search(...) for local file search, dependency(...) for missing tool "
+        "dependencies, printer_scanner(...) for printer discovery/queues, "
+        "desktop_layout(...) for window/monitor snapshots, and backup_sync(...) for ZIP "
+        "backups. If an action returns needs_implementation, say exactly what is missing."
+    ),
+}
+# Alias: notes_tasks / local_calendar / habit_tracker / source_manager /
+# local_search / dependency / printer_scanner / desktop_layout / backup_sync
+# comparten la misma regla compacta de contacts. Mapeamos los aliases para
+# que cualquiera de ellos en el subset traiga la regla una sola vez.
+for _alias in (
+    "notes_tasks", "local_calendar", "habit_tracker", "source_manager",
+    "local_search", "dependency", "printer_scanner", "desktop_layout",
+    "backup_sync",
+):
+    TOOL_RULES[_alias] = TOOL_RULES["contacts"]
+
+
+def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
+    """Construye el SYSTEM_PROMPT efectivo para este turno.
+
+    Sin subset: comportamiento legacy — concatena CORE + todas las TOOL_RULES
+    (resultado equivalente al SYSTEM_PROMPT monolitico anterior).
+
+    Con subset: CORE + solo las TOOL_RULES cuyas tools estan en el subset.
+    Una misma regla compartida (e.g. la de small local organization) se
+    incluye una sola vez aunque varias tools del subset la mapeen.
+    """
+    if not selected_tool_names:
+        # Incluir todas las reglas, deduplicadas, en orden estable.
+        seen: set[int] = set()
+        parts = [CORE_PROMPT]
+        for name in sorted(TOOL_RULES.keys()):
+            rule = TOOL_RULES[name]
+            rid = id(rule)
+            if rid in seen:
+                continue
+            seen.add(rid)
+            parts.append(rule)
+        return "\n\n".join(parts)
+
+    # Subset: filtrar reglas por nombre de tool, deduplicar por identidad
+    # (varias tools pueden mapear a la misma regla compartida).
+    wanted = set(selected_tool_names)
+    seen_ids: set[int] = set()
+    rules: list[str] = []
+    for name in selected_tool_names:
+        rule = TOOL_RULES.get(name)
+        if rule is None:
+            continue
+        rid = id(rule)
+        if rid in seen_ids:
+            continue
+        seen_ids.add(rid)
+        rules.append(rule)
+    if not rules:
+        return CORE_PROMPT
+    return CORE_PROMPT + "\n\n" + "\n\n".join(rules)
+
+
+# Backwards-compat: algunos modulos importan SYSTEM_PROMPT directo (tests, GUI,
+# server.py /agent/system_prompt endpoint). Lo mantenemos como el prompt full
+# para que GET /agent/system_prompt siga mostrando algo util al usuario.
+SYSTEM_PROMPT = build_system_prompt()
 
 
 @dataclass
@@ -400,9 +492,13 @@ class Gemma4Agent:
         # esos tools. De ~46K chars (62 tools full) a ~3-5K (4-6 tools), 10x
         # menos prefill por turno.
         tools_section = self._tool_schemas_hint(selected_tool_names=selected_tool_names)
+        # PERF: el system prompt base ahora se filtra por subset: CORE + solo
+        # reglas de las tools que el router eligio. Reduce ~7K chars sin
+        # perder capacidad (cuando el LLM use la tool, la regla aparecera).
+        prompt_base = build_system_prompt(selected_tool_names)
         return {
             "role": "system",
-            "content": f"{SYSTEM_PROMPT}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
@@ -620,30 +716,41 @@ class Gemma4Agent:
         self._explicit_plan_text = ""
         self._explicit_plan_steps = []
         self._explicit_plan_status = {}
-        try:
-            from .explicit_plan import generate_plan, should_plan
-            if raw_text and should_plan(raw_text, len(plan.steps)):
-                self.trace.event(turn_id, "explicit_plan_start", reason="multi_step")
-                result = generate_plan(
-                    raw_text,
-                    chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350, timeout_s=45.0),
-                )
-                if result.get("ok") and result.get("plan"):
-                    self._explicit_plan_text = str(result["plan"])
-                    self._explicit_plan_steps = list(result.get("steps") or [])
-                    self._explicit_plan_status = {"state": "ready", "step_count": len(self._explicit_plan_steps)}
-                    self.trace.event(turn_id, "explicit_plan_ready",
-                                     step_count=len(self._explicit_plan_steps),
-                                     plan_chars=len(self._explicit_plan_text))
-                elif result.get("skipped"):
-                    self._explicit_plan_status = {"state": "skipped", "reason": "model_said_no_plan"}
-                    self.trace.event(turn_id, "explicit_plan_skipped", reason="model_said_no_plan")
-                elif not result.get("ok"):
-                    self._explicit_plan_status = {"state": "failed", "error": result.get("error")}
-                    self.trace.event(turn_id, "explicit_plan_failed", error=result.get("error"))
-        except Exception as exc:
-            self._explicit_plan_status = {"state": "error", "error": str(exc)}
-            self.trace.event(turn_id, "explicit_plan_error", error=str(exc))
+        # PERF: el explicit planner es una segunda llamada al LLM (45s timeout)
+        # que se disparaba por heuristica (should_plan). Para queries simples
+        # ("abre Steam") era overhead innecesario. Lo hacemos OPT-IN: default
+        # OFF, se activa con GEMMA4_AGENT_EXPLICIT_PLAN=true. La capacidad
+        # multi-step del LLM se preserva porque el sistema sigue usando el
+        # MissionPlan implicito (plan_mission) + multi-turn tool calls.
+        import os as _os_plan
+        explicit_plan_enabled = (_os_plan.environ.get("GEMMA4_AGENT_EXPLICIT_PLAN") or "").strip().lower() in {"1", "true", "yes", "on"}
+        if explicit_plan_enabled:
+            try:
+                from .explicit_plan import generate_plan, should_plan
+                if raw_text and should_plan(raw_text, len(plan.steps)):
+                    self.trace.event(turn_id, "explicit_plan_start", reason="multi_step")
+                    result = generate_plan(
+                        raw_text,
+                        chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350, timeout_s=45.0),
+                    )
+                    if result.get("ok") and result.get("plan"):
+                        self._explicit_plan_text = str(result["plan"])
+                        self._explicit_plan_steps = list(result.get("steps") or [])
+                        self._explicit_plan_status = {"state": "ready", "step_count": len(self._explicit_plan_steps)}
+                        self.trace.event(turn_id, "explicit_plan_ready",
+                                         step_count=len(self._explicit_plan_steps),
+                                         plan_chars=len(self._explicit_plan_text))
+                    elif result.get("skipped"):
+                        self._explicit_plan_status = {"state": "skipped", "reason": "model_said_no_plan"}
+                        self.trace.event(turn_id, "explicit_plan_skipped", reason="model_said_no_plan")
+                    elif not result.get("ok"):
+                        self._explicit_plan_status = {"state": "failed", "error": result.get("error")}
+                        self.trace.event(turn_id, "explicit_plan_failed", error=result.get("error"))
+            except Exception as exc:
+                self._explicit_plan_status = {"state": "error", "error": str(exc)}
+                self.trace.event(turn_id, "explicit_plan_error", error=str(exc))
+        else:
+            self._explicit_plan_status = {"state": "disabled", "reason": "env_var_off"}
         _progress(
             progress,
             "start",

@@ -204,6 +204,20 @@ def warm_up() -> None:
     _ensure_loaded()
 
 
+# PERF: LRU cache para embeds del input del usuario. El embed de un texto
+# corto cuesta 50-150ms en CPU; con cache, queries repetidas ("abre Steam"
+# dos veces) son 0ms. Tamaño 256 cubre conversaciones largas sin crecer
+# memoria sin limite. Clave: el texto normalizado (lower+strip) para que
+# "abre Steam" == "ABRE Steam" == " abre steam ".
+_EMBED_CACHE: "dict[str, Any]" = {}
+_EMBED_CACHE_ORDER: list[str] = []
+_EMBED_CACHE_MAX = 256
+
+
+def _cache_key(text: str) -> str:
+    return " ".join(text.lower().split())
+
+
 def embed(text: str) -> Any | None:
     """Return a normalized embedding for `text` using the cached model.
 
@@ -214,9 +228,26 @@ def embed(text: str) -> Any | None:
     """
     if not text.strip():
         return None
+    key = _cache_key(text)
+    cached = _EMBED_CACHE.get(key)
+    if cached is not None:
+        # LRU touch: mover al final del order para reflejar uso reciente.
+        try:
+            _EMBED_CACHE_ORDER.remove(key)
+        except ValueError:
+            pass
+        _EMBED_CACHE_ORDER.append(key)
+        return cached
     if not _ensure_loaded():
         return None
-    return _STATE.model.encode([text], normalize_embeddings=True, show_progress_bar=False)[0]  # type: ignore[union-attr]
+    vec = _STATE.model.encode([text], normalize_embeddings=True, show_progress_bar=False)[0]  # type: ignore[union-attr]
+    # Evict LRU si supera el cap.
+    if len(_EMBED_CACHE_ORDER) >= _EMBED_CACHE_MAX:
+        oldest = _EMBED_CACHE_ORDER.pop(0)
+        _EMBED_CACHE.pop(oldest, None)
+    _EMBED_CACHE[key] = vec
+    _EMBED_CACHE_ORDER.append(key)
+    return vec
 
 
 def status() -> dict[str, Any]:
