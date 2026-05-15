@@ -1852,6 +1852,42 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     return True
 
 
+def test_optroad_vision_counter_fires_callback_at_threshold() -> bool:
+    """Item 1.7: el counter de imagenes dispara el callback en el umbral.
+
+    Issue #21690 (mmproj leak). El orchestrator registra un callback que
+    reciclara el server cuando se procesen IMAGE_RELAUNCH_THRESHOLD imagenes.
+    """
+    import gemma4_agent.multimodal as mm
+    # Reset estado
+    mm.reset_image_counter()
+    fires: list[int] = []
+    mm.set_vision_relaunch_callback(lambda n: fires.append(n))
+    try:
+        # Procesamos exactamente THRESHOLD veces -> callback dispara una vez.
+        # No usamos image_part real porque requiere file IO; invocamos el
+        # bumper interno.
+        for _ in range(mm.IMAGE_RELAUNCH_THRESHOLD - 1):
+            mm._bump_image_counter()
+        assert mm.get_image_counter() == mm.IMAGE_RELAUNCH_THRESHOLD - 1
+        assert fires == [], f"callback fired prematurely: {fires}"
+        # La imagen que cruza el umbral
+        mm._bump_image_counter()
+        assert mm.get_image_counter() == mm.IMAGE_RELAUNCH_THRESHOLD
+        assert fires == [mm.IMAGE_RELAUNCH_THRESHOLD], f"callback should fire exactly once: {fires}"
+        # Mas imagenes no disparan otra vez (hasta que se haga reset)
+        mm._bump_image_counter()
+        assert fires == [mm.IMAGE_RELAUNCH_THRESHOLD]
+        # Reset y siguiente ciclo
+        mm.reset_image_counter()
+        assert mm.get_image_counter() == 0
+    finally:
+        mm.set_vision_relaunch_callback(None)
+        mm.reset_image_counter()
+    print("OPTROAD-1.7 vision counter callback at threshold: OK")
+    return True
+
+
 def test_optroad_normalize_tool_calls_list_response() -> bool:
     """Aplicacion sobre el formato OpenAI completo."""
     from gemma4_agent.llm_client import normalize_tool_calls_list
@@ -1952,6 +1988,8 @@ def main() -> int:
         test_optroad_normalize_tool_call_arguments_braces,
         test_optroad_normalize_tool_call_arguments_malformed,
         test_optroad_normalize_tool_calls_list_response,
+        # 1.7 vision counter para mmproj leak mitigation (#21690)
+        test_optroad_vision_counter_fires_callback_at_threshold,
     ]
     failures: list[str] = []
     for t in tests:

@@ -484,6 +484,64 @@ class LlamaServerManager:
             self._current_profile = None
         return True
 
+    def recycle_for_vision_leak(self) -> bool:
+        """Recicla el server para mitigar el leak de mmproj (issue #21690).
+
+        Solo aplica si:
+          - Tenemos un proceso vivo gestionado por nosotros.
+          - El perfil activo tiene vision_enabled=True.
+
+        Devuelve True si efectivamente se reciclo. Publica al BUS de eventos
+        un payload {kind:"boot_stage", stage:"vision_relaunch"} antes y
+        despues del swap. Item 1.7 / Bloque E1 del roadmap.
+
+        Lectura: counter de imagenes se mantiene en multimodal.py; este
+        metodo es solo el "como" del relanch, decidido y disparado por el
+        orchestrator (NO por agent.py).
+        """
+        if self._external_detected:
+            logger.info("recycle_for_vision_leak(): external server, skipping")
+            return False
+        profile = self._current_profile
+        if profile is None or not self.is_running():
+            logger.info("recycle_for_vision_leak(): no managed server running")
+            return False
+        if not getattr(profile, "vision_enabled", False):
+            logger.debug("recycle_for_vision_leak(): vision disabled in profile %s", profile.name)
+            return False
+        # Publicar al bus (best-effort; si events_bus no esta importable
+        # estamos en un entorno donde el orchestrator no lo necesita).
+        try:
+            from .events_bus import BUS
+            BUS.publish({
+                "kind": "boot_stage",
+                "stage": "vision_relaunch",
+                "phase": "starting",
+                "profile": profile.name,
+            })
+        except Exception:
+            pass
+        logger.info("recycling llama-server (mmproj leak mitigation #21690)")
+        result = self.restart(profile)
+        try:
+            from .events_bus import BUS
+            BUS.publish({
+                "kind": "boot_stage",
+                "stage": "vision_relaunch",
+                "phase": "completed",
+                "profile": profile.name,
+                "result": result,
+            })
+        except Exception:
+            pass
+        # Reset del counter de imagenes para empezar el siguiente ciclo limpio.
+        try:
+            from .multimodal import reset_image_counter
+            reset_image_counter()
+        except Exception:
+            pass
+        return result == "started"
+
     def restart(self, profile: Profile, **start_kwargs: object) -> str:
         """stop() + start(profile)."""
         self.stop()

@@ -3,9 +3,98 @@
 from __future__ import annotations
 
 import base64
+import logging
 import mimetypes
+import threading
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
+
+logger = logging.getLogger(__name__)
+
+
+# ------------------------------------------------------------------
+# Image processing counter (item 1.7 del roadmap de optimizacion).
+#
+# Issue ggml-org/llama.cpp #21690: el mmproj de Gemma 4 produce un
+# leak progresivo (~6.4 MiB/imagen GPU + 46 MiB host/request). En
+# 6 GB de VRAM se confirma OOM tras ~60-80 imagenes. Mitigacion:
+# emitir un evento "vision_relaunch" cuando el counter alcance
+# IMAGE_RELAUNCH_THRESHOLD (40 imagenes, margen sobre el OOM real),
+# para que el orchestrator (NO agent.py) decida recyclar el server.
+#
+# El counter es module-level + thread-safe. El callback es opcional:
+# si nadie se registra, solo loggeamos. Esto evita acoplar
+# multimodal.py al manager del server.
+# ------------------------------------------------------------------
+
+IMAGE_RELAUNCH_THRESHOLD = 40
+
+_image_counter_lock = threading.Lock()
+_image_counter = 0
+_relaunch_callback: Callable[[int], None] | None = None
+
+
+def set_vision_relaunch_callback(cb: Callable[[int], None] | None) -> None:
+    """Registra el callback que se invoca al cruzar IMAGE_RELAUNCH_THRESHOLD.
+
+    El callback recibe el conteo actual de imágenes; tipicamente
+    reciclara el llama-server. NULL desinstala el callback.
+    El orchestrator (agent_runner / server) lo registra al arrancar.
+    """
+    global _relaunch_callback
+    _relaunch_callback = cb
+
+
+def reset_image_counter() -> None:
+    """Reset del counter, llamado por el orchestrator tras recyclar."""
+    global _image_counter
+    with _image_counter_lock:
+        _image_counter = 0
+
+
+def get_image_counter() -> int:
+    """Lectura del counter actual (para tests y telemetria)."""
+    with _image_counter_lock:
+        return _image_counter
+
+
+def _bump_image_counter() -> None:
+    """Incrementa el counter; si cruza el umbral, dispara el callback Y
+    publica al bus de eventos.
+
+    Doble notificacion intencional:
+    - El callback es para el orchestrator que lo registra explicitamente
+      (typicamente agent_runner.py).
+    - El evento al bus es para listeners genericos (UI, telemetria) y
+      como fallback si nadie registro callback.
+    """
+    global _image_counter
+    with _image_counter_lock:
+        _image_counter += 1
+        crossed = _image_counter == IMAGE_RELAUNCH_THRESHOLD
+        current = _image_counter
+
+    if not crossed:
+        return
+
+    # 1) Publish al bus (best-effort; si events_bus no importable, ok).
+    try:
+        from .events_bus import BUS
+        BUS.publish({
+            "kind": "vision_threshold_reached",
+            "image_count": current,
+            "threshold": IMAGE_RELAUNCH_THRESHOLD,
+            "issue": "ggml-org/llama.cpp#21690",
+        })
+    except Exception as exc:
+        logger.debug("event bus publish failed: %s", exc)
+
+    # 2) Callback si esta registrado.
+    if _relaunch_callback is not None:
+        try:
+            _relaunch_callback(current)
+        except Exception as exc:
+            logger.warning("vision_relaunch callback raised: %s", exc)
 
 
 def _b64(path: Path) -> str:
@@ -15,6 +104,7 @@ def _b64(path: Path) -> str:
 def image_part(path: Path) -> dict[str, Any]:
     path = path.expanduser().resolve()
     mime = mimetypes.guess_type(path.name)[0] or "image/png"
+    _bump_image_counter()
     return {
         "type": "image_url",
         "image_url": {"url": f"data:{mime};base64,{_b64(path)}"},
