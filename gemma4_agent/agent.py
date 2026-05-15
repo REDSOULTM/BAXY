@@ -367,7 +367,12 @@ class Gemma4Agent:
             "tone": self._persona.tone,
         }
 
-    def _system_message(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> dict[str, str]:
+    def _system_message(
+        self,
+        mode: AgentMode | None = None,
+        plan: MissionPlan | None = None,
+        selected_tool_names: list[str] | None = None,
+    ) -> dict[str, str]:
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
         persona_hint = f"\n\n{self._persona.system_hint}" if self._persona.system_hint else ""
@@ -389,13 +394,18 @@ class Gemma4Agent:
         # GEMMA4_DISABLE_TOOL_SCHEMAS_HINT por si el dev necesita prompts
         # mas cortos en debug. Cacheado a nivel-instancia para no recompilar
         # el markdown en cada turno (62 tools = ~6 KB de markdown).
-        tools_section = self._tool_schemas_hint()
+        #
+        # PERF: si el caller pasa selected_tool_names (el subset que el
+        # semantic router eligio para este turn), filtramos el markdown a solo
+        # esos tools. De ~46K chars (62 tools full) a ~3-5K (4-6 tools), 10x
+        # menos prefill por turno.
+        tools_section = self._tool_schemas_hint(selected_tool_names=selected_tool_names)
         return {
             "role": "system",
             "content": f"{SYSTEM_PROMPT}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
-    def _tool_schemas_hint(self) -> str:
+    def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
         """Construye el bloque "Tool Schemas EXACT" una sola vez por agent.
 
         Sprint 1 del optimization_roadmap.md. Mode seleccionado por el
@@ -435,6 +445,39 @@ class Gemma4Agent:
         else:
             mode = env_mode
 
+        # PERF: si el caller paso selected_tool_names, compilar solo el subset.
+        # Cache por (mode, frozenset(selected_tool_names)) para no recompilar
+        # cuando el router elige el mismo subset 2 turns seguidos.
+        if selected_tool_names:
+            subset_key = ",".join(sorted(set(selected_tool_names)))
+            cache_key = f"_cached_tool_schemas_md_{mode}_{subset_key}"
+            cached = getattr(self, cache_key, None)
+            if cached is None:
+                try:
+                    from .tools import COMPOUND_TOOL_SCHEMAS, compile_tools_to_markdown_exact
+                    wanted = set(selected_tool_names)
+                    subset_schemas = [
+                        s for s in COMPOUND_TOOL_SCHEMAS
+                        if isinstance(s, dict)
+                        and isinstance(s.get("function"), dict)
+                        and s["function"].get("name") in wanted
+                    ]
+                    # Si por alguna razon el subset llego vacio (router devolvio
+                    # nombres que no existen en el catalogo), caer al hint full
+                    # para no dejar al LLM sin guidance.
+                    if subset_schemas:
+                        cached = compile_tools_to_markdown_exact(
+                            schemas=subset_schemas,
+                            compact=(mode == "compact"),
+                        )
+                    else:
+                        cached = compile_tools_to_markdown_exact(compact=(mode == "compact"))
+                except Exception:
+                    cached = ""
+                setattr(self, cache_key, cached)
+            return f"\n\n{cached}" if cached else ""
+
+        # Sin subset: comportamiento legacy (todos los tools).
         cache_key = f"_cached_tool_schemas_md_{mode}"
         cached = getattr(self, cache_key, None)
         if cached is None:
@@ -446,8 +489,13 @@ class Gemma4Agent:
             setattr(self, cache_key, cached)
         return f"\n\n{cached}" if cached else ""
 
-    def _messages(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> list[dict[str, Any]]:
-        return [self._system_message(mode, plan), *self.history]
+    def _messages(
+        self,
+        mode: AgentMode | None = None,
+        plan: MissionPlan | None = None,
+        selected_tool_names: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
+        return [self._system_message(mode, plan, selected_tool_names=selected_tool_names), *self.history]
 
     def run_text(
         self,
@@ -645,7 +693,7 @@ class Gemma4Agent:
             )
             try:
                 resp = self.client.chat(
-                    self._messages(mode, plan),
+                    self._messages(mode, plan, selected_tool_names=selected_tool_names),
                     tools=selected_schemas,
                     enable_thinking=mode.enable_thinking,
                     parallel_tool_calls=mode.parallel_tool_calls,
@@ -661,11 +709,12 @@ class Gemma4Agent:
                     # tools last), so this preserves the most relevant ones.
                     keep_count = max(4, len(selected_tool_names) // 2)
                     retry_tool_names = selected_tool_names[:keep_count]
+                    selected_tool_names = retry_tool_names  # propagar al system prompt tambien
                     self.trace.event(turn_id, "subset_truncate_retry", original=len(selected_tool_names), kept=len(retry_tool_names))
                     selected_schemas = self.tools.schemas_for_names(retry_tool_names)
                     try:
                         resp = self.client.chat(
-                            self._messages(mode, plan),
+                            self._messages(mode, plan, selected_tool_names=selected_tool_names),
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
                             parallel_tool_calls=mode.parallel_tool_calls,
