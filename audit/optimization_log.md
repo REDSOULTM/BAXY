@@ -182,3 +182,91 @@ Resolvemos las 4 decisiones documentadas en `optimization_roadmap.md`.
 - Anti-bypass: **6/6 PASS**
 - Commits Fase 2: **3 commits** sobre Fase 1.
 
+---
+
+# Fase 3 — Sprints autónomos (sin tocar agent.py)
+
+Subset del roadmap de 13 sprints que se puede aplicar sin tocar archivos prohibidos.
+
+## Sprint 12 — Hardening operacional llama-server — APPLIED
+- **Commit**: `6108973 feat(llama_server): Sprint 12 — operational hardening`.
+- **Archivos**: `gemma4_agent/llama_server.py`, `gemma4_agent/llm_client.py`, `test_gx_features.py` (+2 tests).
+- **Invariantes nuevas en `_build_server_cmd`**:
+  - `--host 127.0.0.1` (proyecto 100% local, nunca bind a 0.0.0.0).
+  - `--no-webui` (cliente tiene UI propia; webui interno es ataque innecesario).
+  - `--api-key <env>` opcional via `GEMMA4_LLAMA_API_KEY`.
+- **`llm_client._request_headers()`**: helper que añade `Authorization: Bearer <key>` si el env var existe. Defensa en profundidad si el puerto se expone por error.
+- **Validación**: 143/143 + 81/81.
+
+## Sprint 6 — Endpoint `/agent/recycle_server` — APPLIED
+- **Commit**: `2afc5cd feat(server): POST /agent/recycle_server endpoint (Sprint 6)`.
+- **Archivos**: `gemma4_agent/server.py` (+55 líneas).
+- **Endpoint nuevo**: `POST /agent/recycle_server` que recicla SOLO el subprocess llama-server, sin tocar el estado del agente (memory, knowledge, sessions intactos).
+- **Casos de uso**:
+  - Botón "restart server" en UI Field para troubleshooting.
+  - El callback registrado en `multimodal.py` (item 1.7) puede invocar este endpoint vía HTTP cuando el counter cruza 40 imágenes.
+- **Reset automático del image counter** al final del recycle para empezar siguiente ciclo limpio.
+- **Validación**: 143/143 + 81/81.
+
+## Sprint 11 — Telemetría local opt-in — APPLIED
+- **Commit**: `fbdaed3 feat(telemetry): Sprint 11 — local-only opt-in telemetry`.
+- **Archivos**: `gemma4_agent/telemetry.py` (nuevo, ~440 líneas), `test_gx_features.py` (+test).
+- **Módulo nuevo `TelemetryStore`**:
+  - Default OFF, opt-in via `GEMMA4_TELEMETRY=true`.
+  - SQLite local en `<state_path>.parent/telemetry.sqlite` con journal_mode=WAL.
+  - 4 tablas: `turns`, `sessions`, `voice`, `incidents`.
+  - Auto-subscribe al BUS: persiste `vision_threshold_reached` y `boot_stage`.
+  - API: `record_turn / record_session / record_voice / record_incident / summarize_last_24h / export_json / rotate`.
+- **Privacidad**: cero IDs externos, cero contenido del prompt, cero tokens. Rotación 30 días.
+- **Si init falla**: deshabilita en runtime, NUNCA rompe el agent.
+- **Validación**: 143/143 + 82/82.
+
+## Sprint 7 — Pre-warm KV con system prompt — APPLIED (helper only)
+- **Commit**: `c84aef6 feat(prewarm): Sprint 7 — KV cache pre-warm at startup`.
+- **Archivos**: `gemma4_agent/prewarm.py` (nuevo, ~115 líneas), `test_gx_features.py` (+test).
+- **Función pura `prewarm_kv(client, system_prompt, tools=None, timeout_s=90)`**:
+  - Hace POST `chat()` con `[system, user='.']` y `max_tokens=1`.
+  - El '.' es input neutro; max_tokens=1 minimiza generación pero deja procesar prefix completo.
+  - Publica `boot_stage prewarm_start/prewarm_done` al BUS.
+  - Si falla: no levanta, devuelve `ok=False`. El agente arranca igual.
+- **Env opt-out**: `GEMMA4_DISABLE_PREWARM=true`. Default ON. Cuando PR #22288 (fix cache-reuse) merge upstream, se puede desactivar.
+- **DEFERRED wiring**: el caller (agent_runner.py post-boot) requiere tocar archivos del flujo de arranque. El helper está listo + testeado.
+- **Validación**: 143/143 + 83/83.
+
+---
+
+## Resumen Fase 3 (subset autónomo)
+
+| Sprint | Item | Status | Commit | Validación |
+|---|---|---|---|---|
+| 12 | Hardening llama-server | APPLIED | `6108973` | 143/143 + 81/81 |
+| 6 | `/agent/recycle_server` | APPLIED | `2afc5cd` | 143/143 + 81/81 |
+| 11 | Telemetría opt-in | APPLIED | `fbdaed3` | 143/143 + 82/82 |
+| 7 | Pre-warm KV (helper) | APPLIED (helper) / DEFERRED (wiring) | `c84aef6` | 143/143 + 83/83 |
+
+**4 sprints aplicados** sobre Fase 2. Total acumulado:
+
+| Métrica | Baseline → Final |
+|---|---|
+| Tests del repo | 71/71 → **83/83 PASS** (+12 tests nuevos en total) |
+| Smoke Modo A | **143/143 PASS** (sin regresión en toda la sesión) |
+| Anti-bypass | **6/6 PASS** |
+| Commits totales | **19** (1 WIP + 13 feat/docs Fase 1 + 3 Fase 2 + 4 Fase 3 — más este cierre) |
+| Archivos nuevos | `telemetry.py`, `prewarm.py`, `_ps.py` (sesión anterior). |
+| Deps nuevas | **0** |
+| Constraint `agent.py` | **No tocado en toda la sesión** |
+
+## Sprints de Fase 3 que NO se aplicaron (requieren tocar `agent.py` o decisión externa)
+
+| Sprint | Por qué pendiente |
+|---|---|
+| 1 — Inyección de tool schemas EXACT al system prompt | Requiere editar `agent.py:388` (3 líneas). Helper ya listo (1.8). |
+| 2 — A/B bench Carter de UD-Q4_K_XL vs E2B-Q5_K_M | Requiere bajar GGUF + correr bench (horas). |
+| 3 — Bench Carter en Q4_K_M y Q5_K_M | Horas. Mejor overnight. |
+| 4 — Wiring del callback vision_relaunch en agent_runner | Toca archivo del flujo de arranque; preferible para sesión con dev. |
+| 5 — Verificación empírica streaming SSE con interleaved | Tools listas; falta test end-to-end con server real. |
+| 8 — Re-evaluar PR #22288 (cache-reuse) | Esperar 30 días. |
+| 9 — Re-evaluar MTP drafters upstream | Esperar 30 días. |
+| 10 — Implementación final speculative decoding 8 GB+ | Helper en 2.2 listo; falta A/B real. |
+| 13 — Push Carter 99.81 → 100% | Requiere análisis caso por caso. |
+
