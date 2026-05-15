@@ -85,7 +85,7 @@ Generado en sesión autónoma 2026-05-15.
 - [PASS] `maintenance` firewall_status → expect=ok, got=ok
 - [PASS] `maintenance` T2-025 PS injection rejected → expect=needs_user, got=needs_user
 - [PASS] `maintenance` event_logs_query happy → expect=ok, got=ok
-- [PASS] `maintenance` T2-026 defender returns job_id (got status=running, job_id=res_e9866a7f9c)
+- [PASS] `maintenance` T2-026 defender returns job_id (got status=running, job_id=res_6e75d991eb)
 - [PASS] `maintenance` T2-027 disk_cleanup_describe no exec arrays
 
 ## gui
@@ -271,7 +271,7 @@ Generado en sesión autónoma 2026-05-15.
 
 ## Sanity check
 - [PASS] no destructive PowerShell tokens observed in subprocess calls
-- subprocess.run calls: 35
+- subprocess.run calls: 33
 - subprocess.Popen calls: 2
 - urlopen calls: 2
 

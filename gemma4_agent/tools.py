@@ -2374,30 +2374,53 @@ class ToolRegistry:
 
     def list_windows(self, args: dict[str, Any]) -> dict[str, Any]:
         limit = int(args.get("limit", 30))
-        # Preferir psutil (rapido in-process) si esta disponible. PowerShell
-        # spawn paga ~300ms de cold-start y este metodo lo llama
-        # verify_app_opened en hot path (autoverify de app_open).
+        # Preferir pywin32 EnumWindows (~5-15ms) si esta disponible. Devuelve
+        # ventanas REALES con su titulo. Antes este metodo (cuando uso psutil)
+        # devolvia *procesos*, lo cual rompia la semantica para callers como
+        # gui_focus/verify_window_exists que esperan ventanas top-level.
         try:
-            import psutil
+            import win32gui  # type: ignore
+            import win32process  # type: ignore
+            try:
+                import psutil
+            except Exception:
+                psutil = None  # type: ignore[assignment]
+
             windows: list[dict[str, Any]] = []
-            for p in psutil.process_iter(["pid", "name"]):
+            seen_pids: set[int] = set()
+
+            def _enum(hwnd: int, _: Any) -> bool:
+                if len(windows) >= limit:
+                    return False
+                if not win32gui.IsWindowVisible(hwnd):
+                    return True
+                title = win32gui.GetWindowText(hwnd) or ""
+                if not title.strip():
+                    return True
                 try:
-                    info = p.info
-                    name = (info.get("name") or "").strip()
-                    pid = info.get("pid")
-                    if not name or pid is None:
-                        continue
-                    # psutil no expone MainWindowTitle nativamente; usamos
-                    # el nombre del proceso como proxy para el matching que
-                    # verify_app_opened hace. Para listados visuales reales
-                    # caemos al fallback Get-Process abajo.
-                    windows.append({"process": name, "title": name, "pid": pid})
-                    if len(windows) >= limit:
-                        break
-                except (psutil.NoSuchProcess, psutil.AccessDenied):
-                    continue
+                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                except Exception:
+                    pid = 0
+                proc_name = ""
+                if pid and pid not in seen_pids and psutil is not None:
+                    try:
+                        proc_name = psutil.Process(pid).name()
+                        seen_pids.add(pid)
+                    except Exception:
+                        pass
+                windows.append({
+                    "process": proc_name,
+                    "title": title,
+                    "pid": pid,
+                    "hwnd": hwnd,
+                })
+                return True
+
+            win32gui.EnumWindows(_enum, None)
             if windows:
-                return _ok(windows=windows, source="psutil")
+                return _ok(windows=windows, source="win32gui")
+            # Sin ventanas visibles igual es un resultado valido
+            return _ok(windows=[], source="win32gui")
         except Exception:
             pass
 
@@ -2484,51 +2507,116 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
         return _ok(disks=data, exit_code=proc.returncode, source="powershell")
 
     def system_battery(self, args: dict[str, Any]) -> dict[str, Any]:
+        # psutil.sensors_battery (~0.1ms) > Get-CimInstance (~500ms). Y
+        # desktops sin bateria devuelven None limpio en psutil.
+        try:
+            import psutil
+            batt = psutil.sensors_battery()
+            if batt is None:
+                return _ok(battery=None, has_battery=False, note="No battery (desktop or no driver).")
+            return _ok(
+                battery={
+                    "percent": batt.percent,
+                    "plugged": batt.power_plugged,
+                    "secsleft": batt.secsleft if batt.secsleft != psutil.POWER_TIME_UNKNOWN else None,
+                },
+                has_battery=True,
+                source="psutil",
+            )
+        except Exception:
+            pass
+
         script = "Get-CimInstance Win32_Battery | Select-Object Name,EstimatedChargeRemaining,BatteryStatus | ConvertTo-Json -Depth 3"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("system_battery timeout", reason="powershell_timeout")
         ok, data = parse_ps_json(proc.stdout)
         if not ok:
             return _err("system_battery invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
-        return _ok(battery=data, exit_code=proc.returncode)
+        return _ok(battery=data, has_battery=bool(data), exit_code=proc.returncode, source="powershell")
 
     def system_brightness_get(self, args: dict[str, Any]) -> dict[str, Any]:
         script = "Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness | Select-Object CurrentBrightness | ConvertTo-Json"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("system_brightness_get timeout", reason="wmi_unresponsive",
+                        hint="WMI brightness only works on monitors with DDC/CI support.")
         ok, data = parse_ps_json(proc.stdout)
         if not ok:
-            return _err("system_brightness_get invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
-        return _ok(brightness=data, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
+            return _err("system_brightness_get invalid JSON",
+                        stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode,
+                        hint="Most desktop monitors don't expose WmiMonitorBrightness; this only works on laptops.")
+        if data is None:
+            return _ok(brightness=None, note="WmiMonitorBrightness returned null (desktop monitor or no DDC/CI).")
+        return _ok(brightness=data, exit_code=proc.returncode)
 
     def system_brightness_set(self, args: dict[str, Any]) -> dict[str, Any]:
         level = max(0, min(100, int(args.get("level", 50))))
         script = f"(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightnessMethods).WmiSetBrightness(1,{level})"
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
-        return _ok(level=level, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("system_brightness_set timeout", level=level, reason="wmi_unresponsive")
+        if proc.returncode != 0:
+            return _err(
+                "brightness_set rejected by WMI",
+                level=level, exit_code=proc.returncode,
+                stderr=_truncate(proc.stderr.strip(), 1000),
+                hint="WmiMonitorBrightness only works on laptops; desktop monitors need DDC/CI helper.",
+            )
+        return _ok(level=level, requested=level, verified=False,
+                   note="brightness set request sent; verify by calling brightness_get.")
 
     def audio_get_volume(self, args: dict[str, Any]) -> dict[str, Any]:
         try:
             volume = self._audio_endpoint_volume()
             return _ok(level=int(volume.GetMasterVolumeLevelScalar() * 100), muted=bool(volume.GetMute()))
         except ImportError:
-            return _err("pycaw/comtypes not installed. Run: pip install pycaw comtypes")
+            return _err("pycaw/comtypes not installed", status="needs_dependency",
+                        hint="pip install pycaw comtypes")
+        except Exception as exc:
+            return _err(f"audio_get_volume failed: {type(exc).__name__}: {exc}", status="failed")
 
     def audio_set_volume(self, args: dict[str, Any]) -> dict[str, Any]:
         level = max(0, min(100, int(args.get("level", 50))))
         try:
             volume = self._audio_endpoint_volume()
             volume.SetMasterVolumeLevelScalar(level / 100, None)
-            return _ok(level=int(volume.GetMasterVolumeLevelScalar() * 100))
+            # Verificar que SetMasterVolume realmente aplico. En endpoints
+            # exclusive-mode el cambio puede ser ignorado silenciosamente.
+            actual = int(volume.GetMasterVolumeLevelScalar() * 100)
+            if abs(actual - level) > 2:
+                return _err(
+                    f"volume set to {level} but device reports {actual}",
+                    status="failed", requested=level, actual=actual,
+                )
+            return _ok(level=actual, requested=level, verified=True)
         except ImportError:
-            return _err("pycaw/comtypes not installed. Run: pip install pycaw comtypes")
+            return _err("pycaw/comtypes not installed", status="needs_dependency",
+                        hint="pip install pycaw comtypes")
+        except Exception as exc:
+            return _err(f"audio_set_volume failed: {type(exc).__name__}: {exc}", status="failed")
 
     def audio_mute(self, args: dict[str, Any]) -> dict[str, Any]:
         state = bool(args.get("state", True))
         try:
             volume = self._audio_endpoint_volume()
             volume.SetMute(int(state), None)
-            return _ok(muted=bool(volume.GetMute()))
+            # Verificar que SetMute aplico comparando con el state pedido.
+            actual = bool(volume.GetMute())
+            if actual != state:
+                return _err(
+                    f"mute requested {state} but device reports {actual}",
+                    status="failed", requested=state, actual=actual,
+                )
+            return _ok(muted=actual, requested=state, verified=True)
         except ImportError:
-            return _err("pycaw/comtypes not installed. Run: pip install pycaw comtypes")
+            return _err("pycaw/comtypes not installed", status="needs_dependency",
+                        hint="pip install pycaw comtypes")
+        except Exception as exc:
+            return _err(f"audio_mute failed: {type(exc).__name__}: {exc}", status="failed")
 
     def _audio_endpoint_volume(self) -> Any:
         # Returns an IAudioEndpointVolume COM pointer. Typed as Any because
@@ -2564,7 +2652,21 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
         return _ok(devices=data, exit_code=proc.returncode)
 
     def audio_set_default(self, args: dict[str, Any]) -> dict[str, Any]:
-        return _err("setting default audio device needs an external helper such as SoundVolumeView or custom WASAPI policy config", requested=args.get("name"))
+        # Esta accion no esta implementada nativa: Windows WASAPI policy no
+        # expone API publica para cambiar default device sin helper externo
+        # (SoundVolumeView, AudioDeviceCmdlets, NirCmd). En vez de devolver
+        # _err vacio, marcamos status=needs_user para que el LLM lo dirija
+        # a una accion alternativa (audio_device tool con backend distinto).
+        return _err(
+            "audio_set_default not implemented natively",
+            status="needs_user",
+            requested=args.get("name"),
+            reason="Windows no expone API publica para cambiar default audio device.",
+            alternatives=[
+                "Use audio_device tool (action=set_default) which wraps an external helper.",
+                "Install AudioDeviceCmdlets module and call audio_device.",
+            ],
+        )
 
     def audio_media_control(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="media_play_pause")
@@ -2603,6 +2705,36 @@ Start-Sleep -Milliseconds 80
         )
 
     def window_active(self, args: dict[str, Any]) -> dict[str, Any]:
+        # Native win32gui (~1ms) en vez de PowerShell + Add-Type (~400ms cold).
+        try:
+            import win32gui  # type: ignore
+            import win32process  # type: ignore
+            try:
+                import psutil
+            except Exception:
+                psutil = None  # type: ignore[assignment]
+
+            hwnd = win32gui.GetForegroundWindow()
+            if not hwnd:
+                return _ok(active=None, note="no foreground window")
+            title = win32gui.GetWindowText(hwnd) or ""
+            try:
+                _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            except Exception:
+                pid = 0
+            proc_name = ""
+            if pid and psutil is not None:
+                try:
+                    proc_name = psutil.Process(pid).name()
+                except Exception:
+                    pass
+            return _ok(active={"hwnd": hwnd, "title": title, "pid": pid, "process": proc_name},
+                       source="win32gui")
+        except Exception:
+            pass
+
+        # Fallback PowerShell con timeout reducido + try/except (antes
+        # un timeout subia al caller).
         script = r"""
 Add-Type @"
 using System;
@@ -2622,15 +2754,103 @@ $pid32=0
 $p=Get-Process -Id $pid32 -ErrorAction SilentlyContinue
 [PSCustomObject]@{ hwnd=$h.ToInt64(); title=$sb.ToString(); pid=$pid32; process=$p.ProcessName } | ConvertTo-Json
 """
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=6)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("window_active timeout", reason="powershell_timeout")
         ok, data = parse_ps_json(proc.stdout)
         if not ok:
             return _err("window_active invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
-        return _ok(active=data, exit_code=proc.returncode)
+        return _ok(active=data, exit_code=proc.returncode, source="powershell")
 
     def window_control(self, action: str, title_query: str) -> dict[str, Any]:
         if not title_query:
             return _err("missing window title/query")
+        # Native win32gui + EnumWindows: ~10ms vs 400ms PowerShell. Y el
+        # match es estricto (usa _match_query) lo que evita falsos positivos.
+        try:
+            import win32gui  # type: ignore
+            import win32con  # type: ignore
+            import win32process  # type: ignore
+            try:
+                import psutil
+            except Exception:
+                psutil = None  # type: ignore[assignment]
+
+            # SW_* constants
+            sw_action = {
+                "focus":    None,
+                "close":    None,  # usa PostMessage(WM_CLOSE)
+                "minimize": win32con.SW_MINIMIZE,
+                "maximize": win32con.SW_SHOWMAXIMIZED,
+                "restore":  win32con.SW_RESTORE,
+            }
+            if action not in sw_action:
+                return _err("unknown window action", action=action,
+                            valid=list(sw_action.keys()))
+
+            candidates: list[tuple[int, str, int, str]] = []  # (hwnd, title, pid, proc_name)
+
+            def _enum(hwnd: int, _: Any) -> bool:
+                if not win32gui.IsWindowVisible(hwnd):
+                    return True
+                title = win32gui.GetWindowText(hwnd) or ""
+                if not title.strip():
+                    return True
+                if self._match_query(title_query, title):
+                    pid = 0
+                    name = ""
+                    try:
+                        _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                        if psutil is not None:
+                            name = psutil.Process(pid).name()
+                    except Exception:
+                        pass
+                    candidates.append((hwnd, title, pid, name))
+                return True
+
+            win32gui.EnumWindows(_enum, None)
+            if not candidates:
+                return _ok(result={"ok": False, "error": "window not found", "query": title_query},
+                           found=False, source="win32gui")
+
+            # Si hay varias coincidencias, preferir la del proceso cuyo nombre
+            # tambien matchea el query (mejor signal).
+            chosen = next(
+                (c for c in candidates if self._match_query(title_query, c[3])),
+                candidates[0],
+            )
+            hwnd, title, pid, proc_name = chosen
+
+            applied = False
+            error: str | None = None
+            try:
+                if action == "focus":
+                    # Si esta minimizado lo restauramos antes.
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    applied = bool(win32gui.SetForegroundWindow(hwnd))
+                elif action == "close":
+                    win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+                    applied = True  # PostMessage no devuelve confirmacion sincrona
+                else:
+                    win32gui.ShowWindow(hwnd, sw_action[action])
+                    applied = True
+            except Exception as exc:  # noqa: BLE001
+                error = f"{type(exc).__name__}: {exc}"
+
+            return _ok(
+                result={
+                    "ok": applied and error is None, "action": action,
+                    "title": title, "process": proc_name, "pid": pid, "hwnd": hwnd,
+                    "error": error,
+                    "candidates_count": len(candidates),
+                },
+                found=True, source="win32gui",
+            )
+        except Exception:
+            pass
+
+        # Fallback PowerShell (legacy path).
         env = os.environ.copy()
         env["GEMMA4_WINDOW_QUERY"] = title_query
         env["GEMMA4_WINDOW_ACTION"] = action
@@ -2658,13 +2878,16 @@ switch ($action) {
 }
 [PSCustomObject]@{ ok=$true; action=$action; title=$p.MainWindowTitle; process=$p.ProcessName; pid=$p.Id; hwnd=$h.ToInt64() } | ConvertTo-Json
 """
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("window_control timeout", reason="powershell_timeout")
         ok, data = parse_ps_json(proc.stdout)
         if not ok:
             data = {"ok": False, "error": _truncate(proc.stderr, 1000)}
         elif data is None:
             data = {"ok": False, "error": proc.stderr}
-        return _ok(result=data, exit_code=proc.returncode)
+        return _ok(result=data, exit_code=proc.returncode, source="powershell")
 
     def window_move_resize(self, args: dict[str, Any]) -> dict[str, Any]:
         title_query = str(args.get("title") or args.get("query") or "").strip()
@@ -2805,7 +3028,11 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         # con un solo `tasklist` rapido (~200ms).
         running_set = _running_process_names()
         running_candidates = [exe for exe in candidates if exe.lower() in running_set]
-        name_in_running = any(_fold(name) in _fold(p) for p in running_set)
+        # Antes: substring match `_fold(name) in _fold(p)` producia falsos
+        # positivos ("vs" -> matcheaba decenas). Ahora _match_query aplica
+        # las mismas reglas que verify_app_opened: exact/substring>=4chars/
+        # multi-token.
+        name_in_running = any(self._match_query(name, p) for p in running_set)
 
         if not candidates and not name_in_running:
             return _ok(
@@ -2917,25 +3144,80 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         limit = int(args.get("limit", 80))
         if not path.exists():
             return _err("path does not exist", path=str(path))
+        if not path.is_dir():
+            # Antes: explotaba con NotADirectoryError. Ahora devolvemos err
+            # estructurado con hint para que el LLM cambie a filesystem_read.
+            return _err(
+                "path is not a directory", path=str(path),
+                hint="use filesystem.read for files; filesystem.list is for directories",
+            )
         items = []
-        for child in sorted(path.iterdir(), key=lambda p: (not p.is_dir(), p.name.casefold()))[:limit]:
-            stat = child.stat()
-            items.append({
-                "name": child.name,
-                "path": str(child.resolve()),
-                "type": "dir" if child.is_dir() else "file",
-                "size": stat.st_size if child.is_file() else None,
-                "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
-            })
-        return _ok(path=str(path.resolve()), items=items)
+        skipped: list[dict[str, str]] = []
+        try:
+            children = sorted(path.iterdir(), key=lambda p: (not p.is_dir(), p.name.casefold()))
+        except PermissionError as exc:
+            return _err("permission denied listing directory", path=str(path), reason=str(exc), status="needs_user")
+        except OSError as exc:
+            return _err("failed to list directory", path=str(path), reason=str(exc))
+        for child in children[:limit]:
+            try:
+                stat = child.stat()
+                items.append({
+                    "name": child.name,
+                    "path": str(child.resolve()),
+                    "type": "dir" if child.is_dir() else "file",
+                    "size": stat.st_size if child.is_file() else None,
+                    "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
+                })
+            except (PermissionError, OSError) as exc:
+                # Symlinks rotos, locks (Application Data, Recovery), permisos.
+                skipped.append({"name": child.name, "reason": f"{type(exc).__name__}: {exc}"})
+        truncated = len(children) > limit
+        return _ok(
+            path=str(path.resolve()), items=items,
+            total=len(children), shown=len(items),
+            truncated=truncated, skipped=skipped,
+        )
 
     def filesystem_read(self, args: dict[str, Any]) -> dict[str, Any]:
         path = Path(str(args.get("path", "")).strip()).expanduser()
         limit = int(args.get("max_chars", 12000))
         if not path.is_file():
             return _err("file does not exist", path=str(path))
-        content = path.read_text(encoding="utf-8", errors="replace")
-        return _ok(path=str(path.resolve()), content=_truncate(content, limit), size_bytes=path.stat().st_size)
+        try:
+            size = path.stat().st_size
+        except OSError as exc:
+            return _err("cannot stat file", path=str(path), reason=str(exc))
+        # Si el archivo es enorme NO lo cargues entero solo para truncar despues.
+        # Leemos los primeros `limit * 4` bytes (~conservador para UTF-8) y luego
+        # truncamos a chars. Para archivos chicos lee normalmente.
+        max_bytes_for_read = max(limit * 4, 64 * 1024)
+        try:
+            with path.open("rb") as fh:
+                raw = fh.read(max_bytes_for_read + 1)
+        except (PermissionError, OSError) as exc:
+            return _err("cannot read file", path=str(path), reason=str(exc), status="needs_user")
+        partial = len(raw) > max_bytes_for_read
+        if partial:
+            raw = raw[:max_bytes_for_read]
+        # Heuristica binario: si tiene NUL bytes en los primeros 512, es binario.
+        if b"\x00" in raw[:512]:
+            return _err(
+                "file appears to be binary (NUL byte in head)",
+                path=str(path), size_bytes=size,
+                hint="for binary files use download.hash or filesystem.head_bytes (if available)",
+            )
+        try:
+            content = raw.decode("utf-8", errors="replace")
+        except Exception as exc:  # noqa: BLE001
+            return _err("decode failed", path=str(path), reason=str(exc))
+        return _ok(
+            path=str(path.resolve()),
+            content=_truncate(content, limit),
+            size_bytes=size,
+            partial_read=partial,
+            chars_returned=min(len(content), limit),
+        )
 
     def filesystem_write(self, args: dict[str, Any]) -> dict[str, Any]:
         raw_path = str(args.get("path", "")).strip()
@@ -2944,9 +3226,32 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         path = Path(raw_path).expanduser()
         content = str(args.get("content", ""))
         checkpoint = self._checkpoint_existing_path(f"filesystem write {path}", path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
-        return _ok(path=str(path.resolve()), bytes=len(content.encode("utf-8")), checkpoint=checkpoint.get("checkpoint"))
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except (PermissionError, OSError) as exc:
+            return _err("cannot create parent directory", path=str(path), reason=str(exc), status="needs_user")
+        try:
+            path.write_text(content, encoding="utf-8")
+        except (PermissionError, OSError) as exc:
+            return _err("write failed", path=str(path), reason=str(exc),
+                        status="needs_user" if isinstance(exc, PermissionError) else "failed")
+        # Verificar tamaño escrito (en sistemas con full disk write_text puede
+        # haberse hecho parcialmente sin levantar IOError).
+        try:
+            actual_size = path.stat().st_size
+        except OSError:
+            actual_size = -1
+        expected = len(content.encode("utf-8"))
+        if actual_size != -1 and actual_size != expected:
+            return _err(
+                "write incomplete",
+                path=str(path), expected_bytes=expected, actual_bytes=actual_size,
+                status="failed", checkpoint=checkpoint.get("checkpoint"),
+            )
+        return _ok(
+            path=str(path.resolve()), bytes=expected, verified=actual_size == expected,
+            checkpoint=checkpoint.get("checkpoint"),
+        )
 
     def filesystem_search(self, args: dict[str, Any]) -> dict[str, Any]:
         root = Path(str(args.get("root", ".")).strip() or ".").expanduser()
@@ -2954,12 +3259,44 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         limit = int(args.get("limit", 50))
         if not root.exists():
             return _err("root does not exist", root=str(root))
+        if not root.is_dir():
+            return _err("root is not a directory", root=str(root))
+        # Budget: rglob sobre C:\ puede caminar millones de archivos. Cap a
+        # 10s wall-clock o 50K archivos visitados.
+        try:
+            budget_s = float(args.get("budget_s", 10.0))
+        except (TypeError, ValueError):
+            budget_s = 10.0
+        budget_s = max(1.0, min(budget_s, 60.0))
+        deadline = time.monotonic() + budget_s
+        max_visited = int(args.get("max_visited", 50000))
         matches = []
-        for path in root.rglob(pattern):
-            matches.append({"path": str(path.resolve()), "type": "dir" if path.is_dir() else "file"})
+        skipped_dirs = 0
+        visited = 0
+        try:
+            it = root.rglob(pattern)
+        except OSError as exc:
+            return _err("rglob failed", root=str(root), pattern=pattern, reason=str(exc))
+        for path in it:
+            visited += 1
+            if visited > max_visited:
+                break
+            if time.monotonic() > deadline:
+                break
+            try:
+                is_dir = path.is_dir()
+            except (PermissionError, OSError):
+                skipped_dirs += 1
+                continue
+            matches.append({"path": str(path), "type": "dir" if is_dir else "file"})
             if len(matches) >= limit:
                 break
-        return _ok(root=str(root.resolve()), pattern=pattern, matches=matches)
+        truncated = len(matches) >= limit or visited > max_visited or time.monotonic() > deadline
+        return _ok(
+            root=str(root.resolve()), pattern=pattern,
+            matches=matches, count=len(matches),
+            truncated=truncated, visited=visited, skipped_permission=skipped_dirs,
+        )
 
     def filesystem_delete(self, args: dict[str, Any]) -> dict[str, Any]:
         raw_path = str(args.get("path", "")).strip()
@@ -3624,7 +3961,11 @@ $gfx.Dispose()
 $bmp.Dispose()
 [PSCustomObject]@{ path=$path; width=$bounds.Width; height=$bounds.Height; left=$bounds.Left; top=$bounds.Top; mode=$mode } | ConvertTo-Json
 """
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=20)
+        # timeout 20 -> 10s + try/except. Screenshot via GDI normalmente <500ms.
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("screenshot timeout", monitor=mode, reason="powershell_timeout")
         if proc.returncode != 0:
             return _err("screenshot failed", stderr=_truncate(proc.stderr.strip(), 2000))
         # CC-103: parse defensivo.
@@ -3633,11 +3974,48 @@ $bmp.Dispose()
             return _err("screenshot invalid JSON", stdout=data if isinstance(data, str) else None, stderr=_truncate(proc.stderr, 1000))
         if data.get("ok") is False:
             return _err(str(data.get("error") or "screenshot failed"), status="needs_user")
-        return _ok(image_path=str(Path(data["path"]).resolve()), width=data["width"], height=data["height"], left=data["left"], top=data["top"], monitor=mode)
+        # Verificar que el PNG fue escrito (PS puede silenciosamente fallar al
+        # guardar si captures_dir no existe o no hay permisos).
+        out_path = Path(data["path"])
+        if not out_path.is_file():
+            return _err("screenshot file missing after capture", expected=str(out_path),
+                        hint="check that captures_dir is writable")
+        try:
+            png_size = out_path.stat().st_size
+        except OSError:
+            png_size = 0
+        if png_size == 0:
+            return _err("screenshot file empty (0 bytes)", expected=str(out_path))
+        return _ok(
+            image_path=str(out_path.resolve()),
+            width=data["width"], height=data["height"],
+            left=data["left"], top=data["top"], monitor=mode,
+            file_size=png_size, verified=True,
+        )
 
     def gui_click(self, args: dict[str, Any]) -> dict[str, Any]:
         x = int(args.get("x") or 0)
         y = int(args.get("y") or 0)
+        # Validar que (x, y) esta dentro del VirtualScreen actual. Si el LLM
+        # pasa coords negativas o fuera de pantalla, mouse_event silenciosamente
+        # no hace nada y devolvemos un _ok falso. Mejor abortar limpio.
+        try:
+            import win32api  # type: ignore
+            virt_x = win32api.GetSystemMetrics(76)   # SM_XVIRTUALSCREEN
+            virt_y = win32api.GetSystemMetrics(77)   # SM_YVIRTUALSCREEN
+            virt_w = win32api.GetSystemMetrics(78)   # SM_CXVIRTUALSCREEN
+            virt_h = win32api.GetSystemMetrics(79)   # SM_CYVIRTUALSCREEN
+            if not (virt_x <= x < virt_x + virt_w and virt_y <= y < virt_y + virt_h):
+                return _err(
+                    "click coordinates outside virtual screen bounds",
+                    x=x, y=y,
+                    bounds={"left": virt_x, "top": virt_y, "width": virt_w, "height": virt_h},
+                    status="needs_user",
+                )
+        except Exception:
+            # Sin win32api seguimos adelante (mejor click impreciso que fallar).
+            pass
+
         script = f"""
 Add-Type @"
 using System;
@@ -3651,7 +4029,10 @@ public class Mouse {{
 [Mouse]::mouse_event(0x0002,0,0,0,0)
 [Mouse]::mouse_event(0x0004,0,0,0,0)
 """
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=6)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("gui_click timeout", x=x, y=y, reason="powershell_timeout")
         return _ok(x=x, y=y, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def gui_multi_click(self, args: dict[str, Any], button: str, clicks: int) -> dict[str, Any]:
@@ -3775,16 +4156,56 @@ Start-Sleep -Milliseconds 120
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
         return _ok(keys=keys, sendkeys=sendkeys, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
+    def _match_query(self, query: str, target: str) -> bool:
+        """Matching helper compartido entre verify_app_opened / verify_window_exists.
+
+        Reglas (de mas estricto a mas laxo):
+          1) exact match (con o sin extension): "chrome" == "chrome.exe" stem.
+          2) substring solo si query tiene >=4 chars (evita "vs" -> cualquier exe).
+          3) multi-token (>=2 tokens en query): TODOS deben aparecer en target.
+
+        Esto evita los falsos positivos del antiguo `q in target` suelto, que
+        confundia al LLM cuando varios procesos del sistema tenian el nombre
+        del app buscado como substring (ej. ServiceHub*Chrome*).
+        """
+        q = _fold(query).strip()
+        t = _fold(target).strip()
+        if not q or not t:
+            return False
+        stem = t.rsplit(".", 1)[0] if "." in t else t
+        if stem == q or t == q:
+            return True
+        if len(q) >= 4 and q in t:
+            return True
+        q_tokens = [tok for tok in q.split() if len(tok) >= 2]
+        if len(q_tokens) >= 2:
+            return all(tok in t for tok in q_tokens)
+        return False
+
     def verify_app_opened(self, args: dict[str, Any]) -> dict[str, Any]:
         name = str(args.get("name") or args.get("query") or "").strip()
         if not name:
             return _err("missing name")
-        processes = self.list_processes({"limit": 300}).get("processes", [])
-        windows = self.list_windows({"limit": 120}).get("windows", [])
-        q = _fold(name)
-        proc_matches = [p for p in processes if q in _fold(str(p.get("name", "")))]
-        win_matches = [w for w in windows if q in _fold(str(w.get("title", ""))) or q in _fold(str(w.get("process", "")))]
-        return _ok(found=bool(proc_matches or win_matches), process_matches=proc_matches[:10], window_matches=win_matches[:10])
+        # Limit alto para procesos (verify NECESITA exhaustivo, antes 300
+        # podia perder matches en sistemas con 500+ procesos). Para ventanas
+        # 60 es suficiente — el usuario raramente tiene mas abiertas.
+        processes = self.list_processes({"limit": 1000}).get("processes", [])
+        windows = self.list_windows({"limit": 60}).get("windows", [])
+
+        proc_matches = [p for p in processes if self._match_query(name, str(p.get("name", "")))]
+        win_matches = [
+            w for w in windows
+            if self._match_query(name, str(w.get("title", "")))
+            or self._match_query(name, str(w.get("process", "")))
+        ]
+        return _ok(
+            found=bool(proc_matches or win_matches),
+            query=name,
+            process_matches=proc_matches[:10],
+            window_matches=win_matches[:10],
+            match_count_procs=len(proc_matches),
+            match_count_windows=len(win_matches),
+        )
 
     def verify_file_exists(self, args: dict[str, Any]) -> dict[str, Any]:
         path = Path(str(args.get("path", "")).strip()).expanduser()
@@ -3795,9 +4216,12 @@ Start-Sleep -Milliseconds 120
         if not title:
             return _err("missing title/query")
         windows = self.list_windows({"limit": 120}).get("windows", [])
-        q = _fold(title)
-        matches = [w for w in windows if q in _fold(str(w.get("title", ""))) or q in _fold(str(w.get("process", "")))]
-        return _ok(found=bool(matches), matches=matches[:10])
+        matches = [
+            w for w in windows
+            if self._match_query(title, str(w.get("title", "")))
+            or self._match_query(title, str(w.get("process", "")))
+        ]
+        return _ok(found=bool(matches), query=title, matches=matches[:10], match_count=len(matches))
 
     def verify_clipboard_contains(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))
