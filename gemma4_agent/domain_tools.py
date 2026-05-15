@@ -513,7 +513,11 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
             if str(step.get("tool")).strip() == "routine":
                 return _err(f"step {index} cannot call routine recursively")
         label = str(args.get("name") or args.get("label") or f"Routine {int(time.time())}")
-        trigger = args.get("trigger") if isinstance(args.get("trigger"), dict) else {"type": str(args.get("trigger") or "manual")}
+        raw_trigger = args.get("trigger")
+        trigger: dict[str, Any] = (
+            raw_trigger if isinstance(raw_trigger, dict)
+            else {"type": str(raw_trigger or "manual")}
+        )
         trigger_type = str(trigger.get("type") or "manual").casefold()
         process_triggers = {"on_app_open", "on_app_close", "on_process_start", "on_process_exit"}
         phrase_triggers = {"on_phrase", "on_keyword"}
@@ -590,7 +594,8 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
                 results.append({"index": index, "ok": False, "error": "invalid step"})
                 break
             tool = str(step.get("tool") or "").strip()
-            step_args = step.get("args") if isinstance(step.get("args"), dict) else {}
+            raw_args = step.get("args")
+            step_args: dict[str, Any] = raw_args if isinstance(raw_args, dict) else {}
             if not tool or tool == "routine":
                 results.append({"index": index, "ok": False, "error": "invalid or recursive tool", "tool": tool})
                 break
@@ -780,15 +785,18 @@ def _hass_call_service(host: str, token: str, args: dict[str, Any], state: Agent
     service = str(args.get("service") or "").strip()
     if not domain or not service:
         return _err("call_service requires domain and service")
-    payload = args.get("data") if isinstance(args.get("data"), dict) else {}
+    raw_payload = args.get("data")
+    payload: dict[str, Any] = raw_payload if isinstance(raw_payload, dict) else {}
     # Merge target into payload (HA accepts entity_id at top-level).
-    target = args.get("target") if isinstance(args.get("target"), dict) else None
+    raw_target = args.get("target")
+    target: dict[str, Any] | None = raw_target if isinstance(raw_target, dict) else None
     if target:
         payload = {**payload, **target}
     # For toggle/turn_off/turn_on on a switch/light, snapshot before so rollback exists.
     rollback_step = None
     if service in {"turn_on", "turn_off", "toggle"} and payload.get("entity_id"):
-        eid = payload["entity_id"] if isinstance(payload["entity_id"], str) else (payload["entity_id"][0] if payload["entity_id"] else None)
+        eid_raw = payload["entity_id"]
+        eid = eid_raw if isinstance(eid_raw, str) else (eid_raw[0] if eid_raw else None)
         if eid:
             current = _hass_get_state(host, token, {"entity_id": eid}).get("state") or {}
             if current.get("state") == "on" and service == "turn_off":
@@ -1711,23 +1719,28 @@ def _database_connect(driver: str, args: dict[str, Any]):
             raise RuntimeError("neither psycopg nor psycopg2 is installed")
         return conn, conn.close
     if driver == "mysql":
+        host = str(args.get("host") or "localhost")
+        port = int(args.get("port") or 3306)
+        user = str(args.get("user") or "")
+        password = str(args.get("password") or "")
+        database = str(args.get("database") or args.get("db") or "")
         if importlib.util.find_spec("mysql.connector") is not None:
             import mysql.connector  # type: ignore[import-not-found]
             conn = mysql.connector.connect(
-                host=args.get("host", "localhost"),
-                port=int(args.get("port", 3306)),
-                user=args.get("user"),
-                password=args.get("password"),
-                database=args.get("database") or args.get("db"),
+                host=host,
+                port=port,
+                user=user,
+                password=password,
+                database=database,
             )
         elif importlib.util.find_spec("pymysql") is not None:
             import pymysql  # type: ignore[import-not-found]
             conn = pymysql.connect(
-                host=args.get("host", "localhost"),
-                port=int(args.get("port", 3306)),
-                user=args.get("user"),
-                password=args.get("password"),
-                database=args.get("database") or args.get("db"),
+                host=host,
+                port=port,
+                user=user,
+                password=password,
+                database=database,
                 cursorclass=pymysql.cursors.DictCursor,
             )
         else:
@@ -2000,7 +2013,8 @@ def _container_exec(docker: str, args: dict[str, Any]) -> dict[str, Any]:
 
 def _container_compose(docker: str, subcommand: str, args: dict[str, Any]) -> dict[str, Any]:
     cwd = str(args.get("cwd") or args.get("path") or "").strip() or None
-    extra = args.get("args") if isinstance(args.get("args"), list) else []
+    raw_extra = args.get("args")
+    extra: list[Any] = raw_extra if isinstance(raw_extra, list) else []
     cmd = [docker, "compose", subcommand]
     if subcommand == "up":
         cmd.append("-d")
@@ -2077,7 +2091,9 @@ def _photo_open_exif(path: Path) -> dict[str, Any]:
         return {"error": "PIL not available"}
     try:
         with Image.open(path) as img:
-            exif_raw = img._getexif() or {}
+            # _getexif is a private method only on JPEG/TIFF ImageFile subclasses;
+            # Pillow doesn't expose it on the base ImageFile type.
+            exif_raw = img._getexif() or {}  # type: ignore[attr-defined]
             named: dict[str, Any] = {}
             for tag_id, value in exif_raw.items():
                 tag_name = ExifTags.TAGS.get(tag_id, f"Tag{tag_id}")
@@ -2197,11 +2213,11 @@ def _photo_thumbnails(args: dict[str, Any], state: AgentState) -> dict[str, Any]
     else:
         out = Path(out_raw).expanduser()
     out.mkdir(parents=True, exist_ok=True)
-    size_arg = args.get("size", 256)
+    size_arg: Any = args.get("size", 256)
     if isinstance(size_arg, (list, tuple)) and len(size_arg) == 2:
-        size = (int(size_arg[0]), int(size_arg[1]))
+        size = (int(size_arg[0] or 0), int(size_arg[1] or 0))
     else:
-        n = int(size_arg)
+        n: int = int(size_arg) if isinstance(size_arg, (int, float, str)) else 256
         size = (n, n)
     created: list[str] = []
     failed: list[dict[str, str]] = []
@@ -2275,7 +2291,8 @@ def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor:
     claim = str(args.get("claim") or "").strip()
     if not claim:
         return _err("missing claim")
-    sources_arg = args.get("sources") if isinstance(args.get("sources"), list) else []
+    raw_sources = args.get("sources")
+    sources_arg: list[Any] = raw_sources if isinstance(raw_sources, list) else []
     use_knowledge = bool(args.get("use_knowledge", True))
     limit = int(args.get("limit", 10))
 
@@ -2497,8 +2514,8 @@ def _data_load_df(args: dict[str, Any]):
 
 def _data_csv_profile(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
-    if err:
-        return err
+    if err or df is None:
+        return err or _err("dataframe missing")
     cols = []
     for col in df.columns:
         s = df[col]
@@ -2520,16 +2537,16 @@ def _data_csv_profile(args: dict[str, Any]) -> dict[str, Any]:
 
 def _data_csv_describe(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
-    if err:
-        return err
+    if err or df is None:
+        return err or _err("dataframe missing")
     desc = df.describe(include="all").fillna("").to_dict()
     return _ok(path=str(args.get("path")), rows=int(len(df)), describe=desc)
 
 
 def _data_csv_query(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
-    if err:
-        return err
+    if err or df is None:
+        return err or _err("dataframe missing")
     query = str(args.get("query") or "").strip()
     if not query:
         return _err("missing query (pandas .query() expression)")
@@ -2547,16 +2564,16 @@ def _data_csv_query(args: dict[str, Any]) -> dict[str, Any]:
 
 def _data_csv_head(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
-    if err:
-        return err
+    if err or df is None:
+        return err or _err("dataframe missing")
     n = int(args.get("n", 10))
     return _ok(path=str(args.get("path")), n=n, rows=df.head(n).to_dict(orient="records"))
 
 
 def _data_csv_to_xlsx(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     df, err = _data_load_df(args)
-    if err:
-        return err
+    if err or df is None:
+        return err or _err("dataframe missing")
     if importlib.util.find_spec("openpyxl") is None:
         return _err("openpyxl is required to write .xlsx", status="needs_dependency", install_hint="python -m pip install openpyxl")
     dst_raw = str(args.get("dst") or "").strip()
@@ -2576,8 +2593,8 @@ def _data_plot(kind: str, args: dict[str, Any], state: AgentState) -> dict[str, 
     if importlib.util.find_spec("matplotlib") is None:
         return _err("matplotlib is not installed", status="needs_dependency", install_hint="python -m pip install matplotlib")
     df, err = _data_load_df(args)
-    if err:
-        return err
+    if err or df is None:
+        return err or _err("dataframe missing")
     import matplotlib
     matplotlib.use("Agg")  # headless backend; safe even when DISPLAY exists
     import matplotlib.pyplot as plt
@@ -3298,7 +3315,7 @@ def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
     level = args.get("level")  # 1=Critical 2=Error 3=Warning 4=Information
     hours = int(args.get("hours", 24))
     limit = int(args.get("limit", 50))
-    filt = {"LogName": log, "StartTime": "{StartTime}"}
+    filt: dict[str, Any] = {"LogName": log, "StartTime": "{StartTime}"}
     if level is not None:
         filt["Level"] = int(level)
     ht = ";".join(f"{k}='{v}'" if k != "Level" else f"{k}={v}" for k, v in filt.items())
@@ -3524,7 +3541,8 @@ def _media_edit_trim(ffmpeg: str, args: dict[str, Any], state: AgentState) -> di
 
 
 def _media_edit_concat(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    inputs = args.get("inputs") if isinstance(args.get("inputs"), list) else []
+    raw_inputs = args.get("inputs")
+    inputs: list[Any] = raw_inputs if isinstance(raw_inputs, list) else []
     if len(inputs) < 2:
         return _err("concat requires at least 2 inputs")
     paths: list[Path] = []
@@ -3747,8 +3765,11 @@ def _discover_gog_games() -> list[dict[str, Any]]:
         line = line.rstrip()
         m = re.match(r".*\\Games\\(\d+)$", line)
         if m:
-            current_id = m.group(1)
-            games_by_id.setdefault(current_id, {"launcher": "gog", "game_id": current_id})
+            cid = m.group(1)
+            if cid is None:
+                continue
+            current_id = cid
+            games_by_id.setdefault(cid, {"launcher": "gog", "game_id": cid})
             continue
         if current_id and "REG_SZ" in line:
             parts = line.strip().split(None, 2)
@@ -4378,7 +4399,8 @@ def _developer_run(kind: str, args: dict[str, Any]) -> dict[str, Any]:
         return detect
     stacks = detect.get("stacks") or []
     root = Path(detect["root"])
-    extra_args = args.get("args") if isinstance(args.get("args"), list) else []
+    raw_extra_args = args.get("args")
+    extra_args: list[Any] = raw_extra_args if isinstance(raw_extra_args, list) else []
     timeout = int(args.get("timeout_sec", 300))
     # Pick a command for the (stack, kind) pair. We use the first matched stack
     # in priority order: python > node > rust > go.
@@ -4737,8 +4759,11 @@ def _document_extract_pptx(path: Path, max_chars: int) -> dict[str, Any]:
     slides_text: list[str] = []
     for slide in prs.slides:
         for shape in slide.shapes:
-            if hasattr(shape, "text") and shape.text:
-                slides_text.append(str(shape.text))
+            # BaseShape doesn't declare `text`; only specific subclasses (placeholder,
+            # autoshape) expose it. Probe with getattr to dodge the static type wall.
+            shape_text = getattr(shape, "text", None)
+            if shape_text:
+                slides_text.append(str(shape_text))
     text = "\n\n".join(slides_text)
     truncated = len(text) > max_chars
     return _ok(
@@ -4783,7 +4808,7 @@ def _document_extract_tables(args: dict[str, Any]) -> dict[str, Any]:
                 status="needs_dependency", verified=False,
                 install_hint="python -m pip install pdfplumber",
             )
-        import pdfplumber
+        import pdfplumber  # type: ignore[import-not-found]
         try:
             tables_out: list[dict[str, Any]] = []
             with pdfplumber.open(str(path)) as pdf:
@@ -4870,7 +4895,7 @@ def _document_ocr_pdf(args: dict[str, Any], state: AgentState) -> dict[str, Any]
 
 
 def _document_ocr_pdf_with_fitz(path: Path, state: AgentState, tesseract: str, args: dict[str, Any]) -> dict[str, Any]:
-    import fitz  # PyMuPDF
+    import fitz  # type: ignore[import-not-found]  # PyMuPDF
     lang = str(args.get("lang") or "spa+eng")
     out_dir = state.path.parent / "extracted" / f"ocr_{_safe_name(path.stem)}_{int(time.time())}"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -5020,7 +5045,8 @@ def _build_routine_trigger_ps(trigger: dict[str, Any]) -> str | None:
         if cadence == "daily":
             return f"New-ScheduledTaskTrigger -Daily -At '{at}'"
         if cadence == "weekly":
-            days = trigger.get("days_of_week") if isinstance(trigger.get("days_of_week"), list) else ["Monday"]
+            raw_days = trigger.get("days_of_week")
+            days: list[Any] = raw_days if isinstance(raw_days, list) else ["Monday"]
             days_str = ",".join(str(d) for d in days)
             return f"New-ScheduledTaskTrigger -Weekly -DaysOfWeek {days_str} -At '{at}'"
         if cadence == "hourly":
@@ -6462,14 +6488,24 @@ def _create_presentation(args: dict[str, Any], state: AgentState) -> dict[str, A
     if slides:
         first = slides[0]
         slide = prs.slides.add_slide(prs.slide_layouts[0])
-        slide.shapes.title.text = str(first.get("title") or title)
-        slide.placeholders[1].text = str(first.get("subtitle") or first.get("body") or "")
+        # python-pptx exposes `text` and `text_frame` on specific shape subclasses
+        # (placeholders, autoshapes) but the abstract BaseShape type doesn't
+        # declare them. Use setattr/getattr to bypass the static-type wall.
+        title_shape: Any = slide.shapes.title
+        if title_shape is not None:
+            title_shape.text = str(first.get("title") or title)
+        sub_shape: Any = slide.placeholders[1]
+        sub_shape.text = str(first.get("subtitle") or first.get("body") or "")
         for item in slides[1:]:
             slide = prs.slides.add_slide(prs.slide_layouts[1])
-            slide.shapes.title.text = str(item.get("title") or "Slide")
-            body = slide.placeholders[1].text_frame
+            t_shape: Any = slide.shapes.title
+            if t_shape is not None:
+                t_shape.text = str(item.get("title") or "Slide")
+            body_shape: Any = slide.placeholders[1]
+            body = body_shape.text_frame
             body.clear()
-            bullets = item.get("bullets") if isinstance(item.get("bullets"), list) else None
+            raw_bullets = item.get("bullets")
+            bullets: list[Any] | None = raw_bullets if isinstance(raw_bullets, list) else None
             if bullets:
                 for bullet in bullets:
                     p = body.add_paragraph()
@@ -6477,7 +6513,7 @@ def _create_presentation(args: dict[str, Any], state: AgentState) -> dict[str, A
                     p.level = 0
             else:
                 body.text = str(item.get("body") or "")
-    prs.save(path)
+    prs.save(str(path))
     resource = state.register_resource(
         "office_file",
         path.name,
@@ -6500,7 +6536,7 @@ def _create_document(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     content = str(args.get("content") or args.get("body") or "")
     for paragraph in [p.strip() for p in content.splitlines() if p.strip()]:
         doc.add_paragraph(paragraph)
-    doc.save(path)
+    doc.save(str(path))
     resource = state.register_resource("office_file", path.name, cleanup_tool="filesystem", cleanup_args={"action": "delete", "path": str(path)}, metadata={"kind": "document", "path": str(path)})
     return _ok(path=str(path.resolve()), kind="document", resource=resource.get("resource"))
 
@@ -6514,13 +6550,16 @@ def _create_spreadsheet(args: dict[str, Any], state: AgentState) -> dict[str, An
     path = _output_path(args, state, _safe_name(title), ".xlsx")
     wb = Workbook()
     ws = wb.active
+    if ws is None:
+        return _err("openpyxl Workbook has no active sheet", verified=False)
     ws.title = "Datos"
-    rows = args.get("rows") if isinstance(args.get("rows"), list) else []
+    raw_rows = args.get("rows")
+    rows: list[Any] = raw_rows if isinstance(raw_rows, list) else []
     if not rows:
         rows = [["Campo", "Valor"], ["Titulo", title]]
     for row in rows:
         ws.append(row if isinstance(row, list) else [str(row)])
-    wb.save(path)
+    wb.save(str(path))
     resource = state.register_resource("office_file", path.name, cleanup_tool="filesystem", cleanup_args={"action": "delete", "path": str(path)}, metadata={"kind": "spreadsheet", "path": str(path), "rows": len(rows)})
     return _ok(path=str(path.resolve()), kind="spreadsheet", rows=len(rows), resource=resource.get("resource"))
 

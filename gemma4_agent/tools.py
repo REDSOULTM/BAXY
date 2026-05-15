@@ -648,7 +648,7 @@ $items | ConvertTo-Json -Depth 3
         if len(needle) < 2:
             return []
         out: list[AppCandidate] = []
-        seen: set[tuple[str, str]] = set()
+        seen: set[str] = set()
         for root in self._steam_library_roots():
             appinfo = root / "appcache" / "appinfo.vdf"
             cache = root / "appcache" / "librarycache"
@@ -2055,12 +2055,18 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
         except ImportError:
             return _err("pycaw/comtypes not installed. Run: pip install pycaw comtypes")
 
-    def _audio_endpoint_volume(self):
+    def _audio_endpoint_volume(self) -> Any:
+        # Returns an IAudioEndpointVolume COM pointer. Typed as Any because
+        # pycaw/comtypes methods (GetMasterVolumeLevelScalar, GetMute, SetMute,
+        # SetMasterVolumeLevelScalar) are dispatched dynamically through COM
+        # and have no stubs that pyright can introspect.
         from ctypes import POINTER, cast
-        from comtypes import CLSCTX_ALL
-        from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+        from comtypes import CLSCTX_ALL  # type: ignore[import-not-found]
+        from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume  # type: ignore[import-not-found]
 
-        device = AudioUtilities.GetSpeakers()
+        device: Any = AudioUtilities.GetSpeakers()
+        if device is None:
+            raise RuntimeError("no audio endpoint device available")
         if hasattr(device, "EndpointVolume"):
             return device.EndpointVolume
         interface = device.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
@@ -2859,8 +2865,8 @@ $bmp.Dispose()
         return _ok(image_path=str(Path(data["path"]).resolve()), width=data["width"], height=data["height"], left=data["left"], top=data["top"])
 
     def gui_click(self, args: dict[str, Any]) -> dict[str, Any]:
-        x = int(args.get("x"))
-        y = int(args.get("y"))
+        x = int(args.get("x") or 0)
+        y = int(args.get("y") or 0)
         script = f"""
 Add-Type @"
 using System;
@@ -2878,8 +2884,8 @@ public class Mouse {{
         return _ok(x=x, y=y, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def gui_multi_click(self, args: dict[str, Any], button: str, clicks: int) -> dict[str, Any]:
-        x = int(args.get("x"))
-        y = int(args.get("y"))
+        x = int(args.get("x") or 0)
+        y = int(args.get("y") or 0)
         down, up = ("0x0008", "0x0010") if button == "right" else ("0x0002", "0x0004")
         events = "\n".join([f"[Mouse]::mouse_event({down},0,0,0,0); [Mouse]::mouse_event({up},0,0,0,0); Start-Sleep -Milliseconds 80" for _ in range(clicks)])
         script = f"""
@@ -2914,10 +2920,10 @@ public class Mouse {{
         return _ok(amount=amount, wheel=wheel, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def gui_drag(self, args: dict[str, Any]) -> dict[str, Any]:
-        x1 = int(args.get("x1", args.get("from_x")))
-        y1 = int(args.get("y1", args.get("from_y")))
-        x2 = int(args.get("x2", args.get("to_x")))
-        y2 = int(args.get("y2", args.get("to_y")))
+        x1 = int(args.get("x1") or args.get("from_x") or 0)
+        y1 = int(args.get("y1") or args.get("from_y") or 0)
+        x2 = int(args.get("x2") or args.get("to_x") or 0)
+        y2 = int(args.get("y2") or args.get("to_y") or 0)
         script = f"""
 Add-Type @"
 using System;

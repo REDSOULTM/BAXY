@@ -73,13 +73,16 @@ def state_tool(args: dict[str, Any], state: AgentState, execute: Executor) -> di
             if not isinstance(step, dict):
                 continue
             tool = str(step.get("tool") or "").strip()
-            tool_args = step.get("args") if isinstance(step.get("args"), dict) else {}
+            raw_args = step.get("args")
+            tool_args: dict[str, Any] = raw_args if isinstance(raw_args, dict) else {}
             if not tool:
                 continue
             results.append({"tool": tool, "args": tool_args, "result": execute(tool, tool_args)})
         return _ok(checkpoint=plan.get("checkpoint"), rollback_count=len(results), results=results)
     if action == "note":
-        return state.note(str(args.get("text") or ""), metadata=args.get("metadata") if isinstance(args.get("metadata"), dict) else {})
+        raw_meta = args.get("metadata")
+        meta: dict[str, Any] = raw_meta if isinstance(raw_meta, dict) else {}
+        return state.note(str(args.get("text") or ""), metadata=meta)
     return _err("unknown state action", action=action)
 
 
@@ -835,7 +838,10 @@ def _active_page(session: dict[str, Any], page_id: Any | None = None, *, new_tab
 
 def _tabs(session: dict[str, Any]) -> list[dict[str, Any]]:
     tabs = []
-    pages = [page for page in session.get("context").pages if not page.is_closed()]
+    ctx = session.get("context")
+    if ctx is None:
+        return tabs
+    pages = [page for page in ctx.pages if not page.is_closed()]
     session["pages"] = pages
     for index, page in enumerate(pages):
         try:
