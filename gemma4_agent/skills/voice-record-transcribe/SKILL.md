@@ -1,0 +1,85 @@
+---
+name: voice-record-transcribe
+description: Record audio from microphone and transcribe via Whisper STT. Save transcript to a file. Confirm device before recording.
+priority: medium
+requires:
+  os: [windows]
+---
+
+# Voice record & transcribe
+
+**Tools used**: `voice`, `filesystem`, `verify`.
+**Honesty-critical**: no (read-only sobre el mic; el output va a disco).
+
+## Cuándo usar este skill
+
+El usuario dice algo como:
+- "grabá lo que digo"
+- "transcribí mi voz"
+- "tomá nota de lo que diga"
+- "anotá esto" (cuando claramente es input por voz, no texto)
+
+Si el usuario YA dijo el texto en el turn actual, NO grabar — usá `memory`
+o `filesystem.write` para guardar lo que ya tenés. La gracia de este skill
+es cuando el usuario quiere grabar **algo que va a decir después**.
+
+## Steps
+
+### 1. Verificar disponibilidad
+
+```
+voice(action="status")
+```
+
+Si Vosk + Whisper + Piper no están cargados, devolver `needs_dependency`
+con el install hint. NO intentar grabar sin el stack listo.
+
+### 2. Confirmar device
+
+Listar inputs disponibles si la config lo permite. Reportar cuál se va a
+usar:
+
+> "Voy a grabar desde el mic '<device name>'. Decime 'empezá' cuando estés listo."
+
+### 3. Activar grabación
+
+```
+voice(action="trigger")  # push-to-talk: arma una sola captura
+```
+
+O si el modo es always-on:
+
+```
+voice(action="start")  # mic loop wake-word listening
+```
+
+### 4. Whisper transcribe
+
+El stack STT corre solo cuando detecta speech. El transcript llega via
+events (no es síncrono para tools). Recoger el resultado y reportar.
+
+### 5. Guardar a archivo (opcional)
+
+Si el usuario pidió guardar:
+
+```
+filesystem(action="write", path="<path.txt>", content="<transcript>")
+```
+
+Verificar con `filesystem.verify` (write tool ya hace stat post-write).
+
+## Outcomes honestos
+
+| Estado | Cómo reportar |
+|---|---|
+| Voice stack OK, listo a grabar | "Listo, grabando desde <device>. Hablá." |
+| Voice stack no cargado | "Vosk/Whisper no están cargados. Activalos con `voice(action="start")`." |
+| Grabación + transcripción OK + guardado | "Grabé y guardé en <path>: '<preview>'" |
+| Transcripción ambigua / vacía | "No entendí lo que se dijo. ¿Probás de nuevo más cerca del mic?" |
+
+## Anti-patterns
+
+- ❌ Empezar a grabar sin confirmar device (graba la wrong source).
+- ❌ Reportar "grabé X" cuando Whisper falló (queda como UNVERIFIED).
+- ❌ Sobrescribir un archivo existente sin advertir.
+- ❌ Grabar sin notificar al usuario que está siendo grabado.

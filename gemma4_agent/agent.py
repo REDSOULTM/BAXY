@@ -434,6 +434,11 @@ class Gemma4Agent:
         # para siguientes turns (mantiene el KV cache caliente). agent.clear()
         # lo resetea junto con history.
         self._cached_microagents: list = []
+        # TIER 1 #4: skills menu + critical block. Cacheado a nivel-instancia
+        # porque el catalogo de skills es estatico (folder skills/ no cambia
+        # mid-session). El KV cache del llama-server reutiliza el prefix.
+        self._cached_skills_menu: str | None = None
+        self._cached_skills_critical: str | None = None
 
     def clear(self) -> None:
         self.history.clear()
@@ -442,6 +447,11 @@ class Gemma4Agent:
         self._fact_extract_last_run_turn = -10
         self._turn_counter = 0
         self._cached_microagents = []
+        # Skills cache: reset para que scan_skills() vuelva a leer disk en el
+        # proximo turn (util si el dev agrega/modifica un SKILL.md durante
+        # desarrollo). En produccion el catalogo no cambia mid-session.
+        self._cached_skills_menu = None
+        self._cached_skills_critical = None
 
     def set_persona(self, name: str) -> dict[str, Any]:
         """Switch the agent's persona by name. Returns the new persona info or an error dict."""
@@ -520,9 +530,23 @@ class Gemma4Agent:
             )
         except Exception:
             microagents_section = ""
+        # TIER 1 #4: skills menu (compact, una linea por skill) + critical
+        # block (full body de skills con priority=critical). Cacheado a
+        # nivel-instancia: el catalogo skills/ no cambia mid-session.
+        if self._cached_skills_menu is None or self._cached_skills_critical is None:
+            try:
+                from .skills_registry import scan_skills, build_menu, build_critical_block
+                skills_list = scan_skills()
+                self._cached_skills_menu = build_menu(skills_list)
+                self._cached_skills_critical = build_critical_block(skills_list)
+            except Exception:
+                self._cached_skills_menu = ""
+                self._cached_skills_critical = ""
+        skills_critical = self._cached_skills_critical or ""
+        skills_menu = self._cached_skills_menu or ""
         return {
             "role": "system",
-            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_critical}{skills_menu}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:

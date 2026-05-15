@@ -1368,6 +1368,7 @@ class ToolRegistry:
             "terminal": self.t_terminal,
             "memory": self.t_memory,
             "verify": self.t_verify,
+            "skill_load": self.t_skill_load,
             "state": self.t_state,
             "input": self.t_input,
             "env": self.t_env,
@@ -2155,6 +2156,39 @@ class ToolRegistry:
         if action == "clipboard_contains":
             return self.verify_clipboard_contains(args)
         return _err("unknown verify action", action=action)
+
+    def t_skill_load(self, args: dict[str, Any]) -> dict[str, Any]:
+        """TIER 1 #4: el LLM emite skill_load(name="X") para recibir el body
+        completo de un SKILL.md como tool_result. El menu de skills aparece
+        en el system_prompt al boot; aca solo materializamos el body lazy.
+
+        Cap por turn (cuantas skill_load() puede emitir el LLM en el mismo
+        turn) se aplica via self.state, no aca — keep this method simple.
+        """
+        name = str(args.get("name") or "").strip()
+        if not name:
+            return _err(
+                "skill_load requires name (from the SKILLS AVAILABLE menu)",
+                status="needs_user",
+            )
+        from .skills_registry import load_skill_content, scan_skills
+        body = load_skill_content(name)
+        if body is None:
+            # Si el skill no existe, listar los nombres disponibles como hint.
+            available = [s.name for s in scan_skills()]
+            return _err(
+                f"skill '{name}' not found or not eligible on this system",
+                status="needs_user",
+                available_skills=available,
+                hint="check the SKILLS AVAILABLE menu in the system prompt; skill names are lowercase + hyphens",
+            )
+        return _ok(
+            skill=name,
+            recipe=body,
+            chars=len(body),
+            source="local",
+            note="follow this recipe step-by-step using the listed tools",
+        )
 
     def t_state(self, args: dict[str, Any]) -> dict[str, Any]:
         return state_tool(args, self.state, self.execute)
@@ -4491,6 +4525,7 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
     {"type": "function", "function": {"name": "terminal", "description": "Compound terminal tool. Action: run. Direct command execution with command, args, cwd, timeout_sec, shell. shell defaults to false (safer; pass shell=true only when you need shell expansion). Any terminal.run call requires confirmed=true (hard gate). cwd is validated for existence; max_stdout_chars/max_stderr_chars cap output preview and full output spills to captures_dir log.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "command": {"type": "string"}, "args": {"type": "array", "items": {"type": "string"}}, "cwd": {"type": "string"}, "timeout_sec": {"type": "integer"}, "shell": {"type": "boolean"}, "max_stdout_chars": {"type": "integer"}, "max_stderr_chars": {"type": "integer"}}, "required": ["action", "command"]}}},
     {"type": "function", "function": {"name": "memory", "description": "Compound persistent memory tool. Actions: save, recall, list, delete. Save only when user explicitly asks to remember/store something.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "key": {"type": "string"}, "value": {"type": "string"}, "query": {"type": "string"}}, "required": ["action"]}}},
     {"type": "function", "function": {"name": "verify", "description": "Compound verification tool. Actions: app_opened, file_exists, window_exists, clipboard_contains. Use after actions when user needs confirmation.", "parameters": {"type": "object", "properties": {"action": {"type": "string"}, "name": {"type": "string"}, "query": {"type": "string"}, "path": {"type": "string"}, "title": {"type": "string"}, "text": {"type": "string"}}, "required": ["action"]}}},
+    {"type": "function", "function": {"name": "skill_load", "description": "Load the full recipe body of a skill by name. The agent shows a menu of available skills in the system prompt (# SKILLS AVAILABLE). Call this tool ONLY when the user request matches a skill description; the tool result is the full markdown recipe you must follow. Per-turn cap depends on VRAM profile.", "parameters": {"type": "object", "properties": {"name": {"type": "string", "description": "Skill name as shown in the SKILLS AVAILABLE menu (lowercase + hyphens)."}}, "required": ["name"]}}},
 ]
 
 _apply_action_enums(COMPOUND_TOOL_SCHEMAS)
