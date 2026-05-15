@@ -429,6 +429,11 @@ class Gemma4Agent:
         # Persona: nudges system prompt + preferred tools. Default = no nudge.
         from .personas import from_env as _persona_from_env
         self._persona = _persona_from_env()
+        # TIER 1 #3: cache de microagents seleccionados a lo largo de la sesion.
+        # Cuando un microagent matchea un turn, se agrega al cache y persiste
+        # para siguientes turns (mantiene el KV cache caliente). agent.clear()
+        # lo resetea junto con history.
+        self._cached_microagents: list = []
 
     def clear(self) -> None:
         self.history.clear()
@@ -436,6 +441,7 @@ class Gemma4Agent:
         self._summarize_last_run_turn = -10
         self._fact_extract_last_run_turn = -10
         self._turn_counter = 0
+        self._cached_microagents = []
 
     def set_persona(self, name: str) -> dict[str, Any]:
         """Switch the agent's persona by name. Returns the new persona info or an error dict."""
@@ -464,6 +470,7 @@ class Gemma4Agent:
         mode: AgentMode | None = None,
         plan: MissionPlan | None = None,
         selected_tool_names: list[str] | None = None,
+        user_text: str | None = None,
     ) -> dict[str, str]:
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
@@ -496,9 +503,26 @@ class Gemma4Agent:
         # reglas de las tools que el router eligio. Reduce ~7K chars sin
         # perder capacidad (cuando el LLM use la tool, la regla aparecera).
         prompt_base = build_system_prompt(selected_tool_names)
+        # TIER 1 #3: microagents — markdown files con frontmatter que se
+        # inyectan al system_prompt cuando user_text matchea sus triggers.
+        # Diferencia ortogonal con TOOL_RULES:
+        #   TOOL_RULES["X"]: como usar la tool X (regla de uso, viene con
+        #     selected_tool_names).
+        #   microagent: que SIGNIFICA un concepto / como diagnosticar (conoc.
+        #     de dominio, viene con user_text).
+        # Cache a nivel-instancia: lo que matchea en un turn persiste para
+        # los siguientes (KV cache caliente entre turns relacionados).
+        try:
+            from .microagents import build_microagents_section
+            microagents_section, self._cached_microagents = build_microagents_section(
+                user_text or "",
+                cached=self._cached_microagents,
+            )
+        except Exception:
+            microagents_section = ""
         return {
             "role": "system",
-            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
@@ -590,8 +614,16 @@ class Gemma4Agent:
         mode: AgentMode | None = None,
         plan: MissionPlan | None = None,
         selected_tool_names: list[str] | None = None,
+        user_text: str | None = None,
     ) -> list[dict[str, Any]]:
-        return [self._system_message(mode, plan, selected_tool_names=selected_tool_names), *self.history]
+        return [
+            self._system_message(
+                mode, plan,
+                selected_tool_names=selected_tool_names,
+                user_text=user_text,
+            ),
+            *self.history,
+        ]
 
     def run_text(
         self,
@@ -818,7 +850,7 @@ class Gemma4Agent:
             )
             try:
                 resp = self.client.chat(
-                    self._messages(mode, plan, selected_tool_names=selected_tool_names),
+                    self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early),
                     tools=selected_schemas,
                     enable_thinking=mode.enable_thinking,
                     parallel_tool_calls=mode.parallel_tool_calls,
@@ -839,7 +871,7 @@ class Gemma4Agent:
                     selected_schemas = self.tools.schemas_for_names(retry_tool_names)
                     try:
                         resp = self.client.chat(
-                            self._messages(mode, plan, selected_tool_names=selected_tool_names),
+                            self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early),
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
                             parallel_tool_calls=mode.parallel_tool_calls,
