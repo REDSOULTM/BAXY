@@ -1,0 +1,40 @@
+{
+  "saved_at": "2026-05-15T14:46:47",
+  "items": {
+    "21468": {
+      "state": "closed",
+      "merged": null,
+      "updated_at": "2026-05-13T15:26:35",
+      "title": "cache reuse is not supported for Gemma 4 models despite -fa enabled and --swa-full",
+      "html_url": "https://github.com/ggml-org/llama.cpp/issues/21468"
+    },
+    "22288": {
+      "state": "closed",
+      "merged": true,
+      "updated_at": "2026-04-24T07:17:41",
+      "title": "server : fix swa-full logic",
+      "html_url": "https://github.com/ggml-org/llama.cpp/pull/22288"
+    },
+    "21690": {
+      "state": "open",
+      "merged": null,
+      "updated_at": "2026-05-12T07:52:57",
+      "title": "Eval bug: Checkpoints and MMProj on Gemma 4 consume abnormal amounts of RAM, leading to llama-server going OOM",
+      "html_url": "https://github.com/ggml-org/llama.cpp/issues/21690"
+    },
+    "21868": {
+      "state": "closed",
+      "merged": null,
+      "updated_at": "2026-04-13T20:52:23",
+      "title": "server: add input_audio content type routing for Gemma 4 audio inference",
+      "html_url": "https://github.com/ggml-org/llama.cpp/issues/21868"
+    },
+    "21384": {
+      "state": "open",
+      "merged": null,
+      "updated_at": "2026-05-05T01:16:00",
+      "title": "Eval bug: Gemma 4 tool call array parameter serialized as JSON string when values contain `{` or `}`",
+      "html_url": "https://github.com/ggml-org/llama.cpp/issues/21384"
+    }
+  }
+}
