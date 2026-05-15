@@ -37,7 +37,7 @@ from typing import Any
 from .state import atomic_write_json
 
 
-PROFILE_NAMES = ("performance", "balanced", "light", "standby")
+PROFILE_NAMES = ("performance", "balanced_8gb", "balanced", "light", "standby")
 
 ACTIVE_PROFILE_PATH = Path.home() / ".gemma4" / "active_profile.txt"
 PROFILES_OVERRIDES_PATH = Path.home() / ".gemma4" / "profiles.json"
@@ -82,6 +82,11 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _E2B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q4_K_M.gguf")  # 4.46 GB cargado
 _E2B_Q5_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q5_K_M.gguf")  # 4.70 GB cargado
 _E4B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q4_K_M.gguf")  # 6.10 GB cargado
+# Recomendado por el informe externo (Item I1 #2 / Bloque A1) como Pareto
+# frontier para 8 GB de VRAM. Requiere descarga manual desde
+# huggingface.co/unsloth/gemma-4-E4B-it-GGUF (~4.7 GB). Si el archivo no
+# existe, apply_profile_to_env() cae al modelo del usuario via env var.
+_E4B_UD_Q4_K_XL = str(_PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-UD-Q4_K_XL.gguf")
 
 
 PROFILES: dict[str, Profile] = {
@@ -102,6 +107,31 @@ PROFILES: dict[str, Profile] = {
             "Usa el modelo principal del usuario (Q6_K o superior)."
         ),
         est_vram_mb=7500,
+    ),
+    "balanced_8gb": Profile(
+        name="balanced_8gb",
+        display_name="Balanced 8GB",
+        context_size=16384,
+        model_path=_E4B_UD_Q4_K_XL,
+        vision_enabled=False,
+        rerank_enabled=True,
+        parallel_tools=False,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        description=(
+            "Perfil para 8 GB VRAM (RTX 3060 Ti, 4060, 2080). "
+            "E4B-UD-Q4_K_XL (Pareto frontier KLD segun Unsloth/localbench), "
+            "context 16K (espacio para tool_schemas_hint compact + history), "
+            "vision OFF, rerank ON, voice ON (CPU). Requiere descarga manual "
+            "del GGUF; si falta, cae al modelo del usuario (env var). "
+            "Item 2.1 + Sprint 1 del optimization_roadmap.md."
+        ),
+        # E4B-UD-Q4_K_XL (~5.6 GB cargado) + KV F16 16K (~0.70 GB) = ~6.30 GB
+        # total app. + reserva WDDM 1.5 GB = ~7.80 GB fisicos. Entra en 8 GB.
+        # Si el tool_schemas_hint compact (~5.9K tokens) ocupa parte del ctx,
+        # quedan ~10K tokens para conversacion + memoria.
+        est_vram_mb=6300,
     ),
     "balanced": Profile(
         name="balanced",
@@ -223,24 +253,44 @@ def detect_vram_mb() -> int | None:
     return None
 
 
+# Reserva fija de VRAM para Windows/WDDM + driver buffers + headroom CUDA.
+# El informe de auditoria externa (Bloque F1, item I1 #10) cita evidencia
+# anecdotica de foros Microsoft / Tom's Hardware de 0.6-1.2 GB para dwm.exe
+# mas 150-400 MB para buffers de driver. Reservamos 1.5 GB como cifra
+# conservadora para que un usuario con 6 GB fisicos y Chrome abierto NO
+# sufra OOM al arrancar el server.
+WINDOWS_VRAM_RESERVE_MB = 1500
+
+
 def recommend_profile(vram_mb: int | None) -> str:
     """Sugiere perfil segun VRAM detectada.
 
-    Cortes alineados a los model_path defaults:
-    >=12000 -> performance (Q6_K o superior, contexto 32K)
-    >=6000  -> balanced    (E4B-Q4_K_M, contexto 8K, voice ON, vision OFF)
-    >=4000  -> light       (E2B-Q4_K_M, contexto 4K, voice ON)
-    <4000 o None -> light  (mejor que rehusar; voice CPU sigue funcionando)
+    Aplica una reserva fija de WINDOWS_VRAM_RESERVE_MB (1.5 GB) al valor
+    reportado por nvidia-smi antes de mapear. Cortes en VRAM *efectiva*:
+
+    >=10500 MB ef. (>=12 GB fisicos) -> performance
+    >= 6500 MB ef. (>= 8 GB fisicos) -> balanced_8gb (si el GGUF existe;
+                                       sino cae a balanced)
+    >= 4500 MB ef. (>= 6 GB fisicos) -> balanced
+    >= 2500 MB ef. (>= 4 GB fisicos) -> light
+    resto / None                     -> light (voice CPU sigue ON)
     """
     if vram_mb is None:
-        # Sin GPU detectable: light es el mas conservador. Voice CPU
-        # sigue andando aunque el LLM corra en CPU lento o falle.
         return "light"
-    if vram_mb >= 12000:
+    effective = max(0, int(vram_mb) - WINDOWS_VRAM_RESERVE_MB)
+    if effective >= 10500:
         return "performance"
-    if vram_mb >= 6000:
+    if effective >= 6500:
+        # Item 2.1: si el archivo UD-Q4_K_XL esta presente, balanced_8gb;
+        # sino caemos a balanced (E2B-Q5_K_M) para no recomendar un perfil
+        # con missing model.
+        candidate = PROFILES["balanced_8gb"].model_path
+        if candidate and Path(candidate).expanduser().is_file():
+            return "balanced_8gb"
         return "balanced"
-    if vram_mb >= 4000:
+    if effective >= 4500:
+        return "balanced"
+    if effective >= 2500:
         return "light"
     return "light"
 

@@ -697,7 +697,7 @@ class SettingsDialog(QDialog):
             ("voice_enabled", "voice"),
             ("model_path", "model"),
         )
-        cols = ("performance", "balanced", "light")  # standby omitido
+        cols = ("performance", "balanced_8gb", "balanced", "light")  # standby omitido
 
         self._prof_table = QTableWidget(len(fields), len(cols))
         self._prof_table.setHorizontalHeaderLabels([PROFILES[c].display_name for c in cols])
@@ -764,7 +764,7 @@ class SettingsDialog(QDialog):
     def _on_prof_restore_defaults(self) -> None:
         from PyQt6.QtWidgets import QTableWidgetItem
         from ..profiles import PROFILES
-        cols = ("performance", "balanced", "light")
+        cols = ("performance", "balanced_8gb", "balanced", "light")
         fields = ("context_size", "vision_enabled", "rerank_enabled", "parallel_tools", "voice_enabled", "model_path")
         for r, field_name in enumerate(fields):
             for c, prof_name in enumerate(cols):
@@ -798,7 +798,7 @@ class SettingsDialog(QDialog):
             ],
         }
         # Overrides table -> dict[prof_name][field_name] = value
-        cols = ("performance", "balanced", "light")
+        cols = ("performance", "balanced_8gb", "balanced", "light")
         fields = (
             ("context_size", int),
             ("vision_enabled", bool),

@@ -3595,3 +3595,114 @@ COMPOUND_TOOL_SCHEMAS: list[dict[str, Any]] = [
 
 _apply_action_enums(COMPOUND_TOOL_SCHEMAS)
 
+
+# ---------------------------------------------------------------------------
+# 1.8 — Tool schemas "EXACT" en Markdown para inyectar en system prompt.
+#
+# Item I1 #7 + Bloque C4 del informe de optimizacion externa. Patron del
+# gist de Daniel Farina para OpenCode-on-Gemma-4: mostrar al modelo cada
+# tool con tipos y REQUIRED/optional explicitos reduce errores de tool
+# selection y de nombres de argumentos.
+#
+# El compilador es puro (solo lee COMPOUND_TOOL_SCHEMAS). Lo expone como
+# string Markdown listo para inyectar via cualquier hint del agente
+# (persona_hint, plan_hint, o un nuevo schemas_hint que el dev decida
+# añadir en agent.py:388). No tocamos agent.py desde aqui (constraint
+# del brief).
+# ---------------------------------------------------------------------------
+
+
+def compile_tools_to_markdown_exact(
+    schemas: list[dict[str, Any]] | None = None,
+    *,
+    compact: bool = False,
+) -> str:
+    """Renderiza COMPOUND_TOOL_SCHEMAS como Markdown estilo "AGENTS.md".
+
+    El formato sigue la convencion de Daniel Farina (OpenCode):
+      # Tool Schemas (EXACT parameter names - you MUST use these exactly)
+
+      ## <tool_name>
+      <description>
+
+      Parameters:
+      - <param> (<type>, REQUIRED|optional): ...
+      - ...
+
+    Argumentos:
+      schemas: lista opcional; por default usa COMPOUND_TOOL_SCHEMAS.
+      compact: si True, omite descripciones largas y limita enums a 5
+               valores. Reduce ~60% del tamaño. Usar en perfiles con
+               contexto <16K (light, balanced, balanced_8gb).
+
+    Returns:
+      String Markdown. Si no hay schemas, devuelve string vacio.
+    """
+    sch = schemas if schemas is not None else COMPOUND_TOOL_SCHEMAS
+    if not sch:
+        return ""
+
+    if compact:
+        lines: list[str] = [
+            "# Tool Schemas (EXACT names - use ONLY these)",
+            "",
+        ]
+    else:
+        lines = [
+            "# Tool Schemas (EXACT parameter names - you MUST use these exactly)",
+            "",
+            "Each tool below shows its EXACT parameter names and types. Do NOT invent",
+            "parameter names. Use ONLY the action values shown in the enum (when present).",
+            "",
+        ]
+
+    enum_cap = 5 if compact else 10
+
+    for entry in sch:
+        fn = (entry.get("function") or {}) if isinstance(entry, dict) else {}
+        name = str(fn.get("name") or "").strip()
+        if not name:
+            continue
+        desc = str(fn.get("description") or "").strip()
+        params = fn.get("parameters") or {}
+        if not isinstance(params, dict):
+            params = {}
+        props = params.get("properties") or {}
+        required = set(params.get("required") or [])
+
+        lines.append(f"## {name}")
+        if desc and not compact:
+            lines.append(desc)
+        elif desc and compact:
+            # Solo primera oracion en compact.
+            first_sentence = desc.split(".")[0].strip()
+            if first_sentence:
+                lines.append(first_sentence + ".")
+        if props:
+            if not compact:
+                lines.append("")
+                lines.append("Parameters:")
+            # Ordena: required primero, despues alfabetico.
+            keys_required = [k for k in props.keys() if k in required]
+            keys_optional = [k for k in props.keys() if k not in required]
+            keys_required.sort()
+            keys_optional.sort()
+            for key in keys_required + keys_optional:
+                spec = props[key] if isinstance(props.get(key), dict) else {}
+                tname = str(spec.get("type") or "any")
+                tag = "REQUIRED" if key in required else "optional"
+                bullet = f"- {key} ({tname}, {tag})"
+                enum = spec.get("enum")
+                if isinstance(enum, list) and enum:
+                    enum_preview = ", ".join(repr(v) for v in enum[:enum_cap])
+                    if len(enum) > enum_cap:
+                        enum_preview += ", ..."
+                    bullet += f": one of [{enum_preview}]"
+                items = spec.get("items")
+                if isinstance(items, dict) and items.get("type") and not compact:
+                    bullet += f" (items: {items.get('type')})"
+                lines.append(bullet)
+        lines.append("")  # blank line entre tools
+
+    return "\n".join(lines).rstrip() + "\n"
+

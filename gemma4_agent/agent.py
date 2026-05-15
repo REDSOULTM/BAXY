@@ -383,10 +383,68 @@ class Gemma4Agent:
         explicit_section = f"\n\n{explicit_block}" if explicit_block else ""
         phrase_section = _format_phrase_fires(self._phrase_fires)
         phrase_section = f"\n\n{phrase_section}" if phrase_section else ""
+        # Sprint 1 / item I1 #7: bloque "Tool Schemas EXACT" del informe de
+        # optimizacion. Patron Daniel Farina (OpenCode-on-Gemma-4): reduce
+        # errores de tool selection y argument naming. Opt-out via env var
+        # GEMMA4_DISABLE_TOOL_SCHEMAS_HINT por si el dev necesita prompts
+        # mas cortos en debug. Cacheado a nivel-instancia para no recompilar
+        # el markdown en cada turno (62 tools = ~6 KB de markdown).
+        tools_section = self._tool_schemas_hint()
         return {
             "role": "system",
-            "content": f"{SYSTEM_PROMPT}{mode_hint}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{SYSTEM_PROMPT}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
+
+    def _tool_schemas_hint(self) -> str:
+        """Construye el bloque "Tool Schemas EXACT" una sola vez por agent.
+
+        Sprint 1 del optimization_roadmap.md. Mode seleccionado por el
+        context_size del perfil activo:
+          - ctx >= 32K  -> full (~11.6K tokens) — best argument fidelity.
+          - ctx >= 16K  -> compact (~5.9K tokens) — descripciones cortas.
+          - ctx <  16K  -> off (no hint; el catalogo nativo de tools del
+                          schema en --jinja sigue siendo el camino).
+        Override via GEMMA4_TOOL_SCHEMAS_HINT_MODE = full|compact|off|auto.
+        Cache a nivel-instancia porque los schemas son estaticos.
+        """
+        import os as _os
+        env_mode = (_os.environ.get("GEMMA4_TOOL_SCHEMAS_HINT_MODE") or "auto").strip().lower()
+        # legacy opt-out kept for backward compat
+        legacy_off = (_os.environ.get("GEMMA4_DISABLE_TOOL_SCHEMAS_HINT") or "").strip().lower()
+        if legacy_off in {"1", "true", "yes", "on"}:
+            env_mode = "off"
+        if env_mode == "off":
+            return ""
+        if env_mode not in {"full", "compact", "auto"}:
+            env_mode = "auto"
+        if env_mode == "auto":
+            ctx = int(self.config.context_size or 0)
+            # full: solo en perfiles con ctx >=32K (performance). El hint
+            # full es ~11.6K tokens, ~35% de un context 32K — aceptable.
+            # compact: ~5.9K tokens. Solo en ctx >=16K (balanced_8gb,
+            # performance) para que queden >=10K tokens libres para
+            # conversacion + memoria.
+            # off: ctx <16K (balanced, light) — el catalogo nativo de
+            # tools via --jinja sigue siendo el camino, sin overhead extra.
+            if ctx >= 32768:
+                mode = "full"
+            elif ctx >= 16384:
+                mode = "compact"
+            else:
+                return ""
+        else:
+            mode = env_mode
+
+        cache_key = f"_cached_tool_schemas_md_{mode}"
+        cached = getattr(self, cache_key, None)
+        if cached is None:
+            try:
+                from .tools import compile_tools_to_markdown_exact
+                cached = compile_tools_to_markdown_exact(compact=(mode == "compact"))
+            except Exception:
+                cached = ""
+            setattr(self, cache_key, cached)
+        return f"\n\n{cached}" if cached else ""
 
     def _messages(self, mode: AgentMode | None = None, plan: MissionPlan | None = None) -> list[dict[str, Any]]:
         return [self._system_message(mode, plan), *self.history]

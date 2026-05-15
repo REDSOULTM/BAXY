@@ -3,11 +3,26 @@
 from __future__ import annotations
 
 import json
+import os
 import urllib.error
 import urllib.request
 from typing import Any, Iterator
 
 from .config import AgentConfig
+
+
+def _request_headers(content_type: str = "application/json", sse: bool = False) -> dict[str, str]:
+    """Sprint 12 hardening: si GEMMA4_LLAMA_API_KEY esta seteado, añade
+    el header Authorization: Bearer <key> que llama-server espera cuando
+    arranca con --api-key. Si no esta seteado, headers sin Authorization
+    (el server tampoco lo va a pedir)."""
+    headers: dict[str, str] = {"Content-Type": content_type}
+    if sse:
+        headers["Accept"] = "text/event-stream"
+    api_key = (os.environ.get("GEMMA4_LLAMA_API_KEY") or "").strip()
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    return headers
 
 
 class LLMClient:
@@ -63,7 +78,7 @@ class LLMClient:
 
         effective_timeout = float(timeout_s) if timeout_s is not None else self.config.request_timeout_s
         try:
-            return self._post_chat(body, timeout=effective_timeout)
+            response = self._post_chat(body, timeout=effective_timeout)
         except RuntimeError as exc:
             if not _looks_like_unsupported_option_error(str(exc)):
                 raise
@@ -72,7 +87,8 @@ class LLMClient:
             fallback.pop("reasoning_format", None)
             fallback.pop("parse_tool_calls", None)
             fallback.pop("parallel_tool_calls", None)
-            return self._post_chat(fallback, timeout=effective_timeout)
+            response = self._post_chat(fallback, timeout=effective_timeout)
+        return _normalize_response_tool_calls(response)
 
     def chat_stream(
         self,
@@ -132,7 +148,7 @@ class LLMClient:
         req = urllib.request.Request(
             self.config.chat_url,
             data=json.dumps(body).encode("utf-8"),
-            headers={"Content-Type": "application/json", "Accept": "text/event-stream"},
+            headers=_request_headers(sse=True),
         )
         try:
             resp = urllib.request.urlopen(req, timeout=timeout)
@@ -215,19 +231,23 @@ class LLMClient:
             except OSError:
                 pass
 
-        # Frame final con el resumen acumulado
+        # Frame final con el resumen acumulado. Normalizamos arguments de
+        # cada tool_call (issue #21384: string con braces literales se
+        # serializa como JSON string en vez de array, mitigado por
+        # normalize_tool_call_arguments).
+        raw_tool_calls = [tool_calls_acc[k] for k in sorted(tool_calls_acc.keys())]
         yield {
             "type": "final",
             "finish_reason": final_finish or "stop",
             "content": accumulated_content,
-            "tool_calls": [tool_calls_acc[k] for k in sorted(tool_calls_acc.keys())],
+            "tool_calls": normalize_tool_calls_list(raw_tool_calls),
         }
 
     def _post_chat(self, body: dict[str, Any], *, timeout: float) -> dict[str, Any]:
         req = urllib.request.Request(
             self.config.chat_url,
             data=json.dumps(body).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers=_request_headers(),
         )
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -243,6 +263,131 @@ class LLMClient:
             raise RuntimeError(f"llm_connection_error: {exc}") from exc
         except TimeoutError as exc:
             raise RuntimeError(f"llm_timeout: request exceeded {timeout}s") from exc
+
+
+def normalize_tool_call_arguments(raw: Any) -> dict[str, Any]:
+    """Normaliza `tool_call.function.arguments` a dict.
+
+    Issue #21384 (llama.cpp + Gemma 4): cuando los args contienen `{` o `}`
+    literales (paths con `${var}`, regex con sets, JSON anidado), el parser
+    serializa el array como string JSON en vez de array. El cliente debe
+    aceptar ambos casos.
+
+    Recibe: dict, str (JSON), list (raro), None.
+    Devuelve: dict siempre. Si el parsing falla en todos los caminos
+    razonables, devuelve {"_raw": str(raw), "_parse_error": "..."}.
+
+    Item I1 #5 + Bloque C2/D4 del informe de optimizacion externa.
+    """
+    if raw is None:
+        return {}
+    if isinstance(raw, dict):
+        return dict(raw)
+    if isinstance(raw, list):
+        # Caso muy raro pero documentado: el server devuelve un array
+        # cuando el modelo emite un AST nested. Lo envolvemos.
+        return {"_args_list": raw}
+    if isinstance(raw, (int, float, bool)):
+        return {"_value": raw}
+    if not isinstance(raw, str):
+        return {"_raw": str(raw), "_parse_error": "unsupported_type"}
+
+    s = raw.strip()
+    if not s:
+        return {}
+
+    # Path feliz: el string es JSON valido.
+    try:
+        parsed = json.loads(s)
+    except (ValueError, TypeError):
+        parsed = None
+    if isinstance(parsed, dict):
+        return parsed
+    if isinstance(parsed, list):
+        return {"_args_list": parsed}
+    if isinstance(parsed, str):
+        # Path #21384 / doble-stringificado: el server entrego un string
+        # JSON cuyo contenido es a su vez JSON. Re-parsear una vez.
+        try:
+            inner = json.loads(parsed)
+        except (ValueError, TypeError):
+            inner = None
+        if isinstance(inner, dict):
+            return inner
+        if isinstance(inner, list):
+            return {"_args_list": inner}
+        # Si tras re-parsear no llegamos a dict/list, devolvemos el string
+        # primario como _value para no perder informacion.
+        return {"_value": parsed}
+    if parsed is not None:
+        # Escalar JSON-valido distinto de string (numero, bool, null).
+        return {"_value": parsed}
+
+    # Path defensivo final: devolver raw para que el caller decida. NO
+    # bloqueamos; el agente puede recuperarse pidiendo al LLM que reformule.
+    return {"_raw": s, "_parse_error": "not_a_json_object"}
+
+
+def normalize_tool_calls_list(tool_calls: list[Any]) -> list[dict[str, Any]]:
+    """Aplica normalize_tool_call_arguments a cada tool_call de una lista.
+
+    Preserva id/type/function.name; solo robustifica function.arguments.
+    Si una entry no respeta el shape OpenAI, la deja pasar sin tocar.
+    """
+    out: list[dict[str, Any]] = []
+    for tc in tool_calls or []:
+        if not isinstance(tc, dict):
+            out.append(tc)
+            continue
+        fn = tc.get("function")
+        if not isinstance(fn, dict):
+            out.append(tc)
+            continue
+        normalized = dict(tc)
+        normalized_fn = dict(fn)
+        normalized_fn["arguments"] = normalize_tool_call_arguments(fn.get("arguments"))
+        normalized["function"] = normalized_fn
+        out.append(normalized)
+    return out
+
+
+def _normalize_response_tool_calls(response: dict[str, Any]) -> dict[str, Any]:
+    """Recorre choices[*].message.tool_calls y normaliza arguments.
+
+    No mutamos el objeto original; devolvemos una copia ligera con la
+    sustitucion. Si la estructura no coincide con OpenAI, devolvemos
+    response tal cual.
+    """
+    if not isinstance(response, dict):
+        return response
+    choices = response.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return response
+    new_choices = []
+    changed = False
+    for choice in choices:
+        if not isinstance(choice, dict):
+            new_choices.append(choice)
+            continue
+        msg = choice.get("message")
+        if not isinstance(msg, dict):
+            new_choices.append(choice)
+            continue
+        tc_list = msg.get("tool_calls")
+        if not isinstance(tc_list, list) or not tc_list:
+            new_choices.append(choice)
+            continue
+        new_msg = dict(msg)
+        new_msg["tool_calls"] = normalize_tool_calls_list(tc_list)
+        new_choice = dict(choice)
+        new_choice["message"] = new_msg
+        new_choices.append(new_choice)
+        changed = True
+    if not changed:
+        return response
+    out = dict(response)
+    out["choices"] = new_choices
+    return out
 
 
 def _looks_like_unsupported_option_error(message: str) -> bool:

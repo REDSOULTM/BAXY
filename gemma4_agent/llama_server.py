@@ -23,13 +23,14 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import socket
 import subprocess
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from .config import AgentConfig, PACKAGE_ROOT, PROJECT_ROOT
 from .profiles import Profile
@@ -96,6 +97,106 @@ def port_in_use(host: str = "127.0.0.1", port: int = 8080, timeout: float = 0.3)
             pass
 
 
+# Build minimo requerido para soporte correcto de tool-calling en Gemma 4.
+# Esta constante refleja el roadmap del informe de auditoria (item I1 #1):
+# llama.cpp b9090+ contiene los PRs #21418 (parser dedicado Gemma 4),
+# #21326 y #21343 (tokenizer + token spam fixes). Builds anteriores producen
+# tool_calls con tokens corruptos o argumentos serializados como string.
+#
+# CUDA 13.2 esta bloqueado por advertencia de Unsloth (2026-04-11): produce
+# poor outputs en cualquier GGUF de Gemma 4. Recomendar CUDA 13.1 o 12.x.
+LLAMA_CPP_BUILD_MIN = "b9090"
+CUDA_RUNTIME_BLOCKED = "13.2"
+
+
+_BUILD_CHECK_DONE: bool = False
+
+
+def check_llama_build(exe_path: Path) -> dict[str, Any]:
+    """Lee version + build de llama-server y emite warnings si corresponde.
+
+    Llamada idempotente: se ejecuta una sola vez por proceso (controlada
+    por _BUILD_CHECK_DONE). Si llama-server no esta disponible, retorna
+    un dict con `available=False` sin levantar excepciones (el caller
+    decide como manejar el missing exe).
+
+    Returns dict con keys: available, build, cuda, raw, warnings.
+    """
+    global _BUILD_CHECK_DONE
+    info: dict[str, Any] = {
+        "available": False,
+        "build": None,
+        "cuda": None,
+        "raw": None,
+        "warnings": [],
+    }
+    if _BUILD_CHECK_DONE:
+        return info
+    _BUILD_CHECK_DONE = True
+
+    if not exe_path.is_file():
+        info["warnings"].append(f"llama-server exe not found: {exe_path}")
+        return info
+
+    try:
+        proc = subprocess.run(
+            [str(exe_path), "--version"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        info["warnings"].append(f"llama-server --version failed: {exc}")
+        return info
+
+    raw = (proc.stdout or "") + (proc.stderr or "")
+    info["available"] = True
+    info["raw"] = raw[:500]
+
+    # Detectar build: formato tipico "version: <N> (<sha>)" o "build = <N>"
+    # llama-server suele imprimir "version: 6593 (abc1234)" en stderr.
+    build_match = re.search(r"\b(?:version|build)\s*[:=]?\s*(\d{3,5})\b", raw, re.IGNORECASE)
+    if build_match:
+        info["build"] = f"b{build_match.group(1)}"
+        try:
+            current_n = int(build_match.group(1))
+            min_n = int(LLAMA_CPP_BUILD_MIN.lstrip("bB"))
+            if current_n < min_n:
+                msg = (
+                    f"llama-server build {info['build']} is older than {LLAMA_CPP_BUILD_MIN}. "
+                    "Gemma 4 tool calling requires PRs #21418, #21326, #21343 (merged in b9090+). "
+                    "Older builds produce corrupted tool_calls."
+                )
+                info["warnings"].append(msg)
+                logger.warning(msg)
+        except ValueError:
+            pass
+
+    # Detectar CUDA runtime: formato "cuda runtime: 13.1" o "CUDA: 13.2"
+    cuda_match = re.search(r"cuda(?:\s+runtime)?\s*[:=]?\s*(\d+\.\d+)", raw, re.IGNORECASE)
+    if cuda_match:
+        info["cuda"] = cuda_match.group(1)
+        if info["cuda"] == CUDA_RUNTIME_BLOCKED:
+            msg = (
+                f"CUDA runtime {info['cuda']} detected. Unsloth (2026-04-11) "
+                "explicitly warns: 'Do NOT use CUDA 13.2 runtime for any GGUF "
+                "as it will cause poor outputs.' Downgrade to CUDA 13.1 or 12.x."
+            )
+            info["warnings"].append(msg)
+            logger.warning("=" * 70)
+            logger.warning(msg)
+            logger.warning("=" * 70)
+
+    if info["build"] is None and info["cuda"] is None:
+        info["warnings"].append(
+            "Could not parse build/CUDA from llama-server --version output. "
+            "Tool calling may be unreliable on Gemma 4. Update to b9090+."
+        )
+
+    return info
+
+
 def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     """Construye el comando de llama-server respetando el perfil.
 
@@ -123,8 +224,16 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "-m",
         str(model_path.resolve()),
         "--jinja",
+        # Sprint 12 — hardening: forzar bind a loopback. El brief del
+        # proyecto es "100% local"; jamas debe escuchar en 0.0.0.0.
+        "--host",
+        "127.0.0.1",
         "--port",
         "8080",
+        # Sprint 12 — deshabilitar el webui interno de llama-server.
+        # El cliente tiene UI propia (PyQt6 + React UI Field); el webui
+        # interno es superficie de ataque innecesaria.
+        "--no-webui",
         "-ngl",
         "99",
         "-c",
@@ -135,20 +244,120 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "1",
         "--flash-attn",
         "on",
+        # --keep -1: defensa mientras issue #21468 (cache-reuse roto en
+        # Gemma 4 por arquitectura shared-KV) este abierto. Preserva todo
+        # el system prompt entre turnos, evita que context shifts tiren la
+        # prefix cache. PR #22288 candidato a merge; una vez merged, este
+        # flag deja de ser critico pero no daña tenerlo.
+        # Item I1 #3 + Bloque D1 del informe de optimizacion externa.
+        "--keep",
+        "-1",
     ]
+
+    # Sprint 12 — API key opt-in via env var. Si GEMMA4_LLAMA_API_KEY esta
+    # seteado, el server exige Authorization: Bearer <key> en cada request.
+    # No lo forzamos por default para no romper el flujo "el agente Python
+    # habla con llama-server en localhost"; pero si el usuario expone el
+    # puerto a otra red local (errores de config), esto provee defense in
+    # depth. El cliente llm_client.py debe leer el mismo env var y mandar
+    # el header — ver test que verifica round-trip.
+    api_key_env = (os.environ.get("GEMMA4_LLAMA_API_KEY") or "").strip()
+    if api_key_env:
+        cmd.extend(["--api-key", api_key_env])
 
     # VRAM-tight perfiles (balanced, light): --no-mmap para evitar
     # double-buffer entre RAM mapeada y VRAM (critico con budget apretado).
-    #
-    # NO usamos --cache-type-k/v q8_0 aqui: la doc del repo
-    # (documentacion/04_vram_y_hardware/README.md) advierte explicitamente
-    # contra KV quant en Gemma 4 sin medir, citando un localbench benchmark
-    # que reporto KL 0.377 para Gemma 4 26B con q8_0 KV (vs Qwen <0.04).
-    # E4B/E2B no son MoE como el 26B pero el riesgo esta sin validar.
-    # Una pasada del bench Carter 540 con KV q8_0 confirmaria si se puede
-    # activar; mientras tanto, F16 default.
     if profile.name in {"balanced", "light"}:
         cmd.append("--no-mmap")
+
+    # KV cache quantization (opt-in via GEMMA4_LLAMA_KV_TYPE). Default: F16.
+    # El informe de optimizacion externa (Bloque B1, item I1 #5, TL;DR-6)
+    # advierte contra KV quant en Gemma 4 sin medir:
+    #   localbench (2026-04): KL 0.377 con q8_0 KV en 26B-A4B
+    #                         (vs Qwen <0.04), KL 0.108 en 31B Q8_0.
+    # Si el usuario aun asi lo activa por env var, lo respetamos pero con
+    # WARNING grande. Solo aceptamos valores conocidos por llama.cpp.
+    _ALLOWED_KV_TYPES = {"f16", "f32", "bf16", "q8_0", "q5_1", "q5_0", "q4_1", "q4_0"}
+    kv_type_env = (os.environ.get("GEMMA4_LLAMA_KV_TYPE") or "").strip().lower()
+    if kv_type_env:
+        if kv_type_env not in _ALLOWED_KV_TYPES:
+            logger.warning(
+                "GEMMA4_LLAMA_KV_TYPE=%r is not a recognized llama.cpp KV "
+                "type; ignoring. Allowed: %s.",
+                kv_type_env, sorted(_ALLOWED_KV_TYPES),
+            )
+        else:
+            if kv_type_env not in {"f16", "f32", "bf16"}:
+                logger.warning("=" * 70)
+                logger.warning(
+                    "KV cache quantization enabled by env var: %s. "
+                    "localbench (2026-04) measured KL 0.377 for Gemma 4 "
+                    "26B-A4B with q8_0 KV (vs Qwen <0.04). Quality may "
+                    "degrade on long-context / tool-call tasks. Recommended: "
+                    "leave unset (F16 default) until benchmarked on Carter 540.",
+                    kv_type_env,
+                )
+                logger.warning("=" * 70)
+            cmd.extend([
+                "--cache-type-k", kv_type_env,
+                "--cache-type-v", kv_type_env,
+            ])
+
+    # Speculative decoding opt-in via env var (item 2.2 del roadmap).
+    #
+    # Bloque D3 del informe externo: speculative decoding E2B-draft -> E4B/
+    # 26B-A4B-target funciona con --spec-draft-model en llama.cpp upstream.
+    # Acceptance rate estimado 40-60% en Carter (sin medir). VRAM: solo viable
+    # en perfil `performance` con VRAM >=12 GB; E2B-Q4 ~1.85 GB + E4B-Q4 ~5.6 GB
+    # = 7.45 GB no entra en 6 GB.
+    #
+    # ADVERTENCIA: bench externo hackmd.io/ODXuOQNzSiyUITz7g9mtBw mide que en
+    # RTX 3090 con Qwen3.6-35B-A3B speculative resulta MAS LENTO que baseline
+    # (139.9 -> 65.0 tok/s). Lo activamos solo si el usuario lo opta-in y
+    # avisamos del riesgo. Si acceptance < 50% en la maquina, dejar off.
+    spec_draft_env = (os.environ.get("GEMMA4_SPEC_DRAFT_MODEL") or "").strip()
+    if spec_draft_env:
+        if profile.name != "performance":
+            logger.warning(
+                "GEMMA4_SPEC_DRAFT_MODEL set but profile=%s; speculative "
+                "decoding requires the 'performance' profile (VRAM budget). "
+                "Ignoring.",
+                profile.name,
+            )
+        else:
+            draft_path = Path(spec_draft_env).expanduser()
+            if not draft_path.is_file():
+                logger.warning(
+                    "GEMMA4_SPEC_DRAFT_MODEL=%s does not exist; ignoring "
+                    "speculative decoding.",
+                    spec_draft_env,
+                )
+            else:
+                logger.warning("=" * 70)
+                logger.warning(
+                    "Speculative decoding ENABLED: draft=%s. Bench externo "
+                    "hackmd #ODXuOQNzSiyUITz7g9mtBw measured speedup as "
+                    "NEGATIVE on consumer Ampere (RTX 30xx) with some quants. "
+                    "Run llama-bench --model-draft to confirm tok/s gain "
+                    "before relying on this in production.",
+                    draft_path.name,
+                )
+                logger.warning("=" * 70)
+                cmd.extend(["--model-draft", str(draft_path.resolve())])
+                # Flags adicionales con defaults conservadores. Si el usuario
+                # los sobreescribe via env var, respetamos.
+                n_max = (os.environ.get("GEMMA4_SPEC_DRAFT_N_MAX") or "16").strip()
+                n_min = (os.environ.get("GEMMA4_SPEC_DRAFT_N_MIN") or "0").strip()
+                draft_ngl = (os.environ.get("GEMMA4_SPEC_DRAFT_NGL") or "99").strip()
+                try:
+                    int(n_max); int(n_min); int(draft_ngl)
+                    cmd.extend([
+                        "--draft-max", n_max,
+                        "--draft-min", n_min,
+                        "--gpu-layers-draft", draft_ngl,
+                    ])
+                except ValueError:
+                    logger.warning("invalid spec-draft numeric env var; ignoring extra flags")
 
     # Vision: solo agregar --mmproj si el perfil lo permite y hay path real
     if profile.vision_enabled:
@@ -160,6 +369,12 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
             mmproj_path = Path(mmproj_env).expanduser() if mmproj_env else config.mmproj_path
             if mmproj_path.is_file():
                 cmd.extend(["--mmproj", str(mmproj_path.resolve())])
+                # --no-mmproj-offload cuando VRAM efectiva es tight (perfiles
+                # con --no-mmap suelen ser los de 6 GB o menos). Mitiga la
+                # interaccion con issue #19980 (--fit no contabiliza VRAM del
+                # mmproj). Item I1 #8 / Bloque E1 del informe.
+                if profile.name in {"balanced", "light"}:
+                    cmd.append("--no-mmproj-offload")
             else:
                 logger.warning(
                     "mmproj path %s does not exist; loading server without vision",
@@ -271,6 +486,28 @@ class LlamaServerManager:
             )
             return "missing_files"
 
+        # Chequeo de build una vez por proceso. Solo se ejecuta cuando vamos a
+        # arrancar nuestro server (no en path "external" ni "missing_files",
+        # para no interferir con tests que mockean subprocess y para no
+        # ejecutar el binario si no esta presente).
+        check_llama_build(exe)
+
+        # Item 1.9 / Bloque A3: avisar si el modelo es MXFP4 (experimental).
+        try:
+            from .model_info import is_experimental_quant
+            flagged, pattern = is_experimental_quant(str(model))
+            if flagged:
+                logger.warning(
+                    "Loading EXPERIMENTAL quantization (%s) for %s. Unsloth "
+                    "retired MXFP4 from base quants (Q2_K_XL, Q3_K_XL, "
+                    "Q4_K_XL) due to degradation on critical tensors "
+                    "(attn_gate, attn_q, ssm_alpha/beta). Quality may be "
+                    "lower than UD-Q4_K_XL of same size.",
+                    pattern, model.name,
+                )
+        except Exception as exc:
+            logger.debug("experimental quant check failed: %s", exc)
+
         # Tear down si habia uno con perfil distinto
         if self.is_running():
             self.stop()
@@ -337,6 +574,64 @@ class LlamaServerManager:
             self._proc = None
             self._current_profile = None
         return True
+
+    def recycle_for_vision_leak(self) -> bool:
+        """Recicla el server para mitigar el leak de mmproj (issue #21690).
+
+        Solo aplica si:
+          - Tenemos un proceso vivo gestionado por nosotros.
+          - El perfil activo tiene vision_enabled=True.
+
+        Devuelve True si efectivamente se reciclo. Publica al BUS de eventos
+        un payload {kind:"boot_stage", stage:"vision_relaunch"} antes y
+        despues del swap. Item 1.7 / Bloque E1 del roadmap.
+
+        Lectura: counter de imagenes se mantiene en multimodal.py; este
+        metodo es solo el "como" del relanch, decidido y disparado por el
+        orchestrator (NO por agent.py).
+        """
+        if self._external_detected:
+            logger.info("recycle_for_vision_leak(): external server, skipping")
+            return False
+        profile = self._current_profile
+        if profile is None or not self.is_running():
+            logger.info("recycle_for_vision_leak(): no managed server running")
+            return False
+        if not getattr(profile, "vision_enabled", False):
+            logger.debug("recycle_for_vision_leak(): vision disabled in profile %s", profile.name)
+            return False
+        # Publicar al bus (best-effort; si events_bus no esta importable
+        # estamos en un entorno donde el orchestrator no lo necesita).
+        try:
+            from .events_bus import BUS
+            BUS.publish({
+                "kind": "boot_stage",
+                "stage": "vision_relaunch",
+                "phase": "starting",
+                "profile": profile.name,
+            })
+        except Exception:
+            pass
+        logger.info("recycling llama-server (mmproj leak mitigation #21690)")
+        result = self.restart(profile)
+        try:
+            from .events_bus import BUS
+            BUS.publish({
+                "kind": "boot_stage",
+                "stage": "vision_relaunch",
+                "phase": "completed",
+                "profile": profile.name,
+                "result": result,
+            })
+        except Exception:
+            pass
+        # Reset del counter de imagenes para empezar el siguiente ciclo limpio.
+        try:
+            from .multimodal import reset_image_counter
+            reset_image_counter()
+        except Exception:
+            pass
+        return result == "started"
 
     def restart(self, profile: Profile, **start_kwargs: object) -> str:
         """stop() + start(profile)."""

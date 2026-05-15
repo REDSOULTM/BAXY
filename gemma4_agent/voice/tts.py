@@ -127,7 +127,23 @@ def _split_sentences(text: str) -> tuple[list[str], str]:
 
 
 class StreamingTTS:
-    """Sintetiza y reproduce oraciones del LLM en streaming."""
+    """Sintetiza y reproduce oraciones del LLM en streaming.
+
+    ============================================================
+    DEFERRED — item 2.4 del optimization_roadmap.md:
+    Kokoro-82M-es como backend TTS alternativo.
+    Pros: Apache 2.0 (licencia friendly), calidad subjetiva superior
+    a Piper, 82M params manageable en CPU.
+    Cons:
+      - Latencia primer chunk CPU 600-1200 ms vs Piper <300 ms,
+        VIOLA el SLA "≤1 s primer fonema" del brief.
+      - Requiere dep nueva (kokoro-onnx o equivalente).
+      - Voces es-MX/es-AR no son oficiales (parche comunitario).
+    Decision: DEFERRED indefinido. Re-evaluar SOLO si llega
+    feedback explicito de usuarios pidiendo voz mas natural. Por
+    ahora Piper VITS+ONNX es la opcion correcta por latencia.
+    ============================================================
+    """
 
     def __init__(self, voice: str | None = None) -> None:
         env_voice = (os.environ.get("GEMMA4_VOICE_TTS_VOICE") or "").strip()

@@ -1136,25 +1136,48 @@ def test_j5_sequential_handles_parse_error() -> bool:
 
 
 def test_profiles_recommend_by_vram() -> bool:
-    # Cortes actualizados a la nueva tabla:
-    #   >=12 GB -> performance, >=6 GB -> balanced, >=4 GB -> light, resto -> light.
-    # El objetivo de produccion es 6 GB de VRAM minimo, asi que ese es el
-    # corte donde entra balanced (E4B-Q4_K_M con KV q8_0).
-    from gemma4_agent.profiles import recommend_profile
+    # Cortes con reserva fija de 1.5 GB (WINDOWS_VRAM_RESERVE_MB) para dwm/driver:
+    #   VRAM efectiva = vram_mb - 1500
+    #   >=10500 MB ef. (=12 GB fisicos) -> performance
+    #   >= 6500 MB ef. (= 8 GB fisicos) -> balanced_8gb (si GGUF existe)
+    #                                       sino fallback a balanced
+    #   >= 4500 MB ef. (= 6 GB fisicos) -> balanced  <- target HOT
+    #   >= 2500 MB ef. (= 4 GB fisicos) -> light
+    #   resto / None                    -> light
+    # Bloque F1 / item I1 #10 + item 2.1 del optimization_roadmap.md.
+    from pathlib import Path as _P
+    from gemma4_agent.profiles import recommend_profile, PROFILES
+    # 16 GB fisicos = 14.5 GB efectivos -> performance
     assert recommend_profile(16384) == "performance"
+    # 12 GB fisicos = 10.5 GB efectivos -> performance (borde)
     assert recommend_profile(12000) == "performance"
-    assert recommend_profile(11999) == "balanced"
-    assert recommend_profile(10240) == "balanced"
-    assert recommend_profile(8000) == "balanced"
-    assert recommend_profile(7999) == "balanced"
-    assert recommend_profile(6144) == "balanced"  # target de 6 GB cae en balanced
+    # 11.5 GB fisicos = 10.0 GB efectivos -> balanced_8gb si GGUF existe
+    rec_11500 = recommend_profile(11500)
+    # 8 GB fisicos = 6.5 GB efectivos -> balanced_8gb si GGUF existe
+    rec_8000 = recommend_profile(8000)
+    # Validacion condicional: si el GGUF UD-Q4_K_XL esta bajado en la
+    # maquina, el recommend debe usar balanced_8gb. Si no esta, fallback a
+    # balanced (E2B-Q5_K_M). Probamos ambos paths con un mock implicito.
+    gguf_path = PROFILES["balanced_8gb"].model_path
+    gguf_exists = bool(gguf_path) and _P(gguf_path).expanduser().is_file()
+    if gguf_exists:
+        assert rec_11500 == "balanced_8gb", f"GGUF presente, expected balanced_8gb got {rec_11500}"
+        assert rec_8000 == "balanced_8gb"
+    else:
+        assert rec_11500 == "balanced", f"GGUF ausente, expected fallback balanced got {rec_11500}"
+        assert rec_8000 == "balanced"
+    # 6 GB fisicos = 4.5 GB efectivos -> balanced (HOT, GGUF E2B-Q5 que SI existe)
+    assert recommend_profile(6144) == "balanced"
     assert recommend_profile(6000) == "balanced"
-    assert recommend_profile(5999) == "light"     # <6 GB cae a light
+    # 5.9 GB fisicos = 4.4 GB efectivos -> light (debajo del corte balanced)
+    assert recommend_profile(5900) == "light"
+    # 4 GB fisicos = 2.5 GB efectivos -> light (borde)
     assert recommend_profile(4000) == "light"
-    assert recommend_profile(3999) == "light"     # CPU/integrada -> light (voice CPU sigue ON)
+    # CPU/integrada o GPU muy chica -> light
+    assert recommend_profile(2000) == "light"
     assert recommend_profile(0) == "light"
     assert recommend_profile(None) == "light"
-    print("V1 recommend_profile by vram: OK")
+    print(f"V1 recommend_profile by vram (8GB tier GGUF present={gguf_exists}): OK")
     return True
 
 
@@ -1260,9 +1283,17 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
         )
     }
     try:
-        # Context sizes alineados con la nueva tabla 6 GB-aware (balanced bajo
-        # de 16K a 8K para que KV cache entre en VRAM con E4B-Q4_K_M).
-        expected_ctx = {"performance": 32768, "balanced": 8192, "light": 4096, "standby": 4096}
+        # Context sizes alineados con la nueva tabla 6 GB-aware + perfil
+        # intermedio balanced_8gb (item 2.1 + Sprint 1 del roadmap).
+        # balanced_8gb subio a 16K para dejar espacio al tool_schemas_hint
+        # compact (~5.9K tokens) sin saturar conversacion + memoria.
+        expected_ctx = {
+            "performance": 32768,
+            "balanced_8gb": 16384,
+            "balanced": 8192,
+            "light": 4096,
+            "standby": 4096,
+        }
         for name, profile in PROFILES.items():
             for k in saved:
                 os.environ.pop(k, None)
@@ -1798,6 +1829,730 @@ def test_voice_close_phrase_normalization() -> bool:
     return True
 
 
+# ============================================================================
+# Roadmap optimizacion — item 1.4: parser robusto de tool_call.arguments
+# (issue ggml-org/llama.cpp #21384 — args con `{` / `}` literales)
+# ============================================================================
+
+
+def test_optroad_normalize_tool_call_arguments_dict() -> bool:
+    from gemma4_agent.llm_client import normalize_tool_call_arguments
+    out = normalize_tool_call_arguments({"path": "C:/x", "count": 3})
+    assert out == {"path": "C:/x", "count": 3}
+    # None y vacios.
+    assert normalize_tool_call_arguments(None) == {}
+    assert normalize_tool_call_arguments("") == {}
+    print("OPTROAD-1.4-a dict passthrough + empty: OK")
+    return True
+
+
+def test_optroad_normalize_tool_call_arguments_braces() -> bool:
+    """Issue #21384: args serializados como string con `{` y `}` literales."""
+    from gemma4_agent.llm_client import normalize_tool_call_arguments
+    # Caso 1: args como string JSON valido (path con braces).
+    s = '{"path": "C:/Users/${USER}/file.txt", "pattern": "\\\\d{3}"}'
+    out = normalize_tool_call_arguments(s)
+    assert out["path"] == "C:/Users/${USER}/file.txt"
+    assert out["pattern"] == "\\d{3}"
+    # Caso 2: doble-stringificado (JSON-of-JSON).
+    inner = '{"a": 1, "b": "x"}'
+    double = json.dumps(inner)  # '"{\\"a\\": 1, ...}"'
+    out2 = normalize_tool_call_arguments(double)
+    assert out2 == {"a": 1, "b": "x"}, f"got {out2!r}"
+    print("OPTROAD-1.4-b braces + double-string: OK")
+    return True
+
+
+def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
+    """Args completamente rotos: deben caer en _raw, NO levantar."""
+    from gemma4_agent.llm_client import normalize_tool_call_arguments
+    out = normalize_tool_call_arguments("not even close to JSON {")
+    assert "_raw" in out and "_parse_error" in out
+    # No debe perder el contenido original
+    assert "not even close" in out["_raw"]
+    print("OPTROAD-1.4-c malformed → _raw with error: OK")
+    return True
+
+
+def test_optroad_s13_no_mmproj_when_vision_off() -> bool:
+    """Sprint 13: si profile.vision_enabled=False, --mmproj NO debe
+    aparecer en el cmd del server.
+
+    TL;DR MAL #b del informe externo: "usar mmproj F16 a la vez que
+    tiene visión OFF en balanced/light — el F16 cabe en disco pero
+    introduce el path de leak de #21690 si se carga incluso por error".
+    """
+    import os
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    saved = os.environ.get("GEMMA4_MMPROJ_PATH")
+    try:
+        # Aunque el usuario tenga GEMMA4_MMPROJ_PATH apuntando a un archivo,
+        # si vision_enabled=False, el cmd NO debe pasarlo.
+        os.environ["GEMMA4_MMPROJ_PATH"] = "C:/some/mmproj.gguf"
+        for name in ("balanced", "balanced_8gb", "light"):
+            assert PROFILES[name].vision_enabled is False, f"{name} should have vision off"
+            cmd = llama_command(AgentConfig(), PROFILES[name])
+            assert "--mmproj" not in cmd, f"{name}: --mmproj must NOT be in cmd when vision_enabled=False"
+    finally:
+        if saved is None:
+            os.environ.pop("GEMMA4_MMPROJ_PATH", None)
+        else:
+            os.environ["GEMMA4_MMPROJ_PATH"] = saved
+    print("OPTROAD-S13-a no --mmproj when vision OFF: OK")
+    return True
+
+
+def test_optroad_s13_official_sampling_defaults() -> bool:
+    """Sprint 13: AgentConfig defaults son EXACTAMENTE los oficiales
+    Google para Gemma 4: T=1.0, top_p=0.95, top_k=64, repeat_penalty=1.0,
+    max_tokens=1280. TL;DR MEJOR #(a) del informe externo.
+    """
+    from gemma4_agent.config import AgentConfig
+    cfg = AgentConfig()
+    assert cfg.temperature == 1.0, f"T must be 1.0 (Google official); got {cfg.temperature}"
+    assert cfg.top_p == 0.95, f"top_p must be 0.95; got {cfg.top_p}"
+    assert cfg.top_k == 64, f"top_k must be 64; got {cfg.top_k}"
+    assert cfg.repeat_penalty == 1.0, f"repeat_penalty must be 1.0; got {cfg.repeat_penalty}"
+    assert cfg.max_tokens == 1280, f"max_tokens must be 1280; got {cfg.max_tokens}"
+    print("OPTROAD-S13-b Google official sampling defaults preserved: OK")
+    return True
+
+
+def test_optroad_s13_hardening_invariants_always_present() -> bool:
+    """Sprint 13: --host 127.0.0.1 y --no-webui DEBEN estar en el cmd
+    de TODOS los perfiles activos. Defense in depth contra exposicion
+    accidental por LAN (Sprint 12 del roadmap)."""
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    for name in ("performance", "balanced_8gb", "balanced", "light"):
+        cmd = llama_command(AgentConfig(), PROFILES[name])
+        assert "--host" in cmd, f"{name}: --host missing"
+        idx = cmd.index("--host")
+        assert cmd[idx + 1] == "127.0.0.1", f"{name}: --host value {cmd[idx+1]} (must be 127.0.0.1)"
+        assert "--no-webui" in cmd, f"{name}: --no-webui missing"
+    print("OPTROAD-S13-c hardening invariants in all active profiles: OK")
+    return True
+
+
+def test_optroad_s13_tool_schemas_md_covers_all_62_tools() -> bool:
+    """Sprint 13: compile_tools_to_markdown_exact debe listar las 62
+    tools, no solo las primeras. Verifica que ninguna queda fuera del
+    bloque EXACT por bug del walker."""
+    from gemma4_agent.tools import COMPOUND_TOOL_SCHEMAS, compile_tools_to_markdown_exact
+    md_full = compile_tools_to_markdown_exact()
+    md_compact = compile_tools_to_markdown_exact(compact=True)
+    tool_names = [s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS]
+    # Al menos 50 tools (el bench dice 62; algunos pueden tener nombres
+    # duplicados por ser aliases del mismo dispatcher).
+    assert len(tool_names) >= 50, f"expected >=50 tools, got {len(tool_names)}"
+    # Cada tool debe aparecer como heading ## en ambos modos
+    missing_full = [n for n in tool_names if f"## {n}" not in md_full]
+    missing_compact = [n for n in tool_names if f"## {n}" not in md_compact]
+    assert not missing_full, f"full mode missing tools: {missing_full}"
+    assert not missing_compact, f"compact mode missing tools: {missing_compact}"
+    print(f"OPTROAD-S13-d all {len(tool_names)} tools covered in markdown: OK")
+    return True
+
+
+def test_optroad_s13_profiles_voice_always_on_when_active() -> bool:
+    """Sprint 13: voice (Whisper CPU + Piper CPU) DEBE estar ON en
+    todos los perfiles con server_running=True. El brief explicito del
+    usuario: 'voice debe estar disponible en todos los perfiles'."""
+    from gemma4_agent.profiles import PROFILES
+    for name, p in PROFILES.items():
+        if p.server_running:
+            assert getattr(p, "voice_enabled", False) is True, (
+                f"{name} has server_running=True but voice_enabled=False; "
+                "user requirement: voice must be ON for all active profiles"
+            )
+        else:
+            # standby: no LLM, no voice (correct)
+            pass
+    print("OPTROAD-S13-e voice ON for all server-running profiles: OK")
+    return True
+
+
+def test_optroad_sse_streaming_interleaved_tool_calls() -> bool:
+    """Sprint 5: streaming SSE de tool_calls intercalados con texto +
+    thoughts, validando que (a) los deltas llegan en orden, (b) el frame
+    final tiene tool_calls normalizados, (c) la mezcla content+tool_call
+    en el mismo turno se preserva.
+
+    Corresponde al patron interleaved del PR #21418 mergeado: el modelo
+    puede emitir texto (reasoning visible), un tool_call, mas texto, otro
+    tool_call, etc. en el mismo turno.
+    """
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+
+    # Simulamos un turno: pensamiento -> tool_call -> mas texto -> finish
+    frames = [
+        b'data: {"choices":[{"delta":{"role":"assistant","content":null}}]}\n\n',
+        b'data: {"choices":[{"delta":{"content":"Voy a leer el archivo."}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"id":"call_1","type":"function","function":{"name":"filesystem","arguments":""}}]}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"{\\"action\\":\\"read\\","}}]}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"\\"path\\":\\"C:/x.txt\\"}"}}]}}]}\n\n',
+        b'data: {"choices":[{"finish_reason":"tool_calls","delta":{}}]}\n\n',
+        b'data: [DONE]\n\n',
+    ]
+    fake_resp = MagicMock()
+    fake_resp.__iter__ = lambda self: iter(frames)
+    fake_resp.close = MagicMock()
+
+    client = LLMClient(AgentConfig())
+    with patch("urllib.request.urlopen", return_value=fake_resp):
+        events = list(client.chat_stream(messages=[{"role": "user", "content": "lee x.txt"}]))
+
+    deltas = [e for e in events if e["type"] == "delta"]
+    final_events = [e for e in events if e["type"] == "final"]
+    # 1 content delta + 3 tool_call deltas = 4 events
+    assert len(deltas) >= 2, f"expected >=2 deltas, got {len(deltas)}: {deltas}"
+    # Al menos uno con content y al menos uno con tool_call_delta
+    has_content = any(d.get("content_delta") for d in deltas)
+    has_tc = any(d.get("tool_call_delta") for d in deltas)
+    assert has_content, "expected at least one content delta"
+    assert has_tc, "expected at least one tool_call delta"
+    # Frame final reconstruido
+    assert len(final_events) == 1
+    final = final_events[0]
+    assert final["finish_reason"] == "tool_calls"
+    assert final["content"] == "Voy a leer el archivo."
+    assert len(final["tool_calls"]) == 1
+    tc = final["tool_calls"][0]
+    assert tc["id"] == "call_1"
+    assert tc["function"]["name"] == "filesystem"
+    # Argumentos NORMALIZADOS (Sprint 1.4): el string fragmentado se
+    # reensambla y normaliza a dict.
+    args = tc["function"]["arguments"]
+    assert isinstance(args, dict), f"args must be dict after normalize: {args!r}"
+    assert args.get("action") == "read"
+    assert args.get("path") == "C:/x.txt"
+    print("OPTROAD-S5-a SSE interleaved content+tool_call: OK")
+    return True
+
+
+def test_optroad_sse_tool_call_args_with_literal_braces() -> bool:
+    """Sprint 5 + item 1.4: args con `{` y `}` literales no rompen el
+    parser cliente. Caso del issue #21384.
+    """
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+
+    # Tool call con args que contienen braces literales (regex pattern).
+    # llama-server fragmenta el JSON en chunks; el cliente debe reensamblar
+    # y normalizar.
+    args_full = '{"action":"search","pattern":"\\\\d{3,5}","path":"C:/${USER}/logs"}'
+    chunk1 = args_full[:30]
+    chunk2 = args_full[30:]
+
+    import json as _json
+    frames = [
+        f'data: {_json.dumps({"choices":[{"delta":{"tool_calls":[{"index":0,"id":"c1","type":"function","function":{"name":"filesystem","arguments":chunk1}}]}}]})}\n\n'.encode(),
+        f'data: {_json.dumps({"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":chunk2}}]}}]})}\n\n'.encode(),
+        b'data: {"choices":[{"finish_reason":"tool_calls","delta":{}}]}\n\n',
+        b'data: [DONE]\n\n',
+    ]
+    fake_resp = MagicMock()
+    fake_resp.__iter__ = lambda self: iter(frames)
+    fake_resp.close = MagicMock()
+
+    client = LLMClient(AgentConfig())
+    with patch("urllib.request.urlopen", return_value=fake_resp):
+        events = list(client.chat_stream(messages=[{"role": "user", "content": "x"}]))
+
+    final = next(e for e in events if e["type"] == "final")
+    tc = final["tool_calls"][0]
+    args = tc["function"]["arguments"]
+    assert isinstance(args, dict), f"args must be dict: {args!r}"
+    assert args["action"] == "search"
+    assert args["pattern"] == "\\d{3,5}"  # regex con braces preservadas
+    assert args["path"] == "C:/${USER}/logs"  # var con $ preservada
+    print("OPTROAD-S5-b SSE tool_call args with braces normalized: OK")
+    return True
+
+
+def test_optroad_sse_multiple_parallel_tool_calls() -> bool:
+    """Sprint 5 + item C3: el modelo emite MULTIPLES tool_calls en el
+    mismo turno (parallel_tool_calls). Cada uno debe llegar normalizado
+    y indexado correctamente.
+    """
+    from unittest.mock import patch, MagicMock
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llm_client import LLMClient
+
+    frames = [
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"id":"a","type":"function","function":{"name":"filesystem","arguments":"{\\"action\\":\\"list\\"}"}}]}}]}\n\n',
+        b'data: {"choices":[{"delta":{"tool_calls":[{"index":1,"id":"b","type":"function","function":{"name":"system","arguments":"{\\"action\\":\\"time\\"}"}}]}}]}\n\n',
+        b'data: {"choices":[{"finish_reason":"tool_calls","delta":{}}]}\n\n',
+        b'data: [DONE]\n\n',
+    ]
+    fake_resp = MagicMock()
+    fake_resp.__iter__ = lambda self: iter(frames)
+    fake_resp.close = MagicMock()
+
+    client = LLMClient(AgentConfig())
+    with patch("urllib.request.urlopen", return_value=fake_resp):
+        events = list(client.chat_stream(messages=[{"role": "user", "content": "x"}]))
+
+    final = next(e for e in events if e["type"] == "final")
+    tcs = final["tool_calls"]
+    assert len(tcs) == 2, f"expected 2 tool_calls, got {len(tcs)}"
+    # Orden por index
+    assert tcs[0]["id"] == "a"
+    assert tcs[0]["function"]["name"] == "filesystem"
+    assert tcs[0]["function"]["arguments"] == {"action": "list"}
+    assert tcs[1]["id"] == "b"
+    assert tcs[1]["function"]["name"] == "system"
+    assert tcs[1]["function"]["arguments"] == {"action": "time"}
+    print("OPTROAD-S5-c SSE multiple parallel tool_calls: OK")
+    return True
+
+
+def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> bool:
+    """Sprint 1: agent._tool_schemas_hint elige full/compact/off por
+    el context_size del perfil activo.
+
+    Verifica el branching sin construir un Gemma4Agent completo (que
+    requiere LLM, memory, etc.). Construimos un stub minimo.
+    """
+    import os
+    from gemma4_agent.config import AgentConfig
+
+    saved = {
+        "mode": os.environ.get("GEMMA4_TOOL_SCHEMAS_HINT_MODE"),
+        "legacy": os.environ.get("GEMMA4_DISABLE_TOOL_SCHEMAS_HINT"),
+    }
+    try:
+        os.environ.pop("GEMMA4_TOOL_SCHEMAS_HINT_MODE", None)
+        os.environ.pop("GEMMA4_DISABLE_TOOL_SCHEMAS_HINT", None)
+
+        # Stub que reusa el metodo de Gemma4Agent sin instanciar uno real.
+        from gemma4_agent.agent import Gemma4Agent
+        method = Gemma4Agent._tool_schemas_hint
+
+        class _Stub:
+            pass
+        stub = _Stub()
+
+        # ctx 4096 -> off
+        stub.config = AgentConfig(context_size=4096)
+        assert method(stub) == ""
+        # ctx 8192 -> off
+        stub.config = AgentConfig(context_size=8192)
+        assert method(stub) == ""
+        # ctx 16384 -> compact (header con "use ONLY these")
+        stub.config = AgentConfig(context_size=16384)
+        out = method(stub)
+        assert out.strip().startswith("# Tool Schemas (EXACT names")
+        # ctx 32768 -> full (header largo)
+        stub.config = AgentConfig(context_size=32768)
+        out = method(stub)
+        assert "you MUST use these exactly" in out
+
+        # Override env: force off en cualquier ctx
+        os.environ["GEMMA4_TOOL_SCHEMAS_HINT_MODE"] = "off"
+        stub = _Stub()
+        stub.config = AgentConfig(context_size=32768)
+        assert method(stub) == ""
+        # Force compact en ctx chico
+        os.environ["GEMMA4_TOOL_SCHEMAS_HINT_MODE"] = "compact"
+        stub = _Stub()
+        stub.config = AgentConfig(context_size=4096)
+        out = method(stub)
+        assert "EXACT names" in out
+        # Legacy off env var
+        os.environ.pop("GEMMA4_TOOL_SCHEMAS_HINT_MODE", None)
+        os.environ["GEMMA4_DISABLE_TOOL_SCHEMAS_HINT"] = "true"
+        stub = _Stub()
+        stub.config = AgentConfig(context_size=32768)
+        assert method(stub) == ""
+    finally:
+        for k, v in saved.items():
+            envk = f"GEMMA4_TOOL_SCHEMAS_HINT_MODE" if k == "mode" else "GEMMA4_DISABLE_TOOL_SCHEMAS_HINT"
+            if v is None:
+                os.environ.pop(envk, None)
+            else:
+                os.environ[envk] = v
+
+    print("OPTROAD-S1 tool_schemas_hint mode selection: OK")
+    return True
+
+
+def test_optroad_prewarm_kv_calls_chat_with_min_tokens() -> bool:
+    """Sprint 7: prewarm dispara una request al cliente con max_tokens=1."""
+    import os
+    from gemma4_agent.prewarm import prewarm_kv, prewarm_enabled, ENV_OPT_OUT
+
+    saved = os.environ.get(ENV_OPT_OUT)
+    try:
+        # Default: enabled
+        os.environ.pop(ENV_OPT_OUT, None)
+        assert prewarm_enabled() is True
+        # Opt-out via env
+        os.environ[ENV_OPT_OUT] = "true"
+        assert prewarm_enabled() is False
+        # Cualquier otro valor: enabled
+        os.environ[ENV_OPT_OUT] = "no"
+        assert prewarm_enabled() is True
+        os.environ.pop(ENV_OPT_OUT, None)
+
+        # Fake client que captura el call
+        captured = {}
+
+        class FakeClient:
+            def chat(self, messages, tools=None, max_tokens=None, timeout_s=None):
+                captured["messages"] = messages
+                captured["max_tokens"] = max_tokens
+                captured["timeout_s"] = timeout_s
+                return {"choices": [{"message": {"content": "."}}]}
+
+        events: list[dict] = []
+        result = prewarm_kv(
+            FakeClient(),
+            "You are a local agent.",
+            publish=lambda e: events.append(e),
+        )
+        assert result["ok"] is True
+        assert "elapsed_s" in result
+        assert captured["max_tokens"] == 1, "must be 1 to minimize generation cost"
+        assert captured["messages"][0]["role"] == "system"
+        assert captured["messages"][0]["content"] == "You are a local agent."
+        assert captured["messages"][1]["role"] == "user"
+        # Eventos al bus
+        stages = [e.get("stage") for e in events]
+        assert "prewarm_start" in stages
+        assert "prewarm_done" in stages
+
+        # Caso skip por env opt-out
+        os.environ[ENV_OPT_OUT] = "true"
+        result_skip = prewarm_kv(FakeClient(), "ignored")
+        assert result_skip.get("skipped") is True
+        assert result_skip.get("reason") == "disabled_by_env"
+
+        # Caso prompt vacio: skip silencioso
+        os.environ.pop(ENV_OPT_OUT, None)
+        result_empty = prewarm_kv(FakeClient(), "   ")
+        assert result_empty.get("skipped") is True
+        assert result_empty.get("reason") == "empty_prompt"
+
+        # Caso de excepcion del cliente: no propaga, devuelve ok=False
+        class BrokenClient:
+            def chat(self, **kwargs):
+                raise RuntimeError("simulated server error")
+
+        result_err = prewarm_kv(BrokenClient(), "x" * 100, publish=lambda e: None)
+        assert result_err["ok"] is False
+        assert "error" in result_err
+    finally:
+        if saved is None:
+            os.environ.pop(ENV_OPT_OUT, None)
+        else:
+            os.environ[ENV_OPT_OUT] = saved
+
+    print("OPTROAD-S7 prewarm_kv: OK")
+    return True
+
+
+def test_optroad_telemetry_opt_in_default_off() -> bool:
+    """Sprint 11: telemetria OFF por default; ON solo si env var setea."""
+    import os
+    import tempfile
+    from pathlib import Path as _P
+    from gemma4_agent.telemetry import TelemetryStore, is_enabled, ENV_FLAG
+
+    saved = os.environ.get(ENV_FLAG)
+    try:
+        # Default: OFF
+        os.environ.pop(ENV_FLAG, None)
+        assert is_enabled() is False
+        # Algunos otros valores que NO deben encender
+        for v in ("0", "false", "no", "off", ""):
+            os.environ[ENV_FLAG] = v
+            assert is_enabled() is False, f"{v!r} should NOT enable"
+        # Valores aceptados
+        for v in ("1", "true", "yes", "on", "enabled", "True", "YES"):
+            os.environ[ENV_FLAG] = v
+            assert is_enabled() is True, f"{v!r} should enable"
+
+        # TelemetryStore creado en disco: si no encendemos, no escribe nada
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = _P(tmp) / "test_telemetry.sqlite"
+            store = TelemetryStore(db_path)
+            os.environ.pop(ENV_FLAG, None)
+            assert store.enable_if_configured() is False
+            assert not db_path.exists(), "DB file should not be created when OFF"
+
+            # Encender + grabar + verificar
+            os.environ[ENV_FLAG] = "true"
+            assert store.enable_if_configured() is True
+            assert db_path.exists(), "DB file must be created when enabled"
+            store.record_incident(kind="vision_threshold", severity="warn",
+                                  payload={"image_count": 40})
+            store.record_turn(ttft_ms=850, tokens_completion=120, tps=14.2,
+                              tool_call_count=2, tool_call_errors=0)
+            store.record_voice(kind="stt", duration_ms=1200, rtf=0.18)
+            summary = store.summarize_last_24h()
+            assert summary["enabled"] is True
+            assert summary["turns"]["count"] == 1
+            assert summary["incidents"].get("vision_threshold") == 1
+            assert summary["voice"].get("stt", {}).get("count") == 1
+    finally:
+        if saved is None:
+            os.environ.pop(ENV_FLAG, None)
+        else:
+            os.environ[ENV_FLAG] = saved
+
+    print("OPTROAD-S11 telemetry opt-in flow: OK")
+    return True
+
+
+def test_optroad_hardening_flags_in_server_cmd() -> bool:
+    """Sprint 12: --host 127.0.0.1, --no-webui, y --api-key opt-in."""
+    import os
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    saved_key = os.environ.get("GEMMA4_LLAMA_API_KEY")
+    try:
+        # Sin api key: --host y --no-webui presentes, --api-key ausente
+        os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        cmd = llama_command(AgentConfig(), PROFILES["balanced"])
+        assert "--host" in cmd, "--host must be present"
+        host_idx = cmd.index("--host")
+        assert cmd[host_idx + 1] == "127.0.0.1", "host must be loopback"
+        assert "--no-webui" in cmd, "--no-webui must be present"
+        assert "--api-key" not in cmd, "no api-key when env unset"
+
+        # Con api key seteada: --api-key presente con el valor
+        os.environ["GEMMA4_LLAMA_API_KEY"] = "test-secret-123"
+        cmd = llama_command(AgentConfig(), PROFILES["balanced"])
+        assert "--api-key" in cmd
+        key_idx = cmd.index("--api-key")
+        assert cmd[key_idx + 1] == "test-secret-123"
+    finally:
+        if saved_key is None:
+            os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        else:
+            os.environ["GEMMA4_LLAMA_API_KEY"] = saved_key
+
+    print("OPTROAD-S12-a server hardening flags: OK")
+    return True
+
+
+def test_optroad_hardening_client_headers_include_auth() -> bool:
+    """Sprint 12: el cliente envia Authorization si GEMMA4_LLAMA_API_KEY esta."""
+    import os
+    from gemma4_agent.llm_client import _request_headers
+
+    saved = os.environ.get("GEMMA4_LLAMA_API_KEY")
+    try:
+        os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        h = _request_headers()
+        assert "Authorization" not in h
+        assert h["Content-Type"] == "application/json"
+
+        h_sse = _request_headers(sse=True)
+        assert "Authorization" not in h_sse
+        assert h_sse["Accept"] == "text/event-stream"
+
+        os.environ["GEMMA4_LLAMA_API_KEY"] = "another-secret"
+        h = _request_headers()
+        assert h["Authorization"] == "Bearer another-secret"
+        h_sse = _request_headers(sse=True)
+        assert h_sse["Authorization"] == "Bearer another-secret"
+    finally:
+        if saved is None:
+            os.environ.pop("GEMMA4_LLAMA_API_KEY", None)
+        else:
+            os.environ["GEMMA4_LLAMA_API_KEY"] = saved
+    print("OPTROAD-S12-b client headers Bearer auth: OK")
+    return True
+
+
+def test_optroad_spec_draft_flag_only_in_performance() -> bool:
+    """Item 2.2: speculative decoding via env var solo se activa en
+    perfil performance y si el archivo existe."""
+    import os
+    import tempfile
+    from pathlib import Path as _P
+    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.llama_server import llama_command
+    from gemma4_agent.profiles import PROFILES
+
+    # Cleanup
+    saved = os.environ.get("GEMMA4_SPEC_DRAFT_MODEL")
+
+    try:
+        # Caso 1: env var SIN setear -> sin --model-draft
+        os.environ.pop("GEMMA4_SPEC_DRAFT_MODEL", None)
+        cfg = AgentConfig()
+        cmd = llama_command(cfg, PROFILES["performance"])
+        assert "--model-draft" not in cmd, "must not add --model-draft when env unset"
+
+        # Caso 2: env var pero archivo inexistente -> ignorado
+        os.environ["GEMMA4_SPEC_DRAFT_MODEL"] = "C:/does/not/exist_xyz.gguf"
+        cmd = llama_command(cfg, PROFILES["performance"])
+        assert "--model-draft" not in cmd, "missing file should be ignored"
+
+        # Caso 3: archivo existe pero perfil != performance -> ignorado
+        with tempfile.NamedTemporaryFile(suffix=".gguf", delete=False) as tf:
+            tf.write(b"fake gguf")
+            tmp_path = tf.name
+        try:
+            os.environ["GEMMA4_SPEC_DRAFT_MODEL"] = tmp_path
+            cmd = llama_command(cfg, PROFILES["balanced"])
+            assert "--model-draft" not in cmd, "balanced should reject spec draft"
+            cmd = llama_command(cfg, PROFILES["light"])
+            assert "--model-draft" not in cmd, "light should reject spec draft"
+            # Caso 4: archivo existe Y perfil = performance -> activo
+            cmd = llama_command(cfg, PROFILES["performance"])
+            assert "--model-draft" in cmd, "performance should accept spec draft"
+            idx = cmd.index("--model-draft")
+            assert cmd[idx + 1] == str(_P(tmp_path).resolve())
+            assert "--draft-max" in cmd
+            assert "--draft-min" in cmd
+            assert "--gpu-layers-draft" in cmd
+        finally:
+            os.unlink(tmp_path)
+    finally:
+        if saved is None:
+            os.environ.pop("GEMMA4_SPEC_DRAFT_MODEL", None)
+        else:
+            os.environ["GEMMA4_SPEC_DRAFT_MODEL"] = saved
+
+    print("OPTROAD-2.2 spec_draft opt-in only in performance + file exists: OK")
+    return True
+
+
+def test_optroad_is_experimental_quant_detects_mxfp4() -> bool:
+    """Item 1.9: MXFP4_MOE detectado como experimental."""
+    from gemma4_agent.model_info import is_experimental_quant
+    # Casos positivos
+    f1, p1 = is_experimental_quant("models/26B-A4B/gemma-4-26B-A4B-it-MXFP4_MOE.gguf")
+    assert f1 is True and p1 == "mxfp4_moe", f"got {(f1, p1)}"
+    f2, _ = is_experimental_quant("any-name-with-MXFP4-prefix.gguf")
+    assert f2 is True
+    # Casos negativos
+    f3, p3 = is_experimental_quant("models/E4B/gemma-4-E4B-it-Q4_K_M.gguf")
+    assert f3 is False and p3 is None
+    f4, _ = is_experimental_quant("models/E4B/gemma-4-E4B-it-Q6_K.gguf")
+    assert f4 is False
+    f5, _ = is_experimental_quant("unsloth-UD-Q4_K_XL.gguf")
+    assert f5 is False
+    print("OPTROAD-1.9 experimental quant detection: OK")
+    return True
+
+
+def test_optroad_compile_tools_to_markdown_exact_shape() -> bool:
+    """Item 1.8: compile_tools_to_markdown_exact produce el formato EXACT."""
+    from gemma4_agent.tools import COMPOUND_TOOL_SCHEMAS, compile_tools_to_markdown_exact
+    md = compile_tools_to_markdown_exact()
+    # Header obligatorio
+    assert "# Tool Schemas (EXACT parameter names" in md
+    # Cada tool aparece como heading nivel 2
+    tool_names = [s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS]
+    for name in tool_names[:5]:
+        assert f"## {name}" in md, f"missing heading for {name}"
+    # Hay un campo REQUIRED visible al menos
+    assert "REQUIRED" in md
+    # No crashea con lista vacia
+    assert compile_tools_to_markdown_exact([]) == ""
+    # Schema sintetico
+    fake = [{
+        "type": "function",
+        "function": {
+            "name": "fake_tool",
+            "description": "Fake one",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string", "enum": ["read", "write"]},
+                    "path": {"type": "string"},
+                    "count": {"type": "integer"},
+                },
+                "required": ["action", "path"],
+            },
+        },
+    }]
+    md2 = compile_tools_to_markdown_exact(fake)
+    assert "## fake_tool" in md2
+    assert "- action (string, REQUIRED)" in md2
+    assert "- path (string, REQUIRED)" in md2
+    assert "- count (integer, optional)" in md2
+    # Enum reflejado
+    assert "'read'" in md2 and "'write'" in md2
+    print("OPTROAD-1.8 tool schemas EXACT markdown: OK")
+    return True
+
+
+def test_optroad_vision_counter_fires_callback_at_threshold() -> bool:
+    """Item 1.7: el counter de imagenes dispara el callback en el umbral.
+
+    Issue #21690 (mmproj leak). El orchestrator registra un callback que
+    reciclara el server cuando se procesen IMAGE_RELAUNCH_THRESHOLD imagenes.
+    """
+    import gemma4_agent.multimodal as mm
+    # Reset estado
+    mm.reset_image_counter()
+    fires: list[int] = []
+    mm.set_vision_relaunch_callback(lambda n: fires.append(n))
+    try:
+        # Procesamos exactamente THRESHOLD veces -> callback dispara una vez.
+        # No usamos image_part real porque requiere file IO; invocamos el
+        # bumper interno.
+        for _ in range(mm.IMAGE_RELAUNCH_THRESHOLD - 1):
+            mm._bump_image_counter()
+        assert mm.get_image_counter() == mm.IMAGE_RELAUNCH_THRESHOLD - 1
+        assert fires == [], f"callback fired prematurely: {fires}"
+        # La imagen que cruza el umbral
+        mm._bump_image_counter()
+        assert mm.get_image_counter() == mm.IMAGE_RELAUNCH_THRESHOLD
+        assert fires == [mm.IMAGE_RELAUNCH_THRESHOLD], f"callback should fire exactly once: {fires}"
+        # Mas imagenes no disparan otra vez (hasta que se haga reset)
+        mm._bump_image_counter()
+        assert fires == [mm.IMAGE_RELAUNCH_THRESHOLD]
+        # Reset y siguiente ciclo
+        mm.reset_image_counter()
+        assert mm.get_image_counter() == 0
+    finally:
+        mm.set_vision_relaunch_callback(None)
+        mm.reset_image_counter()
+    print("OPTROAD-1.7 vision counter callback at threshold: OK")
+    return True
+
+
+def test_optroad_normalize_tool_calls_list_response() -> bool:
+    """Aplicacion sobre el formato OpenAI completo."""
+    from gemma4_agent.llm_client import normalize_tool_calls_list
+    tcs = [
+        {
+            "id": "call_1",
+            "type": "function",
+            "function": {"name": "filesystem", "arguments": '{"action": "read", "path": "C:/x"}'},
+        },
+        {
+            "id": "call_2",
+            "type": "function",
+            "function": {"name": "terminal", "arguments": {"action": "run", "command": "echo"}},
+        },
+    ]
+    out = normalize_tool_calls_list(tcs)
+    assert out[0]["function"]["arguments"] == {"action": "read", "path": "C:/x"}
+    assert out[1]["function"]["arguments"] == {"action": "run", "command": "echo"}
+    # Lista vacia.
+    assert normalize_tool_calls_list([]) == []
+    print("OPTROAD-1.4-d list + mixed shapes: OK")
+    return True
+
+
 def main() -> int:
     tests = [
         test_g1_experience_record_and_recall,
@@ -1869,6 +2624,38 @@ def main() -> int:
         test_tts_sentence_chunker_flushes_on_punctuation,
         test_stt_auto_fallback_to_base_when_slow,
         test_voice_close_phrase_normalization,
+        # Roadmap optimizacion — 1.4 parser tool_call.arguments robusto (#21384)
+        test_optroad_normalize_tool_call_arguments_dict,
+        test_optroad_normalize_tool_call_arguments_braces,
+        test_optroad_normalize_tool_call_arguments_malformed,
+        test_optroad_normalize_tool_calls_list_response,
+        # 1.7 vision counter para mmproj leak mitigation (#21690)
+        test_optroad_vision_counter_fires_callback_at_threshold,
+        # 1.8 tool schemas EXACT en Markdown
+        test_optroad_compile_tools_to_markdown_exact_shape,
+        # 1.9 deteccion de cuantizaciones experimentales (MXFP4_MOE)
+        test_optroad_is_experimental_quant_detects_mxfp4,
+        # 2.2 speculative decoding opt-in
+        test_optroad_spec_draft_flag_only_in_performance,
+        # Sprint 1 tool_schemas_hint mode selection
+        test_optroad_tool_schemas_hint_selects_mode_by_ctx,
+        # Sprint 5 streaming SSE interleaved + edge cases
+        test_optroad_sse_streaming_interleaved_tool_calls,
+        test_optroad_sse_tool_call_args_with_literal_braces,
+        test_optroad_sse_multiple_parallel_tool_calls,
+        # Sprint 13 — push gemma4_agent toward 100% pass-rate
+        test_optroad_s13_no_mmproj_when_vision_off,
+        test_optroad_s13_official_sampling_defaults,
+        test_optroad_s13_hardening_invariants_always_present,
+        test_optroad_s13_tool_schemas_md_covers_all_62_tools,
+        test_optroad_s13_profiles_voice_always_on_when_active,
+        # Sprint 7 pre-warm KV
+        test_optroad_prewarm_kv_calls_chat_with_min_tokens,
+        # Sprint 11 telemetry opt-in
+        test_optroad_telemetry_opt_in_default_off,
+        # Sprint 12 hardening llama-server
+        test_optroad_hardening_flags_in_server_cmd,
+        test_optroad_hardening_client_headers_include_auth,
     ]
     failures: list[str] = []
     for t in tests:

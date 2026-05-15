@@ -568,6 +568,61 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         })
         return {"status": "accepted"}
 
+    @app.post("/agent/recycle_server")
+    def agent_recycle_server() -> Any:
+        """Sprint 6 / item 1.7 — recycle solo llama-server, sin tocar agent.
+
+        Util para mitigar mmproj leak (#21690) sin perder estado del agente.
+        Diferencia con /agent/restart: este solo mata+relanza el subprocess
+        del LLM. La sesion, memory, knowledge, etc., quedan intactas.
+
+        Devuelve 202 accepted; el recycle corre sync (es rapido, 4-10s).
+        Publica boot_stage 'vision_relaunch' al BUS para que la UI muestre
+        progreso.
+        """
+        from .llama_server import LlamaServerManager
+        from .profiles import get_active_profile
+
+        profile = get_active_profile()
+        if not profile.server_running:
+            return {"status": "skipped", "reason": "profile has server_running=False"}
+
+        manager = LlamaServerManager()
+        # recycle_for_vision_leak requiere que el manager conozca el perfil
+        # actual. Como crear LlamaServerManager nuevo no lo "adopta", forzamos
+        # restart sobre el perfil activo si hay server escuchando.
+        try:
+            result = manager.restart(profile)
+        except Exception as exc:
+            BUS.publish({
+                "type": "activity",
+                "entry": {
+                    "id": uuid.uuid4().hex[:8],
+                    "src": "SYSTEM",
+                    "msg": f"recycle_server failed: {exc}",
+                    "ts": _ts_now(),
+                },
+            })
+            return {"status": "error", "error": str(exc)}, 500
+
+        # Reset del counter de imagenes para empezar siguiente ciclo limpio.
+        try:
+            from .multimodal import reset_image_counter
+            reset_image_counter()
+        except Exception:
+            pass
+
+        BUS.publish({
+            "type": "activity",
+            "entry": {
+                "id": uuid.uuid4().hex[:8],
+                "src": "SYSTEM",
+                "msg": f"llama-server recycled (mmproj leak mitigation #21690) · {result}",
+                "ts": _ts_now(),
+            },
+        })
+        return {"status": "accepted", "result": result}
+
     @app.get("/agent/status")
     def agent_status() -> Any:
         """Lets the UI gate the chat input until the agent + llama-server
