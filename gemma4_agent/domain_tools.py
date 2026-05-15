@@ -1227,7 +1227,10 @@ def _accessibility_launch(exe: str, state: AgentState, *, kind: str) -> dict[str
 
 
 def _accessibility_kill(exe: str, state: AgentState, *, kind: str) -> dict[str, Any]:
-    proc = subprocess.run(["taskkill", "/F", "/IM", exe], capture_output=True, text=True, timeout=15)
+    # timeout 15 -> 5s: taskkill normalmente termina en <1s; si tarda 15s
+    # algo esta mal (snapshot del sistema corrupto, AV interceptando) y
+    # mejor reportar el error rapido que bloquear al caller.
+    proc = subprocess.run(["taskkill", "/F", "/IM", exe], capture_output=True, text=True, timeout=5)
     killed = proc.returncode == 0
     # Mark any matching resource as cleaned.
     for res in _resources_by_kind(state, f"accessibility_{kind}", include_closed=False):

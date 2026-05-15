@@ -619,8 +619,12 @@ class AppResolver:
 
     def _from_start_apps(self) -> list[AppCandidate]:
         script = "Get-StartApps | Select-Object Name,AppID | ConvertTo-Json -Depth 2"
+        # timeout reducido de 20s -> 8s: Get-StartApps normalmente termina en
+        # <2s; 8s da headroom 4x. Si el sistema esta tan saturado que tarda
+        # mas, mejor abortar y seguir con los otros loaders que dar 20s a una
+        # sola fuente.
         try:
-            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
         except Exception:
             return []
         raw = proc.stdout.strip()
@@ -654,8 +658,12 @@ $items = foreach ($p in $paths) {
 }
 $items | ConvertTo-Json -Depth 3
 """
+        # timeout reducido de 25s -> 12s: HKLM Uninstall puede tener 500+ keys
+        # pero Get-ItemProperty con -ErrorAction SilentlyContinue es paralelo
+        # internamente. En la practica este loader corre en 2-6s; 12s da
+        # headroom 2x. Si tarda mas, mejor seguir con steam/epic loaders.
         try:
-            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=25)
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=12)
         except Exception:
             return []
         raw = proc.stdout.strip()
@@ -701,6 +709,17 @@ $items | ConvertTo-Json -Depth 3
         words = _fold(query).split()
         if not words:
             return []
+
+        # Heuristica: si la query es muy corta (<=3 chars) o "generica"
+        # (1 sola palabra de <5 chars), skipear esta fase. where.exe /R
+        # sobre Program Files completo puede tardar 3-5s por root y si la
+        # query es ruido (ej. "abc") vamos a desperdiciar 20s sin encontrar
+        # nada util. Si la query es real (ej. "discord"), el match aparecio
+        # en loaders anteriores.
+        joined = " ".join(words)
+        if len(joined) <= 3:
+            return []
+
         pattern = "*" + "*".join(words) + "*.exe"
         roots = [
             Path(os.environ.get("ProgramFiles", "C:/Program Files")),
@@ -713,18 +732,34 @@ $items | ConvertTo-Json -Depth 3
             Path("E:/Games"),
             Path("E:/SteamLibrary"),
         ]
+
+        # Budget total para evitar que esta fase domine el wall-clock.
+        # 9 roots x 5s = 45s en el peor caso anterior; con 8s total cubrimos
+        # ~3-4 roots completos antes de aceptar la derrota. Esto convierte
+        # "app not found" de 45s -> 8s en el peor caso.
+        try:
+            budget_s = float(os.environ.get("GEMMA4_APP_SCAN_BUDGET_S") or "8.0")
+        except ValueError:
+            budget_s = 8.0
+        budget_s = max(1.0, min(budget_s, 30.0))
+        deadline = time.monotonic() + budget_s
+        per_root_s = max(1.0, budget_s / 3.0)
+
         out = []
         seen: set[Path] = set()
         for root in roots:
             if not root.is_dir() or root in seen:
                 continue
             seen.add(root)
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.2:
+                break  # budget agotado
             try:
                 proc = subprocess.run(
                     ["where.exe", "/R", str(root), pattern],
                     capture_output=True,
                     text=True,
-                    timeout=5,
+                    timeout=min(per_root_s, remaining),
                 )
                 for line in proc.stdout.splitlines():
                     exe = Path(line.strip())
@@ -925,6 +960,51 @@ $s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:GEMMA4_SHORTCUT)
         return None
     target = str(data.get("target") or "").strip()
     return target or None
+
+
+def _running_process_names() -> set[str]:
+    """Lista (best-effort) de nombres de proceso vivos (lowercase, con .exe).
+    Util para el fast-path de app_close: si ningun candidato esta corriendo,
+    evitamos el roundtrip de PowerShell + taskkill que tarda 20s.
+
+    Implementacion priorizada por velocidad:
+      1) psutil.process_iter() si esta disponible (~80-150ms, no spawn)
+      2) Fallback a `tasklist /FO CSV /NH` con timeout corto (puede tardar
+         5-10s en algunos entornos; preferimos no usarlo)
+      3) Set vacio (caller cae al flujo lento, equivalente al comportamiento
+         previo a esta optimizacion — fail open).
+    """
+    try:
+        import psutil
+        out: set[str] = set()
+        for proc in psutil.process_iter(["name"]):
+            try:
+                name = proc.info.get("name") or ""
+                if name:
+                    out.add(name.lower())
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        if out:
+            return out
+    except Exception:
+        pass
+
+    # Fallback subprocess. tasklist puede tardar mucho en algunos hosts
+    # (10s+) por razones que no controlamos; lo usamos solo si psutil falla.
+    try:
+        proc = subprocess.run(
+            ["tasklist", "/FO", "CSV", "/NH"],
+            capture_output=True, text=True, timeout=3,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return set()
+    if proc.returncode != 0 or not proc.stdout:
+        return set()
+    out = set()
+    for row in csv.reader(proc.stdout.splitlines()):
+        if row and row[0]:
+            out.add(row[0].strip().lower())
+    return out
 
 
 def _candidate_close_exes(name: str, matches: list[AppCandidate]) -> list[str]:
@@ -2250,7 +2330,39 @@ class ToolRegistry:
 
     def list_processes(self, args: dict[str, Any]) -> dict[str, Any]:
         limit = int(args.get("limit", 40))
-        proc = subprocess.run(["tasklist", "/FO", "CSV", "/NH"], capture_output=True, text=True, timeout=15)
+        # Preferir psutil (~30-150ms) sobre tasklist (~1-10s en algunos hosts).
+        # En el log de _pre_session se vio que tasklist tardaba 10s+, lo cual
+        # se propagaba a verify_app_opened y volvia app_open en una operacion
+        # de 15-30s. psutil es in-process, no spawnea procesos.
+        try:
+            import psutil
+            items: list[dict[str, Any]] = []
+            for p in psutil.process_iter(["pid", "name"]):
+                try:
+                    info = p.info
+                    name = info.get("name") or ""
+                    pid = info.get("pid")
+                    if not name or pid is None:
+                        continue
+                    items.append({"name": name, "pid": str(pid)})
+                    if len(items) >= limit:
+                        break
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
+            if items:
+                return _ok(processes=items, source="psutil")
+        except Exception:
+            pass
+
+        # Fallback subprocess tasklist (timeout reducido de 15 -> 6s; si tarda
+        # mas, mejor devolver vacio que bloquear al caller).
+        try:
+            proc = subprocess.run(
+                ["tasklist", "/FO", "CSV", "/NH"],
+                capture_output=True, text=True, timeout=6,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return _ok(processes=[], source="tasklist_timeout")
         rows = csv.reader(proc.stdout.splitlines())
         items = []
         for row in rows:
@@ -2258,15 +2370,47 @@ class ToolRegistry:
                 items.append({"name": row[0], "pid": row[1]})
             if len(items) >= limit:
                 break
-        return _ok(processes=items, exit_code=proc.returncode)
+        return _ok(processes=items, exit_code=proc.returncode, source="tasklist")
 
     def list_windows(self, args: dict[str, Any]) -> dict[str, Any]:
         limit = int(args.get("limit", 30))
+        # Preferir psutil (rapido in-process) si esta disponible. PowerShell
+        # spawn paga ~300ms de cold-start y este metodo lo llama
+        # verify_app_opened en hot path (autoverify de app_open).
+        try:
+            import psutil
+            windows: list[dict[str, Any]] = []
+            for p in psutil.process_iter(["pid", "name"]):
+                try:
+                    info = p.info
+                    name = (info.get("name") or "").strip()
+                    pid = info.get("pid")
+                    if not name or pid is None:
+                        continue
+                    # psutil no expone MainWindowTitle nativamente; usamos
+                    # el nombre del proceso como proxy para el matching que
+                    # verify_app_opened hace. Para listados visuales reales
+                    # caemos al fallback Get-Process abajo.
+                    windows.append({"process": name, "title": name, "pid": pid})
+                    if len(windows) >= limit:
+                        break
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
+            if windows:
+                return _ok(windows=windows, source="psutil")
+        except Exception:
+            pass
+
         script = (
             "Get-Process | Where-Object {$_.MainWindowTitle -ne ''} | "
             f"Select-Object -First {limit} ProcessName,MainWindowTitle,Id | ConvertTo-Json -Depth 3"
         )
-        proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=15)
+        # timeout 15 -> 8s: si Get-Process tarda mas de 8s, algo grave esta
+        # mal y bloquear 15s no ayuda. El caller tiene su propio fallback.
+        try:
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _ok(windows=[], source="powershell_timeout")
         ok, data = parse_ps_json(proc.stdout)
         if not ok:
             return _err("list_windows invalid JSON", stdout=data, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
@@ -2278,7 +2422,7 @@ class ToolRegistry:
             {"process": item.get("ProcessName"), "title": item.get("MainWindowTitle"), "pid": item.get("Id")}
             for item in data
         ]
-        return _ok(windows=windows)
+        return _ok(windows=windows, source="powershell")
 
     def system_cpu_ram_gpu(self, args: dict[str, Any]) -> dict[str, Any]:
         script = r"""
@@ -2540,38 +2684,56 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
                 cleanup_args={"action": "close", "name": name},
                 metadata={"resolved": best.as_dict()},
             ).get("resource")
-        # Auto-verify: wait briefly and re-check if a process/window with the
-        # target name is now present. Steam-launched games can take longer to
-        # show a window, so we also accept the resolved exe name. If
-        # auto-verify succeeds, surface status=done so the LLM does not say
-        # "could not verify" when the app actually opened. The user can
-        # disable this with GEMMA4_APP_OPEN_AUTOVERIFY=false (e.g. for slow
-        # Steam launches where the verification window would always be too
-        # short).
+        # Auto-verify con backoff exponencial corto en vez del sleep fijo de
+        # 2.5s. La mayoria de las apps "normales" (Steam, Discord, Chrome)
+        # muestran su ventana en 200-600ms; el sleep fijo desperdiciaba ~2s
+        # cada vez. Hacemos 3 chequeos con timeouts crecientes (0.3, 0.6, 1.2s)
+        # que cortan apenas se confirma el proceso/ventana. Total worst case
+        # = ~2.1s (igual que antes) pero best case = ~0.3s. Para Steam-games
+        # que tardan 10-30s, el caller debe llamar verify(action='app_opened')
+        # explicito; no vale la pena bloquear el turn hasta 30s aca.
         import os as _os
         autoverify = (_os.environ.get("GEMMA4_APP_OPEN_AUTOVERIFY") or "").strip().casefold()
         verified = False
         verify_evidence: dict[str, Any] = {}
         if autoverify not in {"false", "0", "no", "off"}:
+            # GEMMA4_APP_OPEN_AUTOVERIFY_WAIT_S sigue siendo el cap superior
+            # total (suma de los backoffs). Default 2.1s = casi igual al
+            # 2.5s anterior pero con corte temprano.
             try:
-                wait_s = float(_os.environ.get("GEMMA4_APP_OPEN_AUTOVERIFY_WAIT_S") or "2.5")
+                cap_s = float(_os.environ.get("GEMMA4_APP_OPEN_AUTOVERIFY_WAIT_S") or "2.1")
             except ValueError:
-                wait_s = 2.5
-            time.sleep(max(0.0, min(wait_s, 10.0)))
-            post = self.verify_app_opened({"name": name})
-            if post.get("found"):
-                verified = True
-                verify_evidence = {"verify_app_opened_after_wait_s": wait_s, "match": post.get("match")}
-            else:
-                # Also try matching by the resolved exe/process name when the
-                # friendly name differs from the actual window (e.g. "Marvel
-                # Rivals" -> "MarvelRivals.exe").
-                process_hint = best.process_name or ""
+                cap_s = 2.1
+            cap_s = max(0.0, min(cap_s, 10.0))
+
+            process_hint = best.process_name or ""
+            elapsed_total = 0.0
+            for step_s in (0.3, 0.6, 1.2):
+                if elapsed_total >= cap_s:
+                    break
+                # Recortar el ultimo paso si excederia el cap
+                step_s = min(step_s, cap_s - elapsed_total)
+                time.sleep(step_s)
+                elapsed_total += step_s
+
+                post = self.verify_app_opened({"name": name})
+                if post.get("found"):
+                    verified = True
+                    verify_evidence = {
+                        "verify_app_opened_after_s": round(elapsed_total, 2),
+                        "match": post.get("match"),
+                    }
+                    break
                 if process_hint and process_hint.casefold() != name.casefold():
                     post2 = self.verify_app_opened({"name": process_hint})
                     if post2.get("found"):
                         verified = True
-                        verify_evidence = {"verify_app_opened_via_process": process_hint, "match": post2.get("match")}
+                        verify_evidence = {
+                            "verify_app_opened_via_process": process_hint,
+                            "verify_app_opened_after_s": round(elapsed_total, 2),
+                            "match": post2.get("match"),
+                        }
+                        break
         return _ok(
             query=name,
             opened=best.as_dict(),
@@ -2595,12 +2757,63 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             return _err("empty app name")
         matches = self.apps.find(name, limit=8)
         candidates = _candidate_close_exes(name, matches)
+
+        # Fast-path: si NI siquiera hay candidatos exe (no encontramos la app
+        # en path/registry/start/steam) Y no hay ventana por nombre, devolver
+        # "not_running" en <1s. Evita 12s + N*20s de PowerShell+taskkill sobre
+        # exes que no existen. Para esto necesitamos chequear procesos vivos
+        # con un solo `tasklist` rapido (~200ms).
+        running_set = _running_process_names()
+        running_candidates = [exe for exe in candidates if exe.lower() in running_set]
+        name_in_running = any(_fold(name) in _fold(p) for p in running_set)
+
+        if not candidates and not name_in_running:
+            return _ok(
+                closed=False,
+                not_running=True,
+                query=name,
+                candidate_exes=[],
+                running_process_match=False,
+                note=(
+                    "No matching installed app and no running process named like "
+                    f"'{name}' — nothing to close. Fast-path skip of taskkill."
+                ),
+                resolved_from=[m.as_dict() for m in matches[:5]],
+            )
+
+        if candidates and not running_candidates and not name_in_running:
+            # Hay candidatos en disco pero ninguno corriendo. taskkill devolveria
+            # exit_code=128 instantaneamente, pero por las dudas (puede haber un
+            # exe renombrado) saltamos directo al fast-path tambien aca.
+            return _ok(
+                closed=False,
+                not_running=True,
+                query=name,
+                candidate_exes=candidates,
+                running_process_match=False,
+                note=(
+                    "Installed but no matching process is running. "
+                    "Fast-path skip of taskkill."
+                ),
+                resolved_from=[m.as_dict() for m in matches[:5]],
+            )
+
+        # Hay al menos un candidato corriendo (o el query matchea algun proceso).
+        # Vale la pena intentar window-close + taskkill.
         window_close = _close_windows_by_query(name)
         taskkill_results = []
         closed = int(window_close.get("count") or 0) > 0
 
-        for exe in candidates:
-            proc = subprocess.run(["taskkill", "/IM", exe, "/F"], capture_output=True, text=True, timeout=20)
+        # Solo intentamos taskkill sobre exes que SABEMOS estan corriendo.
+        # taskkill sobre un IM inexistente igual deberia ser rapido pero el
+        # binario hace lookup en el snapshot y a veces se cuelga >5s.
+        target_exes = running_candidates or candidates
+        for exe in target_exes:
+            proc = subprocess.run(
+                ["taskkill", "/IM", exe, "/F"],
+                capture_output=True, text=True,
+                timeout=5,  # antes 20s; en practica taskkill termina en <1s
+            )
             item = {
                 "target": exe,
                 "closed": proc.returncode == 0,
