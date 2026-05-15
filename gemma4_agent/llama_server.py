@@ -294,6 +294,12 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
             mmproj_path = Path(mmproj_env).expanduser() if mmproj_env else config.mmproj_path
             if mmproj_path.is_file():
                 cmd.extend(["--mmproj", str(mmproj_path.resolve())])
+                # --no-mmproj-offload cuando VRAM efectiva es tight (perfiles
+                # con --no-mmap suelen ser los de 6 GB o menos). Mitiga la
+                # interaccion con issue #19980 (--fit no contabiliza VRAM del
+                # mmproj). Item I1 #8 / Bloque E1 del informe.
+                if profile.name in {"balanced", "light"}:
+                    cmd.append("--no-mmproj-offload")
             else:
                 logger.warning(
                     "mmproj path %s does not exist; loading server without vision",
