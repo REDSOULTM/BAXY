@@ -799,6 +799,15 @@ class Gemma4Agent:
         loop_state = LoopState()
         loop_aborted = False  # se setea True si detectamos critical
 
+        # Structural per-tool verifier (TIER 1 #2). Cada tool ejecutada produce
+        # un VerifierOutcome (confirmed True/False/None) que se acumula y al
+        # final del turn se rinde como footer honesto en el reply. Si el
+        # outcome trae evidence_keys, los inyecta al loop_state para resetear
+        # warning_count en progreso real (integration con TIER 1 #1).
+        from . import verifiers as _verifiers_registry  # noqa: F401  registra via decorators
+        from .verify_core import verify as _verify, summarize_verifiers, VerifierOutcome
+        verifier_outcomes: list[VerifierOutcome] = []
+
         for _turn in range(self.config.max_agent_turns):
             _progress(
                 progress,
@@ -874,6 +883,17 @@ class Gemma4Agent:
                 assistant_content = self._guard_unverified_final(assistant_content, events)
                 assistant_content = self._guard_phrase_confirm(assistant_content)
                 assistant_content = self._guard_plan_status(assistant_content)
+                # TIER 1 #2: footer estructural honest del verifier per-tool.
+                # Solo aparece si hay failed o unverifiable; silencioso si todo OK.
+                verifier_footer = summarize_verifiers(verifier_outcomes)
+                if verifier_footer:
+                    assistant_content = assistant_content + verifier_footer
+                    self.trace.event(
+                        turn_id, "verifier_footer",
+                        confirmed=sum(1 for o in verifier_outcomes if o.confirmed is True),
+                        failed=sum(1 for o in verifier_outcomes if o.confirmed is False),
+                        unverifiable=sum(1 for o in verifier_outcomes if o.confirmed is None),
+                    )
                 mission = evaluate_mission(events, assistant_content, plan)
                 self.history.append({"role": "assistant", "content": assistant_content})
                 # Subset summary: which sent tools were actually used vs idle.
@@ -980,6 +1000,30 @@ class Gemma4Agent:
                 err_str = str(result.get("error") or "")
                 tool_exists = not err_str.startswith("unknown tool:")
                 loop_state.record(name, args, exists=tool_exists, result=result)
+
+                # Verifier estructural per-tool (TIER 1 #2): mide el efecto real
+                # post-ejecucion. confirmed=True/False/None. Si trae
+                # evidence_keys (e.g. "app:Steam") los inyectamos al loop_state
+                # para que reset el warning_count en progreso real.
+                v_outcome = _verify(name, args, result)
+                verifier_outcomes.append(v_outcome)
+                self.trace.event(
+                    turn_id, "verifier",
+                    tool=name,
+                    confirmed=v_outcome.confirmed,
+                    reason=v_outcome.reason,
+                    evidence_keys=v_outcome.evidence_keys,
+                )
+                if v_outcome.confirmed is True:
+                    for ek in (v_outcome.evidence_keys or []):
+                        loop_state.record_evidence(ek)
+                # Si la tool reporto ok=True pero el verifier dice confirmed=False,
+                # algo es inconsistente — vale la pena loggearlo para debug.
+                if v_outcome.confirmed is False and result.get("ok"):
+                    self.trace.event(
+                        turn_id, "verifier_disagrees",
+                        tool=name, reason=v_outcome.reason,
+                    )
                 if not result.get("ok"):
                     status_norm = str(result.get("status") or "").casefold()
                     completion = str(result.get("completion_status") or "").casefold()
