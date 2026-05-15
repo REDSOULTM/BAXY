@@ -90,6 +90,11 @@ class AgentRunner:
         # long comment in _build_agent. The agent_status endpoint and the
         # WS handshake read this so the UI gate is correct everywhere.
         self._warmed_up: bool = False
+        # Sprint 4: referencia persistente al LlamaServerManager para que
+        # el callback de vision_relaunch (item 1.7) pueda reciclar el
+        # server sin tener que recrear el manager (que perderia la
+        # referencia al subprocess vivo).
+        self._server_manager: Any = None
 
     def is_warmed_up(self) -> bool:
         return self._warmed_up and self._agent is not None
@@ -199,6 +204,7 @@ class AgentRunner:
         try:
             manager = LlamaServerManager()
             result = manager.start(profile, wait_health=True, timeout_s=120)
+            self._server_manager = manager
         except Exception as exc:
             _publish_activity("SYSTEM", f"llama-server boot crashed · {exc}")
             emit_stage(BUS.publish, STAGE_SPAWN,
@@ -210,6 +216,31 @@ class AgentRunner:
             _publish_activity("SYSTEM", f"llama-server up · {result}")
             emit_stage(BUS.publish, STAGE_HEALTH,
                        f"llama-server healthy · {result}", progress=100.0)
+            # Sprint 4: registrar callback de vision_relaunch (item 1.7).
+            # Cuando multimodal._bump_image_counter cruce IMAGE_RELAUNCH_THRESHOLD,
+            # reciclamos el server para mitigar mmproj leak (#21690).
+            # Solo registramos si tenemos manager vivo Y el perfil tiene
+            # vision_enabled. Para perfiles sin vision el counter sube pero
+            # el callback es no-op (lo verifica recycle_for_vision_leak).
+            try:
+                from .multimodal import set_vision_relaunch_callback
+                _runner_ref = self  # closure capture explicito
+
+                def _on_vision_threshold(image_count: int) -> None:
+                    mgr = _runner_ref._server_manager
+                    if mgr is None:
+                        return
+                    try:
+                        mgr.recycle_for_vision_leak()
+                    except Exception as exc:  # noqa: BLE001
+                        _publish_activity(
+                            "SYSTEM",
+                            f"vision_relaunch failed after {image_count} images: {exc}",
+                        )
+
+                set_vision_relaunch_callback(_on_vision_threshold)
+            except Exception as exc:  # noqa: BLE001
+                _publish_activity("SYSTEM", f"vision_relaunch wiring failed: {exc}")
         elif result == "missing_files":
             _publish_activity("SYSTEM", "llama-server boot failed · missing exe or model")
             emit_stage(BUS.publish, STAGE_SPAWN,
