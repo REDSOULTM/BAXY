@@ -427,6 +427,23 @@ def build_parser() -> argparse.ArgumentParser:
     shortcut.add_argument("--path", default=None)
     shortcut.add_argument("--mode", default=None)
 
+    mcp = sub.add_parser(
+        "mcp",
+        help="Exponer compound tools como MCP server (stdio o HTTP). Ver docs/MCP.md.",
+    )
+    mcp.add_argument(
+        "--port", type=int, default=None,
+        help="Si se setea, corre en HTTP en este puerto. Default: stdio.",
+    )
+    mcp.add_argument(
+        "--host", type=str, default="127.0.0.1",
+        help="HTTP bind host. Default 127.0.0.1 (solo localhost).",
+    )
+    mcp.add_argument(
+        "--log-level", type=str, default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+    )
+
     return parser
 
 
@@ -449,6 +466,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         return open_path(args)
     if args.command == "shortcut":
         return create_desktop_shortcut(args)
+    if args.command == "mcp":
+        # TIER 2 #7: MCP server exposure. Delegamos al modulo directo
+        # para evitar duplicar logica de stdio/HTTP/logging.
+        from .mcp_server import main as mcp_main
+        mcp_argv: list[str] = []
+        if args.port is not None:
+            mcp_argv.extend(["--port", str(args.port)])
+        if args.host:
+            mcp_argv.extend(["--host", args.host])
+        if args.log_level:
+            mcp_argv.extend(["--log-level", args.log_level])
+        return mcp_main(mcp_argv)
     return interactive_menu(args)
 
 
