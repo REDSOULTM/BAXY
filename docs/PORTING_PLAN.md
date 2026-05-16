@@ -3,7 +3,22 @@
 > **Branch**: `PortandoLoMejor` (creada desde `develop@23fd70c`)
 > **Tag de rollback**: `backup/pre-portandolomejor-20260515`
 > **Fecha**: 2026-05-15
-> **Estado**: plan; nada portado todavía.
+
+## Estado final del porting (cierre de la branch)
+
+| # | Patrón | Estado | Commit |
+|---|---|---|---|
+| 1 | Loop detection estructural | ✅ DONE | `a82a034` |
+| 2 | Verifier por-tool (12 tools) | ✅ DONE | `08e05cc` |
+| 3 | Microagents (4 eager) | ✅ DONE | `7fc677c` |
+| 4 | Skills system (10 curados, 1 critical eager) | ✅ DONE | `5b30322` + `01c62a0` |
+| 5 | Mission Goal verifier (Voyager pattern) | ✅ DONE | `370840a` |
+| 6 | StateGraph + checkpoints | ⏭️ SKIP | n/a — loop actual funciona; sin payoff inmediato; user decidió skip |
+| 7 | MCP server exposure | ✅ DONE | `7327628` |
+
+Tests totales sumando todos los suites de los TIER portados: **177**
+(loop_detection 19, verifiers 45, microagents 28, skills 26, mission_goal
+45, mcp_server 14). Todos pasan.
 
 ## TL;DR
 
