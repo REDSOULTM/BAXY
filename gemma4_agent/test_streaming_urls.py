@@ -112,11 +112,18 @@ class TestDisneyOpensHomeNotBrokenSearch(unittest.TestCase):
                 _exec, state,
             )
         steps = r.get("web_auto_play_info", {}).get("steps", [])
-        # El flow debe incluir keyboard shortcut "s" + type "Loki" + Enter.
+        # Post 2026-05-16: el flow YA NO presiona Enter despues del typed_query
+        # (Disney+ filtra mientras tipeas, Enter va a otro lado). Ahora espera
+        # los resultados y usa Tab navigation.
         self.assertIn("pressed_search_shortcut:s", steps)
         self.assertIn("typed_query:Loki", steps)
-        self.assertIn("submitted_search", steps)
-        self.assertTrue(r["played"])
+        self.assertIn("waited_for_search_results", steps)
+        # Tab nav al primer resultado.
+        tab_step = next((s for s in steps if s.startswith("tabbed_to_first_result")), None)
+        self.assertIsNotNone(tab_step, f"expected tabbed_to_first_result step, got: {steps}")
+        # attempted_play=True, played=False (best-effort).
+        self.assertTrue(r["attempted_play"])
+        self.assertFalse(r["played"])
 
     def test_netflix_does_not_use_shortcut(self):
         # Netflix soporta URL con query, NO debe usar GUI shortcut.

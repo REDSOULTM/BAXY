@@ -5973,38 +5973,36 @@ def _streaming_web_auto_play(
     search_shortcut: str | None = None,
     needs_gui_search: bool = False,
 ) -> dict[str, Any]:
-    """Para web streaming (Netflix/Disney+/Max/Prime): tras abrir la
-    URL, navegar profile picker -> abrir busqueda (si needs_gui_search)
-    -> click primer titulo -> click Reproducir.
+    """Para web streaming: abre la pagina + opcionalmente activa search +
+    intenta navigation por teclado para llegar al primer resultado.
 
-    Flujo:
-      1. Wait wait_seconds para que el browser cargue la pagina.
-      2. Si hay profile picker: gui.click_text con profile_name.
-      3. Si needs_gui_search:
-           a. Press search_shortcut (e.g. "s" para Disney, "/" para Netflix/Max).
-           b. Type query.
-           c. Press Enter para confirmar busqueda.
-           d. Wait carga de resultados.
-      4. gui.click_text del query (primer titulo).
-      5. Wait detail page.
-      6. gui.click_text "Reproducir" / "Play" / etc.
+    DESIGN PRAGMATICO (2026-05-16): el approach anterior (OCR + click_text
+    sobre la grilla de resultados) fallaba el 90% del tiempo porque los
+    pósters son IMAGENES sin texto OCR-able. Cambio a estrategia de
+    keyboard navigation universal:
+      1. Wait carga.
+      2. Si needs_gui_search: activate search via shortcut + type + Enter.
+      3. Wait resultados.
+      4. Press Tab varias veces (3-5) para mover focus a primer titulo.
+      5. Press Enter para entrar.
+      6. Wait detail.
+      7. Press Tab algunas veces para llegar al Play button + Enter.
+
+    Esto NO garantiza play 100%, pero es mas confiable que OCR. El user
+    queda en la pagina de resultados/detalle si algun paso falla; un
+    click manual completa la accion.
 
     Returns dict con steps + player_started=bool + abort_reason.
-
-    NOTA: Este flujo depende de OCR sobre la pagina web. Es FRAGIL porque:
-      - El layout de cada plataforma cambia frecuentemente.
-      - El DOM puede esconder texto detras de imagenes.
-      - DRM puede prevenir auto-click en algunos casos.
-    Hacemos el mejor esfuerzo y reportamos honesto si abort.
     """
     import time as _time
     steps: list[str] = []
     _time.sleep(max(1.0, wait_seconds))
-    steps.append("waited_for_page")
+    steps.append(f"waited_for_page:{wait_seconds}s")
 
-    # 1. Profile picker (Netflix/Disney+/Max/Prime).
-    # gui.click_text busca el texto en la pantalla y clickea. Si no encuentra
-    # el perfil (porque ya entramos directo al home/search), seguimos sin fallar.
+    # 1. Profile picker. Intentar click_text del nombre (esto sigue siendo
+    # OCR fragil pero los nombres de perfil suelen ser TEXTO renderizado,
+    # no imagen). Si falla, seguir sin error porque puede que ya estemos
+    # en el home.
     try:
         click_profile = executor("gui", {
             "action": "click_text", "target": profile_name,
@@ -6012,112 +6010,100 @@ def _streaming_web_auto_play(
         })
         if click_profile.get("ok") and click_profile.get("found"):
             steps.append(f"clicked_profile:{profile_name}")
-            _time.sleep(2.5)  # esperar carga post-profile
+            _time.sleep(3.0)  # carga post-profile (puede ser lenta)
         else:
             steps.append("no_profile_picker_or_not_found")
     except Exception:
         steps.append("profile_click_error")
 
-    # 2. Si la plataforma no soporta search via URL (Disney+/Max), abrir el
-    # campo de busqueda via shortcut de teclado y escribir la query.
+    # 2. Activar search si needed.
     if needs_gui_search and search_shortcut:
         try:
             executor("gui", {"action": "keypress", "keys": search_shortcut})
             steps.append(f"pressed_search_shortcut:{search_shortcut}")
-            _time.sleep(1.0)  # esperar que aparezca el input
+            _time.sleep(1.2)  # mas tiempo para que aparezca el input
             executor("gui", {"action": "type", "text": query})
             steps.append(f"typed_query:{query}")
-            _time.sleep(0.6)
-            executor("gui", {"action": "keypress", "keys": "enter"})
-            steps.append("submitted_search")
-            _time.sleep(4.0)  # esperar resultados (Disney+ tarda 3-5s)
+            _time.sleep(0.8)
+            # NO press Enter en Disney+/Max: el filtro se aplica mientras
+            # tipeas. Press Enter va al detail de la primera coincidencia
+            # AUTOMATICAMENTE en algunas plataformas, en otras navega a
+            # otra cosa. Es safer dejarlo y usar Tab navigation despues.
+            _time.sleep(3.0)  # mas tiempo para que renderice resultados
+            steps.append("waited_for_search_results")
         except Exception as exc:
             return {
                 "player_started": False, "steps": steps,
                 "abort_reason": f"gui search via shortcut failed: {exc}",
             }
+    else:
+        # URL ya tiene search query — esperar mas tiempo a que renderice
+        # post-load (Netflix puede tardar 3-5s en pintar la grilla).
+        _time.sleep(3.0)
+        steps.append("waited_for_url_search_results")
 
-    # 3. Click en el primer titulo del resultado de busqueda.
-    # Retry loop: si la pagina aun esta cargando los resultados, el OCR no
-    # encuentra el titulo. Intentar hasta 4 veces con 1.5s entre cada try,
-    # probando exact match primero, despues primera palabra. Esto cubre el
-    # caso "Disney+ tarda 5-8s en mostrar la grilla cuando hay imagenes".
-    title_clicked = False
-    title_clicked_with: str | None = None
-    candidates: list[str] = [query]
-    first_word = query.split()[0] if query.split() else query
-    if first_word.lower() != query.lower():
-        candidates.append(first_word)
-    # Variantes comunes para series (Disney+ a veces muestra "Daredevil: Born
-    # Again" en vez de "Daredevil" plano). Si la query tiene multiples
-    # palabras, intentar tambien las 2-3 primeras juntas.
-    if len(query.split()) >= 2:
-        candidates.append(" ".join(query.split()[:2]))
+    # 3. Keyboard navigation: Tab al primer titulo + Enter.
+    # Cada plataforma tiene un layout distinto. Estos defaults son
+    # observados empiricamente; podemos parametrizarlos por plataforma
+    # si una falla consistente.
+    # Netflix con ?q=:    Tab x 5-7 para llegar al primer poster
+    # Disney+ post-search: Tab x 4-6 (search box esta enfocado, salimos)
+    # Max/HBO:           similar
+    # Prime Video:       Tab x 6-8 (mas chrome arriba)
+    tab_count_by_platform = {
+        "netflix": 6,
+        "disney": 5,
+        "hbo_max": 6,
+        "prime_video": 7,
+    }
+    tabs_to_first_result = tab_count_by_platform.get(canonical, 6)
 
-    MAX_RETRIES = 4
-    for attempt in range(MAX_RETRIES):
-        for try_text in candidates:
-            try:
-                click_title = executor("gui", {
-                    "action": "click_text", "target": try_text,
-                    "timeout_sec": 4,
-                })
-                if click_title.get("ok") and click_title.get("found"):
-                    steps.append(f"clicked_title:{try_text} (attempt {attempt+1})")
-                    title_clicked = True
-                    title_clicked_with = try_text
-                    _time.sleep(2.5)  # esperar detail page
-                    break
-            except Exception:
-                continue
-        if title_clicked:
-            break
-        # Wait progressive entre attempts (1.5s, 2.0s, 2.5s) para
-        # darle tiempo al search a renderizar los resultados.
-        if attempt < MAX_RETRIES - 1:
-            _time.sleep(1.5 + attempt * 0.5)
-            steps.append(f"retry_wait:{attempt+1}")
-
-    if not title_clicked:
+    try:
+        for i in range(tabs_to_first_result):
+            executor("gui", {"action": "keypress", "keys": "tab"})
+            _time.sleep(0.15)
+        steps.append(f"tabbed_to_first_result:x{tabs_to_first_result}")
+        _time.sleep(0.3)
+        executor("gui", {"action": "keypress", "keys": "enter"})
+        steps.append("entered_first_result")
+        _time.sleep(3.5)  # detail page tarda en cargar
+    except Exception as exc:
         return {
             "player_started": False, "steps": steps,
-            "abort_reason": (
-                f"could not click title for {query!r} on search page after "
-                f"{MAX_RETRIES} attempts. The page may still be loading, the "
-                f"title text may be hidden behind images, or the title is "
-                f"shown differently than the query."
-            ),
+            "abort_reason": f"tab navigation to first result failed: {exc}",
+            "note": "Open the page manually and click the title.",
         }
 
-    # 4. Click "Reproducir" / "Play" / etc. en detail page.
-    # Cada plataforma tiene su label; probamos varios. Tambien retry con
-    # wait progresivo porque la detail page tarda 2-4s en renderizar el
-    # boton Play (hay video preview que carga antes).
-    play_labels = ["Reproducir", "Play", "Ver", "Watch", "Reproducir ahora",
-                   "Reproducir película", "Reproducir episodio", "Ver ahora",
-                   "Continuar viendo", "Continuar"]
-    for attempt in range(MAX_RETRIES):
-        for label in play_labels:
-            try:
-                click_play = executor("gui", {
-                    "action": "click_text", "target": label,
-                    "timeout_sec": 3,
-                })
-                if click_play.get("ok") and click_play.get("found"):
-                    steps.append(f"clicked_play:{label} (attempt {attempt+1})")
-                    return {"player_started": True, "steps": steps, "abort_reason": None}
-            except Exception:
-                continue
-        if attempt < MAX_RETRIES - 1:
-            _time.sleep(1.5 + attempt * 0.5)
-            steps.append(f"play_retry_wait:{attempt+1}")
+    # 4. En la detail page, intentar Play. Estrategia hybrida:
+    #    (a) Tab navigation al Play button (suele ser focusable temprano).
+    #    (b) Si OCR encuentra Play text, click directo.
+    # Netflix: Play button suele estar en Tab x 1-3.
+    # Disney+: similar.
+    play_tab_count = 3
+    try:
+        for i in range(play_tab_count):
+            executor("gui", {"action": "keypress", "keys": "tab"})
+            _time.sleep(0.15)
+        executor("gui", {"action": "keypress", "keys": "enter"})
+        steps.append(f"tabbed_to_play_button:x{play_tab_count} + Enter")
+        _time.sleep(1.0)
+    except Exception as exc:
+        steps.append(f"play_tab_nav_error:{exc}")
+
+    # HONESTIDAD: no podemos verificar visualmente sin OCR/vision check
+    # (que fue justamente lo que fallaba antes). El return marca
+    # `attempted_play=True` para que el reply diga "intenté reproducir"
+    # en vez de "no pude reproducir". El user verifica visualmente.
+    # player_started=False porque NO tenemos evidencia objetiva de play.
     return {
-        "player_started": False, "steps": steps,
-        "abort_reason": (
-            f"could not find Play button on detail page (tried {len(play_labels)} "
-            f"labels x {MAX_RETRIES} retries). User can press Play manually."
+        "player_started": False,
+        "attempted_play": True,  # nuevo: distingue "intente" de "no pude"
+        "steps": steps,
+        "abort_reason": None,
+        "verification_note": (
+            "Tab navigation + Enter dispatched. Cannot verify playback "
+            "started without OCR/vision check. User confirms visually."
         ),
-        "clicked_title_with": title_clicked_with,
     }
 
 
@@ -6280,11 +6266,13 @@ def _launch_streaming(
         opened = webbrowser.open(web_url)
         if opened:
             # WEB AUTO-PLAY: si tenemos executor + auto_play + profile_name,
-            # intentar el flujo GUI (profile picker -> click title -> click play).
-            # Netflix/Disney/HBO Max/Prime SI funcionan con esto cuando el user
-            # esta logueado en el browser.
+            # intentar el flujo GUI (search + tab navigation + Enter).
+            # Best-effort: el flow llega cerca del play pero no garantiza
+            # que el video haya empezado (sin OCR/vision check confiable).
+            # El reply del LLM debe distinguir attempted_play vs played_verified.
             web_auto_play_info: dict[str, Any] | None = None
             played = False
+            attempted_play = False
             if auto_play and executor is not None and profile_name:
                 web_auto_play_info = _streaming_web_auto_play(
                     executor, canonical, query, profile_name, auto_play_wait,
@@ -6292,6 +6280,7 @@ def _launch_streaming(
                     needs_gui_search=not web_search_via_url,
                 )
                 played = bool(web_auto_play_info.get("player_started"))
+                attempted_play = bool(web_auto_play_info.get("attempted_play"))
             result = _ok(
                 action="play",
                 provider=f"{canonical}_web",
@@ -6299,17 +6288,25 @@ def _launch_streaming(
                 url=web_url,
                 opened=True,
                 played=played,
+                attempted_play=attempted_play,
                 auto_play_attempted=bool(auto_play and profile_name),
                 profile_name=profile_name,
                 web_auto_play_info=web_auto_play_info,
                 verified=played,
-                status="dispatched" if played else "attempted",
-                completion_status="media_playing" if played
-                                   else "opened_search_results_pending_play",
+                status="dispatched" if (played or attempted_play) else "attempted",
+                completion_status=(
+                    "media_playing" if played
+                    else "playback_attempted_unverified" if attempted_play
+                    else "opened_search_results_pending_play"
+                ),
                 note=(
-                    f"{canonical}: playing — Profile '{profile_name}' selected, "
+                    f"{canonical}: playing — Profile '{profile_name}', "
                     "title clicked, Play pressed."
-                    if played else note
+                    if played else
+                    f"{canonical}: search + Tab navigation + Enter dispatched "
+                    f"with profile '{profile_name}'. The video MAY be playing "
+                    "now — verify visually. If not, click the title manually."
+                    if attempted_play else note
                 ),
             )
             if app_info["kind"]:

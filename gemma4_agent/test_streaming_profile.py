@@ -174,14 +174,17 @@ class TestStreamingProfileSavedAndReused(unittest.TestCase):
 class TestStreamingWebGuiFlow(unittest.TestCase):
     """El flujo GUI: profile click -> title click -> play click."""
 
-    def test_full_flow_returns_played_true(self):
+    def test_full_flow_uses_tab_navigation(self):
+        # Post 2026-05-16: OCR del title era fragil. Flow nuevo usa Tab
+        # navigation + Enter. Marca attempted_play=True (best-effort) en
+        # vez de played=True (que requeriria verificacion visual).
         state = _fresh_state()
         _set_streaming_preference(state, "netflix", "Emmanuel")
-        clicks: list[str] = []
+        calls: list[tuple[str, str]] = []
         def _exec(name, args):
+            calls.append((name, args.get("action") or ""))
             if name == "gui" and args.get("action") == "click_text":
-                target = args.get("target", "")
-                clicks.append(target)
+                # Solo el perfil sigue usando OCR; success.
                 return {"ok": True, "found": True}
             return {"ok": True}
         with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True), \
@@ -190,35 +193,37 @@ class TestStreamingWebGuiFlow(unittest.TestCase):
                 {"action": "play", "provider": "netflix", "query": "Stranger Things"},
                 _exec, state,
             )
-        self.assertTrue(r["played"], f"expected played=True, got {r}")
-        self.assertEqual(r["completion_status"], "media_playing")
-        # Debe haber clickeado en perfil + titulo + play button.
-        self.assertIn("Emmanuel", clicks)
-        self.assertIn("Stranger Things", clicks)
-        # Algun play label
-        play_labels = {"Reproducir", "Play", "Ver", "Watch", "Reproducir ahora"}
-        self.assertTrue(any(c in play_labels for c in clicks),
-                         f"expected a play-button click, got: {clicks}")
+        # Best-effort: attempted_play=True, played=False (no verification).
+        self.assertTrue(r["attempted_play"])
+        self.assertFalse(r["played"])
+        self.assertEqual(r["completion_status"], "playback_attempted_unverified")
+        # Debe haber tab + enter calls.
+        tab_calls = [c for c in calls if c == ("gui", "keypress")]
+        # Al menos 6 tabs (titulo) + 3 tabs (play) + 2 enters
+        self.assertGreaterEqual(len(tab_calls), 10)
 
-    def test_flow_aborts_when_title_not_found(self):
+    def test_flow_completes_even_if_title_not_in_ocr(self):
+        # Nuevo flow no usa click_text para el titulo — usa Tab navigation.
+        # Asi que NO depende de OCR para encontrar el titulo. Esto previene
+        # la regresion del log 13:10 donde OCR no encontraba "Daredevil".
         state = _fresh_state()
         _set_streaming_preference(state, "netflix", "Emmanuel")
         def _exec(name, args):
             if name == "gui" and args.get("action") == "click_text":
-                target = args.get("target", "")
-                if target == "Emmanuel":
+                # Solo el perfil. Resto NO se llama (usamos Tab nav).
+                if args.get("target") == "Emmanuel":
                     return {"ok": True, "found": True}
-                # Title NOT found.
                 return {"ok": True, "found": False}
             return {"ok": True}
         with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True), \
              patch("time.sleep"):
             r = media_tool(
-                {"action": "play", "provider": "netflix", "query": "Nonexistent Show"},
+                {"action": "play", "provider": "netflix", "query": "Cualquier Cosa"},
                 _exec, state,
             )
-        self.assertFalse(r["played"])
-        self.assertIn("could not click title", r["web_auto_play_info"]["abort_reason"])
+        # Aunque OCR del titulo fallara, el flow completa via Tab nav.
+        self.assertTrue(r["attempted_play"])
+        self.assertIsNone(r["web_auto_play_info"]["abort_reason"])
 
     def test_auto_play_false_skips_gui_flow(self):
         state = _fresh_state()
