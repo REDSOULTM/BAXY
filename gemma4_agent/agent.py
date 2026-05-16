@@ -864,6 +864,20 @@ class Gemma4Agent:
         from .verify_core import verify as _verify, summarize_verifiers, VerifierOutcome
         verifier_outcomes: list[VerifierOutcome] = []
 
+        # TIER 2 #5: MissionGoal — verifier estructural por-mision (Voyager pattern).
+        # Construido al inicio del turn desde el user_text crudo. Cada tool call
+        # marca su contribucion al objetivo via mission_goal.update_with_tool.
+        # Al final, compute_mission_outcome combina con los per-tool verifier
+        # outcomes para producir un MissionOutcome con status semantico
+        # (COMPLETED/PARTIAL/FAILED/TOOL_OK_VERIFIER_INCONCLUSIVE/...).
+        from .mission_goal import MissionGoal as _MissionGoal
+        from .mission_outcome import (
+            compute_mission_outcome as _compute_mission_outcome,
+            mission_footer as _mission_footer,
+            build_tool_records as _build_tool_records,
+        )
+        mission_goal = _MissionGoal.from_user_text(raw_text_early or "")
+
         for _turn in range(self.config.max_agent_turns):
             _progress(
                 progress,
@@ -950,7 +964,37 @@ class Gemma4Agent:
                         failed=sum(1 for o in verifier_outcomes if o.confirmed is False),
                         unverifiable=sum(1 for o in verifier_outcomes if o.confirmed is None),
                     )
+                # TIER 2 #5: MissionOutcome — status semantico final del turn.
+                # Combina mission_goal (objective fulfilled?) con verifier counts
+                # (per-tool measured effect) y emite footer SOLO si aporta info
+                # (PARTIAL/FAILED/INTENT_NOT_FULFILLED/TOOL_OK_VERIFIER_INCONCLUSIVE).
+                _tool_records_for_outcome = _build_tool_records(events, verifier_outcomes)
+                mission_outcome = _compute_mission_outcome(
+                    mission_goal, _tool_records_for_outcome, assistant_content,
+                )
+                _mission_extra_footer = _mission_footer(mission_outcome)
+                if _mission_extra_footer:
+                    assistant_content = assistant_content + _mission_extra_footer
+                self.trace.event(
+                    turn_id, "mission_outcome",
+                    status=mission_outcome.status.value,
+                    summary=mission_outcome.summary,
+                    confirmed=mission_outcome.confirmed_count,
+                    failed=mission_outcome.failed_count,
+                    unverified=mission_outcome.unverified_count,
+                    expected_total=mission_outcome.expected_total,
+                    expected_satisfied=mission_outcome.expected_satisfied,
+                )
                 mission = evaluate_mission(events, assistant_content, plan)
+                # Enriquecer el mission dict legacy con el outcome estructural
+                # (no rompe consumidores existentes — agrega claves nuevas).
+                if isinstance(mission, dict):
+                    mission["mission_goal_status"] = mission_outcome.status.value
+                    mission["mission_goal_summary"] = mission_outcome.summary
+                    mission["mission_goal_progress"] = [
+                        mission_outcome.expected_satisfied,
+                        mission_outcome.expected_total,
+                    ]
                 self.history.append({"role": "assistant", "content": assistant_content})
                 # Subset summary: which sent tools were actually used vs idle.
                 used_tools = {e.name for e in events}
@@ -1063,6 +1107,11 @@ class Gemma4Agent:
                 # para que reset el warning_count en progreso real.
                 v_outcome = _verify(name, args, result)
                 verifier_outcomes.append(v_outcome)
+                # TIER 2 #5: mission_goal tracking — marca el primer expected
+                # outcome cuyo kind matchee esta call (segun action/args).
+                # Pasa ok del result; el confirmed real lo decide el verifier
+                # arriba y se combina en compute_mission_outcome.
+                mission_goal.update_with_tool(name, args, bool(result.get("ok")))
                 self.trace.event(
                     turn_id, "verifier",
                     tool=name,
