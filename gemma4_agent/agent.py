@@ -1040,10 +1040,11 @@ class Gemma4Agent:
                     # Drop the lowest-priority half of the subset, keeping at
                     # least 4. The planner already orders by priority (utility
                     # tools last), so this preserves the most relevant ones.
-                    keep_count = max(4, len(selected_tool_names) // 2)
+                    original_count = len(selected_tool_names)
+                    keep_count = max(4, original_count // 2)
                     retry_tool_names = selected_tool_names[:keep_count]
                     selected_tool_names = retry_tool_names  # propagar al system prompt tambien
-                    self.trace.event(turn_id, "subset_truncate_retry", original=len(selected_tool_names), kept=len(retry_tool_names))
+                    self.trace.event(turn_id, "subset_truncate_retry", original=original_count, kept=len(retry_tool_names))
                     selected_schemas = self.tools.schemas_for_names(retry_tool_names)
                     try:
                         resp = self.client.chat(
@@ -2357,7 +2358,14 @@ def _json_len(value: Any) -> int:
 
 def _looks_like_context_overflow(message: str) -> bool:
     low = message.casefold()
-    return "exceeds the available context size" in low or "context size" in low and "exceed" in low
+    # Phrasing varies across llama-server builds: explicit "exceeds the available
+    # context size" or the JSON error type "exceed_context_size_error", plus a
+    # generic fallback that pairs "context size" with any "exceed*" variant.
+    if "exceeds the available context size" in low:
+        return True
+    if "exceed_context_size_error" in low:
+        return True
+    return ("context size" in low) and ("exceed" in low)
 
 
 # Footers added by the agent (TIER 1 #2 verifier + TIER 2 #5 mission). Si el
