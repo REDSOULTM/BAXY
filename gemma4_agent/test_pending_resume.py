@@ -309,18 +309,24 @@ class TestPendingActionExplicitCancel(unittest.TestCase):
         self._resume_with("no importa, dejalo")
         self.assertIsNone(get_pending_action(self.agent.state))
 
-    def test_unrelated_long_text_does_not_clear(self):
-        """Long off-topic text shouldn't auto-cancel — user might still
-        intend to follow up. Conservative: leave pending alone, let TTL
-        decide or the next on-topic answer."""
+    def test_unrelated_text_clears_pending(self):
+        """REGRESION 2026-05-16: el pending viejo se quedaba vivo y atrapaba
+        turns futuros donde el user decia 'Hola' o 'Quien eres', guardandolos
+        como nombre de perfil corrupto en el state.
+
+        Politica nueva: si el user_text no se extrae como un nombre de perfil
+        plausible, ASUMIR cambio de tema y cerrar el pending. El user puede
+        re-pedir el media call si lo necesitaba.
+        """
         from .domain_tools import get_pending_action
         reply, mock_exec = self._resume_with(
             "quiero saber qué tiempo va a hacer mañana en buenos aires"
         )
         self.assertIsNone(reply)  # no profile extracted
         mock_exec.assert_not_called()
-        # Pending still there for future on-topic reply.
-        self.assertIsNotNone(get_pending_action(self.agent.state))
+        # Pending CERRADO — el user cambio de tema, mejor liberar el slot
+        # para no atrapar turns futuros como 'Hola' / 'Quien eres'.
+        self.assertIsNone(get_pending_action(self.agent.state))
 
 
 class TestPendingActionPersistsAcrossAgentInstances(unittest.TestCase):

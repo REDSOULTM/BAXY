@@ -1729,14 +1729,20 @@ class Gemma4Agent:
         if not user_text or not user_text.strip():
             return None
         try:
-            from .domain_tools import get_pending_action, clear_pending_action
+            from .domain_tools import (
+                clear_pending_action,
+                get_pending_action,
+                _is_valid_profile_name,
+            )
             pending = get_pending_action(self.state)
         except Exception:
             return None
         if not pending:
             return None
-        # Window de validez: solo continuar si el pending tiene <5 minutos.
-        if pending.get("age_seconds", 0) > 300:
+        # Window de validez: solo continuar si el pending tiene <120 segundos.
+        # Bajado de 300s a 120s — si el user tardo 2 min en responder, ya no
+        # esta en el mismo contexto y mejor cerrar.
+        if pending.get("age_seconds", 0) > 120:
             try:
                 clear_pending_action(self.state, pending.get("resource_id"))
             except Exception:
@@ -1749,15 +1755,27 @@ class Gemma4Agent:
         # PENDING streaming_profile: user respondio con su nombre.
         if kind == "streaming_profile":
             extracted = self._extract_profile_name(user_text)
+            # SAFETY: incluso si el extractor lo acepto, validar que sea
+            # un nombre plausible antes de usarlo (defense in depth).
+            if extracted and not _is_valid_profile_name(extracted):
+                extracted = None
             if not extracted:
-                # User cambio de tema (e.g. "olvidalo", "no, mejor abre Notepad").
-                # Cerramos el pending para no atrapar turns futuros.
-                if any(tok in user_text.lower()
-                        for tok in ("olvida", "no importa", "cancela", "olvidalo")):
-                    try:
-                        clear_pending_action(self.state, pending.get("resource_id"))
-                    except Exception:
-                        pass
+                # User NO contesto con un nombre. Cerrar el pending para no
+                # atrapar turns futuros. ANTES solo cerrabamos en "olvidalo",
+                # pero eso dejaba el pending vivo cuando el user dice "hola"
+                # o cambia de tema — y el proximo turn que diera un nombre
+                # corto se asumia como respuesta de ESTE pending.
+                #
+                # Politica nueva: si el user_text no es un nombre de perfil,
+                # asumir que el user cambio de tema. Cerrar el pending y
+                # dejar que el LLM maneje el turn normalmente.
+                try:
+                    clear_pending_action(self.state, pending.get("resource_id"))
+                    self.trace.event(turn_id, "pending_closed_no_match",
+                                     pending_kind=kind,
+                                     user_text_preview=user_text[:80])
+                except Exception:
+                    pass
                 return None
             self.trace.event(turn_id, "pending_resume",
                              pending_kind=kind, payload=payload,
@@ -1865,12 +1883,26 @@ class Gemma4Agent:
             # the user types as the FIRST word when changing topic. Prefix
             # match would over-reject ("Holanda" would match "hola").
             conversational_exact = {
+                # Saludos / despedidas
                 "hola", "holas", "holis", "hello", "hi", "hey",
-                "buenos", "buenas", "buen", "que", "qué", "como", "cómo",
+                "buenos", "buenas", "buen", "buenísimo", "buenisimo",
+                "adios", "adiós", "bye", "chau", "chao", "nos vemos",
+                # Confirmaciones / negaciones / fillers
                 "gracias", "thanks", "thank", "ok", "okay", "vale",
-                "bueno", "perfecto", "listo", "dale",
-                "adios", "adiós", "bye", "chau", "chao",
-                "ayuda", "help",
+                "bueno", "perfecto", "listo", "dale", "ya", "claro",
+                # Interrogativas: "quien eres", "que tal", "como va", etc
+                # NO son nombres de perfil — son preguntas al agent.
+                "quien", "quién", "que", "qué", "cual", "cuál",
+                "como", "cómo", "donde", "dónde", "cuando", "cuándo",
+                "cuanto", "cuánto", "cuanta", "cuánta",
+                "porque", "por qué", "por que",
+                "who", "what", "which", "how", "where", "when", "why",
+                # Auxiliares + pronombres comunes que no son nombres
+                "tu", "tú", "te", "me", "se", "lo", "la", "le",
+                "you", "your", "are", "is",
+                "eres", "soy", "es", "está", "esta", "estás", "estas",
+                # Ayuda / meta
+                "ayuda", "help", "ayudame", "ayúdame",
             }
 
             def _is_order(word: str) -> bool:

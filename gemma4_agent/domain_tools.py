@@ -5969,16 +5969,73 @@ def _get_streaming_preference(state: AgentState | None, provider: str) -> str | 
     return None
 
 
+# Blacklist de "perfiles" obviamente invalidos. Defense in depth: si el
+# extractor de profile_name falla y pasa algo como "Hola" o "Quien eres",
+# el writer al state lo rechaza igual. Evita corrupcion persistente del
+# store de preferencias.
+_INVALID_PROFILE_NAMES = frozenset({
+    "hola", "holas", "hello", "hi", "hey",
+    "buenos dias", "buenas tardes", "buenas noches",
+    "adios", "bye", "chau", "chao",
+    "gracias", "thanks",
+    "ok", "okay", "vale", "si", "no",
+    "ayuda", "help",
+    "quien eres", "quien soy", "que eres", "que sos",
+    "quién eres", "qué eres",
+    "que tal", "que pasa", "como estas",
+    "qué tal", "cómo estás",
+    "x", "xx", "xxx", "test", "prueba", "default",
+})
+
+
+def _is_valid_profile_name(name: str) -> bool:
+    """True si parece un nombre real de perfil de streaming.
+
+    Rechaza:
+      - Vacio / solo espacios.
+      - Demasiado largo (>30 chars).
+      - Greetings / preguntas conocidas (Hola, Quien eres, etc).
+      - Solo caracteres no-alfanumericos.
+      - Strings con caracteres de tool_call / system markers.
+    """
+    if not name or not name.strip():
+        return False
+    n = name.strip()
+    if len(n) > 30:
+        return False
+    if n.lower() in _INVALID_PROFILE_NAMES:
+        return False
+    # Debe tener al menos UNA letra (cubre nombres en cualquier idioma).
+    if not any(ch.isalpha() for ch in n):
+        return False
+    # Tokens de system / tool_call leak.
+    for bad in ("<|", "|>", "tool_call", "system:", "user:", "assistant:"):
+        if bad in n:
+            return False
+    return True
+
+
 def _set_streaming_preference(
     state: AgentState | None, provider: str, profile_name: str,
 ) -> dict[str, Any] | None:
     """Guarda el nombre del perfil preferido para una plataforma.
+
+    Validacion: rechaza nombres que parecen saludos/preguntas (defense in
+    depth contra extractor permisivo). Si name es invalido, devuelve dict
+    con ok=False para que el caller pueda manejar.
 
     Si ya existe una preferencia para el mismo provider, la actualiza.
     Devuelve el resource creado/actualizado o None si state es None.
     """
     if state is None:
         return None
+    if not _is_valid_profile_name(profile_name):
+        return {
+            "ok": False,
+            "error": f"refused to save invalid profile_name {profile_name!r}",
+            "reason": "looks like a greeting / question / unrelated text",
+        }
+    profile_name = profile_name.strip()
     # Buscar existente.
     try:
         data = state._load()  # noqa: SLF001
