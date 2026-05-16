@@ -1022,10 +1022,17 @@ class MainWindow(QMainWindow):
     def _apply_profile(self, name: str) -> None:
         """Persiste perfil + aplica env vars + reinicia server y worker."""
         from ..profiles import (
-            PROFILES, apply_profile_to_env, get_active_profile, set_active_profile,
+            PROFILES, apply_profile_to_env, get_active_profile,
+            requires_server_restart, set_active_profile,
         )
         if name not in PROFILES:
             return
+        # Capturar perfil activo PREVIO antes de set_active_profile, para
+        # poder decidir si el restart del server es realmente necesario.
+        try:
+            old_profile = get_active_profile()
+        except Exception:
+            old_profile = None
         try:
             set_active_profile(name)
         except (ValueError, OSError) as exc:
@@ -1034,6 +1041,11 @@ class MainWindow(QMainWindow):
         profile = get_active_profile()
         apply_profile_to_env(profile)
         self.log.append(f"profile -> {profile.display_name} (ctx={profile.context_size})", "sys")
+
+        # Decidir si necesitamos restart del binario. Si solo cambian flags del
+        # cliente (parallel_tools/fact_extraction/rerank/voice), basta con
+        # apply_profile_to_env + restart del worker — el server sigue corriendo.
+        need_server_restart = requires_server_restart(old_profile, profile)
 
         # Server: stop/start segun server_running. NO matamos servers externos.
         try:
@@ -1052,6 +1064,16 @@ class MainWindow(QMainWindow):
                 else:
                     mgr.stop()
                 self.hud.set_state("OFFLINE")
+            elif not need_server_restart:
+                # PERF: solo cambian flags del cliente Python (parallel_tools,
+                # fact_extraction, rerank, voice). El binario llama-server sigue
+                # corriendo igual, asi que evitamos 4-10s de reload.
+                self.log.append(
+                    "profile change: only client-side flags differ — "
+                    "skipping llama-server restart",
+                    "sys",
+                )
+                self.hud.set_state("IDLE")
             else:
                 # Hay que (re)arrancar con flags del perfil. Si hay externo, respetar.
                 if port_in_use() and not mgr.is_running():

@@ -473,6 +473,44 @@ def apply_profile_to_env(profile: Profile) -> None:
         # else: silencio. Caller (UI) debe verificar con light_model_missing().
 
 
+def requires_server_restart(old: Profile | None, new: Profile) -> bool:
+    """Decide si pasar de `old` a `new` requiere reiniciar llama-server.
+
+    Solo los campos que el server consume al arrancar (flags del binario)
+    fuerzan restart. Cambios "puramente del cliente Python" (parallel_tools,
+    fact_extraction, voice_enabled, rerank_enabled) se aplican via env vars
+    sin tocar el subprocess.
+
+    Campos que fuerzan restart:
+      - context_size       (-c <N>)
+      - model_path         (-m <path>)
+      - vision_enabled     (--mmproj / sin --mmproj)
+      - server_running     (apagar/encender)
+
+    Si `old is None` (primer apply de la sesion) y new.server_running=True,
+    necesitamos arrancar; el caller debe llamar start(), no restart.
+
+    Caso "ambos apagados" -> False (no hay server al que reiniciar).
+    Caso "old apagado, new prendido" -> True (hay que start, contando como restart).
+    Caso "old prendido, new apagado" -> True (hay que stop).
+    """
+    # Sin estado previo: tratamos como "necesita arrancar" si server_running.
+    if old is None:
+        return bool(new.server_running)
+    # Ambos apagados: no hay restart que hacer.
+    if not old.server_running and not new.server_running:
+        return False
+    # Toggle on/off del server: siempre cambio observable.
+    if old.server_running != new.server_running:
+        return True
+    # Ambos prendidos: comparar solo los campos del binario.
+    return (
+        old.context_size != new.context_size
+        or (old.model_path or "") != (new.model_path or "")
+        or old.vision_enabled != new.vision_enabled
+    )
+
+
 def light_model_configured() -> str | None:
     """Devuelve el model_path del perfil LIGHT (con overrides) o None."""
     profile = _profile_with_overrides(PROFILES["light"])

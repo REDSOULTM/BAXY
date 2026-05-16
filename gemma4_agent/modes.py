@@ -72,11 +72,16 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
                 "act, observe, verify, then continue until the sequence is done or blocked."
             ),
         )
+    # fast_action: smalltalk + confirmaciones cortas. base_max_tokens default
+    # (1280) era excesivo — a ~50 tok/s eso es 25s worst case si el modelo no
+    # encuentra stop. Capamos a 384 que cubre 95% de respuestas conversacionales
+    # (~7-8s wall clock max). Si el usuario quiere respuestas largas, el router
+    # lo manda a deep_action / research que mantienen su budget alto.
     return AgentMode(
         name="fast_action",
         enable_thinking=False,
         parallel_tool_calls=False,
-        max_tokens=base_max_tokens,
+        max_tokens=min(base_max_tokens, 384),
         system_hint=(
             "Mode: fast_action. Keep reasoning short and use the smallest sufficient tool "
             "sequence. Answer directly for normal questions."

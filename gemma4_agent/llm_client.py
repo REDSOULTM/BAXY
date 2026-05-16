@@ -3,12 +3,44 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
+import time
 import urllib.error
 import urllib.request
 from typing import Any, Iterator
 
 from .config import AgentConfig
+
+
+logger = logging.getLogger(__name__)
+
+
+# Connection-reset patterns que indican que el server crasheo/reloadeo
+# durante el handshake. NO incluir genericos como "timeout" que pueden ser
+# del LLM tardando legitimamente. Patrones ya normalizados (sin espacios
+# ni underscores) para matchear despues del lower+replace en el helper.
+_RECOVERABLE_CONN_ERRORS = (
+    "10054",                  # WinError 10054 (forcibly closed by remote host)
+    "10061",                  # WinError 10061 (no connection could be made)
+    "connectionreset",        # ConnectionResetError / "connection reset"
+    "connectionrefused",      # "connection refused"
+    "brokenpipe",             # "broken pipe" / BrokenPipeError
+    "connectionaborted",      # ConnectionAbortedError
+    "remotedisconnected",     # http.client.RemoteDisconnected
+)
+
+
+def _is_recoverable_connection_error(exc: Exception) -> bool:
+    """True si el error sugiere que vale la pena reintentar tras health-poll.
+
+    Patron tipico: profile change -> server.stop() -> stop() libera el puerto;
+    client manda request en la ventana siguiente -> server.start() en curso.
+    El socket queda en estado inconsistente y devuelve 10054. Si esperamos
+    a que /health vuelva (server arrancado de nuevo), el retry funciona.
+    """
+    s = str(exc).lower().replace(" ", "").replace("_", "")
+    return any(token in s for token in _RECOVERABLE_CONN_ERRORS)
 
 
 def _request_headers(content_type: str = "application/json", sse: bool = False) -> dict[str, str]:
@@ -77,18 +109,70 @@ class LLMClient:
             body["parallel_tool_calls"] = self.config.parallel_tool_calls if parallel_tool_calls is None else parallel_tool_calls
 
         effective_timeout = float(timeout_s) if timeout_s is not None else self.config.request_timeout_s
-        try:
-            response = self._post_chat(body, timeout=effective_timeout)
-        except RuntimeError as exc:
-            if not _looks_like_unsupported_option_error(str(exc)):
-                raise
-            fallback = dict(body)
-            fallback.pop("chat_template_kwargs", None)
-            fallback.pop("reasoning_format", None)
-            fallback.pop("parse_tool_calls", None)
-            fallback.pop("parallel_tool_calls", None)
-            response = self._post_chat(fallback, timeout=effective_timeout)
+        response = self._post_chat_with_recovery(body, timeout=effective_timeout)
         return _normalize_response_tool_calls(response)
+
+    def _post_chat_with_recovery(self, body: dict[str, Any], *, timeout: float) -> dict[str, Any]:
+        """Wrapper de _post_chat que recupera de:
+          - Connection reset (server reloadeando: poll /health, 1 retry)
+          - Unsupported option (server build sin features OpenAI extras: retry sin esas keys)
+
+        Maximo 1 reintento por categoria; si falla tras retry, propaga.
+        """
+        try:
+            return self._post_chat(body, timeout=timeout)
+        except RuntimeError as exc:
+            # Caso 1: connection reset -> server reloading. Esperar /health
+            # y reintentar UNA vez. Limit total wait a min(15s, timeout/2).
+            if _is_recoverable_connection_error(exc):
+                wait_budget = min(15.0, timeout / 2.0)
+                deadline = time.monotonic() + wait_budget
+                logger.info(
+                    "llm connection reset (server probably reloading); "
+                    "polling /health up to %.1fs before retry: %s",
+                    wait_budget, exc,
+                )
+                healthy = False
+                while time.monotonic() < deadline:
+                    if self.health(timeout_s=1.0):
+                        healthy = True
+                        break
+                    time.sleep(0.5)
+                if healthy:
+                    logger.info("llm server healthy again; retrying chat once")
+                    try:
+                        return self._post_chat(body, timeout=timeout)
+                    except RuntimeError as retry_exc:
+                        # Si tambien falla en el retry: no insistir mas
+                        # (evita esconder bugs reales del server).
+                        if _is_recoverable_connection_error(retry_exc):
+                            raise RuntimeError(
+                                f"llm_connection_reset_after_retry: {retry_exc}"
+                            ) from retry_exc
+                        # Cae al manejo de unsupported_option si aplica
+                        if _looks_like_unsupported_option_error(str(retry_exc)):
+                            return self._post_chat_fallback(body, timeout=timeout)
+                        raise
+                # Health nunca volvio en wait_budget: propagar
+                raise RuntimeError(
+                    f"llm_connection_reset_no_recovery: server did not become "
+                    f"healthy within {wait_budget:.1f}s. Original: {exc}"
+                ) from exc
+
+            # Caso 2: unsupported option (build sin extras OpenAI) -> retry sin esas keys.
+            if _looks_like_unsupported_option_error(str(exc)):
+                return self._post_chat_fallback(body, timeout=timeout)
+
+            raise
+
+    def _post_chat_fallback(self, body: dict[str, Any], *, timeout: float) -> dict[str, Any]:
+        """Retry sin los campos OpenAI-extra que algunos builds rechazan."""
+        fallback = dict(body)
+        fallback.pop("chat_template_kwargs", None)
+        fallback.pop("reasoning_format", None)
+        fallback.pop("parse_tool_calls", None)
+        fallback.pop("parallel_tool_calls", None)
+        return self._post_chat(fallback, timeout=timeout)
 
     def chat_stream(
         self,
