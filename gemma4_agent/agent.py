@@ -285,7 +285,13 @@ TOOL_RULES: dict[str, str] = {
         "mean you have read or researched the content. If browser(search/open) returns "
         "content_verified=false, say that you opened the URL or search results; do not "
         "claim that you researched, read, watched, or found specific content unless "
-        "web(...) or another tool returned extracted content."
+        "web(...) or another tool returned extracted content.\n"
+        "Browser tool actions are limited to: open, search, youtube_play, media_pause, "
+        "media_stop, active_tab_title, click, find, research. Window operations like "
+        "MINIMIZE, MAXIMIZE, RESTORE, CLOSE, MOVE on a browser window are NOT browser "
+        "actions — use window(action=\"minimize\"|\"maximize\"|\"close\"|...). Example: "
+        "user says 'minimiza Opera' → window(action=\"minimize\", title=\"Opera\"), NOT "
+        "browser(action=\"minimize\")."
     ),
     "email": (
         "Email and Graph-backed reminders require an existing Microsoft Graph token in "

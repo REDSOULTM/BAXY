@@ -5650,13 +5650,34 @@ def _routine_history(state: AgentState, routine: dict[str, Any] | None, *, limit
     return _ok(runs=out, count=len(out))
 
 
+def _find_vlc_executable() -> str | None:
+    """Localiza vlc.exe en PATH o en las rutas tipicas de instalacion Windows.
+
+    winget install VideoLAN.VLC no agrega vlc al PATH por default, asi que
+    shutil.which("vlc") falla aunque este instalado. Probamos las rutas
+    estandar como fallback.
+    """
+    vlc = shutil.which("vlc") or shutil.which("vlc.exe")
+    if vlc:
+        return vlc
+    # Rutas standard de VLC en Windows
+    candidates = [
+        r"C:\Program Files\VideoLAN\VLC\vlc.exe",
+        r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe",
+    ]
+    for c in candidates:
+        if Path(c).is_file():
+            return c
+    return None
+
+
 def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | None = None) -> dict[str, Any]:
     action = str(args.get("action") or "play").casefold()
     if action == "status":
         return _ok(
             backends=["browser_youtube", "windows_media_keys", "local_file", "vlc_cli", "winrt_smtc"],
             now_playing_supported=True,
-            vlc_available=bool(shutil.which("vlc") or shutil.which("vlc.exe")),
+            vlc_available=bool(_find_vlc_executable()),
             note="now_playing uses Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager via PowerShell.",
         )
     if action == "play":
@@ -5665,10 +5686,14 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         provider = str(args.get("provider") or "youtube").casefold()
         if path:
             return _media_play_local(path, args)
+        # Providers tipo spotify / apple_music / deezer requieren SDK + OAuth.
+        # En vez de fallar con "unsupported media provider", caemos a YouTube
+        # — el usuario igual escucha la cancion y le avisamos en `fallback_from`
+        # asi el LLM puede explicarlo en su reply.
         if provider in {"youtube", "yt", "browser"}:
             return executor("browser", {"action": "youtube_play", "query": query or "musica"})
         if provider == "vlc":
-            vlc = shutil.which("vlc") or shutil.which("vlc.exe")
+            vlc = _find_vlc_executable()
             if not vlc:
                 return _err(
                     "VLC is not installed",
@@ -5679,7 +5704,24 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
             if not target:
                 return _err("vlc provider requires path or url")
             return _media_play_vlc(vlc, target)
-        return _err("unsupported media provider", provider=provider, status="needs_dependency", verified=False)
+        # Streaming providers no soportados nativamente — fallback a YouTube
+        # con nota honesta de que NO es el provider pedido.
+        if provider in {"spotify", "apple_music", "applemusic", "deezer",
+                        "tidal", "amazon_music", "amazonmusic", "soundcloud"}:
+            result = executor("browser", {"action": "youtube_play", "query": query or "musica"})
+            if isinstance(result, dict):
+                result = dict(result)
+                result["fallback_from"] = provider
+                result["fallback_note"] = (
+                    f"{provider} requires native SDK/OAuth not configured; "
+                    "played on YouTube instead."
+                )
+            return result
+        return _err(
+            f"unsupported media provider: {provider!r}",
+            provider=provider, status="needs_dependency", verified=False,
+            install_hint="Use provider=youtube (default), local_file with path=..., or vlc with path/url.",
+        )
     if action == "open_local":
         path = str(args.get("path") or "").strip()
         if not path:
@@ -5723,7 +5765,7 @@ def _media_play_local(path_raw: str, args: dict[str, Any]) -> dict[str, Any]:
         return _err("media file not found", path=path_raw)
     backend = str(args.get("backend") or "").casefold()
     if backend == "vlc":
-        vlc = shutil.which("vlc") or shutil.which("vlc.exe")
+        vlc = _find_vlc_executable()
         if vlc:
             return _media_play_vlc(vlc, str(target))
         return _err(
@@ -7626,6 +7668,8 @@ def _find_soundvolumeview() -> Path | None:
     raw = os.environ.get("GEMMA4_SOUNDVOLUMEVIEW")
     candidates = [Path(raw)] if raw else []
     candidates.extend([
+        # ~/.gemma4/tools/ — bundle path (agent puede bajarlo aca proactivamente)
+        Path.home() / ".gemma4" / "tools" / "SoundVolumeView.exe",
         Path.cwd() / "tools" / "SoundVolumeView.exe",
         Path.home() / "Downloads" / "SoundVolumeView.exe",
         Path("C:/Tools/SoundVolumeView/SoundVolumeView.exe"),

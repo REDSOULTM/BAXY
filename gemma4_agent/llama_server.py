@@ -421,6 +421,62 @@ class LlamaServerManager:
             return False
         return self._proc.poll() is None
 
+    def detect_crash_signature(self, max_tail_lines: int = 80) -> dict[str, str | None]:
+        """Inspecciona el err log buscando una causa de crash conocida.
+
+        Devuelve dict con keys:
+          - "kind": 'cuda_illegal_memory' | 'oom' | 'segfault' | 'context_overflow' | None
+          - "summary": una linea descriptiva del crash o None
+          - "log_excerpt": ultimas N lineas relevantes del log (para mostrar al user)
+
+        Util para diagnostico cuando _wait_for_health falla o el cliente recibe
+        ConnectionReset persistente. NO modifica estado del manager — solo lee.
+        """
+        empty = {"kind": None, "summary": None, "log_excerpt": None}
+        log_path = self._config.captures_dir.parent / "logs" / "llama-server.err.log"
+        if not log_path.exists():
+            return empty
+        try:
+            # Read last ~20KB (suficiente para los ultimos ~200 lines).
+            with log_path.open("rb") as fh:
+                fh.seek(0, 2)
+                size = fh.tell()
+                fh.seek(max(0, size - 20480), 0)
+                tail_bytes = fh.read()
+            text = tail_bytes.decode("utf-8", errors="replace")
+        except OSError:
+            return empty
+        lines = text.split("\n")
+        tail = lines[-max_tail_lines:]
+        joined = "\n".join(tail).lower()
+        kind: str | None = None
+        summary: str | None = None
+        if "cuda error" in joined and "illegal memory" in joined:
+            kind = "cuda_illegal_memory"
+            summary = (
+                "llama-server crashed with CUDA illegal memory access. "
+                "This is a GPU/driver-level issue (often after long sessions or "
+                "specific prompt patterns). Restart usually recovers."
+            )
+        elif "out of memory" in joined or "cudamalloc" in joined.replace(" ", ""):
+            kind = "oom"
+            summary = "llama-server out of memory; reduce context_size or use a smaller quant."
+        elif "segmentation fault" in joined or "access violation" in joined:
+            kind = "segfault"
+            summary = "llama-server segfaulted; likely build/binary bug, try a newer llama.cpp release."
+        elif "exceed_context_size_error" in joined or "exceeds the available context size" in joined:
+            kind = "context_overflow"
+            summary = "Request exceeded context_size; agent should compact history or use larger context profile."
+        if kind is None:
+            return empty
+        # Excerpt: keep last ~20 non-empty lines for the UI.
+        non_empty = [l for l in tail if l.strip()][-20:]
+        return {
+            "kind": kind,
+            "summary": summary,
+            "log_excerpt": "\n".join(non_empty),
+        }
+
     def has_any_server(self) -> bool:
         """True si hay un server escuchando en :8080, sea nuestro o externo."""
         return self.is_running() or port_in_use()
