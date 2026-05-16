@@ -152,6 +152,80 @@ class TestMediaCreatesPending(unittest.TestCase):
         self.assertIsNone(get_pending_action(state))
 
 
+class TestResumePendingEndToEnd(unittest.TestCase):
+    """E2E: pending guardado -> user da nombre -> resume sin LLM ejecuta media."""
+
+    def test_resume_runs_media_with_profile(self):
+        from .domain_tools import _set_pending_action
+        agent = Gemma4Agent(AgentConfig.from_env())
+        # Pre-set pending como si el turn anterior hubiera pedido profile.
+        _set_pending_action(agent.state, "streaming_profile", {
+            "provider": "disney",
+            "query": "Daredevil Born Again",
+            "auto_play": True,
+        })
+
+        # Mock executor para evitar GUI real.
+        captured: list[tuple] = []
+
+        def _mock_execute(name, args):
+            captured.append((name, args))
+            if name == "media":
+                # Simular media exitoso (played=True).
+                return {
+                    "ok": True, "played": True, "provider": "disney_web",
+                    "profile_name": args.get("profile"),
+                    "completion_status": "media_playing",
+                    "status": "dispatched", "verified": True,
+                    "tool": "media", "action": "play",
+                }
+            return {"ok": True}
+
+        with patch.object(agent.tools, "execute", side_effect=_mock_execute):
+            reply = agent._try_resume_pending_action("Mi perfil es Ema", "test_turn")
+
+        self.assertIsNotNone(reply, "resume should return AgentReply")
+        self.assertIn("Ema", reply.content)
+        self.assertIn("Daredevil", reply.content)
+        # Verificar que media se llamo con el profile correcto.
+        media_calls = [c for c in captured if c[0] == "media"]
+        self.assertEqual(len(media_calls), 1)
+        self.assertEqual(media_calls[0][1]["profile"], "Ema")
+        self.assertEqual(media_calls[0][1]["provider"], "disney")
+        self.assertEqual(media_calls[0][1]["query"], "Daredevil Born Again")
+
+    def test_resume_traces_without_crashing_on_kind_kwarg(self):
+        """REGRESION: trace.event(turn_id, kind, **payload) no acepta otro
+        kwarg 'kind'. Verificar que el code path del resume no haga eso."""
+        from .domain_tools import _set_pending_action
+        agent = Gemma4Agent(AgentConfig.from_env())
+        _set_pending_action(agent.state, "streaming_profile", {
+            "provider": "disney", "query": "X",
+        })
+
+        # Mock trace.event para capturar todos los kwargs.
+        recorded_calls: list[tuple] = []
+        original_event = agent.trace.event
+
+        def _capture(turn_id, kind, **payload):
+            # Llamar al original (que valida args) — esto re-disparara el
+            # bug si esta presente.
+            recorded_calls.append((turn_id, kind, payload))
+            original_event(turn_id, kind, **payload)
+
+        with patch.object(agent.trace, "event", side_effect=_capture):
+            with patch.object(agent.tools, "execute",
+                              return_value={"ok": True, "played": True,
+                                            "provider": "disney_web",
+                                            "completion_status": "media_playing"}):
+                # Esto NO debe lanzar TypeError "multiple values for kind".
+                reply = agent._try_resume_pending_action("Mi perfil es Ema", "test")
+
+        self.assertIsNotNone(reply)
+        # Verificar que las trace calls fueron exitosas.
+        self.assertTrue(any(c[1] == "pending_resume" for c in recorded_calls))
+
+
 class TestUnverifiedGuardWithNeedsUser(unittest.TestCase):
     """El guard NO debe inyectar 'Nota:' cuando status='needs_user'."""
 

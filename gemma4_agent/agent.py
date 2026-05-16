@@ -1758,7 +1758,8 @@ class Gemma4Agent:
                     except Exception:
                         pass
                 return None
-            self.trace.event(turn_id, "pending_resume", kind=kind, payload=payload,
+            self.trace.event(turn_id, "pending_resume",
+                             pending_kind=kind, payload=payload,
                              extracted_profile=extracted)
             # Construir args para media y ejecutar.
             media_args = {
