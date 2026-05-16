@@ -226,6 +226,203 @@ class TestResumePendingEndToEnd(unittest.TestCase):
         self.assertTrue(any(c[1] == "pending_resume" for c in recorded_calls))
 
 
+class TestPendingActionTTL(unittest.TestCase):
+    """TTL semantics: pending older than 300s must NOT resume, and must
+    be auto-cleared when encountered."""
+
+    def test_pending_within_ttl_resumes(self):
+        from .domain_tools import _set_pending_action
+        agent = Gemma4Agent(AgentConfig.from_env())
+        _set_pending_action(agent.state, "streaming_profile",
+                            {"provider": "netflix", "query": "X"})
+        # Within window (default created_at = now): age ~ 0s.
+        with patch.object(agent.tools, "execute",
+                          return_value={"ok": True, "played": True,
+                                        "provider": "netflix_web",
+                                        "completion_status": "media_playing"}):
+            reply = agent._try_resume_pending_action("Ema", "t1")
+        self.assertIsNotNone(reply)
+
+    def test_pending_past_ttl_does_not_resume_and_clears(self):
+        from .domain_tools import (
+            _set_pending_action,
+            get_pending_action,
+        )
+        agent = Gemma4Agent(AgentConfig.from_env())
+        _set_pending_action(agent.state, "streaming_profile",
+                            {"provider": "netflix", "query": "X"})
+        # Backdate created_at by 10 minutes so age_seconds > 300.
+        from datetime import datetime, timedelta
+        data = agent.state._load()  # noqa: SLF001
+        for res in data.get("resources", {}).values():
+            if isinstance(res, dict) and res.get("kind") == "pending_action":
+                old = (datetime.now() - timedelta(seconds=601)).isoformat()
+                res.setdefault("metadata", {})["created_at"] = old
+        agent.state._save(data)  # noqa: SLF001
+
+        # Sanity: pending is still readable, age > 300.
+        p = get_pending_action(agent.state)
+        self.assertIsNotNone(p)
+        self.assertGreater(p["age_seconds"], 300)
+
+        # Resume must NOT fire even with a valid-looking name.
+        with patch.object(agent.tools, "execute") as mock_exec:
+            reply = agent._try_resume_pending_action("Ema", "t1")
+        self.assertIsNone(reply)
+        mock_exec.assert_not_called()
+        # And pending must be auto-cleared so future turns don't try again.
+        self.assertIsNone(get_pending_action(agent.state))
+
+
+class TestPendingActionExplicitCancel(unittest.TestCase):
+    """User saying 'olvidalo' / 'cancela' / 'no importa' must close the
+    pending so it doesn't trap subsequent turns."""
+
+    def setUp(self):
+        from .domain_tools import _set_pending_action
+        self.agent = Gemma4Agent(AgentConfig.from_env())
+        _set_pending_action(
+            self.agent.state, "streaming_profile",
+            {"provider": "disney", "query": "Loki"},
+        )
+
+    def _resume_with(self, text: str):
+        with patch.object(self.agent.tools, "execute") as mock_exec:
+            reply = self.agent._try_resume_pending_action(text, "tcancel")
+        return reply, mock_exec
+
+    def test_olvidalo_clears_pending(self):
+        from .domain_tools import get_pending_action
+        reply, mock_exec = self._resume_with("olvidalo")
+        # No reply (kicks back to normal LLM path) and no media exec.
+        self.assertIsNone(reply)
+        mock_exec.assert_not_called()
+        self.assertIsNone(get_pending_action(self.agent.state))
+
+    def test_cancela_clears_pending(self):
+        from .domain_tools import get_pending_action
+        self._resume_with("cancela eso por favor")
+        self.assertIsNone(get_pending_action(self.agent.state))
+
+    def test_no_importa_clears_pending(self):
+        from .domain_tools import get_pending_action
+        self._resume_with("no importa, dejalo")
+        self.assertIsNone(get_pending_action(self.agent.state))
+
+    def test_unrelated_long_text_does_not_clear(self):
+        """Long off-topic text shouldn't auto-cancel — user might still
+        intend to follow up. Conservative: leave pending alone, let TTL
+        decide or the next on-topic answer."""
+        from .domain_tools import get_pending_action
+        reply, mock_exec = self._resume_with(
+            "quiero saber qué tiempo va a hacer mañana en buenos aires"
+        )
+        self.assertIsNone(reply)  # no profile extracted
+        mock_exec.assert_not_called()
+        # Pending still there for future on-topic reply.
+        self.assertIsNotNone(get_pending_action(self.agent.state))
+
+
+class TestPendingActionPersistsAcrossAgentInstances(unittest.TestCase):
+    """The pending lives in AgentState (a JSON file). A second Agent
+    constructed against the same state path must see it."""
+
+    def test_second_agent_sees_pending_from_first(self):
+        from .domain_tools import _set_pending_action, get_pending_action
+        # Build first agent + write pending.
+        agent_a = Gemma4Agent(AgentConfig.from_env())
+        _set_pending_action(
+            agent_a.state, "streaming_profile",
+            {"provider": "hbo_max", "query": "House of Dragon"},
+        )
+        state_path = agent_a.state.path
+
+        # Build a second agent against the same state file (simulates
+        # process restart). NOTE: Gemma4Agent uses captures-dir-relative
+        # default state, so we splice the state path back in.
+        agent_b = Gemma4Agent(AgentConfig.from_env())
+        from .state import AgentState
+        agent_b.state = AgentState(path=state_path)
+
+        p = get_pending_action(agent_b.state)
+        self.assertIsNotNone(p, "second agent should read the persisted pending")
+        self.assertEqual(p["kind"], "streaming_profile")
+        self.assertEqual(p["payload"]["provider"], "hbo_max")
+        self.assertEqual(p["payload"]["query"], "House of Dragon")
+
+
+class TestProfileExtractorAdversarial(unittest.TestCase):
+    """10+ adversarial phrases to harden the extractor.
+
+    These come from real-world ways a user might respond when prompted for
+    a streaming profile — including ambiguity, accents, capitalization,
+    and intent-changes.
+    """
+
+    def test_accents_and_capitalization(self):
+        self.assertEqual(
+            Gemma4Agent._extract_profile_name("José"), "José",
+        )
+        self.assertEqual(
+            Gemma4Agent._extract_profile_name("Mi perfil es JOSÉ"), "JOSÉ",
+        )
+
+    def test_with_trailing_punctuation(self):
+        self.assertEqual(
+            Gemma4Agent._extract_profile_name("Ema."), "Ema",
+        )
+        # Trailing comma also stripped (current heuristic uses .strip(" .,;")).
+        self.assertEqual(
+            Gemma4Agent._extract_profile_name("perfil: Elio,"), "Elio",
+        )
+
+    def test_intent_change_rejected(self):
+        # User pivoted away from the question.
+        self.assertIsNone(
+            Gemma4Agent._extract_profile_name("Mejor abre Spotify"),
+        )
+        self.assertIsNone(
+            Gemma4Agent._extract_profile_name("dale pausa"),
+        )
+
+    def test_pure_no_rejected(self):
+        # "no" alone is a cancel, not a name.
+        self.assertIsNone(Gemma4Agent._extract_profile_name("no"))
+        self.assertIsNone(Gemma4Agent._extract_profile_name("No"))
+
+    def test_pure_yes_rejected(self):
+        self.assertIsNone(Gemma4Agent._extract_profile_name("si"))
+        self.assertIsNone(Gemma4Agent._extract_profile_name("yes"))
+        self.assertIsNone(Gemma4Agent._extract_profile_name("ok"))
+
+    def test_question_rejected(self):
+        self.assertIsNone(
+            Gemma4Agent._extract_profile_name("¿cuál era el mío?"),
+        )
+        self.assertIsNone(
+            Gemma4Agent._extract_profile_name("qué perfiles tengo?"),
+        )
+
+    def test_empty_and_whitespace(self):
+        self.assertIsNone(Gemma4Agent._extract_profile_name(""))
+        self.assertIsNone(Gemma4Agent._extract_profile_name("   "))
+        self.assertIsNone(Gemma4Agent._extract_profile_name("\n\t"))
+
+    def test_long_sentence_rejected(self):
+        # 4+ words without explicit "mi perfil es" / "soy" -> reject.
+        self.assertIsNone(
+            Gemma4Agent._extract_profile_name(
+                "me gustaría que uses cualquiera de los perfiles disponibles"
+            ),
+        )
+
+    def test_special_chars_in_name_rejected(self):
+        # Profile names with {}, ?, ! are almost certainly not a real name.
+        self.assertIsNone(
+            Gemma4Agent._extract_profile_name("Mi perfil es {something}"),
+        )
+
+
 class TestUnverifiedGuardWithNeedsUser(unittest.TestCase):
     """El guard NO debe inyectar 'Nota:' cuando status='needs_user'."""
 

@@ -1844,15 +1844,25 @@ class Gemma4Agent:
                 if 1 <= len(name) <= 30 and not any(ch in name for ch in "¿?!{}"):
                     return name
         # 2. Si es 1-2 palabras corto (probablemente solo el nombre).
-        words = s.split()
-        if 1 <= len(words) <= 2 and len(s) <= 30:
-            # No es una orden tipica.
-            order_verbs = {"abre", "open", "pon", "play", "cierra", "close",
+        #    Strippeamos trailing punctuation antes de evaluar — un user que
+        #    responde "Ema." quiere "Ema", no "Ema." como nombre del perfil.
+        s_clean = s.rstrip(" .,;!?")
+        words = s_clean.split()
+        if 1 <= len(words) <= 2 and len(s_clean) <= 30:
+            # No es una orden tipica. Cubre tanto las raices ("olvida",
+            # "cancela") como las flexiones ("olvidalo", "cancelalo",
+            # "cancelo"). Sin prefix-match el extractor aceptaba "olvidalo"
+            # como nombre de perfil y arrancaba media con profile="olvidalo".
+            order_roots = ("abre", "open", "pon", "play", "cierra", "close",
                             "borra", "delete", "busca", "search", "manda",
                             "send", "no", "si", "yes", "ok", "olvida",
-                            "cancela", "stop", "pausa", "pause"}
-            if not any(w.lower() in order_verbs for w in words):
-                return s.strip()
+                            "cancela", "cancel", "stop", "pausa", "pause",
+                            "dale", "dejalo", "dejame")
+            def _is_order(word: str) -> bool:
+                wl = word.casefold()
+                return any(wl == root or wl.startswith(root) for root in order_roots)
+            if not any(_is_order(w) for w in words):
+                return s_clean.strip()
         return None
 
     def _guard_unverified_final(self, content: str, events: list[ToolEvent]) -> str:
