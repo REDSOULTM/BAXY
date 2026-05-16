@@ -339,15 +339,16 @@ for _alias in (
 def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
     """Construye el SYSTEM_PROMPT efectivo para este turno.
 
-    Sin subset: comportamiento legacy — concatena CORE + todas las TOOL_RULES
-    (resultado equivalente al SYSTEM_PROMPT monolitico anterior).
+    `None`        → comportamiento legacy: CORE + TODAS las TOOL_RULES.
+    `[]`          → smalltalk: solo CORE (no rules, no schemas).
+    `[a,b,...]`   → CORE + solo las TOOL_RULES cuyas tools estan en el subset.
 
-    Con subset: CORE + solo las TOOL_RULES cuyas tools estan en el subset.
-    Una misma regla compartida (e.g. la de small local organization) se
-    incluye una sola vez aunque varias tools del subset la mapeen.
+    Distinguir `None` vs `[]` es critico para latencia: smalltalk con None
+    inyectaba 60+ TOOL_RULES innecesarias (~7K chars) y tools schemas (~46K
+    chars) en cada turn, forzando full prompt reprocessing.
     """
-    if not selected_tool_names:
-        # Incluir todas las reglas, deduplicadas, en orden estable.
+    if selected_tool_names is None:
+        # Legacy: incluir todas las reglas, deduplicadas, en orden estable.
         seen: set[int] = set()
         parts = [CORE_PROMPT]
         for name in sorted(TOOL_RULES.keys()):
@@ -359,9 +360,11 @@ def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
             parts.append(rule)
         return "\n\n".join(parts)
 
-    # Subset: filtrar reglas por nombre de tool, deduplicar por identidad
-    # (varias tools pueden mapear a la misma regla compartida).
-    wanted = set(selected_tool_names)
+    if not selected_tool_names:
+        # Smalltalk explicito: solo el CORE.
+        return CORE_PROMPT
+
+    # Subset: filtrar reglas por nombre de tool, deduplicar por identidad.
     seen_ids: set[int] = set()
     rules: list[str] = []
     for name in selected_tool_names:
@@ -589,10 +592,16 @@ class Gemma4Agent:
         else:
             mode = env_mode
 
-        # PERF: si el caller paso selected_tool_names, compilar solo el subset.
-        # Cache por (mode, frozenset(selected_tool_names)) para no recompilar
-        # cuando el router elige el mismo subset 2 turns seguidos.
-        if selected_tool_names:
+        # PERF: si el caller paso selected_tool_names (lista explicita, aunque
+        # sea vacia), respetamos el contrato — no inyectamos schemas que el
+        # router decidio no necesitar. Esto evita el bug de smalltalk metiendo
+        # ~46KB / 11.6K tokens de schemas en cada turn sin necesidad.
+        # `None` significa "no subset path requested" → comportamiento legacy
+        # (full catalogo). Lista vacia `[]` significa "smalltalk / no tools".
+        if selected_tool_names is not None:
+            if not selected_tool_names:
+                # Smalltalk / no tools necesarias: 0 schemas, 0 tokens.
+                return ""
             subset_key = ",".join(sorted(set(selected_tool_names)))
             cache_key = f"_cached_tool_schemas_md_{mode}_{subset_key}"
             cached = getattr(self, cache_key, None)
@@ -606,22 +615,24 @@ class Gemma4Agent:
                         and isinstance(s.get("function"), dict)
                         and s["function"].get("name") in wanted
                     ]
-                    # Si por alguna razon el subset llego vacio (router devolvio
-                    # nombres que no existen en el catalogo), caer al hint full
-                    # para no dejar al LLM sin guidance.
                     if subset_schemas:
                         cached = compile_tools_to_markdown_exact(
                             schemas=subset_schemas,
                             compact=(mode == "compact"),
                         )
                     else:
-                        cached = compile_tools_to_markdown_exact(compact=(mode == "compact"))
+                        # Subset solicitado pero no matchea ningun schema
+                        # (router devolvio nombres invalidos). No inyectar
+                        # full por defensa — log y devolver vacio.
+                        logger.warning("tool_schemas_hint: subset %s no matchea ningun schema; devolviendo vacio",
+                                       sorted(wanted))
+                        cached = ""
                 except Exception:
                     cached = ""
                 setattr(self, cache_key, cached)
             return f"\n\n{cached}" if cached else ""
 
-        # Sin subset: comportamiento legacy (todos los tools).
+        # Sin subset (caller paso None explicito): comportamiento legacy.
         cache_key = f"_cached_tool_schemas_md_{mode}"
         cached = getattr(self, cache_key, None)
         if cached is None:

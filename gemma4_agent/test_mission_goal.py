@@ -378,6 +378,39 @@ class TestBugFixes(unittest.TestCase):
         text = "Aqui hay [info] en medio.\nFinal sin footer."
         self.assertEqual(_strip_trailing_footers(text), text.rstrip())
 
+    def test_build_system_prompt_distinguishes_none_vs_empty(self):
+        """Bug latencia: smalltalk con [] no debe inyectar TODAS las TOOL_RULES."""
+        from .agent import build_system_prompt, CORE_PROMPT
+        legacy = build_system_prompt(None)
+        smalltalk = build_system_prompt([])
+        subset = build_system_prompt(["app", "steam"])
+        # legacy = CORE + TODAS las rules (~60+ rules concatenadas)
+        # smalltalk = solo CORE
+        # subset = CORE + reglas filtradas
+        self.assertGreater(len(legacy), len(subset),
+                           "legacy debe tener mas chars que subset")
+        self.assertGreater(len(subset), len(smalltalk),
+                           "subset debe tener mas chars que smalltalk (al menos las rules de app+steam)")
+        self.assertEqual(smalltalk, CORE_PROMPT,
+                         "smalltalk debe ser exactamente CORE_PROMPT (sin rules)")
+
+    def test_tool_schemas_hint_distinguishes_none_vs_empty(self):
+        """Bug latencia: smalltalk con [] no debe inyectar TODOS los 63 schemas."""
+        import os
+        os.environ['GEMMA4_LLAMA_AUTO_START'] = '0'
+        from .agent import Gemma4Agent
+        from .config import AgentConfig
+        agent = Gemma4Agent(AgentConfig.from_env())
+        # selected = [] (smalltalk) -> sin hint
+        h_empty = agent._tool_schemas_hint(selected_tool_names=[])
+        self.assertEqual(h_empty, "",
+                         "selected=[] (smalltalk) debe devolver hint vacio")
+        # selected = ['app','steam'] -> hint con esos 2 tools
+        h_subset = agent._tool_schemas_hint(selected_tool_names=['app', 'steam'])
+        self.assertGreater(len(h_subset), 0)
+        self.assertLess(len(h_subset), 10000,
+                        "subset de 2 tools debe ser <10K chars (no full catalog)")
+
 
 if __name__ == "__main__":
     unittest.main()
