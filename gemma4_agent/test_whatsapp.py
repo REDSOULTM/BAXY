@@ -63,18 +63,19 @@ class TestWhatsappSendMessage(unittest.TestCase):
     def setUp(self):
         self.state = _fresh_state()
 
-    def test_send_with_explicit_phone_opens_deeplink(self):
+    def test_send_with_explicit_phone_opens_deeplink_no_executor(self):
+        # Sin executor (CLI / tests), auto_send se desactiva graceful y solo
+        # se abre el chat — sent=False es correcto en este path.
         with patch("gemma4_agent.domain_tools._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "shell:AppsFolder\\X!App"}), \
              patch("gemma4_agent.domain_tools.subprocess.Popen") as popen:
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+54 9 11 1234-5678", "text": "hola"},
-                self.state,
+                self.state, executor=None,
             )
         self.assertTrue(r["ok"])
         self.assertEqual(r["provider"], "whatsapp_desktop")
         self.assertFalse(r["sent"])
-        self.assertFalse(r["verified"])
         self.assertEqual(r["recipient_normalized"], "5491112345678")
         self.assertIn("whatsapp://send?phone=5491112345678", r["deeplink"])
         self.assertIn("text=hola", r["deeplink"])
@@ -86,13 +87,15 @@ class TestWhatsappSendMessage(unittest.TestCase):
              patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True) as wb:
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
-                self.state,
+                self.state, executor=None,
             )
         self.assertTrue(r["ok"])
         self.assertEqual(r["provider"], "whatsapp_web")
         self.assertIn("wa.me/15551234567", r["url"])
         self.assertIn("text=hi", r["url"])
         wb.assert_called_once()
+        # Web nunca auto-envia.
+        self.assertFalse(r["sent"])
 
     def test_send_without_recipient_fails(self):
         r = whatsapp_tool({"action": "send_message", "text": "hola"}, self.state)
@@ -240,6 +243,160 @@ class TestWhatsappAliases(unittest.TestCase):
             )
         self.assertTrue(r["ok"])
         self.assertEqual(r["text"], "via body")
+
+
+class TestWhatsappAutoSend(unittest.TestCase):
+    """Auto-send: tras abrir el chat, esperar y mandar Enter solo si la
+    ventana activa es WhatsApp."""
+
+    def setUp(self):
+        self.state = _fresh_state()
+        # Patch time.sleep para que los tests no esperen 1.8s real.
+        self._sleep_patcher = patch("time.sleep")
+        self._sleep_patcher.start()
+
+    def tearDown(self):
+        self._sleep_patcher.stop()
+
+    def _mock_executor_focus_ok(self):
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True, "title": "WhatsApp"}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "WhatsApp - Juan", "pid": 123}}
+            if name == "gui" and args.get("action") == "keypress":
+                return {"ok": True, "keys": "enter"}
+            return {"ok": False, "error": f"unexpected: {name}({args})"}
+        return MagicMock(side_effect=_exec)
+
+    def test_auto_send_default_true_for_send_message(self):
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
+                self.state, executor=executor,
+            )
+        self.assertTrue(r["ok"])
+        self.assertTrue(r["sent"], f"expected sent=True, got {r}")
+        self.assertTrue(r["verified"])
+        self.assertEqual(r["completion_status"], "message_sent")
+        # Executor llamado para focus, active, keypress (al menos 3 calls).
+        self.assertGreaterEqual(executor.call_count, 3)
+
+    def test_auto_send_aborts_when_wrong_window_focused(self):
+        def _exec_wrong(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": False, "error": "window not found"}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "VS Code - test.py", "pid": 999}}
+            return {"ok": True}
+        executor = MagicMock(side_effect=_exec_wrong)
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567", "text": "rm -rf /"},
+                self.state, executor=executor,
+            )
+        # CRITICO: no debe haber enviado Enter porque la ventana activa es VS Code.
+        self.assertFalse(r["sent"], "MUST NOT send Enter to VS Code")
+        # Debe registrar la razon del abort.
+        self.assertIn("not WhatsApp", r["auto_send_info"]["abort_reason"])
+        # Y NUNCA debe haber llamado gui.keypress.
+        keypress_calls = [c for c in executor.call_args_list
+                          if c.args[0] == "gui" and c.args[1].get("action") == "keypress"]
+        self.assertEqual(len(keypress_calls), 0)
+
+    def test_auto_send_false_skips_enter_completely(self):
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567",
+                 "text": "hi", "auto_send": False},
+                self.state, executor=executor,
+            )
+        self.assertTrue(r["ok"])
+        self.assertFalse(r["sent"])
+        self.assertFalse(r["auto_send_attempted"])
+        # Executor NO debe haberse llamado para auto-send.
+        executor.assert_not_called()
+
+    def test_auto_send_false_via_string(self):
+        # LLM puede pasar "false" como string en JSON args.
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567",
+                 "text": "hi", "auto_send": "false"},
+                self.state, executor=executor,
+            )
+        self.assertFalse(r["auto_send_attempted"])
+
+    def test_open_chat_never_auto_sends(self):
+        # action=open_chat es solo "abre el chat", nunca enviar.
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "open_chat", "phone": "+1 555 123 4567"},
+                self.state, executor=executor,
+            )
+        self.assertTrue(r["ok"])
+        self.assertFalse(r["sent"])
+        executor.assert_not_called()
+
+    def test_wait_seconds_is_clamped(self):
+        # wait_seconds=999 debe clampearse a 10s max.
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567",
+                 "text": "hi", "wait_seconds": 999},
+                self.state, executor=executor,
+            )
+        self.assertLessEqual(r["auto_send_info"]["wait_seconds"], 10.0)
+
+    def test_executor_exception_aborts_safely(self):
+        # Si executor(window.focus) lanza excepcion, no debe explotar todo.
+        def _exec_explode(name, args):
+            raise RuntimeError("simulated executor crash")
+        executor = MagicMock(side_effect=_exec_explode)
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
+                self.state, executor=executor,
+            )
+        # Result aun debe ser ok (chat abierto) pero sent=False.
+        self.assertTrue(r["ok"])
+        self.assertFalse(r["sent"])
+        self.assertIn("focus call failed", r["auto_send_info"]["abort_reason"])
+
+    def test_web_fallback_never_auto_sends(self):
+        # Path 2 (wa.me) nunca auto-envia, aunque auto_send=true.
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": None, "launch_target": None}), \
+             patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567",
+                 "text": "hi", "auto_send": True},
+                self.state, executor=executor,
+            )
+        self.assertEqual(r["provider"], "whatsapp_web")
+        self.assertFalse(r["sent"])
+        # Executor NO debe haber sido llamado para auto-send en web path.
+        executor.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -6734,28 +6734,123 @@ def _resolve_whatsapp_recipient(args: dict[str, Any], state: AgentState) -> tupl
     return phone, normalized, f"contact:{best.get('id')}"
 
 
-def whatsapp_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+def _whatsapp_auto_send(executor: Executor, wait_seconds: float) -> dict[str, Any]:
+    """Tras abrir el chat con el deeplink, esperar carga, asegurar focus
+    de la ventana WhatsApp, y mandar Enter.
+
+    Devuelve dict con keys:
+      - "sent": bool — True si llegamos a mandar Enter.
+      - "focus_verified": bool — si confirmamos que la ventana activa era WhatsApp.
+      - "abort_reason": str | None — por que NO mandamos Enter (si aplica).
+      - "wait_seconds": float — cuanto esperamos antes del Enter.
+
+    Seguridad: NUNCA mandar Enter si no podemos confirmar que la ventana
+    activa contiene "WhatsApp" en el titulo. De lo contrario el Enter va a
+    la app que el user tenia en focus (IDE, browser, terminal con comando
+    peligroso, etc.).
+    """
+    import time as _time
+    # 1. Esperar a que WhatsApp termine de cargar el chat + rellenar texto.
+    _time.sleep(max(0.5, wait_seconds))
+
+    # 2. Asegurar focus: pedir explicitamente que la ventana de WhatsApp
+    #    venga al frente. Si no esta abierta, esto falla silenciosamente.
+    try:
+        focus_result = executor("window", {"action": "focus", "title": "WhatsApp"})
+    except Exception as exc:
+        return {
+            "sent": False, "focus_verified": False,
+            "abort_reason": f"focus call failed: {exc}",
+            "wait_seconds": wait_seconds,
+        }
+    focus_ok = bool(focus_result.get("ok"))
+
+    # 3. Verificar que la ventana activa es realmente WhatsApp antes del Enter.
+    #    Damos un pequeño grace para que el focus tome efecto.
+    _time.sleep(0.3)
+    try:
+        active = executor("window", {"action": "active"})
+    except Exception as exc:
+        return {
+            "sent": False, "focus_verified": False,
+            "abort_reason": f"active check failed: {exc}",
+            "wait_seconds": wait_seconds,
+        }
+    active_title = str(
+        (active.get("active") or {}).get("title")
+        if isinstance(active.get("active"), dict)
+        else (active.get("title") or "")
+    ).lower()
+    if "whatsapp" not in active_title:
+        return {
+            "sent": False, "focus_verified": False,
+            "abort_reason": (
+                f"active window is {active_title!r}, not WhatsApp. "
+                "Refusing to send Enter to a different app."
+            ),
+            "wait_seconds": wait_seconds,
+            "focus_call_ok": focus_ok,
+        }
+
+    # 4. Enter — la ventana correcta esta en foco, podemos enviar el mensaje.
+    try:
+        keypress_result = executor("gui", {"action": "keypress", "keys": "enter"})
+    except Exception as exc:
+        return {
+            "sent": False, "focus_verified": True,
+            "abort_reason": f"keypress failed: {exc}",
+            "wait_seconds": wait_seconds,
+        }
+    if not keypress_result.get("ok"):
+        return {
+            "sent": False, "focus_verified": True,
+            "abort_reason": f"keypress returned: {keypress_result.get('error', 'unknown')}",
+            "wait_seconds": wait_seconds,
+        }
+    return {
+        "sent": True, "focus_verified": True,
+        "abort_reason": None,
+        "wait_seconds": wait_seconds,
+        "active_window_title": active_title,
+    }
+
+
+def whatsapp_tool(
+    args: dict[str, Any],
+    state: AgentState,
+    executor: Executor | None = None,
+) -> dict[str, Any]:
     """Compound WhatsApp tool.
 
     Actions:
       - status:        report whether WhatsApp Desktop (UWP) is installed.
       - send_message:  open WhatsApp chat with phone + pre-filled text.
-                        Does NOT send automatically (WhatsApp design — user
-                        gives Enter to confirm). Set send=True to follow-up
-                        with gui keypress (CALLER's responsibility, this tool
-                        only opens the chat).
-      - open_chat:     same as send_message but without text (just opens chat).
+                        With auto_send=True (default) the tool waits for the
+                        chat to load, focuses the WhatsApp window, verifies
+                        active window is WhatsApp, then sends Enter — message
+                        is actually delivered. With auto_send=False the chat
+                        opens but Enter is NOT pressed (legacy behavior).
+      - open_chat:     same as send_message but without text (just opens chat,
+                        auto_send is ignored here).
 
     Phone resolution priority:
       1. args.phone (explicit, validated and normalized)
       2. args.contact / args.recipient / args.to / args.name -> lookup in
          state contacts (using existing _contacts_resolve_recipient).
 
-    Honest behavior:
-      - We NEVER auto-send. WhatsApp deeplinks open the chat with text pre-filled
-        in the input field. The user must press Enter to actually send. This is
-        a Meta design choice and a safety feature — we respect it.
-      - Returns verified=False because we cannot confirm the user actually sent.
+    Safety for auto_send:
+      - NEVER sends Enter without confirming the active window title contains
+        "WhatsApp". This prevents sending Enter to a wrong window (IDE,
+        terminal with destructive command, browser form, etc.).
+      - If focus or active-window check fails, returns sent=False with
+        abort_reason — the user sees the chat opened and can press Enter
+        themselves.
+
+    Defaults:
+      auto_send=True for send_message (Meta deeplink doesn't actually auto-send;
+      we provide a safe wrapper that does it via a verified keypress sequence).
+      Pass auto_send=False if you only want the chat opened for the user to
+      review/edit before sending.
     """
     import urllib.parse
 
@@ -6768,9 +6863,10 @@ def whatsapp_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             app_kind=app_info["kind"],
             launch_target=app_info["launch_target"],
             web_fallback="https://wa.me/<phone>?text=<msg>",
+            auto_send_supported=executor is not None,
             note=(
-                "send_message opens chat with text pre-filled but does NOT send. "
-                "User must press Enter or call gui(keypress='enter') as follow-up."
+                "send_message with auto_send=True (default) opens chat AND sends "
+                "after verifying focus. Set auto_send=False to only open the chat."
             ),
         )
 
@@ -6795,6 +6891,29 @@ def whatsapp_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             status="needs_user",
         )
 
+    # auto_send default True para send_message; False para open_chat.
+    # Acepta string truthy/falsy y bool. Si executor=None, no podemos auto_send.
+    auto_send_raw = args.get("auto_send", action != "open_chat")
+    if isinstance(auto_send_raw, str):
+        auto_send = auto_send_raw.strip().lower() not in {"", "false", "0", "no", "off"}
+    else:
+        auto_send = bool(auto_send_raw)
+    if executor is None:
+        auto_send = False  # sin executor no podemos focus+keypress
+    # open_chat nunca envia: solo abre.
+    if action == "open_chat":
+        auto_send = False
+    # Tiempo de espera tras el deeplink antes de mandar Enter. Configurable
+    # via args.wait_seconds. Default 1.8s — suficiente para que WhatsApp
+    # Desktop ya este corriendo cargue el chat y rellene el input. Primera
+    # vez en frio puede tardar mas; el user puede subirlo.
+    wait_seconds_raw = args.get("wait_seconds") or args.get("send_delay_s") or 1.8
+    try:
+        wait_seconds = float(wait_seconds_raw)
+    except (TypeError, ValueError):
+        wait_seconds = 1.8
+    wait_seconds = max(0.3, min(10.0, wait_seconds))
+
     # Construir URLs. Deeplink desktop scheme y wa.me como fallback.
     encoded_text = urllib.parse.quote(text) if text else ""
     deeplink = f"whatsapp://send?phone={normalized}"
@@ -6814,6 +6933,14 @@ def whatsapp_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 ["cmd", "/c", "start", "", deeplink],
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
+        except (OSError, FileNotFoundError) as exc:
+            desktop_err = str(exc)
+        else:
+            # Auto-send si esta habilitado y tenemos executor.
+            auto_send_info: dict[str, Any] | None = None
+            if auto_send and executor is not None:
+                auto_send_info = _whatsapp_auto_send(executor, wait_seconds)
+            sent = bool(auto_send_info and auto_send_info.get("sent"))
             return _ok(
                 action=action,
                 provider="whatsapp_desktop",
@@ -6824,22 +6951,27 @@ def whatsapp_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 deeplink=deeplink,
                 app_kind=app_info["kind"],
                 opened=True,
-                sent=False,
-                verified=False,
-                status="attempted",
+                sent=sent,
+                auto_send_attempted=auto_send,
+                auto_send_info=auto_send_info,
+                verified=sent,
+                status="dispatched" if sent else "attempted",
+                completion_status="message_sent" if sent
+                                   else "chat_opened_pending_enter",
                 note=(
-                    "WhatsApp Desktop opened with chat and pre-filled message. "
-                    "Message is NOT sent — user must press Enter to confirm. "
-                    "To send programmatically, follow up with "
-                    "gui(action='keypress', keys='enter') ONLY after the chat "
-                    "window has focus and the user explicitly approved."
+                    "Message sent: WhatsApp focused + verified active window + Enter pressed."
+                    if sent
+                    else (
+                        f"WhatsApp Desktop opened with chat pre-filled. "
+                        f"{'Auto-send aborted: ' + (auto_send_info or {}).get('abort_reason', '?') + '. ' if auto_send_info and not sent else ''}"
+                        "User can press Enter manually."
+                    )
                 ),
             )
-        except (OSError, FileNotFoundError) as exc:
-            desktop_err = str(exc)
 
-    # PATH 2: fallback a wa.me (web). Funciona aunque WhatsApp Desktop no este;
-    # si el user tiene WhatsApp en el celu el QR-link click-to-chat lo soporta.
+    # PATH 2: fallback a wa.me (web). Auto_send aqui es mas fragil porque
+    # depende del estado del browser (loguead/no, "Continuar al chat" click,
+    # etc). Mantenemos auto_send=False en este path por seguridad.
     try:
         import webbrowser
         opened = webbrowser.open(web_url)
@@ -6854,12 +6986,17 @@ def whatsapp_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 url=web_url,
                 opened=True,
                 sent=False,
+                auto_send_attempted=auto_send,
+                auto_send_info={"abort_reason": "web fallback does not support auto_send safely"}
+                                if auto_send else None,
                 verified=False,
                 status="attempted",
+                completion_status="chat_opened_pending_enter",
                 note=(
-                    "wa.me (WhatsApp Web) opened in default browser. User must "
-                    "click 'Continuar al chat' / 'Use WhatsApp Web' and then "
-                    "press Enter to send. Message is NOT sent automatically."
+                    "wa.me (WhatsApp Web) opened in default browser. Auto-send "
+                    "is disabled on the web path because we cannot reliably "
+                    "verify the chat input has focus. User must click "
+                    "'Continuar al chat' and press Enter."
                 ),
             )
             if desktop_err:
