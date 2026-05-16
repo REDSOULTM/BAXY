@@ -174,32 +174,46 @@ class TestWhatsappContactResolution(unittest.TestCase):
         self.assertTrue(r["recipient_source"].startswith("contact:"))
         popen.assert_called_once()
 
-    def test_contact_without_phone_fails_with_useful_message(self):
-        r = whatsapp_tool(
-            {"action": "send_message", "contact": "Maria", "text": "hola"},
-            self.state,
+    def test_contact_without_phone_falls_back_to_gui_search(self):
+        # Post 2026-05-15: en vez de fallar cuando el contacto no tiene
+        # phone, el resolver indica gui_search para que el caller use la
+        # busqueda dentro de WhatsApp Desktop.
+        result = _resolve_whatsapp_recipient(
+            {"contact": "Maria"}, self.state,
         )
-        self.assertFalse(r["ok"])
-        self.assertEqual(r["status"], "needs_user")
-        self.assertIn("no phone", r["error"].lower())
+        self.assertIsInstance(result, tuple)
+        raw, normalized, source, name = result
+        self.assertIsNone(raw)
+        self.assertIsNone(normalized)
+        self.assertEqual(source, "gui_search")
+        self.assertEqual(name, "Maria")
 
-    def test_unknown_contact_fails(self):
+    def test_unknown_contact_falls_back_to_gui_search(self):
+        # Mismo flujo: contacto no esta en store local -> tirar al GUI search.
+        # En el tool real (con executor), eso usara WhatsApp UI para buscar.
+        # Sin executor (este test), retorna error needs_user pidiendo CLI.
         r = whatsapp_tool(
             {"action": "send_message", "contact": "Persona Inexistente", "text": "hola"},
-            self.state,
+            self.state, executor=None,
         )
         self.assertFalse(r["ok"])
         self.assertEqual(r["status"], "needs_user")
-        self.assertIn("no contact found", r["error"].lower())
+        # Mensaje debe mencionar gui_search O cli mode.
+        err_low = r["error"].lower()
+        self.assertTrue("gui search" in err_low or "cli mode" in err_low,
+                        f"expected GUI-search-related error, got: {r['error']}")
 
-    def test_resolve_recipient_helper_returns_tuple(self):
+    def test_resolve_recipient_helper_returns_4tuple(self):
+        # Nueva firma: (raw, normalized, source, name_for_gui_search).
         result = _resolve_whatsapp_recipient(
             {"contact": "Juan"}, self.state,
         )
         self.assertIsInstance(result, tuple)
-        raw, normalized, source = result
+        self.assertEqual(len(result), 4)
+        raw, normalized, source, name = result
         self.assertEqual(normalized, "5491187654321")
         self.assertTrue(source.startswith("contact:"))
+        self.assertIsNone(name)  # no necesario porque tenemos phone
 
 
 class TestWhatsappAliases(unittest.TestCase):
@@ -397,6 +411,204 @@ class TestWhatsappAutoSend(unittest.TestCase):
         self.assertFalse(r["sent"])
         # Executor NO debe haber sido llamado para auto-send en web path.
         executor.assert_not_called()
+
+
+class TestWhatsappGuiSearch(unittest.TestCase):
+    """GUI search path: cuando el contacto NO esta en el store local pero SI
+    existe en el WhatsApp del user (Meta tiene los contactos sincronizados
+    desde el telefono).
+    """
+
+    def setUp(self):
+        self.state = _fresh_state()
+        self._sleep = patch("time.sleep")
+        self._sleep.start()
+
+    def tearDown(self):
+        self._sleep.stop()
+
+    def _mock_executor_ok(self):
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "WhatsApp"}}
+            if name == "gui":
+                return {"ok": True}
+            return {"ok": False}
+        return MagicMock(side_effect=_exec)
+
+    def test_gui_search_end_to_end_sends(self):
+        executor = self._mock_executor_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "Amor", "text": "te amo"},
+                self.state, executor=executor,
+            )
+        self.assertTrue(r["ok"])
+        self.assertTrue(r["sent"], f"expected sent=True, got {r}")
+        self.assertEqual(r["provider"], "whatsapp_desktop_gui_search")
+        self.assertEqual(r["recipient_source"], "gui_search")
+        # Steps esperados: dispatch + focus + ctrl+f + type name + enter + type msg + enter.
+        steps = r["gui_search_info"]["steps"]
+        self.assertIn("dispatched_deeplink", steps)
+        self.assertIn("opened_search", steps)
+        self.assertIn("typed_contact_name", steps)
+        self.assertIn("selected_first_match", steps)
+        self.assertIn("typed_message", steps)
+        self.assertIn("sent_enter", steps)
+
+    def test_gui_search_aborts_when_focus_lost(self):
+        # Si la ventana activa cambia mid-flow, abort sin completar.
+        call_count = [0]
+        def _exec(name, args):
+            call_count[0] += 1
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                # Primera vez WhatsApp, despues VS Code (user cambia).
+                if call_count[0] <= 2:
+                    return {"ok": True, "active": {"title": "WhatsApp"}}
+                return {"ok": True, "active": {"title": "VS Code - main.py"}}
+            return {"ok": True}
+        executor = MagicMock(side_effect=_exec)
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "Amor", "text": "rm -rf /"},
+                self.state, executor=executor,
+            )
+        self.assertFalse(r["sent"])
+        self.assertIn("focus", r["gui_search_info"]["abort_reason"].lower())
+
+    def test_gui_search_auto_send_false_stops_after_message(self):
+        executor = self._mock_executor_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "Amor", "text": "hola",
+                 "auto_send": False},
+                self.state, executor=executor,
+            )
+        self.assertFalse(r["sent"])
+        self.assertTrue(r["chat_opened"])
+        steps = r["gui_search_info"]["steps"]
+        self.assertIn("typed_message", steps)
+        self.assertNotIn("sent_enter", steps)
+
+    def test_gui_search_requires_executor(self):
+        # Sin executor -> error informativo, no crash.
+        r = whatsapp_tool(
+            {"action": "send_message", "contact": "Amor", "text": "hi"},
+            self.state, executor=None,
+        )
+        self.assertFalse(r["ok"])
+        self.assertIn("gui search", r["error"].lower())
+
+    def test_gui_search_no_whatsapp_app_returns_error(self):
+        executor = self._mock_executor_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": None, "launch_target": None}):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "Amor", "text": "hi"},
+                self.state, executor=executor,
+            )
+        self.assertFalse(r["ok"])
+        self.assertIn("not installed", r["error"].lower())
+
+
+class TestSpotifyAutoPlay(unittest.TestCase):
+
+    def setUp(self):
+        self._sleep = patch("time.sleep")
+        self._sleep.start()
+
+    def tearDown(self):
+        self._sleep.stop()
+
+    def _mock_executor_spotify_ok(self):
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "Spotify Premium"}}
+            if name == "gui" and args.get("action") == "keypress":
+                return {"ok": True}
+            return {"ok": False}
+        return MagicMock(side_effect=_exec)
+
+    def test_spotify_auto_plays_first_result(self):
+        from .domain_tools import media_tool
+        executor = self._mock_executor_spotify_ok()
+        with patch("gemma4_agent.domain_tools._find_streaming_app",
+                   return_value={"kind": "exe", "launch_target": "C:/spotify.exe"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = media_tool(
+                {"action": "play", "provider": "spotify", "query": "benson boone"},
+                executor,
+            )
+        self.assertTrue(r["ok"])
+        self.assertTrue(r["played"], f"expected played=True, got {r}")
+        self.assertEqual(r["completion_status"], "media_playing")
+        # Executor llamado al menos 3 veces: focus, active, keypress.
+        self.assertGreaterEqual(executor.call_count, 3)
+
+    def test_spotify_auto_play_aborts_on_wrong_window(self):
+        from .domain_tools import media_tool
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "VS Code"}}
+            return {"ok": True}
+        executor = MagicMock(side_effect=_exec)
+        with patch("gemma4_agent.domain_tools._find_streaming_app",
+                   return_value={"kind": "exe", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = media_tool(
+                {"action": "play", "provider": "spotify", "query": "test"},
+                executor,
+            )
+        self.assertFalse(r["played"])
+        self.assertIn("not Spotify", r["auto_play_info"]["abort_reason"])
+        # Y NUNCA debe haber llamado keypress.
+        kp_calls = [c for c in executor.call_args_list
+                    if c.args[0] == "gui" and c.args[1].get("action") == "keypress"]
+        self.assertEqual(len(kp_calls), 0)
+
+    def test_spotify_auto_play_false_skips_keypress(self):
+        from .domain_tools import media_tool
+        executor = self._mock_executor_spotify_ok()
+        with patch("gemma4_agent.domain_tools._find_streaming_app",
+                   return_value={"kind": "exe", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = media_tool(
+                {"action": "play", "provider": "spotify", "query": "x",
+                 "auto_play": False},
+                executor,
+            )
+        self.assertFalse(r["played"])
+        # Sin auto_play, executor NO debe llamarse (no focus/keypress).
+        executor.assert_not_called()
+
+    def test_netflix_does_not_auto_play(self):
+        # Netflix no soporta auto_play (Enter en search ambiguo).
+        from .domain_tools import media_tool
+        executor = self._mock_executor_spotify_ok()
+        with patch("gemma4_agent.domain_tools._find_streaming_app",
+                   return_value={"kind": None, "launch_target": None}), \
+             patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
+            r = media_tool(
+                {"action": "play", "provider": "netflix", "query": "stranger things"},
+                executor,
+            )
+        # Netflix sin app -> web. No tiene played (no auto_play path).
+        self.assertTrue(r["ok"])
+        self.assertNotIn("played", r)
 
 
 if __name__ == "__main__":

@@ -5816,11 +5816,91 @@ def _find_streaming_app(spec: dict[str, Any]) -> dict[str, str | None]:
     return {"kind": None, "launch_target": None}
 
 
-def _launch_streaming(canonical: str, spec: dict[str, Any], query: str) -> dict[str, Any]:
+def _spotify_auto_play(executor: Executor, wait_seconds: float) -> dict[str, Any]:
+    """Tras enviar spotify:search:<q>, esperar carga, focus + verify ventana
+    Spotify, y mandar Enter para reproducir el primer resultado.
+
+    Spotify Desktop al recibir el deeplink muestra resultados de busqueda
+    con la primera fila (track top) seleccionada. Un Enter reproduce
+    ese track.
+
+    Returns dict con keys:
+      - played: bool
+      - focus_verified: bool
+      - abort_reason: str | None
+      - wait_seconds: float
+    """
+    import time as _time
+    _time.sleep(max(0.5, wait_seconds))
+    try:
+        executor("window", {"action": "focus", "title": "Spotify"})
+    except Exception as exc:
+        return {
+            "played": False, "focus_verified": False,
+            "abort_reason": f"focus call failed: {exc}",
+            "wait_seconds": wait_seconds,
+        }
+    _time.sleep(0.3)
+    try:
+        active = executor("window", {"action": "active"})
+    except Exception as exc:
+        return {
+            "played": False, "focus_verified": False,
+            "abort_reason": f"active check failed: {exc}",
+            "wait_seconds": wait_seconds,
+        }
+    active_title = ""
+    a = active.get("active")
+    if isinstance(a, dict):
+        active_title = str(a.get("title") or "")
+    else:
+        active_title = str(active.get("title") or "")
+    if "spotify" not in active_title.lower():
+        return {
+            "played": False, "focus_verified": False,
+            "abort_reason": (
+                f"active window is {active_title!r}, not Spotify. "
+                "Refusing to press Enter on a different app."
+            ),
+            "wait_seconds": wait_seconds,
+        }
+    try:
+        keypress_result = executor("gui", {"action": "keypress", "keys": "enter"})
+    except Exception as exc:
+        return {
+            "played": False, "focus_verified": True,
+            "abort_reason": f"keypress failed: {exc}",
+            "wait_seconds": wait_seconds,
+        }
+    if not keypress_result.get("ok"):
+        return {
+            "played": False, "focus_verified": True,
+            "abort_reason": f"keypress returned: {keypress_result.get('error', 'unknown')}",
+            "wait_seconds": wait_seconds,
+        }
+    return {
+        "played": True, "focus_verified": True,
+        "abort_reason": None,
+        "wait_seconds": wait_seconds,
+        "active_window_title": active_title,
+    }
+
+
+def _launch_streaming(
+    canonical: str,
+    spec: dict[str, Any],
+    query: str,
+    *,
+    executor: Executor | None = None,
+    auto_play: bool = False,
+    auto_play_wait: float = 1.8,
+) -> dict[str, Any]:
     """Abre la app o web del provider con la query de busqueda.
 
     Prioridad:
       1. App desktop instalada + deeplink propio -> usar deeplink.
+         Si auto_play=True + executor disponible + provider tiene auto-play
+         soportado (Spotify), focus + verify + Enter para reproducir.
       2. App desktop instalada sin deeplink -> abrir app (sin busqueda) + abrir web search en background?
          Decision: si NO hay deeplink, vamos directo a web. Abrir la app sin
          busqueda obliga al user a navegar manualmente.
@@ -5848,6 +5928,16 @@ def _launch_streaming(canonical: str, spec: dict[str, Any], query: str) -> dict[
                 ["cmd", "/c", "start", "", deeplink],
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
+        except (OSError, FileNotFoundError):
+            pass  # fall through to web
+        else:
+            # AUTO-PLAY: si tenemos executor y el caller lo pidio, esperar
+            # carga + focus verify + Enter para que Spotify reproduzca la
+            # primera cancion del resultado de busqueda.
+            auto_play_info: dict[str, Any] | None = None
+            if auto_play and executor is not None and canonical == "spotify":
+                auto_play_info = _spotify_auto_play(executor, auto_play_wait)
+            played = bool(auto_play_info and auto_play_info.get("played"))
             return _ok(
                 action="play",
                 provider=canonical,
@@ -5856,12 +5946,18 @@ def _launch_streaming(canonical: str, spec: dict[str, Any], query: str) -> dict[
                 app_kind=app_info["kind"],
                 launch_target=app_info["launch_target"],
                 opened=True,
-                verified=False,
-                status="attempted",
-                note=note,
+                played=played,
+                auto_play_attempted=auto_play,
+                auto_play_info=auto_play_info,
+                verified=played,
+                status="dispatched" if played else "attempted",
+                completion_status="media_playing" if played
+                                   else "opened_search_results_pending_play",
+                note=(
+                    f"{canonical}: playing — Spotify focused, Enter pressed on first result."
+                    if played else note
+                ),
             )
-        except (OSError, FileNotFoundError):
-            pass  # fall through to web
 
     # PATH 2/3: no app o no deeplink -> abrir web URL (browser default).
     # Esto siempre funciona si hay browser default. La app instalada-sin-deeplink
@@ -5898,7 +5994,12 @@ def _launch_streaming(canonical: str, spec: dict[str, Any], query: str) -> dict[
     )
 
 
-def _media_play_streaming(provider: str, query: str, args: dict[str, Any]) -> dict[str, Any]:
+def _media_play_streaming(
+    provider: str,
+    query: str,
+    args: dict[str, Any],
+    executor: Executor | None = None,
+) -> dict[str, Any]:
     """Entry point unificado para Spotify/Netflix/Disney+/Max/Prime Video."""
     resolved = _resolve_streaming_provider(provider)
     if not resolved:
@@ -5911,7 +6012,24 @@ def _media_play_streaming(provider: str, query: str, args: dict[str, Any]) -> di
             ),
         )
     canonical, spec = resolved
-    return _launch_streaming(canonical, spec, query)
+    # auto_play default True para spotify (puede reproducir la 1ra cancion
+    # del search top con Enter), False para netflix/disney/hbo/prime (no
+    # podemos auto-elegir un episodio especifico sin GUI inspection mas
+    # fragil + DRM/login considerations).
+    auto_play_raw = args.get("auto_play", canonical == "spotify")
+    if isinstance(auto_play_raw, str):
+        auto_play = auto_play_raw.strip().lower() not in {"", "false", "0", "no", "off"}
+    else:
+        auto_play = bool(auto_play_raw)
+    wait_raw = args.get("auto_play_wait") or args.get("wait_seconds") or 1.8
+    try:
+        auto_play_wait = max(0.5, min(10.0, float(wait_raw)))
+    except (TypeError, ValueError):
+        auto_play_wait = 1.8
+    return _launch_streaming(
+        canonical, spec, query,
+        executor=executor, auto_play=auto_play, auto_play_wait=auto_play_wait,
+    )
 
 
 # Backwards-compat: el viejo _media_play_spotify se mantiene como alias.
@@ -5950,7 +6068,7 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         # HBO Max/Max, Prime Video). Prioriza la app desktop si esta instalada
         # con deeplink confiable, sino abre la web URL de busqueda.
         if _resolve_streaming_provider(provider):
-            return _media_play_streaming(provider, query, args)
+            return _media_play_streaming(provider, query, args, executor=executor)
         if provider in {"youtube", "yt", "browser"}:
             return executor("browser", {"action": "youtube_play", "query": query or "musica"})
         if provider == "vlc":
@@ -6657,16 +6775,21 @@ def _find_whatsapp_app() -> dict[str, str | None]:
     return {"kind": None, "launch_target": None}
 
 
-def _resolve_whatsapp_recipient(args: dict[str, Any], state: AgentState) -> tuple[str, str, str] | dict[str, Any]:
-    """Resuelve el destinatario a un numero E.164 normalizado.
+def _resolve_whatsapp_recipient(
+    args: dict[str, Any], state: AgentState,
+) -> tuple[str | None, str | None, str, str | None] | dict[str, Any]:
+    """Resuelve el destinatario.
 
     Acepta en args:
       - phone="<numero>"  -> usado directamente (validado).
       - contact="<nombre>" o recipient="<nombre>"  -> busca en contacts.
 
     Returns:
-      - tupla (raw_phone, normalized_digits, source) si OK.
-      - dict de error _err(...) si no se pudo resolver.
+      - tupla (raw_phone, normalized_digits, source, name_for_gui_search) si OK.
+        Si phone resolvio -> (phone, normalized, source, None) — usar deeplink.
+        Si solo hay nombre (contacto sin phone en store, o store vacio) ->
+        (None, None, "gui_search", name_query) — usar GUI search en WhatsApp.
+      - dict de error _err(...) si no se pudo resolver (sin phone ni nombre).
     """
     explicit_phone = str(args.get("phone") or args.get("number") or "").strip()
     if explicit_phone:
@@ -6684,9 +6807,9 @@ def _resolve_whatsapp_recipient(args: dict[str, Any], state: AgentState) -> tupl
                 hint="Include country code (e.g. 54 for Argentina, 1 for USA).",
                 status="needs_user",
             )
-        return explicit_phone, normalized, "explicit"
+        return explicit_phone, normalized, "explicit", None
 
-    # Resolver via contacts.
+    # Resolver por nombre.
     name_query = str(
         args.get("contact") or args.get("recipient") or args.get("to")
         or args.get("name") or ""
@@ -6696,42 +6819,212 @@ def _resolve_whatsapp_recipient(args: dict[str, Any], state: AgentState) -> tupl
             "missing recipient: pass phone='+...' OR contact='<name>'",
             status="needs_user",
         )
+
+    # 1. Intentar contacts store local (rapido si esta).
     resolve_result = _contacts_resolve_recipient({"query": name_query, "limit": 5}, state)
     matches = resolve_result.get("matches") or []
-    if not matches:
+    if matches:
+        best = matches[0]["contact"]
+        meta = best.get("metadata") or {}
+        phone = str(meta.get("phone") or "").strip()
+        if phone:
+            normalized = _normalize_phone_for_whatsapp(phone)
+            if len(normalized) >= 7:
+                return phone, normalized, f"contact:{best.get('id')}", None
+        # Contacto encontrado pero sin phone util -> caer a GUI search.
+
+    # 2. Fallback: GUI search dentro de WhatsApp Desktop.
+    # WhatsApp ya tiene la lista de contactos del telefono — usa Ctrl+F /
+    # campo de busqueda para encontrar al contacto por nombre. Esto cubre
+    # el caso "el contacto existe en WhatsApp pero no en mi store local".
+    return None, None, "gui_search", name_query
+
+
+def _resolve_whatsapp_recipient_legacy3(
+    args: dict[str, Any], state: AgentState,
+) -> tuple[str, str, str] | dict[str, Any]:
+    """Backwards-compat 3-tuple form. Solo para tests viejos que esperaban
+    (raw, normalized, source). NO usar en codigo nuevo.
+    """
+    r = _resolve_whatsapp_recipient(args, state)
+    if isinstance(r, dict):
+        return r
+    raw, normalized, source, name = r
+    if normalized is None:
+        # tests legacy no soportaban el path gui_search; devolver error util.
         return _err(
-            f"no contact found matching {name_query!r}",
-            hint=(
-                "Add the contact first with contacts(action='create', "
-                "name='...', phone='+...') or pass phone= directly."
-            ),
-            status="needs_user", query=name_query,
+            f"contact {name!r} found but has no phone number (use new GUI search path)",
+            status="needs_user", contact_name=name,
         )
-    best = matches[0]["contact"]
-    meta = best.get("metadata") or {}
-    phone = str(meta.get("phone") or "").strip()
-    if not phone:
-        return _err(
-            f"contact {name_query!r} found but has no phone number",
-            status="needs_user",
-            contact_id=best.get("id"),
-            contact_name=meta.get("name"),
+    return raw, normalized, source
+
+
+def _whatsapp_send_via_gui_search(
+    executor: Executor,
+    contact_name: str,
+    text: str,
+    wait_seconds: float,
+    auto_send: bool,
+) -> dict[str, Any]:
+    """Abre WhatsApp generico, busca el contacto por nombre via Ctrl+F,
+    selecciona el primer match, escribe el mensaje y opcionalmente envia.
+
+    Flujo (todos los pasos requieren focus verification antes de teclear):
+      1. Dispatch whatsapp:// (sin args -> abre la app generica).
+      2. Wait wait_seconds para que cargue.
+      3. Focus WhatsApp + verify active window title.
+      4. Ctrl+F (abre el campo de busqueda) o type direct si el campo ya esta.
+      5. Type contact_name.
+      6. Wait ~1s (deja que filtre los resultados).
+      7. Enter (selecciona el primer chat).
+      8. Wait ~0.5s (entra al chat).
+      9. Type text del mensaje.
+      10. Si auto_send: Enter (envia).
+
+    Returns dict con keys:
+      - sent: bool
+      - chat_opened: bool
+      - search_term: str
+      - abort_reason: str | None
+      - steps: list[str] — pasos completados (para debug)
+    """
+    import time as _time
+
+    steps: list[str] = []
+
+    def _focus_and_verify() -> bool:
+        try:
+            executor("window", {"action": "focus", "title": "WhatsApp"})
+        except Exception:
+            return False
+        _time.sleep(0.3)
+        try:
+            active = executor("window", {"action": "active"})
+        except Exception:
+            return False
+        active_title = ""
+        a = active.get("active")
+        if isinstance(a, dict):
+            active_title = str(a.get("title") or "")
+        else:
+            active_title = str(active.get("title") or "")
+        return "whatsapp" in active_title.lower()
+
+    # 1. Abrir WhatsApp (deeplink generico).
+    try:
+        subprocess.Popen(
+            ["cmd", "/c", "start", "", "whatsapp://"],
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
-    normalized = _normalize_phone_for_whatsapp(phone)
-    if len(normalized) < 7:
-        return _err(
-            f"contact {name_query!r} phone {phone!r} normalizes to too few digits",
-            status="needs_user",
-            hint="The stored phone may be missing the country code.",
-        )
-    # Si hubo varios matches y el primero no es exacto, advertir.
-    extra: dict[str, Any] = {}
-    if len(matches) > 1:
-        extra["ambiguous_matches"] = [
-            {"name": (m["contact"].get("metadata") or {}).get("name"),
-              "score": m["score"]} for m in matches
-        ]
-    return phone, normalized, f"contact:{best.get('id')}"
+    except (OSError, FileNotFoundError) as exc:
+        return {
+            "sent": False, "chat_opened": False, "search_term": contact_name,
+            "abort_reason": f"failed to launch WhatsApp: {exc}", "steps": steps,
+        }
+    steps.append("dispatched_deeplink")
+    _time.sleep(max(0.5, wait_seconds))
+
+    # 2. Focus + verify.
+    if not _focus_and_verify():
+        return {
+            "sent": False, "chat_opened": False, "search_term": contact_name,
+            "abort_reason": "could not focus WhatsApp window after launch",
+            "steps": steps,
+        }
+    steps.append("focused")
+
+    # 3. Ctrl+F para abrir busqueda. WhatsApp Desktop usa Ctrl+F.
+    try:
+        executor("gui", {"action": "hotkey", "hotkey": "ctrl+f"})
+    except Exception as exc:
+        return {
+            "sent": False, "chat_opened": False, "search_term": contact_name,
+            "abort_reason": f"hotkey ctrl+f failed: {exc}", "steps": steps,
+        }
+    steps.append("opened_search")
+    _time.sleep(0.4)
+
+    # 4. Type del nombre del contacto.
+    if not _focus_and_verify():
+        return {
+            "sent": False, "chat_opened": False, "search_term": contact_name,
+            "abort_reason": "lost WhatsApp focus before typing contact name",
+            "steps": steps,
+        }
+    try:
+        executor("gui", {"action": "type", "text": contact_name})
+    except Exception as exc:
+        return {
+            "sent": False, "chat_opened": False, "search_term": contact_name,
+            "abort_reason": f"type contact name failed: {exc}", "steps": steps,
+        }
+    steps.append("typed_contact_name")
+    _time.sleep(0.9)  # tiempo para que WhatsApp filtre
+
+    # 5. Enter para seleccionar primer resultado y entrar al chat.
+    if not _focus_and_verify():
+        return {
+            "sent": False, "chat_opened": False, "search_term": contact_name,
+            "abort_reason": "lost WhatsApp focus before selecting contact",
+            "steps": steps,
+        }
+    try:
+        executor("gui", {"action": "keypress", "keys": "enter"})
+    except Exception as exc:
+        return {
+            "sent": False, "chat_opened": False, "search_term": contact_name,
+            "abort_reason": f"enter to select contact failed: {exc}", "steps": steps,
+        }
+    steps.append("selected_first_match")
+    _time.sleep(0.6)  # entrar al chat
+
+    # 6. Type del mensaje (focus moved al input del chat).
+    if not text:
+        # open_chat: solo queriamos llegar al chat, no mandar.
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": None, "steps": steps,
+        }
+    if not _focus_and_verify():
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": "lost WhatsApp focus before typing message",
+            "steps": steps,
+        }
+    try:
+        executor("gui", {"action": "type", "text": text})
+    except Exception as exc:
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": f"type message failed: {exc}", "steps": steps,
+        }
+    steps.append("typed_message")
+    _time.sleep(0.3)
+
+    # 7. Enviar si auto_send.
+    if not auto_send:
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": None, "steps": steps,
+        }
+    if not _focus_and_verify():
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": "lost WhatsApp focus before sending",
+            "steps": steps,
+        }
+    try:
+        executor("gui", {"action": "keypress", "keys": "enter"})
+    except Exception as exc:
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": f"enter to send failed: {exc}", "steps": steps,
+        }
+    steps.append("sent_enter")
+    return {
+        "sent": True, "chat_opened": True, "search_term": contact_name,
+        "abort_reason": None, "steps": steps,
+    }
 
 
 def _whatsapp_auto_send(executor: Executor, wait_seconds: float) -> dict[str, Any]:
@@ -6880,7 +7173,7 @@ def whatsapp_tool(
     resolved = _resolve_whatsapp_recipient(args, state)
     if isinstance(resolved, dict):  # error
         return resolved
-    raw_phone, normalized, source = resolved
+    raw_phone, normalized, source, gui_search_name = resolved
 
     # Mensaje (opcional para open_chat).
     text = str(args.get("text") or args.get("message") or args.get("body") or "").strip()
@@ -6903,6 +7196,68 @@ def whatsapp_tool(
     # open_chat nunca envia: solo abre.
     if action == "open_chat":
         auto_send = False
+
+    # PATH GUI SEARCH: si el resolver indico que necesitamos buscar el
+    # contacto via la UI de WhatsApp (porque no tenemos phone), usar el
+    # flujo Ctrl+F + type contact_name + Enter + type message + Enter.
+    # Esto cubre contactos que existen en WhatsApp pero no en nuestro
+    # contacts store local.
+    if source == "gui_search" and gui_search_name and executor is not None:
+        app_info = _find_whatsapp_app()
+        if not app_info["kind"]:
+            return _err(
+                f"WhatsApp Desktop not installed; cannot search for contact {gui_search_name!r}",
+                status="needs_user", provider="whatsapp",
+                hint=("Install WhatsApp Desktop from Microsoft Store, OR add "
+                      f"the contact phone first: contacts(action='create', "
+                      f"name='{gui_search_name}', phone='+...')."),
+            )
+        wait_seconds_raw = args.get("wait_seconds") or args.get("send_delay_s") or 2.0
+        try:
+            wait_seconds = max(0.5, min(10.0, float(wait_seconds_raw)))
+        except (TypeError, ValueError):
+            wait_seconds = 2.0
+        gui_result = _whatsapp_send_via_gui_search(
+            executor, gui_search_name, text, wait_seconds, auto_send,
+        )
+        sent = bool(gui_result.get("sent"))
+        chat_opened = bool(gui_result.get("chat_opened"))
+        return _ok(
+            action=action,
+            provider="whatsapp_desktop_gui_search",
+            recipient_contact=gui_search_name,
+            recipient_source="gui_search",
+            text=text or None,
+            opened=chat_opened or gui_result.get("steps", []) != [],
+            sent=sent,
+            chat_opened=chat_opened,
+            auto_send_attempted=auto_send,
+            gui_search_info=gui_result,
+            verified=sent,
+            status="dispatched" if sent else "attempted",
+            completion_search="message_sent_via_gui_search" if sent
+                               else "chat_search_partial",
+            completion_status="message_sent" if sent
+                               else ("chat_opened_pending_message"
+                                     if chat_opened else "search_aborted"),
+            note=(
+                f"Sent {text!r} to {gui_search_name!r} via WhatsApp Desktop GUI search."
+                if sent else
+                f"WhatsApp GUI search for {gui_search_name!r} did not complete. "
+                f"Reason: {gui_result.get('abort_reason') or 'unknown'}. "
+                f"Steps completed: {gui_result.get('steps')}."
+            ),
+        )
+    if source == "gui_search" and executor is None:
+        return _err(
+            f"contact {gui_search_name!r} requires GUI search but no executor "
+            "available (CLI mode)",
+            status="needs_user",
+            hint=(
+                "From CLI, pass phone='+...' explicitly, or run inside the agent "
+                "where executor is wired."
+            ),
+        )
     # Tiempo de espera tras el deeplink antes de mandar Enter. Configurable
     # via args.wait_seconds. Default 1.8s — suficiente para que WhatsApp
     # Desktop ya este corriendo cargue el chat y rellene el input. Primera

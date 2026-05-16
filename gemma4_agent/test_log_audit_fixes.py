@@ -14,23 +14,31 @@ class TestMediaSpotifyNative(unittest.TestCase):
     """Bug O: spotify provider should open Spotify natively (desktop or web)."""
 
     def test_spotify_opens_deeplink_or_web(self):
+        # Post 2026-05-15: Spotify ahora hace auto-play (executor SI se
+        # llama para focus + verify + keypress). Test que valida: el
+        # deeplink se dispatched + provider es spotify + Popen llamado.
         from unittest.mock import patch
-        executor = MagicMock()
-        # Mock subprocess.Popen so we don't actually launch anything
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "Spotify"}}
+            return {"ok": True}
+        executor = MagicMock(side_effect=_exec)
         with patch("gemma4_agent.domain_tools.subprocess.Popen") as mock_popen, \
-             patch("gemma4_agent.domain_tools._find_spotify_executable",
-                   return_value=r"C:\Users\test\AppData\Roaming\Spotify\Spotify.exe"):
+             patch("gemma4_agent.domain_tools._find_streaming_app",
+                   return_value={"kind": "exe",
+                                  "launch_target": r"C:\Spotify.exe"}), \
+             patch("time.sleep"):
             result = media_tool(
-                {"action": "play", "provider": "spotify", "query": "benson boone"},
+                {"action": "play", "provider": "spotify", "query": "benson boone",
+                 "auto_play": False},  # explicit false para mantener semantica del test viejo
                 executor,
             )
-        # No debe haber llamado executor (no fallback a browser).
         executor.assert_not_called()
-        # Debe haber abierto el deeplink spotify:
         self.assertTrue(result.get("ok"), f"expected ok=True, got {result}")
         self.assertEqual(result.get("provider"), "spotify")
         self.assertIn("spotify:search:", result.get("deeplink", ""))
-        # Y haber llamado subprocess.Popen con el cmd start
         mock_popen.assert_called_once()
         call = mock_popen.call_args.args[0]
         self.assertIn("start", call)
