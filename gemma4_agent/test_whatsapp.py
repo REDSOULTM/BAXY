@@ -595,8 +595,9 @@ class TestSpotifyAutoPlay(unittest.TestCase):
         # Sin auto_play, executor NO debe llamarse (no focus/keypress).
         executor.assert_not_called()
 
-    def test_netflix_does_not_auto_play(self):
-        # Netflix no soporta auto_play (Enter en search ambiguo).
+    def test_netflix_requires_profile_first_time(self):
+        # Post 2026-05-15: Netflix SI hace auto_play web via GUI flow,
+        # pero la primera vez pide el profile (asks_for=streaming_profile).
         from .domain_tools import media_tool
         executor = self._mock_executor_spotify_ok()
         with patch("gemma4_agent.domain_tools._find_streaming_app",
@@ -605,10 +606,11 @@ class TestSpotifyAutoPlay(unittest.TestCase):
             r = media_tool(
                 {"action": "play", "provider": "netflix", "query": "stranger things"},
                 executor,
+                None,  # state=None -> fresh, no profile saved
             )
-        # Netflix sin app -> web. No tiene played (no auto_play path).
-        self.assertTrue(r["ok"])
-        self.assertNotIn("played", r)
+        # Sin state ni profile, no se puede inferir -> needs_user.
+        self.assertFalse(r["ok"])
+        self.assertEqual(r.get("asks_for"), "streaming_profile")
 
 
 if __name__ == "__main__":

@@ -129,17 +129,18 @@ class TestStreamingPlatforms(unittest.TestCase):
         self.assertIsNone(_resolve_streaming_provider("youtube"))
 
     def test_netflix_opens_web_search(self):
+        # auto_play=false para evitar needs_user (no profile setup en este test).
         from unittest.mock import patch
         with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True) as wb:
             result = media_tool(
-                {"action": "play", "provider": "netflix", "query": "stranger things"},
+                {"action": "play", "provider": "netflix",
+                 "query": "stranger things", "auto_play": False},
                 MagicMock(),
             )
         self.assertTrue(result.get("ok"))
         self.assertEqual(result.get("provider"), "netflix_web")
         self.assertIn("netflix.com/search", result.get("url", ""))
         wb.assert_called_once()
-        # URL-encoded query
         called_url = wb.call_args.args[0]
         self.assertIn("stranger%20things", called_url)
 
@@ -147,7 +148,8 @@ class TestStreamingPlatforms(unittest.TestCase):
         from unittest.mock import patch
         with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
             result = media_tool(
-                {"action": "play", "provider": "disney+", "query": "Loki"},
+                {"action": "play", "provider": "disney+",
+                 "query": "Loki", "auto_play": False},
                 MagicMock(),
             )
         self.assertTrue(result.get("ok"))
@@ -155,11 +157,11 @@ class TestStreamingPlatforms(unittest.TestCase):
         self.assertIn("disneyplus.com", result.get("url", ""))
 
     def test_hbo_max_uses_max_url(self):
-        # Post-rebrand HBO Max -> Max.
         from unittest.mock import patch
         with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
             result = media_tool(
-                {"action": "play", "provider": "max", "query": "house of dragon"},
+                {"action": "play", "provider": "max",
+                 "query": "house of dragon", "auto_play": False},
                 MagicMock(),
             )
         self.assertTrue(result.get("ok"))
@@ -169,7 +171,8 @@ class TestStreamingPlatforms(unittest.TestCase):
         from unittest.mock import patch
         with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
             result = media_tool(
-                {"action": "play", "provider": "prime", "query": "the boys"},
+                {"action": "play", "provider": "prime",
+                 "query": "the boys", "auto_play": False},
                 MagicMock(),
             )
         self.assertTrue(result.get("ok"))
@@ -177,7 +180,7 @@ class TestStreamingPlatforms(unittest.TestCase):
 
     def test_streaming_requires_query(self):
         result = media_tool(
-            {"action": "play", "provider": "netflix"},
+            {"action": "play", "provider": "netflix", "auto_play": False},
             MagicMock(),
         )
         self.assertFalse(result.get("ok"))

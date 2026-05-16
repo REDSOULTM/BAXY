@@ -5816,6 +5816,159 @@ def _find_streaming_app(spec: dict[str, Any]) -> dict[str, str | None]:
     return {"kind": None, "launch_target": None}
 
 
+# ---------------------------------------------------------------------------
+# Streaming preferences (profile per platform)
+# ---------------------------------------------------------------------------
+# El user tiene varios perfiles en Netflix/Disney+/HBO/Prime (el "¿Quién está
+# viendo?" picker). Para que el auto-play funcione sin preguntar cada vez,
+# guardamos el nombre del perfil preferido por plataforma en agent state.
+
+def _get_streaming_preference(state: AgentState | None, provider: str) -> str | None:
+    """Lee el perfil guardado para una plataforma. None si no existe."""
+    if state is None:
+        return None
+    try:
+        data = state._load()  # noqa: SLF001 — state interno
+        resources = data.get("resources", {})
+    except Exception:
+        return None
+    for res in resources.values():
+        if not isinstance(res, dict):
+            continue
+        if res.get("kind") != "streaming_preference":
+            continue
+        meta = res.get("metadata") or {}
+        if str(meta.get("provider", "")).lower() == provider.lower():
+            return str(meta.get("profile_name") or "").strip() or None
+    return None
+
+
+def _set_streaming_preference(
+    state: AgentState | None, provider: str, profile_name: str,
+) -> dict[str, Any] | None:
+    """Guarda el nombre del perfil preferido para una plataforma.
+
+    Si ya existe una preferencia para el mismo provider, la actualiza.
+    Devuelve el resource creado/actualizado o None si state es None.
+    """
+    if state is None:
+        return None
+    # Buscar existente.
+    try:
+        data = state._load()  # noqa: SLF001
+        resources = data.get("resources", {})
+    except Exception:
+        resources = {}
+    existing_id = None
+    for rid, res in resources.items():
+        if (isinstance(res, dict)
+                and res.get("kind") == "streaming_preference"
+                and str((res.get("metadata") or {}).get("provider", "")).lower() == provider.lower()):
+            existing_id = rid
+            break
+    if existing_id:
+        return state.update_resource(
+            existing_id,
+            metadata_patch={"profile_name": profile_name, "updated_at": datetime.now().isoformat()},
+        )
+    return state.register_resource(
+        "streaming_preference",
+        f"{provider} profile",
+        metadata={"provider": provider, "profile_name": profile_name,
+                  "created_at": datetime.now().isoformat()},
+    )
+
+
+def _streaming_web_auto_play(
+    executor: Executor,
+    canonical: str,
+    query: str,
+    profile_name: str,
+    wait_seconds: float,
+) -> dict[str, Any]:
+    """Para web-only streaming (Netflix/Disney+/Max/Prime): tras abrir la
+    URL de busqueda, navegar profile picker -> click primer titulo -> play.
+
+    Flujo:
+      1. Wait wait_seconds para que el browser cargue la pagina.
+      2. Si hay profile picker: gui.click_text con profile_name.
+      3. Wait para que el perfil cargue + redireccion a search.
+      4. gui.click_text del query (primer titulo).
+      5. Wait detail page.
+      6. gui.click_text "Reproducir" / "Play" / etc.
+
+    Returns dict con steps + sent (player_started=bool).
+
+    NOTA: Este flujo depende de OCR sobre la pagina web. Es FRAGIL porque:
+      - El layout de cada plataforma cambia frecuentemente.
+      - El DOM puede esconder texto detras de imagenes.
+      - DRM puede prevenir auto-click en algunos casos.
+    Hacemos el mejor esfuerzo y reportamos honesto si abort.
+    """
+    import time as _time
+    steps: list[str] = []
+    _time.sleep(max(1.0, wait_seconds))
+    steps.append("waited_for_page")
+
+    # 1. Profile picker (Netflix/Disney+/Max/Prime).
+    # gui.click_text busca el texto en la pantalla y clickea. Si no encuentra
+    # el perfil (porque ya entramos directo al search), seguimos sin fallar.
+    try:
+        click_profile = executor("gui", {
+            "action": "click_text", "target": profile_name,
+            "timeout_sec": 4,
+        })
+        if click_profile.get("ok") and click_profile.get("found"):
+            steps.append(f"clicked_profile:{profile_name}")
+            _time.sleep(2.5)  # esperar carga post-profile
+        else:
+            steps.append("no_profile_picker_or_not_found")
+    except Exception:
+        steps.append("profile_click_error")
+
+    # 2. Click en el primer titulo del resultado de busqueda.
+    # El texto del query suele aparecer como titulo en la grilla. Si no
+    # encontramos exact, intentamos con la primera palabra.
+    title_clicked = False
+    for try_text in [query, query.split()[0] if query.split() else query]:
+        try:
+            click_title = executor("gui", {
+                "action": "click_text", "target": try_text,
+                "timeout_sec": 4,
+            })
+            if click_title.get("ok") and click_title.get("found"):
+                steps.append(f"clicked_title:{try_text}")
+                title_clicked = True
+                _time.sleep(2.5)  # esperar detail page
+                break
+        except Exception:
+            continue
+    if not title_clicked:
+        return {
+            "player_started": False, "steps": steps,
+            "abort_reason": f"could not click title for {query!r} on search page",
+        }
+
+    # 3. Click "Reproducir" / "Play" / etc. en detail page.
+    # Cada plataforma tiene su label; probamos varios.
+    play_labels = ["Reproducir", "Play", "Ver", "Watch", "Reproducir ahora"]
+    for label in play_labels:
+        try:
+            click_play = executor("gui", {
+                "action": "click_text", "target": label,
+                "timeout_sec": 3,
+            })
+            if click_play.get("ok") and click_play.get("found"):
+                steps.append(f"clicked_play:{label}")
+                return {"player_started": True, "steps": steps, "abort_reason": None}
+        except Exception:
+            continue
+    return {
+        "player_started": False, "steps": steps,
+        "abort_reason": "could not find Play button on detail page",
+    }
+
+
 def _spotify_auto_play(executor: Executor, wait_seconds: float) -> dict[str, Any]:
     """Tras enviar spotify:search:<q>, esperar carga, focus + verify ventana
     Spotify, y mandar Enter para reproducir el primer resultado.
@@ -5894,6 +6047,7 @@ def _launch_streaming(
     executor: Executor | None = None,
     auto_play: bool = False,
     auto_play_wait: float = 1.8,
+    profile_name: str | None = None,
 ) -> dict[str, Any]:
     """Abre la app o web del provider con la query de busqueda.
 
@@ -5967,15 +6121,36 @@ def _launch_streaming(
         import webbrowser
         opened = webbrowser.open(web_url)
         if opened:
+            # WEB AUTO-PLAY: si tenemos executor + auto_play + profile_name,
+            # intentar el flujo GUI (profile picker -> click title -> click play).
+            # Netflix/Disney/HBO Max/Prime SI funcionan con esto cuando el user
+            # esta logueado en el browser.
+            web_auto_play_info: dict[str, Any] | None = None
+            played = False
+            if auto_play and executor is not None and profile_name:
+                web_auto_play_info = _streaming_web_auto_play(
+                    executor, canonical, query, profile_name, auto_play_wait,
+                )
+                played = bool(web_auto_play_info.get("player_started"))
             result = _ok(
                 action="play",
                 provider=f"{canonical}_web",
                 query=query,
                 url=web_url,
                 opened=True,
-                verified=False,
-                status="attempted",
-                note=note,
+                played=played,
+                auto_play_attempted=bool(auto_play and profile_name),
+                profile_name=profile_name,
+                web_auto_play_info=web_auto_play_info,
+                verified=played,
+                status="dispatched" if played else "attempted",
+                completion_status="media_playing" if played
+                                   else "opened_search_results_pending_play",
+                note=(
+                    f"{canonical}: playing — Profile '{profile_name}' selected, "
+                    "title clicked, Play pressed."
+                    if played else note
+                ),
             )
             if app_info["kind"]:
                 # Avisamos que la app esta pero no la usamos por falta de deeplink.
@@ -5999,6 +6174,7 @@ def _media_play_streaming(
     query: str,
     args: dict[str, Any],
     executor: Executor | None = None,
+    state: AgentState | None = None,
 ) -> dict[str, Any]:
     """Entry point unificado para Spotify/Netflix/Disney+/Max/Prime Video."""
     resolved = _resolve_streaming_provider(provider)
@@ -6012,11 +6188,9 @@ def _media_play_streaming(
             ),
         )
     canonical, spec = resolved
-    # auto_play default True para spotify (puede reproducir la 1ra cancion
-    # del search top con Enter), False para netflix/disney/hbo/prime (no
-    # podemos auto-elegir un episodio especifico sin GUI inspection mas
-    # fragil + DRM/login considerations).
-    auto_play_raw = args.get("auto_play", canonical == "spotify")
+    # auto_play default True para todos: Spotify usa app+Enter; web streaming
+    # usa profile picker + click title + click play.
+    auto_play_raw = args.get("auto_play", True)
     if isinstance(auto_play_raw, str):
         auto_play = auto_play_raw.strip().lower() not in {"", "false", "0", "no", "off"}
     else:
@@ -6026,9 +6200,46 @@ def _media_play_streaming(
         auto_play_wait = max(0.5, min(10.0, float(wait_raw)))
     except (TypeError, ValueError):
         auto_play_wait = 1.8
+
+    # PERFIL: solo aplica a plataformas con profile picker (NOT spotify).
+    # Si el user paso profile= explicitamente, guardarlo Y usarlo.
+    # Si no, leer del state. Si tampoco, pedir al user.
+    profile_name: str | None = None
+    needs_profile = canonical in {"netflix", "disney", "hbo_max", "prime_video"}
+    if needs_profile and auto_play:
+        explicit_profile = str(
+            args.get("profile") or args.get("profile_name") or "",
+        ).strip()
+        if explicit_profile:
+            profile_name = explicit_profile
+            # Guardarlo para proximas veces.
+            try:
+                _set_streaming_preference(state, canonical, profile_name)
+            except Exception:
+                pass  # best-effort, no abortar si falla
+        else:
+            profile_name = _get_streaming_preference(state, canonical)
+            if not profile_name:
+                # PRIMERA VEZ: pedir al user que diga su perfil.
+                return _err(
+                    f"need {canonical} profile to auto-play",
+                    status="needs_user",
+                    provider=canonical,
+                    query=query,
+                    hint=(
+                        f"What's your {canonical} profile name? Tell me once and "
+                        f"I'll remember it. Example: \"mi perfil de "
+                        f"{canonical} es Emmanuel\" — or call media again with "
+                        f"profile='<your name>'. If you don't want auto-play, "
+                        f"pass auto_play=false."
+                    ),
+                    asks_for="streaming_profile",
+                )
+
     return _launch_streaming(
         canonical, spec, query,
         executor=executor, auto_play=auto_play, auto_play_wait=auto_play_wait,
+        profile_name=profile_name,
     )
 
 
@@ -6068,7 +6279,7 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         # HBO Max/Max, Prime Video). Prioriza la app desktop si esta instalada
         # con deeplink confiable, sino abre la web URL de busqueda.
         if _resolve_streaming_provider(provider):
-            return _media_play_streaming(provider, query, args, executor=executor)
+            return _media_play_streaming(provider, query, args, executor=executor, state=state)
         if provider in {"youtube", "yt", "browser"}:
             return executor("browser", {"action": "youtube_play", "query": query or "musica"})
         if provider == "vlc":
