@@ -364,12 +364,49 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\btecla(s)? de\b|\bmedia key\b|\bplay.?pause\b|\bvolume up\b|\bvolume down\b", low):
         if "gui" not in tools:
             tools.append("gui")
+    # WhatsApp keywords — IMPORTANTE: chequear ANTES del match de email/message
+    # para que "mandale mensaje en wsp" no caiga en email.
+    # Cubre variantes ES/EN + foneticas de Whisper (guasap, wasap, huatsap).
+    if re.search(
+        r"\b(whatsapp|wsp|wpp|wasap|guasap|guazap|huatsap|whats)\b|"
+        r"\b(mandale|mandar|enviale|envia|escribile|escribir|dile|decile|"
+        r"di a|message)\b[^.]{0,40}\b(whatsapp|wsp|wpp|wasap|guasap)\b|"
+        r"\b(whatsapp|wsp|wpp|wasap|guasap)\b[^.]{0,40}\b(mensaje|message|texto|chat)\b",
+        low,
+    ):
+        tools.append("whatsapp")
+        # Tambien incluir contacts para el resolve_recipient si el user paso
+        # un nombre en vez de un numero ("mandale a Juan").
+        tools.append("contacts")
     if re.search(r"\b(mail|email|correo|enviar mensaje|"
                  r"send mail|send email|message|"
                  r"correio|enviar mensagem|"
                  r"courriel|envoyer mail|message|"
                  r"posta|inviare email|messaggio)\b", low):
-        tools.append("email")
+        # Si ya elegimos whatsapp, NO empujar email — son tools distintas y
+        # whatsapp es el match mas especifico.
+        if "whatsapp" not in tools:
+            tools.append("email")
+
+    # Streaming platforms: si el user menciona una plataforma explicitamente,
+    # asegurar que `media` este en el subset (donde estan los providers
+    # spotify/netflix/disney/hbo_max/prime_video).
+    if re.search(
+        r"\b(spotify|espotifai|spoti|"
+        r"netflix|netfli|neflix|"
+        r"disney|disney\+|disneyplus|disney plus|"
+        r"hbo|hbo max|hbomax|hbo\+|max\b|"
+        r"prime video|primevideo|amazon prime|amazon video|"
+        r"apple music|apple tv|"
+        r"youtube|yutu|yutubi|youtu)\b",
+        low,
+    ):
+        if "media" not in tools:
+            tools.append("media")
+        # Si el user dice "pon X en netflix/disney/etc", browser tambien util
+        # como fallback si la app no esta.
+        if "browser" not in tools:
+            tools.append("browser")
     if re.search(r"\b(recordatorio graph|microsoft todo|to do|todoist|tarea pendiente cloud)\b", low):
         tools.append("reminder")
 

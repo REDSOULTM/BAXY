@@ -59,6 +59,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "source_manager": "save research sources, snapshots, citations",
     "dependency": "diagnose missing Python modules or binaries",
     "contacts": "manage contacts: create, search, vCard import/export, resolve recipient",
+    "whatsapp": "WhatsApp messaging: send a message, open a chat, mandar mensaje por WhatsApp, escribir a una persona en wsp, decirle algo a alguien en whatsapp, mensaje de texto",
     "notes_tasks": "create and search local notes and tasks",
     "local_calendar": "create local calendar events, import ICS",
     "habit_tracker": "track personal habits and streaks",
@@ -202,6 +203,22 @@ def suggest_tools_semantic(query: str, *, k: int = 12, min_score: float = 0.25) 
 def warm_up() -> None:
     """Eager-load the model (useful for tests/benchmarks)."""
     _ensure_loaded()
+
+
+def reset_cache() -> None:
+    """Force the model to re-embed TOOL_DESCRIPTIONS on next use.
+
+    Necesario cuando TOOL_DESCRIPTIONS cambia mid-process (rare, pero pasa
+    cuando se agrega una tool nueva como `whatsapp` despues de bootstrap).
+    NO descarga el modelo — solo descarta los embeds cacheados para que
+    _ensure_loaded los recalcule con la lista actual.
+    """
+    _STATE.tool_names = None
+    _STATE.tool_embeddings = None
+    _STATE.attempt_count = 0
+    _STATE.last_attempt_ts = 0.0
+    _EMBED_CACHE.clear()
+    _EMBED_CACHE_ORDER.clear()
 
 
 # PERF: LRU cache para embeds del input del usuario. El embed de un texto
