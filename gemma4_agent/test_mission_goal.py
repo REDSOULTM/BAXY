@@ -302,13 +302,81 @@ class TestMissionFooter(unittest.TestCase):
         self.assertIn("misión", mission_footer(out))
         self.assertIn("parcial", mission_footer(out))
 
-    def test_unverified_no_expected_no_footer(self):
+    def test_unverified_no_footer_ever(self):
+        # Post-fix: UNVERIFIED nunca emite footer (smalltalk/read-only legitimo).
+        from .mission_goal import MissionOutcome
+        for total in (0, 1, 3):
+            out = MissionOutcome(
+                status=OutcomeStatus.UNVERIFIED,
+                summary="cualquier cosa", expected_total=total,
+            )
+            self.assertEqual(mission_footer(out), "",
+                             f"UNVERIFIED con expected_total={total} debe ser sin footer")
+
+    def test_empty_summary_no_footer(self):
         from .mission_goal import MissionOutcome
         out = MissionOutcome(
-            status=OutcomeStatus.UNVERIFIED,
-            summary="conversacional", expected_total=0,
+            status=OutcomeStatus.PARTIAL, summary="",
+            expected_total=2, expected_satisfied=1,
         )
         self.assertEqual(mission_footer(out), "")
+
+    def test_summary_truncated_to_120(self):
+        from .mission_goal import MissionOutcome
+        long_summary = "x" * 500
+        out = MissionOutcome(
+            status=OutcomeStatus.PARTIAL, summary=long_summary,
+            expected_total=2, expected_satisfied=1,
+        )
+        f = mission_footer(out)
+        # 120 chars max + brackets/prefix
+        self.assertLessEqual(len(f), 160)
+
+
+class TestBugFixes(unittest.TestCase):
+    """Regression tests for bugs found in session 20:03-20:15 (2026-05-15)."""
+
+    def test_smalltalk_no_expected_outcomes(self):
+        """Bug B: 'Hablame en gitano' / 'Insultame' no deben tener expected outcomes."""
+        for prompt in ("Hablame en gitano", "Insultame", "weona", "Como a Gemma"):
+            g = MissionGoal.from_user_text(prompt)
+            self.assertEqual(
+                len(g.expected), 0,
+                f"{prompt!r} no debe generar expected outcomes (got {[o.kind for o in g.expected]})",
+            )
+
+    def test_smalltalk_outcome_is_unverified_no_footer(self):
+        """Bug A: smalltalk no debe emitir footer eco del reply."""
+        g = MissionGoal.from_user_text("Insultame")
+        out = compute_mission_outcome(g, [], "No estoy programado para insultar a nadie...")
+        self.assertEqual(out.status, OutcomeStatus.UNVERIFIED)
+        # Summary debe ser estructural, NO eco del reply.
+        self.assertNotIn("No estoy programado", out.summary)
+        # Footer silenciado.
+        self.assertEqual(mission_footer(out), "")
+
+    def test_strip_trailing_footers_idempotent(self):
+        """Bug C: strip remueve footer y es idempotente."""
+        from .agent import _strip_trailing_footers
+        text_with = "Hola.\n\n[misión: sin objetivos detectados]"
+        stripped = _strip_trailing_footers(text_with)
+        self.assertEqual(stripped, "Hola.")
+        # Idempotente
+        self.assertEqual(_strip_trailing_footers(stripped), "Hola.")
+
+    def test_strip_multiple_stacked_footers(self):
+        """Bug C: multiple footers stackeados (verifier + mission) se strippean todos."""
+        from .agent import _strip_trailing_footers
+        text = ("Reply real del modelo.\n\n[1 no verificable(s)]"
+                "\n\n[misión: parcial (1/2); falta: abrir lo que pediste]")
+        stripped = _strip_trailing_footers(text)
+        self.assertEqual(stripped, "Reply real del modelo.")
+
+    def test_strip_preserves_normal_brackets(self):
+        """No deber strippear texto que contiene brackets normales."""
+        from .agent import _strip_trailing_footers
+        text = "Aqui hay [info] en medio.\nFinal sin footer."
+        self.assertEqual(_strip_trailing_footers(text), text.rstrip())
 
 
 if __name__ == "__main__":

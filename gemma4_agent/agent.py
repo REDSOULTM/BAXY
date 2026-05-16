@@ -953,6 +953,17 @@ class Gemma4Agent:
                 assistant_content = self._guard_unverified_final(assistant_content, events)
                 assistant_content = self._guard_phrase_confirm(assistant_content)
                 assistant_content = self._guard_plan_status(assistant_content)
+                # Defensa: si el LLM emitio en el reply mismo un footer estilo
+                # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
+                # historial), lo strippeamos antes de pegar el nuestro. Sino,
+                # el reply muestra footers duplicados.
+                assistant_content = _strip_trailing_footers(assistant_content)
+                # IMPORTANTE: guardamos en el history la version SIN footers.
+                # Los footers son metadata para el usuario, no contenido. Si
+                # los pegaramos al history, el LLM los veria como contenido
+                # legitimo del asistente y los reproduciria proximo turn,
+                # bloating context + duplicando texto.
+                content_for_history = assistant_content
                 # TIER 1 #2: footer estructural honest del verifier per-tool.
                 # Solo aparece si hay failed o unverifiable; silencioso si todo OK.
                 verifier_footer = summarize_verifiers(verifier_outcomes)
@@ -970,7 +981,7 @@ class Gemma4Agent:
                 # (PARTIAL/FAILED/INTENT_NOT_FULFILLED/TOOL_OK_VERIFIER_INCONCLUSIVE).
                 _tool_records_for_outcome = _build_tool_records(events, verifier_outcomes)
                 mission_outcome = _compute_mission_outcome(
-                    mission_goal, _tool_records_for_outcome, assistant_content,
+                    mission_goal, _tool_records_for_outcome, content_for_history,
                 )
                 _mission_extra_footer = _mission_footer(mission_outcome)
                 if _mission_extra_footer:
@@ -995,7 +1006,8 @@ class Gemma4Agent:
                         mission_outcome.expected_satisfied,
                         mission_outcome.expected_total,
                     ]
-                self.history.append({"role": "assistant", "content": assistant_content})
+                # History recibe la version SIN footers (ver comentario arriba).
+                self.history.append({"role": "assistant", "content": content_for_history})
                 # Subset summary: which sent tools were actually used vs idle.
                 used_tools = {e.name for e in events}
                 router_stats = {
@@ -2008,6 +2020,38 @@ def _json_len(value: Any) -> int:
 def _looks_like_context_overflow(message: str) -> bool:
     low = message.casefold()
     return "exceeds the available context size" in low or "context size" in low and "exceed" in low
+
+
+# Footers added by the agent (TIER 1 #2 verifier + TIER 2 #5 mission). Si el
+# LLM ve uno en el historial, lo va a reproducir en proximos turns, infando
+# context + duplicando texto en pantalla. Strippeamos antes de guardar al
+# history. Los regex matchean al FINAL del texto (footer es siempre lo ultimo).
+import re as _re_footers
+_FOOTER_PATTERNS = [
+    # "[misión: ...]" — del mission_outcome
+    _re_footers.compile(r"\n*\[misi[óo]n:[^\]]*\]\s*$"),
+    # "[N verificada(s), N no confirmada(s), N no verificable(s)]" — verifier
+    _re_footers.compile(r"\n*\[\d+\s*verificada\(s\)[^\]]*\]\s*$"),
+    _re_footers.compile(r"\n*\[\d+\s*no\s+confirmada\(s\)[^\]]*\]\s*$"),
+    _re_footers.compile(r"\n*\[\d+\s*no\s+verificable\(s\)[^\]]*\]\s*$"),
+]
+
+
+def _strip_trailing_footers(text: str) -> str:
+    """Remueve cualquier footer agregado por el agent del final del texto.
+
+    Hace varias pasadas: si hay multiples footers stackeados (verifier +
+    mission), los strippea todos. Idempotente (correr 2 veces da lo mismo).
+    """
+    if not text:
+        return text
+    prev = None
+    cur = text.rstrip()
+    while cur != prev:
+        prev = cur
+        for pat in _FOOTER_PATTERNS:
+            cur = pat.sub("", cur).rstrip()
+    return cur
 
 
 def _middle_ellipsis(text: str, limit: int) -> str:

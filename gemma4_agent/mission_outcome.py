@@ -116,10 +116,14 @@ def compute_mission_outcome(
                 expected_total=expected_total, expected_satisfied=satisfied,
                 detail=detail,
             )
-        # Conversational reply legitimo (preguntas, knowledge, smalltalk)
+        # Conversational reply legitimo (preguntas, knowledge, smalltalk).
+        # IMPORTANTE: el summary NO debe ser eco del reply_text — mission_footer
+        # imprime "[misión: <summary>]" y eso duplicaria el reply entero.
+        # Usar el summary estructural de mission_goal (e.g. "sin objetivos
+        # detectados") asi el footer es informativo o se silencia.
         return MissionOutcome(
             status=OutcomeStatus.UNVERIFIED,
-            summary=(reply_text or "respuesta conversacional")[:120],
+            summary=mission_goal.summary(),
             expected_total=expected_total, expected_satisfied=satisfied,
             detail=detail,
         )
@@ -203,16 +207,21 @@ def mission_footer(outcome: MissionOutcome) -> str:
 
     Reglas:
       - COMPLETED + 0 unverified -> sin footer (no inflar reply).
-      - PARTIAL / FAILED / INTENT_NOT_FULFILLED -> footer con razon.
-      - TOOL_OK_VERIFIER_INCONCLUSIVE -> footer explicito ("dispatch async").
-      - UNVERIFIED + 0 expected -> sin footer.
+      - UNVERIFIED -> sin footer (respuesta conversacional, no aporta).
+      - PARTIAL / FAILED / INTENT_NOT_FULFILLED / TOOL_OK_VERIFIER_INCONCLUSIVE
+        -> footer corto.
+      - Summary vacio -> sin footer (defensivo).
     """
+    if not outcome.summary:
+        return ""
     if outcome.status == OutcomeStatus.COMPLETED and outcome.unverified_count == 0:
         return ""
-    if outcome.status == OutcomeStatus.UNVERIFIED and outcome.expected_total == 0:
+    # UNVERIFIED es smalltalk / read-only legitimo — no aporta info al user.
+    if outcome.status == OutcomeStatus.UNVERIFIED:
         return ""
-    # Otherwise emit a one-line footer
-    return f"\n\n[misión: {outcome.summary}]"
+    # Truncamos defensivamente para no inflar el reply.
+    summary = outcome.summary[:120]
+    return f"\n\n[misión: {summary}]"
 
 
 def build_tool_records(

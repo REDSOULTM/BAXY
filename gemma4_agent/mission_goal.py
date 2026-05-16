@@ -523,15 +523,19 @@ def _split_clauses(text: str) -> list[str]:
 
 
 def _detect_outcomes_in_clause(clause: str) -> list[ExpectedOutcome]:
-    """Detect uno o mas outcomes en una sola clausula."""
+    """Detect uno o mas outcomes en una sola clausula.
+
+    NO emite fallback "report" — un smalltalk como "Hablame en gitano" o
+    "Insultame" NO tiene expected outcome estructural. Si ningun patron
+    matchea, devolvemos lista vacia y el turn se cuenta como UNVERIFIED
+    (sin footer ruidoso).
+    """
     outcomes: list[ExpectedOutcome] = []
     seen_kinds: set[str] = set()
     for pat, kind in _VERB_KIND_PATTERNS:
         if pat.search(clause) and kind not in seen_kinds:
             outcomes.append(ExpectedOutcome(kind=kind, target=clause[:80]))
             seen_kinds.add(kind)
-    if not outcomes and len(clause) > 3:
-        outcomes.append(ExpectedOutcome(kind="report", target=clause[:80]))
     return outcomes
 
 
