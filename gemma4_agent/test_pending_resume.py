@@ -422,6 +422,31 @@ class TestProfileExtractorAdversarial(unittest.TestCase):
             Gemma4Agent._extract_profile_name("Mi perfil es {something}"),
         )
 
+    def test_greeting_rejected_regression(self):
+        """REGRESION 2026-05-16 (UI screenshot): user said "Hola" after the
+        agent had asked for a streaming profile in a previous turn. Extractor
+        accepted "Hola" → media tool saved profile_name="Hola" on HBO Max.
+        Visible in chat: "Guardé tu perfil de Hbo Max como 'Hola'."
+        """
+        for greeting in ("Hola", "hola", "HOLA", "Hello", "Hi", "Hey",
+                         "Buenos dias", "Buenas", "Que tal", "Gracias",
+                         "Adios", "chau"):
+            with self.subTest(greeting=greeting):
+                self.assertIsNone(
+                    Gemma4Agent._extract_profile_name(greeting),
+                    f"{greeting!r} should be rejected as profile name",
+                )
+
+    def test_greeting_prefix_does_not_overreject(self):
+        """Conversational tokens use exact match, not prefix — "Holanda"
+        must NOT be rejected just because it starts with "Hola"."""
+        self.assertEqual(
+            Gemma4Agent._extract_profile_name("Holanda"), "Holanda",
+        )
+        self.assertEqual(
+            Gemma4Agent._extract_profile_name("Helena"), "Helena",
+        )
+
 
 class TestUnverifiedGuardWithNeedsUser(unittest.TestCase):
     """El guard NO debe inyectar 'Nota:' cuando status='needs_user'."""

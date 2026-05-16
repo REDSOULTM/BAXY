@@ -1849,19 +1849,39 @@ class Gemma4Agent:
         s_clean = s.rstrip(" .,;!?")
         words = s_clean.split()
         if 1 <= len(words) <= 2 and len(s_clean) <= 30:
-            # No es una orden tipica. Cubre tanto las raices ("olvida",
-            # "cancela") como las flexiones ("olvidalo", "cancelalo",
-            # "cancelo"). Sin prefix-match el extractor aceptaba "olvidalo"
-            # como nombre de perfil y arrancaba media con profile="olvidalo".
+            # Reject orders, greetings, thanks, and meta-conversational
+            # tokens. Real-world breakage: user said "Hola" after the agent
+            # had asked for an HBO Max profile in a previous turn (pending
+            # still alive) → extractor accepted "Hola" and saved it as the
+            # HBO Max profile name. Same shape for "Hello", "Gracias", etc.
+            # Roots are checked with both exact match AND prefix match (so
+            # "olvidalo"/"cancelalo" rejected via "olvida"/"cancela" roots).
             order_roots = ("abre", "open", "pon", "play", "cierra", "close",
                             "borra", "delete", "busca", "search", "manda",
                             "send", "no", "si", "yes", "ok", "olvida",
                             "cancela", "cancel", "stop", "pausa", "pause",
                             "dale", "dejalo", "dejame")
+            # Exact-match only (no prefix) — these are conversational tokens
+            # the user types as the FIRST word when changing topic. Prefix
+            # match would over-reject ("Holanda" would match "hola").
+            conversational_exact = {
+                "hola", "holas", "holis", "hello", "hi", "hey",
+                "buenos", "buenas", "buen", "que", "qué", "como", "cómo",
+                "gracias", "thanks", "thank", "ok", "okay", "vale",
+                "bueno", "perfecto", "listo", "dale",
+                "adios", "adiós", "bye", "chau", "chao",
+                "ayuda", "help",
+            }
+
             def _is_order(word: str) -> bool:
                 wl = word.casefold()
                 return any(wl == root or wl.startswith(root) for root in order_roots)
-            if not any(_is_order(w) for w in words):
+
+            def _is_conversational(word: str) -> bool:
+                return word.casefold() in conversational_exact
+
+            rejected = any(_is_order(w) or _is_conversational(w) for w in words)
+            if not rejected:
                 return s_clean.strip()
         return None
 
