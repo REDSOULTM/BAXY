@@ -37,9 +37,11 @@ class TestMediaSpotifyNative(unittest.TestCase):
         self.assertTrue(any("spotify:search" in str(p) for p in call))
 
     def test_spotify_web_fallback_when_no_desktop(self):
+        # Si el detector no encuentra app instalada, debe caer a Spotify Web.
         from unittest.mock import patch
         executor = MagicMock()
-        with patch("gemma4_agent.domain_tools._find_spotify_executable", return_value=None), \
+        with patch("gemma4_agent.domain_tools._find_streaming_app",
+                   return_value={"kind": None, "launch_target": None}), \
              patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True) as mock_open:
             result = media_tool(
                 {"action": "play", "provider": "spotify", "query": "X"},
@@ -86,6 +88,117 @@ class TestMediaSpotifyNative(unittest.TestCase):
         self.assertFalse(result.get("ok"))
         hint = result.get("install_hint", "")
         self.assertIn("youtube", hint.lower())
+
+
+class TestStreamingPlatforms(unittest.TestCase):
+    """Streaming providers: Netflix, Disney+, HBO Max, Prime Video.
+
+    Cubre el alias resolution, app detection, deeplink (cuando disponible),
+    y web fallback (siempre). Mockean subprocess/webbrowser para no abrir
+    ventanas en CI/dev.
+    """
+
+    def test_alias_resolution(self):
+        from .domain_tools import _resolve_streaming_provider
+        cases = [
+            ("netflix", "netflix"), ("NETFLIX", "netflix"),
+            ("disney", "disney"), ("disney+", "disney"),
+            ("Disney Plus", "disney"), ("disney_plus", "disney"),
+            ("hbo_max", "hbo_max"), ("max", "hbo_max"), ("HBO Max", "hbo_max"),
+            ("prime", "prime_video"), ("prime video", "prime_video"),
+            ("Amazon Prime", "prime_video"), ("primevideo", "prime_video"),
+            ("spotify", "spotify"),
+        ]
+        for alias, expected_canonical in cases:
+            r = _resolve_streaming_provider(alias)
+            self.assertIsNotNone(r, f"alias {alias!r} should resolve")
+            self.assertEqual(r[0], expected_canonical, f"alias {alias!r}")
+
+    def test_unknown_alias_returns_none(self):
+        from .domain_tools import _resolve_streaming_provider
+        self.assertIsNone(_resolve_streaming_provider("twitch"))
+        self.assertIsNone(_resolve_streaming_provider(""))
+        self.assertIsNone(_resolve_streaming_provider("youtube"))
+
+    def test_netflix_opens_web_search(self):
+        from unittest.mock import patch
+        with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True) as wb:
+            result = media_tool(
+                {"action": "play", "provider": "netflix", "query": "stranger things"},
+                MagicMock(),
+            )
+        self.assertTrue(result.get("ok"))
+        self.assertEqual(result.get("provider"), "netflix_web")
+        self.assertIn("netflix.com/search", result.get("url", ""))
+        wb.assert_called_once()
+        # URL-encoded query
+        called_url = wb.call_args.args[0]
+        self.assertIn("stranger%20things", called_url)
+
+    def test_disney_plus_alias_resolves(self):
+        from unittest.mock import patch
+        with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
+            result = media_tool(
+                {"action": "play", "provider": "disney+", "query": "Loki"},
+                MagicMock(),
+            )
+        self.assertTrue(result.get("ok"))
+        self.assertEqual(result.get("provider"), "disney_web")
+        self.assertIn("disneyplus.com", result.get("url", ""))
+
+    def test_hbo_max_uses_max_url(self):
+        # Post-rebrand HBO Max -> Max.
+        from unittest.mock import patch
+        with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
+            result = media_tool(
+                {"action": "play", "provider": "max", "query": "house of dragon"},
+                MagicMock(),
+            )
+        self.assertTrue(result.get("ok"))
+        self.assertIn("max.com/search", result.get("url", ""))
+
+    def test_prime_video_alias_resolves(self):
+        from unittest.mock import patch
+        with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
+            result = media_tool(
+                {"action": "play", "provider": "prime", "query": "the boys"},
+                MagicMock(),
+            )
+        self.assertTrue(result.get("ok"))
+        self.assertIn("primevideo.com", result.get("url", ""))
+
+    def test_streaming_requires_query(self):
+        result = media_tool(
+            {"action": "play", "provider": "netflix"},
+            MagicMock(),
+        )
+        self.assertFalse(result.get("ok"))
+        self.assertIn("query", str(result.get("error", "")).lower())
+
+    def test_status_exposes_streaming_platforms(self):
+        # status no requiere mock — solo lee disco
+        result = media_tool({"action": "status"}, MagicMock())
+        self.assertTrue(result.get("ok"))
+        sp = result.get("streaming_platforms", {})
+        for canonical in ("spotify", "netflix", "disney", "hbo_max", "prime_video"):
+            self.assertIn(canonical, sp, f"status should report {canonical}")
+            # Cada entry tiene app_installed bool y has_deeplink bool
+            self.assertIn("app_installed", sp[canonical])
+            self.assertIn("has_deeplink", sp[canonical])
+
+    def test_spotify_deeplink_when_desktop_installed(self):
+        from unittest.mock import patch
+        with patch("gemma4_agent.domain_tools.subprocess.Popen") as popen, \
+             patch("gemma4_agent.domain_tools._find_streaming_app",
+                   return_value={"kind": "exe", "launch_target": r"C:\X\Spotify.exe"}):
+            result = media_tool(
+                {"action": "play", "provider": "spotify", "query": "benson boone"},
+                MagicMock(),
+            )
+        self.assertTrue(result.get("ok"))
+        self.assertEqual(result.get("provider"), "spotify")
+        self.assertIn("spotify:search:", result.get("deeplink", ""))
+        popen.assert_called_once()
 
 
 class TestBrowserToolRule(unittest.TestCase):

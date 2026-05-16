@@ -5691,101 +5691,254 @@ def _find_spotify_executable() -> str | None:
     return None
 
 
-def _media_play_spotify(query: str, args: dict[str, Any]) -> dict[str, Any]:
-    """Reproduce musica en Spotify usando deeplinks nativos cuando es posible.
+# Streaming platforms — registro centralizado de cada plataforma.
+# Cada entry: (canonical_name, normalized_aliases, UWP package_family_name,
+#              exe_path_candidates, deeplink_template, web_url_template,
+#              install_hint, post_open_note)
+#
+# {q} en templates se reemplaza con la query URL-encoded.
+#
+# Notas:
+#   - UWP package family names recolectados de docs publicas; pueden variar
+#     levemente por region. Usamos shell:AppsFolder\<pfn>!App via `start`.
+#     Si el pfn no matchea, Windows no abre nada y caemos a web.
+#   - Deeplinks: solo Spotify y Disney+ tienen scheme propio confiable.
+#     Netflix/HBO/Prime no exponen schemes documentados → siempre web.
+#   - Web URLs verificadas en 2025-2026 (post-rebrand HBO Max -> Max).
+_STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
+    "spotify": {
+        "aliases": {"spotify"},
+        "uwp_pfn": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0",
+        "exe_paths": [
+            Path.home() / "AppData" / "Roaming" / "Spotify" / "Spotify.exe",
+        ],
+        "deeplink": "spotify:search:{q}",
+        "web_url": "https://open.spotify.com/search/{q}",
+        "install_hint": "winget install Spotify.Spotify",
+        "post_open_note": (
+            "Spotify opened with search results. App does NOT auto-play. "
+            "User must press Enter / click a track."
+        ),
+    },
+    "netflix": {
+        "aliases": {"netflix"},
+        "uwp_pfn": "4DF9E0F8.Netflix_mcm4njqhnhss8",
+        "exe_paths": [],
+        "deeplink": None,  # Netflix UWP no expone deeplink de busqueda confiable
+        "web_url": "https://www.netflix.com/search?q={q}",
+        "install_hint": "Install Netflix from Microsoft Store: ms-windows-store://pdp/?productid=9wzdncrfj3tj",
+        "post_open_note": (
+            "Netflix opened with search results. Requires login. "
+            "User clicks the title to start playback."
+        ),
+    },
+    "disney": {
+        "aliases": {"disney", "disney+", "disneyplus", "disney_plus", "disney plus"},
+        "uwp_pfn": "Disney.37853FC22B2CE_6rarf9sa4v8jt",
+        "exe_paths": [],
+        "deeplink": None,  # disneyplus:// no es estandar en Windows desktop
+        "web_url": "https://www.disneyplus.com/search?q={q}",
+        "install_hint": "Install Disney+ from Microsoft Store: ms-windows-store://pdp/?productid=9NXQXXLFST89",
+        "post_open_note": (
+            "Disney+ opened with search results. Requires login. "
+            "User clicks the title to start playback."
+        ),
+    },
+    "hbo_max": {
+        # Rebrand: HBO Max -> Max (mayo 2023). Aceptamos ambos nombres.
+        "aliases": {"hbo_max", "hbo max", "hbomax", "max", "hbo"},
+        "uwp_pfn": None,  # Max no tiene UWP oficial en Windows
+        "exe_paths": [],
+        "deeplink": None,
+        "web_url": "https://www.max.com/search?q={q}",
+        "install_hint": "Max is web-only on Windows (no native app); browser will open.",
+        "post_open_note": (
+            "Max (formerly HBO Max) opened with search results. Requires login. "
+            "User clicks the title to start playback."
+        ),
+    },
+    "prime_video": {
+        "aliases": {"prime_video", "prime video", "primevideo", "amazon prime",
+                     "amazon_prime", "amazon", "prime"},
+        "uwp_pfn": "AmazonVideo.PrimeVideo_pwbj9vvecjh7j",
+        "exe_paths": [],
+        "deeplink": None,
+        "web_url": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase={q}",
+        "install_hint": "Install Prime Video from Microsoft Store: ms-windows-store://pdp/?productid=9P6RC76MSMMJ",
+        "post_open_note": (
+            "Prime Video opened with search results. Requires login. "
+            "User clicks the title to start playback."
+        ),
+    },
+}
 
-    Estrategia:
-      1. Si la app Spotify esta instalada: abrir con `spotify:search:<query>`
-         (la app abre y muestra resultados de busqueda; el user da Enter
-         para reproducir, o el agent puede mandar Enter via gui despues).
-      2. Si no, abrir Spotify Web en el browser: open.spotify.com/search/<q>
-      3. Si tampoco hay browser, devolver needs_user con hint.
 
-    Returns: dict con ok + action + url o command ejecutado.
+def _resolve_streaming_provider(provider_raw: str) -> tuple[str, dict[str, Any]] | None:
+    """Mapea un alias del LLM (e.g. 'disney+') al provider canonico + spec.
+
+    Returns (canonical_name, spec_dict) o None si no matchea.
+    """
+    p = str(provider_raw or "").strip().lower().replace("-", "_")
+    for canonical, spec in _STREAMING_PLATFORMS.items():
+        if p == canonical or p in spec["aliases"]:
+            return canonical, spec
+    return None
+
+
+def _find_streaming_app(spec: dict[str, Any]) -> dict[str, str | None]:
+    """Detecta si la app de streaming esta instalada como UWP o como EXE.
+
+    Returns dict con keys:
+      - "kind": 'uwp' | 'exe' | None
+      - "launch_target": el string que se pasara a `start` (shell:AppsFolder\\<pfn>!App o path al exe)
+    """
+    # 1. EXE paths (preferencia: spotify desktop, etc.)
+    for exe_path in spec.get("exe_paths", []):
+        try:
+            if exe_path.is_file():
+                return {"kind": "exe", "launch_target": str(exe_path)}
+        except OSError:
+            continue
+    # 2. UWP package via Get-AppxPackage check
+    pfn = spec.get("uwp_pfn")
+    if pfn and os.name == "nt":
+        try:
+            proc = subprocess.run(
+                ["powershell", "-NoProfile", "-Command",
+                  f"if (Get-AppxPackage -Name '{pfn.split('_')[0]}') {{ Write-Output yes }}"],
+                capture_output=True, text=True, timeout=3,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            if proc.returncode == 0 and "yes" in (proc.stdout or "").lower():
+                return {"kind": "uwp", "launch_target": f"shell:AppsFolder\\{pfn}!App"}
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+    return {"kind": None, "launch_target": None}
+
+
+def _launch_streaming(canonical: str, spec: dict[str, Any], query: str) -> dict[str, Any]:
+    """Abre la app o web del provider con la query de busqueda.
+
+    Prioridad:
+      1. App desktop instalada + deeplink propio -> usar deeplink.
+      2. App desktop instalada sin deeplink -> abrir app (sin busqueda) + abrir web search en background?
+         Decision: si NO hay deeplink, vamos directo a web. Abrir la app sin
+         busqueda obliga al user a navegar manualmente.
+      3. No app -> abrir web URL en browser default.
     """
     import urllib.parse
     if not query:
-        return _err("spotify provider requires a query (song/artist)")
-
+        return _err(
+            f"{canonical} provider requires a query (movie/series/song)",
+            provider=canonical,
+        )
     encoded = urllib.parse.quote(query)
-    spotify_exe = _find_spotify_executable()
+    web_url = spec["web_url"].format(q=encoded)
+    install_hint = spec.get("install_hint", "")
+    note = spec.get("post_open_note", "")
 
-    if spotify_exe and os.name == "nt":
-        # Deeplink: launches Spotify and shows search results.
-        deeplink = f"spotify:search:{encoded}"
+    app_info = _find_streaming_app(spec)
+    deeplink_tpl = spec.get("deeplink")
+
+    # PATH 1: app instalada + deeplink confiable
+    if app_info["kind"] and deeplink_tpl:
+        deeplink = deeplink_tpl.format(q=encoded)
         try:
-            # `start` permite resolver el protocolo handler spotify://
             subprocess.Popen(
                 ["cmd", "/c", "start", "", deeplink],
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
             return _ok(
                 action="play",
-                provider="spotify",
+                provider=canonical,
                 query=query,
                 deeplink=deeplink,
-                spotify_exe=spotify_exe,
+                app_kind=app_info["kind"],
+                launch_target=app_info["launch_target"],
                 opened=True,
                 verified=False,
                 status="attempted",
-                note=(
-                    "Spotify opened with search results. The app shows matching "
-                    "tracks but does NOT auto-play. User must press Enter / click "
-                    "a track to start playback, or the agent can call "
-                    "gui(action='keypress', keys='enter') as a follow-up."
-                ),
+                note=note,
             )
-        except (OSError, FileNotFoundError) as exc:
-            # Fall through to web fallback
-            spotify_err = str(exc)
-    else:
-        spotify_err = None
+        except (OSError, FileNotFoundError):
+            pass  # fall through to web
 
-    # Web fallback: abre Spotify Web en el browser default.
-    web_url = f"https://open.spotify.com/search/{encoded}"
+    # PATH 2/3: no app o no deeplink -> abrir web URL (browser default).
+    # Esto siempre funciona si hay browser default. La app instalada-sin-deeplink
+    # podemos mencionarla en el note pero abrir web es el camino mas fiable
+    # porque lleva al user directamente al resultado de busqueda.
     try:
         import webbrowser
         opened = webbrowser.open(web_url)
         if opened:
-            return _ok(
+            result = _ok(
                 action="play",
-                provider="spotify_web",
+                provider=f"{canonical}_web",
                 query=query,
                 url=web_url,
                 opened=True,
                 verified=False,
                 status="attempted",
-                note=(
-                    "Spotify Web Player opened with search results. Playback "
-                    "requires the user to be logged in and click a track."
-                ),
-                fallback_from="spotify_desktop" if spotify_err else None,
+                note=note,
             )
+            if app_info["kind"]:
+                # Avisamos que la app esta pero no la usamos por falta de deeplink.
+                result["app_available_but_no_deeplink"] = True
+                result["app_kind"] = app_info["kind"]
+            return result
     except Exception as exc:
         return _err(
-            f"Could not open Spotify (desktop nor web): {exc}",
-            status="failed", provider="spotify",
-            spotify_desktop_error=spotify_err,
+            f"Could not open {canonical} (no app deeplink and webbrowser failed): {exc}",
+            provider=canonical, status="failed",
         )
     return _err(
-        "Spotify desktop not installed and webbrowser.open returned False",
-        status="needs_user", provider="spotify",
-        install_hint="winget install Spotify.Spotify",
+        f"{canonical}: no native deeplink and default browser refused to open.",
+        provider=canonical, status="needs_user",
+        install_hint=install_hint,
     )
+
+
+def _media_play_streaming(provider: str, query: str, args: dict[str, Any]) -> dict[str, Any]:
+    """Entry point unificado para Spotify/Netflix/Disney+/Max/Prime Video."""
+    resolved = _resolve_streaming_provider(provider)
+    if not resolved:
+        return _err(
+            f"unsupported streaming provider: {provider!r}",
+            provider=provider, status="needs_dependency",
+            install_hint=(
+                "Supported providers: spotify, netflix, disney+ (disney), "
+                "hbo_max (max), prime_video. Use one of these names."
+            ),
+        )
+    canonical, spec = resolved
+    return _launch_streaming(canonical, spec, query)
+
+
+# Backwards-compat: el viejo _media_play_spotify se mantiene como alias.
+def _media_play_spotify(query: str, args: dict[str, Any]) -> dict[str, Any]:
+    return _media_play_streaming("spotify", query, args)
 
 
 def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | None = None) -> dict[str, Any]:
     action = str(args.get("action") or "play").casefold()
     if action == "status":
-        spotify_exe = _find_spotify_executable()
+        streaming = {}
+        for canonical, spec in _STREAMING_PLATFORMS.items():
+            app_info = _find_streaming_app(spec)
+            streaming[canonical] = {
+                "app_installed": app_info["kind"] is not None,
+                "app_kind": app_info["kind"],
+                "has_deeplink": spec.get("deeplink") is not None,
+                "web_url_template": spec.get("web_url"),
+            }
         return _ok(
             backends=["browser_youtube", "windows_media_keys", "local_file",
-                       "vlc_cli", "winrt_smtc", "spotify_desktop", "spotify_web"],
+                       "vlc_cli", "winrt_smtc",
+                       "spotify", "netflix", "disney", "hbo_max", "prime_video"],
             now_playing_supported=True,
             vlc_available=bool(_find_vlc_executable()),
-            spotify_desktop_available=bool(spotify_exe),
-            spotify_desktop_path=spotify_exe,
-            note="now_playing uses Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager via PowerShell.",
+            streaming_platforms=streaming,
+            note="now_playing uses Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager via PowerShell. Streaming platforms launch desktop app if installed (with deeplink) else open web search URL.",
         )
     if action == "play":
         query = str(args.get("query") or args.get("song") or args.get("title") or "").strip()
@@ -5793,11 +5946,11 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         provider = str(args.get("provider") or "youtube").casefold()
         if path:
             return _media_play_local(path, args)
-        # Spotify tiene soporte nativo: deeplink al desktop app si esta
-        # instalado, fallback a Spotify Web. No caemos a YouTube — el usuario
-        # explicitamente pidio Spotify.
-        if provider == "spotify":
-            return _media_play_spotify(query, args)
+        # Streaming providers con soporte nativo (Spotify, Netflix, Disney+,
+        # HBO Max/Max, Prime Video). Prioriza la app desktop si esta instalada
+        # con deeplink confiable, sino abre la web URL de busqueda.
+        if _resolve_streaming_provider(provider):
+            return _media_play_streaming(provider, query, args)
         if provider in {"youtube", "yt", "browser"}:
             return executor("browser", {"action": "youtube_play", "query": query or "musica"})
         if provider == "vlc":
