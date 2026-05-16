@@ -76,15 +76,24 @@ def plan_mission(content: str | list[dict[str, Any]]) -> MissionPlan:
     return MissionPlan(goal=text[:500], steps=steps, cleanup_expected=cleanup_expected, needs_pc_action=needs_pc_action)
 
 
-def select_tool_names(content: str | list[dict[str, Any]], plan: MissionPlan, *, safety_enabled: bool = False) -> list[str]:
+def select_tool_names(
+    content: str | list[dict[str, Any]],
+    plan: MissionPlan,
+    *,
+    safety_enabled: bool = False,
+    last_assistant_text: str | None = None,
+) -> list[str]:
     """Return a small, ordered tool subset for the current turn.
 
     Strategy:
     1. Keyword match (cheap, deterministic, multi-language regex).
-    2. If keywords found nothing, fall back to semantic similarity over
+    2. Continuation hint: if the previous assistant message indicated
+       a pending question (e.g. "¿Cuál es tu perfil en Netflix?"),
+       the current user reply is likely the answer. Force the relevant
+       tool into the subset even if the user just said "Ema".
+    3. If keywords found nothing, fall back to semantic similarity over
        multilingual sentence embeddings (semantic_router.suggest_tools_semantic).
-       This covers languages and wordings the regex keywords don't have.
-    3. If both came up empty, return [] (or ["safety"] when enabled).
+    4. If everything came up empty, return [] (or ["safety"] when enabled).
     """
     raw_text = _content_text(content)
     text = _fold_text(raw_text)
@@ -93,6 +102,25 @@ def select_tool_names(content: str | list[dict[str, Any]], plan: MissionPlan, *,
         names.extend(step.suggested_tools)
     if not names:
         names.extend(_suggest_tools(text))
+
+    # Continuation hint: si el agente preguntó por perfil de streaming en
+    # el turn anterior y este turn parece una respuesta corta (no es un
+    # comando nuevo), forzar media en el subset. El LLM decide si llamar
+    # media o no — pero sin la tool en el subset no podría.
+    if last_assistant_text and "media" not in names:
+        prev_low = _fold_text(last_assistant_text)
+        is_streaming_question = (
+            ("perfil" in prev_low or "profile" in prev_low)
+            and re.search(
+                r"\b(netflix|disney|hbo|max|prime|amazon|spotify)\b",
+                prev_low,
+            )
+        )
+        if is_streaming_question:
+            # Solo añadir media si el user no acaba de pedir algo
+            # claramente distinto (ya cubierto por _suggest_tools, names != []).
+            if not names or len(raw_text.split()) <= 6:
+                names.insert(0, "media")
 
     semantic_fallback_used = False
     if not names and raw_text.strip():

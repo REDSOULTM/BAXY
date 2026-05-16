@@ -973,7 +973,22 @@ class Gemma4Agent:
             parallel_tool_calls=mode.parallel_tool_calls,
             max_tokens=mode.max_tokens,
         )
-        selected_tool_names = select_tool_names(content, plan, safety_enabled=self.config.enable_safety)
+        # Pasar al planner el ultimo assistant message para que detecte
+        # turns de continuacion (e.g. agente pregunto perfil de streaming en
+        # turn anterior; este turn el user responde "Ema" — sin esto, el
+        # router decidiria subset=[] porque "Ema" no tiene keywords).
+        last_assistant_text: str | None = None
+        for msg in reversed(self.history):
+            if isinstance(msg, dict) and msg.get("role") == "assistant":
+                c = msg.get("content")
+                if isinstance(c, str) and c.strip():
+                    last_assistant_text = c
+                    break
+        selected_tool_names = select_tool_names(
+            content, plan,
+            safety_enabled=self.config.enable_safety,
+            last_assistant_text=last_assistant_text,
+        )
         semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
         # Persona nudge: ensure the persona's preferred tools are in the
         # subset. Append without duplicating; _cap_tools later trims if it

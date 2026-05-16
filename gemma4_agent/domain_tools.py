@@ -6024,13 +6024,13 @@ def _streaming_web_auto_play(
         try:
             executor("gui", {"action": "keypress", "keys": search_shortcut})
             steps.append(f"pressed_search_shortcut:{search_shortcut}")
-            _time.sleep(0.8)  # esperar que aparezca el input
+            _time.sleep(1.0)  # esperar que aparezca el input
             executor("gui", {"action": "type", "text": query})
             steps.append(f"typed_query:{query}")
-            _time.sleep(0.5)
+            _time.sleep(0.6)
             executor("gui", {"action": "keypress", "keys": "enter"})
             steps.append("submitted_search")
-            _time.sleep(2.0)  # esperar resultados
+            _time.sleep(4.0)  # esperar resultados (Disney+ tarda 3-5s)
         except Exception as exc:
             return {
                 "player_started": False, "steps": steps,
@@ -6038,45 +6038,86 @@ def _streaming_web_auto_play(
             }
 
     # 3. Click en el primer titulo del resultado de busqueda.
-    # El texto del query suele aparecer como titulo en la grilla. Si no
-    # encontramos exact, intentamos con la primera palabra.
+    # Retry loop: si la pagina aun esta cargando los resultados, el OCR no
+    # encuentra el titulo. Intentar hasta 4 veces con 1.5s entre cada try,
+    # probando exact match primero, despues primera palabra. Esto cubre el
+    # caso "Disney+ tarda 5-8s en mostrar la grilla cuando hay imagenes".
     title_clicked = False
-    for try_text in [query, query.split()[0] if query.split() else query]:
-        try:
-            click_title = executor("gui", {
-                "action": "click_text", "target": try_text,
-                "timeout_sec": 4,
-            })
-            if click_title.get("ok") and click_title.get("found"):
-                steps.append(f"clicked_title:{try_text}")
-                title_clicked = True
-                _time.sleep(2.5)  # esperar detail page
-                break
-        except Exception:
-            continue
+    title_clicked_with: str | None = None
+    candidates: list[str] = [query]
+    first_word = query.split()[0] if query.split() else query
+    if first_word.lower() != query.lower():
+        candidates.append(first_word)
+    # Variantes comunes para series (Disney+ a veces muestra "Daredevil: Born
+    # Again" en vez de "Daredevil" plano). Si la query tiene multiples
+    # palabras, intentar tambien las 2-3 primeras juntas.
+    if len(query.split()) >= 2:
+        candidates.append(" ".join(query.split()[:2]))
+
+    MAX_RETRIES = 4
+    for attempt in range(MAX_RETRIES):
+        for try_text in candidates:
+            try:
+                click_title = executor("gui", {
+                    "action": "click_text", "target": try_text,
+                    "timeout_sec": 4,
+                })
+                if click_title.get("ok") and click_title.get("found"):
+                    steps.append(f"clicked_title:{try_text} (attempt {attempt+1})")
+                    title_clicked = True
+                    title_clicked_with = try_text
+                    _time.sleep(2.5)  # esperar detail page
+                    break
+            except Exception:
+                continue
+        if title_clicked:
+            break
+        # Wait progressive entre attempts (1.5s, 2.0s, 2.5s) para
+        # darle tiempo al search a renderizar los resultados.
+        if attempt < MAX_RETRIES - 1:
+            _time.sleep(1.5 + attempt * 0.5)
+            steps.append(f"retry_wait:{attempt+1}")
+
     if not title_clicked:
         return {
             "player_started": False, "steps": steps,
-            "abort_reason": f"could not click title for {query!r} on search page",
+            "abort_reason": (
+                f"could not click title for {query!r} on search page after "
+                f"{MAX_RETRIES} attempts. The page may still be loading, the "
+                f"title text may be hidden behind images, or the title is "
+                f"shown differently than the query."
+            ),
         }
 
     # 4. Click "Reproducir" / "Play" / etc. en detail page.
-    # Cada plataforma tiene su label; probamos varios.
-    play_labels = ["Reproducir", "Play", "Ver", "Watch", "Reproducir ahora"]
-    for label in play_labels:
-        try:
-            click_play = executor("gui", {
-                "action": "click_text", "target": label,
-                "timeout_sec": 3,
-            })
-            if click_play.get("ok") and click_play.get("found"):
-                steps.append(f"clicked_play:{label}")
-                return {"player_started": True, "steps": steps, "abort_reason": None}
-        except Exception:
-            continue
+    # Cada plataforma tiene su label; probamos varios. Tambien retry con
+    # wait progresivo porque la detail page tarda 2-4s en renderizar el
+    # boton Play (hay video preview que carga antes).
+    play_labels = ["Reproducir", "Play", "Ver", "Watch", "Reproducir ahora",
+                   "Reproducir película", "Reproducir episodio", "Ver ahora",
+                   "Continuar viendo", "Continuar"]
+    for attempt in range(MAX_RETRIES):
+        for label in play_labels:
+            try:
+                click_play = executor("gui", {
+                    "action": "click_text", "target": label,
+                    "timeout_sec": 3,
+                })
+                if click_play.get("ok") and click_play.get("found"):
+                    steps.append(f"clicked_play:{label} (attempt {attempt+1})")
+                    return {"player_started": True, "steps": steps, "abort_reason": None}
+            except Exception:
+                continue
+        if attempt < MAX_RETRIES - 1:
+            _time.sleep(1.5 + attempt * 0.5)
+            steps.append(f"play_retry_wait:{attempt+1}")
     return {
         "player_started": False, "steps": steps,
-        "abort_reason": "could not find Play button on detail page",
+        "abort_reason": (
+            f"could not find Play button on detail page (tried {len(play_labels)} "
+            f"labels x {MAX_RETRIES} retries). User can press Play manually."
+        ),
+        "clicked_title_with": title_clicked_with,
     }
 
 
