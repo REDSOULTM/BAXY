@@ -5705,6 +5705,21 @@ def _find_spotify_executable() -> str | None:
 #   - Deeplinks: solo Spotify y Disney+ tienen scheme propio confiable.
 #     Netflix/HBO/Prime no exponen schemes documentados → siempre web.
 #   - Web URLs verificadas en 2025-2026 (post-rebrand HBO Max -> Max).
+# Cada plataforma tiene:
+#   web_url: URL a abrir en el browser.
+#     - Si web_search_via_url=True: la URL incluye {q} con la query.
+#     - Si web_search_via_url=False: web_url es solo el home; la query se
+#       escribe via GUI usando search_shortcut.
+#   web_search_via_url: True/False (URL con query funciona o no).
+#   search_shortcut: tecla(s) para abrir el campo de busqueda (solo se usa
+#     si web_search_via_url=False).
+#
+# URLs verificadas 2026-05-15 (curl + HTTP HEAD):
+#   netflix.com/search?q=X       -> 200 (login redirect, pero acepta query)
+#   primevideo.com/search/.../?phrase=X -> 200
+#   disneyplus.com/search?q=X    -> 404 (URL no existe)
+#   max.com/search?q=X           -> 404 (rebrand HBO Max -> Max, URL movio)
+#   open.spotify.com/search/X    -> 200
 _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
     "spotify": {
         "aliases": {"spotify"},
@@ -5714,6 +5729,8 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         ],
         "deeplink": "spotify:search:{q}",
         "web_url": "https://open.spotify.com/search/{q}",
+        "web_search_via_url": True,
+        "search_shortcut": None,  # tiene deeplink, no necesita
         "install_hint": "winget install Spotify.Spotify",
         "post_open_note": (
             "Spotify opened with search results. App does NOT auto-play. "
@@ -5726,6 +5743,8 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "exe_paths": [],
         "deeplink": None,  # Netflix UWP no expone deeplink de busqueda confiable
         "web_url": "https://www.netflix.com/search?q={q}",
+        "web_search_via_url": True,  # URL con ?q= funciona post-login
+        "search_shortcut": None,
         "install_hint": "Install Netflix from Microsoft Store: ms-windows-store://pdp/?productid=9wzdncrfj3tj",
         "post_open_note": (
             "Netflix opened with search results. Requires login. "
@@ -5736,25 +5755,31 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "aliases": {"disney", "disney+", "disneyplus", "disney_plus", "disney plus"},
         "uwp_pfn": "Disney.37853FC22B2CE_6rarf9sa4v8jt",
         "exe_paths": [],
-        "deeplink": None,  # disneyplus:// no es estandar en Windows desktop
-        "web_url": "https://www.disneyplus.com/search?q={q}",
+        "deeplink": None,
+        # Disney+ NO soporta query via URL — el ?q= devuelve 404. Abrimos
+        # home (es-419 locale para que funcione en LATAM) y usamos GUI
+        # shortcut "s" para abrir la busqueda + type query.
+        "web_url": "https://www.disneyplus.com/es-419/home",
+        "web_search_via_url": False,
+        "search_shortcut": "s",  # Disney+ usa 's' para abrir search
         "install_hint": "Install Disney+ from Microsoft Store: ms-windows-store://pdp/?productid=9NXQXXLFST89",
         "post_open_note": (
-            "Disney+ opened with search results. Requires login. "
-            "User clicks the title to start playback."
+            "Disney+ opened. Use the search bar to find content."
         ),
     },
     "hbo_max": {
-        # Rebrand: HBO Max -> Max (mayo 2023). Aceptamos ambos nombres.
+        # Rebrand: HBO Max -> Max (2023). Pero el dominio actual es
+        # hbomax.com (redirige a play.max.com cuando estas logueado).
         "aliases": {"hbo_max", "hbo max", "hbomax", "max", "hbo"},
         "uwp_pfn": None,  # Max no tiene UWP oficial en Windows
         "exe_paths": [],
         "deeplink": None,
-        "web_url": "https://www.max.com/search?q={q}",
+        "web_url": "https://www.hbomax.com/",  # redirige a play.max.com si logueado
+        "web_search_via_url": False,
+        "search_shortcut": "/",  # Max usa '/' como Netflix
         "install_hint": "Max is web-only on Windows (no native app); browser will open.",
         "post_open_note": (
-            "Max (formerly HBO Max) opened with search results. Requires login. "
-            "User clicks the title to start playback."
+            "Max (formerly HBO Max) opened. Use search to find content."
         ),
     },
     "prime_video": {
@@ -5764,6 +5789,8 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "exe_paths": [],
         "deeplink": None,
         "web_url": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase={q}",
+        "web_search_via_url": True,
+        "search_shortcut": None,
         "install_hint": "Install Prime Video from Microsoft Store: ms-windows-store://pdp/?productid=9P6RC76MSMMJ",
         "post_open_note": (
             "Prime Video opened with search results. Requires login. "
@@ -5984,19 +6011,27 @@ def _streaming_web_auto_play(
     query: str,
     profile_name: str,
     wait_seconds: float,
+    *,
+    search_shortcut: str | None = None,
+    needs_gui_search: bool = False,
 ) -> dict[str, Any]:
-    """Para web-only streaming (Netflix/Disney+/Max/Prime): tras abrir la
-    URL de busqueda, navegar profile picker -> click primer titulo -> play.
+    """Para web streaming (Netflix/Disney+/Max/Prime): tras abrir la
+    URL, navegar profile picker -> abrir busqueda (si needs_gui_search)
+    -> click primer titulo -> click Reproducir.
 
     Flujo:
       1. Wait wait_seconds para que el browser cargue la pagina.
       2. Si hay profile picker: gui.click_text con profile_name.
-      3. Wait para que el perfil cargue + redireccion a search.
+      3. Si needs_gui_search:
+           a. Press search_shortcut (e.g. "s" para Disney, "/" para Netflix/Max).
+           b. Type query.
+           c. Press Enter para confirmar busqueda.
+           d. Wait carga de resultados.
       4. gui.click_text del query (primer titulo).
       5. Wait detail page.
       6. gui.click_text "Reproducir" / "Play" / etc.
 
-    Returns dict con steps + sent (player_started=bool).
+    Returns dict con steps + player_started=bool + abort_reason.
 
     NOTA: Este flujo depende de OCR sobre la pagina web. Es FRAGIL porque:
       - El layout de cada plataforma cambia frecuentemente.
@@ -6011,7 +6046,7 @@ def _streaming_web_auto_play(
 
     # 1. Profile picker (Netflix/Disney+/Max/Prime).
     # gui.click_text busca el texto en la pantalla y clickea. Si no encuentra
-    # el perfil (porque ya entramos directo al search), seguimos sin fallar.
+    # el perfil (porque ya entramos directo al home/search), seguimos sin fallar.
     try:
         click_profile = executor("gui", {
             "action": "click_text", "target": profile_name,
@@ -6025,7 +6060,26 @@ def _streaming_web_auto_play(
     except Exception:
         steps.append("profile_click_error")
 
-    # 2. Click en el primer titulo del resultado de busqueda.
+    # 2. Si la plataforma no soporta search via URL (Disney+/Max), abrir el
+    # campo de busqueda via shortcut de teclado y escribir la query.
+    if needs_gui_search and search_shortcut:
+        try:
+            executor("gui", {"action": "keypress", "keys": search_shortcut})
+            steps.append(f"pressed_search_shortcut:{search_shortcut}")
+            _time.sleep(0.8)  # esperar que aparezca el input
+            executor("gui", {"action": "type", "text": query})
+            steps.append(f"typed_query:{query}")
+            _time.sleep(0.5)
+            executor("gui", {"action": "keypress", "keys": "enter"})
+            steps.append("submitted_search")
+            _time.sleep(2.0)  # esperar resultados
+        except Exception as exc:
+            return {
+                "player_started": False, "steps": steps,
+                "abort_reason": f"gui search via shortcut failed: {exc}",
+            }
+
+    # 3. Click en el primer titulo del resultado de busqueda.
     # El texto del query suele aparecer como titulo en la grilla. Si no
     # encontramos exact, intentamos con la primera palabra.
     title_clicked = False
@@ -6048,7 +6102,7 @@ def _streaming_web_auto_play(
             "abort_reason": f"could not click title for {query!r} on search page",
         }
 
-    # 3. Click "Reproducir" / "Play" / etc. en detail page.
+    # 4. Click "Reproducir" / "Play" / etc. en detail page.
     # Cada plataforma tiene su label; probamos varios.
     play_labels = ["Reproducir", "Play", "Ver", "Watch", "Reproducir ahora"]
     for label in play_labels:
@@ -6166,7 +6220,13 @@ def _launch_streaming(
             provider=canonical,
         )
     encoded = urllib.parse.quote(query)
-    web_url = spec["web_url"].format(q=encoded)
+    # Solo formatear {q} si la plataforma soporta search via URL. Sino,
+    # web_url es solo el home y la query se escribira via GUI search shortcut.
+    web_search_via_url = bool(spec.get("web_search_via_url", True))
+    if web_search_via_url and "{q}" in spec["web_url"]:
+        web_url = spec["web_url"].format(q=encoded)
+    else:
+        web_url = spec["web_url"]
     install_hint = spec.get("install_hint", "")
     note = spec.get("post_open_note", "")
 
@@ -6229,6 +6289,8 @@ def _launch_streaming(
             if auto_play and executor is not None and profile_name:
                 web_auto_play_info = _streaming_web_auto_play(
                     executor, canonical, query, profile_name, auto_play_wait,
+                    search_shortcut=spec.get("search_shortcut"),
+                    needs_gui_search=not web_search_via_url,
                 )
                 played = bool(web_auto_play_info.get("player_started"))
             result = _ok(
