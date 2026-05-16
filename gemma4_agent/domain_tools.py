@@ -5817,6 +5817,105 @@ def _find_streaming_app(spec: dict[str, Any]) -> dict[str, str | None]:
 
 
 # ---------------------------------------------------------------------------
+# Pending action (cross-turn context persistence)
+# ---------------------------------------------------------------------------
+# Cuando una tool devuelve needs_user pidiendo info al user, guardamos el
+# contexto pendiente aca. Al siguiente turn, agent.run_content lee esto
+# para saber que "Mi perfil es Ema" continua el media(disney,
+# Daredevil...) anterior — no es un email aparte.
+
+def _set_pending_action(state: AgentState | None, kind: str, payload: dict[str, Any]) -> None:
+    """Guarda un contexto pendiente. Solo uno activo a la vez (overwrite)."""
+    if state is None:
+        return
+    try:
+        data = state._load()  # noqa: SLF001
+        # Cerrar pendings anteriores (marcar status=closed) para no acumular.
+        for rid, res in list(data.get("resources", {}).items()):
+            if isinstance(res, dict) and res.get("kind") == "pending_action" and res.get("status") == "open":
+                res["status"] = "closed"
+                res["closed_at"] = datetime.now().isoformat()
+        state._save(data)  # noqa: SLF001
+    except Exception:
+        pass
+    try:
+        state.register_resource(
+            "pending_action",
+            f"pending_{kind}",
+            metadata={
+                "kind": kind,
+                "payload": payload,
+                "created_at": datetime.now().isoformat(),
+            },
+        )
+    except Exception:
+        pass
+
+
+def get_pending_action(state: AgentState | None) -> dict[str, Any] | None:
+    """Devuelve el pending_action mas reciente (open) o None.
+
+    Forma del dict devuelto: {"kind": str, "payload": dict, "resource_id": str,
+    "age_seconds": float}.
+    """
+    if state is None:
+        return None
+    try:
+        data = state._load()  # noqa: SLF001
+        resources = data.get("resources", {})
+    except Exception:
+        return None
+    candidates = []
+    for rid, res in resources.items():
+        if not isinstance(res, dict):
+            continue
+        if res.get("kind") != "pending_action":
+            continue
+        if res.get("status") != "open":
+            continue
+        meta = res.get("metadata") or {}
+        created_at = meta.get("created_at")
+        candidates.append((rid, res, meta, created_at))
+    if not candidates:
+        return None
+    # Mas reciente.
+    candidates.sort(key=lambda t: t[3] or "", reverse=True)
+    rid, res, meta, created_at = candidates[0]
+    age = 0.0
+    try:
+        if created_at:
+            dt = datetime.fromisoformat(created_at)
+            age = (datetime.now() - dt).total_seconds()
+    except Exception:
+        pass
+    return {
+        "kind": str(meta.get("kind") or "?"),
+        "payload": meta.get("payload") or {},
+        "resource_id": rid,
+        "age_seconds": age,
+    }
+
+
+def clear_pending_action(state: AgentState | None, resource_id: str | None = None) -> None:
+    """Cierra un pending especifico (por id) o todos los open."""
+    if state is None:
+        return
+    try:
+        data = state._load()  # noqa: SLF001
+        for rid, res in data.get("resources", {}).items():
+            if not isinstance(res, dict) or res.get("kind") != "pending_action":
+                continue
+            if resource_id and rid != resource_id:
+                continue
+            if res.get("status") == "open":
+                res["status"] = "closed"
+                res["closed_at"] = datetime.now().isoformat()
+        state._save(data)  # noqa: SLF001
+    except Exception:
+        pass
+
+
+# ---------------------------------------------------------------------------
 # Streaming preferences (profile per platform)
 # ---------------------------------------------------------------------------
 # El user tiene varios perfiles en Netflix/Disney+/HBO/Prime (el "¿Quién está
@@ -6217,10 +6316,23 @@ def _media_play_streaming(
                 _set_streaming_preference(state, canonical, profile_name)
             except Exception:
                 pass  # best-effort, no abortar si falla
+            # Cerrar cualquier pending_action que estaba esperando este profile.
+            try:
+                clear_pending_action(state)
+            except Exception:
+                pass
         else:
             profile_name = _get_streaming_preference(state, canonical)
             if not profile_name:
-                # PRIMERA VEZ: pedir al user que diga su perfil.
+                # PRIMERA VEZ: pedir al user que diga su perfil + guardar el
+                # contexto pendiente en state para que el proximo turn
+                # ("Mi perfil es Ema") sepa que continua este media call.
+                _set_pending_action(state, "streaming_profile", {
+                    "provider": canonical,
+                    "query": query,
+                    "auto_play": auto_play,
+                    "auto_play_wait": auto_play_wait,
+                })
                 return _err(
                     f"need {canonical} profile to auto-play",
                     status="needs_user",

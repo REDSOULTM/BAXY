@@ -799,6 +799,15 @@ class Gemma4Agent:
         # so Gemma can confirm naturally without re-running the tools.
         self._phrase_fires = []
         raw_text_early = _extract_user_text(content)
+
+        # PENDING ACTION RESUME: si el turn previo emitio un needs_user
+        # (e.g. media pidiendo streaming_profile) y guardo el contexto en
+        # state, chequear si este turn lo continua. Si si, ejecutar la
+        # accion directamente sin pasar por el LLM — evita que el router
+        # elija una tool random ("Mi perfil es Ema" disparaba email).
+        pending_resume = self._try_resume_pending_action(raw_text_early, turn_id)
+        if pending_resume is not None:
+            return pending_resume
         if raw_text_early:
             try:
                 from .domain_tools import (_looks_destructive,
@@ -1706,6 +1715,144 @@ class Gemma4Agent:
             trimmed.pop(0)
         self.history = trimmed
 
+    def _try_resume_pending_action(self, user_text: str, turn_id: str) -> "AgentReply | None":
+        """Si hay un pending_action en state Y el user_text parece responderlo,
+        ejecuta la accion directamente sin pasar por el LLM/router.
+
+        Esto resuelve el caso "media pidio streaming_profile, user dice
+        'mi perfil es Ema', router elige email random". Detectar el pending
+        + extraer el nombre + re-llamar media es deterministico y rapido.
+
+        Returns AgentReply si el resume se hizo, None si no aplica.
+        """
+        if not user_text or not user_text.strip():
+            return None
+        try:
+            from .domain_tools import get_pending_action, clear_pending_action
+            pending = get_pending_action(self.state)
+        except Exception:
+            return None
+        if not pending:
+            return None
+        # Window de validez: solo continuar si el pending tiene <5 minutos.
+        if pending.get("age_seconds", 0) > 300:
+            try:
+                clear_pending_action(self.state, pending.get("resource_id"))
+            except Exception:
+                pass
+            return None
+
+        kind = pending.get("kind")
+        payload = pending.get("payload") or {}
+
+        # PENDING streaming_profile: user respondio con su nombre.
+        if kind == "streaming_profile":
+            extracted = self._extract_profile_name(user_text)
+            if not extracted:
+                # User cambio de tema (e.g. "olvidalo", "no, mejor abre Notepad").
+                # Cerramos el pending para no atrapar turns futuros.
+                if any(tok in user_text.lower()
+                        for tok in ("olvida", "no importa", "cancela", "olvidalo")):
+                    try:
+                        clear_pending_action(self.state, pending.get("resource_id"))
+                    except Exception:
+                        pass
+                return None
+            self.trace.event(turn_id, "pending_resume", kind=kind, payload=payload,
+                             extracted_profile=extracted)
+            # Construir args para media y ejecutar.
+            media_args = {
+                "action": "play",
+                "provider": payload.get("provider", "netflix"),
+                "query": payload.get("query", ""),
+                "profile": extracted,
+                "auto_play": bool(payload.get("auto_play", True)),
+            }
+            if payload.get("auto_play_wait"):
+                media_args["auto_play_wait"] = payload["auto_play_wait"]
+            try:
+                result = self.tools.execute("media", media_args)
+            except Exception as exc:
+                self.trace.event(turn_id, "pending_resume_failed", error=str(exc))
+                return None
+            # Construir reply honesto basado en el resultado.
+            played = bool(result.get("played"))
+            provider = str(result.get("provider", payload.get("provider", "")))
+            provider_human = provider.replace("_web", "").replace("_", " ").title()
+            query = payload.get("query", "")
+            if played:
+                reply_text = f"Listo, reproduciendo {query!r} en {provider_human} con perfil {extracted}."
+            else:
+                reason = ""
+                info = result.get("web_auto_play_info") or {}
+                if info.get("abort_reason"):
+                    reason = f" (razón: {info['abort_reason']})"
+                reply_text = (
+                    f"Guardé tu perfil de {provider_human} como {extracted!r}. "
+                    f"Abrí la búsqueda de {query!r} pero no pude completar el Play{reason}. "
+                    "Podés clickearlo manualmente."
+                )
+            # Registrar tool event para que el resto del agent (tracing,
+            # experience, etc.) lo vea como una llamada normal.
+            event = ToolEvent(name="media", args=media_args, result=result)
+            self.history.append({"role": "user", "content": user_text})
+            self.history.append({"role": "assistant", "content": reply_text})
+            self.trace.event(turn_id, "pending_resume_done",
+                             played=played, provider=provider)
+            from .evaluator import evaluate_mission
+            mission = evaluate_mission([event], reply_text, plan_mission(user_text))
+            return AgentReply(
+                content=reply_text,
+                tool_events=[event],
+                mission=mission,
+            )
+        return None
+
+    @staticmethod
+    def _extract_profile_name(user_text: str) -> str | None:
+        """Extrae el nombre del perfil de la respuesta del user.
+
+        Acepta variantes como:
+          - "Ema"
+          - "Mi perfil es Ema"
+          - "Soy Ema"
+          - "perfil: Ema"
+          - "mi perfil de disney es Ema"
+
+        Devuelve None si no parece nombre (es una orden, pregunta, > 4 palabras
+        que sugiere cambio de tema, etc).
+        """
+        import re as _re
+        s = user_text.strip()
+        if not s:
+            return None
+        # 1. Frases tipo "mi perfil es X" / "soy X" / "es X" / "perfil X".
+        patterns = [
+            r"^\s*mi\s+perfil\s+(?:de\s+\w+\s+)?(?:es|se llama|es el de)\s+(.+?)\s*$",
+            r"^\s*(?:el|mi)\s+perfil\s*[:\-]\s*(.+?)\s*$",
+            r"^\s*soy\s+(.+?)\s*$",
+            r"^\s*es\s+(.+?)\s*$",
+            r"^\s*perfil\s*[:=\-]?\s*(.+?)\s*$",
+            r"^\s*usa(?:r|me)?\s+(?:el\s+(?:perfil\s+)?(?:de\s+)?)?(.+?)\s*$",
+        ]
+        for pat in patterns:
+            m = _re.search(pat, s, _re.IGNORECASE)
+            if m:
+                name = m.group(1).strip(" .,;")
+                if 1 <= len(name) <= 30 and not any(ch in name for ch in "¿?!{}"):
+                    return name
+        # 2. Si es 1-2 palabras corto (probablemente solo el nombre).
+        words = s.split()
+        if 1 <= len(words) <= 2 and len(s) <= 30:
+            # No es una orden tipica.
+            order_verbs = {"abre", "open", "pon", "play", "cierra", "close",
+                            "borra", "delete", "busca", "search", "manda",
+                            "send", "no", "si", "yes", "ok", "olvida",
+                            "cancela", "stop", "pausa", "pause"}
+            if not any(w.lower() in order_verbs for w in words):
+                return s.strip()
+        return None
+
     def _guard_unverified_final(self, content: str, events: list[ToolEvent]) -> str:
         """Inyecta una nota honesta SOLO cuando la tool genuinamente fallo
         o no llego al SO. Tools dispatch-by-nature (URL abierta, deeplink
@@ -1731,6 +1878,12 @@ class Gemma4Agent:
         # status="dispatched" = dispatch async exitoso a SO/browser.
         # verified=None = no medible (honest tristate). Ninguno necesita nota.
         if status == "dispatched":
+            return content
+        # needs_user / needs_dependency = la tool pidio info adicional o
+        # falta una dependencia. El LLM ya construyo el reply explicando
+        # la situacion al user. NO inyectar la nota — duplicaria mensaje.
+        if status in {"needs_user", "needs_dependency", "needs_permission",
+                      "needs_confirmation", "needs_verification_async"}:
             return content
         if verified is None and status not in {"attempted", "needs_verification", "failed"}:
             return content
