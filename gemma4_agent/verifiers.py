@@ -657,3 +657,34 @@ def verify_memory(args: dict, result: dict) -> VerifierOutcome:
     if action == "delete":
         return _ok_evidence("memory", f"memory deleted: {result.get('key', '*')}")
     return _unverifiable("memory", f"unknown memory action: {action}")
+
+
+@register_verifier("whatsapp")
+def verify_whatsapp(args: dict, result: dict) -> VerifierOutcome:
+    """whatsapp.send_message/open_chat: dispatch async al SO via deeplink.
+
+    El efecto real (chat abierto + texto pre-filled) NO es medible sin GUI
+    inspection. Si el dispatch retorno opened=True, marcamos confirmed=None
+    con evidence del provider (desktop vs web) y el recipient. El verifier
+    NUNCA marca True automaticamente porque WhatsApp no auto-envia — el user
+    debe presionar Enter para confirmar.
+    """
+    if _result_says_unverified(result):
+        return _failed("whatsapp", f"whatsapp dispatch failed: {result.get('error', '?')}")
+    action = str(args.get("action") or "send_message").lower()
+    if action == "status":
+        return _ok_evidence("whatsapp", "status query (read-only)")
+    if action in {"send_message", "send", "open_chat"}:
+        provider = result.get("provider", "?")
+        normalized = result.get("recipient_normalized", "?")
+        return _unverifiable(
+            "whatsapp",
+            f"whatsapp {action} dispatched to {provider} for +{normalized} "
+            "(message pre-filled, NOT sent — user must press Enter)",
+            detail={
+                "provider": provider,
+                "recipient": result.get("recipient_phone"),
+                "has_text": bool(result.get("text")),
+            },
+        )
+    return _unverifiable("whatsapp", f"unknown whatsapp action: {action}")

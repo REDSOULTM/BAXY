@@ -6613,6 +6613,272 @@ def _parse_due_iso(value: Any) -> tuple[str | None, str | None]:
     return None, f"due must be a string, got {type(value).__name__}"
 
 
+# ---------------------------------------------------------------------------
+# WhatsApp tool
+# ---------------------------------------------------------------------------
+
+# WhatsApp UWP package family name (instalacion estandar desde Microsoft Store).
+_WHATSAPP_UWP_PFN = "5319275A.WhatsAppDesktop_cv1g1gvanyjgm"
+
+# Numero E.164 (puede tener +, espacios, guiones, parentesis).
+_WHATSAPP_PHONE_RE = re.compile(r"^[\+\d\s\-\(\)]{7,20}$")
+
+
+def _normalize_phone_for_whatsapp(phone: str) -> str:
+    """Normaliza un numero al formato que espera whatsapp:// y wa.me:
+    solo digitos, sin el +, sin separadores. Ej. '+54 9 11 1234-5678' -> '54911123456 78'.
+    """
+    if not phone:
+        return ""
+    # Mantener solo digitos.
+    digits = re.sub(r"\D", "", phone)
+    return digits
+
+
+def _find_whatsapp_app() -> dict[str, str | None]:
+    """Detecta si WhatsApp esta instalado como UWP.
+
+    Returns dict con kind ('uwp' | None) y launch_target.
+    Reutiliza el patron de _find_streaming_app.
+    """
+    if os.name != "nt":
+        return {"kind": None, "launch_target": None}
+    try:
+        proc = subprocess.run(
+            ["powershell", "-NoProfile", "-Command",
+              f"if (Get-AppxPackage -Name '{_WHATSAPP_UWP_PFN.split('_')[0]}') {{ Write-Output yes }}"],
+            capture_output=True, text=True, timeout=3,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        if proc.returncode == 0 and "yes" in (proc.stdout or "").lower():
+            return {"kind": "uwp", "launch_target": f"shell:AppsFolder\\{_WHATSAPP_UWP_PFN}!App"}
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    return {"kind": None, "launch_target": None}
+
+
+def _resolve_whatsapp_recipient(args: dict[str, Any], state: AgentState) -> tuple[str, str, str] | dict[str, Any]:
+    """Resuelve el destinatario a un numero E.164 normalizado.
+
+    Acepta en args:
+      - phone="<numero>"  -> usado directamente (validado).
+      - contact="<nombre>" o recipient="<nombre>"  -> busca en contacts.
+
+    Returns:
+      - tupla (raw_phone, normalized_digits, source) si OK.
+      - dict de error _err(...) si no se pudo resolver.
+    """
+    explicit_phone = str(args.get("phone") or args.get("number") or "").strip()
+    if explicit_phone:
+        if not _WHATSAPP_PHONE_RE.match(explicit_phone):
+            return _err(
+                f"invalid phone format: {explicit_phone!r}",
+                hint=("Pass an international format like +54 9 11 1234-5678 or "
+                      "just digits 5491112345678. WhatsApp requires country code."),
+                status="needs_user",
+            )
+        normalized = _normalize_phone_for_whatsapp(explicit_phone)
+        if len(normalized) < 7:
+            return _err(
+                f"phone too short after normalization: {normalized!r}",
+                hint="Include country code (e.g. 54 for Argentina, 1 for USA).",
+                status="needs_user",
+            )
+        return explicit_phone, normalized, "explicit"
+
+    # Resolver via contacts.
+    name_query = str(
+        args.get("contact") or args.get("recipient") or args.get("to")
+        or args.get("name") or ""
+    ).strip()
+    if not name_query:
+        return _err(
+            "missing recipient: pass phone='+...' OR contact='<name>'",
+            status="needs_user",
+        )
+    resolve_result = _contacts_resolve_recipient({"query": name_query, "limit": 5}, state)
+    matches = resolve_result.get("matches") or []
+    if not matches:
+        return _err(
+            f"no contact found matching {name_query!r}",
+            hint=(
+                "Add the contact first with contacts(action='create', "
+                "name='...', phone='+...') or pass phone= directly."
+            ),
+            status="needs_user", query=name_query,
+        )
+    best = matches[0]["contact"]
+    meta = best.get("metadata") or {}
+    phone = str(meta.get("phone") or "").strip()
+    if not phone:
+        return _err(
+            f"contact {name_query!r} found but has no phone number",
+            status="needs_user",
+            contact_id=best.get("id"),
+            contact_name=meta.get("name"),
+        )
+    normalized = _normalize_phone_for_whatsapp(phone)
+    if len(normalized) < 7:
+        return _err(
+            f"contact {name_query!r} phone {phone!r} normalizes to too few digits",
+            status="needs_user",
+            hint="The stored phone may be missing the country code.",
+        )
+    # Si hubo varios matches y el primero no es exacto, advertir.
+    extra: dict[str, Any] = {}
+    if len(matches) > 1:
+        extra["ambiguous_matches"] = [
+            {"name": (m["contact"].get("metadata") or {}).get("name"),
+              "score": m["score"]} for m in matches
+        ]
+    return phone, normalized, f"contact:{best.get('id')}"
+
+
+def whatsapp_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
+    """Compound WhatsApp tool.
+
+    Actions:
+      - status:        report whether WhatsApp Desktop (UWP) is installed.
+      - send_message:  open WhatsApp chat with phone + pre-filled text.
+                        Does NOT send automatically (WhatsApp design — user
+                        gives Enter to confirm). Set send=True to follow-up
+                        with gui keypress (CALLER's responsibility, this tool
+                        only opens the chat).
+      - open_chat:     same as send_message but without text (just opens chat).
+
+    Phone resolution priority:
+      1. args.phone (explicit, validated and normalized)
+      2. args.contact / args.recipient / args.to / args.name -> lookup in
+         state contacts (using existing _contacts_resolve_recipient).
+
+    Honest behavior:
+      - We NEVER auto-send. WhatsApp deeplinks open the chat with text pre-filled
+        in the input field. The user must press Enter to actually send. This is
+        a Meta design choice and a safety feature — we respect it.
+      - Returns verified=False because we cannot confirm the user actually sent.
+    """
+    import urllib.parse
+
+    action = str(args.get("action") or "send_message").casefold()
+
+    if action == "status":
+        app_info = _find_whatsapp_app()
+        return _ok(
+            installed=app_info["kind"] is not None,
+            app_kind=app_info["kind"],
+            launch_target=app_info["launch_target"],
+            web_fallback="https://wa.me/<phone>?text=<msg>",
+            note=(
+                "send_message opens chat with text pre-filled but does NOT send. "
+                "User must press Enter or call gui(keypress='enter') as follow-up."
+            ),
+        )
+
+    if action not in {"send_message", "open_chat", "send"}:
+        return _err(
+            f"unknown action: {action!r}",
+            hint="Use action='send_message', 'open_chat', or 'status'.",
+        )
+
+    # Resolver destinatario.
+    resolved = _resolve_whatsapp_recipient(args, state)
+    if isinstance(resolved, dict):  # error
+        return resolved
+    raw_phone, normalized, source = resolved
+
+    # Mensaje (opcional para open_chat).
+    text = str(args.get("text") or args.get("message") or args.get("body") or "").strip()
+    if action in {"send_message", "send"} and not text:
+        return _err(
+            "missing text for send_message",
+            hint="Pass text='<your message>' or use action='open_chat' to just open the chat.",
+            status="needs_user",
+        )
+
+    # Construir URLs. Deeplink desktop scheme y wa.me como fallback.
+    encoded_text = urllib.parse.quote(text) if text else ""
+    deeplink = f"whatsapp://send?phone={normalized}"
+    if encoded_text:
+        deeplink += f"&text={encoded_text}"
+    web_url = f"https://wa.me/{normalized}"
+    if encoded_text:
+        web_url += f"?text={encoded_text}"
+
+    app_info = _find_whatsapp_app()
+    desktop_err: str | None = None
+
+    # PATH 1: WhatsApp Desktop instalado -> deeplink whatsapp://
+    if app_info["kind"] and os.name == "nt":
+        try:
+            subprocess.Popen(
+                ["cmd", "/c", "start", "", deeplink],
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            return _ok(
+                action=action,
+                provider="whatsapp_desktop",
+                recipient_phone=raw_phone,
+                recipient_normalized=normalized,
+                recipient_source=source,
+                text=text or None,
+                deeplink=deeplink,
+                app_kind=app_info["kind"],
+                opened=True,
+                sent=False,
+                verified=False,
+                status="attempted",
+                note=(
+                    "WhatsApp Desktop opened with chat and pre-filled message. "
+                    "Message is NOT sent — user must press Enter to confirm. "
+                    "To send programmatically, follow up with "
+                    "gui(action='keypress', keys='enter') ONLY after the chat "
+                    "window has focus and the user explicitly approved."
+                ),
+            )
+        except (OSError, FileNotFoundError) as exc:
+            desktop_err = str(exc)
+
+    # PATH 2: fallback a wa.me (web). Funciona aunque WhatsApp Desktop no este;
+    # si el user tiene WhatsApp en el celu el QR-link click-to-chat lo soporta.
+    try:
+        import webbrowser
+        opened = webbrowser.open(web_url)
+        if opened:
+            result = _ok(
+                action=action,
+                provider="whatsapp_web",
+                recipient_phone=raw_phone,
+                recipient_normalized=normalized,
+                recipient_source=source,
+                text=text or None,
+                url=web_url,
+                opened=True,
+                sent=False,
+                verified=False,
+                status="attempted",
+                note=(
+                    "wa.me (WhatsApp Web) opened in default browser. User must "
+                    "click 'Continuar al chat' / 'Use WhatsApp Web' and then "
+                    "press Enter to send. Message is NOT sent automatically."
+                ),
+            )
+            if desktop_err:
+                result["fallback_from"] = "whatsapp_desktop"
+                result["fallback_reason"] = desktop_err
+            return result
+    except Exception as exc:
+        return _err(
+            f"Could not open WhatsApp (desktop deeplink and web both failed): {exc}",
+            status="failed", provider="whatsapp",
+            desktop_error=desktop_err,
+        )
+    return _err(
+        "WhatsApp: no desktop app and webbrowser refused to open wa.me",
+        status="needs_user", provider="whatsapp",
+        install_hint="winget install WhatsApp.WhatsApp",
+    )
+
+
 def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "list").casefold()
     if action == "status":

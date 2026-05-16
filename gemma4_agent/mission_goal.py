@@ -219,6 +219,7 @@ _TOOL_TO_KINDS: dict[str, tuple[str, ...]] = {
     "skill_load": ("read_state",),
     # Misc — minimal coverage
     "email": ("set_state",),
+    "whatsapp": ("set_state", "navigate"),
     "input": ("set_state", "read_state"),
     "smart_home": ("set_state", "read_state"),
     "subagent": ("read_state",),
