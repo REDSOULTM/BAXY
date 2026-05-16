@@ -10,28 +10,56 @@ from .agent import TOOL_RULES
 from .domain_tools import media_tool
 
 
-class TestMediaSpotifyFallback(unittest.TestCase):
-    """Bug F: spotify provider should fallback to youtube, not fail."""
+class TestMediaSpotifyNative(unittest.TestCase):
+    """Bug O: spotify provider should open Spotify natively (desktop or web)."""
 
-    def test_spotify_falls_back_to_youtube(self):
-        executor = MagicMock(return_value={
-            "ok": True, "action": "youtube_play", "url": "https://youtube.com/..."
-        })
+    def test_spotify_opens_deeplink_or_web(self):
+        from unittest.mock import patch
+        executor = MagicMock()
+        # Mock subprocess.Popen so we don't actually launch anything
+        with patch("gemma4_agent.domain_tools.subprocess.Popen") as mock_popen, \
+             patch("gemma4_agent.domain_tools._find_spotify_executable",
+                   return_value=r"C:\Users\test\AppData\Roaming\Spotify\Spotify.exe"):
+            result = media_tool(
+                {"action": "play", "provider": "spotify", "query": "benson boone"},
+                executor,
+            )
+        # No debe haber llamado executor (no fallback a browser).
+        executor.assert_not_called()
+        # Debe haber abierto el deeplink spotify:
+        self.assertTrue(result.get("ok"), f"expected ok=True, got {result}")
+        self.assertEqual(result.get("provider"), "spotify")
+        self.assertIn("spotify:search:", result.get("deeplink", ""))
+        # Y haber llamado subprocess.Popen con el cmd start
+        mock_popen.assert_called_once()
+        call = mock_popen.call_args.args[0]
+        self.assertIn("start", call)
+        self.assertTrue(any("spotify:search" in str(p) for p in call))
+
+    def test_spotify_web_fallback_when_no_desktop(self):
+        from unittest.mock import patch
+        executor = MagicMock()
+        with patch("gemma4_agent.domain_tools._find_spotify_executable", return_value=None), \
+             patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True) as mock_open:
+            result = media_tool(
+                {"action": "play", "provider": "spotify", "query": "X"},
+                executor,
+            )
+        self.assertTrue(result.get("ok"))
+        self.assertEqual(result.get("provider"), "spotify_web")
+        url = result.get("url", "")
+        self.assertIn("open.spotify.com/search/", url)
+        mock_open.assert_called_once()
+
+    def test_spotify_requires_query(self):
+        executor = MagicMock()
         result = media_tool(
-            {"action": "play", "provider": "spotify", "query": "cancion"},
+            {"action": "play", "provider": "spotify"},
             executor,
         )
-        self.assertTrue(result.get("ok"), f"expected ok=True, got {result}")
-        # Debe haber llamado a browser youtube_play
-        executor.assert_called_once()
-        call_args = executor.call_args
-        self.assertEqual(call_args.args[0], "browser")
-        self.assertEqual(call_args.args[1]["action"], "youtube_play")
-        # Debe marcar el fallback
-        self.assertEqual(result.get("fallback_from"), "spotify")
-        note = result.get("fallback_note", "").lower()
-        self.assertIn("youtube", note)
-        self.assertIn("spotify", note)
+        self.assertFalse(result.get("ok"))
+        # Mensaje debe mencionar query
+        self.assertIn("query", str(result.get("error", "")).lower())
 
     def test_apple_music_falls_back_to_youtube(self):
         executor = MagicMock(return_value={"ok": True})
@@ -47,7 +75,6 @@ class TestMediaSpotifyFallback(unittest.TestCase):
             {"action": "play", "provider": "youtube", "query": "X"},
             executor,
         )
-        # No fallback_from cuando se pidio youtube directamente
         self.assertNotIn("fallback_from", result)
 
     def test_truly_unknown_provider_errors_with_hint(self):
@@ -57,7 +84,6 @@ class TestMediaSpotifyFallback(unittest.TestCase):
             executor,
         )
         self.assertFalse(result.get("ok"))
-        # Hint debe sugerir alternativas validas
         hint = result.get("install_hint", "")
         self.assertIn("youtube", hint.lower())
 

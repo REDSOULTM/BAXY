@@ -205,23 +205,16 @@ def compute_mission_outcome(
 def mission_footer(outcome: MissionOutcome) -> str:
     """Footer corto al final del reply solo si el outcome aporta informacion.
 
-    Reglas:
-      - COMPLETED + 0 unverified -> sin footer (no inflar reply).
-      - UNVERIFIED -> sin footer (respuesta conversacional, no aporta).
-      - PARTIAL / FAILED / INTENT_NOT_FULFILLED / TOOL_OK_VERIFIER_INCONCLUSIVE
-        -> footer corto.
-      - Summary vacio -> sin footer (defensivo).
+    DECISION (2026-05-15, user feedback): el footer "[misión: ...]" NUNCA
+    se inyecta al display. El user no quiere meta-comentarios del agent
+    sobre su propio outcome. El mission_outcome sigue persistiendo en
+    telemetry (trace event mission_outcome con status/summary/counts) para
+    debugging y para que el verifier per-tool footer ([N verificada(s)])
+    siga apareciendo cuando aporta info concreta del SO.
+
+    Devolvemos siempre "" — los callers no necesitan cambiar.
     """
-    if not outcome.summary:
-        return ""
-    if outcome.status == OutcomeStatus.COMPLETED and outcome.unverified_count == 0:
-        return ""
-    # UNVERIFIED es smalltalk / read-only legitimo — no aporta info al user.
-    if outcome.status == OutcomeStatus.UNVERIFIED:
-        return ""
-    # Truncamos defensivamente para no inflar el reply.
-    summary = outcome.summary[:120]
-    return f"\n\n[misión: {summary}]"
+    return ""
 
 
 def build_tool_records(

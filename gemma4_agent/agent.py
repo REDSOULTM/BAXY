@@ -270,6 +270,15 @@ TOOL_RULES: dict[str, str] = {
         "If the user says \"ve a YouTube y pon una cancion, tu eligela\", choose a concrete "
         "song in the query or pass a generic song request. Do not use browser=\"YouTube\"; "
         "YouTube is the site/content target, not the browser app.\n\n"
+        "Spotify is SUPPORTED via media tool. When the user says \"pon música en Spotify\", "
+        "\"reproduce X en Spotify\", \"abre Spotify y pon X\", CALL media(action=\"play\", "
+        "provider=\"spotify\", query=\"<song/artist>\"). If they only said \"pon música en "
+        "Spotify\" without a specific song, pass query=\"musica\" or pick a popular track — "
+        "do NOT refuse with \"no tengo soporte para Spotify\". The tool opens the Spotify "
+        "desktop app (or Spotify Web fallback) with search results; after the tool returns, "
+        "tell the user that Spotify opened with the search and they can press Enter to play, "
+        "OR optionally call gui(action=\"keypress\", keys=\"enter\") if the user wants "
+        "immediate playback. Never claim Spotify is unsupported.\n\n"
         "If the user says \"para el video\", \"pausa el video\", \"para la musica\", or "
         "\"pausa la cancion\", they mean stop/pause current playback. Use "
         "media(action=\"pause\") or audio(action=\"media_play_pause\"). Do not search for a "
@@ -2042,11 +2051,15 @@ def _looks_like_context_overflow(message: str) -> bool:
 # Footers added by the agent (TIER 1 #2 verifier + TIER 2 #5 mission). Si el
 # LLM ve uno en el historial, lo va a reproducir en proximos turns, infando
 # context + duplicando texto en pantalla. Strippeamos antes de guardar al
-# history. Los regex matchean al FINAL del texto (footer es siempre lo ultimo).
+# history Y antes de devolver al display.
+#
+# 2026-05-15: user explicitly asked for "[misión: ...]" to NEVER appear. El
+# patron es case-insensitive y captura variantes con / sin acento. Tambien
+# detecta "Mision" (sin acento, Capitalizado) que el LLM podria emitir.
 import re as _re_footers
 _FOOTER_PATTERNS = [
-    # "[misión: ...]" — del mission_outcome
-    _re_footers.compile(r"\n*\[misi[óo]n:[^\]]*\]\s*$"),
+    # "[misión: ...]" / "[Mision: ...]" — del mission_outcome
+    _re_footers.compile(r"\n*\[\s*[Mm]isi[óo]n\s*:[^\]]*\]\s*$"),
     # "[N verificada(s), N no confirmada(s), N no verificable(s)]" — verifier
     _re_footers.compile(r"\n*\[\d+\s*verificada\(s\)[^\]]*\]\s*$"),
     _re_footers.compile(r"\n*\[\d+\s*no\s+confirmada\(s\)[^\]]*\]\s*$"),

@@ -283,54 +283,35 @@ class TestComputeMissionOutcome(unittest.TestCase):
 
 
 class TestMissionFooter(unittest.TestCase):
-    """mission_footer formatting rules."""
+    """mission_footer formatting rules.
 
-    def test_completed_no_footer(self):
-        from .mission_goal import MissionOutcome
-        out = MissionOutcome(
-            status=OutcomeStatus.COMPLETED,
-            summary="ok", confirmed_count=1, unverified_count=0,
-        )
-        self.assertEqual(mission_footer(out), "")
+    Post Fix N (2026-05-15 user feedback): el footer "[misión: ...]" NUNCA
+    se inyecta al display, sin importar el status. mission_footer() devuelve
+    siempre "". El outcome sigue persistiendo en trace para telemetry.
+    """
 
-    def test_partial_has_footer(self):
+    def test_footer_never_emitted_for_any_status(self):
         from .mission_goal import MissionOutcome
-        out = MissionOutcome(
-            status=OutcomeStatus.PARTIAL,
-            summary="parcial (1/2)", expected_total=2, expected_satisfied=1,
-        )
-        self.assertIn("misión", mission_footer(out))
-        self.assertIn("parcial", mission_footer(out))
-
-    def test_unverified_no_footer_ever(self):
-        # Post-fix: UNVERIFIED nunca emite footer (smalltalk/read-only legitimo).
-        from .mission_goal import MissionOutcome
-        for total in (0, 1, 3):
+        statuses = [
+            OutcomeStatus.COMPLETED,
+            OutcomeStatus.PARTIAL,
+            OutcomeStatus.FAILED,
+            OutcomeStatus.UNVERIFIED,
+            OutcomeStatus.NEEDS_USER,
+            OutcomeStatus.INTENT_NOT_FULFILLED,
+            OutcomeStatus.TOOL_OK_VERIFIER_INCONCLUSIVE,
+            OutcomeStatus.NEEDS_PERMISSION,
+            OutcomeStatus.BLOCKED_BY_POLICY,
+        ]
+        for status in statuses:
             out = MissionOutcome(
-                status=OutcomeStatus.UNVERIFIED,
-                summary="cualquier cosa", expected_total=total,
+                status=status,
+                summary="cualquier resumen", expected_total=2, expected_satisfied=1,
             )
-            self.assertEqual(mission_footer(out), "",
-                             f"UNVERIFIED con expected_total={total} debe ser sin footer")
-
-    def test_empty_summary_no_footer(self):
-        from .mission_goal import MissionOutcome
-        out = MissionOutcome(
-            status=OutcomeStatus.PARTIAL, summary="",
-            expected_total=2, expected_satisfied=1,
-        )
-        self.assertEqual(mission_footer(out), "")
-
-    def test_summary_truncated_to_120(self):
-        from .mission_goal import MissionOutcome
-        long_summary = "x" * 500
-        out = MissionOutcome(
-            status=OutcomeStatus.PARTIAL, summary=long_summary,
-            expected_total=2, expected_satisfied=1,
-        )
-        f = mission_footer(out)
-        # 120 chars max + brackets/prefix
-        self.assertLessEqual(len(f), 160)
+            self.assertEqual(
+                mission_footer(out), "",
+                f"footer debe ser vacio para status={status.value}",
+            )
 
 
 class TestBugFixes(unittest.TestCase):

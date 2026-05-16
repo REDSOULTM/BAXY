@@ -5671,13 +5671,120 @@ def _find_vlc_executable() -> str | None:
     return None
 
 
+def _find_spotify_executable() -> str | None:
+    """Localiza Spotify.exe. Spotify desktop instala en %APPDATA%\\Spotify\\
+    por default (Microsoft Store version usa shell:AppsFolder).
+    """
+    spotify = shutil.which("spotify") or shutil.which("spotify.exe")
+    if spotify:
+        return spotify
+    candidates = [
+        Path.home() / "AppData" / "Roaming" / "Spotify" / "Spotify.exe",
+        Path("C:/Program Files/WindowsApps") / "Spotify.exe",  # raro pero posible
+    ]
+    for c in candidates:
+        try:
+            if c.is_file():
+                return str(c)
+        except OSError:
+            continue
+    return None
+
+
+def _media_play_spotify(query: str, args: dict[str, Any]) -> dict[str, Any]:
+    """Reproduce musica en Spotify usando deeplinks nativos cuando es posible.
+
+    Estrategia:
+      1. Si la app Spotify esta instalada: abrir con `spotify:search:<query>`
+         (la app abre y muestra resultados de busqueda; el user da Enter
+         para reproducir, o el agent puede mandar Enter via gui despues).
+      2. Si no, abrir Spotify Web en el browser: open.spotify.com/search/<q>
+      3. Si tampoco hay browser, devolver needs_user con hint.
+
+    Returns: dict con ok + action + url o command ejecutado.
+    """
+    import urllib.parse
+    if not query:
+        return _err("spotify provider requires a query (song/artist)")
+
+    encoded = urllib.parse.quote(query)
+    spotify_exe = _find_spotify_executable()
+
+    if spotify_exe and os.name == "nt":
+        # Deeplink: launches Spotify and shows search results.
+        deeplink = f"spotify:search:{encoded}"
+        try:
+            # `start` permite resolver el protocolo handler spotify://
+            subprocess.Popen(
+                ["cmd", "/c", "start", "", deeplink],
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            return _ok(
+                action="play",
+                provider="spotify",
+                query=query,
+                deeplink=deeplink,
+                spotify_exe=spotify_exe,
+                opened=True,
+                verified=False,
+                status="attempted",
+                note=(
+                    "Spotify opened with search results. The app shows matching "
+                    "tracks but does NOT auto-play. User must press Enter / click "
+                    "a track to start playback, or the agent can call "
+                    "gui(action='keypress', keys='enter') as a follow-up."
+                ),
+            )
+        except (OSError, FileNotFoundError) as exc:
+            # Fall through to web fallback
+            spotify_err = str(exc)
+    else:
+        spotify_err = None
+
+    # Web fallback: abre Spotify Web en el browser default.
+    web_url = f"https://open.spotify.com/search/{encoded}"
+    try:
+        import webbrowser
+        opened = webbrowser.open(web_url)
+        if opened:
+            return _ok(
+                action="play",
+                provider="spotify_web",
+                query=query,
+                url=web_url,
+                opened=True,
+                verified=False,
+                status="attempted",
+                note=(
+                    "Spotify Web Player opened with search results. Playback "
+                    "requires the user to be logged in and click a track."
+                ),
+                fallback_from="spotify_desktop" if spotify_err else None,
+            )
+    except Exception as exc:
+        return _err(
+            f"Could not open Spotify (desktop nor web): {exc}",
+            status="failed", provider="spotify",
+            spotify_desktop_error=spotify_err,
+        )
+    return _err(
+        "Spotify desktop not installed and webbrowser.open returned False",
+        status="needs_user", provider="spotify",
+        install_hint="winget install Spotify.Spotify",
+    )
+
+
 def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | None = None) -> dict[str, Any]:
     action = str(args.get("action") or "play").casefold()
     if action == "status":
+        spotify_exe = _find_spotify_executable()
         return _ok(
-            backends=["browser_youtube", "windows_media_keys", "local_file", "vlc_cli", "winrt_smtc"],
+            backends=["browser_youtube", "windows_media_keys", "local_file",
+                       "vlc_cli", "winrt_smtc", "spotify_desktop", "spotify_web"],
             now_playing_supported=True,
             vlc_available=bool(_find_vlc_executable()),
+            spotify_desktop_available=bool(spotify_exe),
+            spotify_desktop_path=spotify_exe,
             note="now_playing uses Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager via PowerShell.",
         )
     if action == "play":
@@ -5686,10 +5793,11 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         provider = str(args.get("provider") or "youtube").casefold()
         if path:
             return _media_play_local(path, args)
-        # Providers tipo spotify / apple_music / deezer requieren SDK + OAuth.
-        # En vez de fallar con "unsupported media provider", caemos a YouTube
-        # — el usuario igual escucha la cancion y le avisamos en `fallback_from`
-        # asi el LLM puede explicarlo en su reply.
+        # Spotify tiene soporte nativo: deeplink al desktop app si esta
+        # instalado, fallback a Spotify Web. No caemos a YouTube — el usuario
+        # explicitamente pidio Spotify.
+        if provider == "spotify":
+            return _media_play_spotify(query, args)
         if provider in {"youtube", "yt", "browser"}:
             return executor("browser", {"action": "youtube_play", "query": query or "musica"})
         if provider == "vlc":
@@ -5704,9 +5812,9 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
             if not target:
                 return _err("vlc provider requires path or url")
             return _media_play_vlc(vlc, target)
-        # Streaming providers no soportados nativamente — fallback a YouTube
-        # con nota honesta de que NO es el provider pedido.
-        if provider in {"spotify", "apple_music", "applemusic", "deezer",
+        # Otros streaming providers sin soporte nativo: fallback honesto a
+        # YouTube con nota explicita de que NO es el provider pedido.
+        if provider in {"apple_music", "applemusic", "deezer",
                         "tidal", "amazon_music", "amazonmusic", "soundcloud"}:
             result = executor("browser", {"action": "youtube_play", "query": query or "musica"})
             if isinstance(result, dict):
