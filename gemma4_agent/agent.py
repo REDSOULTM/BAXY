@@ -339,13 +339,32 @@ TOOL_RULES: dict[str, str] = {
         "     Requires the user to be logged in on the default browser. The "
         "     profile name must be known. The tool saves it the first time and "
         "     reuses it on subsequent runs.\n\n"
-        "FIRST TIME ON A PLATFORM: when the tool returns status='needs_user' "
-        "with asks_for='streaming_profile', it means we don't know which "
-        "profile to click. ASK the user: \"¿Cuál es tu perfil en <plataforma>? "
-        "Lo guardo y la próxima vez no te pregunto.\" When they tell you (e.g. "
-        "\"mi perfil es Emmanuel\" or just \"Emmanuel\"), RETRY the same media "
-        "call with profile='Emmanuel'. The tool stores it and continues to the "
-        "GUI flow automatically.\n\n"
+        "FIRST TIME ON A PLATFORM — TWO-TURN FLOW (CRITICAL):\n"
+        "  Turn N: user says \"pon X en Netflix\".\n"
+        "    - You call media(provider='netflix', query='X').\n"
+        "    - Tool returns ok=false, status='needs_user', "
+        "asks_for='streaming_profile'.\n"
+        "    - YOU respond to user (no more tool calls this turn): "
+        "\"¿Cuál es tu perfil en Netflix? Lo guardo y la próxima vez no "
+        "te pregunto.\"\n"
+        "  Turn N+1: user responds. You have THREE things in your context:\n"
+        "    (a) Your question from turn N (asking for the profile).\n"
+        "    (b) The user's response (e.g. \"mi perfil es Emmanuel\", "
+        "\"Emmanuel\", \"soy Emma\", \"usa el de Clara\").\n"
+        "    (c) The original media request from turn N (still in history).\n"
+        "  USE YOUR JUDGMENT to extract the profile name from the response. "
+        "Examples (you decide which is the name):\n"
+        "    \"mi perfil es Emmanuel\"   -> name='Emmanuel'\n"
+        "    \"Emmanuel\"                 -> name='Emmanuel'\n"
+        "    \"soy Emma\"                 -> name='Emma'\n"
+        "    \"usa el de Clara\"          -> name='Clara'\n"
+        "    \"el de los niños\"          -> name='los niños'\n"
+        "    \"Hola\" / \"Quien eres\" / \"olvidalo\" -> NOT a profile name. "
+        "The user changed topic. Just respond normally — DO NOT call media.\n"
+        "  Then CALL media again with the SAME provider+query as turn N "
+        "plus profile='<name>'. The tool stores it and proceeds to play.\n"
+        "  If the user's response is ambiguous, ask a quick clarification "
+        "(\"¿Entonces tu perfil es 'Emma'?\") instead of guessing.\n\n"
         "If played=true: \"Listo, sonando/viendo X en <plataforma>\". If "
         "played=false but opened=true: \"Abrí <plataforma> con la búsqueda; "
         "no pude llegar al Play (razón: <web_auto_play_info.abort_reason>).\" "
@@ -799,15 +818,6 @@ class Gemma4Agent:
         # so Gemma can confirm naturally without re-running the tools.
         self._phrase_fires = []
         raw_text_early = _extract_user_text(content)
-
-        # PENDING ACTION RESUME: si el turn previo emitio un needs_user
-        # (e.g. media pidiendo streaming_profile) y guardo el contexto en
-        # state, chequear si este turn lo continua. Si si, ejecutar la
-        # accion directamente sin pasar por el LLM — evita que el router
-        # elija una tool random ("Mi perfil es Ema" disparaba email).
-        pending_resume = self._try_resume_pending_action(raw_text_early, turn_id)
-        if pending_resume is not None:
-            return pending_resume
         if raw_text_early:
             try:
                 from .domain_tools import (_looks_destructive,
@@ -1716,206 +1726,6 @@ class Gemma4Agent:
             trimmed.pop(0)
         self.history = trimmed
 
-    def _try_resume_pending_action(self, user_text: str, turn_id: str) -> "AgentReply | None":
-        """Si hay un pending_action en state Y el user_text parece responderlo,
-        ejecuta la accion directamente sin pasar por el LLM/router.
-
-        Esto resuelve el caso "media pidio streaming_profile, user dice
-        'mi perfil es Ema', router elige email random". Detectar el pending
-        + extraer el nombre + re-llamar media es deterministico y rapido.
-
-        Returns AgentReply si el resume se hizo, None si no aplica.
-        """
-        if not user_text or not user_text.strip():
-            return None
-        try:
-            from .domain_tools import (
-                clear_pending_action,
-                get_pending_action,
-                _is_valid_profile_name,
-            )
-            pending = get_pending_action(self.state)
-        except Exception:
-            return None
-        if not pending:
-            return None
-        # Window de validez: solo continuar si el pending tiene <120 segundos.
-        # Bajado de 300s a 120s — si el user tardo 2 min en responder, ya no
-        # esta en el mismo contexto y mejor cerrar.
-        if pending.get("age_seconds", 0) > 120:
-            try:
-                clear_pending_action(self.state, pending.get("resource_id"))
-            except Exception:
-                pass
-            return None
-
-        kind = pending.get("kind")
-        payload = pending.get("payload") or {}
-
-        # PENDING streaming_profile: user respondio con su nombre.
-        if kind == "streaming_profile":
-            extracted = self._extract_profile_name(user_text)
-            # SAFETY: incluso si el extractor lo acepto, validar que sea
-            # un nombre plausible antes de usarlo (defense in depth).
-            if extracted and not _is_valid_profile_name(extracted):
-                extracted = None
-            if not extracted:
-                # User NO contesto con un nombre. Cerrar el pending para no
-                # atrapar turns futuros. ANTES solo cerrabamos en "olvidalo",
-                # pero eso dejaba el pending vivo cuando el user dice "hola"
-                # o cambia de tema — y el proximo turn que diera un nombre
-                # corto se asumia como respuesta de ESTE pending.
-                #
-                # Politica nueva: si el user_text no es un nombre de perfil,
-                # asumir que el user cambio de tema. Cerrar el pending y
-                # dejar que el LLM maneje el turn normalmente.
-                try:
-                    clear_pending_action(self.state, pending.get("resource_id"))
-                    self.trace.event(turn_id, "pending_closed_no_match",
-                                     pending_kind=kind,
-                                     user_text_preview=user_text[:80])
-                except Exception:
-                    pass
-                return None
-            self.trace.event(turn_id, "pending_resume",
-                             pending_kind=kind, payload=payload,
-                             extracted_profile=extracted)
-            # Construir args para media y ejecutar.
-            media_args = {
-                "action": "play",
-                "provider": payload.get("provider", "netflix"),
-                "query": payload.get("query", ""),
-                "profile": extracted,
-                "auto_play": bool(payload.get("auto_play", True)),
-            }
-            if payload.get("auto_play_wait"):
-                media_args["auto_play_wait"] = payload["auto_play_wait"]
-            try:
-                result = self.tools.execute("media", media_args)
-            except Exception as exc:
-                self.trace.event(turn_id, "pending_resume_failed", error=str(exc))
-                return None
-            # Construir reply honesto basado en el resultado.
-            played = bool(result.get("played"))
-            provider = str(result.get("provider", payload.get("provider", "")))
-            provider_human = provider.replace("_web", "").replace("_", " ").title()
-            query = payload.get("query", "")
-            if played:
-                reply_text = f"Listo, reproduciendo {query!r} en {provider_human} con perfil {extracted}."
-            else:
-                reason = ""
-                info = result.get("web_auto_play_info") or {}
-                if info.get("abort_reason"):
-                    reason = f" (razón: {info['abort_reason']})"
-                reply_text = (
-                    f"Guardé tu perfil de {provider_human} como {extracted!r}. "
-                    f"Abrí la búsqueda de {query!r} pero no pude completar el Play{reason}. "
-                    "Podés clickearlo manualmente."
-                )
-            # Registrar tool event para que el resto del agent (tracing,
-            # experience, etc.) lo vea como una llamada normal.
-            event = ToolEvent(name="media", args=media_args, result=result)
-            self.history.append({"role": "user", "content": user_text})
-            self.history.append({"role": "assistant", "content": reply_text})
-            self.trace.event(turn_id, "pending_resume_done",
-                             played=played, provider=provider)
-            from .evaluator import evaluate_mission
-            mission = evaluate_mission([event], reply_text, plan_mission(user_text))
-            return AgentReply(
-                content=reply_text,
-                tool_events=[event],
-                mission=mission,
-            )
-        return None
-
-    @staticmethod
-    def _extract_profile_name(user_text: str) -> str | None:
-        """Extrae el nombre del perfil de la respuesta del user.
-
-        Acepta variantes como:
-          - "Ema"
-          - "Mi perfil es Ema"
-          - "Soy Ema"
-          - "perfil: Ema"
-          - "mi perfil de disney es Ema"
-
-        Devuelve None si no parece nombre (es una orden, pregunta, > 4 palabras
-        que sugiere cambio de tema, etc).
-        """
-        import re as _re
-        s = user_text.strip()
-        if not s:
-            return None
-        # 1. Frases tipo "mi perfil es X" / "soy X" / "es X" / "perfil X".
-        patterns = [
-            r"^\s*mi\s+perfil\s+(?:de\s+\w+\s+)?(?:es|se llama|es el de)\s+(.+?)\s*$",
-            r"^\s*(?:el|mi)\s+perfil\s*[:\-]\s*(.+?)\s*$",
-            r"^\s*soy\s+(.+?)\s*$",
-            r"^\s*es\s+(.+?)\s*$",
-            r"^\s*perfil\s*[:=\-]?\s*(.+?)\s*$",
-            r"^\s*usa(?:r|me)?\s+(?:el\s+(?:perfil\s+)?(?:de\s+)?)?(.+?)\s*$",
-        ]
-        for pat in patterns:
-            m = _re.search(pat, s, _re.IGNORECASE)
-            if m:
-                name = m.group(1).strip(" .,;")
-                if 1 <= len(name) <= 30 and not any(ch in name for ch in "¿?!{}"):
-                    return name
-        # 2. Si es 1-2 palabras corto (probablemente solo el nombre).
-        #    Strippeamos trailing punctuation antes de evaluar — un user que
-        #    responde "Ema." quiere "Ema", no "Ema." como nombre del perfil.
-        s_clean = s.rstrip(" .,;!?")
-        words = s_clean.split()
-        if 1 <= len(words) <= 2 and len(s_clean) <= 30:
-            # Reject orders, greetings, thanks, and meta-conversational
-            # tokens. Real-world breakage: user said "Hola" after the agent
-            # had asked for an HBO Max profile in a previous turn (pending
-            # still alive) → extractor accepted "Hola" and saved it as the
-            # HBO Max profile name. Same shape for "Hello", "Gracias", etc.
-            # Roots are checked with both exact match AND prefix match (so
-            # "olvidalo"/"cancelalo" rejected via "olvida"/"cancela" roots).
-            order_roots = ("abre", "open", "pon", "play", "cierra", "close",
-                            "borra", "delete", "busca", "search", "manda",
-                            "send", "no", "si", "yes", "ok", "olvida",
-                            "cancela", "cancel", "stop", "pausa", "pause",
-                            "dale", "dejalo", "dejame")
-            # Exact-match only (no prefix) — these are conversational tokens
-            # the user types as the FIRST word when changing topic. Prefix
-            # match would over-reject ("Holanda" would match "hola").
-            conversational_exact = {
-                # Saludos / despedidas
-                "hola", "holas", "holis", "hello", "hi", "hey",
-                "buenos", "buenas", "buen", "buenísimo", "buenisimo",
-                "adios", "adiós", "bye", "chau", "chao", "nos vemos",
-                # Confirmaciones / negaciones / fillers
-                "gracias", "thanks", "thank", "ok", "okay", "vale",
-                "bueno", "perfecto", "listo", "dale", "ya", "claro",
-                # Interrogativas: "quien eres", "que tal", "como va", etc
-                # NO son nombres de perfil — son preguntas al agent.
-                "quien", "quién", "que", "qué", "cual", "cuál",
-                "como", "cómo", "donde", "dónde", "cuando", "cuándo",
-                "cuanto", "cuánto", "cuanta", "cuánta",
-                "porque", "por qué", "por que",
-                "who", "what", "which", "how", "where", "when", "why",
-                # Auxiliares + pronombres comunes que no son nombres
-                "tu", "tú", "te", "me", "se", "lo", "la", "le",
-                "you", "your", "are", "is",
-                "eres", "soy", "es", "está", "esta", "estás", "estas",
-                # Ayuda / meta
-                "ayuda", "help", "ayudame", "ayúdame",
-            }
-
-            def _is_order(word: str) -> bool:
-                wl = word.casefold()
-                return any(wl == root or wl.startswith(root) for root in order_roots)
-
-            def _is_conversational(word: str) -> bool:
-                return word.casefold() in conversational_exact
-
-            rejected = any(_is_order(w) or _is_conversational(w) for w in words)
-            if not rejected:
-                return s_clean.strip()
-        return None
 
     def _guard_unverified_final(self, content: str, events: list[ToolEvent]) -> str:
         """Inyecta una nota honesta SOLO cuando la tool genuinamente fallo

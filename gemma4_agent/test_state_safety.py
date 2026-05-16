@@ -1,11 +1,15 @@
-"""Tests de defense-in-depth: extractor + validator + sanitizer.
+"""Tests de defense-in-depth: validator + sanitizer.
 
-Bugs reales encontrados en sesion 11:43-11:47 (2026-05-16):
-  1. "Hola" guardado como profile de hbo_max.
-  2. "Quien eres" guardado como profile de disney.
-  3. LLM emitio <|tool_call>...<tool_call|> como texto literal.
+2026-05-16: borrado el extractor _extract_profile_name + el pending
+action store. Confiamos en el LLM para mantener el contexto cross-turn:
+  - media retorna needs_user/streaming_profile.
+  - LLM pregunta al user "¿cuál es tu perfil?".
+  - User responde "Ema" (o "mi perfil es Ema", o lo que sea).
+  - LLM ve el history (su pregunta previa + respuesta) y llama media
+    de nuevo con profile='Ema'.
 
-Estos tests previenen regresion de esos casos.
+El validator queda como DEFENSE IN DEPTH: si el LLM por alguna razon
+pasa profile="Hola" o profile="<|tool_call|>", el state NO se corrompe.
 """
 from __future__ import annotations
 
@@ -16,7 +20,6 @@ from pathlib import Path
 
 os.environ.setdefault("GEMMA4_LLAMA_AUTO_START", "0")
 
-from .agent import Gemma4Agent
 from .domain_tools import (
     _INVALID_PROFILE_NAMES,
     _is_valid_profile_name,
@@ -33,44 +36,6 @@ def _fresh_state() -> AgentState:
     p = Path(tmp.name)
     p.unlink(missing_ok=True)
     return AgentState(path=p)
-
-
-class TestExtractorRejectsGreetingsAndQuestions(unittest.TestCase):
-    """REGRESSION: extractor permitia 'Hola' / 'Quien eres' como profile."""
-
-    def test_hola_rejected(self):
-        for v in ("Hola", "hola", "Holas", "HOLA", "  hola  "):
-            self.assertIsNone(
-                Gemma4Agent._extract_profile_name(v),
-                f"{v!r} should NOT be a profile name",
-            )
-
-    def test_questions_rejected(self):
-        for v in ("Quien eres", "Quién eres", "que tal", "Qué tal",
-                  "Como estas", "Cómo estás", "Cual es", "Cuál es",
-                  "Que sos", "Quien sos"):
-            self.assertIsNone(
-                Gemma4Agent._extract_profile_name(v),
-                f"{v!r} should NOT be a profile name",
-            )
-
-    def test_thanks_and_confirmations_rejected(self):
-        for v in ("Gracias", "thanks", "ok", "okay", "vale",
-                  "si", "no", "bueno", "perfecto"):
-            self.assertIsNone(
-                Gemma4Agent._extract_profile_name(v),
-                f"{v!r} should NOT be a profile name",
-            )
-
-    def test_pronouns_alone_rejected(self):
-        for v in ("eres", "es", "Tú", "Tu", "soy"):
-            self.assertIsNone(Gemma4Agent._extract_profile_name(v))
-
-    def test_real_names_still_accepted(self):
-        for v in ("Ema", "Emmanuel", "Bea", "Clara",
-                  "REDSOULTM", "Mi perfil es Ema"):
-            result = Gemma4Agent._extract_profile_name(v)
-            self.assertIsNotNone(result, f"{v!r} should extract a name")
 
 
 class TestStreamingPreferenceValidator(unittest.TestCase):
