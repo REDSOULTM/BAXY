@@ -130,5 +130,48 @@ class TestToolsCall(unittest.TestCase):
         self.assertIn("content", resp["result"])
 
 
+class TestRequestRobustness(unittest.TestCase):
+    """Hardening: malformed-but-parseable JSON-RPC must not crash the handler."""
+
+    def test_empty_request_dict(self):
+        # {} has no method, no id — handler treats it as a notification of an
+        # unknown method (silently dropped). Must not raise.
+        resp = _handle_request({})
+        self.assertIsNone(resp)
+
+    def test_missing_method_with_id_returns_method_not_found(self):
+        # id present but method missing -> -32601 (method "" is not found).
+        req = {"jsonrpc": "2.0", "id": 5}
+        resp = _handle_request(req)
+        self.assertEqual(resp["id"], 5)
+        self.assertIn("error", resp)
+        self.assertEqual(resp["error"]["code"], -32601)
+
+    def test_string_params_does_not_crash(self):
+        # Misbehaving client sends params=str instead of dict. Handler should
+        # accept gracefully (initialize ignores params anyway).
+        req = {"jsonrpc": "2.0", "id": 6, "method": "initialize", "params": "bogus"}
+        resp = _handle_request(req)
+        self.assertEqual(resp["id"], 6)
+        # Either result or error — never an uncaught exception.
+        self.assertTrue("result" in resp or "error" in resp)
+
+    def test_tools_call_with_missing_arguments(self):
+        # No `arguments` key — should be treated as {}.
+        resp = _handle_tools_call({"name": "system"})
+        self.assertIn("content", resp)
+        # system with no action will return its own error; that's fine,
+        # we only assert the handler didn't crash.
+
+    def test_tools_call_with_none_arguments(self):
+        resp = _handle_tools_call({"name": "system", "arguments": None})
+        self.assertIn("content", resp)
+
+    def test_tools_call_with_empty_name(self):
+        # name="" -> registry returns "unknown tool" -> isError=True.
+        resp = _handle_tools_call({"name": "", "arguments": {}})
+        self.assertTrue(resp["isError"])
+
+
 if __name__ == "__main__":
     unittest.main()
