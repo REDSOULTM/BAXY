@@ -196,6 +196,32 @@ def _redact_sensitive(value: Any, depth: int = 0) -> Any:
     return value
 
 
+# Completion statuses que representan dispatch async exitoso al SO/browser:
+# la operacion llego a destino, el efecto fisico (audio, render, click) no es
+# medible desde Python pero NO es un fallo. Estos casos:
+#   - NO se etiquetan como "needs_verification" (eso confundia al LLM).
+#   - status="dispatched" (nuevo bucket distinto de done/attempted/needs_verif).
+#   - verified=None (honest tristate: True medido / False medido y mal / None
+#                    no medible).
+# Auditoria 2026-05-15 mostro 40+ falsos positivos donde tools dispatch
+# (browser.youtube_play, media.play_pause via media key, browser.open url,
+# steam.store_page, app.open con launch_requested) reportaban verified=False
+# y disparaban el guard "Nota: no dejo evidencia suficiente" aunque la
+# accion SI habia ocurrido.
+_DISPATCH_OK_COMPLETIONS = frozenset({
+    "opened_youtube_video_for_playback",
+    "opened_youtube_search_unverified",
+    "opened_search_results",
+    "opened_url",
+    "opened_steam_client_store_page",
+    "opened_steam_client_store_search_unverified",
+    "opened_matching_steam_library_detail",
+    "sent_global_media_key",
+    "launch_requested",
+    "dispatched",
+})
+
+
 def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
     result.setdefault("tool", name)
     if args.get("action") and "action" not in result:
@@ -209,16 +235,23 @@ def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, An
         result.update(redacted)
 
     ok = bool(result.get("ok", False))
-    unverified = _has_unverified_signal(result)
+    completion = str(result.get("completion_status") or "").casefold()
+    is_dispatch_ok = completion in _DISPATCH_OK_COMPLETIONS
 
     if not ok:
         result.setdefault("status", "failed")
         result.setdefault("verified", False)
         result.setdefault("completion_status", "failed")
+    elif is_dispatch_ok:
+        # Dispatch async legitimo: URL/deeplink/keypress enviado al SO.
+        # status="dispatched" + verified=None (no medible, no fallo).
+        result.setdefault("status", "dispatched")
+        if "verified" not in result:
+            result["verified"] = None
     elif result.get("attempted"):
         result.setdefault("status", "attempted")
         result.setdefault("verified", False)
-    elif unverified:
+    elif _has_unverified_signal(result):
         result.setdefault("status", "needs_verification")
         result.setdefault("verified", False)
     else:
@@ -230,6 +263,12 @@ def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, An
 
 
 def _has_unverified_signal(result: dict[str, Any]) -> bool:
+    # FAST EXIT: dispatch async OK no es unverified, sin importar que tenga
+    # campos *_verified=False (e.g. playback_verified=False es esperado para
+    # un video que se abrio en el browser — no se puede medir desde Python).
+    completion = str(result.get("completion_status") or "").casefold()
+    if completion in _DISPATCH_OK_COMPLETIONS:
+        return False
     for key, value in result.items():
         if key.endswith("_verified") and value is False:
             return True
@@ -237,7 +276,6 @@ def _has_unverified_signal(result: dict[str, Any]) -> bool:
         return True
     if result.get("attempted") is True:
         return True
-    completion = str(result.get("completion_status") or "").casefold()
     return any(token in completion for token in ("unverified", "needs_verification", "requested", "attempted"))
 
 

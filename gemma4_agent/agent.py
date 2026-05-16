@@ -97,6 +97,48 @@ evidence. If you call gui(action="screenshot") or vision(...), the runtime will
 send the screenshot image back to you in the next message; inspect it before
 clicking or typing.
 
+VOICE TRANSCRIPTION RESILIENCE: when the user input arrived through voice
+(Whisper / Vosk), it may contain transcription errors — wrong words, missing
+articles, garbled phonetic spellings of proper names (Discord→"discor",
+Spotify→"espotifai", YouTube→"yutu", WhatsApp→"guasap"/"wasap", Netflix→
+"netfli"), missing accent marks, ambiguous fragments. DO THIS:
+  1. INFER intent from context + acoustic similarity. "Pon una caña de
+     beso bun en espotifai" -> almost certainly "pon una cancion de Benson
+     Boone en Spotify". Make the inference and ACT — call the tool with
+     your corrected interpretation. Do NOT ask for clarification on
+     obvious phonetic typos.
+  2. Use semantic context. If 3 of 4 words clearly mean "open Steam and
+     play Hollow Knight", and the 4th is garbled, infer it from what fits.
+  3. If after best-effort inference the request is still genuinely
+     ambiguous (e.g. could be 2-3 distinct intents), THEN ask a short
+     clarifying question, but include your best guess: "¿Querías abrir
+     Discord o Disney+? (escuché 'disco' y podría ser cualquiera)".
+  4. Common Spanish phonetic mistranscriptions to be aware of:
+     - "guasap" / "wasap" / "guazap" / "huatsap" -> WhatsApp
+     - "espotifai" / "espoti" / "spoti" -> Spotify
+     - "netfli" / "neflix" -> Netflix
+     - "discor" / "diskor" -> Discord
+     - "yutu" / "yutubi" / "youtu" -> YouTube
+     - "estim" / "estim" -> Steam
+     - "guguel" / "gugle" -> Google
+     - "fairfox" / "firefo" -> Firefox
+     - "windous" / "wind" -> Windows
+  5. For misheard proper names (artist/movie/game titles), pass YOUR
+     best-guess query to the search/play tool. The tool's web search
+     usually corrects minor typos (Google/YouTube/Spotify all have fuzzy
+     search). If the result is wildly wrong, the user will tell you.
+  6. NEVER respond with "no entendí" purely because of poor diction. Only
+     do so if there is genuinely no plausible intent to infer.
+
+TOOL EFFECT REPORTING: when a tool returns status="dispatched" or
+verified=null, this means the action was sent to the OS/browser/app
+successfully but the agent cannot directly measure the rendered effect
+(e.g. video frame, audio output). This is NORMAL for URL opens, deeplinks,
+keypresses, app launches — it is NOT a failure. Report to the user that
+the action was done ("Listo, abrí YouTube con la canción"), NOT "no pude
+verificar". Only say "no pude verificar X" when the tool returned ok=false
+or status="failed".
+
 If a necessary tool is missing, say "no tengo herramienta para eso" and stop.
 Never output special tokens or thinking tags."""
 
@@ -1640,15 +1682,70 @@ class Gemma4Agent:
         self.history = trimmed
 
     def _guard_unverified_final(self, content: str, events: list[ToolEvent]) -> str:
+        """Inyecta una nota honesta SOLO cuando la tool genuinamente fallo
+        o no llego al SO. Tools dispatch-by-nature (URL abierta, deeplink
+        enviado, media key sent) NO disparan la nota — son "ok pero no
+        medibles" por design del SO, no un fallo del agent.
+
+        2026-05-15: post-audit de traces revelo 40+ falsos positivos donde
+        este guard inyectaba "Nota: no dejo evidencia suficiente" para
+        operaciones que SI funcionaron (youtube_play, browser.open,
+        media_play_pause, steam.store_page, etc). El user veia "no se pudo
+        verificar" aunque la accion habia ocurrido. Fix: tratar
+        completion_status conocidos como exito.
+        """
         if not events:
             return content
         last = events[-1].result
         status = str(last.get("status") or "")
         verified = last.get("verified")
+
+        # OK rotundo (verified=True): no nota.
+        if verified is True:
+            return content
+        # status="dispatched" = dispatch async exitoso a SO/browser.
+        # verified=None = no medible (honest tristate). Ninguno necesita nota.
+        if status == "dispatched":
+            return content
+        if verified is None and status not in {"attempted", "needs_verification", "failed"}:
+            return content
         if verified is not False and status not in {"attempted", "needs_verification", "failed"}:
             return content
+
+        # PRE-CHECK 1: completion_status conocido como dispatch async exitoso.
+        # Esto cubre tools antiguas que aun no reportan status="dispatched".
+        completion = str(last.get("completion_status") or "").casefold()
+        _DISPATCH_OK_COMPLETIONS = {
+            "opened_youtube_video_for_playback",
+            "opened_youtube_search_unverified",
+            "opened_search_results",
+            "opened_url",
+            "opened_steam_client_store_page",
+            "opened_steam_client_store_search_unverified",
+            "opened_matching_steam_library_detail",
+            "sent_global_media_key",
+            "launch_requested",
+            "dispatched",
+        }
+        if completion in _DISPATCH_OK_COMPLETIONS:
+            return content
+
+        # PRE-CHECK 2: si la tool especifica una URL o deeplink en evidence
+        # y opened=true, es dispatch exitoso a un endpoint conocido.
+        if last.get("opened") is True and (last.get("url") or last.get("deeplink") or last.get("uri")):
+            return content
+
+        # PRE-CHECK 3: status="failed" pero ok=true es inconsistente — emitir
+        # nota informativa solo si la tool genuinamente fallo (ok=false ya fue
+        # manejado upstream por el flujo de error normal).
+        if status == "failed" and not last.get("ok"):
+            return content  # ok=False ya tiene su propia logica
+
         low = content.casefold()
-        already_honest = any(token in low for token in ("intent", "verifi", "no pude", "no se pudo", "error", "fall"))
+        already_honest = any(
+            token in low
+            for token in ("intent", "verifi", "no pude", "no se pudo", "error", "fall")
+        )
         if already_honest:
             return content
         evidence = last.get("evidence") or last.get("completion_status") or status or "sin evidencia"

@@ -138,27 +138,26 @@ def verify(tool_name: str, args: dict, result: dict) -> VerifierOutcome:
 def summarize_verifiers(outcomes: list[VerifierOutcome]) -> str:
     """Footer honesto que se concatena al reply del LLM.
 
-    Solo aparece si hay algo no-trivial que reportar:
-      - failed > 0  o  unverifiable > 0  ->  emite footer
-      - todos confirmed=True -> no emite (no inflar el reply)
-      - lista vacia -> ""
+    Solo aparece si hay algo NEGATIVO concreto que reportar:
+      - failed > 0  ->  emite footer (importante para el user)
+      - todos confirmed=True / None / mix -> NO emite (sin failure no aporta).
+
+    2026-05-15 post-audit: el "N no verificable(s)" generaba ruido visual
+    en el user cuando una tool dispatch async legitima (URL abierta,
+    deeplink, media key) reportaba confirmed=None. El user lo interpretaba
+    como fallo de la accion. Ahora solo emitimos cuando hay un failed real.
     """
     if not outcomes:
         return ""
-    confirmed = sum(1 for o in outcomes if o.confirmed is True)
     failed = sum(1 for o in outcomes if o.confirmed is False)
-    unverifiable = sum(1 for o in outcomes if o.confirmed is None)
-    total = len(outcomes)
-
-    # Caso silencio: todo bien -> no agregar nada
-    if failed == 0 and unverifiable == 0 and confirmed == total:
+    if failed == 0:
         return ""
-
-    parts = []
+    # Solo cuando hay un failed real, surfaceamos el conteo con contexto.
+    confirmed = sum(1 for o in outcomes if o.confirmed is True)
+    unverifiable = sum(1 for o in outcomes if o.confirmed is None)
+    parts = [f"{failed} no confirmada(s)"]
     if confirmed:
-        parts.append(f"{confirmed} verificada(s)")
-    if failed:
-        parts.append(f"{failed} no confirmada(s)")
+        parts.insert(0, f"{confirmed} verificada(s)")
     if unverifiable:
         parts.append(f"{unverifiable} no verificable(s)")
     return f"\n\n[{', '.join(parts)}]"
