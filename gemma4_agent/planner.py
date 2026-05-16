@@ -119,6 +119,14 @@ def select_tool_names(content: str | list[dict[str, Any]], plan: MissionPlan, *,
     if not names:
         return ["safety"] if safety_enabled else []
 
+    # Same negative anchor as in _suggest_tools: if the user mentioned "perfil"
+    # / "profile" but NO email-specific keyword, semantic fallback sometimes
+    # bubbles email to the top. Drop it. Keeps the rest of the subset intact.
+    if "email" in names and re.search(r"\b(perfil|profile)\b", text) and not re.search(
+        r"\b(mail|email|correo|courriel|posta|messaggio)\b", text,
+    ):
+        names = [n for n in names if n != "email"]
+
     expanded: list[str] = []
     for name in _dedupe(names):
         expanded.append(name)
@@ -387,6 +395,16 @@ def _suggest_tools(step: str) -> list[str]:
         # whatsapp es el match mas especifico.
         if "whatsapp" not in tools:
             tools.append("email")
+    # Negative anchor for streaming-profile replies. "Mi perfil es <X>" used
+    # to misroute to email via semantic fallback (perfil ~ profile ~ account ~
+    # mail). The pending-action resume in agent.py intercepts this case before
+    # the router runs, but if that bypass ever breaks we still don't want the
+    # router to confidently steer toward email. Drop email when "perfil" /
+    # "profile" appears WITHOUT any email-specific keyword above.
+    if "email" in tools and re.search(r"\b(perfil|profile)\b", low) and not re.search(
+        r"\b(mail|email|correo|courriel|posta|messaggio)\b", low,
+    ):
+        tools = [t for t in tools if t != "email"]
 
     # Streaming platforms: si el user menciona una plataforma explicitamente,
     # asegurar que `media` este en el subset (donde estan los providers
