@@ -1904,19 +1904,10 @@ class Gemma4Agent:
 
         # PRE-CHECK 1: completion_status conocido como dispatch async exitoso.
         # Esto cubre tools antiguas que aun no reportan status="dispatched".
+        # NOTE: this used to be a locally-defined set duplicated from tools.py;
+        # imported from there now so both layers always agree.
         completion = str(last.get("completion_status") or "").casefold()
-        _DISPATCH_OK_COMPLETIONS = {
-            "opened_youtube_video_for_playback",
-            "opened_youtube_search_unverified",
-            "opened_search_results",
-            "opened_url",
-            "opened_steam_client_store_page",
-            "opened_steam_client_store_search_unverified",
-            "opened_matching_steam_library_detail",
-            "sent_global_media_key",
-            "launch_requested",
-            "dispatched",
-        }
+        from .tools import _DISPATCH_OK_COMPLETIONS
         if completion in _DISPATCH_OK_COMPLETIONS:
             return content
 
