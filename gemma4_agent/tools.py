@@ -479,6 +479,99 @@ def _truncate(text: str, limit: int) -> str:
     return text if len(text) <= limit else text[:limit] + f"...<truncated {len(text) - limit} chars>"
 
 
+# Mapeo de teclas individuales a SendKeys syntax. Source de truth:
+# learn.microsoft.com/dotnet/api/system.windows.forms.sendkeys.send
+# Las teclas se envuelven entre { } en SendKeys cuando son special.
+_SENDKEYS_SPECIAL = {
+    "ENTER": "{ENTER}", "RETURN": "{ENTER}",
+    "ESC": "{ESC}", "ESCAPE": "{ESC}",
+    "TAB": "{TAB}", "BACKSPACE": "{BACKSPACE}", "BS": "{BACKSPACE}",
+    "DELETE": "{DELETE}", "DEL": "{DELETE}",
+    "SPACE": " ", "SPACEBAR": " ",
+    "UP": "{UP}", "DOWN": "{DOWN}", "LEFT": "{LEFT}", "RIGHT": "{RIGHT}",
+    "HOME": "{HOME}", "END": "{END}",
+    "PGUP": "{PGUP}", "PAGEUP": "{PGUP}",
+    "PGDN": "{PGDN}", "PAGEDOWN": "{PGDN}",
+    "INS": "{INS}", "INSERT": "{INS}",
+    "F1": "{F1}", "F2": "{F2}", "F3": "{F3}", "F4": "{F4}",
+    "F5": "{F5}", "F6": "{F6}", "F7": "{F7}", "F8": "{F8}",
+    "F9": "{F9}", "F10": "{F10}", "F11": "{F11}", "F12": "{F12}",
+    "CAPSLOCK": "{CAPSLOCK}", "NUMLOCK": "{NUMLOCK}",
+    "PRINTSCREEN": "{PRTSC}", "PRTSC": "{PRTSC}", "PRINT": "{PRTSC}",
+    "PLAYPAUSE": "^v",  # SendKeys no soporta media keys; usar virtual key via gui_keypress_vk
+}
+
+# Prefijos modificadores de SendKeys.
+_SENDKEYS_MODIFIERS = {
+    "CTRL": "^", "CONTROL": "^",
+    "ALT": "%",
+    "SHIFT": "+",
+    "WIN": "^{ESC}",  # Win key no es directamente soportado por SendKeys; workaround limitado
+}
+
+
+def _translate_keys_to_sendkeys(keys: str) -> str:
+    """Traduce un especificador de teclas humano-friendly a SendKeys syntax.
+
+    Casos cubiertos:
+      - "enter" -> "{ENTER}"
+      - "ctrl+f" -> "^f"
+      - "Ctrl+Shift+T" -> "^+t"
+      - "alt+f4" -> "%{F4}"
+      - "ctrl+shift+escape" -> "^+{ESC}"
+      - "a" -> "a"  (letra normal)
+      - "^f" -> "^f"  (passthrough si ya es SendKeys)
+      - "{ENTER}" -> "{ENTER}"  (passthrough)
+
+    Si el formato no es reconocible, devuelve la string tal cual (passthrough)
+    para no romper input que ya estaba bien.
+    """
+    if not keys:
+        return ""
+    s = keys.strip()
+    # Si ya parece SendKeys syntax (empieza con ^+% o tiene {...}), pass.
+    if s and (s[0] in "^+%" or s.startswith("{")):
+        return s
+    # Mapeo exacto para nombres simples (ENTER, F5, etc).
+    upper = s.upper()
+    if upper in _SENDKEYS_SPECIAL:
+        return _SENDKEYS_SPECIAL[upper]
+    # Combo con modificadores: split por '+'.
+    if "+" in s:
+        parts = [p.strip() for p in s.split("+") if p.strip()]
+        if not parts:
+            return s
+        modifier_prefix = ""
+        # El ultimo token es la tecla; los anteriores son modificadores.
+        for mod in parts[:-1]:
+            mu = mod.upper()
+            if mu in _SENDKEYS_MODIFIERS:
+                # Solo agregamos el simbolo del modificador (^/%/+).
+                m = _SENDKEYS_MODIFIERS[mu]
+                # Filtramos el workaround inutil de WIN.
+                if m in {"^", "%", "+"}:
+                    modifier_prefix += m
+                # Si el modificador no es estandar, retornamos passthrough.
+                else:
+                    return s
+            else:
+                return s
+        last = parts[-1].upper()
+        if last in _SENDKEYS_SPECIAL:
+            return modifier_prefix + _SENDKEYS_SPECIAL[last]
+        last_raw = parts[-1]
+        if len(last_raw) == 1:
+            # Letra/digito normal: lowercase para SendKeys consistency.
+            return modifier_prefix + last_raw.lower()
+        # Multi-char no especial: envolver en { }.
+        return modifier_prefix + "{" + last_raw + "}"
+    # No combo, no especial conocido. Para multichar suponemos texto literal.
+    if len(s) == 1:
+        return s
+    # Multichar sin combo (e.g. "abc"): pasar tal cual (SendKeys lo trata como texto).
+    return s
+
+
 def _action(args: dict[str, Any], default: str = "") -> str:
     return str(args.get("action") or default).strip().casefold()
 
@@ -3018,9 +3111,38 @@ $p=Get-Process -Id $pid32 -ErrorAction SilentlyContinue
             error: str | None = None
             try:
                 if action == "focus":
-                    # Si esta minimizado lo restauramos antes.
-                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    # REGLA UNIVERSAL (2026-05-15 user request): si la ventana
+                    # esta minimizada, restaurarla. Si tras restore queda muy
+                    # chica (probablemente porque el user la habia dejado en
+                    # tamaño reducido), maximizarla automaticamente para que
+                    # comandos GUI subsecuentes (teclas, clicks) funcionen
+                    # consistentemente en la ventana objetivo y no se pierdan
+                    # detras de overlap parcial con otras apps.
+                    #
+                    # Sequence:
+                    #   1. IsIconic check -> SW_RESTORE si esta minimizada.
+                    #   2. SetForegroundWindow para traerla al frente.
+                    #   3. Si el rect resultante es <800x600 (heurustico), tambien
+                    #      SW_SHOWMAXIMIZED para garantizar visibilidad.
+                    was_minimized = bool(win32gui.IsIconic(hwnd))
+                    if was_minimized:
+                        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
                     applied = bool(win32gui.SetForegroundWindow(hwnd))
+                    # Check de tamaño post-restore. Si es chica, maximizar.
+                    try:
+                        left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+                        w = right - left
+                        h = bottom - top
+                        # Threshold conservador: ventanas tipicas de apps de
+                        # productividad >= 800x600 cuando son usables.
+                        if w < 800 or h < 600:
+                            win32gui.ShowWindow(hwnd, win32con.SW_SHOWMAXIMIZED)
+                            # Re-focus tras maximize (algunas apps pierden focus).
+                            win32gui.SetForegroundWindow(hwnd)
+                    except Exception:
+                        # GetWindowRect puede fallar en ventanas raras; no abortar
+                        # — el focus ya fue intentado.
+                        pass
                 elif action == "close":
                     win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
                     applied = True  # PostMessage no devuelve confirmacion sincrona
@@ -4403,17 +4525,7 @@ Start-Sleep -Milliseconds 120
         keys = str(args.get("keys", "")).strip()
         if not keys:
             return _err("empty keys")
-        sendkeys = {
-            "ENTER": "{ENTER}",
-            "ESC": "{ESC}",
-            "ESCAPE": "{ESC}",
-            "TAB": "{TAB}",
-            "CTRL+L": "^l",
-            "CTRL+A": "^a",
-            "CTRL+C": "^c",
-            "CTRL+V": "^v",
-            "ALT+F4": "%{F4}",
-        }.get(keys.upper(), keys)
+        sendkeys = _translate_keys_to_sendkeys(keys)
         env = {**os.environ, "GEMMA4_KEYS": sendkeys}
         script = "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait($env:GEMMA4_KEYS)"
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)

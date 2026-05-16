@@ -6893,11 +6893,14 @@ def _whatsapp_send_via_gui_search(
     steps: list[str] = []
 
     def _focus_and_verify() -> bool:
+        # window.focus ahora hace restore + maximize si la ventana es chica
+        # (regla universal aplicada en tools.py:window_control). Damos grace
+        # de 0.5s para que el maximize tome efecto antes de verificar.
         try:
             executor("window", {"action": "focus", "title": "WhatsApp"})
         except Exception:
             return False
-        _time.sleep(0.3)
+        _time.sleep(0.5)
         try:
             active = executor("window", {"action": "active"})
         except Exception:
@@ -6924,7 +6927,7 @@ def _whatsapp_send_via_gui_search(
     steps.append("dispatched_deeplink")
     _time.sleep(max(0.5, wait_seconds))
 
-    # 2. Focus + verify.
+    # 2. Focus + verify (incluye restore+maximize implicito).
     if not _focus_and_verify():
         return {
             "sent": False, "chat_opened": False, "search_term": contact_name,
@@ -6932,17 +6935,22 @@ def _whatsapp_send_via_gui_search(
             "steps": steps,
         }
     steps.append("focused")
+    # Extra grace tras maximize — el window manager necesita repaint.
+    _time.sleep(0.4)
 
     # 3. Ctrl+F para abrir busqueda. WhatsApp Desktop usa Ctrl+F.
+    # IMPORTANTE: pasar keys="^f" (SendKeys syntax) o keys="ctrl+f" que el
+    # translator convierte. Antes pasabamos hotkey="ctrl+f" pero el handler
+    # no traducia "ctrl+f" -> "^f" y SendKeys lo enviaba LITERAL como texto.
     try:
-        executor("gui", {"action": "hotkey", "hotkey": "ctrl+f"})
+        executor("gui", {"action": "keypress", "keys": "ctrl+f"})
     except Exception as exc:
         return {
             "sent": False, "chat_opened": False, "search_term": contact_name,
             "abort_reason": f"hotkey ctrl+f failed: {exc}", "steps": steps,
         }
     steps.append("opened_search")
-    _time.sleep(0.4)
+    _time.sleep(0.6)
 
     # 4. Type del nombre del contacto.
     if not _focus_and_verify():
@@ -6959,7 +6967,7 @@ def _whatsapp_send_via_gui_search(
             "abort_reason": f"type contact name failed: {exc}", "steps": steps,
         }
     steps.append("typed_contact_name")
-    _time.sleep(0.9)  # tiempo para que WhatsApp filtre
+    _time.sleep(1.0)  # tiempo para que WhatsApp filtre
 
     # 5. Enter para seleccionar primer resultado y entrar al chat.
     if not _focus_and_verify():
@@ -6976,7 +6984,7 @@ def _whatsapp_send_via_gui_search(
             "abort_reason": f"enter to select contact failed: {exc}", "steps": steps,
         }
     steps.append("selected_first_match")
-    _time.sleep(0.6)  # entrar al chat
+    _time.sleep(0.8)  # entrar al chat
 
     # 6. Type del mensaje (focus moved al input del chat).
     if not text:
@@ -6999,7 +7007,7 @@ def _whatsapp_send_via_gui_search(
             "abort_reason": f"type message failed: {exc}", "steps": steps,
         }
     steps.append("typed_message")
-    _time.sleep(0.3)
+    _time.sleep(0.4)
 
     # 7. Enviar si auto_send.
     if not auto_send:
