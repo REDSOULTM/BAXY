@@ -688,3 +688,156 @@ def verify_whatsapp(args: dict, result: dict) -> VerifierOutcome:
             },
         )
     return _unverifiable("whatsapp", f"unknown whatsapp action: {action}")
+
+
+# ============================================================================
+# 14. media (hotfix F 2026-05-17)
+# ============================================================================
+
+@register_verifier("media")
+def verify_media(args: dict, result: dict) -> VerifierOutcome:
+    """Verify media playback / open actions.
+
+    Structural-evidence only: auto_play_info.played + query_match
+    for streaming plays, and trust media keys for pause/next/etc.
+    We do NOT inspect natural-language text in result or reply.
+    """
+    if _result_says_unverified(result):
+        return _failed("media", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action in {"pause", "resume", "play_pause", "stop", "next", "previous"}:
+        return _ok_evidence("media", "media key dispatched", ["action"])
+    if action == "play":
+        api = result.get("auto_play_info") or {}
+        played = api.get("played")
+        verified = api.get("verified")
+        query_match = api.get("query_match")
+        if played and (verified or query_match):
+            return _ok_evidence(
+                "media", "auto-play verified",
+                ["auto_play_info.played", "auto_play_info.query_match"],
+            )
+        if result.get("url") or result.get("deeplink"):
+            return _unverifiable(
+                "media",
+                "URL/deeplink dispatched, no playback signal",
+                {"url": result.get("url"), "deeplink": result.get("deeplink")},
+            )
+    return _unverifiable("media", "no playback evidence in tool result")
+
+
+# ============================================================================
+# 15. office (hotfix F 2026-05-17)
+# ============================================================================
+
+@register_verifier("office")
+def verify_office(args: dict, result: dict) -> VerifierOutcome:
+    """Verify office document creation / convert actions.
+
+    Structural-evidence: the returned path must exist on the
+    filesystem with non-zero size.
+    """
+    if _result_says_unverified(result):
+        return _failed("office", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    path = result.get("path")
+    if action.startswith("create") or action.startswith("convert"):
+        if path:
+            import os
+            if os.path.exists(path):
+                size = os.path.getsize(path)
+                if size > 0:
+                    return _ok_evidence(
+                        "office", "file created on disk",
+                        ["path", "size"], {"size": size},
+                    )
+                return _failed("office", "file exists but empty",
+                               {"path": path})
+            return _failed("office", "claimed path does not exist",
+                           {"path": path})
+        return _unverifiable("office", "no path in result")
+    return _ok_evidence("office", "non-create action", [])
+
+
+# ============================================================================
+# 16. email (hotfix F 2026-05-17)
+# ============================================================================
+
+@register_verifier("email")
+def verify_email(args: dict, result: dict) -> VerifierOutcome:
+    """Verify email send actions.
+
+    Structural-evidence: message_id or sent=True. Both are
+    backend-generated, never inferred from text.
+    """
+    if _result_says_unverified(result):
+        return _failed("email", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action in {"send", "send_message"}:
+        if result.get("message_id") or result.get("sent") is True:
+            return _ok_evidence(
+                "email", "send confirmed",
+                ["message_id", "sent"],
+            )
+        return _unverifiable("email", "no send confirmation")
+    return _ok_evidence("email", "non-send action", [])
+
+
+# ============================================================================
+# 17. notification (hotfix F 2026-05-17)
+# ============================================================================
+
+@register_verifier("notification")
+def verify_notification(args: dict, result: dict) -> VerifierOutcome:
+    """Verify notification creation actions.
+
+    Structural-evidence: id / resource_id / task_name returned by
+    the OS scheduler.
+    """
+    if _result_says_unverified(result):
+        return _failed("notification", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action in {"toast_now", "toast_schedule", "timer_start",
+                  "alarm_create", "reminder_create"}:
+        rid = (
+            result.get("id")
+            or result.get("resource_id")
+            or result.get("task_name")
+        )
+        if rid:
+            return _ok_evidence(
+                "notification", "resource registered",
+                ["id", "resource_id", "task_name"],
+            )
+        return _unverifiable("notification", "no id in result")
+    return _ok_evidence("notification", "non-creation action", [])
+
+
+# ============================================================================
+# 18. routine (hotfix F 2026-05-17)
+# ============================================================================
+
+@register_verifier("routine")
+def verify_routine(args: dict, result: dict) -> VerifierOutcome:
+    """Verify routine creation actions.
+
+    Structural-evidence: id / resource_id assigned by the routine
+    store.
+    """
+    if _result_says_unverified(result):
+        return _failed("routine", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "create":
+        rid = result.get("id") or result.get("resource_id")
+        if rid:
+            return _ok_evidence(
+                "routine", "routine registered",
+                ["id", "resource_id"],
+            )
+        return _unverifiable("routine", "create returned no id")
+    return _ok_evidence("routine", "non-create action", [])
