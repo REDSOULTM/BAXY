@@ -1240,6 +1240,10 @@ class Gemma4Agent:
         self._last_turn_ts = time.time()
         return AgentReply(content=final, tool_events=events, mission=mission)
 
+    # Sprint 6.4: bodies moved to :mod:`.agent_dispatch`. The wrappers
+    # below adapt the agent's positional progress callback to the
+    # progress_emit(event, payload) callable the pure functions take.
+
     def _execute_calls_sequential(
         self,
         prepared: list[dict[str, Any]],
@@ -1248,83 +1252,16 @@ class Gemma4Agent:
         *,
         turn_id: str = "",
     ) -> None:
-        """Run prepared tool calls one by one, populating prep['result'].
-
-        Mirrors the original single-thread behavior: emit tool_start before
-        each execute, short-circuit malformed-args preps with a synthetic
-        result. Phase-3 in the main loop handles tool_end / history append.
-        """
-        for index, prep in enumerate(prepared):
-            name = prep["name"]
-            args = prep["args"]
-            parse_error = prep["parse_error"]
-            if parse_error:
-                prep["result"] = {
-                    "ok": False,
-                    "status": "failed",
-                    "verified": False,
-                    "error": (
-                        f"tool args parse error: {parse_error}. Re-emit the call "
-                        "with valid JSON for the 'arguments' field."
-                    ),
-                    "tool": name,
-                    "evidence": "malformed_json_args",
-                }
-                continue
-            _progress(progress, "tool_start", name=name, args=args, index=base_count + index + 1)
-            # Watchdog: hard wall-clock timeout per tool so a hung tool
-            # never blocks the turn indefinitely. Default 60s; override
-            # via GEMMA4_TOOL_TIMEOUT_S env.
-            #
-            # IMPORTANT thread-affinity exception: Playwright sync API is
-            # NOT thread-safe — the runtime is bound to the thread that
-            # called sync_playwright().start(). Running such tools in a
-            # ThreadPoolExecutor thread breaks them with
-            # "cannot switch to a different thread (which happens to have
-            # exited)". For those tools we skip the watchdog and rely on
-            # their internal timeout_ms / Playwright connect timeout.
-            _THREAD_AFFINE_TOOLS = {"browser_real", "media", "browser"}
-            if name in _THREAD_AFFINE_TOOLS:
-                try:
-                    prep["result"] = self.tools.execute(name, args)
-                except Exception as exc:
-                    prep["result"] = {
-                        "ok": False, "status": "failed", "verified": False,
-                        "error": f"{type(exc).__name__}: {exc}", "tool": name,
-                    }
-            else:
-                import os as _os_to
-                try:
-                    _tool_timeout = float(_os_to.environ.get("GEMMA4_TOOL_TIMEOUT_S") or 60)
-                except (TypeError, ValueError):
-                    _tool_timeout = 60.0
-                _wrapped = _run_with_timeout(
-                    self.tools.execute, name, args, timeout_s=_tool_timeout,
-                )
-                if _wrapped.get("_timed_out"):
-                    self.trace.event(
-                        turn_id, "tool_hard_timeout",
-                        name=name, timeout_s=_tool_timeout,
-                    )
-                    prep["result"] = {
-                        "ok": False,
-                        "status": "failed",
-                        "verified": False,
-                        "error": (
-                            f"tool {name!r} exceeded hard timeout of {_tool_timeout:.0f}s. "
-                            "Possible causes: Playwright lost browser, network hang, "
-                            "or an infinite loop. The tool was abandoned."
-                        ),
-                        "tool": name,
-                        "evidence": "tool_hard_timeout",
-                    }
-                elif _wrapped.get("_error"):
-                    prep["result"] = {
-                        "ok": False, "status": "failed", "verified": False,
-                        "error": _wrapped["_error"], "tool": name,
-                    }
-                else:
-                    prep["result"] = _wrapped["result"]
+        from .agent_dispatch import execute_calls_sequential
+        execute_calls_sequential(
+            prepared,
+            tools_registry=self.tools,
+            trace=self.trace,
+            run_with_timeout=_run_with_timeout,
+            progress_emit=lambda event, payload: _progress(progress, event, **payload),
+            base_count=base_count,
+            turn_id=turn_id,
+        )
 
     def _execute_calls_parallel(
         self,
@@ -1334,94 +1271,15 @@ class Gemma4Agent:
         *,
         turn_id: str = "",
     ) -> None:
-        """Run prepared tool calls concurrently with a small thread pool.
-
-        max_workers=4. Parse-error preps get a synthetic result without a
-        thread submission. Order is preserved because phase-3 iterates
-        `prepared` in original order; we just fill prep['result'] from each
-        completed future.
-        """
-        import concurrent.futures
-        valid_preps: list[tuple[int, dict[str, Any]]] = []
-        for index, prep in enumerate(prepared):
-            if prep["parse_error"]:
-                prep["result"] = {
-                    "ok": False,
-                    "status": "failed",
-                    "verified": False,
-                    "error": (
-                        f"tool args parse error: {prep['parse_error']}. Re-emit "
-                        "the call with valid JSON for the 'arguments' field."
-                    ),
-                    "tool": prep["name"],
-                    "evidence": "malformed_json_args",
-                }
-            else:
-                valid_preps.append((index, prep))
-        if not valid_preps:
-            return
-        import os as _os_par
-        try:
-            _tool_timeout_par = float(_os_par.environ.get("GEMMA4_TOOL_TIMEOUT_S") or 60)
-        except (TypeError, ValueError):
-            _tool_timeout_par = 60.0
-        # Thread-affine tools cannot run in a worker thread (Playwright sync
-        # API is bound to the thread that started it). Run them inline on
-        # the dispatcher thread; the rest go into the pool as before.
-        _THREAD_AFFINE_TOOLS = {"browser_real", "media", "browser"}
-        affine_preps = [(i, p) for i, p in valid_preps
-                         if p["name"] in _THREAD_AFFINE_TOOLS]
-        pool_preps = [(i, p) for i, p in valid_preps
-                       if p["name"] not in _THREAD_AFFINE_TOOLS]
-        for index, prep in affine_preps:
-            _progress(progress, "tool_start", name=prep["name"],
-                       args=prep["args"], index=base_count + index + 1)
-            try:
-                prep["result"] = self.tools.execute(prep["name"], prep["args"])
-            except Exception as exc:
-                prep["result"] = {
-                    "ok": False, "status": "failed", "verified": False,
-                    "error": f"{type(exc).__name__}: {exc}",
-                    "tool": prep["name"],
-                }
-        if not pool_preps:
-            return
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=min(4, len(pool_preps)),
-            thread_name_prefix="gemma4_par_tool",
-        ) as pool:
-            future_to_prep: dict[Any, dict[str, Any]] = {}
-            for index, prep in pool_preps:
-                _progress(progress, "tool_start", name=prep["name"], args=prep["args"], index=base_count + index + 1)
-                future = pool.submit(self.tools.execute, prep["name"], prep["args"])
-                future_to_prep[future] = prep
-            for future in concurrent.futures.as_completed(future_to_prep, timeout=_tool_timeout_par * 2):
-                prep = future_to_prep[future]
-                try:
-                    prep["result"] = future.result(timeout=_tool_timeout_par)
-                except concurrent.futures.TimeoutError:
-                    if turn_id:
-                        self.trace.event(
-                            turn_id, "tool_hard_timeout",
-                            name=prep["name"], timeout_s=_tool_timeout_par,
-                        )
-                    prep["result"] = {
-                        "ok": False, "status": "failed", "verified": False,
-                        "error": (f"tool {prep['name']!r} exceeded hard timeout "
-                                  f"of {_tool_timeout_par:.0f}s and was abandoned."),
-                        "tool": prep["name"],
-                        "evidence": "tool_hard_timeout",
-                    }
-                    continue
-                except Exception as exc:
-                    prep["result"] = {
-                        "ok": False,
-                        "status": "failed",
-                        "verified": False,
-                        "error": f"tool raised in parallel exec: {exc}",
-                        "tool": prep["name"],
-                        "evidence": "parallel_exception",
-                    }
+        from .agent_dispatch import execute_calls_parallel
+        execute_calls_parallel(
+            prepared,
+            tools_registry=self.tools,
+            trace=self.trace,
+            progress_emit=lambda event, payload: _progress(progress, event, **payload),
+            base_count=base_count,
+            turn_id=turn_id,
+        )
 
     def _inject_tool_image(self, path: Path, result: dict[str, Any]) -> None:
         if not path.exists():
