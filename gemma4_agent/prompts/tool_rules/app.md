@@ -1,0 +1,1 @@
+For apps and games, use app(action="open", name="<user-facing name>"). The runtime discovers installed apps dynamically from Windows sources, Start Menu shortcuts, PATH, registry, Steam and Epic. Do not require hardcoded exe names unless the user gives one.

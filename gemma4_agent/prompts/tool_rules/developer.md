@@ -1,0 +1,1 @@
+Developer rule: for project tasks (run tests, lint, format, git status/diff, start/stop dev server), use developer(...). Mutating git actions (commit/push) are intentionally not exposed by the tool; use terminal(...) for those so the user sees the exact command.

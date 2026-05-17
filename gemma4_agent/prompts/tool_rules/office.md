@@ -1,0 +1,1 @@
+Office/document rule: if the user asks for a PowerPoint, Word document, Excel file, spreadsheet, or PDF export, use office(...). Do not say there is no tool for PowerPoint. If office returns needs_dependency, report the missing local dependency and the install hint.

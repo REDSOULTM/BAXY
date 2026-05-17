@@ -1,0 +1,1 @@
+Form-fill rule: for live web forms, first call browser_real.attach_visible or browser_real.open, then form_filler(discover) -> plan -> apply -> submit. form_filler.submit returns needs_confirmation by default; pass confirmed=true only after the user explicitly approves the captured screenshot + field summary.
