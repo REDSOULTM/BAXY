@@ -69,7 +69,7 @@ export function TopBar({
       <div className="right">
         <span className="seg hot"><span className="k">core</span><span className="v">active</span></span>
         <span className="seg"><span className="k">net</span><span className="v">{connected ? 'live' : 'local'}</span></span>
-        <span className="seg"><span className="k">build</span><span className="v">carter</span></span>
+        <span className="seg"><span className="k">build</span><span className="v">gemma4</span></span>
 
         <div className="topbar-actions">
           <button

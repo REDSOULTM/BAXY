@@ -886,12 +886,12 @@ function AboutTab() {
   return (
     <STSection>
       <div className="st-about-title">gemma 4 · field</div>
-      <div className="st-about-sub">local ai agent · carter build · runs entirely offline</div>
+      <div className="st-about-sub">local ai agent · gemma4 build · runs entirely offline</div>
       <div className="hair" style={{ margin: '16px 0' }} />
       <div className="kv">
         <div className="kv-row"><span className="k">settings file</span><span className="v">~/.gemma4/gui.json</span></div>
         <div className="kv-row"><span className="k">agent module</span><span className="v">gemma4_agent/</span></div>
-        <div className="kv-row"><span className="k">build</span><span className="v">carter · 2026.05</span></div>
+        <div className="kv-row"><span className="k">build</span><span className="v">gemma4 · 2026.05</span></div>
         <div className="kv-row"><span className="k">runtime</span><span className="v">llama.cpp · cuda 12</span></div>
       </div>
       <STTip>all inference is local. no telemetry. no external network calls.</STTip>
