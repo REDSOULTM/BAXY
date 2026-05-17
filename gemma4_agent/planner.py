@@ -255,8 +255,18 @@ def _suggest_tools(step: str) -> list[str]:
                  r"file|folder|directory|write|create|delete|copy|move|rename|extract|unzip)\b", low):
         tools.append("filesystem")
     # office
-    if re.search(r"\b(powerpoint|presentacion|diapositiva|pptx|word|docx|excel|xlsx|spreadsheet|hoja de calculo|pdf|"
-                 r"presentation|slide|slides|workbook|sheet)\b", low):
+    # Multi-word variants ("power point", "hoja de calculo") MUST be checked
+    # before the \b...\b single-word pattern, because re.search with \b on a
+    # multi-word alternative requires the WHOLE compound to live between word
+    # boundaries — which it does, but \bpowerpoint\b won't match "power point"
+    # (two words). The Sprint 7 follow-up audit caught this: "Puedes hacerme
+    # un power point?" was routed to web instead of office.
+    if re.search(
+        r"\b(powerpoint|presentacion|diapositiva|pptx|word|docx|excel|xlsx|"
+        r"spreadsheet|hoja de calculo|pdf|"
+        r"presentation|slide|slides|workbook|sheet|"
+        # multi-word variants (with optional accent on presentación):
+        r"power\s+point|presentaci[oó]n|hoja\s+de\s+c[aá]lculo)\b", low):
         tools.append("office")
     if re.search(r"\b(csv|tabla|grafico|estadistica|analisis de datos|limpia datos|"
                  r"table|chart|graph|statistics|data analysis|clean data)\b", low):
