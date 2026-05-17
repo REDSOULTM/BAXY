@@ -932,50 +932,10 @@ def _youtube_title_near_video_id(text: str, video_id: str) -> str | None:
         return match.group(1)
 
 
-def _is_private_host(host: str) -> bool:
-    """T2-web-no-redirect-cap-014: rechaza loopback/RFC1918/link-local."""
-    import ipaddress
-    import socket
-    if not host:
-        return False
-    host_norm = host.split(":", 1)[0].strip("[]")
-    if host_norm.lower() in {"localhost", "ip6-localhost", "ip6-loopback"}:
-        return True
-    # Si es IP literal, comprobamos directamente.
-    try:
-        ip = ipaddress.ip_address(host_norm)
-        return ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast
-    except ValueError:
-        pass
-    # Si es hostname, resolvemos y comprobamos cada IP.
-    try:
-        infos = socket.getaddrinfo(host_norm, None)
-    except socket.gaierror:
-        return False
-    for info in infos:
-        sockaddr = info[4]
-        if not sockaddr:
-            continue
-        try:
-            ip = ipaddress.ip_address(sockaddr[0])
-        except (ValueError, IndexError):
-            continue
-        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
-            return True
-    return False
-
-
-class _SSRFGuardRedirectHandler(urllib.request.HTTPRedirectHandler):
-    """Cap redirect count and re-validate each redirect target host."""
-
-    max_redirections = 5
-
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        from urllib.parse import urlparse
-        host = urlparse(newurl).hostname or ""
-        if _is_private_host(host):
-            raise urllib.error.HTTPError(newurl, 451, f"refused redirect to private host: {host}", headers, fp)
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
+# Sprint 5b: _is_private_host + _SSRFGuardRedirectHandler moved to
+# :mod:`.ssrf_guard`. Re-export here so the internal callers
+# (_http_get_text below + the audit/smoke harness) keep working.
+from .ssrf_guard import _is_private_host, _SSRFGuardRedirectHandler  # noqa: E402,F401
 
 
 def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000, allow_private: bool = False) -> dict[str, Any]:
