@@ -143,6 +143,13 @@ class VoiceController:
 
         self._failed_components: list[str] = []
 
+        # Sprint 7.1: voice end-to-end latency instrumentation.
+        # Set in _on_wake_detected; consumed (once) in begin_tts to
+        # emit a BUS event with wake→first-speak elapsed_ms. Reset to
+        # None after each emission so subsequent TTS chunks within the
+        # same turn don't re-emit.
+        self._wake_ts: float | None = None
+
     # ------------------------------------------------------------------
     # Estado
     # ------------------------------------------------------------------
@@ -263,6 +270,25 @@ class VoiceController:
         forzar la transicion aqui es el anti-echo natural del controller."""
         if self._state in {S_THINKING, S_IDLE_LISTENING, S_FOLLOWUP, S_WAKE_DETECTED}:
             self._set_state(S_SPEAKING)
+        # Sprint 7.1: emit wake→first-speak elapsed_ms exactly once per turn.
+        # NOTE: this approximates "first phoneme" — strictly speaking we'd
+        # need to hook Piper's audio output. begin_tts fires on the first
+        # LLM delta (text), so the real audio is ~50-200ms behind. Good
+        # enough for p50/p95 tracking. BUS import is lazy so voice/ doesn't
+        # acquire a hard dep on events_bus at module-load time.
+        wake_ts = self._wake_ts
+        if wake_ts is not None:
+            elapsed_ms = int((time.monotonic() - wake_ts) * 1000)
+            self._wake_ts = None
+            try:
+                from ..events_bus import BUS
+                BUS.publish({
+                    "kind": "voice_e2e_latency",
+                    "elapsed_ms": elapsed_ms,
+                    "phase": "wake_to_first_speak",
+                })
+            except Exception:
+                pass
 
     def feed_tts_chunk(self, chunk: str) -> None:
         """Acumula texto del LLM stream y encola oraciones a Piper."""
@@ -346,6 +372,10 @@ class VoiceController:
         """
         if self._state not in {S_IDLE_LISTENING, S_FOLLOWUP}:
             return
+        # Sprint 7.1: timestamp the wake moment so begin_tts (called by the
+        # GUI when the first LLM delta arrives) can publish the
+        # wake→first-speak end-to-end latency.
+        self._wake_ts = time.monotonic()
         if self._beep_on_wake:
             self._play_beep()
 

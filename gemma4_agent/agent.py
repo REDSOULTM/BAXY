@@ -729,6 +729,41 @@ class Gemma4Agent:
         mission_goal = _MissionGoal.from_user_text(raw_text_early or "")
         validator_retries_used = 0
 
+        # Sprint 7.1: prompt_built_tokens — emit ONCE per turn (before the
+        # retry loop) so we can track p50/p95 of input size. Estimation is
+        # chars/4, conservative for a multilingual prompt. We materialize
+        # the messages list here to measure exactly what the first chat
+        # call will see; subsequent retry iterations may shrink the subset
+        # but the FIRST attempt dominates the latency budget.
+        try:
+            _initial_messages = self._messages(
+                mode, plan,
+                selected_tool_names=selected_tool_names,
+                user_text=raw_text_early,
+            )
+            _system_chars = sum(
+                len(str(m.get("content") or "")) for m in _initial_messages
+                if m.get("role") == "system"
+            )
+            _schemas_chars = sum(len(json.dumps(s)) for s in selected_schemas)
+            _history_chars = sum(
+                len(str(m.get("content") or "")) for m in _initial_messages
+                if m.get("role") != "system"
+            )
+            _total_chars = _system_chars + _schemas_chars + _history_chars
+            self.trace.event(
+                turn_id, "prompt_built",
+                system_chars=_system_chars,
+                schemas_chars=_schemas_chars,
+                history_chars=_history_chars,
+                total_chars=_total_chars,
+                estimated_tokens=_total_chars // 4,
+                schemas_count=len(selected_schemas),
+            )
+        except Exception:
+            # Telemetry must never break the agent.
+            pass
+
         for _turn in range(self.config.max_agent_turns):
             _progress(
                 progress,
