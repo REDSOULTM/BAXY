@@ -26,6 +26,34 @@ incremental**, no urgencia.
 
 ---
 
+## 0.1 Acciones de Sprint 7 (post-auditoría externa)
+
+Una auditoría externa post-plan (claude.ai, 2026-05-17) identificó
+7 acciones accionables, todas validadas por el operador contra datos
+reales antes de ejecutar. Estado al cierre de Sprint 7:
+
+| Acción del audit | Sprint 7 | Status |
+|---|---|---|
+| `state.json` TTL real (baseline §2.3) | 7.2 | ✅ implementado (`purge_stale_closed` + boot hook + 8 tests) |
+| `traces.jsonl` rotation preventiva | 7.3 | ✅ implementado (50 MB / 3 archives + 6 tests) |
+| Instrumentar `voice_e2e_latency_ms` + `prompt_built_tokens` | 7.1 | ✅ implementado (2 events: BUS `voice_e2e_latency` + trace `prompt_built`) |
+| Fail-loud en `experience.sqlite` schema migration | 7.4 | ✅ implementado (`RuntimeError` con remediation + 3 tests) |
+| Barge-in (no implementar, sólo documentar) | 7.5 | ✅ doc en `docs/architecture/design/barge_in.md` — implementación es Sprint 8 |
+| Crash recovery: documentar lo que YA existe | 7.6 | ✅ §6 en `01_delta_system.md` (5 subsecciones) |
+| `analyze_traces.py` con `% of turns` + recommendation | 7.7 | ✅ implementado en secciones B/C/D |
+
+**La auditoría externa NO modificó decisiones conservadas conscientemente:**
+MainWindow, SettingsDialog, workers (AgentWorker/AgentRunner) siguen
+intactos por las mismas razones documentadas en `_sprint4_log.md`,
+`_sprint5b_log.md` y `_sprint6_log.md`. La auditoría externa, después
+de leer los logs, validó que las decisiones de conservación están bien
+justificadas.
+
+**LOC Sprint 7:** +977 (mayormente tests + dos design docs).
+**Tests Sprint 7:** +17 nuevos (3 archivos), 0 regresiones.
+
+---
+
 ## 1. PENDIENTE: Sprint 3b (diferido por diseño)
 
 ### 1.1 Por qué se difirió
