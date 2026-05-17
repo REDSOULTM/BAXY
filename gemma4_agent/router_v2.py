@@ -42,6 +42,11 @@ MODEL_PATH = MODEL_DIR / "onnx" / "model_quantized.onnx"
 TOKENIZER_PATH = MODEL_DIR / "tokenizer.json"
 SMALLTALK_CENTROID_PATH = MODEL_DIR / "smalltalk_centroid.npy"
 
+# Tool2Vec-style enriched descriptions (Sprint 8b). Loaded once at
+# index-build time. The YAML lives next to this module so it ships
+# with the package.
+TOOL_DESCRIPTIONS_YAML = Path(__file__).parent / "tool_descriptions.yaml"
+
 CACHE_MAX = 1000
 CACHE_THETA = 0.88        # cosine similarity threshold for cache hit
 
@@ -162,12 +167,58 @@ class RouterV2:
     # Index construction
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _load_tool_descriptions() -> dict[str, dict[str, Any]]:
+        """Load enriched descriptions from tool_descriptions.yaml.
+
+        Returns a dict keyed by tool name. Each value is the parsed
+        YAML entry (purpose, domain, example_queries.es/en). Falls
+        back to {} if the YAML can't be parsed — callers must cope.
+        """
+        try:
+            import yaml
+            with open(TOOL_DESCRIPTIONS_YAML, encoding="utf-8") as fh:
+                entries = yaml.safe_load(fh) or []
+        except Exception:  # noqa: BLE001 — never crash the router on a bad YAML
+            return {}
+        return {e["name"]: e for e in entries if isinstance(e, dict) and "name" in e}
+
+    @staticmethod
+    def _doc_for_dense(entry: dict[str, Any], name: str) -> str:
+        """Compose the dense-embedding document for a tool.
+
+        Purpose (English technical summary) + ES + EN example queries
+        joined into a single passage. The encoder ingests this once
+        per tool at index-build time, so it can be richer than what
+        BM25 receives.
+        """
+        purpose = (entry.get("purpose") or "").strip()
+        eq = entry.get("example_queries") or {}
+        es = " ".join(eq.get("es") or [])
+        en = " ".join(eq.get("en") or [])
+        body = " ".join(filter(None, [purpose, es, en])) or name
+        return body
+
+    @staticmethod
+    def _doc_for_bm25(entry: dict[str, Any], name: str) -> str:
+        """Compose the BM25 document for a tool.
+
+        We include the tool name (so "steam"/"netflix" hit even from
+        the name alone), the purpose, and the example_queries in both
+        anchor languages — BM25 thrives on lexical diversity.
+        """
+        purpose = (entry.get("purpose") or "").strip()
+        eq = entry.get("example_queries") or {}
+        es = " ".join(eq.get("es") or [])
+        en = " ".join(eq.get("en") or [])
+        body = " ".join(filter(None, [name, purpose, es, en])) or name
+        return body
+
     def _build_index(self) -> None:
         """Compute embeddings + BM25 + centroids for the 65 compound tools."""
         import numpy as np
         from rank_bm25 import BM25Okapi
 
-        from .semantic_router import TOOL_DESCRIPTIONS
         from .tools import COMPOUND_TOOL_SCHEMAS
 
         # 65 tool names, sorted for determinism.
@@ -178,20 +229,27 @@ class RouterV2:
         })
         self._tool_names = compound_names
 
+        # Sprint 8b enriched descriptions. If the YAML doesn't load
+        # (corrupt, missing), entries() returns {} and the dense/BM25
+        # docs collapse to bare tool names — degraded but not broken.
+        entries = self._load_tool_descriptions()
+
         # E5 convention: documents are prefixed with "passage: ",
         # queries with "query: ". Skipping this asymmetric prefix
         # measurably hurts recall on the same model.
         docs = [
-            f"passage: {TOOL_DESCRIPTIONS.get(name, name)}"
+            f"passage: {self._doc_for_dense(entries.get(name, {}), name)}"
             for name in compound_names
         ]
 
         # Dense embeddings (already L2-normalized by _encode_batch).
         self._tool_embeddings = self._encode_batch(docs)
 
-        # BM25 index over the same docs (sans the "passage: " prefix
-        # to keep tokenization clean).
-        bare_docs = [TOOL_DESCRIPTIONS.get(n, n) for n in compound_names]
+        # BM25 index over the bare (prefix-free) docs.
+        bare_docs = [
+            self._doc_for_bm25(entries.get(name, {}), name)
+            for name in compound_names
+        ]
         tokenized = [self._tokenize_for_bm25(d) for d in bare_docs]
         self._tool_bm25 = BM25Okapi(tokenized)
 
@@ -408,6 +466,7 @@ def is_shadow() -> bool:
 __all__ = [
     "MODEL_DIR",
     "MODEL_PATH",
+    "TOOL_DESCRIPTIONS_YAML",
     "RouterV2",
     "route_v2",
     "is_enabled",
