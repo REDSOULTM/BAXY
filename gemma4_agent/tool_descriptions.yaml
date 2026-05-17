@@ -1143,3 +1143,179 @@
       - "check for driver updates"
       - "run sfc /scannow to repair system files"
       - "empty the recycle bin"
+
+- name: routine
+  purpose: |
+    Compose multi-step routines from primitives — "morning"
+    routine, "shutdown sequence", "before-bed" macro. Saves
+    parameterized recipes that the agent can replay. Use for
+    "armame una rutina de X".
+  domain: automation
+  example_queries:
+    es:
+      - "armame una rutina matutina: abri spotify, lanzar notion, mostrar calendario"
+      - "creame una rutina antes de dormir que apague todo y baje el brillo"
+      - "ejecutame la rutina de gaming"
+      - "mostrame mis rutinas guardadas"
+      - "borrame la rutina de trabajo"
+      - "modifica la rutina matutina y agrega abrir chrome"
+    en:
+      - "create a morning routine: open spotify, launch notion, show calendar"
+      - "create a bedtime routine that turns everything off and dims brightness"
+      - "run the gaming routine"
+      - "show my saved routines"
+      - "delete the work routine"
+
+- name: watcher
+  purpose: |
+    File and folder watchers that react to changes — e.g., when
+    a new file lands in Downloads, move it; when Steam adds a
+    screenshot, copy to OneDrive. Triggers + actions. Use for
+    "cuando pase X haceme Y".
+  domain: automation
+  example_queries:
+    es:
+      - "cuando llegue un archivo a descargas, moveme a la carpeta correcta"
+      - "avisame cuando se modifique este excel"
+      - "cuando steam guarde una captura, copiala a onedrive"
+      - "mostrame los watchers activos"
+      - "borrame el watcher de la carpeta proyectos"
+      - "pausa todos los watchers"
+    en:
+      - "when a file arrives in downloads, move it to the right folder"
+      - "notify me when this excel is modified"
+      - "when steam saves a screenshot, copy it to onedrive"
+      - "show active watchers"
+      - "pause all watchers"
+
+- name: job_manager
+  purpose: |
+    Schedule deferred or recurring jobs — "send email at 9am",
+    "ping server every 5 min", cron-style. Different from
+    reminder (user-facing) — this runs commands. Use for
+    "programame X para Y", "cada Z minutos hace W".
+  domain: automation
+  example_queries:
+    es:
+      - "programame backup de documentos todas las noches a las 2am"
+      - "cada 5 minutos pingueame mi servidor de juego"
+      - "mostrame los jobs programados"
+      - "cancelame el job de las 9 am"
+      - "ejecutame este script todos los lunes"
+      - "pausa todos los jobs"
+    en:
+      - "schedule a documents backup every night at 2am"
+      - "ping my game server every 5 minutes"
+      - "show scheduled jobs"
+      - "cancel the 9am job"
+      - "run this script every monday"
+
+- name: state
+  purpose: |
+    Persist and retrieve agent state across sessions — last
+    queried tool, conversation context, pinned variables, user
+    preferences not covered by memory. Lower-level than memory
+    (which is curated). Use for "guardate X como Y".
+  domain: automation
+  example_queries:
+    es:
+      - "guardate que el monitor principal es el de la izquierda"
+      - "recordate mi nombre real y mi nick de discord"
+      - "olvidate lo ultimo que te dije"
+      - "que tenes guardado de mi sobre mi musica preferida"
+      - "limpia tu estado"
+      - "guardate que ahora estoy en modo trabajo"
+    en:
+      - "remember that the main monitor is the left one"
+      - "remember my real name and my discord nick"
+      - "forget the last thing I said"
+      - "what do you have saved about my favorite music"
+      - "clear your state"
+
+- name: verify
+  purpose: |
+    Post-action verification — confirm a window actually opened,
+    a file actually moved, a setting actually changed. Used
+    internally by the agent loop to validate side effects. Use
+    for "comprobá si X funcionó".
+  domain: automation
+  example_queries:
+    es:
+      - "comproba si chrome quedo abierto"
+      - "verifica si el archivo se movio correctamente"
+      - "chequeame si la luz del living quedo prendida"
+      - "confirma que el commit se hizo"
+      - "verifica si la vpn esta conectada"
+      - "chequeame si el download termino"
+    en:
+      - "check if chrome stayed open"
+      - "verify the file moved correctly"
+      - "check if the living room light stayed on"
+      - "confirm the commit happened"
+      - "check if the vpn is connected"
+
+- name: dependency
+  purpose: |
+    Detect and install missing OS-level dependencies (VLC,
+    ffmpeg, SoundVolumeView). Probes which tool is missing,
+    asks user consent, installs via package. Distinct from
+    package (raw install) — this is the auto-recovery layer.
+  domain: automation
+  example_queries:
+    es:
+      - "chequea si tengo todas las dependencias instaladas"
+      - "que me falta para que funcione el reproductor"
+      - "instalame lo que falte para grabar audio"
+      - "verifica si tengo ffmpeg"
+      - "instalame las herramientas que el agente necesita"
+      - "que dependencias tiene el modulo de visión"
+    en:
+      - "check if I have all dependencies installed"
+      - "what's missing for the media player to work"
+      - "install whatever is needed for audio recording"
+      - "check if I have ffmpeg"
+      - "install the tools the agent needs"
+
+- name: safety
+  purpose: |
+    Purchase guards, destructive-action confirmation, parental
+    locks, blocked tool list. Asks for explicit consent before
+    spending money, deleting, or running heavy operations. Use
+    when the agent needs to slow down before a risky action.
+  domain: automation
+  example_queries:
+    es:
+      - "antes de comprar nada, preguntame"
+      - "bloqueame la opcion de borrar archivos sin confirmar"
+      - "activa el modo seguro para esta sesion"
+      - "que acciones requieren confirmacion"
+      - "desactiva el modo nino"
+      - "ponete en modo de solo lectura"
+    en:
+      - "ask me before buying anything"
+      - "block file deletion without confirmation"
+      - "activate safe mode for this session"
+      - "which actions require confirmation"
+      - "turn off kid mode"
+
+- name: session
+  purpose: |
+    Conversation session controls — start fresh, save current
+    session, list past sessions, replay. Lower-level than state
+    (which is a flat keyvalue). Use for "empezame de cero",
+    "guardame la conversacion actual".
+  domain: automation
+  example_queries:
+    es:
+      - "empezame una sesion nueva"
+      - "guardame la conversacion actual como sesion 'planning'"
+      - "mostrame las sesiones que tengo guardadas"
+      - "retomame la sesion del trabajo de ayer"
+      - "borrame esta sesion"
+      - "exportame la sesion actual a un md"
+    en:
+      - "start a new session"
+      - "save current conversation as 'planning' session"
+      - "show my saved sessions"
+      - "resume yesterday's work session"
+      - "export the current session to a md file"
