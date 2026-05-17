@@ -905,6 +905,21 @@ class Gemma4Agent:
         raw_text_early = _extract_user_text(content)
         # Track current user text for the fallback-streak detector.
         self._current_user_text = (raw_text_early or "").strip().lower()
+        # sprint2: log which microagents matched this turn (independent of
+        # the cache-merge step inside _system_message). Sprint 2.1 found this
+        # was unobservable in traces.jsonl.
+        if raw_text_early:
+            try:
+                from .microagents import load_microagents, select_microagents
+                _matched_ma = select_microagents(raw_text_early, load_microagents())
+                if _matched_ma:
+                    self.trace.event(
+                        turn_id, "microagent_matched",
+                        names=[m.name for m in _matched_ma],
+                        count=len(_matched_ma),
+                    )
+            except Exception:
+                pass
         if raw_text_early:
             try:
                 from .domain_tools import (_looks_destructive,
