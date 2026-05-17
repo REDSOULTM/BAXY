@@ -453,3 +453,113 @@
       - "ask comfyui to create a landscape"
       - "what's in the comfyui queue"
       - "stop the current comfyui generation"
+
+- name: whatsapp
+  purpose: |
+    Send messages, voice notes, images via WhatsApp Web or
+    WhatsApp Desktop. Resolves contact names from local
+    contacts, opens chats, sends pre-typed text. Use for
+    "mandale a X", "decile a Y por whatsapp".
+  domain: messaging
+  example_queries:
+    es:
+      - "mandale un whatsapp a mama diciendo que llego tarde"
+      - "decile a juan por whatsapp que vamos en camino"
+      - "abrime el chat de mi vieja en whatsapp"
+      - "mandale un audio a pedro"
+      - "responde el ultimo mensaje de marta"
+      - "escribile a mi novio que lo amo"
+    en:
+      - "send a whatsapp to mom saying I'll be late"
+      - "tell john on whatsapp we're on our way"
+      - "open my mother's whatsapp chat"
+      - "send a voice note to peter"
+      - "reply to the last message from martha"
+
+- name: email
+  purpose: |
+    Compose, send, search, read email via Outlook desktop or
+    Gmail web. Handles drafting from natural-language brief,
+    attachments, replies. Use for "escribile un mail a X",
+    "mandale por correo a Y".
+  domain: messaging
+  example_queries:
+    es:
+      - "mandale un mail a mi jefe pidiendo el día libre el viernes"
+      - "escribile un correo a juan@empresa.com con el adjunto del presupuesto"
+      - "respondele al ultimo mail de recursos humanos"
+      - "buscame el mail con la factura de luz"
+      - "redactame un correo formal para el banco"
+      - "abrime gmail"
+    en:
+      - "send an email to my boss asking for friday off"
+      - "write a mail to john@company.com with the budget attached"
+      - "reply to the last HR email"
+      - "find the email with the electricity bill"
+      - "draft a formal email to the bank"
+
+- name: contacts
+  purpose: |
+    Lookup, create, update, delete contacts in Windows People /
+    Outlook / Google Contacts. Resolves "mama", "mi jefe",
+    "Juan del trabajo" to canonical entries. Use for finding
+    phone numbers, emails, addresses of known people.
+  domain: messaging
+  example_queries:
+    es:
+      - "cual es el numero de mama"
+      - "guardame el contacto de juan, su numero es 11-2345-6789"
+      - "buscame el email de pedro perez"
+      - "actualizame el telefono de mi hermana"
+      - "mostrame todos mis contactos del trabajo"
+      - "borrame el contacto de mi ex"
+    en:
+      - "what's mom's number"
+      - "save john's contact, his phone is 555-1234"
+      - "find peter's email"
+      - "update my sister's phone"
+      - "show me all my work contacts"
+
+- name: notification
+  purpose: |
+    Manage Windows toast notifications, Action Center, focus
+    assist, Do Not Disturb. Read recent notifications, dismiss
+    them, mute apps, schedule quiet hours. Use for "no me
+    molestes", "mostrame las notificaciones".
+  domain: messaging
+  example_queries:
+    es:
+      - "mostrame las notificaciones de hoy"
+      - "activa modo no molestar hasta las 6"
+      - "silencia las notificaciones de instagram"
+      - "limpia todas las notificaciones"
+      - "que me llego mientras estaba en la reunion"
+      - "desactiva el modo concentracion"
+    en:
+      - "show me today's notifications"
+      - "turn on do not disturb until 6"
+      - "mute instagram notifications"
+      - "clear all notifications"
+      - "what came in while I was in the meeting"
+
+- name: reminder
+  purpose: |
+    Create, list, snooze, dismiss reminders tied to time or
+    location. Different from local_calendar (full events) and
+    notes_tasks (todo items). Use for "recordame en 30 min",
+    "avisame cuando llegue a casa".
+  domain: messaging
+  example_queries:
+    es:
+      - "recordame en 30 minutos que saque la ropa de la lavadora"
+      - "avisame mañana a las 9 que tengo que llamar al medico"
+      - "recordame cuando llegue a casa que riegue las plantas"
+      - "mostrame mis recordatorios activos"
+      - "posterga el recordatorio de la pastilla 10 minutos"
+      - "borrame el recordatorio de las 5"
+    en:
+      - "remind me in 30 minutes to take the laundry out"
+      - "remind me tomorrow at 9 to call the doctor"
+      - "remind me when I get home to water the plants"
+      - "show my active reminders"
+      - "snooze the pill reminder by 10 minutes"
