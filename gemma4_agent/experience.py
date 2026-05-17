@@ -103,6 +103,21 @@ class ExperienceMemory:
                 summary TEXT
             )"""
         )
+        # Bug 2: provenance fields added in 2026-05. Existing rows have NULL
+        # for these columns; format_recall_for_prompt handles NULL gracefully.
+        # Adding columns is idempotent: each ALTER is wrapped in try/except
+        # so re-running on a migrated DB is a no-op.
+        for col_def in (
+            "ALTER TABLE experiences ADD COLUMN outcome_code TEXT",
+            "ALTER TABLE experiences ADD COLUMN failure_reason_code TEXT",
+            "ALTER TABLE experiences ADD COLUMN args_signature TEXT",
+            "ALTER TABLE experiences ADD COLUMN capability_label TEXT",
+            "ALTER TABLE experiences ADD COLUMN grounding_flagged INTEGER DEFAULT 0",
+        ):
+            try:
+                conn.execute(col_def)
+            except sqlite3.OperationalError:
+                pass  # column already exists
         # vec0 virtual table; embedding bound to experiences.rowid (we keep
         # parity via the AUTOINCREMENT id and pass rowid=id when inserting).
         conn.execute(
@@ -130,8 +145,20 @@ class ExperienceMemory:
         mission_status: str | None,
         summary: str | None,
         embed_fn: Any,
+        outcome_code: str | None = None,
+        failure_reason_code: str | None = None,
+        args_signature: dict[str, Any] | None = None,
+        capability_label: str | None = None,
     ) -> dict[str, Any]:
-        """Append one turn to the store. embed_fn(text) must return a 384-dim list/np."""
+        """Append one turn to the store. embed_fn(text) must return a 384-dim list/np.
+
+        Bug 2 provenance fields (all optional, written when caller knows them):
+          - outcome_code: enum-like short tag (PASS_VERIFIED / PASS_UNVERIFIED /
+            PARTIAL / FAILED / NEEDS_USER). Distinct from `outcome` prose.
+          - failure_reason_code: enum (search_page_only, no_evidence, timeout, ...).
+          - args_signature: dict of normalized tool args (e.g. {"provider":"disney_plus"}).
+          - capability_label: from CAPABILITY_LABELS taxonomy (Bug 1).
+        """
         if not is_enabled():
             return {"ok": False, "skipped": "memory_disabled"}
         if not user_input.strip():
@@ -144,10 +171,21 @@ class ExperienceMemory:
             if vec is None:
                 return {"ok": False, "skipped": "embed_failed"}
             ts = time.strftime("%Y-%m-%dT%H:%M:%S%z") or time.strftime("%Y-%m-%dT%H:%M:%S")
+            args_sig_json = json.dumps(args_signature, ensure_ascii=False)[:2000] \
+                if args_signature else None
             cur = conn.execute(
-                "INSERT INTO experiences(turn_id, ts, user_input, tools_used, outcome, mission_status, summary) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (turn_id, ts, user_input[:8000], json.dumps(tools_used)[:4000], (outcome or "")[:8000], mission_status, (summary or "")[:2000]),
+                "INSERT INTO experiences(turn_id, ts, user_input, tools_used, "
+                "outcome, mission_status, summary, outcome_code, "
+                "failure_reason_code, args_signature, capability_label) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    turn_id, ts, user_input[:8000],
+                    json.dumps(tools_used)[:4000],
+                    (outcome or "")[:8000], mission_status,
+                    (summary or "")[:2000],
+                    outcome_code, failure_reason_code,
+                    args_sig_json, capability_label,
+                ),
             )
             rowid = cur.lastrowid
             payload = _vec_blob(vec)
@@ -160,6 +198,54 @@ class ExperienceMemory:
             return {"ok": True, "id": rowid, "turn_id": turn_id, "pruned": pruned}
         except Exception as exc:
             return {"ok": False, "error": f"record_failed: {exc}"}
+
+    def flag_grounding(self, experience_id: int, *, reason: str | None = None) -> dict[str, Any]:
+        """Bug 2/3b — Mark an experience row as having a hallucinated reply.
+
+        Called from the async NLI callback. Future RAG hits on this row will
+        include `WARNING_past_reply_was_hallucinated` in their hint so the
+        LLM is dissuaded from mimicking the (already-stored) prose. Idempotent.
+        """
+        if not is_enabled():
+            return {"ok": False, "skipped": "memory_disabled"}
+        conn = self._open()
+        if conn is None:
+            return {"ok": False, "skipped": "sqlite_vec_unavailable"}
+        try:
+            conn.execute(
+                "UPDATE experiences SET grounding_flagged = 1, "
+                "failure_reason_code = COALESCE(failure_reason_code, ?) "
+                "WHERE id = ?",
+                (reason or "hallucinated_action", int(experience_id)),
+            )
+            conn.commit()
+            return {"ok": True, "id": int(experience_id)}
+        except Exception as exc:
+            return {"ok": False, "error": f"flag_grounding_failed: {exc}"}
+
+    def flag_grounding_by_turn(self, turn_id: str, *, reason: str | None = None) -> dict[str, Any]:
+        """Same as flag_grounding but identifies the row by turn_id.
+
+        Used by the async NLI callback when only the turn_id is in scope
+        (the experience row is persisted with a small delay after the turn
+        ends; by the time NLI returns ~1200ms later, the row exists).
+        """
+        if not is_enabled() or not turn_id:
+            return {"ok": False, "skipped": "no_op"}
+        conn = self._open()
+        if conn is None:
+            return {"ok": False, "skipped": "sqlite_vec_unavailable"}
+        try:
+            cur = conn.execute(
+                "UPDATE experiences SET grounding_flagged = 1, "
+                "failure_reason_code = COALESCE(failure_reason_code, ?) "
+                "WHERE turn_id = ?",
+                (reason or "hallucinated_action", str(turn_id)),
+            )
+            conn.commit()
+            return {"ok": True, "turn_id": turn_id, "rows_updated": cur.rowcount}
+        except Exception as exc:
+            return {"ok": False, "error": f"flag_grounding_by_turn_failed: {exc}"}
 
     def prune(self, *, max_records: int | None = None, max_age_days: int | None = None) -> dict[str, Any]:
         """Drop experiences over budget. Returns counts. Safe to call any time.
@@ -241,7 +327,10 @@ class ExperienceMemory:
                 return []
             payload = _vec_blob(vec)
             cur = conn.execute(
-                """SELECT e.id, e.turn_id, e.ts, e.user_input, e.tools_used, e.mission_status, e.summary,
+                """SELECT e.id, e.turn_id, e.ts, e.user_input, e.tools_used,
+                          e.mission_status, e.summary, e.outcome_code,
+                          e.failure_reason_code, e.args_signature,
+                          e.capability_label, e.grounding_flagged,
                           v.distance
                    FROM experience_vec v
                    JOIN experiences e ON e.id = v.rowid
@@ -259,6 +348,12 @@ class ExperienceMemory:
                     tools_used = json.loads(row["tools_used"] or "[]")
                 except json.JSONDecodeError:
                     pass
+                args_sig: dict[str, Any] = {}
+                if row["args_signature"]:
+                    try:
+                        args_sig = json.loads(row["args_signature"]) or {}
+                    except json.JSONDecodeError:
+                        pass
                 results.append({
                     "id": row["id"],
                     "turn_id": row["turn_id"],
@@ -267,6 +362,12 @@ class ExperienceMemory:
                     "tools_used": tools_used,
                     "mission_status": row["mission_status"],
                     "summary": row["summary"],
+                    # Bug 2 provenance fields (may be NULL for legacy rows).
+                    "outcome_code": row["outcome_code"],
+                    "failure_reason_code": row["failure_reason_code"],
+                    "args_signature": args_sig,
+                    "capability_label": row["capability_label"],
+                    "grounding_flagged": bool(row["grounding_flagged"]),
                     "distance": round(distance, 4),
                 })
             return results
@@ -344,16 +445,45 @@ def _vec_blob(vec: Any) -> Any:
 
 
 def format_recall_for_prompt(recalls: list[dict[str, Any]]) -> str:
-    """Render recalls into a compact bullet list for the system prompt."""
+    """Bug 2 — Provenance-tagged RAG.
+
+    Render recalled past turns as POLICY HINTS (what worked / what failed),
+    NEVER as reply text the LLM could copy. Critical: the past `summary` /
+    `outcome` prose is INTENTIONALLY EXCLUDED from the prompt because the
+    LLM (especially smaller local models) mimics it as a template when the
+    current turn lacks tools.
+
+    Each line tells the LLM "for this kind of input, last time the system
+    used these tools with these args, with this outcome code". No verbal
+    cue to copy.
+    """
     if not recalls:
         return ""
-    lines = ["# Similar past turns (use as hints; not authoritative)"]
+    lines = [
+        "# Lecciones de turnos pasados (USAR para decidir tools/args; NO copiar texto)",
+        "# Estos NO son ejemplos de cómo responder — son política de tool selection.",
+    ]
     for r in recalls:
-        tools = ", ".join(r.get("tools_used") or []) or "no tools"
-        status = r.get("mission_status") or "unknown"
-        text = (r.get("user_input") or "").replace("\n", " ")[:160]
-        summary = (r.get("summary") or "").replace("\n", " ")[:160]
-        lines.append(f"- past[{r['distance']}]: \"{text}\" -> tools=[{tools}] status={status}")
-        if summary:
-            lines.append(f"   summary: {summary}")
+        tools = ", ".join(r.get("tools_used") or []) or "ninguna"
+        # Prefer outcome_code (new) over mission_status (legacy).
+        status = r.get("outcome_code") or r.get("mission_status") or "unknown"
+        text = (r.get("user_input") or "").replace("\n", " ")[:120]
+        parts = [
+            f"input similar=\"{text}\"",
+            f"tools=[{tools}]",
+            f"outcome={status}",
+        ]
+        cap = r.get("capability_label")
+        if cap:
+            parts.append(f"capability=\"{cap}\"")
+        args_sig = r.get("args_signature") or {}
+        if isinstance(args_sig, dict) and args_sig:
+            sig_str = " ".join(f"{k}={v}" for k, v in args_sig.items())
+            parts.append(f"args[{sig_str}]")
+        reason = r.get("failure_reason_code")
+        if reason:
+            parts.append(f"failure_reason={reason}")
+        if r.get("grounding_flagged"):
+            parts.append("WARNING_past_reply_was_hallucinated")
+        lines.append(f"- past[d={r['distance']}]: " + " ".join(parts))
     return "\n".join(lines)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
@@ -14,7 +15,7 @@ from .memory import MemoryStore
 from .modes import AgentMode, choose_mode
 from .multimodal import image_part, user_content
 from .planner import MissionPlan, plan_mission, select_tool_names
-from .reasoning import sanitize_assistant_message, sanitize_text
+from .reasoning import detect_leaked_tool_call, sanitize_assistant_message, sanitize_text
 from .state import AgentState
 from .tools import ToolRegistry
 from .tracing import TraceLogger, summarize_content
@@ -23,17 +24,45 @@ from .tracing import TraceLogger, summarize_content
 ProgressCallback = Callable[[str, dict[str, Any]], None]
 
 
+# F-005: inherit-tools safety knobs.
+# TTL: si pasaron mas de 5 min entre turns, NO heredar tools del turno
+# previo (user retomo la sesion tras mucho tiempo, su contexto cambio).
+INHERIT_TTL_SEC = 300
+# Tools nunca-heredables por safety: una respuesta corta del user
+# ("ok", "si") jamas debe disparar uno de estos sin re-confirmacion.
+DANGEROUS_TOOLS_NEVER_INHERIT = frozenset({
+    "whatsapp", "whatsapp_send",
+    "file_delete", "file_write",
+    "system_shutdown", "system_logoff", "system_restart",
+    "subprocess", "shell",
+})
+
+
 # CORE_PROMPT: reglas universales que SIEMPRE deben ir en el system prompt,
 # independiente del subset de tools seleccionado. Estas son las que aplican
 # a CUALQUIER turno: tono, sintaxis de tool_call, multi-step, multimodal,
 # safety baseline, after-tool-result, fallback honesto.
 CORE_PROMPT = """You are a local Windows agent powered by Gemma 4.
 
-Speak Spanish to the user by default. Be brief, concrete, and honest.
-For general knowledge, identity, explanations, pop culture, definitions, and
-normal conversation, answer directly without tools. Do not say "no tengo
-herramienta para eso" for questions like "quien es Batman", "que es Python",
-or "quien eres"; tools are only needed for live PC state or actions.
+Speak Spanish to the user by default. You are a VOICE assistant (like Alexa
+or Jarvis) — be BRIEF, concrete, honest. Default reply length: 1-2 sentences.
+NO markdown formatting in replies (no **bold**, no bullets, no headers, no
+numbered lists, no emojis). Plain text only — the reply is spoken aloud.
+NO meta-commentary like "te recomiendo", "podrías", "si quieres", "espero
+que te sirva". Just answer.
+
+For general knowledge, definitions, pop culture, and identity, answer
+directly without tools when you know the answer. BUT if you would answer
+"no sé / no tengo información / no estoy seguro / podrías verificar la
+ortografía" — STOP. Instead, CALL web(action="search", query=...) silently
+and answer from the results. Never tell the user "no tengo información sobre
+X" when web is available; just search first. Lo mismo si la pregunta es
+sobre algo después de tu knowledge cutoff (fechas recientes, lanzamientos,
+noticias).
+
+Identity questions ("como me llamo", "quien soy"): FIRST call
+memory(action="recall", query="user name") or check user profile. Solo si
+realmente no hay info guardada, decí "no lo tengo guardado, ¿como te llamas?".
 
 You control the computer only through the tools provided in the API `tools`
 parameter. When the user asks for an action and a relevant tool exists, call
@@ -56,10 +85,18 @@ The runtime sends only the relevant compound tools for the current turn. Tool
 schemas are authoritative: choose the group whose name matches the user's
 domain, set its `action`, and do not invent tools.
 
-Never invent custom tool-call syntax like "<|tool_call>call:input...".
-Always emit a real tool_call message via the runtime so the registry
-sees it. If you cannot map the user's request to one of the registered
-tools, say so honestly.
+Never invent custom tool-call syntax. Specifically: NEVER write tool calls
+as plain text in your reply content. The following are WRONG and break the
+agent:
+  web(action="search", query="X")          ← WRONG: text, not a real call
+  media({"action": "play", "query": "X"})  ← WRONG: text, not a real call
+  Voy a llamar browser(action="open")...   ← WRONG: narrating the call
+ALWAYS emit a real tool_call via the native runtime mechanism. Your reply
+content is ONLY for natural-language messages to the user. If you find
+yourself about to type "<tool_name>(" in your reply, STOP — emit a real
+tool_call instead. If the requested tool is not in the current subset,
+say so in plain Spanish ("no tengo esa herramienta ahora mismo"); do NOT
+type the call as text.
 
 After a tool result, answer from the real result. Never claim that something
 was completed if no tool ran or if the tool returned an error.
@@ -68,6 +105,21 @@ tool ran", not automatically "the user goal is complete". If status is failed,
 attempted, or needs_verification, or verified=false, do not claim completion.
 Either continue with verify/uia/gui/vision/web as appropriate, or tell the user
 exactly what was attempted and what evidence is missing.
+
+NEVER PROMISE FUTURE ACTION — DO IT NOW. The following replies are WRONG
+because they promise something instead of executing/answering it:
+  "Listo, buscaré X" (sin haber llamado web)         ← WRONG
+  "Te proporcionaré el orden de X"                    ← WRONG
+  "Voy a investigar eso"                              ← WRONG
+  "Permíteme buscar la información"                   ← WRONG
+You are a synchronous voice assistant. The user is WAITING in real time. If
+the user asks for info, EITHER answer immediately from what you know, OR
+call the tool RIGHT NOW (same turn) — never a future tense like "buscaré"
+or "te diré". If the tool already ran in a previous turn and you have the
+info, just give the answer directly without preamble. If a user follow-up
+("prefiero X", "perfecto", "sí dale") refers to a previous tool result,
+answer the actual content using what you already have or call the tool
+again — DO NOT just acknowledge with future-tense.
 
 Example multi-step:
 User: "abre Steam, ve a mi biblioteca y busca Doom Eternal ahi dentro, luego ve
@@ -365,17 +417,24 @@ TOOL_RULES: dict[str, str] = {
         "plus profile='<name>'. The tool stores it and proceeds to play.\n"
         "  If the user's response is ambiguous, ask a quick clarification "
         "(\"¿Entonces tu perfil es 'Emma'?\") instead of guessing.\n\n"
-        "REPORTING — read the tool result carefully:\n"
-        "  - played=true                -> \"Listo, sonando/viendo X en <plataforma>.\"\n"
-        "  - attempted_play=true        -> \"Listo, abrí <plataforma> con X y "
-        "intenté reproducir. Si no se inició, hace click manual en el título.\" "
-        "(Este es el caso comun para Netflix/Disney+/HBO/Prime — el flow GUI "
-        "llega cerca del Play pero no podemos verificar 100% que arranco.)\n"
+        "REPORTING — read the tool result carefully and report como hecho, "
+        "no como duda. El user ve la pantalla — no necesita que le pidas que "
+        "verifique:\n"
+        "  - played=true                -> \"Listo, X reproduciéndose en "
+        "<plataforma>.\" (Cuando played=true el click play YA se ejecutó vía CDP. "
+        "No digas 'intenté', no pidas verificación.)\n"
+        "  - attempted_play=true + via_cdp=true -> \"Listo, abrí X en "
+        "<plataforma>.\" (CDP llegó al detail page; el video debería estar "
+        "reproduciendo. NO sembrar duda.)\n"
+        "  - attempted_play=true + via_cdp=false -> \"Abrí <plataforma> con X. "
+        "Si no arranca, click al título.\" (Solo acá hay duda real — fallback "
+        "sin CDP.)\n"
         "  - opened=true sin attempted_play -> \"Abrí <plataforma> con la "
-        "búsqueda de X. Hace click al título para verlo.\"\n"
+        "búsqueda de X.\"\n"
         "  - opened=false               -> reportar el error real.\n"
-        "Never claim the platform is unsupported. Never say \"no pude reproducir\" "
-        "cuando attempted_play=true — di \"intenté\" en vez.\n\n"
+        "Never claim the platform is unsupported. Never say \"no pude confirmar\" "
+        "ni \"verifica manualmente\" cuando via_cdp=true — el CDP click ES la "
+        "confirmación.\n\n"
         "If the user says \"para el video\", \"pausa el video\", \"para la musica\", or "
         "\"pausa la cancion\", they mean stop/pause current playback. Use "
         "media(action=\"pause\") or audio(action=\"media_play_pause\"). Do not search for a "
@@ -586,6 +645,16 @@ class Gemma4Agent:
         # mid-session). El KV cache del llama-server reutiliza el prefix.
         self._cached_skills_menu: str | None = None
         self._cached_skills_critical: str | None = None
+        # F-005: timestamp del ultimo turn cerrado, para TTL del inherit-tools
+        # path (gap > 5 min => no heredar, evita disparar tools peligrosos
+        # cuando el user retoma la sesion tras mucho tiempo).
+        self._last_turn_ts: float | None = None
+        # NOTE: NLI warmup at __init__ was REMOVED — it raced with the voice
+        # stack (faster_whisper) loading huggingface_hub from another thread,
+        # causing intermittent "cannot import name 'logging' from
+        # huggingface_hub" errors on STT init. The classifier loads the NLI
+        # model lazy-on-first-use; the first capability check pays the cold
+        # load cost (~14s once per process), subsequent ones hit the cache.
 
     def clear(self) -> None:
         self.history.clear()
@@ -599,6 +668,7 @@ class Gemma4Agent:
         # desarrollo). En produccion el catalogo no cambia mid-session.
         self._cached_skills_menu = None
         self._cached_skills_critical = None
+        self._last_turn_ts = None
 
     def set_persona(self, name: str) -> dict[str, Any]:
         """Switch the agent's persona by name. Returns the new persona info or an error dict."""
@@ -691,9 +761,17 @@ class Gemma4Agent:
                 self._cached_skills_critical = ""
         skills_critical = self._cached_skills_critical or ""
         skills_menu = self._cached_skills_menu or ""
+        # Validator hint: when the subset crosses an ambiguous pair (audio vs
+        # window/browser/app/media), ask the LLM to emit an <intent> tag so
+        # the dispatcher can reject obvious mismatches before they ship.
+        intent_hint = ""
+        if selected_tool_names:
+            from .intent_validator import INTENT_TAG_INSTRUCTION, needs_intent_tag
+            if needs_intent_tag(selected_tool_names):
+                intent_hint = INTENT_TAG_INSTRUCTION
         return {
             "role": "system",
-            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_critical}{skills_menu}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
+            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary()}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
@@ -825,6 +903,8 @@ class Gemma4Agent:
         # so Gemma can confirm naturally without re-running the tools.
         self._phrase_fires = []
         raw_text_early = _extract_user_text(content)
+        # Track current user text for the fallback-streak detector.
+        self._current_user_text = (raw_text_early or "").strip().lower()
         if raw_text_early:
             try:
                 from .domain_tools import (_looks_destructive,
@@ -996,6 +1076,92 @@ class Gemma4Agent:
             safety_enabled=self.config.enable_safety,
             last_assistant_text=last_assistant_text,
         )
+        # If a phrase-trigger routine already fired this turn, drop
+        # session.cancel_turn from the subset. The user's phrase was
+        # claimed by their saved routine; the LLM should confirm what
+        # ran, not propose a cancellation.
+        if self._phrase_fires and "session" in selected_tool_names:
+            selected_tool_names = [n for n in selected_tool_names if n != "session"]
+            self.trace.event(turn_id, "session_suppressed_by_phrase_fire",
+                             fires=len(self._phrase_fires))
+        # CONTINUATION HEREDA TOOLS: si el subset quedo vacio y el user
+        # esta dando una respuesta CORTA (continuation tras un tool del
+        # turn previo: "Perfecto", "Si", "Prefiero X"), heredar las tools
+        # del turno previo. Sin esto, "Prefiero cronologico" tras un
+        # web research deja subset=[] y el LLM solo puede prometer sin
+        # poder buscar/responder.
+        if not selected_tool_names:
+            raw_text = ""
+            if isinstance(content, str):
+                raw_text = content.strip()
+            elif isinstance(content, list):
+                for item in content:
+                    if isinstance(item, dict) and item.get("type") == "text":
+                        raw_text = str(item.get("text") or "").strip()
+                        break
+            # Short continuation heuristic: <= 6 words AND no action verb.
+            is_short_continuation = (
+                raw_text and len(raw_text.split()) <= 6
+            )
+            if is_short_continuation:
+                # F-005: gap temporal > INHERIT_TTL_SEC => no heredar
+                # (user volvio tras mucho tiempo, contexto del turn previo
+                # ya no es relevante y heredar tools peligrosos es riesgoso).
+                now = time.time()
+                ttl_expired = (
+                    self._last_turn_ts is not None
+                    and (now - self._last_turn_ts) > INHERIT_TTL_SEC
+                )
+                if ttl_expired:
+                    self.trace.event(
+                        turn_id, "inherit_tools_ttl_expired",
+                        gap_sec=int(now - (self._last_turn_ts or now)),
+                        user_text=raw_text[:60],
+                    )
+                else:
+                    # Look back through history for the most recent assistant
+                    # turn that used tools — grab their names.
+                    prev_tools: list[str] = []
+                    for msg in reversed(self.history):
+                        if not isinstance(msg, dict):
+                            continue
+                        if msg.get("role") == "tool":
+                            # Tool result messages carry name field.
+                            name = msg.get("name")
+                            if isinstance(name, str) and name:
+                                if name not in prev_tools:
+                                    prev_tools.append(name)
+                        elif msg.get("role") == "assistant":
+                            tcs = msg.get("tool_calls") or []
+                            for tc in tcs:
+                                fn = (tc or {}).get("function") or {}
+                                name = fn.get("name")
+                                if isinstance(name, str) and name and name not in prev_tools:
+                                    prev_tools.append(name)
+                            if prev_tools:
+                                # Stop at the most recent assistant turn that
+                                # used tools — we have what we need.
+                                break
+                    # F-005: filtrar tools peligrosos de la herencia.
+                    if prev_tools:
+                        filtered = [
+                            t for t in prev_tools
+                            if t not in DANGEROUS_TOOLS_NEVER_INHERIT
+                        ]
+                        dropped = [t for t in prev_tools if t in DANGEROUS_TOOLS_NEVER_INHERIT]
+                        if dropped:
+                            self.trace.event(
+                                turn_id, "inherit_tools_filtered_dangerous",
+                                dropped=dropped, kept=filtered,
+                            )
+                        prev_tools = filtered
+                    if prev_tools:
+                        selected_tool_names = prev_tools[:6]
+                        self.trace.event(
+                            turn_id, "tools_inherited_from_continuation",
+                            tools=selected_tool_names,
+                            user_text=raw_text[:60],
+                        )
         semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
         # Persona nudge: ensure the persona's preferred tools are in the
         # subset. Append without duplicating; _cap_tools later trims if it
@@ -1007,9 +1173,72 @@ class Gemma4Agent:
                 if tool_name not in existing:
                     selected_tool_names.append(tool_name)
                     existing.add(tool_name)
+        # Bug 1: capability classifier (NLI-based) — augments the subset
+        # when the user input maps to a capability bucket the keyword
+        # router missed. Cache-first, sync-with-tight-timeout fallback,
+        # async-warmup when the sync path times out. Honors the planner's
+        # legacy decision (additive only, never replaces).
+        try:
+            from .capability_classifier import augment_subset as _cap_augment
+            _user_text_for_cap = ""
+            if isinstance(content, str):
+                _user_text_for_cap = content.strip()
+            elif isinstance(content, list):
+                for item in content:
+                    if isinstance(item, dict) and item.get("type") == "text":
+                        _user_text_for_cap = str(item.get("text") or "").strip()
+                        break
+            if _user_text_for_cap:
+                selected_tool_names, _cap_tel = _cap_augment(
+                    _user_text_for_cap, selected_tool_names,
+                )
+                if _cap_tel.get("source") and _cap_tel.get("source") != "async_pending":
+                    self.trace.event(
+                        turn_id, "capability_augment",
+                        capability=_cap_tel.get("capability_used"),
+                        confidence=_cap_tel.get("confidence"),
+                        added=_cap_tel.get("added_tools"),
+                        source=_cap_tel.get("source"),
+                        ambiguous=_cap_tel.get("ambiguous"),
+                    )
+                elif _cap_tel.get("source") == "async_pending":
+                    self.trace.event(
+                        turn_id, "capability_async_dispatched",
+                        user_text=_user_text_for_cap[:80],
+                    )
+        except Exception as _cap_exc:  # noqa: BLE001 — classifier must never break a turn
+            self.trace.event(
+                turn_id, "capability_classifier_error",
+                error=str(_cap_exc),
+            )
         selected_schemas = self.tools.schemas_for_names(selected_tool_names)
         self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback, persona=self._persona.name)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
+        # Persist subset for the fallback streak helper (used to surface
+        # plausible hints when the user repeats the same failed phrase).
+        self._last_router_subset = list(selected_tool_names)
+        # Telemetry: separate keyword-vs-semantic breakdown so we can
+        # diagnose WHY a turn ended at the fallback. Local only — never sent.
+        try:
+            from .planner import _suggest_tools as _kw_suggest
+            kw_hits = _kw_suggest(raw_text_early or "")
+        except Exception:
+            kw_hits = []
+        sem_hits: list[str] = []
+        if semantic_fallback:
+            try:
+                from .semantic_router import suggest_tools_semantic
+                sem_hits = suggest_tools_semantic(raw_text_early or "", k=6)
+            except Exception:
+                sem_hits = []
+        self.trace.event(
+            turn_id, "router_reasoning",
+            user_text=(raw_text_early or "")[:200],
+            kw_matches=list(kw_hits),
+            semantic_matches=list(sem_hits),
+            final_subset=list(selected_tool_names),
+            phrase_fires=len(self._phrase_fires or []),
+        )
         self._compact_completed_history()
         self.history.append({"role": "user", "content": _compact_live_content(content)})
         events: list[ToolEvent] = []
@@ -1047,6 +1276,7 @@ class Gemma4Agent:
             build_tool_records as _build_tool_records,
         )
         mission_goal = _MissionGoal.from_user_text(raw_text_early or "")
+        validator_retries_used = 0
 
         for _turn in range(self.config.max_agent_turns):
             _progress(
@@ -1089,6 +1319,7 @@ class Gemma4Agent:
                     except Exception as retry_exc:
                         _progress(progress, "error", error=str(retry_exc), tools=len(events))
                         self.trace.event(turn_id, "llm_error", error=str(retry_exc), tool_events=len(events), after_context_retry=True)
+                        self._last_turn_ts = time.time()
                         return AgentReply(content="", tool_events=events, error=str(retry_exc))
                     else:
                         self.trace.event(turn_id, "context_retry_ok", schema_count=len(selected_schemas))
@@ -1096,6 +1327,7 @@ class Gemma4Agent:
                 else:
                     _progress(progress, "error", error=str(exc), tools=len(events))
                     self.trace.event(turn_id, "llm_error", error=str(exc), tool_events=len(events))
+                    self._last_turn_ts = time.time()
                     return AgentReply(content="", tool_events=events, error=str(exc))
 
             choice = (resp.get("choices") or [{}])[0]
@@ -1103,6 +1335,52 @@ class Gemma4Agent:
             msg = sanitize_assistant_message(raw_msg)
             assistant_content = msg.get("content") or ""
             raw_tool_calls = msg.get("tool_calls") or []
+            # Extract optional <intent> tag from content (validator). The tag
+            # is stripped from the visible reply but kept on the side so the
+            # tool-selection validator can compare declared intent vs chosen
+            # (tool, action) pair below.
+            from .intent_validator import (
+                corrective_message,
+                extract_intent_tag,
+                strip_intent_tag,
+                validate_call,
+            )
+            intent_tag = extract_intent_tag(assistant_content)
+            if intent_tag is not None:
+                assistant_content = strip_intent_tag(assistant_content)
+                msg["content"] = assistant_content
+                self.trace.event(turn_id, "intent_tag_extracted",
+                                 intent_type=intent_tag.intent_type,
+                                 target=intent_tag.target[:120])
+            # RESCUE: a veces Gemma emite el tool call como TEXTO plano en
+            # vez de via el mecanismo nativo (bug del template/decoder). Si
+            # no hubo tool_calls y el content matchea "<tool>(args...)",
+            # lo reescribimos como real tool_call antes de continuar.
+            if not raw_tool_calls and assistant_content:
+                try:
+                    from .tools import COMPOUND_TOOL_SCHEMAS as _CTS
+                    known_names = {
+                        s["function"]["name"] for s in _CTS
+                        if isinstance(s, dict) and isinstance(s.get("function"), dict)
+                        and isinstance(s["function"].get("name"), str)
+                    }
+                except Exception:
+                    known_names = None
+                rescued = detect_leaked_tool_call(
+                    assistant_content, known_tool_names=known_names,
+                )
+                if rescued is not None:
+                    self.trace.event(
+                        turn_id, "tool_call_rescued",
+                        tool=rescued["function"]["name"],
+                        original_content=assistant_content[:200],
+                    )
+                    raw_tool_calls = [rescued]
+                    # Limpiar el content para que NO se muestre al user el
+                    # texto del tool call. El siguiente loop iteration
+                    # ejecutara el tool real y generara el reply final.
+                    assistant_content = ""
+                    msg = {"role": "assistant", "content": "", "tool_calls": raw_tool_calls}
             self.trace.event(
                 turn_id,
                 "llm_response",
@@ -1124,6 +1402,17 @@ class Gemma4Agent:
                 assistant_content = self._guard_unverified_final(assistant_content, events)
                 assistant_content = self._guard_phrase_confirm(assistant_content)
                 assistant_content = self._guard_plan_status(assistant_content)
+                assistant_content = self._guard_promise_without_action(
+                    assistant_content, events,
+                )
+                # Bug 3: grounding gate. Inline morphological check catches
+                # "Abrí X" / "busqué Y" / "agendé Z" claims when tool_events
+                # is empty — same family as promise guard but for past-tense
+                # action claims (vs future-tense promises). Async NLI check
+                # also fires to feed the lesson store for future RAG hits.
+                assistant_content = self._guard_grounded_action_claim(
+                    assistant_content, events, turn_id,
+                )
                 # Defensa: si el LLM emitio en el reply mismo un footer estilo
                 # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
                 # historial), lo strippeamos antes de pegar el nuestro. Sino,
@@ -1192,11 +1481,24 @@ class Gemma4Agent:
                 self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events), mission=mission)
                 # Persist this turn into semantic experience memory (hint-only,
                 # never blocks). Best-effort: failure is logged and swallowed.
+                # Bug 2: also persist provenance fields so future RAG hits
+                # can be formatted as policy hints (not reply templates).
                 try:
                     from .semantic_router import embed as _embed_text
+                    from .capability_classifier import classify_capability_cached
                     raw_text = _extract_user_text(content)
                     used_tools = sorted({e.name for e in events})
                     mission_status = (mission or {}).get("mission_status") if isinstance(mission, dict) else None
+                    # Derive outcome_code (more specific than mission_status).
+                    outcome_code = _derive_outcome_code(mission_status, events)
+                    # Capability label from the cache (warmed by this turn's
+                    # augment_subset call). May be None if classifier didn't
+                    # run / was below threshold.
+                    cap_verdict = classify_capability_cached(raw_text or "")
+                    capability_label = (cap_verdict.top_label
+                                          if cap_verdict and cap_verdict.available
+                                          else None)
+                    args_signature = _derive_args_signature(events)
                     rec = self.experience.record(
                         turn_id=turn_id,
                         user_input=raw_text,
@@ -1205,6 +1507,9 @@ class Gemma4Agent:
                         mission_status=mission_status,
                         summary=assistant_content[:400],
                         embed_fn=_embed_text,
+                        outcome_code=outcome_code,
+                        capability_label=capability_label,
+                        args_signature=args_signature,
                     )
                     if rec.get("ok"):
                         self.trace.event(turn_id, "experience_recorded", id=rec.get("id"))
@@ -1233,7 +1538,47 @@ class Gemma4Agent:
                                 self.trace.event(turn_id, "facts_extraction_failed", error=str(exc))
                 self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
+                self._last_turn_ts = time.time()
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
+
+            # Validator: if the LLM declared an <intent> and chose a tool
+            # that is on the reject list for that intent, reject and retry
+            # once. We only check the FIRST tool call — parallel multi-tool
+            # turns are rare for the ambiguous-subset case.
+            if intent_tag is not None and raw_tool_calls:
+                first = raw_tool_calls[0]
+                fn0 = first.get("function") or {}
+                first_args, _ = _parse_args(fn0.get("arguments", {}))
+                v = validate_call(intent_tag, fn0.get("name", ""), first_args)
+                if v.rejected and validator_retries_used == 0:
+                    self.trace.event(
+                        turn_id, "validator_rejected",
+                        declared_intent=v.declared_intent,
+                        chosen_tool=v.chosen_tool,
+                        chosen_action=v.chosen_action,
+                        reason=v.reason,
+                    )
+                    validator_retries_used += 1
+                    self.history.append({
+                        "role": "user",
+                        "content": corrective_message(v),
+                    })
+                    continue
+                if v.rejected:
+                    self.trace.event(
+                        turn_id, "validator_gave_up",
+                        declared_intent=v.declared_intent,
+                        chosen_tool=v.chosen_tool,
+                        chosen_action=v.chosen_action,
+                        reason=v.reason,
+                    )
+                else:
+                    self.trace.event(
+                        turn_id, "validator_passed",
+                        declared_intent=v.declared_intent,
+                        chosen_tool=v.chosen_tool,
+                        chosen_action=v.chosen_action,
+                    )
 
             self.history.append(msg)
 
@@ -1262,9 +1607,9 @@ class Gemma4Agent:
             parallel_ok = _parallel_tools_enabled() and sum(1 for p in prepared if not p["parse_error"]) >= 2
             if parallel_ok:
                 self.trace.event(turn_id, "tools_parallel_start", count=len(prepared))
-                self._execute_calls_parallel(prepared, progress, len(events))
+                self._execute_calls_parallel(prepared, progress, len(events), turn_id=turn_id)
             else:
-                self._execute_calls_sequential(prepared, progress, len(events))
+                self._execute_calls_sequential(prepared, progress, len(events), turn_id=turn_id)
 
             # Phase 3: apply results in original order to events, history,
             # traces, failure log, image collection.
@@ -1436,6 +1781,7 @@ class Gemma4Agent:
         self.trace.event(turn_id, reason, content=final, tool_events=len(events), mission=mission)
         self._compact_completed_history()
         _progress(progress, "max_turns", tools=len(events), mission=mission)
+        self._last_turn_ts = time.time()
         return AgentReply(content=final, tool_events=events, mission=mission)
 
     def _execute_calls_sequential(
@@ -1443,6 +1789,8 @@ class Gemma4Agent:
         prepared: list[dict[str, Any]],
         progress: ProgressCallback | None,
         base_count: int,
+        *,
+        turn_id: str = "",
     ) -> None:
         """Run prepared tool calls one by one, populating prep['result'].
 
@@ -1468,13 +1816,67 @@ class Gemma4Agent:
                 }
                 continue
             _progress(progress, "tool_start", name=name, args=args, index=base_count + index + 1)
-            prep["result"] = self.tools.execute(name, args)
+            # Watchdog: hard wall-clock timeout per tool so a hung tool
+            # never blocks the turn indefinitely. Default 60s; override
+            # via GEMMA4_TOOL_TIMEOUT_S env.
+            #
+            # IMPORTANT thread-affinity exception: Playwright sync API is
+            # NOT thread-safe — the runtime is bound to the thread that
+            # called sync_playwright().start(). Running such tools in a
+            # ThreadPoolExecutor thread breaks them with
+            # "cannot switch to a different thread (which happens to have
+            # exited)". For those tools we skip the watchdog and rely on
+            # their internal timeout_ms / Playwright connect timeout.
+            _THREAD_AFFINE_TOOLS = {"browser_real", "media", "browser"}
+            if name in _THREAD_AFFINE_TOOLS:
+                try:
+                    prep["result"] = self.tools.execute(name, args)
+                except Exception as exc:
+                    prep["result"] = {
+                        "ok": False, "status": "failed", "verified": False,
+                        "error": f"{type(exc).__name__}: {exc}", "tool": name,
+                    }
+            else:
+                import os as _os_to
+                try:
+                    _tool_timeout = float(_os_to.environ.get("GEMMA4_TOOL_TIMEOUT_S") or 60)
+                except (TypeError, ValueError):
+                    _tool_timeout = 60.0
+                _wrapped = _run_with_timeout(
+                    self.tools.execute, name, args, timeout_s=_tool_timeout,
+                )
+                if _wrapped.get("_timed_out"):
+                    self.trace.event(
+                        turn_id, "tool_hard_timeout",
+                        name=name, timeout_s=_tool_timeout,
+                    )
+                    prep["result"] = {
+                        "ok": False,
+                        "status": "failed",
+                        "verified": False,
+                        "error": (
+                            f"tool {name!r} exceeded hard timeout of {_tool_timeout:.0f}s. "
+                            "Possible causes: Playwright lost browser, network hang, "
+                            "or an infinite loop. The tool was abandoned."
+                        ),
+                        "tool": name,
+                        "evidence": "tool_hard_timeout",
+                    }
+                elif _wrapped.get("_error"):
+                    prep["result"] = {
+                        "ok": False, "status": "failed", "verified": False,
+                        "error": _wrapped["_error"], "tool": name,
+                    }
+                else:
+                    prep["result"] = _wrapped["result"]
 
     def _execute_calls_parallel(
         self,
         prepared: list[dict[str, Any]],
         progress: ProgressCallback | None,
         base_count: int,
+        *,
+        turn_id: str = "",
     ) -> None:
         """Run prepared tool calls concurrently with a small thread pool.
 
@@ -1502,19 +1904,59 @@ class Gemma4Agent:
                 valid_preps.append((index, prep))
         if not valid_preps:
             return
+        import os as _os_par
+        try:
+            _tool_timeout_par = float(_os_par.environ.get("GEMMA4_TOOL_TIMEOUT_S") or 60)
+        except (TypeError, ValueError):
+            _tool_timeout_par = 60.0
+        # Thread-affine tools cannot run in a worker thread (Playwright sync
+        # API is bound to the thread that started it). Run them inline on
+        # the dispatcher thread; the rest go into the pool as before.
+        _THREAD_AFFINE_TOOLS = {"browser_real", "media", "browser"}
+        affine_preps = [(i, p) for i, p in valid_preps
+                         if p["name"] in _THREAD_AFFINE_TOOLS]
+        pool_preps = [(i, p) for i, p in valid_preps
+                       if p["name"] not in _THREAD_AFFINE_TOOLS]
+        for index, prep in affine_preps:
+            _progress(progress, "tool_start", name=prep["name"],
+                       args=prep["args"], index=base_count + index + 1)
+            try:
+                prep["result"] = self.tools.execute(prep["name"], prep["args"])
+            except Exception as exc:
+                prep["result"] = {
+                    "ok": False, "status": "failed", "verified": False,
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "tool": prep["name"],
+                }
+        if not pool_preps:
+            return
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=min(4, len(valid_preps)),
+            max_workers=min(4, len(pool_preps)),
             thread_name_prefix="gemma4_par_tool",
         ) as pool:
             future_to_prep: dict[Any, dict[str, Any]] = {}
-            for index, prep in valid_preps:
+            for index, prep in pool_preps:
                 _progress(progress, "tool_start", name=prep["name"], args=prep["args"], index=base_count + index + 1)
                 future = pool.submit(self.tools.execute, prep["name"], prep["args"])
                 future_to_prep[future] = prep
-            for future in concurrent.futures.as_completed(future_to_prep):
+            for future in concurrent.futures.as_completed(future_to_prep, timeout=_tool_timeout_par * 2):
                 prep = future_to_prep[future]
                 try:
-                    prep["result"] = future.result()
+                    prep["result"] = future.result(timeout=_tool_timeout_par)
+                except concurrent.futures.TimeoutError:
+                    if turn_id:
+                        self.trace.event(
+                            turn_id, "tool_hard_timeout",
+                            name=prep["name"], timeout_s=_tool_timeout_par,
+                        )
+                    prep["result"] = {
+                        "ok": False, "status": "failed", "verified": False,
+                        "error": (f"tool {prep['name']!r} exceeded hard timeout "
+                                  f"of {_tool_timeout_par:.0f}s and was abandoned."),
+                        "tool": prep["name"],
+                        "evidence": "tool_hard_timeout",
+                    }
+                    continue
                 except Exception as exc:
                     prep["result"] = {
                         "ok": False,
@@ -1863,6 +2305,229 @@ class Gemma4Agent:
                          fires=len(self._phrase_fires))
         return prefix + content
 
+    def _build_user_facing_fallback(
+        self,
+        *,
+        reason: str,
+        rejected_reply: str,
+        trace_label: str,
+        missing: str = "",
+    ) -> str:
+        """Pick a fallback string that respects the user's language.
+
+        Also tracks consecutive-fallback streaks per identical user text and
+        upgrades the message to "retry" with available hints on the 2nd hit
+        so the user is not stuck against the same wall twice.
+        """
+        from .grounding_gate import detect_reply_language, format_fallback
+        lang_hint = detect_reply_language(rejected_reply)
+        current_user_text = getattr(self, "_current_user_text", "") or ""
+        last_text = getattr(self, "_last_fallback_user_text", "")
+        streak = getattr(self, "_fallback_streak", 0)
+        if last_text and last_text == current_user_text and current_user_text:
+            streak += 1
+        else:
+            streak = 1
+        self._fallback_streak = streak
+        self._last_fallback_user_text = current_user_text
+        # Upgrade to retry-with-hints on the 2nd consecutive hit for the same
+        # phrase. Hints come from the most recent router subset so they are
+        # actually meaningful to the user.
+        effective_reason = reason
+        hints = ""
+        if streak >= 2:
+            effective_reason = "retry"
+            subset = getattr(self, "_last_router_subset", []) or []
+            top = [n for n in subset if n != "session"][:3]
+            hints = ", ".join(top) if top else ""
+        out = format_fallback(
+            reason=effective_reason,
+            reply_lang_hint=lang_hint,
+            rejected_reply=rejected_reply,
+            missing=missing,
+            hints=hints,
+        )
+        try:
+            self.trace.event(
+                self.trace.new_turn_id(), "fallback_emitted",
+                label=trace_label, reason=effective_reason,
+                streak=streak, lang=lang_hint,
+            )
+        except Exception:
+            pass
+        return out
+
+    def _guard_promise_without_action(
+        self, content: str, events: list[ToolEvent],
+    ) -> str:
+        """Detect 'promise without do' replies: Gemma says 'buscaré X' /
+        'te proporcionaré Y' but tool_events is empty (no tool ran this
+        turn). The user is left waiting for an action that never happens.
+
+        Also detects false confirmations ('Hecho: te agendé X') that claim
+        a tool ran when tool_events is empty — these are systematic lies.
+
+        Strategy: replace the empty promise with a short honest fallback
+        that invites the user to retry. The next turn will hit the
+        inherited-tools path and actually execute. Logged so we can track
+        how often this fires.
+        """
+        if events:
+            # Tool actually ran — promise + result is fine (real follow-up).
+            return content
+        if not content:
+            return content
+        # Phrase-triggered routines (pre-LLM) DO execute real actions but
+        # don't show up in `events` (events is LLM tool_calls only). If a
+        # routine fired this turn, a "Listo, ..." reply is LEGITIMATE
+        # confirmation of that pre-LLM work — don't flag it.
+        if getattr(self, "_phrase_fires", None):
+            return content
+        low = content.lower()
+        # False-confirmation patterns: reply CLAIMS an action was done but
+        # tool_events is empty. These start the reply (after stripping
+        # leading whitespace), so we check the prefix.
+        false_confirmation_patterns = (
+            "hecho:", "hecho,", "listo,", "listo:",
+            "ejecuté", "ejecute", "registré", "registre",
+            "agendé", "agende", "envié", "envie", "mandé", "mande",
+        )
+        stripped_low = low.lstrip()
+        confirm_match = next(
+            (p for p in false_confirmation_patterns if stripped_low.startswith(p)),
+            None,
+        )
+        if confirm_match:
+            self.trace.event(
+                self.trace.new_turn_id(), "false_confirmation_caught",
+                phrase=confirm_match, original=content[:160],
+            )
+            return self._build_user_facing_fallback(
+                reason="generic",
+                rejected_reply=content,
+                trace_label="false_confirmation_caught",
+            )
+        promise_patterns = (
+            "buscare", "buscaré", "voy a buscar", "voy a investigar",
+            "voy a consultar", "voy a revisar", "voy a chequear",
+            "te proporcionare", "te proporcionaré", "te dire", "te diré",
+            "te respondere", "te responderé", "te informare", "te informaré",
+            "te traere", "te traeré", "te dare", "te daré la informacion",
+            "permiteme buscar", "permíteme buscar",
+            "dame un momento", "un momento por favor",
+            "te aviso", "te confirmo", "te paso", "te mando", "te muestro",
+            "lo reviso", "lo verifico", "déjame ver", "dejame ver",
+            "ahora te traigo", "ya te digo", "te explico", "ya mismo",
+            "i'll search", "i'll look", "let me search", "let me check",
+            "i will find", "i'll find", "i'll get",
+        )
+        matched = next((p for p in promise_patterns if p in low), None)
+        if not matched:
+            return content
+        # Replace with honest short reply that doesn't strand the user.
+        # The next user turn will inherit prev tools (see continuation
+        # path) so the agent will actually do the thing.
+        self.trace.event(
+            self.trace.new_turn_id(), "promise_without_action_caught",
+            phrase=matched, original=content[:160],
+        )
+        replacement = self._build_user_facing_fallback(
+            reason="retry",
+            rejected_reply=content,
+            trace_label="promise_without_action_replacement",
+        )
+        if len(content.strip()) <= 100:
+            return replacement
+        # Reply tenia mas contenido — strippear la oración con la promesa.
+        # Split en sentence boundaries y descartar la que contiene el match.
+        import re as _re_promise
+        sentences = _re_promise.split(r"(?<=[.!?])\s+", content)
+        kept = [s for s in sentences if matched not in s.lower()]
+        stripped_content = " ".join(kept).strip()
+        if len(stripped_content) < 20:
+            return replacement
+        return stripped_content
+
+    def _guard_grounded_action_claim(
+        self,
+        content: str,
+        events: list[ToolEvent],
+        turn_id: str,
+    ) -> str:
+        """Bug 3 grounding gate.
+
+        Inline layer: morphological detection of 1st-person past-tense action
+        claims when no tool ran this turn. Honest fallback if flagged.
+
+        Async layer: schedule NLI grounding check. The verdict feeds the
+        lesson store (write happens in the callback) so the next time the
+        RAG retrieves a similar past turn it can warn the LLM.
+        """
+        if not content:
+            return content
+        # Phrase-triggered routines (pre-LLM) DO execute real actions but
+        # don't appear in `events`. Skip the inline gate when a routine
+        # fired this turn — its "Listo, ..." reply is legitimate.
+        if getattr(self, "_phrase_fires", None):
+            return content
+        from .grounding_gate import (
+            detect_action_claim_without_evidence,
+            schedule_grounding_check,
+        )
+
+        # 1. Inline check.
+        verdict = detect_action_claim_without_evidence(content, events)
+        new_content = content
+        if verdict.should_replace:
+            self.trace.event(
+                turn_id, "grounded_action_claim_caught",
+                claim_word=verdict.claim_word,
+                reason=verdict.reason,
+                original=content[:160],
+            )
+            # Use the language-aware fallback rather than the hardcoded ES
+            # string the gate returns by default.
+            new_content = self._build_user_facing_fallback(
+                reason="generic",
+                rejected_reply=content,
+                trace_label="grounded_action_claim_caught",
+            )
+
+        # 2. Async NLI check — always fires (even if inline replaced) so we
+        # can compare the original reply against the trace and learn.
+        # On contradiction, the experience row for this turn gets flagged
+        # so future RAG retrievals include a WARNING tag (Bug 3b → Bug 2).
+        def _nli_cb(nli_verdict: dict) -> None:
+            try:
+                self.trace.event(
+                    turn_id, "grounding_nli_verdict",
+                    available=nli_verdict.get("available", False),
+                    contradicts=nli_verdict.get("contradicts", False),
+                    executed_score=nli_verdict.get("executed_score"),
+                    nothing_score=nli_verdict.get("nothing_score"),
+                )
+                if nli_verdict.get("available") and nli_verdict.get("contradicts"):
+                    try:
+                        flag_res = self.experience.flag_grounding_by_turn(
+                            turn_id, reason="hallucinated_action",
+                        )
+                        self.trace.event(
+                            turn_id, "experience_flagged_hallucination",
+                            ok=flag_res.get("ok"),
+                            rows=flag_res.get("rows_updated"),
+                        )
+                    except Exception:
+                        pass
+            except Exception:
+                pass  # never let telemetry break the agent
+
+        try:
+            schedule_grounding_check(content, events, callback=_nli_cb)
+        except Exception:
+            pass  # NLI worker spawn must never break a turn
+
+        return new_content
+
     def _guard_plan_status(self, content: str) -> str:
         """Surface explicit-plan failures to the user only when the reply is
         suspiciously empty (<30 chars). Plan being SKIPPED is silent because
@@ -1899,6 +2564,54 @@ def _extract_user_text(content: str | list[dict[str, Any]]) -> str:
         if isinstance(item, dict) and item.get("type") == "text":
             parts.append(str(item.get("text") or ""))
     return " ".join(parts).strip()
+
+
+def _derive_outcome_code(mission_status: str | None,
+                          events: list[ToolEvent]) -> str | None:
+    """Bug 2 — map (mission_status, events) → outcome_code enum.
+
+    The codes are finite, short, and informative for RAG policy hints:
+      - PASS_VERIFIED: mission_status=PASS AND at least one tool ran.
+      - PASS_UNVERIFIED: PASS but no tool ran (might be smalltalk OR a
+        false confirmation — disambiguate downstream via grounding flag).
+      - PARTIAL: mission_status=PARTIAL.
+      - FAILED: mission_status=FAILED or grounding NLI marked contradiction.
+      - NEEDS_USER: mission_status=NEEDS_USER.
+      - UNVERIFIED: anything else.
+    """
+    if not mission_status:
+        return "UNVERIFIED"
+    ms = str(mission_status).upper()
+    if ms == "PASS":
+        return "PASS_VERIFIED" if events else "PASS_UNVERIFIED"
+    if ms in {"FAILED", "PARTIAL", "NEEDS_USER", "UNVERIFIED"}:
+        return ms
+    return ms  # passthrough for any custom status the evaluator emits
+
+
+def _derive_args_signature(events: list[ToolEvent]) -> dict[str, Any] | None:
+    """Bug 2 — extract normalized tool args for the lesson store.
+
+    Captures only the most-useful, low-cardinality fields (provider, action,
+    profile) — not raw queries or PII. The signature is meant to be a
+    pattern the RAG can match on (e.g. provider=disney_plus), not a full
+    replay of the call.
+    """
+    if not events:
+        return None
+    sig: dict[str, Any] = {}
+    for ev in events:
+        try:
+            args = getattr(ev, "args", None) or {}
+            if not isinstance(args, dict):
+                continue
+            for key in ("provider", "action", "engine", "browser"):
+                v = args.get(key)
+                if isinstance(v, str) and v and key not in sig:
+                    sig[key] = v[:40]
+        except Exception:
+            continue
+    return sig or None
 
 
 def _fold_match(text: str) -> str:

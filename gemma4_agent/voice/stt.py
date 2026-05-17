@@ -414,8 +414,23 @@ class StreamingSTT:
         Mientras tanto Whisper-small int8 CPU sigue como STT primario.
         ============================================================
         """
+        # Serialize the heavy import against NLI/transformers warmup running
+        # on another thread. Without this lock, an interleaved import of
+        # huggingface_hub from two threads can surface as
+        # "cannot import name 'logging' from huggingface_hub" on STT init.
         try:
-            from faster_whisper import WhisperModel
+            from .._ml_import_lock import ml_imports
+        except ImportError:
+            # Fallback no-op if the helper is unavailable for some reason.
+            from contextlib import contextmanager
+            @contextmanager
+            def ml_imports():  # type: ignore[no-redef]
+                yield
+        try:
+            with ml_imports():
+                import huggingface_hub  # noqa: F401
+                from huggingface_hub import logging as _hf_logging  # noqa: F401
+                from faster_whisper import WhisperModel
         except ImportError as exc:
             self.last_error = f"faster-whisper not installed: {exc}"
             return False

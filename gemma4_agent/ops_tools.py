@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import atexit
 import hashlib
 import importlib.util
 import io
@@ -21,8 +22,37 @@ from .state import AgentState
 
 
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
+
+
+# F-013: encapsular state global de Playwright + sesiones en un registry
+# singleton, para que los tests puedan resetearlo cleanly entre runs y los
+# callers compartan un solo source-of-truth. Los nombres `_PW` y
+# `_BROWSER_SESSIONS` se mantienen como aliases hacia los attrs del registry
+# para no romper imports/lecturas existentes.
+class _SessionRegistry:
+    """Singleton container for Playwright runtime + active browser sessions."""
+
+    def __init__(self) -> None:
+        self.pw: Any | None = None
+        self.sessions: dict[str, dict[str, Any]] = {}
+
+    def reset(self) -> None:
+        """Test helper: clear sessions and drop the Playwright handle.
+        Does NOT call .stop() on the handle — callers in tests usually
+        mock playwright entirely. Use cleanup() for real teardown.
+        """
+        self.sessions.clear()
+        self.pw = None
+
+
+_SESSIONS = _SessionRegistry()
+
+# Aliases (compat): leer/escribir estos nombres sigue funcionando porque
+# son referencias al mismo dict del registry. Para `_PW` los callers usan
+# `global _PW` por lo que mantenemos una variable module-level y la
+# sincronizamos al setear via _playwright().
+_BROWSER_SESSIONS: dict[str, dict[str, Any]] = _SESSIONS.sessions
 _PW: Any | None = None
-_BROWSER_SESSIONS: dict[str, dict[str, Any]] = {}
 
 
 def _ok(**kwargs: Any) -> dict[str, Any]:
@@ -748,7 +778,19 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
     if action == "connect_cdp":
         endpoint = str(args.get("endpoint") or args.get("url") or "http://127.0.0.1:9222").strip()
         session = _connect_cdp_session(session_id, endpoint)
-        return _ok(session_id=session_id, endpoint=endpoint, tabs=_tabs(session), note="Connected over CDP. Browser must have been started with a remote debugging port.")
+        # BUG OBSERVED 2026-05-16 20:00: calling _tabs(session) right after
+        # CDP attach can hang 60+s because page.title()/page.url block on
+        # CDP messages for background pages / service workers / pages with
+        # SSE streams (e.g. claude.ai). The streaming flow never needs the
+        # pre-existing tabs (it opens a fresh new_tab). Caller can request
+        # tabs explicitly via action="tabs" if needed.
+        return _ok(
+            session_id=session_id, endpoint=endpoint, tabs=[],
+            tabs_count=len(session.get("pages") or []),
+            note=("Connected over CDP. Browser must have been started with a "
+                  "remote debugging port. Pre-existing tabs not enumerated "
+                  "(use action='tabs' explicitly if needed)."),
+        )
 
     if action == "attach_visible":
         return _attach_visible_browser(args, session_id, state)
@@ -1178,12 +1220,15 @@ def ocr_find_text(image_path: Path, target: str, *, lang: str = "spa+eng", min_c
 
 
 def _playwright() -> Any:
+    # F-013: instanciar a traves del registry; mantener `_PW` global como
+    # alias compat (algunos tests/lecturas externas lo inspeccionan).
     global _PW
-    if _PW is None:
+    if _SESSIONS.pw is None:
         from playwright.sync_api import sync_playwright
 
-        _PW = sync_playwright().start()
-    return _PW
+        _SESSIONS.pw = sync_playwright().start()
+        _PW = _SESSIONS.pw
+    return _SESSIONS.pw
 
 
 def _get_browser_session(session_id: str, state: AgentState, *, headless: bool) -> dict[str, Any]:
@@ -1218,7 +1263,11 @@ def _connect_cdp_session(session_id: str, endpoint: str) -> dict[str, Any]:
     if existing:
         _close_browser_session(session_id)
     pw = _playwright()
-    browser = pw.chromium.connect_over_cdp(endpoint)
+    # BUG OBSERVED 2026-05-16 19:18: connect_over_cdp without timeout hangs
+    # indefinitely when Opera GX is running but the CDP websocket is not
+    # ready (e.g. user opened browser without --remote-debugging-port).
+    # 8s is generous; if it doesn't connect in 8s, it never will.
+    browser = pw.chromium.connect_over_cdp(endpoint, timeout=8000)
     context = browser.contexts[0] if browser.contexts else browser.new_context()
     pages = list(context.pages)
     session = {"browser": browser, "context": context, "pages": pages, "active": 0, "headless": False, "cdp": True, "endpoint": endpoint}
@@ -1271,10 +1320,17 @@ def _tabs(session: dict[str, Any]) -> list[dict[str, Any]]:
     pages = [page for page in ctx.pages if not page.is_closed()]
     session["pages"] = pages
     for index, page in enumerate(pages):
+        # BUG OBSERVED 2026-05-16 20:00: page.title() is a SYNC CDP call
+        # without a usable client-side timeout. It blocks indefinitely on
+        # tabs with long-lived event streams (claude.ai SSE, gmail websocket)
+        # or pending dialogs. page.url is a cached attribute (instant) and
+        # is enough to identify a tab; title is only informational. Drop it.
         try:
-            tabs.append({"page_id": index, "url": page.url, "title": page.title(), "active": index == int(session.get("active", 0))})
+            url = page.url
         except Exception:
-            tabs.append({"page_id": index, "url": "", "title": "", "active": index == int(session.get("active", 0))})
+            url = ""
+        tabs.append({"page_id": index, "url": url, "title": "",
+                      "active": index == int(session.get("active", 0))})
     return tabs
 
 
@@ -1283,7 +1339,16 @@ def _page_result(session_id: str, session: dict[str, Any], page: Any) -> dict[st
     if page not in pages:
         pages.append(page)
     session["active"] = pages.index(page)
-    return {"session_id": session_id, "page_id": session["active"], "url": page.url, "title": page.title(), "engine": "playwright", "tabs": _tabs(session)}
+    # Same anti-hang policy as _tabs: avoid page.title() (sync CDP call that
+    # can block); url is enough for identification. Title can be queried
+    # later explicitly if a caller really needs it.
+    try:
+        url = page.url
+    except Exception:
+        url = ""
+    return {"session_id": session_id, "page_id": session["active"],
+            "url": url, "title": "", "engine": "playwright",
+            "tabs": _tabs(session)}
 
 
 def _page_screenshot(page: Any, captures_dir: Path, full_page: bool) -> dict[str, Any]:
@@ -1576,3 +1641,17 @@ def _string_list(value: Any) -> list[str]:
 
 def _truncate(text: str, limit: int) -> str:
     return text if len(text) <= limit else text[:limit] + f"...<truncated {len(text) - limit} chars>"
+
+
+# F-006: cleanup atexit para _BROWSER_SESSIONS. Sin esto, los Chromium
+# spawned via Playwright pueden dejar handles/sockets vivos al exit del
+# proceso (en runs largos se acumulan en RAM hasta OOM).
+def _cleanup_all_browser_sessions() -> None:
+    for sid in list(_BROWSER_SESSIONS.keys()):
+        try:
+            _close_browser_session(sid)
+        except Exception:
+            pass
+
+
+atexit.register(_cleanup_all_browser_sessions)

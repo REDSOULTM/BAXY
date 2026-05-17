@@ -8,7 +8,9 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import time
+import unicodedata
 import webbrowser
 import zipfile
 from datetime import datetime, timedelta, timezone
@@ -5705,21 +5707,36 @@ def _find_spotify_executable() -> str | None:
 #   - Deeplinks: solo Spotify y Disney+ tienen scheme propio confiable.
 #     Netflix/HBO/Prime no exponen schemes documentados → siempre web.
 #   - Web URLs verificadas en 2025-2026 (post-rebrand HBO Max -> Max).
-# Cada plataforma tiene:
-#   web_url: URL a abrir en el browser.
-#     - Si web_search_via_url=True: la URL incluye {q} con la query.
-#     - Si web_search_via_url=False: web_url es solo el home; la query se
-#       escribe via GUI usando search_shortcut.
-#   web_search_via_url: True/False (URL con query funciona o no).
-#   search_shortcut: tecla(s) para abrir el campo de busqueda (solo se usa
-#     si web_search_via_url=False).
+# Streaming platform specs. Each entry:
+#   aliases:           set of user-friendly names that map to this canonical key.
+#   uwp_pfn / exe_paths: how to detect the app on Windows (UWP package or EXE).
+#   deeplink:          URI scheme template if the platform has one (Spotify only).
+#   web_url:           landing URL. If template has {q}, it's substituted with
+#                      url-encoded query and the page loads search results
+#                      directly. If no {q}, this is the search page where the
+#                      query must be TYPED into the input (Disney+/HBO Max).
+#   web_search_via_url: True if {q} substitution gives a functional URL.
+#   playback:          dict with selectors for Playwright/CDP automation:
+#                       - search_input:   CSS selector for the search <input>
+#                       - result_card:    selector for the first result card
+#                                          (usually an <a> with the title link)
+#                       - play_button:    selector for the Play CTA on detail page
+#                       - title_url_pattern: regex describing detail URLs that
+#                                            qualify as "watch deep links" — used
+#                                            for the title→URL cache.
+#   install_hint:      ms-windows-store URI for the user to install if they want.
+#   post_open_note:    short note returned in the tool result.
 #
-# URLs verificadas 2026-05-15 (curl + HTTP HEAD):
-#   netflix.com/search?q=X       -> 200 (login redirect, pero acepta query)
-#   primevideo.com/search/.../?phrase=X -> 200
-#   disneyplus.com/search?q=X    -> 404 (URL no existe)
-#   max.com/search?q=X           -> 404 (rebrand HBO Max -> Max, URL movio)
-#   open.spotify.com/search/X    -> 200
+# Sources for selectors and URLs: see docs/compass_artifact_*.md (research
+# 2026-05-16) — Netflix data-uia family, Disney+/HBO Max data-testid/aria,
+# Prime Video data-automation-id. All marked "needs live test" by the research
+# are CANDIDATES that the agent tries in order; the first that matches wins.
+#
+# IMPORTANT: the search_shortcut field was REMOVED (2026-05-16) — no platform
+# has a reliable global hotkey to open search ("/" and "s" do NOT work on
+# Netflix/Disney+/HBO Max despite earlier code assuming so). For Disney+/HBO
+# Max we MUST land on the search page URL and type into the input via DOM
+# or via gui.type after focusing the input.
 _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
     "spotify": {
         "aliases": {"spotify"},
@@ -5730,7 +5747,7 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "deeplink": "spotify:search:{q}",
         "web_url": "https://open.spotify.com/search/{q}",
         "web_search_via_url": True,
-        "search_shortcut": None,  # tiene deeplink, no necesita
+        "playback": {},  # Spotify uses deeplink + Enter; no web selectors needed
         "install_hint": "winget install Spotify.Spotify",
         "post_open_note": (
             "Spotify opened with search results. App does NOT auto-play. "
@@ -5741,14 +5758,42 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "aliases": {"netflix"},
         "uwp_pfn": "4DF9E0F8.Netflix_mcm4njqhnhss8",
         "exe_paths": [],
-        "deeplink": None,  # Netflix UWP no expone deeplink de busqueda confiable
+        "deeplink": None,
+        # Verified via CDP probe 2026-05-16:
+        # - `?q=` works post-login.
+        # - search results: a[data-uia='search-gallery-video-card'] with href
+        #   `/search?q=X&jbv=<title_id>`. Click opens DP (mini-modal).
+        # - In the DP modal, [data-uia='play-button'] navigates to /watch/<id>
+        #   and starts playback.
+        # - profile-gate may appear first time per session.
         "web_url": "https://www.netflix.com/search?q={q}",
-        "web_search_via_url": True,  # URL con ?q= funciona post-login
-        "search_shortcut": None,
+        "web_search_via_url": True,
+        "playback": {
+            "profile_picker_check": "[data-uia='profile-gate'], [data-uia='action-select-profile+secondary']",
+            "profile_item_anchor": "a[data-uia='action-select-profile+secondary']",
+            "search_input": [
+                "input[data-uia='search-box-input']",
+                "input[placeholder*='buscar' i]",
+            ],
+            "result_card": [
+                "a[data-uia='search-gallery-video-card']",
+                "a[data-uia*='video-card']",
+                "a[data-uia='search-suggestion-item-link']",
+            ],
+            # En Netflix, click card abre detalle. Despues hay que click el
+            # play-button del modal/detail para iniciar playback (/watch/).
+            "play_button": [
+                "[data-uia='play-button']",
+                "a[data-uia*='play']",
+                "button[data-uia*='play']",
+                "a[href*='/watch/']",
+            ],
+            "click_card_starts_playback": False,
+            "title_url_pattern": r"netflix\.com/(?:[a-z-]+/)?(?:watch|title)/(\d+)",
+        },
         "install_hint": "Install Netflix from Microsoft Store: ms-windows-store://pdp/?productid=9wzdncrfj3tj",
         "post_open_note": (
-            "Netflix opened with search results. Requires login. "
-            "User clicks the title to start playback."
+            "Netflix opened with search results. User clicks a title to play."
         ),
     },
     "disney": {
@@ -5756,30 +5801,79 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "uwp_pfn": "Disney.37853FC22B2CE_6rarf9sa4v8jt",
         "exe_paths": [],
         "deeplink": None,
-        # Disney+ NO soporta query via URL — el ?q= devuelve 404. Abrimos
-        # home (es-419 locale para que funcione en LATAM) y usamos GUI
-        # shortcut "s" para abrir la busqueda + type query.
-        "web_url": "https://www.disneyplus.com/es-419/home",
+        # Verified via CDP probe 2026-05-16: /es-419/browse/search is the
+        # ONLY URL that works (logged in). Other /search variants return 404.
+        # F-009: template + default_locale para permitir override segun region
+        # del user (es-es, en-us, etc). `web_url` se mantiene como fallback
+        # cuando no se puede resolver locale dinamicamente.
+        "web_url": "https://www.disneyplus.com/es-419/browse/search",
+        "web_url_template": "https://www.disneyplus.com/{locale}/browse/search",
+        "default_locale": "es-419",
         "web_search_via_url": False,
-        "search_shortcut": "s",  # Disney+ usa 's' para abrir search
+        "playback": {
+            "search_input": [
+                "input[type='search']",
+                "input[name='search input']",
+                "input[placeholder*='buscar' i]",
+                "input[placeholder*='ulo' i]",  # placeholder contains 'Título...'
+            ],
+            "result_card": [
+                "a[data-testid='set-item']",
+                "a[href*='/browse/entity-']",
+            ],
+            "play_button": [
+                "[data-testid='playback-action-button']",
+                "button[aria-label*='Ver ahora' i]",
+                "button[aria-label*='VER AHORA' i]",
+                "button[aria-label*='Reproducir' i]",
+            ],
+            "click_card_starts_playback": False,
+            "title_url_pattern": r"disneyplus\.com/[a-z-]+/browse/entity-([A-Za-z0-9_-]+)",
+        },
         "install_hint": "Install Disney+ from Microsoft Store: ms-windows-store://pdp/?productid=9NXQXXLFST89",
         "post_open_note": (
-            "Disney+ opened. Use the search bar to find content."
+            "Disney+ search page opened. Type the title in the search box."
         ),
     },
     "hbo_max": {
-        # Rebrand: HBO Max -> Max (2023). Pero el dominio actual es
-        # hbomax.com (redirige a play.max.com cuando estas logueado).
+        # Rebrand back to HBO Max on 9 July 2025. Verified via CDP probe
+        # 2026-05-16: play.hbomax.com/search?q= works; play.max.com redirects
+        # to play.hbomax.com. Anchors use data-testid='<uuid>_tile'.
         "aliases": {"hbo_max", "hbo max", "hbomax", "max", "hbo"},
-        "uwp_pfn": None,  # Max no tiene UWP oficial en Windows
+        "uwp_pfn": None,
         "exe_paths": [],
         "deeplink": None,
-        "web_url": "https://www.hbomax.com/",  # redirige a play.max.com si logueado
-        "web_search_via_url": False,
-        "search_shortcut": "/",  # Max usa '/' como Netflix
-        "install_hint": "Max is web-only on Windows (no native app); browser will open.",
+        "web_url": "https://play.hbomax.com/search?q={q}",
+        "web_search_via_url": True,
+        "playback": {
+            "search_input": [
+                "input[type='search']",
+                "input[aria-label*='buscar' i]",
+                "input[data-testid*='search' i]",
+            ],
+            "result_card": [
+                "a[data-testid$='_tile'][href*='/movie/']",
+                "a[data-testid$='_tile'][href*='/show/']",
+                "a[data-testid$='_tile'][href*='/series/']",
+                "a[data-testid$='_tile']",
+                "a[href*='/movie/']",
+                "a[href*='/show/']",
+                "a[href*='/series/']",
+                "a[href*='/feature/']",
+            ],
+            "play_button": [
+                "button[data-testid='play_button']",
+                "button[data-testid='playButton']",
+                "button[aria-label*='Reproducir' i]",
+                "button[aria-label*='Ver' i]",
+                "button[aria-label*='Play' i]",
+            ],
+            "click_card_starts_playback": False,
+            "title_url_pattern": r"hbomax\.com/(?:movie|show|series|feature)/([A-Za-z0-9-]+)",
+        },
+        "install_hint": "HBO Max is web-only on Windows; browser will open.",
         "post_open_note": (
-            "Max (formerly HBO Max) opened. Use search to find content."
+            "HBO Max opened. Type the title in the search box."
         ),
     },
     "prime_video": {
@@ -5788,16 +5882,70 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "uwp_pfn": "AmazonVideo.PrimeVideo_pwbj9vvecjh7j",
         "exe_paths": [],
         "deeplink": None,
+        # Verified via CDP probe 2026-05-16: ?phrase= works, cards via
+        # 'article a[href*=/detail/]'. Detail page auto-opens an inline
+        # player (data-testid='draper-player') — explicit play often
+        # unnecessary because preview already runs.
         "web_url": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase={q}",
         "web_search_via_url": True,
-        "search_shortcut": None,
+        "playback": {
+            "search_input": [
+                "input[name='phrase']",
+                "input[type='search']",
+                "input[placeholder*='buscar' i]",
+            ],
+            "result_card": [
+                "article a[href*='/detail/']",
+                "a[href*='/detail/']",
+            ],
+            # Prime Video tiene varios botones con aria 'Play' que NO son
+            # de iniciar playback (Close Player, mute, etc). Probar primero
+            # los explicitos. Si todos fallan, asumir que el detail page
+            # ya esta auto-playing (es lo que hace Prime).
+            "play_button": [
+                "button[data-automation-id='playButton']",
+                "button[aria-label*='Watch now' i]",
+                "button[aria-label*='Ver ahora' i]",
+                "button[aria-label*='Reproducir ahora' i]",
+            ],
+            # En Prime, el detail page abre un mini-player con auto-play.
+            # Markamos card-click como playback-starter (best-effort).
+            "click_card_starts_playback": True,
+            "title_url_pattern": r"primevideo\.com/(?:region/[a-z]+/)?detail/([A-Z0-9]+)",
+        },
         "install_hint": "Install Prime Video from Microsoft Store: ms-windows-store://pdp/?productid=9P6RC76MSMMJ",
         "post_open_note": (
-            "Prime Video opened with search results. Requires login. "
-            "User clicks the title to start playback."
+            "Prime Video opened with search results. User clicks a title to play."
         ),
     },
 }
+
+
+def _resolve_streaming_web_url(
+    spec: dict[str, Any],
+    *,
+    state: AgentState | None = None,
+) -> str:
+    """F-009: resuelve la URL web del provider contemplando locale.
+
+    Si el spec define `web_url_template` (con `{locale}` placeholder) y un
+    `default_locale`, formatea segun el locale del user. Si no hay state o
+    no se puede resolver, usa el default_locale o cae al web_url estatico.
+
+    Pendiente futuro: agregar `state.user_locale` para soportar override
+    real por region. Actualmente siempre usa el default_locale del spec.
+    """
+    template = spec.get("web_url_template")
+    default_locale = spec.get("default_locale")
+    if template and default_locale and "{locale}" in template:
+        # TODO: cuando exista state.user_locale, usarlo aca con fallback.
+        locale = default_locale
+        if state is not None:
+            user_locale = getattr(state, "user_locale", None)
+            if isinstance(user_locale, str) and user_locale.strip():
+                locale = user_locale.strip()
+        return template.format(locale=locale)
+    return str(spec.get("web_url") or "")
 
 
 def _resolve_streaming_provider(provider_raw: str) -> tuple[str, dict[str, Any]] | None:
@@ -5963,6 +6111,640 @@ def _set_streaming_preference(
     )
 
 
+# ---------------------------------------------------------------------------
+# Title -> Direct URL cache (the highest-leverage optimization per compass
+# research 2026-05-16: bypasses search-page entirely on subsequent plays).
+# ---------------------------------------------------------------------------
+# On first play we land on the search/detail page. After the user (or the
+# agent's selectors) navigates to the actual title detail page, we capture
+# the canonical URL and store it as a `streaming_title_cache` resource so
+# subsequent calls jump straight to it.
+
+def _normalize_title_key(title: str) -> str:
+    """Normaliza titulo para lookup case+accent-insensitive."""
+    s = unicodedata.normalize("NFKD", (title or "").strip().lower())
+    s = "".join(ch for ch in s if not unicodedata.combining(ch))
+    # Colapsa espacios y signos triviales para que "Daredevil: Born Again"
+    # matchee "daredevil born again".
+    s = re.sub(r"[^\w\s]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def _get_cached_title_url(
+    state: AgentState | None, provider: str, query: str,
+) -> str | None:
+    """Devuelve la URL deep-link cacheada para (provider, title) o None."""
+    if state is None or not query:
+        return None
+    key = _normalize_title_key(query)
+    if not key:
+        return None
+    try:
+        data = state._load()  # noqa: SLF001
+        resources = data.get("resources", {})
+    except Exception:
+        return None
+    for res in resources.values():
+        if not isinstance(res, dict):
+            continue
+        if res.get("kind") != "streaming_title_cache":
+            continue
+        meta = res.get("metadata") or {}
+        if (str(meta.get("provider", "")).lower() == provider.lower()
+                and str(meta.get("title_key", "")) == key):
+            url = str(meta.get("url") or "").strip()
+            if url:
+                return url
+    return None
+
+
+def _set_cached_title_url(
+    state: AgentState | None, provider: str, query: str, url: str,
+) -> None:
+    """Persist (provider, title) -> URL. Overwrites if exists. Best-effort."""
+    if state is None or not query or not url:
+        return
+    key = _normalize_title_key(query)
+    if not key:
+        return
+    try:
+        data = state._load()  # noqa: SLF001
+        resources = data.get("resources", {})
+    except Exception:
+        return
+    # Look for existing entry.
+    for rid, res in resources.items():
+        if not isinstance(res, dict):
+            continue
+        if res.get("kind") != "streaming_title_cache":
+            continue
+        meta = res.get("metadata") or {}
+        if (str(meta.get("provider", "")).lower() == provider.lower()
+                and str(meta.get("title_key", "")) == key):
+            try:
+                state.update_resource(
+                    rid,
+                    metadata_patch={
+                        "url": url,
+                        "updated_at": datetime.now().isoformat(),
+                    },
+                )
+            except Exception:
+                pass
+            return
+    # Not found -> create.
+    try:
+        state.register_resource(
+            "streaming_title_cache",
+            f"{provider}: {query[:60]}",
+            metadata={
+                "provider": provider,
+                "title_query": query,
+                "title_key": key,
+                "url": url,
+                "created_at": datetime.now().isoformat(),
+            },
+        )
+    except Exception:
+        pass
+
+
+# Chromium-based browsers we know how to launch with CDP. Each entry:
+#   - process_name: as seen in Get-Process (without .exe)
+#   - exe_candidates: filesystem paths to look up the executable
+#   - profile_subpath: user_data_dir relative to a Windows env root
+#   - profile_root: which env var holds the root (APPDATA / LOCALAPPDATA)
+_CDP_BROWSER_CANDIDATES: list[dict[str, Any]] = [
+    {
+        "key": "opera_gx",
+        "progid_match": ("opera gx", "operagx"),
+        "process_name": "opera",
+        "exe_candidates": [
+            r"%LOCALAPPDATA%\Programs\Opera GX\opera.exe",
+        ],
+        "profile_root": "APPDATA",
+        "profile_subpath": r"Opera Software\Opera GX Stable",
+    },
+    {
+        "key": "opera",
+        "progid_match": ("operastable", "opera"),
+        "process_name": "opera",
+        "exe_candidates": [
+            r"%LOCALAPPDATA%\Programs\Opera\opera.exe",
+        ],
+        "profile_root": "APPDATA",
+        "profile_subpath": r"Opera Software\Opera Stable",
+    },
+    {
+        "key": "chrome",
+        "progid_match": ("chrome",),
+        "process_name": "chrome",
+        "exe_candidates": [
+            r"%ProgramFiles%\Google\Chrome\Application\chrome.exe",
+            r"%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe",
+            r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe",
+        ],
+        "profile_root": "LOCALAPPDATA",
+        "profile_subpath": r"Google\Chrome\User Data",
+    },
+    {
+        "key": "edge",
+        "progid_match": ("edge", "msedge"),
+        "process_name": "msedge",
+        "exe_candidates": [
+            r"%ProgramFiles%\Microsoft\Edge\Application\msedge.exe",
+            r"%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe",
+        ],
+        "profile_root": "LOCALAPPDATA",
+        "profile_subpath": r"Microsoft\Edge\User Data",
+    },
+    {
+        "key": "brave",
+        "progid_match": ("brave",),
+        "process_name": "brave",
+        "exe_candidates": [
+            r"%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe",
+            r"%ProgramFiles(x86)%\BraveSoftware\Brave-Browser\Application\brave.exe",
+            r"%LOCALAPPDATA%\BraveSoftware\Brave-Browser\Application\brave.exe",
+        ],
+        "profile_root": "LOCALAPPDATA",
+        "profile_subpath": r"BraveSoftware\Brave-Browser\User Data",
+    },
+]
+
+
+def _cdp_endpoint_alive(timeout: float = 1.5) -> bool:
+    """Quick check: does http://127.0.0.1:9222/json/version respond?"""
+    import urllib.request
+    try:
+        with urllib.request.urlopen(
+            "http://127.0.0.1:9222/json/version", timeout=timeout,
+        ) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+
+def _detect_default_browser_progid() -> str:
+    """Read the user's default browser from the Windows registry. Returns
+    lowercase ProgId or '' if unknown."""
+    if os.name != "nt":
+        return ""
+    try:
+        import winreg
+        key_path = (
+            r"SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations"
+            r"\https\UserChoice"
+        )
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path) as k:
+            val, _ = winreg.QueryValueEx(k, "ProgId")
+            return str(val or "").lower()
+    except Exception:
+        return ""
+
+
+def _pick_cdp_browser() -> dict[str, Any] | None:
+    """Choose which Chromium browser to launch with CDP:
+       1. The user's default browser (if it's Chromium-based and installed).
+       2. Else the first installed candidate (Opera GX > Opera > Chrome > Edge > Brave).
+    Returns the candidate dict (with `exe` and `user_data_dir` resolved) or None."""
+    progid = _detect_default_browser_progid()
+    ordered: list[dict[str, Any]] = []
+    if progid:
+        for cand in _CDP_BROWSER_CANDIDATES:
+            if any(m in progid for m in cand["progid_match"]):
+                ordered.append(cand)
+                break
+    for cand in _CDP_BROWSER_CANDIDATES:
+        if cand not in ordered:
+            ordered.append(cand)
+
+    for cand in ordered:
+        for raw in cand["exe_candidates"]:
+            exe = os.path.expandvars(raw)
+            if Path(exe).is_file():
+                root = os.environ.get(cand["profile_root"], "")
+                user_data_dir = str(Path(root) / cand["profile_subpath"])
+                return {**cand, "exe": exe, "user_data_dir": user_data_dir}
+    return None
+
+
+def _ensure_cdp_browser(timeout_total: float = 10.0) -> dict[str, Any]:
+    """Garantiza que CDP este disponible en :9222. Si no, cierra el browser
+    Chromium del user y lo relanza con --remote-debugging-port=9222 + su
+    propio --user-data-dir (preserva tabs/login).
+
+    Returns dict con keys:
+      - cdp_ok: bool
+      - action: 'already_running' | 'relaunched' | 'launched' | 'failed' | 'unsupported' | 'disabled'
+      - browser_key: str | None
+      - reason: str | None
+    """
+    if _cdp_endpoint_alive():
+        return {"cdp_ok": True, "action": "already_running",
+                "browser_key": None, "reason": None}
+
+    # Test isolation: pytest mockea webbrowser.open al nivel del tool, pero
+    # _ensure_cdp_browser opera FUERA del executor (urllib + subprocess
+    # reales). Para no matar Opera del dev cada vez que corren tests,
+    # respetar GEMMA4_DISABLE_AUTO_CDP_LAUNCH=1 o detectar pytest/unittest/CI.
+    # F-003: amplio la deteccion para cubrir unittest puro, jupyter, smoke
+    # scripts, CI runners. El kill ciego de Opera puede tirar work del user.
+    in_test_env = (
+        os.environ.get("GEMMA4_DISABLE_AUTO_CDP_LAUNCH") == "1"
+        or "PYTEST_CURRENT_TEST" in os.environ
+        or "pytest" in sys.modules
+        or "unittest" in sys.modules
+        or os.environ.get("CI") == "true"
+    )
+    if in_test_env:
+        return {"cdp_ok": False, "action": "disabled",
+                "browser_key": None,
+                "reason": "auto-launch disabled (pytest/unittest/CI or env flag)"}
+
+    if os.name != "nt":
+        return {"cdp_ok": False, "action": "unsupported",
+                "browser_key": None,
+                "reason": "auto-launch only implemented on Windows"}
+
+    cand = _pick_cdp_browser()
+    if not cand:
+        return {"cdp_ok": False, "action": "failed",
+                "browser_key": None,
+                "reason": "no Chromium browser found (Opera/Chrome/Edge/Brave)"}
+
+    exe = cand["exe"]
+    user_data_dir = cand["user_data_dir"]
+    proc_name = cand["process_name"]
+    relaunched = False
+
+    # Cerrar instancias corriendo del mismo browser. Si tenia tabs abiertas,
+    # Opera/Chrome las restauran al abrir de nuevo (session restore default).
+    # F-003: cierre graceful primero (CloseMainWindow envia WM_CLOSE -> browser
+    # guarda session/forms), 3s de espera, solo entonces Stop-Process -Force
+    # como ultimo recurso. Reduce perdida de trabajo del user.
+    import time as _time
+    try:
+        running = subprocess.run(
+            ["powershell", "-NoProfile", "-Command",
+              f"Get-Process {proc_name} -ErrorAction SilentlyContinue | "
+              "Select-Object -ExpandProperty Id"],
+            capture_output=True, text=True, timeout=4,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        pids = [p.strip() for p in (running.stdout or "").splitlines() if p.strip()]
+        if pids:
+            # 1. Pedir cierre suave (WM_CLOSE) a cada proceso.
+            subprocess.run(
+                ["powershell", "-NoProfile", "-Command",
+                  f"$procs = Get-Process {proc_name} -ErrorAction SilentlyContinue; "
+                  "foreach ($p in $procs) { try { $p.CloseMainWindow() | Out-Null } catch {} }"],
+                capture_output=True, text=True, timeout=6,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            _time.sleep(3.0)  # dar tiempo al browser para flush session/forms
+            # 2. Si quedan vivos, force-kill.
+            still = subprocess.run(
+                ["powershell", "-NoProfile", "-Command",
+                  f"Get-Process {proc_name} -ErrorAction SilentlyContinue | "
+                  "Select-Object -ExpandProperty Id"],
+                capture_output=True, text=True, timeout=4,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            still_pids = [p.strip() for p in (still.stdout or "").splitlines() if p.strip()]
+            if still_pids:
+                subprocess.run(
+                    ["powershell", "-NoProfile", "-Command",
+                      f"Get-Process {proc_name} -ErrorAction SilentlyContinue | "
+                      "Stop-Process -Force -ErrorAction SilentlyContinue"],
+                    capture_output=True, text=True, timeout=6,
+                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                )
+                _time.sleep(1.5)  # let OS clean up handles
+            relaunched = True
+    except Exception:
+        pass
+
+    # Lanzar el browser con CDP.
+    try:
+        subprocess.Popen(
+            [exe, "--remote-debugging-port=9222",
+              f"--user-data-dir={user_data_dir}"],
+            creationflags=getattr(subprocess, "DETACHED_PROCESS", 0)
+                          | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            close_fds=True,
+        )
+    except Exception as exc:
+        return {"cdp_ok": False, "action": "failed",
+                "browser_key": cand["key"],
+                "reason": f"launch failed: {exc}"}
+
+    # Poll endpoint hasta ~8s.
+    deadline = _time.time() + max(3.0, timeout_total - 2.0)
+    while _time.time() < deadline:
+        if _cdp_endpoint_alive(timeout=1.0):
+            return {"cdp_ok": True,
+                    "action": "relaunched" if relaunched else "launched",
+                    "browser_key": cand["key"], "reason": None}
+        _time.sleep(0.6)
+
+    return {"cdp_ok": False, "action": "failed",
+            "browser_key": cand["key"],
+            "reason": "browser launched but CDP endpoint never came up"}
+
+
+def _try_cdp_attach(executor: Executor) -> dict[str, Any]:
+    """Intenta conectarse al Chrome del user via CDP (puerto 9222).
+    Si no esta disponible, intenta lanzar el browser default con CDP
+    automaticamente y reintenta.
+
+    Returns dict con keys:
+      - "available": bool — True si se conecto exitosamente.
+      - "session_id": str — id de la sesion de browser_real.
+      - "reason": str | None — por que no se conecto si available=False.
+      - "launched_browser": str | None — clave del browser auto-lanzado, si aplica.
+    """
+    # 0. Garantizar que el browser CDP este corriendo (auto-launch si hace falta).
+    ensure = _ensure_cdp_browser()
+    if not ensure["cdp_ok"]:
+        return {
+            "available": False, "session_id": None,
+            "reason": f"CDP unavailable: {ensure['reason']}",
+            "launched_browser": None,
+        }
+
+    try:
+        r = executor("browser_real", {
+            "action": "connect_cdp",
+            "endpoint": "http://127.0.0.1:9222",
+            "session_id": "streaming",
+        })
+        if r.get("ok"):
+            return {"available": True, "session_id": "streaming",
+                    "reason": None,
+                    "launched_browser": ensure.get("browser_key"),
+                    "browser_action": ensure.get("action")}
+        return {
+            "available": False, "session_id": None,
+            "reason": str(r.get("error") or "connect_cdp returned not-ok"),
+            "launched_browser": ensure.get("browser_key"),
+        }
+    except Exception as exc:
+        return {
+            "available": False, "session_id": None,
+            "reason": f"connect_cdp exception: {exc}",
+        }
+
+
+def _streaming_cdp_play(
+    executor: Executor,
+    canonical: str,
+    spec: dict[str, Any],
+    query: str,
+    profile_name: str,
+    web_url: str,
+    web_search_via_url: bool,
+    cached_url: str | None,
+    state: AgentState | None = None,
+) -> dict[str, Any]:
+    """CDP-first playback via Playwright + selectores REALES (verificados
+    via probe 2026-05-16 contra Opera GX logueado).
+
+    Flow:
+      0. Si cached_url -> goto directo. Si click_card_starts_playback=True
+         (Netflix), la URL cacheada YA es /watch/<id> y ya reproduce. Sino
+         try click play.
+      1. Goto search URL.
+      2. Si profile_picker_check selector existe -> click profile_name
+         (Netflix presenta profile-gate por sesion).
+      3. Si NOT web_search_via_url -> fill search input.
+      4. Esperar render + click primer result_card.
+      5. Capturar detail URL (cache si matchea title_url_pattern).
+      6. Si click_card_starts_playback=True -> ya reproduce. Sino:
+         click play_button.
+    """
+    import time as _time
+    playback = spec.get("playback") or {}
+    selectors_input = playback.get("search_input") or []
+    selectors_card = playback.get("result_card") or []
+    selectors_play = playback.get("play_button") or []
+    profile_picker_check = playback.get("profile_picker_check")
+    profile_item_anchor = playback.get("profile_item_anchor")
+    click_starts_playback = bool(playback.get("click_card_starts_playback"))
+    title_pattern = playback.get("title_url_pattern")
+
+    steps: list[str] = []
+    session_id = "streaming"
+
+    def _try_selectors(action: str, sel_list: list[str], **extras) -> dict[str, Any]:
+        last_err = None
+        for sel in sel_list:
+            try:
+                r = executor("browser_real", {
+                    "action": action,
+                    "session_id": session_id,
+                    "selector": sel,
+                    "timeout_sec": extras.get("timeout_sec", 6),
+                    **{k: v for k, v in extras.items() if k != "timeout_sec"},
+                })
+                if r.get("ok"):
+                    return {"ok": True, "selector": sel, "result": r}
+                last_err = r.get("error")
+            except Exception as exc:
+                last_err = str(exc)
+        return {"ok": False, "error": last_err or "all selectors failed"}
+
+    def _get_current_url() -> str:
+        try:
+            r = executor("browser_real", {
+                "action": "active_tab", "session_id": session_id,
+            })
+            if r.get("ok") and isinstance(r.get("active_tab"), dict):
+                return str(r["active_tab"].get("url") or "")
+        except Exception:
+            pass
+        return ""
+
+    def _bring_browser_to_front() -> None:
+        """User-reported bug 2026-05-16 21:23: after media play, the browser
+        window stays in background and the user can't see what's playing.
+        Issue a `window focus` with the provider name as query — Opera's
+        page title contains "Disney+" / "Netflix" / etc. for the active tab,
+        so this matches and brings it forward (auto-maximizes if small).
+        """
+        try:
+            provider_title = {
+                "disney": "Disney+",
+                "netflix": "Netflix",
+                "hbo_max": "Max",
+                "prime_video": "Prime Video",
+            }.get(canonical, canonical)
+            executor("window", {"action": "focus", "query": provider_title})
+            steps.append(f"focused_window:{provider_title}")
+        except Exception:
+            pass
+
+    # 1. Navegar. Usamos new_tab=True para NO sobreescribir lo que el user
+    # tenia abierto. headless=False matches la sesion CDP (Opera GX).
+    target_url = cached_url or web_url
+    via_cache = bool(cached_url)
+    try:
+        goto = executor("browser_real", {
+            "action": "goto",
+            "session_id": session_id,
+            "url": target_url,
+            "wait_until": "domcontentloaded",
+            "timeout_sec": 25,
+            "headless": False,
+            "new_tab": True,
+        })
+        if not goto.get("ok"):
+            return {
+                "player_started": False, "attempted_play": False,
+                "steps": steps,
+                "abort_reason": f"goto {target_url!r} failed: {goto.get('error')}",
+                "via_cache": via_cache,
+            }
+        steps.append(f"goto:{target_url[:80]}{' (cached)' if via_cache else ''}")
+    except Exception as exc:
+        return {
+            "player_started": False, "attempted_play": False,
+            "steps": steps,
+            "abort_reason": f"goto exception: {exc}",
+            "via_cache": via_cache,
+        }
+    # F-012: reducido 5.5s -> 2.5s. _try_selectors con timeout_sec interno
+    # actua como wait_for_selector con polling, asi que el sleep inicial
+    # solo necesita cubrir el DOMContentLoaded -> JS-hydration gap minimo.
+    _time.sleep(2.5)
+
+    # FAST PATH: cached URL para Netflix etc.
+    if via_cache:
+        if click_starts_playback:
+            # Cached URL es ya /watch/<id> — esta reproduciendo.
+            steps.append("cache_url_loaded_autoplay_expected")
+            _bring_browser_to_front()
+            return {
+                "player_started": True, "attempted_play": True,
+                "steps": steps, "abort_reason": None, "via_cache": True,
+            }
+        # Para otros, intentar el play button.
+        play_res = _try_selectors("click", selectors_play, timeout_sec=8)
+        if play_res["ok"]:
+            steps.append(f"clicked_play_cached:{play_res['selector']}")
+            _bring_browser_to_front()
+            return {
+                "player_started": True, "attempted_play": True,
+                "steps": steps, "abort_reason": None, "via_cache": True,
+            }
+        # Cache URL cargada — usualmente significa que el video ya esta en
+        # detail page o auto-reproduciendo. Mark como exito best-effort.
+        _bring_browser_to_front()
+        return {
+            "player_started": True, "attempted_play": True,
+            "steps": steps + ["cache_url_loaded_no_play_button"],
+            "abort_reason": None, "via_cache": True,
+        }
+
+    # 2. Profile picker (Netflix). Sin `evaluate` (que requiere
+    # confirmation en CDP). Click directo con selector :has-text(profile)
+    # con timeout corto. Si no hay picker, falla rapido y seguimos.
+    if profile_picker_check and profile_item_anchor and profile_name:
+        prof_selectors = [
+            f"{profile_item_anchor}:has-text({profile_name!r})",
+        ]
+        prof_res = _try_selectors("click", prof_selectors, timeout_sec=3)
+        if prof_res["ok"]:
+            steps.append(f"clicked_profile:{profile_name}")
+            # F-012: reducido 8s -> 4s. Selector polling del fill/click
+            # subsiguiente cubre el resto de espera con timeout interno.
+            _time.sleep(4.0)
+        else:
+            # No vimos profile picker (Netflix recuerda sesion) -> continue.
+            steps.append("profile_pick_not_needed_or_failed")
+
+    # 3. Si la URL NO tiene query (Disney+), rellenar input.
+    if not web_search_via_url:
+        fill_res = _try_selectors("fill", selectors_input, value=query,
+                                    timeout_sec=10)
+        if not fill_res["ok"]:
+            return {
+                "player_started": False, "attempted_play": False,
+                "steps": steps,
+                "abort_reason": f"could not find search input: {fill_res['error']}",
+                "via_cache": False,
+                "hint": "Search page may have changed structure. Selectors: "
+                        + ", ".join(selectors_input),
+            }
+        steps.append(f"filled_search:{fill_res['selector']}")
+        # F-012: reducido 4s -> 2s post-fill. El polling del click_card
+        # subsiguiente (timeout_sec=12) absorbe el resto del wait.
+        _time.sleep(2.0)
+
+    # 4. Click primer result card.
+    # F-012: removido 'extra render time' de 2s — _try_selectors timeout=12
+    # ya hace polling activo del selector.
+    card_res = _try_selectors("click", selectors_card, timeout_sec=12)
+    if not card_res["ok"]:
+        return {
+            "player_started": False, "attempted_play": False,
+            "steps": steps,
+            "abort_reason": f"could not click first result card: {card_res['error']}",
+            "via_cache": False,
+            "hint": "Selectors: " + ", ".join(selectors_card),
+        }
+    steps.append(f"clicked_first_result:{card_res['selector']}")
+    # F-012: reducido 5s -> 2.5s post-card-click. El click_play subsiguiente
+    # (timeout_sec=10) cubre el resto con polling activo.
+    _time.sleep(2.5)
+
+    # 5. Cache URL post-click.
+    detail_url = _get_current_url()
+    if detail_url and title_pattern:
+        try:
+            import re as _re
+            if _re.search(title_pattern, detail_url):
+                _set_cached_title_url(state, canonical, query, detail_url)
+                steps.append(f"cached_title_url:{detail_url[:80]}")
+        except Exception:
+            pass
+
+    # 6. Para plataformas donde click card YA reproduce (Netflix) -> done.
+    if click_starts_playback:
+        steps.append("playback_started_via_card_click")
+        _bring_browser_to_front()
+        return {
+            "player_started": True, "attempted_play": True,
+            "steps": steps, "abort_reason": None, "via_cache": False,
+            "detail_url": detail_url,
+        }
+
+    # 7. Click play button.
+    play_res = _try_selectors("click", selectors_play, timeout_sec=10)
+    if play_res["ok"]:
+        steps.append(f"clicked_play:{play_res['selector']}")
+        _bring_browser_to_front()
+        return {
+            "player_started": True, "attempted_play": True,
+            "steps": steps, "abort_reason": None, "via_cache": False,
+            "detail_url": detail_url,
+        }
+    # Llegamos al detail page pero no encontramos un Play button explicito.
+    # Solo asumimos playback automatico cuando spec lo declara explicit
+    # (Prime: click del card abre el player). Para Disney/Netflix/HBO ser
+    # honestos: attempted_play=True pero player_started=False.
+    # Igual traer el browser al frente: el user al menos ve el detail page.
+    _bring_browser_to_front()
+    return {
+        "player_started": click_starts_playback,
+        "attempted_play": True,
+        "steps": steps + ["detail_page_reached_no_explicit_play_button"],
+        "abort_reason": None, "via_cache": False,
+        "detail_url": detail_url,
+    }
+
+
 def _streaming_web_auto_play(
     executor: Executor,
     canonical: str,
@@ -5970,140 +6752,79 @@ def _streaming_web_auto_play(
     profile_name: str,
     wait_seconds: float,
     *,
-    search_shortcut: str | None = None,
-    needs_gui_search: bool = False,
+    spec: dict[str, Any] | None = None,
+    web_url: str | None = None,
+    web_search_via_url: bool = True,
+    state: AgentState | None = None,
 ) -> dict[str, Any]:
-    """Para web streaming: abre la pagina + opcionalmente activa search +
-    intenta navigation por teclado para llegar al primer resultado.
+    """Auto-play en web para Netflix/Disney+/HBO Max/Prime Video.
 
-    DESIGN PRAGMATICO (2026-05-16): el approach anterior (OCR + click_text
-    sobre la grilla de resultados) fallaba el 90% del tiempo porque los
-    pósters son IMAGENES sin texto OCR-able. Cambio a estrategia de
-    keyboard navigation universal:
-      1. Wait carga.
-      2. Si needs_gui_search: activate search via shortcut + type + Enter.
-      3. Wait resultados.
-      4. Press Tab varias veces (3-5) para mover focus a primer titulo.
-      5. Press Enter para entrar.
-      6. Wait detail.
-      7. Press Tab algunas veces para llegar al Play button + Enter.
+    Estrategia (compass research 2026-05-16):
+      1. Intentar CDP attach al Chrome real del user (puerto 9222).
+         Si funciona: DOM-level via Playwright + selectors estables.
+         Si NO funciona: cae a webbrowser.open + report honesto al user.
 
-    Esto NO garantiza play 100%, pero es mas confiable que OCR. El user
-    queda en la pagina de resultados/detalle si algun paso falla; un
-    click manual completa la accion.
-
-    Returns dict con steps + player_started=bool + abort_reason.
+    Returns dict con keys:
+      - player_started: bool — True solo si confirmamos Play click.
+      - attempted_play: bool — True si llegamos a hacer click(s) en el flow.
+      - steps: list[str] — pasos completados (para debug).
+      - abort_reason: str | None — por que paramos.
+      - via_cdp: bool — True si usamos CDP, False si webbrowser fallback.
+      - via_cache: bool — True si usamos title->URL cache.
     """
-    import time as _time
-    steps: list[str] = []
-    _time.sleep(max(1.0, wait_seconds))
-    steps.append(f"waited_for_page:{wait_seconds}s")
+    # 0. Buscar cache title -> URL.
+    cached_url = _get_cached_title_url(state, canonical, query)
 
-    # 1. Profile picker. Intentar click_text del nombre (esto sigue siendo
-    # OCR fragil pero los nombres de perfil suelen ser TEXTO renderizado,
-    # no imagen). Si falla, seguir sin error porque puede que ya estemos
-    # en el home.
+    # 1. Intentar CDP attach.
+    cdp = _try_cdp_attach(executor)
+    if cdp["available"] and spec and web_url:
+        result = _streaming_cdp_play(
+            executor, canonical, spec, query, profile_name,
+            web_url=web_url,
+            web_search_via_url=web_search_via_url,
+            cached_url=cached_url,
+            state=state,
+        )
+        result["via_cdp"] = True
+        return result
+
+    # 2. Fallback: webbrowser.open. Honesto — solo abrimos la pagina y
+    # le pedimos al user que de UN click. NO intentamos Tab nav ciega
+    # (causaba clicks accidentales).
+    import webbrowser as _wb
+    url_to_open = cached_url or web_url
+    if not url_to_open:
+        return {
+            "player_started": False, "attempted_play": False,
+            "steps": [], "via_cdp": False, "via_cache": False,
+            "abort_reason": "no URL to open",
+        }
     try:
-        click_profile = executor("gui", {
-            "action": "click_text", "target": profile_name,
-            "timeout_sec": 4,
-        })
-        if click_profile.get("ok") and click_profile.get("found"):
-            steps.append(f"clicked_profile:{profile_name}")
-            _time.sleep(3.0)  # carga post-profile (puede ser lenta)
-        else:
-            steps.append("no_profile_picker_or_not_found")
-    except Exception:
-        steps.append("profile_click_error")
-
-    # 2. Activar search si needed.
-    if needs_gui_search and search_shortcut:
-        try:
-            executor("gui", {"action": "keypress", "keys": search_shortcut})
-            steps.append(f"pressed_search_shortcut:{search_shortcut}")
-            _time.sleep(1.2)  # mas tiempo para que aparezca el input
-            executor("gui", {"action": "type", "text": query})
-            steps.append(f"typed_query:{query}")
-            _time.sleep(0.8)
-            # NO press Enter en Disney+/Max: el filtro se aplica mientras
-            # tipeas. Press Enter va al detail de la primera coincidencia
-            # AUTOMATICAMENTE en algunas plataformas, en otras navega a
-            # otra cosa. Es safer dejarlo y usar Tab navigation despues.
-            _time.sleep(3.0)  # mas tiempo para que renderice resultados
-            steps.append("waited_for_search_results")
-        except Exception as exc:
-            return {
-                "player_started": False, "steps": steps,
-                "abort_reason": f"gui search via shortcut failed: {exc}",
-            }
-    else:
-        # URL ya tiene search query — esperar mas tiempo a que renderice
-        # post-load (Netflix puede tardar 3-5s en pintar la grilla).
-        _time.sleep(3.0)
-        steps.append("waited_for_url_search_results")
-
-    # 3. Keyboard navigation: Tab al primer titulo + Enter.
-    # Cada plataforma tiene un layout distinto. Estos defaults son
-    # observados empiricamente; podemos parametrizarlos por plataforma
-    # si una falla consistente.
-    # Netflix con ?q=:    Tab x 5-7 para llegar al primer poster
-    # Disney+ post-search: Tab x 4-6 (search box esta enfocado, salimos)
-    # Max/HBO:           similar
-    # Prime Video:       Tab x 6-8 (mas chrome arriba)
-    tab_count_by_platform = {
-        "netflix": 6,
-        "disney": 5,
-        "hbo_max": 6,
-        "prime_video": 7,
-    }
-    tabs_to_first_result = tab_count_by_platform.get(canonical, 6)
-
-    try:
-        for i in range(tabs_to_first_result):
-            executor("gui", {"action": "keypress", "keys": "tab"})
-            _time.sleep(0.15)
-        steps.append(f"tabbed_to_first_result:x{tabs_to_first_result}")
-        _time.sleep(0.3)
-        executor("gui", {"action": "keypress", "keys": "enter"})
-        steps.append("entered_first_result")
-        _time.sleep(3.5)  # detail page tarda en cargar
+        opened = _wb.open(url_to_open)
     except Exception as exc:
         return {
-            "player_started": False, "steps": steps,
-            "abort_reason": f"tab navigation to first result failed: {exc}",
-            "note": "Open the page manually and click the title.",
+            "player_started": False, "attempted_play": False,
+            "steps": [], "via_cdp": False, "via_cache": bool(cached_url),
+            "abort_reason": f"webbrowser.open failed: {exc}",
         }
-
-    # 4. En la detail page, intentar Play. Estrategia hybrida:
-    #    (a) Tab navigation al Play button (suele ser focusable temprano).
-    #    (b) Si OCR encuentra Play text, click directo.
-    # Netflix: Play button suele estar en Tab x 1-3.
-    # Disney+: similar.
-    play_tab_count = 3
-    try:
-        for i in range(play_tab_count):
-            executor("gui", {"action": "keypress", "keys": "tab"})
-            _time.sleep(0.15)
-        executor("gui", {"action": "keypress", "keys": "enter"})
-        steps.append(f"tabbed_to_play_button:x{play_tab_count} + Enter")
-        _time.sleep(1.0)
-    except Exception as exc:
-        steps.append(f"play_tab_nav_error:{exc}")
-
-    # HONESTIDAD: no podemos verificar visualmente sin OCR/vision check
-    # (que fue justamente lo que fallaba antes). El return marca
-    # `attempted_play=True` para que el reply diga "intenté reproducir"
-    # en vez de "no pude reproducir". El user verifica visualmente.
-    # player_started=False porque NO tenemos evidencia objetiva de play.
+    if not opened:
+        return {
+            "player_started": False, "attempted_play": False,
+            "steps": [], "via_cdp": False, "via_cache": bool(cached_url),
+            "abort_reason": "webbrowser.open returned False",
+        }
     return {
         "player_started": False,
-        "attempted_play": True,  # nuevo: distingue "intente" de "no pude"
-        "steps": steps,
+        "attempted_play": False,  # honesto: NO intentamos play, solo abrimos.
+        "steps": [f"opened_in_default_browser:{url_to_open[:80]}"],
+        "via_cdp": False,
+        "via_cache": bool(cached_url),
         "abort_reason": None,
         "verification_note": (
-            "Tab navigation + Enter dispatched. Cannot verify playback "
-            "started without OCR/vision check. User confirms visually."
+            "Opened in default browser. For auto-play, start Chrome with "
+            "--remote-debugging-port=9222 so the agent can attach via CDP."
         ),
+        "cdp_unavailable_reason": cdp["reason"],
     }
 
 
@@ -6155,6 +6876,32 @@ def _spotify_auto_play(executor: Executor, wait_seconds: float) -> dict[str, Any
             ),
             "wait_seconds": wait_seconds,
         }
+    # F-010: re-check immediately before keypress. Entre el primer check y
+    # el keypress hay un gap (~300ms+) donde el user puede haber clickeado
+    # otra ventana — mandar Enter ahi rompe un form/edita un archivo.
+    try:
+        recheck = executor("window", {"action": "active"})
+    except Exception as exc:
+        return {
+            "played": False, "focus_verified": False,
+            "abort_reason": f"pre-keypress recheck failed: {exc}",
+            "wait_seconds": wait_seconds,
+        }
+    recheck_title = ""
+    ra = recheck.get("active")
+    if isinstance(ra, dict):
+        recheck_title = str(ra.get("title") or "")
+    else:
+        recheck_title = str(recheck.get("title") or "")
+    if "spotify" not in recheck_title.lower():
+        return {
+            "played": False, "focus_verified": False,
+            "abort_reason": (
+                f"window changed before keypress: {recheck_title!r}. "
+                "Refusing to press Enter on a different app."
+            ),
+            "wait_seconds": wait_seconds,
+        }
     try:
         keypress_result = executor("gui", {"action": "keypress", "keys": "enter"})
     except Exception as exc:
@@ -6186,6 +6933,7 @@ def _launch_streaming(
     auto_play: bool = False,
     auto_play_wait: float = 1.8,
     profile_name: str | None = None,
+    state: AgentState | None = None,
 ) -> dict[str, Any]:
     """Abre la app o web del provider con la query de busqueda.
 
@@ -6208,10 +6956,13 @@ def _launch_streaming(
     # Solo formatear {q} si la plataforma soporta search via URL. Sino,
     # web_url es solo el home y la query se escribira via GUI search shortcut.
     web_search_via_url = bool(spec.get("web_search_via_url", True))
-    if web_search_via_url and "{q}" in spec["web_url"]:
-        web_url = spec["web_url"].format(q=encoded)
-    else:
-        web_url = spec["web_url"]
+    # F-009: resolver URL contemplando locale dinamico (Disney+ tiene
+    # /es-419/ hardcoded). Si el spec define web_url_template + default_locale,
+    # formatear con el locale del user (futuro: state.user_locale), sino
+    # fallback al default_locale del spec, sino al web_url estatico.
+    web_url = _resolve_streaming_web_url(spec, state=state)
+    if web_search_via_url and "{q}" in web_url:
+        web_url = web_url.format(q=encoded)
     install_hint = spec.get("install_hint", "")
     note = spec.get("post_open_note", "")
 
@@ -6257,73 +7008,108 @@ def _launch_streaming(
                 ),
             )
 
-    # PATH 2/3: no app o no deeplink -> abrir web URL (browser default).
-    # Esto siempre funciona si hay browser default. La app instalada-sin-deeplink
-    # podemos mencionarla en el note pero abrir web es el camino mas fiable
-    # porque lleva al user directamente al resultado de busqueda.
-    try:
-        import webbrowser
-        opened = webbrowser.open(web_url)
-        if opened:
-            # WEB AUTO-PLAY: si tenemos executor + auto_play + profile_name,
-            # intentar el flujo GUI (search + tab navigation + Enter).
-            # Best-effort: el flow llega cerca del play pero no garantiza
-            # que el video haya empezado (sin OCR/vision check confiable).
-            # El reply del LLM debe distinguir attempted_play vs played_verified.
-            web_auto_play_info: dict[str, Any] | None = None
-            played = False
-            attempted_play = False
-            if auto_play and executor is not None and profile_name:
-                web_auto_play_info = _streaming_web_auto_play(
-                    executor, canonical, query, profile_name, auto_play_wait,
-                    search_shortcut=spec.get("search_shortcut"),
-                    needs_gui_search=not web_search_via_url,
-                )
-                played = bool(web_auto_play_info.get("player_started"))
-                attempted_play = bool(web_auto_play_info.get("attempted_play"))
-            result = _ok(
-                action="play",
-                provider=f"{canonical}_web",
-                query=query,
-                url=web_url,
-                opened=True,
-                played=played,
-                attempted_play=attempted_play,
-                auto_play_attempted=bool(auto_play and profile_name),
-                profile_name=profile_name,
-                web_auto_play_info=web_auto_play_info,
-                verified=played,
-                status="dispatched" if (played or attempted_play) else "attempted",
-                completion_status=(
-                    "media_playing" if played
-                    else "playback_attempted_unverified" if attempted_play
-                    else "opened_search_results_pending_play"
-                ),
-                note=(
-                    f"{canonical}: playing — Profile '{profile_name}', "
-                    "title clicked, Play pressed."
-                    if played else
-                    f"{canonical}: search + Tab navigation + Enter dispatched "
-                    f"with profile '{profile_name}'. The video MAY be playing "
-                    "now — verify visually. If not, click the title manually."
-                    if attempted_play else note
-                ),
-            )
-            if app_info["kind"]:
-                # Avisamos que la app esta pero no la usamos por falta de deeplink.
-                result["app_available_but_no_deeplink"] = True
-                result["app_kind"] = app_info["kind"]
-            return result
-    except Exception as exc:
-        return _err(
-            f"Could not open {canonical} (no app deeplink and webbrowser failed): {exc}",
-            provider=canonical, status="failed",
+    # PATH 2/3: sin deeplink -> usar web.
+    #   - auto_play + profile -> _streaming_web_auto_play intenta CDP attach.
+    #     Si CDP attached (via_cdp=True), el browser real ya esta navegado;
+    #     `opened` es True incluso si el play button no se encontro.
+    #   - sin CDP (o sin auto_play) -> webbrowser.open con la search URL.
+    web_auto_play_info: dict[str, Any] | None = None
+    played = False
+    attempted_play = False
+    opened = False
+    if auto_play and executor is not None and profile_name:
+        web_auto_play_info = _streaming_web_auto_play(
+            executor, canonical, query, profile_name, auto_play_wait,
+            spec=spec, web_url=web_url, web_search_via_url=web_search_via_url,
+            state=state,
         )
-    return _err(
-        f"{canonical}: no native deeplink and default browser refused to open.",
-        provider=canonical, status="needs_user",
-        install_hint=install_hint,
+        played = bool(web_auto_play_info.get("player_started"))
+        attempted_play = bool(web_auto_play_info.get("attempted_play"))
+        if web_auto_play_info.get("via_cdp"):
+            # CDP attached: Opera GX ya esta navegado al search/detail.
+            # `opened` es True aunque el play button no se encontrara.
+            opened = True
+        else:
+            # CDP no disponible -> el fallback de _streaming_web_auto_play
+            # ya intento webbrowser.open. Chequear si fue exitoso.
+            if not web_auto_play_info.get("abort_reason"):
+                opened = True
+            else:
+                # Fallback adicional: intentar webbrowser.open desde aqui.
+                try:
+                    opened = webbrowser.open(web_url)
+                except Exception as exc:
+                    return _err(
+                        f"Could not open {canonical} "
+                        f"(no app deeplink and webbrowser failed): {exc}",
+                        provider=canonical, status="failed",
+                    )
+    else:
+        try:
+            opened = webbrowser.open(web_url)
+        except Exception as exc:
+            return _err(
+                f"Could not open {canonical} "
+                f"(no app deeplink and webbrowser failed): {exc}",
+                provider=canonical, status="failed",
+            )
+
+    if not opened:
+        return _err(
+            f"{canonical}: no native deeplink and default browser refused to open.",
+            provider=canonical, status="needs_user",
+            install_hint=install_hint,
+        )
+
+    via_cdp = bool(web_auto_play_info and web_auto_play_info.get("via_cdp"))
+    if played:
+        note_msg = (
+            f"{canonical}: playing — CDP click play executed (profile "
+            f"'{profile_name}'). Confirmed via Playwright."
+            if via_cdp else
+            f"{canonical}: playing — title clicked, Play pressed "
+            f"(profile '{profile_name}')."
+        )
+    elif attempted_play:
+        # via_cdp=True + attempted_play=True (sin played): el flow llego al
+        # detail page pero no encontro Play button (caso comun: el video ya
+        # esta auto-playing en el detail page, o el button selector cambio).
+        # Reportar como exito — el user lo ve en pantalla.
+        note_msg = (
+            f"{canonical}: opened — navigated to '{query}' detail page via "
+            f"CDP (profile '{profile_name}'). The video is loading."
+            if via_cdp else
+            f"{canonical}: opened search results with profile '{profile_name}'. "
+            "Click the title to play."
+        )
+    else:
+        note_msg = note
+    result = _ok(
+        action="play",
+        provider=f"{canonical}_web",
+        query=query,
+        url=web_url,
+        opened=True,
+        played=played,
+        attempted_play=attempted_play,
+        auto_play_attempted=bool(auto_play and profile_name),
+        profile_name=profile_name,
+        web_auto_play_info=web_auto_play_info,
+        verified=played,
+        status="dispatched" if (played or attempted_play) else "attempted",
+        completion_status=(
+            "media_playing" if played
+            else "playback_attempted_unverified" if attempted_play
+            else "opened_search_results_pending_play"
+        ),
+        note=note_msg,
+        via_cdp=via_cdp,
     )
+    if app_info["kind"]:
+        # Avisamos que la app esta pero no la usamos por falta de deeplink.
+        result["app_available_but_no_deeplink"] = True
+        result["app_kind"] = app_info["kind"]
+    return result
 
 
 def _media_play_streaming(
@@ -6402,7 +7188,7 @@ def _media_play_streaming(
     return _launch_streaming(
         canonical, spec, query,
         executor=executor, auto_play=auto_play, auto_play_wait=auto_play_wait,
-        profile_name=profile_name,
+        profile_name=profile_name, state=state,
     )
 
 

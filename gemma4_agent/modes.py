@@ -36,7 +36,13 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             system_hint=(
                 "Mode: research. Use web(...) for extracted sources. You may use multiple "
                 "independent web/search tool calls in one assistant turn, but do not claim "
-                "facts without returned source evidence."
+                "facts without returned source evidence. "
+                "REPLY FORMAT: voice assistant style. 2-4 frases corridas en texto plano. "
+                "NO markdown, NO bullets, NO **bold**, NO headers '#', NO listas numeradas. "
+                "Solo el dato pedido en prosa fluida. Si el user pide algo factual "
+                "concreto (fecha, nombre, precio), respondé eso primero en UNA frase, "
+                "después una breve elaboración si aporta. Ej: 'GTA 5 salió el 17 de "
+                "septiembre de 2013 en PS3 y Xbox 360. La versión de PC llegó en 2015.'"
             ),
         )
     if inferred == "vision_action":
@@ -83,8 +89,12 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         parallel_tool_calls=False,
         max_tokens=min(base_max_tokens, 384),
         system_hint=(
-            "Mode: fast_action. Keep reasoning short and use the smallest sufficient tool "
-            "sequence. Answer directly for normal questions."
+            "Mode: fast_action. You are a VOICE assistant — Alexa/Jarvis style. "
+            "Reply in 1-2 sentences MAX, plain text. NO markdown, NO bullet "
+            "lists, NO headers, NO emojis, NO disclaimers, NO 'te recomiendo X'. "
+            "Direct facts only. If the user asks 'cuando salio GTA 5' say "
+            "'17 de septiembre de 2013' — punto. No bullets, no extra context. "
+            "If a tool finished, ONE confirmation: 'Listo, X.' Nothing more."
         ),
     )
 
@@ -144,6 +154,25 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
     action_score = sum(1 for marker in action_markers if marker in low)
     if sequence_score or action_score >= 2 or len(text) > 180:
         return "deep_action"
+
+    # F-004: queries informativas (explicaciones, comparaciones, listas,
+    # cronologias) necesitan budget grande. fast_action con max_tokens=384
+    # trunca mid-sentence en respuestas de 2+ parrafos. Markers ya estan
+    # "folded" (lowercase + sin acentos) porque `low` paso por _fold_text.
+    info_markers = (
+        " explica ", " explicame ", " explicar ",
+        " describ ", " describime ", " describeme ",
+        " compara ", " comparar ", " comparame ",
+        " orden ", " lista ", " cronolog ",
+        " diferencia ", " diferencias ",
+        " porque ", " por que ",
+        " razon ",
+        " resumi ", " resumime ", " resumen ",
+        " todos los ", " todas las ",
+        " pasos para ", " como funciona ",
+    )
+    if any(m in low for m in info_markers):
+        return "research"
 
     return "fast_action"
 

@@ -145,7 +145,14 @@ def select_tool_names(
             semantic_fallback_used = bool(names)
 
     if not names:
-        return ["safety"] if safety_enabled else []
+        # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",
+        # "stop", "espera"). Expose session.cancel_turn so the LLM can pick
+        # it without falling back to a generic reply.
+        base = ["session"]
+        if safety_enabled:
+            base.append("safety")
+        select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
+        return base
 
     # Same negative anchor as in _suggest_tools: if the user mentioned "perfil"
     # / "profile" but NO email-specific keyword, semantic fallback sometimes
@@ -164,6 +171,12 @@ def select_tool_names(
     if safety_enabled:
         expanded.append("safety")
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
+    # session.cancel_turn is always reachable so the LLM can interrupt the
+    # current turn in any language without depending on a keyword list. We
+    # append it AFTER the cap so it cannot be dropped — its description is
+    # small (~330 tokens) and the LLM ignores it when not applicable.
+    if "session" not in capped:
+        capped.append("session")
     # Stash signal on the function so the agent can record it in traces.
     select_tool_names._last_fallback_used = semantic_fallback_used  # type: ignore[attr-defined]
     return capped
@@ -678,6 +691,58 @@ def _suggest_tools(step: str) -> list[str]:
         # "read|extract|summarize <doc>" wins over "office" (which is for creation).
         if "office" in tools:
             tools.remove("office")
+
+    # IDENTITY / "WHO AM I" questions: chequear memory primero.
+    # "como me llamo", "cual es mi nombre", "quien soy", "what's my name",
+    # "remember my name". Estos NUNCA deberian responder "no se" sin chequear.
+    if re.search(
+        r"\b(como me llamo|cual es mi nombre|mi nombre|"
+        r"quien soy|quien soi|"
+        r"what'?s my name|what is my name|my name|who am i|"
+        r"como me chamo|qual e meu nome|"
+        r"comment je m'appelle|quel est mon nom|"
+        r"come mi chiamo|qual e il mio nome)\b",
+        low,
+    ):
+        if "memory" not in tools:
+            tools.insert(0, "memory")
+
+    # FACTUAL KNOWLEDGE questions ("habla de X", "que es X", "quien es X",
+    # "cuando salio X", "donde queda X", "como funciona X"). Si el LLM duda,
+    # debe poder llamar web. Incluir `web` en el subset.
+    # Heuristica: pregunta interrogativa + sustantivo (no es PC action obvia).
+    pc_action_keywords = (
+        "abre", "abrir", "cierra", "open", "close", "click",
+        "instala", "install", "borra", "delete", "copia",
+        "pon ", "play ", "pausa", "stop", "screenshot",
+        "envia", "send", "manda", "escribi", "type",
+    )
+    is_pc_action = any(kw in low for kw in pc_action_keywords)
+    interrogative = bool(
+        re.search(
+            r"\b(que es|que era|quien es|quien era|quien fue|"
+            r"cual es|cuales son|cuanto cuesta|cuanto vale|"
+            r"cuando salio|cuando se estreno|cuando lanzaron|cuando fue|cuando nacio|cuando murio|"
+            r"donde queda|donde esta|donde se|donde nacio|"
+            r"como funciona|como se hace|por que|porque|"
+            r"hablame de|hablame del|cuentame de|cuentame del|sabes de|sabes quien|"
+            r"what is|what was|who is|who was|which is|"
+            r"when did|when was|where is|where was|how does|why is|why does)\b",
+            low,
+        )
+        or low.strip().endswith("?")
+        or low.strip().endswith("¿")
+    )
+    if interrogative and not is_pc_action and "web" not in tools:
+        # Solo agregar web si la pregunta tiene una entidad referenciada
+        # (proper noun o sustantivo). Heuristica simple: 4+ palabras y no
+        # es smalltalk.
+        word_count = len(low.split())
+        if word_count >= 4 and not re.search(
+            r"\b(como estas|how are you|que tal|que pasa|hola|hello)\b",
+            low,
+        ):
+            tools.append("web")
 
     return _dedupe(tools)
 
