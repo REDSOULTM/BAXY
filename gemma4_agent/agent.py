@@ -670,11 +670,12 @@ class Gemma4Agent:
         try:
             from .router_v2 import is_enabled as _v2_enabled, is_shadow as _v2_shadow, route_v2
             _v2_on = _v2_enabled()
-            _shadow = _v2_shadow()
+            _shadow = (not _v2_on) and _v2_shadow()  # shadow only when v1 still authoritative
             if _v2_on or _shadow:
                 _v2_subset, _v2_telemetry = route_v2(raw_text_early or "")
                 self.trace.event(
                     turn_id, "router_v2",
+                    authoritative=_v2_on,
                     shadow=_shadow,
                     v2_subset=list(_v2_subset),
                     v1_subset=list(selected_tool_names),
@@ -683,7 +684,7 @@ class Gemma4Agent:
                     disagreement_v1_only=sorted(set(selected_tool_names) - set(_v2_subset)),
                     **_v2_telemetry,
                 )
-                if _v2_on and not _shadow:
+                if _v2_on:
                     selected_tool_names = list(_v2_subset)
         except Exception as _v2_exc:  # noqa: BLE001 — never break a turn
             try:

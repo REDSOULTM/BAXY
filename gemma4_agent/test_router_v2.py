@@ -37,13 +37,50 @@ _HAS_MODEL = MODEL_PATH.exists()
 class EnvFlagsTest(unittest.TestCase):
     """The env-gating helpers must work whether or not the model is on disk."""
 
-    def test_is_enabled_false_without_env(self) -> None:
-        old = os.environ.pop("GEMMA4_ROUTER_V2", None)
+    def test_is_enabled_default_matches_model_presence(self) -> None:
+        """Hotfix E 2026-05-17: is_enabled() now defaults ON when the
+        e5-small model is on disk. Without an explicit env var, the
+        result tracks MODEL_PATH.exists() AND singleton availability.
+        """
+        old_v2 = os.environ.pop("GEMMA4_ROUTER_V2", None)
+        old_v1_only = os.environ.pop("GEMMA4_ROUTER_V1_ONLY", None)
+        try:
+            if MODEL_PATH.exists():
+                self.assertTrue(is_enabled(),
+                                "v2 should default ON when model present")
+            else:
+                self.assertFalse(is_enabled(),
+                                 "v2 should default OFF when model absent")
+        finally:
+            if old_v2 is not None:
+                os.environ["GEMMA4_ROUTER_V2"] = old_v2
+            if old_v1_only is not None:
+                os.environ["GEMMA4_ROUTER_V1_ONLY"] = old_v1_only
+
+    def test_is_enabled_v1_only_flag_forces_off(self) -> None:
+        old_v1_only = os.environ.get("GEMMA4_ROUTER_V1_ONLY")
+        os.environ["GEMMA4_ROUTER_V1_ONLY"] = "1"
         try:
             self.assertFalse(is_enabled())
         finally:
-            if old is not None:
-                os.environ["GEMMA4_ROUTER_V2"] = old
+            if old_v1_only is None:
+                os.environ.pop("GEMMA4_ROUTER_V1_ONLY", None)
+            else:
+                os.environ["GEMMA4_ROUTER_V1_ONLY"] = old_v1_only
+
+    def test_is_enabled_explicit_off_overrides_default(self) -> None:
+        old_v2 = os.environ.get("GEMMA4_ROUTER_V2")
+        old_v1_only = os.environ.pop("GEMMA4_ROUTER_V1_ONLY", None)
+        os.environ["GEMMA4_ROUTER_V2"] = "0"
+        try:
+            self.assertFalse(is_enabled())
+        finally:
+            if old_v2 is None:
+                os.environ.pop("GEMMA4_ROUTER_V2", None)
+            else:
+                os.environ["GEMMA4_ROUTER_V2"] = old_v2
+            if old_v1_only is not None:
+                os.environ["GEMMA4_ROUTER_V1_ONLY"] = old_v1_only
 
     def test_is_shadow_default_when_model_present(self) -> None:
         """Without an explicit env, shadow defaults to ON if model

@@ -446,14 +446,26 @@ def route_v2(query: str) -> tuple[list[str], dict[str, Any]]:
 
 
 def is_enabled() -> bool:
-    """True iff env ``GEMMA4_ROUTER_V2`` is on AND the model loaded.
+    """v2 is the authoritative router by default when the model is
+    available (hotfix E 2026-05-17, Sprint 8c activation).
 
-    Callers should treat False as "router_v2 silently unavailable;
-    use the existing v1 (planner + semantic_router) pipeline".
+    Operator controls:
+      GEMMA4_ROUTER_V1_ONLY=1   -> force v1 (regex planner) only.
+      GEMMA4_ROUTER_V2=0/false  -> same effect; explicit.
+      <unset> + model present   -> v2 is authoritative.
+      <unset> + model absent    -> v1 fallback automatically.
+
+    If router_v2 fails to load (sticky _load_failed), v1 is the
+    automatic fallback — no env var needed.
     """
-    raw = (os.environ.get("GEMMA4_ROUTER_V2") or "").strip().lower()
-    if raw not in {"1", "true", "yes", "on"}:
+    v1_only = (os.environ.get("GEMMA4_ROUTER_V1_ONLY") or "").strip().lower()
+    if v1_only in {"1", "true", "yes", "on"}:
         return False
+    explicit = (os.environ.get("GEMMA4_ROUTER_V2") or "").strip().lower()
+    if explicit in {"0", "false", "no", "off"}:
+        return False
+    if explicit in {"1", "true", "yes", "on"}:
+        return RouterV2.get().is_available()
     return RouterV2.get().is_available()
 
 
