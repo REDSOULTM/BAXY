@@ -35,3 +35,7 @@ Thumbs.db
 
 # Vulkan results archivados
 results/_vulkan_archive/
+
+# Voice/trace dumps (not source-controlled; rotate via TraceLogger)
+traces_*.txt
+voice_debug*.log
