@@ -660,6 +660,36 @@ class Gemma4Agent:
                             user_text=raw_text[:60],
                         )
         semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
+        # Sprint 8a: router_v2 opt-in. By default this block is a no-op
+        # (v2 is gated by GEMMA4_ROUTER_V2). In SHADOW mode it only
+        # logs how v2 would have routed without changing v1's pick;
+        # this is what we'll run during Sprint 8c's blind test. With
+        # the real flag on, v2's subset REPLACES v1's; the persona
+        # nudge / continuation-inherit logic below still applies on
+        # top of either pick.
+        try:
+            from .router_v2 import is_enabled as _v2_enabled, is_shadow as _v2_shadow, route_v2
+            _v2_on = _v2_enabled()
+            _shadow = _v2_shadow()
+            if _v2_on or _shadow:
+                _v2_subset, _v2_telemetry = route_v2(raw_text_early or "")
+                self.trace.event(
+                    turn_id, "router_v2",
+                    shadow=_shadow,
+                    v2_subset=list(_v2_subset),
+                    v1_subset=list(selected_tool_names),
+                    agreement=sorted(set(_v2_subset) & set(selected_tool_names)),
+                    disagreement_v2_only=sorted(set(_v2_subset) - set(selected_tool_names)),
+                    disagreement_v1_only=sorted(set(selected_tool_names) - set(_v2_subset)),
+                    **_v2_telemetry,
+                )
+                if _v2_on and not _shadow:
+                    selected_tool_names = list(_v2_subset)
+        except Exception as _v2_exc:  # noqa: BLE001 — never break a turn
+            try:
+                self.trace.event(turn_id, "router_v2_error", error=str(_v2_exc))
+            except Exception:
+                pass
         # Persona nudge: ensure the persona's preferred tools are in the
         # subset. Append without duplicating; _cap_tools later trims if it
         # blows the limit. Default persona has no preferred tools so this is
