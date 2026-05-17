@@ -763,3 +763,136 @@
       - "enable magnifier"
       - "turn on the color blindness filter"
       - "read aloud what's on screen"
+
+- name: filesystem
+  purpose: |
+    File and folder operations — create, copy, move, rename,
+    delete, list, read, write, chmod-equivalent (ACLs). Resolves
+    user-friendly paths ("escritorio", "descargas", "documentos").
+    Use for "borrame X", "moveme Y a Z", "creame una carpeta".
+  domain: storage
+  example_queries:
+    es:
+      - "borrame el archivo viejo.pdf del escritorio"
+      - "moveme todos los pdf de descargas a documentos"
+      - "creame una carpeta nueva llamada proyectos en el escritorio"
+      - "renombrame el archivo informe.docx a informe-final.docx"
+      - "copiame la carpeta fotos a la unidad D"
+      - "mostrame que hay en mi escritorio"
+      - "abrime la carpeta de descargas"
+    en:
+      - "delete old.pdf from the desktop"
+      - "move all pdfs from downloads to documents"
+      - "create a new folder called projects on the desktop"
+      - "rename report.docx to report-final.docx"
+      - "copy the photos folder to drive D"
+
+- name: backup_sync
+  purpose: |
+    OneDrive, Google Drive, Dropbox sync controls, backup
+    schedules, restore from version history, conflict resolution.
+    Use for "hace backup de X", "subi esto a onedrive",
+    "restaura la version de ayer".
+  domain: storage
+  example_queries:
+    es:
+      - "hace un backup de mis documentos a onedrive"
+      - "subi esta carpeta a google drive"
+      - "restaurame la version de ayer de informe.docx"
+      - "que archivos estan sincronizando ahora"
+      - "pausa la sincronizacion de dropbox"
+      - "mostrame el historial de versiones de este excel"
+    en:
+      - "backup my documents to onedrive"
+      - "upload this folder to google drive"
+      - "restore yesterday's version of report.docx"
+      - "which files are syncing now"
+      - "pause dropbox sync"
+
+- name: local_search
+  purpose: |
+    Full-text search across local files (Everything-style),
+    file metadata search, content-based search inside docs/PDFs.
+    Distinct from web (online) and knowledge (curated notes).
+    Use for "buscame el archivo X", "donde guarde Y".
+  domain: storage
+  example_queries:
+    es:
+      - "buscame el archivo donde dice presupuesto 2026"
+      - "donde guarde la foto de las vacaciones en bariloche"
+      - "buscame todos los excel modificados esta semana"
+      - "encontrame el pdf con el contrato de alquiler"
+      - "donde tengo guardado el cv"
+      - "buscame archivos mas grandes de 1gb"
+    en:
+      - "find the file that says budget 2026"
+      - "where did I save the bariloche vacation photo"
+      - "find all excels modified this week"
+      - "find the pdf with the lease contract"
+      - "where is my resume saved"
+
+- name: download
+  purpose: |
+    Download files from URLs, manage download queue, resume
+    interrupted downloads, organize by type into target folders.
+    Different from web (browsing) — this is for explicit file
+    fetches. Use for "bajame X", "descargame de esta url".
+  domain: storage
+  example_queries:
+    es:
+      - "bajame este pdf de la url"
+      - "descargame todas las imagenes de esta pagina"
+      - "pausame la descarga del torrent"
+      - "donde se guardo lo que acabo de bajar"
+      - "descargame esto y guardalo en documentos"
+      - "reanudame la descarga que se corto"
+    en:
+      - "download this pdf from the url"
+      - "download all images from this page"
+      - "pause the torrent download"
+      - "where was the thing I just downloaded saved"
+      - "download this and save it in documents"
+
+- name: container
+  purpose: |
+    Docker / podman container lifecycle — list, start, stop,
+    inspect, pull images, exec into a container, view logs.
+    Use for "levantame el contenedor de X", "mostrame los logs
+    de Y".
+  domain: storage
+  example_queries:
+    es:
+      - "levantame el contenedor de postgres"
+      - "mostrame los containers que estan corriendo"
+      - "parame el container nginx"
+      - "mostrame los logs del container api"
+      - "baja la imagen de mongo latest"
+      - "metete al container de python"
+    en:
+      - "start the postgres container"
+      - "show me running containers"
+      - "stop the nginx container"
+      - "show logs from the api container"
+      - "pull mongo latest image"
+
+- name: database
+  purpose: |
+    Connect to local databases — sqlite, postgres, mysql — run
+    SELECT/INSERT/UPDATE queries, inspect schemas, dump and
+    restore. Use for "consultame X en la base", "que tablas
+    tiene Y".
+  domain: storage
+  example_queries:
+    es:
+      - "consultame los ultimos 10 pedidos de la base ventas"
+      - "que tablas tiene la base local de la app"
+      - "exportame la tabla usuarios a csv"
+      - "conectate a postgres en localhost"
+      - "cuantos registros hay en clientes"
+      - "hace un dump de la base sqlite"
+    en:
+      - "query the last 10 orders from the sales db"
+      - "what tables does the app's local db have"
+      - "export the users table to csv"
+      - "connect to postgres on localhost"
+      - "how many records in customers"
