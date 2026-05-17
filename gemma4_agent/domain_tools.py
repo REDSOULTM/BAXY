@@ -6778,7 +6778,42 @@ def _streaming_web_auto_play(
     }
 
 
-def _spotify_auto_play(executor: Executor, wait_seconds: float) -> dict[str, Any]:
+def _detect_spotify_already_running(executor: Executor) -> bool:
+    """Devuelve True si hay una ventana 'Spotify' visible antes de mandar
+    el deeplink.
+
+    Importa para el wait dinamico: cuando Spotify ya esta abierto mostrando
+    el player view, el deeplink `spotify:search:<q>` tarda 2-4s en navegar
+    a search results. Default `auto_play_wait=1.8s` alcanza para cold-launch
+    (el splash + load tarda mas que la navegacion intra-app) pero NO para
+    warm — Enter dispara mientras la UI todavia esta en player view y
+    reproduce lo que esta en la cola.
+    """
+    try:
+        windows = executor("window", {"action": "list"})
+    except Exception:
+        return False
+    if not isinstance(windows, dict):
+        return False
+    items = windows.get("windows") or windows.get("items") or []
+    if not isinstance(items, list):
+        return False
+    for w in items:
+        title = ""
+        if isinstance(w, dict):
+            title = str(w.get("title") or "")
+        else:
+            title = str(w)
+        if "spotify" in title.lower():
+            return True
+    return False
+
+
+def _spotify_auto_play(
+    executor: Executor,
+    wait_seconds: float,
+    query: str | None = None,
+) -> dict[str, Any]:
     """Tras enviar spotify:search:<q>, esperar carga, focus + verify ventana
     Spotify, y mandar Enter para reproducir el primer resultado.
 
@@ -6786,11 +6821,17 @@ def _spotify_auto_play(executor: Executor, wait_seconds: float) -> dict[str, Any
     con la primera fila (track top) seleccionada. Un Enter reproduce
     ese track.
 
+    Si se pasa `query`, post-keypress se chequea el now-playing title de
+    Spotify para validar que coincide con la query (heuristica: alguna
+    palabra >=4 chars de la query aparece en el title).
+
     Returns dict con keys:
       - played: bool
       - focus_verified: bool
       - abort_reason: str | None
       - wait_seconds: float
+      - post_play_title: str (si query no es None)
+      - query_match: True / False / None (si query no es None)
     """
     import time as _time
     _time.sleep(max(0.5, wait_seconds))
@@ -6866,11 +6907,38 @@ def _spotify_auto_play(executor: Executor, wait_seconds: float) -> dict[str, Any
             "abort_reason": f"keypress returned: {keypress_result.get('error', 'unknown')}",
             "wait_seconds": wait_seconds,
         }
+    # Post-keypress: validar que el track tocando matchea la query.
+    # Spotify muestra el now-playing en el window title (formato tipico:
+    # "Track Name • Artist Name"). Heuristica conservadora: alguna palabra
+    # >=4 chars de la query aparece en el title. NO penalizamos si no
+    # matchea — solo reportamos query_match=False para que el LLM sepa.
+    post_play_title = ""
+    query_match: bool | None = None
+    if query:
+        _time.sleep(0.8)  # dar tiempo a Spotify a actualizar el title
+        try:
+            now_active = executor("window", {"action": "active"})
+        except Exception:
+            now_active = {}
+        if isinstance(now_active, dict):
+            na = now_active.get("active")
+            if isinstance(na, dict):
+                post_play_title = str(na.get("title") or "")
+            else:
+                post_play_title = str(now_active.get("title") or "")
+        query_words = [w for w in str(query).lower().split() if len(w) >= 4]
+        title_lower = post_play_title.lower()
+        if query_words:
+            query_match = any(w in title_lower for w in query_words)
+        else:
+            query_match = None
     return {
         "played": True, "focus_verified": True,
         "abort_reason": None,
         "wait_seconds": wait_seconds,
         "active_window_title": active_title,
+        "post_play_title": post_play_title,
+        "query_match": query_match,
     }
 
 
@@ -6935,8 +7003,44 @@ def _launch_streaming(
             # primera cancion del resultado de busqueda.
             auto_play_info: dict[str, Any] | None = None
             if auto_play and executor is not None and canonical == "spotify":
-                auto_play_info = _spotify_auto_play(executor, auto_play_wait)
+                # Si Spotify ya estaba abierto, el deeplink demora mas en
+                # navegar de player view a search results. El default 1.8s
+                # alcanza para cold-launch pero NO para warm — subimos a 3.5s.
+                already_open = _detect_spotify_already_running(executor)
+                effective_wait = (
+                    max(auto_play_wait, 3.5) if already_open else auto_play_wait
+                )
+                auto_play_info = _spotify_auto_play(executor, effective_wait, query=query)
+                if auto_play_info is not None:
+                    auto_play_info["was_already_open"] = already_open
+                    auto_play_info["wait_seconds_used"] = effective_wait
             played = bool(auto_play_info and auto_play_info.get("played"))
+            qmatch = auto_play_info.get("query_match") if auto_play_info else None
+            # Si played=True pero query_match=False, no marcamos verified=True.
+            # El LLM debe saber que el Enter funciono pero el track tocando
+            # probablemente no es lo que el user pidio.
+            verified = played and qmatch is not False
+            if not played:
+                completion_status = "opened_search_results_pending_play"
+                final_note = note
+            elif qmatch is True:
+                completion_status = "media_playing_match"
+                final_note = (
+                    f"{canonical}: playing — Spotify focused, Enter pressed; "
+                    f"now-playing title matches query."
+                )
+            elif qmatch is False:
+                completion_status = "media_playing_wrong_track"
+                final_note = (
+                    f"{canonical}: played — WARN: now-playing title does not match "
+                    f"query (possible warm-cache race; queued track may have played "
+                    f"instead of search result)."
+                )
+            else:
+                completion_status = "media_playing_unverified"
+                final_note = (
+                    f"{canonical}: playing — Spotify focused, Enter pressed on first result."
+                )
             return _ok(
                 action="play",
                 provider=canonical,
@@ -6948,14 +7052,11 @@ def _launch_streaming(
                 played=played,
                 auto_play_attempted=auto_play,
                 auto_play_info=auto_play_info,
-                verified=played,
+                verified=verified,
+                query_match=qmatch,
                 status="dispatched" if played else "attempted",
-                completion_status="media_playing" if played
-                                   else "opened_search_results_pending_play",
-                note=(
-                    f"{canonical}: playing — Spotify focused, Enter pressed on first result."
-                    if played else note
-                ),
+                completion_status=completion_status,
+                note=final_note,
             )
 
     # PATH 2/3: sin deeplink -> usar web.
