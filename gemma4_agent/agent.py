@@ -75,6 +75,18 @@ class Gemma4Agent:
         # Gemma4Agent. We give the registry a back-reference so it can call us.
         self.tools.parent_agent = self  # type: ignore[attr-defined]
         self.trace = TraceLogger(self.config.trace_path, self.config.enable_tracing)
+        # Sprint 7.2: TTL purge of stale closed resources on startup so
+        # state.json doesn't accumulate zombie entries forever. Wrapped in
+        # try/except — purge MUST NEVER break boot.
+        try:
+            _purge = self.state.purge_stale_closed(max_age_days=7)
+            if _purge.get("purged", 0) > 0:
+                self.trace.event("startup", "state_purge", **_purge)
+        except Exception as _exc:
+            import logging as _logging
+            _logging.getLogger(__name__).warning(
+                "state.json purge_stale_closed failed: %s", _exc,
+            )
         from .experience import ExperienceMemory
         self.experience = ExperienceMemory(self.config.memory_path.parent / "experience.sqlite")
         self.history: list[dict[str, Any]] = []

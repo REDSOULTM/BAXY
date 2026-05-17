@@ -180,6 +180,60 @@ class AgentState:
             self._save(data)
             return {"ok": True, "resource": resource}
 
+    def purge_stale_closed(self, max_age_days: int = 7) -> dict[str, Any]:
+        """Drop closed resources older than ``max_age_days``.
+
+        Resources with ``status == "closed"`` and a ``closed_at`` timestamp
+        older than the cutoff are removed. Closed resources WITHOUT a
+        ``closed_at`` (legacy entries written before this field existed)
+        are also dropped — we assume they are old enough to discard.
+        Closed resources with a malformed ``closed_at`` are dropped for
+        the same reason.
+
+        Open resources are never touched, regardless of age.
+
+        Sprint 7.2: introduced to prevent state.json from accumulating
+        zombie ``closed`` entries forever. Called once on Gemma4Agent
+        startup, in a try/except so a malformed state.json never breaks
+        boot.
+        """
+        import datetime as _dt
+        cutoff = _dt.datetime.now().astimezone() - _dt.timedelta(days=max_age_days)
+        with self._lock:
+            data = self._load()
+            resources = data.get("resources", {})
+            before = len(resources)
+            kept: dict[str, Any] = {}
+            for rid, r in resources.items():
+                status = str(r.get("status") or "")
+                if status != "closed":
+                    kept[rid] = r
+                    continue
+                closed_at = r.get("closed_at")
+                if not closed_at:
+                    # Legacy closed without timestamp: assume old, drop.
+                    continue
+                try:
+                    parsed = _dt.datetime.fromisoformat(str(closed_at))
+                    # Normalize naive timestamps to local tz so the
+                    # comparison with `cutoff` (which is tz-aware) works.
+                    if parsed.tzinfo is None:
+                        parsed = parsed.astimezone()
+                    if parsed > cutoff:
+                        kept[rid] = r
+                except (ValueError, TypeError):
+                    # Malformed timestamp: drop.
+                    continue
+            data["resources"] = kept
+            self._save(data)
+            return {
+                "ok": True,
+                "before": before,
+                "after": len(kept),
+                "purged": before - len(kept),
+                "max_age_days": max_age_days,
+            }
+
     def checkpoint(self, label: str, rollback: list[dict[str, Any]] | None = None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
         with self._lock:
             data = self._load()
