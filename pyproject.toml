@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gemma4_agent"
+version = "0.1.0"
+description = "Local voice-first agent runtime (Gemma 4 / Gemma 3n) with PyQt6 + FastAPI surfaces."
+requires-python = ">=3.11"
+readme = "README.md"
+dynamic = ["dependencies"]
+
+[project.scripts]
+gemma4-chat = "gemma4_agent.chat:main"
+gemma4-ui = "gemma4_agent.ui.app:main"
+gemma4-server = "gemma4_agent.server:main"
+gemma4-launcher = "gemma4_agent.launcher:main"
+
+[tool.setuptools.packages.find]
+include = ["gemma4_agent*"]
+exclude = ["gemma4_agent.docs*", "gemma4_agent.captures*", "gemma4_agent.logs*"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
