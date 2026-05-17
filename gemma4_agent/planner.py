@@ -82,6 +82,7 @@ def select_tool_names(
     *,
     safety_enabled: bool = False,
     last_assistant_text: str | None = None,
+    pending_intent: dict[str, Any] | None = None,
 ) -> list[str]:
     """Return a small, ordered tool subset for the current turn.
 
@@ -171,6 +172,15 @@ def select_tool_names(
     if safety_enabled:
         expanded.append("safety")
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
+    # Hotfix F 2026-05-17: pending_intent injection. If a previous turn
+    # left a tool waiting on user input (status='needs_user'), inject
+    # the tool at the head so it survives the cap. Language-agnostic:
+    # the slot is set on a STRUCTURAL tool result, never inferred from
+    # user text.
+    if pending_intent:
+        pi_tool = str((pending_intent or {}).get("tool") or "")
+        if pi_tool and pi_tool not in capped:
+            capped.insert(0, pi_tool)
     # session.cancel_turn is always reachable so the LLM can interrupt the
     # current turn in any language without depending on a keyword list. We
     # append it AFTER the cap so it cannot be dropped — its description is

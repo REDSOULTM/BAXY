@@ -313,3 +313,50 @@ class AgentState:
             item["result"] = result or {}
             self._save(data)
             return {"ok": True, "confirmation": item}
+
+    # ------------------------------------------------------------------
+    # Pending intent (hotfix F 2026-05-17)
+    # ------------------------------------------------------------------
+    # Cross-turn rescue slot. Triggered when a tool result returns
+    # status='needs_user'; consumed by router_v2 as a tool hint on the
+    # NEXT turn. Language-agnostic: the slot stores tool name + args,
+    # never user-reply text. See feat(state) commit in hotfix F.
+
+    def set_pending_intent(
+        self,
+        tool: str,
+        args: dict[str, Any],
+        asks_for: str,
+        current_turn: int,
+        ttl_turns: int = 3,
+    ) -> None:
+        with self._lock:
+            data = self._load()
+            data["_pending_intent"] = {
+                "tool": tool,
+                "args": dict(args or {}),
+                "asks_for": asks_for,
+                "created_turn": int(current_turn),
+                "ttl_turns": int(ttl_turns),
+            }
+            self._save(data)
+
+    def get_pending_intent(self, current_turn: int) -> dict[str, Any] | None:
+        with self._lock:
+            data = self._load()
+            pi = data.get("_pending_intent")
+            if not pi:
+                return None
+            if int(current_turn) - int(pi.get("created_turn", 0)) > int(pi.get("ttl_turns", 3)):
+                # TTL elapsed: self-clear on next read.
+                data.pop("_pending_intent", None)
+                self._save(data)
+                return None
+            return dict(pi)
+
+    def clear_pending_intent(self) -> None:
+        with self._lock:
+            data = self._load()
+            if "_pending_intent" in data:
+                data.pop("_pending_intent", None)
+                self._save(data)

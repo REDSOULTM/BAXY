@@ -568,10 +568,20 @@ class Gemma4Agent:
                 if isinstance(c, str) and c.strip():
                     last_assistant_text = c
                     break
+        # Hotfix F 2026-05-17: pending_intent cross-turn rescue.
+        # When a previous tool returned status='needs_user', the slot
+        # holds the tool name so the next turn's planner and router_v2
+        # can widen the subset toward it — regardless of the user's
+        # reply text (language-agnostic).
+        pending_intent = (
+            self.state.get_pending_intent(self._turn_counter)
+            if hasattr(self.state, "get_pending_intent") else None
+        )
         selected_tool_names = select_tool_names(
             content, plan,
             safety_enabled=self.config.enable_safety,
             last_assistant_text=last_assistant_text,
+            pending_intent=pending_intent,
         )
         # If a phrase-trigger routine already fired this turn, drop
         # session.cancel_turn from the subset. The user's phrase was
@@ -672,7 +682,14 @@ class Gemma4Agent:
             _v2_on = _v2_enabled()
             _shadow = (not _v2_on) and _v2_shadow()  # shadow only when v1 still authoritative
             if _v2_on or _shadow:
-                _v2_subset, _v2_telemetry = route_v2(raw_text_early or "")
+                # Hotfix F 2026-05-17: pass pending_tool_hint so a parked
+                # intent (status='needs_user' from prior turn) widens the
+                # subset regardless of the user reply's wording.
+                _pending_tool = (pending_intent or {}).get("tool") if pending_intent else None
+                _v2_subset, _v2_telemetry = route_v2(
+                    raw_text_early or "",
+                    pending_tool_hint=_pending_tool,
+                )
                 self.trace.event(
                     turn_id, "router_v2",
                     authoritative=_v2_on,
@@ -1202,6 +1219,40 @@ class Gemma4Agent:
                         failure_log.append({"step": len(events), "tool": name, "error": str(result.get("error") or "")[:300]})
                     else:
                         self.trace.event(turn_id, "failure_excluded_from_replan", tool=name, status=status_norm, completion=completion)
+
+                # Hotfix F 2026-05-17: pending_intent cross-turn rescue.
+                # When a tool returns status='needs_user' (a structural
+                # signal — never inferred from text), stash the intent
+                # so the next turn's router has a hint regardless of
+                # how the user phrases their reply. Cleared below when
+                # the same tool runs successfully.
+                _status_norm = str(result.get("status") or "").casefold()
+                if _status_norm == "needs_user" and hasattr(self.state, "set_pending_intent"):
+                    asks_for = str(
+                        result.get("asks_for")
+                        or result.get("missing")
+                        or "user_input"
+                    )
+                    self.state.set_pending_intent(
+                        tool=name,
+                        args=dict(args or {}),
+                        asks_for=asks_for,
+                        current_turn=self._turn_counter,
+                    )
+                    self.trace.event(
+                        turn_id, "pending_intent_set",
+                        tool=name, asks_for=asks_for,
+                    )
+                elif (
+                    pending_intent
+                    and pending_intent.get("tool") == name
+                    and not _is_unverified_result(result)
+                    and hasattr(self.state, "clear_pending_intent")
+                ):
+                    self.state.clear_pending_intent()
+                    self.trace.event(
+                        turn_id, "pending_intent_cleared", tool=name,
+                    )
                 _progress(
                     progress,
                     "tool_end",

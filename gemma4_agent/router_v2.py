@@ -357,14 +357,36 @@ class RouterV2:
     # Public entry
     # ------------------------------------------------------------------
 
-    def route(self, query: str) -> tuple[list[str], dict[str, Any]]:
+    def route(
+        self,
+        query: str,
+        *,
+        pending_tool_hint: str | None = None,
+    ) -> tuple[list[str], dict[str, Any]]:
         """Resolve a query to a tool subset.
 
         Returns ``(subset, telemetry)``. ``telemetry["source"]`` is one
         of: ``cache``, ``smalltalk``, ``hybrid``, ``disabled``,
         ``empty_query``. ``elapsed_ms`` is always present.
+
+        pending_tool_hint (hotfix F 2026-05-17): tool name from a
+        pending intent (set when a previous tool result returned
+        status='needs_user'). When present, that tool is injected
+        into the returned subset regardless of pipeline path —
+        cache, smalltalk, or hybrid. The LLM still decides whether
+        to call it; the hint only widens reachability.
         """
         import numpy as np
+
+        def _apply_hint(subset: list[str]) -> list[str]:
+            """Hotfix F 2026-05-17. Inject pending_tool_hint at the
+            head if missing. Pure helper so every return path applies
+            the same logic. No-op when hint is None or already present.
+            """
+            if pending_tool_hint and pending_tool_hint not in subset:
+                subset = [pending_tool_hint, *subset]
+                telemetry["pending_tool_injected"] = pending_tool_hint
+            return subset
 
         t0 = time.monotonic()
         telemetry: dict[str, Any] = {"source": "disabled", "elapsed_ms": 0.0}
@@ -372,12 +394,12 @@ class RouterV2:
         if not self._ensure_loaded():
             telemetry["error"] = self._load_error
             telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
-            return [], telemetry
+            return _apply_hint([]), telemetry
 
         if not query or not query.strip():
             telemetry["source"] = "empty_query"
             telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
-            return [], telemetry
+            return _apply_hint([]), telemetry
 
         # Encode once and reuse for cache + gate + dense retrieval.
         query_emb = self._encode_batch([f"query: {query}"])[0]
@@ -387,7 +409,7 @@ class RouterV2:
         if cached is not None:
             telemetry["source"] = "cache"
             telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
-            return cached, telemetry
+            return _apply_hint(cached), telemetry
 
         # Layer 1 — smalltalk gate (delta between centroids).
         # See SMALLTALK_DELTA_THETA docstring for the calibration story.
@@ -401,7 +423,7 @@ class RouterV2:
             telemetry["smalltalk_delta"] = smalltalk_delta
             telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
             self._cache_put(query, query_emb, [])
-            return [], telemetry
+            return _apply_hint([]), telemetry
 
         # Layer 2 — hybrid retrieval (BM25 + dense, fused via RRF).
         dense_scores = self._tool_embeddings @ query_emb        # cosine on L2-norm embs
@@ -441,16 +463,26 @@ class RouterV2:
 
         telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
         self._cache_put(query, query_emb, subset)
-        return subset, telemetry
+        return _apply_hint(subset), telemetry
 
 
 # ---------------------------------------------------------------------------
 # Module-level entry points
 # ---------------------------------------------------------------------------
 
-def route_v2(query: str) -> tuple[list[str], dict[str, Any]]:
-    """Module entry. Returns ``([], {"source": "disabled"})`` if model absent."""
-    return RouterV2.get().route(query)
+def route_v2(
+    query: str,
+    *,
+    pending_tool_hint: str | None = None,
+) -> tuple[list[str], dict[str, Any]]:
+    """Module entry. Returns ``([], {"source": "disabled"})`` if model absent.
+
+    pending_tool_hint (hotfix F 2026-05-17): forwarded to
+    RouterV2.route() — when set, that tool is forced into the
+    returned subset regardless of which pipeline path served the
+    query (cache, smalltalk, hybrid, disabled).
+    """
+    return RouterV2.get().route(query, pending_tool_hint=pending_tool_hint)
 
 
 def is_enabled() -> bool:
