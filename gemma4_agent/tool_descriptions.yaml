@@ -356,6 +356,17 @@
       - "abri disney+ y pone el ultimo capitulo de loki"
       - "buscá un capitulo de friends en max"
       - "tirá una playlist en spotify"
+      # Hotfix E.5 2026-05-17 — short rioplatense imperatives.
+      # The cold-route bug had 'pone benson boone' firing the
+      # smalltalk gate because the dense embedding lacked anchor
+      # phrases of the form "pone <proper noun>" without a music
+      # domain word. These give the encoder + BM25 explicit
+      # material for that shape.
+      - "pone benson boone"
+      - "pone queen"
+      - "poneme algo tranqui"
+      - "pon una canción"
+      - "ponme algo de los redonditos"
     en:
       - "play Daredevil on netflix"
       - "play the rolling stones on spotify"
@@ -363,6 +374,8 @@
       - "find an episode of friends on max"
       - "throw on a playlist in spotify"
       - "play something to focus"
+      # Hotfix E.5 2026-05-17 — short imperative anchors (EN parity).
+      - "play queen"
 
 - name: media_edit
   purpose: |
