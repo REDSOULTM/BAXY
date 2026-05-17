@@ -1,0 +1,61 @@
+# gemma4_agent runtime requirements
+# Generated from real top-level imports in gemma4_agent/*.py (Sprint 0.1, 2026-05-16).
+# Pinned versions match the active virtualenv (`pip freeze`) where available; the
+# rest are lower bounds and should be tightened once the target env is decided.
+
+# --- LLM / embeddings stack ---
+sentence-transformers==5.3.0
+torch==2.10.0
+numpy==1.26.4
+scipy==1.11.4
+
+# --- Voice stack (STT / TTS / VAD / audio I/O) ---
+faster-whisper==1.2.1
+silero-vad==6.2.1
+vosk==0.3.45
+piper-tts==1.4.2
+sounddevice==0.5.5
+
+# --- UI desktop (PyQt6 surface + native webview launcher) ---
+PyQt6==6.11.0
+pywebview==6.2.1
+
+# --- UI field / server (FastAPI surface) ---
+fastapi==0.119.1
+uvicorn==0.38.0
+pydantic==2.12.5
+
+# --- Browser automation ---
+playwright==1.55.0
+
+# --- Data / storage ---
+sqlite-vec==0.1.9
+pandas==1.5.3
+openpyxl==3.1.5
+
+# --- Document / media I/O (domain_tools optional features) ---
+Pillow==12.1.0
+python-docx==1.2.0
+python-pptx==1.0.2
+pypdf==6.10.2
+PyMuPDF>=1.24            # imported as `fitz`
+pdf2image==1.17.0
+pdfplumber>=0.11         # not currently installed in this env
+matplotlib==3.8.4
+beautifulsoup4==4.14.3
+
+# --- DB clients (optional, domain_tools) ---
+mysql-connector-python==9.4.0   # imported as `mysql.connector`
+PyMySQL>=1.1                    # imported as `pymysql`
+psycopg[binary]>=3.2            # imported as `psycopg`
+psycopg2-binary>=2.9            # imported as `psycopg2`
+
+# --- IoT / messaging (optional, domain_tools) ---
+paho-mqtt>=2.1                  # imported as `paho.mqtt`
+
+# --- Windows system / audio control (Windows-only) ---
+pywin32==311                    # provides win32api / win32con / win32gui / win32process / pythoncom
+comtypes==1.4.16
+pycaw==20251023
+psutil==6.1.1
+nvidia-ml-py>=12.560            # imported as `pynvml` (only used in server.py for GPU stats)
