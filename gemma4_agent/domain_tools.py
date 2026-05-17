@@ -44,47 +44,13 @@ def _err(message: str, **kwargs: Any) -> dict[str, Any]:
     return {"ok": False, "error": message, **kwargs}
 
 
-# CC-105: unified in Sprint 4 — the body now lives in :mod:`._shared`
-# (was duplicated against tools._redact_sensitive, see audit §2.2).
-from ._shared import redact_sensitive as _redact_credentials  # noqa: E402
-
-
-def _hard_gate(
-    state: AgentState,
-    *,
-    tool: str,
-    action: str,
-    args: dict[str, Any],
-    reason: str,
-    risk: str = "high",
-) -> dict[str, Any] | None:
-    """CC-101: gate duro replicable desde domain_tools (sin ToolRegistry).
-
-    Devuelve None si la llamada está autorizada; un dict needs_confirmation
-    si no. Respeta routine_context + confirmed_at_create como opt-out.
-    """
-    if bool(args.get("confirmed")):
-        return None
-    if bool(args.get("routine_context")):
-        if bool(args.get("confirmed_at_create")):
-            return None
-        return _err(
-            f"{tool}.{action} blocked: routine step missing confirmed_at_create",
-            status="blocked_needs_confirmation",
-            tool=tool,
-            action=action,
-        )
-    safe_args = _redact_credentials(
-        {**{k: v for k, v in args.items() if k not in {"routine_context", "confirmed_at_create"}}, "confirmed": True}
-    )
-    pending = state.create_confirmation(tool, safe_args, reason=reason, risk=risk)
-    return _err(
-        f"{tool}.{action} requires confirmation; call safety(confirm, id=...) or re-call with confirmed=true",
-        status="needs_confirmation",
-        verified=False,
-        completion_status="needs_user_confirmation",
-        confirmation=pending.get("confirmation"),
-    )
+# CC-105 + CC-101: unified in Sprint 4 — bodies live in :mod:`._shared`
+# (was duplicated against tools._redact_sensitive / ToolRegistry._hard_gate,
+# see audit §2.2).
+from ._shared import (  # noqa: E402
+    hard_gate as _hard_gate,
+    redact_sensitive as _redact_credentials,
+)
 
 
 def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:

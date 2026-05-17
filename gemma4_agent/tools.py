@@ -3909,41 +3909,24 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         routine_context: bool = False,
         confirmed_at_create: bool = False,
     ) -> dict[str, Any] | None:
-        """CC-101: gate de confirmación independiente de `safety_enabled`.
+        """CC-101: confirmation gate independent of ``safety_enabled``.
 
-        Pattern alineado con `form_filler._form_submit`. Devuelve `None` si
-        la llamada está autorizada para proseguir; devuelve un dict
-        `needs_confirmation` en caso contrario.
-
-        `routine_context` y `confirmed_at_create` son inyectados por el
-        dispatcher cuando la step proviene de una routine/watcher: NUNCA
-        aparecen en `COMPOUND_TOOL_SCHEMAS` (filtrados en `execute`).
+        Thin wrapper around :func:`gemma4_agent._shared.hard_gate` — the
+        body was unified with ``domain_tools._hard_gate`` in Sprint 4
+        (audit §2.2). The wrapper still exists so callers can keep
+        invoking ``self._hard_gate(...)`` without knowing where state
+        comes from.
         """
-        if bool(args.get("confirmed")):
-            return None
-        if routine_context:
-            if confirmed_at_create:
-                return None
-            return _err(
-                f"{tool_name}.{action} blocked: routine step missing confirmed_at_create",
-                status="blocked_needs_confirmation",
-                tool=tool_name,
-                action=action,
-            )
-        pending = self.state.create_confirmation(
-            tool_name,
-            _redact_sensitive(
-                {**{k: v for k, v in args.items() if k not in {"routine_context", "confirmed_at_create"}}, "confirmed": True}
-            ),
+        from ._shared import hard_gate
+        return hard_gate(
+            self.state,
+            tool=tool_name,
+            action=action,
+            args=args,
             reason=reason,
             risk=risk,
-        )
-        return _err(
-            f"{tool_name}.{action} requires confirmation; call safety(confirm, id=...) or re-call with confirmed=true",
-            status="needs_confirmation",
-            verified=False,
-            completion_status="needs_user_confirmation",
-            confirmation=pending.get("confirmation"),
+            routine_context=routine_context,
+            confirmed_at_create=confirmed_at_create,
         )
 
     def terminal_run(self, args: dict[str, Any]) -> dict[str, Any]:
