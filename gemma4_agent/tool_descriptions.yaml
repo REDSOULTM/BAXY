@@ -563,3 +563,203 @@
       - "remind me when I get home to water the plants"
       - "show my active reminders"
       - "snooze the pill reminder by 10 minutes"
+
+- name: system
+  purpose: |
+    Windows system controls — shutdown, restart, lock, sleep,
+    hibernate, log off, power plans, brightness, volume,
+    timezone, language. Use for "apaga la pc", "ponete oscuro",
+    "subi el brillo".
+  domain: system
+  example_queries:
+    es:
+      - "apaga la pc en 5 minutos"
+      - "reinicia la computadora"
+      - "ponete en modo oscuro"
+      - "subime el brillo al maximo"
+      - "bloquea la pc"
+      - "cambia el plan de energia a alto rendimiento"
+      - "cambiale el idioma del sistema a ingles"
+    en:
+      - "shutdown the pc in 5 minutes"
+      - "restart the computer"
+      - "switch to dark mode"
+      - "max brightness please"
+      - "lock the pc"
+      - "set power plan to high performance"
+
+- name: gui
+  purpose: |
+    Programmatic mouse + keyboard automation: click coordinates,
+    drag, type, key chords, scroll. Lower-level than uia (which
+    inspects elements). Use when uia can't find a target and you
+    need raw input synthesis. Fallback for legacy apps.
+  domain: system
+  example_queries:
+    es:
+      - "haceme click en el boton verde de la esquina"
+      - "arrastra el archivo desde el escritorio hasta la papelera"
+      - "tipea esto en el cuadro de texto"
+      - "moveme el mouse al centro de la pantalla"
+      - "tomame una captura y haceme click donde dice aceptar"
+      - "scrolleame hasta el final"
+    en:
+      - "click the green button in the corner"
+      - "drag the file from desktop to the trash"
+      - "type this in the text box"
+      - "move the mouse to the center of the screen"
+      - "screenshot and click where it says accept"
+
+- name: uia
+  purpose: |
+    UI Automation accessor for Windows controls — inspect, query,
+    and invoke buttons/menus/text fields via the accessibility
+    tree (AutomationId, Name, ControlType). Higher-level than gui:
+    finds elements by semantics, not pixels. Use for native apps.
+  domain: system
+  example_queries:
+    es:
+      - "apreta el boton aceptar de la ventana"
+      - "rellena el campo nombre con Juan"
+      - "haceme click en el menu archivo"
+      - "buscame el boton guardar de excel"
+      - "leeme el texto del cuadro de dialogo"
+      - "selecciona la opcion espanol del combo"
+    en:
+      - "press the OK button in the window"
+      - "fill the name field with John"
+      - "click the File menu"
+      - "find the Save button in Excel"
+      - "read the text from the dialog box"
+
+- name: window
+  purpose: |
+    Window management — list, focus, minimize, maximize, close,
+    resize, move, snap left/right, send to other monitor. Use
+    for "minimiza esto", "ponelo a la izquierda", "cerra todas
+    las ventanas".
+  domain: system
+  example_queries:
+    es:
+      - "minimiza chrome"
+      - "ponelo a la izquierda de la pantalla"
+      - "cerra todas las ventanas excepto el navegador"
+      - "manda esta ventana al monitor de la derecha"
+      - "maximiza la ventana activa"
+      - "mostrame que ventanas tengo abiertas"
+      - "achica el word"
+    en:
+      - "minimize chrome"
+      - "snap it to the left of the screen"
+      - "close all windows except the browser"
+      - "send this window to the right monitor"
+      - "maximize the active window"
+
+- name: desktop_layout
+  purpose: |
+    Virtual desktops, workspace arrangement, save/restore window
+    layouts, multi-monitor profiles. Use for "armame un escritorio
+    para trabajar", "guardame esta configuracion de ventanas".
+  domain: system
+  example_queries:
+    es:
+      - "creame un escritorio virtual nuevo"
+      - "cambiame al escritorio 2"
+      - "guardame esta disposicion de ventanas como perfil trabajo"
+      - "armame un layout para programar: vscode izq, terminal abajo, browser der"
+      - "borrame el escritorio 3"
+      - "cargame el perfil de gaming"
+    en:
+      - "create a new virtual desktop"
+      - "switch to desktop 2"
+      - "save this window layout as a work profile"
+      - "set up a coding layout: vscode left, terminal bottom, browser right"
+      - "delete desktop 3"
+
+- name: clipboard
+  purpose: |
+    Read, write, and inspect Windows clipboard history. Supports
+    text, images, files. Use for "que tengo copiado", "copiame
+    esto", "pegame lo de hace 3 copias atras".
+  domain: system
+  example_queries:
+    es:
+      - "que tengo copiado en el portapapeles"
+      - "copiame este texto: hola mundo"
+      - "pegame lo ultimo del portapapeles"
+      - "mostrame el historial del portapapeles"
+      - "limpia el clipboard"
+      - "pegame lo de hace 3 copias atras"
+    en:
+      - "what's in my clipboard"
+      - "copy this text: hello world"
+      - "paste the last clipboard item"
+      - "show clipboard history"
+      - "clear the clipboard"
+
+- name: app
+  purpose: |
+    Launch, close, list running applications. Resolves friendly
+    names ("excel", "discord", "chrome") to executables. Distinct
+    from package (install/uninstall) and game_launcher (Steam-only).
+    Use for "abrime X", "cerra Y".
+  domain: system
+  example_queries:
+    es:
+      - "abrime el chrome"
+      - "cerra el discord"
+      - "lanza el word"
+      - "mostrame que aplicaciones tengo abiertas"
+      - "abrime el spotify"
+      - "matame el proceso de outlook"
+      - "abrime la calculadora"
+    en:
+      - "open chrome"
+      - "close discord"
+      - "launch word"
+      - "show me which apps are open"
+      - "open spotify"
+      - "kill the outlook process"
+
+- name: package
+  purpose: |
+    Install, uninstall, update software via winget / scoop /
+    chocolatey. Searches package repos, handles silent installs.
+    Distinct from app (launch/close). Use for "instalame X",
+    "actualizame Y", "desinstalame Z".
+  domain: system
+  example_queries:
+    es:
+      - "instalame vlc"
+      - "desinstalame el discord"
+      - "actualizame todos los paquetes de winget"
+      - "buscame un editor de markdown en winget"
+      - "instalame ffmpeg con scoop"
+      - "que version de python tengo instalada"
+    en:
+      - "install vlc"
+      - "uninstall discord"
+      - "update all winget packages"
+      - "search for a markdown editor in winget"
+      - "install ffmpeg with scoop"
+
+- name: accessibility
+  purpose: |
+    Windows accessibility features — Narrator, Magnifier, high
+    contrast, color filters, sticky keys, mouse keys. Read screen
+    content aloud, increase font size, enable assistive modes.
+  domain: system
+  example_queries:
+    es:
+      - "activa el narrador"
+      - "agrandame la letra de toda la pantalla"
+      - "encendeme el lupa"
+      - "activa el filtro de daltonismo"
+      - "leeme en voz alta lo que esta en pantalla"
+      - "activa alto contraste"
+    en:
+      - "turn on narrator"
+      - "make the screen text bigger"
+      - "enable magnifier"
+      - "turn on the color blindness filter"
+      - "read aloud what's on screen"
