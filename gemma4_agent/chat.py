@@ -16,12 +16,10 @@ if __package__ in {None, ""}:
     from gemma4_agent.agent import Gemma4Agent
     from gemma4_agent.config import AgentConfig
     from gemma4_agent.sessions import Session, SessionStore, auto_title, is_enabled as sessions_enabled
-    from gemma4_agent.timeline import TimelineWriter, is_enabled as timeline_enabled
 else:
     from .agent import Gemma4Agent
     from .config import AgentConfig
     from .sessions import Session, SessionStore, auto_title, is_enabled as sessions_enabled
-    from .timeline import TimelineWriter, is_enabled as timeline_enabled
 
 
 PALETTE = {
@@ -431,22 +429,15 @@ def main() -> int:
 
         progress = ProgressDisplay(enabled=progress_enabled)
         progress.start()
-        progress_cb: Any = progress.update
-        timeline_writer: TimelineWriter | None = None
-        if timeline_enabled() and current_session is not None:
-            turn_idx = len(current_session.turns) // 2 + 1
-            timeline_writer = TimelineWriter(
-                session_id=current_session.id,
-                turn_index=turn_idx,
-                inner=progress.update,
-            )
-            progress_cb = timeline_writer
+        # Sprint 4: dropped the TimelineWriter wrapper that used to mirror
+        # every progress event into ~/.gemma4/timeline/. TraceLogger
+        # (self.trace inside Gemma4Agent) already persists the same data
+        # via gemma4_agent/data/traces.jsonl, which is what
+        # scripts/analyze_traces.py consumes.
         try:
-            reply = agent.run_text(user, images=pending_images, audios=pending_audios, progress=progress_cb)
+            reply = agent.run_text(user, images=pending_images, audios=pending_audios, progress=progress.update)
         finally:
             progress.finish()
-            if timeline_writer is not None:
-                timeline_writer.close()
         pending_images = []
         pending_audios = []
 

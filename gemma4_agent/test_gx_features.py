@@ -811,41 +811,8 @@ def test_k1_session_disabled_env() -> None:
     print("K1 sessions env toggle: OK")
 
 
-def test_k2_timeline_writes_jsonl() -> None:
-    import tempfile
-    from gemma4_agent.timeline import TimelineWriter
-    root = Path(tempfile.mkdtemp(prefix="g_tl_"))
-    captured: list[tuple[str, dict[str, Any]]] = []
-
-    def inner(event: str, payload: dict[str, Any]) -> None:
-        captured.append((event, payload))
-
-    try:
-        w = TimelineWriter(session_id="abc", turn_index=2, inner=inner, root=root)
-        w("tool_start", {"name": "web", "args": {"q": "x"}, "index": 1})
-        w("tool_end", {"name": "web", "ok": True, "status": "done", "index": 1})
-        w.close()
-        files = list(root.glob("*.jsonl"))
-        assert len(files) == 1, files
-        lines = files[0].read_text(encoding="utf-8").strip().splitlines()
-        assert len(lines) == 2
-        first = json.loads(lines[0])
-        assert first["event"] == "tool_start" and first["payload"]["name"] == "web"
-        assert [e[0] for e in captured] == ["tool_start", "tool_end"], "inner cb must also fire"
-    finally:
-        import shutil
-        shutil.rmtree(root, ignore_errors=True)
-    print("K2 timeline writes jsonl + forwards inner: OK")
-
-
-def test_k2_timeline_disabled_env() -> None:
-    import os
-    from gemma4_agent.timeline import is_enabled
-    os.environ["GEMMA4_AGENT_TIMELINE"] = "false"
-    assert is_enabled() is False
-    os.environ.pop("GEMMA4_AGENT_TIMELINE", None)
-    assert is_enabled() is True
-    print("K2 timeline env toggle: OK")
+# Sprint 4: K2 timeline tests removed alongside gemma4_agent/timeline.py
+# (4 sinks → 3; TraceLogger keeps the per-turn JSONL the analyzer reads).
 
 
 def test_k3_context_budget_scales_with_size() -> None:
@@ -993,22 +960,7 @@ def test_audit_experience_recent_exists() -> None:
     print("AUDIT experience.recent() exists: OK")
 
 
-def test_audit_timeline_safe_payload_preserves_dicts() -> None:
-    """_safe_payload must keep nested dicts as dicts, not flatten to str."""
-    from gemma4_agent.timeline import _safe_payload
-    payload = {
-        "name": "web",
-        "args": {"action": "search", "query": "hola"},
-        "result": {"ok": True, "results": [{"title": "x"}, {"title": "y"}]},
-    }
-    out = _safe_payload(payload)
-    assert isinstance(out, dict)
-    assert isinstance(out["args"], dict)
-    assert out["args"]["action"] == "search"
-    assert isinstance(out["result"], dict)
-    assert isinstance(out["result"]["results"], list)
-    assert isinstance(out["result"]["results"][0], dict)
-    print("AUDIT timeline _safe_payload preserves dict structure: OK")
+# Sprint 4: AUDIT timeline _safe_payload test removed with the module.
 
 
 def test_audit_planner_question_mark_inverted_supported() -> None:
@@ -2583,8 +2535,7 @@ def main() -> int:
         test_k1_session_roundtrip,
         test_k1_auto_title_heuristic_fallback,
         test_k1_session_disabled_env,
-        test_k2_timeline_writes_jsonl,
-        test_k2_timeline_disabled_env,
+        # K2 timeline tests removed in Sprint 4 (timeline.py deleted)
         test_k3_context_budget_scales_with_size,
         test_u1_ui_modules_importable,
         test_u1_hud_state_setters,
@@ -2592,7 +2543,7 @@ def main() -> int:
         test_audit_settings_env_names_match_config,
         test_audit_jsonstore_concurrent_writes,
         test_audit_experience_recent_exists,
-        test_audit_timeline_safe_payload_preserves_dicts,
+        # AUDIT timeline _safe_payload test removed in Sprint 4 (timeline.py deleted)
         test_audit_planner_question_mark_inverted_supported,
         # Fase V — VRAM profiles
         test_profiles_recommend_by_vram,
