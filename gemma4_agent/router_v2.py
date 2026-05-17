@@ -458,9 +458,20 @@ def is_enabled() -> bool:
 
 
 def is_shadow() -> bool:
-    """True iff shadow mode is on (log v2 picks without changing behaviour)."""
+    """Shadow mode logs how v2 would route without changing v1's pick.
+
+    Default behavior (hotfix E 2026-05-17): shadow is ON whenever
+    the e5-small model is on disk AND GEMMA4_ROUTER_V2_SHADOW is
+    not explicitly '0' / 'false' / 'off'. Operator can disable
+    with GEMMA4_ROUTER_V2_SHADOW=0 if shadow logging itself causes
+    problems.
+    """
     raw = (os.environ.get("GEMMA4_ROUTER_V2_SHADOW") or "").strip().lower()
-    return raw in {"1", "true", "yes", "on"}
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    return MODEL_PATH.exists()
 
 
 __all__ = [

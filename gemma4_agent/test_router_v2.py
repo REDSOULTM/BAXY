@@ -45,12 +45,35 @@ class EnvFlagsTest(unittest.TestCase):
             if old is not None:
                 os.environ["GEMMA4_ROUTER_V2"] = old
 
-    def test_is_shadow_false_without_env(self) -> None:
+    def test_is_shadow_default_when_model_present(self) -> None:
+        """Without an explicit env, shadow defaults to ON if model
+        is on disk. Skip when the model isn't there (CI machines).
+
+        Hotfix E 2026-05-17: shadow is now ON by default whenever
+        MODEL_PATH exists. Operator can disable with
+        GEMMA4_ROUTER_V2_SHADOW=0.
+        """
         old = os.environ.pop("GEMMA4_ROUTER_V2_SHADOW", None)
+        try:
+            if MODEL_PATH.exists():
+                self.assertTrue(is_shadow(),
+                                "shadow should default ON when model present")
+            else:
+                self.assertFalse(is_shadow(),
+                                 "shadow should default OFF when model absent")
+        finally:
+            if old is not None:
+                os.environ["GEMMA4_ROUTER_V2_SHADOW"] = old
+
+    def test_is_shadow_explicit_off_overrides_default(self) -> None:
+        old = os.environ.get("GEMMA4_ROUTER_V2_SHADOW")
+        os.environ["GEMMA4_ROUTER_V2_SHADOW"] = "0"
         try:
             self.assertFalse(is_shadow())
         finally:
-            if old is not None:
+            if old is None:
+                os.environ.pop("GEMMA4_ROUTER_V2_SHADOW", None)
+            else:
                 os.environ["GEMMA4_ROUTER_V2_SHADOW"] = old
 
     def test_is_shadow_true_when_env_set(self) -> None:
