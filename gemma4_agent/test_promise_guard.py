@@ -28,9 +28,26 @@ class TestPromiseWithoutActionGuard(unittest.TestCase):
 
     def setUp(self):
         # We test the standalone method by binding it to a minimal stub.
+        # The stub mirrors the subset of Gemma4Agent state that
+        # _guard_promise_without_action and its callee
+        # _build_user_facing_fallback actually read. Without the bound
+        # method the guard hits AttributeError on the very first call.
         from gemma4_agent.agent import Gemma4Agent
         self._guard = Gemma4Agent._guard_promise_without_action
-        self._stub = type("Stub", (), {"trace": _DummyTraceMixin()})()
+        # _build_user_facing_fallback lives on Gemma4Agent — bind it
+        # unbound to the stub so the stub.<method>(self_stub, …) shape
+        # the guard expects works.
+        self._stub = type("Stub", (), {
+            "trace": _DummyTraceMixin(),
+            "_build_user_facing_fallback": Gemma4Agent._build_user_facing_fallback,
+            # State attributes _build_user_facing_fallback reads via
+            # getattr(self, …, default). Defaults keep the streak logic
+            # deterministic across tests.
+            "_current_user_text": "",
+            "_last_fallback_user_text": "",
+            "_fallback_streak": 0,
+            "_last_router_subset": [],
+        })()
 
     def _run(self, content: str, events: list[Any]) -> str:
         return self._guard(self._stub, content, events)
