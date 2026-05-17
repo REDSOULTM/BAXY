@@ -53,7 +53,10 @@ logger = logging.getLogger(__name__)
 WHISPER_MODEL_DIR = Path.home() / ".gemma4" / "models" / "whisper"
 DEFAULT_MODEL_SIZE = "small"
 SAMPLE_RATE = 16000
-VAD_SILENCE_MS = 800        # endpoint RMS (post-debug: 400 cortaba muy rapido)
+VAD_SILENCE_MS = 500        # endpoint RMS. 800ms se siente lento al usuario;
+                            # 500ms es el "Alexa-like" estandar de la industria,
+                            # y la grace de RMS+streak ya protege contra cortes
+                            # prematuros mid-palabra (informe sec. 5.1).
 ABSOLUTE_TIMEOUT_S = 15.0   # techo de seguridad
 SHORT_AUDIO_THRESHOLD_S = 3.0  # frontera modo comando vs dictado
 
@@ -61,11 +64,16 @@ SHORT_AUDIO_THRESHOLD_S = 3.0  # frontera modo comando vs dictado
 # ---------------------------------------------------------------------------
 # Prompting / biasing (informe sec. 2.2, 12.2.2)
 # ---------------------------------------------------------------------------
+# El prompt dinamico se construye con apps reales del sistema via
+# app_inventory.py. FALLBACK_INITIAL_PROMPT es la red de seguridad cuando
+# el inventario no esta disponible (primer arranque sin cache + discovery
+# fallo, sistema no Windows, AppResolver crasheo).
+#
 # Repetir "Gemma" muchas veces sesga al decoder a esperar esa palabra
 # (resuelve "Hey Kema!"). Las apps en grafia inglesa correcta sesgan
 # contra "abre estimulo" -> "abre Steam". Texto en espanol natural con
 # puntuacion (OpenAI Cookbook recomienda ese patron explicitamente).
-INITIAL_PROMPT = (
+FALLBACK_INITIAL_PROMPT = (
     "Conversacion con el asistente Gemma. "
     "Hey Gemma, abre Steam. Gemma, abre Spotify y reproduce musica. "
     "Gemma, abre Discord, VS Code, Chrome, Firefox, YouTube, Netflix, "
@@ -77,6 +85,22 @@ INITIAL_PROMPT = (
     "Gemma, cierra la ventana. Gemma, minimiza la ventana. "
     "Comandos breves en espanol dirigidos al asistente Gemma."
 )
+
+
+def get_initial_prompt() -> str:
+    """Devuelve el prompt dinamico si esta disponible, fallback si no.
+
+    Se evalua en cada transcripcion (no en import-time) para que el
+    refresh asincrono del inventario tome efecto sin reiniciar el proceso.
+    """
+    try:
+        from gemma4_agent.voice.app_inventory import get_cached_prompt
+        prompt = get_cached_prompt()
+        if prompt and "Gemma" in prompt:
+            return prompt
+    except Exception as exc:
+        logger.debug("dynamic prompt unavailable, using fallback: %s", exc)
+    return FALLBACK_INITIAL_PROMPT
 
 
 # ---------------------------------------------------------------------------
@@ -152,36 +176,27 @@ def _has_pathological_ngram_repetition(text: str) -> bool:
 # ---------------------------------------------------------------------------
 # Preprocesado de audio (informe sec. 6.4)
 # ---------------------------------------------------------------------------
-# Lazy: construir el filtro al primer uso. scipy es opcional aunque ya esta
-# en el entorno; si faltara, _preprocess degrada a solo conversion.
-_HPF_SOS: Any = None
-
-
-def _build_hpf() -> Any:
-    """High-pass Butterworth orden 4 a 80 Hz. Elimina rumble/DC."""
-    global _HPF_SOS
-    if _HPF_SOS is not None:
-        return _HPF_SOS
-    try:
-        from scipy.signal import butter
-        _HPF_SOS = butter(4, 80, btype="highpass", fs=SAMPLE_RATE, output="sos")
-    except Exception as exc:
-        logger.info("scipy unavailable for high-pass (%s); skipping HPF", exc)
-        _HPF_SOS = False
-    return _HPF_SOS
+# scipy import en module-level (NO lazy): el "lazy" hacia `from scipy.signal
+# import sosfilt` dentro de _preprocess, lo que paga ~470ms de cold-import en
+# la PRIMERA transcripcion (critical path: usuario espera el texto). Como
+# _preprocess se llama siempre que se transcribe, no hay ahorro real con lazy
+# - solo penalizacion al usuario. Movido a top-level. Si scipy falta, _HPF_SOS
+# queda None y _preprocess salta el filtro silenciosamente.
+try:
+    from scipy.signal import butter as _butter, sosfilt as _sosfilt
+    _HPF_SOS: Any = _butter(4, 80, btype="highpass", fs=SAMPLE_RATE, output="sos")
+except Exception as _exc:  # pragma: no cover - scipy esta en requirements
+    logger.info("scipy unavailable for high-pass (%s); skipping HPF", _exc)
+    _HPF_SOS = None
+    _sosfilt = None  # type: ignore[assignment]
 
 
 def _preprocess(audio_int16: np.ndarray) -> np.ndarray:
     """int16 -> float32 [-1,1] con HPF 80 Hz + peak-normalize ligero."""
     audio = audio_int16.astype(np.float32) / 32768.0
-    sos = _build_hpf()
-    if sos is not False:
+    if _HPF_SOS is not None and _sosfilt is not None:
         try:
-            from scipy.signal import sosfilt
-            # sosfilt returns ndarray when zi is not provided, but the scipy
-            # type stub declares the union shape — the cast keeps pyright
-            # happy without changing runtime behaviour.
-            filtered = np.asarray(sosfilt(sos, audio), dtype=np.float32)
+            filtered = np.asarray(_sosfilt(_HPF_SOS, audio), dtype=np.float32)
             audio = filtered
         except Exception as exc:
             logger.debug("sosfilt failed (%s); skipping HPF", exc)
@@ -292,6 +307,8 @@ AudioIter = Iterator[np.ndarray]
 # Configuracion modo dual (informe sec. 12.2.5)
 # ---------------------------------------------------------------------------
 # Base comun. NO se ponen aqui parametros que cambian entre corto/largo.
+# initial_prompt NO va aqui: se inyecta en _run_whisper via get_initial_prompt()
+# para que el prompt dinamico (app_inventory) tome efecto sin reimportar.
 _BASE_KWARGS = dict(
     language="es",
     task="transcribe",
@@ -301,7 +318,6 @@ _BASE_KWARGS = dict(
     log_prob_threshold=-1.0,
     no_speech_threshold=0.6,
     condition_on_previous_text=False,
-    initial_prompt=INITIAL_PROMPT,
     suppress_blank=True,
     suppress_tokens=[-1],         # default no-speech tokens; filtrado de BoH
                                   # se hace por texto (informe 2.4: suprimir
@@ -342,17 +358,53 @@ COMMAND_VERBS_ES = (
 )
 
 
+# Prefijo unico mas corto que distingue cada verbo. Usado para detectar
+# casos donde Whisper pega el verbo al sustantivo OOV ("Abrastim" =
+# "abre" + "stim/Steam"). Sin esto, Plan B nunca se dispara para audios
+# cortos sin pausa entre verbo y nombre.
+_VERB_PREFIXES = {
+    "abr": "abre",
+    "cie": "cierra",
+    "apa": "apaga",
+    "enc": "enciende",
+    "sub": "sube",
+    "baj": "baja",
+    "pau": "pausa",
+    "rep": "reproduce",
+    "bus": "busca",
+    "min": "minimiza",
+    "max": "maximiza",
+}
+
+
 def _detect_command_verb(text: str) -> str | None:
-    """Devuelve el verbo (lowercase) si el texto empieza por uno de los
-    verbos de comando conocidos, tras strip de wake-word y puntuacion."""
+    """Devuelve el verbo de comando si el texto parece empezar por uno.
+
+    Dos modos:
+      1. EXACT: texto empieza por verbo seguido de space/puntuacion
+         ("abre Steam", "Cierra Chrome.")
+      2. SUBSTRING: texto empieza por prefijo de 3-letras de un verbo
+         pero NO es un word separado ("Abrastim" -> "abre"). Esto pasa
+         cuando Whisper pega verbo + sustantivo OOV en una sola palabra,
+         que es exactamente el caso que Plan B existe para resolver.
+    """
     if not text:
         return None
-    # Reaprovechar postprocess para limpiar wake-word residual + puntuacion.
     cleaned = _postprocess_text(text).lower().lstrip()
     if not cleaned:
         return None
+    # Modo 1: verbo separado (caso comun, audio claro)
     first = cleaned.split(None, 1)[0].rstrip(",.!?;:¡¿")
-    return first if first in COMMAND_VERBS_ES else None
+    if first in COMMAND_VERBS_ES:
+        return first
+    # Modo 2: verbo pegado al siguiente token. Aplicamos solo si el primer
+    # token es UNA sola palabra >5 chars (caso "Abrastim"). Si el texto ya
+    # tiene multiples palabras, confiamos en el modo 1.
+    if len(cleaned.split()) == 1 and len(first) >= 5:
+        for prefix, verb in _VERB_PREFIXES.items():
+            if first.startswith(prefix):
+                return verb
+    return None
 
 
 # Regex para strip de wake-word residual al inicio. Defensa en profundidad:
@@ -473,6 +525,22 @@ class StreamingSTT:
 
         # Warmup: 1s de silencio para inicializar kernels JIT/oneDNN.
         self._warmup()
+
+        # App inventory para el INITIAL_PROMPT dinamico (sec. 2.2 informe).
+        # Si ya hay cache se carga inmediato; si no, bloqueo acotado a 3s
+        # (primer arranque). El refresh asincrono mantiene el cache fresco.
+        try:
+            from gemma4_agent.voice.app_inventory import ensure_prompt_available
+            prompt = ensure_prompt_available(sync_timeout_s=3.0)
+            if prompt is None:
+                logger.info("StreamingSTT: no dynamic prompt, using fallback")
+            else:
+                logger.info(
+                    "StreamingSTT: dynamic prompt ready (%d chars)", len(prompt),
+                )
+        except Exception as exc:
+            logger.warning("StreamingSTT: app_inventory unavailable: %s", exc)
+
         return True
 
     def _warmup(self) -> None:
@@ -601,6 +669,7 @@ class StreamingSTT:
         - avg_lp: media de avg_logprob a traves de los segmentos (NaN si no aplicable).
         """
         kwargs = dict(_get_transcribe_kwargs(duration_s))
+        kwargs["initial_prompt"] = get_initial_prompt()
         if prefix is not None:
             kwargs["prefix"] = prefix
         if self._whisper is None:
@@ -653,9 +722,17 @@ class StreamingSTT:
         )
 
         # 4. Plan B: solo en modo SHORT. Disparar si:
-        #    (a) ok=False (quality_check rechazo), o
-        #    (b) ok=True pero detectamos verbo de comando y texto <8 palabras
-        #    (sugiere comando con anglicismo mal reconocido tipo "Abrastim").
+        #    (a) ok=False (quality_check rechazo) y hay verbo detectable, o
+        #    (b) ok=True PERO confidence marginal (avg_lp en [-1.0, -0.5]) y
+        #        hay verbo detectado y texto <8 palabras.
+        # Caso (b) refinado vs version anterior: antes disparabamos Plan B
+        # siempre que el texto pareciera un comando con verbo, anadiendo
+        # ~1500ms incluso cuando la transcripcion ya era buena. Ahora solo
+        # repetimos si la confidence sugiere que merece la pena. Calibracion
+        # empirica: "Abrastim" pass-1 da avg_lp ~-0.47, asi que el umbral
+        # debe estar arriba para rescatar ese caso. Buenas transcripciones
+        # tipicas dan avg_lp > -0.3.
+        PLAN_B_LOW_CONF_THRESHOLD = -0.4
         verb: str | None = None
         retry_reason: str | None = None
         if is_short:
@@ -665,10 +742,13 @@ class StreamingSTT:
                 if verb is not None:
                     retry_reason = f"quality_failed:{reason}"
             else:
-                v = _detect_command_verb(text)
-                if v is not None and len(text.split()) < 8:
-                    verb = v
-                    retry_reason = "short_command_anchor"
+                # Pass-1 OK: solo Plan B si la confidence es marginal.
+                if (np.isfinite(avg_lp) and avg_lp < PLAN_B_LOW_CONF_THRESHOLD
+                        and len(text.split()) < 8):
+                    v = _detect_command_verb(text)
+                    if v is not None:
+                        verb = v
+                        retry_reason = f"low_confidence:{avg_lp:.2f}"
 
         if verb is not None:
             logger.info(

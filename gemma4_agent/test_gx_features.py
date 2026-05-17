@@ -1721,6 +1721,115 @@ def test_voice_close_phrase_normalization() -> None:
 
 
 # ============================================================================
+# App inventory dinamico para el INITIAL_PROMPT de Whisper
+# ============================================================================
+
+def test_app_inventory_filters_blacklist() -> bool:
+    """HARD_BLACKLIST descarta runtimes/redistributables/installers."""
+    from gemma4_agent.voice.app_inventory import _is_hard_blacklisted
+    assert _is_hard_blacklisted("Microsoft Visual C++ 2015 Redistributable (x64)")
+    assert _is_hard_blacklisted("Microsoft .NET Framework 4.8")
+    assert _is_hard_blacklisted("Update for Windows KB5031356")
+    assert _is_hard_blacklisted("Steam Setup")
+    assert _is_hard_blacklisted("Java Update Helper")
+    # Cosas legitimas NO deben filtrarse
+    assert not _is_hard_blacklisted("Steam")
+    assert not _is_hard_blacklisted("Saints Row IV")
+    assert not _is_hard_blacklisted("Visual Studio Code")
+    assert not _is_hard_blacklisted("Chrome")
+    print("app_inventory hard blacklist filters runtimes: OK")
+    return True
+
+
+def test_app_inventory_priority_ordering() -> bool:
+    """Apps con shortcut en Desktop tienen mayor priority que sin shortcut."""
+    from gemma4_agent.voice.app_inventory import _score, _fold
+    desktop = {_fold("Chrome"), _fold("Saints Row IV")}
+    start_user = set()
+    p_with = _score("Chrome", "shortcut", desktop, start_user)
+    p_without = _score("RareApp", "shortcut", desktop, start_user)
+    assert p_with > p_without, (p_with, p_without)
+    # Popular boost para Spotify aunque NO tenga shortcut
+    p_pop = _score("Spotify", "registry", set(), set())
+    p_unknown = _score("Foo", "registry", set(), set())
+    assert p_pop > p_unknown, (p_pop, p_unknown)
+    # Steam source bump
+    p_steam = _score("Saints Row IV", "steam", set(), set())
+    p_reg = _score("Saints Row IV", "registry", set(), set())
+    assert p_steam > p_reg, (p_steam, p_reg)
+    print("app_inventory priority ordering (desktop, popular, steam): OK")
+    return True
+
+
+def test_build_initial_prompt_contains_gemma_15_times() -> bool:
+    """El prompt construido debe tener >= 15 menciones de 'Gemma'."""
+    from gemma4_agent.voice.app_inventory import (
+        AppEntry, build_initial_prompt, MIN_GEMMA_OCCURRENCES,
+    )
+    apps = [
+        AppEntry(display_name=f"App{i}", source="shortcut", priority=0.5)
+        for i in range(20)
+    ]
+    prompt = build_initial_prompt(apps)
+    gemma_count = prompt.count("Gemma") + prompt.count("gemma")
+    assert gemma_count >= MIN_GEMMA_OCCURRENCES, gemma_count
+    # Tambien sin apps debe garantizar el minimo de menciones
+    prompt_empty = build_initial_prompt([])
+    gemma_empty = prompt_empty.count("Gemma") + prompt_empty.count("gemma")
+    assert gemma_empty >= MIN_GEMMA_OCCURRENCES, gemma_empty
+    print("app_inventory prompt has Gemma >=15 times: OK")
+    return True
+
+
+def test_build_initial_prompt_respects_char_cap() -> bool:
+    """500 apps -> prompt truncado a <= PROMPT_CHAR_CAP."""
+    from gemma4_agent.voice.app_inventory import (
+        AppEntry, build_initial_prompt, PROMPT_CHAR_CAP,
+    )
+    apps = [
+        AppEntry(display_name=f"VeryLongAppName{i:04d}", source="shortcut", priority=0.5)
+        for i in range(500)
+    ]
+    prompt = build_initial_prompt(apps)
+    assert len(prompt) <= PROMPT_CHAR_CAP, len(prompt)
+    print(f"app_inventory prompt respects char cap ({len(prompt)} <= {PROMPT_CHAR_CAP}): OK")
+    return True
+
+
+def test_build_initial_prompt_falls_back_when_empty() -> bool:
+    """Apps vacias -> prompt no crashea, devuelve algo utilizable."""
+    from gemma4_agent.voice.app_inventory import build_initial_prompt
+    prompt = build_initial_prompt([])
+    assert prompt and "Gemma" in prompt
+    assert "Comandos breves en espanol" in prompt
+    print("app_inventory empty -> safe fallback prompt: OK")
+    return True
+
+
+def test_stt_uses_dynamic_prompt_when_available() -> bool:
+    """Si get_cached_prompt devuelve un prompt, get_initial_prompt lo retorna."""
+    from unittest.mock import patch
+    from gemma4_agent.voice import stt as stt_mod
+    fake_prompt = "Conversacion con Gemma. Hey Gemma, abre Saints Row IV."
+    with patch("gemma4_agent.voice.app_inventory.get_cached_prompt", return_value=fake_prompt):
+        out = stt_mod.get_initial_prompt()
+    assert out == fake_prompt, out
+    # Sin prompt cacheado -> fallback estatico
+    with patch("gemma4_agent.voice.app_inventory.get_cached_prompt", return_value=None):
+        out_fb = stt_mod.get_initial_prompt()
+    assert out_fb == stt_mod.FALLBACK_INITIAL_PROMPT
+    # Si get_cached_prompt crashea -> fallback (no propagar)
+    with patch(
+        "gemma4_agent.voice.app_inventory.get_cached_prompt",
+        side_effect=RuntimeError("boom"),
+    ):
+        out_crash = stt_mod.get_initial_prompt()
+    assert out_crash == stt_mod.FALLBACK_INITIAL_PROMPT
+    print("stt uses dynamic prompt when available, fallback otherwise: OK")
+    return True
+
+
+# ============================================================================
 # Roadmap optimizacion — item 1.4: parser robusto de tool_call.arguments
 # (issue ggml-org/llama.cpp #21384 — args con `{` / `}` literales)
 # ============================================================================
