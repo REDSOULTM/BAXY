@@ -1319,3 +1319,156 @@
       - "show my saved sessions"
       - "resume yesterday's work session"
       - "export the current session to a md file"
+
+- name: memory
+  purpose: |
+    Long-term semantic memory of facts about the user — gustos
+    musicales, nombres de familia, preferencias de UI, decisiones
+    previas. Curated layer above state. Use for "guardate que
+    me gusta X", "que sabes de mi sobre Y".
+  domain: cognition
+  example_queries:
+    es:
+      - "guardate que mi banda favorita son los redonditos"
+      - "que sabes de mi sobre musica"
+      - "recordate que tengo perro y se llama firulais"
+      - "olvidate todo lo que te dije sobre mi ex"
+      - "que cosas tenes guardadas de mi"
+      - "guardate que prefiero el modo oscuro siempre"
+    en:
+      - "remember that my favorite band is queen"
+      - "what do you know about me regarding music"
+      - "remember I have a dog and his name is rex"
+      - "forget everything I told you about my ex"
+      - "what things do you have stored about me"
+
+- name: notes_tasks
+  purpose: |
+    Notes + todo items — create, edit, delete, list. Distinct
+    from reminder (time-based) and local_calendar (events). Plain
+    text or markdown, with optional tags. Use for "anotame X",
+    "tengo que hacer Y".
+  domain: cognition
+  example_queries:
+    es:
+      - "anotame que tengo que llamar al plomero el martes"
+      - "agregame a la lista de tareas: comprar pan, llamar mama"
+      - "mostrame mi lista de tareas pendientes"
+      - "marca como hecha la tarea de comprar pan"
+      - "borrame la nota vieja de la reunion"
+      - "creame una nota titulada ideas-podcast"
+    en:
+      - "note that I need to call the plumber on tuesday"
+      - "add to my todo list: buy bread, call mom"
+      - "show my pending tasks"
+      - "mark buy bread as done"
+      - "delete the old meeting note"
+
+- name: local_calendar
+  purpose: |
+    Local calendar events — Outlook / Google Calendar / Windows.
+    Create, edit, delete, list events with start/end/location/
+    attendees. Distinct from reminder (alerts) and notes_tasks
+    (todos). Use for "agendame X", "que tengo el viernes".
+  domain: cognition
+  example_queries:
+    es:
+      - "agendame una reunion con juan el viernes a las 3"
+      - "que tengo en el calendario para hoy"
+      - "mové la cita del dentista al martes"
+      - "cancelame el evento de las 4"
+      - "creame un evento recurrente todos los lunes a las 10"
+      - "mostrame el calendario de la semana que viene"
+    en:
+      - "schedule a meeting with john on friday at 3"
+      - "what do I have on my calendar today"
+      - "move the dentist appointment to tuesday"
+      - "cancel the 4pm event"
+      - "create a recurring event every monday at 10"
+
+- name: habit_tracker
+  purpose: |
+    Track habits with streaks — check in daily, view progress,
+    set goals, get reminders. Distinct from notes_tasks (one-off
+    todos). Use for "ya hice X hoy", "cuanto llevo de Y".
+  domain: cognition
+  example_queries:
+    es:
+      - "marcame que hoy hice ejercicio"
+      - "cuantos dias seguidos llevo meditando"
+      - "creame un habito nuevo: leer 20 paginas por dia"
+      - "mostrame mis habitos de la semana"
+      - "borrame el habito de cigarrillos"
+      - "que streak tengo en lectura"
+    en:
+      - "log that I exercised today"
+      - "how many days in a row have I been meditating"
+      - "create a new habit: read 20 pages a day"
+      - "show me my weekly habits"
+      - "what's my reading streak"
+
+- name: data_analysis
+  purpose: |
+    Run pandas-style analysis on local CSVs/Excels — load,
+    group-by, plot, summary stats, basic ML (sklearn). Different
+    from database (SQL) — this is dataframes-in-Python. Use for
+    "analiza este csv", "graficame X de Y".
+  domain: cognition
+  example_queries:
+    es:
+      - "analiza este csv y mostrame las estadisticas"
+      - "graficame las ventas por mes del excel"
+      - "agrupa estos datos por categoria"
+      - "que correlacion hay entre estas dos columnas"
+      - "hace un histograma de la columna edad"
+      - "exporta el resultado del analisis a otro excel"
+    en:
+      - "analyze this csv and show me the stats"
+      - "plot monthly sales from the excel"
+      - "group this data by category"
+      - "what's the correlation between these two columns"
+      - "make a histogram of the age column"
+
+- name: skill_load
+  purpose: |
+    Load and activate skills/microagents at runtime — turn on a
+    specific persona, enable a domain-specific helper, swap
+    behavior packs. Internal tool used by the agent to bootstrap
+    capabilities on demand.
+  domain: cognition
+  example_queries:
+    es:
+      - "carga la skill de programador senior"
+      - "activa el microagente de matematica"
+      - "mostrame que skills tenes disponibles"
+      - "desactiva el modo profesor"
+      - "cargame el persona de cocinero"
+      - "que microagentes estan activos ahora"
+    en:
+      - "load the senior programmer skill"
+      - "activate the math microagent"
+      - "show me what skills are available"
+      - "deactivate teacher mode"
+      - "load the chef persona"
+
+- name: subagent
+  purpose: |
+    Delegate a complex task to a fresh sub-agent with isolated
+    context — research, multi-step planning, parallel branches.
+    Returns a single summary. Use for "investigá a fondo X",
+    "dejá a otro agente que haga Y".
+  domain: cognition
+  example_queries:
+    es:
+      - "que un subagente investigue todo sobre la copa del mundo 2022"
+      - "delega esto a otro agente y dame un resumen"
+      - "lanzame un subagente para auditar este repo"
+      - "que un agente paralelo busque info sobre X"
+      - "abrime un subagente para esto que es muy largo"
+      - "que otro agente termine de redactar el informe"
+    en:
+      - "have a subagent research everything about the 2022 world cup"
+      - "delegate this to another agent and give me a summary"
+      - "spin up a subagent to audit this repo"
+      - "have a parallel agent search info about X"
+      - "open a subagent for this lengthy task"
