@@ -21,6 +21,7 @@ from gemma4_agent.router_v2 import (
     CACHE_THETA,
     FALLBACK_THETA,
     MODEL_PATH,
+    TOOL_DESCRIPTIONS_YAML,
     RouterV2,
     SMALLTALK_DELTA_THETA,
     TOP_K,
@@ -244,6 +245,97 @@ class RouterV2EdgeCasesTest(unittest.TestCase):
         self.assertIsInstance(subset, list)
         self.assertIsInstance(telemetry, dict)
         self.assertIn("source", telemetry)
+
+
+class ToolDescriptionsYamlTest(unittest.TestCase):
+    """Structural tests for tool_descriptions.yaml (Sprint 8b).
+
+    These don't need the ONNX model — they just parse the file and
+    cross-check it against COMPOUND_TOOL_SCHEMAS. Cheap to run on every
+    CI loop and catches the most common mistake (forgetting to add a
+    new tool's entry when COMPOUND_TOOL_SCHEMAS grows)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        import yaml
+        with open(TOOL_DESCRIPTIONS_YAML, encoding="utf-8") as fh:
+            cls.entries = yaml.safe_load(fh) or []
+
+    def test_yaml_has_65_entries(self) -> None:
+        self.assertEqual(len(self.entries), 65,
+                         f"expected 65 tools, got {len(self.entries)}")
+
+    def test_yaml_entries_have_required_fields(self) -> None:
+        for e in self.entries:
+            with self.subTest(name=e.get("name")):
+                self.assertIn("name", e)
+                self.assertIn("purpose", e)
+                self.assertIn("example_queries", e)
+                self.assertIsInstance(e["example_queries"], dict)
+                self.assertIn("es", e["example_queries"])
+                self.assertIn("en", e["example_queries"])
+                self.assertGreaterEqual(len(e["example_queries"]["es"]), 4,
+                                        f"{e['name']}: <4 ES queries")
+                self.assertGreaterEqual(len(e["example_queries"]["en"]), 4,
+                                        f"{e['name']}: <4 EN queries")
+
+    def test_yaml_names_match_compound_tools(self) -> None:
+        from gemma4_agent.tools import COMPOUND_TOOL_SCHEMAS
+        yaml_names = {e["name"] for e in self.entries}
+        tool_names = {s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS}
+        missing = tool_names - yaml_names
+        extra = yaml_names - tool_names
+        self.assertFalse(missing, f"YAML missing: {sorted(missing)}")
+        self.assertFalse(extra, f"YAML extras (not in COMPOUND): {sorted(extra)}")
+
+
+@unittest.skipUnless(_HAS_MODEL, "e5-small ONNX model not installed")
+class EnrichedRoutingTest(unittest.TestCase):
+    """End-to-end routing tests that exercise the YAML-enriched index.
+
+    These were not possible in Sprint 8a (descriptions were too short
+    for BM25 to discriminate). With 8b's example_queries the router
+    actually catches power-point/office and coloquial play commands."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        RouterV2.reset()
+        cls.router = RouterV2.get()
+        if not cls.router._ensure_loaded():
+            raise unittest.SkipTest(cls.router._load_error)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        RouterV2.reset()
+
+    def test_power_point_routes_to_office(self) -> None:
+        # The motivating bug for Sprint 8: 'power point' must surface
+        # `office` in the top-K subset. With the 8b ES queries
+        # ("hazme un power point sobre los planetas") BM25 has direct
+        # lexical material to hit, so this should now reliably make it.
+        RouterV2.reset()
+        r = RouterV2.get()
+        if not r._ensure_loaded():
+            self.skipTest(r._load_error)
+        subset, telemetry = r.route("Puedes hacerme un power point sobre IA?")
+        self.assertEqual(telemetry["source"], "hybrid")
+        self.assertIn("office", subset, f"office missing from {subset}")
+
+    def test_coloquial_play_routes_to_media_or_browser(self) -> None:
+        # Rioplatense imperative "pone Daredevil en netflix" — must
+        # land on media (the streaming-deeplink tool). browser is an
+        # acceptable secondary because the legacy phrasing
+        # "abri netflix" is in the browser docs.
+        RouterV2.reset()
+        r = RouterV2.get()
+        if not r._ensure_loaded():
+            self.skipTest(r._load_error)
+        subset, telemetry = r.route("pone Daredevil en netflix")
+        self.assertEqual(telemetry["source"], "hybrid")
+        self.assertTrue(
+            "media" in subset or "browser" in subset,
+            f"neither media nor browser surfaced: {subset}",
+        )
 
 
 if __name__ == "__main__":
