@@ -107,6 +107,40 @@ def download_model(progress_cb: Callable[[int, int], None] | None = None) -> boo
         return False
 
 
+def match_wake_phrase(text: str) -> str | None:
+    """Devuelve "gemma" o "hey gemma" si el texto reconocido por Vosk
+    arranca con el wake-word; None en cualquier otro caso.
+
+    Reglas:
+    - "gemma" o "hey gemma" como string completo → match exacto.
+    - Texto que arranca con "gemma ..." o "hey gemma ..." → match.
+    - "gemma" en posicion >0 (medio o final del span) → NO match.
+      Eso era el origen de FPs de conversacion humana: en una charla
+      tipo "le dije a Gemma que probara X", Vosk emitia un Result con
+      "gemma" en medio y la confidence por palabra superaba 0.85
+      facilmente, asi que el viejo `"gemma" in text.split()` disparaba.
+    - Caso vacio o texto no normalizado → None.
+
+    El caller (WakeDetector.feed) ya valida confidence ≥ WAKE_MIN_CONFIDENCE
+    y debounce. Esta funcion es puramente textual y testeable sin Vosk.
+    """
+    if not text:
+        return None
+    text = text.strip().lower()
+    if not text:
+        return None
+    words = text.split()
+    if not words:
+        return None
+    if text == "hey gemma" or text == "gemma":
+        return text
+    if len(words) >= 2 and words[0] == "hey" and words[1] == "gemma":
+        return "hey gemma"
+    if words[0] == "gemma":
+        return "gemma"
+    return None
+
+
 class WakeDetector:
     """Detector continuo de wake-words sobre stream de audio.
 
@@ -228,16 +262,7 @@ class WakeDetector:
         now = time.monotonic()
         if now - self._last_fire_at < WAKE_DEBOUNCE_S:
             return
-        # Match exacto sobre las dos frases conocidas (criterio textual previo)
-        matched: str | None = None
-        if text == "hey gemma":
-            matched = "hey gemma"
-        elif text == "gemma":
-            matched = "gemma"
-        elif "hey gemma" in text:
-            matched = "hey gemma"
-        elif "gemma" in text.split():
-            matched = "gemma"
+        matched = match_wake_phrase(text)
         if matched is None:
             return
 
