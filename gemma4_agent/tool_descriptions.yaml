@@ -896,3 +896,116 @@
       - "export the users table to csv"
       - "connect to postgres on localhost"
       - "how many records in customers"
+
+- name: smart_home
+  purpose: |
+    Home Assistant / Alexa / Google Home bridges — lights,
+    thermostats, locks, scenes, switches. Use for "prende las
+    luces", "subi el aire", "modo cine".
+  domain: iot
+  example_queries:
+    es:
+      - "prende las luces del living"
+      - "apaga todas las luces de la casa"
+      - "subi el aire a 22 grados"
+      - "activa el modo cine"
+      - "cerrame el portazgo de la entrada"
+      - "que temperatura hay en el dormitorio"
+      - "encendeme la cafetera"
+    en:
+      - "turn on the living room lights"
+      - "turn off all lights"
+      - "set ac to 22 degrees"
+      - "activate movie mode"
+      - "lock the front door"
+      - "what's the bedroom temperature"
+
+- name: device_settings
+  purpose: |
+    Windows Settings deep links — bluetooth, wifi, display,
+    sound, mouse, keyboard, privacy. Open the right Settings page
+    OR change settings programmatically. Use for "abri la
+    configuracion de X", "cambiame Y".
+  domain: iot
+  example_queries:
+    es:
+      - "abrime la configuracion de bluetooth"
+      - "cambiame la resolucion a 1080p"
+      - "activa el bluetooth"
+      - "abrime sonido para cambiar el dispositivo de salida"
+      - "configura el mouse para zurdos"
+      - "abrime privacidad de la camara"
+      - "cambia el wallpaper"
+    en:
+      - "open bluetooth settings"
+      - "change resolution to 1080p"
+      - "turn on bluetooth"
+      - "open sound settings to change output device"
+      - "set the mouse for left-handed"
+
+- name: peripheral
+  purpose: |
+    Bluetooth/USB device pairing, mouse DPI, keyboard backlight,
+    headset profiles, controller mapping. Distinct from
+    device_settings (Settings UI) — this is device-specific
+    state. Use for "emparejame los auriculares", "cambia el dpi".
+  domain: iot
+  example_queries:
+    es:
+      - "emparejame los auriculares bluetooth"
+      - "cambia el dpi del mouse a 1600"
+      - "encende el rgb del teclado"
+      - "desconecta el control de xbox"
+      - "mostrame los dispositivos bluetooth conectados"
+      - "cambia el perfil de los headphones a modo gaming"
+    en:
+      - "pair the bluetooth headphones"
+      - "change mouse dpi to 1600"
+      - "turn on keyboard rgb"
+      - "disconnect the xbox controller"
+      - "show connected bluetooth devices"
+
+- name: printer_scanner
+  purpose: |
+    Printer queues, scan to file/email, manage paper sizes,
+    duplex, color/bw, install printer drivers. Use for "imprimi
+    esto", "escanea el documento", "cancelame la cola".
+  domain: iot
+  example_queries:
+    es:
+      - "imprimi este pdf a doble cara"
+      - "escanea el documento y guardalo como pdf"
+      - "cancelame la cola de impresion"
+      - "cambia la impresora predeterminada"
+      - "imprimi solo las paginas 1-3 a color"
+      - "instalame la impresora hp de la red"
+    en:
+      - "print this pdf duplex"
+      - "scan the document and save as pdf"
+      - "cancel the print queue"
+      - "change default printer"
+      - "print pages 1-3 in color"
+
+- name: network
+  purpose: |
+    Wifi connect/disconnect, list networks, VPN toggle, ping,
+    traceroute, ip config, dns flush, port scan, proxy settings.
+    Use for "conectate a la wifi X", "prende la vpn",
+    "pingueame Y".
+  domain: iot
+  example_queries:
+    es:
+      - "conectate a la wifi de mi casa"
+      - "prende la vpn"
+      - "mostrame las redes wifi disponibles"
+      - "pingueame google"
+      - "que ip tengo"
+      - "desconectame del wifi"
+      - "cambia el dns a cloudflare"
+    en:
+      - "connect to my home wifi"
+      - "turn on the vpn"
+      - "show available wifi networks"
+      - "ping google"
+      - "what's my ip"
+      - "change dns to cloudflare"
