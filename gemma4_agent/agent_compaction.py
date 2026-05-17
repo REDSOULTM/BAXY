@@ -181,6 +181,11 @@ def compact_tool_result(name: str, args: dict[str, Any], result: dict[str, Any])
         "image_path",
         "title",
         "selected_title",
+        # Hotfix F 2026-05-17: aligns with _LOCATOR_KEYS — deeplink
+        # was preserved by the breadcrumb pre-pass but dropped here
+        # when payload exceeded TOOL_RESULT_LIMIT. EVIDENCE CITATION
+        # in core.md promises deeplink survives compaction.
+        "deeplink",
         "level",
         "query",
         "matched_game",
