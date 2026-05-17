@@ -11,6 +11,8 @@ from __future__ import annotations
 import logging
 import os
 import sys
+import traceback
+from pathlib import Path
 
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont, QPainter, QPen
@@ -19,6 +21,92 @@ from PyQt6.QtWidgets import QApplication, QWidget
 from .main_window import MainWindow
 from .settings import apply_persisted_on_startup
 from .theme import C, display, mono, qcol
+
+
+# Crash log path: misma carpeta que el pre-session recorder para no
+# proliferar lugares de log.
+_CRASH_LOG_PATH = Path.home() / ".gemma4" / "logs" / "_pre_session" / "crash.log"
+
+
+def _install_crash_hooks() -> None:
+    """Persist any unhandled exception (Python or Qt) to crash.log.
+
+    Por defecto en Qt+PyQt6, una excepcion dentro de un slot puede matar
+    el proceso sin propagar al stdout. Esto persiste el traceback a un
+    archivo dedicado para que, cuando la GUI muera "de la nada", tengamos
+    evidencia para diagnosticar. Idempotente: re-instalar no duplica
+    handlers.
+    """
+    try:
+        _CRASH_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # Si no podemos crear el dir (read-only HOME, etc.) no abortamos
+        # el arranque de la GUI — el hook simplemente no loguea a disco.
+        pass
+
+    crash_logger = logging.getLogger("gemma4.crash")
+    crash_logger.setLevel(logging.ERROR)
+    crash_logger.propagate = False  # no spam stdout
+
+    already_attached = any(
+        isinstance(h, logging.FileHandler)
+        and getattr(h, "baseFilename", "") == str(_CRASH_LOG_PATH)
+        for h in crash_logger.handlers
+    )
+    if not already_attached:
+        try:
+            handler = logging.FileHandler(_CRASH_LOG_PATH, encoding="utf-8")
+        except OSError:
+            handler = None
+        if handler is not None:
+            handler.setFormatter(logging.Formatter(
+                "%(asctime)s [%(levelname)s] %(message)s",
+                datefmt="%Y-%m-%dT%H:%M:%S",
+            ))
+            crash_logger.addHandler(handler)
+
+    def _excepthook(exc_type, exc_value, exc_tb):
+        tb_text = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        try:
+            crash_logger.error("UNHANDLED EXCEPTION:\n%s", tb_text)
+        except Exception:
+            pass
+        # Re-emite al stderr default por si el operador esta viendo
+        # la consola.
+        sys.__excepthook__(exc_type, exc_value, exc_tb)
+
+    sys.excepthook = _excepthook
+
+    # Qt tiene su propio canal de mensajes que normalmente no se loggea
+    # (warnings tipo "QObject::connect: No such slot",
+    # "Qt has caught an exception thrown from an event handler", etc.).
+    try:
+        from PyQt6.QtCore import qInstallMessageHandler  # type: ignore
+    except Exception:
+        return
+
+    def _qt_msg_handler(msg_type, context, message):
+        try:
+            sev = int(msg_type)
+        except Exception:
+            sev = 0
+        # QtMsgType: Debug=0, Warning=1, Critical=2, Fatal=3, Info=4.
+        # Solo loggeamos warning+ para no spamear.
+        if sev not in (1, 2, 3):
+            return
+        try:
+            level_name = getattr(msg_type, "name", str(msg_type))
+        except Exception:
+            level_name = str(msg_type)
+        try:
+            crash_logger.error("Qt[%s]: %s", level_name, message)
+        except Exception:
+            pass
+
+    try:
+        qInstallMessageHandler(_qt_msg_handler)
+    except Exception:
+        pass
 
 
 class SplashWidget(QWidget):
@@ -116,6 +204,10 @@ def _setup_logging() -> None:
 
 
 def main() -> int:
+    # Crash hooks first — antes de cualquier cosa que pueda crashear, asi
+    # el primer traceback queda persistido (fix 2026-05-17: GUI cerro sola
+    # sin escribir nada en logs).
+    _install_crash_hooks()
     _setup_logging()
     apply_persisted_on_startup()
     existing = QApplication.instance()
