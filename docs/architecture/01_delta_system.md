@@ -274,3 +274,68 @@ graph TB
 - **Containers no tocados** (decisión consciente): Voice, Mission,
   UI Desktop, UI Field, MCP, Memory, Skills/Microagents/Personas
   (pendientes de Sprint 3b para medir uso real).
+
+## 6. Crash recovery y resilience del subprocess llama-server
+
+> Documentado tras la auditoría externa post-plan (Sprint 7.6), que
+> detectó que estos componentes existen en el código pero no estaban
+> descritos en este delta. No cambian con respecto al baseline; la
+> auditoría externa los marcó "falta", el operador validó "existe pero
+> sin doc", y este §6 cierra la brecha de documentación.
+
+### 6.1 Detección de crash
+
+[`gemma4_agent/llama_server.py:LlamaServerManager.detect_crash_signature()`](../../gemma4_agent/llama_server.py)
+inspecciona el tail del `err.log` buscando patrones conocidos de
+crash:
+
+- CUDA illegal memory access
+- Out of memory (GPU/CPU)
+- Otros patrones documentados a partir de la línea 424.
+
+Devuelve un dict con `summary` (str | None) que el caller (`launcher`,
+`agent_runner._build_agent`) puede usar para decidir si vale la pena
+reintentar o si el problema es estructural (e.g. modelo demasiado
+grande para la VRAM disponible).
+
+### 6.2 Vision relaunch (anti-leak conocido)
+
+`LlamaServerManager.recycle_for_vision_leak()` reinicia el subprocess
+cuando se detecta el leak progresivo del `mmproj` de Gemma 4
+([ggml-org/llama.cpp#21690](https://github.com/ggml-org/llama.cpp/pull/21690)).
+
+- **Trigger automático:** `multimodal._bump_image_counter()` se
+  invoca en cada turn que incluyó una imagen. Cuando el counter
+  cruza `IMAGE_RELAUNCH_THRESHOLD` (default 40 imágenes acumuladas),
+  el callback registrado en `agent_runner._build_agent` (Sprint 4
+  vision_relaunch wiring) llama a `recycle_for_vision_leak()`.
+- **No-op para perfiles sin visión:** Standby / Light no cargan
+  mmproj; el counter sube pero el callback es no-op.
+
+### 6.3 Restart limpio en cambio de profile
+
+`LlamaServerManager.restart(profile)` = `stop() + start(profile)`. Lo
+usa `profile_watcher` cuando un cambio VRAM-aware del perfil
+(Performance → Balanced → Light) requiere relanzar el server con
+nuevos flags (`-c`, `--n-gpu-layers`, mmproj on/off).
+
+### 6.4 Lo que NO existe (gaps conocidos)
+
+- **Auto-restart mid-turn.** Si llama-server crashea durante un
+  `client.chat()` en curso, el cliente HTTP recibe un error y el guard
+  `_guard_unverified_final` debería catcharlo, pero **no hay re-spawn
+  automático del subprocess**. El siguiente turn dispara
+  `_autostart_llama_server` de nuevo (que detecta puerto libre y
+  relanza), así que la sesión se recupera, pero el turn que crasheó
+  queda perdido.
+- **Health probe continuo.** Solo hay probe en el boot warmup
+  (`_build_agent` → `client.health()` + 1-token chat). No hay
+  probe periódico durante un turn largo que se sospecha colgado.
+
+### 6.5 Gaps documentados para Sprint 8+
+
+- Auto-restart mid-turn con re-try transparente del mismo turn.
+- Health probe periódico durante turns que superan N segundos sin
+  progress event.
+- Métricas: contador de crashes detectados por sesión + tiempo
+  promedio entre crash y respawn.
