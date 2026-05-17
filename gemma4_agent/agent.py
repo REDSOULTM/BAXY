@@ -1374,6 +1374,14 @@ class Gemma4Agent:
     def _compact_completed_history(self) -> None:
         """Keep future turns small after a completed tool cycle.
 
+        PRE-PASS (hotfix C 2026-05-17): before dropping tool messages,
+        harvest locator-keys from tool_results and stitch them as a
+        discreet breadcrumb onto the assistant reply of the same turn.
+        This preserves "where did the file get saved" across turns even
+        if the LLM forgot to cite it explicitly. Bug repro: create a
+        PowerPoint, next turn ask "where is it" — without the breadcrumb
+        the path was lost because tool messages get dropped below.
+
         Two-stage strategy inspired by OpenHands:
         1. Cheap pass: drop tool messages and tool_calls, shorten strings.
         2. If estimated context usage is still > 75% of context_size, ask
@@ -1384,6 +1392,11 @@ class Gemma4Agent:
         Bypassed entirely with GEMMA4_AGENT_SUMMARIZATION=false. Stage 1 always
         runs as a safety net even when summarization is disabled.
         """
+        # PRE-PASS: stitch breadcrumbs from tool_results onto the
+        # following assistant reply. Idempotent: if the assistant
+        # reply already mentions the locator verbatim, nothing is added.
+        self.history = _stitch_breadcrumbs(self.history)
+
         budget = _compute_context_budget(self.config.context_size)
         compacted: list[dict[str, Any]] = []
         for msg in self.history:
@@ -1684,6 +1697,7 @@ from .agent_compaction import (  # noqa: E402,F401
     json_len as _json_len,
     message_text_estimate as _message_text_estimate,
     middle_ellipsis as _middle_ellipsis,
+    stitch_breadcrumbs as _stitch_breadcrumbs,
 )
 
 

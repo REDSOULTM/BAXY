@@ -208,6 +208,75 @@ def compact_tool_result(name: str, args: dict[str, Any], result: dict[str, Any])
     return compact_json(core, max_items=6, max_string=600)
 
 
+# Locator keys whose values must survive history compaction. These are
+# the same fields compact_tool_result preserves verbatim under core_keys.
+# Kept here (not in config) because they're closely tied to the prompt
+# rule in core.md (EVIDENCE CITATION) and we want them to drift together.
+_LOCATOR_KEYS: tuple[str, ...] = ("path", "url", "selected_title", "image_path", "deeplink")
+
+
+def stitch_breadcrumbs(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Stitch locator-key breadcrumbs onto assistant replies pre-drop.
+
+    Hotfix C 2026-05-17. Before `_compact_completed_history` drops the
+    role="tool" messages, harvest any `path` / `url` / `selected_title`
+    / `image_path` / `deeplink` values from their JSON content and
+    append them as ``\\n[breadcrumb: key=value ...]`` to the assistant
+    reply of the same turn. The reply is the only thing that survives
+    the drop, so without this the path "vanishes" between turns and the
+    LLM literally cannot answer "where did you save X".
+
+    Idempotent: if the assistant content already contains the locator
+    verbatim, nothing is added. Bounded: breadcrumb suffix capped at
+    ~600 chars so it can't blow up the prompt.
+
+    Returns a new history list (does NOT mutate the input dict
+    structure aside from the assistant ``content`` field of the turn
+    that needs stitching). Safe to call when there are no tool
+    messages — falls through as a no-op.
+    """
+    out: list[dict[str, Any]] = list(history)
+    pending: list[tuple[str, str]] = []
+    for idx, msg in enumerate(out):
+        role = str(msg.get("role") or "")
+        if role == "tool":
+            raw = msg.get("content")
+            parsed: Any = None
+            if isinstance(raw, str):
+                try:
+                    parsed = json.loads(raw)
+                except Exception:
+                    parsed = None
+            elif isinstance(raw, dict):
+                parsed = raw
+            if isinstance(parsed, dict):
+                for k in _LOCATOR_KEYS:
+                    v = parsed.get(k)
+                    if isinstance(v, str) and v.strip() and len(v) <= 400:
+                        pending.append((k, v.strip()))
+            continue
+        if role == "assistant" and not msg.get("tool_calls") and pending:
+            existing = msg.get("content")
+            if isinstance(existing, list):
+                existing_text = "".join(
+                    str(it.get("text", "")) for it in existing
+                    if isinstance(it, dict)
+                )
+            else:
+                existing_text = "" if existing is None else str(existing)
+            missing = [(k, v) for k, v in pending if v not in existing_text]
+            if missing:
+                trail = " ".join(f"{k}={v}" for k, v in missing)
+                breadcrumb = f"\n[breadcrumb: {trail}]"
+                if len(breadcrumb) > 600:
+                    breadcrumb = breadcrumb[:600] + "...]"
+                new_msg = dict(msg)
+                new_msg["content"] = existing_text + breadcrumb
+                out[idx] = new_msg
+            pending = []
+    return out
+
+
 __all__ = [
     "LIVE_TEXT_LIMIT",
     "HISTORY_TEXT_LIMIT",
@@ -220,4 +289,5 @@ __all__ = [
     "compact_json",
     "json_len",
     "compact_tool_result",
+    "stitch_breadcrumbs",
 ]
