@@ -14,11 +14,12 @@ from __future__ import annotations
 
 import os
 import re
+from dataclasses import dataclass
 from pathlib import Path
-from typing import TypedDict
 
 
-class ModelInfo(TypedDict):
+@dataclass(frozen=True)
+class ModelInfo:
     family: str
     params: str
     runtime: str

@@ -26,6 +26,7 @@ import queue
 import subprocess
 import time
 import uuid
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -464,7 +465,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         info = _current_model_info(cfg)
         if info is None:
             return JSONResponse({"status": "loading"}, status_code=503)
-        return info
+        return asdict(info)
 
     @app.get("/metrics")
     def get_metrics() -> Any:
@@ -1400,7 +1401,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
             # an authoritative header without waiting for the next 5s poll.
             info = _current_model_info(cfg)
             if info is not None:
-                await ws.send_text(json.dumps({"type": "model", "info": info}))
+                await ws.send_text(json.dumps({"type": "model", "info": asdict(info)}))
 
             # send an initial ctx snapshot so the substrate ctx·budget bar
             # has the real context size from config from the first paint.
