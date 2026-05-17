@@ -118,6 +118,33 @@ def _md_table(headers: list[str], rows: list[list[Any]]) -> str:
     return "\n".join(out)
 
 
+def _pct_of_turns(count: int, total_turns: int) -> str:
+    """Format a count as `count (X.Y%)` against the turn baseline.
+
+    Sprint 7.7: percentage-of-turns is the metric to drive deletion
+    decisions (count == 0 alone is not enough — edge cases happen).
+    """
+    if total_turns <= 0:
+        return f"{count}"
+    pct = 100.0 * count / total_turns
+    return f"{count} ({pct:.1f}%)"
+
+
+def _usage_recommendation(pct_of_turns: float) -> str:
+    """Map a per-turn usage percentage to a textual recommendation.
+
+    Thresholds (Sprint 7.7, per the external audit):
+      < 1%   → candidate to delete (review in Sprint 3b).
+      1-5%   → low usage, justify maintenance cost.
+      >= 5%  → keep.
+    """
+    if pct_of_turns < 1.0:
+        return "candidate to delete in Sprint 3b"
+    if pct_of_turns < 5.0:
+        return "review: low usage, may not justify maintenance cost"
+    return "keep"
+
+
 def build_report(events: list[dict[str, Any]], *, source_path: Path,
                  since: datetime | None, corrupted: int, total_raw: int) -> str:
     out: list[str] = []
@@ -134,7 +161,8 @@ def build_report(events: list[dict[str, Any]], *, source_path: Path,
     if ts_first and ts_last:
         push(f"- **Time range:** {ts_first} → {ts_last}")
     turn_ids = {e.get("turn_id") for e in events if e.get("turn_id")}
-    push(f"- **Distinct turn_ids:** {len(turn_ids):,}")
+    total_turns = len(turn_ids)
+    push(f"- **Distinct turn_ids:** {total_turns:,}")
     push("")
 
     # ---- Section A: tools ----
@@ -217,14 +245,18 @@ def build_report(events: list[dict[str, Any]], *, source_path: Path,
     push(f"**Hardcoded personas in personas.py:** {', '.join(PERSONA_NAMES)}")
     if persona_events:
         push("")
-        push(f"_Source: {src_label}._")
+        push(f"_Source: {src_label}. Total turns in window: {total_turns:,}._")
         push("")
-        push(_md_table(["persona", "events"],
-                       [[p, n] for p, n in persona_events.most_common()]))
+        rows = []
+        for p, n in persona_events.most_common():
+            pct = (100.0 * n / total_turns) if total_turns else 0.0
+            rows.append([p, n, f"{pct:.1f}%", _usage_recommendation(pct)])
+        push(_md_table(["persona", "events", "% of turns", "recommendation"], rows))
         unused_p = [p for p in PERSONA_NAMES if persona_events.get(p, 0) == 0]
         if unused_p:
             push("")
-            push(f"**Never seen in logs:** {', '.join(unused_p)}")
+            push(f"**Never seen in logs (0% of turns):** {', '.join(unused_p)}")
+            push("> All zero-usage personas qualify as 'candidate to delete in Sprint 3b'.")
     else:
         push("")
         push("> ⚠ No persona-tagged events found in traces.jsonl.")
@@ -249,8 +281,11 @@ def build_report(events: list[dict[str, Any]], *, source_path: Path,
     push("### C.1 Microagents matched")
     push("")
     if microagent:
-        push(_md_table(["microagent", "matches"],
-                       [[n, c] for n, c in microagent.most_common()]))
+        rows = []
+        for n, c in microagent.most_common():
+            pct = (100.0 * c / total_turns) if total_turns else 0.0
+            rows.append([n, c, f"{pct:.1f}%", _usage_recommendation(pct)])
+        push(_md_table(["microagent", "matches", "% of turns", "recommendation"], rows))
     else:
         push("> ⚠ No `microagent_matched` events found. The router currently")
         push("> doesn't log which microagent fired. Sprint 2.2 adds this.")
@@ -258,8 +293,11 @@ def build_report(events: list[dict[str, Any]], *, source_path: Path,
     push("### C.2 Skills loaded (via skill_load tool or skill_loaded event)")
     push("")
     if skill:
-        push(_md_table(["skill", "loads"],
-                       [[n, c] for n, c in skill.most_common()]))
+        rows = []
+        for n, c in skill.most_common():
+            pct = (100.0 * c / total_turns) if total_turns else 0.0
+            rows.append([n, c, f"{pct:.1f}%", _usage_recommendation(pct)])
+        push(_md_table(["skill", "loads", "% of turns", "recommendation"], rows))
     else:
         push("> ⚠ No skill load activity found in this window.")
     push("")
@@ -310,8 +348,11 @@ def build_report(events: list[dict[str, Any]], *, source_path: Path,
     if cap_added:
         push("### D.2 Tools most often suggested by classifier")
         push("")
-        push(_md_table(["tool", "suggestions"],
-                       [[t, c] for t, c in cap_added.most_common(20)]))
+        rows = []
+        for t, c in cap_added.most_common(20):
+            pct = (100.0 * c / total_turns) if total_turns else 0.0
+            rows.append([t, c, f"{pct:.1f}%"])
+        push(_md_table(["tool", "suggestions", "% of turns"], rows))
         push("")
 
     # ---- Section E: routing / fallback ----
