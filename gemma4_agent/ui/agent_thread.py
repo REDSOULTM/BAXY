@@ -15,21 +15,14 @@ Signals:
 """
 from __future__ import annotations
 
-import json
 import queue
 import threading
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from PyQt6.QtCore import QObject, QThread, pyqtSignal
 
-
-@dataclass
-class _TurnRequest:
-    text: str
-    images: list[str]
-    audios: list[str]
+from .._shared import TurnRequest as _TurnRequest, fmt_tool_args
 
 
 class AgentWorker(QThread):
@@ -176,13 +169,7 @@ class AgentWorker(QThread):
 
     @staticmethod
     def _fmt_args(args: dict[str, Any]) -> str:
-        try:
-            s = json.dumps(args, ensure_ascii=False)
-        except Exception:
-            s = str(args)
-        if len(s) > 120:
-            s = s[:117] + "..."
-        return s
+        return fmt_tool_args(args)
 
     # ------------------------------------------------------------------
     def run(self) -> None:

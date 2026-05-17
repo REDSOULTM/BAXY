@@ -17,10 +17,10 @@ import logging
 import queue
 import threading
 import uuid
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from ._shared import TurnRequest as _TurnRequest, fmt_tool_args as _fmt_args
 from .boot_progress import (
     LlamaLogTail,
     STAGE_HEALTH,
@@ -31,13 +31,6 @@ from .boot_progress import (
 from .events_bus import BUS
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class _TurnRequest:
-    text: str
-    images: list[str]
-    audios: list[str]
 
 
 def _ts() -> str:
@@ -55,18 +48,6 @@ def _publish_activity(src: str, msg: str) -> None:
             "ts": _ts(),
         },
     })
-
-
-def _fmt_args(args: Any) -> str:
-    """One-line preview of a tool's args dict, capped at 120 chars."""
-    import json
-    try:
-        s = json.dumps(args, ensure_ascii=False)
-    except (TypeError, ValueError):
-        s = str(args)
-    if len(s) > 120:
-        s = s[:117] + "..."
-    return s
 
 
 class AgentRunner:

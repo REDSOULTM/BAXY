@@ -117,4 +117,37 @@ def hard_gate(
     }
 
 
-__all__ = ["redact_sensitive", "hard_gate"]
+from dataclasses import dataclass
+
+
+@dataclass
+class TurnRequest:
+    """In-flight user turn enqueued by either worker (UI or HTTP).
+
+    Was duplicated as ``_TurnRequest`` in :mod:`agent_runner` and
+    :mod:`ui.agent_thread` (audit §2.1). The two workers diverge in
+    everything ELSE (threading model, output channel, build steps) so
+    Sprint 4 only unifies what was byte-identical. Full ``AgentSerialWorker``
+    extraction is deferred to Sprint 5.
+    """
+    text: str
+    images: list[str]
+    audios: list[str]
+
+
+def fmt_tool_args(args: Any, max_chars: int = 120) -> str:
+    """One-line preview of a tool's args dict, capped at ``max_chars``.
+
+    Identical helper used by both worker `_progress_forwarder` paths.
+    """
+    import json
+    try:
+        s = json.dumps(args, ensure_ascii=False)
+    except (TypeError, ValueError):
+        s = str(args)
+    if len(s) > max_chars:
+        s = s[: max_chars - 3] + "..."
+    return s
+
+
+__all__ = ["redact_sensitive", "hard_gate", "TurnRequest", "fmt_tool_args"]
