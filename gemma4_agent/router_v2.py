@@ -1,0 +1,415 @@
+"""Tool-routing v2 — semantic-first, sin regex.
+
+Architecture (per Claude Research May 2026):
+
+- **Layer 0** — semantic cache (LRU + cosine threshold).
+- **Layer 1** — smalltalk gate (cheap centroid vs centroid check).
+- **Layer 2** — hybrid retrieval (BM25 + dense embeddings + RRF k=60).
+- **Layer 3** — confidence-gated fallback to popular tools.
+
+Default OFF. Enable with env ``GEMMA4_ROUTER_V2=1``. A separate flag
+``GEMMA4_ROUTER_V2_SHADOW=1`` runs v2 in parallel with v1 and only
+logs the comparison (no behavioural change), enabling blind tests
+in production.
+
+- Model: ``intfloat/multilingual-e5-small`` int8 ONNX (100 langs, 384
+  dim). Downloaded by ``scripts/bootstrap_e5_small.py``.
+- BM25: ``rank-bm25`` (already a dep).
+- RRF: Cormack & Clarke (2009), constant k=60.
+
+If the ONNX model is not present on disk, ``is_enabled()`` returns
+False and ``route_v2()`` returns ``([], {"source": "disabled"})``;
+callers must treat that as "router v2 silently unavailable, fall back
+to v1".
+"""
+from __future__ import annotations
+
+import hashlib
+import os
+import threading
+import time
+from collections import OrderedDict
+from pathlib import Path
+from typing import Any
+
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+MODEL_DIR = Path.home() / ".gemma4" / "models" / "e5-small"
+MODEL_PATH = MODEL_DIR / "onnx" / "model_quantized.onnx"
+TOKENIZER_PATH = MODEL_DIR / "tokenizer.json"
+SMALLTALK_CENTROID_PATH = MODEL_DIR / "smalltalk_centroid.npy"
+
+CACHE_MAX = 1000
+CACHE_THETA = 0.88        # cosine similarity threshold for cache hit
+
+# Smalltalk gate uses the DELTA between similarity-to-smalltalk-centroid
+# and similarity-to-tools-centroid, not absolute values. e5-small
+# embeddings are dense enough that absolute cosine for any query
+# against either centroid lands in the 0.85-0.95 band; only the
+# *difference* discriminates. Calibrated against a probe set in
+# Sprint 8a:
+#   "hola, como estas?"     → delta +0.033 (smalltalk-y)
+#   "thanks" / "gracias"    → delta +0.06 .. +0.08
+#   "abrime el Steam"       → delta +0.014 (tools-y)
+#   "power point"           → delta +0.012 (tools-y)
+SMALLTALK_DELTA_THETA = 0.025  # smalltalk - tools >= this → gate fires
+# RRF top-1 floor. With 65 docs and RRF k=60 the theoretical max for a
+# document that's #1 in BOTH dense and BM25 rankings is 2 * 1/61 ≈ 0.0328.
+# Below this floor the top result is unrelated; pop in the popular set.
+FALLBACK_THETA = 0.025
+TOP_K = 16                # subset size cap
+RRF_K = 60                # RRF constant per Cormack & Clarke 2009
+
+# Tools chosen for the low-confidence fallback. Order roughly matches
+# the most-used tools observed in Sprint 2's usage report. Kept short
+# so even on a worst-case query the LLM still has a viable subset.
+_POPULAR_FALLBACK_TOOLS = (
+    "filesystem", "media", "system", "web", "office",
+    "app", "browser", "audio", "steam",
+)
+
+# Default smalltalk seed phrases. Used to bootstrap the smalltalk
+# centroid the first time the router runs. A future sprint can move
+# these to a YAML file and persist the precomputed centroid.
+_SMALLTALK_SEED_PHRASES = (
+    "hola", "hello", "hi", "hey",
+    "buenos dias", "buenas tardes", "buenas noches",
+    "good morning", "good afternoon", "good evening",
+    "gracias", "thank you", "thanks",
+    "como estas", "que tal", "how are you",
+    "ok", "perfecto", "listo", "claro", "vale",
+    "si", "no", "no se", "tal vez", "quizas",
+    "chau", "adios", "bye", "hasta luego", "nos vemos",
+    "que bueno", "genial", "excelente",
+)
+
+
+# ---------------------------------------------------------------------------
+# Router
+# ---------------------------------------------------------------------------
+
+class RouterV2:
+    """Process-singleton hybrid router. Lazy-loaded on first call.
+
+    Singleton because the ONNX session + tool index together cost ~5s
+    to build cold and ~120 MB of RSS; we want one instance shared
+    across the agent worker, the FastAPI server, etc.
+    """
+
+    _instance: "RouterV2 | None" = None
+    _lock = threading.Lock()
+
+    @classmethod
+    def get(cls) -> "RouterV2":
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = cls()
+            return cls._instance
+
+    @classmethod
+    def reset(cls) -> None:
+        """Drop the singleton — exposed for tests that monkey-patch state."""
+        with cls._lock:
+            cls._instance = None
+
+    def __init__(self) -> None:
+        self._model: Any = None
+        self._tokenizer: Any = None
+        self._tool_names: list[str] = []
+        self._tool_embeddings: Any = None        # np.ndarray [n_tools, 384]
+        self._tool_bm25: Any = None
+        self._smalltalk_centroid: Any = None     # np.ndarray [384]
+        self._tools_centroid: Any = None         # np.ndarray [384]
+        self._cache: "OrderedDict[str, tuple[Any, list[str]]]" = OrderedDict()
+        self._loaded = False
+        self._load_failed = False
+        self._load_error = ""
+
+    def is_available(self) -> bool:
+        """True only after a successful _ensure_loaded()."""
+        return MODEL_PATH.exists() and not self._load_failed
+
+    def _ensure_loaded(self) -> bool:
+        """Lazy-init. Returns True if ready, False otherwise (sticky)."""
+        if self._loaded:
+            return True
+        if self._load_failed:
+            return False
+        if not MODEL_PATH.exists():
+            self._load_failed = True
+            self._load_error = f"model not found at {MODEL_PATH}"
+            return False
+        try:
+            import onnxruntime as ort
+            from tokenizers import Tokenizer
+            self._model = ort.InferenceSession(
+                str(MODEL_PATH),
+                providers=["CPUExecutionProvider"],
+            )
+            self._tokenizer = Tokenizer.from_file(str(TOKENIZER_PATH))
+            self._build_index()
+            self._loaded = True
+            return True
+        except Exception as exc:  # noqa: BLE001 — load must never crash callers
+            self._load_failed = True
+            self._load_error = f"{type(exc).__name__}: {exc}"
+            return False
+
+    # ------------------------------------------------------------------
+    # Index construction
+    # ------------------------------------------------------------------
+
+    def _build_index(self) -> None:
+        """Compute embeddings + BM25 + centroids for the 65 compound tools."""
+        import numpy as np
+        from rank_bm25 import BM25Okapi
+
+        from .semantic_router import TOOL_DESCRIPTIONS
+        from .tools import COMPOUND_TOOL_SCHEMAS
+
+        # 65 tool names, sorted for determinism.
+        compound_names = sorted({
+            s.get("function", {}).get("name", "")
+            for s in COMPOUND_TOOL_SCHEMAS
+            if s.get("function", {}).get("name")
+        })
+        self._tool_names = compound_names
+
+        # E5 convention: documents are prefixed with "passage: ",
+        # queries with "query: ". Skipping this asymmetric prefix
+        # measurably hurts recall on the same model.
+        docs = [
+            f"passage: {TOOL_DESCRIPTIONS.get(name, name)}"
+            for name in compound_names
+        ]
+
+        # Dense embeddings (already L2-normalized by _encode_batch).
+        self._tool_embeddings = self._encode_batch(docs)
+
+        # BM25 index over the same docs (sans the "passage: " prefix
+        # to keep tokenization clean).
+        bare_docs = [TOOL_DESCRIPTIONS.get(n, n) for n in compound_names]
+        tokenized = [self._tokenize_for_bm25(d) for d in bare_docs]
+        self._tool_bm25 = BM25Okapi(tokenized)
+
+        # Tools centroid: average of all 65 tool embeddings.
+        self._tools_centroid = np.mean(self._tool_embeddings, axis=0)
+        norm = np.linalg.norm(self._tools_centroid)
+        if norm > 1e-9:
+            self._tools_centroid = self._tools_centroid / norm
+
+        # Smalltalk centroid: load precomputed if available, else
+        # compute from seed phrases.
+        if SMALLTALK_CENTROID_PATH.exists():
+            try:
+                self._smalltalk_centroid = np.load(SMALLTALK_CENTROID_PATH)
+            except Exception:  # noqa: BLE001
+                self._smalltalk_centroid = None
+        if self._smalltalk_centroid is None:
+            seeds = [f"query: {p}" for p in _SMALLTALK_SEED_PHRASES]
+            smalltalk_embs = self._encode_batch(seeds)
+            self._smalltalk_centroid = np.mean(smalltalk_embs, axis=0)
+            sm_norm = np.linalg.norm(self._smalltalk_centroid)
+            if sm_norm > 1e-9:
+                self._smalltalk_centroid = self._smalltalk_centroid / sm_norm
+
+    @staticmethod
+    def _tokenize_for_bm25(text: str) -> list[str]:
+        """Unicode-aware tokenization for BM25, language-agnostic.
+
+        No per-language stopwords — we keep all words because for a
+        65-doc index the IDF term in BM25 already handles common-word
+        suppression, and stopword lists would discriminate against
+        non-English queries.
+        """
+        import re
+        return re.findall(r"\w+", text.lower(), re.UNICODE)
+
+    def _encode_batch(self, texts: list[str]) -> Any:
+        """Run ONNX inference; return [n, 384] L2-normalized embeddings.
+
+        E5-style mean pooling: average token embeddings over the
+        attention mask, then L2-normalize. ``token_type_ids`` is
+        required by this particular ONNX export (BERT-style); we
+        always pass zeros.
+        """
+        import numpy as np
+
+        encs = [self._tokenizer.encode(t) for t in texts]
+        max_len = max(len(e.ids) for e in encs)
+        input_ids = np.zeros((len(encs), max_len), dtype=np.int64)
+        attention_mask = np.zeros((len(encs), max_len), dtype=np.int64)
+        for i, e in enumerate(encs):
+            input_ids[i, : len(e.ids)] = e.ids
+            attention_mask[i, : len(e.ids)] = 1
+        token_type_ids = np.zeros_like(input_ids)
+
+        outputs = self._model.run(
+            None,
+            {
+                "input_ids": input_ids,
+                "attention_mask": attention_mask,
+                "token_type_ids": token_type_ids,
+            },
+        )
+        token_embeddings = outputs[0]  # [n, seq, 384]
+        mask_expanded = attention_mask[..., None].astype(np.float32)
+        summed = (token_embeddings * mask_expanded).sum(axis=1)
+        counts = mask_expanded.sum(axis=1).clip(min=1e-9)
+        embeddings = summed / counts
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True).clip(min=1e-9)
+        return embeddings / norms
+
+    # ------------------------------------------------------------------
+    # Cache
+    # ------------------------------------------------------------------
+
+    def _cache_get(self, query_emb: Any) -> list[str] | None:
+        """Linear-scan semantic cache lookup. Hit iff cosine > CACHE_THETA."""
+        import numpy as np
+
+        if not self._cache:
+            return None
+        for key, (cached_emb, subset) in self._cache.items():
+            sim = float(np.dot(query_emb, cached_emb))
+            if sim > CACHE_THETA:
+                self._cache.move_to_end(key)
+                return list(subset)
+        return None
+
+    def _cache_put(self, query: str, query_emb: Any, subset: list[str]) -> None:
+        key = hashlib.sha256(query.lower().strip().encode("utf-8")).hexdigest()
+        self._cache[key] = (query_emb, list(subset))
+        self._cache.move_to_end(key)
+        while len(self._cache) > CACHE_MAX:
+            self._cache.popitem(last=False)
+
+    # ------------------------------------------------------------------
+    # Public entry
+    # ------------------------------------------------------------------
+
+    def route(self, query: str) -> tuple[list[str], dict[str, Any]]:
+        """Resolve a query to a tool subset.
+
+        Returns ``(subset, telemetry)``. ``telemetry["source"]`` is one
+        of: ``cache``, ``smalltalk``, ``hybrid``, ``disabled``,
+        ``empty_query``. ``elapsed_ms`` is always present.
+        """
+        import numpy as np
+
+        t0 = time.monotonic()
+        telemetry: dict[str, Any] = {"source": "disabled", "elapsed_ms": 0.0}
+
+        if not self._ensure_loaded():
+            telemetry["error"] = self._load_error
+            telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
+            return [], telemetry
+
+        if not query or not query.strip():
+            telemetry["source"] = "empty_query"
+            telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
+            return [], telemetry
+
+        # Encode once and reuse for cache + gate + dense retrieval.
+        query_emb = self._encode_batch([f"query: {query}"])[0]
+
+        # Layer 0 — semantic cache.
+        cached = self._cache_get(query_emb)
+        if cached is not None:
+            telemetry["source"] = "cache"
+            telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
+            return cached, telemetry
+
+        # Layer 1 — smalltalk gate (delta between centroids).
+        # See SMALLTALK_DELTA_THETA docstring for the calibration story.
+        smalltalk_sim = float(np.dot(query_emb, self._smalltalk_centroid))
+        tools_sim = float(np.dot(query_emb, self._tools_centroid))
+        smalltalk_delta = smalltalk_sim - tools_sim
+        if smalltalk_delta >= SMALLTALK_DELTA_THETA:
+            telemetry["source"] = "smalltalk"
+            telemetry["smalltalk_sim"] = smalltalk_sim
+            telemetry["tools_sim"] = tools_sim
+            telemetry["smalltalk_delta"] = smalltalk_delta
+            telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
+            self._cache_put(query, query_emb, [])
+            return [], telemetry
+
+        # Layer 2 — hybrid retrieval (BM25 + dense, fused via RRF).
+        dense_scores = self._tool_embeddings @ query_emb        # cosine on L2-norm embs
+        dense_ranking = np.argsort(-dense_scores)               # descending
+
+        bm25_scores = self._tool_bm25.get_scores(
+            self._tokenize_for_bm25(query),
+        )
+        bm25_ranking = np.argsort(-bm25_scores)
+
+        rrf_scores = np.zeros(len(self._tool_names), dtype=np.float64)
+        for rank, idx in enumerate(dense_ranking):
+            rrf_scores[idx] += 1.0 / (RRF_K + rank + 1)
+        for rank, idx in enumerate(bm25_ranking):
+            rrf_scores[idx] += 1.0 / (RRF_K + rank + 1)
+
+        top_indices = np.argsort(-rrf_scores)[:TOP_K]
+        subset = [self._tool_names[int(i)] for i in top_indices]
+        top_score = float(rrf_scores[top_indices[0]])
+
+        telemetry["source"] = "hybrid"
+        telemetry["top_score"] = top_score
+        telemetry["dense_top1"] = self._tool_names[int(dense_ranking[0])]
+        telemetry["bm25_top1"] = self._tool_names[int(bm25_ranking[0])]
+        telemetry["smalltalk_sim"] = smalltalk_sim
+        telemetry["tools_sim"] = tools_sim
+        telemetry["smalltalk_delta"] = smalltalk_delta
+
+        # Layer 3 — confidence fallback. RRF top-1 below FALLBACK_THETA
+        # means even the best document is unrelated to the query;
+        # surface the popular tools so the LLM has something to pick.
+        if top_score < FALLBACK_THETA:
+            popular = [t for t in _POPULAR_FALLBACK_TOOLS if t in self._tool_names]
+            fallback = popular[:8] + [subset[0]] if subset else popular[:8]
+            subset = list(dict.fromkeys(fallback))
+            telemetry["fallback_applied"] = True
+
+        telemetry["elapsed_ms"] = (time.monotonic() - t0) * 1000
+        self._cache_put(query, query_emb, subset)
+        return subset, telemetry
+
+
+# ---------------------------------------------------------------------------
+# Module-level entry points
+# ---------------------------------------------------------------------------
+
+def route_v2(query: str) -> tuple[list[str], dict[str, Any]]:
+    """Module entry. Returns ``([], {"source": "disabled"})`` if model absent."""
+    return RouterV2.get().route(query)
+
+
+def is_enabled() -> bool:
+    """True iff env ``GEMMA4_ROUTER_V2`` is on AND the model loaded.
+
+    Callers should treat False as "router_v2 silently unavailable;
+    use the existing v1 (planner + semantic_router) pipeline".
+    """
+    raw = (os.environ.get("GEMMA4_ROUTER_V2") or "").strip().lower()
+    if raw not in {"1", "true", "yes", "on"}:
+        return False
+    return RouterV2.get().is_available()
+
+
+def is_shadow() -> bool:
+    """True iff shadow mode is on (log v2 picks without changing behaviour)."""
+    raw = (os.environ.get("GEMMA4_ROUTER_V2_SHADOW") or "").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+__all__ = [
+    "MODEL_DIR",
+    "MODEL_PATH",
+    "RouterV2",
+    "route_v2",
+    "is_enabled",
+    "is_shadow",
+]
