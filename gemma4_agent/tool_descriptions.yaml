@@ -1,0 +1,48 @@
+# Tool descriptions for router_v2 (Sprint 8b).
+#
+# Tool2Vec-style enrichment per Claude Research May 2026 §2:
+# `purpose` is a 2-4 line technical summary in English for the dense
+# embedding model. `example_queries` are 4-6 natural-language utterances
+# per anchor language (ES, EN) that BM25 ingests as lexical signal and
+# that the multilingual encoder uses to anchor the tool in semantic
+# space. PT/FR/IT/DE coverage piggy-backs on multilingual-e5-small's
+# cross-lingual alignment — no explicit queries needed for those.
+#
+# Editing notes:
+#   - `name` MUST match a compound tool name from
+#     `gemma4_agent.tools.COMPOUND_TOOL_SCHEMAS`. Mismatches are caught
+#     by `test_router_v2.test_yaml_names_match_compound_tools`.
+#   - `purpose` ≤ 200 chars: the prompt budget is tight. Capture "what
+#     it does + when to use it", not the API surface (the LLM sees the
+#     schema directly).
+#   - example_queries: 4-6 per language. Mix imperative + declarative
+#     + question. ES should include rioplatense forms (voseo, "armame",
+#     "decime") — that's the operator's dialect. Avoid templated
+#     repetition like "make a pptx / make a docx / make an xlsx";
+#     it's redundant for BM25.
+#   - DO NOT translate ES queries 1:1 into EN. Diversity beats
+#     completeness; BM25 thrives on lexical variety.
+#
+# Generated for Sprint 8b. Loaded by gemma4_agent/router_v2.py.
+
+- name: office
+  purpose: |
+    Create and edit office documents — Word (.docx), PowerPoint (.pptx),
+    Excel (.xlsx), and PDF export. Use for new-document creation,
+    template-driven slides, and converting between formats.
+  domain: documents
+  example_queries:
+    es:
+      - "hazme un power point sobre los planetas"
+      - "armame una presentacion para mañana"
+      - "abri el word que tengo en escritorio"
+      - "creame un excel con los gastos del mes"
+      - "convertir este docx a pdf"
+      - "hoja de calculo para llevar cuentas"
+    en:
+      - "make a powerpoint about the solar system"
+      - "create a presentation for tomorrow"
+      - "open the word doc on my desktop"
+      - "build a spreadsheet for monthly expenses"
+      - "convert this docx to pdf"
+      - "draft a report in word"
