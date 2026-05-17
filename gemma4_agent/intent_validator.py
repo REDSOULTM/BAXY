@@ -32,6 +32,23 @@ CROSS_REJECT_PAIRS: dict[tuple[str, str, str], str] = {
         "Intent is to change volume — media_stop sends a global media key, not a volume level.",
     ("set_volume", "audio", "media_play_pause"):
         "Intent is to change volume — media_play_pause sends a global media key, not a volume level.",
+    # Hotfix F 2026-05-17 — additional pairs from real bug audit.
+    # Each (declared_intent_type, chosen_tool, chosen_action) tuple
+    # describes a confused pairing the LLM might emit. Reasons are
+    # in English by convention (the prompt's reject reason is
+    # visible to the LLM, which speaks all the prompts).
+    ("send_email", "whatsapp", "send_message"):
+        "Intent is to send EMAIL — whatsapp.send_message uses WhatsApp Desktop/web, not an email client. Use email(action='send').",
+    ("send_whatsapp", "email", "send"):
+        "Intent is to send a WhatsApp message — email.send opens Outlook/Gmail. Use whatsapp(action='send_message').",
+    ("automate_page", "browser", "open"):
+        "Intent is to automate a page (click, fill, extract) — browser.open just navigates. Use browser_real.",
+    ("just_navigate", "browser_real", "click"):
+        "Intent is to just open a URL — browser_real.click requires an attached Playwright session. Use browser(action='open').",
+    ("download_file", "filesystem", "copy"):
+        "Intent is to download from the web — filesystem.copy only moves between local paths. Use download.",
+    ("git_workflow", "terminal", "run"):
+        "Intent is a git workflow (commit, push, branch) — prefer developer(action='git_*') for git-aware safety.",
 }
 
 # Subset pairs that, when both present in a turn, trigger the intent-tag
@@ -41,6 +58,12 @@ _AMBIGUOUS_SUBSETS: tuple[tuple[str, str], ...] = (
     ("audio", "browser_real"),
     ("audio", "app"),
     ("audio", "media"),
+    # Hotfix F 2026-05-17 — pairs the audit surfaced where the LLM
+    # confused tools with similar shape but different effects.
+    ("email", "whatsapp"),
+    ("browser", "browser_real"),
+    ("filesystem", "download"),
+    ("terminal", "developer"),
 )
 
 
