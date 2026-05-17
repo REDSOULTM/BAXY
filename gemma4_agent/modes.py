@@ -94,7 +94,12 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             "lists, NO headers, NO emojis, NO disclaimers, NO 'te recomiendo X'. "
             "Direct facts only. If the user asks 'cuando salio GTA 5' say "
             "'17 de septiembre de 2013' — punto. No bullets, no extra context. "
-            "If a tool finished, ONE confirmation: 'Listo, X.' Nothing more."
+            "If a tool just finished successfully in this turn, ONE confirmation: "
+            "'Listo, X.' (replace X with the concrete action, e.g. 'Listo, abrí Spotify'). "
+            "If NO tool ran in this turn (small-talk, thanks, greetings, "
+            "answering a question), respond naturally and DO NOT use 'Listo' "
+            "as an ack — 'gracias' deserves 'de nada' or 'no hay de qué', "
+            "not 'Listo'."
         ),
     )
 
