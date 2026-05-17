@@ -294,3 +294,162 @@
       - "is what this article says actually correct"
       - "check if X's statement holds up"
       - "is climate change real per my pdfs"
+
+- name: audio
+  purpose: |
+    System audio control — get/set master volume, mute, list devices,
+    and send global media keys (play/pause/stop/next/previous). Use
+    for "lower the volume" / "pause whatever is playing" / "skip song".
+    For device routing use `audio_device`.
+  domain: audio
+  example_queries:
+    es:
+      - "bajame el volumen al 30 porciento"
+      - "subi un poco el volumen"
+      - "silencio total"
+      - "pausá lo que esta sonando"
+      - "siguiente cancion"
+      - "muteame la compu"
+    en:
+      - "lower the volume to 30 percent"
+      - "turn it up a bit"
+      - "mute everything"
+      - "pause whatever's playing"
+      - "next song"
+      - "skip this track"
+
+- name: audio_device
+  purpose: |
+    Windows audio routing — set default output / input device,
+    per-app route override (e.g. Discord to headset, Spotify to
+    speakers), snapshot and restore routing presets. Uses
+    SoundVolumeView under the hood.
+  domain: audio
+  example_queries:
+    es:
+      - "cambia el audio a los auriculares"
+      - "mandá el sonido del discord al headset"
+      - "que dispositivos de audio tengo"
+      - "el microfono al focusrite por favor"
+      - "salida de audio a los parlantes"
+      - "restaurar el routing de audio anterior"
+    en:
+      - "switch audio to headphones"
+      - "route discord to the headset"
+      - "list my audio devices"
+      - "set the mic to focusrite"
+      - "output to the speakers please"
+      - "restore the previous audio routing"
+
+- name: media
+  purpose: |
+    Play media on streaming platforms — Spotify, YouTube, Netflix,
+    Disney+, HBO Max, Prime Video — via deeplinks or web flows.
+    Handles auto-play, profile picking, search-and-play. Use for
+    "pon X en Netflix", "play Y on Spotify".
+  domain: media
+  example_queries:
+    es:
+      - "pone Daredevil en netflix"
+      - "reproduce algo de los redonditos en spotify"
+      - "dale play a stranger things en netflix"
+      - "abri disney+ y pone el ultimo capitulo de loki"
+      - "buscá un capitulo de friends en max"
+      - "tirá una playlist en spotify"
+    en:
+      - "play Daredevil on netflix"
+      - "play the rolling stones on spotify"
+      - "open disney+ and start the latest loki episode"
+      - "find an episode of friends on max"
+      - "throw on a playlist in spotify"
+      - "play something to focus"
+
+- name: media_edit
+  purpose: |
+    ffmpeg-based audio / video editing — trim, concat, extract audio,
+    transcode (mp4/mkv/webm), normalize loudness (EBU R128), generate
+    thumbnails, extract subtitles. Local-only; requires ffmpeg.
+  domain: media
+  example_queries:
+    es:
+      - "recortá este video del segundo 10 al 30"
+      - "extraé el audio de este mp4"
+      - "convertí el video a webm"
+      - "normalizame el audio del podcast"
+      - "saca subtitulos del mkv"
+      - "hacé un thumbnail del video"
+    en:
+      - "trim this video from 10s to 30s"
+      - "extract audio from this mp4"
+      - "convert the video to webm"
+      - "normalize loudness on the podcast"
+      - "pull subtitles from the mkv"
+      - "make a thumbnail of the video"
+
+- name: steam
+  purpose: |
+    Steam-specific actions — list installed games, search the library
+    or the store, launch a game by name, open the store page for a
+    title. Uses steam:// deeplinks. For other launchers (Epic, GOG,
+    Xbox) use `game_launcher`.
+  domain: gaming
+  example_queries:
+    es:
+      - "abrime el steam"
+      - "andá a mi biblioteca de steam"
+      - "buscá Hollow Knight en la tienda de steam"
+      - "lanzá Hades por steam"
+      - "que juegos tengo instalados en steam"
+      - "pagina de tienda de Disco Elysium"
+    en:
+      - "open steam"
+      - "go to my steam library"
+      - "search Hollow Knight on the steam store"
+      - "launch Hades from steam"
+      - "list my installed steam games"
+      - "open the Disco Elysium store page"
+
+- name: game_launcher
+  purpose: |
+    Non-Steam launchers — Epic Games, GOG Galaxy, Xbox app, Riot
+    Client. Discover installed titles per launcher, launch by name,
+    open the library page. Steam has its own dedicated tool.
+  domain: gaming
+  example_queries:
+    es:
+      - "abrime League of Legends"
+      - "lanzá un juego de epic"
+      - "abri el xbox app"
+      - "que tengo instalado en gog"
+      - "andá a la biblioteca de epic games"
+      - "iniciá valorant desde el riot client"
+    en:
+      - "launch League of Legends"
+      - "open an epic games title"
+      - "fire up the xbox app"
+      - "what's installed on gog"
+      - "open my epic games library"
+      - "start valorant from riot client"
+
+- name: creative_local
+  purpose: |
+    Bridge to a local ComfyUI server (default :8188) for Stable
+    Diffusion / SDXL / Flux image generation. Submits workflows,
+    polls for results, manages the queue. Requires ComfyUI running
+    locally.
+  domain: media
+  example_queries:
+    es:
+      - "generame una imagen de un astronauta en marte"
+      - "armame un prompt para flux"
+      - "tirá una imagen estilo anime de un gato"
+      - "dale al comfyui que me cree un paisaje"
+      - "que esta en cola en comfyui"
+      - "interrumpí lo que esta generando comfyui"
+    en:
+      - "generate an image of an astronaut on mars"
+      - "build me a flux prompt"
+      - "make an anime-style cat image"
+      - "ask comfyui to create a landscape"
+      - "what's in the comfyui queue"
+      - "stop the current comfyui generation"
