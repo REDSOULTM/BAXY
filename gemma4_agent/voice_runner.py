@@ -302,9 +302,27 @@ class VoiceRunner:
                 from .agent_runner import RUNNER
                 self._agent_submit = RUNNER.submit
 
+            # Track previous state per-runner to detect silent VAD rejects.
+            # The controller goes LISTENING/TRANSCRIBING → IDLE_LISTENING
+            # directly (without passing through THINKING) when the VAD
+            # rejected the audio. Without surfacing this to the user, they
+            # see "the mic ignored me" with no clue what happened. We
+            # publish a one-line toast on that transition so the user knows
+            # to retry.
+            _prev_state = {"v": "IDLE_DISABLED"}
+
             def _on_state(s: str) -> None:
                 conv = _VOICE_TO_CONV.get(s, "idle")
                 BUS.publish({"type": "state", "value": conv})
+                prev = _prev_state["v"]
+                _prev_state["v"] = s
+                # Silent VAD reject path: LISTENING/TRANSCRIBING → IDLE_LISTENING
+                # without going through THINKING. controller.py:490-496 takes
+                # this path when STT emits final="" with saw_speech=False
+                # (VAD `no speech detected` or `speech too short`, stt.py
+                # 708/711). Publish a hint so the user knows to retry.
+                if s == "IDLE_LISTENING" and prev in {"LISTENING", "TRANSCRIBING"}:
+                    _publish_activity("SYSTEM", "no te escuché bien · repetí o acercate al mic")
                 # the duck-flag only applies when the active turn was kicked
                 # off by the mic. text-chat turns reuse the same controller
                 # for TTS echo protection, but lowering the system volume
