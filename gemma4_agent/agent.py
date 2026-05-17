@@ -1199,44 +1199,10 @@ class Gemma4Agent:
                 if tool_name not in existing:
                     selected_tool_names.append(tool_name)
                     existing.add(tool_name)
-        # Bug 1: capability classifier (NLI-based) — augments the subset
-        # when the user input maps to a capability bucket the keyword
-        # router missed. Cache-first, sync-with-tight-timeout fallback,
-        # async-warmup when the sync path times out. Honors the planner's
-        # legacy decision (additive only, never replaces).
-        try:
-            from .capability_classifier import augment_subset as _cap_augment
-            _user_text_for_cap = ""
-            if isinstance(content, str):
-                _user_text_for_cap = content.strip()
-            elif isinstance(content, list):
-                for item in content:
-                    if isinstance(item, dict) and item.get("type") == "text":
-                        _user_text_for_cap = str(item.get("text") or "").strip()
-                        break
-            if _user_text_for_cap:
-                selected_tool_names, _cap_tel = _cap_augment(
-                    _user_text_for_cap, selected_tool_names,
-                )
-                if _cap_tel.get("source") and _cap_tel.get("source") != "async_pending":
-                    self.trace.event(
-                        turn_id, "capability_augment",
-                        capability=_cap_tel.get("capability_used"),
-                        confidence=_cap_tel.get("confidence"),
-                        added=_cap_tel.get("added_tools"),
-                        source=_cap_tel.get("source"),
-                        ambiguous=_cap_tel.get("ambiguous"),
-                    )
-                elif _cap_tel.get("source") == "async_pending":
-                    self.trace.event(
-                        turn_id, "capability_async_dispatched",
-                        user_text=_user_text_for_cap[:80],
-                    )
-        except Exception as _cap_exc:  # noqa: BLE001 — classifier must never break a turn
-            self.trace.event(
-                turn_id, "capability_classifier_error",
-                error=str(_cap_exc),
-            )
+        # The NLI-based capability classifier (Bug 1) was removed in Sprint 3a:
+        # 3.2% cache hit rate over 5 days of use (vs 20% kill threshold per
+        # 08_findings.md §2.10) for a 280MB mDeBERTa model + worker thread.
+        # The keyword planner + semantic_router fallback remain.
         selected_schemas = self.tools.schemas_for_names(selected_tool_names)
         self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback, persona=self._persona.name)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
@@ -1511,19 +1477,15 @@ class Gemma4Agent:
                 # can be formatted as policy hints (not reply templates).
                 try:
                     from .semantic_router import embed as _embed_text
-                    from .capability_classifier import classify_capability_cached
                     raw_text = _extract_user_text(content)
                     used_tools = sorted({e.name for e in events})
                     mission_status = (mission or {}).get("mission_status") if isinstance(mission, dict) else None
                     # Derive outcome_code (more specific than mission_status).
                     outcome_code = _derive_outcome_code(mission_status, events)
-                    # Capability label from the cache (warmed by this turn's
-                    # augment_subset call). May be None if classifier didn't
-                    # run / was below threshold.
-                    cap_verdict = classify_capability_cached(raw_text or "")
-                    capability_label = (cap_verdict.top_label
-                                          if cap_verdict and cap_verdict.available
-                                          else None)
+                    # capability_label was sourced from the NLI classifier
+                    # (removed in Sprint 3a). Future RAG rows go in with
+                    # capability_label=None until an alternative is wired.
+                    capability_label = None
                     args_signature = _derive_args_signature(events)
                     rec = self.experience.record(
                         turn_id=turn_id,
@@ -2505,12 +2467,10 @@ class Gemma4Agent:
         # fired this turn — its "Listo, ..." reply is legitimate.
         if getattr(self, "_phrase_fires", None):
             return content
-        from .grounding_gate import (
-            detect_action_claim_without_evidence,
-            schedule_grounding_check,
-        )
+        from .grounding_gate import detect_action_claim_without_evidence
 
-        # 1. Inline check.
+        # Inline morphology check. The async NLI-based grounding layer was
+        # removed in Sprint 3a along with the rest of the NLI stack.
         verdict = detect_action_claim_without_evidence(content, events)
         new_content = content
         if verdict.should_replace:
@@ -2527,40 +2487,6 @@ class Gemma4Agent:
                 rejected_reply=content,
                 trace_label="grounded_action_claim_caught",
             )
-
-        # 2. Async NLI check — always fires (even if inline replaced) so we
-        # can compare the original reply against the trace and learn.
-        # On contradiction, the experience row for this turn gets flagged
-        # so future RAG retrievals include a WARNING tag (Bug 3b → Bug 2).
-        def _nli_cb(nli_verdict: dict) -> None:
-            try:
-                self.trace.event(
-                    turn_id, "grounding_nli_verdict",
-                    available=nli_verdict.get("available", False),
-                    contradicts=nli_verdict.get("contradicts", False),
-                    executed_score=nli_verdict.get("executed_score"),
-                    nothing_score=nli_verdict.get("nothing_score"),
-                )
-                if nli_verdict.get("available") and nli_verdict.get("contradicts"):
-                    try:
-                        flag_res = self.experience.flag_grounding_by_turn(
-                            turn_id, reason="hallucinated_action",
-                        )
-                        self.trace.event(
-                            turn_id, "experience_flagged_hallucination",
-                            ok=flag_res.get("ok"),
-                            rows=flag_res.get("rows_updated"),
-                        )
-                    except Exception:
-                        pass
-            except Exception:
-                pass  # never let telemetry break the agent
-
-        try:
-            schedule_grounding_check(content, events, callback=_nli_cb)
-        except Exception:
-            pass  # NLI worker spawn must never break a turn
-
         return new_content
 
     def _guard_plan_status(self, content: str) -> str:

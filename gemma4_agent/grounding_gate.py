@@ -1,38 +1,21 @@
 """Bug 3: Grounding gate — detect replies that claim actions not in tool_events.
 
-Two layers:
+Inline cheap check (`detect_action_claim_without_evidence`): runs in the
+hot path, no LLM/NLI inference. Uses linguistic features (verb
+morphology heuristics derived from the existing false-confirmation
+guard) to flag obvious "abrí X / busqué Y / agendé Z" claims when
+`tool_events == []`. Returns a verdict; the agent's existing
+`_guard_promise_without_action` keeps catching prefix cases.
 
-  1. **Inline cheap check** (`detect_action_claim_without_evidence`): runs in
-     the hot path, no LLM/NLI inference. Uses linguistic features (verb
-     morphology heuristics derived from the existing false-confirmation
-     guard) to flag obvious "abrí X / busqué Y / agendé Z" claims when
-     `tool_events == []`. Returns a verdict; the agent's existing
-     `_guard_promise_without_action` keeps catching prefix cases.
-
-  2. **Async NLI grounding** (`schedule_grounding_check`): fires AFTER the
-     reply is generated (and ideally after TTS dispatch), classifies the
-     reply against a premise built from the actual tool trace, and writes
-     the verdict to the lesson store so future similar turns can be
-     warned via RAG (Bug 2).
-
-The inline layer is REPLY → fallback if a clear hallucinated claim slips
-through. The async layer is REPLY → telemetry/lesson_store so the system
-LEARNS from misses; it does NOT mutate the current turn.
-
-Both gates degrade gracefully: if NLI service is unavailable or returns
-None, the system falls back to the inline heuristic alone.
+The async NLI grounding layer (`schedule_grounding_check`) was removed
+in Sprint 3a — its cache hit rate over 5 days of use was 3.2 %, below
+the 20 % keep/kill threshold from `08_findings.md §2.10`.
 """
 from __future__ import annotations
 
-import logging
-import threading
 import unicodedata
 from dataclasses import dataclass
-from typing import Any, Callable
-
-from .nli_service import get_nli_service
-
-_log = logging.getLogger(__name__)
+from typing import Any
 
 
 # Linguistic features for the inline layer. These are NOT a closed allowlist
@@ -264,90 +247,9 @@ def detect_action_claim_without_evidence(
     )
 
 
-# ---------- Async NLI gate ----------
-
-GROUNDING_LABELS = [
-    "el sistema ejecutó acciones concretas",
-    "el sistema no ejecutó ninguna acción",
-]
-
-
-def build_evidence_premise(tool_events: list[Any]) -> str:
-    """Serialize the observable tool trace into a NLI premise string.
-
-    Kept short and factual; longer premises hurt NLI accuracy on encoder
-    models. Hides args (sensitive data) but preserves tool names + outcome
-    flags so claim/evidence comparison is meaningful.
-    """
-    if not tool_events:
-        return ("Estado verificable del sistema en este turno: "
-                "no se ejecutó ninguna tool, no hubo acciones sobre el entorno.")
-    names: list[str] = []
-    for ev in tool_events:
-        # ToolEvent dataclass has .name; fall back to getattr/dict.
-        n = getattr(ev, "name", None) or (ev.get("name") if isinstance(ev, dict) else None)
-        if isinstance(n, str) and n:
-            names.append(n)
-    if not names:
-        return ("Estado verificable: hubo intentos de tool pero sin nombres "
-                "identificables.")
-    uniq = ", ".join(sorted(set(names)))
-    return (f"Estado verificable del sistema en este turno: "
-            f"se ejecutaron las siguientes tools: {uniq}.")
-
-
-def schedule_grounding_check(
-    reply: str,
-    tool_events: list[Any],
-    callback: Callable[[dict[str, Any]], None] | None = None,
-) -> None:
-    """Fire-and-forget NLI grounding check.
-
-    The result is delivered via `callback` (running in NLI worker thread).
-    Typical callback: write a `grounding_verdict` event to the trace +
-    lesson store. The callback MUST be short and side-effect only.
-
-    Returns immediately; the current reply is NOT modified by this call.
-    """
-    if not reply:
-        return
-    premise = build_evidence_premise(tool_events)
-    # Hypothesis is the reply; we want to know whether premise entails it.
-    # We frame as a 2-label zero-shot: "executed actions" vs "did nothing".
-    # If reply implies actions but premise says "did nothing" → high score
-    # on the wrong label → contradiction detected.
-    svc = get_nli_service()
-
-    def _cb(scores: dict[str, float] | None) -> None:
-        if scores is None:
-            if callback:
-                callback({"available": False})
-            return
-        executed = scores.get(GROUNDING_LABELS[0], 0.0)
-        nothing = scores.get(GROUNDING_LABELS[1], 0.0)
-        # Contradiction: reply claims executed actions but actually nothing ran.
-        contradicts = (not tool_events) and executed > nothing and executed > 0.55
-        verdict = {
-            "available": True,
-            "executed_score": executed,
-            "nothing_score": nothing,
-            "contradicts": contradicts,
-            "premise": premise[:200],
-            "reply": reply[:200],
-        }
-        if callback:
-            try:
-                callback(verdict)
-            except Exception as exc:  # noqa: BLE001
-                _log.warning("grounding callback raised: %s", exc)
-
-    svc.classify_async(reply, GROUNDING_LABELS, callback=_cb)
-
-
 __all__ = [
     "GroundingVerdict",
     "detect_action_claim_without_evidence",
-    "build_evidence_premise",
-    "schedule_grounding_check",
-    "GROUNDING_LABELS",
+    "detect_reply_language",
+    "format_fallback",
 ]
