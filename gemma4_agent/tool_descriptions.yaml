@@ -156,3 +156,141 @@
       - "drop the old math deck"
       - "store this concept for spaced repetition"
       - "show my study stats"
+
+- name: browser
+  purpose: |
+    Drive a desktop browser via shell / deep-links — open URLs, search
+    in the active browser, play a specific YouTube video, send media
+    keys. For programmatic page interaction (click, fill, extract) use
+    `browser_real`. For real web research use `web`.
+  domain: browser
+  example_queries:
+    es:
+      - "abri opera y andá a youtube"
+      - "buscame esto en google"
+      - "pone un video de los redonditos en youtube"
+      - "abri chrome con la pagina de netflix"
+      - "tirá google.com en el navegador"
+      - "pausá el video que esta sonando"
+    en:
+      - "open opera and go to youtube"
+      - "search this on google"
+      - "play a queen video on youtube"
+      - "open chrome with netflix"
+      - "fire up google.com in the browser"
+      - "pause whatever's playing in the browser"
+
+- name: browser_real
+  purpose: |
+    Programmatic browser via Playwright over CDP — attach to an
+    already-running Chrome / Edge / Opera, navigate, fill, click,
+    extract text or tables, screenshot, manage tabs. Use when the
+    user needs the agent to *interact* with a specific page state.
+  domain: browser
+  example_queries:
+    es:
+      - "lee el contenido de esta pagina que tengo abierta"
+      - "completá el formulario en la pestaña actual"
+      - "extraé las tablas de esta web"
+      - "click en el boton que dice aceptar"
+      - "sacá un screenshot de esta pagina"
+      - "cerrá la pestaña de gmail"
+    en:
+      - "read the content of the page i have open"
+      - "fill the form in the current tab"
+      - "extract tables from this webpage"
+      - "click the accept button"
+      - "screenshot this page"
+      - "close the gmail tab"
+
+- name: web
+  purpose: |
+    Real web research — search engine queries + page-fetch + content
+    extraction across multiple sources. Use for "investigate", "find
+    out", current facts, citations. Prefer over `browser` whenever
+    the user wants an *answer*, not to look at a page.
+  domain: web
+  example_queries:
+    es:
+      - "investiga que paso con la copa del mundo 2026"
+      - "buscame info sobre el ultimo iphone"
+      - "averigua cuando salio Daredevil Born Again"
+      - "que dice internet sobre este tema"
+      - "consultar fuentes sobre IA local"
+      - "research rapido sobre llama.cpp"
+    en:
+      - "research what happened in the 2026 world cup"
+      - "find out info about the latest iphone"
+      - "look up when Daredevil Born Again came out"
+      - "what does the web say about this"
+      - "check sources about local AI"
+      - "do a quick research on llama.cpp"
+
+- name: vision
+  purpose: |
+    Visual reasoning over the current screen — describe what's shown,
+    OCR a region, find a UI element by description. Uses Gemma's
+    native vision plus local Tesseract for OCR. Read-only; for
+    clicking use `gui` or `uia`.
+  domain: vision
+  example_queries:
+    es:
+      - "que hay en pantalla ahora"
+      - "describime lo que ves"
+      - "leeme lo que dice ese cartel rojo"
+      - "donde esta el boton de aceptar en la pantalla"
+      - "ocr de esta region"
+      - "encuentra el icono de configuracion"
+    en:
+      - "what's on my screen right now"
+      - "describe what you see"
+      - "read the red banner"
+      - "where is the accept button on the screen"
+      - "ocr this region"
+      - "find the settings icon"
+
+- name: form_filler
+  purpose: |
+    HTML form orchestrator on top of `browser_real` — discover form
+    fields, plan a fill from a values dict, apply, then submit with
+    a confirmation gate. Use when the user pastes data and asks to
+    "complete the form".
+  domain: browser
+  example_queries:
+    es:
+      - "llename este formulario con estos datos"
+      - "completá los campos del form con esta info"
+      - "envia el formulario cuando termines"
+      - "rellena la planilla web con lo que te paso"
+      - "completá los datos de envio en la pagina"
+      - "submit el form despues de chequear"
+    en:
+      - "fill this form with my data"
+      - "complete the form fields with this info"
+      - "submit the form once it's filled"
+      - "auto-fill the shipping page"
+      - "fill in the survey with these answers"
+      - "submit the form after review"
+
+- name: fact_check
+  purpose: |
+    Verify a claim against local sources (knowledge base, files,
+    sources_manager). TF-IDF lexical match + negation heuristic;
+    returns verdict + ranked evidence. Use when the user asks "is
+    that true", "verify", "fact-check".
+  domain: web
+  example_queries:
+    es:
+      - "es cierto que la copa del mundo fue en 2022"
+      - "verifica esta afirmacion contra mis fuentes"
+      - "fact check: la luna afecta las mareas"
+      - "esto que dice esta nota es verdad"
+      - "comprobá si lo que dice X es correcto"
+      - "es real lo del cambio climatico segun mis pdfs"
+    en:
+      - "is it true the world cup was in 2022"
+      - "verify this claim against my sources"
+      - "fact check: does the moon affect tides"
+      - "is what this article says actually correct"
+      - "check if X's statement holds up"
+      - "is climate change real per my pdfs"
