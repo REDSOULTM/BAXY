@@ -897,6 +897,17 @@ class Gemma4Agent:
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         turn_id = self.trace.new_turn_id()
+        # sprint2: persona is currently visible only via tool_subset.persona,
+        # which isn't emitted on every turn. Emit one canonical event per turn
+        # so the usage report can quantify which personas actually run.
+        try:
+            self.trace.event(
+                turn_id, "persona_active",
+                persona=self._persona.name,
+                tone=self._persona.tone,
+            )
+        except Exception:
+            pass
         # Phrase-triggered routines: check the user's plain text against
         # saved on_phrase routines BEFORE the LLM call. Each matching routine
         # runs its steps once; the results are inlined into the system prompt

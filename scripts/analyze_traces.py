@@ -205,15 +205,19 @@ def build_report(events: list[dict[str, Any]], *, source_path: Path,
     # ---- Section B: personas ----
     push("## B — Personas")
     push("")
-    persona_events = Counter()
+    persona_canonical = Counter()  # from persona_active (one per turn)
+    persona_fallback = Counter()   # from any other event carrying a persona field
     for ev in events:
         if ev.get("kind") == "persona_active":
-            persona_events[str(ev.get("persona", "?"))] += 1
-        # also catch any historical events that may have embedded a persona field
+            persona_canonical[str(ev.get("persona", "?"))] += 1
         elif "persona" in ev and isinstance(ev.get("persona"), str):
-            persona_events[str(ev.get("persona"))] += 1
+            persona_fallback[str(ev.get("persona"))] += 1
+    persona_events = persona_canonical if persona_canonical else persona_fallback
+    src_label = "persona_active (per-turn)" if persona_canonical else "tool_subset.persona (best-effort fallback)"
     push(f"**Hardcoded personas in personas.py:** {', '.join(PERSONA_NAMES)}")
     if persona_events:
+        push("")
+        push(f"_Source: {src_label}._")
         push("")
         push(_md_table(["persona", "events"],
                        [[p, n] for p, n in persona_events.most_common()]))
@@ -224,8 +228,7 @@ def build_report(events: list[dict[str, Any]], *, source_path: Path,
     else:
         push("")
         push("> ⚠ No persona-tagged events found in traces.jsonl.")
-        push("> The persona system runs but is silent on disk. Sprint 2.2 adds")
-        push("> a `persona_active` event so future reports can quantify this.")
+        push("> Sprint 2.2 adds `persona_active`; re-run after some usage.")
     push("")
 
     # ---- Section C: microagents + skills ----
