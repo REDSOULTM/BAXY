@@ -32,24 +32,22 @@ from gemma4_agent.verify_core import (
 # Core registry / decorator
 # ============================================================================
 
-def test_registered_tool_names_includes_hot_tools() -> bool:
+def test_registered_tool_names_includes_hot_tools() -> None:
     names = set(registered_tool_names())
     expected = {"app", "steam", "window", "filesystem", "audio",
                 "terminal", "gui", "clipboard", "web", "system",
                 "memory", "verify"}
     missing = expected - names
     assert not missing, f"verifiers faltantes: {missing}"
-    return True
 
 
-def test_unknown_tool_returns_none() -> bool:
+def test_unknown_tool_returns_none() -> None:
     outcome = verify("nonexistent_tool_xyz", {}, {"ok": True})
     assert outcome.confirmed is None
     assert outcome.reason == "no_verifier_registered"
-    return True
 
 
-def test_verifier_crash_returns_failed() -> bool:
+def test_verifier_crash_returns_failed() -> None:
     """Si un verifier crashea, el core devuelve confirmed=False con la excepcion."""
     @register_verifier("__crashy_test")
     def _crashy(args, result):
@@ -58,10 +56,9 @@ def test_verifier_crash_returns_failed() -> bool:
     assert outcome.confirmed is False
     assert "verifier crashed" in outcome.reason
     assert "RuntimeError" in outcome.reason
-    return True
 
 
-def test_verifier_returning_non_outcome_handled() -> bool:
+def test_verifier_returning_non_outcome_handled() -> None:
     """Si un verifier devuelve algo raro, el core no crashea."""
     @register_verifier("__weird_return_test")
     def _weird(args, result):
@@ -69,10 +66,9 @@ def test_verifier_returning_non_outcome_handled() -> bool:
     outcome = verify("__weird_return_test", {}, {"ok": True})
     assert outcome.confirmed is False
     assert "non-VerifierOutcome" in outcome.reason
-    return True
 
 
-def test_opt_out_via_env() -> bool:
+def test_opt_out_via_env() -> None:
     os.environ["GEMMA4_VERIFIER_OFF"] = "1"
     try:
         outcome = verify("app", {"action": "open", "name": "X"},
@@ -81,29 +77,26 @@ def test_opt_out_via_env() -> bool:
         assert outcome.reason == "disabled_by_env"
     finally:
         os.environ.pop("GEMMA4_VERIFIER_OFF", None)
-    return True
 
 
 # ============================================================================
 # summarize_verifiers
 # ============================================================================
 
-def test_summarize_empty_returns_empty_string() -> bool:
+def test_summarize_empty_returns_empty_string() -> None:
     assert summarize_verifiers([]) == ""
-    return True
 
 
-def test_summarize_all_confirmed_returns_empty_string() -> bool:
+def test_summarize_all_confirmed_returns_empty_string() -> None:
     """Si todo OK, no agrega footer (no inflar el reply)."""
     outcomes = [
         VerifierOutcome("app", True, "ok"),
         VerifierOutcome("audio", True, "ok"),
     ]
     assert summarize_verifiers(outcomes) == ""
-    return True
 
 
-def test_summarize_mixed_shows_counts() -> bool:
+def test_summarize_mixed_shows_counts() -> None:
     outcomes = [
         VerifierOutcome("app", True, "ok"),
         VerifierOutcome("audio", False, "fail"),
@@ -114,10 +107,9 @@ def test_summarize_mixed_shows_counts() -> bool:
     assert "1 no confirmada(s)" in footer
     assert "1 no verificable(s)" in footer
     assert footer.startswith("\n\n[") and footer.endswith("]")
-    return True
 
 
-def test_collect_evidence_only_from_confirmed_true() -> bool:
+def test_collect_evidence_only_from_confirmed_true() -> None:
     outcomes = [
         VerifierOutcome("app", True, "ok", evidence_keys=["app:Steam"]),
         VerifierOutcome("audio", False, "fail", evidence_keys=["volume:50"]),  # should NOT be collected
@@ -125,102 +117,92 @@ def test_collect_evidence_only_from_confirmed_true() -> bool:
     ]
     keys = collect_evidence_keys(outcomes)
     assert keys == ["app:Steam"], f"got {keys}"
-    return True
 
 
 # ============================================================================
 # verify_app
 # ============================================================================
 
-def test_app_search_with_matches_confirmed() -> bool:
+def test_app_search_with_matches_confirmed() -> None:
     outcome = verify("app",
                      {"action": "search", "query": "code"},
                      {"ok": True, "matches": [{"name": "Code"}, {"name": "VSCode"}]})
     assert outcome.confirmed is True
     assert "2 matches" in outcome.reason
-    return True
 
 
-def test_app_open_with_tool_self_verify_confirmed() -> bool:
+def test_app_open_with_tool_self_verify_confirmed() -> None:
     """Si la tool ya hizo auto-verify y dice True, el verifier confia."""
     outcome = verify("app",
                      {"action": "open", "name": "Notepad"},
                      {"ok": True, "verified": True})
     assert outcome.confirmed is True
     assert "app:Notepad" in outcome.evidence_keys
-    return True
 
 
-def test_app_open_failed_tool_returns_failed() -> bool:
+def test_app_open_failed_tool_returns_failed() -> None:
     outcome = verify("app",
                      {"action": "open", "name": "FakeApp"},
                      {"ok": False, "error": "app not found"})
     assert outcome.confirmed is False
-    return True
 
 
-def test_app_close_not_running_fast_path() -> bool:
+def test_app_close_not_running_fast_path() -> None:
     outcome = verify("app",
                      {"action": "close", "name": "OperaThatNeverRan"},
                      {"ok": True, "not_running": True, "closed": False})
     assert outcome.confirmed is True
     assert "closed" in outcome.evidence_keys[0]
-    return True
 
 
-def test_app_uninstall_unverifiable() -> bool:
+def test_app_uninstall_unverifiable() -> None:
     outcome = verify("app",
                      {"action": "uninstall", "name": "X"},
                      {"ok": True})
     assert outcome.confirmed is None
     assert "async" in outcome.reason
-    return True
 
 
 # ============================================================================
 # verify_terminal
 # ============================================================================
 
-def test_terminal_exit_zero_confirmed() -> bool:
+def test_terminal_exit_zero_confirmed() -> None:
     outcome = verify("terminal",
                      {"command": "echo hi"},
                      {"ok": True, "exit_code": 0, "stdout": "hi"})
     assert outcome.confirmed is True
-    return True
 
 
-def test_terminal_exit_nonzero_failed() -> bool:
+def test_terminal_exit_nonzero_failed() -> None:
     outcome = verify("terminal",
                      {"command": "exit 1"},
                      {"ok": True, "exit_code": 1, "stderr": "boom"})
     assert outcome.confirmed is False
     assert "exit_code=1" in outcome.reason
-    return True
 
 
-def test_terminal_timeout_status_failed() -> bool:
+def test_terminal_timeout_status_failed() -> None:
     outcome = verify("terminal",
                      {"command": "sleep 999"},
                      {"ok": False, "status": "timeout", "timeout_sec": 60})
     assert outcome.confirmed is False
     assert "timed out" in outcome.reason
-    return True
 
 
 # ============================================================================
 # verify_filesystem
 # ============================================================================
 
-def test_filesystem_write_with_tool_self_verify() -> bool:
+def test_filesystem_write_with_tool_self_verify() -> None:
     outcome = verify("filesystem",
                      {"action": "write", "path": "/tmp/x.txt", "content": "hi"},
                      {"ok": True, "verified": True, "bytes": 2, "path": "/tmp/x.txt"})
     assert outcome.confirmed is True
     assert "file:/tmp/x.txt" in outcome.evidence_keys
-    return True
 
 
-def test_filesystem_write_real_stat() -> bool:
+def test_filesystem_write_real_stat() -> None:
     """Sin tool_self_verify, el verifier hace stat real con tmpfile."""
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt",
                                      delete=False) as f:
@@ -234,117 +216,105 @@ def test_filesystem_write_real_stat() -> bool:
         assert path in outcome.detail["size"].__class__.__name__ or outcome.detail["size"] > 0
     finally:
         Path(path).unlink(missing_ok=True)
-    return True
 
 
-def test_filesystem_write_missing_file_failed() -> bool:
+def test_filesystem_write_missing_file_failed() -> None:
     outcome = verify("filesystem",
                      {"action": "write", "path": "/tmp/does_not_exist_xyz.txt"},
                      {"ok": True})
     assert outcome.confirmed is False
     assert "no existe" in outcome.reason
-    return True
 
 
-def test_filesystem_delete_absent_confirmed() -> bool:
+def test_filesystem_delete_absent_confirmed() -> None:
     nonexistent = "/tmp/this_should_not_exist_after_delete.txt"
     Path(nonexistent).unlink(missing_ok=True)
     outcome = verify("filesystem",
                      {"action": "delete", "path": nonexistent},
                      {"ok": True})
     assert outcome.confirmed is True
-    return True
 
 
-def test_filesystem_list_readonly_confirmed() -> bool:
+def test_filesystem_list_readonly_confirmed() -> None:
     outcome = verify("filesystem",
                      {"action": "list", "path": "/tmp"},
                      {"ok": True, "items": []})
     assert outcome.confirmed is True
-    return True
 
 
 # ============================================================================
 # verify_window
 # ============================================================================
 
-def test_window_list_confirmed() -> bool:
+def test_window_list_confirmed() -> None:
     outcome = verify("window", {"action": "list"},
                      {"ok": True, "windows": [{"title": "A"}, {"title": "B"}]})
     assert outcome.confirmed is True
     assert outcome.detail["count"] == 2
-    return True
 
 
-def test_window_active_with_title_confirmed() -> bool:
+def test_window_active_with_title_confirmed() -> None:
     outcome = verify("window", {"action": "active"},
                      {"ok": True, "active": {"title": "Notepad - Untitled",
                                               "pid": 1234, "process": "notepad.exe"}})
     assert outcome.confirmed is True
-    return True
 
 
-def test_window_focus_when_inner_fails_failed() -> bool:
+def test_window_focus_when_inner_fails_failed() -> None:
     outcome = verify("window",
                      {"action": "focus", "title": "X"},
                      {"ok": True, "result": {"ok": False, "error": "window not found"}})
     assert outcome.confirmed is False
-    return True
 
 
 # ============================================================================
 # verify_audio
 # ============================================================================
 
-def test_audio_set_volume_with_tool_verify() -> bool:
+def test_audio_set_volume_with_tool_verify() -> None:
     outcome = verify("audio",
                      {"action": "set_volume", "level": 50},
                      {"ok": True, "verified": True, "level": 50})
     assert outcome.confirmed is True
     assert "volume:50" in outcome.evidence_keys
-    return True
 
 
-def test_audio_mute_with_verified_flag() -> bool:
+def test_audio_mute_with_verified_flag() -> None:
     outcome = verify("audio",
                      {"action": "mute", "state": True},
                      {"ok": True, "verified": True, "muted": True})
     assert outcome.confirmed is True
-    return True
 
 
-def test_audio_get_volume_confirmed() -> bool:
+def test_audio_get_volume_confirmed() -> None:
     outcome = verify("audio", {"action": "get_volume"},
                      {"ok": True, "level": 75, "muted": False})
     assert outcome.confirmed is True
-    return True
 
 
 # ============================================================================
 # verify_steam
 # ============================================================================
 
-def test_steam_launch_game_unverifiable() -> bool:
+def test_steam_launch_game_unverifiable() -> None:
     """launch_game es async; el verifier reporta None honestamente."""
     outcome = verify("steam",
                      {"action": "launch_game", "query": "Doom"},
                      {"ok": True, "matched_game": {"name": "Doom Eternal"}})
     assert outcome.confirmed is None
-    return True
 
 
-def test_steam_list_games_confirmed() -> bool:
+def test_steam_list_games_confirmed() -> None:
     outcome = verify("steam", {"action": "list_games"},
                      {"ok": True, "count": 42})
     assert outcome.confirmed is True
-    return True
 
 
 # ============================================================================
 # verify_gui
 # ============================================================================
 
-def test_gui_screenshot_with_real_file() -> bool:
+def test_gui_screenshot_with_real_file() -> None:
     """Crea un PNG fake con bytes suficientes para pasar la heuristica."""
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
         f.write(b"\x89PNG\r\n" + b"\x00" * 2000)  # bytes para que pase size>1000
@@ -357,138 +327,123 @@ def test_gui_screenshot_with_real_file() -> bool:
         assert "screenshot" in outcome.evidence_keys[0]
     finally:
         Path(path).unlink(missing_ok=True)
-    return True
 
 
-def test_gui_screenshot_missing_file_failed() -> bool:
+def test_gui_screenshot_missing_file_failed() -> None:
     outcome = verify("gui",
                      {"action": "screenshot"},
                      {"ok": True, "image_path": "/tmp/nonexistent_screenshot.png"})
     assert outcome.confirmed is False
-    return True
 
 
-def test_gui_click_unverifiable() -> bool:
+def test_gui_click_unverifiable() -> None:
     """gui inputs son fire-and-forget; sin screenshot adicional no se mide."""
     outcome = verify("gui",
                      {"action": "click", "x": 100, "y": 200},
                      {"ok": True})
     assert outcome.confirmed is None
-    return True
 
 
 # ============================================================================
 # verify_clipboard
 # ============================================================================
 
-def test_clipboard_read_with_content_confirmed() -> bool:
+def test_clipboard_read_with_content_confirmed() -> None:
     outcome = verify("clipboard", {"action": "read"},
                      {"ok": True, "content": "hello"})
     assert outcome.confirmed is True
-    return True
 
 
-def test_clipboard_write_unverifiable_for_privacy() -> bool:
+def test_clipboard_write_unverifiable_for_privacy() -> None:
     outcome = verify("clipboard",
                      {"action": "write", "content": "x"},
                      {"ok": True, "wrote_chars": 1})
     assert outcome.confirmed is None
     assert "privacidad" in outcome.reason
-    return True
 
 
 # ============================================================================
 # verify_web
 # ============================================================================
 
-def test_web_search_confirmed() -> bool:
+def test_web_search_confirmed() -> None:
     outcome = verify("web",
                      {"action": "search", "query": "python"},
                      {"ok": True, "count": 5, "engine": "duckduckgo"})
     assert outcome.confirmed is True
-    return True
 
 
-def test_web_open_unverifiable() -> bool:
+def test_web_open_unverifiable() -> None:
     outcome = verify("web",
                      {"action": "open", "url": "https://example.com"},
                      {"ok": True})
     assert outcome.confirmed is None
-    return True
 
 
-def test_web_research_with_sources_confirmed() -> bool:
+def test_web_research_with_sources_confirmed() -> None:
     outcome = verify("web",
                      {"action": "research", "query": "x"},
                      {"ok": True, "source_count": 3})
     assert outcome.confirmed is True
-    return True
 
 
-def test_web_research_zero_sources_unverifiable() -> bool:
+def test_web_research_zero_sources_unverifiable() -> None:
     outcome = verify("web",
                      {"action": "research", "query": "x"},
                      {"ok": True, "source_count": 0})
     assert outcome.confirmed is None
-    return True
 
 
 # ============================================================================
 # verify_system
 # ============================================================================
 
-def test_system_time_confirmed() -> bool:
+def test_system_time_confirmed() -> None:
     outcome = verify("system", {"action": "time"},
                      {"ok": True, "iso": "2026-05-15T18:00:00", "human": "18:00"})
     assert outcome.confirmed is True
-    return True
 
 
-def test_system_processes_confirmed() -> bool:
+def test_system_processes_confirmed() -> None:
     outcome = verify("system", {"action": "processes"},
                      {"ok": True, "processes": [{"name": "x.exe"}]})
     assert outcome.confirmed is True
-    return True
 
 
-def test_system_shutdown_unverifiable() -> bool:
+def test_system_shutdown_unverifiable() -> None:
     outcome = verify("system", {"action": "shutdown"},
                      {"ok": True})
     assert outcome.confirmed is None
-    return True
 
 
 # ============================================================================
 # verify (meta) is self-skip
 # ============================================================================
 
-def test_verify_meta_self_skip() -> bool:
+def test_verify_meta_self_skip() -> None:
     outcome = verify("verify",
                      {"action": "app_opened", "name": "X"},
                      {"ok": True, "found": True})
     assert outcome.confirmed is None
     assert "self-skip" in outcome.reason
-    return True
 
 
 # ============================================================================
 # verify_memory
 # ============================================================================
 
-def test_memory_save_confirmed() -> bool:
+def test_memory_save_confirmed() -> None:
     outcome = verify("memory",
                      {"action": "save", "key": "user.name", "value": "Ana"},
                      {"ok": True, "key": "user.name"})
     assert outcome.confirmed is True
     assert "memory:user.name" in outcome.evidence_keys
-    return True
 
 
-def test_memory_recall_confirmed() -> bool:
+def test_memory_recall_confirmed() -> None:
     outcome = verify("memory", {"action": "recall"},
                      {"ok": True, "items": {"a": 1, "b": 2}})
     assert outcome.confirmed is True
-    return True
 
 
 # ============================================================================

@@ -39,7 +39,7 @@ def _fake_chat_factory(responses: list[str]):
     return _chat
 
 
-def test_g1_experience_record_and_recall() -> bool:
+def test_g1_experience_record_and_recall() -> None:
     from gemma4_agent.experience import ExperienceMemory
     from gemma4_agent.semantic_router import embed
 
@@ -58,19 +58,17 @@ def test_g1_experience_record_and_recall() -> bool:
     mem.close()
     path.unlink(missing_ok=True)
     print("G1 experience record + recall: OK")
-    return True
 
 
-def test_g3_should_plan() -> bool:
+def test_g3_should_plan() -> None:
     from gemma4_agent.explicit_plan import should_plan
     assert not should_plan("hola", 0)
     assert should_plan("abre steam, luego mira mi biblioteca, despues cierra todo", 3)
     assert should_plan("haz un plan para limpiar el escritorio", 0)
     print("G3 should_plan heuristics: OK")
-    return True
 
 
-def test_g3_parse_steps() -> bool:
+def test_g3_parse_steps() -> None:
     from gemma4_agent.explicit_plan import _parse_numbered_steps
     plan = (
         "1. Abrir Steam y verificar que la ventana se enfoca.\n"
@@ -81,10 +79,9 @@ def test_g3_parse_steps() -> bool:
     steps = _parse_numbered_steps(plan)
     assert len(steps) == 4, f"expected 4 steps, got {len(steps)}"
     print("G3 _parse_numbered_steps: OK")
-    return True
 
 
-def test_g3_generate_plan_with_mock() -> bool:
+def test_g3_generate_plan_with_mock() -> None:
     from gemma4_agent.explicit_plan import generate_plan
     canned = (
         "1. Abrir Steam.\n"
@@ -101,10 +98,9 @@ def test_g3_generate_plan_with_mock() -> bool:
     assert result.get("plan"), "plan should be non-empty"
     assert len(result.get("steps", [])) == 4, f"expected 4 steps: {result.get('steps')}"
     print("G3 generate_plan with mock: OK")
-    return True
 
 
-def test_g3_replan_give_up() -> bool:
+def test_g3_replan_give_up() -> None:
     from gemma4_agent.explicit_plan import replan
     fake = _fake_chat_factory(["GIVE_UP: no hay forma de conectar"])
     result = replan(
@@ -114,10 +110,9 @@ def test_g3_replan_give_up() -> bool:
     assert result.get("ok"), result
     assert result.get("give_up") is True, "should detect give-up"
     print("G3 replan give-up: OK")
-    return True
 
 
-def test_g4_subagent_no_parent() -> bool:
+def test_g4_subagent_no_parent() -> None:
     """Without a parent agent the tool degrades honestly to needs_implementation."""
     from gemma4_agent.memory import MemoryStore
     from gemma4_agent.state import AgentState
@@ -129,10 +124,9 @@ def test_g4_subagent_no_parent() -> bool:
     assert not r.get("ok"), "without parent should fail"
     assert r.get("status") == "needs_implementation", r
     print("G4 subagent honest degrade without parent: OK")
-    return True
 
 
-def test_g4_subagent_with_mock_parent() -> bool:
+def test_g4_subagent_with_mock_parent() -> None:
     """Subagent wiring works when we mock the child's LLM."""
     from gemma4_agent.agent import Gemma4Agent
     canned_child_response = "Hice la sub-tarea sin tools."
@@ -152,10 +146,9 @@ def test_g4_subagent_with_mock_parent() -> bool:
     assert r.get("max_turns") == 1
     assert r.get("tools_filter") == ["system"]
     print("G4 subagent run with mock parent: OK")
-    return True
 
 
-def test_g6_phrase_trigger_creation_validation() -> bool:
+def test_g6_phrase_trigger_creation_validation() -> None:
     """on_phrase requires a phrase of >=3 chars."""
     from gemma4_agent.memory import MemoryStore
     from gemma4_agent.state import AgentState
@@ -178,10 +171,9 @@ def test_g6_phrase_trigger_creation_validation() -> bool:
     })
     assert not r.get("ok"), "should reject missing phrase"
     print("G6 phrase_trigger validation: OK")
-    return True
 
 
-def test_g6_active_phrase_triggers_returns_enabled() -> bool:
+def test_g6_active_phrase_triggers_returns_enabled() -> None:
     """Create one routine, ensure active_phrase_triggers lists it; disable, ensure it disappears."""
     import time
     from gemma4_agent.memory import MemoryStore
@@ -217,10 +209,9 @@ def test_g6_active_phrase_triggers_returns_enabled() -> bool:
     # Cleanup
     reg.execute("routine", {"action": "delete", "id": routine_id})
     print("G6 active_phrase_triggers respects enabled flag: OK")
-    return True
 
 
-def test_g6_phrase_hook_fires_on_match() -> bool:
+def test_g6_phrase_hook_fires_on_match() -> None:
     """Create a phrase routine; calling run_content with matching text should fire it
     BEFORE the LLM is invoked. We mock the LLM to return a final no-tool reply so we
     don't depend on llama-server."""
@@ -251,10 +242,9 @@ def test_g6_phrase_hook_fires_on_match() -> bool:
     finally:
         agent.tools.execute("routine", {"action": "delete", "id": routine_id})
     print("G6 phrase hook fires before LLM: OK")
-    return True
 
 
-def test_h1_2_run_with_timeout_returns_on_hang() -> bool:
+def test_h1_2_run_with_timeout_returns_on_hang() -> None:
     """_run_with_timeout must return with _timed_out=True if the fn hangs past the deadline."""
     import time as _time
     from gemma4_agent.agent import _run_with_timeout
@@ -264,10 +254,9 @@ def test_h1_2_run_with_timeout_returns_on_hang() -> bool:
     assert result.get("_timed_out") is True, f"should time out, got {result}"
     assert elapsed < 2.0, f"timeout did not bound elapsed time: {elapsed}"
     print("H1.2 _run_with_timeout bounds elapsed: OK")
-    return True
 
 
-def test_h1_2_run_with_timeout_captures_exception() -> bool:
+def test_h1_2_run_with_timeout_captures_exception() -> None:
     """_run_with_timeout must capture an in-thread exception, not bubble up."""
     from gemma4_agent.agent import _run_with_timeout
     def boom():
@@ -276,10 +265,9 @@ def test_h1_2_run_with_timeout_captures_exception() -> bool:
     assert result.get("_timed_out") is False
     assert "explode" in (result.get("_error") or "")
     print("H1.2 _run_with_timeout captures exception: OK")
-    return True
 
 
-def test_h1_3_is_unverified_result() -> bool:
+def test_h1_3_is_unverified_result() -> None:
     from gemma4_agent.agent import _is_unverified_result
     assert _is_unverified_result({"ok": False, "error": "x"}) is True
     assert _is_unverified_result({"ok": True, "verified": False}) is True
@@ -289,10 +277,9 @@ def test_h1_3_is_unverified_result() -> bool:
     # not a dict
     assert _is_unverified_result(None) is False  # type: ignore[arg-type]
     print("H1.3 _is_unverified_result classification: OK")
-    return True
 
 
-def test_h1_4_format_phrase_fires_failure_warning() -> bool:
+def test_h1_4_format_phrase_fires_failure_warning() -> None:
     """The system block must include a WARNING line when any step did not complete."""
     from gemma4_agent.agent import _format_phrase_fires
     fires = [{
@@ -313,10 +300,9 @@ def test_h1_4_format_phrase_fires_failure_warning() -> bool:
     }])
     assert "WARNING" not in rendered_all_ok
     print("H1.4 phrase fires WARNING on partial failure: OK")
-    return True
 
 
-def test_h1_5_replan_excludes_needs_user_failures() -> bool:
+def test_h1_5_replan_excludes_needs_user_failures() -> None:
     """Tools returning status='needs_user_*' must NOT count toward replan threshold."""
     # We can't run a full turn without llama-server; exercise the logic directly.
     # Mirror the inline rule in agent.run_content.
@@ -334,10 +320,9 @@ def test_h1_5_replan_excludes_needs_user_failures() -> bool:
         counts = (not result.get("ok")) and not is_blocked
         assert counts == expected_counts, f"mismatch on {result}: counts={counts}, expected={expected_counts}"
     print("H1.5 replan failure filter: OK")
-    return True
 
 
-def test_h1_1_chat_timeout_param_accepted() -> bool:
+def test_h1_1_chat_timeout_param_accepted() -> None:
     """LLMClient.chat must accept timeout_s without raising even if llama-server is down."""
     from gemma4_agent.config import AgentConfig
     from gemma4_agent.llm_client import LLMClient
@@ -351,12 +336,12 @@ def test_h1_1_chat_timeout_param_accepted() -> bool:
         msg = str(exc).lower()
         assert "timeout" in msg or "connection" in msg or "http_error" in msg, f"unexpected error: {exc}"
         print("H1.1 chat timeout_s param surfaces a connection/timeout error: OK")
-        return True
+        return
     print("FAIL: chat with bogus server did not raise")
-    return False
+    assert False, "test failed (was: return False)"
 
 
-def test_h2_1_experience_prune_max_records() -> bool:
+def test_h2_1_experience_prune_max_records() -> None:
     """Insert >max_records rows; prune keeps only the newest."""
     import os
     from gemma4_agent.experience import ExperienceMemory
@@ -390,10 +375,9 @@ def test_h2_1_experience_prune_max_records() -> bool:
         os.environ.pop("GEMMA4_EXPERIENCE_MAX_AGE_DAYS", None)
         path.unlink(missing_ok=True)
     print("H2.1 experience prune by max_records: OK")
-    return True
 
 
-def test_h2_2_summarization_cooldown_helper() -> bool:
+def test_h2_2_summarization_cooldown_helper() -> None:
     import os
     from gemma4_agent.agent import _summarization_cooldown_turns
     assert _summarization_cooldown_turns() == 6
@@ -408,10 +392,9 @@ def test_h2_2_summarization_cooldown_helper() -> bool:
     finally:
         os.environ.pop("GEMMA4_AGENT_SUMMARIZATION_COOLDOWN", None)
     print("H2.2 summarization cooldown helper: OK")
-    return True
 
 
-def test_h2_3_semantic_router_transient_retry() -> bool:
+def test_h2_3_semantic_router_transient_retry() -> None:
     """If the model load raises a transient error, _STATE should record it and allow
     a retry after cooldown — without becoming permanently_disabled."""
     from gemma4_agent import semantic_router as sr
@@ -458,10 +441,9 @@ def test_h2_3_semantic_router_transient_retry() -> bool:
         sr._STATE.attempt_count = 0
         sr._STATE.last_error = ""
     print("H2.3 semantic router transient retry: OK")
-    return True
 
 
-def test_h3_1_phrase_confirm_prepends_when_unack() -> bool:
+def test_h3_1_phrase_confirm_prepends_when_unack() -> None:
     """If phrase fires but the reply does not mention them, _guard_phrase_confirm prepends a confirm."""
     from gemma4_agent.agent import Gemma4Agent
     agent = Gemma4Agent()
@@ -479,10 +461,9 @@ def test_h3_1_phrase_confirm_prepends_when_unack() -> bool:
     out3 = agent._guard_phrase_confirm("Aplique tu modo gaming sin problema.")
     assert "Ejecute tu rutina" not in out3
     print("H3.1 phrase confirm guard: OK")
-    return True
 
 
-def test_h3_2_plan_status_surfaces_only_on_short_reply() -> bool:
+def test_h3_2_plan_status_surfaces_only_on_short_reply() -> None:
     """_guard_plan_status only touches the reply when plan failed AND reply is short."""
     from gemma4_agent.agent import Gemma4Agent
     agent = Gemma4Agent()
@@ -504,10 +485,9 @@ def test_h3_2_plan_status_surfaces_only_on_short_reply() -> bool:
     out4 = agent._guard_plan_status("ok")
     assert out4 == "ok"
     print("H3.2 plan status guard: OK")
-    return True
 
 
-def test_h3_3_parse_args_distinguishes_malformed() -> bool:
+def test_h3_3_parse_args_distinguishes_malformed() -> None:
     """_parse_args returns (args, error) and signals malformed JSON clearly."""
     from gemma4_agent.agent import _parse_args
     args, err = _parse_args({"x": 1})
@@ -526,10 +506,9 @@ def test_h3_3_parse_args_distinguishes_malformed() -> bool:
     args, err = _parse_args(12345)
     assert err is not None and "unsupported_args_type" in err
     print("H3.3 _parse_args malformed JSON detection: OK")
-    return True
 
 
-def test_triggercmd_import_basic() -> bool:
+def test_triggercmd_import_basic() -> None:
     """A small TriggerCMD payload imports the simple commands and skips allowParams=true.
 
     Also verifies that destructive commands (shutdown) are imported DISABLED
@@ -562,10 +541,9 @@ def test_triggercmd_import_basic() -> bool:
     assert by_phrase["notepad"]["enabled"] is True, "notepad should stay enabled"
     state_path.unlink(missing_ok=True)
     print("triggercmd import basic + destructive auto-disable OK")
-    return True
 
 
-def test_triggercmd_destructive_detection() -> bool:
+def test_triggercmd_destructive_detection() -> None:
     """_looks_destructive flags common destructive command lines."""
     from gemma4_agent.domain_tools import _looks_destructive
     # Positive cases: should be flagged.
@@ -591,10 +569,9 @@ def test_triggercmd_destructive_detection() -> bool:
         hit, tokens = _looks_destructive(cmd)
         assert not hit, f"should NOT detect destructive: {cmd} (got {tokens})"
     print("triggercmd destructive detection OK")
-    return True
 
 
-def test_triggercmd_import_off_routine() -> bool:
+def test_triggercmd_import_off_routine() -> None:
     """When entry has offCommand, a second on_phrase routine is created with '<voice> off'."""
     import tempfile
     from gemma4_agent.domain_tools import (active_phrase_triggers,
@@ -616,10 +593,9 @@ def test_triggercmd_import_off_routine() -> bool:
     assert "modo cine off" in phrases
     state_path.unlink(missing_ok=True)
     print("triggercmd import off-routine OK")
-    return True
 
 
-def test_triggercmd_import_duplicate_skipped() -> bool:
+def test_triggercmd_import_duplicate_skipped() -> None:
     """Re-importing the same payload skips dupes unless overwrite_same_phrase=True."""
     import tempfile
     from gemma4_agent.domain_tools import import_triggercmd_entries
@@ -634,10 +610,9 @@ def test_triggercmd_import_duplicate_skipped() -> bool:
     assert second["skipped"][0]["reason"] == "phrase_already_in_use"
     state_path.unlink(missing_ok=True)
     print("triggercmd import duplicate detection OK")
-    return True
 
 
-def test_g2_compaction_disabled_keeps_truncation() -> bool:
+def test_g2_compaction_disabled_keeps_truncation() -> None:
     """When summarization is disabled, _compact_completed_history still truncates."""
     import os
     os.environ["GEMMA4_AGENT_SUMMARIZATION"] = "false"
@@ -645,10 +620,9 @@ def test_g2_compaction_disabled_keeps_truncation() -> bool:
     assert _summarization_enabled() is False
     os.environ.pop("GEMMA4_AGENT_SUMMARIZATION", None)
     print("G2 summarization can be disabled: OK")
-    return True
 
 
-def test_j1_knowledge_rerank_fallback_without_model() -> bool:
+def test_j1_knowledge_rerank_fallback_without_model() -> None:
     """Rerank silently falls back to BM25 ordering when the model can't load."""
     from gemma4_agent import knowledge as kn
     saved = kn._RERANK_STATE.copy()
@@ -666,10 +640,9 @@ def test_j1_knowledge_rerank_fallback_without_model() -> bool:
         kn._RERANK_STATE.clear()
         kn._RERANK_STATE.update(saved)
     print("J1 rerank fallback when model disabled: OK")
-    return True
 
 
-def test_j2_memory_auto_save_prefixes_and_caps() -> bool:
+def test_j2_memory_auto_save_prefixes_and_caps() -> None:
     """auto_save stamps keys with 'auto:' and evicts oldest beyond max_total."""
     import tempfile
     from gemma4_agent.memory import MemoryStore
@@ -687,10 +660,9 @@ def test_j2_memory_auto_save_prefixes_and_caps() -> bool:
     finally:
         p.unlink(missing_ok=True)
     print("J2 auto_save prefixes + caps: OK")
-    return True
 
 
-def test_j2_fact_extraction_env_default_off() -> bool:
+def test_j2_fact_extraction_env_default_off() -> None:
     import os
     from gemma4_agent.agent import _fact_extraction_enabled
     os.environ.pop("GEMMA4_AGENT_FACT_EXTRACTION", None)
@@ -699,10 +671,9 @@ def test_j2_fact_extraction_env_default_off() -> bool:
     assert _fact_extraction_enabled() is True
     os.environ.pop("GEMMA4_AGENT_FACT_EXTRACTION", None)
     print("J2 fact extraction default OFF: OK")
-    return True
 
 
-def test_j3_personas_registry_has_six() -> bool:
+def test_j3_personas_registry_has_six() -> None:
     from gemma4_agent.personas import PERSONAS, get, list_names
     names = list_names()
     for required in ("default", "coder", "researcher", "creative", "planner", "casual"):
@@ -711,10 +682,9 @@ def test_j3_personas_registry_has_six() -> bool:
     assert get("nonexistent").name == "default", "unknown persona must fall back to default"
     assert "developer" in PERSONAS["coder"].preferred_tools
     print("J3 personas registry: OK")
-    return True
 
 
-def test_j4_project_context_walks_up() -> bool:
+def test_j4_project_context_walks_up() -> None:
     import tempfile
     from gemma4_agent.project_context import find_context_file, load_context, format_for_prompt
     root = Path(tempfile.mkdtemp(prefix="g_pctx_"))
@@ -734,10 +704,9 @@ def test_j4_project_context_walks_up() -> bool:
         import shutil
         shutil.rmtree(root, ignore_errors=True)
     print("J4 project context walks up + renders: OK")
-    return True
 
 
-def test_j4_project_context_disabled_env() -> bool:
+def test_j4_project_context_disabled_env() -> None:
     import os
     from gemma4_agent.project_context import is_enabled
     os.environ["GEMMA4_AGENT_PROJECT_CONTEXT"] = "false"
@@ -745,10 +714,9 @@ def test_j4_project_context_disabled_env() -> bool:
     os.environ.pop("GEMMA4_AGENT_PROJECT_CONTEXT", None)
     assert is_enabled() is True
     print("J4 project context env toggle: OK")
-    return True
 
 
-def test_j5_parallel_tools_default_off() -> bool:
+def test_j5_parallel_tools_default_off() -> None:
     import os
     from gemma4_agent.agent import _parallel_tools_enabled
     os.environ.pop("GEMMA4_AGENT_PARALLEL_TOOLS", None)
@@ -757,10 +725,9 @@ def test_j5_parallel_tools_default_off() -> bool:
     assert _parallel_tools_enabled() is True
     os.environ.pop("GEMMA4_AGENT_PARALLEL_TOOLS", None)
     print("J5 parallel tools default OFF: OK")
-    return True
 
 
-def test_j5_parallel_executor_preserves_order_and_calls_each() -> bool:
+def test_j5_parallel_executor_preserves_order_and_calls_each() -> None:
     """Run _execute_calls_parallel with a fake registry; assert order + every call ran."""
     import threading
     import time
@@ -798,10 +765,9 @@ def test_j5_parallel_executor_preserves_order_and_calls_each() -> bool:
     # All three executed
     assert sorted(fake.calls) == ["alpha", "beta", "gamma"]
     print("J5 parallel executor preserves order + runs each: OK")
-    return True
 
 
-def test_k1_session_roundtrip() -> bool:
+def test_k1_session_roundtrip() -> None:
     import tempfile
     from gemma4_agent.sessions import Session, SessionStore, SessionTurn
     root = Path(tempfile.mkdtemp(prefix="g_sess_"))
@@ -824,20 +790,18 @@ def test_k1_session_roundtrip() -> bool:
         import shutil
         shutil.rmtree(root, ignore_errors=True)
     print("K1 session save/load/list/delete: OK")
-    return True
 
 
-def test_k1_auto_title_heuristic_fallback() -> bool:
+def test_k1_auto_title_heuristic_fallback() -> None:
     from gemma4_agent.sessions import auto_title
     title = auto_title("Quiero abrir Steam y buscar Hades en mi biblioteca", chat_fn=None, max_words=4)
     assert title and len(title.split()) <= 4
     empty = auto_title("", chat_fn=None)
     assert empty == "(sin titulo)"
     print("K1 auto_title heuristic fallback: OK")
-    return True
 
 
-def test_k1_session_disabled_env() -> bool:
+def test_k1_session_disabled_env() -> None:
     import os
     from gemma4_agent.sessions import is_enabled
     os.environ["GEMMA4_AGENT_SESSIONS"] = "false"
@@ -845,10 +809,9 @@ def test_k1_session_disabled_env() -> bool:
     os.environ.pop("GEMMA4_AGENT_SESSIONS", None)
     assert is_enabled() is True
     print("K1 sessions env toggle: OK")
-    return True
 
 
-def test_k2_timeline_writes_jsonl() -> bool:
+def test_k2_timeline_writes_jsonl() -> None:
     import tempfile
     from gemma4_agent.timeline import TimelineWriter
     root = Path(tempfile.mkdtemp(prefix="g_tl_"))
@@ -873,10 +836,9 @@ def test_k2_timeline_writes_jsonl() -> bool:
         import shutil
         shutil.rmtree(root, ignore_errors=True)
     print("K2 timeline writes jsonl + forwards inner: OK")
-    return True
 
 
-def test_k2_timeline_disabled_env() -> bool:
+def test_k2_timeline_disabled_env() -> None:
     import os
     from gemma4_agent.timeline import is_enabled
     os.environ["GEMMA4_AGENT_TIMELINE"] = "false"
@@ -884,10 +846,9 @@ def test_k2_timeline_disabled_env() -> bool:
     os.environ.pop("GEMMA4_AGENT_TIMELINE", None)
     assert is_enabled() is True
     print("K2 timeline env toggle: OK")
-    return True
 
 
-def test_k3_context_budget_scales_with_size() -> bool:
+def test_k3_context_budget_scales_with_size() -> None:
     from gemma4_agent.agent import _compute_context_budget
     small = _compute_context_budget(4096)
     mid = _compute_context_budget(32768)
@@ -903,10 +864,9 @@ def test_k3_context_budget_scales_with_size() -> bool:
     assert tiny["soft_cap_messages"] >= 10
     assert tiny["hard_cap_messages"] >= 6
     print("K3 context budget scales 4K..200K: OK")
-    return True
 
 
-def test_audit_atomic_write_replaces_existing() -> bool:
+def test_audit_atomic_write_replaces_existing() -> None:
     """state.atomic_write_json must not leave .tmp files and must overwrite."""
     import tempfile
     from gemma4_agent.state import atomic_write_json
@@ -924,10 +884,9 @@ def test_audit_atomic_write_replaces_existing() -> bool:
         import shutil
         shutil.rmtree(root, ignore_errors=True)
     print("AUDIT atomic_write_json overwrite + no leftover .tmp: OK")
-    return True
 
 
-def test_audit_settings_env_names_match_config() -> bool:
+def test_audit_settings_env_names_match_config() -> None:
     """Every env var Settings persists must be readable by AgentConfig.from_env
     or by a documented helper in the agent. Hubo bugs MAJOR donde Settings
     escribia keys con prefijos distintos a los que config esperaba."""
@@ -979,10 +938,9 @@ def test_audit_settings_env_names_match_config() -> bool:
         _os.environ.clear()
         _os.environ.update(saved_env)
     print("AUDIT settings env names match AgentConfig.from_env: OK")
-    return True
 
 
-def test_audit_jsonstore_concurrent_writes() -> bool:
+def test_audit_jsonstore_concurrent_writes() -> None:
     """Two concurrent register_resource calls don't lose data.
 
     Regression test for the RLock added to AgentState/MemoryStore/SessionStore.
@@ -1016,10 +974,9 @@ def test_audit_jsonstore_concurrent_writes() -> bool:
     finally:
         shutil.rmtree(root, ignore_errors=True)
     print("AUDIT JSONStore concurrent writes preserve all data: OK")
-    return True
 
 
-def test_audit_experience_recent_exists() -> bool:
+def test_audit_experience_recent_exists() -> None:
     """experience.ExperienceMemory.recent(limit=N) must exist (was a ghost)."""
     import tempfile
     from gemma4_agent.experience import ExperienceMemory
@@ -1034,10 +991,9 @@ def test_audit_experience_recent_exists() -> bool:
     finally:
         path.unlink(missing_ok=True)
     print("AUDIT experience.recent() exists: OK")
-    return True
 
 
-def test_audit_timeline_safe_payload_preserves_dicts() -> bool:
+def test_audit_timeline_safe_payload_preserves_dicts() -> None:
     """_safe_payload must keep nested dicts as dicts, not flatten to str."""
     from gemma4_agent.timeline import _safe_payload
     payload = {
@@ -1053,10 +1009,9 @@ def test_audit_timeline_safe_payload_preserves_dicts() -> bool:
     assert isinstance(out["result"]["results"], list)
     assert isinstance(out["result"]["results"][0], dict)
     print("AUDIT timeline _safe_payload preserves dict structure: OK")
-    return True
 
 
-def test_audit_planner_question_mark_inverted_supported() -> bool:
+def test_audit_planner_question_mark_inverted_supported() -> None:
     """Planner heuristic should treat ¿ (Spanish inverted) as a question marker."""
     from gemma4_agent.planner import plan_mission, select_tool_names
     p = plan_mission("¿que tools tengo disponibles?")
@@ -1064,10 +1019,9 @@ def test_audit_planner_question_mark_inverted_supported() -> bool:
     # Mostly we want it to NOT crash and to handle the inverted ? path.
     assert isinstance(out, list)
     print("AUDIT planner accepts inverted question mark: OK")
-    return True
 
 
-def test_u1_ui_modules_importable() -> bool:
+def test_u1_ui_modules_importable() -> None:
     """All ui/ submodules import without side effects (PyQt6 required)."""
     try:
         from gemma4_agent.ui import theme, metrics, hud, log_widget, metric_bar
@@ -1084,10 +1038,9 @@ def test_u1_ui_modules_importable() -> bool:
     assert hasattr(settings, "TOGGLES")
     assert len(settings.TOGGLES) >= 6
     print("U1 UI modules import + theme/settings shape: OK")
-    return True
 
 
-def test_u1_hud_state_setters() -> bool:
+def test_u1_hud_state_setters() -> None:
     """HudCanvas accepts all states without crashing (no Qt event loop)."""
     try:
         import os as _os
@@ -1107,10 +1060,9 @@ def test_u1_hud_state_setters() -> bool:
     hud.set_model("gemma-3n-e4b-it.Q6_K")
     hud.set_connected(True)
     print("U1 HUD state cycling: OK")
-    return True
 
 
-def test_j5_sequential_handles_parse_error() -> bool:
+def test_j5_sequential_handles_parse_error() -> None:
     from gemma4_agent.agent import Gemma4Agent
 
     class NeverCalled:
@@ -1127,7 +1079,6 @@ def test_j5_sequential_handles_parse_error() -> bool:
     assert res["ok"] is False
     assert res["evidence"] == "malformed_json_args"
     print("J5 sequential parse-error short-circuit: OK")
-    return True
 
 
 # ====================================================================
@@ -1135,7 +1086,7 @@ def test_j5_sequential_handles_parse_error() -> bool:
 # ====================================================================
 
 
-def test_profiles_recommend_by_vram() -> bool:
+def test_profiles_recommend_by_vram() -> None:
     # Cortes con reserva fija de 1.5 GB (WINDOWS_VRAM_RESERVE_MB) para dwm/driver:
     #   VRAM efectiva = vram_mb - 1500
     #   >=10500 MB ef. (=12 GB fisicos) -> performance
@@ -1178,10 +1129,9 @@ def test_profiles_recommend_by_vram() -> bool:
     assert recommend_profile(0) == "light"
     assert recommend_profile(None) == "light"
     print(f"V1 recommend_profile by vram (8GB tier GGUF present={gguf_exists}): OK")
-    return True
 
 
-def test_profiles_set_and_get_active() -> bool:
+def test_profiles_set_and_get_active() -> None:
     import os
     import tempfile
     from pathlib import Path as _Path
@@ -1217,10 +1167,9 @@ def test_profiles_set_and_get_active() -> bool:
         except OSError:
             pass
     print("V2 set_active / get_active roundtrip: OK")
-    return True
 
 
-def test_profiles_apply_to_env_complete() -> bool:
+def test_profiles_apply_to_env_complete() -> None:
     import os
     from gemma4_agent.profiles import PROFILES, apply_profile_to_env
 
@@ -1262,10 +1211,9 @@ def test_profiles_apply_to_env_complete() -> bool:
             else:
                 os.environ[k] = v
     print("V3 apply_profile_to_env complete: OK")
-    return True
 
 
-def test_profiles_round_trip_via_agentconfig() -> bool:
+def test_profiles_round_trip_via_agentconfig() -> None:
     """CRITICAL: cada perfil aplicado -> AgentConfig.from_env() ve el cambio.
 
     Hubiera atrapado el bug de env var mismatch del audit anterior.
@@ -1315,10 +1263,9 @@ def test_profiles_round_trip_via_agentconfig() -> bool:
             else:
                 os.environ[k] = v
     print("V4 round-trip apply -> AgentConfig: OK")
-    return True
 
 
-def test_profile_watcher_hysteresis() -> bool:
+def test_profile_watcher_hysteresis() -> None:
     from unittest.mock import patch
     from gemma4_agent.profile_watcher import (
         ProfileWatcher, WatcherConfig, _Sample,
@@ -1391,10 +1338,9 @@ def test_profile_watcher_hysteresis() -> bool:
         assert changes[-1][0] == "balanced", f"expected balanced restore, got {changes}"
 
     print("V5 watcher hysteresis 30s/60s: OK")
-    return True
 
 
-def test_standby_profile_does_not_start_server() -> bool:
+def test_standby_profile_does_not_start_server() -> None:
     from unittest.mock import patch, MagicMock
     from gemma4_agent.llama_server import LlamaServerManager
     from gemma4_agent.profiles import PROFILES
@@ -1409,10 +1355,9 @@ def test_standby_profile_does_not_start_server() -> bool:
     assert result == "skipped_standby"
     popen.assert_not_called()
     print("V6 standby does not start server: OK")
-    return True
 
 
-def test_external_server_detected_not_killed() -> bool:
+def test_external_server_detected_not_killed() -> None:
     from unittest.mock import patch
     from gemma4_agent.config import AgentConfig
     from gemma4_agent.llama_server import LlamaServerManager
@@ -1437,10 +1382,9 @@ def test_external_server_detected_not_killed() -> bool:
     assert manager.is_external_server() is True
     assert manager.current_profile() is None
     print("V7 external server detected, not killed: OK")
-    return True
 
 
-def test_light_profile_missing_model_falls_back() -> bool:
+def test_light_profile_missing_model_falls_back() -> None:
     """Light con model_path inexistente -> ctx=4096 aplicado pero
     GEMMA4_MODEL_PATH no se sobreescribe."""
     import os
@@ -1474,7 +1418,6 @@ def test_light_profile_missing_model_falls_back() -> bool:
             else:
                 os.environ[k] = v
     print("V8 light missing model falls back: OK")
-    return True
 
 
 # ====================================================================
@@ -1482,7 +1425,7 @@ def test_light_profile_missing_model_falls_back() -> bool:
 # ====================================================================
 
 
-def test_sse_streaming_yields_deltas_in_order() -> bool:
+def test_sse_streaming_yields_deltas_in_order() -> None:
     """V-SSE-1: mock urlopen con frames SSE, verificar deltas en orden + final."""
     from unittest.mock import patch, MagicMock
     from gemma4_agent.config import AgentConfig
@@ -1517,10 +1460,9 @@ def test_sse_streaming_yields_deltas_in_order() -> bool:
     assert final["finish_reason"] == "stop"
     assert final["tool_calls"] == []
     print("W-SSE deltas + final reconstructed: OK")
-    return True
 
 
-def test_voice_wake_detector_matches_phrases() -> bool:
+def test_voice_wake_detector_matches_phrases() -> None:
     """Mock Vosk recognizer; verificar callback se llama solo para 'gemma' y 'hey gemma'.
 
     Despues del fix "abre Steam → abre este", el 3er parametro del callback
@@ -1609,10 +1551,9 @@ def test_voice_wake_detector_matches_phrases() -> bool:
     assert len(fires) == 5
     assert abs(fires[4][2] - 0.5) < 0.01, f"expected tail≈0.5 (audio - wake_relative), got {fires[4][2]}"
     print("W1 wake matches + tail_s calculation: OK")
-    return True
 
 
-def test_voice_state_machine_wake_to_listening_to_transcribing() -> bool:
+def test_voice_state_machine_wake_to_listening_to_transcribing() -> None:
     """Simular eventos en el controller sin cargar modelos reales."""
     import numpy as np
     from unittest.mock import MagicMock
@@ -1653,10 +1594,9 @@ def test_voice_state_machine_wake_to_listening_to_transcribing() -> bool:
     assert ctrl._state == S_THINKING
     assert finals == ["apaga la luz"]
     print("W2 state machine WAKE->LISTENING->TRANSCRIBING->THINKING: OK")
-    return True
 
 
-def test_voice_state_machine_listening_timeout_5s() -> bool:
+def test_voice_state_machine_listening_timeout_5s() -> None:
     """Sin speech_started en 5s -> vuelve a IDLE_LISTENING silenciosamente."""
     from unittest.mock import MagicMock, patch
     from gemma4_agent.voice.controller import (
@@ -1679,10 +1619,9 @@ def test_voice_state_machine_listening_timeout_5s() -> bool:
     # Verifica que el wake reset se llamo (parte del cleanup)
     ctrl._wake.reset.assert_called()
     print("W3 listening timeout returns to IDLE silently: OK")
-    return True
 
 
-def test_voice_state_machine_followup_close_phrase() -> bool:
+def test_voice_state_machine_followup_close_phrase() -> None:
     """En FOLLOWUP, recibir final 'gracias' -> IDLE_LISTENING sin enviar al agente."""
     from unittest.mock import MagicMock
     from gemma4_agent.voice.controller import (
@@ -1704,10 +1643,9 @@ def test_voice_state_machine_followup_close_phrase() -> bool:
     ctrl._handle_final("apaga la luz")
     assert sent_to_agent == ["apaga la luz"]
     print("W4 followup close phrase exits silently: OK")
-    return True
 
 
-def test_voice_disabled_in_light_profile() -> bool:
+def test_voice_disabled_in_light_profile() -> None:
     """Apply LIGHT profile -> voice controller deberia poder llamarse disable()."""
     from unittest.mock import MagicMock
     from gemma4_agent.voice.controller import (
@@ -1737,10 +1675,9 @@ def test_voice_disabled_in_light_profile() -> bool:
     ctrl._tts.unload.assert_called()
     ctrl._audio.stop.assert_called()
     print("W5 disable() unloads all models: OK")
-    return True
 
 
-def test_tts_sentence_chunker_flushes_on_punctuation() -> bool:
+def test_tts_sentence_chunker_flushes_on_punctuation() -> None:
     """feed_text con tokens; assertear que solo oraciones cerradas se encolan."""
     from gemma4_agent.voice.tts import StreamingTTS, _split_sentences
 
@@ -1779,10 +1716,9 @@ def test_tts_sentence_chunker_flushes_on_punctuation() -> bool:
     assert len(encolados) == 1
     assert "Hola mundo." in encolados[0]
     print("W6 sentence chunker flushes on '. ' boundary: OK")
-    return True
 
 
-def test_stt_auto_fallback_to_base_when_slow() -> bool:
+def test_stt_auto_fallback_to_base_when_slow() -> None:
     """fallback_to_base() restaura modelo previo si la recarga falla.
 
     Antes este test verificaba que transcribe_stream dispara el fallback en
@@ -1810,10 +1746,9 @@ def test_stt_auto_fallback_to_base_when_slow() -> bool:
     assert stt._whisper is prior_whisper, "whisper should be restored to previous instance"
     assert stt._loaded is True, "loaded flag should be restored"
     print("W7 STT fallback restores prior model on failed reload: OK")
-    return True
 
 
-def test_voice_close_phrase_normalization() -> bool:
+def test_voice_close_phrase_normalization() -> None:
     """Las frases de cierre matchean con accents folded e case-insensitive."""
     from unittest.mock import MagicMock
     from gemma4_agent.voice.controller import (
@@ -1831,7 +1766,6 @@ def test_voice_close_phrase_normalization() -> bool:
     assert ctrl._state == S_IDLE_LISTENING
     assert sent == []
     print("W8 close phrase normalization (case + accents): OK")
-    return True
 
 
 # ============================================================================
@@ -1840,7 +1774,7 @@ def test_voice_close_phrase_normalization() -> bool:
 # ============================================================================
 
 
-def test_optroad_normalize_tool_call_arguments_dict() -> bool:
+def test_optroad_normalize_tool_call_arguments_dict() -> None:
     from gemma4_agent.llm_client import normalize_tool_call_arguments
     out = normalize_tool_call_arguments({"path": "C:/x", "count": 3})
     assert out == {"path": "C:/x", "count": 3}
@@ -1848,10 +1782,9 @@ def test_optroad_normalize_tool_call_arguments_dict() -> bool:
     assert normalize_tool_call_arguments(None) == {}
     assert normalize_tool_call_arguments("") == {}
     print("OPTROAD-1.4-a dict passthrough + empty: OK")
-    return True
 
 
-def test_optroad_normalize_tool_call_arguments_braces() -> bool:
+def test_optroad_normalize_tool_call_arguments_braces() -> None:
     """Issue #21384: args serializados como string con `{` y `}` literales."""
     from gemma4_agent.llm_client import normalize_tool_call_arguments
     # Caso 1: args como string JSON valido (path con braces).
@@ -1865,10 +1798,9 @@ def test_optroad_normalize_tool_call_arguments_braces() -> bool:
     out2 = normalize_tool_call_arguments(double)
     assert out2 == {"a": 1, "b": "x"}, f"got {out2!r}"
     print("OPTROAD-1.4-b braces + double-string: OK")
-    return True
 
 
-def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
+def test_optroad_normalize_tool_call_arguments_malformed() -> None:
     """Args completamente rotos: deben caer en _raw, NO levantar."""
     from gemma4_agent.llm_client import normalize_tool_call_arguments
     out = normalize_tool_call_arguments("not even close to JSON {")
@@ -1876,10 +1808,9 @@ def test_optroad_normalize_tool_call_arguments_malformed() -> bool:
     # No debe perder el contenido original
     assert "not even close" in out["_raw"]
     print("OPTROAD-1.4-c malformed → _raw with error: OK")
-    return True
 
 
-def test_optroad_s13_no_mmproj_when_vision_off() -> bool:
+def test_optroad_s13_no_mmproj_when_vision_off() -> None:
     """Sprint 13: si profile.vision_enabled=False, --mmproj NO debe
     aparecer en el cmd del server.
 
@@ -1907,10 +1838,9 @@ def test_optroad_s13_no_mmproj_when_vision_off() -> bool:
         else:
             os.environ["GEMMA4_MMPROJ_PATH"] = saved
     print("OPTROAD-S13-a no --mmproj when vision OFF: OK")
-    return True
 
 
-def test_optroad_s13_official_sampling_defaults() -> bool:
+def test_optroad_s13_official_sampling_defaults() -> None:
     """Sprint 13: AgentConfig defaults son EXACTAMENTE los oficiales
     Google para Gemma 4: T=1.0, top_p=0.95, top_k=64, repeat_penalty=1.0,
     max_tokens=1280. TL;DR MEJOR #(a) del informe externo.
@@ -1923,10 +1853,9 @@ def test_optroad_s13_official_sampling_defaults() -> bool:
     assert cfg.repeat_penalty == 1.0, f"repeat_penalty must be 1.0; got {cfg.repeat_penalty}"
     assert cfg.max_tokens == 1280, f"max_tokens must be 1280; got {cfg.max_tokens}"
     print("OPTROAD-S13-b Google official sampling defaults preserved: OK")
-    return True
 
 
-def test_optroad_p4_prewarm_kv_called_after_boot() -> bool:
+def test_optroad_p4_prewarm_kv_called_after_boot() -> None:
     """Polish P4: tras warmup exitoso, agent_runner llama a prewarm_kv
     con el system_prompt completo del agente.
 
@@ -1956,10 +1885,9 @@ def test_optroad_p4_prewarm_kv_called_after_boot() -> bool:
     assert "skipped" in src, "caller must handle prewarm_kv skipped result"
 
     print("OPTROAD-P4 prewarm_kv wired in _build_agent: OK")
-    return True
 
 
-def test_optroad_p1_cache_reuse_present_in_cmd() -> bool:
+def test_optroad_p1_cache_reuse_present_in_cmd() -> None:
     """Polish P1: --cache-reuse 256 esta en el cmd del server.
 
     PR ggml-org/llama.cpp#22288 ('server: fix swa-full logic') fue merged
@@ -1992,10 +1920,9 @@ def test_optroad_p1_cache_reuse_present_in_cmd() -> bool:
         keep_idx = cmd.index("--keep")
         assert cmd[keep_idx + 1] == "-1", f"{name}: --keep value not -1"
     print(f"OPTROAD-P1 --cache-reuse 256 active (build {LLAMA_CPP_BUILD_MIN} >= b9084): OK")
-    return True
 
 
-def test_optroad_s13_hardening_invariants_always_present() -> bool:
+def test_optroad_s13_hardening_invariants_always_present() -> None:
     """Sprint 13: --host 127.0.0.1 y --no-webui DEBEN estar en el cmd
     de TODOS los perfiles activos. Defense in depth contra exposicion
     accidental por LAN (Sprint 12 del roadmap)."""
@@ -2010,10 +1937,9 @@ def test_optroad_s13_hardening_invariants_always_present() -> bool:
         assert cmd[idx + 1] == "127.0.0.1", f"{name}: --host value {cmd[idx+1]} (must be 127.0.0.1)"
         assert "--no-webui" in cmd, f"{name}: --no-webui missing"
     print("OPTROAD-S13-c hardening invariants in all active profiles: OK")
-    return True
 
 
-def test_optroad_s13_tool_schemas_md_covers_all_62_tools() -> bool:
+def test_optroad_s13_tool_schemas_md_covers_all_62_tools() -> None:
     """Sprint 13: compile_tools_to_markdown_exact debe listar las 62
     tools, no solo las primeras. Verifica que ninguna queda fuera del
     bloque EXACT por bug del walker."""
@@ -2030,10 +1956,9 @@ def test_optroad_s13_tool_schemas_md_covers_all_62_tools() -> bool:
     assert not missing_full, f"full mode missing tools: {missing_full}"
     assert not missing_compact, f"compact mode missing tools: {missing_compact}"
     print(f"OPTROAD-S13-d all {len(tool_names)} tools covered in markdown: OK")
-    return True
 
 
-def test_optroad_s13_profiles_voice_always_on_when_active() -> bool:
+def test_optroad_s13_profiles_voice_always_on_when_active() -> None:
     """Sprint 13: voice (Whisper CPU + Piper CPU) DEBE estar ON en
     todos los perfiles con server_running=True. El brief explicito del
     usuario: 'voice debe estar disponible en todos los perfiles'."""
@@ -2048,10 +1973,9 @@ def test_optroad_s13_profiles_voice_always_on_when_active() -> bool:
             # standby: no LLM, no voice (correct)
             pass
     print("OPTROAD-S13-e voice ON for all server-running profiles: OK")
-    return True
 
 
-def test_optroad_sse_streaming_interleaved_tool_calls() -> bool:
+def test_optroad_sse_streaming_interleaved_tool_calls() -> None:
     """Sprint 5: streaming SSE de tool_calls intercalados con texto +
     thoughts, validando que (a) los deltas llegan en orden, (b) el frame
     final tiene tool_calls normalizados, (c) la mezcla content+tool_call
@@ -2108,10 +2032,9 @@ def test_optroad_sse_streaming_interleaved_tool_calls() -> bool:
     assert args.get("action") == "read"
     assert args.get("path") == "C:/x.txt"
     print("OPTROAD-S5-a SSE interleaved content+tool_call: OK")
-    return True
 
 
-def test_optroad_sse_tool_call_args_with_literal_braces() -> bool:
+def test_optroad_sse_tool_call_args_with_literal_braces() -> None:
     """Sprint 5 + item 1.4: args con `{` y `}` literales no rompen el
     parser cliente. Caso del issue #21384.
     """
@@ -2149,10 +2072,9 @@ def test_optroad_sse_tool_call_args_with_literal_braces() -> bool:
     assert args["pattern"] == "\\d{3,5}"  # regex con braces preservadas
     assert args["path"] == "C:/${USER}/logs"  # var con $ preservada
     print("OPTROAD-S5-b SSE tool_call args with braces normalized: OK")
-    return True
 
 
-def test_optroad_sse_multiple_parallel_tool_calls() -> bool:
+def test_optroad_sse_multiple_parallel_tool_calls() -> None:
     """Sprint 5 + item C3: el modelo emite MULTIPLES tool_calls en el
     mismo turno (parallel_tool_calls). Cada uno debe llegar normalizado
     y indexado correctamente.
@@ -2186,10 +2108,9 @@ def test_optroad_sse_multiple_parallel_tool_calls() -> bool:
     assert tcs[1]["function"]["name"] == "system"
     assert tcs[1]["function"]["arguments"] == {"action": "time"}
     print("OPTROAD-S5-c SSE multiple parallel tool_calls: OK")
-    return True
 
 
-def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> bool:
+def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> None:
     """Sprint 1: agent._tool_schemas_hint elige full/compact/off por
     el context_size del perfil activo.
 
@@ -2260,10 +2181,9 @@ def test_optroad_tool_schemas_hint_selects_mode_by_ctx() -> bool:
                 os.environ[envk] = v
 
     print("OPTROAD-S1 tool_schemas_hint mode selection: OK")
-    return True
 
 
-def test_optroad_prewarm_kv_calls_chat_with_min_tokens() -> bool:
+def test_optroad_prewarm_kv_calls_chat_with_min_tokens() -> None:
     """Sprint 7: prewarm dispara una request al cliente con max_tokens=1."""
     import os
     from gemma4_agent.prewarm import prewarm_kv, prewarm_enabled, ENV_OPT_OUT
@@ -2335,10 +2255,9 @@ def test_optroad_prewarm_kv_calls_chat_with_min_tokens() -> bool:
             os.environ[ENV_OPT_OUT] = saved
 
     print("OPTROAD-S7 prewarm_kv: OK")
-    return True
 
 
-def test_optroad_telemetry_opt_in_default_off() -> bool:
+def test_optroad_telemetry_opt_in_default_off() -> None:
     """Sprint 11: telemetria OFF por default; ON solo si env var setea."""
     import os
     import tempfile
@@ -2388,10 +2307,9 @@ def test_optroad_telemetry_opt_in_default_off() -> bool:
             os.environ[ENV_FLAG] = saved
 
     print("OPTROAD-S11 telemetry opt-in flow: OK")
-    return True
 
 
-def test_optroad_hardening_flags_in_server_cmd() -> bool:
+def test_optroad_hardening_flags_in_server_cmd() -> None:
     """Sprint 12: --host 127.0.0.1, --no-webui, y --api-key opt-in."""
     import os
     from gemma4_agent.config import AgentConfig
@@ -2422,10 +2340,9 @@ def test_optroad_hardening_flags_in_server_cmd() -> bool:
             os.environ["GEMMA4_LLAMA_API_KEY"] = saved_key
 
     print("OPTROAD-S12-a server hardening flags: OK")
-    return True
 
 
-def test_optroad_hardening_client_headers_include_auth() -> bool:
+def test_optroad_hardening_client_headers_include_auth() -> None:
     """Sprint 12: el cliente envia Authorization si GEMMA4_LLAMA_API_KEY esta."""
     import os
     from gemma4_agent.llm_client import _request_headers
@@ -2452,10 +2369,9 @@ def test_optroad_hardening_client_headers_include_auth() -> bool:
         else:
             os.environ["GEMMA4_LLAMA_API_KEY"] = saved
     print("OPTROAD-S12-b client headers Bearer auth: OK")
-    return True
 
 
-def test_optroad_spec_draft_flag_only_in_performance() -> bool:
+def test_optroad_spec_draft_flag_only_in_performance() -> None:
     """Item 2.2: speculative decoding via env var solo se activa en
     perfil performance y si el archivo existe."""
     import os
@@ -2507,10 +2423,9 @@ def test_optroad_spec_draft_flag_only_in_performance() -> bool:
             os.environ["GEMMA4_SPEC_DRAFT_MODEL"] = saved
 
     print("OPTROAD-2.2 spec_draft opt-in only in performance + file exists: OK")
-    return True
 
 
-def test_optroad_is_experimental_quant_detects_mxfp4() -> bool:
+def test_optroad_is_experimental_quant_detects_mxfp4() -> None:
     """Item 1.9: MXFP4_MOE detectado como experimental."""
     from gemma4_agent.model_info import is_experimental_quant
     # Casos positivos
@@ -2526,10 +2441,9 @@ def test_optroad_is_experimental_quant_detects_mxfp4() -> bool:
     f5, _ = is_experimental_quant("unsloth-UD-Q4_K_XL.gguf")
     assert f5 is False
     print("OPTROAD-1.9 experimental quant detection: OK")
-    return True
 
 
-def test_optroad_compile_tools_to_markdown_exact_shape() -> bool:
+def test_optroad_compile_tools_to_markdown_exact_shape() -> None:
     """Item 1.8: compile_tools_to_markdown_exact produce el formato EXACT."""
     from gemma4_agent.tools import COMPOUND_TOOL_SCHEMAS, compile_tools_to_markdown_exact
     md = compile_tools_to_markdown_exact()
@@ -2568,10 +2482,9 @@ def test_optroad_compile_tools_to_markdown_exact_shape() -> bool:
     # Enum reflejado
     assert "'read'" in md2 and "'write'" in md2
     print("OPTROAD-1.8 tool schemas EXACT markdown: OK")
-    return True
 
 
-def test_optroad_vision_counter_fires_callback_at_threshold() -> bool:
+def test_optroad_vision_counter_fires_callback_at_threshold() -> None:
     """Item 1.7: el counter de imagenes dispara el callback en el umbral.
 
     Issue #21690 (mmproj leak). El orchestrator registra un callback que
@@ -2604,10 +2517,9 @@ def test_optroad_vision_counter_fires_callback_at_threshold() -> bool:
         mm.set_vision_relaunch_callback(None)
         mm.reset_image_counter()
     print("OPTROAD-1.7 vision counter callback at threshold: OK")
-    return True
 
 
-def test_optroad_normalize_tool_calls_list_response() -> bool:
+def test_optroad_normalize_tool_calls_list_response() -> None:
     """Aplicacion sobre el formato OpenAI completo."""
     from gemma4_agent.llm_client import normalize_tool_calls_list
     tcs = [
@@ -2628,7 +2540,6 @@ def test_optroad_normalize_tool_calls_list_response() -> bool:
     # Lista vacia.
     assert normalize_tool_calls_list([]) == []
     print("OPTROAD-1.4-d list + mixed shapes: OK")
-    return True
 
 
 def main() -> int:

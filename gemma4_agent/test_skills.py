@@ -31,29 +31,27 @@ from gemma4_agent.skills_registry import (
 # Name validation
 # ============================================================================
 
-def test_valid_skill_names() -> bool:
+def test_valid_skill_names() -> None:
     assert _is_valid_skill_name("install-steam-game")
     assert _is_valid_skill_name("a")
     assert _is_valid_skill_name("purchase-guard")
     assert _is_valid_skill_name("ab-cd-ef-1-2-3")
-    return True
 
 
-def test_invalid_skill_names() -> bool:
+def test_invalid_skill_names() -> None:
     assert not _is_valid_skill_name("Install-Steam-Game")  # uppercase
     assert not _is_valid_skill_name("install_steam_game")  # underscore
     assert not _is_valid_skill_name("-leading-hyphen")
     assert not _is_valid_skill_name("trailing-hyphen-")
     assert not _is_valid_skill_name("")
     assert not _is_valid_skill_name("x" * 65)  # >64 chars
-    return True
 
 
 # ============================================================================
 # YAML parser
 # ============================================================================
 
-def test_yaml_scalar_and_list() -> bool:
+def test_yaml_scalar_and_list() -> None:
     text = """
 name: foo
 description: hello world
@@ -65,10 +63,9 @@ triggers: ["a", "b", "c"]
     assert parsed["description"] == "hello world"
     assert parsed["priority"] == "high"
     assert parsed["triggers"] == ["a", "b", "c"]
-    return True
 
 
-def test_yaml_block_dict() -> bool:
+def test_yaml_block_dict() -> None:
     text = """
 name: bar
 requires:
@@ -83,22 +80,19 @@ requires:
     assert req["bins"] == ["steam", "steam.exe"]
     assert req["any_bins"] == ["chrome", "edge"]
     assert req["os"] == ["windows"]
-    return True
 
 
-def test_yaml_booleans() -> bool:
+def test_yaml_booleans() -> None:
     text = "honest_critical: true\nlazy: false"
     parsed = _parse_yaml_simple(text)
     assert parsed["honest_critical"] is True
     assert parsed["lazy"] is False
-    return True
 
 
-def test_yaml_comments_skipped() -> bool:
+def test_yaml_comments_skipped() -> None:
     text = "# this is a comment\nname: ok"
     parsed = _parse_yaml_simple(text)
     assert parsed["name"] == "ok"
-    return True
 
 
 # ============================================================================
@@ -115,46 +109,41 @@ def _mk_skill(name: str, **kwargs) -> SkillMeta:
     )
 
 
-def test_eligibility_empty_requires_always_eligible() -> bool:
+def test_eligibility_empty_requires_always_eligible() -> None:
     s = _mk_skill("x", requires={})
     assert check_skill_eligibility(s) is True
-    return True
 
 
-def test_eligibility_os_filter() -> bool:
+def test_eligibility_os_filter() -> None:
     # OS actual (Windows en este host) acepta windows
     s = _mk_skill("x", requires={"os": ["windows", "linux"]})
     assert check_skill_eligibility(s) is True
     # OS no listado → rechazado
     s2 = _mk_skill("y", requires={"os": ["solaris", "haiku"]})
     assert check_skill_eligibility(s2) is False
-    return True
 
 
-def test_eligibility_bins_missing_rejects() -> bool:
+def test_eligibility_bins_missing_rejects() -> None:
     s = _mk_skill("x", requires={"bins": ["definitely_not_a_real_bin_xyz_2026"]})
     assert check_skill_eligibility(s) is False
-    return True
 
 
-def test_eligibility_any_bins_one_match_passes() -> bool:
+def test_eligibility_any_bins_one_match_passes() -> None:
     """python deberia estar disponible en cualquier host que corre tests."""
     s = _mk_skill("x", requires={
         "any_bins": ["python", "python3", "definitely_not_real_xyz"],
     })
     assert check_skill_eligibility(s) is True
-    return True
 
 
-def test_eligibility_env_missing_rejects() -> bool:
+def test_eligibility_env_missing_rejects() -> None:
     var = "DEFINITELY_NOT_SET_ENV_XYZ_2026"
     os.environ.pop(var, None)
     s = _mk_skill("x", requires={"env": [var]})
     assert check_skill_eligibility(s) is False
-    return True
 
 
-def test_eligibility_env_set_passes() -> bool:
+def test_eligibility_env_set_passes() -> None:
     var = "GEMMA4_TEST_TEMP_VAR_XYZ"
     os.environ[var] = "1"
     try:
@@ -162,21 +151,19 @@ def test_eligibility_env_set_passes() -> bool:
         assert check_skill_eligibility(s) is True
     finally:
         os.environ.pop(var, None)
-    return True
 
 
 # ============================================================================
 # Cap per profile
 # ============================================================================
 
-def test_cap_per_profile() -> bool:
+def test_cap_per_profile() -> None:
     assert get_skill_cap("standby") == 0
     assert get_skill_cap("light") == 1
     assert get_skill_cap("balanced") == 2
     assert get_skill_cap("balanced_8gb") == 3
     assert get_skill_cap("performance") == 5
     assert get_skill_cap("unknown_profile") == 3  # default
-    return True
 
 
 # ============================================================================
@@ -190,7 +177,7 @@ def _write_skill(folder: Path, content: str) -> Path:
     return p
 
 
-def test_scan_finds_valid_skill() -> bool:
+def test_scan_finds_valid_skill() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_skill(d / "my-skill", """---
@@ -205,10 +192,9 @@ priority: high
         assert len(skills) == 1
         assert skills[0].name == "my-skill"
         assert skills[0].priority == "high"
-    return True
 
 
-def test_scan_skips_invalid_name() -> bool:
+def test_scan_skips_invalid_name() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_skill(d / "InvalidName", """---
@@ -220,10 +206,9 @@ body
 """)
         skills = scan_skills(d)
         assert len(skills) == 0
-    return True
 
 
-def test_scan_skips_without_description() -> bool:
+def test_scan_skips_without_description() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_skill(d / "no-desc", """---
@@ -234,10 +219,9 @@ body
 """)
         skills = scan_skills(d)
         assert len(skills) == 0
-    return True
 
 
-def test_scan_normalizes_invalid_priority() -> bool:
+def test_scan_normalizes_invalid_priority() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_skill(d / "ok", """---
@@ -250,10 +234,9 @@ body
         skills = scan_skills(d)
         assert len(skills) == 1
         assert skills[0].priority == "medium"
-    return True
 
 
-def test_scan_sort_by_priority() -> bool:
+def test_scan_sort_by_priority() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_skill(d / "zzz-low", """---
@@ -276,10 +259,9 @@ priority: critical
 """)
         skills = scan_skills(d)
         assert [s.name for s in skills] == ["mmm-critical", "aaa-medium", "zzz-low"]
-    return True
 
 
-def test_scan_filters_ineligible() -> bool:
+def test_scan_filters_ineligible() -> None:
     """Un skill con requires no cumplido se oculta."""
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
@@ -301,44 +283,39 @@ requires:
         names = {s.name for s in skills}
         assert "eligible" in names
         assert "not-eligible" not in names
-    return True
 
 
 # ============================================================================
 # Real skills shipped en repo
 # ============================================================================
 
-def test_real_skills_dir_has_purchase_guard_critical() -> bool:
+def test_real_skills_dir_has_purchase_guard_critical() -> None:
     skills = scan_skills()
     pg = [s for s in skills if s.name == "purchase-guard"]
     assert len(pg) == 1, f"purchase-guard no se cargo. skills: {[s.name for s in skills]}"
     assert pg[0].priority == "critical"
-    return True
 
 
-def test_real_skills_load_content() -> bool:
+def test_real_skills_load_content() -> None:
     body = load_skill_content("purchase-guard")
     assert body is not None
     assert "Purchase guard" in body or "purchase-guard" in body.lower()
-    return True
 
 
-def test_load_invalid_name_returns_none() -> bool:
+def test_load_invalid_name_returns_none() -> None:
     assert load_skill_content("Invalid_Name") is None
     assert load_skill_content("does-not-exist") is None
-    return True
 
 
 # ============================================================================
 # Menu + critical block
 # ============================================================================
 
-def test_build_menu_empty() -> bool:
+def test_build_menu_empty() -> None:
     assert build_menu([]) == ""
-    return True
 
 
-def test_build_menu_with_critical_marker() -> bool:
+def test_build_menu_with_critical_marker() -> None:
     skills = [
         _mk_skill("crit-skill", priority="critical", description="critical thing"),
         _mk_skill("normal", priority="high", description="normal thing"),
@@ -348,10 +325,9 @@ def test_build_menu_with_critical_marker() -> bool:
     assert "crit-skill" in menu
     assert "[ALWAYS LOADED]" in menu
     assert "[lazy, priority=high]" in menu
-    return True
 
 
-def test_build_critical_block_only_critical() -> bool:
+def test_build_critical_block_only_critical() -> None:
     """build_critical_block solo lee skills con priority=critical."""
     skills = scan_skills()
     critical_names = [s.name for s in skills if s.priority == "critical"]
@@ -363,21 +339,19 @@ def test_build_critical_block_only_critical() -> bool:
     for n in non_critical:
         # solo el header "## name" debe estar AUSENTE
         assert f"## {n}\n" not in block
-    return True
 
 
 # ============================================================================
 # Opt-out
 # ============================================================================
 
-def test_opt_out_via_env() -> bool:
+def test_opt_out_via_env() -> None:
     os.environ["GEMMA4_SKILLS_OFF"] = "1"
     try:
         assert scan_skills() == []
         assert load_skill_content("purchase-guard") is None
     finally:
         os.environ.pop("GEMMA4_SKILLS_OFF", None)
-    return True
 
 
 # ============================================================================

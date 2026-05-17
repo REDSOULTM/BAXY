@@ -28,29 +28,26 @@ from gemma4_agent.microagents import (
 # fold
 # ============================================================================
 
-def test_fold_lowercases() -> bool:
+def test_fold_lowercases() -> None:
     assert _fold("HOLA") == "hola"
-    return True
 
 
-def test_fold_strips_accents() -> bool:
+def test_fold_strips_accents() -> None:
     assert _fold("qué") == "que"
     assert _fold("Año") == "ano"
     assert _fold("ÑOÑO") == "nono"
-    return True
 
 
-def test_fold_empty() -> bool:
+def test_fold_empty() -> None:
     assert _fold("") == ""
     assert _fold(None) == ""  # type: ignore[arg-type]
-    return True
 
 
 # ============================================================================
 # frontmatter parser
 # ============================================================================
 
-def test_frontmatter_basic() -> bool:
+def test_frontmatter_basic() -> None:
     text = """---
 name: test
 triggers: ["a", "b"]
@@ -65,15 +62,13 @@ body content here"""
     assert meta["triggers"] == ["a", "b"]
     assert meta["priority"] == "high"
     assert body.strip() == "body content here"
-    return True
 
 
-def test_frontmatter_missing_returns_none() -> bool:
+def test_frontmatter_missing_returns_none() -> None:
     assert _parse_frontmatter("just body, no frontmatter") is None
-    return True
 
 
-def test_frontmatter_with_comments_in_yaml() -> bool:
+def test_frontmatter_with_comments_in_yaml() -> None:
     text = """---
 # this is a comment
 name: test
@@ -85,10 +80,9 @@ body"""
     assert parsed is not None
     meta, _ = parsed
     assert meta["name"] == "test"
-    return True
 
 
-def test_frontmatter_quoted_strings() -> bool:
+def test_frontmatter_quoted_strings() -> None:
     text = """---
 name: "quoted"
 triggers: ["a", "b"]
@@ -96,7 +90,6 @@ triggers: ["a", "b"]
 body"""
     parsed = _parse_frontmatter(text)
     assert parsed and parsed[0]["name"] == "quoted"
-    return True
 
 
 # ============================================================================
@@ -109,7 +102,7 @@ def _write_microagent(directory: Path, filename: str, content: str) -> Path:
     return p
 
 
-def test_load_skips_readme() -> bool:
+def test_load_skips_readme() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_microagent(d, "README.md", "# README, no frontmatter")
@@ -122,10 +115,9 @@ body
         loaded = load_microagents(d)
         assert len(loaded) == 1
         assert loaded[0].name == "ok"
-    return True
 
 
-def test_load_skips_without_frontmatter() -> bool:
+def test_load_skips_without_frontmatter() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_microagent(d, "broken.md", "no frontmatter at all")
@@ -138,10 +130,9 @@ body
         loaded = load_microagents(d)
         assert len(loaded) == 1
         assert loaded[0].name == "good"
-    return True
 
 
-def test_load_skips_empty_triggers() -> bool:
+def test_load_skips_empty_triggers() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_microagent(d, "bad.md", """---
@@ -152,10 +143,9 @@ body
 """)
         loaded = load_microagents(d)
         assert len(loaded) == 0
-    return True
 
 
-def test_load_normalizes_invalid_priority_to_medium() -> bool:
+def test_load_normalizes_invalid_priority_to_medium() -> None:
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         _write_microagent(d, "p.md", """---
@@ -168,16 +158,14 @@ body
         loaded = load_microagents(d)
         assert len(loaded) == 1
         assert loaded[0].priority == "medium"
-    return True
 
 
-def test_load_real_dir_has_4_microagents() -> bool:
+def test_load_real_dir_has_4_microagents() -> None:
     """Sanity check: el directorio shipped con el repo tiene 4 microagents."""
     loaded = load_microagents()  # default dir
     names = {m.name for m in loaded}
     expected = {"glossary", "windows-commands", "troubleshoot", "tools-cheat-sheet"}
     assert expected.issubset(names), f"esperado {expected}, encontrado {names}"
-    return True
 
 
 # ============================================================================
@@ -190,35 +178,31 @@ def _make(name: str, triggers: list[str], priority: str = "medium",
                       content=content)
 
 
-def test_select_no_match_returns_empty() -> bool:
+def test_select_no_match_returns_empty() -> None:
     mas = [_make("a", ["foo"]), _make("b", ["bar"])]
     assert select_microagents("hola mundo", mas) == []
-    return True
 
 
-def test_select_matches_substring() -> bool:
+def test_select_matches_substring() -> None:
     mas = [_make("a", ["abre"]), _make("b", ["bar"])]
     matched = select_microagents("abre Steam", mas)
     assert len(matched) == 1
     assert matched[0].name == "a"
-    return True
 
 
-def test_select_case_insensitive() -> bool:
+def test_select_case_insensitive() -> None:
     mas = [_make("a", ["ABRE"])]
     matched = select_microagents("abre steam", mas)
     assert len(matched) == 1
-    return True
 
 
-def test_select_accent_insensitive() -> bool:
+def test_select_accent_insensitive() -> None:
     mas = [_make("a", ["qué"])]
     matched = select_microagents("que paso", mas)
     assert len(matched) == 1
-    return True
 
 
-def test_select_sort_by_priority() -> bool:
+def test_select_sort_by_priority() -> None:
     mas = [
         _make("low_one", ["x"], priority="low"),
         _make("high_one", ["x"], priority="high"),
@@ -226,54 +210,48 @@ def test_select_sort_by_priority() -> bool:
     ]
     matched = select_microagents("hello x world", mas)
     assert [m.name for m in matched] == ["high_one", "med_one", "low_one"]
-    return True
 
 
-def test_select_caps_at_max() -> bool:
+def test_select_caps_at_max() -> None:
     mas = [_make(f"m{i}", ["x"], priority="medium") for i in range(10)]
     matched = select_microagents("x", mas, max_microagents=3)
     assert len(matched) == 3
-    return True
 
 
-def test_select_each_microagent_matches_only_once() -> bool:
+def test_select_each_microagent_matches_only_once() -> None:
     """Un microagent con 5 triggers que TODOS matchean no debe aparecer 5 veces."""
     mas = [_make("once", ["x", "y", "z"])]
     matched = select_microagents("x y z all match", mas)
     assert len(matched) == 1
-    return True
 
 
 # ============================================================================
 # format_microagents_for_prompt
 # ============================================================================
 
-def test_format_empty_returns_empty() -> bool:
+def test_format_empty_returns_empty() -> None:
     assert format_microagents_for_prompt([]) == ""
-    return True
 
 
-def test_format_includes_name_and_content() -> bool:
+def test_format_includes_name_and_content() -> None:
     mas = [_make("test", ["x"], content="body here")]
     out = format_microagents_for_prompt(mas)
     assert "# CONTEXT MICROAGENTS" in out
     assert "## test" in out
     assert "body here" in out
-    return True
 
 
 # ============================================================================
 # build_microagents_section (high-level API)
 # ============================================================================
 
-def test_build_section_empty_text_returns_empty() -> bool:
+def test_build_section_empty_text_returns_empty() -> None:
     section, cached = build_microagents_section("")
     assert section == ""
     assert cached == []
-    return True
 
 
-def test_build_section_caches_match() -> bool:
+def test_build_section_caches_match() -> None:
     """Primer turn: match → cached. Segundo turn sin match → cached preservado."""
     section1, cached1 = build_microagents_section("qué significa mmproj")
     assert len(cached1) >= 1
@@ -284,10 +262,9 @@ def test_build_section_caches_match() -> bool:
     assert cached1_names.issubset(cached2_names), (
         f"cache deberia preservarse; {cached1_names} no esta en {cached2_names}"
     )
-    return True
 
 
-def test_build_section_opt_out() -> bool:
+def test_build_section_opt_out() -> None:
     os.environ["GEMMA4_MICROAGENTS_OFF"] = "1"
     try:
         section, cached = build_microagents_section("qué significa mmproj")
@@ -295,10 +272,9 @@ def test_build_section_opt_out() -> bool:
         assert cached == []
     finally:
         os.environ.pop("GEMMA4_MICROAGENTS_OFF", None)
-    return True
 
 
-def test_build_section_merges_dedupes() -> bool:
+def test_build_section_merges_dedupes() -> None:
     """Si el mismo microagent aparece en cache Y en fresh match, dedupea."""
     section1, cached1 = build_microagents_section("qué significa mmproj")
     name = cached1[0].name if cached1 else "(none)"
@@ -306,28 +282,25 @@ def test_build_section_merges_dedupes() -> bool:
     section2, cached2 = build_microagents_section("qué significa HKCR", cached=cached1)
     final_names = [m.name for m in cached2]
     assert final_names.count(name) == 1, f"dup: {final_names}"
-    return True
 
 
 # ============================================================================
 # Real microagents content sanity
 # ============================================================================
 
-def test_real_glossary_matches_definicional_query() -> bool:
+def test_real_glossary_matches_definicional_query() -> None:
     loaded = load_microagents()
     matched = select_microagents("qué significa mmproj", loaded)
     assert any(m.name == "glossary" for m in matched)
-    return True
 
 
-def test_real_troubleshoot_matches_failure_query() -> bool:
+def test_real_troubleshoot_matches_failure_query() -> None:
     loaded = load_microagents()
     matched = select_microagents("no funciona el audio", loaded)
     assert any(m.name == "troubleshoot" for m in matched)
-    return True
 
 
-def test_real_microagents_no_match_returns_empty() -> bool:
+def test_real_microagents_no_match_returns_empty() -> None:
     loaded = load_microagents()
     matched = select_microagents("abre Steam", loaded)
     # Probable que "abre Steam" no matchee NINGUN microagent (no es definicional,
@@ -335,7 +308,6 @@ def test_real_microagents_no_match_returns_empty() -> bool:
     # Si en el futuro agregamos un microagent con trigger genérico, esto puede
     # fallar — entonces ajustar el trigger, no este test.
     assert matched == [], f"esperado no match para 'abre Steam', got {[m.name for m in matched]}"
-    return True
 
 
 # ============================================================================

@@ -156,9 +156,9 @@ class TestStreamingPlatforms(unittest.TestCase):
         self.assertEqual(result.get("provider"), "disney_web")
         self.assertIn("disneyplus.com", result.get("url", ""))
 
-    def test_hbo_max_opens_home_url(self):
-        # Post 2026-05-15: Max no soporta ?q= search; abrimos hbomax.com home
-        # y el GUI flow usa shortcut "/" para abrir el search.
+    def test_hbo_max_opens_search_url(self):
+        # CDP probe 2026-05-16 verified: play.hbomax.com/search?q= works
+        # post-login. Use it directly (not the marketing home, not /buscar).
         from unittest.mock import patch
         with patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
             result = media_tool(
@@ -167,10 +167,10 @@ class TestStreamingPlatforms(unittest.TestCase):
                 MagicMock(),
             )
         self.assertTrue(result.get("ok"))
-        # URL es el home (hbomax.com), no /search.
         url = result.get("url", "")
         self.assertIn("hbomax.com", url)
-        self.assertNotIn("/search?", url)
+        # max.com redirige a hbomax.com — never use www.max.com/search.
+        self.assertFalse(url.startswith("https://www.max.com/search"))
 
     def test_prime_video_alias_resolves(self):
         from unittest.mock import patch
