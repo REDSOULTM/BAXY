@@ -1647,119 +1647,17 @@ class Gemma4Agent:
         self.history = trimmed
 
 
+    # Sprint 6: post-reply guards' bodies live in :mod:`.agent_guards`.
+    # The wrappers below pull the per-instance state the pure functions
+    # need and persist any mutated streak/last-text back on self.
+
     def _guard_unverified_final(self, content: str, events: list[ToolEvent]) -> str:
-        """Inyecta una nota honesta SOLO cuando la tool genuinamente fallo
-        o no llego al SO. Tools dispatch-by-nature (URL abierta, deeplink
-        enviado, media key sent) NO disparan la nota — son "ok pero no
-        medibles" por design del SO, no un fallo del agent.
-
-        2026-05-15: post-audit de traces revelo 40+ falsos positivos donde
-        este guard inyectaba "Nota: no dejo evidencia suficiente" para
-        operaciones que SI funcionaron (youtube_play, browser.open,
-        media_play_pause, steam.store_page, etc). El user veia "no se pudo
-        verificar" aunque la accion habia ocurrido. Fix: tratar
-        completion_status conocidos como exito.
-        """
-        if not events:
-            return content
-        last = events[-1].result
-        status = str(last.get("status") or "")
-        verified = last.get("verified")
-
-        # OK rotundo (verified=True): no nota.
-        if verified is True:
-            return content
-        # status="dispatched" = dispatch async exitoso a SO/browser.
-        # verified=None = no medible (honest tristate). Ninguno necesita nota.
-        if status == "dispatched":
-            return content
-        # needs_user / needs_dependency = la tool pidio info adicional o
-        # falta una dependencia. El LLM ya construyo el reply explicando
-        # la situacion al user. NO inyectar la nota — duplicaria mensaje.
-        if status in {"needs_user", "needs_dependency", "needs_permission",
-                      "needs_confirmation", "needs_verification_async"}:
-            return content
-        if verified is None and status not in {"attempted", "needs_verification", "failed"}:
-            return content
-        if verified is not False and status not in {"attempted", "needs_verification", "failed"}:
-            return content
-
-        # PRE-CHECK 1: completion_status conocido como dispatch async exitoso.
-        # Esto cubre tools antiguas que aun no reportan status="dispatched".
-        # NOTE: this used to be a locally-defined set duplicated from tools.py;
-        # imported from there now so both layers always agree.
-        completion = str(last.get("completion_status") or "").casefold()
-        from .tools import _DISPATCH_OK_COMPLETIONS
-        if completion in _DISPATCH_OK_COMPLETIONS:
-            return content
-
-        # PRE-CHECK 2: si la tool especifica una URL o deeplink en evidence
-        # y opened=true, es dispatch exitoso a un endpoint conocido.
-        if last.get("opened") is True and (last.get("url") or last.get("deeplink") or last.get("uri")):
-            return content
-
-        # PRE-CHECK 3: status="failed" pero ok=true es inconsistente — emitir
-        # nota informativa solo si la tool genuinamente fallo (ok=false ya fue
-        # manejado upstream por el flujo de error normal).
-        if status == "failed" and not last.get("ok"):
-            return content  # ok=False ya tiene su propia logica
-
-        low = content.casefold()
-        already_honest = any(
-            token in low
-            for token in ("intent", "verifi", "no pude", "no se pudo", "error", "fall")
-        )
-        if already_honest:
-            return content
-        evidence = last.get("evidence") or last.get("completion_status") or status or "sin evidencia"
-        note = (
-            "\n\nNota: la ultima tool no dejo evidencia suficiente de finalizacion "
-            f"(status={status or 'desconocido'}, verified={verified}, evidence={evidence})."
-        )
-        return content.rstrip() + note
+        from .agent_guards import guard_unverified_final
+        return guard_unverified_final(content, events)
 
     def _guard_phrase_confirm(self, content: str) -> str:
-        """If phrase-triggered routines fired but the assistant reply does not
-        acknowledge them, prepend a brief confirmation so the user is never
-        left wondering whether the saved action ran.
-
-        Heuristic: a reply is considered "acknowledging" if any of the labels
-        or phrases of the fires appears in the content (folded), or if the
-        reply already contains common ack tokens ('hecho', 'listo', 'done',
-        'ejecut', 'ya').
-        """
-        if not self._phrase_fires:
-            return content
-        folded = _fold_match(content)
-        ack_tokens = ("hecho", "listo", "done", "ejecut", "completed", "fini", " ya ")
-        already_ack = any(tok in folded for tok in ack_tokens)
-        mentions_any = False
-        for fire in self._phrase_fires:
-            label = _fold_match(str(fire.get("label") or ""))
-            phrase = _fold_match(str(fire.get("phrase") or ""))
-            if (label and label in folded) or (phrase and phrase in folded):
-                mentions_any = True
-                break
-        if already_ack or mentions_any:
-            return content
-        # Build a short, neutral prefix listing what fired.
-        summaries: list[str] = []
-        for fire in self._phrase_fires:
-            label = fire.get("label") or "rutina"
-            results = fire.get("results") or []
-            ok = sum(1 for r in results if r.get("ok"))
-            total = len(results)
-            timed_out = sum(1 for r in results if r.get("timed_out"))
-            suffix = ""
-            if timed_out:
-                suffix = f" ({timed_out} con timeout)"
-            elif ok < total:
-                suffix = f" ({total - ok} con error)"
-            summaries.append(f"{label} {ok}/{total} pasos{suffix}")
-        prefix = "Ejecute tu rutina: " + "; ".join(summaries) + ".\n\n"
-        self.trace.event(self.trace.new_turn_id(), "phrase_confirm_injected",
-                         fires=len(self._phrase_fires))
-        return prefix + content
+        from .agent_guards import guard_phrase_confirm
+        return guard_phrase_confirm(content, phrase_fires=self._phrase_fires, trace=self.trace)
 
     def _build_user_facing_fallback(
         self,
@@ -1769,140 +1667,42 @@ class Gemma4Agent:
         trace_label: str,
         missing: str = "",
     ) -> str:
-        """Pick a fallback string that respects the user's language.
-
-        Also tracks consecutive-fallback streaks per identical user text and
-        upgrades the message to "retry" with available hints on the 2nd hit
-        so the user is not stuck against the same wall twice.
-        """
-        from .grounding_gate import detect_reply_language, format_fallback
-        lang_hint = detect_reply_language(rejected_reply)
-        current_user_text = getattr(self, "_current_user_text", "") or ""
-        last_text = getattr(self, "_last_fallback_user_text", "")
-        streak = getattr(self, "_fallback_streak", 0)
-        if last_text and last_text == current_user_text and current_user_text:
-            streak += 1
-        else:
-            streak = 1
-        self._fallback_streak = streak
-        self._last_fallback_user_text = current_user_text
-        # Upgrade to retry-with-hints on the 2nd consecutive hit for the same
-        # phrase. Hints come from the most recent router subset so they are
-        # actually meaningful to the user.
-        effective_reason = reason
-        hints = ""
-        if streak >= 2:
-            effective_reason = "retry"
-            subset = getattr(self, "_last_router_subset", []) or []
-            top = [n for n in subset if n != "session"][:3]
-            hints = ", ".join(top) if top else ""
-        out = format_fallback(
-            reason=effective_reason,
-            reply_lang_hint=lang_hint,
+        from .agent_guards import build_user_facing_fallback
+        out, new_streak, new_last = build_user_facing_fallback(
+            reason=reason,
             rejected_reply=rejected_reply,
+            trace_label=trace_label,
             missing=missing,
-            hints=hints,
+            current_user_text=getattr(self, "_current_user_text", "") or "",
+            last_fallback_user_text=getattr(self, "_last_fallback_user_text", ""),
+            fallback_streak=getattr(self, "_fallback_streak", 0),
+            last_router_subset=getattr(self, "_last_router_subset", []) or [],
+            trace=self.trace,
         )
-        try:
-            self.trace.event(
-                self.trace.new_turn_id(), "fallback_emitted",
-                label=trace_label, reason=effective_reason,
-                streak=streak, lang=lang_hint,
-            )
-        except Exception:
-            pass
+        self._fallback_streak = new_streak
+        self._last_fallback_user_text = new_last
         return out
 
     def _guard_promise_without_action(
         self, content: str, events: list[ToolEvent],
     ) -> str:
-        """Detect 'promise without do' replies: Gemma says 'buscaré X' /
-        'te proporcionaré Y' but tool_events is empty (no tool ran this
-        turn). The user is left waiting for an action that never happens.
-
-        Also detects false confirmations ('Hecho: te agendé X') that claim
-        a tool ran when tool_events is empty — these are systematic lies.
-
-        Strategy: replace the empty promise with a short honest fallback
-        that invites the user to retry. The next turn will hit the
-        inherited-tools path and actually execute. Logged so we can track
-        how often this fires.
-        """
-        if events:
-            # Tool actually ran — promise + result is fine (real follow-up).
-            return content
-        if not content:
-            return content
-        # Phrase-triggered routines (pre-LLM) DO execute real actions but
-        # don't show up in `events` (events is LLM tool_calls only). If a
-        # routine fired this turn, a "Listo, ..." reply is LEGITIMATE
-        # confirmation of that pre-LLM work — don't flag it.
-        if getattr(self, "_phrase_fires", None):
-            return content
-        low = content.lower()
-        # False-confirmation patterns: reply CLAIMS an action was done but
-        # tool_events is empty. These start the reply (after stripping
-        # leading whitespace), so we check the prefix.
-        false_confirmation_patterns = (
-            "hecho:", "hecho,", "listo,", "listo:",
-            "ejecuté", "ejecute", "registré", "registre",
-            "agendé", "agende", "envié", "envie", "mandé", "mande",
+        from .agent_guards import guard_promise_without_action
+        out, new_streak, new_last = guard_promise_without_action(
+            content, events,
+            phrase_fires=getattr(self, "_phrase_fires", None),
+            trace=self.trace,
+            current_user_text=getattr(self, "_current_user_text", "") or "",
+            last_fallback_user_text=getattr(self, "_last_fallback_user_text", ""),
+            fallback_streak=getattr(self, "_fallback_streak", 0),
+            last_router_subset=getattr(self, "_last_router_subset", []) or [],
         )
-        stripped_low = low.lstrip()
-        confirm_match = next(
-            (p for p in false_confirmation_patterns if stripped_low.startswith(p)),
-            None,
-        )
-        if confirm_match:
-            self.trace.event(
-                self.trace.new_turn_id(), "false_confirmation_caught",
-                phrase=confirm_match, original=content[:160],
-            )
-            return self._build_user_facing_fallback(
-                reason="generic",
-                rejected_reply=content,
-                trace_label="false_confirmation_caught",
-            )
-        promise_patterns = (
-            "buscare", "buscaré", "voy a buscar", "voy a investigar",
-            "voy a consultar", "voy a revisar", "voy a chequear",
-            "te proporcionare", "te proporcionaré", "te dire", "te diré",
-            "te respondere", "te responderé", "te informare", "te informaré",
-            "te traere", "te traeré", "te dare", "te daré la informacion",
-            "permiteme buscar", "permíteme buscar",
-            "dame un momento", "un momento por favor",
-            "te aviso", "te confirmo", "te paso", "te mando", "te muestro",
-            "lo reviso", "lo verifico", "déjame ver", "dejame ver",
-            "ahora te traigo", "ya te digo", "te explico", "ya mismo",
-            "i'll search", "i'll look", "let me search", "let me check",
-            "i will find", "i'll find", "i'll get",
-        )
-        matched = next((p for p in promise_patterns if p in low), None)
-        if not matched:
-            return content
-        # Replace with honest short reply that doesn't strand the user.
-        # The next user turn will inherit prev tools (see continuation
-        # path) so the agent will actually do the thing.
-        self.trace.event(
-            self.trace.new_turn_id(), "promise_without_action_caught",
-            phrase=matched, original=content[:160],
-        )
-        replacement = self._build_user_facing_fallback(
-            reason="retry",
-            rejected_reply=content,
-            trace_label="promise_without_action_replacement",
-        )
-        if len(content.strip()) <= 100:
-            return replacement
-        # Reply tenia mas contenido — strippear la oración con la promesa.
-        # Split en sentence boundaries y descartar la que contiene el match.
-        import re as _re_promise
-        sentences = _re_promise.split(r"(?<=[.!?])\s+", content)
-        kept = [s for s in sentences if matched not in s.lower()]
-        stripped_content = " ".join(kept).strip()
-        if len(stripped_content) < 20:
-            return replacement
-        return stripped_content
+        # Only persist the streak/last-text when the guard actually rebuilt
+        # a fallback (i.e. when the content changed). Otherwise the streak
+        # would tick on every harmless call.
+        if out != content:
+            self._fallback_streak = new_streak
+            self._last_fallback_user_text = new_last
+        return out
 
     def _guard_grounded_action_claim(
         self,
@@ -1910,64 +1710,28 @@ class Gemma4Agent:
         events: list[ToolEvent],
         turn_id: str,
     ) -> str:
-        """Bug 3 grounding gate.
-
-        Inline layer: morphological detection of 1st-person past-tense action
-        claims when no tool ran this turn. Honest fallback if flagged.
-
-        Async layer: schedule NLI grounding check. The verdict feeds the
-        lesson store (write happens in the callback) so the next time the
-        RAG retrieves a similar past turn it can warn the LLM.
-        """
-        if not content:
-            return content
-        # Phrase-triggered routines (pre-LLM) DO execute real actions but
-        # don't appear in `events`. Skip the inline gate when a routine
-        # fired this turn — its "Listo, ..." reply is legitimate.
-        if getattr(self, "_phrase_fires", None):
-            return content
-        from .grounding_gate import detect_action_claim_without_evidence
-
-        # Inline morphology check. The async NLI-based grounding layer was
-        # removed in Sprint 3a along with the rest of the NLI stack.
-        verdict = detect_action_claim_without_evidence(content, events)
-        new_content = content
-        if verdict.should_replace:
-            self.trace.event(
-                turn_id, "grounded_action_claim_caught",
-                claim_word=verdict.claim_word,
-                reason=verdict.reason,
-                original=content[:160],
-            )
-            # Use the language-aware fallback rather than the hardcoded ES
-            # string the gate returns by default.
-            new_content = self._build_user_facing_fallback(
-                reason="generic",
-                rejected_reply=content,
-                trace_label="grounded_action_claim_caught",
-            )
-        return new_content
+        from .agent_guards import guard_grounded_action_claim
+        out, new_streak, new_last = guard_grounded_action_claim(
+            content, events, turn_id,
+            phrase_fires=getattr(self, "_phrase_fires", None),
+            trace=self.trace,
+            current_user_text=getattr(self, "_current_user_text", "") or "",
+            last_fallback_user_text=getattr(self, "_last_fallback_user_text", ""),
+            fallback_streak=getattr(self, "_fallback_streak", 0),
+            last_router_subset=getattr(self, "_last_router_subset", []) or [],
+        )
+        if out != content:
+            self._fallback_streak = new_streak
+            self._last_fallback_user_text = new_last
+        return out
 
     def _guard_plan_status(self, content: str) -> str:
-        """Surface explicit-plan failures to the user only when the reply is
-        suspiciously empty (<30 chars). Plan being SKIPPED is silent because
-        that's the LLM rejecting the planning step for good reasons.
-
-        Failed/error states matter though: if the planner LLM call timed out
-        or returned malformed output AND the agent's main reply is empty,
-        the user would otherwise get a confusing one-liner. We tack on a
-        single-sentence note so they know something was attempted.
-        """
-        status = self._explicit_plan_status or {}
-        state = str(status.get("state") or "")
-        if state not in {"failed", "error"}:
-            return content
-        if len(content.strip()) >= 30:
-            return content
-        err = str(status.get("error") or "unknown error")
-        note = f"\n\nNota: intente generar un plan explicito para tu pedido pero fallo ({err[:120]}). Si quieres, repiteme la peticion o pasame el detalle paso a paso."
-        self.trace.event(self.trace.new_turn_id(), "plan_status_surfaced", state=state)
-        return content.rstrip() + note
+        from .agent_guards import guard_plan_status
+        return guard_plan_status(
+            content,
+            explicit_plan_status=getattr(self, "_explicit_plan_status", None),
+            trace=self.trace,
+        )
 
 
 LIVE_TEXT_LIMIT = 10000
