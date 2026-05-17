@@ -1009,3 +1009,137 @@
       - "ping google"
       - "what's my ip"
       - "change dns to cloudflare"
+
+- name: developer
+  purpose: |
+    Git operations, code editor invocation, build/run/test
+    commands for common stacks (node, python, rust, go), language
+    server diagnostics. Use for "hace commit", "abrime esto en
+    vscode", "corre los tests".
+  domain: dev
+  example_queries:
+    es:
+      - "hace commit con mensaje fix bug login"
+      - "abrime este proyecto en vscode"
+      - "corre los tests del proyecto"
+      - "que cambios tengo sin commitear"
+      - "creame una rama nueva llamada feature/auth"
+      - "hace push al remoto"
+      - "instalame las dependencias del package.json"
+    en:
+      - "git commit with message fix login bug"
+      - "open this project in vscode"
+      - "run the project tests"
+      - "what changes do I have uncommitted"
+      - "create a new branch called feature/auth"
+      - "push to remote"
+
+- name: terminal
+  purpose: |
+    Spawn PowerShell / cmd / WSL bash, execute shell commands,
+    capture output, manage open terminals. Lower-level than
+    developer (which is git/build-aware). Use for "corre el
+    comando X", "abri una terminal en Y".
+  domain: dev
+  example_queries:
+    es:
+      - "abrime una powershell en la carpeta del proyecto"
+      - "corre el comando dir"
+      - "ejecuta este script bash en wsl"
+      - "mostrame las terminales abiertas"
+      - "abrime cmd como administrador"
+      - "corre ipconfig y mostrame el output"
+    en:
+      - "open a powershell in the project folder"
+      - "run the dir command"
+      - "execute this bash script in wsl"
+      - "show open terminals"
+      - "open cmd as admin"
+      - "run ipconfig and show the output"
+
+- name: registry
+  purpose: |
+    Windows registry read/write/export — query keys under HKLM/
+    HKCU, change values, export branches to .reg files. Use with
+    care; this is for advanced configuration. Use for "cambiame
+    la clave X del registro".
+  domain: dev
+  example_queries:
+    es:
+      - "leeme el valor de hkcu software microsoft windows"
+      - "cambia esta clave del registro a 1"
+      - "exportame esta rama del registro a un .reg"
+      - "buscame en el registro la clave de autoinicio"
+      - "borrame esta entrada del registro"
+      - "abrime el editor de registro"
+    en:
+      - "read the value at hkcu software microsoft windows"
+      - "change this registry key to 1"
+      - "export this registry branch to a .reg"
+      - "find the startup key in the registry"
+      - "delete this registry entry"
+
+- name: env
+  purpose: |
+    Environment variables — read PATH, set system or user vars,
+    add directories to PATH, manage .env files. Use for "agrega
+    X al PATH", "que vale la variable Y", "ponete la api key".
+  domain: dev
+  example_queries:
+    es:
+      - 'agrega C:\herramientas al PATH'
+      - "que vale la variable USERNAME"
+      - "ponete la variable OPENAI_API_KEY con este valor"
+      - "mostrame todas las variables de entorno"
+      - "leele las variables del archivo .env"
+      - "borra la variable temporal X"
+    en:
+      - 'add C:\tools to PATH'
+      - "what's the value of USERNAME"
+      - "set OPENAI_API_KEY to this value"
+      - "show all environment variables"
+      - "read variables from the .env file"
+
+- name: input
+  purpose: |
+    Speech-to-text dictation tools, voice typing into focused
+    field, keyboard remapping, IME switching. Distinct from gui
+    (raw keystrokes) — this is for natural dictation flow.
+  domain: dev
+  example_queries:
+    es:
+      - "activame el dictado por voz"
+      - "tipea esto por mi en el word"
+      - "cambia al teclado en ingles"
+      - "remapea la tecla capslock a ctrl"
+      - "activa el reconocimiento de voz de windows"
+      - "tipea lo que te dicte ahora"
+    en:
+      - "turn on voice dictation"
+      - "type this for me in word"
+      - "switch keyboard to english"
+      - "remap capslock to ctrl"
+      - "turn on windows speech recognition"
+
+- name: maintenance
+  purpose: |
+    Disk cleanup, defrag, SFC/DISM repair, Windows update,
+    driver updates, temp file cleanup. Use for "limpia la pc",
+    "actualiza windows", "revisa el disco".
+  domain: dev
+  example_queries:
+    es:
+      - "limpia los archivos temporales"
+      - "corre el liberador de espacio"
+      - "actualiza windows"
+      - "chequea si hay drivers nuevos"
+      - "corre sfc /scannow para reparar archivos del sistema"
+      - "defragmenta el disco c"
+      - "vacia la papelera"
+    en:
+      - "clean up temp files"
+      - "run disk cleanup"
+      - "update windows"
+      - "check for driver updates"
+      - "run sfc /scannow to repair system files"
+      - "empty the recycle bin"
