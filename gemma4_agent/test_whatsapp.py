@@ -530,12 +530,14 @@ class TestSpotifyAutoPlay(unittest.TestCase):
     def tearDown(self):
         self._sleep.stop()
 
-    def _mock_executor_spotify_ok(self):
+    def _mock_executor_spotify_ok(self, post_play_title: str = "Spotify Premium"):
         def _exec(name, args):
+            if name == "window" and args.get("action") == "list":
+                return {"windows": []}  # Spotify NOT already open by default
             if name == "window" and args.get("action") == "focus":
                 return {"ok": True}
             if name == "window" and args.get("action") == "active":
-                return {"ok": True, "active": {"title": "Spotify Premium"}}
+                return {"ok": True, "active": {"title": post_play_title}}
             if name == "gui" and args.get("action") == "keypress":
                 return {"ok": True}
             return {"ok": False}
@@ -543,7 +545,12 @@ class TestSpotifyAutoPlay(unittest.TestCase):
 
     def test_spotify_auto_plays_first_result(self):
         from .domain_tools import media_tool
-        executor = self._mock_executor_spotify_ok()
+        # 2026-05-17: con el post-play title verify, el mock devuelve un
+        # title que coincide con la query — sino el resultado es
+        # media_playing_wrong_track (que tambien es valido pero distinto).
+        executor = self._mock_executor_spotify_ok(
+            post_play_title="Spotify - Beautiful Things • Benson Boone",
+        )
         with patch("gemma4_agent.domain_tools._find_streaming_app",
                    return_value={"kind": "exe", "launch_target": "C:/spotify.exe"}), \
              patch("gemma4_agent.domain_tools.subprocess.Popen"):
@@ -553,7 +560,7 @@ class TestSpotifyAutoPlay(unittest.TestCase):
             )
         self.assertTrue(r["ok"])
         self.assertTrue(r["played"], f"expected played=True, got {r}")
-        self.assertEqual(r["completion_status"], "media_playing")
+        self.assertEqual(r["completion_status"], "media_playing_match")
         # Executor llamado al menos 3 veces: focus, active, keypress.
         self.assertGreaterEqual(executor.call_count, 3)
 
