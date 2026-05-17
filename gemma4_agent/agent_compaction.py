@@ -214,21 +214,45 @@ def compact_tool_result(name: str, args: dict[str, Any], result: dict[str, Any])
 # rule in core.md (EVIDENCE CITATION) and we want them to drift together.
 _LOCATOR_KEYS: tuple[str, ...] = ("path", "url", "selected_title", "image_path", "deeplink")
 
+# Compact "tabular evidence" pre-pass — hotfix D 2026-05-17.
+# The scalar-locator breadcrumb above (path/url/...) survives turns but
+# small tabular results (e.g. disks list from system.disk) do not. When
+# we see such tables in a tool_result, summarize each row as
+# "k=v k=v ..." with a small char budget per row. Bug repro:
+#   user "cuánto espacio en C" -> tool returned disks list (C,D,E,F,...)
+#   reply "74 GB en C" — only C was verbalized
+#   user "y en F?" -> next turn had no F data -> LLM hallucinated 350 GB.
+_TABULAR_KEYS: tuple[str, ...] = (
+    "disks", "processes", "devices", "results", "items", "windows", "tabs",
+)
+_TABULAR_MAX_ROWS = 20
+_TABULAR_MAX_ROW_CHARS = 200
+_TABULAR_MAX_TOTAL_CHARS = 1200
+# Overall cap on the breadcrumb suffix — must fit locators + at most
+# one tabular blob comfortably. Raised from 600 -> 1800 in hotfix D.
+_BREADCRUMB_MAX_CHARS = 1800
+
 
 def stitch_breadcrumbs(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Stitch locator-key breadcrumbs onto assistant replies pre-drop.
 
-    Hotfix C 2026-05-17. Before `_compact_completed_history` drops the
-    role="tool" messages, harvest any `path` / `url` / `selected_title`
-    / `image_path` / `deeplink` values from their JSON content and
-    append them as ``\\n[breadcrumb: key=value ...]`` to the assistant
-    reply of the same turn. The reply is the only thing that survives
-    the drop, so without this the path "vanishes" between turns and the
-    LLM literally cannot answer "where did you save X".
+    Hotfix C 2026-05-17 (scalar locators) + hotfix D 2026-05-17 (tabular
+    evidence). Before `_compact_completed_history` drops the role="tool"
+    messages, harvest:
+      - scalar locator keys (`path`, `url`, `selected_title`,
+        `image_path`, `deeplink`),
+      - tabular keys (`disks`, `processes`, `devices`, `results`,
+        `items`, `windows`, `tabs`) — each rendered as a compact
+        ``k=v k=v ; ...`` blob with bounded per-row and total chars.
 
-    Idempotent: if the assistant content already contains the locator
-    verbatim, nothing is added. Bounded: breadcrumb suffix capped at
-    ~600 chars so it can't blow up the prompt.
+    The harvested values are appended as a single
+    ``\\n[breadcrumb: key=value ...]`` suffix to the assistant reply of
+    the same turn. The reply is the only thing that survives the drop,
+    so without this the data "vanishes" between turns.
+
+    Idempotent: if the assistant content already contains a locator
+    value verbatim, that value is skipped. Bounded: suffix capped at
+    ~1800 chars so it can't blow up the prompt.
 
     Returns a new history list (does NOT mutate the input dict
     structure aside from the assistant ``content`` field of the turn
@@ -250,10 +274,35 @@ def stitch_breadcrumbs(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
             elif isinstance(raw, dict):
                 parsed = raw
             if isinstance(parsed, dict):
+                # Scalar locator harvest.
                 for k in _LOCATOR_KEYS:
                     v = parsed.get(k)
                     if isinstance(v, str) and v.strip() and len(v) <= 400:
                         pending.append((k, v.strip()))
+                # Tabular harvest (hotfix D). Bound each row, each table,
+                # and the total — small tables only.
+                for tk in _TABULAR_KEYS:
+                    rows = parsed.get(tk)
+                    if not isinstance(rows, list) or not rows:
+                        continue
+                    summary_rows: list[str] = []
+                    for row in rows[:_TABULAR_MAX_ROWS]:
+                        if not isinstance(row, dict):
+                            continue
+                        parts: list[str] = []
+                        for k, v in list(row.items())[:6]:
+                            if isinstance(v, (str, int, float, bool)):
+                                parts.append(f"{k}={v}")
+                        rendered = " ".join(parts)
+                        if len(rendered) > _TABULAR_MAX_ROW_CHARS:
+                            rendered = rendered[:_TABULAR_MAX_ROW_CHARS] + "..."
+                        if rendered:
+                            summary_rows.append(rendered)
+                    if summary_rows:
+                        joined = " ; ".join(summary_rows)
+                        if len(joined) > _TABULAR_MAX_TOTAL_CHARS:
+                            joined = joined[:_TABULAR_MAX_TOTAL_CHARS] + "..."
+                        pending.append((tk, joined))
             continue
         if role == "assistant" and not msg.get("tool_calls") and pending:
             existing = msg.get("content")
@@ -268,8 +317,8 @@ def stitch_breadcrumbs(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
             if missing:
                 trail = " ".join(f"{k}={v}" for k, v in missing)
                 breadcrumb = f"\n[breadcrumb: {trail}]"
-                if len(breadcrumb) > 600:
-                    breadcrumb = breadcrumb[:600] + "...]"
+                if len(breadcrumb) > _BREADCRUMB_MAX_CHARS:
+                    breadcrumb = breadcrumb[:_BREADCRUMB_MAX_CHARS] + "...]"
                 new_msg = dict(msg)
                 new_msg["content"] = existing_text + breadcrumb
                 out[idx] = new_msg
