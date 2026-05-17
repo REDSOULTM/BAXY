@@ -108,8 +108,38 @@ def print_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _ensure_router_v2_model() -> None:
+    """Idempotent: download e5-small ONNX + tokenizer + smalltalk
+    centroid on first launch. ~113 MB int8 model.
+
+    Hotfix E 2026-05-17. The previous path-to-production required
+    the user to run scripts/bootstrap_e5_small.py manually. That
+    step is now automated — if MODEL_PATH doesn't exist, the
+    launcher invokes the same bootstrap script before starting.
+    Already-installed models are detected by checking MODEL_PATH;
+    re-runs print 'already complete' and return in <1s.
+
+    Errors during bootstrap log a warning but do NOT block the
+    launcher — v1 is still a valid fallback path.
+    """
+    try:
+        from .router_v2 import MODEL_PATH
+        if MODEL_PATH.exists():
+            return
+        print(
+            "First-run router_v2 bootstrap: downloading e5-small "
+            "(~113 MB, multilingual int8 ONNX) to ~/.gemma4/models/e5-small/. "
+            "This happens once."
+        )
+        from scripts.bootstrap_e5_small import main as bootstrap_main
+        bootstrap_main()
+    except Exception as exc:
+        print(f"router_v2 bootstrap failed ({exc}); falling back to v1 routing.")
+
+
 def start_server(args: argparse.Namespace, *, wait: bool = True) -> int:
     """Arranca llama-server usando el LlamaServerManager + perfil activo."""
+    _ensure_router_v2_model()
     config = config_with_args(args)
 
     # Aplicar perfil activo al entorno antes de construir el comando
