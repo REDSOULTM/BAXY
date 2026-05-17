@@ -174,11 +174,13 @@ class TestLanguageAwareFallback(unittest.TestCase):
     def test_detects_english(self):
         self.assertEqual(detect_reply_language("Done, I opened YouTube for you"), "en")
 
-    def test_detects_italian(self):
-        self.assertEqual(detect_reply_language("Fatto, ho aperto YouTube"), "it")
-
-    def test_detects_german(self):
-        self.assertEqual(detect_reply_language("Fertig, ich habe YouTube geöffnet"), "de")
+    def test_unknown_language_falls_back_to_spanish(self):
+        # Sprint 3a: _LANG_HINTS was trimmed to es+en (PT/IT/DE never
+        # appeared in real traces). Inputs in other languages now fall
+        # through to the ES default, which is the safe choice for the
+        # Spanish-by-default agent.
+        self.assertEqual(detect_reply_language("Fatto, ho aperto YouTube"), "es")
+        self.assertEqual(detect_reply_language("Fertig, ich habe YouTube geöffnet"), "es")
 
     def test_format_in_english(self):
         out = format_fallback(reason="generic", reply_lang_hint="en", rejected_reply="")

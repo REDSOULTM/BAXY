@@ -138,45 +138,16 @@ _FALLBACKS_BY_LANG: dict[str, dict[str, str]] = {
         "partial":  "I'm missing info to complete this: {missing}. Can you tell me?",
         "retry":    "I'm not catching that. Try rephrasing — close options: {hints}.",
     },
-    "it": {
-        "generic":  "Non sono riuscito a completare l'azione. Ripetiamo?",
-        "no_tool":  "Non ho uno strumento per questo. Proviamo qualcos'altro?",
-        "partial":  "Mi mancano info per completare: {missing}. Me le passi?",
-        "retry":    "Non ho colto. Prova a riformulare — opzioni vicine: {hints}.",
-    },
-    "pt": {
-        "generic":  "Não consegui completar a ação. Repetimos?",
-        "no_tool":  "Não tenho ferramenta para isso. Tentamos outra coisa?",
-        "partial":  "Faltam dados para completar: {missing}. Me passa?",
-        "retry":    "Não peguei bem o pedido. Tenta reformular — opções próximas: {hints}.",
-    },
-    "fr": {
-        "generic":  "Je n'ai pas pu terminer l'action. On recommence ?",
-        "no_tool":  "Je n'ai pas d'outil pour ça. On essaie autre chose ?",
-        "partial":  "Il me manque des infos pour finir : {missing}. Tu me les donnes ?",
-        "retry":    "Je ne saisis pas. Reformule — options proches : {hints}.",
-    },
-    "de": {
-        "generic":  "Ich konnte die Aktion nicht abschließen. Nochmal?",
-        "no_tool":  "Ich habe dafür kein Tool. Sollen wir etwas anderes versuchen?",
-        "partial":  "Mir fehlen Infos: {missing}. Kannst du sie mir geben?",
-        "retry":    "Ich verstehe nicht. Formuliere es um — nahe Optionen: {hints}.",
-    },
 }
 
 
+# Sprint 3a: tables trimmed from 6 langs to es+en. PT/FR/IT/DE branches
+# were never observed in 5 days of traces and the CORE_PROMPT commits
+# the agent to Spanish output by default.
 _LANG_HINTS: tuple[tuple[str, tuple[str, ...]], ...] = (
     # (lang_code, list of bigram/word hints — accent-insensitive, lower)
     ("en", ("the ", " i ", " you ", "i'll", "i've", "i couldn", "let me",
             "done", "got it", "okay", "all right")),
-    ("it", (" il ", " la ", " ho ", " ti ", " ci ", "ecco", "fatto",
-            "riprodu", "chiud", "ferma")),
-    ("pt", (" o ", " a ", " que ", " com ", " esta ", "feito", "pronto",
-            "abri", "fechei")),
-    ("fr", (" le ", " la ", " je ", " tu ", " vous ", " et ", "fait",
-            "voici", "j'ai")),
-    ("de", (" der ", " die ", " das ", " ich ", " du ", "fertig",
-            "geöffnet", "geschlossen")),
     # ES is the default; only listed for completeness.
     ("es", (" el ", " la ", " ya ", "listo", "abrí", "cerré", "puse",
             "ejecut", "hecho")),
