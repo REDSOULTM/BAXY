@@ -44,25 +44,9 @@ def _err(message: str, **kwargs: Any) -> dict[str, Any]:
     return {"ok": False, "error": message, **kwargs}
 
 
-_SENSITIVE_KEY_RX = re.compile(r"(password|token|key|secret|api[_-]?key|auth)", re.IGNORECASE)
-
-
-def _redact_credentials(value: Any, depth: int = 0) -> Any:
-    """CC-105: paralelo a tools._redact_sensitive. Redacta keys sensibles
-    recursivamente hasta profundidad 6."""
-    if depth > 6:
-        return value
-    if isinstance(value, dict):
-        out: dict[str, Any] = {}
-        for k, v in value.items():
-            if isinstance(k, str) and _SENSITIVE_KEY_RX.search(k):
-                out[k] = "***REDACTED***" if v not in (None, "") else v
-            else:
-                out[k] = _redact_credentials(v, depth + 1)
-        return out
-    if isinstance(value, list):
-        return [_redact_credentials(v, depth + 1) for v in value]
-    return value
+# CC-105: unified in Sprint 4 — the body now lives in :mod:`._shared`
+# (was duplicated against tools._redact_sensitive, see audit §2.2).
+from ._shared import redact_sensitive as _redact_credentials  # noqa: E402
 
 
 def _hard_gate(

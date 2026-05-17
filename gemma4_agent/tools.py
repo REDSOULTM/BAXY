@@ -170,30 +170,9 @@ _PRE_VALIDATORS: dict[str, Any] = {
 }
 
 
-_SENSITIVE_KEY_RX = re.compile(r"(password|token|key|secret|api[_-]?key|auth)", re.IGNORECASE)
-
-
-def _redact_sensitive(value: Any, depth: int = 0) -> Any:
-    """CC-105: redacta cualquier key que matchee passwords/tokens/secrets.
-
-    Recursivo (capado en 6 niveles) para dicts anidados (p.ej. args.payload).
-    Listas también se inspeccionan. Las strings sensibles se reemplazan por
-    '***REDACTED***'.
-    """
-    if depth > 6:
-        return value
-    if isinstance(value, dict):
-        out: dict[str, Any] = {}
-        for k, v in value.items():
-            if isinstance(k, str) and _SENSITIVE_KEY_RX.search(k):
-                # Mantenemos info de presencia pero ocultamos el contenido.
-                out[k] = "***REDACTED***" if v not in (None, "") else v
-            else:
-                out[k] = _redact_sensitive(v, depth + 1)
-        return out
-    if isinstance(value, list):
-        return [_redact_sensitive(v, depth + 1) for v in value]
-    return value
+# CC-105: unified in Sprint 4 — the body now lives in :mod:`._shared`
+# (was duplicated against domain_tools._redact_credentials, see audit §2.2).
+from ._shared import redact_sensitive as _redact_sensitive  # noqa: E402
 
 
 # Completion statuses que representan dispatch async exitoso al SO/browser:
