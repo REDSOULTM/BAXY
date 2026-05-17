@@ -703,12 +703,28 @@ class StreamingSTT:
         audio = _preprocess(audio_int16)
 
         # 2. VAD trim. None => rechazo total, no llamar a Whisper.
+        # Hotfix E 2026-05-17: upgrade INFO -> WARNING with structured
+        # fields so silent rejects are greppable in _pre_session/full.log
+        # ('voice_silent_reject reason=...'). Memory:
+        # project_voice_silent_rejects, 2026-05-17.
+        # TODO(2026-05-17 hotfix E): controller.py does not yet have a
+        # trace event for the "stt returned empty string" path. Emitting
+        # it requires plumbing self.trace through VoiceController; deferred
+        # to a follow-up sub-step to keep this hotfix surgical.
         trimmed = self._vad.trim(audio)
         if trimmed is None:
-            logger.info("VAD: no speech detected, rejecting transcription")
+            logger.warning(
+                "voice_silent_reject reason=no_speech orig_duration_s=%.3f",
+                audio.size / float(SAMPLE_RATE),
+            )
             return ""
         if trimmed.size < int(0.3 * SAMPLE_RATE):
-            logger.info("VAD: speech too short (<0.3s), rejecting")
+            logger.warning(
+                "voice_silent_reject reason=too_short "
+                "trimmed_duration_s=%.3f orig_duration_s=%.3f",
+                trimmed.size / float(SAMPLE_RATE),
+                audio.size / float(SAMPLE_RATE),
+            )
             return ""
 
         duration_s = trimmed.size / float(SAMPLE_RATE)
