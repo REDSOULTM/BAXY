@@ -1,0 +1,127 @@
+[
+  {
+    "platform": "netflix",
+    "steps": [
+      "goto:https://www.netflix.com/search?q=Stranger+Things"
+    ],
+    "url_after_search_load": "https://www.netflix.com/search?q=Stranger+Things",
+    "title": "Netflix",
+    "error": "no card selector matched"
+  },
+  {
+    "platform": "disney",
+    "steps": [
+      "goto:https://www.disneyplus.com/es-419/browse/search",
+      "filled:input[type='search']",
+      "clicked_card:a[data-testid='set-item']"
+    ],
+    "url_after_search_load": "https://www.disneyplus.com/es-419/browse/search",
+    "title": "Búsqueda | Disney+",
+    "card_a[data-testid='set-item']": {
+      "count": 28,
+      "first_href": "/es-419/browse/entity-8f8c5cbb-e5ba-4285-9e2c-86abcac9fd50",
+      "first_aria": "Loki Disney+ Original Clasificación: 14+. Estreno: 2021. Género: Superhéroes, Acción y aventura. Selecciona esta opción "
+    },
+    "card_sel_used": "a[data-testid='set-item']",
+    "url_after_card": "https://www.disneyplus.com/es-419/browse/entity-8f8c5cbb-e5ba-4285-9e2c-86abcac9fd50",
+    "title_after_card": "Loki | Disney+",
+    "play_buttons": [
+      {
+        "sel": "[data-testid='playback-action-button']",
+        "count": 1,
+        "aria-label": "VER AHORA",
+        "data-testid": "playback-action-button",
+        "visible": true,
+        "text": "VER AHORA"
+      },
+      {
+        "sel": "[data-testid*='play' i]",
+        "count": 18,
+        "aria-label": "VER AHORA",
+        "data-testid": "playback-action-button",
+        "visible": true,
+        "text": "VER AHORA"
+      }
+    ]
+  },
+  {
+    "platform": "hbo_max",
+    "steps": [
+      "goto:https://play.hbomax.com/search?q=House+of+Dragon",
+      "clicked_card:a[href*='/movie/']"
+    ],
+    "url_after_search_load": "https://play.hbomax.com/search?q=House+of+Dragon",
+    "title": "⁨Buscar: House%20of%20Dragon⁩ • HBO Max",
+    "card_a[href*='/movie/']": {
+      "count": 17,
+      "first_href": "/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+      "first_aria": "⁦⁨⁨Charlie y la Fábrica de Chocolate⁩⁩. ⁨Fila 1 de 5, Columna 1 de 6⁩⁩"
+    },
+    "card_a[href*='/show/']": {
+      "count": 13,
+      "first_href": "/show/17f960d6-89a8-43e2-9a4d-363b44346e39",
+      "first_aria": "⁦⁨⁨Robot Chicken⁩⁩. ⁨Fila 1 de 5, Columna 3 de 6⁩⁩"
+    },
+    "card_sel_used": "a[href*='/movie/']",
+    "url_after_card": "https://play.hbomax.com/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+    "title_after_card": "⁨Charlie and the Chocolate Factory⁩ • HBO Max",
+    "play_buttons": [
+      {
+        "sel": "[data-testid*='play' i]",
+        "count": 2,
+        "aria-label": "",
+        "data-testid": "chatbot-play-wrapper",
+        "visible": false,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "platform": "prime_video",
+    "steps": [
+      "goto:https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The+Boys",
+      "clicked_card:article a[href*='/detail/']"
+    ],
+    "url_after_search_load": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The+Boys",
+    "title": "Prime Video: Buscar",
+    "card_article a[href*='/detail/']": {
+      "count": 62,
+      "first_href": "/detail/0N9BB22P2FZ8UD2BBLNX07RP22/ref=atv_sr_fle_c_sre58108_pvsearchresults_1_1",
+      "first_aria": ""
+    },
+    "card_a[href*='/detail/']": {
+      "count": 62,
+      "first_href": "/detail/0N9BB22P2FZ8UD2BBLNX07RP22/ref=atv_sr_fle_c_sre58108_pvsearchresults_1_1",
+      "first_aria": ""
+    },
+    "card_sel_used": "article a[href*='/detail/']",
+    "url_after_card": "https://www.primevideo.com/detail/0N9BB22P2FZ8UD2BBLNX07RP22/ref=atv_sr_fle_c_sre58108_pvsearchresults_1_1",
+    "title_after_card": "Prime Video: The Boys - Temporada 5",
+    "play_buttons": [
+      {
+        "sel": "[data-testid*='play' i]",
+        "count": 17,
+        "aria-label": "",
+        "data-testid": "draper-player",
+        "visible": true,
+        "text": ""
+      },
+      {
+        "sel": "[data-automation-id*='play' i]",
+        "count": 9,
+        "aria-label": "",
+        "data-testid": "draper-player-controls-unmute",
+        "visible": true,
+        "text": ""
+      },
+      {
+        "sel": "button[aria-label*='Play' i]",
+        "count": 3,
+        "aria-label": "Close Player",
+        "data-testid": "",
+        "visible": false,
+        "text": ""
+      }
+    ]
+  }
+]

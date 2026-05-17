@@ -1,0 +1,331 @@
+[
+  {
+    "platform": "disney",
+    "candidates": [
+      {
+        "title": "",
+        "body_excerpt": "",
+        "url_after_load": "https://www.disneyplus.com/es-419/home",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://www.disneyplus.com/",
+        "label": "root"
+      },
+      {
+        "title": "",
+        "body_excerpt": "",
+        "url_after_load": "https://www.disneyplus.com/es-419/home",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://www.disneyplus.com/home",
+        "label": "home"
+      },
+      {
+        "title": "The page you were looking for cannot be found.",
+        "body_excerpt": "The page you were looking for cannot be found. ⏎ Please go to the Disney+ home page by clicking the button below ⏎ DISNEY+ HOME",
+        "url_after_load": "https://www.disneyplus.com/search",
+        "is_404": true,
+        "classification": "404",
+        "inputs": [],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/search",
+        "label": "search_root"
+      },
+      {
+        "title": "The page you were looking for cannot be found.",
+        "body_excerpt": "The page you were looking for cannot be found. ⏎ Please go to the Disney+ home page by clicking the button below ⏎ DISNEY+ HOME",
+        "url_after_load": "https://www.disneyplus.com/es-419/search",
+        "is_404": true,
+        "classification": "404",
+        "inputs": [],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/es-419/search",
+        "label": "search_es419"
+      },
+      {
+        "title": "The page you were looking for cannot be found.",
+        "body_excerpt": "The page you were looking for cannot be found. ⏎ Please go to the Disney+ home page by clicking the button below ⏎ DISNEY+ HOME",
+        "url_after_load": "https://www.disneyplus.com/search?q=Loki",
+        "is_404": true,
+        "classification": "404",
+        "inputs": [],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/search?q=Loki",
+        "label": "search_q_root"
+      },
+      {
+        "title": "The page you were looking for cannot be found.",
+        "body_excerpt": "The page you were looking for cannot be found. ⏎ Please go to the Disney+ home page by clicking the button below ⏎ DISNEY+ HOME",
+        "url_after_load": "https://www.disneyplus.com/es-419/search?q=Loki",
+        "is_404": true,
+        "classification": "404",
+        "inputs": [],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/es-419/search?q=Loki",
+        "label": "search_q_es419"
+      }
+    ]
+  },
+  {
+    "platform": "netflix",
+    "candidates": [
+      {
+        "title": "Netflix",
+        "body_excerpt": "Netflix ⏎ ¿Quién está viendo ahora? ⏎ Bea ⏎ Clara ⏎ Dario ⏎ Emmanuel ⏎ Elio ⏎ Administrar perfiles",
+        "url_after_load": "https://www.netflix.com/browse",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [
+          {
+            "sel": "input[placeholder*='buscar' i]",
+            "count": 1
+          }
+        ],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://www.netflix.com/browse",
+        "label": "browse"
+      },
+      {
+        "title": "Netflix",
+        "body_excerpt": "Netflix ⏎ ¿Quién está viendo ahora? ⏎ Bea ⏎ Clara ⏎ Dario ⏎ Emmanuel ⏎ Elio ⏎ Administrar perfiles",
+        "url_after_load": "https://www.netflix.com/search?q=Stranger+Things",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [
+          {
+            "sel": "input[placeholder*='buscar' i]",
+            "count": 1
+          }
+        ],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://www.netflix.com/search?q=Stranger+Things",
+        "label": "search_q"
+      }
+    ]
+  },
+  {
+    "platform": "hbo_max",
+    "candidates": [
+      {
+        "title": "",
+        "body_excerpt": "",
+        "url_after_load": "https://play.hbomax.com/",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://play.hbomax.com/",
+        "label": "play_root"
+      },
+      {
+        "title": "⁨Buscar⁩ • HBO Max",
+        "body_excerpt": "Pasar al Contenido principal ⏎  ⏎ Inicio ⏎  ⏎ Series ⏎  ⏎ Películas ⏎  ⏎ Niños y Familia ⏎  ⏎ Títulos populares ⏎  ⏎ Charlie y la Fábrica de Chocolate ⏎  ⏎ Pixels ⏎  ⏎ Robot Chicken ⏎  ⏎ Superman y Lois ⏎  ⏎ Euphoria ⏎  ⏎ Nuevo Episodio ⏎  ⏎ \"Cumbr",
+        "url_after_load": "https://play.hbomax.com/search",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [
+          {
+            "sel": "input[aria-label*='buscar' i]",
+            "count": 1
+          },
+          {
+            "sel": "input[data-testid*='search' i]",
+            "count": 1
+          }
+        ],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://play.hbomax.com/search",
+        "label": "play_search"
+      },
+      {
+        "title": "⁨Buscar: House⁩ • HBO Max",
+        "body_excerpt": "Pasar al Contenido principal ⏎  ⏎ Inicio ⏎  ⏎ Series ⏎  ⏎ Películas ⏎  ⏎ Niños y Familia ⏎  ⏎ Títulos populares ⏎ Nuevo Episodio ⏎ Nuevo ⏎  ⏎ Emoji: La Película ⏎  ⏎ Son Como Niños 2 ⏎  ⏎ Mortal Kombat ⏎  ⏎ El Cadáver de la Novia ⏎  ⏎ ¿...Y Dón",
+        "url_after_load": "https://play.hbomax.com/search?q=House",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [
+          {
+            "sel": "input[aria-label*='buscar' i]",
+            "count": 1
+          },
+          {
+            "sel": "input[data-testid*='search' i]",
+            "count": 1
+          }
+        ],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://play.hbomax.com/search?q=House",
+        "label": "play_search_q"
+      },
+      {
+        "title": "⁨Home⁩ • HBO Max",
+        "body_excerpt": "Pasar al Contenido principal ⏎  ⏎ Inicio ⏎  ⏎ Series ⏎  ⏎ Películas ⏎  ⏎ Niños y Familia ⏎  ⏎ Estreno ⏎  ⏎ ⁦⁨⁦⁨Clasificación ⁨10+⁩⁩, ⁨Se estrenó en 2026⁩, ⁨Género: ⁨Infantil y Familiar⁩⁩⁩⁩⁩ ⏎  ⏎ 10+ ⏎ 2026 ⏎ Infantil y Familiar ⏎  ⏎ Una",
+        "url_after_load": "https://play.hbomax.com/",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [],
+        "play_buttons": [
+          {
+            "sel": "button[aria-label*='Play' i]",
+            "count": 1
+          }
+        ],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://www.hbomax.com/",
+        "label": "www_root"
+      },
+      {
+        "title": "⁨Home⁩ • HBO Max",
+        "body_excerpt": "Pasar al Contenido principal ⏎  ⏎ Inicio ⏎  ⏎ Series ⏎  ⏎ Películas ⏎  ⏎ Niños y Familia ⏎  ⏎ Estreno ⏎  ⏎ ⁦⁨⁦⁨Clasificación ⁨10+⁩⁩, ⁨Se estrenó en 2026⁩, ⁨Género: ⁨Infantil y Familiar⁩⁩⁩⁩⁩ ⏎  ⏎ 10+ ⏎ 2026 ⏎ Infantil y Familiar ⏎  ⏎ Una",
+        "url_after_load": "https://play.hbomax.com/",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [],
+        "play_buttons": [
+          {
+            "sel": "button[aria-label*='Play' i]",
+            "count": 1
+          }
+        ],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://play.max.com/",
+        "label": "max_root"
+      },
+      {
+        "title": "⁨Buscar: House⁩ • HBO Max",
+        "body_excerpt": "Pasar al Contenido principal ⏎  ⏎ Inicio ⏎  ⏎ Series ⏎  ⏎ Películas ⏎  ⏎ Niños y Familia ⏎  ⏎ Títulos populares ⏎ Nuevo Episodio ⏎ Nuevo ⏎ Nuevo ⏎ Solo para ti ⏎ Última oportunidad para verlas ⏎ Explora por género ⏎ Universo HBO Max ⏎  ⏎ ",
+        "url_after_load": "https://play.hbomax.com/search?q=House",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [
+          {
+            "sel": "input[aria-label*='buscar' i]",
+            "count": 1
+          },
+          {
+            "sel": "input[data-testid*='search' i]",
+            "count": 1
+          }
+        ],
+        "play_buttons": [],
+        "result_cards": [],
+        "http_status": 200,
+        "url_requested": "https://play.max.com/search?q=House",
+        "label": "max_search_q"
+      }
+    ]
+  },
+  {
+    "platform": "prime_video",
+    "candidates": [
+      {
+        "title": "Prime Video: ve películas, series, deportes y TV en directo",
+        "body_excerpt": "Inicio ⏎ Películas ⏎ Series ⏎ Deportes ⏎ TV en directo ⏎ Suscripciones ⏎ Citadel ⏎ #9 en Chile ⏎ Temporada 2・Espías de élite de una agencia legendaria que una red sombría desintegró deben reunirse y crear un nuevo eq",
+        "url_after_load": "https://www.primevideo.com/",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [
+          {
+            "sel": "input[type='search']",
+            "count": 2
+          },
+          {
+            "sel": "input[placeholder*='buscar' i]",
+            "count": 2
+          },
+          {
+            "sel": "input[name='phrase']",
+            "count": 2
+          }
+        ],
+        "play_buttons": [
+          {
+            "sel": "button[aria-label*='Play' i]",
+            "count": 1
+          }
+        ],
+        "result_cards": [
+          {
+            "sel": "a[href*='/detail/']",
+            "count": 83
+          },
+          {
+            "sel": "article a[href*='/detail/']",
+            "count": 83
+          }
+        ],
+        "http_status": 200,
+        "url_requested": "https://www.primevideo.com/",
+        "label": "root"
+      },
+      {
+        "title": "Prime Video: Buscar",
+        "body_excerpt": "Inicio ⏎ Películas ⏎ Series ⏎ Deportes ⏎ TV en directo ⏎ Suscripciones ⏎ Filtrar ⏎ Principales resultados ⏎ The Boys ⏎ NUEVO EPISODIO ⏎ The Boys-Diábolico ⏎ Gen V ⏎ TENDENCIAS ⏎ Prime Rewind: The Boys por Dentro ⏎ Terrifier 3: P",
+        "url_after_load": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The+Boys",
+        "is_404": false,
+        "classification": "page_loaded",
+        "inputs": [
+          {
+            "sel": "input[type='search']",
+            "count": 2
+          },
+          {
+            "sel": "input[placeholder*='buscar' i]",
+            "count": 2
+          },
+          {
+            "sel": "input[name='phrase']",
+            "count": 2
+          }
+        ],
+        "play_buttons": [
+          {
+            "sel": "button[aria-label*='Play' i]",
+            "count": 1
+          }
+        ],
+        "result_cards": [
+          {
+            "sel": "a[href*='/detail/']",
+            "count": 62
+          },
+          {
+            "sel": "article a[href*='/detail/']",
+            "count": 62
+          }
+        ],
+        "http_status": 200,
+        "url_requested": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The+Boys",
+        "label": "search_phrase"
+      }
+    ]
+  }
+]

@@ -1,0 +1,349 @@
+{
+  "netflix_url": "https://www.netflix.com/search?q=Stranger+Things",
+  "netflix_title": "Netflix",
+  "netflix_anchors_sample": [
+    {
+      "href": "/",
+      "aria": "",
+      "testid": "",
+      "data-uia": "header+logo"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=TQIHECSATRCYHIQO77K3QZ3NMY",
+      "aria": "",
+      "testid": "",
+      "data-uia": "action-select-profile+primary"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=CWGSSZQ4KBF6BMW6VIA4AM2NGI",
+      "aria": "",
+      "testid": "",
+      "data-uia": "action-select-profile+secondary"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=BG7PTIDCSJF2XK4I63E3DPQHB4",
+      "aria": "",
+      "testid": "",
+      "data-uia": "action-select-profile+secondary"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=YVMLCQ4LTNFZHL4A7UVTSUIQ74",
+      "aria": "",
+      "testid": "",
+      "data-uia": "action-select-profile+secondary"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=6IN4R5LESRGUPJP5AWPIGK42Y4",
+      "aria": "",
+      "testid": "",
+      "data-uia": "action-select-profile+secondary"
+    },
+    {
+      "href": "/ManageProfiles",
+      "aria": "Administrar perfiles",
+      "testid": "",
+      "data-uia": "profile-choices-manage-button"
+    }
+  ],
+  "netflix_data_uia_samples": [
+    {
+      "tag": "LINK",
+      "uia": "botLink",
+      "href": "https://assets.nflxext.com/web/ffe/wp/@nf-web-ui/ui-shared/dist/less/pages/akiraClient.85eebc91cdc699f5408e.css",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "loc",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "container-adult",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "NAV",
+      "uia": "navigation",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "A",
+      "uia": "header+logo",
+      "href": "/",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "profile-choices-page",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "A",
+      "uia": "action-select-profile+primary",
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=TQIHECSATRCYHIQO77K3QZ3NMY",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "profile-avatar",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "A",
+      "uia": "action-select-profile+secondary",
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=CWGSSZQ4KBF6BMW6VIA4AM2NGI",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "profile-avatar",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "A",
+      "uia": "action-select-profile+secondary",
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=BG7PTIDCSJF2XK4I63E3DPQHB4",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "profile-avatar",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "A",
+      "uia": "action-select-profile+secondary",
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=YVMLCQ4LTNFZHL4A7UVTSUIQ74",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "profile-avatar",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "A",
+      "uia": "action-select-profile+secondary",
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=6IN4R5LESRGUPJP5AWPIGK42Y4",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "profile-avatar",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "SPAN",
+      "uia": "profile-button",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "A",
+      "uia": "profile-choices-manage-button",
+      "href": "/ManageProfiles",
+      "aria": "Administrar perfiles"
+    },
+    {
+      "tag": "SCRIPT",
+      "uia": "https://assets.nflxext.com/web/ffe/wp/ui/akira/akiraClient.js",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "IFRAME",
+      "uia": "adtech-iframe",
+      "href": "",
+      "aria": ""
+    },
+    {
+      "tag": "DIV",
+      "uia": "notification-manager-toast-group",
+      "href": "",
+      "aria": ""
+    }
+  ],
+  "hbo_search_url": "https://play.hbomax.com/search?q=House+of+Dragon",
+  "hbo_search_title": "⁨Buscar: House%20of%20Dragon⁩ • HBO Max",
+  "hbo_anchors_sample": [
+    {
+      "href": "/home",
+      "aria": "Inicio de H B O Max",
+      "testid": "menubar-logo",
+      "data-uia": ""
+    },
+    {
+      "href": "/home",
+      "aria": "Inicio",
+      "testid": "home_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/series",
+      "aria": "Series",
+      "testid": "series_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/movies",
+      "aria": "Películas",
+      "testid": "movies_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/channel/c0d1f27a-e2f8-4b3c-bf3c-ed0c4e258093",
+      "aria": "H B O",
+      "testid": "channel/c0d1f27a-e2f8-4b3c-bf3c-ed0c4e258093_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/genre/kids-family",
+      "aria": "Niños y Familia",
+      "testid": "genre/kids-family_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/tnt-sports",
+      "aria": "TNT Sports",
+      "testid": "tnt-sports_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/search",
+      "aria": "Pesquisar",
+      "testid": "search_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/my-stuff",
+      "aria": "Mis Cosas",
+      "testid": "my-stuff_button",
+      "data-uia": ""
+    },
+    {
+      "href": "/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+      "aria": "⁦⁨⁨Charlie y la Fábrica de Chocolate⁩⁩. ⁨Fila 1 de 5, Column",
+      "testid": "aad8e3ff-05d9-4325-a1eb-585ee5057ccf_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/movie/7fa30348-2027-4317-aeea-fbf4cbbbf8e2",
+      "aria": "⁦⁨⁨Pixels⁩⁩. ⁨Fila 1 de 5, Columna 2 de 6⁩⁩",
+      "testid": "7fa30348-2027-4317-aeea-fbf4cbbbf8e2_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/17f960d6-89a8-43e2-9a4d-363b44346e39",
+      "aria": "⁦⁨⁨Robot Chicken⁩⁩. ⁨Fila 1 de 5, Columna 3 de 6⁩⁩",
+      "testid": "17f960d6-89a8-43e2-9a4d-363b44346e39_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/bd0e214b-4124-4566-85b3-5498bbb4a479",
+      "aria": "⁦⁨⁨Superman y Lois⁩⁩. ⁨Fila 1 de 5, Columna 4 de 6⁩⁩",
+      "testid": "bd0e214b-4124-4566-85b3-5498bbb4a479_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/4ffd33c9-e0d6-4cd6-bd13-34c266c79be0",
+      "aria": "⁦⁨⁨Euphoria⁩⁩. ⁨Fila 1 de 5, Columna 5 de 6⁩. ⁨⁨Nuevo Episod",
+      "testid": "4ffd33c9-e0d6-4cd6-bd13-34c266c79be0_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/movie/a0e6f4e3-0462-4fef-88b5-ff68036d3998",
+      "aria": "⁦⁨⁨\"Cumbres Borrascosas\"⁩⁩. ⁨Fila 1 de 5, Columna 6 de 6⁩⁩",
+      "testid": "a0e6f4e3-0462-4fef-88b5-ff68036d3998_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/movie/4a9c7b65-5122-4c78-ba8e-36eabb043249",
+      "aria": "⁦⁨⁨Mortal Kombat⁩⁩. ⁨Fila 2 de 5, Columna 1 de 6⁩⁩",
+      "testid": "4a9c7b65-5122-4c78-ba8e-36eabb043249_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/movie/0f42da02-25e5-4446-b39c-f44fa854f158",
+      "aria": "⁦⁨⁨Son Como Niños⁩⁩. ⁨Fila 2 de 5, Columna 2 de 6⁩⁩",
+      "testid": "0f42da02-25e5-4446-b39c-f44fa854f158_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/7dc69e29-ddf2-4451-9754-145a41d6e49b",
+      "aria": "⁦⁨⁨Smallville⁩⁩. ⁨Fila 2 de 5, Columna 3 de 6⁩⁩",
+      "testid": "7dc69e29-ddf2-4451-9754-145a41d6e49b_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/movie/c34d4c23-39eb-4eb8-95dd-209fa0cb3fb4",
+      "aria": "⁦⁨⁨Wonka⁩⁩. ⁨Fila 2 de 5, Columna 4 de 6⁩⁩",
+      "testid": "c34d4c23-39eb-4eb8-95dd-209fa0cb3fb4_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/b692705b-2f12-4a3d-ab4d-579124e0667c",
+      "aria": "⁦⁨⁨SMILING FRIENDS⁩⁩. ⁨Fila 2 de 5, Columna 5 de 6⁩⁩",
+      "testid": "b692705b-2f12-4a3d-ab4d-579124e0667c_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/4f6b4985-2dc9-4ab6-ac79-d60f0860b0ac",
+      "aria": "⁦⁨⁨Game of Thrones⁩⁩. ⁨Fila 2 de 5, Columna 6 de 6⁩⁩",
+      "testid": "4f6b4985-2dc9-4ab6-ac79-d60f0860b0ac_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/c8ea8e19-cae7-4683-9b62-cdbbed744784",
+      "aria": "⁦⁨⁨The Big Bang Theory⁩⁩. ⁨Fila 3 de 5, Columna 1 de 6⁩⁩",
+      "testid": "c8ea8e19-cae7-4683-9b62-cdbbed744784_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/show/759711ff-f46f-4c29-9134-84e247e0e7da",
+      "aria": "⁦⁨⁨Supernatural⁩⁩. ⁨Fila 3 de 5, Columna 2 de 6⁩⁩",
+      "testid": "759711ff-f46f-4c29-9134-84e247e0e7da_tile",
+      "data-uia": ""
+    },
+    {
+      "href": "/movie/e9b8f7b0-692a-40d4-b001-07154edc8270",
+      "aria": "⁦⁨⁨Anaconda⁩⁩. ⁨Fila 3 de 5, Columna 3 de 6⁩⁩",
+      "testid": "e9b8f7b0-692a-40d4-b001-07154edc8270_tile",
+      "data-uia": ""
+    }
+  ],
+  "hbo_detail_url": "https://play.hbomax.com/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+  "hbo_detail_title": "⁨Charlie and the Chocolate Factory⁩ • HBO Max",
+  "hbo_play_candidates": [
+    {
+      "tag": "BUTTON",
+      "testid": "play_button",
+      "aria": "⁦⁨Ver de nuevo: Charlie y la Fábrica de Chocolate⁩⁩",
+      "text": "Mira de nuevo",
+      "href": ""
+    },
+    {
+      "tag": "A",
+      "testid": "d28771bd-73ed-49a7-9259-bdb33a115cbc_tile",
+      "aria": "⁦⁨⁨El Cadáver de la Novia⁩⁩. ⁨Fila 1 de 5, Columna 4 de 6⁩⁩",
+      "text": "",
+      "href": "/movie/d28771bd-73ed-49a7-9259-bdb33a115cbc"
+    },
+    {
+      "tag": "BUTTON",
+      "testid": "dropdownToggleButton",
+      "aria": "Menú de ⁨El Cadáver de la Novia⁩",
+      "text": "",
+      "href": ""
+    }
+  ]
+}

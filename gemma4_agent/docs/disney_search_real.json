@@ -1,0 +1,53 @@
+{
+  "steps": [
+    "goto_search_page",
+    "filled:input[type='search']",
+    "clicked_card:a[href*='/es-419/browse/']"
+  ],
+  "url_after_load": "https://www.disneyplus.com/es-419/browse/search",
+  "title": "Búsqueda | Disney+",
+  "inputs_on_search_page": [
+    {
+      "sel": "input[type='search']",
+      "count": 1,
+      "aria-label": "",
+      "placeholder": "Título, género, equipo o liga",
+      "data-testid": "",
+      "name": "search input"
+    },
+    {
+      "sel": "input",
+      "count": 1,
+      "aria-label": "",
+      "placeholder": "Título, género, equipo o liga",
+      "data-testid": "",
+      "name": "search input"
+    }
+  ],
+  "url_after_fill": "https://www.disneyplus.com/es-419/browse/search",
+  "result_cards": [
+    {
+      "sel": "a[href*='/es-419/browse/']",
+      "count": 9,
+      "samples": [
+        {
+          "href": "/es-419/browse/search",
+          "aria-label": "BÚSQUEDA",
+          "data-testid": "navigation-item-search"
+        },
+        {
+          "href": "/es-419/browse/entity-8f8c5cbb-e5ba-4285-9e2c-86abcac9fd50",
+          "aria-label": "Loki Disney+ Original Clasificación: 14+. Estreno: 2021. Género: Superhéroes, Acción y aventura. Selecciona esta opción para ver los detalles de este título.",
+          "data-testid": "set-item"
+        },
+        {
+          "href": "/es-419/browse/entity-3ffb8049-a23a-4251-b0f6-8a70386919e2",
+          "aria-label": "El bueno, el Bart y el Loki Clasificación: 10+. Estreno: 2021. Género: Superhéroes, Parodia. Selecciona esta opción para ver los detalles de este título.",
+          "data-testid": "set-item"
+        }
+      ]
+    }
+  ],
+  "url_after_click": "https://www.disneyplus.com/es-419/browse/search",
+  "play_buttons_on_detail": []
+}

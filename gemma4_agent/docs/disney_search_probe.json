@@ -1,0 +1,22 @@
+{
+  "buttons_matching_search": [
+    {
+      "selector_used": "a[href*='/search']",
+      "aria-label": "BÚSQUEDA",
+      "text": "",
+      "href": "/es-419/browse/search",
+      "data-testid": "navigation-item-search"
+    },
+    {
+      "selector_used": "[data-testid*='search' i]",
+      "aria-label": "BÚSQUEDA",
+      "text": "",
+      "href": "/es-419/browse/search",
+      "data-testid": "navigation-item-search"
+    }
+  ],
+  "nav_html_excerpt": "<div class=\"kylmxxk kylmxxj r3t2ihbf r3t2ih86 r3t2ihcg r3t2ih25u\"></div><div class=\"kylmxxc kylmxxb r3t2ihuc r3t2ihtv r3t2ihz0 r3t2ihyj r3t2ih4o r3t2ih23u r3t2ih24u r3t2ih26u r3t2ih271 r3t2ih26c r3t2ihbf r3t2ih25u\"><button class=\"kylmxxo fl2b6o1 _1055dze3 r3t2ihb5 r3t2ihbq fl2b6o0 r3t2ih10 r3t2ihby r3t2ihb2 fl2b6o3 fl2b6o2 r3t2ihtu r3t2ihyi r3t2ih23u r3t2ihau r3t2ih26c kylmxxn r3t2ih86 r3t2ih4o r3t2ih25i r3t2ih1lo r3t2ihc4 r3t2ihbi r3t2ih1zo\">Saltar hasta el contenido</button><div class=\"kylmxxi kylmxxh r3t2ih25i r3t2ihbg r3t2ih1ku r3t2ih1yu r3t2ih1zj\"><div id=\"account-dropdown\" data-testid=\"account-dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\" role=\"button\" class=\"sc-jKmXuR hmHptx dropdown\"><ul tabindex=\"0\" data-testid=\"account-dropdown-list\" role=\"menu\" class=\"sc-ccSCjj iiRJFW\"><li class=\"sc-gldTML eurfgH\"><a id=\"active-profile\" data-testid=\"dropdown-active-profile\" tabindex=\"-1\" class=\"sc-hgRTRy gvkxtB\"><div aria-label=\"\" data-testid=\"\" role=\"button\" tabindex=\"-1\" class=\"sc-hIVACf sc-iiUIRa hVgohd\"><div class=\"sc-fgfRvd sc-eLdqWK dMSFbb profile-avatar\" data-testid=\"selected-avatar-image\"></div></div><p class=\"body-copy margin--0 sc-feryYK gtMwLs text-color--secondary margin--left-4\">Ema</p></a></li><div class=\"sc-iIHSe knoYLP\" role=\"presentation\"></div><div class=\"sc-cJOK gcGtAa\"><li class=\"sc-gldTML eurfgH\"><a data-testid=\"dropdown-profile-0\" role=\"menuitem\" tabindex=\"-1\" aria-hidden=\"true\"><div aria-label=\"\" data-testid=\"\" role=\"button\" tabindex=\"-1\" class=\"sc-hIVACf sc-iiUIRa hVgohd\"><div class=\"sc-fgfRvd sc-eLdqWK ghsajh profile-avatar\" data-testid=\"selected-avatar-image\"></div></div><p class=\"body-copy margin--0 sc-feryYK hjwPxn text-color--secondary margin--left-4\">Mamá </p></a></li><li class=\"sc-gldTML eurfgH\"><a data-testid=\"dropdown-profile-1\" role=\"menuitem\" tabindex=\"-1\" aria-hidden=\"true\"><div aria-label=\"\" data-testid=\"\" role=\"button\" tabindex=\"-1\" class=\"sc-hIVACf sc-iiUIRa hVgohd\"><div class=\"sc-fgfRvd sc-eLdqWK hiZkaR profile-avatar\" data-testid=\"selected-avatar-image\"></div></div><p class=\"body-copy margin--0 sc-feryYK hjwPxn text-color--secondary margin--left-4\">amir</p></a></li><li aria-hidden=\"true\" aria-label=\"Crear perfil\" class=\"sc-gldTML eurfgH dropdown-optionsfalse\" id=\"dropdown-option_add-profile\" data-testid=\"dropdown-option-0-add-profile\" role=\"menuitem\" tabindex=\"-1\"><a aria-hidden=\"true\" class=\"text-button text-color--secondary\" data-route=\"Profile\" tabindex=\"-1\"><span style=\"align-items: center; color: rgb(219, 220,",
+  "header_html_excerpt": "",
+  "url": "https://www.disneyplus.com/es-419/home",
+  "title": "Para ti | Disney+"
+}

@@ -1,0 +1,43 @@
+{
+  "steps": [
+    "goto:https://www.netflix.com/search?q=Stranger+Things",
+    "clicked_profile:Emmanuel",
+    "clicked_watch:/watch/81684720?trackId=284616272&tctx=0%2C3%2Cd55070f8-b0cb-46b4-a83b-b8482e5b5d72%2Cd55070f8-b0cb-46b4-a83b-b8482e5b5d72%7C%3DeyJwYWdlSWQiOiIyNjBkZTFiZS0zOTQzLTQzOTgtOWUzMS1hMTIxMDU2YWZjZWUvMS8vc3RyYW5nZXIgdGhpbmdzLzAvMCIsImxvY2FsU2VjdGlvbklkIjoiMiJ9%2C%2C%2C%2CtitlesResults%2C%2CVideo%3A81684720%2CminiDpPlayButton"
+  ],
+  "url_initial": "https://www.netflix.com/search?q=Stranger+Things",
+  "profile_picker_visible": true,
+  "available_profiles": [
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=CWGSSZQ4KBF6BMW6VIA4AM2NGI",
+      "text": "Clara"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=BG7PTIDCSJF2XK4I63E3DPQHB4",
+      "text": "Dario"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=YVMLCQ4LTNFZHL4A7UVTSUIQ74",
+      "text": "Emmanuel"
+    },
+    {
+      "href": "/SwitchProfile?next=%252Fsearch&tkn=6IN4R5LESRGUPJP5AWPIGK42Y4",
+      "text": "Elio"
+    }
+  ],
+  "picked_profile": {
+    "href": "/SwitchProfile?next=%252Fsearch&tkn=YVMLCQ4LTNFZHL4A7UVTSUIQ74",
+    "text": "Emmanuel"
+  },
+  "url_after_profile": "https://www.netflix.com/search?q=Stranger%20Things",
+  "watch_anchors": [
+    {
+      "href": "/watch/81684720?trackId=284616272&tctx=0%2C3%2Cd55070f8-b0cb-46b4-a83b-b8482e5b5d72%2Cd55070f8-b0cb-46b4-a83b-b8482e5b5d72%7C%3DeyJwYWdlSWQiOiIyNjBkZTFiZS0zOTQzLTQzOTgtOWUzMS1hMTIxMDU2YWZjZWUvMS8vc3RyYW5nZXIgdGhpbmdzLzAvMCIsImxvY2FsU2VjdGlvbklkIjoiMiJ9%2C%2C%2C%2CtitlesResults%2C%2CVideo%3A81684720%2CminiDpPlayButton",
+      "uia": "play-button",
+      "aria": "Reproducir",
+      "testid": ""
+    }
+  ],
+  "first_watch_href": "/watch/81684720?trackId=284616272&tctx=0%2C3%2Cd55070f8-b0cb-46b4-a83b-b8482e5b5d72%2Cd55070f8-b0cb-46b4-a83b-b8482e5b5d72%7C%3DeyJwYWdlSWQiOiIyNjBkZTFiZS0zOTQzLTQzOTgtOWUzMS1hMTIxMDU2YWZjZWUvMS8vc3RyYW5nZXIgdGhpbmdzLzAvMCIsImxvY2FsU2VjdGlvbklkIjoiMiJ9%2C%2C%2C%2CtitlesResults%2C%2CVideo%3A81684720%2CminiDpPlayButton",
+  "url_after_watch_click": "https://www.netflix.com/search?q=Stranger%20Things",
+  "play_candidates": []
+}

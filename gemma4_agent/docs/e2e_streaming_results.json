@@ -1,0 +1,202 @@
+[
+  {
+    "provider": "disney",
+    "query": "Loki",
+    "elapsed_sec": 43.8,
+    "ok": true,
+    "played": true,
+    "attempted_play": true,
+    "via_cdp": true,
+    "completion_status": "media_playing",
+    "steps": [
+      "goto:https://www.disneyplus.com/es-419/browse/search",
+      "filled_search:input[type='search']",
+      "clicked_first_result:a[data-testid='set-item']",
+      "clicked_play:[data-testid='playback-action-button']"
+    ],
+    "abort_reason": null,
+    "detail_url": "https://www.disneyplus.com/es-419/browse/entity-8f8c5cbb-e5ba-4285-9e2c-86abcac9fd50",
+    "cdp_unavailable_reason": null,
+    "_full_result": {
+      "ok": true,
+      "action": "play",
+      "provider": "disney_web",
+      "query": "Loki",
+      "url": "https://www.disneyplus.com/es-419/browse/search",
+      "opened": true,
+      "played": true,
+      "attempted_play": true,
+      "auto_play_attempted": true,
+      "profile_name": "Ema",
+      "web_auto_play_info": {
+        "player_started": true,
+        "attempted_play": true,
+        "steps": [
+          "goto:https://www.disneyplus.com/es-419/browse/search",
+          "filled_search:input[type='search']",
+          "clicked_first_result:a[data-testid='set-item']",
+          "clicked_play:[data-testid='playback-action-button']"
+        ],
+        "abort_reason": null,
+        "via_cache": false,
+        "detail_url": "https://www.disneyplus.com/es-419/browse/entity-8f8c5cbb-e5ba-4285-9e2c-86abcac9fd50",
+        "via_cdp": true
+      },
+      "verified": true,
+      "status": "dispatched",
+      "completion_status": "media_playing",
+      "note": "disney: playing — CDP attached, search + first result + Play clicked (profile 'Ema').",
+      "via_cdp": true
+    }
+  },
+  {
+    "provider": "netflix",
+    "query": "Stranger Things",
+    "elapsed_sec": 20.4,
+    "ok": true,
+    "played": true,
+    "attempted_play": true,
+    "via_cdp": true,
+    "completion_status": "media_playing",
+    "steps": [
+      "goto:https://www.netflix.com/search?q=Stranger%20Things",
+      "profile_pick_not_needed_or_failed",
+      "clicked_first_result:a[data-uia='search-gallery-video-card']",
+      "clicked_play:[data-uia='play-button']"
+    ],
+    "abort_reason": null,
+    "detail_url": "https://www.netflix.com/search?q=Stranger%20Things&jbv=80057281",
+    "cdp_unavailable_reason": null,
+    "_full_result": {
+      "ok": true,
+      "action": "play",
+      "provider": "netflix_web",
+      "query": "Stranger Things",
+      "url": "https://www.netflix.com/search?q=Stranger%20Things",
+      "opened": true,
+      "played": true,
+      "attempted_play": true,
+      "auto_play_attempted": true,
+      "profile_name": "Emmanuel",
+      "web_auto_play_info": {
+        "player_started": true,
+        "attempted_play": true,
+        "steps": [
+          "goto:https://www.netflix.com/search?q=Stranger%20Things",
+          "profile_pick_not_needed_or_failed",
+          "clicked_first_result:a[data-uia='search-gallery-video-card']",
+          "clicked_play:[data-uia='play-button']"
+        ],
+        "abort_reason": null,
+        "via_cache": false,
+        "detail_url": "https://www.netflix.com/search?q=Stranger%20Things&jbv=80057281",
+        "via_cdp": true
+      },
+      "verified": true,
+      "status": "dispatched",
+      "completion_status": "media_playing",
+      "note": "netflix: playing — CDP attached, search + first result + Play clicked (profile 'Emmanuel').",
+      "via_cdp": true
+    }
+  },
+  {
+    "provider": "hbo_max",
+    "query": "House of Dragon",
+    "elapsed_sec": 15.3,
+    "ok": true,
+    "played": true,
+    "attempted_play": true,
+    "via_cdp": true,
+    "completion_status": "media_playing",
+    "steps": [
+      "goto:https://play.hbomax.com/search?q=House%20of%20Dragon",
+      "clicked_first_result:a[data-testid$='_tile'][href*='/movie/']",
+      "cached_title_url:https://play.hbomax.com/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+      "clicked_play:button[data-testid='play_button']"
+    ],
+    "abort_reason": null,
+    "detail_url": "https://play.hbomax.com/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+    "cdp_unavailable_reason": null,
+    "_full_result": {
+      "ok": true,
+      "action": "play",
+      "provider": "hbo_max_web",
+      "query": "House of Dragon",
+      "url": "https://play.hbomax.com/search?q=House%20of%20Dragon",
+      "opened": true,
+      "played": true,
+      "attempted_play": true,
+      "auto_play_attempted": true,
+      "profile_name": "Emmanuel",
+      "web_auto_play_info": {
+        "player_started": true,
+        "attempted_play": true,
+        "steps": [
+          "goto:https://play.hbomax.com/search?q=House%20of%20Dragon",
+          "clicked_first_result:a[data-testid$='_tile'][href*='/movie/']",
+          "cached_title_url:https://play.hbomax.com/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+          "clicked_play:button[data-testid='play_button']"
+        ],
+        "abort_reason": null,
+        "via_cache": false,
+        "detail_url": "https://play.hbomax.com/movie/aad8e3ff-05d9-4325-a1eb-585ee5057ccf",
+        "via_cdp": true
+      },
+      "verified": true,
+      "status": "dispatched",
+      "completion_status": "media_playing",
+      "note": "hbo_max: playing — CDP attached, search + first result + Play clicked (profile 'Emmanuel').",
+      "via_cdp": true
+    }
+  },
+  {
+    "provider": "prime_video",
+    "query": "The Boys",
+    "elapsed_sec": 17.7,
+    "ok": true,
+    "played": true,
+    "attempted_play": true,
+    "via_cdp": true,
+    "completion_status": "media_playing",
+    "steps": [
+      "goto:https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The%20Boys",
+      "clicked_first_result:article a[href*='/detail/']",
+      "cached_title_url:https://www.primevideo.com/detail/0N9BB22P2FZ8UD2BBLNX07RP22/ref=atv_sr_fle_c_sr",
+      "playback_started_via_card_click"
+    ],
+    "abort_reason": null,
+    "detail_url": "https://www.primevideo.com/detail/0N9BB22P2FZ8UD2BBLNX07RP22/ref=atv_sr_fle_c_sre58108_pvsearchresults_1_1",
+    "cdp_unavailable_reason": null,
+    "_full_result": {
+      "ok": true,
+      "action": "play",
+      "provider": "prime_video_web",
+      "query": "The Boys",
+      "url": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The%20Boys",
+      "opened": true,
+      "played": true,
+      "attempted_play": true,
+      "auto_play_attempted": true,
+      "profile_name": "Emmanuel",
+      "web_auto_play_info": {
+        "player_started": true,
+        "attempted_play": true,
+        "steps": [
+          "goto:https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The%20Boys",
+          "clicked_first_result:article a[href*='/detail/']",
+          "cached_title_url:https://www.primevideo.com/detail/0N9BB22P2FZ8UD2BBLNX07RP22/ref=atv_sr_fle_c_sr",
+          "playback_started_via_card_click"
+        ],
+        "abort_reason": null,
+        "via_cache": false,
+        "detail_url": "https://www.primevideo.com/detail/0N9BB22P2FZ8UD2BBLNX07RP22/ref=atv_sr_fle_c_sre58108_pvsearchresults_1_1",
+        "via_cdp": true
+      },
+      "verified": true,
+      "status": "dispatched",
+      "completion_status": "media_playing",
+      "note": "prime_video: playing — CDP attached, search + first result + Play clicked (profile 'Emmanuel').",
+      "via_cdp": true
+    }
+  }
+]

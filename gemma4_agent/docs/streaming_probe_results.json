@@ -1,0 +1,203 @@
+[
+  {
+    "platform": "disney",
+    "candidates": [
+      {
+        "url_after_load": "https://www.disneyplus.com/search",
+        "title": "A página que você estava procurando não foi encontrada.",
+        "body_excerpt": "A página que você estava procurando não foi encontrada. ⏎ Clique no botão abaixo para acessar a página de início do Disney+ ⏎ INÍCIO DO DISNEY+",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/search"
+      },
+      {
+        "url_after_load": "https://www.disneyplus.com/es-419/search",
+        "title": "No encontramos la página que estás buscando.",
+        "body_excerpt": "No encontramos la página que estás buscando. ⏎ Haz clic en el siguiente botón para ir a la página de inicio de Disney+. ⏎ INICIO DE DISNEY+",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/es-419/search"
+      },
+      {
+        "url_after_load": "https://www.disneyplus.com/buscar",
+        "title": "The page you were looking for cannot be found.",
+        "body_excerpt": "The page you were looking for cannot be found. ⏎ Please go to the Disney+ home page by clicking the button below ⏎ DISNEY+ HOME",
+        "is_404": true,
+        "classification": "404",
+        "search_inputs_found": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/buscar"
+      },
+      {
+        "url_after_load": "https://www.disneyplus.com/es/search",
+        "title": "The page you were looking for cannot be found.",
+        "body_excerpt": "The page you were looking for cannot be found. ⏎ Please go to the Disney+ home page by clicking the button below ⏎ DISNEY+ HOME",
+        "is_404": true,
+        "classification": "404",
+        "search_inputs_found": [],
+        "http_status": 404,
+        "url_requested": "https://www.disneyplus.com/es/search"
+      },
+      {
+        "url_after_load": "https://www.disneyplus.com/es-419/home",
+        "title": "Disney+ | Películas y series",
+        "body_excerpt": "",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 200,
+        "url_requested": "https://www.disneyplus.com/home"
+      },
+      {
+        "url_after_load": "https://www.disneyplus.com/es-cl",
+        "title": "Disney+ Chile | Películas, series y deportes sin límites",
+        "body_excerpt": "Zootopia 2 ⏎ UEFA Champions League ⏎ Daredevil S2 ⏎ Conmebol Libertadores ⏎ Paradise S2 ⏎ Series exclusivas, éxitos del cine, el deporte de ESPN y más ⏎ Elige tu plan desde CLP 8.490/mes ⏎  ⏎ Ingresa tu correo para c",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 200,
+        "url_requested": "https://www.disneyplus.com/"
+      }
+    ]
+  },
+  {
+    "platform": "netflix",
+    "candidates": [
+      {
+        "url_after_load": "https://www.netflix.com/cl/login?nextpage=https%3A%2F%2Fwww.netflix.com%2Fsearch%3Fq%3DStranger%2BThings&serverState=BgiHuevcAxKQAn4wo1hVgbJW6HBMRktGQdSbNywpW%2FF2IEHfMEh3%2FZrSfnNR7O8FO6uv1emvOA6N%2B4Ui3tLiUWIGosIdllsdFnUZDVD%2FZrHSLoe48tJT%2B%2FEGXeMxKZbmTJ3EbgBbXBdwUjsVhXUYcZ6jUk8gLTOJUb%2FEgXa3XmXtkxsg9uz2HItkbF6%2FC1MjeNzYKK86HhdaJXsp3hEvBJT96wK2f8sDOktRb5K80QqUSEUMY6frmb8YB25PE2VKdZj1zDVJ074I%2F1msHg%2Fa01ZPWMPIuwQEYYT9%2B2%2BE5XdK%2BeKU%2BtHI5eou06DRM%2FPHDULpo1Ykmwaon6rWHY1wyjYsIxDKbWKXgVuooNvwjij%2BesVi1cfEhx7RGAYiDgoMoZrqDOUL4LFmuW5V",
+        "title": "Netflix",
+        "body_excerpt": "Netflix ⏎ Ingresa tu info para iniciar sesión ⏎ O bien, comienza con una cuenta nueva. ⏎ Email o número de celular ⏎ Contraseña ⏎ Continuar ⏎  ⏎ Obtener ayuda ⏎  ⏎ Esta página está protegida por Google reCAPTCHA para c",
+        "is_404": false,
+        "classification": "login_wall",
+        "search_inputs_found": [
+          "input[placeholder*='buscar' i] (1)"
+        ],
+        "http_status": 200,
+        "url_requested": "https://www.netflix.com/search?q=Stranger+Things"
+      },
+      {
+        "url_after_load": "https://www.netflix.com/cl/login?nextpage=https%3A%2F%2Fwww.netflix.com%2Fbrowse&serverState=BgiHuevcAxL%2BAZZvcy4RXdW7NjRMfL4rrlZLjENbT798lKvXA5O135lpGP9%2BwTmu%2BzgPdM8YKYYcBCSG43CEO8K%2FDKLod4yUqpYl6zERVO1StJUFNwDNdjuyqZ9NCiBCktfbR7r1MSDfrnzAVLKg2PbKLbqjqU%2B86FUu6%2BN4T0hC%2BjyL8ONV3IWGFfa45RKDu%2BBIi%2BkBYC25Jvm6JN3xLFNgHtYAMnT%2ForainC9mTkJvJBX9Rlg30Jtv58Hvhu2CoLY845WmJURp9ZAK9HijJTaWIZQgnoCAzyhOYFJfq9B1VkT5oc3GYmn96si88u5wNiO7tPRuA8JQQ%2FZMPC3YwzvIrwVRx%2BuuGAYiDgoMq9mp41X4Zzllo%2BlG",
+        "title": "Netflix",
+        "body_excerpt": "Netflix ⏎ Ingresa tu info para iniciar sesión ⏎ O bien, comienza con una cuenta nueva. ⏎ Email o número de celular ⏎ Contraseña ⏎ Continuar ⏎  ⏎ Obtener ayuda ⏎  ⏎ Esta página está protegida por Google reCAPTCHA para c",
+        "is_404": false,
+        "classification": "login_wall",
+        "search_inputs_found": [
+          "input[placeholder*='buscar' i] (1)"
+        ],
+        "http_status": 200,
+        "url_requested": "https://www.netflix.com/browse"
+      }
+    ]
+  },
+  {
+    "platform": "hbo_max",
+    "candidates": [
+      {
+        "url_after_load": "https://www.hbomax.com/cl/es",
+        "title": "Ver películas y series online | HBO Max",
+        "body_excerpt": "SALTAR AL CONTENIDO ⏎ PELÍCULAS ⏎ SERIES DE TV ⏎ NIÑOS Y FAMILIA ⏎ MARCAS ⏎ TNT SPORTS ⏎ INGRESA ⏎ SUSCRÍBETE AHORA ⏎  ⏎ Los planes empiezan desde $5.390/mes ⏎  ⏎ SUSCRÍBETE AHORA ⏎ Obtén tu paquete anual de TNT Sports + HBO",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 200,
+        "url_requested": "https://play.hbomax.com/search"
+      },
+      {
+        "url_after_load": "https://www.hbomax.com/cl/es",
+        "title": "Ver películas y series online | HBO Max",
+        "body_excerpt": "Preferencias de cookies ⏎  ⏎ Junto con nuestros Afiliados, usamos productos de terceros para acceder y almacenar datos en tu dispositivo para analizar el uso, mejorar la experiencia y personalizar, evalua",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 200,
+        "url_requested": "https://play.hbomax.com/"
+      },
+      {
+        "url_after_load": "https://www.hbomax.com/cl/es",
+        "title": "Ver películas y series online | HBO Max",
+        "body_excerpt": "Preferencias de cookies ⏎  ⏎ Junto con nuestros Afiliados, usamos productos de terceros para acceder y almacenar datos en tu dispositivo para analizar el uso, mejorar la experiencia y personalizar, evalua",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 200,
+        "url_requested": "https://www.hbomax.com/"
+      },
+      {
+        "url_after_load": "https://www.hbomax.com/cl/es",
+        "title": "Ver películas y series online | HBO Max",
+        "body_excerpt": "Preferencias de cookies ⏎  ⏎ Junto con nuestros Afiliados, usamos productos de terceros para acceder y almacenar datos en tu dispositivo para analizar el uso, mejorar la experiencia y personalizar, evalua",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 200,
+        "url_requested": "https://play.max.com/search"
+      },
+      {
+        "url_after_load": "https://www.hbomax.com/cl/es",
+        "title": "Ver películas y series online | HBO Max",
+        "body_excerpt": "Preferencias de cookies ⏎  ⏎ Junto con nuestros Afiliados, usamos productos de terceros para acceder y almacenar datos en tu dispositivo para analizar el uso, mejorar la experiencia y personalizar, evalua",
+        "is_404": false,
+        "classification": "other",
+        "search_inputs_found": [],
+        "http_status": 200,
+        "url_requested": "https://play.max.com/"
+      }
+    ]
+  },
+  {
+    "platform": "prime_video",
+    "candidates": [
+      {
+        "url_after_load": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The+Boys",
+        "title": "Prime Video: Buscar",
+        "body_excerpt": "Inicio ⏎ Películas ⏎ Series de TV ⏎ Deportes ⏎ TV en directo ⏎ Suscripciones ⏎ ES ⏎ Suscribirse a Prime ⏎ Filtrar ⏎ Mejores resultados ⏎ The Boys ⏎ EPISODIO NUEVO ⏎ The Boys-Diábolico ⏎ Gen V ⏎ TENDENCIA ⏎ Prime Rewind: The Boys p",
+        "is_404": false,
+        "classification": "search_page",
+        "search_inputs_found": [
+          "input[type='search'] (2)",
+          "input[placeholder*='buscar' i] (2)",
+          "input[name='phrase'] (2)"
+        ],
+        "http_status": 200,
+        "url_requested": "https://www.primevideo.com/search/ref=atv_nb_sr?phrase=The+Boys"
+      },
+      {
+        "url_after_load": "https://www.primevideo.com/offers/nonprimehomepage/ref=dv_web_force_root",
+        "title": "Te damos la bienvenida a Prime Video",
+        "body_excerpt": "Inicio ⏎ Películas ⏎ Series de TV ⏎ Deportes ⏎ TV en directo ⏎ Suscripciones ⏎ ES ⏎ Suscribirse a Prime ⏎ Te damos la bienvenida a Prime Video ⏎ Disfruta de títulos Amazon Originals exclusivos, además de películas y se",
+        "is_404": false,
+        "classification": "login_wall",
+        "search_inputs_found": [
+          "input[type='search'] (2)",
+          "input[placeholder*='buscar' i] (2)",
+          "input[name='phrase'] (2)"
+        ],
+        "http_status": 200,
+        "url_requested": "https://www.primevideo.com/"
+      }
+    ]
+  },
+  {
+    "platform": "spotify_web",
+    "candidates": [
+      {
+        "url_after_load": "https://open.spotify.com/search/test",
+        "title": "Spotify – Buscar",
+        "body_excerpt": "Ir al contenido principal ⏎ CtrlShiftL ⏎ Premium ⏎ Ayuda ⏎ Descargar ⏎ Instalar aplicación ⏎ Regístrate ⏎ Iniciar sesión ⏎ Tu biblioteca ⏎ Crea tu primera playlist ⏎ ¡Es muy fácil! Te vamos a ayudar ⏎ Crear playlist ⏎ Busque",
+        "is_404": false,
+        "classification": "search_page",
+        "search_inputs_found": [
+          "input[type='search'] (1)",
+          "input[placeholder*='buscar' i] (2)",
+          "input[data-testid*='search' i] (1)"
+        ],
+        "http_status": 200,
+        "url_requested": "https://open.spotify.com/search/test"
+      }
+    ]
+  }
+]
