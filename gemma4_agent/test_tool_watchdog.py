@@ -46,21 +46,31 @@ class TestRunWithTimeout(unittest.TestCase):
 
 
 class TestAgentToolExecutionWrapsTimeout(unittest.TestCase):
-    """The sequential and parallel tool dispatchers must call the watchdog."""
+    """The sequential and parallel tool dispatchers must call the watchdog.
+
+    Sprint 6.4: dispatcher bodies moved from Gemma4Agent._execute_calls_*
+    to gemma4_agent.agent_dispatch.execute_calls_*. The watchdog wiring
+    (run_with_timeout for sequential, concurrent.futures.TimeoutError
+    handling for parallel) lives in the new module now.
+    """
 
     def test_sequential_dispatcher_uses_run_with_timeout(self):
         import inspect
-        from gemma4_agent.agent import Gemma4Agent
-        src = inspect.getsource(Gemma4Agent._execute_calls_sequential)
-        self.assertIn("_run_with_timeout", src,
+        from gemma4_agent import agent_dispatch
+        src = inspect.getsource(agent_dispatch.execute_calls_sequential)
+        # The pure function takes run_with_timeout as a callable parameter,
+        # so the literal name in the source is `run_with_timeout` (the
+        # function uses it via the parameter, not the agent's module-level
+        # private alias).
+        self.assertIn("run_with_timeout", src,
                       "sequential dispatcher must wrap execute() in watchdog")
         self.assertIn("tool_hard_timeout", src,
                       "must emit tool_hard_timeout trace on watchdog fire")
 
     def test_parallel_dispatcher_has_timeout(self):
         import inspect
-        from gemma4_agent.agent import Gemma4Agent
-        src = inspect.getsource(Gemma4Agent._execute_calls_parallel)
+        from gemma4_agent import agent_dispatch
+        src = inspect.getsource(agent_dispatch.execute_calls_parallel)
         self.assertIn("TimeoutError", src,
                       "parallel dispatcher must handle concurrent.futures.TimeoutError")
         self.assertIn("tool_hard_timeout", src)

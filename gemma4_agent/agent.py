@@ -1256,7 +1256,7 @@ class Gemma4Agent:
         execute_calls_sequential(
             prepared,
             tools_registry=self.tools,
-            trace=self.trace,
+            trace=getattr(self, "trace", None),
             run_with_timeout=_run_with_timeout,
             progress_emit=lambda event, payload: _progress(progress, event, **payload),
             base_count=base_count,
@@ -1275,7 +1275,7 @@ class Gemma4Agent:
         execute_calls_parallel(
             prepared,
             tools_registry=self.tools,
-            trace=self.trace,
+            trace=getattr(self, "trace", None),
             progress_emit=lambda event, payload: _progress(progress, event, **payload),
             base_count=base_count,
             turn_id=turn_id,
