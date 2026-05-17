@@ -54,13 +54,21 @@ CACHE_THETA = 0.88        # cosine similarity threshold for cache hit
 # and similarity-to-tools-centroid, not absolute values. e5-small
 # embeddings are dense enough that absolute cosine for any query
 # against either centroid lands in the 0.85-0.95 band; only the
-# *difference* discriminates. Calibrated against a probe set in
-# Sprint 8a:
-#   "hola, como estas?"     → delta +0.033 (smalltalk-y)
-#   "thanks" / "gracias"    → delta +0.06 .. +0.08
-#   "abrime el Steam"       → delta +0.014 (tools-y)
-#   "power point"           → delta +0.012 (tools-y)
-SMALLTALK_DELTA_THETA = 0.025  # smalltalk - tools >= this → gate fires
+# *difference* discriminates.
+#
+# Recalibrated 2026-05-17 (hotfix E.5) after the audit detected
+# that 'pone benson boone' had delta=0.028 — just above the old
+# 0.025 threshold — firing the gate on a clear music request.
+# Raising to 0.030 means the gate only fires when the smalltalk
+# signal is more clearly dominant. The probe set that anchors
+# the new value:
+#   "hola, como estas?"     → delta +0.033 (still fires ✓)
+#   "thanks"                → delta +0.060 (still fires ✓)
+#   "gracias"               → delta +0.080 (still fires ✓)
+#   "pone benson boone"     → delta +0.028 (no longer fires ✓)
+#   "abrime el Steam"       → delta +0.014 (never fired ✓)
+#   "power point"           → delta +0.012 (never fired ✓)
+SMALLTALK_DELTA_THETA = 0.030  # smalltalk - tools >= this → gate fires
 # RRF top-1 floor. With 65 docs and RRF k=60 the theoretical max for a
 # document that's #1 in BOTH dense and BM25 rankings is 2 * 1/61 ≈ 0.0328.
 # Below this floor the top result is unrelated; pop in the popular set.
