@@ -1635,6 +1635,15 @@ class Gemma4Agent:
                 result = prep.get("result") or {}
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
+                # sprint2: surface which skill the LLM loaded so usage reports
+                # can answer "which skills earn their spot in the menu?".
+                # Sprint 2.1 found no skill_load activity in any of 6727 events.
+                if name == "skill_load" and isinstance(result, dict) and result.get("ok"):
+                    self.trace.event(
+                        turn_id, "skill_loaded",
+                        name=str(result.get("skill") or args.get("name") or ""),
+                        chars=int(result.get("chars") or 0),
+                    )
                 # Loop detector: record y check antes de seguir con la siguiente
                 # tool de este batch. exists=True salvo que el result diga
                 # "unknown tool" en el error (tool no registrada). El detector
