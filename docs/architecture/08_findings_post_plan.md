@@ -54,6 +54,56 @@ justificadas.
 
 ---
 
+## 0.2 Acciones de Sprint 8a (routing infra)
+
+Una investigación de Claude Research (mayo 2026) sobre tool-routing
+para agentes locales con catálogos grandes y multi-idioma motivó
+**Sprint 8** (subdividido 8a/8b/8c). Sprint 8a, completado en este
+ciclo, construye la **infraestructura** del nuevo router universal
+sin regex; 8b y 8c siguen.
+
+| Acción | Sprint 8a | Status |
+|---|---|---|
+| Bootstrap del modelo e5-small ONNX (113 MB, 100 langs) | 8a.1 | ✅ `scripts/bootstrap_e5_small.py` (idempotente) |
+| Router v2 con pipeline de 4 layers | 8a.2 | ✅ `gemma4_agent/router_v2.py` (415 LOC, default OFF) |
+| Tests de contrato del router v2 | 8a.3 | ✅ `gemma4_agent/test_router_v2.py` (22 tests) |
+| Wire opt-in en `agent.py` (shadow mode + full v2) | 8a.4 | ✅ `agent.run_content` con dos env-flags |
+
+**Hallazgos críticos de calibración (queda en docstrings del módulo):**
+
+1. **El threshold absoluto de smalltalk no funciona** con e5-small.
+   Embeddings densos → cualquier query da cosine 0.85-0.95 contra
+   cualquier centroide. Cambié a **delta** (smalltalk − tools) con
+   threshold +0.025. La gate ahora distingue greetings de comandos.
+2. **`FALLBACK_THETA` con RRF k=60** debe vivir en banda 0.01-0.05
+   (no 0.30). Con k=60 sobre 65 docs, el top-1 teórico máximo es
+   ~0.033. Threshold final: 0.025.
+3. **ONNX e5-small necesita `token_type_ids`** (BERT-style), siempre
+   zeros. La doc de huggingface no lo dice — el `session.run()`
+   falla si no se pasa.
+
+**Por qué default OFF:** las 65 tool descriptions actuales son
+cortas (legado de `semantic_router.py`). BM25 tiene poco material
+para queries con marcas/intents específicos ("Netflix", "Daredevil",
+"investiga"). Esto se resuelve en 8b con `purpose + example_queries`.
+Activar v2 ahora produciría peores resultados que v1.
+
+**Estado de uso:**
+
+- Default: v1 (planner + semantic_router) activo. No hay cambio
+  visible.
+- Para probar v2 en producción con datos reales (recomendado para
+  preparar 8c):
+  ```pwsh
+  python scripts/bootstrap_e5_small.py  # una vez
+  $env:GEMMA4_ROUTER_V2_SHADOW = "1"     # log v2 vs v1, no cambia v1
+  ```
+
+**LOC Sprint 8a:** +776 (router_v2 + tests + bootstrap + agent hook).
+**Tests Sprint 8a:** +22 nuevos, 0 regresiones (790 total verde).
+
+---
+
 ## 1. PENDIENTE: Sprint 3b (diferido por diseño)
 
 ### 1.1 Por qué se difirió
