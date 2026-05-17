@@ -46,3 +46,113 @@
       - "build a spreadsheet for monthly expenses"
       - "convert this docx to pdf"
       - "draft a report in word"
+
+- name: document
+  purpose: |
+    Extract text, tables, and images from existing PDF / DOCX / XLSX /
+    PPTX / HTML files. Read-only ingestion path; use `office` for
+    creation. Includes summarize and compare-documents flows.
+  domain: documents
+  example_queries:
+    es:
+      - "leeme el pdf de la factura"
+      - "extrae las tablas de este excel"
+      - "que dice el documento que te pase"
+      - "resumime el word que descargue"
+      - "saca el texto del pptx"
+      - "compara estos dos pdfs"
+    en:
+      - "read the invoice pdf"
+      - "extract tables from this excel"
+      - "what does this document say"
+      - "summarize the word file i downloaded"
+      - "pull text out of the pptx"
+      - "compare these two pdfs"
+
+- name: knowledge
+  purpose: |
+    Local RAG knowledge base — ingest documents and search across them
+    with hybrid BM25 + cross-encoder rerank. Best for "I dropped a few
+    PDFs and want to ask questions about them later".
+  domain: documents
+  example_queries:
+    es:
+      - "agregá estos pdfs a la base de conocimiento"
+      - "que sabes sobre el contrato que te di"
+      - "busca en mis documentos donde dice X"
+      - "indexa esta carpeta de papers"
+      - "consulta mi base sobre Y"
+      - "agregame estos archivos al rag"
+    en:
+      - "add these pdfs to the knowledge base"
+      - "what do you know about the contract i shared"
+      - "search my documents for X"
+      - "index this folder of papers"
+      - "query my knowledge base about Y"
+      - "ingest these files into rag"
+
+- name: source_manager
+  purpose: |
+    Persist research sources, URLs, snippets, and file snapshots so
+    future answers can cite them. Companion to `web` and
+    `fact_check`; not for ad-hoc note-taking (use `notes_tasks`).
+  domain: documents
+  example_queries:
+    es:
+      - "guardame esta pagina como fuente"
+      - "anotá la URL del paper que encontramos"
+      - "mostrame las fuentes que tengo de IA"
+      - "borra la fuente vieja sobre Disney"
+      - "que sources tengo guardadas"
+      - "agregá esta cita al manager de fuentes"
+    en:
+      - "save this page as a source"
+      - "store the url of the paper we found"
+      - "list the sources i have about AI"
+      - "drop the old Disney source"
+      - "show me saved citations"
+      - "add this snippet to the source manager"
+
+- name: photo_library
+  purpose: |
+    Organize a local photo library — scan folders, read EXIF data,
+    generate thumbnails, group images by date (YYYY-MM, YYYY-MM-DD).
+    No cloud sync, no face recognition.
+  domain: documents
+  example_queries:
+    es:
+      - "organiza las fotos por mes"
+      - "extrae el exif de estas imagenes"
+      - "hacé thumbnails de la carpeta de fotos"
+      - "agrupame las fotos del verano por dia"
+      - "que metadata tienen mis fotos"
+      - "ordena la libreria de fotos por año"
+    en:
+      - "organize photos by month"
+      - "extract exif from these pictures"
+      - "make thumbnails for the photo folder"
+      - "group summer photos by day"
+      - "what metadata do my photos have"
+      - "sort the photo library by year"
+
+- name: study
+  purpose: |
+    Flashcards + SM-2 spaced repetition. Local SQLite-backed. Manages
+    decks, adds cards, surfaces what's due today, grades reviews 0-5.
+    Personal study aid; not a search tool.
+  domain: documents
+  example_queries:
+    es:
+      - "armame un mazo de tarjetas para historia"
+      - "agregá esta tarjeta al deck de ingles"
+      - "que flashcards me tocan repasar hoy"
+      - "borra el mazo viejo de matematica"
+      - "guardame este concepto para repaso espaciado"
+      - "mostrá las stats de mi estudio"
+    en:
+      - "make a flashcard deck for history"
+      - "add this card to the english deck"
+      - "what cards are due today"
+      - "drop the old math deck"
+      - "store this concept for spaced repetition"
+      - "show my study stats"
