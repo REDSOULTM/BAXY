@@ -118,6 +118,34 @@ class ExperienceMemory:
                 conn.execute(col_def)
             except sqlite3.OperationalError:
                 pass  # column already exists
+        # Sprint 7.4: fail-loud after the ALTER block. If the
+        # `except sqlite3.OperationalError: pass` above ever swallows a
+        # *real* failure (e.g. the DB was locked by antivirus / OneDrive
+        # sync during cold-start so the ALTER couldn't run AND the
+        # column doesn't already exist), subsequent reads will fail
+        # silently. Detect that here and raise with a clear remediation
+        # message so the user sees the problem on day 1.
+        cur = conn.execute("PRAGMA table_info(experiences)")
+        existing_cols = {row[1] for row in cur.fetchall()}
+        expected_cols = {
+            "outcome_code",
+            "failure_reason_code",
+            "args_signature",
+            "capability_label",
+            "grounding_flagged",
+        }
+        missing_cols = expected_cols - existing_cols
+        if missing_cols:
+            raise RuntimeError(
+                f"experience.sqlite schema migration failed: missing columns "
+                f"{sorted(missing_cols)}. The ALTER TABLE statements were "
+                "swallowed by an `except sqlite3.OperationalError`. Common "
+                "cause: the SQLite file is locked by another process "
+                "(antivirus realtime scan, backup tool, OneDrive / Dropbox / "
+                "Google Drive sync). Workaround: move the agent directory "
+                "outside synced/scanned paths, or whitelist it in the "
+                f"scanner. Path: {self.path}"
+            )
         # vec0 virtual table; embedding bound to experiences.rowid (we keep
         # parity via the AUTOINCREMENT id and pass rowid=id when inserting).
         conn.execute(
