@@ -92,6 +92,52 @@ class TabularBreadcrumbTest(unittest.TestCase):
         self.assertIn("pid=1234", final_text)
         self.assertIn("pid=5678", final_text)
 
+    def test_games_list_stitched(self) -> None:
+        # Hotfix E 2026-05-17: steam.list_library returns 'games'.
+        games = [
+            {"appid": 730, "name": "CS2"},
+            {"appid": 570, "name": "Dota 2"},
+        ]
+        hist = [
+            {"role": "user", "content": "qué juegos tengo"},
+            {"role": "assistant", "tool_calls": [
+                {"id": "c1", "type": "function",
+                 "function": {"name": "steam", "arguments": "{}"}}]},
+            {"role": "tool", "tool_call_id": "c1",
+             "content": json.dumps({"ok": True, "games": games})},
+            {"role": "assistant", "content": "Tenés CS2 y Dota 2."},
+        ]
+        out = stitch_breadcrumbs(hist)
+        final_text = ""
+        for m in out:
+            if m.get("role") == "assistant" and not m.get("tool_calls"):
+                final_text += str(m.get("content") or "")
+        self.assertIn("appid=730", final_text)
+        self.assertIn("appid=570", final_text)
+
+    def test_events_list_stitched(self) -> None:
+        # Hotfix E 2026-05-17: local_calendar.list returns 'events'.
+        events = [
+            {"id": "e1", "title": "reunión equipo", "start": "2026-05-18 10:00"},
+            {"id": "e2", "title": "dentista", "start": "2026-05-19 15:00"},
+        ]
+        hist = [
+            {"role": "user", "content": "qué tengo agendado"},
+            {"role": "assistant", "tool_calls": [
+                {"id": "c1", "type": "function",
+                 "function": {"name": "local_calendar", "arguments": "{}"}}]},
+            {"role": "tool", "tool_call_id": "c1",
+             "content": json.dumps({"ok": True, "events": events})},
+            {"role": "assistant", "content": "Tenés 2 eventos esta semana."},
+        ]
+        out = stitch_breadcrumbs(hist)
+        final_text = ""
+        for m in out:
+            if m.get("role") == "assistant" and not m.get("tool_calls"):
+                final_text += str(m.get("content") or "")
+        self.assertIn("title=reunión equipo", final_text)
+        self.assertIn("title=dentista", final_text)
+
     def test_empty_or_non_list_tabular_is_skipped(self) -> None:
         # `disks: []` and `disks: "C:"` must not produce a breadcrumb.
         for bad in ([], "C:", 42, None):

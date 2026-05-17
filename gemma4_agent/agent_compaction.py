@@ -224,6 +224,11 @@ _LOCATOR_KEYS: tuple[str, ...] = ("path", "url", "selected_title", "image_path",
 #   user "y en F?" -> next turn had no F data -> LLM hallucinated 350 GB.
 _TABULAR_KEYS: tuple[str, ...] = (
     "disks", "processes", "devices", "results", "items", "windows", "tabs",
+    # Hotfix E 2026-05-17: more list-of-dict result keys observed in
+    # real tool outputs. Bounded by _TABULAR_MAX_ROWS=20, so large
+    # lists still produce a clipped breadcrumb.
+    "games", "installed_apps", "tracks", "events",
+    "contacts", "notes", "tasks", "reminders",
 )
 _TABULAR_MAX_ROWS = 20
 _TABULAR_MAX_ROW_CHARS = 200
