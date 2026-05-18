@@ -62,6 +62,14 @@ def execute_calls_sequential(
                 "evidence": "malformed_json_args",
             }
             continue
+        # Hotfix I 2026-05-17: the safety hook may have pre-blocked
+        # this call (e.g. checkout-pattern URL or paid action with
+        # safety_enabled=True). Honor the synthetic result and skip
+        # execution.
+        pre_result = prep.get("_pre_dispatch_result")
+        if isinstance(pre_result, dict):
+            prep["result"] = pre_result
+            continue
         progress_emit("tool_start", {"name": name, "args": args, "index": base_count + index + 1})
         if name in _THREAD_AFFINE_TOOLS:
             try:
@@ -138,8 +146,14 @@ def execute_calls_parallel(
                 "tool": prep["name"],
                 "evidence": "malformed_json_args",
             }
-        else:
-            valid_preps.append((index, prep))
+            continue
+        # Hotfix I 2026-05-17: safety hook pre-block (see
+        # sequential executor for the same gate).
+        pre_result = prep.get("_pre_dispatch_result")
+        if isinstance(pre_result, dict):
+            prep["result"] = pre_result
+            continue
+        valid_preps.append((index, prep))
     if not valid_preps:
         return
     tool_timeout = _tool_timeout_seconds()

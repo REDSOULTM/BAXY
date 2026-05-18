@@ -1263,11 +1263,57 @@ class Gemma4Agent:
                 self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset, parse_error=parse_error)
                 if not in_subset:
                     self.trace.event(turn_id, "router_miss", name=name, sent=sorted(subset_set))
+                # Hotfix I 2026-05-17: pre-dispatch safety hook for
+                # purchase / paid-action attempts. Inspects args
+                # for checkout-pattern URLs and known paid action
+                # names. When safety_enabled, a hit pre-loads a
+                # synthetic needs_confirmation result so the
+                # dispatcher skips the real call. When safety is
+                # off, only the trace event fires.
+                _pre_dispatch_result: dict[str, Any] | None = None
+                try:
+                    from .safety_hook import evaluate_tool_call
+                    _action_for_hook = ""
+                    if isinstance(args, dict):
+                        _action_for_hook = str(args.get("action") or "")
+                    _verdict = evaluate_tool_call(
+                        tool_name=name,
+                        action=_action_for_hook,
+                        args=args if isinstance(args, dict) else {},
+                    )
+                    if _verdict.get("block"):
+                        self.trace.event(
+                            turn_id, "safety_hook_match",
+                            tool=name,
+                            pattern=_verdict.get("pattern"),
+                            reason=_verdict.get("reason"),
+                            enforced=bool(self.config.enable_safety),
+                        )
+                        if self.config.enable_safety:
+                            _pre_dispatch_result = {
+                                "ok": False,
+                                "status": "needs_confirmation",
+                                "verified": False,
+                                "error": "purchase_guard",
+                                "reason": _verdict.get("reason"),
+                                "tool": name,
+                                "evidence": "safety_hook_block",
+                            }
+                except Exception as _exc:  # noqa: BLE001
+                    try:
+                        self.trace.event(
+                            turn_id, "silent_fallback",
+                            component="safety_hook",
+                            error=f"{type(_exc).__name__}: {_exc}",
+                        )
+                    except Exception:
+                        pass
                 prepared.append({
                     "raw_call": raw_call,
                     "name": name,
                     "args": args,
                     "parse_error": parse_error,
+                    "_pre_dispatch_result": _pre_dispatch_result,
                 })
 
             # Phase 2: execute. Parallel when enabled, multiple valid calls
