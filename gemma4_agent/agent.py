@@ -1134,6 +1134,42 @@ class Gemma4Agent:
                                     self._fact_extract_last_run_turn = self._turn_counter
                             except Exception as exc:
                                 self.trace.event(turn_id, "facts_extraction_failed", error=str(exc))
+
+                # Hotfix I 2026-05-17: pending_intent rescue when
+                # the LLM asks a clarifying question on its own
+                # (Bug D8 part 2 — no tool returned needs_user, the
+                # LLM just decided to ask). Only fires when nothing
+                # better is already stashed.
+                try:
+                    _pending_target = _should_set_pending_intent_from_reply(
+                        reply_text=assistant_content or "",
+                        tool_calls_this_turn=list(events),
+                        selected_tool_names=list(selected_tool_names),
+                    )
+                    if _pending_target and hasattr(self.state, "get_pending_intent") and not self.state.get_pending_intent(self._turn_counter):
+                        _target_tool, _asks_for = _pending_target
+                        self.state.set_pending_intent(
+                            tool=_target_tool,
+                            args={},
+                            asks_for=_asks_for,
+                            current_turn=self._turn_counter,
+                            ttl_turns=2,
+                        )
+                        self.trace.event(
+                            turn_id, "pending_intent_from_reply_shape",
+                            target_tool=_target_tool,
+                            reason="reply_ended_with_question_no_tool",
+                        )
+                except Exception as _exc:  # noqa: BLE001
+                    try:
+                        self.trace.event(
+                            turn_id, "silent_fallback",
+                            component="pending_intent_from_reply_shape",
+                            error=f"{type(_exc).__name__}: {_exc}",
+                        )
+                    except Exception:
+                        pass
+
                 self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
                 self._last_turn_ts = time.time()
@@ -1900,6 +1936,82 @@ def _is_unverified_result(result: dict[str, Any]) -> bool:
         return True
     status = str(result.get("status") or "").casefold()
     return status in {"failed", "needs_verification", "attempted", "needs_confirmation"}
+
+
+# Hotfix I 2026-05-17. Module-level set of "meta" tools — these
+# manage agent state / safety / verification rather than perform
+# domain actions, so they do not count when deciding whether the
+# LLM "should have called something".
+_META_TOOLS: frozenset[str] = frozenset({
+    "session", "state", "verify", "safety", "skill_load", "subagent",
+})
+
+# Question-mark family: ASCII, Spanish inverted, Arabic, CJK
+# fullwidth. Single-char comparison; never a keyword list, so the
+# detection stays language-agnostic.
+_QUESTION_CHARS: frozenset[str] = frozenset({"?", "¿", "؟", "？"})
+
+
+def _domain_subset(selected_tool_names: list[str]) -> list[str]:
+    """Return only the non-meta tools from a router subset.
+
+    Hotfix I 2026-05-17. Lifted to module-level for testability —
+    used by both I1 (reply-shape pending_intent) and I5
+    (tool_call_skipped_when_expected telemetry).
+    """
+    return [t for t in selected_tool_names if t not in _META_TOOLS]
+
+
+def _should_set_pending_intent_from_reply(
+    reply_text: str,
+    tool_calls_this_turn: list[dict[str, Any]],
+    selected_tool_names: list[str],
+) -> tuple[str, str] | None:
+    """Decide whether to stash a pending_intent based on reply shape.
+
+    Hotfix I 2026-05-17. Hotfix F1 already handles the case where
+    a tool returns status='needs_user'. This helper covers the
+    OTHER case: the LLM asked a clarifying question on its own
+    (Bug D8 part 2). 100% structural — only inspects the final
+    char of the trimmed reply and the structural result of any
+    tool_calls. NEVER matches user text.
+
+    Returns (tool_name, asks_for) when:
+      1. Reply text trimmed ends with a question-family char
+         (? ¿ ؟ ？).
+      2. ZERO successful tool_calls this turn (if a tool ran
+         successfully, the turn ended in a normal action — don't
+         stash a pending intent on top of it).
+      3. selected_tool_names has at least one non-meta tool.
+    Returns None otherwise.
+    """
+    if not reply_text:
+        return None
+    # Strip trailing whitespace and common closing punctuation
+    # (quotes, parens, markdown emphasis) so the trailing-char
+    # check sees the real terminal punctuation.
+    stripped = reply_text.rstrip().rstrip("\"'`*_)")
+    if not stripped or stripped[-1] not in _QUESTION_CHARS:
+        return None
+    # Accept either ToolEvent dataclasses or dicts. Production
+    # callers pass ToolEvent (see agent.py turn loop); unit tests
+    # pass dicts for ergonomics.
+    def _result_of(c: Any) -> dict[str, Any]:
+        if isinstance(c, dict):
+            return c.get("result") or {}
+        r = getattr(c, "result", None)
+        return r if isinstance(r, dict) else {}
+
+    successful = [
+        c for c in tool_calls_this_turn
+        if not _is_unverified_result(_result_of(c))
+    ]
+    if successful:
+        return None
+    candidates = _domain_subset(selected_tool_names)
+    if not candidates:
+        return None
+    return (candidates[0], "user_clarification")
 
 
 def _run_with_timeout(fn: Any, *args: Any, timeout_s: float, **kwargs: Any) -> dict[str, Any]:
