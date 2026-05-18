@@ -39,3 +39,10 @@ results/_vulkan_archive/
 # Voice/trace dumps (not source-controlled; rotate via TraceLogger)
 traces_*.txt
 voice_debug*.log
+
+# Voice analysis intermediate artifacts (Sprint M.1).
+# testaudio_full.wav is regenerable from the .m4a via ffmpeg
+# (already covered by *.wav above, listed here for documentation).
+# The .m4a raw audio file is operator-provided — left to operator
+# discretion. To exclude, uncomment the next line:
+# gemma4_agent/voice/tests/*.m4a
