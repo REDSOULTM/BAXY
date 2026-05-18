@@ -28,8 +28,8 @@
 - name: office
   purpose: |
     Create and edit office documents — Word (.docx), PowerPoint (.pptx),
-    Excel (.xlsx), and PDF export. Use for new-document creation,
-    template-driven slides, and converting between formats.
+    Excel (.xlsx), and PDF export.
+    Crear y editar documentos office — Word, PowerPoint, Excel, PDF.
   domain: documents
   example_queries:
     es:
@@ -50,8 +50,8 @@
 - name: document
   purpose: |
     Extract text, tables, and images from existing PDF / DOCX / XLSX /
-    PPTX / HTML files. Read-only ingestion path; use `office` for
-    creation. Includes summarize and compare-documents flows.
+    PPTX / HTML files. Read-only ingestion path; use `office` for creation.
+    Leer, extraer texto, tablas, imágenes; resumir, comparar documentos.
   domain: documents
   example_queries:
     es:
@@ -72,8 +72,8 @@
 - name: knowledge
   purpose: |
     Local RAG knowledge base — ingest documents and search across them
-    with hybrid BM25 + cross-encoder rerank. Best for "I dropped a few
-    PDFs and want to ask questions about them later".
+    with hybrid BM25 + cross-encoder rerank.
+    Base de conocimiento — indexa, busca, consulta documentos locales.
   domain: documents
   example_queries:
     es:
@@ -94,8 +94,8 @@
 - name: source_manager
   purpose: |
     Persist research sources, URLs, snippets, and file snapshots so
-    future answers can cite them. Companion to `web` and
-    `fact_check`; not for ad-hoc note-taking (use `notes_tasks`).
+    future answers can cite them. Companion to `web` and `fact_check`.
+    Guardar fuentes, URLs, fragmentos, snapshots para citar después.
   domain: documents
   example_queries:
     es:
@@ -117,7 +117,7 @@
   purpose: |
     Organize a local photo library — scan folders, read EXIF data,
     generate thumbnails, group images by date (YYYY-MM, YYYY-MM-DD).
-    No cloud sync, no face recognition.
+    Organizar fotos locales — escanear, leer EXIF, miniaturas, agrupar por fecha.
   domain: documents
   example_queries:
     es:
@@ -139,7 +139,7 @@
   purpose: |
     Flashcards + SM-2 spaced repetition. Local SQLite-backed. Manages
     decks, adds cards, surfaces what's due today, grades reviews 0-5.
-    Personal study aid; not a search tool.
+    Flashcards y repaso espaciado — gestionar mazos, agregar cartas, calificar.
   domain: documents
   example_queries:
     es:
@@ -160,9 +160,8 @@
 - name: browser
   purpose: |
     Drive a desktop browser via shell / deep-links — open URLs, search
-    in the active browser, play a specific YouTube video, send media
-    keys. For programmatic page interaction (click, fill, extract) use
-    `browser_real`. For real web research use `web`.
+    in the active browser, play a YouTube video, send media keys.
+    Navegador — abre URLs, busca, navega, reproduce YouTube, atajos.
   domain: browser
   example_queries:
     es:
@@ -184,8 +183,8 @@
   purpose: |
     Programmatic browser via Playwright over CDP — attach to an
     already-running Chrome / Edge / Opera, navigate, fill, click,
-    extract text or tables, screenshot, manage tabs. Use when the
-    user needs the agent to *interact* with a specific page state.
+    extract text or tables, screenshot, manage tabs.
+    Automatizar el navegador — hacer click, rellenar, extraer, capturar, pestañas.
   domain: browser
   example_queries:
     es:
@@ -206,9 +205,8 @@
 - name: web
   purpose: |
     Real web research — search engine queries + page-fetch + content
-    extraction across multiple sources. Use for "investigate", "find
-    out", current facts, citations. Prefer over `browser` whenever
-    the user wants an *answer*, not to look at a page.
+    extraction across multiple sources. Use for current facts and citations.
+    Investiga, busca en la web, obtiene fuentes, hechos actuales, citas.
   domain: web
   example_queries:
     es:
@@ -229,9 +227,8 @@
 - name: vision
   purpose: |
     Visual reasoning over the current screen — describe what's shown,
-    OCR a region, find a UI element by description. Uses Gemma's
-    native vision plus local Tesseract for OCR. Read-only; for
-    clicking use `gui` or `uia`.
+    OCR a region, find a UI element by description. Read-only.
+    Describir la pantalla, leer texto (OCR), encontrar elementos visuales.
   domain: vision
   example_queries:
     es:
@@ -252,9 +249,8 @@
 - name: form_filler
   purpose: |
     HTML form orchestrator on top of `browser_real` — discover form
-    fields, plan a fill from a values dict, apply, then submit with
-    a confirmation gate. Use when the user pastes data and asks to
-    "complete the form".
+    fields, plan a fill from a values dict, apply, then submit.
+    Rellenar formularios HTML — detectar campos, completar, enviar.
   domain: browser
   example_queries:
     es:
@@ -275,9 +271,8 @@
 - name: fact_check
   purpose: |
     Verify a claim against local sources (knowledge base, files,
-    sources_manager). TF-IDF lexical match + negation heuristic;
-    returns verdict + ranked evidence. Use when the user asks "is
-    that true", "verify", "fact-check".
+    sources_manager). Returns verdict + ranked evidence.
+    Verificar afirmaciones contra fuentes locales, chequear hechos.
   domain: web
   example_queries:
     es:
@@ -298,9 +293,8 @@
 - name: audio
   purpose: |
     System audio control — get/set master volume, mute, list devices,
-    and send global media keys (play/pause/stop/next/previous). Use
-    for "lower the volume" / "pause whatever is playing" / "skip song".
-    For device routing use `audio_device`.
+    and send global media keys (play/pause/stop/next/previous).
+    Controlar volumen, silenciar, pausar, reproducir, siguiente, anterior.
   domain: audio
   example_queries:
     es:
@@ -321,9 +315,8 @@
 - name: audio_device
   purpose: |
     Windows audio routing — set default output / input device,
-    per-app route override (e.g. Discord to headset, Spotify to
-    speakers), snapshot and restore routing presets. Uses
-    SoundVolumeView under the hood.
+    per-app route override, snapshot and restore routing presets.
+    Cambiar dispositivo de audio, enrutar por app, guardar perfiles.
   domain: audio
   example_queries:
     es:
@@ -345,8 +338,7 @@
   purpose: |
     Play media on streaming platforms — Spotify, YouTube, Netflix,
     Disney+, HBO Max, Prime Video — via deeplinks or web flows.
-    Handles auto-play, profile picking, search-and-play. Use for
-    "pon X en Netflix", "play Y on Spotify".
+    Reproducir en plataformas de streaming, autoplay, picking de perfil.
   domain: media
   example_queries:
     es:
@@ -380,8 +372,8 @@
 - name: media_edit
   purpose: |
     ffmpeg-based audio / video editing — trim, concat, extract audio,
-    transcode (mp4/mkv/webm), normalize loudness (EBU R128), generate
-    thumbnails, extract subtitles. Local-only; requires ffmpeg.
+    transcode (mp4/mkv/webm), normalize loudness, generate thumbnails.
+    Editar audio y video — cortar, concatenar, transcodificar, normalizar.
   domain: media
   example_queries:
     es:
@@ -402,9 +394,8 @@
 - name: steam
   purpose: |
     Steam-specific actions — list installed games, search the library
-    or the store, launch a game by name, open the store page for a
-    title. Uses steam:// deeplinks. For other launchers (Epic, GOG,
-    Xbox) use `game_launcher`.
+    or the store, launch and close games, open the store page.
+    Steam — lista, busca, abre, cierra, lanza juegos; abrir la tienda.
   domain: gaming
   example_queries:
     es:
@@ -425,8 +416,8 @@
 - name: game_launcher
   purpose: |
     Non-Steam launchers — Epic Games, GOG Galaxy, Xbox app, Riot
-    Client. Discover installed titles per launcher, launch by name,
-    open the library page. Steam has its own dedicated tool.
+    Client. Discover installed titles, launch by name, open library.
+    Lanzadores no-Steam — Epic, GOG, Xbox; busca, abre, cierra, lanza juegos.
   domain: gaming
   example_queries:
     es:
@@ -447,9 +438,8 @@
 - name: creative_local
   purpose: |
     Bridge to a local ComfyUI server (default :8188) for Stable
-    Diffusion / SDXL / Flux image generation. Submits workflows,
-    polls for results, manages the queue. Requires ComfyUI running
-    locally.
+    Diffusion / SDXL / Flux image generation. Submits workflows.
+    Generar imágenes localmente con ComfyUI — Stable Diffusion, SDXL, Flux.
   domain: media
   example_queries:
     es:
@@ -470,9 +460,8 @@
 - name: whatsapp
   purpose: |
     Send messages, voice notes, images via WhatsApp Web or
-    WhatsApp Desktop. Resolves contact names from local
-    contacts, opens chats, sends pre-typed text. Use for
-    "mandale a X", "decile a Y por whatsapp".
+    WhatsApp Desktop. Resolves contact names from local contacts.
+    WhatsApp — envía, manda mensajes, notas de voz, imágenes; abre chats.
   domain: messaging
   example_queries:
     es:
@@ -493,8 +482,8 @@
   purpose: |
     Compose, send, search, read email via Outlook desktop or
     Gmail web. Handles drafting from natural-language brief,
-    attachments, replies. Use for "escribile un mail a X",
-    "mandale por correo a Y".
+    attachments, replies.
+    Correo — escribe, envía, manda, lee, busca, responde, adjunta.
   domain: messaging
   example_queries:
     es:
@@ -514,9 +503,8 @@
 - name: contacts
   purpose: |
     Lookup, create, update, delete contacts in Windows People /
-    Outlook / Google Contacts. Resolves "mama", "mi jefe",
-    "Juan del trabajo" to canonical entries. Use for finding
-    phone numbers, emails, addresses of known people.
+    Outlook / Google Contacts. Resolves friendly names to entries.
+    Contactos — busca, crea, actualiza, borra; teléfonos, mails, direcciones.
   domain: messaging
   example_queries:
     es:
@@ -536,9 +524,8 @@
 - name: notification
   purpose: |
     Manage Windows toast notifications, Action Center, focus
-    assist, Do Not Disturb. Read recent notifications, dismiss
-    them, mute apps, schedule quiet hours. Use for "no me
-    molestes", "mostrame las notificaciones".
+    assist, Do Not Disturb. Read, dismiss, mute apps, schedule.
+    Gestionar notificaciones, silenciar apps, no molestar, leer, descartar.
   domain: messaging
   example_queries:
     es:
@@ -558,9 +545,8 @@
 - name: reminder
   purpose: |
     Create, list, snooze, dismiss reminders tied to time or
-    location. Different from local_calendar (full events) and
-    notes_tasks (todo items). Use for "recordame en 30 min",
-    "avisame cuando llegue a casa".
+    location. Different from local_calendar (full events).
+    Crear, listar, posponer, descartar recordatorios; avisos por tiempo o lugar.
   domain: messaging
   example_queries:
     es:
@@ -580,9 +566,8 @@
 - name: system
   purpose: |
     Windows system controls — shutdown, restart, lock, sleep,
-    hibernate, log off, power plans, brightness, volume,
-    timezone, language. Use for "apaga la pc", "ponete oscuro",
-    "subi el brillo".
+    hibernate, log off, power plans, brightness, timezone, language.
+    Apagar, reiniciar, bloquear, suspender, hibernar, brillo, zona horaria.
   domain: system
   example_queries:
     es:
@@ -604,9 +589,8 @@
 - name: gui
   purpose: |
     Programmatic mouse + keyboard automation: click coordinates,
-    drag, type, key chords, scroll. Lower-level than uia (which
-    inspects elements). Use when uia can't find a target and you
-    need raw input synthesis. Fallback for legacy apps.
+    drag, type, key chords, scroll. Lower-level than uia.
+    Automatizar mouse y teclado — click, arrastrar, escribir, atajos, scroll.
   domain: system
   example_queries:
     es:
@@ -626,9 +610,8 @@
 - name: uia
   purpose: |
     UI Automation accessor for Windows controls — inspect, query,
-    and invoke buttons/menus/text fields via the accessibility
-    tree (AutomationId, Name, ControlType). Higher-level than gui:
-    finds elements by semantics, not pixels. Use for native apps.
+    and invoke buttons/menus/text fields via the accessibility tree.
+    Inspeccionar, consultar, invocar botones, menús, campos por accesibilidad.
   domain: system
   example_queries:
     es:
@@ -648,9 +631,8 @@
 - name: window
   purpose: |
     Window management — list, focus, minimize, maximize, close,
-    resize, move, snap left/right, send to other monitor. Use
-    for "minimiza esto", "ponelo a la izquierda", "cerra todas
-    las ventanas".
+    resize, move, snap left/right, send to other monitor.
+    Ventanas — lista, enfoca, minimiza, maximiza, cierra, mueve, redimensiona.
   domain: system
   example_queries:
     es:
@@ -671,8 +653,8 @@
 - name: desktop_layout
   purpose: |
     Virtual desktops, workspace arrangement, save/restore window
-    layouts, multi-monitor profiles. Use for "armame un escritorio
-    para trabajar", "guardame esta configuracion de ventanas".
+    layouts, multi-monitor profiles.
+    Escritorios virtuales, organizar workspace, guardar/restaurar layouts.
   domain: system
   example_queries:
     es:
@@ -692,8 +674,8 @@
 - name: clipboard
   purpose: |
     Read, write, and inspect Windows clipboard history. Supports
-    text, images, files. Use for "que tengo copiado", "copiame
-    esto", "pegame lo de hace 3 copias atras".
+    text, images, files.
+    Leer, escribir, inspeccionar el portapapeles — texto, imágenes, archivos.
   domain: system
   example_queries:
     es:
@@ -713,9 +695,8 @@
 - name: app
   purpose: |
     Launch, close, list running applications. Resolves friendly
-    names ("excel", "discord", "chrome") to executables. Distinct
-    from package (install/uninstall) and game_launcher (Steam-only).
-    Use for "abrime X", "cerra Y".
+    names to executables. Distinct from package (install/uninstall).
+    Aplicaciones — abre, cierra, lista, ejecuta; resuelve nombres amigables.
   domain: system
   example_queries:
     es:
@@ -738,8 +719,7 @@
   purpose: |
     Install, uninstall, update software via winget / scoop /
     chocolatey. Searches package repos, handles silent installs.
-    Distinct from app (launch/close). Use for "instalame X",
-    "actualizame Y", "desinstalame Z".
+    Paquetes — instala, desinstala, actualiza, busca software con winget.
   domain: system
   example_queries:
     es:
@@ -759,8 +739,8 @@
 - name: accessibility
   purpose: |
     Windows accessibility features — Narrator, Magnifier, high
-    contrast, color filters, sticky keys, mouse keys. Read screen
-    content aloud, increase font size, enable assistive modes.
+    contrast, color filters, sticky keys, mouse keys.
+    Accesibilidad — narrador, lupa, alto contraste, teclas adhesivas.
   domain: system
   example_queries:
     es:
@@ -780,9 +760,8 @@
 - name: filesystem
   purpose: |
     File and folder operations — create, copy, move, rename,
-    delete, list, read, write, chmod-equivalent (ACLs). Resolves
-    user-friendly paths ("escritorio", "descargas", "documentos").
-    Use for "borrame X", "moveme Y a Z", "creame una carpeta".
+    delete, list, read, write, ACLs. Resolves user-friendly paths.
+    Archivos — crea, copia, mueve, renombra, borra, lista, lee, escribe, abre.
   domain: storage
   example_queries:
     es:
@@ -804,8 +783,7 @@
   purpose: |
     OneDrive, Google Drive, Dropbox sync controls, backup
     schedules, restore from version history, conflict resolution.
-    Use for "hace backup de X", "subi esto a onedrive",
-    "restaura la version de ayer".
+    Sincronizar, respaldar, subir a la nube, restaurar versiones anteriores.
   domain: storage
   example_queries:
     es:
@@ -826,8 +804,7 @@
   purpose: |
     Full-text search across local files (Everything-style),
     file metadata search, content-based search inside docs/PDFs.
-    Distinct from web (online) and knowledge (curated notes).
-    Use for "buscame el archivo X", "donde guarde Y".
+    Buscar archivos locales — busca por nombre, metadatos, contenido.
   domain: storage
   example_queries:
     es:
@@ -848,8 +825,7 @@
   purpose: |
     Download files from URLs, manage download queue, resume
     interrupted downloads, organize by type into target folders.
-    Different from web (browsing) — this is for explicit file
-    fetches. Use for "bajame X", "descargame de esta url".
+    Descargas — baja, descarga archivos desde URLs, gestiona cola, reanuda.
   domain: storage
   example_queries:
     es:
@@ -870,8 +846,7 @@
   purpose: |
     Docker / podman container lifecycle — list, start, stop,
     inspect, pull images, exec into a container, view logs.
-    Use for "levantame el contenedor de X", "mostrame los logs
-    de Y".
+    Gestionar contenedores Docker — listar, arrancar, parar, inspeccionar, logs.
   domain: storage
   example_queries:
     es:
@@ -891,9 +866,8 @@
 - name: database
   purpose: |
     Connect to local databases — sqlite, postgres, mysql — run
-    SELECT/INSERT/UPDATE queries, inspect schemas, dump and
-    restore. Use for "consultame X en la base", "que tablas
-    tiene Y".
+    SELECT/INSERT/UPDATE queries, inspect schemas, dump and restore.
+    Consultar bases de datos, ejecutar SQL, inspeccionar esquemas, exportar.
   domain: storage
   example_queries:
     es:
@@ -913,8 +887,8 @@
 - name: smart_home
   purpose: |
     Home Assistant / Alexa / Google Home bridges — lights,
-    thermostats, locks, scenes, switches. Use for "prende las
-    luces", "subi el aire", "modo cine".
+    thermostats, locks, scenes, switches.
+    Hogar inteligente — luces, termostatos, cerraduras, escenas, interruptores.
   domain: iot
   example_queries:
     es:
@@ -936,9 +910,8 @@
 - name: device_settings
   purpose: |
     Windows Settings deep links — bluetooth, wifi, display,
-    sound, mouse, keyboard, privacy. Open the right Settings page
-    OR change settings programmatically. Use for "abri la
-    configuracion de X", "cambiame Y".
+    sound, mouse, keyboard, privacy. Open Settings or change programmatically.
+    Abrir, cambiar configuración — bluetooth, wifi, pantalla, sonido, privacidad.
   domain: iot
   example_queries:
     es:
@@ -959,9 +932,8 @@
 - name: peripheral
   purpose: |
     Bluetooth/USB device pairing, mouse DPI, keyboard backlight,
-    headset profiles, controller mapping. Distinct from
-    device_settings (Settings UI) — this is device-specific
-    state. Use for "emparejame los auriculares", "cambia el dpi".
+    headset profiles, controller mapping.
+    Emparejar dispositivos bluetooth/USB, DPI del mouse, perfiles de auriculares.
   domain: iot
   example_queries:
     es:
@@ -981,8 +953,8 @@
 - name: printer_scanner
   purpose: |
     Printer queues, scan to file/email, manage paper sizes,
-    duplex, color/bw, install printer drivers. Use for "imprimi
-    esto", "escanea el documento", "cancelame la cola".
+    duplex, color/bw, install printer drivers.
+    Imprimir, escanear, gestionar colas, cancelar trabajos, instalar drivers.
   domain: iot
   example_queries:
     es:
@@ -1003,8 +975,7 @@
   purpose: |
     Wifi connect/disconnect, list networks, VPN toggle, ping,
     traceroute, ip config, dns flush, port scan, proxy settings.
-    Use for "conectate a la wifi X", "prende la vpn",
-    "pingueame Y".
+    Conectar wifi, listar redes, VPN, ping, traceroute, IP, DNS, puertos.
   domain: iot
   example_queries:
     es:
@@ -1026,9 +997,8 @@
 - name: developer
   purpose: |
     Git operations, code editor invocation, build/run/test
-    commands for common stacks (node, python, rust, go), language
-    server diagnostics. Use for "hace commit", "abrime esto en
-    vscode", "corre los tests".
+    commands for common stacks (node, python, rust, go), LSP.
+    Git, abrir editor, compilar, correr tests, diagnósticos del LSP.
   domain: dev
   example_queries:
     es:
@@ -1050,9 +1020,8 @@
 - name: terminal
   purpose: |
     Spawn PowerShell / cmd / WSL bash, execute shell commands,
-    capture output, manage open terminals. Lower-level than
-    developer (which is git/build-aware). Use for "corre el
-    comando X", "abri una terminal en Y".
+    capture output, manage open terminals.
+    Ejecutar comandos en PowerShell/cmd/bash, abrir terminal, capturar salida.
   domain: dev
   example_queries:
     es:
@@ -1073,9 +1042,8 @@
 - name: registry
   purpose: |
     Windows registry read/write/export — query keys under HKLM/
-    HKCU, change values, export branches to .reg files. Use with
-    care; this is for advanced configuration. Use for "cambiame
-    la clave X del registro".
+    HKCU, change values, export branches to .reg files.
+    Leer, escribir, exportar el registro de Windows; consultar claves HKLM/HKCU.
   domain: dev
   example_queries:
     es:
@@ -1095,8 +1063,8 @@
 - name: env
   purpose: |
     Environment variables — read PATH, set system or user vars,
-    add directories to PATH, manage .env files. Use for "agrega
-    X al PATH", "que vale la variable Y", "ponete la api key".
+    add directories to PATH, manage .env files.
+    Variables de entorno — leer, escribir, agregar al PATH, gestionar .env.
   domain: dev
   example_queries:
     es:
@@ -1116,8 +1084,8 @@
 - name: input
   purpose: |
     Speech-to-text dictation tools, voice typing into focused
-    field, keyboard remapping, IME switching. Distinct from gui
-    (raw keystrokes) — this is for natural dictation flow.
+    field, keyboard remapping, IME switching.
+    Dictado por voz, escribir hablando, remapeo de teclado, cambiar idioma.
   domain: dev
   example_queries:
     es:
@@ -1137,8 +1105,8 @@
 - name: maintenance
   purpose: |
     Disk cleanup, defrag, SFC/DISM repair, Windows update,
-    driver updates, temp file cleanup. Use for "limpia la pc",
-    "actualiza windows", "revisa el disco".
+    driver updates, temp file cleanup.
+    Mantenimiento — limpiar disco, desfragmentar, reparar, actualizar drivers.
   domain: dev
   example_queries:
     es:
@@ -1159,10 +1127,9 @@
 
 - name: routine
   purpose: |
-    Compose multi-step routines from primitives — "morning"
-    routine, "shutdown sequence", "before-bed" macro. Saves
-    parameterized recipes that the agent can replay. Use for
-    "armame una rutina de X".
+    Compose multi-step routines from primitives — morning routine,
+    shutdown sequence, before-bed macro. Saves parameterized recipes.
+    Crear, guardar, ejecutar rutinas de varios pasos parametrizadas.
   domain: automation
   example_queries:
     es:
@@ -1181,10 +1148,9 @@
 
 - name: watcher
   purpose: |
-    File and folder watchers that react to changes — e.g., when
-    a new file lands in Downloads, move it; when Steam adds a
-    screenshot, copy to OneDrive. Triggers + actions. Use for
-    "cuando pase X haceme Y".
+    File and folder watchers that react to changes — triggers +
+    actions when new files arrive, screenshots are taken, etc.
+    Vigilar carpetas, reaccionar a cambios, disparar acciones automáticas.
   domain: automation
   example_queries:
     es:
@@ -1203,10 +1169,9 @@
 
 - name: job_manager
   purpose: |
-    Schedule deferred or recurring jobs — "send email at 9am",
-    "ping server every 5 min", cron-style. Different from
-    reminder (user-facing) — this runs commands. Use for
-    "programame X para Y", "cada Z minutos hace W".
+    Schedule deferred or recurring jobs — send email at 9am, ping
+    server every 5 min, cron-style. Different from reminder.
+    Programar trabajos diferidos o recurrentes, estilo cron, ejecutar comandos.
   domain: automation
   example_queries:
     es:
@@ -1226,9 +1191,8 @@
 - name: state
   purpose: |
     Persist and retrieve agent state across sessions — last
-    queried tool, conversation context, pinned variables, user
-    preferences not covered by memory. Lower-level than memory
-    (which is curated). Use for "guardate X como Y".
+    queried tool, conversation context, pinned variables.
+    Guardar y recuperar el estado del agente entre sesiones; variables fijadas.
   domain: automation
   example_queries:
     es:
@@ -1248,9 +1212,8 @@
 - name: verify
   purpose: |
     Post-action verification — confirm a window actually opened,
-    a file actually moved, a setting actually changed. Used
-    internally by the agent loop to validate side effects. Use
-    for "comprobá si X funcionó".
+    a file actually moved, a setting actually changed.
+    Comprobar, verificar acciones — ventanas abiertas, archivos movidos.
   domain: automation
   example_queries:
     es:
@@ -1269,10 +1232,9 @@
 
 - name: dependency
   purpose: |
-    Detect and install missing OS-level dependencies (VLC,
-    ffmpeg, SoundVolumeView). Probes which tool is missing,
-    asks user consent, installs via package. Distinct from
-    package (raw install) — this is the auto-recovery layer.
+    Detect and install missing OS-level dependencies (VLC, ffmpeg,
+    SoundVolumeView). Auto-recovery layer on top of package.
+    Detectar e instalar dependencias del sistema faltantes; auto-recuperación.
   domain: automation
   example_queries:
     es:
@@ -1292,9 +1254,8 @@
 - name: safety
   purpose: |
     Purchase guards, destructive-action confirmation, parental
-    locks, blocked tool list. Asks for explicit consent before
-    spending money, deleting, or running heavy operations. Use
-    when the agent needs to slow down before a risky action.
+    locks, blocked tool list. Asks consent before risky actions.
+    Confirmar acciones riesgosas, bloquear compras, pedir consentimiento.
   domain: automation
   example_queries:
     es:
@@ -1314,9 +1275,8 @@
 - name: session
   purpose: |
     Conversation session controls — start fresh, save current
-    session, list past sessions, replay. Lower-level than state
-    (which is a flat keyvalue). Use for "empezame de cero",
-    "guardame la conversacion actual".
+    session, list past sessions, replay.
+    Controlar la sesión — empezar de cero, guardar, listar, reanudar.
   domain: automation
   example_queries:
     es:
@@ -1335,10 +1295,9 @@
 
 - name: memory
   purpose: |
-    Long-term semantic memory of facts about the user — gustos
-    musicales, nombres de familia, preferencias de UI, decisiones
-    previas. Curated layer above state. Use for "guardate que
-    me gusta X", "que sabes de mi sobre Y".
+    Long-term semantic memory of facts about the user — tastes,
+    family names, UI preferences, prior decisions.
+    Memoria a largo plazo del usuario — gustos, preferencias, decisiones.
   domain: cognition
   example_queries:
     es:
@@ -1358,9 +1317,8 @@
 - name: notes_tasks
   purpose: |
     Notes + todo items — create, edit, delete, list. Distinct
-    from reminder (time-based) and local_calendar (events). Plain
-    text or markdown, with optional tags. Use for "anotame X",
-    "tengo que hacer Y".
+    from reminder (time-based) and local_calendar (events).
+    Notas y tareas — crea, edita, borra, lista, anota; pendientes; markdown.
   domain: cognition
   example_queries:
     es:
@@ -1380,9 +1338,8 @@
 - name: local_calendar
   purpose: |
     Local calendar events — Outlook / Google Calendar / Windows.
-    Create, edit, delete, list events with start/end/location/
-    attendees. Distinct from reminder (alerts) and notes_tasks
-    (todos). Use for "agendame X", "que tengo el viernes".
+    Create, edit, delete, list events with start/end/location.
+    Calendario — crear, editar, borrar, listar eventos; agendar reuniones.
   domain: cognition
   example_queries:
     es:
@@ -1402,8 +1359,8 @@
 - name: habit_tracker
   purpose: |
     Track habits with streaks — check in daily, view progress,
-    set goals, get reminders. Distinct from notes_tasks (one-off
-    todos). Use for "ya hice X hoy", "cuanto llevo de Y".
+    set goals, get reminders.
+    Seguir hábitos con rachas, marcar cada día, ver progreso, fijar metas.
   domain: cognition
   example_queries:
     es:
@@ -1423,9 +1380,8 @@
 - name: data_analysis
   purpose: |
     Run pandas-style analysis on local CSVs/Excels — load,
-    group-by, plot, summary stats, basic ML (sklearn). Different
-    from database (SQL) — this is dataframes-in-Python. Use for
-    "analiza este csv", "graficame X de Y".
+    group-by, plot, summary stats, basic ML (sklearn).
+    Analizar datos — cargar CSV/Excel, agrupar, graficar, estadísticas, ML básico.
   domain: cognition
   example_queries:
     es:
@@ -1445,9 +1401,8 @@
 - name: skill_load
   purpose: |
     Load and activate skills/microagents at runtime — turn on a
-    specific persona, enable a domain-specific helper, swap
-    behavior packs. Internal tool used by the agent to bootstrap
-    capabilities on demand.
+    specific persona, enable a domain-specific helper.
+    Cargar y activar habilidades/microagentes — personas, ayudantes específicos.
   domain: cognition
   example_queries:
     es:
@@ -1468,8 +1423,7 @@
   purpose: |
     Delegate a complex task to a fresh sub-agent with isolated
     context — research, multi-step planning, parallel branches.
-    Returns a single summary. Use for "investigá a fondo X",
-    "dejá a otro agente que haga Y".
+    Delegar a un sub-agente con contexto aislado — investigar, planificar.
   domain: cognition
   example_queries:
     es:
