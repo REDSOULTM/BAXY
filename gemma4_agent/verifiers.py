@@ -841,3 +841,308 @@ def verify_routine(args: dict, result: dict) -> VerifierOutcome:
             )
         return _unverifiable("routine", "create returned no id")
     return _ok_evidence("routine", "non-create action", [])
+
+
+# ============================================================================
+# 19-28. Round 2: 10 more structural verifiers (hotfix I 2026-05-17)
+# ============================================================================
+
+@register_verifier("browser_real")
+def verify_browser_real(args: dict, result: dict) -> VerifierOutcome:
+    """Verify browser_real (Playwright) actions.
+
+    Structural-evidence: extracted_chars, path/url for screenshot
+    and navigation. Never inspects page text.
+    """
+    if _result_says_unverified(result):
+        return _failed("browser_real", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action in {"click", "fill", "press", "type"}:
+        if result.get("ok") is True:
+            return _ok_evidence("browser_real", "action dispatched", ["ok"])
+        return _unverifiable("browser_real", "no ok flag")
+    if action == "extract":
+        chars = result.get("extracted_chars")
+        if chars is None:
+            text = result.get("text") or ""
+            chars = len(text) if isinstance(text, str) else 0
+        if isinstance(chars, int) and chars > 0:
+            return _ok_evidence(
+                "browser_real", "content extracted",
+                ["extracted_chars"], {"chars": chars},
+            )
+        return _unverifiable("browser_real", "extract returned no text")
+    if action in {"screenshot", "open", "goto"}:
+        if result.get("path") or result.get("url"):
+            return _ok_evidence(
+                "browser_real", "page or screenshot reached",
+                ["path", "url"],
+            )
+        return _unverifiable("browser_real", "no path/url evidence")
+    return _ok_evidence("browser_real", "non-evidence-bearing action", [])
+
+
+@register_verifier("device_settings")
+def verify_device_settings(args: dict, result: dict) -> VerifierOutcome:
+    """Verify device_settings actions (WiFi/Bluetooth/displays).
+
+    Structural-evidence: connection booleans + state read-back.
+    """
+    if _result_says_unverified(result):
+        return _failed("device_settings", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "wifi_connect":
+        if result.get("wifi_connected") is True or result.get("connected") is True:
+            return _ok_evidence(
+                "device_settings", "wifi connected",
+                ["wifi_connected", "connected"],
+            )
+        return _unverifiable("device_settings", "no connection confirmation")
+    if action in {"bluetooth_on", "bluetooth_off"}:
+        state = result.get("bluetooth_on")
+        if state is not None:
+            return _ok_evidence(
+                "device_settings", "bluetooth state read back",
+                ["bluetooth_on"],
+            )
+        return _unverifiable("device_settings", "no bluetooth state")
+    return _ok_evidence("device_settings", "non-evidence-bearing action", [])
+
+
+@register_verifier("network")
+def verify_network(args: dict, result: dict) -> VerifierOutcome:
+    """Verify network diagnostics.
+
+    Structural-evidence: ping.success, dns_resolved, port_open
+    booleans set by the diagnostic itself.
+    """
+    if _result_says_unverified(result):
+        return _failed("network", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "ping":
+        ping = result.get("ping") if isinstance(result.get("ping"), dict) else {}
+        if ping.get("success") is True or result.get("reachable") is True:
+            return _ok_evidence("network", "host reachable",
+                                ["ping.success", "reachable"])
+        return _unverifiable("network", "ping no success flag")
+    if action == "dns":
+        if result.get("dns_resolved") is True or result.get("addresses"):
+            return _ok_evidence("network", "dns resolved",
+                                ["dns_resolved", "addresses"])
+        return _unverifiable("network", "no dns evidence")
+    if action == "port_check":
+        if result.get("port_open") is True:
+            return _ok_evidence("network", "port open",
+                                ["port_open"])
+        return _unverifiable("network", "no port_open evidence")
+    return _ok_evidence("network", "non-evidence-bearing action", [])
+
+
+@register_verifier("package")
+def verify_package(args: dict, result: dict) -> VerifierOutcome:
+    """Verify package install / uninstall via winget.
+
+    Structural-evidence: installed=True, version field, or
+    package_already_present=True for idempotent installs.
+    """
+    if _result_says_unverified(result):
+        return _failed("package", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "install":
+        if (
+            result.get("installed") is True
+            or result.get("package_already_present") is True
+            or result.get("version")
+        ):
+            return _ok_evidence(
+                "package", "install confirmed",
+                ["installed", "package_already_present", "version"],
+            )
+        return _unverifiable("package", "no install confirmation")
+    if action == "uninstall":
+        if result.get("uninstalled") is True or result.get("not_installed") is True:
+            return _ok_evidence(
+                "package", "uninstall confirmed",
+                ["uninstalled", "not_installed"],
+            )
+        return _unverifiable("package", "no uninstall confirmation")
+    return _ok_evidence("package", "non-mutating action", [])
+
+
+@register_verifier("download")
+def verify_download(args: dict, result: dict) -> VerifierOutcome:
+    """Verify file download with integrity check.
+
+    Structural-evidence: dst_path exists on disk with size > 0,
+    expected_size matches when provided.
+    """
+    if _result_says_unverified(result):
+        return _failed("download", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "fetch":
+        dst = result.get("dst_path") or result.get("path")
+        if dst:
+            import os
+            if os.path.exists(dst):
+                size = os.path.getsize(dst)
+                expected = result.get("expected_size")
+                if size > 0:
+                    if expected and isinstance(expected, int) and size != expected:
+                        return _failed(
+                            "download",
+                            f"size mismatch ({size} != {expected})",
+                            {"path": dst, "size": size, "expected": expected},
+                        )
+                    return _ok_evidence(
+                        "download", "file downloaded",
+                        ["dst_path", "size"], {"size": size},
+                    )
+                return _failed("download", "file exists but empty",
+                               {"path": dst})
+            return _failed("download", "claimed dst_path does not exist",
+                           {"path": dst})
+        return _unverifiable("download", "no dst_path in result")
+    return _ok_evidence("download", "non-fetch action", [])
+
+
+@register_verifier("local_calendar")
+def verify_local_calendar(args: dict, result: dict) -> VerifierOutcome:
+    """Verify local_calendar event creation.
+
+    Structural-evidence: event.id returned by the calendar store.
+    """
+    if _result_says_unverified(result):
+        return _failed("local_calendar", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "event_create":
+        event = result.get("event") if isinstance(result.get("event"), dict) else {}
+        rid = event.get("id") or result.get("id") or result.get("event_id")
+        if rid:
+            return _ok_evidence(
+                "local_calendar", "event registered",
+                ["event.id", "id", "event_id"],
+            )
+        return _unverifiable("local_calendar", "create returned no event id")
+    return _ok_evidence("local_calendar", "non-create action", [])
+
+
+@register_verifier("notes_tasks")
+def verify_notes_tasks(args: dict, result: dict) -> VerifierOutcome:
+    """Verify notes_tasks create actions.
+
+    Structural-evidence: note.id or task.id returned.
+    """
+    if _result_says_unverified(result):
+        return _failed("notes_tasks", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action in {"note_create", "task_create"}:
+        note = result.get("note") if isinstance(result.get("note"), dict) else {}
+        task = result.get("task") if isinstance(result.get("task"), dict) else {}
+        rid = (
+            note.get("id")
+            or task.get("id")
+            or result.get("id")
+            or result.get("note_id")
+            or result.get("task_id")
+        )
+        if rid:
+            return _ok_evidence(
+                "notes_tasks", "entry registered",
+                ["note.id", "task.id", "id"],
+            )
+        return _unverifiable("notes_tasks", "create returned no id")
+    return _ok_evidence("notes_tasks", "non-create action", [])
+
+
+@register_verifier("reminder")
+def verify_reminder(args: dict, result: dict) -> VerifierOutcome:
+    """Verify reminder creation.
+
+    Structural-evidence: reminder.id and OS scheduler task_name.
+    """
+    if _result_says_unverified(result):
+        return _failed("reminder", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "create":
+        rid = result.get("id") or result.get("reminder_id")
+        task_name = result.get("task_name") or result.get("scheduled_task")
+        if rid or task_name:
+            return _ok_evidence(
+                "reminder", "reminder scheduled",
+                ["id", "reminder_id", "task_name", "scheduled_task"],
+            )
+        return _unverifiable("reminder", "create returned no id / task_name")
+    return _ok_evidence("reminder", "non-create action", [])
+
+
+@register_verifier("contacts")
+def verify_contacts(args: dict, result: dict) -> VerifierOutcome:
+    """Verify contacts create / update / resolve.
+
+    Structural-evidence: contact.id for mutations, match.id for
+    resolve_recipient.
+    """
+    if _result_says_unverified(result):
+        return _failed("contacts", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action in {"create", "update"}:
+        contact = result.get("contact") if isinstance(result.get("contact"), dict) else {}
+        rid = contact.get("id") or result.get("id") or result.get("contact_id")
+        if rid:
+            return _ok_evidence(
+                "contacts", f"{action} confirmed",
+                ["contact.id", "id", "contact_id"],
+            )
+        return _unverifiable("contacts", f"{action} returned no id")
+    if action == "resolve_recipient":
+        match = result.get("match") if isinstance(result.get("match"), dict) else {}
+        rid = match.get("id") or result.get("match_id")
+        if rid:
+            return _ok_evidence(
+                "contacts", "recipient resolved",
+                ["match.id", "match_id"],
+            )
+        return _unverifiable("contacts", "resolve returned no match")
+    return _ok_evidence("contacts", "non-evidence-bearing action", [])
+
+
+@register_verifier("database")
+def verify_database(args: dict, result: dict) -> VerifierOutcome:
+    """Verify database queries / mutations.
+
+    Structural-evidence: rows_affected for INSERT/UPDATE/DELETE,
+    rows_returned for SELECT.
+    """
+    if _result_says_unverified(result):
+        return _failed("database", "tool reported failure",
+                       {"error": result.get("error")})
+    action = str(args.get("action") or "").lower()
+    if action == "execute":
+        rows = result.get("rows_affected")
+        if isinstance(rows, int):
+            return _ok_evidence(
+                "database", f"mutation reported {rows} rows",
+                ["rows_affected"], {"rows": rows},
+            )
+        return _unverifiable("database", "no rows_affected in result")
+    if action == "query":
+        rows = result.get("rows_returned")
+        if rows is None:
+            data = result.get("rows") if isinstance(result.get("rows"), list) else None
+            rows = len(data) if data is not None else None
+        if isinstance(rows, int):
+            return _ok_evidence(
+                "database", f"query returned {rows} rows",
+                ["rows_returned", "rows"], {"rows": rows},
+            )
+        return _unverifiable("database", "no row count in result")
+    return _ok_evidence("database", "non-evidence-bearing action", [])
