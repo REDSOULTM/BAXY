@@ -31,7 +31,18 @@ VOSK_MODEL_URL = f"https://alphacephei.com/vosk/models/{VOSK_MODEL_NAME}.zip"
 VOSK_MODEL_DIR = Path.home() / ".gemma4" / "models" / VOSK_MODEL_NAME
 
 WAKE_VOCAB = '["gemma", "hey gemma", "[unk]"]'
-WAKE_DEBOUNCE_S = 2.0
+# Hotfix M.2 2026-05-18: lowered from 2.0s to 0.8s based on
+# testaudio analysis finding (Sprint M.1). Operator's rapid-fire
+# wakes ("hey gemma X, hey gemma Y" within ~1s) were dropping
+# 50% to the 2s debounce — Vosk reported 6 fires in a 5-minute
+# recording but the callback only saw 3.
+# - < 0.5s risks wake-word tail re-fires (Vosk emits partials
+#   that overlap the wake phrase audio).
+# - > 1.5s drops legitimate rapid follow-ups.
+# - 0.8s is below typical Piper TTS utterance length (1+ sec)
+#   so the user can interrupt with a new wake immediately after
+#   Gemma finishes speaking.
+WAKE_DEBOUNCE_S = 0.8
 
 # Confidence minimo por word para aceptar un wake.
 # Vosk reporta conf ∈ [0,1] cuando SetWords(True). Un wake real suele
@@ -235,7 +246,8 @@ class WakeDetector:
     def feed(self, chunk: np.ndarray) -> None:
         """Procesa un chunk de audio (int16, 16kHz, mono).
 
-        Llama on_wake si detecta una frase wake. Aplica debounce 2s.
+        Llama on_wake si detecta una frase wake. Aplica debounce
+        WAKE_DEBOUNCE_S (default 0.8s post-hotfix M.2).
         Solo dispara en results FINALES, no partials (evita falsos positivos).
         """
         if not self._loaded or self._rec is None:

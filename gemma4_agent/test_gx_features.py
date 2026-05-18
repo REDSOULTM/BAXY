@@ -1425,8 +1425,12 @@ def test_voice_wake_detector_matches_phrases() -> None:
     from gemma4_agent.voice.wake import WakeDetector
 
     fires: list[tuple[str, float, float]] = []
-    # Firma actual: on_wake(phrase, wall_clock_ts, tail_s)
-    det = WakeDetector(on_wake=lambda phrase, ts, tail_s: fires.append((phrase, ts, tail_s)))
+    # Firma actual: on_wake(phrase, wall_clock_ts, tail_s, confidence)
+    # Hotfix M.1.2 2026-05-18: callback gained `confidence` param.
+    det = WakeDetector(
+        on_wake=lambda phrase, ts, tail_s, confidence:
+            fires.append((phrase, ts, tail_s)),
+    )
 
     # Inyectar recognizer mock directamente (bypass load() que lee modelo de disco)
     rec = MagicMock()
