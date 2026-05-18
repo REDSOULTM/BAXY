@@ -244,10 +244,62 @@ def _verdict(small_raw: str, small_reason: str, large_text: str) -> str:
 def _transcribe_aligned(model, audio: np.ndarray,
                         analysis_path: Path) -> dict[str, Any] | None:
     """Per-wake-detection transcription. Returns None if the analysis
-    file isn't found."""
+    file isn't found.
+
+    Sprint P.1 2026-05-18: aligned-window matches the live pipeline
+    endpoint logic (re-uses _live_endpoint from testaudio_analysis.py).
+    Previously this used a fixed 15s post-wake slice which gave large
+    a wider window than the live pipeline produces.
+    """
     if not analysis_path.exists():
         logger.warning(f"{analysis_path} not found — skipping aligned pass")
         return None
+    # Inline copy of testaudio_analysis._live_endpoint — keeps this
+    # script standalone (no re-import of a sibling script that runs
+    # Vosk at module top-level). Both copies must stay in sync.
+    from gemma4_agent.voice.stt import VAD_SILENCE_MS
+    SPEECH_RMS_THRESHOLD = 200
+    SPEECH_MIN_CHUNKS = 2
+    CHUNK_SAMPLES = 512
+
+    def _live_endpoint(audio_arr: np.ndarray, start_idx: int,
+                       max_s: float = 15.0) -> tuple[int, str]:
+        """Same logic as scripts/testaudio_analysis._live_endpoint
+        (inlined to keep this script standalone — both must stay in
+        sync)."""
+        n = len(audio_arr)
+        max_samples = int(max_s * SAMPLE_RATE)
+        end_cap = min(n, start_idx + max_samples)
+        speech_streak = 0
+        first_speech_idx: int | None = None
+        last_speech_idx: int | None = None
+        silence_samples = 0
+        silence_samples_threshold = int(
+            (VAD_SILENCE_MS / 1000.0) * SAMPLE_RATE
+        )
+        for i in range(start_idx, end_cap, CHUNK_SAMPLES):
+            chunk = audio_arr[i:i + CHUNK_SAMPLES]
+            if len(chunk) < CHUNK_SAMPLES:
+                break
+            chunk_rms = float(np.sqrt(np.mean(chunk.astype(np.float32) ** 2)))
+            if chunk_rms > SPEECH_RMS_THRESHOLD:
+                speech_streak += 1
+                if speech_streak >= SPEECH_MIN_CHUNKS:
+                    if first_speech_idx is None:
+                        first_speech_idx = i
+                    last_speech_idx = i + CHUNK_SAMPLES
+                    silence_samples = 0
+            else:
+                speech_streak = 0
+                if first_speech_idx is not None:
+                    silence_samples += CHUNK_SAMPLES
+                    if silence_samples >= silence_samples_threshold:
+                        assert last_speech_idx is not None
+                        return last_speech_idx, "endpoint_silence"
+        if first_speech_idx is None:
+            return start_idx, "no_speech_detected"
+        return end_cap, "max_window"
+
     with open(analysis_path, encoding="utf-8") as fh:
         analysis = json.load(fh)
     WINDOW_S = 15.0
@@ -258,7 +310,9 @@ def _transcribe_aligned(model, audio: np.ndarray,
         if wake_idx < 0:
             continue
         start_idx = max(0, wake_idx - int(WAKE_TAIL_S * SAMPLE_RATE))
-        end_idx = min(len(audio), wake_idx + int(WINDOW_S * SAMPLE_RATE))
+        end_idx, endpoint_reason = _live_endpoint(
+            audio, start_idx=start_idx, max_s=WINDOW_S,
+        )
         segment = audio[start_idx:end_idx].astype(np.float32) / 32768.0
         small_raw = entry.get("whisper_raw_text") or entry.get("text") or ""
         small_reason = entry.get("reject_reason") or ""
@@ -285,6 +339,8 @@ def _transcribe_aligned(model, audio: np.ndarray,
         turns.append({
             "k": entry.get("k"),
             "wake_ts_s": entry.get("wake_ts_s"),
+            "segment_duration_s": round((end_idx - start_idx) / SAMPLE_RATE, 2),
+            "endpoint_reason": endpoint_reason,
             "small_raw_text": small_raw,
             "small_reject_reason": small_reason,
             "large_text": large_text,

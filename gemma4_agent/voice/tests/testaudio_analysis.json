@@ -5,17 +5,22 @@
   "buckets": {
     "legitimate_passed": [
       {
+        "k": 0,
+        "wake_ts_s": 1.82,
+        "text": "Aurecrum"
+      },
+      {
         "k": 3,
-        "wake_ts_s": 158.3,
-        "text": "mandalo un mensaje Juan. Gemma, que llegan diez minutos. Gemma, que es el Steam Deck"
+        "wake_ts_s": 163.1,
+        "text": "manda un mensaje"
+      },
+      {
+        "k": 4,
+        "wake_ts_s": 216.86,
+        "text": "Open Chrome. Gemma, Open Chrome"
       }
     ],
     "legitimate_rejected": [
-      {
-        "k": 0,
-        "wake_ts_s": 1.82,
-        "reason": "ngram_repetition"
-      },
       {
         "k": 1,
         "wake_ts_s": 54.62,
@@ -23,32 +28,26 @@
       },
       {
         "k": 2,
-        "wake_ts_s": 106.21,
-        "reason": "ngram_repetition"
-      },
-      {
-        "k": 4,
-        "wake_ts_s": 211.81,
+        "wake_ts_s": 108.61,
         "reason": "ngram_repetition"
       },
       {
         "k": 5,
-        "wake_ts_s": 264.86,
-        "reason": "no_speech_prob (0.69)"
+        "wake_ts_s": 272.29,
+        "reason": "ngram_repetition"
       }
     ],
     "expected_rejected": []
   },
   "bucket_counts": {
-    "legitimate_passed": 1,
-    "legitimate_rejected": 5,
+    "legitimate_passed": 3,
+    "legitimate_rejected": 3,
     "expected_rejected": 0,
     "wake_false_positive": 0
   },
   "reject_reason_distribution": {
-    "ngram_repetition": 4,
-    "ok": 1,
-    "no_speech_prob (0.69)": 1
+    "ok": 3,
+    "ngram_repetition": 3
   },
   "all_results": [
     {
@@ -57,11 +56,12 @@
       "wake_ts_s": 1.82,
       "wake_phrase": "hey gemma",
       "wake_conf": 1.0,
-      "segment_duration_s": 15.5,
-      "text": "",
-      "reject_reason": "ngram_repetition",
-      "whisper_raw_text": "Abre Chrome. Gemma, abre Steam. Gemma, abre Chrome. Gemma, abre Steam. Gemma, cierra Whatsapp. Gemma, cierra Whatsapp. Gemma, minimiza.",
-      "transcribe_elapsed_s": 2.91
+      "segment_duration_s": 0.99,
+      "endpoint_reason": "endpoint_silence",
+      "text": "Aurecrum",
+      "reject_reason": "ok",
+      "whisper_raw_text": "Aurecrum",
+      "transcribe_elapsed_s": 1.42
     },
     {
       "k": 1,
@@ -69,59 +69,64 @@
       "wake_ts_s": 54.62,
       "wake_phrase": "hey gemma",
       "wake_conf": 1.0,
-      "segment_duration_s": 15.5,
+      "segment_duration_s": 15.0,
+      "endpoint_reason": "max_window",
       "text": "",
       "reject_reason": "ngram_repetition",
-      "whisper_raw_text": "Ponme musica tranquila. Gemma, ponme musica tranquila. Gemma, reproduce algo de los redonditos. Gemma, reproduce algo de los redonditos. Gemma, baja el volumen. Gemma, suba el volumen al máximo. Gemma, suba el volumen.",
-      "transcribe_elapsed_s": 3.65
+      "whisper_raw_text": "Ponme musica tranquila. Gemma, ponme musica tranquila. Gemma, reproduce algo de los redonditos. Gemma, reproduce algo de los redonditos. Gemma, baja el volumen. Gemma, suba el volumen al máximo. Gemma.",
+      "transcribe_elapsed_s": 3.5
     },
     {
       "k": 2,
-      "wake_sample_idx": 1699328,
-      "wake_ts_s": 106.21,
-      "wake_phrase": "gemma",
+      "wake_sample_idx": 1737728,
+      "wake_ts_s": 108.61,
+      "wake_phrase": "hey gemma",
       "wake_conf": 1.0,
-      "segment_duration_s": 15.5,
+      "segment_duration_s": 3.36,
+      "endpoint_reason": "endpoint_silence",
       "text": "",
       "reject_reason": "ngram_repetition",
-      "whisper_raw_text": "Gemma, cuándo salió GTA V? Gemma, cuándo salió GTA V? Gemma, ¿cuál es la capital de Australia? Gemma, ¿cuál es la capital de Australia? Gemma, hola, Gemma, hola.",
-      "transcribe_elapsed_s": 3.25
+      "whisper_raw_text": "¿Cuándo salió GTA V? Gemma. ¿Cuándo salió GTA V?",
+      "transcribe_elapsed_s": 2.1
     },
     {
       "k": 3,
-      "wake_sample_idx": 2532864,
-      "wake_ts_s": 158.3,
+      "wake_sample_idx": 2609664,
+      "wake_ts_s": 163.1,
       "wake_phrase": "hey gemma",
-      "wake_conf": 1.0,
-      "segment_duration_s": 15.5,
-      "text": "mandalo un mensaje Juan. Gemma, que llegan diez minutos. Gemma, que es el Steam Deck",
+      "wake_conf": 0.954,
+      "segment_duration_s": 2.85,
+      "endpoint_reason": "endpoint_silence",
+      "text": "manda un mensaje",
       "reject_reason": "ok",
-      "whisper_raw_text": "mandalo un mensaje Juan. Gemma, que llegan diez minutos. Gemma, que es el Steam Deck",
-      "transcribe_elapsed_s": 2.42
+      "whisper_raw_text": "manda un mensaje",
+      "transcribe_elapsed_s": 1.48
     },
     {
       "k": 4,
-      "wake_sample_idx": 3388928,
-      "wake_ts_s": 211.81,
+      "wake_sample_idx": 3469824,
+      "wake_ts_s": 216.86,
       "wake_phrase": "hey gemma",
       "wake_conf": 1.0,
-      "segment_duration_s": 15.5,
-      "text": "",
-      "reject_reason": "ngram_repetition",
-      "whisper_raw_text": "Gemma, Open Chrome. Gemma, Open Chrome. Gemma, Close Steam.",
-      "transcribe_elapsed_s": 9.3
+      "segment_duration_s": 2.59,
+      "endpoint_reason": "endpoint_silence",
+      "text": "Open Chrome. Gemma, Open Chrome",
+      "reject_reason": "ok",
+      "whisper_raw_text": "Open Chrome. Gemma, Open Chrome",
+      "transcribe_elapsed_s": 1.54
     },
     {
       "k": 5,
-      "wake_sample_idx": 4237824,
-      "wake_ts_s": 264.86,
+      "wake_sample_idx": 4356608,
+      "wake_ts_s": 272.29,
       "wake_phrase": "gemma",
       "wake_conf": 1.0,
-      "segment_duration_s": 15.5,
+      "segment_duration_s": 13.95,
+      "endpoint_reason": "endpoint_silence",
       "text": "",
-      "reject_reason": "no_speech_prob (0.69)",
-      "whisper_raw_text": "Gemma, pon mi Stranger Things en Netflix. Gemma, buca mi Infos sobre Vents on Moon. Gemma, buca mi Infos sobre Vents on Moon. Gemma, abre Counter-Strike 2 en Netflix.",
-      "transcribe_elapsed_s": 3.36
+      "reject_reason": "ngram_repetition",
+      "whisper_raw_text": "Buca mi info sobre Benson Moon. Gemma, buca mi info sobre Benson Moon. Gemma, abre Counter-Strike 2 en Steam. Gemma, abre Counter-Strike 2 en Steam. Gemma, reproduce volumen Rhapsody.",
+      "transcribe_elapsed_s": 3.3
     }
   ]
 }
