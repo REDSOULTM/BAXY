@@ -53,7 +53,13 @@ logger = logging.getLogger(__name__)
 WHISPER_MODEL_DIR = Path.home() / ".gemma4" / "models" / "whisper"
 DEFAULT_MODEL_SIZE = "small"
 SAMPLE_RATE = 16000
-VAD_SILENCE_MS = 500        # endpoint RMS. 800ms se siente lento al usuario;
+# Sprint P.2 2026-05-18: VAD_SILENCE_MS exposed via env var to
+# allow A/B sweeps (500/700/800ms) without recompile. Default 500
+# stays "Alexa-like" industry standard. The investigation post-N
+# suggested 700ms; defer that calibration to a follow-up sprint
+# with sweep data from real usage.
+VAD_SILENCE_MS = int(os.environ.get("GEMMA4_VOICE_SILENCE_MS", "500"))
+                            # endpoint RMS. 800ms se siente lento al usuario;
                             # 500ms es el "Alexa-like" estandar de la industria,
                             # y la grace de RMS+streak ya protege contra cortes
                             # prematuros mid-palabra (informe sec. 5.1).
@@ -287,6 +293,31 @@ class _SileroVAD:
         start = int(ts[0]["start"])
         end = int(ts[-1]["end"])
         return audio_f32[start:end]
+
+    def predict_chunk(self, chunk: np.ndarray) -> float:
+        """Return speech probability (0.0 to 1.0) for a single 32ms
+        chunk (CHUNK_SAMPLES=512 at SAMPLE_RATE=16kHz).
+
+        Returns 0.0 if Silero is not loaded or if the model raised
+        (e.g. wrong chunk size, transient torch error) — the caller
+        is responsible for falling back to RMS.
+
+        Sprint P.2 2026-05-18: exposed for use as endpoint detection
+        signal in transcribe_stream. Previously the model was used
+        only for pre-Whisper trim via .trim().
+        """
+        if not self._loaded or self._model is None:
+            return 0.0
+        try:
+            import torch
+            chunk_f32 = chunk.astype(np.float32) / 32768.0
+            tensor = torch.from_numpy(chunk_f32)
+            with torch.no_grad():
+                prob = self._model(tensor, SAMPLE_RATE).item()
+            return float(prob)
+        except Exception as exc:
+            logger.debug("silero predict_chunk failed: %s", exc)
+            return 0.0
 
     def unload(self) -> None:
         """Libera el modelo ONNX de RAM pero respeta el flag _failed.
@@ -953,14 +984,28 @@ class StreamingSTT:
             except Exception:
                 chunk_rms = 0.0
 
-            if chunk_rms > SPEECH_RMS_THRESHOLD:
+            # Sprint P.2 2026-05-18: prefer Silero VAD's per-chunk speech
+            # probability over the bare RMS threshold. Silero is robust
+            # against sustained noise (fan/AC/music) where RMS gives a
+            # false-positive, and catches murmured tails where RMS gives
+            # a false-silence. Fallback to pure RMS if Silero unavailable.
+            # Safety-net: very clear RMS speech (5x threshold) is accepted
+            # regardless of Silero's opinion.
+            silero_prob = self._vad.predict_chunk(chunk)
+            speech_detected = (
+                silero_prob >= 0.5
+                or chunk_rms > SPEECH_RMS_THRESHOLD * 5
+                or (silero_prob == 0.0 and not self._vad._loaded
+                    and chunk_rms > SPEECH_RMS_THRESHOLD)
+            )
+            if speech_detected:
                 speech_streak += 1
                 if speech_streak >= SPEECH_MIN_CHUNKS:
                     if first_speech_t is None:
                         first_speech_t = now
                         logger.info(
-                            "transcribe_stream: SPEECH confirmed (rms=%.0f, streak=%d)",
-                            chunk_rms, speech_streak,
+                            "transcribe_stream: SPEECH confirmed (rms=%.0f, silero=%.2f, streak=%d)",
+                            chunk_rms, silero_prob, speech_streak,
                         )
                     last_speech_t = now
                     if not partial_emitted:
