@@ -8,6 +8,7 @@ fully local and focused on the text agent.
 from __future__ import annotations
 
 import argparse
+import atexit
 import os
 import subprocess
 import sys
@@ -20,6 +21,30 @@ from .llama_server import LlamaServerManager, port_in_use
 from .llm_client import LLMClient
 from .profiles import apply_profile_to_env, get_active_profile
 from .tools import COMPOUND_TOOL_SCHEMAS
+
+
+def _emit_router_v2_summary() -> None:
+    """Hotfix H 2026-05-17. Best-effort: log the v2 session
+    summary on shutdown so operators can track router_v2 health
+    over real sessions without instrumenting every turn. No-op if
+    the singleton was never instantiated (e.g. launcher status
+    that doesn't touch routing).
+    """
+    try:
+        from .router_v2 import RouterV2
+        router = RouterV2._instance
+        if router is None:
+            return
+        summary = router.session_summary()
+        # Only emit when there's something to report — keeps the
+        # status command quiet for users that don't run a chat.
+        if summary.get("calls_total", 0) > 0:
+            print(f"router_v2_session_summary {summary}")
+    except Exception:
+        pass
+
+
+atexit.register(_emit_router_v2_summary)
 
 
 PALETTE = {

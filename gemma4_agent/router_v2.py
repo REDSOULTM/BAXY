@@ -140,6 +140,63 @@ class RouterV2:
         self._loaded = False
         self._load_failed = False
         self._load_error = ""
+        # Hotfix H 2026-05-17: per-process counters for rolling
+        # calibration telemetry. The launcher emits a summary at
+        # atexit so we can track v2 health over real sessions
+        # without instrumenting every turn. load_failed is bumped
+        # at most once per process (sticky).
+        self._counters: dict[str, int] = {
+            "calls_total": 0,
+            "source_cache": 0,
+            "source_smalltalk": 0,
+            "source_hybrid": 0,
+            "source_empty_query": 0,
+            "source_disabled": 0,
+            "fallback_applied": 0,
+            "pending_tool_injected": 0,
+            "load_failed": 0,
+        }
+        self._load_failed_counted = False
+        self._latency_ms_sum: float = 0.0
+        self._latency_ms_max: float = 0.0
+
+    def session_summary(self) -> dict[str, Any]:
+        """Return aggregated stats since process start.
+
+        Hotfix H 2026-05-17. Emitted from launcher's atexit hook
+        so operators get a single 'router_v2_session_summary' log
+        line at the end of each session. latency_ms_avg is over
+        all calls; latency_ms_max is the worst single call seen.
+        """
+        calls = max(1, self._counters["calls_total"])
+        return {
+            **self._counters,
+            "latency_ms_avg": round(self._latency_ms_sum / calls, 2),
+            "latency_ms_max": round(self._latency_ms_max, 2),
+        }
+
+    def _record_call(self, telemetry: dict[str, Any]) -> None:
+        """Update session counters from a route() telemetry dict.
+
+        Called once per route() exit, regardless of which pipeline
+        path produced the result.
+        """
+        self._counters["calls_total"] += 1
+        src = str(telemetry.get("source") or "unknown")
+        key = f"source_{src}"
+        if key in self._counters:
+            self._counters[key] += 1
+        if telemetry.get("fallback_applied"):
+            self._counters["fallback_applied"] += 1
+        if telemetry.get("pending_tool_injected"):
+            self._counters["pending_tool_injected"] += 1
+        if src == "disabled" and not self._load_failed_counted:
+            self._counters["load_failed"] += 1
+            self._load_failed_counted = True
+        elapsed = float(telemetry.get("elapsed_ms") or 0.0)
+        self._latency_ms_sum += elapsed
+        if elapsed > self._latency_ms_max:
+            self._latency_ms_max = elapsed
 
     def is_available(self) -> bool:
         """True only after a successful _ensure_loaded()."""
@@ -382,10 +439,16 @@ class RouterV2:
             """Hotfix F 2026-05-17. Inject pending_tool_hint at the
             head if missing. Pure helper so every return path applies
             the same logic. No-op when hint is None or already present.
+
+            Hotfix H 2026-05-17: also records the call in the
+            session counters so every return path bumps the right
+            tally (calls_total, source_*, fallback_applied,
+            pending_tool_injected, latency_ms_*).
             """
             if pending_tool_hint and pending_tool_hint not in subset:
                 subset = [pending_tool_hint, *subset]
                 telemetry["pending_tool_injected"] = pending_tool_hint
+            self._record_call(telemetry)
             return subset
 
         t0 = time.monotonic()
