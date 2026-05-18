@@ -1170,6 +1170,29 @@ class Gemma4Agent:
                     except Exception:
                         pass
 
+                # Hotfix I 2026-05-17: telemetry for the final-
+                # stage Bug D1 symptom — domain tool in the subset
+                # but the LLM didn't call anything. Pure
+                # observability; no behavior change. Operators grep
+                # for drift between subset selection and LLM use.
+                try:
+                    _domain = _domain_subset(list(selected_tool_names))
+                    if _domain and len(events) == 0:
+                        self.trace.event(
+                            turn_id, "tool_call_skipped_when_expected",
+                            domain_subset=_domain,
+                            reply_preview=(assistant_content or "")[:200],
+                        )
+                except Exception as _exc:  # noqa: BLE001
+                    try:
+                        self.trace.event(
+                            turn_id, "silent_fallback",
+                            component="tool_call_skipped_telemetry",
+                            error=f"{type(_exc).__name__}: {_exc}",
+                        )
+                    except Exception:
+                        pass
+
                 # Hotfix I 2026-05-17: structural backstop for
                 # 'Listo' on no-tool turns (Bug B residual). The
                 # prompt does 95% of the work; this catches the
