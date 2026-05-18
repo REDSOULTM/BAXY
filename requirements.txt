@@ -59,3 +59,6 @@ comtypes==1.4.16
 pycaw==20251023
 psutil==6.1.1
 nvidia-ml-py>=12.560            # imported as `pynvml` (only used in server.py for GPU stats)
+
+# --- Offline ground-truth tooling (Sprint N, used by scripts/testaudio_groundtruth.py) ---
+jiwer>=3.0                       # WER/CER computation for Whisper-large vs pipeline comparison

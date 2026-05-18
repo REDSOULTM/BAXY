@@ -1,0 +1,85 @@
+{
+  "source_file": "Grabación (2).m4a",
+  "alignment_source": "testaudio_analysis.json",
+  "wake_count": 6,
+  "turns": [
+    {
+      "k": 0,
+      "wake_ts_s": 1.82,
+      "small_raw_text": "Abre Chrome. Gemma, abre Steam. Gemma, abre Chrome. Gemma, abre Steam. Gemma, cierra Whatsapp. Gemma, cierra Whatsapp. Gemma, minimiza.",
+      "small_reject_reason": "ngram_repetition",
+      "large_text": "Abre Chrome, Gemma, abre Steam, hey Gemma, abre Chrome, Gemma, abre Steam, hey Gemma, cierra WhatsApp, Gemma, cierra WhatsApp, hey Gemma, minimiza.",
+      "large_avg_logprob": -0.1837,
+      "large_no_speech_prob": 0.6797,
+      "wer": 0.4091,
+      "cer": 0.1224,
+      "verdict": "small_rejected_false_positive",
+      "large_elapsed_s": 23.16
+    },
+    {
+      "k": 1,
+      "wake_ts_s": 54.62,
+      "small_raw_text": "Ponme musica tranquila. Gemma, ponme musica tranquila. Gemma, reproduce algo de los redonditos. Gemma, reproduce algo de los redonditos. Gemma, baja el volumen. Gemma, suba el volumen al máximo. Gemma, suba el volumen.",
+      "small_reject_reason": "ngram_repetition",
+      "large_text": "Ponme música tranquila. Gema, ponme música tranquila. Hey, Gema, reproduce algo de los redonditos. Hey, Gema, reproduce algo de los redonditos. Gema, baja el volumen. Hey, Gema, sube el volumen al máximo. Gema, sube el volumen.",
+      "large_avg_logprob": -0.161,
+      "large_no_speech_prob": 0.0504,
+      "wer": 0.3611,
+      "cer": 0.1101,
+      "verdict": "small_rejected_false_positive",
+      "large_elapsed_s": 19.87
+    },
+    {
+      "k": 2,
+      "wake_ts_s": 106.21,
+      "small_raw_text": "Gemma, cuándo salió GTA V? Gemma, cuándo salió GTA V? Gemma, ¿cuál es la capital de Australia? Gemma, ¿cuál es la capital de Australia? Gemma, hola, Gemma, hola.",
+      "small_reject_reason": "ngram_repetition",
+      "large_text": "invito a la Mona Lisa. Hey Gemma, ¿cuándo salió GTA V? Gemma, ¿cuándo salió GTA V? Hey Gemma, ¿cuál es la capital de Australia? Gemma, ¿cuál es la capital de Australia? Hey Gemma, hola. Gemma, hola.",
+      "large_avg_logprob": -0.1693,
+      "large_no_speech_prob": 0.3788,
+      "wer": 0.3056,
+      "cer": 0.1919,
+      "verdict": "small_rejected_false_positive",
+      "large_elapsed_s": 19.57
+    },
+    {
+      "k": 3,
+      "wake_ts_s": 158.3,
+      "small_raw_text": "mandalo un mensaje Juan. Gemma, que llegan diez minutos. Gemma, que es el Steam Deck",
+      "small_reject_reason": "ok",
+      "large_text": "Mándale un mensaje a Juan, que yo llego en dos minutos. Hey, Gemma, mándale un mensaje a Juan. Gemma, que llego en diez minutos. Hey, Gemma, ¿qué es el Steam Deck?",
+      "large_avg_logprob": -0.2664,
+      "large_no_speech_prob": 0.5675,
+      "wer": 0.6452,
+      "cer": 0.5031,
+      "verdict": "small_underproduced",
+      "large_elapsed_s": 18.59
+    },
+    {
+      "k": 4,
+      "wake_ts_s": 211.81,
+      "small_raw_text": "Gemma, Open Chrome. Gemma, Open Chrome. Gemma, Close Steam.",
+      "small_reject_reason": "ngram_repetition",
+      "large_text": "vez que diga foco prende el modo enfoque el gema open cross el gema open chrome gema open chrome el gema close steam el gema no sé hablar",
+      "large_avg_logprob": -0.3567,
+      "large_no_speech_prob": 0.5547,
+      "wer": 0.8929,
+      "cer": 0.6642,
+      "verdict": "small_underproduced",
+      "large_elapsed_s": 16.84
+    },
+    {
+      "k": 5,
+      "wake_ts_s": 264.86,
+      "small_raw_text": "Gemma, pon mi Stranger Things en Netflix. Gemma, buca mi Infos sobre Vents on Moon. Gemma, buca mi Infos sobre Vents on Moon. Gemma, abre Counter-Strike 2 en Netflix.",
+      "small_reject_reason": "no_speech_prob (0.69)",
+      "large_text": "Youtube. Gemma ponme Stranger Things en Netflix. Gemma ponme Stranger Things en Netflix. Gemma búscame info sobre Benson Moon. Gemma búscame info sobre Benson Moon. Gemma abre Counter Strike 2 en",
+      "large_avg_logprob": -0.2226,
+      "large_no_speech_prob": 0.4999,
+      "wer": 0.7742,
+      "cer": 0.4051,
+      "verdict": "small_rejected_false_positive",
+      "large_elapsed_s": 16.37
+    }
+  ]
+}

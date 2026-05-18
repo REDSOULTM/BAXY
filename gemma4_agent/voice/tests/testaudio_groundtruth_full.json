@@ -1,0 +1,1074 @@
+{
+  "source_file": "Grabación (2).m4a",
+  "model": "large-v3",
+  "language_detected": "es",
+  "language_probability": 0.9424,
+  "total_duration_s": 292.84,
+  "segments": [
+    {
+      "id": 1,
+      "start": 0.0,
+      "end": 20.24,
+      "text": "Hey Gemma, abre Chrome. Gemma, abre Steam. Hey Gemma, abre Chrome. Gemma, abre Steam. Hey Gemma, cierra WhatsApp. Gemma, cierra WhatsApp. Hey Gemma, minimiza la ventana. Gemma, minimiza la ventana.",
+      "avg_logprob": -0.1255,
+      "no_speech_prob": 0.4319,
+      "compression_ratio": 2.3176
+    },
+    {
+      "id": 2,
+      "start": 20.24,
+      "end": 47.24,
+      "text": "Hey Gemma, pausa. Gemma, pausa. Gemma, sigue. Hey Gemma, sigue. Hey Gemma, stop. Gemma, stop. Hey Gemma, stop. Gemma, siguiente canción. Hey Gemma, siguiente canción. Gemma, siguiente canción. Hey Gemma, pon música. Gemma, pon música. Hey Gemma, pon música clásica.",
+      "avg_logprob": -0.0896,
+      "no_speech_prob": 0.0071,
+      "compression_ratio": 3.2447
+    },
+    {
+      "id": 3,
+      "start": 47.24,
+      "end": 49.72,
+      "text": "Hey Gemma, pon música clásica.",
+      "avg_logprob": -0.0896,
+      "no_speech_prob": 0.0071,
+      "compression_ratio": 3.2447
+    },
+    {
+      "id": 4,
+      "start": 50.24,
+      "end": 64.24,
+      "text": "Hey Gemma, ponme música tranquila. Hey Gemma, ponme música tranquila. Hey Gemma, ponme música tranquila. Hey Gemma, reproduce algo de los redonditos. Hey Gemma, reproduce algo de los redonditos.",
+      "avg_logprob": -0.0744,
+      "no_speech_prob": 0.0165,
+      "compression_ratio": 2.9128
+    },
+    {
+      "id": 5,
+      "start": 64.24,
+      "end": 78.24,
+      "text": "Gemma, baja el volumen. Hey Gemma, sube el volumen al máximo. Gemma, sube el volumen al máximo. Hey Gemma, subí el volumen al máximo. Hey Gemma, subí el volumen al máximo. Hey Gemma, silencia el sistema.",
+      "avg_logprob": -0.0744,
+      "no_speech_prob": 0.0165,
+      "compression_ratio": 2.9128
+    },
+    {
+      "id": 6,
+      "start": 78.24,
+      "end": 80.24,
+      "text": "Hey Gemma, ¿qué hora es?",
+      "avg_logprob": -0.0744,
+      "no_speech_prob": 0.0165,
+      "compression_ratio": 2.9128
+    },
+    {
+      "id": 7,
+      "start": 80.24,
+      "end": 82.24,
+      "text": "Hey Gemma, ¿qué hora es?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 8,
+      "start": 82.24,
+      "end": 84.24,
+      "text": "Hey Gemma, ¿qué fecha es hoy?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 9,
+      "start": 84.24,
+      "end": 86.24,
+      "text": "Hey Gemma, ¿cuánto espacio me queda en el disco C?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 10,
+      "start": 86.24,
+      "end": 88.24,
+      "text": "Hey Gemma, ¿cuánto espacio me queda en el disco C?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 11,
+      "start": 88.24,
+      "end": 90.24,
+      "text": "Hey Gemma, ¿cuánto espacio me queda en el disco C?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 12,
+      "start": 90.24,
+      "end": 92.24,
+      "text": "Hey Gemma, ¿cuánto espacio me queda en el disco C?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 13,
+      "start": 92.24,
+      "end": 94.24,
+      "text": "Hey Gemma, ¿cuánta batería me queda?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 14,
+      "start": 94.24,
+      "end": 96.24,
+      "text": "Hey Gemma, ¿qué procesador tengo?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 15,
+      "start": 96.24,
+      "end": 98.24,
+      "text": "Hey Gemma, ¿qué procesador tengo?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 16,
+      "start": 98.24,
+      "end": 100.24,
+      "text": "Hey Gemma, ¿qué es la guerra de Troya?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 17,
+      "start": 100.24,
+      "end": 102.24,
+      "text": "Hey Gemma, ¿qué es la guerra de Troya?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 18,
+      "start": 102.24,
+      "end": 104.24,
+      "text": "Hey Gemma, ¿quién pintó la Mona Lisa?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 19,
+      "start": 104.24,
+      "end": 106.24,
+      "text": "Hey Gemma, ¿quién pintó la Mona Lisa?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 20,
+      "start": 106.24,
+      "end": 108.24,
+      "text": "Hey Gemma, ¿cuándo salió GTA V?",
+      "avg_logprob": -0.0422,
+      "no_speech_prob": 0.0146,
+      "compression_ratio": 3.5029
+    },
+    {
+      "id": 21,
+      "start": 108.24,
+      "end": 110.24,
+      "text": "Hey Gemma, ¿cuándo salió GTA V?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 22,
+      "start": 110.24,
+      "end": 112.24,
+      "text": "Hey Gemma, ¿cuándo salió GTA V?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 23,
+      "start": 112.24,
+      "end": 114.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 24,
+      "start": 114.24,
+      "end": 116.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 25,
+      "start": 116.24,
+      "end": 118.24,
+      "text": "Hey Gemma, ¿cuándo salió GTA V?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 26,
+      "start": 118.24,
+      "end": 120.24,
+      "text": "Hey Gemma, ¿cuándo salió GTA V?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 27,
+      "start": 120.24,
+      "end": 122.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 28,
+      "start": 122.24,
+      "end": 124.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 29,
+      "start": 124.24,
+      "end": 126.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 30,
+      "start": 126.24,
+      "end": 128.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 31,
+      "start": 128.24,
+      "end": 130.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 32,
+      "start": 130.24,
+      "end": 132.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 33,
+      "start": 132.24,
+      "end": 134.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 34,
+      "start": 134.24,
+      "end": 136.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0371,
+      "no_speech_prob": 0.004,
+      "compression_ratio": 7.3373
+    },
+    {
+      "id": 35,
+      "start": 136.24,
+      "end": 138.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 36,
+      "start": 138.24,
+      "end": 140.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 37,
+      "start": 140.24,
+      "end": 142.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 38,
+      "start": 142.24,
+      "end": 144.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 39,
+      "start": 144.24,
+      "end": 146.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 40,
+      "start": 146.24,
+      "end": 148.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 41,
+      "start": 148.24,
+      "end": 150.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 42,
+      "start": 150.24,
+      "end": 152.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 43,
+      "start": 152.24,
+      "end": 154.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 44,
+      "start": 154.24,
+      "end": 156.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 45,
+      "start": 156.24,
+      "end": 158.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 46,
+      "start": 158.24,
+      "end": 160.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 47,
+      "start": 160.24,
+      "end": 162.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 48,
+      "start": 162.24,
+      "end": 164.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0131,
+      "no_speech_prob": 0.0073,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 49,
+      "start": 164.24,
+      "end": 166.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 50,
+      "start": 166.24,
+      "end": 168.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 51,
+      "start": 168.24,
+      "end": 170.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 52,
+      "start": 170.24,
+      "end": 172.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 53,
+      "start": 172.24,
+      "end": 174.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 54,
+      "start": 174.24,
+      "end": 176.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 55,
+      "start": 176.24,
+      "end": 178.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 56,
+      "start": 178.24,
+      "end": 180.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 57,
+      "start": 180.24,
+      "end": 182.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 58,
+      "start": 182.24,
+      "end": 184.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 59,
+      "start": 184.24,
+      "end": 186.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 60,
+      "start": 186.24,
+      "end": 188.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 61,
+      "start": 188.24,
+      "end": 190.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 62,
+      "start": 190.24,
+      "end": 192.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0103,
+      "no_speech_prob": 0.0055,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 63,
+      "start": 192.24,
+      "end": 194.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 64,
+      "start": 194.24,
+      "end": 196.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 65,
+      "start": 196.24,
+      "end": 198.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 66,
+      "start": 198.24,
+      "end": 200.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 67,
+      "start": 200.24,
+      "end": 202.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 68,
+      "start": 202.24,
+      "end": 204.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 69,
+      "start": 204.24,
+      "end": 206.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 70,
+      "start": 206.24,
+      "end": 208.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 71,
+      "start": 208.24,
+      "end": 210.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 72,
+      "start": 210.24,
+      "end": 212.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 73,
+      "start": 212.24,
+      "end": 214.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 74,
+      "start": 214.24,
+      "end": 216.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 75,
+      "start": 216.24,
+      "end": 218.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 76,
+      "start": 218.24,
+      "end": 220.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.009,
+      "no_speech_prob": 0.0349,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 77,
+      "start": 220.24,
+      "end": 222.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 78,
+      "start": 222.24,
+      "end": 224.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 79,
+      "start": 224.24,
+      "end": 226.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 80,
+      "start": 226.24,
+      "end": 228.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 81,
+      "start": 228.24,
+      "end": 230.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 82,
+      "start": 230.24,
+      "end": 232.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 83,
+      "start": 232.24,
+      "end": 234.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 84,
+      "start": 234.24,
+      "end": 236.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 85,
+      "start": 236.24,
+      "end": 238.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 86,
+      "start": 238.24,
+      "end": 240.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 87,
+      "start": 240.24,
+      "end": 242.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 88,
+      "start": 242.24,
+      "end": 244.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 89,
+      "start": 244.24,
+      "end": 246.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 90,
+      "start": 246.24,
+      "end": 248.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0127,
+      "no_speech_prob": 0.0106,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 91,
+      "start": 248.24,
+      "end": 250.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 92,
+      "start": 250.24,
+      "end": 252.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 93,
+      "start": 252.24,
+      "end": 254.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 94,
+      "start": 256.24,
+      "end": 258.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 95,
+      "start": 258.24,
+      "end": 260.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 96,
+      "start": 260.24,
+      "end": 262.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 97,
+      "start": 262.24,
+      "end": 264.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 98,
+      "start": 264.24,
+      "end": 266.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 99,
+      "start": 266.24,
+      "end": 268.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 100,
+      "start": 268.24,
+      "end": 270.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 101,
+      "start": 270.24,
+      "end": 272.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 102,
+      "start": 272.24,
+      "end": 274.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 103,
+      "start": 274.24,
+      "end": 276.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 104,
+      "start": 276.24,
+      "end": 278.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.0253,
+      "no_speech_prob": 0.0051,
+      "compression_ratio": 10.4286
+    },
+    {
+      "id": 105,
+      "start": 278.24,
+      "end": 280.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 106,
+      "start": 280.24,
+      "end": 282.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 107,
+      "start": 282.24,
+      "end": 284.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 108,
+      "start": 284.24,
+      "end": 286.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 109,
+      "start": 286.24,
+      "end": 288.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 110,
+      "start": 288.24,
+      "end": 290.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 111,
+      "start": 290.24,
+      "end": 292.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 112,
+      "start": 292.24,
+      "end": 294.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 113,
+      "start": 294.24,
+      "end": 296.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 114,
+      "start": 296.24,
+      "end": 298.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 115,
+      "start": 298.24,
+      "end": 300.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 116,
+      "start": 300.24,
+      "end": 302.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 117,
+      "start": 302.24,
+      "end": 304.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    },
+    {
+      "id": 118,
+      "start": 304.24,
+      "end": 306.24,
+      "text": "Hey Gemma, ¿cuál es la capital de Australia?",
+      "avg_logprob": -0.008,
+      "no_speech_prob": 0.0137,
+      "compression_ratio": 11.0
+    }
+  ],
+  "manual_correction": "",
+  "generated_at": "2026-05-18T14:57:36",
+  "transcribe_elapsed_s": 451.73
+}
