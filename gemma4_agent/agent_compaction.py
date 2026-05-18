@@ -16,7 +16,35 @@ context_overflow net does not cover.
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
+
+
+# Hotfix H 2026-05-17: stitch_breadcrumbs (hotfix C+D+E) appends
+# `[breadcrumb: k=v ...]` lines to assistant.content. Repeated
+# compactions stack these indefinitely (~9KB observed after 5
+# tool-call turns). _compact_old_breadcrumbs collapses all but
+# the most recent so the LLM keeps the latest locator without
+# context bloat.
+_BREADCRUMB_PATTERN = re.compile(
+    r"\n\[breadcrumb:[^\n\]]*\]",
+    re.DOTALL,
+)
+_BREADCRUMB_PLACEHOLDER = "\n[breadcrumb: ...older breadcrumbs collapsed...]"
+
+
+def _compact_old_breadcrumbs(text: str) -> str:
+    """Keep only the most recent breadcrumb in an assistant message.
+
+    Idempotent: 0 or 1 breadcrumb is unchanged; N≥2 collapses to
+    head + placeholder + last breadcrumb + tail.
+    """
+    matches = list(_BREADCRUMB_PATTERN.finditer(text))
+    if len(matches) <= 1:
+        return text
+    last = matches[-1]
+    head = text[:matches[0].start()]
+    return head + _BREADCRUMB_PLACEHOLDER + last.group(0) + text[last.end():]
 
 
 # Char budgets the helpers respect when truncating message content.
@@ -114,7 +142,7 @@ def compact_live_content(content: str | list[dict[str, Any]]) -> str | list[dict
 
 def compact_history_content(content: Any) -> str:
     if isinstance(content, str):
-        return middle_ellipsis(content, HISTORY_TEXT_LIMIT)
+        return middle_ellipsis(_compact_old_breadcrumbs(content), HISTORY_TEXT_LIMIT)
     if isinstance(content, list):
         parts: list[str] = []
         omitted_media = 0
@@ -127,8 +155,9 @@ def compact_history_content(content: Any) -> str:
             elif kind in {"image_url", "input_audio"}:
                 omitted_media += 1
         suffix = f"\n[{omitted_media} multimodal item(s) omitted from history]" if omitted_media else ""
-        return middle_ellipsis("\n".join(parts).strip() + suffix, HISTORY_TEXT_LIMIT)
-    return middle_ellipsis(str(content or ""), HISTORY_TEXT_LIMIT)
+        joined = "\n".join(parts).strip() + suffix
+        return middle_ellipsis(_compact_old_breadcrumbs(joined), HISTORY_TEXT_LIMIT)
+    return middle_ellipsis(_compact_old_breadcrumbs(str(content or "")), HISTORY_TEXT_LIMIT)
 
 
 def compact_json(value: Any, *, max_items: int, max_string: int, depth: int = 0) -> Any:
