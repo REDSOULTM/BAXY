@@ -62,3 +62,11 @@ nvidia-ml-py>=12.560            # imported as `pynvml` (only used in server.py f
 
 # --- Offline ground-truth tooling (Sprint N, used by scripts/testaudio_groundtruth.py) ---
 jiwer>=3.0                       # WER/CER computation for Whisper-large vs pipeline comparison
+
+# --- CUDA 12 runtime for faster-whisper GPU inference (Sprint Q.0) ---
+# ctranslate2 4.7.x is compiled against CUDA 12; even on systems with CUDA 13
+# toolkit installed, the CUDA 12 runtime DLLs must be on the implicit search
+# path. These wheels ship them; scripts/setup_cuda_runtime.py relocates them
+# into the ctranslate2 package dir on Windows (where they're actually found).
+nvidia-cublas-cu12>=12.9         # provides cublas64_12.dll + cublasLt64_12.dll
+nvidia-cudnn-cu12>=9.0           # provides cudnn64_9.dll + cudnn_* DLLs
