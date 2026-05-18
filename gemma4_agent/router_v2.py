@@ -99,6 +99,38 @@ HIGH_CONFIDENCE_CAP = 4
 MEDIUM_CONFIDENCE_TOP_SCORE = 0.020
 MEDIUM_CONFIDENCE_CAP = 8
 
+# TIGHT_CLUSTER band (hotfix J.1 2026-05-17).
+# When retrievers DISAGREE on top-1 but the top-5 RRF scores form
+# a tight cluster (rrf[4]/rrf[0] >= 0.80) AND the top score is
+# corroborated across retrievers (top_score >= 0.025), the LLM
+# sees 4-5 real candidates rather than the full TOP_K=16 noise.
+#
+# Calibration (5 probes, 2026-05-17 audit):
+#   "cierra steam"               rrf[4]/rrf[0]=0.88, top=0.0320 -> TIGHT
+#   "abre el powerpoint..."      rrf[4]/rrf[0]=0.93, top=~0.030 -> TIGHT
+#   "instala vlc..."             rrf[4]/rrf[0]=0.83, top=~0.029 -> TIGHT
+#   "ayudame con un proyecto"    rrf[4]/rrf[0]=0.61, top=0.0325 -> LOW
+#   "hace algo"                  top_score<0.020              -> LOW (via floor)
+#
+# The 0.025 floor matches FALLBACK_THETA exactly: anything below
+# is fallback territory regardless of cluster shape.
+#
+# The 0.80 ratio sits midway between the lowest TIGHT (0.83) and
+# the highest DISPERSED (0.61) — 19-point margin in both directions.
+#
+# Cap=8 (not 6) because the competitive cluster is typically 4-5
+# tools; cap=8 leaves a 3-4 tool margin for adjacent neighbours.
+# Token cost of 2 extra schemas in 32K context is negligible vs.
+# recall risk.
+#
+# Research: docs/architecture/compass_artifact_wf-4173e745-...md
+# (literature sanity-checked: Shtok 2012, Bahri 2020/2023,
+# Bruch 2023).
+TIGHT_CLUSTER_TOP_SCORE = 0.025   # = FALLBACK_THETA; corroboration floor
+TIGHT_CLUSTER_RATIO = 0.80        # rrf[4] / rrf[0] cutoff
+TIGHT_CLUSTER_CAP = 8
+TIGHT_CLUSTER_RANK_AT = 4         # which RRF rank to compare against rank-0
+
 # Tools chosen for the low-confidence fallback. Order roughly matches
 # the most-used tools observed in Sprint 2's usage report. Kept short
 # so even on a worst-case query the LLM still has a viable subset.
@@ -184,6 +216,11 @@ class RouterV2:
             "band_high": 0,
             "band_medium": 0,
             "band_low": 0,
+            # Hotfix J.1 2026-05-17: TIGHT_CLUSTER band counter
+            # joins the existing trio. The _record_call bump
+            # (`f"band_{band}"`) picks it up automatically because
+            # the band name is now "tight_cluster".
+            "band_tight_cluster": 0,
         }
         self._load_failed_counted = False
         self._latency_ms_sum: float = 0.0
@@ -537,7 +574,16 @@ class RouterV2:
         rrf_scores = np.zeros(len(self._tool_names), dtype=np.float64)
         for rank, idx in enumerate(dense_ranking):
             rrf_scores[idx] += 1.0 / (RRF_K + rank + 1)
+        # Hotfix J.1 2026-05-17: BM25 saturation guard. Tools with
+        # raw BM25=0 are NOT genuinely ranked — they appear in the
+        # ranking in arbitrary order due to ties at zero. Treating
+        # them as "not in BM25 list" prevents spurious cluster
+        # inflation in the TIGHT_CLUSTER detector below. The dense-
+        # only contribution survives, so relevant tools still rank
+        # correctly; only the rank-tail scores change.
         for rank, idx in enumerate(bm25_ranking):
+            if float(bm25_scores[idx]) <= 0.0:
+                continue
             rrf_scores[idx] += 1.0 / (RRF_K + rank + 1)
 
         # Always compute the full ranking first — we cap after we
@@ -552,6 +598,9 @@ class RouterV2:
         dense_top1_name = self._tool_names[int(dense_ranking[0])]
         bm25_top1_name = self._tool_names[int(bm25_ranking[0])]
         retrievers_agree = dense_top1_name == bm25_top1_name
+        # rrf_sorted is reused below for both the TIGHT_CLUSTER
+        # gate and the cluster_size telemetry — compute once.
+        rrf_sorted = np.sort(rrf_scores)[::-1]  # descending
         if retrievers_agree and top_score >= HIGH_CONFIDENCE_TOP_SCORE:
             adaptive_cap = HIGH_CONFIDENCE_CAP
             confidence_band = "high"
@@ -559,9 +608,38 @@ class RouterV2:
             adaptive_cap = MEDIUM_CONFIDENCE_CAP
             confidence_band = "medium"
         else:
-            adaptive_cap = TOP_K
-            confidence_band = "low"
+            # Hotfix J.1 2026-05-17: distinguish "tight cluster of
+            # real candidates" from "genuinely ambiguous → TOP_K
+            # fallback". Both retrievers disagree on top-1 but if
+            # their rankings overlap enough that the top-5 RRF
+            # scores stay close to top-1, there are 4-5 real
+            # candidates, not 16.
+            if (
+                len(rrf_sorted) > TIGHT_CLUSTER_RANK_AT
+                and top_score >= TIGHT_CLUSTER_TOP_SCORE
+                and float(rrf_sorted[0]) > 0.0
+                and (float(rrf_sorted[TIGHT_CLUSTER_RANK_AT]) /
+                     float(rrf_sorted[0])) >= TIGHT_CLUSTER_RATIO
+            ):
+                adaptive_cap = TIGHT_CLUSTER_CAP
+                confidence_band = "tight_cluster"
+            else:
+                adaptive_cap = TOP_K
+                confidence_band = "low"
         subset = subset_full[:adaptive_cap]
+
+        # Hotfix J.1 2026-05-17: cluster_size telemetry — count of
+        # top-TOP_K candidates whose RRF score is within 80% of
+        # top-1. Healthy regime for TIGHT_CLUSTER is [3, 8];
+        # cluster_size > 8 while firing TIGHT_CLUSTER signals
+        # BM25-saturation pathology (sentinel for future drift).
+        top_k_scores = rrf_sorted[:TOP_K] if len(rrf_sorted) >= TOP_K else rrf_sorted
+        if len(top_k_scores) > 0 and float(top_k_scores[0]) > 0.0:
+            cluster_size = int(np.sum(
+                top_k_scores / float(top_k_scores[0]) >= TIGHT_CLUSTER_RATIO
+            ))
+        else:
+            cluster_size = 0
 
         telemetry["source"] = "hybrid"
         telemetry["top_score"] = top_score
@@ -575,6 +653,10 @@ class RouterV2:
         telemetry["confidence_band"] = confidence_band
         telemetry["adaptive_cap"] = adaptive_cap
         telemetry["retrievers_agree"] = retrievers_agree
+        # Hotfix J.1 2026-05-17: cluster_size is the count of
+        # candidates within 80% of top-1; used to audit the
+        # TIGHT_CLUSTER calibration in production.
+        telemetry["cluster_size"] = cluster_size
 
         # Layer 3 — confidence fallback. RRF top-1 below FALLBACK_THETA
         # means even the best document is unrelated to the query;
@@ -665,4 +747,11 @@ __all__ = [
     "MEDIUM_CONFIDENCE_TOP_SCORE",
     "MEDIUM_CONFIDENCE_CAP",
     "TOP_K",
+    # Hotfix J.1 2026-05-17: TIGHT_CLUSTER band constants.
+    "TIGHT_CLUSTER_TOP_SCORE",
+    "TIGHT_CLUSTER_RATIO",
+    "TIGHT_CLUSTER_CAP",
+    "TIGHT_CLUSTER_RANK_AT",
+    "FALLBACK_THETA",
+    "RRF_K",
 ]
