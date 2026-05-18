@@ -244,17 +244,24 @@ class VoiceRecorder:
         turn. Safe to call when no turn is active."""
         if not self._enabled:
             return
+        # Peek at the active turn WITHOUT clearing it yet — the
+        # writer thread needs the reference to drain pending
+        # chunks of THIS turn. We clear it after the drain.
         with self._writer_lock:
             turn = self._active_turn
-            self._active_turn = None
         if turn is None:
             return
-        # Drain by waiting briefly for the queue. We close writers
-        # from here because the writer thread doesn't keep file
-        # handles per turn after the active_turn is gone.
+        # Drain the queue. Writer is still happily writing to
+        # turn.user_writer / turn.tts_writer because active_turn
+        # still points to it.
         deadline = time.time() + 2.0
         while not self._writer_queue.empty() and time.time() < deadline:
             time.sleep(0.05)
+        # Now detach the active turn so any subsequent capture_*
+        # calls (which arrive between finish_turn and the next
+        # start_turn) no-op cleanly.
+        with self._writer_lock:
+            self._active_turn = None
         # Close writers (if any chunks made them open).
         for writer in (turn.user_writer, turn.tts_writer):
             if writer is not None:
