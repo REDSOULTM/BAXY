@@ -127,9 +127,19 @@ SPANISH_HALLUCINATION_PHRASES = (
     "bienvenidos a este canal",
     "bienvenidos al canal",
     "que tal amigos",
+    # Sound-effect tags Whisper sometimes hallucinates in silence.
+    # Keep only the bracketed/parenthesized forms; the standalone
+    # word "musica" was removed 2026-05-18 (hotfix M) because it
+    # falsely rejected legitimate user requests like "pon musica"
+    # (7 silent rejects observed in real session 12:08 — diagnosed
+    # via Sprint L recordings). See manifest at
+    # ~/.gemma4/recordings/20260518_120744/manifest.jsonl.
     "[musica]",
+    "(musica)",
     "[aplausos]",
-    "musica",
+    "(aplausos)",
+    "[risas]",
+    "(risas)",
 )
 
 
