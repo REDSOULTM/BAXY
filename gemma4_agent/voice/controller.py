@@ -230,7 +230,7 @@ class VoiceController:
         """Atajo para el boton mic de la GUI: simula un wake (sin snapshot)."""
         if self._state == S_IDLE_LISTENING:
             # wake_end_s=0.0 -> no snapshot, gracia normal de 200ms
-            self._on_wake_detected("manual", time.monotonic(), 0.0)
+            self._on_wake_detected("manual", time.monotonic(), 0.0, 0.0)
 
     def shutdown(self) -> None:
         """Cleanup al cerrar la aplicacion."""
@@ -373,7 +373,13 @@ class VoiceController:
         except Exception:
             pass
 
-    def _on_wake_detected(self, phrase: str, ts: float, tail_s: float = 0.0) -> None:
+    def _on_wake_detected(
+        self,
+        phrase: str,
+        ts: float,
+        tail_s: float = 0.0,
+        confidence: float = 0.0,
+    ) -> None:
         """Wake-word detectado.
 
         tail_s: cuanto audio del ring buffer hay DESPUES del wake-word
@@ -411,10 +417,13 @@ class VoiceController:
                     pre = None
                 turn_id = f"turn_{int(self._wake_ts * 1000)}"
                 self._current_turn_id = turn_id
+                # Hotfix M.1.2 2026-05-18: wake.py now propagates
+                # Vosk's confidence value through the callback;
+                # pass it to the recorder for manifest annotation.
                 recorder.start_turn(
                     turn_id=turn_id,
                     wake_phrase=phrase,
-                    wake_confidence=0.0,  # Vosk caller doesn't pass conf here
+                    wake_confidence=float(confidence),
                     pre_wake_audio=pre,
                 )
         except Exception as _rec_exc:
@@ -532,16 +541,29 @@ class VoiceController:
                         # Hotfix L 2026-05-17: annotate the recorder
                         # with whisper transcription (or rejection
                         # reason) so the manifest carries weak ground
-                        # truth alongside the WAV. Wrapped — never
-                        # break the voice loop on recorder failure.
+                        # truth alongside the WAV.
+                        # Hotfix M.1.3 2026-05-18: use the specific
+                        # reject_reason from the STT event (now
+                        # carried on STTEvent) — 'BoH_match' /
+                        # 'low_logprob' / 'no_speech' / etc — instead
+                        # of the generic placeholder.
+                        # Hotfix M.1.4 2026-05-18: eagerly close the
+                        # turn on STT reject. No TTS will play, so
+                        # end_tts -> finish_turn won't fire from the
+                        # downstream path; we'd otherwise wait for
+                        # the next wake to overlap-close with the
+                        # wrong finish_reason.
                         try:
                             _rec = VoiceRecorder.get()
                             if ev.text:
                                 _rec.annotate_turn(whisper_transcription=ev.text)
                             else:
-                                _rec.annotate_turn(
-                                    stt_reject_reason="stt_empty_or_vad_reject",
+                                _specific = (
+                                    getattr(ev, "reject_reason", "")
+                                    or "stt_empty_or_vad_reject"
                                 )
+                                _rec.annotate_turn(stt_reject_reason=_specific)
+                                _rec.finish_turn(reason="stt_rejected")
                         except Exception:
                             pass
                         if not saw_speech and not ev.text:

@@ -41,8 +41,8 @@ WAKE_DEBOUNCE_S = 2.0
 WAKE_MIN_CONFIDENCE = 0.85
 
 
-WakeCallback = Callable[[str, float, float], None]
-# Signature: on_wake(matched_phrase, wall_clock_ts, tail_s)
+WakeCallback = Callable[[str, float, float, float], None]
+# Signature: on_wake(matched_phrase, wall_clock_ts, tail_s, confidence)
 #
 # - matched_phrase: "gemma" o "hey gemma"
 # - wall_clock_ts: time.monotonic() en el momento del wake (para debounce/UX)
@@ -50,6 +50,10 @@ WakeCallback = Callable[[str, float, float], None]
 #   Lo calcula este modulo restando wake_end vs duracion del Result actual.
 #   El caller usa snapshot_tail(tail_s) para sembrar el STT con el comando
 #   continuo "gemma apaga la luz" sin perder la cola.
+# - confidence (hotfix M.1.2): Vosk's `conf` value for the matched wake
+#   word (typically in [WAKE_MIN_CONFIDENCE, 1.0]). 0.0 means the
+#   detector couldn't extract a confidence (rare). Used by the
+#   recorder to annotate the turn manifest with the wake quality.
 
 
 def model_exists() -> bool:
@@ -359,7 +363,11 @@ class WakeDetector:
 
         self._last_fire_at = now
         try:
-            self._on_wake(matched, now, tail_s)
+            # Hotfix M.1.2 2026-05-18: propagate Vosk's confidence
+            # to the callback so the recorder can annotate the
+            # turn manifest. best_conf is the conf of the matched
+            # wake word in the current Vosk Result.
+            self._on_wake(matched, now, tail_s, float(best_conf))
         except Exception as exc:
             logger.warning("on_wake callback raised: %s", exc)
 

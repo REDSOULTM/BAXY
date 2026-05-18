@@ -293,10 +293,18 @@ class _SileroVAD:
 
 @dataclass(frozen=True)
 class STTEvent:
-    """Evento emitido por el iterator de transcripcion."""
+    """Evento emitido por el iterator de transcripcion.
+
+    Hotfix M.1.3 2026-05-18: `reject_reason` carries the specific
+    rejection reason ('BoH_match' / 'low_logprob' / 'no_speech' /
+    'too_short' / etc) when `kind=='final'` and `text==''`. Allows
+    the recorder manifest to log the diagnostic reason instead of
+    a generic placeholder.
+    """
     kind: Literal["partial", "final", "timeout", "error"]
     text: str = ""
     error: str = ""
+    reject_reason: str = ""
 
 
 # Tipo del iterator de audio: yields np.int16 arrays (cualquier longitud).
@@ -688,16 +696,24 @@ class StreamingSTT:
         avg_lp = float(np.mean(avg_lps)) if avg_lps else float("nan")
         return segments, text, ok, reason, avg_lp
 
-    def _transcribe_buffer(self, audio_int16: np.ndarray) -> str:
+    def _transcribe_buffer(self, audio_int16: np.ndarray) -> tuple[str, str]:
         """Pipeline completo: preprocess -> VAD trim -> Whisper -> quality -> postprocess.
 
-        Devuelve "" si el quality_check rechaza o el VAD no detecta speech.
+        Returns (text, reason) tuple. text is "" on rejection; reason
+        indicates WHY ('ok', 'no_speech', 'too_short', 'BoH_match',
+        'low_logprob', 'no_speech_prob', 'compression_ratio',
+        'empty_or_too_short', 'too_many_words_for_duration',
+        'ngram_repetition', etc.). Hotfix M.1.3 2026-05-18: changed
+        return shape from `str` to `tuple[str, str]` so the controller
+        can annotate the recorder with the specific reject reason
+        instead of a generic placeholder.
+
         En modo SHORT, si el resultado original parece un comando ("abre X",
         etc.) o si quality_check falla, re-intenta UNA vez con prefix=<verbo>
         para anclar al decoder (Plan B / skill-prefix biasing, informe 8.4).
         """
         if self._whisper is None or audio_int16.size == 0:
-            return ""
+            return "", "empty_input"
 
         # 1. Preprocess (int16 -> float32, HPF 80 Hz, normalize ligero)
         audio = _preprocess(audio_int16)
@@ -717,7 +733,7 @@ class StreamingSTT:
                 "voice_silent_reject reason=no_speech orig_duration_s=%.3f",
                 audio.size / float(SAMPLE_RATE),
             )
-            return ""
+            return "", "no_speech"
         if trimmed.size < int(0.3 * SAMPLE_RATE):
             logger.warning(
                 "voice_silent_reject reason=too_short "
@@ -725,7 +741,7 @@ class StreamingSTT:
                 trimmed.size / float(SAMPLE_RATE),
                 audio.size / float(SAMPLE_RATE),
             )
-            return ""
+            return "", "too_short"
 
         duration_s = trimmed.size / float(SAMPLE_RATE)
         is_short = duration_s < SHORT_AUDIO_THRESHOLD_S
@@ -797,9 +813,13 @@ class StreamingSTT:
 
         if not ok:
             logger.info("quality_check rejected (%s): text=%r", reason, text[:80])
-            return ""
+            # Hotfix M.1.3 2026-05-18: propagate the specific
+            # quality_check reason so the recorder manifest can
+            # show 'BoH_match' / 'low_logprob' / etc instead of
+            # the generic placeholder.
+            return "", reason or "quality_check_rejected"
 
-        return _postprocess_text(text)
+        return _postprocess_text(text), "ok"
 
     def transcribe_stream(
         self,
@@ -879,8 +899,8 @@ class StreamingSTT:
             if elapsed_total > ABSOLUTE_TIMEOUT_S:
                 logger.info("transcribe_stream: absolute timeout 15s")
                 if first_speech_t is not None:
-                    text = self._transcribe_buffer(buffer)
-                    yield STTEvent(kind="final", text=text)
+                    text, reason = self._transcribe_buffer(buffer)
+                    yield STTEvent(kind="final", text=text, reject_reason=reason)
                 else:
                     yield STTEvent(kind="timeout")
                 return
@@ -929,21 +949,21 @@ class StreamingSTT:
                         silence_ms, buffer.size / SAMPLE_RATE,
                     )
                     t0 = time.monotonic()
-                    text = self._transcribe_buffer(buffer)
+                    text, reason = self._transcribe_buffer(buffer)
                     elapsed = time.monotonic() - t0
                     logger.info(
-                        "transcribe_stream: final transcribe %.2fs for %.2fs audio (RTF %.2f), text=%r",
+                        "transcribe_stream: final transcribe %.2fs for %.2fs audio (RTF %.2f), text=%r reason=%s",
                         elapsed, buffer.size / SAMPLE_RATE,
                         elapsed / max(0.01, buffer.size / SAMPLE_RATE),
-                        text[:80],
+                        text[:80], reason,
                     )
-                    yield STTEvent(kind="final", text=text)
+                    yield STTEvent(kind="final", text=text, reject_reason=reason)
                     return
 
         # Iterator cerrado sin endpoint
         if first_speech_t is not None:
-            text = self._transcribe_buffer(buffer)
-            yield STTEvent(kind="final", text=text)
+            text, reason = self._transcribe_buffer(buffer)
+            yield STTEvent(kind="final", text=text, reject_reason=reason)
         else:
             yield STTEvent(kind="timeout")
 

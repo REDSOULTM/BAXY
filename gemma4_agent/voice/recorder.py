@@ -66,6 +66,15 @@ _MAX_QUEUE = 2000
 # than it actually holds.
 PRE_WAKE_TAIL_S = 0.5
 
+# Hotfix M.1.1 2026-05-18: TTS grace window. Piper synthesis
+# runs on a worker thread and its chunks can arrive shortly
+# AFTER end_tts/finish_turn returns. Keep the just-closed turn's
+# tts_writer open for this many seconds so late chunks land in
+# the correct .tts.wav instead of being dropped. 2.0s gives
+# Piper room to drain (typically 1-2s); larger windows risk
+# confusing the close-vs-reopen logic on rapid wake sequences.
+_GRACE_AFTER_FINISH_S = 2.0
+
 
 @dataclass
 class _ActiveTurn:
@@ -123,6 +132,12 @@ class VoiceRecorder:
     def __init__(self) -> None:
         self._session_id: str | None = None
         self._active_turn: _ActiveTurn | None = None
+        # Hotfix M.1.1 2026-05-18: TTS grace window state. Tracks
+        # the most recently closed turn so late Piper chunks can
+        # still be appended to its .tts.wav within
+        # _GRACE_AFTER_FINISH_S.
+        self._just_finished_turn: _ActiveTurn | None = None
+        self._just_finished_at: float = 0.0
         self._enabled = False
         self._init_failed = False
         self._writer_queue: _queue.Queue[tuple[str, np.ndarray | None]] = _queue.Queue(maxsize=_MAX_QUEUE)
@@ -186,6 +201,23 @@ class VoiceRecorder:
             self.finish_turn(reason="overlapping_new_turn")
         if self._session_id is None:
             return
+        # Hotfix M.1.1 2026-05-18: clean up the previous turn's
+        # tts_writer if the grace window expired. This is the
+        # natural cleanup point — a new wake means any late TTS
+        # chunks from the previous turn are too stale to matter.
+        with self._writer_lock:
+            jf = self._just_finished_turn
+            jf_at = self._just_finished_at
+        if jf is not None and time.time() - jf_at >= _GRACE_AFTER_FINISH_S:
+            if jf.tts_writer is not None:
+                try:
+                    jf.tts_writer.close()
+                except Exception:
+                    pass
+                jf.tts_writer = None
+            with self._writer_lock:
+                if self._just_finished_turn is jf:
+                    self._just_finished_turn = None
         session_dir = RECORDINGS_DIR / self._session_id
         turn = _ActiveTurn(
             session_id=self._session_id,
@@ -220,13 +252,27 @@ class VoiceRecorder:
                 )
 
     def capture_tts_chunk(self, chunk: np.ndarray) -> None:
-        """Enqueue a TTS chunk for the active turn."""
-        if not self._enabled or self._active_turn is None:
+        """Enqueue a TTS chunk for the active turn, OR for a just-
+        finished turn within the M.1.1 grace window (handles
+        Piper async race)."""
+        if not self._enabled:
             return
-        try:
-            self._writer_queue.put_nowait(("tts", chunk))
-        except _queue.Full:
-            self._dropped_chunks += 1
+        if self._active_turn is not None:
+            try:
+                self._writer_queue.put_nowait(("tts", chunk))
+            except _queue.Full:
+                self._dropped_chunks += 1
+            return
+        # No active turn — route to the just-finished turn if
+        # we're still inside the grace window. Otherwise drop.
+        if (
+            self._just_finished_turn is not None
+            and time.time() - self._just_finished_at < _GRACE_AFTER_FINISH_S
+        ):
+            try:
+                self._writer_queue.put_nowait(("tts_finished_turn", chunk))
+            except _queue.Full:
+                self._dropped_chunks += 1
 
     def annotate_turn(self, **fields: Any) -> None:
         """Attach arbitrary key/value metadata to the active turn.
@@ -259,16 +305,22 @@ class VoiceRecorder:
             time.sleep(0.05)
         # Now detach the active turn so any subsequent capture_*
         # calls (which arrive between finish_turn and the next
-        # start_turn) no-op cleanly.
+        # start_turn) route through the grace-window path. We
+        # also stash the just-finished turn so late TTS chunks
+        # can still land on its tts_writer (M.1.1).
         with self._writer_lock:
             self._active_turn = None
-        # Close writers (if any chunks made them open).
-        for writer in (turn.user_writer, turn.tts_writer):
-            if writer is not None:
-                try:
-                    writer.close()
-                except Exception:
-                    pass
+            self._just_finished_turn = turn
+            self._just_finished_at = time.time()
+        # Close user_writer immediately — no more mic chunks for
+        # this turn. tts_writer stays open during the grace window
+        # so late Piper chunks (M.1.1 race) can still write.
+        if turn.user_writer is not None:
+            try:
+                turn.user_writer.close()
+            except Exception:
+                pass
+            turn.user_writer = None
         # Append manifest.
         try:
             entry = {
@@ -301,6 +353,17 @@ class VoiceRecorder:
         """Stop the writer thread cleanly. Idempotent."""
         if self._active_turn is not None:
             self.finish_turn(reason="shutdown")
+        # Hotfix M.1.1 2026-05-18: close any pending just-finished
+        # tts_writer left open for the grace window.
+        with self._writer_lock:
+            jf = self._just_finished_turn
+            self._just_finished_turn = None
+        if jf is not None and jf.tts_writer is not None:
+            try:
+                jf.tts_writer.close()
+            except Exception:
+                pass
+            jf.tts_writer = None
         if self._writer_thread is not None:
             try:
                 self._writer_queue.put_nowait(("__stop__", None))
@@ -323,21 +386,36 @@ class VoiceRecorder:
                 return
             with self._writer_lock:
                 turn = self._active_turn
-            if turn is None or chunk is None:
+                finished_turn = self._just_finished_turn
+            if chunk is None:
                 continue
             try:
-                if kind == "user":
+                if kind == "user" and turn is not None:
                     if turn.user_writer is None:
                         turn.user_writer = self._open_wav(turn.user_path)
                     if turn.user_writer is not None:
                         self._write_chunk(turn.user_writer, chunk)
                         turn.user_samples_written += int(chunk.size)
-                elif kind == "tts":
+                elif kind == "tts" and turn is not None:
                     if turn.tts_writer is None:
                         turn.tts_writer = self._open_wav(turn.tts_path)
                     if turn.tts_writer is not None:
                         self._write_chunk(turn.tts_writer, chunk)
                         turn.tts_samples_written += int(chunk.size)
+                elif kind == "tts_finished_turn" and finished_turn is not None:
+                    # Hotfix M.1.1 2026-05-18: late TTS chunk for
+                    # the just-closed turn. The tts_writer was
+                    # intentionally NOT closed in finish_turn — we
+                    # write to it directly. If no writer was ever
+                    # created (TTS started entirely after
+                    # finish_turn), open one now.
+                    if finished_turn.tts_writer is None:
+                        finished_turn.tts_writer = self._open_wav(
+                            finished_turn.tts_path
+                        )
+                    if finished_turn.tts_writer is not None:
+                        self._write_chunk(finished_turn.tts_writer, chunk)
+                        finished_turn.tts_samples_written += int(chunk.size)
             except Exception as exc:
                 logger.warning(
                     "voice_recorder_write_failed kind=%s error=%s",
