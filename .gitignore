@@ -46,3 +46,6 @@ voice_debug*.log
 # The .m4a raw audio file is operator-provided — left to operator
 # discretion. To exclude, uncomment the next line:
 # gemma4_agent/voice/tests/*.m4a
+
+# Bench harness outputs (regenerable per commit).
+bench_results/
