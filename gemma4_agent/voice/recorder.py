@@ -338,6 +338,12 @@ class VoiceRecorder:
                 "finish_reason": reason,
                 "whisper_transcription": turn.extra_metadata.pop(
                     "whisper_transcription", None),
+                # Hotfix M.2.3 2026-05-18: pre-quality-check Whisper
+                # output. Empty when there was no Whisper text at
+                # all (no_speech / too_short pre-Whisper rejects)
+                # or when the manifest entry is from a passed turn.
+                "whisper_raw_text": turn.extra_metadata.pop(
+                    "whisper_raw_text", None),
                 "stt_reject_reason": turn.extra_metadata.pop(
                     "stt_reject_reason", None),
                 # Empty field for later manual correction in review.

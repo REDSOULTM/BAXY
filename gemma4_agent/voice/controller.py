@@ -563,6 +563,13 @@ class VoiceController:
                                     or "stt_empty_or_vad_reject"
                                 )
                                 _rec.annotate_turn(stt_reject_reason=_specific)
+                                # Hotfix M.2.3 2026-05-18: include
+                                # Whisper's pre-filter text in the
+                                # manifest so post-hoc diagnosis
+                                # doesn't require re-running Whisper.
+                                _raw = getattr(ev, "raw_text", "") or ""
+                                if _raw:
+                                    _rec.annotate_turn(whisper_raw_text=_raw)
                                 _rec.finish_turn(reason="stt_rejected")
                         except Exception:
                             pass

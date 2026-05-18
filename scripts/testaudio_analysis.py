@@ -110,7 +110,9 @@ for k, (sample_idx, phrase, conf) in enumerate(index_detections):
     seg_duration = (end_idx - start_idx) / SAMPLE_RATE
     wake_ts_s = sample_idx / SAMPLE_RATE
     t0 = time.time()
-    text, reason = stt._transcribe_buffer(segment)
+    # Hotfix M.2.3 2026-05-18: 3-tuple includes raw_text — what
+    # Whisper produced before the quality_check killed it.
+    text, reason, raw = stt._transcribe_buffer(segment)
     elapsed = time.time() - t0
     results.append({
         "k": k,
@@ -121,11 +123,13 @@ for k, (sample_idx, phrase, conf) in enumerate(index_detections):
         "segment_duration_s": round(seg_duration, 2),
         "text": text,
         "reject_reason": reason,
+        "whisper_raw_text": raw,
         "transcribe_elapsed_s": round(elapsed, 2),
     })
     text_repr = (text[:80] + "...") if len(text) > 80 else text
+    raw_repr = (raw[:80] + "...") if len(raw) > 80 else raw
     print(f"  [{k}] t={wake_ts_s:>6.2f}s conf={conf:.3f} "
-          f"reason={reason:<20s} text={text_repr!r}")
+          f"reason={reason:<20s} text={text_repr!r} raw={raw_repr!r}")
 
 # --- Step 4: Categorize ---
 buckets: dict[str, list] = {

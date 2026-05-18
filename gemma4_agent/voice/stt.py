@@ -300,11 +300,19 @@ class STTEvent:
     'too_short' / etc) when `kind=='final'` and `text==''`. Allows
     the recorder manifest to log the diagnostic reason instead of
     a generic placeholder.
+
+    Hotfix M.2.3 2026-05-18: `raw_text` carries what Whisper
+    produced BEFORE the quality_check killed it. Equal to `text`
+    when `reason='ok'`; populated on reject so post-hoc diagnosis
+    doesn't require re-running Whisper on the recorded WAV.
+    Empty when there was no Whisper text at all (no_speech /
+    too_short pre-Whisper rejects).
     """
     kind: Literal["partial", "final", "timeout", "error"]
     text: str = ""
     error: str = ""
     reject_reason: str = ""
+    raw_text: str = ""
 
 
 # Tipo del iterator de audio: yields np.int16 arrays (cualquier longitud).
@@ -696,44 +704,48 @@ class StreamingSTT:
         avg_lp = float(np.mean(avg_lps)) if avg_lps else float("nan")
         return segments, text, ok, reason, avg_lp
 
-    def _transcribe_buffer(self, audio_int16: np.ndarray) -> tuple[str, str]:
+    def _transcribe_buffer(self, audio_int16: np.ndarray) -> tuple[str, str, str]:
         """Pipeline completo: preprocess -> VAD trim -> Whisper -> quality -> postprocess.
 
-        Returns (text, reason) tuple. text is "" on rejection; reason
-        indicates WHY ('ok', 'no_speech', 'too_short', 'BoH_match',
-        'low_logprob', 'no_speech_prob', 'compression_ratio',
-        'empty_or_too_short', 'too_many_words_for_duration',
-        'ngram_repetition', etc.). Hotfix M.1.3 2026-05-18: changed
-        return shape from `str` to `tuple[str, str]` so the controller
-        can annotate the recorder with the specific reject reason
-        instead of a generic placeholder.
+        Returns (text, reason, raw_text):
+          - text: post-filter clean transcription, "" on rejection.
+          - reason: 'ok' on pass, or specific rejection reason
+            ('BoH_match', 'low_logprob', 'no_speech', 'too_short',
+            'ngram_repetition', 'no_speech_prob', 'compression_ratio',
+            'empty_or_too_short', 'too_many_words_for_duration',
+            'empty_input', 'quality_check_rejected').
+          - raw_text: what Whisper actually produced. Equal to `text`
+            when reason='ok'. For rejected turns, this is the text
+            the quality_check killed — used for offline diagnosis
+            without re-running Whisper.
+
+        Hotfix M.1.3 2026-05-18: changed return shape from `str` to
+        `tuple[str, str]` so the controller can annotate the recorder
+        with the specific reject reason instead of a generic
+        placeholder.
+
+        Hotfix M.2.3 2026-05-18: extended to 3-tuple to include
+        raw_text. Lets the operator inspect Whisper's pre-filter
+        output from the manifest alone, no Whisper re-run needed.
 
         En modo SHORT, si el resultado original parece un comando ("abre X",
         etc.) o si quality_check falla, re-intenta UNA vez con prefix=<verbo>
         para anclar al decoder (Plan B / skill-prefix biasing, informe 8.4).
         """
         if self._whisper is None or audio_int16.size == 0:
-            return "", "empty_input"
+            return "", "empty_input", ""
 
         # 1. Preprocess (int16 -> float32, HPF 80 Hz, normalize ligero)
         audio = _preprocess(audio_int16)
 
         # 2. VAD trim. None => rechazo total, no llamar a Whisper.
-        # Hotfix E 2026-05-17: upgrade INFO -> WARNING with structured
-        # fields so silent rejects are greppable in _pre_session/full.log
-        # ('voice_silent_reject reason=...'). Memory:
-        # project_voice_silent_rejects, 2026-05-17.
-        # TODO(2026-05-17 hotfix E): controller.py does not yet have a
-        # trace event for the "stt returned empty string" path. Emitting
-        # it requires plumbing self.trace through VoiceController; deferred
-        # to a follow-up sub-step to keep this hotfix surgical.
         trimmed = self._vad.trim(audio)
         if trimmed is None:
             logger.warning(
                 "voice_silent_reject reason=no_speech orig_duration_s=%.3f",
                 audio.size / float(SAMPLE_RATE),
             )
-            return "", "no_speech"
+            return "", "no_speech", ""
         if trimmed.size < int(0.3 * SAMPLE_RATE):
             logger.warning(
                 "voice_silent_reject reason=too_short "
@@ -741,7 +753,7 @@ class StreamingSTT:
                 trimmed.size / float(SAMPLE_RATE),
                 audio.size / float(SAMPLE_RATE),
             )
-            return "", "too_short"
+            return "", "too_short", ""
 
         duration_s = trimmed.size / float(SAMPLE_RATE)
         is_short = duration_s < SHORT_AUDIO_THRESHOLD_S
@@ -817,9 +829,13 @@ class StreamingSTT:
             # quality_check reason so the recorder manifest can
             # show 'BoH_match' / 'low_logprob' / etc instead of
             # the generic placeholder.
-            return "", reason or "quality_check_rejected"
+            # Hotfix M.2.3 2026-05-18: also expose `text` as
+            # raw_text so the operator can see what Whisper
+            # actually produced before the filter killed it.
+            return "", reason or "quality_check_rejected", text
 
-        return _postprocess_text(text), "ok"
+        clean = _postprocess_text(text)
+        return clean, "ok", clean
 
     def transcribe_stream(
         self,
@@ -899,8 +915,11 @@ class StreamingSTT:
             if elapsed_total > ABSOLUTE_TIMEOUT_S:
                 logger.info("transcribe_stream: absolute timeout 15s")
                 if first_speech_t is not None:
-                    text, reason = self._transcribe_buffer(buffer)
-                    yield STTEvent(kind="final", text=text, reject_reason=reason)
+                    text, reason, raw = self._transcribe_buffer(buffer)
+                    yield STTEvent(
+                        kind="final", text=text,
+                        reject_reason=reason, raw_text=raw,
+                    )
                 else:
                     yield STTEvent(kind="timeout")
                 return
@@ -949,7 +968,7 @@ class StreamingSTT:
                         silence_ms, buffer.size / SAMPLE_RATE,
                     )
                     t0 = time.monotonic()
-                    text, reason = self._transcribe_buffer(buffer)
+                    text, reason, raw = self._transcribe_buffer(buffer)
                     elapsed = time.monotonic() - t0
                     logger.info(
                         "transcribe_stream: final transcribe %.2fs for %.2fs audio (RTF %.2f), text=%r reason=%s",
@@ -957,13 +976,19 @@ class StreamingSTT:
                         elapsed / max(0.01, buffer.size / SAMPLE_RATE),
                         text[:80], reason,
                     )
-                    yield STTEvent(kind="final", text=text, reject_reason=reason)
+                    yield STTEvent(
+                        kind="final", text=text,
+                        reject_reason=reason, raw_text=raw,
+                    )
                     return
 
         # Iterator cerrado sin endpoint
         if first_speech_t is not None:
-            text, reason = self._transcribe_buffer(buffer)
-            yield STTEvent(kind="final", text=text, reject_reason=reason)
+            text, reason, raw = self._transcribe_buffer(buffer)
+            yield STTEvent(
+                kind="final", text=text,
+                reject_reason=reason, raw_text=raw,
+            )
         else:
             yield STTEvent(kind="timeout")
 

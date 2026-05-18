@@ -1,9 +1,15 @@
 {
   "source_file": "Grabación (2).m4a",
   "total_duration_s": 292.84,
-  "wake_detections": 3,
+  "wake_detections": 6,
   "buckets": {
-    "legitimate_passed": [],
+    "legitimate_passed": [
+      {
+        "k": 3,
+        "wake_ts_s": 158.3,
+        "text": "mandalo un mensaje Juan. Gemma, que llegan diez minutos. Gemma, que es el Steam Deck"
+      }
+    ],
     "legitimate_rejected": [
       {
         "k": 0,
@@ -12,26 +18,37 @@
       },
       {
         "k": 1,
-        "wake_ts_s": 137.18,
+        "wake_ts_s": 54.62,
         "reason": "ngram_repetition"
       },
       {
         "k": 2,
-        "wake_ts_s": 269.18,
-        "reason": "no_speech_prob (0.66)"
+        "wake_ts_s": 106.21,
+        "reason": "ngram_repetition"
+      },
+      {
+        "k": 4,
+        "wake_ts_s": 211.81,
+        "reason": "ngram_repetition"
+      },
+      {
+        "k": 5,
+        "wake_ts_s": 264.86,
+        "reason": "no_speech_prob (0.69)"
       }
     ],
     "expected_rejected": []
   },
   "bucket_counts": {
-    "legitimate_passed": 0,
-    "legitimate_rejected": 3,
+    "legitimate_passed": 1,
+    "legitimate_rejected": 5,
     "expected_rejected": 0,
     "wake_false_positive": 0
   },
   "reject_reason_distribution": {
-    "ngram_repetition": 2,
-    "no_speech_prob (0.66)": 1
+    "ngram_repetition": 4,
+    "ok": 1,
+    "no_speech_prob (0.69)": 1
   },
   "all_results": [
     {
@@ -43,29 +60,68 @@
       "segment_duration_s": 15.5,
       "text": "",
       "reject_reason": "ngram_repetition",
-      "transcribe_elapsed_s": 2.59
+      "whisper_raw_text": "Abre Chrome. Gemma, abre Steam. Gemma, abre Chrome. Gemma, abre Steam. Gemma, cierra Whatsapp. Gemma, cierra Whatsapp. Gemma, minimiza.",
+      "transcribe_elapsed_s": 2.91
     },
     {
       "k": 1,
-      "wake_sample_idx": 2194944,
-      "wake_ts_s": 137.18,
+      "wake_sample_idx": 873984,
+      "wake_ts_s": 54.62,
       "wake_phrase": "hey gemma",
       "wake_conf": 1.0,
       "segment_duration_s": 15.5,
       "text": "",
       "reject_reason": "ngram_repetition",
-      "transcribe_elapsed_s": 2.24
+      "whisper_raw_text": "Ponme musica tranquila. Gemma, ponme musica tranquila. Gemma, reproduce algo de los redonditos. Gemma, reproduce algo de los redonditos. Gemma, baja el volumen. Gemma, suba el volumen al máximo. Gemma, suba el volumen.",
+      "transcribe_elapsed_s": 3.65
     },
     {
       "k": 2,
-      "wake_sample_idx": 4306944,
-      "wake_ts_s": 269.18,
+      "wake_sample_idx": 1699328,
+      "wake_ts_s": 106.21,
+      "wake_phrase": "gemma",
+      "wake_conf": 1.0,
+      "segment_duration_s": 15.5,
+      "text": "",
+      "reject_reason": "ngram_repetition",
+      "whisper_raw_text": "Gemma, cuándo salió GTA V? Gemma, cuándo salió GTA V? Gemma, ¿cuál es la capital de Australia? Gemma, ¿cuál es la capital de Australia? Gemma, hola, Gemma, hola.",
+      "transcribe_elapsed_s": 3.25
+    },
+    {
+      "k": 3,
+      "wake_sample_idx": 2532864,
+      "wake_ts_s": 158.3,
+      "wake_phrase": "hey gemma",
+      "wake_conf": 1.0,
+      "segment_duration_s": 15.5,
+      "text": "mandalo un mensaje Juan. Gemma, que llegan diez minutos. Gemma, que es el Steam Deck",
+      "reject_reason": "ok",
+      "whisper_raw_text": "mandalo un mensaje Juan. Gemma, que llegan diez minutos. Gemma, que es el Steam Deck",
+      "transcribe_elapsed_s": 2.42
+    },
+    {
+      "k": 4,
+      "wake_sample_idx": 3388928,
+      "wake_ts_s": 211.81,
       "wake_phrase": "hey gemma",
       "wake_conf": 1.0,
       "segment_duration_s": 15.5,
       "text": "",
-      "reject_reason": "no_speech_prob (0.66)",
-      "transcribe_elapsed_s": 2.64
+      "reject_reason": "ngram_repetition",
+      "whisper_raw_text": "Gemma, Open Chrome. Gemma, Open Chrome. Gemma, Close Steam.",
+      "transcribe_elapsed_s": 9.3
+    },
+    {
+      "k": 5,
+      "wake_sample_idx": 4237824,
+      "wake_ts_s": 264.86,
+      "wake_phrase": "gemma",
+      "wake_conf": 1.0,
+      "segment_duration_s": 15.5,
+      "text": "",
+      "reject_reason": "no_speech_prob (0.69)",
+      "whisper_raw_text": "Gemma, pon mi Stranger Things en Netflix. Gemma, buca mi Infos sobre Vents on Moon. Gemma, buca mi Infos sobre Vents on Moon. Gemma, abre Counter-Strike 2 en Netflix.",
+      "transcribe_elapsed_s": 3.36
     }
   ]
 }
