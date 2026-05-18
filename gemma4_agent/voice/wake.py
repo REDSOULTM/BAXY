@@ -327,6 +327,15 @@ class WakeDetector:
                 break
 
         if best_conf < WAKE_MIN_CONFIDENCE:
+            # Hotfix H 2026-05-17: surface wake_word_rejected so the
+            # ratio of false wake fires vs threshold is greppable in
+            # the pre-session log. We log only structural signals
+            # (confidence, threshold), NOT the detected phrase text —
+            # that crosses the privacy boundary for audio content.
+            logger.warning(
+                "wake_word_rejected confidence=%.3f threshold=%.3f",
+                best_conf, WAKE_MIN_CONFIDENCE,
+            )
             logger.debug(
                 "wake descartado por conf (%.2f < %.2f): text=%r words=%r",
                 best_conf, WAKE_MIN_CONFIDENCE, text, words,
@@ -337,6 +346,12 @@ class WakeDetector:
         result_duration_s = samples_in_this_result / float(SAMPLE_RATE)
         wake_end_relative_s = max(0.0, wake_end_s - result_start_s)
         tail_s = max(0.0, result_duration_s - wake_end_relative_s)
+        # Hotfix H 2026-05-17: greppable wake_word_accepted event,
+        # confidence-only (no phrase text — privacy boundary).
+        logger.warning(
+            "wake_word_accepted confidence=%.3f threshold=%.3f tail_s=%.3f",
+            best_conf, WAKE_MIN_CONFIDENCE, tail_s,
+        )
         logger.info(
             "wake detect: result_dur=%.2fs wake_rel_end=%.2fs tail=%.2fs (conf=%.2f, text=%r)",
             result_duration_s, wake_end_relative_s, tail_s, best_conf, text,

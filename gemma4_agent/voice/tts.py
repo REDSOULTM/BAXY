@@ -284,15 +284,35 @@ class StreamingTTS:
         """
         if self._piper is None:
             return
+        # Hotfix H 2026-05-17: greppable tts_started / tts_finished
+        # markers around playback so 'Gemma está lento' reports can
+        # be localized to the TTS leg. We log only structural signals
+        # (text_len, duration_s) — never the synthesized phrase text,
+        # since that crosses the privacy boundary for audio content.
+        import time as _time
+        _t0 = _time.monotonic()
+        logger.warning("tts_started text_len=%d", len(text))
         try:
             for chunk in self._piper.synthesize(text):
                 if not self._running or self._muted:
+                    logger.warning(
+                        "tts_finished duration_s=%.3f reason=interrupted",
+                        _time.monotonic() - _t0,
+                    )
                     return
                 audio = chunk.audio_int16_array
                 if audio is None or len(audio) == 0:
                     continue
                 out_stream.write(audio)
+            logger.warning(
+                "tts_finished duration_s=%.3f reason=ok",
+                _time.monotonic() - _t0,
+            )
         except Exception as exc:
+            logger.warning(
+                "tts_finished duration_s=%.3f reason=error error=%s",
+                _time.monotonic() - _t0, exc,
+            )
             logger.warning("Piper synth failed: %s", exc)
 
     def unload(self) -> None:
