@@ -717,7 +717,15 @@ class Gemma4Agent:
                 # Hotfix F 2026-05-17: pass pending_tool_hint so a parked
                 # intent (status='needs_user' from prior turn) widens the
                 # subset regardless of the user reply's wording.
+                # Hotfix I 2026-05-17: also honor pending_question
+                # (tool ran but emitted clarification_needed) — same
+                # kwarg, the router doesn't care about the source.
+                # pending_intent wins when both are set.
                 _pending_tool = (pending_intent or {}).get("tool") if pending_intent else None
+                if not _pending_tool and hasattr(self.state, "get_pending_question"):
+                    _pq = self.state.get_pending_question(self._turn_counter)
+                    if _pq:
+                        _pending_tool = _pq.get("tool")
                 _v2_subset, _v2_telemetry = route_v2(
                     raw_text_early or "",
                     pending_tool_hint=_pending_tool,
@@ -1447,6 +1455,28 @@ class Gemma4Agent:
                     self.state.clear_pending_intent()
                     self.trace.event(
                         turn_id, "pending_intent_cleared", tool=name,
+                    )
+
+                # Hotfix I 2026-05-17: pending_question slot. The
+                # tool ran but emitted clarification_needed (or
+                # partial_reason). Separate slot from pending_intent
+                # because the semantics differ — "ran-but-partial"
+                # vs "about-to-run". The router consumes both via
+                # the same pending_tool_hint kwarg downstream.
+                _clarif = result.get("clarification_needed") or result.get("partial_reason")
+                if (
+                    isinstance(_clarif, str) and _clarif
+                    and hasattr(self.state, "set_pending_question")
+                ):
+                    self.state.set_pending_question(
+                        tool=name,
+                        question_topic=_clarif,
+                        last_args=dict(args or {}),
+                        current_turn=self._turn_counter,
+                    )
+                    self.trace.event(
+                        turn_id, "pending_question_set",
+                        tool=name, question_topic=_clarif,
                     )
                 _progress(
                     progress,

@@ -360,3 +360,54 @@ class AgentState:
             if "_pending_intent" in data:
                 data.pop("_pending_intent", None)
                 self._save(data)
+
+    # ------------------------------------------------------------------
+    # Pending question (hotfix I 2026-05-17)
+    # ------------------------------------------------------------------
+    # Separate from pending_intent. Triggered when a tool succeeded but
+    # emitted a clarification_needed / partial_reason field — the tool
+    # ran, but more info is required to finish the job. Schema mirrors
+    # pending_intent but with question_topic + last_args, and a shorter
+    # default TTL (2 vs 3) because a partial result is more time-
+    # sensitive than a not-yet-attempted intent. Kept as a distinct slot
+    # so semantics ("ran-but-partial") don't conflate with intent
+    # ("about-to-run"); the router consumes both via the same
+    # pending_tool_hint kwarg.
+
+    def set_pending_question(
+        self,
+        tool: str,
+        question_topic: str,
+        last_args: dict[str, Any],
+        current_turn: int,
+        ttl_turns: int = 2,
+    ) -> None:
+        with self._lock:
+            data = self._load()
+            data["_pending_question"] = {
+                "tool": tool,
+                "question_topic": question_topic,
+                "last_args": dict(last_args or {}),
+                "created_turn": int(current_turn),
+                "ttl_turns": int(ttl_turns),
+            }
+            self._save(data)
+
+    def get_pending_question(self, current_turn: int) -> dict[str, Any] | None:
+        with self._lock:
+            data = self._load()
+            pq = data.get("_pending_question")
+            if not pq:
+                return None
+            if int(current_turn) - int(pq.get("created_turn", 0)) > int(pq.get("ttl_turns", 2)):
+                data.pop("_pending_question", None)
+                self._save(data)
+                return None
+            return dict(pq)
+
+    def clear_pending_question(self) -> None:
+        with self._lock:
+            data = self._load()
+            if "_pending_question" in data:
+                data.pop("_pending_question", None)
+                self._save(data)
