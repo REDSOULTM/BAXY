@@ -35,6 +35,7 @@ from typing import Callable, Iterable, Iterator
 import numpy as np
 
 from .audio_io import AudioCapture, SAMPLE_RATE
+from .recorder import PRE_WAKE_TAIL_S, VoiceRecorder
 from .stt import StreamingSTT  # STTEvent inferred from transcribe_stream return
 from .tts import StreamingTTS
 from .wake import WakeDetector
@@ -318,6 +319,13 @@ class VoiceController:
                 if not self._tts.is_busy():
                     break
                 time.sleep(0.1)
+            # Hotfix L 2026-05-17: TTS finished playing — close the
+            # turn's recording. Wrapped so a recorder failure doesn't
+            # break the state transition.
+            try:
+                VoiceRecorder.get().finish_turn(reason="tts_finished")
+            except Exception:
+                pass
             # ya esta tranquilo — volver al estado correcto
             if self._followup_s > 0:
                 self._set_state(S_FOLLOWUP)
@@ -356,6 +364,15 @@ class VoiceController:
                     )
         # En THINKING / SPEAKING / IDLE_DISABLED / FAILED ignoramos audio.
 
+        # Hotfix L 2026-05-17: tap the mic for the recorder. No-op
+        # when not recording an active turn or recording disabled.
+        # Wrapped in try/except so a recorder failure can never break
+        # the audio loop.
+        try:
+            VoiceRecorder.get().capture_user_chunk(chunk)
+        except Exception:
+            pass
+
     def _on_wake_detected(self, phrase: str, ts: float, tail_s: float = 0.0) -> None:
         """Wake-word detectado.
 
@@ -378,6 +395,30 @@ class VoiceController:
         self._wake_ts = time.monotonic()
         if self._beep_on_wake:
             self._play_beep()
+
+        # Hotfix L 2026-05-17: start recording for this turn. The
+        # pre-wake tail comes from the mic ring buffer so we keep
+        # ~500ms of audio before the wake-word was confirmed (useful
+        # for false-wake audit). Failure-tolerant: a recorder issue
+        # never breaks the voice loop.
+        try:
+            recorder = VoiceRecorder.get()
+            if recorder.enable():
+                pre = None
+                try:
+                    pre = self._audio.snapshot_tail(PRE_WAKE_TAIL_S)
+                except Exception:
+                    pre = None
+                turn_id = f"turn_{int(self._wake_ts * 1000)}"
+                self._current_turn_id = turn_id
+                recorder.start_turn(
+                    turn_id=turn_id,
+                    wake_phrase=phrase,
+                    wake_confidence=0.0,  # Vosk caller doesn't pass conf here
+                    pre_wake_audio=pre,
+                )
+        except Exception as _rec_exc:
+            logger.warning("voice_recorder_start_turn_failed error=%s", _rec_exc)
 
         # Ampliar el snapshot WAKE_SAFETY_MARGIN_S hacia atras del fin del
         # wake-word reportado por Vosk para no comer el principio del comando
@@ -488,6 +529,21 @@ class VoiceController:
                             except Exception:
                                 pass
                     elif ev.kind == "final":
+                        # Hotfix L 2026-05-17: annotate the recorder
+                        # with whisper transcription (or rejection
+                        # reason) so the manifest carries weak ground
+                        # truth alongside the WAV. Wrapped — never
+                        # break the voice loop on recorder failure.
+                        try:
+                            _rec = VoiceRecorder.get()
+                            if ev.text:
+                                _rec.annotate_turn(whisper_transcription=ev.text)
+                            else:
+                                _rec.annotate_turn(
+                                    stt_reject_reason="stt_empty_or_vad_reject",
+                                )
+                        except Exception:
+                            pass
                         if not saw_speech and not ev.text:
                             # Timeout sin habla -> volver a idle limpio
                             if self._state in {S_LISTENING, S_TRANSCRIBING}:
