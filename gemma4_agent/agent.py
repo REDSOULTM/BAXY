@@ -1170,6 +1170,40 @@ class Gemma4Agent:
                     except Exception:
                         pass
 
+                # Hotfix I 2026-05-17: structural backstop for
+                # 'Listo' on no-tool turns (Bug B residual). The
+                # prompt does 95% of the work; this catches the
+                # residual drift. Deferred-correction path: inject
+                # a corrective system message AFTER the assistant's
+                # bad reply so the LLM sees both in the next turn's
+                # context. Gemma4Agent has no _regen_reply method,
+                # and building one is out of scope for this hotfix.
+                try:
+                    from .reply_validator import (
+                        is_listo_on_no_tool_turn as _is_listo_on_no_tool_turn,
+                        LISTO_REGEN_HINT as _LISTO_REGEN_HINT,
+                    )
+                    if _is_listo_on_no_tool_turn(
+                        assistant_content or "", list(events),
+                    ):
+                        self.trace.event(
+                            turn_id, "reply_anti_pattern_detected",
+                            pattern="listo_on_no_tool",
+                        )
+                        self.history.append({
+                            "role": "system",
+                            "content": _LISTO_REGEN_HINT,
+                        })
+                except Exception as _exc:  # noqa: BLE001
+                    try:
+                        self.trace.event(
+                            turn_id, "silent_fallback",
+                            component="reply_validator",
+                            error=f"{type(_exc).__name__}: {_exc}",
+                        )
+                    except Exception:
+                        pass
+
                 self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
                 self._last_turn_ts = time.time()
