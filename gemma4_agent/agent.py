@@ -216,7 +216,15 @@ class Gemma4Agent:
                 user_text or "",
                 cached=self._cached_microagents,
             )
-        except Exception:
+        except Exception as _exc:
+            try:
+                self.trace.event(
+                    "agent", "silent_fallback",
+                    component="microagents",
+                    error=f"{type(_exc).__name__}: {_exc}",
+                )
+            except Exception:
+                pass
             microagents_section = ""
         # TIER 1 #4: skills menu (compact, una linea por skill) + critical
         # block (full body de skills con priority=critical). Cacheado a
@@ -227,7 +235,15 @@ class Gemma4Agent:
                 skills_list = scan_skills()
                 self._cached_skills_menu = build_menu(skills_list)
                 self._cached_skills_critical = build_critical_block(skills_list)
-            except Exception:
+            except Exception as _exc:
+                try:
+                    self.trace.event(
+                        "agent", "silent_fallback",
+                        component="skills_registry",
+                        error=f"{type(_exc).__name__}: {_exc}",
+                    )
+                except Exception:
+                    pass
                 self._cached_skills_menu = ""
                 self._cached_skills_critical = ""
         skills_critical = self._cached_skills_critical or ""
@@ -320,7 +336,15 @@ class Gemma4Agent:
                         logger.warning("tool_schemas_hint: subset %s no matchea ningun schema; devolviendo vacio",
                                        sorted(wanted))
                         cached = ""
-                except Exception:
+                except Exception as _exc:
+                    try:
+                        self.trace.event(
+                            "agent", "silent_fallback",
+                            component="tool_schemas_hint_subset",
+                            error=f"{type(_exc).__name__}: {_exc}",
+                        )
+                    except Exception:
+                        pass
                     cached = ""
                 setattr(self, cache_key, cached)
             return f"\n\n{cached}" if cached else ""
@@ -332,7 +356,15 @@ class Gemma4Agent:
             try:
                 from .tools import compile_tools_to_markdown_exact
                 cached = compile_tools_to_markdown_exact(compact=(mode == "compact"))
-            except Exception:
+            except Exception as _exc:
+                try:
+                    self.trace.event(
+                        "agent", "silent_fallback",
+                        component="tool_schemas_hint_full",
+                        error=f"{type(_exc).__name__}: {_exc}",
+                    )
+                except Exception:
+                    pass
                 cached = ""
             setattr(self, cache_key, cached)
         return f"\n\n{cached}" if cached else ""
@@ -733,14 +765,30 @@ class Gemma4Agent:
         try:
             from .planner import _suggest_tools as _kw_suggest
             kw_hits = _kw_suggest(raw_text_early or "")
-        except Exception:
+        except Exception as _exc:
+            try:
+                self.trace.event(
+                    turn_id, "silent_fallback",
+                    component="planner_keyword_hits",
+                    error=f"{type(_exc).__name__}: {_exc}",
+                )
+            except Exception:
+                pass
             kw_hits = []
         sem_hits: list[str] = []
         if semantic_fallback:
             try:
                 from .semantic_router import suggest_tools_semantic
                 sem_hits = suggest_tools_semantic(raw_text_early or "", k=6)
-            except Exception:
+            except Exception as _exc:
+                try:
+                    self.trace.event(
+                        turn_id, "silent_fallback",
+                        component="semantic_router",
+                        error=f"{type(_exc).__name__}: {_exc}",
+                    )
+                except Exception:
+                    pass
                 sem_hits = []
         self.trace.event(
             turn_id, "router_reasoning",
@@ -910,7 +958,15 @@ class Gemma4Agent:
                         if isinstance(s, dict) and isinstance(s.get("function"), dict)
                         and isinstance(s["function"].get("name"), str)
                     }
-                except Exception:
+                except Exception as _exc:
+                    try:
+                        self.trace.event(
+                            turn_id, "silent_fallback",
+                            component="known_tool_names",
+                            error=f"{type(_exc).__name__}: {_exc}",
+                        )
+                    except Exception:
+                        pass
                     known_names = None
                 rescued = detect_leaked_tool_call(
                     assistant_content, known_tool_names=known_names,
@@ -1533,7 +1589,15 @@ class Gemma4Agent:
                 max_tokens=200,
                 timeout_s=20.0,
             )
-        except Exception:
+        except Exception as _exc:
+            try:
+                self.trace.event(
+                    "agent", "silent_fallback",
+                    component="summarize_history_block",
+                    error=f"{type(_exc).__name__}: {_exc}",
+                )
+            except Exception:
+                pass
             return []
         choices = resp.get("choices") or []
         if not choices:
