@@ -76,6 +76,29 @@ FALLBACK_THETA = 0.025
 TOP_K = 16                # subset size cap
 RRF_K = 60                # RRF constant per Cormack & Clarke 2009
 
+# Adaptive subset cap (hotfix J 2026-05-17).
+# When BOTH retrievers (dense + BM25) agree on the top tool AND
+# the RRF score is near max-theoretical (~0.033 = 2/(60+1) for
+# RRF_K=60 over 65 docs), confidence is high enough to cap the
+# subset tightly. When they disagree, we fall back to TOP_K for
+# the LLM to choose.
+#
+# Bands chosen empirically against the smoke probes 2026-05-17:
+#   "sube el volumen"   -> top_score=0.0328 (max), agree   -> 4
+#   "apaga la pc"       -> top_score=0.0328, agree         -> 4
+#   "instala vlc"       -> top_score=0.0328, agree         -> 4
+#   "ayudame con un X"  -> top_score=0.0325, disagree      -> 16
+#
+# 0.030 is well above the FALLBACK_THETA=0.025 floor so high-
+# confidence and fallback paths never overlap. 4 is the minimum
+# safe HIGH cap — gives the LLM 3 neighbours so it can recover
+# when top-1 is marginally wrong (e.g. audio top-1 when intent was
+# really audio_device).
+HIGH_CONFIDENCE_TOP_SCORE = 0.030
+HIGH_CONFIDENCE_CAP = 4
+MEDIUM_CONFIDENCE_TOP_SCORE = 0.020
+MEDIUM_CONFIDENCE_CAP = 8
+
 # Tools chosen for the low-confidence fallback. Order roughly matches
 # the most-used tools observed in Sprint 2's usage report. Kept short
 # so even on a worst-case query the LLM still has a viable subset.
@@ -155,6 +178,12 @@ class RouterV2:
             "fallback_applied": 0,
             "pending_tool_injected": 0,
             "load_failed": 0,
+            # Hotfix J 2026-05-17: track how often each confidence
+            # band fires so the session_summary shows whether the
+            # bands need re-calibration after real usage.
+            "band_high": 0,
+            "band_medium": 0,
+            "band_low": 0,
         }
         self._load_failed_counted = False
         self._latency_ms_sum: float = 0.0
@@ -190,6 +219,14 @@ class RouterV2:
             self._counters["fallback_applied"] += 1
         if telemetry.get("pending_tool_injected"):
             self._counters["pending_tool_injected"] += 1
+        # Hotfix J 2026-05-17: bucket the call by adaptive-cap
+        # confidence band. Only set on hybrid-path turns; cache /
+        # smalltalk / empty_query / disabled leave it unset.
+        band = telemetry.get("confidence_band")
+        if band:
+            key = f"band_{band}"
+            if key in self._counters:
+                self._counters[key] += 1
         if src == "disabled" and not self._load_failed_counted:
             self._counters["load_failed"] += 1
             self._load_failed_counted = True
@@ -503,17 +540,41 @@ class RouterV2:
         for rank, idx in enumerate(bm25_ranking):
             rrf_scores[idx] += 1.0 / (RRF_K + rank + 1)
 
+        # Always compute the full ranking first — we cap after we
+        # know which confidence band we're in (hotfix J 2026-05-17).
         top_indices = np.argsort(-rrf_scores)[:TOP_K]
-        subset = [self._tool_names[int(i)] for i in top_indices]
+        subset_full = [self._tool_names[int(i)] for i in top_indices]
         top_score = float(rrf_scores[top_indices[0]])
+
+        # Adaptive cap by retriever agreement + RRF score.
+        # Detection is 100% structural — reads top1 names from the
+        # rankings route() already computed for telemetry.
+        dense_top1_name = self._tool_names[int(dense_ranking[0])]
+        bm25_top1_name = self._tool_names[int(bm25_ranking[0])]
+        retrievers_agree = dense_top1_name == bm25_top1_name
+        if retrievers_agree and top_score >= HIGH_CONFIDENCE_TOP_SCORE:
+            adaptive_cap = HIGH_CONFIDENCE_CAP
+            confidence_band = "high"
+        elif retrievers_agree and top_score >= MEDIUM_CONFIDENCE_TOP_SCORE:
+            adaptive_cap = MEDIUM_CONFIDENCE_CAP
+            confidence_band = "medium"
+        else:
+            adaptive_cap = TOP_K
+            confidence_band = "low"
+        subset = subset_full[:adaptive_cap]
 
         telemetry["source"] = "hybrid"
         telemetry["top_score"] = top_score
-        telemetry["dense_top1"] = self._tool_names[int(dense_ranking[0])]
-        telemetry["bm25_top1"] = self._tool_names[int(bm25_ranking[0])]
+        telemetry["dense_top1"] = dense_top1_name
+        telemetry["bm25_top1"] = bm25_top1_name
         telemetry["smalltalk_sim"] = smalltalk_sim
         telemetry["tools_sim"] = tools_sim
         telemetry["smalltalk_delta"] = smalltalk_delta
+        # Hotfix J: expose the adaptive cap decision so we can
+        # audit whether the bands are well-calibrated in production.
+        telemetry["confidence_band"] = confidence_band
+        telemetry["adaptive_cap"] = adaptive_cap
+        telemetry["retrievers_agree"] = retrievers_agree
 
         # Layer 3 — confidence fallback. RRF top-1 below FALLBACK_THETA
         # means even the best document is unrelated to the query;
@@ -597,4 +658,11 @@ __all__ = [
     "route_v2",
     "is_enabled",
     "is_shadow",
+    # Hotfix J 2026-05-17: adaptive cap constants exported so
+    # tests can pin the band boundaries.
+    "HIGH_CONFIDENCE_TOP_SCORE",
+    "HIGH_CONFIDENCE_CAP",
+    "MEDIUM_CONFIDENCE_TOP_SCORE",
+    "MEDIUM_CONFIDENCE_CAP",
+    "TOP_K",
 ]
