@@ -1,8 +1,21 @@
-"""Fase W — Voz local: wake-word (Vosk) + STT streaming (faster-whisper) + TTS (Piper).
+"""Voice module — clean slate after Sprint R3.1 (2026-05-19).
 
-Diseno: cada submodulo es lazy-import. Si una dep no esta instalada, ese
-subsistema queda en FAILED pero el resto funciona. controller.py orquesta los
-3 y expone Qt signals para que la GUI se conecte sin tocar al agente directamente.
+The previous pipeline (Vosk/openWakeWord wake + faster-whisper STT +
+recorder + controller) was removed because it proved fragile in real
+production (false wakes on ambient noise, mistranscriptions of
+English app/song names embedded in Spanish, single-voice fine-tune
+that didn't generalize).
 
-Modelos descargados a `~/.gemma4/models/{vosk,whisper,piper}/` con consentimiento.
+Current state:
+- `tts.py`        — Piper TTS, kept as-is (works, the agent's voice).
+- `audio_io.py`   — Mic capture utilities, kept for reuse in the new
+                    pipeline.
+- `tests/`        — Test audio + ground-truth annotations preserved
+                    for evaluation of the new pipeline.
+
+Pending: replacement architecture is in research (see
+docs/architecture/voice_pipeline_redesign_research_prompt.md).
+
+Backup of the deleted pipeline: git branch
+`pre-voice-rewrite-2026-05-19`.
 """

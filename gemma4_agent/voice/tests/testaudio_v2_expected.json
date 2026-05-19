@@ -1,0 +1,1050 @@
+{
+  "audio_file": "Grabación (2).wav",
+  "duration_s": 292.84,
+  "wakes": [
+    {
+      "timestamp_s": 1.34,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 3.78,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 6.21,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 8.13,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 10.24,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 12.35,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 15.81,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 18.88,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 23.49,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 26.05,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 27.65,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 29.31,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 30.85,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 32.45,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 34.37,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 36.16,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 38.53,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 40.0,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 41.92,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 44.03,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 45.95,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 48.45,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 50.75,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 53.89,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 56.26,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 58.56,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 61.89,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 64.64,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 66.75,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 69.06,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 71.68,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 73.86,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 75.9,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 79.23,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 81.22,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 82.62,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 84.54,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 88.64,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 91.71,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 93.89,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 96.0,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 98.82,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 100.8,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 103.1,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 105.41,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 107.52,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 110.14,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 113.41,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 115.26,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 118.72,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 120.32,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 121.92,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 123.65,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 125.25,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 126.85,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 128.45,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 130.11,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 131.9,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 133.31,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 135.17,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 136.64,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 138.88,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 140.42,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 142.27,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 143.81,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 145.28,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 149.5,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 153.92,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 157.5,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 161.66,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 164.74,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 168.09,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 171.8,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 174.1,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 176.79,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 178.9,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 181.21,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 184.6,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 188.44,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 192.15,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 196.18,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 199.83,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 204.44,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 207.83,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 210.97,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 216.15,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 218.78,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 220.38,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 222.3,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 224.15,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 234.65,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 239.7,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 242.33,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 248.15,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 257.56,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 258.9,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 261.46,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 264.15,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 265.75,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 268.63,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 271.64,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 274.97,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 277.85,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 281.05,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    },
+    {
+      "timestamp_s": 284.06,
+      "kind": "wake",
+      "phrase": "hey gemma",
+      "expected": true
+    }
+  ],
+  "commands": [
+    {
+      "timestamp_s": 2.43,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 4.8,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 7.04,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 9.15,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 11.39,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 14.27,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 16.9,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 19.9,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 24.45,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 26.37,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 28.16,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 29.82,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 31.3,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 33.02,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 34.82,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 36.54,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 38.98,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 40.83,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 42.94,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 44.67,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 46.78,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 49.54,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 51.97,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 54.91,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 57.47,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 59.71,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 63.17,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 65.79,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 67.71,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 70.02,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 72.51,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 74.94,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 76.99,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 80.26,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 81.66,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 83.46,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 86.85,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 89.73,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 92.93,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 94.78,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 97.73,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 99.71,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 101.63,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 104.38,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 106.5,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 108.8,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 111.17,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 114.24,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 116.42,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 119.42,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 120.96,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 122.56,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 124.29,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 125.89,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 127.68,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 129.34,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 130.88,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 132.29,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 134.08,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 135.87,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 137.22,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 139.26,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 141.44,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 143.04,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 144.45,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 146.05,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 150.46,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 154.69,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 158.98,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 165.38,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 169.3,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 172.89,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 175.64,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 177.82,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 179.86,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 182.36,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 185.37,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 189.59,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 192.92,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 197.4,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 200.73,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 205.59,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 209.05,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 212.25,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 217.37,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 219.54,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 221.08,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 223.0,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 226.97,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 235.93,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 240.73,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 243.1,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 258.01,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 259.61,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 262.04,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 264.92,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 266.46,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 269.46,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 274.14,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 275.74,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 278.87,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 282.2,
+      "kind": "command"
+    },
+    {
+      "timestamp_s": 285.85,
+      "kind": "command"
+    }
+  ]
+}

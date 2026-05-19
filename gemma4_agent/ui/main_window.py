@@ -1163,6 +1163,15 @@ class MainWindow(QMainWindow):
     def _start_voice_controller(self, voice_cfg: dict[str, Any]) -> None:
         if self._voice_controller is not None:
             return
+        # Sprint R3.1 clean-slate (2026-05-19): VoiceController removed
+        # pending pipeline redesign. UI returns early with a clear message
+        # so the user knows voice is intentionally offline, not crashed.
+        self.log.append(
+            "voice pipeline is being redesigned — UI voice mode disabled "
+            "until the new wake+STT lands",
+            "warn",
+        )
+        return
         try:
             from ..voice.controller import VoiceController
         except Exception as exc:

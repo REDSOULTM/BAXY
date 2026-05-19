@@ -1,3 +1,0 @@
-# Placeholder so the directory exists in the repo. The trained
-# hey_gemma.onnx (operator output, ~1-3MB) lands here but is
-# gitignored. See docs/architecture/wake_custom_training_path.md.

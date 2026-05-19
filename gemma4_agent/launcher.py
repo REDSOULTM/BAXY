@@ -48,15 +48,10 @@ atexit.register(_emit_router_v2_summary)
 
 
 def _shutdown_voice_recorder() -> None:
-    """Hotfix L 2026-05-17. Best-effort: flush any in-flight
-    voice recording on shutdown so the last turn's WAV files +
-    manifest entry land on disk cleanly.
-    """
-    try:
-        from .voice.recorder import VoiceRecorder
-        VoiceRecorder.get().shutdown()
-    except Exception:
-        pass
+    """Voice recorder removed in Sprint R3.1 clean-slate (2026-05-19).
+    Stub kept so atexit registration doesn't error; replaced when
+    the new voice pipeline lands."""
+    pass
 
 
 atexit.register(_shutdown_voice_recorder)

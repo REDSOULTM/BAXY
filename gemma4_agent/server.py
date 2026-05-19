@@ -444,18 +444,10 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
     from .agent_runner import RUNNER
     RUNNER.start()
 
-    # also boot the voice loop (vosk + faster-whisper + piper) on its own
-    # daemon thread. matches the legacy GUI which loaded voice as soon as
-    # the main window appeared. VOICE.enable() blocks 1-3s loading the
-    # three models so we never call it on the event loop. activity entries
-    # ("voice · levantándose" → "voice · levantado") give the user feedback.
-    import threading
-    from .voice_runner import VOICE
-    threading.Thread(
-        target=lambda: VOICE.enable(),
-        name="gemma4-voice-boot",
-        daemon=True,
-    ).start()
+    # Voice loop boot removed in Sprint R3.1 clean-slate (2026-05-19).
+    # The new voice pipeline (wake + STT) is pending the research output
+    # at docs/architecture/voice_pipeline_redesign_research_prompt.md.
+    # TTS (Piper) is still available at gemma4_agent.voice.tts when needed.
 
     # health endpoints + APIs come before the static mount, otherwise the
     # SPA fallback eats them.
@@ -513,38 +505,13 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
 
     @app.get("/voice/inventory")
     def voice_inventory() -> Any:
-        """Lists available STT models + TTS voices, marking which are already
-        downloaded vs which still need to fetch. Used by the transcript tab so
-        the user picks from real options instead of typing model names blind."""
-        from pathlib import Path
+        """Lists available TTS voices for the transcript tab.
 
-        # STT (faster-whisper) — sizes are picked at load time. faster-whisper
-        # caches them in HF_HOME (or its own ~\.cache\huggingface). we don't
-        # try to detect that here; we just list the valid sizes and flag the
-        # one currently selected via the GEMMA4_VOICE_STT_MODEL env var.
-        try:
-            from .voice.stt import DEFAULT_MODEL_SIZE
-        except Exception:
-            DEFAULT_MODEL_SIZE = "small"  # noqa: N806
-        stt_models = [
-            {"name": "tiny",   "size_label": "~75 MB",  "downloaded": None},
-            {"name": "base",   "size_label": "~145 MB", "downloaded": None},
-            {"name": "small",  "size_label": "~470 MB", "downloaded": None},
-            {"name": "medium", "size_label": "~1.5 GB", "downloaded": None},
-            {"name": "large-v3", "size_label": "~3.0 GB", "downloaded": None},
-        ]
-        # check faster-whisper HF cache for visible model dirs to set the
-        # downloaded flag. patterns: models--Systran--faster-whisper-{size}
-        hf_cache = Path.home() / ".cache" / "huggingface" / "hub"
-        if hf_cache.is_dir():
-            try:
-                cached_dirs = [d.name for d in hf_cache.iterdir() if d.is_dir()]
-                for m in stt_models:
-                    needle = f"faster-whisper-{m['name']}".lower()
-                    m["downloaded"] = any(needle in d.lower() for d in cached_dirs)
-            except OSError:
-                pass
-
+        Sprint R3.1 clean-slate (2026-05-19): STT and wake catalogs were
+        removed alongside the old pipeline. The new architecture will
+        repopulate this endpoint with its concrete choices when it lands.
+        Until then, only the Piper TTS catalog is reported.
+        """
         # TTS (Piper) — we control the catalog explicitly in voice/tts.py
         try:
             from .voice.tts import PIPER_VOICE_URLS, voice_files_exist
@@ -558,22 +525,13 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
                 "downloaded": bool(voice_files_exist(name)),
             })
 
-        # Wake word (Vosk) — single model, only one option
-        try:
-            from .voice.wake import VOSK_MODEL_DIR, VOSK_MODEL_NAME
-            wake_model = {
-                "name": VOSK_MODEL_NAME,
-                "downloaded": VOSK_MODEL_DIR.is_dir(),
-            }
-        except Exception:
-            wake_model = {"name": "vosk-model-small-es-0.42", "downloaded": False}
-
         return {
-            "stt_default": DEFAULT_MODEL_SIZE,
-            "stt": stt_models,
+            "stt_default": None,
+            "stt": [],
             "tts": tts_voices,
-            "wake": wake_model,
+            "wake": {"name": None, "downloaded": False},
             "languages": ["auto", "es", "en", "fr", "pt", "it", "de"],
+            "pipeline_status": "pending_redesign",
         }
 
     @app.post("/agent/restart")
@@ -716,33 +674,38 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         return {"status": "accepted"}
 
     # ---------- voice ----------
+    # Sprint R3.1 clean-slate (2026-05-19): the wake + STT pipeline was
+    # removed pending a redesign. These endpoints return placeholders so
+    # the UI doesn't 500 while the new pipeline is being built. The shape
+    # stays compatible so the UI keeps rendering; pipeline_status flags
+    # it as "pending_redesign".
+
+    def _voice_disabled_status() -> dict[str, Any]:
+        return {
+            "enabled": False,
+            "running": False,
+            "wake_loaded": False,
+            "stt_loaded": False,
+            "tts_loaded": False,
+            "pipeline_status": "pending_redesign",
+            "message": "voice pipeline is being redesigned (see docs/architecture/voice_pipeline_redesign_research_prompt.md)",
+        }
 
     @app.get("/voice/status")
     def voice_status() -> Any:
-        from .voice_runner import VOICE
-        return VOICE.status()
+        return _voice_disabled_status()
 
     @app.post("/voice/start")
     def voice_start() -> Any:
-        """Enable voice loop. Loads Vosk + faster-whisper + Piper on first call
-        (~1-3s blocking). The UI shows BOOT/SYSTEM entries during load."""
-        from .voice_runner import VOICE
-        ok = VOICE.enable()
-        return {"ok": ok, **VOICE.status()}
+        return {"ok": False, **_voice_disabled_status()}
 
     @app.post("/voice/stop")
     def voice_stop() -> Any:
-        from .voice_runner import VOICE
-        VOICE.disable()
-        return {"ok": True, **VOICE.status()}
+        return {"ok": True, **_voice_disabled_status()}
 
     @app.post("/voice/trigger")
     def voice_trigger() -> Any:
-        """Push-to-talk: synthesise a wake event so the next phrase is captured
-        even without saying 'gemma'. No-op if voice isn't enabled."""
-        from .voice_runner import VOICE
-        VOICE.trigger_manual()
-        return {"ok": True, **VOICE.status()}
+        return {"ok": False, **_voice_disabled_status()}
 
     # ---------- sessions ----------
 
