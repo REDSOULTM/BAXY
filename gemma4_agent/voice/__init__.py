@@ -1,21 +1,33 @@
-"""Voice module — clean slate after Sprint R3.1 (2026-05-19).
+"""Voice pipeline v2 — clean rebuild (2026-05-19).
 
-The previous pipeline (Vosk/openWakeWord wake + faster-whisper STT +
-recorder + controller) was removed because it proved fragile in real
-production (false wakes on ambient noise, mistranscriptions of
-English app/song names embedded in Spanish, single-voice fine-tune
-that didn't generalize).
+Architecture (per docs/architecture/voice_pipeline_redesign_research_report.md):
 
-Current state:
-- `tts.py`        — Piper TTS, kept as-is (works, the agent's voice).
-- `audio_io.py`   — Mic capture utilities, kept for reuse in the new
-                    pipeline.
-- `tests/`        — Test audio + ground-truth annotations preserved
-                    for evaluation of the new pipeline.
+    mic stream (16 kHz mono, 20 ms frames)
+      → Silero VAD (gate)
+      → openWakeWord (wake-word detection)
+      → command capture state machine (end-of-speech via VAD)
+      → faster-whisper small int8 (STT)
+      → RapidFuzz post-correction against domain inventory
+      → text out to LLM
 
-Pending: replacement architecture is in research (see
-docs/architecture/voice_pipeline_redesign_research_prompt.md).
+Module map:
+    audio_io      — mic capture + ring buffer + frame primitives
+    vad           — Silero VAD wrapper
+    wake          — openWakeWord wrapper (stock + custom model paths)
+    stt           — faster-whisper streaming wrapper
+    inventory     — domain vocab loader (apps, contacts, songs)
+    corrector     — RapidFuzz fuzzy-match post-corrector
+    pipeline      — orchestrator: composes the above into a state machine
+    tts           — Piper TTS (kept from v1, unchanged)
 
-Backup of the deleted pipeline: git branch
-`pre-voice-rewrite-2026-05-19`.
+Wake phrase: "Hey Gemma" (planned via custom training in Sprint 4).
+Until the custom hey_gemma.onnx exists, the pipeline falls back to
+the stock `hey_jarvis` openWakeWord model so the system is usable
+during development. The fallback is logged loud and clear.
+
+OS support: Windows + macOS arm64 + Linux x86_64. All deps have
+pre-built wheels for Python 3.10-3.12.
+
+Models: downloaded on first use to ~/.gemma4/models/{whisper,oww}/.
+Total disk: ~490 MB.
 """

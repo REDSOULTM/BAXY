@@ -1,0 +1,49 @@
+# Voice pipeline dependencies (Sprint VoiceRedesign, 2026-05-19)
+# Architecture: Silero VAD -> openWakeWord (hey_jarvis stock + hey_gemma custom planned)
+#               -> faster-whisper small int8 -> RapidFuzz post-correction -> LLM
+#
+# All packages have pre-built wheels for Windows + macOS arm64 + Linux,
+# Python 3.10-3.12. Install: pip install -r requirements-voice.txt
+# Total ~300 MB install + ~490 MB downloaded models = ~790 MB.
+
+# STT engine: faster-whisper bundles ctranslate2 + tokenizer + mel.
+# Pinned to a known-good version that supports `initial_prompt`,
+# `condition_on_previous_text=False`, and int8 CPU compute.
+faster-whisper>=1.0.3,<2.0
+
+# Wake-word detection: openWakeWord with ONNX backend. Ships stock
+# pretrained models (hey_jarvis, alexa, ok_nabu, computer, etc.) and
+# supports custom trained heads dropped in models/oww/.
+openwakeword>=0.6.0,<1.0
+
+# ONNX runtime for openWakeWord + Silero VAD + future hey_gemma.onnx.
+# CPU-only, no CUDA dependency.
+onnxruntime>=1.18.0,<2.0
+
+# Voice Activity Detection: gates the wake detector to reject
+# ambient/silence audio before spectral pattern matching runs.
+silero-vad>=5.1
+
+# Audio I/O: PortAudio bindings. Cross-platform wheels.
+sounddevice>=0.4.7
+
+# Audio file I/O (WAV read/write).
+soundfile>=0.12
+
+# Required by faster-whisper int8 + Silero ONNX.
+numpy>=1.26,<2.0
+
+# Fuzzy post-correction against domain inventory (apps, songs, contacts).
+# This is the key new component: deterministic correction of anglicism
+# mistranscriptions ("Benson Mould" -> "Benson Boone") without depending
+# on a brittle 224-token initial_prompt.
+rapidfuzz>=3.9
+
+# Model downloads (faster-whisper auto-fetches via HuggingFace).
+huggingface_hub>=0.24
+
+# PyTorch is a hard dep of silero-vad. CPU-only build (avoid CUDA wheel
+# which is ~2 GB). Used only for VAD inference (silero ships ONNX but
+# load_silero_vad helper imports torch for thread tuning).
+torch>=2.0,<3.0; platform_system != "Darwin"
+torch>=2.0,<3.0; platform_system == "Darwin"
