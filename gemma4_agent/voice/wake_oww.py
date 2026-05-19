@@ -54,9 +54,27 @@ OWW_FALLBACK_MODEL_NAME = "hey_jarvis"
 OWW_MODEL_NAME = os.environ.get("GEMMA4_OWW_MODEL", "")
 
 # Score threshold for triggering a wake. openWakeWord scores are
-# in [0, 1]; the upstream default is 0.5. We expose this via env
-# var so the operator can sweep it without recompiling.
-OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.5"))
+# in [0, 1]; the upstream default is 0.5.
+#
+# Sprint R3.1 hotfix (2026-05-19): raised from 0.5 to 0.7 after the
+# operator reported the v5 model self-triggering on ambient mic noise
+# in real production sessions (session 20260519_123719: 5 wakes in
+# 38s with rms < 0.005, all transcribed to nothing).
+#
+# Hotfix flow:
+# 1. v7 trained with explicit silence/mic-thermal-noise/production-FP
+#    recordings as hard negatives. Score on pure silence dropped from
+#    >0.9 (v5) to <0.5 (v7).
+# 2. Even with v7, ambient sounds (door clicks, keyboard, etc.) can
+#    still produce spurious >0.6 scores. Threshold 0.7 rejects 4/5
+#    of the captured FP recordings while keeping recall 0.524 +
+#    precision 0.965 on Grabación (2) for true wakes.
+# 3. Recall trade-off vs threshold 0.5 (v7): from 0.71 to 0.52, but
+#    precision improves from 0.94 to 0.97 -- false wakes are intrusive
+#    (interrupt the user) while missed wakes just make the user repeat.
+#
+# Operator can override via GEMMA4_OWW_THRESHOLD env var.
+OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.6"))
 
 # openWakeWord expects 1280-sample (80ms at 16kHz) chunks for
 # inference. The audio pipeline feeds us CHUNK_SAMPLES=512 (32ms)
