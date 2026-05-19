@@ -31,6 +31,7 @@ import argparse
 import datetime as _dt
 import json
 import logging
+import re
 import statistics
 import sys
 import time
@@ -310,12 +311,30 @@ def measure_wake_fp_rate() -> ThresholdResult:
 
 # --- Threshold 3: stt_wer_mean --------------------------------------
 
-def measure_stt_wer_mean() -> ThresholdResult:
-    """Compute WER of production small vs large-v3 ground truth.
+_PUNCT_RE = re.compile(r"[¿?¡!.,;:\"'()\[\]]")
+_WS_RE = re.compile(r"\s+")
 
-    Reuses testaudio_groundtruth_aligned.json from Sprint N if
-    available -- that file already has small and large transcriptions
-    aligned per wake. If missing, SKIPPED."""
+
+def _normalize_for_wer(s: str) -> str:
+    """Sprint R3.1 (2026-05-19): WER normalization that strips punctuation
+    and collapses whitespace before comparison. The router downstream of
+    STT doesn't care if 'Cuándo' has the leading '¿' -- semantic intent
+    is what matters. Without this normalization, the bench penalized
+    correct semantic transcriptions over punctuation cosmetics.
+    """
+    s = s.lower()
+    s = _PUNCT_RE.sub("", s)
+    s = _WS_RE.sub(" ", s).strip()
+    return s
+
+
+def measure_stt_wer_mean() -> ThresholdResult:
+    """Compute semantic WER of production small vs ground truth.
+
+    Reuses testaudio_groundtruth_aligned.json. Strips punctuation
+    before WER computation (semantic match is what matters for
+    downstream router intent classification). If missing, SKIPPED.
+    """
     aligned = VOICE_TESTS / "testaudio_groundtruth_aligned.json"
     if not aligned.exists():
         return ThresholdResult(
@@ -330,8 +349,8 @@ def measure_stt_wer_mean() -> ThresholdResult:
     jiwer = _ensure_jiwer()
     wers = []
     for t in d.get("turns", []):
-        ref = (t.get("large_text") or "").strip().lower()
-        hyp = (t.get("small_raw_text") or t.get("small_text") or "").strip().lower()
+        ref = _normalize_for_wer(t.get("large_text") or "")
+        hyp = _normalize_for_wer(t.get("small_raw_text") or t.get("small_text") or "")
         if not ref:
             continue
         wer = float(jiwer.wer(ref, hyp))
@@ -350,7 +369,7 @@ def measure_stt_wer_mean() -> ThresholdResult:
         THRESHOLDS["stt_wer_mean"]["target"],
         THRESHOLDS["stt_wer_mean"]["op"],
         passed=_compare(mean_wer, THRESHOLDS["stt_wer_mean"]["target"], THRESHOLDS["stt_wer_mean"]["op"]),
-        note=f"n={len(wers)} turns",
+        note=f"n={len(wers)} turns (semantic WER, punctuation-insensitive)",
         details={"wers": [round(w, 3) for w in wers]},
     )
 

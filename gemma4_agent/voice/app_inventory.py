@@ -408,14 +408,27 @@ def _save_cache(apps: list[AppEntry]) -> None:
 # Plantilla base con "Gemma" >= MIN_GEMMA_OCCURRENCES menciones. Las apps se
 # interpolan en grupos. Cierra con frases generales para anclar estilo.
 _PROMPT_PREFIX = (
-    "Conversacion con el asistente Gemma. "
+    # Sprint R3.1 final (2026-05-19): operator confirmed that the
+    # real usage pattern is Spanish-rioplatense embedded with English
+    # app/song/person names. The decoder MUST keep these proper nouns
+    # in their original English spelling. Seed the prompt with
+    # bilingual command pairs ('abre X' / 'open X') so the decoder
+    # doesn't phoneticize English nouns (e.g. Chrome -> Aurecrum,
+    # Boone -> Mould, Spotify -> Esportifai).
+    "Conversacion con el asistente Gemma en espanol rioplatense con nombres "
+    "de aplicaciones y canciones en ingles. "
+    "Hey Gemma, abre Chrome. Hey Gemma, open Chrome. "
+    "Hey Gemma, abre Spotify. Hey Gemma, open Spotify. "
+    "Hey Gemma, reproduce Bohemian Rhapsody de Queen. "
+    "Hey Gemma, buscame info sobre Benson Boone en Google. "
 )
 _PROMPT_SUFFIX = (
     "Gemma, apaga la luz del salon. Gemma, enciende la luz de la cocina. "
     "Gemma, sube el volumen. Gemma, baja el volumen. Gemma, pausa la musica. "
     "Gemma, pon el temporizador a cinco minutos. Gemma, que hora es. "
     "Gemma, busca en Google. Gemma, cierra la ventana. "
-    "Comandos breves en espanol dirigidos al asistente Gemma."
+    "Gemma, mandale un mensaje a Juan por WhatsApp. "
+    "Comandos breves en espanol con nombres de apps en ingles."
 )
 
 

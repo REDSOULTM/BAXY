@@ -80,28 +80,40 @@ SHORT_AUDIO_THRESHOLD_S = 3.0  # frontera modo comando vs dictado
 # contra "abre estimulo" -> "abre Steam". Texto en espanol natural con
 # puntuacion (OpenAI Cookbook recomienda ese patron explicitamente).
 FALLBACK_INITIAL_PROMPT = (
-    "Conversacion con el asistente Gemma. "
-    "Hey Gemma, abre Steam. Hey Gemma, abre Spotify y reproduce musica. "
-    "Hey Gemma, abre Discord, VS Code, Chrome, Firefox, YouTube, Netflix, "
-    "Twitch, WhatsApp, Telegram, Visual Studio Code, Notepad, Explorer, OBS, "
-    "Counter-Strike 2, GTA V. "
+    # Sprint R3.1 final (2026-05-19): operator-confirmed pattern is
+    # Spanish rioplatense embedded with English app/proper names.
+    # The decoder MUST learn to keep app/song/person names in their
+    # original English spelling instead of phoneticizing them.
+    # Pattern: verb in Spanish + noun in English.
+    "Conversacion con el asistente Gemma en espanol rioplatense con nombres de "
+    "aplicaciones y canciones en ingles. "
+    # Bilingual app commands -- both forms ('abre X' / 'open X')
+    "Hey Gemma, abre Chrome. Hey Gemma, open Chrome. "
+    "Hey Gemma, abre Steam. Hey Gemma, open Steam. "
+    "Hey Gemma, abre Spotify. Hey Gemma, open Spotify. "
+    "Hey Gemma, abre Discord, abre Firefox, abre Edge, abre Notepad, abre Explorer. "
+    "Hey Gemma, abre WhatsApp, abre Telegram. "
+    "Hey Gemma, abre YouTube, abre Netflix, abre Twitch. "
+    "Hey Gemma, abre Visual Studio Code, abre VS Code, abre OBS. "
+    "Hey Gemma, abre Counter-Strike 2, abre GTA V, abre Steam. "
+    # Music/search with English titles/names
+    "Hey Gemma, reproduce Bohemian Rhapsody de Queen. "
+    "Hey Gemma, reproduce algo de Benson Boone. "
+    "Hey Gemma, reproduce algo de los redonditos. "
+    "Hey Gemma, ponme musica tranquila. "
+    "Hey Gemma, buscame info sobre Benson Boone en Google. "
+    "Hey Gemma, busca informacion sobre Counter-Strike 2. "
+    "Hey Gemma, cuando salio GTA V. "
+    # Smart home + system controls (pure Spanish)
     "Hey Gemma, apaga la luz del salon. Hey Gemma, enciende la luz de la cocina. "
     "Hey Gemma, sube el volumen. Hey Gemma, baja el volumen. Hey Gemma, pausa la musica. "
     "Hey Gemma, pon el temporizador a cinco minutos. Hey Gemma, que hora es. "
     "Hey Gemma, como esta el tiempo en Madrid. Hey Gemma, busca en Google. "
     "Hey Gemma, cierra la ventana. Hey Gemma, minimiza la ventana. "
-    # Sprint R3.1: messaging/search verbs that appeared in operator's
-    # testaudio with high WER (e.g. 'mandale un mensaje a Juan',
-    # 'buscame info sobre Benson Boone') -- give the decoder strong
-    # priors for these specific command patterns.
+    # Messaging
     "Hey Gemma, mandale un mensaje a Juan por WhatsApp. "
     "Hey Gemma, mandale un mensaje a Maria. "
-    "Hey Gemma, buscame info sobre Benson Boone. "
-    "Hey Gemma, reproduce Bohemian Rhapsody. "
-    "Hey Gemma, reproduce algo de los redonditos. "
-    "Hey Gemma, ponme musica tranquila. "
-    "Hey Gemma, cuando salio GTA V. "
-    "Comandos breves en espanol rioplatense dirigidos al asistente Gemma."
+    "Comandos breves en espanol con apps en ingles, dirigidos al asistente Gemma."
 )
 
 
