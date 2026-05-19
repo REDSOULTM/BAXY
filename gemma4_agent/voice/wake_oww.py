@@ -55,26 +55,27 @@ OWW_MODEL_NAME = os.environ.get("GEMMA4_OWW_MODEL", "")
 
 # Score threshold for triggering a wake. openWakeWord scores are
 # in [0, 1]; the upstream default is 0.5.
-#
-# Sprint R3.1 hotfix (2026-05-19): raised from 0.5 to 0.7 after the
-# operator reported the v5 model self-triggering on ambient mic noise
-# in real production sessions (session 20260519_123719: 5 wakes in
-# 38s with rms < 0.005, all transcribed to nothing).
-#
-# Hotfix flow:
-# 1. v7 trained with explicit silence/mic-thermal-noise/production-FP
-#    recordings as hard negatives. Score on pure silence dropped from
-#    >0.9 (v5) to <0.5 (v7).
-# 2. Even with v7, ambient sounds (door clicks, keyboard, etc.) can
-#    still produce spurious >0.6 scores. Threshold 0.7 rejects 4/5
-#    of the captured FP recordings while keeping recall 0.524 +
-#    precision 0.965 on Grabación (2) for true wakes.
-# 3. Recall trade-off vs threshold 0.5 (v7): from 0.71 to 0.52, but
-#    precision improves from 0.94 to 0.97 -- false wakes are intrusive
-#    (interrupt the user) while missed wakes just make the user repeat.
-#
 # Operator can override via GEMMA4_OWW_THRESHOLD env var.
 OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.6"))
+
+# Sprint R3.1 hotfix 2 (2026-05-19): Silero VAD gate.
+# After v7 reduced silence false-positives, the operator's sessions
+# 20260519_123719 and _125212 still showed 6+ false wakes with
+# confidences 0.63-0.75. Inspection showed those audios had ambient
+# sound (rms 0.003-0.021): fan, AC, keyboard clicks, distant TV --
+# ambient that triggers the wake model's spectral pattern matcher.
+#
+# Pure RMS gate didn't work: operator speech at conversational
+# distance ranges from rms 0.001 to 0.10 -- can't pick a single
+# threshold that allows speech but rejects ambient.
+#
+# Solution: use Silero VAD to detect if the window contains HUMAN
+# VOICE specifically (not just any energy). Silero outputs a 0-1
+# speech probability per chunk; we gate at 0.3 (operator's voice
+# scores 0.7-0.95 reliably, ambient scores <0.4).
+#
+# Override via GEMMA4_OWW_VAD_MIN env var. Set to 0 to disable.
+OWW_VAD_MIN = float(os.environ.get("GEMMA4_OWW_VAD_MIN", "0.3"))
 
 # openWakeWord expects 1280-sample (80ms at 16kHz) chunks for
 # inference. The audio pipeline feeds us CHUNK_SAMPLES=512 (32ms)
@@ -139,6 +140,10 @@ class OpenWakeWordDetector:
         self._last_fire_at: float = 0.0
         # Accumulator for the 80ms windows openWakeWord wants.
         self._buf: np.ndarray = np.zeros(0, dtype=np.int16)
+        # Sprint R3.1 hotfix 2: lazy-loaded Silero VAD model used as
+        # gate in _predict_window to reject non-speech audio.
+        self._vad_model: Any = None
+        self._vad_failed: bool = False
         # Phrase string passed to the on_wake callback. We use a
         # canonical "hey gemma" so downstream code (recorder
         # manifests, controller state) doesn't care which model
@@ -254,6 +259,41 @@ class OpenWakeWordDetector:
             self._predict_window(window)
 
     def _predict_window(self, window: np.ndarray) -> None:
+        # Sprint R3.1 hotfix 2 (2026-05-19): Silero VAD gate.
+        # Reject windows that don't contain human voice. Silero is
+        # specifically trained to discriminate speech from ambient,
+        # unlike pure RMS which can't tell soft speech from loud noise.
+        if OWW_VAD_MIN > 0.0:
+            if self._vad_model is None and not self._vad_failed:
+                try:
+                    from silero_vad import load_silero_vad
+                    import torch as _torch
+                    _torch.set_num_threads(1)
+                    self._vad_model = load_silero_vad(onnx=True)
+                except Exception as exc:
+                    logger.warning("Silero VAD load failed; disabling VAD gate: %s", exc)
+                    self._vad_failed = True
+            if self._vad_model is not None:
+                try:
+                    import torch as _torch
+                    window_f = window.astype(np.float32) / 32768.0
+                    # Silero expects exactly 512 samples at 16kHz per
+                    # forward pass. We have 1280 (80ms) — feed two
+                    # consecutive halves and take the MAX (any half
+                    # with speech keeps the window).
+                    HALF = 512
+                    max_prob = 0.0
+                    for off in (0, len(window_f) - HALF):
+                        sub = window_f[off:off + HALF]
+                        if sub.shape[0] != HALF:
+                            continue
+                        p = float(self._vad_model(_torch.from_numpy(sub), 16000).item())
+                        if p > max_prob:
+                            max_prob = p
+                    if max_prob < OWW_VAD_MIN:
+                        return  # no human voice -- skip predict
+                except Exception as exc:
+                    logger.debug("VAD gate failed; passing through: %s", exc)
         try:
             scores = self._model.predict(window)
         except Exception as exc:

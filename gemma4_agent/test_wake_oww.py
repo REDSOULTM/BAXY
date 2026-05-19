@@ -159,24 +159,35 @@ class OpenWakeWordBackendTest(unittest.TestCase):
         det = OpenWakeWordDetector(on_wake=_noop_callback)
         if not det.load():
             self.skipTest(f"oww load failed: {det.last_error}")
-        # Track how many times the model was actually asked to
-        # predict.
-        calls = []
-        orig_predict = det._model.predict
+        # Disable VAD gate for this structural test -- we're not
+        # testing speech detection, only buffer accumulation logic.
+        # The R3.1 hotfix-2 added VAD which would block our zero
+        # input from reaching predict.
+        det._vad_failed = True  # forces VAD to be skipped
+        det._vad_model = None
+        import gemma4_agent.voice.wake_oww as _oww_mod
+        original_vad_min = _oww_mod.OWW_VAD_MIN
+        _oww_mod.OWW_VAD_MIN = 0.0
+        try:
+            # Track how many times the model was actually asked to predict.
+            calls = []
+            orig_predict = det._model.predict
 
-        def counting_predict(window):
-            calls.append(window.shape[0] if hasattr(window, "shape") else len(window))
-            return orig_predict(window)
+            def counting_predict(window):
+                calls.append(window.shape[0] if hasattr(window, "shape") else len(window))
+                return orig_predict(window)
 
-        det._model.predict = counting_predict
-        # Feed 3 chunks of 512 = 1536 samples. That's enough for
-        # exactly one full window (1280) with 256 left over.
-        for _ in range(3):
-            det.feed(np.zeros(512, dtype=np.int16))
-        self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0], OWW_WINDOW_SAMPLES)
-        # Buffer should now hold the leftover 256 samples.
-        self.assertEqual(det._buf.size, 1536 - OWW_WINDOW_SAMPLES)
+            det._model.predict = counting_predict
+            # Feed 3 chunks of 512 = 1536 samples. That's enough for
+            # exactly one full window (1280) with 256 left over.
+            for _ in range(3):
+                det.feed(np.zeros(512, dtype=np.int16))
+            self.assertEqual(len(calls), 1)
+            self.assertEqual(calls[0], OWW_WINDOW_SAMPLES)
+            # Buffer should now hold the leftover 256 samples.
+            self.assertEqual(det._buf.size, 1536 - OWW_WINDOW_SAMPLES)
+        finally:
+            _oww_mod.OWW_VAD_MIN = original_vad_min
 
 
 class CallbackSignatureTest(unittest.TestCase):
