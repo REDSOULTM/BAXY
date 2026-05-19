@@ -158,12 +158,15 @@ def run_e2e_test(
     for i in range(0, len(audio) - CHUNK_SAMPLES, CHUNK_SAMPLES):
         chunk = audio[i:i + CHUNK_SAMPLES]
         audio_cursor[0] = (i + CHUNK_SAMPLES) / SAMPLE_RATE
-        # VAD gate (matches pipeline.py _handle_idle logic).
+        # Mirror pipeline.py _handle_idle: feed wake EVERY chunk. The
+        # wake detector accumulates 80 ms windows internally; gating
+        # via VAD upstream destroys that continuity. VAD stats kept
+        # for observability only.
         if vad.is_speech(chunk, threshold=0.3):
-            wake.feed(chunk)
             n_speech += 1
         else:
             n_silence += 1
+        wake.feed(chunk)
     t_elapsed = time.time() - t_start
     log.info(
         "Stream processed in %.2fs (%.2fx realtime). "

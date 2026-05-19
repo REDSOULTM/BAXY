@@ -183,7 +183,20 @@ class VoicePipeline:
             logger.exception("on_chunk handler crashed: %s", exc)
 
     def _handle_idle(self, chunk: np.ndarray) -> None:
-        """In IDLE, keep preroll updated and run wake detection."""
+        """In IDLE, keep preroll updated and run wake detection.
+
+        Sprint 5 fix (2026-05-19): the wake detector accumulates
+        80 ms windows internally; if we drop chunks via a VAD gate
+        upstream, we destroy that continuity and the wake never sees
+        a complete window. Empirically this took recall from 7/105 to
+        0/105 on Grabación (2).wav.
+
+        Conclusion: feed wake EVERY chunk. The wake model's own
+        threshold + the same_phrase_cooldown handle ambient-noise
+        FP rejection adequately for v9. The VAD is still used DOWN-
+        stream (end-of-speech detection during CAPTURE) where it
+        belongs.
+        """
         self._preroll.append(chunk)
         # Software-mute: pause wake detection while TTS is speaking.
         # Without echo cancellation, hearing 'gemma' in TTS output
@@ -194,10 +207,8 @@ class VoicePipeline:
                     return
             except Exception:
                 pass
-        # Gate: only feed wake if VAD says there's speech.
-        is_speech = self._vad.is_speech(chunk, threshold=WAKE_GATE_THRESHOLD)
-        if is_speech:
-            self._wake.feed(chunk)
+        # Feed wake unconditionally — no VAD gate. See docstring.
+        self._wake.feed(chunk)
 
     def _handle_capture(self, chunk: np.ndarray) -> None:
         """In CAPTURE, buffer audio. Detect end-of-speech via VAD silence."""

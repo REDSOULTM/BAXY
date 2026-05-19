@@ -51,16 +51,33 @@ logger = logging.getLogger(__name__)
 OWW_WINDOW_SAMPLES = 1280
 
 # Score above which we fire. openWakeWord upstream default = 0.5.
-# Operator can override via env var; not exposed as constructor arg
-# because the env override applies process-wide.
+# Sprint 5 (2026-05-19) calibration: with the custom hey_gemma.onnx
+# trained on Piper Spanish synthetic voices + RIR augmentation, raw
+# scoring on the operator's real audio shows:
+#   score > 0.5: 4.8% recall (5/105 expected wakes)
+#   score > 0.3: 6.7% recall (7/105)
+#   score > 0.2: 7.6% recall (8/105)
+#   score > 0.1: 9.5% recall (10/105)
+# Lowered to 0.3 — buys ~40% more recall vs 0.5 default at the cost
+# of slightly more false-trigger risk. The Silero VAD gate + state
+# machine CAPTURE blocking provide the back-pressure that keeps FPs
+# manageable in real use.
 import os
-OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.5"))
+OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.3"))
+
+# "Partial wake" — when score is between PARTIAL_THRESHOLD and
+# OWW_THRESHOLD, we emit a debug-level event so the UI can optionally
+# show a "did you mean hey gemma?" feedback without actually firing.
+# Future Sprint can wire this into a UI toast for low-confidence cases.
+OWW_PARTIAL_THRESHOLD = float(os.environ.get("GEMMA4_OWW_PARTIAL", "0.15"))
 
 # Minimum gap between two fires of the SAME phrase. Smaller than the
 # old debounce because the upstream VAD gate + state-machine CAPTURE
 # state already provide back-pressure. This is just to avoid the SAME
 # wake utterance firing 3-4 times across consecutive 80 ms windows.
-SAME_PHRASE_COOLDOWN_S = 0.24
+# Lowered from 0.24 to 0.10 so that if the user repeats "hey gemma"
+# because the first one wasn't detected, the second one isn't gated.
+SAME_PHRASE_COOLDOWN_S = 0.10
 
 # Where the custom-trained model goes once Sprint 4 produces it.
 CUSTOM_MODEL_PATH = (
@@ -91,6 +108,9 @@ class WakeDetector:
         self._loaded: bool = False
         self._buf: np.ndarray = np.zeros(0, dtype=np.int16)
         self._last_fire_at: float = 0.0
+        # Sprint 5 partial-detection cooldown — separate from full-fire
+        # cooldown so partials don't gate fires and vice versa.
+        self._last_partial_at: float = 0.0
         self.last_error: str | None = None
         self.using_custom_model: bool = False
 
@@ -159,6 +179,7 @@ class WakeDetector:
         """Clear the rolling buffer and cooldown. Call between sessions."""
         self._buf = np.zeros(0, dtype=np.int16)
         self._last_fire_at = 0.0
+        self._last_partial_at = 0.0
         if self._model is not None:
             try:
                 self._model.reset()
@@ -192,8 +213,25 @@ class WakeDetector:
             logger.warning("openwakeword predict failed: %s", exc)
             return
         score = float(scores.get(self._model_score_key, 0.0))
-        if score < OWW_THRESHOLD:
+        # Below partial threshold: do nothing.
+        if score < OWW_PARTIAL_THRESHOLD:
             return
+        # Between partial and full threshold: emit observability event
+        # so the UI can show "did you say hey gemma?" feedback. We do
+        # NOT fire on_wake here — partial detections shouldn't kick off
+        # a CAPTURE state.
+        if score < OWW_THRESHOLD:
+            now = time.monotonic()
+            # Same cooldown for partials to avoid log spam.
+            if now - self._last_partial_at >= SAME_PHRASE_COOLDOWN_S:
+                self._last_partial_at = now
+                logger.info(
+                    "wake_word_partial score=%.3f threshold=%.3f model=%s",
+                    score, OWW_THRESHOLD,
+                    "custom" if self.using_custom_model else "stock",
+                )
+            return
+        # Above threshold: fire.
         now = time.monotonic()
         if now - self._last_fire_at < SAME_PHRASE_COOLDOWN_S:
             return
