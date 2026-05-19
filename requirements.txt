@@ -63,6 +63,13 @@ nvidia-ml-py>=12.560            # imported as `pynvml` (only used in server.py f
 # --- Offline ground-truth tooling (Sprint N, used by scripts/testaudio_groundtruth.py) ---
 jiwer>=3.0                       # WER/CER computation for Whisper-large vs pipeline comparison
 
+# --- Wake-word detection backend (Sprint R2, used by wake_oww.py) ---
+# Pre-trained pre-builds are not phonetically close enough to "hey gemma"
+# (Sprint R2 audit: 0 fires across thresholds 0.05..0.8). Kept as an
+# optional benchmark backend until a custom model lands. See
+# docs/architecture/wake_custom_training_path.md.
+openwakeword>=0.6
+
 # --- CUDA 12 runtime for faster-whisper GPU inference (Sprint Q.0) ---
 # ctranslate2 4.7.x is compiled against CUDA 12; even on systems with CUDA 13
 # toolkit installed, the CUDA 12 runtime DLLs must be on the implicit search
