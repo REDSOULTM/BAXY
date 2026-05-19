@@ -82,6 +82,13 @@ class VoicePipeline:
         self._state: State = State.IDLE
         self._state_lock = threading.Lock()
 
+        # Optional: callable that returns True while the agent is
+        # speaking (TTS busy). When set and returns True, wake detection
+        # is paused to avoid self-triggering on Piper output going out
+        # of the same speaker as the mic input. Research report C.6
+        # plan A — software-mute path, no AEC dependency.
+        self._tts_busy_fn: Callable[[], bool] | None = None
+
         # Pre-wake ring buffer (PREROLL_SECONDS worth of chunks).
         preroll_chunks = int(PREROLL_SECONDS * SAMPLE_RATE / CHUNK_SAMPLES)
         self._preroll: deque[np.ndarray] = deque(maxlen=preroll_chunks)
@@ -150,6 +157,13 @@ class VoicePipeline:
     def state(self) -> State:
         return self._state
 
+    def set_tts_busy_fn(self, fn: Callable[[], bool] | None) -> None:
+        """Register a callable that returns True while TTS is playing.
+        The wake detector pauses while this returns True (software-mute
+        echo avoidance, per research report C.6 plan A).
+        """
+        self._tts_busy_fn = fn
+
     # ----- audio chunk handler (runs in AudioPump thread) -------------
 
     def _on_chunk(self, chunk: np.ndarray) -> None:
@@ -171,6 +185,15 @@ class VoicePipeline:
     def _handle_idle(self, chunk: np.ndarray) -> None:
         """In IDLE, keep preroll updated and run wake detection."""
         self._preroll.append(chunk)
+        # Software-mute: pause wake detection while TTS is speaking.
+        # Without echo cancellation, hearing 'gemma' in TTS output
+        # would self-trigger via the mic.
+        if self._tts_busy_fn is not None:
+            try:
+                if self._tts_busy_fn():
+                    return
+            except Exception:
+                pass
         # Gate: only feed wake if VAD says there's speech.
         is_speech = self._vad.is_speech(chunk, threshold=WAKE_GATE_THRESHOLD)
         if is_speech:

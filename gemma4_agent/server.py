@@ -674,38 +674,42 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         return {"status": "accepted"}
 
     # ---------- voice ----------
-    # Sprint R3.1 clean-slate (2026-05-19): the wake + STT pipeline was
-    # removed pending a redesign. These endpoints return placeholders so
-    # the UI doesn't 500 while the new pipeline is being built. The shape
-    # stays compatible so the UI keeps rendering; pipeline_status flags
-    # it as "pending_redesign".
-
-    def _voice_disabled_status() -> dict[str, Any]:
-        return {
-            "enabled": False,
-            "running": False,
-            "wake_loaded": False,
-            "stt_loaded": False,
-            "tts_loaded": False,
-            "pipeline_status": "pending_redesign",
-            "message": "voice pipeline is being redesigned (see docs/architecture/voice_pipeline_redesign_research_prompt.md)",
-        }
+    # Voice pipeline v2 (Sprint 2). VOICE singleton lives in
+    # voice_runner.py and owns the VoicePipeline + StreamingTTS.
 
     @app.get("/voice/status")
     def voice_status() -> Any:
-        return _voice_disabled_status()
+        from .voice_runner import VOICE
+        return VOICE.status()
 
     @app.post("/voice/start")
     def voice_start() -> Any:
-        return {"ok": False, **_voice_disabled_status()}
+        """Enable voice loop. Loads VAD + wake + STT + Piper on first
+        call (~1-3s blocking). Idempotent."""
+        from .voice_runner import VOICE
+        ok = VOICE.enable()
+        # Wire on_command to the agent runner so transcribed commands
+        # become turns.
+        if ok:
+            from .agent_runner import RUNNER
+            VOICE.set_on_command(lambda text: RUNNER.submit(text))
+        return {"ok": ok, **VOICE.status()}
 
     @app.post("/voice/stop")
     def voice_stop() -> Any:
-        return {"ok": True, **_voice_disabled_status()}
+        from .voice_runner import VOICE
+        VOICE.disable()
+        return {"ok": True, **VOICE.status()}
 
     @app.post("/voice/trigger")
     def voice_trigger() -> Any:
-        return {"ok": False, **_voice_disabled_status()}
+        """Push-to-talk: synthesise a wake event. Not implemented in
+        v2 pipeline yet (no clean state-machine injection point); the
+        endpoint returns ok=False so the UI shows a clear toast."""
+        from .voice_runner import VOICE
+        VOICE.trigger_manual()
+        return {"ok": False, **VOICE.status(),
+                "message": "trigger_manual not implemented in voice v2"}
 
     # ---------- sessions ----------
 

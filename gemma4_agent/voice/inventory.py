@@ -100,16 +100,54 @@ def _load_user_overrides() -> dict[str, list[str]]:
         return {}
 
 
-def get_inventory() -> dict[str, list[str]]:
-    """Merged inventory: STATIC + user overrides.
+_DISCOVERY_CACHE: list[str] | None = None
+_DISCOVERY_CACHE_MAX = 80  # cap for prompt size sanity
 
-    User overrides EXTEND (don't replace) the static lists.
+
+def _discover_installed_apps() -> list[str]:
+    """Run app discovery once per process and cache the result.
+
+    Best-effort: failures return []. The voice pipeline still works
+    on STATIC_INVENTORY alone.
+    """
+    global _DISCOVERY_CACHE
+    if _DISCOVERY_CACHE is not None:
+        return _DISCOVERY_CACHE
+    try:
+        from .app_discovery import discover_apps
+        apps = discover_apps()
+    except Exception as exc:
+        logger.warning("app discovery failed: %s", exc)
+        apps = []
+    if len(apps) > _DISCOVERY_CACHE_MAX:
+        logger.info(
+            "app discovery returned %d apps; truncating to %d for prompt budget",
+            len(apps), _DISCOVERY_CACHE_MAX,
+        )
+        apps = apps[:_DISCOVERY_CACHE_MAX]
+    _DISCOVERY_CACHE = apps
+    return apps
+
+
+def get_inventory(include_discovery: bool = True) -> dict[str, list[str]]:
+    """Merged inventory: STATIC + user overrides + (optional) discovery.
+
+    User overrides EXTEND (don't replace) the static lists. Discovery
+    is opt-in via the include_discovery flag (default True) so tests
+    can request a deterministic inventory without OS calls.
     """
     merged: dict[str, list[str]] = {k: list(v) for k, v in STATIC_INVENTORY.items()}
     user = _load_user_overrides()
     for k, v in user.items():
         merged.setdefault(k, []).extend(v)
-    # Deduplicate preserving order
+    if include_discovery:
+        # Never let discovery crash the voice pipeline. Any exception
+        # here = ship STATIC_INVENTORY + user overrides only.
+        try:
+            merged.setdefault("apps", []).extend(_discover_installed_apps())
+        except Exception as exc:
+            logger.warning("inventory discovery failed; using static: %s", exc)
+    # Deduplicate preserving order, case-insensitive.
     for k, v in merged.items():
         seen = set()
         out = []

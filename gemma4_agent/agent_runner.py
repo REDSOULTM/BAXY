@@ -513,10 +513,17 @@ class AgentRunner:
                         _publish_activity("GEMMA", preview)
                         # crude tokens estimate (4 chars ≈ 1 token) for the counter
                         BUS.publish({"type": "tokens", "delta": max(1, len(content) // 4)})
-                        # Voice runner removed in Sprint R3.1 clean-slate
-                        # (2026-05-19). New pipeline pending research output.
-                        # TTS (Piper) still exists at gemma4_agent.voice.tts
-                        # if a future TTS-only path needs reattaching here.
+                        # If voice mode is active, stream the reply through
+                        # Piper TTS. Voice pipeline v2 (Sprint 2 of
+                        # voice_pipeline_redesign): the VOICE singleton
+                        # exposes feed_tts() with the same shape as the
+                        # old runner, so this call site doesn't need to
+                        # care about the rewrite.
+                        try:
+                            from .voice_runner import VOICE
+                            VOICE.feed_tts(content)
+                        except Exception as exc:
+                            logger.warning("voice feed failed: %s", exc)
                     BUS.publish({"type": "state", "value": "idle"})
 
             except Exception as exc:
