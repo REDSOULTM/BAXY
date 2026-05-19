@@ -49,3 +49,6 @@ voice_debug*.log
 
 # Bench harness outputs (regenerable per commit).
 bench_results/
+
+# STT filter audit reports (Sprint O; regenerable from script).
+reports/

@@ -175,7 +175,21 @@ def looks_like_hallucination(text: str) -> bool:
 
 
 def _has_pathological_ngram_repetition(text: str) -> bool:
-    """Detecta repeticion patologica de n-gramas (informe sec. 9.2)."""
+    """Detecta repeticion patologica de n-gramas (informe sec. 9.2).
+
+    Sprint O 2026-05-18 calibration: the previous absolute threshold
+    (`dups > 2`) rejected legitimate operator rapid-fire ("Gemma X.
+    Gemma X. Gemma Y. Gemma Y.") on 3/6 testaudio turns -- those are
+    real speech, not Whisper hallucinations, and contained natural
+    duplicate n-grams from the user repeating commands.
+
+    The fix is length-scaled: a longer turn can afford more
+    duplicates before looking pathological. Threshold becomes
+    `dups > max(2, len(ngrams) // 2)`. Whisper hallucination loops
+    ("gracias por ver el video" repeated 10x) still hit ~0.9 ratio
+    and trip the gate; natural human repetition hits ~0.3-0.4 and
+    passes.
+    """
     words = text.lower().split()
     if len(words) < 6:
         return False
@@ -183,8 +197,9 @@ def _has_pathological_ngram_repetition(text: str) -> bool:
         ngrams = [tuple(words[i:i + n]) for i in range(len(words) - n + 1)]
         if not ngrams:
             continue
-        # Mas de 2 duplicados -> patologico
-        if len(ngrams) - len(set(ngrams)) > 2:
+        dups = len(ngrams) - len(set(ngrams))
+        threshold = max(2, len(ngrams) // 2)
+        if dups > threshold:
             return True
     return False
 
