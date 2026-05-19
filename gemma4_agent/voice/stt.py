@@ -81,15 +81,27 @@ SHORT_AUDIO_THRESHOLD_S = 3.0  # frontera modo comando vs dictado
 # puntuacion (OpenAI Cookbook recomienda ese patron explicitamente).
 FALLBACK_INITIAL_PROMPT = (
     "Conversacion con el asistente Gemma. "
-    "Hey Gemma, abre Steam. Gemma, abre Spotify y reproduce musica. "
-    "Gemma, abre Discord, VS Code, Chrome, Firefox, YouTube, Netflix, "
-    "Twitch, WhatsApp, Telegram, Visual Studio Code, Notepad, Explorer, OBS. "
-    "Gemma, apaga la luz del salon. Gemma, enciende la luz de la cocina. "
-    "Gemma, sube el volumen. Gemma, baja el volumen. Gemma, pausa la musica. "
-    "Gemma, pon el temporizador a cinco minutos. Gemma, que hora es. "
-    "Gemma, como esta el tiempo en Madrid. Gemma, busca en Google. "
-    "Gemma, cierra la ventana. Gemma, minimiza la ventana. "
-    "Comandos breves en espanol dirigidos al asistente Gemma."
+    "Hey Gemma, abre Steam. Hey Gemma, abre Spotify y reproduce musica. "
+    "Hey Gemma, abre Discord, VS Code, Chrome, Firefox, YouTube, Netflix, "
+    "Twitch, WhatsApp, Telegram, Visual Studio Code, Notepad, Explorer, OBS, "
+    "Counter-Strike 2, GTA V. "
+    "Hey Gemma, apaga la luz del salon. Hey Gemma, enciende la luz de la cocina. "
+    "Hey Gemma, sube el volumen. Hey Gemma, baja el volumen. Hey Gemma, pausa la musica. "
+    "Hey Gemma, pon el temporizador a cinco minutos. Hey Gemma, que hora es. "
+    "Hey Gemma, como esta el tiempo en Madrid. Hey Gemma, busca en Google. "
+    "Hey Gemma, cierra la ventana. Hey Gemma, minimiza la ventana. "
+    # Sprint R3.1: messaging/search verbs that appeared in operator's
+    # testaudio with high WER (e.g. 'mandale un mensaje a Juan',
+    # 'buscame info sobre Benson Boone') -- give the decoder strong
+    # priors for these specific command patterns.
+    "Hey Gemma, mandale un mensaje a Juan por WhatsApp. "
+    "Hey Gemma, mandale un mensaje a Maria. "
+    "Hey Gemma, buscame info sobre Benson Boone. "
+    "Hey Gemma, reproduce Bohemian Rhapsody. "
+    "Hey Gemma, reproduce algo de los redonditos. "
+    "Hey Gemma, ponme musica tranquila. "
+    "Hey Gemma, cuando salio GTA V. "
+    "Comandos breves en espanol rioplatense dirigidos al asistente Gemma."
 )
 
 
