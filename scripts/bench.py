@@ -93,6 +93,42 @@ def _compare(measured: float, target: float, op: str) -> bool:
     raise ValueError(f"unknown op: {op}")
 
 
+# --- Wake detection matching (Sprint R2.5) --------------------------
+# Copied literal from scripts/wake_backend_audit.py. Two consumers
+# don't justify a shared module yet; refactor when a 3rd appears.
+# tolerance_s=1.0 matches the audit -- keep them in sync.
+
+def _match_detections(
+    detections_s: list[float],
+    expected_s: list[float],
+    tolerance_s: float = 1.0,
+) -> tuple[int, int, int]:
+    """Bipartite-greedy match. Each expected wake can absorb at
+    most one detection within tolerance; remaining detections are
+    false positives. Returns (tp, fp, fn).
+    """
+    used_expected = [False] * len(expected_s)
+    tp = 0
+    fp = 0
+    for d in detections_s:
+        best_i = -1
+        best_gap = tolerance_s + 1.0
+        for i, e in enumerate(expected_s):
+            if used_expected[i]:
+                continue
+            gap = abs(d - e)
+            if gap <= tolerance_s and gap < best_gap:
+                best_i = i
+                best_gap = gap
+        if best_i >= 0:
+            used_expected[best_i] = True
+            tp += 1
+        else:
+            fp += 1
+    fn = sum(1 for u in used_expected if not u)
+    return tp, fp, fn
+
+
 # --- jiwer auto-install ---------------------------------------------
 
 def _ensure_jiwer():
@@ -149,10 +185,19 @@ def measure_wake_recall() -> ThresholdResult:
         )
     audio = _load_wav(audio_path)
     from gemma4_agent.voice.wake import WakeDetector  # lazy
-    detections: list = []
+
+    # Sprint R2.5 2026-05-18: stamp each fire with the audio-relative
+    # offset of the chunk it landed in. The detector callback ts is
+    # time.monotonic() -- useless for matching against audio-relative
+    # expected timestamps. Localization error is bounded by
+    # CHUNK/SAMPLE_RATE = 32ms, well within the +/-1s match tolerance.
+    detections_audio_s: list[float] = []
+    _last_offset = [0.0]
+
     def _on_wake(phrase: str, ts: float, tail_s: float = 0.0,
                  confidence: float = 0.0) -> None:
-        detections.append((ts, phrase, confidence))
+        detections_audio_s.append(_last_offset[0])
+
     det = WakeDetector(on_wake=_on_wake)
     if not det.load():
         return ThresholdResult(
@@ -160,32 +205,65 @@ def measure_wake_recall() -> ThresholdResult:
             THRESHOLDS["wake_recall"]["target"],
             THRESHOLDS["wake_recall"]["op"],
             passed=None,
-            note=f"Vosk load failed: {det.last_error}",
+            note=f"Wake load failed: {det.last_error}",
         )
     CHUNK = 512
     for i in range(0, len(audio) - CHUNK, CHUNK):
+        _last_offset[0] = i / SAMPLE_RATE
         det.feed(audio[i:i + CHUNK])
-    fires = len(detections)
-    if TEST_V2_EXPECTED.exists():
-        with open(TEST_V2_EXPECTED, encoding="utf-8") as fh:
-            expected = json.load(fh)
-        expected_count = sum(1 for e in expected.get("wakes", []) if e.get("expected"))
-        recall = fires / max(1, expected_count)
+
+    if not TEST_V2_EXPECTED.exists():
+        # No ground truth -- report raw fires count, SKIP.
         return ThresholdResult(
-            "wake_recall", recall,
+            "wake_recall", None,
             THRESHOLDS["wake_recall"]["target"],
             THRESHOLDS["wake_recall"]["op"],
-            passed=_compare(recall, THRESHOLDS["wake_recall"]["target"], THRESHOLDS["wake_recall"]["op"]),
-            note=f"audio={audio_path.name} ({note})",
-            details={"fires": fires, "expected": expected_count},
+            passed=None,
+            note=(
+                f"fires={len(detections_audio_s)} on {audio_path.name} "
+                f"({note}); no expected.json"
+            ),
+            details={"fires": len(detections_audio_s)},
         )
+
+    with open(TEST_V2_EXPECTED, encoding="utf-8") as fh:
+        expected_data = json.load(fh)
+    expected_s = sorted(
+        float(w["timestamp_s"])
+        for w in expected_data.get("wakes", [])
+        if w.get("expected", True)
+    )
+
+    tp, fp, fn = _match_detections(detections_audio_s, expected_s)
+    fires = tp + fp
+    recall = tp / max(1, len(expected_s))
+    precision = tp / max(1, fires) if fires > 0 else 0.0
+    f1 = (
+        2 * precision * recall / (precision + recall)
+        if (precision + recall) > 0 else 0.0
+    )
+
     return ThresholdResult(
-        "wake_recall", None,
+        "wake_recall", recall,
         THRESHOLDS["wake_recall"]["target"],
         THRESHOLDS["wake_recall"]["op"],
-        passed=None,
-        note=f"fires={fires} on {audio_path.name} ({note}); no expected.json",
-        details={"fires": fires},
+        passed=_compare(
+            recall, THRESHOLDS["wake_recall"]["target"],
+            THRESHOLDS["wake_recall"]["op"],
+        ),
+        note=(
+            f"audio={audio_path.name} ({note}); "
+            f"tp={tp} fp={fp} fn={fn}"
+        ),
+        details={
+            "fires": fires,
+            "tp": tp,
+            "fp": fp,
+            "fn": fn,
+            "expected": len(expected_s),
+            "precision": round(precision, 3),
+            "f1": round(f1, 3),
+        },
     )
 
 
