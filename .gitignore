@@ -52,3 +52,17 @@ bench_results/
 
 # STT filter audit reports (Sprint O; regenerable from script).
 reports/
+
+# Sprint R3 — wake-word training pipeline outputs.
+# The trained model is operator-output (~30-60min Colab run); do
+# not commit. The dataset + zip are regenerable from the audio +
+# expected.json via scripts/build_wake_dataset.py.
+gemma4_agent/voice/models/oww/*.onnx
+wake_dataset/
+wake_dataset.zip
+
+# Re-include the empty marker for the oww model dir (the broad
+# `models/` rule at the top of this file would otherwise hide it).
+!gemma4_agent/voice/models/
+!gemma4_agent/voice/models/oww/
+!gemma4_agent/voice/models/oww/.gitkeep

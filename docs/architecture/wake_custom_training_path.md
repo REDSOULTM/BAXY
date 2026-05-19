@@ -1,8 +1,8 @@
 # Wake-detection custom training path
 
-> Outcome of Sprint R2 2026-05-18. This doc captures *why* the
-> pre-trained openWakeWord models are not sufficient for our use
-> case and what the next sprint must do.
+> Outcome of Sprint R2 2026-05-18. **Implemented in Sprint R3
+> 2026-05-18** (pipeline + tests + notebook). The actual training
+> run is operator-side -- this doc is the runbook.
 
 ## TL;DR
 
@@ -112,6 +112,58 @@ back to `"auto"`. Vosk stays as the fallback.
   this sprint (R2) already landed -- orchestrator, env-var
   switch, audit harness -- so the follow-up just plugs the
   trained ONNX into the existing slot.
+
+## Running the training (Sprint R3 runbook)
+
+The pipeline this doc planned is now landed. **Operator-side**
+workflow:
+
+1. **Build the dataset locally** (~30s):
+   ```
+   python scripts/build_wake_dataset.py
+   ```
+   Produces `wake_dataset/` (positives + augmented + hard
+   negatives + manifest.json) and `wake_dataset.zip`. Both are
+   gitignored; the zip is the artifact you upload to Colab.
+
+2. **Train on Colab** (~30-60 min on a free T4):
+   - Open `scripts/notebooks/train_hey_gemma.ipynb` in Colab.
+   - Runtime -> Change runtime type -> GPU (T4 is fine).
+   - Run all cells. Cell 3 prompts you to upload
+     `wake_dataset.zip`. Cell 7 downloads `hey_gemma.onnx`.
+
+3. **Drop the trained model into the repo**:
+   ```
+   mv ~/Downloads/hey_gemma.onnx gemma4_agent/voice/models/oww/hey_gemma.onnx
+   ```
+   The `.onnx` is gitignored (operator output, not source
+   artifact).
+
+4. **Validate against the bench**:
+   ```
+   python -c "from pathlib import Path; p = Path('gemma4_agent/voice/models/oww/hey_gemma.onnx'); print(f'exists={p.exists()}, size={p.stat().st_size if p.exists() else 0}')"
+   python scripts/wake_backend_audit.py    # sweep thresholds
+   python scripts/bench.py                  # production-readiness check
+   ```
+
+5. **If acceptance bar met** (see below), flip the
+   orchestrator default from `"vosk"` to `"auto"`:
+   ```python
+   # gemma4_agent/voice/wake.py:WakeDetector.__init__
+   backend: BackendName = "auto",  # was "vosk"
+   ```
+
+## Acceptance bar
+
+Per the [[project-vosk-baseline-characterization]] memory:
+
+- **Recall >= 0.70** (12x Vosk's 0.057).
+- **Precision >= 0.80** (don't regress below Vosk's 0.857 floor).
+
+Both gates must pass simultaneously. A custom model that hits
+recall but tanks precision (recall=0.90 + precision=0.50) is
+**not shippable** -- false positives interrupt the operator and
+are worse UX than the conservative Vosk baseline.
 
 ## What this sprint shipped instead
 

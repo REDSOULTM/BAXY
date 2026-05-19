@@ -206,5 +206,84 @@ class ReexportTest(unittest.TestCase):
         self.assertGreaterEqual(WAKE_MIN_CONFIDENCE, 0.5)
 
 
+class CustomModelLoadingTest(unittest.TestCase):
+    """Sprint R3: OpenWakeWordDetector auto-detects a custom
+    'hey_gemma.onnx' under voice/models/oww/. If present, use it;
+    if not, fall back to the upstream 'hey_jarvis' surrogate."""
+
+    def setUp(self) -> None:
+        self._saved_env = os.environ.pop("GEMMA4_OWW_MODEL", None)
+
+    def tearDown(self) -> None:
+        if self._saved_env is not None:
+            os.environ["GEMMA4_OWW_MODEL"] = self._saved_env
+        else:
+            os.environ.pop("GEMMA4_OWW_MODEL", None)
+
+    def test_custom_model_loaded_when_exists(self) -> None:
+        """When OWW_CUSTOM_MODEL_PATH exists, the loader passes
+        the absolute path to openwakeword and uses the file's stem
+        as the score-dict key."""
+        from gemma4_agent.voice import wake_oww
+        # _resolve_model_spec() returns (arg_to_wakeword_models,
+        # score_dict_key). Test the resolver directly to avoid
+        # network/model download.
+        det = wake_oww.OpenWakeWordDetector(on_wake=_noop_callback)
+        with patch.object(
+            type(wake_oww.OWW_CUSTOM_MODEL_PATH), "exists",
+            lambda self: True,
+        ):
+            arg, key = det._resolve_model_spec()
+        # arg should be an absolute path string containing the
+        # repo-relative location.
+        self.assertIn("hey_gemma.onnx", arg)
+        self.assertEqual(key, "hey_gemma")
+
+    def test_fallback_to_jarvis_when_custom_missing(self) -> None:
+        """When the custom .onnx is absent, fall back to
+        OWW_FALLBACK_MODEL_NAME and log a warning that names
+        Sprint R3."""
+        from gemma4_agent.voice import wake_oww
+        det = wake_oww.OpenWakeWordDetector(on_wake=_noop_callback)
+        with patch.object(
+            type(wake_oww.OWW_CUSTOM_MODEL_PATH), "exists",
+            lambda self: False,
+        ), self.assertLogs("gemma4_agent.voice.wake_oww",
+                           level="WARNING") as log_ctx:
+            arg, key = det._resolve_model_spec()
+        self.assertEqual(arg, wake_oww.OWW_FALLBACK_MODEL_NAME)
+        self.assertEqual(key, wake_oww.OWW_FALLBACK_MODEL_NAME)
+        # The fallback warning must mention Sprint R3 so the operator
+        # has a breadcrumb to the training pipeline.
+        self.assertTrue(
+            any("Sprint R3" in record for record in log_ctx.output),
+            f"warning did not mention Sprint R3: {log_ctx.output}",
+        )
+
+    def test_env_var_overrides_auto_detection(self) -> None:
+        """GEMMA4_OWW_MODEL=<name> forces the loader to use the
+        given pre-trained model name, even if the custom .onnx
+        exists. This is the escape hatch for A/B benchmarking."""
+        from gemma4_agent.voice import wake_oww
+        # Reload module to pick up the env var (it's read at import time).
+        import importlib
+        os.environ["GEMMA4_OWW_MODEL"] = "alexa"
+        importlib.reload(wake_oww)
+        try:
+            det = wake_oww.OpenWakeWordDetector(on_wake=_noop_callback)
+            # Even with the custom model file present, the env
+            # override wins.
+            with patch.object(
+                type(wake_oww.OWW_CUSTOM_MODEL_PATH), "exists",
+                lambda self: True,
+            ):
+                arg, key = det._resolve_model_spec()
+            self.assertEqual(arg, "alexa")
+            self.assertEqual(key, "alexa")
+        finally:
+            os.environ.pop("GEMMA4_OWW_MODEL", None)
+            importlib.reload(wake_oww)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,14 +1,17 @@
-"""openWakeWord backend for wake-word detection (Sprint R2 2026-05-18).
+"""openWakeWord backend for wake-word detection (Sprint R2 + R3).
 
 openWakeWord is a neural wake-word detector (ONNX). Unlike Vosk
 (generic STT forced to wake-detection), it's trained specifically
 on wake-word vs non-wake-word audio and exposes a continuous
 0..1 score per chunk.
 
-No "hey gemma" pre-trained model exists upstream. This module uses
-`hey_jarvis` as a phonetic surrogate. Custom training to a real
-"hey gemma" model is documented in
-docs/architecture/wake_custom_training_path.md (when applicable).
+Sprint R3 2026-05-18: this module now auto-detects a custom
+"hey_gemma.onnx" model at gemma4_agent/voice/models/oww/. If
+present, it's used; if not, falls back to the upstream
+"hey_jarvis" model with a warning. The custom model is the output
+of scripts/notebooks/train_hey_gemma.ipynb (Colab); the pipeline
+to produce it lives in scripts/build_wake_dataset.py. See
+docs/architecture/wake_custom_training_path.md for the runbook.
 
 Public surface mirrors VoskWakeDetector:
   - OpenWakeWordDetector(on_wake)
@@ -27,6 +30,7 @@ import logging
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Any, Callable
 
 import numpy as np
@@ -36,9 +40,18 @@ from .audio_io import SAMPLE_RATE
 logger = logging.getLogger(__name__)
 
 
-# Model name from the upstream pre-trained set. This is a surrogate;
-# custom "hey gemma" training is the follow-up sprint.
-OWW_MODEL_NAME = os.environ.get("GEMMA4_OWW_MODEL", "hey_jarvis")
+# Sprint R3: where the custom-trained "hey_gemma" ONNX lives. If the
+# file is present, we use it; otherwise we fall back to the upstream
+# pre-trained model. The custom model is operator-output (not in
+# git); see docs/architecture/wake_custom_training_path.md.
+OWW_CUSTOM_MODEL_PATH = (
+    Path(__file__).resolve().parent / "models" / "oww" / "hey_gemma.onnx"
+)
+OWW_FALLBACK_MODEL_NAME = "hey_jarvis"
+
+# Operator can override either name (pre-trained) or path (custom)
+# via env vars. GEMMA4_OWW_MODEL takes precedence over auto-detection.
+OWW_MODEL_NAME = os.environ.get("GEMMA4_OWW_MODEL", "")
 
 # Score threshold for triggering a wake. openWakeWord scores are
 # in [0, 1]; the upstream default is 0.5. We expose this via env
@@ -102,6 +115,42 @@ class OpenWakeWordDetector:
         # manifests, controller state) doesn't care which model
         # actually fired underneath.
         self._matched_phrase: str = "hey gemma"
+        # The key under which the loaded model exposes its score
+        # in Model.predict()'s dict. Populated by load() based on
+        # which model actually got loaded (custom path vs upstream
+        # name). Required because scores[name] uses the basename
+        # for custom .onnx loads.
+        self._model_name: str = ""
+
+    def _resolve_model_spec(self) -> tuple[Any, str]:
+        """Decide what to pass to openwakeword.Model(wakeword_models=[...])
+        and what key to look up in the scores dict.
+
+        Precedence:
+          1. GEMMA4_OWW_MODEL env var (operator-forced).
+          2. Custom file at OWW_CUSTOM_MODEL_PATH (Sprint R3 output).
+          3. Pre-trained OWW_FALLBACK_MODEL_NAME ("hey_jarvis").
+
+        Returns (wakeword_models_arg, score_key).
+        """
+        if OWW_MODEL_NAME:
+            # Explicit env override -- could be name or path.
+            override_path = Path(OWW_MODEL_NAME)
+            if override_path.exists():
+                return str(override_path), override_path.stem
+            return OWW_MODEL_NAME, OWW_MODEL_NAME
+        if OWW_CUSTOM_MODEL_PATH.exists():
+            logger.info(
+                "Loading custom hey_gemma model from %s",
+                OWW_CUSTOM_MODEL_PATH,
+            )
+            return str(OWW_CUSTOM_MODEL_PATH), OWW_CUSTOM_MODEL_PATH.stem
+        logger.warning(
+            "Custom hey_gemma model not found at %s -- falling back to %s. "
+            "Run Sprint R3 to train it.",
+            OWW_CUSTOM_MODEL_PATH, OWW_FALLBACK_MODEL_NAME,
+        )
+        return OWW_FALLBACK_MODEL_NAME, OWW_FALLBACK_MODEL_NAME
 
     def load(self) -> bool:
         """Try to import openwakeword and instantiate the model.
@@ -128,14 +177,16 @@ class OpenWakeWordDetector:
             logger.debug("openwakeword download_models() raised: %s", exc)
 
         try:
-            self._model = Model(wakeword_models=[OWW_MODEL_NAME])
+            wakeword_arg, score_key = self._resolve_model_spec()
+            self._model = Model(wakeword_models=[wakeword_arg])
+            self._model_name = score_key
             self._loaded = True
             self.last_error = None
             self._buf = np.zeros(0, dtype=np.int16)
             self._last_fire_at = 0.0
             logger.info(
                 "OpenWakeWordDetector loaded (model=%s, threshold=%.2f)",
-                OWW_MODEL_NAME, OWW_THRESHOLD,
+                self._model_name, OWW_THRESHOLD,
             )
             return True
         except Exception as exc:
@@ -179,7 +230,7 @@ class OpenWakeWordDetector:
         except Exception as exc:
             logger.warning("oww predict failed: %s", exc)
             return
-        score = float(scores.get(OWW_MODEL_NAME, 0.0))
+        score = float(scores.get(self._model_name, 0.0))
         if score < OWW_THRESHOLD:
             return
         now = time.monotonic()
