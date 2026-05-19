@@ -1,0 +1,239 @@
+{
+  "positives": {
+    "total": 500,
+    "fired": 55,
+    "overall_recall": 0.11,
+    "per_language": {
+      "ar": {
+        "total": 20,
+        "fired": 1,
+        "recall": 0.05
+      },
+      "de": {
+        "total": 60,
+        "fired": 6,
+        "recall": 0.1
+      },
+      "en": {
+        "total": 100,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "es": {
+        "total": 20,
+        "fired": 10,
+        "recall": 0.5
+      },
+      "fr": {
+        "total": 60,
+        "fired": 26,
+        "recall": 0.4333
+      },
+      "it": {
+        "total": 40,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "nl": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "pl": {
+        "total": 40,
+        "fired": 8,
+        "recall": 0.2
+      },
+      "pt": {
+        "total": 40,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "ru": {
+        "total": 40,
+        "fired": 2,
+        "recall": 0.05
+      },
+      "sv": {
+        "total": 20,
+        "fired": 2,
+        "recall": 0.1
+      },
+      "vi": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "zh": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      }
+    },
+    "per_voice": {
+      "ar_JO-kareem-medium": {
+        "total": 20,
+        "fired": 1,
+        "recall": 0.05
+      },
+      "de_DE-eva_k-x_low": {
+        "total": 20,
+        "fired": 2,
+        "recall": 0.1
+      },
+      "de_DE-karlsson-low": {
+        "total": 20,
+        "fired": 3,
+        "recall": 0.15
+      },
+      "de_DE-thorsten-medium": {
+        "total": 20,
+        "fired": 1,
+        "recall": 0.05
+      },
+      "en_GB-alan-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "en_GB-jenny_dioco-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "en_US-amy-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "en_US-libritts_r-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "en_US-ryan-high": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "es_AR-daniela-high": {
+        "total": 20,
+        "fired": 10,
+        "recall": 0.5
+      },
+      "fr_FR-siwis-medium": {
+        "total": 20,
+        "fired": 14,
+        "recall": 0.7
+      },
+      "fr_FR-tom-medium": {
+        "total": 20,
+        "fired": 4,
+        "recall": 0.2
+      },
+      "fr_FR-upmc-medium": {
+        "total": 20,
+        "fired": 8,
+        "recall": 0.4
+      },
+      "it_IT-paola-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "it_IT-riccardo-x_low": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "nl_NL-mls_5809-low": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "pl_PL-darkman-medium": {
+        "total": 20,
+        "fired": 5,
+        "recall": 0.25
+      },
+      "pl_PL-gosia-medium": {
+        "total": 20,
+        "fired": 3,
+        "recall": 0.15
+      },
+      "pt_BR-edresson-low": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "pt_BR-faber-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "ru_RU-denis-medium": {
+        "total": 20,
+        "fired": 2,
+        "recall": 0.1
+      },
+      "ru_RU-irina-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "sv_SE-nst-medium": {
+        "total": 20,
+        "fired": 2,
+        "recall": 0.1
+      },
+      "vi_VN-vais1000-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      },
+      "zh_CN-huayan-medium": {
+        "total": 20,
+        "fired": 0,
+        "recall": 0.0
+      }
+    }
+  },
+  "negatives": {
+    "files": 5323,
+    "total_seconds": 38848.6,
+    "total_hours": 10.79,
+    "fires": 8,
+    "fp_per_hour": 0.741,
+    "top_fp_speakers": [
+      [
+        "5338",
+        2
+      ],
+      [
+        "1462",
+        1
+      ],
+      [
+        "1988",
+        1
+      ],
+      [
+        "3536",
+        1
+      ],
+      [
+        "6345",
+        1
+      ],
+      [
+        "84",
+        1
+      ],
+      [
+        "61",
+        1
+      ]
+    ]
+  },
+  "elapsed_seconds": 1401.0
+}

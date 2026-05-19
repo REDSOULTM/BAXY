@@ -72,3 +72,8 @@ wake_dataset.zip
 .training_workspace/
 bench_results_v2/
 positive_clips_v8/
+
+# Sprint 6 — universal wake-word eval dataset (TTS voices + negatives +
+# generated clips). Reproducible via scripts/wake_universal_*.py.
+# Total size ~5-10 GB depending on coverage; never commit.
+data/wake_universal_eval/
