@@ -10,6 +10,9 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Isolated venv for openWakeWord training (Sprint R3.1, local GPU path)
+.venv_train/
+
 # Gemma4 agent runtime outputs
 gemma4_agent/captures/
 gemma4_agent/data/
@@ -66,3 +69,4 @@ wake_dataset.zip
 !gemma4_agent/voice/models/
 !gemma4_agent/voice/models/oww/
 !gemma4_agent/voice/models/oww/.gitkeep
+.training_workspace/

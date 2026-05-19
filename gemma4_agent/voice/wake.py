@@ -67,17 +67,22 @@ class WakeDetector:
     def __init__(
         self,
         on_wake: WakeCallback,
-        backend: BackendName = "vosk",
+        backend: BackendName = "auto",
     ) -> None:
-        # Sprint R2 default = "vosk". The audit
-        # (scripts/wake_backend_audit.py) showed that pre-trained
-        # openWakeWord models ("hey_jarvis") yield 0 fires on the
-        # operator's "hey gemma" audio. Until a custom "hey gemma"
-        # model exists (see docs/architecture/wake_custom_training_path.md),
-        # Vosk stays the only useful default.
+        # Sprint R3.1 (2026-05-19): default flipped from "vosk" to "auto".
+        # A custom hey_gemma.onnx model trained on the operator's
+        # 105 annotated clips + LibriTTS synthetics + ACAV100M negatives
+        # now lives in gemma4_agent/voice/models/oww/. Audit on
+        # Grabación (2).wav with debounce=0.05s shows:
+        #   vosk:        recall=0.057 precision=1.000 F1=0.108
+        #   oww/hey_gemma: recall=0.838 precision=0.871 F1=0.854
+        # i.e. 14.7x recall improvement at >0.85 precision -- both above
+        # the formal acceptance bar (recall >= 0.70 AND precision >= 0.80
+        # per memory project-vosk-baseline-characterization).
         #
-        # Operators who want to benchmark openWakeWord against
-        # alternate audio can set GEMMA4_WAKE_BACKEND=auto or oww.
+        # "auto" backend prefers openWakeWord if the model loads and
+        # falls back to Vosk on any failure. Operator can force a
+        # specific backend with GEMMA4_WAKE_BACKEND=vosk|oww|auto.
         env_override = os.environ.get("GEMMA4_WAKE_BACKEND")
         if env_override in ("auto", "oww", "vosk"):
             backend = env_override  # type: ignore[assignment]

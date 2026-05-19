@@ -64,9 +64,20 @@ OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.5"))
 # whenever it fills.
 OWW_WINDOW_SAMPLES = 1280
 
-# Debounce window between consecutive triggers (same value as Vosk
-# for consistency in operator UX; spec says NOT to retune for oww).
-OWW_DEBOUNCE_S = 0.8
+# Debounce window between consecutive triggers. Sprint R3.1 calibration
+# (2026-05-19): with the custom hey_gemma.onnx model, debounce sweep over
+# Grabación (2).wav (105 annotated wakes) showed:
+#   debounce  recall  precision  F1
+#   0.05      0.819   0.869      0.843
+#   0.10      0.495   0.852      0.627
+#   0.30      0.190   0.833      0.310
+#   0.80      0.086   1.000      0.158  (matches Vosk-era default)
+# The Vosk-era default 0.8s strangled the oww model's ability to detect
+# wakes that fire across multiple sliding-window positions. Lowered to
+# 0.05s -- the model's own prediction smoothness (score must stay above
+# threshold for several consecutive chunks) prevents pathological
+# self-triggering. Operator can override via GEMMA4_OWW_DEBOUNCE_S env var.
+OWW_DEBOUNCE_S = float(os.environ.get("GEMMA4_OWW_DEBOUNCE_S", "0.05"))
 
 # Heuristic tail used for the post-wake snapshot. Vosk computes
 # this from word timestamps in the result; oww doesn't expose
