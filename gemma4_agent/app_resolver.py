@@ -88,19 +88,41 @@ class AppResolver:
 
     def _rank(self, query: str, candidates: list[AppCandidate], limit: int) -> list[AppCandidate]:
         from .tools import _fold, _score
-        ranked: list[tuple[int, AppCandidate]] = []
+        q_folded = _fold(query)
+        q_len = len(q_folded)
+        ranked: list[tuple[int, int, int, AppCandidate]] = []
         seen: set[tuple[str, str]] = set()
         for app in candidates:
-            score = max(_score(query, app.name), _score(query, Path(app.launch).stem))
+            name_score = _score(query, app.name)
+            launch_score = _score(query, Path(app.launch).stem)
+            score = max(name_score, launch_score)
             if score <= 0:
                 continue
             key = (_fold(app.name), app.launch.casefold())
             if key in seen:
                 continue
             seen.add(key)
-            ranked.append((score, app))
-        ranked.sort(key=lambda item: (-item[0], item[1].source, item[1].name.casefold()))
-        return [app for _score_value, app in ranked[:limit]]
+            # 2026-05-20 tiebreaks (both observed live):
+            #  1. NAME match beats LAUNCH-stem match. PWA shortcuts ("YouTube",
+            #     "southpark") launch via Chrome.exe, so they score 100 on the
+            #     launch stem for query "Chrome" — but the user asking for
+            #     "Chrome" wants the app NAMED Chrome, not a web-app that opens
+            #     through it. name_matched=0 sorts before name_matched=1.
+            #  2. NAME closest in LENGTH to the query. "Edge" tied at 75 vs
+            #     "Microsoft Edge" (browser) and "MicrosoftEdgeBCHost" (helper);
+            #     length-distance favors the real app over the longer helper.
+            # name_in: 0 if the query actually appears in the NAME (any score
+            # > 0), else 1. This is the real Chrome fix: "Google Chrome" has
+            # name_score 75 (query in name) while the "YouTube" PWA has
+            # name_score 0 (only its Chrome.exe launch stem matched). Prefer
+            # the candidate the user actually named.
+            name_in = 0 if name_score > 0 else 1
+            length_gap = abs(len(_fold(app.name)) - q_len)
+            ranked.append((score, name_in, length_gap, app))
+        # -score desc, name-match first, smaller length gap, then source/name.
+        ranked.sort(key=lambda item: (-item[0], item[1], item[2],
+                                      item[3].source, item[3].name.casefold()))
+        return [app for _score, _nm, _gap, app in ranked[:limit]]
 
     def _from_path(self) -> list[AppCandidate]:
         out = []
