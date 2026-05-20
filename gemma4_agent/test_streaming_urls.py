@@ -211,6 +211,22 @@ class TestCDPFallbackBehavior(unittest.TestCase):
 class TestCDPHappyPath(unittest.TestCase):
     """Cuando CDP funciona, usamos selectores Playwright para auto-play."""
 
+    def setUp(self):
+        # These tests assert the CDP-AVAILABLE path. CDP availability is
+        # decided by _ensure_cdp_browser(), which does a REAL Chrome probe /
+        # auto-launch on port 9222 — nondeterministic in CI (it was flaking,
+        # making "fill"/"click" never run when no real Chrome was up). Mock it
+        # to deterministically-available so we test the play flow, not the
+        # environment. The CDP-UNAVAILABLE fallback is covered by the
+        # *_no_cdp_falls_back_to_webbrowser tests above.
+        self._cdp_patch = patch(
+            "gemma4_agent.domain_tools._ensure_cdp_browser",
+            return_value={"cdp_ok": True, "reason": None,
+                          "browser_key": "chrome", "action": "already_running"},
+        )
+        self._cdp_patch.start()
+        self.addCleanup(self._cdp_patch.stop)
+
     def test_netflix_cdp_navigates_and_clicks_play(self):
         state = _fresh_state()
         _set_streaming_preference(state, "netflix", "Emmanuel")
