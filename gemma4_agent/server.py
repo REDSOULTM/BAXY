@@ -64,6 +64,19 @@ class ActivityRequest(BaseModel):
     msg: str
 
 
+class ProfileChange(BaseModel):
+    """Body of PUT /profile. MUST live at MODULE level: this file uses
+    `from __future__ import annotations`, so an endpoint's parameter
+    annotation is a STRING forward-ref. FastAPI can only resolve it against
+    module globals — a class defined INSIDE create_app() can't be found, so
+    FastAPI silently demoted `body: _ProfileChange` to a query param and
+    every profile switch 422'd ("Field required"). Keeping the model here
+    makes the forward-ref resolvable. (The other local _Model classes in
+    create_app have the same latent bug; migrate them if they ever 422.)"""
+
+    name: str
+
+
 # ---------- hardware specs ----------
 
 # cached at module import — these don't change at runtime, so detecting once
@@ -1229,8 +1242,9 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         except Exception as exc:
             return {"active": "bal", "error": str(exc)}
 
-    class _ProfileChange(BaseModel):
-        name: str
+    # NOTE: ProfileChange is defined at MODULE level (see its docstring) —
+    # a function-local Pydantic model can't be resolved from the stringized
+    # forward-ref annotation and silently breaks body binding (422).
 
     # Alias UI -> nombre canónico de profiles.py. Desde 2026-05-20 la UI envía
     # los nombres por VRAM directamente (vram3..vram16, standby), que
@@ -1247,7 +1261,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
     }
 
     @app.put("/profile")
-    def put_profile(body: _ProfileChange) -> Any:
+    def put_profile(body: ProfileChange) -> Any:
         """Switch the active VRAM profile. Persists to ~/.gemma4 + applies
         env vars so the next agent restart picks them up. Does NOT restart
         llama-server here — that requires a heavier orchestration we save
