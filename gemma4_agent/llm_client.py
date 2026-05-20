@@ -79,6 +79,7 @@ class LLMClient:
         timeout_s: float | None = None,
         force_tool: bool = False,
         thinking_budget: int | None = None,
+        model: str | None = None,
     ) -> dict[str, Any]:
         """Synchronous chat completion against the local llama-server.
 
@@ -88,7 +89,9 @@ class LLMClient:
         """
         thinking = self.config.enable_thinking if enable_thinking is None else enable_thinking
         body: dict[str, Any] = {
-            "model": self.config.model,
+            # In router mode the agent passes the per-turn router preset name
+            # ("<profile>-text" / "<profile>-vision"); else the configured model.
+            "model": model or self.config.model,
             "stream": False,
             "messages": messages,
             "temperature": self.config.temperature,

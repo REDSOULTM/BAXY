@@ -422,6 +422,19 @@ class Gemma4Agent:
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         turn_id = self.trace.new_turn_id()
+        # Router mode (lazy vision): pick the per-turn router preset. vision
+        # only when this turn actually has an image (mode==vision_action) — so
+        # text/voice turns use the cache-reuse-enabled text preset (fast). None
+        # when not in router mode -> client uses the configured model.
+        self._router_model = None
+        try:
+            from .llama_server import get_shared_manager
+            mgr = get_shared_manager()
+            if mgr.is_router_mode():
+                self._router_model = mgr.router_model_for(
+                    has_image=(mode.name == "vision_action"))
+        except Exception:
+            self._router_model = None
         # sprint2: persona is currently visible only via tool_subset.persona,
         # which isn't emitted on every turn. Emit one canonical event per turn
         # so the usage report can quantify which personas actually run.
@@ -960,6 +973,7 @@ class Gemma4Agent:
                     tools=selected_schemas,
                     enable_thinking=_think_now,
                     thinking_budget=mode.thinking_budget,
+                    model=getattr(self, "_router_model", None),
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=mode.max_tokens,
                 )
@@ -983,6 +997,7 @@ class Gemma4Agent:
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
                             thinking_budget=mode.thinking_budget,
+                            model=getattr(self, "_router_model", None),
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
                         )
@@ -1103,6 +1118,7 @@ class Gemma4Agent:
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
                             thinking_budget=mode.thinking_budget,
+                            model=getattr(self, "_router_model", None),
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
                             force_tool=True,

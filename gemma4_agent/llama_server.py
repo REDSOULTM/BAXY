@@ -465,6 +465,112 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     return cmd
 
 
+# ---------------------------------------------------------------------------
+# Router mode (lazy vision) — 2026-05-20
+# ---------------------------------------------------------------------------
+# MEASURED root cause of high latency: with --mmproj loaded, llama.cpp prints
+# "cache_reuse is not supported by multimodal, it will be disabled", so EVERY
+# LLM call of a turn re-evaluates the full ~8K-token prompt (~1.9s each). With
+# vision OFF + a text preset, growing-prefix cache reuse works (call 2 prompt
+# eval drops from ~1.9s to ~0.04s; measured 4.93s -> 0.40s on a cached call).
+#
+# Fix: run llama-server in ROUTER mode with TWO presets of the same model —
+# `<name>-text` (no mmproj, cache-reuse on, FAST) and `<name>-vision` (mmproj).
+# The agent sends model="<name>-text" for voice/text turns (the vast majority)
+# and "<name>-vision" only when an image is present. --models-max 1 keeps a
+# single instance resident (respects small VRAM); switching to vision triggers
+# a one-time on-demand load. Router mode is marked EXPERIMENTAL in llama.cpp,
+# so it's gated by GEMMA4_ROUTER_MODE (default on) with a clean single-model
+# fallback.
+ROUTER_TEXT_SUFFIX = "-text"
+ROUTER_VISION_SUFFIX = "-vision"
+
+
+def router_mode_enabled() -> bool:
+    raw = (os.environ.get("GEMMA4_ROUTER_MODE") or "").strip().casefold()
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return True
+
+
+def router_model_names(profile: Profile) -> tuple[str, str]:
+    """(text_model_name, vision_model_name) for the router `model` field."""
+    base = profile.name
+    return base + ROUTER_TEXT_SUFFIX, base + ROUTER_VISION_SUFFIX
+
+
+def write_router_presets(config: AgentConfig, profile: Profile) -> Path | None:
+    """Write a llama.cpp router presets INI for this profile (text+vision).
+
+    Returns the INI path, or None if the model file is missing (caller falls
+    back to single-model mode). The vision preset is only emitted when the
+    profile has vision + a real mmproj; otherwise only the text preset exists.
+    """
+    model_path: Path = config.model_path
+    if profile.model_path:
+        cand = Path(profile.model_path).expanduser()
+        if cand.is_file():
+            model_path = cand
+    if not Path(model_path).is_file():
+        return None
+
+    text_name, vision_name = router_model_names(profile)
+    ctx = int(profile.context_size)
+    tight = profile.name in {"vram3", "vram4", "vram6"}
+
+    lines: list[str] = []
+
+    def _common(extra: list[str]) -> list[str]:
+        block = [
+            f"model = {Path(model_path).resolve()}",
+            f"ctx-size = {ctx}",
+            "ngl = 99",
+            "flash-attn = on",
+            "jinja = true",
+            "parallel = 1",
+        ]
+        if tight:
+            block.append("no-mmap = true")
+        block.extend(extra)
+        return block
+
+    # text preset: cache-reuse ON (no mmproj) -> fast multi-call turns
+    lines.append(f"[{text_name}]")
+    lines.extend(_common(["cache-reuse = 256", "keep = -1"]))
+    lines.append("")
+
+    # vision preset: only if the profile ships vision + a real mmproj
+    mmproj = None
+    if profile.vision_enabled:
+        mp = (profile.mmproj_path or os.environ.get("GEMMA4_MMPROJ_PATH") or "")
+        if mp and Path(mp).expanduser().is_file():
+            mmproj = Path(mp).expanduser().resolve()
+    if mmproj is not None:
+        lines.append(f"[{vision_name}]")
+        extra = [f"mmproj = {mmproj}"]
+        if tight:
+            extra.append("no-mmproj-offload = true")
+        lines.extend(_common(extra))
+        lines.append("")
+
+    out = (PACKAGE_ROOT / "logs" / f"router_presets_{profile.name}.ini")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("\n".join(lines), encoding="utf-8")
+    return out
+
+
+def router_command(config: AgentConfig, presets_path: Path) -> list[str]:
+    """llama-server command for router mode with the given presets file."""
+    return [
+        str(config.llama_server_exe.resolve()),
+        "--models-preset", str(presets_path.resolve()),
+        "--models-max", "1",          # single instance resident (small VRAM)
+        "--host", "127.0.0.1",
+        "--port", "8080",
+        "--no-webui",
+    ]
+
+
 class LlamaServerManager:
     """Maneja un unico proceso llama-server vivo.
 
@@ -479,6 +585,7 @@ class LlamaServerManager:
         self._current_profile: Optional[Profile] = None
         self._external_detected: bool = False
         self._external_context_mismatch_msg: Optional[str] = None
+        self._router_mode: bool = False  # True when started in router (lazy-vision) mode
         self._log_dir = log_dir or (PACKAGE_ROOT / "logs")
         # Serializes profile swaps: rapid consecutive clicks (vram3->vram6->
         # vram4) would otherwise spawn overlapping restart threads that fight
@@ -564,6 +671,22 @@ class LlamaServerManager:
         que pide el perfil. None si no aplica (no hay externo, o context OK)."""
         return self._external_context_mismatch_msg
 
+    def is_router_mode(self) -> bool:
+        return bool(self._router_mode)
+
+    def router_model_for(self, has_image: bool) -> str | None:
+        """Router `model` name to send for this turn, or None if not in router
+        mode. Vision preset only when an image is present (lazy vision)."""
+        if not self._router_mode or self._current_profile is None:
+            return None
+        text_name, vision_name = router_model_names(self._current_profile)
+        if has_image:
+            # vision preset only exists if the profile shipped a real mmproj;
+            # write_router_presets guarantees that, else there's no vision name
+            # to use — fall back to text (the server has only the text preset).
+            return vision_name
+        return text_name
+
     def current_profile(self) -> Profile | None:
         """Perfil con el que arrancamos el server actual.
 
@@ -617,10 +740,30 @@ class LlamaServerManager:
                 self._external_context_mismatch_msg = msg
             return "external"
 
-        # Verificar archivos
-        cmd_args = llama_command(self._config, profile)
+        # Build the command. Router mode (lazy vision) when enabled AND we can
+        # write presets; otherwise the classic single-model command.
+        self._router_mode = False
+        cmd_args = None
+        if router_mode_enabled():
+            presets = write_router_presets(self._config, profile)
+            if presets is not None:
+                cmd_args = router_command(self._config, presets)
+                self._router_mode = True
+                logger.info("router mode ON for profile %s (presets=%s)",
+                            profile.name, presets.name)
+        if cmd_args is None:
+            cmd_args = llama_command(self._config, profile)
+
+        # Verificar archivos. En router mode el modelo va en el INI (no en
+        # argv[2]); validamos exe + el model_path del perfil por separado.
         exe = Path(cmd_args[0])
-        model = Path(cmd_args[2])
+        if self._router_mode:
+            mp = self._config.model_path
+            if profile.model_path and Path(profile.model_path).expanduser().is_file():
+                mp = Path(profile.model_path).expanduser()
+            model = Path(mp)
+        else:
+            model = Path(cmd_args[2])
         if not exe.exists() or not model.exists():
             logger.error(
                 "Cannot start llama-server: missing exe=%s or model=%s",

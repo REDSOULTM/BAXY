@@ -370,11 +370,23 @@ class AgentRunner:
                    "warming up llama-server · first completion may take 30-90s")
         warmup_ok = False
         warmup_err: str | None = None
+        # Router mode: warm the TEXT preset (the one used by voice/text turns,
+        # the common case). This triggers its on-demand load so the user's
+        # first turn is fast and the cache-reuse prefix is primed.
+        _warm_model = None
+        try:
+            from .llama_server import get_shared_manager
+            _mgr = get_shared_manager()
+            if _mgr.is_router_mode():
+                _warm_model = _mgr.router_model_for(has_image=False)
+        except Exception:
+            _warm_model = None
         try:
             resp = self._agent.client.chat(
                 messages=[{"role": "user", "content": "."}],
                 max_tokens=1,
                 timeout_s=180.0,
+                model=_warm_model,
             )
             # any HTTP 200 with the expected shape counts as ready — we don't
             # care about the actual content of the reply.
