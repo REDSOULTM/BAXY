@@ -342,6 +342,15 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(investiga|investigar|fuentes|citas|source|snapshot|referencia|guarda fuente|"
                  r"research|cite|citation|reference|save source)\b", low):
         tools.extend(["web", "source_manager"])
+    # Current-facts the model can't know from training → web. Weather is the
+    # big one (live repro 2026-05-20: "que temperatura hay en Madrid" /
+    # "weather in London" routed to NOTHING; the embedder doesn't tie
+    # clima/tiempo/weather to web search). Also live prices/rates/scores.
+    if re.search(r"\b(clima|tiempo que hace|que tiempo hace|temperatura|"
+                 r"va a llover|llovera|pronostico|forecast|weather|"
+                 r"cotizacion|precio actual|cuanto vale|cuanto esta|"
+                 r"tipo de cambio|resultado del partido|marcador)\b", low):
+        tools.append("web")
 
     # filesystem
     if re.search(r"\b(archivo|carpeta|directorio|escribe|crea|borra|copia|mueve|renombra|zip|extrae|descomprime|"
