@@ -29,10 +29,12 @@ const INITIAL_HARDWARE: HardwareInfo = {
   gpu: 'unknown', gpu_vram_gb: 0,
 };
 
-// `bal8` = balanced_8gb (E4B UD-Q4_K_XL, ctx 16K, ~7.2 GB VRAM).
-// Orden de mas a menos VRAM. El backend acepta los aliases tal cual o
-// expandidos (profiles.set_active_profile mapea `bal8` -> `balanced_8gb`).
-const PROFILES = ['perf', 'bal8', 'bal', 'light', 'stdby'] as const;
+// Perfiles nombrados por VRAM (2026-05-20). Cada uno trae voz + transcripción
+// (CPU) + visión. Orden de MENOR a MAYOR VRAM: el modelo y el contexto crecen
+// con el número. `standby` apaga el server. El backend (PUT /profile) acepta
+// estos nombres canónicos tal cual; GET /profile devuelve el mismo nombre en
+// `active`. Números medidos en models + scripts/measure_vram_profiles.py.
+const PROFILES = ['vram3', 'vram4', 'vram6', 'vram8', 'vram12', 'vram16', 'standby'] as const;
 
 function fmtK(n: number): string {
   return `${(n / 1000).toFixed(1)}k`;

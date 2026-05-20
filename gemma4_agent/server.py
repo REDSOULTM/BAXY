@@ -1217,13 +1217,10 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         try:
             from .profiles import get_active_profile
             p = get_active_profile()
-            # Reverse-lookup: nombre completo -> alias UI. Si no hay alias
-            # mapeado, devolvemos el nombre tal cual (los usuarios power que
-            # editan ~/.gemma4/active_profile.txt a mano lo ven literal).
-            reverse = {v: k for k, v in _PROFILE_UI_ALIASES.items()}
-            ui_alias = reverse.get(p.name, p.name)
+            # La UI ahora usa los nombres canónicos por VRAM (vram3..vram16,
+            # standby) directamente, así que devolvemos el nombre tal cual.
             return {
-                "active": ui_alias,
+                "active": p.name,
                 "active_full": p.name,
                 "display_name": p.display_name,
                 "context_size": p.context_size,
@@ -1235,15 +1232,17 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
     class _ProfileChange(BaseModel):
         name: str
 
-    # Alias UI (chips React) -> nombre completo de profiles.py. El frontend usa
-    # abreviaciones de 4-6 chars (`perf`, `bal8`, `bal`, `light`, `stdby`) por
-    # razones de layout; profiles.set_active_profile espera los nombres
-    # completos. Sin este mapeo el PUT /profile devolvia 422 ("unknown profile").
+    # Alias UI -> nombre canónico de profiles.py. Desde 2026-05-20 la UI envía
+    # los nombres por VRAM directamente (vram3..vram16, standby), que
+    # set_active_profile acepta tal cual. Mantenemos los alias VIEJOS (perf/
+    # bal8/bal/light/stdby) para que una UI cacheada anterior siga funcionando.
+    # set_active_profile además resuelve los nombres legacy (balanced/light/...).
     _PROFILE_UI_ALIASES: dict[str, str] = {
-        "perf":  "performance",
-        "bal8":  "balanced_8gb",
-        "bal":   "balanced",
-        "light": "light",
+        # legacy chips de la UI anterior:
+        "perf":  "vram16",
+        "bal8":  "vram8",
+        "bal":   "vram6",
+        "light": "vram4",
         "stdby": "standby",
     }
 

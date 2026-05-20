@@ -37,7 +37,7 @@ from typing import Any
 from .state import atomic_write_json
 
 
-PROFILE_NAMES = ("performance", "balanced_8gb", "balanced", "light", "standby")
+PROFILE_NAMES = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16", "standby")
 
 ACTIVE_PROFILE_PATH = Path.home() / ".gemma4" / "active_profile.txt"
 PROFILES_OVERRIDES_PATH = Path.home() / ".gemma4" / "profiles.json"
@@ -69,6 +69,15 @@ class Profile:
     voice_enabled: bool
     description: str
     est_vram_mb: int  # display only; not used for decisions
+    # mmproj path for vision. When vision_enabled=True and this is set to an
+    # existing file, apply_profile_to_env() forces GEMMA4_MMPROJ_PATH to it so
+    # the profile is self-contained ("every profile has vision"). When None,
+    # the legacy behavior holds (respect the user's Settings mmproj path).
+    mmproj_path: str | None = None
+    # Camera (live webcam vision) — reserved for a future small VLM
+    # (e.g. Moondream) running alongside. Off everywhere today; the field
+    # exists so profiles + UI can carry it without a later schema change.
+    camera_enabled: bool = False
 
 
 # Defaults — copiados aqui para que sean editables sin tocar profiles.json.
@@ -79,135 +88,177 @@ class Profile:
 # del modelo" (peso del modelo vs idle Windows): el cargado es lo que el
 # usuario ve en nvidia-smi y es el que cuenta para el budget.
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_E2B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q4_K_M.gguf")  # 4.46 GB cargado
-_E2B_Q5_K_M = str(_PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q5_K_M.gguf")  # 4.70 GB cargado
-_E4B_Q4_K_M = str(_PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q4_K_M.gguf")  # 6.10 GB cargado
-# Recomendado por el informe externo (Item I1 #2 / Bloque A1) como Pareto
-# frontier para 8 GB de VRAM. Requiere descarga manual desde
-# huggingface.co/unsloth/gemma-4-E4B-it-GGUF (~4.7 GB). Si el archivo no
-# existe, apply_profile_to_env() cae al modelo del usuario via env var.
-_E4B_UD_Q4_K_XL = str(_PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-UD-Q4_K_XL.gguf")
+_E2B = _PROJECT_ROOT / "models" / "E2B"
+_E4B = _PROJECT_ROOT / "models" / "E4B"
+
+# GGUF paths. VRAM numbers in comments are REAL nvidia-smi deltas over the
+# Windows idle baseline (2.06 GB), measured 2026-05-20 on an RTX 4060 Ti with
+# scripts/measure_vram_profiles.py — flash-attn on, -ngl 99, at the ctx noted.
+# These REPLACE the earlier comment values, which were inflated ~2x (they had
+# the dev model still resident in VRAM): e.g. E2B-Q4 was "4.46 GB" but loads
+# at 2.16 GB no-vision / 3.36 GB with vision.
+_E2B_Q2_K_XL = str(_E2B / "gemma-4-E2B-it-UD-Q2_K_XL.gguf")  # 1.75 novis / 2.94 +vis @2K
+_E2B_Q4_K_M  = str(_E2B / "gemma-4-E2B-it-Q4_K_M.gguf")      # 2.16 novis / 3.36 +vis @4K
+_E2B_Q5_K_M  = str(_E2B / "gemma-4-E2B-it-Q5_K_M.gguf")      # 2.41 novis @8K
+_E4B_Q4_K_M  = str(_E4B / "gemma-4-E4B-it-Q4_K_M.gguf")      # 4.96 +vis @8K
+_E4B_Q4_K_XL = str(_E4B / "gemma-4-E4B-it-UD-Q4_K_XL.gguf")  # 5.23 +vis @16K
+_E4B_Q6_K    = str(_E4B / "gemma-4-E4B-it-Q6_K.gguf")        # 6.34 +vis @32K
+_MMPROJ_E2B  = str(_E2B / "mmproj-F16.gguf")                 # vision encoder (~1.2 GB loaded)
+_MMPROJ_E4B  = str(_E4B / "mmproj-F16.gguf")
 
 
+# ===========================================================================
+# Perfiles nombrados por VRAM (2026-05-20). Reemplazan los nombres antiguos
+# (perf/bal8/bal/light); los viejos se conservan como ALIASES (ver _ALIASES y
+# get/set) para no romper ~/.gemma4/active_profile.txt de usuarios existentes.
+#
+# REGLA DE DISEÑO (pedido del operador): TODOS los perfiles activos tienen
+# voz (Piper, CPU) + transcripción (Whisper, CPU) + VISIÓN (mmproj). La voz y
+# STT cuestan 0 VRAM (corren en CPU); la visión cuesta ~1.2 GB cargado, y la
+# medición real (scripts/measure_vram_profiles.py) confirmó que ENTRA incluso
+# en 4 GB. Cada perfil escala el MODELO (cuantización) y el contexto: del más
+# chico (vram3) al más grande (vram16). camera_enabled queda reservado para
+# un VLM de webcam futuro (Moondream-like) — off en todos hoy.
+#
+# Columna "cargado" = delta real de nvidia-smi sobre idle Windows (2.06 GB),
+# CON visión y al ctx indicado. "física" = cargado + 1.5 GB reserva WDDM.
+# ===========================================================================
 PROFILES: dict[str, Profile] = {
-    "performance": Profile(
-        name="performance",
-        display_name="Performance",
+    "vram3": Profile(
+        name="vram3",
+        display_name="VRAM 3GB",
+        context_size=2048,
+        model_path=_E2B_Q2_K_XL,
+        mmproj_path=_MMPROJ_E2B,
+        vision_enabled=True,
+        rerank_enabled=False,
+        parallel_tools=False,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        camera_enabled=False,
+        description=(
+            "GPU de 3-4 GB. E2B-UD-Q2_K_XL (la cuantización más chica usable), "
+            "ctx 2K, VISIÓN ON, voz+STT ON (CPU). Medido: 2.94 GB cargado con "
+            "visión -> ~4.4 GB física con reserva WDDM. La calidad del modelo "
+            "Q2 es la más baja del set; subí de perfil si tenés VRAM."
+        ),
+        est_vram_mb=2940,
+    ),
+    "vram4": Profile(
+        name="vram4",
+        display_name="VRAM 4GB",
+        context_size=4096,
+        model_path=_E2B_Q4_K_M,
+        mmproj_path=_MMPROJ_E2B,
+        vision_enabled=True,
+        rerank_enabled=False,
+        parallel_tools=False,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        camera_enabled=False,
+        description=(
+            "GPU de 4-6 GB (modo gaming). E2B-Q4_K_M, ctx 4K, VISIÓN ON, "
+            "voz+STT ON (CPU). Medido: 3.36 GB cargado con visión -> ~4.9 GB "
+            "física. Mejor calidad que vram3 (Q4 vs Q2)."
+        ),
+        est_vram_mb=3360,
+    ),
+    "vram6": Profile(
+        name="vram6",
+        display_name="VRAM 6GB",
+        context_size=8192,
+        model_path=_E4B_Q4_K_M,
+        mmproj_path=_MMPROJ_E4B,
+        vision_enabled=True,
+        rerank_enabled=True,
+        parallel_tools=False,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        camera_enabled=False,
+        description=(
+            "GPU de 6-8 GB. Salta a la familia E4B (más capaz que E2B) en "
+            "Q4_K_M, ctx 8K, VISIÓN ON, rerank ON, voz+STT ON (CPU). Medido: "
+            "4.96 GB cargado con visión -> ~6.5 GB física."
+        ),
+        est_vram_mb=4960,
+    ),
+    "vram8": Profile(
+        name="vram8",
+        display_name="VRAM 8GB",
+        context_size=16384,
+        model_path=_E4B_Q4_K_XL,
+        mmproj_path=_MMPROJ_E4B,
+        vision_enabled=True,
+        rerank_enabled=True,
+        parallel_tools=True,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        camera_enabled=False,
+        description=(
+            "GPU de 8 GB (RTX 3060 Ti, 4060, 2080). E4B-UD-Q4_K_XL (Pareto "
+            "frontier KLD según Unsloth), ctx 16K, VISIÓN ON, rerank ON, "
+            "parallel tools ON, voz+STT ON (CPU). Medido: 5.23 GB cargado con "
+            "visión -> ~6.7 GB física."
+        ),
+        est_vram_mb=5230,
+    ),
+    "vram12": Profile(
+        name="vram12",
+        display_name="VRAM 12GB",
         context_size=32768,
-        model_path=None,  # usuario configura modelo principal (Q6_K u otro grande)
+        model_path=_E4B_Q6_K,
+        mmproj_path=_MMPROJ_E4B,
         vision_enabled=True,
         rerank_enabled=True,
         parallel_tools=True,
         fact_extraction=True,
         server_running=True,
         voice_enabled=True,
+        camera_enabled=False,
         description=(
-            "Maximo rendimiento. Context 32K, vision ON, rerank ON, "
-            "parallel tools ON, fact extraction ON, voice ON. Para 12+ GB VRAM. "
-            "Usa el modelo principal del usuario (Q6_K o superior)."
+            "GPU de 12 GB+. E4B-Q6_K (casi sin pérdida vs el full), ctx 32K, "
+            "VISIÓN ON, todo ON, voz+STT ON (CPU). Medido: 6.34 GB cargado con "
+            "visión -> ~7.8 GB física. Margen amplio en 12 GB."
         ),
-        est_vram_mb=7500,
+        est_vram_mb=6340,
     ),
-    "balanced_8gb": Profile(
-        name="balanced_8gb",
-        display_name="Balanced 8GB",
-        context_size=16384,
-        model_path=_E4B_UD_Q4_K_XL,
-        vision_enabled=False,
+    "vram16": Profile(
+        name="vram16",
+        display_name="VRAM 16GB+",
+        context_size=32768,
+        model_path=None,  # usa el modelo principal del usuario (dev / Q8 / full)
+        mmproj_path=None,  # respeta el mmproj que el usuario configuró en Settings
+        vision_enabled=True,
         rerank_enabled=True,
-        parallel_tools=False,
-        fact_extraction=False,
+        parallel_tools=True,
+        fact_extraction=True,
         server_running=True,
         voice_enabled=True,
+        camera_enabled=False,
         description=(
-            "Perfil para 8 GB VRAM (RTX 3060 Ti, 4060, 2080). "
-            "E4B-UD-Q4_K_XL (Pareto frontier KLD segun Unsloth/localbench), "
-            "context 16K (margen 0.8 GB sobre 8 GB con GGUF medido), "
-            "vision OFF, rerank ON, voice ON (CPU). El GGUF "
-            "gemma-4-E4B-it-UD-Q4_K_XL.gguf ya esta descargado en models/E4B/."
+            "GPU de 16 GB+ / máquina de desarrollo. Usa el modelo principal "
+            "del usuario (el de mayor calidad que tenga configurado), ctx 32K, "
+            "VISIÓN ON, todo ON, voz+STT ON. VRAM según el modelo elegido."
         ),
-        # Calculo de VRAM actualizado con tamaño real medido (Polish session
-        # post-descarga). El informe externo proyectaba ~4.7 GB cargado pero
-        # el binario real es 4.77 GiB en disco, lo que mapea a ~5.0 GB cargado
-        # en VRAM por overhead llama-server (compute buffer + headers).
-        #
-        #   E4B-UD-Q4_K_XL en disco:           4.77 GiB
-        #   -> cargado en VRAM (~+5% overhead): ~5.00 GB
-        #   KV F16 ctx 16384 (con flash-attn): ~0.70 GB (SWA reduce ~50%)
-        #   = total app:                      ~5.70 GB
-        #   + reserva WDDM Windows:            1.50 GB
-        #   = VRAM fisica requerida:          ~7.20 GB
-        #
-        # Sobre 8 GB nominales -> margen ~0.80 GB. Aceptable incluso con
-        # Chrome/Discord abiertos (cada uno ~0.2 GB de WDDM extra).
-        #
-        # Con ctx 16K queda espacio para:
-        #   - tool_schemas_hint compact:       ~5.9K tokens
-        #   - SYSTEM_PROMPT + persona + mode:  ~1.5K tokens
-        #   - history + memory + plan:         residual ~9K tokens
-        # Suficiente para conversaciones largas (~20 turnos antes de ctx-shift).
-        #
-        # MEDICION EMPIRICA PENDIENTE: cuando el dev tenga el server en
-        # idle (sin Q6_K dev model corriendo), correr:
-        #   "C:/llamacpp-cuda/bin/llama-server.exe" \
-        #     -m models/E4B/gemma-4-E4B-it-UD-Q4_K_XL.gguf \
-        #     -c 16384 -ngl 99 --flash-attn on --host 127.0.0.1 --port 8080
-        # y comparar nvidia-smi --query-gpu=memory.used antes/durante.
-        # Si peak > 6.5 GB efectivo (=8 GB - 1.5 WDDM), bajar a ctx 12K.
-        est_vram_mb=5700,
-    ),
-    "balanced": Profile(
-        name="balanced",
-        display_name="Balanced",
-        context_size=8192,
-        model_path=_E2B_Q5_K_M,  # 4.70 GB cargado real (NO E4B-Q4_K_M, que mide 6.10 GB y NO entra en 6 GB)
-        vision_enabled=False,    # mmproj F16 (0.9 GB) rompe el budget de 6 GB
-        rerank_enabled=True,
-        parallel_tools=False,
-        fact_extraction=False,
-        server_running=True,
-        voice_enabled=True,
-        description=(
-            "Perfil objetivo para 6 GB VRAM. E2B-Q5_K_M (mejor calidad que "
-            "Q4_K_M y misma familia que light), context 8K, vision OFF, "
-            "rerank ON, voice ON (CPU). Racional: 4.70 GB cargado + KV F16 8K "
-            "(~0.40) = ~5.1 GB. Holgura ~0.9 GB sobre 6 GB nominales."
-        ),
-        # E2B-Q5_K_M (4.70) + KV F16 8K (~0.40) ~= 5.10 GB. Sin KV quant
-        # porque la doc del repo (04_vram_y_hardware) advierte contra q8_0 KV
-        # en Gemma 4 sin medir.
-        est_vram_mb=5100,
-    ),
-    "light": Profile(
-        name="light",
-        display_name="Light",
-        context_size=4096,
-        model_path=_E2B_Q4_K_M,  # 4.46 GB cargado: cabe con holgura en 4-6 GB
-        vision_enabled=False,
-        rerank_enabled=False,
-        parallel_tools=False,
-        fact_extraction=False,
-        server_running=True,
-        voice_enabled=True,
-        description=(
-            "Modo gaming/4 GB VRAM. E2B-Q4_K_M, context 4K, vision OFF, "
-            "rerank OFF, voice ON (CPU). 4.46 GB cargado + KV F16 4K "
-            "(~0.20) = ~4.66 GB. Deja ~1.3 GB libres en 6 GB para juego."
-        ),
-        # E2B-Q4_K_M (4.46) + KV F16 4K (~0.20) ~= 4.66 GB.
-        est_vram_mb=4700,
+        est_vram_mb=8000,
     ),
     "standby": Profile(
         name="standby",
         display_name="Standby",
         context_size=4096,  # irrelevante pero algo hay que poner
         model_path=None,
+        mmproj_path=None,
         vision_enabled=False,
         rerank_enabled=False,
         parallel_tools=False,
         fact_extraction=False,
         server_running=False,
         voice_enabled=False,  # sin LLM no hay a quien hablarle
+        camera_enabled=False,
         description=(
             "llama-server apagado. La GUI sigue viva (memory viewer, "
             "sessions, triggers, tool explorer non-LLM). El chat muestra "
@@ -217,6 +268,23 @@ PROFILES: dict[str, Profile] = {
         est_vram_mb=0,
     ),
 }
+
+# Aliases de compatibilidad: nombres antiguos -> nuevo equivalente más cercano.
+# Mantienen funcionando ~/.gemma4/active_profile.txt y profiles.json viejos,
+# y cualquier código/test que pida "balanced" etc. set/get_active_profile y
+# apply los resuelven vía _resolve_alias().
+_LEGACY_ALIASES: dict[str, str] = {
+    "performance": "vram16",
+    "balanced_8gb": "vram8",
+    "balanced": "vram6",
+    "light": "vram4",
+    # standby se mantiene con su nombre.
+}
+
+
+def _resolve_alias(name: str) -> str:
+    """Mapea un nombre (posiblemente legacy) al nombre canónico vramN/standby."""
+    return _LEGACY_ALIASES.get(name, name)
 
 
 def detect_vram_mb() -> int | None:
@@ -286,36 +354,48 @@ WINDOWS_VRAM_RESERVE_MB = 1500
 
 
 def recommend_profile(vram_mb: int | None) -> str:
-    """Sugiere perfil segun VRAM detectada.
+    """Sugiere perfil vramN segun la VRAM FISICA total detectada.
 
-    Aplica una reserva fija de WINDOWS_VRAM_RESERVE_MB (1.5 GB) al valor
-    reportado por nvidia-smi antes de mapear. Cortes en VRAM *efectiva*:
+    Compara la VRAM fisica de la GPU contra la "fisica requerida" de cada
+    perfil (cargado medido CON visión + WINDOWS_VRAM_RESERVE_MB de 1.5 GB).
+    Cortes (VRAM fisica nominal de la placa):
 
-    >=10500 MB ef. (>=12 GB fisicos) -> performance
-    >= 6500 MB ef. (>= 8 GB fisicos) -> balanced_8gb (si el GGUF existe;
-                                       sino cae a balanced)
-    >= 4500 MB ef. (>= 6 GB fisicos) -> balanced
-    >= 2500 MB ef. (>= 4 GB fisicos) -> light
-    resto / None                     -> light (voice CPU sigue ON)
+      >= 12 GB -> vram12   (E4B-Q6_K,    ~7.8 GB fisica)
+      >=  8 GB -> vram8    (E4B-Q4_K_XL, ~6.7 GB fisica)
+      >=  6 GB -> vram6    (E4B-Q4_K_M,  ~6.5 GB fisica)  [margen ajustado]
+      >=  4 GB -> vram4    (E2B-Q4_K_M,  ~4.9 GB fisica)
+      resto/None -> vram3  (E2B-Q2,      ~4.4 GB fisica)
+
+    NB: vram16 (modelo del usuario) NO se auto-recomienda — es opt-in para
+    quien tiene una GPU grande y un modelo grande configurado; el caller/UI
+    lo ofrece, pero el default seguro para 16 GB es vram12 (cabe siempre).
+    Si un perfil tiene su GGUF ausente, caemos al inmediato inferior.
     """
     if vram_mb is None:
-        return "light"
-    effective = max(0, int(vram_mb) - WINDOWS_VRAM_RESERVE_MB)
-    if effective >= 10500:
-        return "performance"
-    if effective >= 6500:
-        # Item 2.1: si el archivo UD-Q4_K_XL esta presente, balanced_8gb;
-        # sino caemos a balanced (E2B-Q5_K_M) para no recomendar un perfil
-        # con missing model.
-        candidate = PROFILES["balanced_8gb"].model_path
-        if candidate and Path(candidate).expanduser().is_file():
-            return "balanced_8gb"
-        return "balanced"
-    if effective >= 4500:
-        return "balanced"
-    if effective >= 2500:
-        return "light"
-    return "light"
+        return "vram3"
+    gb = int(vram_mb) / 1024.0
+
+    def _model_ok(profile_name: str) -> bool:
+        mp = PROFILES[profile_name].model_path
+        if mp is None:  # vram16 usa el modelo del usuario; tratamos como ok
+            return True
+        try:
+            return Path(mp).expanduser().is_file()
+        except OSError:
+            return False
+
+    # De mayor a menor; el primero cuyo umbral pasa Y cuyo GGUF existe gana.
+    ladder = [
+        (12.0, "vram12"),
+        (8.0, "vram8"),
+        (6.0, "vram6"),
+        (4.0, "vram4"),
+        (0.0, "vram3"),
+    ]
+    for threshold, name in ladder:
+        if gb >= threshold and _model_ok(name):
+            return name
+    return "vram3"
 
 
 def get_active_profile() -> Profile:
@@ -325,10 +405,12 @@ def get_active_profile() -> Profile:
     vez y persiste el perfil recomendado. Asi la app arranca con el perfil
     correcto sin pedirle al usuario que vaya a Settings.
 
-    Default fallback: balanced (si no se puede detectar VRAM).
+    Default fallback: vram4 (si no se puede detectar VRAM). Resuelve nombres
+    legacy (balanced/light/...) escritos por versiones anteriores.
     """
+    _DEFAULT = "vram4"
     if not ACTIVE_PROFILE_PATH.is_file():
-        # Primera vez: detecta y persiste. Si falla, queda en balanced sin
+        # Primera vez: detecta y persiste. Si falla, queda en el default sin
         # escribir nada (asi en la proxima ejecucion vuelve a intentar).
         try:
             vram_mb = detect_vram_mb()
@@ -336,21 +418,27 @@ def get_active_profile() -> Profile:
             set_active_profile(recommended)
             return _profile_with_overrides(PROFILES[recommended])
         except (OSError, ValueError):
-            return PROFILES["balanced"]
+            return PROFILES[_DEFAULT]
     try:
         name = ACTIVE_PROFILE_PATH.read_text(encoding="utf-8").strip().casefold()
     except OSError:
-        return PROFILES["balanced"]
+        return PROFILES[_DEFAULT]
+    name = _resolve_alias(name)  # legacy "balanced" -> "vram6", etc.
     if name not in PROFILES:
-        return PROFILES["balanced"]
+        return PROFILES[_DEFAULT]
     return _profile_with_overrides(PROFILES[name])
 
 
 def set_active_profile(name: str) -> None:
-    """Persiste el nombre del perfil activo atomicamente."""
-    if name not in PROFILES:
+    """Persiste el nombre del perfil activo atomicamente.
+
+    Acepta nombres canónicos (vramN/standby) y legacy (balanced/light/...),
+    persistiendo siempre el canónico para que el archivo quede normalizado.
+    """
+    canonical = _resolve_alias(name)
+    if canonical not in PROFILES:
         raise ValueError(f"unknown profile: {name!r} (valid: {PROFILE_NAMES})")
-    atomic_write_text(ACTIVE_PROFILE_PATH, name)
+    atomic_write_text(ACTIVE_PROFILE_PATH, canonical)
 
 
 def load_overrides() -> dict[str, dict[str, Any]]:
@@ -397,9 +485,9 @@ def _profile_with_overrides(base: Profile) -> Profile:
     # Solo aceptamos overrides de campos conocidos y tipados
     allowed: dict[str, Any] = {}
     for field_name in (
-        "context_size", "model_path", "vision_enabled", "rerank_enabled",
-        "parallel_tools", "fact_extraction", "voice_enabled", "est_vram_mb",
-        "display_name", "description",
+        "context_size", "model_path", "mmproj_path", "vision_enabled",
+        "rerank_enabled", "parallel_tools", "fact_extraction", "voice_enabled",
+        "camera_enabled", "est_vram_mb", "display_name", "description",
     ):
         if field_name in these:
             allowed[field_name] = these[field_name]
@@ -455,13 +543,27 @@ def apply_profile_to_env(profile: Profile) -> None:
     # master switch del usuario en Settings (voice.enabled). La AND de los
     # dos es lo que enciende voice.
     os.environ["GEMMA4_VOICE_PROFILE_ALLOWS"] = "true" if profile.voice_enabled else "false"
+    # Camera (future webcam VLM). Carried through so the runtime/UI can read
+    # it; no model is wired yet, so this is informational today.
+    os.environ["GEMMA4_CAMERA_PROFILE_ALLOWS"] = "true" if profile.camera_enabled else "false"
 
-    # Vision: cadena vacia significa "no cargar mmproj". launcher.py debe
-    # detectar este caso y omitir --mmproj del comando.
+    # Vision (mmproj). Three cases:
+    #   - vision OFF                -> "" (launcher omits --mmproj)
+    #   - vision ON + profile.mmproj_path exists -> force it (self-contained
+    #     profile; this is how the vramN profiles ship vision baked in)
+    #   - vision ON + profile.mmproj_path None   -> respect the user's Settings
+    #     value (legacy behavior; used by vram16 which rides the user's model)
     if not profile.vision_enabled:
         os.environ["GEMMA4_MMPROJ_PATH"] = ""
-    # Si vision_enabled=True NO tocamos GEMMA4_MMPROJ_PATH; respetamos el
-    # valor que el usuario haya configurado en Settings.
+    elif profile.mmproj_path:
+        candidate = Path(profile.mmproj_path).expanduser()
+        if candidate.is_file():
+            os.environ["GEMMA4_MMPROJ_PATH"] = str(candidate)
+        else:
+            # Declared but missing -> don't fabricate; fall back to "no vision"
+            # so the server still starts (caller may warn). Better than OOM/crash.
+            os.environ["GEMMA4_MMPROJ_PATH"] = ""
+    # else (vision ON, mmproj_path None): leave GEMMA4_MMPROJ_PATH untouched.
 
     # Modelo: solo lo sobreescribimos si el perfil define uno Y el archivo existe.
     # Caso LIGHT con light_model_path inexistente: NO tocamos y dejamos que el
@@ -508,25 +610,33 @@ def requires_server_restart(old: Profile | None, new: Profile) -> bool:
         old.context_size != new.context_size
         or (old.model_path or "") != (new.model_path or "")
         or old.vision_enabled != new.vision_enabled
+        or (old.mmproj_path or "") != (new.mmproj_path or "")
     )
 
 
-def light_model_configured() -> str | None:
-    """Devuelve el model_path del perfil LIGHT (con overrides) o None."""
-    profile = _profile_with_overrides(PROFILES["light"])
-    return profile.model_path
+def model_missing(profile_name: str) -> bool:
+    """True si el perfil tiene model_path configurado pero el archivo no existe.
 
-
-def light_model_missing() -> bool:
-    """True si LIGHT tiene model_path configurado pero el archivo no existe.
-
-    Caller debe llamar a esto antes de aplicar LIGHT para decidir si
-    mostrar warning amber + caer al modelo principal con ctx bajo.
+    Caller debe llamarlo antes de aplicar un perfil para decidir si mostrar
+    warning amber + caer al modelo principal. profile_name acepta nombres
+    canónicos o legacy. vram16 (model_path None) nunca está "missing".
     """
-    path = light_model_configured()
+    name = _resolve_alias(profile_name)
+    if name not in PROFILES:
+        return False
+    path = _profile_with_overrides(PROFILES[name]).model_path
     if not path:
-        return False  # no configurado -> usar default, no es "missing"
+        return False  # no configurado (vram16) -> usa default, no es "missing"
     try:
         return not Path(path).expanduser().is_file()
     except OSError:
         return True
+
+
+# Compat: nombre viejo usado por la UI/launcher para el perfil de menor VRAM.
+def light_model_configured() -> str | None:
+    return _profile_with_overrides(PROFILES["vram4"]).model_path
+
+
+def light_model_missing() -> bool:
+    return model_missing("vram4")

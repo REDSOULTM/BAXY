@@ -10,8 +10,9 @@ from .profiles import PROFILES, Profile, requires_server_restart
 class TestRequiresServerRestart(unittest.TestCase):
 
     def setUp(self):
-        self.perf = PROFILES["performance"]
-        self.bal8 = PROFILES["balanced_8gb"]
+        # Renombrados por VRAM (2026-05-20): performance->vram16, balanced_8gb->vram8.
+        self.perf = PROFILES["vram16"]
+        self.bal8 = PROFILES["vram8"]
         self.standby = PROFILES["standby"]
 
     def test_first_apply_with_server_running_needs_start(self):
@@ -65,8 +66,9 @@ class TestRequiresServerRestart(unittest.TestCase):
         self.assertFalse(requires_server_restart(self.perf, modified))
 
     def test_cross_profile_perf_to_bal8_needs_restart(self):
-        # Real-world: cambiar de performance (ctx=32K) a balanced_8gb (ctx=16K)
-        # DEBE reiniciar (cambia context_size + model_path + vision).
+        # Real-world: cambiar de vram16 (ctx=32K, modelo del usuario) a vram8
+        # (ctx=16K, E4B-Q4_K_XL) DEBE reiniciar (cambia context_size +
+        # model_path). Ambos tienen visión ON, así que vision no cambia.
         self.assertTrue(requires_server_restart(self.perf, self.bal8))
 
 

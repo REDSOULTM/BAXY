@@ -277,9 +277,10 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     if api_key_env:
         cmd.extend(["--api-key", api_key_env])
 
-    # VRAM-tight perfiles (balanced, light): --no-mmap para evitar
+    # VRAM-tight perfiles (<=6 GB: vram3/vram4/vram6): --no-mmap para evitar
     # double-buffer entre RAM mapeada y VRAM (critico con budget apretado).
-    if profile.name in {"balanced", "light"}:
+    _VRAM_TIGHT = {"vram3", "vram4", "vram6"}
+    if profile.name in _VRAM_TIGHT:
         cmd.append("--no-mmap")
 
     # KV cache quantization (opt-in via GEMMA4_LLAMA_KV_TYPE). Default: F16.
@@ -329,10 +330,10 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     # avisamos del riesgo. Si acceptance < 50% en la maquina, dejar off.
     spec_draft_env = (os.environ.get("GEMMA4_SPEC_DRAFT_MODEL") or "").strip()
     if spec_draft_env:
-        if profile.name != "performance":
+        if profile.name != "vram16":
             logger.warning(
                 "GEMMA4_SPEC_DRAFT_MODEL set but profile=%s; speculative "
-                "decoding requires the 'performance' profile (VRAM budget). "
+                "decoding requires the 'vram16' profile (VRAM budget). "
                 "Ignoring.",
                 profile.name,
             )
@@ -385,7 +386,7 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                 # con --no-mmap suelen ser los de 6 GB o menos). Mitiga la
                 # interaccion con issue #19980 (--fit no contabiliza VRAM del
                 # mmproj). Item I1 #8 / Bloque E1 del informe.
-                if profile.name in {"balanced", "light"}:
+                if profile.name in _VRAM_TIGHT:
                     cmd.append("--no-mmproj-offload")
             else:
                 logger.warning(

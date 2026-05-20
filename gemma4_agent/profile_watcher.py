@@ -54,8 +54,8 @@ VRAM_THRESHOLD_PCT = 40
 @dataclass
 class WatcherConfig:
     enabled: bool = False
-    downgrade_to: str = "light"
-    restore_to: str = "balanced"
+    downgrade_to: str = "vram4"   # antes "light" (renombrado por VRAM 2026-05-20)
+    restore_to: str = "vram6"     # antes "balanced"
     game_watchlist: list[str] = field(default_factory=list)
     trigger_on_game: bool = False  # nombre-based: opt-in solo si el user lo quiere
     trigger_on_gpu: bool = False

@@ -67,11 +67,20 @@ logger = logging.getLogger(__name__)
 
 Priority = Literal["critical", "high", "medium", "low"]
 
-# Cap por profile de Gemma 4: cuantas skill_load() puede emitir el LLM en
-# un turn. standby NO carga skills (modo idle). En light hay context tight
-# (4K), una sola skill cabe. perf permite hasta 5 (32K ctx).
+# Cap por profile de Gemma 4: cuantas skill_load() puede emitir el LLM en un
+# turn. Escala con el context_size del perfil (menos ctx -> menos skills caben).
+# standby NO carga skills. Las claves legacy (light/balanced/...) se conservan
+# como alias para no romper callers viejos; las nuevas son vramN.
 CAP_PER_PROFILE: dict[str, int] = {
     "standby":      0,
+    # nuevos (por VRAM / context_size)
+    "vram3":        1,   # ctx 2K
+    "vram4":        1,   # ctx 4K
+    "vram6":        2,   # ctx 8K
+    "vram8":        3,   # ctx 16K
+    "vram12":       5,   # ctx 32K
+    "vram16":       5,   # ctx 32K
+    # legacy aliases (compat)
     "light":        1,
     "balanced":     2,
     "balanced_8gb": 3,

@@ -955,7 +955,7 @@ class MainWindow(QMainWindow):
             from ..profiles import get_active_profile
             active = get_active_profile().name
         except Exception:
-            active = "balanced"
+            active = "vram4"
         buttons: dict[str, Any] = self._left_h.get("profile_buttons") or {}
         for full_name, btn in buttons.items():
             is_active = (full_name == active)
@@ -995,27 +995,27 @@ class MainWindow(QMainWindow):
             if reply != QMessageBox.StandardButton.Yes:
                 return
 
-        # Light con modelo chico ausente -> warning amber + fallback
-        if name == "light":
-            try:
-                from ..profiles import light_model_configured, light_model_missing
-                if light_model_missing():
-                    path = light_model_configured() or "(no configurado)"
-                    QMessageBox.warning(
-                        self, "Light model missing",
-                        f"Light profile pide un GGUF chico (ej. gemma-3n-e2b-it.Q4_K_M.gguf) "
-                        f"en:\n  {path}\n\n"
-                        "El archivo no existe. Voy a aplicar el perfil igual usando tu modelo "
-                        "principal con context=4096 como fallback. Para usar el modelo chico "
-                        "real: bajalo y poneo en esa ruta, o cambia la ruta en "
-                        "Settings -> PROFILES.",
-                    )
-                    self.log.append(
-                        f"WARNING light_model_path missing ({path}); falling back to main model with ctx=4096",
-                        "warn",
-                    )
-            except Exception:
-                pass
+        # Cualquier perfil cuyo GGUF declarado no exista -> warning + fallback
+        # al modelo principal del usuario (apply_profile_to_env no toca
+        # GEMMA4_MODEL_PATH si el archivo falta). Antes era hardcode "light".
+        try:
+            from ..profiles import PROFILES, model_missing, _resolve_alias
+            if model_missing(name):
+                canonical = _resolve_alias(name)
+                path = PROFILES[canonical].model_path or "(no configurado)"
+                QMessageBox.warning(
+                    self, "Model missing",
+                    f"El perfil {name} pide un GGUF en:\n  {path}\n\n"
+                    "El archivo no existe. Voy a aplicar el perfil igual usando tu modelo "
+                    "principal como fallback. Para usar el modelo del perfil: bajalo y "
+                    "ponelo en esa ruta, o cambia la ruta en Settings -> PROFILES.",
+                )
+                self.log.append(
+                    f"WARNING profile {name} model_path missing ({path}); falling back to main model",
+                    "warn",
+                )
+        except Exception:
+            pass
 
         self._apply_profile(name)
 
