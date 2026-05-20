@@ -78,6 +78,7 @@ class LLMClient:
         max_tokens: int | None = None,
         timeout_s: float | None = None,
         force_tool: bool = False,
+        thinking_budget: int | None = None,
     ) -> dict[str, Any]:
         """Synchronous chat completion against the local llama-server.
 
@@ -103,6 +104,11 @@ class LLMClient:
             body["seed"] = int(self.config.seed)
         if self.config.reasoning_format:
             body["reasoning_format"] = self.config.reasoning_format
+        # Cap reasoning tokens (when thinking is on) so a turn can't run away
+        # to 13k-15k thinking tokens and blow the latency budget. llama.cpp
+        # honors `thinking_budget_tokens` (b9090). -1/None = unbounded.
+        if thinking and thinking_budget is not None and int(thinking_budget) >= 0:
+            body["thinking_budget_tokens"] = int(thinking_budget)
         if tools:
             body["tools"] = tools
             # tool_choice: ESTE build de llama.cpp (b9090) espera un STRING

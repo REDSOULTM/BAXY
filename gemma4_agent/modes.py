@@ -14,6 +14,14 @@ class AgentMode:
     parallel_tool_calls: bool
     max_tokens: int
     system_hint: str
+    # Cap on reasoning tokens when enable_thinking is True. -1 = unbounded.
+    # MEASURED (2026-05-20): with thinking unbounded, some turns generate
+    # 13k-15k reasoning tokens — at ~50 tok/s on CPU that's MINUTES, blowing
+    # the 4-5s voice budget. A simple action only needs ~90 reasoning tokens
+    # to emit the tool-call, so action modes cap tight; research/deep keep a
+    # larger budget for genuine multi-step reasoning. llama.cpp honors this
+    # via `thinking_budget_tokens` in the request body (verified on b9090).
+    thinking_budget: int = -1
 
 
 MODE_NAMES = {"auto", "fast_action", "quick_action", "deep_action", "vision_action", "audio_mode", "research"}
@@ -44,6 +52,7 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
                 "después una breve elaboración si aporta. Ej: 'GTA 5 salió el 17 de "
                 "septiembre de 2013 en PS3 y Xbox 360. La versión de PC llegó en 2015.'"
             ),
+            thinking_budget=2048,  # research reasons more, but cap the runaway
         )
     if inferred == "vision_action":
         return AgentMode(
@@ -55,6 +64,7 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
                 "Mode: vision_action. Use screenshots/images as evidence before GUI actions. "
                 "Prefer UIA when available, then screenshot/vision, then raw GUI."
             ),
+            thinking_budget=1024,
         )
     if inferred == "audio_mode":
         return AgentMode(
@@ -77,6 +87,7 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
                 "Mode: deep_action. Execute multi-step PC missions in order. Think privately, "
                 "act, observe, verify, then continue until the sequence is done or blocked."
             ),
+            thinking_budget=1024,  # multi-step needs more, but still bounded
         )
     if inferred == "quick_action":
         # quick_action: comando de UNA sola acción ("abre steam", "pon música").
@@ -92,6 +103,7 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             parallel_tool_calls=False,
             max_tokens=min(base_max_tokens, 512),
             system_hint=_FAST_ACTION_HINT,
+            thinking_budget=384,  # enough to decide+emit a tool-call (~90 obs)
         )
     # fast_action: smalltalk + confirmaciones cortas. base_max_tokens default
     # (1280) era excesivo — a ~50 tok/s eso es 25s worst case si el modelo no

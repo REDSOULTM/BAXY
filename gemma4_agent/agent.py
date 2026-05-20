@@ -953,6 +953,7 @@ class Gemma4Agent:
                     self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early),
                     tools=selected_schemas,
                     enable_thinking=mode.enable_thinking,
+                    thinking_budget=mode.thinking_budget,
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=mode.max_tokens,
                 )
@@ -975,6 +976,7 @@ class Gemma4Agent:
                             self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early),
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
+                            thinking_budget=mode.thinking_budget,
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
                         )
@@ -1094,6 +1096,7 @@ class Gemma4Agent:
                                            user_text=raw_text_early),
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
+                            thinking_budget=mode.thinking_budget,
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
                             force_tool=True,
