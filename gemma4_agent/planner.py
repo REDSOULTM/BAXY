@@ -404,11 +404,18 @@ def _suggest_tools(step: str) -> list[str]:
         tools.extend(["memory", "knowledge"])
     if re.search(r"\b(dependencia|dependency|libreria|modulo|instala dependencia|falta|missing)\b", low):
         tools.append("dependency")
-    if re.search(r"\b(contacto|telefono|email de|correo de|vcard|"
-                 r"contact|phone|email of)\b", low):
+    if re.search(r"\b(contacto|contactos|telefono|email de|correo de|vcard|"
+                 # 2026-05-20: natural read/write phrasings were missed —
+                 # "tengo el numero de X", "agrega a X con numero", "guardado
+                 # el contacto de". \bnumero\b near a name = contact op.
+                 r"numero de|el numero|guardado el contacto|agrega a |agregar a |"
+                 r"contact|phone|email of|number of)\b", low):
         tools.append("contacts")
-    if re.search(r"\b(nota|tarea|lista|checklist|pendiente|"
-                 r"note|task|todo)\b", low):
+    if re.search(r"\b(nota|notas|tarea|tareas|lista|checklist|pendiente|"
+                 # "anota"/"apunta" (verb) and plural "notas" weren't caught
+                 # by \bnota\b. "que notas tengo" / "anota que ...".
+                 r"anota|anotar|apunta|apuntar|"
+                 r"note|notes|task|todo)\b", low):
         tools.append("notes_tasks")
     if re.search(r"\b(calendario|agenda|agendad[oa]|agendar|evento|eventos|ics|"
                  # 2026-05-20: calendar READ phrasings were missed (write was
@@ -417,7 +424,10 @@ def _suggest_tools(step: str) -> list[str]:
                  r"reunion|reuniones|cita medica|citas medicas|que tengo (hoy|manana|el)|"
                  r"calendar|event|meeting|appointment|schedule)\b", low):
         tools.append("local_calendar")
-    if re.search(r"\b(habito|racha|streak|habit|hobby)\b", low):
+    if re.search(r"\b(habito|habitos|racha|streak|habit|hobby|"
+                 # "registra que hoy hice X" / "lleva la cuenta de" — habit log.
+                 r"registra que|llevar la cuenta|llevo \d+ dias|hice ejercicio|"
+                 r"track my)\b", low):
         tools.append("habit_tracker")
     if re.search(r"\b(busca en mis archivos|encuentra archivo|buscar archivo|reciente|"
                  r"search files|find file|recent files)\b", low):
@@ -534,7 +544,10 @@ def _suggest_tools(step: str) -> list[str]:
                  r"keyboard)\b", low):
         tools.append("input")
     if re.search(r"\b(winget|paquete|instalar app|desinstalar|"
-                 r"package|install app|uninstall)\b", low):
+                 # 2026-05-20: "esta instalado X" / "tengo instalado X" (the
+                 # READ — is a program installed) were missed.
+                 r"instalad[oa]|tengo instalad|esta instalad|version de \w+ (que tengo|instalada)|"
+                 r"package|install app|uninstall|is .* installed)\b", low):
         tools.append("package")
 
     # ---- Tools added in phases C/D/F3 ----
