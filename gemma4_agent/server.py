@@ -24,6 +24,7 @@ import os
 import platform
 import queue
 import subprocess
+import threading
 import time
 import uuid
 from dataclasses import asdict
@@ -1262,33 +1263,59 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
 
     @app.put("/profile")
     def put_profile(body: ProfileChange) -> Any:
-        """Switch the active VRAM profile. Persists to ~/.gemma4 + applies
-        env vars so the next agent restart picks them up. Does NOT restart
-        llama-server here — that requires a heavier orchestration we save
-        for later. The activity log entry tells the user to restart for
-        the new context size to take effect.
+        """Switch the active VRAM profile.
 
-        Acepta tanto los nombres completos (`balanced_8gb`) como los aliases
-        que usa la UI React (`bal8`).
+        Persists to ~/.gemma4, applies env vars, AND — when the change needs
+        a different llama-server (model / context / vision / on-off) — restarts
+        the shared llama-server with the new profile so the model actually
+        swaps and VRAM changes. The restart runs in a background thread (it
+        takes ~4-10 s) and streams boot stages to the BUS; the HTTP response
+        returns immediately with restarting=True so the chip flips instantly.
+
+        Acepta nombres canónicos (vram8) y aliases UI viejos (bal8).
         """
         try:
             from .profiles import (apply_profile_to_env, get_active_profile,
-                                    set_active_profile)
+                                    set_active_profile, requires_server_restart)
             raw = body.name.strip().lower()
             name = _PROFILE_UI_ALIASES.get(raw, raw)
+            prev = get_active_profile()
             set_active_profile(name)
             p = get_active_profile()
             apply_profile_to_env(p)
-            BUS.publish({
-                "type": "activity",
-                "entry": {
-                    "id": uuid.uuid4().hex[:8],
-                    "src": "SYSTEM",
-                    "msg": f"profile · switched to {p.display_name}",
-                    "ts": _ts_now(),
-                },
-            })
-            return {"ok": True, "active": p.name, "display_name": p.display_name}
+
+            def _activity(msg: str) -> None:
+                BUS.publish({"type": "activity", "entry": {
+                    "id": uuid.uuid4().hex[:8], "src": "SYSTEM",
+                    "msg": msg, "ts": _ts_now()}})
+
+            _activity(f"profile · switched to {p.display_name}")
+
+            needs_restart = requires_server_restart(prev, p)
+            if needs_restart:
+                def _do_restart() -> None:
+                    try:
+                        from .llama_server import get_shared_manager
+                        BUS.publish({"kind": "boot_stage", "stage": "profile_swap",
+                                     "phase": "starting", "profile": p.name})
+                        _activity(f"profile · loading {p.display_name} model…")
+                        mgr = get_shared_manager()
+                        result = mgr.force_restart_for_profile(p)
+                        ok = result in ("started", "already_running", "stopped")
+                        _activity(
+                            f"profile · {p.display_name} "
+                            + ("ready" if ok else f"restart={result}")
+                        )
+                        BUS.publish({"kind": "boot_stage", "stage": "profile_swap",
+                                     "phase": "completed", "profile": p.name,
+                                     "result": result})
+                    except Exception as exc:  # never let the thread die silent
+                        _activity(f"profile · restart FAILED: {exc}")
+                threading.Thread(target=_do_restart, name="profile-swap",
+                                 daemon=True).start()
+
+            return {"ok": True, "active": p.name,
+                    "display_name": p.display_name, "restarting": needs_restart}
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc))
 

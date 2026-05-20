@@ -201,7 +201,11 @@ def start_server(args: argparse.Namespace, *, wait: bool = True) -> int:
             print(f"  {path}")
         return 2
 
-    manager = LlamaServerManager(config=config)
+    # Use the PROCESS-WIDE shared manager so the /profile endpoint (same
+    # process, uvicorn thread) can later restart THIS exact server when the
+    # user switches VRAM profiles.
+    from .llama_server import get_shared_manager
+    manager = get_shared_manager(config=config)
     timeout_s = max(1, int(getattr(args, "timeout", 90)))
     print(color("dim",
         f"Iniciando llama-server (profile={profile.name}, ctx={profile.context_size}); "

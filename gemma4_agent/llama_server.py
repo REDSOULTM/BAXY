@@ -97,6 +97,73 @@ def port_in_use(host: str = "127.0.0.1", port: int = 8080, timeout: float = 0.3)
             pass
 
 
+def _server_port(config: "AgentConfig | None" = None) -> int:
+    """Best-effort: port llama-server listens on (default 8080)."""
+    try:
+        url = (config or AgentConfig.from_env()).server_url  # e.g. http://127.0.0.1:8080
+        return int(url.rsplit(":", 1)[1].split("/")[0])
+    except Exception:
+        return 8080
+
+
+def _kill_server_on_port(config: "AgentConfig | None" = None) -> bool:
+    """Kill whatever process listens on the llama-server port (Windows).
+
+    Used by a USER-DRIVEN profile switch to take over the port even when the
+    running server was started outside this manager (external) — the user
+    explicitly asked to load a different model. Best-effort: returns True if a
+    PID was found and a kill was issued. Cross-platform via psutil if present,
+    else falls back to netstat+taskkill on Windows.
+    """
+    port = _server_port(config)
+    if not port_in_use(port=port):
+        return False
+    pids: set[int] = set()
+    try:
+        import psutil  # type: ignore
+        for c in psutil.net_connections(kind="inet"):
+            if c.laddr and c.laddr.port == port and c.status == psutil.CONN_LISTEN and c.pid:
+                pids.add(int(c.pid))
+    except Exception:
+        # Fallback: parse `netstat -ano` for the listening PID on this port.
+        try:
+            out = subprocess.run(
+                ["netstat", "-ano", "-p", "tcp"], capture_output=True, text=True, timeout=5,
+            ).stdout
+            for line in out.splitlines():
+                if f":{port} " in line and "LISTENING" in line.upper():
+                    parts = line.split()
+                    if parts and parts[-1].isdigit():
+                        pids.add(int(parts[-1]))
+        except Exception:
+            return False
+    killed = False
+    for pid in pids:
+        try:
+            subprocess.run(["taskkill", "/F", "/PID", str(pid)],
+                           capture_output=True, timeout=5)
+            killed = True
+            logger.info("killed server on port %d (pid %d) for profile switch", port, pid)
+        except Exception as exc:
+            logger.warning("failed to kill pid %d on port %d: %s", pid, port, exc)
+    return killed
+
+
+# Process-wide shared manager. The launcher (start_server) and the FastAPI
+# server (/profile) run in the SAME process (uvicorn on a daemon thread), so a
+# module singleton lets the profile endpoint restart the very server the
+# launcher started — without that, the endpoint built a fresh manager with no
+# handle to the running process and the switch silently did nothing.
+_SHARED_MANAGER: "LlamaServerManager | None" = None
+
+
+def get_shared_manager(config: "AgentConfig | None" = None) -> "LlamaServerManager":
+    global _SHARED_MANAGER
+    if _SHARED_MANAGER is None:
+        _SHARED_MANAGER = LlamaServerManager(config=config)
+    return _SHARED_MANAGER
+
+
 # Build minimo requerido para soporte correcto de tool-calling en Gemma 4.
 # Esta constante refleja el roadmap del informe de auditoria (item I1 #1):
 # llama.cpp b9090+ contiene los PRs #21418 (parser dedicado Gemma 4),
@@ -701,6 +768,43 @@ class LlamaServerManager:
         except Exception:
             pass
         return result == "started"
+
+    def force_restart_for_profile(self, profile: Profile,
+                                  wait_health: bool = True,
+                                  timeout_s: int = 90) -> str:
+        """Restart for a USER-DRIVEN profile switch — authoritative.
+
+        Unlike start()/restart(), this WILL take over the port even if the
+        server there is "external": when the user picks a new VRAM profile they
+        are explicitly asking to load that profile's model, so a server running
+        a different model on our port must be replaced. We:
+          1. stop our managed process if we have one, else kill whatever
+             listens on the config port (by PID),
+          2. clear the external flag,
+          3. start() fresh with the new profile.
+
+        For standby (server_running=False) we just stop and report 'stopped'.
+        Returns the start() result string, or 'stopped' for standby.
+        """
+        # Always tear down the current server first.
+        if self.is_running():
+            self.stop()
+        else:
+            _kill_server_on_port(self._config)
+        self._proc = None
+        self._current_profile = None
+        self._external_detected = False
+        self._external_context_mismatch_msg = None
+
+        if not profile.server_running:
+            # standby: leave it down.
+            return "stopped"
+        # Give the OS a moment to release the port + VRAM before re-binding.
+        for _ in range(20):
+            if not port_in_use():
+                break
+            time.sleep(0.25)
+        return self.start(profile, wait_health=wait_health, timeout_s=timeout_s)
 
     def restart(self, profile: Profile, **start_kwargs: object) -> str:
         """stop() + start(profile)."""
