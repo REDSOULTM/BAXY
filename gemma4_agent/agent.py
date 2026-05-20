@@ -416,6 +416,9 @@ class Gemma4Agent:
 
     def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
         self._turn_counter += 1
+        # Allow ONE forced tool-call retry per user turn (reset here; consumed
+        # in the agent loop when a domain tool was expected but none was called).
+        self._forced_tool_retry_done = False
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         turn_id = self.trace.new_turn_id()
@@ -1038,6 +1041,61 @@ class Gemma4Agent:
                         turn_id, "rescue_missed",
                         raw_content=(assistant_content or "")[:400],
                     )
+
+            # FORCED tool-call retry (2026-05-20, research-backed). If the
+            # router put a DOMAIN tool in the subset but the model emitted no
+            # tool_call (and the leak-rescue above didn't recover one), the
+            # model "promised" the action in prose instead of calling — the
+            # dominant SLM failure mode (arXiv:2504.19277: "uncontrolled
+            # generation"; fix = constrained/structured output). We retry ONCE
+            # with tool_choice:{type:any}, which makes llama.cpp's grammar
+            # FORCE a tool-call. Measured lift on weak quants (E2B-Q2 went from
+            # ~0% to usable). Guarded: one retry, only when a domain tool was
+            # expected, never on no-tool/chat turns.
+            if (not raw_tool_calls and selected_schemas
+                    and len(events) == 0  # no tool ran yet this turn — a true
+                    # skip, not the natural reply AFTER a tool already executed
+                    and not getattr(self, "_forced_tool_retry_done", False)):
+                try:
+                    _domain_now = _domain_subset(list(selected_tool_names))
+                except Exception:
+                    _domain_now = []
+                if _domain_now:
+                    self._forced_tool_retry_done = True  # one per turn
+                    self.trace.event(
+                        turn_id, "forced_tool_retry",
+                        domain_subset=_domain_now,
+                        skipped_reply=(assistant_content or "")[:160],
+                    )
+                    _progress(progress, "forced_tool_retry", tools=len(events))
+                    try:
+                        resp_f = self.client.chat(
+                            self._messages(mode, plan,
+                                           selected_tool_names=selected_tool_names,
+                                           user_text=raw_text_early),
+                            tools=selected_schemas,
+                            enable_thinking=mode.enable_thinking,
+                            parallel_tool_calls=mode.parallel_tool_calls,
+                            max_tokens=mode.max_tokens,
+                            force_tool=True,
+                        )
+                        choice_f = (resp_f.get("choices") or [{}])[0]
+                        msg_f = sanitize_assistant_message(choice_f.get("message") or {})
+                        tc_f = msg_f.get("tool_calls") or []
+                        if tc_f:
+                            raw_tool_calls = tc_f
+                            assistant_content = ""
+                            msg = {"role": "assistant", "content": "",
+                                   "tool_calls": raw_tool_calls}
+                            choice = choice_f
+                            self.trace.event(turn_id, "forced_tool_retry_ok",
+                                             tool=tc_f[0].get("function", {}).get("name"))
+                        else:
+                            self.trace.event(turn_id, "forced_tool_retry_empty")
+                    except Exception as _fexc:  # never break the turn on retry
+                        self.trace.event(turn_id, "forced_tool_retry_error",
+                                         error=f"{type(_fexc).__name__}: {_fexc}")
+
             self.trace.event(
                 turn_id,
                 "llm_response",

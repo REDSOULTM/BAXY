@@ -77,6 +77,7 @@ class LLMClient:
         parallel_tool_calls: bool | None = None,
         max_tokens: int | None = None,
         timeout_s: float | None = None,
+        force_tool: bool = False,
     ) -> dict[str, Any]:
         """Synchronous chat completion against the local llama-server.
 
@@ -104,7 +105,15 @@ class LLMClient:
             body["reasoning_format"] = self.config.reasoning_format
         if tools:
             body["tools"] = tools
-            body["tool_choice"] = "auto"
+            # tool_choice: ESTE build de llama.cpp (b9090) espera un STRING
+            # estilo OpenAI ("auto"/"required"/"none"), NO el objeto {"type":..}
+            # — pasar objeto lo rechaza con 'Expected string, using default'
+            # (verificado en el err log). El default "auto" deja al modelo
+            # elegir; force_tool=True usa "required" para OBLIGAR un tool-call.
+            # Fix respaldado por la literatura (arXiv:2504.19277: los SLM fallan
+            # por "uncontrolled generation"; la cura es constrained/structured
+            # output, que tool_choice=required activa vía la gramática interna).
+            body["tool_choice"] = "required" if force_tool else "auto"
             body["parse_tool_calls"] = self.config.parse_tool_calls
             body["parallel_tool_calls"] = self.config.parallel_tool_calls if parallel_tool_calls is None else parallel_tool_calls
 
@@ -219,6 +228,7 @@ class LLMClient:
             body["reasoning_format"] = self.config.reasoning_format
         if tools:
             body["tools"] = tools
+            # String form — this build wants OpenAI-style strings, not objects.
             body["tool_choice"] = "auto"
             body["parse_tool_calls"] = self.config.parse_tool_calls
             body["parallel_tool_calls"] = (
