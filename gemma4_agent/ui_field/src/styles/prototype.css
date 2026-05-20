@@ -119,6 +119,35 @@ body {
 .ibtn.mic-btn.mic-ptt:hover {
   background: rgba(184, 58, 74, 0.10);
 }
+/* Loading state: while /voice/start loads the models (~1-3s), keep the
+   mic lit carmine and pulse it, plus a rotating ring, so the user sees
+   "starting" instead of a red→black flicker. */
+.ibtn.mic-btn.mic-loading {
+  color: var(--carmine);
+  border-color: var(--carmine);
+  background: rgba(184, 58, 74, 0.08);
+  position: relative;
+  cursor: progress;
+  animation: micLoadPulse 1.1s ease-in-out infinite;
+}
+.ibtn.mic-btn.mic-loading::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 1.5px solid transparent;
+  border-top-color: var(--carmine);
+  border-right-color: rgba(184, 58, 74, 0.35);
+  animation: micLoadSpin 0.8s linear infinite;
+  pointer-events: none;
+}
+@keyframes micLoadPulse {
+  0%, 100% { background: rgba(184, 58, 74, 0.06); }
+  50%      { background: rgba(184, 58, 74, 0.20); }
+}
+@keyframes micLoadSpin {
+  to { transform: rotate(360deg); }
+}
 .ibtn.send {
   color: var(--carmine);
 }

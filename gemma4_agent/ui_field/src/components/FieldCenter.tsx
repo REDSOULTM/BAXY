@@ -11,6 +11,9 @@ interface Props {
   onDebugState: ((s: ConvState) => void) | null;
   ctx: CtxBudget | null;
   micMode: MicMode;
+  /** true while /voice/start is loading the voice models on the backend.
+   *  keeps the mic icon lit + pulsing so it doesn't flicker red→black. */
+  micLoading: boolean;
   /** left click: cycle listening↔off (mute toggle). */
   onMicLeftClick: () => void;
   /** right click: toggle push-to-talk vs the previous on-mode. */
@@ -83,7 +86,7 @@ function fmtKb(n: number): string {
 }
 
 export function FieldCenter({
-  convState, onDebugState, ctx, micMode, onMicLeftClick, onMicRightClick, agent,
+  convState, onDebugState, ctx, micMode, micLoading, onMicLeftClick, onMicRightClick, agent,
   bootStage,
 }: Props) {
   const [draft, setDraft] = useState('');
@@ -266,11 +269,12 @@ export function FieldCenter({
           <div className="chat-actions">
             <button
               type="button"
-              className={`ibtn mic-btn mic-${micMode}${micMode !== 'off' ? ' active' : ''}`}
-              data-tip={MIC_TIP[micMode]}
+              className={`ibtn mic-btn mic-${micMode}${micMode !== 'off' ? ' active' : ''}${micLoading ? ' mic-loading' : ''}`}
+              data-tip={micLoading ? 'voice · cargando modelos…' : MIC_TIP[micMode]}
               onClick={onMicLeftClick}
               onContextMenu={(e) => { e.preventDefault(); onMicRightClick(); }}
               aria-label={MIC_ARIA[micMode]}
+              aria-busy={micLoading}
             >
               <Icon name={MIC_ICON[micMode]} />
             </button>

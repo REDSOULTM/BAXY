@@ -269,24 +269,44 @@ export default function App() {
   //   off       → /voice/stop
   // /voice/trigger fires the wake event manually so the next phrase is
   // captured without saying 'gemma'.
+  // True while /voice/start is loading the models (VAD + wake + STT +
+  // Piper, ~1-3s blocking on the backend). Drives the mic button's
+  // "loading" animation so the icon stays lit + pulsing instead of
+  // flickering red→black while the request is in flight.
+  const [micLoading, setMicLoading] = useState(false);
   const setMicModeAsync = useCallback(async (next: MicMode, opts?: { triggerAfter?: boolean }) => {
     const prev = micMode;
+    // Optimistic: light the icon immediately so the click feels responsive.
     setMicMode(next);
-    try {
-      if (next === 'off') {
+    if (next === 'off') {
+      try {
         const r = await fetch('/voice/stop', { method: 'POST' });
         if (!r.ok) throw new Error(`stop ${r.status}`);
-      } else {
-        // both 'listening' and 'ptt' need the loop running.
-        const r = await fetch('/voice/start', { method: 'POST' });
-        if (!r.ok) throw new Error(`start ${r.status}`);
-        if (opts?.triggerAfter) {
-          await fetch('/voice/trigger', { method: 'POST' });
-        }
+      } catch (e) {
+        setMicMode(prev);
+        toastError(`mic off failed · ${String(e).replace(/^Error: /, '')}`);
+      }
+      return;
+    }
+    // listening / ptt need the loop running. The backend blocks while it
+    // loads models, so show the loading state and DON'T revert just
+    // because it took a few seconds — only revert on an explicit failure.
+    setMicLoading(true);
+    try {
+      const r = await fetch('/voice/start', { method: 'POST' });
+      if (!r.ok) throw new Error(`start ${r.status}`);
+      const data = (await r.json()) as { ok?: boolean; running?: boolean; last_error?: string | null };
+      if (data.ok === false || data.running === false) {
+        throw new Error(data.last_error || 'voice failed to start');
+      }
+      if (opts?.triggerAfter) {
+        await fetch('/voice/trigger', { method: 'POST' });
       }
     } catch (e) {
       setMicMode(prev);
       toastError(`mic ${next} failed · ${String(e).replace(/^Error: /, '')}`);
+    } finally {
+      setMicLoading(false);
     }
   }, [micMode]);
 
@@ -347,6 +367,7 @@ export default function App() {
             onDebugState={debugOn ? setDebugState : null}
             ctx={stream.ctx}
             micMode={micMode}
+            micLoading={micLoading}
             onMicLeftClick={onMicLeftClick}
             onMicRightClick={onMicRightClick}
             agent={stream.agent}
