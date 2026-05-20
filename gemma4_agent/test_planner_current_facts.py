@@ -33,6 +33,16 @@ class TestCurrentFactsRouting(unittest.TestCase):
         for q in ["cuanto vale el dolar", "precio actual del bitcoin"]:
             self.assertTrue(_has_web(q), f"expected web for {q!r}")
 
+    def test_release_dates_route_web(self):
+        # Release/premiere dates the model can't know — real fail logs.
+        for q in [
+            "Cuando sale gta 6",
+            "cuando se estrena la nueva pelicula de batman",
+            "cuando lanzan el iphone 17",
+            "fecha de lanzamiento de GTA 6",
+        ]:
+            self.assertTrue(_has_web(q), f"expected web for {q!r}")
+
     def test_tiempo_as_duration_does_not_route_web(self):
         # "tiempo" meaning duration / the bare routine word must NOT pull web.
         for q in ["cuanto tiempo falta", "hace tiempo que no juego", "tiempo"]:

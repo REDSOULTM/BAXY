@@ -360,7 +360,12 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(clima|tiempo que hace|que tiempo hace|temperatura|"
                  r"va a llover|llovera|pronostico|forecast|weather|"
                  r"cotizacion|precio actual|cuanto vale|cuanto esta|"
-                 r"tipo de cambio|resultado del partido|marcador)\b", low):
+                 r"tipo de cambio|resultado del partido|marcador|"
+                 # 2026-05-20: release dates the model can't know — "cuando
+                 # sale gta 6", "cuando se estrena/lanza X". Real fail logs.
+                 r"cuando sale|cuando sale|cuando se estrena|cuando estrena|"
+                 r"cuando se lanza|cuando lanzan|fecha de (salida|lanzamiento|estreno)|"
+                 r"when does .* (release|come out)|release date)\b", low):
         tools.append("web")
 
     # filesystem
