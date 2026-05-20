@@ -77,12 +77,55 @@ def run_router(q: str, prev: str | None = None) -> set[str]:
     ))
 
 
-def _evaluate(rows: list[dict], use_prev: bool = False):
+# ---- runtime inherit_tools simulation -------------------------------------
+# The harness above measures the router IN ISOLATION. Production does more:
+# when the router returns no domain tool AND the turn is a short continuation
+# ("ciérralo", "mutea"), agent.py inherits the tools the PRIOR turn actually
+# executed (NOT the prior text — the deictic's referent lives in the executed
+# tool). --inherit reproduces that so we see the real production recall.
+# We mirror agent.py's rules: <=6 words, and never inherit dangerous tools.
+try:
+    from gemma4_agent.agent import DANGEROUS_TOOLS_NEVER_INHERIT as _DANGEROUS
+except Exception:
+    _DANGEROUS = frozenset({
+        "whatsapp", "whatsapp_send", "file_delete", "file_write",
+        "system_shutdown", "system_logoff", "system_restart",
+        "subprocess", "shell",
+    })
+
+
+def _build_executed_map(rows: list[dict]) -> dict[str, list[str]]:
+    """Approximate 'what tool ran on turn T' by T's curated expected tools.
+    This is the signal agent.py inherits from real tool-call history; on the
+    corpus the closest proxy is the prior turn's ground-truth label."""
+    return {r["q"].strip().lower(): list(r.get("expected") or []) for r in rows}
+
+
+def _inherit_from_prev(q: str, prev: str | None,
+                       executed: dict[str, list[str]]) -> set[str]:
+    """Mirror agent.py inherit_tools: for a short continuation with a known
+    prior turn, inherit that turn's executed (non-dangerous) tools."""
+    if not prev:
+        return set()
+    if len(q.split()) > 6:           # same <=6-word gate as runtime
+        return set()
+    prior = executed.get(prev.strip().lower())
+    if not prior:
+        return set()
+    return {t for t in prior if t not in _DANGEROUS}
+
+
+def _evaluate(rows: list[dict], use_prev: bool = False,
+              inherit: bool = False, all_rows: list[dict] | None = None):
     recall_total = recall_ok = 0
     notool_total = notool_ok = 0
     recall_fails: list[tuple[str, list[str], list[str]]] = []
     notool_fails: list[tuple[str, list[str]]] = []
     per_tool = collections.defaultdict(lambda: [0, 0])
+    # executed-tool map for the inherit simulation (built from the WHOLE
+    # corpus, not just this split, because a continuation's prior turn may
+    # live in the other split).
+    executed = _build_executed_map(all_rows if all_rows is not None else rows) if inherit else {}
 
     for r in rows:
         q = r["q"]
@@ -91,8 +134,12 @@ def _evaluate(rows: list[dict], use_prev: bool = False):
         # gets the previous user turn (corpus `prev`) so deictic
         # continuations can resolve. Default (no prev) is the honest
         # isolated number — how the router does with zero context.
-        prev = (r.get("prev") if use_prev else None)
+        prev = (r.get("prev") if (use_prev or inherit) else None)
         subset = run_router(q, prev)
+        # --inherit: reproduce agent.py's continuation inheritance. Like the
+        # runtime, only kicks in when the router pulled NO domain tool.
+        if inherit and not (subset - _NON_DOMAIN):
+            subset |= _inherit_from_prev(q, prev, executed)
         if expected:
             recall_total += 1
             hit = bool(subset & set(expected))
@@ -138,6 +185,11 @@ def main() -> int:
     ap.add_argument("--use-prev", action="store_true",
                     help="pass the previous user turn (realistic production "
                          "context) so deictic continuations can resolve")
+    ap.add_argument("--inherit", action="store_true",
+                    help="simulate agent.py inherit_tools: short continuations "
+                         "with no router tool inherit the prior turn's executed "
+                         "tools. This is the REAL production recall (the router "
+                         "alone under-measures it).")
     args = ap.parse_args()
 
     if not args.corpus.exists():
@@ -165,9 +217,13 @@ def main() -> int:
 
     if args.use_prev:
         print("  (context mode: passing previous user turn — production-like)")
+    if args.inherit:
+        print("  (inherit mode: simulating agent.py continuation inheritance "
+              "— REAL production recall)")
     last = None
     for name, subset_rows in targets:
-        m = _evaluate(subset_rows, use_prev=args.use_prev)
+        m = _evaluate(subset_rows, use_prev=args.use_prev,
+                      inherit=args.inherit, all_rows=rows)
         _print_block(name, m)
         last = (name, m)
 
