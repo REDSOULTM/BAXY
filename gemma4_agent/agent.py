@@ -948,11 +948,17 @@ class Gemma4Agent:
                 max_turns=self.config.max_agent_turns,
                 tools=len(events),
             )
+            # Reasoning only helps the model DECIDE/emit the tool-call. Once a
+            # tool has run this turn, the next LLM iteration just summarizes the
+            # result ("Listo, abrí Steam") — that needs no thinking, and leaving
+            # it on roughly DOUBLES the turn latency (a second reasoning pass on
+            # a 4B CPU model). So enable thinking only while no tool has run yet.
+            _think_now = mode.enable_thinking and len(events) == 0
             try:
                 resp = self.client.chat(
                     self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early),
                     tools=selected_schemas,
-                    enable_thinking=mode.enable_thinking,
+                    enable_thinking=_think_now,
                     thinking_budget=mode.thinking_budget,
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=mode.max_tokens,
