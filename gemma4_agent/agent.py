@@ -806,6 +806,25 @@ class Gemma4Agent:
         selected_schemas = self.tools.schemas_for_names(selected_tool_names)
         self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback, persona=self._persona.name)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
+
+        # Reasoning-for-tools upgrade (2026-05-20, MEASURED). Gemma4 emits
+        # tool-calls reliably only with thinking ON (E4B-Q4: 2/6 OFF vs 6/6 ON;
+        # ~+1s latency, well under budget). The keyword-based mode picker
+        # (modes._infer_mode) catches most action verbs, but it can't cover
+        # every phrasing ("saca un screenshot", "mutea") without a brittle
+        # keyword list. The ROBUST signal is the planner's own decision: if a
+        # DOMAIN tool made it into the subset and the picked mode has thinking
+        # OFF (fast_action), upgrade to quick_action (thinking on, voice-
+        # concise). Universal — driven by tool selection, not the wording.
+        if not mode.enable_thinking:
+            try:
+                if _domain_subset(list(selected_tool_names)):
+                    from .modes import choose_mode as _choose_mode
+                    mode = _choose_mode("quick_action", "quick_action", self.config.max_tokens)
+                    self.trace.event(turn_id, "mode_upgraded_for_tools",
+                                     to="quick_action", tools=list(selected_tool_names))
+            except Exception:
+                pass
         # Persist subset for the fallback streak helper (used to surface
         # plausible hints when the user repeats the same failed phrase).
         self._last_router_subset = list(selected_tool_names)

@@ -24,6 +24,12 @@ class TestInfoQueriesRoutedToResearch(unittest.TestCase):
             f"prompt {prompt!r} should stay in fast_action, got {_infer_mode(prompt)!r}",
         )
 
+    def _assert_quick_action(self, prompt: str):
+        self.assertEqual(
+            _infer_mode(prompt), "quick_action",
+            f"prompt {prompt!r} should route to quick_action, got {_infer_mode(prompt)!r}",
+        )
+
     # ---- The 6 audit-listed prompts that NEED long replies ----
 
     def test_cronological_order_routes_to_research(self):
@@ -52,13 +58,21 @@ class TestInfoQueriesRoutedToResearch(unittest.TestCase):
     def test_que_hora_es_stays_in_fast_action(self):
         self._assert_fast_action("qué hora es")
 
-    def test_ponme_loki_stays_in_fast_action(self):
-        self._assert_fast_action("ponme Loki")
+    # 2026-05-20: single-action commands whose verb is in the marker list
+    # route to quick_action (thinking ON) — MEASURED that Gemma4 needs
+    # reasoning to emit the tool-call reliably (2/6 OFF vs 6/6 ON).
+    def test_abre_chrome_routes_to_quick_action(self):
+        self._assert_quick_action("abre Chrome")
 
-    # "abre Chrome" hits action_marker count >=1 but not >=2; len < 180.
-    # That returns fast_action per current logic; let's verify.
-    def test_abre_chrome_stays_in_fast_action(self):
-        self._assert_fast_action("abre Chrome")
+    # "ponme Loki" — the verb "ponme" is NOT in _infer_mode's marker list
+    # ("pon" with spaces doesn't match the glued "ponme"). So _infer_mode
+    # alone returns fast_action here. That's OK: the REAL guarantee is the
+    # agent-level upgrade (agent.py) — when the planner selects a DOMAIN tool
+    # (media, here), the turn is upgraded to quick_action regardless of the
+    # keyword. This test pins the _infer_mode fast-path; the end-to-end
+    # thinking-on behavior is covered by the agent's tool-driven upgrade.
+    def test_ponme_loki_infer_is_fast_action(self):
+        self._assert_fast_action("ponme Loki")
 
     def test_cuando_salio_stays_in_fast_action(self):
         # "cuándo salió GTA 5" — short factual question, no info marker.

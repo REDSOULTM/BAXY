@@ -16,7 +16,7 @@ class AgentMode:
     system_hint: str
 
 
-MODE_NAMES = {"auto", "fast_action", "deep_action", "vision_action", "audio_mode", "research"}
+MODE_NAMES = {"auto", "fast_action", "quick_action", "deep_action", "vision_action", "audio_mode", "research"}
 
 
 def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_tokens: int) -> AgentMode:
@@ -78,6 +78,21 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
                 "act, observe, verify, then continue until the sequence is done or blocked."
             ),
         )
+    if inferred == "quick_action":
+        # quick_action: comando de UNA sola acción ("abre steam", "pon música").
+        # MEDIDO (2026-05-20, E4B-Q4): con thinking OFF Gemma4 emite el tool-call
+        # solo ~2/6 veces (promete en texto); con thinking ON, 6/6. El
+        # razonamiento es lo que hace fiable el tool-calling en Gemma4. El costo
+        # es ~+1s de latencia (0.8s -> 1.7s LLM), holgado bajo el budget 4-5s.
+        # Por eso un comando de acción usa thinking ON, pero con el budget chico
+        # de fast_action (respuesta corta estilo voz) y su mismo system_hint.
+        return AgentMode(
+            name="quick_action",
+            enable_thinking=True,
+            parallel_tool_calls=False,
+            max_tokens=min(base_max_tokens, 512),
+            system_hint=_FAST_ACTION_HINT,
+        )
     # fast_action: smalltalk + confirmaciones cortas. base_max_tokens default
     # (1280) era excesivo — a ~50 tok/s eso es 25s worst case si el modelo no
     # encuentra stop. Capamos a 384 que cubre 95% de respuestas conversacionales
@@ -88,20 +103,26 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         enable_thinking=False,
         parallel_tool_calls=False,
         max_tokens=min(base_max_tokens, 384),
-        system_hint=(
-            "Mode: fast_action. You are a VOICE assistant — Alexa/Jarvis style. "
-            "Reply in 1-2 sentences MAX, plain text. NO markdown, NO bullet "
-            "lists, NO headers, NO emojis, NO disclaimers, NO 'te recomiendo X'. "
-            "Direct facts only. If the user asks 'cuando salio GTA 5' say "
-            "'17 de septiembre de 2013' — punto. No bullets, no extra context. "
-            "If a tool just finished successfully in this turn, ONE confirmation: "
-            "'Listo, X.' (replace X with the concrete action, e.g. 'Listo, abrí Spotify'). "
-            "If NO tool ran in this turn (small-talk, thanks, greetings, "
-            "answering a question), respond naturally and DO NOT use 'Listo' "
-            "as an ack — 'gracias' deserves 'de nada' or 'no hay de qué', "
-            "not 'Listo'."
-        ),
+        system_hint=_FAST_ACTION_HINT,
     )
+
+
+# Shared by fast_action (smalltalk, thinking off) and quick_action (single
+# command, thinking on) — same voice-assistant reply style, different
+# reasoning budget.
+_FAST_ACTION_HINT = (
+    "Mode: fast_action. You are a VOICE assistant — Alexa/Jarvis style. "
+    "Reply in 1-2 sentences MAX, plain text. NO markdown, NO bullet "
+    "lists, NO headers, NO emojis, NO disclaimers, NO 'te recomiendo X'. "
+    "Direct facts only. If the user asks 'cuando salio GTA 5' say "
+    "'17 de septiembre de 2013' — punto. No bullets, no extra context. "
+    "If a tool just finished successfully in this turn, ONE confirmation: "
+    "'Listo, X.' (replace X with the concrete action, e.g. 'Listo, abrí Spotify'). "
+    "If NO tool ran in this turn (small-talk, thanks, greetings, "
+    "answering a question), respond naturally and DO NOT use 'Listo' "
+    "as an ack — 'gracias' deserves 'de nada' or 'no hay de qué', "
+    "not 'Listo'."
+)
 
 
 def _infer_mode(content: str | list[dict[str, Any]]) -> str:
@@ -159,6 +180,13 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
     action_score = sum(1 for marker in action_markers if marker in low)
     if sequence_score or action_score >= 2 or len(text) > 180:
         return "deep_action"
+    # Single-action command ("abre steam", "pon música", "saca screenshot").
+    # MEASURED: these need thinking ON to emit the tool-call reliably (2/6 OFF
+    # vs 6/6 ON) — route to quick_action (thinking on, voice-concise) instead
+    # of fast_action (thinking off). Smalltalk has no action marker -> still
+    # fast_action.
+    if action_score >= 1:
+        return "quick_action"
 
     # F-004: queries informativas (explicaciones, comparaciones, listas,
     # cronologias) necesitan budget grande. fast_action con max_tokens=384
