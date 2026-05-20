@@ -28,11 +28,18 @@ class TestContinuationHintForStreaming(unittest.TestCase):
             self.assertIn("media", subset,
                           f"reply={reply!r} should keep media in subset")
 
-    def test_without_hint_short_reply_subset_empty(self):
-        # Sin el hint, "Ema" no produce ningun subset — eso fue el bug.
+    def test_without_hint_short_reply_no_domain_tool(self):
+        # Sin el hint, "Ema" (un nombre suelto) no debe disparar NINGUNA
+        # tool de dominio. El planner siempre deja `session` alcanzable
+        # (cancelar turno en cualquier idioma, Hotfix F) — eso es no-dominio.
+        # NB: "Ema" antes tiraba web/knowledge por un bug de wants_knowledge
+        # (chitchat era la clase top pero info ganaba a action) — corregido
+        # exigiendo que info sea la clase dominante (argmax).
+        _NON_DOMAIN = {"session", "safety", "state", "verify"}
         plan = plan_mission("Ema")
-        subset = select_tool_names("Ema", plan)
-        self.assertEqual(subset, [])
+        subset = set(select_tool_names("Ema", plan))
+        self.assertEqual(subset - _NON_DOMAIN, set(),
+                         f"bare name pulled domain tools: {sorted(subset)}")
 
     def test_hint_works_for_all_streaming_platforms(self):
         cases = [

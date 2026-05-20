@@ -120,22 +120,24 @@ _SELF_ANCHORS = [
     "que peux tu faire", "was kannst du",
 ]
 
-# wants_knowledge fires only when INFO is the dominant class — it must
-# beat BOTH action and chitchat by a margin. Tuned on the full historical
-# corpus (863 queries): genuine world questions clear both margins;
-# smalltalk loses to chitchat; commands lose to action. No absolute-score
-# cutoff (that dropped low-signal-but-real queries like "what is quantum
-# computing"); the relative margins do the work.
+# wants_knowledge fires only when INFO is the DOMINANT class — it must beat
+# action by a margin AND be the argmax over chitchat and self-reference.
+# Tuned on the historical corpus: genuine world questions in any language
+# clear it ("quién es X", "what is X about"); smalltalk and bare names lose
+# because chitchat outranks info there ("Ema", "no entiendo nada"); commands
+# lose because action wins. No absolute-score cutoff (that dropped real
+# low-signal queries like "what is quantum computing"); the argmax does it.
 _VS_ACTION_MARGIN = float(os.environ.get("GEMMA4_INTENT_VS_ACTION", "0.05"))
-# Chitchat only BLOCKS when it dominates info by this margin (pure
-# smalltalk like "jajaja"/"nada" has chitchat far above info). A
-# conversational question ("háblame de la película X", "cuándo salió Y")
-# has chitchat and info close together — that should still count as
-# knowledge. So we don't require info > chitchat; we require chitchat to
-# not OUTRANK info beyond _CHITCHAT_DOMINATES.
-_CHITCHAT_DOMINATES = float(os.environ.get("GEMMA4_INTENT_CHITCHAT_DOM", "0.12"))
-# Self-reference blocks the same way: only when it clearly dominates.
-_SELF_DOMINATES = float(os.environ.get("GEMMA4_INTENT_SELF_DOM", "0.04"))
+# Conversational abstention gate (is_conversational): how much the
+# conversational classes (chitchat ∪ selfref) must outrank the worldly
+# classes (action ∪ info) before we suppress the semantic router's noisy
+# domain-tool suggestions. Tuned on the dev split only.
+_CONV_MARGIN = float(os.environ.get("GEMMA4_INTENT_CONV_MARGIN", "0.03"))
+# Conversational abstention gate (is_conversational): how much the
+# conversational classes (chitchat ∪ selfref) must outrank the worldly
+# classes (action ∪ info) before we suppress the semantic router's noisy
+# domain-tool suggestions. Tuned on the dev split only.
+_CONV_MARGIN = float(os.environ.get("GEMMA4_INTENT_CONV_MARGIN", "0.03"))
 
 
 @dataclass(frozen=True)
@@ -197,7 +199,12 @@ def classify_intent(text: str) -> IntentScores | None:
     try:
         from . import semantic_router as sr
         import numpy as np
-        qe = sr._STATE.model.encode([text], normalize_embeddings=True)[0]
+        # Use the LRU-cached embedding so multiple intent checks on the same
+        # turn (is_conversational + wants_knowledge + the planner's gate) cost
+        # ONE encode, not three — matters for the per-turn latency budget.
+        qe = sr.embed(text)
+        if qe is None:
+            qe = sr._STATE.model.encode([text], normalize_embeddings=True)[0]
         qe = np.asarray(qe, dtype="float32")
         return IntentScores(
             info=float(qe @ _C.info),
@@ -207,6 +214,50 @@ def classify_intent(text: str) -> IntentScores | None:
         )
     except Exception:
         return None
+
+
+def is_conversational(text: str) -> bool:
+    """True when the query is dominantly CONVERSATIONAL — chitchat or a
+    question about the assistant itself — rather than a request for a
+    domain action or world knowledge.
+
+    Used by the planner as an ABSTENTION GATE for the semantic router.
+    The semantic stage (suggest_tools_semantic) always returns its top-k
+    tools for ANY input above a low cosine floor, so on smalltalk and
+    self-reference turns ("quién eres", "gracias", "jajaja", "no entiendo")
+    it over-offers domain tools the user never asked for. When this returns
+    True we suppress that semantic union, because the turn is not asking the
+    PC to do anything.
+
+    Decision is purely semantic (no keywords): the conversational classes
+    (chitchat ∪ selfref) must BOTH outrank action AND outrank info — i.e.
+    the strongest signal is "talking", not "do X" and not "tell me about
+    the world". The action/info guards keep real commands and real
+    questions from being silenced:
+      - "abre Steam"        → action highest        → NOT conversational
+      - "quién es Batman"   → info highest           → NOT conversational
+      - "quién eres"        → selfref highest         → conversational
+      - "gracias" / "ok"    → chitchat highest        → conversational
+      - "no entiendo nada"  → chitchat highest        → conversational
+
+    A small margin (_CONV_MARGIN) avoids silencing borderline turns where
+    action/info are essentially tied with the conversational classes.
+    """
+    s = classify_intent(text)
+    return _is_conversational_scores(s)
+
+
+def _is_conversational_scores(s: IntentScores | None) -> bool:
+    """Decision from precomputed scores (one embed serves both gates)."""
+    if s is None:
+        return False
+    # Never suppress a genuine world-knowledge question, even if it embeds
+    # close to chitchat ("¿quién es el mejor?", "háblame de la peli X").
+    if _wants_knowledge_scores(s):
+        return False
+    conv = max(s.chitchat, s.selfref)
+    worldly = max(s.action, s.info)
+    return (conv - worldly) >= _CONV_MARGIN
 
 
 def wants_knowledge(text: str) -> bool:
@@ -219,11 +270,24 @@ def wants_knowledge(text: str) -> bool:
     while still firing for "quién es X", "what is X about", "de qué murió
     X" in any language. Used by the planner so the LLM can look things up
     even when no keyword fired."""
-    s = classify_intent(text)
+    return _wants_knowledge_scores(classify_intent(text))
+
+
+def _wants_knowledge_scores(s: IntentScores | None) -> bool:
     if s is None:
         return False
+    # info must be the DOMINANT class — beat action by a margin AND be at
+    # least as strong as chitchat and self-reference. Requiring info to be
+    # the argmax (not merely "not dominated by 0.12") is what stops filler
+    # and bare names from pulling web/knowledge: "Ema" (chitchat 0.616 >
+    # info 0.508) and "no entiendo nada" (chitchat > info) are blocked,
+    # while genuine world-questions in any language ("quién es X", "what is
+    # X about") clear it because info wins there. Measured on dev: this
+    # raised NO-TOOL keep ~0.09 for ~0.005 recall (a handful of in-isolation-
+    # ambiguous turns like "¿quién es el mejor?" that the agent resolves
+    # from history anyway).
     return (
         (s.info - s.action) >= _VS_ACTION_MARGIN
-        and (s.chitchat - s.info) < _CHITCHAT_DOMINATES
-        and (s.selfref - s.info) < _SELF_DOMINATES
+        and s.info >= s.chitchat
+        and s.info >= s.selfref
     )

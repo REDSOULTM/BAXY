@@ -213,6 +213,21 @@ def suggest_tools_semantic(query: str, *, k: int = 12, min_score: float = 0.25) 
     matches with score >= min_score; below that we treat as 'no idea' and
     return empty so the caller can fall back to whatever default it wants.
     """
+    return [name for name, _ in suggest_tools_scored(query, k=k, min_score=min_score)]
+
+
+def suggest_tools_scored(
+    query: str, *, k: int = 12, min_score: float = 0.25,
+) -> list[tuple[str, float]]:
+    """Like suggest_tools_semantic but returns (tool, cosine) pairs.
+
+    The score is the second signal the planner uses to decide how much to
+    trust a match: a high top-1 cosine (≈0.4+) means the wording lands
+    squarely on one tool's intent (a confident command like "mutea" →
+    audio 0.51), whereas chitchat/self-reference spread thin and low
+    (≈0.27–0.3, on generic catch-all tools). Returns at most k pairs above
+    min_score, highest first.
+    """
     if not query.strip():
         return []
     if not is_enabled():
@@ -226,12 +241,12 @@ def suggest_tools_semantic(query: str, *, k: int = 12, min_score: float = 0.25) 
     scores = tool_emb @ q_emb_arr
     ranked = np.argsort(-scores)
     names = _STATE.tool_names or []
-    out: list[str] = []
+    out: list[tuple[str, float]] = []
     for idx in ranked[: max(1, k)]:
         score = float(scores[idx])
         if score < min_score:
             break
-        out.append(names[idx])
+        out.append((names[idx], score))
     return out
 
 

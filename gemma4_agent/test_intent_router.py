@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import unittest
 
-from .intent_router import classify_intent, wants_knowledge
+from .intent_router import classify_intent, wants_knowledge, is_conversational
 
 
 def _model_available() -> bool:
@@ -111,6 +111,38 @@ class TestIntentRouter(unittest.TestCase):
                 wants_knowledge(q),
                 f"conversational question {q!r} should request web",
             )
+
+
+    def test_conversational_gate_flags_smalltalk_and_selfref(self):
+        # The abstention gate must flag pure conversation so the planner
+        # can suppress the semantic router's noisy domain-tool top-k.
+        for q in [
+            "jajaja", "ok", "nada", "muchas gracias",
+            "quien eres", "que puedes hacer", "cual es tu prioridad",
+        ]:
+            self.assertTrue(
+                is_conversational(q),
+                f"{q!r} should be flagged conversational (abstain)",
+            )
+
+    def test_conversational_gate_spares_world_questions(self):
+        # Real world-questions must NOT be flagged conversational, or the
+        # planner would silence the web/knowledge they need.
+        for q in [
+            "quien es batman", "de que trata inception",
+            "what is quantum computing",
+        ]:
+            self.assertFalse(
+                is_conversational(q),
+                f"world question {q!r} should NOT be flagged conversational",
+            )
+
+    # NB: clear imperatives ("abre Steam", "pon una canción") may or may not
+    # be flagged conversational by the standalone gate — that's harmless,
+    # because the keyword stage and the high-confidence semantic override
+    # still put their tools in the subset. We assert the ROUTING OUTCOME,
+    # which is what actually matters, in test_router*.py — not the internal
+    # gate flag, which is only one of several signals.
 
 
 if __name__ == "__main__":

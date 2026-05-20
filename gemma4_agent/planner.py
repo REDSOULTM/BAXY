@@ -14,6 +14,16 @@ STEP_SPLIT_RE = re.compile(
 )
 MAX_SELECTED_TOOLS = 16
 
+# Semantic-confidence override of the conversational abstention gate.
+# A single tool whose cosine to the query clears _SEM_CONFIDENT_SCORE means
+# the wording lands squarely on that tool's intent — a real command even if
+# the intent classifier read the turn as conversational (common on one-word
+# imperatives like "mutea"/"pausa"). When overriding we keep only tools
+# within _SEM_CONF_BAND of the peak, not the noisy tail. Tuned on dev only.
+import os as _os
+_SEM_CONFIDENT_SCORE = float(_os.environ.get("GEMMA4_SEM_CONFIDENT", "0.45"))
+_SEM_CONF_BAND = float(_os.environ.get("GEMMA4_SEM_CONF_BAND", "0.12"))
+
 
 @dataclass
 class MissionStep:
@@ -82,6 +92,7 @@ def select_tool_names(
     *,
     safety_enabled: bool = False,
     last_assistant_text: str | None = None,
+    prev_user_text: str | None = None,
     pending_intent: dict[str, Any] | None = None,
 ) -> list[str]:
     """Return a small, ordered tool subset for the current turn.
@@ -146,10 +157,51 @@ def select_tool_names(
             r"que tal|how are you|como estas|como estan|tudo bem|ca va|come stai)\b",
             _fold_text(raw_text),
         )
-        # Run semantics unless it's pure smalltalk with no entity/question.
-        if not casual and (word_count >= 2 or "?" in raw_text or "¿" in raw_text):
-            from .semantic_router import suggest_tools_semantic
-            sem = suggest_tools_semantic(raw_text, k=12)
+        # Semantic abstention gate (2026-05-20 night): the semantic router
+        # returns its top-k for ANY input above a low cosine floor, so on
+        # conversational turns (smalltalk, "quién eres", "no entiendo") it
+        # over-offers domain tools the user never requested — the dominant
+        # source of NO-TOOL over-offers in the eval. is_conversational()
+        # decides PURELY by intent (chitchat/selfref outrank action/info)
+        # whether the turn is "talking" rather than "do X" / "tell me about
+        # the world". When it is, we skip the semantic union. Keyword hits
+        # (precise action verbs) and wants_knowledge (real questions) still
+        # stand, so this can't silence a genuine command or question.
+        conversational = False
+        try:
+            from .intent_router import is_conversational
+            conversational = is_conversational(raw_text)
+        except Exception:
+            conversational = False
+        # Run semantics unless it's pure smalltalk. We compute the scored
+        # matches first so a CONFIDENT top-1 can override the conversational
+        # gate: a one-word imperative ("mutea", "pausa", "minimiza") reads
+        # as conversational by intent (chitchat edges action on contentless
+        # tokens) yet lands squarely on one tool's meaning (audio 0.51,
+        # media 0.45, window 0.36). True chitchat/self-reference spreads
+        # thin and low (~0.27 on catch-all tools). So we abstain ONLY when
+        # the turn is conversational AND no tool match is confident — both
+        # signals must agree it's "just talking". Pure semantic confidence,
+        # no keywords.
+        if not casual and (
+            word_count >= 2 or "?" in raw_text or "¿" in raw_text
+            or len(raw_text.split()) == 1  # single-word imperatives count
+        ):
+            from .semantic_router import suggest_tools_scored
+            scored = suggest_tools_scored(raw_text, k=12)
+            top_score = scored[0][1] if scored else 0.0
+            confident = top_score >= _SEM_CONFIDENT_SCORE
+            if conversational:
+                if confident:
+                    # Override: keep only the tools near the confident peak
+                    # (within _SEM_CONF_BAND of the top), not the noisy tail —
+                    # so we recover "mutea"→audio without importing the 11
+                    # weak matches that broke no-tool keep in the first place.
+                    cut = top_score - _SEM_CONF_BAND
+                    scored = [p for p in scored if p[1] >= cut]
+                else:
+                    scored = []  # abstain: conversational AND nothing confident
+            sem = [name for name, _ in scored]
             if sem:
                 if not names:
                     # keywords found nothing → semantics is the sole source.
@@ -163,14 +215,14 @@ def select_tool_names(
                             names.append(s)
                             existing.add(s)
 
-    # NOTE on continuation inheritance: we deliberately do NOT re-derive
-    # tools from last_assistant_text here. Measured on the curated corpus
-    # (2026-05-20), planner-level inheritance helped recall in only 2 cases
-    # but pulled domain tools into 25 no-tool follow-ups ("gracias" after
-    # "abre steam") — net negative. The AGENT (agent.py) already inherits
-    # from real conversation history with a TTL + short-continuation guard,
-    # using the actual tool_calls of the prior turn (a far better signal
-    # than the prior user text). That stays; the planner does not guess.
+    # NOTE: continuation resolution via prev_user_text was tried (night of
+    # 2026-05-20) and abandoned: on this corpus the previous-user-turn rarely
+    # carries the deictic's referent ("mutea" ← prev "saca pantallazo";
+    # "ciérralo" ← prev "ponlo bajito"; many have prev=None). The real
+    # continuation signal is the actually-executed tool of the prior turn,
+    # which the AGENT inherits from real history (agent.py) — not derivable
+    # from the prev user text. The param is kept for API symmetry but the
+    # planner does not guess from it.
 
     if not names:
         # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",

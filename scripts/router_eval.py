@@ -67,14 +67,17 @@ def run_router(q: str, prev: str | None = None) -> set[str]:
     # safety_enabled=True mirrors production: the planner appends `safety`
     # so risky actions ("formatea el pendrive", "edita el registry") can be
     # gated. Running with it off hid the safety tool from the subset.
+    # prev is the PREVIOUS USER TURN (corpus `prev` field), passed as
+    # prev_user_text so deictic continuations can resolve their referent —
+    # this is what the planner sees at runtime when context is available.
     from gemma4_agent.planner import select_tool_names, plan_mission
     return set(select_tool_names(
         q, plan_mission(q), safety_enabled=True,
-        last_assistant_text=prev,
+        prev_user_text=prev,
     ))
 
 
-def _evaluate(rows: list[dict]):
+def _evaluate(rows: list[dict], use_prev: bool = False):
     recall_total = recall_ok = 0
     notool_total = notool_ok = 0
     recall_fails: list[tuple[str, list[str], list[str]]] = []
@@ -84,11 +87,12 @@ def _evaluate(rows: list[dict]):
     for r in rows:
         q = r["q"]
         expected = r.get("expected") or []
-        # The planner does not inherit from prior user text (measured
-        # net-negative; the agent does it from real history). So we route
-        # each query as the planner sees it on a fresh turn. prev is kept
-        # available for analysis but not passed.
-        subset = run_router(q, None)
+        # --use-prev measures the realistic production case: the planner
+        # gets the previous user turn (corpus `prev`) so deictic
+        # continuations can resolve. Default (no prev) is the honest
+        # isolated number — how the router does with zero context.
+        prev = (r.get("prev") if use_prev else None)
+        subset = run_router(q, prev)
         if expected:
             recall_total += 1
             hit = bool(subset & set(expected))
@@ -131,6 +135,9 @@ def main() -> int:
     ap.add_argument("--split", choices=["dev", "holdout", "all", "both"],
                     default="both")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--use-prev", action="store_true",
+                    help="pass the previous user turn (realistic production "
+                         "context) so deictic continuations can resolve")
     args = ap.parse_args()
 
     if not args.corpus.exists():
@@ -156,9 +163,11 @@ def main() -> int:
     if args.split == "all":
         targets.append(("all", rows))
 
+    if args.use_prev:
+        print("  (context mode: passing previous user turn — production-like)")
     last = None
     for name, subset_rows in targets:
-        m = _evaluate(subset_rows)
+        m = _evaluate(subset_rows, use_prev=args.use_prev)
         _print_block(name, m)
         last = (name, m)
 
