@@ -687,6 +687,38 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         """Enable voice loop. Loads VAD + wake + STT + Piper on first
         call (~1-3s blocking). Idempotent."""
         from .voice_runner import VOICE
+        # Wire UI feedback BEFORE enabling so the very first wake is caught.
+        # The web UI (ui_field) drives its mic animation off {type:"state"}
+        # BUS events and beeps off {type:"voice_wake"}. Without these the
+        # conv state jumps idle->thinking with no "listening" phase and no
+        # audible cue. Map the pipeline's state names to the frontend's
+        # ConvState vocabulary (idle/listening/thinking/speaking).
+        _VOICE_STATE_MAP = {
+            "LISTENING": "listening",
+            "TRANSCRIBING": "listening",  # still capturing the user's command
+            "IDLE_LISTENING": "idle",
+        }
+
+        def _on_voice_state(state: str) -> None:
+            mapped = _VOICE_STATE_MAP.get(state)
+            if mapped is not None:
+                BUS.publish({"type": "state", "value": mapped})
+
+        def _on_voice_wake() -> None:
+            # Tell the frontend to chirp; also emit listening immediately.
+            BUS.publish({"type": "voice_wake"})
+            BUS.publish({"type": "state", "value": "listening"})
+            # Backend-side beep as a fallback (works even if the browser
+            # tab is muted / lacks an audio gesture). Windows-only; silent
+            # no-op elsewhere.
+            try:
+                import winsound
+                winsound.Beep(880, 90)
+            except Exception:
+                pass
+
+        VOICE.set_on_state(_on_voice_state)
+        VOICE.set_on_wake_event(_on_voice_wake)
         ok = VOICE.enable()
         # Wire on_command to the agent runner so transcribed commands
         # become turns.

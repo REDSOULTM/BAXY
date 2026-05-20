@@ -522,6 +522,12 @@ class AgentRunner:
                         try:
                             from .voice_runner import VOICE
                             VOICE.feed_tts(content)
+                            # CRITICAL: feed_tts only enqueues sentences that
+                            # end in . ? ! — the reply often doesn't, so the
+                            # tail stays buffered and is never spoken. flush
+                            # forces the trailing partial sentence out. Without
+                            # this the agent appears mute on most replies.
+                            VOICE.flush_tts()
                         except Exception as exc:
                             logger.warning("voice feed failed: %s", exc)
                     BUS.publish({"type": "state", "value": "idle"})
