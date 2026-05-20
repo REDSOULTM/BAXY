@@ -410,8 +410,12 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(nota|tarea|lista|checklist|pendiente|"
                  r"note|task|todo)\b", low):
         tools.append("notes_tasks")
-    if re.search(r"\b(calendario|agenda|evento|ics|"
-                 r"calendar|event)\b", low):
+    if re.search(r"\b(calendario|agenda|agendad[oa]|agendar|evento|eventos|ics|"
+                 # 2026-05-20: calendar READ phrasings were missed (write was
+                 # fine). "que tengo agendado para hoy" / "que reuniones tengo"
+                 # routed to nothing. \bagenda\b doesn't match "agendado".
+                 r"reunion|reuniones|cita medica|citas medicas|que tengo (hoy|manana|el)|"
+                 r"calendar|event|meeting|appointment|schedule)\b", low):
         tools.append("local_calendar")
     if re.search(r"\b(habito|racha|streak|habit|hobby)\b", low):
         tools.append("habit_tracker")

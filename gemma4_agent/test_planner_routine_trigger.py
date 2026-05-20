@@ -40,5 +40,31 @@ class TestRoutineTriggerRouting(unittest.TestCase):
             self.assertFalse(_has_routine(q), f"unexpected routine for {q!r}")
 
 
+def _has_calendar(q: str) -> bool:
+    return "local_calendar" in set(
+        select_tool_names(q, plan_mission(q), safety_enabled=True)
+    )
+
+
+class TestCalendarReadRouting(unittest.TestCase):
+    """Calendar READ phrasings routed to nothing while write was fine (live
+    repro 2026-05-20: "que tengo agendado para hoy"). \\bagenda\\b doesn't
+    match "agendado"; "reuniones"/"eventos" weren't covered."""
+
+    def test_calendar_reads_route_local_calendar(self):
+        for q in [
+            "que tengo agendado para hoy",
+            "que reuniones tengo hoy",
+            "que eventos tengo esta semana",
+            "tengo una cita medica el lunes",
+        ]:
+            self.assertTrue(_has_calendar(q), f"expected local_calendar for {q!r}")
+
+    def test_quote_and_folder_do_not_route_calendar(self):
+        # "cita" as a quote, and a folder listing, must NOT pull calendar.
+        self.assertFalse(_has_calendar("dame una cita de Einstein"))
+        self.assertFalse(_has_calendar("que tengo en la carpeta descargas"))
+
+
 if __name__ == "__main__":
     unittest.main()
