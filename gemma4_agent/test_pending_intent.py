@@ -133,5 +133,32 @@ class RouterV2PendingHintTest(unittest.TestCase):
                           f"{q!r}: steam missing despite hint")
 
 
+class PlannerPendingIntentInjectionTest(unittest.TestCase):
+    """The v1 planner must inject the parked tool even when THIS reply is
+    smalltalk-shaped (empty keyword/semantic match). 2026-05-20 bug: media
+    asked for the Disney profile, the user replied "Mi perfil es Ema" (no
+    keyword → names empty), and the early-return dropped the pending intent
+    BEFORE injection → infinite "need disney profile" loop."""
+
+    def _has(self, q: str, tool: str, pi: dict | None) -> bool:
+        from gemma4_agent.planner import select_tool_names, plan_mission
+        return tool in set(select_tool_names(
+            q, plan_mission(q), safety_enabled=True, pending_intent=pi))
+
+    def test_smalltalk_reply_keeps_pending_media(self):
+        pi = {"tool": "media", "args": {"action": "play", "provider": "disney"},
+              "asks_for": "profile"}
+        for q in ["Mi perfil es Ema", "mi perfil es Emmanuel", "Ema"]:
+            # Without the pending intent these route to nothing useful...
+            self.assertFalse(self._has(q, "media", None), q)
+            # ...but WITH it parked, media must be injected so the reply
+            # reaches the tool that asked.
+            self.assertTrue(self._has(q, "media", pi), q)
+
+    def test_no_pending_means_no_injection(self):
+        # Sanity: a bare reply with no parked intent stays tool-free.
+        self.assertFalse(self._has("Mi perfil es Ema", "media", None))
+
+
 if __name__ == "__main__":
     unittest.main()

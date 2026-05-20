@@ -235,6 +235,17 @@ def select_tool_names(
         base = ["session"]
         if safety_enabled:
             base.append("safety")
+        # 2026-05-20: a parked tool (prior turn returned needs_user) must
+        # survive even when THIS reply is smalltalk-shaped. The classic case:
+        # media asks "what's your Disney profile?" and the user replies
+        # "Mi perfil es Ema" (no keyword → names empty). Without this, the
+        # pending intent was dropped here (before the injection below) and
+        # the profile never reached media → infinite "need disney profile"
+        # loop. Inject the parked tool at the head.
+        if pending_intent:
+            pi_tool = str((pending_intent or {}).get("tool") or "")
+            if pi_tool and pi_tool not in base:
+                base.insert(0, pi_tool)
         select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
         return base
 
