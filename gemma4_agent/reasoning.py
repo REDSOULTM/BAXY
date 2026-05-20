@@ -344,38 +344,48 @@ def detect_leaked_tool_call(
     # and start with a lowercase letter.
     if "(" not in stripped or not stripped[0].isalpha():
         return None
-    # Allow content like "web(action=...)" possibly with trailing punctuation.
-    m = _LEAKED_CALL_RE.match(stripped)
-    if not m:
-        # Maybe there's narration first ("Voy a llamar web(...)"). F-007:
-        # cambiar de "ultima llamada" a "primera que matchee known_tool_names".
-        # Multi-call leak: 'web(...) y luego whatsapp(...)' debe rescatar
-        # web (primero) no whatsapp.
-        last_call = None
-        for cand in re.finditer(
-            r"\b([a-z][a-z0-9_]{1,40})\s*\(",
-            stripped,
-        ):
+    # Scanner: find the FIRST balanced tool(...) call whose name is known and
+    # whose body parses. Handles narration ("Voy a llamar web(...)") and
+    # MULTI-CALL leaks — incl. two space-separated calls
+    # `system(action="memory") system(action="recall")`, where the greedy
+    # whole-string regex below would grab a broken body. F-007: first match,
+    # not last.
+    def _scan_first_valid() -> tuple[str, dict[str, Any]] | None:
+        for cand in re.finditer(r"\b([a-z][a-z0-9_]{1,40})\s*\(", stripped):
             cand_name = cand.group(1)
             if known_tool_names is not None and cand_name not in known_tool_names:
                 continue
             open_idx = cand.end() - 1
             close_idx = _find_matching_paren(stripped, open_idx)
-            if close_idx > open_idx:
-                last_call = (cand_name, stripped[open_idx + 1: close_idx])
-                break  # primera que matchee, no ultima
-        if not last_call:
+            if close_idx <= open_idx:
+                continue
+            cand_parsed = _parse_kwargs(stripped[open_idx + 1: close_idx])
+            if cand_parsed is not None:
+                return cand_name, cand_parsed
+        return None
+
+    # Allow content like "web(action=...)" possibly with trailing punctuation.
+    m = _LEAKED_CALL_RE.match(stripped)
+    name: str | None = None
+    parsed: dict[str, Any] | None = None
+    if m:
+        cand_name, body = m.group(1), m.group(2)
+        if known_tool_names is None or cand_name in known_tool_names:
+            cand_parsed = _parse_kwargs(body)
+            if cand_parsed is not None:
+                name, parsed = cand_name, cand_parsed
+    if parsed is None:
+        # Primary didn't match, or matched with an unparseable (greedy) body
+        # → scan for the first valid balanced call instead of giving up.
+        scanned = _scan_first_valid()
+        if scanned is None:
             return None
-        name, body = last_call
-    else:
-        name, body = m.group(1), m.group(2)
+        name, parsed = scanned
 
     # Tool name allowlist (if provided): avoids treating prose like
     # "esto(es algo)" as a tool call.
     if known_tool_names is not None and name not in known_tool_names:
         return None
-
-    parsed = _parse_kwargs(body)
     if parsed is None:
         return None
     try:

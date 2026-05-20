@@ -419,6 +419,10 @@ def _suggest_tools(step: str) -> list[str]:
     # ("cuanto", "dija", "diega") because users mistype these often.
     if re.search(r"\b(rutina|automatiza|automatizacion|cuando pase|cada vez|"
                  r"cuando te diga|cuando te dija|cuanto te diga|cuanto te dija|"
+                 # 2026-05-20: also the "te"-less Alexa phrasing the user
+                 # actually says — "cuando diga buenos dias abre X" was being
+                 # routed to the action/notification instead of `routine`.
+                 r"cuando diga|cuando dija|cuanto diga|cuando digas|"
                  r"cuando le diga|si te digo|si digo|cada vez que diga|"
                  r"si te escribo|cuando escriba|cuando escribas|cuando ponga|"
                  r"quiero que aprietes|quiero que apriete|quiero que presiones|"

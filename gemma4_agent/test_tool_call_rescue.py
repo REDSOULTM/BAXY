@@ -284,5 +284,35 @@ class TestDottedMethodRescue(unittest.TestCase):
         self.assertIsNone(out)
 
 
+class TestMultiCallLeak(unittest.TestCase):
+    """Two space-separated leaked calls — `system(action='memory')
+    system(action='recall')` — must rescue the FIRST. Live repro 2026-05-20:
+    the greedy whole-string regex grabbed a broken body and gave up, so the
+    reminder turn ran no tool."""
+
+    K = {"system", "memory", "reminder", "web", "whatsapp"}
+
+    def test_two_space_separated_calls_rescues_first(self):
+        out = detect_leaked_tool_call(
+            "system(action='memory') system(action='recall')",
+            known_tool_names=self.K)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "system")
+        args = json.loads(out["function"]["arguments"])
+        self.assertEqual(args.get("action"), "memory")
+
+    def test_narration_then_two_calls(self):
+        out = detect_leaked_tool_call(
+            'Voy a hacer web(action="search") y luego whatsapp(action="send")',
+            known_tool_names=self.K)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "web")
+
+    def test_prose_with_parens_not_a_call(self):
+        out = detect_leaked_tool_call(
+            "esto no es (un call) de verdad", known_tool_names=self.K)
+        self.assertIsNone(out)
+
+
 if __name__ == "__main__":
     unittest.main()
