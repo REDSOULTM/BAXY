@@ -246,5 +246,43 @@ class TestRescueGemmaJsonForm(unittest.TestCase):
         self.assertIsNone(out)
 
 
+class TestDottedMethodRescue(unittest.TestCase):
+    """The model sometimes writes a compound tool's ACTION as a Python method
+    — window.close(query="x") instead of window(action="close", query="x").
+    Live repro 2026-05-20: "schliesse das Fenster" leaked window.close(...) as
+    text and the window never closed. The rescue must rewrite it."""
+
+    DOTTED_KNOWN = {"window", "app", "audio", "media", "steam", "web"}
+
+    def test_dotted_close_with_single_quotes(self):
+        out = detect_leaked_tool_call(
+            "window.close(query='das Fenster')", known_tool_names=self.DOTTED_KNOWN)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "window")
+        args = json.loads(out["function"]["arguments"])
+        self.assertEqual(args["action"], "close")
+        self.assertEqual(args["query"], "das Fenster")
+
+    def test_dotted_set_volume(self):
+        out = detect_leaked_tool_call(
+            "audio.set_volume(level=20)", known_tool_names=self.DOTTED_KNOWN)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "audio")
+        args = json.loads(out["function"]["arguments"])
+        self.assertEqual(args["action"], "set_volume")
+        self.assertEqual(args["level"], 20)
+
+    def test_normal_form_still_works(self):
+        out = detect_leaked_tool_call(
+            'window(action="close", query="x")', known_tool_names=self.DOTTED_KNOWN)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "window")
+
+    def test_unknown_dotted_tool_rejected(self):
+        out = detect_leaked_tool_call(
+            "notatool.foo(x=1)", known_tool_names=self.DOTTED_KNOWN)
+        self.assertIsNone(out)
+
+
 if __name__ == "__main__":
     unittest.main()

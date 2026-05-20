@@ -120,12 +120,30 @@ class Gemma4Agent:
         # path (gap > 5 min => no heredar, evita disparar tools peligrosos
         # cuando el user retoma la sesion tras mucho tiempo).
         self._last_turn_ts: float | None = None
+        # 2026-05-20: the tools the PREVIOUS turn actually executed. Survives
+        # history compaction (which strips tool messages), so a short
+        # continuation ("subelo un poco mas") can inherit the real prior tool
+        # instead of hallucinating. The history scan can't see these because
+        # _compact_completed_history drops tool_calls/tool messages.
+        self._last_executed_tools: list[str] = []
         # NOTE: NLI warmup at __init__ was REMOVED — it raced with the voice
         # stack (faster_whisper) loading huggingface_hub from another thread,
         # causing intermittent "cannot import name 'logging' from
         # huggingface_hub" errors on STT init. The classifier loads the NLI
         # model lazy-on-first-use; the first capability check pays the cold
         # load cost (~14s once per process), subsequent ones hit the cache.
+
+    def _remember_executed_tools(self, events: list[ToolEvent]) -> None:
+        """Record the tool names this turn actually executed, so the NEXT
+        turn's continuation-inherit can use them even after the tool messages
+        are compacted out of history. Only meaningful tools (skip none)."""
+        names: list[str] = []
+        for e in events:
+            nm = getattr(e, "name", None) or getattr(e, "tool", None)
+            if isinstance(nm, str) and nm and nm not in names:
+                names.append(nm)
+        if names:
+            self._last_executed_tools = names
 
     def clear(self) -> None:
         self.history.clear()
@@ -134,6 +152,7 @@ class Gemma4Agent:
         self._fact_extract_last_run_turn = -10
         self._turn_counter = 0
         self._cached_microagents = []
+        self._last_executed_tools = []
         # Skills cache: reset para que scan_skills() vuelva a leer disk en el
         # proximo turn (util si el dev agrega/modifica un SKILL.md durante
         # desarrollo). En produccion el catalogo no cambia mid-session.
@@ -629,13 +648,19 @@ class Gemma4Agent:
             selected_tool_names = [n for n in selected_tool_names if n != "session"]
             self.trace.event(turn_id, "session_suppressed_by_phrase_fire",
                              fires=len(self._phrase_fires))
-        # CONTINUATION HEREDA TOOLS: si el subset quedo vacio y el user
-        # esta dando una respuesta CORTA (continuation tras un tool del
-        # turn previo: "Perfecto", "Si", "Prefiero X"), heredar las tools
-        # del turno previo. Sin esto, "Prefiero cronologico" tras un
-        # web research deja subset=[] y el LLM solo puede prometer sin
-        # poder buscar/responder.
-        if not selected_tool_names:
+        # CONTINUATION HEREDA TOOLS: si el subset no tiene NINGUNA tool de
+        # dominio y el user esta dando una respuesta CORTA (continuation tras
+        # un tool del turn previo: "Perfecto", "Si", "subelo un poco mas"),
+        # heredar las tools del turno previo. Sin esto, "Prefiero cronologico"
+        # tras un web research, o "subelo un poco mas" tras un audio.set_volume,
+        # deja el subset solo con [session, safety] y el LLM, sin la tool real,
+        # ALUCINA una llamada invalida (repro 2026-05-20: "subelo un poco mas"
+        # -> system({action:"audio.set_volume"}) -> invalid tool arguments).
+        # 2026-05-20: antes era `if not selected_tool_names` (subset VACIO),
+        # pero el planner agrega session/safety, asi que nunca disparaba para
+        # continuaciones reales. Ahora dispara cuando no hay tool de dominio.
+        _NON_DOMAIN_TOOLS = {"session", "safety", "state", "verify"}
+        if not (set(selected_tool_names) - _NON_DOMAIN_TOOLS):
             raw_text = ""
             if isinstance(content, str):
                 raw_text = content.strip()
@@ -664,10 +689,17 @@ class Gemma4Agent:
                         user_text=raw_text[:60],
                     )
                 else:
-                    # Look back through history for the most recent assistant
-                    # turn that used tools — grab their names.
-                    prev_tools: list[str] = []
+                    # PRIMARY source: the previous turn's actually-executed
+                    # tools, tracked in _last_executed_tools. This SURVIVES
+                    # history compaction (which strips tool_calls/tool
+                    # messages), so the history scan below usually finds
+                    # nothing. Without this, continuations never inherited.
+                    prev_tools: list[str] = list(self._last_executed_tools)
+                    # Fallback: scan history (works when compaction hasn't run
+                    # yet, e.g. mid-turn continuations).
                     for msg in reversed(self.history):
+                        if prev_tools:
+                            break
                         if not isinstance(msg, dict):
                             continue
                         if msg.get("role") == "tool":
@@ -1253,6 +1285,7 @@ class Gemma4Agent:
                 self._compact_completed_history()
                 _progress(progress, "final", tools=len(events), mission=mission)
                 self._last_turn_ts = time.time()
+                self._remember_executed_tools(events)
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
 
             # Validator: if the LLM declared an <intent> and chose a tool
@@ -1607,6 +1640,7 @@ class Gemma4Agent:
         self._compact_completed_history()
         _progress(progress, "max_turns", tools=len(events), mission=mission)
         self._last_turn_ts = time.time()
+        self._remember_executed_tools(events)
         return AgentReply(content=final, tool_events=events, mission=mission)
 
     # Sprint 6.4: bodies moved to :mod:`.agent_dispatch`. The wrappers

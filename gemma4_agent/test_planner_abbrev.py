@@ -36,6 +36,20 @@ class TestExpandAbbreviations(unittest.TestCase):
         s = "abre Steam y pon una cancion"
         self.assertEqual(_x(s), s)
 
+    def test_multilingual_open_close_verbs(self):
+        # Foreign action verbs normalize to the Spanish verb so the router
+        # (which only keys ES/EN verbs) routes them. Live repro: IT/FR/DE
+        # open/close didn't pull app/window.
+        self.assertIn("abre", _x("apri la calcolatrice"))      # IT
+        self.assertIn("abre", _x("ouvre la calculatrice"))     # FR
+        self.assertIn("cierra", _x("schliesse das Fenster"))   # DE
+        self.assertIn("cierra", _x("chiudi la finestra"))      # IT
+
+    def test_fecha_date_noun_not_corrupted(self):
+        # "fecha" (ES date) must NOT be treated as the PT close verb.
+        self.assertEqual(_x("que fecha es hoy"), "que fecha es hoy")
+        self.assertIn("fecha", _x("dime la fecha"))
+
 
 if __name__ == "__main__":
     unittest.main()

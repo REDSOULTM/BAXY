@@ -827,6 +827,23 @@ _ABBREV_EXPANSIONS: tuple[tuple[str, str], ...] = (
     (r"\byt\b", "youtube"),
     (r"\bopera gx\b", "opera"),
     (r"\bg hub\b", "logitech g hub"),
+    # Multilingual ACTION VERBS the keyword router only knows in ES/EN. We
+    # normalize the verb to its Spanish equivalent so an Italian/French/German
+    # command routes like the Spanish one ("apri"→"abre", "schliesse"→"cierra").
+    # Live repro 2026-05-20: "apri la calcolatrice"/"ouvre la calculatrice" did
+    # not pull `app`; "schliesse das Fenster" failed. The noun stays in its
+    # language — only the verb is mapped, and the embedder handles the rest.
+    (r"\bapri\b", "abre"),            # IT open
+    (r"\bouvre\b", "abre"),           # FR open
+    (r"\boeffne\b", "abre"),          # DE open (oe for ö)
+    (r"\böffne\b", "abre"),      # DE öffne
+    (r"\babrir\b", "abre"),           # ES infinitive → imperative form
+    (r"\bchiudi\b", "cierra"),        # IT close
+    (r"\bferme\b", "cierra"),         # FR close
+    (r"\bschliesse\b", "cierra"),     # DE close (ss for ß)
+    (r"\bschließe\b", "cierra"), # DE schließe
+    (r"\bfechar\b", "cierra"),        # PT close (infinitive; "fecha" alone is
+                                       # ES "date", so we only map the verb form)
 )
 _ABBREV_COMPILED = [(re.compile(p, re.IGNORECASE), r) for p, r in _ABBREV_EXPANSIONS]
 

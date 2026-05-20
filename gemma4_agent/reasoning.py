@@ -276,6 +276,43 @@ def _parse_kwargs(text: str) -> dict[str, Any] | None:
         return None
 
 
+# Dotted-method leak: the model writes the compound tool's ACTION as a
+# Python method — `window.close(query="das Fenster")`, `audio.set_volume(
+# level=20)` — instead of `window(action="close", ...)`. Seen live on
+# "schliesse das Fenster" (DE) 2026-05-20: it leaked as text, unrescued,
+# so the window never closed. We rewrite tool.action(args) into the normal
+# compound form with action injected.
+_DOTTED_CALL_RE = re.compile(
+    r"^\s*([a-z][a-z0-9_]{1,40})\.([a-z][a-z0-9_]{1,40})\s*\((.*)\)\s*$",
+    re.DOTALL,
+)
+
+
+def _detect_dotted_method_call(
+    stripped: str, known_tool_names: set[str] | None
+) -> dict[str, Any] | None:
+    m = _DOTTED_CALL_RE.match(stripped)
+    if not m:
+        return None
+    tool, action, body = m.group(1), m.group(2), m.group(3)
+    if known_tool_names is not None and tool not in known_tool_names:
+        return None
+    parsed = _parse_kwargs(body)
+    if parsed is None:
+        parsed = {}
+    # Don't clobber an explicit action the model also passed.
+    parsed.setdefault("action", action)
+    try:
+        args_json = json.dumps(parsed, ensure_ascii=False)
+    except Exception:
+        return None
+    return {
+        "id": f"call_rescue_{uuid.uuid4().hex[:12]}",
+        "type": "function",
+        "function": {"name": tool, "arguments": args_json},
+    }
+
+
 def detect_leaked_tool_call(
     content: str,
     *,
@@ -298,6 +335,11 @@ def detect_leaked_tool_call(
     gemma_json = _detect_gemma_json_call(stripped, known_tool_names)
     if gemma_json is not None:
         return gemma_json
+    # Dotted-method form `tool.action(args)` — more specific than the plain
+    # paren form, so try it first (e.g. window.close(query="x")).
+    dotted = _detect_dotted_method_call(stripped, known_tool_names)
+    if dotted is not None:
+        return dotted
     # Quick reject for the Python-function form: must contain '(' and ')'
     # and start with a lowercase letter.
     if "(" not in stripped or not stripped[0].isalpha():
