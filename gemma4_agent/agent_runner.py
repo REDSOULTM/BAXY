@@ -447,12 +447,18 @@ class AgentRunner:
         if event == "tool_subset":
             count = int(payload.get("schema_count") or 0)
             tools = payload.get("tools") or []
-            if count == 0 or not tools:
-                return  # nothing actionable to show
-            tlist = ", ".join(str(t) for t in tools[:6])
-            if len(tools) > 6:
-                tlist += f" ... (+{len(tools) - 6})"
-            _publish_activity("CONTEXT", tlist)
+            # Always surface the per-turn context the router built — this is
+            # "what the agent sees this turn". Previously we suppressed the
+            # entry when the subset was empty, which made CONTEXT vanish from
+            # the activity log on most turns; the operator relies on it to
+            # see what tools were wired in. Show it unconditionally.
+            if not tools:
+                _publish_activity("CONTEXT", "0 tools · LLM libre (sin subset)")
+            else:
+                tlist = ", ".join(str(t) for t in tools[:8])
+                if len(tools) > 8:
+                    tlist += f" … (+{len(tools) - 8})"
+                _publish_activity("CONTEXT", f"{count} tools · {tlist}")
         elif event == "tool_start":
             name = payload.get("name") or "?"
             args = payload.get("args") or {}
