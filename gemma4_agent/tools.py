@@ -353,6 +353,31 @@ def _apply_action_enums(schemas: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return schemas
 
 
+def _correct_known_misroute(name: str, args: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """Redirect a tool call whose OWN arguments prove the model picked the
+    wrong tool. Validates the LLM's output, not the user's phrasing, so it is
+    language-universal. Returns the (possibly corrected) (name, args).
+
+    Rule 1 — volume via the device tool: `audio_device` has no `level`
+    parameter; its actions manage the default output/input DEVICE. If the
+    model calls it with a numeric `level` (or a set/lower/raise action plus a
+    level), it meant to set the VOLUME → route to audio.set_volume. This is
+    the exact failure seen on "baja el vol del pc a 10" (audio_device failed).
+    """
+    if name == "audio_device":
+        level = args.get("level")
+        action = str(args.get("action") or "").lower()
+        wants_volume = level is not None or action in {
+            "set_volume", "set", "lower", "raise", "volume", "set_level",
+        }
+        if wants_volume:
+            new_args: dict[str, Any] = {"action": "set_volume"}
+            if level is not None:
+                new_args["level"] = level
+            return "audio", new_args
+    return name, args
+
+
 def _coerce_and_validate_tool_args(name: str, args: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     params = _parameters_for_tool(name)
     if not params:
@@ -1162,6 +1187,13 @@ class ToolRegistry:
         for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create"):
             clean_args.pop(forbidden, None)
         confirmed = bool(clean_args.pop("confirmed", False))
+        # Output-coherence guard: catch a known LLM misroute where the call
+        # itself proves the wrong tool was chosen, and redirect it. This
+        # validates the model's OUTPUT (not the user's words), so it stays
+        # universal. Currently: audio_device({...,"level":N}) — the device
+        # tool has no `level`; a numeric level means the user wanted VOLUME,
+        # so route to audio.set_volume. (Repro: "baja el vol del pc a 10".)
+        name, clean_args = _correct_known_misroute(name, clean_args)
         impl = self._impls.get(name)
         if not impl:
             return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))

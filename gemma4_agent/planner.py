@@ -108,6 +108,10 @@ def select_tool_names(
     4. If everything came up empty, return [] (or ["safety"] when enabled).
     """
     raw_text = _content_text(content)
+    # Expand colloquial shorthand ("vol"→"volumen", "wsp"→"whatsapp") so
+    # abbreviated queries route by meaning. Universal normalization, not a
+    # keyword→tool map. Applied before BOTH keyword and embedding paths.
+    raw_text = _expand_abbreviations(raw_text)
     text = _fold_text(raw_text)
     names: list[str] = []
     for step in plan.steps:
@@ -799,6 +803,43 @@ def _dedupe(items: list[str]) -> list[str]:
         if item not in seen:
             seen.add(item)
             out.append(item)
+    return out
+
+
+# Colloquial abbreviations / shorthand the multilingual embedder can't map
+# on its own ("vol" is not near "volumen" in embedding space). We EXPAND the
+# shorthand to its full word BEFORE routing, so the query still routes by
+# MEANING (universal) rather than via a brittle keyword→tool table. Each entry
+# is a true synonym expansion, not a tool binding. Whole-word match only.
+_ABBREV_EXPANSIONS: tuple[tuple[str, str], ...] = (
+    (r"\bvol\b", "volumen"),
+    (r"\bvolu\b", "volumen"),
+    (r"\bporfa\b", "por favor"),
+    (r"\bpls\b", "por favor"),
+    (r"\bplis\b", "por favor"),
+    (r"\bpc\b", "computadora"),
+    (r"\bapp\b", "aplicacion"),
+    (r"\bwsp\b", "whatsapp"),
+    (r"\bwpp\b", "whatsapp"),
+    (r"\bwtsp\b", "whatsapp"),
+    (r"\bigu?\b", "instagram"),
+    (r"\bfb\b", "facebook"),
+    (r"\byt\b", "youtube"),
+    (r"\bopera gx\b", "opera"),
+    (r"\bg hub\b", "logitech g hub"),
+)
+_ABBREV_COMPILED = [(re.compile(p, re.IGNORECASE), r) for p, r in _ABBREV_EXPANSIONS]
+
+
+def _expand_abbreviations(text: str) -> str:
+    """Expand colloquial shorthand to full words so short/abbreviated queries
+    route semantically ('baja el vol a 10' -> 'baja el volumen a 10'). This is
+    universal text normalization, language-agnostic in effect: the expanded
+    query is what a clear speaker would say, and the embedder routes that
+    correctly. Does NOT bind any word to a tool."""
+    out = text
+    for pat, repl in _ABBREV_COMPILED:
+        out = pat.sub(repl, out)
     return out
 
 

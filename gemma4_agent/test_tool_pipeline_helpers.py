@@ -16,10 +16,53 @@ import unittest
 from gemma4_agent.tools import (
     COMPOUND_TOOL_SCHEMAS,
     _coerce_and_validate_tool_args,
+    _correct_known_misroute,
     _normalize_tool_result,
     _parameters_for_tool,
     _PRE_VALIDATORS,
 )
+
+
+class TestCorrectKnownMisroute(unittest.TestCase):
+    """Output-coherence guard: a tool call whose own args prove the wrong
+    tool was chosen gets redirected. Language-universal (validates the
+    model's output, not the user's words)."""
+
+    def test_audio_device_with_level_redirects_to_audio(self):
+        # The exact production failure: "baja el vol del pc a 10" ->
+        # audio_device({set_default, level:10}) which has no `level` param.
+        name, args = _correct_known_misroute(
+            "audio_device", {"action": "set_default", "level": 10})
+        self.assertEqual(name, "audio")
+        self.assertEqual(args, {"action": "set_volume", "level": 10})
+
+    def test_audio_device_volume_action_redirects(self):
+        for action in ("lower", "raise", "set_volume", "volume"):
+            name, args = _correct_known_misroute(
+                "audio_device", {"action": action, "level": 20})
+            self.assertEqual(name, "audio", f"action={action}")
+            self.assertEqual(args["action"], "set_volume")
+
+    def test_real_device_change_is_untouched(self):
+        # A genuine default-device change must NOT be redirected.
+        name, args = _correct_known_misroute(
+            "audio_device", {"action": "set_default", "device": "HyperX"})
+        self.assertEqual(name, "audio_device")
+        self.assertEqual(args, {"action": "set_default", "device": "HyperX"})
+
+    def test_device_list_is_untouched(self):
+        name, args = _correct_known_misroute("audio_device", {"action": "list"})
+        self.assertEqual(name, "audio_device")
+
+    def test_already_correct_audio_is_untouched(self):
+        name, args = _correct_known_misroute(
+            "audio", {"action": "set_volume", "level": 30})
+        self.assertEqual(name, "audio")
+        self.assertEqual(args, {"action": "set_volume", "level": 30})
+
+    def test_unrelated_tool_is_untouched(self):
+        name, args = _correct_known_misroute("steam", {"action": "open"})
+        self.assertEqual(name, "steam")
 
 
 class TestNormalizeToolResult(unittest.TestCase):
