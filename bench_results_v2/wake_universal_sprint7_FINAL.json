@@ -1,0 +1,51 @@
+{
+  "sprint": 7,
+  "date": "2026-05-19",
+  "model": "LiveKit conv-attention medium, trained on Piper LibriTTS (904 EN speakers x SLERP) + ACAV100M negatives + MIT RIRs",
+  "model_file": "gemma4_agent/voice/models/livekit/hey_gemma.onnx",
+  "model_size_bytes": 882211,
+  "training": {
+    "n_positive_samples": 5000,
+    "augmentation_rounds": 3,
+    "steps": 30000,
+    "wall_clock_min": 12.5,
+    "internal_val_recall": 0.880,
+    "internal_val_fpph": 0.054
+  },
+  "eval_methodology": {
+    "positives": "500 synthetic 'hey gemma' clips, 25 Piper voices held out from training, 13 languages",
+    "negatives": "LibriSpeech test-clean + dev-clean, ~7.7h total measured across two runs",
+    "pad_fix": "wake phrase must be at END of 2s window (LiveKit pads zeros at start); eval pads short clips at start accordingly",
+    "scoring": "sliding 2s window, hop 0.5s, max score per clip"
+  },
+  "threshold_sweep": {
+    "0.50": {"recall": 0.550, "fp_per_hour": 0.0},
+    "0.40": {"recall": 0.636, "fp_per_hour": 0.0},
+    "0.30": {"recall": 0.708, "fp_per_hour": 0.0},
+    "0.25": {"recall": 0.744, "fp_per_hour": 0.0},
+    "0.20": {"recall": 0.764, "fp_per_hour": 0.0}
+  },
+  "chosen_threshold": 0.25,
+  "per_language_recall_at_0.30": {
+    "ar": 0.75, "de": 0.65, "en": 0.94, "es": 0.85, "fr": 0.80,
+    "it": 0.97, "nl": 0.00, "pl": 0.90, "pt": 0.53, "ru": 0.85,
+    "sv": 0.55, "vi": 0.00, "zh": 0.05
+  },
+  "gate": {
+    "recall_target": 0.60,
+    "recall_actual_at_0.25": 0.744,
+    "recall_pass": true,
+    "fp_per_hour_target": 1.0,
+    "fp_per_hour_actual": 0.0,
+    "fp_per_hour_pass": true
+  },
+  "comparison_vs_baseline_v9": {
+    "v9_universal_recall": 0.110,
+    "sprint7_universal_recall": 0.744,
+    "improvement_factor": 6.76,
+    "v9_fp_per_hour": 0.741,
+    "sprint7_fp_per_hour": 0.0
+  },
+  "known_weak_languages": ["nl", "vi", "zh"],
+  "notes": "First substantial wake-word success across 7 sprints. Dutch/Vietnamese/Mandarin still ~0 recall (phonetically distant from EN training corpus). Future work: add multilingual TTS coverage for those, or accept EN/Romance/Slavic coverage as the universal floor."
+}

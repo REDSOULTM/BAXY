@@ -1,0 +1,126 @@
+# LiveKit WakeWord — "gemma" standalone wake.
+# Sprint 7 (2026-05-19): paired with hey_gemma.yaml. The runtime
+# wake stack ORs the two — fires when EITHER model triggers. Recall
+# composes as 1 - (1-r_hey)*(1-r_gemma).
+#
+# Same VoxCPM 34+ voice diversity as hey_gemma.yaml. The negative
+# phrase list explicitly includes single English words that contain
+# similar phonemes ('emma', 'jenna') to push the model to discriminate
+# the specific phoneme sequence /dʒ-ɛ-m-ə/.
+
+model_name: gemma
+
+target_phrases:
+  - "gemma"
+  - "Gemma"
+  - "gema"            # Spanish phonetic
+  - "yema"            # rioplatense (g often pronounced as 'sh' or 'y')
+
+tts_backend: voxcpm
+
+n_samples: 5000
+n_samples_val: 1000
+n_background_samples: 500
+n_background_samples_val: 100
+tts_batch_size: 50
+
+# Adversarial negatives. Include "hey gemma" so this model doesn't
+# fire on the longer phrase — we want clean discrimination.
+custom_negative_phrases:
+  - "hey gemma"
+  - "jenna"
+  - "emma"
+  - "gimme"
+  - "gemini"
+  - "gemma stone"
+  - "gem"
+  - "germ a"
+  - "drama"
+  - "dilemma"
+  - "memma"
+
+noise_scales: [0.98]
+noise_scale_ws: [0.98]
+length_scales: [0.75, 1.0, 1.25]
+slerp_weights: [0.2, 0.35, 0.5, 0.65, 0.8]
+
+piper_tts:
+  checkpoint_relpath: piper/en-us-libritts-high.pt
+
+voxcpm_tts:
+  model_id: openbmb/VoxCPM2
+  model_cache_relpath: voxcpm/VoxCPM2
+  local_model_path: null
+  load_denoiser: false
+  cfg_values: [1.5, 2.0, 2.5, 3.0]
+  inference_timesteps_list: [8, 10, 12]
+  voice_design_prompts:
+    - "A young adult woman, clear mid-pitch voice, moderate pace, calm and professional"
+    - "A young adult man, warm baritone, steady pace, friendly and articulate"
+    - "A middle-aged woman, slightly low pitch, measured pace, confident tone"
+    - "A middle-aged man, deep resonant voice, slow deliberate pace"
+    - "An older adult woman, soft gentle voice, slower pace, kind tone"
+    - "An older adult man, gravelly tenor, moderate pace, matter-of-fact"
+    - "A young woman, bright energetic tone, slightly faster pace"
+    - "A young man, light tenor, quick conversational pace"
+    - "A woman in her thirties, smooth alto, neutral American accent, even pace"
+    - "A man in his thirties, clear baritone, businesslike pace"
+    - "A speaker with a higher pitch, enthusiastic and upbeat, medium-fast pace"
+    - "A speaker with a lower pitch, relaxed and laid-back, slower pace"
+    - "A young adult, gender-neutral delivery, soft volume, careful enunciation"
+    - "A confident presenter voice, strong projection, moderate speed"
+    - "A quiet intimate voice, close-mic feel, slow and clear"
+    - "A news-anchor style voice, authoritative, even rhythm"
+    - "A friendly customer-service tone, slightly smiling, medium pace"
+    - "A tired but clear voice, subdued energy, steady pace"
+    - "A cheerful animated voice, wide pitch range, lively pace"
+    - "A serious formal voice, minimal emotion, precise articulation"
+    - "A Southern US English accent, warm tone, conversational pace"
+    - "A British English accent, clear RP-like delivery, moderate pace"
+    - "A speaker with slight vocal fry, casual young adult, medium pace"
+    - "A very smooth polished voice, studio quality, slow to medium pace"
+    - "A nasal bright tone, energetic, faster than average pace"
+    - "A breathy soft voice, gentle, slower pace"
+    - "A robust athletic-sounding voice, strong and direct, medium pace"
+    - "A scholarly tone, thoughtful pauses, slower academic pace"
+    - "A teenager-sounding voice, casual, slightly fast, light pitch"
+    - "A mature executive voice, controlled low dynamics, steady"
+    - "A sing-song playful tone, varied pitch, medium pace"
+    - "A monotone flat delivery, robotic clarity, even speed"
+    - "A husky voice, low energy, medium-slow pace"
+    - "A crisp precise voice, minimal accent, fast clear speech"
+    - "An Argentine Spanish speaker, rioplatense rhythm, sh-sound in y/ll"
+    - "A Mexican Spanish speaker, neutral Latin American accent, clear vowels"
+    - "A Castilian Spanish speaker, theta sound on c/z, formal pace"
+    - "A bilingual English-Spanish code-switcher, soft Latin accent on English"
+    - "A native French speaker speaking English with a French accent, nasal vowels"
+    - "A native German speaker speaking English with light German accent, crisp consonants"
+    - "A native Mandarin speaker speaking English with slight tonal influence, careful enunciation"
+    - "A native Hindi speaker speaking English with retroflex consonants, melodic pace"
+
+data_dir: ./data
+output_dir: ./output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 16
+  rounds: 3
+  background_paths: [./data/backgrounds]
+  rir_paths: [./data/rirs]
+
+model:
+  model_type: conv_attention
+  model_size: medium
+
+steps: 100000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.05
+max_negative_weight: 3000
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 50
+  adversarial_negative: 50
+  ACAV100M_sample: 1024
+  background_noise: 50

@@ -15,16 +15,20 @@ class WakeThresholdTest(unittest.TestCase):
     """Unit tests for WakeDetector._predict_window threshold logic."""
 
     def _make_detector_with_mocked_model(self, score_returned: float):
-        """Construct a WakeDetector whose model.predict returns the given
-        score for the registered phrase key, and capture wake fires.
+        """Construct a WakeDetector whose OWW model.predict returns the
+        given score, and capture wake fires.
+
+        Sprint 7: the WakeDetector now supports two backends; we force
+        the OWW path by setting _backend='oww_custom' and mocking the
+        OWW slots.
         """
         from gemma4_agent.voice import wake
         fires: list[tuple[str, float]] = []
         det = wake.WakeDetector(on_wake=lambda p, s: fires.append((p, s)))
-        # Inject a mocked model.
-        det._model = MagicMock()
-        det._model.predict.return_value = {"hey_gemma": score_returned}
-        det._model_score_key = "hey_gemma"
+        det._oww_model = MagicMock()
+        det._oww_model.predict.return_value = {"hey_gemma": score_returned}
+        det._oww_score_key = "hey_gemma"
+        det._backend = "oww_custom"
         det._loaded = True
         det.using_custom_model = True
         return det, fires
@@ -74,7 +78,7 @@ class WakeThresholdTest(unittest.TestCase):
         self.assertEqual(len(fires), 1)
         det.reset()
         # After reset, a fresh fire should be allowed immediately.
-        det._model.predict.return_value = {"hey_gemma": 0.5}
+        det._oww_model.predict.return_value = {"hey_gemma": 0.5}
         det.feed(np.zeros(OWW_WINDOW_SAMPLES, dtype=np.int16))
         self.assertEqual(len(fires), 2)
 

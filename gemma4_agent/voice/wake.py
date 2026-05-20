@@ -1,44 +1,37 @@
-"""Wake-word detection via openWakeWord.
+"""Wake-word detection — Sprint 7 (LiveKit) with openWakeWord fallback.
 
-Sprint VoiceRedesign (2026-05-19): clean rebuild of the wake stack
-after the v1-v7 fine-tune chain failed in production (false-positives
-on ambient noise, single-voice overfit).
+Sprint 7 (2026-05-19): replaced openWakeWord with LiveKit WakeWord as
+the preferred backend, after Sprint 6's universal eval showed v9 OWW
+recall = 0.110 across 25 voices / 13 languages. LiveKit's conv-attention
+head reports 60x lower AUT and 17% better recall vs OWW in their bench.
 
-This module wraps openWakeWord with two specific operating modes:
-
-  (1) STOCK: load openWakeWord's pretrained "hey_jarvis" model. Used as
-      a working placeholder until the custom "hey_gemma" model is
-      trained (planned Sprint 4 with Piper-synthesised dataset).
-      The pretrained "hey_jarvis" has documented metrics:
-        - 200k synthetic clips training set (LibriTTS + WAVEGLOW)
-        - 0.187 false accepts/hr on Dinner Party Corpus
-        - generalises to unseen voices (no per-user training needed)
-
-  (2) CUSTOM: load `~/.gemma4/models/oww/hey_gemma.onnx` if present.
-      The build pipeline (Sprint 4) will synthesise 100k+ Hispanic-
-      pronounced "hey gemma" samples via Piper Spanish voices,
-      merge with English negatives, and train a small head on the
-      frozen Google speech embedding backbone.
+Backend selection (in order):
+  (1) LiveKit: `gemma4_agent/voice/models/livekit/hey_gemma.onnx`
+      Trained with LiveKit's pipeline on Piper LibriTTS (904 EN speakers
+      × SLERP) + ACAV100M negatives + MIT RIRs. Stateless predict()
+      taking ~2 s windows.
+  (2) openWakeWord custom: `gemma4_agent/voice/models/oww/hey_gemma.onnx`
+      Sprint 5 v9 model — kept as fallback during transition.
+  (3) openWakeWord stock "hey_jarvis": pretrained from upstream OWW
+      catalog. Last-resort if neither custom model loads.
 
 API contract (matches AudioCapture.on_chunk):
-  - feed(chunk: np.ndarray) — int16, mono, 16 kHz; ANY size accepted.
-    Internal buffer accumulates to openWakeWord's 1280-sample (80 ms)
-    window.
-  - on_wake callback signature: (phrase: str, score: float).
+  - feed(chunk: np.ndarray): int16, mono, 16 kHz; ANY size accepted.
+    Internal ring-buffer keeps the last LIVEKIT_WINDOW_SAMPLES for the
+    LiveKit predictor; OWW uses its own 80 ms accumulator.
+  - on_wake callback: (phrase: str, score: float).
 
-Design vs the deleted v1:
-  - NO debounce inside the wake detector. End-of-command is detected
-    by Silero VAD downstream, not by post-fire silence wait.
-  - NO env-var threshold default 0.7. Default is 0.5 (openWakeWord's
-    own default). The cascade VAD + verifier provides robustness;
-    threshold tuning is a band-aid.
-  - NO duplicate firings within 240 ms (single physical cooldown to
-    prevent the same utterance triggering twice during the same
-    speech segment; smaller than the old 0.8s "debounce" hack).
+Design:
+  - NO debounce inside the detector. End-of-command handled by VAD.
+  - SAME_PHRASE_COOLDOWN_S prevents repeated fires within a single
+    utterance (~100 ms).
+  - LiveKit prediction stride = 1 chunk (~32 ms). Each new chunk
+    triggers one predict() over the trailing 2 s window.
 """
 from __future__ import annotations
 
 import logging
+import os
 import time
 from pathlib import Path
 from typing import Any, Callable
@@ -47,71 +40,89 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# openWakeWord internal window size at 16 kHz: 80 ms = 1280 samples.
-OWW_WINDOW_SAMPLES = 1280
+# ----- shared timing -------------------------------------------------
 
-# Score above which we fire. openWakeWord upstream default = 0.5.
-# Sprint 5 (2026-05-19) calibration: with the custom hey_gemma.onnx
-# trained on Piper Spanish synthetic voices + RIR augmentation, raw
-# scoring on the operator's real audio shows:
-#   score > 0.5: 4.8% recall (5/105 expected wakes)
-#   score > 0.3: 6.7% recall (7/105)
-#   score > 0.2: 7.6% recall (8/105)
-#   score > 0.1: 9.5% recall (10/105)
-# Lowered to 0.3 — buys ~40% more recall vs 0.5 default at the cost
-# of slightly more false-trigger risk. The Silero VAD gate + state
-# machine CAPTURE blocking provide the back-pressure that keeps FPs
-# manageable in real use.
-import os
-OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.3"))
-
-# "Partial wake" — when score is between PARTIAL_THRESHOLD and
-# OWW_THRESHOLD, we emit a debug-level event so the UI can optionally
-# show a "did you mean hey gemma?" feedback without actually firing.
-# Future Sprint can wire this into a UI toast for low-confidence cases.
-OWW_PARTIAL_THRESHOLD = float(os.environ.get("GEMMA4_OWW_PARTIAL", "0.15"))
-
-# Minimum gap between two fires of the SAME phrase. Smaller than the
-# old debounce because the upstream VAD gate + state-machine CAPTURE
-# state already provide back-pressure. This is just to avoid the SAME
-# wake utterance firing 3-4 times across consecutive 80 ms windows.
-# Lowered from 0.24 to 0.10 so that if the user repeats "hey gemma"
-# because the first one wasn't detected, the second one isn't gated.
+# Min gap between two fires of the SAME wake; prevents same utterance
+# triggering multiple times across consecutive frames.
 SAME_PHRASE_COOLDOWN_S = 0.10
 
-# Where the custom-trained model goes once Sprint 4 produces it.
-CUSTOM_MODEL_PATH = (
+# ----- LiveKit backend -----------------------------------------------
+
+# LiveKit predict() needs ~2 s audio to produce non-zero scores
+# (16 mel embeddings; window 76 mel frames @ 10 ms hop, stride 8).
+LIVEKIT_WINDOW_SECONDS = 2.0
+LIVEKIT_SAMPLE_RATE = 16000
+LIVEKIT_WINDOW_SAMPLES = int(LIVEKIT_WINDOW_SECONDS * LIVEKIT_SAMPLE_RATE)
+
+# Fire threshold for LiveKit conv-attention output.
+# Sprint 7 calibration (2026-05-19) on the universal held-out
+# (500 clips / 25 voices / 13 languages + 7.7h LibriSpeech negatives):
+#   thr 0.50: recall 0.550, fp/hr 0.000
+#   thr 0.40: recall 0.636, fp/hr 0.000
+#   thr 0.30: recall 0.708, fp/hr 0.000
+#   thr 0.25: recall 0.744, fp/hr 0.000   <- chosen
+#   thr 0.20: recall 0.764, fp/hr 0.000
+# FP rate is 0.000 even at 0.20, so we pick 0.25 for max recall with a
+# small safety margin. 7x the v9 baseline (0.110) at zero false fires.
+LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.25"))
+
+LIVEKIT_MODEL_PATH = (
+    Path(__file__).resolve().parent / "models" / "livekit" / "hey_gemma.onnx"
+)
+
+# ----- openWakeWord backend (fallback) -------------------------------
+
+OWW_WINDOW_SAMPLES = 1280   # 80 ms @ 16 kHz
+OWW_THRESHOLD = float(os.environ.get("GEMMA4_OWW_THRESHOLD", "0.3"))
+OWW_PARTIAL_THRESHOLD = float(os.environ.get("GEMMA4_OWW_PARTIAL", "0.15"))
+
+OWW_CUSTOM_MODEL_PATH = (
     Path(__file__).resolve().parent / "models" / "oww" / "hey_gemma.onnx"
 )
-# Stock model name in openWakeWord's bundled catalog (the model with
-# the best documented FA/hr on benchmark sets).
-STOCK_MODEL_NAME = "hey_jarvis"
+OWW_STOCK_MODEL_NAME = "hey_jarvis"
+
+# Back-compat alias — callers (tests, pipeline) used to import these.
+CUSTOM_MODEL_PATH = OWW_CUSTOM_MODEL_PATH
+STOCK_MODEL_NAME = OWW_STOCK_MODEL_NAME
 
 
 WakeCallback = Callable[[str, float], None]
 
 
 class WakeDetector:
-    """openWakeWord wrapper. Prefers custom model, falls back to stock.
+    """Wake-word detector supporting LiveKit (preferred) + openWakeWord.
 
     Lifecycle:
         det = WakeDetector(on_wake=fn)
-        ok = det.load()      # loads model, downloads if needed
-        det.feed(chunk)      # call from AudioPump for each 512-sample chunk
-        det.reset()          # clear buffer when starting fresh
+        ok = det.load()
+        det.feed(chunk)
+        det.reset()
     """
 
     def __init__(self, on_wake: WakeCallback) -> None:
         self._on_wake = on_wake
-        self._model: Any = None
-        self._model_score_key: str = ""
         self._loaded: bool = False
-        self._buf: np.ndarray = np.zeros(0, dtype=np.int16)
-        self._last_fire_at: float = 0.0
-        # Sprint 5 partial-detection cooldown — separate from full-fire
-        # cooldown so partials don't gate fires and vice versa.
-        self._last_partial_at: float = 0.0
         self.last_error: str | None = None
+
+        # Which backend is active. One of: "livekit", "oww_custom", "oww_stock".
+        self._backend: str = ""
+
+        # ---- LiveKit state ----
+        self._livekit_model: Any = None
+        self._livekit_score_key: str = "hey_gemma"
+        # Ring buffer of last LIVEKIT_WINDOW_SAMPLES samples (int16).
+        self._lk_ring: np.ndarray = np.zeros(0, dtype=np.int16)
+
+        # ---- OWW state ----
+        self._oww_model: Any = None
+        self._oww_score_key: str = ""
+        self._oww_buf: np.ndarray = np.zeros(0, dtype=np.int16)
+
+        # ---- cooldowns ----
+        self._last_fire_at: float = 0.0
+        self._last_partial_at: float = 0.0
+
+        # Public flag (kept for back-compat with pipeline.py / tests).
         self.using_custom_model: bool = False
 
     # ----- lifecycle ---------------------------------------------------
@@ -119,6 +130,27 @@ class WakeDetector:
     def load(self) -> bool:
         if self._loaded:
             return True
+
+        # Try LiveKit first.
+        if LIVEKIT_MODEL_PATH.exists():
+            try:
+                from livekit.wakeword.inference import WakeWordModel
+                self._livekit_model = WakeWordModel(models=[str(LIVEKIT_MODEL_PATH)])
+                self._livekit_score_key = LIVEKIT_MODEL_PATH.stem  # "hey_gemma"
+                self._backend = "livekit"
+                self.using_custom_model = True
+                self._loaded = True
+                logger.info(
+                    "WakeDetector ready (LiveKit %s)", LIVEKIT_MODEL_PATH,
+                )
+                return True
+            except Exception as exc:
+                logger.warning(
+                    "LiveKit model load failed (%s), falling back to OWW",
+                    exc,
+                )
+
+        # Try OWW custom (Sprint 5 v9).
         try:
             from openwakeword import Model
             from openwakeword.utils import download_models
@@ -127,71 +159,60 @@ class WakeDetector:
             logger.error(self.last_error)
             return False
 
-        # Try custom model first.
         try:
-            if CUSTOM_MODEL_PATH.exists():
-                logger.info(
-                    "WakeDetector: loading custom model %s",
-                    CUSTOM_MODEL_PATH,
-                )
-                self._model = Model(
-                    wakeword_models=[str(CUSTOM_MODEL_PATH)],
+            if OWW_CUSTOM_MODEL_PATH.exists():
+                self._oww_model = Model(
+                    wakeword_models=[str(OWW_CUSTOM_MODEL_PATH)],
                     inference_framework="onnx",
                 )
-                # Custom model exports use the file stem as key.
-                self._model_score_key = CUSTOM_MODEL_PATH.stem  # "hey_gemma"
+                self._oww_score_key = OWW_CUSTOM_MODEL_PATH.stem
+                self._backend = "oww_custom"
                 self.using_custom_model = True
                 self._loaded = True
-                logger.info("WakeDetector ready (custom hey_gemma)")
+                logger.info("WakeDetector ready (OWW custom %s)", OWW_CUSTOM_MODEL_PATH)
                 return True
         except Exception as exc:
-            logger.warning(
-                "Custom model load failed, falling back to stock: %s",
-                exc,
-            )
+            logger.warning("OWW custom load failed, falling back to stock: %s", exc)
 
-        # Fall back to stock hey_jarvis.
+        # Stock hey_jarvis.
         try:
-            # Ensure the stock models are downloaded.
             download_models()
-            self._model = Model(
-                wakeword_models=[STOCK_MODEL_NAME],
+            self._oww_model = Model(
+                wakeword_models=[OWW_STOCK_MODEL_NAME],
                 inference_framework="onnx",
             )
-            self._model_score_key = STOCK_MODEL_NAME
+            self._oww_score_key = OWW_STOCK_MODEL_NAME
+            self._backend = "oww_stock"
             self.using_custom_model = False
             self._loaded = True
             logger.warning(
-                "WakeDetector ready (FALLBACK to stock '%s'). "
-                "Train custom hey_gemma.onnx for production. "
-                "See docs/architecture/voice_pipeline_redesign_research_report.md",
-                STOCK_MODEL_NAME,
+                "WakeDetector ready (FALLBACK to OWW stock '%s')",
+                OWW_STOCK_MODEL_NAME,
             )
             return True
         except Exception as exc:
             self.last_error = f"WakeDetector init failed: {type(exc).__name__}: {exc}"
             logger.error(self.last_error)
-            self._model = None
             self._loaded = False
             return False
 
     def reset(self) -> None:
-        """Clear the rolling buffer and cooldown. Call between sessions."""
-        self._buf = np.zeros(0, dtype=np.int16)
+        """Clear buffers and cooldowns."""
+        self._lk_ring = np.zeros(0, dtype=np.int16)
+        self._oww_buf = np.zeros(0, dtype=np.int16)
         self._last_fire_at = 0.0
         self._last_partial_at = 0.0
-        if self._model is not None:
+        if self._oww_model is not None:
             try:
-                self._model.reset()
+                self._oww_model.reset()
             except Exception:
                 pass
 
     # ----- inference ---------------------------------------------------
 
     def feed(self, chunk: np.ndarray) -> None:
-        """Append `chunk` (int16, mono, 16 kHz, any size) and predict
-        on every full 80 ms (1280-sample) window."""
-        if not self._loaded or self._model is None:
+        """Append `chunk` (int16, mono, 16 kHz, any size) and predict."""
+        if not self._loaded:
             return
         try:
             chunk_i16 = np.asarray(chunk, dtype=np.int16)
@@ -200,48 +221,81 @@ class WakeDetector:
             return
         if chunk_i16.size == 0:
             return
-        self._buf = np.concatenate([self._buf, chunk_i16])
-        while self._buf.size >= OWW_WINDOW_SAMPLES:
-            window = self._buf[:OWW_WINDOW_SAMPLES]
-            self._buf = self._buf[OWW_WINDOW_SAMPLES:]
-            self._predict_window(window)
 
-    def _predict_window(self, window: np.ndarray) -> None:
+        if self._backend == "livekit":
+            self._feed_livekit(chunk_i16)
+        else:
+            self._feed_oww(chunk_i16)
+
+    # ----- LiveKit path -----------------------------------------------
+
+    def _feed_livekit(self, chunk: np.ndarray) -> None:
+        # Maintain rolling 2-second buffer.
+        self._lk_ring = np.concatenate([self._lk_ring, chunk])
+        if self._lk_ring.size > LIVEKIT_WINDOW_SAMPLES:
+            self._lk_ring = self._lk_ring[-LIVEKIT_WINDOW_SAMPLES:]
+        # Wait until we have enough audio for a meaningful score.
+        if self._lk_ring.size < LIVEKIT_WINDOW_SAMPLES:
+            return
         try:
-            scores = self._model.predict(window)
+            scores = self._livekit_model.predict(self._lk_ring)
         except Exception as exc:
-            logger.warning("openwakeword predict failed: %s", exc)
+            logger.warning("LiveKit predict failed: %s", exc)
             return
-        score = float(scores.get(self._model_score_key, 0.0))
-        # Below partial threshold: do nothing.
-        if score < OWW_PARTIAL_THRESHOLD:
+        score = float(scores.get(self._livekit_score_key, 0.0))
+        self._evaluate_score(score, backend="livekit",
+                             threshold=LIVEKIT_THRESHOLD,
+                             partial=LIVEKIT_THRESHOLD * 0.5)
+
+    # ----- OWW path ---------------------------------------------------
+
+    def _feed_oww(self, chunk: np.ndarray) -> None:
+        if self._oww_model is None:
             return
-        # Between partial and full threshold: emit observability event
-        # so the UI can show "did you say hey gemma?" feedback. We do
-        # NOT fire on_wake here — partial detections shouldn't kick off
-        # a CAPTURE state.
-        if score < OWW_THRESHOLD:
-            now = time.monotonic()
-            # Same cooldown for partials to avoid log spam.
+        self._oww_buf = np.concatenate([self._oww_buf, chunk])
+        while self._oww_buf.size >= OWW_WINDOW_SAMPLES:
+            window = self._oww_buf[:OWW_WINDOW_SAMPLES]
+            self._oww_buf = self._oww_buf[OWW_WINDOW_SAMPLES:]
+            try:
+                scores = self._oww_model.predict(window)
+            except Exception as exc:
+                logger.warning("OWW predict failed: %s", exc)
+                continue
+            score = float(scores.get(self._oww_score_key, 0.0))
+            self._evaluate_score(score, backend=self._backend,
+                                 threshold=OWW_THRESHOLD,
+                                 partial=OWW_PARTIAL_THRESHOLD)
+
+    # ----- shared scoring ---------------------------------------------
+
+    def _evaluate_score(
+        self,
+        score: float,
+        *,
+        backend: str,
+        threshold: float,
+        partial: float,
+    ) -> None:
+        if score < partial:
+            return
+        now = time.monotonic()
+        if score < threshold:
             if now - self._last_partial_at >= SAME_PHRASE_COOLDOWN_S:
                 self._last_partial_at = now
                 logger.info(
-                    "wake_word_partial score=%.3f threshold=%.3f model=%s",
-                    score, OWW_THRESHOLD,
-                    "custom" if self.using_custom_model else "stock",
+                    "wake_word_partial score=%.3f threshold=%.3f backend=%s",
+                    score, threshold, backend,
                 )
             return
-        # Above threshold: fire.
-        now = time.monotonic()
         if now - self._last_fire_at < SAME_PHRASE_COOLDOWN_S:
             return
         self._last_fire_at = now
-        phrase = "hey gemma" if self.using_custom_model else "hey jarvis"
+        phrase = (
+            "hey gemma" if self.using_custom_model else "hey jarvis"
+        )
         logger.info(
-            "wake_word_fired phrase=%s score=%.3f threshold=%.3f "
-            "model=%s",
-            phrase, score, OWW_THRESHOLD,
-            "custom" if self.using_custom_model else "stock",
+            "wake_word_fired phrase=%s score=%.3f threshold=%.3f backend=%s",
+            phrase, score, threshold, backend,
         )
         try:
             self._on_wake(phrase, score)

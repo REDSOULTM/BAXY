@@ -1,0 +1,115 @@
+# LiveKit WakeWord — "hey gemma" Piper-LibriTTS backend.
+# Sprint 7 (2026-05-19): replacement for v9 openWakeWord baseline 0.110
+# universal recall. Uses LiveKit's official Piper VITS checkpoint
+# (LibriTTS-R, 904 English speakers) with SLERP blending across
+# speaker pairs to create ~409k unique synthetic voices.
+#
+# RATIONALE for Piper-EN vs VoxCPM:
+#   - VoxCPM segfaults on Ada Lovelace GPUs (OpenBMB issue #102) —
+#     same crash class we hit twice today.
+#   - LiveKit officially says "multilingual achieves lower accuracy
+#     than English models" due to limited multi-speaker non-EN TTS.
+#   - LibriTTS-R has speakers with varied accents (incl. LATAM/Asian)
+#     that bias the embedding toward phoneme-level discrimination
+#     rather than single-timbre overfit.
+#
+# Acceptance gate vs Sprint 6 baseline:
+#   universal_recall >= 0.60  (was 0.110)
+#   fp_per_hour      <= 1.00  (was 0.74)
+
+model_name: hey_gemma
+
+target_phrases:
+  - "hey gemma"
+  - "hey Gemma"
+  - "ey gemma"        # h-drop common in Hispanic informal speech
+  - "hey gema"        # alt spelling (Spanish phonetic)
+  - "ay gemma"        # casual variant
+
+tts_backend: piper_vits
+
+# Scaled-down vs prod.yaml (25k→5k) to fit overnight on a single
+# RTX 4060 Ti. Adversarial negatives + ACAV100M sampling keep FP rate
+# low even with smaller positive count.
+n_samples: 5000
+n_samples_val: 1000
+n_background_samples: 500
+n_background_samples_val: 100
+tts_batch_size: 50
+
+# Adversarial negatives — phonetically close phrases that must NOT
+# trigger. Critical for "gemma" (only 4 phonemes; needs strong reject
+# of bare word and similar names).
+custom_negative_phrases:
+  - "gemma"           # bare word — most common false trigger
+  - "jenna"
+  - "emma"
+  - "gimme"
+  - "gemma stone"     # actress name; pop-culture overlap
+  - "gemini"
+  - "hey emma"
+  - "hey jenna"
+  - "hey jenny"
+  - "hey gem"
+  - "hey gemini"
+  - "hey jamma"
+  - "hey jama"
+  - "they gemma"
+  - "say gemma"
+  - "play gemma"
+  - "ahem ah"
+  - "drama"
+  - "dilemma"
+  - "lemma"
+  - "stigma"
+
+# Piper VITS sampling parameters (cartesian product → prosody diversity).
+noise_scales: [0.98]
+noise_scale_ws: [0.98]
+length_scales: [0.75, 1.0, 1.25]
+slerp_weights: [0.2, 0.35, 0.5, 0.65, 0.8]
+
+# Use ALL 904 LibriTTS speakers (default). Comment max_speakers to
+# constrain if needed.
+# max_speakers: null
+
+piper_tts:
+  checkpoint_relpath: piper/en-us-libritts-high.pt
+
+data_dir: ./data
+output_dir: ./output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 16
+  rounds: 3        # 3 augmentation passes = 3x effective data
+  background_paths: [./data/backgrounds]
+  rir_paths: [./data/rirs]
+
+model:
+  # conv_attention is the head LiveKit reports as 60x better AUT than
+  # openWakeWord's dnn. medium = 128d, fits comfortably in 16GB VRAM.
+  model_type: conv_attention
+  model_size: medium
+
+# 30k steps is half of prod.yaml's 100k — empirically AUT plateaus
+# around 20-30k with conv-attention + 5k samples * 3 augmentation
+# rounds (15k effective).
+steps: 30000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.05
+
+# 3000 is upper bound from prod; if FP rate is too high at eval time,
+# bumping this to 5000+ trades recall for precision.
+max_negative_weight: 3000
+
+# 0.1/hr is aggressive for a 6-phoneme wake word. May fall back to
+# balanced accuracy optimization if unreachable.
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 50
+  adversarial_negative: 50
+  ACAV100M_sample: 1024  # ~17 GB of real-world negatives we already cached
+  background_noise: 50
