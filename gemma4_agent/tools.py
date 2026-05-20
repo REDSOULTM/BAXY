@@ -620,6 +620,15 @@ def _score(query: str, candidate: str) -> int:
     # un score bajo pero positivo para que el candidato no se descarte.
     import difflib
     full_ratio = difflib.SequenceMatcher(None, q, c).ratio()
+    # 2026-05-20: first-character guard. Short near-anagrams ("teams" vs
+    # "steam", ratio ~0.8) were fuzzy-matching and "abre Teams" opened Steam.
+    # A real typo almost always keeps the first letter ("spotfy"->"spotify",
+    # "calculadra"->"calculadora"); a different first letter on a short query
+    # is a different word. Only gate the SHORT single-token case so multi-word
+    # / longer queries keep their fuzzy tolerance.
+    short_single_token = len(q_words) <= 1 and len(q) <= 7
+    if short_single_token and q[:1] != c[:1]:
+        full_ratio = 0.0
     if full_ratio >= 0.7:
         # Mapeo lineal: 0.7 -> 35, 1.0 -> 70. Suficiente para entrar al
         # ranking pero no para vencer un startswith/contiene del 75-90.
@@ -634,6 +643,11 @@ def _score(query: str, candidate: str) -> int:
             continue
         for cw in c_words:
             if len(cw) < 3:
+                continue
+            # Same first-char guard as above: "teams"~"steam" (ratio ~0.8)
+            # is a near-anagram, NOT a typo. A real per-word typo keeps the
+            # first letter. This is what made "abre Teams" open Steam.
+            if qw[:1] != cw[:1]:
                 continue
             if difflib.SequenceMatcher(None, qw, cw).ratio() >= 0.75:
                 matched_words += 1
