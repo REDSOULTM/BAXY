@@ -991,6 +991,15 @@ class Gemma4Agent:
                     # ejecutara el tool real y generara el reply final.
                     assistant_content = ""
                     msg = {"role": "assistant", "content": "", "tool_calls": raw_tool_calls}
+                else:
+                    # Rescue MISSED. Capture the raw model text verbatim so we
+                    # can calibrate the leak patterns against what THIS Gemma
+                    # actually emits (vs guessing the format). Pure telemetry;
+                    # no behaviour change. Grep traces for "rescue_missed".
+                    self.trace.event(
+                        turn_id, "rescue_missed",
+                        raw_content=(assistant_content or "")[:400],
+                    )
             self.trace.event(
                 turn_id,
                 "llm_response",

@@ -172,5 +172,79 @@ class TestRescueMultiCallPicksFirst(unittest.TestCase):
         self.assertEqual(args["query"], "B")
 
 
+class TestRescueGemmaJsonForm(unittest.TestCase):
+    """Sprint 8 (2026-05-20): Gemma 4 sometimes leaks tool calls in its
+    native JSON shape (not the python-function shape), which the
+    llama-server parser fails to lift into tool_calls. These must be
+    rescued too. Formats documented in llama.cpp #21384 / mlx-lm #1096.
+    """
+
+    def test_bare_json(self):
+        out = detect_leaked_tool_call(
+            '{"name": "steam", "arguments": {"action": "open"}}',
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "steam")
+        self.assertEqual(json.loads(out["function"]["arguments"])["action"], "open")
+
+    def test_tool_call_markers(self):
+        out = detect_leaked_tool_call(
+            '<|tool_call>{"name": "steam", "arguments": {"action": "open"}}<tool_call|>',
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "steam")
+
+    def test_fenced_tool_call_block(self):
+        out = detect_leaked_tool_call(
+            '```tool_call\n{"name": "media", "arguments": '
+            '{"action": "play", "provider": "disney", "query": "daredevil"}}\n```',
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "media")
+        self.assertEqual(json.loads(out["function"]["arguments"])["provider"], "disney")
+
+    def test_fenced_json_with_parameters_key(self):
+        out = detect_leaked_tool_call(
+            '```json\n{"name": "web", "parameters": {"action": "search", "query": "x"}}\n```',
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "web")
+        self.assertEqual(json.loads(out["function"]["arguments"])["query"], "x")
+
+    def test_arguments_as_json_string(self):
+        out = detect_leaked_tool_call(
+            '{"name": "steam", "arguments": "{\\"action\\": \\"open\\"}"}',
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNotNone(out)
+        self.assertEqual(json.loads(out["function"]["arguments"])["action"], "open")
+
+    def test_json_with_narration_prefix(self):
+        out = detect_leaked_tool_call(
+            'Voy a abrir Steam: {"name": "steam", "arguments": {"action": "open"}}',
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "steam")
+
+    def test_unknown_tool_json_rejected(self):
+        out = detect_leaked_tool_call(
+            '{"name": "notatool", "arguments": {}}',
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNone(out)
+
+    def test_prose_with_braces_not_a_call(self):
+        out = detect_leaked_tool_call(
+            "me gusta el formato {clave: valor} en mis notas",
+            known_tool_names=KNOWN,
+        )
+        self.assertIsNone(out)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -88,6 +88,112 @@ _LEAKED_CALL_RE = re.compile(
     re.DOTALL,
 )
 
+# Gemma 4 sometimes serialises a tool call in its NATIVE JSON shape that
+# the llama-server parser fails to lift into tool_calls (documented bug:
+# llama.cpp #21384, mlx-lm #1096, Google's own function-calling docs). It
+# lands in message.content as one of:
+#   <|tool_call>{"name": "steam", "arguments": {...}}<tool_call|>
+#   ```tool_call\n{"name": "steam", "arguments": {...}}\n```
+#   ```json\n{"name": "steam", "arguments": {...}}\n```
+#   bare  {"name": "steam", "arguments": {...}}   (or "parameters")
+# We find each '{' that starts a JSON object containing a "name" key,
+# extract the balanced object (regex can't reliably match nested JSON),
+# and parse it. The Python-function form `steam(action="open")` is
+# handled separately by _LEAKED_CALL_RE.
+_NAME_KEY_RE = re.compile(r'"(?:name|tool_name)"\s*:\s*"[a-z][a-z0-9_]{1,40}"')
+
+
+def _extract_balanced_json(text: str, open_idx: int) -> str | None:
+    """Return the substring of the balanced {...} starting at open_idx,
+    respecting string quoting/escapes. None if unbalanced."""
+    if open_idx >= len(text) or text[open_idx] != "{":
+        return None
+    depth = 0
+    i = open_idx
+    in_str = False
+    while i < len(text):
+        ch = text[i]
+        if in_str:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == '"':
+                in_str = False
+        else:
+            if ch == '"':
+                in_str = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[open_idx : i + 1]
+        i += 1
+    return None
+
+
+def _detect_gemma_json_call(
+    content: str,
+    known_tool_names: set[str] | None,
+) -> dict[str, Any] | None:
+    """Detect a Gemma-4 native-JSON tool call leaked into content.
+
+    Returns the OpenAI-shaped tool_call dict, or None. Guarded by
+    known_tool_names when provided so prose with a stray '{"name": ...}'
+    can't be misread as a call.
+    """
+    if not content or "{" not in content:
+        return None
+    # Look near each "name"/"tool_name" key for the enclosing JSON object.
+    for km in _NAME_KEY_RE.finditer(content):
+        # Walk backwards from the key to the nearest '{' that opens its object.
+        open_idx = content.rfind("{", 0, km.start())
+        while open_idx != -1:
+            blob = _extract_balanced_json(content, open_idx)
+            if blob is not None and km.start() < open_idx + len(blob):
+                obj = None
+                try:
+                    obj = json.loads(blob)
+                except Exception:
+                    obj = None
+                if isinstance(obj, dict):
+                    rescued = _gemma_obj_to_call(obj, known_tool_names)
+                    if rescued is not None:
+                        return rescued
+                break
+            open_idx = content.rfind("{", 0, open_idx)
+    return None
+
+
+def _gemma_obj_to_call(
+    obj: dict[str, Any],
+    known_tool_names: set[str] | None,
+) -> dict[str, Any] | None:
+    name = obj.get("name") or obj.get("tool_name")
+    if not isinstance(name, str) or not name:
+        return None
+    if known_tool_names is not None and name not in known_tool_names:
+        return None
+    raw_args = obj.get("arguments")
+    if raw_args is None:
+        raw_args = obj.get("parameters")
+    if isinstance(raw_args, str):
+        try:
+            raw_args = json.loads(raw_args)
+        except Exception:
+            raw_args = {}
+    if not isinstance(raw_args, dict):
+        raw_args = {}
+    try:
+        args_json = json.dumps(raw_args, ensure_ascii=False)
+    except Exception:
+        return None
+    return {
+        "id": f"call_rescue_{uuid.uuid4().hex[:12]}",
+        "type": "function",
+        "function": {"name": name, "arguments": args_json},
+    }
+
 
 def _find_matching_paren(text: str, start: int = 0) -> int:
     """Find index of the close paren that matches the open at `start`,
@@ -186,7 +292,14 @@ def detect_leaked_tool_call(
     if not content or not isinstance(content, str):
         return None
     stripped = content.strip()
-    # Quick reject: must contain '(' and ')' and start with a lowercase letter.
+    # First: Gemma-4 native-JSON form ({"name": "...", "arguments": {...}},
+    # optionally wrapped in <|tool_call> markers or ``` fences). The
+    # Python-function form is handled by the paren logic below.
+    gemma_json = _detect_gemma_json_call(stripped, known_tool_names)
+    if gemma_json is not None:
+        return gemma_json
+    # Quick reject for the Python-function form: must contain '(' and ')'
+    # and start with a lowercase letter.
     if "(" not in stripped or not stripped[0].isalpha():
         return None
     # Allow content like "web(action=...)" possibly with trailing punctuation.
