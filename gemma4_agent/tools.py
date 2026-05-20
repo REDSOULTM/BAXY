@@ -2509,6 +2509,19 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
         from comtypes import CLSCTX_ALL  # type: ignore[import-not-found]
         from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume  # type: ignore[import-not-found]
 
+        # 2026-05-20: the agent runs tools on worker threads; pycaw's COM
+        # objects require COM to be initialized ON THIS THREAD or GetSpeakers()
+        # raises "[WinError -2147221008] CoInitialize has not been called".
+        # This caused intermittent volume failures ("sube el volumen al 50"
+        # FAILED while "baja el vol a 30" happened to work on an already-init
+        # thread). CoInitialize is idempotent (returns S_FALSE if already
+        # initialized), so calling it here every time is safe.
+        try:
+            from comtypes import CoInitialize  # type: ignore[import-not-found]
+            CoInitialize()
+        except Exception:
+            pass
+
         device: Any = AudioUtilities.GetSpeakers()
         if device is None:
             raise RuntimeError("no audio endpoint device available")
