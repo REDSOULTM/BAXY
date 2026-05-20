@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sqlite3
 import time
 from dataclasses import dataclass
@@ -27,6 +28,17 @@ from pathlib import Path
 from typing import Any
 
 _EMBED_DIM = 384
+
+# Automated-test / smoke inputs that must NOT be stored as real experiences
+# (they polluted 52% of the DB and degraded recall over long sessions).
+_TEST_JUNK_RE = re.compile(
+    r"phrase_hook_test|hook_test|__stop__|test_\d{3,}|\becho prueba\b|^echo\b|^\s*prueba\s*$",
+    re.IGNORECASE,
+)
+
+
+def _is_test_junk(text: str) -> bool:
+    return bool(_TEST_JUNK_RE.search(text or ""))
 # Defaults for housekeeping. Override via env GEMMA4_EXPERIENCE_MAX_RECORDS /
 # GEMMA4_EXPERIENCE_MAX_AGE_DAYS. Auto-prune fires every N inserts (cheap).
 _DEFAULT_MAX_RECORDS = 5000
@@ -191,6 +203,12 @@ class ExperienceMemory:
             return {"ok": False, "skipped": "memory_disabled"}
         if not user_input.strip():
             return {"ok": False, "skipped": "empty_input"}
+        # 2026-05-20 (anti-degradation): never store automated-test / smoke
+        # inputs as real experiences. Before this guard, 52% of the DB was
+        # `echo prueba` / `phrase_hook_test_*` junk that crowded out genuine
+        # recalls and dragged the model toward noise over a long session.
+        if _is_test_junk(user_input):
+            return {"ok": False, "skipped": "test_junk"}
         conn = self._open()
         if conn is None:
             return {"ok": False, "skipped": "sqlite_vec_unavailable"}
@@ -336,11 +354,20 @@ class ExperienceMemory:
     # ------------------------------------------------------------ public reads
 
     def recall(self, query: str, *, embed_fn: Any, k: int = 3, max_distance: float = 1.2) -> list[dict[str, Any]]:
-        """Return top-k past experiences most similar to `query`.
+        """Return top-k USEFUL past experiences most similar to `query`.
 
         `max_distance` is sqlite-vec's L2 distance threshold. With L2-normalized
         embeddings, distance ~= 2*(1-cos). 1.2 corresponds to cos >= 0.4 which
         is a permissive 'kind of similar' bar.
+
+        2026-05-20 (anti-degradation): a recalled turn that FAILED while using
+        NO tool teaches nothing — it only feeds the model its own past
+        non-action ("cierra steam"→FAILED tools=[]). Worse, the experience DB
+        is 34% failures, so unfiltered recall steadily injects bad precedent
+        as the user keeps using Gemma — the "it starts failing after a while"
+        symptom. We over-fetch and drop those empty failures so the k slots go
+        to experiences that actually carry a lesson (a tool that worked, or a
+        tool to AVOID).
         """
         if not is_enabled():
             return []
@@ -354,6 +381,8 @@ class ExperienceMemory:
             if vec is None:
                 return []
             payload = _vec_blob(vec)
+            # Over-fetch so the post-filter still has k useful rows to return.
+            fetch_k = max(1, k) * 5
             cur = conn.execute(
                 """SELECT e.id, e.turn_id, e.ts, e.user_input, e.tools_used,
                           e.mission_status, e.summary, e.outcome_code,
@@ -364,10 +393,12 @@ class ExperienceMemory:
                    JOIN experiences e ON e.id = v.rowid
                    WHERE v.embedding MATCH ? AND v.k = ?
                    ORDER BY v.distance ASC""",
-                (payload, max(1, k)),
+                (payload, fetch_k),
             )
             results: list[dict[str, Any]] = []
             for row in cur.fetchall():
+                if len(results) >= max(1, k):
+                    break
                 distance = float(row["distance"])
                 if distance > max_distance:
                     continue
@@ -376,6 +407,14 @@ class ExperienceMemory:
                     tools_used = json.loads(row["tools_used"] or "[]")
                 except json.JSONDecodeError:
                     pass
+                status = (row["outcome_code"] or row["mission_status"] or "").upper()
+                is_failure = "FAIL" in status
+                # Drop a failed turn that used no tool: it's pure noise (often
+                # ASR junk or a turn the LLM never acted on) and only anchors
+                # the model toward inaction. A failed turn WITH a tool is kept
+                # — it becomes a "do NOT use this tool here" lesson downstream.
+                if is_failure and not tools_used:
+                    continue
                 args_sig: dict[str, Any] = {}
                 if row["args_signature"]:
                     try:
@@ -495,23 +534,47 @@ def format_recall_for_prompt(recalls: list[dict[str, Any]]) -> str:
         tools = ", ".join(r.get("tools_used") or []) or "ninguna"
         # Prefer outcome_code (new) over mission_status (legacy).
         status = r.get("outcome_code") or r.get("mission_status") or "unknown"
+        is_failure = "FAIL" in str(status).upper()
         text = (r.get("user_input") or "").replace("\n", " ")[:120]
-        parts = [
-            f"input similar=\"{text}\"",
-            f"tools=[{tools}]",
-            f"outcome={status}",
-        ]
-        cap = r.get("capability_label")
-        if cap:
-            parts.append(f"capability=\"{cap}\"")
         args_sig = r.get("args_signature") or {}
+        sig_str = ""
         if isinstance(args_sig, dict) and args_sig:
             sig_str = " ".join(f"{k}={v}" for k, v in args_sig.items())
-            parts.append(f"args[{sig_str}]")
         reason = r.get("failure_reason_code")
-        if reason:
-            parts.append(f"failure_reason={reason}")
-        if r.get("grounding_flagged"):
-            parts.append("WARNING_past_reply_was_hallucinated")
-        lines.append(f"- past[d={r['distance']}]: " + " ".join(parts))
+        cap = r.get("capability_label")
+
+        if is_failure:
+            # 2026-05-20 (anti-degradation): a past FAILURE must be an
+            # AVOID lesson, never a neutral precedent the model might copy.
+            # Otherwise recall feeds the model its own past mistakes (e.g.
+            # "baja volumen"→audio_device FAILED) and it repeats them — the
+            # "starts failing after a while" symptom. Phrase it as a warning.
+            parts = [
+                f"input similar=\"{text}\"",
+                f"EVITAR: el intento pasado con tools=[{tools}] FALLÓ",
+                "elige OTRA tool/args para este tipo de pedido",
+            ]
+            if sig_str:
+                parts.append(f"(args que fallaron: {sig_str})")
+            if reason:
+                parts.append(f"motivo={reason}")
+            lines.append(f"- past[d={r['distance']}] ⚠ NEGATIVA: " + " ".join(parts))
+        else:
+            parts = [
+                f"input similar=\"{text}\"",
+                f"tools=[{tools}]",
+                f"outcome={status}",
+            ]
+            if cap:
+                parts.append(f"capability=\"{cap}\"")
+            if sig_str:
+                parts.append(f"args[{sig_str}]")
+            # A non-FAILED turn can still have been hallucinated (grounding
+            # flag): surface both the warning and the reason so the model
+            # treats it as a soft-negative, not clean precedent.
+            if reason:
+                parts.append(f"failure_reason={reason}")
+            if r.get("grounding_flagged"):
+                parts.append("WARNING_past_reply_was_hallucinated")
+            lines.append(f"- past[d={r['distance']}]: " + " ".join(parts))
     return "\n".join(lines)

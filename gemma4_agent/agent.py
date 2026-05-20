@@ -521,7 +521,13 @@ class Gemma4Agent:
         try:
             from .semantic_router import embed as _embed_text
             if raw_text and len(raw_text.split()) >= 2:
-                self._recent_recalls = self.experience.recall(raw_text, embed_fn=_embed_text, k=3)
+                # 2026-05-20 (anti-degradation): tighter than the permissive
+                # default (1.2 ≈ cos 0.4). 0.9 ≈ cos 0.55 — only inject a past
+                # turn that is genuinely similar. A weak match just adds prompt
+                # tokens (latency) and can mislead with loosely-related
+                # precedent. k stays 3 but most turns now recall 0–2.
+                self._recent_recalls = self.experience.recall(
+                    raw_text, embed_fn=_embed_text, k=3, max_distance=0.9)
                 if self._recent_recalls:
                     self.trace.event(turn_id, "experience_recall",
                                      query=raw_text[:200],
