@@ -692,27 +692,33 @@ def route_v2(
 
 
 def is_enabled() -> bool:
-    """v2 is the authoritative router by default when the model is
-    available (hotfix E 2026-05-17, Sprint 8c activation).
+    """v1 (the semantic-intent planner) is authoritative by default. v2 is
+    OPT-IN only.
+
+    2026-05-20 reversal of the hotfix-E "Sprint 8c activation" that made v2
+    authoritative-by-default: a live probe found v2 was actively routing
+    GARBAGE in production and OVERRIDING v1's good subset. Measured on a
+    14-case battery, v1 hit 13/14 vs v2 12/14, and v2 missed basics like
+    "qué hora es"→system and "de qué trata Dune"→web (returned noisy 7-tool
+    subsets with no relevant tool). All the routing improvements (semantic
+    intent classifier, abbreviation expansion, anti-degradation) live in v1,
+    and v2 was silently discarding them. So v2 must NOT be authoritative
+    unless an operator explicitly opts in for an A/B.
 
     Operator controls:
-      GEMMA4_ROUTER_V1_ONLY=1   -> force v1 (regex planner) only.
-      GEMMA4_ROUTER_V2=0/false  -> same effect; explicit.
-      <unset> + model present   -> v2 is authoritative.
-      <unset> + model absent    -> v1 fallback automatically.
-
-    If router_v2 fails to load (sticky _load_failed), v1 is the
-    automatic fallback — no env var needed.
+      GEMMA4_ROUTER_V1_ONLY=1   -> force v1 (also disables shadow).
+      GEMMA4_ROUTER_V2=1/true   -> opt INTO v2 as authoritative (A/B only).
+      GEMMA4_ROUTER_V2=0/false  -> explicit v1 (same as default).
+      <unset>                   -> v1 authoritative (the proven-better path).
     """
     v1_only = (os.environ.get("GEMMA4_ROUTER_V1_ONLY") or "").strip().lower()
     if v1_only in {"1", "true", "yes", "on"}:
         return False
     explicit = (os.environ.get("GEMMA4_ROUTER_V2") or "").strip().lower()
-    if explicit in {"0", "false", "no", "off"}:
-        return False
     if explicit in {"1", "true", "yes", "on"}:
         return RouterV2.get().is_available()
-    return RouterV2.get().is_available()
+    # Unset or explicitly off → v1 is authoritative.
+    return False
 
 
 def is_shadow() -> bool:

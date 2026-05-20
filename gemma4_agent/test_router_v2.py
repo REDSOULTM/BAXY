@@ -37,20 +37,25 @@ _HAS_MODEL = MODEL_PATH.exists()
 class EnvFlagsTest(unittest.TestCase):
     """The env-gating helpers must work whether or not the model is on disk."""
 
-    def test_is_enabled_default_matches_model_presence(self) -> None:
-        """Hotfix E 2026-05-17: is_enabled() now defaults ON when the
-        e5-small model is on disk. Without an explicit env var, the
-        result tracks MODEL_PATH.exists() AND singleton availability.
+    def test_is_enabled_defaults_off_v1_authoritative(self) -> None:
+        """2026-05-20: reversed hotfix-E. v2 is OPT-IN only — v1 (the
+        semantic-intent planner) is authoritative by default, because a live
+        probe found v2 routing garbage and overriding v1's good subset.
+        Unset env => v2 NOT authoritative, regardless of model presence.
+        Explicit GEMMA4_ROUTER_V2=1 => v2 on (A/B), tracking availability.
         """
         old_v2 = os.environ.pop("GEMMA4_ROUTER_V2", None)
         old_v1_only = os.environ.pop("GEMMA4_ROUTER_V1_ONLY", None)
         try:
+            # default (unset): v1 authoritative, v2 off.
+            self.assertFalse(is_enabled(),
+                             "v2 must default OFF (v1 authoritative)")
+            # explicit opt-in: tracks model availability.
+            os.environ["GEMMA4_ROUTER_V2"] = "1"
             if MODEL_PATH.exists():
                 self.assertTrue(is_enabled(),
-                                "v2 should default ON when model present")
-            else:
-                self.assertFalse(is_enabled(),
-                                 "v2 should default OFF when model absent")
+                                "explicit GEMMA4_ROUTER_V2=1 should enable v2")
+            os.environ.pop("GEMMA4_ROUTER_V2", None)
         finally:
             if old_v2 is not None:
                 os.environ["GEMMA4_ROUTER_V2"] = old_v2
