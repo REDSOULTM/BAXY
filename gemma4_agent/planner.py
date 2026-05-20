@@ -356,6 +356,13 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(archivo|carpeta|directorio|escribe|crea|borra|copia|mueve|renombra|zip|extrae|descomprime|"
                  r"file|folder|directory|write|create|delete|copy|move|rename|extract|unzip)\b", low):
         tools.append("filesystem")
+    # A filename WITH an extension is an unambiguous file operation, whatever
+    # the verb. 2026-05-20 live repro: "agrega una linea al final de notas.txt"
+    # routed to notes_tasks (the word "notas") instead of filesystem. Detect a
+    # name.ext token and force filesystem in. Structural signal, not a keyword.
+    if re.search(r"\b[\w\-]+\.(txt|md|csv|json|log|pdf|docx?|xlsx?|pptx?|py|js|ts|"
+                 r"html?|xml|yaml|yml|ini|cfg|zip|png|jpe?g)\b", low):
+        tools.append("filesystem")
     # office
     # Multi-word variants ("power point", "hoja de calculo") MUST be checked
     # before the \b...\b single-word pattern, because re.search with \b on a

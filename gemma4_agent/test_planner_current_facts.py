@@ -42,5 +42,31 @@ class TestCurrentFactsRouting(unittest.TestCase):
         self.assertFalse(_has_web("pon el volumen a 30"))
 
 
+def _has_fs(q: str) -> bool:
+    return "filesystem" in set(
+        select_tool_names(q, plan_mission(q), safety_enabled=True)
+    )
+
+
+class TestFileExtensionRouting(unittest.TestCase):
+    """A filename with an extension is an unambiguous file operation, whatever
+    the verb. Live repro 2026-05-20: "agrega una linea al final de notas.txt"
+    routed to notes_tasks (the word "notas") instead of filesystem."""
+
+    def test_filename_with_extension_routes_filesystem(self):
+        for q in [
+            "agrega una linea al final de notas.txt",
+            "lee CHANGELOG.md y dime si puedo seguir",
+            "abre el reporte.pdf",
+            "convierte data.csv a otra cosa",
+        ]:
+            self.assertTrue(_has_fs(q), f"expected filesystem for {q!r}")
+
+    def test_domain_and_plain_note_do_not_force_filesystem(self):
+        # ".com" is not a file extension; "agrega una nota" is a real note.
+        self.assertFalse(_has_fs("abre google.com"))
+        self.assertFalse(_has_fs("agrega una nota a mi lista"))
+
+
 if __name__ == "__main__":
     unittest.main()
