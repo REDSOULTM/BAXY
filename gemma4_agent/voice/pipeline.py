@@ -37,10 +37,27 @@ from .wake import WakeDetector
 logger = logging.getLogger(__name__)
 
 
-# Default state machine timings.
+import os as _os
+
+# Default state machine timings. All overridable by env var so the
+# operator can tune responsiveness vs patience without a code change.
 PREROLL_SECONDS = 0.5            # audio kept before the wake event
-COMMAND_TIMEOUT_S = 6.0          # hard cap on command length
-END_OF_SPEECH_SILENCE_S = 0.7    # silence required to end CAPTURE
+
+# Hard cap on how long a single command can be (from wake to forced cut).
+COMMAND_TIMEOUT_S = float(_os.environ.get("GEMMA4_VOICE_COMMAND_TIMEOUT_S", "8.0"))
+
+# Trailing silence required to end CAPTURE. Was 0.7s, which cut the user
+# off during the natural pause between "hey gemma" and the actual command
+# ("...abre Steam") — the pipeline transcribed just "hey gemma" and fired
+# an empty command. 1.4s gives room to breathe between the wake word and
+# the instruction without feeling sluggish.
+END_OF_SPEECH_SILENCE_S = float(_os.environ.get("GEMMA4_VOICE_EOS_SILENCE_S", "1.4"))
+
+# Minimum capture duration before end-of-speech can fire at all. Guards
+# against an immediate post-wake micro-pause closing the window before
+# the user has said anything. Capture always runs at least this long.
+MIN_CAPTURE_S = float(_os.environ.get("GEMMA4_VOICE_MIN_CAPTURE_S", "1.0"))
+
 COOLDOWN_S = 0.4                 # post-transcribe wait
 
 # VAD thresholds.
@@ -229,6 +246,11 @@ class VoicePipeline:
         if elapsed > COMMAND_TIMEOUT_S:
             logger.info("command capture timeout @ %.2fs", elapsed)
             self._finish_capture(reason="timeout")
+            return
+        # Don't allow end-of-speech to close the window before the
+        # minimum capture time — protects against the natural micro-pause
+        # right after "hey gemma" cutting off before the command is said.
+        if elapsed < MIN_CAPTURE_S:
             return
         # End-of-speech via trailing silence.
         is_speech = self._vad.is_speech(chunk, threshold=EOS_VAD_THRESHOLD)
