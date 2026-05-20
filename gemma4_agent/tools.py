@@ -595,6 +595,14 @@ def _fold(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", text).strip()
 
 
+# Connective words that must NOT count as a meaningful name overlap (else
+# "League of Legends" ~ "Sea of Thieves" via "of"). ES + EN.
+_APP_NAME_STOPWORDS = frozenset({
+    "of", "the", "a", "an", "and", "in", "on", "for", "to",
+    "de", "del", "la", "el", "los", "las", "y", "e", "en", "un", "una",
+})
+
+
 def _score(query: str, candidate: str) -> int:
     q = _fold(query)
     c = _fold(candidate)
@@ -610,9 +618,18 @@ def _score(query: str, candidate: str) -> int:
     c_words = set(c.split())
     if not q_words:
         return 0
-    overlap = len(q_words & c_words)
+    # 2026-05-20: exclude stopwords from the "meaningful overlap" count.
+    # "League of Legends" vs "Sea of Thieves" shared only "of" and scored 50,
+    # so "Call of Duty" could resolve to "God of War" when the real game
+    # isn't installed. A shared connective word is not a real app match.
+    overlap_words = (q_words & c_words) - _APP_NAME_STOPWORDS
+    overlap = len(overlap_words)
     if overlap:
-        return 40 + int(30 * overlap / len(q_words))
+        # Normalize against the query's CONTENT words (non-stopwords), so a
+        # 1-of-1 content match still scores high.
+        q_content = q_words - _APP_NAME_STOPWORDS
+        denom = len(q_content) or len(q_words)
+        return 40 + int(30 * overlap / denom)
     # Fuzzy fallback: el usuario puede haber dictado mal por voz
     # ("Saint Rose" en vez de "Saints Row") o con typos. Usamos difflib
     # SequenceMatcher.ratio() sobre la frase completa Y sobre cada par

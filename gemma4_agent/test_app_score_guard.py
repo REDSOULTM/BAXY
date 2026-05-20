@@ -39,5 +39,23 @@ class TestScoreFirstCharGuard(unittest.TestCase):
         self.assertGreater(_score("saint rose", "Saints Row"), 0)
 
 
+class TestScoreStopwordOverlap(unittest.TestCase):
+    """A shared connective word ("of"/"de"/"the") must NOT count as an app
+    name match. 2026-05-20: "League of Legends" matched "Sea of Thieves" at
+    50 via "of", so "Call of Duty" could resolve to "God of War" when the
+    real game wasn't installed."""
+
+    def test_only_stopword_shared_scores_zero(self):
+        self.assertEqual(_score("League of Legends", "Sea of Thieves"), 0)
+        self.assertEqual(_score("Call of Duty", "God of War"), 0)
+        self.assertEqual(_score("Prince of Persia", "Sea of Thieves"), 0)
+
+    def test_real_content_overlap_still_scores(self):
+        self.assertGreater(_score("League of Legends", "Rocket League"), 0)
+        self.assertGreater(_score("Grand Theft Auto", "Grand Theft Auto V"), 0)
+        self.assertGreater(_score("God of War", "God of War Ragnarok"), 0)
+        self.assertGreater(_score("Counter Strike", "Counter-Strike 2"), 0)
+
+
 if __name__ == "__main__":
     unittest.main()
