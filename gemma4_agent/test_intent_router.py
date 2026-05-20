@@ -88,10 +88,28 @@ class TestIntentRouter(unittest.TestCase):
             )
 
     def test_chitchat_not_knowledge(self):
-        for q in ["jajaja", "nada", "oye", "dale", "mmm", "gracias", "ok"]:
+        for q in ["jajaja", "nada", "oye", "dale", "mmm", "gracias", "ok",
+                  "muchas gracias", "merci beaucoup", "tudo bem"]:
             self.assertFalse(
                 wants_knowledge(q),
                 f"chitchat {q!r} should not request web",
+            )
+
+    def test_conversational_questions_are_knowledge(self):
+        # Questions phrased conversationally (close to chitchat in
+        # embedding space) must still count as world-knowledge.
+        # NB: "cuándo salió X" (when was X released) sits on the action
+        # boundary ("salió/released" embeds near action) — a documented
+        # borderline, not asserted here. These are the robust ones.
+        for q in [
+            "hablame de la pelicula emilia perez",
+            "quien gana batman vs superman",
+            "wer hat den Mond zuerst betreten",
+            "chi ha dipinto la Gioconda",
+        ]:
+            self.assertTrue(
+                wants_knowledge(q),
+                f"conversational question {q!r} should request web",
             )
 
 

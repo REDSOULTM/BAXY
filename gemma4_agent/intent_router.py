@@ -33,23 +33,35 @@ from typing import Any
 # here = better coverage; these cover the romance/germanic/english core
 # and the model generalizes to the rest via its multilingual training.
 _INFO_ANCHORS = [
-    # English — people, things, concepts, how/why
+    # English — people, things, concepts, how/why, who-did/when/where
     "who is this person", "what is this thing", "tell me about this",
     "what is this movie or game about", "how did this happen",
     "general knowledge question about the world",
     "what is this concept", "what does this word mean",
     "how does this technology work", "explain this topic to me",
+    "who did or made or directed or invented this",
+    "when did this happen", "where is this place",
+    "which one is the biggest best or first",
     # Spanish
     "quien es esta persona", "que es esto", "de que trata esto",
     "hablame sobre algo", "de que murio alguien",
     "informacion sobre una pelicula juego o persona",
     "que es este concepto", "como funciona esta tecnologia",
     "explicame este tema", "que significa esta palabra",
+    # English/Spanish — searching the INTERNET for external info (prices,
+    # news, images, how-to) as opposed to searching local files.
+    "search the internet for something", "look up prices online",
+    "find news or images about a topic on the web",
+    "busca en internet", "busca precios o descuentos online",
+    "busca noticias o imagenes en la web", "busca en google",
+    "busca como hacer algo en internet",
     # Portuguese / French / German / Italian
     "quem e essa pessoa", "qui est cette personne",
     "wer ist diese person", "chi e questa persona",
     "de quoi parle ce film", "worum geht es",
     "was bedeutet das", "che cosa significa",
+    "procurar na internet", "chercher sur internet",
+    "im internet suchen", "cercare su internet",
 ]
 
 _ACTION_ANCHORS = [
@@ -82,6 +94,10 @@ _CHITCHAT_ANCHORS = [
     "perdon", "adios", "chau", "listo", "jaja",
     # Portuguese / French / German / Italian
     "obrigado", "merci", "danke", "grazie", "ciao", "salut",
+    # emphatic thanks / greetings (full phrases embed differently)
+    "thank you so much", "muchas gracias", "danke schon", "danke sehr",
+    "merci beaucoup", "muito obrigado", "grazie mille", "mil gracias",
+    "buenas", "buenas que tal", "todo bien", "tudo bem",
 ]
 
 # Questions about the ASSISTANT ITSELF or its policy ("quién eres", "qué
@@ -111,7 +127,15 @@ _SELF_ANCHORS = [
 # cutoff (that dropped low-signal-but-real queries like "what is quantum
 # computing"); the relative margins do the work.
 _VS_ACTION_MARGIN = float(os.environ.get("GEMMA4_INTENT_VS_ACTION", "0.05"))
-_VS_CHITCHAT_MARGIN = float(os.environ.get("GEMMA4_INTENT_VS_CHITCHAT", "0.00"))
+# Chitchat only BLOCKS when it dominates info by this margin (pure
+# smalltalk like "jajaja"/"nada" has chitchat far above info). A
+# conversational question ("háblame de la película X", "cuándo salió Y")
+# has chitchat and info close together — that should still count as
+# knowledge. So we don't require info > chitchat; we require chitchat to
+# not OUTRANK info beyond _CHITCHAT_DOMINATES.
+_CHITCHAT_DOMINATES = float(os.environ.get("GEMMA4_INTENT_CHITCHAT_DOM", "0.12"))
+# Self-reference blocks the same way: only when it clearly dominates.
+_SELF_DOMINATES = float(os.environ.get("GEMMA4_INTENT_SELF_DOM", "0.04"))
 
 
 @dataclass(frozen=True)
@@ -200,6 +224,6 @@ def wants_knowledge(text: str) -> bool:
         return False
     return (
         (s.info - s.action) >= _VS_ACTION_MARGIN
-        and (s.info - s.chitchat) >= _VS_CHITCHAT_MARGIN
-        and s.info >= s.selfref
+        and (s.chitchat - s.info) < _CHITCHAT_DOMINATES
+        and (s.selfref - s.info) < _SELF_DOMINATES
     )

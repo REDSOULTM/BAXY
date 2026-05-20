@@ -163,6 +163,15 @@ def select_tool_names(
                             names.append(s)
                             existing.add(s)
 
+    # NOTE on continuation inheritance: we deliberately do NOT re-derive
+    # tools from last_assistant_text here. Measured on the curated corpus
+    # (2026-05-20), planner-level inheritance helped recall in only 2 cases
+    # but pulled domain tools into 25 no-tool follow-ups ("gracias" after
+    # "abre steam") — net negative. The AGENT (agent.py) already inherits
+    # from real conversation history with a TTL + short-continuation guard,
+    # using the actual tool_calls of the prior turn (a far better signal
+    # than the prior user text). That stays; the planner does not guess.
+
     if not names:
         # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",
         # "stop", "espera"). Expose session.cancel_turn so the LLM can pick

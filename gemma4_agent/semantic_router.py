@@ -26,7 +26,13 @@ _MODEL_NAME_DEFAULT = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-
 # model sees, NOT the full JSON schema description. Keep them concrete and
 # free of brand keywords so semantic search works across languages.
 TOOL_DESCRIPTIONS: dict[str, str] = {
-    "system": "system info: time, processes, CPU, RAM, GPU, disk, battery, brightness",
+    "system": (
+        "system info, processes and power: current time and date, qué hora "
+        "es, qué fecha es hoy; list running processes, kill or force-close a "
+        "process, taskkill, mata procesos colgados, lista procesos, cierra "
+        "un proceso; CPU RAM GPU disk battery brightness, shutdown restart "
+        "sleep"
+    ),
     "audio": "audio volume, mute, system sound, media keys, audio devices listing",
     "audio_device": "change default audio output/input device, per-app audio routing",
     "app": "open or close a desktop application by name",
@@ -34,24 +40,46 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "window": "list windows, focus, close, minimize, maximize, move, resize",
     "gui": "screenshot, click, type text, hotkeys, scroll, drag with mouse",
     "vision": "describe what is on screen, OCR a region, find UI element",
-    "browser": "open URL or search query in a web browser",
+    "browser": (
+        "open a website, URL or web address in a browser; abrir una pagina "
+        "web, abrir github o un sitio, abrir una direccion como python.org "
+        "o localhost, navegar a un enlace, open a link in the browser"
+    ),
     "web": (
-        "answer questions about the world and external facts; who is a person, "
-        "what is something, what a movie or game or show is about, how someone "
-        "died, when something happened, general knowledge lookup; "
-        "responder preguntas sobre el mundo: quien es alguien, que es algo, "
-        "de que trata una pelicula juego o serie, de que murio alguien, hechos "
-        "generales, informacion externa; search the web and read sources"
+        "search the internet and answer questions about the world: latest "
+        "news, current prices, who is a person, what is something, what a "
+        "movie or game is about, how someone died, when something happened; "
+        "buscar en internet, ultimas noticias, precios actuales, quien es "
+        "alguien, que es algo, de que trata una pelicula o juego, de que "
+        "murio alguien, informacion externa, busca en la web"
     ),
     "uia": "Windows UI Automation tree: find and click named controls",
-    "filesystem": "list, read, write, search, delete, copy, move, rename, zip files and folders",
+    "filesystem": (
+        "work with local files and folders: read a file, see what is in a "
+        "folder, list a directory, write or append to a file, search, "
+        "delete, copy, move, rename, zip; que hay en una carpeta, lee un "
+        "archivo, abre el archivo de log, lista los archivos, agrega una "
+        "linea a un archivo, contenido de Descargas"
+    ),
     "package": "install, uninstall, search packages via winget",
     "clipboard": "read or write the clipboard text",
     "terminal": "execute a shell command",
-    "memory": "save, recall, list, delete persistent user preferences",
+    "memory": (
+        "remember facts about the user and their preferences: my name is X, "
+        "call me X from now on, remember that I prefer Y, what is my name, "
+        "what project am I working on, what preference do I have, change or "
+        "forget my setting; recordar datos del usuario, me llamo X, "
+        "llamame X, recuerda que prefiero, que preferencia tengo, que "
+        "proyecto estoy trabajando, de que proyecto, olvida mi configuracion"
+    ),
     "verify": "verify app opened, file exists, window exists, clipboard contains",
     "state": "list open resources, cleanup, checkpoint, rollback",
-    "input": "list keyboard layouts, set Windows language list",
+    "input": (
+        "press keys and type on the keyboard: press Escape, press Win, "
+        "press arrow down 3 times, type text without pressing enter, send "
+        "keystrokes and hotkeys; presiona una tecla, apreta Escape o Win, "
+        "escribe sin enter, manda teclas; also keyboard layouts and language"
+    ),
     "env": "get, set, delete environment variables",
     "registry": "query, export, add, delete Windows registry entries",
     "download": "download a file, hash a file, check signature",
