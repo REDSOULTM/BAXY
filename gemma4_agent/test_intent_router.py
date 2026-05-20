@@ -67,7 +67,32 @@ class TestIntentRouter(unittest.TestCase):
         self.assertIsNotNone(s)
         self.assertTrue(-1.0 <= s.info <= 1.0)
         self.assertTrue(-1.0 <= s.action <= 1.0)
-        self.assertAlmostEqual(s.margin, s.info - s.action, places=6)
+        self.assertTrue(-1.0 <= s.chitchat <= 1.0)
+        self.assertTrue(-1.0 <= s.selfref <= 1.0)
+        # margin = info over the strongest competing class (4-class).
+        self.assertAlmostEqual(
+            s.margin,
+            s.info - max(s.action, s.chitchat, s.selfref),
+            places=6,
+        )
+
+    def test_self_reference_not_knowledge(self):
+        # Questions about the assistant itself must NOT pull web.
+        for q in [
+            "quien eres", "que eres exactamente", "que puedes hacer",
+            "como te llamas", "who are you", "what can you do",
+        ]:
+            self.assertFalse(
+                wants_knowledge(q),
+                f"self-reference {q!r} should not request web",
+            )
+
+    def test_chitchat_not_knowledge(self):
+        for q in ["jajaja", "nada", "oye", "dale", "mmm", "gracias", "ok"]:
+            self.assertFalse(
+                wants_knowledge(q),
+                f"chitchat {q!r} should not request web",
+            )
 
 
 if __name__ == "__main__":
