@@ -35,7 +35,14 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "gui": "screenshot, click, type text, hotkeys, scroll, drag with mouse",
     "vision": "describe what is on screen, OCR a region, find UI element",
     "browser": "open URL or search query in a web browser",
-    "web": "search the web and extract content from sources",
+    "web": (
+        "answer questions about the world and external facts; who is a person, "
+        "what is something, what a movie or game or show is about, how someone "
+        "died, when something happened, general knowledge lookup; "
+        "responder preguntas sobre el mundo: quien es alguien, que es algo, "
+        "de que trata una pelicula juego o serie, de que murio alguien, hechos "
+        "generales, informacion externa; search the web and read sources"
+    ),
     "uia": "Windows UI Automation tree: find and click named controls",
     "filesystem": "list, read, write, search, delete, copy, move, rename, zip files and folders",
     "package": "install, uninstall, search packages via winget",

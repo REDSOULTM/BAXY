@@ -1,0 +1,74 @@
+"""Tests for the semantic intent classifier (intent_router.py).
+
+Sprint 8 (2026-05-20): the router now decides "informational question
+about the world" vs "PC action" semantically (multilingual, keyword-
+free) instead of per-language regex. These tests pin the behavior in
+several languages so a future change can't silently regress it.
+
+The embedding model loads lazily; if it's unavailable the classifier
+returns None and wants_knowledge() is False (graceful degrade) — those
+environments skip the semantic assertions.
+"""
+from __future__ import annotations
+
+import unittest
+
+from .intent_router import classify_intent, wants_knowledge
+
+
+def _model_available() -> bool:
+    return classify_intent("who is Einstein") is not None
+
+
+@unittest.skipUnless(_model_available(), "embedding model not available")
+class TestIntentRouter(unittest.TestCase):
+
+    # Informational questions across languages → wants_knowledge True.
+    def test_info_multilingual(self):
+        for q in [
+            "quien es batman",
+            "de que trata marvel rivals",
+            "de que murio michael jackson",
+            "who is spiderman",
+            "what is quantum computing",
+            "wer war Napoleon",
+            "de quoi parle le film Inception",
+            "chi e Leonardo da Vinci",
+            "quem foi Pele",
+        ]:
+            self.assertTrue(
+                wants_knowledge(q),
+                f"expected informational intent for {q!r}",
+            )
+
+    # PC actions across languages → wants_knowledge False (no web stuffing).
+    def test_action_multilingual(self):
+        for q in [
+            "abre Steam",
+            "cierra youtube",
+            "pon una cancion en spotify",
+            "saca un screenshot",
+            "open Steam",
+            "ferme la fenetre",
+            "manda mensaje a juan por whatsapp",
+            "instala discord",
+        ]:
+            self.assertFalse(
+                wants_knowledge(q),
+                f"expected action intent (not knowledge) for {q!r}",
+            )
+
+    def test_empty_and_garbage(self):
+        self.assertFalse(wants_knowledge(""))
+        self.assertFalse(wants_knowledge("   "))
+
+    def test_scores_shape(self):
+        s = classify_intent("quien es batman")
+        self.assertIsNotNone(s)
+        self.assertTrue(-1.0 <= s.info <= 1.0)
+        self.assertTrue(-1.0 <= s.action <= 1.0)
+        self.assertAlmostEqual(s.margin, s.info - s.action, places=6)
+
+
+if __name__ == "__main__":
+    unittest.main()

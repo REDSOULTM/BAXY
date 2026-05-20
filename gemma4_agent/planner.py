@@ -124,11 +124,17 @@ def select_tool_names(
                 names.insert(0, "media")
 
     semantic_fallback_used = False
-    if not names and raw_text.strip():
-        # Skip the fallback for casual / conversational messages where the model
-        # should answer directly without tools. Heuristics:
-        # - very short (<=3 words) and no question mark.
-        # - greeting / smalltalk pattern.
+    if raw_text.strip():
+        # Sprint 8 (2026-05-20): the semantic router runs ALWAYS now, not
+        # only when keywords come up empty. Keyword matching is precise for
+        # action verbs but blind to intent expressed in wording our regex
+        # doesn't cover — especially informational questions in any
+        # language ("quién es X", "who is X", "de qué trata X"). The
+        # embedding model (paraphrase-multilingual, 50+ languages) covers
+        # that universally. We UNION the semantic suggestions onto the
+        # keyword names: keywords guarantee the action tools stay (no
+        # regression), semantics add the knowledge/intent tools keywords
+        # miss. Smalltalk/greetings still short-circuit to no tools.
         word_count = len(raw_text.split())
         casual = re.search(
             r"^\s*(hola|hello|hi|hey|hola!|buenos dias|buenas tardes|buenas noches|buen dia|"
@@ -140,10 +146,22 @@ def select_tool_names(
             r"que tal|how are you|como estas|como estan|tudo bem|ca va|come stai)\b",
             _fold_text(raw_text),
         )
-        if not casual and (word_count > 3 or "?" in raw_text or "¿" in raw_text):
+        # Run semantics unless it's pure smalltalk with no entity/question.
+        if not casual and (word_count >= 2 or "?" in raw_text or "¿" in raw_text):
             from .semantic_router import suggest_tools_semantic
-            names = suggest_tools_semantic(raw_text, k=12)
-            semantic_fallback_used = bool(names)
+            sem = suggest_tools_semantic(raw_text, k=12)
+            if sem:
+                if not names:
+                    # keywords found nothing → semantics is the sole source.
+                    names = list(sem)
+                    semantic_fallback_used = True
+                else:
+                    # union: keep keyword order first, append new semantic hits.
+                    existing = set(names)
+                    for s in sem:
+                        if s not in existing:
+                            names.append(s)
+                            existing.add(s)
 
     if not names:
         # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",
@@ -565,42 +583,26 @@ def _suggest_tools(step: str) -> list[str]:
         if "memory" not in tools:
             tools.insert(0, "memory")
 
-    # FACTUAL KNOWLEDGE questions ("habla de X", "que es X", "quien es X",
-    # "cuando salio X", "donde queda X", "como funciona X"). Si el LLM duda,
-    # debe poder llamar web. Incluir `web` en el subset.
-    # Heuristica: pregunta interrogativa + sustantivo (no es PC action obvia).
-    pc_action_keywords = (
-        "abre", "abrir", "cierra", "open", "close", "click",
-        "instala", "install", "borra", "delete", "copia",
-        "pon ", "play ", "pausa", "stop", "screenshot",
-        "envia", "send", "manda", "escribi", "type",
-    )
-    is_pc_action = any(kw in low for kw in pc_action_keywords)
-    interrogative = bool(
-        re.search(
-            r"\b(que es|que era|quien es|quien era|quien fue|"
-            r"cual es|cuales son|cuanto cuesta|cuanto vale|"
-            r"cuando salio|cuando se estreno|cuando lanzaron|cuando fue|cuando nacio|cuando murio|"
-            r"donde queda|donde esta|donde se|donde nacio|"
-            r"como funciona|como se hace|por que|porque|"
-            r"hablame de|hablame del|cuentame de|cuentame del|sabes de|sabes quien|"
-            r"what is|what was|who is|who was|which is|"
-            r"when did|when was|where is|where was|how does|why is|why does)\b",
-            low,
-        )
-        or low.strip().endswith("?")
-        or low.strip().endswith("¿")
-    )
-    if interrogative and not is_pc_action and "web" not in tools:
-        # Solo agregar web si la pregunta tiene una entidad referenciada
-        # (proper noun o sustantivo). Heuristica simple: 4+ palabras y no
-        # es smalltalk.
-        word_count = len(low.split())
-        if word_count >= 4 and not re.search(
-            r"\b(como estas|how are you|que tal|que pasa|hola|hello)\b",
-            low,
-        ):
-            tools.append("web")
+    # FACTUAL KNOWLEDGE questions ("quién es X", "de qué trata X", "who is
+    # X", "wer ist X" ...). Sprint 8 (2026-05-20): replaced the
+    # per-language interrogative regex with a SEMANTIC intent classifier
+    # (intent_router.wants_knowledge) — universal across languages, robust
+    # on short queries, no keyword maintenance. If the user's intent is
+    # informational (about the world, not a PC action), ensure web +
+    # knowledge are reachable so the LLM can look things up. We add them
+    # even when an entity name (a game, a person) already pulled action
+    # tools — asking ABOUT something is not the same as acting on it.
+    try:
+        from .intent_router import wants_knowledge
+        if wants_knowledge(step):
+            if "web" not in tools:
+                tools.append("web")
+            if "knowledge" not in tools:
+                tools.append("knowledge")
+    except Exception:
+        # Embedding model unavailable → degrade gracefully (no crash);
+        # the rest of the subset still stands.
+        pass
 
     return _dedupe(tools)
 
