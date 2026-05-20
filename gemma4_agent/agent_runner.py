@@ -307,6 +307,19 @@ class AgentRunner:
             def _bg_warmup_router() -> None:
                 try:
                     semantic_router._ensure_loaded(known_tool_names=tool_names_for_router)
+                    # Also warm the intent-router centroids (used EVERY turn by
+                    # the conversational gate + wants_knowledge) and the embed
+                    # cache, so the user's FIRST command doesn't pay the ~80-
+                    # anchor encode + a cold embed on the critical path. This
+                    # is the bulk of the ~14s cold "start" phase measured on a
+                    # fresh agent — paid here in the background instead.
+                    try:
+                        from . import intent_router as _ir
+                        _ir._ensure_centroids()
+                        _ir.is_conversational("warmup")
+                        semantic_router.embed("warmup")
+                    except Exception:
+                        pass
                     emit_stage(BUS.publish, "rerank_load",
                                "semantic router ready",
                                progress=100.0)
