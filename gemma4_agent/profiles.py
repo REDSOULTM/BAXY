@@ -135,7 +135,7 @@ PROFILES: dict[str, Profile] = {
         name="vram3",
         display_name="VRAM 3GB",
         context_size=16384,
-        model_path=_E2B_Q2_K_XL,
+        model_path=_E2B_Q4_K_M,  # subido de Q2_K_XL: Q2 no tool-callea fiable
         mmproj_path=_MMPROJ_E2B,
         vision_enabled=True,
         rerank_enabled=False,
@@ -145,10 +145,10 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 3-4 GB. E2B-UD-Q2_K_XL (la cuantización más chica usable), "
-            "ctx 16K (piso usable), VISIÓN ON, voz+STT ON (CPU). Medido: "
-            "~2.94 GB modelo + KV 16K -> entra en 4 GB físicos. La calidad del "
-            "modelo Q2 es la más baja del set; subí de perfil si tenés VRAM."
+            "GPU de 3-4 GB. E2B-Q4_K_M (subido desde Q2: Q2 no emite tool-calls "
+            "de forma fiable ni forzado — medido), ctx 16K, VISIÓN ON, voz+STT "
+            "ON (CPU). ~3.38 GB modelo + KV 16K -> ~5 GB física. Acciones "
+            "razonables; para tool-calling más fiable subí a vram4+ (E4B)."
         ),
         est_vram_mb=2940,
     ),
@@ -156,8 +156,8 @@ PROFILES: dict[str, Profile] = {
         name="vram4",
         display_name="VRAM 4GB",
         context_size=16384,
-        model_path=_E2B_Q4_K_M,
-        mmproj_path=_MMPROJ_E2B,
+        model_path=_E4B_Q4_K_M,  # subido de E2B-Q4: E4B tool-callea fiable (67%+)
+        mmproj_path=_MMPROJ_E4B,
         vision_enabled=True,
         rerank_enabled=False,
         parallel_tools=False,
@@ -166,9 +166,10 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 4-6 GB (modo gaming). E2B-Q4_K_M, ctx 16K (piso usable), "
-            "VISIÓN ON, voz+STT ON (CPU). ~3.36 GB modelo + KV 16K -> ~5 GB "
-            "física. Mejor calidad que vram3 (Q4 vs Q2)."
+            "GPU de 4-6 GB. E4B-Q4_K_M (subido desde E2B: la familia E4B "
+            "emite tool-calls de forma fiable — medido 67%+ vs ~0% en E2B-Q2), "
+            "ctx 16K, VISIÓN ON, voz+STT ON (CPU). ~4.96 GB modelo + KV 16K -> "
+            "~6.5 GB física. Primer perfil con acciones fiables."
         ),
         est_vram_mb=3360,
     ),
