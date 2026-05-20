@@ -122,12 +122,19 @@ _MMPROJ_E4B  = str(_E4B / "mmproj-F16.gguf")
 #
 # Columna "cargado" = delta real de nvidia-smi sobre idle Windows (2.06 GB),
 # CON visión y al ctx indicado. "física" = cargado + 1.5 GB reserva WDDM.
+#
+# PISO DE CONTEXTO (medido 2026-05-20): el system prompt del agente arma
+# 4.6k tokens en un "hola" y hasta ~9.2k en un turno multi-tool. Por eso
+# NINGÚN perfil baja de 16K de contexto — con menos, el propio prompt no entra
+# y hasta "hola" da 400 exceed_context_size. (Antes vram3/4/6 estaban en
+# 2K/4K/8K y eran INUSABLES.) El KV cache a 16K cuesta poca VRAM (~0.4-0.7 GB
+# con flash-attn + SWA); el modelo sigue siendo el costo dominante.
 # ===========================================================================
 PROFILES: dict[str, Profile] = {
     "vram3": Profile(
         name="vram3",
         display_name="VRAM 3GB",
-        context_size=2048,
+        context_size=16384,
         model_path=_E2B_Q2_K_XL,
         mmproj_path=_MMPROJ_E2B,
         vision_enabled=True,
@@ -139,16 +146,16 @@ PROFILES: dict[str, Profile] = {
         camera_enabled=False,
         description=(
             "GPU de 3-4 GB. E2B-UD-Q2_K_XL (la cuantización más chica usable), "
-            "ctx 2K, VISIÓN ON, voz+STT ON (CPU). Medido: 2.94 GB cargado con "
-            "visión -> ~4.4 GB física con reserva WDDM. La calidad del modelo "
-            "Q2 es la más baja del set; subí de perfil si tenés VRAM."
+            "ctx 16K (piso usable), VISIÓN ON, voz+STT ON (CPU). Medido: "
+            "~2.94 GB modelo + KV 16K -> entra en 4 GB físicos. La calidad del "
+            "modelo Q2 es la más baja del set; subí de perfil si tenés VRAM."
         ),
         est_vram_mb=2940,
     ),
     "vram4": Profile(
         name="vram4",
         display_name="VRAM 4GB",
-        context_size=4096,
+        context_size=16384,
         model_path=_E2B_Q4_K_M,
         mmproj_path=_MMPROJ_E2B,
         vision_enabled=True,
@@ -159,8 +166,8 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 4-6 GB (modo gaming). E2B-Q4_K_M, ctx 4K, VISIÓN ON, "
-            "voz+STT ON (CPU). Medido: 3.36 GB cargado con visión -> ~4.9 GB "
+            "GPU de 4-6 GB (modo gaming). E2B-Q4_K_M, ctx 16K (piso usable), "
+            "VISIÓN ON, voz+STT ON (CPU). ~3.36 GB modelo + KV 16K -> ~5 GB "
             "física. Mejor calidad que vram3 (Q4 vs Q2)."
         ),
         est_vram_mb=3360,
@@ -168,7 +175,7 @@ PROFILES: dict[str, Profile] = {
     "vram6": Profile(
         name="vram6",
         display_name="VRAM 6GB",
-        context_size=8192,
+        context_size=16384,
         model_path=_E4B_Q4_K_M,
         mmproj_path=_MMPROJ_E4B,
         vision_enabled=True,
@@ -180,8 +187,8 @@ PROFILES: dict[str, Profile] = {
         camera_enabled=False,
         description=(
             "GPU de 6-8 GB. Salta a la familia E4B (más capaz que E2B) en "
-            "Q4_K_M, ctx 8K, VISIÓN ON, rerank ON, voz+STT ON (CPU). Medido: "
-            "4.96 GB cargado con visión -> ~6.5 GB física."
+            "Q4_K_M, ctx 16K, VISIÓN ON, rerank ON, voz+STT ON (CPU). Medido: "
+            "~4.96 GB modelo + KV 16K -> ~6.5 GB física."
         ),
         est_vram_mb=4960,
     ),

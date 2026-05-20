@@ -386,12 +386,20 @@ class AgentRunner:
             # primer turno simplemente paga el TTFT completo.
             try:
                 from .prewarm import prewarm_kv
-                # Construir el system_prompt real que el agente usaria. Le
-                # pasamos mode=None/plan=None para que sea el prompt base
-                # mas el tool_schemas_hint (que sera lo mas pesado del
-                # prefix). Tools=None: el catalogo ya esta en el system
-                # prompt como bloque markdown EXACT.
-                sys_msg = self._agent._system_message(mode=None, plan=None)
+                # Warm the STABLE prefix only — the base system prompt with a
+                # MINIMAL tool subset, NOT all 64 tools. Two reasons:
+                #   1. The runtime never sends all 64 tools (the router always
+                #      subsets to <=16), so warming the full catalog warms a
+                #      prefix that's never actually reused.
+                #   2. With all tools the prompt is ~22k tokens and OVERFLOWS
+                #      any profile under 32K (the 400 exceed_context_size the
+                #      user hit). The base+minimal subset (~4-5k) fits every
+                #      profile (>=16K) and still primes the bulk of the reused
+                #      prefix (core prompt + guards + memory).
+                sys_msg = self._agent._system_message(
+                    mode=None, plan=None,
+                    selected_tool_names=["session", "safety"],
+                )
                 sys_content = sys_msg.get("content", "")
                 prewarm_result = prewarm_kv(
                     self._agent.client,
