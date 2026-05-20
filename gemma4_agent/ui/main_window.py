@@ -1163,15 +1163,134 @@ class MainWindow(QMainWindow):
     def _start_voice_controller(self, voice_cfg: dict[str, Any]) -> None:
         if self._voice_controller is not None:
             return
-        # Sprint R3.1 clean-slate (2026-05-19): VoiceController removed
-        # pending pipeline redesign. UI returns early with a clear message
-        # so the user knows voice is intentionally offline, not crashed.
+        # Sprint 7 (2026-05-19): the clean-slate VoiceController was
+        # replaced by the VoiceRunner singleton (voice_runner.py), which
+        # owns the new VoicePipeline (VAD + LiveKit wake + Whisper STT +
+        # Piper TTS). We adapt the old controller call-sites onto VOICE
+        # via a thin shim so the rest of MainWindow stays untouched.
+        stt_model = voice_cfg.get("stt_model")
+        if stt_model and str(stt_model).strip().lower() not in {"", "auto"}:
+            os.environ["GEMMA4_VOICE_STT_MODEL"] = str(stt_model)
+        else:
+            os.environ.pop("GEMMA4_VOICE_STT_MODEL", None)
+        tts_voice = voice_cfg.get("tts_voice")
+        if tts_voice:
+            os.environ["GEMMA4_VOICE_TTS_VOICE"] = str(tts_voice)
+
+        from ..voice_runner import VOICE
+        from ..agent_runner import RUNNER
+
+        # Bridge so pipeline callbacks (audio thread) reach the GUI thread
+        # safely. state_changed is already wired to _on_voice_state_main,
+        # which drives the HUD animation (idle→listening→thinking).
+        self._voice_bridge = VoiceBridge(self)
+        self._voice_bridge.state_changed.connect(self._on_voice_state_main)
+        bridge = self._voice_bridge
+        beep_enabled = bool(voice_cfg.get("feedback_beep", True))
+
+        def _play_beep() -> None:
+            if not beep_enabled:
+                return
+            try:
+                import winsound
+                # Short two-tone chirp = "I'm listening".
+                winsound.Beep(880, 90)
+            except Exception:
+                pass
+
+        class _VoiceShim:
+            """Adapts old VoiceController call-sites onto VoiceRunner."""
+
+            def __init__(self) -> None:
+                self._v = VOICE
+
+            def enable(self) -> bool:
+                # Wire UI feedback BEFORE enabling so the first wake is caught.
+                self._v.set_on_state(lambda s: bridge.state_changed.emit(s))
+                self._v.set_on_wake_event(_play_beep)
+                ok = self._v.enable()
+                if ok:
+                    # Route transcribed commands to the agent as turns.
+                    self._v.set_on_command(lambda text: RUNNER.submit(text))
+                return ok
+
+            def disable(self) -> None:
+                self._v.disable()
+
+            def shutdown(self) -> None:
+                self._v.disable()
+
+            # TTS bridge — LLM reply streams through here to Piper.
+            def begin_tts(self) -> None:
+                pass
+
+            def feed_tts_chunk(self, chunk: str) -> None:
+                try:
+                    self._v.feed_tts(chunk)
+                except Exception:
+                    pass
+
+            def end_tts(self) -> None:
+                # Flush the trailing partial sentence — the agent's reply
+                # often doesn't end in . ? ! so feed_text would otherwise
+                # leave it unspoken in the buffer.
+                try:
+                    self._v.flush_tts()
+                except Exception:
+                    pass
+
+            # Tolerant no-ops for live-config setters the new runner
+            # doesn't expose yet (mute/followup/close-phrases).
+            def set_tts_muted(self, *_a, **_k) -> None:
+                pass
+
+            def set_followup_seconds(self, *_a, **_k) -> None:
+                pass
+
+            def set_close_phrases(self, *_a, **_k) -> None:
+                pass
+
+            def get_failed_components(self) -> list[str]:
+                err = getattr(self._v, "last_error", None)
+                return [err] if err else []
+
+        controller = _VoiceShim()
+        self._voice_controller = controller
         self.log.append(
-            "voice pipeline is being redesigned — UI voice mode disabled "
-            "until the new wake+STT lands",
-            "warn",
+            "voice: enabling (VAD + LiveKit wake + Whisper STT + Piper)...",
+            "sys",
         )
+        from PyQt6.QtCore import QThread
+
+        class _Loader(QThread):
+            def __init__(self, ctrl, parent):  # noqa: ANN001
+                super().__init__(parent)
+                self.ctrl = ctrl
+                self.ok = False
+
+            def run(self) -> None:
+                self.ok = self.ctrl.enable()
+
+        loader = _Loader(controller, self)
+
+        def _done() -> None:
+            if loader.ok:
+                self.log.append(
+                    "voice: servicio de voz levantado — decí 'hey gemma'",
+                    "ok",
+                )
+            else:
+                self.log.append("voice: failed to enable; check logs", "err")
+                for c in controller.get_failed_components():
+                    self.log.append(f"voice: {c}", "warn")
+                # Reset so a retry can re-arm.
+                self._voice_controller = None
+
+        loader.finished.connect(_done)
+        loader.start()
+        self._voice_loader = loader  # keep alive
         return
+        # ---- dead code below: original VoiceController path (removed) ----
         try:
             from ..voice.controller import VoiceController
         except Exception as exc:

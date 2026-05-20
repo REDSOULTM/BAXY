@@ -68,8 +68,19 @@ class VoicePipeline:
         pipe.stop()
     """
 
-    def __init__(self, on_command: CommandCallback) -> None:
+    def __init__(
+        self,
+        on_command: CommandCallback,
+        on_state: Callable[[str], None] | None = None,
+        on_wake_event: Callable[[], None] | None = None,
+    ) -> None:
         self._on_command = on_command
+        # Optional UI hooks (Sprint 7): on_state(state_name) fires on every
+        # state transition so the HUD can animate idle→listening→thinking;
+        # on_wake_event() fires the instant the wake word triggers (for the
+        # beep / "I heard you" feedback).
+        self._on_state = on_state
+        self._on_wake_event = on_wake_event
         self._vad = SileroVAD()
         self._wake = WakeDetector(on_wake=self._on_wake)
         self._stt = STT()
@@ -240,6 +251,16 @@ class VoicePipeline:
 
     # ----- state transitions ------------------------------------------
 
+    def _emit_state(self, name: str) -> None:
+        """Notify the UI of a state transition (best-effort)."""
+        cb = self._on_state
+        if cb is None:
+            return
+        try:
+            cb(name)
+        except Exception as exc:
+            logger.debug("on_state callback raised: %s", exc)
+
     def _on_wake(self, phrase: str, score: float) -> None:
         """Wake fired. Transition IDLE -> CAPTURE.
 
@@ -260,6 +281,13 @@ class VoicePipeline:
             "wake -> CAPTURE (phrase=%s score=%.3f preroll_chunks=%d)",
             phrase, score, len(self._capture_buf),
         )
+        # UI feedback: beep + "listening" animation the instant we wake.
+        if self._on_wake_event is not None:
+            try:
+                self._on_wake_event()
+            except Exception as exc:
+                logger.debug("on_wake_event raised: %s", exc)
+        self._emit_state("LISTENING")
 
     def _finish_capture(self, reason: str) -> None:
         """Transition CAPTURE -> TRANSCRIBE -> COOLDOWN."""
@@ -267,6 +295,7 @@ class VoicePipeline:
             if self._state != State.CAPTURE:
                 return
             self._state = State.TRANSCRIBE
+        self._emit_state("TRANSCRIBING")
         audio = (np.concatenate(self._capture_buf)
                  if self._capture_buf else np.zeros(0, dtype=np.int16))
         dur = audio.size / SAMPLE_RATE
@@ -311,3 +340,4 @@ class VoicePipeline:
         self._capture_buf = []
         self._eos_silence_count = 0
         logger.debug("-> IDLE (%s)", reason)
+        self._emit_state("IDLE_LISTENING")

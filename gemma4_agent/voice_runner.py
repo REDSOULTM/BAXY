@@ -53,6 +53,8 @@ class VoiceRunner:
         self._pipeline: VoicePipeline | None = None
         self._tts: StreamingTTS | None = None
         self._on_command: CommandCallback | None = None
+        self._on_state: Callable[[str], None] | None = None
+        self._on_wake_event: Callable[[], None] | None = None
         self._enabled: bool = False
         self._loading: bool = False
         self.last_error: str | None = None
@@ -80,7 +82,11 @@ class VoiceRunner:
                     self._tts.start()
             # Pipeline (loads VAD, wake, STT models; ~1-3s blocking).
             if self._pipeline is None:
-                self._pipeline = VoicePipeline(on_command=self._handle_command)
+                self._pipeline = VoicePipeline(
+                    on_command=self._handle_command,
+                    on_state=self._handle_state,
+                    on_wake_event=self._handle_wake_event,
+                )
                 # Wire TTS-busy signal so the wake detector pauses
                 # while Piper is speaking (echo avoidance).
                 self._pipeline.set_tts_busy_fn(self._is_tts_busy)
@@ -138,6 +144,34 @@ class VoiceRunner:
         this to enqueue a turn)."""
         self._on_command = cb
 
+    def set_on_state(self, cb: Callable[[str], None] | None) -> None:
+        """Register a UI callback fired on every pipeline state change
+        (IDLE_LISTENING / LISTENING / TRANSCRIBING). Lets the HUD animate."""
+        self._on_state = cb
+
+    def set_on_wake_event(self, cb: Callable[[], None] | None) -> None:
+        """Register a UI callback fired the instant the wake word triggers
+        (used for the beep / visual 'I heard you' feedback)."""
+        self._on_wake_event = cb
+
+    def _handle_state(self, state: str) -> None:
+        cb = getattr(self, "_on_state", None)
+        if cb is None:
+            return
+        try:
+            cb(state)
+        except Exception as exc:
+            logger.debug("on_state callback raised: %s", exc)
+
+    def _handle_wake_event(self) -> None:
+        cb = getattr(self, "_on_wake_event", None)
+        if cb is None:
+            return
+        try:
+            cb()
+        except Exception as exc:
+            logger.debug("on_wake_event callback raised: %s", exc)
+
     def _handle_command(self, text: str, audio_secs: float, raw_text: str) -> None:
         """Pipeline callback. Dispatches to the registered on_command."""
         logger.info(
@@ -174,6 +208,17 @@ class VoiceRunner:
         if self._tts is None or not self._tts.is_loaded():
             return 0
         return self._tts.feed_text(text_chunk)
+
+    def flush_tts(self) -> int:
+        """Force any buffered partial sentence to be spoken. The agent's
+        reply often doesn't end in . ? ! so feed_text leaves it in the
+        buffer; call this at end-of-reply so the tail is never dropped."""
+        if self._tts is None or not self._tts.is_loaded():
+            return 0
+        try:
+            return self._tts.flush()
+        except Exception:
+            return 0
 
     def _is_tts_busy(self) -> bool:
         """Pipeline polls this to decide whether to pause wake
