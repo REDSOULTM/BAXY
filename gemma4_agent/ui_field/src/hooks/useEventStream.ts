@@ -257,6 +257,13 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
         agent: { built: ev.built, healthy: ev.healthy, ready: ev.ready },
       };
     case 'boot_stage': {
+      // A stage that reports phase:"completed" (e.g. the profile swap) is a
+      // ONE-SHOT that finished — clear the boot overlay so the placeholder
+      // returns to the normal chat prompt instead of getting stuck on the
+      // stage name ("profile_swap") forever.
+      if (ev.phase === 'completed' || ev.stage === 'ready') {
+        return { ...prev, bootStage: null };
+      }
       // El shape extendido (prewarm.py) trae elapsed_s/ok/system_prompt_chars
       // en lugar de label/progress. Construimos un label legible asi la UI
       // (FieldCenter placeholder + log) muestra info util sin caso especial.

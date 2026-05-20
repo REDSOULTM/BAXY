@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubstratePanel } from './components/SubstratePanel';
 import { ActivityPanel } from './components/ActivityPanel';
 import { FieldCenter } from './components/FieldCenter';
@@ -68,9 +68,17 @@ export default function App() {
     const id = window.setInterval(sync, 4000);
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
+  // Start from the last-used chip, defaulting to vram4 (a safe modest profile)
+  // — NOT the old 'bal' alias, which matches no vramN chip and left nothing
+  // highlighted. The real source of truth is the backend; we sync it on mount
+  // below so the highlighted chip always reflects what's actually loaded.
   const [profile, setProfile] = useState<string>(() => {
-    return localStorage.getItem('field.profile') ?? 'bal';
+    return localStorage.getItem('field.profile') ?? 'vram4';
   });
+  // True until we've reconciled `profile` with GET /profile. Prevents the
+  // push-effect below from PUTting (and restarting llama-server) on first
+  // mount before we even know the real active profile.
+  const profileSynced = useRef(false);
   const [activeSurface, setActiveSurface] = useState<SurfaceId>(() => {
     const stored = localStorage.getItem('field.surface');
     if (stored === 'sessions' || stored === 'memory' || stored === 'triggers' || stored === 'tools') {
@@ -108,13 +116,36 @@ export default function App() {
     setVisionDismissedAt(stream.visionThreshold?.imageCount ?? null);
   }, [stream.visionThreshold]);
 
-  // persist profile so the chip selection survives reloads, AND propagate
-  // the change to the backend so set_active_profile + apply_profile_to_env
-  // pick up the new VRAM profile. happens on every change including the
-  // initial mount (cheap PUT to keep the agent + UI in sync). Surface a
-  // toast when the PUT itself errors so the user knows the backend didn't
-  // accept the new profile (chip stays visually selected for transparency).
+  // On mount: read the REAL active profile from the backend and reflect it in
+  // the chip. This is the source of truth (the launcher booted some profile),
+  // so the highlighted chip matches what's actually loaded — without this the
+  // chip showed a stale localStorage value (or the old 'bal' alias) and
+  // nothing was highlighted. We mark profileSynced AFTER setting it so the
+  // push-effect below doesn't immediately PUT it back (which would restart
+  // llama-server for no reason).
   useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch('/profile');
+        if (!cancelled && r.ok) {
+          const data = await r.json();
+          if (data?.active) setProfile(String(data.active));
+        }
+      } catch { /* keep the localStorage default; sync flag still set below */ }
+      finally { profileSynced.current = true; }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Push profile changes to the backend so set_active_profile +
+  // apply_profile_to_env + the llama-server restart happen. We SKIP the very
+  // first run (before the mount-sync above resolves) so we don't fire a PUT —
+  // and a model reload — for a profile the backend already has. After that,
+  // every user click PUTs once. Surface a toast on rejection (chip stays
+  // selected for transparency).
+  useEffect(() => {
+    if (!profileSynced.current) return;  // don't PUT until reconciled
     localStorage.setItem('field.profile', profile);
     fetch('/profile', {
       method: 'PUT',

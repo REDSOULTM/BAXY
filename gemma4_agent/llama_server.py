@@ -26,6 +26,7 @@ import os
 import re
 import socket
 import subprocess
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -479,6 +480,11 @@ class LlamaServerManager:
         self._external_detected: bool = False
         self._external_context_mismatch_msg: Optional[str] = None
         self._log_dir = log_dir or (PACKAGE_ROOT / "logs")
+        # Serializes profile swaps: rapid consecutive clicks (vram3->vram6->
+        # vram4) would otherwise spawn overlapping restart threads that fight
+        # over the port ("NOT responding" / "boot timed out"). With the lock
+        # they run one-after-another and the last profile wins cleanly.
+        self._restart_lock = threading.Lock()
 
     def is_running(self) -> bool:
         """True si tenemos un proceso vivo gestionado por este manager.
@@ -785,26 +791,29 @@ class LlamaServerManager:
 
         For standby (server_running=False) we just stop and report 'stopped'.
         Returns the start() result string, or 'stopped' for standby.
-        """
-        # Always tear down the current server first.
-        if self.is_running():
-            self.stop()
-        else:
-            _kill_server_on_port(self._config)
-        self._proc = None
-        self._current_profile = None
-        self._external_detected = False
-        self._external_context_mismatch_msg = None
 
-        if not profile.server_running:
-            # standby: leave it down.
-            return "stopped"
-        # Give the OS a moment to release the port + VRAM before re-binding.
-        for _ in range(20):
-            if not port_in_use():
-                break
-            time.sleep(0.25)
-        return self.start(profile, wait_health=wait_health, timeout_s=timeout_s)
+        Serialized by _restart_lock so overlapping swaps don't fight the port.
+        """
+        with self._restart_lock:
+            # Always tear down the current server first.
+            if self.is_running():
+                self.stop()
+            else:
+                _kill_server_on_port(self._config)
+            self._proc = None
+            self._current_profile = None
+            self._external_detected = False
+            self._external_context_mismatch_msg = None
+
+            if not profile.server_running:
+                # standby: leave it down.
+                return "stopped"
+            # Give the OS a moment to release the port + VRAM before re-binding.
+            for _ in range(40):
+                if not port_in_use():
+                    break
+                time.sleep(0.25)
+            return self.start(profile, wait_health=wait_health, timeout_s=timeout_s)
 
     def restart(self, profile: Profile, **start_kwargs: object) -> str:
         """stop() + start(profile)."""

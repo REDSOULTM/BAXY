@@ -111,6 +111,12 @@ export type ServerEvent =
       label?: string | null;
       progress?: number | null;
       error?: string | null;
+      // one-shot stages (e.g. profile_swap) report a lifecycle phase; when
+      // 'completed' the UI clears the boot overlay instead of pinning the
+      // stage name as the placeholder.
+      phase?: 'starting' | 'completed' | string;
+      profile?: string;
+      result?: string;
       // shape extendido del prewarm
       elapsed_s?: number;
       ok?: boolean;
