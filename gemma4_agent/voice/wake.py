@@ -131,22 +131,34 @@ class WakeDetector:
         if self._loaded:
             return True
 
-        # Try LiveKit first.
+        # Try LiveKit first — via the pure-onnxruntime runtime (works on
+        # Python 3.10; does NOT import the livekit-wakeword package which
+        # requires 3.11). Needs melspectrogram.onnx + embedding_model.onnx
+        # + hey_gemma.onnx side by side in models/livekit/.
         if LIVEKIT_MODEL_PATH.exists():
             try:
-                from livekit.wakeword.inference import WakeWordModel
-                self._livekit_model = WakeWordModel(models=[str(LIVEKIT_MODEL_PATH)])
-                self._livekit_score_key = LIVEKIT_MODEL_PATH.stem  # "hey_gemma"
-                self._backend = "livekit"
-                self.using_custom_model = True
-                self._loaded = True
-                logger.info(
-                    "WakeDetector ready (LiveKit %s)", LIVEKIT_MODEL_PATH,
+                from .livekit_runtime import LiveKitWakeRuntime
+                rt = LiveKitWakeRuntime(
+                    LIVEKIT_MODEL_PATH.parent, LIVEKIT_MODEL_PATH.stem,
                 )
-                return True
+                if rt.load():
+                    self._livekit_model = rt
+                    self._livekit_score_key = LIVEKIT_MODEL_PATH.stem
+                    self._backend = "livekit"
+                    self.using_custom_model = True
+                    self._loaded = True
+                    logger.info(
+                        "WakeDetector ready (LiveKit pure-ORT %s)",
+                        LIVEKIT_MODEL_PATH,
+                    )
+                    return True
+                logger.warning(
+                    "LiveKit runtime load failed (%s), falling back to OWW",
+                    rt.last_error,
+                )
             except Exception as exc:
                 logger.warning(
-                    "LiveKit model load failed (%s), falling back to OWW",
+                    "LiveKit runtime import/load failed (%s), falling back to OWW",
                     exc,
                 )
 
@@ -238,11 +250,11 @@ class WakeDetector:
         if self._lk_ring.size < LIVEKIT_WINDOW_SAMPLES:
             return
         try:
-            scores = self._livekit_model.predict(self._lk_ring)
+            # LiveKitWakeRuntime.predict() returns a float directly.
+            score = float(self._livekit_model.predict(self._lk_ring))
         except Exception as exc:
             logger.warning("LiveKit predict failed: %s", exc)
             return
-        score = float(scores.get(self._livekit_score_key, 0.0))
         self._evaluate_score(score, backend="livekit",
                              threshold=LIVEKIT_THRESHOLD,
                              partial=LIVEKIT_THRESHOLD * 0.5)
