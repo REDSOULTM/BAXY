@@ -39,7 +39,13 @@ def redact_sensitive(value: Any, depth: int = 0) -> Any:
         out: dict[str, Any] = {}
         for k, v in value.items():
             if isinstance(k, str) and _SENSITIVE_KEY_RX.search(k):
-                out[k] = "***REDACTED***" if v not in (None, "") else v
+                # Keep None / "" so logs distinguish "absent" from "redacted".
+                # Use `is`/explicit compare instead of `v not in (None, "")`:
+                # that membership check raises ValueError on a numpy array value
+                # ("truth value ambiguous"), which would crash this safety-path
+                # helper (called from hard_gate / confirmation prompts).
+                keep_as_is = v is None or (isinstance(v, str) and v == "")
+                out[k] = v if keep_as_is else "***REDACTED***"
             else:
                 out[k] = redact_sensitive(v, depth + 1)
         return out
