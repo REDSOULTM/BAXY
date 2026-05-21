@@ -651,9 +651,9 @@ class Gemma4Agent:
                     break
         # Hotfix F 2026-05-17: pending_intent cross-turn rescue.
         # When a previous tool returned status='needs_user', the slot
-        # holds the tool name so the next turn's planner and router_v2
-        # can widen the subset toward it — regardless of the user's
-        # reply text (language-agnostic).
+        # holds the tool name so the next turn's planner can widen the
+        # subset toward it — regardless of the user's reply text
+        # (language-agnostic).
         pending_intent = (
             self.state.get_pending_intent(self._turn_counter)
             if hasattr(self.state, "get_pending_intent") else None
@@ -812,52 +812,14 @@ class Gemma4Agent:
                             user_text=raw_text[:60],
                         )
         semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
-        # Sprint 8a: router_v2 opt-in. By default this block is a no-op
-        # (v2 is gated by GEMMA4_ROUTER_V2). In SHADOW mode it only
-        # logs how v2 would have routed without changing v1's pick;
-        # this is what we'll run during Sprint 8c's blind test. With
-        # the real flag on, v2's subset REPLACES v1's; the persona
-        # nudge / continuation-inherit logic below still applies on
-        # top of either pick.
-        try:
-            from .router_v2 import is_enabled as _v2_enabled, is_shadow as _v2_shadow, route_v2
-            _v2_on = _v2_enabled()
-            _shadow = (not _v2_on) and _v2_shadow()  # shadow only when v1 still authoritative
-            if _v2_on or _shadow:
-                # Hotfix F 2026-05-17: pass pending_tool_hint so a parked
-                # intent (status='needs_user' from prior turn) widens the
-                # subset regardless of the user reply's wording.
-                # Hotfix I 2026-05-17: also honor pending_question
-                # (tool ran but emitted clarification_needed) — same
-                # kwarg, the router doesn't care about the source.
-                # pending_intent wins when both are set.
-                _pending_tool = (pending_intent or {}).get("tool") if pending_intent else None
-                if not _pending_tool and hasattr(self.state, "get_pending_question"):
-                    _pq = self.state.get_pending_question(self._turn_counter)
-                    if _pq:
-                        _pending_tool = _pq.get("tool")
-                _v2_subset, _v2_telemetry = route_v2(
-                    raw_text_early or "",
-                    pending_tool_hint=_pending_tool,
-                )
-                self.trace.event(
-                    turn_id, "router_v2",
-                    authoritative=_v2_on,
-                    shadow=_shadow,
-                    v2_subset=list(_v2_subset),
-                    v1_subset=list(selected_tool_names),
-                    agreement=sorted(set(_v2_subset) & set(selected_tool_names)),
-                    disagreement_v2_only=sorted(set(_v2_subset) - set(selected_tool_names)),
-                    disagreement_v1_only=sorted(set(selected_tool_names) - set(_v2_subset)),
-                    **_v2_telemetry,
-                )
-                if _v2_on:
-                    selected_tool_names = list(_v2_subset)
-        except Exception as _v2_exc:  # noqa: BLE001 — never break a turn
-            try:
-                self.trace.event(turn_id, "router_v2_error", error=str(_v2_exc))
-            except Exception:
-                pass
+        # router_v2 (BM25+RRF hybrid) was removed 2026-05-21. All four router
+        # research reports agreed it was structurally wrong for short voice
+        # queries (TF collapses to 1; RRF amplifies the degenerate lexical
+        # ranker's noise) and a live probe caught it routing garbage. The
+        # unified router — fine-tuned encoder + Tool2Vec + calibrated abstain
+        # head, all driven through select_tool_names — replaced it with a
+        # measured-better result (holdout recall 0.835->0.881, no-tool
+        # 0.512->0.628). See docs/architecture/router_rebuild_2026_05_21.md.
         # Persona nudge: ensure the persona's preferred tools are in the
         # subset. Append without duplicating; _cap_tools later trims if it
         # blows the limit. Default persona has no preferred tools so this is

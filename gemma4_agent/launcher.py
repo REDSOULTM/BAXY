@@ -23,30 +23,6 @@ from .profiles import apply_profile_to_env, get_active_profile
 from .tools import COMPOUND_TOOL_SCHEMAS
 
 
-def _emit_router_v2_summary() -> None:
-    """Hotfix H 2026-05-17. Best-effort: log the v2 session
-    summary on shutdown so operators can track router_v2 health
-    over real sessions without instrumenting every turn. No-op if
-    the singleton was never instantiated (e.g. launcher status
-    that doesn't touch routing).
-    """
-    try:
-        from .router_v2 import RouterV2
-        router = RouterV2._instance
-        if router is None:
-            return
-        summary = router.session_summary()
-        # Only emit when there's something to report — keeps the
-        # status command quiet for users that don't run a chat.
-        if summary.get("calls_total", 0) > 0:
-            print(f"router_v2_session_summary {summary}")
-    except Exception:
-        pass
-
-
-atexit.register(_emit_router_v2_summary)
-
-
 def _shutdown_voice_recorder() -> None:
     """Voice recorder removed in Sprint R3.1 clean-slate (2026-05-19).
     Stub kept so atexit registration doesn't error; replaced when
@@ -143,38 +119,8 @@ def print_status(args: argparse.Namespace) -> int:
     return 0
 
 
-def _ensure_router_v2_model() -> None:
-    """Idempotent: download e5-small ONNX + tokenizer + smalltalk
-    centroid on first launch. ~113 MB int8 model.
-
-    Hotfix E 2026-05-17. The previous path-to-production required
-    the user to run scripts/bootstrap_e5_small.py manually. That
-    step is now automated — if MODEL_PATH doesn't exist, the
-    launcher invokes the same bootstrap script before starting.
-    Already-installed models are detected by checking MODEL_PATH;
-    re-runs print 'already complete' and return in <1s.
-
-    Errors during bootstrap log a warning but do NOT block the
-    launcher — v1 is still a valid fallback path.
-    """
-    try:
-        from .router_v2 import MODEL_PATH
-        if MODEL_PATH.exists():
-            return
-        print(
-            "First-run router_v2 bootstrap: downloading e5-small "
-            "(~113 MB, multilingual int8 ONNX) to ~/.gemma4/models/e5-small/. "
-            "This happens once."
-        )
-        from scripts.bootstrap_e5_small import main as bootstrap_main
-        bootstrap_main()
-    except Exception as exc:
-        print(f"router_v2 bootstrap failed ({exc}); falling back to v1 routing.")
-
-
 def start_server(args: argparse.Namespace, *, wait: bool = True) -> int:
     """Arranca llama-server usando el LlamaServerManager + perfil activo."""
-    _ensure_router_v2_model()
     config = config_with_args(args)
 
     # Aplicar perfil activo al entorno antes de construir el comando

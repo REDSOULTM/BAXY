@@ -318,9 +318,9 @@ class AgentState:
     # Pending intent (hotfix F 2026-05-17)
     # ------------------------------------------------------------------
     # Cross-turn rescue slot. Triggered when a tool result returns
-    # status='needs_user'; consumed by router_v2 as a tool hint on the
-    # NEXT turn. Language-agnostic: the slot stores tool name + args,
-    # never user-reply text. See feat(state) commit in hotfix F.
+    # status='needs_user'; consumed by the planner (pending_intent) as a tool
+    # hint on the NEXT turn so a parked slot-fill survives. Language-agnostic:
+    # the slot stores tool name + args, never user-reply text.
 
     def set_pending_intent(
         self,
