@@ -88,9 +88,27 @@ BASE model's portable files so the artifact loads cross-version. Do NOT install
 `optimum` into the 3.10 runtime env; if ONNX export is wanted, use an isolated
 venv.
 
-## router_v2 stays dead
+## Unification (the 4 reports' consolidation ask)
 
-All four reports agreed BM25+RRF is structurally wrong for short voice queries
-(TF collapses to 1; RRF amplifies the degenerate lexical ranker's noise). v2
-remains OFF/opt-in; its 52 tests still pass untouched. It is a candidate for
-deletion once this pipeline is the sole authoritative router.
+The router is now ONE thing with ONE decision per turn, exposed through a single
+public entry point `gemma4_agent/router.py`:
+
+```python
+from gemma4_agent import router
+router.select_tool_names(text, plan, ...)   # the one decision
+router.classify_intent(...) / router.suggest_tools_scored(...) / router.load_abstain_model()
+```
+
+The internals remain as cohesive single-responsibility modules (planner =
+orchestrator + keyword layer + abstain gate; semantic_router = fine-tuned
+encoder + Tool2Vec retrieval; intent_router = intent centroids; abstain_head =
+calibrated reject option). Merging them into one megafile would hurt readability
+and testability; the facade unifies the *interface*, which is what "one router"
+means in practice.
+
+**router_v2 was DELETED** (2026-05-21). All four reports agreed BM25+RRF is
+structurally wrong for short voice queries (TF collapses to 1; RRF amplifies the
+degenerate lexical ranker's noise) and a live probe caught it routing garbage.
+It was already OFF, so removal left the holdout unchanged (0.881/0.628) — pure
+debt cleanup. Removed with it: its 4 dedicated tests, `scripts/bootstrap_e5_small.py`
+(served only v2), the agent.py shadow-routing block, and the launcher bootstrap.
