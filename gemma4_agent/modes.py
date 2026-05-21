@@ -7,6 +7,18 @@ from dataclasses import dataclass
 from typing import Any
 
 
+# Per-call LLM timeout is DERIVED from the mode's token budget, so it can't
+# drift from the actual work. Floor decode speed = the slowest realistic case
+# (CPU-bound / contended GPU ~20 tok/s; measured floor, real is 40-70). Prefill
+# headroom covers the ~5-8K-token system prompt + tool schemas being processed.
+# Clamped so a tiny reply still gets a sane minimum and a long one doesn't run
+# to the global 180s default.
+_FLOOR_TOK_S = 20.0          # worst realistic decode tok/s
+_PREFILL_HEADROOM_S = 12.0   # process system prompt + tools + connect/health
+_MIN_CALL_TIMEOUT_S = 20.0
+_MAX_CALL_TIMEOUT_S = 150.0
+
+
 @dataclass(frozen=True)
 class AgentMode:
     name: str
@@ -22,6 +34,20 @@ class AgentMode:
     # larger budget for genuine multi-step reasoning. llama.cpp honors this
     # via `thinking_budget_tokens` in the request body (verified on b9090).
     thinking_budget: int = -1
+
+    @property
+    def request_timeout_s(self) -> float:
+        """Per-call wall-clock deadline derived from this mode's token budget.
+
+        Without a per-call cap the main LLM call inherits the global 180s
+        default, so a hung/slow turn blocks the user for up to
+        max_agent_turns * 180s. For a voice assistant, failing fast and letting
+        the user re-ask beats a multi-minute freeze. The bound scales with the
+        work the mode actually permits (tokens), at the slowest realistic
+        decode speed, so it never trips on a legitimately long reply."""
+        budget_tokens = self.max_tokens + max(0, self.thinking_budget)
+        est = budget_tokens / _FLOOR_TOK_S + _PREFILL_HEADROOM_S
+        return float(max(_MIN_CALL_TIMEOUT_S, min(_MAX_CALL_TIMEOUT_S, est)))
 
 
 MODE_NAMES = {"auto", "fast_action", "quick_action", "deep_action", "vision_action", "audio_mode", "research"}

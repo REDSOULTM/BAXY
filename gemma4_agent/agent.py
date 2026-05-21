@@ -1026,6 +1026,10 @@ class Gemma4Agent:
                     model=_call_model,
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=_pass_max,
+                    # Per-mode deadline so a hung/slow call fails fast instead of
+                    # blocking up to the global 180s * max_agent_turns. Derived
+                    # from the token budget (see AgentMode.request_timeout_s).
+                    timeout_s=mode.request_timeout_s,
                 )
             except Exception as exc:
                 if _looks_like_context_overflow(str(exc)):
@@ -1051,6 +1055,7 @@ class Gemma4Agent:
                             model=self._router_model_for(_msgs_r),
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
+                            timeout_s=mode.request_timeout_s,
                         )
                     except Exception as retry_exc:
                         _progress(progress, "error", error=str(retry_exc), tools=len(events))
