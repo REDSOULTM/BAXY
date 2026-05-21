@@ -652,17 +652,17 @@ class SettingsDialog(QDialog):
         sw_row.addWidget(QLabel("Cambiar a:"))
         self._prof_auto_down = QComboBox()
         self._prof_auto_down.setStyleSheet(combo_qss())
-        for n in ("light", "balanced", "standby"):
+        for n in ("vram3", "vram4", "vram6", "standby"):
             self._prof_auto_down.addItem(n)
-        self._prof_auto_down.setCurrentText(str(auto.get("downgrade_to", "light")))
+        self._prof_auto_down.setCurrentText(str(auto.get("downgrade_to", "vram4")))
         sw_row.addWidget(self._prof_auto_down)
         sw_row.addSpacing(12)
         sw_row.addWidget(QLabel("Volver a:"))
         self._prof_auto_up = QComboBox()
         self._prof_auto_up.setStyleSheet(combo_qss())
-        for n in ("balanced", "performance"):
+        for n in ("vram6", "vram8", "vram12"):
             self._prof_auto_up.addItem(n)
-        self._prof_auto_up.setCurrentText(str(auto.get("restore_to", "balanced")))
+        self._prof_auto_up.setCurrentText(str(auto.get("restore_to", "vram6")))
         sw_row.addWidget(self._prof_auto_up)
         sw_row.addStretch()
         sw_wrap = QWidget(); sw_wrap.setLayout(sw_row)
@@ -698,7 +698,7 @@ class SettingsDialog(QDialog):
             ("voice_enabled", "voice"),
             ("model_path", "model"),
         )
-        cols = ("performance", "balanced_8gb", "balanced", "light")  # standby omitido
+        cols = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16")  # standby omitido
 
         self._prof_table = QTableWidget(len(fields), len(cols))
         self._prof_table.setHorizontalHeaderLabels([PROFILES[c].display_name for c in cols])
@@ -756,7 +756,7 @@ class SettingsDialog(QDialog):
         mb = detect_vram_mb()
         if mb is None:
             self._prof_vram_lbl.setText("VRAM detectada: no detectada (nvidia-smi/rocm-smi no respondio)")
-            rec = "balanced"
+            rec = "vram4"
         else:
             self._prof_vram_lbl.setText(f"VRAM detectada: {mb} MB")
             rec = recommend_profile(mb)
@@ -765,7 +765,7 @@ class SettingsDialog(QDialog):
     def _on_prof_restore_defaults(self) -> None:
         from PyQt6.QtWidgets import QTableWidgetItem
         from ..profiles import PROFILES
-        cols = ("performance", "balanced_8gb", "balanced", "light")
+        cols = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16")
         fields = ("context_size", "vision_enabled", "rerank_enabled", "parallel_tools", "voice_enabled", "model_path")
         for r, field_name in enumerate(fields):
             for c, prof_name in enumerate(cols):
@@ -799,7 +799,7 @@ class SettingsDialog(QDialog):
             ],
         }
         # Overrides table -> dict[prof_name][field_name] = value
-        cols = ("performance", "balanced_8gb", "balanced", "light")
+        cols = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16")
         fields = (
             ("context_size", int),
             ("vision_enabled", bool),
