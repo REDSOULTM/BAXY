@@ -71,6 +71,23 @@ The `_HOLDOUT_SALT` stable hash is identical across `router_eval.py`,
 `train_abstain_head.py`, and `train_router_encoder.py`, so the holdout 20% is
 NEVER seen during any training step.
 
+### Pinned runtime versions (router/encoder path)
+
+Verified-working on 2026-05-21: `torch 2.10.0+cpu`, `transformers 4.57.6`,
+`sentence-transformers 5.5.1`, `scikit-learn 1.7.2`, `numpy 1.26.4`.
+
+GOTCHA (cost a debugging detour): a stray `pip install optimum[onnxruntime]`
+upgraded transformers and pulled a broken `tensorflow 2.20.0` (its own
+`import tensorflow` failed on `tensorflow.tsl.protobuf`). transformers eagerly
+imports TF, so `sentence_transformers` import broke → `semantic_router` silently
+disabled → router returned EMPTY subsets → holdout recall collapsed 0.88→0.66.
+Fix: uninstall the broken `tensorflow`/`tf_keras`. Also: newer transformers save
+a tokenizer_config referencing `TokenizersBackend`, unloadable by older
+transformers; `train_router_encoder.py` now overwrites the FT tokenizer with the
+BASE model's portable files so the artifact loads cross-version. Do NOT install
+`optimum` into the 3.10 runtime env; if ONNX export is wanted, use an isolated
+venv.
+
 ## router_v2 stays dead
 
 All four reports agreed BM25+RRF is structurally wrong for short voice queries

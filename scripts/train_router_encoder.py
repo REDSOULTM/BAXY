@@ -120,6 +120,27 @@ def main() -> int:
     )
     print(f"fine-tuned model -> {OUT_DIR}")
 
+    # Reproducibility guard (2026-05-21): newer transformers write a tokenizer
+    #_config referencing a `TokenizersBackend` class that older transformers
+    # can't load, which silently DISABLES the router on a version mismatch. The
+    # fine-tune does not change the vocab, so we overwrite the saved tokenizer
+    # with the BASE model's portable tokenizer files. This makes the artifact
+    # load across transformers versions.
+    try:
+        import shutil
+        from huggingface_hub import snapshot_download
+        base = snapshot_download(args.base)
+        for f in ("tokenizer_config.json", "tokenizer.json",
+                  "sentencepiece.bpe.model", "special_tokens_map.json",
+                  "unigram.json", "vocab.txt"):
+            src = Path(base) / f
+            if src.exists():
+                shutil.copy(src, OUT_DIR / f)
+        print("  pinned base tokenizer into the FT dir (cross-version safe)")
+    except Exception as exc:
+        print(f"  WARN: could not pin base tokenizer ({exc}); the model may "
+              "fail to load on a different transformers version.")
+
     TOOL_DESC_OUT.write_text(json.dumps({
         "base": args.base, "epochs": args.epochs, "batch": args.batch,
         "n_pairs": len(pairs),
