@@ -39,6 +39,11 @@ class _State:
 
 
 _S = _State()
+# Serializes _load across threads: warm_up() (daemon) and the first turn's
+# rerank() both call _load and would otherwise double-load the ~120MB
+# CrossEncoder. Double-checked locking; the fast path never takes the lock.
+import threading as _threading
+_LOAD_LOCK = _threading.Lock()
 
 
 def is_enabled() -> bool:
@@ -47,18 +52,25 @@ def is_enabled() -> bool:
 
 
 def _load() -> Any | None:
+    # Fast path (no lock): already loaded or already disabled/tried.
     if _S.model is not None:
         return _S.model
     if _S.disabled or _S.tried:
         return _S.model
-    _S.tried = True
-    try:
-        from sentence_transformers import CrossEncoder
-        _S.model = CrossEncoder(_MODEL_NAME, max_length=128)
-        return _S.model
-    except Exception:
-        _S.disabled = True
-        return None
+    with _LOAD_LOCK:
+        # Re-check: another thread may have finished while we waited.
+        if _S.model is not None:
+            return _S.model
+        if _S.disabled or _S.tried:
+            return _S.model
+        _S.tried = True
+        try:
+            from sentence_transformers import CrossEncoder
+            _S.model = CrossEncoder(_MODEL_NAME, max_length=128)
+            return _S.model
+        except Exception:
+            _S.disabled = True
+            return None
 
 
 def warm_up() -> None:

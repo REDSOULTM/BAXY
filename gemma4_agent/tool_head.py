@@ -50,6 +50,10 @@ class ToolHead:
 
 _HEAD: ToolHead | None = None
 _TRIED = False
+# Serializes load(): warmup thread + first turn both call it. Double-checked
+# locking keeps _HEAD/_TRIED consistent and avoids a double JSON parse.
+import threading as _threading
+_LOAD_LOCK = _threading.Lock()
 
 
 def is_enabled() -> bool:
@@ -63,6 +67,16 @@ def load() -> ToolHead | None:
         return _HEAD
     if _TRIED:
         return None
+    with _LOAD_LOCK:
+        if _HEAD is not None:
+            return _HEAD
+        if _TRIED:
+            return None
+        return _load_locked()
+
+
+def _load_locked() -> ToolHead | None:
+    global _HEAD, _TRIED
     _TRIED = True
     if not _PATH.exists():
         return None

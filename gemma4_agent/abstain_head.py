@@ -76,6 +76,11 @@ class AbstainModel:
 
 _MODEL: AbstainModel | None = None
 _LOAD_TRIED = False
+# Serializes load_model: warmup thread + first turn both call it. The artifact
+# is a small JSON so a double-parse is cheap, but the lock keeps _LOAD_TRIED and
+# _MODEL consistent under contention. Double-checked locking.
+import threading as _threading
+_LOAD_LOCK = _threading.Lock()
 
 
 def is_enabled() -> bool:
@@ -92,6 +97,16 @@ def load_model() -> AbstainModel | None:
         return _MODEL
     if _LOAD_TRIED:
         return None
+    with _LOAD_LOCK:
+        if _MODEL is not None:
+            return _MODEL
+        if _LOAD_TRIED:
+            return None
+        return _load_model_locked()
+
+
+def _load_model_locked() -> AbstainModel | None:
+    global _MODEL, _LOAD_TRIED
     _LOAD_TRIED = True
     if not _WEIGHTS_PATH.exists():
         return None
