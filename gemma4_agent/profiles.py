@@ -200,7 +200,13 @@ PROFILES: dict[str, Profile] = {
         name="vram8",
         display_name="VRAM 8GB",
         context_size=16384,
-        model_path=_E4B_Q4_K_XL,
+        # 2026-05-21 PERF FIX: switched from UD-Q4_K_XL to standard Q4_K_M.
+        # The Unsloth dynamic XL quant leaves ~2.3 GB of tensors CPU-mapped even
+        # at ngl=99 (measured: CPU_Mapped 2288 MiB), which collapsed GENERATION
+        # to ~11 tok/s. Standard Q4_K_M offloads fully to GPU and generates at
+        # ~72 tok/s — a 6.6x speedup, same ~4.7 GB size, negligible quality
+        # difference for tool-calling. This is what makes vram8 actually usable.
+        model_path=_E4B_Q4_K_M,
         mmproj_path=_MMPROJ_E4B,
         vision_enabled=True,
         rerank_enabled=True,
@@ -210,10 +216,10 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 8 GB (RTX 3060 Ti, 4060, 2080). E4B-UD-Q4_K_XL (Pareto "
-            "frontier KLD según Unsloth), ctx 16K, VISIÓN ON, rerank ON, "
-            "parallel tools ON, voz+STT ON (CPU). Medido: 5.23 GB cargado con "
-            "visión -> ~6.7 GB física."
+            "GPU de 8 GB (RTX 3060 Ti, 4060, 2080). E4B-Q4_K_M (descarga 100%% "
+            "a GPU -> ~72 tok/s; el UD-Q4_K_XL dejaba 2.3 GB en CPU y caía a "
+            "~11 tok/s), ctx 16K, VISIÓN ON, rerank ON, parallel tools ON, "
+            "voz+STT ON (CPU). ~5 GB cargado con visión."
         ),
         est_vram_mb=5230,
     ),

@@ -332,6 +332,16 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         # Polish P1 del optimization_roadmap.md.
         "--cache-reuse",
         "256",
+        # --swa-full: CRITICAL for cache-reuse on Gemma 4. Gemma uses Sliding
+        # Window Attention (n_swa=512); WITHOUT this flag the KV cache only keeps
+        # the sliding window, so the stable system-prompt prefix gets evicted
+        # ("erased invalidated context checkpoint, n_swa=512" in the server log)
+        # and EVERY turn reprocesses the full ~6K-token prompt from scratch
+        # (memory_seq_rm [0,end]) -> ~6s prefill per turn on ALL profiles.
+        # --swa-full keeps the full attention span so cache-reuse can actually
+        # reuse the prefix. Trades a bit more KV memory for a large TTFT win.
+        # (PR #22288 fixed the swa-full logic; our build b9090+ includes it.)
+        "--swa-full",
     ]
 
     # Sprint 12 — API key opt-in via env var. Si GEMMA4_LLAMA_API_KEY esta
