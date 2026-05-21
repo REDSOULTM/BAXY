@@ -499,6 +499,83 @@ def router_model_names(profile: Profile) -> tuple[str, str]:
     return base + ROUTER_TEXT_SUFFIX, base + ROUTER_VISION_SUFFIX
 
 
+# Server-driven model resolution (cross-process). Cached briefly so we don't
+# probe /v1/models on every single LLM call.
+_MODEL_PROBE_CACHE: dict[str, object] = {"ts": 0.0, "ids": None, "loaded": None}
+_MODEL_PROBE_TTL = 30.0
+
+
+def _probe_server_models(config: "AgentConfig | None" = None) -> tuple[list[str], list[str]]:
+    """Return (all_advertised_ids, loaded_ids) from the running server's
+    /v1/models. Cached for _MODEL_PROBE_TTL seconds. Empty lists on failure."""
+    import time as _t
+    now = _t.time()
+    if (_MODEL_PROBE_CACHE.get("ids") is not None
+            and now - float(_MODEL_PROBE_CACHE["ts"]) < _MODEL_PROBE_TTL):  # type: ignore[arg-type]
+        return (_MODEL_PROBE_CACHE["ids"], _MODEL_PROBE_CACHE["loaded"])  # type: ignore[return-value]
+    import json as _json
+    import urllib.request as _ur
+    cfg = config or AgentConfig.from_env()
+    ids: list[str] = []
+    loaded: list[str] = []
+    try:
+        r = _ur.urlopen(f"{cfg.server_url}/v1/models", timeout=3)
+        data = _json.load(r)
+        for m in data.get("data", []):
+            mid = m.get("id")
+            if not mid:
+                continue
+            ids.append(mid)
+            if (m.get("status") or {}).get("value") == "loaded":
+                loaded.append(mid)
+    except Exception:
+        ids, loaded = [], []
+    _MODEL_PROBE_CACHE.update({"ts": now, "ids": ids, "loaded": loaded})
+    return ids, loaded
+
+
+def reset_model_probe_cache() -> None:
+    """Drop the cached /v1/models result (call on profile swap / restart)."""
+    _MODEL_PROBE_CACHE.update({"ts": 0.0, "ids": None, "loaded": None})
+
+
+def resolve_turn_model(has_image: bool = False,
+                       config: "AgentConfig | None" = None) -> str | None:
+    """The `model` name to send for THIS turn, resolved SERVER-DRIVEN from the
+    running llama-server's /v1/models. Works cross-process and for external /
+    already-running servers (where the in-process manager doesn't know the
+    profile). Returns None when the server advertises a single plain model (not
+    router mode) so the caller uses the configured default; returns the
+    matching -text / -vision router preset when the server is in router mode.
+
+    This is THE fix for 'model gemma-4 not found': a router-mode server only
+    advertises e.g. vram8-text / vram8-vision, so sending the config default
+    'gemma-4' is rejected with HTTP 400. Probing the server is authoritative.
+    """
+    ids, loaded = _probe_server_models(config)
+    if not ids:
+        return None  # server unreachable -> caller falls back to config default
+    pool = loaded or ids
+    # If the server is NOT in router mode it advertises a single non-suffixed
+    # model; let the caller use the configured name (None signals that).
+    router_ids = [m for m in ids if m.endswith(ROUTER_TEXT_SUFFIX)
+                  or m.endswith(ROUTER_VISION_SUFFIX)]
+    if not router_ids:
+        return None
+    if has_image:
+        vis = next((m for m in pool if m.endswith(ROUTER_VISION_SUFFIX)), None)
+        if vis:
+            return vis
+        # no vision preset loaded -> fall back to a text preset (server has only
+        # text), so a mid-turn image at least doesn't 400.
+    text = next((m for m in pool if m.endswith(ROUTER_TEXT_SUFFIX)), None)
+    if text:
+        return text
+    # router mode but nothing loaded yet -> pick any advertised router preset
+    return next((m for m in router_ids if m.endswith(ROUTER_TEXT_SUFFIX)),
+                router_ids[0])
+
+
 def write_router_presets(config: AgentConfig, profile: Profile) -> Path | None:
     """Write a llama.cpp router presets INI for this profile (text+vision).
 

@@ -405,43 +405,21 @@ class AgentRunner:
         # Router mode: warm the TEXT preset (the one used by voice/text turns,
         # the common case). This triggers its on-demand load so the user's
         # first turn is fast and the cache-reuse prefix is primed.
+        # CRITICAL FIX (2026-05-21): resolve the warmup model SERVER-DRIVEN from
+        # the running llama-server's /v1/models. The old path trusted the
+        # in-process manager's router_model_for(), which returns None when the
+        # agent attaches to an already-running / external router-mode server —
+        # so the warmup fell back to the config default "gemma-4", which a
+        # router-mode server (advertising only vram8-text/vram8-vision) REJECTS
+        # with HTTP 400 "model 'gemma-4' not found". That left the field
+        # permanently OFFLINE (warmed=False) — the "never loads" the operator
+        # reported. resolve_turn_model() probes the server and is authoritative.
         _warm_model = None
         try:
-            from .llama_server import get_shared_manager
-            _mgr = get_shared_manager()
-            if _mgr.is_router_mode():
-                _warm_model = _mgr.router_model_for(has_image=False)
+            from .llama_server import resolve_turn_model
+            _warm_model = resolve_turn_model(has_image=False)
         except Exception:
             _warm_model = None
-        # CRITICAL FIX (2026-05-21): when the agent attaches to an ALREADY-RUNNING
-        # llama-server (external, or a router-mode server the fresh manager
-        # doesn't recognize), is_router_mode() is False and _warm_model stays
-        # None — so the warmup chat falls back to the config default model name
-        # ("gemma-4"), which a router-mode server REJECTS with HTTP 400
-        # "model 'gemma-4' not found". That left the field permanently OFFLINE
-        # (warmed=False) — the exact "never loads" the operator reported. Resolve
-        # the model name from the running server's /v1/models instead of trusting
-        # the config default.
-        if not _warm_model:
-            try:
-                import json as _json
-                import urllib.request as _ur
-                from .config import AgentConfig
-                _cfg = AgentConfig.from_env()
-                _r = _ur.urlopen(f"{_cfg.server_url}/v1/models", timeout=3)
-                _data = _json.load(_r)
-                ids = [m.get("id") for m in _data.get("data", []) if m.get("id")]
-                # prefer a loaded -text preset (the common voice/text turn),
-                # else any loaded model, else the first advertised.
-                _loaded = [m.get("id") for m in _data.get("data", [])
-                           if (m.get("status") or {}).get("value") == "loaded"
-                           and m.get("id")]
-                _pool = _loaded or ids
-                if _pool:
-                    _warm_model = next((m for m in _pool if str(m).endswith("-text")),
-                                       _pool[0])
-            except Exception:
-                _warm_model = None
         try:
             resp = self._agent.client.chat(
                 messages=[{"role": "user", "content": "."}],
