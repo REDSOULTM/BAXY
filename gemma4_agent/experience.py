@@ -19,6 +19,7 @@ Disable via env GEMMA4_EXPERIENCE_MEMORY=false.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sqlite3
@@ -26,6 +27,8 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 _EMBED_DIM = 384
 
@@ -90,19 +93,81 @@ class ExperienceMemory:
         if self._conn is not None:
             return self._conn
         try:
+            return self._connect_and_setup()
+        except sqlite3.DatabaseError as exc:
+            # CORRUPTION RECOVERY. A malformed DB ("database disk image is
+            # malformed", "file is not a database") would otherwise crash every
+            # record()/recall() — memory "works for a while then breaks forever"
+            # after a power loss / sync conflict mid-write. Quarantine the bad
+            # file and recreate from scratch ONCE. Memory degrades to "starts
+            # fresh" instead of bricking the agent. The quarantined copy is left
+            # for forensics; it is never auto-deleted.
+            #
+            # NOTE: this catches ONLY sqlite3.DatabaseError (corruption). The
+            # deliberate fail-loud schema-drift guard (RuntimeError, raised when
+            # the ALTERs were swallowed by a lock) is NOT caught here — it must
+            # propagate so the user sees the clear remediation message. That is
+            # a config/environment problem (antivirus/sync lock), not corruption
+            # we can self-heal by recreating.
+            logger.warning("experience DB unusable (%s); quarantining %s", exc, self.path)
+            if not self._quarantine_corrupt_db():
+                self._disabled = True
+                return None
+            try:
+                return self._connect_and_setup()
+            except sqlite3.DatabaseError as exc2:
+                logger.error("experience DB still unusable after recreate: %s", exc2)
+                self._disabled = True
+                return None
+
+    def _quarantine_corrupt_db(self) -> bool:
+        """Rename the corrupt DB (and its -wal/-shm sidecars) out of the way so
+        a fresh one can be created. Returns True on success."""
+        if self._conn is not None:
+            try:
+                self._conn.close()
+            except Exception:
+                pass
+            self._conn = None
+        import time as _t
+        stamp = _t.strftime("%Y%m%d-%H%M%S")
+        ok = False
+        for suffix in ("", "-wal", "-shm"):
+            src = Path(str(self.path) + suffix)
+            if not src.exists():
+                continue
+            try:
+                src.rename(Path(str(self.path) + suffix + f".corrupt-{stamp}"))
+                ok = True
+            except OSError as exc:
+                logger.error("could not quarantine %s: %s", src, exc)
+        return ok
+
+    def _connect_and_setup(self) -> sqlite3.Connection | None:
+        try:
             import sqlite_vec  # type: ignore[import-not-found]
         except ImportError:
             self._disabled = True
             return None
+        # connect + extension load: a non-corruption failure here disables
+        # gracefully; a DatabaseError propagates to _open's recovery path.
         try:
             conn = sqlite3.connect(str(self.path))
             conn.row_factory = sqlite3.Row
             conn.enable_load_extension(True)
             sqlite_vec.load(conn)
             conn.enable_load_extension(False)
+        except sqlite3.DatabaseError:
+            raise  # let _open quarantine + recreate
         except Exception:
             self._disabled = True
             return None
+        # Stash the handle NOW (before the CREATE/ALTER statements that actually
+        # touch the file pages). On a corrupt file those raise DatabaseError, and
+        # the recovery path must be able to close THIS connection before renaming
+        # the file — otherwise Windows blocks the rename (WinError 32, file in
+        # use). _quarantine_corrupt_db closes self._conn.
+        self._conn = conn
         conn.execute(
             """CREATE TABLE IF NOT EXISTS experiences (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
