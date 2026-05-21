@@ -362,31 +362,31 @@ def select_tool_names(
             # Veto only when the abstain head is CONFIDENT (p >= _VETO_P), so a
             # borderline real command the head is unsure about still reaches the
             # tool head. Tuned on dev to balance no-tool keep vs recall.
+            # Compute the head firings FIRST (always), then decide the veto.
+            _head_fired: list[tuple[str, float]] = []
+            try:
+                from .tool_head import load as _th_load, is_enabled as _th_on
+                if _th_on():
+                    _th = _th_load()
+                    if _th is not None:
+                        from .semantic_router import embed as _emb
+                        _qv = _emb(raw_text)
+                        if _qv is not None:
+                            _head_fired = [(t, m) for t, m in _th.fire(_qv)
+                                           if m >= _HEAD_MIN_MARGIN][:_HEAD_TOP_N]
+            except Exception:
+                _head_fired = []
+            # If the head's strongest firing is a KNOWLEDGE tool (web/knowledge),
+            # the turn is a lookup ("who directed Oppenheimer") — never veto it,
+            # even when wants_knowledge missed the phrasing and p_no_tool is high.
+            _head_knows = bool(_head_fired) and _head_fired[0][0] in {"web", "knowledge"}
+
             _abstain_veto = (do_abstain and abstain_p >= _VETO_P
                              and not _kw_protect
-                             and not _is_world_q
+                             and not _is_world_q and not _head_knows
                              and not pending_intent and not streaming_hint_media
                              and not confident_peak)
-            head_tools: list[str] = []
-            if not _abstain_veto:
-                try:
-                    from .tool_head import load as _th_load, is_enabled as _th_on
-                    if _th_on():
-                        _th = _th_load()
-                        if _th is not None:
-                            from .semantic_router import embed as _emb
-                            _qv = _emb(raw_text)
-                            if _qv is not None:
-                                # Keep only firings with a real margin over
-                                # their threshold, and cap to the top-N: a tool
-                                # barely over its bar (margin < _HEAD_MIN_MARGIN)
-                                # is weak evidence and tends to be noise
-                                # ("minimiza VS Code" -> media_edit @ 0.14).
-                                _fired = _th.fire(_qv)
-                                head_tools = [t for t, m in _fired
-                                              if m >= _HEAD_MIN_MARGIN][:_HEAD_TOP_N]
-                except Exception:
-                    head_tools = []
+            head_tools: list[str] = [] if _abstain_veto else [t for t, _ in _head_fired]
 
             sem = [name for name, _ in scored]
             if head_tools:
@@ -944,6 +944,22 @@ def _suggest_tools(step: str) -> list[str]:
         if "memory" not in tools:
             tools.insert(0, "memory")
 
+    # Tab/window listing -> window (the encoder places "cuántas pestañas/
+    # ventanas" weakly; a small keyword anchor makes it deterministic).
+    if re.search(r"\b(cuantas|cuantos|que|qu[eé]|lista|listar|how many|list)\b"
+                 r".{0,16}\b(pestanas|pesta[nñ]as|ventanas|tabs|windows)\b", low):
+        if "window" not in tools:
+            tools.append("window")
+    # English "who directed/wrote/invented/painted X" knowledge frame — the
+    # multilingual encoder is weak on these short English phrasings; anchor them
+    # to web so they don't fall to empty (e.g. "who directed Oppenheimer").
+    if re.search(r"\bwho (directed|wrote|invented|created|founded|painted|"
+                 r"composed|designed|discovered|built|made)\b", low):
+        if "web" not in tools:
+            tools.append("web")
+        if "knowledge" not in tools:
+            tools.append("knowledge")
+
     # FACTUAL KNOWLEDGE questions ("quién es X", "de qué trata X", "who is
     # X", "wer ist X" ...). Sprint 8 (2026-05-20): replaced the
     # per-language interrogative regex with a SEMANTIC intent classifier
@@ -962,7 +978,17 @@ def _suggest_tools(step: str) -> list[str]:
         # already matched, the question is about THIS machine, not the world.
         _LOCAL_FACT = {"system", "app", "media", "audio", "audio_device",
                        "device_settings", "network", "clipboard"}
-        if wants_knowledge(step) and not (set(tools) & _LOCAL_FACT):
+        # Local date/time ("qué día es hoy", "qué fecha", "what day is today")
+        # is a LOCAL fact the system answers, not a world question — route it to
+        # system (added here) and skip the web/knowledge pile-on.
+        _local_datetime = re.search(
+            r"\b(que dia es|qu[eé] dia es|que fecha|qu[eé] fecha|fecha de hoy|"
+            r"what day is|what'?s the date|todays date|today'?s date|"
+            r"que hora|qu[eé] hora|what time)\b", low)
+        if _local_datetime and "system" not in tools:
+            tools.append("system")
+        if (wants_knowledge(step) and not (set(tools) & _LOCAL_FACT)
+                and not _local_datetime):
             if "web" not in tools:
                 tools.append("web")
             if "knowledge" not in tools:

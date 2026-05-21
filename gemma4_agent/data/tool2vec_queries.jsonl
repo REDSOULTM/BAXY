@@ -3333,3 +3333,61 @@
 {"tool": "knowledge", "q": "what is photosynthesis"}
 {"tool": "knowledge", "q": "de que trata Dune"}
 {"tool": "knowledge", "q": "who directed Oppenheimer"}
+{"tool": "window", "q": "minimiza la de VS Code"}
+{"tool": "window", "q": "minimiza vs code"}
+{"tool": "window", "q": "minimiza visual studio code"}
+{"tool": "window", "q": "minimiza la ventana de VS Code"}
+{"tool": "window", "q": "minimiza el editor"}
+{"tool": "window", "q": "minimiza la de chrome"}
+{"tool": "window", "q": "minimiza la de discord"}
+{"tool": "window", "q": "minimiza la de spotify"}
+{"tool": "window", "q": "minimiza la de notepad"}
+{"tool": "window", "q": "minimize VS Code"}
+{"tool": "window", "q": "minimize the editor window"}
+{"tool": "window", "q": "minimize chrome window"}
+{"tool": "window", "q": "cierra la ventana de VS Code"}
+{"tool": "window", "q": "enfoca VS Code"}
+{"tool": "window", "q": "maximiza VS Code"}
+{"tool": "memory", "q": "que recuerdas de mi"}
+{"tool": "memory", "q": "que sabes de mi"}
+{"tool": "memory", "q": "que recuerdas sobre mi"}
+{"tool": "memory", "q": "que cosas sabes de mi"}
+{"tool": "memory", "q": "que tienes guardado sobre mi"}
+{"tool": "memory", "q": "what do you remember about me"}
+{"tool": "memory", "q": "what do you know about me"}
+{"tool": "memory", "q": "que recuerdas de mis preferencias"}
+{"tool": "memory", "q": "recuerda que me gusta el cafe"}
+{"tool": "memory", "q": "que datos mios tienes"}
+{"tool": "memory", "q": "cuales son mis preferencias guardadas"}
+{"tool": "web", "q": "what is a CPU"}
+{"tool": "web", "q": "what is a GPU"}
+{"tool": "web", "q": "what is RAM memory"}
+{"tool": "web", "q": "what is a hard disk"}
+{"tool": "web", "q": "what is a processor"}
+{"tool": "web", "q": "what does CPU stand for"}
+{"tool": "web", "q": "what is computer memory"}
+{"tool": "web", "q": "que es un procesador"}
+{"tool": "web", "q": "que es la memoria ram"}
+{"tool": "web", "q": "que es un disco duro"}
+{"tool": "knowledge", "q": "what is a CPU"}
+{"tool": "knowledge", "q": "what is a GPU"}
+{"tool": "knowledge", "q": "what is a processor"}
+{"tool": "knowledge", "q": "que es un procesador"}
+{"tool": "window", "q": "cuantas pestanas tengo abiertas"}
+{"tool": "window", "q": "cuantas pestanas hay abiertas"}
+{"tool": "window", "q": "lista las pestanas abiertas"}
+{"tool": "window", "q": "que pestanas tengo abiertas"}
+{"tool": "window", "q": "how many tabs are open"}
+{"tool": "window", "q": "list my open tabs"}
+{"tool": "window", "q": "cuantas ventanas hay"}
+{"tool": "window", "q": "que ventanas estan abiertas"}
+{"tool": "system", "q": "que dia es hoy"}
+{"tool": "system", "q": "que fecha es hoy"}
+{"tool": "system", "q": "cual es la fecha de hoy"}
+{"tool": "system", "q": "what day is today"}
+{"tool": "system", "q": "what is today's date"}
+{"tool": "system", "q": "que dia es"}
+{"tool": "system", "q": "dime la fecha"}
+{"tool": "local_calendar", "q": "que dia es hoy"}
+{"tool": "local_calendar", "q": "que fecha es hoy"}
+{"tool": "local_calendar", "q": "what day is today"}
