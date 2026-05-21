@@ -710,12 +710,24 @@ def _suggest_tools(step: str) -> list[str]:
         r"youtube|yutu|yutubi|youtu)\b",
         low,
     ):
-        if "media" not in tools:
-            tools.append("media")
-        # Si el user dice "pon X en netflix/disney/etc", browser tambien util
-        # como fallback si la app no esta.
-        if "browser" not in tools:
-            tools.append("browser")
+        # `media` (playback control) + `browser` (web fallback) only matter when
+        # the user wants to PLAY/WATCH content ("pon X en spotify", "reproduce
+        # Y") — NOT for a bare "abre/open spotify", which just launches the app
+        # (app/window cover that). Adding them on every platform mention bloated
+        # "abre spotify" to 5-6 tools. Gate on a play verb; a plain open stays
+        # tight (app only). A platform mentioned with NO open verb (e.g. just
+        # "spotify") also gets media — it's likely a playback intent.
+        _play_verb = re.search(
+            r"\b(pon|poneme|ponme|reproduce|reproducir|play|escucha|escuchar|"
+            r"ver|mira|mirar|watch|busca|buscar|search|siguiente|next|pausa|"
+            r"reanuda|cancion|musica|video|episodio|pelicula|capitulo)\b", low)
+        _open_verb = re.search(
+            r"\b(abre|abrir|open|lanza|lanzar|launch|inicia|iniciar|arranca)\b", low)
+        if _play_verb or not _open_verb:
+            if "media" not in tools:
+                tools.append("media")
+            if "browser" not in tools:
+                tools.append("browser")
     if re.search(r"\b(recordatorio graph|microsoft todo|to do|todoist|tarea pendiente cloud)\b", low):
         tools.append("reminder")
 
@@ -883,7 +895,14 @@ def _suggest_tools(step: str) -> list[str]:
     # tools — asking ABOUT something is not the same as acting on it.
     try:
         from .intent_router import wants_knowledge
-        if wants_knowledge(step):
+        # Don't pile web/knowledge onto a LOCAL-FACT query the system can answer
+        # itself. "qué hora es" / "cuánta batería tengo" read as informational
+        # (info>action) and used to drag web+knowledge in, but the `system` tool
+        # answers them locally — no web lookup needed. When a strong local tool
+        # already matched, the question is about THIS machine, not the world.
+        _LOCAL_FACT = {"system", "app", "media", "audio", "audio_device",
+                       "device_settings", "network", "clipboard"}
+        if wants_knowledge(step) and not (set(tools) & _LOCAL_FACT):
             if "web" not in tools:
                 tools.append("web")
             if "knowledge" not in tools:
