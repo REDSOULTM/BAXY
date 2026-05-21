@@ -175,6 +175,21 @@ class TestStreamingFirstChunk(unittest.TestCase):
                 seq += self._drain(t)
         self.assertEqual(seq[0], "Vale,")
 
+    def test_full_reply_fed_at_once_preserves_all_text(self):
+        # agent_runner.py feeds the WHOLE reply in one feed_tts() then flush_tts()
+        # (not token-by-token). The first-chunk path must still emit the opening
+        # clause early AND preserve every word in order (nothing dropped/dup'd).
+        import re
+        t = self._fresh()
+        reply = "Listo, abrí Spotify y puse tu playlist. ¿Algo más?"
+        t.feed_text(reply)
+        t.flush()
+        seq = self._drain(t)
+        self.assertEqual(seq[0], "Listo,", "opening clause must flush first")
+        words = lambda s: re.findall(r"\w+", s.lower())
+        self.assertEqual(words(" ".join(seq)), words(reply),
+                         "every word of the reply must survive, in order")
+
 
 if __name__ == "__main__":
     unittest.main()
