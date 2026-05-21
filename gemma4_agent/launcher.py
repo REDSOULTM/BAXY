@@ -52,6 +52,43 @@ BANNER = r"""
 """
 
 
+def _pick_bindable_port(host: str, preferred: int) -> int:
+    """Return a port we can actually bind on `host`. The default UI port (8765)
+    sometimes falls inside a Windows EXCLUDED port range (Hyper-V / WSL2 / Docker
+    reserve dynamic ranges, e.g. 8728-8827 covers 8765) -> uvicorn fails with
+    'WinError 13: socket access not permitted' and the UI never comes up.
+    Try the preferred port first; if it's not bindable, walk a few candidates
+    and finally let the OS pick a free one. This makes `launcher ui` robust to
+    the system reserving the default port."""
+    import socket
+
+    def _can_bind(p: int) -> bool:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((host, p))
+            s.close()
+            return True
+        except OSError:
+            return False
+
+    if _can_bind(preferred):
+        return preferred
+    # try a handful of nearby/clear ports outside common reserved ranges
+    for cand in (8765, 8770, 8123, 7860, 9123, 5111, 8099, 8311):
+        if cand != preferred and _can_bind(cand):
+            print(color("warn", f"puerto {preferred} bloqueado por el sistema "
+                                 f"(rango reservado); usando {cand}"))
+            return cand
+    # last resort: let the OS assign a free ephemeral port
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((host, 0))
+    free = s.getsockname()[1]
+    s.close()
+    print(color("warn", f"puerto {preferred} bloqueado; usando libre {free}"))
+    return free
+
+
 def enable_ansi() -> None:
     if os.name != "nt":
         return
@@ -229,7 +266,7 @@ def run_ui(args: argparse.Namespace) -> int:
     config = config_with_args(args)
     app = create_app(config)
     host = getattr(args, "host", "127.0.0.1")
-    port = int(getattr(args, "port", 8765))
+    port = _pick_bindable_port(host, int(getattr(args, "port", 8765)))
     url = f"http://{host}:{port}/"
 
     no_window = bool(getattr(args, "no_window", False))
