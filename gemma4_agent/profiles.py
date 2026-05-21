@@ -103,6 +103,15 @@ _E2B_Q5_K_M  = str(_E2B / "gemma-4-E2B-it-Q5_K_M.gguf")      # 2.41 novis @8K
 _E4B_Q4_K_M  = str(_E4B / "gemma-4-E4B-it-Q4_K_M.gguf")      # 4.96 +vis @8K
 _E4B_Q4_K_XL = str(_E4B / "gemma-4-E4B-it-UD-Q4_K_XL.gguf")  # 5.23 +vis @16K
 _E4B_Q6_K    = str(_E4B / "gemma-4-E4B-it-Q6_K.gguf")        # 6.34 +vis @32K
+# 26B-A4B = MoE (26B de capacidad, ~4B activos por token -> rápido como E4B pero
+# mucho más inteligente). Es el modelo para aprovechar 12-16 GB de VRAM. Medido:
+# UD-Q3_K_XL carga ~15.7 GB en GPU @ctx16K y genera ~43 tok/s (vs E4B-Q6 que
+# dejaba 3.4 GB en CPU y daba 34 tok/s). E4B nunca pasaba de ~7 GB sin importar
+# la VRAM disponible — por eso vram12/16 "no usaban más de 7 GB".
+_26B = _PROJECT_ROOT / "models" / "26B-A4B"
+_26B_Q3_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q3_K_XL.gguf")  # ~13 GB, vram12/16
+_26B_Q4_K_M  = str(_26B / "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf")   # ~16 GB, vram16 si sobra
+_MMPROJ_26B  = str(_26B / "mmproj-F16.gguf")
 _MMPROJ_E2B  = str(_E2B / "mmproj-F16.gguf")                 # vision encoder (~1.2 GB loaded)
 _MMPROJ_E4B  = str(_E4B / "mmproj-F16.gguf")
 
@@ -226,9 +235,15 @@ PROFILES: dict[str, Profile] = {
     "vram12": Profile(
         name="vram12",
         display_name="VRAM 12GB",
-        context_size=32768,
-        model_path=_E4B_Q6_K,
-        mmproj_path=_MMPROJ_E4B,
+        # ctx 16K (no 32K): el prefill de 32K era parte de la lentitud y el
+        # agente rara vez usa >16K; 16K mantiene latencia baja con margen de KV.
+        context_size=16384,
+        # 26B-A4B (MoE) en vez de E4B: el E4B (4B params) NUNCA pasaba de ~7 GB
+        # sin importar la VRAM — por eso "no usaba más de 7 GB". El 26B-A4B usa
+        # ~13 GB en GPU, es 26B de calidad con ~4B activos (rápido), y genera
+        # ~43 tok/s. Salto enorme de calidad aprovechando los 12-16 GB.
+        model_path=_26B_Q3_K_XL,
+        mmproj_path=_MMPROJ_26B,
         vision_enabled=True,
         rerank_enabled=True,
         parallel_tools=True,
@@ -237,18 +252,21 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 12 GB+. E4B-Q6_K (casi sin pérdida vs el full), ctx 32K, "
-            "VISIÓN ON, todo ON, voz+STT ON (CPU). Medido: 6.34 GB cargado con "
-            "visión -> ~7.8 GB física. Margen amplio en 12 GB."
+            "GPU de 12-16 GB. 26B-A4B MoE UD-Q3_K_XL (26B de calidad, ~4B "
+            "activos -> rápido; ~43 tok/s, usa ~13 GB en GPU), ctx 16K, VISIÓN "
+            "ON, todo ON. Mucho más inteligente que E4B aprovechando la VRAM."
         ),
-        est_vram_mb=6340,
+        est_vram_mb=13000,
     ),
     "vram16": Profile(
         name="vram16",
         display_name="VRAM 16GB+",
-        context_size=32768,
-        model_path=None,  # usa el modelo principal del usuario (dev / Q8 / full)
-        mmproj_path=None,  # respeta el mmproj que el usuario configuró en Settings
+        context_size=16384,
+        # 26B-A4B MoE, mismo modelo que vram12 (el Q3_K_XL ya aprovecha ~13 GB
+        # con margen de KV/visión en 16 GB). Si el usuario configura un modelo
+        # propio mayor en Settings, GEMMA4_MODEL_PATH lo sobreescribe.
+        model_path=_26B_Q3_K_XL,
+        mmproj_path=_MMPROJ_26B,
         vision_enabled=True,
         rerank_enabled=True,
         parallel_tools=True,
@@ -257,11 +275,11 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 16 GB+ / máquina de desarrollo. Usa el modelo principal "
-            "del usuario (el de mayor calidad que tenga configurado), ctx 32K, "
-            "VISIÓN ON, todo ON, voz+STT ON. VRAM según el modelo elegido."
+            "GPU de 16 GB+. 26B-A4B MoE UD-Q3_K_XL (~13 GB, ~43 tok/s, 26B de "
+            "calidad con ~4B activos), ctx 16K, VISIÓN ON, todo ON. El máximo "
+            "que aprovecha 16 GB sin OOM; modelo propio via Settings lo override."
         ),
-        est_vram_mb=8000,
+        est_vram_mb=13000,
     ),
     "standby": Profile(
         name="standby",
