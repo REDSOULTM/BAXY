@@ -361,19 +361,26 @@ class TestBugFixes(unittest.TestCase):
 
     def test_build_system_prompt_distinguishes_none_vs_empty(self):
         """Bug latencia: smalltalk con [] no debe inyectar TODAS las TOOL_RULES."""
-        from .agent import build_system_prompt, CORE_PROMPT
+        from .agent import build_system_prompt
+        # 2026-05-21: build_system_prompt is now PROFILE-AWARE — smalltalk
+        # returns the ACTIVE profile's CORE (lean on small-model tiers, full on
+        # large). The invariant under test is unchanged: smalltalk == the bare
+        # CORE with NO tool rules appended. So compare against the core the
+        # builder actually selected, not the hardcoded full CORE_PROMPT.
+        from .agent_prompt import _core_for_profile
+        active_core = _core_for_profile()
         legacy = build_system_prompt(None)
         smalltalk = build_system_prompt([])
         subset = build_system_prompt(["app", "steam"])
         # legacy = CORE + TODAS las rules (~60+ rules concatenadas)
-        # smalltalk = solo CORE
+        # smalltalk = solo CORE (del perfil activo)
         # subset = CORE + reglas filtradas
         self.assertGreater(len(legacy), len(subset),
                            "legacy debe tener mas chars que subset")
         self.assertGreater(len(subset), len(smalltalk),
                            "subset debe tener mas chars que smalltalk (al menos las rules de app+steam)")
-        self.assertEqual(smalltalk, CORE_PROMPT,
-                         "smalltalk debe ser exactamente CORE_PROMPT (sin rules)")
+        self.assertEqual(smalltalk, active_core,
+                         "smalltalk debe ser exactamente el CORE del perfil activo (sin rules)")
 
     def test_tool_schemas_hint_distinguishes_none_vs_empty(self):
         """Bug latencia: smalltalk con [] no debe inyectar TODOS los 63 schemas."""
