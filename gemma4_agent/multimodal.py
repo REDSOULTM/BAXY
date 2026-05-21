@@ -32,6 +32,14 @@ IMAGE_RELAUNCH_THRESHOLD = 40
 _image_counter_lock = threading.Lock()
 _image_counter = 0
 _relaunch_callback: Callable[[int], None] | None = None
+# Image count at which we last FIRED the relaunch callback. The fire condition
+# is current >= threshold AND we haven't already fired for THIS threshold band
+# (i.e. current - _last_fired_at >= threshold). This fixes the prior `== `
+# check: if the recycle failed or returned early WITHOUT resetting the counter,
+# `==` never matched again (41 != 40) so the leak grew unbounded with no retry.
+# Now an un-reset counter re-fires every `threshold` more images (coarse retry),
+# and a successful reset (counter -> 0) re-arms immediately.
+_last_fired_at = 0
 
 
 def set_vision_relaunch_callback(cb: Callable[[int], None] | None) -> None:
@@ -46,10 +54,14 @@ def set_vision_relaunch_callback(cb: Callable[[int], None] | None) -> None:
 
 
 def reset_image_counter() -> None:
-    """Reset del counter, llamado por el orchestrator tras recyclar."""
-    global _image_counter
+    """Reset del counter, llamado por el orchestrator tras recyclar.
+
+    Tambien re-arma el latch de relanzamiento (_last_fired_at) para que el
+    proximo cruce del umbral vuelva a disparar."""
+    global _image_counter, _last_fired_at
     with _image_counter_lock:
         _image_counter = 0
+        _last_fired_at = 0
 
 
 def get_image_counter() -> int:
@@ -68,11 +80,17 @@ def _bump_image_counter() -> None:
     - El evento al bus es para listeners genericos (UI, telemetria) y
       como fallback si nadie registro callback.
     """
-    global _image_counter
+    global _image_counter, _last_fired_at
     with _image_counter_lock:
         _image_counter += 1
-        crossed = _image_counter == IMAGE_RELAUNCH_THRESHOLD
         current = _image_counter
+        # Fire on reaching the threshold and again every `threshold` images
+        # after that if no reset happened (a failed/early recycle leaves the
+        # counter climbing — we must keep retrying, not go silent forever).
+        crossed = (current >= IMAGE_RELAUNCH_THRESHOLD
+                   and current - _last_fired_at >= IMAGE_RELAUNCH_THRESHOLD)
+        if crossed:
+            _last_fired_at = current
 
     if not crossed:
         return
