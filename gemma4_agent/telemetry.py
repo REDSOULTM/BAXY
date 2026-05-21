@@ -88,6 +88,7 @@ class TelemetryStore:
         self._enabled = False
         self._bus_listener_attached = False
         self._init_done = False
+        self._rotated_this_process = False
 
     def _ensure_initialized(self) -> bool:
         """Crea archivo + tablas si hace falta. Idempotente.
@@ -105,11 +106,24 @@ class TelemetryStore:
                 with self._connect() as conn:
                     self._init_schema(conn)
                 self._init_done = True
-                return True
             except (OSError, sqlite3.Error) as exc:
                 logger.warning("telemetry init failed: %s; disabling", exc)
                 self._enabled = False
                 return False
+        # Auto-rotate ONCE per process, after a successful init (outside the
+        # init lock — rotate takes the lock itself). Without this the rotate()
+        # method was dead code: the turns/sessions/voice/incidents tables grew
+        # UNBOUNDED for the lifetime of an always-on assistant. Best-effort:
+        # a rotate failure must never disable telemetry or break the caller.
+        if not self._rotated_this_process:
+            self._rotated_this_process = True
+            try:
+                deleted = self.rotate()
+                if deleted:
+                    logger.debug("telemetry auto-rotate removed %d stale rows", deleted)
+            except Exception as exc:  # noqa: BLE001
+                logger.debug("telemetry auto-rotate skipped: %s", exc)
+        return True
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
