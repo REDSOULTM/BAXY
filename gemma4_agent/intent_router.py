@@ -120,6 +120,46 @@ _SELF_ANCHORS = [
     "que peux tu faire", "was kannst du",
 ]
 
+# META-DIRECTIVES: the user is instructing the agent about HOW to behave or
+# answer THIS turn, not asking it to act on the world. Two flavours, both of
+# which must NOT pull domain tools (all four 2026-05-21 research models flagged
+# this as the missing 5th class behind the 0.51 no-tool keep):
+#   (a) explicit tool policy: "no uses tools", "responde sin herramientas",
+#       "usa tools solo si hace falta", "no abras el navegador".
+#   (b) mission-behavior policy: "arregla todo el repo como sea", "termina la
+#       misión dejando log y limpieza", "acepta todos los permisos", "no
+#       mezcles bugfix con deuda" — directives about the run, not a discrete
+#       command the router should map to one tool. The LLM/orchestrator handles
+#       these; the router should abstain rather than guess a tool.
+# These embed near action/info today (they contain verbs like "usa", "abre",
+# "termina") so the chitchat/selfref centroids miss them. A dedicated centroid
+# pulls them out. Multilingual anchors so it generalizes, not a keyword list.
+#
+# IMPORTANT scoping lesson (2026-05-21 dev measurement): the FIRST cut also
+# included mission-behaviour anchors ("termina la misión dejando log", "arregla
+# el repo como sea", "si el tool call falla repregunta"). Those absorbed real
+# commands-with-a-qualifier ("corre hardcode_guard si existe", "lista procesos
+# Python", "resume el log sin cargar todo") and cost 2.4 pts of recall on dev.
+# A command WITH a constraint is still a command. So META is scoped TIGHTLY to
+# explicit TOOL/ANSWER POLICY only — "should I use tools at all / how should I
+# answer" — never mission constraints. The mission directives that are truly
+# no-tool ("arregla el repo") are better left to the abstain head (Step 2),
+# which sees the whole feature vector, not this single centroid.
+_META_ANCHORS = [
+    # English — explicit tool/answer policy
+    "do not use any tools for this answer", "answer without using tools",
+    "reply in plain text without tools", "do not use any tool just talk",
+    "answer this question without calling any function",
+    # Spanish — explicit tool/answer policy
+    "no uses herramientas para esta respuesta",
+    "responde sin usar herramientas", "responde en texto plano sin tools",
+    "no llames ninguna herramienta solo responde",
+    "contesta esta pregunta sin usar ninguna funcion",
+    # Portuguese / French / German / Italian — policy core
+    "nao use ferramentas nesta resposta", "n'utilise pas d'outils pour repondre",
+    "benutze keine werkzeuge antworte nur", "non usare strumenti rispondi solo",
+]
+
 # wants_knowledge fires only when INFO is the DOMINANT class — it must beat
 # action by a margin AND be the argmax over chitchat and self-reference.
 # Tuned on the historical corpus: genuine world questions in any language
@@ -138,6 +178,11 @@ _CONV_MARGIN = float(os.environ.get("GEMMA4_INTENT_CONV_MARGIN", "0.03"))
 # classes (action ∪ info) before we suppress the semantic router's noisy
 # domain-tool suggestions. Tuned on the dev split only.
 _CONV_MARGIN = float(os.environ.get("GEMMA4_INTENT_CONV_MARGIN", "0.03"))
+# Absolute floor a query's META score must clear (in addition to being the
+# argmax) before we treat it as a tool/answer-policy directive. Genuine meta
+# phrasings ("no uses herramientas", "responde sin tools") score ~0.45-0.65 on
+# the tight anchor set; commands-with-a-qualifier peak below this. Tuned on dev.
+_META_FLOOR = float(os.environ.get("GEMMA4_INTENT_META_FLOOR", "0.36"))
 
 
 @dataclass(frozen=True)
@@ -146,11 +191,12 @@ class IntentScores:
     action: float
     chitchat: float = 0.0
     selfref: float = 0.0
+    meta: float = 0.0
 
     @property
     def margin(self) -> float:
         """Info margin over the strongest competing class."""
-        return self.info - max(self.action, self.chitchat, self.selfref)
+        return self.info - max(self.action, self.chitchat, self.selfref, self.meta)
 
 
 class _Centroids:
@@ -158,6 +204,7 @@ class _Centroids:
     action: Any = None
     chitchat: Any = None
     selfref: Any = None
+    meta: Any = None
     ready: bool = False
 
 
@@ -183,6 +230,7 @@ def _ensure_centroids() -> bool:
         _C.action = _centroid(_ACTION_ANCHORS)
         _C.chitchat = _centroid(_CHITCHAT_ANCHORS)
         _C.selfref = _centroid(_SELF_ANCHORS)
+        _C.meta = _centroid(_META_ANCHORS)
         _C.ready = True
         return True
     except Exception:
@@ -211,6 +259,7 @@ def classify_intent(text: str) -> IntentScores | None:
             action=float(qe @ _C.action),
             chitchat=float(qe @ _C.chitchat),
             selfref=float(qe @ _C.selfref),
+            meta=float(qe @ _C.meta) if _C.meta is not None else 0.0,
         )
     except Exception:
         return None
@@ -255,6 +304,14 @@ def _is_conversational_scores(s: IntentScores | None) -> bool:
     # close to chitchat ("¿quién es el mejor?", "háblame de la peli X").
     if _wants_knowledge_scores(s):
         return False
+    # meta-directives ("no uses herramientas", "responde sin tools") steer how
+    # to answer, not what to do — suppress the domain union. META is gated more
+    # strictly than chitchat/selfref: it must be the argmax AND clear an
+    # absolute floor, because its anchors sit closer to action/info (they
+    # contain verbs) and a loose gate cost recall on commands-with-qualifiers.
+    if (s.meta >= _META_FLOOR and s.meta >= max(s.action, s.info, s.chitchat,
+                                                s.selfref)):
+        return True
     conv = max(s.chitchat, s.selfref)
     worldly = max(s.action, s.info)
     return (conv - worldly) >= _CONV_MARGIN
@@ -290,4 +347,7 @@ def _wants_knowledge_scores(s: IntentScores | None) -> bool:
         (s.info - s.action) >= _VS_ACTION_MARGIN
         and s.info >= s.chitchat
         and s.info >= s.selfref
+        # "responde sin herramientas: qué es Batman" is info-shaped but the
+        # user forbade tools — meta must not be the winner, or we'd pull web.
+        and s.info >= s.meta
     )

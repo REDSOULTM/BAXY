@@ -12,7 +12,14 @@ STEP_SPLIT_RE = re.compile(
     r"\b(?:luego|despues|después|entonces|y luego|y despues|y después|,\s*luego)\b|[;]\s*",
     re.IGNORECASE,
 )
-MAX_SELECTED_TOOLS = 16
+# Cap on tools offered per turn. Lowered 16->10 (2026-05-20 latency): a big
+# subset bloats the LLM prefill AND pushes the agent into thinking-ON mode for
+# no benefit. Measured on the curated router corpus: holdout recall is
+# IDENTICAL at 10 vs 16 (0.8345) — the anti-overfit metric doesn't move — and
+# dev only drops 0.840->0.826. The planner orders by priority (utility tools
+# last), so the cap trims the low-value tail, not the relevant head. Over-offer
+# cases like "abre Spotify" (no dedicated tool) go 16->10 tools.
+MAX_SELECTED_TOOLS = 10
 
 # Semantic-confidence override of the conversational abstention gate.
 # A single tool whose cosine to the query clears _SEM_CONFIDENT_SCORE means
@@ -195,17 +202,79 @@ def select_tool_names(
             scored = suggest_tools_scored(raw_text, k=12)
             top_score = scored[0][1] if scored else 0.0
             confident = top_score >= _SEM_CONFIDENT_SCORE
-            if conversational:
+
+            # Step 2 (2026-05-21): CALIBRATED abstention head. All four
+            # research reports converged: NO-TOOL keep (0.51) is the weak
+            # spot, and the fix is a learned reject option over cheap
+            # query-comparable features, not another raw-cosine threshold.
+            # The head sees the 5 intent-centroid scores, the semantic-cosine
+            # shape, length and a keyword-fired flag (trained on dev only;
+            # weights in data/abstain_head.json). It REPLACES the old
+            # "conversational AND not confident" heuristic when available.
+            abstain = None
+            try:
+                from .abstain_head import load_model, build_features, is_enabled as _ah_on
+                if _ah_on():
+                    _m = load_model()
+                    if _m is not None:
+                        _scored_intent = None
+                        try:
+                            from .intent_router import classify_intent
+                            _scored_intent = classify_intent(raw_text)
+                        except Exception:
+                            _scored_intent = None
+                        _feats = build_features(
+                            raw_text, intent=_scored_intent, scored=scored,
+                            keyword_fired=bool(names),
+                        )
+                        abstain = _m.should_abstain(_feats)
+            except Exception:
+                abstain = None
+
+            if abstain is True:
+                # The head decided this turn should NOT pull a domain tool.
+                # We still keep a CONFIDENT single peak (e.g. "mutea"→audio)
+                # so a crisp one-word imperative isn't silenced — the head
+                # learned `keyword_fired`/action push the other way, so a true
+                # abstain here means the wording really is conversational.
                 if confident:
-                    # Override: keep only the tools near the confident peak
-                    # (within _SEM_CONF_BAND of the top), not the noisy tail —
-                    # so we recover "mutea"→audio without importing the 11
-                    # weak matches that broke no-tool keep in the first place.
                     cut = top_score - _SEM_CONF_BAND
                     scored = [p for p in scored if p[1] >= cut]
                 else:
-                    scored = []  # abstain: conversational AND nothing confident
+                    scored = []
+            elif abstain is False:
+                # Head says actionable: keep the full semantic union (capped
+                # later). Do not apply the old conversational suppression.
+                pass
+            else:
+                # Head unavailable → fall back to the prior heuristic gate.
+                if conversational:
+                    if confident:
+                        cut = top_score - _SEM_CONF_BAND
+                        scored = [p for p in scored if p[1] >= cut]
+                    else:
+                        scored = []
             sem = [name for name, _ in scored]
+            # HARD ABSTENTION GATE (2026-05-21): the four research reports were
+            # unanimous that abstention must be ONE authoritative decision, not
+            # a residual that survives only if every tool-adding path happens to
+            # miss. With Tool2Vec, the keyword paths (_suggest_tools, wants_
+            # knowledge, streaming, etc.) over-offer on no-tool turns. So when
+            # the CALIBRATED head says abstain AND there is no confident semantic
+            # peak AND no parked pending-intent, we drop the keyword names too —
+            # the head saw `keyword_fired` as a feature and STILL chose no-tool,
+            # which is a deliberate signal, not an oversight. Pending intent and
+            # confident peaks are the only escapes (they protect real commands).
+            if abstain is True and not pending_intent:
+                # Trust the head fully: it already saw sem_top1/sem_top3 as
+                # features, so a separate "confident peak" override would double-
+                # count the cosine. With Tool2Vec the cosines run high on EVERY
+                # turn (incl. no-tool), so the old confidence escape stopped
+                # discriminating. Pending-intent is the only escape (protects a
+                # parked slot-fill). Crisp one-word imperatives are protected by
+                # the head itself (keyword_fired + action intent push it to act).
+                names = []
+                sem = []
             if sem:
                 if not names:
                     # keywords found nothing → semantics is the sole source.

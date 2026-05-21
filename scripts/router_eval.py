@@ -29,6 +29,7 @@ import argparse
 import collections
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -61,6 +62,68 @@ def _split_of(q: str) -> str:
 # Utility tools that are always reachable / harmless; their presence does
 # NOT count as "the router pulled a domain tool" for the no-tool metric.
 _NON_DOMAIN = {"session", "safety", "state", "verify"}
+
+
+# ---- slice tagging (Step 0, 2026-05-21) --------------------------------------
+# Every research model demanded the same anti-overfit discipline: never report
+# only an aggregate. A model that scores 0.90 overall by being 0.99 on the easy
+# slice and 0.40 on the hard one is worse than a balanced 0.88. So we tag each
+# row with the slices it belongs to and report metrics per slice. Slices are
+# derived from the query text only (no labels), so they can't leak the answer.
+_LANG_HINTS = {
+    "en": (" the ", " what ", " how ", " open ", " close ", " play ", " is ",
+           "who ", "what'", "show me", " my ", " me ", " to ", " a "),
+    "fr": ("ouvre", "ferme", "qu'est", "quel", "pourquoi", " le ", " la ",
+           "comment", "qui est", "s'il", "peux-tu"),
+    "de": ("öffne", "schließe", "was ist", "wer ist", "wie", " der ", " die ",
+           " das ", "kannst du", "bitte"),
+    "it": ("apri", "chiudi", "cos'è", "che cosa", "perché", " il ", " la ",
+           "chi è", "puoi"),
+    "pt": ("abre", "fecha", "o que", "quem é", "por que", " você ", "abrir",
+           "qual é", "pode "),
+}
+
+
+def _detect_lang(q: str) -> str:
+    """Cheap heuristic language tag for slicing. NOT used for routing — only
+    so we can report recall per language and catch a Spanish-only overfit.
+    Defaults to 'es' (the dominant language) when no other hint dominates."""
+    low = " " + q.casefold() + " "
+    scores = {lang: sum(low.count(h) for h in hints)
+              for lang, hints in _LANG_HINTS.items()}
+    best = max(scores, key=lambda k: scores[k])
+    # require at least 2 hint hits to override the Spanish default — one stray
+    # English article in a Spanish query shouldn't flip the tag.
+    return best if scores[best] >= 2 else "es"
+
+
+_CONTINUATION_MARKERS = re.compile(
+    r"^\s*(lo|la|los|las|le|les)\b|"          # bare clitic pronoun start
+    r"\b(cierralo|cierrala|abrelo|abrela|subelo|bajalo|mutealo|ponlo|quitalo|"
+    r"dale|otra vez|de nuevo|lo mismo|igual|tambien|ahora|mejor)\b|"
+    r"\b(close it|open it|turn it|do the same|again|now|instead)\b",
+    re.IGNORECASE,
+)
+
+
+def _slices_of(r: dict) -> set[str]:
+    """Slices this row belongs to (from the QUERY only, never the label)."""
+    q = r["q"]
+    s: set[str] = set()
+    wc = len(q.split())
+    if wc <= 4:
+        s.add("short")
+    lang = _detect_lang(q)
+    s.add(f"lang:{lang}")
+    if lang != "es":
+        s.add("multilingual")
+    if _CONTINUATION_MARKERS.search(q) or wc <= 2:
+        s.add("continuation")
+    if not (r.get("expected") or []):
+        s.add("no_tool")
+    else:
+        s.add("tool")
+    return s
 
 
 def run_router(q: str, prev: str | None = None) -> set[str]:
@@ -122,6 +185,8 @@ def _evaluate(rows: list[dict], use_prev: bool = False,
     recall_fails: list[tuple[str, list[str], list[str]]] = []
     notool_fails: list[tuple[str, list[str]]] = []
     per_tool = collections.defaultdict(lambda: [0, 0])
+    # per-slice [recall_ok, recall_total, notool_ok, notool_total]
+    per_slice = collections.defaultdict(lambda: [0, 0, 0, 0])
     # executed-tool map for the inherit simulation (built from the WHOLE
     # corpus, not just this split, because a continuation's prior turn may
     # live in the other split).
@@ -140,6 +205,7 @@ def _evaluate(rows: list[dict], use_prev: bool = False,
         # runtime, only kicks in when the router pulled NO domain tool.
         if inherit and not (subset - _NON_DOMAIN):
             subset |= _inherit_from_prev(q, prev, executed)
+        slices = _slices_of(r)
         if expected:
             recall_total += 1
             hit = bool(subset & set(expected))
@@ -151,17 +217,26 @@ def _evaluate(rows: list[dict], use_prev: bool = False,
                 per_tool[t][1] += 1
                 if hit:
                     per_tool[t][0] += 1
+            for sl in slices:
+                per_slice[sl][1] += 1
+                if hit:
+                    per_slice[sl][0] += 1
         else:
             notool_total += 1
-            if not (subset - _NON_DOMAIN):
+            ok = not (subset - _NON_DOMAIN)
+            if ok:
                 notool_ok += 1
             else:
                 notool_fails.append((q, sorted(subset - _NON_DOMAIN)))
+            for sl in slices:
+                per_slice[sl][3] += 1
+                if ok:
+                    per_slice[sl][2] += 1
     return {
         "recall_ok": recall_ok, "recall_total": recall_total,
         "notool_ok": notool_ok, "notool_total": notool_total,
         "recall_fails": recall_fails, "notool_fails": notool_fails,
-        "per_tool": per_tool,
+        "per_tool": per_tool, "per_slice": per_slice,
     }
 
 
@@ -178,6 +253,10 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--show-fails", action="store_true")
     ap.add_argument("--by-tool", action="store_true")
+    ap.add_argument("--slices", action="store_true",
+                    help="report recall + no-tool keep per slice (short, "
+                         "continuation, multilingual, per-language). Anti-"
+                         "overfit: a balanced 0.88 beats a lopsided 0.90.")
     ap.add_argument("--corpus", type=Path, default=CURATED)
     ap.add_argument("--split", choices=["dev", "holdout", "all", "both"],
                     default="both")
@@ -229,8 +308,21 @@ def main() -> int:
 
     # detail uses the LAST evaluated split (so --split holdout --show-fails
     # shows holdout fails; default 'both' shows holdout detail).
-    if last and (args.by_tool or args.show_fails):
+    if last and (args.by_tool or args.show_fails or args.slices):
         name, m = last
+        if args.slices:
+            print(f"\n  per-slice on [{name}]  (recall | no-tool keep):")
+            order = ["tool", "no_tool", "short", "continuation", "multilingual",
+                     "lang:es", "lang:en", "lang:fr", "lang:de", "lang:it",
+                     "lang:pt"]
+            ps = m["per_slice"]
+            for sl in order:
+                if sl not in ps:
+                    continue
+                ro, rt, no, nt = ps[sl]
+                rec = f"{ro}/{rt}={ro/rt:.3f}" if rt else "    n/a    "
+                ntk = f"{no}/{nt}={no/nt:.3f}" if nt else "    n/a    "
+                print(f"    {sl:14s} recall {rec:18s} no-tool {ntk}")
         if args.by_tool:
             print(f"\n  per-tool recall on [{name}] (hit/total):")
             for t, (h, n) in sorted(m["per_tool"].items(), key=lambda x: -x[1][1]):

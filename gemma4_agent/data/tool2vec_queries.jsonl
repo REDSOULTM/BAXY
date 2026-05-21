@@ -1,0 +1,1790 @@
+{"tool": "media", "q": "Play the new Taylor Swift playlist"}
+{"tool": "media", "q": "Mete pausa de esta cancion"}
+{"tool": "media", "q": "Peux-tu jouer la chanson de Mozart"}
+{"tool": "media", "q": "Stoppa questo brano subito"}
+{"tool": "media", "q": "Spingi il prossimo brano, per favore"}
+{"tool": "media", "q": "Vorrei vedere un film di fantascienza"}
+{"tool": "media", "q": "Ponme música relajante para trabajar"}
+{"tool": "media", "q": "¿Puedes poner algo de jazz?"}
+{"tool": "media", "q": "Mets un peu de musique française"}
+{"tool": "media", "q": "Accosta il volume, voglio sentire"}
+{"tool": "media", "q": "Mi metti una canción en español"}
+{"tool": "media", "q": "Dime que música estás reproduciendo"}
+{"tool": "media", "q": "Toca o vídeo que eu estava ouvindo"}
+{"tool": "media", "q": "Pode pular para a próxima música?"}
+{"tool": "media", "q": "Lance cette vidéo de voyage"}
+{"tool": "media", "q": "Avanti con la playlist, per favore"}
+{"tool": "media", "q": "Poneme algo de reggaeton"}
+{"tool": "media", "q": "Podrías poner la música alta?"}
+{"tool": "media", "q": "Jouer la radio de France, s'il te plaît"}
+{"tool": "media", "q": "Peux-tu mettre en pause le son?"}
+{"tool": "media", "q": "Je veux écouter une chanson italienne"}
+{"tool": "media", "q": "Avvia il video sul mio telefono"}
+{"tool": "media", "q": "Poneme ese video de gatos"}
+{"tool": "media", "q": "Reproduce el podcast de historia"}
+{"tool": "media", "q": "Spiel mir diesen Song, bitte"}
+{"tool": "media", "q": "Kannst du das Video pausieren?"}
+{"tool": "media", "q": "Nächstes Lied, bitte"}
+{"tool": "media", "q": "Stoppe la musica adesso"}
+{"tool": "media", "q": "Pone el video de tutorial"}
+{"tool": "media", "q": "Qué canción esta sonando"}
+{"tool": "system", "q": "What time is it right now?"}
+{"tool": "system", "q": "Qué hora es en este momento"}
+{"tool": "system", "q": "A que horas é agora?"}
+{"tool": "system", "q": "Quelle heure est-il?"}
+{"tool": "system", "q": "Wie spät ist es?"}
+{"tool": "system", "q": "Che ora è?"}
+{"tool": "system", "q": "Show me current system specs"}
+{"tool": "system", "q": "Muéstrame los procesos que corren"}
+{"tool": "system", "q": "Quais processos estão rodando?"}
+{"tool": "system", "q": "Liste les processus en cours"}
+{"tool": "system", "q": "Zeige die laufenden Prozesse"}
+{"tool": "system", "q": "Elenca i processi attivi"}
+{"tool": "system", "q": "Can you shut down the computer?"}
+{"tool": "system", "q": "¿Qué fecha es hoy?"}
+{"tool": "system", "q": "Me diz a data de hoje"}
+{"tool": "system", "q": "Pouvais me dire la date?"}
+{"tool": "system", "q": "Schalt den Computer herunter"}
+{"tool": "system", "q": "Cerrar el proceso que está colgado"}
+{"tool": "system", "q": "Me feche o programa travado"}
+{"tool": "system", "q": "Éteins le programme bloqué"}
+{"tool": "system", "q": "Schließe den Prozess"}
+{"tool": "system", "q": "Chiudi il processo bloccato"}
+{"tool": "system", "q": "How is my battery level?"}
+{"tool": "system", "q": "¿Cómo está mi batería?"}
+{"tool": "system", "q": "Qual o nível da minha bateria?"}
+{"tool": "system", "q": "Quelle est ma batterie?"}
+{"tool": "system", "q": "Wie ist der Akku?"}
+{"tool": "system", "q": "Come va la batteria?"}
+{"tool": "system", "q": "List all running processes please"}
+{"tool": "system", "q": "Mata los procesos colgados ahora"}
+{"tool": "audio", "q": "Turn up the system volume please"}
+{"tool": "audio", "q": "Can you mute the microphone now"}
+{"tool": "audio", "q": "What devices are connected to audio"}
+{"tool": "audio", "q": "Decrease the volume slightly"}
+{"tool": "audio", "q": "Play the next song"}
+{"tool": "audio", "q": "Is the audio device working"}
+{"tool": "audio", "q": "Baja el volumen un poco, por favor"}
+{"tool": "audio", "q": "¿Puedes silenciar el sonido ahora"}
+{"tool": "audio", "q": "Qué dispositivos de audio están aquí"}
+{"tool": "audio", "q": "Sube el volumen al máximo"}
+{"tool": "audio", "q": "Pon la música a pausa"}
+{"tool": "audio", "q": "Necesito ver mis altavoces"}
+{"tool": "audio", "q": "Aumenta o diminui o volume"}
+{"tool": "audio", "q": "Pode silenciar todos os sons?"}
+{"tool": "audio", "q": "Quais são os dispositivos de áudio?"}
+{"tool": "audio", "q": "Manda a próxima música"}
+{"tool": "audio", "q": "Coloca o som mais alto"}
+{"tool": "audio", "q": "Mute o microfone agora"}
+{"tool": "audio", "q": "Augmente le volume s'il vous plaît"}
+{"tool": "audio", "q": "Pouvons-nous changer le périphérique audio"}
+{"tool": "audio", "q": "Réduis le volume un peu"}
+{"tool": "audio", "q": "Est-ce que le son fonctionne bien"}
+{"tool": "audio", "q": "Active le mode silencieux"}
+{"tool": "audio", "q": "Quel est mon périphérique audio"}
+{"tool": "audio", "q": "Lautstärke erhöhen bitte"}
+{"tool": "audio", "q": "Kannst du das Audio stummschalten?"}
+{"tool": "audio", "q": "Welche Audiogeräte sind verbunden?"}
+{"tool": "audio", "q": "Senke den Ton etwas"}
+{"tool": "audio", "q": "Nächstes Lied abspielen"}
+{"tool": "audio", "q": "Kannst du das Mikrofon ausschalten"}
+{"tool": "audio_device", "q": "Change the microphone input device now"}
+{"tool": "audio_device", "q": "Switch my output audio to headphones"}
+{"tool": "audio_device", "q": "Can I change the default speakers?"}
+{"tool": "audio_device", "q": "Route this app audio to the monitor"}
+{"tool": "audio_device", "q": "Set the input device to the USB mic"}
+{"tool": "audio_device", "q": "Switch to the headset mic please"}
+{"tool": "audio_device", "q": "Cambiar el dispositivo de audio por favor"}
+{"tool": "audio_device", "q": "Pon la salida de sonido en Bluetooth"}
+{"tool": "audio_device", "q": "¿Cómo cambio el altavoz principal?"}
+{"tool": "audio_device", "q": "Ruta el sonido de esta app al monitor"}
+{"tool": "audio_device", "q": "Cambia el micrófono interno al externo"}
+{"tool": "audio_device", "q": "Necesito cambiar el dispositivo de entrada"}
+{"tool": "audio_device", "q": "Muda o dispositivo de áudio padrão"}
+{"tool": "audio_device", "q": "Mudar a saída de som para o tablet"}
+{"tool": "audio_device", "q": "Posso trocar o microfone agora?"}
+{"tool": "audio_device", "q": "Direcionar o áudio deste app para lá"}
+{"tool": "audio_device", "q": "Qual é o dispositivo de entrada atual?"}
+{"tool": "audio_device", "q": "Troca o áudio para os fones de ouvido"}
+{"tool": "audio_device", "q": "Change the audio output to my speakers"}
+{"tool": "audio_device", "q": "Passe le son sur mes enceintes"}
+{"tool": "audio_device", "q": "Peux-tu changer le périphérique audio?"}
+{"tool": "audio_device", "q": "Route le son de cette application ici"}
+{"tool": "audio_device", "q": "Quel est le périphérique d'entrée?"}
+{"tool": "audio_device", "q": "Change les haut-parleurs par défaut"}
+{"tool": "audio_device", "q": "Wechsle den Audioausgang auf Kopfhörer"}
+{"tool": "audio_device", "q": "Ändere das Eingabegerät für mich"}
+{"tool": "audio_device", "q": "Kann ich das Audio umleiten?"}
+{"tool": "audio_device", "q": "Setze das Standardgerät auf den Monitor"}
+{"tool": "audio_device", "q": "Welcher Mikrofon ist aktiv jetzt?"}
+{"tool": "audio_device", "q": "Wechsel das Audio auf das Handy"}
+{"tool": "app", "q": "Open Photoshop for me"}
+{"tool": "app", "q": "Close my browser window"}
+{"tool": "app", "q": "Could you open Spotify please"}
+{"tool": "app", "q": "Launch Microsoft Teams now"}
+{"tool": "app", "q": "Hey, close the drawing program"}
+{"tool": "app", "q": "Open Calculator quickly"}
+{"tool": "app", "q": "Abre Chrome por favor"}
+{"tool": "app", "q": "¿Puedes abrir Word?"}
+{"tool": "app", "q": "Cerrar el editor de imágenes"}
+{"tool": "app", "q": "Inicia el programa de música"}
+{"tool": "app", "q": "Necesito abrir mi calendario"}
+{"tool": "app", "q": "Cierra Zoom ya"}
+{"tool": "app", "q": "Abre o programa de notas"}
+{"tool": "app", "q": "Pode fechar o Paint, por favor"}
+{"tool": "app", "q": "Queria abrir o Excel"}
+{"tool": "app", "q": "Você pode iniciar o Slack?"}
+{"tool": "app", "q": "Fecha o navegador de internet"}
+{"tool": "app", "q": "Abra o aplicativo de fotos"}
+{"tool": "app", "q": "Ouvre le logiciel de dessin"}
+{"tool": "app", "q": "Peux-tu ouvrir mon éditeur de texte?"}
+{"tool": "app", "q": "Ferme le client de messagerie"}
+{"tool": "app", "q": "Ouvrir la calculatrice s'il te plaît"}
+{"tool": "app", "q": "Lance Visual Studio Code"}
+{"tool": "app", "q": "Peux-tu fermer ce programme?"}
+{"tool": "app", "q": "Öffne den Taschenrechner bitte"}
+{"tool": "app", "q": "Kannst du Word öffnen?"}
+{"tool": "app", "q": "Schließe die App ab"}
+{"tool": "app", "q": "Starte den Browser für mich"}
+{"tool": "app", "q": "Öffne die E-Mail-Anwendung"}
+{"tool": "app", "q": "Kannst du Teams schließen?"}
+{"tool": "steam", "q": "Open my Steam library please"}
+{"tool": "steam", "q": "Launch that new Steam game"}
+{"tool": "steam", "q": "Show me the Steam store deals"}
+{"tool": "steam", "q": "What games do I have on Steam?"}
+{"tool": "steam", "q": "Can you open Steam for me?"}
+{"tool": "steam", "q": "Hey, look up Steam games"}
+{"tool": "steam", "q": "Abre mi biblioteca de Steam, por favor"}
+{"tool": "steam", "q": "Muéstrame los juegos en Steam"}
+{"tool": "steam", "q": "Quiero abrir la tienda de Steam"}
+{"tool": "steam", "q": "¿Puedes lanzar mi juego de Steam?"}
+{"tool": "steam", "q": "Busca juegos en Steam ahora"}
+{"tool": "steam", "q": "Dame mi lista de juegos de Steam"}
+{"tool": "steam", "q": "Abre a Steam minha biblioteca, por favor"}
+{"tool": "steam", "q": "Mostra os jogos na loja Steam"}
+{"tool": "steam", "q": "Quero lançar um jogo do Steam"}
+{"tool": "steam", "q": "Tem algum jogo novo no Steam?"}
+{"tool": "steam", "q": "Pode abrir o Steam para mim?"}
+{"tool": "steam", "q": "Verificar minha biblioteca Steam"}
+{"tool": "steam", "q": "Ouvre ma bibliothèque Steam, s'il te plaît"}
+{"tool": "steam", "q": "Lance-moi un jeu sur Steam"}
+{"tool": "steam", "q": "Montre-moi les nouveautés de Steam"}
+{"tool": "steam", "q": "Qu'est-ce qui est sur Steam?"}
+{"tool": "steam", "q": "Peux-tu ouvrir Steam maintenant?"}
+{"tool": "steam", "q": "Steam, lance un jeu"}
+{"tool": "steam", "q": "Öffne meine Steam Bibliothek bitte"}
+{"tool": "steam", "q": "Zeig mir den Steam Store"}
+{"tool": "steam", "q": "Kannst du ein Steam Spiel starten?"}
+{"tool": "steam", "q": "Was habe ich in Steam?"}
+{"tool": "steam", "q": "Gib mir die Steam Spiele"}
+{"tool": "steam", "q": "Such mir ein Spiel auf Steam"}
+{"tool": "window", "q": "Close that browser window for me"}
+{"tool": "window", "q": "Can you list all my open windows"}
+{"tool": "window", "q": "Maximize the current application please"}
+{"tool": "window", "q": "Focus on the project window"}
+{"tool": "window", "q": "Minimiza this window, please"}
+{"tool": "window", "q": "I need to move this window"}
+{"tool": "window", "q": "Resize the screen to fit everything"}
+{"tool": "window", "q": "¿Puedes minimizar esta ventana?"}
+{"tool": "window", "q": "Quiero enfocar la ventana de chat"}
+{"tool": "window", "q": "Cierra la pestaña de noticias"}
+{"tool": "window", "q": "Mueve esta ventana a la izquierda"}
+{"tool": "window", "q": "Agranda esta ventana ahora"}
+{"tool": "window", "q": "Dime qué ventanas están abiertas"}
+{"tool": "window", "q": "Pode focar a janela do Chrome"}
+{"tool": "window", "q": "Minimiza todas as janelas abertas"}
+{"tool": "window", "q": "Posso fechar essa janela?"}
+{"tool": "window", "q": "Muda o tamanho da janela"}
+{"tool": "window", "q": "Mover a janela para o topo"}
+{"tool": "window", "q": "Lista as janelas que estão rodando"}
+{"tool": "window", "q": "Ferme cette fenêtre de navigateur"}
+{"tool": "window", "q": "Peux-tu maximiser l'application ?"}
+{"tool": "window", "q": "Je veux fermer cette fenêtre"}
+{"tool": "window", "q": "Déplace la fenêtre vers le bureau"}
+{"tool": "window", "q": "Quelles fenêtres sont ouvertes ?"}
+{"tool": "window", "q": "Réduis la taille de cette fenêtre"}
+{"tool": "window", "q": "Maximieren Sie das Fenster bitte"}
+{"tool": "window", "q": "Können Sie die Fenster auflisten?"}
+{"tool": "window", "q": "Schließe dieses Fenster sofort"}
+{"tool": "window", "q": "Fokussiere das Projektfenster"}
+{"tool": "window", "q": "Verschiebe das Fenster nach unten"}
+{"tool": "gui", "q": "Can you take a screenshot of that window?"}
+{"tool": "gui", "q": "I need to click on the settings button now"}
+{"tool": "gui", "q": "Please scroll down to see the rest of the page"}
+{"tool": "gui", "q": "Can you type \"project deadline\" into the search bar?"}
+{"tool": "gui", "q": "Drag this image over to the desktop please"}
+{"tool": "gui", "q": "Press the control-shift-T hotkey for me"}
+{"tool": "gui", "q": "¿Puedes hacer una captura de pantalla de esto?"}
+{"tool": "gui", "q": "Necesito hacer clic en el ícono de perfil"}
+{"tool": "gui", "q": "Por favor, desplázate hacia abajo lentamente"}
+{"tool": "gui", "q": "¿Puedes escribir \"Hola mundo\" en este campo?"}
+{"tool": "gui", "q": "Dame una captura de pantalla de la pantalla actual"}
+{"tool": "gui", "q": "Presiona la combinación de teclas Ctrl S"}
+{"tool": "gui", "q": "Pode tirar um print dessa janela, por favor"}
+{"tool": "gui", "q": "Clique nesse botão verde lá na tela"}
+{"tool": "gui", "q": "Poderia digitar o texto aqui para mim?"}
+{"tool": "gui", "q": "Por favor, selecione e arraste este elemento"}
+{"tool": "gui", "q": "Eu preciso capturar a tela agora mesmo"}
+{"tool": "gui", "q": "Tu podes rolar para cima um pouco?"}
+{"tool": "gui", "q": "Podes clicar naquele link azul?"}
+{"tool": "gui", "q": "Por favor, tira um print dessa interface"}
+{"tool": "gui", "q": "Je peux prendre une capture d'écran de cette page"}
+{"tool": "gui", "q": "Clique sur le bouton de validation s'il te plaît"}
+{"tool": "gui", "q": "Pouvez-vous taper votre nom dans ce champ?"}
+{"tool": "gui", "q": "Fais un screenshot de ce que tu vois"}
+{"tool": "gui", "q": "Peux-tu défiler vers le bas lentement?"}
+{"tool": "gui", "q": "Bitte mach einen Screenshot dieses Fensters"}
+{"tool": "gui", "q": "Klicke auf das nächste Element bitte"}
+{"tool": "gui", "q": "Kannst du den Text hier eingeben?"}
+{"tool": "gui", "q": "Bitte scrolle nach unten bis zum Ende"}
+{"tool": "gui", "q": "Puoi scattare uno screenshot di questo?"}
+{"tool": "vision", "q": "What is on the screen right now"}
+{"tool": "vision", "q": "Describe this image for me"}
+{"tool": "vision", "q": "Can you read this text here"}
+{"tool": "vision", "q": "Find the login button"}
+{"tool": "vision", "q": "OCR that block of numbers"}
+{"tool": "vision", "q": "Show me what the interface looks like"}
+{"tool": "vision", "q": "¿Qué hay en la pantalla"}
+{"tool": "vision", "q": "Describe lo que veo"}
+{"tool": "vision", "q": "Puedes leer este texto"}
+{"tool": "vision", "q": "Encuentra el ícono de guardar"}
+{"tool": "vision", "q": "OCR esa parte de la imagen"}
+{"tool": "vision", "q": "Muéstrame qué hay en la pantalla"}
+{"tool": "vision", "q": "O que tem na tela"}
+{"tool": "vision", "q": "Descreva essa imagem para mim"}
+{"tool": "vision", "q": "Pode ler este texto por favor"}
+{"tool": "vision", "q": "Encontre o campo de busca"}
+{"tool": "vision", "q": "Fazer o OCR desse trecho"}
+{"tool": "vision", "q": "O que aparece na tela"}
+{"tool": "vision", "q": "Décris-moi ce qui est affiché"}
+{"tool": "vision", "q": "Peux-tu lire ce texte là"}
+{"tool": "vision", "q": "Qu'est-ce qui est sur l'écran"}
+{"tool": "vision", "q": "Trouve le bouton de paiement"}
+{"tool": "vision", "q": "OCR cette région s'il te plaît"}
+{"tool": "vision", "q": "Montre-moi l'interface"}
+{"tool": "vision", "q": "Was ist auf dem Bildschirm"}
+{"tool": "vision", "q": "Beschreibe mir das"}
+{"tool": "vision", "q": "Kannst du diesen Text erkennen"}
+{"tool": "vision", "q": "Finde das Menüelement"}
+{"tool": "vision", "q": "OCR diesen Text bitte"}
+{"tool": "vision", "q": "Zeig mir, was da ist"}
+{"tool": "browser", "q": "Open GitHub in a new tab please"}
+{"tool": "browser", "q": "Abre python.org en el navegador"}
+{"tool": "browser", "q": "Pode abrir o Google pro mim?"}
+{"tool": "browser", "q": "Ouvre la page de Google s'il te plaît"}
+{"tool": "browser", "q": "Kannst du mir google.de zeigen?"}
+{"tool": "browser", "q": "Apri google.it nel browser"}
+{"tool": "browser", "q": "Open Wikipedia for the history of Rome"}
+{"tool": "browser", "q": "Puedes abrir la página de Wikipedia?"}
+{"tool": "browser", "q": "Abri o site da Amazon para mim"}
+{"tool": "browser", "q": "Peux-tu ouvrir un lien rapide?"}
+{"tool": "browser", "q": "Zeig mir die lokale Seite"}
+{"tool": "browser", "q": "Apri il mio portafoglio online"}
+{"tool": "browser", "q": "Go to amazon.com right now"}
+{"tool": "browser", "q": "Naviga a localhost por favor"}
+{"tool": "browser", "q": "Abre el sitio de noticias de hoy"}
+{"tool": "browser", "q": "Queres ver o youtube agora?"}
+{"tool": "browser", "q": "Ouvre cette adresse web maintenant"}
+{"tool": "browser", "q": "Kannst du diesen Link öffnen?"}
+{"tool": "browser", "q": "Abre la página de mi banco"}
+{"tool": "browser", "q": "Abri github.com in the browser"}
+{"tool": "browser", "q": "Você pode abrir o site da Netflix?"}
+{"tool": "browser", "q": "Pourrais-tu ouvrir un lien spécifique?"}
+{"tool": "browser", "q": "Zeig mir den Login-Screen"}
+{"tool": "browser", "q": "Apri la pagina di github"}
+{"tool": "browser", "q": "Can you open this link in Safari?"}
+{"tool": "browser", "q": "¿Puedes abrir el sitio de soporte?"}
+{"tool": "browser", "q": "Queres ver um exemplo de python?"}
+{"tool": "browser", "q": "Ouvre l'adresse que me donnes"}
+{"tool": "browser", "q": "Bitte zeig mir diese url"}
+{"tool": "browser", "q": "Mi puoi aprire la pagina di aiuto?"}
+{"tool": "web", "q": "What is the weather forecast today?"}
+{"tool": "web", "q": "¿Cómo está el tiempo en Madrid?"}
+{"tool": "web", "q": "What are the latest news updates?"}
+{"tool": "web", "q": "Quiero saber las últimas noticias"}
+{"tool": "web", "q": "Wie ist das Wetter heute?"}
+{"tool": "web", "q": "Qual è il tempo oggi?"}
+{"tool": "web", "q": "O que está acontecendo no mundo?"}
+{"tool": "web", "q": "Busca as notícias mais recentes"}
+{"tool": "web", "q": "Can you tell me who that person is?"}
+{"tool": "web", "q": "¿Quién es ese político?"}
+{"tool": "web", "q": "Who was the winner of that game?"}
+{"tool": "web", "q": "De que trata esa película nueva?"}
+{"tool": "web", "q": "Kannst du mir sagen wie das funktioniert?"}
+{"tool": "web", "q": "Mi puoi dire che ore sono?"}
+{"tool": "web", "q": "Je veux savoir l'actualité"}
+{"tool": "web", "q": "Dis-moi qui est cette célébrité"}
+{"tool": "web", "q": "Qual è il prezzo di Bitcoin ora?"}
+{"tool": "web", "q": "Quanto costa l'oro oggi?"}
+{"tool": "web", "q": "Busca el precio de la gasolina"}
+{"tool": "web", "q": "Puedes buscarme el horario de trenes?"}
+{"tool": "web", "q": "Poderias buscarme el horario de trenes?"}
+{"tool": "web", "q": "Wie viel kostet ein Flug nach Rom?"}
+{"tool": "web", "q": "Quanto costa un biglietto a Milano?"}
+{"tool": "web", "q": "Puis-je avoir des informations sur...?"}
+{"tool": "web", "q": "Donne-moi des infos sur Paris"}
+{"tool": "web", "q": "Was ist der Unterschied zwischen"}
+{"tool": "web", "q": "Qual è la differenza tra"}
+{"tool": "web", "q": "Tell me when the event happened"}
+{"tool": "web", "q": "Cuándo pasó ese evento histórico?"}
+{"tool": "web", "q": "Quando aconteceu esse evento?"}
+{"tool": "uia", "q": "Click the save button on the profile window"}
+{"tool": "uia", "q": "¿Podrías buscar el campo de nombre de usuario?"}
+{"tool": "uia", "q": "Abre la configuración y haz clic en guardar"}
+{"tool": "uia", "q": "Can you find the next available dropdown menu?"}
+{"tool": "uia", "q": "Fais-moi cliquer sur le bouton valider s'il te plaît"}
+{"tool": "uia", "q": "Bitte klicke auf das nächste Feld"}
+{"tool": "uia", "q": "Clicca sul pulsante per salvare i dati"}
+{"tool": "uia", "q": "Pode encontrar o botão de enviar agora?"}
+{"tool": "uia", "q": "Bitte zeig mir das Kontaktmenü"}
+{"tool": "uia", "q": "Trova l'opzione di aiuto e cliccala"}
+{"tool": "uia", "q": "Clique sur le bouton de connexion rapide"}
+{"tool": "uia", "q": "Leesme el texto del encabezado principal"}
+{"tool": "uia", "q": "¿Puedes encontrar el botón de inicio de sesión?"}
+{"tool": "uia", "q": "Necesito que busques el menú de opciones"}
+{"tool": "uia", "q": "Dime qué dice el cuadro de texto"}
+{"tool": "uia", "q": "Onde está o botão para fechar a janela?"}
+{"tool": "uia", "q": "Puis clique sur le formulaire de contact"}
+{"tool": "uia", "q": "Find the user name input field please"}
+{"tool": "uia", "q": "Puodes encontrar el boton de cerrar la ventana?"}
+{"tool": "uia", "q": "Qual é o campo de busca principal?"}
+{"tool": "uia", "q": "Vor mir das Menüinstellungen zeigen"}
+{"tool": "uia", "q": "Trova l'icona della cronologia e clicca"}
+{"tool": "uia", "q": "Abre el modal de configuración ahora"}
+{"tool": "uia", "q": "O que fazer para adicionar um novo item?"}
+{"tool": "uia", "q": "Fais-moi naviguer vers l'écran d'accueil"}
+{"tool": "uia", "q": "Liesci la casella di testo per inserire il nome"}
+{"tool": "uia", "q": "Find the submit button and click it"}
+{"tool": "uia", "q": "Bitte öffne die Einstellungen für mich"}
+{"tool": "uia", "q": "Ti trovi sulla pagina del profilo?"}
+{"tool": "filesystem", "q": "¿Qué archivos hay en la carpeta Descargas?"}
+{"tool": "filesystem", "q": "Can you list all files in the documents?"}
+{"tool": "filesystem", "q": "Pode me mostrar o conteúdo da pasta atual?"}
+{"tool": "filesystem", "q": "Peux-tu lister les fichiers dans ce dossier?"}
+{"tool": "filesystem", "q": "Kannst du die Dateien hier auflisten bitte?"}
+{"tool": "filesystem", "q": "Mostra i file nella cartella Downloads"}
+{"tool": "filesystem", "q": "What notes do I have saved locally?"}
+{"tool": "filesystem", "q": "Show me the contents of the receipts folder"}
+{"tool": "filesystem", "q": "Qual é o nome do último arquivo copiado?"}
+{"tool": "filesystem", "q": "Vérifie si le fichier est bien sauvegardé"}
+{"tool": "filesystem", "q": "Soll ich diese Datei umbenennen?"}
+{"tool": "filesystem", "q": "Copia questo documento in una nuova cartella"}
+{"tool": "filesystem", "q": "¿Puedes abrir el archivo de log de hoy?"}
+{"tool": "filesystem", "q": "Please search for all files named 'report'"}
+{"tool": "filesystem", "q": "Você pode deletar os arquivos temporários?"}
+{"tool": "filesystem", "q": "Pouvez-vous supprimer ce fichier corrompu?"}
+{"tool": "filesystem", "q": "Bitte lösche alle Dateien älter als eine Woche"}
+{"tool": "filesystem", "q": "Aggiungi questa linea al file di testo"}
+{"tool": "filesystem", "q": "Listar todos os arquivos dentro desta pasta"}
+{"tool": "filesystem", "q": "Mets-moi tous les fichiers dans une archive zip"}
+{"tool": "filesystem", "q": "Gib mir den Inhalt der Konfigurationsdatei"}
+{"tool": "filesystem", "q": "Aprire il file di registro e leggerne il contenuto"}
+{"tool": "filesystem", "q": "Abre la carpeta de fotos de mi teléfono"}
+{"tool": "filesystem", "q": "Can you delete that old photo file?"}
+{"tool": "filesystem", "q": "Mudar o nome desse arquivo aqui"}
+{"tool": "filesystem", "q": "Quais arquivos estão dentro da pasta de trabalho?"}
+{"tool": "filesystem", "q": "Veuillez copier ce dossier sur le bureau"}
+{"tool": "package", "q": "Install the new python package please"}
+{"tool": "package", "q": "Can you search for discord winget"}
+{"tool": "package", "q": "I need to uninstall the old software"}
+{"tool": "package", "q": "What packages are currently installed"}
+{"tool": "package", "q": "Find me the latest vscode installer"}
+{"tool": "package", "q": "Install the chromium browser quickly"}
+{"tool": "package", "q": "¿puedes buscar el paquete ms office"}
+{"tool": "package", "q": "Busca el paquete winget por favor"}
+{"tool": "package", "q": "Quiero instalar el programa discord"}
+{"tool": "package", "q": "Desinstala la aplicación que ya no necesito"}
+{"tool": "package", "q": "Necesito buscar programas nuevos"}
+{"tool": "package", "q": "¿qué programas tengo instalados ahora"}
+{"tool": "package", "q": "Instala spotify en mi pc"}
+{"tool": "package", "q": "Descarga el paquete de spotify"}
+{"tool": "package", "q": "Busca el spotify winget"}
+{"tool": "package", "q": "Desinstala el spotify porfa"}
+{"tool": "package", "q": "Pouvez-vous installer ce programme"}
+{"tool": "package", "q": "Cherche le package spotify winget"}
+{"tool": "package", "q": "Installe-moi discord s'il te plaît"}
+{"tool": "package", "q": "Quelles applications sont installées"}
+{"tool": "package", "q": "Supprime ce package obsolète"}
+{"tool": "package", "q": "Trouve-moi le dernier firefox"}
+{"tool": "package", "q": "Installe le pilote de imprimante"}
+{"tool": "package", "q": "Installare il pacchetto spotify per favore"}
+{"tool": "package", "q": "Cerca il programma winget su winget"}
+{"tool": "package", "q": "Installa discord sulla mia macchina"}
+{"tool": "package", "q": "Disinstalla quel vecchio software"}
+{"tool": "package", "q": "Quali programmi sono installati qui"}
+{"tool": "package", "q": "Suche nach dem discord winget"}
+{"tool": "package", "q": "Installiere das neue package bitte"}
+{"tool": "clipboard", "q": "English"}
+{"tool": "clipboard", "q": "Read the text currently on my clipboard"}
+{"tool": "clipboard", "q": "Copy this link to the clipboard please"}
+{"tool": "clipboard", "q": "What's in the clipboard"}
+{"tool": "clipboard", "q": "Paste this phrase to the clipboard"}
+{"tool": "clipboard", "q": "Put the address on the clipboard"}
+{"tool": "clipboard", "q": "Can you grab the clipboard content"}
+{"tool": "clipboard", "q": "Spanish"}
+{"tool": "clipboard", "q": "Pega esto en el portapapeles"}
+{"tool": "clipboard", "q": "¿Qué hay copiado ahora mismo?"}
+{"tool": "clipboard", "q": "Copia esa URL al portapapeles"}
+{"tool": "clipboard", "q": "Guarda este texto en el portapapeles"}
+{"tool": "clipboard", "q": "Pon mi número en el copiado"}
+{"tool": "clipboard", "q": "Dame el contenido del portapapeles"}
+{"tool": "clipboard", "q": "Portuguese"}
+{"tool": "clipboard", "q": "Coloque isso na área de transferência"}
+{"tool": "clipboard", "q": "O que está no clipboard?"}
+{"tool": "clipboard", "q": "Copie esta frase para mim"}
+{"tool": "clipboard", "q": "Escreve este texto no clipboard"}
+{"tool": "clipboard", "q": "Pode me dar o que está copiado?"}
+{"tool": "clipboard", "q": "Guarde esta nota no portapapeles"}
+{"tool": "clipboard", "q": "French"}
+{"tool": "clipboard", "q": "Colle ceci dans le presse-papiers"}
+{"tool": "clipboard", "q": "Qu'y a-t-il dans le clipboard ?"}
+{"tool": "clipboard", "q": "Copie cette phrase pour moi"}
+{"tool": "clipboard", "q": "Mets cette adresse dans le presse-papiers"}
+{"tool": "clipboard", "q": "Peux-tu lire le contenu du clipboard ?"}
+{"tool": "clipboard", "q": "Enregistre ce texte rapidement"}
+{"tool": "clipboard", "q": "German"}
+{"tool": "clipboard", "q": "Kopiere diesen Text in die Zwischenablage"}
+{"tool": "terminal", "q": "Show me the files in this directory"}
+{"tool": "terminal", "q": "¿Puedes ejecutar el comando ls"}
+{"tool": "terminal", "q": "Ouvir o log do sistema por favor"}
+{"tool": "terminal", "q": "Pourrais-tu lancer ce script là"}
+{"tool": "terminal", "q": "Führe den Befehl echo nach"}
+{"tool": "terminal", "q": "Esegui il comando directory listing"}
+{"tool": "terminal", "q": "How do I check the network status"}
+{"tool": "terminal", "q": "¿Qué comandos puedo ejecutar ahora"}
+{"tool": "terminal", "q": "Poderia listar os arquivos na pasta"}
+{"tool": "terminal", "q": "Peux-tu me montrer le contenu du fichier"}
+{"tool": "terminal", "q": "Kannst du mir den Dateipfad zeigen"}
+{"tool": "terminal", "q": "Mostrami lo stato del server"}
+{"tool": "terminal", "q": "Execute a quick system check"}
+{"tool": "terminal", "q": "¿Podrías ejecutar ping google"}
+{"tool": "terminal", "q": "Executa o comando de teste de ping"}
+{"tool": "terminal", "q": "Montre-moi le résultat de la commande"}
+{"tool": "terminal", "q": "Zeig mir die aktuelle verzeichnisstruktur"}
+{"tool": "terminal", "q": "Fammi vedere l'output del script"}
+{"tool": "terminal", "q": "Run the update script now"}
+{"tool": "terminal", "q": "Ejecuta el script de actualizaciones"}
+{"tool": "terminal", "q": "Rode o script de atualizacao"}
+{"tool": "terminal", "q": "Lance le script de mise à jour"}
+{"tool": "terminal", "q": "Führe das update script aus"}
+{"tool": "terminal", "q": "Avvia lo script di aggiornamento"}
+{"tool": "terminal", "q": "What is the current working directory"}
+{"tool": "terminal", "q": "¿Qué directorios hay disponibles"}
+{"tool": "terminal", "q": "Qual é o diretório atual, por favor"}
+{"tool": "terminal", "q": "Quel est le répertoire courant"}
+{"tool": "terminal", "q": "Was ist der aktuelle arbeitsordner"}
+{"tool": "terminal", "q": "Qual è la directory di lavoro corrente"}
+{"tool": "memory", "q": "What is my preferred coffee order?"}
+{"tool": "memory", "q": "Remember I prefer dark roast coffee"}
+{"tool": "memory", "q": "Can you tell me my project name?"}
+{"tool": "memory", "q": "What did I tell you my name is?"}
+{"tool": "memory", "q": "Please remember that I am Alex"}
+{"tool": "memory", "q": "Change my project to marketing team"}
+{"tool": "memory", "q": "¿Cuál es mi nombre, por favor?"}
+{"tool": "memory", "q": "Recuérdame que prefiero el té verde"}
+{"tool": "memory", "q": "Dime qué proyecto estoy haciendo"}
+{"tool": "memory", "q": "¿Cómo me llamo yo?"}
+{"tool": "memory", "q": "Olvídate de mi configuración de volumen"}
+{"tool": "memory", "q": "Guarda que mi color favorito es azul"}
+{"tool": "memory", "q": "Qual é o meu nome novamente?"}
+{"tool": "memory", "q": "Lembra que eu gosto de chocolate amargo?"}
+{"tool": "memory", "q": "Qual projeto eu estou fazendo?"}
+{"tool": "memory", "q": "Pode guardar meu telefone?"}
+{"tool": "memory", "q": "Me diga minha preferência de notificação"}
+{"tool": "memory", "q": "Muda meu nome para João"}
+{"tool": "memory", "q": "Quel est mon nom, s'il vous plaît?"}
+{"tool": "memory", "q": "Souviens-toi de ma couleur préférée"}
+{"tool": "memory", "q": "Quel projet suis-je en train de faire?"}
+{"tool": "memory", "q": "Peux-tu me rappeler mon prénom?"}
+{"tool": "memory", "q": "Oublie mon paramètre de notif"}
+{"tool": "memory", "q": "Note mon nom est Sophie"}
+{"tool": "memory", "q": "Was ist mein Name noch mal?"}
+{"tool": "memory", "q": "Bitte speichere meine Lieblingsfarbe"}
+{"tool": "memory", "q": "Welches Projekt mache ich gerade?"}
+{"tool": "memory", "q": "Was ist meine bevorzugte Einstellung?"}
+{"tool": "memory", "q": "Vergiss mal meine alte Präferenz"}
+{"tool": "memory", "q": "Erinnere dich an meinen Firmennamen"}
+{"tool": "verify", "q": "Is the notepad application open?"}
+{"tool": "verify", "q": "¿Existe el archivo de informe?"}
+{"tool": "verify", "q": "Está el documento en la nube?"}
+{"tool": "verify", "q": "Est-ce que la fenêtre est là?"}
+{"tool": "verify", "q": "Ist das Dokument gespeichert?"}
+{"tool": "verify", "q": "È aperta la finestra di chat?"}
+{"tool": "verify", "q": "Do I have text in the clipboard?"}
+{"tool": "verify", "q": "¿Qué tiene el portapapeles ahora?"}
+{"tool": "verify", "q": "O arquivo existe no disco rígido?"}
+{"tool": "verify", "q": "Pode verificar se o app abriu?"}
+{"tool": "verify", "q": "Vérifie si le fichier est bien là"}
+{"tool": "verify", "q": "Prüfe, ist die Datei existiert?"}
+{"tool": "verify", "q": "Verifica se il file è presente"}
+{"tool": "verify", "q": "Check if the main window is visible"}
+{"tool": "verify", "q": "¿El archivo existe en esta carpeta?"}
+{"tool": "verify", "q": "Por favor, verifica si el app está abierto"}
+{"tool": "verify", "q": "Existe o arquivo nomeado 'dados'?"}
+{"tool": "verify", "q": "Você pode checar se a janela existe?"}
+{"tool": "verify", "q": "Est-ce que la clipboard contient quelque chose?"}
+{"tool": "verify", "q": "Brauchst du prüfen, ob die app läuft?"}
+{"tool": "verify", "q": "Controlla se il documento è salvato"}
+{"tool": "verify", "q": "Are we still in the correct application window?"}
+{"tool": "verify", "q": "¿Puedes ver si el archivo existe?"}
+{"tool": "verify", "q": "O que está na área de transferência?"}
+{"tool": "verify", "q": "Est-ce le fichier est trouvé?"}
+{"tool": "state", "q": "List my open resources, please"}
+{"tool": "state", "q": "¿Qué recursos están abiertos ahora?"}
+{"tool": "state", "q": "Me mostra os recursos abertos"}
+{"tool": "state", "q": "Puisque, liste mes ressources ouvertes"}
+{"tool": "state", "q": "Zeige mir die offenen Ressourcen"}
+{"tool": "state", "q": "Mostra i miei risorse aperti"}
+{"tool": "state", "q": "Can you list what resources I have?"}
+{"tool": "state", "q": "¿Puedes listar los recursos abiertos?"}
+{"tool": "state", "q": "Me mostra quais recursos estão abertos"}
+{"tool": "state", "q": "Liste-moi tes ressources actives"}
+{"tool": "state", "q": "Bitte listet die aktuellen Ressourcen"}
+{"tool": "state", "q": "Potresti elencare i risorse attivi?"}
+{"tool": "state", "q": "Check the current state and resources"}
+{"tool": "state", "q": "Haz un punto de control del estado"}
+{"tool": "state", "q": "Faz um checkpoint do estado atual"}
+{"tool": "state", "q": "Prends un point de contrôle de l'état"}
+{"tool": "state", "q": "Erstelle einen Zustandspunkt"}
+{"tool": "state", "q": "Crea un checkpoint dello stato"}
+{"tool": "state", "q": "Roll back to the previous resource state"}
+{"tool": "state", "q": "Revierte al estado anterior de recursos"}
+{"tool": "state", "q": "Reverter para o último estado salvo"}
+{"tool": "state", "q": "Annule au dernier état enregistré"}
+{"tool": "state", "q": "Zurückrollen zum letzten Zustand bitte"}
+{"tool": "state", "q": "Ripristina lo stato precedente, per favore"}
+{"tool": "state", "q": "What resources need cleanup now?"}
+{"tool": "state", "q": "¿Necesito limpiar los recursos?"}
+{"tool": "state", "q": "Preciso limpar os recursos agora"}
+{"tool": "state", "q": "Faut nettoyer les ressources inutiles"}
+{"tool": "state", "q": "Ich muss die Ressourcen bereinigen"}
+{"tool": "state", "q": "Devo pulire le risorse inutilizzate"}
+{"tool": "input", "q": "Type escape and then press the win key"}
+{"tool": "input", "q": "Press arrow down three times and type"}
+{"tool": "input", "q": "Can you send the Escape hotkey?"}
+{"tool": "input", "q": "Type hello world without pressing enter"}
+{"tool": "input", "q": "Use the keyboard layout for Spanish"}
+{"tool": "input", "q": "Send the keystrokes for the Enter key"}
+{"tool": "input", "q": "Presiona Escape y luego Win"}
+{"tool": "input", "q": "Escribe este texto sin pulsar enter"}
+{"tool": "input", "q": "¿Puedes simular la tecla de flecha?"}
+{"tool": "input", "q": "Manda el Hotkey de Escape ahora"}
+{"tool": "input", "q": "Presiona la tecla Shift y luego Control"}
+{"tool": "input", "q": "Escribe la frase en español"}
+{"tool": "input", "q": "Pressione Escape e depois Win"}
+{"tool": "input", "q": "Digite esse texto sem apertar enter"}
+{"tool": "input", "q": "Pode mandar a sequência de teclas?"}
+{"tool": "input", "q": "Pressiona seta para baixo três vezes"}
+{"tool": "input", "q": "Manda o hotkey de Escape, por favor"}
+{"tool": "input", "q": "Digite isso no teclado agora"}
+{"tool": "input", "q": "Appuyez sur Échap et la touche Windows"}
+{"tool": "input", "q": "Tape ce texte sans valider"}
+{"tool": "input", "q": "Peux-tu simuler des frappes de clavier?"}
+{"tool": "input", "q": "Envoie les flèches vers le bas trois fois"}
+{"tool": "input", "q": "Active le clavier français"}
+{"tool": "input", "q": "Écris ça maintenant, s'il te plaît"}
+{"tool": "input", "q": "Drücke Escape und dann die Win Taste"}
+{"tool": "input", "q": "Gib diesen Text ohne Enter ein"}
+{"tool": "input", "q": "Kannst du die Pfeiltasten senden?"}
+{"tool": "input", "q": "Drücke die Taste und tippe etwas"}
+{"tool": "input", "q": "Schick die Hotkeys für mich"}
+{"tool": "input", "q": "Bitte gib die deutsche Tastatur ein"}
+{"tool": "env", "q": "What is the current database connection string?"}
+{"tool": "env", "q": "Tell me the API key for the service"}
+{"tool": "env", "q": "Muestra el valor de la variable de entorno"}
+{"tool": "env", "q": "¿Qué es el puerto configurado ahora?"}
+{"tool": "env", "q": "Set the host variable to production environment"}
+{"tool": "env", "q": "How do I check my security token?"}
+{"tool": "env", "q": "Qual è il valore della variabile di sistema?"}
+{"tool": "env", "q": "Mi puoi mostrare l'ambiente di produzione?"}
+{"tool": "env", "q": "Mete la variabile PATH a /usr/bin"}
+{"tool": "env", "q": "Dichiamami il nome dell'ambiente"}
+{"tool": "env", "q": "Welche Umgebungsvariable ist gesetzt?"}
+{"tool": "env", "q": "Zeige mir den Wert der Datenbank"}
+{"tool": "env", "q": "Wie setze ich die Datenbank URL?"}
+{"tool": "env", "q": "Können Sie mir das API-Schlüssel zeigen?"}
+{"tool": "env", "q": "Gib mir den Wert der Umgebungsvariable"}
+{"tool": "env", "q": "Qual è la variabile di sistema attiva?"}
+{"tool": "env", "q": "Posso vedere la configurazione dell'ambiente?"}
+{"tool": "env", "q": "Mostra il valore della chiave segreta"}
+{"tool": "env", "q": "Setta la variabile TIMEOUT a"}
+{"tool": "env", "q": "Quali variabili sono attive adesso?"}
+{"tool": "env", "q": "Muestra la variable de entorno nombre"}
+{"tool": "env", "q": "¿Puedo cambiar la variable de log?"}
+{"tool": "env", "q": "Cambia la variable de puerto a"}
+{"tool": "env", "q": "What is the value of my environment variable?"}
+{"tool": "env", "q": "Could you read the service endpoint?"}
+{"tool": "env", "q": "Check the current config variable"}
+{"tool": "env", "q": "Please unset the old environment variable"}
+{"tool": "env", "q": "Set environment var logging to true"}
+{"tool": "env", "q": "Qual é o valor da variável de ambiente?"}
+{"tool": "env", "q": "Poderia ver a variável PATH?"}
+{"tool": "registry", "q": "What's the value of that registry key?"}
+{"tool": "registry", "q": "Me puedes mostrar la clave de registro?"}
+{"tool": "registry", "q": "Poderia checar uma entrada do registro?"}
+{"tool": "registry", "q": "Quelle est la valeur de cette clé?"}
+{"tool": "registry", "q": "Kannst du den Registrierungswert abrufen?"}
+{"tool": "registry", "q": "Qual è il valore di quella chiave?"}
+{"tool": "registry", "q": "Show me the permissions for this registry path"}
+{"tool": "registry", "q": "Export this specific registry tree to a file"}
+{"tool": "registry", "q": "¿Puedes buscar todas las entradas de software?"}
+{"tool": "registry", "q": "Quero exportar o ramo de registro específico"}
+{"tool": "registry", "q": "Peux-tu exporter cette branche de registre?"}
+{"tool": "registry", "q": "Lösche diesen registrierungseintrag bitte"}
+{"tool": "registry", "q": "Elimina questa voce di registro per me"}
+{"tool": "registry", "q": "Delete the registry key named 'Software'"}
+{"tool": "registry", "q": "¿Qué hay en la ruta de registro HKEY_LOCAL_MACHINE?"}
+{"tool": "registry", "q": "Quais valores tem neste caminho de registro?"}
+{"tool": "registry", "q": "Pouvez-vous ajouter une nouvelle entrée de registre?"}
+{"tool": "registry", "q": "Kannst du einen neuen registrierungswert hinzufügen?"}
+{"tool": "registry", "q": "Aggiungi una nuova chiave di registro, per favore"}
+{"tool": "registry", "q": "Add a new entry under the system configuration"}
+{"tool": "registry", "q": "Wie füge ich einen neuen registrierungseintrag hinzu?"}
+{"tool": "registry", "q": "Aggiungimi la chiave di registro di sistema"}
+{"tool": "registry", "q": "What are the current system settings?"}
+{"tool": "registry", "q": "Muestra los valores de las configuraciones actuales"}
+{"tool": "registry", "q": "Qual é a configuração atual do sistema?"}
+{"tool": "registry", "q": "Pouvez-vous me donner l'état du registre?"}
+{"tool": "registry", "q": "Welche registrierungseinstellungen sind aktiv?"}
+{"tool": "registry", "q": "Quali sono le impostazioni di registro attive?"}
+{"tool": "registry", "q": "Find me the permissions for this registry path"}
+{"tool": "registry", "q": "Buscar permisos para esta ruta de registro"}
+{"tool": "download", "q": "Download this file for me now"}
+{"tool": "download", "q": "Can you hash that document?"}
+{"tool": "download", "q": "Please download the latest report"}
+{"tool": "download", "q": "Holá, baixe o arquivo para mim"}
+{"tool": "download", "q": "Peux-tu télécharger ce document?"}
+{"tool": "download", "q": "Lütfen dosyayı indir"}
+{"tool": "download", "q": "Scarica quel file subito"}
+{"tool": "download", "q": "Kannst du die Datei herunterladen?"}
+{"tool": "download", "q": "Vorladown den Bericht bitte"}
+{"tool": "download", "q": "Mi serve scaricare questo allegato"}
+{"tool": "download", "q": "Descarga ese archivo por favor"}
+{"tool": "download", "q": "Pode baixar o relatório completo"}
+{"tool": "download", "q": "Télécharge-moi le fichier signé"}
+{"tool": "download", "q": "Bitte hashe die Signaturdatei"}
+{"tool": "download", "q": "Can you verify the signature now?"}
+{"tool": "download", "q": "Hash this file for me quick"}
+{"tool": "download", "q": "Need to download the project files"}
+{"tool": "download", "q": "Por favor, baixe o arquivo"}
+{"tool": "download", "q": "download the source code"}
+{"tool": "download", "q": "Peux-tu vérifier la signature?"}
+{"tool": "download", "q": "Bitte überprüfe die Signatur"}
+{"tool": "download", "q": "Scarica e verifica il file"}
+{"tool": "download", "q": "¿Puedes descargar el paquete?"}
+{"tool": "download", "q": "Pode checar o hash desse arquivo"}
+{"tool": "download", "q": "Télécharge le fichier et vérifie"}
+{"tool": "download", "q": "Descarga el archivo y haz el hash"}
+{"tool": "download", "q": "Bitte lass mich den Bericht herunterladen"}
+{"tool": "download", "q": "Can you check the file signature?"}
+{"tool": "download", "q": "Me puoi scaricare il file di backup"}
+{"tool": "download", "q": "¿Podrías descargar ese documento?"}
+{"tool": "email", "q": "Send an email to John about the report"}
+{"tool": "email", "q": "Manda un email a John sobre el informe"}
+{"tool": "email", "q": "Envia um email para João sobre o relatório"}
+{"tool": "email", "q": "Envoie un email à John concernant le rapport"}
+{"tool": "email", "q": "Schick John eine E-Mail zum Bericht"}
+{"tool": "email", "q": "Invia un'email a John riguardo al rapporto"}
+{"tool": "email", "q": "Can you email the team about the meeting?"}
+{"tool": "email", "q": "Podes mandar um email à equipe sobre a reunião?"}
+{"tool": "email", "q": "Peux-tu envoyer un mail à l'équipe pour la réunion?"}
+{"tool": "email", "q": "Kannst du dem Team eine Mail über das Treffen schicken?"}
+{"tool": "email", "q": "Puoi inviare un'email al team sulla riunione?"}
+{"tool": "email", "q": "Mándale un correo a María de trabajo"}
+{"tool": "email", "q": "Envie un message rapide à Marie"}
+{"tool": "email", "q": "Schick Marie eine kurze Nachricht"}
+{"tool": "email", "q": "Invia un messaggio a Maria per lavoro"}
+{"tool": "email", "q": "What's the status of my drafts?"}
+{"tool": "email", "q": "Quais são os meus rascunhos?"}
+{"tool": "email", "q": "Quels sont mes brouillons?"}
+{"tool": "email", "q": "Welcher Status haben meine Entwürfe?"}
+{"tool": "email", "q": "Qual è lo stato delle mie bozze?"}
+{"tool": "email", "q": "¿Me puedes enviar un email a mi jefe?"}
+{"tool": "email", "q": "Pode me mandar um email para meu chefe?"}
+{"tool": "email", "q": "Pourrais m'envoyer un email à mon patron?"}
+{"tool": "email", "q": "Könntest du mir eine Mail an meinen chef schicken?"}
+{"tool": "email", "q": "Potresti inviarmi un'email al mio capo?"}
+{"tool": "email", "q": "Escribe un email a Sarah, por favor"}
+{"tool": "email", "q": "Manda um email para Sara, por favor"}
+{"tool": "email", "q": "Envoie un courriel à Sara, s'il vous plaît"}
+{"tool": "email", "q": "Schreib Sarah eine"}
+{"tool": "reminder", "q": "Set a reminder for tomorrow morning"}
+{"tool": "reminder", "q": "Can you remind me to call mom later"}
+{"tool": "reminder", "q": "Remind me to buy milk this evening"}
+{"tool": "reminder", "q": "Please create a reminder for 3 PM"}
+{"tool": "reminder", "q": "Remind me about the meeting tomorrow"}
+{"tool": "reminder", "q": "Set a reminder for the dentist appointment"}
+{"tool": "reminder", "q": "Dime un recordatorio para mañana"}
+{"tool": "reminder", "q": "Recuérdame llamar al dentista la próxima semana"}
+{"tool": "reminder", "q": "Ponme un aviso para las 8 de la noche"}
+{"tool": "reminder", "q": "Necesito un recordatorio para el informe"}
+{"tool": "reminder", "q": "¿Puedes crear un aviso para el lunes?"}
+{"tool": "reminder", "q": "Recuérdame comprar pan hoy"}
+{"tool": "reminder", "q": "Me lembra de ligar amanhã de manhã"}
+{"tool": "reminder", "q": "Pode criar um lembrete para amanhã às 10h?"}
+{"tool": "reminder", "q": "Mande um lembrete para pagar a conta"}
+{"tool": "reminder", "q": "Lembrar-me de comprar pão depois"}
+{"tool": "reminder", "q": "Defina um lembrete para sexta-feira"}
+{"tool": "reminder", "q": "Quero um lembrete sobre a reunião"}
+{"tool": "reminder", "q": "Rappelle-moi de prendre les médicaments"}
+{"tool": "reminder", "q": "Peux-tu me créer un rappel pour ce soir?"}
+{"tool": "reminder", "q": "Mets un rappel pour l'apéro"}
+{"tool": "reminder", "q": "Souviens-toi de l'anniversaire de Jean"}
+{"tool": "reminder", "q": "J'ai besoin d'un rappel pour le dossier"}
+{"tool": "reminder", "q": "Crée-moi un rappel pour lundi"}
+{"tool": "reminder", "q": "Erinnere mich daran, Kaffee zu kaufen"}
+{"tool": "reminder", "q": "Können Sie mir einen Erinnerung setzen?"}
+{"tool": "reminder", "q": "Setz einen Reminder für morgen früh"}
+{"tool": "reminder", "q": "Erinnere mich, die Miete zu bezahlen"}
+{"tool": "reminder", "q": "Bitte erinnere mich heute Abend"}
+{"tool": "reminder", "q": "Stell mir einen Termin ab"}
+{"tool": "browser_real", "q": "Search the website for the latest sales prices"}
+{"tool": "browser_real", "q": "Can you fill out this contact form for me"}
+{"tool": "browser_real", "q": "Abre la página de seguimiento de mi pedido"}
+{"tool": "browser_real", "q": "Poderias buscar el precio de ese producto"}
+{"tool": "browser_real", "q": "Bitte finde die aktuelle Öffnungszeit"}
+{"tool": "browser_real", "q": "Dammit, öffne die Lieferseite"}
+{"tool": "browser_real", "q": "Mets-moi sur le site des réservations"}
+{"tool": "browser_real", "q": "Ouvre le formulaire d'inscription s'il te plaît"}
+{"tool": "browser_real", "q": "Wie lautet der Inhalt dieser Seite?"}
+{"tool": "browser_real", "q": "Mostra-me o formulário de contato agora"}
+{"tool": "browser_real", "q": "Quero que você preencha os dados aqui"}
+{"tool": "browser_real", "q": "Cerca o endereço de suporte da empresa"}
+{"tool": "browser_real", "q": "Was ist das Wetter in Berlin?"}
+{"tool": "browser_real", "q": "Visualizza la pagina dei termini di servizio"}
+{"tool": "browser_real", "q": "Puoi cliccare sul pulsante di acquisto?"}
+{"tool": "browser_real", "q": "Naviga para o site da Amazon Brasil"}
+{"tool": "browser_real", "q": "Me montre le site des avis clients"}
+{"tool": "browser_real", "q": "Traduci la pagina in inglese, per favore"}
+{"tool": "browser_real", "q": "Find the user review section on the site"}
+{"tool": "browser_real", "q": "¿Puedes buscar el correo electrónico de soporte?"}
+{"tool": "browser_real", "q": "Preenche o campo de nome, por favor"}
+{"tool": "browser_real", "q": "Suche nach den Nutzungsbedingungen"}
+{"tool": "browser_real", "q": "Vor der Bestellung, welche Kosten fallen an?"}
+{"tool": "browser_real", "q": "Capisci i dettagli del mio ordine, per favore"}
+{"tool": "browser_real", "q": "Check the status of my delivery order"}
+{"tool": "browser_real", "q": "Potresti caricare la pagina dei prezzi?"}
+{"tool": "browser_real", "q": "Quero que você abra o site de notícias"}
+{"tool": "browser_real", "q": "L'articolo è sulla terza tab, ok?"}
+{"tool": "browser_real", "q": "Gefinde die Kontaktinformationen der Firma"}
+{"tool": "browser_real", "q": "Show me the company's contact details"}
+{"tool": "knowledge", "q": "¿Qué documentos tengo guardados?"}
+{"tool": "knowledge", "q": "Busca información sobre la reunión"}
+{"tool": "knowledge", "q": "Pon este PDF en la base de conocimiento"}
+{"tool": "knowledge", "q": "Necesito saber los detalles del proyecto"}
+{"tool": "knowledge", "q": "Puedes buscar las notas de la semana pasada"}
+{"tool": "knowledge", "q": "Recuerda ese archivo de la política"}
+{"tool": "knowledge", "q": "What documents do I have saved?"}
+{"tool": "knowledge", "q": "Search knowledge base for company policies"}
+{"tool": "knowledge", "q": "Ingest this report into our system"}
+{"tool": "knowledge", "q": "Can you find the client contact details?"}
+{"tool": "knowledge", "q": "Tell me about our recent project history"}
+{"tool": "knowledge", "q": "Store this new research paper"}
+{"tool": "knowledge", "q": "Onde estão os documentos do projeto?"}
+{"tool": "knowledge", "q": "Busque a base de conhecimento por riscos"}
+{"tool": "knowledge", "q": "Adicione este texto ao meu conhecimento"}
+{"tool": "knowledge", "q": "Quais foram as últimas decisões tomadas?"}
+{"tool": "knowledge", "q": "Poderias encontrar o manual de procedimentos?"}
+{"tool": "knowledge", "q": "Salvar esse novo artigo, por favor"}
+{"tool": "knowledge", "q": "Quelles sont les notes importantes ?"}
+{"tool": "knowledge", "q": "Peux-tu chercher les documents clients ?"}
+{"tool": "knowledge", "q": "Ajoute ce rapport à la base de données"}
+{"tool": "knowledge", "q": "Où puis-je trouver les anciennes fiches ?"}
+{"tool": "knowledge", "q": "Trouve-moi les infos du projet Alpha"}
+{"tool": "knowledge", "q": "Stocke ce nouveau document, s'il te plaît"}
+{"tool": "knowledge", "q": "Wo sind die Dokumente gespeichert?"}
+{"tool": "knowledge", "q": "Kannst du nach dem letzten Meeting suchen?"}
+{"tool": "knowledge", "q": "Speichere dieses Protokoll im Wissenssystem"}
+{"tool": "knowledge", "q": "Welche Informationen hast du über uns?"}
+{"tool": "knowledge", "q": "Zeig mir die relevanten Unterlagen bitte"}
+{"tool": "knowledge", "q": "Füge diese Notizen zur Wissensbasis hinzu"}
+{"tool": "office", "q": "Could you make a new PowerPoint presentation?"}
+{"tool": "office", "q": "I need an Excel sheet for my budget"}
+{"tool": "office", "q": "Write up a Word document on this topic"}
+{"tool": "office", "q": "Can you generate a spreadsheet for me?"}
+{"tool": "office", "q": "Please create an Excel file immediately"}
+{"tool": "office", "q": "Generate a new document now"}
+{"tool": "office", "q": "Posso criar uma apresentação do PowerPoint?"}
+{"tool": "office", "q": "Faz um arquivo Word sobre o projeto"}
+{"tool": "office", "q": "Pode fazer uma tabela no Excel?"}
+{"tool": "office", "q": "Cria um documento de texto para mim"}
+{"tool": "office", "q": "Gere um novo slide show, por favor"}
+{"tool": "office", "q": "Quero um arquivo de trabalho agora"}
+{"tool": "office", "q": "Pourrais-tu créer un document Word pour moi?"}
+{"tool": "office", "q": "Fais-moi un tableau Excel pour les données"}
+{"tool": "office", "q": "Peux-tu générer une présentation PowerPoint?"}
+{"tool": "office", "q": "Crée un nouveau document, s'il te plaît"}
+{"tool": "office", "q": "J'ai besoin d'un fichier de calcul"}
+{"tool": "office", "q": "Fais-moi un fichier de texte rapide"}
+{"tool": "office", "q": "Kannst du eine Präsentation erstellen bitte?"}
+{"tool": "office", "q": "Bitte ein Excel-Dokument für mich machen"}
+{"tool": "office", "q": "Erstelle einen Word-Bericht zu diesem Thema"}
+{"tool": "office", "q": "Kannst du ein neues Dokument schreiben?"}
+{"tool": "office", "q": "Brauche ein PowerPoint, kannst du das machen?"}
+{"tool": "office", "q": "Bitte mache mir eine Tabelle"}
+{"tool": "office", "q": "Puoi creare una presentazione PowerPoint?"}
+{"tool": "office", "q": "Mi serve un file Word per il cliente"}
+{"tool": "office", "q": "Genera un foglio Excel subito"}
+{"tool": "office", "q": "Potresti creare un nuovo documento per me?"}
+{"tool": "office", "q": "Vorrei un documento Word urgente"}
+{"tool": "office", "q": "Fai un Excel velocemente"}
+{"tool": "notification", "q": "Set a timer for twenty minutes please"}
+{"tool": "notification", "q": "Can you remind me about the meeting later"}
+{"tool": "notification", "q": "Alexa, schedule an alarm for seven AM"}
+{"tool": "notification", "q": "Remind me to call mom tomorrow morning"}
+{"tool": "notification", "q": "Please set a reminder for the grocery list"}
+{"tool": "notification", "q": "What time is my next appointment reminder"}
+{"tool": "notification", "q": "Mettre un rappel pour demain matin s'il vous plaît"}
+{"tool": "notification", "q": "Can you set a toast notification now"}
+{"tool": "notification", "q": "Set a timer for the next hour"}
+{"tool": "notification", "q": "Alarm for 6 thirty sharp please"}
+{"tool": "notification", "q": "Ricordami di chiamare il dentista domani"}
+{"tool": "notification", "q": "Set a reminder to drink water hourly"}
+{"tool": "notification", "q": "Can you remind me when the package arrives"}
+{"tool": "notification", "q": "Metti un promemoria per le otto di sera"}
+{"tool": "notification", "q": "Wie lange bis mein nächster timer abläuft"}
+{"tool": "notification", "q": "Set a timer for fifteen minutes"}
+{"tool": "notification", "q": "Pode me lembrar de ligar amanhã?"}
+{"tool": "notification", "q": "Alarme para amanhã às oito da manhã"}
+{"tool": "notification", "q": "Define um lembrete para a reunião"}
+{"tool": "notification", "q": "Establece una alarma para las seis de la mañana"}
+{"tool": "notification", "q": "¿Me puedes avisar en veinte minutos?"}
+{"tool": "notification", "q": "Recuérdame que pague la factura"}
+{"tool": "notification", "q": "Stelle einen Timer auf dreißig Minuten"}
+{"tool": "notification", "q": "Kannst du mir eine Erinnerung setzen?"}
+{"tool": "notification", "q": "Fais-moi un rappel dans une heure"}
+{"tool": "notification", "q": "Rappelle-moi de prendre les clés"}
+{"tool": "notification", "q": "Avisame cuando termine la reunión"}
+{"tool": "notification", "q": "Mi alarma de la mañana no sonó"}
+{"tool": "notification", "q": "Can you check my scheduled alarms?"}
+{"tool": "notification", "q": "Mi notificacion de recordatorio no funciona"}
+{"tool": "routine", "q": "Set up a routine when I open the app"}
+{"tool": "routine", "q": "Can you create a manual automation?"}
+{"tool": "routine", "q": "Create a routine for every Monday morning"}
+{"tool": "routine", "q": "Run a routine at 8 AM daily"}
+{"tool": "routine", "q": "Schedule a routine when the phone unlocks"}
+{"tool": "routine", "q": "What routines can I set up here?"}
+{"tool": "routine", "q": "Crea una rutina automática para mí"}
+{"tool": "routine", "q": "¿Cómo configuro una rutina cron?"}
+{"tool": "routine", "q": "Necesito una rutina para el lunes por la mañana"}
+{"tool": "routine", "q": "Pon una rutina cuando abra la aplicación"}
+{"tool": "routine", "q": "¿Puedes crear un disparador manual?"}
+{"tool": "routine", "q": "Configura una rutina para las siete en punto"}
+{"tool": "routine", "q": "Cria uma rotina para quando eu abrir o app"}
+{"tool": "routine", "q": "Configurar uma rotina cron, por favor"}
+{"tool": "routine", "q": "Me dá uma automacao para a noite"}
+{"tool": "routine", "q": "Tem como criar um gatilho manual?"}
+{"tool": "routine", "q": "Crée une routine pour l'ouverture de l'app"}
+{"tool": "routine", "q": "Peux-tu configurer une automatisation manuelle?"}
+{"tool": "routine", "q": "Fais une routine pour le lundi matin"}
+{"tool": "routine", "q": "Crée-moi une routine quand je l'ouvre"}
+{"tool": "routine", "q": "Peux-tu automatiser ça pour moi?"}
+{"tool": "routine", "q": "Routine erstellen wenn die app startet"}
+{"tool": "routine", "q": "Kannst du eine manuelle routine einrichten?"}
+{"tool": "routine", "q": "Erstelle eine Routine für jeden Montagmorgen"}
+{"tool": "routine", "q": "Setze eine automatische Routine jetzt"}
+{"tool": "routine", "q": "Wie richte ich eine Cron-Routine ein?"}
+{"tool": "routine", "q": "Erstelle mir eine Routine für morgen"}
+{"tool": "routine", "q": "Vuoi creare una routine all'apertura?"}
+{"tool": "routine", "q": "Puoi impostare un trigger manuale?"}
+{"tool": "routine", "q": "Crea un'automazione per l'app di apertura"}
+{"tool": "source_manager", "q": "Save this research source, please"}
+{"tool": "source_manager", "q": "Can you show my saved citations?"}
+{"tool": "source_manager", "q": "What sources did I save yesterday?"}
+{"tool": "source_manager", "q": "Add this snapshot to my project"}
+{"tool": "source_manager", "q": "Find all my source notes"}
+{"tool": "source_manager", "q": "Where are my saved research materials?"}
+{"tool": "source_manager", "q": "Guarda esta fuente de investigación, por favor"}
+{"tool": "source_manager", "q": "¿Puedes mostrarme mis citas guardadas?"}
+{"tool": "source_manager", "q": "Necesito guardar este material de lectura"}
+{"tool": "source_manager", "q": "Muéstrame los bocetos que he tomado"}
+{"tool": "source_manager", "q": "Añade esta referencia a mi base de datos"}
+{"tool": "source_manager", "q": "¿Qué fuentes tengo guardadas ahora?"}
+{"tool": "source_manager", "q": "Pode salvar essa fonte de pesquisa para mim"}
+{"tool": "source_manager", "q": "Quero adicionar este resumo agora"}
+{"tool": "source_manager", "q": "Mostre os meus materiais de estudo"}
+{"tool": "source_manager", "q": "Eu devo salvar essa citação?"}
+{"tool": "source_manager", "q": "Pouvez-vous sauvegarder cette source, s'il vous plaît?"}
+{"tool": "source_manager", "q": "Ajoute cette référence à ma liste"}
+{"tool": "source_manager", "q": "Où sont mes sources de recherche enregistrées?"}
+{"tool": "source_manager", "q": "Peux-tu enregistrer cette note rapidement?"}
+{"tool": "source_manager", "q": "Sauvegarde cette citation pour moi"}
+{"tool": "source_manager", "q": "Wie speichere ich diese Quelle?"}
+{"tool": "source_manager", "q": "Zeige mir alle meine Quellen"}
+{"tool": "source_manager", "q": "Bitte füge diesen Auszug hinzu"}
+{"tool": "source_manager", "q": "Wo finde ich meine gespeicherten Snapshots?"}
+{"tool": "source_manager", "q": "Salva questa fonte di ricerca, per favore"}
+{"tool": "source_manager", "q": "Puoi mostrarmi le mie citazioni?"}
+{"tool": "source_manager", "q": "Aggiungi questo appunto ai miei dati"}
+{"tool": "source_manager", "q": "Dove ho salvato questo documento?"}
+{"tool": "source_manager", "q": "Mostrami gli articoli che ho raccolto"}
+{"tool": "dependency", "q": "English"}
+{"tool": "dependency", "q": "Check my python dependencies now"}
+{"tool": "dependency", "q": "Are there any missing modules?"}
+{"tool": "dependency", "q": "Diagnose required software components"}
+{"tool": "dependency", "q": "What dependencies am I missing?"}
+{"tool": "dependency", "q": "Run the dependency check please"}
+{"tool": "dependency", "q": "Need to check my environment modules"}
+{"tool": "dependency", "q": "Spanish"}
+{"tool": "dependency", "q": "Revisa las dependencias del proyecto"}
+{"tool": "dependency", "q": "¿Faltan librerías de python?"}
+{"tool": "dependency", "q": "Diagnostica los paquetes faltantes"}
+{"tool": "dependency", "q": "Chequea las dependencias de este script"}
+{"tool": "dependency", "q": "¿Qué modules me faltan?"}
+{"tool": "dependency", "q": "Necesito verificar los requisitos"}
+{"tool": "dependency", "q": "Portuguese"}
+{"tool": "dependency", "q": "Verifique as dependências do sistema"}
+{"tool": "dependency", "q": "Há algum módulo faltando aqui?"}
+{"tool": "dependency", "q": "Diagnosticar dependências do python"}
+{"tool": "dependency", "q": "Quais pacotes estão faltando?"}
+{"tool": "dependency", "q": "Checa os requisitos do projeto"}
+{"tool": "dependency", "q": "Por favor, faça a verificação de dependência"}
+{"tool": "dependency", "q": "French"}
+{"tool": "dependency", "q": "Vérifie les dépendances python svp"}
+{"tool": "dependency", "q": "Y a-t-il des modules manquants?"}
+{"tool": "dependency", "q": "Diagnostiquer les dépendances du script"}
+{"tool": "dependency", "q": "Quelles sont les dépendances requises?"}
+{"tool": "dependency", "q": "Vérifie mes librairies maintenant"}
+{"tool": "dependency", "q": "Peux-tu détecter les dépendances?"}
+{"tool": "dependency", "q": "German"}
+{"tool": "dependency", "q": "Prüfe die fehlenden Abhängigkeiten"}
+{"tool": "contacts", "q": "What are my saved contacts"}
+{"tool": "contacts", "q": "Find John Doe in my address book"}
+{"tool": "contacts", "q": "Can you search my contacts for Sarah"}
+{"tool": "contacts", "q": "Show me all my phone numbers"}
+{"tool": "contacts", "q": "Add a new contact for Maria Lopez"}
+{"tool": "contacts", "q": "Save this number to contacts"}
+{"tool": "contacts", "q": "What's the email for that guy"}
+{"tool": "contacts", "q": "Hey, find the number for Paul"}
+{"tool": "contacts", "q": "Find me Mike's contact info"}
+{"tool": "contacts", "q": "Can you resolve this email address"}
+{"tool": "contacts", "q": "Add a new vcard contact"}
+{"tool": "contacts", "q": "Export my contacts to a file"}
+{"tool": "contacts", "q": "How do I import a contact list"}
+{"tool": "contacts", "q": "Import this vcard file now"}
+{"tool": "contacts", "q": "Search my list for my boss"}
+{"tool": "contacts", "q": "Where is Jane's entry"}
+{"tool": "contacts", "q": "Please create a contact for my mom"}
+{"tool": "contacts", "q": "Can you put this in my contacts"}
+{"tool": "contacts", "q": "I need to find my old contacts"}
+{"tool": "contacts", "q": "Show me contacts from last year"}
+{"tool": "contacts", "q": "Send this to his contact"}
+{"tool": "contacts", "q": "Can you find a suitable recipient"}
+{"tool": "contacts", "q": "Resolve this email address please"}
+{"tool": "contacts", "q": "What contacts do I have now"}
+{"tool": "contacts", "q": "Add this person to my contacts"}
+{"tool": "contacts", "q": "search for contact jennifer"}
+{"tool": "contacts", "q": "Can you help me manage contacts"}
+{"tool": "contacts", "q": "Please open the contacts app"}
+{"tool": "contacts", "q": "What are my contacts like"}
+{"tool": "contacts", "q": "find my saved contacts quickly"}
+{"tool": "notes_tasks", "q": "What notes do I have today"}
+{"tool": "notes_tasks", "q": "Can you add this to my tasks"}
+{"tool": "notes_tasks", "q": "Recuerda comprar leche mañana"}
+{"tool": "notes_tasks", "q": "¿Qué notas tengo sobre el proyecto"}
+{"tool": "notes_tasks", "q": "Anotar la idea de la reunión"}
+{"tool": "notes_tasks", "q": "Crear una tarea para el lunes"}
+{"tool": "notes_tasks", "q": "Quere saber mis tarefas anotações"}
+{"tool": "notes_tasks", "q": "Poderias criar uma nota rápida"}
+{"tool": "notes_tasks", "q": "Ache as minhas tarefas pendentes"}
+{"tool": "notes_tasks", "q": "Adiciona uma lembrança sobre isso"}
+{"tool": "notes_tasks", "q": "Fais-moi une note sur ce sujet"}
+{"tool": "notes_tasks", "q": "Ajoute cette tâche à ma liste"}
+{"tool": "notes_tasks", "q": "Wie kann ich meine Notizen finden"}
+{"tool": "notes_tasks", "q": "Erstelle eine Aufgabe für mich"}
+{"tool": "notes_tasks", "q": "Bitte notiere das jetzt mal"}
+{"tool": "notes_tasks", "q": "Suche nach den letzten Einkaufslisten"}
+{"tool": "notes_tasks", "q": "Necesito anotar esto rápido"}
+{"tool": "notes_tasks", "q": "Ponme un recordatorio para la cena"}
+{"tool": "notes_tasks", "q": "Dime qué tareas tengo pendientes"}
+{"tool": "notes_tasks", "q": "¿Puedes buscar notas de trabajo"}
+{"tool": "notes_tasks", "q": "Faire une note rapide pour moi"}
+{"tool": "notes_tasks", "q": "Ajoute une tâche urgente maintenant"}
+{"tool": "notes_tasks", "q": "Où sont mes notes de ontem"}
+{"tool": "notes_tasks", "q": "Scrivi una nota su quello"}
+{"tool": "notes_tasks", "q": "Crea un compito per domani"}
+{"tool": "notes_tasks", "q": "Ricerca le note di viaggio"}
+{"tool": "notes_tasks", "q": "Aggiungi un promemoria importante"}
+{"tool": "notes_tasks", "q": "Vorrei creare una lista di cose"}
+{"tool": "notes_tasks", "q": "Was ist auf meiner ToDo Liste"}
+{"tool": "notes_tasks", "q": "Kannst du mir deine Notizen zeigen"}
+{"tool": "local_calendar", "q": "Set a meeting in my calendar please"}
+{"tool": "local_calendar", "q": "¿Puedes agendar una cita mañana?"}
+{"tool": "local_calendar", "q": "Agende um evento no meu calendário"}
+{"tool": "local_calendar", "q": "Ajoute un événement dans mon calendrier"}
+{"tool": "local_calendar", "q": "Trageiere einen Termin ein"}
+{"tool": "local_calendar", "q": "Crea un evento hoy por la tarde"}
+{"tool": "local_calendar", "q": "Can you import this ICS file?"}
+{"tool": "local_calendar", "q": "Need to write down a reminder"}
+{"tool": "local_calendar", "q": "Pode criar um evento para amanhã?"}
+{"tool": "local_calendar", "q": "Donne-moi les événements de la semaine"}
+{"tool": "local_calendar", "q": "Ich will einen ICS importieren"}
+{"tool": "local_calendar", "q": "Aggiungi un evento domani mattina"}
+{"tool": "local_calendar", "q": "What calendar events do I have?"}
+{"tool": "local_calendar", "q": "Pon una cita para el lunes"}
+{"tool": "local_calendar", "q": "Manda um evento para o meu calendário"}
+{"tool": "local_calendar", "q": "Ajoute cette date à mon calendrier"}
+{"tool": "local_calendar", "q": "Gibt es Termine in meinem Kalender?"}
+{"tool": "local_calendar", "q": "Aggiungi un appuntamento al calendario"}
+{"tool": "local_calendar", "q": "Set up a reminder for Friday"}
+{"tool": "local_calendar", "q": "¿Qué tengo agendado esta semana?"}
+{"tool": "local_calendar", "q": "Preciso adicionar um evento agora"}
+{"tool": "local_calendar", "q": "Peux-tu ajouter un événement?"}
+{"tool": "local_calendar", "q": "Mein Kalender anzeigen"}
+{"tool": "local_calendar", "q": "Mi calendario ha un evento domani?"}
+{"tool": "local_calendar", "q": "Add a new event for tomorrow"}
+{"tool": "local_calendar", "q": "Importar o arquivo ICS"}
+{"tool": "local_calendar", "q": "Pouvez-vous créer une rencontre?"}
+{"tool": "local_calendar", "q": "Zum Kalender hinzufügen"}
+{"tool": "local_calendar", "q": "Devo creare un evento velocemente"}
+{"tool": "local_calendar", "q": "What's in my schedule?"}
+{"tool": "habit_tracker", "q": "Track my new running habit today"}
+{"tool": "habit_tracker", "q": "¿Puedo registrar mi hábito de leer?"}
+{"tool": "habit_tracker", "q": "Me lembra minhas metas de treino"}
+{"tool": "habit_tracker", "q": "Tu peux enregistrer ma nouvelle habitude"}
+{"tool": "habit_tracker", "q": "Erinner mich an meinen Gewohnheitsstreak"}
+{"tool": "habit_tracker", "q": "Annota la mia nuova abitudine"}
+{"tool": "habit_tracker", "q": "What habits did I track last week?"}
+{"tool": "habit_tracker", "q": "¿Qué hábitos debo completar hoy?"}
+{"tool": "habit_tracker", "q": "Gosta de verificar meu progresso?"}
+{"tool": "habit_tracker", "q": "Peux-tu afficher mes habitudes actuelles?"}
+{"tool": "habit_tracker", "q": "Wie ist mein Fortschritt beim Training?"}
+{"tool": "habit_tracker", "q": "Controlla i miei obiettivi di abitudine"}
+{"tool": "habit_tracker", "q": "Add logging for my meditation streak"}
+{"tool": "habit_tracker", "q": "Dime qué hábito tengo pendiente"}
+{"tool": "habit_tracker", "q": "Posso ver meus hábitos registrados?"}
+{"tool": "habit_tracker", "q": "Montre-moi mes habitudes pour ce mois"}
+{"tool": "habit_tracker", "q": "Kannst du meine tägliche Gewohnheit speichern?"}
+{"tool": "habit_tracker", "q": "Quanti sono i miei streak di fitness?"}
+{"tool": "habit_tracker", "q": "Registra la mia abitudine di bere acqua"}
+{"tool": "habit_tracker", "q": "How many streaks have I achieved?"}
+{"tool": "habit_tracker", "q": "¿Qué hábitos tengo en la lista?"}
+{"tool": "habit_tracker", "q": "Preciso adicionar um novo hábito"}
+{"tool": "habit_tracker", "q": "Puis-je voir mes habitudes en cours?"}
+{"tool": "habit_tracker", "q": "Mein Gewohnheitsplan ist voll"}
+{"tool": "habit_tracker", "q": "Aggiungi un nuovo obiettivo di abitudine"}
+{"tool": "habit_tracker", "q": "Anota que estoy bebiendo agua"}
+{"tool": "habit_tracker", "q": "Queria saber meus hábitos atuais"}
+{"tool": "habit_tracker", "q": "Donne-moi mes habitudes de suivi"}
+{"tool": "habit_tracker", "q": "Speichern du neue Gewohnheit Eintrag"}
+{"tool": "habit_tracker", "q": "Mi puoi mostrare i miei obiettivi?"}
+{"tool": "local_search", "q": "Find all recent notes about the project"}
+{"tool": "local_search", "q": "¿Puedes buscar archivos de mi trabajo?"}
+{"tool": "local_search", "q": "Procura arquivos com a palavra relatório"}
+{"tool": "local_search", "q": "Peux-tu chercher mes documents de voyage?"}
+{"tool": "local_search", "q": "Zeig mir die Dateien mit dem Namen Projekt"}
+{"tool": "local_search", "q": "Trova um arquivo com anexo importante"}
+{"tool": "local_search", "q": "Ache todos os documentos com o termo reunião"}
+{"tool": "local_search", "q": "Trouve les fichiers contenant le mot mot de passe"}
+{"tool": "local_search", "q": "Such nach allen Notizen von gestern"}
+{"tool": "local_search", "q": "Mi puedes mostrar notas sobre el viaje?"}
+{"tool": "local_search", "q": "Cherche les fichiers avec le mot \"client"}
+{"tool": "local_search", "q": "Vorlese die Datei über Kundendaten"}
+{"tool": "local_search", "q": "Cerca tutte le foto di vacanza"}
+{"tool": "local_search", "q": "Mostrami i file chiamati riunione"}
+{"tool": "local_search", "q": "Potresti trovare la nota sul budget?"}
+{"tool": "local_search", "q": "Cerca documenti di contabilità"}
+{"tool": "local_search", "q": "Find the file that mentions Q3 sales"}
+{"tool": "local_search", "q": "Buscar documentos con palabra clave"}
+{"tool": "local_search", "q": "Acha arquivos que eu salvei no ano passado"}
+{"tool": "local_search", "q": "Montre-moi les notes de la semaine"}
+{"tool": "local_search", "q": "Cherche les fichiers nommés Facture_"}
+{"tool": "local_search", "q": "Zeig mir alles was ich letztes Mal gespeichert habe"}
+{"tool": "local_search", "q": "Kannst du die Notizen von gestern finden?"}
+{"tool": "local_search", "q": "Trova il file con la parola password"}
+{"tool": "local_search", "q": "Mostrami il documento di progetto"}
+{"tool": "local_search", "q": "Necesito buscar el archivo de impuestos"}
+{"tool": "local_search", "q": "Quero achar o documento do cliente"}
+{"tool": "local_search", "q": "Estás a ver os meus arquivos de trabalho?"}
+{"tool": "local_search", "q": "Tu peux me montrer le fichier important?"}
+{"tool": "local_search", "q": "Suche nach der Datei in meinem Ordner"}
+{"tool": "printer_scanner", "q": "List all connected printers for me"}
+{"tool": "printer_scanner", "q": "Can you scan this document now?"}
+{"tool": "printer_scanner", "q": "Print the report to the office printer"}
+{"tool": "printer_scanner", "q": "List all available scanners please"}
+{"tool": "printer_scanner", "q": "How do I cancel this print job?"}
+{"tool": "printer_scanner", "q": "Scan a page and save it to my drive"}
+{"tool": "printer_scanner", "q": "¿Me puedes listar las impresoras?"}
+{"tool": "printer_scanner", "q": "Quiero imprimir este archivo ahora mismo"}
+{"tool": "printer_scanner", "q": "Cancela el trabajo de impresión, por favor"}
+{"tool": "printer_scanner", "q": "¿Qué escáneres tienes disponibles?"}
+{"tool": "printer_scanner", "q": "Escanea el documento en la mesa"}
+{"tool": "printer_scanner", "q": "Lista las impresoras y escáneres"}
+{"tool": "printer_scanner", "q": "Abre la lista de impresoras"}
+{"tool": "printer_scanner", "q": "¿Puedes imprimir este pdf por mí?"}
+{"tool": "printer_scanner", "q": "Cancela el trabajo de impresión rápido"}
+{"tool": "printer_scanner", "q": "Muestra los escáneres disponibles"}
+{"tool": "printer_scanner", "q": "Escanea esta foto, por favor"}
+{"tool": "printer_scanner", "q": "Imprime el documento en la red"}
+{"tool": "printer_scanner", "q": "Liste les imprimantes disponibles"}
+{"tool": "printer_scanner", "q": "Pouvez-vous scanner ce document ?"}
+{"tool": "printer_scanner", "q": "Annulez ce travail d'impression"}
+{"tool": "printer_scanner", "q": "Montre-moi les scanners"}
+{"tool": "printer_scanner", "q": "Scanner cette page s'il vous plaît"}
+{"tool": "printer_scanner", "q": "Imprime ce fichier sur le réseau"}
+{"tool": "printer_scanner", "q": "zeige mir die verfügbaren Drucker"}
+{"tool": "printer_scanner", "q": "Kannst du dieses Dokument scannen?"}
+{"tool": "printer_scanner", "q": "Bitte den Druckauftrag abbrechen"}
+{"tool": "printer_scanner", "q": "Liste die Scanner auf"}
+{"tool": "printer_scanner", "q": "Scan dieses Dokument für mich"}
+{"tool": "printer_scanner", "q": "Drucke diese Datei aus bitte"}
+{"tool": "desktop_layout", "q": "Save the current desktop layout please"}
+{"tool": "desktop_layout", "q": "Capture my monitor positions now"}
+{"tool": "desktop_layout", "q": "¿Puedes guardar la disposición de las ventanas?"}
+{"tool": "desktop_layout", "q": "Restore the last screen setup"}
+{"tool": "desktop_layout", "q": "Set my desktop layout back"}
+{"tool": "desktop_layout", "q": "Guardar la maquetación de ventanas"}
+{"tool": "desktop_layout", "q": "Save window positions across all screens"}
+{"tool": "desktop_layout", "q": "Snapshot the current desktop arrangement"}
+{"tool": "desktop_layout", "q": "Can I restore my previous layout?"}
+{"tool": "desktop_layout", "q": "Take a picture of my monitors"}
+{"tool": "desktop_layout", "q": "Please save this desktop state"}
+{"tool": "desktop_layout", "q": "Capture desktop layout now"}
+{"tool": "desktop_layout", "q": "Salvar o layout das janelas, por favor"}
+{"tool": "desktop_layout", "q": "Guardar a disposição atual do desktop"}
+{"tool": "desktop_layout", "q": "Pode restaurar o meu layout de trabalho?"}
+{"tool": "desktop_layout", "q": "Capturar a posição das janelas"}
+{"tool": "desktop_layout", "q": "Salvar o layout dos monitores"}
+{"tool": "desktop_layout", "q": "Mostrar o layout salvo"}
+{"tool": "desktop_layout", "q": "Sauvegarde la disposition de mon bureau"}
+{"tool": "desktop_layout", "q": "Prends une photo de l'agencement"}
+{"tool": "desktop_layout", "q": "Peux-tu restaurer ma configuration?"}
+{"tool": "desktop_layout", "q": "Sauvegarder les positions des fenêtres"}
+{"tool": "desktop_layout", "q": "Enregistrer la mise en page actuelle"}
+{"tool": "desktop_layout", "q": "Donne-moi la disposition enregistrée"}
+{"tool": "desktop_layout", "q": "Speichere das aktuelle Desktop-Layout"}
+{"tool": "desktop_layout", "q": "Erstelle ein Layout-Snapshot"}
+{"tool": "desktop_layout", "q": "Kannst du die Fensterpositionen wiederherstellen?"}
+{"tool": "desktop_layout", "q": "Speichern der Monitoranordnung"}
+{"tool": "desktop_layout", "q": "Lade das letzte Layout"}
+{"tool": "desktop_layout", "q": "Setze die Desktop-Layouts zurück"}
+{"tool": "backup_sync", "q": "Can you start a full backup now?"}
+{"tool": "backup_sync", "q": "Please deduplicate my stored files"}
+{"tool": "backup_sync", "q": "Sync up my local and cloud data"}
+{"tool": "backup_sync", "q": "Make a new zip backup for me"}
+{"tool": "backup_sync", "q": "How are my backups currently set up?"}
+{"tool": "backup_sync", "q": "Run the file restoration process"}
+{"tool": "backup_sync", "q": "¿Puedes hacer un respaldo ahora mismo?"}
+{"tool": "backup_sync", "q": "Por favor, restaura la última copia"}
+{"tool": "backup_sync", "q": "Necesito sincronizar todos los archivos"}
+{"tool": "backup_sync", "q": "Haz un backup de mis documentos"}
+{"tool": "backup_sync", "q": "Deduplicar archivos por favor"}
+{"tool": "backup_sync", "q": "¿Dónde están mis copias de seguridad?"}
+{"tool": "backup_sync", "q": "Poder sincronizar mi telefono con el backup"}
+{"tool": "backup_sync", "q": "Haz una copia de seguridad ahora"}
+{"tool": "backup_sync", "q": "Respaldo de datos, por favor"}
+{"tool": "backup_sync", "q": "Restaurar la copia de seguridad de ayer"}
+{"tool": "backup_sync", "q": "Je veux faire une sauvegarde complète"}
+{"tool": "backup_sync", "q": "Peux-tu restaurer les fichiers?"}
+{"tool": "backup_sync", "q": "Synchronise mes données locales"}
+{"tool": "backup_sync", "q": "Fais le backup de tout"}
+{"tool": "backup_sync", "q": "Bitte sichere meine Dateien"}
+{"tool": "backup_sync", "q": "Kannst du sie synchronisieren?"}
+{"tool": "backup_sync", "q": "Führe die Wiederherstellung durch"}
+{"tool": "backup_sync", "q": "Sicherungen erstellen, bitte"}
+{"tool": "backup_sync", "q": "Ripristina i miei dati, per favore"}
+{"tool": "backup_sync", "q": "Puoi sincronizzare i miei documenti?"}
+{"tool": "backup_sync", "q": "Fai un backup e deduplica"}
+{"tool": "backup_sync", "q": "Sincronizza il backup ora"}
+{"tool": "backup_sync", "q": "Quiero restaurar mi información antigua"}
+{"tool": "backup_sync", "q": "Restaura mi respaldo, por favor"}
+{"tool": "safety", "q": "What risky actions are pending?"}
+{"tool": "safety", "q": "Show me my pending safety checks"}
+{"tool": "safety", "q": "Do I have any high-risk items?"}
+{"tool": "safety", "q": "Confirm outstanding safety protocols, please"}
+{"tool": "safety", "q": "Safety review, what needs approval?"}
+{"tool": "safety", "q": "Check my pending risky decisions"}
+{"tool": "safety", "q": "¿Hay acciones riesgosas pendientes?"}
+{"tool": "safety", "q": "Muéstrame las acciones de riesgo"}
+{"tool": "safety", "q": "¿Qué debo confirmar ahora?"}
+{"tool": "safety", "q": "Revisa las decisiones peligrosas"}
+{"tool": "safety", "q": "Necesito ver mis alertas de seguridad"}
+{"tool": "safety", "q": "¿Tengo algo que confirmar?"}
+{"tool": "safety", "q": "Quais ações arriscadas estão pendentes?"}
+{"tool": "safety", "q": "Poderia mostrar os alertas de segurança?"}
+{"tool": "safety", "q": "Tem alguma decisão perigosa?"}
+{"tool": "safety", "q": "Verificar riscos pendentes, por favor"}
+{"tool": "safety", "q": "Est-o tenho riscos?"}
+{"tool": "safety", "q": "Pode me dizer o que devo confirmar?"}
+{"tool": "safety", "q": "Me mostra as minhas pendencias de segurança"}
+{"tool": "safety", "q": "Verifique as ações perigosas pendentes"}
+{"tool": "safety", "q": "Quelles sont mes actions risquées?"}
+{"tool": "safety", "q": "Peux-tu vérifier ce qui est en attente?"}
+{"tool": "safety", "q": "Montre-moi les confirmations de sécurité"}
+{"tool": "safety", "q": "Qu'est-ce qui est en suspens?"}
+{"tool": "safety", "q": "Vérifie les actions dangereuses"}
+{"tool": "safety", "q": "Welche Risikobemerkungen warten?"}
+{"tool": "safety", "q": "Zeig mir die ausstehenden Sicherheitschecks"}
+{"tool": "safety", "q": "Muss ich etwas bestätigen?"}
+{"tool": "safety", "q": "Gib mir einen Überblick über Risiken"}
+{"tool": "safety", "q": "Kontrolliere meine gefährlichen Aufgaben"}
+{"tool": "document", "q": "Can you extract the data from this PDF?"}
+{"tool": "document", "q": "Puedes extraer el texto de ese documento"}
+{"tool": "document", "q": "Pode extrair o conteúdo deste arquivo, por favor"}
+{"tool": "document", "q": "Pourrais-tu extraire les informations de ce fichier?"}
+{"tool": "document", "q": "Kannst du den Text aus dieser Datei ziehen?"}
+{"tool": "document", "q": "Puoi estrarre i dati da questo documento?"}
+{"tool": "document", "q": "Get me the tables from this spreadsheet"}
+{"tool": "document", "q": "Extrae la tabla de este informe"}
+{"tool": "document", "q": "Extrair as tabelas desse relatório"}
+{"tool": "document", "q": "Extrais-tu les tableaux de ce rapport?"}
+{"tool": "document", "q": "Ziehe mir die Tabellen aus dieser XLSX"}
+{"tool": "document", "q": "Estrarre le tabelle da questo file"}
+{"tool": "document", "q": "What are the key points in this report?"}
+{"tool": "document", "q": "¿Cuáles son los puntos clave de este informe?"}
+{"tool": "document", "q": "Qual é o ponto principal deste arquivo?"}
+{"tool": "document", "q": "Quelles sont les idées principales ici?"}
+{"tool": "document", "q": "Was sind die wichtigsten Punkte in diesem Dokument?"}
+{"tool": "document", "q": "Quali sono i punti chiave di questo file?"}
+{"tool": "document", "q": "Please summarize the slides in this presentation"}
+{"tool": "document", "q": "Resúmeme las diapositivas de la presentación"}
+{"tool": "document", "q": "Resumir os slides desta apresentação, por favor"}
+{"tool": "document", "q": "Peux-tu résumer les diapositives pour moi?"}
+{"tool": "document", "q": "Fasse die Präsentation zusammen"}
+{"tool": "document", "q": "Riassumi le slide di questa presentazione"}
+{"tool": "document", "q": "Can you pull out all the images?"}
+{"tool": "document", "q": "¿Me puedes sacar todas las imágenes?"}
+{"tool": "document", "q": "Extrair as imagens deste PDF, por favor"}
+{"tool": "document", "q": "Extrais les images pour moi?"}
+{"tool": "document", "q": "Hol dir alle Bilder aus dieser Datei"}
+{"tool": "document", "q": "Tira tutte le immagini da questo file"}
+{"tool": "developer", "q": "Run tests for this project"}
+{"tool": "developer", "q": "Can you format my code please"}
+{"tool": "developer", "q": "Start the development server"}
+{"tool": "developer", "q": "Check the git status"}
+{"tool": "developer", "q": "Lint my current files"}
+{"tool": "developer", "q": "Show me the code diff"}
+{"tool": "developer", "q": "Ejecuta los tests del proyecto"}
+{"tool": "developer", "q": "¿Me puedes hacer un diff git?"}
+{"tool": "developer", "q": "Formatea los archivos ahora"}
+{"tool": "developer", "q": "Detén el servidor de desarrollo"}
+{"tool": "developer", "q": "Verifica el estado de git"}
+{"tool": "developer", "q": "Corregir errores de lint"}
+{"tool": "developer", "q": "Testeame este código rapido"}
+{"tool": "developer", "q": "¿Cómo va el código ahora?"}
+{"tool": "developer", "q": "Muéstrame la diferencia de archivos"}
+{"tool": "developer", "q": "Necesito ver el status del repo"}
+{"tool": "developer", "q": "Testeos y formatea el proyecto"}
+{"tool": "developer", "q": "Por favor, haz un lint check"}
+{"tool": "developer", "q": "Arranca el servidor de desarrollo"}
+{"tool": "developer", "q": "¿Hay cambios en git?"}
+{"tool": "developer", "q": "Genera el reporte de tests"}
+{"tool": "developer", "q": "Dame el diff de los últimos commits"}
+{"tool": "developer", "q": "Lintear este código por favor"}
+{"tool": "developer", "q": "¿Podrías correr los tests?"}
+{"tool": "developer", "q": "Testeame todo lo que he escrito"}
+{"tool": "developer", "q": "Revisar el estado de los archivos"}
+{"tool": "developer", "q": "Formatear el código source"}
+{"tool": "developer", "q": "¿Qué pasa con el servidor?"}
+{"tool": "developer", "q": "Necesito ver el status ahora"}
+{"tool": "developer", "q": "Ejecutar el linter de archivos"}
+{"tool": "device_settings", "q": "Turn on my bluetooth settings"}
+{"tool": "device_settings", "q": "Configurar la pantalla del telefono"}
+{"tool": "device_settings", "q": "Abre las opciones de wifi"}
+{"tool": "device_settings", "q": "Poucas coisas nas configurações do dispositivo"}
+{"tool": "device_settings", "q": "Schalte die Anzeigeeinstellungen ein"}
+{"tool": "device_settings", "q": "Apri le impostazioni del display"}
+{"tool": "device_settings", "q": "What is my current power plan"}
+{"tool": "device_settings", "q": "Cómo está configurada mi batería"}
+{"tool": "device_settings", "q": "Quero ver as configurações de energia"}
+{"tool": "device_settings", "q": "Quel est le réglage d'affichage"}
+{"tool": "device_settings", "q": "Wie ist mein wifi verbunden"}
+{"tool": "device_settings", "q": "Mostra-me as configurações do sistema"}
+{"tool": "device_settings", "q": "Turn off all bluetooth devices now"}
+{"tool": "device_settings", "q": "Apaga el bluetooth, por favor"}
+{"tool": "device_settings", "q": "Desliga o bluetooth, por favor"}
+{"tool": "device_settings", "q": "Désactive le bluetooth s'il te plaît"}
+{"tool": "device_settings", "q": "Bluetooth aus, bitte"}
+{"tool": "device_settings", "q": "Disattiva il bluetooth"}
+{"tool": "device_settings", "q": "How do I change screen brightness"}
+{"tool": "device_settings", "q": "¿Cómo cambio el brillo de la pantalla?"}
+{"tool": "device_settings", "q": "Mudar o brilho da tela"}
+{"tool": "device_settings", "q": "Change the display settings"}
+{"tool": "device_settings", "q": "Regler la luminosité de l'écran"}
+{"tool": "device_settings", "q": "Bildschirmhelligkeit ändern"}
+{"tool": "device_settings", "q": "Cambia la luminosità dello schermo"}
+{"tool": "device_settings", "q": "Check the wifi connection status"}
+{"tool": "device_settings", "q": "¿Qué wifi estoy usando ahora?"}
+{"tool": "device_settings", "q": "Verificar a conexão wifi"}
+{"tool": "device_settings", "q": "Vérifie le réseau wifi"}
+{"tool": "device_settings", "q": "Wifi status prüfen"}
+{"tool": "game_launcher", "q": "Open Epic Games for me"}
+{"tool": "game_launcher", "q": "Can you start Xbox app?"}
+{"tool": "game_launcher", "q": "Play Riot client now"}
+{"tool": "game_launcher", "q": "Launch the GOG games"}
+{"tool": "game_launcher", "q": "Open my games"}
+{"tool": "game_launcher", "q": "Start Epic Games Please"}
+{"tool": "game_launcher", "q": "Abre el cliente de Riot"}
+{"tool": "game_launcher", "q": "¿Puedes abrir GOG juegos?"}
+{"tool": "game_launcher", "q": "Inicia Xbox app por favor"}
+{"tool": "game_launcher", "q": "Jugar Epic Games"}
+{"tool": "game_launcher", "q": "Abre el launcher"}
+{"tool": "game_launcher", "q": "Necesito jugar ahora"}
+{"tool": "game_launcher", "q": "Ouvir o cliente de Riot"}
+{"tool": "game_launcher", "q": "Pode abrir Epic Games?"}
+{"tool": "game_launcher", "q": "Iniciar GOG"}
+{"tool": "game_launcher", "q": "Joga o Xbox app"}
+{"tool": "game_launcher", "q": "Abre os meus jogos"}
+{"tool": "game_launcher", "q": "Lançar o Epic"}
+{"tool": "game_launcher", "q": "Ouvre le client Riot"}
+{"tool": "game_launcher", "q": "Peux-tu lancer GOG?"}
+{"tool": "game_launcher", "q": "Lance l'application Xbox"}
+{"tool": "game_launcher", "q": "Ouvre Epic Games s'il te plaît"}
+{"tool": "game_launcher", "q": "Je veux jouer"}
+{"tool": "game_launcher", "q": "Démarre les jeux"}
+{"tool": "game_launcher", "q": "Epic Games abre por favor"}
+{"tool": "game_launcher", "q": "Puedes abrir el Riot client"}
+{"tool": "game_launcher", "q": "Inicia la app de Xbox"}
+{"tool": "game_launcher", "q": "Jugar GOG"}
+{"tool": "game_launcher", "q": "Necesito abrir mi juego"}
+{"tool": "game_launcher", "q": "Abre Epic Games"}
+{"tool": "media_edit", "q": "Trim this video down to just two minutes"}
+{"tool": "media_edit", "q": "Can you normalize the audio on this track?"}
+{"tool": "media_edit", "q": "Transcode this file to 1080p please"}
+{"tool": "media_edit", "q": "Make a thumbnail from the first scene"}
+{"tool": "media_edit", "q": "Cut the beginning of the video out now"}
+{"tool": "media_edit", "q": "Normalize the volume across the whole clip"}
+{"tool": "media_edit", "q": "Por favor, recorta este video a cinco minutos"}
+{"tool": "media_edit", "q": "¿Puedes transcodear esto a mp4?"}
+{"tool": "media_edit", "q": "Quiero hacer una miniatura de este clip"}
+{"tool": "media_edit", "q": "Recorta el audio para que sea más suave"}
+{"tool": "media_edit", "q": "Pode transcodificar esse vídeo para webm?"}
+{"tool": "media_edit", "q": "Cria uma thumbnail do vídeo para mim"}
+{"tool": "media_edit", "q": "Kannst du dieses Video trimmen?"}
+{"tool": "media_edit", "q": "Normalisiere den Ton dieses Videos"}
+{"tool": "media_edit", "q": "Erstelle ein Thumbnail von diesem Clip"}
+{"tool": "media_edit", "q": "Bitte transkodiere es in hochauflösend"}
+{"tool": "media_edit", "q": "Tu peux rogner cette vidéo pour moi?"}
+{"tool": "media_edit", "q": "Peux-tu faire une miniature de l'image?"}
+{"tool": "media_edit", "q": "Normalise le son de ce fichier, s'il te plaît"}
+{"tool": "media_edit", "q": "Rogne ce clip, necesito que sea corto"}
+{"tool": "media_edit", "q": "Pode cortar os primeiros segundos do arquivo?"}
+{"tool": "media_edit", "q": "Gere uma thumbnail para o vídeo agora"}
+{"tool": "media_edit", "q": "Metti a video a ridimensionare e normalizzare"}
+{"tool": "media_edit", "q": "Puoi trimmare questo video a dieci secondi?"}
+{"tool": "media_edit", "q": "Crea una miniatura per il video appena registrato"}
+{"tool": "media_edit", "q": "Normalizza il suono e transcodificalo subito"}
+{"tool": "media_edit", "q": "Bitte generiere ein Thumbnails für diesen film"}
+{"tool": "media_edit", "q": "Können wir diesen audio track normalisieren?"}
+{"tool": "media_edit", "q": "Trimmer este video para o formato jpg"}
+{"tool": "media_edit", "q": "Pode ajustar o áudio e normalizar o volume?"}
+{"tool": "maintenance", "q": "Check my system's current Windows update status"}
+{"tool": "maintenance", "q": "¿Puedes revisar los registros de eventos ahora?"}
+{"tool": "maintenance", "q": "Verificar status do firewall por favor"}
+{"tool": "maintenance", "q": "Puis-je vérifier l'état de Defender ?"}
+{"tool": "maintenance", "q": "Kannst du die Systemdienste überprüfen schnell?"}
+{"tool": "maintenance", "q": "Controlla lo stato dei servizi di sistema"}
+{"tool": "maintenance", "q": "Update Windows and check for pending issues"}
+{"tool": "maintenance", "q": "Necesito que me muestres los puntos de restauración"}
+{"tool": "maintenance", "q": "Tem que verificar os serviços do computador"}
+{"tool": "maintenance", "q": "Vérifie les points de restauration système"}
+{"tool": "maintenance", "q": "Prüfe die Restorepunkte des Computers"}
+{"tool": "maintenance", "q": "Verifica i punti di ripristino ora"}
+{"tool": "maintenance", "q": "How is the firewall configured right now?"}
+{"tool": "maintenance", "q": "¿Qué versión de Windows tengo instalada?"}
+{"tool": "maintenance", "q": "Qual é o status atual do Defender?"}
+{"tool": "maintenance", "q": "Quelles sont les mises à jour disponibles ?"}
+{"tool": "maintenance", "q": "Wie ist der aktuelle Defender Status?"}
+{"tool": "maintenance", "q": "Mi firewall è attivo, mi dici perché?"}
+{"tool": "maintenance", "q": "Run a full virus scan using Defender"}
+{"tool": "maintenance", "q": "Abrir el historial de eventos del sistema, por favor"}
+{"tool": "maintenance", "q": "Mostrar os logs de eventos do Windows"}
+{"tool": "maintenance", "q": "Ouvre le journal des événements"}
+{"tool": "maintenance", "q": "Zeige mir die Ereignisprotokolle"}
+{"tool": "maintenance", "q": "Mostrami gli eventi di sistema"}
+{"tool": "maintenance", "q": "Are there any pending system services needing attention?"}
+{"tool": "maintenance", "q": "Revisa los servicios que están fallando, por favor"}
+{"tool": "maintenance", "q": "Poderia checar os serviços ativos aqui"}
+{"tool": "maintenance", "q": "Vérifie les services qui tournent"}
+{"tool": "maintenance", "q": "Welche Dienste laufen aktuell?"}
+{"tool": "maintenance", "q": "Controlla i servizi che girano adesso"}
+{"tool": "watcher", "q": "Watch this website for any updates please"}
+{"tool": "watcher", "q": "Puedes vigilar este archivo por cambios"}
+{"tool": "watcher", "q": "Poderia monitorar este link para mim"}
+{"tool": "watcher", "q": "Peux-tu surveiller ce fichier pour les changements"}
+{"tool": "watcher", "q": "Überwache diesen URL auf Änderungen"}
+{"tool": "watcher", "q": "Monitora questo link per modifiche"}
+{"tool": "watcher", "q": "Check this file for new changes"}
+{"tool": "watcher", "q": "¿Puedes vigilar este documento por si cambia?"}
+{"tool": "watcher", "q": "Vigila este archivo y avísame si hay algo"}
+{"tool": "watcher", "q": "Peux-tu me dire si este archivo cambia"}
+{"tool": "watcher", "q": "Kannst du dieses Dokument auf Änderungen überwachen"}
+{"tool": "watcher", "q": "Controllo questo URL in cerca di modifiche"}
+{"tool": "watcher", "q": "Monitor this directory for changes please"}
+{"tool": "watcher", "q": "Por favor, vigila esta carpeta por cambios"}
+{"tool": "watcher", "q": "Vigila la página de noticias por actualizaciones"}
+{"tool": "watcher", "q": "Surveillez ce dossier pour les modifications"}
+{"tool": "watcher", "q": "Überprüfe diese Datei auf Aktualisierungen"}
+{"tool": "watcher", "q": "Controlla questo documento se cambia"}
+{"tool": "watcher", "q": "Vigila mi este documento por cambios"}
+{"tool": "watcher", "q": "¿puedes vigilar la pagina por cambios?"}
+{"tool": "watcher", "q": "Kannst du auf diese URL achten?"}
+{"tool": "watcher", "q": "Vigila esta url y avísame"}
+{"tool": "watcher", "q": "Surveille ce fichier pour les mises à jour"}
+{"tool": "watcher", "q": "Monitora este site para ver novidades"}
+{"tool": "watcher", "q": "Vigila este archivo si se actualiza"}
+{"tool": "watcher", "q": "Overwatch this link for any changes"}
+{"tool": "watcher", "q": "Mi puedes vigilar este archivo porfa"}
+{"tool": "watcher", "q": "Watch this file for new edits"}
+{"tool": "watcher", "q": "Surveille ce document pour les changements"}
+{"tool": "watcher", "q": "Kontrolliere die Datei auf Änderungen"}
+{"tool": "job_manager", "q": "Start a background job for me"}
+{"tool": "job_manager", "q": "Can you track my current jobs?"}
+{"tool": "job_manager", "q": "Please launch that long running task"}
+{"tool": "job_manager", "q": "Run the data processing job now"}
+{"tool": "job_manager", "q": "What jobs are currently running?"}
+{"tool": "job_manager", "q": "Show me my active subprocesses"}
+{"tool": "job_manager", "q": "Inicia un trabajo en segundo plano"}
+{"tool": "job_manager", "q": "¿Puedes rastrear mis procesos activos?"}
+{"tool": "job_manager", "q": "Por favor, lanza ese proceso largo"}
+{"tool": "job_manager", "q": "Ejecuta el script de análisis ahora"}
+{"tool": "job_manager", "q": "Qué trabajos tengo en curso?"}
+{"tool": "job_manager", "q": "Muéstrame mis tareas pendientes"}
+{"tool": "job_manager", "q": "Começa um trabalho em background"}
+{"tool": "job_manager", "q": "Pode monitorar meus processos em andamento?"}
+{"tool": "job_manager", "q": "Por favor, inicia a tarefa demorada"}
+{"tool": "job_manager", "q": "Executa o job de processamento agora"}
+{"tool": "job_manager", "q": "Quais trabalhos estão rodando?"}
+{"tool": "job_manager", "q": "Me mostra os jobs ativos"}
+{"tool": "job_manager", "q": "Avvia un job in background"}
+{"tool": "job_manager", "q": "Puoi tracciare i processi in corso?"}
+{"tool": "job_manager", "q": "Avvia quel compito lungo per me"}
+{"tool": "job_manager", "q": "Esegui il processo di analisi subito"}
+{"tool": "job_manager", "q": "Quali lavori sono attivi?"}
+{"tool": "job_manager", "q": "Mostrami i miei job in esecuzione"}
+{"tool": "job_manager", "q": "Starte un processo in background"}
+{"tool": "job_manager", "q": "Puoi seguire i miei lavori lunghi?"}
+{"tool": "job_manager", "q": "Avvia il task in background per favore"}
+{"tool": "job_manager", "q": "Esegui il job di gestione dati"}
+{"tool": "job_manager", "q": "Quali processi sto eseguendo?"}
+{"tool": "job_manager", "q": "Fammi vedere i miei lavori attivi"}
+{"tool": "network", "q": "Can you check my public IP address?"}
+{"tool": "network", "q": "Ping the server 192 dot 168 point"}
+{"tool": "network", "q": "What is the DNS for google com?"}
+{"tool": "network", "q": "Show me active network connections now"}
+{"tool": "network", "q": "Traceroute to the corporate website please"}
+{"tool": "network", "q": "Check the port status for"}
+{"tool": "network", "q": "¿Puedes hacer un ping a ese servidor?"}
+{"tool": "network", "q": "Dime cuál es mi dirección IP pública"}
+{"tool": "network", "q": "Muéstrame las conexiones activas en la red"}
+{"tool": "network", "q": "¿Cómo está el traceroute a mi router?"}
+{"tool": "network", "q": "Revisa si ese puerto está abierto"}
+{"tool": "network", "q": "Haz un ping rápido a dominio com"}
+{"tool": "network", "q": "Pode verificar o meu IP público?"}
+{"tool": "network", "q": "Quero saber a minha adresse IP"}
+{"tool": "network", "q": "Faz um ping no servidor agora"}
+{"tool": "network", "q": "Qual é o status da porta 443?"}
+{"tool": "network", "q": "Peux-tu vérifier mon adresse IP publique?"}
+{"tool": "network", "q": "J'ai besoin de faire un ping à ce site"}
+{"tool": "network", "q": "Montre-moi les connections réseau actives"}
+{"tool": "network", "q": "Quel est le DNS de amazon point com?"}
+{"tool": "network", "q": "Est-ce que ce port est ouvert s'il vous plaît?"}
+{"tool": "network", "q": "Ich möchte mein öffentliches IP sehen"}
+{"tool": "network", "q": "Bitte pinge diese domain"}
+{"tool": "network", "q": "Zeige mir die aktiven Verbindungen"}
+{"tool": "network", "q": "Ist der Port 22 offen?"}
+{"tool": "network", "q": "Vor allem, was ist meine IP?"}
+{"tool": "network", "q": "Può controllare il mio indirizzo IP pubblico?"}
+{"tool": "network", "q": "Verifica le connessioni attive sulla rete"}
+{"tool": "network", "q": "Fammi fare un ping a questo sito web"}
+{"tool": "network", "q": "Che cos'è l'IP pubblico di oggi?"}
+{"tool": "data_analysis", "q": "Can you describe this CSV file for me?"}
+{"tool": "data_analysis", "q": "Show me a histogram of the data"}
+{"tool": "data_analysis", "q": "Pode analisar este arquivo CSV agora?"}
+{"tool": "data_analysis", "q": "Pourrais-tu décrire cette feuille de calcul?"}
+{"tool": "data_analysis", "q": "Gib mir eine Zusammenfassung dieser daten"}
+{"tool": "data_analysis", "q": "Puoi analizzare questo file per me?"}
+{"tool": "data_analysis", "q": "Describe the customer profile in the spreadsheet"}
+{"tool": "data_analysis", "q": "What are the key metrics in the data?"}
+{"tool": "data_analysis", "q": "Poderes fazer uma análise do perfil?"}
+{"tool": "data_analysis", "q": "Quelles sont les colonnes de ce fichier?"}
+{"tool": "data_analysis", "q": "Kannst du die daten visualisieren bitte?"}
+{"tool": "data_analysis", "q": "Visualizza il profilo del dataset, per favore"}
+{"tool": "data_analysis", "q": "How many records are in this data?"}
+{"tool": "data_analysis", "q": "Descreve-me o perfil dos dados"}
+{"tool": "data_analysis", "q": "Montre-moi une carte de dispersion des points"}
+{"tool": "data_analysis", "q": "Wie sieht die datenverteilung aus?"}
+{"tool": "data_analysis", "q": "Quanti valori ci sono in questo CSV?"}
+{"tool": "data_analysis", "q": "¿Puedes describir el perfil de los datos?"}
+{"tool": "data_analysis", "q": "Mostrar a média de vendas neste arquivo"}
+{"tool": "data_analysis", "q": "Est-ce que tu peux faire une requête spécifique?"}
+{"tool": "data_analysis", "q": "Gib mir die durchschnittswerte"}
+{"tool": "data_analysis", "q": "Descrivi la distribuzione di questa colonna"}
+{"tool": "data_analysis", "q": "Diz-moi ce que ce fichier contient"}
+{"tool": "data_analysis", "q": "What's the average age of the users?"}
+{"tool": "data_analysis", "q": "Quais são os dados mais importantes aqui?"}
+{"tool": "data_analysis", "q": "Kannst du das datenprofil anzeigen?"}
+{"tool": "data_analysis", "q": "Dimmi cosa c'è nei dati"}
+{"tool": "data_analysis", "q": "¿Cuál es el promedio de ingresos?"}
+{"tool": "data_analysis", "q": "Plot the income against age"}
+{"tool": "data_analysis", "q": "O que você acha deste arquivo?"}
+{"tool": "fact_check", "q": "Check if that claim is true"}
+{"tool": "fact_check", "q": "Can you fact check this for me"}
+{"tool": "fact_check", "q": "Verify this information please"}
+{"tool": "fact_check", "q": "Is this statement accurate locally"}
+{"tool": "fact_check", "q": "Check these facts right now"}
+{"tool": "fact_check", "q": "Do you know if this is real"}
+{"tool": "fact_check", "q": "¿Puedes verificar esta afirmación?"}
+{"tool": "fact_check", "q": "Verifica estos datos por favor"}
+{"tool": "fact_check", "q": "¿Es esto cierto según fuentes?"}
+{"tool": "fact_check", "q": "Comprueba si esta información es real"}
+{"tool": "fact_check", "q": "Chequear la veracidad de esto"}
+{"tool": "fact_check", "q": "Dime si este dato es correcto"}
+{"tool": "fact_check", "q": "Pode verificar essa informação?"}
+{"tool": "fact_check", "q": "Verifica se esse dado é verdadeiro"}
+{"tool": "fact_check", "q": "Está correta essa alegação localmente?"}
+{"tool": "fact_check", "q": "Pode checar se isso é um fato?"}
+{"tool": "fact_check", "q": "Confirma se isso é verdade"}
+{"tool": "fact_check", "q": "Checar a veracidade desse ponto"}
+{"tool": "fact_check", "q": "Vérifie cette affirmation s'il vous plaît"}
+{"tool": "fact_check", "q": "Est-ce que c'est vrai selon les sources?"}
+{"tool": "fact_check", "q": "Peux-tu vérifier cette information?"}
+{"tool": "fact_check", "q": "Vérifie cette allégation immédiatement"}
+{"tool": "fact_check", "q": "Est-ce que ça correspond aux faits?"}
+{"tool": "fact_check", "q": "Vérifiez si c'est exact"}
+{"tool": "fact_check", "q": "Kannst du das überprüfen bitte?"}
+{"tool": "fact_check", "q": "Ist diese Behauptung wahr?"}
+{"tool": "fact_check", "q": "Verifiziere diesen Fakt bitte"}
+{"tool": "fact_check", "q": "Gibt es lokale Quellen dazu?"}
+{"tool": "fact_check", "q": "Können Sie das prüfen?"}
+{"tool": "fact_check", "q": "Ist diese Aussage korrekt?"}
+{"tool": "container", "q": "Show me running docker containers please"}
+{"tool": "container", "q": "How do I stop that container"}
+{"tool": "container", "q": "Start the compose stack now"}
+{"tool": "container", "q": "Check container logs for me"}
+{"tool": "container", "q": "What containers are currently running"}
+{"tool": "container", "q": "Can you execute a command inside?"}
+{"tool": "container", "q": "Muestra contenedores activos ahora"}
+{"tool": "container", "q": "Podrías parar el contenedor por favor"}
+{"tool": "container", "q": "Quiero ver los logs del servicio"}
+{"tool": "container", "q": "Qué contenedores tenemos en sistema"}
+{"tool": "container", "q": "Ejecuta un comando en el contenedor"}
+{"tool": "container", "q": "¿puedes listar los contenedores?"}
+{"tool": "container", "q": "Mostra os containers em execução"}
+{"tool": "container", "q": "Para o container que está rodando"}
+{"tool": "container", "q": "Quero ver os logs do compose"}
+{"tool": "container", "q": "Executa um comando dentro do container"}
+{"tool": "container", "q": "Puis lance les conteneurs s'il vous plaît"}
+{"tool": "container", "q": "Montre-moi les conteneurs actifs"}
+{"tool": "container", "q": "Arrête ce conteneur maintenant"}
+{"tool": "container", "q": "Quelles sont les logs de ce service"}
+{"tool": "container", "q": "Peux-tu exécuter une commande dedans"}
+{"tool": "container", "q": "Affiche les conteneurs en cours"}
+{"tool": "container", "q": "Stoppe le stack compose"}
+{"tool": "container", "q": "Containerps"}
+{"tool": "container", "q": "Wie sind die laufenden container"}
+{"tool": "container", "q": "Starte den docker compose"}
+{"tool": "container", "q": "Zeige mir die container logs"}
+{"tool": "container", "q": "Stoppe diesen container bitte"}
+{"tool": "container", "q": "Kannst du ein exec machen"}
+{"tool": "container", "q": "Liste alle docker container"}
+{"tool": "database", "q": "What are the recent customer order statuses?"}
+{"tool": "database", "q": "Can you query the sales database now?"}
+{"tool": "database", "q": "Necesito saber los datos de usuarios recientes"}
+{"tool": "database", "q": "Please retrieve the data for project Alpha"}
+{"tool": "database", "q": "Wie sind die aktuellen Kundendaten?"}
+{"tool": "database", "q": "Damit ich die Datenbank aktualisieren kann"}
+{"tool": "database", "q": "Quali sono i dati del cliente più recenti?"}
+{"tool": "database", "q": "Potresti controllare l'inventario nel database?"}
+{"tool": "database", "q": "Qu'est-ce que la base de données contient?"}
+{"tool": "database", "q": "Peux-tu vérifier les inscriptions utilisateur s'il te plaît?"}
+{"tool": "database", "q": "Kannst du mir die Datenbankabfrage zeigen?"}
+{"tool": "database", "q": "Zeige mir die letzten Transaktionen aus der DB"}
+{"tool": "database", "q": "Qual são os dados do cliente no banco?"}
+{"tool": "database", "q": "Pode buscar os registros de pedidos, por favor"}
+{"tool": "database", "q": "Me mostras quais são os registros de produtos?"}
+{"tool": "database", "q": "Atualize o estoque no sistema de banco de dados"}
+{"tool": "database", "q": "What notes do I have for this client?"}
+{"tool": "database", "q": "Can you write this new entry to the database?"}
+{"tool": "database", "q": "Por favor, insira esta nova informação no sistema"}
+{"tool": "database", "q": "Mets à jour les données clients dans la base"}
+{"tool": "database", "q": "Kannst du diesen neuen Eintrag speichern bitte?"}
+{"tool": "database", "q": "Ich will die Daten in der Datenbank ändern"}
+{"tool": "database", "q": "Vorlaß die Ergebnisse der Datenbanksuche"}
+{"tool": "database", "q": "Scrivi il nuovo record nel sistema di database"}
+{"tool": "database", "q": "Puoi trovare l'indirizzo di quel cliente?"}
+{"tool": "database", "q": "Acheve-moi le compte-rendu de la base"}
+{"tool": "database", "q": "Gibt es neue Einträge im CRM-System?"}
+{"tool": "database", "q": "Bitte füge dieses neue Produkt hinzu"}
+{"tool": "database", "q": "Quali sono le transazioni fatte oggi?"}
+{"tool": "database", "q": "Puoi inserire questo dato nella tabella?"}
+{"tool": "creative_local", "q": "Can you make a futuristic cityscape image?"}
+{"tool": "creative_local", "q": "Generate a painting of a sad robot"}
+{"tool": "creative_local", "q": "Poderias crear una imagen de un bosque mágico?"}
+{"tool": "creative_local", "q": "Gera uma imagem de um gato astronauta"}
+{"tool": "creative_local", "q": "Peux-tu créer une image de chat mignon?"}
+{"tool": "creative_local", "q": "Kannst du ein Bild von einem Drachen machen?"}
+{"tool": "creative_local", "q": "Puoi generare un paesaggio fantasy?"}
+{"tool": "creative_local", "q": "Genera uma foto realista de uma floresta"}
+{"tool": "creative_local", "q": "Dime una foto de un perro en el espacio"}
+{"tool": "creative_local", "q": "¿Puedes hacer una imagen de estilo pixel art?"}
+{"tool": "creative_local", "q": "Podes crear uma imagem de natureza abstrata?"}
+{"tool": "creative_local", "q": "Montre-me um pôr do sol digital"}
+{"tool": "creative_local", "q": "Pouvez-tu générer un portrait cyberpunk?"}
+{"tool": "creative_local", "q": "Erstelle mir ein Bild von einer alten Stadt"}
+{"tool": "creative_local", "q": "Fai un ritratto stile anime per me"}
+{"tool": "creative_local", "q": "Crea un'immagine di un drago rosso"}
+{"tool": "creative_local", "q": "Generate an abstract concept art of flight"}
+{"tool": "creative_local", "q": "¿Me haces una imagen de un dinosaurio gigante?"}
+{"tool": "creative_local", "q": "Quiero una foto de un lobo en la nieve"}
+{"tool": "creative_local", "q": "Por favor, crea un paisaje de fantasía"}
+{"tool": "creative_local", "q": "Gera uma imagem de um cavaleiro medieval"}
+{"tool": "creative_local", "q": "Queres uma imagem de um oceano surreal?"}
+{"tool": "creative_local", "q": "Puis-je créer une image d'un chat géant?"}
+{"tool": "creative_local", "q": "Bitte ein Bild einer futuristischen Welt"}
+{"tool": "creative_local", "q": "Genera una foto di una città futuristica"}
+{"tool": "creative_local", "q": "Fammi un'immagine di un gatto sorridente"}
+{"tool": "creative_local", "q": "¿Podrías generar un dibujo de un pájaro?"}
+{"tool": "creative_local", "q": "Fais une image d'un robot amical"}
+{"tool": "creative_local", "q": "Ein Bild von einem Wald at night"}
+{"tool": "creative_local", "q": "Può creare un'immagine di un tramonto?"}
+{"tool": "form_filler", "q": "Fill out the online application now"}
+{"tool": "form_filler", "q": "Pode preencher aquele formulário, por favor?"}
+{"tool": "form_filler", "q": "Fais-moi remplir ce formulaire web"}
+{"tool": "form_filler", "q": "Kannst du dieses Formular ausfüllen?"}
+{"tool": "form_filler", "q": "Riempi questo modulo online per me"}
+{"tool": "form_filler", "q": "Preenche o formulário da inscrição, por gentileza"}
+{"tool": "form_filler", "q": "Can you fill out that web form?"}
+{"tool": "form_filler", "q": "Pode mandar preencher o formulário?"}
+{"tool": "form_filler", "q": "Remplis-moi le formulaire d'inscription, s'il te plaît"}
+{"tool": "form_filler", "q": "Bitte fülle das Formular aus dem Review Gate"}
+{"tool": "form_filler", "q": "Per favore, invia il modulo di candidatura"}
+{"tool": "form_filler", "q": "Manda preencher o formulário de revisão"}
+{"tool": "form_filler", "q": "Fill in the details for the survey"}
+{"tool": "form_filler", "q": "Poderia completar esse formulário agora?"}
+{"tool": "form_filler", "q": "Fais-moi remplir le formulaire d'évaluation"}
+{"tool": "form_filler", "q": "Fülle das Formular mit den Daten aus"}
+{"tool": "form_filler", "q": "Riempi subito il modulo di richiesta"}
+{"tool": "form_filler", "q": "¿Puedes llenar este formulario web?"}
+{"tool": "form_filler", "q": "Peche preencher o formulário agora"}
+{"tool": "form_filler", "q": "Remplir ce formulaire de contact maintenant"}
+{"tool": "form_filler", "q": "Fülle bitte das Formular mit den Infos"}
+{"tool": "form_filler", "q": "Riempimi il modulo di registrazione, please"}
+{"tool": "form_filler", "q": "Preenche o formulário de dados, por favor"}
+{"tool": "form_filler", "q": "Can you submit the form I was looking at?"}
+{"tool": "form_filler", "q": "Pode finalizar o formulário para mim?"}
+{"tool": "form_filler", "q": "Remplis-moi le formulaire pour la validation"}
+{"tool": "form_filler", "q": "Füllen Sie bitte das Formular aus"}
+{"tool": "form_filler", "q": "Riempire il modulo per la verifica"}
+{"tool": "form_filler", "q": "Manda preencher o formulário e mandar"}
+{"tool": "form_filler", "q": "Fill this form and send it"}
+{"tool": "peripheral", "q": "Can you check my USB device manager?"}
+{"tool": "peripheral", "q": "¿Qué periféricos están conectados ahora?"}
+{"tool": "peripheral", "q": "Me parece que mi teclado no funciona"}
+{"tool": "peripheral", "q": "Peux-tu vérifier les périphériques connectés?"}
+{"tool": "peripheral", "q": "Wie sind meine USB-Geräte verbunden?"}
+{"tool": "peripheral", "q": "Controlla i dispositivi collegati al PC"}
+{"tool": "peripheral", "q": "Show me all connected controllers"}
+{"tool": "peripheral", "q": "¿Podrías buscar un problema con mi raton?"}
+{"tool": "peripheral", "q": "Meu mouse USB não está sendo reconhecido"}
+{"tool": "peripheral", "q": "Vérifie tous les périphériques HID pour moi"}
+{"tool": "peripheral", "q": "Kannst du mir die Drucker auflisten?"}
+{"tool": "peripheral", "q": "Quali periferiche devo aggiornare oggi?"}
+{"tool": "peripheral", "q": "Check for HID device issues please"}
+{"tool": "peripheral", "q": "¿Hay algún problema con la impresora?"}
+{"tool": "peripheral", "q": "Necesito ver la lista de dispositivos USB"}
+{"tool": "peripheral", "q": "Os dispositivos USB estão funcionando bem?"}
+{"tool": "peripheral", "q": "Puis-je avoir la liste des périphériques?"}
+{"tool": "peripheral", "q": "Bitte liste alle angeschlossenen Geräte auf"}
+{"tool": "peripheral", "q": "Mi sembra che ci sia un errore nel driver"}
+{"tool": "peripheral", "q": "What USB devices are currently connected?"}
+{"tool": "peripheral", "q": "¿Cómo arreglo este error de controlador?"}
+{"tool": "peripheral", "q": "O meu controle de videogame não liga"}
+{"tool": "peripheral", "q": "Pourrais-tu diagnostiquer ce périphérique?"}
+{"tool": "peripheral", "q": "Find out why my webcam isnt working"}
+{"tool": "peripheral", "q": "¿Qué tipo de dispositivos tengo conectados?"}
+{"tool": "peripheral", "q": "Diz-mi quali periferiche devo rimuovere"}
+{"tool": "peripheral", "q": "Welches Gerätemanagerproblem habe ich hier?"}
+{"tool": "peripheral", "q": "Posso ver quais dispositivos estão falhando?"}
+{"tool": "peripheral", "q": "Dispositivi USB non rilevati, cosa devo fare?"}
+{"tool": "peripheral", "q": "Can you list my input devices?"}
+{"tool": "accessibility", "q": "Turn on the magnifier please"}
+{"tool": "accessibility", "q": "Activate the screen reader"}
+{"tool": "accessibility", "q": "Can you turn on the narrator?"}
+{"tool": "accessibility", "q": "Accessibility settings menu"}
+{"tool": "accessibility", "q": "Make text bigger for me"}
+{"tool": "accessibility", "q": "I need the accessibility options"}
+{"tool": "accessibility", "q": "Abre el narrador, por favor"}
+{"tool": "accessibility", "q": "Necesito el panel de accesibilidad"}
+{"tool": "accessibility", "q": "¿Puedes activar el aumento?"}
+{"tool": "accessibility", "q": "Configuración de accesibilidad"}
+{"tool": "accessibility", "q": "Pon el texto más grande"}
+{"tool": "accessibility", "q": "Quiero cambiar la accesibilidad"}
+{"tool": "accessibility", "q": "Liga o narrar esta página"}
+{"tool": "accessibility", "q": "Ativar o lupa, por favor"}
+{"tool": "accessibility", "q": "Quais são as opções de acessibilidade?"}
+{"tool": "accessibility", "q": "Manda o leitor de tela"}
+{"tool": "accessibility", "q": "Aumenta a letra agora"}
+{"tool": "accessibility", "q": "Configura as acessibilidades"}
+{"tool": "accessibility", "q": "Active le narrateur s'il vous plaît"}
+{"tool": "accessibility", "q": "Je veux les paramètres d'accessibilité"}
+{"tool": "accessibility", "q": "Peux-tu activer le zoom?"}
+{"tool": "accessibility", "q": "Ouvre le panneau d'accessibilité"}
+{"tool": "accessibility", "q": "Augmenter la taille du texte"}
+{"tool": "accessibility", "q": "Montre-moi les options d'accessibilité"}
+{"tool": "accessibility", "q": "Schalte den Nahmodus ein"}
+{"tool": "accessibility", "q": "Narrator aktivieren bitte"}
+{"tool": "accessibility", "q": "Wo finde ich die Barrierefreiheitseinstellungen?"}
+{"tool": "accessibility", "q": "Mache den Text größer"}
+{"tool": "accessibility", "q": "Aktiviere den Lesemodus"}
+{"tool": "accessibility", "q": "Accessibility einstellen"}
+{"tool": "study", "q": "Start my flashcards now"}
+{"tool": "study", "q": "Quiero estudiar historia antigua"}
+{"tool": "study", "q": "Poderias revisar mi vocabulario?"}
+{"tool": "study", "q": "Flashcards, por favor, empezar"}
+{"tool": "study", "q": "Laisse-moi étudier les concepts clés"}
+{"tool": "study", "q": "Gib mir die Karteikarten für Biologie"}
+{"tool": "study", "q": "Fammi ripassare le parole difficili"}
+{"tool": "study", "q": "I need to study today"}
+{"tool": "study", "q": "Can I start my review session?"}
+{"tool": "study", "q": "Por favor, dame mis tarjetas de estudio"}
+{"tool": "study", "q": "Me gustaría empezar a repasar"}
+{"tool": "study", "q": "Revisar el tema de la biología"}
+{"tool": "study", "q": "Flashcards de química, ¿listo?"}
+{"tool": "study", "q": "Posso começar a estudar agora?"}
+{"tool": "study", "q": "Quero ver minhas anotações de estudo"}
+{"tool": "study", "q": "Passe-me os flashcards de história"}
+{"tool": "study", "q": "Zeige mir die Vokabelkarten"}
+{"tool": "study", "q": "Devi fare una revisione veloce"}
+{"tool": "study", "q": "Start my spaced repetition session"}
+{"tool": "study", "q": "¿Qué tarjetas tengo pendientes?"}
+{"tool": "study", "q": "Déjame estudiar el capítulo tres"}
+{"tool": "study", "q": "Je veux réviser les maths"}
+{"tool": "study", "q": "Kann ich meine Karteikarten sehen?"}
+{"tool": "study", "q": "Rivedi il capitolo di diritto"}
+{"tool": "study", "q": "Open my study set please"}
+{"tool": "study", "q": "¿Puedo practicar este concepto?"}
+{"tool": "study", "q": "Minha revisão de física"}
+{"tool": "study", "q": "Flashcards de línguas, por favor"}
+{"tool": "study", "q": "Devo ripassare l'inglese"}
+{"tool": "study", "q": "Studiamo il periodo rinascimentale"}
+{"tool": "smart_home", "q": "Spanish"}
+{"tool": "smart_home", "q": "Enciende las luces del salón ahora mismo"}
+{"tool": "smart_home", "q": "¿Cómo está la temperatura en la cocina?"}
+{"tool": "smart_home", "q": "Pon el termostato a veinte grados"}
+{"tool": "smart_home", "q": "Abre las persianas de la habitación principal"}
+{"tool": "smart_home", "q": "¿Podrías subir el volumen de la música?"}
+{"tool": "smart_home", "q": "Cierra la puerta principal por favor"}
+{"tool": "smart_home", "q": "English"}
+{"tool": "smart_home", "q": "Turn off the kitchen lights immediately"}
+{"tool": "smart_home", "q": "What is the current temperature inside?"}
+{"tool": "smart_home", "q": "Please lock the front door"}
+{"tool": "smart_home", "q": "Set the thermostat to seventy-two"}
+{"tool": "smart_home", "q": "Are the blinds open or closed?"}
+{"tool": "smart_home", "q": "Check the status of the security camera"}
+{"tool": "smart_home", "q": "Portuguese"}
+{"tool": "smart_home", "q": "Ligue as luzes da sala agora"}
+{"tool": "smart_home", "q": "Qual é a temperatura da casa?"}
+{"tool": "smart_home", "q": "Feche a porta da garagem por favor"}
+{"tool": "smart_home", "q": "Defina o aquecedor para vinte"}
+{"tool": "smart_home", "q": "As janelas estão abertas ou fechadas?"}
+{"tool": "smart_home", "q": "Verifique o status da casa inteligente"}
+{"tool": "smart_home", "q": "French"}
+{"tool": "smart_home", "q": "Allumer la lumière du salon s'il vous plaît"}
+{"tool": "smart_home", "q": "Quelle est la température actuelle ici?"}
+{"tool": "smart_home", "q": "Verrouillez la porte d'entrée maintenant"}
+{"tool": "smart_home", "q": "Réglez le chauffage à vingt degrés"}
+{"tool": "smart_home", "q": "Est-ce que les volets sont fermés?"}
+{"tool": "smart_home", "q": "Vérifie l'état de la maison"}
+{"tool": "smart_home", "q": "German"}
+{"tool": "smart_home", "q": "Schalte das Wohnzimmerlicht ein"}

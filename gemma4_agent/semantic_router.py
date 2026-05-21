@@ -130,11 +130,26 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
 class _State:
     model: Any | None = None
     tool_names: list[str] | None = None
-    tool_embeddings: Any | None = None  # np.ndarray
+    tool_embeddings: Any | None = None  # np.ndarray (DESCRIPTION embeddings)
+    # Tool2Vec (Step 4, 2026-05-21): per-tool centroid of synthetic example
+    # QUERIES, aligned to tool_names. The runtime tool vector is a blend of the
+    # description embedding and this query-centroid — example queries land far
+    # closer to real short voice phrasings than a terse English description
+    # does (Tool2Vec arXiv:2409.02141 / Re-Invoke arXiv:2408.01875).
+    tool2vec: Any | None = None  # np.ndarray [N,384] aligned to tool_names, or None
     permanently_disabled: bool = False  # set only when the lib is missing
     last_attempt_ts: float = 0.0
     last_error: str = ""
     attempt_count: int = 0
+
+
+# Blend weight: final tool vector = normalize(alpha*tool2vec + (1-alpha)*desc).
+# alpha=0 -> pure description (old behaviour), alpha=1 -> pure query-centroid.
+# Tuned on the dev split via router_eval; default set after the sweep.
+import os as _os2
+_TOOL2VEC_ALPHA = float(_os2.environ.get("GEMMA4_TOOL2VEC_ALPHA", "0.6"))
+_TOOL2VEC_PATH = os.path.join(
+    os.path.dirname(__file__), "data", "tool2vec_centroids.npz")
 
 
 _STATE = _State()
@@ -202,8 +217,50 @@ def _ensure_loaded(known_tool_names: list[str] | None = None) -> bool:
     _STATE.model = model
     _STATE.tool_names = names
     _STATE.tool_embeddings = embeddings
+    # Blend in Tool2Vec query-centroids if the artifact exists. Missing artifact
+    # => pure-description behaviour (graceful, identical to pre-Step-4).
+    _STATE.tool2vec = _load_tool2vec(names)
+    if _STATE.tool2vec is not None and _TOOL2VEC_ALPHA > 0.0:
+        _STATE.tool_embeddings = _blend_embeddings(
+            embeddings, _STATE.tool2vec, _TOOL2VEC_ALPHA)
     _STATE.last_error = ""
     return True
+
+
+def _load_tool2vec(names: list[str]) -> Any | None:
+    """Load tool2vec_centroids.npz and align to `names`. Returns an [N,384]
+    array (zeros row for tools without a centroid) or None if absent."""
+    if not os.path.exists(_TOOL2VEC_PATH):
+        return None
+    try:
+        import numpy as np
+        data = np.load(_TOOL2VEC_PATH, allow_pickle=True)
+        c_names = list(data["names"])
+        c_vecs = np.asarray(data["centroids"], dtype=np.float32)
+        idx = {n: i for i, n in enumerate(c_names)}
+        dim = c_vecs.shape[1]
+        out = np.zeros((len(names), dim), dtype=np.float32)
+        for i, n in enumerate(names):
+            if n in idx:
+                out[i] = c_vecs[idx[n]]
+        return out
+    except Exception:
+        return None
+
+
+def _blend_embeddings(desc: Any, t2v: Any, alpha: float) -> Any:
+    """final = normalize(alpha*t2v + (1-alpha)*desc), per tool. Tools whose
+    t2v row is all-zeros (no centroid) keep their pure description vector."""
+    import numpy as np
+    desc = np.asarray(desc, dtype=np.float32)
+    t2v = np.asarray(t2v, dtype=np.float32)
+    blended = alpha * t2v + (1.0 - alpha) * desc
+    # rows where t2v is empty -> fall back to description
+    empty = (np.linalg.norm(t2v, axis=1) == 0.0)
+    blended[empty] = desc[empty]
+    norms = np.linalg.norm(blended, axis=1, keepdims=True)
+    norms[norms == 0.0] = 1.0
+    return blended / norms
 
 
 def suggest_tools_semantic(query: str, *, k: int = 12, min_score: float = 0.25) -> list[str]:
