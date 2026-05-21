@@ -19,7 +19,7 @@ STEP_SPLIT_RE = re.compile(
 # dev only drops 0.840->0.826. The planner orders by priority (utility tools
 # last), so the cap trims the low-value tail, not the relevant head. Over-offer
 # cases like "abre Spotify" (no dedicated tool) go 16->10 tools.
-MAX_SELECTED_TOOLS = 10
+MAX_SELECTED_TOOLS = 8
 
 # Semantic-confidence override of the conversational abstention gate.
 # A single tool whose cosine to the query clears _SEM_CONFIDENT_SCORE means
@@ -35,7 +35,18 @@ _SEM_CONF_BAND = float(_os.environ.get("GEMMA4_SEM_CONF_BAND", "0.12"))
 # real command even if the abstain head leans no-tool (e.g. "mutea"→audio).
 # Tuned for the fine-tuned encoder's higher cosine scale (dev).
 _SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.60"))
-_SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.18"))
+_SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.15"))
+# When one tool clearly dominates ("abre steam"->steam 0.74), keep only tools
+# within this band of it (drops the noisy tail -> small subset). Recall-safe:
+# the labeled tool IS the dominant peak in these crisp single-intent commands.
+_SEM_PEAK_BAND = float(_os.environ.get("GEMMA4_SEM_PEAK_BAND", "0.20"))
+# Budget for speculative related-tool deps (the gui/uia/vision/window fan-out
+# that, stacked on the semantic union, produced the operator's "11 tools").
+_RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "4"))
+# Above this absolute INFO score, the keyword-protection treats the turn as a
+# knowledge question (a "what is X" frame) and does NOT shield a spurious
+# keyword from the abstain wipe. Below it, a fired keyword is a real command.
+_KW_PROTECT_INFO_BLOCK = float(_os.environ.get("GEMMA4_KW_PROTECT_INFO_BLOCK", "0.55"))
 
 
 @dataclass
@@ -261,16 +272,54 @@ def select_tool_names(
             # conversational heuristic. Confident commands stay either way.
             do_abstain = (abstain is True) if head_available else bool(conversational)
 
+            # Protect keyword-matched action tools from the abstain wipe UNLESS
+            # the turn is informational. "reproduce daddy yankee" fires the media
+            # keyword but its OOV object makes the semantic list empty, fooling
+            # the head into abstaining — the keyword is the true signal there.
+            # But a keyword firing on a knowledge question ("que es pytest" ->
+            # developer) is a false positive that SHOULD abstain.
+            _kw_protect: list[str] = []
+            if names:
+                _is_knowledge = False
+                try:
+                    from .intent_router import wants_knowledge as _wk, classify_intent as _ci2
+                    _is_knowledge = _wk(raw_text)
+                    if not _is_knowledge:
+                        # Looser knowledge guard for the keyword-protection only:
+                        # a "what is X" frame scores high INFO even when chitchat
+                        # edges it ("qué es pytest": info 0.64, chitchat 0.66).
+                        # wants_knowledge stays strict (used elsewhere); here we
+                        # also block protection when info is high in absolute
+                        # terms, so a spurious keyword on a knowledge question
+                        # ("pytest"->developer) doesn't survive the abstain wipe.
+                        _si = _ci2(raw_text)
+                        if _si is not None and _si.info >= _KW_PROTECT_INFO_BLOCK:
+                            _is_knowledge = True
+                except Exception:
+                    _is_knowledge = False
+                if not _is_knowledge:
+                    _kw_protect = list(names)
+
             if do_abstain and not pending_intent and not streaming_hint_media:
                 if confident_peak or (not head_available and confident):
-                    # Keep only the dominant peak (+near ties), drop the tail.
+                    # Keep only the dominant peak (+near ties) + protected kw.
                     cut = top_score - _SEM_CONF_BAND
                     scored = [p for p in scored if p[1] >= cut]
-                    names = [n for n in names
-                             if n in {nm for nm, _ in scored}]
+                    _keep = {nm for nm, _ in scored} | set(_kw_protect)
+                    names = [n for n in names if n in _keep]
                 else:
                     scored = []
-                    names = []
+                    names = list(_kw_protect)
+            # Peak-dominant trim (2026-05-21, operator: "11 tools for abre steam
+            # makes no sense"). When one tool clearly wins, the rest of the top-12
+            # is noise the FT encoder's high cosines drag along; offering it hurts
+            # Gemma-4B's tool-calling (every report cited RAG-MCP). Only fires on
+            # a dominant peak, where the labeled tool IS the peak, so it's recall-
+            # safe; flat/ambiguous queries keep the full union.
+            if len(scored) >= 2:
+                _pk, _second = scored[0][1], scored[1][1]
+                if _pk >= _SEM_PEAK_KEEP and (_pk - _second) >= _SEM_PEAK_GAP:
+                    scored = [p for p in scored if p[1] >= _pk - _SEM_PEAK_BAND]
             sem = [name for name, _ in scored]
             if sem:
                 if not names:
@@ -323,10 +372,21 @@ def select_tool_names(
     ):
         names = [n for n in names if n != "email"]
 
+    # Related-tools deps, BUDGETED across the whole subset. The unconditional
+    # fan-out (every app/media tool dragging in gui/uia/vision/window/browser/
+    # audio) was the second bloat engine behind the "11 tools" complaint.
+    # Directly-matched tools are always kept; deps fill only up to the budget.
     expanded: list[str] = []
+    _rel_budget = _RELATED_BUDGET
     for name in _dedupe(names):
         expanded.append(name)
-        expanded.extend(_related_tools(name, text))
+        for rel in _related_tools(name, text):
+            if rel in expanded:
+                continue
+            if _rel_budget <= 0:
+                break
+            expanded.append(rel)
+            _rel_budget -= 1
     if plan.cleanup_expected or re.search(r"\b(cleanup|limpia|limpiar|cierra todo lo que abriste|rollback|restaura|deshacer)\b", text):
         expanded.append("state")
     if safety_enabled:
