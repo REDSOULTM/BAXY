@@ -635,11 +635,14 @@ def _suggest_tools(step: str) -> list[str]:
                  r"numero de|el numero|guardado el contacto|agrega a |agregar a |"
                  r"contact|phone|email of|number of)\b", low):
         tools.append("contacts")
-    if re.search(r"\b(nota|notas|tarea|tareas|lista|checklist|pendiente|"
-                 # "anota"/"apunta" (verb) and plural "notas" weren't caught
-                 # by \bnota\b. "que notas tengo" / "anota que ...".
+    # NOTE: bare "lista" and "todo" were REMOVED — too generic ("lista las
+    # ventanas" -> notes_tasks, "minimiza todo" -> notes_tasks). The note words
+    # (nota/tarea/checklist/anota/apunta) are specific enough; "lista de tareas"
+    # / "to-do list" still match via tarea/checklist.
+    if re.search(r"\b(nota|notas|tarea|tareas|checklist|lista de tareas|"
+                 r"lista de compras|lista de pendientes|pendiente|"
                  r"anota|anotar|apunta|apuntar|"
-                 r"note|notes|task|todo)\b", low):
+                 r"note|notes|task|to-do|to do list|todo list)\b", low):
         tools.append("notes_tasks")
     if re.search(r"\b(calendario|agenda|agendad[oa]|agendar|evento|eventos|ics|"
                  # 2026-05-20: calendar READ phrasings were missed (write was

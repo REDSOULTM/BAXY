@@ -1,0 +1,66 @@
+{"q": "abre steam", "expect_any": ["steam"], "forbid": ["web", "knowledge", "media"]}
+{"q": "abre spotify", "expect_any": ["app"], "forbid": ["web", "knowledge"]}
+{"q": "mutea", "expect_any": ["audio"], "forbid": ["web", "media_edit"]}
+{"q": "sube el volumen", "expect_any": ["audio"], "forbid": ["smart_home", "media_edit", "web"]}
+{"q": "pausa la musica", "expect_any": ["media"], "forbid": ["web", "knowledge"]}
+{"q": "reproduce daddy yankee", "expect_any": ["media"], "forbid": ["web"]}
+{"q": "que hora es", "expect_any": ["system"], "forbid": ["web", "knowledge"]}
+{"q": "que dia es hoy", "expect_any": ["system", "local_calendar"], "forbid": ["web", "knowledge"]}
+{"q": "cuanta RAM tengo", "expect_any": ["system"], "forbid": ["web", "knowledge"]}
+{"q": "que es una GPU", "expect_any": ["web", "knowledge"], "forbid": ["system"]}
+{"q": "que es una API", "expect_any": ["web", "knowledge"], "forbid": ["system", "developer"]}
+{"q": "de que trata Dune", "expect_any": ["web", "knowledge"], "forbid": ["media", "notes_tasks"]}
+{"q": "de que trata la pelicula Dune", "expect_any": ["web", "knowledge"], "forbid": ["media"]}
+{"q": "who directed Oppenheimer", "expect_any": ["web", "knowledge"], "forbid": ["app"]}
+{"q": "who is Batman", "expect_any": ["web", "knowledge"], "forbid": []}
+{"q": "what is a CPU", "expect_any": ["web", "knowledge"], "forbid": ["system"]}
+{"q": "quien es batman", "expect_any": ["web", "knowledge"], "forbid": []}
+{"q": "hablame de superman", "expect_any": ["web", "knowledge"], "forbid": []}
+{"q": "cuando sale gta 6", "expect_any": ["web"], "forbid": []}
+{"q": "que es pytest", "expect_empty": true}
+{"q": "hola", "expect_empty": true}
+{"q": "gracias", "expect_empty": true}
+{"q": "como estas", "expect_empty": true}
+{"q": "buenas noches", "expect_empty": true}
+{"q": "cuanto es 25 por 4", "expect_empty": true}
+{"q": "minimiza la ventana", "expect_any": ["window"], "forbid": ["media_edit", "developer", "filesystem"]}
+{"q": "minimiza la de VS Code", "expect_any": ["window"], "forbid": ["media_edit", "developer", "filesystem", "terminal", "dependency"]}
+{"q": "minimiza todo", "expect_any": ["window", "desktop_layout"], "forbid": ["media_edit", "notes_tasks", "filesystem"]}
+{"q": "maximiza la ventana actual", "expect_any": ["window"], "forbid": []}
+{"q": "restaura la ventana", "expect_any": ["window", "desktop_layout"], "forbid": []}
+{"q": "cierra youtube", "expect_any": ["app", "window"], "forbid": ["media"]}
+{"q": "cierra steam", "expect_any": ["steam", "app"], "forbid": ["web", "media"]}
+{"q": "cierra este", "expect_any": ["app", "window"], "forbid": ["smart_home"]}
+{"q": "cuantas pestanas tengo abiertas", "expect_any": ["window", "browser"], "forbid": []}
+{"q": "lista las ventanas abiertas", "expect_any": ["window", "desktop_layout"], "forbid": ["notes_tasks"]}
+{"q": "ponme un recordatorio para llamar al dentista", "expect_any": ["notification", "reminder"], "forbid": ["media", "browser", "audio"]}
+{"q": "pon una alarma para las 7 am", "expect_any": ["notification"], "forbid": ["media"]}
+{"q": "agenda una reunion manana a las 3pm", "expect_any": ["local_calendar"], "forbid": ["web"]}
+{"q": "que tengo agendado para hoy", "expect_any": ["local_calendar"], "forbid": ["web"]}
+{"q": "manda whatsapp a juan", "expect_any": ["whatsapp"], "forbid": ["email", "web"]}
+{"q": "dile a amor en wsp que la amo", "expect_any": ["whatsapp"], "forbid": ["email"]}
+{"q": "mandale un correo a mi jefe", "expect_any": ["email"], "forbid": ["whatsapp"]}
+{"q": "que notas tengo", "expect_any": ["notes_tasks"], "forbid": ["web"]}
+{"q": "anota que tengo que comprar pan", "expect_any": ["notes_tasks"], "forbid": ["web"]}
+{"q": "esta instalado discord", "expect_any": ["package"], "forbid": ["web"]}
+{"q": "que version de chrome tengo instalada", "expect_any": ["package", "browser"], "forbid": ["web"]}
+{"q": "como me llamo", "expect_any": ["memory"], "forbid": ["web"]}
+{"q": "recuerda que me llamo red", "expect_any": ["memory"], "forbid": ["web"]}
+{"q": "que recuerdas de mi", "expect_any": ["memory"], "forbid": ["reminder"]}
+{"q": "saca una captura de pantalla", "expect_any": ["gui", "vision"], "forbid": ["web"]}
+{"q": "que hay en mi pantalla ahora", "expect_any": ["vision", "gui"], "forbid": ["web"]}
+{"q": "baja el brillo al 20 por ciento", "expect_any": ["device_settings"], "forbid": ["web"]}
+{"q": "conecta el bluetooth", "expect_any": ["device_settings"], "forbid": ["web"]}
+{"q": "cual es mi ip publica", "expect_any": ["network"], "forbid": ["web"]}
+{"q": "tengo el numero de Juan", "expect_any": ["contacts"], "forbid": ["web"]}
+{"q": "hazme un excel con 3 columnas", "expect_any": ["office"], "forbid": ["web"]}
+{"q": "Puedes hacerme un power point", "expect_any": ["office"], "forbid": ["web"]}
+{"q": "registra que hoy hice ejercicio", "expect_any": ["habit_tracker"], "forbid": ["web"]}
+{"q": "apaga las luces de la sala", "expect_any": ["smart_home"], "forbid": ["web"]}
+{"q": "extrae el texto de un pdf", "expect_any": ["document", "filesystem"], "forbid": ["web"]}
+{"q": "abre la calculadora", "expect_any": ["app"], "forbid": ["web", "media"]}
+{"q": "open the calculator", "expect_any": ["app"], "forbid": ["web", "media"]}
+{"q": "what time is it", "expect_any": ["system"], "forbid": ["web"]}
+{"q": "abre el bloc de notas", "expect_any": ["app", "notes_tasks"], "forbid": ["web"]}
+{"q": "borra todos los archivos de descargas", "expect_any": ["filesystem"], "forbid": ["web"]}
+{"q": "lee un archivo de texto", "expect_any": ["filesystem"], "forbid": ["web"]}

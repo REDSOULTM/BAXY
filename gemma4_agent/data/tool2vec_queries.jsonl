@@ -3257,3 +3257,79 @@
 {"tool": "smart_home", "q": "la ventana abre"}
 {"tool": "smart_home", "q": "the sensor reading"}
 {"tool": "smart_home", "q": "mi termostato"}
+{"tool": "window", "q": "minimiza la ventana"}
+{"tool": "window", "q": "minimiza esta ventana"}
+{"tool": "window", "q": "minimiza la de VS Code"}
+{"tool": "window", "q": "minimiza la ventana de Chrome"}
+{"tool": "window", "q": "minimiza la ventana de Steam"}
+{"tool": "window", "q": "minimiza todo"}
+{"tool": "window", "q": "minimiza todas las ventanas"}
+{"tool": "window", "q": "maximiza la ventana"}
+{"tool": "window", "q": "maximiza esta ventana"}
+{"tool": "window", "q": "maximiza la ventana actual"}
+{"tool": "window", "q": "maximiza opera"}
+{"tool": "window", "q": "restaura la ventana"}
+{"tool": "window", "q": "restaura esta ventana"}
+{"tool": "window", "q": "trae la ventana al frente"}
+{"tool": "window", "q": "enfoca la ventana de Discord"}
+{"tool": "window", "q": "cambia a la ventana de Chrome"}
+{"tool": "window", "q": "mueve la ventana al otro monitor"}
+{"tool": "window", "q": "minimize the window"}
+{"tool": "window", "q": "minimize this window"}
+{"tool": "window", "q": "minimize the VS Code window"}
+{"tool": "window", "q": "maximize the window"}
+{"tool": "window", "q": "maximize the current window"}
+{"tool": "window", "q": "restore the window"}
+{"tool": "window", "q": "bring the window to front"}
+{"tool": "window", "q": "focus the Chrome window"}
+{"tool": "window", "q": "minimize everything"}
+{"tool": "window", "q": "minimize all windows"}
+{"tool": "window", "q": "cuantas ventanas tengo abiertas"}
+{"tool": "window", "q": "lista las ventanas abiertas"}
+{"tool": "window", "q": "que ventanas tengo abiertas"}
+{"tool": "window", "q": "list open windows"}
+{"tool": "window", "q": "how many windows are open"}
+{"tool": "window", "q": "cuantas pestanas tengo abiertas"}
+{"tool": "window", "q": "lista las pestanas abiertas"}
+{"tool": "web", "q": "que es una GPU"}
+{"tool": "web", "q": "que es una CPU"}
+{"tool": "web", "q": "que es la RAM"}
+{"tool": "web", "q": "que es un disco duro"}
+{"tool": "web", "q": "que es una API"}
+{"tool": "web", "q": "que es un kernel"}
+{"tool": "web", "q": "que es la fotosintesis"}
+{"tool": "web", "q": "que es un agujero negro"}
+{"tool": "web", "q": "what is a GPU"}
+{"tool": "web", "q": "what is a CPU"}
+{"tool": "web", "q": "what is RAM"}
+{"tool": "web", "q": "what is an API"}
+{"tool": "web", "q": "what is a kernel"}
+{"tool": "web", "q": "what is photosynthesis"}
+{"tool": "web", "q": "what is a black hole"}
+{"tool": "web", "q": "what does GPU mean"}
+{"tool": "web", "q": "who directed Oppenheimer"}
+{"tool": "web", "q": "who directed Inception"}
+{"tool": "web", "q": "who invented the telephone"}
+{"tool": "web", "q": "who is Albert Einstein"}
+{"tool": "web", "q": "who is Christopher Nolan"}
+{"tool": "web", "q": "who wrote Hamlet"}
+{"tool": "web", "q": "when did world war 2 end"}
+{"tool": "web", "q": "where is the Eiffel tower"}
+{"tool": "web", "q": "explain quantum computing"}
+{"tool": "web", "q": "explain what an API is"}
+{"tool": "web", "q": "tell me about the Roman empire"}
+{"tool": "web", "q": "de que trata Dune"}
+{"tool": "web", "q": "de que trata la pelicula Inception"}
+{"tool": "web", "q": "quien dirigio Oppenheimer"}
+{"tool": "web", "q": "quien invento el telefono"}
+{"tool": "web", "q": "explicame que es la fotosintesis"}
+{"tool": "web", "q": "explica que es una API"}
+{"tool": "web", "q": "habla sobre Marte"}
+{"tool": "knowledge", "q": "que es una GPU"}
+{"tool": "knowledge", "q": "what is a CPU"}
+{"tool": "knowledge", "q": "explicame que es una API"}
+{"tool": "knowledge", "q": "explain what RAM is"}
+{"tool": "knowledge", "q": "que es la fotosintesis"}
+{"tool": "knowledge", "q": "what is photosynthesis"}
+{"tool": "knowledge", "q": "de que trata Dune"}
+{"tool": "knowledge", "q": "who directed Oppenheimer"}
