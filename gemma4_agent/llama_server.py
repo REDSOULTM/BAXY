@@ -683,12 +683,36 @@ class LlamaServerManager:
         self._external_detected: bool = False
         self._external_context_mismatch_msg: Optional[str] = None
         self._router_mode: bool = False  # True when started in router (lazy-vision) mode
+        # Parent-side handles for the child's stdout/stderr log files. Popen
+        # dups the fd into the child, so the PARENT copy must be closed once the
+        # child holds it — otherwise every restart (profile switch / vision
+        # recycle) leaks two file objects in this long-running process. Stored
+        # so stop()/start() can close the previous pair deterministically
+        # instead of relying on GC finalization.
+        self._log_handles: list = []
         self._log_dir = log_dir or (PACKAGE_ROOT / "logs")
         # Serializes profile swaps: rapid consecutive clicks (vram3->vram6->
         # vram4) would otherwise spawn overlapping restart threads that fight
         # over the port ("NOT responding" / "boot timed out"). With the lock
         # they run one-after-another and the last profile wins cleanly.
         self._restart_lock = threading.Lock()
+
+    def _close_log_handles(self, handles: list | None = None) -> None:
+        """Close the parent-side child-log file objects (best-effort).
+
+        Defaults to ``self._log_handles`` (the live pair) and clears it; pass
+        an explicit list to close handles that were never stored (the spawn-
+        failure path). Closing the parent copy does not affect the running
+        child, which writes through its own dup'd fd.
+        """
+        to_close = handles if handles is not None else self._log_handles
+        for fh in to_close:
+            try:
+                fh.close()
+            except OSError:
+                pass
+        if handles is None:
+            self._log_handles = []
 
     def is_running(self) -> bool:
         """True si tenemos un proceso vivo gestionado por este manager.
@@ -898,6 +922,9 @@ class LlamaServerManager:
         self._log_dir.mkdir(parents=True, exist_ok=True)
         stdout_path = self._log_dir / "llama-server.out.log"
         stderr_path = self._log_dir / "llama-server.err.log"
+        # Close any handles left over from a previous start (a clean stop()
+        # already closes them; this covers a start()->start() without stop()).
+        self._close_log_handles()
         stdout_f = stdout_path.open("a", encoding="utf-8", errors="replace")
         stderr_f = stderr_path.open("a", encoding="utf-8", errors="replace")
         creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
@@ -913,7 +940,14 @@ class LlamaServerManager:
         except OSError as exc:
             logger.error("Failed to spawn llama-server: %s", exc)
             self._proc = None
+            # Spawn failed: the child never took these fds, so the parent must
+            # close them here or they leak on every failed start.
+            self._close_log_handles([stdout_f, stderr_f])
             return "missing_files"
+
+        # Child owns dup'd fds now. Hold the parent copies until the next
+        # stop()/start() closes them (one pair at a time, never accumulating).
+        self._log_handles = [stdout_f, stderr_f]
 
         self._current_profile = profile
         self._external_detected = False
@@ -938,10 +972,12 @@ class LlamaServerManager:
             logger.info("stop(): external server detected, not touching it")
             return False
         if self._proc is None:
+            self._close_log_handles()
             return False
         if self._proc.poll() is not None:
             self._proc = None
             self._current_profile = None
+            self._close_log_handles()
             return False
         try:
             self._proc.terminate()
@@ -955,6 +991,8 @@ class LlamaServerManager:
         finally:
             self._proc = None
             self._current_profile = None
+            # Child is dead -> safe to release the parent log handles.
+            self._close_log_handles()
         return True
 
     def recycle_for_vision_leak(self) -> bool:
