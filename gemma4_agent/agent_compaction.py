@@ -115,14 +115,39 @@ def message_text_estimate(message: dict[str, Any]) -> str:
 
 
 def middle_ellipsis(text: str, limit: int) -> str:
+    """Truncate `text` to ~`limit` chars, keeping head + tail with a marker.
+
+    The output is bounded by `limit` (plus the short marker). Two bugs this
+    guards against:
+      1. `text[-0:]` is the WHOLE string, not "last 0 chars" — so when the tail
+         budget hit 0 the function returned head + marker + FULL text, making the
+         result LONGER than the input (defeating compaction -> context overflow).
+         We split the budget evenly and slice the tail explicitly.
+      2. The fixed marker overhead used to push the result over `limit` for small
+         limits. We now reserve room for the marker so head+tail+marker <= limit
+         whenever the limit is large enough to hold the marker; otherwise we fall
+         back to a hard head-only cut.
+    """
     if len(text) <= limit:
         return text
-    keep_start = max(0, limit // 2)
-    keep_end = max(0, limit - keep_start - 80)
+    if limit <= 0:
+        return ""
+    marker = "\n...[omitted {} chars to keep context under limit]...\n"
+    # Marker length depends on the omitted count's digits; estimate generously.
+    marker_overhead = len(marker.format(len(text)))
+    budget = limit - marker_overhead
+    if budget < 20:
+        # Limit too small to hold head+marker+tail meaningfully — hard cut the
+        # head and append a short ellipsis. Never returns more than `limit`+3.
+        return text[:max(1, limit)].rstrip() + "..."
+    keep_start = budget // 2
+    keep_end = budget - keep_start
+    omitted = len(text) - keep_start - keep_end
+    tail = text[len(text) - keep_end:] if keep_end > 0 else ""
     return (
         text[:keep_start].rstrip()
-        + f"\n...[omitted {len(text) - keep_start - keep_end} chars to keep context under limit]...\n"
-        + text[-keep_end:].lstrip()
+        + marker.format(omitted)
+        + tail.lstrip()
     )
 
 
