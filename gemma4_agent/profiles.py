@@ -415,15 +415,17 @@ def recommend_profile(vram_mb: int | None) -> str:
     menor y el modelo FIABLE (E4B) entra en menos VRAM. Numeros medidos
     (RTX 4060 Ti, E4B-Q4 text preset = 3.89 GB cargado -> ~5.4 GB fisica):
 
-      >= 12 GB -> vram12   (E4B-Q6_K)
-      >=  8 GB -> vram8    (E4B-UD-Q4_K_XL)
-      >=  6 GB -> vram6    (E4B-Q4_K_M, FIABLE, ~5.4 GB fisica con lazy-vision)
+      >= 12 GB -> vram12   (E4B-Q6_K @16K; ~9.3 GB residente con lazy-vision)
+      >=  8 GB -> vram8    (E4B-Q4_K_M @16K; ~7.3 GB residente)
+      >=  6 GB -> vram6    (E4B-Q4_K_M, FIABLE, ~7.3 GB residente con lazy-vision)
                            <-- PERFIL MINIMO FIABLE para 6 GB
       >=  4 GB -> vram4    (E4B-Q4_K_M, mismo modelo fiable, ctx/flags mas
-                           ajustados; ~5.4 GB con lazy-vision — apretado en 4 GB
+                           ajustados; ~7.3 GB residente — apretado en 4 GB
                            real pero el operador prioriza fiabilidad)
       resto/None -> vram3  (E2B-Q4, mas rapido pero tool-calling INCONSISTENTE;
-                           solo para hardware que no aguanta E4B)
+                           solo para hardware que no aguanta E4B; ~4.6 GB resid.)
+    (Cifras residentes verificadas con scripts/vram_calculator.py, fórmula de
+    KV validada al MiB contra los logs. vram8/12 ya NO usan Q4_K_XL/Q6 viejos.)
 
     NB: vram16 (modelo del usuario) NO se auto-recomienda — opt-in.
     Si un perfil tiene su GGUF ausente, caemos al inmediato inferior.

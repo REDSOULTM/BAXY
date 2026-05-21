@@ -11,9 +11,10 @@ interleaves full-attention layers (key_len 512) and sliding-window layers
 (key_len 256), and the 26B-A4B has a PER-LAYER kv-head array, so we read the
 exact arrays from the GGUF rather than assume.
 
-VALIDATED against real nvidia-smi/server-log measurements (exact to the MiB):
-  26B-A4B-Q2 @16K: full-attn KV 320 MiB, SWA KV 3200 MiB, total 3520 MiB.
-  E4B          @16K: full-attn KV 256 MiB, SWA KV  640 MiB, total  896 MiB.
+VALIDATED against real server-log KV measurements, exact to the MiB:
+  26B-A4B-Q2 @ctx16K: full-attn 320 MiB + SWA 3200 MiB = 3520 MiB  (log: 3520)
+  26B-A4B-Q2 @ctx 8K: full-attn 160 MiB + SWA 1600 MiB = 1760 MiB  (log: 1760)
+(Two independent ctx points + the per-layer head math all reproduce exactly.)
 The published GGUF VRAM formula has ~365 MiB median error (oobabooga), so we add
 a safety margin and a WDDM reserve before declaring "fits".
 
