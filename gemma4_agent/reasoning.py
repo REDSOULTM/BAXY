@@ -19,7 +19,20 @@ THINKING_KEYS = {
 THINKING_PATTERNS = (
     re.compile(r"(?is)<think>.*?</think>"),
     re.compile(r"(?is)<\|think\|>.*?(?=<\|(?:tool_call|start|end|message|assistant|user|system)\|>|$)"),
+    # UNCLOSED <think> with no </think>: happens when generation is cut
+    # mid-thinking (token budget / timeout). Without this the raw thinking
+    # ("<think>razonando...") LEAKS to the user. Strip from <think> to EOL/EOS.
+    # Runs AFTER the closed-tag pattern, so a properly closed block is already
+    # gone and this only catches a dangling opener.
+    re.compile(r"(?is)<think>.*$"),
 )
+
+# Stray model control tokens (<|end|>, <|start|>, <|message|>, ...) that the
+# template/parser sometimes leaks into content. The <|think|> pattern above
+# stops at a lookahead token but leaves that token in place; and a truncated
+# turn can drop a bare <|end|>. Strip any leftover <|...|> marker so the user
+# never sees raw control tokens.
+_CONTROL_TOKEN_RE = re.compile(r"<\|[a-z_]+\|>", re.IGNORECASE)
 
 # El LLM a veces emite el formato de tool_call como TEXTO (string en el
 # content) en vez de via el mecanismo nativo de tool_calls. Eso es un bug
@@ -51,6 +64,10 @@ def sanitize_text(text: Any) -> str:
         text = pattern.sub("", text)
     for pattern in TOOL_CALL_LEAK_PATTERNS:
         text = pattern.sub("", text)
+    # Strip any leftover control tokens (e.g. a bare <|end|> the think pattern
+    # stopped at, or a token from a truncated turn). Done last so the patterns
+    # above keep their lookahead semantics.
+    text = _CONTROL_TOKEN_RE.sub("", text)
     return text.strip()
 
 
