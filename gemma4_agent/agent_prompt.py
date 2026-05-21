@@ -46,7 +46,37 @@ from pathlib import Path
 
 _PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 _CORE_PATH = _PROMPTS_DIR / "core.md"
+_CORE_LEAN_PATH = _PROMPTS_DIR / "core_lean.md"
 _TOOL_RULES_DIR = _PROMPTS_DIR / "tool_rules"
+
+# Per-profile CORE selection (2026-05-21). The repo's own latency research
+# (latency_golden_eras.md) flagged prompt thickening as the cold-start Achilles
+# heel; RAG-MCP (arXiv:2505.03275) and EasyTool (arXiv:2401.06201) show a
+# shorter prompt is BOTH faster (less prefill) AND more accurate (less attention
+# dilution) — especially on the smaller models. So low-VRAM profiles (small/
+# weak models, where latency hurts most) get the LEAN core (~920 tok); larger
+# profiles get the FULL core (~2900 tok) with all the nuance. Env override:
+# GEMMA4_CORE_TIER=lean|full.
+_LEAN_PROFILES = {"vram3", "vram4"}
+
+
+def _core_for_profile() -> str:
+    """Return the CORE prompt for the ACTIVE profile. Lean for small-model
+    tiers, full otherwise. Falls back to full on any error."""
+    import os
+    tier = (os.environ.get("GEMMA4_CORE_TIER") or "").strip().lower()
+    if tier == "lean":
+        return CORE_LEAN_PROMPT
+    if tier == "full":
+        return CORE_PROMPT
+    try:
+        from .profiles import get_active_profile
+        name = get_active_profile().name
+        if name in _LEAN_PROFILES:
+            return CORE_LEAN_PROMPT
+    except Exception:
+        pass
+    return CORE_PROMPT
 
 
 # Tools that share a rule by aliasing the canonical key. Each entry is
@@ -114,6 +144,16 @@ CORE_PROMPT: str = _load_core_prompt()
 TOOL_RULES: dict[str, str] = _load_tool_rules()
 
 
+def _load_core_lean_prompt() -> str:
+    try:
+        return _CORE_LEAN_PATH.read_text(encoding="utf-8").strip()
+    except Exception:
+        return CORE_PROMPT  # fall back to full if the lean file is missing
+
+
+CORE_LEAN_PROMPT: str = _load_core_lean_prompt()
+
+
 def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
     """Construye el SYSTEM_PROMPT efectivo para este turno.
 
@@ -125,10 +165,11 @@ def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
     inyectaba 60+ TOOL_RULES innecesarias (~7K chars) y tools schemas (~46K
     chars) en cada turn, forzando full prompt reprocessing.
     """
+    _core = _core_for_profile()
     if selected_tool_names is None:
         # Legacy: incluir todas las reglas, deduplicadas, en orden estable.
         seen: set[int] = set()
-        parts = [CORE_PROMPT]
+        parts = [_core]
         for name in sorted(TOOL_RULES.keys()):
             rule = TOOL_RULES[name]
             rid = id(rule)
@@ -140,7 +181,7 @@ def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
 
     if not selected_tool_names:
         # Smalltalk explicito: solo el CORE.
-        return CORE_PROMPT
+        return _core
 
     # Subset: filtrar reglas por nombre de tool, deduplicar por identidad.
     seen_ids: set[int] = set()
@@ -155,8 +196,8 @@ def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
         seen_ids.add(rid)
         rules.append(rule)
     if not rules:
-        return CORE_PROMPT
-    return CORE_PROMPT + "\n\n" + "\n\n".join(rules)
+        return _core
+    return _core + "\n\n" + "\n\n".join(rules)
 
 
 # Backwards-compat: algunos modulos importan SYSTEM_PROMPT directo (tests, GUI,
