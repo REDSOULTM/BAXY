@@ -118,6 +118,12 @@ class STT:
         """
         if not self._loaded or self._model is None:
             return ""
+        # Defense-in-depth: never hand Whisper an empty/degenerate buffer. The
+        # pipeline's silence gate already filters silent captures, but a direct
+        # caller (tests, future paths) must not be able to make the model
+        # transcribe nothing (undefined behaviour / wasted decode). 80ms floor.
+        if audio is None or audio.size < int(0.08 * SAMPLE_RATE):
+            return ""
         if audio.dtype != np.int16:
             audio = audio.astype(np.int16, copy=False)
         # faster-whisper accepts float32 in [-1, 1] or wraps it itself
