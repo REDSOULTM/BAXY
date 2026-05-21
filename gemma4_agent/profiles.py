@@ -187,11 +187,14 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 6-8 GB. Salta a la familia E4B (más capaz que E2B) en "
-            "Q4_K_M, ctx 16K, VISIÓN ON, rerank ON, voz+STT ON (CPU). Medido: "
-            "~4.96 GB modelo + KV 16K -> ~6.5 GB física."
+            "PERFIL MÍNIMO FIABLE para 6 GB. E4B-Q4_K_M (familia E4B = "
+            "tool-calling fiable, MEDIDO 4/4), ctx 16K, rerank ON, voz+STT ON "
+            "(CPU). Con visión-lazy (router mode) el modelo residente carga "
+            "~3.9 GB -> ~5.7 GB de VRAM total ocupada (entra en 6 GB). La "
+            "visión se carga on-demand solo en turnos con imagen. Acciones "
+            "confiables 4/4 medido."
         ),
-        est_vram_mb=4960,
+        est_vram_mb=3900,  # text preset residente (lazy-vision); +mmproj on-demand
     ),
     "vram8": Profile(
         name="vram8",
@@ -364,19 +367,24 @@ WINDOWS_VRAM_RESERVE_MB = 1500
 def recommend_profile(vram_mb: int | None) -> str:
     """Sugiere perfil vramN segun la VRAM FISICA total detectada.
 
-    Compara la VRAM fisica de la GPU contra la "fisica requerida" de cada
-    perfil (cargado medido CON visión + WINDOWS_VRAM_RESERVE_MB de 1.5 GB).
-    Cortes (VRAM fisica nominal de la placa):
+    VRAM fisica = (modelo cargado MEDIDO con visión-lazy/router-mode, es decir
+    el preset TEXT residente por defecto) + WINDOWS_VRAM_RESERVE_MB (1.5 GB).
+    Con router mode (default ON) la visión NO esta residente: se carga
+    on-demand solo en turnos con imagen, asi que el footprint por defecto es
+    menor y el modelo FIABLE (E4B) entra en menos VRAM. Numeros medidos
+    (RTX 4060 Ti, E4B-Q4 text preset = 3.89 GB cargado -> ~5.4 GB fisica):
 
-      >= 12 GB -> vram12   (E4B-Q6_K,    ~7.8 GB fisica)
-      >=  8 GB -> vram8    (E4B-Q4_K_XL, ~6.7 GB fisica)
-      >=  6 GB -> vram6    (E4B-Q4_K_M,  ~6.5 GB fisica)  [margen ajustado]
-      >=  4 GB -> vram4    (E2B-Q4_K_M,  ~4.9 GB fisica)
-      resto/None -> vram3  (E2B-Q2,      ~4.4 GB fisica)
+      >= 12 GB -> vram12   (E4B-Q6_K)
+      >=  8 GB -> vram8    (E4B-UD-Q4_K_XL)
+      >=  6 GB -> vram6    (E4B-Q4_K_M, FIABLE, ~5.4 GB fisica con lazy-vision)
+                           <-- PERFIL MINIMO FIABLE para 6 GB
+      >=  4 GB -> vram4    (E4B-Q4_K_M, mismo modelo fiable, ctx/flags mas
+                           ajustados; ~5.4 GB con lazy-vision — apretado en 4 GB
+                           real pero el operador prioriza fiabilidad)
+      resto/None -> vram3  (E2B-Q4, mas rapido pero tool-calling INCONSISTENTE;
+                           solo para hardware que no aguanta E4B)
 
-    NB: vram16 (modelo del usuario) NO se auto-recomienda — es opt-in para
-    quien tiene una GPU grande y un modelo grande configurado; el caller/UI
-    lo ofrece, pero el default seguro para 16 GB es vram12 (cabe siempre).
+    NB: vram16 (modelo del usuario) NO se auto-recomienda — opt-in.
     Si un perfil tiene su GGUF ausente, caemos al inmediato inferior.
     """
     if vram_mb is None:
