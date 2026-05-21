@@ -218,8 +218,21 @@ def _ensure_loaded(known_tool_names: list[str] | None = None) -> bool:
     try:
         model = SentenceTransformer(model_name)
     except Exception as exc:
-        _STATE.last_error = f"SentenceTransformer init failed: {exc}"
-        return False
+        # ROBUSTNESS (2026-05-21): if the fine-tuned encoder fails to load (a
+        # corrupt artifact, a transformers-version tokenizer mismatch, etc.),
+        # DON'T leave the router disabled (which looks like "stuck forever" in
+        # the UI). Fall back to the base multilingual model so routing keeps
+        # working at base quality. Only if THAT also fails do we report.
+        _STATE.last_error = f"FT encoder load failed, falling back to base: {exc}"
+        if model_name != _BASE_MODEL_NAME:
+            try:
+                model = SentenceTransformer(_BASE_MODEL_NAME)
+                model_name = _BASE_MODEL_NAME
+            except Exception as exc2:
+                _STATE.last_error = f"SentenceTransformer init failed: {exc2}"
+                return False
+        else:
+            return False
     names = known_tool_names or list(TOOL_DESCRIPTIONS.keys())
     descriptions = [TOOL_DESCRIPTIONS.get(name, name) for name in names]
     try:

@@ -325,6 +325,20 @@ class AgentRunner:
                         _ir._ensure_centroids()
                         _ir.is_conversational("warmup")
                         semantic_router.embed("warmup")
+                        # 2026-05-21: also warm the abstain head + per-tool logit
+                        # head HERE, so they never load lazily on the user's
+                        # first turn (the critical path). Both are tiny numpy
+                        # artifacts; loading them is fast but must not race the
+                        # first route.
+                        try:
+                            from . import abstain_head as _ah
+                            if _ah.is_enabled():
+                                _ah.load_model()
+                            from . import tool_head as _th
+                            if _th.is_enabled():
+                                _th.load()
+                        except Exception:
+                            pass
                     except Exception:
                         pass
                     emit_stage(BUS.publish, "rerank_load",
