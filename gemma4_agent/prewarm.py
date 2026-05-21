@@ -50,6 +50,7 @@ def prewarm_kv(
     tools: list[dict[str, Any]] | None = None,
     timeout_s: float = 90.0,
     publish: Any = None,
+    model: str | None = None,
 ) -> dict[str, Any]:
     """Lanza una request sintetica para precargar el KV cache.
 
@@ -107,6 +108,7 @@ def prewarm_kv(
             tools=tools,
             max_tokens=1,
             timeout_s=timeout_s,
+            model=model,
         )
         elapsed = time.monotonic() - started
         # Si el server devolvio algo (aunque sea 1 token), el prefix quedo cacheado.

@@ -183,7 +183,14 @@ class AgentRunner:
         tail.start()
 
         try:
-            manager = LlamaServerManager()
+            # Use the PROCESS-WIDE shared manager so router-mode state
+            # (is_router_mode / router_model_for) is consistent between the
+            # boot path here, the launcher, and the /profile endpoint. A fresh
+            # LlamaServerManager() would report router_mode=False to the warmup
+            # even when the server was started in router mode -> the warmup
+            # would send the wrong model name and hang on its timeout.
+            from .llama_server import get_shared_manager
+            manager = get_shared_manager()
             result = manager.start(profile, wait_health=True, timeout_s=120)
             self._server_manager = manager
         except Exception as exc:
@@ -432,6 +439,7 @@ class AgentRunner:
                     tools=None,
                     timeout_s=90.0,
                     publish=BUS.publish,
+                    model=_warm_model,  # router mode: text preset (else None)
                 )
                 if prewarm_result.get("ok"):
                     elapsed = prewarm_result.get("elapsed_s", 0)
