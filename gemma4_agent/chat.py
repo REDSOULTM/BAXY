@@ -136,9 +136,17 @@ class ProgressDisplay:
                     break
                 line = self._render_line()
                 self._frame += 1
-            width = max(40, shutil.get_terminal_size((100, 20)).columns)
-            sys.stdout.write("\r" + line[: width - 1].ljust(width - 1))
-            sys.stdout.flush()
+            # Render OUTSIDE the lock (don't hold it during IO). Guard the write:
+            # if the terminal closed mid-turn (broken pipe) or stdout was
+            # redirected/closed, this daemon thread must NOT spew an unhandled
+            # traceback to stderr — it's a cosmetic spinner. Disable on failure.
+            try:
+                width = max(40, shutil.get_terminal_size((100, 20)).columns)
+                sys.stdout.write("\r" + line[: width - 1].ljust(width - 1))
+                sys.stdout.flush()
+            except Exception:
+                self.enabled = False
+                break
             time.sleep(0.12)
 
     def _render_line(self) -> str:
