@@ -43,6 +43,13 @@ _SEM_PEAK_BAND = float(_os.environ.get("GEMMA4_SEM_PEAK_BAND", "0.20"))
 # Budget for speculative related-tool deps (the gui/uia/vision/window fan-out
 # that, stacked on the semantic union, produced the operator's "11 tools").
 _RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "4"))
+# Cap on the semantic fallback list (used ONLY when the tool head AND keywords
+# both came up empty — a hard query we still want to take a shot at).
+_SEM_TOPN = int(_os.environ.get("GEMMA4_SEM_TOPN", "5"))
+# P(no_tool) above which the abstain head VETOES the per-tool head (kills a
+# marginal tool firing on a clearly-conversational turn). High so it only fires
+# on confident no-tool, not borderline commands.
+_VETO_P = float(_os.environ.get("GEMMA4_VETO_P", "0.78"))
 # Above this absolute INFO score, the keyword-protection treats the turn as a
 # knowledge question (a "what is X" frame) and does NOT shield a spurious
 # keyword from the abstain wipe. Below it, a fired keyword is a real command.
@@ -231,6 +238,7 @@ def select_tool_names(
             # weights in data/abstain_head.json). It REPLACES the old
             # "conversational AND not confident" heuristic when available.
             abstain = None
+            abstain_p = 0.0  # P(no_tool) from the head, for the veto strength
             try:
                 from .abstain_head import load_model, build_features, is_enabled as _ah_on
                 if _ah_on():
@@ -247,6 +255,7 @@ def select_tool_names(
                             keyword_fired=bool(names),
                         )
                         abstain = _m.should_abstain(_feats)
+                        abstain_p = _m.p_no_tool(_feats)
             except Exception:
                 abstain = None
 
@@ -310,29 +319,65 @@ def select_tool_names(
                 else:
                     scored = []
                     names = list(_kw_protect)
-            # Peak-dominant trim (2026-05-21, operator: "11 tools for abre steam
-            # makes no sense"). When one tool clearly wins, the rest of the top-12
-            # is noise the FT encoder's high cosines drag along; offering it hurts
-            # Gemma-4B's tool-calling (every report cited RAG-MCP). Only fires on
-            # a dominant peak, where the labeled tool IS the peak, so it's recall-
-            # safe; flat/ambiguous queries keep the full union.
-            if len(scored) >= 2:
-                _pk, _second = scored[0][1], scored[1][1]
-                if _pk >= _SEM_PEAK_KEEP and (_pk - _second) >= _SEM_PEAK_GAP:
-                    scored = [p for p in scored if p[1] >= _pk - _SEM_PEAK_BAND]
+            # PER-TOOL LOGIT HEAD (2026-05-21) — the research's anti-bloat
+            # architecture. Instead of taking the semantic top-k / a band (which
+            # drags a flat-distribution cluster like "pausa"->media,app,study,
+            # accessibility into the subset), each tool has its OWN calibrated
+            # threshold; the subset is only the tools that individually clear
+            # their bar. "pausa" fires {media}; "abre steam" fires {steam,app};
+            # "que es pytest" fires {} — small and precise BY CONSTRUCTION.
+            # We UNION the head's firings with the keyword hits (keyword is the
+            # high-precision recall floor that catches OOV objects like
+            # "reproduce daddy yankee" the encoder can't place), and fall back to
+            # the semantic top-k only when BOTH come up empty (so we never regress
+            # to nothing on a real but hard query).
+            # The abstain head VETOES the tool head on a clear no-tool turn:
+            # if the calibrated abstain decision says "conversational" AND no
+            # precise keyword fired AND it's not a parked continuation, we do
+            # not let the per-tool head pull anything. This is what keeps
+            # knowledge questions / smalltalk at zero domain tools even though a
+            # tool's logit might marginally clear its bar. A keyword hit
+            # (_kw_protect) or a confident command bypasses the veto.
+            # Veto only when the abstain head is CONFIDENT (p >= _VETO_P), so a
+            # borderline real command the head is unsure about still reaches the
+            # tool head. Tuned on dev to balance no-tool keep vs recall.
+            _abstain_veto = (do_abstain and abstain_p >= _VETO_P
+                             and not _kw_protect
+                             and not pending_intent and not streaming_hint_media
+                             and not confident_peak)
+            head_tools: list[str] = []
+            if not _abstain_veto:
+                try:
+                    from .tool_head import load as _th_load, is_enabled as _th_on
+                    if _th_on():
+                        _th = _th_load()
+                        if _th is not None:
+                            from .semantic_router import embed as _emb
+                            _qv = _emb(raw_text)
+                            if _qv is not None:
+                                head_tools = [t for t, _ in _th.fire(_qv)]
+                except Exception:
+                    head_tools = []
+
             sem = [name for name, _ in scored]
-            if sem:
+            if head_tools:
+                # Head fired: it is the precise primary. Union with keyword hits
+                # (both high-precision); do NOT dump the semantic top-k tail.
+                existing = set(names)
+                for t in head_tools:
+                    if t not in existing:
+                        names.append(t)
+                        existing.add(t)
                 if not names:
-                    # keywords found nothing → semantics is the sole source.
-                    names = list(sem)
                     semantic_fallback_used = True
-                else:
-                    # union: keep keyword order first, append new semantic hits.
-                    existing = set(names)
-                    for s in sem:
-                        if s not in existing:
-                            names.append(s)
-                            existing.add(s)
+            elif sem:
+                # Head fired nothing. Keep keyword hits; only fall back to the
+                # semantic list when keywords ALSO came up empty (a hard query
+                # the head couldn't score but the encoder still placed).
+                if not names:
+                    names = list(sem[:_SEM_TOPN])
+                    semantic_fallback_used = True
+                # else: keyword hits stand alone (precise); no semantic flood.
 
     # NOTE: continuation resolution via prev_user_text was tried (night of
     # 2026-05-20) and abandoned: on this corpus the previous-user-turn rarely

@@ -54,6 +54,13 @@ from .abstain_head import (
     load_model as load_abstain_model,
 )
 
+# Per-tool logit head (each tool clears its own calibrated threshold) — the
+# anti-bloat subset selector that yields 1-3 tools for a crisp command.
+from .tool_head import (
+    is_enabled as tool_head_enabled,
+    load as load_tool_head,
+)
+
 __all__ = [
     # orchestrator
     "select_tool_names", "plan_mission", "MissionPlan", "MissionStep",
@@ -65,4 +72,6 @@ __all__ = [
     "TOOL_DESCRIPTIONS",
     # abstention
     "load_abstain_model", "abstain_features", "abstain_enabled",
+    # per-tool subset selector
+    "load_tool_head", "tool_head_enabled",
 ]
