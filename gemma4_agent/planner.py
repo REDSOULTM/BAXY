@@ -30,6 +30,12 @@ MAX_SELECTED_TOOLS = 10
 import os as _os
 _SEM_CONFIDENT_SCORE = float(_os.environ.get("GEMMA4_SEM_CONFIDENT", "0.45"))
 _SEM_CONF_BAND = float(_os.environ.get("GEMMA4_SEM_CONF_BAND", "0.12"))
+# Confident-peak escape from the abstention gate: a single tool whose cosine
+# clears _SEM_PEAK_KEEP AND beats the runner-up by _SEM_PEAK_GAP is treated as a
+# real command even if the abstain head leans no-tool (e.g. "mutea"→audio).
+# Tuned for the fine-tuned encoder's higher cosine scale (dev).
+_SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.60"))
+_SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.18"))
 
 
 @dataclass
@@ -130,6 +136,7 @@ def select_tool_names(
     # el turn anterior y este turn parece una respuesta corta (no es un
     # comando nuevo), forzar media en el subset. El LLM decide si llamar
     # media o no — pero sin la tool en el subset no podría.
+    streaming_hint_media = False
     if last_assistant_text and "media" not in names:
         prev_low = _fold_text(last_assistant_text)
         is_streaming_question = (
@@ -144,6 +151,7 @@ def select_tool_names(
             # claramente distinto (ya cubierto por _suggest_tools, names != []).
             if not names or len(raw_text.split()) <= 6:
                 names.insert(0, "media")
+                streaming_hint_media = True
 
     semantic_fallback_used = False
     if raw_text.strip():
@@ -231,50 +239,39 @@ def select_tool_names(
             except Exception:
                 abstain = None
 
-            if abstain is True:
-                # The head decided this turn should NOT pull a domain tool.
-                # We still keep a CONFIDENT single peak (e.g. "mutea"→audio)
-                # so a crisp one-word imperative isn't silenced — the head
-                # learned `keyword_fired`/action push the other way, so a true
-                # abstain here means the wording really is conversational.
-                if confident:
+            # ONE authoritative abstention decision (2026-05-21 rebuild). All
+            # four research reports were unanimous: abstention must be a single
+            # calibrated decision, not a residual that survives only if every
+            # tool-adding path happens to miss. The CALIBRATED head decides;
+            # two narrow escapes protect real commands the head over-suppresses.
+            #
+            # Confident-peak escape: a crisp imperative like "mutea" reads as
+            # short/contentless to the head (p_no_tool ~0.70) yet lands squarely
+            # on ONE tool (audio 0.65, wide gap to #2). Keep just that peak. The
+            # bar is high (_SEM_PEAK_KEEP) because the FT encoder's cosines run
+            # higher; true smalltalk/knowledge spreads flatter and never clears
+            # it. The other escapes (pending_intent, streaming hint) are explicit
+            # prior-turn continuation signals, handled at the wipe below.
+            peak_gap = (scored[0][1] - scored[1][1]) if len(scored) >= 2 else top_score
+            confident_peak = (top_score >= _SEM_PEAK_KEEP
+                              and peak_gap >= _SEM_PEAK_GAP)
+
+            head_available = abstain is not None
+            # Effective abstain: the learned head when present, else the prior
+            # conversational heuristic. Confident commands stay either way.
+            do_abstain = (abstain is True) if head_available else bool(conversational)
+
+            if do_abstain and not pending_intent and not streaming_hint_media:
+                if confident_peak or (not head_available and confident):
+                    # Keep only the dominant peak (+near ties), drop the tail.
                     cut = top_score - _SEM_CONF_BAND
                     scored = [p for p in scored if p[1] >= cut]
+                    names = [n for n in names
+                             if n in {nm for nm, _ in scored}]
                 else:
                     scored = []
-            elif abstain is False:
-                # Head says actionable: keep the full semantic union (capped
-                # later). Do not apply the old conversational suppression.
-                pass
-            else:
-                # Head unavailable → fall back to the prior heuristic gate.
-                if conversational:
-                    if confident:
-                        cut = top_score - _SEM_CONF_BAND
-                        scored = [p for p in scored if p[1] >= cut]
-                    else:
-                        scored = []
+                    names = []
             sem = [name for name, _ in scored]
-            # HARD ABSTENTION GATE (2026-05-21): the four research reports were
-            # unanimous that abstention must be ONE authoritative decision, not
-            # a residual that survives only if every tool-adding path happens to
-            # miss. With Tool2Vec, the keyword paths (_suggest_tools, wants_
-            # knowledge, streaming, etc.) over-offer on no-tool turns. So when
-            # the CALIBRATED head says abstain AND there is no confident semantic
-            # peak AND no parked pending-intent, we drop the keyword names too —
-            # the head saw `keyword_fired` as a feature and STILL chose no-tool,
-            # which is a deliberate signal, not an oversight. Pending intent and
-            # confident peaks are the only escapes (they protect real commands).
-            if abstain is True and not pending_intent:
-                # Trust the head fully: it already saw sem_top1/sem_top3 as
-                # features, so a separate "confident peak" override would double-
-                # count the cosine. With Tool2Vec the cosines run high on EVERY
-                # turn (incl. no-tool), so the old confidence escape stopped
-                # discriminating. Pending-intent is the only escape (protects a
-                # parked slot-fill). Crisp one-word imperatives are protected by
-                # the head itself (keyword_fired + action intent push it to act).
-                names = []
-                sem = []
             if sem:
                 if not names:
                     # keywords found nothing → semantics is the sole source.

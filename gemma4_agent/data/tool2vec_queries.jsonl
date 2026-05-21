@@ -1788,3 +1788,1472 @@
 {"tool": "smart_home", "q": "Vérifie l'état de la maison"}
 {"tool": "smart_home", "q": "German"}
 {"tool": "smart_home", "q": "Schalte das Wohnzimmerlicht ein"}
+{"tool": "audio", "q": "Volumen, bajalo"}
+{"tool": "audio", "q": "Mute, please"}
+{"tool": "audio", "q": "O som? Manda"}
+{"tool": "audio", "q": "Volume plus vite"}
+{"tool": "audio", "q": "Geräusch aufdrehen"}
+{"tool": "audio", "q": "Suono? Alzalo"}
+{"tool": "audio", "q": "Mute, what devices?"}
+{"tool": "audio", "q": "Sobrino, volumen bajo"}
+{"tool": "audio", "q": "O volume, como é?"}
+{"tool": "audio", "q": "Faites le son"}
+{"tool": "audio", "q": "Klang aus, bitte"}
+{"tool": "audio", "q": "Volume? Qual è?"}
+{"tool": "audio", "q": "Abre eso, volumen"}
+{"tool": "audio", "q": "Media key, ahora"}
+{"tool": "audio", "q": "O outro, também"}
+{"tool": "audio", "q": "Volume, por favor"}
+{"tool": "audio", "q": "Mute, check settings"}
+{"tool": "audio", "q": "Das Geräusch ändern"}
+{"tool": "audio", "q": "Il volume, sì"}
+{"tool": "audio", "q": "Bajar el audio"}
+{"tool": "audio", "q": "Volume, mais um pouco"}
+{"tool": "audio", "q": "Ça sonne fort?"}
+{"tool": "audio", "q": "Lautstärke hoch"}
+{"tool": "audio", "q": "Suono, deve cambiare"}
+{"tool": "audio", "q": "Mute, ya"}
+{"tool": "audio_device", "q": "el audio cambiar ahora"}
+{"tool": "audio_device", "q": "change input device"}
+{"tool": "audio_device", "q": "mudar o microfone lá"}
+{"tool": "audio_device", "q": "change output please"}
+{"tool": "audio_device", "q": "diesen sound ändern"}
+{"tool": "audio_device", "q": "cambia el speaker rapido"}
+{"tool": "audio_device", "q": "el micro el otro"}
+{"tool": "audio_device", "q": "faute changer le son"}
+{"tool": "audio_device", "q": "sound card where is"}
+{"tool": "audio_device", "q": "quello el otro app"}
+{"tool": "audio_device", "q": "mudar pro outro porta"}
+{"tool": "audio_device", "q": "das audio ändern mal"}
+{"tool": "audio_device", "q": "change that mic now"}
+{"tool": "audio_device", "q": "audio routing fast"}
+{"tool": "audio_device", "q": "quel autre périphérique"}
+{"tool": "audio_device", "q": "das geräusch wechseln"}
+{"tool": "audio_device", "q": "cambiar a los auriculares"}
+{"tool": "audio_device", "q": "out device switch it"}
+{"tool": "audio_device", "q": "otro el sonido rápido"}
+{"tool": "audio_device", "q": "changer les enceintes"}
+{"tool": "audio_device", "q": "input ändern bitte"}
+{"tool": "audio_device", "q": "mudar pra outra saída"}
+{"tool": "audio_device", "q": "audio device quick"}
+{"tool": "audio_device", "q": "turn it to speakers"}
+{"tool": "audio_device", "q": "cambia el volumen low"}
+{"tool": "app", "q": "abre el chrome"}
+{"tool": "app", "q": "launch excel now"}
+{"tool": "app", "q": "chiudi la app"}
+{"tool": "app", "q": "ouvrir slack vite"}
+{"tool": "app", "q": "öffne word mal"}
+{"tool": "app", "q": "apri spotify per favore"}
+{"tool": "app", "q": "cierra el firefox"}
+{"tool": "app", "q": "it's time for chrome"}
+{"tool": "app", "q": "drei apps öffnen"}
+{"tool": "app", "q": "fermer chrome un peu"}
+{"tool": "app", "q": "apri photoshop veloce"}
+{"tool": "app", "q": "spotify chiudi ora"}
+{"tool": "app", "q": "el notas por favor"}
+{"tool": "app", "q": "run the notepad"}
+{"tool": "app", "q": "fechar o chrome rapidinho"}
+{"tool": "app", "q": "ouvrir ce programme"}
+{"tool": "app", "q": "schließ das down"}
+{"tool": "app", "q": "chiudi l'ide"}
+{"tool": "app", "q": "notas abrir"}
+{"tool": "app", "q": "close the browser"}
+{"tool": "app", "q": "abra eso ya"}
+{"tool": "app", "q": "abrir el word"}
+{"tool": "app", "q": "app close please"}
+{"tool": "app", "q": "le programme fermer"}
+{"tool": "app", "q": "drei apps bitte"}
+{"tool": "steam", "q": "Steam games app"}
+{"tool": "steam", "q": "Open the steem store"}
+{"tool": "steam", "q": "Quero ver meus jogos"}
+{"tool": "steam", "q": "Abre o Steam lá"}
+{"tool": "steam", "q": "Spiel die games"}
+{"tool": "steam", "q": "Steam biblioteca"}
+{"tool": "steam", "q": "Je veux Steam"}
+{"tool": "steam", "q": "Steam, appaure ça"}
+{"tool": "steam", "q": "It Steam, please"}
+{"tool": "steam", "q": "I need the games"}
+{"tool": "steam", "q": "O Steam, bota pra rodar"}
+{"tool": "steam", "q": "Steam, a loja"}
+{"tool": "steam", "q": "Mi Steam, abri"}
+{"tool": "steam", "q": "Steam, los juegos"}
+{"tool": "steam", "q": "Steam, apra eso"}
+{"tool": "steam", "q": "Geims library now"}
+{"tool": "steam", "q": "Steam store, lo otro"}
+{"tool": "steam", "q": "Steam, o bájalo"}
+{"tool": "steam", "q": "Manda a abrir Steam"}
+{"tool": "steam", "q": "Steam, el catalogo"}
+{"tool": "steam", "q": "Steam games, and now"}
+{"tool": "steam", "q": "Steam, el volumen"}
+{"tool": "steam", "q": "Steam, dame los jogos"}
+{"tool": "steam", "q": "Steam, la tienda"}
+{"tool": "steam", "q": "Steam, lo otro también"}
+{"tool": "window", "q": "fecha esa cosa ya"}
+{"tool": "window", "q": "minimizá el otro"}
+{"tool": "window", "q": "mostrar ventanas ahora"}
+{"tool": "window", "q": "close that window bitte"}
+{"tool": "window", "q": "maximiza eso porfa"}
+{"tool": "window", "q": "abrir la que estaba"}
+{"tool": "window", "q": "move that window over"}
+{"tool": "window", "q": "minimizar todas las pestañas"}
+{"tool": "window", "q": "die anzeige da brauch"}
+{"tool": "window", "q": "focus on this one"}
+{"tool": "window", "q": "muda a direita por favor"}
+{"tool": "window", "q": "mostrar listas ventanas"}
+{"tool": "window", "q": "chiudi la finestra veloce"}
+{"tool": "window", "q": "resize it little bit"}
+{"tool": "window", "q": "o outro janela aí"}
+{"tool": "window", "q": "mettre ça en arrière"}
+{"tool": "window", "q": "die nächste window"}
+{"tool": "window", "q": "minimizar tudo rapidinho"}
+{"tool": "window", "q": "la que estaba ahí"}
+{"tool": "window", "q": "maximizar ahora mismo"}
+{"tool": "window", "q": "babaixa ele mais um pouco"}
+{"tool": "window", "q": "close windows quick"}
+{"tool": "window", "q": "list all windows"}
+{"tool": "window", "q": "trasladar ese panel"}
+{"tool": "window", "q": "ouvrir le truc là"}
+{"tool": "gui", "q": "click that thing there"}
+{"tool": "gui", "q": "abre esa ventana"}
+{"tool": "gui", "q": "take a quick pic"}
+{"tool": "gui", "q": "scrol down a little"}
+{"tool": "gui", "q": "tipo lo que hay"}
+{"tool": "gui", "q": "faça o print agora"}
+{"tool": "gui", "q": "ouvrir cette page"}
+{"tool": "gui", "q": "gib mir den screenshot"}
+{"tool": "gui", "q": "scroll a bit more"}
+{"tool": "gui", "q": "mouse click there fast"}
+{"tool": "gui", "q": "un clic sur le menu"}
+{"tool": "gui", "q": "tippa lo che c'è"}
+{"tool": "gui", "q": "vorrei una schermata"}
+{"tool": "gui", "q": "dati e poi clicca"}
+{"tool": "gui", "q": "scrolla un po' l'altro"}
+{"tool": "gui", "q": "click the button there"}
+{"tool": "gui", "q": "faça isso, por favor"}
+{"tool": "gui", "q": "scrolla quel testo"}
+{"tool": "gui", "q": "dein bild machen"}
+{"tool": "gui", "q": "clicca su quella cosa"}
+{"tool": "gui", "q": "dando a te o print"}
+{"tool": "gui", "q": "tira una foto"}
+{"tool": "gui", "q": "mouse drag that window"}
+{"tool": "gui", "q": "hotkey for the file"}
+{"tool": "gui", "q": "pensa o outro também"}
+{"tool": "vision", "q": "muestra lo que hay ahi"}
+{"tool": "vision", "q": "describe screen now"}
+{"tool": "vision", "q": "ocr ese texto por favor"}
+{"tool": "vision", "q": "checa el boton de pago"}
+{"tool": "vision", "q": "lo otro también"}
+{"tool": "vision", "q": "quese UI element there"}
+{"tool": "vision", "q": "fotografía esa zona"}
+{"tool": "vision", "q": "descríbele la imagen"}
+{"tool": "vision", "q": "potem describe isso ali"}
+{"tool": "vision", "q": "diz o que tem na tela"}
+{"tool": "vision", "q": "find that button right"}
+{"tool": "vision", "q": "scanea el código de barras"}
+{"tool": "vision", "q": "vorrei descrivere questa"}
+{"tool": "vision", "q": "questo testo qua ok"}
+{"tool": "vision", "q": "gib mir das hier"}
+{"tool": "vision", "q": "décrir cette partie"}
+{"tool": "vision", "q": "scan those numbers quick"}
+{"tool": "vision", "q": "mi mostri la faccia?"}
+{"tool": "vision", "q": "el volumen qué pasa"}
+{"tool": "vision", "q": "notas? ¿qué hay?"}
+{"tool": "vision", "q": "darme el precio de eso"}
+{"tool": "vision", "q": "lo que está en la foto"}
+{"tool": "vision", "q": "dime qué dice el texto"}
+{"tool": "vision", "q": "describes la pantalla rapidito"}
+{"tool": "vision", "q": "la foto qué tiene"}
+{"tool": "browser", "q": "abre ese sitio web"}
+{"tool": "browser", "q": "open the url link"}
+{"tool": "browser", "q": "apri pagina github"}
+{"tool": "browser", "q": "lien en le brauzer"}
+{"tool": "browser", "q": "öffne die seite da"}
+{"tool": "browser", "q": "apri sito python org"}
+{"tool": "browser", "q": "vai su google dot com"}
+{"tool": "browser", "q": "abrir esa web porfa"}
+{"tool": "browser", "q": "open the browser now"}
+{"tool": "browser", "q": "o pen o site"}
+{"tool": "browser", "q": "ouvrir cette page"}
+{"tool": "browser", "q": "öffnen localhost bitte"}
+{"tool": "browser", "q": "apri quello web"}
+{"tool": "browser", "q": "brauzer apri link"}
+{"tool": "browser", "q": "sitio web abrir"}
+{"tool": "browser", "q": "page la ouvrir"}
+{"tool": "browser", "q": "die url jetzt"}
+{"tool": "browser", "q": "apri subito sito"}
+{"tool": "browser", "q": "open that web thing"}
+{"tool": "browser", "q": "o pen link site"}
+{"tool": "browser", "q": "apre la pagina veloce"}
+{"tool": "browser", "q": "öffne das hier"}
+{"tool": "browser", "q": "site abrir por favor"}
+{"tool": "browser", "q": "ouvrir lien ici"}
+{"tool": "browser", "q": "brauzer open me"}
+{"tool": "web", "q": "che cosa c'è di nuovo"}
+{"tool": "web", "q": "dame noticias de hoy"}
+{"tool": "web", "q": "como se llama eso"}
+{"tool": "web", "q": "search the internet for me"}
+{"tool": "web", "q": "me diga el precio ahora"}
+{"tool": "web", "q": "wo ist die weltnachrichten"}
+{"tool": "web", "q": "que es ese actor"}
+{"tool": "web", "q": "por favor busca algo"}
+{"tool": "web", "q": "info de la película"}
+{"tool": "web", "q": "cerca de eso el otro"}
+{"tool": "web", "q": "wie war das gestern"}
+{"tool": "web", "q": "por la web"}
+{"tool": "web", "q": "neue noticias ahora"}
+{"tool": "web", "q": "what's the weather there"}
+{"tool": "web", "q": "descubrir eso rápido"}
+{"tool": "web", "q": "diga la fecha hoy"}
+{"tool": "web", "q": "que pasa con el mercado"}
+{"tool": "web", "q": "busca el resumen"}
+{"tool": "web", "q": "pode buscar a ele"}
+{"tool": "web", "q": "sabe quién es el"}
+{"tool": "web", "q": "danke sag mal"}
+{"tool": "web", "q": "tira ese link"}
+{"tool": "web", "q": "dónde está la info"}
+{"tool": "web", "q": "che cosa significa eso"}
+{"tool": "web", "q": "latest news please"}
+{"tool": "uia", "q": "click que boton ese"}
+{"tool": "uia", "q": "find the settings menu"}
+{"tool": "uia", "q": "abre esa ventana ahora"}
+{"tool": "uia", "q": "wo ist der ausgang"}
+{"tool": "uia", "q": "tasto cliccar quell'icona"}
+{"tool": "uia", "q": "find the save button"}
+{"tool": "uia", "q": "bájalo ese slider"}
+{"tool": "uia", "q": "this one, please"}
+{"tool": "uia", "q": "la otra pestaña dame"}
+{"tool": "uia", "q": "clickan esa coisa"}
+{"tool": "uia", "q": "das neue fenster bitte"}
+{"tool": "uia", "q": "quel campo è questo"}
+{"tool": "uia", "q": "open the control named"}
+{"tool": "uia", "q": "click the next field"}
+{"tool": "uia", "q": "la barra de herramientas"}
+{"tool": "uia", "q": "push the submit button"}
+{"tool": "uia", "q": "le menu d'options vite"}
+{"tool": "uia", "q": "einmal das druecken"}
+{"tool": "uia", "q": "clicca il bottone qui"}
+{"tool": "uia", "q": "find the help widget"}
+{"tool": "uia", "q": "esse botao ali ali"}
+{"tool": "uia", "q": "quitte o menu agora"}
+{"tool": "uia", "q": "click the last thing"}
+{"tool": "uia", "q": "la caja de texto"}
+{"tool": "uia", "q": "find the user profile"}
+{"tool": "filesystem", "q": "qué hay en descargas"}
+{"tool": "filesystem", "q": "abre el log de hoy"}
+{"tool": "filesystem", "q": "lista archivos ahí"}
+{"tool": "filesystem", "q": "open that folder now"}
+{"tool": "filesystem", "q": "mirar lo de las fotos"}
+{"tool": "filesystem", "q": "zipar eso rapidito"}
+{"tool": "filesystem", "q": "quitar ese archivo"}
+{"tool": "filesystem", "q": "dónde está el reporte"}
+{"tool": "filesystem", "q": "leggen die dateien"}
+{"tool": "filesystem", "q": "contenuto da downloads"}
+{"tool": "filesystem", "q": "voire les fichiers"}
+{"tool": "filesystem", "q": "ouvrir ce dossier"}
+{"tool": "filesystem", "q": "die dateien sehen"}
+{"tool": "filesystem", "q": "scarica tutto qui"}
+{"tool": "filesystem", "q": "manda el archivo"}
+{"tool": "filesystem", "q": "copiar carpeta esa"}
+{"tool": "filesystem", "q": "busca el pdf viejo"}
+{"tool": "filesystem", "q": "che cosa c'è lì"}
+{"tool": "filesystem", "q": "mover esto ahora"}
+{"tool": "filesystem", "q": "where's that file"}
+{"tool": "filesystem", "q": "aqui lista os arquivos"}
+{"tool": "filesystem", "q": "me mostrar os docu"}
+{"tool": "filesystem", "q": "find that backup"}
+{"tool": "filesystem", "q": "apreeso la carpeta"}
+{"tool": "filesystem", "q": "le dossier maintenant"}
+{"tool": "package", "q": "installa eso paquete"}
+{"tool": "package", "q": "winget buscar programa"}
+{"tool": "package", "q": "podrías desinstalar esa cosa"}
+{"tool": "package", "q": "find package nome"}
+{"tool": "package", "q": "install me package"}
+{"tool": "package", "q": "busca la app"}
+{"tool": "package", "q": "deinstall ese paquete"}
+{"tool": "package", "q": "run package check"}
+{"tool": "package", "q": "suchen package"}
+{"tool": "package", "q": "install de package"}
+{"tool": "package", "q": "uninstalla ese cosa"}
+{"tool": "package", "q": "paquete instalacion ayuda"}
+{"tool": "package", "q": "me package search"}
+{"tool": "package", "q": "busca el programa"}
+{"tool": "package", "q": "scarica ese paquete"}
+{"tool": "package", "q": "install package nome"}
+{"tool": "package", "q": "deinstale la cosa"}
+{"tool": "package", "q": "paquete qué hay"}
+{"tool": "package", "q": "lo otro también paquete"}
+{"tool": "package", "q": "y ahora bájalo"}
+{"tool": "package", "q": "winget install programa"}
+{"tool": "package", "q": "desinstala ya"}
+{"tool": "package", "q": "carioca instal package"}
+{"tool": "package", "q": "chercher package nom"}
+{"tool": "package", "q": "install this program"}
+{"tool": "clipboard", "q": "copiar ese texto"}
+{"tool": "clipboard", "q": "read clip board"}
+{"tool": "clipboard", "q": "metti il testo lì"}
+{"tool": "clipboard", "q": "kopiere das hier"}
+{"tool": "clipboard", "q": "coloque na área"}
+{"tool": "clipboard", "q": "le copias?"}
+{"tool": "clipboard", "q": "this thing on clipboard"}
+{"tool": "clipboard", "q": "mi clipboard donde"}
+{"tool": "clipboard", "q": "put it there quick"}
+{"tool": "clipboard", "q": "le lire le texte"}
+{"tool": "clipboard", "q": "copiar o que tem"}
+{"tool": "clipboard", "q": "deixa aqui as coisas"}
+{"tool": "clipboard", "q": "lesen in das clipboard"}
+{"tool": "clipboard", "q": "text lì ora"}
+{"tool": "clipboard", "q": "a copia quella"}
+{"tool": "clipboard", "q": "clip board lo chiudi"}
+{"tool": "clipboard", "q": "put clip in it"}
+{"tool": "clipboard", "q": "escribir en el clip"}
+{"tool": "clipboard", "q": "fazer o copy agora"}
+{"tool": "clipboard", "q": "le mets dans le clip"}
+{"tool": "clipboard", "q": "den das clipboard schreiben"}
+{"tool": "clipboard", "q": "metti qui la cosa"}
+{"tool": "clipboard", "q": "le notas?"}
+{"tool": "clipboard", "q": "clipboard copy paste"}
+{"tool": "clipboard", "q": "algo en clipboard"}
+{"tool": "terminal", "q": "abre el terminal porfa"}
+{"tool": "terminal", "q": "run command now"}
+{"tool": "terminal", "q": "quere abrir terminal"}
+{"tool": "terminal", "q": "mach das terminal bitte"}
+{"tool": "terminal", "q": "apre eso de la consola"}
+{"tool": "terminal", "q": "toca la terminal"}
+{"tool": "terminal", "q": "run bash script"}
+{"tool": "terminal", "q": "mi terminal, dale"}
+{"tool": "terminal", "q": "faiz ça le terminal"}
+{"tool": "terminal", "q": "runing the shell"}
+{"tool": "terminal", "q": "tieni l'interfaccia ora"}
+{"tool": "terminal", "q": "dando el terminal rápido"}
+{"tool": "terminal", "q": "console abre eso"}
+{"tool": "terminal", "q": "das terminal jetzt"}
+{"tool": "terminal", "q": "abrir prompt please"}
+{"tool": "terminal", "q": "run it, lo otro"}
+{"tool": "terminal", "q": "el volumen y la consola"}
+{"tool": "terminal", "q": "shell open me"}
+{"tool": "terminal", "q": "lo otro también terminal"}
+{"tool": "terminal", "q": "abre la terminal de nuevo"}
+{"tool": "terminal", "q": "mach terminal kurz"}
+{"tool": "terminal", "q": "portar abrir terminal"}
+{"tool": "terminal", "q": "this terminal now"}
+{"tool": "terminal", "q": "terminala ejecuta eso"}
+{"tool": "terminal", "q": "tieni la shell ora"}
+{"tool": "memory", "q": "mi nombre que es"}
+{"tool": "memory", "q": "recuérdame el nombre"}
+{"tool": "memory", "q": "me llamo X y"}
+{"tool": "memory", "q": "que prefiero yo"}
+{"tool": "memory", "q": "datos del usuario"}
+{"tool": "memory", "q": "mi proyecto actual"}
+{"tool": "memory", "q": "qué preferencia tengo"}
+{"tool": "memory", "q": "llámame X ahora"}
+{"tool": "memory", "q": "recordar esto porfa"}
+{"tool": "memory", "q": "dónde está mi data"}
+{"tool": "memory", "q": "was my name again"}
+{"tool": "memory", "q": "what was my pref"}
+{"tool": "memory", "q": "lembra ese dato"}
+{"tool": "memory", "q": "mein vorzug was"}
+{"tool": "memory", "q": "dime mi dato"}
+{"tool": "memory", "q": "ripasso configurazione"}
+{"tool": "memory", "q": "ricorda il progetto"}
+{"tool": "memory", "q": "meu nome qual era"}
+{"tool": "memory", "q": "oublie ma pref"}
+{"tool": "memory", "q": "die daten speichern"}
+{"tool": "memory", "q": "cosa voglio io"}
+{"tool": "memory", "q": "prefiero esto ya"}
+{"tool": "memory", "q": "y ahora bájalo"}
+{"tool": "memory", "q": "lo otro también"}
+{"tool": "memory", "q": "my setting please"}
+{"tool": "verify", "q": "check if app opened"}
+{"tool": "verify", "q": "archivo existe mmm"}
+{"tool": "verify", "q": "abre eso ya"}
+{"tool": "verify", "q": "está ahí la ventana"}
+{"tool": "verify", "q": "clipboard qué hay"}
+{"tool": "verify", "q": "saber si hay archivo"}
+{"tool": "verify", "q": "está abierto la aplicación"}
+{"tool": "verify", "q": "notas? mira eso"}
+{"tool": "verify", "q": "prüfen Datei existiert"}
+{"tool": "verify", "q": "verifica ventana ahora"}
+{"tool": "verify", "q": "apre eso rápido"}
+{"tool": "verify", "q": "faichle da ist"}
+{"tool": "verify", "q": "controlla se ha abierto"}
+{"tool": "verify", "q": "verifica si copia"}
+{"tool": "verify", "q": "chequea si existe"}
+{"tool": "verify", "q": "vai ver se tá aberto"}
+{"tool": "verify", "q": "c’est ça est là"}
+{"tool": "verify", "q": "où est le fichier"}
+{"tool": "verify", "q": "die datei prüfen"}
+{"tool": "verify", "q": "lo otro también mmm"}
+{"tool": "verify", "q": "y ahora bájalo"}
+{"tool": "verify", "q": "apre eso rápido mmm"}
+{"tool": "verify", "q": "app aberta verifica"}
+{"tool": "verify", "q": "clipboard checa isso"}
+{"tool": "verify", "q": "file check me"}
+{"tool": "state", "q": "check open stuff"}
+{"tool": "state", "q": "checkpoint now please"}
+{"tool": "state", "q": "roll back to last"}
+{"tool": "state", "q": "lista los recursos"}
+{"tool": "state", "q": "deletar eso quick"}
+{"tool": "state", "q": "list open notes"}
+{"tool": "state", "q": "cleanup, please, quick"}
+{"tool": "state", "q": "estado actual, ¿cómo va?"}
+{"tool": "state", "q": "wie ist der status"}
+{"tool": "state", "q": "quel état on a là"}
+{"tool": "state", "q": "la lista de las cosas"}
+{"tool": "state", "q": "limpiar el sistema"}
+{"tool": "state", "q": "dein aktueller zustand"}
+{"tool": "state", "q": "controlla i stato"}
+{"tool": "state", "q": "rollback, dame el estado"}
+{"tool": "state", "q": "la lista de pendientes"}
+{"tool": "state", "q": "sómeo abre eso"}
+{"tool": "state", "q": "abre los recursos"}
+{"tool": "state", "q": "deleting, make it stop"}
+{"tool": "state", "q": "stato, mi stato"}
+{"tool": "state", "q": "list open now"}
+{"tool": "state", "q": "cleanup, lo otro también"}
+{"tool": "state", "q": "check points, ¿dónde?"}
+{"tool": "state", "q": "die speicherpunkte"}
+{"tool": "state", "q": "lista cosas abiertas"}
+{"tool": "input", "q": "manda las teclas"}
+{"tool": "input", "q": "teclea eso rapido"}
+{"tool": "input", "q": "abre el teclado, por favor"}
+{"tool": "input", "q": "dame el layout ahora"}
+{"tool": "input", "q": "key press escape"}
+{"tool": "input", "q": "bájalo tres veces"}
+{"tool": "input", "q": "escribir sin enter"}
+{"tool": "input", "q": "lo otro también"}
+{"tool": "input", "q": "dame un hotkey"}
+{"tool": "input", "q": "pressionar teclas, bitte"}
+{"tool": "input", "q": "digita el texto"}
+{"tool": "input", "q": "type the shortcut"}
+{"tool": "input", "q": "darme ese teclado"}
+{"tool": "input", "q": "baja el volumen y"}
+{"tool": "input", "q": "presiona la tecla"}
+{"tool": "input", "q": "type down three"}
+{"tool": "input", "q": "dime el layout"}
+{"tool": "input", "q": "escribe sin pulsar"}
+{"tool": "input", "q": "run together words"}
+{"tool": "input", "q": "la tecla, ¿qué?"}
+{"tool": "input", "q": "darme la entrada"}
+{"tool": "input", "q": "toca un poco"}
+{"tool": "input", "q": "escritura, ya"}
+{"tool": "input", "q": "send it, quickly"}
+{"tool": "input", "q": "dame las notas"}
+{"tool": "env", "q": "Set env var now"}
+{"tool": "env", "q": "Onde tá a variável?"}
+{"tool": "env", "q": "Das um ambiente"}
+{"tool": "env", "q": "Get de variáveis"}
+{"tool": "env", "q": "El valor de eso"}
+{"tool": "env", "q": "Abre as configs"}
+{"tool": "env", "q": "Mein umgebung"}
+{"tool": "env", "q": "Configurar o caminho"}
+{"tool": "env", "q": "Déle el nombre"}
+{"tool": "env", "q": "Envio a pasta"}
+{"tool": "env", "q": "Wie ist die variabel"}
+{"tool": "env", "q": "Set o modo"}
+{"tool": "env", "q": "Cambia o ambiente"}
+{"tool": "env", "q": "Dove sta il valore?"}
+{"tool": "env", "q": "Déle el nuevo valor"}
+{"tool": "env", "q": "Ajustar os settings"}
+{"tool": "env", "q": "Delete o arquivo"}
+{"tool": "env", "q": "Il setting di sistema"}
+{"tool": "env", "q": "Lavora no ambiente"}
+{"tool": "env", "q": "Deletar a variável"}
+{"tool": "env", "q": "Set the path"}
+{"tool": "env", "q": "Need to check env"}
+{"tool": "env", "q": "Tirar esse variável"}
+{"tool": "env", "q": "Set o proxy"}
+{"tool": "env", "q": "Quel est la var?"}
+{"tool": "registry", "q": "registri consulta ahora"}
+{"tool": "registry", "q": "query registry clave"}
+{"tool": "registry", "q": "configuracion del sistema"}
+{"tool": "registry", "q": "where is the registry"}
+{"tool": "registry", "q": "abrir las entradas"}
+{"tool": "registry", "q": "le registri por favor"}
+{"tool": "registry", "q": "die registrierung anzeigen"}
+{"tool": "registry", "q": "trova registro valor"}
+{"tool": "registry", "q": "registro borrar el nodo"}
+{"tool": "registry", "q": "exportar esto al disco"}
+{"tool": "registry", "q": "notas? registry clave"}
+{"tool": "registry", "q": "por favor bájame eso"}
+{"tool": "registry", "q": "o registri exportar"}
+{"tool": "registry", "q": "die eintragung ändern"}
+{"tool": "registry", "q": "dime el path"}
+{"tool": "registry", "q": "registro y luego borrar"}
+{"tool": "registry", "q": "this system config"}
+{"tool": "registry", "q": "registry delete value"}
+{"tool": "registry", "q": "el otro también ahora"}
+{"tool": "registry", "q": "registro añadir algo"}
+{"tool": "registry", "q": "qual chave acessar"}
+{"tool": "registry", "q": "dans le registre ça"}
+{"tool": "registry", "q": "e registri exportar ahora"}
+{"tool": "registry", "q": "die daten abrufen"}
+{"tool": "registry", "q": "questo registro valore"}
+{"tool": "download", "q": "Bájame el archivo"}
+{"tool": "download", "q": "Download eso ya"}
+{"tool": "download", "q": "Necesito el hash"}
+{"tool": "download", "q": "Ficher öffnen"}
+{"tool": "download", "q": "Scarica quello adesso"}
+{"tool": "download", "q": "Tira eso ahora"}
+{"tool": "download", "q": "Pode baixar aquele"}
+{"tool": "download", "q": "Just check the file"}
+{"tool": "download", "q": "Quiero la descarga"}
+{"tool": "download", "q": "Lo otro también"}
+{"tool": "download", "q": "Download el sig"}
+{"tool": "download", "q": "Bitte die Datei"}
+{"tool": "download", "q": "Faites le téléchargement"}
+{"tool": "download", "q": "Avrebbe il file?"}
+{"tool": "download", "q": "Algo más bajalo"}
+{"tool": "download", "q": "Download lo otra"}
+{"tool": "download", "q": "Verificar signature"}
+{"tool": "download", "q": "Necesito el volumen"}
+{"tool": "download", "q": "Abre eso el archivo"}
+{"tool": "download", "q": "Download ahora porfa"}
+{"tool": "download", "q": "El hash del disco"}
+{"tool": "download", "q": "scarica lo que es"}
+{"tool": "download", "q": "Das runterladen"}
+{"tool": "download", "q": "L'ho scaricato"}
+{"tool": "download", "q": "¿Qué tienes ahí"}
+{"tool": "email", "q": "send e-mail right now"}
+{"tool": "email", "q": "mandar el correo ahora"}
+{"tool": "email", "q": "manda email por aí"}
+{"tool": "email", "q": "envoie ce mesag"}
+{"tool": "email", "q": "schick die mail bitte"}
+{"tool": "email", "q": "mandami la mail"}
+{"tool": "email", "q": "lo otro también enviar"}
+{"tool": "email", "q": "el mail rápido"}
+{"tool": "reminder", "q": "Recuardo eso"}
+{"tool": "reminder", "q": "Nota para mañana"}
+{"tool": "reminder", "q": "Remind me later"}
+{"tool": "reminder", "q": "Set a note"}
+{"tool": "reminder", "q": "Mi lembre amanhã"}
+{"tool": "reminder", "q": "Notas rápidas"}
+{"tool": "reminder", "q": "Rappeler ça vite"}
+{"tool": "reminder", "q": "Une note svp"}
+{"tool": "reminder", "q": "Erinnern mich später"}
+{"tool": "reminder", "q": "Notiz machen"}
+{"tool": "reminder", "q": "Ricordami domani"}
+{"tool": "browser_real", "q": "abre el navegador ya"}
+{"tool": "browser_real", "q": "browser abri eso"}
+{"tool": "browser_real", "q": "checa esa pagina"}
+{"tool": "browser_real", "q": "notas web porfa"}
+{"tool": "browser_real", "q": "lo otro también"}
+{"tool": "browser_real", "q": "url ese link ahora"}
+{"tool": "browser_real", "q": "page lo quiero ver"}
+{"tool": "browser_real", "q": "cierra el tab ese"}
+{"tool": "browser_real", "q": "buscar el formulario"}
+{"tool": "browser_real", "q": "die Seite muss offen"}
+{"tool": "browser_real", "q": "apre eso el navegador"}
+{"tool": "browser_real", "q": "vai pra web agora"}
+{"tool": "browser_real", "q": "show me that page"}
+{"tool": "browser_real", "q": "dando esa dirección"}
+{"tool": "browser_real", "q": "la cosa en el navegador"}
+{"tool": "browser_real", "q": "quel site abrir"}
+{"tool": "browser_real", "q": "page fill the form"}
+{"tool": "browser_real", "q": "aperta il browser ora"}
+{"tool": "browser_real", "q": "ich muss diese seite"}
+{"tool": "browser_real", "q": "bájalo el volumen navegador"}
+{"tool": "browser_real", "q": "y ahora bájalo"}
+{"tool": "browser_real", "q": "browser open the site"}
+{"tool": "browser_real", "q": "checa eso el web"}
+{"tool": "browser_real", "q": "quel link ese"}
+{"tool": "browser_real", "q": "pagina lo necesito"}
+{"tool": "knowledge", "q": "Dame notas de eso"}
+{"tool": "knowledge", "q": "Find my docs"}
+{"tool": "knowledge", "q": "Onde tá o arquivo?"}
+{"tool": "knowledge", "q": "Quel doc là?"}
+{"tool": "knowledge", "q": "Wissensbasis malen"}
+{"tool": "knowledge", "q": "Cerca documenti subito"}
+{"tool": "knowledge", "q": "Algo sobre el informe"}
+{"tool": "knowledge", "q": "Notas el volumen"}
+{"tool": "knowledge", "q": "Dime la información"}
+{"tool": "knowledge", "q": "Documentos buscar por favor"}
+{"tool": "knowledge", "q": "Arquivo sobre isso, hein"}
+{"tool": "knowledge", "q": "Das wissen abrufen"}
+{"tool": "knowledge", "q": "Trovare dati vecchi"}
+{"tool": "knowledge", "q": "Quoi trouver ici?"}
+{"tool": "knowledge", "q": "Abre la base de datos"}
+{"tool": "knowledge", "q": "Lo otro también"}
+{"tool": "knowledge", "q": "Información ese tema"}
+{"tool": "knowledge", "q": "Buscar ese archivo"}
+{"tool": "knowledge", "q": "Finde die Fakten"}
+{"tool": "knowledge", "q": "Trova le cose"}
+{"tool": "knowledge", "q": "Algo sobre el cliente"}
+{"tool": "knowledge", "q": "Necesito el informe"}
+{"tool": "knowledge", "q": "Recherche document ici"}
+{"tool": "knowledge", "q": "Passage de notes rapide"}
+{"tool": "knowledge", "q": "Die Quel Daten"}
+{"tool": "office", "q": "PPT Word Excel please"}
+{"tool": "office", "q": "Notas? Abre eso"}
+{"tool": "office", "q": "Fazer relatório rapidinho"}
+{"tool": "office", "q": "Fais o office aí"}
+{"tool": "office", "q": "Powerpoint, sim, isso"}
+{"tool": "office", "q": "Ein Office machen"}
+{"tool": "office", "q": "Word machen schnell"}
+{"tool": "office", "q": "Crea un documento"}
+{"tool": "office", "q": "Il foglio di calcolo"}
+{"tool": "office", "q": "Powerpoint, necesito"}
+{"tool": "office", "q": "Word doc agora"}
+{"tool": "office", "q": "Excel, quick, bitte"}
+{"tool": "office", "q": "Fais o resto também"}
+{"tool": "office", "q": "Darf du machen das"}
+{"tool": "office", "q": "Documento, per favore"}
+{"tool": "office", "q": "Excel? Vai lá"}
+{"tool": "office", "q": "Faire le rapport"}
+{"tool": "office", "q": "Rapport Word, oui"}
+{"tool": "office", "q": "Powerpoint, mach das"}
+{"tool": "office", "q": "Mi documento, per favore"}
+{"tool": "office", "q": "Arquivo Office abrir"}
+{"tool": "office", "q": "Word? Quero fazer"}
+{"tool": "office", "q": "Fazer uns slides agora"}
+{"tool": "office", "q": "Notes? O office"}
+{"tool": "office", "q": "Powerpoint, o outro"}
+{"tool": "notification", "q": "alarma en diez minutos"}
+{"tool": "notification", "q": "set reminder para el jefe"}
+{"tool": "notification", "q": "tocar alarma mañana ocho"}
+{"tool": "notification", "q": "schedules notifícación por favor"}
+{"tool": "notification", "q": "timer cinco minutos eh"}
+{"tool": "notification", "q": "alarme en media hora"}
+{"tool": "notification", "q": "notifícación, ¿cuándo eso?"}
+{"tool": "notification", "q": "set up a reminder"}
+{"tool": "notification", "q": "o alarme lembrete"}
+{"tool": "notification", "q": "notificações pra amanhã"}
+{"tool": "notification", "q": "timer pour cinq minutes"}
+{"tool": "notification", "q": "un rappel demain matin"}
+{"tool": "notification", "q": "Alarm stellen Sie ein"}
+{"tool": "notification", "q": "ricordo me lo dopo"}
+{"tool": "notification", "q": "set toast now"}
+{"tool": "notification", "q": "remíndeme el libro"}
+{"tool": "notification", "q": "tocar el sonido"}
+{"tool": "notification", "q": "sonorito, ¿ya?"}
+{"tool": "notification", "q": "timer, ya sé"}
+{"tool": "notification", "q": "set an alarm quick"}
+{"tool": "notification", "q": "notificá, cuando llego"}
+{"tool": "notification", "q": "alarme para la reunión"}
+{"tool": "notification", "q": "timer cinque minuti"}
+{"tool": "notification", "q": "définir un rappel"}
+{"tool": "notification", "q": "erinnerung setzen schnell"}
+{"tool": "routine", "q": "Rutina hacer algo"}
+{"tool": "routine", "q": "Cron job"}
+{"tool": "routine", "q": "Abre las automatizaciones"}
+{"tool": "routine", "q": "Configurar rutinas"}
+{"tool": "routine", "q": "O routines, porfa"}
+{"tool": "routine", "q": "Triggers, qué hago"}
+{"tool": "routine", "q": "Abre las acciones"}
+{"tool": "routine", "q": "Rutina manual"}
+{"tool": "routine", "q": "Das la rutina"}
+{"tool": "routine", "q": "Configura eso"}
+{"tool": "routine", "q": "Automacao, por favor"}
+{"tool": "routine", "q": "Ajustar a rotinas"}
+{"tool": "routine", "q": "Faire une routine"}
+{"tool": "routine", "q": "Programmer les routines"}
+{"tool": "routine", "q": "Routinen, faire"}
+{"tool": "routine", "q": "Ein Routinesystem"}
+{"tool": "routine", "q": "Routine, es crear"}
+{"tool": "routine", "q": "Abre las tareas"}
+{"tool": "routine", "q": "Mi rutina, ¿qué?"}
+{"tool": "routine", "q": "Regel für alles"}
+{"tool": "routine", "q": "Impostare la routine"}
+{"tool": "routine", "q": "La routine, attivare"}
+{"tool": "routine", "q": "Rutina, ya"}
+{"tool": "routine", "q": "Make a routine"}
+{"tool": "routine", "q": "The routine list"}
+{"tool": "media", "q": "play the next song"}
+{"tool": "media", "q": "tocá música aí"}
+{"tool": "media", "q": "pausa o que tá rolando"}
+{"tool": "media", "q": "stop it now plz"}
+{"tool": "media", "q": "spiele den film"}
+{"tool": "media", "q": "metti il video"}
+{"tool": "media", "q": "next track please"}
+{"tool": "media", "q": "o próximo agora"}
+{"tool": "media", "q": "la canción otra vez"}
+{"tool": "media", "q": "quelque chose musique"}
+{"tool": "media", "q": "davanti quello dopo"}
+{"tool": "media", "q": "stop it stop"}
+{"tool": "media", "q": "pausa o som"}
+{"tool": "media", "q": "darüber noch etwas"}
+{"tool": "media", "q": "what's playing now"}
+{"tool": "media", "q": "il prossimo brano"}
+{"tool": "media", "q": "die nächste stube"}
+{"tool": "media", "q": "y ahora bájalo"}
+{"tool": "media", "q": "next one again"}
+{"tool": "media", "q": "le son prochain"}
+{"tool": "media", "q": "trockeln noch"}
+{"tool": "media", "q": "lo otro también"}
+{"tool": "media", "q": "play it up"}
+{"tool": "media", "q": "me toca"}
+{"tool": "media", "q": "il volume basso"}
+{"tool": "source_manager", "q": "guardar las referencias"}
+{"tool": "source_manager", "q": "save citations now"}
+{"tool": "source_manager", "q": "dizionario fonti apri"}
+{"tool": "source_manager", "q": "quel documento di ricerca"}
+{"tool": "source_manager", "q": "ich die quelle speichern"}
+{"tool": "source_manager", "q": "sources snapshottz save"}
+{"tool": "source_manager", "q": "guardar esas cosas"}
+{"tool": "source_manager", "q": "la nota lo guardar"}
+{"tool": "source_manager", "q": "só salva os dados"}
+{"tool": "source_manager", "q": "save that source please"}
+{"tool": "source_manager", "q": "fichier source manager"}
+{"tool": "source_manager", "q": "quel truc citer"}
+{"tool": "source_manager", "q": "quelle doc aille"}
+{"tool": "source_manager", "q": "ich die zeitung speichere"}
+{"tool": "source_manager", "q": "source save research notes"}
+{"tool": "source_manager", "q": "porfavor guarda los datos"}
+{"tool": "source_manager", "q": "quelque chose à enregistrer"}
+{"tool": "source_manager", "q": "source notes snapshot"}
+{"tool": "source_manager", "q": "die quelle speichern"}
+{"tool": "source_manager", "q": "salva quella fonte"}
+{"tool": "source_manager", "q": "guardar esas referencias"}
+{"tool": "source_manager", "q": "research source snapshot"}
+{"tool": "source_manager", "q": "notas guardar lo"}
+{"tool": "source_manager", "q": "enregistrer la doc"}
+{"tool": "source_manager", "q": "fonte citazioni salvia"}
+{"tool": "dependency", "q": "Chequea si falta algo"}
+{"tool": "dependency", "q": "Dependency check please"}
+{"tool": "dependency", "q": "Faltando modules?"}
+{"tool": "dependency", "q": "O que tá faltando"}
+{"tool": "dependency", "q": "Dependencies check"}
+{"tool": "dependency", "q": "C'est quoi le module"}
+{"tool": "dependency", "q": "Paket fehlend prüfen"}
+{"tool": "dependency", "q": "Serve a dipendenza"}
+{"tool": "dependency", "q": "Check my dependencies"}
+{"tool": "dependency", "q": "Módulos aus?"}
+{"tool": "dependency", "q": "Dependência agora"}
+{"tool": "dependency", "q": "L'autre dépendance"}
+{"tool": "dependency", "q": "Missing package please"}
+{"tool": "dependency", "q": "Dipende cosa manca"}
+{"tool": "dependency", "q": "Check the binaries"}
+{"tool": "dependency", "q": "Falt. binäre prüfen"}
+{"tool": "dependency", "q": "¿Qué dependencia falta?"}
+{"tool": "dependency", "q": "Outro também verifica"}
+{"tool": "dependency", "q": "Check that module now"}
+{"tool": "dependency", "q": "Need a dep check"}
+{"tool": "dependency", "q": "Quel paquet manque?"}
+{"tool": "dependency", "q": "Muss ich prüfen?"}
+{"tool": "dependency", "q": "Verifica le dipendenze"}
+{"tool": "dependency", "q": "El volumen check"}
+{"tool": "dependency", "q": "Lo otro también"}
+{"tool": "contacts", "q": "find contact info"}
+{"tool": "contacts", "q": "buscar ese numero"}
+{"tool": "contacts", "q": "contacts abre"}
+{"tool": "contacts", "q": "where is jane"}
+{"tool": "contacts", "q": "aggiungi un contatto"}
+{"tool": "contacts", "q": "lo otro también"}
+{"tool": "contacts", "q": "my saved people"}
+{"tool": "contacts", "q": "contatos achar"}
+{"tool": "contacts", "q": "find that guy"}
+{"tool": "contacts", "q": "cria um contacto"}
+{"tool": "contacts", "q": "le trouver des gens"}
+{"tool": "contacts", "q": "kontakt speichern bitte"}
+{"tool": "contacts", "q": "salva il contatto"}
+{"tool": "contacts", "q": "where is that email"}
+{"tool": "contacts", "q": "find mi amiga"}
+{"tool": "contacts", "q": "contatos, buscar"}
+{"tool": "contacts", "q": "add new entry"}
+{"tool": "contacts", "q": "cari um contato"}
+{"tool": "contacts", "q": "trouve-moi les adresses"}
+{"tool": "contacts", "q": "contacten suche"}
+{"tool": "contacts", "q": "trova i contatti"}
+{"tool": "contacts", "q": "contacta mi jefe"}
+{"tool": "contacts", "q": "where is the address"}
+{"tool": "contacts", "q": "add somebody please"}
+{"tool": "contacts", "q": "find mi telefono"}
+{"tool": "whatsapp", "q": "Mandar mensaje en wsp"}
+{"tool": "whatsapp", "q": "Abrir chat de ese"}
+{"tool": "whatsapp", "q": "Tell him on WhatsApp"}
+{"tool": "whatsapp", "q": "Enviar a la persona"}
+{"tool": "whatsapp", "q": "Messaj para jorge"}
+{"tool": "whatsapp", "q": "WhatsApp agora"}
+{"tool": "whatsapp", "q": "Mandar el mensaje"}
+{"tool": "whatsapp", "q": "Ouvir eso no"}
+{"tool": "whatsapp", "q": "Faire un message là"}
+{"tool": "whatsapp", "q": "Nachricht an sie"}
+{"tool": "whatsapp", "q": "Mandami un messaggio"}
+{"tool": "whatsapp", "q": "In WhatsApp, pronto"}
+{"tool": "whatsapp", "q": "Wapp, abre el chat"}
+{"tool": "whatsapp", "q": "Mensaje rápido ahora"}
+{"tool": "whatsapp", "q": "Envía esto por wsp"}
+{"tool": "whatsapp", "q": "Chat con ella va"}
+{"tool": "whatsapp", "q": "Nachricht an mich"}
+{"tool": "whatsapp", "q": "Abre el mensaje"}
+{"tool": "whatsapp", "q": "WhatsApp, eso otro"}
+{"tool": "whatsapp", "q": "Manda mensaje ahora"}
+{"tool": "whatsapp", "q": "Mandar un msg"}
+{"tool": "whatsapp", "q": "Send it via wapp"}
+{"tool": "whatsapp", "q": "Manda mensaje por wsp"}
+{"tool": "whatsapp", "q": "Il messaggio ora"}
+{"tool": "whatsapp", "q": "Tròva il mio contatto"}
+{"tool": "notes_tasks", "q": "Notas ah buscar"}
+{"tool": "notes_tasks", "q": "Onde estão as tarefas"}
+{"tool": "notes_tasks", "q": "Open notes quick"}
+{"tool": "notes_tasks", "q": "Notas, o que tem"}
+{"tool": "notes_tasks", "q": "Abre essas coisas"}
+{"tool": "notes_tasks", "q": "I need my list"}
+{"tool": "notes_tasks", "q": "Crea uma tarefa nova"}
+{"tool": "notes_tasks", "q": "Die Notizen suchen"}
+{"tool": "notes_tasks", "q": "Cosa scrivere adesso"}
+{"tool": "notes_tasks", "q": "Les prendre rapidement"}
+{"tool": "notes_tasks", "q": "Tarefas aqui pra mim"}
+{"tool": "notes_tasks", "q": "Find my notes quick"}
+{"tool": "notes_tasks", "q": "Notizen suchen bitte"}
+{"tool": "notes_tasks", "q": "Mando la nota adesso"}
+{"tool": "notes_tasks", "q": "These tasks need doing"}
+{"tool": "notes_tasks", "q": "Abre as notas aí"}
+{"tool": "notes_tasks", "q": "Les faire un rappel"}
+{"tool": "notes_tasks", "q": "Notiz erstellen bitte"}
+{"tool": "notes_tasks", "q": "Cose in lista"}
+{"tool": "notes_tasks", "q": "Onde tá o bloco"}
+{"tool": "notes_tasks", "q": "Need to write down"}
+{"tool": "notes_tasks", "q": "Das Notizbuch öffnen"}
+{"tool": "notes_tasks", "q": "Trabalhos, por favor"}
+{"tool": "notes_tasks", "q": "Tuas anotações, aí"}
+{"tool": "notes_tasks", "q": "Faire une note"}
+{"tool": "local_calendar", "q": "evento local ahora"}
+{"tool": "local_calendar", "q": "agenda ver eso"}
+{"tool": "local_calendar", "q": "kalender machen"}
+{"tool": "local_calendar", "q": "aggiungi appuntamento"}
+{"tool": "local_calendar", "q": "meu calendário aí"}
+{"tool": "local_calendar", "q": "un meeting por favor"}
+{"tool": "local_calendar", "q": "ICS importar dale"}
+{"tool": "local_calendar", "q": "bájame los eventos"}
+{"tool": "local_calendar", "q": "fecha próxima calendario"}
+{"tool": "local_calendar", "q": "appuntamento nuovo"}
+{"tool": "local_calendar", "q": "calendario ahora dame"}
+{"tool": "local_calendar", "q": "calendrier rdv"}
+{"tool": "local_calendar", "q": "lokal planen"}
+{"tool": "local_calendar", "q": "agenda che cosa"}
+{"tool": "local_calendar", "q": "saber la cita"}
+{"tool": "local_calendar", "q": "o evento importar"}
+{"tool": "local_calendar", "q": "meus contatos calendário"}
+{"tool": "local_calendar", "q": "le calendar event"}
+{"tool": "local_calendar", "q": "agenda next"}
+{"tool": "local_calendar", "q": "date and time"}
+{"tool": "local_calendar", "q": "importar esos archivos"}
+{"tool": "local_calendar", "q": "scheduling local calendar"}
+{"tool": "local_calendar", "q": "pôr o evento"}
+{"tool": "local_calendar", "q": "termine next event"}
+{"tool": "local_calendar", "q": "daten hinzufügen"}
+{"tool": "habit_tracker", "q": "streaks, checa eso"}
+{"tool": "habit_tracker", "q": "track my habits, uh"}
+{"tool": "habit_tracker", "q": "fazer o hábito novo"}
+{"tool": "habit_tracker", "q": "quelque chose pour mes habitudes"}
+{"tool": "habit_tracker", "q": "habits tracking, bitte"}
+{"tool": "habit_tracker", "q": "traccia le mie abitudini"}
+{"tool": "habit_tracker", "q": "la checa, esas notas"}
+{"tool": "habit_tracker", "q": "mi rutina, la quiero"}
+{"tool": "habit_tracker", "q": "abre el registro, please"}
+{"tool": "habit_tracker", "q": "lo otro también, ahí"}
+{"tool": "habit_tracker", "q": "das streaks agora"}
+{"tool": "habit_tracker", "q": "check my habit log"}
+{"tool": "habit_tracker", "q": "quelque chose faire, hein"}
+{"tool": "habit_tracker", "q": "mi hábito, ¿qué pasa?"}
+{"tool": "habit_tracker", "q": "tracciona i miei obiettivi"}
+{"tool": "habit_tracker", "q": "dame el seguimiento, dale"}
+{"tool": "habit_tracker", "q": "die Gewohnheiten, mach"}
+{"tool": "habit_tracker", "q": "per me la storia"}
+{"tool": "habit_tracker", "q": "tracking, la quiero ahora"}
+{"tool": "habit_tracker", "q": "y ahora bájalo"}
+{"tool": "habit_tracker", "q": "my habit list, uh"}
+{"tool": "habit_tracker", "q": "fazer acompanhamento"}
+{"tool": "habit_tracker", "q": "ce truc pour les habitudes"}
+{"tool": "habit_tracker", "q": "die Gewohnheit, check"}
+{"tool": "habit_tracker", "q": "traccia, i miei progressi"}
+{"tool": "local_search", "q": "dónde está ese archivo"}
+{"tool": "local_search", "q": "search notes local"}
+{"tool": "local_search", "q": "pórtico onde tá o nome"}
+{"tool": "local_search", "q": "find that pdf file"}
+{"tool": "local_search", "q": "die date suche bitte"}
+{"tool": "local_search", "q": "trova il file locale"}
+{"tool": "local_search", "q": "où est le document?"}
+{"tool": "local_search", "q": "need that thing file"}
+{"tool": "local_search", "q": "busca notas rápido"}
+{"tool": "local_search", "q": "dossier procurar agora"}
+{"tool": "local_search", "q": "mein file suchen"}
+{"tool": "local_search", "q": "find me the data"}
+{"tool": "local_search", "q": "la carpeta de fotos"}
+{"tool": "local_search", "q": "busca algo por aquí"}
+{"tool": "local_search", "q": "wo ist der dokument?"}
+{"tool": "local_search", "q": "trova la lista qui"}
+{"tool": "local_search", "q": "fais-moi le doc"}
+{"tool": "local_search", "q": "daten such bitte"}
+{"tool": "local_search", "q": "un fichier local"}
+{"tool": "local_search", "q": "cerca il nome file"}
+{"tool": "local_search", "q": "localizá ese documento"}
+{"tool": "local_search", "q": "o arquivo lá atrás"}
+{"tool": "local_search", "q": "find it locally please"}
+{"tool": "local_search", "q": "quel est ce fichier"}
+{"tool": "local_search", "q": "daten suchen jetzt"}
+{"tool": "printer_scanner", "q": "list print jobs"}
+{"tool": "printer_scanner", "q": "scan doc quick"}
+{"tool": "printer_scanner", "q": "a ver las impresoras"}
+{"tool": "printer_scanner", "q": "printer list, please"}
+{"tool": "printer_scanner", "q": "scan or print"}
+{"tool": "printer_scanner", "q": "das scannern"}
+{"tool": "printer_scanner", "q": "cancela ese print"}
+{"tool": "printer_scanner", "q": "la impresora lista"}
+{"tool": "printer_scanner", "q": "scanner files, please"}
+{"tool": "printer_scanner", "q": "de la impresora"}
+{"tool": "printer_scanner", "q": "le scanner, s'il vous plaît"}
+{"tool": "printer_scanner", "q": "list printers quick"}
+{"tool": "printer_scanner", "q": "drucken das ding"}
+{"tool": "printer_scanner", "q": "la stampante"}
+{"tool": "printer_scanner", "q": "scanner documento"}
+{"tool": "printer_scanner", "q": "lista scans, ya"}
+{"tool": "printer_scanner", "q": "fazer cópia, por favor"}
+{"tool": "printer_scanner", "q": "das drucker, wo?"}
+{"tool": "printer_scanner", "q": "ouvrir le scanner"}
+{"tool": "printer_scanner", "q": "il veut imprimer"}
+{"tool": "printer_scanner", "q": "lista las máquinas"}
+{"tool": "printer_scanner", "q": "print job cancel"}
+{"tool": "printer_scanner", "q": "scan docs, now"}
+{"tool": "printer_scanner", "q": "die printer liste"}
+{"tool": "printer_scanner", "q": "lo otro también"}
+{"tool": "desktop_layout", "q": "Snap the windows"}
+{"tool": "desktop_layout", "q": "Layout save now"}
+{"tool": "desktop_layout", "q": "Desktop posiciona"}
+{"tool": "desktop_layout", "q": "Configuración guarda"}
+{"tool": "desktop_layout", "q": "Snap shot de todo"}
+{"tool": "desktop_layout", "q": "Arrume las ventanas"}
+{"tool": "desktop_layout", "q": "Layout restaurar"}
+{"tool": "desktop_layout", "q": "Positions back please"}
+{"tool": "desktop_layout", "q": "Reorganizar tudo"}
+{"tool": "desktop_layout", "q": "Ajustar o layout"}
+{"tool": "desktop_layout", "q": "Snapshot, porfa"}
+{"tool": "desktop_layout", "q": "Arrête le layout"}
+{"tool": "desktop_layout", "q": "Positionner tout là"}
+{"tool": "desktop_layout", "q": "Layouts sauvegarder"}
+{"tool": "desktop_layout", "q": "Sprei das Fenster auf"}
+{"tool": "desktop_layout", "q": "Layout speichern bitte"}
+{"tool": "desktop_layout", "q": "Riordina le finestre"}
+{"tool": "desktop_layout", "q": "Layout salva rapido"}
+{"tool": "desktop_layout", "q": "Fenêtres, mets ça"}
+{"tool": "desktop_layout", "q": "Die Fenster richten"}
+{"tool": "desktop_layout", "q": "Visualizza il layout"}
+{"tool": "desktop_layout", "q": "Arrangementa salva"}
+{"tool": "desktop_layout", "q": "Manda la posición"}
+{"tool": "desktop_layout", "q": "Despacho guardar eso"}
+{"tool": "desktop_layout", "q": "Mete o layout"}
+{"tool": "backup_sync", "q": "Sincroniza los archivos"}
+{"tool": "backup_sync", "q": "Backup necesito ya"}
+{"tool": "backup_sync", "q": "Zip hazme uno"}
+{"tool": "backup_sync", "q": "Der Backup läuft"}
+{"tool": "backup_sync", "q": "Mi backup por favor"}
+{"tool": "backup_sync", "q": "Faire une sauvegarde"}
+{"tool": "backup_sync", "q": "Sync data, please"}
+{"tool": "backup_sync", "q": "Ripresta il backup"}
+{"tool": "backup_sync", "q": "O fazer o backup"}
+{"tool": "backup_sync", "q": "Volumen sincronizar"}
+{"tool": "backup_sync", "q": "Restore files, now"}
+{"tool": "backup_sync", "q": "ZIP, make one now"}
+{"tool": "backup_sync", "q": "Sync datos, ¿sí?"}
+{"tool": "backup_sync", "q": "Sauvegarde, dame eso"}
+{"tool": "backup_sync", "q": "backup hacer rápido"}
+{"tool": "backup_sync", "q": "Zip, dame uno"}
+{"tool": "backup_sync", "q": "Ripristino dati"}
+{"tool": "backup_sync", "q": "Sincroniza, ahora"}
+{"tool": "backup_sync", "q": "O backup, sim"}
+{"tool": "backup_sync", "q": "Déduplica, ya eso"}
+{"tool": "backup_sync", "q": "Backup, quiero eso"}
+{"tool": "backup_sync", "q": "Hazme una copya"}
+{"tool": "backup_sync", "q": "Sync, necesito"}
+{"tool": "backup_sync", "q": "ZIP, dame un"}
+{"tool": "backup_sync", "q": "Datensicherung starten"}
+{"tool": "safety", "q": "confirm safe action"}
+{"tool": "safety", "q": "checking risky thing"}
+{"tool": "safety", "q": "seguridad ya"}
+{"tool": "safety", "q": "safety check please"}
+{"tool": "safety", "q": "¿qué hacer ahora"}
+{"tool": "safety", "q": "lo peligroso?"}
+{"tool": "safety", "q": "confirmar lo ese"}
+{"tool": "safety", "q": "safety confirma"}
+{"tool": "safety", "q": "die sicherheitsfrage"}
+{"tool": "safety", "q": "a ver si es safe"}
+{"tool": "safety", "q": "por favor verifica"}
+{"tool": "safety", "q": "verificarlo eso"}
+{"tool": "safety", "q": "seguridad necesito"}
+{"tool": "safety", "q": "is it safe tho"}
+{"tool": "safety", "q": "la confirmacion de"}
+{"tool": "safety", "q": "safety aprova"}
+{"tool": "safety", "q": "das ist riskant"}
+{"tool": "safety", "q": "checklo please"}
+{"tool": "safety", "q": "dime si es seguro"}
+{"tool": "safety", "q": "verificar el riesgo"}
+{"tool": "safety", "q": "safety mi"}
+{"tool": "safety", "q": "confirma eso ya"}
+{"tool": "safety", "q": "risco lo saber"}
+{"tool": "safety", "q": "va che cosa c'è"}
+{"tool": "safety", "q": "la cosa seria"}
+{"tool": "document", "q": "abre ese pdf ahora"}
+{"tool": "document", "q": "extract the text"}
+{"tool": "document", "q": "documento por favor"}
+{"tool": "document", "q": "fotos y tablas"}
+{"tool": "document", "q": "le docx lo puedes abrir"}
+{"tool": "document", "q": "Notas? ¿Buscar documentos?"}
+{"tool": "document", "q": "por favor dame eso"}
+{"tool": "document", "q": "abrir ese excel"}
+{"tool": "document", "q": "o el otro también"}
+{"tool": "document", "q": "documentos de archivo"}
+{"tool": "document", "q": "por favor el volumen"}
+{"tool": "document", "q": "extract data from file"}
+{"tool": "document", "q": "archivos adjuntos ¿qué?"}
+{"tool": "document", "q": "ficheros en pdf"}
+{"tool": "document", "q": "le dame el texto"}
+{"tool": "document", "q": "die dokumente bitte"}
+{"tool": "document", "q": "le document par l'image"}
+{"tool": "document", "q": "il faut extraire tout"}
+{"tool": "document", "q": "dami a tabela"}
+{"tool": "document", "q": "o arquivo PDF"}
+{"tool": "document", "q": "documento me passa"}
+{"tool": "document", "q": "just the tables please"}
+{"tool": "document", "q": "por favor bájalo"}
+{"tool": "document", "q": "esos archivos ahí"}
+{"tool": "document", "q": "extrair todo lo que hay"}
+{"tool": "developer", "q": "tests run now please"}
+{"tool": "developer", "q": "check git status"}
+{"tool": "developer", "q": "format code fast"}
+{"tool": "developer", "q": "servidor iniciar porfa"}
+{"tool": "developer", "q": "lint eso ahora"}
+{"tool": "developer", "q": "run test please"}
+{"tool": "developer", "q": "git diff view"}
+{"tool": "developer", "q": "format project now"}
+{"tool": "developer", "q": "developer mode start"}
+{"tool": "developer", "q": "checar archivos rapido"}
+{"tool": "developer", "q": "testar todo ya"}
+{"tool": "developer", "q": "lint code rapid"}
+{"tool": "developer", "q": "servir la app"}
+{"tool": "developer", "q": "wir testen mal"}
+{"tool": "developer", "q": "formatierung starten"}
+{"tool": "developer", "q": "status git bitte"}
+{"tool": "developer", "q": "start dev server"}
+{"tool": "developer", "q": "lint isso rápido"}
+{"tool": "developer", "q": "checar o código"}
+{"tool": "developer", "q": "teste agora por favor"}
+{"tool": "developer", "q": "ouvrir tests svp"}
+{"tool": "developer", "q": "vérifier le code"}
+{"tool": "developer", "q": "wir bauen das"}
+{"tool": "developer", "q": "dev server an"}
+{"tool": "developer", "q": "git status ver"}
+{"tool": "device_settings", "q": "el wifi settings"}
+{"tool": "device_settings", "q": "bluetooths on please"}
+{"tool": "device_settings", "q": "die anschlüsse"}
+{"tool": "device_settings", "q": "screen brightness low"}
+{"tool": "device_settings", "q": "power plans check"}
+{"tool": "device_settings", "q": "quelque chose de settingz"}
+{"tool": "device_settings", "q": "apaga la pantalla"}
+{"tool": "device_settings", "q": "bluetooths y display"}
+{"tool": "device_settings", "q": "ich will die einstellung"}
+{"tool": "device_settings", "q": "sistema settings bitte"}
+{"tool": "device_settings", "q": "wifi config lo"}
+{"tool": "device_settings", "q": "ajustar el poder"}
+{"tool": "device_settings", "q": "un peu de systemes"}
+{"tool": "device_settings", "q": "bluetooths lo otro también"}
+{"tool": "device_settings", "q": "il display e il wifi"}
+{"tool": "device_settings", "q": "die stromfunktion ändern"}
+{"tool": "device_settings", "q": "power settings now"}
+{"tool": "device_settings", "q": "blu tooth o ligar"}
+{"tool": "device_settings", "q": "des réglages rapides"}
+{"tool": "device_settings", "q": "display mode cambiar"}
+{"tool": "device_settings", "q": "aplica la configuración"}
+{"tool": "device_settings", "q": "settings menu o'"}
+{"tool": "device_settings", "q": "sistema, dame eso"}
+{"tool": "device_settings", "q": "la luz baja"}
+{"tool": "device_settings", "q": "alleinstellungen zeigen"}
+{"tool": "game_launcher", "q": "abre esos juegos"}
+{"tool": "game_launcher", "q": "launch Riot client"}
+{"tool": "game_launcher", "q": "liga jogos agora"}
+{"tool": "game_launcher", "q": "ouvrir les jeux"}
+{"tool": "game_launcher", "q": "das spiele starten"}
+{"tool": "game_launcher", "q": "apri il launcher"}
+{"tool": "game_launcher", "q": "jeux epic lancer"}
+{"tool": "game_launcher", "q": "liga de jogos, por favor"}
+{"tool": "game_launcher", "q": "abre esos apps"}
+{"tool": "game_launcher", "q": "epic games, dale"}
+{"tool": "game_launcher", "q": "das spiel öffnen"}
+{"tool": "game_launcher", "q": "jogo Xbox, abrir"}
+{"tool": "game_launcher", "q": "quelques jeux là"}
+{"tool": "game_launcher", "q": "lancier los juegos"}
+{"tool": "game_launcher", "q": "apre eso"}
+{"tool": "game_launcher", "q": "il launcher, vamos"}
+{"tool": "game_launcher", "q": "das gaming starten"}
+{"tool": "game_launcher", "q": "lo otro también"}
+{"tool": "game_launcher", "q": "abre esos juegos"}
+{"tool": "game_launcher", "q": "jeux, la app"}
+{"tool": "game_launcher", "q": "apre el riot"}
+{"tool": "game_launcher", "q": "jogo de pc, abre"}
+{"tool": "game_launcher", "q": "start games now"}
+{"tool": "game_launcher", "q": "epic, dale eso"}
+{"tool": "game_launcher", "q": "lancer eso"}
+{"tool": "media_edit", "q": "trimar video ahora"}
+{"tool": "media_edit", "q": "el volumen baja"}
+{"tool": "media_edit", "q": "norma el audio"}
+{"tool": "media_edit", "q": "faça o corte"}
+{"tool": "media_edit", "q": "découper la video"}
+{"tool": "media_edit", "q": "denormalizar esto"}
+{"tool": "media_edit", "q": "audio normalizar, por favor"}
+{"tool": "media_edit", "q": "thumbnails hacer rápido"}
+{"tool": "media_edit", "q": "reducir la calidad, sí"}
+{"tool": "media_edit", "q": "transcodificar, lo otro"}
+{"tool": "media_edit", "q": "wir schneiden das"}
+{"tool": "media_edit", "q": "diminuir o áudio"}
+{"tool": "media_edit", "q": "l'image miniature"}
+{"tool": "media_edit", "q": "video corto, cortar"}
+{"tool": "media_edit", "q": "normalize volumen, please"}
+{"tool": "media_edit", "q": "darle un corte"}
+{"tool": "media_edit", "q": "faire les promos"}
+{"tool": "media_edit", "q": "audio bajar eso"}
+{"tool": "media_edit", "q": "trimmer video agora"}
+{"tool": "media_edit", "q": "cortar y transcodificar"}
+{"tool": "media_edit", "q": "denormalizar el archivo"}
+{"tool": "media_edit", "q": "la vignette, ¿ok?"}
+{"tool": "media_edit", "q": "wir machen das"}
+{"tool": "media_edit", "q": "diminuir a qualidade"}
+{"tool": "media_edit", "q": "el transcode, rápido"}
+{"tool": "maintenance", "q": "checar el sistema"}
+{"tool": "maintenance", "q": "defender check"}
+{"tool": "maintenance", "q": "lo otro también"}
+{"tool": "maintenance", "q": "windows updates ahora"}
+{"tool": "maintenance", "q": "serviços, abre isso"}
+{"tool": "maintenance", "q": "Firewall, mostrar logs"}
+{"tool": "maintenance", "q": "Windows updeit or"}
+{"tool": "maintenance", "q": "i need to see logs"}
+{"tool": "maintenance", "q": "event logs? show them"}
+{"tool": "maintenance", "q": "diesen service prüfen"}
+{"tool": "maintenance", "q": "controlare i log"}
+{"tool": "maintenance", "q": "méntener o sistema"}
+{"tool": "maintenance", "q": "firewall, abrir ele"}
+{"tool": "maintenance", "q": "logs, me mostra"}
+{"tool": "maintenance", "q": "das update, schnell"}
+{"tool": "maintenance", "q": "mi mantieni la macchina"}
+{"tool": "maintenance", "q": "service, verifícalo"}
+{"tool": "maintenance", "q": "check the firewall"}
+{"tool": "maintenance", "q": "logs and services please"}
+{"tool": "maintenance", "q": "updates, ¿cómo va?"}
+{"tool": "maintenance", "q": "pour les maintenances"}
+{"tool": "maintenance", "q": "den firewall check"}
+{"tool": "maintenance", "q": "servizi, stato attuale"}
+{"tool": "maintenance", "q": "event log, open it"}
+{"tool": "maintenance", "q": "el volumen, revisa"}
+{"tool": "watcher", "q": "checa eso"}
+{"tool": "watcher", "q": "watch URL changes"}
+{"tool": "watcher", "q": "dame el archivo"}
+{"tool": "watcher", "q": "monitor file now"}
+{"tool": "watcher", "q": "prüf die datei"}
+{"tool": "watcher", "q": "controlla i file"}
+{"tool": "watcher", "q": "check it out"}
+{"tool": "watcher", "q": "saber si cambia"}
+{"tool": "watcher", "q": "abre el link"}
+{"tool": "watcher", "q": "cuidado el archivo"}
+{"tool": "watcher", "q": "voire si ça bouge"}
+{"tool": "watcher", "q": "wir schauen das"}
+{"tool": "watcher", "q": "dá uma olhada"}
+{"tool": "watcher", "q": "watch this url"}
+{"tool": "watcher", "q": "mi piace il file"}
+{"tool": "watcher", "q": "vérifier la page"}
+{"tool": "watcher", "q": "check updates please"}
+{"tool": "watcher", "q": "dame el cambio"}
+{"tool": "watcher", "q": "schau nach da datei"}
+{"tool": "watcher", "q": "monitorar link"}
+{"tool": "watcher", "q": "verificar el estado"}
+{"tool": "watcher", "q": "itaglia i file"}
+{"tool": "watcher", "q": "watch file now"}
+{"tool": "watcher", "q": "prüfe es"}
+{"tool": "watcher", "q": "saber si hay"}
+{"tool": "job_manager", "q": "Inicia el trabajo largo"}
+{"tool": "job_manager", "q": "Start the job now"}
+{"tool": "job_manager", "q": "Começa o processo aí"}
+{"tool": "job_manager", "q": "Lancement le processus"}
+{"tool": "job_manager", "q": "Mach den Job starten"}
+{"tool": "job_manager", "q": "Avviare il lavoro"}
+{"tool": "job_manager", "q": "Notas? Revisa los procesos"}
+{"tool": "job_manager", "q": "Lo otro también inicia"}
+{"tool": "job_manager", "q": "Run the background thing"}
+{"tool": "job_manager", "q": "Começa a rastrear os jobs"}
+{"tool": "job_manager", "q": "Suivi des tâches en cours"}
+{"tool": "job_manager", "q": "Job tracken bitte"}
+{"tool": "job_manager", "q": "Controlla i processi attivi"}
+{"tool": "job_manager", "q": "El volumen de la tarea"}
+{"tool": "job_manager", "q": "Check the running thing"}
+{"tool": "job_manager", "q": "Acompanhar o progresso aí"}
+{"tool": "job_manager", "q": "Vérifier les processus en cours"}
+{"tool": "job_manager", "q": "Job status bitte"}
+{"tool": "job_manager", "q": "Cosa sta succedendo"}
+{"tool": "job_manager", "q": "Tieni traccia del lavoro"}
+{"tool": "job_manager", "q": "Start the long thing"}
+{"tool": "job_manager", "q": "Darf ich Job starten"}
+{"tool": "job_manager", "q": "Iniciar el seguimiento ahora"}
+{"tool": "job_manager", "q": "Abre ese monitor"}
+{"tool": "job_manager", "q": "Start the big task"}
+{"tool": "network", "q": "ping el nodo"}
+{"tool": "network", "q": "check la ruta"}
+{"tool": "network", "q": "porta abierta ahora"}
+{"tool": "network", "q": "show conexiones"}
+{"tool": "network", "q": "el volumen de la red"}
+{"tool": "network", "q": "dns lookup dame"}
+{"tool": "network", "q": "prüfen die ip"}
+{"tool": "network", "q": "verificar ports ceux"}
+{"tool": "network", "q": "tracciare connessione adesso"}
+{"tool": "network", "q": "conexión a la web"}
+{"tool": "network", "q": "rede status por favor"}
+{"tool": "network", "q": "le port check"}
+{"tool": "network", "q": "net status maintenant"}
+{"tool": "network", "q": "wie ist die ip"}
+{"tool": "network", "q": "controlla la porta"}
+{"tool": "network", "q": "ping eso ahora"}
+{"tool": "network", "q": "traceroute dame datos"}
+{"tool": "network", "q": "check connections rapid"}
+{"tool": "network", "q": "la rede ping"}
+{"tool": "network", "q": "ip publique, dame"}
+{"tool": "network", "q": "porte ouverte voir"}
+{"tool": "network", "q": "sieht die netzwerk"}
+{"tool": "network", "q": "conneter la machine"}
+{"tool": "network", "q": "verificar dns rápido"}
+{"tool": "network", "q": "conexión lenta"}
+{"tool": "data_analysis", "q": "Plot the profile now"}
+{"tool": "data_analysis", "q": "Abre eso CSV"}
+{"tool": "data_analysis", "q": "Describe the data?"}
+{"tool": "data_analysis", "q": "Histograma quick"}
+{"tool": "data_analysis", "q": "Query the sheet"}
+{"tool": "data_analysis", "q": "Die Daten analysieren"}
+{"tool": "data_analysis", "q": "Descrever o arquivo"}
+{"tool": "data_analysis", "q": "Analyse ce fichier"}
+{"tool": "data_analysis", "q": "Quere query datos"}
+{"tool": "data_analysis", "q": "A plot the scatter"}
+{"tool": "data_analysis", "q": "Bajo el volumen"}
+{"tool": "data_analysis", "q": "Checa la columna"}
+{"tool": "data_analysis", "q": "Potencial descrever"}
+{"tool": "data_analysis", "q": "Faire un profil"}
+{"tool": "data_analysis", "q": "Die werte anzeigen"}
+{"tool": "data_analysis", "q": "Descrivi i dati"}
+{"tool": "data_analysis", "q": "Graphiamo subito"}
+{"tool": "data_analysis", "q": "Necesito los números"}
+{"tool": "data_analysis", "q": "Lo otro también"}
+{"tool": "data_analysis", "q": "Run the stats"}
+{"tool": "data_analysis", "q": "Por favor, mira"}
+{"tool": "data_analysis", "q": "Profile the csv"}
+{"tool": "data_analysis", "q": "Coi l'analisi"}
+{"tool": "data_analysis", "q": "Analyse a data"}
+{"tool": "data_analysis", "q": "Por describir eso"}
+{"tool": "fact_check", "q": "checa eso una vez"}
+{"tool": "fact_check", "q": "verificar la noticia"}
+{"tool": "fact_check", "q": "fact check claim porfa"}
+{"tool": "fact_check", "q": "a ver si eso es verdad"}
+{"tool": "fact_check", "q": "vérifica ese dato"}
+{"tool": "fact_check", "q": "me dices si es cierto"}
+{"tool": "fact_check", "q": "verificar nota ahora"}
+{"tool": "fact_check", "q": "check esa fuente"}
+{"tool": "fact_check", "q": "isso é verdade?"}
+{"tool": "fact_check", "q": "checar a informação"}
+{"tool": "fact_check", "q": "verificar aquela claim"}
+{"tool": "fact_check", "q": "die sachlage prüfen"}
+{"tool": "fact_check", "q": "verificar questo agora"}
+{"tool": "fact_check", "q": "check if that's true"}
+{"tool": "fact_check", "q": "certo eso verificar"}
+{"tool": "fact_check", "q": "fact check esa cosa"}
+{"tool": "fact_check", "q": "prüfen die aufgabe"}
+{"tool": "fact_check", "q": "verificar lo otro también"}
+{"tool": "fact_check", "q": "es verdad lo dicho"}
+{"tool": "fact_check", "q": "check it out local"}
+{"tool": "fact_check", "q": "verificar fuente rápida"}
+{"tool": "fact_check", "q": "quello es verdad"}
+{"tool": "fact_check", "q": "die claim checken"}
+{"tool": "fact_check", "q": "fatto controllare adesso"}
+{"tool": "fact_check", "q": "check this story"}
+{"tool": "photo_library", "q": "fotos por fecha date"}
+{"tool": "photo_library", "q": "organizar las fotos"}
+{"tool": "photo_library", "q": "abre el álbum de fotos"}
+{"tool": "photo_library", "q": "die bilder sortieren mal"}
+{"tool": "photo_library", "q": "photo library, bitte"}
+{"tool": "photo_library", "q": "organizar fotos exif"}
+{"tool": "photo_library", "q": "as fotos por data"}
+{"tool": "photo_library", "q": "thumbnails, ¿dónde están?"}
+{"tool": "photo_library", "q": "fotos, arregla eso ahora"}
+{"tool": "photo_library", "q": "i need photo organization"}
+{"tool": "photo_library", "q": "dates, date, date"}
+{"tool": "photo_library", "q": "famille photo organiser"}
+{"tool": "photo_library", "q": "archivia las fotos, porfa"}
+{"tool": "photo_library", "q": "fotos, mmm, organizar"}
+{"tool": "photo_library", "q": "die bildarchive öffnen"}
+{"tool": "photo_library", "q": "abre los thumbnails, ¿no?"}
+{"tool": "photo_library", "q": "fotos, fecha, ya"}
+{"tool": "photo_library", "q": "organizar, date, exif"}
+{"tool": "photo_library", "q": "i want picture grouping"}
+{"tool": "photo_library", "q": "fotos, mi biblioteca"}
+{"tool": "photo_library", "q": "archiva todo, por favor"}
+{"tool": "photo_library", "q": "photos, sort by date"}
+{"tool": "photo_library", "q": "organiza esa foto, ya"}
+{"tool": "photo_library", "q": "die fotos sortieren"}
+{"tool": "photo_library", "q": "fotos, ese álbum, dame"}
+{"tool": "container", "q": "ps de contenedores"}
+{"tool": "container", "q": "docker logs eso"}
+{"tool": "container", "q": "abre el compose"}
+{"tool": "container", "q": "stop el contenedor"}
+{"tool": "container", "q": "start container ahora"}
+{"tool": "container", "q": "quién está ahí"}
+{"tool": "container", "q": "show logs ps"}
+{"tool": "container", "q": "docker ps el"}
+{"tool": "container", "q": "drei container starten"}
+{"tool": "container", "q": "compose up fast"}
+{"tool": "container", "q": "c'est le conteneur"}
+{"tool": "container", "q": "me show the stuff"}
+{"tool": "container", "q": "el volumen bájalo"}
+{"tool": "container", "q": "ps quem está"}
+{"tool": "container", "q": "dme os logs"}
+{"tool": "container", "q": "stoppo il container"}
+{"tool": "container", "q": "logs container please"}
+{"tool": "container", "q": "wie läuft es"}
+{"tool": "container", "q": "acende eso"}
+{"tool": "container", "q": "me exec into"}
+{"tool": "container", "q": "docker start ese"}
+{"tool": "container", "q": "ps lista"}
+{"tool": "container", "q": "y ahora bájalo"}
+{"tool": "container", "q": "le resto también"}
+{"tool": "container", "q": "container stop fast"}
+{"tool": "database", "q": "data where is it"}
+{"tool": "database", "q": "consulta db lo"}
+{"tool": "database", "q": "open the records"}
+{"tool": "database", "q": "notas? eso"}
+{"tool": "database", "q": "mi base de datos"}
+{"tool": "database", "q": "run the query now"}
+{"tool": "database", "q": "lo otro también"}
+{"tool": "database", "q": "db checar datos"}
+{"tool": "database", "q": "abrir postgres"}
+{"tool": "database", "q": "ich hab die tabelle"}
+{"tool": "database", "q": "qual è il dato"}
+{"tool": "database", "q": "run query sqlite"}
+{"tool": "database", "q": "where is the table"}
+{"tool": "database", "q": "o consultar mysql"}
+{"tool": "database", "q": "query eso ahora"}
+{"tool": "database", "q": "db dados checar"}
+{"tool": "database", "q": "la base de dados"}
+{"tool": "database", "q": "tabela dados buscar"}
+{"tool": "database", "q": "ich will die daten"}
+{"tool": "database", "q": "consultar los registros"}
+{"tool": "database", "q": "la db checar"}
+{"tool": "database", "q": "data where?"}
+{"tool": "database", "q": "fetch the data"}
+{"tool": "database", "q": "il dato da me"}
+{"tool": "database", "q": "checa el db"}
+{"tool": "creative_local", "q": "dame una imagen de gato"}
+{"tool": "creative_local", "q": "show me some ai pics"}
+{"tool": "creative_local", "q": "faz uma imagem agora"}
+{"tool": "creative_local", "q": "génère une image locale"}
+{"tool": "creative_local", "q": "bilder generiere jetzt"}
+{"tool": "creative_local", "q": "mostra foto di luna"}
+{"tool": "creative_local", "q": "image localmente please"}
+{"tool": "creative_local", "q": "show me something artistic"}
+{"tool": "creative_local", "q": "genera un po' d'arte"}
+{"tool": "creative_local", "q": "dime algo chulo"}
+{"tool": "creative_local", "q": "abre las fotos creativas"}
+{"tool": "creative_local", "q": "uma imagen da floresta"}
+{"tool": "creative_local", "q": "show me the local stuff"}
+{"tool": "creative_local", "q": "fais-moi une image"}
+{"tool": "creative_local", "q": "bilder machen bitte"}
+{"tool": "creative_local", "q": "mostrami una cosa strana"}
+{"tool": "creative_local", "q": "dame un dibujo chulo"}
+{"tool": "creative_local", "q": "a local image now"}
+{"tool": "creative_local", "q": "génère quelque chose"}
+{"tool": "creative_local", "q": "ein bilde machen"}
+{"tool": "creative_local", "q": "foto di fantasia"}
+{"tool": "creative_local", "q": "algo de arte"}
+{"tool": "creative_local", "q": "show me the ai stuff"}
+{"tool": "creative_local", "q": "faz um desenho agora"}
+{"tool": "creative_local", "q": "image localmente"}
+{"tool": "form_filler", "q": "Llenar ese formulario ya"}
+{"tool": "form_filler", "q": "Fill the form fast"}
+{"tool": "form_filler", "q": "Preenche o formulário agora"}
+{"tool": "form_filler", "q": "Remplir le formulaire vite"}
+{"tool": "form_filler", "q": "Formular ausfüllen bitte"}
+{"tool": "form_filler", "q": "Compila quel modulo subito"}
+{"tool": "form_filler", "q": "Eso de los datos"}
+{"tool": "form_filler", "q": "Notas el formulario"}
+{"tool": "form_filler", "q": "Formulario, dame acceso"}
+{"tool": "form_filler", "q": "Lo de las casillas"}
+{"tool": "form_filler", "q": "Abre el formulario eso"}
+{"tool": "form_filler", "q": "Preencher o resto"}
+{"tool": "form_filler", "q": "Le formulaire complet"}
+{"tool": "form_filler", "q": "Die Eingabe machen"}
+{"tool": "form_filler", "q": "Modulo, invialo ya"}
+{"tool": "form_filler", "q": "Hay que llenar eso"}
+{"tool": "form_filler", "q": "Formulario, ya está"}
+{"tool": "form_filler", "q": "Que llene eso"}
+{"tool": "form_filler", "q": "O preencher o outro"}
+{"tool": "form_filler", "q": "Remplir ça maintenant"}
+{"tool": "form_filler", "q": "Die Form füllen mal"}
+{"tool": "form_filler", "q": "Compilare adesso, per favore"}
+{"tool": "form_filler", "q": "Llenar y enviar ya"}
+{"tool": "form_filler", "q": "Eso, el formulario"}
+{"tool": "form_filler", "q": "Lo otro también"}
+{"tool": "accessibility", "q": "zoom in please"}
+{"tool": "accessibility", "q": "narrador oye"}
+{"tool": "accessibility", "q": "magnifier now"}
+{"tool": "accessibility", "q": "aumenta el texto"}
+{"tool": "accessibility", "q": "settings panel bitte"}
+{"tool": "accessibility", "q": "accesibilidad abrir"}
+{"tool": "accessibility", "q": "make it bigger"}
+{"tool": "accessibility", "q": "aumentar tamaño"}
+{"tool": "accessibility", "q": "zoom in please"}
+{"tool": "accessibility", "q": "ajustar visual"}
+{"tool": "accessibility", "q": "la barra de ayuda"}
+{"tool": "accessibility", "q": "diminuer tamanho"}
+{"tool": "accessibility", "q": "volume settings"}
+{"tool": "accessibility", "q": "turn on narrator"}
+{"tool": "accessibility", "q": "aide accessibilité"}
+{"tool": "accessibility", "q": "visual aids bitte"}
+{"tool": "accessibility", "q": "toca eso"}
+{"tool": "accessibility", "q": "configura eso"}
+{"tool": "accessibility", "q": "aumentar foco"}
+{"tool": "accessibility", "q": "it's too small"}
+{"tool": "accessibility", "q": "settings panel"}
+{"tool": "accessibility", "q": "diminuiscale"}
+{"tool": "accessibility", "q": "la ayuda visual"}
+{"tool": "accessibility", "q": "un poco más grande"}
+{"tool": "accessibility", "q": "configura la vista"}
+{"tool": "study", "q": "flashcards ahora"}
+{"tool": "study", "q": "study please"}
+{"tool": "study", "q": "repaso de vocabulario"}
+{"tool": "study", "q": "let's study that"}
+{"tool": "study", "q": "flashcards. abreeso"}
+{"tool": "study", "q": "de nuevo esas notas"}
+{"tool": "study", "q": "flashcard deck"}
+{"tool": "study", "q": "studdy sm two"}
+{"tool": "study", "q": "studie jetzt bitte"}
+{"tool": "study", "q": "ripassi le schede"}
+{"tool": "study", "q": "les flashcards"}
+{"tool": "study", "q": "flash. dame más"}
+{"tool": "study", "q": "notas? ponlas"}
+{"tool": "study", "q": "de las lecciones"}
+{"tool": "study", "q": "flashcards, por favor"}
+{"tool": "study", "q": "ai estudar agora"}
+{"tool": "study", "q": "flashcards, bájalo"}
+{"tool": "study", "q": "lesen die karten"}
+{"tool": "study", "q": "studia le schede"}
+{"tool": "study", "q": "study, y ahora bájalo"}
+{"tool": "study", "q": "otra cosa también"}
+{"tool": "study", "q": "vocabulario rápido"}
+{"tool": "study", "q": "german lernen bitte"}
+{"tool": "study", "q": "flash. el volumen"}
+{"tool": "study", "q": "deberes, ¿qué hay?"}
+{"tool": "smart_home", "q": "la luz del cuarto"}
+{"tool": "smart_home", "q": "abre las persianas ahora"}
+{"tool": "smart_home", "q": "lo otro también"}
+{"tool": "smart_home", "q": "the lights down please"}
+{"tool": "smart_home", "q": "la tempurature baja"}
+{"tool": "smart_home", "q": "turn on the lamp"}
+{"tool": "smart_home", "q": "mi casa control"}
+{"tool": "smart_home", "q": "dim the lightes"}
+{"tool": "smart_home", "q": "aumenta el volumen"}
+{"tool": "smart_home", "q": "das Licht an bitte"}
+{"tool": "smart_home", "q": "apri eso"}
+{"tool": "smart_home", "q": "acende las cortinas"}
+{"tool": "smart_home", "q": "the heat is too high"}
+{"tool": "smart_home", "q": "baja esa luz"}
+{"tool": "smart_home", "q": "la cosa del MQTT"}
+{"tool": "smart_home", "q": "faiblo el volumen"}
+{"tool": "smart_home", "q": "c'est la lumière"}
+{"tool": "smart_home", "q": "il faut baisser"}
+{"tool": "smart_home", "q": "dabei das smart home"}
+{"tool": "smart_home", "q": "il est fermé"}
+{"tool": "smart_home", "q": "accende eso"}
+{"tool": "smart_home", "q": "volumen mucho más"}
+{"tool": "smart_home", "q": "la ventana abre"}
+{"tool": "smart_home", "q": "the sensor reading"}
+{"tool": "smart_home", "q": "mi termostato"}

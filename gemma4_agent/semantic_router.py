@@ -20,7 +20,20 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-_MODEL_NAME_DEFAULT = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+_BASE_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+# Step 6 (2026-05-21): a router-domain fine-tune of the base MiniLM, trained on
+# our synthetic multilingual tool queries + the dev split (holdout excluded).
+# On the held-out corpus it lifts recall 0.835->0.878 and NO-TOOL keep
+# 0.512->0.628, and IMPROVES multilingual probes (0.79->0.90) — the fine-tune is
+# the encoder lever the research identified (the base model's short-query
+# topical geometry was the ceiling). Same 384-dim MiniLM size => same CPU
+# latency. If the artifact is absent (fresh checkout before training), we fall
+# back to the base model automatically. Regenerate via
+# scripts/train_router_encoder.py + scripts/router_ft_pipeline.py.
+_FT_MODEL_DIR = os.path.join(os.path.dirname(__file__), "data", "router_encoder_ft")
+_MODEL_NAME_DEFAULT = (
+    _FT_MODEL_DIR if os.path.isdir(_FT_MODEL_DIR) else _BASE_MODEL_NAME
+)
 
 # Short, intent-style description for each tool. These are what the embedding
 # model sees, NOT the full JSON schema description. Keep them concrete and
