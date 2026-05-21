@@ -714,6 +714,14 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         }
 
         def _on_voice_state(state: str) -> None:
+            # NO_SPEECH: the capture was dropped (silence / Whisper hallucination)
+            # — a user who DID try to speak must get feedback, not a silent drop
+            # back to idle ("the mic ignored me"). Emit a distinct event the HUD
+            # can flash, then fall through to idle via the IDLE_LISTENING that
+            # the pipeline emits right after.
+            if state == "NO_SPEECH":
+                BUS.publish({"type": "voice_no_speech"})
+                return
             mapped = _VOICE_STATE_MAP.get(state)
             if mapped is not None:
                 BUS.publish({"type": "state", "value": mapped})

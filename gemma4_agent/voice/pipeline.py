@@ -427,11 +427,16 @@ class VoicePipeline:
                 "silence gate: peak_rms=%.0f < %.0f -> skip transcribe "
                 "(reason=%s dur=%.2fs)", peak_rms, MIN_CAPTURE_RMS, reason, dur,
             )
+            # Tell the UI we heard nothing usable, so a user who DID try to speak
+            # gets feedback instead of the HUD silently dropping back to idle
+            # ("the mic ignored me"). NO_SPEECH -> brief cue, then idle.
+            self._emit_state("NO_SPEECH")
             self._cooldown_until = time.monotonic() + COOLDOWN_S
             with self._state_lock:
                 self._state = State.COOLDOWN
             self._wake.reset()
             self._vad.reset()
+            self._emit_state("IDLE_LISTENING")
             return
 
         logger.info(
@@ -471,6 +476,7 @@ class VoicePipeline:
                     "silence hallucination dropped: raw=%r corrected=%r",
                     raw_text[:60], corrected[:60],
                 )
+                self._emit_state("NO_SPEECH")
             else:
                 self._on_command(corrected, dur, raw_text)
         except Exception as exc:
