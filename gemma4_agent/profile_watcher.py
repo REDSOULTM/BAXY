@@ -325,20 +325,55 @@ class ProfileWatcher:
 
     def _switch_to(self, name: str, reason: str) -> None:
         try:
+            prev = get_active_profile()
             set_active_profile(name)
             # Apply with overrides direct from memory, sin re-leer active_profile.txt
             # (que justo acabamos de escribir). Mas barato y mas correcto: si dos
             # threads compiten, este usa el valor que SI escribimos arriba.
-            apply_profile_to_env(_profile_with_overrides(PROFILES[name]))
+            new_p = _profile_with_overrides(PROFILES[name])
+            apply_profile_to_env(new_p)
             logger.info("ProfileWatcher switched to %s (reason: %s)", name, reason)
         except (ValueError, OSError) as exc:
             logger.error("ProfileWatcher failed to switch to %s: %s", name, exc)
             return
+        # CRITICAL: env vars alone do NOT change the model already resident in
+        # VRAM — only a server restart does. The whole point of an auto-downgrade
+        # (game launched -> free GPU) is to release VRAM, so we MUST restart the
+        # server when the new profile needs a different model/ctx/vision. Without
+        # this the downgrade was cosmetic: the old (bigger) model stayed loaded.
+        # Best-effort + daemon thread so the watcher tick never blocks or dies;
+        # if the shared manager isn't available (headless/tests) we just skip.
+        self._restart_server_if_needed(prev, new_p)
         if self._on_change is not None:
             try:
                 self._on_change(name, reason)
             except Exception as exc:
                 logger.warning("on_change callback raised: %s", exc)
+
+    def _restart_server_if_needed(self, prev: Profile, new_p: Profile) -> None:
+        """Restart llama-server in the background iff the binary-affecting fields
+        (model/ctx/vision/server_running) changed. No-op on import/manager error."""
+        try:
+            from .profiles import requires_server_restart
+            if not requires_server_restart(prev, new_p):
+                return
+        except Exception as exc:
+            logger.debug("requires_server_restart check failed: %s", exc)
+            return
+
+        def _do_restart() -> None:
+            try:
+                from .llama_server import get_shared_manager
+                mgr = get_shared_manager()
+                result = mgr.force_restart_for_profile(new_p)
+                logger.info("ProfileWatcher server restart for %s -> %s",
+                            new_p.name, result)
+            except Exception as exc:  # never let the thread die silent
+                logger.warning("ProfileWatcher server restart failed for %s: %s",
+                               new_p.name, exc)
+
+        threading.Thread(target=_do_restart,
+                         name="watcher-profile-swap", daemon=True).start()
 
     def _tick(self) -> None:
         sample = self._sample()

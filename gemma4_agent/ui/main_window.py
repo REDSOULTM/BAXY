@@ -1658,9 +1658,10 @@ class MainWindow(QMainWindow):
     def _on_watcher_change(self, name: str, reason: str) -> None:
         """Callback del thread watcher. Llamado desde thread no-GUI.
 
-        Solo loggea y refresca el selector. NO arrancamos llama-server desde
-        aca para no bloquear el thread; el usuario vera el cambio al proximo
-        request (env vars ya estan aplicados).
+        Solo loggea y refresca el selector. El RESTART del llama-server (para
+        que el modelo nuevo se cargue y se libere/ocupe la VRAM correcta) lo
+        dispara ProfileWatcher._switch_to en su propio daemon thread — NO acá,
+        para no bloquear la GUI. Este callback es puramente notificación.
         """
         # Marshalling a GUI thread: schedule a QTimer 0-shot
         from PyQt6.QtCore import QTimer
