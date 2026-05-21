@@ -144,6 +144,37 @@ class AgentRunner:
     # worker
     # ------------------------------------------------------------------
 
+    def _server_matches_profile(self, profile) -> bool:  # noqa: ANN001
+        """True if the llama-server currently on the port is running the model
+        the given profile expects. Compares the loaded model's GGUF filename
+        against the profile's model_path (basename). Standby/no-model profiles
+        and unknown-model servers are treated as 'matches' (don't disrupt).
+        Probes /v1/models on the configured server URL."""
+        try:
+            want = getattr(profile, "model_path", None)
+            if not want:
+                return True  # profile uses the user's default model -> don't fight
+            import json as _json
+            import os as _os
+            import urllib.request as _ur
+            from .config import AgentConfig
+            cfg = AgentConfig.from_env()
+            r = _ur.urlopen(f"{cfg.server_url}/v1/models", timeout=3)
+            data = _json.load(r)
+            want_base = _os.path.basename(str(want)).lower()
+            for m in data.get("data", []):
+                args = ((m.get("status") or {}).get("args")) or []
+                for a in args:
+                    if isinstance(a, str) and a.lower().endswith(".gguf"):
+                        if _os.path.basename(a).lower() == want_base:
+                            return True
+            # we got a model list but none matched the wanted GGUF -> mismatch
+            return False
+        except Exception:
+            # can't tell (no /v1/models, parse error) -> don't disrupt the
+            # running server; reuse it as before.
+            return True
+
     def _autostart_llama_server(self) -> None:
         """Replicates the legacy ServerBootWorker logic: if the active profile
         wants a server and no one is listening on :8080, launch llama-server.exe
@@ -174,10 +205,34 @@ class AgentRunner:
             return
 
         if port_in_use():
-            _publish_activity("SYSTEM", "llama-server already up on :8080 · using it")
-            emit_stage(BUS.publish, STAGE_LISTENING,
-                       "external llama-server detected · using it")
-            return
+            # A server is already listening. REUSE it only if it's running the
+            # model the ACTIVE profile wants — otherwise the user selected (say)
+            # vram12 but a stale vram8 server keeps serving the small model and
+            # VRAM never grows. Check the running model id against the profile's
+            # expected router model; if it MISMATCHES, take over the port and
+            # start the right one (same authoritative path as a profile switch).
+            if self._server_matches_profile(profile):
+                _publish_activity("SYSTEM", "llama-server already up on :8080 · using it")
+                emit_stage(BUS.publish, STAGE_LISTENING,
+                           "external llama-server detected · using it")
+                return
+            _publish_activity(
+                "SYSTEM",
+                f"server on :8080 runs a different model · switching to "
+                f"{profile.display_name}")
+            emit_stage(BUS.publish, STAGE_SPAWN,
+                       f"replacing stale server · loading {profile.display_name}")
+            try:
+                from .llama_server import get_shared_manager
+                mgr = get_shared_manager()
+                apply_profile_to_env(profile)
+                mgr.force_restart_for_profile(profile, wait_health=True,
+                                              timeout_s=120)
+                self._server_manager = mgr
+                return
+            except Exception as exc:
+                _publish_activity("SYSTEM", f"profile takeover failed: {exc}")
+                # fall through to a normal start attempt below
 
         # apply env vars before spawning so the server sees ctx/mmproj from profile
         apply_profile_to_env(profile)
