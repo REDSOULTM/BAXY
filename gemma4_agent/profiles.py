@@ -109,8 +109,15 @@ _E4B_Q6_K    = str(_E4B / "gemma-4-E4B-it-Q6_K.gguf")        # 6.34 +vis @32K
 # dejaba 3.4 GB en CPU y daba 34 tok/s). E4B nunca pasaba de ~7 GB sin importar
 # la VRAM disponible — por eso vram12/16 "no usaban más de 7 GB".
 _26B = _PROJECT_ROOT / "models" / "26B-A4B"
-_26B_Q3_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q3_K_XL.gguf")  # ~13 GB, vram12/16
-_26B_Q4_K_M  = str(_26B / "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf")   # ~16 GB, vram16 si sobra
+# MEDIDO con visión + KV en una 4060 Ti de 16 GB:
+#   Q3_K_XL + mmproj + ctx 16K = 16.1 GB  -> OOM, se desborda a RAM compartida y
+#                                            el server CRASHEA (500 proxy error).
+#   Q3_K_XL + mmproj + ctx 8K  = 15.9 GB  -> al borde, sin margen seguro.
+#   Q2_K_XL + mmproj + ctx 8K  = 14.6 GB  -> 1.4 GB de margen, 79 tok/s. SEGURO.
+# Por eso vram12/16 usan Q2_K_XL @ctx 8K: el 26B-MoE Q2 sigue muy por encima del
+# E4B-4B en calidad, entra con margen junto a la visión, y no crashea.
+_26B_Q2_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q2_K_XL.gguf")  # ~9.9 GB peso, 14.6 GB +vis+kv@8K
+_26B_Q3_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q3_K_XL.gguf")  # ~13 GB, NO entra con visión en 16 GB
 _MMPROJ_26B  = str(_26B / "mmproj-F16.gguf")
 _MMPROJ_E2B  = str(_E2B / "mmproj-F16.gguf")                 # vision encoder (~1.2 GB loaded)
 _MMPROJ_E4B  = str(_E4B / "mmproj-F16.gguf")
@@ -235,14 +242,16 @@ PROFILES: dict[str, Profile] = {
     "vram12": Profile(
         name="vram12",
         display_name="VRAM 12GB",
-        # ctx 16K (no 32K): el prefill de 32K era parte de la lentitud y el
-        # agente rara vez usa >16K; 16K mantiene latencia baja con margen de KV.
-        context_size=16384,
+        # ctx 8K (no 16K/32K): MEDIDO — Q3_K_XL+visión+ctx16K = 16.1 GB -> OOM
+        # crash (overflow a RAM compartida -> server muere -> 500). ctx 8K con
+        # Q2_K_XL deja 14.6 GB con margen seguro en 16 GB. El agente rara vez
+        # usa >8K; el prefill más corto además baja latencia.
+        context_size=8192,
         # 26B-A4B (MoE) en vez de E4B: el E4B (4B params) NUNCA pasaba de ~7 GB
-        # sin importar la VRAM — por eso "no usaba más de 7 GB". El 26B-A4B usa
-        # ~13 GB en GPU, es 26B de calidad con ~4B activos (rápido), y genera
-        # ~43 tok/s. Salto enorme de calidad aprovechando los 12-16 GB.
-        model_path=_26B_Q3_K_XL,
+        # sin importar la VRAM — por eso "no usaba más de 7 GB". El 26B-A4B
+        # Q2_K_XL usa ~14.6 GB con visión+KV@8K, es 26B de calidad con ~4B
+        # activos (rápido), y genera ~79 tok/s. Salto enorme de calidad.
+        model_path=_26B_Q2_K_XL,
         mmproj_path=_MMPROJ_26B,
         vision_enabled=True,
         rerank_enabled=True,
@@ -252,20 +261,22 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 12-16 GB. 26B-A4B MoE UD-Q3_K_XL (26B de calidad, ~4B "
-            "activos -> rápido; ~43 tok/s, usa ~13 GB en GPU), ctx 16K, VISIÓN "
+            "GPU de 12-16 GB. 26B-A4B MoE UD-Q2_K_XL (26B de calidad, ~4B "
+            "activos -> rápido; ~79 tok/s, usa ~14.6 GB en GPU), ctx 8K, VISIÓN "
             "ON, todo ON. Mucho más inteligente que E4B aprovechando la VRAM."
         ),
-        est_vram_mb=13000,
+        est_vram_mb=14600,
     ),
     "vram16": Profile(
         name="vram16",
         display_name="VRAM 16GB+",
-        context_size=16384,
-        # 26B-A4B MoE, mismo modelo que vram12 (el Q3_K_XL ya aprovecha ~13 GB
-        # con margen de KV/visión en 16 GB). Si el usuario configura un modelo
-        # propio mayor en Settings, GEMMA4_MODEL_PATH lo sobreescribe.
-        model_path=_26B_Q3_K_XL,
+        # ctx 8K: mismo límite de OOM medido que vram12 (Q3+vis+16K crasheaba).
+        context_size=8192,
+        # 26B-A4B MoE Q2_K_XL, mismo modelo que vram12 (Q2 entra con visión+KV
+        # @8K en 14.6 GB, margen seguro en 16 GB; Q3_K_XL crasheaba por OOM).
+        # Si el usuario configura un modelo propio mayor en Settings,
+        # GEMMA4_MODEL_PATH lo sobreescribe.
+        model_path=_26B_Q2_K_XL,
         mmproj_path=_MMPROJ_26B,
         vision_enabled=True,
         rerank_enabled=True,
@@ -275,11 +286,11 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 16 GB+. 26B-A4B MoE UD-Q3_K_XL (~13 GB, ~43 tok/s, 26B de "
-            "calidad con ~4B activos), ctx 16K, VISIÓN ON, todo ON. El máximo "
+            "GPU de 16 GB+. 26B-A4B MoE UD-Q2_K_XL (~14.6 GB, ~79 tok/s, 26B de "
+            "calidad con ~4B activos), ctx 8K, VISIÓN ON, todo ON. El máximo "
             "que aprovecha 16 GB sin OOM; modelo propio via Settings lo override."
         ),
-        est_vram_mb=13000,
+        est_vram_mb=14600,
     ),
     "standby": Profile(
         name="standby",

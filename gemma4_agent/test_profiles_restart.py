@@ -25,7 +25,8 @@ class TestRequiresServerRestart(unittest.TestCase):
         self.assertFalse(requires_server_restart(self.perf, self.perf))
 
     def test_context_change_needs_restart(self):
-        modified = replace(self.perf, context_size=8192)
+        # Use a value guaranteed != the profile's own ctx (vram16 is now 8192).
+        modified = replace(self.perf, context_size=self.perf.context_size + 4096)
         self.assertTrue(requires_server_restart(self.perf, modified))
 
     def test_model_path_change_needs_restart(self):

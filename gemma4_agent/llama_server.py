@@ -615,6 +615,16 @@ def write_router_presets(config: AgentConfig, profile: Profile) -> Path | None:
             "flash-attn = on",
             "jinja = true",
             "parallel = 1",
+            # swa-full: CRITICAL for Gemma cache-reuse, same as the --swa-full CLI
+            # flag in _build_server_cmd. Gemma uses SWA (n_swa=512); WITHOUT this
+            # the KV cache only keeps the sliding window, so the stable system-
+            # prompt prefix is evicted each turn ("erased invalidated context
+            # checkpoint, n_swa=512") and EVERY turn reprocesses the full ~6K-tok
+            # prompt (memory_seq_rm [0,end]) -> ~6s prefill per turn. Router mode
+            # is the production path, so it MUST carry swa-full too — otherwise
+            # the cache-reuse below is a no-op for Gemma. (PR #22288 fixed the
+            # swa-full logic; build b9090+ includes it.)
+            "swa-full = true",
         ]
         if tight:
             block.append("no-mmap = true")

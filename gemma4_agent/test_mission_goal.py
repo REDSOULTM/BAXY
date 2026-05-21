@@ -386,18 +386,30 @@ class TestBugFixes(unittest.TestCase):
         """Bug latencia: smalltalk con [] no debe inyectar TODOS los 63 schemas."""
         import os
         os.environ['GEMMA4_LLAMA_AUTO_START'] = '0'
-        from .agent import Gemma4Agent
-        from .config import AgentConfig
-        agent = Gemma4Agent(AgentConfig.from_env())
-        # selected = [] (smalltalk) -> sin hint
-        h_empty = agent._tool_schemas_hint(selected_tool_names=[])
-        self.assertEqual(h_empty, "",
-                         "selected=[] (smalltalk) debe devolver hint vacio")
-        # selected = ['app','steam'] -> hint con esos 2 tools
-        h_subset = agent._tool_schemas_hint(selected_tool_names=['app', 'steam'])
-        self.assertGreater(len(h_subset), 0)
-        self.assertLess(len(h_subset), 10000,
-                        "subset de 2 tools debe ser <10K chars (no full catalog)")
+        # Forzar el modo compact: en 'auto' el hint depende del ctx del perfil
+        # activo (off si <12288), y vram12/16 ahora corren a 8192 -> auto daria
+        # "". Este test verifica el contrato subset-vs-vacio, no el gate de ctx,
+        # asi que fijamos el modo para que sea determinista.
+        prev = os.environ.get('GEMMA4_TOOL_SCHEMAS_HINT_MODE')
+        os.environ['GEMMA4_TOOL_SCHEMAS_HINT_MODE'] = 'compact'
+        try:
+            from .agent import Gemma4Agent
+            from .config import AgentConfig
+            agent = Gemma4Agent(AgentConfig.from_env())
+            # selected = [] (smalltalk) -> sin hint
+            h_empty = agent._tool_schemas_hint(selected_tool_names=[])
+            self.assertEqual(h_empty, "",
+                             "selected=[] (smalltalk) debe devolver hint vacio")
+            # selected = ['app','steam'] -> hint con esos 2 tools
+            h_subset = agent._tool_schemas_hint(selected_tool_names=['app', 'steam'])
+            self.assertGreater(len(h_subset), 0)
+            self.assertLess(len(h_subset), 10000,
+                            "subset de 2 tools debe ser <10K chars (no full catalog)")
+        finally:
+            if prev is None:
+                os.environ.pop('GEMMA4_TOOL_SCHEMAS_HINT_MODE', None)
+            else:
+                os.environ['GEMMA4_TOOL_SCHEMAS_HINT_MODE'] = prev
 
 
 if __name__ == "__main__":
