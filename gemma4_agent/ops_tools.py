@@ -1652,6 +1652,18 @@ def _cleanup_all_browser_sessions() -> None:
             _close_browser_session(sid)
         except Exception:
             pass
+    # Stop the Playwright handle too. _playwright() is a singleton that spawns a
+    # node.js driver subprocess; closing the browser sessions does NOT stop that
+    # driver, so without this the node process is orphaned on every shutdown.
+    # Best-effort: never let teardown raise.
+    global _PW
+    if _SESSIONS.pw is not None:
+        try:
+            _SESSIONS.pw.stop()
+        except Exception:
+            pass
+        _SESSIONS.pw = None
+        _PW = None
 
 
 atexit.register(_cleanup_all_browser_sessions)
