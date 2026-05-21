@@ -61,6 +61,15 @@ from .tool_head import (
     load as load_tool_head,
 )
 
+# Conditional cross-encoder reranker — Stage-E tiebreaker that rescues short/
+# ambiguous queries the bi-encoder placed too weakly (fires only on the
+# empty-but-not-smalltalk band, so the common path pays nothing).
+from .reranker import (
+    is_enabled as reranker_enabled,
+    rerank as rerank_tools,
+    warm_up as warm_up_reranker,
+)
+
 __all__ = [
     # orchestrator
     "select_tool_names", "plan_mission", "MissionPlan", "MissionStep",
@@ -74,4 +83,6 @@ __all__ = [
     "load_abstain_model", "abstain_features", "abstain_enabled",
     # per-tool subset selector
     "load_tool_head", "tool_head_enabled",
+    # conditional cross-encoder rescue
+    "rerank_tools", "reranker_enabled", "warm_up_reranker",
 ]

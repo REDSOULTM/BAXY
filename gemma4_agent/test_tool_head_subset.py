@@ -54,3 +54,22 @@ class ToolHeadSubsetContract(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CrossEncoderRescueContract(unittest.TestCase):
+    """The cross-encoder rescue must recover short/ambiguous real intents that
+    the bi-encoder placed too weakly, WITHOUT resurrecting tools on smalltalk."""
+
+    def test_rescues_short_knowledge_and_window(self):
+        # These went EMPTY before the rescue stage (encoder placed them weakly).
+        self.assertTrue({"web", "knowledge"} & set(_domain("who directed Oppenheimer")))
+        self.assertIn("window", _domain("cuantas pestanas tengo abiertas"))
+
+    def test_rescue_does_not_resurrect_smalltalk(self):
+        for q in ("hola", "gracias", "como estas"):
+            self.assertEqual(_domain(q), [], f"{q!r} must stay empty")
+
+    def test_memory_read_not_reminder(self):
+        d = _domain("que recuerdas de mi")
+        self.assertIn("memory", d)
+        self.assertNotIn("reminder", d)

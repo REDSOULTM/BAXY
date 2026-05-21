@@ -47,6 +47,10 @@ _RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "3"))
 # (weak just-over-bar firings are noise), and at most this many head tools.
 _HEAD_MIN_MARGIN = float(_os.environ.get("GEMMA4_HEAD_MIN_MARGIN", "0.05"))
 _HEAD_TOP_N = int(_os.environ.get("GEMMA4_HEAD_TOP_N", "3"))
+# Cross-encoder rescue only when the abstain head's P(no_tool) is below this
+# (i.e. NOT a confident smalltalk/no-tool turn) — so we rescue real intents but
+# don't resurrect tools on "hola"/"gracias".
+_RERANK_ABSTAIN_MAX = float(_os.environ.get("GEMMA4_RERANK_ABSTAIN_MAX", "0.85"))
 # Cap on the semantic fallback list (used ONLY when the tool head AND keywords
 # both came up empty — a hard query we still want to take a shot at).
 _SEM_TOPN = int(_os.environ.get("GEMMA4_SEM_TOPN", "5"))
@@ -417,6 +421,41 @@ def select_tool_names(
     # from the prev user text. The param is kept for API symmetry but the
     # planner does not guess from it.
 
+    # CROSS-ENCODER RESCUE (Stage E, research-recommended). When the primary
+    # router found NO domain tool but the turn is NOT a confident abstention
+    # (the abstain head wasn't sure it's smalltalk), a short/ambiguous query may
+    # have a real intent the bi-encoder placed too weakly ("who directed
+    # Oppenheimer", "cuántas pestañas tengo"). A cross-encoder reads the (query,
+    # tool-description) pair JOINTLY and resolves these. Fires on a small
+    # fraction of turns (only the empty-but-not-smalltalk band), so the common
+    # path pays nothing. Fully optional (GEMMA4_RERANKER=0).
+    if not names and raw_text.strip():
+        try:
+            _ab = None
+            try:
+                from .abstain_head import load_model as _al, build_features as _af, is_enabled as _ae
+                if _ae():
+                    _m = _al()
+                    if _m is not None:
+                        from .intent_router import classify_intent as _ci
+                        _ab = _m.p_no_tool(_af(raw_text, intent=_ci(raw_text),
+                                               scored=None, keyword_fired=False))
+            except Exception:
+                _ab = None
+            # only rescue when the head is NOT confident it's no-tool
+            if _ab is None or _ab < _RERANK_ABSTAIN_MAX:
+                from .reranker import rerank as _rerank, is_enabled as _ron
+                if _ron():
+                    from .semantic_router import TOOL_DESCRIPTIONS as _TD
+                    cands = [(t, d) for t, d in _TD.items()
+                             if t not in {"session", "safety", "state", "verify"}]
+                    picked = _rerank(raw_text, cands)
+                    if picked:
+                        names = picked
+                        semantic_fallback_used = True
+        except Exception:
+            pass
+
     if not names:
         # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",
         # "stop", "espera"). Expose session.cancel_turn so the LLM can pick
@@ -445,6 +484,17 @@ def select_tool_names(
         r"\b(mail|email|correo|courriel|posta|messaggio)\b", text,
     ):
         names = [n for n in names if n != "email"]
+
+    # memory-read vs reminder confusion: "qué recuerdas de mí" is a MEMORY read,
+    # but the encoder head weakly adds `reminder` (recordar~recordatorio). When
+    # the turn is a memory-read frame and memory is present, drop the stray
+    # reminder (a real reminder/alarm query says "recordatorio"/"alarma", caught
+    # separately and not matched here).
+    if "memory" in names and "reminder" in names and re.search(
+        r"\b(recuerdas|recordas|sabes de mi|sabes sobre mi|que recuerdas|"
+        r"what do you (remember|know) about me)\b", text,
+    ) and not re.search(r"\b(recordatorio|alarma|reminder|alarm|avisame)\b", text):
+        names = [n for n in names if n != "reminder"]
 
     # Related-tools deps, BUDGETED across the whole subset. The unconditional
     # fan-out (every app/media tool dragging in gui/uia/vision/window/browser/
@@ -620,9 +670,15 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(descarga|descargar|download|sha256|hash|firma)\b", low):
         tools.append("download")
 
-    if re.search(r"\b(recuerda|recorda|guarda en memoria|memoria|"
-                 r"remember|remind me|save to memory|memory)\b", low):
+    if re.search(r"\b(recuerda|recorda|recuerdas|recordas|guarda en memoria|memoria|"
+                 r"sabes de mi|sabes sobre mi|que sabes de|datos mios|"
+                 r"remember|remind me|save to memory|memory|"
+                 r"what do you (remember|know) about me)\b", low):
         tools.append("memory")
+        # memory-read ("qué recuerdas de mí") and reminder are a known confusion
+        # pair; when the MEMORY keyword fired, drop a stray `reminder` the
+        # encoder head adds with a weak margin.
+        tools = [t for t in tools if t != "reminder"]
     if re.search(r"\b(documento|rag|conocimiento|knowledge base|base de conocimiento|"
                  r"document|knowledge)\b", low):
         tools.extend(["memory", "knowledge"])

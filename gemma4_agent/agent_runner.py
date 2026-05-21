@@ -348,6 +348,12 @@ class AgentRunner:
                             from . import tool_head as _th
                             if _th.is_enabled():
                                 _th.load()
+                            # warm the conditional cross-encoder too (its first
+                            # load is ~13s; do it here, not on the user's first
+                            # ambiguous query that triggers the rescue).
+                            from . import reranker as _rr
+                            if _rr.is_enabled():
+                                _rr.warm_up()
                         except Exception:
                             pass
                     except Exception:
