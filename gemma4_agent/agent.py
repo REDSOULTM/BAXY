@@ -428,11 +428,19 @@ class Gemma4Agent:
         # when not in router mode -> client uses the configured model.
         self._router_model = None
         try:
-            from .llama_server import get_shared_manager
-            mgr = get_shared_manager()
-            if mgr.is_router_mode():
-                self._router_model = mgr.router_model_for(
-                    has_image=(mode.name == "vision_action"))
+            # SERVER-driven resolution: probe /v1/models so this is correct in
+            # ANY process (launcher, standalone UI server, smoke tests) — the
+            # manager singleton isn't shared across processes, but the running
+            # server is ground truth. Falls back to manager state if the probe
+            # can't run (e.g. server not up yet during boot warmup).
+            from .llama_server import resolve_turn_model, get_shared_manager
+            self._router_model = resolve_turn_model(
+                has_image=(mode.name == "vision_action"))
+            if self._router_model is None:
+                mgr = get_shared_manager()
+                if mgr.is_router_mode():
+                    self._router_model = mgr.router_model_for(
+                        has_image=(mode.name == "vision_action"))
         except Exception:
             self._router_model = None
         # sprint2: persona is currently visible only via tool_subset.persona,
@@ -689,6 +697,54 @@ class Gemma4Agent:
             is_short_continuation = (
                 raw_text and len(raw_text.split()) <= 6
             )
+            # Step 5 (2026-05-21): fold the abstention decision INTO the
+            # inheritance gate. Before, ANY short turn that the planner left
+            # tool-less would inherit the prior tool — including deliberate
+            # smalltalk/meta ("gracias", "qué hora es", "no uses tools"), which
+            # is why with-context no-tool keep collapsed (0.58 -> 0.50). The
+            # calibrated abstain head already separates "conversational, leave
+            # it alone" from "deictic continuation with no own signal". If the
+            # head is CONFIDENT this is no-tool, we do NOT inherit — the user
+            # is talking, not continuing an action. Continuations like "ciérralo"
+            # / "subelo" score LOW on abstain (action intent), so they still
+            # inherit. This is the research's "context as a router input, not a
+            # blind rescue".
+            if is_short_continuation:
+                try:
+                    from .abstain_head import (
+                        load_model as _ah_load, build_features as _ah_feats,
+                        is_enabled as _ah_on,
+                    )
+                    if _ah_on():
+                        _ahm = _ah_load()
+                        if _ahm is not None:
+                            from .intent_router import classify_intent as _ci
+                            from .semantic_router import suggest_tools_scored as _sts
+                            _isc = None
+                            try:
+                                _isc = _ci(raw_text)
+                            except Exception:
+                                _isc = None
+                            _f = _ah_feats(raw_text, intent=_isc,
+                                           scored=_sts(raw_text, k=12),
+                                           keyword_fired=False)
+                            # A no-tool probability at/above the routing
+                            # threshold means "really conversational" — skip
+                            # inheritance. Using the gate's own threshold (not a
+                            # higher floor) was the dev-tuned sweet spot: it
+                            # preserves the isolated no-tool keep (0.612) under
+                            # inheritance while real deictic continuations
+                            # ("ciérralo"/"subelo", which score LOW on abstain)
+                            # still inherit the prior tool.
+                            if _ahm.p_no_tool(_f) >= _ahm.threshold:
+                                is_short_continuation = False
+                                self.trace.event(
+                                    turn_id, "inherit_skipped_abstain",
+                                    p_no_tool=round(_ahm.p_no_tool(_f), 3),
+                                    user_text=raw_text[:60],
+                                )
+                except Exception:
+                    pass
             if is_short_continuation:
                 # F-005: gap temporal > INHERIT_TTL_SEC => no heredar
                 # (user volvio tras mucho tiempo, contexto del turn previo
@@ -820,15 +876,21 @@ class Gemma4Agent:
         self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback, persona=self._persona.name)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
 
-        # Reasoning-for-tools upgrade (2026-05-20, MEASURED). Gemma4 emits
-        # tool-calls reliably only with thinking ON (E4B-Q4: 2/6 OFF vs 6/6 ON;
-        # ~+1s latency, well under budget). The keyword-based mode picker
-        # (modes._infer_mode) catches most action verbs, but it can't cover
-        # every phrasing ("saca un screenshot", "mutea") without a brittle
-        # keyword list. The ROBUST signal is the planner's own decision: if a
-        # DOMAIN tool made it into the subset and the picked mode has thinking
-        # OFF (fast_action), upgrade to quick_action (thinking on, voice-
-        # concise). Universal — driven by tool selection, not the wording.
+        # Reasoning-for-tools upgrade (9da4fd3). If a DOMAIN tool is in the subset
+        # and the picked mode has thinking OFF, upgrade to quick_action
+        # (thinking ON) — Gemma 4 emits tool-calls reliably only with reasoning
+        # (E4B plain-OFF: 2-4/6 through the full agent).
+        #
+        # 2026-05-21: tool_choice=required + thinking-OFF was MEASURED as a way
+        # to recover the 15-May golden-era ~1s pass-1 with reliability. It works
+        # for clear commands (abre steam, mutea: 0.5-1.8s) BUT on ambiguous ones
+        # ("quita el silencio") the forced grammar runs away to max_tokens with
+        # NO tool-call (200 tok, ~6s, then forced-retry) — worse than thinking,
+        # and exactly the >5s outliers we're trying to kill. REJECTED: thinking
+        # ON is the reliable floor. Latency is recovered via the orthogonal
+        # safe wins (swa-full prefix-reuse, CUDA prefill, cap-10 subset, pass-2
+        # slimming, streaming TTS) that don't trade reliability. See
+        # latency_golden_eras.md + latency_research_prompt.md.
         if not mode.enable_thinking:
             try:
                 if _domain_subset(list(selected_tool_names)):
@@ -967,15 +1029,41 @@ class Gemma4Agent:
             # it on roughly DOUBLES the turn latency (a second reasoning pass on
             # a 4B CPU model). So enable thinking only while no tool has run yet.
             _think_now = mode.enable_thinking and len(events) == 0
+            _msgs = self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early)
+            # Re-resolve the router model per call: a tool may have injected an
+            # image (e.g. screenshot) into history mid-turn, which forces the
+            # vision preset even on a text-mode turn. See _messages_have_image.
+            _call_model = self._router_model_for(_msgs)
+            # SUMMARY-PASS slimming (2026-05-20 latency). After a tool has run on
+            # a SINGLE-ACTION turn (fast/quick_action), the next pass just
+            # summarizes the result ("Listo, abrí Steam"). There, the tool-
+            # schemas catalog is dead weight in the prefill (~800-1500 tokens)
+            # and a 512-token cap is pointless for one sentence. Decode is
+            # memory-bound at ~60 tok/s, so fewer prompt+output tokens = directly
+            # less latency. Guards STRICTLY scoped so we never break multi-step:
+            #   - only single-action modes (fast_action/quick_action), which are
+            #     not expected to chain tools (deep/research/vision keep tools);
+            #   - only after a tool ran (len(events)>0);
+            #   - never when an image was injected (vision needs room + tools).
+            # If a single-action turn somehow still wants another tool, the next
+            # loop iteration is gone, but these modes are single-shot by design.
+            # Honesty/grounding guards run on the reply text and are untouched.
+            _is_summary_pass = (
+                len(events) > 0
+                and mode.name in {"fast_action", "quick_action"}
+                and not _messages_have_image(_msgs)
+            )
+            _pass_tools = None if _is_summary_pass else selected_schemas
+            _pass_max = 160 if _is_summary_pass else mode.max_tokens
             try:
                 resp = self.client.chat(
-                    self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early),
-                    tools=selected_schemas,
+                    _msgs,
+                    tools=_pass_tools,
                     enable_thinking=_think_now,
                     thinking_budget=mode.thinking_budget,
-                    model=getattr(self, "_router_model", None),
+                    model=_call_model,
                     parallel_tool_calls=mode.parallel_tool_calls,
-                    max_tokens=mode.max_tokens,
+                    max_tokens=_pass_max,
                 )
             except Exception as exc:
                 if _looks_like_context_overflow(str(exc)):
@@ -991,13 +1079,14 @@ class Gemma4Agent:
                     selected_tool_names = retry_tool_names  # propagar al system prompt tambien
                     self.trace.event(turn_id, "subset_truncate_retry", original=original_count, kept=len(retry_tool_names))
                     selected_schemas = self.tools.schemas_for_names(retry_tool_names)
+                    _msgs_r = self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early)
                     try:
                         resp = self.client.chat(
-                            self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early),
+                            _msgs_r,
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
                             thinking_budget=mode.thinking_budget,
-                            model=getattr(self, "_router_model", None),
+                            model=self._router_model_for(_msgs_r),
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
                         )
@@ -1110,15 +1199,16 @@ class Gemma4Agent:
                         skipped_reply=(assistant_content or "")[:160],
                     )
                     _progress(progress, "forced_tool_retry", tools=len(events))
+                    _msgs_f = self._messages(mode, plan,
+                                             selected_tool_names=selected_tool_names,
+                                             user_text=raw_text_early)
                     try:
                         resp_f = self.client.chat(
-                            self._messages(mode, plan,
-                                           selected_tool_names=selected_tool_names,
-                                           user_text=raw_text_early),
+                            _msgs_f,
                             tools=selected_schemas,
                             enable_thinking=mode.enable_thinking,
                             thinking_budget=mode.thinking_budget,
-                            model=getattr(self, "_router_model", None),
+                            model=self._router_model_for(_msgs_f),
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
                             force_tool=True,
@@ -1786,6 +1876,24 @@ class Gemma4Agent:
             turn_id=turn_id,
         )
 
+    def _router_model_for(self, messages: list[dict[str, Any]]) -> str | None:
+        """Pick the router preset for THIS call based on the actual messages.
+
+        Vision preset when the outgoing messages carry an image (mode-driven
+        OR a mid-turn tool injection like a screenshot), else the text preset.
+        None when not in router mode (caller falls back to the configured
+        model). Server-driven so it works in any process."""
+        has_image = _messages_have_image(messages)
+        try:
+            from .llama_server import resolve_turn_model
+            m = resolve_turn_model(has_image=has_image)
+            if m is not None:
+                return m
+        except Exception:
+            pass
+        # Fall back to whatever was resolved at turn start.
+        return getattr(self, "_router_model", None)
+
     def _inject_tool_image(self, path: Path, result: dict[str, Any]) -> None:
         if not path.exists():
             return
@@ -2244,6 +2352,27 @@ def _domain_subset(selected_tool_names: list[str]) -> list[str]:
     (tool_call_skipped_when_expected telemetry).
     """
     return [t for t in selected_tool_names if t not in _META_TOOLS]
+
+
+def _messages_have_image(messages: list[dict[str, Any]]) -> bool:
+    """True if any message carries an image part (type=='image_url').
+
+    Router-mode lazy-vision: a TEXT turn (mode=fast_action) can still pull
+    in an image MID-turn — e.g. the `gui screenshot` tool injects its capture
+    back into history for visual reasoning. The follow-up LLM call then carries
+    that image, so it MUST go to the vision preset (which has the mmproj), not
+    the text preset. Resolving the model once per turn from mode.name misses
+    this; we re-check the actual outgoing messages on every call instead.
+    Bug: 'saca un screenshot' -> 500 'image input is not supported' because the
+    post-screenshot summarization call was sent to <profile>-text.
+    """
+    for m in messages:
+        content = m.get("content")
+        if isinstance(content, list):
+            for part in content:
+                if isinstance(part, dict) and part.get("type") == "image_url":
+                    return True
+    return False
 
 
 def _should_set_pending_intent_from_reply(

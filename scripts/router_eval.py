@@ -172,10 +172,42 @@ def _inherit_from_prev(q: str, prev: str | None,
         return set()
     if len(q.split()) > 6:           # same <=6-word gate as runtime
         return set()
+    # Step 5: mirror agent.py — do NOT inherit when the abstain head is
+    # confident the turn is conversational (smalltalk/meta), only when it's a
+    # genuine deictic continuation. Keeps with-context no-tool keep honest.
+    if _head_strongly_abstains(q):
+        return set()
     prior = executed.get(prev.strip().lower())
     if not prior:
         return set()
     return {t for t in prior if t not in _DANGEROUS}
+
+
+def _head_strongly_abstains(q: str) -> bool:
+    """True when the calibrated abstain head is confident (p >= max(thr,0.80))
+    that q is no-tool. Matches the runtime inherit gate in agent.py."""
+    try:
+        from gemma4_agent.abstain_head import (
+            load_model, build_features, is_enabled,
+        )
+        if not is_enabled():
+            return False
+        m = load_model()
+        if m is None:
+            return False
+        from gemma4_agent.intent_router import classify_intent
+        from gemma4_agent.semantic_router import suggest_tools_scored
+        intent = None
+        try:
+            intent = classify_intent(q)
+        except Exception:
+            intent = None
+        feats = build_features(q, intent=intent,
+                               scored=suggest_tools_scored(q, k=12),
+                               keyword_fired=False)
+        return m.p_no_tool(feats) >= m.threshold
+    except Exception:
+        return False
 
 
 def _evaluate(rows: list[dict], use_prev: bool = False,
