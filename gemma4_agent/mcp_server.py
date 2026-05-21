@@ -58,12 +58,23 @@ SERVER_VERSION = "0.9.1"
 
 
 _REGISTRY = None
+# Serializes the lazy build. run_http today uses a serial HTTPServer so the
+# race can't trigger, but the ToolRegistry build is heavy (AppResolver +
+# KnowledgeStore) and double-building it would be wasteful if anyone ever
+# switches to ThreadingHTTPServer. Double-checked locking, same pattern as the
+# other lazy loaders (semantic_router/reranker/tool_head/abstain_head).
+import threading as _threading
+_REGISTRY_LOCK = _threading.Lock()
 
 
 def _get_registry():
-    """Lazy build the ToolRegistry on first tools/call."""
+    """Lazy build the ToolRegistry on first tools/call (thread-safe)."""
     global _REGISTRY
-    if _REGISTRY is None:
+    if _REGISTRY is not None:
+        return _REGISTRY
+    with _REGISTRY_LOCK:
+        if _REGISTRY is not None:
+            return _REGISTRY
         from .config import AgentConfig
         from .memory import MemoryStore
         from .state import AgentState
@@ -72,14 +83,15 @@ def _get_registry():
         cfg = AgentConfig.from_env()
         memory = MemoryStore(path=cfg.memory_path)
         state = AgentState(path=cfg.state_path)
-        _REGISTRY = ToolRegistry(
+        registry = ToolRegistry(
             memory=memory,
             captures_dir=cfg.captures_dir,
             state=state,
             safety_enabled=True,
         )
         logger.info("ToolRegistry initialized (%d compound tools)",
-                    len(_REGISTRY.schema_names))
+                    len(registry.schema_names))
+        _REGISTRY = registry
     return _REGISTRY
 
 
