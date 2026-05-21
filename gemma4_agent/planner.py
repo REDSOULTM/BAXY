@@ -42,7 +42,11 @@ _SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.15"))
 _SEM_PEAK_BAND = float(_os.environ.get("GEMMA4_SEM_PEAK_BAND", "0.20"))
 # Budget for speculative related-tool deps (the gui/uia/vision/window fan-out
 # that, stacked on the semantic union, produced the operator's "11 tools").
-_RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "4"))
+_RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "3"))
+# Per-tool head firing filters: a tool must clear its threshold by this margin
+# (weak just-over-bar firings are noise), and at most this many head tools.
+_HEAD_MIN_MARGIN = float(_os.environ.get("GEMMA4_HEAD_MIN_MARGIN", "0.05"))
+_HEAD_TOP_N = int(_os.environ.get("GEMMA4_HEAD_TOP_N", "3"))
 # Cap on the semantic fallback list (used ONLY when the tool head AND keywords
 # both came up empty — a hard query we still want to take a shot at).
 _SEM_TOPN = int(_os.environ.get("GEMMA4_SEM_TOPN", "5"))
@@ -355,7 +359,14 @@ def select_tool_names(
                             from .semantic_router import embed as _emb
                             _qv = _emb(raw_text)
                             if _qv is not None:
-                                head_tools = [t for t, _ in _th.fire(_qv)]
+                                # Keep only firings with a real margin over
+                                # their threshold, and cap to the top-N: a tool
+                                # barely over its bar (margin < _HEAD_MIN_MARGIN)
+                                # is weak evidence and tends to be noise
+                                # ("minimiza VS Code" -> media_edit @ 0.14).
+                                _fired = _th.fire(_qv)
+                                head_tools = [t for t, m in _fired
+                                              if m >= _HEAD_MIN_MARGIN][:_HEAD_TOP_N]
                 except Exception:
                     head_tools = []
 
@@ -499,9 +510,17 @@ def _suggest_tools(step: str) -> list[str]:
     # steam (proper noun, identical across langs)
     if "steam" in low or re.search(r"\b(biblioteca|tienda|library|store)\b", low):
         tools.append("steam")
-    # media: song / video / play / pause
-    if re.search(r"\b(youtube|cancion|musica|video|reproduce|ponme|pon|pausa|reanuda|resume|play|stop|siguiente|anterior|"
-                 r"music|song|track|playlist|next|previous|skip|pause)\b", low):
+    # media: song / video / play / pause. NOTE: bare "pon"/"ponme" and the app
+    # name "youtube" were REMOVED from this raw trigger — "pon" is too greedy
+    # ("ponme un recordatorio" -> media), and "youtube" fired media even on
+    # "cierra youtube" (close). Real media-PLAY intent is covered by the explicit
+    # play nouns/verbs below + the streaming-platform rule (which now gates media
+    # on a play verb). "pon" only counts when followed by a media object.
+    if re.search(r"\b(cancion|musica|reproduce|reproducir|pausa|reanuda|resume|"
+                 r"play|siguiente|anterior|"
+                 r"music|song|track|playlist|next|previous|skip|pause)\b", low) or \
+       re.search(r"\b(pon|ponme|poneme)\b.*\b(cancion|musica|video|tema|playlist|"
+                 r"rock|jazz|pop|reggaeton|algo de|music|song)\b", low):
         tools.append("media")
     # audio: volume / mute
     if re.search(r"\b(volumen|mute|silencio|audio|sonido|"
@@ -625,6 +644,16 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(monitor|pantallas|layout|ventanas|escritorio|workspace|"
                  r"screen|window|desktop)\b", low):
         tools.append("desktop_layout")
+    # Window-management verbs (minimize/maximize/restore/move a window). These
+    # had NO keyword, so "minimiza la de VS Code" fell entirely to the encoder,
+    # which mis-fired (VS Code -> developer/media_edit). A window verb is an
+    # unambiguous `window` op — anchor it so the head's noise can't dominate.
+    if re.search(r"\b(minimiza|minimizar|maximiza|maximizar|restaura(r)? la ventana|"
+                 r"restaura(r)? ventana|mueve la ventana|cambia de ventana|"
+                 r"trae(r)? al frente|enfoca|foco a|"
+                 r"minimize|maximize|restore window|move (the )?window|focus (the )?window|"
+                 r"bring to front)\b", low):
+        tools.append("window")
     if re.search(r"\b(backup|respaldo|copia de seguridad|restore|restaurar|dedupe|duplicados|"
                  r"deduplicate|duplicates)\b", low):
         tools.append("backup_sync")
@@ -717,13 +746,17 @@ def _suggest_tools(step: str) -> list[str]:
         # "abre spotify" to 5-6 tools. Gate on a play verb; a plain open stays
         # tight (app only). A platform mentioned with NO open verb (e.g. just
         # "spotify") also gets media — it's likely a playback intent.
+        # media/browser ONLY on an explicit play/watch verb. A bare "abre
+        # spotify" (launch) or "cierra youtube" (close) must NOT pull playback
+        # tools — app/window cover open/close. Requiring a positive play verb
+        # (instead of "not an open verb") fixes "cierra youtube" wrongly getting
+        # media+browser.
         _play_verb = re.search(
             r"\b(pon|poneme|ponme|reproduce|reproducir|play|escucha|escuchar|"
-            r"ver|mira|mirar|watch|busca|buscar|search|siguiente|next|pausa|"
-            r"reanuda|cancion|musica|video|episodio|pelicula|capitulo)\b", low)
-        _open_verb = re.search(
-            r"\b(abre|abrir|open|lanza|lanzar|launch|inicia|iniciar|arranca)\b", low)
-        if _play_verb or not _open_verb:
+            r"ver|mira|mirar|mostrar|watch|siguiente|anterior|next|previous|"
+            r"pausa|reanuda|resume|skip|cancion|musica|tema|playlist|"
+            r"video|episodio|pelicula|serie|capitulo)\b", low)
+        if _play_verb:
             if "media" not in tools:
                 tools.append("media")
             if "browser" not in tools:
@@ -948,8 +981,16 @@ def _related_tools(name: str, text: str) -> list[str]:
         return ["audio", "state", "dependency"]
     if name in {"filesystem", "registry", "env", "download", "office", "backup_sync"}:
         return ["verify", "state"]
-    if name in {"gui", "uia", "vision", "window", "desktop_layout"}:
-        return ["gui", "uia", "vision", "window"]
+    # GUI family: only cross-link the ACTUAL automation primitives (gui/uia/
+    # vision interchange for clicking/reading the screen). A plain window op
+    # ("minimiza la ventana", "restaura") needs `window`, NOT the speculative
+    # vision/uia stack — that triple was a major source of 5-6 tool subsets on
+    # simple window commands. The per-tool head now surfaces vision/gui when the
+    # query is actually about the screen.
+    if name in {"gui", "uia", "vision"}:
+        return ["gui", "uia", "vision"]
+    if name in {"window", "desktop_layout"}:
+        return ["window"]
     if name in {"notification", "routine", "contacts", "notes_tasks", "local_calendar", "habit_tracker", "source_manager"}:
         return ["state"]
     if name == "printer_scanner":
