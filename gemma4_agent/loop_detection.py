@@ -92,17 +92,37 @@ def _result_signature(result: dict | None) -> str:
             }
         }
         canonical = json.dumps(filtered, sort_keys=True, ensure_ascii=False, default=str)
-    except TypeError:
-        canonical = repr(sorted(result.items())) if isinstance(result, dict) else repr(result)
+    except Exception:
+        # Fallback for non-serializable / unsortable results. NOTE: a dict with
+        # mixed-type keys breaks BOTH json.dumps(sort_keys=True) AND
+        # sorted(items()) with TypeError — and this is a SAFETY NET that must
+        # NEVER crash the turn it protects. So we sort by repr (always
+        # comparable) and wrap everything so any failure degrades to a coarse
+        # repr rather than propagating into the agent loop.
+        try:
+            if isinstance(result, dict):
+                canonical = repr(sorted(result.items(), key=lambda kv: repr(kv[0])))
+            else:
+                canonical = repr(result)
+        except Exception:
+            canonical = repr(result)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
 
 
 def _hash_tool_call(tool_name: str, args: dict, result_sig: str = "") -> str:
-    """Hash que incluye result_signature (result-aware)."""
+    """Hash que incluye result_signature (result-aware).
+
+    MUST never raise: this feeds the loop detector, a safety net that must not
+    crash the turn it protects. `default=str` handles non-serializable values;
+    the fallback sorts by repr (always comparable) since mixed-type arg keys
+    break both json.dumps(sort_keys=True) and sorted(items())."""
     try:
-        args_canonical = json.dumps(args or {}, sort_keys=True, ensure_ascii=False)
-    except TypeError:
-        args_canonical = repr(sorted(args.items())) if args else ""
+        args_canonical = json.dumps(args or {}, sort_keys=True, ensure_ascii=False, default=str)
+    except Exception:
+        try:
+            args_canonical = repr(sorted((args or {}).items(), key=lambda kv: repr(kv[0])))
+        except Exception:
+            args_canonical = repr(args)
     payload = f"{tool_name}::{args_canonical}::{result_sig}"
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
