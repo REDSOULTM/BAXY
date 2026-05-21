@@ -105,16 +105,21 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             system_hint=_FAST_ACTION_HINT,
             thinking_budget=384,  # enough to decide+emit a tool-call (~90 obs)
         )
-    # fast_action: smalltalk + confirmaciones cortas. base_max_tokens default
-    # (1280) era excesivo — a ~50 tok/s eso es 25s worst case si el modelo no
-    # encuentra stop. Capamos a 384 que cubre 95% de respuestas conversacionales
-    # (~7-8s wall clock max). Si el usuario quiere respuestas largas, el router
-    # lo manda a deep_action / research que mantienen su budget alto.
+    # fast_action: smalltalk + confirmaciones cortas ("hola", "gracias",
+    # "Listo, abrí Spotify"). MEDIDO (log de sesión): un "hola" generaba 512
+    # tokens (el modelo no encuentra stop y divaga) -> 512 * 24.5 ms = 12.5 s
+    # con el 26B (~40 tok/s). ESO es el "se demora 10s en un hola".
+    # Una respuesta conversacional de voz real es ~10-40 tokens. Capamos a 128
+    # (worst case: 128/40 = 3.2s en el 26B; 128/80 = 1.6s en E4B) — holgado
+    # bajo el budget 4-5s en CUALQUIER perfil. El system_hint ya pide "1-2
+    # frases MAX", así que 128 nunca trunca una respuesta legítima de voz.
+    # Si el usuario pide algo largo (explica/compara/investiga), _infer_mode
+    # lo manda a research/deep_action, que mantienen su budget alto.
     return AgentMode(
         name="fast_action",
         enable_thinking=False,
         parallel_tool_calls=False,
-        max_tokens=min(base_max_tokens, 384),
+        max_tokens=min(base_max_tokens, 128),
         system_hint=_FAST_ACTION_HINT,
     )
 

@@ -64,6 +64,100 @@ COOLDOWN_S = 0.4                 # post-transcribe wait
 WAKE_GATE_THRESHOLD = 0.3        # let speech-y audio reach wake; reject ambient
 EOS_VAD_THRESHOLD = 0.5          # stricter for end-of-speech
 
+# --- Silence gate before transcription -------------------------------------
+# Whisper HALLUCINATES on silence/near-silence: trained on YouTube captions,
+# it emits artifacts like "¡Suscríbete!" / "Gracias por ver el video" / "..."
+# when fed a buffer with no real speech. The operator saw exactly this. Guard:
+# require the captured audio to contain at least one short window whose energy
+# exceeds a speech floor, else skip transcription entirely (no command emitted).
+#
+# We use PEAK windowed RMS (not whole-clip RMS) so a brief command surrounded
+# by the trailing-silence padding (1.4s EOS) isn't diluted below the floor.
+# int16 reference levels (16 kHz mic): quiet room RMS ~50-250, ambient/typing
+# ~200-500, normal speech peaks ~800-4000. Default floor 350 sits above room
+# noise / fan / keyboard but well below conversational speech. Env-tunable so
+# the operator can raise it in a loud room or lower it for a quiet mic.
+MIN_CAPTURE_RMS = float(_os.environ.get("GEMMA4_VOICE_MIN_CAPTURE_RMS", "350"))
+# Window over which peak RMS is measured (seconds). 0.20s ~ a syllable; long
+# enough to be robust to single-sample spikes, short enough to catch one word.
+_RMS_WINDOW_S = float(_os.environ.get("GEMMA4_VOICE_RMS_WINDOW_S", "0.20"))
+
+
+def _buffer_rms(audio: "np.ndarray") -> float:
+    """Whole-buffer RMS of int16 PCM, in float64 (no overflow). 0.0 if empty.
+
+    Used as a coarse energy floor for the silence gate. For short commands
+    buried in trailing EOS-silence, prefer `peak_window_rms` (it doesn't get
+    diluted); `_buffer_rms` is the simple aggregate the echo-guard spec uses.
+    """
+    if audio is None or audio.size == 0:
+        return 0.0
+    x = audio.astype(np.float64)
+    return float(np.sqrt(np.mean(x * x)))
+
+
+# Whisper hallucination artifacts on silence (trained on YouTube captions). If
+# the transcript is ONLY one of these (or trivially so), it's almost certainly
+# a silent/near-silent capture, not a real command — drop it. Matched against
+# the accent-folded, lowercased, punctuation-stripped transcript so "¡Suscríbete!"
+# and "SUSCRÍBETE" both hit. Kept as whole-string equality (not substring) so a
+# real command CONTAINING one of these words ("suscríbete a este canal",
+# "gracias, ahora pon música") is NOT dropped.
+_SILENCE_HALLUCINATIONS = frozenset({
+    "suscribete", "suscribete a", "gracias por ver", "gracias por ver el video",
+    "gracias por ver el vídeo", "subtitulos realizados por la comunidad de amara org",
+    "subtitulos por la comunidad de amara org", "thanks for watching", "subscribe",
+    "you", "thank you", "gracias", "subtitulos", "amara org",
+    "subtitles by the amara org community",
+})
+
+
+def _fold_for_match(text: str) -> str:
+    """Lowercase, strip accents, collapse punctuation/whitespace -> for matching."""
+    import unicodedata
+    t = unicodedata.normalize("NFKD", (text or "").casefold())
+    t = "".join(ch for ch in t if not unicodedata.combining(ch))
+    # keep letters/digits/spaces only; collapse runs of space
+    t = "".join(ch if (ch.isalnum() or ch.isspace()) else " " for ch in t)
+    return " ".join(t.split())
+
+
+def _is_silence_hallucination(text: str) -> bool:
+    """True if `text` is (only) a known Whisper-on-silence artifact.
+
+    Empty/whitespace -> False (handled separately as 'empty transcript'). A real
+    command that merely contains one of these words is NOT flagged."""
+    folded = _fold_for_match(text)
+    if not folded:
+        return False
+    return folded in _SILENCE_HALLUCINATIONS
+
+
+def peak_window_rms(audio: "np.ndarray", window_samples: int) -> float:
+    """Return the maximum RMS over non-overlapping windows of `audio`.
+
+    `audio` is int16 PCM. Returns 0.0 for empty input. Computed in float64 to
+    avoid int16 overflow when squaring. A clip of pure silence -> ~0; a clip
+    with one spoken word -> the RMS of that word's loudest 0.2s window.
+    """
+    if audio is None or audio.size == 0:
+        return 0.0
+    x = audio.astype(np.float64)
+    w = max(1, int(window_samples))
+    n_full = x.size // w
+    peak = 0.0
+    if n_full > 0:
+        windows = x[: n_full * w].reshape(n_full, w)
+        # RMS per window, then the max across windows.
+        rms = np.sqrt(np.mean(windows * windows, axis=1))
+        peak = float(rms.max())
+    # Also consider the trailing partial window (a short command may not fill
+    # a whole 0.2s window after the wake phrase is stripped).
+    tail = x[n_full * w:]
+    if tail.size:
+        peak = max(peak, float(np.sqrt(np.mean(tail * tail))))
+    return peak
+
 
 class State(Enum):
     IDLE = "idle"
@@ -322,8 +416,27 @@ class VoicePipeline:
                  if self._capture_buf else np.zeros(0, dtype=np.int16))
         dur = audio.size / SAMPLE_RATE
         self._capture_buf = []
+
+        # SILENCE GATE: skip Whisper entirely if the buffer has no real speech
+        # energy. Prevents the "¡Suscríbete!" hallucination on silent captures
+        # (woke on noise, or user said nothing). Measured as peak windowed RMS
+        # so the trailing EOS-silence padding doesn't dilute a short command.
+        peak_rms = peak_window_rms(audio, int(_RMS_WINDOW_S * SAMPLE_RATE))
+        if peak_rms < MIN_CAPTURE_RMS:
+            logger.info(
+                "silence gate: peak_rms=%.0f < %.0f -> skip transcribe "
+                "(reason=%s dur=%.2fs)", peak_rms, MIN_CAPTURE_RMS, reason, dur,
+            )
+            self._cooldown_until = time.monotonic() + COOLDOWN_S
+            with self._state_lock:
+                self._state = State.COOLDOWN
+            self._wake.reset()
+            self._vad.reset()
+            return
+
         logger.info(
-            "TRANSCRIBE start (reason=%s dur=%.2fs)", reason, dur,
+            "TRANSCRIBE start (reason=%s dur=%.2fs peak_rms=%.0f)",
+            reason, dur, peak_rms,
         )
         t0 = time.time()
         raw_text = self._stt.transcribe(
@@ -348,10 +461,18 @@ class VoicePipeline:
         # Emit the command (callback may do heavy work; we're already
         # in COOLDOWN so re-wakes are gated until it completes).
         try:
-            if corrected.strip():
-                self._on_command(corrected, dur, raw_text)
-            else:
+            if not corrected.strip():
                 logger.info("empty transcript, no command emitted")
+            elif _is_silence_hallucination(raw_text) or _is_silence_hallucination(corrected):
+                # Audio passed the RMS gate but Whisper still produced one of its
+                # canonical silence artifacts ("¡Suscríbete!", "Gracias por ver
+                # el video", "you"...). Drop it — it is not a real command.
+                logger.info(
+                    "silence hallucination dropped: raw=%r corrected=%r",
+                    raw_text[:60], corrected[:60],
+                )
+            else:
+                self._on_command(corrected, dur, raw_text)
         except Exception as exc:
             logger.exception("on_command callback raised: %s", exc)
 

@@ -18,6 +18,7 @@ import logging
 import os
 import re
 import threading
+import time
 from pathlib import Path
 from queue import Empty, Queue
 from typing import Callable
@@ -29,6 +30,13 @@ logger = logging.getLogger(__name__)
 
 PIPER_MODEL_DIR = Path.home() / ".gemma4" / "models" / "piper"
 DEFAULT_VOICE = "es_MX-claude-high"
+
+# After the last audio chunk finishes playing, is_busy() stays True for this
+# grace window. Without it the controller flips to IDLE_LISTENING the instant
+# the queue drains, and the spoken sentence's tail (still coming out of the
+# speakers) leaks back into the mic as a fake "command" (self-hearing). The
+# grace keeps the mic muted until the room is actually quiet again.
+TTS_TAIL_GRACE_S = float(os.environ.get("GEMMA4_TTS_TAIL_GRACE_S", "0.6"))
 
 # URLs hardcoded de huggingface.co/rhasspy/piper-voices, main branch.
 # Si rompe en el futuro, el usuario ve el error y puede bajar manualmente.
@@ -49,6 +57,10 @@ PIPER_VOICE_URLS = {
 
 # Regex de fin de oracion (incluye signos invertidos del espanol)
 SENTENCE_END_RE = re.compile(r"[.!?;¡¿]\s|\n\n")
+# Opening-clause boundary for the first-chunk fast path: the first comma or
+# sentence-ending punctuation. Used once per utterance to flush the opening
+# words to Piper early (e.g. "Listo," before the rest of the sentence arrives).
+_OPENING_CLAUSE_RE = re.compile(r"[,.!?;…]")
 
 
 def voice_files_exist(voice: str) -> bool:
@@ -157,6 +169,13 @@ class StreamingTTS:
         self._buffer: str = ""
         self._loaded: bool = False
         self.last_error: str | None = None
+        # Busy-state tracking (tail-grace + synthesizing) so is_busy() stays
+        # True through synth+play and a short tail, preventing self-hearing.
+        self._synthesizing: bool = False
+        self._last_audio_ts: float = 0.0
+        # First-chunk fast path: flush the opening clause of an utterance early
+        # so Piper starts speaking ~1-2s sooner; re-armed on each flush().
+        self._first_chunk_done: bool = False
 
     def load(self) -> bool:
         try:
@@ -187,12 +206,25 @@ class StreamingTTS:
         return self._loaded
 
     def is_busy(self) -> bool:
-        """True while there's queued text waiting to play or currently being
-        synthesised. used by the controller to keep SPEAKING (and therefore
-        the mic mute) active until Piper is fully done — without this the
-        controller goes back to IDLE_LISTENING the instant `flush()` returns
-        and the tail of the spoken sentence leaks into Vosk as echo."""
-        return self._running and not self._queue.empty()
+        """True while TTS is occupied: queued text pending, actively
+        synthesising, or within the tail-grace window after the last audio.
+
+        Used by the controller to keep SPEAKING (and the mic muted) until Piper
+        is fully done AND the speakers are quiet — without this the controller
+        goes back to IDLE_LISTENING the instant the queue drains and the tail
+        of the spoken sentence leaks into the mic as echo (self-hearing)."""
+        if not self._running:
+            return False
+        if self._synthesizing:
+            return True
+        if not self._queue.empty():
+            return True
+        # Tail grace: stay busy briefly after the last audio finished.
+        if self._last_audio_ts and (
+            time.monotonic() - self._last_audio_ts < TTS_TAIL_GRACE_S
+        ):
+            return True
+        return False
 
     def set_muted(self, muted: bool) -> None:
         self._muted = bool(muted)
@@ -224,18 +256,43 @@ class StreamingTTS:
         self._buffer = ""
 
     def feed_text(self, chunk: str) -> int:
-        """Acumula texto del LLM y encola oraciones cerradas. Devuelve cuantas encolo."""
+        """Acumula texto del LLM y encola oraciones cerradas. Devuelve cuantas encolo.
+
+        FIRST-CHUNK FAST PATH (latency): for the FIRST emission of an utterance,
+        flush the opening clause (up to the first comma or sentence end) as soon
+        as it closes, so Piper starts speaking ~1-2s before the full sentence is
+        ready. After that first flush, normal full-sentence chunking resumes
+        (so later commas don't fragment the audio). Re-armed by flush()."""
         if not self._loaded or self._muted:
             return 0
         self._buffer += chunk
+        queued = 0
+
+        # First-chunk: emit the opening clause early (boundary = first comma or
+        # sentence end). Only once per utterance.
+        if not self._first_chunk_done:
+            m = _OPENING_CLAUSE_RE.search(self._buffer)
+            if m:
+                clause = self._buffer[: m.end()].strip()
+                self._buffer = self._buffer[m.end():]
+                if clause:
+                    self._queue.put(clause)
+                    queued += 1
+                self._first_chunk_done = True
+
+        # Normal sentence chunking for the remainder.
         sentences, rest = _split_sentences(self._buffer)
         self._buffer = rest
         for s in sentences:
             self._queue.put(s)
-        return len(sentences)
+            queued += 1
+        return queued
 
     def flush(self) -> int:
-        """Fuerza el envio del buffer pendiente como ultima oracion."""
+        """Fuerza el envio del buffer pendiente como ultima oracion.
+
+        Also re-arms the first-chunk fast path for the NEXT utterance."""
+        self._first_chunk_done = False
         if not self._loaded or self._muted:
             self._buffer = ""
             return 0
@@ -267,7 +324,14 @@ class StreamingTTS:
                     break
                 if self._muted:
                     continue
-                self._synthesize_and_play(item, out_stream)
+                # Mark busy across synth+play; stamp the finish time so is_busy()
+                # keeps the mic muted through the tail-grace window afterwards.
+                self._synthesizing = True
+                try:
+                    self._synthesize_and_play(item, out_stream)
+                finally:
+                    self._synthesizing = False
+                    self._last_audio_ts = time.monotonic()
         finally:
             if out_stream is not None:
                 try:

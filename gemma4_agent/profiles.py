@@ -109,15 +109,18 @@ _E4B_Q6_K    = str(_E4B / "gemma-4-E4B-it-Q6_K.gguf")        # 6.34 +vis @32K
 # dejaba 3.4 GB en CPU y daba 34 tok/s). E4B nunca pasaba de ~7 GB sin importar
 # la VRAM disponible — por eso vram12/16 "no usaban más de 7 GB".
 _26B = _PROJECT_ROOT / "models" / "26B-A4B"
-# MEDIDO con visión + KV en una 4060 Ti de 16 GB:
-#   Q3_K_XL + mmproj + ctx 16K = 16.1 GB  -> OOM, se desborda a RAM compartida y
-#                                            el server CRASHEA (500 proxy error).
-#   Q3_K_XL + mmproj + ctx 8K  = 15.9 GB  -> al borde, sin margen seguro.
-#   Q2_K_XL + mmproj + ctx 8K  = 14.6 GB  -> 1.4 GB de margen, 79 tok/s. SEGURO.
-# Por eso vram12/16 usan Q2_K_XL @ctx 8K: el 26B-MoE Q2 sigue muy por encima del
-# E4B-4B en calidad, entra con margen junto a la visión, y no crashea.
-_26B_Q2_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q2_K_XL.gguf")  # ~9.9 GB peso, 14.6 GB +vis+kv@8K
-_26B_Q3_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q3_K_XL.gguf")  # ~13 GB, NO entra con visión en 16 GB
+# DESGLOSE REAL DEL KV CACHE (de los logs del server, b9090, swa-full on, en
+# una 4060 Ti de 16 GB). El KV del 26B-A4B es GRANDE (MoE, muchas capas):
+#   26B-Q2: pesos GPU 10043 MiB + KV@16K 3520 MiB (320 non-SWA + 3200 SWA) +
+#           compute 527 MiB + visión mmproj ~1200 MiB  =>  ~14.9 GB @ctx16K
+#           (~11.4 GB sin visión). 100% en GPU (CPU_Mapped solo 484 MiB = embed).
+#   El KV escala lineal con ctx: ~3.5 GB @16K, ~1.8 GB @8K. ctx16K es el piso
+#   USABLE porque el system prompt + tools llega a 8894-10558 tok en multi-tool
+#   (medido: ctx 8K daba 'exceed_context_size_error' en turnos reales).
+# Por eso vram12/16 = 26B-Q2 @ctx16K (cabe ~14.9 GB en 16 GB con margen WDDM,
+# 100% GPU). El Q3_K_XL (pesos ~13 GB) NO deja lugar al KV+visión en 16 GB.
+_26B_Q2_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q2_K_XL.gguf")  # pesos 10.0 GB GPU; ~14.9 GB +vis+kv@16K
+_26B_Q3_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q3_K_XL.gguf")  # pesos ~13 GB, NO entra con KV@16K+visión en 16 GB
 _MMPROJ_26B  = str(_26B / "mmproj-F16.gguf")
 _MMPROJ_E2B  = str(_E2B / "mmproj-F16.gguf")                 # vision encoder (~1.2 GB loaded)
 _MMPROJ_E4B  = str(_E4B / "mmproj-F16.gguf")
@@ -242,15 +245,14 @@ PROFILES: dict[str, Profile] = {
     "vram12": Profile(
         name="vram12",
         display_name="VRAM 12GB",
-        # ctx 8K (no 16K/32K): MEDIDO — Q3_K_XL+visión+ctx16K = 16.1 GB -> OOM
-        # crash (overflow a RAM compartida -> server muere -> 500). ctx 8K con
-        # Q2_K_XL deja 14.6 GB con margen seguro en 16 GB. El agente rara vez
-        # usa >8K; el prefill más corto además baja latencia.
-        context_size=8192,
-        # 26B-A4B (MoE) en vez de E4B: el E4B (4B params) NUNCA pasaba de ~7 GB
-        # sin importar la VRAM — por eso "no usaba más de 7 GB". El 26B-A4B
-        # Q2_K_XL usa ~14.6 GB con visión+KV@8K, es 26B de calidad con ~4B
-        # activos (rápido), y genera ~79 tok/s. Salto enorme de calidad.
+        # ctx 16K: PISO USABLE. El system prompt + tools del router llega a
+        # 8894-10558 tokens en turnos multi-tool (MEDIDO en el log: ctx 8K daba
+        # 'exceed_context_size_error' en un turno real -> el perfil quedaba roto).
+        # El KV del 26B @16K son ~3.5 GB; aun así entra (ver desglose arriba).
+        context_size=16384,
+        # 26B-A4B (MoE: 26B capacidad, ~4B activos/token). El E4B (4B) NUNCA
+        # pasaba de ~7 GB sin importar la VRAM. El 26B-Q2 usa ~14.9 GB @ctx16K
+        # con visión, 100% en GPU. Más inteligente, aprovecha los 12-16 GB.
         model_path=_26B_Q2_K_XL,
         mmproj_path=_MMPROJ_26B,
         vision_enabled=True,
@@ -262,20 +264,20 @@ PROFILES: dict[str, Profile] = {
         camera_enabled=False,
         description=(
             "GPU de 12-16 GB. 26B-A4B MoE UD-Q2_K_XL (26B de calidad, ~4B "
-            "activos -> rápido; ~79 tok/s, usa ~14.6 GB en GPU), ctx 8K, VISIÓN "
-            "ON, todo ON. Mucho más inteligente que E4B aprovechando la VRAM."
+            "activos, 100% en GPU, usa ~14.9 GB), ctx 16K, VISIÓN ON, todo ON. "
+            "Mucho más inteligente que E4B aprovechando la VRAM."
         ),
-        est_vram_mb=14600,
+        est_vram_mb=14900,
     ),
     "vram16": Profile(
         name="vram16",
         display_name="VRAM 16GB+",
-        # ctx 8K: mismo límite de OOM medido que vram12 (Q3+vis+16K crasheaba).
-        context_size=8192,
-        # 26B-A4B MoE Q2_K_XL, mismo modelo que vram12 (Q2 entra con visión+KV
-        # @8K en 14.6 GB, margen seguro en 16 GB; Q3_K_XL crasheaba por OOM).
-        # Si el usuario configura un modelo propio mayor en Settings,
-        # GEMMA4_MODEL_PATH lo sobreescribe.
+        # ctx 16K: mismo piso usable que vram12 (el prompt multi-tool >8K).
+        context_size=16384,
+        # 26B-A4B MoE Q2_K_XL, mismo modelo que vram12 (~14.9 GB @ctx16K +visión,
+        # 100% GPU, ~1.5 GB de margen WDDM en 16 GB). El Q3_K_XL (pesos ~13 GB)
+        # no deja lugar al KV@16K + visión. Si el usuario configura un modelo
+        # propio mayor en Settings, GEMMA4_MODEL_PATH lo sobreescribe.
         model_path=_26B_Q2_K_XL,
         mmproj_path=_MMPROJ_26B,
         vision_enabled=True,
@@ -286,11 +288,11 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 16 GB+. 26B-A4B MoE UD-Q2_K_XL (~14.6 GB, ~79 tok/s, 26B de "
-            "calidad con ~4B activos), ctx 8K, VISIÓN ON, todo ON. El máximo "
+            "GPU de 16 GB+. 26B-A4B MoE UD-Q2_K_XL (~14.9 GB @ctx16K, 100% GPU, "
+            "26B de calidad con ~4B activos), ctx 16K, VISIÓN ON, todo ON. El máximo "
             "que aprovecha 16 GB sin OOM; modelo propio via Settings lo override."
         ),
-        est_vram_mb=14600,
+        est_vram_mb=14900,
     ),
     "standby": Profile(
         name="standby",

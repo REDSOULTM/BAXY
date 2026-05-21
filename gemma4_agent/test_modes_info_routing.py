@@ -1,6 +1,7 @@
 """Tests for F-004: mode selection must NOT route info queries
 (explicaciones, comparaciones, listas, cronologias) to fast_action,
-because fast_action caps max_tokens=384 and truncates mid-sentence.
+because fast_action caps max_tokens tight (128, for fast voice replies)
+and would truncate a multi-paragraph answer mid-sentence.
 """
 from __future__ import annotations
 
