@@ -49,6 +49,10 @@ export default function App() {
   // away, etc.) shows up in the UI. backend only knows on/off — we keep our
   // own ptt/listening distinction client-side; if backend reports running
   // false while we think we're on, flip to 'off' so the icon stays honest.
+  // Guards the status-sync from fighting the mount auto-start: until the
+  // auto-start has had its chance (and while a start is in flight), we must NOT
+  // flip the UI to 'off' just because the backend loop hasn't finished booting.
+  const voiceBootSettled = useRef(false);
   useEffect(() => {
     let cancelled = false;
     const sync = async () => {
@@ -59,7 +63,11 @@ export default function App() {
         if (typeof data.running !== 'boolean') return;
         setMicMode((prev) => {
           if (data.running && prev === 'off') return 'listening';
-          if (!data.running && prev !== 'off') return 'off';
+          // Only DROP to 'off' once the auto-start boot has settled — otherwise
+          // the first poll (backend still loading models) would wrongly mute the
+          // UI and cancel the auto-start. After boot, a genuine backend stop
+          // (device lost, load failed) still flips us off as before.
+          if (!data.running && prev !== 'off' && voiceBootSettled.current) return 'off';
           return prev;
         });
       } catch { /* ignore */ }
@@ -340,6 +348,27 @@ export default function App() {
       setMicLoading(false);
     }
   }, [micMode]);
+
+  // AUTO-START voice on mount, but RESPECT the user's choice. The persisted
+  // micMode ('listening'/'ptt'/'off') is the source of truth: if it's not
+  // 'off' we boot the backend voice loop automatically (so the mic is armed AND
+  // Gemma's TTS plays without the user having to click the mic first). If the
+  // user previously turned the mic OFF, we honor that and stay silent — we do
+  // NOT auto-start. One-shot: runs once after mount.
+  const didAutoStartVoice = useRef(false);
+  useEffect(() => {
+    if (didAutoStartVoice.current) return;
+    didAutoStartVoice.current = true;
+    if (micMode !== 'off') {
+      // bring the backend loop up to match the persisted on-state. Don't
+      // arm a capture (no triggerAfter) — just enable wake-word + TTS.
+      setMicModeAsync(micMode).finally(() => { voiceBootSettled.current = true; });
+    } else {
+      // user chose 'off' — nothing to start; let the sync act normally.
+      voiceBootSettled.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onMicLeftClick = useCallback(() => {
     // listening → off. off → listening. ptt → off (so left click is always
