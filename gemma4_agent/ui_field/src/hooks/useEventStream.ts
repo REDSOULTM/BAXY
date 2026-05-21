@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ServerEvent, ActivityEntry, ConvState, ModelInfo } from '../types';
+import { pushToast } from './useToast';
 
 export interface FieldReadout {
   entropy: number;
@@ -303,6 +304,13 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
           issue: ev.issue,
         },
       };
+    case 'voice_no_speech':
+      // Capture dropped (silence / Whisper hallucination). Give the user who
+      // tried to speak a brief cue instead of a silent drop to idle. Stable id
+      // dedups rapid repeats. convState returns to idle via the state event the
+      // pipeline emits right after, so we only surface the toast here.
+      pushToast({ id: 'voice-no-speech', kind: 'info', msg: 'No te entendí — probá de nuevo', ttlMs: 2500 });
+      return prev;
     case 'log_clear':
       // wipe activity entries; tokens stay (they reflect lifetime usage).
       return { ...prev, entries: [] };

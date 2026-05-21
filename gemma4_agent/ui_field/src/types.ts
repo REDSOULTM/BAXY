@@ -138,4 +138,8 @@ export type ServerEvent =
       issue: string;
     }
   /** wipe the activity log everywhere — fired by POST /log/clear. */
-  | { type: 'log_clear' };
+  | { type: 'log_clear' }
+  /** A voice capture was dropped (silence below the RMS floor, or a Whisper
+   *  silence hallucination). The user who tried to speak gets a brief "no te
+   *  entendí" cue instead of the HUD silently dropping back to idle. */
+  | { type: 'voice_no_speech' };
