@@ -28,7 +28,14 @@ class TraceLogger:
 
     def __post_init__(self) -> None:
         if self.enabled:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
+            # Tracing is DIAGNOSTICS — it must never break the agent. If the
+            # path is unwritable (parent is a file, no permission, full disk),
+            # disable instead of raising out of the agent constructor.
+            try:
+                self.path.parent.mkdir(parents=True, exist_ok=True)
+            except OSError:
+                self.enabled = False
+                return
             # Rotate on startup so a previous session that grew past the
             # cap rolls over cleanly without an extra big-file event.
             self._maybe_rotate()
@@ -50,8 +57,16 @@ class TraceLogger:
             "kind": kind,
             **_json_safe(payload),
         }
-        with self.path.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
+        # event() is called dozens of times per turn from the agent loop. A
+        # write failure (full disk, locked file, parent removed mid-session)
+        # must NEVER crash the turn — tracing is diagnostics. Swallow IO/encode
+        # errors; the turn continues without this trace line.
+        try:
+            line = json.dumps(record, ensure_ascii=False, separators=(",", ":"))
+            with self.path.open("a", encoding="utf-8") as fh:
+                fh.write(line + "\n")
+        except (OSError, TypeError, ValueError):
+            pass
 
     # ------------------------------------------------------------------
     # Rotation
