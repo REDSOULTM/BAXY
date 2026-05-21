@@ -313,16 +313,33 @@ def select_tool_names(
                 if not _is_knowledge:
                     _kw_protect = list(names)
 
+            # A genuine WORLD-KNOWLEDGE question ("de qué trata Dune", "who
+            # directed Oppenheimer") must NOT be abstained — it needs web/
+            # knowledge to look the answer up. wants_knowledge() already added
+            # those to `names`; protect them through the abstain gate (the
+            # abstain head's high p_no_tool on these is a false positive — they
+            # ARE no-PC-action, but they're a web lookup, not silence).
+            _is_world_q = False
+            try:
+                from .intent_router import wants_knowledge as _wk2
+                _is_world_q = _wk2(raw_text)
+            except Exception:
+                _is_world_q = False
+            _knowledge_keep = [n for n in names if n in {"web", "knowledge",
+                               "source_manager"}] if _is_world_q else []
+
             if do_abstain and not pending_intent and not streaming_hint_media:
                 if confident_peak or (not head_available and confident):
                     # Keep only the dominant peak (+near ties) + protected kw.
                     cut = top_score - _SEM_CONF_BAND
                     scored = [p for p in scored if p[1] >= cut]
-                    _keep = {nm for nm, _ in scored} | set(_kw_protect)
+                    _keep = ({nm for nm, _ in scored} | set(_kw_protect)
+                             | set(_knowledge_keep))
                     names = [n for n in names if n in _keep]
                 else:
                     scored = []
-                    names = list(_kw_protect)
+                    names = list(_kw_protect) + [n for n in _knowledge_keep
+                                                 if n not in _kw_protect]
             # PER-TOOL LOGIT HEAD (2026-05-21) — the research's anti-bloat
             # architecture. Instead of taking the semantic top-k / a band (which
             # drags a flat-distribution cluster like "pausa"->media,app,study,
@@ -347,6 +364,7 @@ def select_tool_names(
             # tool head. Tuned on dev to balance no-tool keep vs recall.
             _abstain_veto = (do_abstain and abstain_p >= _VETO_P
                              and not _kw_protect
+                             and not _is_world_q
                              and not pending_intent and not streaming_hint_media
                              and not confident_peak)
             head_tools: list[str] = []
@@ -764,7 +782,13 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(recordatorio graph|microsoft todo|to do|todoist|tarea pendiente cloud)\b", low):
         tools.append("reminder")
 
-    if re.search(r"\b(proceso|process|cpu|ram|gpu|disco|disk|bateria|battery|hora|time)\b", low):
+    # system info (processes, CPU/RAM/GPU/disk/battery usage, time). But NOT
+    # when it's a CONCEPT question — "qué es una GPU" / "what is a CPU" asks for
+    # an explanation, not this machine's stats. A "what is / qué es" frame in
+    # front of the hardware word means knowledge, not a system query.
+    if re.search(r"\b(proceso|process|cpu|ram|gpu|disco|disk|bateria|battery|hora|time)\b", low) \
+       and not re.search(r"\b(que es|qu[eé] es|what is|what'?s|que significa|"
+                         r"what does|explica|explicame|explain)\b", low):
         tools.append("system")
     if re.search(r"\b(portapapeles|clipboard|copiar al portapapeles|pega|paste|"
                  r"area de transferencia)\b", low):
