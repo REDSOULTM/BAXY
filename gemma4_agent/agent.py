@@ -939,7 +939,17 @@ class Gemma4Agent:
             mission_footer as _mission_footer,
             build_tool_records as _build_tool_records,
         )
-        mission_goal = _MissionGoal.from_user_text(raw_text_early or "")
+        # from_user_text runs regex intent-detection on the user text. A bug
+        # there must not crash the turn before any LLM call — fall back to an
+        # empty MissionGoal (no expected outcomes -> footer simply stays quiet).
+        try:
+            mission_goal = _MissionGoal.from_user_text(raw_text_early or "")
+        except Exception as _mg_exc:  # noqa: BLE001
+            import logging as _logging
+            _logging.getLogger(__name__).warning(
+                "MissionGoal.from_user_text failed: %s", _mg_exc)
+            # Direct constructor — can't re-run the regex path that just failed.
+            mission_goal = _MissionGoal(user_text="", expected=[])
         validator_retries_used = 0
 
         # Sprint 7.1: prompt_built_tokens — emit ONCE per turn (before the
@@ -1255,27 +1265,43 @@ class Gemma4Agent:
                 # Combina mission_goal (objective fulfilled?) con verifier counts
                 # (per-tool measured effect) y emite footer SOLO si aporta info
                 # (PARTIAL/FAILED/INTENT_NOT_FULFILLED/TOOL_OK_VERIFIER_INCONCLUSIVE).
-                _tool_records_for_outcome = _build_tool_records(events, verifier_outcomes)
-                mission_outcome = _compute_mission_outcome(
-                    mission_goal, _tool_records_for_outcome, content_for_history,
-                )
-                _mission_extra_footer = _mission_footer(mission_outcome)
-                if _mission_extra_footer:
-                    assistant_content = assistant_content + _mission_extra_footer
-                self.trace.event(
-                    turn_id, "mission_outcome",
-                    status=mission_outcome.status.value,
-                    summary=mission_outcome.summary,
-                    confirmed=mission_outcome.confirmed_count,
-                    failed=mission_outcome.failed_count,
-                    unverified=mission_outcome.unverified_count,
-                    expected_total=mission_outcome.expected_total,
-                    expected_satisfied=mission_outcome.expected_satisfied,
-                )
+                # The mission-outcome footer is post-reply ENRICHMENT (cosmetic
+                # metadata). A bug in build/compute/footer must NEVER destroy a
+                # reply the LLM already produced — same invariant as the verifier
+                # and tracing fixes. On failure keep assistant_content as-is and
+                # leave mission_outcome=None (guarded downstream).
+                mission_outcome = None
+                try:
+                    _tool_records_for_outcome = _build_tool_records(events, verifier_outcomes)
+                    mission_outcome = _compute_mission_outcome(
+                        mission_goal, _tool_records_for_outcome, content_for_history,
+                    )
+                    _mission_extra_footer = _mission_footer(mission_outcome)
+                    if _mission_extra_footer:
+                        assistant_content = assistant_content + _mission_extra_footer
+                    self.trace.event(
+                        turn_id, "mission_outcome",
+                        status=mission_outcome.status.value,
+                        summary=mission_outcome.summary,
+                        confirmed=mission_outcome.confirmed_count,
+                        failed=mission_outcome.failed_count,
+                        unverified=mission_outcome.unverified_count,
+                        expected_total=mission_outcome.expected_total,
+                        expected_satisfied=mission_outcome.expected_satisfied,
+                    )
+                except Exception as _mo_exc:  # noqa: BLE001
+                    import logging as _logging
+                    _logging.getLogger(__name__).warning(
+                        "mission outcome footer failed: %s", _mo_exc)
+                    try:
+                        self.trace.event(turn_id, "mission_outcome_error",
+                                         error=f"{type(_mo_exc).__name__}: {_mo_exc}")
+                    except Exception:
+                        pass
                 mission = evaluate_mission(events, assistant_content, plan)
                 # Enriquecer el mission dict legacy con el outcome estructural
                 # (no rompe consumidores existentes — agrega claves nuevas).
-                if isinstance(mission, dict):
+                if isinstance(mission, dict) and mission_outcome is not None:
                     mission["mission_goal_status"] = mission_outcome.status.value
                     mission["mission_goal_summary"] = mission_outcome.summary
                     mission["mission_goal_progress"] = [
