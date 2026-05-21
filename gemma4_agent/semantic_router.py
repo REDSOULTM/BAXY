@@ -166,6 +166,14 @@ _TOOL2VEC_PATH = os.path.join(
 
 
 _STATE = _State()
+# Serializes _ensure_loaded across threads. The warmup daemon thread and the
+# first user turn both call _ensure_loaded; without this lock they race —
+# double-loading the SentenceTransformer (2x memory + load time) and, worse,
+# mis-counting concurrent attempts toward _RETRY_MAX_ATTEMPTS so two racing
+# loads could falsely trip permanently_disabled. Double-checked locking: the
+# fast path (already loaded) never takes the lock.
+import threading as _threading
+_LOAD_LOCK = _threading.Lock()
 
 # Retry policy for transient failures (e.g. disk full, network blip on first
 # model download): wait at least RETRY_COOLDOWN_S before trying again, up to
@@ -190,10 +198,24 @@ def _ensure_loaded(known_tool_names: list[str] | None = None) -> bool:
     On a permanent failure (sentence-transformers not installed) we mark the
     state permanently disabled.
     """
+    # Fast path (no lock): already loaded / already permanently disabled.
     if _STATE.permanently_disabled:
         return False
     if _STATE.model is not None and _STATE.tool_embeddings is not None:
         return True
+    # Slow path: take the lock so concurrent callers (warmup thread + first
+    # turn) don't double-load or mis-count attempts. Re-check inside the lock —
+    # another thread may have finished loading while we waited.
+    with _LOAD_LOCK:
+        if _STATE.permanently_disabled:
+            return False
+        if _STATE.model is not None and _STATE.tool_embeddings is not None:
+            return True
+        return _ensure_loaded_locked(known_tool_names)
+
+
+def _ensure_loaded_locked(known_tool_names: list[str] | None) -> bool:
+    """Body of _ensure_loaded; MUST be called holding _LOAD_LOCK."""
     # Cooldown gate: do not retry too often.
     import time as _time
     now = _time.time()
