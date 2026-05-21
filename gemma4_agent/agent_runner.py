@@ -15,6 +15,7 @@ from __future__ import annotations
 import datetime
 import logging
 import queue
+import sys
 import threading
 import uuid
 from pathlib import Path
@@ -48,6 +49,16 @@ def _publish_activity(src: str, msg: str) -> None:
             "ts": _ts(),
         },
     })
+    # ALSO echo boot/system progress to stderr. The launcher's terminal showed
+    # nothing after the torch import warnings (all boot events went only to the
+    # BUS/UI), making a perfectly-progressing boot look "hung". Printing here
+    # makes the terminal a real progress log — and pinpoints any actual stall.
+    try:
+        if src in ("BOOT", "SYSTEM"):
+            sys.stderr.write(f"[gemma4 {_ts()}] {src}: {msg}\n")
+            sys.stderr.flush()
+    except Exception:
+        pass
 
 
 class AgentRunner:
