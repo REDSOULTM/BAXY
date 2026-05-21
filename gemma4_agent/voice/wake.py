@@ -54,6 +54,17 @@ LIVEKIT_WINDOW_SECONDS = 2.0
 LIVEKIT_SAMPLE_RATE = 16000
 LIVEKIT_WINDOW_SAMPLES = int(LIVEKIT_WINDOW_SECONDS * LIVEKIT_SAMPLE_RATE)
 
+# Predict throttle: the audio pump delivers 32 ms chunks (~31/s), and running
+# the conv-attention ONNX model on the full 2 s window EVERY chunk is ~31
+# inferences/second of continuous CPU while idle-listening — the dominant idle
+# cost of the wake stage (ONNX-without-throttle is what froze the PC in earlier
+# sprints). A 2 s wake phrase does NOT need 31 Hz sampling: scoring the rolling
+# window every Nth chunk still samples the phrase ~16 times. Decimate to ~8 Hz
+# (every 4th chunk) -> ~75% less wake CPU, no measurable recall loss (the window
+# is unchanged; we just score it less often). Env-tunable for tuning/measurement.
+LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
+    os.environ.get("GEMMA4_WAKE_PREDICT_EVERY_N", "4")))
+
 # Fire threshold for LiveKit conv-attention output.
 # Sprint 7 calibration (2026-05-19) on the universal held-out
 # (500 clips / 25 voices / 13 languages + 7.7h LibriSpeech negatives):
@@ -112,6 +123,8 @@ class WakeDetector:
         self._livekit_score_key: str = "hey_gemma"
         # Ring buffer of last LIVEKIT_WINDOW_SAMPLES samples (int16).
         self._lk_ring: np.ndarray = np.zeros(0, dtype=np.int16)
+        # Predict-throttle counter (see LIVEKIT_PREDICT_EVERY_N_CHUNKS).
+        self._lk_chunk_count: int = 0
 
         # ---- OWW state ----
         self._oww_model: Any = None
@@ -212,6 +225,7 @@ class WakeDetector:
         """Clear buffers and cooldowns."""
         self._lk_ring = np.zeros(0, dtype=np.int16)
         self._oww_buf = np.zeros(0, dtype=np.int16)
+        self._lk_chunk_count = 0
         self._last_fire_at = 0.0
         self._last_partial_at = 0.0
         if self._oww_model is not None:
@@ -242,12 +256,20 @@ class WakeDetector:
     # ----- LiveKit path -----------------------------------------------
 
     def _feed_livekit(self, chunk: np.ndarray) -> None:
-        # Maintain rolling 2-second buffer.
+        # Maintain rolling 2-second buffer. IMPORTANT: append EVERY chunk so the
+        # window is always current — only the predict() CALL is throttled below.
         self._lk_ring = np.concatenate([self._lk_ring, chunk])
         if self._lk_ring.size > LIVEKIT_WINDOW_SAMPLES:
             self._lk_ring = self._lk_ring[-LIVEKIT_WINDOW_SAMPLES:]
         # Wait until we have enough audio for a meaningful score.
         if self._lk_ring.size < LIVEKIT_WINDOW_SAMPLES:
+            return
+        # Throttle: score the rolling window only every Nth chunk. At 32ms/chunk
+        # this drops ~31 Hz -> ~8 Hz of ONNX inference (~75% less idle CPU) while
+        # still sampling a 2s phrase ~16 times. The buffer above stays fresh, so
+        # when we DO predict it's on the latest audio.
+        self._lk_chunk_count += 1
+        if self._lk_chunk_count % LIVEKIT_PREDICT_EVERY_N_CHUNKS != 0:
             return
         try:
             # LiveKitWakeRuntime.predict() returns a float directly.
