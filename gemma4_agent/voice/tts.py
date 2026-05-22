@@ -83,11 +83,17 @@ def download_voice(
     import urllib.request
 
     def _dl(url: str, dst: Path) -> bool:
+        # Download to a .part temp and atomically rename on success. A network
+        # drop mid-stream otherwise leaves a TRUNCATED .onnx at the final path;
+        # voice_files_exist() then reports it present, load() fails on the
+        # corrupt model, and TTS is bricked until the user manually deletes the
+        # partial file. Same atomic-write discipline as state.py / experience.py.
+        tmp = dst.with_suffix(dst.suffix + ".part")
         try:
             with urllib.request.urlopen(url, timeout=30) as resp:
                 total = int(resp.headers.get("Content-Length") or 0)
                 done = 0
-                with open(dst, "wb") as f:
+                with open(tmp, "wb") as f:
                     while True:
                         chunk = resp.read(64 * 1024)
                         if not chunk:
@@ -99,9 +105,14 @@ def download_voice(
                                 progress_cb(done, total)
                             except Exception:
                                 pass
+            os.replace(tmp, dst)  # atomic: dst is never a partial file
             return True
         except Exception as exc:
             logger.error("Piper voice download failed (%s): %s", url, exc)
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
             return False
 
     return _dl(onnx_url, PIPER_MODEL_DIR / f"{voice}.onnx") and \
