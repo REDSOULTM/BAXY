@@ -1,7 +1,14 @@
-"""Tests for F-004: mode selection must NOT route info queries
-(explicaciones, comparaciones, listas, cronologias) to fast_action,
-because fast_action caps max_tokens tight (128, for fast voice replies)
-and would truncate a multi-paragraph answer mid-sentence.
+"""Tests for F-004 + sprint de latencia (2026-05-22): mode selection must NOT
+route info queries (explicaciones, comparaciones, listas, cronologias) to
+fast_action (caps max_tokens at 128 -> truncates multi-paragraph answers).
+
+SPRINT DE LATENCIA: estas preguntas YA NO van a `research` (thinking ON, 2048
+tok) — MEDIDO en vivo que el thinking en preguntas de conocimiento es puro costo
+de latencia Y a menudo PEOR calidad (reasoning se come el budget -> content
+vacío; cx5 48s->1.1s, cx1 7s->1s). Ahora van a `fast_info`: thinking OFF, 320
+tok, hint conciso de voz. Mantiene el budget de F-004 (no trunca) y elimina el
+costo del thinking. Genuine retrieval ("buscame info actual", "noticias") sigue
+en `research`.
 """
 from __future__ import annotations
 
@@ -11,12 +18,19 @@ from gemma4_agent.modes import _infer_mode
 
 
 class TestInfoQueriesRoutedToResearch(unittest.TestCase):
-    """Queries that need longer replies must go to research mode."""
+    """Queries that need longer replies must go to fast_info (was research)."""
 
     def _assert_research(self, prompt: str):
+        # Retrieval queries still go to research.
         self.assertEqual(
             _infer_mode(prompt), "research",
             f"prompt {prompt!r} should route to research, got {_infer_mode(prompt)!r}",
+        )
+
+    def _assert_fast_info(self, prompt: str):
+        self.assertEqual(
+            _infer_mode(prompt), "fast_info",
+            f"prompt {prompt!r} should route to fast_info, got {_infer_mode(prompt)!r}",
         )
 
     def _assert_fast_action(self, prompt: str):
@@ -31,25 +45,35 @@ class TestInfoQueriesRoutedToResearch(unittest.TestCase):
             f"prompt {prompt!r} should route to quick_action, got {_infer_mode(prompt)!r}",
         )
 
-    # ---- The 6 audit-listed prompts that NEED long replies ----
+    # ---- The 6 audit-listed prompts that NEED long replies (now fast_info) ----
+    # These keep the F-004 guarantee (not truncated) but with thinking OFF for
+    # latency — measured 7-48s -> 1-2s with equal/better quality.
 
-    def test_cronological_order_routes_to_research(self):
-        self._assert_research("orden cronológico de la saga Batman Arkham")
+    def test_cronological_order_routes_to_fast_info(self):
+        self._assert_fast_info("orden cronológico de la saga Batman Arkham")
 
-    def test_compara_routes_to_research(self):
-        self._assert_research("comparame Disney+ y Netflix")
+    def test_compara_routes_to_fast_info(self):
+        self._assert_fast_info("comparame Disney+ y Netflix")
 
-    def test_explica_routes_to_research(self):
-        self._assert_research("explicame cómo funciona CDP")
+    def test_explica_routes_to_fast_info(self):
+        self._assert_fast_info("explicame cómo funciona CDP")
 
-    def test_diferencia_routes_to_research(self):
-        self._assert_research("cuál es la diferencia entre Gemma 3 y Gemma 4")
+    def test_diferencia_routes_to_fast_info(self):
+        self._assert_fast_info("cuál es la diferencia entre Gemma 3 y Gemma 4")
 
-    def test_porque_routes_to_research(self):
-        self._assert_research("porque el agente no me responde")
+    def test_porque_routes_to_fast_info(self):
+        self._assert_fast_info("porque el agente no me responde")
 
-    def test_resumeme_routes_to_research(self):
-        self._assert_research("resumime el paper de Gemma 3n")
+    def test_resumeme_routes_to_fast_info(self):
+        self._assert_fast_info("resumime el paper de Gemma 3n")
+
+    # ---- Retrieval queries STILL go to research (thinking ON, web tools) ----
+
+    def test_buscame_info_actual_routes_to_research(self):
+        self._assert_research("buscame informacion actual sobre el dolar")
+
+    def test_noticias_routes_to_research(self):
+        self._assert_research("que noticias hay sobre inteligencia artificial")
 
     # ---- The 6 control prompts that MUST stay in fast_action ----
 
@@ -75,9 +99,12 @@ class TestInfoQueriesRoutedToResearch(unittest.TestCase):
     def test_ponme_loki_infer_is_fast_action(self):
         self._assert_fast_action("ponme Loki")
 
-    def test_cuando_salio_stays_in_fast_action(self):
-        # "cuándo salió GTA 5" — short factual question, no info marker.
-        self._assert_fast_action("cuándo salió GTA 5")
+    def test_cuando_salio_routes_to_fast_info(self):
+        # "cuándo salió GTA 5" — factual question (interrogativa). Sprint de
+        # latencia: ahora va a fast_info para evitar que el router ofrezca tools
+        # de acción por "GTA" y dispare el upgrade-a-thinking + forced-retry
+        # (medido 16s); fast_info lo deja en ~2s, respuesta correcta.
+        self._assert_fast_info("cuándo salió GTA 5")
 
     def test_si_stays_in_fast_action(self):
         self._assert_fast_action("sí")

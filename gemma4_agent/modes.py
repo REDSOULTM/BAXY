@@ -50,7 +50,7 @@ class AgentMode:
         return float(max(_MIN_CALL_TIMEOUT_S, min(_MAX_CALL_TIMEOUT_S, est)))
 
 
-MODE_NAMES = {"auto", "fast_action", "quick_action", "deep_action", "vision_action", "audio_mode", "research"}
+MODE_NAMES = {"auto", "fast_action", "fast_info", "quick_action", "deep_action", "vision_action", "audio_mode", "research"}
 
 
 def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_tokens: int) -> AgentMode:
@@ -79,6 +79,26 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
                 "septiembre de 2013 en PS3 y Xbox 360. La versión de PC llegó en 2015.'"
             ),
             thinking_budget=2048,  # research reasons more, but cap the runaway
+        )
+    if inferred == "fast_info":
+        # Preguntas informativas que el modelo responde de su conocimiento
+        # paramétrico (explica/compara/diferencia/por qué/qué es), SIN necesidad
+        # de retrieval web. MEDIDO (2026-05-22, vram12-text E4B-Q6 en vivo):
+        # thinking ON en estas preguntas es PURO costo de latencia y A MENUDO
+        # PEOR calidad — el reasoning se come el budget y deja content VACÍO
+        # (finish=length): cx1 "fotosíntesis" OFF 0.73s correcto vs ON 7.2s VACÍO;
+        # cx5 "RAM vs disco" OFF 7.1s correcto vs ON VACÍO; fs2 "GTA5" OFF 0.44s
+        # vs ON 4.81s. Para recall factual el thinking NO aporta. Por eso:
+        # thinking OFF + hint conciso de voz + max_tokens moderado (evita el muro
+        # de markdown verboso que el modelo escupe sin guía). Antes estas caían
+        # en `research` (thinking ON, 2048 tok) — el origen de los outliers de
+        # 15-48s del baseline.
+        return AgentMode(
+            name="fast_info",
+            enable_thinking=False,
+            parallel_tool_calls=False,
+            max_tokens=min(base_max_tokens, 320),
+            system_hint=_INFO_HINT,
         )
     if inferred == "vision_action":
         return AgentMode(
@@ -148,6 +168,20 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         max_tokens=min(base_max_tokens, 128),
         system_hint=_FAST_ACTION_HINT,
     )
+
+
+# Info questions (fast_info): concise voice-style prose, NO markdown, thinking
+# OFF. Same anti-verbosity rules as research's reply-format but without the web
+# retrieval framing (these answer from parametric knowledge).
+_INFO_HINT = (
+    "Mode: fast_info. You are a VOICE assistant. Answer the question DIRECTLY in "
+    "1-3 short sentences of plain prose. NO markdown, NO bullets, NO **bold**, NO "
+    "headers '#', NO numbered lists, NO emojis. If the user asks for a concrete "
+    "fact (date, name, number), give it FIRST in one sentence, then at most one "
+    "short clarifying sentence. Do not pad. Ej: 'GTA 5 salió el 17 de septiembre "
+    "de 2013.' o 'La RAM es memoria volátil y rápida para datos en uso; el disco "
+    "es almacenamiento permanente y más lento.'"
+)
 
 
 # Shared by fast_action (smalltalk, thinking off) and quick_action (single
@@ -247,8 +281,28 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
         " todos los ", " todas las ",
         " pasos para ", " como funciona ",
     )
+    # Interrogativas factuales SIN verbo de acción: "cuándo salió GTA 5",
+    # "quién escribió X", "cuántos planetas hay". El router a veces ofrece tools
+    # de acción por una palabra clave del objeto ("GTA" -> game_launcher), lo que
+    # disparaba upgrade-a-thinking + forced-retry y volvía lento un turno que es
+    # SOLO una pregunta de conocimiento (fs2 medido 16s). Si hay palabra
+    # interrogativa y NINGÚN verbo de acción (action_score==0, ya chequeado
+    # arriba), es fast_info. NOTA: el `?` no es requisito (el STT a veces no lo
+    # transcribe); detectamos por palabra interrogativa folded.
+    question_markers = (
+        " cuando ", " quien ", " quienes ", " cuanto ", " cuantos ", " cuantas ",
+        " cual ", " cuales ", " donde ", " que es ", " que son ", " que fue ",
+        " a que ", " en que ano ", " en que año ",
+    )
+    if action_score == 0 and any(m in low for m in question_markers):
+        return "fast_info"
+
     if any(m in low for m in info_markers):
-        return "research"
+        # Info question answered from knowledge (no web). thinking OFF — measured
+        # faster AND higher quality than research-mode thinking (which left empty
+        # replies). Genuine retrieval ("buscame info", "noticias", "actual")
+        # already returned "research" above.
+        return "fast_info"
 
     return "fast_action"
 

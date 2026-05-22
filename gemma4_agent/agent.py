@@ -855,7 +855,29 @@ class Gemma4Agent:
         # latency_golden_eras.md + latency_research_prompt.md.
         if not mode.enable_thinking:
             try:
-                if _domain_subset(list(selected_tool_names)):
+                _dom = _domain_subset(list(selected_tool_names))
+                # LATENCIA (2026-05-22): NO upgradear a thinking cuando el turno es
+                # INFORMATIVO (fast_info) y los únicos domain-tools ofrecidos son
+                # de info-retrieval (web/knowledge/memory/...). MEDIDO en vivo:
+                # esas preguntas el modelo las responde de su conocimiento SIN
+                # llamar la tool, así que el thinking-para-tool-calling es puro
+                # costo (fs2 "GTA5" 15.6s, cx5 "RAM" 13.5s con thinking ON; las
+                # mismas OFF dan 0.4-2s y MEJOR calidad — el reasoning dejaba el
+                # content vacío). El upgrade SÍ aplica a tools de ACCIÓN (donde
+                # Gemma necesita reasoning para emitir el tool-call fiable).
+                # fast_info = una PREGUNTA informativa. El modelo la responde de
+                # su conocimiento; NO la upgradeamos a thinking aunque el router
+                # haya ofrecido tools especulativamente (web/system/etc.) — esas
+                # preguntas casi nunca llaman la tool, y el thinking-para-tool es
+                # puro costo (medido: cx5 "RAM" 14.7s con upgrade vs ~2s sin). Si
+                # excepcionalmente necesita una tool, el forced-tool-retry la
+                # rescata. Para fast_action (smalltalk/comando) el upgrade SÍ
+                # aplica salvo que los tools sean sólo info-retrieval.
+                _only_info = bool(_dom) and all(
+                    t in _INFO_RETRIEVAL_TOOLS for t in _dom)
+                _skip_upgrade = (mode.name == "fast_info") or (
+                    _only_info and mode.name == "fast_action")
+                if _dom and not _skip_upgrade:
                     from .modes import choose_mode as _choose_mode
                     mode = _choose_mode("quick_action", "quick_action", self.config.max_tokens)
                     self.trace.event(turn_id, "mode_upgraded_for_tools",
@@ -1179,7 +1201,15 @@ class Gemma4Agent:
                 _only_info_tools = bool(_domain_now) and all(
                     t in _INFO_RETRIEVAL_TOOLS for t in _domain_now
                 )
-                if _domain_now and not (_only_info_tools and _answered_in_prose):
+                # fast_info = pregunta informativa: si ya respondió en prosa, NO
+                # forzar una tool aunque el router haya ofrecido una no-info
+                # especulativa (ej. `system` para "qué es la RAM"). MEDIDO: el
+                # forced-retry quemaba 10.8s en cx5 para no llamar nada
+                # (forced_tool_retry_empty). El forced-retry sigue para turnos de
+                # ACCIÓN (fast_action/quick_action) con prosa-sin-llamada.
+                _info_answered = (mode.name == "fast_info") and _answered_in_prose
+                _skip_forced = (_only_info_tools and _answered_in_prose) or _info_answered
+                if _domain_now and not _skip_forced:
                     self._forced_tool_retry_done = True  # one per turn
                     self.trace.event(
                         turn_id, "forced_tool_retry",
