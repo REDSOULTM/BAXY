@@ -33,9 +33,12 @@ forced-tool-retry se disparaba en turnos informativos ya respondidos en prosa,
 quemando un pass de LLM completo (~11.8s). El mock no lo veía. Es exactamente el
 tipo de hallazgo que justificaba la validación E2E.
 
-**Latencia residual conocida (NO bug):** turnos donde el modelo elige pensar +
-llamar web/knowledge tardan 4–11s por el thinking budget (512 tok @ ~55 tok/s).
-Es comportamiento del modelo + tuning de `thinking_budget`. → decisión de RED.
+**Latencia residual — RESUELTA (sprint de latencia 2026-05-22).** Los turnos
+info/factual que tardaban 4–48s ahora <2.2s (modo fast_info, thinking OFF en
+preguntas de conocimiento). Corpus median 4.0s→1.9s, max 48.2s→11.6s, quality
+0.959→**0.989 (subió)**. Detalle en `bench/latency_sprint_report.md`. Restan
+acciones (5–6.6s) y multistep/research (7–11s, costo inherente de N tool-calls /
+retrieval real) — ver tradeoffs.md T1 (streaming) y T3 (multistep).
 
 ## 🔵 El rojo pre-existente ajeno (CDP/Netflix)
 
@@ -52,10 +55,15 @@ integración ambiental, no un fallo de código.
    model real; acotar descartaría turnos de usuario en silencio).
 2. **`gemma4_agent/ContextoClaude.md`** (#2): archivo sin trackear que no creé yo.
    → **Recomiendo gitignorearlo** si es scratch (parece serlo, 171KB de contexto).
-3. **Thinking budget en turnos info** (nuevo, del E2E): los turnos think+retrieve
-   tardan 4–11s. → **Recomiendo evaluar bajar `thinking_budget` del modo info**
-   (o aceptar que turnos "profundos" exceden el budget de voz). Medir antes de
-   tocar.
+3. ~~**Thinking budget en turnos info**~~ → ✅ **RESUELTA** (sprint de latencia
+   2026-05-22). Medido A/B: thinking en preguntas de conocimiento era puro costo y
+   peor calidad → modo fast_info (thinking OFF) las bajó a <2.2s con calidad
+   SUPERIOR. El thinking_budget de acciones ya estaba bien (modelo auto-limita;
+   ajustado 384→256 sin trade-off). Ver tradeoffs.md T2.
+4. **Streaming a TTS** (nuevo, tradeoffs.md T1): la infra quedó funcional (TTFT
+   130ms) pero streamear el reply al TTS choca con los guards post-generación que
+   reescriben texto. → **Recomiendo (C) UI-stream sin riesgo + (B) TTS-stream con
+   pre-check de action-claims** si aprobás adelantar el criterio del guard.
 
 (El #5 tracing-ValueError ya se RESOLVIÓ; el #1 boot E2E quedó parcialmente
 cubierto — ver "riesgos residuales".)
