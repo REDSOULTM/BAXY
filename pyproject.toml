@@ -22,3 +22,12 @@ exclude = ["gemma4_agent.docs*", "gemma4_agent.captures*", "gemma4_agent.logs*"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
+
+[tool.pytest.ini_options]
+# Registered so @pytest.mark.slow / @pytest.mark.gpu don't warn. These ONLY
+# tag tests for selection (`-m "not slow"` to skip heavy perf/model tests);
+# they do not change default collection — every test still runs by default.
+markers = [
+    "slow: heavier tests (perf budgets, large stress) — opt out with -m 'not slow'",
+    "gpu: loads a real model (ONNX/Whisper) — heavier, CPU-OK but slow",
+]
