@@ -25,6 +25,14 @@ class TestTracingFailsafe(unittest.TestCase):
         # And event() on the disabled logger is a no-op.
         t.event("turn1", "llm_start", foo="bar")  # must not raise
 
+    def test_construct_on_malformed_path_disables(self):
+        # A path with an embedded null byte raises ValueError (not OSError) from
+        # the OS layer. At the filesystem boundary ANY failure to prepare the
+        # path must disable tracing, never crash the agent constructor.
+        t = TraceLogger(path=Path("Z:/x\0bad/traces.jsonl"), enabled=True)
+        self.assertFalse(t.enabled)
+        t.event("turn1", "llm_start", foo="bar")  # must not raise
+
     def test_event_swallows_write_failure(self):
         t = TraceLogger(path=self.dir / "t.jsonl", enabled=True)
         # Repoint to an unwritable path AFTER construction to force a write fail.

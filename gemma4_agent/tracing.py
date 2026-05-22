@@ -29,11 +29,16 @@ class TraceLogger:
     def __post_init__(self) -> None:
         if self.enabled:
             # Tracing is DIAGNOSTICS — it must never break the agent. If the
-            # path is unwritable (parent is a file, no permission, full disk),
-            # disable instead of raising out of the agent constructor.
+            # path is unwritable (parent is a file, no permission, full disk ->
+            # OSError) or malformed (embedded null byte / bad chars -> ValueError
+            # from the OS layer), disable instead of raising out of the agent
+            # constructor. The exception class is irrelevant: at this filesystem
+            # boundary ANY failure to prepare the path means "can't trace", and
+            # diagnostics must never crash what they trace. event() already
+            # swallows the same (OSError, TypeError, ValueError) on write.
             try:
                 self.path.parent.mkdir(parents=True, exist_ok=True)
-            except OSError:
+            except (OSError, ValueError):
                 self.enabled = False
                 return
             # Rotate on startup so a previous session that grew past the
