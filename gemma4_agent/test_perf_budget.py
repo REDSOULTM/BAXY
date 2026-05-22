@@ -40,6 +40,31 @@ class TestCompactionBudget(unittest.TestCase):
         self.assertLess(len(out), len(big), "compaction must shrink the input")
 
 
+class TestThinkingGatingBudget(unittest.TestCase):
+    """LATENCIA (sprint 2026-05-22): info/factual questions must route to a
+    thinking-OFF mode. Thinking ON on knowledge questions was measured as pure
+    latency cost AND often worse quality (empty replies): cx5 "RAM vs disco"
+    48.2s->1.1s, corpus median 4.0s->1.9s once gated. This guards the routing
+    that delivered the win — a regression that re-enables thinking on these
+    fails here (deterministic, no server needed)."""
+
+    def test_info_and_factual_questions_do_not_think(self):
+        from gemma4_agent.modes import choose_mode
+        for q in ["explica que es la fotosintesis",
+                  "cual es la diferencia entre RAM y disco",
+                  "cuando salio GTA 5", "quien escribio el Quijote",
+                  "por que el cielo es azul", "cual es la capital de Francia"]:
+            m = choose_mode(q, "auto", 512)
+            self.assertFalse(m.enable_thinking,
+                             f"{q!r} ({m.name}) must NOT think — measured pure latency cost")
+
+    def test_actions_still_think_for_reliable_tool_calls(self):
+        # The win must NOT have broken action tool-calling (thinking ON needed).
+        from gemma4_agent.modes import choose_mode
+        m = choose_mode("abre Chrome", "auto", 512)
+        self.assertTrue(m.enable_thinking, "actions need thinking for reliable tool-calls")
+
+
 class TestSystemMessageBudget(unittest.TestCase):
     def test_system_message_warm_under_budget(self):
         """_system_message runs every turn. Budget 5ms (measured ~1.06ms with the
