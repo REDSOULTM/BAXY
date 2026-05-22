@@ -65,7 +65,8 @@ Detalle en `bench/overnight_validation.md`. Probe reproducible en
 
 ## Acumulado total de la auditoría
 
-- **Bugs reales fijados:** 21 (rondas 1–10) + 5 (ronda 11) = **26 en 11 rondas**.
+- **Bugs reales fijados:** 21 (rondas 1–10) + 5 (ronda 11) = **26 en 13 rondas**
+  (rondas 12 y 13 LIMPIAS → condición de parada cumplida).
 - **Tests nuevos esta sesión:** 18 smokes + 15 por-fix = **33 tests** nuevos.
 - **Regresión:** batch final 88 + 74 = **162 passed, 0 rojos** en los módulos
   tocados + sus dependientes.
@@ -94,6 +95,35 @@ Detalle en `bench/overnight_validation.md`. Probe reproducible en
    seguidas confirmaron que el hot-path está sólido y los bugs viven en los bordes.
    El siguiente filón de mayor valor es la **validación E2E con server real**, no
    más lectura estática.
+
+## Rondas 12-13 — condición de parada cumplida (2 rondas limpias)
+
+La ronda 11 tuvo bugs, así que seguí hasta 2 rondas consecutivas sin bug (regla
+de parada de RED).
+
+| ronda | módulos | resultado |
+|-------|---------|-----------|
+| 12 | wake.py (OWW path), tools.py (execute/dispatch branches), mcp_server (handlers) | **LIMPIO** |
+| 13 | sessions.py (SessionStore), log_recorder.py, events_bus.py | **LIMPIO** |
+
+Observaciones (eje arquitectura/fiabilidad):
+- **tools.py dispatch:** doble contención del blast radius — `execute()` envuelve
+  `impl()` en try/except, Y `_run_with_timeout` (el caller) captura Exception. Los
+  sub-dispatchers (t_system/t_audio/...) terminan en `_err`, nunca devuelven None.
+- **wake OWW:** consume el buffer ANTES de predict → un predict que falla no hace
+  crecer el buffer. Load con fallback en cascada (LiveKit → OWW custom → stock),
+  cada uno guardado.
+- **events_bus.py / log_recorder.py:** ejemplares. El bus snapshotea
+  listeners/subscribers bajo lock y luego itera SIN lock → un listener reentrante
+  (log_recorder bajo su RLock) no deadlockea. Todo escritor de disco guarda
+  OSError + JSON errors.
+
+No-bugs anotados: docstring stale en log_recorder (el bus ya suelta el lock antes
+de invocar listeners); mkdir sin guard en SessionStore.__init__ (contenido por el
+caller, user-driven). Ninguno amerita churn.
+
+**Cierre:** patrón confirmado 7ma-8va vez. **Total: 26 bugs en 13 rondas**, las 2
+últimas limpias. El hot-path y los always-on cuidados están sólidos.
 
 ## Verificación de procesos limpios (cierre)
 
