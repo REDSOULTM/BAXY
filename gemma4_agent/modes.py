@@ -149,7 +149,12 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             parallel_tool_calls=False,
             max_tokens=min(base_max_tokens, 512),
             system_hint=_FAST_ACTION_HINT,
-            thinking_budget=384,  # enough to decide+emit a tool-call (~90 obs)
+            # 256 (era 384). A/B medido (2026-05-22, vram12-text, tools app/window):
+            # el modelo AUTO-termina el reasoning a 128-346 chars para emitir el
+            # tool-call, MUY por debajo de 384 -> bajar a 256 no cambia la latencia
+            # típica (abre calculadora ~1s en ambos) NI la fiabilidad del tool-call,
+            # pero acota el worst-case runaway. Ganancia chica, costo nulo.
+            thinking_budget=256,
         )
     # fast_action: smalltalk + confirmaciones cortas ("hola", "gracias",
     # "Listo, abrí Spotify"). MEDIDO (log de sesión): un "hola" generaba 512

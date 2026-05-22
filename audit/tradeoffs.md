@@ -48,3 +48,45 @@ pena, pero necesita tu decisión sobre el balance seguridad/percepción.
 **Pregunta de 1 línea:** ¿implemento (C) UI-streaming ya (sin riesgo) y (B)
 TTS-streaming con pre-check de action-claims, o preferís que la voz espere
 siempre a los guards (status quo, percibida=total pero ya <5s con Fase 2/3)?
+
+---
+
+## T2 — thinking_budget de acciones: ya bien tuneado (decisión #3, RESUELTA con datos)
+
+A/B medido en vivo (vram12-text, 2026-05-22) del thinking_budget para turnos de
+ACCIÓN (decidir+emitir tool-call):
+
+| prompt | budget 384 | 256 | 192 | 128 |
+|--------|-----------|-----|-----|-----|
+| "abre la calculadora" | 1.15s/r128/tc1 | 1.04s/r128/tc1 | 1.03s/r128/tc1 | 1.01s/r128/tc1 |
+| "minimiza la ventana" | 1.59s/r182/tc1 | 1.56s/r182/tc1 | 1.06s/r182/tc1 | 1.06s/r182/tc1 |
+| "sube el volumen"* | 1.59s/r346/tc0 | 1.57s/r346/tc0 | 1.57s/r346/tc0 | 1.58s/r346/tc0 |
+
+(*sin la tool `audio` en el set de prueba; por eso tc0 — no es el budget.)
+
+**Conclusión:** el modelo AUTO-limita el reasoning (128-346 chars, ~50-120 tok)
+MUY por debajo de cualquier budget — el thinking_budget NO es el cuello de
+botella de la latencia de acciones. Bajé quick_action 384->256 como guarda de
+worst-case (costo nulo, sin pérdida de fiabilidad de tool-call), pero la ganancia
+típica es ~0.
+
+**El costo real de las acciones** = prefill del prompt (tools en el contexto) +
+la estructura de 2 calls (tool + summary). Una acción simple es ~3-4s (bajo el
+budget). Los SLOW restantes son MULTISTEP genuino (am2 "Chrome + Spotify" = 4
+tool-calls reales, ~10s) — eso es trabajo legítimo, no waste; documentado abajo.
+
+**Decisión #3 del MERGE_CHECKLIST: RESUELTA.** El thinking del MODO INFO sí era
+el problema (eliminado en fast_info, commit b6793e9: cx5 48s->1.1s). El thinking
+de ACCIONES ya estaba bien calibrado (el modelo se auto-limita); 384->256 es un
+ajuste menor sin trade-off.
+
+## T3 — Multistep inherentemente >5s (para conocimiento de RED, no bloqueante)
+
+"abre Chrome y luego pon música en Spotify" hace 4 tool-calls reales (~10s). Eso
+es el costo legítimo de N acciones secuenciales con verificación entre cada una;
+no hay waste que recortar sin sacrificar la verificación per-tool (invariante de
+fiabilidad). Opciones si RED quiere multistep <5s: (a) parallel_tool_calls en
+deep_action (riesgo: acciones con dependencias se desordenan), (b) saltar el
+summary pass intermedio y confirmar solo al final (ahorra 1 call/paso). Ambas
+tocan fiabilidad -> decisión de RED. RECOMENDACIÓN: dejar multistep como está
+(es minoría de turnos y el usuario espera que "hacé 3 cosas" tarde más que "hola").
