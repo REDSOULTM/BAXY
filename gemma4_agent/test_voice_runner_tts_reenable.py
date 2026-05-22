@@ -53,6 +53,26 @@ class TestTtsReEnable(unittest.TestCase):
             "enable() after disable() must restart the TTS worker",
         )
 
+    def test_tts_load_failure_does_not_block_voice(self):
+        """Coverage gap (Fase 3): if TTS load() fails, voice must still enable
+        (mic/wake/STT work; the agent just can't speak). start() must NOT be
+        called on the unloaded TTS, and re-enable must not crash."""
+        runner = VoiceRunner()
+        tts = mock.MagicMock()
+        tts.load.return_value = False     # speech unavailable
+        tts.is_loaded.return_value = False
+        pipe = mock.MagicMock()
+        pipe.load.return_value = True
+        pipe.start.return_value = True
+        with mock.patch("gemma4_agent.voice_runner.StreamingTTS", return_value=tts), \
+                mock.patch("gemma4_agent.voice_runner.VoicePipeline", return_value=pipe):
+            self.assertTrue(runner.enable(), "voice must enable even if TTS load fails")
+            tts.start.assert_not_called()  # never start an unloaded TTS worker
+            runner.disable()
+            runner._enabled = False
+            self.assertTrue(runner.enable(), "re-enable must not crash with failed TTS")
+            tts.start.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
