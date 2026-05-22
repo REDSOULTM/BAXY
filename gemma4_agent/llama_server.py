@@ -156,12 +156,46 @@ def _kill_server_on_port(config: "AgentConfig | None" = None) -> bool:
 # launcher started — without that, the endpoint built a fresh manager with no
 # handle to the running process and the switch silently did nothing.
 _SHARED_MANAGER: "LlamaServerManager | None" = None
+# get_shared_manager is called from several threads at boot (launcher main,
+# agent_runner boot daemon, profile-swap daemon). Without a lock two callers
+# could each build a manager and start a server, leaving one orphaned. Same
+# double-checked-locking pattern as the other lazy singletons in the codebase.
+_SHARED_MANAGER_LOCK = threading.Lock()
+_ATEXIT_REGISTERED = False
+
+
+def _atexit_stop_shared_manager() -> None:
+    """Stop the managed llama-server on interpreter exit (best-effort).
+
+    Without this the llama-server child is ORPHANED when the agent process
+    exits: on Windows a Popen child is not killed with its parent, so the model
+    keeps holding the full ~6 GB VRAM budget. Worse, the next launch then sees
+    a server on :8080, flags it 'external', and refuses to manage it. stop()
+    only touches OUR managed process (it no-ops on an external server and on a
+    never-started manager), so this never kills a server the user ran by hand.
+    """
+    mgr = _SHARED_MANAGER
+    if mgr is None:
+        return
+    try:
+        mgr.stop()
+    except Exception:
+        pass
 
 
 def get_shared_manager(config: "AgentConfig | None" = None) -> "LlamaServerManager":
-    global _SHARED_MANAGER
-    if _SHARED_MANAGER is None:
-        _SHARED_MANAGER = LlamaServerManager(config=config)
+    global _SHARED_MANAGER, _ATEXIT_REGISTERED
+    if _SHARED_MANAGER is not None:
+        return _SHARED_MANAGER
+    with _SHARED_MANAGER_LOCK:
+        if _SHARED_MANAGER is not None:
+            return _SHARED_MANAGER
+        mgr = LlamaServerManager(config=config)
+        if not _ATEXIT_REGISTERED:
+            import atexit
+            atexit.register(_atexit_stop_shared_manager)
+            _ATEXIT_REGISTERED = True
+        _SHARED_MANAGER = mgr  # assign last so racing readers never see a half-built mgr
     return _SHARED_MANAGER
 
 
