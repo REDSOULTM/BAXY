@@ -91,3 +91,25 @@ reales del usuario) Y el server corriendo, corrí un turno:
 El E2E cumplió su propósito: reveló y arregló un bug de latencia real
 (forced-retry espurio) que ningún test mockeado veía. Server NO modificado (era
 externo); sin procesos colgados por mi parte.
+
+## Fase 3 — Perf budget en vivo (confirmación, sin recalibrar)
+
+`test_perf_budget.py` corrido con modelos reales cargados (la prueba de wake YA
+carga el ONNX real; compaction y _system_message son CPU real):
+
+| budget | medido (post-fix) | límite | margen |
+|--------|-------------------|--------|--------|
+| compaction 10MB | 2.7 ms | 50 ms | 18× |
+| _system_message warm | 1.060 ms | 5 ms | 4.7× |
+| wake N=4 vs N=1 | ~26% | <60% | holgado |
+
+**Los 3 budgets pasan en vivo con amplio margen — el mock NO subestimaba.** NO
+recalibré nada.
+
+**Decisión consciente (anti-flakiness):** NO agregué un assert de latencia de
+TURNO contra el server LLM en vivo. La latencia E2E del turno depende del server
+y tiene varianza inherente (4-11s en turnos think+retrieve, ver Exp 2). Un assert
+así sería FLAKY — exactamente lo que la Fase 2 enseña a evitar. El budget se
+mantiene sobre los costos CPU-side DETERMINISTAS; los números E2E del turno quedan
+DOCUMENTADOS acá, no como un test no-determinista. Si RED quiere un gate E2E, que
+sea un smoke manual/CI con tolerancia amplia y skip-if-no-server.
