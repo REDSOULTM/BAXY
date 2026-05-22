@@ -201,6 +201,8 @@ class LLMClient:
         parallel_tool_calls: bool | None = None,
         max_tokens: int | None = None,
         timeout_s: float | None = None,
+        thinking_budget: int | None = None,
+        model: str | None = None,
     ) -> Iterator[dict[str, Any]]:
         """Streaming chat completion (SSE) against llama-server.
 
@@ -218,8 +220,15 @@ class LLMClient:
         en cuanto el LLM empieza a emitir. agent.py todavia usa chat() no-stream.
         """
         thinking = self.config.enable_thinking if enable_thinking is None else enable_thinking
+        ctk: dict[str, Any] = {"enable_thinking": thinking}
+        if thinking_budget is not None:
+            ctk["thinking_budget"] = int(thinking_budget)
         body: dict[str, Any] = {
-            "model": self.config.model,
+            # In router mode the agent passes the per-turn router preset name
+            # ("<profile>-text" / "<profile>-vision"); else the configured model.
+            # Without this the stream sent "gemma-4" and the router 400'd — the
+            # reason agent.py never adopted streaming. Now threaded through.
+            "model": model or self.config.model,
             "stream": True,
             "messages": messages,
             "temperature": self.config.temperature,
@@ -227,7 +236,7 @@ class LLMClient:
             "top_k": self.config.top_k,
             "repeat_penalty": self.config.repeat_penalty,
             "max_tokens": max_tokens or self.config.max_tokens,
-            "chat_template_kwargs": {"enable_thinking": thinking},
+            "chat_template_kwargs": ctk,
         }
         if self.config.min_p is not None:
             body["min_p"] = self.config.min_p
