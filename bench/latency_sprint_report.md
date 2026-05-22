@@ -199,3 +199,28 @@ el server real con resolución nativa, las acciones son 1.65-4.09s. El número d
 **En los 3 modelos / 6 perfiles: preguntas <1.1s, acciones <5s, tool-calls
 fiables, respuestas correctas.** El multistep real (N acciones) sigue siendo >5s
 por diseño (tradeoffs T3). Servers de prueba cerrados; el del usuario intacto.
+
+---
+
+## Smoke test por perfil (reproducible) 2026-05-22
+
+`bench/_profile_smoke.py`: levanta CADA modelo del lineup UNO A LA VEZ (sin
+contención de GPU — la contención fue el origen del artefacto 17s) y corre un
+mini-corpus mixto (smalltalk/factual/info/acción) con los params reales del modo,
+3× por prompt, con gates de latencia + calidad. Resultado:
+
+| perfil (modelo) | smalltalk | factual | info | acción (pass-1) | veredicto |
+|-----------------|-----------|---------|------|-----------------|-----------|
+| vram3 (E2B-Q4) | 0.12s | 0.14-0.24s | 0.29-0.32s | 1.83-1.98s tc=1 | ✅ |
+| vram4/6/8 (E4B-Q4) | 0.14s | 0.32-0.37s | 0.57-0.69s | 0.92-0.94s tc=1 | ✅ |
+| vram12/16 (E4B-Q6) | 0.15s | 0.41-0.42s | 0.88-0.91s | 1.16-1.22s tc=1 | ✅ |
+
+**21 checks, TODOS OK** (7 prompts × 3 modelos). Latencia bajo gate y tool-call
+fiable (tc=1) en los 3.
+
+NOTA de calidad (honesta): el smoke con un hint CORTO devolvió 2 smalltalk en
+inglés ("Hello..."). Verificado que es artefacto del hint mínimo del harness —
+con el system prompt REAL del agente (grande, fija ES) el smalltalk responde en
+español ("Hola de nuevo", "De nada", "Buen día"). El hint del harness se reforzó
+para fijar ES y no marcar falso-positivo. La calidad de idioma en producción es
+correcta.
