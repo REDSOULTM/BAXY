@@ -273,6 +273,22 @@ class VoicePipeline:
         if self._audio is not None:
             self._audio.stop()
             self._audio = None
+        # Reset the state machine so a later start() (the UI toggles voice
+        # off/on, reusing this SAME pipeline instance) resumes cleanly in IDLE.
+        # Without this, a stop() mid-CAPTURE leaves _state=CAPTURE + a stale
+        # _capture_buf; the next start()'s first chunk appends to that stale
+        # buffer and can fire _finish_capture -> a phantom command transcribed
+        # from the PREVIOUS session's audio.
+        with self._state_lock:
+            self._state = State.IDLE
+        self._capture_buf = []
+        self._eos_silence_count = 0
+        self._preroll.clear()
+        try:
+            self._wake.reset()
+            self._vad.reset()
+        except Exception:
+            pass
         logger.info("VoicePipeline stopped")
 
     @property
