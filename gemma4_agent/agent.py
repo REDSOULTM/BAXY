@@ -1366,25 +1366,42 @@ class Gemma4Agent:
                     self.trace.event(turn_id, "experience_record_failed", error=str(exc))
                 # Fact extraction: opt-in via env. Cooldown so we do not call
                 # the LLM every turn. Skips short / trivial turns.
+                # LATENCIA: este es un 2º LLM call (~200 tok) que NO aporta al
+                # reply del usuario — antes corría SÍNCRONO acá, sumando su decode
+                # al tiempo que el usuario espera. Lo movemos a un daemon thread:
+                # el reply se devuelve YA, la extracción de facts ocurre en
+                # background. Marcamos el cooldown ANTES de spawnnear (no dispara
+                # dos veces) y la persistencia (memory.auto_save) tiene su propio
+                # lock. Best-effort: un fallo en el thread se traza, no afecta el
+                # turno (que ya retornó).
                 if _fact_extraction_enabled():
                     cooldown = _fact_extraction_cooldown_turns()
                     if (self._turn_counter - self._fact_extract_last_run_turn) >= cooldown:
                         raw_text_now = _extract_user_text(content)
                         if raw_text_now and len(raw_text_now.split()) >= 5:
-                            try:
-                                facts = self._extract_facts(raw_text_now, assistant_content)
-                                if facts:
-                                    save_result = self.memory.auto_save(facts)
-                                    self.trace.event(turn_id, "facts_extracted",
-                                                     count=len(facts),
-                                                     added=save_result.get("added"),
-                                                     total_auto=save_result.get("total_auto"))
-                                    self._fact_extract_last_run_turn = self._turn_counter
-                                else:
-                                    self.trace.event(turn_id, "facts_extraction_empty")
-                                    self._fact_extract_last_run_turn = self._turn_counter
-                            except Exception as exc:
-                                self.trace.event(turn_id, "facts_extraction_failed", error=str(exc))
+                            self._fact_extract_last_run_turn = self._turn_counter
+                            _ft_user, _ft_reply, _ft_turn = (
+                                raw_text_now, assistant_content, turn_id)
+
+                            def _bg_extract_facts() -> None:
+                                try:
+                                    facts = self._extract_facts(_ft_user, _ft_reply)
+                                    if facts:
+                                        save_result = self.memory.auto_save(facts)
+                                        self.trace.event(_ft_turn, "facts_extracted",
+                                                         count=len(facts),
+                                                         added=save_result.get("added"),
+                                                         total_auto=save_result.get("total_auto"))
+                                    else:
+                                        self.trace.event(_ft_turn, "facts_extraction_empty")
+                                except Exception as exc:
+                                    self.trace.event(_ft_turn, "facts_extraction_failed",
+                                                     error=str(exc))
+
+                            import threading as _threading
+                            _threading.Thread(target=_bg_extract_facts,
+                                              name="gemma4-fact-extract",
+                                              daemon=True).start()
 
                 # Hotfix I 2026-05-17: pending_intent rescue when
                 # the LLM asks a clarifying question on its own
