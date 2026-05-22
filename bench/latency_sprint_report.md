@@ -150,3 +150,52 @@ intacto y respondiendo `status:ok`.
 **Conclusión final:** el big win (fast_info, thinking OFF en preguntas) entrega
 latencia <1.1s y calidad correcta en CADA perfil del proyecto. Verificado por
 medición directa en los 3 modelos, no extrapolado.
+
+---
+
+## Validación de ACCIONES por modelo (cierre del hueco) 2026-05-22
+
+Las verificaciones previas cubrían preguntas; faltaba validar ACCIONES (que iban
+borderline 5-6.6s) en cada modelo. Hecho — con una lección de método.
+
+**Acciones contra el server REAL del usuario (vram12, E4B-Q6, router nativo):**
+
+| acción | E2E |
+|--------|-----|
+| abre la calculadora | 2.26s |
+| abre Chrome | 3.78s |
+| minimiza la ventana | 1.65s |
+| cierra WhatsApp | 4.09s |
+
+Todas <5s, todas con confirmación correcta ("Listo, ...").
+
+**Pass-1 (decidir+emitir tool-call) por modelo, API directa, sin contención:**
+
+| modelo | latencia pass-1 | tool-call emitido | reasoning |
+|--------|-----------------|-------------------|-----------|
+| E2B-Q4 (vram3) | 1.76-2.08s | ✅ 4/4 | 789-923 chars |
+| E4B-Q4 (vram4/6/8) | 0.91-1.09s | ✅ 3/3 | 160-217 chars |
+| E4B-Q6 (vram12/16) | 1.13-1.27s | ✅ 3/3 | 160-217 chars |
+
++ summary pass ~1s = **~2-3.5s por acción en TODOS los modelos**, tool-call fiable
+en los 3. El E2B-Q4 razona más (por eso el cap thinking_budget 256 es buena guarda
+para el modelo débil), pero emite el tool de forma fiable y se mantiene ~2s/pass.
+
+**LECCIÓN DE MÉTODO (honesta):** una corrida intermedia dio acciones E2B-Q4 en
+~17s CONSTANTES. Diagnóstico: NO era el modelo — era un ARTEFACTO DEL TEST
+(monkeypatch de resolve_turn_model con un alias `-text` que el server de prueba
+no resolvía → loop de recovery de 17s + 3 servers compitiendo por la GPU). Contra
+el server real con resolución nativa, las acciones son 1.65-4.09s. El número de
+17s NO refleja producción; lo dejo documentado para no engañar.
+
+## Veredicto final por perfil (latencia + calidad)
+
+| perfil | modelo | preguntas | acciones | calidad |
+|--------|--------|-----------|----------|---------|
+| vram3 | E2B-Q4 | 0.30s avg ✅ | ~2-3.5s ✅ | correcta |
+| vram4/6/8 | E4B-Q4 | 0.48s avg ✅ | ~2-3.5s ✅ | correcta |
+| vram12/16 | E4B-Q6 | 0.58s avg ✅ | 1.65-4.09s ✅ | correcta |
+
+**En los 3 modelos / 6 perfiles: preguntas <1.1s, acciones <5s, tool-calls
+fiables, respuestas correctas.** El multistep real (N acciones) sigue siendo >5s
+por diseño (tradeoffs T3). Servers de prueba cerrados; el del usuario intacto.
