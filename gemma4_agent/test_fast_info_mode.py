@@ -29,6 +29,24 @@ class TestFastInfoMode(unittest.TestCase):
                   "que es la fotosintesis", "por que el cielo es azul"]:
             self.assertEqual(_infer_mode(q), "fast_info", f"{q!r} -> fast_info")
 
+    def test_win_is_profile_agnostic(self):
+        """El big win (thinking OFF en preguntas) NO debe depender del perfil. La
+        única entrada que varía por perfil en choose_mode es base_max_tokens. A/B
+        en vivo (2026-05-22) confirmó que thinking-OFF da respuestas correctas en
+        E2B-Q4 (vram3, el modelo más débil: 0.25-0.52s, todas correctas) igual que
+        en E4B-Q6 (vram12). Este test pina que el routing + el thinking-OFF + el
+        cap conciso son IDÉNTICOS sea cual sea el base_max_tokens del perfil
+        (vram3..vram16). Una regresión que ate el win a un perfil falla acá."""
+        q = "explica que es la fotosintesis"
+        # base_max_tokens spans the realistic per-profile range (config default
+        # 1280; standby 4096-ctx profiles still feed the same agent max_tokens).
+        for base in (128, 256, 512, 1280, 2048):
+            m = choose_mode(q, "auto", base)
+            self.assertEqual(m.name, "fast_info", f"base={base} must still route fast_info")
+            self.assertFalse(m.enable_thinking, f"base={base} must keep thinking OFF")
+            self.assertLessEqual(m.max_tokens, 320,
+                                 f"base={base}: concise cap holds (no per-profile blow-up)")
+
     def test_actions_do_not_route_to_fast_info(self):
         for q in ["abre Chrome", "pon musica", "cierra WhatsApp"]:
             self.assertNotEqual(_infer_mode(q), "fast_info", f"{q!r} is an action")

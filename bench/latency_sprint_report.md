@@ -83,3 +83,42 @@ percibida ya mejoró sin streaming; el streaming llevaría las acciones (5-6s) a
 
 Calidad: **0.989** (subió). Ningún turno degradó; 2 mejoraron (replies antes
 vacíos por thinking-runaway ahora confirman).
+
+---
+
+## Verificación cross-perfil del big win (2026-05-22)
+
+Pregunta: ¿el win (fast_info, thinking OFF en preguntas) aplica a TODOS los
+perfiles o solo a vram12 (E4B-Q6) donde se midió? Verificado levantando un server
+temporal con el modelo MÁS DÉBIL (E2B-Q4 = vram3) en :8091 y A/B contra E4B-Q6.
+
+**Arquitectura:** el routing + el cap de tokens viven en `modes.py`, que es
+PROFILE-AGNOSTIC. La única entrada que varía por perfil (`base_max_tokens`) es la
+misma (config default 1280) en todos -> `fast_info` = min(1280,320) = 320 en todos.
+Test `test_win_is_profile_agnostic` lo pina sobre base 128..2048.
+
+**Calidad (A/B en vivo, thinking OFF):**
+
+| pregunta | E2B-Q4 (vram3, débil) | E4B-Q6 (vram12) |
+|----------|----------------------|-----------------|
+| capital de Francia | 0.27s ✅ "París" | 0.58s ✅ |
+| qué es fotosíntesis | 0.52s ✅ correcta | 0.95s ✅ |
+| diferencia RAM/disco | 0.35s ✅ correcta | 0.98s ✅ |
+| cuándo salió GTA5 | 0.25s ✅ "17 sep 2013" | 1.90s ✅ |
+
+Thinking OFF en E2B-Q4: TODAS correctas en 0.25-0.52s. Thinking ON en E2B-Q4: 8×
+más lento (2-2.5s) y "fotosíntesis" hit finish=length (el modelo débil razona
+verboso y RIESGA truncar). **El win es igual o MÁS valioso en el modelo débil.**
+
+**Decode speed por perfil (medido):** E2B-Q4 126 tok/s · E4B-Q6 54 tok/s (2.3×).
+El `request_timeout_s` deriva de un floor fijo de 20 tok/s — conservador y SEGURO
+bajo el modelo más lento, así que no necesita override por perfil (nunca corta un
+reply legítimo en ningún perfil; el fail-fast es backstop, no gate ajustado).
+
+**Veredicto:** el big win es PROFILE-AGNOSTIC en latencia Y calidad. NO se
+justifica divergencia por perfil — los datos muestran que E2B-Q4 se comporta como
+E4B-Q6 en preguntas info (forzar knobs por perfil sería churn contra la evidencia).
+El cap conciso (320 tok + hint de 1-3 frases) mantiene los info-replies cortos en
+TODOS los modelos, así que ni el más lento (E4B-Q6, 54 tok/s) se acerca a 5s en
+una pregunta. Server temporal E2B-Q4 cerrado tras el test; el server del usuario
+(vram12, :8080) intacto.
