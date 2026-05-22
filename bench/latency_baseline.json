@@ -1,0 +1,407 @@
+[
+  {
+    "id": "st1",
+    "type": "smalltalk",
+    "prompt": "hola",
+    "median_s": 0.29,
+    "samples": [
+      0.29,
+      0.34,
+      0.13
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 5,
+    "reply": "Hola."
+  },
+  {
+    "id": "st2",
+    "type": "smalltalk",
+    "prompt": "gracias",
+    "median_s": 0.17,
+    "samples": [
+      0.17,
+      0.21,
+      0.17
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 8,
+    "reply": "De nada."
+  },
+  {
+    "id": "st3",
+    "type": "smalltalk",
+    "prompt": "como estas",
+    "median_s": 0.78,
+    "samples": [
+      0.55,
+      0.78,
+      0.83
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 52,
+    "reply": "Estoy bien, listo para ayudarte en lo que necesites."
+  },
+  {
+    "id": "st4",
+    "type": "smalltalk",
+    "prompt": "buen dia",
+    "median_s": 0.89,
+    "samples": [
+      0.89,
+      0.97,
+      0.87
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 25,
+    "reply": "Buen día. ¿Qué necesitas?"
+  },
+  {
+    "id": "st5",
+    "type": "smalltalk",
+    "prompt": "quien eres",
+    "median_s": 1.11,
+    "samples": [
+      1.18,
+      1.01,
+      1.11
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 53,
+    "reply": "Soy un agente local de Windows impulsado por Gemma 4."
+  },
+  {
+    "id": "fs1",
+    "type": "factual-simple",
+    "prompt": "cual es la capital de Francia",
+    "median_s": 0.58,
+    "samples": [
+      0.58,
+      1.59,
+      0.35
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 31,
+    "reply": "La capital de Francia es París."
+  },
+  {
+    "id": "fs2",
+    "type": "factual-simple",
+    "prompt": "cuando salio GTA 5",
+    "median_s": 15.78,
+    "samples": [
+      18.16,
+      15.27,
+      15.78
+    ],
+    "n_calls": 2,
+    "reasoning_chars": 961,
+    "content_chars": 458,
+    "reply": "GTA 5 salió el 17 de septiembre de 2013."
+  },
+  {
+    "id": "fs3",
+    "type": "factual-simple",
+    "prompt": "cuantos planetas tiene el sistema solar",
+    "median_s": 0.46,
+    "samples": [
+      1.39,
+      0.45,
+      0.46
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 37,
+    "reply": "El sistema solar tiene ocho planetas."
+  },
+  {
+    "id": "fs4",
+    "type": "factual-simple",
+    "prompt": "quien escribio Cien Anos de Soledad",
+    "median_s": 1.17,
+    "samples": [
+      1.29,
+      1.15,
+      1.17
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 60,
+    "reply": "Cien años de soledad fue escrito por Gabriel García Márquez."
+  },
+  {
+    "id": "fs5",
+    "type": "factual-simple",
+    "prompt": "en que ano llego el hombre a la luna",
+    "median_s": 0.6,
+    "samples": [
+      1.55,
+      0.6,
+      0.6
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 34,
+    "reply": "El hombre llegó a la luna en 1969."
+  },
+  {
+    "id": "fs6",
+    "type": "factual-simple",
+    "prompt": "cual es el rio mas largo del mundo",
+    "median_s": 0.57,
+    "samples": [
+      1.39,
+      0.55,
+      0.57
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 42,
+    "reply": "El río más largo del mundo es el Amazonas."
+  },
+  {
+    "id": "cx1",
+    "type": "pregunta-compleja",
+    "prompt": "explica en una frase que es la fotosintesis",
+    "median_s": 1.17,
+    "samples": [
+      1.68,
+      1.02,
+      1.17
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 165,
+    "reply": "La fotosíntesis es el proceso natural donde las plantas transforman la energía solar, el agua y el dióxido de carbono en glucosa, liberando oxígeno como subproducto."
+  },
+  {
+    "id": "cx2",
+    "type": "pregunta-compleja",
+    "prompt": "compara brevemente energia solar y eolica",
+    "median_s": 2.22,
+    "samples": [
+      2.41,
+      2.22,
+      2.19
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 142,
+    "reply": "La energía solar obtiene su poder directamente del sol, mientras que la eólica se basa en capturar y convertir la energía cinética del viento."
+  },
+  {
+    "id": "cx3",
+    "type": "pregunta-compleja",
+    "prompt": "por que el cielo es azul",
+    "median_s": 2.27,
+    "samples": [
+      2.99,
+      2.12,
+      2.27
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 137,
+    "reply": "La luz del sol se dispersa en la atmósfera, y las moléculas de aire dispersan predominantemente la luz de onda corta, que es la luz azul."
+  },
+  {
+    "id": "cx4",
+    "type": "pregunta-compleja",
+    "prompt": "explica como funciona un motor de combustion",
+    "median_s": 4.0,
+    "samples": [
+      10.82,
+      4.0,
+      1.45
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 0,
+    "content_chars": 244,
+    "reply": "Un motor de combustión quema un combustible dentro de un espacio cerrado, lo que genera una expansión rápida de gases. Esta presión empuja un pistón dentro de un cilindro, transmitiendo el movimiento rotacional necesario para mover un vehículo."
+  },
+  {
+    "id": "cx5",
+    "type": "pregunta-compleja",
+    "prompt": "cual es la diferencia entre RAM y disco",
+    "median_s": 48.23,
+    "samples": [
+      49.6,
+      48.23,
+      47.73
+    ],
+    "n_calls": 2,
+    "reasoning_chars": 0,
+    "content_chars": 477,
+    "reply": "La RAM es una memoria de acceso rápido que guarda la información que el sistema necesita usar en este momento, pero se borra al apagar. El disco, por otro lado, guarda de forma permanente todos tus archivos y el sistema operativo."
+  },
+  {
+    "id": "ac1",
+    "type": "accion",
+    "prompt": "abre la calculadora",
+    "median_s": 4.79,
+    "samples": [
+      4.03,
+      5.11,
+      4.79
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 0,
+    "content_chars": 81,
+    "reply": "Listo, abrí la Calculadora."
+  },
+  {
+    "id": "ac2",
+    "type": "accion",
+    "prompt": "abre Chrome",
+    "median_s": 6.39,
+    "samples": [
+      7.17,
+      5.29,
+      6.39
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 194,
+    "content_chars": 58,
+    "reply": "Listo, abrí Chrome."
+  },
+  {
+    "id": "ac3",
+    "type": "accion",
+    "prompt": "cierra WhatsApp",
+    "median_s": 9.1,
+    "samples": [
+      9.1,
+      16.3,
+      4.76
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 176,
+    "content_chars": 67,
+    "reply": "Listo, cerré WhatsApp.\n\n[1 no confirmada(s)]"
+  },
+  {
+    "id": "ac4",
+    "type": "accion",
+    "prompt": "minimiza la ventana",
+    "median_s": 5.79,
+    "samples": [
+      5.79,
+      5.25,
+      5.81
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 201,
+    "content_chars": 103,
+    "reply": "Listo, minimicé la ventana activa.\n\n[1 no confirmada(s)]"
+  },
+  {
+    "id": "ac5",
+    "type": "accion",
+    "prompt": "sube el volumen",
+    "median_s": 15.92,
+    "samples": [
+      17.19,
+      6.94,
+      15.92
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 519,
+    "content_chars": 358,
+    "reply": ""
+  },
+  {
+    "id": "ac6",
+    "type": "accion",
+    "prompt": "saca una captura de pantalla",
+    "median_s": 5.95,
+    "samples": [
+      5.85,
+      6.28,
+      5.95
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 162,
+    "content_chars": 112,
+    "reply": "Listo, saqué una captura de pantalla."
+  },
+  {
+    "id": "am1",
+    "type": "accion-multistep",
+    "prompt": "abre Steam y busca Hollow Knight",
+    "median_s": 8.87,
+    "samples": [
+      8.87,
+      8.06,
+      9.83
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 768,
+    "content_chars": 116,
+    "reply": ""
+  },
+  {
+    "id": "am2",
+    "type": "accion-multistep",
+    "prompt": "abre Chrome y luego pon musica en Spotify",
+    "median_s": 10.98,
+    "samples": [
+      15.08,
+      10.98,
+      8.38
+    ],
+    "n_calls": 4,
+    "reasoning_chars": 0,
+    "content_chars": 156,
+    "reply": "Listo, abrí Chrome y después puse música en Spotify."
+  },
+  {
+    "id": "am3",
+    "type": "accion-multistep",
+    "prompt": "minimiza todo y abre el bloc de notas",
+    "median_s": 12.44,
+    "samples": [
+      12.44,
+      16.55,
+      8.61
+    ],
+    "n_calls": 3,
+    "reasoning_chars": 0,
+    "content_chars": 202,
+    "reply": "\n\n[1 no confirmada(s)]"
+  },
+  {
+    "id": "rs1",
+    "type": "research",
+    "prompt": "buscame informacion actual sobre el clima de hoy",
+    "median_s": 8.52,
+    "samples": [
+      8.52,
+      3.31,
+      11.91
+    ],
+    "n_calls": 1,
+    "reasoning_chars": 1985,
+    "content_chars": 114,
+    "reply": "Necesito que me indiques una ciudad o código postal para buscarte el clima de hoy, ya que la información es local."
+  },
+  {
+    "id": "rs2",
+    "type": "research",
+    "prompt": "que noticias hay sobre inteligencia artificial",
+    "median_s": 5.17,
+    "samples": [
+      7.93,
+      2.83,
+      5.17
+    ],
+    "n_calls": 2,
+    "reasoning_chars": 354,
+    "content_chars": 237,
+    "reply": "Los reportes más recientes señalan avances en la IA generativa y en la adopción de modelos más pequeños y eficientes. También hay mucha cobertura sobre los debates regulatorios que están tomando fuerza en Europa y otras partes del mundo."
+  }
+]
