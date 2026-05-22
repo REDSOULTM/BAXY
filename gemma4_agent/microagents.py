@@ -136,16 +136,54 @@ def _default_microagents_dir() -> Path:
     return Path(__file__).parent / "microagents"
 
 
+# PERF (latencia, hot-path): build_microagents_section corre en CADA turno y
+# llamaba load_microagents(), que re-leía y re-parseaba TODOS los *.md del disco
+# (medido: ~1.13 ms/turno, >50% del costo de _system_message — 1400 read_text +
+# 2800 stat en un profile de 200 turnos). Los microagents casi nunca cambian.
+# Cacheamos el resultado por una FIRMA del directorio: {(name, mtime_ns, size)}
+# de cada *.md. Recomputar la firma es solo stat (barato); re-leemos los cuerpos
+# SOLO cuando la firma cambia. Esto preserva el live-edit (agregar/editar/borrar
+# un microagent se refleja al siguiente turno, igual que antes) sin pagar el
+# read+parse en cada turno. Cache por-directorio (normalmente uno solo).
+_MICROAGENT_CACHE: dict[str, tuple[frozenset, list["Microagent"]]] = {}
+
+
+def _dir_signature(directory: Path) -> frozenset:
+    """Stat-only fingerprint of the *.md files in `directory`. Changes iff a
+    file is added, removed, resized, or its mtime moves (i.e. an edit)."""
+    sig = set()
+    try:
+        for path in directory.glob("*.md"):
+            if path.name.lower() in {"readme.md"}:
+                continue
+            try:
+                st = path.stat()
+                sig.add((path.name, st.st_mtime_ns, st.st_size))
+            except OSError:
+                # Unreadable mid-scan -> include the name so the signature still
+                # changes when it appears/disappears; the read below will skip it.
+                sig.add((path.name, -1, -1))
+    except OSError:
+        pass
+    return frozenset(sig)
+
+
 def load_microagents(directory: Path | None = None) -> list[Microagent]:
     """Carga todos los *.md del directorio (skips README.md y archivos sin frontmatter).
 
     Devuelve lista en orden alfabético por filename. Errores de parsing se
-    loggean con warning y se skipean (nunca crashean el agente).
+    loggean con warning y se skipean (nunca crashean el agente). El resultado se
+    cachea por firma del directorio (mtime/size); se relee solo si algo cambió.
     """
     if directory is None:
         directory = _default_microagents_dir()
     if not directory.exists():
         return []
+    sig = _dir_signature(directory)
+    cache_key = str(directory)
+    cached = _MICROAGENT_CACHE.get(cache_key)
+    if cached is not None and cached[0] == sig:
+        return cached[1]
     out: list[Microagent] = []
     for path in sorted(directory.glob("*.md")):
         if path.name.lower() in {"readme.md"}:
@@ -185,6 +223,7 @@ def load_microagents(directory: Path | None = None) -> list[Microagent]:
             content=body_clean,
             source_path=path,
         ))
+    _MICROAGENT_CACHE[cache_key] = (sig, out)
     return out
 
 
