@@ -1168,7 +1168,18 @@ class Gemma4Agent:
                     _domain_now = _domain_subset(list(selected_tool_names))
                 except Exception:
                     _domain_now = []
-                if _domain_now:
+                # Don't force a tool on an INFO turn the model already answered
+                # from knowledge: if every domain tool offered is info-retrieval
+                # (web/knowledge/...) AND the model produced a substantive prose
+                # answer, the prose IS the deliverable — forcing web/knowledge
+                # here wastes a full second LLM pass (measured ~11.8s) to return
+                # nothing. The forced retry stays for ACTION tools (open/play/send)
+                # where prose-without-a-call means a skipped action.
+                _answered_in_prose = len((assistant_content or "").strip()) >= 12
+                _only_info_tools = bool(_domain_now) and all(
+                    t in _INFO_RETRIEVAL_TOOLS for t in _domain_now
+                )
+                if _domain_now and not (_only_info_tools and _answered_in_prose):
                     self._forced_tool_retry_done = True  # one per turn
                     self.trace.event(
                         turn_id, "forced_tool_retry",
@@ -2329,6 +2340,18 @@ def _is_unverified_result(result: dict[str, Any]) -> bool:
 # LLM "should have called something".
 _META_TOOLS: frozenset[str] = frozenset({
     "session", "state", "verify", "safety", "skill_load", "subagent",
+})
+
+# Info-retrieval tools: OPTIONAL grounding aids the router offers on a question
+# ("¿quién es X?"), NOT user-requested ACTIONS. A model that answers such a turn
+# from parametric knowledge (prose, no tool call) is behaving CORRECTLY — it must
+# NOT trigger the forced-tool-retry (which exists for ACTION turns where the
+# model promised "voy a abrir Steam" but skipped the call). Forcing a tool here
+# wastes a full second LLM pass on an info turn (measured E2E: 11.8s wasted on
+# "¿cuál es la capital de Francia?" — the model already answered "París" and the
+# forced web/knowledge retry burned 512 tokens to return nothing).
+_INFO_RETRIEVAL_TOOLS: frozenset[str] = frozenset({
+    "web", "knowledge", "memory", "source_manager", "fact_check", "local_search",
 })
 
 # Question-mark family: ASCII, Spanish inverted, Arabic, CJK
