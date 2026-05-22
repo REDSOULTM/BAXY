@@ -80,6 +80,13 @@ class VoiceRunner:
                     )
                 else:
                     self._tts.start()
+            elif self._tts.is_loaded():
+                # Re-enable after a disable(): disable() called _tts.stop()
+                # which killed the worker thread. start() is idempotent (no-ops
+                # if already running) — without this call the TTS queue is never
+                # consumed again and the agent goes MUTE on every voice off/on
+                # cycle. (Sibling of the 'TTS mudo sin flush' lifecycle gap.)
+                self._tts.start()
             # Pipeline (loads VAD, wake, STT models; ~1-3s blocking).
             if self._pipeline is None:
                 self._pipeline = VoicePipeline(
