@@ -138,8 +138,11 @@ def middle_ellipsis(text: str, limit: int) -> str:
     budget = limit - marker_overhead
     if budget < 20:
         # Limit too small to hold head+marker+tail meaningfully — hard cut the
-        # head and append a short ellipsis. Never returns more than `limit`+3.
-        return text[:max(1, limit)].rstrip() + "..."
+        # head and append a short ellipsis, reserving room for it so the result
+        # is STRICTLY <= limit (the compaction primitive must never grow text).
+        if limit <= 3:
+            return text[:limit]
+        return text[: limit - 3].rstrip() + "..."
     keep_start = budget // 2
     keep_end = budget - keep_start
     omitted = len(text) - keep_start - keep_end
