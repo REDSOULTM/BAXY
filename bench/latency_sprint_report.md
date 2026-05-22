@@ -122,3 +122,31 @@ El cap conciso (320 tok + hint de 1-3 frases) mantiene los info-replies cortos e
 TODOS los modelos, así que ni el más lento (E4B-Q6, 54 tok/s) se acerca a 5s en
 una pregunta. Server temporal E2B-Q4 cerrado tras el test; el server del usuario
 (vram12, :8080) intacto.
+
+---
+
+## Validación 3-way por modelo (TODOS los perfiles) 2026-05-22
+
+RED pidió asegurar latencia Y calidad PERFECTAS en cada perfil. Los 6 perfiles
+corren 3 modelos distintos; levanté los 3 en paralelo (E2B-Q4 :8091, E4B-Q4 :8092,
+E4B-Q6 :8080 del usuario) y corrí 7 prompts representativos (smalltalk + 6
+info/factual) con los parámetros reales del modo (thinking OFF, hint conciso, 320
+tok). Correctitud = keyword esperado presente.
+
+| modelo | perfiles | avg latencia | slow (≥5s) | incorrectas |
+|--------|----------|--------------|-----------|-------------|
+| **E2B-Q4** | vram3 | **0.30s** | 0/7 | 0/7 |
+| **E4B-Q4** | vram4, vram6, vram8 | **0.48s** | 0/7 | 0/7 |
+| **E4B-Q6** | vram12, vram16 | **0.58s** | 0/7 | 0/7 |
+
+**Resultado: en los 3 modelos, las 7 preguntas <1.1s y TODAS correctas.** El más
+débil (E2B-Q4) es además el más rápido (0.30s avg). Cero degradación de calidad,
+cero turnos lentos, en TODA la línea de perfiles vram3→vram16.
+
+VRAM durante el test 3-modelos-en-paralelo: 12.8 GB / 16 GB (los 3 caben). Los dos
+servers de prueba (8091/8092) cerrados tras medir; el del usuario (vram12 :8080)
+intacto y respondiendo `status:ok`.
+
+**Conclusión final:** el big win (fast_info, thinking OFF en preguntas) entrega
+latencia <1.1s y calidad correcta en CADA perfil del proyecto. Verificado por
+medición directa en los 3 modelos, no extrapolado.
