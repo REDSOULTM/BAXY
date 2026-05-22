@@ -607,11 +607,20 @@ def resolve_turn_model(has_image: bool = False,
     if not router_ids:
         return None
     if has_image:
-        vis = next((m for m in pool if m.endswith(ROUTER_VISION_SUFFIX)), None)
+        # IMPORTANTE: buscar el preset de visión en TODOS los ids advertised, NO
+        # solo en los `loaded`. En router mode (--models-max 1) el preset de
+        # visión casi siempre está UNLOADED (lazy vision: solo se carga cuando
+        # llega una imagen). Si solo miráramos `loaded` (que tiene el -text ya
+        # cargado), caeríamos al preset de texto y mandaríamos la imagen ahí ->
+        # HTTP 500 "image input is not supported / provide the mmproj" (el bug
+        # del screenshot). Pedir el -vision por nombre dispara la carga on-demand
+        # del child con mmproj. Solo si NO existe ningún -vision (perfil sin
+        # mmproj real) caemos a texto.
+        vis = next((m for m in ids if m.endswith(ROUTER_VISION_SUFFIX)), None)
         if vis:
             return vis
-        # no vision preset loaded -> fall back to a text preset (server has only
-        # text), so a mid-turn image at least doesn't 400.
+        # no vision preset advertised at all -> fall back to text (server has no
+        # vision support), so a mid-turn image at least doesn't 400/500-loop.
     text = next((m for m in pool if m.endswith(ROUTER_TEXT_SUFFIX)), None)
     if text:
         return text
