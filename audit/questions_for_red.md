@@ -24,22 +24,35 @@ el contrato decía "never grows" y no lo cumplía en el fallback. Ya resuelto, l
 anoto para que sepas que el primitivo cambió levemente (los tests round-7 siguen
 verdes).
 
-## 4. (INFO — no actioné) `_inbox` del agent_runner es una Queue() sin límite
-**Eje:** fiabilidad. `submit()` encola turnos sin bound. En la práctica está
-acotado por la tasa de input humano + el per-mode timeout (round 1) que evita
-hangs indefinidos, así que NO lo consideré bug real (no hay productor runaway
-plausible). Si alguna vez un wake-word con FP alto floodea comandos, podría
-crecer. **Recomendación:** dejarlo como está salvo que veas el síntoma; un
-maxsize con drop-oldest sería el fix, pero hoy es especulativo.
+## 4. (DECISIÓN DE RED — comportamiento visible) `_inbox` del agent_runner sin límite
+**Eje:** fiabilidad vs UX. `submit()` encola turnos sin bound. En el threat model
+realista NO leakea: un turno se drena y procesa serialmente antes de que llegue el
+siguiente input humano, y el per-mode timeout (round 1) evita hangs. El único
+vector de flood es una tormenta de wake-FP — que es un bug a arreglar EN LA FUENTE,
+no acá. **Por qué necesita a RED:** la única "mejora" sería un bound, pero acotar
+una cola de TURNOS DE USUARIO con drop-oldest los descarta SILENCIOSAMENTE (viola
+"never degrade silently"), y rechazarlos con señal visible es un cambio de
+comportamiento de UI. Ninguna opción es un fix unilateral seguro.
+**Pregunta refinada (1 línea):** ¿querés un bound duro en `_inbox` (ej. 32) que
+RECHACE con un toast "estoy ocupado, repetí" — o lo dejamos unbounded (seguro hoy)?
 
-## 5. (INFO) Tracing con path de byte-null crashea (ValueError, no OSError)
-**Eje:** fiabilidad. El fix de la ronda 7 captura OSError (full disk / permiso /
-parent-es-file — los fallos REALES). Un path con `\0` embebido tira ValueError
-antes, que NO se captura. NO es alcanzable en prod (ningún config genera un null
-byte en un path). Lo dejé así a propósito: ampliar el except a ValueError
-escondería bugs de programación legítimos. Anotado por completitud.
+## 5. ✅ RESUELTO (commit 2e9a48f) — Tracing con path malformado
+Era: `__post_init__` capturaba solo OSError; un path con null byte tira ValueError
+y crasheaba el constructor del agente. **Resuelto:** amplié a `(OSError,
+ValueError)` SOLO en `__post_init__` (el boundary del filesystem). Razonamiento:
+el diagnóstico jamás debe crashear lo que traza, y la clase de excepción es
+irrelevante al preparar un path; NO esconde bugs de lógica (es IO, no agente).
+Test nuevo `test_construct_on_malformed_path_disables`.
 
 ---
 
-Sin BLOCKED_NEW_DEP esta sesión (no necesité instalar nada). Sin tradeoffs.md
-(ningún fix mejoró un eje degradando otro — todos fueron lifecycle/teardown puro).
+## Items que quedan para RED (resumen)
+- **#1** boot E2E con GPU libre (cuando puedas, no es bug).
+- **#2** ¿gitignorear/borrar `gemma4_agent/ContextoClaude.md`? (no lo toco: no lo creé).
+- **#3** info (ya resuelto en su momento, sin acción pendiente).
+- **#4** decisión de producto sobre el bound de `_inbox` (pregunta de 1 línea arriba).
+
+BLOCKED_NEW_DEP (sesión de continuación): `hypothesis`, `pytest-cov`/`coverage`
+NO están instalados. Fase 2 cae a tests table-driven; Fase 3 a análisis manual de
+coverage. Si querés property-based + coverage automatizado, autorizá instalarlos.
+Sin tradeoffs.md (el fix de #5 fue mejora pura de fiabilidad, sin degradar ejes).
