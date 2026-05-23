@@ -1722,6 +1722,19 @@ class Gemma4Agent:
                 fn = raw_call.get("function") or {}
                 name = fn.get("name", "")
                 args, parse_error = _parse_args(fn.get("arguments", {}))
+                # AUTO-REPAIR de path (2026-05-23, informe B): el modelo (E4B,4B)
+                # encadena search->open pero llama office.open / media.play /
+                # filesystem.read con path AUSENTE o inválido (no copia el
+                # resultado del search). En vez de fallar "ruta no válida",
+                # rellenamos el path con el PRIMER resultado del filesystem.search
+                # exitoso más reciente del turno. Determinista, NO ejecuta una
+                # tool que el LLM no eligió — solo repara su argumento. Bug #847.
+                if isinstance(args, dict) and not parse_error:
+                    repaired = self._autorepair_path_from_search(name, args, events)
+                    if repaired is not None:
+                        self.trace.event(turn_id, "path_autorepaired",
+                                         tool=name, path=repaired)
+                        args = {**args, "path": repaired}
                 in_subset = name in subset_set
                 self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset, parse_error=parse_error)
                 if not in_subset:
@@ -2166,6 +2179,61 @@ class Gemma4Agent:
                 "tool-call usando el primer resultado. No te detengas en la "
                 "búsqueda si el usuario pidió una acción sobre lo encontrado."
             )
+        return None
+
+    # Tools que abren/leen/reproducen UN archivo y necesitan `path`. Si el LLM
+    # las llama tras un search sin copiar el path, lo rellenamos del search.
+    _PATH_CONSUMER_TOOLS = frozenset({"office", "media", "filesystem", "document"})
+
+    @staticmethod
+    def _first_path_from_search_result(result: dict[str, Any]) -> str | None:
+        """Extrae el primer path de un resultado de filesystem.search. Robusto a
+        matches=[{path:...}], paths=[...], results=[...]."""
+        for key in ("matches", "paths", "results", "files", "items"):
+            items = result.get(key)
+            if isinstance(items, list) and items:
+                first = items[0]
+                if isinstance(first, str):
+                    return first
+                if isinstance(first, dict):
+                    for pk in ("path", "fullpath", "filepath", "abspath"):
+                        if isinstance(first.get(pk), str):
+                            return first[pk]
+        return None
+
+    def _autorepair_path_from_search(
+        self, name: str, args: dict[str, Any], events: list["ToolEvent"],
+    ) -> str | None:
+        """Si `name` consume un path pero args no trae uno válido, devuelve el
+        primer path del filesystem.search exitoso más reciente. None si no aplica
+        (no es consumer, ya tiene path válido, o no hubo search)."""
+        if name not in self._PATH_CONSUMER_TOOLS:
+            return None
+        action = str(args.get("action") or "").casefold()
+        # solo acciones que abren/leen/reproducen algo concreto
+        if action not in ("open", "play", "read", "open_document", ""):
+            return None
+        cur = args.get("path") or args.get("file") or args.get("filepath")
+        if isinstance(cur, str) and cur.strip() and ("\\" in cur or "/" in cur):
+            return None  # ya tiene un path que parece absoluto -> no tocar
+        # buscar el último filesystem.search OK con resultados
+        for ev in reversed(events):
+            if getattr(ev, "name", "") != "filesystem":
+                continue
+            res = getattr(ev, "result", None)
+            if not isinstance(res, dict) or not res.get("ok"):
+                continue
+            if "search" not in str(res.get("action") or "").casefold():
+                continue
+            p = self._first_path_from_search_result(res)
+            if p:
+                # resolver a absoluto respecto al root del search si hace falta
+                root = res.get("root")
+                if root and not ("\\" in p[:3] or "/" in p[:1] or ":" in p[:3]):
+                    from pathlib import Path as _P
+                    p = str(_P(str(root)) / p)
+                return p
+            break
         return None
 
     def _image_is_for_llm(
