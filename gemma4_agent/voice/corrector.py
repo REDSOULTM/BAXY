@@ -41,11 +41,81 @@ logger = logging.getLogger(__name__)
 #   'aurekrom' vs 'chrome' = 43 (Whisper's mistranscription score)
 #   'benson mould' vs 'benson boone' = 66
 #   'cross' vs 'chrome' = 55
-# These are string-edit distances. Phonetic similarity (Metaphone/
-# Soundex) would catch them better; that's a future enhancement.
-# For now we use 65 to catch obvious-but-not-identical cases like
-# 'Mould -> Boone' while leaving truly distant tokens alone.
+# These are string-edit distances. We ALSO compare phonetic codes
+# (Metaphone) below — see PHONETIC_THRESHOLD.
 DEFAULT_THRESHOLD = 65
+
+# Phonetic threshold (0-100). Applied to fuzz.ratio OVER the Metaphone codes
+# of the window vs the inventory item. STT Tier-1 (2026-05-22): los
+# anglicismos que Whisper-small fonetiza al español ("Chrome"->"aurekrom",
+# "Steam"->"estimulo", "Gemma"->"jema", "Spotify"->"espotify") son matches
+# FONÉTICOS, inalcanzables por edit-distance de texto. Medido contra los casos
+# reales de los traces: positivos ("estimulo"->steam=75, "espotify"->spotify=93,
+# "netflis"->netflix=91, "jema"->gemma=100) caen ≥75; negativos (palabras
+# comunes "abre"=40, "pon"=40, "musica"=36, "hola"=22) caen ≤40. 72 separa
+# limpio sin falsos positivos. Fuente: compass research (Sun et al. arXiv
+# 2309.09552, +10% recall code-switching con phonetic matching + Whisper frozen).
+# jellyfish.metaphone es inglés-tuned, lo cual ENCAJA: el problema es justamente
+# anglicismos ingleses mal oídos en fonología española.
+PHONETIC_THRESHOLD = 78
+
+# jellyfish es opcional: si falta, el corrector degrada a solo-texto (la rama
+# fonética se desactiva, sin romper). Se carga una vez a nivel módulo.
+try:
+    import jellyfish as _jellyfish
+    _HAS_PHONETIC = True
+except Exception:  # pragma: no cover - depende del entorno
+    _jellyfish = None
+    _HAS_PHONETIC = False
+
+
+# Stop-list de palabras españolas frecuentes que NUNCA deben corregirse contra
+# el inventario, aunque colisionen fuzzy/fonéticamente con un verbo o app. Bug
+# PRE-EXISTENTE detectado 2026-05-22: "musica"->"buscar" (txt_adj 67>umbral),
+# "guerra"->"cierra"/"sierra". Son palabras válidas del español que el corrector
+# corrompía. La investigación (compass, Sun et al.) recomienda exactamente este
+# "cap" de vocabulario frecuente contra over-correction. Normalizado (sin
+# acentos). Solo palabras de contenido común que colisionan; NO incluir términos
+# que el user podría querer como nombre propio.
+_SPANISH_STOPWORDS = frozenset({
+    "musica", "cancion", "canciones", "tema", "temas", "video", "videos",
+    "guerra", "tierra", "sierra", "fecha", "hora", "dia", "noche", "tarde",
+    "luz", "ventana", "ventanas", "volumen", "sistema", "pantalla", "archivo",
+    "carpeta", "correo", "mensaje", "foto", "imagen", "musical",
+    "hola", "gracias", "adios", "bien", "mal", "ahora", "luego", "hoy", "manana",
+    "que", "cual", "quien", "como", "cuando", "donde", "porque", "cuanto",
+    # preposiciones/conjunciones cortas que colisionan con verbos ("en"->"enciende")
+    "en", "de", "la", "el", "lo", "un", "una", "con", "por", "para", "del",
+    "los", "las", "al", "se", "su", "mi", "tu", "y", "o", "a",
+})
+
+
+# Verbos de COMANDO que licencian corregir el TOKEN SIGUIENTE (el argumento).
+# Diseño estructural (round 2, 2026-05-22): el corrector token-por-token sobre
+# TODO el transcript corrompía habla real ("persona"->"prende", "el hombre"->
+# "el Chrome"). Los nombres propios del inventario aparecen en POSICIÓN DE
+# ARGUMENTO: "abre <APP>", "pon <X> en <STREAMER>". Frases declarativas
+# conversacionales ("la granizada destruyó...") NO tienen verbo-de-comando
+# inicial, así que NO se corrigen. Esto elimina la corrupción de raíz sin una
+# lista infinita de stopwords. (doc 1 §8.4 "skill prefix biasing"; patrón de
+# Alexa/Google: el ASR solo resuelve el slot tras el intent.)
+_COMMAND_VERB_ROOTS = (
+    "abre", "abri", "cierra", "cerr", "pon", "pone", "ponme", "reproduc",
+    "toca", "play", "prende", "prend", "enciende", "encende", "busca", "busc",
+    "mira", "ver", "escucha", "escuch", "open", "close", "watch", "search",
+    "mete", "metel", "dale", "lanza", "ejecuta", "inicia", "arranca",
+)
+# Conectores que licencian corregir el siguiente token ("X en <STREAMER>",
+# "cancion de <ARTIST>"). Posición de argumento secundaria.
+_ARG_CONNECTORS = frozenset({"en", "de", "del", "con", "a"})
+
+
+def _licenses_next(token_norm: str) -> bool:
+    """True si `token_norm` es un verbo de comando o conector que habilita la
+    corrección del token siguiente (posición de argumento)."""
+    if token_norm in _ARG_CONNECTORS:
+        return True
+    return any(token_norm.startswith(r) for r in _COMMAND_VERB_ROOTS)
 
 
 def _normalise(s: str) -> str:
@@ -58,6 +128,19 @@ def _normalise(s: str) -> str:
     return s
 
 
+def _metaphone(s: str) -> str:
+    """Metaphone code de un string ya normalizado (sin espacios -> junta
+    tokens). Cadena vacía si jellyfish no está o el input es trivial."""
+    if not _HAS_PHONETIC or not s:
+        return ""
+    try:
+        # Metaphone de la frase sin espacios: "espotify"->"ESPTF". Para n-gramas
+        # quitamos espacios para una sola clave fonética comparable.
+        return _jellyfish.metaphone(s.replace(" ", ""))
+    except Exception:
+        return ""
+
+
 class FuzzyCorrector:
     """Stateless. Constructed once with an inventory; reused across turns."""
 
@@ -68,11 +151,15 @@ class FuzzyCorrector:
     ) -> None:
         self._inventory = inventory
         self._threshold = threshold
-        # Pre-normalize each category for fast comparison. We keep the
-        # original strings to return canonical replacements.
-        self._normalized: dict[str, list[tuple[str, str]]] = {}
+        self._phonetic_threshold = PHONETIC_THRESHOLD
+        # Pre-normalize + pre-Metaphone each category for fast comparison. We
+        # keep the original strings to return canonical replacements. Tuple:
+        # (normalized_text, metaphone_code, original).
+        self._normalized: dict[str, list[tuple[str, str, str]]] = {}
         for cat, items in inventory.items():
-            self._normalized[cat] = [(_normalise(x), x) for x in items]
+            self._normalized[cat] = [
+                (_normalise(x), _metaphone(_normalise(x)), x) for x in items
+            ]
 
     def correct(self, transcript: str) -> str:
         """Apply fuzzy correction to a Whisper raw transcript.
@@ -101,14 +188,56 @@ class FuzzyCorrector:
             best_replacement: str = tokens[i]
             best_score: float = 0
             best_size: int = 1
+            # GATE POSICIONAL (round 2): solo corregimos un token si está en
+            # posición de ARGUMENTO de comando — i.e. el token anterior (en la
+            # SALIDA ya corregida) es un verbo de comando o un conector. La
+            # posición 0 siempre es corregible (puede ser el verbo mismo, p.ej.
+            # "habre"->"abre"). Esto evita corromper habla declarativa real.
+            prev_norm = _normalise(out[-1]) if out else ""
+            is_command_start = (i == 0)
+            in_arg_position = is_command_start or _licenses_next(prev_norm)
+            # DOS REGÍMENES (round 2, medido contra 180 clips reales):
+            #   - En posición de comando/argumento -> corrección PLENA (texto +
+            #     fonético, thresholds normales): ahí es donde viven los nombres
+            #     propios y el contexto es seguro.
+            #   - Fuera de esa posición (habla declarativa) -> NO desactivamos
+            #     del todo (un nombre propio fuerte como "netflis"->Netflix
+            #     puede aparecer suelto), pero SÍ endurecemos: solo TEXTO (sin
+            #     fonético, que es el que más corrompía) y threshold alto (75),
+            #     sin verbos. Así "netflis"(86)/"disnei"(83) pasan pero
+            #     "hombre"->Chrome(67)/"persona"->prende(40) no.
+            strict_mode = not in_arg_position
+            # En posición de argumento (no inicio) NUNCA corregimos a un verbo:
+            # los args son nombres propios. En strict_mode tampoco.
+            skip_verbs = (not is_command_start)
+            text_threshold = 75 if strict_mode else self._threshold
             for ngram in (3, 2, 1):
                 if i + ngram > n:
                     continue
-                window = " ".join(tokens[i:i + ngram])
+                window_tokens = tokens[i:i + ngram]
+                window = " ".join(window_tokens)
                 window_norm = _normalise(window)
+                # Stop-list guard: una palabra española común y válida no se
+                # corrige aunque colisione con un verbo/app del inventario.
+                #   - 1-grama exacto en la stop-list -> no corregir.
+                #   - multi-grama que CONTIENE una stopword -> no colapsar (ej.
+                #     "en disnei" no debe volverse "enciende"; "en" debe quedar
+                #     suelto y "disnei" matchear como 1-grama). Esto evita que un
+                #     2-grama con preposición absorba el token real. (bug medido
+                #     2026-05-22: "pon loki en disnei" -> "...enciende").
+                norm_parts = [_normalise(t) for t in window_tokens]
+                if any(p in _SPANISH_STOPWORDS for p in norm_parts):
+                    continue
+                window_meta = _metaphone(window_norm)
                 for cat, normalized_items in self._normalized.items():
-                    for norm_item, orig_item in normalized_items:
-                        # Use fuzz.ratio for symmetric string distance.
+                    # No corregir a un verbo si: estamos en posición de argumento
+                    # (los args son nombres propios), o el window es multi-token
+                    # (un verbo de comando es UNA palabra; "si busca"->"buscar"
+                    # era un colapso 2-gram->verbo erróneo).
+                    if cat == "verbs" and (skip_verbs or ngram > 1):
+                        continue
+                    for norm_item, meta_item, orig_item in normalized_items:
+                        # (1) Rama TEXTUAL: fuzz.ratio sobre el texto normalizado.
                         score = fuzz.ratio(window_norm, norm_item)
                         # Length penalty: if window and candidate have
                         # very different lengths, the score is inflated
@@ -120,13 +249,48 @@ class FuzzyCorrector:
                         len_max = max(len(window_norm), len(norm_item), 1)
                         coverage = 1.0 - (len_diff / len_max)
                         adjusted = score * coverage
-                        # Threshold applies AFTER coverage adjustment so
-                        # length-mismatched partial overlaps don't sneak
-                        # in via inflated raw scores.
-                        if adjusted < self._threshold:
+                        passes_text = adjusted >= text_threshold
+
+                        # (2) Rama FONÉTICA: fuzz.ratio sobre los códigos
+                        # Metaphone. Atrapa anglicismos fonetizados que el texto
+                        # no alcanza ("jema"->gemma, "netflis"->netflix,
+                        # "disnei"->disney).
+                        #
+                        # GATE anti-falso-positivo (medido 2026-05-22): el
+                        # fonético solo NO separa anglicismos reales de palabras
+                        # españolas que colisionan ("ventana"~"finder" FNTN/FNTR
+                        # =75, "cierra"~"sierra"=100). Por eso exigimos TAMBIÉN un
+                        # piso de similitud TEXTUAL (>=45): un anglicismo mal oído
+                        # comparte letras con su target ("netflis"/"netflix"
+                        # txt=86, "jema"/"gemma" txt=67), pero una palabra
+                        # española distinta no ("ventana"/"finder" txt=15). Así
+                        # la rama fonética solo "rescata" tokens ya plausiblemente
+                        # parecidos, no inventa correcciones sobre vocabulario
+                        # común. (compass research: capear el corrector contra
+                        # over-correction de vocabulario frecuente.)
+                        # Fonético: NO en strict_mode (declarativo) y NO para
+                        # verbos. Los verbos son cortos y colisionan fonéticamente
+                        # ("cuales"->close KLS/KLS=100, "fue"->ver) — se corrigen
+                        # solo por texto (se oyen razonablemente bien). El fonético
+                        # se reserva para nombres propios (apps/artistas/canciones).
+                        passes_phon = False
+                        phon_adjusted = 0.0
+                        if (not strict_mode and cat != "verbs"
+                                and window_meta and meta_item and score >= 50):
+                            phon = fuzz.ratio(window_meta, meta_item)
+                            m_diff = abs(len(window_meta) - len(meta_item))
+                            m_max = max(len(window_meta), len(meta_item), 1)
+                            m_cov = 1.0 - (m_diff / m_max)
+                            phon_adjusted = phon * m_cov
+                            passes_phon = phon_adjusted >= self._phonetic_threshold
+
+                        if not (passes_text or passes_phon):
                             continue
-                        if adjusted > best_score:
-                            best_score = adjusted
+                        # Score efectivo = el mejor de las dos ramas, para que
+                        # el desempate elija el candidato más fuerte globalmente.
+                        effective = max(adjusted, phon_adjusted)
+                        if effective > best_score:
+                            best_score = effective
                             best_replacement = orig_item
                             best_size = ngram
             out.append(best_replacement)

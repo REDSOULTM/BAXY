@@ -46,12 +46,19 @@ PREROLL_SECONDS = 0.5            # audio kept before the wake event
 # Hard cap on how long a single command can be (from wake to forced cut).
 COMMAND_TIMEOUT_S = float(_os.environ.get("GEMMA4_VOICE_COMMAND_TIMEOUT_S", "8.0"))
 
-# Trailing silence required to end CAPTURE. Was 0.7s, which cut the user
-# off during the natural pause between "hey gemma" and the actual command
-# ("...abre Steam") — the pipeline transcribed just "hey gemma" and fired
-# an empty command. 1.4s gives room to breathe between the wake word and
-# the instruction without feeling sluggish.
-END_OF_SPEECH_SILENCE_S = float(_os.environ.get("GEMMA4_VOICE_EOS_SILENCE_S", "1.4"))
+# Trailing silence required to end CAPTURE (= cuánto callás DESPUÉS del comando
+# antes de que transcribamos). Este es el delay que el usuario siente al
+# terminar de hablar (reporte 2026-05-22).
+#
+# HISTORIA: estaba en 0.7s, se subió a 1.4s porque "cortaba en la pausa entre
+# 'hey gemma' y el comando". PERO ese diagnóstico apuntaba al knob equivocado:
+# la pausa POST-WAKE ya está protegida por MIN_CAPTURE_S (el EOS ni siquiera
+# puede disparar en el primer 1.0s de captura). Así que el 1.4s solo agrega
+# latencia al FINAL sin necesidad. La literatura de VAD para comandos cortos
+# (faster-whisper VAD: min_silence ~300ms; pausas naturales intra-comando
+# ~200-400ms) indica que 0.8s es de sobra para no cortar a mitad de frase y
+# ~600ms más rápido que 1.4s. Tunable por env si alguien habla muy pausado.
+END_OF_SPEECH_SILENCE_S = float(_os.environ.get("GEMMA4_VOICE_EOS_SILENCE_S", "0.8"))
 
 # Minimum capture duration before end-of-speech can fire at all. Guards
 # against an immediate post-wake micro-pause closing the window before
@@ -72,7 +79,7 @@ EOS_VAD_THRESHOLD = 0.5          # stricter for end-of-speech
 # exceeds a speech floor, else skip transcription entirely (no command emitted).
 #
 # We use PEAK windowed RMS (not whole-clip RMS) so a brief command surrounded
-# by the trailing-silence padding (1.4s EOS) isn't diluted below the floor.
+# by the trailing-silence padding (EOS, ~0.8s) isn't diluted below the floor.
 # int16 reference levels (16 kHz mic): quiet room RMS ~50-250, ambient/typing
 # ~200-500, normal speech peaks ~800-4000. Default floor 350 sits above room
 # noise / fan / keyboard but well below conversational speech. Env-tunable so
@@ -103,12 +110,27 @@ def _buffer_rms(audio: "np.ndarray") -> float:
 # and "SUSCRÍBETE" both hit. Kept as whole-string equality (not substring) so a
 # real command CONTAINING one of these words ("suscríbete a este canal",
 # "gracias, ahora pon música") is NOT dropped.
+# STT Tier-1 (2026-05-22): lista ampliada con la "Bag-of-Hallucinations"
+# publicada (Barański et al., AGH Kraków, arXiv 2501.11378) + Calm-Whisper fig.1
+# + outros típicos de YouTube en es/en. Whole-string match (folded) para no
+# tocar comandos que CONTENGAN una de estas palabras.
 _SILENCE_HALLUCINATIONS = frozenset({
+    # --- original ---
     "suscribete", "suscribete a", "gracias por ver", "gracias por ver el video",
     "gracias por ver el vídeo", "subtitulos realizados por la comunidad de amara org",
     "subtitulos por la comunidad de amara org", "thanks for watching", "subscribe",
     "you", "thank you", "gracias", "subtitulos", "amara org",
     "subtitles by the amara org community",
+    # --- español: outros / subtítulos ---
+    "no olvides darle like", "dale like", "hasta la proxima", "hasta el proximo video",
+    "subtitulos creados por la comunidad", "subtitulado por", "subtitulos por aegisub",
+    "aegisub", "hola a todos", "bienvenidos a este canal", "bienvenidos al canal",
+    "que tal amigos", "buenos dias a todos", "musica", "aplausos", "risas",
+    "gracias por su atencion", "nos vemos en el proximo video",
+    # --- inglés ---
+    "thanks for watching!", "please subscribe", "like and subscribe",
+    "see you next time", "music", "applause", "laughter", "i",
+    "bye", "okay", "the end",
 })
 
 
@@ -197,7 +219,12 @@ class VoicePipeline:
         self._stt = STT()
         inv = get_inventory()
         self._corrector = FuzzyCorrector(inv)
-        self._initial_prompt = build_initial_prompt(inv)
+        # Idioma-matriz del STT (env GEMMA4_VOICE_LANG, default 'es'). El prompt
+        # y el `language` de Whisper se derivan del MISMO perfil para que un
+        # usuario en otro idioma no quede con config española. Ver lang_profiles.
+        from .lang_profiles import get_profile
+        self._lang_profile = get_profile()
+        self._initial_prompt = build_initial_prompt(inv, lang=self._lang_profile.code)
         self._audio: AudioCapture | None = None
 
         # State machine state.
@@ -455,13 +482,29 @@ class VoicePipeline:
             self._emit_state("IDLE_LISTENING")
             return
 
+        # VAD TRIM (STT Tier-1): recortar silencio lateral antes de Whisper.
+        # El silencio al inicio/final es la causa #1 de alucinación en clips
+        # cortos. Reseteamos el estado RNN del VAD (la detección de EOS ya lo
+        # consumió) para un escaneo limpio. Si el VAD no está o falla, devuelve
+        # el audio intacto (nunca rompe). El silence-gate de arriba ya garantizó
+        # que hay energía de speech, así que trim no debería devolver None aquí.
+        self._vad.reset()
+        trimmed = self._vad.trim_silence(audio)
+        if trimmed is not None and trimmed.size >= int(0.08 * SAMPLE_RATE):
+            if trimmed.size < audio.size:
+                logger.debug(
+                    "vad trim: %.2fs -> %.2fs", dur, trimmed.size / SAMPLE_RATE,
+                )
+            audio = trimmed
+
         logger.info(
             "TRANSCRIBE start (reason=%s dur=%.2fs peak_rms=%.0f)",
-            reason, dur, peak_rms,
+            reason, audio.size / SAMPLE_RATE, peak_rms,
         )
         t0 = time.time()
         raw_text = self._stt.transcribe(
             audio, initial_prompt=self._initial_prompt,
+            language=self._lang_profile.whisper_language,
         )
         # Strip wake phrase + fuzzy correct.
         stripped = self._corrector.strip_wake_phrase(raw_text)

@@ -42,9 +42,11 @@ class CorrectorRegressionTest(unittest.TestCase):
         self.c = FuzzyCorrector(SMALL_INV)
 
     def test_benson_mould_becomes_boone(self):
-        # 'Benson Mould' is ~67% similar to 'Benson Boone' (Levenshtein).
-        # This is exactly the kind of case our fuzzy corrector catches.
-        out = self.c.correct("Búscame info sobre Benson Mould")
+        # 'Benson Mould' ~67% similar a 'Benson Boone' (Levenshtein). Round-2:
+        # la corrección plena de nombres propios aplica en POSICIÓN DE ARGUMENTO
+        # (tras un verbo de comando: "reproduce X", "pon X"). En habla
+        # declarativa el modo estricto exige match >=75 para no corromper.
+        out = self.c.correct("reproduce Benson Mould")
         self.assertIn("Benson Boone", out)
 
     def test_keeps_known_word_unchanged(self):
@@ -118,6 +120,58 @@ class InventoryTest(unittest.TestCase):
         # ~220 tokens hard limit. We use a conservative ~880-char cap.
         prompt = build_initial_prompt()
         self.assertLessEqual(len(prompt), 900)
+
+
+class PhoneticCorrectionTest(unittest.TestCase):
+    """STT Tier-1 (2026-05-22): rama fonética Double-Metaphone para anglicismos
+    que el edit-distance no alcanza, + stop-list anti-over-correction."""
+
+    def setUp(self):
+        self.c = FuzzyCorrector(get_inventory(include_discovery=False))
+
+    def test_anglicisms_corrected_phonetically(self):
+        # "netflis"->Netflix, "disnei"->Disney, "jema"->gemma son matches
+        # fonéticos inalcanzables por texto puro.
+        self.assertIn("Netflix", self.c.correct("abre netflis"))
+        self.assertIn("Disney", self.c.correct("pon loki en disnei"))
+        self.assertIn("gemma", self.c.correct("jema que hora es").lower())
+        self.assertIn("Spotify", self.c.correct("pon espotify"))
+
+    def test_streaming_command_preserves_preposition(self):
+        # bug medido: "en disnei" colapsaba a "enciende". El "en" debe quedar.
+        out = self.c.correct("pon loki en disnei")
+        self.assertIn("en", out.split())
+        self.assertNotIn("enciende", out)
+
+    def test_common_spanish_words_not_corrupted(self):
+        # Stop-list: palabras españolas válidas NO se corrigen a verbos/apps,
+        # aunque colisionen fuzzy/fonéticamente (bug pre-existente).
+        for cmd in [
+            "pon musica clasica",
+            "busca informacion sobre la guerra",
+            "abre la ventana",
+            "cierra la ventana",
+            "sube el volumen al maximo",
+            "que hora es",
+            "reproduce algo de musica",
+        ]:
+            self.assertEqual(
+                self.c.correct(cmd), cmd,
+                f"corrector corrompió un comando común: {cmd!r}",
+            )
+
+    def test_corrector_works_without_jellyfish(self):
+        # Si jellyfish no está, la rama fonética se desactiva pero el texto
+        # sigue funcionando (no crash). Simulamos forzando _HAS_PHONETIC=False.
+        import gemma4_agent.voice.corrector as corr
+        orig = corr._HAS_PHONETIC
+        try:
+            corr._HAS_PHONETIC = False
+            c = FuzzyCorrector(SMALL_INV)
+            # match textual fuerte sigue andando
+            self.assertIn("Chrome", c.correct("abre chrme"))
+        finally:
+            corr._HAS_PHONETIC = orig
 
 
 if __name__ == "__main__":

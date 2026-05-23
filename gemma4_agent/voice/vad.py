@@ -106,6 +106,54 @@ class SileroVAD:
         """
         return self.speech_prob(chunk) >= threshold
 
+    def trim_silence(
+        self,
+        audio: np.ndarray,
+        threshold: float = 0.5,
+        pad_ms: int = 100,
+    ) -> np.ndarray | None:
+        """Recorta silencio lateral de `audio` (int16) usando Silero por frames.
+
+        STT Tier-1 (2026-05-22): la causa #1 de alucinación de Whisper en clips
+        cortos es el silencio al inicio/final (el encoder paddea a 30s con ceros
+        y el decoder fabrica texto). Recortar agresivo el silencio lateral ANTES
+        de Whisper lo elimina. La investigación (faster-whisper VAD §5.3) usa
+        speech_pad_ms=100, NO los 400 default que agregan latencia.
+
+        Devuelve:
+          - El buffer recortado [primer_frame_speech .. ultimo_frame_speech]
+            + `pad_ms` de margen a cada lado.
+          - None si NO se detectó NADA de speech (rechazar -> no invocar Whisper,
+            cero alucinaciones en falsos positivos del wake).
+          - El audio ORIGINAL intacto si el VAD no está cargado (fallback) o si
+            algo falla — nunca rompe el pipeline.
+        """
+        if audio is None or audio.size == 0:
+            return None
+        if not self._loaded:
+            return audio  # gate-open fallback: sin VAD, no recortamos
+        f = SILERO_FRAME_SAMPLES
+        try:
+            n_frames = audio.size // f
+            if n_frames == 0:
+                return audio  # más corto que un frame: dejar pasar tal cual
+            first = last = -1
+            for k in range(n_frames):
+                frame = audio[k * f:(k + 1) * f]
+                if self.speech_prob(frame) >= threshold:
+                    if first < 0:
+                        first = k
+                    last = k
+            if first < 0:
+                return None  # ningún frame con speech -> rechazar
+            pad = int(pad_ms * SAMPLE_RATE / 1000)
+            start = max(0, first * f - pad)
+            end = min(audio.size, (last + 1) * f + pad)
+            return audio[start:end]
+        except Exception as exc:
+            logger.debug("trim_silence failed, passing audio through: %s", exc)
+            return audio
+
     def reset(self) -> None:
         """Reset the internal RNN state. Call between commands."""
         if not self._loaded or self._model is None:

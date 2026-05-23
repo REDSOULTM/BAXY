@@ -88,3 +88,8 @@ Testing Inicial/**/*.docx
 Testing Inicial/**/*.png
 Testing Inicial/**/*.zip
 Testing Inicial/**/*.wav
+
+# STT eval audio + voice models (regenerable via scripts/stt_synthetic_eval.py + download)
+data/stt_eval/audio/
+data/stt_eval/voices/
+data/stt_eval/real_es/*.wav

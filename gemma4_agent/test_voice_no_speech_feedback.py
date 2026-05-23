@@ -19,7 +19,7 @@ class _StubSTT:
     def __init__(self, text):
         self._text = text
 
-    def transcribe(self, audio, initial_prompt=None):
+    def transcribe(self, audio, initial_prompt=None, language=None):
         return self._text
 
 
@@ -39,9 +39,15 @@ def _make_pipeline(stt_text, capture_audio):
     p._stt = _StubSTT(stt_text)
     p._corrector = _StubCorrector()
     p._initial_prompt = ""
+    from gemma4_agent.voice.lang_profiles import get_profile
+    p._lang_profile = get_profile("es")
     p._cooldown_until = 0.0
     p._wake = type("W", (), {"reset": lambda self: None})()
-    p._vad = type("V", (), {"reset": lambda self: None})()
+    # Fake VAD: reset no-op + trim_silence pasa el audio intacto (gate-open).
+    p._vad = type("V", (), {
+        "reset": lambda self: None,
+        "trim_silence": lambda self, audio, *a, **k: audio,
+    })()
     p.states = []
     p.commands = []
     p._on_state = lambda s: p.states.append(s)

@@ -37,6 +37,10 @@ DEFAULT_MODEL_SIZE = "small"
 WHISPER_MODEL_DIR = Path.home() / ".gemma4" / "models" / "whisper"
 
 # Decoding kwargs (per research report recommendation).
+# `language` se fija DINAMICAMENTE por turno desde el perfil de idioma
+# (lang_profiles.py). Para code-switching (español con apps en inglés) FIJAR el
+# idioma-matriz es lo correcto — autodetect flipea de idioma a mitad de frase y
+# no vuelve (openai/whisper #2009). El default 'es' queda como fallback.
 DECODE_KWARGS = dict(
     language="es",
     task="transcribe",
@@ -45,7 +49,14 @@ DECODE_KWARGS = dict(
     temperature=0.0,
     condition_on_previous_text=False,
     vad_filter=False,           # we do VAD ourselves upstream
-    without_timestamps=True,    # not needed for command output
+    # without_timestamps=False (STT Tier-1, 2026-05-22): forzar al decoder a
+    # EMITIR timestamps reduce alucinaciones — es el cambio aislado de mayor
+    # impacto según Sanchit Gandhi (mantenedor de Whisper en HF transformers):
+    # "forcing the model to predict timestamps is contradictory to
+    # hallucinations". Confirmado por whisper.cpp (suprimir <|notimestamps|>
+    # elimina alucinaciones en no-speech) y linto-ai/whisper-timestamped #105.
+    # Costo <5% latencia con beam=1. No usamos los timestamps, solo que existan.
+    without_timestamps=False,
 )
 
 
@@ -110,8 +121,13 @@ class STT:
         self,
         audio: np.ndarray,
         initial_prompt: str | None = None,
+        language: str | None = None,
     ) -> str:
         """Transcribe an int16 mono 16 kHz audio buffer.
+
+        `language`: código ISO del idioma-matriz a fijar (ver lang_profiles).
+        Si None, usa el default de DECODE_KWARGS ('es'). Fijar el idioma es lo
+        correcto para code-switching; no usar autodetect.
 
         Returns the raw text (post-corrector should be applied by the
         pipeline orchestrator, NOT here, to keep this module pure).
@@ -130,6 +146,8 @@ class STT:
         # for ndarray int16; we normalize explicitly for clarity.
         audio_f32 = audio.astype(np.float32) / 32768.0
         kwargs = dict(DECODE_KWARGS)
+        if language:
+            kwargs["language"] = language
         if initial_prompt:
             kwargs["initial_prompt"] = initial_prompt
         try:

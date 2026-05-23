@@ -47,7 +47,8 @@ STATIC_INVENTORY: dict[str, list[str]] = {
         "Visual Studio Code", "VS Code", "Visual Studio", "PyCharm", "IntelliJ",
         "Notion", "Obsidian", "Notepad", "Sublime Text",
         "OBS", "OBS Studio", "DaVinci Resolve",
-        "YouTube", "Netflix", "Twitch", "Disney Plus",
+        "YouTube", "Netflix", "Twitch",
+        "Disney Plus", "Disney+", "HBO Max", "Max", "Prime Video", "Apple Music",
         "Counter-Strike 2", "GTA V", "Among Us", "Minecraft",
         "Explorer", "Finder", "Files",
     ],
@@ -159,33 +160,27 @@ def get_inventory(include_discovery: bool = True) -> dict[str, list[str]]:
     return merged
 
 
-def build_initial_prompt(inv: dict[str, list[str]] | None = None) -> str:
-    """Build the Whisper initial_prompt from the inventory.
+def build_initial_prompt(
+    inv: dict[str, list[str]] | None = None,
+    lang: str | None = None,
+) -> str:
+    """Build the Whisper initial_prompt from the inventory, PER LANGUAGE.
 
-    Cap at ~220 tokens worth of text (~880 chars conservative) to stay
-    under Whisper's 224-token initial_prompt limit.
+    El idioma-matriz determina el framing del prompt (ver lang_profiles.py):
+    español-Spanglish, inglés, portugués, francés, ... Los nombres propios
+    (apps/artistas/canciones) son agnósticos del idioma y se inyectan igual.
+    `lang` None -> se resuelve por env GEMMA4_VOICE_LANG, default 'es'.
+
+    Cap ~880 chars (<224 tokens de Whisper).
     """
+    from .lang_profiles import PROMPT_CHAR_CAP, get_profile
     if inv is None:
         inv = get_inventory()
     apps = inv.get("apps", [])[:25]
     artists = inv.get("music_artists", [])[:10]
     songs = inv.get("music_songs", [])[:6]
-    # Bilingual command pairs to bias against anglicism phoneticization.
-    head = (
-        "Conversación con el asistente Gemma en español rioplatense con "
-        "nombres de aplicaciones y canciones en inglés. "
-        "Hey Gemma, abre Chrome. Hey Gemma, open Chrome. "
-        "Hey Gemma, abre Spotify. Hey Gemma, open Spotify. "
-    )
-    apps_str = "Apps: " + ", ".join(apps) + ". " if apps else ""
-    artists_str = "Artistas: " + ", ".join(artists) + ". " if artists else ""
-    songs_str = "Canciones: " + ", ".join(songs) + ". " if songs else ""
-    tail = (
-        "Comandos breves en español con nombres de apps en inglés, "
-        "dirigidos al asistente Gemma."
-    )
-    prompt = head + apps_str + artists_str + songs_str + tail
-    # Conservative cap at 880 chars.
-    if len(prompt) > 880:
-        prompt = prompt[:877] + "..."
+    profile = get_profile(lang)
+    prompt = profile.frame(apps, artists, songs)
+    if len(prompt) > PROMPT_CHAR_CAP:
+        prompt = prompt[:PROMPT_CHAR_CAP - 3] + "..."
     return prompt
