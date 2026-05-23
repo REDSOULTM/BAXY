@@ -466,9 +466,28 @@ def get_active_profile() -> Profile:
 
     Default fallback: vram4 (si no se puede detectar VRAM). Resuelve nombres
     legacy (balanced/light/...) escritos por versiones anteriores.
+
+    Override GEMMA4_DEFAULT_PROFILE (2026-05-23, pedido de RED): si está seteado
+    a un perfil válido, ese es el default en el PRIMER arranque (en vez de
+    auto-detectar por VRAM y recomendar el más grande). Opt-in -> no afecta a
+    otros usuarios (multi-usuario universal). NO pisa un active_profile.txt ya
+    existente (el usuario manda si ya eligió). Sirve para fijar vram4 default
+    aunque la GPU tenga 16 GB.
     """
     _DEFAULT = "vram4"
+    _env_default = (os.environ.get("GEMMA4_DEFAULT_PROFILE") or "").strip().casefold()
+    if _env_default:
+        _env_default = _resolve_alias(_env_default)
+        if _env_default in PROFILES:
+            _DEFAULT = _env_default
     if not ACTIVE_PROFILE_PATH.is_file():
+        # Si hay override de default, respetarlo y persistirlo (no auto-detectar).
+        if _env_default and _env_default in PROFILES:
+            try:
+                set_active_profile(_env_default)
+            except Exception:
+                pass
+            return _profile_with_overrides(PROFILES[_env_default])
         # Primera vez: detecta y persiste. Si falla, queda en el default sin
         # escribir nada (asi en la proxima ejecucion vuelve a intentar).
         try:
