@@ -4121,6 +4121,20 @@ Start-Sleep -Milliseconds 120
 
     def gui_type(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))
+        # BUG tilde (2026-05-23): SendKeys vía stdin pierde acentos. El stdin de
+        # PowerShell se decodifica con la code-page de consola (cp1252/OEM en
+        # Windows ES), NO UTF-8, así que "mamá" llegaba como "mam?". Mismo gotcha
+        # que espeak-ng (CLAUDE.md). Además SendKeys tiene límites con Unicode.
+        # FIX: si el texto tiene caracteres NO-ASCII (acentos, ñ, emoji), tipear
+        # por CLIPBOARD-PASTE (tkinter es UTF-8-safe), guardando y restaurando el
+        # portapapeles del usuario. ASCII puro -> SendKeys (no toca el clipboard).
+        non_ascii = any(ord(c) > 127 for c in text)
+        if non_ascii and not bool(args.get("raw_sendkeys", False)):
+            result = self._gui_type_via_paste(text)
+            if result.get("ok"):
+                return result
+            # si el paste falla, caemos a SendKeys (best-effort, puede perder acentos)
+
         # T3-gui-type-no-sanitization-010: escapar SendKeys control chars.
         # `+^%~(){}[]` son modificadores/grupos; los envolvemos en `{}` para que
         # SendKeys los tipee literalmente. El orden importa: hay que escapar `{`
@@ -4134,14 +4148,52 @@ Start-Sleep -Milliseconds 120
             text_to_send = "".join(escaped)
         else:
             text_to_send = text
-        script = "Add-Type -AssemblyName System.Windows.Forms; $t=[Console]::In.ReadToEnd(); [System.Windows.Forms.SendKeys]::SendWait($t)"
-        # timeout 20 -> 8s. SendKeys es sincrono; textos cortos terminan en
-        # <500ms. 8s permite textos largos (~5K chars) sin bloquear el turn.
+        # FIX encoding: pasar el texto por env-var (UTF-8 vía PowerShell que lee
+        # $env directo) en vez de stdin (que se decodifica con la code-page de
+        # consola y corrompe). Igual patrón que gui_keypress.
+        env = {**os.environ, "GEMMA4_TYPE_TEXT": text_to_send}
+        script = ("Add-Type -AssemblyName System.Windows.Forms; "
+                  "[System.Windows.Forms.SendKeys]::SendWait($env:GEMMA4_TYPE_TEXT)")
         try:
-            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], input=text_to_send, capture_output=True, text=True, timeout=8)
+            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=8)
         except (OSError, subprocess.TimeoutExpired):
             return _err("gui_type timeout", chars=len(text), reason="sendkeys_timeout")
-        return _ok(chars=len(text), exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
+        return _ok(chars=len(text), exit_code=proc.returncode, method="sendkeys",
+                   stderr=_truncate(proc.stderr.strip(), 1000))
+
+    def _gui_type_via_paste(self, text: str) -> dict[str, Any]:
+        """Tipea `text` por clipboard-paste (Ctrl+V). UTF-8-safe para acentos,
+        ñ, emoji. Guarda y restaura el portapapeles del usuario para no pisarlo.
+        """
+        # 1. Guardar clipboard actual (best-effort).
+        saved = ""
+        try:
+            saved = str(self.clipboard_read({"max_chars": 100000}).get("content") or "")
+        except Exception:
+            saved = ""
+        # 2. Poner nuestro texto (tkinter, UTF-8-safe).
+        wrote = self.clipboard_write({"content": text})
+        if not wrote.get("ok"):
+            return _err("paste: clipboard_write failed", method="paste")
+        import time as _t
+        _t.sleep(0.05)
+        # 3. Ctrl+V.
+        env = {**os.environ, "GEMMA4_KEYS": "^v"}
+        script = ("Add-Type -AssemblyName System.Windows.Forms; "
+                  "[System.Windows.Forms.SendKeys]::SendWait($env:GEMMA4_KEYS)")
+        try:
+            subprocess.run(["powershell", "-NoProfile", "-Command", script],
+                           env=env, capture_output=True, text=True, timeout=8)
+        except (OSError, subprocess.TimeoutExpired):
+            return _err("paste: ctrl+v timeout", method="paste")
+        # 4. Restaurar clipboard del usuario (tras dar tiempo al paste).
+        _t.sleep(0.1)
+        if saved:
+            try:
+                self.clipboard_write({"content": saved})
+            except Exception:
+                pass
+        return _ok(chars=len(text), method="paste")
 
     def gui_keypress(self, args: dict[str, Any]) -> dict[str, Any]:
         # CC-100 / T3-gui-keypress-sendkeys-injection-009: env-var indirection
