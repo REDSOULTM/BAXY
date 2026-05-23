@@ -70,3 +70,86 @@ siendo el mejor compromiso.
 **Recomendación:** mantener Whisper-small como motor. Reconsiderar Parakeet SOLO
 con un A/B sobre voz real de RED (no sintética). El spike deja todo listo
 (`scripts/spike_sherpa_parakeet.py`) para re-correr con esos clips.
+
+---
+
+## UPDATE 2026-05-23 — re-test con `bpe.vocab` CORRECTO + score 1.5 (post-investigación)
+
+La investigación confirmó que mi primer test de hotwords era inválido (vocab mal
+formado + score 3.0). Lo corregí:
+- **`bpe.vocab` generado correcto**: el modelo no trae bpe.vocab/bpe.model, e
+  instalar NeMo (torch+lightning, GBs) era caro. Lo derivé del `tokenizer.json`
+  de HF (formato HF-BPE: vocab + merges) usando el **merge-rank como proxy del
+  score sentencepiece**. Resultado: 8192 piezas, sherpa-onnx CARGA sin el error
+  "Cannot find ID for token" — los nombres SÍ se encodean ahora.
+- **score 1.5 + max_active_paths=8 + modeling_unit="bpe"** (config recomendada).
+
+**RESULTADO: los hotwords SIGUEN sin arreglar los nombres, incluso bien
+configurados.** "abre Steam"→"Hablestan" (Steam no aparece), "Netflix"→"Netfix",
+"Stranger Things"→"ponjertis". Una mejora aislada: "Visual Studio Code"→"Studio
+Code". En general no rescata y a veces desestabiliza.
+
+**Causa raíz CONFIRMADA (no es config):** el encoder de Parakeet-v3 pierde la
+señal acústica del anglicismo en este audio — si "Steam" se oyó "Hablestan", NO
+hay hipótesis con "Steam" en el beam para que el hotword la premie. El biasing
+por rescoring no puede premiar lo que no existe en las hipótesis. Coincide con
+S5/caveat de la investigación: "el encoder está perdiendo la información
+acústica del anglicismo; ningún rescoring lo arregla".
+
+**PERO — sigue siendo sobre voz SINTÉTICA Piper.** La investigación es enfática
+(paso S4, obligatorio): validar con voz HUMANA real antes de concluir. Parakeet-v3
+es europeo (Granary); voz latina real + micro-corte natural en el anglicismo
+podría rendir mucho mejor. **Mi medición no descarta Parakeet — descarta
+Parakeet+hotwords-sobre-Piper.** El experimento decisivo es voz real de RED.
+
+**Lo que queda listo y verificado para cuando RED grabe:**
+- `bpe.vocab` correcto en el dir del modelo.
+- `scripts/spike_sherpa_parakeet.py` para re-medir.
+- La ruta SEGURA que NO depende de esto: `rule_fsts` post-proceso sobre
+  greedy_search (no toca el decoder, mantiene 110ms, no puede empeorar) — para
+  corregir el set cerrado de errores observados ("Hablestan"→"Steam"). Es defensa
+  determinista mientras se decide el motor.
+
+---
+
+## UPDATE 2 (2026-05-23) — A/B SOBRE VOZ REAL DE RED (Grabación 2, wake-anchored)
+
+Por fin medido sobre voz HUMANA real (no Piper). 6 turnos, anglicismos:
+Chrome (k0,k4), GTA V (k2), Benson Boone (k5). Whisper+corrector vs Parakeet
+greedy vs Parakeet+hotwords(score1.5,bpe.vocab correcto):
+
+| turno | Whisper+corr | Parakeet greedy | Parakeet +hw |
+|---|---|---|---|
+| k0 "abre Chrome" (1s) | ❌ ALUCINÓ outro YouTube | ✅ "Chrome" | ✅ "Chrome" |
+| k2 "GTA V" | ✅ GTA V | ✅ GTA V | ✅ GTA V |
+| k4 "open Chrome" | ✅ open Chrome | ⚠️ open chrome | ✅ Open Chrome |
+| k5 "Benson Boone" | ✅ Benson Boone | ❌ Benson Moon | ❌ Benson Moon |
+
+**HALLAZGOS (sobre voz real, lo que importa):**
+1. **En voz real Parakeet SÍ compite** — la investigación tenía razón: el TTS
+   Piper lo penalizaba injustamente. En sintético era un desastre; en real da
+   "Chrome" limpio. NO descartar Parakeet fue lo correcto.
+2. **k0 es demoledor para Whisper:** "abre Chrome" (1s) → Whisper **alucinó un
+   outro de YouTube** ("nos vemos en el próximo video, adiós") — el fallo crónico
+   de Whisper en clips cortos. **Parakeet dio "Chrome" limpio.** Punto fuerte
+   real de Parakeet: NO alucina en clips cortos.
+3. **Los hotwords aportan POCO sobre voz real también:** k0/k2/k5 idénticos
+   con/sin hotwords; solo k4 mejoró "open"→"Open". En k5 "Boone"→"Moon" el
+   hotword no rescató (encoder oyó "Moon", no hay "Boone" en el beam). Confirma:
+   el biasing no arregla lo que el encoder no captó.
+4. **Whisper+corrector ganó "Benson Boone"** (su corrector fonético Double-
+   Metaphone lo arregló; Parakeet no tiene ese post-proceso).
+
+**CONCLUSIÓN HONESTA (medida en voz real):** ni Whisper ni Parakeet domina solo
+— ganan casos distintos. Parakeet es más robusto en clips cortos (no alucina) y
+clava "Chrome"; Whisper+corrector clava "Benson Boone". Los hotwords de Parakeet
+aportan marginalmente. El n=6 es chico para un veredicto estadístico — falta el
+held-out de RED (~20-30 comandos) para IC Wilson. Pero la señal cualitativa es
+clara: **Parakeet vale la pena como motor, y su mayor ventaja NO es el biasing
+(que aporta poco) sino que NO alucina en clips cortos** — justo el talón de
+Aquiles de Whisper-small que veníamos peleando.
+
+**Próximo paso decisivo:** grabar ~25 comandos held-out (apps/series que NO
+estén en inventario) para medir Entity-Recall con IC sobre voz real, y decidir:
+Parakeet-solo, Whisper-solo, o dual (Parakeet primario + corrector fonético
+encima para los "Boone"→"Moon").

@@ -57,10 +57,16 @@ def build_recognizer(hotwords_file: str | None = None):
         model_type="nemo_transducer",
     )
     if hotwords_file:
+        # Config CORRECTA (post-investigación 2026-05-23): plain-word hotwords +
+        # bpe.vocab real (derivado de tokenizer.json) + score 1.5 + beam 8.
+        bpe = MODEL_DIR / "bpe.vocab"
         kw.update(
             decoding_method="modified_beam_search",
+            max_active_paths=8,
+            modeling_unit="bpe",
+            bpe_vocab=str(bpe),
             hotwords_file=hotwords_file,
-            hotwords_score=2.0,
+            hotwords_score=1.5,
         )
     else:
         kw["decoding_method"] = "greedy_search"
