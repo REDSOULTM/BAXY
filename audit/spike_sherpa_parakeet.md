@@ -194,3 +194,31 @@ fonética inglesa.
   + Metáfono Español, gateado por `ys_log_probs` en el slot post-verbo.
 - NO usar MBS/hotwords/LM/LODR (medidos como no-aplicables o inestables en 1.13.2).
 - Medir con held-out de RED (IC Wilson) antes de hacerlo default.
+
+---
+
+## UPDATE 4 (2026-05-23) — Etapa 0 de la investigación, VERIFICADA en máquina
+
+La investigación (plan_sherpa_parakeet_cpu_optimizacion.md) priorizó rescate
+post-hoc sobre fp32 (sin evidencia de que fp32 arregle fusiones). Verifiqué sus
+3 puntos de Etapa 0 en NUESTRA máquina:
+
+1. **MBS bug #3267 NO persiste en 1.13.2** (la investigación lo INFERÍA; ahora
+   CONFIRMADO empíricamente). MBS sobre los 6 turnos reales = texto correcto, sin
+   "Yeah"/vacíos. Más: k4 MBS dio "Open Chrome" limpio vs greedy "E gema open
+   chrome". => PR #3589 está en 1.13.2. **HOTWORDS REABIERTOS como vía válida.**
+2. **feature_dim NO es bug**: default del wrapper es 80, pero sherpa-onnx ignora
+   ese valor para modelos NeMo y usa el correcto (128) del propio ONNX. Salida
+   idéntica con fd=80 y fd=128. Conjetura de la investigación descartada (bien
+   verificarla, no aplica).
+3. **Threads**: 16 físicos / 24 lógicos -> num_threads = min(4, físicos) = 4
+   (coincide con el óptimo medido p50 150ms en UPDATE previo).
+
+**PLAN DE IMPLEMENTACIÓN (pendiente OK de RED):**
+Etapa 1 (apuesta principal): rescate post-hoc determinista — extraer slot por
+verbo-comando/timestamps, corrector fonético ES+EN (Double Metaphone jellyfish +
+Spanish Metaphone Mosquera + RapidFuzz) contra inventario dinámico. Cablear sobre
+la salida de Parakeet (mi corrector actual YA rescata "benson moon"->"boone").
+Etapa 2: como MBS anda en 1.13.2, sumar hotwords (modeling_unit=bpe, score 1.5)
+como PREVENCIÓN, no rescate.
+fp32: DIFERIDO (sin evidencia de fix; +1.8GB RAM, ~2x latencia).
