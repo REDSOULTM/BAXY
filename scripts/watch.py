@@ -16,9 +16,10 @@ import sys
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).parent
-RESULTS_F2 = ROOT / "results"
-RESULTS_F3 = ROOT / "harness_carter540" / "results"
+ROOT = Path(__file__).resolve().parent.parent  # repo root (scripts/..)
+_TESTING = ROOT / "Testing Inicial"  # eval artifacts movidos aquí en la reorg 2026-05-22
+RESULTS_F2 = _TESTING / "results"
+RESULTS_F3 = _TESTING / "harness_carter540" / "results"
 TASK_LOG_GLOB = r"C:\Users\usuario\AppData\Local\Temp\claude\c--Users-usuario-Desktop-ETC-Programacion-Probando-Gemma-4\*\tasks\*.output"
 
 PALETTE = {

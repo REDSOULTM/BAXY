@@ -1,6 +1,6 @@
 """Genera todos los graficos PNG para la documentacion.
 
-Lee los JSON crudos de results/ y harness_carter540/results/ y produce
+Lee los JSON crudos de Testing Inicial/results/ y Testing Inicial/harness_carter540/results/ y produce
 graficos comparativos en documentacion/graficos/.
 """
 from __future__ import annotations
@@ -16,8 +16,9 @@ ROOT = Path(__file__).resolve().parent.parent
 DOC = ROOT / "documentacion"
 GRA = DOC / "graficos"
 GRA.mkdir(parents=True, exist_ok=True)
-RESULTS_F2 = ROOT / "results"
-RESULTS_F3 = ROOT / "harness_carter540" / "results"
+_TESTING = ROOT / "Testing Inicial"  # eval artifacts movidos aquí en la reorg 2026-05-22
+RESULTS_F2 = _TESTING / "results"
+RESULTS_F3 = _TESTING / "harness_carter540" / "results"
 
 # Estilo unificado
 plt.rcParams.update({

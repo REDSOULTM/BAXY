@@ -77,3 +77,14 @@ positive_clips_v8/
 # generated clips). Reproducible via scripts/wake_universal_*.py.
 # Total size ~5-10 GB depending on coverage; never commit.
 data/wake_universal_eval/
+
+# Reorg 2026-05-22 — "Testing Inicial/" guarda artefactos viejos. Logs y
+# binarios generados ahí NO se versionan (regenerables / no aportan al código).
+Testing Inicial/**/*.log
+Testing Inicial/**/*.log.err
+Testing Inicial/**/*.err
+Testing Inicial/**/*.pptx
+Testing Inicial/**/*.docx
+Testing Inicial/**/*.png
+Testing Inicial/**/*.zip
+Testing Inicial/**/*.wav

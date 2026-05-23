@@ -13,7 +13,7 @@ Sources swept (this project):
   - ~/.gemma4/timeline/*.jsonl               (per-turn timeline)
   - ~/.gemma4/recordings/*/manifest.jsonl    (session recordings)
   - ~/.gemma4/logs/**/full.log               (pre-session full logs)
-  - harness_carter540/tests_540.md           (curated 540-case matrix)
+  - Testing Inicial/harness_carter540/tests_540.md  (curated 540-case matrix)
 
 Sources swept (Carter, the prior project — see CARTER_ROOT):
   - Extras/Carter_v3_tests/*.md              (3 distinct curated bench
@@ -301,7 +301,7 @@ def main() -> int:
         counts[str(src)] = kept
 
     # ---- This project's curated 540-case matrix --------------------------
-    carter = ROOT / "harness_carter540" / "tests_540.md"
+    carter = ROOT / "Testing Inicial" / "harness_carter540" / "tests_540.md"
     kept = 0
     for prompt, tools, prev in _carter540_cases(carter):
         if add(prompt, src="tests_540.md", tools=tools or None, prev=prev):

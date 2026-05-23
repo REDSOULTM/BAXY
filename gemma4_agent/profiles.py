@@ -23,7 +23,7 @@ Decisiones:
   GEMMA4_MODEL_PATH -- el caller debe detectar y caer al modelo principal.
 
 VRAM estimada (est_vram_mb) en cada perfil es solo display en UI; no se
-usa para decisiones. Numeros vienen del INFORME_ARQUITECTURA_6GB.md de
+usa para decisiones. Numeros vienen de docs/architecture/INFORME_ARQUITECTURA_6GB.md de
 esta misma sesion de investigacion.
 """
 from __future__ import annotations
