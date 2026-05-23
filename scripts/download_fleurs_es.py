@@ -7,6 +7,14 @@ HuggingFace (google/fleurs, split test, es_419), reproducible (CLAUDE.md #2).
 Escribe fleurs_es_NNNN.wav (16k mono int16) + reescribe manifest.tsv (file\ttext).
 NO toca los chilean_*.wav (esos sí tienen audio).
 
+GOTCHA CRÍTICO (2026-05-23): NO instalar `torchcodec` para esto. El decoder de
+audio de `datasets` lo pide, pero torchcodec ROMPE el runtime: inyecta una
+dependencia de FFmpeg/libtorchcodec en el import chain de sentence-transformers
+y el SEMANTIC ROUTER queda vacío (classify_intent->None, suggest_tools->[]), lo
+que mis-rutea TODO (ej. "¿qué es X?" -> crea documento). Mismo tipo de breakage
+que optimum/tensorflow (CLAUDE.md). Este script usa decode=False + soundfile,
+así que NO necesita torchcodec. Si alguien lo instaló: `pip uninstall torchcodec`.
+
 Uso:
     python scripts/download_fleurs_es.py --n 120
 """
