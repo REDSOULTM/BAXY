@@ -45,6 +45,26 @@ class RouterLoadHealthTest(unittest.TestCase):
             "pip uninstall torchcodec. El downloader de FLEURS usa decode=False "
             "+ soundfile y NO lo necesita.")
 
+    def test_torchvision_version_matches_torch_or_absent(self):
+        # torchvision NO se usa en runtime (router es solo texto). Si está
+        # presente con versión incompatible con torch, escupe el warning
+        # 'Failed to load image Python extension' al arrancar. Debe estar
+        # AUSENTE, o alineado con torch. (2026-05-23: 0.16.2+cu121 vs torch
+        # 2.10+cpu daba el warning -> desinstalado.)
+        import importlib.util
+        if importlib.util.find_spec("torchvision") is None:
+            return  # ausente: correcto, no se necesita
+        import torch, torchvision
+        tv_major_minor = ".".join(torchvision.__version__.split("+")[0].split(".")[:2])
+        # torchvision 0.16 ~ torch 2.1; 0.21 ~ torch 2.6; etc. Si está, que
+        # cargue su extensión sin error (proxy de compatibilidad de ABI).
+        try:
+            import torchvision.transforms  # noqa: F401
+        except Exception as exc:  # pragma: no cover
+            self.fail(f"torchvision {torchvision.__version__} incompatible con "
+                      f"torch {torch.__version__} ({exc}). Desinstalalo "
+                      f"(no se usa) o alinealo: pip install torchvision compatible.")
+
     def test_router_health_reports_ok(self):
         from gemma4_agent.intent_router import router_health
         ok, detail = router_health()
