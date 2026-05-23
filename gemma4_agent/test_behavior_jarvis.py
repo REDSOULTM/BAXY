@@ -1,0 +1,105 @@
+"""Tests del Jarvis proactivo (investigación 5): behavior_log + pattern_miner.
+
+Base del asistente que aprende patrones del usuario y ofrece automatizarlos.
+La minería es código DETERMINISTA (cabe en vram4); el LLM solo conversa.
+"""
+from __future__ import annotations
+
+import tempfile
+import time
+import unittest
+from pathlib import Path
+
+from gemma4_agent.behavior_log import BehaviorLog, ALLOWED_KINDS
+from gemma4_agent.pattern_miner import mine_simple_patterns, PatternCandidate
+
+
+class BehaviorLogTest(unittest.TestCase):
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp())
+        self.bl = BehaviorLog(user="t", dir_path=self.dir)
+
+    def tearDown(self):
+        self.bl.close()
+
+    def test_records_valid_events(self):
+        self.assertTrue(self.bl.record("boot", "pc"))
+        self.assertTrue(self.bl.record("app_close", "Discord.exe"))
+        evs = self.bl.events()
+        self.assertEqual(len(evs), 2)
+        # normaliza a lowercase
+        self.assertTrue(any(e["key"] == "discord.exe" for e in evs))
+
+    def test_anti_poison_whitelist(self):
+        # kind fuera de la whitelist -> NO se guarda (evita contaminación)
+        self.assertFalse(self.bl.record("test_junk", "basura"))
+        self.assertFalse(self.bl.record("random", "x"))
+        self.assertEqual(self.bl.events(), [])
+
+    def test_empty_key_rejected(self):
+        self.assertFalse(self.bl.record("app_open", ""))
+        self.assertFalse(self.bl.record("app_open", "   "))
+
+    def test_per_user_isolation(self):
+        self.bl.record("boot", "pc")
+        other = BehaviorLog(user="otro", dir_path=self.dir)
+        try:
+            self.assertEqual(other.events(), [])  # otro usuario no ve los eventos
+        finally:
+            other.close()
+
+    def test_allowed_kinds_are_stable_signals(self):
+        # la whitelist debe ser acotada (no un cajón de sastre)
+        self.assertLessEqual(len(ALLOWED_KINDS), 8)
+        self.assertIn("boot", ALLOWED_KINDS)
+        self.assertIn("app_close", ALLOWED_KINDS)
+
+
+class PatternMinerTest(unittest.TestCase):
+    def _events_red_case(self, days=10, close_n=8):
+        """Caso de RED: cada arranque cierra Discord (close_n de days veces)."""
+        now = int(time.time() * 1000)
+        day = 86400 * 1000
+        evs = []
+        for d in range(days):
+            base = now - (days - d) * day
+            evs.append({"ts": base, "kind": "boot", "key": "pc", "context": {}})
+            if d < close_n:
+                evs.append({"ts": base + 30000, "kind": "app_close",
+                            "key": "discord.exe", "context": {}})
+        return sorted(evs, key=lambda e: e["ts"])
+
+    def test_detects_reds_close_discord_on_boot(self):
+        pats = mine_simple_patterns(self._events_red_case())
+        match = [p for p in pats if p.target_key == "discord.exe"
+                 and p.target_kind == "app_close"]
+        self.assertTrue(match, "debería detectar 'cerrar Discord al arrancar'")
+        p = match[0]
+        self.assertEqual(p.count, 8)
+        self.assertGreaterEqual(p.consistency, 0.6)
+
+    def test_maps_to_routine_trigger(self):
+        pats = mine_simple_patterns(self._events_red_case())
+        p = [p for p in pats if p.target_key == "discord.exe"][0]
+        r = p.to_routine_trigger()
+        self.assertIsNotNone(r)
+        self.assertEqual(r["action"]["tool"], "app")
+        self.assertEqual(r["action"]["args"]["action"], "close")
+
+    def test_conservative_below_thresholds(self):
+        # solo 3 de 10 -> consistencia 0.3 < 0.6 -> NO sugiere
+        pats = mine_simple_patterns(self._events_red_case(days=10, close_n=3))
+        match = [p for p in pats if p.target_key == "discord.exe"]
+        self.assertFalse(match, "0.3 consistencia no debe disparar (conservador)")
+
+    def test_insufficient_window_no_suggestion(self):
+        # solo 2 días de datos -> no sugerir aunque haya repeticiones
+        pats = mine_simple_patterns(self._events_red_case(days=2, close_n=2))
+        self.assertEqual(pats, [])
+
+    def test_empty_events(self):
+        self.assertEqual(mine_simple_patterns([]), [])
+
+
+if __name__ == "__main__":
+    unittest.main()
