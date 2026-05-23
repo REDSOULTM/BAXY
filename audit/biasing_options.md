@@ -221,9 +221,22 @@ A y B siguen chocando con CPU/fork. Quedan, realistas:
 - **D-dual** (Whisper open-vocab + speech-to-phrase para comandos) — mejor
   biasing en comandos, pero complejidad de motor dual + router + Kaldi packaging.
 
-### Ruta E — Whisper + reparación con el LLM residente (C+, open-vocab nativo)
+### ⛔ Ruta E — DESCARTADA por RED (2026-05-23)
 
-**La que mejor cumple el requisito de RED.** El LLM de Gemma4 YA está corriendo
+RED: *"los LLM que corremos ya de por sí son muy pequeños; necesito que el
+sistema de transcripción sea autosuficiente por sí mismo."*
+
+Argumento válido y dirimente: nuestros LLM son E2B/E4B-Q4 (chicos), ya al límite
+de fiabilidad para tool-calling ([[project_tool_calling_weak_models_2026_05_20]]).
+Cargarles además la reparación de transcripción (a) los pone a alucinar
+correcciones, (b) ACOPLA el STT a un componente débil — si el LLM falla o cambia,
+el STT se degrada. **El STT debe ser autosuficiente.** => E queda descartada.
+Lo que queda debe resolver el biasing DENTRO del motor de transcripción, sin
+depender del LLM.
+
+### (E original, archivada) — Whisper + reparación con el LLM residente
+
+El LLM de Gemma4 YA está corriendo
 en GPU. Úsalo como segunda pasada para reparar el transcript de Whisper:
 
 - Whisper transcribe TODO (open-vocab, base intacta) — "abrí estimulo en estim".
@@ -255,53 +268,69 @@ El costo es latencia condicional (solo en ambigüedad) — medible y acotable.
 
 ---
 
-## 2. RECOMENDACIÓN (con datos) — y PARADA para decisión del user
+## 2. RECOMENDACIÓN FINAL (con datos) — restricciones convergidas
 
-Comparación final de las 5 rutas contra TODAS las restricciones (STT-en-CPU,
-OSS pip cross-platform, sin forks frágiles, **open-vocab obligatorio**,
-generaliza a held-out):
+Las 4 restricciones de RED, juntas, son muy exigentes y eliminan casi todo:
 
-| Ruta | Biasing real | open-vocab | CPU-prod | pip cross-plat | held-out | Esfuerzo |
+1. **open-vocab** (resolver lo no anticipado) → mata D-pura y whisper.cpp-GBNF.
+2. **STT autosuficiente** (sin depender del LLM chico) → mata E.
+3. **STT en CPU** (la GPU es del LLM) → mata A (Parakeet GPU-bound).
+4. **pip cross-platform, sin fork frágil** → mata B (fork C++) y D-dual (Kaldi/Docker).
+
+| Ruta | open-vocab | autosuf. | CPU | pip x-plat | biasing real | held-out |
 |------|:---:|:---:|:---:|:---:|:---:|:---:|
-| A NeMo/Parakeet | ✅ | ✅ | ❌ GPU | ❌ | ✅ | alto |
-| B fork CTranslate2 | ✅ | ✅ | ✅ | ❌ C++ | ✅ | alto+mantto |
-| C inventario dinámico | ⚠️ post-hoc | ✅ | ✅ | ✅ | ⚠️ techo | bajo |
-| D speech-to-phrase | ✅ | ❌ (dual) | ✅ | ❌ Kaldi | ✅ comandos | alto |
-| **E Whisper+repair-LLM** | ✅ semántico | ✅ | ✅ | ✅ | ✅ razona | bajo-medio |
+| A NeMo/Parakeet | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| B fork CTranslate2 | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
+| C corrector autocontenido | ✅ | ✅ | ✅ | ✅ | ⚠️ post-hoc | ⚠️ techo |
+| D-dual speech-to-phrase | ✅ (dual) | ✅ | ✅ | ❌ | ✅ | ✅ comandos |
+| E Whisper+repair-LLM | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| whisper.cpp GBNF | ❌ | ✅ | ✅ | ✅ | ✅(closed) | ❌ |
 
-**Recomendación: C + E combinadas.** Es la única que cumple TODOS los ejes
-incluido el requisito de RED (open-vocab para lo no anticipado):
+**La única ruta que cumple las 4 restricciones a la vez es C.** Y C es
+post-hoc con techo. Esa es la verdad incómoda pero honesta: **bajo el conjunto
+completo de restricciones de RED, no existe una solución de biasing real
+pip-installable, CPU, autosuficiente y open-vocab.** Todas las que dan biasing
+real (A/B/D) rompen al menos una restricción dura.
 
-1. **Whisper se queda** como base open-vocab — resuelve CUALQUIER comando/dictado,
-   incluido lo que no está en plantilla (requisito de RED ✅).
-2. **C (inventario dinámico)** — el corrector fuzzy/fonético matchea contra las
-   apps REALMENTE instaladas + media reciente del user (no mi hardcode). Rápido,
-   barato, atrapa los nombres conocidos del entorno.
-3. **E (repair-LLM)** — cuando C no encuentra match confiable (nombre nuevo, fuera
-   de inventario), el LLM residente repara el transcript POR RAZONAMIENTO. Esto
-   da generalización held-out real ("el juego que bajé ayer") sin lista, sin
-   Kaldi, sin GPU nueva, sin closed-vocab.
+### Qué se puede hacer DENTRO de las restricciones (Ruta C bien hecha)
 
-Por qué NO las otras:
-- **A**: GPU-bound (rompe STT-en-CPU). **B**: fork C++ frágil. **D pura**: rompe
-  open-vocab (el bloqueo de RED); D-dual es válida pero motor dual + Kaldi/Docker
-  en Windows es mucho más esfuerzo que C+E para una ganancia que E ya da por
-  razonamiento.
+C no es "biasing real en el decoding", pero es **autosuficiente, open-vocab, CPU,
+pip-installable**. El trabajo de generalización honesto sobre C:
 
-**Honestidad sobre el techo de C+E:** E depende de que el LLM razone bien sobre
-el transcript crudo — si Whisper destruye TANTO el audio que no queda señal
-("YouTube"→"Show2V"), ni el LLM lo recupera. Ese piso lo pone Whisper-small, no
-el biasing. Para superarlo de verdad haría falta A/B/D (biasing en decoding) o
-fine-tuning. Pero C+E es lo máximo alcanzable SIN migración ni Kaldi ni GPU, y
-cumple el requisito open-vocab.
+1. **Inventario DINÁMICO real**, no hardcodeado: el corrector matchea contra apps
+   instaladas (`_discover_installed_apps` ya existe) + media reciente + entidades
+   que el user mencionó antes. "Cyberpunk" generaliza si el user LO TIENE. El
+   overfitting a corregir es "mi lista de ejemplos", no "usar lista".
+2. **Quitar el hardcode del prompt/hotwords** (Steam/YouTube/Netflix enumerados)
+   y reemplazar por el inventario dinámico — así no sesga solo lo que yo listé.
+3. Medir held-out HONESTO: el techo de C sobre nombres que el user NUNCA tuvo es
+   real y se documenta, no se esconde.
 
-**DECISIÓN QUE NECESITO DE VOS (RED):**
-1. **C + E** (recomendada): Whisper open-vocab + corrector dinámico + repair con
-   el LLM residente. Cumple open-vocab, generaliza por razonamiento, sin
-   migración. → procedo a FASE 1 (held-out + voz real + IC) y la implemento.
-2. **+ D-dual a futuro** (C+E ahora, y evaluás speech-to-phrase como segundo
-   motor de comandos en un sprint posterior con su spike de Kaldi).
-3. **Mover STT a GPU** para habilitar A (biasing nativo, rompe STT-en-CPU).
+### El techo honesto y qué lo superaría (mandato #3)
+
+C generaliza a **lo que el user tiene/mencionó**, no a "cualquier nombre del
+mundo". Un nombre nuevo que Whisper-es vuelve español plausible ("estimulo") es
+irrecuperable por post-corrector sin candidato. Superar ESE techo, dentro de
+"autosuficiente", solo se logra con **biasing en el decoding sobre un motor
+CPU+pip+open-vocab** — y ese motor HOY no existe maduro (B sería, pero es fork).
+La otra salida real es **fine-tuning de Whisper-small** a Spanglish (mejora el
+piso del propio motor, sigue autosuficiente y open-vocab) — costo: datos + GPU
+de training (la RTX 4060 sirve para entrenar, no es runtime), riesgo de degradar
+generalidad multi-usuario (se mitiga con held-out de no-regresión).
+
+### DECISIÓN QUE NECESITO DE VOS (RED)
+
+1. **C bien hecha** (inventario dinámico real + quitar hardcodes), medida con
+   held-out honesto. Es lo único que cumple las 4 restricciones. Techo: nombres
+   del entorno del user. → FASE 1 + implementación.
+2. **Fine-tuning de Whisper-small** a Spanglish (autosuficiente, open-vocab, sube
+   el piso del motor) — sprint de datos+training, no runtime. ¿Lo evaluamos?
+3. **Relajar UNA restricción** (ej. aceptar STT en GPU → A con biasing real, o
+   aceptar Docker → D-dual). ¿Cuál estarías dispuesto a ceder?
 4. Otra prioridad.
 
 NO implemento nada hasta tu OK de ruta (regla del sprint).
+
+<!-- bloque viejo C+E archivado (E descartada por RED 2026-05-23) -->
+<!-- recomendación previa C+E removida; ver sección 2 actualizada arriba -->
+<!-- fin bloque archivado -->
