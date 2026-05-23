@@ -2766,24 +2766,26 @@ $p=Get-Process -Id $pid32 -ErrorAction SilentlyContinue
                     #   3. Si el rect resultante es <800x600 (heurustico), tambien
                     #      SW_SHOWMAXIMIZED para garantizar visibilidad.
                     was_minimized = bool(win32gui.IsIconic(hwnd))
-                    if was_minimized:
-                        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-                    applied = bool(win32gui.SetForegroundWindow(hwnd))
-                    # Check de tamaño post-restore. Si es chica, maximizar.
+                    # Foco ROBUSTO (2026-05-23, informe C): truco ALT +
+                    # AttachThreadInput + ShowWindow + verificación + UIA(UWP) +
+                    # retry. El SetForegroundWindow directo viejo fallaba bajo el
+                    # foreground-lock de Windows (WhatsApp/Spotify no se enfocaban).
                     try:
-                        left, top, right, bottom = win32gui.GetWindowRect(hwnd)
-                        w = right - left
-                        h = bottom - top
-                        # Threshold conservador: ventanas tipicas de apps de
-                        # productividad >= 800x600 cuando son usables.
-                        if w < 800 or h < 600:
-                            win32gui.ShowWindow(hwnd, win32con.SW_SHOWMAXIMIZED)
-                            # Re-focus tras maximize (algunas apps pierden focus).
-                            win32gui.SetForegroundWindow(hwnd)
+                        from .win_focus import focus_and_maximize
+                        applied = focus_and_maximize(
+                            hwnd, expected_title_substr=(title or None))
                     except Exception:
-                        # GetWindowRect puede fallar en ventanas raras; no abortar
-                        # — el focus ya fue intentado.
-                        pass
+                        # Fallback al camino viejo si win_focus no está disponible.
+                        if was_minimized:
+                            win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                        applied = bool(win32gui.SetForegroundWindow(hwnd))
+                        try:
+                            l, t, r, b = win32gui.GetWindowRect(hwnd)
+                            if (r - l) < 800 or (b - t) < 600:
+                                win32gui.ShowWindow(hwnd, win32con.SW_SHOWMAXIMIZED)
+                                win32gui.SetForegroundWindow(hwnd)
+                        except Exception:
+                            pass
                 elif action == "close":
                     win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
                     applied = True  # PostMessage no devuelve confirmacion sincrona
