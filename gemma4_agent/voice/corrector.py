@@ -84,6 +84,11 @@ _SPANISH_STOPWORDS = frozenset({
     "carpeta", "correo", "mensaje", "foto", "imagen", "musical",
     "hola", "gracias", "adios", "bien", "mal", "ahora", "luego", "hoy", "manana",
     "que", "cual", "quien", "como", "cuando", "donde", "porque", "cuanto",
+    # números en palabra: nunca son nombres propios; protegen dictados con
+    # cifras ("treinta"->"Torrent" medido 2026-05-23 sobre FLEURS).
+    "cero", "uno", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete",
+    "ocho", "nueve", "diez", "once", "doce", "veinte", "treinta", "cuarenta",
+    "cincuenta", "cien", "ciento", "mil", "millon", "millones", "medio",
     # preposiciones/conjunciones cortas que colisionan con verbos ("en"->"enciende")
     "en", "de", "la", "el", "lo", "un", "una", "con", "por", "para", "del",
     "los", "las", "al", "se", "su", "mi", "tu", "y", "o", "a",
@@ -129,7 +134,7 @@ def _normalise(s: str) -> str:
 
 
 def _metaphone(s: str) -> str:
-    """Metaphone code de un string ya normalizado (sin espacios -> junta
+    """Metaphone code INGLÉS de un string ya normalizado (sin espacios -> junta
     tokens). Cadena vacía si jellyfish no está o el input es trivial."""
     if not _HAS_PHONETIC or not s:
         return ""
@@ -137,6 +142,45 @@ def _metaphone(s: str) -> str:
         # Metaphone de la frase sin espacios: "espotify"->"ESPTF". Para n-gramas
         # quitamos espacios para una sola clave fonética comparable.
         return _jellyfish.metaphone(s.replace(" ", ""))
+    except Exception:
+        return ""
+
+
+# Spanish Metaphone (Mosquera 2012): segunda clave fonética, codificada según
+# fonología ESPAÑOLA. Necesaria porque Parakeet (multilingüe, sesgo es) fusiona
+# nombres ingleses a sonido español ("vlc"->"BLC", "netflis", "disnei"); el
+# Metaphone inglés no acerca esos códigos pero el español sí. MEDIDO 2026-05-23:
+# blc/vlc ES=100 (EN=67), netflis/netflix ES=100, disnei/disney ES=100. Para
+# fusiones donde Parakeet PIERDE fonemas (crumb/chrome, echo/edge) el inglés
+# sigue siendo mejor -> usamos el MÁXIMO de ambas codificaciones (dual ES↔EN),
+# que domina a cualquiera sola. Plan §Axis-3 "codificación dual + match cruzado".
+try:
+    from gemma4_agent.voice.phonetic_es import spanish_metaphone as _spanish_metaphone
+    _HAS_ES_PHONETIC = True
+except Exception:  # pragma: no cover
+    _spanish_metaphone = None
+    _HAS_ES_PHONETIC = False
+
+
+# Gate de LONGITUD de enunciado (anti-overfit, medido 2026-05-23): un asistente
+# de voz recibe COMANDOS, no párrafos. Los comandos son cortos (sobre 84 reales
+# de RED: p50=3 tokens, p90=6, MAX=8; 81/84 ≤6); el habla declarativa es larga
+# (sobre 180 clips humanos FLEURS+chileno: p50=21 tokens, solo 18/180 ≤6). Con el
+# inventario grande (discovery, 125+ apps) el corrector corrompía 20/180 frases
+# declarativas ("Esto"->"stop", "repollo"->"Apollo", "setenta"->"Counter-Strike").
+# Solución estructural (plan §Axis-3 "slot por posición"): NO corregir enunciados
+# largos. Umbral 8 = el máximo real de un comando de RED. Esto protege a CUALQUIER
+# usuario hablando frases largas sin perder ninguna corrección de comando real.
+# (CLAUDE.md: anti-regresión por dominio; uso universal, no overfit a una voz.)
+MAX_COMMAND_TOKENS = 8
+
+
+def _metaphone_es(s: str) -> str:
+    """Spanish Metaphone de un string ya normalizado (sin espacios)."""
+    if not _HAS_ES_PHONETIC or not s:
+        return ""
+    try:
+        return _spanish_metaphone(s.replace(" ", ""))
     except Exception:
         return ""
 
@@ -152,13 +196,15 @@ class FuzzyCorrector:
         self._inventory = inventory
         self._threshold = threshold
         self._phonetic_threshold = PHONETIC_THRESHOLD
-        # Pre-normalize + pre-Metaphone each category for fast comparison. We
-        # keep the original strings to return canonical replacements. Tuple:
-        # (normalized_text, metaphone_code, original).
-        self._normalized: dict[str, list[tuple[str, str, str]]] = {}
+        # Pre-normalize + pre-Metaphone (EN y ES) cada categoría para comparar
+        # rápido. Guardamos el original para devolver la forma canónica. Tupla:
+        # (texto_norm, metaphone_EN, metaphone_ES, original).
+        self._normalized: dict[str, list[tuple[str, str, str, str]]] = {}
         for cat, items in inventory.items():
             self._normalized[cat] = [
-                (_normalise(x), _metaphone(_normalise(x)), x) for x in items
+                (_normalise(x), _metaphone(_normalise(x)),
+                 _metaphone_es(_normalise(x)), x)
+                for x in items
             ]
 
     def correct(self, transcript: str) -> str:
@@ -181,6 +227,11 @@ class FuzzyCorrector:
             return transcript
 
         tokens = transcript.split()
+        # Gate de longitud: enunciados largos = habla declarativa, no comandos.
+        # No los tocamos (protege voz real de cualquier usuario; ver
+        # MAX_COMMAND_TOKENS). El comando más largo de RED son 8 tokens.
+        if len(tokens) > MAX_COMMAND_TOKENS:
+            return transcript
         out: list[str] = []
         i = 0
         n = len(tokens)
@@ -229,6 +280,7 @@ class FuzzyCorrector:
                 if any(p in _SPANISH_STOPWORDS for p in norm_parts):
                     continue
                 window_meta = _metaphone(window_norm)
+                window_meta_es = _metaphone_es(window_norm)
                 for cat, normalized_items in self._normalized.items():
                     # No corregir a un verbo si: estamos en posición de argumento
                     # (los args son nombres propios), o el window es multi-token
@@ -236,7 +288,7 @@ class FuzzyCorrector:
                     # era un colapso 2-gram->verbo erróneo).
                     if cat == "verbs" and (skip_verbs or ngram > 1):
                         continue
-                    for norm_item, meta_item, orig_item in normalized_items:
+                    for norm_item, meta_item, meta_item_es, orig_item in normalized_items:
                         # (1) Rama TEXTUAL: fuzz.ratio sobre el texto normalizado.
                         score = fuzz.ratio(window_norm, norm_item)
                         # Length penalty: if window and candidate have
@@ -273,16 +325,31 @@ class FuzzyCorrector:
                         # ("cuales"->close KLS/KLS=100, "fue"->ver) — se corrigen
                         # solo por texto (se oyen razonablemente bien). El fonético
                         # se reserva para nombres propios (apps/artistas/canciones).
+                        # Codificación DUAL ES↔EN: tomamos el MÁXIMO de la
+                        # similitud fonética inglesa y española. Cada fusión usa
+                        # la codificación que mejor la captura: anglicismos
+                        # fonetizados al español ("blc"->vlc, "netflis"->netflix)
+                        # puntúan alto en ES; fusiones con pérdida de fonemas
+                        # ("crumb"->chrome) puntúan mejor en EN. El máximo domina
+                        # a cualquiera sola sin bajar el piso. (Plan §Axis-3.)
                         passes_phon = False
                         phon_adjusted = 0.0
                         if (not strict_mode and cat != "verbs"
-                                and window_meta and meta_item and score >= 50):
-                            phon = fuzz.ratio(window_meta, meta_item)
-                            m_diff = abs(len(window_meta) - len(meta_item))
-                            m_max = max(len(window_meta), len(meta_item), 1)
-                            m_cov = 1.0 - (m_diff / m_max)
-                            phon_adjusted = phon * m_cov
-                            passes_phon = phon_adjusted >= self._phonetic_threshold
+                                and score >= 50):
+                            cands = []
+                            if window_meta and meta_item:
+                                m_diff = abs(len(window_meta) - len(meta_item))
+                                m_max = max(len(window_meta), len(meta_item), 1)
+                                cands.append(fuzz.ratio(window_meta, meta_item)
+                                             * (1.0 - m_diff / m_max))
+                            if window_meta_es and meta_item_es:
+                                e_diff = abs(len(window_meta_es) - len(meta_item_es))
+                                e_max = max(len(window_meta_es), len(meta_item_es), 1)
+                                cands.append(fuzz.ratio(window_meta_es, meta_item_es)
+                                             * (1.0 - e_diff / e_max))
+                            if cands:
+                                phon_adjusted = max(cands)
+                                passes_phon = phon_adjusted >= self._phonetic_threshold
 
                         if not (passes_text or passes_phon):
                             continue
