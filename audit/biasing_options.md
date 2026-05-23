@@ -139,10 +139,79 @@ esté en SU entorno. Eso NO es un fallo de C — es el límite de cualquier
 post-corrector. Lo único que lo superaría es biasing en el decoding (A/B) o
 fine-tuning, ambos con el costo descrito.
 
+### Ruta D — speech-to-phrase (closed-vocab FST/Kaldi) COMO SEGUNDO MOTOR
+
+(agregada tras el pedido de RED de investigar Rhasspy3. El sucesor moderno de
+Rhasspy3-STT es `OHF-Voice/speech-to-phrase`, Home Assistant Voice Chapter 9,
+feb 2025.)
+
+**Qué es:** NO transcribe libre — responde *"¿cuál de las frases que conozco
+dijiste?"*. Convierte plantillas de comandos + tus entidades en un FST (Kaldi +
+opengrm), entrena un LM, y reconoce SOLO frases de ese grafo. Para nombres
+propios es **biasing real de verdad**: el nombre solo puede salir si está en el
+grafo. Maneja palabras desconocidas con **phonetisaurus G2P** (adivina la
+pronunciación de "Cyberpunk" sin diccionario) + una capa fuzzy de corrección.
+
+**A favor (encaja con varios ejes):**
+- **Biasing real** (closed-vocab) — resuelve el overfitting de raíz: el grafo se
+  genera de TUS entidades (apps/áreas), dinámico y personalizado.
+- **CPU-friendly** — corre <1s en Raspberry Pi 4 (HA chapter 9). Respeta STT-en-CPU.
+- Español SÍ (Coqui community). Licencia **Apache-2.0** (OK).
+- G2P para held-out: "Cyberpunk" se reconoce aunque nunca lo listé, si está en
+  el grafo (apps instaladas).
+
+**En contra (fricción real):**
+- **Closed-vocabulary ONLY**: NO hace dictado libre. "buscá en Google qué es la
+  guerra de Troya" o cualquier query abierta NO la transcribe. Gemma4 necesita
+  AMBOS (comandos + dictado/preguntas libres). => speech-to-phrase NO reemplaza
+  a Whisper; sería un SEGUNDO motor en paralelo (comando cerrado primero, fallback
+  a Whisper para lo abierto). Es el patrón Rhasspy/OVOS.
+- **Packaging**: Docker/Linux-primary, depende de Kaldi + opengrm + phonetisaurus
+  (binarios nativos). NO es `pip install` limpio en Windows. Choca con la
+  restricción de "release a comunidad: pip install en Win/Mac/Linux sin compilar
+  nativo" ([[project... voice_pipeline_redesign clarifications]]). En Windows
+  habría que dockerizar o usar WSL = fricción de setup para el user final.
+
+**Veredicto D:** arquitectónicamente es la mejor respuesta al biasing real
+CPU-friendly, y el G2P es exactamente lo que generaliza a held-out. PERO (1) es
+closed-vocab => motor DUAL (no reemplaza Whisper), (2) packaging Kaldi/Docker en
+Windows choca con la meta de pip-install cross-platform. Es la ruta más
+ambiciosa: mayor ganancia potencial, mayor esfuerzo de integración.
+
+---
+
+## 2. RECOMENDACIÓN (con datos) — y PARADA para decisión del user
+
+Comparación final de las 4 rutas contra nuestras restricciones (STT-en-CPU,
+OSS pip-installable cross-platform, sin forks frágiles, necesita comandos +
+dictado libre):
+
+| Ruta | Biasing real | CPU-prod | pip Win/Mac/Lin | Reemplaza Whisper | Esfuerzo |
+|------|:---:|:---:|:---:|:---:|:---:|
+| A NeMo/Parakeet | ✅ | ❌ GPU-bound | ❌ | sí (motor nuevo) | alto |
+| B fork CTranslate2 | ✅ | ✅ | ❌ build C++ | no | alto+mantto |
+| C inventario dinámico | ⚠️ post-hoc | ✅ | ✅ | no | bajo |
+| **D speech-to-phrase** | ✅ closed-vocab | ✅ | ❌ Kaldi/Docker | no (motor DUAL) | alto integración |
+
+**Recomendación matizada:**
+- **Para SHIPPEAR YA con bajo riesgo: Ruta C** (inventario dinámico). Sin
+  migración, pip-friendly, ataca el overfitting real (lista dinámica del entorno
+  vs hardcode). Techo honesto: no recupera nombres que el user nunca tuvo.
+- **Para el biasing REAL de nombres propios, la mejor arquitectura es D**
+  (speech-to-phrase como segundo motor para comandos, Whisper para dictado).
+  Es lo que hace HA/Rhasspy y resuelve el problema de raíz — PERO es un proyecto
+  grande (motor dual + packaging Kaldi en Windows) y rompe la meta pip-install
+  cross-platform salvo que se acepte Docker/WSL.
+
+**No hay free-lunch:** el biasing real (D, o A) cuesta o un motor dual con Kaldi,
+o GPU. Lo barato (C) tiene techo teórico. Esa es la verdad medida.
+
 **DECISIÓN QUE NECESITO DE VOS (RED):**
-1. ¿Aceptás Ruta C (inventario dinámico, sin migración) como dirección? ó
-2. ¿Querés evaluar mover el STT a la RTX 4060 en prod para habilitar Ruta A
-   (biasing real, pero rompe el "STT en CPU")? ó
-3. ¿Otra prioridad?
+1. **Ruta C** ahora (rápido, generaliza a lo que el user tiene, techo honesto), ó
+2. **Ruta D** (speech-to-phrase como segundo motor — biasing real, pero motor
+   dual + Kaldi/Docker en Windows; aceptás el packaging por Docker/WSL?), ó
+3. **C ahora + D como sprint futuro** (pragmático: shippear C, evaluar D con un
+   spike real de integración después), ó
+4. Otra prioridad.
 
 NO implemento nada hasta tu OK de ruta (regla del sprint).
