@@ -25,8 +25,68 @@ Public API:
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from typing import Any
+
+# ---------------------------------------------------------------------------
+# Gate LÉXICO interrogativo (zero-ML, sub-ms). Complemento DETERMINISTA del
+# clasificador semántico. Dos usos (2026-05-23, informe latencia/router):
+#   1. Fallback cuando el modelo de embeddings NO cargó (classify_intent=None):
+#      una pregunta clara ("¿qué es Mortal Kombat?") debe ir a INFO aunque el
+#      router esté degradado, en vez de caer al fallback que solo ofrecía office
+#      (el bug que torchcodec destapó). [[project_torchcodec_breaks_router]]
+#   2. Prior: refuerza la rama info cuando hay interrogativa sin verbo de acción.
+# Las palabras interrogativas son conjunto CERRADO por idioma -> regex casi
+# perfecta en es/en/pt/it. NO sustituye al semántico (que generaliza), lo respalda.
+_WH_WORDS = (
+    # español (con y sin tilde — el ASR a veces no la pone)
+    r"qu[eé]|qui[eé]n|qui[eé]nes|c[oó]mo|d[oó]nde|cu[aá]ndo|por\s*qu[eé]|"
+    r"cu[aá]l|cu[aá]les|cu[aá]nto|cu[aá]ntos|cu[aá]nta|cu[aá]ntas|"
+    # inglés
+    r"what|who|how|where|when|why|which|whose|"
+    # portugués / italiano
+    r"o\s*que|quem|onde|quando|qual|quais|quanto|"
+    r"cosa|chi|dove|quando|perch[eé]|quale|quali"
+)
+_WH_RE = re.compile(r"(?:^|\b)(?:" + _WH_WORDS + r")\b", re.IGNORECASE)
+_Q_MARK_RE = re.compile(r"[¿?]")
+# Verbos de COMANDO (acción sobre la PC). Si aparecen, NO es pregunta-info aunque
+# tenga forma interrogativa ("¿podés abrir Spotify?" es acción). Multi-idioma.
+_ACTION_VERBS = frozenset({
+    "abre", "abrir", "abreme", "ábreme", "abrime", "lanza", "lanzá", "ejecuta",
+    "ejecutá", "inicia", "arranca", "cierra", "cerrar", "cerrá",
+    "reproduce", "reproducir", "reproducí", "pon", "poné", "ponme", "play",
+    "crea", "crear", "creá", "creame", "créame", "genera", "generá",
+    "envia", "envía", "enviar", "manda", "mandá", "mándale", "mandale", "send",
+    "busca", "buscar", "buscá", "descarga", "descargar", "instala", "instalar",
+    "sube", "subí", "baja", "bajá", "apaga", "apagá", "enciende", "prende",
+    "open", "close", "create", "launch", "start", "stop", "search", "download",
+})
+
+
+def is_question_lexical(text: str) -> tuple[bool, float]:
+    """(es_pregunta_informativa, confianza) por léxico puro. Sin ML, sub-ms.
+
+    Devuelve True solo si hay señal interrogativa (wh-word y/o '¿?') Y NO hay un
+    verbo de comando explícito (que la volvería acción). Funciona aunque el
+    modelo de embeddings esté caído — ese es el punto."""
+    if not text or not text.strip():
+        return (False, 0.0)
+    t = text.strip().lower()
+    has_q = bool(_Q_MARK_RE.search(t))
+    has_wh = bool(_WH_RE.search(t))
+    if not (has_q or has_wh):
+        return (False, 0.0)
+    # verbo de comando en los primeros tokens -> es acción, no pregunta-info
+    toks = re.findall(r"[a-záéíóúüñ]+", t)
+    if any(v in _ACTION_VERBS for v in toks[:3]):
+        return (False, 0.0)
+    if has_wh and has_q:
+        return (True, 0.95)
+    if has_wh:
+        return (True, 0.80)
+    return (True, 0.55)  # solo signo de pregunta
 
 # Anchor phrases per intent, in several languages. The MEAN of each
 # group's embeddings is the centroid we compare against. More languages
@@ -326,8 +386,18 @@ def wants_knowledge(text: str) -> bool:
       - questions about the agent ("quién eres")  → selfref wins
     while still firing for "quién es X", "what is X about", "de qué murió
     X" in any language. Used by the planner so the LLM can look things up
-    even when no keyword fired."""
-    return _wants_knowledge_scores(classify_intent(text))
+    even when no keyword fired.
+
+    FALLBACK LÉXICO (2026-05-23): si el modelo de embeddings no cargó
+    (classify_intent → None), una pregunta interrogativa clara SIN verbo de
+    comando se trata como info igual. Esto evita el mis-ruteo a 'office' que
+    pasó cuando torchcodec rompió el router en silencio."""
+    s = classify_intent(text)
+    if s is None:
+        # Router degradado: confiar en el léxico para no mis-rutear preguntas.
+        is_q, conf = is_question_lexical(text)
+        return is_q and conf >= 0.80
+    return _wants_knowledge_scores(s)
 
 
 def _wants_knowledge_scores(s: IntentScores | None) -> bool:
@@ -351,3 +421,28 @@ def _wants_knowledge_scores(s: IntentScores | None) -> bool:
         # user forbade tools — meta must not be the winner, or we'd pull web.
         and s.info >= s.meta
     )
+
+
+def router_health() -> tuple[bool, str]:
+    """Health-check del router semántico. (sano, detalle).
+
+    Falla RUIDOSO si el modelo de embeddings no cargó — el caso torchcodec dejó
+    el router vacío SIN avisar y mis-ruteó todo. Probar en el arranque y exponer
+    a la UI/logs. Probes en 4 idiomas: una pregunta info debe clasificar info>
+    action; un comando debe clasificar action>info."""
+    if not _ensure_centroids() or _C.info is None:
+        return (False, "encoder de embeddings no cargó (¿torchcodec/optimum/"
+                       "tensorflow instalado? rompe sentence-transformers)")
+    probes = [
+        ("¿qué es python?", True), ("what is mortal kombat?", True),
+        ("abre whatsapp", False), ("pon música", False),
+    ]
+    for q, expect_info in probes:
+        s = classify_intent(q)
+        if s is None:
+            return (False, f"classify_intent devolvió None para {q!r}")
+        got_info = s.info > s.action
+        if got_info != expect_info:
+            return (False, f"probe {q!r}: esperaba info={expect_info} "
+                           f"pero info={s.info:.2f} action={s.action:.2f}")
+    return (True, "router OK (4/4 probes)")

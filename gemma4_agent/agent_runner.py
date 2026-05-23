@@ -391,6 +391,21 @@ class AgentRunner:
                         _ir._ensure_centroids()
                         _ir.is_conversational("warmup")
                         semantic_router.embed("warmup")
+                        # HEALTH-CHECK ruidoso (2026-05-23): si el encoder no
+                        # cargó, el router clasifica/rutea MAL en silencio (lo
+                        # que torchcodec destapó: "¿qué es X?" creó un documento).
+                        # Avisar fuerte para que se note, en vez de degradar mudo.
+                        try:
+                            _ok, _detail = _ir.router_health()
+                            if not _ok:
+                                _publish_activity(
+                                    "SYSTEM",
+                                    f"⚠ router degradado: {_detail} — el ruteo "
+                                    f"usará fallback léxico (preguntas OK, "
+                                    f"acciones complejas pueden fallar)")
+                                logger.error("router health FAILED: %s", _detail)
+                        except Exception:
+                            pass
                         # 2026-05-21: also warm the abstain head + per-tool logit
                         # head HERE, so they never load lazily on the user's
                         # first turn (the critical path). Both are tiny numpy

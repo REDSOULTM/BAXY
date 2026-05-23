@@ -45,6 +45,44 @@ class RouterLoadHealthTest(unittest.TestCase):
             "pip uninstall torchcodec. El downloader de FLEURS usa decode=False "
             "+ soundfile y NO lo necesita.")
 
+    def test_router_health_reports_ok(self):
+        from gemma4_agent.intent_router import router_health
+        ok, detail = router_health()
+        self.assertTrue(ok, f"router_health falló: {detail}")
+
+
+class LexicalGateTest(unittest.TestCase):
+    """Gate interrogativo zero-ML + fallback cuando el modelo está caído."""
+
+    def test_questions_detected(self):
+        from gemma4_agent.intent_router import is_question_lexical
+        for q in ["¿qué es el Mortal Kombat?", "what is python",
+                  "quién ganó el mundial", "por qué el cielo es azul"]:
+            is_q, conf = is_question_lexical(q)
+            self.assertTrue(is_q, f"{q!r} debería ser pregunta")
+            self.assertGreaterEqual(conf, 0.55)
+
+    def test_commands_not_questions(self):
+        from gemma4_agent.intent_router import is_question_lexical
+        # comandos (aun con forma interrogativa) NO son pregunta-info
+        for cmd in ["abre Spotify", "pon música", "¿podés abrir Chrome?",
+                    "mandale un mensaje a Juan"]:
+            is_q, _ = is_question_lexical(cmd)
+            self.assertFalse(is_q, f"{cmd!r} es acción, no pregunta")
+
+    def test_fallback_when_model_down(self):
+        # Si classify_intent → None (router caído, p.ej. torchcodec),
+        # wants_knowledge debe usar el léxico, NO devolver False y mis-rutear.
+        import gemma4_agent.intent_router as ir
+        orig = ir.classify_intent
+        try:
+            ir.classify_intent = lambda t: None
+            self.assertTrue(ir.wants_knowledge("¿qué es el Mortal Kombat?"))
+            self.assertTrue(ir.wants_knowledge("what is python"))
+            self.assertFalse(ir.wants_knowledge("abre Spotify"))
+        finally:
+            ir.classify_intent = orig
+
 
 if __name__ == "__main__":
     unittest.main()
