@@ -222,3 +222,23 @@ la salida de Parakeet (mi corrector actual YA rescata "benson moon"->"boone").
 Etapa 2: como MBS anda en 1.13.2, sumar hotwords (modeling_unit=bpe, score 1.5)
 como PREVENCIÓN, no rescate.
 fp32: DIFERIDO (sin evidencia de fix; +1.8GB RAM, ~2x latencia).
+
+---
+
+## UPDATE 5 (2026-05-23, noche) — Etapa 2 MEDIDA: MBS-hotwords RECHAZADO por evidencia
+
+Verificado que `modified_beam_search` + hotwords es ESTABLE en sherpa 1.13.2
+(PR #3589 efectivo: no alucina, no desestabiliza). En casos sueltos rescata
+(crumb→chrom, Thunder Birth→Thunderbird). PERO sobre el set COMPLETO de RED:
+
+| Config | Entity-Recall | p50 |
+|---|---|---|
+| greedy (crudo) | 64% [52,75] | 75 ms |
+| MBS-hotwords 1.5 (crudo) | 64% [52,75] | 98 ms |
+| **greedy + corrector** | **81% [70,89]** | **73 ms** |
+| MBS-hotwords + corrector | 78% [67,86] | 98 ms |
+
+CONCLUSIÓN: el corrector sobre greedy DOMINA. Los hotwords sobre-sesgan (vuelven
+incorrectas salidas greedy que estaban bien), cancelando sus rescates, y suman
+~25ms. **Decisión: producción = Parakeet greedy + corrector. NO hotwords.**
+Coincide con la apuesta principal del plan (rescate post-hoc > trucos de decoding).

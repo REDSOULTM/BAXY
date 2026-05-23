@@ -29,7 +29,7 @@ import numpy as np
 
 from .audio_io import AudioCapture, CHUNK_SAMPLES, SAMPLE_RATE
 from .corrector import FuzzyCorrector
-from .inventory import build_initial_prompt, get_inventory
+from .inventory import build_hotwords, build_initial_prompt, get_inventory
 from .stt import STT
 from .vad import SileroVAD
 from .wake import WakeDetector
@@ -216,7 +216,21 @@ class VoicePipeline:
         self._on_wake_event = on_wake_event
         self._vad = SileroVAD()
         self._wake = WakeDetector(on_wake=self._on_wake)
-        self._stt = STT()
+        # Motor STT seleccionable por env GEMMA4_STT_ENGINE (default: whisper =
+        # prod actual; "parakeet" = sherpa-onnx Parakeet-TDT-v3). MEDIDO sobre
+        # voz real 2026-05-23: Parakeet+corrector EntRecall comandos 81% [70,89]
+        # vs Whisper 70%, WER 0.26 vs 0.90, p50 78ms vs 1593ms, 0 regresión en
+        # voz de terceros, robusto a música de fondo (88% @20dB SNR). Ambos
+        # exponen load()+transcribe(int16,...) -> drop-in. Default whisper para
+        # no cambiar prod sin que RED lo apruebe explícitamente.
+        import os as _os
+        _engine = _os.environ.get("GEMMA4_STT_ENGINE", "whisper").lower()
+        if _engine == "parakeet":
+            from .parakeet_stt import ParakeetSTT
+            self._stt = ParakeetSTT()
+            logger.info("STT engine: Parakeet-TDT-v3 (GEMMA4_STT_ENGINE=parakeet)")
+        else:
+            self._stt = STT()
         inv = get_inventory()
         self._corrector = FuzzyCorrector(inv)
         # Idioma-matriz del STT (env GEMMA4_VOICE_LANG, default 'es'). El prompt
@@ -225,6 +239,7 @@ class VoicePipeline:
         from .lang_profiles import get_profile
         self._lang_profile = get_profile()
         self._initial_prompt = build_initial_prompt(inv, lang=self._lang_profile.code)
+        self._hotwords = build_hotwords(inv)
         self._audio: AudioCapture | None = None
 
         # State machine state.
@@ -280,7 +295,7 @@ class VoicePipeline:
         logger.info(
             "VoicePipeline ready: wake=%s, model=%s",
             "custom" if self._wake.using_custom_model else "stock_hey_jarvis",
-            self._stt._model_size,
+            getattr(self._stt, "_model_size", type(self._stt).__name__),
         )
         return True
 
@@ -505,6 +520,7 @@ class VoicePipeline:
         raw_text = self._stt.transcribe(
             audio, initial_prompt=self._initial_prompt,
             language=self._lang_profile.whisper_language,
+            hotwords=self._hotwords,
         )
         # Strip wake phrase + fuzzy correct.
         stripped = self._corrector.strip_wake_phrase(raw_text)
