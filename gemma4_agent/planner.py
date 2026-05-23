@@ -584,9 +584,9 @@ def _suggest_tools(step: str) -> list[str]:
     # "cierra youtube" (close). Real media-PLAY intent is covered by the explicit
     # play nouns/verbs below + the streaming-platform rule (which now gates media
     # on a play verb). "pon" only counts when followed by a media object.
-    if re.search(r"\b(cancion|musica|reproduce|reproducir|pausa|reanuda|resume|"
+    if re.search(r"\b(cancion|musica|reproduce|reproduci|reproducir|reproducilo|pausa|reanuda|resume|"
                  r"play|siguiente|anterior|"
-                 r"music|song|track|playlist|next|previous|skip|pause)\b", low) or \
+                 r"music|song|track|playlist|mp3|mp4|video|next|previous|skip|pause)\b", low) or \
        re.search(r"\b(pon|ponme|poneme)\b.*\b(cancion|musica|video|tema|playlist|"
                  r"rock|jazz|pop|reggaeton|algo de|music|song)\b", low):
         tools.append("media")
@@ -635,7 +635,34 @@ def _suggest_tools(step: str) -> list[str]:
     # routed to notes_tasks (the word "notas") instead of filesystem. Detect a
     # name.ext token and force filesystem in. Structural signal, not a keyword.
     if re.search(r"\b[\w\-]+\.(txt|md|csv|json|log|pdf|docx?|xlsx?|pptx?|py|js|ts|"
-                 r"html?|xml|yaml|yml|ini|cfg|zip|png|jpe?g)\b", low):
+                 r"html?|xml|yaml|yml|ini|cfg|zip|png|jpe?g|mp3|mp4|mkv|avi|mov|wav|flac)\b", low) or \
+       re.search(r"(?<!\w)\.(txt|md|csv|json|log|pdf|docx?|xlsx?|pptx?|mp3|mp4|mkv|avi|mov|wav|flac)\b", low):
+        tools.append("filesystem")
+    # Local file search/action by natural folder names. Gates from RED:
+    # "Buscá un Excel en Documentos y abrilo", "Reproducí un mp3 de Descargas",
+    # "Abre el documento más reciente de mi escritorio". These may not contain
+    # the literal word "archivo", but they are still filesystem operations.
+    _folder_ref = re.search(
+        r"\b(descargas|downloads|documentos|documents|escritorio|desktop|"
+        r"musica|music|videos?)\b",
+        low,
+    )
+    _file_kind_ref = re.search(
+        r"\b(word|docx?|pdf|excel|xlsx?|documento|document|txt|texto|"
+        r"mp3|mp4|mkv|avi|mov|wav|flac|video|cancion|musica|archivo|file)\b",
+        low,
+    ) or re.search(
+        r"(?<!\w)\.(txt|md|csv|json|log|pdf|docx?|xlsx?|pptx?|mp3|mp4|mkv|avi|mov|wav|flac)\b",
+        low,
+    )
+    _file_action_ref = re.search(
+        r"\b(busca|buscar|buscame|encuentra|encontrar|encuentres|"
+        r"abre|abri|abrir|abrilo|open|"
+        r"lee|leer|leeme|mostrame|muestrame|mostrar|"
+        r"reproduce|reproduci|reproducir|reproducilo|pon|ponme)\b",
+        low,
+    )
+    if _folder_ref and _file_kind_ref and _file_action_ref:
         tools.append("filesystem")
     # office
     # Multi-word variants ("power point", "hoja de calculo") MUST be checked
@@ -650,6 +677,11 @@ def _suggest_tools(step: str) -> list[str]:
         r"presentation|slide|slides|workbook|sheet|"
         # multi-word variants (with optional accent on presentación):
         r"power\s+point|presentaci[oó]n|hoja\s+de\s+c[aá]lculo)\b", low):
+        tools.append("office")
+    if _folder_ref and _file_action_ref and re.search(
+        r"\b(word|docx?|pdf|excel|xlsx?|documento|document)\b",
+        low,
+    ):
         tools.append("office")
     if re.search(r"\b(csv|tabla|grafico|estadistica|analisis de datos|limpia datos|"
                  r"table|chart|graph|statistics|data analysis|clean data)\b", low):

@@ -15,6 +15,7 @@ from unittest.mock import MagicMock
 
 from gemma4_agent.agent import Gemma4Agent, ToolEvent
 from gemma4_agent.config import AgentConfig
+from gemma4_agent.planner import plan_mission, select_tool_names
 
 
 def _nudge(raw_calls, evs):
@@ -103,6 +104,103 @@ class FilesystemSearchClarificationTest(unittest.TestCase):
                       result={"ok": True, "action": "open"}),
         ]
         self.assertIsNone(_clarify(ev, "abre el primer Word en Descargas"))
+
+    def test_open_play_read_targets_from_red_gate_cases(self):
+        cases = [
+            ("Abre el primer Word que encuentres en mi carpeta de Descargas",
+             "office", "open", "abrir"),
+            ("Abrí el último PDF de Descargas",
+             "office", "open", "abrir"),
+            ("Buscá un Excel en Documentos y abrilo",
+             "office", "open", "abrir"),
+            ("Abre el documento más reciente de mi escritorio",
+             "office", "open", "abrir"),
+            ("Pon la primera canción que encuentres en mi carpeta de Música",
+             "media", "play", "reproducir"),
+            ("Reproducí un mp3 de Descargas",
+             "media", "play", "reproducir"),
+            ("Buscá un video en Descargas y reproducilo",
+             "media", "play", "reproducir"),
+            ("Leé el primer archivo de texto que haya en Documentos",
+             "filesystem", "read", "leer"),
+            ("Buscá un .txt en Descargas y mostrame qué dice",
+             "filesystem", "read", "leer"),
+        ]
+        ev = [ToolEvent(name="filesystem", args={"action": "search"},
+                        result={"ok": True, "action": "search",
+                                "paths": ["C:/Users/u/Downloads/a.txt"]})]
+        for prompt, tool, action, verb in cases:
+            with self.subTest(prompt=prompt):
+                out = _clarify(ev, prompt)
+                self.assertIsNotNone(out)
+                assert out is not None
+                self.assertEqual(out["target_tool"], tool)
+                self.assertEqual(out["args"]["action"], action)
+                self.assertIn(f"Cual queres {verb}", out["content"])
+
+    def test_control_cases_do_not_trigger_search_followup(self):
+        ev = [ToolEvent(name="filesystem", args={"action": "search"},
+                        result={"ok": True, "action": "search",
+                                "paths": ["C:/Users/u/Downloads/a.docx"]})]
+        for prompt in [
+            "¿Qué hora es?",
+            "¿Qué archivos hay en Descargas?",
+        ]:
+            with self.subTest(prompt=prompt):
+                self.assertIsNone(_clarify(ev, prompt))
+        self.assertIsNone(_clarify(
+            [ToolEvent(name="app", args={"action": "open"},
+                       result={"ok": True, "action": "open"})],
+            "Abre Spotify",
+        ))
+
+
+class SearchChainPlannerGateTest(unittest.TestCase):
+    def _tools(self, prompt: str) -> set[str]:
+        return set(select_tool_names(
+            prompt, plan_mission(prompt), safety_enabled=False,
+        ))
+
+    def test_open_cases_offer_filesystem_and_office(self):
+        for prompt in [
+            "Abre el primer Word que encuentres en mi carpeta de Descargas",
+            "Abrí el último PDF de Descargas",
+            "Buscá un Excel en Documentos y abrilo",
+            "Abre el documento más reciente de mi escritorio",
+        ]:
+            with self.subTest(prompt=prompt):
+                tools = self._tools(prompt)
+                self.assertIn("filesystem", tools)
+                self.assertIn("office", tools)
+
+    def test_play_cases_offer_filesystem_and_media(self):
+        for prompt in [
+            "Pon la primera canción que encuentres en mi carpeta de Música",
+            "Reproducí un mp3 de Descargas",
+            "Buscá un video en Descargas y reproducilo",
+        ]:
+            with self.subTest(prompt=prompt):
+                tools = self._tools(prompt)
+                self.assertIn("filesystem", tools)
+                self.assertIn("media", tools)
+
+    def test_read_cases_offer_filesystem(self):
+        for prompt in [
+            "Leé el primer archivo de texto que haya en Documentos",
+            "Buscá un .txt en Descargas y mostrame qué dice",
+        ]:
+            with self.subTest(prompt=prompt):
+                self.assertIn("filesystem", self._tools(prompt))
+
+    def test_controls_do_not_over_chain(self):
+        self.assertNotIn("filesystem", self._tools("¿Qué hora es?"))
+        tools = self._tools("Abre Spotify")
+        self.assertIn("app", tools)
+        self.assertNotIn("filesystem", tools)
+        tools = self._tools("¿Qué archivos hay en Descargas?")
+        self.assertIn("filesystem", tools)
+        self.assertNotIn("office", tools)
+        self.assertNotIn("media", tools)
 
 
 class FilesystemSearchClarificationFlowTest(unittest.TestCase):

@@ -2295,19 +2295,45 @@ class Gemma4Agent:
         return paths
 
     @staticmethod
-    def _user_requested_file_followup(user_text: str) -> bool:
-        """True when the original request asked to act on a found file."""
+    def _search_followup_target(user_text: str) -> dict[str, str] | None:
+        """Return the second-step target requested after a file search."""
         if not user_text:
-            return False
+            return None
         import re
         text = _fold_match(user_text)
-        return bool(re.search(
-            r"\b("
-            r"abre|abri|abrir|abreme|abrime|open|"
-            r"muestra|mostrar|show"
-            r")\b",
+        if re.search(
+            r"\b(reproduce|reproduci|reproducir|reproducilo|play|pon|ponme)\b",
             text,
-        ))
+        ):
+            return {
+                "target_tool": "media",
+                "action": "play",
+                "verb": "reproducir",
+            }
+        if re.search(
+            r"\b(lee|leer|leeme|read|mostrame|muestrame|mostrar|show)\b",
+            text,
+        ):
+            return {
+                "target_tool": "filesystem",
+                "action": "read",
+                "verb": "leer",
+            }
+        if re.search(
+            r"\b(abre|abri|abrir|abrilo|abreme|abrime|open)\b",
+            text,
+        ):
+            return {
+                "target_tool": "office",
+                "action": "open",
+                "verb": "abrir",
+            }
+        return None
+
+    @staticmethod
+    def _user_requested_file_followup(user_text: str) -> bool:
+        """True when the original request asked to act on a found file."""
+        return Gemma4Agent._search_followup_target(user_text) is not None
 
     def _filesystem_search_clarification(
         self,
@@ -2322,7 +2348,8 @@ class Gemma4Agent:
         when the last executed tool is a successful filesystem.search with
         paths and the original request asked for an action over the result.
         """
-        if not events or not self._user_requested_file_followup(user_text):
+        target = self._search_followup_target(user_text)
+        if not events or target is None:
             return None
         last = events[-1]
         if getattr(last, "name", "") != "filesystem":
@@ -2348,12 +2375,14 @@ class Gemma4Agent:
             lines.append(f"{index}. {Path(path).name} - {path}")
         if len(normalized) > len(shown):
             lines.append(f"... y {len(normalized) - len(shown)} mas.")
-        lines.append("Cual queres abrir? Responde con el numero o el nombre.")
+        lines.append(
+            f"Cual queres {target['verb']}? Responde con el numero o el nombre."
+        )
         return {
             "content": "\n".join(lines),
-            "target_tool": "office",
+            "target_tool": target["target_tool"],
             "args": {
-                "action": "open",
+                "action": target["action"],
                 "candidates": shown,
             },
             "paths": normalized,
