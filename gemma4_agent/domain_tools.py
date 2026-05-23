@@ -5677,7 +5677,7 @@ def _find_spotify_executable() -> str | None:
 #   install_hint:      ms-windows-store URI for the user to install if they want.
 #   post_open_note:    short note returned in the tool result.
 #
-# Sources for selectors and URLs: see docs/compass_artifact_*.md (research
+# Sources for selectors and URLs: see docs/research/streaming/streaming_playback_field_guide_2026.md (research
 # 2026-05-16) — Netflix data-uia family, Disney+/HBO Max data-testid/aria,
 # Prime Video data-automation-id. All marked "needs live test" by the research
 # are CANDIDATES that the agent tries in order; the first that matches wins.
@@ -6014,6 +6014,73 @@ def _is_valid_profile_name(name: str) -> bool:
     return True
 
 
+# Query "generica" = el user pidio musica/una cancion SIN nombrar un titulo.
+# Detector de query "generica" (pidio musica SIN nombrar titulo/artista).
+#
+# DISEÑO (minimo hardcode, regla de uso universal): NO enumeramos frases. Un
+# pedido generico es uno cuyas palabras-de-contenido son TODAS "tokens
+# genericos" (palabra de musica, cuantificador vago, o verbo de play). Si
+# queda alguna palabra que no es generica, es un titulo/artista -> NO generico.
+# Asi "pon una cancion", "reproduce algo de musica", "play some music" y
+# "metele cualquier cosa" matchean sin listarlas; "pon Bad Bunny" no (queda
+# "bad"/"bunny"). Y aunque el detector FALLE, el fallback UIA igual reproduce
+# el top result de buscar esa frase (validado 2026-05-22) — no es punto critico.
+#
+# RAICES de contenido (play-verb / music-noun / cuantificador-vago). Se
+# matchean por PREFIJO (startswith) para cubrir conjugaciones — por eso aca van
+# SOLO tokens >=3 letras y semanticamente fuertes (nunca preposiciones cortas
+# como "de", que matchearian "Despacito").
+_GENERIC_CONTENT_ROOTS = (
+    # play verbs
+    "pon", "reproduc", "toca", "play", "put", "metel", "echa", "dale",
+    # music nouns
+    "cancion", "canción", "music", "música", "rola", "tema", "song", "tune",
+    "cancao", "canzon", "chanson", "musik", "lied",
+    # vague quantifiers / "anything"
+    "algo", "cualquier", "random", "aleatori", "something", "anything",
+    "whatever", "some", "qualquer", "qualcosa", "quelque", "irgend",
+)
+# FILLER de funcion (articulos/preposiciones/pronombres). Se matchean EXACTO
+# (no prefijo) para no pisar titulos. Multi-idioma, pero es funcion pura.
+_GENERIC_FILLER_WORDS = frozenset({
+    "una", "un", "uno", "unos", "unas", "de", "del", "la", "el", "lo", "las",
+    "los", "que", "sea", "cosa", "a", "me", "le", "nos", "te", "asi",
+    "any", "of", "the", "for", "uma", "um", "qualsiasi",
+    "une", "des", "du", "di", "una", "uno",  # fr/it articles
+})
+
+
+def _is_generic_music_query(query: str) -> bool:
+    """True si el query NO nombra un titulo/artista concreto.
+
+    Heuristica estructural (sin lista de frases): generico sii TODAS las
+    palabras son o bien una RAIZ de contenido generica (por prefijo) o FILLER
+    de funcion (exacto). Una sola palabra "real" (titulo/artista) hace False.
+    Query vacia = generico. Cap de longitud para frases largas (probable titulo).
+    """
+    if not query or not query.strip():
+        return True
+    norm = " ".join(query.strip().lower().split()).strip(" .!?¡¿,;:\"'")
+    words = [w for w in norm.split() if w]
+    if not words:
+        return True
+    if len(words) > 6:
+        return False
+    for w in words:
+        if w in _GENERIC_FILLER_WORDS:
+            continue
+        if any(w.startswith(root) for root in _GENERIC_CONTENT_ROOTS):
+            continue
+        return False  # palabra real -> hay un titulo/artista
+    return True
+
+
+def _get_spotify_username(state: AgentState | None) -> str | None:
+    """Lee el username de Spotify guardado (para deeplink de Liked Songs).
+    Reusa el store de streaming_preference con provider='spotify_user'."""
+    return _get_streaming_preference(state, "spotify_user")
+
+
 def _set_streaming_preference(
     state: AgentState | None, provider: str, profile_name: str,
 ) -> dict[str, Any] | None:
@@ -6254,18 +6321,69 @@ def _detect_default_browser_progid() -> str:
         return ""
 
 
+def _running_chromium_process_names() -> set[str]:
+    """Set de process names (sin .exe, lowercase) de los Chromium vivos AHORA.
+
+    User-reported 2026-05-22: el agente abria Opera GX (default del registro)
+    aunque el user tenia Chrome abierto y logueado en Disney/Netflix. El
+    navegador donde vive la sesion es el que esta CORRIENDO, no el default
+    nominal del registro. Devolvemos los process names para que
+    `_pick_cdp_browser` priorice relanzar ese mismo navegador (preservando su
+    --user-data-dir, asi conserva login + tabs via session restore).
+    """
+    if os.name != "nt":
+        return set()
+    names = {c["process_name"] for c in _CDP_BROWSER_CANDIDATES}
+    try:
+        # Una sola pasada: lista todos los procesos cuyo nombre matchea un
+        # candidato. -ErrorAction SilentlyContinue evita ruido si ninguno corre.
+        name_args = ",".join(sorted(names))
+        res = subprocess.run(
+            ["powershell", "-NoProfile", "-Command",
+              f"Get-Process {name_args} -ErrorAction SilentlyContinue | "
+              "Select-Object -ExpandProperty ProcessName -Unique"],
+            capture_output=True, text=True, timeout=4,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        return {
+            line.strip().lower()
+            for line in (res.stdout or "").splitlines()
+            if line.strip()
+        }
+    except Exception:
+        return set()
+
+
 def _pick_cdp_browser() -> dict[str, Any] | None:
-    """Choose which Chromium browser to launch with CDP:
-       1. The user's default browser (if it's Chromium-based and installed).
-       2. Else the first installed candidate (Opera GX > Opera > Chrome > Edge > Brave).
+    """Choose which Chromium browser to launch with CDP. Priority (user
+    decision 2026-05-22 — respetar el navegador default del user):
+       1. The user's DEFAULT browser if it's currently RUNNING — relaunch it with
+          the same --user-data-dir to preserve the logged-in session + tabs.
+       2. The user's default browser even if not running (launch fresh).
+       3. Any other Chromium that IS running (fallback: the session likely lives
+          in whatever browser is open).
+       4. The first installed candidate (Opera GX > Opera > Chrome > Edge > Brave).
     Returns the candidate dict (with `exe` and `user_data_dir` resolved) or None."""
+    running = _running_chromium_process_names()
     progid = _detect_default_browser_progid()
-    ordered: list[dict[str, Any]] = []
+
+    default_cand: dict[str, Any] | None = None
     if progid:
         for cand in _CDP_BROWSER_CANDIDATES:
             if any(m in progid for m in cand["progid_match"]):
-                ordered.append(cand)
+                default_cand = cand
                 break
+
+    ordered: list[dict[str, Any]] = []
+    # 1+2. Default del user primero (corriendo o no — lo relanzamos igual).
+    if default_cand is not None:
+        ordered.append(default_cand)
+    # 3. Otros Chromium vivos (donde puede estar la sesion si el default no corre).
+    if running:
+        for cand in _CDP_BROWSER_CANDIDATES:
+            if cand["process_name"].lower() in running and cand not in ordered:
+                ordered.append(cand)
+    # 4. Resto de instalados.
     for cand in _CDP_BROWSER_CANDIDATES:
         if cand not in ordered:
             ordered.append(cand)
@@ -6298,20 +6416,26 @@ def _ensure_cdp_browser(timeout_total: float = 10.0) -> dict[str, Any]:
     # Test isolation: pytest mockea webbrowser.open al nivel del tool, pero
     # _ensure_cdp_browser opera FUERA del executor (urllib + subprocess
     # reales). Para no matar Opera del dev cada vez que corren tests,
-    # respetar GEMMA4_DISABLE_AUTO_CDP_LAUNCH=1 o detectar pytest/unittest/CI.
-    # F-003: amplio la deteccion para cubrir unittest puro, jupyter, smoke
-    # scripts, CI runners. El kill ciego de Opera puede tirar work del user.
+    # respetar GEMMA4_DISABLE_AUTO_CDP_LAUNCH=1 o detectar una corrida de tests.
+    #
+    # BUG 2026-05-22 (trace #847): `"unittest" in sys.modules` y
+    # `"pytest" in sys.modules` son FALSOS POSITIVOS en produccion — torch /
+    # transformers / numpy.testing importan `unittest` al cargar, asi que el
+    # runtime de voz SIEMPRE creia estar en tests y NUNCA lanzaba CDP -> Disney
+    # caia a webbrowser.open (abria la pagina pero nunca tipeaba la query).
+    # Verificado: importar torch/transformers mete unittest en sys.modules.
+    # Señal confiable de "corriendo DENTRO de un test": la env var
+    # PYTEST_CURRENT_TEST (pytest la setea por test) o flags explicitos. La
+    # presencia del modulo importado NO sirve.
     in_test_env = (
         os.environ.get("GEMMA4_DISABLE_AUTO_CDP_LAUNCH") == "1"
         or "PYTEST_CURRENT_TEST" in os.environ
-        or "pytest" in sys.modules
-        or "unittest" in sys.modules
         or os.environ.get("CI") == "true"
     )
     if in_test_env:
         return {"cdp_ok": False, "action": "disabled",
                 "browser_key": None,
-                "reason": "auto-launch disabled (pytest/unittest/CI or env flag)"}
+                "reason": "auto-launch disabled (test env var or GEMMA4_DISABLE_AUTO_CDP_LAUNCH)"}
 
     if os.name != "nt":
         return {"cdp_ok": False, "action": "unsupported",
@@ -6809,135 +6933,238 @@ def _detect_spotify_already_running(executor: Executor) -> bool:
     return False
 
 
+def _spotify_play_random(
+    executor: Executor,
+    state: AgentState | None,
+    auto_play_wait: float,
+) -> dict[str, Any]:
+    """User pidio 'una cancion' / 'musica' sin nombrar titulo.
+
+    Decision del user (2026-05-22):
+      - Si tenemos el username de Spotify -> reproducir 'Me Gusta' (Liked Songs)
+        en shuffle via deeplink spotify:user:<user>:collection.
+      - Si NO -> mandar Play global (media key): reanuda lo que Spotify tenga
+        cargado / la cola. Universal y sin login, pero si Spotify esta vacio no
+        suena nada (lo reportamos honesto).
+
+    Fuente del URI de Liked Songs:
+      https://community.spotify.com/t5/Your-Library/What-is-the-Spotify-URI-for-my-Liked-Songs/td-p/5255192
+      (spotify:user:<username>:collection — workaround no-oficial pero estable).
+    """
+    username = _get_spotify_username(state)
+    if username:
+        # 1. Lanzar app con deeplink a Liked Songs.
+        deeplink = f"spotify:user:{username}:collection"
+        try:
+            subprocess.Popen(
+                ["cmd", "/c", "start", "", deeplink],
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+        except (OSError, FileNotFoundError) as exc:
+            return {"played": False, "mode": "liked_songs",
+                    "abort_reason": f"deeplink launch failed: {exc}"}
+        # 2. Focus + Enter para reproducir (con shuffle el primer track suena).
+        ap = _spotify_auto_play(executor, max(auto_play_wait, 2.5), query=None)
+        ap["mode"] = "liked_songs"
+        ap["deeplink"] = deeplink
+        ap["username"] = username
+        return ap
+    # Sin username -> Play global.
+    try:
+        r = executor("audio", {"action": "media_play_pause"})
+        ok = bool(isinstance(r, dict) and r.get("ok", True))
+        return {
+            "played": ok,
+            "mode": "global_play_key",
+            "abort_reason": None if ok else "media_play_pause returned not-ok",
+            "needs_username_hint": (
+                "Para reproducir tus 'Me Gusta' aleatorias directamente, decime "
+                "tu usuario de Spotify una vez (ej. 'mi usuario de Spotify es "
+                "ema123') y lo recuerdo."
+            ),
+        }
+    except Exception as exc:
+        return {"played": False, "mode": "global_play_key",
+                "abort_reason": f"media_play_pause failed: {exc}"}
+
+
+def _is_spotify_track_title(title: str) -> bool:
+    """Spotify pone "Track • Artist" (o "Spotify - Track • Artist") en el window
+    title cuando suena algo. Cuando NO suena nada el title es la marca pelada:
+    "Spotify Premium" / "Spotify Free" / "Spotify". True si hay un track."""
+    t = (title or "").strip().lower()
+    if not t:
+        return False
+    return t not in {"spotify", "spotify premium", "spotify free",
+                      "spotify - premium", "advertisement"}
+
+
+# Script PowerShell que reproduce en Spotify Desktop via UI Automation.
+# VALIDADO EN VIVO 2026-05-22 (track/artista/cancion). Spotify (Electron)
+# expone su arbol de accesibilidad: cada item reproducible tiene un boton
+# cuyo Name empieza con "Reproducir <X>" (o "Play <X>" en ingles). El TAB+ENTER
+# a ciegas NO reproduce nada — el clic UIA via InvokePattern SI.
+#
+# Estrategia:
+#   1. Tomar la ventana de Spotify, leer su title ANTES.
+#   2. Enumerar botones cuyo Name empiece con el verbo de play (localizado).
+#      Filtrar a los del AREA DE CONTENIDO (x > borde-izq + margen) para
+#      descartar la sidebar/biblioteca del user.
+#   3. Elegir el que MATCHEA palabras de la query (>=4 chars); si ninguno,
+#      el de menor Y (top result). Invoke().
+#   4. Leer el title DESPUES y devolver JSON con played/post_play_title.
+# Los verbos se pasan como parametro (multi-idioma, sin hardcode en el .ps1).
+_SPOTIFY_UIA_PLAY_PS = r"""
+param([string]$Query, [string]$PlayVerbs)
+$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName UIAutomationClient
+Add-Type -AssemblyName UIAutomationTypes
+function Get-Title { (Get-Process Spotify -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -ne "" } | Select-Object -First 1).MainWindowTitle }
+$verbs = @()
+foreach ($v in ($PlayVerbs -split '\|')) { if ($v.Trim() -ne "") { $verbs += $v.Trim().ToLower() } }
+$proc = Get-Process Spotify -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
+if (-not $proc) { [Console]::Out.WriteLine('{"ok":false,"error":"no_spotify_window"}'); exit }
+$titleBefore = Get-Title
+$root = [System.Windows.Automation.AutomationElement]::FromHandle($proc.MainWindowHandle)
+$winRect = $root.Current.BoundingRectangle
+$sidebarEdge = $winRect.X + 100
+$cond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)
+$buttons = $root.FindAll([System.Windows.Automation.TreeScope]::Descendants, $cond)
+function Is-PlayName($name) { $n=$name.ToLower(); foreach ($v in $verbs) { if ($n.StartsWith($v + " ")) { return $true } }; return $false }
+$content = @()
+foreach ($b in $buttons) {
+  $nm = $b.Current.Name
+  if ((Is-PlayName $nm) -and ($b.Current.BoundingRectangle.X -gt $sidebarEdge)) { $content += $b }
+}
+$content = $content | Sort-Object { $_.Current.BoundingRectangle.Y }
+if ($content.Count -eq 0) {
+  [Console]::Out.WriteLine((ConvertTo-Json @{ok=$false;error="no_play_button";title_before=$titleBefore} -Compress)); exit
+}
+$qwords = @(); foreach ($w in ($Query.ToLower() -split '\s+')) { if ($w.Length -ge 4) { $qwords += $w } }
+$match = $null
+foreach ($b in $content) { $n=$b.Current.Name.ToLower(); foreach ($w in $qwords) { if ($n.Contains($w)) { $match=$b; break } }; if ($match) { break } }
+$target = if ($match) { $match } else { $content[0] }
+$chosen = $target.Current.Name
+$target.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+Start-Sleep -Milliseconds 1500
+$titleAfter = Get-Title
+[Console]::Out.WriteLine((ConvertTo-Json @{ok=$true;chosen=$chosen;matched_query=($match -ne $null);title_before=$titleBefore;title_after=$titleAfter} -Compress))
+"""
+
+
 def _spotify_auto_play(
     executor: Executor,
     wait_seconds: float,
     query: str | None = None,
 ) -> dict[str, Any]:
-    """Tras enviar spotify:search:<q>, esperar carga, focus + verify ventana
-    Spotify, y mandar Enter para reproducir el primer resultado.
+    """Tras enviar spotify:search:<q>, esperar render y reproducir via UI
+    Automation (clic real en el boton "Reproducir <X>" del resultado).
 
-    Spotify Desktop al recibir el deeplink muestra resultados de busqueda
-    con la primera fila (track top) seleccionada. Un Enter reproduce
-    ese track.
+    DESCUBRIMIENTO 2026-05-22 (validado en vivo): Tab+Enter / media-keys NO
+    reproducen de forma fiable desde la busqueda de Spotify. Spotify Electron
+    SI expone su arbol UIA: cada resultado tiene un boton "Reproducir <X>".
+    Clickearlo via InvokePattern reproduce de verdad — y eligiendo el que
+    matchea la query reproduce EXACTAMENTE lo pedido (track/artista/genero).
 
-    Si se pasa `query`, post-keypress se chequea el now-playing title de
-    Spotify para validar que coincide con la query (heuristica: alguna
-    palabra >=4 chars de la query aparece en el title).
+    Multi-idioma: los verbos de "play" se detectan por el idioma de la UI de
+    Spotify (ES "Reproducir", EN "Play", PT "Reproduzir", etc.) — se pasan al
+    script como lista, sin hardcode en el .ps1.
 
-    Returns dict con keys:
-      - played: bool
-      - focus_verified: bool
-      - abort_reason: str | None
-      - wait_seconds: float
-      - post_play_title: str (si query no es None)
-      - query_match: True / False / None (si query no es None)
+    Returns dict: played, focus_verified, abort_reason, wait_seconds,
+    post_play_title, query_match, chosen.
     """
+    import json as _json
     import time as _time
     _time.sleep(max(0.5, wait_seconds))
+
+    # Verbos de "Reproducir" en los idiomas de UI de Spotify. La UI puede estar
+    # en cualquier idioma — incluimos los principales. (No es la query del user;
+    # es el label del boton de Spotify, acotado a idiomas de la app.)
+    play_verbs = "|".join([
+        "reproducir", "play", "reproduzir", "riproduci", "lire", "abspielen",
+        "afspelen", "spela", "odtwórz", "воспроизвести", "再生", "재생", "播放",
+    ])
+
+    if os.name != "nt":
+        return {"played": False, "focus_verified": False,
+                "abort_reason": "UIA play only implemented on Windows",
+                "wait_seconds": wait_seconds}
+
+    # IMPORTANTE: pasar un script multilinea con params via `-Command` lo
+    # mangla (PowerShell rompe el param binding). Escribir a un .ps1 temporal
+    # y correr con `-File` es robusto. Validado en vivo 2026-05-22.
+    import tempfile as _tempfile
+    ps_path = None
     try:
-        executor("window", {"action": "focus", "title": "Spotify"})
+        with _tempfile.NamedTemporaryFile(
+            mode="w", suffix=".ps1", delete=False, encoding="utf-8",
+        ) as fh:
+            fh.write(_SPOTIFY_UIA_PLAY_PS)
+            ps_path = fh.name
+        proc = subprocess.run(
+            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
+              "-File", ps_path,
+              "-Query", str(query or ""), "-PlayVerbs", play_verbs],
+            capture_output=True, text=True, timeout=30,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
     except Exception as exc:
+        return {"played": False, "focus_verified": False,
+                "abort_reason": f"UIA play subprocess failed: {exc}",
+                "wait_seconds": wait_seconds}
+    finally:
+        if ps_path:
+            try:
+                os.unlink(ps_path)
+            except Exception:
+                pass
+
+    out = (proc.stdout or "").strip()
+    data: dict[str, Any] = {}
+    # El script imprime una linea JSON; tomar la ultima por si hay ruido.
+    for line in reversed(out.splitlines()):
+        line = line.strip()
+        if line.startswith("{"):
+            try:
+                data = _json.loads(line)
+                break
+            except Exception:
+                continue
+
+    if not data.get("ok"):
+        reason = data.get("error") or (proc.stderr or "").strip() or "uia_no_output"
         return {
-            "played": False, "focus_verified": False,
-            "abort_reason": f"focus call failed: {exc}",
+            "played": False, "focus_verified": bool(data),
+            "abort_reason": f"UIA play: {reason}",
             "wait_seconds": wait_seconds,
+            "title_before_play": data.get("title_before", ""),
         }
-    _time.sleep(0.3)
-    try:
-        active = executor("window", {"action": "active"})
-    except Exception as exc:
-        return {
-            "played": False, "focus_verified": False,
-            "abort_reason": f"active check failed: {exc}",
-            "wait_seconds": wait_seconds,
-        }
-    active_title = ""
-    a = active.get("active")
-    if isinstance(a, dict):
-        active_title = str(a.get("title") or "")
-    else:
-        active_title = str(active.get("title") or "")
-    if "spotify" not in active_title.lower():
-        return {
-            "played": False, "focus_verified": False,
-            "abort_reason": (
-                f"active window is {active_title!r}, not Spotify. "
-                "Refusing to press Enter on a different app."
-            ),
-            "wait_seconds": wait_seconds,
-        }
-    # F-010: re-check immediately before keypress. Entre el primer check y
-    # el keypress hay un gap (~300ms+) donde el user puede haber clickeado
-    # otra ventana — mandar Enter ahi rompe un form/edita un archivo.
-    try:
-        recheck = executor("window", {"action": "active"})
-    except Exception as exc:
-        return {
-            "played": False, "focus_verified": False,
-            "abort_reason": f"pre-keypress recheck failed: {exc}",
-            "wait_seconds": wait_seconds,
-        }
-    recheck_title = ""
-    ra = recheck.get("active")
-    if isinstance(ra, dict):
-        recheck_title = str(ra.get("title") or "")
-    else:
-        recheck_title = str(recheck.get("title") or "")
-    if "spotify" not in recheck_title.lower():
-        return {
-            "played": False, "focus_verified": False,
-            "abort_reason": (
-                f"window changed before keypress: {recheck_title!r}. "
-                "Refusing to press Enter on a different app."
-            ),
-            "wait_seconds": wait_seconds,
-        }
-    try:
-        keypress_result = executor("gui", {"action": "keypress", "keys": "enter"})
-    except Exception as exc:
-        return {
-            "played": False, "focus_verified": True,
-            "abort_reason": f"keypress failed: {exc}",
-            "wait_seconds": wait_seconds,
-        }
-    if not keypress_result.get("ok"):
-        return {
-            "played": False, "focus_verified": True,
-            "abort_reason": f"keypress returned: {keypress_result.get('error', 'unknown')}",
-            "wait_seconds": wait_seconds,
-        }
-    # Post-keypress: validar que el track tocando matchea la query.
-    # Spotify muestra el now-playing en el window title (formato tipico:
-    # "Track Name • Artist Name"). Heuristica conservadora: alguna palabra
-    # >=4 chars de la query aparece en el title. NO penalizamos si no
-    # matchea — solo reportamos query_match=False para que el LLM sepa.
-    post_play_title = ""
+
+    title_after = str(data.get("title_after") or "")
+    played = _is_spotify_track_title(title_after)
+    chosen = str(data.get("chosen") or "")
+
+    # query_match: ¿lo que suena se parece a lo pedido? Heuristica: palabra
+    # >=4 chars de la query en el title o en el nombre del boton elegido.
     query_match: bool | None = None
-    if query:
-        _time.sleep(0.8)  # dar tiempo a Spotify a actualizar el title
-        try:
-            now_active = executor("window", {"action": "active"})
-        except Exception:
-            now_active = {}
-        if isinstance(now_active, dict):
-            na = now_active.get("active")
-            if isinstance(na, dict):
-                post_play_title = str(na.get("title") or "")
-            else:
-                post_play_title = str(now_active.get("title") or "")
-        query_words = [w for w in str(query).lower().split() if len(w) >= 4]
-        title_lower = post_play_title.lower()
-        if query_words:
-            query_match = any(w in title_lower for w in query_words)
-        else:
-            query_match = None
+    if query and played:
+        qwords = [w for w in str(query).lower().split() if len(w) >= 4]
+        hay = (title_after + " " + chosen).lower()
+        if qwords:
+            query_match = any(w in hay for w in qwords)
     return {
-        "played": True, "focus_verified": True,
-        "abort_reason": None,
+        "played": played,
+        "focus_verified": True,
+        "abort_reason": None if played else (
+            "UIA clicked a play button but no track in window title — Spotify "
+            "may still be loading, or the result was not playable."
+        ),
         "wait_seconds": wait_seconds,
-        "active_window_title": active_title,
-        "post_play_title": post_play_title,
+        "via_uia": True,
+        "chosen": chosen,
+        "matched_query": bool(data.get("matched_query")),
+        "title_before_play": str(data.get("title_before") or ""),
+        "post_play_title": title_after,
         "query_match": query_match,
     }
 
@@ -7003,12 +7230,15 @@ def _launch_streaming(
             # primera cancion del resultado de busqueda.
             auto_play_info: dict[str, Any] | None = None
             if auto_play and executor is not None and canonical == "spotify":
-                # Si Spotify ya estaba abierto, el deeplink demora mas en
-                # navegar de player view a search results. El default 1.8s
-                # alcanza para cold-launch pero NO para warm — subimos a 3.5s.
+                # El UIA play necesita que los RESULTADOS de busqueda esten
+                # renderizados (los botones "Reproducir <X>" recien existen en
+                # el arbol cuando el grid cargo). Validado en vivo 2026-05-22:
+                # ~5s alcanza. Piso 4.5s cold, 5.5s si ya estaba abierto (el
+                # deeplink navega de player-view a search, mas lento en warm).
                 already_open = _detect_spotify_already_running(executor)
                 effective_wait = (
-                    max(auto_play_wait, 3.5) if already_open else auto_play_wait
+                    max(auto_play_wait, 5.5) if already_open
+                    else max(auto_play_wait, 4.5)
                 )
                 auto_play_info = _spotify_auto_play(executor, effective_wait, query=query)
                 if auto_play_info is not None:
@@ -7182,6 +7412,17 @@ def _media_play_streaming(
             ),
         )
     canonical, spec = resolved
+
+    # SPOTIFY USERNAME: si el user lo da (para Liked Songs aleatorias), el LLM
+    # lo pasa como spotify_user / username. Persistir igual que los perfiles.
+    if canonical == "spotify":
+        uname = str(args.get("spotify_user") or args.get("username") or "").strip()
+        if uname:
+            try:
+                _set_streaming_preference(state, "spotify_user", uname)
+            except Exception:
+                pass  # best-effort
+
     # auto_play default True para todos: Spotify usa app+Enter; web streaming
     # usa profile picker + click title + click play.
     auto_play_raw = args.get("auto_play", True)
@@ -7194,6 +7435,50 @@ def _media_play_streaming(
         auto_play_wait = max(0.5, min(10.0, float(wait_raw)))
     except (TypeError, ValueError):
         auto_play_wait = 1.8
+
+    # GENERICO: "pon una cancion" / "musica" SIN titulo. Buscar la palabra
+    # literal ("cancion") nunca reproduce nada util. Para Spotify -> random:
+    # Liked Songs shuffle si hay username, sino Play global. (decision user
+    # 2026-05-22). Solo aplica a Spotify; para video pedir titulo es razonable.
+    if (canonical == "spotify" and auto_play and executor is not None
+            and _is_generic_music_query(query)):
+        rnd = _spotify_play_random(executor, state, auto_play_wait)
+        played = bool(rnd.get("played"))
+        mode = rnd.get("mode")
+        if played and mode == "liked_songs":
+            note = (
+                "spotify: reproduciendo tus 'Me Gusta' en aleatorio "
+                f"(usuario '{rnd.get('username')}')."
+            )
+            completion = "media_playing"
+        elif played and mode == "global_play_key":
+            note = (
+                "spotify: Play global enviado — reanudando lo que tenías "
+                "cargado. " + str(rnd.get("needs_username_hint") or "")
+            )
+            completion = "media_playing_unverified"
+        else:
+            note = (
+                "spotify: no pude iniciar reproducción aleatoria"
+                + (f" ({rnd.get('abort_reason')})" if rnd.get("abort_reason") else "")
+                + ". " + str(rnd.get("needs_username_hint") or "")
+            )
+            completion = "opened_search_results_pending_play"
+        return _ok(
+            action="play",
+            provider="spotify",
+            query=query,
+            random_playback=True,
+            random_mode=mode,
+            opened=True,
+            played=played,
+            auto_play_attempted=True,
+            auto_play_info=rnd,
+            verified=played and mode == "liked_songs",
+            status="dispatched" if played else "attempted",
+            completion_status=completion,
+            note=note.strip(),
+        )
 
     # PERFIL: solo aplica a plataformas con profile picker (NOT spotify).
     # Si el user paso profile= explicitamente, guardarlo Y usarlo.
@@ -8070,6 +8355,48 @@ def _resolve_whatsapp_recipient_legacy3(
     return raw, normalized, source
 
 
+def _verify_chat_header(executor: Executor, contact_name: str) -> bool:
+    """Confirma por OCR que el chat abierto en WhatsApp es del contacto pedido.
+
+    Bug #847b: el Enter a ciegas tras buscar abría el chat equivocado (mensaje a
+    'mamá' cayó en el grupo 'Música'). Antes de escribir, OCR-eamos la franja
+    SUPERIOR de la ventana (donde WhatsApp pone el nombre del chat activo) y
+    verificamos que aparezca el nombre del contacto (o un token significativo de
+    él). Conservador: si NO podemos verificar, devolvemos False -> el caller NO
+    escribe (mejor no mandar que mandar al chat equivocado).
+
+    El match es laxo a propósito: el header puede tener emojis/apodos ("Mamá🍓");
+    basta con que un token alfabético >=3 chars del contacto aparezca en el OCR.
+    """
+    import re as _re
+    try:
+        shot = executor("gui", {"action": "locate_text", "text": contact_name})
+    except Exception:
+        return False
+    if not isinstance(shot, dict):
+        return False
+    # locate_text devuelve found=True y matches si lo encontró en pantalla.
+    if shot.get("found"):
+        return True
+    # Fallback: el OCR completo puede traer el texto aunque el match exacto falle
+    # (emojis, mayúsculas). Buscar un token significativo del nombre en el texto.
+    ocr_text = ""
+    for key in ("text", "ocr_text", "full_text"):
+        v = shot.get(key)
+        if isinstance(v, str) and v:
+            ocr_text = v
+            break
+    if not ocr_text and isinstance(shot.get("matches"), list):
+        ocr_text = " ".join(
+            str(m.get("text", "")) for m in shot["matches"] if isinstance(m, dict))
+    ocr_norm = _re.sub(r"[^a-záéíóúüñ ]", " ", ocr_text.lower())
+    tokens = [t for t in _re.split(r"\s+", contact_name.lower()) if len(t) >= 3]
+    if not tokens:
+        # nombre muy corto (p.ej. "mi") -> no podemos verificar con seguridad
+        return False
+    return any(t in ocr_norm for t in tokens)
+
+
 def _whatsapp_send_via_gui_search(
     executor: Executor,
     contact_name: str,
@@ -8196,6 +8523,23 @@ def _whatsapp_send_via_gui_search(
         }
     steps.append("selected_first_match")
     _time.sleep(0.8)  # entrar al chat
+
+    # 5b. VERIFICAR el chat abierto (bug #847b: el Enter "a ciegas" abría el chat
+    # equivocado — "mamá" terminó mandando al grupo "Música"). Antes de escribir
+    # NADA, confirmar por OCR que el nombre del contacto aparece en el header del
+    # chat. Si NO se puede verificar, ABORTAR el envío (no escribir en el chat
+    # equivocado — un mensaje al destinatario errado es un daño real e
+    # irreversible). El chat queda abierto para que el usuario revise.
+    chat_verified = _verify_chat_header(executor, contact_name)
+    steps.append(f"chat_header_verified:{chat_verified}")
+    if not chat_verified:
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": (f"no pude confirmar que el chat abierto es de "
+                             f"'{contact_name}' — no escribo para no mandar al "
+                             f"chat equivocado. Revisá el chat y mandá vos."),
+            "steps": steps, "chat_verified": False,
+        }
 
     # 6. Type del mensaje (focus moved al input del chat).
     if not text:

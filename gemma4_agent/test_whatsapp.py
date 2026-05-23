@@ -434,9 +434,44 @@ class TestWhatsappGuiSearch(unittest.TestCase):
             if name == "window" and args.get("action") == "active":
                 return {"ok": True, "active": {"title": "WhatsApp"}}
             if name == "gui":
+                # El verify de chat (locate_text) debe confirmar el contacto:
+                # simulamos que el OCR encontró el nombre en el header del chat.
+                if args.get("action") == "locate_text":
+                    return {"ok": True, "found": True,
+                            "matches": [{"text": args.get("text", "")}]}
                 return {"ok": True}
             return {"ok": False}
         return MagicMock(side_effect=_exec)
+
+    def test_gui_search_aborts_on_wrong_chat(self):
+        # Bug #847b: el Enter a ciegas abría el chat equivocado (mensaje a 'mamá'
+        # cayó en el grupo 'Música'). El verify por OCR debe ABORTAR si el header
+        # del chat NO contiene el contacto -> NO escribir en el chat errado.
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "WhatsApp"}}
+            if name == "gui":
+                if args.get("action") == "locate_text":
+                    # OCR del header muestra OTRO chat ('Música'), no 'mamá'.
+                    return {"ok": True, "found": False, "text": "Música  Tú"}
+                return {"ok": True}
+            return {"ok": False}
+        executor = MagicMock(side_effect=_exec)
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "mamá",
+                 "text": "que la quiero mucho"},
+                self.state, executor=executor,
+            )
+        self.assertFalse(r["sent"], f"NO debió enviar al chat equivocado: {r}")
+        steps = r["gui_search_info"]["steps"]
+        self.assertIn("chat_header_verified:False", steps)
+        # crítico: NO debió escribir el mensaje en el chat equivocado
+        self.assertNotIn("typed_message", steps)
 
     def test_gui_search_end_to_end_sends(self):
         executor = self._mock_executor_ok()
