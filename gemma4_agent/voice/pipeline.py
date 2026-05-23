@@ -216,21 +216,17 @@ class VoicePipeline:
         self._on_wake_event = on_wake_event
         self._vad = SileroVAD()
         self._wake = WakeDetector(on_wake=self._on_wake)
-        # Motor STT seleccionable por env GEMMA4_STT_ENGINE (default: whisper =
-        # prod actual; "parakeet" = sherpa-onnx Parakeet-TDT-v3). MEDIDO sobre
-        # voz real 2026-05-23: Parakeet+corrector EntRecall comandos 81% [70,89]
-        # vs Whisper 70%, WER 0.26 vs 0.90, p50 78ms vs 1593ms, 0 regresión en
-        # voz de terceros, robusto a música de fondo (88% @20dB SNR). Ambos
-        # exponen load()+transcribe(int16,...) -> drop-in. Default whisper para
-        # no cambiar prod sin que RED lo apruebe explícitamente.
+        # Motor STT por env GEMMA4_STT_ENGINE. DEFAULT: parakeet (sherpa-onnx
+        # Parakeet-TDT-v3), aprobado para prod por RED 2026-05-23. MEDIDO sobre
+        # voz real: Parakeet+corrector EntRecall comandos 81% [70,89] vs Whisper
+        # 70%, WER 0.26 vs 0.90, p50 78ms vs 1593ms (21x), 0 regresión en voz de
+        # terceros, robusto a música de fondo (88% @20dB SNR). Ambos exponen
+        # load()+transcribe(int16,...) -> drop-in. GEMMA4_STT_ENGINE=whisper
+        # fuerza el motor viejo. La carga real (con fallback a Whisper si el
+        # modelo Parakeet falta/falla) ocurre en load() -> voz nunca queda rota.
         import os as _os
-        _engine = _os.environ.get("GEMMA4_STT_ENGINE", "whisper").lower()
-        if _engine == "parakeet":
-            from .parakeet_stt import ParakeetSTT
-            self._stt = ParakeetSTT()
-            logger.info("STT engine: Parakeet-TDT-v3 (GEMMA4_STT_ENGINE=parakeet)")
-        else:
-            self._stt = STT()
+        self._stt_engine = _os.environ.get("GEMMA4_STT_ENGINE", "parakeet").lower()
+        self._stt = self._build_stt(self._stt_engine)
         inv = get_inventory()
         self._corrector = FuzzyCorrector(inv)
         # Idioma-matriz del STT (env GEMMA4_VOICE_LANG, default 'es'). El prompt
@@ -273,6 +269,21 @@ class VoicePipeline:
         self._loaded: bool = False
         self.last_error: str | None = None
 
+    # ----- internal helpers --------------------------------------------
+
+    @staticmethod
+    def _build_stt(engine: str):
+        """Construye el motor STT elegido. 'parakeet' -> ParakeetSTT; cualquier
+        otra cosa -> Whisper STT. La carga (y el fallback) se hace en load()."""
+        if engine == "parakeet":
+            try:
+                from .parakeet_stt import ParakeetSTT
+                logger.info("STT engine: Parakeet-TDT-v3")
+                return ParakeetSTT()
+            except Exception as exc:  # import roto -> Whisper
+                logger.warning("ParakeetSTT no disponible (%s); usando Whisper", exc)
+        return STT()
+
     # ----- public API --------------------------------------------------
 
     def load(self) -> bool:
@@ -288,9 +299,20 @@ class VoicePipeline:
             logger.error(self.last_error)
             return False
         if not self._stt.load():
-            self.last_error = f"STT load failed: {self._stt.last_error}"
-            logger.error(self.last_error)
-            return False
+            # FALLBACK: si Parakeet no carga (modelo ausente en esta máquina),
+            # caemos a Whisper para que la voz NUNCA quede rota. (CLAUDE.md: el
+            # código garantiza sus precondiciones; sin carga de setup al user.)
+            if self._stt_engine == "parakeet":
+                logger.warning(
+                    "Parakeet STT no cargó (%s); fallback a Whisper-small",
+                    self._stt.last_error,
+                )
+                self._stt = STT()
+                self._stt_engine = "whisper"
+            if not self._stt.load():
+                self.last_error = f"STT load failed: {self._stt.last_error}"
+                logger.error(self.last_error)
+                return False
         self._loaded = True
         logger.info(
             "VoicePipeline ready: wake=%s, model=%s",

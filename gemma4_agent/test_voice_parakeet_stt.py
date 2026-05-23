@@ -96,5 +96,32 @@ class ParakeetSTTInterfaceTest(unittest.TestCase):
         self.assertIsInstance(out, str)
 
 
+class EngineSelectionTest(unittest.TestCase):
+    """El pipeline elige Parakeet por default (prod 2026-05-23) y cae a Whisper
+    si Parakeet no está disponible. Voz nunca queda rota."""
+
+    def test_default_engine_is_parakeet(self):
+        import os
+        from gemma4_agent.voice.pipeline import VoicePipeline
+        old = os.environ.pop("GEMMA4_STT_ENGINE", None)
+        try:
+            stt = VoicePipeline._build_stt(
+                os.environ.get("GEMMA4_STT_ENGINE", "parakeet").lower())
+            self.assertEqual(type(stt).__name__, "ParakeetSTT")
+        finally:
+            if old is not None:
+                os.environ["GEMMA4_STT_ENGINE"] = old
+
+    def test_whisper_engine_explicit(self):
+        from gemma4_agent.voice.pipeline import VoicePipeline
+        stt = VoicePipeline._build_stt("whisper")
+        self.assertEqual(type(stt).__name__, "STT")
+
+    def test_prod_model_dir_under_gemma4_home(self):
+        from gemma4_agent.voice.parakeet_stt import PROD_MODEL_DIR
+        self.assertIn(".gemma4", str(PROD_MODEL_DIR))
+        self.assertIn("models", str(PROD_MODEL_DIR))
+
+
 if __name__ == "__main__":
     unittest.main()

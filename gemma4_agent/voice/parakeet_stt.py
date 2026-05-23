@@ -41,13 +41,23 @@ logger = logging.getLogger(__name__)
 
 SAMPLE_RATE = 16000
 
-# Bundle del modelo (descargado en data/stt_eval/sherpa). En prod debería vivir
-# bajo ~/.gemma4/models; por ahora apunta al bundle del repo para el A/B.
+# Resolución del bundle del modelo. PROD vive en ~/.gemma4/models (junto a
+# whisper/piper/vosk); el bundle de eval del repo es el fallback para dev/A-B.
+# Se elige el primero que exista -> prod no depende del checkout del repo.
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_MODEL_DIR = (
-    _REPO_ROOT / "data" / "stt_eval" / "sherpa"
-    / "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
-)
+_BUNDLE_NAME = "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
+PROD_MODEL_DIR = Path.home() / ".gemma4" / "models" / _BUNDLE_NAME
+_EVAL_MODEL_DIR = _REPO_ROOT / "data" / "stt_eval" / "sherpa" / _BUNDLE_NAME
+
+
+def _resolve_model_dir() -> Path:
+    """Prod home primero, luego bundle de eval del repo."""
+    if (PROD_MODEL_DIR / "encoder.int8.onnx").exists():
+        return PROD_MODEL_DIR
+    return _EVAL_MODEL_DIR
+
+
+DEFAULT_MODEL_DIR = _resolve_model_dir()
 
 
 def _optimal_threads() -> int:
