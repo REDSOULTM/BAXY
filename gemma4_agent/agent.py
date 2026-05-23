@@ -1406,6 +1406,37 @@ class Gemma4Agent:
             )
 
             if not raw_tool_calls:
+                chain_question = self._filesystem_search_clarification(
+                    events, raw_text_early,
+                )
+                if chain_question:
+                    assistant_content = chain_question["content"]
+                    msg["content"] = assistant_content
+                    try:
+                        if hasattr(self.state, "set_pending_intent"):
+                            self.state.set_pending_intent(
+                                tool=str(chain_question.get("target_tool") or "office"),
+                                args=dict(chain_question.get("args") or {}),
+                                asks_for="file_selection",
+                                current_turn=self._turn_counter,
+                                ttl_turns=2,
+                            )
+                        self.trace.event(
+                            turn_id,
+                            "filesystem_search_clarification",
+                            candidates=len(chain_question.get("paths") or []),
+                            target_tool=str(chain_question.get("target_tool") or "office"),
+                        )
+                    except Exception as _exc:  # noqa: BLE001
+                        try:
+                            self.trace.event(
+                                turn_id,
+                                "silent_fallback",
+                                component="filesystem_search_clarification",
+                                error=f"{type(_exc).__name__}: {_exc}",
+                            )
+                        except Exception:
+                            pass
                 assistant_content = sanitize_text(assistant_content)
                 assistant_content = self._guard_unverified_final(assistant_content, events)
                 assistant_content = self._guard_phrase_confirm(assistant_content)
@@ -2235,6 +2266,98 @@ class Gemma4Agent:
                 return p
             break
         return None
+
+    @staticmethod
+    def _paths_from_search_result(result: dict[str, Any]) -> list[str]:
+        """Extract path-like strings from a filesystem.search result."""
+        paths: list[str] = []
+        seen: set[str] = set()
+        for key in ("matches", "paths", "results", "files", "items"):
+            items = result.get(key)
+            if not isinstance(items, list):
+                continue
+            for item in items:
+                path: str | None = None
+                if isinstance(item, str):
+                    path = item
+                elif isinstance(item, dict):
+                    for pk in ("path", "fullpath", "filepath", "abspath"):
+                        value = item.get(pk)
+                        if isinstance(value, str) and value.strip():
+                            path = value
+                            break
+                if not path:
+                    continue
+                path = path.strip()
+                if path and path not in seen:
+                    seen.add(path)
+                    paths.append(path)
+        return paths
+
+    @staticmethod
+    def _user_requested_file_followup(user_text: str) -> bool:
+        """True when the original request asked to act on a found file."""
+        if not user_text:
+            return False
+        import re
+        text = _fold_match(user_text)
+        return bool(re.search(
+            r"\b("
+            r"abre|abri|abrir|abreme|abrime|open|"
+            r"muestra|mostrar|show"
+            r")\b",
+            text,
+        ))
+
+    def _filesystem_search_clarification(
+        self,
+        events: list["ToolEvent"],
+        user_text: str,
+        *,
+        limit: int = 5,
+    ) -> dict[str, Any] | None:
+        """Ask the user to choose when E4B stops after filesystem.search.
+
+        RED chose clarification over deterministic auto-open. This fires only
+        when the last executed tool is a successful filesystem.search with
+        paths and the original request asked for an action over the result.
+        """
+        if not events or not self._user_requested_file_followup(user_text):
+            return None
+        last = events[-1]
+        if getattr(last, "name", "") != "filesystem":
+            return None
+        res = getattr(last, "result", None)
+        if not isinstance(res, dict) or not res.get("ok"):
+            return None
+        if "search" not in str(res.get("action") or "").casefold():
+            return None
+        paths = self._paths_from_search_result(res)
+        if not paths:
+            return None
+        root = res.get("root")
+        normalized: list[str] = []
+        for path in paths:
+            if root and not ("\\" in path[:3] or "/" in path[:1] or ":" in path[:3]):
+                from pathlib import Path as _P
+                path = str(_P(str(root)) / path)
+            normalized.append(path)
+        shown = normalized[:max(1, limit)]
+        lines = ["Encontre estos archivos:"]
+        for index, path in enumerate(shown, start=1):
+            lines.append(f"{index}. {Path(path).name} - {path}")
+        if len(normalized) > len(shown):
+            lines.append(f"... y {len(normalized) - len(shown)} mas.")
+        lines.append("Cual queres abrir? Responde con el numero o el nombre.")
+        return {
+            "content": "\n".join(lines),
+            "target_tool": "office",
+            "args": {
+                "action": "open",
+                "candidates": shown,
+            },
+            "paths": normalized,
+        }
 
     def _image_is_for_llm(
         self, mode: "AgentMode", tool_name: str, result: dict[str, Any],
