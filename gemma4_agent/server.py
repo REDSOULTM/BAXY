@@ -161,6 +161,31 @@ def _detect_hardware() -> dict[str, Any]:
     except Exception:
         pass
 
+    # FALLBACK nvidia-smi (2026-05-23): NVML/pynvml a veces NO está instalado
+    # (ModuleNotFoundError), dejando gpu="unknown" y el context budget sin
+    # auto-rellenar en la Field UI. nvidia-smi viene con el driver y ya se usa
+    # en profile_watcher/metrics. Solo se invoca si NVML no resolvió la GPU.
+    if gpu_spec == "unknown":
+        try:
+            out = subprocess.run(
+                ["nvidia-smi", "--query-gpu=name,memory.total",
+                 "--format=csv,noheader,nounits"],
+                capture_output=True, text=True, timeout=5,
+            )
+            line = (out.stdout or "").strip().splitlines()[0] if out.stdout.strip() else ""
+            if line:
+                parts = [p.strip() for p in line.split(",")]
+                name = parts[0]
+                mem_mib = float(parts[1]) if len(parts) > 1 and parts[1] else 0.0
+                gpu_vram_gb = mem_mib / 1024.0
+                short = name.lower()
+                for k in ("nvidia ", "geforce "):
+                    short = short.replace(k, "")
+                short = " ".join(short.split())
+                gpu_spec = f"{short} · {gpu_vram_gb:.0f} gb"
+        except Exception:
+            pass
+
     return {
         "cpu": cpu_spec,
         "cpu_cores": cpu_cores,
