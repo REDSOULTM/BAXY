@@ -133,6 +133,20 @@ class Gemma4Agent:
             )
         from .experience import ExperienceMemory
         self.experience = ExperienceMemory(self.config.memory_path.parent / "experience.sqlite")
+        # JARVIS proactivo (inv 5): log de comportamiento para detectar rutinas
+        # del usuario y ofrecer automatizarlas. SEPARADO de experience (no
+        # contamina). Best-effort: si falla, no rompe nada. Gate GEMMA4_JARVIS=0.
+        import os as _os_j
+        self._jarvis_on = _os_j.environ.get("GEMMA4_JARVIS", "1").strip().lower() \
+            not in {"0", "false", "no", "off"}
+        self.behavior = None
+        if self._jarvis_on:
+            try:
+                from .behavior_log import BehaviorLog
+                self.behavior = BehaviorLog()
+                self.behavior.record("boot", "agent")  # arranque de sesión
+            except Exception:
+                self.behavior = None
         self.history: list[dict[str, Any]] = []
         self._recent_recalls: list[dict[str, Any]] = []
         self._explicit_plan_text: str = ""
@@ -1708,6 +1722,7 @@ class Gemma4Agent:
                 _progress(progress, "final", tools=len(events), mission=mission)
                 self._last_turn_ts = time.time()
                 self._remember_executed_tools(events)
+                assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
 
             # Validator: if the LLM declared an <intent> and chose a tool
@@ -1848,6 +1863,17 @@ class Gemma4Agent:
                 result = prep.get("result") or {}
                 events.append(ToolEvent(name=name, args=args, result=result))
                 self.trace.event(turn_id, "tool_result", name=name, result=result)
+                # JARVIS (inv 5): registrar acciones del usuario para detectar
+                # rutinas. Solo app open/close EXITOSAS (señal estable). Best-
+                # effort; nunca rompe el turno.
+                if self.behavior is not None and isinstance(result, dict) and result.get("ok"):
+                    try:
+                        _act = str(args.get("action") or "").casefold()
+                        _nm = str(args.get("name") or args.get("app") or "").strip()
+                        if name == "app" and _act in ("open", "close") and _nm:
+                            self.behavior.record(f"app_{_act}", _nm)
+                    except Exception:
+                        pass
                 # sprint2: surface which skill the LLM loaded so usage reports
                 # can answer "which skills earn their spot in the menu?".
                 # Sprint 2.1 found no skill_load activity in any of 6727 events.
@@ -2109,6 +2135,7 @@ class Gemma4Agent:
         _progress(progress, "max_turns", tools=len(events), mission=mission)
         self._last_turn_ts = time.time()
         self._remember_executed_tools(events)
+        final = (final or "") + self._maybe_proactive_suffix()
         return AgentReply(content=final, tool_events=events, mission=mission)
 
     # Sprint 6.4: bodies moved to :mod:`.agent_dispatch`. The wrappers
@@ -2177,6 +2204,35 @@ class Gemma4Agent:
     _VISUAL_DELIVERABLE_TOOLS = frozenset({"gui", "vision", "uia", "verify"})
     # Result.action values that mean "I captured an image on purpose".
     _VISUAL_ACTIONS = ("screenshot", "capture", "ocr", "read_screen", "describe")
+
+    def _maybe_proactive_suffix(self) -> str:
+        """JARVIS (inv 5): en un BREAKPOINT (fin de turno), si el miner detectó
+        una rutina del usuario y la suggestion_queue la libera (cooldowns OK),
+        devuelve un OFRECIMIENTO corto para anexar al reply. Conservador: solo
+        sugiere, NO crea la rutina (eso es un turno futuro con el sí del usuario).
+        Best-effort: cualquier fallo -> string vacío (no rompe el turno).
+
+        Cabe en vram4: la minería es código determinista, no usa el LLM."""
+        if self.behavior is None:
+            return ""
+        try:
+            from .pattern_miner import mine_simple_patterns
+            from .suggestion_queue import SuggestionQueue
+            events = self.behavior.events()
+            if len(events) < 10:  # poca señal -> ni minar (barato salir)
+                return ""
+            cands = mine_simple_patterns(events)
+            if not cands:
+                return ""
+            cand = SuggestionQueue().next_suggestion(cands)
+            if cand is None:
+                return ""
+            # recordar el patrón ofrecido para resolver el sí/no del próximo turno
+            self._pending_suggestion = cand
+            return (f"\n\nPor cierto: noté que {cand.describe_es()}. "
+                    f"¿Querés que lo automatice? (decí sí o no)")
+        except Exception:
+            return ""
 
     # Tools de BÚSQUEDA/LISTADO cuyo resultado suele ser un PASO INTERMEDIO
     # (el usuario quiere algo CON el resultado: abrir/reproducir/leer).
