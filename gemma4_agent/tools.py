@@ -3210,8 +3210,34 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             checkpoint=checkpoint.get("checkpoint"),
         )
 
+    # Carpetas de usuario conocidas (es/en) -> ruta real bajo el home. El LLM y
+    # el usuario dicen "Descargas"/"Downloads"/"Escritorio" sin ruta absoluta.
+    _USER_FOLDER_ALIASES = {
+        "downloads": "Downloads", "descargas": "Downloads",
+        "desktop": "Desktop", "escritorio": "Desktop",
+        "documents": "Documents", "documentos": "Documents",
+        "pictures": "Pictures", "imagenes": "Pictures", "imágenes": "Pictures",
+        "music": "Music", "musica": "Music", "música": "Music",
+        "videos": "Videos", "vídeos": "Videos",
+    }
+
+    def _resolve_user_folder(self, raw: str) -> Path:
+        """Resuelve una ruta. Si es un nombre de carpeta conocida (Downloads,
+        Descargas, ...) la mapea a la carpeta real del home; si no, expanduser."""
+        key = raw.strip().strip("/\\").casefold()
+        alias = self._USER_FOLDER_ALIASES.get(key)
+        if alias:
+            return (Path.home() / alias)
+        return Path(raw).expanduser()
+
     def filesystem_search(self, args: dict[str, Any]) -> dict[str, Any]:
-        root = Path(str(args.get("root", ".")).strip() or ".").expanduser()
+        # BUG sesión #847: el LLM pasa `path` (intuitivo, está en el schema) pero
+        # esto solo leía `root` -> ignoraba el path y buscaba en "." (el dir del
+        # proyecto), por eso "abre el Word de Descargas" no encontraba nada real.
+        # Fix: aceptar path/dir como alias de root, y resolver nombres de carpetas
+        # conocidas (Downloads/Descargas/Escritorio/Documentos...) al home del user.
+        raw_root = str(args.get("root") or args.get("path") or args.get("dir") or ".").strip() or "."
+        root = self._resolve_user_folder(raw_root)
         pattern = str(args.get("pattern", "*")).strip() or "*"
         limit = int(args.get("limit", 50))
         if not root.exists():
