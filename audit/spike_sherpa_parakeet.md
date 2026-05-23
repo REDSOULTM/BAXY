@@ -153,3 +153,44 @@ Aquiles de Whisper-small que veníamos peleando.
 estén en inventario) para medir Entity-Recall con IC sobre voz real, y decidir:
 Parakeet-solo, Whisper-solo, o dual (Parakeet primario + corrector fonético
 encima para los "Boone"→"Moon").
+
+---
+
+## UPDATE 3 (2026-05-23) — investigación "meter el nombre en el beam" + verificación en código
+
+Investigación profunda (compass_artifact_wf-6e2efce2). Verifiqué SUS afirmaciones
+de código en MI máquina (no en docs):
+
+**VERIFICADO en código instalado:**
+1. `blank_penalty` existe en greedy NeMo. PERO medido sobre k5 "Benson Boone":
+   bp=0.0→2.0 → **"Benson Moon" PERSISTE en todos los valores**. Confirma: la
+   fusión "Boone→Moon" es del ENCODER, no del decoder. blank_penalty arregla
+   sílabas SALTADAS (doing→∅), NO confusiones del encoder. En NUESTRO caso no
+   ayuda (lo medí, no lo asumí).
+2. El result de sherpa SÍ expone `ys_log_probs`, `tokens`, `timestamps`, `words`
+   — gating por confianza es viable.
+3. `lm`/`lm_scale` y `lodr_fst` → la investigación dice que en el path NeMo son
+   no-op (PR #3077 "Removed unused LM rescoring code"). No los uso.
+4. `modified_beam_search` en v1.13.2 → bug ~33% fallo (issue #3267, fix #3589 NO
+   está en 1.13.2). NO usar MBS en prod hasta upgrade. Quedarse en greedy.
+
+**EL HALLAZGO QUE CIERRA EL PLAN:** mi corrector fonético ACTUAL (Double
+Metaphone + fuzz) YA rescata "benson moon"→"benson boone" (txt=87, meta=86, ambos
+> threshold) y "espotifai"→"spotify" (meta=89). El problema del A/B NO fue el
+corrector — fue que **el corrector corre sobre la salida de WHISPER, no de
+PARAKEET**. Si adopto Parakeet como motor y CABLEO mi corrector existente sobre
+SU salida, combino lo mejor medido: Parakeet no alucina (gana "Chrome" en clips
+cortos) + corrector rescata fusiones (gana "Boone"). La investigación valida
+exactamente esto (su capa #1: "Parakeet motor + corrector post-hoc, capa
+OBLIGATORIA"). Mejora propuesta por la investigación: sumar Metáfono Español
+(Mosquera 2012, amsqr/Spanish-Metaphone) al corrector para cuando el hispano
+pronuncia el anglicismo "a la española" — Double Metaphone solo está sesgado a
+fonética inglesa.
+
+**PLAN VERIFICADO (pendiente OK de RED para implementar en prod):**
+- Motor: Parakeet-v3 greedy (no alucina, ~110ms, CPU). Mantener Whisper como
+  fallback configurable.
+- Encima: el corrector fonético existente (cableado sobre la salida de Parakeet)
+  + Metáfono Español, gateado por `ys_log_probs` en el slot post-verbo.
+- NO usar MBS/hotwords/LM/LODR (medidos como no-aplicables o inestables en 1.13.2).
+- Medir con held-out de RED (IC Wilson) antes de hacerlo default.
