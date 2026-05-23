@@ -180,38 +180,128 @@ ambiciosa: mayor ganancia potencial, mayor esfuerzo de integración.
 
 ---
 
+## 1.5 REQUISITO QUE DECIDE TODO: open-vocabulary obligatorio (input de RED)
+
+RED 2026-05-23: *"un usuario no te va a decir sí o sí los comandos que ya
+existen; puede decir cualquier comando que NO está en la plantilla. ¿Qué pasa
+si pasa eso? Debería poder resolverlo también."*
+
+**Esto es el requisito decisivo y elimina cualquier solución closed-vocab PURA.**
+Un asistente de propósito general DEBE manejar lo no anticipado:
+- comandos fuera de plantilla ("buscá la receta de paella", "resumime este PDF"),
+- nombres que el user nunca registró ("abrí el juego que bajé ayer"),
+- dictado/preguntas libres ("¿qué fue la guerra de los 30 años?").
+
+Un grafo FST (Ruta D pura) NO puede resolver nada fuera de su grafo — por diseño.
+Por lo tanto:
+
+- **Ruta D PURA queda DESCARTADA** como motor único (rompe open-vocabulary).
+- **D solo sobrevive como motor DUAL**: closed-vocab para comandos conocidos
+  (alta precisión en nombres) + Whisper SIEMPRE como fallback open-vocab para
+  todo lo demás. El router decide o corre ambos y elige por confianza.
+- El motor open-vocab (Whisper) NO desaparece en NINGÚN escenario. Es la base.
+  El biasing (cualquier ruta) solo MEJORA los nombres propios SOBRE esa base,
+  nunca la reemplaza.
+
+**Implicación para la decisión:** la pregunta real no es "¿qué motor?", es
+"¿qué le agrego a Whisper (que se queda) para mejorar nombres propios sin perder
+el open-vocab?". Re-evaluadas bajo esa lente:
+
+| Ruta | ¿Preserva open-vocab? | ¿Mejora nombres propios? | Costo |
+|------|:---:|:---:|---|
+| A NeMo/Parakeet | ✅ (es open-vocab con biasing) | ✅ real | GPU-bound, motor nuevo |
+| B fork CTranslate2 | ✅ (Whisper + logit-bias) | ✅ real | fork C++ frágil |
+| C inventario dinámico | ✅ (Whisper + post-corrector) | ⚠️ post-hoc, techo | bajo, ya tenemos |
+| D speech-to-phrase | ✅ SOLO si es DUAL con Whisper | ✅ real en comandos | motor dual + Kaldi |
+| **E Whisper + repair-LLM** | ✅ nativo | ✅ por razonamiento (open) | bajo, LLM ya corre |
+
+A y B siguen chocando con CPU/fork. Quedan, realistas:
+- **C** (Whisper + corrector dinámico) — preserva open-vocab nativamente, mejora
+  nombres propios con techo, cero migración. Lo que YA tenemos, bien hecho.
+- **D-dual** (Whisper open-vocab + speech-to-phrase para comandos) — mejor
+  biasing en comandos, pero complejidad de motor dual + router + Kaldi packaging.
+
+### Ruta E — Whisper + reparación con el LLM residente (C+, open-vocab nativo)
+
+**La que mejor cumple el requisito de RED.** El LLM de Gemma4 YA está corriendo
+en GPU. Úsalo como segunda pasada para reparar el transcript de Whisper:
+
+- Whisper transcribe TODO (open-vocab, base intacta) — "abrí estimulo en estim".
+- Si el corrector fuzzy NO encuentra match con alta confianza (señal de nombre
+  propio mal oído), se manda UNA pasada al LLM con contexto:
+  *"El usuario dio un comando de voz en Spanglish. Apps instaladas: <inventario
+  dinámico>. Transcripción cruda: '<texto>'. Devolvé SOLO el comando corregido."*
+- El LLM **razona**, no matchea lista: resuelve "el juego que bajé ayer",
+  nombres nuevos, comandos fuera de plantilla — porque ENTIENDE, no porque el
+  nombre esté en un grafo. Eso es exactamente lo que RED pide.
+
+**Evidencia:** Wang et al. (arXiv 2502.16142): "the LLM contributes significantly
+to improvements in rare word error rate (R-WER) ... without altering the
+common-word baseline". El LLM repara la cola de entidades/raras sin tocar el
+resto. Compass research R10 (Tier-2).
+
+**A favor:** open-vocab nativo (Whisper se queda), generaliza por RAZONAMIENTO
+(no lista) => held-out real, CPU para STT (el LLM ya está en GPU, no agrega
+modelo nuevo), cero migración de motor, cero Kaldi. Resuelve el requisito de RED.
+
+**En contra / a medir:** latencia (una llamada extra al LLM ~100-200ms, SOLO
+cuando hay ambigüedad — no en cada turno); riesgo de que el LLM chico alucine
+una corrección (se acota con prompt restringido + "NONE" si no está seguro);
+hay que cablearlo en el hot-path de voz sin inflar el turno.
+
+**Veredicto E:** la mejor relación generalización-real / costo / requisito-RED.
+Open-vocab garantizado, generaliza por comprensión, sin migración ni Kaldi.
+El costo es latencia condicional (solo en ambigüedad) — medible y acotable.
+
+---
+
 ## 2. RECOMENDACIÓN (con datos) — y PARADA para decisión del user
 
-Comparación final de las 4 rutas contra nuestras restricciones (STT-en-CPU,
-OSS pip-installable cross-platform, sin forks frágiles, necesita comandos +
-dictado libre):
+Comparación final de las 5 rutas contra TODAS las restricciones (STT-en-CPU,
+OSS pip cross-platform, sin forks frágiles, **open-vocab obligatorio**,
+generaliza a held-out):
 
-| Ruta | Biasing real | CPU-prod | pip Win/Mac/Lin | Reemplaza Whisper | Esfuerzo |
-|------|:---:|:---:|:---:|:---:|:---:|
-| A NeMo/Parakeet | ✅ | ❌ GPU-bound | ❌ | sí (motor nuevo) | alto |
-| B fork CTranslate2 | ✅ | ✅ | ❌ build C++ | no | alto+mantto |
-| C inventario dinámico | ⚠️ post-hoc | ✅ | ✅ | no | bajo |
-| **D speech-to-phrase** | ✅ closed-vocab | ✅ | ❌ Kaldi/Docker | no (motor DUAL) | alto integración |
+| Ruta | Biasing real | open-vocab | CPU-prod | pip cross-plat | held-out | Esfuerzo |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|
+| A NeMo/Parakeet | ✅ | ✅ | ❌ GPU | ❌ | ✅ | alto |
+| B fork CTranslate2 | ✅ | ✅ | ✅ | ❌ C++ | ✅ | alto+mantto |
+| C inventario dinámico | ⚠️ post-hoc | ✅ | ✅ | ✅ | ⚠️ techo | bajo |
+| D speech-to-phrase | ✅ | ❌ (dual) | ✅ | ❌ Kaldi | ✅ comandos | alto |
+| **E Whisper+repair-LLM** | ✅ semántico | ✅ | ✅ | ✅ | ✅ razona | bajo-medio |
 
-**Recomendación matizada:**
-- **Para SHIPPEAR YA con bajo riesgo: Ruta C** (inventario dinámico). Sin
-  migración, pip-friendly, ataca el overfitting real (lista dinámica del entorno
-  vs hardcode). Techo honesto: no recupera nombres que el user nunca tuvo.
-- **Para el biasing REAL de nombres propios, la mejor arquitectura es D**
-  (speech-to-phrase como segundo motor para comandos, Whisper para dictado).
-  Es lo que hace HA/Rhasspy y resuelve el problema de raíz — PERO es un proyecto
-  grande (motor dual + packaging Kaldi en Windows) y rompe la meta pip-install
-  cross-platform salvo que se acepte Docker/WSL.
+**Recomendación: C + E combinadas.** Es la única que cumple TODOS los ejes
+incluido el requisito de RED (open-vocab para lo no anticipado):
 
-**No hay free-lunch:** el biasing real (D, o A) cuesta o un motor dual con Kaldi,
-o GPU. Lo barato (C) tiene techo teórico. Esa es la verdad medida.
+1. **Whisper se queda** como base open-vocab — resuelve CUALQUIER comando/dictado,
+   incluido lo que no está en plantilla (requisito de RED ✅).
+2. **C (inventario dinámico)** — el corrector fuzzy/fonético matchea contra las
+   apps REALMENTE instaladas + media reciente del user (no mi hardcode). Rápido,
+   barato, atrapa los nombres conocidos del entorno.
+3. **E (repair-LLM)** — cuando C no encuentra match confiable (nombre nuevo, fuera
+   de inventario), el LLM residente repara el transcript POR RAZONAMIENTO. Esto
+   da generalización held-out real ("el juego que bajé ayer") sin lista, sin
+   Kaldi, sin GPU nueva, sin closed-vocab.
+
+Por qué NO las otras:
+- **A**: GPU-bound (rompe STT-en-CPU). **B**: fork C++ frágil. **D pura**: rompe
+  open-vocab (el bloqueo de RED); D-dual es válida pero motor dual + Kaldi/Docker
+  en Windows es mucho más esfuerzo que C+E para una ganancia que E ya da por
+  razonamiento.
+
+**Honestidad sobre el techo de C+E:** E depende de que el LLM razone bien sobre
+el transcript crudo — si Whisper destruye TANTO el audio que no queda señal
+("YouTube"→"Show2V"), ni el LLM lo recupera. Ese piso lo pone Whisper-small, no
+el biasing. Para superarlo de verdad haría falta A/B/D (biasing en decoding) o
+fine-tuning. Pero C+E es lo máximo alcanzable SIN migración ni Kaldi ni GPU, y
+cumple el requisito open-vocab.
 
 **DECISIÓN QUE NECESITO DE VOS (RED):**
-1. **Ruta C** ahora (rápido, generaliza a lo que el user tiene, techo honesto), ó
-2. **Ruta D** (speech-to-phrase como segundo motor — biasing real, pero motor
-   dual + Kaldi/Docker en Windows; aceptás el packaging por Docker/WSL?), ó
-3. **C ahora + D como sprint futuro** (pragmático: shippear C, evaluar D con un
-   spike real de integración después), ó
+1. **C + E** (recomendada): Whisper open-vocab + corrector dinámico + repair con
+   el LLM residente. Cumple open-vocab, generaliza por razonamiento, sin
+   migración. → procedo a FASE 1 (held-out + voz real + IC) y la implemento.
+2. **+ D-dual a futuro** (C+E ahora, y evaluás speech-to-phrase como segundo
+   motor de comandos en un sprint posterior con su spike de Kaldi).
+3. **Mover STT a GPU** para habilitar A (biasing nativo, rompe STT-en-CPU).
 4. Otra prioridad.
 
 NO implemento nada hasta tu OK de ruta (regla del sprint).
