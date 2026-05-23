@@ -103,3 +103,36 @@ class PatternMinerTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SuggestionQueueTest(unittest.TestCase):
+    def setUp(self):
+        import tempfile
+        from gemma4_agent.suggestion_queue import SuggestionQueue
+        self.q = SuggestionQueue(user="t", dir_path=Path(tempfile.mkdtemp()))
+        self.c1 = PatternCandidate("boot", "pc", "app_close", "discord.exe", 8, 0.8, 30.0)
+        self.c2 = PatternCandidate("boot", "pc", "app_open", "chrome.exe", 10, 1.0, 50.0)
+        self.now = time.time()
+
+    def test_offers_best_candidate_first(self):
+        s = self.q.next_suggestion([self.c2, self.c1], now=self.now)
+        self.assertIsNotNone(s)
+
+    def test_rate_limit_one_per_hour(self):
+        self.assertIsNotNone(self.q.next_suggestion([self.c1], now=self.now))
+        self.assertIsNone(self.q.next_suggestion([self.c2], now=self.now + 60))
+        self.assertIsNotNone(self.q.next_suggestion([self.c2], now=self.now + 3601))
+
+    def test_rejected_pattern_silenced(self):
+        self.q.mark_rejected(self.c1, now=self.now)
+        self.assertIsNone(self.q.next_suggestion([self.c1], now=self.now + 3601))
+
+    def test_accepted_never_reoffered(self):
+        self.q.mark_accepted(self.c2)
+        self.assertIsNone(self.q.next_suggestion([self.c2], now=self.now + 10 * 3600))
+
+    def test_rejected_reoffered_if_count_doubles(self):
+        self.q.mark_rejected(self.c1, now=self.now)
+        # count subió de 8 a 16 (duplicó) -> se puede re-ofrecer aunque < 30d
+        stronger = PatternCandidate("boot", "pc", "app_close", "discord.exe", 16, 0.9, 30.0)
+        self.assertIsNotNone(self.q.next_suggestion([stronger], now=self.now + 3601))
