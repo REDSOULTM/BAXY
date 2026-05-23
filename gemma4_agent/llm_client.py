@@ -80,28 +80,43 @@ class LLMClient:
         force_tool: bool = False,
         thinking_budget: int | None = None,
         model: str | None = None,
+        greedy: bool = False,
     ) -> dict[str, Any]:
         """Synchronous chat completion against the local llama-server.
 
         timeout_s overrides the per-call request timeout. Defaults to
         self.config.request_timeout_s. This is the wall-clock deadline of the
         HTTP request - if exceeded, raises RuntimeError('llm_timeout: ...').
+
+        greedy=True: SAMPLING DETERMINISTA para el turno de ACCIÓN (decidir y
+        emitir el tool-call). Investigación 1 (2026-05-23): los defaults de Gemma
+        (temp=1.0/top_k=64) son para escritura creativa; en una decisión discreta
+        (elegir 1 de 6 tools + args) la alta entropía del primer token hace al 4B
+        "narrar" en vez de disparar <|tool_call|> (el 2/6 sin reasoning). Greedy
+        (temp=0, top_k=1) reduce esa entropía -> tool-call más fiable SIN el costo
+        del thinking. Sampling DUAL: greedy en acción, defaults en conversación.
+        NO subir repeat_penalty en Gemma 4 (bug <unused49>, issue #21338).
+        Gate: GEMMA4_GREEDY_TOOLCALL=0 desactiva (vuelve a sampling normal).
         """
         thinking = self.config.enable_thinking if enable_thinking is None else enable_thinking
+        import os as _os
+        _greedy_on = greedy and (
+            _os.environ.get("GEMMA4_GREEDY_TOOLCALL", "1").strip().lower()
+            not in {"0", "false", "no", "off"})
         body: dict[str, Any] = {
             # In router mode the agent passes the per-turn router preset name
             # ("<profile>-text" / "<profile>-vision"); else the configured model.
             "model": model or self.config.model,
             "stream": False,
             "messages": messages,
-            "temperature": self.config.temperature,
-            "top_p": self.config.top_p,
-            "top_k": self.config.top_k,
-            "repeat_penalty": self.config.repeat_penalty,
+            "temperature": 0.0 if _greedy_on else self.config.temperature,
+            "top_p": 1.0 if _greedy_on else self.config.top_p,
+            "top_k": 1 if _greedy_on else self.config.top_k,
+            "repeat_penalty": self.config.repeat_penalty,  # 1.0; NO subir (Gemma 4 bug)
             "max_tokens": max_tokens or self.config.max_tokens,
             "chat_template_kwargs": {"enable_thinking": thinking},
         }
-        if self.config.min_p is not None:
+        if self.config.min_p is not None and not _greedy_on:
             body["min_p"] = self.config.min_p
         if self.config.seed is not None and int(self.config.seed) >= 0:
             body["seed"] = int(self.config.seed)

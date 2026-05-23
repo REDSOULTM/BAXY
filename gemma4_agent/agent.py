@@ -1138,6 +1138,11 @@ class Gemma4Agent:
             )
             _pass_tools = None if _is_summary_pass else selected_schemas
             _pass_max = 160 if _is_summary_pass else mode.max_tokens
+            # SAMPLING DUAL (inv 1, 2026-05-23): greedy en el turno de ACCIÓN
+            # (hay tools ofrecidas, ninguna corrió aún, y NO es summary-pass) ->
+            # decisión de tool-call con baja entropía, más fiable sin reasoning.
+            # En summary-pass / conversación NO greedy (necesita lenguaje natural).
+            _greedy = bool(_pass_tools) and len(events) == 0 and not _is_summary_pass
             try:
                 resp = self.client.chat(
                     _msgs,
@@ -1147,6 +1152,7 @@ class Gemma4Agent:
                     model=_call_model,
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=_pass_max,
+                    greedy=_greedy,
                     # Per-mode deadline so a hung/slow call fails fast instead of
                     # blocking up to the global 180s * max_agent_turns. Derived
                     # from the token budget (see AgentMode.request_timeout_s).
@@ -1371,6 +1377,7 @@ class Gemma4Agent:
                             parallel_tool_calls=mode.parallel_tool_calls,
                             max_tokens=mode.max_tokens,
                             force_tool=True,
+                            greedy=True,  # forced-retry = decisión pura de tool-call
                         )
                         choice_f = (resp_f.get("choices") or [{}])[0]
                         msg_f = sanitize_assistant_message(choice_f.get("message") or {})
