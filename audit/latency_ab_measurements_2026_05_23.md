@@ -50,3 +50,22 @@ PERO el log real (llama-server.err.log, build 9090) muestra lo CONTRARIO:
 DECISIÓN: NO tocar --ctx-checkpoints a ciegas (ya falló el -ub del mismo informe).
 Quitarlo CAMBIARÍA el comportamiento, no es no-op. Requiere A/B dedicado en server
 de prueba antes de tocar prod. El sistema funciona (turno mediano 2s); riesgo > ROI.
+
+---
+## FR-CoT (thinking estructurado) — MEDIDO en NUESTRO E4B, net negativo (2026-05-23)
+
+Informe thinking-latencia: thinking estructurado ≤4 líneas (INTENT/TOOL/ARGS/GO).
+Cifras del informe eran de Qwen2.5; medido en NUESTRO Gemma E4B (smoke E2E):
+
+| categoría | FR-CoT OFF | FR-CoT ON |
+|---|---|---|
+| apps | 6/6, 6.4s | 6/6, 5.0s ✓ |
+| audio | 5/6, 5.2s | 6/6, 2.4s ✓✓ (2x más rápido) |
+| **media** | **6/6, 7.3s** | **3/6, 10.5s ✗✗ REGRESIÓN** |
+
+CAUSA de la regresión en media: Gemma E4B a veces emite el formato
+'INTENT:.../TOOL:.../ARGS:...' como TEXTO DE SALIDA (no en el canal de
+pensamiento) -> rompe el tool-call (tool=False) y suena raro. El informe avisó
+que sus cifras eran Qwen, no Gemma. Net negativo -> DEFAULT OFF, opt-in
+GEMMA4_FRCOT=1. La mejora en audio (2x) es real pero no compensa romper media.
+Para rescatarlo haría falta el router 3-capas + grammar del informe (más trabajo).

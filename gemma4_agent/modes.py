@@ -148,7 +148,7 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             enable_thinking=True,
             parallel_tool_calls=False,
             max_tokens=min(base_max_tokens, 512),
-            system_hint=_FAST_ACTION_HINT,
+            system_hint=_FAST_ACTION_HINT + _frcot_hint(),
             # 256 (era 384). A/B medido (2026-05-22, vram12-text, tools app/window):
             # el modelo AUTO-termina el reasoning a 128-346 chars para emitir el
             # tool-call, MUY por debajo de 384 -> bajar a 256 no cambia la latencia
@@ -205,6 +205,40 @@ _FAST_ACTION_HINT = (
     "as an ack — 'gracias' deserves 'de nada' or 'no hay de qué', "
     "not 'Listo'."
 )
+
+
+# FR-CoT (Function-Routing Chain-of-Thought, informe thinking-latencia 2026-05-23):
+# para modelos chicos, un thinking BREVE y ESTRUCTURADO es más fiable Y más rápido
+# que el thinking libre. Evidencia: Qi 2026 (arXiv 2604.02155, BFCL v3) — brief
+# CoT@32 sube tool-call de 44%->64% en Qwen2.5-1.5B y baja alucinación a 0%. NUESTRO
+# E4B genera p90=268 / max=841 tok de thinking (hasta 4.3s); esto lo acota a ≤4
+# líneas. Gate GEMMA4_FRCOT=0 lo desactiva (las cifras son de Qwen, NO de Gemma —
+# MEDIR tokens antes/después en nuestro modelo, por eso reversible).
+_FRCOT_HINT = (
+    "\n\nTHINKING: razoná BREVE, máximo 4 líneas, en este formato exacto, "
+    "luego emití el tool-call:\n"
+    "INTENT: <abrir_app|reproducir|control_sistema|buscar|aclarar>\n"
+    "TOOL: <nombre exacto de la función, o none>\n"
+    "ARGS: <clave=valor separados por coma, o —>\n"
+    "GO\n"
+    "Nunca deliberes más de esas 4 líneas. Si no podés decidir el tool/args, "
+    "INTENT=aclarar y hacé UNA pregunta corta sin llamar tools."
+)
+
+
+def _frcot_hint() -> str:
+    # DEFAULT OFF (medido 2026-05-23 en NUESTRO E4B, no Qwen): FR-CoT MEJORA
+    # apps/audio (audio 5.2s->2.4s, 11/12->12/12) PERO REGRESIONA media (6/6->
+    # 3/6, 7.3s->10.5s): Gemma E4B a veces emite el formato INTENT/TOOL/ARGS como
+    # TEXTO DE SALIDA en vez de en el canal de pensamiento, y eso rompe el
+    # tool-call. El informe avisó que sus cifras eran de Qwen, no Gemma — y acá
+    # se ve la diferencia. Net negativo -> opt-in (=1) para experimentar, NO
+    # default. (CLAUDE.md #3: medir; el formato no sobrevivió en media.)
+    import os as _os
+    if (_os.environ.get("GEMMA4_FRCOT", "0").strip().lower()
+            not in {"1", "true", "yes", "on"}):
+        return ""
+    return _FRCOT_HINT
 
 
 def _infer_mode(content: str | list[dict[str, Any]]) -> str:
