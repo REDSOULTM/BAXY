@@ -1,4 +1,4 @@
-# Prompt de investigación 4/4 — Gestión de contexto e historial multi-turno en un 4B local
+# Prompt de investigación 4/8 — Gestión de contexto e historial multi-turno en un 4B local
 
 Copiá esto a Claude (research/web). Tema ESPECÍFICO: cómo manejar el historial de
 conversación y el contexto entre turnos en un modelo de 4B con ventana de 16K, sin
@@ -8,6 +8,17 @@ saturar el contexto ni romper el prefix-cache ni perder coherencia. Fuentes 2025
 Gemma 4 E4B-it Q4_K_M, llama.cpp b9090, ctx=16384, `--swa-full --cache-reuse 256
 --keep -1`, monoslot, asistente de VOZ local. Turnos cortos de comando + a veces
 multi-paso. El system prompt base (CORE LEAN) ya pesa ~920 tok; FULL ~2900 tok.
+
+
+## RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4
+El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU
+modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz
+de TODO esto — NO asumir un modelo más grande ni subir de perfil. Ninguna
+solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º
+modelo pesado. Lo que necesite 'inteligencia' extra: preferí CÓDIGO
+DETERMINISTA + el LLM solo para lo conversacional. Cualquier recomendación
+que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una
+alternativa que sí entre.
 
 ## 1. El problema medido
 - El prompt total mediano es ~7875 tok y CRECE ~3900 tok/turno (user + respuesta

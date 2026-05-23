@@ -1,4 +1,4 @@
-# Prompt de investigación 1/4 — Fiabilidad de tool-calling y structured output en Gemma 4 E4B (4B local)
+# Prompt de investigación 1/8 — Fiabilidad de tool-calling y structured output en Gemma 4 E4B (4B local)
 
 Copiá esto a Claude (research/web). Tema ESPECÍFICO: hacer que el modelo de 4B
 emita tool-calls válidos de forma fiable, sin depender del reasoning largo.
@@ -8,6 +8,17 @@ llama.cpp. Dame código/flags. NO repitas lo que ya tenemos (sección 2).
 ## 0. Stack
 Gemma 4 E4B-it Q4_K_M GGUF, llama.cpp b9090, `--jinja`, monoslot, 6 GB, voz
 local. Function-calling nativo (`<|tool_call|>`). 65 tools; router da 4-6/turno.
+
+
+## RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4
+El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU
+modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz
+de TODO esto — NO asumir un modelo más grande ni subir de perfil. Ninguna
+solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º
+modelo pesado. Lo que necesite 'inteligencia' extra: preferí CÓDIGO
+DETERMINISTA + el LLM solo para lo conversacional. Cualquier recomendación
+que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una
+alternativa que sí entre.
 
 ## 1. El problema medido
 - Con reasoning ON: tool-call correcto 6/6 en comandos crisp. Con reasoning OFF:

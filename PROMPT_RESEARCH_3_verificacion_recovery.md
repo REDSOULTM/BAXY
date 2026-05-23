@@ -1,4 +1,4 @@
-# Prompt de investigación 3/4 — Verificación de acciones y recuperación de errores del agente
+# Prompt de investigación 3/8 — Verificación de acciones y recuperación de errores del agente
 
 Copiá esto a Claude (research/web). Tema ESPECÍFICO: cómo el agente CONFIRMA que
 una acción de verdad ocurrió, y cómo se RECUPERA cuando una tool falla, sin
@@ -7,6 +7,17 @@ mentirle al usuario ("Listo" cuando no pasó nada). Local, voz, 4B. Fuentes 2025
 ## 0. Stack
 Gemma 4 E4B-it Q4_K_M, llama.cpp b9090, asistente de voz local Windows. 65 tools
 que ACTÚAN sobre el sistema (abrir apps, controlar GUI, mandar mensajes, media).
+
+
+## RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4
+El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU
+modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz
+de TODO esto — NO asumir un modelo más grande ni subir de perfil. Ninguna
+solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º
+modelo pesado. Lo que necesite 'inteligencia' extra: preferí CÓDIGO
+DETERMINISTA + el LLM solo para lo conversacional. Cualquier recomendación
+que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una
+alternativa que sí entre.
 
 ## 1. El problema
 Un asistente que actúa sobre el mundo real debe saber si la acción TUVO efecto:

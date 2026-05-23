@@ -1,4 +1,4 @@
-# Prompt de investigación 2/4 — Memoria, personalización y entity-grounding del asistente
+# Prompt de investigación 2/8 — Memoria, personalización y entity-grounding del asistente
 
 Copiá esto a Claude (research/web). Tema ESPECÍFICO: cómo el asistente APRENDE y
 usa el contexto del usuario (sus apps instaladas, contactos, preferencias, alias)
@@ -8,6 +8,17 @@ para ejecutar comandos con precisión. Local, sin cloud. Fuentes 2025-2026.
 Gemma 4 E4B-it Q4_K_M, llama.cpp b9090, asistente de VOZ local Windows, 100%
 offline. STT=Parakeet. El usuario da comandos hablados con nombres propios
 (apps, contactos, artistas) que el modelo debe resolver a entidades reales.
+
+
+## RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4
+El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU
+modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz
+de TODO esto — NO asumir un modelo más grande ni subir de perfil. Ninguna
+solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º
+modelo pesado. Lo que necesite 'inteligencia' extra: preferí CÓDIGO
+DETERMINISTA + el LLM solo para lo conversacional. Cualquier recomendación
+que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una
+alternativa que sí entre.
 
 ## 1. El problema medido (3 incidentes reales)
 - **WhatsApp al contacto equivocado**: pidió "escríbele a mamá" y fue al grupo
