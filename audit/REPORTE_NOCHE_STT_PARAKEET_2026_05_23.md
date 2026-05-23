@@ -78,8 +78,15 @@ downstream. El plan defiere el fp32 como último recurso y advierte que su
 beneficio no está probado para nombres propios — no lo toqué porque el corrector
 ya da el grueso de la ganancia y fp32 costaría ~2× latencia y ~1.8 GB RAM extra.
 
+Nota de medición justa: el Entity-Recall "estricto" es 81%, pero 2 de los 12
+"fallos" son funcionalmente correctos (Counter-Strike→"Counter-Strike 2",
+títulos multi-palabra). Con matching tolerante a guiones/sub-palabras —que es lo
+que hace el app-resolver downstream— el recall operativo real es **84%**.
+
 **Decisión que te queda a vos:** ¿activar `GEMMA4_STT_ENGINE=parakeet` en prod?
 Yo lo dejé en Whisper por default para no cambiar nada sin tu OK explícito.
+Verifiqué que el path default (Whisper) está intacto: 80/80 tests de voz pasan
+con y sin el flag, y la construcción del pipeline sin la env-var usa Whisper.
 
 ---
 
