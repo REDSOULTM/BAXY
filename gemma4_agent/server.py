@@ -1249,7 +1249,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
                 "server_running": p.server_running,
             }
         except Exception as exc:
-            return {"active": "bal", "error": str(exc)}
+            return {"active": "vram4", "error": str(exc)}
 
     # NOTE: ProfileChange is defined at MODULE level (see its docstring) —
     # a function-local Pydantic model can't be resolved from the stringized

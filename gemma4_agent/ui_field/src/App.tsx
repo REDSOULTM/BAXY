@@ -28,6 +28,7 @@ type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
 export type MicMode = 'listening' | 'ptt' | 'off';
 
 const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', 'standby'];
+const PROFILE_CYCLE = ['vram16', 'vram12', 'vram8', 'vram6', 'vram4', 'vram3', 'standby'];
 
 export default function App() {
   const { clock, date } = useClock();
@@ -251,10 +252,10 @@ export default function App() {
         setOpenPanel('tools');
       } else if (k === 'g' && e.shiftKey) {
         e.preventDefault();
-        // cycle perf -> bal8 -> bal -> light -> stdby -> perf
-        const cycle = ['perf', 'bal8', 'bal', 'light', 'stdby'];
-        const idx = cycle.indexOf(profile);
-        const next = cycle[(idx + 1) % cycle.length] ?? 'bal';
+        // cycle high -> low VRAM using the canonical names accepted by
+        // profiles.py and shown by the chips.
+        const idx = PROFILE_CYCLE.indexOf(profile);
+        const next = PROFILE_CYCLE[(idx + 1) % PROFILE_CYCLE.length] ?? 'vram4';
         setProfile(next);
       }
     };
@@ -362,7 +363,10 @@ export default function App() {
     if (micMode !== 'off') {
       // bring the backend loop up to match the persisted on-state. Don't
       // arm a capture (no triggerAfter) — just enable wake-word + TTS.
-      setMicModeAsync(micMode).finally(() => { voiceBootSettled.current = true; });
+      const id = window.setTimeout(() => {
+        setMicModeAsync(micMode).finally(() => { voiceBootSettled.current = true; });
+      }, 0);
+      return () => window.clearTimeout(id);
     } else {
       // user chose 'off' — nothing to start; let the sync act normally.
       voiceBootSettled.current = true;

@@ -560,6 +560,13 @@ body {
   line-height: 1.45; text-wrap: pretty;
   padding-left: 0;
 }
+.activity-empty {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--t-muted);
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+}
 .src.tool    { color: var(--tag-tool); }
 .src.you     { color: var(--tag-you); }
 .src.gemma   { color: var(--tag-ai); }

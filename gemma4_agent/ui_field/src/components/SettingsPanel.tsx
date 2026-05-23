@@ -84,9 +84,9 @@ const DEFAULTS: SettingsConfig = {
   inputDevice: '1: Micrófono (3- USB PnP Audio Dev)',
   followUpWindow: 5, followUpClosePhrases: 'gracias\nlisto\nya está\ncancelar', muteTts: false,
   autoSwitch: false, autoSwitchGame: true, autoSwitchGpu: false, autoSwitchRam: false,
-  autoSwitchTo: 'light', autoSwitchBack: 'balanced',
+  autoSwitchTo: 'vram4', autoSwitchBack: 'vram6',
   gameProcesses: 'steam.exe\nRobloxPlayer.exe\njavaw.exe',
-  vramDetected: 16380, recommendedProfile: 'performance',
+  vramDetected: 16380, recommendedProfile: 'vram16',
   factExtraction: false, crossEncoderRerank: true, parallelToolExec: false,
   autoLoadCtx: false, persistentSessions: true, toolTimeline: true,
   summarization: true, tracing: true,
@@ -577,10 +577,11 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
         const vramMb = Math.round((data.gpu_vram_gb ?? 0) * 1024);
         if (vramMb > 0) {
           set('vramDetected')(vramMb);
-          // simple heuristic — matches the legacy GUI's mapping.
-          const rec = vramMb >= 12 * 1024 ? 'performance'
-            : vramMb >= 6 * 1024 ? 'balanced'
-            : 'light';
+          // simple heuristic matching the canonical vramN profiles.
+          const rec = vramMb >= 12 * 1024 ? 'vram16'
+            : vramMb >= 8 * 1024 ? 'vram8'
+            : vramMb >= 6 * 1024 ? 'vram6'
+            : 'vram4';
           set('recommendedProfile')(rec);
         }
       } catch { /* ignore */ }
@@ -590,12 +591,13 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const PROFILES = ['vram3', 'vram4', 'vram6', 'vram8', 'vram12', 'vram16', 'standby'] as const;
   const ROWS = [
-    { row: 'ctx',      perf: '32 768', bal: '16 384', light: '4 096' },
-    { row: 'tools',    perf: '62',     bal: '48',     light: '12' },
-    { row: 'tts',      perf: 'on',     bal: 'on',     light: 'off' },
-    { row: 'wake',     perf: 'on',     bal: 'on',     light: 'on' },
-    { row: 'vram cap', perf: '16 gb',  bal: '10 gb',  light: '3 gb' },
+    { row: 'ctx', values: ['4 096', '8 192', '16 384', '24 576', '32 768', '49 152', 'off'] },
+    { row: 'server', values: ['on', 'on', 'on', 'on', 'on', 'on', 'off'] },
+    { row: 'voice', values: ['on', 'on', 'on', 'on', 'on', 'on', 'off'] },
+    { row: 'vision', values: ['on', 'on', 'on', 'on', 'on', 'on', 'off'] },
+    { row: 'vram cap', values: ['3 gb', '4 gb', '6 gb', '8 gb', '12 gb', '16 gb', '0 gb'] },
   ];
   return (
     <STSection>
@@ -639,7 +641,7 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
 
       <div className="st-sub-head" style={{ marginTop: 18 }}>active profile</div>
       <div className="profile-chips" style={{ marginBottom: 12 }}>
-        {['perf', 'bal', 'light', 'stdby'].map((p) => (
+        {PROFILES.map((p) => (
           <button
             type="button"
             key={p}
@@ -652,15 +654,16 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
       <div className="st-sub-head">profile capabilities</div>
       <table className="st-table">
         <thead>
-          <tr><th></th><th>perf</th><th>bal</th><th>light</th></tr>
+          <tr>
+            <th></th>
+            {PROFILES.map((p) => <th key={p}>{p}</th>)}
+          </tr>
         </thead>
         <tbody>
           {ROWS.map((r) => (
             <tr key={r.row}>
               <td className="row-label">{r.row}</td>
-              <td>{r.perf}</td>
-              <td>{r.bal}</td>
-              <td>{r.light}</td>
+              {r.values.map((v, i) => <td key={`${r.row}-${PROFILES[i]}`}>{v}</td>)}
             </tr>
           ))}
         </tbody>
@@ -737,7 +740,7 @@ function OptimTab({ c, set }: { c: SettingsConfig; set: Setter }) {
       <div className="st-sub-head" style={{ marginTop: 16 }}>llama-server</div>
       <Field
         label="kv cache type"
-        hint="quantizacion del kv cache. util en perfiles light/balanced con context grandes."
+        hint="quantizacion del kv cache. util en perfiles vram4/vram6 con context grandes."
       >
         <Select
           value={c.kvType}

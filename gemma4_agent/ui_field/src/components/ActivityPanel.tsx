@@ -2,14 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ActivityEntry, SourceTag } from '../types';
 import type { SessionInfo, SurfacesCount } from '../hooks/useEventStream';
 
-const INITIAL_ENTRIES: ActivityEntry[] = [
-  { id: 'b1', src: 'BOOT',    msg: 'weights resident · mapped from disk.',                ts: '00:00:01' },
-  { id: 'b2', src: 'SYSTEM',  msg: 'llama-server reachable · tools loaded.',              ts: '00:00:03' },
-  { id: 'b3', src: 'CONTEXT', msg: 'session resumed · prior history available in scope.', ts: '00:00:04' },
-  { id: 'b4', src: 'MEMORY',  msg: 'pinned traces recalled into focus tier.',             ts: '00:00:05' },
-  { id: 'b5', src: 'GEMMA',   msg: 'ready. field is idle. waiting for your voice or text.', ts: '00:00:06' },
-];
-
 type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
 
 interface SurfaceCard {
@@ -56,10 +48,7 @@ export function ActivityPanel({
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
 
-  const ordered = useMemo(
-    () => (entries.length > 0 ? entries : [...INITIAL_ENTRIES].reverse()),
-    [entries],
-  );
+  const ordered = useMemo(() => entries, [entries]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -69,8 +58,8 @@ export function ActivityPanel({
   // to the polled snapshot for steady-state counts.
   const live = surfaces ?? polled;
   const surfaceCount = (id: SurfaceId): string => live ? String(live[id]) : '—';
-  const entryCount = entries.length > 0 ? entries.length : INITIAL_ENTRIES.length;
-  const sessionId = session?.id ?? '847';
+  const entryCount = entries.length;
+  const sessionId = session?.id ?? 'none';
 
   return (
     <>
@@ -86,7 +75,11 @@ export function ActivityPanel({
         aria-live="polite"
         aria-atomic="false"
       >
-        {ordered.map((e) => <ActivityRow key={e.id} entry={e} />)}
+        {ordered.length > 0 ? (
+          ordered.map((e) => <ActivityRow key={e.id} entry={e} />)
+        ) : (
+          <div className="activity-empty">waiting for live activity</div>
+        )}
       </div>
 
       <div className="surfaces-wrap">
