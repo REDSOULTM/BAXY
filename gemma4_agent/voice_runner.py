@@ -189,10 +189,55 @@ class VoiceRunner:
         if cb is None:
             logger.warning("voice command received but no on_command registered")
             return
+        # TWO-TRACK TTS FILLER (informe thinking-latencia 2026-05-23): hablar una
+        # confirmación corta YA, mientras el LLM piensa+ejecuta (~3-7s). Baja la
+        # latencia PERCIBIDA 1-2s sin tocar el modelo. Patrón Vapi/Stream/Sierra.
+        # Solo para COMANDOS de acción (no preguntas info, que se responden rápido
+        # y un filler sonaría raro). Gate GEMMA4_VOICE_FILLER=0 lo desactiva.
+        self._maybe_speak_filler(text)
         try:
             cb(text)
         except Exception as exc:
             logger.exception("on_command callback raised: %s", exc)
+
+    def _maybe_speak_filler(self, text: str) -> None:
+        """Emite un filler corto por TTS si el comando es de ACCIÓN (no pregunta).
+        Best-effort: cualquier fallo es silencioso (no debe romper el turno)."""
+        import os
+        if os.environ.get("GEMMA4_VOICE_FILLER", "1").strip().lower() in {
+                "0", "false", "no", "off"}:
+            return
+        if self._tts is None or not self._tts.is_loaded():
+            return
+        try:
+            filler = self._pick_filler(text)
+            if filler:
+                self._tts.feed_text(filler)
+                self._tts.flush()   # forzar que el filler salga YA
+                logger.info("voice filler: %r", filler)
+        except Exception as exc:
+            logger.debug("filler skipped: %s", exc)
+
+    @staticmethod
+    def _pick_filler(text: str) -> str | None:
+        """Filler natural según el tipo de comando. None si es pregunta info
+        (esas se responden rápido y un filler molesta) o smalltalk."""
+        try:
+            from .intent_router import is_question_lexical
+            is_q, _ = is_question_lexical(text)
+            if is_q:
+                return None  # pregunta info: no filler
+        except Exception:
+            pass
+        low = f" {text.lower().strip()} "
+        # smalltalk / muy corto -> sin filler (respuesta inmediata)
+        if len(text.split()) <= 1:
+            return None
+        # filler GENÉRICO (no intent-aware: decir "abriendo Steam" arriesga
+        # equivocarse si el LLM hace otra cosa; un genérico natural nunca miente).
+        # Variar evita que suene robótico en uso repetido.
+        import random
+        return random.choice(("Dame un segundo.", "Voy con eso.", "Enseguida."))
 
     def trigger_manual(self) -> None:
         """Push-to-talk: simulate a wake. NOT YET IMPLEMENTED in v2 — the
