@@ -38,6 +38,50 @@ DANGEROUS_TOOLS_NEVER_INHERIT = frozenset({
 })
 
 
+# CORE-SET para PREFIJO ESTABLE del prompt (latencia, medido 2026-05-23).
+# El system prompt + tool-schemas se filtran al subset que el router elige por
+# turno; como el subset cambia con la query, el INICIO del prompt cambia y ROMPE
+# el prefix-cache de llama.cpp -> cada turno reprocesa ~1100ms en vez de ~100ms
+# (medido: prefijo estable reusado = 101ms vs prefijo cambiado = 1036ms, 10x).
+# Fix: anteponer SIEMPRE un core-set fijo (en orden fijo) a los picks del router,
+# así el prefijo (reglas+schemas del core) es idéntico turno-a-turno y el cache
+# lo reusa. Los picks extra del router van DESPUÉS (siguen disponibles para el
+# modelo). El orden es FIJO (no sorted del subset variable) — esa es la clave.
+# Grounding: los 15 tools más llamados en logs reales (#847) + verify/filesystem
+# de infraestructura. ~4956 tokens estables, deja ~11K de 16K ctx para historial.
+# Gate: GEMMA4_STABLE_TOOL_PREFIX (default ON; =0 vuelve al comportamiento viejo).
+_CACHE_CORE_SET: tuple[str, ...] = (
+    "app", "window", "gui", "media", "steam", "web", "browser",
+    "whatsapp", "contacts", "audio", "system", "office", "filesystem",
+    "state", "verify", "session", "memory",
+)
+
+
+def _stabilize_tool_order(picks: list[str]) -> list[str]:
+    """Devuelve core-set (orden FIJO) + picks del router que no estén en core.
+
+    Estabiliza el prefijo del prompt para maximizar el prefix-cache. El core va
+    primero SIEMPRE en el mismo orden (de ahí el cache-hit); los extras del
+    router quedan al final (varían, pero ya no rompen el prefijo del core)."""
+    import os as _os
+    # DEFAULT OFF (medido 2026-05-23): el core-set fijo estabiliza el prefijo y
+    # baja el prefill en AISLADO (1126->100ms), PERO en el smoke E2E real salió
+    # ~2x MÁS LENTO (audio 3.4s OFF vs 6.5s ON): el prompt más grande (17 tools
+    # fijos vs 4-6 del router) infla ~3000 tok/turno y el historial creciente
+    # rompe el cache en la cola igual, así que el ahorro no compensa. El router
+    # ya da subsets chicos que se cachean cuando se repiten. Se deja como opt-in
+    # (=1) para experimentar, pero NO es la solución de latencia. (CLAUDE.md #3:
+    # medir, no celebrar — la teoría del prefix-cache no sobrevivió al E2E real.)
+    if (_os.environ.get("GEMMA4_STABLE_TOOL_PREFIX", "0").strip().lower()
+            not in {"1", "true", "yes", "on"}):
+        return picks
+    if not picks:
+        return picks  # smalltalk / no-tools: no inflar con el core-set
+    seen = set(_CACHE_CORE_SET)
+    extras = [t for t in picks if t not in seen]
+    return list(_CACHE_CORE_SET) + extras
+
+
 # Sprint 5b: CORE_PROMPT + TOOL_RULES + build_system_prompt + SYSTEM_PROMPT
 # moved to :mod:`.agent_prompt`. Re-export keeps existing callers (tests,
 # ui/, server.py /agent/system_prompt endpoint, mcp_server) working.
@@ -486,10 +530,17 @@ class Gemma4Agent:
                 # Configurable via env; default 30s per step.
                 import os as _os
                 step_timeout = float(_os.environ.get("GEMMA4_PHRASE_STEP_TIMEOUT_S") or 30)
+                # "Frase sola": el usuario dijo esencialmente la palabra-frase
+                # y nada más (ej. "tiempo", "tiempo."). En ese caso ejecutamos
+                # la rutina y cortamos el turno sin pasar por el LLM. Si la
+                # frase aparece DENTRO de una oración más larga, el turno sigue
+                # normal (el LLM responde con contexto).
+                _input_core = _strip_for_phrase_only(folded_input)
                 for routine in active_phrase_triggers(self.state):
                     needle = _fold_match(str(routine.get("phrase") or ""))
                     if not needle or needle not in folded_input:
                         continue
+                    phrase_only = _strip_for_phrase_only(needle) == _input_core
                     # Extra safety for destructive routines: do NOT fire if the
                     # user message looks like a question or hypothetical that
                     # merely *mentions* the phrase. We check the steps for a
@@ -547,6 +598,7 @@ class Gemma4Agent:
                         "label": routine.get("label"),
                         "phrase": routine.get("phrase"),
                         "results": step_results,
+                        "phrase_only": phrase_only,
                     }
                     self._phrase_fires.append(fire)
                     self.trace.event(turn_id, "phrase_trigger_fired",
@@ -557,6 +609,31 @@ class Gemma4Agent:
                                      timeouts=sum(1 for r in step_results if r.get("timed_out")))
             except Exception as exc:
                 self.trace.event(turn_id, "phrase_trigger_error", error=str(exc))
+
+        # Frase-sola → ejecutar y CORTAR el turno sin LLM. Cuando el usuario
+        # dijo solo la palabra-frase (no una oración que la contiene), la
+        # rutina ya corrió arriba; respondemos con un mensaje fijo y nos
+        # ahorramos la llamada al modelo (latencia ~0 + sin contexto inyectado).
+        _phrase_only_fires = [f for f in self._phrase_fires if f.get("phrase_only")]
+        if _phrase_only_fires:
+            reply = _format_phrase_only_reply(_phrase_only_fires)
+            self.trace.event(turn_id, "phrase_trigger_shortcircuit",
+                             fires=len(_phrase_only_fires),
+                             ok=sum(1 for f in _phrase_only_fires if _phrase_fire_ok(f)),
+                             failed=sum(1 for f in _phrase_only_fires if not _phrase_fire_ok(f)),
+                             labels=[f.get("label") or f.get("phrase") for f in _phrase_only_fires])
+            # Registramos el turno en el historial como cualquier otro para que
+            # una continuación ("subelo más") tenga contexto coherente.
+            self._compact_completed_history()
+            self.history.append({"role": "user", "content": _compact_live_content(content)})
+            self.history.append({"role": "assistant", "content": reply})
+            # Mismos invariantes de cierre de turno que el camino normal: señal
+            # 'final' a la UI/voz, timestamp para el TTL de inherit-tools, y
+            # limpiar las tools heredadas (este turno no ejecutó tools del LLM).
+            _progress(progress, "final", tools=0, mission=None)
+            self._last_turn_ts = time.time()
+            self._remember_executed_tools([])
+            return AgentReply(content=reply, tool_events=[], mission=None)
 
         # Semantic memory: recall similar past turns. Hint-only, never blocks.
         self._recent_recalls = []
@@ -834,6 +911,18 @@ class Gemma4Agent:
         # 3.2% cache hit rate over 5 days of use (vs 20% kill threshold per
         # 08_findings.md §2.10) for a 280MB mDeBERTa model + worker thread.
         # The keyword planner + semantic_router fallback remain.
+        #
+        # PREFIJO ESTABLE (latencia): anteponer el core-set fijo a los picks del
+        # router para que el prefijo del prompt (reglas+schemas del core) sea
+        # idéntico turno-a-turno y el prefix-cache de llama.cpp lo reuse (~100ms
+        # vs ~1100ms reprocesando). Los picks extra del router quedan al final.
+        # Gate GEMMA4_STABLE_TOOL_PREFIX=0 revierte. Ver _CACHE_CORE_SET.
+        _router_picks = list(selected_tool_names)
+        selected_tool_names = _stabilize_tool_order(selected_tool_names)
+        if selected_tool_names != _router_picks:
+            self.trace.event(turn_id, "tool_prefix_stabilized",
+                             router_picks=_router_picks,
+                             stabilized=selected_tool_names)
         selected_schemas = self.tools.schemas_for_names(selected_tool_names)
         self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback, persona=self._persona.name)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
@@ -1167,10 +1256,22 @@ class Gemma4Agent:
                     # can calibrate the leak patterns against what THIS Gemma
                     # actually emits (vs guessing the format). Pure telemetry;
                     # no behaviour change. Grep traces for "rescue_missed".
-                    self.trace.event(
-                        turn_id, "rescue_missed",
-                        raw_content=(assistant_content or "")[:400],
-                    )
+                    #
+                    # 2026-05-22: gate it on a DOMAIN tool actually being in the
+                    # subset. The leak we calibrate against only exists when an
+                    # action was expected; on pure-chat turns (no domain tool
+                    # offered, e.g. "hola") there is nothing to rescue, so the
+                    # event fired on ~49/50 turns and drowned real signals in the
+                    # trace. No behaviour change — only stops logging noise.
+                    try:
+                        _has_domain = bool(_domain_subset(list(selected_tool_names)))
+                    except Exception:
+                        _has_domain = True  # fail open: keep the telemetry
+                    if _has_domain:
+                        self.trace.event(
+                            turn_id, "rescue_missed",
+                            raw_content=(assistant_content or "")[:400],
+                        )
 
             # FORCED tool-call retry (2026-05-20, research-backed). If the
             # router put a DOMAIN tool in the subset but the model emitted no
@@ -1208,7 +1309,47 @@ class Gemma4Agent:
                 # (forced_tool_retry_empty). El forced-retry sigue para turnos de
                 # ACCIÓN (fast_action/quick_action) con prosa-sin-llamada.
                 _info_answered = (mode.name == "fast_info") and _answered_in_prose
-                _skip_forced = (_only_info_tools and _answered_in_prose) or _info_answered
+                # SEMANTIC-FALLBACK guard (2026-05-22, mined from today's traces).
+                # When the router had LOW confidence it grabs a generic grab-bag
+                # subset (memory/web/smart_home/terminal...) and flags it
+                # `semantic_fallback`. On smalltalk / roleplay / noise ("Salud.",
+                # "Amarillo", "fgdfgfghjhgjk") the model then answers/clarifies in
+                # prose — correct — but a domain tool is in the subset so the
+                # forced retry fired anyway, ran a SECOND full LLM pass with
+                # tool_choice=required, and the model (rightly) refused →
+                # forced_tool_retry_empty. MEASURED today: 6/8 forced retries came
+                # back empty, avg 23.4s/turn wasted (max 38s for a Batman roleplay).
+                # A fallback subset is a GUESS, not a routing decision; forcing a
+                # tool on a guess is the failure. So: if the subset is a semantic
+                # fallback AND the model answered in prose WITHOUT claiming/
+                # promising an action, skip the retry. We KEEP the retry when the
+                # reply claims/promises an action (reply_claims_action) — that's a
+                # genuinely skipped action and exactly what the retry is for.
+                # NB: we use a non-empty (>=3 chars) bar here, not the >=12
+                # _answered_in_prose bar — short smalltalk replies ("Hola.",
+                # "Salud.") are valid chat answers to a low-confidence fallback
+                # turn, and forcing a tool on them is the wasted pass we measured.
+                from .agent_guards import reply_claims_action
+                _fallback_reply = (assistant_content or "").strip()
+                _fallback_chat = (
+                    semantic_fallback
+                    and len(_fallback_reply) >= 3
+                    and not reply_claims_action(_fallback_reply)
+                )
+                _skip_forced = (
+                    (_only_info_tools and _answered_in_prose)
+                    or _info_answered
+                    or _fallback_chat
+                )
+                if _domain_now and _fallback_chat:
+                    # Telemetry only: count how often the fallback-chat guard
+                    # spares a wasted 2nd LLM pass. Grep traces for this kind to
+                    # measure the latency win over time. No behaviour beyond skip.
+                    self.trace.event(
+                        turn_id, "forced_retry_skipped_fallback_chat",
+                        domain_subset=_domain_now,
+                        reply=(assistant_content or "")[:120],
+                    )
                 if _domain_now and not _skip_forced:
                     self._forced_tool_retry_done = True  # one per turn
                     self.trace.event(
@@ -1572,7 +1713,7 @@ class Gemma4Agent:
 
             self.history.append(msg)
 
-            image_results: list[tuple[Path, dict[str, Any]]] = []
+            image_results: list[tuple[Path, dict[str, Any], str]] = []
             subset_set = set(selected_tool_names)
 
             # Phase 1: parse + classify all calls (no execution yet).
@@ -1786,9 +1927,28 @@ class Gemma4Agent:
 
                 image_path = result.get("image_path")
                 if image_path:
-                    image_results.append((Path(str(image_path)), result))
+                    image_results.append((Path(str(image_path)), result, name))
 
-            for image_path, result in image_results:
+            for image_path, result, _img_tool in image_results:
+                # Only feed the image to the LLM when the turn is genuinely
+                # VISUAL — i.e. a vision mode, or the image came from a
+                # vision/screenshot tool whose deliverable IS the picture.
+                #
+                # Regresión 2026-05-22 (minada de traces): action tools like
+                # `media`/`browser` (play music/video) attach a self-VERIFICATION
+                # screenshot (`screenshot is provided for visual verification`,
+                # a 3840x1944 / 1.7 MB capture). That image is for the verifier,
+                # not for the reply. Injecting it forced the follow-up reply pass
+                # to the vision preset; when the running server didn't advertise
+                # <profile>-vision the image landed on -text → HTTP 500 "image
+                # input is not supported". A "Listo, abrí YouTube" confirmation
+                # never needs to SEE the screenshot — so don't inject it.
+                if not self._image_is_for_llm(mode, _img_tool, result):
+                    self.trace.event(
+                        turn_id, "tool_image_not_injected",
+                        tool=_img_tool, reason="action_self_verification_screenshot",
+                    )
+                    continue
                 _progress(progress, "image_injected", path=str(image_path))
                 self._inject_tool_image(image_path, result)
 
@@ -1944,6 +2104,29 @@ class Gemma4Agent:
             pass
         # Fall back to whatever was resolved at turn start.
         return getattr(self, "_router_model", None)
+
+    # Tools whose DELIVERABLE is the picture itself — a screenshot/visual read
+    # the user asked for. Their image must reach the LLM. Everything else that
+    # happens to carry an `image_path` (media/browser play, app open, etc.)
+    # attached it as VERIFICATION evidence for the verifier, not as LLM input.
+    _VISUAL_DELIVERABLE_TOOLS = frozenset({"gui", "vision", "uia", "verify"})
+    # Result.action values that mean "I captured an image on purpose".
+    _VISUAL_ACTIONS = ("screenshot", "capture", "ocr", "read_screen", "describe")
+
+    def _image_is_for_llm(
+        self, mode: "AgentMode", tool_name: str, result: dict[str, Any],
+    ) -> bool:
+        """Whether a tool-produced image should be fed to the LLM this turn.
+
+        True for genuine vision turns / visual-deliverable tools; False for an
+        action tool's self-verification screenshot (see the injection site for
+        the 2026-05-22 regression this prevents)."""
+        if getattr(mode, "name", "") in ("vision_action", "audio_mode"):
+            return True
+        if tool_name in self._VISUAL_DELIVERABLE_TOOLS:
+            return True
+        action = str(result.get("action") or "").casefold()
+        return any(tok in action for tok in self._VISUAL_ACTIONS)
 
     def _inject_tool_image(self, path: Path, result: dict[str, Any]) -> None:
         if not path.exists():
@@ -2137,13 +2320,19 @@ class Gemma4Agent:
             "Devuelve solo el resumen, sin titulos.\n\n"
             f"CONVERSACION:\n{rendered}\n\nRESUMEN:"
         )
+        _summ_msgs = [{"role": "user", "content": prompt}]
         try:
             resp = self.client.chat(
-                [{"role": "user", "content": prompt}],
+                _summ_msgs,
                 tools=None,
                 enable_thinking=False,
                 parallel_tool_calls=False,
                 max_tokens=400,
+                # Router mode: must name a live preset. Without this the client
+                # defaults to the dead alias "gemma-4" and the router-server
+                # 400s ("model 'gemma-4' not found"), so summarization silently
+                # fell back to plain truncation. Text-only prompt → text preset.
+                model=self._router_model_for(_summ_msgs),
                 timeout_s=60.0,
             )
             choices = resp.get("choices") or []
@@ -2360,6 +2549,66 @@ def _fold_match(text: str) -> str:
     import unicodedata
     folded = unicodedata.normalize("NFKD", text.casefold())
     return "".join(ch for ch in folded if not unicodedata.combining(ch))
+
+
+def _strip_for_phrase_only(text: str) -> str:
+    """Núcleo comparable para decidir "el usuario dijo SOLO la frase".
+
+    Quita puntuación de borde y colapsa espacios, sobre texto ya plegado por
+    :func:`_fold_match`. Así "tiempo", "tiempo.", "  tiempo  " y "¿tiempo?"
+    colapsan al mismo núcleo, pero "que tiempo hace" NO (tiene más palabras).
+    """
+    import re
+    core = re.sub(r"[^\w\s]", " ", text)
+    return re.sub(r"\s+", " ", core).strip()
+
+
+def _phrase_fire_ok(fire: dict[str, Any]) -> bool:
+    """¿La rutina disparada por frase corrió TODOS sus pasos con éxito?
+
+    Honestidad (CLAUDE.md #3 + invariante "no fingir éxito"): un paso con
+    ok=False, timeout o excepción significa que la rutina NO se completó —
+    el mensaje al usuario debe decirlo, no afirmar "Se ejecutó". Una rutina
+    sin pasos (results vacío) se considera fallida (no hizo nada).
+    """
+    results = fire.get("results") or []
+    if not results:
+        return False
+    return all(bool(r.get("ok")) for r in results)
+
+
+def _format_phrase_only_reply(fires: list[dict[str, Any]]) -> str:
+    """Mensaje de confirmación para rutinas disparadas por frase-sola.
+
+    Determinista, en español, breve para voz. Usa el label visible (cae a la
+    frase). Es HONESTO: separa las rutinas que corrieron OK de las que
+    fallaron, para no decir "Se ejecutó" cuando un paso falló (p. ej. una
+    rutina que apunta a una acción inexistente).
+    """
+    def _name(f):
+        return str(f.get("label") or f.get("phrase") or "").strip()
+
+    ok = [_name(f) for f in fires if _phrase_fire_ok(f) and _name(f)]
+    failed = [_name(f) for f in fires if not _phrase_fire_ok(f) and _name(f)]
+
+    parts: list[str] = []
+    if ok:
+        if len(ok) == 1:
+            parts.append(f'Se ejecutó tu rutina "{ok[0]}".')
+        else:
+            parts.append("Se ejecutaron tus rutinas "
+                         + ", ".join(f'"{n}"' for n in ok) + ".")
+    if failed:
+        if len(failed) == 1:
+            parts.append(f'No pude completar tu rutina "{failed[0]}" '
+                         "(revisá sus pasos en Triggers).")
+        else:
+            parts.append("No pude completar las rutinas "
+                         + ", ".join(f'"{n}"' for n in failed)
+                         + " (revisá sus pasos en Triggers).")
+    if not parts:
+        return "Intenté ejecutar tu rutina, pero no pude completarla."
+    return " ".join(parts)
 
 
 def _is_unverified_result(result: dict[str, Any]) -> bool:
