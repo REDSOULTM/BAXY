@@ -36,3 +36,17 @@ Mayor ROI: ESTABILIZAR el prefijo del prompt. Arquitectura:
   - Extras dinámicos del router APPEND al final (no rompen el prefijo).
   - Resultado esperado: la mayoría de turnos pagan ~100ms de prefill (no ~1100ms).
 NO tocar -ub (no rinde en GPU). slot-save-path/keep-alive: menor ROI, opcional.
+
+---
+## D-flags: --ctx-checkpoints con swa-full — INFORME CONTRADICHO por el log (2026-05-23)
+
+El informe 1 afirmó que --ctx-checkpoints es INOPERANTE con --swa-full (PR #15293).
+PERO el log real (llama-server.err.log, build 9090) muestra lo CONTRARIO:
+  "created context checkpoint 1 of 1 ... size = 40.012 MiB"
+  "Checking checkpoint with [2850,3873] against 0..."
+  "erased invalidated context checkpoint ... n_swa = 512"
+-> Los checkpoints SÍ se crean/usan (40 MiB/turno), y n_swa=512 (no 1024 como
+   decía el informe para Gemma 4). El informe se equivocó en 2 puntos verificables.
+DECISIÓN: NO tocar --ctx-checkpoints a ciegas (ya falló el -ub del mismo informe).
+Quitarlo CAMBIARÍA el comportamiento, no es no-op. Requiere A/B dedicado en server
+de prueba antes de tocar prod. El sistema funciona (turno mediano 2s); riesgo > ROI.

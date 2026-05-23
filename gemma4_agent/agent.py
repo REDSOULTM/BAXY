@@ -1974,6 +1974,20 @@ class Gemma4Agent:
                 })
                 self.trace.event(turn_id, "unverified_intermediate_warning", tools=unverified_in_batch)
 
+            # CHAINING NUDGE (2026-05-23, Problema B): un tool de BÚSQUEDA/LISTADO
+            # (filesystem.search, local_search, ...) que devuelve ITEMS NO es el
+            # final del turno — el usuario casi siempre quiere ALGO con el primer
+            # resultado (abrir/reproducir/leer). Gemma E4B (4B) tiende a parar ahí
+            # ("ya busqué, listo") sin encadenar el segundo paso. Bug sesión #847:
+            # filesystem.search encontró el .docx pero NUNCA encadenó office.open.
+            # Inyectamos un nudge que lo empuja a usar el resultado. Solo cuando:
+            # la búsqueda fue EXITOSA y trajo items (si vino vacía, el honesty
+            # guard de arriba ya maneja el "no encontré nada").
+            chain_hint = self._chaining_nudge(raw_tool_calls, events)
+            if chain_hint:
+                self.history.append({"role": "user", "content": chain_hint})
+                self.trace.event(turn_id, "chaining_nudge_injected", hint=chain_hint[:120])
+
             # Loop detector check: si critical, abort el outer for y produci un
             # reply honesto. Si warning, inyecta el mensaje al historial para que
             # el LLM lo vea en el proximo client.chat() y corrija solo.
@@ -2112,6 +2126,47 @@ class Gemma4Agent:
     _VISUAL_DELIVERABLE_TOOLS = frozenset({"gui", "vision", "uia", "verify"})
     # Result.action values that mean "I captured an image on purpose".
     _VISUAL_ACTIONS = ("screenshot", "capture", "ocr", "read_screen", "describe")
+
+    # Tools de BÚSQUEDA/LISTADO cuyo resultado suele ser un PASO INTERMEDIO
+    # (el usuario quiere algo CON el resultado: abrir/reproducir/leer).
+    _SEARCH_LIKE_TOOLS = frozenset({
+        "filesystem", "local_search", "photo_library", "web", "browser_real",
+    })
+
+    def _chaining_nudge(
+        self, raw_tool_calls: list[dict[str, Any]], events: list[Any],
+    ) -> str | None:
+        """Devuelve un nudge si la última batch fue una BÚSQUEDA exitosa con
+        items (paso intermedio que el modelo chico tiende a no encadenar).
+
+        None si no aplica (no fue búsqueda, o vino vacía -> lo maneja el honesty
+        guard). Empuja a Gemma a usar el primer resultado para el segundo paso."""
+        if not raw_tool_calls:
+            return None
+        batch_evs = events[-len(raw_tool_calls):] if events else []
+        for raw_call, ev in zip(raw_tool_calls, batch_evs):
+            name = (raw_call.get("function") or {}).get("name", "")
+            if name not in self._SEARCH_LIKE_TOOLS:
+                continue
+            res = getattr(ev, "result", None)
+            if not isinstance(res, dict) or not res.get("ok"):
+                continue
+            action = str(res.get("action") or "").casefold()
+            if "search" not in action and "list" not in action and "find" not in action:
+                continue
+            # ¿trajo items? (paths/matches/results/files no vacíos)
+            items = (res.get("matches") or res.get("paths") or res.get("results")
+                     or res.get("files") or res.get("items"))
+            if not items:
+                continue  # vacío -> honesty guard responde "no encontré nada"
+            return (
+                "[system note] La búsqueda encontró resultados. Si la tarea del "
+                "usuario requería un SEGUNDO paso con el resultado (abrir, "
+                "reproducir, leer, mostrar), EJECUTALO ahora con la siguiente "
+                "tool-call usando el primer resultado. No te detengas en la "
+                "búsqueda si el usuario pidió una acción sobre lo encontrado."
+            )
+        return None
 
     def _image_is_for_llm(
         self, mode: "AgentMode", tool_name: str, result: dict[str, Any],
