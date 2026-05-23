@@ -242,3 +242,14 @@ CONCLUSIÓN: el corrector sobre greedy DOMINA. Los hotwords sobre-sesgan (vuelve
 incorrectas salidas greedy que estaban bien), cancelando sus rescates, y suman
 ~25ms. **Decisión: producción = Parakeet greedy + corrector. NO hotwords.**
 Coincide con la apuesta principal del plan (rescate post-hoc > trucos de decoding).
+
+## UPDATE 6 (2026-05-23) — Etapa 3 (slot re-transcription) PROBADA y NO IMPLEMENTADA
+
+Probé hotwords agresivos (score 2.5/3.5/5.0) sobre los 6 residuales severos:
+- score 2.5: rescata 2/6 (gimp, reddit); score 3.5: 1/6; score 5.0: 0/6 (basura
+  "Red","Edg"). chrome→chrom, edge→echo, zoom→su NUNCA recuperan.
+CONCLUSIÓN: las fusiones residuales son límite ACÚSTICO/encoder (Parakeet no
+capturó esos fonemas del audio), no rescatables por decoding. Etapa 3 daría ≤2
+rescates inestables a cambio de latencia + riesgo de degradación catastrófica.
+NO se implementa. El corrector @81% es el operating point correcto. Coincide con
+la predicción del plan (límite estructural del encoder de 600M).

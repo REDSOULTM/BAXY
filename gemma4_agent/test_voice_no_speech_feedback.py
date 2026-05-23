@@ -19,7 +19,7 @@ class _StubSTT:
     def __init__(self, text):
         self._text = text
 
-    def transcribe(self, audio, initial_prompt=None, language=None):
+    def transcribe(self, audio, initial_prompt=None, language=None, hotwords=None):
         return self._text
 
 
@@ -39,6 +39,7 @@ def _make_pipeline(stt_text, capture_audio):
     p._stt = _StubSTT(stt_text)
     p._corrector = _StubCorrector()
     p._initial_prompt = ""
+    p._hotwords = ""  # _finish_capture pasa hotwords a transcribe (igual que prod)
     from gemma4_agent.voice.lang_profiles import get_profile
     p._lang_profile = get_profile("es")
     p._cooldown_until = 0.0
