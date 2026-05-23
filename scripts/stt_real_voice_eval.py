@@ -193,6 +193,8 @@ def main() -> int:
     ap.add_argument("--threshold", type=int, default=None,
                      help="override umbral de texto del corrector")
     ap.add_argument("--limit", type=int, default=0, help="limitar N clips por fuente (rápido)")
+    ap.add_argument("--discovery", action="store_true",
+                     help="inventario con apps instaladas (realista en prod)")
     args = ap.parse_args()
 
     engines = [e.strip() for e in args.engines.split(",") if e.strip()]
@@ -249,14 +251,14 @@ def main() -> int:
     if "parakeet_corr" in engines:
         from gemma4_agent.voice.corrector import FuzzyCorrector
         from gemma4_agent.voice.inventory import get_inventory
-        inv = get_inventory(include_discovery=False)
+        inv = get_inventory(include_discovery=args.discovery)
         kw = {"threshold": args.threshold} if args.threshold else {}
         corr = FuzzyCorrector(inv, **kw)
     if "whisper" in engines:
         print("Cargando Whisper-small...", flush=True)
         from gemma4_agent.voice.stt import STT
         from gemma4_agent.voice.inventory import get_inventory, build_initial_prompt, build_hotwords
-        inv = get_inventory(include_discovery=False)
+        inv = get_inventory(include_discovery=args.discovery)
         _wprompt = build_initial_prompt(inv, lang="es")
         _whot = build_hotwords(inv)
         t0 = time.time(); stt_whisper = STT(); stt_whisper.load()

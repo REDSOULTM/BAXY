@@ -40,17 +40,32 @@ STATIC_INVENTORY: dict[str, list[str]] = {
     # Common desktop apps. The dynamic discoverer (future) augments this
     # with the operator's actually-installed apps.
     "apps": [
-        "Chrome", "Firefox", "Edge", "Brave", "Safari",
+        "Chrome", "Firefox", "Edge", "Brave", "Safari", "Opera",
         "Spotify", "Discord", "Telegram", "WhatsApp", "Signal",
-        "Slack", "Zoom", "Teams", "Skype",
-        "Steam", "Epic Games", "Battle.net", "GOG",
+        "Slack", "Zoom", "Teams", "Skype", "Reddit",
+        "Steam", "Epic Games", "Battle.net", "GOG", "EA App", "Ubisoft Connect",
         "Visual Studio Code", "VS Code", "Visual Studio", "PyCharm", "IntelliJ",
         "Notion", "Obsidian", "Notepad", "Sublime Text",
-        "OBS", "OBS Studio", "DaVinci Resolve",
+        "OBS", "OBS Studio", "DaVinci Resolve", "Audacity", "Ableton",
         "YouTube", "Netflix", "Twitch",
         "Disney Plus", "Disney+", "HBO Max", "Max", "Prime Video", "Apple Music",
-        "Counter-Strike 2", "GTA V", "Among Us", "Minecraft",
         "Explorer", "Finder", "Files",
+        # Apps de productividad/creación GLOBALMENTE comunes (universales, no
+        # del operador). Antes faltaban y Parakeet las fusionaba sin target:
+        # gimp->equipe, vlc->blc, reddit->red. El gate de longitud evita que
+        # esta ampliación corrompa habla declarativa. (Etapa 1b, 2026-05-23.)
+        "GIMP", "VLC", "Blender", "Krita", "Photoshop", "Illustrator",
+        "Premiere", "After Effects", "Lightroom",
+        "Word", "Excel", "PowerPoint", "Outlook", "OneNote", "Access",
+        "Thunderbird", "Audible", "Kindle", "Calibre", "qBittorrent",
+        "Figma", "Canva", "Unity", "Unreal Engine",
+        # Juegos populares globales (títulos que un usuario cualquiera diría).
+        "Counter-Strike 2", "Counter-Strike", "GTA V", "Grand Theft Auto",
+        "Among Us", "Minecraft", "Fortnite", "Valorant", "League of Legends",
+        "Dota 2", "Apex Legends", "Overwatch", "Roblox",
+        "Elden Ring", "Cyberpunk 2077", "Cyberpunk", "Hollow Knight",
+        "Stardew Valley", "Baldur's Gate", "Red Dead Redemption",
+        "Marvel Rivals", "ARC Raiders", "Age of Empires",
     ],
     # Common artists / songs the operator references. Operator-extended
     # via voice_inventory.json.
@@ -59,6 +74,14 @@ STATIC_INVENTORY: dict[str, list[str]] = {
         "Queen", "The Beatles", "Pink Floyd", "Coldplay",
         "Los Redonditos de Ricota", "Soda Stereo", "Charly García",
         "Arctic Monkeys", "Radiohead",
+        # Artistas GLOBALMENTE top (Spotify/charts mundiales) — universales, no
+        # del operador. Nombres de pila ingleses cortos que Parakeet fusiona
+        # (billy->billie, dualipa->dua lipa). El gate de longitud los protege.
+        "Billie Eilish", "Dua Lipa", "The Weeknd", "Karol G", "Sabrina Carpenter",
+        "Hozier", "Michael Jackson", "Ariana Grande", "Drake", "Ed Sheeran",
+        "Eminem", "Rihanna", "Beyoncé", "Adele", "Bruno Mars", "Travis Scott",
+        "Shakira", "Daddy Yankee", "Rauw Alejandro", "Feid",
+        "Peso Pluma", "Olivia Rodrigo", "Lady Gaga", "Kanye West", "SZA",
     ],
     "music_songs": [
         "Bohemian Rhapsody", "Stairway to Heaven", "Hotel California",
@@ -158,6 +181,29 @@ def get_inventory(include_discovery: bool = True) -> dict[str, list[str]]:
                 out.append(s)
         merged[k] = out
     return merged
+
+
+def build_hotwords(inv: dict[str, list[str]] | None = None) -> str:
+    """Lista de nombres propios (apps + artistas) separados por espacio para el
+    parámetro `hotwords` de faster-whisper. Sesga el decoder hacia ellos.
+    MEDIDO 2026-05-22: rescata casos que el initial_prompt solo no ("te liera"
+    ->Telegram) sin dañar habla real. Cap a ~40 nombres para no inflar el prompt
+    (hotwords comparte el budget de 224 tokens)."""
+    if inv is None:
+        inv = get_inventory()
+    names: list[str] = []
+    for cat in ("apps", "music_artists"):
+        names.extend(inv.get(cat, []))
+    # Dedup preservando orden, cap conservador.
+    seen, out = set(), []
+    for n in names:
+        k = n.lower()
+        if k not in seen:
+            seen.add(k)
+            out.append(n)
+        if len(out) >= 40:
+            break
+    return " ".join(out)
 
 
 def build_initial_prompt(

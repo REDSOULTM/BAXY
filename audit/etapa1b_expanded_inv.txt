@@ -1,0 +1,92 @@
+Clips: RED=84  TERCEROS=180  motores=['whisper', 'parakeet', 'parakeet_corr']
+
+Cargando Parakeet...
+  Parakeet listo en 1.7s
+Cargando Whisper-small...
+  Whisper listo en 17.5s
+  RED ...20/84
+  RED ...40/84
+  RED ...60/84
+  RED ...80/84
+  TERCEROS ...20/180
+  TERCEROS ...40/180
+  TERCEROS ...60/180
+  TERCEROS ...80/180
+  TERCEROS ...100/180
+  TERCEROS ...120/180
+  TERCEROS ...140/180
+  TERCEROS ...160/180
+  TERCEROS ...180/180
+
+================================================================
+RESULTADOS — VOZ REAL
+================================================================
+
+### RED (n=84)
+  motor                 WER         EntRecall (Wilson 95%)   p50ms
+  whisper            0.9000            45/64=70% [58%,80%]    1593
+  parakeet           0.3352            41/64=64% [52%,75%]      71
+  parakeet_corr      0.2595            52/64=81% [70%,89%]      78
+
+### TERCEROS (n=180)
+  motor                 WER         EntRecall (Wilson 95%)   p50ms
+  whisper            0.0773                              —    1859
+  parakeet           0.0499                              —     238
+  parakeet_corr      0.0499                              —     246
+
+  [RED/whisper] entidades NO recuperadas (19):
+     [twitch] 'abre Twitch' -> 'abre tu shit!'
+     [notion] 'abre Notion' -> 'abre y noten.'
+     [counterstrike] 'lanzá Counter-Strike' -> 'Lanza Counter-Strike 2'
+     [marvel rivals] 'abre Marvel Rivals' -> 'Bruno Mars Rivals!'
+     [hollow knight] 'pon Hollow Knight' -> 'Bonne column night.'
+     [among us] 'abre Among Us' -> '¡Ahora, moncón!'
+     [hbo max] 'pon House of the Dragon en HBO Max' -> 'Pon House of the Dragon en Azure Vellmark.'
+     [karol g] 'pon Karol G' -> 'PON Carodí.'
+     [juan] 'mándale un mensaje a Juan' -> 'manda un mensaje, ajan.'
+     [gimp] 'abre GIMP' -> 'abre y Quimpe.'
+     [vlc] 'abre VLC' -> 'abre Belis!'
+     [outlook] 'abre Outlook' -> 'Ableton'
+     [zoom] 'abre Zoom' -> 'abre y suba.'
+     [red dead redemption] 'pon Red Dead Redemption' -> 'Blender Dead Redemption.'
+     [baldurs gate] "abre Baldur's Gate" -> "abre Baldur's Gate"
+     [elden ring] 'lanzá Elden Ring' -> 'Lanza, El Dendrigg.'
+     [hbo max] 'reproduce The Last of Us en HBO Max' -> 'reproduce de la sofos en la chepionba.'
+     [dua lipa] 'reproduce Dua Lipa' -> 'reproduce Duali.'
+     [hozier] 'reproduce Hozier' -> 'reproduce OBS'
+
+  [RED/parakeet] entidades NO recuperadas (23):
+     [chrome] 'abre Chrome' -> 'Avre crumb.'
+     [counterstrike] 'lanzá Counter-Strike' -> 'Lanza Counter Strike.'
+     [marvel rivals] 'abre Marvel Rivals' -> 'And Marble Rivals.'
+     [hollow knight] 'pon Hollow Knight' -> 'Pun Holong Nike.'
+     [hbo max] 'pon House of the Dragon en HBO Max' -> 'Pun House of the Dragon in HBO Mec.'
+     [bad bunny] 'pon una canción de Bad Bunny' -> 'Pon una canción de Bad Bonnie.'
+     [karol g] 'pon Karol G' -> 'Pon Karolji'
+     [the weeknd] 'reproduce Blinding Lights de The Weeknd' -> 'Reproduce blinding likes de The Weekend.'
+     [gimp] 'abre GIMP' -> 'Abre equipe.'
+     [thunderbird] 'abre Thunderbird' -> 'Abre Thunder Birth.'
+     [vlc] 'abre VLC' -> 'Abre BLC.'
+     [edge] 'abre Edge' -> 'Abre echo.'
+     [outlook] 'abre Outlook' -> 'Abre o'
+     [zoom] 'abre Zoom' -> 'Abre su'
+     [reddit] 'abre Reddit' -> 'Abre red.'
+     [legends] 'lanzá League of Legends' -> 'Lanza League of Layers.'
+     [grand theft auto] 'abre Grand Theft Auto' -> 'Abre gran defoto.'
+     [baldurs gate] "abre Baldur's Gate" -> "Abre Baldur's Gate."
+     [stardew valley] 'abre Stardew Valley' -> 'Abre Star Dieu Valley.'
+     [hbo max] 'reproduce The Last of Us en HBO Max' -> 'Reproduce The Last of Us en H Pombre'
+
+  [RED/parakeet_corr] entidades NO recuperadas (12):
+     [chrome] 'abre Chrome' -> 'abre crumb.'
+     [counterstrike] 'lanzá Counter-Strike' -> 'Lanza Counter-Strike 2'
+     [hollow knight] 'pon Hollow Knight' -> 'Pun Holong Nike.'
+     [hbo max] 'pon House of the Dragon en HBO Max' -> 'Pun House of the Dragon in HBO Mec.'
+     [gimp] 'abre GIMP' -> 'abre equipe.'
+     [edge] 'abre Edge' -> 'abre echo.'
+     [outlook] 'abre Outlook' -> 'abre o'
+     [zoom] 'abre Zoom' -> 'abre su'
+     [reddit] 'abre Reddit' -> 'abre red.'
+     [baldurs gate] "abre Baldur's Gate" -> "abre Baldur's Gate"
+     [hbo max] 'reproduce The Last of Us en HBO Max' -> 'reproduce Teams of Us en H Pombre'
+     [hozier] 'reproduce Hozier' -> 'reproduce o si'
