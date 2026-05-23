@@ -519,13 +519,28 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
 
     @app.get("/voice/inventory")
     def voice_inventory() -> Any:
-        """Lists available TTS voices for the transcript tab.
+        """Lists the active local voice stack for the transcript tab."""
+        # STT (Parakeet) — default engine in voice.pipeline. This does not load
+        # the model; it only checks whether the bundle files are present.
+        try:
+            from .voice.parakeet_stt import DEFAULT_MODEL_DIR
+            parakeet_downloaded = all(
+                (DEFAULT_MODEL_DIR / f).exists()
+                for f in ("encoder.int8.onnx", "decoder.int8.onnx",
+                          "joiner.int8.onnx", "tokens.txt")
+            )
+        except Exception:
+            parakeet_downloaded = False
 
-        Sprint R3.1 clean-slate (2026-05-19): STT and wake catalogs were
-        removed alongside the old pipeline. The new architecture will
-        repopulate this endpoint with its concrete choices when it lands.
-        Until then, only the Piper TTS catalog is reported.
-        """
+        # Wake (LiveKit) — preferred backend in voice.wake, with OWW fallback.
+        try:
+            from .voice.wake import LIVEKIT_MODEL_PATH
+            wake_name = f"LiveKit {LIVEKIT_MODEL_PATH.stem}"
+            wake_downloaded = LIVEKIT_MODEL_PATH.exists()
+        except Exception:
+            wake_name = "LiveKit hey_gemma"
+            wake_downloaded = False
+
         # TTS (Piper) — we control the catalog explicitly in voice/tts.py
         try:
             from .voice.tts import PIPER_VOICE_URLS, voice_files_exist
@@ -540,12 +555,16 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
             })
 
         return {
-            "stt_default": None,
-            "stt": [],
+            "stt_default": "parakeet-tdt-0.6b-v3-int8",
+            "stt": [{
+                "name": "parakeet-tdt-0.6b-v3-int8",
+                "size_label": "sherpa-onnx CPU int8",
+                "downloaded": parakeet_downloaded,
+            }],
             "tts": tts_voices,
-            "wake": {"name": None, "downloaded": False},
+            "wake": {"name": wake_name, "downloaded": wake_downloaded},
             "languages": ["auto", "es", "en", "fr", "pt", "it", "de"],
-            "pipeline_status": "pending_redesign",
+            "pipeline_status": "active",
         }
 
     @app.post("/agent/restart")

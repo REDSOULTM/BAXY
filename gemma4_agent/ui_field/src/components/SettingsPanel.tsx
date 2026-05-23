@@ -1,4 +1,4 @@
-/* SettingsPanel — 11 tabs, persisted to ~/.gemma4/gui.json via PUT /settings.
+/* SettingsPanel — 12 tabs, persisted to ~/.gemma4/gui.json via PUT /settings.
    markup follows prototype/components/settings-panel.jsx 1:1: the chrome is
    the shared Panel (.panel-shroud > .panel.settings-panel) with .settings-tabs
    header, .settings-body section, .settings-footer; primitives reuse the
@@ -77,11 +77,11 @@ const DEFAULTS: SettingsConfig = {
   repeatPenalty: 1.0, seed: -1, allowCoT: true, parallelTools: true,
   summarizationCooldown: 6, factCooldown: 5,
   phraseTriggerTimeout: 30, llmTimeout: 180, maxExpRecords: 5000,
-  sttProvider: 'whisper.cpp (local)', sttModel: 'ggml-base.bin', sttLanguage: 'auto',
-  ttsProvider: 'piper (local)', ttsVoice: 'es_AR-daniela-high', ttsRate: 1.0,
-  wakeWord: 'gemma', wakeWordEnabled: true,
+  sttProvider: 'sherpa-onnx (local)', sttModel: 'parakeet-tdt-0.6b-v3-int8', sttLanguage: 'auto',
+  ttsProvider: 'piper (local)', ttsVoice: 'es_MX-claude-high', ttsRate: 1.0,
+  wakeWord: 'hey gemma', wakeWordEnabled: true,
   voiceEnabled: true, wakeBeep: true, wakeHudBlink: true, wakeTts: false,
-  inputDevice: '1: Micrófono (3- USB PnP Audio Dev)',
+  inputDevice: 'system default',
   followUpWindow: 5, followUpClosePhrases: 'gracias\nlisto\nya está\ncancelar', muteTts: false,
   autoSwitch: false, autoSwitchGame: true, autoSwitchGpu: false, autoSwitchRam: false,
   autoSwitchTo: 'vram4', autoSwitchBack: 'vram6',
@@ -242,7 +242,7 @@ interface VoiceInventory {
   stt_default?: string;
   stt: STTOption[];
   tts: TTSOption[];
-  wake?: { name: string; downloaded: boolean };
+  wake?: { name?: string | null; downloaded: boolean };
   languages: string[];
 }
 
@@ -455,10 +455,12 @@ function downloadedHint(d: boolean | null | undefined): string | undefined {
 function TranscriptTab({ c, set }: { c: SettingsConfig; set: Setter }) {
   const inv = useVoiceInventory();
 
-  // STT provider is fixed for this build (only faster-whisper.cpp is wired).
+  // STT provider is fixed for this build: Parakeet-TDT-v3 through sherpa-onnx.
+  // Whisper-small remains a backend fallback in voice.pipeline if Parakeet fails
+  // to load, but it is no longer the advertised default.
   // we still surface it as a dropdown so future providers slot in trivially.
   const sttProviderOptions: SelectOption[] = [
-    { value: 'whisper.cpp (local)', label: 'whisper.cpp (local)' },
+    { value: 'sherpa-onnx (local)', label: 'sherpa-onnx (local)', hint: 'Parakeet-TDT-v3 default' },
   ];
   if (c.sttProvider && !sttProviderOptions.some((o) => o.value === c.sttProvider)) {
     sttProviderOptions.unshift({ value: c.sttProvider, label: c.sttProvider, hint: 'custom' });
@@ -501,7 +503,7 @@ function TranscriptTab({ c, set }: { c: SettingsConfig; set: Setter }) {
   }
 
   // wake-word model status — single option from voice/wake.py
-  const wakeHint = inv?.wake
+  const wakeHint = inv?.wake?.name
     ? `${inv.wake.name} · ${inv.wake.downloaded ? 'descargado' : 'no descargado'}`
     : undefined;
 
@@ -530,9 +532,9 @@ function TranscriptTab({ c, set }: { c: SettingsConfig; set: Setter }) {
       <SliderRow label="tts speech rate" value={c.ttsRate} onChange={set('ttsRate')} min={0.5} max={2} step={0.05} fmt={(v) => v.toFixed(2)} />
       <Field
         label="wake words"
-        hint={wakeHint ?? "hardcoded for this build — change voice/wake.py to add more"}
+        hint={wakeHint ?? "LiveKit hey_gemma is the preferred local wake model"}
       >
-        <span className="muted mono">gemma · hey gemma</span>
+        <span className="muted mono">hey gemma</span>
       </Field>
       <Field label=" "><STCheck value={c.wakeWordEnabled} onChange={set('wakeWordEnabled')} label="wake word enabled" hint="passive listening" /></Field>
     </STSection>
@@ -542,10 +544,10 @@ function TranscriptTab({ c, set }: { c: SettingsConfig; set: Setter }) {
 function VoiceTab({ c, set }: { c: SettingsConfig; set: Setter }) {
   return (
     <STSection>
-      <STTip>local voice — vosk (wake) + faster-whisper (stt) + piper (tts). all cpu.</STTip>
+      <STTip>local voice — LiveKit wake + Parakeet STT + Piper TTS. all cpu.</STTip>
       <Field label=" "><STCheck value={c.voiceEnabled} onChange={set('voiceEnabled')} label="enable voice" hint="master switch" /></Field>
-      <Field label="wake words" hint="'gemma' AND 'hey gemma' (both active)">
-        <span className="muted mono">gemma · hey gemma</span>
+      <Field label="wake words" hint="custom LiveKit model; transcript cleanup also strips short wake variants">
+        <span className="muted mono">hey gemma</span>
       </Field>
       <Field label="wake feedback">
         <div className="check-row">

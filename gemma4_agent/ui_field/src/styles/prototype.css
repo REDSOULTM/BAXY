@@ -914,7 +914,7 @@ body {
    SETTINGS PANEL (tabbed)
    ============================================================ */
 .settings-panel {
-  width: 820px;
+  width: 960px;
   max-width: 95vw;
   height: 720px;
   max-height: calc(100vh - 80px);
@@ -962,6 +962,43 @@ body {
   color: var(--carmine);
   border-bottom-color: var(--carmine);
   background: rgba(184, 58, 74, 0.06);
+}
+
+@media (max-width: 640px) {
+  .panel-shroud {
+    justify-content: flex-start;
+    padding: 48px 12px 12px;
+  }
+  .settings-panel {
+    width: calc(100vw - 24px);
+    width: calc(100dvw - 24px);
+    max-width: calc(100vw - 24px);
+    max-width: calc(100dvw - 24px);
+    height: calc(100vh - 24px);
+    max-height: calc(100vh - 24px);
+  }
+  .settings-tabs {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .settings-tab {
+    padding: 9px 10px 7px;
+    font-size: 10px;
+  }
+  .sf {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .sf-label {
+    text-align: left;
+  }
+  .sf-hint {
+    grid-column: 1;
+  }
+  .toggle-list-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 .settings-body {
