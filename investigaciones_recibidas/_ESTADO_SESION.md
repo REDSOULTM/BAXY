@@ -62,6 +62,22 @@ RED: "nada de regex es-only, la app la usa cualquier hablante." → router (inv 
 y splitter (inv 7) migrados a embeddings multilingües + fallback seguro. Ver
 memoria feedback_no_monolingual_regex.
 
+### Sesión 2026-05-24 — auditoría Carter + computer-use (lo nuevo)
+- Auditoría PROFUNDA de Carter OS AI (v1-v5, MISMO stack Gemma4/llama.cpp que
+  nosotros; cita nuestro harness como ground-truth). En docs/auditoria_carter_os/.
+  Resultado: casi todo lo bueno YA lo tenemos o lo iteramos más. Portado lo que
+  valía: no_progress (loop), anti-unverified-claim, normalize_tool_name.
+- REGLA NUEVA en CLAUDE.md (RED lo vetó): el LLM responde, NADA de respuestas
+  enlatadas/hardcoded ni short-circuits canned. Ver feedback_no_canned_replies.
+- Audio DUCKING reconstruido (voz: baja volumen al escuchar; no existía, vivía en
+  PyQt viejo). Self-hearing (TTS no auto-dispara wake) YA existía.
+- Layout de prompt cache-friendly: tool-rules al FINAL (medido: prefijo común
+  28%→75%, ~957 tok menos en cambio de dominio de tools). Gate GEMMA4_PROMPT_LAYOUT_V2.
+- COMPUTER-USE (el grande): RED quiere controlar el PC como humano. Investigado+
+  triangulado, Fase 0 (eval-set GUI) HECHA y MEDIDA. **Ver memoria
+  project_computer_use_roadmap_2026_05_24 + docs/research/agent_arquitectura/
+  computer_use_sintesis_decisional_2026_05_24.md.** PRÓXIMO = Fase 1 verify_post_action.
+
 ### Pendiente menor (no bloqueante)
 - inv 2 capas profundas (sqlite-vec retrieval, salience/TTL) — arquitectura
   grande, no aplicada (el P0 del bug WhatsApp sí).
