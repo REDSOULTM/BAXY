@@ -4557,6 +4557,90 @@ Start-Sleep -Milliseconds 120
         typed["action"] = "type_into"
         return typed
 
+    # Clases/procesos cuyo árbol UIA (AX de Chromium/CEF/Electron) es lazy: el
+    # 1er walk tras enfocar devuelve vacío. Discord/Spotify/Slack/VSCode/Teams
+    # son Electron. Detectamos por CLASE de ventana (estable) y proceso.
+    _CHROMIUM_WIN_CLASSES = ("Chrome_WidgetWin_1", "Chrome_WidgetWin_0",
+                             "Intermediate D3D Window")
+
+    def _foreground_is_chromium(self, window_hint: str = "") -> bool:
+        """¿La ventana objetivo (hint o foreground) es Chromium/CEF/Electron?
+        Por clase de ventana (cross-locale). Sirve para decidir el retry lazy."""
+        try:
+            import win32gui
+            h = 0
+            if window_hint:
+                # buscar una ventana visible cuyo título matchee el hint
+                cands = []
+                def _cb(hh, _):
+                    if win32gui.IsWindowVisible(hh):
+                        t = win32gui.GetWindowText(hh) or ""
+                        if self._match_query(window_hint, t):
+                            cands.append(hh)
+                    return True
+                win32gui.EnumWindows(_cb, None)
+                h = cands[0] if cands else 0
+            if not h:
+                h = win32gui.GetForegroundWindow()
+            if not h:
+                return False
+            return (win32gui.GetClassName(h) or "") in self._CHROMIUM_WIN_CLASSES
+        except Exception:
+            return False
+
+    def _click_button_via_ocr(self, label: str, args: dict[str, Any]) -> dict[str, Any] | None:
+        """FALLBACK OCR del macro click_button: screenshot -> ocr_find_text(label)
+        -> click del centro del match -> verify_post_action. Devuelve el result
+        (ok/fail) o None si OCR no encontró nada (para que el caller decida el
+        error final). NO depende de UIA — es para apps de render propio (CEF,
+        custom-draw) donde el árbol UIA no expone el botón."""
+        shot = self.gui_screenshot({})
+        if not shot.get("ok"):
+            return None
+        try:
+            found = ocr_find_text(Path(str(shot["image_path"])), label,
+                                  lang=str(args.get("lang") or "spa+eng"),
+                                  min_conf=int(args.get("min_conf", 25)))
+        except Exception:
+            return None
+        matches = found.get("matches") or []
+        if not matches:
+            return None
+        m = matches[0]
+        # traducir coords image-local -> pantalla (igual que el path click_text)
+        shot_left, shot_top = int(shot.get("left", 0)), int(shot.get("top", 0))
+        if "center_x" in m and "center_y" in m:
+            sx, sy = int(m["center_x"]) + shot_left, int(m["center_y"]) + shot_top
+        elif "screen_x" in m and "screen_y" in m:
+            sx, sy = int(m["screen_x"]), int(m["screen_y"])
+        else:
+            return None
+        try:
+            from . import gui_verify
+            before = gui_verify.capture_before(sx, sy)
+        except Exception:
+            before = None
+        clicked = self.gui_click({"x": sx, "y": sy})
+        if not clicked.get("ok"):
+            return _err(clicked.get("error") or "el click OCR falló",
+                        label=label, status="failed", grounding="ocr")
+        try:
+            if before is not None:
+                from . import gui_verify
+                v = gui_verify.verify_after(before)
+                clicked["state_changed"] = v.get("state_changed")
+                clicked["state_verify"] = v.get("reason")
+                if v.get("state_changed") is False:
+                    clicked["verified"] = False
+                    clicked.setdefault("completion_status", "clicked_no_effect")
+        except Exception:
+            pass
+        clicked["action"] = "click_button"
+        clicked["label"] = label
+        clicked["grounding"] = "ocr"
+        clicked["ocr_match"] = {k: m.get(k) for k in ("text", "center_x", "center_y", "conf")}
+        return clicked
+
     def gui_click_button(self, args: dict[str, Any]) -> dict[str, Any]:
         """MACRO determinista (computer-use): clickear un control por su LABEL.
         El 4B da el OBJETIVO (el label, p.ej. "Enviar"/"Save"/"Aceptar"); el
@@ -4574,13 +4658,31 @@ Start-Sleep -Milliseconds 120
         if not label:
             return _err("click_button requiere 'label'", status="needs_user")
         window = str(args.get("window") or args.get("title") or "").strip()
-        # 1) localizar el botón (button-prioritized). Devuelve el punto clickeable.
+        # CASCADA Fase 3: UIA -> (retry lazy-Chromium) -> OCR. El 4B da el label;
+        # el código elige el grounding más fiable disponible (Agent-S2 mixture of
+        # grounding). UIA primero (estructura, menos spoofeable); si el árbol UIA
+        # viene vacío/sin match -y la ventana es Chromium/CEF cuyo AX es lazy- se
+        # reintenta el walk tras un delay (gotcha verificado: 1er walk vacío);
+        # si aún nada, cae a OCR (PaddleOCR) sobre el screenshot. Visión queda
+        # como último recurso (Fase 8, no acá).
+        # 1) localizar el botón por UIA (button-prioritized).
         found = self._uia_find_clickable(label, window)
+        # 1b) retry lazy-Chromium: el árbol AX de Chromium/CEF (Discord/Spotify/
+        # Electron) devuelve VACÍO en el 1er walk tras enfocar; reintentar una vez
+        # tras un delay corto antes de caer a OCR.
+        if not found.get("ok") and self._foreground_is_chromium(window):
+            time.sleep(0.6)
+            found = self._uia_find_clickable(label, window)
+        # 1c) FALLBACK OCR: si UIA no encontró el control (app sin UIA rico),
+        # localizar el label por OCR y clickear su centro, con verificación.
         if not found.get("ok"):
+            ocr_res = self._click_button_via_ocr(label, args)
+            if ocr_res is not None:
+                return ocr_res
             return _err(
-                found.get("error") or "no encontré un botón con ese label",
+                found.get("error") or "no encontré un botón con ese label (UIA ni OCR)",
                 label=label, window=window, status="failed",
-                candidates=found.get("candidates"))
+                candidates=found.get("candidates"), grounding="uia+ocr")
         el = found.get("element") or {}
         pt = found.get("click_point") or {}
         cx, cy = pt.get("x"), pt.get("y")
@@ -4622,6 +4724,7 @@ Start-Sleep -Milliseconds 120
         clicked["action"] = "click_button"
         clicked["label"] = label
         clicked["clicked_element"] = el
+        clicked["grounding"] = "uia"
         return clicked
 
     # Tipos de control que cuentan como "clickeables tipo botón", en orden de
