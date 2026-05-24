@@ -387,6 +387,33 @@ class Gemma4Agent:
             from .intent_validator import INTENT_TAG_INSTRUCTION, needs_intent_tag
             if needs_intent_tag(selected_tool_names):
                 intent_hint = INTENT_TAG_INSTRUCTION
+        # LAYOUT cache-friendly (medido 2026-05-23): el system prompt diverge al
+        # ~28% porque las TOOL_RULES (variables por subset del router) iban temprano
+        # -> cambiar de dominio de tools (Spotify->volumen) reprocesaba ~4000 tok
+        # (892ms). Reordenamos: lo ESTABLE (CORE + persona + skills, que NO dependen
+        # del turno) va al PRINCIPIO; lo VARIABLE (tool-rules + tool-schemas +
+        # microagents + recall + memoria) va al FINAL. Así cambiar de tools solo
+        # invalida la cola, no el 72% del prompt. Sin inflar el prompt (a diferencia
+        # del core-set estable, que fue 2x peor por prompt más grande).
+        # Gate GEMMA4_PROMPT_LAYOUT_V2=0 vuelve al orden viejo.
+        import os as _os_layout
+        if _os_layout.environ.get("GEMMA4_PROMPT_LAYOUT_V2", "1").strip().lower() \
+                not in {"0", "false", "no", "off"}:
+            from .agent_prompt import build_core_only, build_tool_rules_tail
+            core_stable = build_core_only()
+            tool_rules_tail = build_tool_rules_tail(selected_tool_names)
+            tool_rules_section = f"\n\n{tool_rules_tail}" if tool_rules_tail else ""
+            # ESTABLE primero (no depende del turno): CORE + persona + skills.
+            stable = f"{core_stable}{persona_hint}{skills_critical}{skills_menu}"
+            # VARIABLE al final (depende del subset/turno): mode, tool-rules,
+            # tool-schemas, project/plan/explicit/recall/phrase, microagents,
+            # intent, memoria.
+            variable = (f"{mode_hint}{tool_rules_section}{tools_section}"
+                        f"{project_section}{plan_hint}{explicit_section}"
+                        f"{recall_section}{phrase_section}{microagents_section}"
+                        f"{intent_hint}\n\n# Persistent memory\n"
+                        f"{self.memory.prompt_summary_for(user_text)}")
+            return {"role": "system", "content": stable + variable}
         return {
             "role": "system",
             "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",

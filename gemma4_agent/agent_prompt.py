@@ -163,6 +163,47 @@ def _load_core_lean_prompt() -> str:
 CORE_LEAN_PROMPT: str = _load_core_lean_prompt()
 
 
+def build_core_only() -> str:
+    """Solo el CORE estable del system prompt (sin TOOL_RULES por tool).
+
+    Usado por el layout cache-friendly (inv: fragmentación de prompt): el CORE no
+    depende del subset de tools del turno, así que va al PRINCIPIO del prompt y
+    se cachea entre turnos aunque las tools cambien. Las TOOL_RULES (variables por
+    subset) se mueven al final vía build_tool_rules_tail()."""
+    return _core_for_profile()
+
+
+def build_tool_rules_tail(selected_tool_names: list[str] | None = None) -> str:
+    """Solo las TOOL_RULES del subset (sin el CORE). Cola variable del prompt.
+
+    Devuelve "" si no hay reglas (smalltalk) o None-legacy se trata como todas."""
+    if selected_tool_names is None:
+        seen: set[int] = set()
+        parts: list[str] = []
+        for name in sorted(TOOL_RULES.keys()):
+            rule = TOOL_RULES[name]
+            rid = id(rule)
+            if rid in seen:
+                continue
+            seen.add(rid)
+            parts.append(rule)
+        return "\n\n".join(parts)
+    if not selected_tool_names:
+        return ""
+    seen_ids: set[int] = set()
+    rules: list[str] = []
+    for name in selected_tool_names:
+        rule = TOOL_RULES.get(name)
+        if rule is None:
+            continue
+        rid = id(rule)
+        if rid in seen_ids:
+            continue
+        seen_ids.add(rid)
+        rules.append(rule)
+    return "\n\n".join(rules)
+
+
 def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
     """Construye el SYSTEM_PROMPT efectivo para este turno.
 
