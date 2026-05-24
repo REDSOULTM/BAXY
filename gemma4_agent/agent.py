@@ -2443,6 +2443,13 @@ class Gemma4Agent:
             _mission_id = _mc.begin(self.state.path, list(clauses))
         except Exception:
             _mc = None  # type: ignore
+        # resetear el presupuesto de visión de la cascada al empezar la misión
+        # (Fase 8: ≤2 escalaciones de visión por misión).
+        try:
+            from . import gui_vision_gate as _gvg
+            _gvg.reset_budget()
+        except Exception:
+            pass
         try:
             for _clause_idx, clause in enumerate(clauses):
                 # MACRO DETERMINISTA (Fase 2): si arrastramos contexto GUI y la

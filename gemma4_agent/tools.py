@@ -4729,6 +4729,38 @@ Start-Sleep -Milliseconds 120
         clicked["ocr_match"] = {k: m.get(k) for k in ("text", "center_x", "center_y", "conf")}
         return clicked
 
+    def _vision_escalate(self, label: str, window: str, candidates: Any) -> dict[str, Any] | None:
+        """ÚLTIMO RECURSO (Fase 8): UIA y OCR no localizaron `label`. Si el gate
+        de visión lo permite (VRAM + presupuesto por misión ≤2), captura un
+        screenshot y lo devuelve adjunto para que el agente lo razone con su
+        visión NATIVA (Gemma 4 + mmproj) — o localiza de otra forma, o reporta
+        honestamente qué ve. NO clickea por visión a ciegas (grounding por VLM
+        no es fiable). Devuelve None si no se puede escalar (gate/VRAM/budget) ->
+        el caller da error honesto."""
+        try:
+            from . import gui_vision_gate
+        except Exception:
+            return None
+        ok, why = gui_vision_gate.can_escalate()
+        if not ok:
+            return None
+        shot = self.gui_screenshot({})
+        if not shot.get("ok"):
+            return None
+        gui_vision_gate.note_escalation()  # consume presupuesto de la misión
+        result = _attach_screenshot(_err(
+            f"no localicé '{label}' por UIA ni OCR; escalo a visión",
+            label=label, window=window, status="needs_vision",
+            grounding="vision_escalation",
+            ocr_candidates=candidates,
+            budget=gui_vision_gate.budget_state(),
+            note=("UIA y OCR no encontraron el control. Te paso una captura: "
+                  "mirá la pantalla y decime qué botón/control corresponde a "
+                  f"'{label}', o avisá honestamente que no está visible. NO "
+                  "adivines coordenadas."),
+        ), shot)
+        return result
+
     def gui_click_button(self, args: dict[str, Any]) -> dict[str, Any]:
         """MACRO determinista (computer-use): clickear un control por su LABEL.
         El 4B da el OBJETIVO (el label, p.ej. "Enviar"/"Save"/"Aceptar"); el
@@ -4767,6 +4799,15 @@ Start-Sleep -Milliseconds 120
             ocr_res = self._click_button_via_ocr(label, args)
             if ocr_res is not None:
                 return ocr_res
+            # 1d) ÚLTIMO RECURSO (Fase 8): visión gateada. UIA y OCR fallaron.
+            # NO clickeamos por visión a ciegas (no es fiable); ESCALAMOS a un
+            # screenshot para que el agente lo razone con su visión nativa y o
+            # bien localice de otra forma o reporte honestamente qué ve. Gateado
+            # por VRAM + presupuesto por misión (≤2). Si no se puede escalar,
+            # error honesto.
+            vis = self._vision_escalate(label, window, found.get("candidates"))
+            if vis is not None:
+                return vis
             return _err(
                 found.get("error") or "no encontré un botón con ese label (UIA ni OCR)",
                 label=label, window=window, status="failed",
