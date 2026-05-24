@@ -9,7 +9,12 @@ import unittest
 from gemma4_agent.reply_validator import (
     LISTO_REGEN_HINT,
     is_listo_on_no_tool_turn,
+    is_unverified_claim,
+    UNVERIFIED_CLAIM_REGEN_HINT,
+    _ensure_claim_centroids,
 )
+
+_HAS_ENCODER = _ensure_claim_centroids()
 
 
 class ListoValidatorTest(unittest.TestCase):
@@ -53,6 +58,52 @@ class ListoValidatorTest(unittest.TestCase):
 
     def test_empty_reply_does_not_trigger(self) -> None:
         self.assertFalse(is_listo_on_no_tool_turn("", []))
+
+
+class UnverifiedClaimTest(unittest.TestCase):
+    """Guarda estructural: el reply afirma un efecto externo sin tool verificada.
+    Multilingüe (embeddings) + fallback seguro (sin encoder no flaggea)."""
+
+    _OK = {"ok": True, "verified": True}
+    _BAD = {"ok": False}
+
+    def test_no_encoder_never_flags(self):
+        # invariante de seguridad: sin encoder, jamás molesta
+        import gemma4_agent.reply_validator as rv
+        saved = (rv._CC.ready, rv._CC.claim, rv._CC.conv)
+        rv._CC.ready, rv._CC.claim, rv._CC.conv = True, None, None
+        try:
+            self.assertFalse(is_unverified_claim("ya abrí la calculadora", []))
+        finally:
+            rv._CC.ready, rv._CC.claim, rv._CC.conv = saved
+
+    def test_short_reply_never_flags(self):
+        self.assertFalse(is_unverified_claim("ok", []))
+
+    def test_claim_with_successful_tool_not_flagged(self):
+        # afirmación SUSTENTADA por una tool exitosa -> OK
+        self.assertFalse(is_unverified_claim("ya abrí la calculadora",
+                                             [{"result": self._OK}]))
+
+    def test_hint_non_empty(self):
+        self.assertGreater(len(UNVERIFIED_CLAIM_REGEN_HINT), 50)
+
+    @unittest.skipUnless(_HAS_ENCODER, "encoder multilingüe no disponible")
+    def test_claim_without_tool_flagged_multilang(self):
+        for reply in ("ya abrí la calculadora", "the window is now open",
+                      "listo, subí el volumen"):
+            self.assertTrue(is_unverified_claim(reply, []), reply)
+
+    @unittest.skipUnless(_HAS_ENCODER, "encoder multilingüe no disponible")
+    def test_conversational_not_flagged(self):
+        for reply in ("¿cuál archivo querés abrir?", "no estoy seguro de qué pediste",
+                      "no tengo esa herramienta"):
+            self.assertFalse(is_unverified_claim(reply, []), reply)
+
+    @unittest.skipUnless(_HAS_ENCODER, "encoder multilingüe no disponible")
+    def test_claim_with_failed_tool_flagged(self):
+        # tool corrió pero falló -> la afirmación NO está sustentada -> flag
+        self.assertTrue(is_unverified_claim("listo, lo cerré", [{"result": self._BAD}]))
 
 
 if __name__ == "__main__":

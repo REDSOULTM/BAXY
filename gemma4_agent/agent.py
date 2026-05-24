@@ -1862,6 +1862,8 @@ class Gemma4Agent:
                     from .reply_validator import (
                         is_listo_on_no_tool_turn as _is_listo_on_no_tool_turn,
                         LISTO_REGEN_HINT as _LISTO_REGEN_HINT,
+                        is_unverified_claim as _is_unverified_claim,
+                        UNVERIFIED_CLAIM_REGEN_HINT as _UNVERIFIED_CLAIM_HINT,
                     )
                     if _is_listo_on_no_tool_turn(
                         assistant_content or "", list(events),
@@ -1873,6 +1875,22 @@ class Gemma4Agent:
                         self.history.append({
                             "role": "system",
                             "content": _LISTO_REGEN_HINT,
+                        })
+                    # Anti-unverified-claim (Tier-1 auditoría Carter): el reply
+                    # AFIRMA un efecto externo (cualquier idioma, por embeddings)
+                    # pero ninguna tool verificada corrió. Generaliza el caso
+                    # 'Listo' a fraseos/idiomas no anticipados. Solo si Listo no
+                    # disparó ya (evita doble inyección). Gate por env.
+                    elif _os.environ.get("GEMMA4_ANTI_UNVERIFIED_CLAIM", "1").strip().lower() \
+                            not in {"0", "false", "no", "off"} and _is_unverified_claim(
+                                assistant_content or "", list(events)):
+                        self.trace.event(
+                            turn_id, "reply_anti_pattern_detected",
+                            pattern="unverified_claim",
+                        )
+                        self.history.append({
+                            "role": "system",
+                            "content": _UNVERIFIED_CLAIM_HINT,
                         })
                 except Exception as _exc:  # noqa: BLE001
                     try:
