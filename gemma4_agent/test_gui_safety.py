@@ -71,5 +71,51 @@ class PasswordGuardTest(unittest.TestCase):
             self.assertEqual(r["completion_status"], "secret_handoff")
 
 
+class ActionBudgetTest(unittest.TestCase):
+    """R8: cap de acciones físicas por turno (anti pop-up/visual injection)."""
+
+    def setUp(self):
+        for k in ("GEMMA4_GUI_ACTION_BUDGET", "GEMMA4_GUI_ACTION_BUDGET_GUARD"):
+            os.environ.pop(k, None)
+        gui_safety.reset_action_budget()
+
+    def test_under_budget_ok(self):
+        os.environ["GEMMA4_GUI_ACTION_BUDGET"] = "3"
+        self.assertIsNone(gui_safety.check_action_budget())
+        gui_safety.note_action()
+        gui_safety.note_action()
+        self.assertIsNone(gui_safety.check_action_budget())  # 2 < 3
+
+    def test_over_budget_blocks(self):
+        os.environ["GEMMA4_GUI_ACTION_BUDGET"] = "3"
+        for _ in range(3):
+            self.assertIsNone(gui_safety.check_action_budget())
+            gui_safety.note_action()
+        blk = gui_safety.check_action_budget()
+        self.assertIsNotNone(blk)
+        self.assertEqual(blk["blocked"], "action_budget_exhausted")
+        self.assertFalse(blk["ok"])
+
+    def test_reset_restores(self):
+        os.environ["GEMMA4_GUI_ACTION_BUDGET"] = "1"
+        gui_safety.note_action()
+        self.assertIsNotNone(gui_safety.check_action_budget())
+        gui_safety.reset_action_budget()
+        self.assertIsNone(gui_safety.check_action_budget())
+
+    def test_gate_off(self):
+        os.environ["GEMMA4_GUI_ACTION_BUDGET"] = "1"
+        os.environ["GEMMA4_GUI_ACTION_BUDGET_GUARD"] = "0"
+        gui_safety.note_action()
+        gui_safety.note_action()
+        self.assertIsNone(gui_safety.check_action_budget())  # guard off -> nunca bloquea
+
+    def test_default_budget_allows_multistep(self):
+        # default 6 debe permitir holgado una misión de 2-3 pasos
+        for _ in range(4):
+            self.assertIsNone(gui_safety.check_action_budget())
+            gui_safety.note_action()
+
+
 if __name__ == "__main__":
     unittest.main()

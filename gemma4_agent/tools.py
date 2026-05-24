@@ -1584,6 +1584,11 @@ class ToolRegistry:
         if action in self._GUI_PHYSICAL:
             try:
                 from . import gui_safety
+                # (0) cap de acciones físicas por turno (R8 anti pop-up/injection)
+                _bud = gui_safety.check_action_budget()
+                if _bud is not None:
+                    _bud["action"] = action
+                    return _bud
                 _blk = gui_safety.check_user_activity()
                 if _blk is not None:
                     _blk["action"] = action
@@ -1593,6 +1598,7 @@ class ToolRegistry:
                     if _pwd is not None:
                         _pwd["action"] = action
                         return _pwd
+                gui_safety.note_action()  # consume 1 del presupuesto del turno
             except Exception:
                 pass
         if action == "type_into":

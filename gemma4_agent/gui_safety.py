@@ -41,6 +41,56 @@ def _env_off(name: str) -> bool:
     return os.environ.get(name, "1").strip().lower() in {"0", "false", "no", "off"}
 
 
+# --- 3. activity-budget por turno (R8: anti pop-up / visual injection) -------
+# Cap duro de ACCIONES FÍSICAS (click/type/drag/...) por turno de voz. Acota el
+# blast-radius de un pop-up adversarial: un pop-up solo puede capturar N clicks
+# antes de que el agente se detenga y pida confirmación, en vez de "distraerse"
+# indefinidamente (Visual Confused Deputy, ACL 2025 ASR 86%). Estructural: mide
+# CUÁNTAS acciones, no su contenido. Reset por turno (reset_action_budget).
+_GUI_ACTIONS_THIS_TURN: int = 0
+
+
+def _action_budget() -> int:
+    try:
+        return max(1, int(os.environ.get("GEMMA4_GUI_ACTION_BUDGET", "6")))
+    except ValueError:
+        return 6
+
+
+def reset_action_budget() -> None:
+    """Resetear el contador de acciones físicas (llamar al empezar cada turno)."""
+    global _GUI_ACTIONS_THIS_TURN
+    _GUI_ACTIONS_THIS_TURN = 0
+
+
+def check_action_budget() -> dict[str, Any] | None:
+    """Devuelve un dict de bloqueo si ya se agotó el presupuesto de acciones
+    físicas del turno, o None si se puede proceder. NO consume (eso lo hace
+    note_action). Gate GEMMA4_GUI_ACTION_BUDGET_GUARD."""
+    if _env_off("GEMMA4_GUI_ACTION_BUDGET_GUARD"):
+        return None
+    budget = _action_budget()
+    if _GUI_ACTIONS_THIS_TURN < budget:
+        return None
+    return {
+        "ok": False,
+        "blocked": "action_budget_exhausted",
+        "status": "needs_user",
+        "actions_this_turn": _GUI_ACTIONS_THIS_TURN,
+        "budget": budget,
+        "reason": (f"ya hice {_GUI_ACTIONS_THIS_TURN} acciones físicas en este "
+                   f"turno (tope {budget}); me detengo para no encadenar clicks a "
+                   "ciegas (posible pop-up/desvío). Confirmá si seguís."),
+        "completion_status": "action_budget_exhausted",
+    }
+
+
+def note_action() -> None:
+    """Consume una unidad del presupuesto de acciones físicas del turno."""
+    global _GUI_ACTIONS_THIS_TURN
+    _GUI_ACTIONS_THIS_TURN += 1
+
+
 # El agente también genera input sintético (mouse_event/SendKeys) que resetea
 # GetLastInputInfo. Para no auto-bloquearse en acciones multi-paso, registramos
 # cuándo el AGENTE tocó input por última vez; si la actividad reciente cae dentro

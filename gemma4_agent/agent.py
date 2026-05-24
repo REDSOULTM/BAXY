@@ -592,6 +592,16 @@ class Gemma4Agent:
 
     def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
         self._turn_counter += 1
+        # R8: resetear el presupuesto de acciones físicas GUI al EMPEZAR un turno
+        # top-level (no por cláusula — las cláusulas de un multi-intent comparten
+        # el presupuesto del turno). Acota cuántos clicks/types a ciegas puede
+        # encadenar el agente (anti pop-up/visual injection).
+        if not getattr(self, "_splitting", False):
+            try:
+                from . import gui_safety
+                gui_safety.reset_action_budget()
+            except Exception:
+                pass
         # JARVIS (inv 5): si el turno anterior ofreció automatizar una rutina y
         # el usuario responde sí/no, resolverlo ACÁ (antes del LLM) — es un
         # handshake determinista, no hace falta inferencia. Short-circuit del turno.
