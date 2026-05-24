@@ -9,7 +9,7 @@ Leyenda: ✅ ya lo tenemos · ⚠️ parcial · ❌ gap real · 🚫 no aplica/d
 |---|---|---|---|---|
 | 1 | **Loop `no_progress`** (N tools sin cambiar evidence_key) | ⚠️ | `loop_detection.py` tiene `record_evidence`/`evidence_keys_changed` pero NO el detector explícito | **GAP barato (#1)** — ~15 LOC, aditivo |
 | 2 | **Anti-unverified-claim** (reply afirma "está abierto" sin leer estado) | ❌ | `reply_validator.py` solo cubre el patrón "Listo" literal; no hay anti-echo ni anti-claim | **GAP real** — honestidad, ~40 LOC |
-| 3 | **Trivial short-circuit** ("ok"/"gracias"→reply canned SIN LLM) | ❌ | agent.py:927 solo comenta; no hay canned short-circuit pre-LLM | **GAP de latencia** — ahorra 4-7s en smalltalk |
+| 3 | **Trivial short-circuit** ("ok"/"gracias"→reply canned SIN LLM) | 🚫 | RED lo VETÓ (2026-05-23): respuesta enlatada = hardcode frágil/monolingüe. El LLM responde, siempre. Regla nueva en CLAUDE.md. | **DESCARTADO por principio** — no por técnica |
 | 4 | **Error classifier** (RETRY/SKIP/REPLAN/ABORT determinista + LLM fallback) | ❌ | no existe; el loop_detector corta pero no decide estrategia | **GAP** (#2 audit previa) — alto ROI GUI |
 | 5 | **normalize_tool_name** (case/segment fallback: SYSTEM_INFO→system_info) | ⚠️ | `reasoning.py::_extract_balanced_json` cubre JSON balanced+truncado, NO el nombre mal-caseado | **GAP menor** — Gemma 4 mis-casea |
 | 6 | **Active-recall pre-turno** (resuelve "el proyecto X"→path antes del LLM) | ⚠️ | memoria en capas (inv 2) es PASIVA; no resuelve referencias activamente | **Evaluar** (#5 audit) — solapa ~60% |

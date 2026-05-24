@@ -87,6 +87,18 @@ guardia de compra sigue para software pago.
   NUNCA optimices sobre la voz del operador como atajo (un fine-tune
   sobre su voz mejora su recall pero degrada a todos los demás).
   Evaluá siempre contra un held-out diverso, no contra una sola voz.
+- **El LLM responde. Nada de hardcodes ni respuestas enlatadas.** NO
+  pongas tablas de respuestas fijas ("ok"→"Listo.", "gracias"→"De nada.")
+  ni short-circuits que respondan SIN pasar por el LLM. Tampoco listas de
+  keywords/apps/URLs por idioma para decidir qué hacer o qué contestar.
+  Eso es frágil, monolingüe, y rompe a hablantes de otros idiomas o a
+  fraseos que no anticipaste. El asistente debe SENTIRSE inteligente, no
+  un árbol de if/else. Lo único determinista permitido es: (a) clasificación
+  por **embeddings multilingües** con fallback seguro, (b) **guardas
+  estructurales** que miden la FORMA (no el contenido) — anti-loop,
+  honestidad, verificadores —, (c) resolución por **estado del SO**
+  (registry, UIA, pycaw), nunca por listas hardcoded. Si dudás entre
+  "respuesta enlatada rápida" y "el LLM responde", **gana el LLM**.
 - **CPU para STT.** El target tiene 6 GB de VRAM consumidos por el LLM.
   Whisper corre en CPU + int8. Las cifras de GPU son solo techo de
   medición, no representativas de prod.
