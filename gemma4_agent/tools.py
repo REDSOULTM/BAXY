@@ -3996,13 +3996,26 @@ public class GemmaMouse {
 }
 "@
 
+# Cast seguro double->int: los elementos OFFSCREEN devuelven BoundingRectangle
+# con valores enorme/Infinity/NaN (p.ej. ±1.79e308); un [int] directo OVERFLOWEA
+# y crashea TODO el ForEach-Object con "Valor demasiado grande" -> el comando UIA
+# no emite nada (bug latente, 2026-05-25). Clampeamos al rango int32.
+function SafeInt($v) {
+  try {
+    if ([double]::IsNaN($v) -or [double]::IsInfinity($v)) { return 0 }
+    if ($v -gt 2147483647) { return 2147483647 }
+    if ($v -lt -2147483648) { return -2147483648 }
+    return [int][math]::Round([double]$v)
+  } catch { return 0 }
+}
+
 function ElemObj($e) {
   if ($null -eq $e) { return $null }
   $r = $e.Current.BoundingRectangle
   $click = $null
   try {
     $p = $e.GetClickablePoint()
-    $click = [PSCustomObject]@{ x=[int]$p.X; y=[int]$p.Y }
+    $click = [PSCustomObject]@{ x=(SafeInt $p.X); y=(SafeInt $p.Y) }
   } catch {}
   [PSCustomObject]@{
     name=$e.Current.Name
@@ -4013,7 +4026,7 @@ function ElemObj($e) {
     enabled=$e.Current.IsEnabled
     offscreen=$e.Current.IsOffscreen
     bounds=[PSCustomObject]@{
-      x=[int]$r.X; y=[int]$r.Y; width=[int]$r.Width; height=[int]$r.Height
+      x=(SafeInt $r.X); y=(SafeInt $r.Y); width=(SafeInt $r.Width); height=(SafeInt $r.Height)
     }
     clickable_point=$click
   }
@@ -4912,6 +4925,11 @@ Start-Sleep -Milliseconds 120
         {ok:false, candidates}. Reusa la maquinaria UIA existente (uia find)."""
         res = self._uia_run({"query": label, "window": window, "limit": 120}, "find")
         if not res.get("ok"):
+            # el find léxico falló del todo -> intentar cross-lingual (R7) antes
+            # de rendirse (p.ej. label en otro idioma que el de la UI).
+            sem = self._uia_find_clickable_semantic(label, window)
+            if sem is not None:
+                return sem
             return {"ok": False, "error": res.get("error") or "uia find falló"}
         matches = res.get("matches") or []
         # PowerShell ConvertTo-Json emite un OBJETO (no lista) cuando hay 1 sola
@@ -4920,6 +4938,9 @@ Start-Sleep -Milliseconds 120
             matches = [matches]
         matches = [m for m in matches if isinstance(m, dict)]
         if not matches:
+            sem = self._uia_find_clickable_semantic(label, window)
+            if sem is not None:
+                return sem
             return {"ok": False, "error": "sin coincidencias UIA", "candidates": []}
         from .tools import _score  # type: ignore  # noqa: F401  (módulo propio)
         lab = label.casefold()
@@ -4949,13 +4970,78 @@ Start-Sleep -Milliseconds 120
         # clickable_point no sirve. Aceptamos si tiene punto clickeable.
         best = next((m for m in ranked if m.get("clickable_point")
                      or (m.get("control_type") in self._BUTTON_CTYPES)), None)
+        # R7: además exigir que el match LÉXICO sea bueno (name exacto o contiene
+        # el label). Si el "mejor" no comparte texto con el label (p.ej. el query
+        # "five" matcheó algo laxo por AutomationId), NO sirve -> intentar el
+        # match CROSS-LINGUAL por embeddings antes de rendirse.
+        if best is not None and lab and lab not in (best.get("name") or "").casefold():
+            best = None  # el match léxico no es del label -> probar semántico
         if best is None:
+            sem = self._uia_find_clickable_semantic(label, window)
+            if sem is not None:
+                return sem
             return {"ok": False, "error": "ninguna coincidencia es clickeable",
                     "candidates": [m.get("name") for m in ranked[:6]]}
         return {"ok": True, "element": best,
                 "click_point": best.get("clickable_point")
                 or {"x": best.get("bounds", {}).get("x"),
                     "y": best.get("bounds", {}).get("y")}}
+
+    # Umbrales del matcher cross-lingual (R7, del informe claude.ai): aceptar solo
+    # si la similitud top-1 supera el umbral Y le saca margen al segundo (evita
+    # falsos positivos entre etiquetas cortas ambiguas).
+    _XLING_SIM_MIN = 0.75
+    _XLING_MARGIN = 0.10
+
+    def _uia_find_clickable_semantic(self, label: str, window: str) -> dict[str, Any] | None:
+        """R7 — match CROSS-LINGUAL del label contra los Names de los controles
+        clickeables, por EMBEDDINGS multilingües (reusa el encoder MiniLM del
+        router, sin cargar otro modelo). Resuelve 'five'↔'Cinco', 'open'↔'Abrir'
+        sin tablas de traducción por idioma (cumple el constraint: embeddings +
+        fallback seguro). Opt-in: GEMMA4_GUI_XLING=0 lo apaga. None si no aplica
+        (sin encoder, sin candidatos, o sin match con margen)."""
+        import os as _os
+        if (_os.environ.get("GEMMA4_GUI_XLING", "1").strip().lower()
+                in {"0", "false", "no", "off"}):
+            return None
+        try:
+            from .semantic_router import embed as _embed
+        except Exception:
+            return None
+        # traer TODOS los controles del árbol (query vacío) y quedarnos con los
+        # clickeables con Name no vacío.
+        res = self._uia_run({"query": "", "window": window, "limit": 200}, "find")
+        cands = res.get("matches") or []
+        if isinstance(cands, dict):
+            cands = [cands]
+        cands = [c for c in cands if isinstance(c, dict)
+                 and (c.get("name") or "").strip()
+                 and (c.get("clickable_point") or c.get("control_type") in self._BUTTON_CTYPES)
+                 and not c.get("offscreen", False)]
+        if not cands:
+            return None
+        qv = _embed(label)
+        if qv is None:
+            return None  # sin encoder -> fallback seguro (no forzar)
+        scored = []
+        for c in cands:
+            nv = _embed(c.get("name") or "")
+            if nv is None:
+                continue
+            sim = float(sum(a * b for a, b in zip(qv, nv)))  # coseno (vectores L2-norm)
+            scored.append((sim, c))
+        if not scored:
+            return None
+        scored.sort(key=lambda x: -x[0])
+        top_sim, top = scored[0]
+        second = scored[1][0] if len(scored) > 1 else 0.0
+        if top_sim < self._XLING_SIM_MIN or (top_sim - second) < self._XLING_MARGIN:
+            return None  # sin confianza/margen -> no arriesgar el click
+        return {"ok": True, "element": top, "grounding_match": "xlingual",
+                "xling_sim": round(top_sim, 3),
+                "click_point": top.get("clickable_point")
+                or {"x": top.get("bounds", {}).get("x"),
+                    "y": top.get("bounds", {}).get("y")}}
 
     def _uia_window_contains_text(self, window_substr: str, text: str) -> bool | None:
         """¿La ventana en foco (o cuyo título contiene window_substr) tiene un
