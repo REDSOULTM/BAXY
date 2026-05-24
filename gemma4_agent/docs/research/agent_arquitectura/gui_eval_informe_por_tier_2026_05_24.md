@@ -5,7 +5,63 @@
 > (pycaw, tasklist, EnumWindows/UIA), nunca por lo que el agente diga — ese es
 > el anti-patrón que hundió a Carter (falso-PASS).
 
-## Resumen ejecutivo
+# Continuación 2026-05-25: click_button + cierre de falso-PASS
+
+Segunda sesión sobre el mismo roadmap. Dos capacidades nuevas, ambas
+verificadas contra el agente real bajo vram4:
+
+1. **Macro `gui.click_button(label)`** (commit `99806ca`) — clickear un control
+   por su LABEL con verificación sin VLM. Cierra el gap "click ciego" del
+   roadmap (Fase 2 → click). Además volvió **button-prioritized + token-aware**
+   el `uia.click` que ya usa el agente:
+   - reordena los matches UIA (tipo botón > Invoke > Name exacto/contiene >
+     habilitado/en-pantalla) en vez de tomar el 1er match laxo;
+   - `Matches()` token-aware: "botón tres"/"button three" matchea el control
+     "Tres" (stop-words de UI multi-idioma);
+   - fallback all-windows (commit `14a3fdd`): si el control no está en el
+     foreground, reescanea todas las ventanas top-level. Esto fue clave — sin
+     él, click_button pasaba aislado pero fallaba en el eval completo porque la
+     Calculadora perdía el foco entre el reset y el click.
+   - **Medido (harness real, tier-2): 16/16 (100%), click_button 6/6** (display
+     real 'Se muestra 9/5/3' vía UIA, no "tool ok"). 6 misiones nuevas.
+2. **Cierre del falso-PASS por launch no confirmado** (commit `f2a222c`) —
+   `reply_validator.soften_unverified_launch`: si el reply afirma haber abierto
+   una app pero `app.open` quedó `verified=false`, añade un caveat honesto en el
+   idioma del reply. Determinista (el E4B no sigue la regla en prosa). +7 tests.
+
+**Discord — techo honesto refinado:** queda como falso-PASS residual por una
+razón concreta y medida: su launcher Squirrel muestra una ventana TRANSITORIA
+titulada "Discord" que `verify_app_opened` capta → `app.open` devuelve
+`verified=true` → el hedge (que actúa sobre `verified=false`) NO aplica → el
+proceso `Discord.exe` persistente no aparece en la ventana de verificación. NO
+es gap de capacidad (app.open lanza el .lnk correcto); es el updater de Discord.
+Forzar verify_app_opened a exigir proceso rompería apps legítimamente
+window-only — se deja como techo documentado, no se hackea el hot path.
+
+### run7 (110 misiones, medido con TODOS los fixes de esta sesión)
+
+| Métrica | run7 |
+|---|---|
+| **Task success rate** | **92.7% (102/110)** |
+| **Falso-PASS** | **5 (4.5%)** (con el detector corregido; mspaint lento pasó a FAIL honesto) |
+| Tier 1 | 75/80 |
+| **Tier 2 (Chrome/Edge/Word/Excel + click_button)** | **16/16 (100%)** |
+| Tier 3 | 11/14 |
+
+**Los 8 fails de run7, todos honestos:**
+- 4× mute/unmute corto — techo del encoder multilingüe (DE imperativo, bare token).
+- 3× Discord — updater Squirrel (verify capta ventana transitoria; proceso no
+  persiste en la ventana de medición). Único falso-PASS no cerrado.
+- 1× mspaint (open) — abrió lento; el reply HEDGEÓ honestamente ("estoy abriendo
+  Paint; puede tardar"), por eso NO es falso-PASS. Flaky de timing, no regresión
+  (pasó en run4/run5).
+
+**click_button: 6/6 en el run completo** — verificado por el display real de la
+Calculadora (UIA), incluida la secuencia 7+2= a mano → "Se muestra 9".
+
+---
+
+## Resumen ejecutivo (sesión 2026-05-24)
 
 | Métrica | run3 (baseline) | run4 | **run5 (FINAL)** |
 |---|---|---|---|
