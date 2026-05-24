@@ -275,7 +275,7 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "app": ["search", "open", "close", "uninstall"],
     "steam": ["open", "library", "store", "list_games", "launch_game", "search_library", "search_store", "store_page", "install"],
     "window": ["list", "active", "focus", "close", "minimize", "maximize", "restore", "move_resize"],
-    "gui": ["screenshot", "click", "double_click", "right_click", "type", "keypress", "hotkey", "scroll", "drag", "wait_for", "locate_text", "click_text", "locate_image"],
+    "gui": ["screenshot", "click", "double_click", "right_click", "type", "type_into", "keypress", "hotkey", "scroll", "drag", "wait_for", "locate_text", "click_text", "locate_image"],
     "vision": ["describe_screen", "find_element", "ocr", "compare_before_after"],
     "browser": ["open", "search", "youtube_play", "media_pause", "media_stop", "active_tab_title", "click", "find", "research"],
     "web": ["search", "read", "research", "open"],
@@ -1572,6 +1572,8 @@ class ToolRegistry:
         action = _action(args, default="screenshot")
         if action == "screenshot":
             return self.gui_screenshot(args)
+        if action == "type_into":
+            return self.gui_type_into(args)
         if action in self._GUI_MUTATING:
             # verify_post_action: capturar ROI antes -> actuar -> verificar que el
             # SO cambió. Anota state_changed en el result (honestidad: el agente
@@ -4240,6 +4242,49 @@ Start-Sleep -Milliseconds 120
                 return _ok(found=True, target=text, windows=windows)
             time.sleep(0.5)
         return _ok(found=False, target=text, last_windows=last)
+
+    def gui_type_into(self, args: dict[str, Any]) -> dict[str, Any]:
+        """MACRO determinista (Fase 2 computer-use): teclear `text` en la ventana
+        ACTIVA, con verificación. El 4B solo da el OBJETIVO (el texto); el código
+        hace el cómo: (1) asegura que hay una ventana de foco real, (2) teclea vía
+        gui_type (clipboard-paste para acentos), (3) verify_post_action mide si la
+        pantalla cambió. Saca al 4B de formar la llamada GUI (Agent-S2 mixture of
+        grounding: el modelo no estima/forma acciones GUI, el código sí).
+
+        Devuelve el result de gui_type anotado con state_changed/typed."""
+        text = str(args.get("text") or args.get("value") or "")
+        if not text.strip():
+            return _err("type_into requiere 'text'", status="needs_user")
+        # 1) ¿hay una ventana en foco para recibir el texto? (GetForegroundWindow)
+        try:
+            import win32gui
+            fg = win32gui.GetForegroundWindow()
+            fg_title = win32gui.GetWindowText(fg) if fg else ""
+        except Exception:
+            fg, fg_title = None, ""
+        # 2) capturar estado antes + teclear + verificar (sin VLM)
+        try:
+            from . import gui_verify
+            before = gui_verify.capture_before(None, None)
+        except Exception:
+            before = None
+        typed = self.gui_type({"text": text})
+        if not typed.get("ok"):
+            return typed
+        try:
+            if before is not None:
+                from . import gui_verify
+                v = gui_verify.verify_after(before)
+                typed["state_changed"] = v.get("state_changed")
+                typed["state_verify"] = v.get("reason")
+                if v.get("state_changed") is False:
+                    typed["verified"] = False
+                    typed.setdefault("completion_status", "typed_no_effect")
+        except Exception:
+            pass
+        typed["typed_into_window"] = fg_title
+        typed["action"] = "type_into"
+        return typed
 
     def gui_type(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))

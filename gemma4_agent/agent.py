@@ -2426,6 +2426,31 @@ class Gemma4Agent:
         carry: list[str] = []  # tools de contexto GUI que arrastra la cláusula previa
         try:
             for clause in clauses:
+                # MACRO DETERMINISTA (Fase 2): si arrastramos contexto GUI y la
+                # cláusula es "escribí/tecleá <texto>", NO le pedimos al 4B que
+                # forme la llamada (no lo hace fiable con verbos ambiguos). El
+                # código teclea directo en la ventana activa con type_into, que
+                # verifica el efecto. El 4B dio el objetivo (el texto); el código
+                # hace el cómo (Agent-S2 mixture of grounding). Universal.
+                _payload = None
+                if carry:
+                    try:
+                        from .command_splitter import extract_write_payload
+                        _payload = extract_write_payload(clause)
+                    except Exception:
+                        _payload = None
+                if _payload:
+                    res = self.tools.execute("gui", {"action": "type_into", "text": _payload})
+                    ok = isinstance(res, dict) and res.get("ok")
+                    changed = res.get("state_changed") if isinstance(res, dict) else None
+                    if ok and changed is not False:
+                        replies.append(f"Escribí «{_payload}».")
+                    else:
+                        replies.append(f"Intenté escribir «{_payload}» pero no pude "
+                                       "confirmar que entró en la ventana activa.")
+                    self.trace.event("multi_intent", "type_into_macro",
+                                     text=_payload[:60], ok=ok, state_changed=changed)
+                    continue
                 # Propagar el contexto GUI de la cláusula anterior a ESTA, para
                 # que "escribí X" tras "abrí Notepad" herede gui/window y no
                 # caiga a 'session' (charla). Bypassa el veto conversacional del

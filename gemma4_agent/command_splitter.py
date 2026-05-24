@@ -202,3 +202,40 @@ def plan_clauses(utterance: str) -> list[dict]:
     clauses = split_command(utterance)
     return [{"text": c, "depends_on_prev": i > 0 and has_back_reference(c)}
             for i, c in enumerate(clauses)]
+
+
+# --- Extracción de payload de ESCRITURA (Fase 2 computer-use) ----------------
+# Una cláusula "escribí/tecleá/type <texto>" en un contexto GUI debe ir a la
+# macro determinista type_into, NO a que el 4B forme la llamada. El verbo de
+# escritura inicial es vocabulario CERRADO y morfológico (no clasifica intención
+# global, solo SEPARA el verbo del payload) -> stems multi-idioma para EXTRAER.
+# Comillas: si el texto va entre comillas, se respeta literal.
+_WRITE_VERB_STEM = re.compile(
+    r"^\s*(?:"
+    r"escrib[íie]\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|"          # es
+    r"type|write|enter|input|"                                        # en
+    r"escrev[ae]\w*|digit[ae]\w*|"                                    # pt
+    r"[ée]cri[st]\w*|tap[ae]\w*|"                                     # fr
+    r"schreib\w*|tipp\w*|"                                            # de
+    r"scriv[ie]\w*"                                                   # it
+    r")\b[\s:]+",
+    re.IGNORECASE,
+)
+
+
+def extract_write_payload(clause: str) -> str | None:
+    """Si la cláusula es "<verbo-escribir> <texto>", devuelve <texto> (a tipear).
+    None si no es una cláusula de escritura. ESTRUCTURAL: solo separa el verbo
+    inicial del payload; la decisión de USARLO (contexto GUI presente) la toma el
+    caller. Universal por los stems multi-idioma; el payload es lo que el usuario
+    quiere teclear, en cualquier idioma."""
+    if not clause or not clause.strip():
+        return None
+    m = _WRITE_VERB_STEM.match(clause)
+    if not m:
+        return None
+    payload = clause[m.end():].strip()
+    # quitar comillas envolventes si las hay
+    if len(payload) >= 2 and payload[0] in "\"'«" and payload[-1] in "\"'»":
+        payload = payload[1:-1].strip()
+    return payload or None

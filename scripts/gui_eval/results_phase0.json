@@ -1,14 +1,14 @@
 {
   "summary": {
     "total": 7,
-    "pass": 6,
-    "fail": 1,
+    "pass": 7,
+    "fail": 0,
     "inconclusive": 0,
-    "task_success_rate": 0.857,
+    "task_success_rate": 1.0,
     "false_pass_count": 0,
     "false_pass_rate": 0.0,
-    "latency_p50_s": 2.75,
-    "latency_p95_s": 10.42
+    "latency_p50_s": 2.91,
+    "latency_p95_s": 9.97
   },
   "rows": [
     {
@@ -18,7 +18,7 @@
       "pass": true,
       "evidence": "volumen=30 (target 30±4)",
       "steps": 1,
-      "latency_s": 10.42,
+      "latency_s": 9.97,
       "agent_thinks_ok": true,
       "false_pass": false,
       "reply": "Listo, subí el volumen al 30.",
@@ -31,10 +31,10 @@
       "pass": true,
       "evidence": "volumen=50 (target 50±4)",
       "steps": 1,
-      "latency_s": 2.19,
+      "latency_s": 2.13,
       "agent_thinks_ok": true,
       "false_pass": false,
-      "reply": "Listo, el volumen se ajustó al 50 por ciento.",
+      "reply": "Listo, ajusté el volumen a 50.",
       "error": null
     },
     {
@@ -44,10 +44,10 @@
       "pass": true,
       "evidence": "volumen=10 (target 10±4)",
       "steps": 1,
-      "latency_s": 2.16,
+      "latency_s": 2.1,
       "agent_thinks_ok": true,
       "false_pass": false,
-      "reply": "Listo, el volumen se colocó al 10 por ciento.",
+      "reply": "Listo, ajusté el volumen a 10.",
       "error": null
     },
     {
@@ -70,10 +70,10 @@
       "pass": true,
       "evidence": "ventana 'notas' visible=True",
       "steps": 1,
-      "latency_s": 5.18,
+      "latency_s": 5.21,
       "agent_thinks_ok": true,
       "false_pass": false,
-      "reply": "Listo, abrí el Bloc de notas.",
+      "reply": "Listo, abrí Bloc de notas.",
       "error": null
     },
     {
@@ -83,23 +83,23 @@
       "pass": true,
       "evidence": "calc proc=True",
       "steps": 1,
-      "latency_s": 2.75,
+      "latency_s": 2.91,
       "agent_thinks_ok": true,
       "false_pass": false,
-      "reply": "Listo, abrí Calculadora.",
+      "reply": "Listo, abrí la Calculadora.",
       "error": null
     },
     {
       "id": "t1_notepad_write",
       "tier": 1,
       "utterance": "abrí el bloc de notas y escribí hola mundo",
-      "pass": false,
-      "evidence": "Notepad contiene 'hola mundo'=False",
+      "pass": true,
+      "evidence": "Notepad contiene 'hola mundo'=True",
       "steps": 1,
-      "latency_s": 5.06,
+      "latency_s": 4.49,
       "agent_thinks_ok": false,
       "false_pass": false,
-      "reply": "Listo, abrí el Bloc de notas. No alcancé a completar la acción. ¿La repetimos?",
+      "reply": "Listo, abrí Bloc de notas. Intenté escribir «hola mundo» pero no pude confirmar que entró en la ventana activa.",
       "error": null
     }
   ]
