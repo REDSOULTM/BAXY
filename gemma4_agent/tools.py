@@ -353,6 +353,52 @@ def _apply_action_enums(schemas: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return schemas
 
 
+def _normalize_tool_name(name: str, known: set[str]) -> str | None:
+    """Normaliza un tool name mal-formado de Gemma 4 a uno del catálogo, o None.
+
+    Gemma 4 emite a veces el nombre con ruido estructural (no semántico):
+      - mayúsculas:        "GUI" / "SYSTEM"
+      - espacios/parens:   "gui " / "gui()"
+      - segmentado:        "Functions.gui.click" / "tools/gui"
+      - prefijo de acción: "gui_click" cuando la tool es "gui"
+    Esto NO es ambigüedad de intención (eso lo decide el router/LLM): es un
+    nombre que apunta CLARAMENTE a una tool existente pero con forma sucia.
+    Normalización 100% ESTRUCTURAL (sin keywords, sin idioma, sin hardcode de
+    nombres): solo manipula la string contra el catálogo real `known`.
+    Port de carter_v5/adapters/tool_call_repair.py::normalize_tool_name.
+    """
+    if not name:
+        return None
+    # 1. exact
+    if name in known:
+        return name
+    # 2. strip whitespace + trailing parens/punct
+    stripped = name.strip().rstrip("()[]{} .:")
+    if stripped in known:
+        return stripped
+    # 3. case-insensitive
+    low = stripped.casefold()
+    by_lower = {k.casefold(): k for k in known}
+    if low in by_lower:
+        return by_lower[low]
+    # 4. segmento: partir en . / \ y probar cada segmento desde la derecha
+    #    "Functions.gui.click" -> "click"? no; "gui"? sí. "tools/gui" -> "gui".
+    for sep in (".", "/", "\\"):
+        if sep in low:
+            for seg in reversed([s for s in low.split(sep) if s]):
+                if seg in by_lower:
+                    return by_lower[seg]
+    # 5. prefijo underscore: "gui_click" -> "gui" si "gui" ∈ known.
+    #    Probar prefijos progresivos por "_".
+    if "_" in low:
+        parts = low.split("_")
+        for i in range(len(parts) - 1, 0, -1):
+            cand = "_".join(parts[:i])
+            if cand in by_lower:
+                return by_lower[cand]
+    return None
+
+
 def _correct_known_misroute(name: str, args: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """Redirect a tool call whose OWN arguments prove the model picked the
     wrong tool. Validates the LLM's output, not the user's phrasing, so it is
@@ -1227,7 +1273,20 @@ class ToolRegistry:
         name, clean_args = _correct_known_misroute(name, clean_args)
         impl = self._impls.get(name)
         if not impl:
-            return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))
+            # Gemma 4 a veces ensucia el nombre (mayúsculas, "gui()",
+            # "Functions.gui.click", "gui_click"). Normalización estructural
+            # contra el catálogo real antes de declarar "unknown". Gate
+            # GEMMA4_NORMALIZE_TOOL_NAME=0. (Carter tool_call_repair port.)
+            import os as _os_n
+            if _os_n.environ.get("GEMMA4_NORMALIZE_TOOL_NAME", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                fixed = _normalize_tool_name(name, set(self._impls.keys()))
+                if fixed and fixed != name:
+                    impl = self._impls.get(fixed)
+                    if impl:
+                        name = fixed
+            if not impl:
+                return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))
         clean_args, validation_errors = _coerce_and_validate_tool_args(name, clean_args)
         if validation_errors:
             return _normalize_tool_result(

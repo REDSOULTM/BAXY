@@ -190,5 +190,38 @@ class TestParentAgentBackref(unittest.TestCase):
         self.assertIs(getattr(reg, "parent_agent", None), sentinel)
 
 
+class TestToolNameNormalization(unittest.TestCase):
+    """Gemma 4 ensucia el nombre de la tool (mayúsculas, parens, segmentos,
+    prefijo de acción). La normalización estructural lo arregla; un nombre
+    genuinamente inexistente sigue siendo 'unknown tool'."""
+
+    def setUp(self) -> None:
+        self.reg = _make_registry()
+
+    def test_uppercase_dispatches(self) -> None:
+        r = self.reg.execute("SYSTEM", {"action": "time"})
+        self.assertNotIn("unknown tool", str(r.get("error") or ""))
+        self.assertTrue(r.get("ok"))
+
+    def test_dirty_forms_map_to_base(self) -> None:
+        from .tools import _normalize_tool_name
+        known = set(self.reg._impls.keys())
+        for dirty, base in (("gui()", "gui"), ("Functions.gui.click", "gui"),
+                            ("gui_click", "gui"), ("gui ", "gui"),
+                            ("tools/window", "window")):
+            if base in known:
+                self.assertEqual(_normalize_tool_name(dirty, known), base, dirty)
+
+    def test_genuinely_unknown_stays_unknown(self) -> None:
+        r = self.reg.execute("teleport", {"x": 1})
+        self.assertIn("unknown tool", str(r.get("error") or ""))
+
+    def test_normalize_returns_none_for_unknown(self) -> None:
+        from .tools import _normalize_tool_name
+        known = {"gui", "audio", "system"}
+        self.assertIsNone(_normalize_tool_name("frobnicate", known))
+        self.assertIsNone(_normalize_tool_name("xyz_abc", known))
+
+
 if __name__ == "__main__":
     unittest.main()
