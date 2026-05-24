@@ -78,11 +78,15 @@ memoria feedback_no_monolingual_regex.
   project_computer_use_roadmap_2026_05_24 + docs/research/agent_arquitectura/
   computer_use_sintesis_decisional_2026_05_24.md.** PRÓXIMO = Fase 1 verify_post_action.
 
-### Pendiente menor (no bloqueante)
-- inv 2 capas profundas (sqlite-vec retrieval, salience/TTL) — arquitectura
-  grande, no aplicada (el P0 del bug WhatsApp sí).
-- Jarvis yes/no + textos de respuesta siguen es-céntricos (miss benigno).
-- Los 2 TestSpotifyAutoPlay siguen fallando por trabajo sin commitear de RED.
+### Pendiente menor — RESUELTO (2026-05-25)
+- inv 2 capas profundas: **salience + eviction por importancia HECHO** (bc23d0f):
+  el cap ya no borra un hecho importante viejo por basura reciente; recall sube
+  salience. NO se trajo sqlite-vec/EmbeddingGemma (MiniLM-retrieval ya cubre el
+  caso; menos deps/VRAM, alineado con LoCoMo "simple bien hecho > sofisticado").
+- Jarvis yes/no: **handshake MULTILINGÜE HECHO** (6aa3849): oferta + respuestas +
+  describe en es/en/pt/fr/de/it; responde en el idioma de la oferta.
+- Los 2 TestSpotifyAutoPlay siguen fallando por trabajo sin commitear de RED
+  (stash + planner.py M) — NO es de las investigaciones.
 
 ## GOTCHAS clave
 - agent.py = 3249 líneas (orquestación concentrada). Loop max_agent_turns=8.
