@@ -215,6 +215,50 @@ class TestWhatsappContactResolution(unittest.TestCase):
         self.assertTrue(source.startswith("contact:"))
         self.assertIsNone(name)  # no necesario porque tenemos phone
 
+    def test_phonetic_fuzzy_match_resolves_accent_and_typo(self):
+        # 'juan perez' sin tilde / con typo leve igual resuelve (universal, fuzzy)
+        from .domain_tools import _contacts_resolve_recipient
+        for q in ("Juan Pérez", "juan peres", "Juan Perz"):
+            r = _contacts_resolve_recipient({"query": q}, self.state)
+            self.assertTrue(r["ok"], q)
+            self.assertIsNotNone(r["best"], q)
+            best_name = (r["best"]["contact"].get("metadata") or {}).get("name")
+            self.assertEqual(best_name, "Juan Perez", q)
+
+
+class TestWhatsappAmbiguousContact(unittest.TestCase):
+    """Inv 2 (grounding): si dos contactos casi empatan, PREGUNTAR, no adivinar
+    (anti bug 'mamá'->'Música': mandar al chat equivocado es daño irreversible)."""
+
+    def setUp(self):
+        self.state = _fresh_state()
+        # Dos contactos con nombres parecidos y ambos con phone.
+        self.state.register_resource(
+            "contact", "Mariana",
+            metadata={"name": "Mariana", "phone": "+54 9 11 1111-1111"})
+        self.state.register_resource(
+            "contact", "Marian",
+            metadata={"name": "Marian", "phone": "+54 9 11 2222-2222"})
+
+    def test_ambiguous_resolution_flagged(self):
+        from .domain_tools import _contacts_resolve_recipient
+        r = _contacts_resolve_recipient({"query": "Maria"}, self.state)
+        self.assertTrue(r["ok"])
+        self.assertTrue(r["ambiguous"], "Mariana vs Marian deberían empatar")
+
+    def test_exact_match_not_ambiguous(self):
+        from .domain_tools import _contacts_resolve_recipient
+        r = _contacts_resolve_recipient({"query": "Mariana"}, self.state)
+        self.assertFalse(r["ambiguous"])  # match exacto no es ambiguo
+
+    def test_whatsapp_asks_on_ambiguous(self):
+        # el flujo de envío debe devolver needs_user con candidatos, no mandar
+        result = _resolve_whatsapp_recipient({"contact": "Maria"}, self.state)
+        self.assertIsInstance(result, dict)  # error/needs_user, no 4-tuple
+        self.assertEqual(result.get("status"), "needs_user")
+        self.assertIn("candidates", result)
+        self.assertGreaterEqual(len(result["candidates"]), 2)
+
 
 class TestWhatsappAliases(unittest.TestCase):
     """Aceptamos varios alias para los campos."""

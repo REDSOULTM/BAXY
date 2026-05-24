@@ -8156,6 +8156,38 @@ def _vcard_parse(text: str) -> list[dict[str, Any]]:
     return cards
 
 
+def _name_similarity(q: str, name: str) -> int:
+    """Similitud nombre-query UNIVERSAL (inv 2). Combina exacto/substring con
+    fuzzy (Jaro-Winkler, funciona en cualquier script) y fonético (metaphone,
+    ayuda en alfabeto latino: 'mama'!='musica'). Devuelve 0-100. Sin deps duras:
+    si jellyfish/rapidfuzz no están, cae a exacto/substring."""
+    if not q or not name:
+        return 0
+    if q == name:
+        return 100
+    score = 50 if q in name or name in q else 0
+    try:
+        import jellyfish
+        jw = jellyfish.jaro_winkler_similarity(q, name)
+        score = max(score, int(jw * 88))  # tope <100 para no empatar con exacto
+        # bonus fonético: mismo metaphone refuerza (anti 'mama'->'musica').
+        if jellyfish.metaphone(q) and jellyfish.metaphone(q) == jellyfish.metaphone(name):
+            score = max(score, 72)
+    except Exception:
+        pass
+    return score
+
+
+# Si el mejor y el segundo candidato quedan dentro de este margen, la resolución
+# es AMBIGUA y el agente debería preguntar en vez de adivinar (anti bug
+# "mamá"->"Música"): mejor pedir desempate que mandar al chat equivocado.
+_RESOLVE_AMBIGUOUS_MARGIN = 12
+# Piso de score para considerar un match REAL. Jaro-Winkler da ~50 de baseline a
+# strings no relacionados ('persona inexistente' vs 'juan perez' = 48); por
+# debajo de esto es ruido fuzzy, no un candidato. Medido sobre nombres reales.
+_RESOLVE_MIN_SCORE = 60
+
+
 def _contacts_resolve_recipient(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     query = str(args.get("query") or args.get("name") or args.get("recipient") or "").strip()
     if not query:
@@ -8168,24 +8200,29 @@ def _contacts_resolve_recipient(args: dict[str, Any], state: AgentState) -> dict
         name = str(meta.get("name") or c.get("label") or "").casefold()
         email = str(meta.get("email") or "").casefold()
         phone = str(meta.get("phone") or "").casefold()
-        score = 0
-        if q == name:
-            score += 100
-        elif q in name:
-            score += 50
+        score = _name_similarity(q, name)
         if q == email:
-            score += 90
-        elif q in email:
-            score += 40
+            score = max(score, 90)
+        elif q and q in email:
+            score = max(score, 40)
         if q == phone:
-            score += 80
-        elif q in phone:
-            score += 30
-        if score:
+            score = max(score, 80)
+        elif q and q in phone:
+            score = max(score, 30)
+        if score >= _RESOLVE_MIN_SCORE:
             scored.append((score, c))
     scored.sort(key=lambda t: -t[0])
     matches = [{"contact": c, "score": s} for s, c in scored[: int(args.get("limit", 5))]]
-    return _ok(query=query, matches=matches, count=len(matches), best=matches[0] if matches else None)
+    # Ambigüedad: top-2 REALES (sobre el piso) y muy cerca -> señalar para que el
+    # agente desempate. Dos matches débiles no son ambiguos, son ruido.
+    ambiguous = (
+        len(matches) >= 2
+        and matches[1]["score"] >= _RESOLVE_MIN_SCORE
+        and (matches[0]["score"] - matches[1]["score"]) <= _RESOLVE_AMBIGUOUS_MARGIN
+        and matches[0]["score"] < 100  # un match exacto no es ambiguo
+    )
+    return _ok(query=query, matches=matches, count=len(matches),
+               best=matches[0] if matches else None, ambiguous=ambiguous)
 
 
 def _parse_due_iso(value: Any) -> tuple[str | None, str | None]:
@@ -8319,6 +8356,22 @@ def _resolve_whatsapp_recipient(
     # 1. Intentar contacts store local (rapido si esta).
     resolve_result = _contacts_resolve_recipient({"query": name_query, "limit": 5}, state)
     matches = resolve_result.get("matches") or []
+    # Inv 2 (grounding): si la resolución es AMBIGUA (dos contactos casi
+    # empatados), NO adivinar — pedir desempate. Mandar al chat equivocado es
+    # daño irreversible (bug "mamá"->"Música"). Mejor preguntar.
+    if resolve_result.get("ambiguous") and len(matches) >= 2:
+        cand_names = [
+            str((m["contact"].get("metadata") or {}).get("name")
+                or m["contact"].get("label") or "?")
+            for m in matches[:3]
+        ]
+        return _err(
+            f"contacto ambiguo para {name_query!r}",
+            status="needs_user",
+            contact_name=name_query,
+            candidates=cand_names,
+            hint=f"¿A cuál querías: {', '.join(cand_names)}?",
+        )
     if matches:
         best = matches[0]["contact"]
         meta = best.get("metadata") or {}
