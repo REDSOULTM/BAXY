@@ -34,10 +34,15 @@ Tres categorías de resultado:
 3. **Features concretas que v5 tiene y nosotros no** — candidatos priorizados.
 
 Ver detalle en:
-- [`01_lo_que_valida.md`](01_lo_que_valida.md)
-- [`02_antipatrones_a_revisar.md`](02_antipatrones_a_revisar.md)
-- [`03_features_candidatas.md`](03_features_candidatas.md)
-- [`04_de_las_investigaciones.md`](04_de_las_investigaciones.md)
+- [`01_lo_que_valida.md`](01_lo_que_valida.md) — 13 decisiones nuestras que Carter confirma.
+- [`02_antipatrones_a_revisar.md`](02_antipatrones_a_revisar.md) — errores que Carter pagó; verificados contra nuestro código.
+- [`03_features_candidatas.md`](03_features_candidatas.md) — features de v5 que no tenemos (primer pase, alto nivel).
+- [`04_de_las_investigaciones.md`](04_de_las_investigaciones.md) — cruce de los 57 .md de investigación.
+- **[`05_analisis_profundo_codigo.md`](05_analisis_profundo_codigo.md)** — ⭐ lectura módulo-por-módulo del CÓDIGO real (core/mission/verify/loop/memory/safety/tools de v5 + lo perdido en v3/v4 + OpenClaw). 84+ técnicas con archivo:línea y umbrales.
+- **[`06_matriz_gaps_verificada.md`](06_matriz_gaps_verificada.md)** — ⭐ 23 hallazgos cruzados por grep contra NUESTRO código (✅/⚠️/❌/🚫) + top accionables re-priorizados.
+
+> **05 y 06 son el análisis profundo** pedido (lectura del código real de todo
+> Carter, no solo docs). 01-04 fueron el primer pase de alto nivel.
 
 ---
 
