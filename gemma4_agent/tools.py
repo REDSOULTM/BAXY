@@ -4804,7 +4804,19 @@ Start-Sleep -Milliseconds 120
                 v = gui_verify.verify_after(before)
                 clicked["state_changed"] = v.get("state_changed")
                 clicked["state_verify"] = v.get("reason")
-                if v.get("state_changed") is False:
+                # RECOVERY Fase 4: si el click NO tuvo efecto observable
+                # (state_changed False) y tenemos un punto, recuperar UNA vez:
+                # re-enfocar la ventana del control + reintentar el click. Causa
+                # típica: el control no tenía foco o la ventana estaba detrás.
+                # Bounded (1 retry) para no loopear. Reduce 'clicks sin efecto'.
+                if v.get("state_changed") is False and cx is not None and cy is not None:
+                    rec = self._recover_click(label, window, el, cx, cy)
+                    if rec is not None:
+                        rec["action"] = "click_button"
+                        rec["label"] = label
+                        rec["clicked_element"] = el
+                        rec["recovered"] = True
+                        return rec
                     clicked["verified"] = False
                     clicked.setdefault("completion_status", "clicked_no_effect")
         except Exception:
@@ -4814,6 +4826,39 @@ Start-Sleep -Milliseconds 120
         clicked["clicked_element"] = el
         clicked["grounding"] = "uia"
         return clicked
+
+    def _recover_click(self, label: str, window: str, el: dict, cx: int, cy: int) -> dict[str, Any] | None:
+        """RECOVERY (Fase 4) para un click sin efecto: re-enfocar la ventana del
+        control y reintentar el click UNA vez por coordenada, re-verificando. El
+        foco perdido es la causa #1 de 'click sin efecto' (la ventana estaba
+        detrás o el control no tenía foco). Devuelve el result si el reintento
+        SÍ cambió el estado, o None si tampoco funcionó (el caller reporta el
+        fallo honesto). Bounded: 1 intento, sin recursión."""
+        try:
+            # re-enfocar: por window hint, o por el proceso del elemento clickeado.
+            focus_target = window or (el.get("name") or "")
+            if focus_target:
+                self.window_control("focus", focus_target)
+                time.sleep(0.25)
+            from . import gui_verify
+            before2 = gui_verify.capture_before(cx, cy)
+            retry = self.gui_click({"x": int(cx), "y": int(cy)})
+            if not retry.get("ok"):
+                return None
+            v2 = gui_verify.verify_after(before2)
+            retry["state_changed"] = v2.get("state_changed")
+            retry["state_verify"] = v2.get("reason")
+            retry["grounding"] = "uia"
+            retry["recovery"] = "refocus_retry"
+            # Solo consideramos recuperado si AHORA sí cambió algo (o no se pudo
+            # medir -> lo dejamos pasar como best-effort, igual que el path normal).
+            if v2.get("state_changed") is False:
+                retry["verified"] = False
+                retry.setdefault("completion_status", "clicked_no_effect")
+                return None  # el retry tampoco tuvo efecto -> fallo honesto
+            return retry
+        except Exception:
+            return None
 
     # Tipos de control que cuentan como "clickeables tipo botón", en orden de
     # preferencia. Estable cross-locale (son ProgrammaticName de UIA, en inglés).
