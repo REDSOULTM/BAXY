@@ -81,6 +81,7 @@ class LLMClient:
         thinking_budget: int | None = None,
         model: str | None = None,
         greedy: bool = False,
+        sampling: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Synchronous chat completion against the local llama-server.
 
@@ -103,15 +104,26 @@ class LLMClient:
         _greedy_on = greedy and (
             _os.environ.get("GEMMA4_GREEDY_TOOLCALL", "1").strip().lower()
             not in {"0", "false", "no", "off"})
+        # SAMPLING POR MODO (inv 0 T4): el modo puede pasar overrides
+        # {temperature, top_p, top_k} para bajar la entropía en modos de acción /
+        # info breve (los defaults de Gemma son para chat). Greedy GANA sobre esto
+        # (la decisión de tool-call manda con temp=0). Gate GEMMA4_MODE_SAMPLING=0.
+        _samp = sampling or {}
+        if _os.environ.get("GEMMA4_MODE_SAMPLING", "1").strip().lower() \
+                in {"0", "false", "no", "off"}:
+            _samp = {}
+        def _pick(key: str, cfg_default: Any) -> Any:
+            v = _samp.get(key)
+            return cfg_default if v is None else v
         body: dict[str, Any] = {
             # In router mode the agent passes the per-turn router preset name
             # ("<profile>-text" / "<profile>-vision"); else the configured model.
             "model": model or self.config.model,
             "stream": False,
             "messages": messages,
-            "temperature": 0.0 if _greedy_on else self.config.temperature,
-            "top_p": 1.0 if _greedy_on else self.config.top_p,
-            "top_k": 1 if _greedy_on else self.config.top_k,
+            "temperature": 0.0 if _greedy_on else _pick("temperature", self.config.temperature),
+            "top_p": 1.0 if _greedy_on else _pick("top_p", self.config.top_p),
+            "top_k": 1 if _greedy_on else _pick("top_k", self.config.top_k),
             "repeat_penalty": self.config.repeat_penalty,  # 1.0; NO subir (Gemma 4 bug)
             "max_tokens": max_tokens or self.config.max_tokens,
             "chat_template_kwargs": {"enable_thinking": thinking},

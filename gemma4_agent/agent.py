@@ -1302,6 +1302,10 @@ class Gemma4Agent:
                     parallel_tool_calls=mode.parallel_tool_calls,
                     max_tokens=_pass_max,
                     greedy=_greedy,
+                    # SAMPLING POR MODO (inv 0 T4): baja-T en modos de acción/info
+                    # breve. Greedy gana sobre esto en el turno de tool-call.
+                    sampling={"temperature": mode.temperature, "top_p": mode.top_p,
+                              "top_k": mode.top_k},
                     # Per-mode deadline so a hung/slow call fails fast instead of
                     # blocking up to the global 180s * max_agent_turns. Derived
                     # from the token budget (see AgentMode.request_timeout_s).

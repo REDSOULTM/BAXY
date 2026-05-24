@@ -34,6 +34,18 @@ class AgentMode:
     # larger budget for genuine multi-step reasoning. llama.cpp honors this
     # via `thinking_budget_tokens` in the request body (verified on b9090).
     thinking_budget: int = -1
+    # SAMPLING POR MODO (inv 0 T4, 2026-05-23). Los defaults de Gemma
+    # (T=1.0/top_p=0.95/top_k=64) son para chat/thinking; en modos de ACCIÓN con
+    # gramática activa son innecesariamente altos y dan varianza turno-a-turno en
+    # el nombre de la tool y los args. Una T más baja en acción estabiliza sin
+    # empobrecer el lenguaje (esos modos emiten tool-call o summary corto, no
+    # prosa larga). None = usar el default del config (sin override). NO se aplica
+    # cuando el cliente ya va greedy (la decisión de tool-call manda con temp=0).
+    # Fuente: tabla T4 del informe de arquitectura + práctica industria (greedy/
+    # baja-T para JSON estructurado y function-calling).
+    temperature: float | None = None
+    top_p: float | None = None
+    top_k: int | None = None
 
     @property
     def request_timeout_s(self) -> float:
@@ -99,6 +111,9 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             parallel_tool_calls=False,
             max_tokens=min(base_max_tokens, 320),
             system_hint=_INFO_HINT,
+            # T4: algo de variance para razonamiento breve factual, pero por
+            # debajo del default 1.0 (recall factual no necesita creatividad).
+            temperature=0.6, top_p=0.95, top_k=40,
         )
     if inferred == "vision_action":
         return AgentMode(
@@ -172,6 +187,9 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         parallel_tool_calls=False,
         max_tokens=min(base_max_tokens, 128),
         system_hint=_FAST_ACTION_HINT,
+        # T4: smalltalk/confirmaciones cortas -> baja-T estabiliza la respuesta
+        # sin empobrecerla (son 1-2 frases). Reduce varianza turno-a-turno.
+        temperature=0.4, top_p=0.9, top_k=40,
     )
 
 
