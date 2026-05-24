@@ -520,7 +520,100 @@ $items | ConvertTo-Json -Depth 3
                 out.append(AppCandidate(name, "epic", exe, "file", Path(exe).name))
         return out
 
+    # Ejecutables Chromium/Electron conocidos: lanzarlos con la flag de
+    # accesibilidad (R1) enciende el árbol UIA del WebContents desde el arranque
+    # -> el agente puede leer/clickear controles web por UIA (evita caer a OCR) y
+    # detectar campos de contraseña web por UIA IsPassword (R6). Verificado:
+    # --force-renderer-accessibility=complete expone IsPassword en inputs web.
+    _CHROMIUM_EXES = ("chrome.exe", "msedge.exe", "brave.exe", "vivaldi.exe",
+                      "opera.exe", "opera_gx.exe")
+    _ELECTRON_EXES = ("discord.exe", "slack.exe", "code.exe", "teams.exe",
+                      "spotify.exe", "whatsapp.exe", "signal.exe", "notion.exe",
+                      "github desktop.exe", "githubdesktop.exe")
+
+    # Nombre de app (lower, substring) -> image name del exe, para resolver por
+    # registry App Paths cuando el candidato es una shell:appsFolder URI (no
+    # appendeable). Solo Chromium/Electron conocidos.
+    _NAME_TO_EXE = {
+        "google chrome": "chrome.exe", "chrome": "chrome.exe",
+        "microsoft edge": "msedge.exe", "edge": "msedge.exe",
+        "brave": "brave.exe", "vivaldi": "vivaldi.exe", "opera gx": "opera.exe",
+        "opera": "opera.exe", "discord": "discord.exe", "slack": "slack.exe",
+        "visual studio code": "code.exe", "vs code": "code.exe",
+        "spotify": "spotify.exe", "whatsapp": "whatsapp.exe",
+    }
+
+    @staticmethod
+    def _exe_from_app_paths(image_name: str) -> str | None:
+        """Resuelve la ruta completa de un exe vía registry App Paths (HKLM/HKCU)
+        — la forma canónica Windows. None si no está registrado."""
+        try:
+            import winreg
+        except Exception:
+            return None
+        sub = (r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\\" + image_name)
+        for root in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+            try:
+                with winreg.OpenKey(root, sub) as k:
+                    val, _ = winreg.QueryValueEx(k, None)  # default value
+                    if val and os.path.exists(val):
+                        return val
+            except OSError:
+                continue
+        return None
+
+    def _ax_launch_target(self, candidate: AppCandidate) -> tuple[str, list[str], bool] | None:
+        """Si el candidato es Chromium/Electron, devuelve (exe, args, is_electron)
+        para lanzarlo con la flag de accesibilidad. Resuelve .lnk (TargetPath),
+        shell:appsFolder (registry App Paths por nombre) o exe directo. None si no
+        aplica / no se pudo resolver un exe. Gated por GEMMA4_GUI_AX_LAUNCH
+        (default ON; agresivo por decisión de RED)."""
+        if os.environ.get("GEMMA4_GUI_AX_LAUNCH", "1").strip().lower() in {"0", "false", "no", "off"}:
+            return None
+        launch = candidate.launch or ""
+        low = launch.lower()
+        exe = launch
+        if low.endswith(".lnk"):
+            tgt = self._resolve_lnk_target(launch)
+            if not tgt:
+                return None
+            exe = tgt
+        elif low.startswith("shell:") or candidate.launch_type == "shell":
+            # shell:appsFolder no es appeable -> resolver el exe por NOMBRE de app
+            from .tools import _fold  # noqa
+            nm = _fold(candidate.name)
+            img = next((self._NAME_TO_EXE[k] for k in self._NAME_TO_EXE if k in nm), None)
+            if not img:
+                return None
+            resolved = self._exe_from_app_paths(img)
+            if not resolved:
+                return None
+            exe = resolved
+        base = os.path.basename(exe).lower()
+        if base in self._CHROMIUM_EXES:
+            return (exe, ["--force-renderer-accessibility=complete"], False)
+        if base in self._ELECTRON_EXES:
+            # Electron usa env var, no flag (la flag puede no propagar al renderer).
+            return (exe, [], True)
+        return None
+
     def open(self, candidate: AppCandidate) -> dict[str, Any]:
+        # R1: Chromium/Electron -> lanzar con accesibilidad encendida (UIA web).
+        ax = self._ax_launch_target(candidate)
+        if ax is not None:
+            exe, args, is_electron = ax
+            try:
+                env = dict(os.environ)
+                if is_electron:
+                    env["ELECTRON_ENABLE_ACCESSIBILITY"] = "1"
+                subprocess.Popen([exe, *args], env=env,
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+                                 | getattr(subprocess, "DETACHED_PROCESS", 0))
+                return {"ok": True, "candidate": {"name": candidate.name,
+                        "launch": exe, "launch_type": "ax_accessible",
+                        "ax_flag": bool(args) or is_electron}}
+            except Exception:
+                pass  # cualquier fallo -> caer al os.startfile normal (no romper)
         # T2-app-startfile-no-error-042: capturamos OSError y devolvemos
         # un dict estructurado con detalle del candidate.
         try:
