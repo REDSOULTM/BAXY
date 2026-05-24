@@ -397,22 +397,25 @@ def _build_extended() -> list[GuiMission]:
             note=f"unmute ({lang})"))
 
     # ---- ABRIR APPS NATIVAS (siempre en Windows) × idiomas
+    # (label, exe_real, proc_name_para_verify, utterances). El verifier usa el
+    # NOMBRE REAL del proceso (calc -> CalculatorApp.exe), exact, para no
+    # confundir (notepad != notepad++) ni fallar por mismatch (calc != calc.exe).
     native = [
-        ("notepad", "notepad.exe", ["abrí el bloc de notas", "open notepad",
+        ("notepad", "notepad.exe", "notepad", ["abrí el bloc de notas", "open notepad",
          "abre o bloco de notas", "ouvre le bloc-notes", "öffne den editor"]),
-        ("calc", "CalculatorApp.exe", ["abrí la calculadora", "open the calculator",
-         "abre a calculadora", "ouvre la calculatrice", "öffne den rechner"]),
-        ("mspaint", "mspaint.exe", ["abrí Paint", "open Paint", "abre o Paint"]),
-        ("wordpad", "wordpad.exe", ["abrí WordPad", "open WordPad"]),
+        ("calc", "CalculatorApp.exe", "CalculatorApp", ["abrí la calculadora",
+         "open the calculator", "abre a calculadora", "ouvre la calculatrice",
+         "öffne den rechner"]),
+        ("mspaint", "mspaint.exe", "mspaint", ["abrí Paint", "open Paint", "abre o Paint"]),
     ]
-    for proc_substr, exe, utts in native:
+    for label, exe, proc_name, utts in native:
         for k, u in enumerate(utts):
             out.append(GuiMission(
-                id=f"t1_open_{proc_substr}_{k}", tier=1, utterance=u,
-                goal_verifier=_v_proc(proc_substr, exact=True),  # notepad != notepad++
+                id=f"t1_open_{label}_{k}", tier=1, utterance=u,
+                goal_verifier=_v_proc(proc_name, exact=True),
                 reset=(lambda e=exe: _kill_process(e)),
                 precheck=(lambda e=exe: _exe_exists(e)),
-                note=f"abrir {proc_substr} ({u})"))
+                note=f"abrir {label} ({u})"))
 
     # ---- MULTI-PASO Tier-1: abrir + escribir (verifica el TEXTO por UIA)
     write_cases = [
@@ -466,8 +469,8 @@ def _build_extended() -> list[GuiMission]:
             out.append(GuiMission(
                 id=f"t1_close_{proc_substr}_{k}", tier=1, utterance=u,
                 goal_verifier=(lambda p=proc_substr: (lambda r: {"pass": (r is False),
-                    "evidence": f"proceso '{p}' corriendo={r} (esperado cerrado)",
-                    "actual": r})(process_running(p))),
+                    "evidence": f"proceso '{p}'(exact) corriendo={r} (esperado cerrado)",
+                    "actual": r})(process_running(p, exact=True))),
                 reset=(lambda e=exe: _launch_detached(e)),
                 precheck=(lambda e=exe: _exe_exists(e)),
                 note=f"cerrar {proc_substr} ({u})"))
