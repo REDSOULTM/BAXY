@@ -3468,3 +3468,16 @@
 {"tool": "app", "q": "lance Google Chrome"}
 {"tool": "app", "q": "starte Google Chrome"}
 {"tool": "app", "q": "avvia Google Chrome"}
+{"tool": "uia", "q": "apretá el botón 7 en la calculadora"}
+{"tool": "uia", "q": "apretá el 7 en la calculadora"}
+{"tool": "uia", "q": "tocá el siete en la calculadora"}
+{"tool": "uia", "q": "presioná el botón cinco"}
+{"tool": "uia", "q": "press the 5 button in the calculator"}
+{"tool": "uia", "q": "apretá el botón Aceptar"}
+{"tool": "uia", "q": "tocá el botón Enviar"}
+{"tool": "uia", "q": "hacé clic en el botón Guardar"}
+{"tool": "uia", "q": "clic en el 9 de la calculadora"}
+{"tool": "uia", "q": "tap the seven button"}
+{"tool": "uia", "q": "appuie sur le bouton sept"}
+{"tool": "uia", "q": "drück die Sieben"}
+{"tool": "uia", "q": "clicca il pulsante sette"}

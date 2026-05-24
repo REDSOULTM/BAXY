@@ -165,24 +165,35 @@ def _kill_process(exe_name: str) -> bool:
 
 def uia_window_has_text(window_substr: str, text_substr: str) -> bool | None:
     """¿La ventana cuyo título contiene window_substr tiene un control/edit cuyo
-    valor o Name contiene text_substr? Lee el árbol UIA real. None si no se pudo."""
+    valor o Name contiene text_substr? Lee el árbol UIA real. None si no se pudo.
+    Camina descendientes en PROFUNDIDAD acotada (BFS) — el display de algunas apps
+    (Calculadora: 'CalculatorResults') está más abajo que 2 niveles; un walk chato
+    daba FALSO NEGATIVO aunque el texto SÍ estaba (bug 2026-05-25)."""
     try:
         import uiautomation as auto
         s_win, s_txt = window_substr.lower(), text_substr.lower()
         for w in auto.GetRootControl().GetChildren():
             try:
-                if s_win in (w.Name or "").lower():
-                    # buscar en descendientes (acotado)
-                    for el in w.GetChildren():
-                        for sub in [el] + el.GetChildren():
-                            val = ""
-                            try:
-                                vp = sub.GetValuePattern()
-                                val = vp.Value or ""
-                            except Exception:
-                                val = sub.Name or ""
-                            if s_txt in val.lower():
-                                return True
+                if s_win not in (w.Name or "").lower():
+                    continue
+                # BFS acotado: hasta ~600 nodos, cualquier profundidad razonable.
+                queue = list(w.GetChildren())
+                seen = 0
+                while queue and seen < 600:
+                    sub = queue.pop(0)
+                    seen += 1
+                    val = ""
+                    try:
+                        vp = sub.GetValuePattern()
+                        val = vp.Value or ""
+                    except Exception:
+                        val = sub.Name or ""
+                    if s_txt in (val or "").lower():
+                        return True
+                    try:
+                        queue.extend(sub.GetChildren())
+                    except Exception:
+                        pass
             except Exception:
                 continue
         return False
@@ -532,7 +543,89 @@ def _build_extended() -> list[GuiMission]:
             goal_verifier=_v_volume(n), reset=(lambda r=((n + 33) % 100): set_master_volume(r)),
             note=f"volumen {n} ({lang})"))
 
+    # ---- CLICK_BUTTON: clickear un control por su LABEL (macro click_button +
+    # uia.click button-prioritized). La Calculadora es UIA-rico y verificable: el
+    # display ('CalculatorResults') refleja el resultado. Usamos utterances con
+    # "clic/click en el botón X" (intención de CLICK clara — "apretá el 7" suelto
+    # es realmente intención de TECLADO, va a `input`, correcto). Verificador =
+    # estado del SO (display por UIA), nunca "tool ok". El reset clickea
+    # 7 + <op> dejando el display en un valor conocido tras el botón objetivo.
+    # Cada misión: clic en un botón NOMBRADO y el display debe mostrar el efecto.
+    # (digit_label, expected_display_substr, utterances)
+    # NOTA: las utterances van en el idioma del SO (Windows ES en la PC de RED)
+    # porque el LABEL del control que matchea es el del UIA localizado ("Cinco",
+    # no "five"). El cross-lingual label↔UI (pedir "five" en un Windows español)
+    # es un TECHO documentado aparte, NO se fuerza con una tabla de traducción
+    # de dígitos por idioma (sería el hardcode monolingüe vetado).
+    click_named = [
+        ("Nueve", "9", ["hacé clic en el botón nueve de la calculadora",
+                         "clic en el botón nueve"]),
+        ("Cinco", "5", ["clic en el botón cinco de la calculadora",
+                        "hacé clic en el botón cinco"]),
+        ("Tres", "3", ["hacé clic en el botón tres", "clic en el botón tres"]),
+    ]
+    for label, expect, utts in click_named:
+        for k, u in enumerate(utts):
+            out.append(GuiMission(
+                id=f"t2_clickbtn_{expect}_{k}", tier=2, utterance=u,
+                goal_verifier=(lambda e=expect: (lambda val: {
+                    "pass": (val is not None and e in val),
+                    "evidence": f"display Calculadora={val!r} contiene '{e}'={val is not None and e in val}",
+                    "actual": val})(_calc_display_value())),
+                reset=_reset_calc_clean,
+                precheck=(lambda: _exe_exists("CalculatorApp.exe") or True),
+                max_steps_hint=3,
+                note=f"click_button '{label}' ({u})"))
+
     return out
+
+
+def _calc_display_value() -> str | None:
+    """Lee el valor del display de la Calculadora (AutomationId
+    'CalculatorResults', Name tipo 'Se muestra 7' / 'Display is 7'). Devuelve el
+    Name del elemento o None. Es el ESTADO real del SO — distingue el dígito
+    clickeado de los botones (que también contienen dígitos en su nombre)."""
+    try:
+        import uiautomation as auto
+        for w in auto.GetRootControl().GetChildren():
+            if "calc" not in (w.Name or "").lower():
+                continue
+            queue = list(w.GetChildren())
+            seen = 0
+            while queue and seen < 600:
+                el = queue.pop(0)
+                seen += 1
+                try:
+                    if (el.AutomationId or "") == "CalculatorResults":
+                        return el.Name or ""
+                except Exception:
+                    pass
+                try:
+                    queue.extend(el.GetChildren())
+                except Exception:
+                    pass
+        return None
+    except Exception:
+        return None
+
+
+def _reset_calc_clean() -> None:
+    """Abre la Calculadora LIMPIA para las misiones click_button: mata la
+    instancia previa, abre una nueva y manda Escape (limpia el display). Así el
+    verificador parte de display vacío y un dígito clickeado se distingue."""
+    _kill_process("CalculatorApp.exe")
+    import time
+    time.sleep(0.4)
+    _launch_detached("calc.exe")
+    time.sleep(1.4)
+    try:
+        # Escape limpia el display de la Calculadora si quedó algo.
+        import subprocess
+        subprocess.run(["powershell", "-NoProfile", "-Command",
+                        "$w=New-Object -ComObject WScript.Shell; $w.AppActivate('Calculadora') | Out-Null; Start-Sleep -Milliseconds 300; $w.SendKeys('{ESC}')"],
+                       capture_output=True, timeout=8)
+    except Exception:
+        pass
 
 
 def _launch_detached(exe: str) -> bool:

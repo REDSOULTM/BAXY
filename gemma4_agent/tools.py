@@ -275,7 +275,7 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "app": ["search", "open", "close", "uninstall"],
     "steam": ["open", "library", "store", "list_games", "launch_game", "search_library", "search_store", "store_page", "install"],
     "window": ["list", "active", "focus", "close", "minimize", "maximize", "restore", "move_resize"],
-    "gui": ["screenshot", "click", "double_click", "right_click", "type", "type_into", "keypress", "hotkey", "scroll", "drag", "wait_for", "locate_text", "click_text", "locate_image"],
+    "gui": ["screenshot", "click", "double_click", "right_click", "type", "type_into", "click_button", "keypress", "hotkey", "scroll", "drag", "wait_for", "locate_text", "click_text", "locate_image"],
     "vision": ["describe_screen", "find_element", "ocr", "compare_before_after"],
     "browser": ["open", "search", "youtube_play", "media_pause", "media_stop", "active_tab_title", "click", "find", "research"],
     "web": ["search", "read", "research", "open"],
@@ -1574,6 +1574,8 @@ class ToolRegistry:
             return self.gui_screenshot(args)
         if action == "type_into":
             return self.gui_type_into(args)
+        if action == "click_button":
+            return self.gui_click_button(args)
         if action in self._GUI_MUTATING:
             # verify_post_action: capturar ROI antes -> actuar -> verificar que el
             # SO cambió. Anota state_changed en el result (honestidad: el agente
@@ -3963,13 +3965,29 @@ function ElemObj($e) {
 function Matches($e, $q) {
   if ([string]::IsNullOrWhiteSpace($q)) { return $true }
   $needle = $q.ToLowerInvariant()
+  $name = $e.Current.Name; if ($null -eq $name) { $name = "" }
+  $nameL = $name.ToLowerInvariant()
   $hay = @(
     $e.Current.Name,
     $e.Current.AutomationId,
     $e.Current.ClassName,
     $e.Current.ControlType.ProgrammaticName
   ) -join " "
-  return $hay.ToLowerInvariant().Contains($needle)
+  $hayL = $hay.ToLowerInvariant()
+  if ($hayL.Contains($needle)) { return $true }
+  # Token-aware: el usuario suele decir "botón tres"/"button three" pero el Name
+  # del control es solo "Tres". Matchear si un TOKEN significativo del query
+  # (>=3 chars, sin palabras genéricas de UI multi-idioma) coincide con el Name,
+  # o si el Name está contenido en el query. No es hardcode por-app: son
+  # stop-words de UI universales, el matching sigue siendo por el Name real.
+  $stop = @("boton","botón","button","bouton","schaltflache","schaltfläche","pulsante","botao","botão","el","la","the","le","les","der","die","das","il","en","in","de","del","of")
+  if ($nameL.Length -ge 2 -and $needle.Contains($nameL)) { return $true }
+  foreach ($tok in ($needle -split '\s+')) {
+    if ($tok.Length -lt 3) { continue }
+    if ($stop -contains $tok) { continue }
+    if ($nameL -eq $tok -or $nameL.Contains($tok) -or $tok.Contains($nameL)) { return $true }
+  }
+  return $false
 }
 
 function RootElement($windowQuery) {
@@ -4039,6 +4057,37 @@ if ($matches.Count -lt 1) {
 }
 
 $el = $matches[0]
+
+# Para CLICK: el 1er match laxo puede NO ser el control correcto (query "7"
+# matchea cualquier elemento que CONTENGA "7" en Name/AutomationId/ClassName/
+# ControlType). Reordenar para clickear el control MÁS clickeable: priorizar
+# (1) tipos botón, (2) que soporten InvokePattern, (3) Name que coincide exacto
+# o contiene el query, (4) habilitado y en pantalla. Esto arregla el click ciego
+# en apps UIA-rico (Calculadora: "7" daba un match equivocado que reportaba ok
+# pero no apretaba el dígito). Estable cross-locale (ControlType es inglés).
+if ($action -eq "click" -and $matches.Count -gt 1) {
+  $btnTypes = @("Button","SplitButton","MenuItem","TabItem","ListItem","Hyperlink","CheckBox","RadioButton")
+  $q = $query.ToLowerInvariant()
+  $best = $null; $bestScore = [double]::PositiveInfinity
+  foreach ($m in $matches) {
+    $ct = ($m.Current.ControlType.ProgrammaticName -replace '^ControlType\.','')
+    $nm = ($m.Current.Name)
+    if ($null -eq $nm) { $nm = "" }
+    $nml = $nm.ToLowerInvariant()
+    $ctRank = $btnTypes.IndexOf($ct); if ($ctRank -lt 0) { $ctRank = 99 }
+    $inv = $null
+    $hasInvoke = $m.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$inv)
+    $exact = if ($nml -eq $q) { 0 } else { 1 }
+    $nameHas = if ($nml.Contains($q)) { 0 } else { 1 }
+    $enabled = if ($m.Current.IsEnabled) { 0 } else { 1 }
+    $offs = if ($m.Current.IsOffscreen) { 1 } else { 0 }
+    # score lexicográfico aplanado a un double (pesos decrecientes)
+    $score = $offs*100000 + $enabled*10000 + (&{ if($hasInvoke){0}else{1} })*1000 + $ctRank*10 + $exact*4 + $nameHas*2
+    if ($score -lt $bestScore) { $bestScore = $score; $best = $m }
+  }
+  if ($best -ne $null) { $el = $best }
+}
+
 if ($action -eq "focus") {
   $el.SetFocus()
   [PSCustomObject]@{ ok=$true; action=$action; query=$query; element=(ElemObj $el); method="uia_set_focus" } | ConvertTo-Json -Depth 8
@@ -4481,6 +4530,129 @@ Start-Sleep -Milliseconds 120
         typed["typed_into_window"] = fg_title
         typed["action"] = "type_into"
         return typed
+
+    def gui_click_button(self, args: dict[str, Any]) -> dict[str, Any]:
+        """MACRO determinista (computer-use): clickear un control por su LABEL.
+        El 4B da el OBJETIVO (el label, p.ej. "Enviar"/"Save"/"Aceptar"); el
+        código hace el cómo (Agent-S2 mixture of grounding):
+          1) UIA find del control CLICKEABLE cuyo Name mejor matchea el label,
+             priorizando tipos botón (Button/MenuItem/ListItem/TabItem/Hyperlink/
+             CheckBox/RadioButton) sobre cualquier elemento que solo CONTENGA el
+             texto — así "clickeá Enviar" no matchea un label de texto.
+          2) capture_before en el punto del control -> Invoke()/click -> verify.
+        Devuelve el result UIA anotado con state_changed (verificación SIN VLM).
+        No es hardcode: el label viene del usuario en cualquier idioma, el
+        matching es por Name del control, no por listas por-app/idioma."""
+        label = str(args.get("label") or args.get("target") or args.get("query")
+                    or args.get("text") or "").strip()
+        if not label:
+            return _err("click_button requiere 'label'", status="needs_user")
+        window = str(args.get("window") or args.get("title") or "").strip()
+        # 1) localizar el botón (button-prioritized). Devuelve el punto clickeable.
+        found = self._uia_find_clickable(label, window)
+        if not found.get("ok"):
+            return _err(
+                found.get("error") or "no encontré un botón con ese label",
+                label=label, window=window, status="failed",
+                candidates=found.get("candidates"))
+        el = found.get("element") or {}
+        pt = found.get("click_point") or {}
+        cx, cy = pt.get("x"), pt.get("y")
+        # 2) capture_before en el punto -> click -> verify_after.
+        try:
+            from . import gui_verify
+            before = gui_verify.capture_before(cx, cy)
+        except Exception:
+            before = None
+        # Click preferente por UIA InvokePattern (no depende de foreground ni de
+        # coordenadas, funciona aunque el control esté parcialmente ocluido). Para
+        # apuntar al EXACTO control que rankeamos usamos su AutomationId como query
+        # (es único y _uia_run lo matchea); si no hay AutomationId, caemos al
+        # punto clickeable por coordenada. _uia_run('click') ya intenta Invoke y
+        # si no, clickea el GetClickablePoint del control.
+        aid = (el.get("automation_id") or "").strip()
+        click_query = aid or el.get("name") or label
+        clicked = self._uia_run({"query": click_query, "window": window}, "click")
+        if not clicked.get("ok"):
+            # fallback: click por coordenada del punto que hallamos
+            if cx is not None and cy is not None:
+                clicked = self.gui_click({"x": int(cx), "y": int(cy)})
+                if clicked.get("ok"):
+                    clicked["method"] = "clickable_point_coord"
+            if not clicked.get("ok"):
+                return _err(clicked.get("error") or "el click falló",
+                            label=label, element=el, status="failed")
+        try:
+            if before is not None:
+                from . import gui_verify
+                v = gui_verify.verify_after(before)
+                clicked["state_changed"] = v.get("state_changed")
+                clicked["state_verify"] = v.get("reason")
+                if v.get("state_changed") is False:
+                    clicked["verified"] = False
+                    clicked.setdefault("completion_status", "clicked_no_effect")
+        except Exception:
+            pass
+        clicked["action"] = "click_button"
+        clicked["label"] = label
+        clicked["clicked_element"] = el
+        return clicked
+
+    # Tipos de control que cuentan como "clickeables tipo botón", en orden de
+    # preferencia. Estable cross-locale (son ProgrammaticName de UIA, en inglés).
+    _BUTTON_CTYPES = ("Button", "SplitButton", "MenuItem", "TabItem",
+                      "ListItem", "Hyperlink", "CheckBox", "RadioButton")
+
+    def _uia_find_clickable(self, label: str, window: str) -> dict[str, Any]:
+        """Encuentra el control clickeable cuyo Name mejor matchea `label`,
+        priorizando tipos botón. Devuelve {ok, element, click_point} o
+        {ok:false, candidates}. Reusa la maquinaria UIA existente (uia find)."""
+        res = self._uia_run({"query": label, "window": window, "limit": 120}, "find")
+        if not res.get("ok"):
+            return {"ok": False, "error": res.get("error") or "uia find falló"}
+        matches = res.get("matches") or []
+        # PowerShell ConvertTo-Json emite un OBJETO (no lista) cuando hay 1 sola
+        # coincidencia -> normalizar. Y descartar cualquier entrada que no sea dict.
+        if isinstance(matches, dict):
+            matches = [matches]
+        matches = [m for m in matches if isinstance(m, dict)]
+        if not matches:
+            return {"ok": False, "error": "sin coincidencias UIA", "candidates": []}
+        from .tools import _score  # type: ignore  # noqa: F401  (módulo propio)
+        lab = label.casefold()
+
+        def rank(m: dict) -> tuple:
+            name = (m.get("name") or "")
+            ctype = (m.get("control_type") or "")
+            enabled = bool(m.get("enabled", True))
+            offscreen = bool(m.get("offscreen", False))
+            has_click = bool(m.get("clickable_point"))
+            # ¿es un tipo botón? (índice de preferencia; 99 si no)
+            try:
+                ctype_rank = self._BUTTON_CTYPES.index(ctype)
+            except ValueError:
+                ctype_rank = 99
+            n = name.casefold()
+            exact = 0 if n == lab else 1
+            # name contiene el label (mejor señal que el match laxo de _uia_run,
+            # que mira también AutomationId/ClassName/ControlType)
+            name_has = 0 if lab in n else 1
+            # preferir: clickeable, en pantalla, habilitado, tipo botón, nombre exacto/contiene
+            return (0 if has_click else 1, 1 if offscreen else 0,
+                    0 if enabled else 1, ctype_rank, exact, name_has, len(name))
+
+        ranked = sorted(matches, key=rank)
+        # Filtrar lo que NO puede ser un botón clickeable: sin Name Y sin
+        # clickable_point no sirve. Aceptamos si tiene punto clickeable.
+        best = next((m for m in ranked if m.get("clickable_point")
+                     or (m.get("control_type") in self._BUTTON_CTYPES)), None)
+        if best is None:
+            return {"ok": False, "error": "ninguna coincidencia es clickeable",
+                    "candidates": [m.get("name") for m in ranked[:6]]}
+        return {"ok": True, "element": best,
+                "click_point": best.get("clickable_point")
+                or {"x": best.get("bounds", {}).get("x"),
+                    "y": best.get("bounds", {}).get("y")}}
 
     def _uia_window_contains_text(self, window_substr: str, text: str) -> bool | None:
         """¿La ventana en foco (o cuyo título contiene window_substr) tiene un
