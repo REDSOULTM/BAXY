@@ -3395,6 +3395,12 @@
 {"tool": "audio", "q": "desmuteá el audio"}
 {"tool": "audio", "q": "quitá el silencio"}
 {"tool": "audio", "q": "unmute the sound"}
+{"tool": "audio", "q": "unmute"}
+{"tool": "audio", "q": "desmuteá"}
+{"tool": "audio", "q": "desmutea"}
+{"tool": "audio", "q": "desmutear"}
+{"tool": "audio", "q": "unmute it"}
+{"tool": "audio", "q": "turn the sound back on"}
 {"tool": "audio", "q": "turn the sound back on"}
 {"tool": "audio", "q": "restore the audio"}
 {"tool": "audio", "q": "reactiva o som"}
