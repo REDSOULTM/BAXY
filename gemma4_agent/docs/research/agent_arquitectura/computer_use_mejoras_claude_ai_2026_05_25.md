@@ -31,9 +31,13 @@ setup antes de construir): **R2** OCR (Tesseract = RapidOCR en precisión pero
 UIA-text-confirm de Fase 3 ya da 0/5 falsos-negativos en texto chico → no hace
 falta). Más speculative y VLM-coords (rechazados antes).
 
-**PENDIENTE menor**: R8-anchor-binding (el informe avisa que da fricción; requiere
-calibración con red-team). Todo lo demás del informe: resuelto (aplicado o
-medido-y-rechazado).
+**R8-anchor-binding: HECHO** (3adf9de). Calibrado contra el riesgo de fricción
+que el informe advertía: un umbral de cosine solo NO separa (legit 0.156 vs
+inject 0.267 se solapan). Señal combinada (label ≥4 palabras Y cosine<0.30) →
+0/12 fricción, 5/10 protección. Soft-flag (confirmar), no hard-abort.
+
+**INFORME RESUELTO AL 100%**: aplicadas R1,R4,R6,R7,R8(.1+.2) + SafeInt;
+medidas-y-rechazadas con evidencia R2,R3,R5 (+ speculative,VLM-coords antes).
 
 ## Recomendaciones (resumen)
 | # | Qué | Impacto | Esfuerzo | Estado |
@@ -45,7 +49,7 @@ medido-y-rechazado).
 | R5 | UIA CacheRequest + RuntimeId rebind + paralelizar | Medio | Medio | **MEDIDO y descartado**: desglose de latencia de turno GUI → UIA = 0.6-0.9s, LLM+resto = 2.9-12.5s. UIA NO es el cuello (el LLM domina 3-14x). El cache ahorraría ~0.5s de un turno de 3-13s = negligible. El informe asumía que UIA era el costo; no lo es. NO construir. Harness: _measure_latency.py |
 | R6 | password fields web | Alto seg | Bajo | **HECHO** (5e81be1): con R1 activo, UIA IsPassword se expone en web → el password-guard de Fase 5 bloquea el type. Verificado en form web real. |
 | R7 | matcher cross-lingual por embeddings (label↔UI) | Medio | Bajo | **HECHO** (a31a73f): reusa el MiniLM del router, umbral 0.75+margen 0.10, abstiene si dudoso. five↔Cinco=0.992 |
-| R8 | activity-budget (+ anchor-binding pendiente) | Alto seg | Medio | **HECHO parcial** (135c0db): cap N acciones/turno. anchor-binding = follow-up |
+| R8 | activity-budget + anchor-binding | Alto seg | Medio | **HECHO** (135c0db + 3adf9de): cap N acciones/turno + anchor-binding calibrado (0 fricción, frena bait largo no-relacionado) |
 | R9 | NO migrar a VLM coordinate grounding | — | — | ya es nuestra decisión (no se toca) |
 
 ## Fuentes citadas (links del informe)
