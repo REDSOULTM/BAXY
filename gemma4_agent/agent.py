@@ -2434,8 +2434,17 @@ class Gemma4Agent:
         _GUI_CTX = {"app", "gui", "window", "uia", "steam", "browser", "office"}
         carry: list[str] = []  # tools de contexto GUI que arrastra la cláusula previa
         carry_window: str = ""  # nombre de la app/ventana abierta por la cláusula previa
+        # CHECKPOINT de misión (Fase 7): persistir progreso clause-by-clause para
+        # poder reanudar si la misión se interrumpe (crash/reinicio/cancel). Solo
+        # para misiones de varios pasos. Best-effort, no bloquea.
+        _mission_id = None
         try:
-            for clause in clauses:
+            from . import mission_checkpoint as _mc
+            _mission_id = _mc.begin(self.state.path, list(clauses))
+        except Exception:
+            _mc = None  # type: ignore
+        try:
+            for _clause_idx, clause in enumerate(clauses):
                 # MACRO DETERMINISTA (Fase 2): si arrastramos contexto GUI y la
                 # cláusula es "escribí/tecleá <texto>", NO le pedimos al 4B que
                 # forme la llamada (no lo hace fiable con verbos ambiguos). El
@@ -2467,6 +2476,12 @@ class Gemma4Agent:
                                        "confirmar que entró en la ventana activa.")
                     self.trace.event("multi_intent", "type_into_macro",
                                      text=_payload[:60], ok=ok, state_changed=changed)
+                    if _mission_id and _mc is not None:
+                        try:
+                            _mc.mark_done(self.state.path, _mission_id, _clause_idx,
+                                          replies[-1] if replies else "")
+                        except Exception:
+                            pass
                     continue
                 # Propagar el contexto GUI de la cláusula anterior a ESTA, para
                 # que "escribí X" tras "abrí Notepad" herede gui/window y no
@@ -2498,9 +2513,22 @@ class Gemma4Agent:
                             if _nm:
                                 carry_window = str(_nm)
                                 break
+                if _mission_id and _mc is not None:
+                    try:
+                        _mc.mark_done(self.state.path, _mission_id, _clause_idx, c)
+                    except Exception:
+                        pass
         finally:
             self._splitting = False
             self._mi_carry_tools = []
+            # misión completada (o abortada por excepción) -> cerrar checkpoint.
+            # Si fue interrupción DURA (crash/kill) el finally no corre y el
+            # checkpoint queda para reanudar — que es exactamente lo que queremos.
+            if _mission_id and _mc is not None:
+                try:
+                    _mc.finish(self.state.path, _mission_id)
+                except Exception:
+                    pass
         combined = " ".join(replies).strip() or "Listo."
         self.trace.event("multi_intent", "split_executed",
                          clauses=clauses, replies=len(replies))
