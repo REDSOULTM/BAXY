@@ -57,6 +57,11 @@ class VoiceRunner:
         self._on_wake_event: Callable[[], None] | None = None
         self._enabled: bool = False
         self._loading: bool = False
+        # Audio ducking: baja el volumen del PC mientras Gemma escucha el comando
+        # y lo restaura al terminar (comportamiento tipo Alexa que el operador
+        # recordaba). Best-effort, restaura siempre ante fallo.
+        from .voice.ducking import AudioDucker
+        self._ducker = AudioDucker()
         self.last_error: str | None = None
 
     # ------ lifecycle -------------------------------------------------
@@ -120,6 +125,13 @@ class VoiceRunner:
                 self._tts.stop()
             except Exception:
                 pass
+        # Si nos apagan a mitad de una captura, NO dejar el volumen bajo.
+        ducker = getattr(self, "_ducker", None)
+        if ducker is not None:
+            try:
+                ducker.restore()
+            except Exception:
+                pass
         self._enabled = False
         logger.info("VoiceRunner disabled")
 
@@ -162,6 +174,20 @@ class VoiceRunner:
         self._on_wake_event = cb
 
     def _handle_state(self, state: str) -> None:
+        # AUDIO DUCKING: al entrar en LISTENING (wake -> captura) bajamos el
+        # volumen para que el STT escuche limpio; en cualquier estado terminal
+        # de la captura (dejó de hablar) lo restauramos. restore() es seguro de
+        # llamar siempre (no-op si no estaba duckeado). Nunca rompe el turno.
+        try:
+            ducker = getattr(self, "_ducker", None)
+            if ducker is not None:
+                if state == "LISTENING":
+                    ducker.duck()
+                elif state in ("TRANSCRIBING", "NO_SPEECH", "IDLE_LISTENING",
+                               "COOLDOWN", "IDLE"):
+                    ducker.restore()
+        except Exception as exc:
+            logger.debug("ducking en _handle_state falló: %s", exc)
         cb = getattr(self, "_on_state", None)
         if cb is None:
             return
