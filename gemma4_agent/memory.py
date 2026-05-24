@@ -23,6 +23,32 @@ MAX_TOTAL_ITEMS = 500  # explicit; el cap de auto: es aparte (max_total kwarg)
 _INVALID_CONTROL_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
+# Filtro anti-junk para la extracción PASIVA (auto_save). El incidente reportado
+# (inv 2 §4): el 52% de la memoria era basura de pruebas. Solo aplica a auto:* —
+# el `save` explícito (el user lo pidió) NUNCA se filtra. Universal: valores tipo
+# test/asdf/solo-dígitos/ruido, sin keywords de idioma. Conservador: ante la duda
+# se guarda (mejor un hecho marginal que perder uno útil).
+_JUNK_VALUE_RE = re.compile(
+    r"^\s*(?:"
+    r"test\d*|testing|asdf+|qwerty|foo(?:bar)?|bar|baz|"  # placeholders dev
+    r"prueba\d*|lorem(?:\s+ipsum)?|"
+    r"x{2,}|a{3,}|\.{2,}|-{2,}|"                            # repeticiones
+    r"\d{1,6}|"                                             # solo dígitos cortos
+    r"n/?a|none|null|undefined|\?+"                         # vacíos disfrazados
+    r")\s*$",
+    re.IGNORECASE,
+)
+_MIN_VALUE_CHARS = 2  # un valor de 1 char nunca es un hecho útil
+
+
+def _is_junk_value(value: str) -> bool:
+    """True si el valor parece basura de prueba/ruido (no un hecho real)."""
+    v = (value or "").strip()
+    if len(v) < _MIN_VALUE_CHARS:
+        return True
+    return bool(_JUNK_VALUE_RE.match(v))
+
+
 def _sanitize_key(raw: str) -> str:
     """Normaliza una key: strip + colapsar whitespace + drop control chars."""
     if not raw:
@@ -126,6 +152,11 @@ class MemoryStore:
                 if not key or not value:
                     skipped.append({"reason": "empty_key_or_value", "fact": fact})
                     continue
+                # Anti-junk (inv 2 §4): la extracción pasiva NO debe envenenar la
+                # memoria con basura de pruebas. El save explícito no pasa por acá.
+                if _is_junk_value(value):
+                    skipped.append({"reason": "junk_value", "fact": fact})
+                    continue
                 stamped_key = key if key.startswith("auto:") else f"auto:{key}"
                 items[stamped_key] = {
                     "value": value,
@@ -185,3 +216,19 @@ class MemoryStore:
         for key, entry in sorted(items.items()):
             lines.append(f"- {key}: {entry.get('value', '')}")
         return "\n".join(lines)
+
+    def prompt_summary_for(self, user_text: str | None) -> str:
+        """Memoria EN CAPAS para el prompt (inv 2): core siempre + hechos
+        relevantes al turno por retrieval semántico cuando el store es grande.
+        Para stores chicos == prompt_summary() (vuelca todo). Best-effort: ante
+        cualquier fallo cae a prompt_summary() (nunca esconde hechos a ciegas)."""
+        with self._lock:
+            items = self._load().get("items", {})
+        try:
+            from .memory_retrieval import build_memory_section
+            return build_memory_section(items, user_text)
+        except Exception:
+            if not items:
+                return "No persistent memory saved."
+            return "\n".join(
+                f"- {k}: {v.get('value', '')}" for k, v in sorted(items.items()))
