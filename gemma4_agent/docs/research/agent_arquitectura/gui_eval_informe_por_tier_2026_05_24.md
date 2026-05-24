@@ -5,6 +5,23 @@
 > (pycaw, tasklist, EnumWindows/UIA), nunca por lo que el agente diga — ese es
 > el anti-patrón que hundió a Carter (falso-PASS).
 
+# Fase 7 (2026-05-25): checkpoint de misión reanudable
+
+Una misión GUI multi-paso interrumpida (crash/reinicio/cancel) ya no se pierde:
+`mission_checkpoint.py` persiste el progreso clause-by-clause en JSON atómico
+(reusa `state.atomic_write_json`). begin (solo misiones ≥2 cláusulas) → mark_done
+por paso → finish al terminar. Si la interrupción es DURA el `finally` no corre →
+el checkpoint sobrevive → `pending()` lo expone como reanudable (in_progress, no
+vencido >30min, con pasos sin hacer). Cableado en `agent._run_multi_intent`.
+Gate `GEMMA4_MISSION_CHECKPOINT`. +9 tests.
+
+> Alcance honesto: entrega PERSISTENCIA + DETECCIÓN. El auto-resume EJECUTANDO
+> los pasos pendientes se deja opt-in — tras una interrupción el estado del SO
+> pudo cambiar, así que reanudar a ciegas sería inseguro; el agente debe OFRECER
+> reanudar (handshake), no re-ejecutar solo.
+
+---
+
 # Fases 4 y 5 (2026-05-25): recovery + seguridad
 
 Tras la cascada de Fase 3, dos fases más del roadmap (commits 3f12a7e, 4da09ea):
