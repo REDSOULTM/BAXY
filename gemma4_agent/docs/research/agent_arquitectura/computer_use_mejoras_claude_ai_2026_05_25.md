@@ -34,7 +34,7 @@ R3 (WinEvents push), R5 (UIA cache), R8-anchor-binding.
 | R2 | OCR → RapidOCR PP-OCRv5 ONNX | Alto | Medio | **MEDIDO y RECHAZADO**: A/B sobre UI-text rendered (white-on-blue + dark-on-light) → Tesseract y RapidOCR ambos 4/4 precisión, pero Tesseract 5-20x más rápido (0.15s vs 3.30s). El premise del informe (Tesseract falla en blanco-sobre-color) es de scene-text ICDAR, NO aplica a UI rendered (limpio/anti-aliased). RapidOCR además trae solo modelo CHINO (lee latín como CJK) — necesitaría descargar modelo Latin. NO migrar. Harness: scripts/gui_eval/_ab_ocr3.py |
 | R3 | WinEvents push + UIA event handlers | Alto | Medio | pendiente (Fase 2) |
 | R4 | transient-launcher: descartar updater (Squirrel) | Medio | Bajo | **HECHO** (4d141d8): Discord 3 false-pass→0 |
-| R5 | UIA CacheRequest + RuntimeId rebind + paralelizar | Medio | Medio | pendiente (Fase 2) |
+| R5 | UIA CacheRequest + RuntimeId rebind + paralelizar | Medio | Medio | **MEDIDO y descartado**: desglose de latencia de turno GUI → UIA = 0.6-0.9s, LLM+resto = 2.9-12.5s. UIA NO es el cuello (el LLM domina 3-14x). El cache ahorraría ~0.5s de un turno de 3-13s = negligible. El informe asumía que UIA era el costo; no lo es. NO construir. Harness: _measure_latency.py |
 | R6 | password fields web | Alto seg | Bajo | **HECHO** (5e81be1): con R1 activo, UIA IsPassword se expone en web → el password-guard de Fase 5 bloquea el type. Verificado en form web real. |
 | R7 | matcher cross-lingual por embeddings (label↔UI) | Medio | Bajo | **HECHO** (a31a73f): reusa el MiniLM del router, umbral 0.75+margen 0.10, abstiene si dudoso. five↔Cinco=0.992 |
 | R8 | activity-budget (+ anchor-binding pendiente) | Alto seg | Medio | **HECHO parcial** (135c0db): cap N acciones/turno. anchor-binding = follow-up |
