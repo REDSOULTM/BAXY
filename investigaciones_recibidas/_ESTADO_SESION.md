@@ -31,16 +31,42 @@ oro: investigar/medir antes de tocar; los informes fallan en detalles del entorn
 - FR-CoT thinking (GEMMA4_FRCOT): mejora apps/audio, ROMPE media (Gemma emite el
   formato como texto).
 
-## LO QUE SIGUE (el trabajo grande)
-8 prompts de investigación escritos (PROMPT_RESEARCH_[1-8]_*.md, índice en
-PROMPT_RESEARCH_INDEX.md). RED los manda a Claude y deja las respuestas en
-**investigaciones_recibidas/N_tema.md** (ver README de esa carpeta). Cuando RED
-diga "aplicá la N": leer investigación + código real → verificar contra build →
-gate → cambio mínimo → medir smoke bajo vram4 → commit/opt-in/revertir.
+## LAS 8 INVESTIGACIONES — TODAS APLICADAS (2026-05-23)
+Cada una verificada contra código real + medida bajo vram4 + commit bilingüe.
 
-Temas: 1 tool-calling, 2 memoria/entity-grounding, 3 verificación+recovery,
-4 contexto-multiturno, 5 Jarvis-proactivo, 6 estabilidad/no-crash, 7 NLU/multi-
-intent, 8 automatización-GUI. Orden de impacto sugerido: 1→5→7→6→2→3→8→4.
+1. **tool-calling** (commit previo): sampling greedy en turno de acción
+   (-15% latencia). Prefill/few-shot DESCARTADO (no había problema medible).
+2. **memoria/grounding** (ca9dd9f): resolver contactos con fuzzy (Jaro-Winkler,
+   universal) + fonético (metaphone) + flag ambiguous → pregunta en vez de
+   adivinar. Ataca el bug "mamá→Música" en su raíz (pre-tool-call).
+3. **verificación** (345b24f): email.send → requires_confirmation (sin backstop,
+   irreversible); tabla declarativa de riesgo verify_policy.py. whatsapp queda
+   fluido (ya verifica por OCR/UIA). El resto de inv 3 ya estaba cubierto
+   (loop_detector result-aware, replan acotado).
+4. **contexto multi-turno** (efa9825): context_router.py — droppea historial en
+   turnos atómicos. MULTILINGÜE (embeddings, no regex es) + fallback seguro.
+   Win ~272tok/62ms por turno. HALLAZGO: cache-reuse SÍ funciona en b9090
+   (#21468 no afecta).
+5. **Jarvis proactivo** (commit previo): behavior_log + pattern_miner +
+   suggestion_queue + handler sí/no que crea rutina. Verificado en vivo.
+6. **estabilidad** (5f29fcf): vram_watchdog.py — muestrea VRAM libre, avisa antes
+   del OOM zombie (#13085). No-op sin GPU NVIDIA.
+7. **NLU/multi-intent** (8d8f5bc + ec48d15): command_splitter — parte "abrí X y
+   bajá Y". Ahora MULTILINGÜE (conjunción multi-idioma + check acción-vs-
+   sustantivo por embeddings). Medido 5 idiomas 10/10.
+8. **automatización-GUI** (cba61ae): _verify_chat_header usa UIA (árbol de
+   accesibilidad) PRIMERO, OCR fallback. Más rápido, sin mmproj.
+
+### Principio del usuario aplicado retroactivamente (2026-05-23)
+RED: "nada de regex es-only, la app la usa cualquier hablante." → router (inv 4)
+y splitter (inv 7) migrados a embeddings multilingües + fallback seguro. Ver
+memoria feedback_no_monolingual_regex.
+
+### Pendiente menor (no bloqueante)
+- inv 2 capas profundas (sqlite-vec retrieval, salience/TTL) — arquitectura
+  grande, no aplicada (el P0 del bug WhatsApp sí).
+- Jarvis yes/no + textos de respuesta siguen es-céntricos (miss benigno).
+- Los 2 TestSpotifyAutoPlay siguen fallando por trabajo sin commitear de RED.
 
 ## GOTCHAS clave
 - agent.py = 3249 líneas (orquestación concentrada). Loop max_agent_turns=8.
