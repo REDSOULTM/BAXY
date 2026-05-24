@@ -238,6 +238,7 @@ class Gemma4Agent:
         # instead of hallucinating. The history scan can't see these because
         # _compact_completed_history drops tool_calls/tool messages.
         self._last_executed_tools: list[str] = []
+        self._mi_carry_tools: list[str] = []  # multi-intent: tools de contexto GUI a arrastrar
         # NOTE: NLI warmup at __init__ was REMOVED — it raced with the voice
         # stack (faster_whisper) loading huggingface_hub from another thread,
         # causing intermittent "cannot import name 'logging' from
@@ -1092,6 +1093,20 @@ class Gemma4Agent:
         # vs ~1100ms reprocesando). Los picks extra del router quedan al final.
         # Gate GEMMA4_STABLE_TOOL_PREFIX=0 revierte. Ver _CACHE_CORE_SET.
         _router_picks = list(selected_tool_names)
+        # MULTI-INTENT carry (Fase 2 computer-use): si venimos de una cláusula
+        # previa que abrió/enfocó algo (app/gui/window...), forzar esas tools en
+        # el subset para que "escribí X" tras "abrí Notepad" pueda actuar sobre
+        # ese contexto en vez de caer a charla. Solo activo dentro de
+        # _run_multi_intent (self._splitting True + carry no vacío). Bypassa el
+        # veto conversacional porque en un comando compuesto sabemos que NO es
+        # smalltalk. Universal (no depende del idioma del verbo).
+        _carry = getattr(self, "_mi_carry_tools", None)
+        if _carry and getattr(self, "_splitting", False):
+            for _t in _carry:
+                if _t not in selected_tool_names:
+                    selected_tool_names.append(_t)
+            self.trace.event(turn_id, "multi_intent_carry",
+                             carried=_carry, subset=selected_tool_names)
         selected_tool_names = _stabilize_tool_order(selected_tool_names)
         if selected_tool_names != _router_picks:
             self.trace.event(turn_id, "tool_prefix_stabilized",
@@ -2402,8 +2417,20 @@ class Gemma4Agent:
         self._splitting = True
         replies: list[str] = []
         all_events: list[ToolEvent] = []
+        # Familia de tools de "contexto GUI": si una cláusula abrió/enfocó algo,
+        # las cláusulas SIGUIENTES están en ese mismo contexto y deben poder
+        # actuar sobre él (escribir/clickear), aunque solas el router las trataría
+        # como charla. Es la desambiguación-por-contexto: en un comando compuesto
+        # ("abrí Notepad Y escribí X") sabemos que NO es smalltalk.
+        _GUI_CTX = {"app", "gui", "window", "uia", "steam", "browser", "office"}
+        carry: list[str] = []  # tools de contexto GUI que arrastra la cláusula previa
         try:
             for clause in clauses:
+                # Propagar el contexto GUI de la cláusula anterior a ESTA, para
+                # que "escribí X" tras "abrí Notepad" herede gui/window y no
+                # caiga a 'session' (charla). Bypassa el veto conversacional del
+                # abstain head SOLO en multi-intent (sabemos que es continuación).
+                self._mi_carry_tools = list(carry)
                 try:
                     r = self.run_content(clause, progress=progress)
                 except Exception as exc:
@@ -2415,8 +2442,14 @@ class Gemma4Agent:
                 ev = getattr(r, "tool_events", None)
                 if ev:
                     all_events.extend(ev)
+                # actualizar carry con las tools de contexto GUI que ESTA cláusula
+                # ejecutó (para la siguiente).
+                ran = [n for n in (self._last_executed_tools or []) if n in _GUI_CTX]
+                if ran:
+                    carry = ran
         finally:
             self._splitting = False
+            self._mi_carry_tools = []
         combined = " ".join(replies).strip() or "Listo."
         self.trace.event("multi_intent", "split_executed",
                          clauses=clauses, replies=len(replies))
