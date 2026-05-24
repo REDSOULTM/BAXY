@@ -200,3 +200,82 @@ UNVERIFIED_CLAIM_REGEN_HINT = (
     "not perform. Either call the right tool, or say honestly that you "
     "did not do it / are not sure — in the user's language."
 )
+
+
+# Frases-caveat por idioma para apps cuyo lanzamiento NO se pudo confirmar. NO
+# es una respuesta enlatada (el LLM YA respondió; esto solo AÑADE honestidad a
+# una sobre-afirmación que la propia tool marcó como no confirmada). Se elige por
+# el idioma del reply de forma simple (heurística de stopwords), con fallback es.
+_LAUNCH_HEDGE = {
+    "es": " (puede tardar unos segundos en aparecer; no pude confirmarlo todavía)",
+    "en": " (it may take a few seconds to appear; I couldn't confirm it yet)",
+    "pt": " (pode demorar alguns segundos a aparecer; ainda não consegui confirmar)",
+    "fr": " (cela peut prendre quelques secondes à apparaître ; je n'ai pas encore pu le confirmer)",
+    "de": " (es kann ein paar Sekunden dauern, bis es erscheint; ich konnte es noch nicht bestätigen)",
+    "it": " (potrebbe metterci qualche secondo ad apparire; non ho ancora potuto confermarlo)",
+}
+
+
+def _launch_unconfirmed(tool_calls_this_turn: list[Any]) -> bool:
+    """True si alguna call de lanzamiento de app (app.open / steam / game) corrió
+    pero quedó SIN CONFIRMAR (verified=false / completion_status=launch_requested
+    / status=attempted). Es la señal honesta de "lo mandé pero no vi la ventana".
+    NO incluye fallos duros (ok=false): esos el reply ya los admite."""
+    for c in tool_calls_this_turn:
+        r = _result_of(c)
+        name = (c.get("tool") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        if name not in {"app", "steam", "game_launcher"}:
+            continue
+        if r.get("ok") is False:
+            continue  # fallo duro, no es el caso "lanzado sin confirmar"
+        cs = str(r.get("completion_status") or "").casefold()
+        if r.get("verified") is False or cs == "launch_requested" \
+                or str(r.get("status") or "").casefold() == "attempted":
+            return True
+    return False
+
+
+def _guess_lang(text: str) -> str:
+    """Heurística mínima de idioma por stopwords frecuentes. Fallback 'es'.
+    Solo para elegir la frase-caveat; no decide intención (eso es por embeddings
+    en el router)."""
+    t = f" {text.lower()} "
+    marks = {
+        "en": (" the ", " it ", " open", " i ", " you ", " is ", " couldn"),
+        "pt": (" o ", " não ", " está ", " segundos", " abrir", " você "),
+        "fr": (" le ", " la ", " ouvre", " peut ", " secondes", " je "),
+        "de": (" der ", " die ", " das ", " ich ", " kann ", " sekunden", " öffne"),
+        "it": (" il ", " non ", " aprire", " secondi", " sto ", " può "),
+        "es": (" el ", " la ", " abrí", " abrir", " está ", " segundos", " no "),
+    }
+    best, score = "es", 0
+    for lang, toks in marks.items():
+        s = sum(1 for tk in toks if tk in t)
+        if s > score:
+            best, score = lang, s
+    return best
+
+
+def soften_unverified_launch(reply_text: str, tool_calls_this_turn: list[Any]) -> str:
+    """Si el reply AFIRMA haber abierto/completado algo pero la tool de
+    lanzamiento quedó SIN CONFIRMAR, añade un caveat honesto en el idioma del
+    reply. Cierra el falso-PASS donde el 4B dice "abrí Discord" aunque app.open
+    devolvió verified=false (Discord/Squirrel tarda >ventana de verificación).
+
+    Determinista y estructural: actúa por la FORMA (afirma efecto) + el ESTADO de
+    la tool (no confirmada), no por contenido por-app/idioma. Si el reply ya
+    admite duda o no afirma efecto, lo deja igual. Idempotente."""
+    if not reply_text or not reply_text.strip():
+        return reply_text
+    if not _launch_unconfirmed(tool_calls_this_turn):
+        return reply_text
+    if not _reply_asserts_effect(reply_text):
+        return reply_text  # el reply no afirma un efecto -> nada que suavizar
+    low = reply_text.lower()
+    # ya hedgea (evita doble caveat / idempotencia)
+    if any(k in low for k in ("puede tardar", "no pude confirmar", "couldn't confirm",
+                              "may take", "no consegui", "pas encore", "bestätigen",
+                              "confermarlo", "unos segundos", "few seconds")):
+        return reply_text
+    lang = _guess_lang(reply_text)
+    return reply_text.rstrip() + _LAUNCH_HEDGE.get(lang, _LAUNCH_HEDGE["es"])

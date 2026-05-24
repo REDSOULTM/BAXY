@@ -1921,6 +1921,15 @@ class Gemma4Agent:
                 _progress(progress, "final", tools=len(events), mission=mission)
                 self._last_turn_ts = time.time()
                 self._remember_executed_tools(events)
+                # HONESTIDAD launch-no-confirmado: si el reply afirma haber abierto
+                # una app pero app.open quedó verified=false (Discord/Squirrel
+                # tarda >ventana de verificación), añadir un caveat honesto. El 4B
+                # no sigue la regla en prosa de app.md -> cierre DETERMINISTA acá.
+                try:
+                    from .reply_validator import soften_unverified_launch as _soften
+                    assistant_content = _soften(assistant_content or "", list(events))
+                except Exception:
+                    pass
                 assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
 

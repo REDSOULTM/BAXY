@@ -12,6 +12,7 @@ from gemma4_agent.reply_validator import (
     is_unverified_claim,
     UNVERIFIED_CLAIM_REGEN_HINT,
     _ensure_claim_centroids,
+    soften_unverified_launch,
 )
 
 _HAS_ENCODER = _ensure_claim_centroids()
@@ -104,6 +105,48 @@ class UnverifiedClaimTest(unittest.TestCase):
     def test_claim_with_failed_tool_flagged(self):
         # tool corrió pero falló -> la afirmación NO está sustentada -> flag
         self.assertTrue(is_unverified_claim("listo, lo cerré", [{"result": self._BAD}]))
+
+
+class SoftenUnverifiedLaunchTest(unittest.TestCase):
+    _UNCONF = [{"tool": "app", "result": {"ok": True, "verified": False,
+                                          "completion_status": "launch_requested"}}]
+    _CONF = [{"tool": "app", "result": {"ok": True, "verified": True,
+                                        "completion_status": "launch_verified"}}]
+    _FAIL = [{"tool": "app", "result": {"ok": False}}]
+
+    def test_confirmed_launch_untouched(self):
+        # app verificada -> NO se toca el reply (la afirmación es verdadera)
+        r = "Listo, abrí Discord."
+        self.assertEqual(soften_unverified_launch(r, self._CONF), r)
+
+    def test_hard_fail_untouched(self):
+        # fallo duro -> el reply ya admite, no se hedgea
+        r = "No pude abrir Discord."
+        self.assertEqual(soften_unverified_launch(r, self._FAIL), r)
+
+    def test_no_launch_tool_untouched(self):
+        r = "Listo, abrí Discord."
+        self.assertEqual(soften_unverified_launch(r, []), r)
+
+    def test_already_hedged_idempotent(self):
+        r = "Estoy abriendo Discord, puede tardar unos segundos."
+        self.assertEqual(soften_unverified_launch(r, self._UNCONF), r)
+
+    @unittest.skipUnless(_HAS_ENCODER, "encoder multilingüe no disponible")
+    def test_unconfirmed_claim_gets_hedge_es(self):
+        out = soften_unverified_launch("Listo, abrí Discord.", self._UNCONF)
+        self.assertNotEqual(out, "Listo, abrí Discord.")
+        self.assertIn("no pude confirmar", out.lower())
+
+    @unittest.skipUnless(_HAS_ENCODER, "encoder multilingüe no disponible")
+    def test_unconfirmed_claim_gets_hedge_en(self):
+        out = soften_unverified_launch("Done, I opened Discord.", self._UNCONF)
+        self.assertIn("couldn't confirm", out.lower())
+
+    @unittest.skipUnless(_HAS_ENCODER, "encoder multilingüe no disponible")
+    def test_non_effect_reply_untouched(self):
+        r = "¿Querés que abra algo más?"
+        self.assertEqual(soften_unverified_launch(r, self._UNCONF), r)
 
 
 if __name__ == "__main__":
