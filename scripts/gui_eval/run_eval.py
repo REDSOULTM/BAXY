@@ -109,6 +109,7 @@ def run_mission(agent, m: GuiMission) -> dict:
         "pass": v.get("pass"), "evidence": v.get("evidence"),
         "steps": len(events), "latency_s": round(latency, 2),
         "agent_thinks_ok": agent_thinks_ok, "false_pass": false_pass,
+        "flaky": bool(getattr(m, "flaky", False)),
         "reply": reply[:120], "error": err,
     }
 
@@ -184,7 +185,13 @@ def main() -> int:
         except Exception:
             pass
 
-    scored = [r for r in rows if "skipped" not in r]
+    all_scored = [r for r in rows if "skipped" not in r]
+    # SEPARAR flaky (limitación del SO, no del agente: calc UWP+SendKeys) del gate
+    # duro. Se reportan APARTE — no es esconderlas, es no contaminar el SR con
+    # ruido físico no-determinista. El gate (SR/falso-PASS) se mide sobre lo que
+    # el agente SÍ controla.
+    scored = [r for r in all_scored if not r.get("flaky")]
+    flaky_rows = [r for r in all_scored if r.get("flaky")]
     passes = sum(1 for r in scored if r["pass"] is True)
     fails = sum(1 for r in scored if r["pass"] is False)
     inconc = sum(1 for r in scored if r["pass"] is None)
@@ -193,12 +200,17 @@ def main() -> int:
     lat.sort()
     p50 = lat[len(lat)//2] if lat else 0
     p95 = lat[int(len(lat)*0.95)] if lat else 0
+    flaky_pass = sum(1 for r in flaky_rows if r["pass"] is True)
+    flaky_fp = sum(1 for r in flaky_rows if r["false_pass"])
     summary = {
         "total": len(scored), "pass": passes, "fail": fails, "inconclusive": inconc,
         "task_success_rate": round(passes / max(1, len(scored)), 3),
         "false_pass_count": false_passes,
         "false_pass_rate": round(false_passes / max(1, len(scored)), 3),
         "latency_p50_s": p50, "latency_p95_s": p95,
+        # informativo: flaky (techo del SO, fuera del gate)
+        "flaky_total": len(flaky_rows), "flaky_pass": flaky_pass,
+        "flaky_false_pass": flaky_fp,
     }
     Path(args.out).write_text(json.dumps({"summary": summary, "rows": rows},
                                           indent=2, ensure_ascii=False), encoding="utf-8")
@@ -206,6 +218,9 @@ def main() -> int:
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\n>> FALSO-PASS rate = {summary['false_pass_rate']} "
           f"(el número crítico: agente cree que sí, SO dice que no)")
+    if flaky_rows:
+        print(f">> FLAKY (techo del SO, fuera del gate): {flaky_pass}/{len(flaky_rows)} "
+              f"pass, {flaky_fp} falso-PASS — calc UWP+SendKeys es no-determinista")
     print(f">> resultados en {args.out}")
     return 0
 

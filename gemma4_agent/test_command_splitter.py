@@ -48,31 +48,33 @@ class SplitterTest(unittest.TestCase):
         self.assertFalse(has_back_reference("abrí Chrome"))
 
     def test_cap_on_too_many_clauses(self):
-        # MAX_CLAUSES=5 (techo computer-use): hasta 5 cláusulas SÍ parte; más
-        # de 5 -> no confiar, tratar como un comando (ruido/lista).
+        # MAX_CLAUSES=3 (techo VERIFICADO: cadenas 2-3 pasos medidas estables).
+        # hasta 3 cláusulas SÍ parte; más -> no confiar (ruido/lista). El soporte
+        # del código llega a más, pero NO se afirma >3 sin medición estable.
         from gemma4_agent.command_splitter import MAX_CLAUSES
-        self.assertEqual(MAX_CLAUSES, 5)
-        # exactamente 5 -> parte (misión válida de 5 pasos)
-        cmd5 = "abre A y abre B y abre C y abre D y abre E"
-        self.assertEqual(len(split_command(cmd5)), 5)
-        # 6 -> excede el cap -> no parte (status quo, el LLM ve todo)
-        cmd6 = "abre A y abre B y abre C y abre D y abre E y abre F"
-        self.assertEqual(len(split_command(cmd6)), 1)
+        self.assertEqual(MAX_CLAUSES, 3)
+        # exactamente 3 -> parte (misión válida de 3 pasos)
+        cmd3 = "abre A y abre B y abre C"
+        self.assertEqual(len(split_command(cmd3)), 3)
+        # 4 -> excede el cap -> no parte (status quo, el LLM ve todo)
+        cmd4 = "abre A y abre B y abre C y abre D"
+        self.assertEqual(len(split_command(cmd4)), 1)
 
     def test_empty_and_none_safe(self):
         self.assertEqual(split_command(""), [""])
         self.assertEqual(split_command("   "), ["   "])
 
-    def test_chain_of_3_4_5_steps(self):
-        # Fase A/B: cadenas de 3-5 pasos parten correctamente (verbos de click/
-        # navegación/guardado ahora en _IMPERATIVE).
+    def test_chain_of_3_steps(self):
+        # VERIFICADO: cadenas de hasta 3 pasos parten (verbos de click/escritura
+        # en _IMPERATIVE). Cadenas de >3 no se afirman (cap=3): el código las
+        # soporta pero no se midieron estables -> no se parten por ahora.
         self.assertEqual(
             len(split_command("abrí la calculadora y escribí 2+2 y apretá enter")), 3)
         self.assertEqual(
-            len(split_command("abrí Spotify y bajá el volumen y poné música y cerrá la ventana")), 4)
+            len(split_command("abrí el bloc de notas, escribí hola y apretá enter")), 3)
+        # >3 cláusulas: no parte (cap conservador en lo medido)
         self.assertEqual(
-            len(split_command(
-                "abrí Chrome y andá a Configuración y activá el modo oscuro y guardá y cerrá")), 5)
+            len(split_command("abrí Spotify y bajá el volumen y poné música y cerrá la ventana")), 1)
 
     def test_noise_does_not_split_as_chain(self):
         # listas/nombres no son misiones aunque tengan muchos "y".

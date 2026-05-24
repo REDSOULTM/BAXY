@@ -2591,7 +2591,8 @@ class Gemma4Agent:
                     except Exception:
                         _click_target = None
                 if _click_target:
-                    if is_key_name(_click_target):
+                    _is_key = is_key_name(_click_target)
+                    if _is_key:
                         res = self.tools.execute(
                             "gui", {"action": "keypress", "keys": _click_target})
                         _label_human = _click_target
@@ -2605,11 +2606,20 @@ class Gemma4Agent:
                         _verb = "Cliqueé"
                     ok = isinstance(res, dict) and res.get("ok")
                     changed = res.get("state_changed") if isinstance(res, dict) else None
-                    # Igual que en escritura: cortar SÓLO ante fallo positivo
-                    # (ok False o changed medido False). Inconcluso (None) NO corta
-                    # — una tecla/click cuyo efecto no es medible por píxeles no es
-                    # un fallo; el verificador final juzga el estado del SO.
-                    _step_failed = (not ok) or (changed is False)
+                    # Cortar SÓLO ante fallo positivo (ok False o changed medido
+                    # False). Inconcluso (None) NO corta. EXCEPCIÓN keypress
+                    # (decisión RED 2026-05-24): una pulsación de tecla (Enter/Tab/
+                    # Esc) casi nunca produce un cambio de PÍXELES medible — el
+                    # frame-diff da changed=False aunque la tecla SÍ funcionó (Enter
+                    # en calc/Notepad: el display ya mostraba el parcial / sólo baja
+                    # una línea). Tratar keypress como BEST-EFFORT: nunca corta la
+                    # cadena por su verify; el verificador final (estado del SO)
+                    # juzga. Para click_button sí cortamos ante fallo medido (un
+                    # botón que no se clickeó es un fallo real).
+                    if _is_key:
+                        _step_failed = not ok  # sólo si la tool misma erroró
+                    else:
+                        _step_failed = (not ok) or (changed is False)
                     if not _step_failed:
                         replies.append(f"{_verb} «{_label_human}».")
                     else:

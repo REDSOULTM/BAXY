@@ -84,12 +84,14 @@ _DEP_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Cap de cláusulas por misión. Subido 3->5 (2026-05-24): el techo HONESTO
-# triangulado por la investigación de computer-use es "apps UIA-ricas, misiones
-# ≤5 pasos" (SOTA mundial Windows = 52.5%; el error por paso se multiplica:
-# 0.9^5≈0.59). >5 cláusulas = casi siempre ruido/lista, no una misión real ->
-# no partir (status quo: el LLM ve el comando entero). Guarda anti-ruido.
-MAX_CLAUSES = 5
+# Cap de cláusulas por misión. **VERIFICADO = 3** (2026-05-24): cadenas de 2-3
+# pasos (abrir+escribir+enter) se midieron estables contra el SO real con
+# falso-PASS 0%. El soporte del código llega a más, pero NO se afirma >3: las
+# cadenas de 4-5 pasos no se pudieron verificar ESTABLES (la capa de tecleo del
+# SO —SendKeys a apps recién abiertas— se degrada de forma no-determinista bajo
+# carga; ver memoria project_gui_chains). Mantener el cap en lo MEDIDO, no en lo
+# aspiracional. >3 cláusulas = no partir (status quo: el LLM ve el comando entero).
+MAX_CLAUSES = 3
 
 # Margen mínimo (action - noun) para tratar una cláusula como ACCIÓN (medido:
 # acciones multi-idioma ~+0.24..+0.51, sintagmas nominales ~-0.24..-0.33).

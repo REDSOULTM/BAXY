@@ -4634,30 +4634,41 @@ Start-Sleep -Milliseconds 120
         # se comió '5+'). En vez de un sleep fijo (frágil), POLLEAMOS hasta que el
         # foreground sea estable la ventana objetivo, cap ~1.5s. Universal: no
         # depende de la app; mide que la ventana esté al frente y quieta.
-        if hint:
-            try:
-                import win32gui as _w
-                _deadline = time.time() + 1.5
-                _stable = 0
-                _last = None
-                while time.time() < _deadline:
-                    _h = _w.GetForegroundWindow()
-                    _t = _w.GetWindowText(_h) if _h else ""
-                    if self._match_query(hint, _t):
-                        # foreground es la ventana objetivo: exigir 2 lecturas
-                        # seguidas iguales (~estable) antes de teclear.
-                        if _t == _last:
-                            _stable += 1
-                            if _stable >= 2:
-                                fg_title = _t
-                                break
-                        _last = _t
-                    else:
-                        _stable = 0
-                        _last = None
+        #
+        # MODO 1 (hint matchea): esperar a ESA ventana estable. Es el caso medido
+        # al 100% — NO tocar. MODO 2 (sin hint, o hint no matchea tras ~1s): caer
+        # a esperar que CUALQUIER foreground escribible esté estable, para no
+        # perder teclas igual (t1_write_1). El modo 2 NO debe demorar ni romper el
+        # modo 1: por eso el modo 1 tiene prioridad y su propio break.
+        try:
+            import win32gui as _w
+            _deadline = time.time() + 1.5
+            _stable = 0
+            _last = None
+            _saw_hint = False
+            while time.time() < _deadline:
+                _h = _w.GetForegroundWindow()
+                _t = _w.GetWindowText(_h) if _h else ""
+                _hint_match = bool(hint) and self._match_query(hint, _t)
+                if _hint_match:
+                    _saw_hint = True
+                # MODO 1: si hay hint, exigir que matchee Y esté estable.
+                if hint and not _saw_hint:
+                    # todavía no apareció la ventana objetivo: esperarla.
+                    _stable = 0
+                    _last = None
                     time.sleep(0.12)
-            except Exception:
-                pass
+                    continue
+                # Acá: o no hay hint, o el hint ya apareció. Exigir estable.
+                if _t == _last and _t:
+                    _stable += 1
+                    if _stable >= 2:
+                        fg_title = _t
+                        break
+                _last = _t
+                time.sleep(0.12)
+        except Exception:
+            pass
         # 2) capturar estado antes + teclear + verificar (sin VLM)
         try:
             from . import gui_verify
