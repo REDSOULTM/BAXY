@@ -159,11 +159,67 @@ class AppResolver:
             # the candidate the user actually named.
             name_in = 0 if name_score > 0 else 1
             length_gap = abs(len(_fold(app.name)) - q_len)
-            ranked.append((score, name_in, length_gap, app))
-        # -score desc, name-match first, smaller length gap, then source/name.
-        ranked.sort(key=lambda item: (-item[0], item[1], item[2],
-                                      item[3].source, item[3].name.casefold()))
-        return [app for _score, _nm, _gap, app in ranked[:limit]]
+            # 2026-05-24: DEMOTE shortcuts muertos. Un .lnk cuyo target ya no
+            # existe (p.ej. vlc.lnk -> D:\...\vlc.exe borrado) rankea primero por
+            # nombre pero al lanzarlo el SO devuelve error ("operación cancelada"
+            # / no abre). Si hay otro candidato vivo (VLC en Program Files), debe
+            # ganar. dead=1 ordena DESPUÉS de dead=0 a igual score. No lo
+            # dropeamos (si TODOS están muertos igual devolvemos algo).
+            dead = 1 if self._is_dead_launch(app) else 0
+            ranked.append((score, dead, name_in, length_gap, app))
+        # Si hay AL MENOS un candidato VIVO, descartar los muertos (un .lnk con
+        # target inexistente lanza error, no la app). Si TODOS están muertos,
+        # los conservamos (mejor intentar que no devolver nada). Un shortcut
+        # muerto con score altísimo NO debe ganarle a la app real con score
+        # menor — por eso filtramos ANTES de ordenar por score.
+        live = [it for it in ranked if it[1] == 0]
+        pool = live if live else ranked
+        # -score desc, name-match first, menor length gap, luego source/name.
+        pool.sort(key=lambda item: (-item[0], item[2], item[3],
+                                    item[4].source, item[4].name.casefold()))
+        return [app for _s, _d, _nm, _gap, app in pool[:limit]]
+
+    def _is_dead_launch(self, app: "AppCandidate") -> bool:
+        """True si el launch del candidato apunta a un target inexistente. Para
+        .lnk resuelve el TargetPath; para exe directo chequea el archivo. Solo
+        para shortcuts/file (Steam/Epic usan URIs, no se tocan). Cacheado por
+        path para no resolver el mismo .lnk muchas veces."""
+        launch = app.launch or ""
+        if app.source in ("steam", "epic") or launch[:5].lower() in ("steam", "com.e"):
+            return False
+        cache = getattr(self, "_dead_cache", None)
+        if cache is None:
+            cache = {}
+            self._dead_cache = cache
+        if launch in cache:
+            return cache[launch]
+        dead = False
+        try:
+            low = launch.lower()
+            if low.endswith(".lnk"):
+                target = self._resolve_lnk_target(launch)
+                # si no pudimos resolver el target, NO lo marcamos muerto (duda
+                # a favor de intentarlo); solo si resolvió y no existe.
+                if target and not os.path.exists(target):
+                    dead = True
+            elif low.endswith((".exe", ".bat", ".cmd", ".com")):
+                if not os.path.exists(launch):
+                    dead = True
+        except Exception:
+            dead = False
+        cache[launch] = dead
+        return dead
+
+    @staticmethod
+    def _resolve_lnk_target(lnk_path: str) -> str | None:
+        """TargetPath de un .lnk vía COM (WScript.Shell). None si falla."""
+        try:
+            import win32com.client  # type: ignore
+            sh = win32com.client.Dispatch("WScript.Shell")
+            sc = sh.CreateShortcut(lnk_path)
+            return sc.TargetPath or None
+        except Exception:
+            return None
 
     def _from_path(self) -> list[AppCandidate]:
         out = []

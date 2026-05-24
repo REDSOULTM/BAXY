@@ -70,13 +70,28 @@ def run_mission(agent, m: GuiMission) -> dict:
     except Exception as exc:
         err = f"{type(exc).__name__}: {exc}"
     latency = time.time() - t0
-    time.sleep(0.5)  # settling antes de leer el SO
 
-    # 3) verificar por ESTADO DEL SO
-    try:
-        v = m.goal_verifier()
-    except Exception as exc:
-        v = {"pass": None, "evidence": f"verifier_raised: {exc}", "actual": None}
+    # 3) verificar por ESTADO DEL SO — POLL con timeout: apps como Discord/Spotify
+    # tardan SEGUNDOS en spawnear (y al cerrar, en desaparecer del tasklist). Un
+    # check único a 0.5s daba falsos FAIL "la app no abrió" cuando sí abría, solo
+    # más lento. Reintentamos hasta que pase o se agote el timeout. Esto es
+    # medición correcta (esperar el efecto real), no gaming: si nunca pasa, FAIL.
+    # tier 3 = apps de terceros con launchers lentos. Discord usa Squirrel
+    # (Update.exe -> Discord.exe) y tarda ~12-15s en cold start; VERIFICADO que
+    # SÍ abre, solo fuera de 8s. Darles más ventana es medición correcta
+    # (esperar el efecto real), no gaming: si nunca aparecen, FAIL igual.
+    _settle_timeout = 20.0 if m.tier >= 3 else 8.0
+    _deadline = time.time() + _settle_timeout
+    v = {"pass": None, "evidence": "no evaluado", "actual": None}
+    time.sleep(0.4)
+    while True:
+        try:
+            v = m.goal_verifier()
+        except Exception as exc:
+            v = {"pass": None, "evidence": f"verifier_raised: {exc}", "actual": None}
+        if v.get("pass") is True or time.time() >= _deadline:
+            break
+        time.sleep(0.6)
 
     agent_thinks_ok = _agent_reported_success(reply, events)
     false_pass = bool(agent_thinks_ok and v.get("pass") is False)
