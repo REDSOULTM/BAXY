@@ -147,6 +147,25 @@ class Gemma4Agent:
                 self.behavior.record("boot", "agent")  # arranque de sesión
             except Exception:
                 self.behavior = None
+        # WATCHDOG de VRAM (inv 6): muestrea VRAM libre con TTL para detectar
+        # presión ANTES de despachar visión y evitar el OOM que deja a
+        # llama-server zombie (issue #13085). No-op sin GPU NVIDIA. Barato,
+        # cabe en vram4. Self-check al boot = fail-loud (no degradar en silencio).
+        try:
+            from .vram_watchdog import VRAMWatchdog
+            self.vram_watchdog = VRAMWatchdog()
+            _vsnap = self.vram_watchdog.snapshot(force=True)
+            if _vsnap.available and _vsnap.level != "ok":
+                logger.warning(
+                    "VRAM watchdog boot: nivel=%s libre=%.0fMiB usado=%.0fMiB "
+                    "(presión de VRAM al arranque; visión puede degradarse)",
+                    _vsnap.level, _vsnap.free_mib, _vsnap.used_mib,
+                )
+            elif _vsnap.available:
+                logger.info(
+                    "VRAM watchdog boot: ok, libre=%.0fMiB", _vsnap.free_mib)
+        except Exception:
+            self.vram_watchdog = None
         self.history: list[dict[str, Any]] = []
         self._recent_recalls: list[dict[str, Any]] = []
         self._explicit_plan_text: str = ""
@@ -520,6 +539,30 @@ class Gemma4Agent:
                         has_image=(mode.name == "vision_action"))
         except Exception:
             self._router_model = None
+        # WATCHDOG inv 6: si este turn va a cargar visión (mmproj ~946 MiB) y la
+        # VRAM libre está crítica, avisar FUERTE en el trace. No bloqueamos el
+        # turn (vram4 debe poder todo y el modelo ya está cargado), pero el
+        # operador y los logs ven la presión ANTES del posible OOM zombie, en
+        # vez de un /completion colgado sin explicación (fail-loud, inv 6).
+        if (mode.name == "vision_action"
+                and getattr(self, "vram_watchdog", None) is not None):
+            try:
+                if not self.vram_watchdog.vision_safe():
+                    _vs = self.vram_watchdog.snapshot()
+                    logger.warning(
+                        "VRAM watchdog: turno de VISIÓN con libre=%.0fMiB "
+                        "(nivel=%s); el mmproj ~946MiB puede causar OOM "
+                        "(llama-server no recupera, #13085)",
+                        _vs.free_mib, _vs.level)
+                    try:
+                        self.trace.event(
+                            turn_id, "vram_pressure", level=_vs.level,
+                            free_mib=_vs.free_mib, used_mib=_vs.used_mib,
+                            context="vision_turn")
+                    except Exception:
+                        pass
+            except Exception:
+                pass
         # sprint2: persona is currently visible only via tool_subset.persona,
         # which isn't emitted on every turn. Emit one canonical event per turn
         # so the usage report can quantify which personas actually run.
