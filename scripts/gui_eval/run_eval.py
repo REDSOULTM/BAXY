@@ -139,16 +139,23 @@ def main() -> int:
     agent = Gemma4Agent()
     print("[gui-eval] agente construido; corriendo misiones contra el SO real...\n")
 
+    # progreso incremental observable: una línea JSON por misión, flush inmediato.
+    prog_path = Path(args.out).with_suffix(".progress.jsonl")
+    prog_path.write_text("", encoding="utf-8")
     rows = []
-    for m in missions:
+    for idx, m in enumerate(missions, 1):
         r = run_mission(agent, m)
         rows.append(r)
         if "skipped" in r:
-            print(f"  SKIP {r['id']:20} ({r['skipped']})")
-            continue
-        mark = {True: "PASS", False: "FAIL", None: "INCONC"}.get(r["pass"], "?")
-        fp = " <<FALSO-PASS" if r["false_pass"] else ""
-        print(f"  {mark:6} {r['id']:20} steps={r['steps']} {r['latency_s']}s | {r['evidence']}{fp}")
+            line = f"[{idx}/{len(missions)}] SKIP {r['id']} ({r['skipped']})"
+        else:
+            mark = {True: "PASS", False: "FAIL", None: "INCONC"}.get(r["pass"], "?")
+            fp = " <<FALSO-PASS" if r["false_pass"] else ""
+            line = (f"[{idx}/{len(missions)}] {mark:6} {r['id']:24} "
+                    f"steps={r['steps']} {r.get('latency_s')}s | {r.get('evidence')}{fp}")
+        print(line, flush=True)            # flush para monitoreo en vivo
+        with prog_path.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(r, ensure_ascii=False) + "\n")  # incremental a disco
         try:
             agent.clear()
         except Exception:

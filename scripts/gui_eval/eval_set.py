@@ -119,16 +119,28 @@ def foreground_title() -> str | None:
         return None
 
 
-def process_running(name_substr: str) -> bool | None:
-    """¿Hay un proceso cuyo nombre contiene name_substr? vía tasklist."""
+def process_running(name_substr: str, *, exact: bool = False) -> bool | None:
+    """¿Hay un proceso cuyo nombre coincide? vía tasklist.
+    exact=True compara el NOMBRE EXACTO del .exe (evita que 'notepad' matchee
+    'notepad++.exe'). exact=False = substring en toda la salida (laxo)."""
     try:
         out = subprocess.run(
             ["tasklist", "/FO", "CSV", "/NH"],
             capture_output=True, encoding="utf-8", errors="replace", timeout=8,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
-        low = (out.stdout or "").lower()
-        return name_substr.lower() in low
+        text = out.stdout or ""
+        if not exact:
+            return name_substr.lower() in text.lower()
+        target = name_substr.lower()
+        if not target.endswith(".exe"):
+            target += ".exe"
+        for line in text.splitlines():
+            # CSV: "imagename.exe","pid",...
+            first = line.split(",")[0].strip().strip('"').lower()
+            if first == target:
+                return True
+        return False
     except Exception:
         return None
 
@@ -322,12 +334,12 @@ def _start_apps_contains(substr: str) -> bool:
     return any(s in a for a in _START_APPS_CACHE)
 
 
-def _v_proc(name_substr: str) -> Callable[[], dict]:
+def _v_proc(name_substr: str, *, exact: bool = False) -> Callable[[], dict]:
     def _f() -> dict:
-        ok = process_running(name_substr)
+        ok = process_running(name_substr, exact=exact)
         if ok is None:
             return {"pass": None, "evidence": "tasklist no disponible", "actual": None}
-        return {"pass": ok, "evidence": f"proceso '{name_substr}' corriendo={ok}", "actual": ok}
+        return {"pass": ok, "evidence": f"proceso '{name_substr}'{'(exact)' if exact else ''} corriendo={ok}", "actual": ok}
     return _f
 
 
@@ -397,7 +409,7 @@ def _build_extended() -> list[GuiMission]:
         for k, u in enumerate(utts):
             out.append(GuiMission(
                 id=f"t1_open_{proc_substr}_{k}", tier=1, utterance=u,
-                goal_verifier=_v_proc(proc_substr),
+                goal_verifier=_v_proc(proc_substr, exact=True),  # notepad != notepad++
                 reset=(lambda e=exe: _kill_process(e)),
                 precheck=(lambda e=exe: _exe_exists(e)),
                 note=f"abrir {proc_substr} ({u})"))
@@ -502,12 +514,23 @@ def _set_mute(on: bool) -> None:
 
 
 def _exe_exists(exe: str) -> bool:
-    """¿El exe está en PATH o es una app nativa de Windows conocida?"""
-    import shutil
+    """¿El exe está en PATH o es una app nativa de Windows conocida?
+    WordPad NO va acá: Microsoft lo deprecó/quitó en Windows 11 24H2+ (2024),
+    así que no es 'siempre presente'. Si está en PATH, which lo encuentra."""
+    import shutil, os as _os
     if shutil.which(exe):
         return True
-    # nativas que no están en PATH pero existen siempre
-    return exe.lower() in {"calculatorapp.exe", "notepad.exe", "mspaint.exe", "wordpad.exe"}
+    # nativas que no están en PATH pero existen siempre en Windows
+    if exe.lower() in {"calculatorapp.exe", "notepad.exe", "mspaint.exe"}:
+        return True
+    # wordpad: solo si realmente existe el binario (deprecado en 24H2)
+    if exe.lower() == "wordpad.exe":
+        for base in (_os.environ.get("ProgramFiles", r"C:\Program Files"),
+                     _os.environ.get("ProgramW6432", r"C:\Program Files")):
+            if _os.path.isfile(_os.path.join(base, "Windows NT", "Accessories", "wordpad.exe")):
+                return True
+        return False
+    return False
 
 
 # Construir el set ampliado una vez al importar.
