@@ -4628,12 +4628,50 @@ Start-Sleep -Milliseconds 120
                 fg_title = _w.GetWindowText(fg) if fg else fg_title
             except Exception:
                 pass
+        # WINDOW-READY GATE (2026-05-24): una app recién abierta (calculadora UWP,
+        # Notepad) tarda en estar LISTA para recibir teclas — los primeros
+        # keystrokes se pierden si llegan antes (eval Tier-4: '5+3' -> display '3',
+        # se comió '5+'). En vez de un sleep fijo (frágil), POLLEAMOS hasta que el
+        # foreground sea estable la ventana objetivo, cap ~1.5s. Universal: no
+        # depende de la app; mide que la ventana esté al frente y quieta.
+        if hint:
+            try:
+                import win32gui as _w
+                _deadline = time.time() + 1.5
+                _stable = 0
+                _last = None
+                while time.time() < _deadline:
+                    _h = _w.GetForegroundWindow()
+                    _t = _w.GetWindowText(_h) if _h else ""
+                    if self._match_query(hint, _t):
+                        # foreground es la ventana objetivo: exigir 2 lecturas
+                        # seguidas iguales (~estable) antes de teclear.
+                        if _t == _last:
+                            _stable += 1
+                            if _stable >= 2:
+                                fg_title = _t
+                                break
+                        _last = _t
+                    else:
+                        _stable = 0
+                        _last = None
+                    time.sleep(0.12)
+            except Exception:
+                pass
         # 2) capturar estado antes + teclear + verificar (sin VLM)
         try:
             from . import gui_verify
             before = gui_verify.capture_before(None, None)
         except Exception:
             before = None
+        # snapshot UIA del texto de la ventana ANTES de teclear: para detectar
+        # 'el contenido cambió' sin buscar un literal (la calculadora nunca muestra
+        # '2+2' pero su display pasa de '0' a otra cosa). Universal: mide cambio.
+        _uia_before = None
+        try:
+            _uia_before = self._uia_focused_text_snapshot(hint or fg_title or "")
+        except Exception:
+            _uia_before = None
         typed = self.gui_type({"text": text})
         if not typed.get("ok"):
             return typed
@@ -4663,14 +4701,31 @@ Start-Sleep -Milliseconds 120
                 uia_confirmed = self._uia_window_contains_text("", text)
         except Exception:
             uia_confirmed = None
+        # Señal UIA de CAMBIO (sin literal): si el snapshot de texto de la ventana
+        # cambió tras teclear, algo entró aunque no encontremos el string exacto
+        # (calculadora: '2+2' nunca aparece, pero el display deja de ser '0').
+        uia_changed = None
+        if uia_confirmed is not True and _uia_before is not None:
+            try:
+                _uia_after = self._uia_focused_text_snapshot(hint or fg_title or "")
+                if _uia_after is not None:
+                    uia_changed = (_uia_after != _uia_before)
+            except Exception:
+                uia_changed = None
         if uia_confirmed is True:
             typed["state_changed"] = True
             typed["state_verify"] = "uia_text_present"
+            typed["verified"] = True
+        elif uia_changed is True:
+            # cambió el contenido de texto de la ventana -> el tipeo tuvo efecto.
+            typed["state_changed"] = True
+            typed["state_verify"] = "uia_content_changed"
             typed["verified"] = True
         elif typed.get("state_changed") is False:
             typed["verified"] = False
             typed.setdefault("completion_status", "typed_no_effect")
         typed["uia_confirmed"] = uia_confirmed
+        typed["uia_changed"] = uia_changed
         typed["typed_into_window"] = fg_title
         typed["action"] = "type_into"
         return typed
@@ -5108,6 +5163,55 @@ Start-Sleep -Milliseconds 120
                     except Exception:
                         pass
             return False
+        except Exception:
+            return None
+
+    def _uia_focused_text_snapshot(self, window_substr: str = "") -> str | None:
+        """Devuelve una huella del TEXTO visible (Value + Name de edits/text) de
+        la ventana en foco, para detectar 'algo cambió tras teclear' SIN buscar un
+        literal. Caso calculadora: el display nunca muestra '2+2' literal, pero su
+        valor pasa de '0' a otra cosa — comparar el snapshot ANTES/DESPUÉS lo
+        detecta. Universal (no busca un string esperado, mide cambio). None si UIA
+        no está. Acotado (depth cap) para no costar latencia."""
+        try:
+            import uiautomation as auto
+        except Exception:
+            return None
+        win_s = (window_substr or "").strip().lower()
+        parts: list[str] = []
+        try:
+            for w in auto.GetRootControl().GetChildren():
+                wname = (w.Name or "").lower()
+                if win_s and win_s not in wname and wname not in win_s:
+                    continue
+                stack = list(w.GetChildren())
+                depth = 0
+                while stack and depth < 300:
+                    el = stack.pop()
+                    depth += 1
+                    val = ""
+                    try:
+                        vp = el.GetValuePattern()
+                        val = vp.Value or ""
+                    except Exception:
+                        val = ""
+                    # incluir Name SOLO de controles de texto/edición/resultado
+                    # (no botones, que son estáticos y no reflejan el tipeo).
+                    try:
+                        ct = el.ControlTypeName or ""
+                    except Exception:
+                        ct = ""
+                    if not val and ct in ("EditControl", "TextControl", "DocumentControl"):
+                        val = el.Name or ""
+                    if val:
+                        parts.append(val)
+                    try:
+                        stack.extend(el.GetChildren())
+                    except Exception:
+                        pass
+                if win_s:
+                    break  # ya encontramos la ventana objetivo
+            return "".join(parts) if parts else ""
         except Exception:
             return None
 

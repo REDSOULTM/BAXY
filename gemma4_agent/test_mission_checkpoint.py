@@ -77,6 +77,21 @@ class MissionCheckpointTest(unittest.TestCase):
         self.assertIsNotNone(p)
         self.assertEqual(p["remaining"], ["escribí informe", "exportá pdf"])
 
+    def test_stop_on_failure_leaves_remaining_resumable(self):
+        # Fase B/C: cadena de 5 pasos que falla en el paso 3 (idx 2). El agente
+        # marca done los pasos 0 y 1, NO llama finish (parar-en-fallo) -> el
+        # checkpoint queda con los pasos 3,4,5 (idx 2,3,4) pendientes para reanudar.
+        clauses = ["abrí Chrome", "andá a Configuración", "activá modo oscuro",
+                   "guardá", "cerrá"]
+        mid = mc.begin(self.state, clauses)
+        mc.mark_done(self.state, mid, 0, "abrí Chrome")
+        mc.mark_done(self.state, mid, 1, "andá a Configuración")
+        # paso idx 2 FALLA -> NO mark_done, NO finish (el agente hace break)
+        p = mc.pending(self.state)
+        self.assertIsNotNone(p)
+        self.assertEqual(p["remaining"],
+                         ["activá modo oscuro", "guardá", "cerrá"])
+
     def test_mark_done_wrong_mission_id_noop(self):
         mid = mc.begin(self.state, ["a", "b", "c"])
         mc.mark_done(self.state, "mis_otra", 0)  # otra misión

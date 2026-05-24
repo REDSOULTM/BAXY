@@ -602,6 +602,45 @@ def _build_extended() -> list[GuiMission]:
             max_steps_hint=2,
             note=f"cascada OCR sobre contenido Chromium ({u})"))
 
+    # ---- TIER 4: CADENAS de 3-5 pasos (Fase A/B computer-use, 2026-05-24). El
+    # splitter parte la misión, el código ejecuta cada paso (type_into/click_button/
+    # keypress) y VERIFICA el efecto; el 4B solo da el objetivo de cada paso (NO
+    # encadena solo — medido 0%). Verificador = ESTADO DEL SO al final de la cadena.
+    # Las cadenas terminan en un estado leíble (display de calc / texto de Notepad).
+    #
+    # CALC: "abrí la calculadora y escribí N+M y apretá enter" -> display = N+M.
+    # Verificable por UIA (CalculatorResults). El reset abre calc limpia.
+    calc_chains = [
+        ("2+2", "4", "abrí la calculadora y escribí 2+2 y apretá enter"),
+        ("5+3", "8", "abrí la calculadora, escribí 5+3 y apretá enter"),
+        ("7*6", "42", "abrí la calculadora y tecleá 7*6 y apretá enter"),  # 4 efectos
+    ]
+    for expr, expect, utt in calc_chains:
+        out.append(GuiMission(
+            id=f"t4_calc_chain_{expect}", tier=4, utterance=utt,
+            goal_verifier=(lambda e=expect: (lambda val: {
+                "pass": (val is not None and e in val),
+                "evidence": f"display Calculadora={val!r} contiene '{e}'={val is not None and e in val}",
+                "actual": val})(_calc_display_value())),
+            reset=_reset_calc_clean,
+            precheck=(lambda: _exe_exists("CalculatorApp.exe") or True),
+            max_steps_hint=4,
+            note=f"cadena 3 pasos abrir+escribir+enter -> display '{expect}' ({utt})"))
+
+    # NOTEPAD: "abrí el bloc de notas y escribí X y apretá enter y escribí Y" ->
+    # el edit contiene X (y Y). Verificable por UIA. 3-4 pasos.
+    npad_chains = [
+        ("informe final", "abrí el bloc de notas y escribí informe final"),
+        ("hola mundo", "abrí el bloc de notas, escribí hola mundo y apretá enter"),
+    ]
+    for text, utt in npad_chains:
+        out.append(GuiMission(
+            id=f"t4_npad_chain_{text.replace(' ', '_')}", tier=4, utterance=utt,
+            goal_verifier=_v_notepad_text(text),
+            reset=lambda: (_kill_process("notepad.exe"), _clear_notepad_session()),
+            max_steps_hint=4,
+            note=f"cadena multi-paso Notepad -> contiene '{text}' ({utt})"))
+
     return out
 
 

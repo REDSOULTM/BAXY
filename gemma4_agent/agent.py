@@ -2516,6 +2516,9 @@ class Gemma4Agent:
             _gvg.reset_budget()
         except Exception:
             pass
+        # PARAR-EN-FALLO: si un paso de la cadena falla, cortamos y dejamos el
+        # checkpoint SIN borrar (para reanudar). Este flag se lo dice al finally.
+        _chain_failed = False
         try:
             for _clause_idx, clause in enumerate(clauses):
                 # MACRO DETERMINISTA (Fase 2): si arrastramos contexto GUI y la
@@ -2542,7 +2545,14 @@ class Gemma4Agent:
                     res = self.tools.execute("gui", _ti_args)
                     ok = isinstance(res, dict) and res.get("ok")
                     changed = res.get("state_changed") if isinstance(res, dict) else None
-                    if ok and changed is not False:
+                    # PARAR-EN-FALLO sólo ante evidencia POSITIVA de fallo: la tool
+                    # erroró (ok False) o el verify MIDIÓ que nada cambió
+                    # (changed is False). Un verify INCONCLUSO (changed is None) NO
+                    # corta — muchas apps (calculadora) no exponen el texto tecleado
+                    # por UIA ni cambian píxeles de forma medible, y cortar ahí daba
+                    # falsos cortes. El verificador final (estado del SO) es el juez.
+                    _step_failed = (not ok) or (changed is False)
+                    if not _step_failed:
                         replies.append(f"Escribí «{_payload}».")
                     else:
                         replies.append(f"Intenté escribir «{_payload}» pero no pude "
@@ -2555,6 +2565,78 @@ class Gemma4Agent:
                                           replies[-1] if replies else "")
                         except Exception:
                             pass
+                    # parar-en-fallo también en escritura (consistencia con click).
+                    if _step_failed:
+                        _chain_failed = True
+                        if _clause_idx + 1 < len(clauses):
+                            replies.append(
+                                f"Paré la secuencia acá: faltaron los pasos "
+                                f"{_clause_idx + 2} en adelante. Decime si reintento.")
+                        self.trace.event("multi_intent", "chain_stopped_on_failure",
+                                         at_clause=_clause_idx, text=_payload[:60])
+                        break
+                    continue
+                # MACRO DETERMINISTA de CLICK (Fase B): simétrico a la escritura.
+                # Si arrastramos contexto GUI y la cláusula es "apretá/clickeá/
+                # tocá <X>", NO se lo pedimos al 4B (medido flojo encadenando):
+                # - si <X> es una TECLA (enter, tab, esc...) -> gui.keypress.
+                # - si <X> es un BOTÓN nombrado -> gui.click_button (UIA find por
+                #   Name + InvokePattern + verify; OCR fallback). El 4B dio el
+                #   objetivo (qué clickear); el código hace el cómo. Universal.
+                _click_target = None
+                if carry:
+                    try:
+                        from .command_splitter import extract_click_target, is_key_name
+                        _click_target = extract_click_target(clause)
+                    except Exception:
+                        _click_target = None
+                if _click_target:
+                    if is_key_name(_click_target):
+                        res = self.tools.execute(
+                            "gui", {"action": "keypress", "keys": _click_target})
+                        _label_human = _click_target
+                        _verb = "Apreté"
+                    else:
+                        _cb_args = {"action": "click_button", "label": _click_target}
+                        if carry_window:
+                            _cb_args["window"] = carry_window
+                        res = self.tools.execute("gui", _cb_args)
+                        _label_human = _click_target
+                        _verb = "Cliqueé"
+                    ok = isinstance(res, dict) and res.get("ok")
+                    changed = res.get("state_changed") if isinstance(res, dict) else None
+                    # Igual que en escritura: cortar SÓLO ante fallo positivo
+                    # (ok False o changed medido False). Inconcluso (None) NO corta
+                    # — una tecla/click cuyo efecto no es medible por píxeles no es
+                    # un fallo; el verificador final juzga el estado del SO.
+                    _step_failed = (not ok) or (changed is False)
+                    if not _step_failed:
+                        replies.append(f"{_verb} «{_label_human}».")
+                    else:
+                        replies.append(f"Intenté {_verb.lower()[:-1]}r «{_label_human}» "
+                                       "pero no pude confirmar el efecto.")
+                    self.trace.event("multi_intent", "click_macro",
+                                     label=_click_target[:60], ok=ok,
+                                     state_changed=changed,
+                                     key=is_key_name(_click_target))
+                    if _mission_id and _mc is not None:
+                        try:
+                            _mc.mark_done(self.state.path, _mission_id, _clause_idx,
+                                          replies[-1] if replies else "")
+                        except Exception:
+                            pass
+                    # PARAR-EN-FALLO (decisión RED): cortar la cadena sólo ante
+                    # evidencia positiva de fallo y avisar qué quedó. El checkpoint
+                    # NO se borra (finally respeta _chain_failed) -> reanudable.
+                    if _step_failed:
+                        _chain_failed = True
+                        if _clause_idx + 1 < len(clauses):
+                            replies.append(
+                                f"Paré la secuencia acá: faltaron los pasos "
+                                f"{_clause_idx + 2} en adelante. Decime si reintento.")
+                        self.trace.event("multi_intent", "chain_stopped_on_failure",
+                                         at_clause=_clause_idx, label=_click_target[:60])
+                        break
                     continue
                 # Propagar el contexto GUI de la cláusula anterior a ESTA, para
                 # que "escribí X" tras "abrí Notepad" herede gui/window y no
@@ -2594,10 +2676,12 @@ class Gemma4Agent:
         finally:
             self._splitting = False
             self._mi_carry_tools = []
-            # misión completada (o abortada por excepción) -> cerrar checkpoint.
-            # Si fue interrupción DURA (crash/kill) el finally no corre y el
-            # checkpoint queda para reanudar — que es exactamente lo que queremos.
-            if _mission_id and _mc is not None:
+            # misión completada -> cerrar checkpoint. Si PARAMOS POR FALLO
+            # (_chain_failed) NO lo borramos: queda para reanudar los pasos
+            # pendientes (decisión RED: parar y avisar qué quedó). Si fue
+            # interrupción DURA (crash/kill) el finally no corre y el checkpoint
+            # también queda — que es exactamente lo que queremos.
+            if _mission_id and _mc is not None and not _chain_failed:
                 try:
                     _mc.finish(self.state.path, _mission_id)
                 except Exception:

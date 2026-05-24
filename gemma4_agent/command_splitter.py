@@ -34,14 +34,30 @@ _IMPERATIVE = (
     r"busc[áa]|busca|buscame|and[áa]|anda|reproduc[íie]|reproduce|"
     r"mut[eé]a?|silenci[áa]|mostr[áa]|muestra|mostrame|empez[áa]|empieza|"
     r"par[áa]|para|pausa|paus[áa]|reanud[áa]|reanuda|llam[áa]|llama|"
-    r"escrib[íi]|escribe|crea|cre[áa]|apag[áa]|apaga|prend[ée]|prende|"
-    r"enciend[ee]|cancel[áa]|cancela|borr[áa]|borra|elimin[áa]|elimina"
+    r"escrib[íi]|escribe|tecle[áa]|teclea|tipe[áa]|tipea|digit[áa]|digita|"
+    r"crea|cre[áa]|apag[áa]|apaga|prend[ée]|prende|"
+    r"enciend[ee]|cancel[áa]|cancela|borr[áa]|borra|elimin[áa]|elimina|"
+    # verbos de CLICK/INTERACCIÓN (Fase B computer-use): "apretá/clickeá/tocá/
+    # seleccioná/elegí <botón>". Sin estos, una cadena "...y apretá enter" no
+    # partía la 3ra cláusula. Voseo + estándar.
+    r"apret[áa]|apreta|clicke[áa]|clickea|click[ée]a?|toc[áa]|toca|"
+    r"seleccion[áa]|selecciona|eleg[íi]|elige|presion[áa]|presiona|"
+    r"guard[áa]|guarda|confirm[áa]|confirma|acept[áa]|acepta|activ[áa]|activa|"
+    r"desactiv[áa]|desactiva|"
+    # verbos de NAVEGACIÓN: "andá/ve/navegá a <sección>".
+    r"naveg[áa]|navega|dirig[íi]te|ve\s+a|and[áa]\s+a"
 )
 
 _SPLIT_RE = re.compile(
     r"\s*(?:"
     r";\s+(?=(?:" + _IMPERATIVE + r"))"
     r"|,?\s+(?:y|e|o)\s+(?:despu[ée]s\s+|luego\s+|tambi[ée]n\s+)?(?=(?:" + _IMPERATIVE + r"))"
+    # ASÍNDETON: coma SIN conjunción seguida de un imperativo ("abrí la calc,
+    # escribí X y apretá enter"). 2026-05-24: el eval Tier-4 mostró que la coma
+    # antes de la 1ra acción dejaba dos acciones pegadas en una cláusula -> el 4B
+    # abría pero no tecleaba. Requiere un VERBO imperativo tras la coma, así
+    # "sal, pimienta, azúcar" (sustantivos) NO parte.
+    r"|,\s+(?=(?:" + _IMPERATIVE + r"))"
     r"|\s+(?:despu[ée]s|luego)\s+(?=(?:" + _IMPERATIVE + r"))"
     r")",
     re.IGNORECASE,
@@ -68,7 +84,12 @@ _DEP_RE = re.compile(
     re.IGNORECASE,
 )
 
-MAX_CLAUSES = 3  # cap conservador (inv 7): si parte en más, probablemente ruido
+# Cap de cláusulas por misión. Subido 3->5 (2026-05-24): el techo HONESTO
+# triangulado por la investigación de computer-use es "apps UIA-ricas, misiones
+# ≤5 pasos" (SOTA mundial Windows = 52.5%; el error por paso se multiplica:
+# 0.9^5≈0.59). >5 cláusulas = casi siempre ruido/lista, no una misión real ->
+# no partir (status quo: el LLM ve el comando entero). Guarda anti-ruido.
+MAX_CLAUSES = 5
 
 # Margen mínimo (action - noun) para tratar una cláusula como ACCIÓN (medido:
 # acciones multi-idioma ~+0.24..+0.51, sintagmas nominales ~-0.24..-0.33).
@@ -239,3 +260,92 @@ def extract_write_payload(clause: str) -> str | None:
     if len(payload) >= 2 and payload[0] in "\"'«" and payload[-1] in "\"'»":
         payload = payload[1:-1].strip()
     return payload or None
+
+
+# --- Extracción de TARGET de CLICK (Fase B computer-use) ---------------------
+# Simétrico a la escritura: una cláusula "apretá/clickeá/tocá/seleccioná <botón>"
+# en contexto GUI debe ir a la macro determinista click_button(label) — UIA find
+# por Name + InvokePattern + verify — NO a que el 4B forme la llamada (medido
+# flojo encadenando). El verbo de click es vocabulario CERRADO y morfológico
+# (solo SEPARA verbo de label) -> stems multi-idioma. Universal.
+_CLICK_VERB_STEM = re.compile(
+    r"^\s*(?:"
+    r"apret[áa]\w*|clicke[áa]\w*|click\w*|toc[áa]\w*|toca\w*|"            # es
+    r"seleccion[áa]\w*|elegí|elige|elig[ée]\w*|presion[áa]\w*|"          # es
+    r"click|press|tap|select|choose|hit|"                                # en
+    r"clic\w*|aperte\w*|toqu\w*|selecion\w*|"                            # pt
+    r"clique\w*|appuie\w*|s[ée]lectionne\w*|"                            # fr
+    r"klick\w*|dr[üu]ck\w*|w[äa]hl\w*|"                                   # de
+    r"clicc\w*|premi\w*|selezion\w*"                                      # it
+    r")\b[\s:]+",
+    re.IGNORECASE,
+)
+
+# Preposiciones/artículos que pueden quedar entre el verbo-click y el label en
+# varios idiomas ("clickeá EN EL botón", "clique EM Enviar", "klick AUF OK").
+# Se quitan del frente del label para que el Name UIA matchee. Closed set,
+# multi-idioma; conservador (solo al principio del label).
+_CLICK_LEAD = re.compile(
+    r"^(?:"
+    r"en\s+el|en\s+la|en|el|la|los|las|sobre|"      # es
+    r"on\s+the|on|the|"                              # en
+    r"em|no|na|"                                     # pt
+    r"sur\s+le|sur|le|"                              # fr
+    r"auf\s+das|auf\s+den|auf|"                      # de
+    r"su|sul|sulla"                                  # it
+    r")\s+",
+    re.IGNORECASE,
+)
+
+# Palabras que indican que el "click" es sobre coordenadas/posición, no un
+# control nombrado -> NO mandar a click_button (que busca por Name). Conservador.
+_CLICK_POSITIONAL = re.compile(
+    r"\b(?:aqu[íi]|ah[íi]|all[íi]|ac[áa]|here|there|esta?\s+posici[óo]n|"
+    r"esquina|corner|centro|center|coordenada)\b", re.IGNORECASE)
+
+
+# Teclas físicas: si el "target" de un click es una tecla (enter, tab, esc...),
+# NO es un botón nombrado -> va a keypress, no a click_button. Vocabulario CERRADO
+# de teclas (nombres físicos, no traducibles en su mayoría). El caller decide.
+_KEY_NAMES = frozenset({
+    "enter", "intro", "return", "tab", "esc", "escape", "space", "espacio",
+    "backspace", "retroceso", "delete", "supr", "suprimir", "del",
+    "arriba", "abajo", "izquierda", "derecha", "up", "down", "left", "right",
+    "home", "end", "inicio", "fin", "pageup", "pagedown", "f1", "f2", "f3",
+    "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
+})
+
+
+def is_key_name(label: str | None) -> bool:
+    """True si `label` es el nombre de una tecla física (enter/tab/esc/...),
+    no un control nombrado. El caller manda esto a keypress, no a click_button."""
+    if not label:
+        return False
+    return label.strip().casefold() in _KEY_NAMES
+
+
+def extract_click_target(clause: str) -> str | None:
+    """Si la cláusula es "<verbo-click> <label>", devuelve <label> (botón a
+    clickear por Name UIA). None si no es una cláusula de click, o si refiere a
+    una posición/coordenada (eso es gui.click crudo, no click_button). ESTRUCTURAL:
+    solo separa el verbo inicial del label; la decisión de USARLO (contexto GUI)
+    la toma el caller. Universal por los stems multi-idioma."""
+    if not clause or not clause.strip():
+        return None
+    m = _CLICK_VERB_STEM.match(clause)
+    if not m:
+        return None
+    label = clause[m.end():].strip()
+    if not label:
+        return None
+    # quitar preposición/artículo de enlace ("en el", "em", "auf"...).
+    label = _CLICK_LEAD.sub("", label, count=1).strip()
+    if not label:
+        return None
+    # click posicional ("clickeá ahí", "click aquí") -> no es por Name.
+    if _CLICK_POSITIONAL.search(label):
+        return None
+    # quitar comillas envolventes y artículos/punto final residuales.
+    if len(label) >= 2 and label[0] in "\"'«" and label[-1] in "\"'»":
+        label = label[1:-1].strip()
+    return label.strip(" .,;") or None
