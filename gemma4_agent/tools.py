@@ -1546,10 +1546,12 @@ class ToolRegistry:
             return self.window_move_resize(args)
         return _err("unknown window action", action=action)
 
-    def t_gui(self, args: dict[str, Any]) -> dict[str, Any]:
-        action = _action(args, default="screenshot")
-        if action == "screenshot":
-            return self.gui_screenshot(args)
+    # Acciones GUI que MUTAN la pantalla -> verificamos el efecto post-acción
+    # (Fase 1 computer-use: cerrar el "click/type ciego"). Ver gui_verify.py.
+    _GUI_MUTATING = {"click", "double_click", "right_click", "type",
+                     "keypress", "hotkey", "scroll", "drag"}
+
+    def _gui_dispatch_raw(self, action: str, args: dict[str, Any]) -> dict[str, Any]:
         if action == "click":
             return self.gui_click(args)
         if action == "double_click":
@@ -1564,6 +1566,39 @@ class ToolRegistry:
             return self.gui_scroll(args)
         if action == "drag":
             return self.gui_drag(args)
+        return _err("unknown gui mutating action", action=action)
+
+    def t_gui(self, args: dict[str, Any]) -> dict[str, Any]:
+        action = _action(args, default="screenshot")
+        if action == "screenshot":
+            return self.gui_screenshot(args)
+        if action in self._GUI_MUTATING:
+            # verify_post_action: capturar ROI antes -> actuar -> verificar que el
+            # SO cambió. Anota state_changed en el result (honestidad: el agente
+            # deja de creer que hizo algo que no hizo). Best-effort, nunca rompe.
+            try:
+                from . import gui_verify
+                _x = args.get("x"); _y = args.get("y")
+                _before = gui_verify.capture_before(
+                    int(_x) if _x is not None else None,
+                    int(_y) if _y is not None else None)
+            except Exception:
+                _before = None
+            result = self._gui_dispatch_raw(action, args)
+            try:
+                if _before is not None and isinstance(result, dict) and result.get("ok"):
+                    from . import gui_verify
+                    _v = gui_verify.verify_after(_before)
+                    result["state_changed"] = _v.get("state_changed")
+                    result["state_verify"] = _v.get("reason")
+                    # Si NO cambió nada medible, marcar para el honesty-guard:
+                    # la acción se despachó pero no se observó efecto.
+                    if _v.get("state_changed") is False:
+                        result["verified"] = False
+                        result.setdefault("completion_status", "dispatched_no_effect")
+            except Exception:
+                pass
+            return result
         if action == "wait_for":
             return self.gui_wait_for(args)
         if action in {"locate_text", "click_text"}:

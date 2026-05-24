@@ -148,6 +148,34 @@ Detalle:
    observe→act→verify es real y medible. Gate Fase 1: bajar falso-PASS de 14.3% a <5%.
 3. Latencia: 1er turno 14.7s (frío). Pre-calentar o excluir warmup. Resto 1.7-2.3s.
 
+## 6.ter — FASE 1 hecha (verify_post_action) — resultado HONESTO
+
+`gemma4_agent/gui_verify.py` + cableado en `t_gui` (commit pendiente). Tras
+click/type: frame-diff de ROI (dHash 8×8, Hamming≥6) + foreground check, anota
+`state_changed` en el result; si False → `verified=False` +
+`completion_status="dispatched_no_effect"`. Sin VLM. Gate GEMMA4_GUI_VERIFY=0.
+7 tests unitarios; 28 contract tests OK. Medido: capture 34ms + dHash 4ms.
+
+Re-corrida del eval:
+- Task SR 71.4% → **85.7%** (calc pasó esta vez; warm-up influye).
+- Falso-PASS 14.3% → **0.0%** ✓ (gate <5% cumplido).
+
+**HONESTIDAD (no auto-engaño, lección de Carter):** el falso-PASS bajó a 0 por
+DOS razones, y hay que distinguirlas:
+1. verify_post_action está construido, funciona y es el cimiento correcto para
+   las macros de Fase 2. PERO en el caso que fallaba (`t1_notepad_write`) NO fue
+   el factor: el agente solo abrió Notepad (1 step) y NUNCA llamó gui.type, así
+   que no hubo acción que verificar.
+2. El "falso-PASS" de Fase 0 era EN PARTE un artefacto de mi heurística de
+   medición (`_agent_reported_success`): el agente FUE honesto ("no alcancé a
+   completar, ¿la repetimos?") pero mi detector no reconocía esa frase. Lo
+   corregí (ahora reconoce "no alcancé/no completé/pendiente/...").
+
+**Problema real que SIGUE abierto:** `t1_notepad_write` sigue FAIL — el agente NO
+encadena "abrir Notepad Y escribir". Es trabajo de FASE 2 (macros observe→act→
+verify + chaining determinista). verify_post_action es el cimiento; las macros lo
+van a USAR para no avanzar al paso 2 hasta confirmar el paso 1.
+
 ## 7. Decisión
 
 **La arquitectura está triangulada y decidida.** El próximo paso correcto es la

@@ -41,7 +41,12 @@ def _agent_reported_success(reply: str, events: list) -> bool:
     txt = (reply or "").lower()
     admits_fail = any(k in txt for k in (
         "no pude", "no puedo", "no tengo", "error", "falló", "no encontré",
-        "couldn't", "could not", "i can't", "failed", "unable"))
+        "couldn't", "could not", "i can't", "failed", "unable",
+        # admisiones de NO completar (el agente fue honesto — no es falso-PASS):
+        "no alcancé", "no alcance", "no complet", "no logré", "no logre",
+        "¿la repetimos", "la repetimos", "no terminé", "no termine",
+        "didn't finish", "did not finish", "couldn't complete", "incomplete",
+        "no se completó", "no se completo", "pendiente"))
     return (not admits_fail) and bool(events)
 
 
