@@ -4033,6 +4033,32 @@ foreach ($e in $all) {
   }
 }
 
+# FALLBACK ALL-WINDOWS: si el root (foreground o por título) no dio matches y
+# NO se pidió una ventana específica, el control puede estar en OTRA ventana que
+# no tiene el foco (en el eval, la Calculadora se abre pero el foco queda en
+# otra app entre el reset y el click -> "no encontré el botón"). Reescaneamos
+# las ventanas top-level visibles y juntamos matches. General: clickear un botón
+# de una app que no está al frente. Acotado por $limit.
+if ($matches.Count -lt 1 -and [string]::IsNullOrWhiteSpace($window) -and $action -ne "tree") {
+  try {
+    $desktop = [System.Windows.Automation.AutomationElement]::RootElement
+    $tops = @($desktop.FindAll([System.Windows.Automation.TreeScope]::Children, [System.Windows.Automation.Condition]::TrueCondition))
+    foreach ($top in $tops) {
+      if ($matches.Count -ge $limit) { break }
+      try {
+        $sub = @($top.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition))
+        foreach ($e in $sub) {
+          if (Matches $e $query) {
+            $matches += $e
+            if ($matches.Count -ge $limit) { break }
+          }
+        }
+      } catch {}
+    }
+    if ($matches.Count -gt 0) { $all = $matches }
+  } catch {}
+}
+
 if ($action -eq "tree") {
   $items = @()
   foreach ($e in $all) {
