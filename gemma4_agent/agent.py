@@ -480,6 +480,19 @@ class Gemma4Agent:
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
             return _jarvis_reply
+        # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
+        # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
+        # LLM y corremos cada cláusula como su propio turno (serializado si la
+        # 2ª depende de la 1ª via inherit-tools). Solo texto plano; gate
+        # GEMMA4_MULTI_INTENT=0. _splitting evita recursión.
+        if isinstance(content, str) and not getattr(self, "_splitting", False):
+            import os as _os_mi
+            if _os_mi.environ.get("GEMMA4_MULTI_INTENT", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                from .command_splitter import split_command
+                _clauses = split_command(content)
+                if len(_clauses) > 1:
+                    return self._run_multi_intent(_clauses, progress=progress)
         # Allow ONE forced tool-call retry per user turn (reset here; consumed
         # in the agent loop when a domain tool was expected but none was called).
         self._forced_tool_retry_done = False
@@ -2210,6 +2223,34 @@ class Gemma4Agent:
     _VISUAL_DELIVERABLE_TOOLS = frozenset({"gui", "vision", "uia", "verify"})
     # Result.action values that mean "I captured an image on purpose".
     _VISUAL_ACTIONS = ("screenshot", "capture", "ocr", "read_screen", "describe")
+
+    def _run_multi_intent(self, clauses: list[str], progress=None) -> "AgentReply":
+        """Ejecuta cada cláusula de un comando multi-intent como su propio turno
+        (inv 7). Serializado: las cláusulas dependientes ('...y abrilo') usan el
+        inherit-tools del turno previo. Combina las respuestas en un solo reply.
+        _splitting evita que cada sub-turno vuelva a partir."""
+        self._splitting = True
+        replies: list[str] = []
+        all_events: list[ToolEvent] = []
+        try:
+            for clause in clauses:
+                try:
+                    r = self.run_content(clause, progress=progress)
+                except Exception as exc:
+                    replies.append(f"(no pude con «{clause}»: {exc})")
+                    continue
+                c = (getattr(r, "content", "") or "").strip()
+                if c:
+                    replies.append(c)
+                ev = getattr(r, "tool_events", None)
+                if ev:
+                    all_events.extend(ev)
+        finally:
+            self._splitting = False
+        combined = " ".join(replies).strip() or "Listo."
+        self.trace.event("multi_intent", "split_executed",
+                         clauses=clauses, replies=len(replies))
+        return AgentReply(content=combined, tool_events=all_events, mission=None)
 
     def _handle_pending_suggestion(self, content: Any) -> "AgentReply | None":
         """JARVIS (inv 5): resuelve el sí/no a una oferta de automatización del
