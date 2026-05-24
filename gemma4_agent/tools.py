@@ -5121,6 +5121,19 @@ Start-Sleep -Milliseconds 120
             return all(tok in t for tok in q_tokens)
         return False
 
+    # Procesos/ventanas de UPDATER/INSTALADOR que NO son la app real. Squirrel
+    # (Discord/Slack/Teams/GitHub Desktop) lanza Update.exe que muestra una
+    # ventana TRANSITORIA cuyo título puede contener el nombre de la app ("Discord")
+    # hasta que entrega control al proceso real -> daba false-PASS (R4). Filtramos
+    # por NOMBRE DE PROCESO del updater (forma estructural, estable cross-locale),
+    # no por keyword de contenido.
+    _UPDATER_PROCS = ("update.exe", "squirrel.exe", "setup.exe", "installer.exe",
+                      "updater.exe", "msiexec.exe", "vcredist", "stub.exe")
+
+    def _is_updater_proc(self, proc_name: str) -> bool:
+        p = (proc_name or "").strip().lower()
+        return any(u in p for u in self._UPDATER_PROCS) if p else False
+
     def verify_app_opened(self, args: dict[str, Any]) -> dict[str, Any]:
         name = str(args.get("name") or args.get("query") or "").strip()
         if not name:
@@ -5137,13 +5150,30 @@ Start-Sleep -Milliseconds 120
             if self._match_query(name, str(w.get("title", "")))
             or self._match_query(name, str(w.get("process", "")))
         ]
+        # R4: descartar matches de UPDATER. Una ventana cuyo proceso es Update.exe/
+        # Squirrel NO es la app abierta — es el instalador transitorio. Sin esto,
+        # "Discord" en el título del updater daba found=True aunque Discord.exe no
+        # corría (3 false-PASS medidos en run7).
+        real_procs = [p for p in proc_matches if not self._is_updater_proc(str(p.get("name", "")))]
+        # ventana real = su proceso no es updater Y su título no es de updater
+        # ("Discord Updater" tiene proceso vacío pero título de updater).
+        def _win_is_real(w: dict) -> bool:
+            if self._is_updater_proc(str(w.get("process", ""))):
+                return False
+            tl = str(w.get("title", "")).lower()
+            return not any(k in tl for k in ("updater", "update failed", "installing",
+                                             "instalando", "setup", "actualiz"))
+        real_wins = [w for w in win_matches if _win_is_real(w)]
+        updater_only = bool((proc_matches or win_matches) and not (real_procs or real_wins))
         return _ok(
-            found=bool(proc_matches or win_matches),
+            # found ahora exige un match REAL (no solo el updater transitorio).
+            found=bool(real_procs or real_wins),
             query=name,
-            process_matches=proc_matches[:10],
-            window_matches=win_matches[:10],
-            match_count_procs=len(proc_matches),
-            match_count_windows=len(win_matches),
+            process_matches=real_procs[:10],
+            window_matches=real_wins[:10],
+            match_count_procs=len(real_procs),
+            match_count_windows=len(real_wins),
+            updater_only=updater_only,  # señal honesta: solo se vio el instalador
         )
 
     def verify_file_exists(self, args: dict[str, Any]) -> dict[str, Any]:
