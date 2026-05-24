@@ -1195,8 +1195,8 @@ class Gemma4Agent:
         replan_done = False
 
         # Loop detector: registra cada tool execution con result canonicalizado y
-        # detecta 5 patrones de stuck (repeat, unknown_tool, ping_pong, circuit
-        # breaker, vision_not_found). Two-tier escalation: warning -> critical.
+        # detecta 6 patrones de stuck (repeat, unknown_tool, ping_pong, circuit
+        # breaker, vision_not_found, no_progress). Two-tier escalation: warning -> critical.
         # Vive por-turn (un user request); se evita carry-over que confunda al
         # LLM entre preguntas distintas.
         from .loop_detection import LoopState
@@ -2079,6 +2079,11 @@ class Gemma4Agent:
                 if v_outcome.confirmed is True:
                     for ek in (v_outcome.evidence_keys or []):
                         loop_state.record_evidence(ek)
+                elif v_outcome.confirmed is None:
+                    # No verificable (read-only / sin verifier): no es "no
+                    # progresar". No penalizar para no falsos-positivos de
+                    # no_progress en turnos read-heavy (búsquedas, knowledge).
+                    loop_state.note_unverifiable()
                 # Si la tool reporto ok=True pero el verifier dice confirmed=False,
                 # algo es inconsistente — vale la pena loggearlo para debug.
                 if v_outcome.confirmed is False and result.get("ok"):

@@ -57,6 +57,13 @@ UNKNOWN_TOOL_LIMIT = 3
 PING_PONG_WINDOW = 6
 GLOBAL_CIRCUIT_BREAKER = 30
 VISION_NOT_FOUND_LIMIT = 3
+# no_progress (Carter v5 loop/detection.py 5º patrón): N tool calls sin que
+# NINGÚN verifier registre evidencia de cambio real en el SO. Distinto de
+# generic_repeat (que exige args+result idénticos): acá los args/results pueden
+# variar, pero el agente no está LOGRANDO nada medible. Conservador: > que los
+# patrones de repetición, < que el circuit breaker global. Two-tier (warn→crit).
+NO_PROGRESS_WARNING = 6
+NO_PROGRESS_CRITICAL = 9
 
 
 def _detector_enabled() -> bool:
@@ -156,6 +163,9 @@ class LoopState:
     evidence_keys_changed: set[str] = field(default_factory=set)
     warning_count: int = 0
     vision_not_found_count: int = 0
+    # no_progress: tool calls acumulados desde la última evidencia de cambio real.
+    # Se incrementa en record(), se resetea en record_evidence().
+    calls_since_evidence: int = 0
 
     def record(
         self,
@@ -167,6 +177,7 @@ class LoopState:
     ) -> None:
         """Registra un tool call. Llamar DESPUÉS de ejecutar (para tener result)."""
         self.global_count += 1
+        self.calls_since_evidence += 1
         result_sig = _result_signature(result)
         h = _hash_tool_call(tool_name, args, result_sig)
         self.history.append((tool_name, h, exists, result_sig))
@@ -184,6 +195,14 @@ class LoopState:
             elif result.get("visible") is True:
                 self.vision_not_found_count = 0
 
+    def note_unverifiable(self) -> None:
+        """La última call NO es verificable (read-only / sin verifier, confirmed=None).
+        No cuenta para no_progress: leer no es "no progresar", es simplemente no
+        producir un cambio medible. Descontamos el incremento que hizo record()
+        para no penalizar turnos read-heavy legítimos (9 búsquedas web != loop)."""
+        if self.calls_since_evidence > 0:
+            self.calls_since_evidence -= 1
+
     def record_evidence(self, evidence_key: str) -> None:
         """Marca que algo cambió en el estado del SO.
 
@@ -200,6 +219,7 @@ class LoopState:
         """
         self.evidence_keys_changed.add(evidence_key)
         self.warning_count = 0
+        self.calls_since_evidence = 0  # hubo progreso real -> resetear no_progress
 
     def reset(self) -> None:
         self.history.clear()
@@ -208,6 +228,7 @@ class LoopState:
         self.evidence_keys_changed.clear()
         self.warning_count = 0
         self.vision_not_found_count = 0
+        self.calls_since_evidence = 0
 
     def detect_stuck(self) -> Optional[StuckSignal]:
         """Si hay un patrón problemático, devuelve StuckSignal. Si no, None.
@@ -222,6 +243,7 @@ class LoopState:
           3. vision_not_found_repeat (siempre critical)
           4. generic_repeat (warning → critical)
           5. ping_pong (siempre critical)
+          6. no_progress (warning → critical) — coarse, va último
         """
         if not _detector_enabled():
             return None
@@ -332,5 +354,32 @@ class LoopState:
                     ),
                     detail={"tools": list(names)},
                 )
+
+        # 6. no_progress (Carter v5 5º patrón): muchos tool calls sin que NINGÚN
+        # verifier registre evidencia de cambio real. Más coarse que los de
+        # repetición (los args/results pueden variar), va último. Two-tier.
+        if self.calls_since_evidence >= NO_PROGRESS_CRITICAL:
+            return StuckSignal(
+                level="critical",
+                pattern="no_progress",
+                message=(
+                    f"[loop-detector CRITICAL] {self.calls_since_evidence} "
+                    "tool_calls sin NINGÚN cambio verificado en el sistema. No "
+                    "estás logrando nada medible. ABORTÁ esta línea de acción y "
+                    "reportá honestamente al usuario qué pudiste y qué no."
+                ),
+                detail={"calls_since_evidence": self.calls_since_evidence},
+            )
+        if self.calls_since_evidence >= NO_PROGRESS_WARNING:
+            return StuckSignal(
+                level="warning",
+                pattern="no_progress",
+                message=(
+                    f"[loop-detector] Llevás {self.calls_since_evidence} tool_calls "
+                    "sin un cambio verificado en el sistema. Si no estás progresando, "
+                    "PROBÁ otra estrategia o admití UNVERIFIED honestamente."
+                ),
+                detail={"calls_since_evidence": self.calls_since_evidence},
+            )
 
         return None

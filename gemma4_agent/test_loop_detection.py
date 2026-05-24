@@ -260,6 +260,58 @@ def test_reset_clears_all_state() -> None:
     assert s.vision_not_found_count == 0
 
 
+# --------------------------------------------------------------- no_progress
+def test_no_progress_critical_without_evidence() -> None:
+    """9 tool calls sin NINGUNA evidencia de cambio -> no_progress critical.
+    Args/results varían (no es generic_repeat), pero no se logra nada medible."""
+    s = LoopState()
+    for i in range(9):
+        s.record("app", {"action": "open", "name": f"x{i}"},
+                 exists=True, result={"ok": False, "attempt": i})
+    sig = s.detect_stuck()
+    assert sig is not None and sig.pattern == "no_progress"
+    assert sig.level == "critical"
+
+
+def test_no_progress_warning_tier() -> None:
+    s = LoopState()
+    for i in range(6):
+        s.record("web", {"q": f"q{i}"}, exists=True, result={"ok": True, "data": i})
+    sig = s.detect_stuck()
+    assert sig is not None and sig.pattern == "no_progress"
+    assert sig.level == "warning"
+
+
+def test_no_progress_resets_on_evidence() -> None:
+    """Evidencia frecuente de progreso real -> NUNCA dispara no_progress."""
+    s = LoopState()
+    for i in range(9):
+        s.record("app", {"action": "open", "name": f"x{i}"},
+                 exists=True, result={"ok": True})
+        if i % 2 == 0:
+            s.record_evidence(f"app:x{i}")
+    sig = s.detect_stuck()
+    assert sig is None or sig.pattern != "no_progress"
+
+
+def test_no_progress_below_threshold_returns_none() -> None:
+    s = LoopState()
+    for i in range(3):
+        s.record("web", {"q": f"q{i}"}, exists=True, result={"ok": True, "data": i})
+    assert s.detect_stuck() is None
+
+
+def test_no_progress_unverifiable_reads_exempt() -> None:
+    """Turno read-heavy legítimo (9 búsquedas, todas confirmed=None) NO debe
+    disparar no_progress: leer no es no-progresar. note_unverifiable() descuenta."""
+    s = LoopState()
+    for i in range(9):
+        s.record("web", {"q": f"q{i}"}, exists=True, result={"ok": True, "data": i})
+        s.note_unverifiable()  # el agente lo llama cuando confirmed is None
+    sig = s.detect_stuck()
+    assert sig is None or sig.pattern != "no_progress"
+
+
 # ============================================================================
 # Runner standalone
 # ============================================================================
@@ -283,6 +335,11 @@ TESTS = [
     test_evidence_resets_warning_count,
     test_detector_disabled_via_env,
     test_reset_clears_all_state,
+    test_no_progress_critical_without_evidence,
+    test_no_progress_warning_tier,
+    test_no_progress_resets_on_evidence,
+    test_no_progress_below_threshold_returns_none,
+    test_no_progress_unverifiable_reads_exempt,
 ]
 
 
