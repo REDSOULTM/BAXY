@@ -19,20 +19,28 @@ con GPT-4o/o1; con 4B local nuestro 0/12 manda) y vision-no-clica-por-coords
 (ScreenSpot-Pro: GPT-4o 0.9%, UI-TARS-7B 35.7%, UI-TARS-1.5 61.6% — clicar por
 coords de un VLM 4B local sería peor que random).
 
-## ESTADO DE APLICACIÓN (2026-05-25)
-Aplicadas y verificadas esta sesión (commits): **R4** (4d141d8), **R7** (a31a73f),
-**R1+R6** (5e81be1), **R8 activity-budget** (135c0db), + fix latente crítico
-**SafeInt UIA** (a31a73f, los elementos offscreen con bounds Infinity crasheaban
-todo el find por overflow int) + nudge click-intent en la descripción de uia.
-Pendientes (Fase 2-3 del informe, requieren más esfuerzo/medición): R2 (OCR A/B),
-R3 (WinEvents push), R5 (UIA cache), R8-anchor-binding.
+## ESTADO DE APLICACIÓN (2026-05-25) — PASADA COMPLETA
+**APLICADAS** (commits): **R4** (4d141d8), **R7** (a31a73f), **R1+R6** (5e81be1),
+**R8 activity-budget** (135c0db), + fix latente crítico **SafeInt UIA** (a31a73f)
++ nudge click-intent en la descripción de uia.
+
+**MEDIDAS y RECHAZADAS con evidencia** (el patrón sano: medir contra nuestro
+setup antes de construir): **R2** OCR (Tesseract = RapidOCR en precisión pero
+5-20x más rápido → no migrar, 3476e78), **R5** UIA-cache (UIA = 0.6-0.9s vs LLM
+3-13s, no es el cuello → no construir, 8f00ab3), **R3** WinEvents (la
+UIA-text-confirm de Fase 3 ya da 0/5 falsos-negativos en texto chico → no hace
+falta). Más speculative y VLM-coords (rechazados antes).
+
+**PENDIENTE menor**: R8-anchor-binding (el informe avisa que da fricción; requiere
+calibración con red-team). Todo lo demás del informe: resuelto (aplicado o
+medido-y-rechazado).
 
 ## Recomendaciones (resumen)
 | # | Qué | Impacto | Esfuerzo | Estado |
 |---|---|---|---|---|
 | R1 | `--force-renderer-accessibility` + `ELECTRON_ENABLE_ACCESSIBILITY=1` | Alto | Bajo | **HECHO** (5e81be1): app.open lanza Chromium/Electron con AX; resuelve exe de .lnk/shell via App Paths |
 | R2 | OCR → RapidOCR PP-OCRv5 ONNX | Alto | Medio | **MEDIDO y RECHAZADO**: A/B sobre UI-text rendered (white-on-blue + dark-on-light) → Tesseract y RapidOCR ambos 4/4 precisión, pero Tesseract 5-20x más rápido (0.15s vs 3.30s). El premise del informe (Tesseract falla en blanco-sobre-color) es de scene-text ICDAR, NO aplica a UI rendered (limpio/anti-aliased). RapidOCR además trae solo modelo CHINO (lee latín como CJK) — necesitaría descargar modelo Latin. NO migrar. Harness: scripts/gui_eval/_ab_ocr3.py |
-| R3 | WinEvents push + UIA event handlers | Alto | Medio | pendiente (Fase 2) |
+| R3 | WinEvents push + UIA event handlers | Alto | Medio | **MEDIDO y descartado**: el beneficio principal (eliminar falsos-negativos de verify en texto chico) YA está cubierto por la UIA-text-confirmation de Fase 3. Medido: 0/5 falsos-negativos en texto de 1-2 chars (state_changed=True, uia_confirmed=True). WinEvents = complejidad (hooks/threading/filtrado cross-process) para un fn-rate que ya es 0%. NO construir. Harness: _measure_verify_fn.py |
 | R4 | transient-launcher: descartar updater (Squirrel) | Medio | Bajo | **HECHO** (4d141d8): Discord 3 false-pass→0 |
 | R5 | UIA CacheRequest + RuntimeId rebind + paralelizar | Medio | Medio | **MEDIDO y descartado**: desglose de latencia de turno GUI → UIA = 0.6-0.9s, LLM+resto = 2.9-12.5s. UIA NO es el cuello (el LLM domina 3-14x). El cache ahorraría ~0.5s de un turno de 3-13s = negligible. El informe asumía que UIA era el costo; no lo es. NO construir. Harness: _measure_latency.py |
 | R6 | password fields web | Alto seg | Bajo | **HECHO** (5e81be1): con R1 activo, UIA IsPassword se expone en web → el password-guard de Fase 5 bloquea el type. Verificado en form web real. |
