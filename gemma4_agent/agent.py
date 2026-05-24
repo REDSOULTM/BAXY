@@ -474,6 +474,12 @@ class Gemma4Agent:
 
     def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
         self._turn_counter += 1
+        # JARVIS (inv 5): si el turno anterior ofreció automatizar una rutina y
+        # el usuario responde sí/no, resolverlo ACÁ (antes del LLM) — es un
+        # handshake determinista, no hace falta inferencia. Short-circuit del turno.
+        _jarvis_reply = self._handle_pending_suggestion(content)
+        if _jarvis_reply is not None:
+            return _jarvis_reply
         # Allow ONE forced tool-call retry per user turn (reset here; consumed
         # in the agent loop when a domain tool was expected but none was called).
         self._forced_tool_retry_done = False
@@ -2204,6 +2210,66 @@ class Gemma4Agent:
     _VISUAL_DELIVERABLE_TOOLS = frozenset({"gui", "vision", "uia", "verify"})
     # Result.action values that mean "I captured an image on purpose".
     _VISUAL_ACTIONS = ("screenshot", "capture", "ocr", "read_screen", "describe")
+
+    def _handle_pending_suggestion(self, content: Any) -> "AgentReply | None":
+        """JARVIS (inv 5): resuelve el sí/no a una oferta de automatización del
+        turno anterior. Si el usuario aceptó, CREA la rutina vía routine_tool.
+        Devuelve un AgentReply (short-circuit) o None si no hay oferta pendiente
+        o el mensaje no es un sí/no claro. Determinista, sin LLM."""
+        cand = getattr(self, "_pending_suggestion", None)
+        if cand is None:
+            return None
+        # extraer texto plano del content (puede ser str o lista multimodal)
+        text = content if isinstance(content, str) else " ".join(
+            p.get("text", "") for p in content if isinstance(p, dict))
+        t = (text or "").strip().lower()
+        import re as _re
+        t = _re.sub(r"[^a-záéíóúñ ]", " ", t).strip()
+        yes = any(w in t.split() for w in (
+            "si", "sí", "dale", "ok", "okay", "bueno", "hacelo", "hazlo",
+            "automatizalo", "automatízalo", "yes", "claro", "obvio"))
+        no = any(w in t.split() for w in (
+            "no", "nop", "nope", "negativo", "mejor", "despues", "después"))
+        if not (yes or no) or (yes and no):
+            # mensaje ambiguo: NO consumir la oferta (el usuario cambió de tema);
+            # la dejamos pendiente y seguimos el turno normal.
+            return None
+        self._pending_suggestion = None
+        try:
+            from .suggestion_queue import SuggestionQueue
+            _q = SuggestionQueue()
+        except Exception:
+            _q = None
+        if no:
+            if _q is not None:
+                try: _q.mark_rejected(cand)
+                except Exception: pass
+            return AgentReply(content="Listo, no lo automatizo. Avisame si cambiás de idea.",
+                              tool_events=[], mission=None)
+        # YES -> crear la rutina vía routine_tool
+        rt = cand.to_routine_trigger()
+        if not rt:
+            return AgentReply(content="Quise automatizarlo pero no pude armar la rutina; lo dejo para más adelante.",
+                              tool_events=[], mission=None)
+        label = f"auto: {cand.describe_es()}"[:60]
+        trigger = {"type": rt["trigger_type"]}
+        if rt["trigger_type"] in ("on_app_open", "on_app_close") and rt.get("trigger_key"):
+            trigger["process"] = rt["trigger_key"]
+        routine_args = {"action": "create", "name": label,
+                        "trigger": trigger, "steps": [rt["action"]]}
+        try:
+            res = self.tools.execute("routine", routine_args)
+            ok = isinstance(res, dict) and res.get("ok")
+        except Exception:
+            ok = False
+        if ok:
+            if _q is not None:
+                try: _q.mark_accepted(cand)
+                except Exception: pass
+            return AgentReply(content=f"Hecho. Automaticé: {cand.describe_es()}.",
+                              tool_events=[], mission=None)
+        return AgentReply(content="Intenté automatizarlo pero la creación de la rutina falló. Lo dejamos manual por ahora.",
+                          tool_events=[], mission=None)
 
     def _maybe_proactive_suffix(self) -> str:
         """JARVIS (inv 5): en un BREAKPOINT (fin de turno), si el miner detectó

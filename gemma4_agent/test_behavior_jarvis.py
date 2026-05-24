@@ -136,3 +136,44 @@ class SuggestionQueueTest(unittest.TestCase):
         # count subió de 8 a 16 (duplicó) -> se puede re-ofrecer aunque < 30d
         stronger = PatternCandidate("boot", "pc", "app_close", "discord.exe", 16, 0.9, 30.0)
         self.assertIsNotNone(self.q.next_suggestion([stronger], now=self.now + 3601))
+
+
+class PendingSuggestionHandlerTest(unittest.TestCase):
+    def _agent(self):
+        from gemma4_agent.agent import Gemma4Agent
+        ag = Gemma4Agent.__new__(Gemma4Agent)
+        class _T:
+            def execute(self, name, args):
+                self.last = (name, args); return {"ok": True}
+        ag.tools = _T()
+        ag._pending_suggestion = PatternCandidate(
+            "boot", "agent", "app_close", "discord.exe", 8, 0.8, 30.0)
+        return ag
+
+    def test_yes_creates_routine(self):
+        ag = self._agent()
+        r = ag._handle_pending_suggestion("sí dale")
+        self.assertIsNotNone(r)
+        self.assertIn("automatic", r.content.lower())
+        self.assertEqual(ag.tools.last[0], "routine")
+        self.assertEqual(ag.tools.last[1]["action"], "create")
+        self.assertEqual(ag.tools.last[1]["steps"][0]["args"]["action"], "close")
+        self.assertIsNone(ag._pending_suggestion)  # consumida
+
+    def test_no_declines(self):
+        ag = self._agent()
+        r = ag._handle_pending_suggestion("no, mejor no")
+        self.assertIsNotNone(r)
+        self.assertIn("no lo automatizo", r.content.lower())
+        self.assertIsNone(ag._pending_suggestion)
+
+    def test_ambiguous_does_not_consume(self):
+        ag = self._agent()
+        r = ag._handle_pending_suggestion("qué hora es")
+        self.assertIsNone(r)  # sigue el turno normal
+        self.assertIsNotNone(ag._pending_suggestion)  # oferta sigue viva
+
+    def test_no_pending_returns_none(self):
+        ag = self._agent()
+        ag._pending_suggestion = None
+        self.assertIsNone(ag._handle_pending_suggestion("sí"))
