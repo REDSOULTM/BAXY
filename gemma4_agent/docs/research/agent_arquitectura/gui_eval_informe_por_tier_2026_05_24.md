@@ -5,6 +5,46 @@
 > (pycaw, tasklist, EnumWindows/UIA), nunca por lo que el agente diga — ese es
 > el anti-patrón que hundió a Carter (falso-PASS).
 
+# Fase 3 (2026-05-25): cascada UIA→OCR + fix DPI crítico
+
+La Fase 3 del roadmap (cascada UIA→OCR→visión para apps sin UIA rico). Gate:
+Discord/Spotify SR 0→≥30%. **Resultado: 3/3 en el harness real.**
+
+**Lo construido (commits eb71605, db06bfa, 8b12b80, cf8227b, 97926e4):**
+- **Cascada UIA→retry-Chromium→OCR** en `click_button` y, clave, en `uia.click`
+  (el tool que el agente realmente elige): en ventanas Chromium/CEF
+  (class `Chrome_WidgetWin_1`: Edge/Chrome/Discord/Spotify/Electron) va DIRECTO
+  a OCR — el árbol UIA del contenido web es inconsistente y el InvokePattern del
+  proxy no dispara el onclick del DOM. Fuera de Chromium: UIA primero, OCR si el
+  match es débil. Retry lazy-Chromium (gotcha del 1er walk AX vacío).
+- **`_click_button_via_ocr`**: screenshot → `ocr_find_text(label)` → click del
+  centro → `verify_post_action`. Reusa el OCR (Tesseract) ya instalado.
+
+**Dos bugs CRÍTICOS encontrados y arreglados en el camino (no eran de Fase 3,
+pero rompían cualquier grounding por pantalla):**
+1. **OCR muerto por cp1252** (`eb71605`): `ocr_image` corría Tesseract con
+   `subprocess text=True` → decodía el TSV con cp1252 y CRASHEABA en texto
+   acentuado → 0 líneas SIEMPRE. El grounding por OCR estaba de facto muerto.
+   Fix bytes+utf-8. Medido: 0 → 28 líneas/136 palabras en 0.7s.
+2. **OCR-click fallaba en pantallas escaladas** (`8b12b80`): con DPI≠100% (laptop
+   a 150% — el hardware TARGET), el screenshot GDI capturaba en coords lógicas
+   (1260×840) y el cursor operaba en físicas (1890×1260) → el click por
+   coordenada caía mal SIEMPRE. Fix: screenshot y click DPI-aware
+   (PER_MONITOR_AWARE_V2) → coords OCR mapean 1:1 al click. **Esto afectaba a
+   TODO click por coordenada del agente, no solo Fase 3.**
+
+**Medición (harness real, fixture HTML en Edge = contenido Chromium, verificado
+por TÍTULO de ventana que el botón cambia vía JS):** 3/3 PASS. El click OCR
+landa en el botón dentro del contenido web y el título pasa a 'OK-clickeado'.
+
+> Nota: la cascada se prueba con un fixture HTML CONTROLADO (no la UI interna de
+> Discord/Spotify, que es no-determinista e invverificable por estado). Mide
+> exactamente la capacidad nueva: clickear algo que el árbol UIA NO expone.
+> El reset usa el foco ROBUSTO (win_focus ALT+AttachThreadInput) — sin él Edge
+> no quedaba al frente y el click caía en la ventana equivocada.
+
+---
+
 # Continuación 2026-05-25: click_button + cierre de falso-PASS
 
 Segunda sesión sobre el mismo roadmap. Dos capacidades nuevas, ambas
