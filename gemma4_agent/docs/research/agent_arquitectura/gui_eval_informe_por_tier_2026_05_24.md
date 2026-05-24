@@ -5,6 +5,32 @@
 > (pycaw, tasklist, EnumWindows/UIA), nunca por lo que el agente diga — ese es
 > el anti-patrón que hundió a Carter (falso-PASS).
 
+# Fase 6 (2026-05-25): speculative multi-action — MEDIDO y RECHAZADO
+
+El roadmap exige medir ANTES de construir: speculative N=2 solo vale si el 4B
+acierta la next-action >80%. **Medido: NO pasa el gate → NO se construye.**
+
+Experimento (`scripts/gui_eval/_measure_speculative.py`, reproducible): 12
+misiones canónicas de 2 pasos ("abrí Notepad y escribí <texto>", es/en/pt/fr/it)
+con el splitter determinista APAGADO (`GEMMA4_MULTI_INTENT=0`) → el 4B debe
+encadenar `app.open → gui.type_into` solo, en una pasada. Oráculo por estado del
+SO (¿el texto quedó en Notepad? UIA).
+
+**Resultado: full-sequence 0/12 (0%), first-action 8/12 (67%).** El 4B NUNCA
+completó la secuencia de 2 acciones solo: 8/12 abrió la app y se DETUVO sin
+teclear (`ntools=1`); 3/12 mis-ruteó "escribí X" a `notes_tasks.note_create`;
+1/12 no emitió nada. 0% << gate 80%.
+
+**Decisión: NO construir speculative.** A 0% de secuencia completa, la
+especulación produciría un rollback casi siempre → costaría más que el ahorro.
+Esto además VALIDA empíricamente la arquitectura actual: el splitter
+determinista + macros (Fases 2-3) existen precisamente porque el 4B no encadena
+— y el dato lo confirma al extremo. (Confirma el caveat del roadmap: "un 4B
+predice secuencias peor que o1".) Si en el futuro se sube a un modelo más capaz,
+re-correr este harness para re-evaluar el gate.
+
+---
+
 # Fase 8 (2026-05-25): visión gateada — cascada UIA→OCR→VISIÓN completa
 
 Cierra la cascada de grounding. Cuando UIA y OCR fallan en localizar el control,
