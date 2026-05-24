@@ -46,7 +46,15 @@ def _agent_reported_success(reply: str, events: list) -> bool:
         "no alcancé", "no alcance", "no complet", "no logré", "no logre",
         "¿la repetimos", "la repetimos", "no terminé", "no termine",
         "didn't finish", "did not finish", "couldn't complete", "incomplete",
-        "no se completó", "no se completo", "pendiente"))
+        "no se completó", "no se completo", "pendiente",
+        # HEDGES (el agente NO afirma completado, dice "lo estoy haciendo / puede
+        # tardar / no pude confirmar") — un hedge honesto NO es falso-PASS aunque
+        # el SO aún no muestre el efecto. Cubre la regla app.md de launch no
+        # confirmado y el soften_unverified_launch del reply_validator.
+        "puede tardar", "may take", "estoy abriendo", "launching",
+        "no pude confirmar", "couldn't confirm", "could not confirm",
+        "no consegui confirmar", "puede demorar", "está abriendo",
+        "abriendo "))
     return (not admits_fail) and bool(events)
 
 
