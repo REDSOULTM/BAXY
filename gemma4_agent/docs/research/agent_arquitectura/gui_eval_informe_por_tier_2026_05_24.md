@@ -5,6 +5,35 @@
 > (pycaw, tasklist, EnumWindows/UIA), nunca por lo que el agente diga — ese es
 > el anti-patrón que hundió a Carter (falso-PASS).
 
+# Fases 4 y 5 (2026-05-25): recovery + seguridad
+
+Tras la cascada de Fase 3, dos fases más del roadmap (commits 3f12a7e, 4da09ea):
+
+**Fase 5 — guardas de seguridad** (gate: 0 leaks de password). Ahora que el
+agente clickea/teclea en cualquier lado, dos guardas estructurales en `t_gui`
+(el dispatch que usa el agente), antes de todo control físico:
+- **user-activity** (`GetLastInputInfo`): no pelear el mouse/teclado con el
+  usuario. Si tocó input hace < umbral (1500ms) → bloqueo suave `deferred`.
+  Excluye el input sintético del propio agente (`note_agent_input` tras cada
+  click/type) para no auto-bloquearse en multi-paso.
+- **password-field** (UIA IsPassword 30019): nunca teclear en un campo de
+  contraseña → secret handoff. Solo type/type_into (click no se bloquea).
+  Honesto: fiable en campos NATIVOS; en web Chromium el AX es disperso y puede
+  no exponer IsPassword (limitación documentada — cuando detecta, bloquea;
+  nunca causa daño).
+  Verificado end-to-end por t_gui: type en password→blocked; click con usuario
+  activo→deferred; tras input del agente→no auto-bloquea. +7 tests.
+
+**Fase 4 — recovery de click-sin-efecto** (gate: clicks-sin-efecto post-retry
+<10%). Cuando click_button (UIA) detecta que el click no tuvo efecto
+(`state_changed=False`), re-enfoca la ventana del control y reintenta UNA vez
+(foco perdido = causa #1). Bounded, sin recursión. Solo en el path UIA (en
+OCR/CEF el state_changed=False suele ser falso-negativo del frame-diff y un
+re-click togglearía controles no idempotentes). 6/6 click_button + 3/3 CEF
+sin regresión.
+
+---
+
 # Fase 3 (2026-05-25): cascada UIA→OCR + fix DPI crítico
 
 La Fase 3 del roadmap (cascada UIA→OCR→visión para apps sin UIA rico). Gate:
