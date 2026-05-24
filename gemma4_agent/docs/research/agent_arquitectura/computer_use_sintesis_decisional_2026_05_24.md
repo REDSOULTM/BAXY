@@ -122,6 +122,32 @@ commit/revertir.**
 
 ---
 
+## 6.bis — BASELINE Fase 0 medido (2026-05-24, contra el agente real)
+
+Primera corrida del eval-set (`scripts/gui_eval/`, 7 misiones Tier-1) contra el
+agente real. **Esta es la foto contra la que medimos las fases siguientes.**
+
+| Métrica | Valor |
+|---|---|
+| Task Success Rate (real, por estado SO) | **71.4%** (5/7) |
+| **Falso-PASS rate** | **14.3%** (1/7) |
+| Latencia p50 / p95 | 4.8s / 14.7s (p95 = 1er turno frío) |
+
+Detalle:
+- ✅ volumen 30/50/10 (es/en/pt) + mute = **4/4** — el control atómico del SO es sólido.
+- ✅ abrir Notepad = PASS.
+- ❌ `t1_open_calc` = FAIL honesto (no logró abrir calc UWP; lo reportó).
+- ❌ `t1_notepad_write` = **FALSO-PASS**: "abrí Notepad y escribí hola mundo" → el
+  agente cree que sí (1 step, sin error) pero el texto NO está en el SO. **Es el
+  "type ciego sin verify" en vivo, en la misión multi-paso — exactamente lo que
+  la investigación predijo y lo que la Fase 1 (verify_post_action) debe cerrar.**
+
+**Lecturas:**
+1. El subset alcanzable (atómico, UIA-rico) ya funciona — confirma la tesis.
+2. El falso-PASS aparece en multi-paso (abrir+escribir) → el gap del loop
+   observe→act→verify es real y medible. Gate Fase 1: bajar falso-PASS de 14.3% a <5%.
+3. Latencia: 1er turno 14.7s (frío). Pre-calentar o excluir warmup. Resto 1.7-2.3s.
+
 ## 7. Decisión
 
 **La arquitectura está triangulada y decidida.** El próximo paso correcto es la

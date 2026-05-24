@@ -1,0 +1,106 @@
+{
+  "summary": {
+    "total": 7,
+    "pass": 5,
+    "fail": 2,
+    "inconclusive": 0,
+    "task_success_rate": 0.714,
+    "false_pass_count": 1,
+    "false_pass_rate": 0.143,
+    "latency_p50_s": 4.81,
+    "latency_p95_s": 14.73
+  },
+  "rows": [
+    {
+      "id": "t1_vol_30",
+      "tier": 1,
+      "utterance": "subí el volumen al 30",
+      "pass": true,
+      "evidence": "volumen=30 (target 30±4)",
+      "steps": 1,
+      "latency_s": 14.73,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, subí el volumen al 30.",
+      "error": null
+    },
+    {
+      "id": "t1_vol_50_en",
+      "tier": 1,
+      "utterance": "set the volume to 50",
+      "pass": true,
+      "evidence": "volumen=50 (target 50±4)",
+      "steps": 1,
+      "latency_s": 2.31,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, el volumen está al 50 por ciento.",
+      "error": null
+    },
+    {
+      "id": "t1_vol_10_pt",
+      "tier": 1,
+      "utterance": "coloca o volume em 10",
+      "pass": true,
+      "evidence": "volumen=10 (target 10±4)",
+      "steps": 1,
+      "latency_s": 2.22,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, el volumen está en 10.",
+      "error": null
+    },
+    {
+      "id": "t1_mute",
+      "tier": 1,
+      "utterance": "silenciá el sonido",
+      "pass": true,
+      "evidence": "muted=True (esperado True)",
+      "steps": 1,
+      "latency_s": 1.68,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, silencié el sonido.",
+      "error": null
+    },
+    {
+      "id": "t1_open_notepad",
+      "tier": 1,
+      "utterance": "abrí el bloc de notas",
+      "pass": true,
+      "evidence": "ventana 'notas' visible=True",
+      "steps": 1,
+      "latency_s": 6.9,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, abrí el Bloc de notas.",
+      "error": null
+    },
+    {
+      "id": "t1_open_calc",
+      "tier": 1,
+      "utterance": "abrí la calculadora",
+      "pass": false,
+      "evidence": "calc proc=False",
+      "steps": 1,
+      "latency_s": 10.26,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "No puedo abrir la calculadora porque el comando anterior falló.",
+      "error": null
+    },
+    {
+      "id": "t1_notepad_write",
+      "tier": 1,
+      "utterance": "abrí el bloc de notas y escribí hola mundo",
+      "pass": false,
+      "evidence": "Notepad contiene 'hola mundo'=False",
+      "steps": 1,
+      "latency_s": 4.81,
+      "agent_thinks_ok": true,
+      "false_pass": true,
+      "reply": "Listo, abrí el Bloc de notas. No alcancé a completar la acción. ¿La repetimos?",
+      "error": null
+    }
+  ]
+}
