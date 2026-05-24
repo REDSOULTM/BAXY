@@ -84,12 +84,20 @@ def _windows_get_start_apps() -> list[str]:
     try:
         # `-NoProfile` skips user profile load (~300 ms speedup).
         # `-Command` evaluates the cmdlet directly.
+        # ENCODING (bug 2026-05-23): nombres de apps del menú Inicio traen chars
+        # fuera de cp1252 (comillas tipográficas, símbolos: byte 0x9d crasheaba el
+        # _readerthread con UnicodeDecodeError y dejaba la lista VACÍA). Forzamos
+        # a PowerShell a emitir UTF-8 y decodificamos UTF-8 con errors=replace.
+        # NO usar text=True (default cp1252 en Windows). Mismo tipo que el bug de
+        # la tilde de WhatsApp.
         result = subprocess.run(
             [
                 "powershell", "-NoProfile", "-Command",
+                "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; "
                 "Get-StartApps | Select-Object -ExpandProperty Name",
             ],
-            capture_output=True, text=True, timeout=8,
+            capture_output=True, timeout=8,
+            encoding="utf-8", errors="replace",
         )
         if result.returncode != 0:
             logger.warning("Get-StartApps non-zero: %s", result.stderr[:200])
