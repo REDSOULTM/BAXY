@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GEMMA4 CLICK TEST listo-para-clickear</title>
+<style>
+  html,body{margin:0;height:100%;background:#f4f6f8;color:#202428;
+    font-family:Segoe UI,Arial,sans-serif;display:flex;align-items:center;
+    justify-content:center;flex-direction:column;gap:40px}
+  /* botón grande con TEXTO OSCURO sobre fondo claro: el OCR (Tesseract) lee
+     mucho mejor texto oscuro/claro que blanco-sobre-color saturado. */
+  #btn{font-size:52px;padding:38px 90px;background:#e2e8f0;color:#111;
+    border:3px solid #334155;border-radius:14px;cursor:pointer;letter-spacing:2px;
+    font-weight:600}
+  #status{font-size:34px;color:#334155}
+</style>
+</head>
+<body>
+  <div id="status">Esperando</div>
+  <button id="btn" onclick="document.title='GEMMA4 CLICK TEST OK-clickeado'; document.getElementById('status').textContent='Confirmado';">Confirmar</button>
+</body>
+</html>

@@ -577,7 +577,118 @@ def _build_extended() -> list[GuiMission]:
                 max_steps_hint=3,
                 note=f"click_button '{label}' ({u})"))
 
+    # ---- CASCADA UIA→OCR (Fase 3): clickear un botón en CONTENIDO CHROMIUM
+    # (superficie de render propio, sin UIA rico) — fuerza el fallback OCR. El
+    # fixture HTML abre con título "...listo-para-clickear" y al clickear
+    # "Confirmar" cambia a "...OK-clickeado". Verificable por ESTADO DEL SO (el
+    # título de ventana, leído por Win32), reproducible y sin depender de la UI
+    # interna de apps de terceros. Mide exactamente lo que agrega Fase 3: clickear
+    # algo que el árbol UIA NO expone.
+    cef_clicks = [
+        ("confirmar_es", "hacé clic en el botón Confirmar"),
+        ("confirmar_es2", "clic en Confirmar"),
+        ("confirmar_en", "click the Confirmar button"),
+    ]
+    for cid, u in cef_clicks:
+        out.append(GuiMission(
+            id=f"t3_cef_{cid}", tier=3, utterance=u,
+            goal_verifier=(lambda: (lambda ok: {
+                "pass": ok,
+                "evidence": f"título de ventana contiene 'OK-clickeado'={ok}",
+                "actual": _gemma_click_test_title()})(
+                "ok-clickeado" in (_gemma_click_test_title() or "").lower())),
+            reset=_reset_cef_fixture,
+            precheck=(lambda: _gemma_click_test_title() is not None),
+            max_steps_hint=2,
+            note=f"cascada OCR sobre contenido Chromium ({u})"))
+
     return out
+
+
+def _gemma_click_test_title() -> str | None:
+    """Título de la ventana del fixture HTML (contiene 'GEMMA4 CLICK TEST').
+    None si no está abierta. Es el oráculo de estado del SO para la misión CEF."""
+    for w in visible_windows():
+        if "gemma4 click test" in (w.get("title") or "").lower():
+            return w["title"]
+    return None
+
+
+def _reset_cef_fixture() -> None:
+    """Abre el fixture HTML en el navegador por defecto (contenido Chromium) y
+    espera el render. Cierra Edge/Chrome previos para partir del estado base
+    ('listo-para-clickear'). El fixture cambia su <title> al clickear, lo que da
+    un oráculo limpio por título de ventana."""
+    import os
+    import time
+    import subprocess
+    # Cerrar TODOS los navegadores y ESPERAR a que no quede ninguna ventana del
+    # fixture (Edge/Chrome son single-instance + session-restore: si quedan tabs
+    # viejos con 'OK-clickeado', contaminan la verificación de la próxima misión —
+    # mismo gotcha que Notepad UWP). Reintentar el kill hasta que el título
+    # desaparezca, cap ~6s.
+    _deadline_kill = time.time() + 6.0
+    while time.time() < _deadline_kill:
+        _kill_process("msedge.exe")
+        _kill_process("chrome.exe")
+        time.sleep(0.7)
+        if _gemma_click_test_title() is None:
+            break
+    fixture = os.path.join(os.path.dirname(__file__), "fixtures", "click_target.html")
+    try:
+        os.startfile(fixture)  # type: ignore[attr-defined]
+    except Exception:
+        try:
+            subprocess.Popen(["cmd", "/c", "start", "", fixture])
+        except Exception:
+            pass
+    # Poll hasta que el título base 'listo-para-clickear' esté presente (render
+    # listo) — el cold start del navegador es variable; un sleep fijo daba flaky
+    # en la 2da/3ra misión. Cap ~12s.
+    deadline = time.time() + 12.0
+    time.sleep(2.0)
+    while time.time() < deadline:
+        t = (_gemma_click_test_title() or "").lower()
+        if "listo-para-clickear" in t:
+            time.sleep(0.6)  # un respiro extra para que el botón sea clickeable
+            _focus_window_substr("gemma4 click test")  # dejar Edge al frente
+            time.sleep(0.4)
+            return
+        time.sleep(0.7)
+
+
+def _focus_window_substr(substr: str) -> None:
+    """Trae al frente la ventana cuyo título contiene substr (setup del harness:
+    el agente clickea por coordenada/OCR sobre el FOREGROUND; si Edge no está al
+    frente tras el reset, el click cae en la ventana equivocada). Usa el foco
+    ROBUSTO del proyecto (win_focus: ALT+AttachThreadInput) porque el
+    SetForegroundWindow directo lo bloquea el foreground-lock de Windows."""
+    try:
+        import win32gui
+        s = substr.lower()
+        target = []
+        def _cb(h, _):
+            if win32gui.IsWindowVisible(h) and s in (win32gui.GetWindowText(h) or "").lower():
+                target.append((h, win32gui.GetWindowText(h)))
+            return True
+        win32gui.EnumWindows(_cb, None)
+        if not target:
+            return
+        hwnd, title = target[0]
+        try:
+            from gemma4_agent.win_focus import focus_and_maximize
+            focus_and_maximize(hwnd, expected_title_substr=title or None)
+            return
+        except Exception:
+            pass
+        try:
+            import win32con
+            win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+            win32gui.SetForegroundWindow(hwnd)
+        except Exception:
+            pass
+    except Exception:
+        pass
 
 
 def _calc_display_value() -> str | None:
