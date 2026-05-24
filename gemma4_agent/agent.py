@@ -37,6 +37,41 @@ DANGEROUS_TOOLS_NEVER_INHERIT = frozenset({
     "subprocess", "shell",
 })
 
+# Confirmación/negación a la oferta de automatización del Jarvis (inv 5). El
+# "sí/no" es vocabulario CERRADO y universal -> lista multilingüe (no embeddings:
+# 1-2 palabras dan señal pobre). Cubre los idiomas más comunes; lo no reconocido
+# NO se consume (cae a None, el turno sigue normal). Principio del usuario: la app
+# la usa cualquier hablante -> nada de solo-español. [[feedback_no_monolingual_regex]]
+_JARVIS_YES = frozenset({
+    # es
+    "si", "sí", "dale", "bueno", "hacelo", "hazlo", "automatizalo", "automatízalo",
+    "claro", "obvio", "ok", "okay", "vale", "sip", "correcto", "exacto",
+    # en
+    "yes", "yeah", "yep", "yup", "sure", "ok", "okay", "please", "definitely",
+    # pt
+    "sim", "claro", "isso", "faz", "pode",
+    # fr
+    "oui", "ouais", "vas-y", "daccord",
+    # de
+    "ja", "klar", "gerne", "mach",
+    # it
+    "sì", "certo", "fallo",
+})
+_JARVIS_NO = frozenset({
+    # es
+    "no", "nop", "negativo", "mejor", "despues", "después", "nada",
+    # en
+    "no", "nope", "nah", "dont", "later", "skip",
+    # pt
+    "não", "nao", "depois",
+    # fr
+    "non", "pas",
+    # de
+    "nein", "nö", "später",
+    # it
+    "no", "dopo",
+})
+
 
 # CORE-SET para PREFIJO ESTABLE del prompt (latencia, medido 2026-05-23).
 # El system prompt + tool-schemas se filtran al subset que el router elige por
@@ -2346,12 +2381,16 @@ class Gemma4Agent:
             p.get("text", "") for p in content if isinstance(p, dict))
         t = (text or "").strip().lower()
         import re as _re
-        t = _re.sub(r"[^a-záéíóúñ ]", " ", t).strip()
-        yes = any(w in t.split() for w in (
-            "si", "sí", "dale", "ok", "okay", "bueno", "hacelo", "hazlo",
-            "automatizalo", "automatízalo", "yes", "claro", "obvio"))
-        no = any(w in t.split() for w in (
-            "no", "nop", "nope", "negativo", "mejor", "despues", "después"))
+        # Tokenizar por palabra Unicode (NO restringir a a-z latino: eso borraba
+        # cirílico/CJK/árabe y rompía el sí/no de esos idiomas). \w con re.UNICODE.
+        words = set(_re.findall(r"\w+", t, _re.UNICODE))
+        # Confirmación/negación = vocabulario CERRADO y diminuto -> lista
+        # multilingüe es lo correcto acá (no embeddings: 1-2 palabras dan señal
+        # pobre y arriesgada). Cubre los idiomas más comunes; un sí/no no
+        # reconocido NO se consume (cae a None) -> el turno sigue normal (miss
+        # benigno, el LLM responde). Universal por cobertura + fallback seguro.
+        yes = bool(words & _JARVIS_YES)
+        no = bool(words & _JARVIS_NO)
         if not (yes or no) or (yes and no):
             # mensaje ambiguo: NO consumir la oferta (el usuario cambió de tema);
             # la dejamos pendiente y seguimos el turno normal.

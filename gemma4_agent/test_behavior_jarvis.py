@@ -177,3 +177,26 @@ class PendingSuggestionHandlerTest(unittest.TestCase):
         ag = self._agent()
         ag._pending_suggestion = None
         self.assertIsNone(ag._handle_pending_suggestion("sí"))
+
+    def test_yes_no_multilingual(self):
+        # Principio universal: la app la usa cualquier hablante. El sí/no a la
+        # oferta de Jarvis se entiende en varios idiomas (vocabulario cerrado).
+        for yes in ("yes", "oui", "ja", "sim", "sì", "vale", "okay"):
+            ag = self._agent()
+            r = ag._handle_pending_suggestion(yes)
+            self.assertIsNotNone(r, yes)
+            self.assertIn("automatic", r.content.lower(), yes)
+        for no in ("no", "nein", "não", "non", "nope", "nah"):
+            ag = self._agent()
+            r = ag._handle_pending_suggestion(no)
+            self.assertIsNotNone(r, no)
+            self.assertIn("no lo automatizo", r.content.lower(), no)
+
+    def test_non_latin_script_not_erased(self):
+        # bug previo: el sub(r'[^a-záéíóúñ ]') borraba cirílico/CJK -> sí/no de
+        # esos idiomas quedaba vacío. Ahora se tokeniza Unicode. Un texto no
+        # reconocido NO se consume (cae a None), pero NO debe crashear.
+        ag = self._agent()
+        r = ag._handle_pending_suggestion("да")  # 'sí' en ruso (no en el set)
+        self.assertIsNone(r)  # no reconocido -> turno normal (miss benigno)
+        self.assertIsNotNone(ag._pending_suggestion)  # oferta sigue viva
