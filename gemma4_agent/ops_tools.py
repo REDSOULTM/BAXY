@@ -1176,10 +1176,17 @@ def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35) ->
             install_hint="winget install UB-Mannheim.TesseractOCR",
         )
     cmd = [tesseract, str(image_path), "stdout", "-l", lang, "--psm", "6", "tsv"]
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    # BUG cp1252 (2026-05-25): con text=True, Python decodía el stdout TSV de
+    # Tesseract con la code-page de consola (cp1252 en Windows ES) y CRASHEABA
+    # en bytes no-ASCII (texto acentuado en la UI) -> el OCR devolvía 0 líneas
+    # silenciosamente. Mismo gotcha que espeak-ng/gui_type (CLAUDE.md). FIX:
+    # capturar BYTES y decodificar utf-8 con errors=replace.
+    proc = subprocess.run(cmd, capture_output=True, timeout=60)
     if proc.returncode != 0:
-        return _err("tesseract failed", image_path=str(image_path), stderr=_truncate(proc.stderr, 2000), exit_code=proc.returncode)
-    words = _parse_tesseract_tsv(proc.stdout, min_conf=min_conf)
+        _stderr = (proc.stderr or b"").decode("utf-8", errors="replace")
+        return _err("tesseract failed", image_path=str(image_path), stderr=_truncate(_stderr, 2000), exit_code=proc.returncode)
+    stdout_text = (proc.stdout or b"").decode("utf-8", errors="replace")
+    words = _parse_tesseract_tsv(stdout_text, min_conf=min_conf)
     text = " ".join(word["text"] for word in words)
     lines = _ocr_lines(words)
     return _ok(
