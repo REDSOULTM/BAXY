@@ -36,6 +36,13 @@ DANGEROUS_TOOLS_NEVER_INHERIT = frozenset({
     "system_shutdown", "system_logoff", "system_restart",
     "subprocess", "shell",
 })
+# Tools que dejan una tarea INTERACTIVA abierta (una app en pantalla esperando
+# input). Si el turno previo ejecutó una de estas, una continuación deíctica corta
+# ("hacelo tú", "seguí", "dale") está retomando ESA tarea — aunque el abstain head
+# la lea como conversacional. El estado del SO (app abierta, objetivo incompleto)
+# es evidencia estructural de que el turno está mid-flight; pesa más que el clasificador
+# de texto. Universal: no depende del idioma ni del nombre de la app.
+_GUI_CONTEXT_TOOLS = frozenset({"gui", "uia", "app", "window", "vision"})
 
 # Confirmación/negación a la oferta de automatización del Jarvis (inv 5). El
 # "sí/no" es vocabulario CERRADO y universal -> lista multilingüe (no embeddings:
@@ -1017,12 +1024,32 @@ class Gemma4Agent:
                             # ("ciérralo"/"subelo", which score LOW on abstain)
                             # still inherit the prior tool.
                             if _ahm.p_no_tool(_f) >= _ahm.threshold:
-                                is_short_continuation = False
-                                self.trace.event(
-                                    turn_id, "inherit_skipped_abstain",
-                                    p_no_tool=round(_ahm.p_no_tool(_f), 3),
-                                    user_text=raw_text[:60],
+                                # OVERRIDE por estado del SO: si el turno previo
+                                # dejó una app/GUI abierta (tarea interactiva mid-
+                                # flight), una continuación corta la está retomando
+                                # — NO la trates como charla aunque el head lo crea.
+                                # El abstain head solo ve el TEXTO; no ve que hay una
+                                # calculadora abierta esperando la cuenta. "Pero
+                                # quiero que lo hagas tú" tras abrir la calc dio
+                                # p_no_tool=0.924 y colapsó el subset a [session],
+                                # forzando al 4B a alucinar system(action=calculator).
+                                _prev_gui = bool(
+                                    set(self._last_executed_tools) & _GUI_CONTEXT_TOOLS
                                 )
+                                if _prev_gui:
+                                    self.trace.event(
+                                        turn_id, "inherit_kept_gui_context",
+                                        p_no_tool=round(_ahm.p_no_tool(_f), 3),
+                                        prev_tools=list(self._last_executed_tools),
+                                        user_text=raw_text[:60],
+                                    )
+                                else:
+                                    is_short_continuation = False
+                                    self.trace.event(
+                                        turn_id, "inherit_skipped_abstain",
+                                        p_no_tool=round(_ahm.p_no_tool(_f), 3),
+                                        user_text=raw_text[:60],
+                                    )
                 except Exception:
                     pass
             if is_short_continuation:
@@ -1084,6 +1111,17 @@ class Gemma4Agent:
                                 dropped=dropped, kept=filtered,
                             )
                         prev_tools = filtered
+                    # Si el contexto previo era GUI (app/window abierta), la
+                    # continuación suele necesitar OPERAR esa app por teclado,
+                    # no sólo re-abrirla. P.ej. tras "abre la calculadora" sólo
+                    # se ejecutó `app`; "ahora sumá 2+2" requiere `gui` (type +
+                    # keypress) que no estaba en prev_tools. Sumamos las tools de
+                    # síntesis (gui, uia) al subset heredado para que el patrón
+                    # universal "operar la app abierta por teclado" sea posible.
+                    if prev_tools and (set(prev_tools) & _GUI_CONTEXT_TOOLS):
+                        for _t in ("gui", "uia"):
+                            if _t not in prev_tools:
+                                prev_tools.append(_t)
                     if prev_tools:
                         selected_tool_names = prev_tools[:6]
                         self.trace.event(

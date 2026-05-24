@@ -19,6 +19,7 @@ from gemma4_agent.agent import (
     DANGEROUS_TOOLS_NEVER_INHERIT,
     INHERIT_TTL_SEC,
     Gemma4Agent,
+    _GUI_CONTEXT_TOOLS,
 )
 
 
@@ -72,6 +73,58 @@ class TestInheritToolsSafety(unittest.TestCase):
         now = time.time()
         gap = now - last_ts
         self.assertLess(gap, INHERIT_TTL_SEC)
+
+
+class TestGuiContextInheritOverride(unittest.TestCase):
+    """Override por estado del SO: una continuación corta tras una tarea GUI
+    abierta (app/window/gui/uia) NO debe tratarse como charla aunque el abstain
+    head la lea como conversacional. Repro real (traces 2026-05-24): tras "abre
+    la calculadora y suma 2+2" (ejecutó `app`), "Pero quiero que lo hagas tu" dio
+    p_no_tool=0.924 -> subset [session] -> el 4B alucinó system(action=calculator).
+    """
+
+    def test_gui_context_tools_includes_synthesis_and_apps(self):
+        for t in ("gui", "uia", "app", "window", "vision"):
+            self.assertIn(t, _GUI_CONTEXT_TOOLS)
+
+    def test_gui_context_excludes_conversational_tools(self):
+        # session/memory/web no son contexto GUI interactivo.
+        for t in ("session", "memory", "web", "calendar"):
+            self.assertNotIn(t, _GUI_CONTEXT_TOOLS)
+
+    def test_prev_app_detected_as_gui_context(self):
+        # tras "abre la calculadora" sólo se ejecutó `app`: debe contar como
+        # contexto GUI abierto (la app quedó en pantalla esperando input).
+        prev = ["app", "window", "verify"]
+        self.assertTrue(set(prev) & _GUI_CONTEXT_TOOLS)
+
+    def test_inherit_augments_with_synthesis_tools(self):
+        # Replica la augmentación del agent: si el contexto era GUI, sumar
+        # gui/uia para poder OPERAR la app (type/keypress), no sólo re-abrirla.
+        prev_tools = ["app", "window"]
+        if prev_tools and (set(prev_tools) & _GUI_CONTEXT_TOOLS):
+            for _t in ("gui", "uia"):
+                if _t not in prev_tools:
+                    prev_tools.append(_t)
+        self.assertIn("gui", prev_tools)
+        self.assertIn("uia", prev_tools)
+
+    def test_no_augment_when_not_gui_context(self):
+        # un contexto no-GUI (web research) NO debe ganar gui/uia.
+        prev_tools = ["web", "memory"]
+        if prev_tools and (set(prev_tools) & _GUI_CONTEXT_TOOLS):
+            for _t in ("gui", "uia"):
+                if _t not in prev_tools:
+                    prev_tools.append(_t)
+        self.assertNotIn("gui", prev_tools)
+        self.assertNotIn("uia", prev_tools)
+
+    def test_override_logic_present_in_source(self):
+        import inspect
+        src = inspect.getsource(Gemma4Agent.run_content)
+        # el override mantiene la herencia cuando el turno previo dejó GUI abierta
+        self.assertIn("inherit_kept_gui_context", src)
+        self.assertIn("_GUI_CONTEXT_TOOLS", src)
 
 
 class TestAgentInheritState(unittest.TestCase):
