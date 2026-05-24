@@ -1786,7 +1786,41 @@ class ToolRegistry:
         if action == "find":
             return self.uia_find(args)
         if action == "click":
-            return self.uia_click(args)
+            # CASCADA Fase 3 en uia.click (el tool que el agente elige para
+            # "clic en X"). En ventanas CHROMIUM/CEF (Edge/Chrome/Electron) el
+            # árbol UIA del contenido web es inconsistente y el InvokePattern del
+            # proxy NO dispara el onclick del DOM (verificado: matchea un nodo y
+            # el click no tiene efecto). La investigación (síntesis §1) dice que
+            # OCR/coordenada es más fiable que el AX del CEF -> en Chromium vamos
+            # DIRECTO a OCR (no doble-acción: el UIA invoke no haría nada útil).
+            # Fuera de Chromium: UIA primero, y si el match fue débil (sin
+            # elemento / nameless) caer a OCR.
+            label = str(args.get("query") or args.get("text")
+                        or args.get("target") or "").strip()
+            try:
+                if label and self._foreground_is_chromium(str(args.get("window") or "")):
+                    ocr_res = self._click_button_via_ocr(label, args)
+                    if ocr_res is not None and ocr_res.get("ok"):
+                        ocr_res["grounding"] = "ocr"
+                        ocr_res["cascade"] = "chromium_direct_ocr"
+                        return ocr_res
+                    # si OCR no halló el label, seguimos al camino UIA (best-effort)
+            except Exception:
+                pass
+            res = self.uia_click(args)
+            try:
+                el_name = (res.get("element") or {}).get("name") if isinstance(res, dict) else None
+                method = res.get("method") if isinstance(res, dict) else None
+                weak = (not res.get("ok")) or (not el_name)
+                if label and weak:
+                    ocr_res = self._click_button_via_ocr(label, args)
+                    if ocr_res is not None and ocr_res.get("ok"):
+                        ocr_res["uia_first"] = {"ok": res.get("ok"), "method": method,
+                                                "element": el_name}
+                        return ocr_res
+            except Exception:
+                pass
+            return res
         if action == "focus":
             return self.uia_focus(args)
         if action in {"set_value", "type"}:
