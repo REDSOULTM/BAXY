@@ -33,6 +33,13 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
         return SafetyDecision(True, "system_audio_device", "changing audio devices/routing affects system settings")
     if tool == "office" and action in {"edit_presentation", "edit_document", "edit_spreadsheet", "export_pdf"}:
         return SafetyDecision(True, "document_mutation", f"office.{action} can modify user documents")
+    # Inv 3 (verificación): enviar email es irreversible y a terceros, y NO tiene
+    # backstop (a diferencia de whatsapp.send_message, que verifica el chat por
+    # OCR antes de mandar). Un email al destinatario/contenido equivocado es daño
+    # real. Confirmar antes de send (no antes de draft/status). Lit.: acciones
+    # irreversibles de comunicación externa = verificación/confirmación obligatoria.
+    if tool == "email" and action == "send":
+        return SafetyDecision(True, "external_message_send", "email.send delivers an irreversible message to third parties")
     if tool == "notification" and action not in {"status", "list", "timer_list", "alarm_list", "reminder_list"}:
         return SafetyDecision(True, "scheduled_notification", f"notification.{action} can create/cancel local scheduled tasks")
     if tool == "routine" and action in {"create", "enable", "disable", "delete", "run_now"}:
