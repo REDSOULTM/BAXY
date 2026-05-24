@@ -241,6 +241,27 @@ def _v_window_open(title_substr: str) -> Callable[[], dict]:
     return _f
 
 
+def _v_no_window(*title_substrs: str) -> Callable[[], dict]:
+    """Verifica que NO quede ninguna ventana visible cuyo título contenga alguno
+    de los substrings. Es el oráculo CORRECTO para 'cerrar' apps UWP modernas
+    (Win11 Notepad) cuyo PROCESO queda residente/caliente aunque la última
+    ventana se cierre — process_running daría un FALSO FAIL aunque la ventana
+    (lo que el usuario pidió cerrar) sí desapareció. Para apps clásicas
+    (mspaint, CalculatorApp) el proceso sí termina, así que esas siguen usando
+    _v_proc. Medir 'ventana ausente' es MÁS estricto para el intent real del
+    usuario, no un atajo. (2026-05-24: descubierto que Win11 Notepad no muere
+    al cerrar su ventana.)"""
+    subs = [s.lower() for s in title_substrs]
+    def _f() -> dict:
+        titles = [w["title"] for w in visible_windows()]
+        remaining = [t for t in titles if any(s in t.lower() for s in subs)]
+        gone = len(remaining) == 0
+        return {"pass": gone,
+                "evidence": f"ventanas {subs} visibles={len(remaining)} (esperado 0)",
+                "actual": remaining[:6]}
+    return _f
+
+
 def _v_notepad_text(text: str) -> Callable[[], dict]:
     def _f() -> dict:
         # Notepad moderno: el título suele ser "*Sin título: Bloc de notas" o
@@ -429,7 +450,9 @@ def _build_extended() -> list[GuiMission]:
                 goal_verifier=(lambda w=win, tx=t: (lambda g: {"pass": g, "evidence":
                     f"{w} contiene '{tx}'={g}", "actual": g})(
                     uia_window_has_text(w, tx))),
-                reset=(lambda e=exe: _kill_process(e)),
+                # kill + limpiar session-restore para que el write arranque sin
+                # pestañas sucias previas (mismo motivo que en las misiones close).
+                reset=(lambda e=exe: (_kill_process(e), _clear_notepad_session())),
                 max_steps_hint=3, note=f"multi-paso abrir+escribir '{t}'"))
 
     # ---- TIER 2/3: APPS DE TERCEROS (precheck por instalación). Abrir la app y
@@ -458,20 +481,36 @@ def _build_extended() -> list[GuiMission]:
                 note=f"tier{tier} abrir {start_name} ({u})"))
 
     # ---- CERRAR APPS (verificable: el proceso YA NO corre). reset las abre.
+    # verifier por target: notepad (UWP) verifica VENTANA-ausente (su proceso
+    # queda residente al cerrar la última ventana); mspaint/calc (clásicas)
+    # verifican PROCESO-ausente (sí terminan). Ver _v_no_window.
     close_targets = [
-        ("notepad", "notepad.exe", ["cerrá el bloc de notas", "close notepad",
-         "fecha o bloco de notas"]),
-        ("mspaint", "mspaint.exe", ["cerrá Paint", "close Paint"]),
-        ("CalculatorApp", "CalculatorApp.exe", ["cerrá la calculadora", "close calculator"]),
+        ("notepad", "notepad.exe",
+         _v_no_window("bloc de notas", "notepad"),
+         ["cerrá el bloc de notas", "close notepad", "fecha o bloco de notas"]),
+        ("mspaint", "mspaint.exe", None, ["cerrá Paint", "close Paint"]),
+        ("CalculatorApp", "CalculatorApp.exe", None,
+         ["cerrá la calculadora", "close calculator"]),
     ]
-    for proc_substr, exe, utts in close_targets:
+    for proc_substr, exe, win_verifier, utts in close_targets:
         for k, u in enumerate(utts):
             out.append(GuiMission(
                 id=f"t1_close_{proc_substr}_{k}", tier=1, utterance=u,
-                goal_verifier=(lambda p=proc_substr: (lambda r: {"pass": (r is False),
+                goal_verifier=(win_verifier or (lambda p=proc_substr: (lambda r: {"pass": (r is False),
                     "evidence": f"proceso '{p}'(exact) corriendo={r} (esperado cerrado)",
-                    "actual": r})(process_running(p, exact=True))),
-                reset=(lambda e=exe: _launch_detached(e)),
+                    "actual": r})(process_running(p, exact=True)))),
+                # HIGIENE DEL HARNESS: matar TODAS las instancias primero (las
+                # misiones de 'escribir' dejan ventanas con cambios sin guardar
+                # -> WM_CLOSE abre diálogo "¿guardar?" y la ventana sobrevive,
+                # contaminando esta misión con un FALSO FAIL); para Notepad UWP
+                # además limpiar TabState (si no, session-restore reabre las
+                # pestañas sucias) y recién entonces abrir UNA instancia limpia.
+                # Así el agente cierra exactamente una ventana sin diálogo. Sin
+                # esto, el estado base no era reproducible (bug 2026-05-24).
+                reset=(lambda e=exe, p=proc_substr: (
+                    _kill_process(e),
+                    (_clear_notepad_session() if p == "notepad" else None),
+                    _launch_detached(e))),
                 precheck=(lambda e=exe: _exe_exists(e)),
                 note=f"cerrar {proc_substr} ({u})"))
 
@@ -503,6 +542,33 @@ def _launch_detached(exe: str) -> bool:
                          | getattr(subprocess, "DETACHED_PROCESS", 0))
         import time
         time.sleep(1.2)  # dar tiempo a que arranque
+    except Exception:
+        pass
+    return True
+
+
+def _clear_notepad_session() -> bool:
+    """Borra el TabState del Notepad UWP (Win11) para que abra LIMPIO sin
+    session-restore. Sin esto, Notepad reabre las pestañas sucias que quedaron
+    de misiones anteriores (texto '*hola mundo' sin guardar) -> la misión de
+    'cerrar' ve 2-3 ventanas zombies y da FALSO FAIL irreproducible.
+    Es limpieza de FIXTURE de test (pestañas SIN guardar generadas por el propio
+    eval), no toca documentos guardados. best-effort. Hay que matar Notepad
+    ANTES o el proceso reescribe el TabState al salir. Descubierto 2026-05-24:
+    Notepad moderno es proceso ÚNICO + residente + session-restore."""
+    import os
+    import glob
+    base = os.environ.get("LOCALAPPDATA", "")
+    ts = os.path.join(base, "Packages",
+                      "Microsoft.WindowsNotepad_8wekyb3d8bbwe",
+                      "LocalState", "TabState")
+    try:
+        if os.path.isdir(ts):
+            for f in glob.glob(os.path.join(ts, "*")):
+                try:
+                    os.remove(f)
+                except OSError:
+                    pass
     except Exception:
         pass
     return True
