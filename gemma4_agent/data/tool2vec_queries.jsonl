@@ -3409,3 +3409,56 @@
 {"tool": "audio", "q": "mute the system sound"}
 {"tool": "audio", "q": "coupe le son"}
 {"tool": "audio", "q": "silencia o som"}
+{"tool": "audio", "q": "stumm schalten"}
+{"tool": "audio", "q": "schalte den ton stumm"}
+{"tool": "audio", "q": "mach den ton aus"}
+{"tool": "audio", "q": "ton aus"}
+{"tool": "audio", "q": "ton an"}
+{"tool": "audio", "q": "ton wieder einschalten"}
+{"tool": "audio", "q": "stummschaltung aufheben"}
+{"tool": "audio", "q": "coupe le son"}
+{"tool": "audio", "q": "mets en sourdine"}
+{"tool": "audio", "q": "remets le son"}
+{"tool": "audio", "q": "réactive le son"}
+{"tool": "audio", "q": "silenzia l'audio"}
+{"tool": "audio", "q": "togli il muto"}
+{"tool": "audio", "q": "riattiva l'audio"}
+{"tool": "app", "q": "abrí Google Chrome"}
+{"tool": "app", "q": "open Chrome"}
+{"tool": "app", "q": "lanzá Chrome"}
+{"tool": "app", "q": "abrí el navegador Edge"}
+{"tool": "app", "q": "open Microsoft Edge"}
+{"tool": "app", "q": "abrí Word"}
+{"tool": "app", "q": "open Excel"}
+{"tool": "app", "q": "lanzá PowerPoint"}
+{"tool": "app", "q": "abrí Firefox"}
+{"tool": "app", "q": "open the Chrome browser"}
+{"tool": "app", "q": "abrí Discord"}
+{"tool": "app", "q": "open Spotify"}
+{"tool": "app", "q": "lanzá Steam"}
+{"tool": "app", "q": "abrí VLC"}
+{"tool": "app", "q": "open Telegram"}
+{"tool": "app", "q": "lanzá Excel"}
+{"tool": "app", "q": "abre Excel"}
+{"tool": "app", "q": "launch Excel"}
+{"tool": "app", "q": "ouvre Excel"}
+{"tool": "app", "q": "öffne Excel"}
+{"tool": "app", "q": "apri Excel"}
+{"tool": "app", "q": "abre o Excel"}
+{"tool": "app", "q": "open Word"}
+{"tool": "app", "q": "launch Word"}
+{"tool": "app", "q": "ouvre Word"}
+{"tool": "app", "q": "öffne Word"}
+{"tool": "app", "q": "apri Word"}
+{"tool": "app", "q": "abrí el bloc de notas"}
+{"tool": "app", "q": "ouvre le bloc-notes"}
+{"tool": "app", "q": "öffne den Editor"}
+{"tool": "app", "q": "apri il blocco note"}
+{"tool": "app", "q": "abre o bloco de notas"}
+{"tool": "app", "q": "lanzá Google Chrome"}
+{"tool": "app", "q": "lanza Google Chrome"}
+{"tool": "app", "q": "iniciá Google Chrome"}
+{"tool": "app", "q": "launch Google Chrome"}
+{"tool": "app", "q": "lance Google Chrome"}
+{"tool": "app", "q": "starte Google Chrome"}
+{"tool": "app", "q": "avvia Google Chrome"}

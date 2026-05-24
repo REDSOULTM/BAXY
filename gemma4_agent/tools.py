@@ -1677,6 +1677,25 @@ class ToolRegistry:
         if action == "open":
             url = str(args.get("url") or "").strip() or query
             if not url:
+                # LAUNCH-THE-APP fallback: el modelo chico (E4B-Q4) interpreta
+                # "lanzá Chrome" / "abrí Firefox" como browser.open con
+                # browser/name="Chrome" y SIN url — porque "Chrome" es un
+                # navegador. La intención real es LANZAR el programa, no navegar.
+                # En vez de devolver needs_user (que el modelo convierte en "no
+                # puedo abrir Chrome sin URL"), delegamos a app.open: hacemos la
+                # acción real. No es un hardcode de routing ni una respuesta
+                # enlatada — es la tool garantizando su precondición (CLAUDE.md
+                # #5) cuando el arg nombra una app y falta el url. La regla en
+                # prompts/tool_rules/browser.md enseña la forma correcta
+                # (app.open); esto es la red de seguridad determinista.
+                app_name = (browser or str(args.get("name") or "")).strip()
+                if app_name:
+                    res = self.app_open({"name": app_name})
+                    if res.get("ok"):
+                        res.update(delegated_from="browser.open",
+                                   note="No URL given; launched the browser application via app.open.")
+                        return res
+                    # si app.open tampoco lo encuentra, caemos al error normal
                 return _err(
                     "browser.open requires url or query",
                     status="needs_user", action=action,
@@ -2813,21 +2832,44 @@ $p=Get-Process -Id $pid32 -ErrorAction SilentlyContinue
 
             candidates: list[tuple[int, str, int, str]] = []  # (hwnd, title, pid, proc_name)
 
+            # El TÍTULO de la ventana suele estar LOCALIZADO por el SO ("Sin
+            # título: Bloc de notas" en Windows en español) mientras el usuario
+            # pide en SU idioma ("close notepad", "fecha o bloco de notas"). El
+            # match por título solo fallaba -> "window not found". Resolvemos el
+            # query también a un NOMBRE DE PROCESO vía el AppResolver (que ya
+            # traduce builtins localizados, p.ej. "bloco de notas"->notepad.exe)
+            # y aceptamos la ventana si su proceso coincide. Así "close notepad"
+            # cierra la ventana "Bloc de notas". No es hardcode de routing: es la
+            # misma resolución de apps que usa app.open/app.close.
+            proc_hints: set[str] = set()
+            try:
+                for m in self.apps.find(title_query, limit=3):
+                    pn = (m.process_name or Path(m.launch).name or "").casefold()
+                    if pn:
+                        proc_hints.add(pn)
+                        proc_hints.add(pn[:-4] if pn.endswith(".exe") else pn)
+            except Exception:
+                pass
+
             def _enum(hwnd: int, _: Any) -> bool:
                 if not win32gui.IsWindowVisible(hwnd):
                     return True
                 title = win32gui.GetWindowText(hwnd) or ""
                 if not title.strip():
                     return True
-                if self._match_query(title_query, title):
-                    pid = 0
-                    name = ""
-                    try:
-                        _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                        if psutil is not None:
-                            name = psutil.Process(pid).name()
-                    except Exception:
-                        pass
+                pid = 0
+                name = ""
+                title_hit = self._match_query(title_query, title)
+                if not title_hit and not proc_hints:
+                    return True
+                try:
+                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                    if psutil is not None:
+                        name = psutil.Process(pid).name()
+                except Exception:
+                    pass
+                proc_hit = bool(name) and name.casefold() in proc_hints
+                if title_hit or proc_hit:
                     candidates.append((hwnd, title, pid, name))
                 return True
 
@@ -2884,7 +2926,30 @@ $p=Get-Process -Id $pid32 -ErrorAction SilentlyContinue
                             pass
                 elif action == "close":
                     win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
-                    applied = True  # PostMessage no devuelve confirmacion sincrona
+                    # VERIFICAR que la ventana realmente se cerró. WM_CLOSE es un
+                    # PEDIDO, no una garantía: si la app muestra un diálogo
+                    # "¿guardar cambios?" o ignora el mensaje, la ventana
+                    # sobrevive. Antes reportábamos applied=True sin chequear ->
+                    # FALSO-PASS (el agente decía "cerré" y el proceso seguía
+                    # vivo, el bug clase-Carter). Polleamos hasta ~1.5s a que el
+                    # hwnd deje de ser ventana válida/visible. NO forzamos kill
+                    # (taskkill sobre trabajo sin guardar sería destructivo,
+                    # CLAUDE.md #6); si no cierra, lo reportamos honestamente.
+                    applied = False
+                    _close_deadline = time.time() + 1.5
+                    while time.time() < _close_deadline:
+                        time.sleep(0.15)
+                        try:
+                            if not win32gui.IsWindow(hwnd) or not win32gui.IsWindowVisible(hwnd):
+                                applied = True
+                                break
+                        except Exception:
+                            applied = True  # hwnd inválido = cerró
+                            break
+                    if not applied:
+                        error = ("window did not close (app may be showing a "
+                                 "save/confirm dialog or ignored WM_CLOSE); not "
+                                 "force-killed to avoid data loss")
                 else:
                     win32gui.ShowWindow(hwnd, sw_action[action])
                     applied = True
@@ -4243,6 +4308,83 @@ Start-Sleep -Milliseconds 120
             time.sleep(0.5)
         return _ok(found=False, target=text, last_windows=last)
 
+    # Títulos/clases de ventanas que NO son apps escribibles (toasts de
+    # notificación, shell). Si una de éstas tiene el foco, type_into perdería el
+    # texto. Multi-idioma por TÍTULO no es fiable (localizado) -> chequeamos
+    # también la CLASE de ventana (estable cross-locale).
+    _NON_TYPABLE_TITLES = ("nueva notificación", "new notification", "notification")
+    _NON_TYPABLE_CLASSES = ("Windows.UI.Core.CoreWindow", "Shell_TrayWnd",
+                            "Progman", "WorkerW", "ForegroundStaging",
+                            "MultitaskingViewFrame", "XamlExplorerHostIslandWindow")
+
+    def _is_non_typable_foreground(self, fg_title: str) -> bool:
+        try:
+            import win32gui
+            h = win32gui.GetForegroundWindow()
+            if not h:
+                return True
+            cls = win32gui.GetClassName(h) or ""
+            if cls in self._NON_TYPABLE_CLASSES:
+                return True
+            title = (fg_title or win32gui.GetWindowText(h) or "")
+            if not title.strip():
+                return True
+            if title.strip().casefold() in self._NON_TYPABLE_TITLES:
+                return True
+        except Exception:
+            return False
+        return False
+
+    def _focus_typable_window(self, hint: str = "") -> bool:
+        """Enfoca una ventana de app escribible. Si `hint` nombra una (o resuelve
+        a un proceso vía AppResolver), la prioriza; si no, toma la ventana de app
+        normal más arriba en el z-order. Devuelve True si enfocó algo."""
+        try:
+            import win32gui
+            import win32process
+        except Exception:
+            return False
+        # Si hay hint, usar window_control(focus) que ya resuelve título/proceso
+        # (incluye la traducción de builtins localizados que agregué a EnumWindows).
+        if hint:
+            try:
+                r = self.window_control("focus", hint)
+                inner = r.get("result") if isinstance(r, dict) else None
+                if isinstance(inner, dict) and inner.get("ok"):
+                    return True
+            except Exception:
+                pass
+        # Fallback: primera ventana visible con título y clase "normal" en z-order.
+        target = []
+        def _cb(h, _):
+            if not win32gui.IsWindowVisible(h):
+                return True
+            title = win32gui.GetWindowText(h) or ""
+            if not title.strip():
+                return True
+            cls = win32gui.GetClassName(h) or ""
+            if cls in self._NON_TYPABLE_CLASSES:
+                return True
+            if title.strip().casefold() in self._NON_TYPABLE_TITLES:
+                return True
+            target.append((h, title))
+            return False  # primera válida = tope del z-order
+        try:
+            win32gui.EnumWindows(_cb, None)
+        except Exception:
+            pass
+        if target:
+            try:
+                from .win_focus import focus_and_maximize
+                return bool(focus_and_maximize(target[0][0], expected_title_substr=target[0][1] or None))
+            except Exception:
+                try:
+                    win32gui.SetForegroundWindow(target[0][0])
+                    return True
+                except Exception:
+                    return False
+        return False
+
     def gui_type_into(self, args: dict[str, Any]) -> dict[str, Any]:
         """MACRO determinista (Fase 2 computer-use): teclear `text` en la ventana
         ACTIVA, con verificación. El 4B solo da el OBJETIVO (el texto); el código
@@ -4262,6 +4404,37 @@ Start-Sleep -Milliseconds 120
             fg_title = win32gui.GetWindowText(fg) if fg else ""
         except Exception:
             fg, fg_title = None, ""
+        # 1b) GROUNDING: el foreground puede ser un TOAST de notificación
+        # ("Nueva notificación" / Windows.UI.Core.CoreWindow) o una ventana sin
+        # título — robaría el texto y se perdería. (Bug 2026-05-24: en el macro
+        # multi-intent "abrí Notepad y escribí X" el toast tomaba el foco y X se
+        # tecleaba en la nada.) Si el foreground NO es una app normal escribible,
+        # enfocamos la ÚLTIMA ventana de app real (la más arriba en el z-order
+        # con título y clase de ventana normal). 'hint' permite al caller nombrar
+        # la ventana objetivo (p.ej. el macro sabe que abrió Notepad).
+        hint = str(args.get("window") or args.get("target") or "").strip()
+        # Enfocar la ventana objetivo si: (a) el foreground no es escribible
+        # (toast/shell) -> buscar cualquier app real, o (b) hay un HINT explícito
+        # y el foreground NO es ya esa ventana -> evita escribir en la app
+        # equivocada (Word/Edge) que casualmente tenga el foco. Si no hay hint y
+        # el foreground ya es escribible, no tocamos nada.
+        _need_focus = self._is_non_typable_foreground(fg_title)
+        if hint and not _need_focus:
+            if not self._match_query(hint, fg_title):
+                _need_focus = True
+        focus_attempted = False
+        if _need_focus:
+            focus_attempted = True
+            focused = self._focus_typable_window(hint)
+            # settle: dar tiempo a que el cambio de foco se asiente antes de
+            # teclear (sin esto el primer keystroke puede ir a la ventana vieja).
+            time.sleep(0.25)
+            try:
+                import win32gui as _w
+                fg = _w.GetForegroundWindow()
+                fg_title = _w.GetWindowText(fg) if fg else fg_title
+            except Exception:
+                pass
         # 2) capturar estado antes + teclear + verificar (sin VLM)
         try:
             from . import gui_verify
@@ -4277,14 +4450,77 @@ Start-Sleep -Milliseconds 120
                 v = gui_verify.verify_after(before)
                 typed["state_changed"] = v.get("state_changed")
                 typed["state_verify"] = v.get("reason")
-                if v.get("state_changed") is False:
-                    typed["verified"] = False
-                    typed.setdefault("completion_status", "typed_no_effect")
         except Exception:
             pass
+        # VERIFICACIÓN UIA (más fuerte que frame-diff para TEXTO): el dHash sobre
+        # la ROI a veces NO trippea con texto chico (anti-aliasing sutil) -> daba
+        # state_changed=False aunque el texto SÍ entró (UIA_has_text=True). Bug
+        # 2026-05-24: el macro reportaba "no pude confirmar" en un éxito real.
+        # Si UIA encuentra el texto tecleado en el árbol de la ventana en foco,
+        # eso es prueba directa de que entró y promueve state_changed=True.
+        uia_confirmed = None
+        try:
+            time.sleep(0.2)  # dejar que el texto se asiente en el árbol UIA
+            # buscar por una palabra clave corta del título (no el título entero,
+            # que incluye "Sin título:" y rompe el match por substring).
+            _win_key = (hint or fg_title or "")
+            uia_confirmed = self._uia_window_contains_text(_win_key, text)
+            if uia_confirmed is not True:
+                # reintento sin filtrar por ventana (cualquier ventana en foco):
+                uia_confirmed = self._uia_window_contains_text("", text)
+        except Exception:
+            uia_confirmed = None
+        if uia_confirmed is True:
+            typed["state_changed"] = True
+            typed["state_verify"] = "uia_text_present"
+            typed["verified"] = True
+        elif typed.get("state_changed") is False:
+            typed["verified"] = False
+            typed.setdefault("completion_status", "typed_no_effect")
+        typed["uia_confirmed"] = uia_confirmed
         typed["typed_into_window"] = fg_title
         typed["action"] = "type_into"
         return typed
+
+    def _uia_window_contains_text(self, window_substr: str, text: str) -> bool | None:
+        """¿La ventana en foco (o cuyo título contiene window_substr) tiene un
+        control de edición cuyo valor/Name contiene `text`? Lee el árbol UIA.
+        None si UIA no está disponible. Es el verificador fuerte de 'el texto
+        entró', usado por gui_type_into (más fiable que frame-diff para texto)."""
+        try:
+            import uiautomation as auto
+        except Exception:
+            return None
+        needle = (text or "").strip().lower()
+        if not needle:
+            return None
+        win_s = (window_substr or "").strip().lower()
+        try:
+            for w in auto.GetRootControl().GetChildren():
+                wname = (w.Name or "").lower()
+                if win_s and win_s not in wname and wname not in win_s:
+                    continue
+                # buscar texto en descendientes acotado (2 niveles)
+                stack = list(w.GetChildren())
+                depth = 0
+                while stack and depth < 400:
+                    el = stack.pop()
+                    depth += 1
+                    val = ""
+                    try:
+                        vp = el.GetValuePattern()
+                        val = (vp.Value or "")
+                    except Exception:
+                        val = el.Name or ""
+                    if needle in (val or "").lower():
+                        return True
+                    try:
+                        stack.extend(el.GetChildren())
+                    except Exception:
+                        pass
+            return False
+        except Exception:
+            return None
 
     def gui_type(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))

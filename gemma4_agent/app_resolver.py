@@ -23,6 +23,34 @@ from pathlib import Path
 from typing import Any, Callable
 
 
+# Builtin OS executables whose colloquial name is LOCALIZED by the user's
+# language but whose actual binary name is fixed and English. Windows discovery
+# (PATH/StartApps/registry) only knows the binary ("notepad", "calc"), so a
+# French "bloc-notes" or German "Editor" fuzzy-scores 0 against "notepad" and
+# the app is never found. This is NOT intent routing (the semantic router has
+# already chosen the `app` tool) and NOT a canned reply — it is a name-translation
+# table for a SMALL, FIXED set of OS-shipped binaries, the same precedent as the
+# streaming-app alias table in domain_tools.py. Keys are folded (lowercase, no
+# accents/punctuation — must match tools._fold output). We translate the
+# localized name to the canonical binary query, then let normal discovery rank it.
+# Sources: Windows shell names per MS docs (notepad.exe, calc, mspaint, cmd);
+# localized labels from the OS UI in es/en/pt/fr/de/it.
+_BUILTIN_ALIASES: dict[str, str] = {
+    # notepad.exe
+    "bloc de notas": "notepad", "bloco de notas": "notepad",
+    "bloc notes": "notepad", "bloc note": "notepad",   # fr "bloc-notes" -> fold
+    "editor": "notepad",                                 # de "Editor"
+    "blocco note": "notepad", "blocco di note": "notepad",
+    # calc (CalculatorApp / calc.exe)
+    "calculadora": "calc", "calculatrice": "calc", "rechner": "calc",
+    "calcolatrice": "calc",
+    # mspaint.exe
+    "paint": "mspaint", "pintura": "mspaint", "dessin": "mspaint",
+    # cmd
+    "simbolo del sistema": "cmd", "terminal": "cmd",
+}
+
+
 @dataclass(frozen=True)
 class AppCandidate:
     name: str
@@ -50,7 +78,20 @@ class AppResolver:
 
     def find(self, query: str, limit: int = 8, refresh: bool = False, deep_fallback: bool = True) -> list[AppCandidate]:
         # Lazy import: avoids a top-level cycle with tools.py.
-        from .tools import _score
+        from .tools import _score, _fold
+        # Translate a localized OS-builtin name ("bloc-notes", "Editor",
+        # "calculatrice") to its canonical binary BEFORE discovery — discovery
+        # only knows the English binary name, so the foreign label fuzzy-scores 0.
+        # See _BUILTIN_ALIASES. Strip a leading article the LLM may keep ("el/le/
+        # den/o/il/la/lo/the") so "ouvre LE bloc-notes" still matches.
+        folded = _fold(query)
+        for _art in ("el ", "la ", "lo ", "le ", "den ", "der ", "das ", "o ", "a ", "il ", "the "):
+            if folded.startswith(_art):
+                folded = folded[len(_art):]
+                break
+        canonical = _BUILTIN_ALIASES.get(folded)
+        if canonical is not None:
+            query = canonical
         if refresh:
             self._cache = []
             self._loaded_sources = set()
