@@ -4210,6 +4210,25 @@ if ($action -eq "set_value") {
         script = r"""
 $path = $env:GEMMA4_SCREENSHOT_PATH
 $mode = $env:GEMMA4_SCREENSHOT_MODE
+# DPI-AWARENESS (2026-05-25): sin esto, en pantallas escaladas (p.ej. laptop a
+# 150% — el hardware TARGET de RED) GDI captura en coords LÓGICAS (1260x840)
+# mientras el cursor/mouse_event opera en FÍSICAS (1890x1260). El OCR hallaba
+# el botón en el bitmap lógico y el click caía en el lugar equivocado -> toda
+# la cascada OCR fallaba en clicks por coordenada. Marcamos el proceso
+# PER_MONITOR_AWARE_V2 para capturar a resolución física real = misma escala
+# que el click. Debe ir ANTES de leer bounds / CopyFromScreen.
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class GemmaDpi {
+  [DllImport("user32.dll")] public static extern bool SetProcessDpiAwarenessContext(IntPtr value);
+  [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
+}
+"@
+try {
+  # -4 = DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+  if (-not [GemmaDpi]::SetProcessDpiAwarenessContext([IntPtr](-4))) { [GemmaDpi]::SetProcessDPIAware() | Out-Null }
+} catch { try { [GemmaDpi]::SetProcessDPIAware() | Out-Null } catch {} }
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 if ($mode -eq 'primary') {
@@ -4289,6 +4308,10 @@ $bmp.Dispose()
             # Sin win32api seguimos adelante (mejor click impreciso que fallar).
             pass
 
+        # DPI-aware (2026-05-25): el screenshot ahora captura en coords FÍSICAS,
+        # así que el click DEBE operar en el mismo espacio físico o el OCR-click
+        # cae en el lugar equivocado en pantallas escaladas. SetProcessDpiAware
+        # ANTES de SetCursorPos.
         script = f"""
 Add-Type @"
 using System;
@@ -4296,8 +4319,11 @@ using System.Runtime.InteropServices;
 public class Mouse {{
   [DllImport("user32.dll")] public static extern bool SetCursorPos(int X, int Y);
   [DllImport("user32.dll")] public static extern void mouse_event(int flags, int dx, int dy, int data, int extra);
+  [DllImport("user32.dll")] public static extern bool SetProcessDpiAwarenessContext(IntPtr value);
+  [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
 }}
 "@
+try {{ if (-not [Mouse]::SetProcessDpiAwarenessContext([IntPtr](-4))) {{ [Mouse]::SetProcessDPIAware() | Out-Null }} }} catch {{ try {{ [Mouse]::SetProcessDPIAware() | Out-Null }} catch {{}} }}
 [Mouse]::SetCursorPos({x}, {y}) | Out-Null
 [Mouse]::mouse_event(0x0002,0,0,0,0)
 [Mouse]::mouse_event(0x0004,0,0,0,0)
