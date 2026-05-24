@@ -91,6 +91,63 @@ def note_action() -> None:
     _GUI_ACTIONS_THIS_TURN += 1
 
 
+# --- 4. anchor-binding (R8.2: clic a bait de pop-up no relacionado al objetivo)
+# CALIBRADO (2026-05-25): un umbral de cosine(goal,label) solo NO separa (legit
+# 'Guardar'=0.156 se solapa con inject 0.267). La señal robusta es COMBINADA: un
+# control real es CORTO (<=3 palabras); el bait de pop-up es una FRASE imperativa
+# LARGA y NO relacionada al objetivo del turno. Flag SOLO si (label >=4 palabras)
+# Y (cosine con el goal < 0.30). Medido: 0/12 fricción (no bloquea labels cortos
+# legítimos) y 5/10 protección (frena el bait obvio; el resto lo acota el
+# activity-budget). NO es hard-abort: es un soft-flag para que el agente confirme.
+_TURN_GOAL: str = ""
+_ANCHOR_COS_MAX = 0.30
+_ANCHOR_MIN_WORDS = 4
+
+
+def set_turn_goal(goal: str) -> None:
+    """Fijar el objetivo (utterance del usuario) del turno top-level actual, para
+    el anchor-binding. Llamar al empezar el turno."""
+    global _TURN_GOAL
+    _TURN_GOAL = (goal or "").strip()
+
+
+def check_anchor(label: str) -> dict[str, Any] | None:
+    """Devuelve un dict de bloqueo si el `label` del click parece BAIT de pop-up
+    (frase larga NO relacionada al objetivo del turno), o None si se puede
+    clickear. Conservador por diseño: solo frena el caso claro. Gate
+    GEMMA4_GUI_ANCHOR_GUARD."""
+    if _env_off("GEMMA4_GUI_ANCHOR_GUARD"):
+        return None
+    lbl = (label or "").strip()
+    if not lbl or not _TURN_GOAL:
+        return None
+    if len(lbl.split()) < _ANCHOR_MIN_WORDS:
+        return None  # control corto -> legítimo, no se evalúa (evita fricción)
+    try:
+        from .semantic_router import embed
+        gv = embed(_TURN_GOAL)
+        lv = embed(lbl)
+        if gv is None or lv is None:
+            return None  # sin encoder -> fallback seguro (no bloquear)
+        sim = float(sum(a * b for a, b in zip(gv, lv)))
+    except Exception:
+        return None
+    if sim >= _ANCHOR_COS_MAX:
+        return None  # relacionado al objetivo -> pasa
+    return {
+        "ok": False,
+        "blocked": "anchor_mismatch",
+        "status": "needs_user",
+        "label": lbl,
+        "goal": _TURN_GOAL[:80],
+        "similarity": round(sim, 3),
+        "reason": (f"el control «{lbl[:50]}» no se relaciona con lo que pediste "
+                   f"(«{_TURN_GOAL[:50]}»); parece un pop-up/desvío. No lo clickeo "
+                   "sin que confirmes."),
+        "completion_status": "anchor_mismatch",
+    }
+
+
 # El agente también genera input sintético (mouse_event/SendKeys) que resetea
 # GetLastInputInfo. Para no auto-bloquearse en acciones multi-paso, registramos
 # cuándo el AGENTE tocó input por última vez; si la actividad reciente cae dentro

@@ -600,6 +600,17 @@ class Gemma4Agent:
             try:
                 from . import gui_safety
                 gui_safety.reset_action_budget()
+                # anchor-binding (R8.2): fijar el objetivo del turno para detectar
+                # clicks a bait de pop-up no relacionado.
+                try:
+                    _goal_txt = content if isinstance(content, str) else ""
+                    if not _goal_txt and isinstance(content, list):
+                        _goal_txt = " ".join(
+                            str(p.get("text", "")) for p in content
+                            if isinstance(p, dict) and p.get("type") == "text")
+                    gui_safety.set_turn_goal(_goal_txt)
+                except Exception:
+                    pass
             except Exception:
                 pass
         # JARVIS (inv 5): si el turno anterior ofreció automatizar una rutina y

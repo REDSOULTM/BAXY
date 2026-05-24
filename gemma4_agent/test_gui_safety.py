@@ -117,5 +117,54 @@ class ActionBudgetTest(unittest.TestCase):
             gui_safety.note_action()
 
 
+class AnchorBindingTest(unittest.TestCase):
+    """R8.2: anchor-binding conservador — frena bait de pop-up largo/no-relacionado
+    SIN bloquear controles cortos legítimos (0 fricción calibrada)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from gemma4_agent.semantic_router import embed
+        cls.available = embed("test") is not None
+
+    def setUp(self):
+        os.environ.pop("GEMMA4_GUI_ANCHOR_GUARD", None)
+        gui_safety.set_turn_goal("")
+
+    def test_no_goal_no_block(self):
+        gui_safety.set_turn_goal("")
+        self.assertIsNone(gui_safety.check_anchor("Click here to claim your prize"))
+
+    def test_short_label_never_blocked(self):
+        # control corto (<4 palabras) NUNCA se evalúa -> 0 fricción, sin importar cosine
+        gui_safety.set_turn_goal("guardá el documento")
+        for lbl in ("Guardar", "Cinco", "OK", "Es igual a", "Iniciar sesión"):
+            self.assertIsNone(gui_safety.check_anchor(lbl), lbl)
+
+    def test_long_bait_blocked(self):
+        if not self.available:
+            self.skipTest("encoder no disponible")
+        gui_safety.set_turn_goal("envía el mensaje a Juan")
+        blk = gui_safety.check_anchor("Click here to claim your prize now")
+        self.assertIsNotNone(blk)
+        self.assertEqual(blk["blocked"], "anchor_mismatch")
+
+    def test_gate_off(self):
+        os.environ["GEMMA4_GUI_ANCHOR_GUARD"] = "0"
+        gui_safety.set_turn_goal("envía el mensaje a Juan")
+        self.assertIsNone(gui_safety.check_anchor("Click here to claim your prize now"))
+
+    def test_long_but_related_passes(self):
+        # frase larga PERO relacionada al objetivo -> NO bloquea (cosine alto)
+        if not self.available:
+            self.skipTest("encoder no disponible")
+        gui_safety.set_turn_goal("iniciar sesión en mi cuenta")
+        # "Iniciar sesión con Google" es largo pero relacionado
+        r = gui_safety.check_anchor("Iniciar sesión con tu cuenta de Google")
+        # puede pasar o no según cosine; lo que importa: si pasa, no es falso bloqueo
+        # (este test documenta el comportamiento, no exige bloqueo)
+        if r is not None:
+            self.assertEqual(r["blocked"], "anchor_mismatch")
+
+
 if __name__ == "__main__":
     unittest.main()

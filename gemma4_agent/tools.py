@@ -1815,6 +1815,17 @@ class ToolRegistry:
         if action == "find":
             return self.uia_find(args)
         if action == "click":
+            # ANCHOR-BINDING (R8.2): no clickear bait de pop-up no relacionado al
+            # objetivo del turno (label frase-larga + cosine bajo). Conservador.
+            try:
+                from . import gui_safety
+                _anc = gui_safety.check_anchor(str(args.get("query") or args.get("text")
+                                                   or args.get("target") or ""))
+                if _anc is not None:
+                    _anc["action"] = "uia.click"
+                    return _anc
+            except Exception:
+                pass
             # CASCADA Fase 3 en uia.click (el tool que el agente elige para
             # "clic en X"). En ventanas CHROMIUM/CEF (Edge/Chrome/Electron) el
             # árbol UIA del contenido web es inconsistente y el InvokePattern del
@@ -4796,6 +4807,17 @@ Start-Sleep -Milliseconds 120
                     or args.get("text") or "").strip()
         if not label:
             return _err("click_button requiere 'label'", status="needs_user")
+        # ANCHOR-BINDING (R8.2): si el label parece bait de pop-up no relacionado
+        # al objetivo del turno (frase larga + cosine bajo), no clickear sin
+        # confirmar. Conservador (0 fricción en labels cortos legítimos).
+        try:
+            from . import gui_safety
+            _anc = gui_safety.check_anchor(label)
+            if _anc is not None:
+                _anc["action"] = "click_button"
+                return _anc
+        except Exception:
+            pass
         window = str(args.get("window") or args.get("title") or "").strip()
         # CASCADA Fase 3: UIA -> (retry lazy-Chromium) -> OCR. El 4B da el label;
         # el código elige el grounding más fiable disponible (Agent-S2 mixture of
