@@ -180,17 +180,37 @@ class PendingSuggestionHandlerTest(unittest.TestCase):
 
     def test_yes_no_multilingual(self):
         # Principio universal: la app la usa cualquier hablante. El sí/no a la
-        # oferta de Jarvis se entiende en varios idiomas (vocabulario cerrado).
+        # oferta de Jarvis se entiende en varios idiomas (vocabulario cerrado) Y
+        # la RESPUESTA va en el idioma del usuario (inv5 multilingüe).
         for yes in ("yes", "oui", "ja", "sim", "sì", "vale", "okay"):
             ag = self._agent()
             r = ag._handle_pending_suggestion(yes)
             self.assertIsNotNone(r, yes)
-            self.assertIn("automatic", r.content.lower(), yes)
+            # 'sí' aceptado -> menciona la automatización (en cualquier idioma):
+            # es 'automaticé/automatizo', en 'automated', fr 'automatisé', etc.
+            self.assertRegex(r.content.lower(), r"automat", yes)
+        # NO en distintos idiomas -> rechazo NO vacío (en el idioma detectado).
+        # No exigimos una frase es fija: la respuesta es multilingüe ahora.
         for no in ("no", "nein", "não", "non", "nope", "nah"):
             ag = self._agent()
             r = ag._handle_pending_suggestion(no)
             self.assertIsNotNone(r, no)
-            self.assertIn("no lo automatizo", r.content.lower(), no)
+            self.assertTrue(len(r.content.strip()) > 5, no)
+
+    def test_reply_language_matches_offer(self):
+        # inv5: el sí/no responde en el idioma EN QUE SE HIZO LA OFERTA (un "no"
+        # pelado no da señal; la oferta sí). Simulamos oferta en inglés.
+        ag = self._agent()
+        ag._pending_suggestion_lang = "en"
+        r = ag._handle_pending_suggestion("no")
+        self.assertIsNotNone(r)
+        self.assertIn("automate", r.content.lower())  # rechazo en inglés
+        # y en alemán
+        ag2 = self._agent()
+        ag2._pending_suggestion_lang = "de"
+        r2 = ag2._handle_pending_suggestion("nein")
+        self.assertIsNotNone(r2)
+        self.assertIn("automatisiere", r2.content.lower())  # rechazo en alemán
 
     def test_non_latin_script_not_erased(self):
         # bug previo: el sub(r'[^a-záéíóúñ ]') borraba cirílico/CJK -> sí/no de

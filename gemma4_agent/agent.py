@@ -609,6 +609,13 @@ class Gemma4Agent:
                             str(p.get("text", "")) for p in content
                             if isinstance(p, dict) and p.get("type") == "text")
                     gui_safety.set_turn_goal(_goal_txt)
+                    # idioma del turno (inv5: la oferta de Jarvis va en el idioma
+                    # del usuario). Heurística por stopwords, fallback es.
+                    try:
+                        from .reply_validator import _guess_lang as _gl2
+                        self._turn_lang = _gl2(_goal_txt) if _goal_txt else "es"
+                    except Exception:
+                        self._turn_lang = "es"
                 except Exception:
                     pass
             except Exception:
@@ -2590,6 +2597,16 @@ class Gemma4Agent:
             # la dejamos pendiente y seguimos el turno normal.
             return None
         self._pending_suggestion = None
+        # idioma de la respuesta (inv5 multilingüe): preferir el idioma EN QUE SE
+        # HIZO LA OFERTA (un "no"/"sí" pelado del próximo turno no da señal de
+        # idioma fiable); si no lo tenemos, inferir del propio mensaje.
+        try:
+            from .reply_validator import _guess_lang as _gl
+            from .pattern_miner import jarvis_phrase as _jp
+            _lang = getattr(self, "_pending_suggestion_lang", "") or _gl(text or "")
+        except Exception:
+            _lang = "es"
+            _jp = lambda l, k: ""  # noqa: E731
         try:
             from .suggestion_queue import SuggestionQueue
             _q = SuggestionQueue()
@@ -2599,14 +2616,14 @@ class Gemma4Agent:
             if _q is not None:
                 try: _q.mark_rejected(cand)
                 except Exception: pass
-            return AgentReply(content="Listo, no lo automatizo. Avisame si cambiás de idea.",
+            return AgentReply(content=_jp(_lang, "rejected") or "Listo, no lo automatizo.",
                               tool_events=[], mission=None)
         # YES -> crear la rutina vía routine_tool
         rt = cand.to_routine_trigger()
         if not rt:
-            return AgentReply(content="Quise automatizarlo pero no pude armar la rutina; lo dejo para más adelante.",
+            return AgentReply(content=_jp(_lang, "build_fail"),
                               tool_events=[], mission=None)
-        label = f"auto: {cand.describe_es()}"[:60]
+        label = f"auto: {cand.describe('es')}"[:60]
         trigger = {"type": rt["trigger_type"]}
         if rt["trigger_type"] in ("on_app_open", "on_app_close") and rt.get("trigger_key"):
             trigger["process"] = rt["trigger_key"]
@@ -2621,9 +2638,9 @@ class Gemma4Agent:
             if _q is not None:
                 try: _q.mark_accepted(cand)
                 except Exception: pass
-            return AgentReply(content=f"Hecho. Automaticé: {cand.describe_es()}.",
+            return AgentReply(content=_jp(_lang, "accepted").format(desc=cand.describe(_lang)),
                               tool_events=[], mission=None)
-        return AgentReply(content="Intenté automatizarlo pero la creación de la rutina falló. Lo dejamos manual por ahora.",
+        return AgentReply(content=_jp(_lang, "create_fail"),
                           tool_events=[], mission=None)
 
     def _maybe_proactive_suffix(self) -> str:
@@ -2650,8 +2667,13 @@ class Gemma4Agent:
                 return ""
             # recordar el patrón ofrecido para resolver el sí/no del próximo turno
             self._pending_suggestion = cand
-            return (f"\n\nPor cierto: noté que {cand.describe_es()}. "
-                    f"¿Querés que lo automatice? (decí sí o no)")
+            # oferta en el idioma del turno (inv5 multilingüe). Guardamos ese
+            # idioma para responder el sí/no en el MISMO idioma (un "no" pelado
+            # del próximo turno no da señal de idioma; la oferta sí la tenía).
+            _lang = getattr(self, "_turn_lang", "es")
+            self._pending_suggestion_lang = _lang
+            from .pattern_miner import jarvis_phrase as _jp
+            return _jp(_lang, "offer").format(desc=cand.describe(_lang))
         except Exception:
             return ""
 

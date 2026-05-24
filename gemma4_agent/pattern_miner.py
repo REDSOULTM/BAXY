@@ -38,15 +38,28 @@ class PatternCandidate:
     consistency: float  # count / veces que ocurrió el trigger
     delta_median_s: float  # mediana del delay trigger→target
 
+    # Plantillas del patrón por idioma (inv5 multilingüe). Solo conectivos/verbos
+    # genéricos; los nombres de app (target_key) son neutrales. {trig}/{act} se
+    # rellenan con las sub-plantillas. Cubre es/en/pt/fr/de/it; fallback es.
+    _DESC = {
+        "es": ("arrancás la PC", "abrís {k}", {"app_close": "cerrás {k}", "app_open": "abrís {k}", "cmd": "usás «{k}»"}, "cuando {trig}, {act}"),
+        "en": ("you start the PC", "you open {k}", {"app_close": "you close {k}", "app_open": "you open {k}", "cmd": "you use «{k}»"}, "when {trig}, {act}"),
+        "pt": ("você liga o PC", "você abre {k}", {"app_close": "você fecha {k}", "app_open": "você abre {k}", "cmd": "você usa «{k}»"}, "quando {trig}, {act}"),
+        "fr": ("tu démarres le PC", "tu ouvres {k}", {"app_close": "tu fermes {k}", "app_open": "tu ouvres {k}", "cmd": "tu utilises «{k}»"}, "quand {trig}, {act}"),
+        "de": ("du den PC startest", "du {k} öffnest", {"app_close": "du {k} schließt", "app_open": "du {k} öffnest", "cmd": "du «{k}» benutzt"}, "wenn {trig}, {act}"),
+        "it": ("avvii il PC", "apri {k}", {"app_close": "chiudi {k}", "app_open": "apri {k}", "cmd": "usi «{k}»"}, "quando {trig}, {act}"),
+    }
+
+    def describe(self, lang: str = "es") -> str:
+        """Texto natural del patrón en el idioma del usuario (inv5 multilingüe)."""
+        boot_t, open_t, act_map, frame = self._DESC.get(lang, self._DESC["es"])
+        trig = boot_t if self.trigger_kind == "boot" else open_t.format(k=self.trigger_key)
+        act = act_map.get(self.target_kind, f"{self.target_kind} {self.target_key}").format(k=self.target_key)
+        return frame.format(trig=trig, act=act)
+
     def describe_es(self) -> str:
-        """Texto natural del patrón para la propuesta (lo que el LLM conversa)."""
-        trig = "arrancás la PC" if self.trigger_kind == "boot" else \
-               f"abrís {self.trigger_key}"
-        act = {"app_close": f"cerrás {self.target_key}",
-               "app_open": f"abrís {self.target_key}",
-               "cmd": f"usás «{self.target_key}»"}.get(
-                   self.target_kind, f"{self.target_kind} {self.target_key}")
-        return f"cuando {trig}, {act}"
+        """Alias retrocompat (es)."""
+        return self.describe("es")
 
     def to_routine_trigger(self) -> dict[str, Any] | None:
         """Mapea el patrón a un trigger del routine_tool existente (traducción
@@ -68,6 +81,49 @@ class PatternCandidate:
             return None
         return {"trigger_type": tt, "trigger_key": self.trigger_key or None,
                 "action": action}
+
+
+# Frases del handshake de Jarvis por idioma (inv5 multilingüe). {desc} = la
+# descripción del patrón ya en el idioma del usuario. Excepción permitida por
+# CLAUDE.md: handshake sí/no del propio agente (no es respuesta enlatada a una
+# pregunta del usuario). Cubre es/en/pt/fr/de/it; fallback es.
+JARVIS_PHRASES = {
+    "es": {"offer": "\n\nPor cierto: noté que {desc}. ¿Querés que lo automatice? (decí sí o no)",
+           "rejected": "Listo, no lo automatizo. Avisame si cambiás de idea.",
+           "accepted": "Hecho. Automaticé: {desc}.",
+           "build_fail": "Quise automatizarlo pero no pude armar la rutina; lo dejo para más adelante.",
+           "create_fail": "Intenté automatizarlo pero la creación de la rutina falló. Lo dejamos manual por ahora."},
+    "en": {"offer": "\n\nBy the way: I noticed that {desc}. Want me to automate it? (say yes or no)",
+           "rejected": "OK, I won't automate it. Let me know if you change your mind.",
+           "accepted": "Done. I automated: {desc}.",
+           "build_fail": "I wanted to automate it but couldn't build the routine; leaving it for later.",
+           "create_fail": "I tried to automate it but creating the routine failed. Keeping it manual for now."},
+    "pt": {"offer": "\n\nA propósito: notei que {desc}. Quer que eu automatize? (diga sim ou não)",
+           "rejected": "Pronto, não vou automatizar. Avise se mudar de ideia.",
+           "accepted": "Feito. Automatizei: {desc}.",
+           "build_fail": "Quis automatizar mas não consegui montar a rotina; deixo para depois.",
+           "create_fail": "Tentei automatizar mas a criação da rotina falhou. Fica manual por ora."},
+    "fr": {"offer": "\n\nAu fait : j'ai remarqué que {desc}. Tu veux que je l'automatise ? (dis oui ou non)",
+           "rejected": "D'accord, je ne l'automatise pas. Dis-moi si tu changes d'avis.",
+           "accepted": "Fait. J'ai automatisé : {desc}.",
+           "build_fail": "Je voulais l'automatiser mais je n'ai pas pu créer la routine ; je laisse pour plus tard.",
+           "create_fail": "J'ai essayé d'automatiser mais la création de la routine a échoué. On le garde manuel pour l'instant."},
+    "de": {"offer": "\n\nÜbrigens: Mir ist aufgefallen, dass {desc}. Soll ich das automatisieren? (sag ja oder nein)",
+           "rejected": "OK, ich automatisiere es nicht. Sag Bescheid, wenn du es dir anders überlegst.",
+           "accepted": "Erledigt. Automatisiert: {desc}.",
+           "build_fail": "Ich wollte es automatisieren, konnte die Routine aber nicht erstellen; lasse es für später.",
+           "create_fail": "Ich habe es versucht, aber die Routine-Erstellung schlug fehl. Bleibt vorerst manuell."},
+    "it": {"offer": "\n\nA proposito: ho notato che {desc}. Vuoi che lo automatizzi? (dì sì o no)",
+           "rejected": "Ok, non lo automatizzo. Fammi sapere se cambi idea.",
+           "accepted": "Fatto. Ho automatizzato: {desc}.",
+           "build_fail": "Volevo automatizzarlo ma non sono riuscito a creare la routine; lo lascio per dopo.",
+           "create_fail": "Ho provato ad automatizzarlo ma la creazione della routine è fallita. Resta manuale per ora."},
+}
+
+
+def jarvis_phrase(lang: str, key: str) -> str:
+    """Frase del handshake en el idioma del usuario (fallback es)."""
+    return JARVIS_PHRASES.get(lang, JARVIS_PHRASES["es"]).get(key, JARVIS_PHRASES["es"][key])
 
 
 def mine_simple_patterns(
