@@ -40,6 +40,41 @@ _JUNK_VALUE_RE = re.compile(
 )
 _MIN_VALUE_CHARS = 2  # un valor de 1 char nunca es un hecho útil
 
+# SALIENCE (inv 2 §4): importancia de un hecho, para que el cap NO evicte algo
+# importante (p.ej. "mi cumpleaños") por ser viejo, dejando basura reciente. La
+# eviction pasa de "el más viejo" a "el menos importante, y entre iguales el más
+# viejo". Simple a propósito (LoCoMo: retrieval simple bien hecho > esquema
+# sofisticado mal aplicado en un 4B). Sin sqlite-vec/EmbeddingGemma: reusa lo que
+# hay. Hechos sin campo salience (datos viejos) = SALIENCE_AUTO (degradan primero,
+# seguro). Recall/uso de un hecho lo sube (lo accedido es importante).
+SALIENCE_EXPLICIT = 3   # el user lo pidió guardar (save) -> importante
+SALIENCE_AUTO = 1       # extraído pasivamente (auto:) -> bajo por defecto
+SALIENCE_MAX = 5
+# TTL: hechos auto de salience mínima más viejos que esto degradan primero en el
+# desempate (no se borran solos sin presión de cap; el cap + salience decide).
+AUTO_TTL_DAYS = 30
+
+
+def _salience_of(item: Any) -> int:
+    """Salience de un item (dict). Default seguro: AUTO (degrada primero)."""
+    if isinstance(item, dict):
+        try:
+            return int(item.get("salience", SALIENCE_AUTO))
+        except (TypeError, ValueError):
+            return SALIENCE_AUTO
+    return SALIENCE_AUTO
+
+
+def _evict_key(items: dict) -> str | None:
+    """Elige qué key evictar bajo presión de cap: la de MENOR salience y, entre
+    iguales, la más vieja (updated_at). Devuelve la key o None si vacío."""
+    if not items:
+        return None
+    def _rank(pair):
+        k, v = pair
+        return (_salience_of(v), v.get("updated_at", "") if isinstance(v, dict) else "")
+    return min(items.items(), key=_rank)[0]
+
 
 def _is_junk_value(value: str) -> bool:
     """True si el valor parece basura de prueba/ruido (no un hecho real)."""
@@ -116,17 +151,21 @@ class MemoryStore:
             # entry mas vieja (por updated_at). Explicit pueden eliminar a
             # auto:* y viceversa — el cap es global porque el storage es uno.
             if clean_key not in items and len(items) >= MAX_TOTAL_ITEMS:
-                oldest = min(
-                    items.items(),
-                    key=lambda pair: pair[1].get("updated_at", "") if isinstance(pair[1], dict) else "",
-                )
-                items.pop(oldest[0], None)
-                evicted = oldest[0]
+                # eviction por SALIENCE-luego-edad (inv2): no perder un hecho
+                # importante viejo por basura reciente.
+                ev = _evict_key(items)
+                if ev is not None:
+                    items.pop(ev, None)
+                evicted = ev
             else:
                 evicted = None
+            # el save EXPLÍCITO es importante (el user lo pidió). Si ya existía,
+            # sube la salience (re-guardar = reforzar), capada.
+            prev_sal = _salience_of(items.get(clean_key)) if clean_key in items else 0
             items[clean_key] = {
                 "value": clean_value,
                 "updated_at": datetime.now().isoformat(timespec="seconds"),
+                "salience": min(SALIENCE_MAX, max(SALIENCE_EXPLICIT, prev_sal)),
             }
             self._save(data)
             return {
@@ -158,22 +197,27 @@ class MemoryStore:
                     skipped.append({"reason": "junk_value", "fact": fact})
                     continue
                 stamped_key = key if key.startswith("auto:") else f"auto:{key}"
+                # conservar salience si el hecho ya existía (uso previo lo subió).
+                prev_sal = _salience_of(items.get(stamped_key)) if stamped_key in items else SALIENCE_AUTO
                 items[stamped_key] = {
                     "value": value,
                     "updated_at": datetime.now().isoformat(timespec="seconds"),
                     "source": "auto_extracted",
+                    "salience": max(SALIENCE_AUTO, prev_sal),
                 }
                 added.append(stamped_key)
-            # Evict oldest auto:* entries if we exceed the cap. Explicit (non-auto)
-            # entries are never touched.
+            # Evict auto:* bajo cap por SALIENCE-luego-edad (inv2): primero la
+            # basura de baja importancia y vieja, no el auto-fact reciente útil.
+            # Explicit (non-auto) entries are never touched.
             auto_keys = [k for k in items if k.startswith("auto:")]
             if len(auto_keys) > max_total:
                 sorted_auto = sorted(
-                    ((k, items[k].get("updated_at", "")) for k in auto_keys),
-                    key=lambda pair: pair[1],
+                    auto_keys,
+                    key=lambda k: (_salience_of(items[k]),
+                                   items[k].get("updated_at", "") if isinstance(items[k], dict) else ""),
                 )
                 to_drop = len(auto_keys) - max_total
-                for k, _ in sorted_auto[:to_drop]:
+                for k in sorted_auto[:to_drop]:
                     items.pop(k, None)
             self._save(data)
             return {"ok": True, "added": added, "skipped": skipped, "total_auto": sum(1 for k in items if k.startswith("auto:"))}
@@ -189,6 +233,25 @@ class MemoryStore:
             k: v for k, v in items.items()
             if q in k.casefold() or q in str(v.get("value", "")).casefold()
         }
+        # SALIENCE bump (inv2): un hecho RECUPERADO se está usando -> es
+        # importante; subir su salience (capado) para que sobreviva al cap.
+        # Best-effort, no rompe el recall si falla la escritura.
+        if matches:
+            try:
+                with self._lock:
+                    data = self._load()
+                    its = data.get("items", {})
+                    changed = False
+                    for k in matches:
+                        if k in its and isinstance(its[k], dict):
+                            cur = _salience_of(its[k])
+                            if cur < SALIENCE_MAX:
+                                its[k]["salience"] = min(SALIENCE_MAX, cur + 1)
+                                changed = True
+                    if changed:
+                        self._save(data)
+            except Exception:
+                pass
         return {"ok": True, "query": query, "items": matches}
 
     def delete(self, key: str) -> dict[str, Any]:
