@@ -31,7 +31,7 @@ R3 (WinEvents push), R5 (UIA cache), R8-anchor-binding.
 | # | Qué | Impacto | Esfuerzo | Estado |
 |---|---|---|---|---|
 | R1 | `--force-renderer-accessibility` + `ELECTRON_ENABLE_ACCESSIBILITY=1` | Alto | Bajo | **HECHO** (5e81be1): app.open lanza Chromium/Electron con AX; resuelve exe de .lnk/shell via App Paths |
-| R2 | OCR → RapidOCR PP-OCRv5 ONNX | Alto | Medio | pendiente (rapidocr+paddleocr ya instalados; falta A/B vs Tesseract) |
+| R2 | OCR → RapidOCR PP-OCRv5 ONNX | Alto | Medio | **MEDIDO y RECHAZADO**: A/B sobre UI-text rendered (white-on-blue + dark-on-light) → Tesseract y RapidOCR ambos 4/4 precisión, pero Tesseract 5-20x más rápido (0.15s vs 3.30s). El premise del informe (Tesseract falla en blanco-sobre-color) es de scene-text ICDAR, NO aplica a UI rendered (limpio/anti-aliased). RapidOCR además trae solo modelo CHINO (lee latín como CJK) — necesitaría descargar modelo Latin. NO migrar. Harness: scripts/gui_eval/_ab_ocr3.py |
 | R3 | WinEvents push + UIA event handlers | Alto | Medio | pendiente (Fase 2) |
 | R4 | transient-launcher: descartar updater (Squirrel) | Medio | Bajo | **HECHO** (4d141d8): Discord 3 false-pass→0 |
 | R5 | UIA CacheRequest + RuntimeId rebind + paralelizar | Medio | Medio | pendiente (Fase 2) |
