@@ -286,7 +286,236 @@ MISSIONS: list[GuiMission] = [
 ]
 
 
-def missions_for_tier(tier: int | None = None) -> list[GuiMission]:
+# ===========================================================================
+# EVAL-SET AMPLIADO (>=100 comandos) — Tier 1/2/3, multi-idioma, verificado por SO
+# RED pidió >=100 para verificar de verdad. Generación combinatoria honesta:
+# cada misión sigue midiendo por estado del SO; las de apps de terceros llevan
+# precheck (skip si no está instalada -> no es FAIL falso).
+# ===========================================================================
+
+def _app_installed(start_app_substr: str) -> bool:
+    """¿La app aparece en Get-StartApps (instalada)? Cacheado por proceso."""
+    try:
+        import functools
+        return _start_apps_contains(start_app_substr)
+    except Exception:
+        return False
+
+
+_START_APPS_CACHE: list[str] | None = None
+
+
+def _start_apps_contains(substr: str) -> bool:
+    global _START_APPS_CACHE
+    if _START_APPS_CACHE is None:
+        try:
+            out = subprocess.run(
+                ["powershell", "-NoProfile", "-Command",
+                 "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; "
+                 "Get-StartApps | Select-Object -ExpandProperty Name"],
+                capture_output=True, encoding="utf-8", errors="replace", timeout=15,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            _START_APPS_CACHE = [l.strip().lower() for l in (out.stdout or "").splitlines() if l.strip()]
+        except Exception:
+            _START_APPS_CACHE = []
+    s = substr.lower()
+    return any(s in a for a in _START_APPS_CACHE)
+
+
+def _v_proc(name_substr: str) -> Callable[[], dict]:
+    def _f() -> dict:
+        ok = process_running(name_substr)
+        if ok is None:
+            return {"pass": None, "evidence": "tasklist no disponible", "actual": None}
+        return {"pass": ok, "evidence": f"proceso '{name_substr}' corriendo={ok}", "actual": ok}
+    return _f
+
+
+def _v_window(title_substr: str) -> Callable[[], dict]:
+    return _v_window_open(title_substr)
+
+
+def _v_unmuted() -> Callable[[], dict]:
+    return _v_muted(False)
+
+
+def _build_extended() -> list[GuiMission]:
+    """Genera >=100 misiones. Estructura: VOLUMEN (muchos niveles × idiomas) +
+    MUTE/UNMUTE + APPS nativas + APPS terceros (precheck) + multi-paso."""
+    out: list[GuiMission] = []
+
+    # ---- VOLUMEN: niveles × fraseos multi-idioma. Verificable exacto por pycaw.
+    # (target, utterance, reset_to)
+    vol_templates = [
+        ("subí el volumen al {n}", "es"), ("bajá el volumen a {n}", "es"),
+        ("poné el volumen en {n}", "es"), ("volumen al {n} por ciento", "es"),
+        ("set the volume to {n}", "en"), ("turn the volume to {n} percent", "en"),
+        ("change volume to {n}", "en"),
+        ("coloca o volume em {n}", "pt"), ("ajusta o volume para {n}", "pt"),
+        ("mets le volume à {n}", "fr"), ("stell die lautstärke auf {n}", "de"),
+        ("imposta il volume a {n}", "it"),
+    ]
+    levels = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 20, 40, 60, 80, 10, 30, 50, 70, 90, 100]
+    i = 0
+    for n in levels:
+        tmpl, lang = vol_templates[i % len(vol_templates)]
+        i += 1
+        reset_to = (n + 40) % 100  # un valor distinto al target
+        out.append(GuiMission(
+            id=f"t1_vol_{n}_{lang}_{i}", tier=1, utterance=tmpl.format(n=n),
+            goal_verifier=_v_volume(n), reset=(lambda r=reset_to: set_master_volume(r)),
+            note=f"volumen {n} ({lang})"))
+
+    # ---- MUTE / UNMUTE × idiomas
+    mute_utts = [("silenciá el sonido", "es"), ("muteá", "es"), ("mute the sound", "en"),
+                 ("silencia o som", "pt"), ("coupe le son", "fr"), ("stumm schalten", "de"),
+                 ("silencia el audio", "es"), ("mute", "en")]
+    for k, (u, lang) in enumerate(mute_utts):
+        out.append(GuiMission(
+            id=f"t1_mute_{lang}_{k}", tier=1, utterance=u,
+            goal_verifier=_v_muted(True), reset=(lambda: set_master_volume(50)),
+            note=f"mute ({lang})"))
+    unmute_utts = [("activá el sonido", "es"), ("desmuteá", "es"), ("unmute", "en"),
+                   ("reactiva o som", "pt"), ("rétablis le son", "fr"), ("ton an", "de")]
+    for k, (u, lang) in enumerate(unmute_utts):
+        out.append(GuiMission(
+            id=f"t1_unmute_{lang}_{k}", tier=1, utterance=u,
+            goal_verifier=_v_unmuted(),
+            reset=(lambda: (set_master_volume(50), _set_mute(True))),
+            note=f"unmute ({lang})"))
+
+    # ---- ABRIR APPS NATIVAS (siempre en Windows) × idiomas
+    native = [
+        ("notepad", "notepad.exe", ["abrí el bloc de notas", "open notepad",
+         "abre o bloco de notas", "ouvre le bloc-notes", "öffne den editor"]),
+        ("calc", "CalculatorApp.exe", ["abrí la calculadora", "open the calculator",
+         "abre a calculadora", "ouvre la calculatrice", "öffne den rechner"]),
+        ("mspaint", "mspaint.exe", ["abrí Paint", "open Paint", "abre o Paint"]),
+        ("wordpad", "wordpad.exe", ["abrí WordPad", "open WordPad"]),
+    ]
+    for proc_substr, exe, utts in native:
+        for k, u in enumerate(utts):
+            out.append(GuiMission(
+                id=f"t1_open_{proc_substr}_{k}", tier=1, utterance=u,
+                goal_verifier=_v_proc(proc_substr),
+                reset=(lambda e=exe: _kill_process(e)),
+                precheck=(lambda e=exe: _exe_exists(e)),
+                note=f"abrir {proc_substr} ({u})"))
+
+    # ---- MULTI-PASO Tier-1: abrir + escribir (verifica el TEXTO por UIA)
+    write_cases = [
+        ("notas", "notepad.exe", "abrí el bloc de notas y escribí {t}",
+         ["hola mundo", "prueba uno dos tres", "buenos dias"]),
+    ]
+    for win, exe, tmpl, texts in write_cases:
+        for k, t in enumerate(texts):
+            out.append(GuiMission(
+                id=f"t1_write_{k}", tier=1, utterance=tmpl.format(t=t),
+                goal_verifier=(lambda w=win, tx=t: (lambda g: {"pass": g, "evidence":
+                    f"{w} contiene '{tx}'={g}", "actual": g})(
+                    uia_window_has_text(w, tx))),
+                reset=(lambda e=exe: _kill_process(e)),
+                max_steps_hint=3, note=f"multi-paso abrir+escribir '{t}'"))
+
+    # ---- TIER 2/3: APPS DE TERCEROS (precheck por instalación). Abrir la app y
+    # verificar por proceso. Universal: el agente las resuelve por su nombre.
+    third = [
+        (2, "chrome", "chrome.exe", "Google Chrome", ["abrí Chrome", "open Chrome",
+         "abre o Chrome", "lanzá Google Chrome"]),
+        (2, "msedge", "msedge.exe", "Microsoft Edge", ["abrí Edge", "open Edge"]),
+        (3, "Discord", "Discord.exe", "Discord", ["abrí Discord", "open Discord",
+         "abre o Discord"]),
+        (3, "Spotify", "Spotify.exe", "Spotify", ["abrí Spotify", "open Spotify",
+         "abre o Spotify", "lanzá Spotify"]),
+        (3, "steam", "steam.exe", "Steam", ["abrí Steam", "open Steam"]),
+        (3, "vlc", "vlc.exe", "VLC media player", ["abrí VLC", "open VLC", "abre o VLC"]),
+        (3, "Telegram", "Telegram.exe", "Telegram", ["abrí Telegram", "open Telegram"]),
+        (2, "WINWORD", "WINWORD.EXE", "Word", ["abrí Word", "open Word"]),
+        (2, "EXCEL", "EXCEL.EXE", "Excel", ["abrí Excel", "open Excel"]),
+    ]
+    for tier, proc_substr, exe, start_name, utts in third:
+        for k, u in enumerate(utts):
+            out.append(GuiMission(
+                id=f"t{tier}_open_{proc_substr}_{k}", tier=tier, utterance=u,
+                goal_verifier=_v_proc(proc_substr),
+                reset=(lambda e=exe: _kill_process(e)),
+                precheck=(lambda s=start_name: _start_apps_contains(s)),
+                note=f"tier{tier} abrir {start_name} ({u})"))
+
+    # ---- CERRAR APPS (verificable: el proceso YA NO corre). reset las abre.
+    close_targets = [
+        ("notepad", "notepad.exe", ["cerrá el bloc de notas", "close notepad",
+         "fecha o bloco de notas"]),
+        ("mspaint", "mspaint.exe", ["cerrá Paint", "close Paint"]),
+        ("CalculatorApp", "CalculatorApp.exe", ["cerrá la calculadora", "close calculator"]),
+    ]
+    for proc_substr, exe, utts in close_targets:
+        for k, u in enumerate(utts):
+            out.append(GuiMission(
+                id=f"t1_close_{proc_substr}_{k}", tier=1, utterance=u,
+                goal_verifier=(lambda p=proc_substr: (lambda r: {"pass": (r is False),
+                    "evidence": f"proceso '{p}' corriendo={r} (esperado cerrado)",
+                    "actual": r})(process_running(p))),
+                reset=(lambda e=exe: _launch_detached(e)),
+                precheck=(lambda e=exe: _exe_exists(e)),
+                note=f"cerrar {proc_substr} ({u})"))
+
+    # ---- MÁS VOLUMEN: niveles intermedios para llegar holgado a >=100 y cubrir
+    # más fraseos/idiomas. Verificable exacto.
+    more_levels = [12, 22, 33, 44, 56, 66, 77, 88, 8, 18, 28, 38, 48, 58, 68, 78]
+    more_templates = [
+        ("poné el volumen al {n}%", "es"), ("dejá el volumen en {n}", "es"),
+        ("volume to {n}", "en"), ("make it {n} percent volume", "en"),
+        ("volume a {n}", "pt"), ("règle le volume sur {n}", "fr"),
+        ("lautstärke {n} prozent", "de"), ("volume al {n}", "it"),
+    ]
+    j = 0
+    for n in more_levels:
+        tmpl, lang = more_templates[j % len(more_templates)]
+        j += 1
+        out.append(GuiMission(
+            id=f"t1_vol2_{n}_{lang}", tier=1, utterance=tmpl.format(n=n),
+            goal_verifier=_v_volume(n), reset=(lambda r=((n + 33) % 100): set_master_volume(r)),
+            note=f"volumen {n} ({lang})"))
+
+    return out
+
+
+def _launch_detached(exe: str) -> bool:
+    """Abre un exe (para reset de misiones de 'cerrar'). best-effort."""
+    try:
+        subprocess.Popen([exe], creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+                         | getattr(subprocess, "DETACHED_PROCESS", 0))
+        import time
+        time.sleep(1.2)  # dar tiempo a que arranque
+    except Exception:
+        pass
+    return True
+
+
+def _set_mute(on: bool) -> None:
+    try:
+        v = _endpoint_volume()
+        v.SetMute(bool(on), None)
+    except Exception:
+        pass
+
+
+def _exe_exists(exe: str) -> bool:
+    """¿El exe está en PATH o es una app nativa de Windows conocida?"""
+    import shutil
+    if shutil.which(exe):
+        return True
+    # nativas que no están en PATH pero existen siempre
+    return exe.lower() in {"calculatorapp.exe", "notepad.exe", "mspaint.exe", "wordpad.exe"}
+
+
+# Construir el set ampliado una vez al importar.
+MISSIONS_EXT: list[GuiMission] = MISSIONS + _build_extended()
+
+
+def missions_for_tier(tier: int | None = None, extended: bool = True) -> list[GuiMission]:
+    src = MISSIONS_EXT if extended else MISSIONS
     if tier is None:
-        return list(MISSIONS)
-    return [m for m in MISSIONS if m.tier == tier]
+        return list(src)
+    return [m for m in src if m.tier == tier]
