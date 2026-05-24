@@ -1568,10 +1568,33 @@ class ToolRegistry:
             return self.gui_drag(args)
         return _err("unknown gui mutating action", action=action)
 
+    # Acciones GUI que MUEVEN el mouse o TECLEAN (control físico). La guarda de
+    # actividad del usuario aplica a todas; la de password solo a las que teclean.
+    _GUI_PHYSICAL = {"click", "double_click", "right_click", "type", "type_into",
+                     "click_button", "keypress", "hotkey", "scroll", "drag"}
+    _GUI_TYPING = {"type", "type_into"}
+
     def t_gui(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="screenshot")
         if action == "screenshot":
             return self.gui_screenshot(args)
+        # GUARDAS Fase 5 (antes de cualquier control físico):
+        #  (a) no pelear el mouse/teclado si el usuario está activo ahora;
+        #  (b) no teclear en campos de contraseña (secret handoff).
+        if action in self._GUI_PHYSICAL:
+            try:
+                from . import gui_safety
+                _blk = gui_safety.check_user_activity()
+                if _blk is not None:
+                    _blk["action"] = action
+                    return _blk
+                if action in self._GUI_TYPING:
+                    _pwd = gui_safety.check_password_field()
+                    if _pwd is not None:
+                        _pwd["action"] = action
+                        return _pwd
+            except Exception:
+                pass
         if action == "type_into":
             return self.gui_type_into(args)
         if action == "click_button":
@@ -4366,6 +4389,11 @@ try {{ if (-not [Mouse]::SetProcessDpiAwarenessContext([IntPtr](-4))) {{ [Mouse]
             proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=6)
         except (OSError, subprocess.TimeoutExpired):
             return _err("gui_click timeout", x=x, y=y, reason="powershell_timeout")
+        try:
+            from . import gui_safety
+            gui_safety.note_agent_input()  # marcar que ESTE input fue del agente
+        except Exception:
+            pass
         return _ok(x=x, y=y, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def gui_multi_click(self, args: dict[str, Any], button: str, clicks: int) -> dict[str, Any]:
@@ -4896,6 +4924,11 @@ Start-Sleep -Milliseconds 120
         if non_ascii and not bool(args.get("raw_sendkeys", False)):
             result = self._gui_type_via_paste(text)
             if result.get("ok"):
+                try:
+                    from . import gui_safety
+                    gui_safety.note_agent_input()
+                except Exception:
+                    pass
                 return result
             # si el paste falla, caemos a SendKeys (best-effort, puede perder acentos)
 
@@ -4922,6 +4955,11 @@ Start-Sleep -Milliseconds 120
             proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=8)
         except (OSError, subprocess.TimeoutExpired):
             return _err("gui_type timeout", chars=len(text), reason="sendkeys_timeout")
+        try:
+            from . import gui_safety
+            gui_safety.note_agent_input()
+        except Exception:
+            pass
         return _ok(chars=len(text), exit_code=proc.returncode, method="sendkeys",
                    stderr=_truncate(proc.stderr.strip(), 1000))
 
