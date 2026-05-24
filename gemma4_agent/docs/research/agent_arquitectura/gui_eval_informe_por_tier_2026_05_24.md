@@ -5,6 +5,30 @@
 > (pycaw, tasklist, EnumWindows/UIA), nunca por lo que el agente diga — ese es
 > el anti-patrón que hundió a Carter (falso-PASS).
 
+# Fase 8 (2026-05-25): visión gateada — cascada UIA→OCR→VISIÓN completa
+
+Cierra la cascada de grounding. Cuando UIA y OCR fallan en localizar el control,
+`click_button` ESCALA a visión: captura un screenshot y lo devuelve adjunto
+(`status=needs_vision`, `grounding=vision_escalation`) para que el agente lo
+razone con su visión NATIVA (Gemma 4 + mmproj) — localiza de otra forma o reporta
+honestamente qué ve. **NO clickea por visión a ciegas**: el grounding por VLM no
+es fiable (ni UI-TARS-7B pasa ~50% en UIs difíciles) y la visión es vector de
+prompt-injection (síntesis §2).
+
+Dos gates DUROS (umbral roadmap "vision calls/misión >2 → cascada rota"):
+- **presupuesto por misión ≤2** (`GEMMA4_GUI_VISION_BUDGET`). Verificado:
+  escalaciones #1/#2 → screenshot; #3 → error honesto `uia+ocr`. reset al empezar
+  misión + idle-reset 120s.
+- **VRAM** (`VRAMWatchdog.vision_safe()`): no arriesgar OOM con el mmproj ~990MiB
+  en el target de 6GB. Sin GPU → no bloquea.
+`gui_vision_gate.py`. La visión NO se dispara cuando UIA/OCR aciertan
+(click_button 6/6 sin escalar). +6 tests.
+
+**Cascada completa:** UIA (button-prioritized + token-aware + all-windows) →
+retry-lazy-Chromium → OCR (Tesseract, coords DPI-correctas) → visión (gateada).
+
+---
+
 # Fase 7 (2026-05-25): checkpoint de misión reanudable
 
 Una misión GUI multi-paso interrumpida (crash/reinicio/cancel) ya no se pierde:
