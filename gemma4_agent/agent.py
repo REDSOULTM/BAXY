@@ -2424,6 +2424,7 @@ class Gemma4Agent:
         # ("abrí Notepad Y escribí X") sabemos que NO es smalltalk.
         _GUI_CTX = {"app", "gui", "window", "uia", "steam", "browser", "office"}
         carry: list[str] = []  # tools de contexto GUI que arrastra la cláusula previa
+        carry_window: str = ""  # nombre de la app/ventana abierta por la cláusula previa
         try:
             for clause in clauses:
                 # MACRO DETERMINISTA (Fase 2): si arrastramos contexto GUI y la
@@ -2440,7 +2441,14 @@ class Gemma4Agent:
                     except Exception:
                         _payload = None
                 if _payload:
-                    res = self.tools.execute("gui", {"action": "type_into", "text": _payload})
+                    # Pasamos el hint de ventana objetivo (la app que abrió la
+                    # cláusula previa, p.ej. "bloc de notas") para que type_into
+                    # enfoque ESA ventana y no escriba en la que casualmente tenga
+                    # el foco (Word, un toast, etc.). Bug 2026-05-24.
+                    _ti_args = {"action": "type_into", "text": _payload}
+                    if carry_window:
+                        _ti_args["window"] = carry_window
+                    res = self.tools.execute("gui", _ti_args)
                     ok = isinstance(res, dict) and res.get("ok")
                     changed = res.get("state_changed") if isinstance(res, dict) else None
                     if ok and changed is not False:
@@ -2472,6 +2480,15 @@ class Gemma4Agent:
                 ran = [n for n in (self._last_executed_tools or []) if n in _GUI_CTX]
                 if ran:
                     carry = ran
+                    # capturar el nombre de la app/ventana abierta para que la
+                    # cláusula de escritura siguiente la enfoque (hint).
+                    for _ev in (ev or []):
+                        if getattr(_ev, "name", None) in _GUI_CTX:
+                            _a = getattr(_ev, "args", {}) or {}
+                            _nm = _a.get("name") or _a.get("query") or _a.get("title")
+                            if _nm:
+                                carry_window = str(_nm)
+                                break
         finally:
             self._splitting = False
             self._mi_carry_tools = []
