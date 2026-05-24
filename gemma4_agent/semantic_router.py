@@ -46,7 +46,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "un proceso; CPU RAM GPU disk battery brightness, shutdown restart "
         "sleep"
     ),
-    "audio": "audio volume, mute, system sound, media keys, audio devices listing",
+    "audio": "audio volume, mute and unmute the sound (silenciar, desmutear, stummschalten, ton an, couper/rétablir le son, silenciar/reativar o som), system sound, media keys, audio devices listing",
     "audio_device": "change default audio output/input device, per-app audio routing",
     "app": "open or close a desktop application by name",
     "steam": "Steam game library, Steam store, launch installed Steam games",

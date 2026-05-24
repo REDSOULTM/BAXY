@@ -3391,3 +3391,21 @@
 {"tool": "local_calendar", "q": "que dia es hoy"}
 {"tool": "local_calendar", "q": "que fecha es hoy"}
 {"tool": "local_calendar", "q": "what day is today"}
+{"tool": "audio", "q": "activá el sonido"}
+{"tool": "audio", "q": "desmuteá el audio"}
+{"tool": "audio", "q": "quitá el silencio"}
+{"tool": "audio", "q": "unmute the sound"}
+{"tool": "audio", "q": "turn the sound back on"}
+{"tool": "audio", "q": "restore the audio"}
+{"tool": "audio", "q": "reactiva o som"}
+{"tool": "audio", "q": "tira o mudo"}
+{"tool": "audio", "q": "rétablis le son"}
+{"tool": "audio", "q": "réactive le son"}
+{"tool": "audio", "q": "ton wieder an"}
+{"tool": "audio", "q": "stummschaltung aufheben"}
+{"tool": "audio", "q": "riattiva l audio"}
+{"tool": "audio", "q": "silenciá el sonido"}
+{"tool": "audio", "q": "poné el audio en mudo"}
+{"tool": "audio", "q": "mute the system sound"}
+{"tool": "audio", "q": "coupe le son"}
+{"tool": "audio", "q": "silencia o som"}
