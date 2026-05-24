@@ -457,6 +457,52 @@ class TestWhatsappAutoSend(unittest.TestCase):
         executor.assert_not_called()
 
 
+class TestVerifyChatHeaderUIA(unittest.TestCase):
+    """Inv 8: verificación del chat por UIA (árbol de accesibilidad) PRIMERO,
+    OCR como fallback. UIA es más rápido y no carga mmproj."""
+
+    def test_uia_confirms_without_ocr(self):
+        from .domain_tools import _verify_chat_header
+        calls = []
+
+        def _exec(name, args):
+            calls.append((name, args.get("action")))
+            if name == "uia" and args.get("action") == "find":
+                return {"ok": True, "matches": [{"name": "Mamá 🍓"}]}
+            return {"ok": True, "found": True}  # OCR no debería hacer falta
+        self.assertTrue(_verify_chat_header(_exec, "mamá"))
+        # UIA confirmó -> no se llamó al OCR (gui locate_text)
+        self.assertIn(("uia", "find"), calls)
+        self.assertNotIn(("gui", "locate_text"), calls)
+
+    def test_falls_back_to_ocr_when_uia_empty(self):
+        from .domain_tools import _verify_chat_header
+        calls = []
+
+        def _exec(name, args):
+            calls.append((name, args.get("action")))
+            if name == "uia":
+                return {"ok": True, "matches": []}  # UIA sin evidencia
+            if name == "gui" and args.get("action") == "locate_text":
+                return {"ok": True, "found": True, "matches": [{"text": "mamá"}]}
+            return {"ok": True}
+        self.assertTrue(_verify_chat_header(_exec, "mamá"))
+        self.assertIn(("uia", "find"), calls)
+        self.assertIn(("gui", "locate_text"), calls)  # cayó a OCR
+
+    def test_uia_unavailable_does_not_crash(self):
+        from .domain_tools import _verify_chat_header
+
+        def _exec(name, args):
+            if name == "uia":
+                raise RuntimeError("uia not available")
+            if name == "gui" and args.get("action") == "locate_text":
+                return {"ok": True, "found": False, "text": "Música  Tú"}
+            return {"ok": True}
+        # UIA explota -> cae a OCR -> OCR dice chat equivocado -> False (no manda)
+        self.assertFalse(_verify_chat_header(_exec, "mamá"))
+
+
 class TestWhatsappGuiSearch(unittest.TestCase):
     """GUI search path: cuando el contacto NO esta en el store local pero SI
     existe en el WhatsApp del user (Meta tiene los contactos sincronizados

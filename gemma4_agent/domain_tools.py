@@ -8408,20 +8408,60 @@ def _resolve_whatsapp_recipient_legacy3(
     return raw, normalized, source
 
 
-def _verify_chat_header(executor: Executor, contact_name: str) -> bool:
-    """Confirma por OCR que el chat abierto en WhatsApp es del contacto pedido.
+def _verify_chat_header_uia(executor: Executor, contact_name: str) -> bool | None:
+    """Inv 8 (UIA primary): verifica el chat activo leyendo el ÁRBOL DE
+    ACCESIBILIDAD de WhatsApp (no OCR, no mmproj, sub-segundo). WhatsApp Desktop
+    moderno es WebView2/Chromium: el nombre del contacto aparece como el `Name`
+    de un control (heading/text/listitem). Buscamos un token significativo del
+    nombre entre los elementos UIA de la ventana de WhatsApp.
 
-    Bug #847b: el Enter a ciegas tras buscar abría el chat equivocado (mensaje a
-    'mamá' cayó en el grupo 'Música'). Antes de escribir, OCR-eamos la franja
-    SUPERIOR de la ventana (donde WhatsApp pone el nombre del chat activo) y
-    verificamos que aparezca el nombre del contacto (o un token significativo de
-    él). Conservador: si NO podemos verificar, devolvemos False -> el caller NO
-    escribe (mejor no mandar que mandar al chat equivocado).
-
-    El match es laxo a propósito: el header puede tener emojis/apodos ("Mamá🍓");
-    basta con que un token alfabético >=3 chars del contacto aparezca en el OCR.
+    Returns:
+        True  -> encontrado en el árbol UIA (chat correcto).
+        None  -> UIA no disponible / sin evidencia -> el caller cae a OCR.
+        (no devuelve False: ausencia en UIA no PRUEBA chat equivocado; eso lo
+         decide el verificador OCR, más sensible al header visible.)
     """
     import re as _re
+    try:
+        res = executor("uia", {"action": "find", "window": "WhatsApp",
+                               "query": contact_name, "limit": 40})
+    except Exception:
+        return None
+    if not isinstance(res, dict) or not res.get("ok"):
+        return None
+    matches = res.get("matches")
+    if not isinstance(matches, list):
+        return None
+    names = " ".join(
+        str(m.get("name", "")) for m in matches if isinstance(m, dict)).lower()
+    if not names.strip():
+        return None
+    names = _re.sub(r"[^a-záéíóúüñ ]", " ", names)
+    tokens = [t for t in _re.split(r"\s+", contact_name.lower()) if len(t) >= 3]
+    if not tokens:
+        return None
+    return True if any(t in names for t in tokens) else None
+
+
+def _verify_chat_header(executor: Executor, contact_name: str) -> bool:
+    """Confirma que el chat abierto en WhatsApp es del contacto pedido.
+
+    Bug #847b: el Enter a ciegas tras buscar abría el chat equivocado (mensaje a
+    'mamá' cayó en el grupo 'Música'). Antes de escribir verificamos el chat
+    activo. Inv 8: PRIMERO por UIA (árbol de accesibilidad, barato, sin mmproj);
+    si UIA no da evidencia, FALLBACK a OCR de la franja superior. Conservador: si
+    NINGUNO verifica, devolvemos False -> el caller NO escribe (mejor no mandar
+    que mandar al chat equivocado).
+
+    El match es laxo a propósito: el header puede tener emojis/apodos ("Mamá🍓");
+    basta con que un token alfabético >=3 chars del contacto aparezca.
+    """
+    import re as _re
+    # Inv 8: UIA primero (más rápido y fiable que OCR, no carga mmproj).
+    uia_ok = _verify_chat_header_uia(executor, contact_name)
+    if uia_ok is True:
+        return True
+    # Fallback: OCR de la franja superior.
     try:
         shot = executor("gui", {"action": "locate_text", "text": contact_name})
     except Exception:
