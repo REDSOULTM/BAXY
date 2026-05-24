@@ -471,15 +471,51 @@ class Gemma4Agent:
         plan: MissionPlan | None = None,
         selected_tool_names: list[str] | None = None,
         user_text: str | None = None,
+        route_context: bool = False,
     ) -> list[dict[str, Any]]:
+        history = self._history_for_turn(user_text) if route_context else self.history
         return [
             self._system_message(
                 mode, plan,
                 selected_tool_names=selected_tool_names,
                 user_text=user_text,
             ),
-            *self.history,
+            *history,
         ]
+
+    def _history_for_turn(self, user_text: str | None) -> list[dict[str, Any]]:
+        """Router de contexto (inv 4): la mayoría de los comandos de voz son
+        atómicos -> no mandar historial previo recorta el tail que SIEMPRE se
+        reprocesa (medido: el prefix-cache de b9090 SÍ funciona para Gemma 4 E4B,
+        pero el tail variable no se cachea). Conservador: sólo droppea el
+        historial PREVIO cuando el turno es claramente autocontenido; siempre
+        conserva el turno actual (self.history[-1]).
+
+        SÓLO se llama en la PRIMERA llamada al LLM del turno (route_context=True,
+        len(events)==0). En ese punto self.history sólo contiene user/assistant
+        (_compact_completed_history corrió al inicio del turno y droppea
+        tool/tool_calls), y hist[-1] es el turno actual recién appendeado. NO se
+        usa dentro del loop de tools (ahí history acumula call/result y slicear
+        rompería el pairing del chat template de Gemma 4)."""
+        hist = self.history
+        if not hist or len(hist) < 2:
+            return hist
+        # Guardia dura: si hay algún tool-call/result en el historial, NO tocar
+        # (no debería pasar en la 1ª llamada, pero protege ante reentradas).
+        if any(m.get("role") == "tool" or m.get("tool_calls") for m in hist):
+            return hist
+        try:
+            from .context_router import needs_history, select_history
+            prior, current = hist[:-1], hist[-1:]
+            mode = needs_history(user_text or "", has_history=bool(prior))
+            kept_prior = select_history(prior, mode)
+            if len(kept_prior) != len(prior):
+                self.trace.event(
+                    self.trace.new_turn_id(), "context_router",
+                    mode=mode, prior_msgs=len(prior), kept=len(kept_prior))
+            return [*kept_prior, *current]
+        except Exception:
+            return hist
 
     def run_text(
         self,
@@ -1150,6 +1186,7 @@ class Gemma4Agent:
                 mode, plan,
                 selected_tool_names=selected_tool_names,
                 user_text=raw_text_early,
+                route_context=True,  # mide lo que realmente verá la 1ª llamada
             )
             _system_chars = sum(
                 len(str(m.get("content") or "")) for m in _initial_messages
@@ -1188,7 +1225,8 @@ class Gemma4Agent:
             # it on roughly DOUBLES the turn latency (a second reasoning pass on
             # a 4B CPU model). So enable thinking only while no tool has run yet.
             _think_now = mode.enable_thinking and len(events) == 0
-            _msgs = self._messages(mode, plan, selected_tool_names=selected_tool_names, user_text=raw_text_early)
+            _msgs = self._messages(mode, plan, selected_tool_names=selected_tool_names,
+                                    user_text=raw_text_early, route_context=(len(events) == 0))
             # Re-resolve the router model per call: a tool may have injected an
             # image (e.g. screenshot) into history mid-turn, which forces the
             # vision preset even on a text-mode turn. See _messages_have_image.
