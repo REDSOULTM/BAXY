@@ -593,8 +593,14 @@ $items | ConvertTo-Json -Depth 3
         if base in self._CHROMIUM_EXES:
             return (exe, ["--force-renderer-accessibility=complete"], False)
         if base in self._ELECTRON_EXES:
-            # Electron usa env var, no flag (la flag puede no propagar al renderer).
-            return (exe, [], True)
+            # Electron ES Chromium por dentro: necesita el flag --force-renderer-
+            # accessibility=complete (que SÍ se propaga al renderer) ADEMÁS de la
+            # env var. La investigación 11 (Discord/Slack) confirma que el launcher
+            # correcto es `Discord.exe --force-renderer-accessibility=complete`,
+            # no solo la env var (que sola es poco fiable y no llena el árbol UIA
+            # web). Antes pasábamos [] -> Discord abría sin UIA -> caía a OCR.
+            # Damos AMBOS: flag (Chromium renderer) + env var (Electron host).
+            return (exe, ["--force-renderer-accessibility=complete"], True)
         return None
 
     def open(self, candidate: AppCandidate) -> dict[str, Any]:
