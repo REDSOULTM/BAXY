@@ -28,7 +28,9 @@ class NavTargetExtractTest(unittest.TestCase):
             "Servidor de prueba")
 
     def test_extracts_channel(self):
-        self.assertEqual(extract_nav_target("entra al canal general"), "canal general")
+        # pela el contenedor "canal" -> solo el nombre del control.
+        self.assertEqual(extract_nav_target("entra al canal general"), "general")
+        self.assertEqual(extract_nav_target("andá al servidor VALORANT"), "VALORANT")
 
     def test_non_nav_returns_none(self):
         for q in ("que hora es", "contame un chiste", "mutea el audio"):

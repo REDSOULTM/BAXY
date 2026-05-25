@@ -5005,6 +5005,30 @@ Start-Sleep -Milliseconds 120
         if not found.get("ok") and self._foreground_is_chromium(window):
             time.sleep(0.6)
             found = self._uia_find_clickable(label, window)
+        # 1b2) RETRY por ÁRBOL UIA NO-LISTO (2026-05-25): un find que falla puede ser
+        # porque el árbol UIA aún no se pobló (app cargando, provider on-demand).
+        # Reintentar el find con delay corto antes de caer a OCR recupera ese caso en
+        # apps con UIA ESTABLE (Notepad/Settings/Office/navegadores). Gateado por
+        # GEMMA4_CLICK_UIA_RETRIES (default 4). Universal.
+        # TECHO MEDIDO (Discord, 2026-05-25): el árbol UIA de Discord (Electron) es
+        # INTERMITENTE de forma patológica — alterna entre poblado (~248 controles) y
+        # COLAPSADO (6-7) en estados que duran más que cualquier retry razonable, NO-
+        # determinista. NO es falta de flag (se llena SIN --force-renderer-accessibility,
+        # que Discord IGNORA — solo acepta una lista cerrada de chromiumSwitches). El
+        # retry NO resuelve Discord de forma fiable (medido 8/8 fail en colapso); para
+        # Discord/Electron-inestables el camino real es OCR/visión. Ver memoria
+        # project_inapp_nav_discord.
+        if not found.get("ok"):
+            try:
+                _retries = int(os.environ.get("GEMMA4_CLICK_UIA_RETRIES", "4"))
+            except ValueError:
+                _retries = 4
+            for _i in range(max(0, _retries)):
+                time.sleep(0.7)
+                found = self._uia_find_clickable(label, window)
+                if found.get("ok"):
+                    found["uia_retries"] = _i + 1
+                    break
         # 1c) FALLBACK OCR: si UIA no encontró el control (app sin UIA rico),
         # localizar el label por OCR y clickear su centro, con verificación.
         if not found.get("ok"):

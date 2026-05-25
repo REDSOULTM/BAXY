@@ -374,14 +374,28 @@ _NAV_VERB_STEM = re.compile(
 # Conectores que preceden al TARGET dentro de la app, multi-idioma. "al servidor X",
 # "al canal X", "a la pestaña X", "a la sección X", "to the channel X". Se quitan
 # para dejar solo el nombre del control. NO incluye el nombre de la app (ver abajo).
+# Sustantivos-contenedor que preceden al TARGET ("[al] canal X", "[el] servidor X",
+# "[la] pestaña X"). Multi-idioma. Se pelan CON o SIN preposición/artículo delante,
+# porque _NAV_VERB_STEM ya consumió la preposición ("entra al" -> "canal X"). Se
+# aplica REPETIDO (sub con loop) para encadenar "al servidor X" -> "X".
+_NAV_CONTAINER = (
+    r"servidor|canal|pestani?a|secci[óo]n|conversaci[óo]n|chat|grupo|"
+    r"server|channel|tab|section|conversation|group|"
+    r"servidor|canale|scheda|sezione|"
+    r"serveur|cha[iî]ne|onglet"
+)
 _NAV_LEAD = re.compile(
     r"^(?:"
-    r"a[l]?\s+(?:servidor|canal|pestani?a|secci[óo]n|conversaci[óo]n|chat|grupo)\s+|"
-    r"a\s+la\s+(?:pestani?a|secci[óo]n|conversaci[óo]n)\s+|"
-    r"to\s+the\s+(?:server|channel|tab|section|conversation|chat)\s+|"
-    r"a[l]?\s+|to\s+the\s+|to\s+|a\s+la\s+|a\s+las\s+|au\s+|aux\s+|"
-    r"no\s+|na\s+|nel\s+|nella\s+"
-    r")",
+    # preposición/artículo de dirección, opcional.
+    r"(?:a[l]?|to(?:\s+the)?|a\s+la|a\s+las|au|aux|no|na|nel|nella|al|su)\s+"
+    r")?"
+    # sustantivo-contenedor opcional (+ artículo opcional), seguido de espacio.
+    r"(?:(?:el|la|los|las|the|le|il|lo)\s+)?(?:" + _NAV_CONTAINER + r")\b\s+",
+    re.IGNORECASE,
+)
+# fallback: solo preposición/artículo de dirección sin contenedor ("a X", "to X").
+_NAV_PREP_ONLY = re.compile(
+    r"^(?:a[l]?|to(?:\s+the)?|a\s+la|a\s+las|au|aux|no|na|nel|nella|su)\s+",
     re.IGNORECASE,
 )
 
@@ -412,8 +426,15 @@ def extract_nav_target(clause: str, *, app_hint: str = "") -> str | None:
             if len(tok) >= 4:
                 rest = re.sub(r"^\s*" + re.escape(tok) + r"\b", "", rest,
                               count=1, flags=re.IGNORECASE).strip(" ,-:")
-    # quitar conector ("al servidor", "al canal", "a la pestaña"...).
-    rest = _NAV_LEAD.sub("", rest, count=1).strip()
+    # quitar conectores ("al servidor", "el canal", "a la pestaña"...) REPETIDO:
+    # tras pelar la app puede quedar "al servidor X" -> "servidor X" -> "X".
+    for _ in range(3):
+        new = _NAV_LEAD.sub("", rest, count=1).strip()
+        if new == rest:
+            break
+        rest = new
+    # fallback: si quedó una preposición de dirección suelta ("a X", "to X").
+    rest = _NAV_PREP_ONLY.sub("", rest, count=1).strip()
     if not rest:
         return None
     if len(rest) >= 2 and rest[0] in "\"'«" and rest[-1] in "\"'»":
