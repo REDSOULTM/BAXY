@@ -300,21 +300,31 @@ class Gemma4Agent:
         verificando por estado del SO. Medido 2026-05-25: calc/browser/chat 4/4 c/u.
 
         GATE de activación (universal, por ESTADO DEL SO, sin regex por intención):
-        una ventana ABIERTA matchea un token del comando -> el usuario quiere OPERAR
-        esa app. Si no hay app abierta mencionada, devuelve None (turno normal del LLM).
+        una app ABIERTA está mencionada en el comando. Se resuelve por DOS vías para
+        cubrir nombres coloquiales ("wsp"/"wasap" -> WhatsApp): (1) un token del texto
+        matchea un título de ventana; o (2) el PLANIFICADOR normaliza el nombre de app
+        en el arg de focus_app y ESE matchea una ventana abierta (el 4B hace la
+        normalización lingüística; el estado del SO confirma que la app está abierta).
+        Si ninguna vía da una app abierta, None (turno normal del LLM).
         Gate de apagado: GEMMA4_COMPUTER_USE=0."""
         import os as _os
         if _os.environ.get("GEMMA4_COMPUTER_USE", "1").strip().lower() in {"0", "false", "no", "off"}:
             return None
-        win = self._window_title_in_text(text)
-        if not win:
-            return None  # ninguna app abierta mencionada -> no es computer-use de app
         from .computer_use import plan_for, PlanExecutor, summarize_result
+        # VÍA 1: token del texto matchea una ventana.
+        win = self._window_title_in_text(text)
         plan = plan_for(self, text)
         if not plan:
             return None  # el 4B no produjo un plan -> dejar el turno normal
-        # un plan que NO opera una app (p.ej. solo 'type' sin foco) y la 1ª op no es
-        # focus_app/open_* -> dejar pasar (probablemente no es navegación-en-app).
+        # VÍA 2 (coloquialismos): el arg de focus_app del plan (el 4B lo normaliza:
+        # "wsp"->WhatsApp) matchea una ventana abierta. Resuelve "escribile a X en
+        # wsp" aunque "wsp" no aparezca en ningún título. Sigue siendo estado del SO.
+        if not win:
+            _focus_arg = next((s["arg"] for s in plan if s["op"] == "focus_app"), "")
+            if _focus_arg:
+                win = self._window_title_in_text(_focus_arg)
+        if not win:
+            return None  # ninguna app abierta mencionada (ni por texto ni por el plan)
         self.trace.event(turn_id, "computer_use_plan",
                          window=win[:40], ops=[s["op"] for s in plan], text=text[:60])
         try:
@@ -1387,59 +1397,14 @@ class Gemma4Agent:
                     selected_tool_names.append(_t)
             self.trace.event(turn_id, "multi_intent_carry",
                              carried=_carry, subset=selected_tool_names)
-        # NAVEGACIÓN-EN-APP por ESTADO DEL SO (2026-05-25, validación Discord): un
-        # comando como "entrá a Discord al servidor X" es AMBIGUO por texto — el
-        # router lo manda a app/terminal (suena a "abrir Discord"). El embedding NO
-        # puede desambiguar solo (medido: uia=0.000 para ese fraseo). La señal que
-        # SÍ desambigua es el ESTADO DEL SO: si una ventana cuyo título matchea una
-        # palabra del comando YA está abierta, el usuario quiere OPERAR esa app
-        # (navegar/clickear dentro), no relanzarla -> inyectar uia/gui/window. Es
-        # resolución por estado del SO (CLAUDE.md), universal (no hardcode de apps
-        # ni idiomas; usa los títulos REALES de las ventanas abiertas). Solo si el
-        # router NO ofreció ya computer-use, y solo para turnos atómicos (no charla).
-        try:
-            _txt_for_nav = content if isinstance(content, str) else ""
-            # CORRER aunque el router ya haya puesto uia/gui (bug medido 2026-05-25:
-            # "Ve a discord y pon el chat de cbayeah" traía uia=0.42 PERO whatsapp=0.58
-            # ARRIBA — la condición vieja `not (subset & {uia,gui,window})` SALTABA el
-            # bloque por tener uia, dejaba whatsapp de líder y el 4B abría el chat en
-            # WHATSAPP, no en Discord). La señal de desambiguación es el ESTADO DEL SO
-            # (ventana de Discord ABIERTA), no si el router tocó uia. Por eso ahora
-            # solo gateamos por "turno atómico" (no charla/no split) + ventana matchea.
-            if _txt_for_nav and not getattr(self, "_splitting", False):
-                _open_match = self._window_title_in_text(_txt_for_nav)
-                if _open_match:
-                    for _t in ("uia", "gui", "window"):
-                        if _t not in selected_tool_names:
-                            selected_tool_names.append(_t)
-                    # quitar DISTRACTORES: la app objetivo YA está abierta (su ventana
-                    # matcheó el comando), así que el usuario quiere OPERAR DENTRO de
-                    # ella, no (a) relanzar otra app [game_launcher/app/steam/browser]
-                    # ni (b) mandar el "chat/mensaje" por OTRO canal de mensajería
-                    # [whatsapp/contacts/email]. El 4B débil elegía esos distractores
-                    # por encima de uia: "pon el chat de cbayeah" tiene whatsapp=0.58
-                    # aunque el comando empiece con "Ve a discord". Sacarlos deja a
-                    # computer-use (uia/gui) como la única vía -> opera la app abierta.
-                    # session (cancel_turn) también fuera: el comando es una ACCIÓN
-                    # nueva, no una cancelación (el 4B la elegía y respondía "no puedo,
-                    # interrumpiste la acción anterior"). Categorías de tools, NO listas
-                    # de apps por idioma -> universal (CLAUDE.md: estado del SO).
-                    _drop = {"game_launcher", "app", "steam", "browser",
-                             "whatsapp", "contacts", "email", "media", "session"}
-                    # PERO no sacar la tool DEDICADA que corresponde a la ventana
-                    # matcheada: si el usuario abrió WhatsApp y pide algo de WhatsApp,
-                    # la ventana matchea "whatsapp" y ahí SÍ queremos la tool whatsapp,
-                    # no forzar uia. Conservamos cualquier tool cuyo nombre aparezca en
-                    # el título de la ventana abierta (resolución por estado del SO).
-                    _win_low = _open_match.lower()
-                    _drop = {t for t in _drop if t not in _win_low}
-                    selected_tool_names = [t for t in selected_tool_names if t not in _drop]
-                    self.trace.event(turn_id, "in_app_nav_injected",
-                                     matched_window=_open_match[:40],
-                                     dropped=sorted(_drop),
-                                     user_text=_txt_for_nav[:60])
-        except Exception:
-            pass
+        # NOTA (2026-05-25): acá vivía un bloque que, si una ventana abierta matcheaba
+        # el comando, inyectaba uia/gui y DROPPEABA distractores incluido `whatsapp`.
+        # Eso REGRESIONÓ los comandos de WhatsApp ("escribile a X en wsp"): si Discord
+        # u otra ventana coincidía con un token del comando, se sacaba `whatsapp` y el
+        # comando perdía su tool. SE ELIMINÓ: la operación-en-app ya la maneja la capa
+        # universal _try_computer_use (short-circuit ANTES del LLM, línea ~846). Si esa
+        # capa no aplica (no hay app abierta mencionada / server caído), el router/LLM
+        # decide normalmente — sin cirugía de subset que rompa WhatsApp/Discord.
         selected_tool_names = _stabilize_tool_order(selected_tool_names)
         if selected_tool_names != _router_picks:
             self.trace.event(turn_id, "tool_prefix_stabilized",
