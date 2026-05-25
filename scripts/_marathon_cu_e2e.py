@@ -67,11 +67,15 @@ def v_calc(expect):
     return f
 def v_fg_has(word):
     return lambda: word.lower() in fgt().lower()
-def v_title_has(substr, word):  # foreground primero, fallback a win_title
+import re as _re_v
+def _norm(s): return _re_v.sub(r"[^a-z0-9]", "", (s or "").lower())
+def v_title_has(substr, word):  # foreground primero, fallback a win_title; NORMALIZADO
+    # normaliza ambos lados: el título "espacia" dominios ("stackoverflow"->"Stack
+    # Overflow") y el match contiguo daba falso-negativo (bug medido).
     def f():
-        fg=fgt().lower()
-        if substr.lower() in fg: return word.lower() in fg
-        return word.lower() in (win_title(substr) or "").lower()
+        fg=fgt()
+        if substr.lower() in fg.lower(): return _norm(word) in _norm(fg)
+        return _norm(word) in _norm(win_title(substr))
     return f
 def v_npad(word): return lambda: npad_has(word)
 def v_present(substr): return lambda: win_present(substr)
@@ -130,7 +134,7 @@ browser = "opera" if have_opera else ("chrome" if have_chrome else ("edge" if ha
 print(f"apps: calc={have_calc} browser={browser} discord={have_discord} notepad={have_npad}", flush=True)
 
 n=ok=0; t0=time.time()
-def run(kind, cmd, setup, verify, app):
+def run(kind, cmd, setup, verify, app, settle=0.6):
     global n, ok
     if setup: setup(AG)
     seen=[]
@@ -141,10 +145,16 @@ def run(kind, cmd, setup, verify, app):
     except Exception as exc:
         reply=f"EXC {exc}"
     dt=time.time()-t
-    time.sleep(0.6)
+    # open_app: algunas apps (Spotify/Steam) tardan en mostrar su ventana -> verify
+    # con reintento hasta `settle`s antes de declarar fallo (latencia de lanzamiento,
+    # no del agente). Otros tipos: settle corto.
     v=False
-    try: v=verify()
-    except Exception: v=False
+    deadline=time.time()+settle
+    while True:
+        try: v=verify()
+        except Exception: v=False
+        if v or time.time()>=deadline: break
+        time.sleep(0.5)
     n+=1; ok+=v
     log({"i":n,"kind":kind,"app":app,"cmd":cmd,"ok":v,"reply":reply[:60],"lat":round(dt,1)})
     if n%10==0:
@@ -163,10 +173,22 @@ for rnd in range(args.rounds):
     if have_discord:
         for c in CHATS:
             run("chat_open", f"andá a discord al chat de {c}", None, v_title_has("Discord", c[:6]), "discord")
-    # NOTEPAD type
-    if have_npad:
+    # NOTEPAD type — RESET a UNA ventana limpia por ronda (evita que el título
+    # quede con una palabra de test previa y confunda el contexto de app; era el
+    # artefacto que daba 43% en la maratón, NO el agente — medido 5/5 en limpio).
+    if have_npad and not win_present("ram.txt"):
+        subprocess.run(["taskkill","/F","/IM","notepad.exe"],capture_output=True)
+        subprocess.run(["taskkill","/F","/IM","Notepad.exe"],capture_output=True); time.sleep(0.8)
+        import tempfile as _tf; _nf2=Path(_tf.mkdtemp())/"gemma4_cu.txt"; _nf2.write_text("",encoding="utf-8")
+        subprocess.Popen(["notepad.exe",str(_nf2)]); time.sleep(2.0)
         for w in WORDS:
             run("npad_type", f"escribí {w} en el bloc de notas", npad_clear, v_npad(w), "notepad")
+    # OPEN-APP (cobertura amplia): abrir/enfocar apps variadas, verify = ventana presente.
+    for cmd, sub, app in [("abrí paint","Paint","paint"),
+                          ("abrí el explorador de archivos","Explorador","explorer"),
+                          ("abrí spotify","Spotify","spotify"),
+                          ("abrí steam","Steam","steam")]:
+        run("open_app", cmd, None, v_present(sub), app, settle=4.0)  # apps lentas
     print(f"-- ronda {rnd+1}/{args.rounds} done: ok {ok}/{n} ({100*ok//max(n,1)}%) --", flush=True)
 
 logf.close()
