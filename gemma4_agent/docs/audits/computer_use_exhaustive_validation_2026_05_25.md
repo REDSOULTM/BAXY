@@ -146,3 +146,44 @@ chat (restaura si está minimizado, navega, verifica por título). "escribe a cb
 en discord y dile que haces" → navega + teclea + ENVÍA, verificado en el chat. La
 navegación/envío-en-app es DETERMINISTA y foreground-safe; el robo de foco solo
 ocurre si el árbol está frío (app minimizada/sin foco), que RED autorizó.
+
+---
+
+## ADDENDUM 2 — REDISEÑO UNIVERSAL (RED: "está mal diseñado, una función por cada cosa")
+
+RED señaló (con razón) que los macros por-intención (`_try_in_app_nav`,
+`_try_in_app_message`, ...) eran el árbol de if/else que CLAUDE.md prohíbe: una
+función + regex por cada fraseo, no escala. Rediseño a UNA capa universal, decidido
+MIDIENDO (gates antes):
+
+**Mediciones (todas verificadas por estado del SO):**
+- ¿El 4B ENCADENA acciones solo (sin capa)? **2/10** — hace `focus` y para.
+  -> hace falta una capa determinista (no es sobre-diseño).
+- ¿El 4B emite un PLAN de primitivas? **10/10 parseable, 7/10 correcto** (los 3
+  "fallos" eran gate estricto: send==Enter, click válido para canal). El 4B
+  PLANIFICA bien aunque no EJECUTE.
+
+**Dos opciones construidas y comparadas:**
+- **OPCIÓN A — ejecutor de planes** (`computer_use.py`): el 4B emite un plan de
+  primitivas (cualquier idioma/fraseo); `PlanExecutor` corre las primitivas
+  ATÓMICAS (focus_app/open_chat/open_url/type/send/keypress/click) reusando los
+  tools/helpers que ya existen, verificando por estado del SO entre pasos.
+  **MEDIDO 16/16 = 100%** en apps VARIADAS: calc 4/4, browser(Opera) 4/4,
+  chat(Discord) 4/4, notepad 4/4. GATE (global≥80% Y peor-tipo≥60%) PASA.
+- **OPCIÓN B — clasificador verbo→primitiva por embeddings** (`computer_use_b.py`):
+  clasifica el objetivo a UNA primitiva por embeddings multilingües. RECHAZADA por
+  DISEÑO: estructuralmente NO compone multi-paso (no puede hacer la cuenta de calc
+  `type+keypress` ni un mensaje `open_chat+type+send`) — su techo es 1 primitiva por
+  comando. Se deja en el repo como referencia medida, no se usa.
+
+**APLICADO: Opción A.** `_try_computer_use` (UNA entrada) reemplaza los dos macros
+en `run_content`; `_try_in_app_nav` y `_try_in_app_message` BORRADOS (los helpers
+`_quick_switcher_nav`/`_title_now_matches`/`_app_window_title` quedan — los reusa el
+ejecutor). Gate de activación universal: una ventana abierta matchea el comando
+(estado del SO). Gate de apagado: GEMMA4_COMPUTER_USE=0. +tests test_computer_use.py
+(parse_plan vocabulario cerrado + dispatch del ejecutor, mockeado sin GUI).
+
+**Regla para adelante:** una intención/fraseo nuevo de computer-use NO pide otra
+función — el 4B lo planifica con las primitivas que hay. Solo una CAPACIDAD nueva
+(rara) pide una primitiva nueva. Harnesses: _measure_4b_composes.py,
+_measure_4b_plan_emission.py, _measure_cu_optionA.py, _measure_cu_optionB.py.

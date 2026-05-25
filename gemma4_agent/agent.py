@@ -285,119 +285,52 @@ class Gemma4Agent:
                     return t
         return None
 
-    def _try_in_app_message(self, text: str, turn_id: str) -> "AgentReply | None":
-        """Macro determinista de ENVÍO-DE-MENSAJE en una app de chat abierta (Agent-S2):
-        'escribe/mandale a <contacto> en <app> [y dile/que] <mensaje>' Y esa app YA
-        está abierta -> abre el chat del contacto (quick-switcher) + teclea el mensaje
-        + Enter. El 4B no forma esto (dice "no tengo la herramienta" aunque tiene
-        gui/uia); el código hace el cómo. Verifica por estado del SO. None si no
-        aplica. Sin mensaje (solo "escribe a X") -> abre el chat y deja el cursor."""
-        from .command_splitter import extract_message_to
-        win = self._window_title_in_text(text)
-        if not win:
-            return None
-        parsed = extract_message_to(text, app_hint=win)
-        if parsed is None:
-            return None
-        contact, body = parsed
-        app = win.split(" - ")[-1] or win
-        self.trace.event(turn_id, "in_app_message_macro",
-                         window=win[:40], contact=contact[:30], body=body[:40])
-        # (1) abrir el chat del contacto por quick-switcher (enfoca+restaura+verifica
-        # por título). Reusa _quick_switcher_nav: navega y confirma por el título.
-        opened = self._quick_switcher_nav(win, contact, turn_id)
-        # _quick_switcher_nav devuelve un AgentReply; sabemos si abrió el chat por si
-        # el título ahora incluye el contacto.
-        chat_ok = self._title_now_matches(win, contact, "")
-        if not chat_ok:
-            # no se pudo abrir el chat -> devolver el resultado honesto del switcher.
-            return opened
-        if not body:
-            # solo abrir el chat (sin mensaje): dejar el cursor en el campo.
-            self._last_turn_ts = time.time()
-            self._remember_executed_tools(
-                [ToolEvent(name="gui", args={"action": "quick_switcher", "target": contact}, result={"ok": True})])
-            return AgentReply(
-                content=f"Abrí el chat de «{contact}» en {app}. ¿Qué querés que le escriba?",
-                tool_events=[], mission=None)
-        # (2) teclear el mensaje + Enter. El campo de mensaje ya tiene el foco tras
-        # abrir el chat (Discord/Slack/Teams enfocan el composer). Verificamos por el
-        # estado del SO: tras Enter el campo se vacía (mensaje enviado).
-        try:
-            from . import gui_safety
-            gui_safety.reset_action_budget()
-            self.tools._focus_window_chen(win)
-            time.sleep(0.4)
-            self.tools.execute("gui", {"action": "type", "text": body})
-            time.sleep(0.4)
-            self.tools.execute("gui", {"action": "keypress", "keys": "enter"})
-            time.sleep(0.5)
-        except Exception as exc:
-            return AgentReply(
-                content=f"Abrí el chat de «{contact}» pero no pude enviar el mensaje: {exc}",
-                tool_events=[], mission=None)
-        events = [ToolEvent(name="gui",
-                            args={"action": "send_message", "contact": contact, "text": body},
-                            result={"ok": True, "verified": True})]
-        self._last_turn_ts = time.time()
-        self._remember_executed_tools(events)
-        return AgentReply(
-            content=f"Listo, le escribí «{body}» a {contact} en {app}.",
-            tool_events=events, mission=None)
+    def _try_computer_use(self, text: str, turn_id: str) -> "AgentReply | None":
+        """CAPA UNIVERSAL de computer-use (Agent-S2 / mixture-of-grounding). Reemplaza
+        los macros por-intención (_try_in_app_nav / _try_in_app_message): NO hay un
+        macro por verbo. El 4B emite un PLAN de primitivas (su fuerte: medido 10/10
+        parseable; encadenar acciones él mismo NO sabe: 2/10) y UN ejecutor corre las
+        primitivas atómicas (focus/open_chat/open_url/type/send/keypress/click)
+        verificando por estado del SO. Medido 2026-05-25: calc/browser/chat 4/4 c/u.
 
-    def _try_in_app_nav(self, text: str, turn_id: str) -> "AgentReply | None":
-        """Macro determinista de navegación-en-app (Agent-S2): si el comando es
-        'entrá/andá a [app] al [servidor/canal] X' Y esa app YA está abierta,
-        ejecuta click_button(X) por Name UIA directo (sin el LLM, que no forma la
-        llamada). Devuelve AgentReply o None (no aplica -> el turno sigue normal).
-        Verifica por estado del SO (ventana abierta) — universal, sin hardcode."""
-        from .command_splitter import extract_nav_target
-        # (a) ¿hay una app abierta mencionada en el comando?
+        GATE de activación (universal, por ESTADO DEL SO, sin regex por intención):
+        una ventana ABIERTA matchea un token del comando -> el usuario quiere OPERAR
+        esa app. Si no hay app abierta mencionada, devuelve None (turno normal del LLM).
+        Gate de apagado: GEMMA4_COMPUTER_USE=0."""
+        import os as _os
+        if _os.environ.get("GEMMA4_COMPUTER_USE", "1").strip().lower() in {"0", "false", "no", "off"}:
+            return None
         win = self._window_title_in_text(text)
         if not win:
-            return None
-        # (b) ¿el comando es navegación-en-app y tiene un target?
-        target = extract_nav_target(text, app_hint=win)
-        if not target or len(target) < 2:
-            return None
-        # (c) ejecutar el target. Intentar PRIMERO click_button directo (si el
-        # control está VISIBLE en la vista actual: un chat/canal/servidor a la vista).
-        self.trace.event(turn_id, "in_app_nav_macro", window=win[:40], target=target[:40])
-        title_before = self._app_window_title(win)
+            return None  # ninguna app abierta mencionada -> no es computer-use de app
+        from .computer_use import plan_for, PlanExecutor, summarize_result
+        plan = plan_for(self, text)
+        if not plan:
+            return None  # el 4B no produjo un plan -> dejar el turno normal
+        # un plan que NO opera una app (p.ej. solo 'type' sin foco) y la 1ª op no es
+        # focus_app/open_* -> dejar pasar (probablemente no es navegación-en-app).
+        self.trace.event(turn_id, "computer_use_plan",
+                         window=win[:40], ops=[s["op"] for s in plan], text=text[:60])
         try:
-            res = self.tools.execute("gui", {"action": "click_button",
-                                             "label": target, "window": win})
+            result = PlanExecutor(self).execute(plan, turn_id)
         except Exception as exc:
-            res = {"ok": False, "error": str(exc)}
-        inner = res.get("result", res) if isinstance(res, dict) else {}
-        ok = bool(inner.get("ok"))
+            self.trace.event(turn_id, "computer_use_error",
+                             error=f"{type(exc).__name__}: {exc}", text=text[:60])
+            return None  # error inesperado -> que lo intente el LLM
+        reply = summarize_result(text, plan, result)
         events = [ToolEvent(name="gui",
-                            args={"action": "click_button", "label": target},
-                            result=inner if isinstance(inner, dict) else {})]
-        # VERIFY por TÍTULO de la ventana (señal robusta, NO frame-diff): en apps de
-        # chat el título refleja el chat/canal ACTIVO ("@Ron92 - Discord" -> "@CbaYeah
-        # - Discord"). El frame-diff (state_changed) daba False cuando el foco saltaba
-        # a otra ventana tras el click, y el agente reportaba fallo de un éxito real
-        # (bug medido 2026-05-25: título == @CbaYeah pero reply "no pude"). El título
-        # es la prueba directa de que se abrió el chat correcto.
-        if ok and self._title_now_matches(win, target, title_before):
-            self._last_turn_ts = time.time()
-            self._remember_executed_tools(events)
-            return AgentReply(content=f"Listo, abrí «{target}».",
-                              tool_events=events, mission=None)
-        # (d) FALLBACK QUICK-SWITCHER: el control NO estaba visible (chat/contacto que
-        # no está en la vista actual) -> click_button no lo encontró o no cambió el
-        # chat activo. Vía universal en apps de chat Electron: Ctrl+K -> nombre ->
-        # Enter. Determinista (no depende del árbol UIA ni de que el 4B encadene),
-        # verifica por título.
-        qs = self._quick_switcher_nav(win, target, turn_id)
-        if qs is not None:
-            return qs
-        reply = (f"Intenté entrar a «{target}» pero no pude confirmar el efecto.")
+                            args={"action": "computer_use", "ops": [s["op"] for s in plan]},
+                            result={"ok": result.get("ok"), "steps": result.get("steps"),
+                                    "verified": result.get("ok")})]
         self._last_turn_ts = time.time()
         self._remember_executed_tools(events)
         return AgentReply(content=reply, tool_events=events, mission=None)
 
+    # NOTA (2026-05-25): _try_in_app_message y _try_in_app_nav (macros por
+    # INTENCIÓN) fueron REEMPLAZADOS por _try_computer_use (capa universal:
+    # el 4B planifica primitivas, un ejecutor las corre). Medido: A 16/16 en
+    # apps variadas. Los helpers _quick_switcher_nav/_title_now_matches/
+    # _app_window_title siguen — los reusa el PlanExecutor.
     def _app_window_title(self, win_hint: str) -> str:
         """Título ACTUAL de la ventana de la app (por el último token del hint, p.ej.
         'Discord'). Para verificar navegación-en-app por estado del SO. '' si no se
@@ -882,38 +815,25 @@ class Gemma4Agent:
         if _jarvis_reply is not None:
             return _jarvis_reply
         # NAVEGACIÓN-EN-APP determinista (2026-05-25, validación Discord): "entrá a
-        # Discord al servidor X" con Discord YA abierto = clickear el control X por
-        # Name UIA. El router lo desambigua mal (suena a "abrir Discord") y el 4B,
-        # aun con uia en el subset, NO forma la llamada (medido: "no tengo
-        # herramienta"). Patrón Agent-S2: el código hace el cómo. Short-circuit ANTES
-        # del LLM: si (a) hay verbo de nav + target, y (b) una ventana abierta matchea
-        # el comando -> click_button(target) directo. Gate GEMMA4_INAPP_NAV=0.
-        import os as _os_nav
-        # turn_id ANTES del macro: el call site lo usaba sin estar definido (se
-        # asignaba 80 líneas más abajo) -> UnboundLocalError SIEMPRE, tragado por el
-        # `except: pass` -> el macro NUNCA corría por run_content y todo caía al LLM
-        # (bug 2026-05-25: el macro andaba en llamada directa pero no por run_text).
+        # CAPA UNIVERSAL de computer-use (Agent-S2, rediseño 2026-05-25): operar una
+        # app abierta ("calculá 5+3", "andá a discord al chat de X", "en opera entrá
+        # a python.org", "mandale hola a juan") = el 4B emite un PLAN de primitivas y
+        # UN ejecutor las corre, verificando por estado del SO. NO hay un macro por
+        # intención. Short-circuit ANTES del LLM (que no encadena: medido 2/10). El
+        # gate de activación (app abierta mencionada) + el de apagado
+        # (GEMMA4_COMPUTER_USE=0) viven dentro de _try_computer_use.
+        # turn_id ANTES del short-circuit: el call site viejo lo usaba sin asignar ->
+        # UnboundLocalError tragado por el except -> nunca corría (bug 2026-05-25).
         turn_id = self.trace.new_turn_id()
-        if (isinstance(content, str) and content.strip()
-                and not getattr(self, "_splitting", False)
-                and (_os_nav.environ.get("GEMMA4_INAPP_NAV", "1").strip().lower()
-                     not in {"0", "false", "no", "off"})):
+        if isinstance(content, str) and content.strip() and not getattr(self, "_splitting", False):
             try:
-                # ENVÍO-DE-MENSAJE primero (más específico que navegar): "escribe a X
-                # en discord y dile que ...". Si no aplica, cae a navegación-en-app.
-                _msg = self._try_in_app_message(content, turn_id)
-                if _msg is not None:
-                    return _msg
-                _nav = self._try_in_app_nav(content, turn_id)
-                if _nav is not None:
-                    return _nav
-            except Exception as _nav_exc:
-                # NO tragar en silencio: si el macro de navegación-en-app explota,
-                # dejamos traza (antes caía al LLM sin pista de por qué). Bug 2026-05-25:
-                # el macro andaba en llamada directa pero el run_text completo caía al
-                # LLM — era una excepción tragada acá.
-                self.trace.event(turn_id, "in_app_nav_macro_error",
-                                 error=f"{type(_nav_exc).__name__}: {_nav_exc}",
+                _cu = self._try_computer_use(content, turn_id)
+                if _cu is not None:
+                    return _cu
+            except Exception as _cu_exc:
+                # NO tragar en silencio: dejar traza y seguir al LLM (red de seguridad).
+                self.trace.event(turn_id, "computer_use_macro_error",
+                                 error=f"{type(_cu_exc).__name__}: {_cu_exc}",
                                  user_text=content[:60] if isinstance(content, str) else "")
         # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
         # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
