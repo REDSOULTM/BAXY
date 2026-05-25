@@ -271,8 +271,14 @@ class Gemma4Agent:
         # de un EnumWindows propio con callback efímero — ese daba error 126 (el GC
         # recolecta el callback antes de que ctypes lo use). list_windows devuelve
         # {ok, windows:[{title,...}]}.
+        # LIMIT ALTO (bug medido 2026-05-25): list_windows corta en `limit` (default
+        # 30) y EnumWindows devuelve en Z-ORDER, que cambia entre llamadas (la ventana
+        # al frente se mueve). Con 30, una app abierta (Discord) caía FUERA del corte
+        # en llamadas sucesivas -> match INTERMITENTE (ok la 1ª vez, None las
+        # siguientes). Acá buscamos UNA app puntual, no mostramos una lista: pedir
+        # muchas ventanas para no perderla por el corte de Z-order.
         try:
-            res = self.tools.list_windows({})
+            res = self.tools.list_windows({"limit": 200})
             wins = res.get("windows", []) if isinstance(res, dict) else []
         except Exception:
             return None
