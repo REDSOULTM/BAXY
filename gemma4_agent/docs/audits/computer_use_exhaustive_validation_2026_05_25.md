@@ -91,3 +91,58 @@ con guarda por nombre único y nunca toca ventanas que no creó.
 - `scripts/_exhaustive_llm_test.py` — LLM e2e multi-turno (vram4 en :8080).
 - `scripts/_exhaustive_discord_test.py` — Discord en condiciones reales.
 - Resultados crudos: `scripts/gui_eval/_exhaustive_*_results.json`.
+
+---
+
+## ADDENDUM — navegación-en-app + envío-de-mensaje en Discord (continuación, mismo día)
+
+Tras la validación de arriba, RED reportó dos fallas reales de computer-use en
+Discord vía la UI. Diagnóstico en vivo + fixes (commits 3d0efbc, 69f3c76, a4186f3,
+42a3549):
+
+### 5. "Ve a discord y pon el chat de X" iba a WhatsApp y cancelaba el turno
+Cadena de 3 fallas: (a) el SPLITTER partía "Ve a discord" | "pon el chat de X" y la
+2da cláusula, aislada, perdía "discord" → el router la puntuaba whatsapp=0.58 (medido)
+→ abría el chat en WhatsApp. (b) La desambiguación por estado del SO se SALTABA si el
+router ya había puesto uia. (c) Los distractores que se sacaban eran muy pocos
+({game_launcher,app,steam}), no whatsapp/contacts/media/session. FIX: un "ir/entrar a
+<app>" puro NO parte (es prefijo de contexto); la desambiguación corre siempre que una
+ventana matchee; se sacan los distractores de mensajería/lanzamiento conservando la
+tool dedicada si la ventana ES de esa app.
+
+### 6. BUG RAÍZ — el macro de navegación-en-app NUNCA corría por run_content
+`_try_in_app_nav(content, turn_id)` se llamaba con `turn_id` ANTES de asignarlo
+(estaba ~30 líneas abajo) → `UnboundLocalError` SIEMPRE, tragado por `except: pass`
+→ el macro determinista jamás se ejecutaba vía run_text; TODO caía al LLM (que
+desambigua mal y no encadena). Por eso "andaba en llamada directa pero no por el
+agente". FIX: generar `turn_id` antes del macro; el except ahora deja traza.
+
+### 7. Árbol UIA "intermitente" de Discord = ventana MINIMIZADA
+Lo que parecía intermitencia patológica era: Discord minimizado (iconic, rect en
+-21333) NO renderiza su DOM → árbol UIA colapsa a ~5 controles → todo find/click
+falla. MEDIDO: `ShowWindow(SW_RESTORE)` lo lleva de 5 → 646/698 controles.
+`_focus_window_chen` no des-minimizaba (SetForegroundWindow no restaura); FIX: agrega
+`IsIconic`+`ShowWindow(SW_RESTORE)`. Universal (cualquier app minimizada).
+
+### 8. Chats NO visibles: quick-switcher (Ctrl+K) + verify por TÍTULO
+Un chat que no está en la vista actual no tiene control clickeable. Vía universal en
+apps de chat Electron: Ctrl+K → nombre → Enter. Determinista (no depende del árbol
+ni de que el 4B encadene), verifica por el TÍTULO de la ventana (refleja el chat
+activo). El `state_changed` (frame-diff) daba False cuando el foco saltaba tras el
+click y el agente reportaba fallo de un éxito real → ahora se verifica por título.
+Combos de teclado (ctrl+k) migrados a SendInput in-process (PowerShell-SendKeys no
+aterrizaba fiable por el robo de foco). Match case-insensitive ("cbayeah"→"CbaYeah").
+
+### 9. ENVÍO de mensajes — "escribe a X en discord y dile que ..."
+El 4B decía "no tengo la herramienta" (falso: tiene gui/uia). NUEVO macro
+`_try_in_app_message`: quick-switcher al contacto + type(mensaje) + Enter, verify
+por estado del SO. `extract_message_to` separa (contacto, mensaje) multi-idioma;
+"a <contacto>" OBLIGATORIO para escribe/write (así "escribí 2+2" NO se confunde con
+mensaje); "que" se preserva ("dile que haces" → "que haces"). MEDIDO en vivo: envió
+"que haces" a CbaYeah (verificado: aparece en el chat). Sin mensaje → abre y pregunta.
+
+**Estado final Discord (medido):** "Ve a discord y pon el chat de cbayeah" → abre el
+chat (restaura si está minimizado, navega, verifica por título). "escribe a cbayeah
+en discord y dile que haces" → navega + teclea + ENVÍA, verificado en el chat. La
+navegación/envío-en-app es DETERMINISTA y foreground-safe; el robo de foco solo
+ocurre si el árbol está frío (app minimizada/sin foco), que RED autorizó.
