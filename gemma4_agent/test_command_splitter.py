@@ -12,8 +12,62 @@ import unittest
 from gemma4_agent.command_splitter import (
     split_command, has_back_reference, plan_clauses,
     extract_click_target, is_key_name, extract_write_payload,
-    extract_nav_target,
+    extract_nav_target, extract_message_to,
 )
+
+
+class MessageToExtractTest(unittest.TestCase):
+    """extract_message_to: 'escribe/mandale a <contacto> en <app> [y dile/que]
+    <mensaje>' -> (contacto, mensaje). Para el macro de envío-de-mensaje en apps de
+    chat (Discord/Slack). Validación en vivo 2026-05-25."""
+
+    def test_contact_and_body(self):
+        h = "@Ron92 - Discord"
+        self.assertEqual(
+            extract_message_to("escribe a cbayeah en discord y dile que haces", app_hint=h),
+            ("cbayeah", "que haces"))   # "que" se preserva (cambia el sentido si se quita)
+        self.assertEqual(
+            extract_message_to("mandale a juan en discord: nos vemos", app_hint=h),
+            ("juan", "nos vemos"))
+        self.assertEqual(
+            extract_message_to("decile a GordoFriki que llego tarde", app_hint=h),
+            ("GordoFriki", "que llego tarde"))
+        self.assertEqual(
+            extract_message_to("mandale a cbayeah en discord hola", app_hint=h),
+            ("cbayeah", "hola"))
+
+    def test_no_body_opens_chat(self):
+        # solo "escribe a X en discord" -> (contacto, "") = abrir el chat, sin enviar.
+        self.assertEqual(
+            extract_message_to("escribe a cbayeah en discord", app_hint="@Ron92 - Discord"),
+            ("cbayeah", ""))
+
+    def test_app_hint_does_not_strip_contact(self):
+        # bug 2026-05-25: si el título en foco YA es el del contacto ("@CbaYeah -
+        # Discord"), el peeling de app no debe borrar el contacto. Solo pela la APP
+        # (último segmento), no cualquier token del título.
+        self.assertEqual(
+            extract_message_to("escribe a cbayeah en discord", app_hint="@CbaYeah - Discord"),
+            ("cbayeah", ""))
+
+    def test_app_write_is_not_a_message(self):
+        # CRÍTICO: un tecleo-en-app ("escribí 2+2" en la calc, "escribí hola mundo")
+        # NO debe parsearse como mensaje-a-contacto (mandaría texto a un "contacto"
+        # inexistente). La preposición de destinatario "a <X>" es obligatoria para
+        # "escribe/write"; mandale/decile sí implican destinatario.
+        for q in ("escribí 2+2", "escribe 5 por 5 y apretá igual",
+                  "escribí hola mundo", "escribe el informe final"):
+            self.assertIsNone(extract_message_to(q, app_hint="Calculadora"), msg=q)
+
+    def test_recipient_verbs_imply_destinatario(self):
+        # "mandale/decile X" sí es mensaje aunque no repita "a".
+        self.assertEqual(extract_message_to("mandale a juan hola"), ("juan", "hola"))
+        self.assertEqual(extract_message_to("decile a Ana que ya voy"),
+                         ("Ana", "que ya voy"))
+
+    def test_non_message_returns_none(self):
+        for q in ("que hora es", "abre discord", "andá al canal general"):
+            self.assertIsNone(extract_message_to(q), msg=q)
 
 
 class NavTargetExtractTest(unittest.TestCase):

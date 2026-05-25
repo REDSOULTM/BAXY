@@ -285,6 +285,66 @@ class Gemma4Agent:
                     return t
         return None
 
+    def _try_in_app_message(self, text: str, turn_id: str) -> "AgentReply | None":
+        """Macro determinista de ENVÍO-DE-MENSAJE en una app de chat abierta (Agent-S2):
+        'escribe/mandale a <contacto> en <app> [y dile/que] <mensaje>' Y esa app YA
+        está abierta -> abre el chat del contacto (quick-switcher) + teclea el mensaje
+        + Enter. El 4B no forma esto (dice "no tengo la herramienta" aunque tiene
+        gui/uia); el código hace el cómo. Verifica por estado del SO. None si no
+        aplica. Sin mensaje (solo "escribe a X") -> abre el chat y deja el cursor."""
+        from .command_splitter import extract_message_to
+        win = self._window_title_in_text(text)
+        if not win:
+            return None
+        parsed = extract_message_to(text, app_hint=win)
+        if parsed is None:
+            return None
+        contact, body = parsed
+        app = win.split(" - ")[-1] or win
+        self.trace.event(turn_id, "in_app_message_macro",
+                         window=win[:40], contact=contact[:30], body=body[:40])
+        # (1) abrir el chat del contacto por quick-switcher (enfoca+restaura+verifica
+        # por título). Reusa _quick_switcher_nav: navega y confirma por el título.
+        opened = self._quick_switcher_nav(win, contact, turn_id)
+        # _quick_switcher_nav devuelve un AgentReply; sabemos si abrió el chat por si
+        # el título ahora incluye el contacto.
+        chat_ok = self._title_now_matches(win, contact, "")
+        if not chat_ok:
+            # no se pudo abrir el chat -> devolver el resultado honesto del switcher.
+            return opened
+        if not body:
+            # solo abrir el chat (sin mensaje): dejar el cursor en el campo.
+            self._last_turn_ts = time.time()
+            self._remember_executed_tools(
+                [ToolEvent(name="gui", args={"action": "quick_switcher", "target": contact}, result={"ok": True})])
+            return AgentReply(
+                content=f"Abrí el chat de «{contact}» en {app}. ¿Qué querés que le escriba?",
+                tool_events=[], mission=None)
+        # (2) teclear el mensaje + Enter. El campo de mensaje ya tiene el foco tras
+        # abrir el chat (Discord/Slack/Teams enfocan el composer). Verificamos por el
+        # estado del SO: tras Enter el campo se vacía (mensaje enviado).
+        try:
+            from . import gui_safety
+            gui_safety.reset_action_budget()
+            self.tools._focus_window_chen(win)
+            time.sleep(0.4)
+            self.tools.execute("gui", {"action": "type", "text": body})
+            time.sleep(0.4)
+            self.tools.execute("gui", {"action": "keypress", "keys": "enter"})
+            time.sleep(0.5)
+        except Exception as exc:
+            return AgentReply(
+                content=f"Abrí el chat de «{contact}» pero no pude enviar el mensaje: {exc}",
+                tool_events=[], mission=None)
+        events = [ToolEvent(name="gui",
+                            args={"action": "send_message", "contact": contact, "text": body},
+                            result={"ok": True, "verified": True})]
+        self._last_turn_ts = time.time()
+        self._remember_executed_tools(events)
+        return AgentReply(
+            content=f"Listo, le escribí «{body}» a {contact} en {app}.",
+            tool_events=events, mission=None)
+
     def _try_in_app_nav(self, text: str, turn_id: str) -> "AgentReply | None":
         """Macro determinista de navegación-en-app (Agent-S2): si el comando es
         'entrá/andá a [app] al [servidor/canal] X' Y esa app YA está abierta,
@@ -839,6 +899,11 @@ class Gemma4Agent:
                 and (_os_nav.environ.get("GEMMA4_INAPP_NAV", "1").strip().lower()
                      not in {"0", "false", "no", "off"})):
             try:
+                # ENVÍO-DE-MENSAJE primero (más específico que navegar): "escribe a X
+                # en discord y dile que ...". Si no aplica, cae a navegación-en-app.
+                _msg = self._try_in_app_message(content, turn_id)
+                if _msg is not None:
+                    return _msg
                 _nav = self._try_in_app_nav(content, turn_id)
                 if _nav is not None:
                     return _nav

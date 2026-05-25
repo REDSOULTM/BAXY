@@ -294,6 +294,122 @@ _WRITE_VERB_STEM = re.compile(
 )
 
 
+# --- Extracción de MENSAJE-A-CONTACTO (computer-use en apps de chat) ----------
+# "escribe/mandale/decile A <contacto> [en <app>] [y dile/que] <mensaje>". A
+# diferencia de extract_nav_target (que solo ABRE un chat), esto separa el
+# CONTACTO del MENSAJE para enviar. Verbo de envío + "a <contacto>" + (opcional
+# "en <app>") + (conector "y dile/decile/que/:") + mensaje. Estructural y
+# multi-idioma (stems); el caller confirma por estado del SO (app abierta).
+_MSG_VERB_STEM = re.compile(
+    r"^\s*(?:"
+    r"escrib[íie]\w*|mand[áa]\w*|manda\w*|m[áa]ndale|mandale|decil[ée]?|"   # es
+    r"dile|dec[íi]\w*|envi[áa]\w*|envia\w*|"                                # es
+    r"write|send|message|msg|text|tell|"                                   # en
+    r"escrev[ae]\w*|mand[ae]\w*|envi[ae]\w*|"                               # pt
+    r"[ée]cri[st]\w*|envoie\w*|"                                            # fr
+    r"schreib\w*|schick\w*|"                                                # de
+    r"scriv[ie]\w*|invia\w*"                                                # it
+    r")\b",
+    re.IGNORECASE,
+)
+# conector que separa el (contacto [en app]) del MENSAJE. El cuerpo arranca tras
+# un conector explícito de "decir": "y dile que", "decile", "diciendo", "and tell
+# them", ":" ... NO incluye un "que" suelto (ambiguo). Multi-idioma.
+# NOTA sobre "que": en español "dile QUE haces" -> el mensaje es "que haces" (=
+# "¿qué hacés?"). Quitar "que" cambiaría el sentido. Por eso el lead consume el
+# verbo de decir (y la conjunción previa) pero NO el "que" siguiente: queda en el
+# mensaje. Solo ":" como conector explícito sí se consume entero.
+_MSG_BODY_LEAD = re.compile(
+    r"(?:^|\s)(?:"
+    r"(?:y\s+|e\s+|and\s+|et\s+|und\s+)?"
+    r"(?:d[ií]gan?le|d[ií]le|dec[íi]le|tell\s+(?:him|her|them)|"
+    r"sag\s+(?:ihm|ihr|ihnen)|dis[\s-]?lui|dici[ée]ndo(?:le)?|saying)"
+    r"|:\s*)\s*",
+    re.IGNORECASE,
+)
+# "en <app>" al final del contacto, para pelarlo. App = una palabra (no frase).
+_MSG_APP_TAIL = re.compile(
+    r"\s+(?:en|in|on|im|su|no|dans)\s+\w+\s*$", re.IGNORECASE)
+
+
+def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | None:
+    """Si la cláusula es "escribe/mandale a <CONTACTO> [en <app>] [y dile/que]
+    <MENSAJE>", devuelve (contacto, mensaje). None si no es un envío-de-mensaje.
+    El mensaje puede venir vacío (solo "escribe a X") -> mensaje "". ESTRUCTURAL:
+    separa verbo + 'a <contacto>' + ('en <app>') + conector + mensaje. El caller
+    confirma por estado del SO (app abierta) y ejecuta el cómo (quick-switcher +
+    type + Enter). app_hint quita el nombre de app del contacto si se coló.
+
+    Ejemplos:
+      "escribe a cbayeah en discord y dile que haces" -> ("cbayeah", "que haces")
+      "mandale a juan en discord: nos vemos"          -> ("juan", "nos vemos")
+      "decile a GordoFriki que llego tarde"           -> ("GordoFriki", "llego tarde")
+    """
+    if not clause or not clause.strip():
+        return None
+    m = _MSG_VERB_STEM.match(clause)
+    if not m:
+        return None
+    rest = clause[m.end():].strip(" ,:")
+    # "a <contacto>" — la preposición de destinatario es OBLIGATORIA: separa un
+    # ENVÍO-A-ALGUIEN ("escribe A juan ...") de un tecleo-en-app ("escribí 2+2",
+    # "escribí hola mundo" en la calc/notepad, que NO llevan "a <persona>"). Sin la
+    # preposición de destinatario NO es un mensaje -> None (lo maneja el flujo de
+    # escritura-en-app, no el de mensajería). Evita mis-parsear "escribí 2+2" como
+    # "mandar 2+2 al contacto ''". (Verbos como mandale/decile YA implican
+    # destinatario aunque no repitan "a": ese caso se cubre abajo.)
+    _verb = clause[m.start():m.end()].strip().lower()
+    _verb_implies_recipient = bool(re.match(
+        r"mand|m[áa]ndale|mandale|decil|dile|dec[íi]|tell|text|message|msg|"
+        r"schick|envoie|invia", _verb))
+    m_to = re.match(r"^(?:a|al|to|para|à|an)\s+", rest, flags=re.IGNORECASE)
+    if m_to:
+        rest = rest[m_to.end():].strip()
+    elif not _verb_implies_recipient:
+        # "escribe/write/type X" SIN "a" y sin verbo-de-mensajería -> tecleo, no msg.
+        return None
+    if not rest:
+        return None
+    # PASO 1: separar el cuerpo por el conector explícito ("y dile que", ":", ...),
+    # ANTES de tocar "en app" (así "...y dile que haces" deja body="que haces").
+    contact, body = rest, ""
+    mb = _MSG_BODY_LEAD.search(rest)
+    if mb and mb.start() > 0:
+        contact = rest[:mb.start()].strip(" ,:")
+        body = rest[mb.end():].strip(" ,:")
+    # PASO 2: en lo que quedó como "contacto", separar "en <app> [mensaje]". Tras
+    # "en <app>" puede venir DIRECTAMENTE el mensaje sin conector ("a cbayeah en
+    # discord hola" -> contacto=cbayeah, body=hola). Capturamos app y resto.
+    mapp = re.search(r"\s+(?:en|in|on|im|su|no|dans)\s+(\w+)\b\s*(.*)$",
+                     contact, flags=re.IGNORECASE)
+    if mapp:
+        tail = mapp.group(2).strip(" ,:")        # lo que sigue al nombre de app
+        contact = contact[:mapp.start()].strip(" ,:")
+        if tail and not body:                    # mensaje pegado tras "en app"
+            body = tail
+    # PASO 3 (fallback): si NO hubo conector ni "en app" y el contacto tiene varias
+    # palabras, la 1ª es el contacto y el resto el mensaje ("CbaYeah hola como va",
+    # "juan hola"). Conservador: el contacto suele ser UNA palabra (handle/nombre).
+    if not body and " " in contact:
+        first, rest2 = contact.split(" ", 1)
+        contact, body = first, rest2.strip()
+    # pelar SOLO el nombre de la APP del contacto (no cualquier token del título).
+    # El app_hint puede ser un título "@CbaYeah - Discord" cuyo PRIMER segmento es el
+    # chat activo (= puede ser el propio contacto) y el ÚLTIMO es la app ("Discord").
+    # Pelar todos los tokens borraría el contacto. Usamos solo el último segmento.
+    if app_hint:
+        app_seg = app_hint.split(" - ")[-1]
+        for tok in re.findall(r"\w+", app_seg.lower()):
+            if len(tok) >= 4:
+                contact = re.sub(r"\b" + re.escape(tok) + r"\b", "", contact,
+                                 flags=re.IGNORECASE).strip(" ,:")
+    contact = contact.strip(" ,:\"'«»")
+    body = body.strip(" \"'«»")
+    if not contact or len(contact) < 2:
+        return None
+    return (contact, body)
+
+
 def extract_write_payload(clause: str) -> str | None:
     """Si la cláusula es "<verbo-escribir> <texto>", devuelve <texto> (a tipear).
     None si no es una cláusula de escritura. ESTRUCTURAL: solo separa el verbo
