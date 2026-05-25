@@ -239,7 +239,12 @@ class PlanExecutor:
         after = _foreground_title()
         host = re.sub(r"^https?://(www\.)?", "", u).split("/")[0]
         token = host.split(".")[0]
-        ok = bool(token) and token.lower() in after.lower()
+        # VERIFY robusto: comparar SIN espacios ni puntuación en AMBOS lados. El
+        # título suele "espaciar" el dominio ("stackoverflow" -> "Stack Overflow",
+        # "duckduckgo" -> "DuckDuckGo") -> el match contiguo daba falso-negativo
+        # (bug medido en la maratón). Normalizamos a solo-alfanumérico.
+        def _norm(s): return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+        ok = bool(token) and _norm(token) in _norm(after)
         return {"ok": ok, "verified": ok, "url": u, "title": after}
 
     def _type(self, text: str, win: str) -> dict:

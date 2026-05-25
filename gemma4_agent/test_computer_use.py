@@ -60,6 +60,33 @@ class SummarizeResultTest(unittest.TestCase):
         self.assertTrue("No encontré" in msg or "no pude" in msg.lower())
 
 
+class OpenUrlVerifyTest(unittest.TestCase):
+    """El verify de open_url normaliza (quita espacios/puntuación) en AMBOS lados:
+    el título "espacia" el dominio ("stackoverflow"->"Stack Overflow") y el match
+    contiguo daba falso-negativo (bug medido en la maratón 2026-05-25)."""
+
+    def _run(self, url, fg_title):
+        import gemma4_agent.computer_use as cu
+        from unittest.mock import patch
+        ag = MagicMock()
+        ag._app_window_title.return_value = ""
+        ag.tools._focus_window_chen.return_value = True
+        ag.tools.execute.return_value = {"ok": True}
+        ex = cu.PlanExecutor(ag)
+        with patch.object(cu, "_foreground_title", return_value=fg_title):
+            return ex._open_url(url, "opera")
+
+    def test_spaced_domain_title_matches(self):
+        self.assertTrue(self._run("stackoverflow.com", "Newest Questions - Stack Overflow - Opera")["ok"])
+        self.assertTrue(self._run("duckduckgo.com", "DuckDuckGo — Privacy - Opera")["ok"])
+
+    def test_plain_domain_title_matches(self):
+        self.assertTrue(self._run("python.org", "Welcome to Python.org - Opera")["ok"])
+
+    def test_wrong_page_does_not_match(self):
+        self.assertFalse(self._run("github.com", "Welcome to Python.org - Opera")["ok"])
+
+
 class ExecutorDispatchTest(unittest.TestCase):
     """El ejecutor llama las primitivas correctas. Mockeamos el agente/tools para
     no tocar la GUI; verificamos QUÉ tool-calls emite por cada op."""
