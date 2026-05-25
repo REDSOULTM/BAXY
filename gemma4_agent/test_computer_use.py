@@ -87,6 +87,33 @@ class OpenUrlVerifyTest(unittest.TestCase):
         self.assertFalse(self._run("github.com", "Welcome to Python.org - Opera")["ok"])
 
 
+class OpenChatFuzzyTest(unittest.TestCase):
+    """open_chat es tolerante a typos: el quick-switcher de las apps de chat hace
+    fuzzy match ("shotercock"->"ShooterCOCK"). Si el título CAMBIÓ a un chat nuevo,
+    es éxito y se reporta el chat REAL abierto (no el typo). Bug medido 2026-05-25:
+    el usuario veía "No encontré" de un éxito real."""
+
+    def _exec(self, before_title, after_title):
+        from gemma4_agent.computer_use import PlanExecutor
+        ag = MagicMock()
+        # _app_window_title devuelve before en la 1ª llamada, after en la 2ª.
+        ag._app_window_title.side_effect = [before_title, after_title]
+        ag._title_now_matches.return_value = False  # no match exacto del typo
+        ex = PlanExecutor(ag)
+        return ex._open_chat("shotercock", "Discord")
+
+    def test_fuzzy_navigation_is_success_and_reports_real_name(self):
+        r = self._exec("@CbaYeah - Discord", "@ShooterCOCK - Discord")
+        self.assertTrue(r["ok"])
+        self.assertTrue(r["fuzzy"])
+        self.assertEqual(r["opened"], "ShooterCOCK")  # nombre REAL, no el typo
+
+    def test_no_navigation_is_failure(self):
+        # el título NO cambió -> no navegó -> fallo honesto.
+        r = self._exec("@CbaYeah - Discord", "@CbaYeah - Discord")
+        self.assertFalse(r["ok"])
+
+
 class ExecutorDispatchTest(unittest.TestCase):
     """El ejecutor llama las primitivas correctas. Mockeamos el agente/tools para
     no tocar la GUI; verificamos QUÉ tool-calls emite por cada op."""

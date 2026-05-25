@@ -159,7 +159,10 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
     ops = [s["op"] for s in steps]
     sent = "send" in ops
     typed = next((s["arg"] for s in steps if s["op"] == "type"), "")
-    chat = next((s["arg"] for s in steps if s["op"] == "open_chat"), "")
+    # nombre REAL del chat abierto (la app pudo fuzzy-matchear un typo: "shotercock"
+    # -> "ShooterCOCK"); reportamos lo que la app realmente abrió, no lo que se tipeó.
+    _chat_step = next((s for s in steps if s["op"] == "open_chat"), None)
+    chat = (_chat_step.get("opened") or _chat_step.get("arg")) if _chat_step else ""
     url = next((s["arg"] for s in steps if s["op"] == "open_url"), "")
     if sent and chat:
         return f"Listo, le escribí «{typed}» a {chat}."
@@ -210,8 +213,24 @@ class PlanExecutor:
             self.ag._quick_switcher_nav(win, name, "cu")
         except Exception:
             pass
-        matched = self.ag._title_now_matches(win, name, before) if win else False
-        return {"ok": matched, "verified": matched, "target": name}
+        after = self.ag._app_window_title(win) if win else ""
+        exact = self.ag._title_now_matches(win, name, before) if win else False
+        # ÉXITO TOLERANTE A TYPOS: el quick-switcher de las apps de chat hace FUZZY
+        # match — "shotercock" (typo) abre "ShooterCOCK". El verify exacto por
+        # substring fallaba aunque el chat SÍ se abrió (bug medido 2026-05-25: el
+        # usuario veía "No encontré" de un éxito real). Si el título CAMBIÓ a un chat
+        # nuevo (navegó), lo contamos como éxito y reportamos el chat REAL abierto
+        # (honesto: "abrí X" con el nombre que muestra la app, no el que tipeó mal).
+        navigated = bool(after) and after != before
+        ok = exact or navigated
+        # nombre real del chat = primer segmento del título (sin la app), si navegó.
+        actual = name
+        if navigated and " - " in after:
+            head = after.split(" - ")[0].strip().lstrip("@").strip()
+            if head:
+                actual = head
+        return {"ok": ok, "verified": exact, "target": name,
+                "opened": actual, "exact": exact, "fuzzy": navigated and not exact}
 
     def _open_url(self, url: str, app_hint: str) -> dict:
         u = url.strip()
