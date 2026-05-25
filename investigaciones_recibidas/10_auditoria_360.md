@@ -86,6 +86,17 @@ CONCLUSIÓN §7.6: la única vía de latencia que sobrevive a los 3 es la conser
 - ¿chains5/6 vs ref/final fue realmente carga? → nuestra propia medición ya lo confirmó
   (degradación progresiva tras ~25 evals).
 
+## P3 CALIBRACIÓN — MEDIDA y NO-VIABLE hoy (2026-05-24)
+Intenté calibrar umbrales abstain POR IDIOMA. Medido sobre router_eval_corpus.curated
+(dev 1394 filas): es=1248 (337 no-tool), fr=103 (13), pt=35 (12), en=8 (1). DOS
+hallazgos: (1) el threshold global 0.66 YA es el de español (corpus ~90% es), nada
+que ganar en es; (2) fr/pt/en tienen 1-13 filas no-tool = INSUFICIENTE, calibrar ahí
+sería RUIDO que podría EMPEORAR esos idiomas. Por eso NO calibré (no forzar mejora
+falsa). La infra threshold_for(lang)+thresholds_by_lang queda lista (cae al global,
+cero regresión). Para calibrar de verdad: PRIMERO recolectar más queries no-tool
+multilingües (de traces reales o síntesis). El routing multilingüe NO está roto por
+umbral — es falta de DATOS. Commit 7b1e528 (infra), gotcha registrado.
+
 ## PLAN (orden por ROI, cada uno con gate)
 **P0 — §7.1 SendInput in-process** (el de mayor ROI; si esto no sube >90% bajo carga,
 no tocar el resto). Gate: re-correr cadenas Tier-4 {fresca, saturada} → estable.
