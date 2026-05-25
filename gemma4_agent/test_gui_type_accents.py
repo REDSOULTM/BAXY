@@ -89,5 +89,30 @@ class GuiTypeAccentRoutingTest(unittest.TestCase):
         self.assertEqual(got, sample)
 
 
+class KeypressComboTest(unittest.TestCase):
+    """Combos con modificador (ctrl+k, ctrl+shift+t, alt+f4) deben ir por SendInput
+    IN-PROCESS, no por PowerShell-SendKeys (cuyo cold-start + parpadeo de consola
+    roba/devuelve el foreground y hacía que ctrl+k a Discord no aterrizara fiable,
+    bug medido 2026-05-25). _keypress_via_sendinput ahora mapea modificador(es) +
+    tecla base. None solo si algún token no se puede mapear (cae a SendKeys)."""
+
+    def setUp(self):
+        self.reg = ToolRegistry.__new__(ToolRegistry)
+
+    def test_modifier_combos_go_in_process(self):
+        for combo, n_events in (("ctrl+k", 4), ("ctrl+a", 4),
+                                ("ctrl+shift+t", 6), ("alt+f4", 4),
+                                ("enter", 2), ("f5", 2)):
+            r = self.reg._keypress_via_sendinput(combo)
+            self.assertIsNotNone(r, combo)
+            self.assertTrue(r.get("ok"), combo)
+            self.assertEqual(r.get("method"), "sendinput", combo)
+            self.assertEqual(r.get("events"), n_events, combo)
+
+    def test_unknown_modifier_falls_back(self):
+        # un modificador no mapeable -> None (el caller usa SendKeys legacy).
+        self.assertIsNone(self.reg._keypress_via_sendinput("hyper+x"))
+
+
 if __name__ == "__main__":
     unittest.main()

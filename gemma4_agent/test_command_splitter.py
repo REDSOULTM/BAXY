@@ -32,6 +32,21 @@ class NavTargetExtractTest(unittest.TestCase):
         self.assertEqual(extract_nav_target("entra al canal general"), "general")
         self.assertEqual(extract_nav_target("andá al servidor VALORANT"), "VALORANT")
 
+    def test_extracts_chat_target_varied_phrasings(self):
+        # Bug reportado 2026-05-25: "Ve a discord y pon el chat de X" debe dejar X
+        # (pelar "y pon el chat de"); "al chat de X" debe pelar el "de" final.
+        h = "@Ron92 - Discord"
+        self.assertEqual(
+            extract_nav_target("Ve a discord y pon el chat de cbayeah", app_hint=h),
+            "cbayeah")
+        self.assertEqual(
+            extract_nav_target("andá a discord al chat de GordoFriki", app_hint=h),
+            "GordoFriki")
+        self.assertEqual(
+            extract_nav_target("ve a discord y abrí el chat de juan", app_hint=h),
+            "juan")
+        self.assertEqual(extract_nav_target("entrá al canal de soporte"), "soporte")
+
     def test_non_nav_returns_none(self):
         for q in ("que hora es", "contame un chiste", "mutea el audio"):
             self.assertIsNone(extract_nav_target(q), msg=q)

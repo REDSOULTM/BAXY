@@ -5517,6 +5517,17 @@ Start-Sleep -Milliseconds 120
                 u.SetForegroundWindow.restype = wintypes.BOOL
                 u.IsWindowVisible.argtypes = (wintypes.HWND,)
                 u.IsWindowVisible.restype = wintypes.BOOL
+                # IsIconic + ShowWindow: para RESTAURAR una ventana minimizada antes
+                # de enfocarla. Una app minimizada (Electron/Chromium: Discord/Slack)
+                # NO renderiza su DOM -> su árbol UIA colapsa a ~5 controles y el
+                # find/click falla (lo que parecía "árbol intermitente" 2026-05-25 era
+                # esto: Discord estaba iconic, rect en -21333). SetForegroundWindow NO
+                # des-minimiza; hay que ShowWindow(SW_RESTORE). Medido: restaurar
+                # llevó el árbol de 5 -> 646 controles.
+                u.IsIconic.argtypes = (wintypes.HWND,)
+                u.IsIconic.restype = wintypes.BOOL
+                u.ShowWindow.argtypes = (wintypes.HWND, ctypes.c_int)
+                u.ShowWindow.restype = wintypes.BOOL
                 u.GetWindowTextW.argtypes = (wintypes.HWND, wintypes.LPWSTR, ctypes.c_int)
                 u.GetWindowTextW.restype = ctypes.c_int
                 u.GetWindowTextLengthW.argtypes = (wintypes.HWND,)
@@ -5553,6 +5564,15 @@ Start-Sleep -Milliseconds 120
             if not self._chen_found:
                 return False
             hwnd = self._chen_found[0]
+            # RESTAURAR si está minimizada ANTES de enfocar: una app iconic no
+            # renderiza -> su árbol UIA colapsa (Discord 5 controles) y todo
+            # find/click falla. SW_RESTORE = 9. Universal (cualquier app minimizada).
+            try:
+                if user32.IsIconic(hwnd):
+                    user32.ShowWindow(hwnd, 9)  # SW_RESTORE
+                    time.sleep(0.4)  # dejar que el DOM/árbol se repueble
+            except Exception:
+                pass
             # ALT-TRICK (2026-05-25, CAUSA RAÍZ final): SetForegroundWindow lo BLOQUEA
             # el foreground-lock de Windows si nuestro proceso no recibió input del
             # usuario reciente -> Discord NO pasaba al frente -> su árbol UIA quedaba
@@ -5800,15 +5820,55 @@ Start-Sleep -Milliseconds 120
         "F7": 0x76, "F8": 0x77, "F9": 0x78, "F10": 0x79, "F11": 0x7A, "F12": 0x7B,
     }
 
-    def _keypress_via_sendinput(self, keys: str) -> dict[str, Any] | None:
-        """Una tecla nombrada SIN modificador -> SendInput in-process (VK). Mismo
-        fix §7.1 que gui_type: evita el cold-start de PowerShell + el parpadeo de
-        consola que roba/devuelve el foreground (el churn de foco tras varias
-        pulsaciones desincronizaba la inyección). None si la tecla lleva modificador
-        o no está mapeada -> el caller cae al SendKeys legacy."""
-        vk = self._VK_NAMED.get(keys.strip().upper())
-        if vk is None:
+    # VK de modificadores para combos in-process (ctrl/alt/shift/win).
+    _VK_MODIFIER = {"CTRL": 0x11, "CONTROL": 0x11, "ALT": 0x12, "MENU": 0x12,
+                    "SHIFT": 0x10, "WIN": 0x5B, "WINDOWS": 0x5B, "META": 0x5B}
+
+    def _vk_for_key(self, token: str) -> int | None:
+        """VK de UNA tecla (nombrada o letra/dígito/símbolo simple) para SendInput.
+        Devuelve None si no se puede mapear sin layout (deja el fallback a SendKeys)."""
+        t = token.strip()
+        if not t:
             return None
+        named = self._VK_NAMED.get(t.upper())
+        if named is not None:
+            return named
+        if len(t) == 1:
+            # letra o dígito ASCII: VK = ord(mayúscula) para A-Z/0-9 (layout US-base,
+            # suficiente para atajos estándar ctrl+k/ctrl+a/ctrl+f que NO dependen del
+            # layout para la tecla base). Símbolos raros -> None (cae a SendKeys).
+            ch = t.upper()
+            if "A" <= ch <= "Z" or "0" <= ch <= "9":
+                return ord(ch)
+        return None
+
+    def _keypress_via_sendinput(self, keys: str) -> dict[str, Any] | None:
+        """Teclas vía SendInput IN-PROCESS (sin PowerShell). Maneja: (a) una tecla
+        nombrada/simple, (b) un COMBO con modificadores ("ctrl+k", "ctrl+shift+t",
+        "alt+f4"). Fix §7.1: evita el cold-start de PowerShell + el parpadeo de
+        consola que roba/devuelve el foreground (el churn de foco desincronizaba la
+        inyección — por eso ctrl+k a Discord por SendKeys no aterrizaba fiable). El
+        combo presiona los modificadores, la tecla base, y suelta en orden inverso,
+        TODO en un solo SendInput (atómico). None si algún token no se puede mapear
+        -> el caller cae al SendKeys legacy."""
+        raw = keys.strip()
+        if not raw:
+            return None
+        # Separar combo por '+': el ÚLTIMO token es la tecla base; los previos son
+        # modificadores. (Una sola tecla -> sin modificadores.)
+        parts = [p for p in raw.replace(" ", "").split("+") if p]
+        if not parts:
+            return None
+        *mods, base = parts
+        base_vk = self._vk_for_key(base)
+        if base_vk is None:
+            return None
+        mod_vks: list[int] = []
+        for m in mods:
+            mv = self._VK_MODIFIER.get(m.upper())
+            if mv is None:
+                return None  # modificador desconocido -> fallback SendKeys
+            mod_vks.append(mv)
         _m = _sendinput_machine()
         if _m is None:
             return None
@@ -5817,12 +5877,19 @@ Start-Sleep -Milliseconds 120
             _size = _m["size"]
             KEYEVENTF_KEYUP = 0x0002
 
-            def _vk_ev(up):
+            def _ev(vk, up):
                 i = _INPUT(); i.type = 1
                 i.u.ki = _KEYBDINPUT(vk, 0, KEYEVENTF_KEYUP if up else 0, 0, 0)
                 return i
-            buf = (_INPUT * 2)(_vk_ev(False), _vk_ev(True))
-            n = user32.SendInput(2, buf, _size)
+            seq = []
+            for mv in mod_vks:               # modificadores DOWN (en orden)
+                seq.append(_ev(mv, False))
+            seq.append(_ev(base_vk, False))  # tecla base DOWN
+            seq.append(_ev(base_vk, True))   # tecla base UP
+            for mv in reversed(mod_vks):     # modificadores UP (orden inverso)
+                seq.append(_ev(mv, True))
+            buf = (_INPUT * len(seq))(*seq)
+            n = user32.SendInput(len(seq), buf, _size)
             return {"ok": True, "keys": keys, "method": "sendinput", "events": n}
         except Exception as exc:
             return {"ok": False, "error": f"keypress sendinput failed: {exc}"}

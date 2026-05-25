@@ -300,20 +300,32 @@ class Gemma4Agent:
         target = extract_nav_target(text, app_hint=win)
         if not target or len(target) < 2:
             return None
-        # (c) ejecutar click_button(target) directo, enfocando esa ventana.
+        # (c) ejecutar el target. Intentar PRIMERO click_button directo (si el
+        # control está VISIBLE en la vista actual: un canal/servidor a la vista).
         self.trace.event(turn_id, "in_app_nav_macro", window=win[:40], target=target[:40])
         try:
             res = self.tools.execute("gui", {"action": "click_button",
                                              "label": target, "window": win})
         except Exception as exc:
-            return AgentReply(content=f"No pude entrar a «{target}»: {exc}",
-                              tool_events=[], mission=None)
+            res = {"ok": False, "error": str(exc)}
         inner = res.get("result", res) if isinstance(res, dict) else {}
         ok = bool(inner.get("ok"))
         changed = inner.get("state_changed")
         events = [ToolEvent(name="gui",
                             args={"action": "click_button", "label": target},
                             result=inner if isinstance(inner, dict) else {})]
+        # (d) FALLBACK QUICK-SWITCHER: si el control NO estaba visible (un chat/
+        # contacto/servidor que no está en la vista actual), click_button no lo
+        # encuentra. La vía universal en apps de chat tipo Electron (Discord/Slack/
+        # Teams) es el quick-switcher: Ctrl+K -> teclear el nombre -> Enter. Es
+        # DETERMINISTA (no depende de leer el árbol UIA ni de que el 4B encadene) y
+        # se VERIFICA por estado del SO: el título de la ventana cambia al chat/canal
+        # activo (medido 2026-05-25: "@Ron92 - Discord" -> "#reglas | GordoFriki -
+        # Discord"). Solo se intenta si el click directo no confirmó efecto.
+        if not (ok and changed is not False):
+            qs = self._quick_switcher_nav(win, target, turn_id)
+            if qs is not None:
+                return qs
         if ok and changed is not False:
             reply = f"Listo, entré a «{target}»."
         else:
@@ -322,6 +334,69 @@ class Gemma4Agent:
         self._last_turn_ts = time.time()
         self._remember_executed_tools(events)
         return AgentReply(content=reply, tool_events=events, mission=None)
+
+    def _quick_switcher_nav(self, win: str, target: str, turn_id: str) -> "AgentReply | None":
+        """Navegar a un chat/canal/servidor por el QUICK-SWITCHER (Ctrl+K + nombre +
+        Enter). Determinista, sin depender del árbol UIA ni de que el 4B encadene.
+        Verifica por el TÍTULO de la ventana: si cambió e incluye una palabra del
+        target, navegó. Devuelve AgentReply si confirmó, o None (que el caller dé su
+        respuesta normal). Universal para apps de chat Electron; no hardcodea apps."""
+        try:
+            import win32gui as _w
+        except Exception:
+            return None
+        def _title() -> str:
+            try:
+                return _w.GetWindowText(_w.GetForegroundWindow()) or ""
+            except Exception:
+                return ""
+        try:
+            from . import gui_safety
+            gui_safety.reset_action_budget()
+            # enfocar (restaura si está minimizada) y leer el título base.
+            self.tools._focus_window_chen(win)
+            time.sleep(0.6)
+            before = _title()
+            # Ctrl+K abre el quick-switcher en Discord/Slack/Teams. (Si la app no lo
+            # soporta, el type+Enter no cambia el título y devolvemos None.)
+            self.tools.execute("gui", {"action": "keypress", "keys": "ctrl+k"})
+            time.sleep(0.7)
+            self.tools.execute("gui", {"action": "type", "text": target})
+            time.sleep(1.0)
+            self.tools.execute("gui", {"action": "keypress", "keys": "enter"})
+            time.sleep(1.2)
+            after = _title()
+        except Exception:
+            return None
+        # VERIFY por estado del SO: el título cambió Y contiene una palabra del target.
+        import re as _re_qs
+        changed = after != before
+        toks = [t for t in _re_qs.findall(r"\w+", target.lower()) if len(t) >= 3]
+        matched = any(t in after.lower() for t in toks) if toks else False
+        self.trace.event(turn_id, "in_app_nav_quickswitcher",
+                         window=win[:40], target=target[:40],
+                         title_before=before[:40], title_after=after[:40],
+                         changed=changed, matched=matched)
+        events = [ToolEvent(name="gui",
+                            args={"action": "quick_switcher", "target": target},
+                            result={"ok": changed, "title_after": after,
+                                    "verified": matched})]
+        self._last_turn_ts = time.time()
+        self._remember_executed_tools(events)
+        if changed and matched:
+            return AgentReply(content=f"Listo, abrí «{target}» en {win.split(' - ')[-1] or win}.",
+                              tool_events=events, mission=None)
+        if changed:
+            # navegó a ALGO pero no pude confirmar que sea el target exacto.
+            return AgentReply(
+                content=f"Abrí el quick-switcher y entré a algo con «{target}», "
+                        "pero no pude confirmar que sea exactamente lo que pediste.",
+                tool_events=events, mission=None)
+        # el título no cambió -> no navegó (target inexistente o app sin quick-switcher).
+        return AgentReply(
+            content=f"No encontré «{target}» en {win.split(' - ')[-1] or win}. "
+                    "¿Está escrito igual que en la app?",
+            tool_events=events, mission=None)
 
     def _remember_executed_tools(self, events: list[ToolEvent]) -> None:
         """Record the tool names this turn actually executed, so the NEXT

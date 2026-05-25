@@ -438,12 +438,27 @@ _NAV_LEAD = re.compile(
     r"(?:a[l]?|to(?:\s+the)?|a\s+la|a\s+las|au|aux|no|na|nel|nella|al|su)\s+"
     r")?"
     # sustantivo-contenedor opcional (+ artículo opcional), seguido de espacio.
-    r"(?:(?:el|la|los|las|the|le|il|lo)\s+)?(?:" + _NAV_CONTAINER + r")\b\s+",
+    r"(?:(?:el|la|los|las|the|le|il|lo)\s+)?(?:" + _NAV_CONTAINER + r")\b\s+"
+    # "de/del/of" opcional tras el contenedor ("canal DE soporte", "chat DE juan").
+    r"(?:(?:de|del|of|do|da)\s+)?",
     re.IGNORECASE,
 )
 # fallback: solo preposición/artículo de dirección sin contenedor ("a X", "to X").
 _NAV_PREP_ONLY = re.compile(
     r"^(?:a[l]?|to(?:\s+the)?|a\s+la|a\s+las|au|aux|no|na|nel|nella|su)\s+",
+    re.IGNORECASE,
+)
+# Lead-in de SEGUNDA acción tras un "ve a <app>": una conjunción opcional + un verbo
+# de abrir/mostrar/poner + (artículo) + (contenedor "chat/canal...") + ("de"). P.ej.
+# "Ve a discord [y pon el chat de] cbayeah" -> "cbayeah". Multi-idioma básico. Se
+# pela DESPUÉS de quitar la app del frente. Estructural (verbos, no nombres de app).
+_NAV_SECOND_ACTION_LEAD = re.compile(
+    r"^(?:y|e|and|und|et)?\s*"                                        # conjunción opc.
+    r"(?:pon[eé]?|poner|abr[íi]|abrir|abre|mostr[áa]|muestra|mostrar|"  # verbos open/show
+    r"llev[áa]me?|ll[ée]vame|anda?|and[áa]|ve|open|show|go\s+to)\s+"
+    r"(?:(?:el|la|los|las|the|le|il)\s+)?"                            # artículo opc.
+    r"(?:(?:" + _NAV_CONTAINER + r")\s+)?"                            # contenedor opc.
+    r"(?:de|del|of|do|da)?\s*",                                       # "de" opc.
     re.IGNORECASE,
 )
 
@@ -474,6 +489,14 @@ def extract_nav_target(clause: str, *, app_hint: str = "") -> str | None:
             if len(tok) >= 4:
                 rest = re.sub(r"^\s*" + re.escape(tok) + r"\b", "", rest,
                               count=1, flags=re.IGNORECASE).strip(" ,-:")
+    # pelar el lead-in de una SEGUNDA acción ("a discord [y pon el chat de] X"):
+    # tras quitar la app del frente queda "[a] y pon el chat de X" o "al chat de X".
+    # Primero limpiar una preposición de dirección suelta que quedó ("a y pon..." ->
+    # "y pon...") y luego el lead de la 2da acción -> deja el target limpio.
+    rest = _NAV_PREP_ONLY.sub("", rest, count=1).strip()
+    new = _NAV_SECOND_ACTION_LEAD.sub("", rest, count=1).strip(" ,-:")
+    if new and new != rest:
+        rest = new
     # quitar conectores ("al servidor", "el canal", "a la pestaña"...) REPETIDO:
     # tras pelar la app puede quedar "al servidor X" -> "servidor X" -> "X".
     for _ in range(3):
