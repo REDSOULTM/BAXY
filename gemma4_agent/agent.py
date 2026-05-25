@@ -301,8 +301,9 @@ class Gemma4Agent:
         if not target or len(target) < 2:
             return None
         # (c) ejecutar el target. Intentar PRIMERO click_button directo (si el
-        # control está VISIBLE en la vista actual: un canal/servidor a la vista).
+        # control está VISIBLE en la vista actual: un chat/canal/servidor a la vista).
         self.trace.event(turn_id, "in_app_nav_macro", window=win[:40], target=target[:40])
+        title_before = self._app_window_title(win)
         try:
             res = self.tools.execute("gui", {"action": "click_button",
                                              "label": target, "window": win})
@@ -310,30 +311,69 @@ class Gemma4Agent:
             res = {"ok": False, "error": str(exc)}
         inner = res.get("result", res) if isinstance(res, dict) else {}
         ok = bool(inner.get("ok"))
-        changed = inner.get("state_changed")
         events = [ToolEvent(name="gui",
                             args={"action": "click_button", "label": target},
                             result=inner if isinstance(inner, dict) else {})]
-        # (d) FALLBACK QUICK-SWITCHER: si el control NO estaba visible (un chat/
-        # contacto/servidor que no está en la vista actual), click_button no lo
-        # encuentra. La vía universal en apps de chat tipo Electron (Discord/Slack/
-        # Teams) es el quick-switcher: Ctrl+K -> teclear el nombre -> Enter. Es
-        # DETERMINISTA (no depende de leer el árbol UIA ni de que el 4B encadene) y
-        # se VERIFICA por estado del SO: el título de la ventana cambia al chat/canal
-        # activo (medido 2026-05-25: "@Ron92 - Discord" -> "#reglas | GordoFriki -
-        # Discord"). Solo se intenta si el click directo no confirmó efecto.
-        if not (ok and changed is not False):
-            qs = self._quick_switcher_nav(win, target, turn_id)
-            if qs is not None:
-                return qs
-        if ok and changed is not False:
-            reply = f"Listo, entré a «{target}»."
-        else:
-            reply = (f"Intenté entrar a «{target}» pero no pude confirmar el "
-                     "efecto.")
+        # VERIFY por TÍTULO de la ventana (señal robusta, NO frame-diff): en apps de
+        # chat el título refleja el chat/canal ACTIVO ("@Ron92 - Discord" -> "@CbaYeah
+        # - Discord"). El frame-diff (state_changed) daba False cuando el foco saltaba
+        # a otra ventana tras el click, y el agente reportaba fallo de un éxito real
+        # (bug medido 2026-05-25: título == @CbaYeah pero reply "no pude"). El título
+        # es la prueba directa de que se abrió el chat correcto.
+        if ok and self._title_now_matches(win, target, title_before):
+            self._last_turn_ts = time.time()
+            self._remember_executed_tools(events)
+            return AgentReply(content=f"Listo, abrí «{target}».",
+                              tool_events=events, mission=None)
+        # (d) FALLBACK QUICK-SWITCHER: el control NO estaba visible (chat/contacto que
+        # no está en la vista actual) -> click_button no lo encontró o no cambió el
+        # chat activo. Vía universal en apps de chat Electron: Ctrl+K -> nombre ->
+        # Enter. Determinista (no depende del árbol UIA ni de que el 4B encadene),
+        # verifica por título.
+        qs = self._quick_switcher_nav(win, target, turn_id)
+        if qs is not None:
+            return qs
+        reply = (f"Intenté entrar a «{target}» pero no pude confirmar el efecto.")
         self._last_turn_ts = time.time()
         self._remember_executed_tools(events)
         return AgentReply(content=reply, tool_events=events, mission=None)
+
+    def _app_window_title(self, win_hint: str) -> str:
+        """Título ACTUAL de la ventana de la app (por el último token del hint, p.ej.
+        'Discord'). Para verificar navegación-en-app por estado del SO. '' si no se
+        puede leer (no-Windows / no encontrada)."""
+        try:
+            import win32gui as _w
+            import re as _re_t
+            toks = sorted((t for t in _re_t.findall(r"\w+", win_hint) if len(t) >= 4),
+                          key=len, reverse=True)
+            key = (toks[0] if toks else win_hint).lower()
+            found = [""]
+            def _cb(h, _):
+                t = _w.GetWindowText(h) or ""
+                if key in t.lower() and not t.lower().startswith("discord overlay"):
+                    found[0] = t
+                return True
+            _w.EnumWindows(_cb, None)
+            return found[0]
+        except Exception:
+            return ""
+
+    def _title_now_matches(self, win_hint: str, target: str, title_before: str) -> bool:
+        """True si el título de la ventana de la app refleja el target (= el chat/
+        canal activo es el pedido). Señal de estado del SO, robusta al robo de foco
+        post-click. Cuenta como éxito tanto si CAMBIÓ al target como si YA estaba en
+        él (el usuario pidió abrir un chat que ya estaba activo: igual está hecho)."""
+        import re as _re_m
+        after = self._app_window_title(win_hint)
+        if not after:
+            return False
+        toks = [t for t in _re_m.findall(r"\w+", target.lower()) if len(t) >= 3]
+        if not toks:
+            return False
+        # el título actual incluye el target -> estamos en el chat pedido (haya
+        # cambiado o ya estuviéramos ahí). Es la prueba directa de estado del SO.
+        return any(t in after.lower() for t in toks)
 
     def _quick_switcher_nav(self, win: str, target: str, turn_id: str) -> "AgentReply | None":
         """Navegar a un chat/canal/servidor por el QUICK-SWITCHER (Ctrl+K + nombre +
@@ -368,7 +408,10 @@ class Gemma4Agent:
             after = _title()
         except Exception:
             return None
-        # VERIFY por estado del SO: el título cambió Y contiene una palabra del target.
+        # VERIFY por estado del SO: el título ACTUAL incluye el target (= el chat/canal
+        # activo es el pedido). matched cuenta tanto si cambió como si YA estabas ahí
+        # (pediste un chat que ya estaba abierto: igual está hecho). 'changed' solo
+        # informa para el caso ambiguo (navegó a algo pero sin matchear el target).
         import re as _re_qs
         changed = after != before
         toks = [t for t in _re_qs.findall(r"\w+", target.lower()) if len(t) >= 3]
@@ -379,23 +422,23 @@ class Gemma4Agent:
                          changed=changed, matched=matched)
         events = [ToolEvent(name="gui",
                             args={"action": "quick_switcher", "target": target},
-                            result={"ok": changed, "title_after": after,
+                            result={"ok": matched, "title_after": after,
                                     "verified": matched})]
         self._last_turn_ts = time.time()
         self._remember_executed_tools(events)
-        if changed and matched:
-            return AgentReply(content=f"Listo, abrí «{target}» en {win.split(' - ')[-1] or win}.",
+        _app = win.split(" - ")[-1] or win
+        if matched:
+            return AgentReply(content=f"Listo, abrí «{target}» en {_app}.",
                               tool_events=events, mission=None)
         if changed:
-            # navegó a ALGO pero no pude confirmar que sea el target exacto.
+            # navegó a ALGO pero el título no matchea el target -> no confirmable.
             return AgentReply(
-                content=f"Abrí el quick-switcher y entré a algo con «{target}», "
-                        "pero no pude confirmar que sea exactamente lo que pediste.",
+                content=f"Entré a algo en {_app} pero no pude confirmar que sea "
+                        f"exactamente «{target}».",
                 tool_events=events, mission=None)
-        # el título no cambió -> no navegó (target inexistente o app sin quick-switcher).
+        # el título no cambió ni matchea -> no navegó (target inexistente / no encontrado).
         return AgentReply(
-            content=f"No encontré «{target}» en {win.split(' - ')[-1] or win}. "
-                    "¿Está escrito igual que en la app?",
+            content=f"No encontré «{target}» en {_app}. ¿Está escrito igual que en la app?",
             tool_events=events, mission=None)
 
     def _remember_executed_tools(self, events: list[ToolEvent]) -> None:
@@ -786,6 +829,11 @@ class Gemma4Agent:
         # del LLM: si (a) hay verbo de nav + target, y (b) una ventana abierta matchea
         # el comando -> click_button(target) directo. Gate GEMMA4_INAPP_NAV=0.
         import os as _os_nav
+        # turn_id ANTES del macro: el call site lo usaba sin estar definido (se
+        # asignaba 80 líneas más abajo) -> UnboundLocalError SIEMPRE, tragado por el
+        # `except: pass` -> el macro NUNCA corría por run_content y todo caía al LLM
+        # (bug 2026-05-25: el macro andaba en llamada directa pero no por run_text).
+        turn_id = self.trace.new_turn_id()
         if (isinstance(content, str) and content.strip()
                 and not getattr(self, "_splitting", False)
                 and (_os_nav.environ.get("GEMMA4_INAPP_NAV", "1").strip().lower()
@@ -794,8 +842,14 @@ class Gemma4Agent:
                 _nav = self._try_in_app_nav(content, turn_id)
                 if _nav is not None:
                     return _nav
-            except Exception:
-                pass
+            except Exception as _nav_exc:
+                # NO tragar en silencio: si el macro de navegación-en-app explota,
+                # dejamos traza (antes caía al LLM sin pista de por qué). Bug 2026-05-25:
+                # el macro andaba en llamada directa pero el run_text completo caía al
+                # LLM — era una excepción tragada acá.
+                self.trace.event(turn_id, "in_app_nav_macro_error",
+                                 error=f"{type(_nav_exc).__name__}: {_nav_exc}",
+                                 user_text=content[:60] if isinstance(content, str) else "")
         # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
         # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
         # LLM y corremos cada cláusula como su propio turno (serializado si la
@@ -814,7 +868,7 @@ class Gemma4Agent:
         self._forced_tool_retry_done = False
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
-        turn_id = self.trace.new_turn_id()
+        # turn_id ya se generó arriba (antes del macro de navegación-en-app).
         # Router mode (lazy vision): pick the per-turn router preset. vision
         # only when this turn actually has an image (mode==vision_action) — so
         # text/voice turns use the cache-reuse-enabled text preset (fast). None
