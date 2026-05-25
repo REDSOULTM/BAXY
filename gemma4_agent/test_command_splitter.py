@@ -103,6 +103,27 @@ class SplitterTest(unittest.TestCase):
         self.assertEqual(len(split_command("sal y pimienta y azúcar y harina y huevos y leche")), 1)
         self.assertEqual(len(split_command("Tom y Jerry")), 1)
 
+    def test_bare_nav_to_app_prefix_does_not_split(self):
+        # Bug medido 2026-05-25: "Ve a discord y pon el chat de cbayeah" se partía en
+        # ["Ve a discord","pon el chat de cbayeah"]; la 2da cláusula AISLADA perdía
+        # "discord" y el router la mandaba a WhatsApp (whatsapp=0.58) -> abría el chat
+        # en la app equivocada. Un "ir/entrar a <app>" PURO es prefijo de contexto, no
+        # una acción aparte: NO se parte, para que la navegación-en-app vea la app.
+        for cmd in (
+            "Ve a discord y pon el chat de cbayeah",
+            "andá a discord y mandale hola a juan",
+            "entrá a Spotify y poné rock",
+        ):
+            self.assertEqual(len(split_command(cmd)), 1, cmd)
+
+    def test_open_app_still_chains(self):
+        # PERO "abrí <app>" SÍ es una acción que encadena (abrir != navegar): no se
+        # debe colapsar. _PURE_NAV_VERB excluye 'abrí'/'abre'/'open' a propósito.
+        self.assertEqual(len(split_command("abrí Spotify y bajá el volumen")), 2)
+        self.assertEqual(
+            len(split_command("abrí la calculadora y escribí 2+2 y apretá enter")), 3)
+        self.assertEqual(len(split_command("abre el bloc de notas y escribí hola")), 2)
+
     def test_asyndeton_comma_splits_actions(self):
         # Regresión del eval Tier-4 (2026-05-24): una coma SIN conjunción antes
         # de una acción ("abrí la calc, escribí X y apretá enter") dejaba dos

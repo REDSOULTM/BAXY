@@ -197,6 +197,45 @@ def _split_multilingual(utterance: str) -> list[str]:
     return [utterance]
 
 
+# Verbos de PURA navegación/dirección ("ir a", "entrar a") — un prefijo de
+# CONTEXTO, NO una acción que produzca un efecto por sí sola. Deliberadamente NO
+# incluye "abrí/abre/open": abrir una app SÍ es una acción que encadena ("abrí la
+# calc y escribí 2+2" son 2 acciones reales). "Ve a discord" no hace nada solo —
+# es el contexto de lo que sigue.
+_PURE_NAV_VERB = re.compile(
+    r"^\s*(?:"
+    r"entr[áa]\w*|entra|and[áa]\w*|anda|naveg[áa]\w*|navega|dirig[íi]te|ve|"   # es
+    r"go|navigate|"                                                            # en
+    r"vai|va|entre"                                                            # pt/it/fr
+    r")\b"
+    r"(?:\s+(?:a|al|to|para|dans|au|in|nel|su|n[oa]))?"
+    r"[\s:]+",
+    re.IGNORECASE,
+)
+
+
+def _is_bare_nav_to_app(clause: str) -> bool:
+    """True si la cláusula es SOLO "ir/entrar a <app>" (prefijo de contexto), sin
+    una acción propia adentro. P.ej. "Ve a discord" sí; "abrí la calc y escribí 2+2"
+    NO (abrir es acción que encadena, por eso _PURE_NAV_VERB excluye 'abrí'/'open').
+    Estructural: matchea un verbo de PURA navegación y el resto es corto (≤3 tokens,
+    el nombre de la app) y NO contiene otro verbo imperativo. Sirve para NO partir
+    "Ve a discord y pon el chat de X" (es UNA navegación-en-app: partirla pierde el
+    "discord" de la 2da cláusula)."""
+    if not clause:
+        return False
+    m = _PURE_NAV_VERB.match(clause)
+    if not m:
+        return False
+    rest = clause[m.end():].strip(" ,.;:")
+    if not rest or len(rest.split()) > 3:
+        return False  # vacío o demasiado largo -> no es un simple "ir a <app>"
+    # si el resto YA contiene un verbo imperativo, no es navegación pura.
+    if re.search(_IMPERATIVE, rest, re.IGNORECASE):
+        return False
+    return True
+
+
 def split_command(utterance: str) -> list[str]:
     """Parte un enunciado en cláusulas de acción. Devuelve [utterance] si no hay
     multi-intent claro (caso normal). Nunca lanza.
@@ -207,6 +246,15 @@ def split_command(utterance: str) -> list[str]:
     # CAPA 1: regex español (exacta, barata, ya validada).
     parts = [p.strip(" ,.;") for p in _SPLIT_RE.split(utterance) if p and p.strip(" ,.;")]
     if len(parts) > 1:
+        # NO PARTIR cuando la 1ra cláusula es un "ir/entrar a <app>" puro: es un
+        # PREFIJO DE CONTEXTO de lo que sigue, no una acción aparte. Bug medido
+        # 2026-05-25: "Ve a discord y pon el chat de cbayeah" se partía en
+        # ["Ve a discord","pon el chat de cbayeah"]; la 2da, aislada, perdía
+        # "discord" -> el router la mandaba a WhatsApp (whatsapp=0.58) y abría el
+        # chat en la app equivocada. Manteniéndolas juntas, _window_title_in_text
+        # ve "discord", matchea la ventana abierta y rutea a navegación-en-app.
+        if _is_bare_nav_to_app(parts[0]):
+            return [utterance]
         if len(parts) > MAX_CLAUSES:
             return [utterance]
         return parts

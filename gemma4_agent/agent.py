@@ -1279,20 +1279,40 @@ class Gemma4Agent:
         # router NO ofreció ya computer-use, y solo para turnos atómicos (no charla).
         try:
             _txt_for_nav = content if isinstance(content, str) else ""
-            if (_txt_for_nav and not getattr(self, "_splitting", False)
-                    and not (set(selected_tool_names) & {"uia", "gui", "window"})):
+            # CORRER aunque el router ya haya puesto uia/gui (bug medido 2026-05-25:
+            # "Ve a discord y pon el chat de cbayeah" traía uia=0.42 PERO whatsapp=0.58
+            # ARRIBA — la condición vieja `not (subset & {uia,gui,window})` SALTABA el
+            # bloque por tener uia, dejaba whatsapp de líder y el 4B abría el chat en
+            # WHATSAPP, no en Discord). La señal de desambiguación es el ESTADO DEL SO
+            # (ventana de Discord ABIERTA), no si el router tocó uia. Por eso ahora
+            # solo gateamos por "turno atómico" (no charla/no split) + ventana matchea.
+            if _txt_for_nav and not getattr(self, "_splitting", False):
                 _open_match = self._window_title_in_text(_txt_for_nav)
                 if _open_match:
                     for _t in ("uia", "gui", "window"):
                         if _t not in selected_tool_names:
                             selected_tool_names.append(_t)
-                    # quitar DISTRACTORES de "lanzar app/juego": la app YA está
-                    # abierta (su ventana matcheó), así que game_launcher/app NO
-                    # aplican y el 4B débil los elegía por encima de uia (medido:
-                    # con game_launcher en el subset, el 4B elegía launch en vez de
-                    # uia para "entrá a Discord al servidor X"). Sacarlos deja a
-                    # computer-use como la opción correcta.
-                    _drop = {"game_launcher", "app", "steam"}
+                    # quitar DISTRACTORES: la app objetivo YA está abierta (su ventana
+                    # matcheó el comando), así que el usuario quiere OPERAR DENTRO de
+                    # ella, no (a) relanzar otra app [game_launcher/app/steam/browser]
+                    # ni (b) mandar el "chat/mensaje" por OTRO canal de mensajería
+                    # [whatsapp/contacts/email]. El 4B débil elegía esos distractores
+                    # por encima de uia: "pon el chat de cbayeah" tiene whatsapp=0.58
+                    # aunque el comando empiece con "Ve a discord". Sacarlos deja a
+                    # computer-use (uia/gui) como la única vía -> opera la app abierta.
+                    # session (cancel_turn) también fuera: el comando es una ACCIÓN
+                    # nueva, no una cancelación (el 4B la elegía y respondía "no puedo,
+                    # interrumpiste la acción anterior"). Categorías de tools, NO listas
+                    # de apps por idioma -> universal (CLAUDE.md: estado del SO).
+                    _drop = {"game_launcher", "app", "steam", "browser",
+                             "whatsapp", "contacts", "email", "media", "session"}
+                    # PERO no sacar la tool DEDICADA que corresponde a la ventana
+                    # matcheada: si el usuario abrió WhatsApp y pide algo de WhatsApp,
+                    # la ventana matchea "whatsapp" y ahí SÍ queremos la tool whatsapp,
+                    # no forzar uia. Conservamos cualquier tool cuyo nombre aparezca en
+                    # el título de la ventana abierta (resolución por estado del SO).
+                    _win_low = _open_match.lower()
+                    _drop = {t for t in _drop if t not in _win_low}
                     selected_tool_names = [t for t in selected_tool_names if t not in _drop]
                     self.trace.event(turn_id, "in_app_nav_injected",
                                      matched_window=_open_match[:40],
