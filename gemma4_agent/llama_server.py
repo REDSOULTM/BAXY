@@ -476,9 +476,13 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                 draft_ngl = (os.environ.get("GEMMA4_SPEC_DRAFT_NGL") or "99").strip()
                 try:
                     int(n_max); int(n_min); int(draft_ngl)
+                    # NOTA: --draft-max/--draft-min fueron REMOVIDOS en este build
+                    # (b9090); los nombres vigentes son --spec-draft-n-max/-n-min
+                    # (verificado en `llama-server --help`). Con los viejos el
+                    # server no arrancaba. --gpu-layers-draft sigue siendo alias OK.
                     cmd.extend([
-                        "--draft-max", n_max,
-                        "--draft-min", n_min,
+                        "--spec-draft-n-max", n_max,
+                        "--spec-draft-n-min", n_min,
                         "--gpu-layers-draft", draft_ngl,
                     ])
                 except ValueError:
@@ -493,15 +497,18 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     # comparar tok/s + tool-call success antes de confiar. Reversible (quitar la
     # env var). NO incompatible con --swa-full ni cache-reuse (es otra capa).
     if (os.environ.get("GEMMA4_NGRAM_SPEC") or "").strip().lower() in {"1", "true", "yes", "on"}:
-        # --spec-type ngram-cache: speculative sin draft model (b9090+).
+        # --spec-type ngram-cache: speculative sin draft model (verificado en este
+        # build b9090: `llama-server --help` lista ngram-cache|ngram-simple|...).
+        # El nº de tokens a draftear es --spec-draft-n-max (NOTA: --draft-max fue
+        # REMOVIDO en este build; usar el nombre nuevo o el server no arranca).
         n_draft = (os.environ.get("GEMMA4_NGRAM_DRAFT_MAX") or "8").strip()
         try:
             int(n_draft)
-            cmd.extend(["--spec-type", "ngram-cache", "--draft-max", n_draft])
+            cmd.extend(["--spec-type", "ngram-cache", "--spec-draft-n-max", n_draft])
             logger.warning(
                 "ngram-cache speculative ENABLED (opt-in). Gana en prompts "
                 "repetitivos; ~0%% en conversación variada (auditoría §7.6). "
-                "Medir tok/s antes de confiar. draft-max=%s", n_draft)
+                "Medir tok/s antes de confiar. spec-draft-n-max=%s", n_draft)
         except ValueError:
             logger.warning("GEMMA4_NGRAM_DRAFT_MAX inválido; ignorando ngram-cache")
 
