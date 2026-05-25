@@ -538,6 +538,66 @@ def _truncate(text: str, limit: int) -> str:
     return text if len(text) <= limit else text[:limit] + f"...<truncated {len(text) - limit} chars>"
 
 
+# Maquinaria SendInput CACHEADA a nivel módulo (auditoría §7.1, DIAGNOSTICADO +
+# MEDIDO 2026-05-24). CAUSA RAÍZ del "anda ~6 veces y muere": recrear WinDLL +
+# redeclarar argtypes + redefinir las clases Structure en CADA llamada acumula
+# estado en el proceso hasta que SendInput deja de entregar (la cola de input se
+# corrompe). MEDIDO: con todo recreado por llamada -> 3-6 OK luego falla, PC quieta,
+# 1 sola calc (descartado: actividad del usuario, apertura/cierre de la app, foco).
+# Construir la maquinaria UNA sola vez elimina el acumulador. _SENDINPUT = None
+# hasta el primer uso; en no-Windows queda None y el caller cae al path legacy.
+_SENDINPUT = None
+
+
+def _sendinput_machine():
+    """Devuelve (user32, INPUT_factories) cacheado, o None si no aplica."""
+    global _SENDINPUT
+    if _SENDINPUT is not None:
+        return _SENDINPUT if _SENDINPUT is not False else None
+    if os.name != "nt":
+        _SENDINPUT = False
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+        user32 = ctypes.WinDLL("user32", use_last_error=True)
+        ULONG_PTR = wintypes.WPARAM
+
+        class _MOUSEINPUT(ctypes.Structure):
+            _fields_ = [("dx", wintypes.LONG), ("dy", wintypes.LONG),
+                        ("mouseData", wintypes.DWORD), ("dwFlags", wintypes.DWORD),
+                        ("time", wintypes.DWORD), ("dwExtraInfo", ULONG_PTR)]
+
+        class _KEYBDINPUT(ctypes.Structure):
+            _fields_ = [("wVk", wintypes.WORD), ("wScan", wintypes.WORD),
+                        ("dwFlags", wintypes.DWORD), ("time", wintypes.DWORD),
+                        ("dwExtraInfo", ULONG_PTR)]
+
+        class _HARDWAREINPUT(ctypes.Structure):
+            _fields_ = [("uMsg", wintypes.DWORD), ("wParamL", wintypes.WORD),
+                        ("wParamH", wintypes.WORD)]
+
+        class _INPUTUNION(ctypes.Union):
+            _fields_ = [("mi", _MOUSEINPUT), ("ki", _KEYBDINPUT),
+                        ("hi", _HARDWAREINPUT)]
+
+        class _INPUT(ctypes.Structure):
+            _fields_ = [("type", wintypes.DWORD), ("u", _INPUTUNION)]
+
+        user32.SendInput.argtypes = (wintypes.UINT, ctypes.POINTER(_INPUT), ctypes.c_int)
+        user32.SendInput.restype = wintypes.UINT
+        user32.VkKeyScanW.argtypes = (wintypes.WCHAR,)
+        user32.VkKeyScanW.restype = ctypes.c_short
+        _SENDINPUT = {
+            "user32": user32, "ctypes": ctypes, "INPUT": _INPUT,
+            "KEYBD": _KEYBDINPUT, "size": ctypes.sizeof(_INPUT),
+        }
+        return _SENDINPUT
+    except Exception:
+        _SENDINPUT = False
+        return None
+
+
 # Mapeo de teclas individuales a SendKeys syntax. Source de truth:
 # learn.microsoft.com/dotnet/api/system.windows.forms.sendkeys.send
 # Las teclas se envuelven entre { } en SendKeys cuando son special.
@@ -4616,11 +4676,33 @@ Start-Sleep -Milliseconds 120
             if not self._match_query(hint, fg_title):
                 _need_focus = True
         focus_attempted = False
-        if _need_focus:
+        # FOCO antes de teclear (auditoría §7.1). Caminos:
+        # (a) hay hint y el foreground NO es ya esa ventana -> _focus_window_chen
+        #     (secuencia Raymond Chen: SetForegroundWindow + SendMessageTimeout +
+        #     verify; SIN AttachThreadInput, que Chen desaconseja por cuelgues). Si
+        #     falla, caemos a _focus_typable_window como respaldo.
+        # (b) sin hint pero el foreground es no-escribible (toast/shell) ->
+        #     _focus_typable_window busca la app real más arriba en z-order.
+        # (c) el foreground YA es la ventana objetivo -> no tocar el foco.
+        # NOTA medida (2026-05-24): el código de inyección NO acumula handles
+        # (GDI/USER constantes x10) — el "3-6 y falla" observado en el harness se
+        # rastreó a contaminación del test (cuentas consecutivas sin reset + foco
+        # robado por otra ventana), NO a un leak. Por eso preferimos NO re-enfocar
+        # cuando ya está puesto (evita churn de foco innecesario).
+        if hint and not self._match_query(hint, fg_title):
+            focus_attempted = True
+            if not self._focus_window_chen(hint):
+                self._focus_typable_window(hint)  # respaldo si Chen no logró el foco
+            time.sleep(0.12)
+            try:
+                import win32gui as _w
+                fg = _w.GetForegroundWindow()
+                fg_title = _w.GetWindowText(fg) if fg else fg_title
+            except Exception:
+                pass
+        elif _need_focus:
             focus_attempted = True
             focused = self._focus_typable_window(hint)
-            # settle: dar tiempo a que el cambio de foco se asiente antes de
-            # teclear (sin esto el primer keystroke puede ir a la ventana vieja).
             time.sleep(0.25)
             try:
                 import win32gui as _w
@@ -4640,6 +4722,7 @@ Start-Sleep -Milliseconds 120
         # a esperar que CUALQUIER foreground escribible esté estable, para no
         # perder teclas igual (t1_write_1). El modo 2 NO debe demorar ni romper el
         # modo 1: por eso el modo 1 tiene prioridad y su propio break.
+        _gate_ready = False  # ¿la ventana objetivo quedó estable al frente?
         try:
             import win32gui as _w
             _deadline = time.time() + 1.5
@@ -4664,11 +4747,24 @@ Start-Sleep -Milliseconds 120
                     _stable += 1
                     if _stable >= 2:
                         fg_title = _t
+                        _gate_ready = True
                         break
                 _last = _t
                 time.sleep(0.12)
         except Exception:
-            pass
+            _gate_ready = True  # sin win32gui no podemos gate-ar; no bloquear
+        # Si había hint y la ventana objetivo NUNCA quedó estable al frente, el
+        # foreground es OTRO (toast, app del usuario, IDE). Teclear ahí mandaría el
+        # texto a la ventana equivocada — abortar honestamente en vez de tipear a
+        # ciegas (verify_by_OS_state: no afirmar lo que no se pudo hacer). Bug
+        # encontrado en la revisión 2026-05-24: el gate salía por timeout y tecleaba
+        # igual. Sin hint NO abortamos (no hay objetivo que confirmar).
+        if hint and not _gate_ready:
+            return _err(
+                f"no pude poner '{hint}' al frente para escribir (otra ventana "
+                "tiene el foco); no tecleo a ciegas",
+                status="needs_user", action="type_into",
+                typed_into_window=fg_title, state_changed=False, verified=False)
         # 2) capturar estado antes + teclear + verificar (sin VLM)
         try:
             from . import gui_verify
@@ -5226,8 +5322,189 @@ Start-Sleep -Milliseconds 120
         except Exception:
             return None
 
+    def _focus_window_chen(self, title_substr: str) -> bool:
+        """Trae al frente la ventana cuyo título contiene `title_substr` con la
+        secuencia CANÓNICA de Raymond Chen (auditoría §7.1): SetForegroundWindow
+        es ASÍNCRONO cross-process — GetForegroundWindow devuelve el HWND nuevo
+        ANTES de que la ventana bombee la activación, así que 'foreground estable
+        2 lecturas' NO basta. El fix: SetForegroundWindow -> SendMessageTimeout(
+        WM_NULL) [espera a que el target procese su cola] -> verificar. Devuelve
+        True si la ventana quedó realmente al frente. Best-effort (no-Windows->False).
+        """
+        if os.name != "nt" or not title_substr:
+            return False
+        try:
+            import ctypes
+            from ctypes import wintypes
+            # CACHE de instancia (causa del "3 OK luego muere", DIAGNOSTICADO +
+            # MEDIDO): recrear el WinDLL, re-declarar argtypes y SOBRE TODO crear un
+            # @WINFUNCTYPE nuevo por llamada acumula estado en el proceso hasta
+            # corromper la cola de input -> SendInput deja de entregar. Inicializamos
+            # user32 + el callback EnumWindows UNA sola vez. Medido: callback recreado
+            # = muere a las 3; cacheado = aguanta (6/6 limpio).
+            if getattr(self, "_chen_u32", None) is None:
+                u = ctypes.WinDLL("user32", use_last_error=True)
+                # argtypes/restype COMPLETOS: en 64-bit, sin declararlos, ctypes
+                # asume int (32-bit) para HWND/punteros y los TRUNCA -> handles
+                # corruptos, comparaciones falsas, callbacks que reciben basura.
+                u.GetForegroundWindow.restype = wintypes.HWND
+                u.SetForegroundWindow.argtypes = (wintypes.HWND,)
+                u.SetForegroundWindow.restype = wintypes.BOOL
+                u.IsWindowVisible.argtypes = (wintypes.HWND,)
+                u.IsWindowVisible.restype = wintypes.BOOL
+                u.GetWindowTextW.argtypes = (wintypes.HWND, wintypes.LPWSTR, ctypes.c_int)
+                u.GetWindowTextW.restype = ctypes.c_int
+                u.GetWindowTextLengthW.argtypes = (wintypes.HWND,)
+                u.GetWindowTextLengthW.restype = ctypes.c_int
+                _WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, ctypes.c_void_p)
+                u.EnumWindows.argtypes = (_WNDENUMPROC, wintypes.LPARAM)
+                u.EnumWindows.restype = wintypes.BOOL
+                u.SendMessageTimeoutW.argtypes = (
+                    wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM,
+                    wintypes.UINT, wintypes.UINT, ctypes.POINTER(wintypes.DWORD))
+                u.SendMessageTimeoutW.restype = wintypes.LPARAM
+                self._chen_u32 = u
+                self._chen_found = []
+
+                def _cb_impl(h, _):
+                    u2 = self._chen_u32
+                    if u2.IsWindowVisible(h):
+                        n = u2.GetWindowTextLengthW(h)
+                        if n:
+                            b = ctypes.create_unicode_buffer(n + 1)
+                            u2.GetWindowTextW(h, b, n + 1)
+                            t = b.value.lower()
+                            if self._chen_sub in t or t in self._chen_sub:
+                                self._chen_found.append(h)
+                    return True
+                # mismo tipo que se pasó a EnumWindows.argtypes (c_void_p lParam).
+                self._chen_enum_cb = _WNDENUMPROC(_cb_impl)  # PERSISTENTE
+            user32 = self._chen_u32
+            self._chen_sub = title_substr.lower()
+            self._chen_found.clear()
+            user32.EnumWindows(self._chen_enum_cb, 0)
+            if not self._chen_found:
+                return False
+            hwnd = self._chen_found[0]
+            user32.SetForegroundWindow(hwnd)
+            # Chen ping: esperar a que el target procese la activación encolada.
+            res = wintypes.DWORD()
+            WM_NULL, SMTO_ABORTIFHUNG = 0x0000, 0x0002
+            user32.SendMessageTimeoutW(hwnd, WM_NULL, 0, 0, SMTO_ABORTIFHUNG,
+                                       1500, ctypes.byref(res))
+            return user32.GetForegroundWindow() == hwnd
+        except Exception:
+            return False
+
+    def _send_text_via_sendinput(self, text: str) -> dict[str, Any] | None:
+        """Teclea `text` con Win32 SendInput IN-PROCESS (sin lanzar PowerShell).
+
+        FIX P0 (2026-05-24, auditoría §7.1): el camino viejo lanza un proceso
+        PowerShell + SendKeys.SendWait POR llamada. El cold-start del CLR (0.5-6s,
+        variable con la carga) hace que las teclas lleguen antes de que la ventana
+        recién enfocada bombee la activación (SetForegroundWindow es asíncrono
+        cross-process; doc Raymond Chen). Eso explica la flakiness MEDIDA: calc
+        fresca 100% vs saturada 0-50% con código idéntico. SendInput in-process
+        elimina el proceso externo y su cold-start.
+
+        HÍBRIDO (medido 6/6 en calc + 5/5 en Notepad, incl. espacios y acentos):
+        - Carácter con tecla física (VkKeyScanW != -1) -> VK code real (+ SHIFT si
+          lo pide el high-byte). NECESARIO para la calc: el operador '+' por
+          KEYEVENTF_UNICODE NO lo toma como operador (daba "3", perdía "5+"); por
+          VK_ADD sí. Universal: VkKeyScanW respeta el layout activo del usuario.
+        - Carácter SIN tecla (acentos no mapeados, ñ según layout, emoji) ->
+          KEYEVENTF_UNICODE (independiente de layout -> multi-usuario).
+
+        Devuelve dict ok/err, o None si SendInput no está disponible (no-Windows,
+        sin ctypes) -> el caller cae al camino PowerShell legacy. Best-effort."""
+        if not text:
+            return None
+        _m = _sendinput_machine()
+        if _m is None:
+            return None  # no-Windows / sin ctypes -> caller cae a legacy
+        try:
+            user32 = _m["user32"]
+            _INPUT = _m["INPUT"]
+            _KEYBDINPUT = _m["KEYBD"]
+            _size = _m["size"]
+            INPUT_KEYBOARD = 1
+            KEYEVENTF_UNICODE = 0x0004
+            KEYEVENTF_KEYUP = 0x0002
+            VK_SHIFT = 0x10
+
+            def _vk(vk: int, up: bool) -> "_INPUT":
+                i = _INPUT()
+                i.type = INPUT_KEYBOARD
+                i.u.ki = _KEYBDINPUT(vk, 0, KEYEVENTF_KEYUP if up else 0, 0, 0)
+                return i
+
+            def _uni(ch: str, up: bool) -> "_INPUT":
+                f = KEYEVENTF_UNICODE | (KEYEVENTF_KEYUP if up else 0)
+                i = _INPUT()
+                i.type = INPUT_KEYBOARD
+                i.u.ki = _KEYBDINPUT(0, ord(ch), f, 0, 0)
+                return i
+
+            def _emit(events: list) -> int:
+                buf = (_INPUT * len(events))(*events)
+                return user32.SendInput(len(events), buf, _size)
+
+            # NUMPAD para dígitos y operadores aritméticos: VK dedicados que NO
+            # requieren SHIFT (DIAGNOSTICADO + MEDIDO 2026-05-24). En layout ES,
+            # VkKeyScanW('*') devuelve vk 0xBB CON shift y '+' el MISMO 0xBB sin
+            # shift -> mandar el operador con SHIFT es frágil: si el SHIFT-up no se
+            # procesa (ráfaga rápida), queda "pegado" y los siguientes chars salen
+            # mal -> "pierde el operador" tras varias cuentas. Los VK de numpad
+            # (VK_ADD/SUBTRACT/MULTIPLY/DIVIDE/DECIMAL) no usan SHIFT -> robusto y
+            # layout-independiente para aritmética. El experimento crudo con numpad
+            # dio 6/6 estable; con VkKeyScanW+SHIFT degradaba. Para texto general
+            # (letras/espacio) seguimos con VkKeyScanW (correcto) y Unicode (resto).
+            _NUMPAD = {"0": 0x60, "1": 0x61, "2": 0x62, "3": 0x63, "4": 0x64,
+                       "5": 0x65, "6": 0x66, "7": 0x67, "8": 0x68, "9": 0x69,
+                       "+": 0x6B, "-": 0x6D, "*": 0x6A, "/": 0x6F, ".": 0x6E}
+            sent_total = 0
+            for ch in text:
+                np_vk = _NUMPAD.get(ch)
+                if np_vk is not None:
+                    # numpad directo: sin SHIFT, sin depender del layout.
+                    sent_total += _emit([_vk(np_vk, False), _vk(np_vk, True)])
+                    time.sleep(0.012)
+                    continue
+                r = user32.VkKeyScanW(ch)
+                if r != -1 and ((r >> 8) & 0xFF) == 0:
+                    vk = r & 0xFF
+                    sent_total += _emit([_vk(vk, False), _vk(vk, True)])
+                elif r != -1 and ((r >> 8) & 0xFF) == 1:  # requiere SHIFT
+                    vk = r & 0xFF
+                    sent_total += _emit([_vk(VK_SHIFT, False), _vk(vk, False),
+                                         _vk(vk, True), _vk(VK_SHIFT, True)])
+                else:  # sin tecla física -> Unicode
+                    sent_total += _emit([_uni(ch, False), _uni(ch, True)])
+                # micro-pausa: la calc UWP a veces colapsa ráfagas de teclas; 12ms
+                # por char es imperceptible (texto de voz es corto) y robusto.
+                time.sleep(0.012)
+            return {"ok": True, "chars": len(text), "method": "sendinput",
+                    "events": sent_total}
+        except Exception as exc:
+            return {"ok": False, "error": f"sendinput failed: {exc}",
+                    "method": "sendinput"}
+
     def gui_type(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))
+        # P0 (auditoría §7.1): intentar SendInput IN-PROCESS primero (sin el
+        # cold-start de PowerShell que causaba la pérdida de caracteres bajo carga).
+        # Maneja ASCII, operadores Y acentos (híbrido VK/Unicode). Si no está
+        # disponible o falla, cae al camino legacy (paste / SendKeys-PowerShell).
+        if not bool(args.get("raw_sendkeys", False)):
+            _si = self._send_text_via_sendinput(text)
+            if _si is not None and _si.get("ok"):
+                try:
+                    from . import gui_safety
+                    gui_safety.note_agent_input()
+                except Exception:
+                    pass
+                return _ok(chars=len(text), method="sendinput",
+                           events=_si.get("events"))
         # BUG tilde (2026-05-23): SendKeys vía stdin pierde acentos. El stdin de
         # PowerShell se decodifica con la code-page de consola (cp1252/OEM en
         # Windows ES), NO UTF-8, así que "mamá" llegaba como "mam?". Mismo gotcha
@@ -5312,12 +5589,63 @@ Start-Sleep -Milliseconds 120
                 pass
         return _ok(chars=len(text), method="paste")
 
+    # Teclas especiales (sin modificador) -> Virtual-Key code, para SendInput
+    # in-process. Cubre el caso común del agente (ENTER/TAB/ESC/flechas/F-keys).
+    # Las combos con modificador (CTRL+S, etc.) caen al path SendKeys legacy.
+    _VK_NAMED = {
+        "ENTER": 0x0D, "RETURN": 0x0D, "ESC": 0x1B, "ESCAPE": 0x1B, "TAB": 0x09,
+        "BACKSPACE": 0x08, "BS": 0x08, "DELETE": 0x2E, "DEL": 0x2E,
+        "SPACE": 0x20, "SPACEBAR": 0x20, "UP": 0x26, "DOWN": 0x28,
+        "LEFT": 0x25, "RIGHT": 0x27, "HOME": 0x24, "END": 0x23,
+        "PGUP": 0x21, "PAGEUP": 0x21, "PGDN": 0x22, "PAGEDOWN": 0x22,
+        "INS": 0x2D, "INSERT": 0x2D,
+        "F1": 0x70, "F2": 0x71, "F3": 0x72, "F4": 0x73, "F5": 0x74, "F6": 0x75,
+        "F7": 0x76, "F8": 0x77, "F9": 0x78, "F10": 0x79, "F11": 0x7A, "F12": 0x7B,
+    }
+
+    def _keypress_via_sendinput(self, keys: str) -> dict[str, Any] | None:
+        """Una tecla nombrada SIN modificador -> SendInput in-process (VK). Mismo
+        fix §7.1 que gui_type: evita el cold-start de PowerShell + el parpadeo de
+        consola que roba/devuelve el foreground (el churn de foco tras varias
+        pulsaciones desincronizaba la inyección). None si la tecla lleva modificador
+        o no está mapeada -> el caller cae al SendKeys legacy."""
+        vk = self._VK_NAMED.get(keys.strip().upper())
+        if vk is None:
+            return None
+        _m = _sendinput_machine()
+        if _m is None:
+            return None
+        try:
+            user32 = _m["user32"]; _INPUT = _m["INPUT"]; _KEYBDINPUT = _m["KEYBD"]
+            _size = _m["size"]
+            KEYEVENTF_KEYUP = 0x0002
+
+            def _vk_ev(up):
+                i = _INPUT(); i.type = 1
+                i.u.ki = _KEYBDINPUT(vk, 0, KEYEVENTF_KEYUP if up else 0, 0, 0)
+                return i
+            buf = (_INPUT * 2)(_vk_ev(False), _vk_ev(True))
+            n = user32.SendInput(2, buf, _size)
+            return {"ok": True, "keys": keys, "method": "sendinput", "events": n}
+        except Exception as exc:
+            return {"ok": False, "error": f"keypress sendinput failed: {exc}"}
+
     def gui_keypress(self, args: dict[str, Any]) -> dict[str, Any]:
         # CC-100 / T3-gui-keypress-sendkeys-injection-009: env-var indirection
         # para nunca f-stringear `keys` en el script PS.
         keys = str(args.get("keys", "")).strip()
         if not keys:
             return _err("empty keys")
+        # P0 (§7.1): tecla simple nombrada -> SendInput in-process (sin PowerShell).
+        _si = self._keypress_via_sendinput(keys)
+        if _si is not None and _si.get("ok"):
+            try:
+                from . import gui_safety
+                gui_safety.note_agent_input()
+            except Exception:
+                pass
+            return _ok(keys=keys, method="sendinput", events=_si.get("events"))
+        # combos con modificador / teclas no mapeadas -> SendKeys legacy.
         sendkeys = _translate_keys_to_sendkeys(keys)
         env = {**os.environ, "GEMMA4_KEYS": sendkeys}
         script = "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait($env:GEMMA4_KEYS)"
