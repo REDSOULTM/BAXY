@@ -49,6 +49,33 @@ class UserActivityGuardTest(unittest.TestCase):
         self.assertIsNone(gui_safety.check_user_activity())
 
 
+class AgentInputMarkedByCallersTest(unittest.TestCase):
+    """Regresión 2026-05-25 (bug de PROD): los caminos que generan input SINTÉTICO
+    del agente DEBEN marcar note_agent_input(), si no la guarda de actividad-del-
+    usuario confunde el input del propio agente (ALT-trick al enfocar, keypress con
+    modificador por SendKeys) con el usuario y difiere la acción siguiente
+    (blocked=user_active). Medido: type_into tras enfocar daba user_active desde el
+    1er turno. Verifica que los CALLERS llaman note_agent_input."""
+
+    def setUp(self):
+        gui_safety._last_agent_input_ts = 0.0
+
+    def test_keypress_modifier_path_marks_agent_input(self):
+        # gui_keypress con un combo de modificador cae al camino SendKeys-PowerShell
+        # (no SendInput); ese camino debe marcar note_agent_input.
+        import subprocess
+        from unittest.mock import patch
+        from gemma4_agent.tools import ToolRegistry
+        reg = ToolRegistry.__new__(ToolRegistry)
+        before = gui_safety._last_agent_input_ts
+        with patch.object(ToolRegistry, "_keypress_via_sendinput", return_value=None), \
+             patch("gemma4_agent.tools.subprocess.run") as run:
+            run.return_value = subprocess.CompletedProcess([], 0, "", "")
+            reg.gui_keypress({"keys": "ctrl+a"})
+        self.assertGreater(gui_safety._last_agent_input_ts, before,
+                           "el camino SendKeys de gui_keypress no marcó note_agent_input")
+
+
 class PasswordGuardTest(unittest.TestCase):
     def setUp(self):
         os.environ.pop("GEMMA4_GUI_PASSWORD_GUARD", None)

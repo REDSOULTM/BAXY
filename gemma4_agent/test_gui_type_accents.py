@@ -19,23 +19,38 @@ class GuiTypeAccentRoutingTest(unittest.TestCase):
     def setUp(self):
         self.reg = ToolRegistry.__new__(ToolRegistry)
 
-    def test_accented_text_uses_paste(self):
-        # "mamá" tiene 'á' (>127) -> debe ir por clipboard-paste.
-        with patch.object(ToolRegistry, "_gui_type_via_paste",
+    def test_accented_text_uses_sendinput_first(self):
+        # Migración P0 (§7.1, 2026-05-24): gui_type intenta SendInput IN-PROCESS
+        # PRIMERO. SendInput maneja acentos por su rama Unicode (KEYEVENTF_UNICODE),
+        # así que "mamá" NO necesita clipboard-paste si SendInput está disponible.
+        # (El paste sigue como fallback si SendInput no está / falla.)
+        with patch.object(ToolRegistry, "_send_text_via_sendinput",
+                          return_value={"ok": True, "method": "sendinput", "events": 8}) as si, \
+             patch.object(ToolRegistry, "_gui_type_via_paste") as paste:
+            out = self.reg.gui_type({"text": "mamá"})
+        si.assert_called_once()
+        paste.assert_not_called()
+        self.assertEqual(out.get("method"), "sendinput")
+
+    def test_accented_text_falls_back_to_paste_without_sendinput(self):
+        # Si SendInput no está disponible (no-Windows / sin ctypes -> None), el
+        # texto con acentos cae a clipboard-paste (UTF-8-safe), preservando el fix.
+        with patch.object(ToolRegistry, "_send_text_via_sendinput", return_value=None), \
+             patch.object(ToolRegistry, "_gui_type_via_paste",
                           return_value={"ok": True, "method": "paste", "chars": 4}) as paste:
             out = self.reg.gui_type({"text": "mamá"})
         paste.assert_called_once()
         self.assertEqual(out.get("method"), "paste")
 
-    def test_ascii_text_uses_sendkeys(self):
-        # "hello" es ASCII puro -> NO debe tocar el clipboard (usa SendKeys).
-        import subprocess
-        with patch.object(ToolRegistry, "_gui_type_via_paste") as paste, \
-             patch("gemma4_agent.tools.subprocess.run") as run:
-            run.return_value = subprocess.CompletedProcess([], 0, "", "")
+    def test_ascii_text_uses_sendinput(self):
+        # "hello world" ASCII puro -> SendInput in-process (no toca el clipboard).
+        with patch.object(ToolRegistry, "_send_text_via_sendinput",
+                          return_value={"ok": True, "method": "sendinput", "events": 22}) as si, \
+             patch.object(ToolRegistry, "_gui_type_via_paste") as paste:
             out = self.reg.gui_type({"text": "hello world"})
+        si.assert_called_once()
         paste.assert_not_called()
-        self.assertEqual(out.get("method"), "sendkeys")
+        self.assertEqual(out.get("method"), "sendinput")
 
     def test_paste_preserves_user_clipboard(self):
         # El paste debe guardar y restaurar el portapapeles del usuario.

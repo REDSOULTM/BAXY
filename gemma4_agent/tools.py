@@ -4990,14 +4990,46 @@ Start-Sleep -Milliseconds 120
         except Exception:
             pass
         window = str(args.get("window") or args.get("title") or "").strip()
-        # CASCADA Fase 3: UIA -> (retry lazy-Chromium) -> OCR. El 4B da el label;
-        # el código elige el grounding más fiable disponible (Agent-S2 mixture of
-        # grounding). UIA primero (estructura, menos spoofeable); si el árbol UIA
-        # viene vacío/sin match -y la ventana es Chromium/CEF cuyo AX es lazy- se
-        # reintenta el walk tras un delay (gotcha verificado: 1er walk vacío);
-        # si aún nada, cae a OCR (PaddleOCR) sobre el screenshot. Visión queda
-        # como último recurso (Fase 8, no acá).
-        # 1) localizar el botón por UIA (button-prioritized).
+        # FOREGROUND-SAFE (2026-05-25, CAUSA RAÍZ RE-MEDIDA): el primer modelo
+        # ("Electron solo puebla su árbol con foco") era una correlación NO aislada.
+        # Medición limpia este sesión: el árbol UIA in-process de Discord se lee
+        # COMPLETO (708 controles, 10/10 clicks) AUNQUE Discord NO tenga el
+        # foreground (lo tenía VS Code). El 6/10 viejo NO era COMError ni árbol
+        # colapsado: era el robo de foco de _focus_window_chen compitiendo con el
+        # usuario activo (teclado/Moonlight). En uso real el usuario ESTÁ usando el
+        # PC, así que NO robamos foco salvo necesidad. ESTRATEGIA: leer in-process
+        # PRIMERO (no toca el foreground del usuario); solo si falla, recién ahí
+        # enfocar como fallback y reintentar. Foreground-safe por defecto.
+        # 0) UIA IN-PROCESS sin tocar el foco (uiautomation, SIN PowerShell).
+        # MEDIDO: 12/12 calc, 10/10 Discord sin foco. No perturba al usuario activo.
+        _inproc = self._uia_click_inproc(label, window)
+        if _inproc is not None and _inproc.get("ok"):
+            _inproc["action"] = "click_button"
+            _inproc["focus_stolen"] = False
+            return _inproc
+        # 0b) FALLBACK con foco: el read sin foco no encontró el control. Recién
+        # ahora enfocamos (último recurso menos amable con el usuario activo) y
+        # reintentamos el read in-process. Cubre apps que SÍ requieren foreground
+        # para poblar (o un control que aún no estaba en vista). _focus_window_chen
+        # es la secuencia segura (Raymond Chen, sin AttachThreadInput); enfocamos
+        # por el TOKEN más largo del hint (nombre de app, estable aunque el título
+        # cambie: "Amigos - Discord" -> "@Ron92 - Discord").
+        if window:
+            try:
+                import re as _re_w
+                _toks = sorted((t for t in _re_w.findall(r"\w+", window) if len(t) >= 4),
+                               key=len, reverse=True)
+                self._focus_window_chen(_toks[0] if _toks else window)
+                time.sleep(0.7)  # dejar que el provider UIA pueble el árbol
+            except Exception:
+                pass
+            _inproc2 = self._uia_click_inproc(label, window)
+            if _inproc2 is not None and _inproc2.get("ok"):
+                _inproc2["action"] = "click_button"
+                _inproc2["focus_stolen"] = True
+                return _inproc2
+        # CASCADA Fase 3 (resto): UIA-PowerShell -> (retry) -> OCR -> visión.
+        # 1) localizar el botón por UIA (button-prioritized) vía _uia_run (PowerShell).
         found = self._uia_find_clickable(label, window)
         # 1b) retry lazy-Chromium: el árbol AX de Chromium/CEF (Discord/Spotify/
         # Electron) devuelve VACÍO en el 1er walk tras enfocar; reintentar una vez
@@ -5141,6 +5173,106 @@ Start-Sleep -Milliseconds 120
     # preferencia. Estable cross-locale (son ProgrammaticName de UIA, en inglés).
     _BUTTON_CTYPES = ("Button", "SplitButton", "MenuItem", "TabItem",
                       "ListItem", "Hyperlink", "CheckBox", "RadioButton")
+
+    def _uia_click_inproc(self, label: str, window: str) -> dict[str, Any] | None:
+        """Encuentra y CLICKEA un control por Name IN-PROCESS con `uiautomation`
+        (sin PowerShell). CAUSA RAÍZ medida (2026-05-25): el _uia_run viejo lanza
+        PowerShell que PARPADEA una consola y ROBA el foreground a la app justo
+        después de enfocarla -> el árbol UIA de Electron (Discord) colapsa a 0 y el
+        find falla. La lectura in-process NO roba foco -> con la app enfocada da
+        10/10 estable en Discord. Devuelve {ok, ...} clickeando vía InvokePattern, o
+        None si uiautomation no está / no encontró (caller cae a _uia_run/OCR).
+        Match: substring case-insensitive del Name, priorizando tipos botón."""
+        try:
+            import uiautomation as auto
+        except Exception:
+            return None
+        try:
+            lab = label.strip().lower()
+            win_s = (window or "").strip().lower()
+            # tokens del hint de ventana para matchear título dinámico (Discord).
+            win_toks = [t for t in re.findall(r"\w+", win_s) if len(t) >= 4]
+            best = None  # (rank, control)
+            _BTN = {"ButtonControl", "MenuItemControl", "TabItemControl",
+                    "ListItemControl", "HyperlinkControl", "SplitButtonControl",
+                    "CheckBoxControl", "RadioButtonControl", "TreeItemControl"}
+            for w in auto.GetRootControl().GetChildren():
+                wn = (w.Name or "").lower()
+                if win_s and win_s not in wn and not any(t in wn for t in win_toks):
+                    if wn not in win_s:
+                        continue
+                stack = list(w.GetChildren())
+                depth = 0
+                while stack and depth < 4000:
+                    el = stack.pop()
+                    depth += 1
+                    try:
+                        nm = (el.Name or "").strip()
+                        ct = el.ControlTypeName or ""
+                    except Exception:
+                        nm, ct = "", ""
+                    if nm and lab in nm.lower():
+                        # rank: botón exacto > botón substring > no-botón.
+                        is_btn = ct in _BTN
+                        exact = nm.lower() == lab
+                        rank = (0 if (is_btn and exact) else
+                                1 if is_btn else
+                                2 if exact else 3)
+                        if best is None or rank < best[0]:
+                            best = (rank, el)
+                            if rank == 0:
+                                stack = []  # match perfecto, parar
+                                break
+                    try:
+                        stack.extend(el.GetChildren())
+                    except Exception:
+                        pass
+                if best is not None:
+                    break
+            if best is None:
+                return None
+            el = best[1]
+            # capturar estado antes (frame-diff) + invocar + verify.
+            try:
+                from . import gui_verify
+                _before = gui_verify.capture_before(None, None)
+            except Exception:
+                _before = None
+            invoked = False
+            try:
+                ip = el.GetInvokePattern()
+                ip.Invoke()
+                invoked = True
+            except Exception:
+                # sin InvokePattern -> click por coordenada del centro del bbox.
+                try:
+                    r = el.BoundingRectangle
+                    cx, cy = (r.left + r.right) // 2, (r.top + r.bottom) // 2
+                    self.gui_click({"x": cx, "y": cy})
+                    invoked = True
+                except Exception:
+                    return None
+            try:
+                from . import gui_safety as _gs
+                _gs.note_agent_input()  # el Invoke/click es input del agente
+            except Exception:
+                pass
+            time.sleep(0.2)
+            changed = None
+            try:
+                if _before is not None:
+                    from . import gui_verify
+                    changed = gui_verify.verify_after(_before).get("state_changed")
+            except Exception:
+                pass
+            return {"ok": bool(invoked), "grounding": "uia_inproc",
+                    "element": {"name": (el.Name or "")[:80],
+                                "type": el.ControlTypeName},
+                    "state_changed": changed, "verified": changed is True,
+                    "label": label}
+        except Exception as exc:
+            return {"ok": False, "error": f"uia_inproc falló: {exc}",
+                    "grounding": "uia_inproc"}
 
     def _uia_find_clickable(self, label: str, window: str) -> dict[str, Any]:
         """Encuentra el control clickeable cuyo Name mejor matchea `label`,
@@ -5396,6 +5528,8 @@ Start-Sleep -Milliseconds 120
                     wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM,
                     wintypes.UINT, wintypes.UINT, ctypes.POINTER(wintypes.DWORD))
                 u.SendMessageTimeoutW.restype = wintypes.LPARAM
+                u.keybd_event.argtypes = (wintypes.BYTE, wintypes.BYTE,
+                                          wintypes.DWORD, ctypes.c_void_p)
                 self._chen_u32 = u
                 self._chen_found = []
 
@@ -5419,13 +5553,43 @@ Start-Sleep -Milliseconds 120
             if not self._chen_found:
                 return False
             hwnd = self._chen_found[0]
+            # ALT-TRICK (2026-05-25, CAUSA RAÍZ final): SetForegroundWindow lo BLOQUEA
+            # el foreground-lock de Windows si nuestro proceso no recibió input del
+            # usuario reciente -> Discord NO pasaba al frente -> su árbol UIA quedaba
+            # en 0 (lo que parecía "intermitente" era esto). La doc de
+            # LockSetForegroundWindow dice que un input de ALT REHABILITA
+            # SetForegroundWindow para el proceso. Simular ALT down/up antes -> el
+            # foco SÍ se logra (medido: Discord pasó al frente y su árbol a 266).
+            try:
+                _VK_MENU = 0x12
+                _KEYUP = 0x0002
+                user32.keybd_event(_VK_MENU, 0, 0, 0)
+                user32.keybd_event(_VK_MENU, 0, _KEYUP, 0)
+                # El ALT sintético resetea GetLastInputInfo -> sin esto, la guarda
+                # de actividad-del-usuario confunde NUESTRO ALT con el usuario y
+                # difiere la acción siguiente (bug medido 2026-05-25: type_into tras
+                # enfocar daba blocked=user_active desde el 1er turno). Marcar que
+                # la actividad reciente fue del agente. Universal (todo control GUI
+                # que enfoca pasa por acá).
+                from . import gui_safety as _gs
+                _gs.note_agent_input()
+            except Exception:
+                pass
             user32.SetForegroundWindow(hwnd)
             # Chen ping: esperar a que el target procese la activación encolada.
             res = wintypes.DWORD()
             WM_NULL, SMTO_ABORTIFHUNG = 0x0000, 0x0002
             user32.SendMessageTimeoutW(hwnd, WM_NULL, 0, 0, SMTO_ABORTIFHUNG,
                                        1500, ctypes.byref(res))
-            return user32.GetForegroundWindow() == hwnd
+            # comparar como INT: GetForegroundWindow (HWND/c_void_p) vs hwnd (int del
+            # callback) pueden diferir en TIPO aunque sean el mismo handle -> el ==
+            # directo daba False aunque el foco SÍ se logró (bug medido). int() de
+            # ambos lo resuelve. None (top desconocido) -> caer a comparación laxa.
+            try:
+                _fg = user32.GetForegroundWindow()
+                return int(_fg or 0) == int(hwnd or 0)
+            except Exception:
+                return True  # enfocamos; no pudimos verificar -> asumir OK
         except Exception:
             return False
 
@@ -5683,6 +5847,14 @@ Start-Sleep -Milliseconds 120
         env = {**os.environ, "GEMMA4_KEYS": sendkeys}
         script = "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait($env:GEMMA4_KEYS)"
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
+        # marcar input del agente también en el camino SendKeys (combos con
+        # modificador como ctrl+a): si no, la guarda de actividad-del-usuario
+        # confunde estas teclas con el usuario y difiere la acción siguiente.
+        try:
+            from . import gui_safety
+            gui_safety.note_agent_input()
+        except Exception:
+            pass
         return _ok(keys=keys, sendkeys=sendkeys, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
 
     def _match_query(self, query: str, target: str) -> bool:
