@@ -60,10 +60,17 @@ PLANNER_SYSTEM = (
     "app. Para 'mandar/escribir un mensaje a X': focus_app, open_chat(X), type(msg), "
     "send. Para 'abrir/operar una cuenta en la calculadora': focus_app, type(expr), "
     "keypress(enter). Para 'ir a una web': focus_app(navegador), open_url(url). "
+    "IMPORTANTE: 'escribí/escribe/type/schreibe/scrivi <TEXTO> en <APP>' SIEMPRE son "
+    "DOS pasos: focus_app(APP) Y type(TEXTO) — aunque el TEXTO sea una sola palabra y "
+    "la APP sea genérica (el editor/Editor/bloc de notas/notepad). Nunca te quedes "
+    "solo en focus_app cuando el usuario dio un texto a escribir.\n"
     "Devolvé EXACTAMENTE el JSON, sin texto extra ni markdown.\n"
-    "Ejemplo: 'mandale hola a juan en discord' -> "
+    "Ejemplos:\n"
+    "'mandale hola a juan en discord' -> "
     '[{"op":"focus_app","arg":"discord"},{"op":"open_chat","arg":"juan"},'
-    '{"op":"type","arg":"hola"},{"op":"send","arg":""}]'
+    '{"op":"type","arg":"hola"},{"op":"send","arg":""}]\n'
+    "'escribí hola en el editor' -> "
+    '[{"op":"focus_app","arg":"editor"},{"op":"type","arg":"hola"}]'
 )
 
 
