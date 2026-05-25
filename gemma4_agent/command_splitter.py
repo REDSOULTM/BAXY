@@ -351,3 +351,71 @@ def extract_click_target(clause: str) -> str | None:
     if len(label) >= 2 and label[0] in "\"'«" and label[-1] in "\"'»":
         label = label[1:-1].strip()
     return label.strip(" .,;") or None
+
+
+# --- NAVEGACIÓN-EN-APP (2026-05-25, validación Discord) ---------------------
+# "entrá/andá/ve a [el servidor/canal/pestaña/sección] <TARGET> [de la app]" en una
+# app YA abierta -> el TARGET es un control a clickear por Name UIA. El 4B no forma
+# la llamada uia desde estos verbos ambiguos (medido: dice "no tengo herramienta"),
+# así que el caller usa esto para sacar el TARGET y ejecutar click_button directo
+# (macro determinista, patrón Agent-S2). Estructural + multi-idioma.
+_NAV_VERB_STEM = re.compile(
+    r"^\s*(?:"
+    r"entr[áa]\w*|entra|and[áa]\w*|anda|naveg[áa]\w*|dirig[íi]te|"          # es
+    r"abr[íi]\w*|abre|ve|"                                                  # es
+    r"enter|go|navigate|open|"                                             # en
+    r"vai|va|entre"                                                        # pt/it/fr
+    r")\b"
+    # preposición/dirección OPCIONAL tras el verbo ("entra A", "ve A", "go TO").
+    r"(?:\s+(?:a|al|to|para|dans|au|in|nel|su|n[oa]))?"
+    r"[\s:]+",
+    re.IGNORECASE,
+)
+# Conectores que preceden al TARGET dentro de la app, multi-idioma. "al servidor X",
+# "al canal X", "a la pestaña X", "a la sección X", "to the channel X". Se quitan
+# para dejar solo el nombre del control. NO incluye el nombre de la app (ver abajo).
+_NAV_LEAD = re.compile(
+    r"^(?:"
+    r"a[l]?\s+(?:servidor|canal|pestani?a|secci[óo]n|conversaci[óo]n|chat|grupo)\s+|"
+    r"a\s+la\s+(?:pestani?a|secci[óo]n|conversaci[óo]n)\s+|"
+    r"to\s+the\s+(?:server|channel|tab|section|conversation|chat)\s+|"
+    r"a[l]?\s+|to\s+the\s+|to\s+|a\s+la\s+|a\s+las\s+|au\s+|aux\s+|"
+    r"no\s+|na\s+|nel\s+|nella\s+"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def extract_nav_target(clause: str, *, app_hint: str = "") -> str | None:
+    """Si la cláusula es "<verbo-nav> [app] [al servidor/canal] <TARGET>", devuelve
+    <TARGET> (control a clickear por Name UIA dentro de la app abierta). None si no
+    es navegación-en-app. ESTRUCTURAL: separa verbo + conectores + (opcional) el
+    nombre de la app; el caller decide usarlo (app abierta confirmada por estado SO).
+
+    app_hint: si se pasa el nombre de la app abierta (ej "Discord"), se quita del
+    target para no confundir "entrá a Discord al servidor X" -> "X" (no "Discord X").
+    """
+    if not clause or not clause.strip():
+        return None
+    m = _NAV_VERB_STEM.match(clause)
+    if not m:
+        return None
+    rest = clause[m.end():].strip()
+    if not rest:
+        return None
+    # quitar el nombre de la app si aparece al principio ("Discord al servidor X").
+    if app_hint:
+        ah = app_hint.strip()
+        # el hint puede ser un título de ventana ("Amigos - Discord"); usar sus
+        # tokens significativos para pelar el nombre de app del frente del target.
+        for tok in re.findall(r"\w+", ah.lower()):
+            if len(tok) >= 4:
+                rest = re.sub(r"^\s*" + re.escape(tok) + r"\b", "", rest,
+                              count=1, flags=re.IGNORECASE).strip(" ,-:")
+    # quitar conector ("al servidor", "al canal", "a la pestaña"...).
+    rest = _NAV_LEAD.sub("", rest, count=1).strip()
+    if not rest:
+        return None
+    if len(rest) >= 2 and rest[0] in "\"'«" and rest[-1] in "\"'»":
+        rest = rest[1:-1].strip()
+    return rest.strip(" .,;") or None

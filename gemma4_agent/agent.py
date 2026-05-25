@@ -253,6 +253,76 @@ class Gemma4Agent:
         # model lazy-on-first-use; the first capability check pays the cold
         # load cost (~14s once per process), subsequent ones hit the cache.
 
+    def _window_title_in_text(self, text: str) -> str | None:
+        """Si alguna VENTANA ABIERTA tiene un token significativo de su título
+        presente en `text`, devuelve ese título; si no, None. Señal de "el usuario
+        habla de una app que YA está abierta" -> probablemente quiere operar dentro
+        (computer-use), no relanzar. Universal: usa los títulos reales del SO, sin
+        listas de apps ni idiomas. Best-effort (no-Windows / sin win32 -> None)."""
+        import os as _os
+        import re as _re
+        if _os.name != "nt" or not text:
+            return None
+        # tokens del comando, sin stop-words cortas (>=4 chars para evitar ruido).
+        toks = {w for w in _re.findall(r"\w+", text.lower()) if len(w) >= 4}
+        if not toks:
+            return None
+        # REUSAR tools.list_windows (enumerador estable ya probado en prod) en vez
+        # de un EnumWindows propio con callback efímero — ese daba error 126 (el GC
+        # recolecta el callback antes de que ctypes lo use). list_windows devuelve
+        # {ok, windows:[{title,...}]}.
+        try:
+            res = self.tools.list_windows({})
+            wins = res.get("windows", []) if isinstance(res, dict) else []
+        except Exception:
+            return None
+        for w in wins:
+            t = str((w or {}).get("title") or "").strip()
+            if not t:
+                continue
+            for wt in _re.findall(r"\w+", t.lower()):
+                if len(wt) >= 4 and wt in toks:
+                    return t
+        return None
+
+    def _try_in_app_nav(self, text: str, turn_id: str) -> "AgentReply | None":
+        """Macro determinista de navegación-en-app (Agent-S2): si el comando es
+        'entrá/andá a [app] al [servidor/canal] X' Y esa app YA está abierta,
+        ejecuta click_button(X) por Name UIA directo (sin el LLM, que no forma la
+        llamada). Devuelve AgentReply o None (no aplica -> el turno sigue normal).
+        Verifica por estado del SO (ventana abierta) — universal, sin hardcode."""
+        from .command_splitter import extract_nav_target
+        # (a) ¿hay una app abierta mencionada en el comando?
+        win = self._window_title_in_text(text)
+        if not win:
+            return None
+        # (b) ¿el comando es navegación-en-app y tiene un target?
+        target = extract_nav_target(text, app_hint=win)
+        if not target or len(target) < 2:
+            return None
+        # (c) ejecutar click_button(target) directo, enfocando esa ventana.
+        self.trace.event(turn_id, "in_app_nav_macro", window=win[:40], target=target[:40])
+        try:
+            res = self.tools.execute("gui", {"action": "click_button",
+                                             "label": target, "window": win})
+        except Exception as exc:
+            return AgentReply(content=f"No pude entrar a «{target}»: {exc}",
+                              tool_events=[], mission=None)
+        inner = res.get("result", res) if isinstance(res, dict) else {}
+        ok = bool(inner.get("ok"))
+        changed = inner.get("state_changed")
+        events = [ToolEvent(name="gui",
+                            args={"action": "click_button", "label": target},
+                            result=inner if isinstance(inner, dict) else {})]
+        if ok and changed is not False:
+            reply = f"Listo, entré a «{target}»."
+        else:
+            reply = (f"Intenté entrar a «{target}» pero no pude confirmar el "
+                     "efecto.")
+        self._last_turn_ts = time.time()
+        self._remember_executed_tools(events)
+        return AgentReply(content=reply, tool_events=events, mission=None)
+
     def _remember_executed_tools(self, events: list[ToolEvent]) -> None:
         """Record the tool names this turn actually executed, so the NEXT
         turn's continuation-inherit can use them even after the tool messages
@@ -633,6 +703,24 @@ class Gemma4Agent:
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
             return _jarvis_reply
+        # NAVEGACIÓN-EN-APP determinista (2026-05-25, validación Discord): "entrá a
+        # Discord al servidor X" con Discord YA abierto = clickear el control X por
+        # Name UIA. El router lo desambigua mal (suena a "abrir Discord") y el 4B,
+        # aun con uia en el subset, NO forma la llamada (medido: "no tengo
+        # herramienta"). Patrón Agent-S2: el código hace el cómo. Short-circuit ANTES
+        # del LLM: si (a) hay verbo de nav + target, y (b) una ventana abierta matchea
+        # el comando -> click_button(target) directo. Gate GEMMA4_INAPP_NAV=0.
+        import os as _os_nav
+        if (isinstance(content, str) and content.strip()
+                and not getattr(self, "_splitting", False)
+                and (_os_nav.environ.get("GEMMA4_INAPP_NAV", "1").strip().lower()
+                     not in {"0", "false", "no", "off"})):
+            try:
+                _nav = self._try_in_app_nav(content, turn_id)
+                if _nav is not None:
+                    return _nav
+            except Exception:
+                pass
         # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
         # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
         # LLM y corremos cada cláusula como su propio turno (serializado si la
@@ -1179,6 +1267,39 @@ class Gemma4Agent:
                     selected_tool_names.append(_t)
             self.trace.event(turn_id, "multi_intent_carry",
                              carried=_carry, subset=selected_tool_names)
+        # NAVEGACIÓN-EN-APP por ESTADO DEL SO (2026-05-25, validación Discord): un
+        # comando como "entrá a Discord al servidor X" es AMBIGUO por texto — el
+        # router lo manda a app/terminal (suena a "abrir Discord"). El embedding NO
+        # puede desambiguar solo (medido: uia=0.000 para ese fraseo). La señal que
+        # SÍ desambigua es el ESTADO DEL SO: si una ventana cuyo título matchea una
+        # palabra del comando YA está abierta, el usuario quiere OPERAR esa app
+        # (navegar/clickear dentro), no relanzarla -> inyectar uia/gui/window. Es
+        # resolución por estado del SO (CLAUDE.md), universal (no hardcode de apps
+        # ni idiomas; usa los títulos REALES de las ventanas abiertas). Solo si el
+        # router NO ofreció ya computer-use, y solo para turnos atómicos (no charla).
+        try:
+            _txt_for_nav = content if isinstance(content, str) else ""
+            if (_txt_for_nav and not getattr(self, "_splitting", False)
+                    and not (set(selected_tool_names) & {"uia", "gui", "window"})):
+                _open_match = self._window_title_in_text(_txt_for_nav)
+                if _open_match:
+                    for _t in ("uia", "gui", "window"):
+                        if _t not in selected_tool_names:
+                            selected_tool_names.append(_t)
+                    # quitar DISTRACTORES de "lanzar app/juego": la app YA está
+                    # abierta (su ventana matcheó), así que game_launcher/app NO
+                    # aplican y el 4B débil los elegía por encima de uia (medido:
+                    # con game_launcher en el subset, el 4B elegía launch en vez de
+                    # uia para "entrá a Discord al servidor X"). Sacarlos deja a
+                    # computer-use como la opción correcta.
+                    _drop = {"game_launcher", "app", "steam"}
+                    selected_tool_names = [t for t in selected_tool_names if t not in _drop]
+                    self.trace.event(turn_id, "in_app_nav_injected",
+                                     matched_window=_open_match[:40],
+                                     dropped=sorted(_drop),
+                                     user_text=_txt_for_nav[:60])
+        except Exception:
+            pass
         selected_tool_names = _stabilize_tool_order(selected_tool_names)
         if selected_tool_names != _router_picks:
             self.trace.event(turn_id, "tool_prefix_stabilized",

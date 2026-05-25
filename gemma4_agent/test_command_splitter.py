@@ -12,7 +12,27 @@ import unittest
 from gemma4_agent.command_splitter import (
     split_command, has_back_reference, plan_clauses,
     extract_click_target, is_key_name, extract_write_payload,
+    extract_nav_target,
 )
+
+
+class NavTargetExtractTest(unittest.TestCase):
+    """extract_nav_target: 'entrá/andá a [app] al [servidor/canal] X' -> X (control
+    a clickear por Name UIA dentro de la app abierta). Validación Discord 2026-05-25."""
+
+    def test_extracts_target_with_app_hint(self):
+        # el caso real: pelar la app del frente para dejar el target.
+        self.assertEqual(
+            extract_nav_target("entra a Discord al servidor Servidor de prueba",
+                               app_hint="Amigos - Discord"),
+            "Servidor de prueba")
+
+    def test_extracts_channel(self):
+        self.assertEqual(extract_nav_target("entra al canal general"), "canal general")
+
+    def test_non_nav_returns_none(self):
+        for q in ("que hora es", "contame un chiste", "mutea el audio"):
+            self.assertIsNone(extract_nav_target(q), msg=q)
 
 
 class SplitterTest(unittest.TestCase):

@@ -66,7 +66,11 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "alguien, que es algo, de que trata una pelicula o juego, de que "
         "murio alguien, informacion externa, busca en la web"
     ),
-    "uia": "Windows UI Automation tree: find and click named controls",
+    "uia": (
+        "operar dentro de una app ya abierta: clickear o entrar a un boton, canal, "
+        "servidor, pestania, seccion, contacto o elemento por su nombre. Windows UI "
+        "Automation: find and click named controls inside an open app."
+    ),
     "filesystem": (
         "work with local files and folders: read a file, see what is in a "
         "folder, list a directory, write or append to a file, search, "
