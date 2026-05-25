@@ -59,3 +59,12 @@ verificando por estado del SO) es **sólida y universal**: ~96-99% real across a
 variadas, idiomas y fraseos, con falsos-negativos explicados por fixtures/latencia,
 no por el diseño. Harnesses reanudables: scripts/_marathon_llm_plans.py,
 scripts/_marathon_cu_e2e.py. Crudos: scripts/gui_eval/_marathon_*.jsonl.
+
+## Nota: corrida contaminada (NO usar como medición)
+Una corrida tardía de Fase 2 dio 27% — CONTAMINADA: el usuario estaba usando la PC en
+paralelo (tomó el foco / abrió ventanas), así que el verify del harness leyó ventanas
+del usuario en vez de la app del test (falsos FAIL). Las replies del agente eran de
+ÉXITO ("Listo, escribí 2+2 en Calculadora") y open_app (verify por ventana-presente,
+robusto al foco) dio 24/24. NO es regresión del agente — es el verify del harness
+sensible a la actividad del usuario. Medición válida = corridas con PC libre:
+Fase 1 99%, Fase 2 v2 96%, Fase 3 multi/chains 100%.
