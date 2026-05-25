@@ -470,6 +470,31 @@ def _coerce_and_validate_tool_args(name: str, args: dict[str, Any]) -> tuple[dic
     return clean, errors
 
 
+def _invalid_args_result(name: str, clean_args: dict[str, Any],
+                         validation_errors: list[str]) -> dict[str, Any]:
+    """Error de argumentos inválidos CORREGIBLE en 1 reintento (auditoría §7.2).
+
+    El caso típico (system(action='calculator')) es un enum de acción inválido: la
+    grammar de --jinja de Gemma fuerza la ESTRUCTURA del tool-call pero NO el enum
+    del argumento (json-schema-to-grammar no cubre la notación fc de Gemma), así que
+    el 4B igual puede inventar la acción. En vez de una GBNF custom (que pelea con la
+    grammar interna y puede romper TODO el tool-calling), devolvemos un error
+    máximamente accionable: acciones válidas explícitas + hint de que, si lo que
+    quería no está, ESTA no es la tool. El loop del agente corrige en 1 turno."""
+    valid_actions = ACTION_ENUMS.get(str(name))
+    extra: dict[str, Any] = {}
+    if valid_actions:
+        extra["hint"] = (
+            f"'{name}' SOLO acepta action en {list(valid_actions)}. Si lo que "
+            f"necesitás no está en esa lista, '{name}' NO es la tool correcta: elegí "
+            f"otra del subset, o si es operar una app abierta usá "
+            f"gui(action='type'/'keypress').")
+    return _normalize_tool_result(
+        name, clean_args,
+        _err("invalid tool arguments", validation_errors=validation_errors,
+             expected_schema=_parameters_for_tool(name), **extra))
+
+
 def _parameters_for_tool(name: str) -> dict[str, Any] | None:
     for schema in COMPOUND_TOOL_SCHEMAS:
         function = schema.get("function") or {}
@@ -1349,15 +1374,7 @@ class ToolRegistry:
                 return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))
         clean_args, validation_errors = _coerce_and_validate_tool_args(name, clean_args)
         if validation_errors:
-            return _normalize_tool_result(
-                name,
-                clean_args,
-                _err(
-                    "invalid tool arguments",
-                    validation_errors=validation_errors,
-                    expected_schema=_parameters_for_tool(name),
-                ),
-            )
+            return _invalid_args_result(name, clean_args, validation_errors)
         # Pre-validation hook: corre ANTES del classifier para que inputs
         # claramente inválidos no exijan confirmación al usuario (UX). Los
         # validators son pure-functions que devuelven un dict de error (con
@@ -1409,15 +1426,7 @@ class ToolRegistry:
             return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))
         clean_args, validation_errors = _coerce_and_validate_tool_args(name, clean_args)
         if validation_errors:
-            return _normalize_tool_result(
-                name,
-                clean_args,
-                _err(
-                    "invalid tool arguments",
-                    validation_errors=validation_errors,
-                    expected_schema=_parameters_for_tool(name),
-                ),
-            )
+            return _invalid_args_result(name, clean_args, validation_errors)
         impl_args = dict(clean_args)
         impl_args["routine_context"] = True
         impl_args["confirmed_at_create"] = bool(confirmed_at_create)

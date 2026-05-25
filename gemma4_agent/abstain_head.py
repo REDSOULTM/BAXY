@@ -31,7 +31,7 @@ from __future__ import annotations
 import json
 import math
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -63,6 +63,12 @@ class AbstainModel:
     threshold: float
     feature_names: tuple[str, ...]
     model_version: str = "v1"
+    # Umbral POR IDIOMA (auditoría §7.5; CausalAbstain arXiv:2506.00519, MKA
+    # arXiv:2503.23687): los embeddings multilingües tienen escalas distintas por
+    # idioma, así que un único umbral global discrimina mal a los de bajo recurso.
+    # {lang_code: threshold}. VACÍO por defecto -> usa el global (cero regresión).
+    # Se llena cuando router_eval.py calibre por idioma sobre el dev split.
+    thresholds_by_lang: dict[str, float] = field(default_factory=dict)
 
     def p_no_tool(self, feats: dict[str, float]) -> float:
         z = self.bias
@@ -70,8 +76,17 @@ class AbstainModel:
             z += w * float(feats.get(name, 0.0))
         return 1.0 / (1.0 + math.exp(-z))
 
-    def should_abstain(self, feats: dict[str, float]) -> bool:
-        return self.p_no_tool(feats) >= self.threshold
+    def threshold_for(self, lang: str | None = None) -> float:
+        """Umbral para el idioma dado; cae al global si no hay calibración propia.
+        Universal: nunca rompe (lang None / desconocido -> global)."""
+        if lang:
+            t = self.thresholds_by_lang.get(lang.strip().lower())
+            if t is not None:
+                return float(t)
+        return self.threshold
+
+    def should_abstain(self, feats: dict[str, float], lang: str | None = None) -> bool:
+        return self.p_no_tool(feats) >= self.threshold_for(lang)
 
 
 _MODEL: AbstainModel | None = None
@@ -112,12 +127,17 @@ def _load_model_locked() -> AbstainModel | None:
         return None
     try:
         d = json.loads(_WEIGHTS_PATH.read_text(encoding="utf-8"))
+        # thresholds_by_lang: opcional en el JSON; si no está, queda vacío y se usa
+        # el threshold global (retrocompat total con artefactos viejos).
+        _tbl_raw = d.get("thresholds_by_lang") or {}
+        _tbl = {str(k).lower(): float(v) for k, v in _tbl_raw.items()} if isinstance(_tbl_raw, dict) else {}
         _MODEL = AbstainModel(
             weights=[float(x) for x in d["weights"]],
             bias=float(d["bias"]),
             threshold=float(d["threshold"]),
             feature_names=tuple(d["feature_names"]),
             model_version=str(d.get("model_version", "v1")),
+            thresholds_by_lang=_tbl,
         )
         # Guard: feature order must match this module's expectation, or the
         # dot product would silently mix up coefficients.

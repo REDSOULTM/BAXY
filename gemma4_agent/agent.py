@@ -1023,7 +1023,13 @@ class Gemma4Agent:
                             # inheritance while real deictic continuations
                             # ("ciérralo"/"subelo", which score LOW on abstain)
                             # still inherit the prior tool.
-                            if _ahm.p_no_tool(_f) >= _ahm.threshold:
+                            # umbral POR IDIOMA (auditoría §7.5): el del turno si
+                            # hay calibración propia, si no el global (threshold_for
+                            # cae solo). _turn_lang lo setea run_content vía _guess_lang.
+                            _lang = getattr(self, "_turn_lang", None)
+                            _thr = (_ahm.threshold_for(_lang)
+                                    if hasattr(_ahm, "threshold_for") else _ahm.threshold)
+                            if _ahm.p_no_tool(_f) >= _thr:
                                 # OVERRIDE por estado del SO: si el turno previo
                                 # dejó una app/GUI abierta (tarea interactiva mid-
                                 # flight), una continuación corta la está retomando

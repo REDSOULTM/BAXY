@@ -484,6 +484,27 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                 except ValueError:
                     logger.warning("invalid spec-draft numeric env var; ignoring extra flags")
 
+    # NGRAM-CACHE speculative decoding (auditoría §7.6, opt-in via
+    # GEMMA4_NGRAM_SPEC=1). A diferencia del draft model, NO consume VRAM extra
+    # (no carga un 2º modelo): predice tokens desde n-gramas del propio contexto.
+    # GANA en prompts repetitivos / RAG / citado del contexto; en conversación
+    # VARIADA los 3 informes de la auditoría coinciden en ~0% mejora (Maher, DEV
+    # Community). Por eso es OPT-IN, no default: medir con GEMMA4_NGRAM_SPEC=1 y
+    # comparar tok/s + tool-call success antes de confiar. Reversible (quitar la
+    # env var). NO incompatible con --swa-full ni cache-reuse (es otra capa).
+    if (os.environ.get("GEMMA4_NGRAM_SPEC") or "").strip().lower() in {"1", "true", "yes", "on"}:
+        # --spec-type ngram-cache: speculative sin draft model (b9090+).
+        n_draft = (os.environ.get("GEMMA4_NGRAM_DRAFT_MAX") or "8").strip()
+        try:
+            int(n_draft)
+            cmd.extend(["--spec-type", "ngram-cache", "--draft-max", n_draft])
+            logger.warning(
+                "ngram-cache speculative ENABLED (opt-in). Gana en prompts "
+                "repetitivos; ~0%% en conversación variada (auditoría §7.6). "
+                "Medir tok/s antes de confiar. draft-max=%s", n_draft)
+        except ValueError:
+            logger.warning("GEMMA4_NGRAM_DRAFT_MAX inválido; ignorando ngram-cache")
+
     # Vision: solo agregar --mmproj si el perfil lo permite y hay path real
     if profile.vision_enabled:
         mmproj_env = os.environ.get("GEMMA4_MMPROJ_PATH")
