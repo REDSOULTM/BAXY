@@ -16,10 +16,20 @@ apps reales con UI). Clasificación por la tecnología de su UI, que decide si e
 
 ## Resultado en esta PC
 
-### ✅ Chromium/Electron — FLAG APLICA y YA están cubiertas
-(reciben el flag cuando el agente las abre + el script `enable_app_accessibility.ps1`)
-- Google Chrome, Microsoft Edge, Opera GX (Chromium)
-- Discord, Spotify, Visual Studio Code, WhatsApp, GitHub Desktop (Electron)
+### ✅ Chromium/Electron — accesibilidad activable (VALIDADO 2026-05-25)
+DOS mecanismos distintos según el empaquetado (medido con el árbol UIA real):
+- **Navegadores Chromium puros** (Chrome, Edge, Opera GX): el flag CLI
+  `--force-renderer-accessibility=complete` en el shortcut SÍ llega al renderer.
+  Cubierto por el script (shortcut) + el agente al abrirlas.
+- **Discord (Electron empaquetado con Squirrel)**: el flag CLI **NO funciona** —
+  Squirrel lo descarta (medido: shortcut con flag → 0 controles UIA con nombre). La
+  vía correcta es agregar `force-renderer-accessibility: complete` a
+  `chromiumSwitches` en `%APPDATA%\discord\settings.json` (MEDIDO: **0 → 273
+  controles UIA con nombre**; el agente ya ve botones "Enviar mensaje", canales,
+  contactos). Lo hace el script (config-based apps).
+- Spotify/Slack/otras Electron: shortcut flag aplicado best-effort; si su árbol UIA
+  sigue vacío, probar su config propio (cada Electron empaquetada difiere).
+- VS Code, WhatsApp: no se tocan (IDE / UWP nativo).
 
 ### ✅ UWP / nativo — UIA NATIVO, no necesitan flag (cubierto por diseño)
 Exponen su árbol de accesibilidad de fábrica; el agente las controla por UIA directo.

@@ -593,13 +593,16 @@ $items | ConvertTo-Json -Depth 3
         if base in self._CHROMIUM_EXES:
             return (exe, ["--force-renderer-accessibility=complete"], False)
         if base in self._ELECTRON_EXES:
-            # Electron ES Chromium por dentro: necesita el flag --force-renderer-
-            # accessibility=complete (que SÍ se propaga al renderer) ADEMÁS de la
-            # env var. La investigación 11 (Discord/Slack) confirma que el launcher
-            # correcto es `Discord.exe --force-renderer-accessibility=complete`,
-            # no solo la env var (que sola es poco fiable y no llena el árbol UIA
-            # web). Antes pasábamos [] -> Discord abría sin UIA -> caía a OCR.
-            # Damos AMBOS: flag (Chromium renderer) + env var (Electron host).
+            # Electron: el flag CLI + env var son BEST-EFFORT, pero VALIDADO
+            # (2026-05-25) que para apps EMPAQUETADAS (Discord=Squirrel) el flag CLI
+            # NO llega al renderer (Squirrel lo descarta -> 0 controles UIA con
+            # nombre). La vía que SÍ funciona para Discord es agregar
+            # `force-renderer-accessibility: complete` a chromiumSwitches en su
+            # settings.json (medido: 0 -> 273 controles UIA con nombre). Eso lo hace
+            # scripts/enable_app_accessibility.ps1 (config-based apps), no este
+            # launch. Acá pasamos el flag igual (inofensivo; sirve para Electron NO
+            # empaquetadas) + env var; pero el control real de Discord depende del
+            # settings.json, no de este arg. Ver scripts/app_accessibility_census.md.
             return (exe, ["--force-renderer-accessibility=complete"], True)
         return None
 

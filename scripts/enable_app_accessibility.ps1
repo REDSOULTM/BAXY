@@ -39,11 +39,19 @@ param(
 # Chromium flag that fills the UIA tree. 'complete' = full AXMode.
 $FLAG = '--force-renderer-accessibility=complete'
 
-# Target apps: .lnk name (no extension) as shown. Chromium and Electron alike
-# (Electron IS Chromium -> the flag propagates to the renderer).
-# Excludes 'Visual Studio Code' (IDE) and UWP (WhatsApp).
-$TARGETS = @('Discord', 'Spotify', 'Google Chrome', 'Chrome', 'Microsoft Edge',
-             'Brave', 'Slack')
+# Target apps via SHORTCUT flag: browsers (Chromium puro). The CLI flag DOES
+# reach their renderer. Discord is NOT here: it is Squirrel-packaged and SWALLOWS
+# the CLI flag (validated 2026-05-25: shortcut flag -> 0 named UIA controls).
+# Discord (and Electron apps with a config-based switch list) go through the
+# settings.json path below instead (validated: 0 -> 273 named UIA controls).
+$TARGETS = @('Spotify', 'Google Chrome', 'Chrome', 'Microsoft Edge', 'Brave')
+
+# Electron apps that read chromiumSwitches from their own settings.json (the CLI
+# flag does NOT work for them). {name = path to settings.json}. The switch goes
+# as a JSON property "force-renderer-accessibility": "complete".
+$ELECTRON_CONFIG_APPS = @{
+    'Discord' = (Join-Path $env:APPDATA 'discord\settings.json')
+}
 
 # Standard .lnk locations in Windows.
 $SEARCH_DIRS = @(
@@ -66,8 +74,37 @@ function Find-Shortcuts {
 
 $shell = New-Object -ComObject WScript.Shell
 
+# Apps Electron config-based (Discord): agregar/quitar el switch en su settings.json.
+function Set-ElectronConfigSwitch {
+    param([string]$name, [string]$jsonPath, [switch]$Remove)
+    if (-not (Test-Path $jsonPath)) {
+        Write-Host "  $name`: no settings.json en $jsonPath (saltado)" -ForegroundColor DarkGray
+        return
+    }
+    $bak = "$jsonPath.gemma4bak"
+    if ($Remove) {
+        if (Test-Path $bak) {
+            if ($PSCmdlet.ShouldProcess($jsonPath, "Restore Discord settings")) {
+                Copy-Item $bak $jsonPath -Force; Remove-Item $bak -Force
+                Write-Host "  $name`: settings.json restaurado" -ForegroundColor Green
+            }
+        }
+        return
+    }
+    if ($PSCmdlet.ShouldProcess($jsonPath, "Add force-renderer-accessibility to chromiumSwitches")) {
+        if (-not (Test-Path $bak)) { Copy-Item $jsonPath $bak -Force }
+        $j = Get-Content $jsonPath -Raw | ConvertFrom-Json
+        if ($null -eq $j.chromiumSwitches) {
+            $j | Add-Member -NotePropertyName chromiumSwitches -NotePropertyValue (New-Object PSObject) -Force
+        }
+        $j.chromiumSwitches | Add-Member -NotePropertyName 'force-renderer-accessibility' -NotePropertyValue 'complete' -Force
+        $j | ConvertTo-Json -Depth 10 | Set-Content $jsonPath -Encoding utf8
+        Write-Host "  $name`: chromiumSwitches actualizado (cerrá y reabrí Discord)" -ForegroundColor Green
+    }
+}
+
 if ($Revert) {
-    Write-Host "== REVERT: restoring original shortcuts ==" -ForegroundColor Cyan
+    Write-Host "== REVERT: restoring original shortcuts + Electron configs ==" -ForegroundColor Cyan
     $n = 0
     foreach ($dir in $SEARCH_DIRS) {
         Get-ChildItem -Path $dir -Filter '*.lnk.gemma4bak' -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
@@ -80,18 +117,15 @@ if ($Revert) {
             }
         }
     }
-    Write-Host "== $n shortcuts restored ==" -ForegroundColor Green
+    foreach ($name in $ELECTRON_CONFIG_APPS.Keys) {
+        Set-ElectronConfigSwitch -name $name -jsonPath $ELECTRON_CONFIG_APPS[$name] -Remove
+    }
+    Write-Host "== $n shortcuts restored + Electron configs reverted ==" -ForegroundColor Green
     return
 }
 
 Write-Host "== Adapting Chromium/Electron apps for accessibility (Gemma 4) ==" -ForegroundColor Cyan
 $shortcuts = Find-Shortcuts
-if (-not $shortcuts) {
-    Write-Host "No shortcuts found for: $($TARGETS -join ', ')" -ForegroundColor Yellow
-    Write-Host "(Apps may open from a pinned taskbar item or be UWP -- the agent still passes the flag when IT opens them.)"
-    return
-}
-
 $n = 0
 foreach ($lnkPath in $shortcuts) {
     $lnk = $shell.CreateShortcut($lnkPath)
@@ -110,6 +144,14 @@ foreach ($lnkPath in $shortcuts) {
         $n++
     }
 }
-Write-Host "== $n shortcuts adapted (backup in *.lnk.gemma4bak) ==" -ForegroundColor Green
+Write-Host "== $n browser shortcuts adapted (backup in *.lnk.gemma4bak) ==" -ForegroundColor Green
+
+# Apps Electron config-based (Discord): editar su settings.json (VALIDADO:
+# 0 -> 273 controles UIA con nombre tras esto). El flag CLI NO les sirve.
+Write-Host "== Electron config-based apps (chromiumSwitches) ==" -ForegroundColor Cyan
+foreach ($name in $ELECTRON_CONFIG_APPS.Keys) {
+    Set-ElectronConfigSwitch -name $name -jsonPath $ELECTRON_CONFIG_APPS[$name]
+}
+
 Write-Host "To revert: powershell -ExecutionPolicy Bypass -File scripts\enable_app_accessibility.ps1 -Revert"
 Write-Host "NOTE: close and reopen the apps for it to take effect (single-instance)." -ForegroundColor Yellow
