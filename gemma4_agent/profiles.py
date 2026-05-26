@@ -174,14 +174,17 @@ PROFILES: dict[str, Profile] = {
         name="vram4",
         display_name="VRAM 4GB",
         context_size=16384,
-        # E4B-UD-IQ3_XXS (2026-05-25): MEDIDO 3.58 GB residente (<4 GB con
-        # visión-lazy) vs E4B-Q4 4.45 GB. Tool-calling 11/12=91% — IGUAL que el Q4
-        # (mismo harness, mismo 1 fallo cold-start). Unsloth dynamic IQ3 aguanta el
-        # tool-calling (a diferencia de IQ2_M que cayó a 1/3). Da el target <4GB del
-        # operador SIN perder calidad de acciones. La visión (mmproj) sigue lazy:
-        # pico 4.78 GB sólo en turnos con imagen.
-        model_path=_E4B_IQ3_XXS,
-        mmproj_path=_MMPROJ_E4B,
+        # E2B-Q4_K_M (2026-05-25, DEFAULT para PC de 4 GB — pedido de RED: la app
+        # debe entrar en ≤4 GB de VRAM con TODO funcionando a la vez). MEDIDO: el
+        # ÚNICO Gemma 4 que mete modelo + VISIÓN RESIDENTE + KV simultáneos dentro de
+        # 4 GB: 2.16 GB texto / 3.36 GB con visión (vs E4B-IQ3_XXS 4.78 GB con visión,
+        # que se pasa; E4B no entra en 4 GB ni en su cuant más baja). Tool-calling
+        # 9/12=75% con los fixes de hoy (subió desde ~0% histórico; las 2 fallas son
+        # "narra la función como texto" → el forced-tool-retry las rescata en prod).
+        # Trade-off aceptado: -16pp de tool-calling vs E4B a cambio de TODO en 4 GB.
+        # Quien tenga >4 GB usa vram6 (E4B-Q4, 91%). Ver project_tool_calling_weak_models.
+        model_path=_E2B_Q4_K_M,
+        mmproj_path=_MMPROJ_E2B,
         vision_enabled=True,
         rerank_enabled=False,
         parallel_tools=False,
@@ -190,12 +193,12 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 4 GB. E4B-UD-IQ3_XXS: <4 GB residente (3.58 GB medido, "
-            "visión-lazy), tool-calling 91% = igual que E4B-Q4 pero ~0.9 GB menos. "
-            "ctx 16K, VISIÓN ON (on-demand), voz+STT ON (CPU). El target <4GB sin "
-            "perder fiabilidad de acciones."
+            "GPU de 4 GB (DEFAULT). E2B-Q4_K_M: TODO en ≤4 GB — modelo + VISIÓN "
+            "residente + KV = 3.36 GB medido. Voz+STT ON (CPU, 0 VRAM). ctx 16K. "
+            "Tool-calling 75% (forced-retry lo sube). El único Gemma 4 que entra "
+            "completo en 4 GB; para tool-calling 91% con >4 GB usá vram6 (E4B)."
         ),
-        est_vram_mb=3583,
+        est_vram_mb=3360,
     ),
     "vram6": Profile(
         name="vram6",
