@@ -338,6 +338,20 @@ class Gemma4Agent:
             self.trace.event(turn_id, "computer_use_skip_bare_focus",
                              ops=[s["op"] for s in plan], text=text[:60])
             return None
+        # DEFERIR a TOOLS DEDICADAS (regresión medida 2026-05-25): si la app de la
+        # ventana matcheada tiene una tool DEDICADA (WhatsApp -> tool `whatsapp` con
+        # su flujo propio deeplink+Ctrl+F+verify-header), NO usar computer-use. La capa
+        # universal tecleaba por SendInput, que NO llega al WebView2 de WhatsApp -> la
+        # búsqueda no abría el chat y el `type` caía en la 1ª caja de texto disponible
+        # (mandaba al contacto equivocado). Discord/Slack/Teams NO tienen tool dedicada
+        # -> esos SÍ van por computer-use. Mapa nombre-de-app -> tool dedicada.
+        _DEDICATED_APP_TOOLS = {"whatsapp": "whatsapp"}
+        _win_low = win.lower()
+        for _app_kw, _tool in _DEDICATED_APP_TOOLS.items():
+            if _app_kw in _win_low:
+                self.trace.event(turn_id, "computer_use_defer_dedicated",
+                                 app=_app_kw, tool=_tool, window=win[:40])
+                return None  # el router/LLM usa la tool dedicada
         self.trace.event(turn_id, "computer_use_plan",
                          window=win[:40], ops=[s["op"] for s in plan], text=text[:60])
         try:

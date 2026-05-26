@@ -22,22 +22,23 @@ class ComputerUseGateTest(unittest.TestCase):
         ag._remember_executed_tools = lambda ev: None
         return ag
 
-    def test_slang_app_activates_via_plan_focus_arg(self):
-        # "escribile a migue en wsp hola": el texto NO matchea ventana ("wsp" no está
-        # en "WhatsApp"), pero el plan focus_app="WhatsApp" SÍ -> debe activarse.
+    def test_activates_via_plan_focus_arg_when_text_doesnt_match(self):
+        # VÍA 2: el TEXTO no matchea ninguna ventana, pero el plan focus_app (que el
+        # 4B normaliza) SÍ matchea una ventana abierta -> debe activarse. Uso Discord
+        # (sin tool dedicada; WhatsApp deferiría a su tool). Simula un fraseo donde el
+        # texto crudo no nombra "Discord" pero el plan lo resuelve.
         ag = self._agent()
-        plan = [{"op": "focus_app", "arg": "WhatsApp"}, {"op": "open_chat", "arg": "migue"},
+        plan = [{"op": "focus_app", "arg": "Discord"}, {"op": "open_chat", "arg": "migue"},
                 {"op": "type", "arg": "hola"}, {"op": "send", "arg": ""}]
-        # _window_title_in_text: None para el texto crudo, "WhatsApp" para el arg.
         def wtit(s):
-            return "WhatsApp" if s == "WhatsApp" else None
+            return "@Ron - Discord" if s == "Discord" else None  # solo el arg matchea
         with patch.object(Gemma4Agent, "_window_title_in_text", side_effect=wtit), \
              patch("gemma4_agent.computer_use.plan_for", return_value=plan), \
              patch("gemma4_agent.computer_use.PlanExecutor") as PE, \
              patch("gemma4_agent.computer_use.summarize_result", return_value="ok"):
-            PE.return_value.execute.return_value = {"ok": True, "steps": plan, "focused_app": "WhatsApp"}
-            r = ag._try_computer_use("escribile a migue en wsp hola", "t1")
-        self.assertIsNotNone(r)  # se activó pese a que "wsp" no matchea por texto
+            PE.return_value.execute.return_value = {"ok": True, "steps": plan, "focused_app": "Discord"}
+            r = ag._try_computer_use("mandale hola a migue", "t1")
+        self.assertIsNotNone(r)  # se activó vía el focus_arg del plan
 
     def test_no_open_app_does_not_activate(self):
         # ni el texto ni el arg de focus_app matchean una ventana abierta -> None.
@@ -73,6 +74,19 @@ class ComputerUseGateTest(unittest.TestCase):
             PE.return_value.execute.return_value = {"ok": True, "steps": plan, "focused_app": "Discord"}
             r = ag._try_computer_use("escribile a juan en discord hola", "t1")
         self.assertIsNotNone(r)
+
+    def test_whatsapp_defers_to_dedicated_tool(self):
+        # REGRESIÓN 2026-05-25: WhatsApp tiene tool DEDICADA (`whatsapp`). La capa
+        # universal tecleaba por SendInput (no llega al WebView2) -> escribía en la 1ª
+        # caja disponible / contacto equivocado. Debe DEFERIR: computer_use devuelve
+        # None y el router/LLM usa la tool whatsapp. Discord (sin tool dedicada) NO.
+        ag = self._agent()
+        plan = [{"op": "focus_app", "arg": "whatsapp"}, {"op": "open_chat", "arg": "vicente"},
+                {"op": "type", "arg": "gracias"}, {"op": "send", "arg": ""}]
+        with patch.object(Gemma4Agent, "_window_title_in_text", return_value="WhatsApp"), \
+             patch("gemma4_agent.computer_use.plan_for", return_value=plan):
+            r = ag._try_computer_use("escribe a vicente en wsp gracias", "t1")
+        self.assertIsNone(r)  # defiere a la tool whatsapp
 
     def test_disabled_by_env(self):
         import os
