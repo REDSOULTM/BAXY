@@ -48,6 +48,32 @@ class ComputerUseGateTest(unittest.TestCase):
             r = ag._try_computer_use("mandale algo a x en telegram", "t1")
         self.assertIsNone(r)
 
+    def test_bare_focus_plan_does_NOT_hijack(self):
+        # REGRESIÓN medida 2026-05-25: "abre steam"/"Cierra steam" con Steam YA
+        # abierto -> plan = [focus_app(steam)] (sin op de operación-en-app) ->
+        # computer_use NO debe tomar el turno (eso es del tool dedicado steam/window).
+        # Antes secuestraba y "enfocaba/minimizaba Steam porque sí".
+        ag = self._agent()
+        plan = [{"op": "focus_app", "arg": "steam"}]
+        with patch.object(Gemma4Agent, "_window_title_in_text", return_value="Steam"), \
+             patch("gemma4_agent.computer_use.plan_for", return_value=plan):
+            r = ag._try_computer_use("abre steam", "t1")
+        self.assertIsNone(r)  # no secuestra -> el router/LLM usa el tool steam
+
+    def test_inapp_op_plan_DOES_fire(self):
+        # un plan con una primitiva de operación-en-app (type/send/click/open_chat/
+        # open_url) SÍ activa computer_use.
+        ag = self._agent()
+        plan = [{"op": "focus_app", "arg": "discord"}, {"op": "open_chat", "arg": "juan"},
+                {"op": "type", "arg": "hola"}, {"op": "send", "arg": ""}]
+        with patch.object(Gemma4Agent, "_window_title_in_text", return_value="Discord"), \
+             patch("gemma4_agent.computer_use.plan_for", return_value=plan), \
+             patch("gemma4_agent.computer_use.PlanExecutor") as PE, \
+             patch("gemma4_agent.computer_use.summarize_result", return_value="ok"):
+            PE.return_value.execute.return_value = {"ok": True, "steps": plan, "focused_app": "Discord"}
+            r = ag._try_computer_use("escribile a juan en discord hola", "t1")
+        self.assertIsNotNone(r)
+
     def test_disabled_by_env(self):
         import os
         ag = self._agent()

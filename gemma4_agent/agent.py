@@ -325,6 +325,19 @@ class Gemma4Agent:
                 win = self._window_title_in_text(_focus_arg)
         if not win:
             return None  # ninguna app abierta mencionada (ni por texto ni por el plan)
+        # GUARD CRÍTICO (regresión medida 2026-05-25): la capa universal SÓLO debe
+        # tomar el turno si el plan OPERA DENTRO de la app (type/send/keypress/click/
+        # open_chat/open_url). Un plan que es SÓLO focus_app (o focus+nada) = "abrir/
+        # cerrar/enfocar la app" — eso es de los tools DEDICADOS (steam/app/window),
+        # NO de computer-use. Sin este guard, "abre steam"/"Cierra steam" con Steam ya
+        # abierto disparaban computer_use -> focus_app(Steam) -> "enfoca/minimiza Steam
+        # porque sí" en vez de abrir/cerrar. Si el plan no tiene una primitiva de
+        # operación-en-app, devolvemos None y deja al router/LLM con sus tools.
+        _IN_APP_OPS = {"type", "send", "keypress", "click", "open_chat", "open_url"}
+        if not any(s["op"] in _IN_APP_OPS for s in plan):
+            self.trace.event(turn_id, "computer_use_skip_bare_focus",
+                             ops=[s["op"] for s in plan], text=text[:60])
+            return None
         self.trace.event(turn_id, "computer_use_plan",
                          window=win[:40], ops=[s["op"] for s in plan], text=text[:60])
         try:
