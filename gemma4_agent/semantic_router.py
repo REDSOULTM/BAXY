@@ -52,6 +52,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "steam": "Steam game library, Steam store, launch installed Steam games",
     "window": "list windows, focus, close, minimize, maximize, move, resize",
     "gui": "screenshot, click, type text, hotkeys, scroll, drag with mouse",
+    "computer_use": "operar DENTRO de una app abierta: abrir un chat o canal y escribir/enviar un mensaje en Discord/Slack/Teams, entrar a una página web en el navegador, clickear un control por nombre, navegar adentro de una app. escribile a X en discord, andá al canal Y, mandale un mensaje a alguien en una app, entrá a tal web, operar la app que ya está abierta",
     "vision": "describe what is on screen, OCR a region, find UI element",
     "browser": (
         "open a website, URL or web address in a browser; abrir una pagina "

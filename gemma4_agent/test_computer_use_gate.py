@@ -1,102 +1,79 @@
-"""Test del GATE de activación de _try_computer_use (agent.py), offline (sin LLM/GUI).
+"""Tests de computer_use como TOOL del registry (rediseño 2026-05-25).
 
-Cubre el fix 2026-05-25: nombres coloquiales de app ("wsp"/"wasap" -> WhatsApp) que
-NO matchean ningún título de ventana por texto, pero el PLANIFICADOR normaliza el
-nombre en focus_app y ESE sí matchea una ventana abierta -> la capa se activa.
+Antes computer-use era un short-circuit pre-LLM (_try_computer_use) con un gate que
+secuestraba turnos — eso se ELIMINÓ (causaba: "abre steam"->enfoca/minimiza, WhatsApp
+->caja equivocada, "router no ofrece tools"). Ahora `computer_use(goal=...)` es UNA
+tool más: el router la ofrece y el LLM la llama. Estos tests cubren el impl de la tool
+(t_computer_use) y que el router la rankee para operar-en-app.
 """
 from __future__ import annotations
 
 import unittest
 from unittest.mock import MagicMock, patch
 
-from gemma4_agent.agent import Gemma4Agent
+from gemma4_agent.tools import ToolRegistry
 
 
-class ComputerUseGateTest(unittest.TestCase):
-    def _agent(self):
-        # instancia vacía sin __init__ (no levanta cliente/servidor).
-        ag = Gemma4Agent.__new__(Gemma4Agent)
-        ag.trace = MagicMock()
-        ag.trace.new_turn_id.return_value = "t1"
-        ag._last_turn_ts = 0
-        ag._remember_executed_tools = lambda ev: None
-        return ag
+class ComputerUseToolTest(unittest.TestCase):
+    def _reg(self):
+        reg = ToolRegistry.__new__(ToolRegistry)
+        reg.parent_agent = MagicMock()  # el executor reusa helpers del agente
+        return reg
 
-    def test_activates_via_plan_focus_arg_when_text_doesnt_match(self):
-        # VÍA 2: el TEXTO no matchea ninguna ventana, pero el plan focus_app (que el
-        # 4B normaliza) SÍ matchea una ventana abierta -> debe activarse. Uso Discord
-        # (sin tool dedicada; WhatsApp deferiría a su tool). Simula un fraseo donde el
-        # texto crudo no nombra "Discord" pero el plan lo resuelve.
-        ag = self._agent()
-        plan = [{"op": "focus_app", "arg": "Discord"}, {"op": "open_chat", "arg": "migue"},
-                {"op": "type", "arg": "hola"}, {"op": "send", "arg": ""}]
-        def wtit(s):
-            return "@Ron - Discord" if s == "Discord" else None  # solo el arg matchea
-        with patch.object(Gemma4Agent, "_window_title_in_text", side_effect=wtit), \
-             patch("gemma4_agent.computer_use.plan_for", return_value=plan), \
-             patch("gemma4_agent.computer_use.PlanExecutor") as PE, \
-             patch("gemma4_agent.computer_use.summarize_result", return_value="ok"):
-            PE.return_value.execute.return_value = {"ok": True, "steps": plan, "focused_app": "Discord"}
-            r = ag._try_computer_use("mandale hola a migue", "t1")
-        self.assertIsNotNone(r)  # se activó vía el focus_arg del plan
+    def test_requires_goal(self):
+        reg = self._reg()
+        r = reg.t_computer_use({})
+        self.assertFalse(r["ok"])
+        self.assertEqual(r.get("status"), "needs_user")
 
-    def test_no_open_app_does_not_activate(self):
-        # ni el texto ni el arg de focus_app matchean una ventana abierta -> None.
-        ag = self._agent()
-        plan = [{"op": "focus_app", "arg": "Telegram"}, {"op": "open_chat", "arg": "x"}]
-        with patch.object(Gemma4Agent, "_window_title_in_text", return_value=None), \
-             patch("gemma4_agent.computer_use.plan_for", return_value=plan):
-            r = ag._try_computer_use("mandale algo a x en telegram", "t1")
-        self.assertIsNone(r)
-
-    def test_bare_focus_plan_does_NOT_hijack(self):
-        # REGRESIÓN medida 2026-05-25: "abre steam"/"Cierra steam" con Steam YA
-        # abierto -> plan = [focus_app(steam)] (sin op de operación-en-app) ->
-        # computer_use NO debe tomar el turno (eso es del tool dedicado steam/window).
-        # Antes secuestraba y "enfocaba/minimizaba Steam porque sí".
-        ag = self._agent()
-        plan = [{"op": "focus_app", "arg": "steam"}]
-        with patch.object(Gemma4Agent, "_window_title_in_text", return_value="Steam"), \
-             patch("gemma4_agent.computer_use.plan_for", return_value=plan):
-            r = ag._try_computer_use("abre steam", "t1")
-        self.assertIsNone(r)  # no secuestra -> el router/LLM usa el tool steam
-
-    def test_inapp_op_plan_DOES_fire(self):
-        # un plan con una primitiva de operación-en-app (type/send/click/open_chat/
-        # open_url) SÍ activa computer_use.
-        ag = self._agent()
+    def test_runs_plan_executor_and_returns_ok(self):
+        reg = self._reg()
         plan = [{"op": "focus_app", "arg": "discord"}, {"op": "open_chat", "arg": "juan"},
                 {"op": "type", "arg": "hola"}, {"op": "send", "arg": ""}]
-        with patch.object(Gemma4Agent, "_window_title_in_text", return_value="Discord"), \
-             patch("gemma4_agent.computer_use.plan_for", return_value=plan), \
+        with patch("gemma4_agent.computer_use.plan_for", return_value=plan), \
              patch("gemma4_agent.computer_use.PlanExecutor") as PE, \
-             patch("gemma4_agent.computer_use.summarize_result", return_value="ok"):
+             patch("gemma4_agent.computer_use.summarize_result", return_value="Listo, le escribí hola a juan."):
             PE.return_value.execute.return_value = {"ok": True, "steps": plan, "focused_app": "Discord"}
-            r = ag._try_computer_use("escribile a juan en discord hola", "t1")
-        self.assertIsNotNone(r)
+            r = reg.t_computer_use({"goal": "escribile a juan en discord hola"})
+        self.assertTrue(r["ok"])
+        self.assertTrue(r["verified"])
+        self.assertEqual(r["completion_status"], "done")
+        self.assertIn("juan", r["reply"])
 
-    def test_whatsapp_defers_to_dedicated_tool(self):
-        # REGRESIÓN 2026-05-25: WhatsApp tiene tool DEDICADA (`whatsapp`). La capa
-        # universal tecleaba por SendInput (no llega al WebView2) -> escribía en la 1ª
-        # caja disponible / contacto equivocado. Debe DEFERIR: computer_use devuelve
-        # None y el router/LLM usa la tool whatsapp. Discord (sin tool dedicada) NO.
-        ag = self._agent()
-        plan = [{"op": "focus_app", "arg": "whatsapp"}, {"op": "open_chat", "arg": "vicente"},
-                {"op": "type", "arg": "gracias"}, {"op": "send", "arg": ""}]
-        with patch.object(Gemma4Agent, "_window_title_in_text", return_value="WhatsApp"), \
-             patch("gemma4_agent.computer_use.plan_for", return_value=plan):
-            r = ag._try_computer_use("escribe a vicente en wsp gracias", "t1")
-        self.assertIsNone(r)  # defiere a la tool whatsapp
+    def test_no_plan_is_honest_failure(self):
+        reg = self._reg()
+        with patch("gemma4_agent.computer_use.plan_for", return_value=None):
+            r = reg.t_computer_use({"goal": "algo raro que no se planifica"})
+        self.assertFalse(r["ok"])
 
-    def test_disabled_by_env(self):
-        import os
-        ag = self._agent()
-        os.environ["GEMMA4_COMPUTER_USE"] = "0"
-        try:
-            r = ag._try_computer_use("calculá 2+2 en la calculadora", "t1")
-        finally:
-            os.environ.pop("GEMMA4_COMPUTER_USE", None)
-        self.assertIsNone(r)
+    def test_registered_in_schemas(self):
+        from gemma4_agent.tool_schemas import COMPOUND_TOOL_SCHEMAS
+        names = [s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS]
+        self.assertIn("computer_use", names)
+
+
+class RouterOffersComputerUseTest(unittest.TestCase):
+    """El router debe RANKEAR computer_use para comandos de operar-dentro-de-app."""
+
+    @classmethod
+    def setUpClass(cls):
+        from gemma4_agent.semantic_router import suggest_tools_scored
+        # ¿hay encoder? si no, skip (CI sin sentence-transformers)
+        cls.available = bool(suggest_tools_scored("test"))
+
+    def _top(self, q):
+        from gemma4_agent.semantic_router import suggest_tools_scored
+        return [t for t, _ in suggest_tools_scored(q)]
+
+    def test_inapp_message_ranks_computer_use(self):
+        if not self.available:
+            self.skipTest("encoder no disponible")
+        # computer_use debe estar entre las tools ofrecidas (subset router <=16);
+        # medido #1 en estos casos, exigimos top-6 para robustez ante re-orderings.
+        for q in ("mandale hola a pedro en discord",
+                  "andá al canal general en discord",
+                  "en opera entra a python.org"):
+            self.assertIn("computer_use", self._top(q)[:6], msg=q)
 
 
 if __name__ == "__main__":

@@ -1249,6 +1249,7 @@ class ToolRegistry:
             "steam": self.t_steam,
             "window": self.t_window,
             "gui": self.t_gui,
+            "computer_use": self.t_computer_use,
             "vision": self.t_vision,
             "browser": self.t_browser,
             "web": self.t_web,
@@ -1744,6 +1745,36 @@ class ToolRegistry:
             shot["target"] = args.get("image") or args.get("target")
             return shot
         return _err("unknown gui action", action=action)
+
+    def t_computer_use(self, args: dict[str, Any]) -> dict[str, Any]:
+        """Tool UNIVERSAL de operación-en-app (rediseño 2026-05-25): ahora es UNA
+        tool más del registry — el router la ofrece y el LLM la llama con `goal`, en
+        vez del short-circuit pre-LLM que secuestraba turnos. Internamente: el 4B
+        planifica primitivas (plan_for) y el PlanExecutor las ejecuta verificando por
+        estado del SO. Devuelve un result normal (ok/steps/...) como cualquier tool.
+        El planner del agente vive en computer_use.py; el agente backref da los
+        helpers (focus/título/quick-switcher) que el executor reusa."""
+        goal = str(args.get("goal") or args.get("text") or args.get("target") or "").strip()
+        if not goal:
+            return _err("computer_use requiere 'goal' (el objetivo en lenguaje natural)",
+                        status="needs_user")
+        agent = getattr(self, "parent_agent", None)
+        if agent is None:
+            return _err("computer_use no disponible (sin agente)", status="failed")
+        try:
+            from .computer_use import plan_for, PlanExecutor, summarize_result
+            plan = plan_for(agent, goal)
+            if not plan:
+                return _err("no pude planificar la acción", goal=goal[:60], status="failed")
+            result = PlanExecutor(agent).execute(plan, "cu_tool")
+            reply = summarize_result(goal, plan, result)
+            return _ok(action="computer_use", goal=goal[:80],
+                       ops=[s["op"] for s in plan], steps=result.get("steps"),
+                       verified=bool(result.get("ok")),
+                       completion_status="done" if result.get("ok") else "attempted",
+                       reply=reply)
+        except Exception as exc:
+            return _err(f"computer_use falló: {exc}", goal=goal[:60], status="failed")
 
     def t_vision(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="describe_screen")
@@ -5708,11 +5739,20 @@ Start-Sleep -Milliseconds 120
 
     def gui_type(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))
+        # REGRESION WebView2 (2026-05-25): SendInput in-process no inyecta de forma
+        # fiable en inputs WebView2/Chromium/Electron (WhatsApp/Discord/Spotify). Antes
+        # del 23 el camino era SendKeys/paste y llegaba. FIX: si el target es
+        # Chromium, saltar SendInput y usar paste (UTF-8-safe, funciona en inputs web).
+        # Gate GEMMA4_KEYS_SENDINPUT=0 fuerza no-SendInput.
+        _win_hint = str(args.get("window") or args.get("title") or "")
+        _skip_sendinput = (
+            os.environ.get("GEMMA4_KEYS_SENDINPUT", "1").strip().lower() in {"0", "false", "no", "off"}
+            or self._foreground_is_chromium(_win_hint))
         # P0 (auditoría §7.1): intentar SendInput IN-PROCESS primero (sin el
         # cold-start de PowerShell que causaba la pérdida de caracteres bajo carga).
         # Maneja ASCII, operadores Y acentos (híbrido VK/Unicode). Si no está
         # disponible o falla, cae al camino legacy (paste / SendKeys-PowerShell).
-        if not bool(args.get("raw_sendkeys", False)):
+        if not bool(args.get("raw_sendkeys", False)) and not _skip_sendinput:
             _si = self._send_text_via_sendinput(text)
             if _si is not None and _si.get("ok"):
                 try:
@@ -5729,8 +5769,11 @@ Start-Sleep -Milliseconds 120
         # FIX: si el texto tiene caracteres NO-ASCII (acentos, ñ, emoji), tipear
         # por CLIPBOARD-PASTE (tkinter es UTF-8-safe), guardando y restaurando el
         # portapapeles del usuario. ASCII puro -> SendKeys (no toca el clipboard).
+        # WebView2/Chromium: preferir PASTE (evento de pegado, llega al input web)
+        # aunque sea ASCII — SendKeys de texto largo a WebView2 es menos fiable que
+        # un paste. Apps nativas: solo paste para no-ASCII (acentos), como antes.
         non_ascii = any(ord(c) > 127 for c in text)
-        if non_ascii and not bool(args.get("raw_sendkeys", False)):
+        if (non_ascii or _skip_sendinput) and not bool(args.get("raw_sendkeys", False)):
             result = self._gui_type_via_paste(text)
             if result.get("ok"):
                 try:
@@ -5900,8 +5943,19 @@ Start-Sleep -Milliseconds 120
         keys = str(args.get("keys", "")).strip()
         if not keys:
             return _err("empty keys")
-        # P0 (§7.1): tecla simple nombrada -> SendInput in-process (sin PowerShell).
-        _si = self._keypress_via_sendinput(keys)
+        # REGRESION medida 2026-05-25 (RED: "wsp funcionaba perfecto antes del 23"):
+        # antes del 23 los keystrokes iban por PowerShell-SendKeys y llegaban a
+        # WhatsApp. La migracion a SendInput (856a345) y luego a combos por SendInput
+        # (69f3c76) rompio apps WebView2/Electron/Chromium: ctrl+f/ctrl+k podia no
+        # llegar al input web. FIX hibrido: SendInput para apps nativas; SendKeys para
+        # WebView2/Chromium. Gate GEMMA4_KEYS_SENDINPUT=0 fuerza SendKeys siempre.
+        _win_hint = str(args.get("window") or args.get("title") or "")
+        _force_sendkeys = (
+            os.environ.get("GEMMA4_KEYS_SENDINPUT", "1").strip().lower() in {"0", "false", "no", "off"}
+            or self._foreground_is_chromium(_win_hint))
+        # P0 (§7.1): tecla simple nombrada -> SendInput in-process (sin PowerShell),
+        # SALVO que el target sea WebView2/Chromium (ahí SendInput no llega).
+        _si = None if _force_sendkeys else self._keypress_via_sendinput(keys)
         if _si is not None and _si.get("ok"):
             try:
                 from . import gui_safety
@@ -5922,7 +5976,8 @@ Start-Sleep -Milliseconds 120
             gui_safety.note_agent_input()
         except Exception:
             pass
-        return _ok(keys=keys, sendkeys=sendkeys, exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000))
+        return _ok(keys=keys, sendkeys=sendkeys, exit_code=proc.returncode,
+                   method="sendkeys", stderr=_truncate(proc.stderr.strip(), 1000))
 
     def _match_query(self, query: str, target: str) -> bool:
         """Matching helper compartido entre verify_app_opened / verify_window_exists.

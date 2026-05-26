@@ -291,84 +291,10 @@ class Gemma4Agent:
                     return t
         return None
 
-    def _try_computer_use(self, text: str, turn_id: str) -> "AgentReply | None":
-        """CAPA UNIVERSAL de computer-use (Agent-S2 / mixture-of-grounding). Reemplaza
-        los macros por-intención (_try_in_app_nav / _try_in_app_message): NO hay un
-        macro por verbo. El 4B emite un PLAN de primitivas (su fuerte: medido 10/10
-        parseable; encadenar acciones él mismo NO sabe: 2/10) y UN ejecutor corre las
-        primitivas atómicas (focus/open_chat/open_url/type/send/keypress/click)
-        verificando por estado del SO. Medido 2026-05-25: calc/browser/chat 4/4 c/u.
-
-        GATE de activación (universal, por ESTADO DEL SO, sin regex por intención):
-        una app ABIERTA está mencionada en el comando. Se resuelve por DOS vías para
-        cubrir nombres coloquiales ("wsp"/"wasap" -> WhatsApp): (1) un token del texto
-        matchea un título de ventana; o (2) el PLANIFICADOR normaliza el nombre de app
-        en el arg de focus_app y ESE matchea una ventana abierta (el 4B hace la
-        normalización lingüística; el estado del SO confirma que la app está abierta).
-        Si ninguna vía da una app abierta, None (turno normal del LLM).
-        Gate de apagado: GEMMA4_COMPUTER_USE=0."""
-        import os as _os
-        if _os.environ.get("GEMMA4_COMPUTER_USE", "1").strip().lower() in {"0", "false", "no", "off"}:
-            return None
-        from .computer_use import plan_for, PlanExecutor, summarize_result
-        # VÍA 1: token del texto matchea una ventana.
-        win = self._window_title_in_text(text)
-        plan = plan_for(self, text)
-        if not plan:
-            return None  # el 4B no produjo un plan -> dejar el turno normal
-        # VÍA 2 (coloquialismos): el arg de focus_app del plan (el 4B lo normaliza:
-        # "wsp"->WhatsApp) matchea una ventana abierta. Resuelve "escribile a X en
-        # wsp" aunque "wsp" no aparezca en ningún título. Sigue siendo estado del SO.
-        if not win:
-            _focus_arg = next((s["arg"] for s in plan if s["op"] == "focus_app"), "")
-            if _focus_arg:
-                win = self._window_title_in_text(_focus_arg)
-        if not win:
-            return None  # ninguna app abierta mencionada (ni por texto ni por el plan)
-        # GUARD CRÍTICO (regresión medida 2026-05-25): la capa universal SÓLO debe
-        # tomar el turno si el plan OPERA DENTRO de la app (type/send/keypress/click/
-        # open_chat/open_url). Un plan que es SÓLO focus_app (o focus+nada) = "abrir/
-        # cerrar/enfocar la app" — eso es de los tools DEDICADOS (steam/app/window),
-        # NO de computer-use. Sin este guard, "abre steam"/"Cierra steam" con Steam ya
-        # abierto disparaban computer_use -> focus_app(Steam) -> "enfoca/minimiza Steam
-        # porque sí" en vez de abrir/cerrar. Si el plan no tiene una primitiva de
-        # operación-en-app, devolvemos None y deja al router/LLM con sus tools.
-        _IN_APP_OPS = {"type", "send", "keypress", "click", "open_chat", "open_url"}
-        if not any(s["op"] in _IN_APP_OPS for s in plan):
-            self.trace.event(turn_id, "computer_use_skip_bare_focus",
-                             ops=[s["op"] for s in plan], text=text[:60])
-            return None
-        # DEFERIR a TOOLS DEDICADAS (regresión medida 2026-05-25): si la app de la
-        # ventana matcheada tiene una tool DEDICADA (WhatsApp -> tool `whatsapp` con
-        # su flujo propio deeplink+Ctrl+F+verify-header), NO usar computer-use. La capa
-        # universal tecleaba por SendInput, que NO llega al WebView2 de WhatsApp -> la
-        # búsqueda no abría el chat y el `type` caía en la 1ª caja de texto disponible
-        # (mandaba al contacto equivocado). Discord/Slack/Teams NO tienen tool dedicada
-        # -> esos SÍ van por computer-use. Mapa nombre-de-app -> tool dedicada.
-        _DEDICATED_APP_TOOLS = {"whatsapp": "whatsapp"}
-        _win_low = win.lower()
-        for _app_kw, _tool in _DEDICATED_APP_TOOLS.items():
-            if _app_kw in _win_low:
-                self.trace.event(turn_id, "computer_use_defer_dedicated",
-                                 app=_app_kw, tool=_tool, window=win[:40])
-                return None  # el router/LLM usa la tool dedicada
-        self.trace.event(turn_id, "computer_use_plan",
-                         window=win[:40], ops=[s["op"] for s in plan], text=text[:60])
-        try:
-            result = PlanExecutor(self).execute(plan, turn_id)
-        except Exception as exc:
-            self.trace.event(turn_id, "computer_use_error",
-                             error=f"{type(exc).__name__}: {exc}", text=text[:60])
-            return None  # error inesperado -> que lo intente el LLM
-        reply = summarize_result(text, plan, result)
-        events = [ToolEvent(name="gui",
-                            args={"action": "computer_use", "ops": [s["op"] for s in plan]},
-                            result={"ok": result.get("ok"), "steps": result.get("steps"),
-                                    "verified": result.get("ok")})]
-        self._last_turn_ts = time.time()
-        self._remember_executed_tools(events)
-        return AgentReply(content=reply, tool_events=events, mission=None)
-
+    # computer-use = tool del registry (tools.t_computer_use), NO un método del
+    # agente. El short-circuit pre-LLM se eliminó (secuestraba turnos). Los
+    # helpers de abajo (_app_window_title/_title_now_matches/_quick_switcher_nav)
+    # los reusa el PlanExecutor de computer_use.py.
     # NOTA (2026-05-25): _try_in_app_message y _try_in_app_nav (macros por
     # INTENCIÓN) fueron REEMPLAZADOS por _try_computer_use (capa universal:
     # el 4B planifica primitivas, un ejecutor las corre). Medido: A 16/16 en
@@ -857,27 +783,14 @@ class Gemma4Agent:
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
             return _jarvis_reply
-        # NAVEGACIÓN-EN-APP determinista (2026-05-25, validación Discord): "entrá a
-        # CAPA UNIVERSAL de computer-use (Agent-S2, rediseño 2026-05-25): operar una
-        # app abierta ("calculá 5+3", "andá a discord al chat de X", "en opera entrá
-        # a python.org", "mandale hola a juan") = el 4B emite un PLAN de primitivas y
-        # UN ejecutor las corre, verificando por estado del SO. NO hay un macro por
-        # intención. Short-circuit ANTES del LLM (que no encadena: medido 2/10). El
-        # gate de activación (app abierta mencionada) + el de apagado
-        # (GEMMA4_COMPUTER_USE=0) viven dentro de _try_computer_use.
-        # turn_id ANTES del short-circuit: el call site viejo lo usaba sin asignar ->
-        # UnboundLocalError tragado por el except -> nunca corría (bug 2026-05-25).
+        # COMPUTER-USE ES UNA TOOL (rediseño 2026-05-25, pedido de RED): operar dentro
+        # de una app abierta ya NO es un short-circuit pre-LLM que secuestraba turnos
+        # (causaba: "abre steam"->enfoca/minimiza, WhatsApp->escribe en la caja
+        # equivocada, "router no ofrece tools"). Ahora `computer_use(goal=...)` es una
+        # tool más del registry: el router la ofrece y el LLM la llama como cualquier
+        # otra, con sus parámetros. Su impl (tools.t_computer_use) corre el plan
+        # executor internamente. Sin gate frágil, sin secuestro — unificado.
         turn_id = self.trace.new_turn_id()
-        if isinstance(content, str) and content.strip() and not getattr(self, "_splitting", False):
-            try:
-                _cu = self._try_computer_use(content, turn_id)
-                if _cu is not None:
-                    return _cu
-            except Exception as _cu_exc:
-                # NO tragar en silencio: dejar traza y seguir al LLM (red de seguridad).
-                self.trace.event(turn_id, "computer_use_macro_error",
-                                 error=f"{type(_cu_exc).__name__}: {_cu_exc}",
-                                 user_text=content[:60] if isinstance(content, str) else "")
         # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
         # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
         # LLM y corremos cada cláusula como su propio turno (serializado si la
