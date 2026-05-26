@@ -100,6 +100,7 @@ _E4B = _PROJECT_ROOT / "models" / "E4B"
 _E2B_Q2_K_XL = str(_E2B / "gemma-4-E2B-it-UD-Q2_K_XL.gguf")  # 1.75 novis / 2.94 +vis @2K
 _E2B_Q4_K_M  = str(_E2B / "gemma-4-E2B-it-Q4_K_M.gguf")      # 2.16 novis / 3.36 +vis @4K
 _E2B_Q5_K_M  = str(_E2B / "gemma-4-E2B-it-Q5_K_M.gguf")      # 2.41 novis @8K
+_E4B_IQ3_XXS = str(_E4B / "gemma-4-E4B-it-UD-IQ3_XXS.gguf")  # 3.58 novis / 4.78 +vis @16K — <4GB residente, tool-calling 91% (= Q4)
 _E4B_Q4_K_M  = str(_E4B / "gemma-4-E4B-it-Q4_K_M.gguf")      # 4.96 +vis @8K
 _E4B_Q4_K_XL = str(_E4B / "gemma-4-E4B-it-UD-Q4_K_XL.gguf")  # 5.23 +vis @16K
 _E4B_Q6_K    = str(_E4B / "gemma-4-E4B-it-Q6_K.gguf")        # 6.34 +vis @32K
@@ -173,7 +174,13 @@ PROFILES: dict[str, Profile] = {
         name="vram4",
         display_name="VRAM 4GB",
         context_size=16384,
-        model_path=_E4B_Q4_K_M,  # subido de E2B-Q4: E4B tool-callea fiable (67%+)
+        # E4B-UD-IQ3_XXS (2026-05-25): MEDIDO 3.58 GB residente (<4 GB con
+        # visión-lazy) vs E4B-Q4 4.45 GB. Tool-calling 11/12=91% — IGUAL que el Q4
+        # (mismo harness, mismo 1 fallo cold-start). Unsloth dynamic IQ3 aguanta el
+        # tool-calling (a diferencia de IQ2_M que cayó a 1/3). Da el target <4GB del
+        # operador SIN perder calidad de acciones. La visión (mmproj) sigue lazy:
+        # pico 4.78 GB sólo en turnos con imagen.
+        model_path=_E4B_IQ3_XXS,
         mmproj_path=_MMPROJ_E4B,
         vision_enabled=True,
         rerank_enabled=False,
@@ -183,12 +190,12 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         description=(
-            "GPU de 4-6 GB. E4B-Q4_K_M (subido desde E2B: la familia E4B "
-            "emite tool-calls de forma fiable — medido 67%+ vs ~0% en E2B-Q2), "
-            "ctx 16K, VISIÓN ON, voz+STT ON (CPU). ~4.96 GB modelo + KV 16K -> "
-            "~6.5 GB física. Primer perfil con acciones fiables."
+            "GPU de 4 GB. E4B-UD-IQ3_XXS: <4 GB residente (3.58 GB medido, "
+            "visión-lazy), tool-calling 91% = igual que E4B-Q4 pero ~0.9 GB menos. "
+            "ctx 16K, VISIÓN ON (on-demand), voz+STT ON (CPU). El target <4GB sin "
+            "perder fiabilidad de acciones."
         ),
-        est_vram_mb=3360,
+        est_vram_mb=3583,
     ),
     "vram6": Profile(
         name="vram6",
