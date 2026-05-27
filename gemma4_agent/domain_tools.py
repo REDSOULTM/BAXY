@@ -11436,7 +11436,25 @@ def _notification_due(args: dict[str, Any]) -> datetime:
         if candidate <= now:
             candidate = candidate + timedelta(days=1)
         return candidate
-    raise _NotificationDueError(f"unrecognized due/time format: {raw!r} (use ISO datetime or HH:MM)")
+    # LENGUAJE NATURAL (2026-05-27): "a las 7 de la mañana", "mañana a las 9",
+    # "las 6 de la tarde". El 4B NO convierte fiable estas frases a HH:MM/ISO
+    # (medido), así que las alarmas/timers fallaban con NL aunque los recordatorios
+    # ya lo soportan. Misma capa universal y conservadora que reminder_tool
+    # (datetime_parse.py): si NO resuelve con confianza -> error honesto (no
+    # inventamos un horario; una alarma a la hora equivocada es inútil).
+    try:
+        from .datetime_parse import parse_when as _parse_when
+        _iso = _parse_when(raw)
+    except Exception:
+        _iso = None
+    if _iso:
+        try:
+            return datetime.fromisoformat(_iso.replace("Z", "+00:00")).astimezone().replace(tzinfo=None)
+        except ValueError:
+            pass
+    raise _NotificationDueError(
+        f"unrecognized due/time format: {raw!r} (use ISO datetime, HH:MM, "
+        "or a clear time like 'a las 7 de la mañana')")
 
 
 def _find_routine(args: dict[str, Any], state: AgentState) -> dict[str, Any] | None:

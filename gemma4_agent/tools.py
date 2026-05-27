@@ -112,7 +112,7 @@ def _prevalidate_notification(args: dict[str, Any]) -> dict[str, Any] | None:
     raw = str(args.get("due") or args.get("time") or "").strip()
     if not raw:
         return None
-    # ISO datetime aceptado, HH:MM aceptado, todo lo demás rechazado.
+    # ISO datetime aceptado, HH:MM aceptado.
     if _RX_HHMM_LOCAL.fullmatch(raw):
         return None
     try:
@@ -120,11 +120,24 @@ def _prevalidate_notification(args: dict[str, Any]) -> dict[str, Any] | None:
         _dt.fromisoformat(raw.replace("Z", "+00:00"))
         return None
     except ValueError:
-        return _err(
-            f"invalid time/due format: {raw!r} (use ISO datetime or HH:MM)",
-            status="needs_user",
-            time=raw,
-        )
+        pass
+    # LENGUAJE NATURAL (2026-05-27): "a las 7 de la mañana", "mañana a las 9". El
+    # tool (_notification_due) ya las resuelve vía datetime_parse; el validador
+    # debe DEJARLAS PASAR si parse_when las entiende con confianza. Si NO -> sigue
+    # rechazando (honesto: pedir hora exacta, no inventar). Misma capa que
+    # reminder. Alinea alarmas/timers con recordatorios (antes solo ISO/HH:MM).
+    try:
+        from .datetime_parse import parse_when as _pw
+        if _pw(raw):
+            return None
+    except Exception:
+        pass
+    return _err(
+        f"invalid time/due format: {raw!r} (use ISO datetime, HH:MM, or a clear "
+        "time like 'a las 7 de la mañana')",
+        status="needs_user",
+        time=raw,
+    )
 
 
 def _prevalidate_backup_sync(args: dict[str, Any]) -> dict[str, Any] | None:

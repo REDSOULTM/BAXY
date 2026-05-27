@@ -44,24 +44,31 @@ def _normalize_es(text: str) -> str:
     t = re.sub(r"\b(\d{1,2})\s+y\s+30\b", r"\1:30", t)
     t = re.sub(r"\b(\d{1,2})\s+y\s+15\b", r"\1:15", t)
     # "X de la tarde"/"de la noche" -> +12h (si X<12). "X de la mañana" -> X tal cual.
+    # Maneja minutos: "7:30 de la tarde" -> "19:30", "7 de la tarde" -> "19:00".
     def _pm(m: re.Match) -> str:
         h = int(m.group(1))
+        mm = m.group(2) or "00"
         if h < 12:
             h += 12
-        return f"{h}:00"
-    t = re.sub(r"\b(\d{1,2})(?::00)?\s+de\s+la\s+(tarde|noche)\b", _pm, t,
+        return f"{h}:{mm}"
+    t = re.sub(r"\b(\d{1,2})(?::(\d{2}))?\s+de\s+la\s+(?:tarde|noche)\b", _pm, t,
                flags=re.IGNORECASE)
-    t = re.sub(r"\b(\d{1,2})(?::00)?\s+de\s+la\s+ma(?:n|ñ)ana\b", r"\1:00", t,
+    def _am(m: re.Match) -> str:
+        return f"{int(m.group(1))}:{m.group(2) or '00'}"
+    t = re.sub(r"\b(\d{1,2})(?::(\d{2}))?\s+de\s+la\s+ma(?:n|ñ)ana\b", _am, t,
                flags=re.IGNORECASE)
     # "a las N" sin sufijo -> dejar que dateparser lo tome como hora; normalizamos
     # "a las 5" -> "5:00" para anclar la hora.
     t = re.sub(r"\ba\s+las\s+(\d{1,2})\b(?!\s*[:h]\d)(?!\s*de\s+la)", r"\1:00", t,
                flags=re.IGNORECASE)
     # "en N minutos/horas" ya lo maneja dateparser en es; lo dejamos.
-    # Limpiar artículos sueltos que quedan tras normalizar la hora y que
-    # confunden a dateparser ("las 15:00" -> "15:00", "el viernes 5:00" ->
-    # "viernes 5:00"). Solo al inicio o antes de un día/hora.
-    t = re.sub(r"\b(las|el|la|los)\s+(?=\d{1,2}:\d{2}\b)", "", t, flags=re.IGNORECASE)
+    # Limpiar artículos/preposiciones sueltos que quedan tras normalizar la hora y
+    # que confunden a dateparser ("las 15:00" -> "15:00"; "a las 7 de la mañana" ->
+    # tras la regla mañana queda "a 7:00", y dateparser lee "a 7:00" como enero
+    # 2027 — bug medido). Quitamos "a las / a la / a / las / el / la / los" antes de
+    # una hora HH:MM. Solo al inicio o pegado a la hora; no toca el resto.
+    t = re.sub(r"\b(?:a\s+las|a\s+la|a|las|el|la|los)\s+(?=\d{1,2}:\d{2}\b)", "",
+               t, flags=re.IGNORECASE)
     t = re.sub(r"^\s*(el|la|los|las)\s+", "", t, flags=re.IGNORECASE)
     return t.strip()
 
@@ -96,8 +103,14 @@ def parse_when(text: str, *, base: Optional[datetime] = None,
     # 2027). En ese caso descartamos -> None (el caller pregunta). Conservador:
     # un horario MAL es peor que preguntar.
     low = s.lower()
-    _has_explicit_day = bool(re.search(
-        r"\bma(?:n|ñ)ana\b|\bpasado\b|\bhoy\b|\blunes\b|\bmartes\b|\bmi(?:e|é)rcoles\b|"
+    # OJO "mañana": en español es AMBIGUO — "mañana" (tomorrow, día) vs "de/por la
+    # mañana" (morning, parte del día). "a las 7 DE LA mañana" NO es "mañana=día"
+    # (bug medido: contaba como día explícito, desactivaba el guardrail y daba
+    # 2027). Solo cuenta como día el "mañana" que NO va precedido de "la/de la"
+    # (esos son "morning").
+    _manana_as_day = bool(re.search(r"(?<!la\s)(?<!de\sla\s)\bma(?:n|ñ)ana\b", low))
+    _has_explicit_day = _manana_as_day or bool(re.search(
+        r"\bpasado\b|\bhoy\b|\blunes\b|\bmartes\b|\bmi(?:e|é)rcoles\b|"
         r"\bjueves\b|\bviernes\b|\bs(?:a|á)bado\b|\bdomingo\b|\btomorrow\b|\btoday\b|"
         r"\bmonday\b|\btuesday\b|\bwednesday\b|\bthursday\b|\bfriday\b|\bsaturday\b|"
         r"\bsunday\b|\d{1,4}[-/]\d{1,2}|\bel\s+\d{1,2}\b|\bnext\b|\bpr(?:o|ó)xim",

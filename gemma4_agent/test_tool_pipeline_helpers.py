@@ -246,6 +246,15 @@ class TestPreValidatorsRegistry(unittest.TestCase):
         self.assertEqual(out["status"], "needs_user")
         self.assertIn("tomorrow morning", out["error"])
 
+    def test_notification_validator_accepts_natural_language_time(self) -> None:
+        # 2026-05-27: alarmas/timers aceptan NL que parse_when resuelve (igual que
+        # recordatorios). Antes el validador rechazaba todo lo no-ISO/HH:MM.
+        fn = _PRE_VALIDATORS["notification"]
+        for raw in ("a las 7 de la mañana", "mañana a las 9", "a las 11 de la noche"):
+            self.assertIsNone(
+                fn({"action": "alarm_create", "time": raw}),
+                f"{raw!r} should pass (parse_when resolves it)")
+
     def test_notification_validator_ignores_non_scheduling_actions(self) -> None:
         # Action without scheduling semantics returns None (no opinion).
         fn = _PRE_VALIDATORS["notification"]
