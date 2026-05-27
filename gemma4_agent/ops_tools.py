@@ -722,11 +722,24 @@ def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                     _dt.fromisoformat(s)
                     due_normalized = s
                 except ValueError:
-                    return _err(
-                        f"reminder due {s!r} is not ISO 8601",
-                        status="needs_user",
-                        hint="pass YYYY-MM-DD or YYYY-MM-DDTHH:MM; resolve relative dates in the agent",
-                    )
+                    # No es ISO: el 4B no convierte fiable "las tres de la tarde".
+                    # Normalizamos lenguaje natural -> ISO (multilingüe, conservador).
+                    # Si NO resuelve con confianza, error honesto pidiendo la hora
+                    # exacta (NUNCA inventamos un horario: un recordatorio mal es
+                    # peligroso). Capa universal, ver datetime_parse.py.
+                    try:
+                        from .datetime_parse import parse_when as _parse_when
+                        _iso = _parse_when(s)
+                    except Exception:
+                        _iso = None
+                    if _iso:
+                        due_normalized = _iso
+                    else:
+                        return _err(
+                            f"no pude entender la fecha/hora {s!r}",
+                            status="needs_user",
+                            hint="decime la hora exacta (ej: 'a las 3 de la tarde de hoy' o 'mañana a las 9')",
+                        )
     resource = state.register_resource(
         "reminder",
         title,
