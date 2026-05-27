@@ -38,6 +38,10 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
     # OCR antes de mandar). Un email al destinatario/contenido equivocado es daño
     # real. Confirmar antes de send (no antes de draft/status). Lit.: acciones
     # irreversibles de comunicación externa = verificación/confirmación obligatoria.
+    # NB: el send sin Graph token cae al redactor web pre-rellenado (no envía; el
+    # usuario manda a mano en el redactor) — ver email_tool. Igual mantenemos la
+    # confirmación previa cuando safety está ON: confirmar "voy a actuar sobre tu
+    # correo" es correcto para comunicación externa, y el redactor abre DESPUÉS.
     if tool == "email" and action == "send":
         return SafetyDecision(True, "external_message_send", "email.send delivers an irreversible message to third parties")
     if tool == "notification" and action not in {"status", "list", "timer_list", "alarm_list", "reminder_list"}:

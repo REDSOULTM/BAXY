@@ -608,16 +608,48 @@ def email_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             valid_actions=["status", "draft", "send"],
             status="needs_user",
         )
-    if not token:
-        return _err(
-            "missing Microsoft Graph token",
-            status="needs_user",
-            verified=False,
-            completion_status="needs_user_auth",
-            provider="microsoft_graph",
-            required_env="GEMMA4_GRAPH_TOKEN",
-        )
     to = _string_list(args.get("to"))
+    if not token:
+        # SIN token de Graph: en vez de fallar (que dejaba al usuario sin manos
+        # sin forma de mandar un correo), abrimos el REDACTOR web pre-rellenado
+        # de Gmail con la sesión que el usuario ya tiene logueada — cero setup
+        # (CLAUDE.md #5: el código garantiza su precondición). NO enviamos acá:
+        # componer no es irreversible, enviar sí (CLAUDE.md #6) → el usuario
+        # revisa y manda en el redactor. El open real lo hace t_email (tiene el
+        # browser); acá solo armamos la URL y señalamos el fallback.
+        if not to:
+            return _err("missing email recipient", status="needs_user", verified=False)
+        # NO validamos formato de email acá (a diferencia del send por Graph): el
+        # redactor NO envía, así que un NOMBRE pelado ("juan") es válido — va al
+        # campo "Para" de Gmail, donde el autocompletado de contactos del usuario
+        # lo resuelve y el usuario elige antes de mandar. El 4B a veces pasa el
+        # nombre sin expandir a correo; rechazarlo dejaría al usuario sin manos
+        # sin poder escribir el mail. Gmail no manda nada hasta que el user lo
+        # confirma, así que abrir el borrador es siempre más útil que abortar.
+        from urllib.parse import quote as _q
+        url = ("https://mail.google.com/mail/?view=cm&fs=1"
+               f"&to={_q(','.join(to))}")
+        subject = str(args.get("subject") or "").strip()
+        body = str(args.get("body") or "").strip()
+        if subject:
+            url += f"&su={_q(subject)}"
+        if body:
+            url += f"&body={_q(body)}"
+        # ¿el destinatario ya es un email completo, o un nombre a resolver?
+        _all_emails = all(_EMAIL_RECIPIENT_RE.match(a) for a in to)
+        return _ok(
+            provider="gmail_web_compose",
+            fallback="gmail_web_compose",
+            compose_url=url,
+            to=to, subject=subject, body=body,
+            recipient_resolved=_all_emails,
+            sent=False, verified=False,
+            completion_status="email_compose_url",
+            note=("No Graph token; opening a pre-filled Gmail compose window. "
+                  "The message is NOT sent — the user reviews and sends it."
+                  + ("" if _all_emails else
+                     " Recipient is a name; the user picks the contact in Gmail.")),
+        )
     if not to:
         return _err("missing email recipient", status="needs_user", verified=False)
     # VALIDACION de formato email para cada destinatario. Microsoft Graph

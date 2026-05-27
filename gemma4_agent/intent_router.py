@@ -645,3 +645,84 @@ def wants_web_navigation(text: str) -> bool:
         return (float(q @ _NAV.nav) - float(q @ _NAV.nonav)) >= _NAV_MARGIN
     except Exception:
         return False
+
+
+# ---------------------------------------------------------------------------
+# Intención de MANDAR UN EMAIL (2026-05-27). El 4B ni emite el tool-call de email
+# (medido: reply vacío). Para un usuario sin manos, mandar correo por voz es
+# diario. Este clasificador detecta "mandá/escribí un correo a X" para que la red
+# determinista abra el redactor web pre-rellenado (sin token, usa la sesión
+# logueada). Distinto de notas/mensajes-de-chat. Embeddings, fallback seguro.
+# ---------------------------------------------------------------------------
+_EMAIL_ANCHORS = [
+    "manda un correo a juan", "escribi un email a ana", "envia un mail a soporte",
+    "mandale un correo electronico a mi jefe", "redacta un email para el profe",
+    "escribile un correo a maria diciendo que llego tarde",
+    "mandale un correo a ana arroba gmail diciendo que llego tarde",
+    "envia un mail a pedro@empresa.com con el asunto reunion",
+    "send an email to john@gmail.com saying i'm late",
+    "send an email to john", "write a mail to support", "email my boss",
+    "envia um email", "envoyer un courriel", "schreib eine email", "manda una mail",
+]
+_NOEMAIL_ANCHORS = [
+    # NO es email: mensaje de chat, nota, llamada, pregunta, navegar
+    "mandale un mensaje a juan por whatsapp", "escribile a ana en discord",
+    "anota que tengo que llamar al medico", "recordame algo",
+    "llama a mi mama", "que es el correo electronico", "abri gmail",
+    "send a whatsapp message", "take a note", "what is email", "open gmail",
+]
+
+
+class _EmailCentroids:
+    em: Any = None
+    noem: Any = None
+    ready: bool = False
+
+
+_EMAIL = _EmailCentroids()
+_EMAIL_MARGIN = float(os.environ.get("GEMMA4_EMAIL_MARGIN", "0.08"))
+
+
+def _ensure_email_centroids() -> bool:
+    if _EMAIL.ready:
+        return _EMAIL.em is not None
+    try:
+        from . import semantic_router as sr
+        if not sr._ensure_loaded():
+            _EMAIL.ready = True
+            return False
+        import numpy as np
+        model = sr._STATE.model
+
+        def _centroid(anchors: list[str]) -> Any:
+            e = model.encode(anchors, normalize_embeddings=True).mean(0)
+            return np.asarray(e / (np.linalg.norm(e) or 1.0), dtype="float32")
+
+        _EMAIL.em = _centroid(_EMAIL_ANCHORS)
+        _EMAIL.noem = _centroid(_NOEMAIL_ANCHORS)
+        _EMAIL.ready = True
+        return True
+    except Exception:
+        _EMAIL.ready = True
+        return False
+
+
+def wants_send_email(text: str) -> bool:
+    """True si el turno pide MANDAR/ESCRIBIR un CORREO (email), distinto de nota/
+    mensaje-de-chat/llamada. Multilingüe, fallback seguro. La red determinista lo
+    usa para abrir el redactor web pre-rellenado."""
+    txt = (text or "").strip()
+    if len(txt) < 5:
+        return False
+    if not _ensure_email_centroids() or _EMAIL.em is None:
+        return False
+    try:
+        from . import semantic_router as sr
+        import numpy as np
+        q = sr.embed(txt)
+        if q is None:
+            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
+        q = np.asarray(q, dtype="float32")
+        return (float(q @ _EMAIL.em) - float(q @ _EMAIL.noem)) >= _EMAIL_MARGIN
+    except Exception:
+        return False

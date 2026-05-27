@@ -2428,7 +2428,20 @@ class ToolRegistry:
         return download_tool(args, self.state)
 
     def t_email(self, args: dict[str, Any]) -> dict[str, Any]:
-        return email_tool(args, self.state)
+        res = email_tool(args, self.state)
+        # FALLBACK SIN TOKEN (2026-05-27): email_tool arma la URL de compose de
+        # Gmail cuando no hay Graph token; acá (que SÍ tenemos el browser) la
+        # abrimos de verdad con la sesión logueada del usuario. NO envía: abre
+        # el redactor pre-rellenado para que el usuario confirme y mande. Es la
+        # vía universal para alguien sin manos (cero setup, sin token).
+        if isinstance(res, dict) and res.get("fallback") == "gmail_web_compose" \
+                and res.get("compose_url"):
+            opened = self.web_open_url({"url": str(res["compose_url"])})
+            res = {**res, **{k: v for k, v in opened.items()
+                             if k not in ("ok",)}}
+            res["ok"] = bool(opened.get("ok", res.get("ok")))
+            res["opened_compose"] = bool(opened.get("ok"))
+        return res
 
     def t_reminder(self, args: dict[str, Any]) -> dict[str, Any]:
         return reminder_tool(args, self.state)

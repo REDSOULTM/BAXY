@@ -1917,6 +1917,26 @@ class Gemma4Agent:
                                              tool=tc_f[0].get("function", {}).get("name"))
                         else:
                             self.trace.event(turn_id, "forced_tool_retry_empty")
+                            # RED DETERMINISTA EMAIL (backstop, 2026-05-27). MEDIDO:
+                            # el 4B SÍ emite el tool-call de email de forma fiable
+                            # (3/3 en vivo), así que el camino NORMAL ya lo cubre vía
+                            # la tool `email` (que sin Graph token abre el redactor
+                            # web pre-rellenado). Esta red SOLO entra en el caso raro
+                            # en que ni el forced-retry sacó un tool-call — entonces,
+                            # si el turno pide mandar un correo con destinatario,
+                            # disparamos la MISMA tool email. Más específico que
+                            # navegación -> va primero.
+                            _mail_ev = self._deterministic_email(raw_text_early)
+                            if _mail_ev is not None:
+                                events.append(_mail_ev)
+                                _to = (_mail_ev.result or {}).get("email_to") or ""
+                                self.trace.event(turn_id, "deterministic_email", to=_to)
+                                if (_mail_ev.result or {}).get("ok"):
+                                    assistant_content = (
+                                        f"Abrí el borrador de correo para {_to}. "
+                                        "Revisalo y decime si lo envío.")
+                                    raw_msg = {}
+                                    raw_tool_calls = []  # no seguir buscando tool
                             # RED DETERMINISTA DE NAVEGACIÓN (2026-05-27, GATE 0):
                             # E2B-Q4 a veces NO emite el tool-call NI forzado
                             # (medido: forced_tool_retry_empty en "andá a github").
@@ -1926,7 +1946,7 @@ class Gemma4Agent:
                             # estado, NO respuesta enlatada (el LLM redacta la
                             # confirmación después, con el resultado en contexto).
                             # Solo como ÚLTIMO recurso (el 4B ya probó que no llama).
-                            _nav_ev = self._deterministic_navigate(raw_text_early)
+                            _nav_ev = None if _mail_ev is not None else self._deterministic_navigate(raw_text_early)
                             if _nav_ev is not None:
                                 events.append(_nav_ev)
                                 _nav_url = (_nav_ev.result or {}).get("url") or ""
@@ -3166,6 +3186,92 @@ class Gemma4Agent:
         except Exception as exc:
             result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
         return ToolEvent(name="browser", args=args, result=result if isinstance(result, dict) else {})
+
+    @staticmethod
+    def _extract_email_fields(text: str) -> dict[str, str] | None:
+        """Extrae destinatario/cuerpo de 'mandá un correo a X diciendo Y'. Solo
+        devuelve algo si hay un DESTINATARIO claro (email address o un nombre tras
+        'a '). El cuerpo viene tras 'diciendo/que/saying/...'. Conservador: sin
+        destinatario -> None (el flujo normal/clarificación decide)."""
+        import re as _re
+        t = (text or "").strip()
+        # destinatario: email explícito, o nombre tras "a "/"to "
+        addr = _re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", t)
+        to = addr.group(0) if addr else ""
+        if not to:
+            m = _re.search(r"\b(?:a|para|to|à|an)\s+([A-Za-zÁÉÍÓÚáéíóúñ][\w.\-]*"
+                           r"(?:\s+[A-Za-zÁÉÍÓÚáéíóúñ][\w.\-]*)?)", t)
+            if m:
+                cand = m.group(1).strip()
+                # cortar en conectores que NO son parte del nombre (asunto/cuerpo).
+                _stop = {"con", "diciendo", "que", "saying", "con", "and", "y",
+                         "asunto", "subject", "dile"}
+                parts = []
+                for w in cand.split():
+                    if w.lower() in _stop:
+                        break
+                    parts.append(w)
+                cand = " ".join(parts)
+                if cand and cand.lower() not in {"the", "la", "el", "un", "una"}:
+                    to = cand
+        if not to:
+            return None
+        # cuerpo: lo que sigue a "diciendo/que/saying/dile que/con el mensaje"
+        body = ""
+        bm = _re.search(r"\b(?:diciendo(?:\s+que)?|dile\s+que|que\s+le\s+diga|"
+                        r"con\s+el\s+mensaje|saying|telling\s+(?:him|her|them)\s+that|"
+                        r"con\s+el\s+texto)\s+(.+)$", t, _re.IGNORECASE)
+        if bm:
+            body = bm.group(1).strip()
+        # asunto opcional: "con el asunto X" / "subject X"
+        subject = ""
+        sm = _re.search(r"\b(?:con\s+el\s+asunto|asunto|subject)\s+(.+?)(?:\s+(?:diciendo|que|con el|saying)|$)",
+                        t, _re.IGNORECASE)
+        if sm:
+            subject = sm.group(1).strip()
+        return {"to": to, "subject": subject, "body": body}
+
+    def _deterministic_email(self, text: str) -> "ToolEvent | None":
+        """RED DETERMINISTA EMAIL (backstop): si el turno pide mandar un correo
+        (alta confianza, embeddings) y hay destinatario, dispara la tool `email`
+        con action=send. MEDIDO 2026-05-27: el 4B SÍ emite el tool-call de email
+        de forma fiable (3/3 en vivo), así que el camino normal ya lo cubre vía
+        la tool — y la tool, sin Graph token, abre el REDACTOR web pre-rellenado
+        (Gmail compose) con la sesión logueada (sin enviar; el usuario confirma).
+        Esta red queda como RED DE SEGURIDAD para el caso raro en que el 4B NO
+        llame la tool (carga/fraseo no anticipado). Delega en la MISMA tool (una
+        sola fuente de verdad para la URL de compose). None si no aplica."""
+        if not isinstance(text, str) or not text.strip():
+            return None
+        try:
+            from .intent_router import wants_send_email
+            if not wants_send_email(text):
+                return None
+        except Exception:
+            return None
+        fields = self._extract_email_fields(text)
+        if not fields or not fields.get("to"):
+            return None
+        # Delegar en la tool email (action=send). Sin token arma+abre la compose
+        # URL; con token enviaría — pero como esto es un backstop determinista y
+        # enviar es irreversible (CLAUDE.md #6), forzamos el modo compose para que
+        # NUNCA mande sin que el usuario lo confirme: pasamos el destinatario/
+        # asunto/cuerpo y la tool, sin token, abre el redactor. (Si hubiera token,
+        # el camino normal del LLM ya habría enviado; acá preferimos la vía segura.)
+        args = {
+            "action": "send",
+            "to": fields["to"],
+            "subject": fields.get("subject") or "",
+            "body": fields.get("body") or "",
+        }
+        try:
+            result = self.tools.execute("email", args)
+        except Exception as exc:
+            result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        if isinstance(result, dict):
+            result = {**result, "email_to": fields["to"]}
+        return ToolEvent(name="email", args=args,
+                         result=result if isinstance(result, dict) else {})
 
     def _handle_pending_suggestion(self, content: Any) -> "AgentReply | None":
         """JARVIS (inv 5): resuelve el sí/no a una oferta de automatización del
