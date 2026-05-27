@@ -43,8 +43,9 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "system info, processes and power: current time and date, qué hora "
         "es, qué fecha es hoy; list running processes, kill or force-close a "
         "process, taskkill, mata procesos colgados, lista procesos, cierra "
-        "un proceso; CPU RAM GPU disk battery brightness, shutdown restart "
-        "sleep"
+        "un proceso; CPU RAM GPU disk; SCREEN/display brightness up/down — "
+        "subir/bajar el brillo de la pantalla, atenuar la pantalla, set screen "
+        "brightness; battery level, shutdown restart sleep"
     ),
     "audio": "audio volume, mute and unmute the sound (silenciar, desmutear, stummschalten, ton an, couper/rétablir le son, silenciar/reativar o som), system sound, media keys, audio devices listing",
     "audio_device": "change default audio output/input device, per-app audio routing",
@@ -67,6 +68,8 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "search the internet and answer questions about the world: latest "
         "news, current prices, who is a person, what is something, what a "
         "movie or game is about, how someone died, when something happened; "
+        "the WEATHER and forecast — el clima, el pronóstico del tiempo, qué "
+        "tiempo hace, va a llover, la temperatura de hoy, weather forecast; "
         "buscar en internet, ultimas noticias, precios actuales, quien es "
         "alguien, que es algo, de que trata una pelicula o juego, de que "
         "murio alguien, informacion externa, busca en la web"
@@ -144,7 +147,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "peripheral": "USB devices, controllers, HID listing, device manager problems",
     "accessibility": "Magnifier, Narrator, accessibility settings panel",
     "study": "flashcards with SM-2 spaced repetition",
-    "smart_home": "Home Assistant local control and MQTT publish",
+    "smart_home": "Home Assistant / MQTT: control EXTERNAL smart-home devices (smart lights, plugs, thermostat, sensors) — NOT the computer's own screen brightness or volume",
 }
 
 # Discord in-app control lives in computer_use: channel navigation, text send,

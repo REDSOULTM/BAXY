@@ -3530,3 +3530,23 @@
 {"tool": "device_settings", "q": "collegati alla rete wifi di casa"}
 {"tool": "device_settings", "q": "conectate a internet por wifi"}
 {"tool": "device_settings", "q": "ponme en la red de la casa"}
+{"tool": "system", "q": "sube el brillo de la pantalla"}
+{"tool": "system", "q": "baja el brillo"}
+{"tool": "system", "q": "atenua la pantalla"}
+{"tool": "system", "q": "pon el brillo al maximo"}
+{"tool": "system", "q": "bajale el brillo a la pantalla que me molesta"}
+{"tool": "system", "q": "turn up the screen brightness"}
+{"tool": "system", "q": "dim the screen"}
+{"tool": "system", "q": "set screen brightness to 50 percent"}
+{"tool": "system", "q": "sobe o brilho da tela"}
+{"tool": "system", "q": "augmente la luminosité de l ecran"}
+{"tool": "system", "q": "stelle die bildschirmhelligkeit höher"}
+{"tool": "web", "q": "que tiempo hace hoy"}
+{"tool": "web", "q": "va a llover manana"}
+{"tool": "web", "q": "como esta el clima"}
+{"tool": "web", "q": "el pronostico del tiempo para el fin de semana"}
+{"tool": "web", "q": "que temperatura hace afuera"}
+{"tool": "web", "q": "what is the weather today"}
+{"tool": "web", "q": "will it rain tomorrow"}
+{"tool": "web", "q": "qual e a previsao do tempo"}
+{"tool": "web", "q": "quel temps fait-il aujourd hui"}

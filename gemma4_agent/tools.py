@@ -312,7 +312,7 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "backup_sync": ["status", "backup_create", "list", "restore", "dedupe", "verify"],
     "document": ["status", "extract_text", "extract_tables", "extract_images", "ocr_pdf", "summarize", "ingest_to_knowledge", "compare_documents"],
     "developer": ["status", "project_detect", "run_tests", "run_lint", "run_format", "git_status", "git_diff", "git_log", "git_commit", "git_push", "start_dev_server", "stop_dev_server", "list_dev_servers"],
-    "device_settings": ["status", "wifi_status", "wifi_list", "wifi_profiles", "wifi_scan", "wifi_connect", "wifi_disconnect", "wifi_add_profile", "wifi_delete_profile", "bluetooth_status", "bluetooth_toggle", "bluetooth_pair", "display_list", "display_set_resolution", "display_set_scale", "power_plan_list", "power_plans", "power_plan_get", "power_plan_set", "night_light", "wifi_set_profile"],
+    "device_settings": ["status", "wifi_status", "wifi_list", "wifi_profiles", "wifi_scan", "wifi_connect", "wifi_disconnect", "wifi_add_profile", "wifi_delete_profile", "bluetooth_status", "bluetooth_toggle", "bluetooth_pair", "brightness_get", "brightness_set", "brightness_up", "brightness_down", "display_list", "display_set_resolution", "display_set_scale", "power_plan_list", "power_plans", "power_plan_get", "power_plan_set", "night_light", "wifi_set_profile"],
     "game_launcher": ["status", "discover", "list", "discover_games", "launch", "open_store_page", "open_library_page"],
     "media_edit": ["status", "probe", "trim", "concat", "extract_audio", "subtitles_extract", "normalize", "thumbnail", "transcode"],
     "maintenance": ["status", "windows_update_status", "defender_status", "defender_quick_scan", "firewall_status", "event_logs_query", "services_list", "services", "service_status", "service_start", "service_stop", "disk_cleanup_describe", "restore_point_create"],
@@ -1483,10 +1483,16 @@ class ToolRegistry:
             return self.system_disk(args)
         if action == "battery":
             return self.system_battery(args)
-        if action == "brightness_get":
+        if action in ("brightness_get", "get_brightness"):
             return self.system_brightness_get(args)
-        if action == "brightness_set":
-            return self.system_brightness_set(args)
+        if action in ("brightness_set", "set_brightness", "brightness",
+                      "brightness_up", "brightness_down"):
+            a = dict(args)
+            if action == "brightness_up" and "level" not in a and "delta" not in a:
+                a["delta"] = 20
+            elif action == "brightness_down" and "level" not in a and "delta" not in a:
+                a["delta"] = -20
+            return self.system_brightness_set(a)
         if action in ("shutdown", "restart", "sleep"):
             # CC-101 / T1-system-shutdown-no-confirmation-002: gate duro.
             gate = self._hard_gate(
@@ -2568,6 +2574,28 @@ class ToolRegistry:
         return developer_tool(args, self.state)
 
     def t_device_settings(self, args: dict[str, Any]) -> dict[str, Any]:
+        # BRILLO DE PANTALLA (2026-05-27): el brillo vive en `system`
+        # (brightness_get/set), pero el modelo chico lo pide de forma natural por
+        # `device_settings` (es un ajuste de pantalla). En vez de fallar ("no
+        # tengo herramienta para el brillo"), delegamos a la impl real de system
+        # — garantía de precondición, mismo patrón que browser.open->app.open.
+        # Un usuario con baja visión sube/baja el brillo por voz sin saber en qué
+        # tool vive. Acepta variantes que el 4B inventa (brightness_up/down/set).
+        _act = str(args.get("action") or "").casefold()
+        if _act in {"brightness_get", "get_brightness", "brightness_status"}:
+            return self.system_brightness_get(args)
+        if _act in {"brightness_set", "set_brightness", "brightness",
+                    "brightness_up", "brightness_down", "set_screen_brightness"}:
+            a = dict(args)
+            # mapear up/down a un delta si no vino un nivel explícito
+            if _act == "brightness_up" and "level" not in a and "delta" not in a:
+                a["delta"] = 20
+            elif _act == "brightness_down" and "level" not in a and "delta" not in a:
+                a["delta"] = -20
+            res = self.system_brightness_set(a)
+            if isinstance(res, dict):
+                res.setdefault("delegated_from", "device_settings." + _act)
+            return res
         return device_settings_tool(args, self.state)
 
     def t_game_launcher(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -2954,8 +2982,41 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
             return _ok(brightness=None, note="WmiMonitorBrightness returned null (desktop monitor or no DDC/CI).")
         return _ok(brightness=data, exit_code=proc.returncode)
 
+    @staticmethod
+    def _extract_brightness_level(raw: Any) -> int | None:
+        """Normaliza lo que devuelve WmiMonitorBrightness a un entero 0..100.
+        Puede venir como int, {"CurrentBrightness": N}, o lista de esos (varios
+        monitores -> tomamos el primero). None si no se puede leer."""
+        if isinstance(raw, list):
+            raw = raw[0] if raw else None
+        if isinstance(raw, dict):
+            raw = raw.get("CurrentBrightness")
+        if isinstance(raw, bool):
+            return None
+        if isinstance(raw, (int, float)):
+            return int(raw)
+        return None
+
     def system_brightness_set(self, args: dict[str, Any]) -> dict[str, Any]:
-        level = max(0, min(100, int(args.get("level", 50))))
+        # DELTA relativo (2026-05-27): "subí/bajá el brillo" sin un número -> el 4B
+        # manda delta=+/-N. Leemos el nivel actual y aplicamos el delta (clamp
+        # 0..100). Sin level ni delta, default 50. Esto hace "sube el brillo" por
+        # voz funcione sin que el usuario tenga que decir un porcentaje exacto.
+        if "level" not in args and args.get("delta") is not None:
+            try:
+                delta = int(args.get("delta"))
+            except (TypeError, ValueError):
+                delta = 0
+            cur = self.system_brightness_get({})
+            raw = cur.get("brightness")
+            # brightness_get devuelve el objeto WMI crudo: puede ser un int, o
+            # {"CurrentBrightness": N}, o una lista de esos (multi-monitor), o None.
+            base = self._extract_brightness_level(raw)
+            if base is None:
+                base = 50  # monitor sin DDC/CI: arrancamos de un punto medio
+            level = max(0, min(100, base + delta))
+        else:
+            level = max(0, min(100, int(args.get("level", 50))))
         script = f"(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightnessMethods).WmiSetBrightness(1,{level})"
         try:
             proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
