@@ -1645,8 +1645,20 @@ class Gemma4Agent:
                 and mode.name in {"fast_action", "quick_action"}
                 and not _messages_have_image(_msgs)
             )
-            _pass_tools = None if _is_summary_pass else selected_schemas
-            _pass_max = 160 if _is_summary_pass else mode.max_tokens
+            # DESCRIBE-PASS (2026-05-27, crítico no-vidente): tras inyectar una
+            # imagen para DESCRIBIRLA (vision describe_screen / leer pantalla), el
+            # 4B debe RESPONDER EN TEXTO la descripción — NO llamar más tools. Si
+            # le dejamos tools, el modelo débil a veces elige session.cancel_turn
+            # ("nada que describir") en vez de describir (medido). Quitamos las
+            # tools y damos budget amplio para que narre. Es el camino que hace
+            # la lectura de pantalla funcionar para alguien que no ve.
+            _is_describe_pass = (len(events) > 0 and _messages_have_image(_msgs))
+            if _is_describe_pass:
+                _pass_tools = None          # forzar respuesta en texto (descripción)
+                _pass_max = max(mode.max_tokens, 512)
+            else:
+                _pass_tools = None if _is_summary_pass else selected_schemas
+                _pass_max = 160 if _is_summary_pass else mode.max_tokens
             # SAMPLING DUAL (inv 1, 2026-05-23): greedy en el turno de ACCIÓN
             # (hay tools ofrecidas, ninguna corrió aún, y NO es summary-pass) ->
             # decisión de tool-call con baja entropía, más fiable sin reasoning.
@@ -2378,6 +2390,11 @@ class Gemma4Agent:
                     assistant_content = _soften(assistant_content or "", list(events))
                 except Exception:
                     pass
+                # LECTURA DE PANTALLA (no-vidente): si vision produjo una
+                # descripción, ÚSALA como reply (el 4B no la relata fiable).
+                _scr = self._screen_description_reply(events)
+                if _scr:
+                    assistant_content = _scr
                 assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
                 return AgentReply(content=assistant_content, tool_events=events, mission=mission)
 
@@ -2796,6 +2813,12 @@ class Gemma4Agent:
         _progress(progress, "max_turns", tools=len(events), mission=mission)
         self._last_turn_ts = time.time()
         self._remember_executed_tools(events)
+        # LECTURA DE PANTALLA (no-vidente): si la cadena se cortó (max_turns/loop)
+        # pero vision YA describió la pantalla, devolver esa descripción en vez
+        # del mensaje de corte — el usuario que no ve igual recibe la lectura.
+        _scr = self._screen_description_reply(events)
+        if _scr:
+            final = _scr
         final = (final or "") + self._maybe_proactive_suffix()
         return AgentReply(content=final, tool_events=events, mission=mission)
 
@@ -3218,6 +3241,23 @@ class Gemma4Agent:
         return AgentReply(content=_jp(_lang, "create_fail"),
                           tool_events=[], mission=None)
 
+    def _screen_description_reply(self, events: list["ToolEvent"]) -> str | None:
+        """Si una tool de visión produjo una DESCRIPCIÓN de pantalla
+        (describe_screen describe directo, 2026-05-27), devolverla para usarla
+        como reply — el 4B débil NO la relata fiable desde el tool-result (medido:
+        respondía 'no hay instrucción' con la descripción ahí mismo). Crítico para
+        un usuario no-vidente: la lectura de pantalla DEBE llegarle. Toma la
+        descripción del ÚLTIMO evento de visión que la tenga."""
+        for ev in reversed(events or []):
+            name = getattr(ev, "name", None) or (ev.get("tool") if isinstance(ev, dict) else None)
+            if name != "vision":
+                continue
+            res = getattr(ev, "result", None) or (ev.get("result") if isinstance(ev, dict) else {}) or {}
+            desc = str(res.get("description") or "").strip()
+            if desc:
+                return desc
+        return None
+
     def _maybe_proactive_suffix(self) -> str:
         """JARVIS (inv 5): en un BREAKPOINT (fin de turno), si el miner detectó
         una rutina del usuario y la suggestion_queue la libera (cooldowns OK),
@@ -3481,6 +3521,12 @@ class Gemma4Agent:
         True for genuine vision turns / visual-deliverable tools; False for an
         action tool's self-verification screenshot (see the injection site for
         the 2026-05-22 regression this prevents)."""
+        # Si la tool YA produjo una descripción de texto (vision describe_screen
+        # describe directo, 2026-05-27), NO re-inyectamos la imagen: el texto ya
+        # está listo y re-inyectar haría que el 4B débil fumblee (re-llamar vision
+        # / cancelar). El reply usa la `description` del resultado.
+        if str(result.get("description") or "").strip():
+            return False
         if getattr(mode, "name", "") in ("vision_action", "audio_mode"):
             return True
         if tool_name in self._VISUAL_DELIVERABLE_TOOLS:

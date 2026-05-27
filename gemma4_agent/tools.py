@@ -1886,8 +1886,61 @@ class ToolRegistry:
         shot = self.gui_screenshot(args)
         shot["vision_action"] = action
         shot["target"] = args.get("target") or args.get("text")
-        shot["note"] = "Screenshot captured and re-injected as Gemma 4 image input for native visual reasoning."
+        # DESCRIBE DIRECTO (2026-05-27, crítico no-vidente): en vez de devolver
+        # solo el screenshot y confiar en que el loop del agente lo describa (el
+        # 4B débil fumblea: re-llama vision o cancela), hacemos AQUÍ una llamada
+        # de visión LIMPIA y enfocada (thinking off, sin tools, prompt único) —
+        # exactamente lo que SÍ funciona — y devolvemos la descripción como texto.
+        # Si no se puede (sin agente/visión), caemos al re-inject clásico.
+        described = self._describe_image_directly(
+            shot.get("image_path"),
+            str(args.get("target") or args.get("text") or "").strip())
+        if described:
+            shot["description"] = described
+            shot["completion_status"] = "screen_described"
+            shot["note"] = "Pantalla descrita por visión (texto en `description`)."
+        else:
+            shot["note"] = "Screenshot captured and re-injected as Gemma 4 image input for native visual reasoning."
         return shot
+
+    def _describe_image_directly(self, image_path: Any, focus: str = "") -> str | None:
+        """Llamada de visión LIMPIA: describe la captura en texto. thinking OFF,
+        sin tools, budget amplio (lo que evita el finish=length vacío del 4B).
+        Devuelve la descripción o None si no se puede (sin agente/visión/error)."""
+        agent = getattr(self, "parent_agent", None)
+        if agent is None or not image_path:
+            return None
+        from pathlib import Path as _P
+        p = _P(str(image_path))
+        if not p.exists():
+            return None
+        try:
+            from .multimodal import image_part
+            from .llama_server import resolve_turn_model
+            _vision_model = None
+            try:
+                _vision_model = resolve_turn_model(has_image=True)  # '<perfil>-vision'
+            except Exception:
+                _vision_model = None
+            instr = (
+                "Describí en 2-4 frases, en español claro, qué se ve en esta "
+                "captura de pantalla: la app/ventana principal al frente, el "
+                "contenido relevante y las opciones o acciones visibles. De "
+                "arriba a abajo, lo más importante primero. No inventes lo que "
+                "no se ve."
+            )
+            if focus:
+                instr += f" Prestá atención especial a: {focus}."
+            msgs = [{"role": "user", "content": [
+                image_part(p), {"type": "text", "text": instr}]}]
+            resp = agent.client.chat(
+                msgs, tools=None, enable_thinking=False, max_tokens=400,
+                timeout_s=90.0, model=_vision_model)
+            txt = (((resp or {}).get("choices") or [{}])[0]
+                   .get("message") or {}).get("content") or ""
+            return txt.strip() or None
+        except Exception:
+            return None
 
     def t_browser(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="open")
