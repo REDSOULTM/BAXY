@@ -37,7 +37,14 @@ from typing import Any
 from .state import atomic_write_json
 
 
-PROFILE_NAMES = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16", "standby")
+# 2026-05-26: COLAPSADO A UN SOLO PERFIL (pedido del operador). vram4 (E2B-Q4)
+# es el ÚNICO perfil operante — el target del producto: TODO (modelo + visión
+# residente + KV + voz/STT en CPU) dentro de ≤4 GB de VRAM. Se eliminaron
+# vram3/6/8/12/16: ya no hay selector ni auto-detección por VRAM. `standby` se
+# conserva porque apaga llama-server y la UI lo necesita. Cualquier nombre viejo
+# (vram3/6/8/.../performance/balanced/light) resuelve a vram4 vía _LEGACY_ALIASES
+# para no romper un ~/.gemma4/active_profile.txt preexistente.
+PROFILE_NAMES = ("vram4", "standby")
 
 ACTIVE_PROFILE_PATH = Path.home() / ".gemma4" / "active_profile.txt"
 PROFILES_OVERRIDES_PATH = Path.home() / ".gemma4" / "profiles.json"
@@ -89,40 +96,16 @@ class Profile:
 # usuario ve en nvidia-smi y es el que cuenta para el budget.
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _E2B = _PROJECT_ROOT / "models" / "E2B"
-_E4B = _PROJECT_ROOT / "models" / "E4B"
 
-# GGUF paths. VRAM numbers in comments are REAL nvidia-smi deltas over the
-# Windows idle baseline (2.06 GB), measured 2026-05-20 on an RTX 4060 Ti with
-# scripts/measure_vram_profiles.py — flash-attn on, -ngl 99, at the ctx noted.
-# These REPLACE the earlier comment values, which were inflated ~2x (they had
-# the dev model still resident in VRAM): e.g. E2B-Q4 was "4.46 GB" but loads
-# at 2.16 GB no-vision / 3.36 GB with vision.
-_E2B_Q2_K_XL = str(_E2B / "gemma-4-E2B-it-UD-Q2_K_XL.gguf")  # 1.75 novis / 2.94 +vis @2K
+# GGUF paths del ÚNICO perfil (vram4 = E2B-Q4). VRAM en comentarios = delta REAL
+# de nvidia-smi sobre idle Windows (2.06 GB), medido 2026-05-20 en RTX 4060 Ti
+# (scripts/measure_vram_profiles.py, flash-attn on, -ngl 99).
+# 2026-05-26: se quitaron las constantes de E4B/26B (perfiles eliminados). Los
+# GGUF siguen en disco (models/E4B, models/26B-A4B) por si se reintroduce un
+# perfil vía profiles.json override o GEMMA4_MODEL_PATH — sólo se borró el
+# código que ya no los referenciaba, no los archivos.
 _E2B_Q4_K_M  = str(_E2B / "gemma-4-E2B-it-Q4_K_M.gguf")      # 2.16 novis / 3.36 +vis @4K
-_E2B_Q5_K_M  = str(_E2B / "gemma-4-E2B-it-Q5_K_M.gguf")      # 2.41 novis @8K
-_E4B_IQ3_XXS = str(_E4B / "gemma-4-E4B-it-UD-IQ3_XXS.gguf")  # 3.58 novis / 4.78 +vis @16K — <4GB residente, tool-calling 91% (= Q4)
-_E4B_Q4_K_M  = str(_E4B / "gemma-4-E4B-it-Q4_K_M.gguf")      # 4.96 +vis @8K
-_E4B_Q4_K_XL = str(_E4B / "gemma-4-E4B-it-UD-Q4_K_XL.gguf")  # 5.23 +vis @16K
-_E4B_Q6_K    = str(_E4B / "gemma-4-E4B-it-Q6_K.gguf")        # 6.34 +vis @32K
-# 26B-A4B = MoE (26B de capacidad, ~4B activos por token -> rápido como E4B pero
-# mucho más inteligente). Es el modelo para aprovechar 12-16 GB de VRAM. Medido:
-# UD-Q3_K_XL carga ~15.7 GB en GPU @ctx16K y genera ~43 tok/s (vs E4B-Q6 que
-# dejaba 3.4 GB en CPU y daba 34 tok/s). E4B nunca pasaba de ~7 GB sin importar
-# la VRAM disponible — por eso vram12/16 "no usaban más de 7 GB".
-_26B = _PROJECT_ROOT / "models" / "26B-A4B"
-# 26B-A4B: NO se usa por default. La calculadora de VRAM (scripts/vram_calculator.py,
-# fórmula validada al MiB contra los logs) demuestra que NO entra seguro en 16 GB:
-#   26B-Q2 @ctx16K+visión = 15828 MiB > 15580 budget -> OOM (lo que crasheaba).
-#   Su KV es enorme porque es MoE con 8 KV-heads en la mayoría de capas:
-#     pesos 10058 MiB + KV@16K 3520 MiB + compute 600 + visión 1250 + margen 400.
-#   Mejor config posible (ctx14K+visión = 15388 MiB) queda AL BORDE, y genera a
-#   ~40 tok/s (lento para voz). Por eso vram12/16 usan E4B-Q6 (rápido, cabe con
-#   margen). El 26B queda disponible para GPUs de 24 GB+ via GEMMA4_MODEL_PATH.
-_26B_Q2_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q2_K_XL.gguf")  # opt-in 24GB+; OOM en 16GB @ctx16K+vis
-_26B_Q3_K_XL = str(_26B / "gemma-4-26B-A4B-it-UD-Q3_K_XL.gguf")  # opt-in 24GB+
-_MMPROJ_26B  = str(_26B / "mmproj-F16.gguf")
 _MMPROJ_E2B  = str(_E2B / "mmproj-F16.gguf")                 # vision encoder (~1.2 GB loaded)
-_MMPROJ_E4B  = str(_E4B / "mmproj-F16.gguf")
 
 
 # ===========================================================================
@@ -149,27 +132,6 @@ _MMPROJ_E4B  = str(_E4B / "mmproj-F16.gguf")
 # con flash-attn + SWA); el modelo sigue siendo el costo dominante.
 # ===========================================================================
 PROFILES: dict[str, Profile] = {
-    "vram3": Profile(
-        name="vram3",
-        display_name="VRAM 3GB",
-        context_size=16384,
-        model_path=_E2B_Q4_K_M,  # subido de Q2_K_XL: Q2 no tool-callea fiable
-        mmproj_path=_MMPROJ_E2B,
-        vision_enabled=True,
-        rerank_enabled=False,
-        parallel_tools=False,
-        fact_extraction=False,
-        server_running=True,
-        voice_enabled=True,
-        camera_enabled=False,
-        description=(
-            "GPU de 3-4 GB. E2B-Q4_K_M (subido desde Q2: Q2 no emite tool-calls "
-            "de forma fiable ni forzado — medido), ctx 16K, VISIÓN ON, voz+STT "
-            "ON (CPU). ~3.38 GB modelo + KV 16K -> ~5 GB física. Acciones "
-            "razonables; para tool-calling más fiable subí a vram4+ (E4B)."
-        ),
-        est_vram_mb=2940,
-    ),
     "vram4": Profile(
         name="vram4",
         display_name="VRAM 4GB",
@@ -200,114 +162,6 @@ PROFILES: dict[str, Profile] = {
         ),
         est_vram_mb=3360,
     ),
-    "vram6": Profile(
-        name="vram6",
-        display_name="VRAM 6GB",
-        context_size=16384,
-        model_path=_E4B_Q4_K_M,
-        mmproj_path=_MMPROJ_E4B,
-        vision_enabled=True,
-        rerank_enabled=True,
-        parallel_tools=False,
-        fact_extraction=False,
-        server_running=True,
-        voice_enabled=True,
-        camera_enabled=False,
-        description=(
-            "PERFIL MÍNIMO FIABLE para 6 GB. E4B-Q4_K_M (familia E4B = "
-            "tool-calling fiable, MEDIDO 4/4), ctx 16K, rerank ON, voz+STT ON "
-            "(CPU). Con visión-lazy (router mode) el modelo residente carga "
-            "~3.9 GB -> ~5.7 GB de VRAM total ocupada (entra en 6 GB). La "
-            "visión se carga on-demand solo en turnos con imagen. Acciones "
-            "confiables 4/4 medido."
-        ),
-        est_vram_mb=3900,  # text preset residente (lazy-vision); +mmproj on-demand
-    ),
-    "vram8": Profile(
-        name="vram8",
-        display_name="VRAM 8GB",
-        context_size=16384,
-        # 2026-05-21 PERF FIX: switched from UD-Q4_K_XL to standard Q4_K_M.
-        # The Unsloth dynamic XL quant leaves ~2.3 GB of tensors CPU-mapped even
-        # at ngl=99 (measured: CPU_Mapped 2288 MiB), which collapsed GENERATION
-        # to ~11 tok/s. Standard Q4_K_M offloads fully to GPU and generates at
-        # ~72 tok/s — a 6.6x speedup, same ~4.7 GB size, negligible quality
-        # difference for tool-calling. This is what makes vram8 actually usable.
-        model_path=_E4B_Q4_K_M,
-        mmproj_path=_MMPROJ_E4B,
-        vision_enabled=True,
-        rerank_enabled=True,
-        parallel_tools=True,
-        fact_extraction=False,
-        server_running=True,
-        voice_enabled=True,
-        camera_enabled=False,
-        description=(
-            "GPU de 8 GB (RTX 3060 Ti, 4060, 2080). E4B-Q4_K_M (descarga 100%% "
-            "a GPU -> ~72 tok/s; el UD-Q4_K_XL dejaba 2.3 GB en CPU y caía a "
-            "~11 tok/s), ctx 16K, VISIÓN ON, rerank ON, parallel tools ON, "
-            "voz+STT ON (CPU). ~5 GB cargado con visión."
-        ),
-        est_vram_mb=5230,
-    ),
-    "vram12": Profile(
-        name="vram12",
-        display_name="VRAM 12GB",
-        # ctx 16K: piso usable (el prompt multi-tool llega a 8894-10558 tok,
-        # medido; ctx 8K daba 'exceed_context_size_error'). Con E4B-Q6 el KV@16K
-        # es solo ~896 MiB -> sobra VRAM.
-        context_size=16384,
-        # E4B-Q6_K (NO 26B-A4B). DECISIÓN basada en la calculadora de VRAM
-        # (scripts/vram_calculator.py, fórmula validada al MiB contra los logs):
-        # el 26B-Q2 @ctx16K+visión = 15828 MiB > 15580 budget -> OOM (por eso
-        # crasheaba). Su mejor config (ctx14K) queda a 15388/15580 = al borde,
-        # y genera a ~40 tok/s (lento para voz). El E4B-Q6 @16K+visión = ~6.5 GB:
-        # cabe con ~9 GB de margen (cero riesgo OOM), 100% GPU, ~70+ tok/s
-        # (latencia tier-Alexa), Q6 = casi sin pérdida de cuantización. Para un
-        # asistente de VOZ, rápido+confiable > lento+al-borde-de-OOM.
-        # El 26B (_26B_Q2_K_XL) queda documentado para GPUs de 24 GB+.
-        model_path=_E4B_Q6_K,
-        mmproj_path=_MMPROJ_E4B,
-        vision_enabled=True,
-        rerank_enabled=True,
-        parallel_tools=True,
-        fact_extraction=True,
-        server_running=True,
-        voice_enabled=True,
-        camera_enabled=False,
-        description=(
-            "GPU de 12 GB+. E4B-Q6_K (casi sin pérdida de cuantización, 100% en "
-            "GPU, ~70+ tok/s), ctx 16K, VISIÓN ON, todo ON. Rápido y confiable; "
-            "exprime la VRAM con margen sin riesgo de OOM."
-        ),
-        est_vram_mb=6500,
-    ),
-    "vram16": Profile(
-        name="vram16",
-        display_name="VRAM 16GB+",
-        # ctx 32K: con E4B-Q6 el KV escala bien (~1.8 GB @32K) y aún sobra VRAM
-        # en 16 GB. Más contexto para conversaciones largas / visión.
-        context_size=32768,
-        # E4B-Q6_K @ctx32K+visión = ~9 GB (validado por vram_calculator.py):
-        # cabe con margen amplio, 100% GPU, rápido. Mismo razonamiento que vram12
-        # (el 26B-Q2 hace OOM @16K+visión y es lento para voz). Si el usuario
-        # tiene 24 GB+ y quiere el 26B, GEMMA4_MODEL_PATH lo sobreescribe.
-        model_path=_E4B_Q6_K,
-        mmproj_path=_MMPROJ_E4B,
-        vision_enabled=True,
-        rerank_enabled=True,
-        parallel_tools=True,
-        fact_extraction=True,
-        server_running=True,
-        voice_enabled=True,
-        camera_enabled=False,
-        description=(
-            "GPU de 16 GB+. E4B-Q6_K (casi sin pérdida, 100% GPU, ~70+ tok/s), "
-            "ctx 32K, VISIÓN ON, todo ON. El máximo contexto con margen de VRAM; "
-            "rápido y sin OOM. Modelo propio mayor via Settings lo override."
-        ),
-        est_vram_mb=9000,
-    ),
     "standby": Profile(
         name="standby",
         display_name="Standby",
@@ -331,15 +185,21 @@ PROFILES: dict[str, Profile] = {
     ),
 }
 
-# Aliases de compatibilidad: nombres antiguos -> nuevo equivalente más cercano.
-# Mantienen funcionando ~/.gemma4/active_profile.txt y profiles.json viejos,
-# y cualquier código/test que pida "balanced" etc. set/get_active_profile y
-# apply los resuelven vía _resolve_alias().
+# Aliases de compatibilidad: TODOS los nombres viejos -> vram4 (el único perfil).
+# Mantienen funcionando un ~/.gemma4/active_profile.txt o profiles.json escrito
+# por una versión anterior (que pudo persistir vram3/6/8/12/16 o performance/
+# balanced/light). set/get_active_profile y apply los resuelven vía
+# _resolve_alias(). `standby` se mantiene con su nombre (sigue existiendo).
 _LEGACY_ALIASES: dict[str, str] = {
-    "performance": "vram16",
-    "balanced_8gb": "vram8",
-    "balanced": "vram6",
+    "performance": "vram4",
+    "balanced_8gb": "vram4",
+    "balanced": "vram4",
     "light": "vram4",
+    "vram3": "vram4",
+    "vram6": "vram4",
+    "vram8": "vram4",
+    "vram12": "vram4",
+    "vram16": "vram4",
     # standby se mantiene con su nombre.
 }
 
@@ -416,55 +276,15 @@ WINDOWS_VRAM_RESERVE_MB = 1500
 
 
 def recommend_profile(vram_mb: int | None) -> str:
-    """Sugiere perfil vramN segun la VRAM FISICA total detectada.
+    """Devuelve SIEMPRE "vram4" — el único perfil del producto.
 
-    VRAM fisica = (modelo cargado MEDIDO con visión-lazy/router-mode, es decir
-    el preset TEXT residente por defecto) + WINDOWS_VRAM_RESERVE_MB (1.5 GB).
-    Con router mode (default ON) la visión NO esta residente: se carga
-    on-demand solo en turnos con imagen, asi que el footprint por defecto es
-    menor y el modelo FIABLE (E4B) entra en menos VRAM. Numeros medidos
-    (RTX 4060 Ti, E4B-Q4 text preset = 3.89 GB cargado -> ~5.4 GB fisica):
-
-      >= 12 GB -> vram12   (E4B-Q6_K @16K; ~9.3 GB residente con lazy-vision)
-      >=  8 GB -> vram8    (E4B-Q4_K_M @16K; ~7.3 GB residente)
-      >=  6 GB -> vram6    (E4B-Q4_K_M, FIABLE, ~7.3 GB residente con lazy-vision)
-                           <-- PERFIL MINIMO FIABLE para 6 GB
-      >=  4 GB -> vram4    (E4B-Q4_K_M, mismo modelo fiable, ctx/flags mas
-                           ajustados; ~7.3 GB residente — apretado en 4 GB
-                           real pero el operador prioriza fiabilidad)
-      resto/None -> vram3  (E2B-Q4, mas rapido pero tool-calling INCONSISTENTE;
-                           solo para hardware que no aguanta E4B; ~4.6 GB resid.)
-    (Cifras residentes verificadas con scripts/vram_calculator.py, fórmula de
-    KV validada al MiB contra los logs. vram8/12 ya NO usan Q4_K_XL/Q6 viejos.)
-
-    NB: vram16 (modelo del usuario) NO se auto-recomienda — opt-in.
-    Si un perfil tiene su GGUF ausente, caemos al inmediato inferior.
+    2026-05-26: el sistema multi-perfil se colapsó a un solo perfil (vram4 =
+    E2B-Q4, TODO en ≤4 GB). Ya no hay escalera por VRAM ni auto-recomendación.
+    `vram_mb` se conserva en la firma (callers existentes lo pasan; la UI sigue
+    mostrando la VRAM detectada como dato informativo) pero no influye en la
+    decisión. detect_vram_mb() se mantiene para ese display, no para elegir.
     """
-    if vram_mb is None:
-        return "vram3"
-    gb = int(vram_mb) / 1024.0
-
-    def _model_ok(profile_name: str) -> bool:
-        mp = PROFILES[profile_name].model_path
-        if mp is None:  # vram16 usa el modelo del usuario; tratamos como ok
-            return True
-        try:
-            return Path(mp).expanduser().is_file()
-        except OSError:
-            return False
-
-    # De mayor a menor; el primero cuyo umbral pasa Y cuyo GGUF existe gana.
-    ladder = [
-        (12.0, "vram12"),
-        (8.0, "vram8"),
-        (6.0, "vram6"),
-        (4.0, "vram4"),
-        (0.0, "vram3"),
-    ]
-    for threshold, name in ladder:
-        if gb >= threshold and _model_ok(name):
-            return name
-    return "vram3"
+    return "vram4"
 
 
 def get_active_profile() -> Profile:

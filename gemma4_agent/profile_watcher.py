@@ -53,9 +53,13 @@ VRAM_THRESHOLD_PCT = 40
 
 @dataclass
 class WatcherConfig:
+    # 2026-05-26: sistema colapsado a un solo perfil (vram4). El auto-downgrade/
+    # upgrade ya no tiene a dónde ir: downgrade y restore apuntan ambos a vram4,
+    # así que aunque alguien active el watcher (enabled=True) los switches son
+    # no-ops. Se deja el módulo funcional (no se borra) para no romper imports.
     enabled: bool = False
-    downgrade_to: str = "vram4"   # antes "light" (renombrado por VRAM 2026-05-20)
-    restore_to: str = "vram6"     # antes "balanced"
+    downgrade_to: str = "vram4"
+    restore_to: str = "vram4"
     game_watchlist: list[str] = field(default_factory=list)
     trigger_on_game: bool = False  # nombre-based: opt-in solo si el user lo quiere
     trigger_on_gpu: bool = False

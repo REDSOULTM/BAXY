@@ -20,7 +20,7 @@ from gemma4_agent.profiles import PROFILES
 
 def _fake_profile():
     # A real registered profile (server_running=True so start() proceeds).
-    return PROFILES["vram8"]
+    return PROFILES["vram4"]  # único perfil (era vram8)
 
 
 class _FakeProc:

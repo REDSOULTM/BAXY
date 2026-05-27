@@ -190,10 +190,10 @@ def build_left_panel() -> tuple[QWidget, dict[str, Any]]:
     prof_row.setContentsMargins(0, 0, 0, 0)
     prof_row.setSpacing(2)
     prof_buttons: dict[str, QPushButton] = {}
-    # B8GB = balanced_8gb (perfil para 8 GB VRAM, E4B UD-Q4_K_XL).
-    # Orden: de mas a menos VRAM (Performance, Balanced 8GB, Balanced, Light, Standby).
-    for code, full in (("PERF", "performance"), ("B8GB", "balanced_8gb"),
-                       ("BAL", "balanced"), ("LIGHT", "light"), ("STDBY", "standby")):
+    # 2026-05-26: sistema colapsado a un solo perfil (vram4 = E2B-Q4, ≤4 GB) +
+    # standby (server off). Antes había 5 chips por VRAM; ahora sólo VRAM4 y
+    # STANDBY. Los nombres legacy igual resuelven a vram4 vía _resolve_alias.
+    for code, full in (("VRAM4", "vram4"), ("STDBY", "standby")):
         btn = QPushButton(code)
         btn.setFont(mono(6, True))
         btn.setFixedHeight(20)

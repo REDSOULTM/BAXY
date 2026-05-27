@@ -157,7 +157,7 @@ class TestServerLifecycleNoOrphans(unittest.TestCase):
         with mock.patch("gemma4_agent.llama_server.port_in_use", return_value=True), \
              mock.patch("gemma4_agent.llama_server.get_external_server_context",
                         return_value=None):
-            self.assertEqual(mgr.start(PROFILES["vram8"]), "external")
+            self.assertEqual(mgr.start(PROFILES["vram4"]), "external")  # único perfil (era vram8)
         self.assertIsNone(mgr.current_profile())
         self.assertFalse(mgr.stop(), "stop() must no-op on an external server")
 

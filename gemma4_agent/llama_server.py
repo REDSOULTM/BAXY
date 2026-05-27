@@ -389,9 +389,9 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     if api_key_env:
         cmd.extend(["--api-key", api_key_env])
 
-    # VRAM-tight perfiles (<=6 GB: vram3/vram4/vram6): --no-mmap para evitar
-    # double-buffer entre RAM mapeada y VRAM (critico con budget apretado).
-    _VRAM_TIGHT = {"vram3", "vram4", "vram6"}
+    # VRAM-tight: el único perfil (vram4, ≤4 GB) usa --no-mmap para evitar el
+    # double-buffer entre RAM mapeada y VRAM (crítico con budget apretado).
+    _VRAM_TIGHT = {"vram4"}
     if profile.name in _VRAM_TIGHT:
         cmd.append("--no-mmap")
 
@@ -442,11 +442,16 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     # avisamos del riesgo. Si acceptance < 50% en la maquina, dejar off.
     spec_draft_env = (os.environ.get("GEMMA4_SPEC_DRAFT_MODEL") or "").strip()
     if spec_draft_env:
-        if profile.name != "vram16":
+        # 2026-05-26: el único perfil es vram4 (≤4 GB). Speculative decoding
+        # (draft E2B + target E4B = ~7.45 GB) NO entra ni en 6 GB, menos en 4.
+        # Antes se gateaba a 'vram16' (≥12 GB), que ya no existe. Queda
+        # inalcanzable por VRAM; se ignora con aviso si alguien lo opta-in.
+        _SPEC_OK = False
+        if not _SPEC_OK:
             logger.warning(
-                "GEMMA4_SPEC_DRAFT_MODEL set but profile=%s; speculative "
-                "decoding requires the 'vram16' profile (VRAM budget). "
-                "Ignoring.",
+                "GEMMA4_SPEC_DRAFT_MODEL set but the only profile is %s "
+                "(≤4 GB VRAM); speculative decoding (draft+target ~7.45 GB) "
+                "does not fit. Ignoring.",
                 profile.name,
             )
         else:
@@ -674,7 +679,7 @@ def write_router_presets(config: AgentConfig, profile: Profile) -> Path | None:
 
     text_name, vision_name = router_model_names(profile)
     ctx = int(profile.context_size)
-    tight = profile.name in {"vram3", "vram4", "vram6"}
+    tight = profile.name in {"vram4"}  # único perfil ≤4 GB (era vram3/4/6)
 
     lines: list[str] = []
 
@@ -762,10 +767,10 @@ class LlamaServerManager:
         # instead of relying on GC finalization.
         self._log_handles: list = []
         self._log_dir = log_dir or (PACKAGE_ROOT / "logs")
-        # Serializes profile swaps: rapid consecutive clicks (vram3->vram6->
-        # vram4) would otherwise spawn overlapping restart threads that fight
-        # over the port ("NOT responding" / "boot timed out"). With the lock
-        # they run one-after-another and the last profile wins cleanly.
+        # Serializes server restarts (e.g. vision recycle, or a standby<->vram4
+        # toggle): overlapping restart threads would otherwise fight over the
+        # port ("NOT responding" / "boot timed out"). With the lock they run
+        # one-after-another and the last state wins cleanly.
         self._restart_lock = threading.Lock()
 
     def _close_log_handles(self, handles: list | None = None) -> None:

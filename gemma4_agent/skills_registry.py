@@ -68,23 +68,25 @@ logger = logging.getLogger(__name__)
 Priority = Literal["critical", "high", "medium", "low"]
 
 # Cap por profile de Gemma 4: cuantas skill_load() puede emitir el LLM en un
-# turn. Escala con el context_size del perfil (menos ctx -> menos skills caben).
-# standby NO carga skills. Las claves legacy (light/balanced/...) se conservan
-# como alias para no romper callers viejos; las nuevas son vramN.
+# turn. Escala con el context_size del perfil. standby NO carga skills.
+# 2026-05-26: colapsado a un solo perfil operante (vram4, ctx 16K) + standby.
+# vram4 = 3 (coherente con su ctx 16K — antes ese tier era el de vram8). Las
+# claves legacy y los nombres viejos por-VRAM se mantienen como alias -> 3 para
+# no romper callers viejos; cualquier clave desconocida cae al default 3
+# (ver _cap_for_profile abajo).
 CAP_PER_PROFILE: dict[str, int] = {
     "standby":      0,
-    # nuevos (por VRAM / context_size)
-    "vram3":        1,   # ctx 2K
-    "vram4":        1,   # ctx 4K
-    "vram6":        2,   # ctx 8K
-    "vram8":        3,   # ctx 16K
-    "vram12":       5,   # ctx 32K
-    "vram16":       5,   # ctx 32K
-    # legacy aliases (compat)
-    "light":        1,
-    "balanced":     2,
+    "vram4":        3,   # ctx 16K (único perfil)
+    # aliases legacy / nombres viejos por-VRAM -> mismo cap que vram4
+    "vram3":        3,
+    "vram6":        3,
+    "vram8":        3,
+    "vram12":       3,
+    "vram16":       3,
+    "light":        3,
+    "balanced":     3,
     "balanced_8gb": 3,
-    "performance":  5,
+    "performance":  3,
 }
 
 

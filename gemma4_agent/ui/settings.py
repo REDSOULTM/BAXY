@@ -650,9 +650,12 @@ class SettingsDialog(QDialog):
 
         sw_row = QHBoxLayout()
         sw_row.addWidget(QLabel("Cambiar a:"))
+        # 2026-05-26: un solo perfil (vram4) + standby. El auto-switch ya no
+        # tiene a dónde ir; los combos sólo ofrecen los perfiles que existen.
+        _switch_opts = ("vram4", "standby")
         self._prof_auto_down = QComboBox()
         self._prof_auto_down.setStyleSheet(combo_qss())
-        for n in ("vram3", "vram4", "vram6", "standby"):
+        for n in _switch_opts:
             self._prof_auto_down.addItem(n)
         self._prof_auto_down.setCurrentText(str(auto.get("downgrade_to", "vram4")))
         sw_row.addWidget(self._prof_auto_down)
@@ -660,9 +663,9 @@ class SettingsDialog(QDialog):
         sw_row.addWidget(QLabel("Volver a:"))
         self._prof_auto_up = QComboBox()
         self._prof_auto_up.setStyleSheet(combo_qss())
-        for n in ("vram6", "vram8", "vram12"):
+        for n in _switch_opts:
             self._prof_auto_up.addItem(n)
-        self._prof_auto_up.setCurrentText(str(auto.get("restore_to", "vram6")))
+        self._prof_auto_up.setCurrentText(str(auto.get("restore_to", "vram4")))
         sw_row.addWidget(self._prof_auto_up)
         sw_row.addStretch()
         sw_wrap = QWidget(); sw_wrap.setLayout(sw_row)
@@ -698,7 +701,7 @@ class SettingsDialog(QDialog):
             ("voice_enabled", "voice"),
             ("model_path", "model"),
         )
-        cols = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16")  # standby omitido
+        cols = ("vram4",)  # 2026-05-26: único perfil editable (standby omitido)
 
         self._prof_table = QTableWidget(len(fields), len(cols))
         self._prof_table.setHorizontalHeaderLabels([PROFILES[c].display_name for c in cols])
@@ -765,7 +768,7 @@ class SettingsDialog(QDialog):
     def _on_prof_restore_defaults(self) -> None:
         from PyQt6.QtWidgets import QTableWidgetItem
         from ..profiles import PROFILES
-        cols = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16")
+        cols = ("vram4",)  # único perfil (2026-05-26)
         fields = ("context_size", "vision_enabled", "rerank_enabled", "parallel_tools", "voice_enabled", "model_path")
         for r, field_name in enumerate(fields):
             for c, prof_name in enumerate(cols):
@@ -799,7 +802,7 @@ class SettingsDialog(QDialog):
             ],
         }
         # Overrides table -> dict[prof_name][field_name] = value
-        cols = ("vram3", "vram4", "vram6", "vram8", "vram12", "vram16")
+        cols = ("vram4",)  # único perfil (2026-05-26)
         fields = (
             ("context_size", int),
             ("vision_enabled", bool),

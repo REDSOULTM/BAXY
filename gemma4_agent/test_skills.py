@@ -158,11 +158,15 @@ def test_eligibility_env_set_passes() -> None:
 # ============================================================================
 
 def test_cap_per_profile() -> None:
+    # 2026-05-26: colapsado a un solo perfil operante (vram4, ctx 16K -> cap 3)
+    # + standby (0). Los nombres legacy ahora mapean todos al mismo cap que
+    # vram4 (3) para no romper callers viejos; standby sigue en 0.
     assert get_skill_cap("standby") == 0
-    assert get_skill_cap("light") == 1
-    assert get_skill_cap("balanced") == 2
+    assert get_skill_cap("vram4") == 3
+    assert get_skill_cap("light") == 3
+    assert get_skill_cap("balanced") == 3
     assert get_skill_cap("balanced_8gb") == 3
-    assert get_skill_cap("performance") == 5
+    assert get_skill_cap("performance") == 3
     assert get_skill_cap("unknown_profile") == 3  # default
 
 

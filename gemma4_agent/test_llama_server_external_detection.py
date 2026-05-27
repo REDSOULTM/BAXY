@@ -27,7 +27,7 @@ class TestStandbyBranch(unittest.TestCase):
 class TestExternalDetection(unittest.TestCase):
     def setUp(self):
         self.mgr = LlamaServerManager()
-        self.profile = PROFILES["vram8"]
+        self.profile = PROFILES["vram4"]  # único perfil (era vram8)
 
     def test_external_server_is_detected_not_taken_over(self):
         with mock.patch("gemma4_agent.llama_server.port_in_use", return_value=True), \

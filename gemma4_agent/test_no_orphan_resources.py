@@ -44,7 +44,7 @@ class TestLlamaServerLeavesNoOpenHandles(unittest.TestCase):
                         side_effect=lambda *a, **k: _FakeProc()), \
              mock.patch.object(mgr, "_wait_for_health", return_value=True):
             for _ in range(10):
-                mgr.restart(PROFILES["vram8"])
+                mgr.restart(PROFILES["vram4"])  # único perfil (era vram8)
             peak = nfiles()
             mgr.stop()
         after = nfiles()

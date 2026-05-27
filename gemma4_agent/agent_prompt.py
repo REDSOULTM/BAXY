@@ -58,15 +58,14 @@ _TOOL_RULES_DIR = _PROMPTS_DIR / "tool_rules"
 # profiles get the FULL core (~2900 tok) with all the nuance. Env override:
 # GEMMA4_CORE_TIER=lean|full.
 #
-# Mapping (2026-05-21, validated live on E4B): lean for the E2B/E4B-Q4 tiers
-# (vram3-8) — the live tool-call test showed E4B is 7/7 correct AND faster with
-# lean (abre steam 4.0->3.0s, mutea 4.0->2.7s); these tiers are also the most
-# latency-sensitive (voice on modest GPUs). Full CORE for vram12 (E4B-Q6) and
-# vram16 (user's Q8/large) — fast models that aren't latency-bound, where the
-# extra nuance buys quality at no felt cost. One CORE choice PER profile, exactly
-# tuned to that profile's model size + latency budget.
-_LEAN_PROFILES = {"vram3", "vram4", "vram6", "vram8"}
-_FULL_PROFILES = {"vram12", "vram16", "standby"}
+# 2026-05-26: el único perfil operante es vram4 (E2B-Q4) -> LEAN core (~920 tok):
+# es el tier más chico y más sensible a latencia (voz en GPU modesta), donde el
+# prompt corto es a la vez más rápido (menos prefill) y más preciso (menos
+# dilución de atención). El live tool-call test (2026-05-21) lo validó en E4B:
+# 7/7 correcto y más rápido con lean. standby no corre server (su tier es
+# irrelevante). Override manual: GEMMA4_CORE_TIER=lean|full.
+_LEAN_PROFILES = {"vram4"}
+_FULL_PROFILES = {"standby"}
 
 
 def _core_for_profile() -> str:
