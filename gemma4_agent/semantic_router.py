@@ -48,7 +48,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     ),
     "audio": "audio volume, mute and unmute the sound (silenciar, desmutear, stummschalten, ton an, couper/rétablir le son, silenciar/reativar o som), system sound, media keys, audio devices listing",
     "audio_device": "change default audio output/input device, per-app audio routing",
-    "app": "open or close a desktop application by name",
+    "app": "abrir, cerrar o encontrar un programa o juego ya instalado en esta computadora, desde el menú de inicio; open, close or find an installed desktop application on this PC by name",
     "steam": "Steam game library, Steam store, launch installed Steam games",
     "window": "list windows, focus, close, minimize, maximize, move, resize",
     "gui": "screenshot, click, type text, hotkeys, scroll, drag with mouse",
@@ -57,7 +57,11 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "browser": (
         "open a website, URL or web address in a browser; abrir una pagina "
         "web, abrir github o un sitio, abrir una direccion como python.org "
-        "o localhost, navegar a un enlace, open a link in the browser"
+        "o localhost, navegar a un enlace, open a link in the browser. "
+        "TAMBIEN: buscar o comprar un producto o juego en una TIENDA WEB "
+        "(Instant Gaming, Steam store online, Epic Games, GOG, Amazon): ir al "
+        "sitio de la tienda y buscar ahi el juego; find or buy a game on an "
+        "online store website, go to the store site and search for the product"
     ),
     "web": (
         "search the internet and answer questions about the world: latest "
@@ -124,7 +128,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "document": "extract text, tables, images from PDF, DOCX, XLSX, PPTX, HTML",
     "developer": "developer workflows: tests, lint, format, git status/diff, start/stop dev server",
     "device_settings": "WiFi, Bluetooth, display, power plans, system settings",
-    "game_launcher": "Epic Games, GOG, Xbox app, Riot Client games",
+    "game_launcher": "lanzar e iniciar un juego ya instalado desde un launcher de escritorio: Epic Games, GOG Galaxy, Xbox app, Riot Client",
     "media_edit": "ffmpeg video and audio editing: trim, transcode, normalize, thumbnails",
     "maintenance": "Windows Update, Defender, firewall, event logs, services, restore points",
     "watcher": "watch a file or URL for changes",
@@ -142,6 +146,18 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "study": "flashcards with SM-2 spaced repetition",
     "smart_home": "Home Assistant local control and MQTT publish",
 }
+
+# Discord in-app control lives in computer_use: channel navigation, text send,
+# voice-channel join, mic mute/unmute, deafen/undeafen and disconnect.
+TOOL_DESCRIPTIONS["computer_use"] = (
+    "operate inside an open app: Discord text channel, voice channel, send "
+    "messages in Discord/Slack/Teams, mute or unmute Discord microphone, deafen "
+    "or undeafen Discord, leave a voice call, open or focus a browser, navigate "
+    "inside a browser/app, click a bookmark/favorite/link/result/named control, "
+    "chain browser actions to reach a goal. canal de voz discord, canal de texto "
+    "discord, mutea mi microfono en discord, ensordecer discord, barra de "
+    "favoritos, marcador, abrir un navegador y clickear un favorito"
+)
 
 
 @dataclass

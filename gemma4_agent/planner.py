@@ -54,6 +54,11 @@ _RERANK_ABSTAIN_MAX = float(_os.environ.get("GEMMA4_RERANK_ABSTAIN_MAX", "0.85")
 # Cap on the semantic fallback list (used ONLY when the tool head AND keywords
 # both came up empty — a hard query we still want to take a shot at).
 _SEM_TOPN = int(_os.environ.get("GEMMA4_SEM_TOPN", "5"))
+# Semantic rescue for in-app operation. The per-tool head can weakly fire a
+# thematic neighbor (media/browser) on short app-navigation turns; when the
+# multilingual retriever places computer_use above this calibrated floor, keep
+# that operational tool in the subset without adding phrase rules.
+_COMPUTER_USE_SEM_RESCUE = float(_os.environ.get("GEMMA4_CU_SEM_RESCUE", "0.44"))
 # P(no_tool) above which the abstain head VETOES the per-tool head (kills a
 # marginal tool firing on a clearly-conversational turn). High so it only fires
 # on confident no-tool, not borderline commands.
@@ -146,13 +151,41 @@ def select_tool_names(
        multilingual sentence embeddings (semantic_router.suggest_tools_semantic).
     4. If everything came up empty, return [] (or ["safety"] when enabled).
     """
-    raw_text = _content_text(content)
+    original_text = _content_text(content)
     # Expand colloquial shorthand ("vol"→"volumen", "wsp"→"whatsapp") so
     # abbreviated queries route by meaning. Universal normalization, not a
     # keyword→tool map. Applied before BOTH keyword and embedding paths.
-    raw_text = _expand_abbreviations(raw_text)
+    raw_text = _expand_abbreviations(original_text)
     text = _fold_text(raw_text)
     names: list[str] = []
+    exemplar_tools: list[str] = []
+    try:
+        from .exemplar_router import match as _exemplar_match
+        _exemplar = _exemplar_match(original_text)
+        if _exemplar is None and raw_text != original_text:
+            _exemplar = _exemplar_match(raw_text)
+        if _exemplar is not None:
+            if _exemplar.abstain and not pending_intent:
+                _exemplar_can_abstain = True
+                try:
+                    from .intent_router import wants_knowledge as _ex_wants_knowledge
+                    from .exemplar_router import has_tool_conflict as _ex_has_tool_conflict
+                    _exemplar_can_abstain = not (
+                        _ex_wants_knowledge(original_text)
+                        and _ex_has_tool_conflict(original_text)
+                    )
+                except Exception:
+                    _exemplar_can_abstain = True
+                if _exemplar_can_abstain:
+                    base = ["session"]
+                    if safety_enabled:
+                        base.append("safety")
+                    select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
+                    return base
+            exemplar_tools = list(_exemplar.tools)
+            names.extend(exemplar_tools)
+    except Exception:
+        exemplar_tools = []
     for step in plan.steps:
         names.extend(step.suggested_tools)
     if not names:
@@ -316,6 +349,9 @@ def select_tool_names(
                     _is_knowledge = False
                 if not _is_knowledge:
                     _kw_protect = list(names)
+                for _tool in exemplar_tools:
+                    if _tool not in _kw_protect:
+                        _kw_protect.append(_tool)
 
             # A genuine WORLD-KNOWLEDGE question ("de qué trata Dune", "who
             # directed Oppenheimer") must NOT be abstained — it needs web/
@@ -391,6 +427,30 @@ def select_tool_names(
                              and not pending_intent and not streaming_hint_media
                              and not confident_peak)
             head_tools: list[str] = [] if _abstain_veto else [t for t, _ in _head_fired]
+            _cu_score = 0.0
+            try:
+                _cu_score = max((s for t, s in scored if t == "computer_use"),
+                                default=0.0)
+            except Exception:
+                _cu_score = 0.0
+            _cu_sem_rescue = (
+                _cu_score >= _COMPUTER_USE_SEM_RESCUE
+                and not _abstain_veto
+                and not _is_world_q
+                and not streaming_hint_media
+                and "whatsapp" not in names
+            )
+            if _cu_sem_rescue:
+                # If there was no precise keyword, prefer the operational
+                # in-app tool over weak thematic head firings. With a keyword
+                # hit, keep both signals but put computer_use first so the LLM
+                # sees the right affordance before generic fallbacks.
+                if "computer_use" not in names:
+                    names.insert(0, "computer_use")
+                if not _kw_protect:
+                    head_tools = ["computer_use"]
+                elif "computer_use" not in head_tools:
+                    head_tools.insert(0, "computer_use")
 
             sem = [name for name, _ in scored]
             if head_tools:
@@ -500,6 +560,23 @@ def select_tool_names(
     # fan-out (every app/media tool dragging in gui/uia/vision/window/browser/
     # audio) was the second bloat engine behind the "11 tools" complaint.
     # Directly-matched tools are always kept; deps fill only up to the budget.
+    # SHOPPING-IN-WEB-STORE (2026-05-26): "comprá/buscá un juego en Instant
+    # Gaming/Epic/GOG" se mis-ruteaba a game_launcher/app porque el NOMBRE de la
+    # tienda embebe cerca de las tools de juegos (las negaciones en las
+    # descripciones no funcionan en embeddings). Cuando la intención de compra-
+    # en-tienda dispara (clasificador multilingüe), GARANTIZAMOS browser y
+    # browser_real al FRENTE del subset, para que el LLM tenga la afordancia
+    # correcta (navegar a la tienda) por encima de los launchers locales.
+    # Fallback seguro: sin encoder, wants_web_store -> False -> no cambia nada.
+    try:
+        from .intent_router import wants_web_store as _wants_store
+        if _wants_store(raw_text):
+            for _bt in ("browser_real", "browser"):
+                if _bt in names:
+                    names.remove(_bt)
+                names.insert(0, _bt)
+    except Exception:
+        pass
     expanded: list[str] = []
     _rel_budget = _RELATED_BUDGET
     for name in _dedupe(names):

@@ -3481,3 +3481,37 @@
 {"tool": "uia", "q": "appuie sur le bouton sept"}
 {"tool": "uia", "q": "drück die Sieben"}
 {"tool": "uia", "q": "clicca il pulsante sette"}
+{"tool": "uia", "q": "entra al canal general de Discord"}
+{"tool": "uia", "q": "entra a Discord al servidor Servidor de prueba"}
+{"tool": "uia", "q": "abri la conversacion con ron.91"}
+{"tool": "uia", "q": "andá a la pestania de configuracion"}
+{"tool": "uia", "q": "ve a la seccion de ajustes de la app"}
+{"tool": "uia", "q": "selecciona el servidor VALORANT"}
+{"tool": "uia", "q": "entra al chat de mi mama"}
+{"tool": "uia", "q": "abri el canal de anuncios"}
+{"tool": "uia", "q": "enter the general channel"}
+{"tool": "uia", "q": "open the conversation with John"}
+{"tool": "uia", "q": "go to the settings tab"}
+{"tool": "uia", "q": "select the VALORANT server on Discord"}
+{"tool": "uia", "q": "entra no canal geral"}
+{"tool": "uia", "q": "va al canale generale"}
+{"tool": "computer_use", "q": "escribile a juan en discord que llego tarde"}
+{"tool": "computer_use", "q": "mandale un mensaje a pedro en discord"}
+{"tool": "computer_use", "q": "andá al canal general en discord"}
+{"tool": "computer_use", "q": "entrá al chat de maria en discord"}
+{"tool": "computer_use", "q": "en discord abrí la conversación con el grupo"}
+{"tool": "computer_use", "q": "mandale hola a mi amigo por slack"}
+{"tool": "computer_use", "q": "escribí en el canal de anuncios de discord"}
+{"tool": "computer_use", "q": "message my team on slack saying done"}
+{"tool": "computer_use", "q": "go to the general channel in discord"}
+{"tool": "computer_use", "q": "open the chat with anna in teams"}
+{"tool": "computer_use", "q": "en opera entrá a python.org"}
+{"tool": "computer_use", "q": "andá a github.com en el navegador"}
+{"tool": "computer_use", "q": "abrí wikipedia en chrome"}
+{"tool": "computer_use", "q": "navegá a youtube.com"}
+{"tool": "computer_use", "q": "entrá a esa página web en el navegador"}
+{"tool": "computer_use", "q": "clickeá el botón guardar en la app"}
+{"tool": "computer_use", "q": "apretá enviar en discord"}
+{"tool": "computer_use", "q": "escribí este texto en el editor abierto"}
+{"tool": "computer_use", "q": "operá la app que está abierta"}
+{"tool": "computer_use", "q": "in opera go to reddit.com"}

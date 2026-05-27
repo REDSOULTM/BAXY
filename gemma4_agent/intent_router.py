@@ -446,3 +446,112 @@ def router_health() -> tuple[bool, str]:
             return (False, f"probe {q!r}: esperaba info={expect_info} "
                            f"pero info={s.info:.2f} action={s.action:.2f}")
     return (True, "router OK (4/4 probes)")
+
+
+# ---------------------------------------------------------------------------
+# Intención de COMPRA/BÚSQUEDA EN TIENDA WEB (2026-05-26). Caso real: "comprá un
+# juego en Instant Gaming" se mis-ruteaba a game_launcher/app porque el NOMBRE
+# de la tienda ("Instant Gaming") embebe cerca de las tools de juegos. Ninguna
+# descripción de tool lo vence (las negaciones no funcionan en espacio de
+# embeddings). Solución: clasificar la INTENCIÓN ("buscar/comprar un producto en
+# una tienda online") por embeddings multilingües; cuando dispara, el planner
+# mete browser/browser_real al frente del subset. Ataca la intención de compra,
+# no pelea con el nombre de marca — generaliza a Epic/GOG/Amazon/etc.
+# CUMPLE las reglas: embeddings multilingües + margen + fallback seguro.
+# ---------------------------------------------------------------------------
+_SHOP_ANCHORS = [
+    # es — comprar/buscar un producto o juego en una tienda online
+    "comprar un juego en una tienda online", "comprar algo por internet",
+    "ir a la pagina de una tienda online",
+    "abrir el sitio web de una tienda",
+    "buscar un juego para comprar en una tienda web",
+    "buscar un titulo de juego en una tienda digital",
+    "buscar un producto en una tienda web por nombre",
+    "ir a una tienda online y comprar un juego",
+    "comprame este juego en la tienda", "agregar un producto al carrito y comprar",
+    "buscar el precio de un juego en una tienda online",
+    "comprar en instant gaming", "comprar en la tienda de epic o gog",
+    "buscar un juego en instant gaming", "buscar el ultimo juego en la tienda online",
+    "ver un juego en instant gaming para comprarlo",
+    # en
+    "buy a game on an online store", "purchase something online",
+    "go to the website of an online store",
+    "open an online store website",
+    "find a game to buy on a web store", "add a product to the cart and check out",
+    "shop for a game on a store website",
+    "search a game title on a digital game store",
+    "open an online shop and find a product",
+    # pt / fr / de / it
+    "comprar um jogo numa loja online", "acheter un jeu sur une boutique en ligne",
+    "ein spiel in einem online shop kaufen", "comprare un gioco in un negozio online",
+]
+_NOSHOP_ANCHORS = [
+    # es — NO es comprar en tienda: lanzar instalado, abrir app, preguntar, charlar
+    "lanzar un juego que ya tengo instalado", "abrir una aplicación instalada",
+    "abrir steam", "jugar un juego instalado", "qué es este juego",
+    "poner música", "mandar un mensaje", "hola cómo estás",
+    # en
+    "launch an installed game", "open an installed application", "open steam",
+    "what is this game about", "play music", "send a message", "hello",
+    # pt / fr / de / it
+    "abrir um aplicativo instalado", "ouvrir une application installée",
+    "ein installiertes spiel starten", "aprire un'app installata",
+]
+
+
+class _ShopCentroids:
+    shop: Any = None
+    noshop: Any = None
+    ready: bool = False
+
+
+_SHOP = _ShopCentroids()
+# Margen (shop - noshop) para considerar intención de compra-en-tienda. Tuneado
+# conservador: solo dispara cuando la intención de compra-online es clara.
+_SHOP_MARGIN = float(os.environ.get("GEMMA4_SHOP_MARGIN", "0.03"))
+
+
+def _ensure_shop_centroids() -> bool:
+    if _SHOP.ready:
+        return _SHOP.shop is not None
+    try:
+        from . import semantic_router as sr
+        if not sr._ensure_loaded():
+            _SHOP.ready = True
+            return False
+        import numpy as np
+        model = sr._STATE.model
+
+        def _centroid(anchors: list[str]) -> Any:
+            e = model.encode(anchors, normalize_embeddings=True).mean(0)
+            return np.asarray(e / (np.linalg.norm(e) or 1.0), dtype="float32")
+
+        _SHOP.shop = _centroid(_SHOP_ANCHORS)
+        _SHOP.noshop = _centroid(_NOSHOP_ANCHORS)
+        _SHOP.ready = True
+        return True
+    except Exception:
+        _SHOP.ready = True
+        return False
+
+
+def wants_web_store(text: str) -> bool:
+    """True si el turno pide BUSCAR o COMPRAR un producto/juego en una TIENDA WEB
+    (Instant Gaming, Epic, GOG, Amazon...). Multilingüe, por embeddings. El
+    planner lo usa para subir browser/browser_real al subset. Fallback seguro:
+    sin encoder -> False (no fuerza nada)."""
+    txt = (text or "").strip()
+    if len(txt) < 3:
+        return False
+    if not _ensure_shop_centroids() or _SHOP.shop is None:
+        return False
+    try:
+        from . import semantic_router as sr
+        import numpy as np
+        q = sr.embed(txt)
+        if q is None:
+            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
+        q = np.asarray(q, dtype="float32")
+        return (float(q @ _SHOP.shop) - float(q @ _SHOP.noshop)) >= _SHOP_MARGIN
+    except Exception:
+        return False
