@@ -91,4 +91,75 @@ def evaluate_tool_call(
             "pattern": f"action:{tool_name}.{action}",
         }
 
+    # HUECO CERRADO 2026-05-26: un click GENÉRICO (gui/computer_use/uia) se
+    # colaba en una pantalla de PAGO — no es URL de checkout ni tool
+    # 'steam.purchase'. Caso real: gui(click_button, label="Comprar") en Steam.
+    # Decisión de producto (2026-05-26): si la ventana AL FRENTE es una tienda/
+    # checkout, CUALQUIER click pide confirmación — sin depender del label del
+    # botón (clasificarlo por su texto corto es frágil; un falso-negativo COBRA
+    # plata, mucho peor que pedir confirmar una vez de más). La señal fuerte y
+    # fiable es el ESTADO DEL SO (título de la ventana = tienda conocida). El
+    # usuario hands-free igual avanza diciendo "sí" al handshake. Navegar/abrir
+    # la tienda NO se bloquea: solo los CLICKS dentro de un checkout.
+    if tool_name in {"gui", "computer_use", "uia"} and _is_click(args):
+        if _foreground_is_checkout():
+            return {
+                "block": True,
+                "reason": (
+                    "Click on a store/checkout screen could spend money. "
+                    "Stop before charging; confirm with the user (say yes/no)."
+                ),
+                "pattern": "gui_click_on_checkout_window",
+            }
+
     return {"block": False}
+
+
+def _is_click(args: dict[str, Any]) -> bool:
+    """True si el tool_call es un CLICK (algo que puede avanzar un pago). Cubre
+    gui.click/click_button/click_text. Para computer_use, su goal corre clicks
+    internamente, así que un goal sobre una ventana de checkout también cuenta."""
+    if not isinstance(args, dict):
+        return False
+    action = str(args.get("action") or "").casefold()
+    if action in {"click", "click_button", "click_text", "double_click", "right_click"}:
+        return True
+    # computer_use no usa 'action' pero sí 'goal'; un objetivo dentro de un
+    # checkout puede ejecutar el click de pago -> tratarlo como click.
+    if "goal" in args:
+        return True
+    return False
+
+
+# Marcas de pago/checkout en el titulo de la ventana al frente. No basta con el
+# nombre de la tienda ("Steam", "Amazon", etc.): eso bloquearia navegacion normal
+# y romperia movilidad. Exigimos estado de pago/carrito/checkout o proveedor de
+# pago explicito.
+_PAYMENT_PROVIDER_MARKERS = (
+    "paypal", "stripe", "mercado pago", "mercadopago", "checkout.stripe.com",
+)
+
+_CHECKOUT_STATE_MARKERS = (
+    "checkout", "payment", "billing", "cart", "basket", "order review",
+    "place order", "pay now",
+    "pago", "pagar", "carrito", "cesta", "finalizar compra",
+    "confirmar compra", "pedido", "facturacion", "facturación",
+    "pagamento", "carrinho", "paiement", "panier", "warenkorb", "zahlung",
+    "kasse", "carrello", "ordine",
+)
+
+
+def _foreground_is_checkout() -> bool:
+    """True si la ventana al frente parece una tienda/checkout, por su título.
+    Estado del SO (Win32 GetForegroundWindow). Fallback seguro: si no se puede
+    leer el título, devuelve False (no bloquea de más)."""
+    try:
+        from .computer_use import _foreground_title
+        title = (_foreground_title() or "").casefold()
+    except Exception:
+        return False
+    if not title:
+        return False
+    if any(m in title for m in _PAYMENT_PROVIDER_MARKERS):
+        return True
+    return any(m in title for m in _CHECKOUT_STATE_MARKERS)

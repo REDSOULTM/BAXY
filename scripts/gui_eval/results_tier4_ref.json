@@ -1,0 +1,119 @@
+{
+  "summary": {
+    "total": 8,
+    "pass": 2,
+    "fail": 6,
+    "inconclusive": 0,
+    "task_success_rate": 0.25,
+    "false_pass_count": 0,
+    "false_pass_rate": 0.0,
+    "latency_p50_s": 7.22,
+    "latency_p95_s": 16.02
+  },
+  "rows": [
+    {
+      "id": "t4_calc_chain_4",
+      "tier": 4,
+      "utterance": "abrí la calculadora y escribí 2+2 y apretá enter",
+      "pass": false,
+      "evidence": "display Calculadora='Se muestra 2' contiene '4'=False",
+      "steps": 1,
+      "latency_s": 16.02,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí Calculadora. Intenté escribir «2+2» pero no pude confirmar que entró en la ventana activa. Paré la secuencia",
+      "error": null
+    },
+    {
+      "id": "t4_calc_chain_8",
+      "tier": 4,
+      "utterance": "abrí la calculadora, escribí 5+3 y apretá enter",
+      "pass": false,
+      "evidence": "display Calculadora='Se muestra 3' contiene '8'=False",
+      "steps": 1,
+      "latency_s": 7.17,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí la calculadora. Intenté escribir «5+3» pero no pude confirmar que entró en la ventana activa. Paré la secuen",
+      "error": null
+    },
+    {
+      "id": "t4_calc_chain_42",
+      "tier": 4,
+      "utterance": "abrí la calculadora y tecleá 7*6 y apretá enter",
+      "pass": false,
+      "evidence": "display Calculadora='Se muestra 6' contiene '42'=False",
+      "steps": 1,
+      "latency_s": 7.22,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí Calculadora. Intenté escribir «7*6» pero no pude confirmar que entró en la ventana activa. Paré la secuencia",
+      "error": null
+    },
+    {
+      "id": "t4_npad_chain_informe_final",
+      "tier": 4,
+      "utterance": "abrí el bloc de notas y escribí informe final",
+      "pass": true,
+      "evidence": "Notepad contiene 'informe final'=True",
+      "steps": 1,
+      "latency_s": 6.09,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, abrí Bloc de notas. Escribí «informe final».",
+      "error": null
+    },
+    {
+      "id": "t4_npad_chain_hola_mundo",
+      "tier": 4,
+      "utterance": "abrí el bloc de notas, escribí hola mundo y apretá enter",
+      "pass": true,
+      "evidence": "Notepad contiene 'hola mundo'=True",
+      "steps": 1,
+      "latency_s": 5.14,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, abrí Bloc de notas. Escribí «hola mundo». Apreté «enter».",
+      "error": null
+    },
+    {
+      "id": "t4_npad_4step",
+      "tier": 4,
+      "utterance": "abrí el bloc de notas, escribí alpha bravo, apretá enter y escribí charlie delta",
+      "pass": false,
+      "evidence": "Notepad L1('alpha bravo')=True L2('charlie delta')=False",
+      "steps": 1,
+      "latency_s": 5.12,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí Bloc de notas. Escribí «alpha bravo». Apreté «enter». Intenté escribir «charlie delta» pero no pude confirma",
+      "error": null
+    },
+    {
+      "id": "t4_calc_long_100m58",
+      "tier": 4,
+      "utterance": "abrí la calculadora, escribí 100-58 y apretá enter",
+      "pass": false,
+      "evidence": "display='Se muestra 58' dígitos contienen '42'",
+      "steps": 1,
+      "latency_s": 8.48,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí la calculadora. Intenté escribir «100-58» pero no pude confirmar que entró en la ventana activa. Paré la sec",
+      "error": null
+    },
+    {
+      "id": "t4_calc_long_123p877",
+      "tier": 4,
+      "utterance": "abrí la calculadora, escribí 123+877 y apretá enter",
+      "pass": false,
+      "evidence": "display='Se muestra 877' dígitos contienen '1000'",
+      "steps": 1,
+      "latency_s": 7.55,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí la Calculadora. Intenté escribir «123+877» pero no pude confirmar que entró en la ventana activa. Paré la se",
+      "error": null
+    }
+  ]
+}

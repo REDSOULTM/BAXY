@@ -1,0 +1,166 @@
+[
+  {
+    "kind": "calc",
+    "cmd": "calculá 2+2 en la calculadora",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type",
+      "keypress"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "calc",
+    "cmd": "en la calculadora escribí 7*6 y apretá igual",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type",
+      "keypress"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "calc",
+    "cmd": "hacé 9*9 en la calculadora",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type",
+      "keypress"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "calc",
+    "cmd": "calculá 100-58 en la calculadora",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type",
+      "keypress"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "browser",
+    "cmd": "andá a opera y entrá a python.org",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_url"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "browser",
+    "cmd": "en opera entrá a github.com",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_url"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "browser",
+    "cmd": "abrí wikipedia.org en opera",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_url"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "browser",
+    "cmd": "en opera andá a example.com",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_url"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "chat",
+    "cmd": "andá a discord al chat de cbayeah",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_chat"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "chat",
+    "cmd": "entrá a discord al chat de juanpi",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_chat"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "chat",
+    "cmd": "en discord abrí el chat de pierosky",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_chat"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "chat",
+    "cmd": "andá a discord a ShooterCOCK",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "open_chat"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "notepad",
+    "cmd": "escribí murcielago en el bloc de notas",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "notepad",
+    "cmd": "en el bloc de notas escribí paralelogramo",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "notepad",
+    "cmd": "escribí helicoptero en el bloc de notas",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type"
+    ],
+    "exec_ok": true
+  },
+  {
+    "kind": "notepad",
+    "cmd": "en el bloc de notas escribí computadora",
+    "ok": true,
+    "plan_ops": [
+      "focus_app",
+      "type"
+    ],
+    "exec_ok": true
+  }
+]

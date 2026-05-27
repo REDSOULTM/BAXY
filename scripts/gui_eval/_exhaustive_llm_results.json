@@ -1,0 +1,112 @@
+[
+  {
+    "cmd": "abrí la calculadora",
+    "exp": null,
+    "display": "Se muestra 0",
+    "dig": "0",
+    "tool_called": true,
+    "ok": true,
+    "reply": "Listo, abrí la calculadora.",
+    "err": null,
+    "latency_s": 3.14
+  },
+  {
+    "cmd": "escribí 2 más 2 y apretá igual",
+    "exp": "4",
+    "display": "Se muestra 4",
+    "dig": "4",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar que el resultado de la operación sea ",
+    "err": null,
+    "latency_s": 5.3
+  },
+  {
+    "cmd": "escribí 5 por 5 y apretá igual",
+    "exp": "25",
+    "display": "Se muestra 25",
+    "dig": "25",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar que la operación de multiplicar 5 por",
+    "err": null,
+    "latency_s": 6.03
+  },
+  {
+    "cmd": "escribí 9 más 1 y apretá igual",
+    "exp": "10",
+    "display": "Se muestra 10",
+    "dig": "10",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar que el resultado de la suma de 9 más ",
+    "err": null,
+    "latency_s": 6.11
+  },
+  {
+    "cmd": "escribí 8 menos 3 y apretá igual",
+    "exp": "5",
+    "display": "Se muestra 5",
+    "dig": "5",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar el resultado de la operación de resta",
+    "err": null,
+    "latency_s": 6.21
+  },
+  {
+    "cmd": "escribí 6 por 7 y apretá igual",
+    "exp": "42",
+    "display": "Se muestra 42",
+    "dig": "42",
+    "tool_called": true,
+    "ok": true,
+    "reply": "Listo, escribí 6 por 7 en la calculadora. Intenté cliqu",
+    "err": null,
+    "latency_s": 6.44
+  },
+  {
+    "cmd": "escribí 12 más 12 y apretá igual",
+    "exp": "24",
+    "display": "Se muestra 24",
+    "dig": "24",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar el resultado de la suma de 12 más 12 ",
+    "err": null,
+    "latency_s": 6.76
+  },
+  {
+    "cmd": "escribí 100 dividido 4 y apretá igual",
+    "exp": "25",
+    "display": "Se muestra 25",
+    "dig": "25",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar que la división de 100 entre 4 se hay",
+    "err": null,
+    "latency_s": 6.92
+  },
+  {
+    "cmd": "escribí 7 más 8 y apretá igual",
+    "exp": "15",
+    "display": "Se muestra 15",
+    "dig": "15",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar el resultado de la suma de 7 más 8 en",
+    "err": null,
+    "latency_s": 6.3
+  },
+  {
+    "cmd": "escribí 11 por 11 y apretá igual",
+    "exp": "121",
+    "display": "Se muestra 121",
+    "dig": "121",
+    "tool_called": true,
+    "ok": true,
+    "reply": "No pude verificar el resultado de la multiplicación de ",
+    "err": null,
+    "latency_s": 7.29
+  }
+]

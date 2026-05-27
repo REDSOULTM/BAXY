@@ -1,0 +1,169 @@
+[
+  {
+    "goal": "andá a discord al chat de cbayeah",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "open_chat"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat"
+    ],
+    "correct": true,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"discord\"},{\"op\":\"open_chat\",\"arg\":\"cbayeah\"}]"
+  },
+  {
+    "goal": "escribe a cbayeah en discord y dile que haces",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "correct": true,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"discord\"},{\"op\":\"open_chat\",\"arg\":\"cbayeah\"},{\"op\":\"ty"
+  },
+  {
+    "goal": "mandale a juan en discord nos vemos manana",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "correct": true,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"discord\"},{\"op\":\"open_chat\",\"arg\":\"juan\"},{\"op\":\"type\""
+  },
+  {
+    "goal": "entrá a opera y andá a python.org",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "open_url"
+    ],
+    "exp": [
+      "focus_app",
+      "open_url"
+    ],
+    "correct": true,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"opera\"},{\"op\":\"open_url\",\"arg\":\"https://www.python.org"
+  },
+  {
+    "goal": "en opera entrá a github.com",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "open_url"
+    ],
+    "exp": [
+      "focus_app",
+      "open_url"
+    ],
+    "correct": false,
+    "raw": "[{\"op\":\"open_url\",\"arg\":\"https://github.com\"}]"
+  },
+  {
+    "goal": "abrí la calculadora y escribí 2+2 y apretá igual",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "focus_app",
+      "type",
+      "keypress"
+    ],
+    "correct": false,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"Calculadora\"},{\"op\":\"type\",\"arg\":\"2+2\"},{\"op\":\"send\",\""
+  },
+  {
+    "goal": "decile a GordoFriki que llego tarde",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "correct": true,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"\"},{\"op\":\"open_chat\",\"arg\":\"GordoFriki\"},{\"op\":\"type\","
+  },
+  {
+    "goal": "entrá a discord al canal general",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "click"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat"
+    ],
+    "correct": false,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"discord\"},{\"op\":\"click\",\"arg\":\"general\"}]"
+  },
+  {
+    "goal": "escribí hola mundo en el bloc de notas",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "type"
+    ],
+    "exp": [
+      "focus_app",
+      "type"
+    ],
+    "correct": true,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"Bloc de notas\"},{\"op\":\"type\",\"arg\":\"hola mundo\"}]"
+  },
+  {
+    "goal": "mandale buenas noches a pierosky por discord",
+    "parseable": true,
+    "valid_ops": true,
+    "ops": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "correct": true,
+    "raw": "[{\"op\":\"focus_app\",\"arg\":\"discord\"},{\"op\":\"open_chat\",\"arg\":\"pierosky\"},{\"op\":\"t"
+  }
+]

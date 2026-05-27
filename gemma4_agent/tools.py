@@ -293,7 +293,7 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "download": ["fetch", "hash", "signature"],
     "email": ["status", "draft", "send"],
     "reminder": ["status", "create", "list", "delete"],
-    "browser_real": ["status", "open", "goto", "tabs", "click", "fill", "press", "text", "screenshot", "evaluate", "connect_cdp", "close", "attach_visible", "active_tab", "tab_open", "tab_close", "tab_focus", "click_text", "extract", "wait_for_download", "set_download_path"],
+    "browser_real": ["status", "open", "goto", "tabs", "click", "click_accessible", "toggle_accessible", "fill", "press", "type_text", "text", "screenshot", "evaluate", "connect_cdp", "close", "attach_visible", "active_tab", "tab_open", "tab_close", "tab_focus", "click_text", "extract", "wait_for_download", "set_download_path"],
     "knowledge": ["status", "ingest", "search", "list", "delete"],
     "office": ["status", "create_presentation", "edit_presentation", "create_document", "edit_document", "create_spreadsheet", "edit_spreadsheet", "export_pdf", "inspect", "open"],
     "audio_device": ["status", "list", "set_default", "set_default_communications", "set_app_route", "get_app_routes", "snapshot", "restore"],
@@ -994,8 +994,29 @@ def _candidate_close_exes(name: str, matches: list[AppCandidate]) -> list[str]:
 def _close_windows_by_query(name: str) -> dict[str, Any]:
     env = os.environ.copy()
     env["GEMMA4_CLOSE_QUERY"] = name
+    # GUARDA ESTRUCTURAL (no por intención): nunca cerramos editores/IDE/terminales
+    # ni nuestro propio árbol de procesos, AUNQUE el título matchee el query. El bug
+    # que motiva esto: el título de VS Code contiene el path del proyecto ("Probando
+    # Gemma 4"), así que "cerrá gemma" -> WM_CLOSE a Code.exe y se pierde trabajo sin
+    # guardar. Protege por IDENTIDAD del proceso (ProcessName + PID propio/padre),
+    # no por una lista de apps-objetivo hardcodeada. Si el usuario realmente quiere
+    # cerrar su editor, el match exacto del ProcessName lo permite igual.
+    env["GEMMA4_OWN_PID"] = str(os.getpid())
+    try:
+        env["GEMMA4_PARENT_PID"] = str(os.getppid())
+    except Exception:
+        env["GEMMA4_PARENT_PID"] = ""
     script = r"""
 $q=$env:GEMMA4_CLOSE_QUERY.ToLower()
+$ownPid=[int]$env:GEMMA4_OWN_PID
+$parentPid = if ($env:GEMMA4_PARENT_PID) { [int]$env:GEMMA4_PARENT_PID } else { 0 }
+# Procesos protegidos: editores/IDE/terminales/shell. Se exime SOLO si el query
+# matchea EXACTO el ProcessName (intención inequívoca de cerrar esa app puntual);
+# un match por substring/título sobre uno de estos NO cierra.
+$protected = @('code','code - insiders','codium','vscodium','devenv','rider64',
+  'pycharm64','idea64','webstorm64','clion64','sublime_text','atom','notepad++',
+  'windowsterminal','wt','powershell','pwsh','cmd','conhost','explorer',
+  'python','pythonw','node','claude','git')
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -1010,11 +1031,20 @@ $targets = Get-Process | Where-Object {
   )
 }
 $closed = @()
+$skipped = @()
 foreach ($p in $targets) {
+  $pn = $p.ProcessName.ToLower()
+  $isProtected = $protected -contains $pn
+  $exactName = ($pn -eq $q)            # el usuario nombró el proceso exacto
+  $isSelf = ($p.Id -eq $ownPid) -or ($p.Id -eq $parentPid)
+  if ($isSelf -or ($isProtected -and -not $exactName)) {
+    $skipped += [PSCustomObject]@{ title=$p.MainWindowTitle; process=$p.ProcessName; pid=$p.Id; reason=$(if($isSelf){'self'}else{'protected'}) }
+    continue
+  }
   [Win32]::PostMessage($p.MainWindowHandle,0x0010,[IntPtr]::Zero,[IntPtr]::Zero) | Out-Null
   $closed += [PSCustomObject]@{ title=$p.MainWindowTitle; process=$p.ProcessName; pid=$p.Id }
 }
-[PSCustomObject]@{ count=$closed.Count; windows=$closed } | ConvertTo-Json -Depth 4
+[PSCustomObject]@{ count=$closed.Count; windows=$closed; skipped=$skipped } | ConvertTo-Json -Depth 4
 """
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=12)
@@ -1614,7 +1644,42 @@ class ToolRegistry:
             return self.window_control(action, str(args.get("title") or args.get("query") or ""))
         if action == "move_resize":
             return self.window_move_resize(args)
-        return _err("unknown window action", action=action)
+        # AUTO-DELEGACIÓN (CLAUDE.md §5: la tool garantiza su precondición). El 4B
+        # a veces llama window(action='open', query='<sitio>') para "abrir una
+        # página" — pero `window` no abre páginas (no tiene 'open'). En vez de un
+        # error duro (que en movilidad/no_vidente deja la tarea trabada), si el
+        # arg parece una URL o un sitio/tienda, lo abrimos en el navegador por
+        # defecto (web_open_url, que SIEMPRE funciona). Si parece el nombre de una
+        # APP, delegamos a app.open. Mismo patrón que browser.open->app.open.
+        if action == "open":
+            target = str(args.get("url") or args.get("query") or args.get("title")
+                         or args.get("name") or "").strip()
+            looks_url = bool(target) and (
+                target.lower().startswith(("http://", "https://"))
+                or bool(re.search(r"[a-z0-9-]+\.[a-z]{2,}(/|$|\?)", target, re.IGNORECASE)))
+            if looks_url:
+                # Es una URL/dominio explícito -> abrir en el navegador por defecto.
+                r = self.web_open_url({"url": target})
+                r.update(delegated_from="window.open", completion_status="opened_url")
+                return r
+            # No es una URL (p.ej. "Instant Gaming", "youtube"): NO adivinamos el
+            # dominio (el 4B le erraría el TLD). Devolvemos un error ACCIONABLE que
+            # lo reencamina a la herramienta correcta — que para un sitio sin URL
+            # exacta es web(search) -> browser.open (ver browser.md). En movilidad/
+            # no_vidente, la guarda de continuación re-promptea con esto.
+            return _err(
+                "window no abre páginas web", action=action, target=target[:60],
+                status="needs_verification",
+                hint=("Para abrir un SITIO web nombrado (sin URL exacta), primero "
+                      "web(action='search', query='<sitio>') para obtener la URL "
+                      "real, luego browser(action='open', url=<esa URL>). Para una "
+                      "URL exacta, browser(action='open', url=...). window solo "
+                      "controla ventanas (focus/close/minimize/...)."),
+            )
+        return _err("unknown window action", action=action,
+                    hint="window solo controla VENTANAS (focus/close/minimize/...). "
+                         "Para abrir una PÁGINA web usá browser/open_url; para una "
+                         "APP usá app.open.")
 
     # Acciones GUI que MUTAN la pantalla -> verificamos el efecto post-acción
     # (Fase 1 computer-use: cerrar el "click/type ciego"). Ver gui_verify.py.
@@ -1631,7 +1696,9 @@ class ToolRegistry:
         if action == "type":
             return self.gui_type(args)
         if action in {"keypress", "hotkey"}:
-            return self.gui_keypress({"keys": args.get("keys") or args.get("hotkey") or ""})
+            key_args = dict(args)
+            key_args["keys"] = args.get("keys") or args.get("hotkey") or ""
+            return self.gui_keypress(key_args)
         if action == "scroll":
             return self.gui_scroll(args)
         if action == "drag":
@@ -1648,6 +1715,18 @@ class ToolRegistry:
         action = _action(args, default="screenshot")
         if action == "screenshot":
             return self.gui_screenshot(args)
+        if action == "open":
+            target = str(args.get("target") or args.get("name") or args.get("query")
+                         or args.get("app") or "").strip()
+            if not target:
+                return _err("gui.open requiere target/name; para abrir apps usa app.open",
+                            action=action, status="needs_user")
+            result = self.t_app({"action": "open", "name": target,
+                                 "refresh": args.get("refresh", False)})
+            if isinstance(result, dict):
+                result.setdefault("routed_from", "gui.open")
+                result.setdefault("routed_to", "app.open")
+            return result
         # GUARDAS Fase 5 (antes de cualquier control físico):
         #  (a) no pelear el mouse/teclado si el usuario está activo ahora;
         #  (b) no teclear en campos de contraseña (secret handoff).
@@ -1671,6 +1750,14 @@ class ToolRegistry:
                 gui_safety.note_action()  # consume 1 del presupuesto del turno
             except Exception:
                 pass
+        if action == "click" and (args.get("x") is None or args.get("y") is None):
+            label = str(args.get("label") or args.get("target") or args.get("text") or "").strip()
+            if label:
+                click_args = dict(args)
+                click_args["label"] = label
+                return self.gui_click_button(click_args)
+            return _err("gui.click sin coordenadas requiere label/target/text",
+                        action=action, status="needs_user")
         if action == "type_into":
             return self.gui_type_into(args)
         if action == "click_button":
@@ -1768,10 +1855,11 @@ class ToolRegistry:
                 return _err("no pude planificar la acción", goal=goal[:60], status="failed")
             result = PlanExecutor(agent).execute(plan, "cu_tool")
             reply = summarize_result(goal, plan, result)
+            verified = bool(result.get("ok")) and bool(result.get("verified", result.get("ok")))
             return _ok(action="computer_use", goal=goal[:80],
                        ops=[s["op"] for s in plan], steps=result.get("steps"),
-                       verified=bool(result.get("ok")),
-                       completion_status="done" if result.get("ok") else "attempted",
+                       verified=verified,
+                       completion_status="done" if verified else "attempted",
                        reply=reply)
         except Exception as exc:
             return _err(f"computer_use falló: {exc}", goal=goal[:60], status="failed")
@@ -1853,18 +1941,62 @@ class ToolRegistry:
                 return self.browser_youtube_play(play_args)
             if engine == "youtube" or browser_is_youtube_app:
                 url = f"https://www.youtube.com/results?search_query={quote_plus(query)}"
+                extracted = {}
             else:
                 url = f"https://www.google.com/search?q={quote_plus(query)}"
+                # browser.search antes solo abría Google y dejaba al 4B sin los
+                # URLs reales en el historial; en movilidad/no_vidente eso
+                # terminaba en "verifica/elegí el resultado". Extraemos resultados
+                # estructurados en paralelo a abrir la página para que el siguiente
+                # paso pueda hacer browser.open(top_result_url) sin delegar.
+                try:
+                    extracted = self.web_search({
+                        "query": query,
+                        "limit": int(args.get("limit", 5) or 5),
+                    })
+                except Exception as exc:  # noqa: BLE001
+                    extracted = {"ok": False, "error": f"web_search failed: {type(exc).__name__}: {exc}"}
+
+            def _with_search_results(res: dict[str, Any]) -> dict[str, Any]:
+                if not isinstance(extracted, dict):
+                    return res
+                results = extracted.get("results") or []
+                if results:
+                    top = results[0]
+                    top_url = str(top.get("url") or "")
+                    res.update(
+                        action="search",
+                        query=query,
+                        search_results=results,
+                        top_result=top,
+                        top_result_url=top_url,
+                        search_verified=bool(extracted.get("verified") or extracted.get("content_verified")),
+                        content_verified=True,
+                        completion_status="opened_search_results_with_extracted_results",
+                        next_step_hint=(
+                            "If the user asked to open a named site/page, call "
+                            "browser(action='open', url=top_result_url). Do not ask "
+                            "the user to inspect or choose unless the results are truly ambiguous."
+                        ),
+                    )
+                elif extracted:
+                    res["search_results_error"] = extracted.get("error") or extracted.get("message")
+                return res
             if browser and not browser_is_youtube_app:
                 opened = self.app_open({"name": browser})
                 time.sleep(float(args.get("delay_sec", 1.5)))
                 self.gui_keypress({"keys": "CTRL+L"})
                 self.gui_type({"text": url})
                 self.gui_keypress({"keys": "ENTER"})
-                return _ok(browser=browser, url=url, opened=opened, method="targeted_browser_gui", content_verified=False, completion_status="opened_search_results")
+                return _with_search_results(_ok(
+                    browser=browser, url=url, opened=opened,
+                    method="targeted_browser_gui", content_verified=False,
+                    completion_status="opened_search_results",
+                ))
             result = self.web_open_url({"url": url})
-            result.update(content_verified=False, completion_status="opened_search_results")
-            return result
+            result.update(action="search", query=query,
+                          content_verified=False, completion_status="opened_search_results")
+            return _with_search_results(result)
         if action in {"research", "read", "search_web"}:
             return self.t_web({**args, "action": action})
         if action == "active_tab_title":
@@ -3369,6 +3501,22 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         # taskkill sobre un IM inexistente igual deberia ser rapido pero el
         # binario hace lookup en el snapshot y a veces se cuelga >5s.
         target_exes = running_candidates or candidates
+        # GUARDA: taskkill /F es force-kill irreversible (sin prompt de guardar).
+        # NUNCA matamos por la fuerza editores/IDE/terminales/runtime salvo que el
+        # query nombre EXACTO ese exe. Misma protección estructural que window-close.
+        _protected_exes = {
+            "code.exe", "code - insiders.exe", "codium.exe", "vscodium.exe",
+            "devenv.exe", "rider64.exe", "pycharm64.exe", "idea64.exe",
+            "webstorm64.exe", "clion64.exe", "sublime_text.exe", "notepad++.exe",
+            "windowsterminal.exe", "wt.exe", "powershell.exe", "pwsh.exe",
+            "cmd.exe", "conhost.exe", "explorer.exe", "python.exe", "pythonw.exe",
+            "node.exe", "claude.exe", "git.exe",
+        }
+        _q_fold = _fold(name)
+        target_exes = [
+            exe for exe in target_exes
+            if exe.lower() not in _protected_exes or _fold(exe.lower().removesuffix(".exe")) == _q_fold
+        ]
         for exe in target_exes:
             proc = subprocess.run(
                 ["taskkill", "/IM", exe, "/F"],
@@ -3411,7 +3559,34 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             return _err("empty query")
         limit = int(args.get("limit", 10))
         matches = self.apps.find(query, limit=limit, refresh=bool(args.get("refresh", False)))
-        return _ok(query=query, matches=[m.as_dict() for m in matches])
+        scored = [
+            {
+                **m.as_dict(),
+                "match_score": max(_score(query, m.name), _score(query, Path(m.launch).stem)),
+            }
+            for m in matches
+        ]
+        best_score = max((int(m.get("match_score", 0)) for m in scored), default=0)
+        if scored and best_score < 55:
+            return _ok(
+                query=query,
+                matches=scored,
+                status="needs_verification",
+                verified=False,
+                completion_status="low_confidence_local_app_search",
+                hint=(
+                    "app.search only searches installed local apps/games. These "
+                    "matches are weak; if the user asked for a website, store, "
+                    "product, price, or web result, continue with web.search/"
+                    "browser.open instead of treating this as a local app match."
+                ),
+            )
+        return _ok(
+            query=query,
+            matches=scored,
+            verified=bool(scored),
+            completion_status="local_app_search_results",
+        )
 
     def _backup_path_for(self, path: Path) -> Path:
         safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(path.resolve()))[-120:]
@@ -4134,6 +4309,29 @@ function ElemObj($e) {
     $p = $e.GetClickablePoint()
     $click = [PSCustomObject]@{ x=(SafeInt $p.X); y=(SafeInt $p.Y) }
   } catch {}
+  $patterns = @()
+  $toggleState = $null
+  $pat = $null
+  try {
+    if ($e.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$pat)) {
+      $patterns += "Invoke"
+    }
+  } catch {}
+  $pat = $null
+  try {
+    if ($e.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern, [ref]$pat)) {
+      $patterns += "Toggle"
+      try { $toggleState = [string]$pat.Current.ToggleState } catch {}
+    }
+  } catch {}
+  $pat = $null
+  try {
+    if ($e.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$pat)) {
+      $patterns += "Value"
+    }
+  } catch {}
+  $isPassword = $false
+  try { $isPassword = [bool]$e.Current.IsPassword } catch {}
   [PSCustomObject]@{
     name=$e.Current.Name
     control_type=($e.Current.ControlType.ProgrammaticName -replace '^ControlType\.','')
@@ -4141,11 +4339,14 @@ function ElemObj($e) {
     class_name=$e.Current.ClassName
     framework_id=$e.Current.FrameworkId
     enabled=$e.Current.IsEnabled
+    is_password=$isPassword
     offscreen=$e.Current.IsOffscreen
     bounds=[PSCustomObject]@{
       x=(SafeInt $r.X); y=(SafeInt $r.Y); width=(SafeInt $r.Width); height=(SafeInt $r.Height)
     }
     clickable_point=$click
+    patterns=$patterns
+    toggle_state=$toggleState
   }
 }
 
@@ -4328,16 +4529,29 @@ if ($action -eq "click") {
 }
 
 if ($action -eq "set_value") {
+  try {
+    if ([bool]$el.Current.IsPassword) {
+      [PSCustomObject]@{
+        ok=$false; action=$action; query=$query; element=(ElemObj $el);
+        error="refusing to set value on a password/protected field";
+        status="needs_user"; verified=$false;
+        completion_status="needs_secret_handoff"
+      } | ConvertTo-Json -Depth 8
+      exit 0
+    }
+  } catch {}
   $pattern = $null
   if ($el.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$pattern)) {
     $pattern.SetValue($value)
-    [PSCustomObject]@{ ok=$true; action=$action; query=$query; value=$value; element=(ElemObj $el); method="value_pattern" } | ConvertTo-Json -Depth 8
+    [PSCustomObject]@{ ok=$true; action=$action; query=$query; value_chars=$value.Length; element=(ElemObj $el); method="value_pattern" } | ConvertTo-Json -Depth 8
     exit 0
   }
-  $el.SetFocus()
-  Add-Type -AssemblyName System.Windows.Forms
-  [System.Windows.Forms.SendKeys]::SendWait($value)
-  [PSCustomObject]@{ ok=$true; action=$action; query=$query; value=$value; element=(ElemObj $el); method="focus_sendkeys" } | ConvertTo-Json -Depth 8
+  [PSCustomObject]@{
+    ok=$false; action=$action; query=$query; value_chars=$value.Length;
+    element=(ElemObj $el); method="value_pattern_unavailable";
+    verified=$false; completion_status="uia_value_pattern_unavailable";
+    error="element does not expose ValuePattern"
+  } | ConvertTo-Json -Depth 8
   exit 0
 }
 
@@ -5739,6 +5953,18 @@ Start-Sleep -Milliseconds 120
 
     def gui_type(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))
+        forced_method = str(args.get("method") or args.get("input_method") or "").strip().lower()
+        force_paste = forced_method == "paste" or bool(args.get("force_paste"))
+        force_sendkeys = forced_method == "sendkeys" or bool(args.get("force_sendkeys"))
+        if force_paste and not bool(args.get("raw_sendkeys", False)):
+            result = self._gui_type_via_paste(text)
+            if result.get("ok"):
+                try:
+                    from . import gui_safety
+                    gui_safety.note_agent_input()
+                except Exception:
+                    pass
+            return result
         # REGRESION WebView2 (2026-05-25): SendInput in-process no inyecta de forma
         # fiable en inputs WebView2/Chromium/Electron (WhatsApp/Discord/Spotify). Antes
         # del 23 el camino era SendKeys/paste y llegaba. FIX: si el target es
@@ -5746,7 +5972,8 @@ Start-Sleep -Milliseconds 120
         # Gate GEMMA4_KEYS_SENDINPUT=0 fuerza no-SendInput.
         _win_hint = str(args.get("window") or args.get("title") or "")
         _skip_sendinput = (
-            os.environ.get("GEMMA4_KEYS_SENDINPUT", "1").strip().lower() in {"0", "false", "no", "off"}
+            force_sendkeys
+            or os.environ.get("GEMMA4_KEYS_SENDINPUT", "1").strip().lower() in {"0", "false", "no", "off"}
             or self._foreground_is_chromium(_win_hint))
         # P0 (auditoría §7.1): intentar SendInput IN-PROCESS primero (sin el
         # cold-start de PowerShell que causaba la pérdida de caracteres bajo carga).
@@ -5773,7 +6000,8 @@ Start-Sleep -Milliseconds 120
         # aunque sea ASCII — SendKeys de texto largo a WebView2 es menos fiable que
         # un paste. Apps nativas: solo paste para no-ASCII (acentos), como antes.
         non_ascii = any(ord(c) > 127 for c in text)
-        if (non_ascii or _skip_sendinput) and not bool(args.get("raw_sendkeys", False)):
+        if ((non_ascii or _skip_sendinput) and not force_sendkeys
+                and not bool(args.get("raw_sendkeys", False))):
             result = self._gui_type_via_paste(text)
             if result.get("ok"):
                 try:
@@ -5840,8 +6068,9 @@ Start-Sleep -Milliseconds 120
                            env=env, capture_output=True, text=True, timeout=8)
         except (OSError, subprocess.TimeoutExpired):
             return _err("paste: ctrl+v timeout", method="paste")
-        # 4. Restaurar clipboard del usuario (tras dar tiempo al paste).
-        _t.sleep(0.1)
+        # 4. Restaurar clipboard del usuario solo cuando WebView2 ya consumio
+        # el paste. Con 0.1s WhatsApp a veces pegaba el clipboard restaurado.
+        _t.sleep(0.5)
         if saved:
             try:
                 self.clipboard_write({"content": saved})
@@ -5943,6 +6172,7 @@ Start-Sleep -Milliseconds 120
         keys = str(args.get("keys", "")).strip()
         if not keys:
             return _err("empty keys")
+        forced_method = str(args.get("method") or args.get("input_method") or "").strip().lower()
         # REGRESION medida 2026-05-25 (RED: "wsp funcionaba perfecto antes del 23"):
         # antes del 23 los keystrokes iban por PowerShell-SendKeys y llegaban a
         # WhatsApp. La migracion a SendInput (856a345) y luego a combos por SendInput
@@ -5951,7 +6181,9 @@ Start-Sleep -Milliseconds 120
         # WebView2/Chromium. Gate GEMMA4_KEYS_SENDINPUT=0 fuerza SendKeys siempre.
         _win_hint = str(args.get("window") or args.get("title") or "")
         _force_sendkeys = (
-            os.environ.get("GEMMA4_KEYS_SENDINPUT", "1").strip().lower() in {"0", "false", "no", "off"}
+            forced_method == "sendkeys"
+            or bool(args.get("force_sendkeys"))
+            or os.environ.get("GEMMA4_KEYS_SENDINPUT", "1").strip().lower() in {"0", "false", "no", "off"}
             or self._foreground_is_chromium(_win_hint))
         # P0 (§7.1): tecla simple nombrada -> SendInput in-process (sin PowerShell),
         # SALVO que el target sea WebView2/Chromium (ahí SendInput no llega).

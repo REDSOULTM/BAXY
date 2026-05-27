@@ -1,0 +1,74 @@
+[
+  {
+    "cmd": "abre steam",
+    "tool_called": false,
+    "lat": 0.5,
+    "reply": "Listo."
+  },
+  {
+    "cmd": "saca un screenshot",
+    "tool_called": true,
+    "lat": 3.0,
+    "reply": "Listo, tom? una captura de pantalla."
+  },
+  {
+    "cmd": "sube el volumen",
+    "tool_called": true,
+    "lat": 6.1,
+    "reply": ""
+  },
+  {
+    "cmd": "mutea el sonido",
+    "tool_called": true,
+    "lat": 2.3,
+    "reply": "Listo, silenci? el sonido."
+  },
+  {
+    "cmd": "abre la calculadora",
+    "tool_called": true,
+    "lat": 4.1,
+    "reply": "Listo, abr? Calculadora."
+  },
+  {
+    "cmd": "pausa la musica",
+    "tool_called": true,
+    "lat": 7.8,
+    "reply": "Listo, paus? la m?sica."
+  },
+  {
+    "cmd": "minimiza la ventana",
+    "tool_called": true,
+    "lat": 5.7,
+    "reply": "Listo, minimic? la ventana.\n\n[1 no confirmada"
+  },
+  {
+    "cmd": "que procesos consumen mas",
+    "tool_called": true,
+    "lat": 12.5,
+    "reply": "Listo, te muestro la lista de procesos para q"
+  },
+  {
+    "cmd": "baja el volumen a 20",
+    "tool_called": true,
+    "lat": 5.2,
+    "reply": "Listo, baj? el volumen a 20."
+  },
+  {
+    "cmd": "abre el bloc de notas",
+    "tool_called": true,
+    "lat": 5.5,
+    "reply": "Listo, abr? Bloc de notas."
+  },
+  {
+    "cmd": "pon el volumen al maximo",
+    "tool_called": true,
+    "lat": 5.2,
+    "reply": "Listo, puse el volumen al m?ximo."
+  },
+  {
+    "cmd": "cierra esta ventana",
+    "tool_called": true,
+    "lat": 5.3,
+    "reply": "Listo, cerr? esta ventana.\n\n[1 no confirmada("
+  }
+]

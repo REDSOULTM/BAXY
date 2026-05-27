@@ -39,6 +39,11 @@ def _press_alt(win32api) -> None:
     try:
         win32api.keybd_event(VK_MENU, 0, 0, 0)
         win32api.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
+        try:
+            from . import gui_safety
+            gui_safety.note_agent_input()
+        except Exception:
+            pass
     except Exception:
         pass
 

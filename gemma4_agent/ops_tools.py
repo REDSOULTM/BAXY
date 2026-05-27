@@ -925,6 +925,43 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
                 status="failed" if "Timeout" not in type(exc).__name__ else "timeout",
             )
         return _ok(**_page_result(session_id, session, page), pressed=key, selector=selector or "body", verified=True, content_verified=True)
+    if action == "type_text":
+        if not value:
+            return _err("type_text requires text/value", status="needs_user")
+        before = _page_signal(page, timeout_ms)
+        active_before = _page_active_element(page)
+        if str(active_before.get("type") or "").casefold() == "password":
+            return _err(
+                "refusing to type into a password field",
+                status="needs_user",
+                verified=False,
+                completion_status="needs_secret_handoff",
+                session_id=session_id,
+            )
+        try:
+            page.keyboard.type(value)
+        except Exception as exc:
+            return _err(
+                f"type_text failed: {type(exc).__name__}: {exc}",
+                session_id=session_id,
+                status="failed",
+            )
+        time.sleep(0.15)
+        active_after = _page_active_element(page)
+        after = _page_signal(page, timeout_ms)
+        changed = bool(
+            (active_after and active_after != active_before)
+            or (before and after and before != after)
+        )
+        return _ok(
+            **_page_result(session_id, session, page),
+            typed_chars=len(value),
+            active_element=active_after,
+            verified=changed,
+            state_changed=changed,
+            content_verified=bool(after.get("text_hash") or after.get("url")),
+            completion_status="typed_text_verified" if changed else "typed_text_unverified",
+        )
     if action == "text":
         try:
             text = page.inner_text(selector or "body", timeout=timeout_ms)[: int(args.get("max_chars", 8000))]
@@ -979,6 +1016,196 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
         except Exception as exc:
             return _err(f"click_text failed: {exc}", target=target, session_id=session_id)
         return _ok(**_page_result(session_id, session, page), clicked_text=target, verified=True, content_verified=True)
+    if action == "click_accessible":
+        target = str(args.get("name") or args.get("target") or args.get("text") or value or "").strip()
+        if not target:
+            return _err("click_accessible requires name/target/text", status="needs_user")
+        raw_roles = args.get("roles")
+        if isinstance(raw_roles, str):
+            roles = [r.strip() for r in raw_roles.split(",") if r.strip()]
+        elif isinstance(raw_roles, list):
+            roles = [str(r).strip() for r in raw_roles if str(r).strip()]
+        else:
+            roles = ["button", "link", "menuitem", "tab", "checkbox", "radio", "textbox"]
+        exact = bool(args.get("exact", False))
+        before = _page_signal(page, timeout_ms)
+        active_before = _page_active_element(page)
+        attempts: list[str] = []
+        last_err = ""
+
+        for role in roles:
+            try:
+                locator = page.get_by_role(role, name=target, exact=exact)
+                locator.first.click(timeout=timeout_ms)
+                attempts.append(f"role:{role}")
+                last_err = ""
+                break
+            except Exception as exc:
+                last_err = f"{type(exc).__name__}: {exc}"
+                attempts.append(f"role:{role}:failed")
+        else:
+            locator_methods = (
+                ("label", "get_by_label"),
+                ("placeholder", "get_by_placeholder"),
+                ("title", "get_by_title"),
+                ("alt_text", "get_by_alt_text"),
+                ("text", "get_by_text"),
+            )
+            for method_name, attr in locator_methods:
+                try:
+                    getter = getattr(page, attr)
+                    locator = getter(target, exact=exact)
+                    locator.first.click(timeout=timeout_ms)
+                    attempts.append(method_name)
+                    last_err = ""
+                    break
+                except AttributeError:
+                    last_err = f"{attr} unavailable"
+                    attempts.append(f"{method_name}:unavailable")
+                except Exception as exc:
+                    last_err = f"{type(exc).__name__}: {exc}"
+                    attempts.append(f"{method_name}:failed")
+
+        if last_err:
+            return _err(
+                "click_accessible failed",
+                target=target, attempts=attempts[-8:], reason=last_err,
+                session_id=session_id, status="failed",
+            )
+
+        try:
+            page.wait_for_load_state("domcontentloaded", timeout=min(timeout_ms, 5000))
+        except Exception:
+            pass
+        time.sleep(0.25)
+        after = _page_signal(page, timeout_ms)
+        active_after = _page_active_element(page)
+        changed = bool(
+            (active_after and active_after != active_before)
+            or (before and after and before != after)
+        )
+        return _ok(
+            **_page_result(session_id, session, page),
+            clicked_accessible=target,
+            attempts=attempts[-8:],
+            active_element=active_after,
+            verified=changed,
+            content_verified=bool(after.get("text_hash") or after.get("url")),
+            state_changed=changed,
+            completion_status=(
+                "clicked_accessible_verified" if changed
+                else "clicked_accessible_unverified"
+            ),
+        )
+    if action == "toggle_accessible":
+        target = str(args.get("name") or args.get("target") or args.get("text") or value or "").strip()
+        if not target:
+            return _err("toggle_accessible requires name/target/text", status="needs_user")
+        desired_raw = args.get("desired")
+        desired = desired_raw if isinstance(desired_raw, bool) else None
+        try:
+            result = page.evaluate(
+                """({target, desired}) => {
+                  const fold = (s) => String(s || '')
+                    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')
+                    .toLowerCase().replace(/\\s+/g, ' ').trim();
+                  const needle = fold(target);
+                  const matches = (text) => {
+                    const f = fold(text);
+                    return !!f && (f === needle || f.includes(needle) || needle.includes(f));
+                  };
+                  const byId = (id) => id ? document.getElementById(id) : null;
+                  const cssEscape = (s) => (window.CSS && CSS.escape)
+                    ? CSS.escape(s)
+                    : String(s).replace(/["\\\\]/g, '\\\\$&');
+                  const labelText = (el) => {
+                    const parts = [];
+                    const add = (v) => { if (v) parts.push(String(v)); };
+                    add(el.getAttribute && el.getAttribute('aria-label'));
+                    const labelledBy = el.getAttribute && el.getAttribute('aria-labelledby');
+                    if (labelledBy) {
+                      for (const id of labelledBy.split(/\\s+/)) add(byId(id)?.innerText || byId(id)?.textContent);
+                    }
+                    if (el.labels) for (const label of Array.from(el.labels)) add(label.innerText || label.textContent);
+                    if (el.id) for (const label of Array.from(document.querySelectorAll(`label[for="${cssEscape(el.id)}"]`))) add(label.innerText || label.textContent);
+                    const parentLabel = el.closest && el.closest('label');
+                    if (parentLabel) add(parentLabel.innerText || parentLabel.textContent);
+                    add(el.getAttribute && el.getAttribute('title'));
+                    add(el.getAttribute && el.getAttribute('name'));
+                    add(el.getAttribute && el.getAttribute('id'));
+                    if (!(el instanceof HTMLInputElement)) add(el.innerText || el.textContent);
+                    return parts.join(' ');
+                  };
+                  const controls = Array.from(document.querySelectorAll(
+                    'input[type="checkbox"],input[type="radio"],[role="checkbox"],[role="switch"],[role="radio"],button[aria-checked]'
+                  ));
+                  const el = controls.find((candidate) => matches(labelText(candidate)));
+                  if (!el) return {ok:false, verified:false, error:'control_not_found', target};
+                  const read = (node) => {
+                    if ('checked' in node) return !!node.checked;
+                    const aria = (node.getAttribute && node.getAttribute('aria-checked') || '').toLowerCase();
+                    if (aria === 'true') return true;
+                    if (aria === 'false') return false;
+                    return null;
+                  };
+                  const before = read(el);
+                  if (desired !== null && before === desired) {
+                    return {ok:true, verified:true, already:true, target, before, after:before, label:labelText(el)};
+                  }
+                  const wanted = desired === null ? (before === null ? true : !before) : desired;
+                  if ('checked' in el) {
+                    if (el.type === 'radio' && wanted === false) {
+                      return {ok:false, verified:false, error:'radio_cannot_uncheck', target, before};
+                    }
+                    el.focus();
+                    el.checked = !!wanted;
+                    el.dispatchEvent(new Event('input', {bubbles:true}));
+                    el.dispatchEvent(new Event('change', {bubbles:true}));
+                  } else {
+                    el.click();
+                  }
+                  const after = read(el);
+                  const verified = desired === null ? (before !== after || after === wanted) : after === desired;
+                  return {
+                    ok: !!verified,
+                    verified: !!verified,
+                    target,
+                    desired,
+                    before,
+                    after,
+                    tag: (el.tagName || '').toLowerCase(),
+                    type: el.getAttribute && (el.getAttribute('type') || el.getAttribute('role') || ''),
+                    label: labelText(el),
+                  };
+                }""",
+                {"target": target, "desired": desired},
+            )
+        except Exception as exc:
+            return _err(
+                f"toggle_accessible failed: {type(exc).__name__}: {exc}",
+                target=target, session_id=session_id, status="failed",
+            )
+        if not isinstance(result, dict) or not result.get("ok"):
+            return _err(
+                "toggle_accessible failed",
+                target=target,
+                reason=(result or {}).get("error") if isinstance(result, dict) else "no result",
+                state=result if isinstance(result, dict) else None,
+                session_id=session_id,
+                status="failed",
+            )
+        return _ok(
+            **_page_result(session_id, session, page),
+            toggled_accessible=target,
+            state=result,
+            verified=result.get("verified") is True,
+            content_verified=True,
+            state_changed=result.get("before") != result.get("after"),
+            completion_status=(
+                "toggle_accessible_verified" if result.get("verified") is True
+                else "toggle_accessible_unverified"
+            ),
+        )
     if action == "extract":
         mode = str(args.get("mode") or "main_text").casefold()
         max_chars = int(args.get("max_chars", 12000))
@@ -1004,7 +1231,8 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
         valid_actions=[
             "status", "close", "tabs", "connect_cdp", "attach_visible",
             "active_tab", "tab_open", "tab_close", "tab_focus", "open", "goto",
-            "click", "fill", "press", "text", "screenshot", "evaluate",
+            "click", "click_accessible", "toggle_accessible", "fill", "press", "type_text",
+            "text", "screenshot", "evaluate",
         ],
         status="needs_user",
     )
@@ -1020,23 +1248,45 @@ def _attach_visible_browser(args: dict[str, Any], session_id: str, state: AgentS
     browser_choice = str(args.get("browser") or "chrome").casefold()
     port = int(args.get("port", 9222))
     endpoint = str(args.get("endpoint") or f"http://127.0.0.1:{port}").strip()
+    auto_launch = bool(args.get("auto_launch", True))
+    launched_dir = ""
     # Probe the endpoint first.
     if not _cdp_endpoint_alive(endpoint):
-        launch_cmd = _cdp_launch_instruction(browser_choice, port)
-        return _err(
-            f"no browser is listening on {endpoint}",
-            status="needs_user", verified=False,
-            completion_status="needs_browser_debug_port",
-            browser=browser_choice, endpoint=endpoint, port=port,
-            launch_instructions=launch_cmd,
-            note="Start the browser yourself with the listed flags and re-call attach_visible. Auto-restart is not done because it would close your tabs.",
-        )
+        # The code guarantees its precondition instead of asking the user to run
+        # a flag (CLAUDE.md §5): launch a DEDICATED CDP instance (separate
+        # user-data-dir — the only thing that works on Chrome 136+; the real
+        # profile silently ignores the debug port). We never close the user's
+        # window. If launching fails, degrade to needs_user with instructions.
+        launch = _launch_cdp_instance(browser_choice, port) if auto_launch else {"ok": False, "error": "auto_launch disabled"}
+        if not launch.get("ok"):
+            launch_cmd = _cdp_launch_instruction(browser_choice, port)
+            return _err(
+                f"no browser is listening on {endpoint}",
+                status="needs_user", verified=False,
+                completion_status="needs_browser_debug_port",
+                browser=browser_choice, endpoint=endpoint, port=port,
+                launch_instructions=launch_cmd,
+                auto_launch_error=launch.get("error"),
+                note="No pude levantar una instancia CDP dedicada automáticamente. Lanzá el navegador con los flags listados y re-llamá attach_visible. No reinicio tu navegador abierto porque cerraría tus pestañas.",
+            )
+        endpoint = str(launch.get("endpoint") or endpoint)
+        launched_dir = str(launch.get("user_data_dir") or "")
     session = _connect_cdp_session(session_id, endpoint)
+    note = ("Attached to the user's visible browser via CDP. Tabs you open here "
+            "are visible to the user. Use tab_close to clean up.")
+    profile = "user_profile_via_cdp"
+    if launched_dir:
+        note = ("Lancé una instancia CDP dedicada (perfil separado, visible) porque "
+                "ningún navegador escuchaba el puerto de debug. No toqué tu ventana "
+                "ni tus pestañas. Las pestañas que abra acá son de esta instancia.")
+        profile = "dedicated_cdp_profile"
     return _ok(
         session_id=session_id, endpoint=endpoint, attached=True,
         browser=browser_choice, tabs=_tabs(session), cdp=True,
-        evidence={"session_id": session_id, "browser_profile": "user_profile_via_cdp"},
-        note="Attached to the user's visible browser via CDP. Tabs you open here are visible to the user. Use tab_close to clean up.",
+        auto_launched=bool(launched_dir),
+        evidence={"session_id": session_id, "browser_profile": profile,
+                  "user_data_dir": launched_dir or None},
+        note=note,
     )
 
 
@@ -1046,6 +1296,101 @@ def _cdp_endpoint_alive(endpoint: str) -> bool:
             return True
     except Exception:
         return False
+
+
+def _resolve_browser_exe(browser: str) -> str | None:
+    """Resolve the .exe path for a Chromium-family browser, probing the usual
+    install locations. Returns None if not found (caller degrades to needs_user).
+    """
+    pf = os.environ.get("ProgramFiles", r"C:\Program Files")
+    pfx86 = os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")
+    local = os.environ.get("LOCALAPPDATA", "")
+    candidates: dict[str, list[str]] = {
+        "chrome": [
+            rf"{pf}\Google\Chrome\Application\chrome.exe",
+            rf"{pfx86}\Google\Chrome\Application\chrome.exe",
+            rf"{local}\Google\Chrome\Application\chrome.exe",
+        ],
+        "edge": [
+            rf"{pfx86}\Microsoft\Edge\Application\msedge.exe",
+            rf"{pf}\Microsoft\Edge\Application\msedge.exe",
+        ],
+        "opera": [
+            rf"{local}\Programs\Opera GX\opera.exe",
+            rf"{local}\Programs\Opera\opera.exe",
+            rf"{pf}\Opera GX\opera.exe",
+            rf"{pf}\Opera\opera.exe",
+        ],
+        "brave": [
+            rf"{pf}\BraveSoftware\Brave-Browser\Application\brave.exe",
+            rf"{pfx86}\BraveSoftware\Brave-Browser\Application\brave.exe",
+        ],
+    }
+    for path in candidates.get(browser, []):
+        if path and os.path.isfile(path):
+            return path
+    # last resort: rely on PATH (chrome/msedge/brave may be on it)
+    exe_name = {"chrome": "chrome", "edge": "msedge", "brave": "brave",
+                "opera": "opera"}.get(browser, browser)
+    found = shutil.which(exe_name)
+    return found
+
+
+def _launch_cdp_instance(browser: str, port: int, *, wait_s: float = 12.0) -> dict[str, Any]:
+    """Launch a DEDICATED CDP instance of `browser` with --remote-debugging-port
+    and a separate --user-data-dir, then poll until the endpoint is alive.
+
+    Why a separate user-data-dir and NOT the user's profile: Chrome 136+ / Edge
+    (and Chromium-family generally) silently IGNORE --remote-debugging-port when
+    launched on the default profile — a security hardening to stop malware from
+    reading cookies/passwords over CDP. So debugging the real profile is simply
+    impossible; a dedicated data dir is the only path that produces an endpoint.
+    Source: https://developer.chrome.com/blog/remote-debugging-port (Chrome 136,
+    2025-04). This also means we never touch or close the user's window/tabs
+    (CLAUDE.md §6). The dedicated profile is visible to the user.
+    """
+    exe = _resolve_browser_exe(browser)
+    if not exe:
+        return {"ok": False, "error": f"no encontré el ejecutable de {browser}"}
+    local = os.environ.get("LOCALAPPDATA") or str(Path.home())
+    user_data_dir = str(Path(local) / "Gemma4Agent" / f"{browser}-cdp")
+    try:
+        Path(user_data_dir).mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+    cmd = [
+        exe,
+        f"--remote-debugging-port={port}",
+        f"--user-data-dir={user_data_dir}",
+        "--no-first-run",
+        "--no-default-browser-check",
+        "--restore-last-session",
+    ]
+    creationflags = 0
+    if os.name == "nt":
+        # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP so the browser outlives the
+        # agent turn and doesn't get torn down with our process tree.
+        creationflags = 0x00000008 | 0x00000200
+    try:
+        subprocess.Popen(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            stdin=subprocess.DEVNULL,
+            creationflags=creationflags,
+            close_fds=True,
+        )
+    except Exception as exc:
+        return {"ok": False, "error": f"no pude lanzar {browser}: {type(exc).__name__}: {exc}"}
+    endpoint = f"http://127.0.0.1:{port}"
+    deadline = time.monotonic() + max(2.0, wait_s)
+    while time.monotonic() < deadline:
+        if _cdp_endpoint_alive(endpoint):
+            return {"ok": True, "endpoint": endpoint, "exe": exe,
+                    "user_data_dir": user_data_dir}
+        time.sleep(0.4)
+    return {"ok": False, "error": f"{browser} no expuso CDP en {endpoint} tras {wait_s:.0f}s",
+            "endpoint": endpoint, "user_data_dir": user_data_dir}
 
 
 def _cdp_launch_instruction(browser: str, port: int) -> dict[str, Any]:
@@ -1339,6 +1684,53 @@ def _tabs(session: dict[str, Any]) -> list[dict[str, Any]]:
         tabs.append({"page_id": index, "url": url, "title": "",
                       "active": index == int(session.get("active", 0))})
     return tabs
+
+
+def _page_signal(page: Any, timeout_ms: int = 2000) -> dict[str, Any]:
+    """Small, non-sensitive page state used to verify that an action did work."""
+    signal: dict[str, Any] = {}
+    try:
+        signal["url"] = page.url
+    except Exception:
+        signal["url"] = ""
+    try:
+        text = page.inner_text("body", timeout=min(max(timeout_ms, 500), 2500))
+    except Exception:
+        text = ""
+    if text:
+        signal["text_hash"] = hashlib.sha256(text[:8000].encode("utf-8", "ignore")).hexdigest()
+        signal["text_len"] = len(text)
+    else:
+        signal["text_hash"] = ""
+        signal["text_len"] = 0
+    return signal
+
+
+def _page_active_element(page: Any) -> dict[str, Any]:
+    """Return sanitized active element state for action verification."""
+    try:
+        value = page.evaluate(
+            """() => {
+              const el = document.activeElement;
+              if (!el) return {};
+              const tag = (el.tagName || '').toLowerCase();
+              const type = (el.getAttribute && el.getAttribute('type')) || '';
+              const editable = !!el.isContentEditable;
+              let text = '';
+              if (type.toLowerCase() !== 'password') {
+                if ('value' in el) text = String(el.value || '');
+                else if (editable) text = String(el.textContent || '');
+              }
+              return {
+                tag, type, editable,
+                textHash: text ? text.length + ':' + text.slice(-64) : '',
+                textLen: text.length,
+              };
+            }"""
+        )
+        return value if isinstance(value, dict) else {}
+    except Exception:
+        return {}
 
 
 def _page_result(session_id: str, session: dict[str, Any], page: Any) -> dict[str, Any]:

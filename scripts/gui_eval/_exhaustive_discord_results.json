@@ -1,0 +1,92 @@
+[
+  {
+    "label": "Buscar",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Buscar o iniciar una conversación",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Bandeja de entrada",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Bandeja de entrada",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Mensajes directos",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Mensajes directos",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Mensajes fijados",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Mensajes fijados",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Buscar",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Buscar o iniciar una conversación",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Apps",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Apps",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Bandeja de entrada",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Bandeja de entrada",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Buscar",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Buscar o iniciar una conversación",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Mensajes directos",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Mensajes directos",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  },
+  {
+    "label": "Apps",
+    "ok": true,
+    "grounding": "uia_inproc",
+    "element": "Apps",
+    "focus_stolen": false,
+    "fg_before": "@Ron92 - Discord",
+    "fg_after": "@Ron92 - Discord"
+  }
+]

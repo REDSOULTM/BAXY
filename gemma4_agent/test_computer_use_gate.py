@@ -40,6 +40,21 @@ class ComputerUseToolTest(unittest.TestCase):
         self.assertEqual(r["completion_status"], "done")
         self.assertIn("juan", r["reply"])
 
+    def test_unverified_plan_reports_attempted_not_done(self):
+        reg = self._reg()
+        plan = [{"op": "focus_app", "arg": "discord"},
+                {"op": "discord_control", "arg": "deafen"}]
+        with patch("gemma4_agent.computer_use.plan_for", return_value=plan), \
+             patch("gemma4_agent.computer_use.PlanExecutor") as PE, \
+             patch("gemma4_agent.computer_use.summarize_result", return_value="Intentado."):
+            PE.return_value.execute.return_value = {
+                "ok": True, "verified": False, "steps": plan, "focused_app": "Discord",
+            }
+            r = reg.t_computer_use({"goal": "ensordeceme en discord"})
+        self.assertTrue(r["ok"])
+        self.assertFalse(r["verified"])
+        self.assertEqual(r["completion_status"], "attempted")
+
     def test_no_plan_is_honest_failure(self):
         reg = self._reg()
         with patch("gemma4_agent.computer_use.plan_for", return_value=None):
@@ -50,6 +65,37 @@ class ComputerUseToolTest(unittest.TestCase):
         from gemma4_agent.tool_schemas import COMPOUND_TOOL_SCHEMAS
         names = [s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS]
         self.assertIn("computer_use", names)
+
+
+class GuiCompatibilityTest(unittest.TestCase):
+    """Recovery for common LLM-shaped GUI calls. These tests mock the actual
+    app/click layers, so they never emit input to Windows."""
+
+    def _reg(self):
+        return ToolRegistry.__new__(ToolRegistry)
+
+    def test_gui_open_routes_to_app_open(self):
+        reg = self._reg()
+        reg.t_app = MagicMock(return_value={"ok": True, "status": "done"})
+        r = reg.t_gui({"action": "open", "target": "Opera GX"})
+        self.assertTrue(r["ok"])
+        self.assertEqual(r["routed_to"], "app.open")
+        reg.t_app.assert_called_once_with({
+            "action": "open",
+            "name": "Opera GX",
+            "refresh": False,
+        })
+
+    def test_gui_click_target_routes_to_click_button(self):
+        reg = self._reg()
+        reg.gui_click_button = MagicMock(return_value={"ok": True, "method": "uia"})
+        with patch("gemma4_agent.gui_safety.check_action_budget", return_value=None), \
+             patch("gemma4_agent.gui_safety.check_user_activity", return_value=None), \
+             patch("gemma4_agent.gui_safety.note_action"):
+            r = reg.t_gui({"action": "click", "target": "favorite-site"})
+        self.assertTrue(r["ok"])
+        reg.gui_click_button.assert_called_once()
+        self.assertEqual(reg.gui_click_button.call_args.args[0]["label"], "favorite-site")
 
 
 class RouterOffersComputerUseTest(unittest.TestCase):

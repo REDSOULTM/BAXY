@@ -1,0 +1,50 @@
+[
+  {
+    "label": "E4B-Q4_K_M     ctx16k novis (BASELINE)",
+    "ok": true,
+    "idle_mb": 6145,
+    "peak_mb": 10594,
+    "delta_mb": 4449,
+    "disk_mb": 4746
+  },
+  {
+    "label": "E4B-Q4_K_M     ctx16k +VIS  (BASELINE)",
+    "ok": true,
+    "idle_mb": 6145,
+    "peak_mb": 11792,
+    "delta_mb": 5647,
+    "disk_mb": 4746
+  },
+  {
+    "label": "E4B-UD-Q3_K_XL ctx16k novis",
+    "ok": true,
+    "idle_mb": 6145,
+    "peak_mb": 10224,
+    "delta_mb": 4079,
+    "disk_mb": 4375
+  },
+  {
+    "label": "E4B-UD-Q3_K_XL ctx16k +VIS",
+    "ok": true,
+    "idle_mb": 6145,
+    "peak_mb": 11422,
+    "delta_mb": 5277,
+    "disk_mb": 4375
+  },
+  {
+    "label": "E4B-UD-IQ3_XXS ctx16k novis",
+    "ok": true,
+    "idle_mb": 6145,
+    "peak_mb": 9728,
+    "delta_mb": 3583,
+    "disk_mb": 3544
+  },
+  {
+    "label": "E4B-UD-IQ3_XXS ctx16k +VIS",
+    "ok": true,
+    "idle_mb": 6145,
+    "peak_mb": 10926,
+    "delta_mb": 4781,
+    "disk_mb": 3544
+  }
+]

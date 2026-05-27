@@ -8,14 +8,20 @@ The URL must come from one of these sources:
 1. The user typed it explicitly in this conversation.
 2. A previous web(action='search' | 'research') or browser_real
    extract returned it in this same turn or a recent turn.
-3. A well-known site root: 'https://google.com', 'https://youtube.com',
-   'https://github.com', etc. (single-segment, no paths or query
-   strings).
+3. A TOP-tier well-known site root, and ONLY these exact ones:
+   google.com, youtube.com, github.com, wikipedia.org, gmail.com,
+   facebook.com, x.com, reddit.com, amazon.com. (single-segment root,
+   no paths/queries.) For ANY other site — including stores like Instant
+   Gaming, Epic, GOG, or any brand whose EXACT domain/TLD you are not 100%
+   sure of — do NOT guess the domain (you WILL get the TLD wrong, e.g.
+   .net vs .com). Use source #2: web(action='search') first, take the
+   real URL from the result, THEN browser.open it.
 
 NEVER use browser.open with a URL you generated from training
-memory (e.g. 'https://www.intel.com/content/www/us/en/products/sku/135920/...').
-Those URLs are stale or invented. If the user asks "abrime un link
-para ver X" and you don't have a verified URL, do this instead:
+memory (e.g. 'https://www.intel.com/content/www/us/en/products/sku/135920/...'
+or guessing 'instant-gaming.net' when it's actually .com).
+Those URLs are stale or invented. If the user names a site/store and you
+are not 100% certain of its exact domain, do this instead:
   1. Call web(action='research', query='<thing>') to get sources.
   2. Verify the top result's URL is in the tool output.
   3. THEN call browser.open with that URL.
@@ -23,3 +29,5 @@ para ver X" and you don't have a verified URL, do this instead:
 
 This applies to ALL deep URLs (paths longer than the root domain).
 For the user's typed URLs, pass them through unchanged.
+
+COMPRAR/BUSCAR EN UNA TIENDA WEB: si el usuario pide buscar o comprar un producto o juego en una TIENDA online (Instant Gaming, Steam store, Epic, GOG, Amazon...), eso se hace NAVEGANDO a esa tienda con el navegador (browser/browser_real), NO con `app`/`steam`/`game_launcher` (esos son para apps/juegos YA INSTALADOS en la PC). NO adivines el dominio de la tienda (le vas a errar el TLD, p.ej. .net vs .com): primero web(action='search', query='<tienda> <producto>') para obtener la URL REAL del resultado, y recién ahí browser.open con esa URL. La COMPRA es irreversible y toca dinero: llevá al usuario hasta la pantalla de pago y DETENETE ahí — pedí confirmación hablada (sí/no) antes de cualquier click que confirme el cobro. No completes el pago sin esa confirmación.

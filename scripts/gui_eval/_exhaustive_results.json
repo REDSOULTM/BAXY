@@ -1,0 +1,106 @@
+{
+  "calc": [
+    {
+      "expr": "2+2",
+      "exp": "4",
+      "display": "Se muestra 4",
+      "ok": true
+    },
+    {
+      "expr": "5+3",
+      "exp": "8",
+      "display": "Se muestra 8",
+      "ok": true
+    },
+    {
+      "expr": "7*6",
+      "exp": "42",
+      "display": "Se muestra 42",
+      "ok": true
+    },
+    {
+      "expr": "100-58",
+      "exp": "42",
+      "display": "Se muestra 42",
+      "ok": true
+    },
+    {
+      "expr": "9*9",
+      "exp": "81",
+      "display": "Se muestra 81",
+      "ok": true
+    },
+    {
+      "expr": "12+8",
+      "exp": "20",
+      "display": "Se muestra 20",
+      "ok": true
+    },
+    {
+      "expr": "50-5",
+      "exp": "45",
+      "display": "Se muestra 45",
+      "ok": true
+    },
+    {
+      "expr": "8*8",
+      "exp": "64",
+      "display": "Se muestra 64",
+      "ok": true
+    },
+    {
+      "expr": "11+11",
+      "exp": "22",
+      "display": "Se muestra 22",
+      "ok": true
+    },
+    {
+      "expr": "144-44",
+      "exp": "100",
+      "display": "Se muestra 100",
+      "ok": true
+    }
+  ],
+  "notepad": [
+    {
+      "text": "hola mundo",
+      "ok": false
+    },
+    {
+      "text": "informe final",
+      "ok": false
+    },
+    {
+      "text": "accion rapida",
+      "ok": false
+    },
+    {
+      "text": "prueba uno dos",
+      "ok": false
+    },
+    {
+      "text": "comprar leche",
+      "ok": false
+    },
+    {
+      "text": "reunion a las cinco",
+      "ok": false
+    },
+    {
+      "text": "proyecto alpha",
+      "ok": false
+    },
+    {
+      "text": "nota importante",
+      "ok": false
+    },
+    {
+      "text": "lista de tareas",
+      "ok": false
+    },
+    {
+      "text": "mensaje test",
+      "ok": false
+    }
+  ]
+}

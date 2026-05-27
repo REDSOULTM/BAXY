@@ -10,6 +10,7 @@ from __future__ import annotations
 import unittest
 
 from gemma4_agent.safety import classify_tool_call
+from gemma4_agent.verifiers import verify_whatsapp
 from gemma4_agent.verify_policy import policy_for, Risk, VerifyPolicy
 
 
@@ -91,6 +92,26 @@ class VerifyPolicyTest(unittest.TestCase):
         self.assertEqual(
             policy_for("whatsapp", {"action": "send_message"}).require_user_confirmation,
             classify_tool_call("whatsapp", {"action": "send_message"}).requires_confirmation)
+
+class WhatsAppVerifierTest(unittest.TestCase):
+    def test_gui_search_sent_requires_physical_actions_ok(self):
+        base = {
+            "ok": True,
+            "provider": "whatsapp_desktop_gui_search",
+            "recipient_contact": "Ana",
+            "sent": True,
+            "completion_status": "message_sent",
+            "gui_search_info": {
+                "chat_header_status": "confirmed",
+                "chat_verified": True,
+            },
+        }
+        outcome = verify_whatsapp({"action": "send_message"}, base)
+        self.assertIsNone(outcome.confirmed)
+
+        base["gui_search_info"]["physical_actions_ok"] = True
+        outcome = verify_whatsapp({"action": "send_message"}, base)
+        self.assertTrue(outcome.confirmed)
 
 
 if __name__ == "__main__":

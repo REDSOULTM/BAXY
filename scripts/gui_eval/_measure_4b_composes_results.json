@@ -1,0 +1,92 @@
+[
+  {
+    "cmd": "andá a discord al chat de cbayeah",
+    "ok": true,
+    "tools": [
+      "window"
+    ],
+    "reply": "Listo, enfoc? Discord. Ahora busco el chat de CbaYeah.",
+    "latency_s": 6.6
+  },
+  {
+    "cmd": "entrá a discord al chat de GordoFriki",
+    "ok": false,
+    "tools": [
+      "window"
+    ],
+    "reply": "",
+    "latency_s": 6.1
+  },
+  {
+    "cmd": "en discord abrí el chat de juanpi",
+    "ok": false,
+    "tools": [
+      "window"
+    ],
+    "reply": "Listo, activ? Discord.",
+    "latency_s": 7.6
+  },
+  {
+    "cmd": "andá a discord al chat de pierosky",
+    "ok": false,
+    "tools": [
+      "window"
+    ],
+    "reply": "",
+    "latency_s": 5.8
+  },
+  {
+    "cmd": "entrá a discord a Migue_STg",
+    "ok": false,
+    "tools": [
+      "window"
+    ],
+    "reply": "Listo, enfoc? Discord en el chat de CbaYeah.",
+    "latency_s": 5.7
+  },
+  {
+    "cmd": "andá a discord al chat de cbayeah",
+    "ok": true,
+    "tools": [
+      "window"
+    ],
+    "reply": "Listo, activ? el chat de CbaYeah en Discord.",
+    "latency_s": 7.5
+  },
+  {
+    "cmd": "entrá a opera y andá a python.org",
+    "ok": false,
+    "tools": [
+      "window"
+    ],
+    "reply": "",
+    "latency_s": 8.0
+  },
+  {
+    "cmd": "en opera entrá a github.com",
+    "ok": false,
+    "tools": [
+      "web"
+    ],
+    "reply": "Abr? GitHub, pero no puedo verificar si la p?gina se carg? c",
+    "latency_s": 3.6
+  },
+  {
+    "cmd": "andá a opera y entrá a wikipedia.org",
+    "ok": false,
+    "tools": [
+      "web"
+    ],
+    "reply": "Abr? la p?gina de Wikipedia, pero no puedo confirmar si el c",
+    "latency_s": 4.0
+  },
+  {
+    "cmd": "entrá a discord al chat de ShooterCOCK",
+    "ok": false,
+    "tools": [
+      "window"
+    ],
+    "reply": "Listo, enfocar? Discord ahora busco el chat de ShooterCOCK.",
+    "latency_s": 6.8
+  }
+]

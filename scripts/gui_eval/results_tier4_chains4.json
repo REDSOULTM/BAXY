@@ -1,0 +1,80 @@
+{
+  "summary": {
+    "total": 5,
+    "pass": 3,
+    "fail": 2,
+    "inconclusive": 0,
+    "task_success_rate": 0.6,
+    "false_pass_count": 0,
+    "false_pass_rate": 0.0,
+    "latency_p50_s": 6.99,
+    "latency_p95_s": 14.97
+  },
+  "rows": [
+    {
+      "id": "t4_calc_chain_4",
+      "tier": 4,
+      "utterance": "abrí la calculadora y escribí 2+2 y apretá enter",
+      "pass": true,
+      "evidence": "display Calculadora='Se muestra 4' contiene '4'=True",
+      "steps": 1,
+      "latency_s": 14.97,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí la Calculadora. Escribí «2+2». Intenté apretr «enter» pero no pude confirmar el efecto.",
+      "error": null
+    },
+    {
+      "id": "t4_calc_chain_8",
+      "tier": 4,
+      "utterance": "abrí la calculadora, escribí 5+3 y apretá enter",
+      "pass": false,
+      "evidence": "display Calculadora='Se muestra 3' contiene '8'=False",
+      "steps": 1,
+      "latency_s": 7.22,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí Calculadora. Intenté escribir «5+3» pero no pude confirmar que entró en la ventana activa. Paré la secuencia",
+      "error": null
+    },
+    {
+      "id": "t4_calc_chain_42",
+      "tier": 4,
+      "utterance": "abrí la calculadora y tecleá 7*6 y apretá enter",
+      "pass": false,
+      "evidence": "display Calculadora='Se muestra 6' contiene '42'=False",
+      "steps": 1,
+      "latency_s": 6.99,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí Calculadora. Intenté escribir «7*6» pero no pude confirmar que entró en la ventana activa. Paré la secuencia",
+      "error": null
+    },
+    {
+      "id": "t4_npad_chain_informe_final",
+      "tier": 4,
+      "utterance": "abrí el bloc de notas y escribí informe final",
+      "pass": true,
+      "evidence": "Notepad contiene 'informe final'=True",
+      "steps": 1,
+      "latency_s": 5.3,
+      "agent_thinks_ok": true,
+      "false_pass": false,
+      "reply": "Listo, abrí el Bloc de notas. Escribí «informe final».",
+      "error": null
+    },
+    {
+      "id": "t4_npad_chain_hola_mundo",
+      "tier": 4,
+      "utterance": "abrí el bloc de notas, escribí hola mundo y apretá enter",
+      "pass": true,
+      "evidence": "Notepad contiene 'hola mundo'=True",
+      "steps": 1,
+      "latency_s": 4.74,
+      "agent_thinks_ok": false,
+      "false_pass": false,
+      "reply": "Listo, abrí el Bloc de notas. Escribí «hola mundo». Intenté apretr «enter» pero no pude confirmar el efecto.",
+      "error": null
+    }
+  ]
+}

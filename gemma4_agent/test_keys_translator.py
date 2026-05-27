@@ -72,10 +72,30 @@ class TestSendKeysTranslator(unittest.TestCase):
 
 
 class TestWhatsAppGuiUsesCorrectHotkey(unittest.TestCase):
-    """Verifica que _whatsapp_send_via_gui_search pase keys='ctrl+f' (no
-    hotkey='ctrl+f' que se enviaba literal)."""
+    """Verifica que _whatsapp_send_via_gui_search use keypress estructural."""
 
-    def test_ctrl_f_via_keypress_not_hotkey(self):
+    def test_gui_dispatch_preserves_keypress_method(self):
+        from .tools import ToolRegistry
+
+        class Dummy:
+            seen = None
+
+            def gui_keypress(self, args):
+                self.seen = dict(args)
+                return {"ok": True}
+
+        dummy = Dummy()
+        ToolRegistry._gui_dispatch_raw(
+            dummy,
+            "keypress",
+            {"action": "keypress", "keys": "ctrl+n",
+             "method": "sendkeys", "window": "WhatsApp"},
+        )
+        self.assertEqual(dummy.seen["keys"], "ctrl+n")
+        self.assertEqual(dummy.seen["method"], "sendkeys")
+        self.assertEqual(dummy.seen["window"], "WhatsApp")
+
+    def test_ctrl_n_via_keypress_not_typed_literal(self):
         from .domain_tools import _whatsapp_send_via_gui_search
         calls = []
         def _exec(name, args):
@@ -90,14 +110,14 @@ class TestWhatsAppGuiUsesCorrectHotkey(unittest.TestCase):
         with patch("gemma4_agent.domain_tools.subprocess.Popen"), \
              patch("time.sleep"):
             r = _whatsapp_send_via_gui_search(_exec, "Amor", "te amo", 0.5, True)
-        # Buscar el keypress de ctrl+f.
-        ctrl_f_calls = [
+        # Buscar el keypress de ctrl+n (nuevo chat / selector global).
+        ctrl_n_calls = [
             args for name, args in calls
             if name == "gui" and args.get("action") == "keypress"
-            and "ctrl+f" in str(args.get("keys", "")).lower()
+            and "ctrl+n" in str(args.get("keys", "")).lower()
         ]
-        self.assertGreaterEqual(len(ctrl_f_calls), 1,
-                                 f"expected at least 1 ctrl+f keypress, got calls: {calls}")
+        self.assertGreaterEqual(len(ctrl_n_calls), 1,
+                                 f"expected at least 1 ctrl+n keypress, got calls: {calls}")
         # IMPORTANTE: NO debe ser type con text='ctrl+f' (el bug original).
         bad_type_calls = [
             args for name, args in calls

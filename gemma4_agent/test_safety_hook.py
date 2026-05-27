@@ -6,7 +6,9 @@ Hotfix I 2026-05-17. Structural detection — operates on args
 from __future__ import annotations
 
 import unittest
+from unittest import mock
 
+import gemma4_agent.safety_hook as sh
 from gemma4_agent.safety_hook import evaluate_tool_call
 
 
@@ -105,6 +107,60 @@ class SafetyHookTest(unittest.TestCase):
         self.assertTrue(v["block"])
         self.assertIn("pattern", v)
         self.assertIn("stripe", v["pattern"])
+
+
+class CheckoutWindowClickGuardTest(unittest.TestCase):
+    """HUECO CERRADO 2026-05-26: un click GENÉRICO en una pantalla de checkout
+    (gui.click_button 'Comprar' en Steam) ya no se cuela. Decisión: si la
+    ventana al frente es una tienda/checkout, CUALQUIER click pide confirmación
+    — la señal del SO manda; el label del botón no decide (frágil). Mockeamos
+    _foreground_is_checkout para no depender de la ventana real."""
+
+    def test_click_button_on_checkout_window_is_blocked(self):
+        with mock.patch.object(sh, "_foreground_is_checkout", return_value=True):
+            v = evaluate_tool_call(
+                "gui", "click_button", {"action": "click_button", "label": "Comprar"})
+        self.assertTrue(v["block"])
+        self.assertEqual(v["pattern"], "gui_click_on_checkout_window")
+
+    def test_computer_use_goal_on_checkout_window_is_blocked(self):
+        with mock.patch.object(sh, "_foreground_is_checkout", return_value=True):
+            v = evaluate_tool_call(
+                "computer_use", "", {"goal": "comprar el juego"})
+        self.assertTrue(v["block"])
+
+    def test_click_without_checkout_window_passes(self):
+        # Click idéntico pero NO en un checkout -> navegación normal, no bloquea.
+        with mock.patch.object(sh, "_foreground_is_checkout", return_value=False):
+            v = evaluate_tool_call(
+                "gui", "click_button", {"action": "click_button", "label": "Comprar"})
+        self.assertFalse(v["block"])
+
+    def test_non_click_on_checkout_window_passes(self):
+        # type/scroll/etc no avanza un pago por sí mismo -> no bloquea (el click
+        # de confirmación sí lo hará). Evita bloquear todo el flujo de checkout.
+        with mock.patch.object(sh, "_foreground_is_checkout", return_value=True):
+            v = evaluate_tool_call(
+                "gui", "type", {"action": "type", "text": "datos"})
+        self.assertFalse(v["block"])
+
+    def test_foreground_is_checkout_reads_window_title(self):
+        # Verifica la señal del SO: estado de pago/checkout -> True.
+        with mock.patch("gemma4_agent.computer_use._foreground_title",
+                        return_value="Steam Checkout"):
+            self.assertTrue(sh._foreground_is_checkout())
+        with mock.patch("gemma4_agent.computer_use._foreground_title",
+                        return_value="Resident Evil — Steam"):
+            self.assertFalse(sh._foreground_is_checkout())
+        with mock.patch("gemma4_agent.computer_use._foreground_title",
+                        return_value="Bloc de notas"):
+            self.assertFalse(sh._foreground_is_checkout())
+
+    def test_foreground_read_failure_is_safe_false(self):
+        # Si no se puede leer el título, NO bloquea de más (fallback seguro).
+        with mock.patch("gemma4_agent.computer_use._foreground_title",
+                        side_effect=RuntimeError("no win32")):
+            self.assertFalse(sh._foreground_is_checkout())
 
 
 if __name__ == "__main__":

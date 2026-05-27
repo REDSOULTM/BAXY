@@ -1,0 +1,72 @@
+[
+  {
+    "seq": "Dos Más Dos Es igual a",
+    "exp": "4",
+    "display": "Se muestra 4",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Cinco Más Tres Es igual a",
+    "exp": "8",
+    "display": "Se muestra 8",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Siete Multiplicar por Seis Es igual a",
+    "exp": "42",
+    "display": "Se muestra 42",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Nueve Multiplicar por Nueve Es igual a",
+    "exp": "81",
+    "display": "Se muestra 81",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Ocho Menos Tres Es igual a",
+    "exp": "5",
+    "display": "Se muestra 5",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Cuatro Más Cinco Es igual a",
+    "exp": "9",
+    "display": "Se muestra 9",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Seis Multiplicar por Siete Es igual a",
+    "exp": "42",
+    "display": "Se muestra 42",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Uno Más Uno Es igual a",
+    "exp": "2",
+    "display": "Se muestra 2",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Dos Multiplicar por Ocho Es igual a",
+    "exp": "16",
+    "display": "Se muestra 16",
+    "grounding": "uia_inproc",
+    "ok": true
+  },
+  {
+    "seq": "Tres Más Cuatro Es igual a",
+    "exp": "7",
+    "display": "Se muestra 7",
+    "grounding": "uia_inproc",
+    "ok": true
+  }
+]

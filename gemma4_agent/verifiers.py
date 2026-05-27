@@ -661,13 +661,11 @@ def verify_memory(args: dict, result: dict) -> VerifierOutcome:
 
 @register_verifier("whatsapp")
 def verify_whatsapp(args: dict, result: dict) -> VerifierOutcome:
-    """whatsapp.send_message/open_chat: dispatch async al SO via deeplink.
+    """whatsapp.send_message/open_chat verifier.
 
-    El efecto real (chat abierto + texto pre-filled) NO es medible sin GUI
-    inspection. Si el dispatch retorno opened=True, marcamos confirmed=None
-    con evidence del provider (desktop vs web) y el recipient. El verifier
-    NUNCA marca True automaticamente porque WhatsApp no auto-envia — el user
-    debe presionar Enter para confirmar.
+    Desktop GUI-search can now verify chat focus and actually press Enter. Trust
+    that structured result when it reports sent/chat_opened; keep deeplink/web
+    fallbacks as unverifiable because they only pre-fill text.
     """
     if _result_says_unverified(result):
         return _failed("whatsapp", f"whatsapp dispatch failed: {result.get('error', '?')}")
@@ -677,6 +675,38 @@ def verify_whatsapp(args: dict, result: dict) -> VerifierOutcome:
     if action in {"send_message", "send", "open_chat"}:
         provider = result.get("provider", "?")
         normalized = result.get("recipient_normalized", "?")
+        gui_info = result.get("gui_search_info")
+        header_confirmed = (
+            isinstance(gui_info, dict)
+            and gui_info.get("chat_header_status") == "confirmed"
+            and gui_info.get("chat_verified") is True
+        )
+        physical_actions_ok = (
+            result.get("provider") != "whatsapp_desktop_gui_search"
+            or (isinstance(gui_info, dict) and gui_info.get("physical_actions_ok") is True)
+        )
+        if (
+            (result.get("sent") is True or result.get("completion_status") == "message_sent")
+            and (result.get("provider") != "whatsapp_desktop_gui_search"
+                 or (header_confirmed and physical_actions_ok))
+        ):
+            recipient = result.get("recipient_contact") or result.get("recipient_phone") or normalized
+            return _ok_evidence(
+                "whatsapp",
+                f"whatsapp message sent via {provider} to {recipient}",
+            )
+        if action == "open_chat" and (
+            result.get("chat_opened") is True
+            or result.get("completion_status") == "chat_opened"
+        ) and (
+            result.get("provider") != "whatsapp_desktop_gui_search"
+            or (header_confirmed and physical_actions_ok)
+        ):
+            recipient = result.get("recipient_contact") or result.get("recipient_phone") or normalized
+            return _ok_evidence(
+                "whatsapp",
+                f"whatsapp chat opened via {provider} for {recipient}",
+            )
         return _unverifiable(
             "whatsapp",
             f"whatsapp {action} dispatched to {provider} for +{normalized} "

@@ -52,9 +52,9 @@ _GUI_ACTIONS_THIS_TURN: int = 0
 
 def _action_budget() -> int:
     try:
-        return max(1, int(os.environ.get("GEMMA4_GUI_ACTION_BUDGET", "6")))
+        return max(1, int(os.environ.get("GEMMA4_GUI_ACTION_BUDGET", "8")))
     except ValueError:
-        return 6
+        return 8
 
 
 def reset_action_budget() -> None:
