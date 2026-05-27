@@ -43,6 +43,52 @@ def _is_recoverable_connection_error(exc: Exception) -> bool:
     return any(token in s for token in _RECOVERABLE_CONN_ERRORS)
 
 
+# ZOMBIE del proxy en router-mode (2026-05-27). En router mode (front en :8080 +
+# child por modelo), si el child worker MUERE (OOM CUDA en 4GB —issue #13085—, o
+# un crash del child bajo carga), el FRONT sigue vivo y responde HTTP 500 con un
+# body tipo "proxy error: Could not establish connection" / "Failed to read
+# connection". NO es un connection-reset (el socket conecta y devuelve 200-OK a
+# nivel TCP, con un 500 dentro), así que _is_recoverable_connection_error NO lo
+# agarra y el turno moría con llm_http_error 500. El server NO se autorrecupera
+# (#13085) -> hay que REINICIARLO. Detectamos por la firma del 500 del proxy.
+_PROXY_ZOMBIE_MARKERS = (
+    "couldnotestablishconnection",   # "Could not establish connection"
+    "failedtoreadconnection",        # "Failed to read connection"
+    "proxyerror",                    # "proxy error: ..."
+)
+
+
+def _is_proxy_zombie_error(exc: Exception) -> bool:
+    """True si es un HTTP 500 del FRONT del router porque el child worker murió
+    (server zombie, #13085). Requiere reinicio del server, no solo un retry."""
+    s = str(exc).lower()
+    if "llm_http_error 500" not in s:
+        return False
+    norm = s.replace(" ", "").replace("_", "")
+    return any(m in norm for m in _PROXY_ZOMBIE_MARKERS)
+
+
+def _try_restart_managed_server() -> bool:
+    """Reinicia el llama-server que NOSOTROS gestionamos (no toca un server
+    externo del usuario). Best-effort: True si quedó healthy. Import perezoso
+    para no acoplar el cliente al manager en el happy-path."""
+    try:
+        from .llama_server import get_shared_manager
+        from .profiles import get_active_profile
+        mgr = get_shared_manager()
+        # restart() ya no-opea sobre server externo / no-gestionado.
+        if not mgr.is_running():
+            return False
+        status = mgr.restart(get_active_profile(), wait_health=True, timeout_s=90)
+        ok = status in {"started", "already_running"}
+        logger.warning("proxy-zombie recovery: server restart -> %s (healthy=%s)",
+                       status, ok)
+        return ok
+    except Exception as exc:  # nunca romper el turno por el recovery
+        logger.warning("proxy-zombie recovery failed: %s", exc)
+        return False
+
+
 def _request_headers(content_type: str = "application/json", sse: bool = False) -> dict[str, str]:
     """Sprint 12 hardening: si GEMMA4_LLAMA_API_KEY esta seteado, añade
     el header Authorization: Bearer <key> que llama-server espera cuando
@@ -167,6 +213,26 @@ class LLMClient:
         try:
             return self._post_chat(body, timeout=timeout)
         except RuntimeError as exc:
+            # Caso 0: ZOMBIE del proxy (router-mode, child murió -> HTTP 500
+            # "proxy error: Could not establish connection"). El server NO se
+            # autorrecupera (#13085): lo REINICIAMOS y reintentamos UNA vez. Solo
+            # toca un server gestionado por nosotros (no el externo del usuario).
+            if _is_proxy_zombie_error(exc):
+                logger.warning(
+                    "llm proxy-zombie (router child died, HTTP 500); "
+                    "restarting managed server and retrying once: %s", exc)
+                if _try_restart_managed_server():
+                    try:
+                        return self._post_chat(body, timeout=timeout)
+                    except RuntimeError as retry_exc:
+                        raise RuntimeError(
+                            f"llm_proxy_zombie_after_restart: {retry_exc}"
+                        ) from retry_exc
+                raise RuntimeError(
+                    f"llm_proxy_zombie_no_recovery: server restart did not "
+                    f"recover. Original: {exc}"
+                ) from exc
+
             # Caso 1: connection reset -> server reloading. Esperar /health
             # y reintentar UNA vez. Limit total wait a min(15s, timeout/2).
             if _is_recoverable_connection_error(exc):

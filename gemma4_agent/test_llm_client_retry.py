@@ -8,6 +8,7 @@ from .config import AgentConfig
 from .llm_client import (
     LLMClient,
     _is_recoverable_connection_error,
+    _is_proxy_zombie_error,
 )
 
 
@@ -123,6 +124,105 @@ class TestPostChatWithRecovery(unittest.TestCase):
                           side_effect=RuntimeError("llm_http_error 400: messages required")):
             with self.assertRaises(RuntimeError):
                 self.client._post_chat_with_recovery(self.body, timeout=30.0)
+
+
+class TestIsProxyZombie(unittest.TestCase):
+    """Firma del 500 del FRONT del router cuando el child worker murió (#13085)."""
+
+    def test_could_not_establish_connection(self):
+        e = RuntimeError("llm_http_error 500: proxy error: Could not establish connection")
+        self.assertTrue(_is_proxy_zombie_error(e))
+
+    def test_failed_to_read_connection(self):
+        e = RuntimeError("llm_http_error 500: proxy error: Failed to read connection")
+        self.assertTrue(_is_proxy_zombie_error(e))
+
+    def test_plain_500_is_not_proxy_zombie(self):
+        # un 500 genérico (bug del server, no proxy-zombie) NO dispara reinicio.
+        e = RuntimeError("llm_http_error 500: internal server error")
+        self.assertFalse(_is_proxy_zombie_error(e))
+
+    def test_400_is_not_proxy_zombie(self):
+        e = RuntimeError("llm_http_error 400: proxy error: bad request")
+        self.assertFalse(_is_proxy_zombie_error(e))
+
+    def test_connection_reset_is_not_proxy_zombie(self):
+        # un reset de conexión lo maneja el otro path (no requiere restart).
+        e = RuntimeError("[WinError 10054] connection reset")
+        self.assertFalse(_is_proxy_zombie_error(e))
+
+
+class TestProxyZombieRecovery(unittest.TestCase):
+    """El zombie del proxy reinicia el server gestionado y reintenta 1 vez."""
+
+    def setUp(self):
+        self.client = LLMClient(AgentConfig.from_env())
+        self.body = {"messages": [{"role": "user", "content": "hi"}]}
+
+    def test_zombie_restart_then_retry_ok(self):
+        responses = [
+            RuntimeError("llm_http_error 500: proxy error: Could not establish connection"),
+            {"choices": [{"message": {"content": "ok after restart"}}]},
+        ]
+        with patch.object(self.client, "_post_chat", side_effect=responses) as mock_post, \
+             patch("gemma4_agent.llm_client._try_restart_managed_server",
+                   return_value=True) as mock_restart:
+            result = self.client._post_chat_with_recovery(self.body, timeout=30.0)
+            self.assertEqual(mock_post.call_count, 2)
+            mock_restart.assert_called_once()
+            self.assertEqual(result["choices"][0]["message"]["content"], "ok after restart")
+
+    def test_zombie_restart_fails_raises(self):
+        # el reinicio no recupera -> error explícito (no esconder el bug).
+        with patch.object(self.client, "_post_chat",
+                          side_effect=RuntimeError("llm_http_error 500: proxy error: Could not establish connection")), \
+             patch("gemma4_agent.llm_client._try_restart_managed_server", return_value=False):
+            with self.assertRaises(RuntimeError) as ctx:
+                self.client._post_chat_with_recovery(self.body, timeout=30.0)
+            self.assertIn("llm_proxy_zombie_no_recovery", str(ctx.exception))
+
+    def test_zombie_then_zombie_again_raises(self):
+        # reinicia ok, pero el retry vuelve a dar zombie -> no insistir.
+        with patch.object(self.client, "_post_chat",
+                          side_effect=RuntimeError("llm_http_error 500: proxy error: Could not establish connection")), \
+             patch("gemma4_agent.llm_client._try_restart_managed_server", return_value=True):
+            with self.assertRaises(RuntimeError) as ctx:
+                self.client._post_chat_with_recovery(self.body, timeout=30.0)
+            self.assertIn("llm_proxy_zombie_after_restart", str(ctx.exception))
+
+
+class TestTryRestartManagedServer(unittest.TestCase):
+    """_try_restart_managed_server: reinicia SOLO un server gestionado, no el
+    externo del usuario; lee el resultado de restart() correctamente."""
+
+    def test_restarts_when_managed_and_running(self):
+        from unittest.mock import MagicMock
+        import gemma4_agent.llm_client as lc
+        mgr = MagicMock()
+        mgr.is_running.return_value = True
+        mgr.restart.return_value = "started"
+        with patch("gemma4_agent.llama_server.get_shared_manager", return_value=mgr), \
+             patch("gemma4_agent.profiles.get_active_profile", return_value=object()):
+            self.assertTrue(lc._try_restart_managed_server())
+            mgr.restart.assert_called_once()
+
+    def test_noop_when_not_running(self):
+        # server externo / no-gestionado -> is_running False -> NO reinicia.
+        from unittest.mock import MagicMock
+        import gemma4_agent.llm_client as lc
+        mgr = MagicMock()
+        mgr.is_running.return_value = False
+        with patch("gemma4_agent.llama_server.get_shared_manager", return_value=mgr), \
+             patch("gemma4_agent.profiles.get_active_profile", return_value=object()):
+            self.assertFalse(lc._try_restart_managed_server())
+            mgr.restart.assert_not_called()
+
+    def test_never_raises_on_error(self):
+        import gemma4_agent.llm_client as lc
+        with patch("gemma4_agent.llama_server.get_shared_manager",
+                   side_effect=RuntimeError("boom")):
+            # nunca debe romper el turno por el recovery
+            self.assertFalse(lc._try_restart_managed_server())
 
 
 if __name__ == "__main__":
