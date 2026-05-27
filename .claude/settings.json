@@ -4,7 +4,41 @@
       "Bash(python -m gemma4_agent.test_router)",
       "Bash(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits)",
       "Bash(tasklist /FI \"IMAGENAME eq llama-cli.exe\")",
-      "Bash(tasklist /FI \"IMAGENAME eq llama-server.exe\")"
+      "Bash(tasklist /FI \"IMAGENAME eq llama-server.exe\")",
+      "Bash(timeout 60 python -c ' *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(python -m pytest gemma4_agent/test_gui_type_accents.py gemma4_agent/test_computer_use_gate.py -q*)"
+    ],
+    "deny": [
+      "Bash(*launcher*)",
+      "Bash(*launcher.py*)",
+      "Bash(python -m gemma4_agent.launcher*)",
+      "Bash(*gemma4_agent.voice*)",
+      "Bash(*voice_runner*)",
+      "Bash(*agent_runner*)",
+      "Bash(*SendKeys*)",
+      "Bash(*SendInput*)",
+      "Bash(*sendinput*)",
+      "Bash(*PostMessage*)",
+      "Bash(*WM_CLOSE*)",
+      "Bash(*0x0010*)",
+      "Bash(*taskkill*)",
+      "Bash(*Stop-Process*)",
+      "Bash(*Get-Process*MainWindowTitle*)",
+      "Bash(*[System.Windows.Forms.SendKeys]*)",
+      "PowerShell(*SendKeys*)",
+      "PowerShell(*SendInput*)",
+      "PowerShell(*sendinput*)",
+      "PowerShell(*PostMessage*)",
+      "PowerShell(*WM_CLOSE*)",
+      "PowerShell(*0x0010*)",
+      "PowerShell(*taskkill*)",
+      "PowerShell(*Stop-Process*)",
+      "PowerShell(*Get-Process*MainWindowTitle*)",
+      "PowerShell(*launcher*)",
+      "PowerShell(*gemma4_agent.voice*)",
+      "PowerShell(*voice_runner*)",
+      "PowerShell(*agent_runner*)"
     ]
   }
 }

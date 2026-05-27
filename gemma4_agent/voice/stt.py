@@ -122,12 +122,15 @@ class STT:
         audio: np.ndarray,
         initial_prompt: str | None = None,
         language: str | None = None,
+        hotwords: str | None = None,
     ) -> str:
         """Transcribe an int16 mono 16 kHz audio buffer.
 
         `language`: código ISO del idioma-matriz a fijar (ver lang_profiles).
-        Si None, usa el default de DECODE_KWARGS ('es'). Fijar el idioma es lo
-        correcto para code-switching; no usar autodetect.
+        `hotwords`: lista de nombres propios (apps/servicios) separados por
+        espacio para sesgar el decoder hacia ellos. MEDIDO 2026-05-22 sobre eval
+        real+sintético: rescata casos que el prompt no ("te liera"->Telegram) y
+        NO daña habla real (WER real igual con/sin). Se combina con initial_prompt.
 
         Returns the raw text (post-corrector should be applied by the
         pipeline orchestrator, NOT here, to keep this module pure).
@@ -150,6 +153,8 @@ class STT:
             kwargs["language"] = language
         if initial_prompt:
             kwargs["initial_prompt"] = initial_prompt
+        if hotwords:
+            kwargs["hotwords"] = hotwords
         try:
             segments, info = self._model.transcribe(audio_f32, **kwargs)
             text = " ".join(s.text.strip() for s in segments).strip()

@@ -1,0 +1,72 @@
+# Smoke-test variant of hey_gemma.yaml — minimal samples + steps to
+# validate the end-to-end pipeline works on this machine before
+# committing to the multi-hour real training run.
+#
+# Expected output: a model with bad recall (no surprise, 200 samples),
+# but the pipeline succeeds and ONNX export produces a valid file.
+
+model_name: hey_gemma_smoke
+
+target_phrases:
+  - "hey gemma"
+  - "ey gemma"
+
+tts_backend: voxcpm
+
+n_samples: 200
+n_samples_val: 40
+n_background_samples: 40
+n_background_samples_val: 10
+tts_batch_size: 16
+
+custom_negative_phrases:
+  - "gemma"
+  - "emma"
+  - "jenna"
+  - "hey emma"
+
+noise_scales: [0.98]
+noise_scale_ws: [0.98]
+length_scales: [1.0]
+slerp_weights: [0.5]
+
+piper_tts:
+  checkpoint_relpath: piper/en-us-libritts-high.pt
+
+voxcpm_tts:
+  model_id: openbmb/VoxCPM2
+  model_cache_relpath: voxcpm/VoxCPM2
+  local_model_path: null
+  load_denoiser: false
+  cfg_values: [2.0]
+  inference_timesteps_list: [10]
+  voice_design_prompts:
+    - "A young adult woman, clear mid-pitch voice, moderate pace"
+    - "A middle-aged man, deep resonant voice, slow deliberate pace"
+
+data_dir: ./data
+output_dir: ./output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 8
+  rounds: 1
+  background_paths: [./data/backgrounds]
+  rir_paths: [./data/rirs]
+
+model:
+  model_type: conv_attention
+  model_size: small
+
+steps: 500
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.05
+max_negative_weight: 1000
+target_fp_per_hour: 0.2
+
+batch_n_per_class:
+  positive: 16
+  adversarial_negative: 16
+  ACAV100M_sample: 128
+  background_noise: 16

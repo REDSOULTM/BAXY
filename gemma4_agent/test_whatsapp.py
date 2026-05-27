@@ -567,7 +567,12 @@ class TestWhatsappGuiSearch(unittest.TestCase):
         executor = self._mock_executor_ok()
         with patch("gemma4_agent.domain_tools._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools._verify_visible_whatsapp_text_status",
+                   return_value="confirmed"), \
+             patch("win32gui.GetForegroundWindow", return_value=1), \
+             patch("win32gui.GetWindowText", return_value="WhatsApp"), \
+             patch("win32gui.GetWindowRect", return_value=(100, 100, 1100, 900)):
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "Amor", "text": "te amo"},
                 self.state, executor=executor,
@@ -579,11 +584,108 @@ class TestWhatsappGuiSearch(unittest.TestCase):
         # Steps esperados: dispatch + focus + ctrl+f + type name + enter + type msg + enter.
         steps = r["gui_search_info"]["steps"]
         self.assertIn("dispatched_deeplink", steps)
-        self.assertIn("opened_search", steps)
+        self.assertIn("opened_new_chat_search", steps)
         self.assertIn("typed_contact_name", steps)
         self.assertIn("selected_first_match", steps)
+        self.assertIn("focused_compose_box", steps)
         self.assertIn("typed_message", steps)
         self.assertIn("sent_enter", steps)
+        self.assertIn("sent_message_visible:confirmed", steps)
+        self.assertTrue(r["gui_search_info"]["physical_actions_ok"])
+
+    def test_gui_search_forces_whatsapp_safe_input_methods(self):
+        executor = self._mock_executor_ok()
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools._verify_visible_whatsapp_text_status",
+                   return_value="confirmed"), \
+             patch("win32gui.GetForegroundWindow", return_value=1), \
+             patch("win32gui.GetWindowText", return_value="WhatsApp"), \
+             patch("win32gui.GetWindowRect", return_value=(100, 100, 1100, 900)):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "Amor", "text": "te amo"},
+                self.state, executor=executor,
+            )
+        self.assertTrue(r["sent"], f"expected sent=True, got {r}")
+        gui_calls = [
+            dict(call.args[1]) for call in executor.call_args_list
+            if call.args and call.args[0] == "gui"
+        ]
+        keypress_calls = [c for c in gui_calls if c.get("action") == "keypress"]
+        type_calls = [c for c in gui_calls if c.get("action") == "type"]
+        self.assertTrue(keypress_calls)
+        self.assertTrue(type_calls)
+        self.assertTrue(
+            all(c.get("method") == "sendkeys" for c in keypress_calls),
+            f"keypresses must force SendKeys for WhatsApp: {keypress_calls}",
+        )
+        self.assertTrue(
+            all(c.get("method") == "sendkeys" for c in type_calls),
+            f"text entry must not use clipboard paste for WhatsApp: {type_calls}",
+        )
+
+    def test_gui_search_aborts_when_physical_action_blocked(self):
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "WhatsApp"}}
+            if name == "gui" and args.get("action") == "keypress":
+                return {
+                    "ok": False,
+                    "error": "blocked by gui_safety: user is active",
+                    "status": "needs_user",
+                }
+            if name == "gui" and args.get("action") == "locate_text":
+                return {"ok": True, "found": True}
+            if name == "gui":
+                return {"ok": True}
+            return {"ok": False}
+        executor = MagicMock(side_effect=_exec)
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "Amor", "text": "te amo"},
+                self.state, executor=executor,
+            )
+        self.assertFalse(r["sent"], f"blocked physical action must not be sent: {r}")
+        self.assertFalse(r["verified"])
+        self.assertEqual(r["completion_status"], "search_aborted")
+        info = r["gui_search_info"]
+        self.assertFalse(info["physical_actions_ok"])
+        self.assertIn("open new chat search", info["abort_reason"])
+        self.assertNotIn("opened_new_chat_search", info["steps"])
+
+    def test_gui_search_does_not_trust_uia_search_result_as_header(self):
+        # UIA puede encontrar el contacto en la lista/busqueda sin que el chat
+        # activo sea ese. Sin OCR/header confirmado, no se debe escribir ni enviar.
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "WhatsApp"}}
+            if name == "uia" and args.get("action") == "find":
+                return {"ok": True, "matches": [{"name": "Amor"}]}
+            if name == "gui" and args.get("action") == "locate_text":
+                return {"ok": True, "found": False, "text": ""}
+            if name == "gui":
+                return {"ok": True}
+            return {"ok": False}
+        executor = MagicMock(side_effect=_exec)
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = whatsapp_tool(
+                {"action": "send_message", "contact": "Amor", "text": "te amo"},
+                self.state, executor=executor,
+            )
+        self.assertFalse(r["sent"], f"UIA broad match must not count as sent: {r}")
+        steps = r["gui_search_info"]["steps"]
+        self.assertIn("chat_header_status:unknown", steps)
+        self.assertNotIn("typed_message", steps)
+        self.assertNotIn("sent_enter", steps)
 
     def test_gui_search_aborts_when_focus_lost(self):
         # Si la ventana activa cambia mid-flow, abort sin completar.
@@ -613,7 +715,10 @@ class TestWhatsappGuiSearch(unittest.TestCase):
         executor = self._mock_executor_ok()
         with patch("gemma4_agent.domain_tools._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
+             patch("win32gui.GetForegroundWindow", return_value=1), \
+             patch("win32gui.GetWindowText", return_value="WhatsApp"), \
+             patch("win32gui.GetWindowRect", return_value=(100, 100, 1100, 900)):
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "Amor", "text": "hola",
                  "auto_send": False},

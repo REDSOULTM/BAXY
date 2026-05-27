@@ -15,20 +15,31 @@ Movida y consolidada el 2026-05-22 desde múltiples carpetas sueltas
 
 ## `research/` — Investigaciones, por temática
 
-El corazón del archivo: informes de investigación (deep-research, compass
-artifacts, prompts de investigación) agrupados por tema.
+El corazón del archivo: informes de investigación y prompts de research
+agrupados por tema. (Los archivos crípticos `compass_artifact_wf-…` y
+`deep-research-report` fueron renombrados a títulos descriptivos según
+su contenido el 2026-05-22.)
 
-- **`research/router/`** — Router de tools: las 3 investigaciones externas
-  (deep-research-report + 2 compass), las recomendaciones de calibración
-  (TIGHT_CLUSTER band, arquitectura retriever híbrido), el prompt de
-  investigación de routing, los logbooks de rebuild, y el PDF
-  "Optimizing Voice Assistant Tool Router".
-- **`research/voice_stt/`** — STT y pipeline de voz: prompt de research de
-  STT, rediseño del pipeline de voz (prompt + clarifications), camino de
-  training del wake-word custom, y la optimización de faster-whisper
-  small int8 CPU.
-- **`research/streaming/`** — Reproducción de títulos en plataformas de
-  streaming (Netflix/Disney+/HBO Max/Prime): el compass field-guide 2026.
+- **`research/router/`** — Router de tools:
+  - `router_unificado_selectivo_investigacion.md` — investigación del
+    router unificado y selectivo (deep-research).
+  - `router_audit_arquitectura_y_migracion.md` — audit + plan de migración.
+  - `router_plan_migracion_hacia_100.md` — plan técnico para llevar el
+    router a ~100%.
+  - `router_arquitectura_retriever_hibrido_rrf.md` — retriever híbrido
+    BM25+dense con RRF para 65 compound tools.
+  - `router_calibracion_tight_cluster_band.md` — recomendación de la banda
+    TIGHT_CLUSTER.
+  - `PROMPT_FOR_ROUTING_RESEARCH.md`, logbooks de rebuild, y el PDF
+    "Optimizing Voice Assistant Tool Router".
+- **`research/voice_stt/`** — STT y pipeline de voz:
+  - `whisper_small_cpu_spanglish_accuracy.md` — maximizar precisión de
+    Whisper-small en CPU para asistente Spanglish.
+  - `stt_precision_local_analisis.md` — análisis de precisión local de STT.
+  - prompt de research de STT, rediseño del pipeline de voz (prompt +
+    clarifications), camino de training del wake-word custom.
+- **`research/streaming/`** — Reproducción de títulos en plataformas:
+  `streaming_playback_field_guide_2026.md` (Netflix/Disney+/HBO Max/Prime).
   ⚠️ Referenciado por `domain_tools.py` (selectores/URLs).
 - **`research/latency/`** — Presupuesto de latencia: prompt de research +
   "golden eras" de latencia.
@@ -49,8 +60,9 @@ artifacts, prompts de investigación) agrupados por tema.
 
 Reportes de auditoría (`AUDITORIA_2026_05_14`, `NIGHT_AUDIT_2026_05_16`,
 `audit_report`), checklists de merge/consolidación, logs de fixes,
-optimización, smoke, tradeoffs, y las auditorías externas (compass de
-3 bugs voice + AUDIT_REPORT externo + informe de optimización externa).
+optimización, smoke, tradeoffs, y las auditorías externas
+(`review_arquitectonico_3_bugs_voz.md` + AUDIT_REPORT externo + informe
+de optimización externa).
 
 ## `reports/` — Reportes de sesión
 

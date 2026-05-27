@@ -33,38 +33,23 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from gemma4_agent.voice.corrector import FuzzyCorrector
-from gemma4_agent.voice.inventory import build_initial_prompt, get_inventory
+from gemma4_agent.voice.inventory import build_initial_prompt, build_hotwords, get_inventory
 from gemma4_agent.voice.stt import STT, SAMPLE_RATE
 from gemma4_agent.voice.vad import SileroVAD
 
 VOICES_DIR = ROOT / "data" / "stt_eval" / "voices"
 AUDIO_DIR = ROOT / "data" / "stt_eval" / "audio"
 
-# Comandos Spanglish: (texto_a_sintetizar, entidad_inglesa_clave). El wake word
-# se incluye al inicio (como en uso real) y se quita downstream.
-COMMANDS = [
-    ("Hey Gemma, abre Steam", "steam"),
-    ("Hey Gemma, abre Chrome", "chrome"),
-    ("Hey Gemma, abre Spotify", "spotify"),
-    ("Hey Gemma, abre Discord", "discord"),
-    ("Hey Gemma, pon Daredevil en Disney Plus", "disney"),
-    ("Hey Gemma, pon Stranger Things en Netflix", "netflix"),
-    ("Hey Gemma, reproduce The Boys en Prime Video", "prime"),
-    ("Hey Gemma, abre Visual Studio Code", "visual studio code"),
-    ("Hey Gemma, pon una canción de Bad Bunny en Spotify", "spotify"),
-    ("Hey Gemma, abre Counter-Strike en Steam", "steam"),
-    ("Hey Gemma, abre WhatsApp", "whatsapp"),
-    ("Hey Gemma, abre Telegram", "telegram"),
-    ("Hey Gemma, pon House of the Dragon en HBO Max", "hbo"),
-    ("Hey Gemma, abre YouTube", "youtube"),
-    ("Hey Gemma, abre Firefox", "firefox"),
-    # Comandos SIN anglicismo (no deben corromperse)
-    ("Hey Gemma, sube el volumen", None),
-    ("Hey Gemma, qué hora es", None),
-    ("Hey Gemma, pausa la música", None),
-    ("Hey Gemma, cierra la ventana", None),
-    ("Hey Gemma, baja el volumen al mínimo", None),
-]
+# Comandos Spanglish: generados por PLANTILLA (1000+, diversos) en
+# scripts/stt_eval_commands.py. (texto, entidad_inglesa_clave|None).
+from stt_eval_commands import build_commands as _build_commands
+
+# N comandos sintéticos (env STT_EVAL_N, default 1000). Cada uno se sintetiza
+# con UNA voz rotada entre las disponibles -> diversidad de comando Y voz sin
+# explotar el tiempo (1000 clips vs 6000).
+import os as _os
+N_SYNTH = int(_os.environ.get("STT_EVAL_N", "1000"))
+COMMANDS = _build_commands(seed=0, target=N_SYNTH)
 
 
 def _synth(voice, text):
@@ -88,24 +73,39 @@ def _resample(audio, sr_in, sr_out):
 
 
 def generate(regen=False):
+    """Sintetiza 1 voz ROTADA por comando (N clips, no N×voces). Agrupa por voz
+    para cargar cada modelo Piper una sola vez."""
     import scipy.io.wavfile as wavf
     from piper import PiperVoice
     AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     voices = sorted(VOICES_DIR.glob("*.onnx"))
-    manifest = []
-    for vp in voices:
-        vname = vp.stem
-        voice = PiperVoice.load(str(vp))
-        sr_native = int(voice.config.sample_rate)
-        for ci, (text, entity) in enumerate(COMMANDS):
-            wav_path = AUDIO_DIR / f"{vname}__c{ci:02d}.wav"
-            manifest.append((wav_path, text, entity))
+    if not voices:
+        return []
+    # Asignar voz por índice de comando (round-robin) -> diversidad de voz.
+    by_voice: dict[int, list[int]] = {vi: [] for vi in range(len(voices))}
+    for ci in range(len(COMMANDS)):
+        by_voice[ci % len(voices)].append(ci)
+
+    manifest = [None] * len(COMMANDS)
+    for vi, vp in enumerate(voices):
+        cidxs = by_voice[vi]
+        if not cidxs:
+            continue
+        # ¿hace falta cargar la voz? (solo si algún clip falta o regen)
+        need = regen or any(
+            not (AUDIO_DIR / f"{vp.stem}__c{ci:04d}.wav").exists() for ci in cidxs
+        )
+        voice = PiperVoice.load(str(vp)) if need else None
+        for ci in cidxs:
+            text, entity = COMMANDS[ci]
+            wav_path = AUDIO_DIR / f"{vp.stem}__c{ci:04d}.wav"
+            manifest[ci] = (wav_path, text, entity)
             if wav_path.exists() and not regen:
                 continue
             audio, sr = _synth(voice, text)
             audio = _resample(audio, sr, SAMPLE_RATE)
             wavf.write(str(wav_path), SAMPLE_RATE, audio)
-    return manifest
+    return [m for m in manifest if m]
 
 
 def _norm(s):
@@ -174,6 +174,7 @@ def main():
 
     inv = get_inventory(include_discovery=False)
     prompt = build_initial_prompt(inv, lang="es")
+    hotwords = build_hotwords(inv)
     stt = STT(); stt.load()
     vad = SileroVAD(); vad.load()
     corr = FuzzyCorrector(inv)
@@ -194,7 +195,7 @@ def main():
         trimmed = vad.trim_silence(audio)
         if trimmed is not None and trimmed.size >= int(0.08 * SAMPLE_RATE):
             audio = trimmed
-        raw = stt.transcribe(audio, initial_prompt=prompt, language="es")
+        raw = stt.transcribe(audio, initial_prompt=prompt, language="es", hotwords=hotwords)
         stripped = _strip_wake(raw)
         ref = _strip_wake(text)
         hyp_base = stripped

@@ -8490,6 +8490,189 @@ def _verify_chat_header(executor: Executor, contact_name: str) -> bool:
     return any(t in ocr_norm for t in tokens)
 
 
+def _verify_chat_header_status(executor: Executor, contact_name: str) -> str:
+    """Tri-state para el envio WhatsApp.
+
+    Returns:
+        "confirmed"   -> el header contiene el contacto pedido.
+        "wrong_chat"  -> el OCR leyo un header corto y claramente distinto.
+        "unknown"     -> UIA/OCR no dio evidencia suficiente.
+
+    El bool historico _verify_chat_header mezclaba "wrong_chat" con "unknown" y eso
+    rompio WhatsApp: cuando WebView2 no exponia el header, abortaba envios validos.
+    """
+    import re as _re
+
+    def _fold(s: str) -> str:
+        s = unicodedata.normalize("NFKD", s.casefold())
+        s = "".join(ch for ch in s if not unicodedata.combining(ch))
+        return _re.sub(r"[^a-z0-9 ]", " ", s)
+
+    # Do NOT use broad UIA find here. It can match the contact in the search
+    # results/sidebar while the active chat is still the old one. For the final
+    # send gate we need visible header evidence after the search overlay is gone.
+    try:
+        shot = executor("gui", {"action": "locate_text", "text": contact_name})
+    except Exception:
+        return "unknown"
+    if not isinstance(shot, dict):
+        return "unknown"
+    if shot.get("found"):
+        return "confirmed"
+    ocr_text = ""
+    for key in ("text", "ocr_text", "full_text"):
+        v = shot.get(key)
+        if isinstance(v, str) and v.strip():
+            ocr_text = v
+            break
+    if not ocr_text and isinstance(shot.get("matches"), list):
+        ocr_text = " ".join(
+            str(m.get("text", "")) for m in shot["matches"] if isinstance(m, dict))
+    ocr_norm = _fold(ocr_text)
+    target_tokens = [t for t in _fold(contact_name).split() if len(t) >= 3]
+    if not target_tokens or not ocr_norm.strip():
+        return "unknown"
+    if any(t in ocr_norm for t in target_tokens):
+        return "confirmed"
+    # Si OCR devolvio un texto corto, probablemente es el header visible; si no
+    # contiene el contacto pedido, es un chat distinto. Textos largos suelen ser OCR
+    # de toda la pantalla/lista, no evidencia fiable para bloquear.
+    visible_tokens = [t for t in _re.split(r"\s+", ocr_norm) if len(t) >= 2]
+    if visible_tokens and len(visible_tokens) <= 6:
+        return "wrong_chat"
+    return "unknown"
+
+
+def _verify_visible_whatsapp_text_status(executor: Executor, target_text: str) -> str:
+    """Confirma por OCR que un texto reciente quedo visible en WhatsApp."""
+    import re as _re
+
+    def _fold(s: str) -> str:
+        s = unicodedata.normalize("NFKD", s.casefold())
+        s = "".join(ch for ch in s if not unicodedata.combining(ch))
+        return _re.sub(r"[^a-z0-9 ]", " ", s)
+
+    target = (target_text or "").strip()
+    if not target:
+        return "unknown"
+    try:
+        import win32gui  # type: ignore
+        hwnd = win32gui.GetForegroundWindow()
+        if not hwnd:
+            return "unknown"
+        title = win32gui.GetWindowText(hwnd) or ""
+        if "whatsapp" not in title.lower():
+            return "unknown"
+        rect = win32gui.GetWindowRect(hwnd)
+    except Exception:
+        return "unknown"
+
+    try:
+        shot = executor("gui", {"action": "screenshot", "monitor": "all"})
+    except Exception:
+        return "unknown"
+    if not isinstance(shot, dict) or not shot.get("ok") or not shot.get("image_path"):
+        return "unknown"
+
+    try:
+        from PIL import Image
+        from .ops_tools import ocr_find_text
+        image_path = Path(str(shot["image_path"]))
+        img = Image.open(image_path)
+        screen_left = int(shot.get("left", 0))
+        screen_top = int(shot.get("top", 0))
+        left, top, right, bottom = [int(v) for v in rect]
+        box = (
+            max(0, left - screen_left),
+            max(0, top - screen_top),
+            min(img.width, right - screen_left),
+            min(img.height, bottom - screen_top),
+        )
+        if box[2] <= box[0] or box[3] <= box[1]:
+            return "unknown"
+        crop_path = image_path.with_name(image_path.stem + "_whatsapp_crop.png")
+        img.crop(box).save(crop_path)
+        found = ocr_find_text(crop_path, target[:80], lang="spa+eng", min_conf=25)
+    except Exception:
+        return "unknown"
+
+    if not isinstance(found, dict):
+        return "unknown"
+    if found.get("found"):
+        return "confirmed"
+    ocr_text = str(found.get("ocr_text") or found.get("text") or "")
+    if not ocr_text:
+        return "unknown"
+    ocr_norm = _fold(ocr_text)
+    target_tokens = [t for t in _fold(target).split() if len(t) >= 4]
+    if not target_tokens:
+        return "unknown"
+    needed = target_tokens[: min(4, len(target_tokens))]
+    return "confirmed" if all(t in ocr_norm for t in needed) else "unknown"
+
+
+def _capture_whatsapp_chat_area(executor: Executor) -> dict[str, Any] | None:
+    """Captura la zona de mensajes del chat activo, excluyendo sidebar e input."""
+    try:
+        import win32gui  # type: ignore
+        from PIL import Image
+
+        hwnd = win32gui.GetForegroundWindow()
+        if not hwnd:
+            return None
+        title = win32gui.GetWindowText(hwnd) or ""
+        if "whatsapp" not in title.lower():
+            return None
+        left, top, right, bottom = [int(v) for v in win32gui.GetWindowRect(hwnd)]
+        shot = executor("gui", {"action": "screenshot", "monitor": "all"})
+        if not isinstance(shot, dict) or not shot.get("ok") or not shot.get("image_path"):
+            return None
+        img = Image.open(Path(str(shot["image_path"]))).convert("RGB")
+        screen_left = int(shot.get("left", 0))
+        screen_top = int(shot.get("top", 0))
+        w = max(1, right - left)
+        h = max(1, bottom - top)
+        # WhatsApp desktop: sidebar a la izquierda, header arriba, composer abajo.
+        box = (
+            max(0, int(left + w * 0.35) - screen_left),
+            max(0, int(top + h * 0.14) - screen_top),
+            min(img.width, int(right - w * 0.02) - screen_left),
+            min(img.height, int(bottom - h * 0.13) - screen_top),
+        )
+        if box[2] <= box[0] or box[3] <= box[1]:
+            return None
+        crop = img.crop(box)
+        return {"image": crop, "box": box}
+    except Exception:
+        return None
+
+
+def _whatsapp_chat_area_changed(
+    before: dict[str, Any] | None,
+    after: dict[str, Any] | None,
+) -> bool:
+    try:
+        from PIL import ImageChops, ImageStat
+
+        if not before or not after:
+            return False
+        a = before.get("image")
+        b = after.get("image")
+        if a is None or b is None:
+            return False
+        if a.size != b.size:
+            b = b.resize(a.size)
+        diff = ImageChops.difference(a.convert("RGB"), b.convert("RGB"))
+        bbox = diff.getbbox()
+        if bbox is None:
+            return False
+        area_ratio = ((bbox[2] - bbox[0]) * (bbox[3] - bbox[1])) / max(1, a.size[0] * a.size[1])
+        mean_delta = sum(ImageStat.Stat(diff).mean) / 3.0
+        return area_ratio >= 0.01 and mean_delta >= 0.35
+    except Exception:
+        return False
+
+
 def _whatsapp_send_via_gui_search(
     executor: Executor,
     contact_name: str,
@@ -8497,14 +8680,14 @@ def _whatsapp_send_via_gui_search(
     wait_seconds: float,
     auto_send: bool,
 ) -> dict[str, Any]:
-    """Abre WhatsApp generico, busca el contacto por nombre via Ctrl+F,
+    """Abre WhatsApp generico, busca el contacto por nombre via Ctrl+N,
     selecciona el primer match, escribe el mensaje y opcionalmente envia.
 
     Flujo (todos los pasos requieren focus verification antes de teclear):
       1. Dispatch whatsapp:// (sin args -> abre la app generica).
       2. Wait wait_seconds para que cargue.
       3. Focus WhatsApp + verify active window title.
-      4. Ctrl+F (abre el campo de busqueda) o type direct si el campo ya esta.
+      4. Ctrl+N (abre nuevo chat / selector global de contacto).
       5. Type contact_name.
       6. Wait ~1s (deja que filtre los resultados).
       7. Enter (selecciona el primer chat).
@@ -8522,27 +8705,152 @@ def _whatsapp_send_via_gui_search(
     import time as _time
 
     steps: list[str] = []
+    action_results: list[dict[str, Any]] = []
 
-    def _focus_and_verify() -> bool:
+    def _compact_result(result: Any) -> dict[str, Any]:
+        if not isinstance(result, dict):
+            return {"type": type(result).__name__}
+        keep = (
+            "ok", "error", "reason", "status", "completion_status", "verified",
+            "state_changed", "state_verify", "method", "keys", "chars",
+            "exit_code", "events", "found", "source", "action",
+        )
+        compact = {k: result.get(k) for k in keep if k in result}
+        nested = result.get("result")
+        if isinstance(nested, dict):
+            compact["result"] = {
+                k: nested.get(k)
+                for k in ("ok", "error", "action", "title", "process", "pid", "hwnd")
+                if k in nested
+            }
+        return compact
+
+    def _result_failure(label: str, result: Any, *, require_effect: bool = False) -> str | None:
+        if not isinstance(result, dict):
+            return f"{label} returned non-dict result"
+        if result.get("ok") is not True:
+            return str(result.get("error") or result.get("reason") or "ok was not true")
+        nested = result.get("result")
+        if isinstance(nested, dict) and nested.get("ok") is False:
+            return str(nested.get("error") or "nested result ok=false")
+        if result.get("found") is False:
+            return str(result.get("error") or "target window/control was not found")
+        if require_effect and result.get("state_changed") is False:
+            return str(result.get("state_verify") or "action caused no visible state change")
+        events = result.get("events")
+        if isinstance(events, (int, float)) and events <= 0:
+            return "input injector reported zero events"
+        exit_code = result.get("exit_code")
+        if isinstance(exit_code, int) and exit_code != 0:
+            return f"input command returned exit_code={exit_code}"
+        return None
+
+    def _abort(
+        label: str,
+        reason: str,
+        *,
+        chat_opened: bool = False,
+        result: Any = None,
+        extra: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "sent": False,
+            "chat_opened": chat_opened,
+            "search_term": contact_name,
+            "abort_reason": f"{label}: {reason}",
+            "steps": steps,
+            "physical_actions_ok": False,
+            "gui_action_results": action_results,
+        }
+        if result is not None:
+            payload["failed_step"] = label
+            payload["failed_result"] = _compact_result(result)
+        if extra:
+            payload.update(extra)
+        return payload
+
+    def _checked_executor(
+        tool: str,
+        args: dict[str, Any],
+        label: str,
+        *,
+        require_effect: bool = False,
+    ) -> tuple[dict[str, Any] | None, str | None]:
+        if tool == "gui" and str(args.get("action") or "") in {
+            "click", "double_click", "right_click", "type", "type_into",
+            "click_button", "keypress", "hotkey", "scroll", "drag",
+        }:
+            _wait_until_not_user_active()
+        try:
+            result = executor(tool, args)
+        except Exception as exc:
+            return None, f"{type(exc).__name__}: {exc}"
+        failure = _result_failure(label, result, require_effect=require_effect)
+        if failure:
+            return result, failure
+        action_results.append({"step": label, "tool": tool, **_compact_result(result)})
+        return result, None
+
+    def _focus_and_verify() -> tuple[bool, str | None, Any]:
         # window.focus ahora hace restore + maximize si la ventana es chica
         # (regla universal aplicada en tools.py:window_control). Damos grace
         # de 0.5s para que el maximize tome efecto antes de verificar.
+        last_active: Any = None
+        last_title = ""
+        for attempt in range(3):
+            focus, abort = _checked_executor(
+                "window", {"action": "focus", "title": "WhatsApp"}, "focus WhatsApp")
+            if abort is not None:
+                return False, abort, focus
+            _time.sleep(0.5 + 0.25 * attempt)
+            active, abort = _checked_executor("window", {"action": "active"}, "read active window")
+            if abort is not None:
+                return False, abort, active
+            last_active = active
+            active_title = ""
+            a = active.get("active") if isinstance(active, dict) else None
+            if isinstance(a, dict):
+                active_title = str(a.get("title") or "")
+            elif isinstance(active, dict):
+                active_title = str(active.get("title") or "")
+            last_title = active_title
+            if "whatsapp" in active_title.lower():
+                return True, None, active
+        return False, f"active window is not WhatsApp: {last_title!r}", last_active
+
+    def _focus_compose_box() -> tuple[dict[str, Any] | None, str | None]:
+        """Click en la caja de mensaje del chat activo sin depender del idioma UI."""
         try:
-            executor("window", {"action": "focus", "title": "WhatsApp"})
-        except Exception:
-            return False
-        _time.sleep(0.5)
+            import win32gui  # type: ignore
+            hwnd = win32gui.GetForegroundWindow()
+            if not hwnd:
+                return None, "no foreground window"
+            title = win32gui.GetWindowText(hwnd) or ""
+            if "whatsapp" not in title.lower():
+                return None, f"active window is not WhatsApp: {title!r}"
+            left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+        except Exception as exc:
+            return None, f"could not locate WhatsApp compose box: {exc}"
+        width = max(1, right - left)
+        height = max(1, bottom - top)
+        x = int(left + width * 0.72)
+        y = int(bottom - max(44, min(72, height * 0.05)))
+        return _checked_executor(
+            "gui", {"action": "click", "x": x, "y": y}, "focus compose box")
+
+    def _wait_until_not_user_active(timeout_s: float = 3.0) -> None:
         try:
-            active = executor("window", {"action": "active"})
+            from . import gui_safety
         except Exception:
-            return False
-        active_title = ""
-        a = active.get("active")
-        if isinstance(a, dict):
-            active_title = str(a.get("title") or "")
-        else:
-            active_title = str(active.get("title") or "")
-        return "whatsapp" in active_title.lower()
+            return
+        deadline = _time.monotonic() + max(0.0, timeout_s)
+        while _time.monotonic() < deadline:
+            try:
+                if not gui_safety.user_is_active():
+                    return
+            except Exception:
+                return
+            _time.sleep(0.2)
 
     # 1. Abrir WhatsApp (deeplink generico).
     try:
@@ -8554,106 +8862,151 @@ def _whatsapp_send_via_gui_search(
         return {
             "sent": False, "chat_opened": False, "search_term": contact_name,
             "abort_reason": f"failed to launch WhatsApp: {exc}", "steps": steps,
+            "physical_actions_ok": False, "gui_action_results": action_results,
         }
     steps.append("dispatched_deeplink")
     _time.sleep(max(0.5, wait_seconds))
 
     # 2. Focus + verify (incluye restore+maximize implicito).
-    if not _focus_and_verify():
-        return {
-            "sent": False, "chat_opened": False, "search_term": contact_name,
-            "abort_reason": "could not focus WhatsApp window after launch",
-            "steps": steps,
-        }
+    focused, reason, result = _focus_and_verify()
+    if not focused:
+        return _abort(
+            "focus WhatsApp after launch",
+            reason or "could not focus WhatsApp window after launch",
+            result=result,
+        )
     steps.append("focused")
     # Extra grace tras maximize — el window manager necesita repaint.
     _time.sleep(0.4)
 
-    # 3. Ctrl+F para abrir busqueda. WhatsApp Desktop usa Ctrl+F.
-    # IMPORTANTE: pasar keys="^f" (SendKeys syntax) o keys="ctrl+f" que el
-    # translator convierte. Antes pasabamos hotkey="ctrl+f" pero el handler
-    # no traducia "ctrl+f" -> "^f" y SendKeys lo enviaba LITERAL como texto.
-    try:
-        executor("gui", {"action": "keypress", "keys": "ctrl+f"})
-    except Exception as exc:
-        return {
-            "sent": False, "chat_opened": False, "search_term": contact_name,
-            "abort_reason": f"hotkey ctrl+f failed: {exc}", "steps": steps,
-        }
-    steps.append("opened_search")
+    # 3. Ctrl+N abre el selector global de nuevo chat. Ctrl+F puede quedarse en
+    # "buscar dentro del chat actual", lo que produjo falsos positivos: se
+    # tipeaba el contacto en la busqueda del chat viejo y luego el mensaje no
+    # salia al destinatario pedido.
+    result, reason = _checked_executor(
+        "gui",
+        {
+            "action": "keypress", "keys": "ctrl+n",
+            "window": "WhatsApp", "method": "sendkeys",
+        },
+        "open new chat search",
+    )
+    if reason:
+        return _abort("open new chat search", reason, result=result)
+    steps.append("opened_new_chat_search")
     _time.sleep(0.6)
 
+    result, reason = _checked_executor(
+        "gui",
+        {
+            "action": "keypress", "keys": "ctrl+a",
+            "window": "WhatsApp", "method": "sendkeys",
+        },
+        "select contact search text",
+    )
+    if reason:
+        return _abort("select contact search text", reason, result=result)
+    steps.append("selected_contact_search_text")
+    _time.sleep(0.1)
+
     # 4. Type del nombre del contacto.
-    if not _focus_and_verify():
-        return {
-            "sent": False, "chat_opened": False, "search_term": contact_name,
-            "abort_reason": "lost WhatsApp focus before typing contact name",
-            "steps": steps,
-        }
-    try:
-        executor("gui", {"action": "type", "text": contact_name})
-    except Exception as exc:
-        return {
-            "sent": False, "chat_opened": False, "search_term": contact_name,
-            "abort_reason": f"type contact name failed: {exc}", "steps": steps,
-        }
+    focused, reason, result = _focus_and_verify()
+    if not focused:
+        return _abort(
+            "focus before typing contact name",
+            reason or "lost WhatsApp focus before typing contact name",
+            result=result,
+        )
+    result, reason = _checked_executor(
+        "gui",
+        {
+            "action": "type", "text": contact_name,
+            "window": "WhatsApp", "method": "sendkeys",
+        },
+        "type contact name",
+    )
+    if reason:
+        return _abort("type contact name", reason, result=result)
     steps.append("typed_contact_name")
     _time.sleep(1.0)  # tiempo para que WhatsApp filtre
 
     # 5. Enter para seleccionar primer resultado y entrar al chat.
-    if not _focus_and_verify():
-        return {
-            "sent": False, "chat_opened": False, "search_term": contact_name,
-            "abort_reason": "lost WhatsApp focus before selecting contact",
-            "steps": steps,
-        }
-    try:
-        executor("gui", {"action": "keypress", "keys": "enter"})
-    except Exception as exc:
-        return {
-            "sent": False, "chat_opened": False, "search_term": contact_name,
-            "abort_reason": f"enter to select contact failed: {exc}", "steps": steps,
-        }
+    focused, reason, result = _focus_and_verify()
+    if not focused:
+        return _abort(
+            "focus before selecting contact",
+            reason or "lost WhatsApp focus before selecting contact",
+            result=result,
+        )
+    result, reason = _checked_executor(
+        "gui",
+        {
+            "action": "keypress", "keys": "enter",
+            "window": "WhatsApp", "method": "sendkeys",
+        },
+        "select first contact match",
+    )
+    if reason:
+        return _abort("select first contact match", reason, result=result)
     steps.append("selected_first_match")
     _time.sleep(0.8)  # entrar al chat
 
-    # 5b. VERIFICAR el chat abierto (bug #847b: el Enter "a ciegas" abría el chat
-    # equivocado — "mamá" terminó mandando al grupo "Música"). Antes de escribir
-    # NADA, confirmar por OCR que el nombre del contacto aparece en el header del
-    # chat. Si NO se puede verificar, ABORTAR el envío (no escribir en el chat
-    # equivocado — un mensaje al destinatario errado es un daño real e
-    # irreversible). El chat queda abierto para que el usuario revise.
-    chat_verified = _verify_chat_header(executor, contact_name)
+    # Enter normalmente cierra el selector de nuevo chat. No mandamos Escape aqui:
+    # necesitamos conservar el presupuesto fisico para enfocar la caja de mensaje.
+
+    # 5b. Verificacion hard gate. Nunca escribir/enviar si no vemos evidencia
+    # del header del chat pedido. Antes "unknown" seguia adelante y podia marcar
+    # sent=True aunque el texto hubiera quedado en un buscador o en otro chat.
+    chat_status = _verify_chat_header_status(executor, contact_name)
+    chat_verified = chat_status == "confirmed"
     steps.append(f"chat_header_verified:{chat_verified}")
-    if not chat_verified:
+    steps.append(f"chat_header_status:{chat_status}")
+    if chat_status != "confirmed":
         return {
-            "sent": False, "chat_opened": True, "search_term": contact_name,
-            "abort_reason": (f"no pude confirmar que el chat abierto es de "
-                             f"'{contact_name}' — no escribo para no mandar al "
-                             f"chat equivocado. Revisá el chat y mandá vos."),
-            "steps": steps, "chat_verified": False,
+            "sent": False,
+            "chat_opened": chat_status == "wrong_chat",
+            "search_term": contact_name,
+            "abort_reason": (
+                f"no pude confirmar que el chat abierto es de '{contact_name}' "
+                "despues de buscarlo — no escribo para no mandar al chat equivocado."
+            ),
+            "steps": steps, "chat_verified": False, "chat_header_status": chat_status,
+            "physical_actions_ok": False, "gui_action_results": action_results,
         }
+    chat_area_before_send = _capture_whatsapp_chat_area(executor)
 
     # 6. Type del mensaje (focus moved al input del chat).
     if not text:
         # open_chat: solo queriamos llegar al chat, no mandar.
         return {
             "sent": False, "chat_opened": True, "search_term": contact_name,
-            "abort_reason": None, "steps": steps,
+            "abort_reason": None, "steps": steps, "chat_verified": chat_verified,
+            "chat_header_status": chat_status, "physical_actions_ok": True,
+            "gui_action_results": action_results,
         }
-    if not _focus_and_verify():
-        return {
-            "sent": False, "chat_opened": True, "search_term": contact_name,
-            "abort_reason": "lost WhatsApp focus before typing message",
-            "steps": steps,
-        }
-    try:
-        executor("gui", {"action": "type", "text": text})
-    except Exception as exc:
-        return {
-            "sent": False, "chat_opened": True, "search_term": contact_name,
-            "abort_reason": f"type message failed: {exc}", "steps": steps,
-        }
+    focused, reason, result = _focus_and_verify()
+    if not focused:
+        return _abort(
+            "focus before typing message",
+            reason or "lost WhatsApp focus before typing message",
+            chat_opened=True,
+            result=result,
+        )
+    result, reason = _focus_compose_box()
+    if reason:
+        return _abort("focus compose box", reason, chat_opened=True, result=result)
+    steps.append("focused_compose_box")
+    _time.sleep(0.2)
+    result, reason = _checked_executor(
+        "gui",
+        {
+            "action": "type", "text": text,
+            "window": "WhatsApp", "method": "sendkeys",
+        },
+        "type message",
+    )
+    if reason:
+        return _abort("type message", reason, chat_opened=True, result=result)
     steps.append("typed_message")
     _time.sleep(0.4)
 
@@ -8661,25 +9014,56 @@ def _whatsapp_send_via_gui_search(
     if not auto_send:
         return {
             "sent": False, "chat_opened": True, "search_term": contact_name,
-            "abort_reason": None, "steps": steps,
+            "abort_reason": None, "steps": steps, "chat_verified": chat_verified,
+            "chat_header_status": chat_status, "physical_actions_ok": True,
+            "gui_action_results": action_results,
         }
-    if not _focus_and_verify():
-        return {
-            "sent": False, "chat_opened": True, "search_term": contact_name,
-            "abort_reason": "lost WhatsApp focus before sending",
-            "steps": steps,
-        }
-    try:
-        executor("gui", {"action": "keypress", "keys": "enter"})
-    except Exception as exc:
-        return {
-            "sent": False, "chat_opened": True, "search_term": contact_name,
-            "abort_reason": f"enter to send failed: {exc}", "steps": steps,
-        }
+    focused, reason, result = _focus_and_verify()
+    if not focused:
+        return _abort(
+            "focus before sending",
+            reason or "lost WhatsApp focus before sending",
+            chat_opened=True,
+            result=result,
+        )
+    result, reason = _checked_executor(
+        "gui",
+        {
+            "action": "keypress", "keys": "enter",
+            "window": "WhatsApp", "method": "sendkeys",
+        },
+        "send message",
+    )
+    if reason:
+        return _abort("send message", reason, chat_opened=True, result=result)
     steps.append("sent_enter")
+    _time.sleep(0.8)
+    chat_area_after_send = _capture_whatsapp_chat_area(executor)
+    visual_changed = _whatsapp_chat_area_changed(chat_area_before_send, chat_area_after_send)
+    steps.append(f"sent_message_area_changed:{visual_changed}")
+    message_status = _verify_visible_whatsapp_text_status(executor, text)
+    steps.append(f"sent_message_visible:{message_status}")
+    if message_status != "confirmed" and not visual_changed:
+        return {
+            "sent": False, "chat_opened": True, "search_term": contact_name,
+            "abort_reason": (
+                "no pude verificar en pantalla que el mensaje enviado aparezca "
+                "en el chat despues de presionar Enter."
+            ),
+            "steps": steps, "chat_verified": chat_verified,
+            "chat_header_status": chat_status,
+            "sent_message_visible_status": message_status,
+            "sent_message_area_changed": visual_changed,
+            "physical_actions_ok": False,
+            "gui_action_results": action_results,
+        }
     return {
         "sent": True, "chat_opened": True, "search_term": contact_name,
-        "abort_reason": None, "steps": steps,
+        "abort_reason": None, "steps": steps, "chat_verified": chat_verified,
+        "chat_header_status": chat_status, "physical_actions_ok": True,
+        "sent_message_visible_status": message_status,
+        "sent_message_area_changed": visual_changed,
+        "gui_action_results": action_results,
     }
 
 
@@ -8888,6 +9272,7 @@ def whatsapp_tool(
             sent=sent,
             chat_opened=chat_opened,
             auto_send_attempted=auto_send,
+            physical_actions_ok=bool(gui_result.get("physical_actions_ok")),
             gui_search_info=gui_result,
             verified=sent,
             status="dispatched" if sent else "attempted",
