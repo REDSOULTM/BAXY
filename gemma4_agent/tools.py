@@ -1954,6 +1954,26 @@ class ToolRegistry:
         browser = str(args.get("browser") or "").strip()
         if action == "open":
             url = str(args.get("url") or "").strip() or query
+            # SITE-NAME -> RESOLVER POR BÚSQUEDA (2026-05-27): "ve a la página de
+            # pivigames" da un NOMBRE de sitio, no una URL. Antes esto abría
+            # "https://pivigames" (host inexistente) o el 4B caía en browser.search
+            # y se quedaba en los resultados. Si el target es una palabra suelta
+            # (sin punto ni esquema), lo resolvemos con una búsqueda REAL y abrimos
+            # el primer resultado — NO adivinamos el TLD (CLAUDE.md: resolver por
+            # lookup, no por intuición). Una URL/dominio explícito sigue directo.
+            if url and not url.startswith(("http://", "https://")) and "." not in url \
+                    and "/" not in url and len(url) >= 3 and len(url.split()) <= 4:
+                resolved = self._resolve_site_by_search(url)
+                if resolved:
+                    res = self.web_open_url({"url": resolved})
+                    res.update(
+                        resolved_from_name=url, resolved_url=resolved,
+                        method="search_top_result",
+                        note=f"'{url}' no es un dominio; resolví por búsqueda a {resolved} y lo abrí.",
+                    )
+                    return res
+                # sin resultado fiable -> caer al flujo normal (que dará host inválido
+                # y un error honesto, mejor que abrir algo equivocado).
             if not url:
                 # LAUNCH-THE-APP fallback: el modelo chico (E4B-Q4) interpreta
                 # "lanzá Chrome" / "abrí Firefox" como browser.open con
@@ -4083,6 +4103,28 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
             return _err("path does not exist", path=str(path))
         os.startfile(str(path.resolve()))  # type: ignore[attr-defined]
         return _ok(path=str(path.resolve()))
+
+    def _resolve_site_by_search(self, name: str) -> str | None:
+        """Resuelve el NOMBRE de un sitio ('pivigames') a una URL real vía búsqueda
+        web y devuelve el primer resultado. None si la búsqueda no da nada fiable.
+        NO adivina el TLD — usa un lookup real (CLAUDE.md). El homepage del primer
+        resultado suele ser el sitio que el usuario quiere."""
+        name = (name or "").strip()
+        if not name:
+            return None
+        try:
+            r = self.web_search({"query": name, "limit": 5})
+        except Exception:
+            return None
+        if not isinstance(r, dict) or not r.get("ok"):
+            return None
+        results = r.get("results") or []
+        if not results:
+            return None
+        top_url = str((results[0] or {}).get("url") or "").strip()
+        if not top_url.startswith(("http://", "https://")):
+            return None
+        return top_url
 
     def web_open_url(self, args: dict[str, Any]) -> dict[str, Any]:
         url = str(args.get("url", "")).strip()
