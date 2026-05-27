@@ -3515,3 +3515,18 @@
 {"tool": "computer_use", "q": "escribí este texto en el editor abierto"}
 {"tool": "computer_use", "q": "operá la app que está abierta"}
 {"tool": "computer_use", "q": "in opera go to reddit.com"}
+{"tool": "device_settings", "q": "conectate a la red wifi de casa"}
+{"tool": "device_settings", "q": "conectá a la red de la familia"}
+{"tool": "device_settings", "q": "conéctame al wifi de la oficina"}
+{"tool": "device_settings", "q": "cambiá a la otra red wifi"}
+{"tool": "device_settings", "q": "unite a la red wifi del vecino con esta clave"}
+{"tool": "device_settings", "q": "connect to the home wifi network"}
+{"tool": "device_settings", "q": "join the wifi called Starbucks"}
+{"tool": "device_settings", "q": "switch to my phone hotspot network"}
+{"tool": "device_settings", "q": "connect me to the office network"}
+{"tool": "device_settings", "q": "conecte-se à rede wifi de casa"}
+{"tool": "device_settings", "q": "connecte-toi au réseau wifi de la maison"}
+{"tool": "device_settings", "q": "verbinde dich mit dem WLAN-Netzwerk zu Hause"}
+{"tool": "device_settings", "q": "collegati alla rete wifi di casa"}
+{"tool": "device_settings", "q": "conectate a internet por wifi"}
+{"tool": "device_settings", "q": "ponme en la red de la casa"}

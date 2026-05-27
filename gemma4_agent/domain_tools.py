@@ -2871,6 +2871,22 @@ def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     config so they can be rolled back via state.rollback.
     """
     action = str(args.get("action") or "status").casefold()
+    # DELEGACIÓN wifi-connect (2026-05-27): el modelo chico a veces rutea
+    # "conectá a la red X" a `network` (diagnóstico) en vez de device_settings
+    # (que tiene wifi_connect). En vez de fallar/ignorar — que deja al usuario sin
+    # manos sin conexión — garantizamos la precondición delegando a la conexión
+    # WiFi real (mismo patrón que browser.open->app.open). Detecta intención de
+    # UNIRSE a una red: acción connect/join/wifi*, o un name/ssid presente (lo que
+    # el modelo nunca manda para un ping/dns). Va ANTES del status default para
+    # que `network {name: 'RV'}` (sin action) también se resuelva.
+    _connectish = action in {
+        "connect", "wifi_connect", "join", "wifi", "wifi_join", "connect_wifi"}
+    _has_target = bool(str(args.get("name") or args.get("ssid") or "").strip())
+    if _connectish or (_has_target and action in {"", "status"}):
+        res = _device_wifi_connect(args)
+        if isinstance(res, dict):
+            res.setdefault("delegated_from", "network." + (action or "connect"))
+        return res
     if action == "status":
         return _ok(
             powershell=bool(shutil.which("powershell")),
@@ -4537,28 +4553,200 @@ def _device_wifi_scan() -> dict[str, Any]:
     return _ok(networks=networks[:50], count=len(networks))
 
 
+# Palabras de relleno que el usuario/4B mete alrededor del NOMBRE de la red
+# ("conectame a la red wifi de la familia" -> el nombre es 'familia'). NO es una
+# keyword-list de intención: son artículos + los términos técnicos genéricos
+# ("wifi"/"red"/"network"/"wlan", multilingüe) que NUNCA son parte del SSID real.
+# Mismo espíritu que _APP_NAME_STOPWORDS del resolver de apps. Se quitan SOLO del
+# lado del dictado para extraer el nombre; el SSID real se respeta tal cual.
+_WIFI_FILLER = frozenset({
+    "wifi", "wi-fi", "wlan", "red", "redes", "network", "rede", "réseau",
+    "reseau", "internet", "conexion", "conexión", "connection",
+    "a", "al", "the", "de", "del", "la", "el", "los", "las", "un", "una",
+    "to", "me", "mi", "tu", "su", "of", "and", "y", "en", "on", "the",
+})
+
+
+def _wifi_match_score(query: str, candidate: str) -> float:
+    """Puntaje 0..1 de cuán bien `query` (lo que dijo el usuario, p.ej. 'la de la
+    familia') matchea un nombre de red `candidate` ('Familia Prueba'). NO es una
+    lista de keywords de intención: mide la FORMA del nombre contra el dictado, con
+    difflib — el mismo idioma de matching que usa el resolver de apps (tools.py).
+    Robusto a mayúsculas, a relleno alrededor del nombre, a que el usuario diga
+    solo una parte, y a typos de voz."""
+    import difflib
+    q_raw = (query or "").strip().casefold()
+    c = (candidate or "").strip().casefold()
+    if not q_raw or not c:
+        return 0.0
+    if q_raw == c:
+        return 1.0
+    # quitar relleno del DICTADO para quedarnos con el nombre real
+    # ("la red wifi de la familia" -> "familia"). El candidato (SSID) NO se toca.
+    q_core_tokens = [t for t in re.split(r"[\s_\-.]+", q_raw)
+                     if t and t not in _WIFI_FILLER]
+    q = " ".join(q_core_tokens) if q_core_tokens else q_raw
+    if q == c:
+        return 1.0
+    # substring: el usuario casi siempre dice un PEDAZO del nombre real
+    # ("movistar" -> "MOVISTAR_PLUS_X0", "familia" -> "Familia Prueba").
+    if q in c or c in q:
+        shorter, longer = (q, c) if len(q) <= len(c) else (c, q)
+        # GUARD anti-falso-positivo: un substring MUY corto ("ev", 2 chars) cae
+        # dentro de muchas palabras largas ("nuevared" contiene "ev") sin ser un
+        # match real. Exigimos que el trozo común sea sustancial (≥4 chars) o
+        # caiga en un BORDE de token (no embebido en medio de otra palabra). No
+        # es una keyword-list: es la FORMA del solapamiento.
+        on_boundary = bool(re.search(
+            r"(?:^|[\s_\-.])" + re.escape(shorter) + r"(?:$|[\s_\-.])", longer))
+        if len(shorter) >= 4 or on_boundary:
+            # base alta para que un substring claro gane al ruido; el desempate
+            # entre varios ("vtr" en 3 redes VTR) lo maneja el caller.
+            return 0.86
+        # substring corto y embebido -> dejar que el resto de heurísticas decidan
+        # (cae al overlap de tokens / fuzzy abajo).
+    # overlap de tokens (orden-independiente): "casa familia" ~ "Familia Prueba".
+    # Ponderado por cobertura de AMBOS lados (Jaccard-ish): un solo token genérico
+    # compartido en una frase larga ('...esta red xyz' vs 'RED_LISTA') NO debe
+    # alcanzar el umbral fuerte — sería un falso positivo que conecta a la red
+    # equivocada. Exigimos que el match cubra una fracción real del candidato Y
+    # del query.
+    q_tokens = {t for t in re.split(r"[\s_\-.]+", q) if len(t) >= 3}
+    c_tokens = {t for t in re.split(r"[\s_\-.]+", c) if len(t) >= 3}
+    if q_tokens and c_tokens:
+        inter = q_tokens & c_tokens
+        if inter:
+            cov_q = len(inter) / len(q_tokens)   # cuánto del dictado se explica
+            cov_c = len(inter) / len(c_tokens)   # cuánto del nombre real se cubre
+            # un token suelto de muchos (p.ej. 'wifi'/'red', genéricos) -> coverage
+            # baja -> score por debajo de 0.6 (el umbral fuerte). Esto evita falsos
+            # positivos por una palabra común SIN una stoplist hardcoded: lo que
+            # decide es la FORMA (qué fracción de ambos nombres se cubre), no qué
+            # palabra es. Dos tokens que cubren ambos lados -> score alto.
+            return 0.4 + 0.5 * min(cov_q, cov_c)
+    # fuzzy por frase completa (typos de voz). Guard de 1ª letra en token corto
+    # (como en el resolver de apps): "teams"~"steam" es anagrama, no typo.
+    full = difflib.SequenceMatcher(None, q, c).ratio()
+    if full >= 0.72:
+        return min(0.8, full)
+    return 0.0
+
+
+def _resolve_wifi_target(name: str) -> dict[str, Any]:
+    """Resuelve el nombre dicho por el usuario a un nombre de red REAL usando el
+    ESTADO DEL SO (perfiles guardados + SSIDs visibles vía netsh) — no keywords.
+    Devuelve {'resolved': <nombre exacto>, 'source': 'profile'|'ssid', 'exact':
+    bool} si hay un ganador claro; {'ambiguous': [...]} si hay varios candidatos
+    parejos (el caller pregunta, no adivina); {'none': True, ...} si nada matchea.
+    Prefiere PERFILES GUARDADOS (el usuario ya se conectó: tiene credenciales)
+    sobre SSIDs visibles sin perfil."""
+    profiles = _device_wifi_profiles().get("profiles", []) or []
+    # 1) match exacto (incluyendo case-insensitive) sobre perfiles guardados
+    if name in profiles:
+        return {"resolved": name, "source": "profile", "exact": True}
+    ci = [p for p in profiles if p.casefold() == name.casefold()]
+    if ci:
+        return {"resolved": ci[0], "source": "profile", "exact": True}
+    # 2) fuzzy sobre perfiles guardados
+    scored = sorted(
+        ((_wifi_match_score(name, p), p) for p in profiles),
+        key=lambda t: t[0], reverse=True,
+    )
+    strong = [(s, p) for s, p in scored if s >= 0.6]
+    if len(strong) == 1:
+        return {"resolved": strong[0][1], "source": "profile", "exact": False,
+                "score": round(strong[0][0], 2)}
+    if len(strong) >= 2:
+        # ¿hay un ganador destacado (margen claro sobre el 2º)?
+        if strong[0][0] - strong[1][0] >= 0.2:
+            return {"resolved": strong[0][1], "source": "profile", "exact": False,
+                    "score": round(strong[0][0], 2)}
+        return {"ambiguous": [p for _, p in strong[:6]], "source": "profile"}
+    # 3) sin perfil que matchee: ¿hay un SSID VISIBLE que matchee? (red nueva,
+    # sin credenciales guardadas -> necesitará password, pero al menos confirmamos
+    # que existe y devolvemos su nombre exacto para el flujo de add_profile).
+    try:
+        nets = _device_wifi_scan().get("networks", []) or []
+        ssids = [str(n.get("ssid") or "").strip() for n in nets]
+        ssids = [s for s in ssids if s]
+    except Exception:
+        ssids = []
+    s_scored = sorted(
+        ((_wifi_match_score(name, s), s) for s in ssids),
+        key=lambda t: t[0], reverse=True,
+    )
+    s_strong = [(sc, s) for sc, s in s_scored if sc >= 0.6]
+    if len(s_strong) == 1 or (len(s_strong) >= 2 and s_strong[0][0] - s_strong[1][0] >= 0.2):
+        return {"resolved": s_strong[0][1], "source": "ssid", "exact": False,
+                "score": round(s_strong[0][0], 2)}
+    if len(s_strong) >= 2:
+        return {"ambiguous": [s for _, s in s_strong[:6]], "source": "ssid"}
+    return {"none": True, "profiles": profiles[:30], "visible_ssids": ssids[:30]}
+
+
 def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
     name = str(args.get("name") or args.get("ssid") or args.get("profile") or "").strip()
     if not name:
         return _err("missing profile name; pass name=<existing profile>")
     password = str(args.get("password") or args.get("key") or "").strip()
-    profiles = _device_wifi_profiles().get("profiles", [])
     created = None
-    if name not in profiles:
-        # If the caller provided a password, auto-create a WPA2-Personal profile.
+
+    # RESOLUCIÓN POR ESTADO DEL SO (2026-05-27, usuario sin manos): el usuario
+    # dice el nombre de la red como lo recuerda ('la de la familia', 'vtr'), no
+    # el SSID exacto guardado ('Familia Prueba'). Antes exigíamos match exacto
+    # -> "profile not found". Ahora resolvemos contra perfiles guardados + SSIDs
+    # visibles (netsh), con desambiguación honesta si hay varios. NO keywords.
+    target = _resolve_wifi_target(name)
+    if target.get("ambiguous"):
+        cands = target["ambiguous"]
+        return _err(
+            f"varias redes coinciden con '{name}'; especificá cuál",
+            status="needs_user",
+            ambiguous_matches=cands,
+            hint="repetí el nombre más específico (p.ej. el nombre completo de la red)",
+        )
+    if target.get("resolved"):
+        resolved = target["resolved"]
+        if target.get("source") == "ssid" and not target.get("exact"):
+            # matchea un SSID visible pero NO hay perfil guardado: hace falta
+            # credencial. Si vino password, creamos el perfil; si no, pedimos.
+            if password:
+                created = _device_wifi_add_profile({
+                    "ssid": resolved, "password": password,
+                    "auto_connect": bool(args.get("auto_connect", True)),
+                    "all_users": bool(args.get("all_users", False))})
+                if not created.get("ok"):
+                    return created
+            else:
+                return _err(
+                    f"'{resolved}' está visible pero no tiene perfil guardado; "
+                    "necesito la contraseña para conectarme",
+                    status="needs_user", matched_ssid=resolved,
+                )
+        name = resolved  # nombre real para netsh connect
+    else:
+        # nada matcheó. Si vino password, tratamos `name` como SSID nuevo a crear.
         if password:
-            created = _device_wifi_add_profile({"ssid": name, "password": password, "auto_connect": bool(args.get("auto_connect", True)), "all_users": bool(args.get("all_users", False))})
+            created = _device_wifi_add_profile({
+                "ssid": name, "password": password,
+                "auto_connect": bool(args.get("auto_connect", True)),
+                "all_users": bool(args.get("all_users", False))})
             if not created.get("ok"):
                 return created
         else:
             return _err(
-                f"profile '{name}' not found; pass password to auto-create a WPA2-Personal profile, or use wifi_add_profile first",
+                f"no encontré una red guardada ni visible que coincida con '{name}'; "
+                "pasá la contraseña para crear el perfil, o decime el nombre exacto",
                 status="needs_user",
-                available_profiles=profiles[:30],
+                available_profiles=target.get("profiles", [])[:30],
+                visible_ssids=target.get("visible_ssids", [])[:30],
             )
+
     proc = subprocess.run(["netsh", "wlan", "connect", f"name={name}"], capture_output=True, text=True, timeout=20)
     return _ok(
         profile=name,
+        requested=str(args.get("name") or args.get("ssid") or "").strip(),
+        resolved_from_state=(name != str(args.get("name") or args.get("ssid") or "").strip()),
         created_profile=created,
         exit_code=proc.returncode,
         stdout=proc.stdout.strip()[:500],
