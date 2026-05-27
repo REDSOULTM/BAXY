@@ -3550,3 +3550,24 @@
 {"tool": "web", "q": "will it rain tomorrow"}
 {"tool": "web", "q": "qual e a previsao do tempo"}
 {"tool": "web", "q": "quel temps fait-il aujourd hui"}
+{"tool": "vision", "q": "leeme el ultimo mensaje"}
+{"tool": "vision", "q": "que me escribio mama"}
+{"tool": "vision", "q": "leeme lo que dice ese mensaje"}
+{"tool": "vision", "q": "leeme los mensajes nuevos"}
+{"tool": "vision", "q": "que dice el mensaje en la pantalla"}
+{"tool": "vision", "q": "leeme la conversacion"}
+{"tool": "vision", "q": "read me the last message"}
+{"tool": "vision", "q": "what did she write to me"}
+{"tool": "vision", "q": "read out the new messages"}
+{"tool": "vision", "q": "leia a ultima mensagem para mim"}
+{"tool": "vision", "q": "lis-moi le dernier message"}
+{"tool": "vision", "q": "lies mir die nachricht vor"}
+{"tool": "whatsapp", "q": "respondele a mi mama que ya voy"}
+{"tool": "whatsapp", "q": "contestale que si"}
+{"tool": "whatsapp", "q": "contestale a juan que llego en 10"}
+{"tool": "whatsapp", "q": "respondele que despues hablamos"}
+{"tool": "whatsapp", "q": "decile que si por whatsapp"}
+{"tool": "whatsapp", "q": "reply to mom that i am on my way"}
+{"tool": "whatsapp", "q": "answer her yes"}
+{"tool": "whatsapp", "q": "responde ao joao que sim"}
+{"tool": "whatsapp", "q": "reponds-lui que oui"}

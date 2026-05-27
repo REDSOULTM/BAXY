@@ -54,7 +54,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "window": "list windows, focus, close, minimize, maximize, move, resize",
     "gui": "screenshot, click, type text, hotkeys, scroll, drag with mouse",
     "computer_use": "operar DENTRO de una app abierta: abrir un chat o canal y escribir/enviar un mensaje en Discord/Slack/Teams, entrar a una página web en el navegador, clickear un control por nombre, navegar adentro de una app. escribile a X en discord, andá al canal Y, mandale un mensaje a alguien en una app, entrá a tal web, operar la app que ya está abierta",
-    "vision": "describe what is on screen, OCR a region, find UI element",
+    "vision": "describe what is on screen, READ ALOUD what a message or chat or notification says, read the screen for someone who can't see — leeme lo que dice, leeme el mensaje, qué dice en la pantalla, qué me escribió, qué dice ese mensaje; OCR a region, find UI element",
     "browser": (
         "open a website, URL or web address in a browser; abrir una pagina "
         "web, abrir github o un sitio, abrir una direccion como python.org "
@@ -119,7 +119,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "source_manager": "save research sources, snapshots, citations",
     "dependency": "diagnose missing Python modules or binaries",
     "contacts": "manage contacts: create, search, vCard import/export, resolve recipient",
-    "whatsapp": "WhatsApp messaging: send a message, open a chat, mandar mensaje por WhatsApp, escribir a una persona en wsp, decirle algo a alguien en whatsapp, mensaje de texto",
+    "whatsapp": "WhatsApp messaging: send a message, REPLY/answer a message, open a chat, mandar/responder/contestar un mensaje por WhatsApp, respondele/contestale a una persona, escribir a alguien en wsp, decirle algo a alguien en whatsapp, mensaje de texto",
     "notes_tasks": "create and search local notes and tasks",
     "local_calendar": "create local calendar events, import ICS",
     "habit_tracker": "track personal habits and streaks",

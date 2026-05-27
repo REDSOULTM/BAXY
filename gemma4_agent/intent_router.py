@@ -129,13 +129,19 @@ _ACTION_ANCHORS = [
     "open an application", "close a window", "play music",
     "take a screenshot", "send a message", "install something",
     "do something on my computer", "control the pc",
+    "reply to a message", "answer her message", "text mom that i'm coming",
     # Spanish
     "abre una aplicacion", "cierra una ventana", "pon musica",
     "manda un mensaje", "instala algo", "saca una captura de pantalla",
+    # responder/contestar un mensaje ES una acción (no charla), aunque el cuerpo
+    # sea corto ("que ya voy", "que sí"): el destinatario lo hace acción.
+    "respondele a mama que ya voy", "contestale a juan que llego tarde",
+    "respondele que despues hablamos", "mandale un mensaje a alguien",
     # Portuguese / French / German / Italian
     "abrir um aplicativo", "ouvrir une application",
     "eine anwendung offnen", "apri unapplicazione",
     "envoyer un message", "eine nachricht senden",
+    "responder a mensagem", "repondre au message", "auf die nachricht antworten",
 ]
 
 # Chitchat / contentless utterances. Critical third class: short

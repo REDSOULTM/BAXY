@@ -2567,6 +2567,20 @@ class ToolRegistry:
         return contacts_tool(args, self.state)
 
     def t_whatsapp(self, args: dict[str, Any]) -> dict[str, Any]:
+        # LEER mensajes (2026-05-27, no-vidente): el tool de WhatsApp solo ENVÍA.
+        # Para "leeme el último mensaje / qué me escribió X" el 4B a veces rutea a
+        # whatsapp con una acción de lectura (read/read_messages/last/unread...).
+        # No existe scraping de WhatsApp; lo UNIVERSAL es LEER LA PANTALLA por
+        # visión (sirve para cualquier chat). Delegamos a vision.describe_screen
+        # con foco en los mensajes — garantía de outcome, no respuesta enlatada.
+        _act = str(args.get("action") or "").casefold()
+        if _act in {"read", "read_message", "read_messages", "read_chat",
+                    "last_message", "unread", "list_messages", "get_messages"}:
+            return self.t_vision({
+                "action": "describe_screen",
+                "target": "los mensajes de chat visibles; leé en voz el/los "
+                          "último(s) mensaje(s): quién lo envió y qué dice",
+            })
         return whatsapp_tool(args, self.state, executor=self.execute)
 
     def t_notes_tasks(self, args: dict[str, Any]) -> dict[str, Any]:

@@ -304,11 +304,12 @@ _MSG_VERB_STEM = re.compile(
     r"^\s*(?:"
     r"escrib[íie]\w*|mand[áa]\w*|manda\w*|m[áa]ndale|mandale|decil[ée]?|"   # es
     r"dile|dec[íi]\w*|envi[áa]\w*|envia\w*|"                                # es
-    r"write|send|message|msg|text|tell|"                                   # en
-    r"escrev[ae]\w*|mand[ae]\w*|envi[ae]\w*|"                               # pt
-    r"[ée]cri[st]\w*|envoie\w*|"                                            # fr
-    r"schreib\w*|schick\w*|"                                                # de
-    r"scriv[ie]\w*|invia\w*"                                                # it
+    r"respond[ée]\w*|respondele|contest[áae]\w*|contestale|"               # es (responder)
+    r"write|send|message|msg|text|tell|repl(?:y|ies|ied)|answer|"          # en (+reply/answer)
+    r"escrev[ae]\w*|mand[ae]\w*|envi[ae]\w*|respond[ae]\w*|"               # pt
+    r"[ée]cri[st]\w*|envoie\w*|r[ée]ponds?\w*|"                            # fr (répondre)
+    r"schreib\w*|schick\w*|antworte\w*|"                                    # de (antworten)
+    r"scriv[ie]\w*|invia\w*|rispondi\w*"                                    # it (rispondere)
     r")\b",
     re.IGNORECASE,
 )
@@ -377,6 +378,16 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
     if mb and mb.start() > 0:
         contact = rest[:mb.start()].strip(" ,:")
         body = rest[mb.end():].strip(" ,:")
+    else:
+        # Fallback "que/that": DESPUÉS de "a <contacto>", un "que" suelto SÍ marca
+        # el inicio del cuerpo de forma fiable ("a juan QUE llego en 10" -> contacto
+        # juan, body "que llego en 10"). Acá ya consumimos la preposición de
+        # destinatario, así que no hay la ambigüedad del "que" general. PRESERVAMOS
+        # el "que" en el cuerpo (comportamiento histórico: "que" cambia el sentido).
+        # Esto evita que el separador "en <app>" mal-lea "en 10 minutos" como app=10.
+        mq = re.search(r"\s+(?:que|that|qu[ei]|dass|che)\s+", contact, flags=re.IGNORECASE)
+        if mq and mq.start() > 0:
+            contact, body = contact[:mq.start()].strip(" ,:"), contact[mq.start():].strip(" ,:")
     # PASO 2: en lo que quedó como "contacto", separar "en <app> [mensaje]". Tras
     # "en <app>" puede venir DIRECTAMENTE el mensaje sin conector ("a cbayeah en
     # discord hola" -> contacto=cbayeah, body=hola). Capturamos app y resto.

@@ -868,9 +868,39 @@ class Gemma4Agent:
                 _clauses = split_command(content)
                 if len(_clauses) > 1:
                     return self._run_multi_intent(_clauses, progress=progress)
+        # RESPONDER MENSAJE — short-circuit determinista PRE-LLM (2026-05-27).
+        # MEDIDO: ante "respondele a X que Y" el 4B es errático — a veces se niega
+        # (sin tool), a veces llama gui/session (tool equivocada), CASI NUNCA
+        # whatsapp. Un detector ESTRUCTURAL de alta precisión (extract_message_to:
+        # verbo + 'a <destinatario>' + cuerpo; mide la FORMA, no el contenido —
+        # CLAUDE.md (b)) resuelve esto sin depender del 4B. NO es respuesta
+        # enlatada: abre el chat pre-rellenado (auto_send=False, no envía; el
+        # usuario confirma) y el LLM redacta la confirmación con el resultado en
+        # contexto. Solo dispara con destinatario+cuerpo CLAROS (None -> sigue el
+        # flujo normal y el LLM pregunta a quién). Gate GEMMA4_REPLY_NET=0.
+        import os as _os_rn
+        if isinstance(content, str) and content.strip() \
+                and not getattr(self, "_splitting", False) \
+                and _os_rn.environ.get("GEMMA4_REPLY_NET", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+            try:
+                _reply_sc = self._deterministic_reply(content)
+            except Exception:
+                _reply_sc = None
+            if _reply_sc is not None and (_reply_sc.result or {}).get("ok"):
+                _rc = (_reply_sc.result or {}).get("reply_contact") or ""
+                try:
+                    self.trace.event(turn_id, "deterministic_reply_shortcircuit", contact=_rc)
+                except Exception:
+                    pass
+                _msg = (f"Abrí el chat con {_rc} y dejé el mensaje listo. "
+                        "Revisalo y decime si lo envío.")
+                self._last_turn_ts = time.time()
+                return AgentReply(content=_msg, tool_events=[_reply_sc], mission=None)
         # Allow ONE forced tool-call retry per user turn (reset here; consumed
         # in the agent loop when a domain tool was expected but none was called).
         self._forced_tool_retry_done = False
+        self._det_nets_tried = False  # redes deterministas (reply/email/nav) por turno
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         # turn_id ya se generó arriba (antes del macro de navegación-en-app).
@@ -1926,7 +1956,26 @@ class Gemma4Agent:
                             # si el turno pide mandar un correo con destinatario,
                             # disparamos la MISMA tool email. Más específico que
                             # navegación -> va primero.
-                            _mail_ev = self._deterministic_email(raw_text_early)
+                            # RED DETERMINISTA RESPONDER MENSAJE (2026-05-27): el 4B
+                            # a veces SE NIEGA ("no puedo enviar mensajes") ante
+                            # "respondele a X que Y" aunque la tool whatsapp esté
+                            # ofrecida (medido). Si hay destinatario + cuerpo claros,
+                            # abrimos el chat pre-rellenado (NO auto-send: enviar es
+                            # irreversible y el SendInput va a la ventana enfocada;
+                            # el usuario revisa y manda). Va PRIMERO (lo más específico).
+                            _reply_ev = self._deterministic_reply(raw_text_early)
+                            if _reply_ev is not None:
+                                events.append(_reply_ev)
+                                _rc = (_reply_ev.result or {}).get("reply_contact") or ""
+                                self.trace.event(turn_id, "deterministic_reply", contact=_rc)
+                                if (_reply_ev.result or {}).get("ok"):
+                                    assistant_content = (
+                                        f"Abrí el chat con {_rc} y dejé el mensaje listo. "
+                                        "Revisalo y decime si lo envío.")
+                                    raw_msg = {}
+                                    raw_tool_calls = []
+                            _mail_ev = (None if _reply_ev is not None
+                                        else self._deterministic_email(raw_text_early))
                             if _mail_ev is not None:
                                 events.append(_mail_ev)
                                 _to = (_mail_ev.result or {}).get("email_to") or ""
@@ -1946,7 +1995,8 @@ class Gemma4Agent:
                             # estado, NO respuesta enlatada (el LLM redacta la
                             # confirmación después, con el resultado en contexto).
                             # Solo como ÚLTIMO recurso (el 4B ya probó que no llama).
-                            _nav_ev = None if _mail_ev is not None else self._deterministic_navigate(raw_text_early)
+                            _nav_ev = (None if (_mail_ev is not None or _reply_ev is not None)
+                                       else self._deterministic_navigate(raw_text_early))
                             if _nav_ev is not None:
                                 events.append(_nav_ev)
                                 _nav_url = (_nav_ev.result or {}).get("url") or ""
@@ -1982,6 +2032,55 @@ class Gemma4Agent:
             )
 
             if not raw_tool_calls:
+                # REDES DETERMINISTAS (fallback final, 2026-05-27). Las redes de
+                # responder-mensaje / email / navegación son detectores de ALTA
+                # precisión (verbo + 'a <destinatario>' + cuerpo; o URL/sitio
+                # claros). Antes solo corrían dentro de forced_tool_retry_empty,
+                # que se SALTEA cuando el abstain-head juzga el turno "no-tool" y
+                # deja el subset sin la tool de dominio (medido: "respondele a mama
+                # que ya voy" -> subset=[session], el 4B se niega). Acá las
+                # disparamos AUNQUE el abstain head haya abstenido — desacopladas
+                # del router — pero SOLO si ninguna tool corrió aún este turno
+                # (len(events)==0) y el forced-retry no las probó ya. Cada red es
+                # conservadora (None si no hay match claro) -> no roba turnos de
+                # charla. Fallback seguro: error -> seguimos al flujo normal.
+                if (len(events) == 0
+                        and not getattr(self, "_det_nets_tried", False)):
+                    self._det_nets_tried = True
+                    try:
+                        _dn_ev = (self._deterministic_reply(raw_text_early)
+                                  or self._deterministic_email(raw_text_early)
+                                  or self._deterministic_navigate(raw_text_early))
+                    except Exception as _dnexc:
+                        _dn_ev = None
+                        try:
+                            self.trace.event(turn_id, "deterministic_net_error",
+                                             error=f"{type(_dnexc).__name__}: {_dnexc}")
+                        except Exception:
+                            pass
+                    if _dn_ev is not None and (_dn_ev.result or {}).get("ok"):
+                        events.append(_dn_ev)
+                        _nm = _dn_ev.name
+                        self.trace.event(turn_id, "deterministic_net_fallback",
+                                         tool=_nm)
+                        _res = _dn_ev.result or {}
+                        if _nm == "whatsapp":
+                            _rc = _res.get("reply_contact") or ""
+                            assistant_content = (
+                                f"Abrí el chat con {_rc} y dejé el mensaje listo. "
+                                "Revisalo y decime si lo envío.")
+                        elif _nm == "email":
+                            _to = _res.get("email_to") or ""
+                            assistant_content = (
+                                f"Abrí el borrador de correo para {_to}. "
+                                "Revisalo y decime si lo envío.")
+                        else:  # browser
+                            _u = _res.get("resolved_url") or _res.get("url") or ""
+                            assistant_content = f"Listo, abrí {_u}."
+                        raw_msg = {}
+                        # con la red disparada, saltamos los guards de "prometió
+                        # sin acción" (ya hay un evento real) y finalizamos.
+                        msg["content"] = assistant_content
                 # ACCESIBILIDAD (B3/B4) — CONTINUAR EN EL MISMO TURNO. En
                 # movilidad/no_vidente el agente debe HACER TODO por el usuario:
                 # si está por terminar con una respuesta que DELEGA la tarea
@@ -3271,6 +3370,44 @@ class Gemma4Agent:
         if isinstance(result, dict):
             result = {**result, "email_to": fields["to"]}
         return ToolEvent(name="email", args=args,
+                         result=result if isinstance(result, dict) else {})
+
+    def _deterministic_reply(self, text: str) -> "ToolEvent | None":
+        """RED DETERMINISTA RESPONDER MENSAJE (backstop): "respondele/contestale a
+        X que Y" con destinatario + cuerpo CLAROS -> abre el chat de WhatsApp
+        pre-rellenado (auto_send=False: NO envía; el usuario revisa y manda). El 4B
+        a veces se niega ("no puedo enviar mensajes") aunque la tool esté ofrecida
+        (medido). Estructural: reutiliza extract_message_to (verbo + 'a <contacto>'
+        + cuerpo, multi-idioma). None si no hay destinatario (p.ej. "contestale que
+        sí" sin nombre) -> el LLM pregunta a quién (honesto, no inventa)."""
+        if not isinstance(text, str) or not text.strip():
+            return None
+        # Debe SER intención de responder/mandar mensaje (no cualquier "a X que Y").
+        try:
+            from .command_splitter import extract_message_to
+            parsed = extract_message_to(text)
+        except Exception:
+            return None
+        if not parsed:
+            return None
+        contact, body = parsed
+        contact = (contact or "").strip()
+        body = (body or "").strip()
+        # Sin destinatario claro o sin cuerpo -> NO disparamos (el LLM pide el dato).
+        if not contact or not body:
+            return None
+        # auto_send=False: SOLO abre el chat con el texto puesto. Enviar es
+        # irreversible y el Enter va a la ventana enfocada (CLAUDE.md #6) -> lo
+        # confirma el usuario. Resuelve el contacto contra el store si existe.
+        args = {"action": "send_message", "contact": contact,
+                "text": body, "auto_send": False}
+        try:
+            result = self.tools.execute("whatsapp", args)
+        except Exception as exc:
+            result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        if isinstance(result, dict):
+            result = {**result, "reply_contact": contact}
+        return ToolEvent(name="whatsapp", args=args,
                          result=result if isinstance(result, dict) else {})
 
     def _handle_pending_suggestion(self, content: Any) -> "AgentReply | None":
