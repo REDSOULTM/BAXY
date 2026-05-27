@@ -237,20 +237,38 @@ def _launch_unconfirmed(tool_calls_this_turn: list[Any]) -> bool:
 
 def _guess_lang(text: str) -> str:
     """Heurística mínima de idioma por stopwords frecuentes. Fallback 'es'.
-    Solo para elegir la frase-caveat; no decide intención (eso es por embeddings
-    en el router)."""
+    Solo para elegir la frase-caveat / el idioma de la oferta de Jarvis; NO
+    decide intención (eso es por embeddings en el router).
+
+    2026-05-27: arreglado el falso 'fr' en español. " la " es compartida es/fr
+    (señal pobre) y los empates iban al primero del dict (fr antes que es) ->
+    "entra a la pagina de youtube" daba 'fr'. Fix: (a) markers DISCRIMINANTES por
+    idioma (sin tokens compartidos ambiguos como " la "), (b) empate -> es
+    (default seguro: la app se usó históricamente en español)."""
     t = f" {text.lower()} "
+    # Markers elegidos para DISCRIMINAR, no solo "aparecer". Evitamos " la "/" el "
+    # (es+fr+otros). Acentos y formas verbales son la señal fuerte por idioma.
     marks = {
-        "en": (" the ", " it ", " open", " i ", " you ", " is ", " couldn"),
-        "pt": (" o ", " não ", " está ", " segundos", " abrir", " você "),
-        "fr": (" le ", " la ", " ouvre", " peut ", " secondes", " je "),
-        "de": (" der ", " die ", " das ", " ich ", " kann ", " sekunden", " öffne"),
-        "it": (" il ", " non ", " aprire", " secondi", " sto ", " può "),
-        "es": (" el ", " la ", " abrí", " abrir", " está ", " segundos", " no "),
+        "en": (" the ", " it ", " open ", " i ", " you ", " is ", " couldn",
+               " and ", " what ", " how "),
+        "pt": (" não ", " está ", " você ", " segundos", " abrir o ", " fazer ",
+               " já ", " obrigado"),
+        "fr": (" le ", " ouvre", " peut ", " secondes", " je ", " tu ", " vous ",
+               " c'est", " d'", " qu'", " merci", " ferme"),
+        "de": (" der ", " die ", " das ", " ich ", " kann ", " sekunden",
+               " öffne", " und ", " nicht ", " danke"),
+        "it": (" il ", " aprire", " secondi", " sto ", " può ", " grazie",
+               " chiudi", " apri "),
+        "es": (" entra ", " entrá ", " abrí ", " abrir ", " abre ", " está ",
+               " segundos", " página", " pagina ", " busca ", " buscá ",
+               " poné ", " pon ", " andá ", " cerrá ", " hola ", " gracias",
+               " qué ", " cómo ", " y ", " de ", " a la ", " el ", " un "),
     }
     best, score = "es", 0
     for lang, toks in marks.items():
         s = sum(1 for tk in toks if tk in t)
+        # empate NO desplaza al actual -> 'es' (procesado primero como default)
+        # gana los empates. Sólo un score ESTRICTAMENTE mayor cambia el ganador.
         if s > score:
             best, score = lang, s
     return best

@@ -1905,6 +1905,30 @@ class Gemma4Agent:
                                              tool=tc_f[0].get("function", {}).get("name"))
                         else:
                             self.trace.event(turn_id, "forced_tool_retry_empty")
+                            # RED DETERMINISTA DE NAVEGACIÓN (2026-05-27, GATE 0):
+                            # E2B-Q4 a veces NO emite el tool-call NI forzado
+                            # (medido: forced_tool_retry_empty en "andá a github").
+                            # Si el turno es navegación-web de ALTA confianza Y
+                            # podemos extraer una URL/sitio, EJECUTAMOS browser.open
+                            # nosotros — resolución por intención (embeddings) +
+                            # estado, NO respuesta enlatada (el LLM redacta la
+                            # confirmación después, con el resultado en contexto).
+                            # Solo como ÚLTIMO recurso (el 4B ya probó que no llama).
+                            _nav_ev = self._deterministic_navigate(raw_text_early)
+                            if _nav_ev is not None:
+                                events.append(_nav_ev)
+                                _nav_url = (_nav_ev.result or {}).get("url") or ""
+                                _nav_ok = bool((_nav_ev.result or {}).get("ok"))
+                                self.trace.event(
+                                    turn_id, "deterministic_navigation",
+                                    url=_nav_url, ok=_nav_ok)
+                                # Reemplazar la prosa-sin-acción del 4B por una
+                                # confirmación honesta del estado real (dispatched:
+                                # abrí la URL, no puedo leer el contenido). NO es
+                                # enlatado fijo: refleja el resultado de la tool.
+                                if _nav_ok:
+                                    assistant_content = f"Listo, abrí {_nav_url}."
+                                    raw_msg = {}
                     except Exception as _fexc:  # never break the turn on retry
                         self.trace.event(turn_id, "forced_tool_retry_error",
                                          error=f"{type(_fexc).__name__}: {_fexc}")
@@ -3058,6 +3082,67 @@ class Gemma4Agent:
         self.trace.event("multi_intent", "split_executed",
                          clauses=clauses, replies=len(replies))
         return AgentReply(content=combined, tool_events=all_events, mission=None)
+
+    # Sitios MUY conocidos: nombre -> URL raíz. Conjunto CERRADO y chico (no es
+    # routing por keywords de idioma: es un mapeo identidad-de-sitio->dominio,
+    # como las marcas del safety_hook). Para CUALQUIER otro sitio NO adivinamos
+    # el dominio (le erraríamos el TLD); ahí la red determinista se abstiene y
+    # deja que el flujo normal (web search -> URL real) lo resuelva.
+    _KNOWN_SITES = {
+        "youtube": "https://www.youtube.com", "google": "https://www.google.com",
+        "gmail": "https://mail.google.com", "github": "https://github.com",
+        "wikipedia": "https://www.wikipedia.org", "reddit": "https://www.reddit.com",
+        "twitch": "https://www.twitch.tv", "spotify": "https://open.spotify.com",
+        "netflix": "https://www.netflix.com", "amazon": "https://www.amazon.com",
+        "facebook": "https://www.facebook.com", "instagram": "https://www.instagram.com",
+        "whatsapp": "https://web.whatsapp.com", "x": "https://x.com",
+        "twitter": "https://x.com", "chatgpt": "https://chatgpt.com",
+    }
+
+    def _extract_nav_url(self, text: str) -> str | None:
+        """Extrae una URL para navegar de un texto de navegación. Acepta: (1) una
+        URL/dominio EXPLÍCITO (github.com, https://...); (2) un sitio MUY conocido
+        por nombre (youtube->youtube.com). Devuelve None si no hay destino claro
+        (NO adivina dominios de sitios dudosos -> el TLD se erraría)."""
+        import re as _re
+        t = (text or "").strip().lower()
+        # 1) URL/dominio explícito en el texto.
+        m = _re.search(r"\b((?:https?://)?[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+(?:/\S*)?)",
+                       t, _re.IGNORECASE)
+        if m:
+            cand = m.group(1)
+            # filtrar falsos dominios tipo "2+2" o palabras con punto raro:
+            if _re.search(r"\.[a-z]{2,}", cand, _re.IGNORECASE):
+                return cand if cand.startswith(("http://", "https://")) else "https://" + cand
+        # 2) sitio muy conocido por nombre (token presente).
+        toks = set(_re.findall(r"[a-z0-9]+", t))
+        for name, url in self._KNOWN_SITES.items():
+            if name in toks:
+                return url
+        return None
+
+    def _deterministic_navigate(self, text: str) -> "ToolEvent | None":
+        """RED DETERMINISTA: si el turno es navegación-web de ALTA confianza y se
+        puede extraer una URL/sitio, ejecuta browser.open directo (sin depender de
+        que el 4B emita el tool-call) y devuelve el ToolEvent. None si no aplica
+        (no es navegación clara, o no hay URL extraíble -> no adivinamos)."""
+        if not isinstance(text, str) or not text.strip():
+            return None
+        try:
+            from .intent_router import wants_web_navigation, wants_web_store
+            if not (wants_web_navigation(text) or wants_web_store(text)):
+                return None
+        except Exception:
+            return None
+        url = self._extract_nav_url(text)
+        if not url:
+            return None  # sin destino claro -> el flujo normal (web->URL real) decide
+        args = {"action": "open", "url": url}
+        try:
+            result = self.tools.execute("browser", args)
+        except Exception as exc:
+            result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        return ToolEvent(name="browser", args=args, result=result if isinstance(result, dict) else {})
 
     def _handle_pending_suggestion(self, content: Any) -> "AgentReply | None":
         """JARVIS (inv 5): resuelve el sí/no a una oferta de automatización del

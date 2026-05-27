@@ -560,17 +560,25 @@ def select_tool_names(
     # fan-out (every app/media tool dragging in gui/uia/vision/window/browser/
     # audio) was the second bloat engine behind the "11 tools" complaint.
     # Directly-matched tools are always kept; deps fill only up to the budget.
-    # SHOPPING-IN-WEB-STORE (2026-05-26): "comprá/buscá un juego en Instant
-    # Gaming/Epic/GOG" se mis-ruteaba a game_launcher/app porque el NOMBRE de la
-    # tienda embebe cerca de las tools de juegos (las negaciones en las
-    # descripciones no funcionan en embeddings). Cuando la intención de compra-
-    # en-tienda dispara (clasificador multilingüe), GARANTIZAMOS browser y
-    # browser_real al FRENTE del subset, para que el LLM tenga la afordancia
-    # correcta (navegar a la tienda) por encima de los launchers locales.
-    # Fallback seguro: sin encoder, wants_web_store -> False -> no cambia nada.
+    # NAVEGACIÓN/COMPRA WEB UNIFICADA (2026-05-27, GATE 0 medido): "andá a la
+    # página de X" / "comprá en Instant Gaming" / "entrá a youtube" ruteaban
+    # INCONSISTENTE — a veces browser.open (bien), a veces web-search-a-Google,
+    # a veces computer_use — porque el subset ofrecía 4 tools de navegación y el
+    # 4B elegía mal, o game_launcher ganaba por la colisión de marca ("Gaming").
+    # Cuando la intención es NAVEGAR a una web o COMPRAR en una tienda web
+    # (clasificadores multilingües por embeddings):
+    #   (a) lideramos con browser_real + browser (camino que prefiere CDP);
+    #   (b) SACAMOS web y game_launcher del subset — son para PREGUNTAR (web) o
+    #       lanzar instalado (game_launcher), NUNCA para navegar; ofrecerlos
+    #       confunde al 4B (eligió web=Google). Los clasificadores ya excluyen
+    #       preguntas/launches, así que sacar web acá no rompe búsquedas reales.
+    # Fallback seguro: sin encoder -> ambos False -> no cambia nada.
+    _web_nav_intent = False
     try:
-        from .intent_router import wants_web_store as _wants_store
-        if _wants_store(raw_text):
+        from .intent_router import (wants_web_store as _wants_store,
+                                    wants_web_navigation as _wants_nav)
+        if _wants_store(raw_text) or _wants_nav(raw_text):
+            _web_nav_intent = True
             for _bt in ("browser_real", "browser"):
                 if _bt in names:
                     names.remove(_bt)
@@ -592,6 +600,24 @@ def select_tool_names(
         expanded.append("state")
     if safety_enabled:
         expanded.append("safety")
+    # Navegación/compra web: SACAR web y game_launcher DESPUÉS de la expansión
+    # (si los quitábamos antes, _related_tools los re-agregaba). web=preguntar,
+    # game_launcher=lanzar instalado; ninguno navega -> confunden al 4B. Pero
+    # NUNCA sacamos browser (el camino correcto) ni dejamos el subset vacío, y
+    # NUNCA sacamos `web` si el turno TAMBIÉN es una pregunta de conocimiento
+    # ("busca información de X en internet" SÍ necesita web — falso-positivo del
+    # clasificador de navegación que evitamos con wants_knowledge).
+    if _web_nav_intent:
+        _is_knowledge_q = False
+        try:
+            from .intent_router import wants_knowledge as _wk_nav
+            _is_knowledge_q = _wk_nav(raw_text)
+        except Exception:
+            _is_knowledge_q = False
+        _drop = ("game_launcher",) if _is_knowledge_q else ("web", "game_launcher")
+        _filtered = [t for t in expanded if t not in _drop]
+        if any(t in _filtered for t in ("browser", "browser_real", "computer_use")):
+            expanded = _filtered
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
     # Hotfix F 2026-05-17: pending_intent injection. If a previous turn
     # left a tool waiting on user input (status='needs_user'), inject

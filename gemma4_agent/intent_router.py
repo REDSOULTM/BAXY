@@ -555,3 +555,93 @@ def wants_web_store(text: str) -> bool:
         return (float(q @ _SHOP.shop) - float(q @ _SHOP.noshop)) >= _SHOP_MARGIN
     except Exception:
         return False
+
+
+# ---------------------------------------------------------------------------
+# Intención de NAVEGAR A UNA WEB (2026-05-27). Caso medido: "andá a la página de
+# Instant Gaming" / "entrá a youtube" ruteaban inconsistente (browser / web-a-
+# Google / computer_use) porque el subset ofrecía 4 tools de navegación y el 4B
+# elegía mal (web=Google en vez de abrir el sitio), o game_launcher ganaba por la
+# colisión de marca. Este clasificador detecta "IR A una página/sitio/URL" para
+# que el planner lidere con browser/browser_real y SAQUE web/game_launcher (que
+# son para preguntar / lanzar instalado, NO para navegar). Embeddings, fallback
+# seguro. Distinto de wants_web_store (comprar): navegar incluye abrir cualquier
+# sitio, no solo tiendas.
+# ---------------------------------------------------------------------------
+_NAV_ANCHORS = [
+    # es
+    "andá a la página de youtube", "entrá a ese sitio web", "abrí esa página",
+    "navegá a github punto com", "llevame a la web de instant gaming",
+    "entrá a la tienda online", "abrí el sitio en el navegador", "ir a una url",
+    "metete en esa página web",
+    # en
+    "go to the youtube page", "open that website", "navigate to github dot com",
+    "take me to the instant gaming site", "open the url in the browser",
+    # pt / fr / de / it
+    "vá para o site", "va sur ce site web", "geh auf die webseite",
+    "vai a quel sito web",
+]
+_NONAV_ANCHORS = [
+    # NO es navegar: preguntar info, lanzar app instalada, charlar, operar app
+    "qué es python", "quién ganó el mundial", "cuánto cuesta esto",
+    "lanzá un juego que tengo instalado", "abrí spotify instalado",
+    "poné música", "mandá un mensaje", "hola cómo estás",
+    "what is this about", "play music", "launch an installed game",
+    "send a message", "open an installed app",
+]
+
+
+class _NavCentroids:
+    nav: Any = None
+    nonav: Any = None
+    ready: bool = False
+
+
+_NAV = _NavCentroids()
+_NAV_MARGIN = float(os.environ.get("GEMMA4_NAV_MARGIN", "0.06"))
+
+
+def _ensure_nav_centroids() -> bool:
+    if _NAV.ready:
+        return _NAV.nav is not None
+    try:
+        from . import semantic_router as sr
+        if not sr._ensure_loaded():
+            _NAV.ready = True
+            return False
+        import numpy as np
+        model = sr._STATE.model
+
+        def _centroid(anchors: list[str]) -> Any:
+            e = model.encode(anchors, normalize_embeddings=True).mean(0)
+            return np.asarray(e / (np.linalg.norm(e) or 1.0), dtype="float32")
+
+        _NAV.nav = _centroid(_NAV_ANCHORS)
+        _NAV.nonav = _centroid(_NONAV_ANCHORS)
+        _NAV.ready = True
+        return True
+    except Exception:
+        _NAV.ready = True
+        return False
+
+
+def wants_web_navigation(text: str) -> bool:
+    """True si el turno pide IR A una página/sitio/URL en el navegador (navegar),
+    distinto de preguntar info o lanzar una app instalada. El planner lo usa para
+    liderar con browser/browser_real y sacar web/game_launcher del subset.
+    Multilingüe, fallback seguro."""
+    txt = (text or "").strip()
+    if len(txt) < 3:
+        return False
+    if not _ensure_nav_centroids() or _NAV.nav is None:
+        return False
+    try:
+        from . import semantic_router as sr
+        import numpy as np
+        q = sr.embed(txt)
+        if q is None:
+            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
+        q = np.asarray(q, dtype="float32")
+        return (float(q @ _NAV.nav) - float(q @ _NAV.nonav)) >= _NAV_MARGIN
+    except Exception:
+        return False
