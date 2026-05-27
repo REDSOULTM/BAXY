@@ -46,6 +46,12 @@ _CONCRETE_BROWSER_TOKENS = (
     "chrome", "edge", "opera", "brave", "firefox", "vivaldi", "msedge", "operagx",
 )
 
+# Reintentos por paso CRÍTICO (hard-fail/verificado) antes de abortar la cadena.
+# Acotado para no colgarse en un paso imposible: avanza lo más posible y, si tras
+# los reintentos no puede, aborta honesto. Gate por env para tunear/medir.
+import os as _os_cu
+_STEP_RETRIES = int(_os_cu.environ.get("GEMMA4_CU_STEP_RETRIES", "2"))
+
 
 def _is_concrete_browser(app_hint: str) -> bool:
     folded = re.sub(r"\s+", " ", (app_hint or "").casefold()).strip()
@@ -485,10 +491,15 @@ class PlanExecutor:
         # focus_app("navegador") no resuelve ninguna app y luego se tipeaba en la
         # ventana equivocada -> verify fallaba -> needs_verification.)
         win = app_hint if _is_concrete_browser(app_hint) else ""
+        dispatched = False  # ¿el SO ACEPTÓ abrir la URL? (web_open_url opened=True)
         try:
             from . import gui_safety
             gui_safety.reset_action_budget()
             if win:
+                # NAVEGADOR CONCRETO: tecleamos en SU barra de direcciones -> ESA
+                # ventana debe mostrar el sitio. La verificación por título es
+                # FUERTE y exigible (no marcamos dispatched-leniente: si el título
+                # no matchea, es un fallo real — tecleamos en una ventana concreta).
                 self.tools._focus_window_chen(win)
                 time.sleep(0.5)
                 self.tools.execute("gui", {"action": "keypress", "keys": "ctrl+l"})
@@ -498,25 +509,37 @@ class PlanExecutor:
                 self.tools.execute("gui", {"action": "keypress", "keys": "enter"})
                 time.sleep(1.5)
             else:
-                self.tools.web_open_url({"url": u})
+                # NAVEGADOR POR DEFECTO: el SO abre la URL pero NO controlamos qué
+                # ventana queda al frente -> dispatched-leniente (opened=True es
+                # evidencia de que se abrió, aunque el foreground sea otra app).
+                _wr = self.tools.web_open_url({"url": u})
+                dispatched = bool(isinstance(_wr, dict) and (_wr.get("ok") or _wr.get("opened")))
                 time.sleep(1.8)
         except Exception as exc:
-            return {"ok": False, "error": str(exc)}
-        # VERIFY contra la ventana en FOREGROUND (la que acabamos de enfocar+navegar),
-        # NO "cualquier ventana de la app": puede haber VARIAS ventanas del mismo
-        # navegador y _app_window_title devuelve una arbitraria (bug medido: 5
-        # ventanas Opera -> leía la equivocada). El host de la URL debe aparecer en
-        # el título de la ventana activa.
+            return {"ok": False, "verified": False, "error": str(exc)}
+        # VERIFY por TÍTULO de la ventana en foreground (confirmación FUERTE: el
+        # host aparece en el título de la ventana activa). Normalizamos a solo
+        # alfanumérico (el título "espacia" el dominio: stackoverflow->Stack Overflow).
         after = _foreground_title()
         host = re.sub(r"^https?://(www\.)?", "", u).split("/")[0]
         token = host.split(".")[0]
-        # VERIFY robusto: comparar SIN espacios ni puntuación en AMBOS lados. El
-        # título suele "espaciar" el dominio ("stackoverflow" -> "Stack Overflow",
-        # "duckduckgo" -> "DuckDuckGo") -> el match contiguo daba falso-negativo
-        # (bug medido en la maratón). Normalizamos a solo-alfanumérico.
         def _norm(s): return re.sub(r"[^a-z0-9]", "", (s or "").lower())
-        ok = bool(token) and _norm(token) in _norm(after)
-        return {"ok": ok, "verified": ok, "url": u, "title": after}
+        title_match = bool(token) and _norm(token) in _norm(after)
+        # SEMÁNTICA HONESTA (fix 2026-05-27, cadenas largas): abrir una URL es una
+        # acción DISPATCH-async. El SO acepta el open (web_open_url opened=True) pero
+        # la pestaña/ventana puede NO estar al frente al instante (otra app enfocada
+        # -> el título no matchea) -> ANTES eso daba ok=False y ABORTABA la cadena
+        # entera por un falso-negativo. Ahora:
+        #   - título matchea -> verificado FUERTE (ok=True, verified=True).
+        #   - despachado pero sin confirmar foreground -> ok=True (la URL se abrió),
+        #     verified=None (no pude CONFIRMAR el foreground, pero NO es un fallo).
+        #   - ni despachado ni título -> fallo real (ok=False).
+        if title_match:
+            return {"ok": True, "verified": True, "url": u, "title": after}
+        if dispatched:
+            return {"ok": True, "verified": None, "url": u, "title": after,
+                    "completion_status": "opened_url_unconfirmed_foreground"}
+        return {"ok": False, "verified": False, "url": u, "title": after}
 
     def _type(self, text: str, win: str) -> dict:
         try:
@@ -1147,11 +1170,46 @@ class PlanExecutor:
                 })
                 return {"ok": False, "steps": steps_out, "focused_app": app_token,
                         "failed_at": op}
+            # REINTENTO ACOTADO POR PASO (universal, 2026-05-27). Antes un solo
+            # fallo TRANSITORIO de un paso hard-fail (ventana sin foco aún, página
+            # cargando) abortaba la cadena ENTERA. La literatura (Plan-and-Act) y
+            # la medición lo confirman: la fragilidad por-paso es el techo de las
+            # cadenas largas. Reintentamos un paso hard-fail/verificado hasta
+            # _STEP_RETRIES veces, re-tomando el snapshot y re-enfocando entre
+            # intentos, ANTES de rendirnos. Universal: no sabe de "tiendas" ni de
+            # casos de uso — reintenta CUALQUIER primitiva frágil. Pasos best-
+            # effort (type/send/keypress/scroll/wait) NO se reintentan (no son
+            # hard-fail; su fallo no corta la cadena).
+            _is_critical = (self.capabilities.is_hard_fail(op)
+                            or self.capabilities.is_verified_step(op))
             res, app_token = self.capabilities.run(
-                op, arg, app_token,
-                snapshot=before_caps,
-                policy=layer_policy,
+                op, arg, app_token, snapshot=before_caps, policy=layer_policy,
             )
+            _attempts = 1
+            while (_is_critical and _attempts <= _STEP_RETRIES
+                   and (not res.get("ok") or res.get("verified") is False)):
+                try:
+                    self.ag.trace.event(turn_id, "cu_step_retry", op=op,
+                                        attempt=_attempts, prev_ok=res.get("ok"))
+                except Exception:
+                    pass
+                time.sleep(0.4 + 0.3 * _attempts)  # backoff: dar tiempo a la UI
+                # re-enfocar la app del contexto (un paso suele fallar porque la
+                # ventana perdió foco entre pasos) y re-tomar el snapshot.
+                if app_token:
+                    try:
+                        self.tools._focus_window_chen(app_token)
+                        time.sleep(0.2)
+                    except Exception:
+                        pass
+                before_caps = self.detector.snapshot(app_token, include_uia=include_uia)
+                layer_policy = self.choose_policy(before_caps, op).to_dict()
+                res, app_token = self.capabilities.run(
+                    op, arg, app_token, snapshot=before_caps, policy=layer_policy,
+                )
+                _attempts += 1
+            if _attempts > 1:
+                res = {**res, "retries": _attempts - 1}
             # routed through internal capability router
             # app_token is updated by the owning capability
             after_caps = self.detector.snapshot(app_token, include_uia=False)

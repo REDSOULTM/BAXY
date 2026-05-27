@@ -452,6 +452,41 @@ class ExecutorDispatchTest(unittest.TestCase):
         self.assertFalse(any(
             len(a) > 1 and a[1].get("text") == "no debe tipearse" for a in calls))
 
+    def test_critical_step_retries_before_aborting(self):
+        # REINTENTO (2026-05-27): un paso CRÍTICO que falla TRANSITORIAMENTE (1ra
+        # vez) pero anda al reintento NO debe abortar la cadena. Mockeamos
+        # capabilities.run para fallar focus_app una vez y luego OK.
+        ag = self._agent()
+        ex = self._executor(ag)
+        seq = [
+            ({"ok": False, "verified": False}, "App"),   # focus_app intento 1: falla
+            ({"ok": True, "verified": True}, "App"),     # focus_app intento 2: OK
+            ({"ok": True, "verified": True}, "App"),     # open_url OK
+        ]
+        ex.capabilities.run = MagicMock(side_effect=seq)
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            res = ex.execute([{"op": "focus_app", "arg": "App"},
+                              {"op": "open_url", "arg": "example.com"}], "t")
+        self.assertTrue(res["ok"])  # NO abortó pese al fallo transitorio
+        self.assertIsNone(res.get("failed_at"))
+        # focus_app se reintentó (3 llamadas totales: 2 focus_app + 1 open_url)
+        self.assertEqual(ex.capabilities.run.call_count, 3)
+
+    def test_critical_step_aborts_after_exhausting_retries(self):
+        # Si el paso crítico falla SIEMPRE (agota reintentos), aborta honesto.
+        ag = self._agent()
+        ex = self._executor(ag)
+        ex.capabilities.run = MagicMock(
+            return_value=({"ok": False, "verified": False}, "App"))
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            res = ex.execute([{"op": "focus_app", "arg": "App"},
+                              {"op": "type", "arg": "no debe tipearse"}], "t")
+        self.assertFalse(res["ok"])
+        self.assertEqual(res["failed_at"], "focus_app")
+        # se intentó 1 + _STEP_RETRIES veces (no infinito)
+        import gemma4_agent.computer_use as _cu
+        self.assertEqual(ex.capabilities.run.call_count, 1 + _cu._STEP_RETRIES)
+
     def test_nav_failure_stops_chain(self):
         # si open_chat falla (título no matchea), el ejecutor corta y NO teclea.
         ag = self._agent()

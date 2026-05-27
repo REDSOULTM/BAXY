@@ -350,7 +350,13 @@ def gate_g14() -> tuple[bool, str]:
     pe.capabilities = _Caps()
     pe.ag = _Agent()
     result = pe.execute([{"op": "click", "arg": "Abrir"}, {"op": "type", "arg": "danger"}])
-    ok = result.get("ok") is False and result.get("failed_at") == "click" and pe.capabilities.calls == ["click"]
+    # PROPIEDAD DE SEGURIDAD: la cadena PARA en el click no verificado y NO llega
+    # al `type` peligroso. (2026-05-27: el ejecutor ahora REINTENTA un paso
+    # crítico antes de abortar -> calls puede ser [click]*N; lo que importa es que
+    # NUNCA ejecute `type`, no el número de reintentos del click.)
+    ok = (result.get("ok") is False and result.get("failed_at") == "click"
+          and "type" not in pe.capabilities.calls
+          and set(pe.capabilities.calls) == {"click"})
     return ok, f"result_ok={result.get('ok')}, failed_at={result.get('failed_at')}, calls={pe.capabilities.calls}"
 
 
@@ -397,7 +403,12 @@ def gate_g14b() -> tuple[bool, str]:
     pe.capabilities = _Caps()
     pe.ag = _Agent()
     result = pe.execute([{"op": "type", "arg": "hola"}, {"op": "send", "arg": ""}])
-    ok = result.get("ok") is False and result.get("failed_at") == "type" and pe.capabilities.calls == ["type"]
+    # PROPIEDAD: para en el `type` no verificado y NO llega al `send`. El ejecutor
+    # reintenta el paso crítico antes de abortar (calls puede ser [type]*N); lo que
+    # importa es que NUNCA ejecute `send`.
+    ok = (result.get("ok") is False and result.get("failed_at") == "type"
+          and "send" not in pe.capabilities.calls
+          and set(pe.capabilities.calls) == {"type"})
     return ok, f"failed_at={result.get('failed_at')}, calls={pe.capabilities.calls}"
 
 
