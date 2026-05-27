@@ -78,6 +78,14 @@ class ProfileChange(BaseModel):
     name: str
 
 
+class AccessibilityChange(BaseModel):
+    """Body of PUT /accessibility. A nivel MÓDULO por la misma razón que
+    ProfileChange (forward-ref de annotations). `mode` = normal|no_vidente|
+    movilidad."""
+
+    mode: str
+
+
 # ---------- hardware specs ----------
 
 # cached at module import — these don't change at runtime, so detecting once
@@ -1295,20 +1303,53 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         except Exception as exc:
             return {"active": "vram4", "error": str(exc)}
 
+    @app.get("/accessibility")
+    def get_accessibility() -> Any:
+        """Modo de accesibilidad activo + catálogo, para el chip de la UI."""
+        try:
+            from . import accessibility as _a11y
+            active = _a11y.get_active_mode()
+            return {
+                "active": active.name,
+                "display_name": active.display_name,
+                "modes": [
+                    {"name": m.name, "display_name": m.display_name,
+                     "description": m.description}
+                    for m in (_a11y.get(n) for n in _a11y.list_names())
+                ],
+            }
+        except Exception as exc:
+            return {"active": "normal", "modes": [], "error": str(exc)}
+
+    @app.put("/accessibility")
+    def put_accessibility(body: AccessibilityChange) -> Any:
+        """Cambia el modo de accesibilidad (persiste). No reinicia el server: es
+        una capa de comportamiento (system_hint + guardas), no de modelo."""
+        try:
+            from . import accessibility as _a11y
+            m = _a11y.set_active_mode(body.mode)
+            BUS.publish({"type": "activity", "entry": {
+                "id": uuid.uuid4().hex[:8], "src": "SYSTEM",
+                "msg": f"accessibility · {m.display_name}", "ts": _ts_now()}})
+            return {"ok": True, "active": m.name, "display_name": m.display_name}
+        except ValueError as exc:
+            return {"ok": False, "error": str(exc)}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
     # NOTE: ProfileChange is defined at MODULE level (see its docstring) —
     # a function-local Pydantic model can't be resolved from the stringized
     # forward-ref annotation and silently breaks body binding (422).
 
-    # Alias UI -> nombre canónico de profiles.py. Desde 2026-05-20 la UI envía
-    # los nombres por VRAM directamente (vram3..vram16, standby), que
-    # set_active_profile acepta tal cual. Mantenemos los alias VIEJOS (perf/
-    # bal8/bal/light/stdby) para que una UI cacheada anterior siga funcionando.
-    # set_active_profile además resuelve los nombres legacy (balanced/light/...).
+    # 2026-05-26: el sistema se colapsó a un solo perfil (vram4) + standby. Todos
+    # los chips/nombres viejos de cualquier UI cacheada (perf/bal8/bal/light y
+    # también vram3/6/8/12/16) caen a vram4. set_active_profile + _resolve_alias
+    # ya resuelven los nombres legacy igualmente; este map sólo cubre los chips
+    # cortos de la UI vieja que NO son nombres de perfil. stdby -> standby.
     _PROFILE_UI_ALIASES: dict[str, str] = {
-        # legacy chips de la UI anterior:
-        "perf":  "vram16",
-        "bal8":  "vram8",
-        "bal":   "vram6",
+        "perf":  "vram4",
+        "bal8":  "vram4",
+        "bal":   "vram4",
         "light": "vram4",
         "stdby": "standby",
     }

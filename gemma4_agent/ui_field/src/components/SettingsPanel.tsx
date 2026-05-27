@@ -579,12 +579,10 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
         const vramMb = Math.round((data.gpu_vram_gb ?? 0) * 1024);
         if (vramMb > 0) {
           set('vramDetected')(vramMb);
-          // simple heuristic matching the canonical vramN profiles.
-          const rec = vramMb >= 12 * 1024 ? 'vram16'
-            : vramMb >= 8 * 1024 ? 'vram8'
-            : vramMb >= 6 * 1024 ? 'vram6'
-            : 'vram4';
-          set('recommendedProfile')(rec);
+          // 2026-05-26: el producto tiene UN solo perfil (vram4 = E2B-Q4, todo
+          // en ≤4 GB). Ya no hay escalera por VRAM: la recomendación es siempre
+          // vram4 sin importar cuánta VRAM haya.
+          set('recommendedProfile')('vram4');
         }
       } catch { /* ignore */ }
     })();
@@ -593,13 +591,14 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const PROFILES = ['vram3', 'vram4', 'vram6', 'vram8', 'vram12', 'vram16', 'standby'] as const;
+  // 2026-05-26: colapsado a un solo perfil operante (vram4) + standby (server off).
+  const PROFILES = ['vram4', 'standby'] as const;
   const ROWS = [
-    { row: 'ctx', values: ['4 096', '8 192', '16 384', '24 576', '32 768', '49 152', 'off'] },
-    { row: 'server', values: ['on', 'on', 'on', 'on', 'on', 'on', 'off'] },
-    { row: 'voice', values: ['on', 'on', 'on', 'on', 'on', 'on', 'off'] },
-    { row: 'vision', values: ['on', 'on', 'on', 'on', 'on', 'on', 'off'] },
-    { row: 'vram cap', values: ['3 gb', '4 gb', '6 gb', '8 gb', '12 gb', '16 gb', '0 gb'] },
+    { row: 'ctx', values: ['16 384', 'off'] },
+    { row: 'server', values: ['on', 'off'] },
+    { row: 'voice', values: ['on', 'off'] },
+    { row: 'vision', values: ['on', 'off'] },
+    { row: 'vram cap', values: ['4 gb', '0 gb'] },
   ];
   return (
     <STSection>
@@ -628,19 +627,8 @@ function ProfilesTab({ c, set, profile, onProfile }: { c: SettingsConfig; set: S
         <Icon name="restart" size={11} /> re-detect
       </button>
 
-      <div className="st-sub-head" style={{ marginTop: 18 }}>auto-switch (opt-in)</div>
-      <STCheck value={c.autoSwitch}     onChange={set('autoSwitch')}     label="change profile automatically when…" />
-      <STCheck value={c.autoSwitchGame} onChange={set('autoSwitchGame')} label="a game is detected" hint="process in watchlist" />
-      <STCheck value={c.autoSwitchGpu}  onChange={set('autoSwitchGpu')}  label="gpu > 70% for more than 30s" hint="excluding gemma 4" />
-      <STCheck value={c.autoSwitchRam}  onChange={set('autoSwitchRam')}  label="ram > 85%" />
-      <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-        <Field label="switch to"><STInput value={c.autoSwitchTo} onChange={set('autoSwitchTo')} /></Field>
-        <Field label="return to"><STInput value={c.autoSwitchBack} onChange={set('autoSwitchBack')} /></Field>
-      </div>
-      <Field label="watchlist processes" hint="one per line">
-        <STText value={c.gameProcesses} onChange={set('gameProcesses')} rows={4} />
-      </Field>
-
+      {/* 2026-05-26: el auto-switch entre perfiles se quitó (un solo perfil:
+          no hay a dónde cambiar). El único toggle real es vram4 <-> standby. */}
       <div className="st-sub-head" style={{ marginTop: 18 }}>active profile</div>
       <div className="profile-chips" style={{ marginBottom: 12 }}>
         {PROFILES.map((p) => (

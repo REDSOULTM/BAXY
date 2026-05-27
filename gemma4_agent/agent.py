@@ -44,6 +44,14 @@ DANGEROUS_TOOLS_NEVER_INHERIT = frozenset({
 # de texto. Universal: no depende del idioma ni del nombre de la app.
 _GUI_CONTEXT_TOOLS = frozenset({"gui", "uia", "app", "window", "vision"})
 
+# Tope de re-prompts forzados por turno cuando, en movilidad/no_vidente, el LLM
+# DELEGA la tarea en el usuario en vez de seguir actuando. Acota el "hacé todo
+# por el usuario" para que el 4B no se cuelgue en una cadena infinita: avanza
+# hasta este tope y, si no completó, para honesto. Cada re-prompt consume además
+# una iteración del loop max_agent_turns, así que esto es un límite ADICIONAL.
+import os as _os_a11y
+_A11Y_MAX_CONTINUES = int(_os_a11y.environ.get("GEMMA4_A11Y_MAX_CONTINUES", "3"))
+
 # Confirmación/negación a la oferta de automatización del Jarvis (inv 5). El
 # "sí/no" es vocabulario CERRADO y universal -> lista multilingüe (no embeddings:
 # 1-2 palabras dan señal pobre). Cubre los idiomas más comunes; lo no reconocido
@@ -213,6 +221,14 @@ class Gemma4Agent:
         self._explicit_plan_text: str = ""
         self._explicit_plan_steps: list[str] = []
         self._phrase_fires: list[dict[str, Any]] = []
+        # Nota transitoria (un turno) cuando el usuario acaba de cambiar el modo
+        # de accesibilidad por voz: el LLM la usa para CONFIRMAR el cambio con
+        # sus propias palabras (no hay frase enlatada). Se limpia tras el turno.
+        self._a11y_switch_note: str = ""
+        # Contador (por turno) de re-prompts forzados en movilidad/no_vidente
+        # cuando el LLM DELEGABA la tarea en vez de seguir actuando. Acotado para
+        # "avanzar lo más posible y después parar honesto", sin colgarse.
+        self._a11y_continue_count: int = 0
         # Summarization cooldown so we don't spend an extra LLM call every
         # turn when the conversation has just been compacted. Resets per-clear.
         self._summarize_last_run_turn: int = -10
@@ -361,11 +377,11 @@ class Gemma4Agent:
             before = _title()
             # Ctrl+K abre el quick-switcher en Discord/Slack/Teams. (Si la app no lo
             # soporta, el type+Enter no cambia el título y devolvemos None.)
-            self.tools.execute("gui", {"action": "keypress", "keys": "ctrl+k"})
+            self.tools.execute("gui", {"action": "keypress", "keys": "ctrl+k", "window": win})
             time.sleep(0.7)
-            self.tools.execute("gui", {"action": "type", "text": target})
+            self.tools.execute("gui", {"action": "type", "text": target, "window": win, "method": "sendkeys"})
             time.sleep(1.0)
-            self.tools.execute("gui", {"action": "keypress", "keys": "enter"})
+            self.tools.execute("gui", {"action": "keypress", "keys": "enter", "window": win})
             time.sleep(1.2)
             after = _title()
         except Exception:
@@ -462,6 +478,22 @@ class Gemma4Agent:
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
         persona_hint = f"\n\n{self._persona.system_hint}" if self._persona.system_hint else ""
+        # Accessibility mode (perceptual/motor). Session-level (no cambia por
+        # turno) -> va en el bloque ESTABLE junto a persona, cache-friendly. El
+        # `system_hint` está vacío para 'normal', así que esto es no-op salvo
+        # que el usuario haya activado un modo. Las garantías DURAS (narrar /
+        # confirmar / hands-free) las aplican guardas estructurales en runtime,
+        # no este texto. Fallback seguro: cualquier error -> sin hint.
+        try:
+            from . import accessibility as _a11y
+            _a11y_hint = _a11y.get_active_mode().system_hint
+        except Exception:
+            _a11y_hint = ""
+        accessibility_hint = f"\n\n{_a11y_hint}" if _a11y_hint else ""
+        # Nota transitoria (un turno) si el usuario acaba de cambiar de modo por
+        # voz — el LLM la usa para confirmar el cambio. Va en la cola VARIABLE.
+        a11y_switch_note = (f"\n\n{self._a11y_switch_note}"
+                            if getattr(self, "_a11y_switch_note", "") else "")
         from .experience import format_recall_for_prompt
         from .explicit_plan import format_for_prompt as _format_explicit_plan
         from .project_context import format_for_prompt as _format_project_context
@@ -561,12 +593,13 @@ class Gemma4Agent:
             core_stable = build_core_only()
             tool_rules_tail = build_tool_rules_tail(selected_tool_names)
             tool_rules_section = f"\n\n{tool_rules_tail}" if tool_rules_tail else ""
-            # ESTABLE primero (no depende del turno): CORE + persona + skills.
-            stable = f"{core_stable}{persona_hint}{skills_critical}{skills_menu}"
+            # ESTABLE primero (no depende del turno): CORE + persona +
+            # accesibilidad + skills.
+            stable = f"{core_stable}{persona_hint}{accessibility_hint}{skills_critical}{skills_menu}"
             # VARIABLE al final (depende del subset/turno): mode, tool-rules,
             # tool-schemas, project/plan/explicit/recall/phrase, microagents,
             # intent, memoria.
-            variable = (f"{mode_hint}{tool_rules_section}{tools_section}"
+            variable = (f"{mode_hint}{a11y_switch_note}{tool_rules_section}{tools_section}"
                         f"{project_section}{plan_hint}{explicit_section}"
                         f"{recall_section}{phrase_section}{microagents_section}"
                         f"{intent_hint}\n\n# Persistent memory\n"
@@ -574,7 +607,7 @@ class Gemma4Agent:
             return {"role": "system", "content": stable + variable}
         return {
             "role": "system",
-            "content": f"{prompt_base}{mode_hint}{tools_section}{persona_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
+            "content": f"{prompt_base}{mode_hint}{a11y_switch_note}{tools_section}{persona_hint}{accessibility_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
@@ -777,12 +810,43 @@ class Gemma4Agent:
                     pass
             except Exception:
                 pass
+        # Reset de la nota transitoria de cambio-de-modo (un turno). Va ANTES de
+        # cualquier short-circuit para que no filtre de un turno al siguiente.
+        self._a11y_switch_note = ""
+        self._a11y_continue_count = 0  # re-prompts de accesibilidad usados este turno
         # JARVIS (inv 5): si el turno anterior ofreció automatizar una rutina y
         # el usuario responde sí/no, resolverlo ACÁ (antes del LLM) — es un
         # handshake determinista, no hace falta inferencia. Short-circuit del turno.
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
             return _jarvis_reply
+        # ACCESIBILIDAD (B2): si el usuario PIDE cambiar de modo de accesibilidad
+        # ("activá modo no vidente", "no puedo usar las manos", "volvé a normal"),
+        # lo detectamos por EMBEDDINGS multilingües (no keywords) y lo aplicamos/
+        # persistimos ACÁ, antes de elegir tools. NO short-circuiteamos con una
+        # respuesta enlatada: dejamos seguir el turno para que el LLM confirme el
+        # cambio con sus palabras, ya con el system_hint del nuevo modo activo.
+        # Fallback seguro: si el encoder está caído, maybe_switch_mode -> None.
+        if isinstance(content, str) and content.strip():
+            try:
+                from . import accessibility_voice as _a11y_voice
+                _switched = _a11y_voice.maybe_switch_mode(content)
+                if _switched is not None:
+                    self._a11y_switch_note = (
+                        f"# Cambio de modo de accesibilidad\n"
+                        f"El usuario acaba de pedir cambiar al modo "
+                        f"«{_switched.display_name}». Ya quedó ACTIVADO y "
+                        f"persistido. Confirmáselo en UNA frase breve, con tus "
+                        f"palabras y en su idioma, y seguí asistiéndolo en ese "
+                        f"modo. No expliques la implementación."
+                    )
+                    try:
+                        self.trace.event(turn_id, "a11y_mode_switch",
+                                         mode=_switched.name)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
         # COMPUTER-USE ES UNA TOOL (rediseño 2026-05-25, pedido de RED): operar dentro
         # de una app abierta ya NO es un short-circuit pre-LLM que secuestraba turnos
         # (causaba: "abre steam"->enfoca/minimiza, WhatsApp->escribe en la caja
@@ -1309,6 +1373,22 @@ class Gemma4Agent:
         if self._persona.preferred_tools:
             existing = set(selected_tool_names)
             for tool_name in self._persona.preferred_tools:
+                if tool_name not in existing:
+                    selected_tool_names.append(tool_name)
+                    existing.add(tool_name)
+        # Accessibility-mode nudge: igual patrón que la persona. En 'movilidad'
+        # el agente DEBE tener a mano las tools de control del PC (computer_use/
+        # uia/gui) para poder actuar sin pedirle al usuario que toque nada; en
+        # 'no_vidente', las de lectura/control de pantalla. 'normal' no tiene
+        # preferred_tools -> no-op. Fallback seguro ante cualquier error.
+        try:
+            from . import accessibility as _a11y_sub
+            _a11y_prefs = _a11y_sub.get_active_mode().preferred_tools
+        except Exception:
+            _a11y_prefs = ()
+        if _a11y_prefs:
+            existing = set(selected_tool_names)
+            for tool_name in _a11y_prefs:
                 if tool_name not in existing:
                     selected_tool_names.append(tool_name)
                     existing.add(tool_name)
@@ -1846,6 +1926,52 @@ class Gemma4Agent:
             )
 
             if not raw_tool_calls:
+                # ACCESIBILIDAD (B3/B4) — CONTINUAR EN EL MISMO TURNO. En
+                # movilidad/no_vidente el agente debe HACER TODO por el usuario:
+                # si está por terminar con una respuesta que DELEGA la tarea
+                # ("revisá los resultados", "elegí cuál", "mirá la pantalla y
+                # decidí"), NO finalizamos — inyectamos un nudge y re-prompteamos
+                # al LLM para que ejecute el SIGUIENTE paso él mismo, dentro de
+                # este turno. Acotado por _A11Y_MAX_CONTINUES para "avanzar lo más
+                # posible y después parar honesto" (el 4B se traba en cadenas
+                # largas; no queremos un loop infinito). Aplica a CUALQUIER tarea,
+                # no solo compras. Fallback seguro: cualquier error -> finaliza.
+                _cont_delegates = None
+                try:
+                    from . import accessibility as _a11y_cont
+                    from .reply_validator import reply_delegates_task as _rdt_cont
+                    _cont_mode = _a11y_cont.get_active_mode()
+                    _cont_active = _cont_mode.hands_free_only or _cont_mode.narrate_all_actions
+                    if _cont_active:
+                        _cont_delegates = _rdt_cont(assistant_content or "")
+                except Exception:
+                    _cont_active = False
+                    _cont_delegates = False
+                if (_cont_active
+                        and self._a11y_continue_count < _A11Y_MAX_CONTINUES
+                        and _cont_delegates):
+                    self._a11y_continue_count += 1
+                    self.trace.event(
+                        turn_id, "a11y_continue_nudge",
+                        attempt=self._a11y_continue_count,
+                        reply_preview=(assistant_content or "")[:120],
+                    )
+                    self.history.append({"role": "assistant",
+                                         "content": assistant_content or ""})
+                    self.history.append({
+                        "role": "user",
+                        "content": (
+                            "[system note] No delegues la tarea en mí: no puedo "
+                            "revisar la pantalla, elegir ni hacer clic. EJECUTÁ "
+                            "vos el siguiente paso ahora con una tool-call "
+                            "(capturá la pantalla con vision si necesitás leer "
+                            "los resultados, abrí el resultado correcto vos "
+                            "mismo, y seguí). Si de verdad te trabás, decímelo "
+                            "con honestidad — pero primero intentá el próximo "
+                            "paso."
+                        ),
+                    })
+                    continue  # re-prompt en la próxima iteración del for _turn
                 chain_question = self._filesystem_search_clarification(
                     events, raw_text_early,
                 )
@@ -2117,6 +2243,12 @@ class Gemma4Agent:
                         LISTO_REGEN_HINT as _LISTO_REGEN_HINT,
                         is_unverified_claim as _is_unverified_claim,
                         UNVERIFIED_CLAIM_REGEN_HINT as _UNVERIFIED_CLAIM_HINT,
+                        asks_user_manual_action as _asks_user_manual_action,
+                        HANDS_FREE_REGEN_HINT as _HANDS_FREE_REGEN_HINT,
+                        reply_too_terse_for_blind as _reply_too_terse_for_blind,
+                        NARRATE_ACTION_REGEN_HINT as _NARRATE_ACTION_REGEN_HINT,
+                        reply_delegates_task as _reply_delegates_task,
+                        DELEGATE_REGEN_HINT as _DELEGATE_REGEN_HINT,
                     )
                     if _is_listo_on_no_tool_turn(
                         assistant_content or "", list(events),
@@ -2144,6 +2276,60 @@ class Gemma4Agent:
                         self.history.append({
                             "role": "system",
                             "content": _UNVERIFIED_CLAIM_HINT,
+                        })
+                    # MOVILIDAD (B3): si el modo manos-libres está activo y el
+                    # reply le PIDIÓ al usuario una acción manual (clic/tecla/
+                    # typeo), inyectar la corrección — el agente debe ACTUAR, no
+                    # delegar en el usuario. Solo en modo movilidad: en otros
+                    # modos pedir un clic es válido. Independiente de los de
+                    # arriba (puede co-ocurrir con un claim).
+                    try:
+                        from . import accessibility as _a11y_chk
+                        _a11y_active = _a11y_chk.get_active_mode()
+                        _hands_free = _a11y_active.hands_free_only
+                        _narrate = _a11y_active.narrate_all_actions
+                    except Exception:
+                        _hands_free = False
+                        _narrate = False
+                    if _hands_free and _asks_user_manual_action(assistant_content or ""):
+                        self.trace.event(
+                            turn_id, "reply_anti_pattern_detected",
+                            pattern="hands_free_manual_request",
+                        )
+                        self.history.append({
+                            "role": "system",
+                            "content": _HANDS_FREE_REGEN_HINT,
+                        })
+                    # NO VIDENTE (B4): si el modo narra-todo está activo y corrió
+                    # una acción pero el reply quedó MUDO/escueto (un "Listo" que
+                    # no informa a quien no ve), pedir una confirmación hablada
+                    # descriptiva. Solo en no_vidente: en otros modos un ack corto
+                    # es válido. Independiente de las guardas de arriba.
+                    if _narrate and _reply_too_terse_for_blind(
+                        assistant_content or "", list(events)):
+                        self.trace.event(
+                            turn_id, "reply_anti_pattern_detected",
+                            pattern="terse_reply_blind",
+                        )
+                        self.history.append({
+                            "role": "system",
+                            "content": _NARRATE_ACTION_REGEN_HINT,
+                        })
+                    # UNIVERSAL movilidad/no_vidente: si el reply DELEGA la tarea
+                    # en el usuario ("revisá los resultados", "elegí cuál", "mirá
+                    # la pantalla y decidí") en vez de seguir actuando, corregir.
+                    # Aplica a CUALQUIER tarea (no solo compras): el usuario de
+                    # estos modos no puede revisar/elegir/clickear. Gateado a los
+                    # dos modos donde el usuario no puede intervenir a mano.
+                    if (_hands_free or _narrate) and _reply_delegates_task(
+                        assistant_content or ""):
+                        self.trace.event(
+                            turn_id, "reply_anti_pattern_detected",
+                            pattern="task_delegated_to_user",
+                        )
+                        self.history.append({
+                            "role": "system",
+                            "content": _DELEGATE_REGEN_HINT,
                         })
                 except Exception as _exc:  # noqa: BLE001
                     try:
@@ -2984,7 +3170,8 @@ class Gemma4Agent:
     # Tools de BÚSQUEDA/LISTADO cuyo resultado suele ser un PASO INTERMEDIO
     # (el usuario quiere algo CON el resultado: abrir/reproducir/leer).
     _SEARCH_LIKE_TOOLS = frozenset({
-        "filesystem", "local_search", "photo_library", "web", "browser_real",
+        "filesystem", "local_search", "photo_library", "web", "browser",
+        "browser_real",
     })
 
     def _chaining_nudge(
@@ -3017,7 +3204,10 @@ class Gemma4Agent:
                 "[system note] La búsqueda encontró resultados. Si la tarea del "
                 "usuario requería un SEGUNDO paso con el resultado (abrir, "
                 "reproducir, leer, mostrar), EJECUTALO ahora con la siguiente "
-                "tool-call usando el primer resultado. No te detengas en la "
+                "tool-call usando el primer resultado. Si el resultado trae "
+                "`top_result_url`, abrilo directamente con browser.open(url=...) "
+                "en vez de pedirle al usuario que inspeccione la pantalla. No te "
+                "detengas en la "
                 "búsqueda si el usuario pidió una acción sobre lo encontrado."
             )
         return None

@@ -279,3 +279,310 @@ def soften_unverified_launch(reply_text: str, tool_calls_this_turn: list[Any]) -
         return reply_text
     lang = _guess_lang(reply_text)
     return reply_text.rstrip() + _LAUNCH_HEDGE.get(lang, _LAUNCH_HEDGE["es"])
+
+
+# ---------------------------------------------------------------------------
+# Anti-"pedir input manual" (MODO MOVILIDAD, B3). En modo movilidad el usuario NO
+# puede usar teclado/mouse: el agente debe ACTUAR por él, nunca pedirle que toque
+# algo. Esta guarda estructural detecta cuando el reply le INSTRUYE al usuario una
+# acción MANUAL ("hacé clic en...", "apretá Enter", "escribí tu contraseña",
+# "andá a Configuración y tocá..."). Solo se evalúa cuando el modo movilidad está
+# activo (el caller lo gatea) — nunca afecta a normal/no_vidente.
+#
+# CUMPLE las reglas (igual que _reply_asserts_effect):
+#  - NO keywords por idioma: detección por SIMILITUD SEMÁNTICA contra anclas
+#    multi-idioma (mismo encoder del router).
+#  - Mide la FORMA del reply del LLM, nunca el texto del usuario.
+#  - FALLBACK SEGURO: sin encoder o margen ambiguo -> NO flaggea.
+# ---------------------------------------------------------------------------
+
+# Margen mínimo (manual - ok) para considerar que el reply PIDE input manual.
+# CONSERVADOR a propósito (CLAUDE.md §3): preferimos un falso-NEGATIVO ocasional
+# (una instrucción manual que se cuela) antes que un falso-POSITIVO (regen
+# espurio sobre un reply legítimo, p.ej. una pregunta aclaratoria). El system_hint
+# de movilidad es la defensa primaria; esta guarda es el backstop estructural.
+# Medido (2026-05-26, encoder real, 14 casos): 13/14, 0 falsos-positivos.
+_HANDS_FREE_MARGIN = float(__import__("os").environ.get("GEMMA4_HANDS_FREE_MARGIN", "0.15"))
+
+# Anclas "pedile al usuario que haga una acción MANUAL en pantalla".
+_MANUAL_INSTRUCTION_ANCHORS = [
+    # es
+    "hacé clic en el botón aceptar", "apretá la tecla enter",
+    "escribí tu contraseña en el campo", "andá a configuración y tocá guardar",
+    "presioná el botón de la esquina", "hacé doble clic en el ícono",
+    "seleccioná la opción con el mouse",
+    # en
+    "click the OK button", "press the enter key",
+    "type your password in the field", "go to settings and tap save",
+    "double click the icon", "select the option with your mouse",
+    # pt / fr / de / it
+    "clique no botão", "pressione a tecla enter",
+    "cliquez sur le bouton", "appuyez sur la touche entrée",
+    "klicken sie auf die schaltfläche", "drücken sie die eingabetaste",
+    "fai clic sul pulsante", "premi il tasto invio",
+]
+# Anclas "el agente lo hace por el usuario", "pregunta qué hacer" o "pide que el
+# usuario DIGA un dato por voz" (todo OK en manos libres — NO pide acción manual).
+_AGENT_ACTS_ANCHORS = [
+    # es — agente actúa / pregunta
+    "ya lo hice por vos", "lo abro yo ahora", "lo hago por vos",
+    "¿querés que lo haga?", "¿a cuál te referís?", "listo, lo cerré",
+    "te lo dejo abierto", "decime qué necesitás",
+    # es — pedir un dato HABLADO (válido: el usuario lo dice, no lo escribe)
+    "decime el nombre y lo busco yo", "¿con qué otro nombre lo probamos?",
+    "decime qué querés y lo hago", "no la encontré, ¿cómo se llama?",
+    # en
+    "I did it for you", "I'll open it now", "I'll handle it",
+    "do you want me to do it", "which one did you mean", "done, I closed it",
+    "tell me the name and I'll search it", "couldn't find it, what's it called",
+    # pt / fr / de / it
+    "eu faço por você", "je le fais pour toi",
+    "ich mache es für dich", "lo faccio io per te",
+]
+
+
+class _HandsFreeCentroids:
+    __slots__ = ("ready", "manual", "ok")
+
+    def __init__(self) -> None:
+        self.ready = False
+        self.manual = None
+        self.ok = None
+
+
+_HF = _HandsFreeCentroids()
+
+
+def _ensure_hands_free_centroids() -> bool:
+    if _HF.ready:
+        return _HF.manual is not None
+    try:
+        from . import semantic_router as sr
+        if not sr._ensure_loaded():
+            _HF.ready = True
+            return False
+        import numpy as np
+        model = sr._STATE.model
+
+        def _centroid(anchors):
+            e = model.encode(anchors, normalize_embeddings=True).mean(0)
+            return np.asarray(e / (np.linalg.norm(e) or 1.0), dtype="float32")
+
+        _HF.manual = _centroid(_MANUAL_INSTRUCTION_ANCHORS)
+        _HF.ok = _centroid(_AGENT_ACTS_ANCHORS)
+        _HF.ready = True
+        return True
+    except Exception:
+        _HF.ready = True
+        return False
+
+
+def asks_user_manual_action(reply_text: str) -> bool:
+    """True si el reply le PIDE al usuario una acción MANUAL (clic/tecla/typeo).
+    False si no hay encoder (fallback seguro) o si el agente actúa / pregunta.
+
+    Estructural y multilingüe. El CALLER debe gatear esto a modo movilidad: en
+    otros modos pedirle al usuario que haga clic es perfectamente válido."""
+    txt = (reply_text or "").strip()
+    if len(txt) < 4:
+        return False
+    if not _ensure_hands_free_centroids() or _HF.manual is None:
+        return False
+    try:
+        from . import semantic_router as sr
+        import numpy as np
+        q = sr.embed(txt)
+        if q is None:
+            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
+        q = np.asarray(q, dtype="float32")
+        return (float(q @ _HF.manual) - float(q @ _HF.ok)) >= _HANDS_FREE_MARGIN
+    except Exception:
+        return False
+
+
+HANDS_FREE_REGEN_HINT = (
+    "MOVILIDAD: tu respuesta le pidió al usuario que hiciera una acción manual "
+    "(hacer clic, apretar una tecla, escribir). En este modo el usuario NO "
+    "puede usar teclado ni mouse. NO le pidas que toque nada: ejecutá vos la "
+    "acción con las herramientas de control del PC (computer_use / gui / uia). "
+    "Si de verdad necesitás un dato suyo, pedíselo para que lo DIGA por voz, no "
+    "para que lo escriba. Reescribí tu respuesta en el idioma del usuario."
+)
+
+
+# ---------------------------------------------------------------------------
+# Anti-DELEGACIÓN / tarea-abandonada-a-medias (MOVILIDAD + NO VIDENTE, B3/B4).
+# Caso real: en movilidad, "comprá X en Instant Gaming" -> el agente hizo UN
+# paso (búsqueda en Google) y respondió "revisá los resultados para ver el
+# precio". Eso NO es pedir un clic explícito (la guarda hands-free no lo atrapa)
+# pero le PASA la tarea al usuario — que en movilidad/no_vidente no puede
+# revisar/elegir/clickear. Esta guarda detecta cuando el reply DELEGA la
+# continuación de la tarea en el usuario (revisá/fijate/elegí cuál/mirá la
+# pantalla y decidí) en vez de seguir actuando hasta completar o trabarse.
+#
+# Estructural y multilingüe (embeddings). Distingue DELEGAR (malo) de: el agente
+# YA terminó, el agente pregunta un dato puntual por voz, o el agente avisa
+# HONESTAMENTE que se trabó (eso último es válido — avanzar lo más posible +
+# avisar, según la decisión de producto 2026-05-26).
+# ---------------------------------------------------------------------------
+_DELEGATE_MARGIN = float(__import__("os").environ.get("GEMMA4_DELEGATE_MARGIN", "0.10"))
+
+_DELEGATE_ANCHORS = [
+    # es — le pasa la tarea al usuario para que revise/elija/decida/mire (UNIVERSAL,
+    # no solo compras: archivos, configuración, listas, resultados, lo que sea)
+    "revisá los resultados y elegí cuál querés", "fijate en la pantalla cuál te sirve",
+    "mirá las opciones y decidí cuál comprar", "elegí vos el que prefieras",
+    "revisá la lista y avisame cuál", "ahí tenés los resultados, mirálos",
+    "decidí vos cuál de estos", "mirá la pantalla y decidí qué hacer",
+    "fijate en la configuración cuál opción activar", "elegí el archivo que quieras abrir",
+    "revisá las opciones de ajustes y seleccioná", "mirá vos cuál te conviene",
+    "verificá si querés que abra el enlace", "verifica si queres que abra el enlace",
+    "decime si querés que abra el resultado",
+    "avisame si querés que abra el link directo", "confirmame si querés que lo abra",
+    # en
+    "review the results and pick the one you want", "look at the screen and choose",
+    "check the options and decide which to buy", "pick whichever you prefer",
+    "look at the screen and decide what to do", "choose the file you want to open",
+    "check the settings and pick an option",
+    "tell me if you want me to open the link",
+    "let me know if you want me to open the result",
+    "should I open the direct link for you",
+    # pt / fr / de / it
+    "veja os resultados e escolha", "regarde les résultats et choisis",
+    "schau dir die ergebnisse an und wähle", "guarda i risultati e scegli",
+]
+_PROCEED_OR_DONE_ANCHORS = [
+    # es — el agente ACTÚA / terminó / pregunta por voz / avisa honesto del límite
+    "ya lo abrí y lo dejé listo", "lo agrego al carrito ahora",
+    "abrí la página del juego, sigo con la compra", "¿confirmás la compra? sí o no",
+    "confirmás esta acción de pago sí o no", "necesito confirmación hablada para pagar",
+    "llegué hasta el pago, ahí me detengo", "me trabé en este paso, no pude seguir",
+    "decime el título exacto y lo busco yo", "lo estoy comprando por vos",
+    # en
+    "I opened it and it's ready", "I'm adding it to the cart now",
+    "I opened the game page, continuing with the purchase",
+    "do you confirm the purchase yes or no", "confirm this paid action yes or no",
+    "I got stuck on this step",
+    # pt / fr / de / it
+    "abri a página e continuo", "j'ai ouvert la page et je continue",
+    "ich habe es geöffnet und mache weiter", "ho aperto la pagina e continuo",
+]
+
+
+class _DelegateCentroids:
+    __slots__ = ("ready", "delegate", "proceed")
+
+    def __init__(self) -> None:
+        self.ready = False
+        self.delegate = None
+        self.proceed = None
+
+
+_DG = _DelegateCentroids()
+
+
+def _ensure_delegate_centroids() -> bool:
+    if _DG.ready:
+        return _DG.delegate is not None
+    try:
+        from . import semantic_router as sr
+        if not sr._ensure_loaded():
+            _DG.ready = True
+            return False
+        import numpy as np
+        model = sr._STATE.model
+
+        def _centroid(anchors):
+            e = model.encode(anchors, normalize_embeddings=True).mean(0)
+            return np.asarray(e / (np.linalg.norm(e) or 1.0), dtype="float32")
+
+        _DG.delegate = _centroid(_DELEGATE_ANCHORS)
+        _DG.proceed = _centroid(_PROCEED_OR_DONE_ANCHORS)
+        _DG.ready = True
+        return True
+    except Exception:
+        _DG.ready = True
+        return False
+
+
+def reply_delegates_task(reply_text: str) -> bool:
+    """True si el reply DELEGA la continuación de la tarea en el usuario
+    (revisá/elegí/fijate y decidí), en vez de actuar o avisar honesto del
+    límite. Multilingüe, por embeddings. El caller lo gatea a movilidad/
+    no_vidente. Fallback seguro: sin encoder -> False."""
+    txt = (reply_text or "").strip()
+    if len(txt) < 4:
+        return False
+    if not _ensure_delegate_centroids() or _DG.delegate is None:
+        return False
+    try:
+        from . import semantic_router as sr
+        import numpy as np
+        q = sr.embed(txt)
+        if q is None:
+            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
+        q = np.asarray(q, dtype="float32")
+        return (float(q @ _DG.delegate) - float(q @ _DG.proceed)) >= _DELEGATE_MARGIN
+    except Exception:
+        return False
+
+
+DELEGATE_REGEN_HINT = (
+    "ACCESIBILIDAD: tu respuesta le pasó la tarea al usuario ('revisá los "
+    "resultados', 'elegí cuál', 'fijate en la pantalla'). En este modo el "
+    "usuario NO puede revisar ni elegir con mouse/teclado, y puede que no vea la "
+    "pantalla. NO delegues: SEGUÍ actuando vos hasta completar la tarea — "
+    "capturá la pantalla con la tool vision (describe_screen/ocr) si necesitás "
+    "leer los resultados, abrí el resultado correcto vos mismo con gui/uia/"
+    "computer_use, y avanzá al siguiente paso. Si de verdad te trabás en un "
+    "paso, decílo con honestidad ('llegué "
+    "hasta acá, me trabé en X') — pero NUNCA le pidas al usuario que revise o "
+    "elija algo en pantalla. Reescribí tu respuesta en el idioma del usuario."
+)
+
+
+# ---------------------------------------------------------------------------
+# Anti-respuesta-muda (MODO NO VIDENTE, B4). Un usuario que no ve necesita que
+# el resultado de una acción se le DIGA: una respuesta como "Listo." tras abrir
+# una app no le informa NADA (no ve la ventana). Esta guarda detecta el caso
+# estructural "corrió una tool con éxito PERO el reply es demasiado escueto para
+# informar a alguien que no ve" y pide una confirmación descriptiva hablada.
+#
+# Es ESTRUCTURAL (no keywords de contenido): combina (a) hubo tool exitosa este
+# turno, con (b) el reply es muy corto o es el ack-template 'Listo'. No mira el
+# significado del reply, solo su forma + la actividad de tools. El CALLER lo
+# gatea a modo no_vidente (en otros modos un "Listo." es perfectamente válido).
+# ---------------------------------------------------------------------------
+
+# Umbral de "demasiado escueto" para un usuario no vidente, en caracteres. Una
+# confirmación informativa ("Abrí Spotify y está sonando tu lista de Favoritos")
+# supera esto cómodo; un "Listo." / "Hecho." / "Ok" no. Conservador.
+_TERSE_REPLY_MAX_CHARS = int(__import__("os").environ.get("GEMMA4_NARRATE_MIN_CHARS", "40"))
+
+
+def reply_too_terse_for_blind(reply_text: str, tool_calls_this_turn: list[Any]) -> bool:
+    """True iff corrió una tool con éxito este turno PERO el reply es demasiado
+    escueto para informar a alguien que no ve (muy corto, o un ack 'Listo' pelado).
+
+    Estructural: tool-éxito + forma del reply (longitud / ack-template). No mira
+    el contenido semántico. El caller debe gatearlo a modo no_vidente."""
+    successful = [c for c in tool_calls_this_turn if _is_successful_call(c)]
+    if not successful:
+        return False  # no hubo acción que narrar -> nada que exigir
+    txt = (reply_text or "").strip()
+    if not txt:
+        return True  # reply vacío tras una acción: mudo total
+    # ack-template pelado ("Listo.", "Listo, abrí X" con X muy corto) o reply
+    # demasiado corto en general -> no informa a quien no ve.
+    if len(txt) <= _TERSE_REPLY_MAX_CHARS:
+        return True
+    return False
+
+
+NARRATE_ACTION_REGEN_HINT = (
+    "NO VIDENTE: ejecutaste una acción pero tu respuesta es demasiado escueta. "
+    "El usuario NO VE la pantalla, así que un 'Listo' no le dice nada. Describí "
+    "en una o dos frases QUÉ hiciste y cuál es el estado resultante observable "
+    "(qué app/ventana quedó al frente, qué está pasando ahora), en el idioma del "
+    "usuario. Sé concreto pero breve; no inventes detalles que no puedas verificar."
+)

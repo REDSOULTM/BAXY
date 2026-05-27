@@ -28,7 +28,8 @@ type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
 export type MicMode = 'listening' | 'ptt' | 'off';
 
 const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', 'standby'];
-const PROFILE_CYCLE = ['vram16', 'vram12', 'vram8', 'vram6', 'vram4', 'vram3', 'standby'];
+// 2026-05-26: un solo perfil operante (vram4) + standby; el hotkey alterna entre esos dos.
+const PROFILE_CYCLE = ['vram4', 'standby'];
 
 export default function App() {
   const { clock, date } = useClock();
@@ -88,6 +89,13 @@ export default function App() {
   // push-effect below from PUTting (and restarting llama-server) on first
   // mount before we even know the real active profile.
   const profileSynced = useRef(false);
+  // Modo de accesibilidad (normal | no_vidente | movilidad). Mismo ciclo que
+  // profile: arranca del último, se reconcilia con GET /accessibility en mount,
+  // y se PUT-ea al cambiar. NO reinicia el server (es capa de comportamiento).
+  const [accessMode, setAccessMode] = useState<string>(() => {
+    return localStorage.getItem('field.accessMode') ?? 'normal';
+  });
+  const accessSynced = useRef(false);
   const [activeSurface, setActiveSurface] = useState<SurfaceId>(() => {
     const stored = localStorage.getItem('field.surface');
     if (stored === 'sessions' || stored === 'memory' || stored === 'triggers' || stored === 'tools') {
@@ -164,6 +172,35 @@ export default function App() {
       .then((r) => { if (!r.ok) toastError(`profile change rejected · ${r.status}`); })
       .catch(() => toastError('profile change failed · backend unreachable'));
   }, [profile]);
+
+  // Accessibility mode: reconcile from backend on mount (source of truth =
+  // the persisted active_accessibility_mode.txt), then PUT on user change.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch('/accessibility');
+        if (!cancelled && r.ok) {
+          const data = await r.json();
+          if (data?.active) setAccessMode(String(data.active));
+        }
+      } catch { /* keep localStorage default */ }
+      finally { accessSynced.current = true; }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    if (!accessSynced.current) return;  // don't PUT until reconciled
+    localStorage.setItem('field.accessMode', accessMode);
+    fetch('/accessibility', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: accessMode }),
+    })
+      .then((r) => { if (!r.ok) toastError(`accessibility change rejected · ${r.status}`); })
+      .catch(() => toastError('accessibility change failed · backend unreachable'));
+  }, [accessMode]);
 
   // debug override + auto-cycler when WS is down
   const [debugState, setDebugState] = useState<ConvState | null>(null);
@@ -423,6 +460,8 @@ export default function App() {
             tokens={stream.tokens}
             profile={profile}
             onProfile={setProfile}
+            accessMode={accessMode}
+            onAccessMode={setAccessMode}
           />
         </div>
         <div className="col center">

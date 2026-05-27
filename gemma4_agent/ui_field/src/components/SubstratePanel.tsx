@@ -12,6 +12,8 @@ interface Props {
   tokens: number;
   profile: string;
   onProfile: (p: string) => void;
+  accessMode: string;
+  onAccessMode: (m: string) => void;
 }
 
 interface ModelState {
@@ -30,11 +32,21 @@ const INITIAL_HARDWARE: HardwareInfo = {
 };
 
 // Perfiles nombrados por VRAM (2026-05-20). Cada uno trae voz + transcripción
-// (CPU) + visión. Orden de MENOR a MAYOR VRAM: el modelo y el contexto crecen
-// con el número. `standby` apaga el server. El backend (PUT /profile) acepta
-// estos nombres canónicos tal cual; GET /profile devuelve el mismo nombre en
-// `active`. Números medidos en models + scripts/measure_vram_profiles.py.
-const PROFILES = ['vram3', 'vram4', 'vram6', 'vram8', 'vram12', 'vram16', 'standby'] as const;
+// 2026-05-26: el producto se colapsó a UN solo perfil operante, vram4 (E2B-Q4,
+// todo en ≤4 GB con voz/STT en CPU + visión). `standby` apaga el server. Ya no
+// hay escalera por VRAM ni selector de N perfiles. El backend (PUT /profile)
+// acepta estos nombres; GET /profile devuelve el activo. Cualquier nombre viejo
+// resuelve a vram4 en el backend (_resolve_alias).
+const PROFILES = ['vram4', 'standby'] as const;
+
+// Modos de accesibilidad (B5). normal = sin ajustes; no_vidente = todo por voz
+// (narra/lee pantalla); movilidad = control 100% por voz (manos libres). El
+// backend (PUT /accessibility) persiste; también se puede activar por voz.
+const ACCESS_MODES: { id: string; label: string }[] = [
+  { id: 'normal', label: 'normal' },
+  { id: 'no_vidente', label: 'no vidente' },
+  { id: 'movilidad', label: 'movilidad' },
+];
 
 function fmtK(n: number): string {
   return `${(n / 1000).toFixed(1)}k`;
@@ -42,6 +54,7 @@ function fmtK(n: number): string {
 
 export function SubstratePanel({
   convState, wsModel, field, ctx, tokens, profile, onProfile,
+  accessMode, onAccessMode,
 }: Props) {
   const [model, setModel] = useState<ModelState>(INITIAL_MODEL);
   const [metrics, setMetrics] = useState<MetricSnapshot>(INITIAL_METRICS);
@@ -207,6 +220,26 @@ export function SubstratePanel({
             onClick={() => onProfile(p)}
           >
             {p}
+          </button>
+        ))}
+      </div>
+
+      {/* ---- accessibility mode chips (B5) ---- */}
+      <div className="sec-head">
+        <span>access</span>
+        <span className="ref">{accessMode}</span>
+      </div>
+      <div className="profile-chips" role="radiogroup" aria-label="accessibility mode">
+        {ACCESS_MODES.map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            role="radio"
+            aria-checked={accessMode === m.id}
+            className={`chip${accessMode === m.id ? ' on' : ''}`}
+            onClick={() => onAccessMode(m.id)}
+          >
+            {m.label}
           </button>
         ))}
       </div>

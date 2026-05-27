@@ -31,6 +31,49 @@ def _fold_match(text: str) -> str:
     return "".join(ch for ch in folded if not unicodedata.combining(ch))
 
 
+# Reply phrases that signal the model CLAIMED or PROMISED an action it did not
+# actually call (false confirmation = past tense "ya lo hice"; promise = future
+# tense "voy a hacerlo"). Lifted to module level so the forced-tool-retry guard
+# in agent.py can reuse the SAME vocabulary as guard_promise_without_action —
+# one source of truth. See reply_claims_action().
+_FALSE_CONFIRMATION_PATTERNS = (
+    "hecho:", "hecho,", "listo,", "listo:",
+    "ejecuté", "ejecute", "registré", "registre",
+    "agendé", "agende", "envié", "envie", "mandé", "mande",
+)
+_PROMISE_PATTERNS = (
+    "buscare", "buscaré", "voy a buscar", "voy a investigar",
+    "voy a consultar", "voy a revisar", "voy a chequear",
+    "te proporcionare", "te proporcionaré", "te dire", "te diré",
+    "te respondere", "te responderé", "te informare", "te informaré",
+    "te traere", "te traeré", "te dare", "te daré la informacion",
+    "permiteme buscar", "permíteme buscar",
+    "dame un momento", "un momento por favor",
+    "te aviso", "te confirmo", "te paso", "te mando", "te muestro",
+    "lo reviso", "lo verifico", "déjame ver", "dejame ver",
+    "ahora te traigo", "ya te digo", "te explico", "ya mismo",
+    "i'll search", "i'll look", "let me search", "let me check",
+    "i will find", "i'll find", "i'll get",
+)
+
+
+def reply_claims_action(content: str) -> bool:
+    """True if the prose reply claims/promises an action it didn't call.
+
+    Used to decide whether a prose-without-tool-call turn is a genuine
+    skipped action (claim/promise -> the forced retry is justified) or just
+    chat/clarification/decline (no claim -> forcing a tool wastes an LLM
+    pass). Mirrors the detection in guard_promise_without_action.
+    """
+    if not content:
+        return False
+    low = content.lower()
+    stripped_low = low.lstrip()
+    if any(stripped_low.startswith(p) for p in _FALSE_CONFIRMATION_PATTERNS):
+        return True
+    return any(p in low for p in _PROMISE_PATTERNS)
+
+
 # ---------------------------------------------------------------------------
 # Shared fallback builder
 # ---------------------------------------------------------------------------
@@ -213,14 +256,9 @@ def guard_promise_without_action(
         return content, fallback_streak, last_fallback_user_text
 
     low = content.lower()
-    false_confirmation_patterns = (
-        "hecho:", "hecho,", "listo,", "listo:",
-        "ejecuté", "ejecute", "registré", "registre",
-        "agendé", "agende", "envié", "envie", "mandé", "mande",
-    )
     stripped_low = low.lstrip()
     confirm_match = next(
-        (p for p in false_confirmation_patterns if stripped_low.startswith(p)),
+        (p for p in _FALSE_CONFIRMATION_PATTERNS if stripped_low.startswith(p)),
         None,
     )
     if confirm_match:
@@ -244,21 +282,7 @@ def guard_promise_without_action(
         )
         return replacement, new_streak, new_last
 
-    promise_patterns = (
-        "buscare", "buscaré", "voy a buscar", "voy a investigar",
-        "voy a consultar", "voy a revisar", "voy a chequear",
-        "te proporcionare", "te proporcionaré", "te dire", "te diré",
-        "te respondere", "te responderé", "te informare", "te informaré",
-        "te traere", "te traeré", "te dare", "te daré la informacion",
-        "permiteme buscar", "permíteme buscar",
-        "dame un momento", "un momento por favor",
-        "te aviso", "te confirmo", "te paso", "te mando", "te muestro",
-        "lo reviso", "lo verifico", "déjame ver", "dejame ver",
-        "ahora te traigo", "ya te digo", "te explico", "ya mismo",
-        "i'll search", "i'll look", "let me search", "let me check",
-        "i will find", "i'll find", "i'll get",
-    )
-    matched = next((p for p in promise_patterns if p in low), None)
+    matched = next((p for p in _PROMISE_PATTERNS if p in low), None)
     if not matched:
         return content, fallback_streak, last_fallback_user_text
 
