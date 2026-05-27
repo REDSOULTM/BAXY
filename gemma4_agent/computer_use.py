@@ -1145,6 +1145,18 @@ class PlanExecutor:
             gui_safety.reset_action_budget()
         except Exception:
             pass
+        # ¿La cadena INTERACTÚA en página (type/click/send/fill_field/toggle)
+        # DESPUÉS de un open_url? Si sí, la capability de navegador prefiere CDP
+        # (robusto, no roba foco) para esos pasos — auto-lanza instancia dedicada
+        # si hace falta. Señal a nivel-plan que la capability sola no puede ver.
+        try:
+            _ops = [str(s.get("op") or "") for s in plan]
+            if "open_url" in _ops:
+                _after = _ops[_ops.index("open_url") + 1:]
+                _interactive = {"type", "click", "send", "keypress", "fill_field", "toggle"}
+                self.capabilities.browser._prefer_cdp = bool(_interactive & set(_after))
+        except Exception:
+            pass
         for step in plan:
             op, arg = step["op"], step["arg"]
             include_uia = op in {"click", "fill_field", "toggle", "wait_for", "discord_control"}

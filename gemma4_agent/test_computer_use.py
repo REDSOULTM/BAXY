@@ -472,6 +472,28 @@ class ExecutorDispatchTest(unittest.TestCase):
         # focus_app se reintentó (3 llamadas totales: 2 focus_app + 1 open_url)
         self.assertEqual(ex.capabilities.run.call_count, 3)
 
+    def test_prefer_cdp_set_when_chain_interacts_in_page(self):
+        # prefer_cdp (2026-05-27): si la cadena tiene type/click/send DESPUÉS de
+        # open_url, la capability de navegador debe preferir CDP (robusto, no roba
+        # foco) para esos pasos en-página.
+        ag = self._agent()
+        ex = self._executor(ag)
+        ex.capabilities.run = MagicMock(return_value=({"ok": True, "verified": True}, "X"))
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            ex.execute([{"op": "open_url", "arg": "youtube.com"},
+                        {"op": "type", "arg": "gatos"},
+                        {"op": "send", "arg": ""}], "t")
+        self.assertTrue(ex.capabilities.browser._prefer_cdp)
+
+    def test_prefer_cdp_not_set_for_navigate_only(self):
+        # cadena de SOLO navegar (sin interacción en página) -> NO fuerza CDP.
+        ag = self._agent()
+        ex = self._executor(ag)
+        ex.capabilities.run = MagicMock(return_value=({"ok": True, "verified": True}, "X"))
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            ex.execute([{"op": "open_url", "arg": "example.com"}], "t")
+        self.assertFalse(ex.capabilities.browser._prefer_cdp)
+
     def test_critical_step_aborts_after_exhausting_retries(self):
         # Si el paso crítico falla SIEMPRE (agota reintentos), aborta honesto.
         ag = self._agent()

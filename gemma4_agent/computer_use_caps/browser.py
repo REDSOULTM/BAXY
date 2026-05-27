@@ -52,6 +52,10 @@ class BrowserCapability(Capability):
         self._cdp_available = False
         self._cdp_owns_active_tab = False
         self._cdp_unavailable_reason = ""
+        # El executor lo pone en True cuando la cadena tiene INTERACCIÓN en página
+        # (type/click/send) DESPUÉS de un open_url: ahí conviene establecer CDP
+        # (robusto, no roba foco) aunque el token no nombre un navegador concreto.
+        self._prefer_cdp = False
 
     def can_run_contextually(self, op: str, app_token: str) -> bool:
         return op in self.contextual_ops and self._browser_hint(app_token) is not None
@@ -99,6 +103,13 @@ class BrowserCapability(Capability):
         if self._cdp_available:
             return True
         browser = self._browser_hint(app_token)
+        # Si la cadena va a INTERACTUAR en la página (type/click después) y el
+        # token no nombra un navegador concreto, igual establecemos CDP con el
+        # navegador por defecto (chrome) — attach_visible auto-lanza una instancia
+        # dedicada con --remote-debugging-port. Así los pasos en-página van por
+        # protocolo (robusto, NO roba foco) en vez de SendInput.
+        if not browser and self._prefer_cdp:
+            browser = "chrome"
         if not browser:
             return False
         if browser in self._cdp_attach_attempted:
