@@ -62,14 +62,18 @@ class TestMediaSpotifyNative(unittest.TestCase):
         mock_open.assert_called_once()
 
     def test_spotify_requires_query(self):
+        # 2026-05-22: comportamiento cambió — "pon una canción" SIN query
+        # ahora reproduce random (Liked Songs shuffle si hay username, sino
+        # Play global). El test viejo verificaba que rechazaba sin query.
+        # Hoy es OK sin query (es una decisión de producto: Spotify random).
+        # Memoria: project_spotify_random_2026_05_22.
         executor = MagicMock()
         result = media_tool(
             {"action": "play", "provider": "spotify"},
             executor,
         )
-        self.assertFalse(result.get("ok"))
-        # Mensaje debe mencionar query
-        self.assertIn("query", str(result.get("error", "")).lower())
+        # Random play sin query es válido — solo verificamos que es spotify.
+        self.assertEqual(result.get("provider"), "spotify")
 
     def test_apple_music_falls_back_to_youtube(self):
         executor = MagicMock(return_value={"ok": True})
@@ -203,6 +207,9 @@ class TestStreamingPlatforms(unittest.TestCase):
             self.assertIn("has_deeplink", sp[canonical])
 
     def test_spotify_deeplink_when_desktop_installed(self):
+        # 2026-05-28: Popen ahora se llama 2 veces (la app evolucionó —
+        # primer Popen para focus check, segundo para abrir el deeplink).
+        # El contract real es: AL MENOS una llamada con el spotify:search.
         from unittest.mock import patch
         with patch("gemma4_agent.domain_tools.subprocess.Popen") as popen, \
              patch("gemma4_agent.domain_tools._find_streaming_app",
@@ -214,7 +221,8 @@ class TestStreamingPlatforms(unittest.TestCase):
         self.assertTrue(result.get("ok"))
         self.assertEqual(result.get("provider"), "spotify")
         self.assertIn("spotify:search:", result.get("deeplink", ""))
-        popen.assert_called_once()
+        # Al menos UNA llamada — no exactly once.
+        self.assertGreaterEqual(popen.call_count, 1)
 
 
 class TestBrowserToolRule(unittest.TestCase):
