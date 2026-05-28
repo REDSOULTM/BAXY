@@ -4813,7 +4813,9 @@ def _progress(callback: ProgressCallback | None, event: str, **payload: Any) -> 
         callback(event, payload)
     except Exception as exc:
         try:
-            import sys
-            print(f"[progress callback error in event={event}]: {exc}", file=sys.stderr)
+            # R7 sprint 2026-05-28: era `print(..., file=sys.stderr)`.
+            # logger.warning va al mismo handler stderr en default config y
+            # se enruta donde corresponda en prod.
+            logger.warning("progress callback error in event=%s: %s", event, exc)
         except Exception:
             pass
