@@ -108,6 +108,7 @@ automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 | `_r2_make_shims_aliased.py` | R2 finalize: shims `domain_tools_X.py` como aliases del módulo real (sys.modules). | R2 |
 | `_r4_revert_aliases.py` | R4 cleanup: revierte `_ok_tr/_err_tr` aliases a `_ok/_err` directos. | R4 |
 | `_r4_final_cleanup.py` | R4 cleanup: borra defs duplicadas tras el revert, limpia imports. | R4 |
+| `_r3_remove_redundant_lazies.py` | R3 deep cleanup: elimina lazies que duplican imports top-level del mismo archivo. | R3 |
 
 ## Categoría G — Diagnoses ad-hoc (movibles a `_diag/`)
 

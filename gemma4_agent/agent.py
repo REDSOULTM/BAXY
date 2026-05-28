@@ -4113,7 +4113,7 @@ class Gemma4Agent:
         if not choices:
             return []
         raw = str((choices[0].get("message") or {}).get("content") or "").strip()
-        from .reasoning import sanitize_text
+        # R3 cleanup 2026-05-28: sanitize_text ya está top-level (línea 18).
         cleaned = sanitize_text(raw).strip()
         # The LLM sometimes wraps in ```json ... ``` despite instructions.
         if cleaned.startswith("```"):
@@ -4189,7 +4189,7 @@ class Gemma4Agent:
             msg = choices[0].get("message") or {}
             summary = str(msg.get("content") or "").strip()
             # Strip any leaked thinking tags or assistant role prefix.
-            from .reasoning import sanitize_text
+            # R3 cleanup: sanitize_text ya está top-level.
             return sanitize_text(summary)[:2000]
         except Exception as exc:
             self.trace.event(self.trace.new_turn_id(), "summarization_failed", error=str(exc))
