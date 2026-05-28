@@ -101,6 +101,7 @@ del [[architecture_audit_2026_05_27]] (2026-05-28).
 | `_r2_restore_head.py` | R2: restaura archivos a HEAD via `git show` (workaround harness). | R2 |
 | `_r3_rewrite_imports.py` | R3: reescribe lazy → top-level imports. | R3 |
 | `_r3_resolve_stranded.py` | R3: limpia merge-stage huérfanos via `update-index`. | R3 |
+| `_r4_migrate_batch.py` | R4: migración batch _ok/_err → ToolResult con .to_dict(). | R4 |
 
 ## Categoría G — Diagnoses ad-hoc (movibles a `_diag/`)
 

@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -44,6 +45,15 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 _PHOTO_EXTS = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".tif", ".tiff", ".webp", ".bmp", ".gif"}
 
 
@@ -56,7 +66,7 @@ def photo_library_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     action = str(args.get("action") or "status").casefold()
     pil_available = importlib.util.find_spec("PIL") is not None
     if action == "status":
-        return _ok(
+        return _ok_tr(
             pillow=pil_available,
             install_hint="python -m pip install Pillow",
             note="EXIF parsing and thumbnails require Pillow; scan/find_by_date work without it for filename listings only.",
@@ -64,7 +74,7 @@ def photo_library_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     if action == "scan":
         return _photo_scan(args)
     if not pil_available:
-        return _err(
+        return _err_tr(
             "Pillow is not installed",
             status="needs_dependency", verified=False,
             install_hint="python -m pip install Pillow",
@@ -77,7 +87,7 @@ def photo_library_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
         return _photo_thumbnails(args, state)
     if action == "find_by_date":
         return _photo_find_by_date(args)
-    return _err(
+    return _err_tr(
         "unknown photo_library action", action=action,
         valid_actions=[
             "status", "scan", "exif", "group_by_date", "group_by_location",
@@ -94,7 +104,7 @@ def _photo_scan(args: dict[str, Any]) -> dict[str, Any]:
     else:
         root = Path(root_raw).expanduser()
     if not root.exists():
-        return _err("root not found", root=str(root))
+        return _err_tr("root not found", root=str(root))
     limit = int(args.get("limit", 1000))
     photos: list[dict[str, Any]] = []
     for path in root.rglob("*"):
@@ -107,7 +117,7 @@ def _photo_scan(args: dict[str, Any]) -> dict[str, Any]:
             continue
         if len(photos) >= limit:
             break
-    return _ok(root=str(root), count=len(photos), photos=photos[:200], note=f"{len(photos)} photos found (preview limited to 200).")
+    return _ok_tr(root=str(root), count=len(photos), photos=photos[:200], note=f"{len(photos)} photos found (preview limited to 200).")
 
 
 def _photo_open_exif(path: Path) -> dict[str, Any]:
@@ -146,14 +156,14 @@ def _photo_open_exif(path: Path) -> dict[str, Any]:
 def _photo_exif(args: dict[str, Any]) -> dict[str, Any]:
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
-        return _err("missing path")
+        return _err_tr("missing path")
     path = Path(path_raw).expanduser()
     if not path.is_file():
-        return _err("file not found", path=str(path))
+        return _err_tr("file not found", path=str(path))
     info = _photo_open_exif(path)
     if info.get("error"):
-        return _err(info["error"], path=str(path))
-    return _ok(path=str(path), **info)
+        return _err_tr(info["error"], path=str(path))
+    return _ok_tr(path=str(path), **info)
 
 
 def _photo_extract_date(path: Path) -> str | None:
@@ -175,10 +185,10 @@ def _photo_group_by_date(args: dict[str, Any], state: AgentState) -> dict[str, A
     from .domain_tools_backup_sync import _next_available_path
     root_raw = str(args.get("root") or "").strip()
     if not root_raw:
-        return _err("missing root")
+        return _err_tr("missing root")
     root = Path(root_raw).expanduser()
     if not root.is_dir():
-        return _err("root not a directory", root=str(root))
+        return _err_tr("root not a directory", root=str(root))
     out_raw = str(args.get("output") or args.get("dst") or "").strip()
     if not out_raw:
         out = state.path.parent / "photos_by_date"
@@ -223,17 +233,17 @@ def _photo_group_by_date(args: dict[str, Any], state: AgentState) -> dict[str, A
             moved += 1
         except (OSError, shutil.Error):
             skipped += 1
-    return _ok(root=str(root), output=str(out), mode=mode, granularity=granularity, processed=moved, skipped=skipped, plan_preview=plan[:30], total_plan=len(plan))
+    return _ok_tr(root=str(root), output=str(out), mode=mode, granularity=granularity, processed=moved, skipped=skipped, plan_preview=plan[:30], total_plan=len(plan))
 
 
 def _photo_thumbnails(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from PIL import Image
     root_raw = str(args.get("root") or "").strip()
     if not root_raw:
-        return _err("missing root")
+        return _err_tr("missing root")
     root = Path(root_raw).expanduser()
     if not root.exists():
-        return _err("root not found", root=str(root))
+        return _err_tr("root not found", root=str(root))
     out_raw = str(args.get("output") or args.get("dst") or "").strip()
     if not out_raw:
         out = state.path.parent / "thumbnails"
@@ -259,17 +269,17 @@ def _photo_thumbnails(args: dict[str, Any], state: AgentState) -> dict[str, Any]
             created.append(str(target))
         except Exception as exc:
             failed.append({"src": str(path), "error": str(exc)})
-    return _ok(root=str(root), output=str(out), size=size, created=len(created), failed=len(failed), failed_details=failed[:10])
+    return _ok_tr(root=str(root), output=str(out), size=size, created=len(created), failed=len(failed), failed_details=failed[:10])
 
 
 def _photo_find_by_date(args: dict[str, Any]) -> dict[str, Any]:
     root_raw = str(args.get("root") or "").strip()
     if not root_raw:
-        return _err("missing root")
+        return _err_tr("missing root")
     year = args.get("year")
     month = args.get("month")
     if year is None:
-        return _err("missing year")
+        return _err_tr("missing year")
     target_prefix = f"{int(year):04d}"
     if month is not None:
         target_prefix += f"-{int(month):02d}"
@@ -283,4 +293,4 @@ def _photo_find_by_date(args: dict[str, Any]) -> dict[str, Any]:
             matches.append({"path": str(path), "date": date})
         if len(matches) >= int(args.get("limit", 500)):
             break
-    return _ok(root=str(root), filter=target_prefix, count=len(matches), photos=matches[:200])
+    return _ok_tr(root=str(root), filter=target_prefix, count=len(matches), photos=matches[:200])

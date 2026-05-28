@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -49,6 +50,15 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def media_edit_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """Compound tool for ffmpeg-based audio/video editing.
 
@@ -60,14 +70,14 @@ def media_edit_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "status":
         ffmpeg = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
         ffprobe = shutil.which("ffprobe") or shutil.which("ffprobe.exe")
-        return _ok(
+        return _ok_tr(
             ffmpeg=bool(ffmpeg), ffmpeg_path=ffmpeg,
             ffprobe=bool(ffprobe), ffprobe_path=ffprobe,
             install_hint="winget install Gyan.FFmpeg",
         )
     ffmpeg = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
     if not ffmpeg:
-        return _err(
+        return _err_tr(
             "ffmpeg is not installed",
             status="needs_dependency",
             install_hint="winget install Gyan.FFmpeg",
@@ -88,7 +98,7 @@ def media_edit_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _media_edit_thumbnail(ffmpeg, args, state)
     if action == "transcode":
         return _media_edit_transcode(ffmpeg, args, state)
-    return _err(
+    return _err_tr(
         "unknown media_edit action", action=action,
         valid_actions=[
             "status", "probe", "trim", "concat", "extract_audio",
@@ -101,7 +111,7 @@ def media_edit_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 def _media_edit_probe(args: dict[str, Any]) -> dict[str, Any]:
     ffprobe = shutil.which("ffprobe") or shutil.which("ffprobe.exe")
     if not ffprobe:
-        return _err("ffprobe is not installed", status="needs_dependency", install_hint="winget install Gyan.FFmpeg")
+        return _err_tr("ffprobe is not installed", status="needs_dependency", install_hint="winget install Gyan.FFmpeg")
     path = _media_edit_input(args)
     if isinstance(path, dict):
         return path
@@ -110,21 +120,21 @@ def _media_edit_probe(args: dict[str, Any]) -> dict[str, Any]:
         capture_output=True, text=True, timeout=60,
     )
     if proc.returncode != 0:
-        return _err("ffprobe failed", stderr=proc.stderr, exit_code=proc.returncode)
+        return _err_tr("ffprobe failed", stderr=proc.stderr, exit_code=proc.returncode)
     try:
         data = json.loads(proc.stdout)
     except json.JSONDecodeError:
-        return _err("ffprobe returned invalid JSON", raw=proc.stdout[:500])
-    return _ok(path=str(path), probe=data)
+        return _err_tr("ffprobe returned invalid JSON", raw=proc.stdout[:500])
+    return _ok_tr(path=str(path), probe=data)
 
 
 def _media_edit_input(args: dict[str, Any]) -> Path | dict[str, Any]:
     raw = str(args.get("path") or args.get("input") or args.get("src") or "").strip()
     if not raw:
-        return _err("missing input path")
+        return _err_tr("missing input path")
     path = Path(raw).expanduser()
     if not path.is_file():
-        return _err("input file not found", path=str(path))
+        return _err_tr("input file not found", path=str(path))
     return path
 
 
@@ -166,19 +176,19 @@ def _media_edit_trim(ffmpeg: str, args: dict[str, Any], state: AgentState) -> di
         cmd.extend(["-to", end])
     cmd.extend(["-c", "copy", str(out)])
     result = _run_ffmpeg(ffmpeg, cmd)
-    return _ok(path=str(out), src=str(src), start=start, duration=duration or None, end=end or None, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+    return _ok_tr(path=str(out), src=str(src), start=start, duration=duration or None, end=end or None, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
 
 
 def _media_edit_concat(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     raw_inputs = args.get("inputs")
     inputs: list[Any] = raw_inputs if isinstance(raw_inputs, list) else []
     if len(inputs) < 2:
-        return _err("concat requires at least 2 inputs")
+        return _err_tr("concat requires at least 2 inputs")
     paths: list[Path] = []
     for raw in inputs:
         p = Path(str(raw)).expanduser()
         if not p.is_file():
-            return _err("concat input not found", path=str(p))
+            return _err_tr("concat input not found", path=str(p))
         paths.append(p)
     out = _media_edit_output(args, state, paths[0], paths[0].suffix)
     # ffmpeg concat demuxer expects a list file.
@@ -195,7 +205,7 @@ def _media_edit_concat(ffmpeg: str, args: dict[str, Any], state: AgentState) -> 
         list_file.unlink()
     except OSError:
         pass
-    return _ok(path=str(out), inputs=[str(p) for p in paths], verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+    return _ok_tr(path=str(out), inputs=[str(p) for p in paths], verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
 
 
 def _media_edit_extract_audio(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -204,12 +214,12 @@ def _media_edit_extract_audio(ffmpeg: str, args: dict[str, Any], state: AgentSta
         return src
     fmt = str(args.get("format") or "mp3").lower()
     if fmt not in {"mp3", "aac", "wav", "flac", "ogg", "m4a"}:
-        return _err(f"unsupported audio format: {fmt}", supported=["mp3", "aac", "wav", "flac", "ogg", "m4a"])
+        return _err_tr(f"unsupported audio format: {fmt}", supported=["mp3", "aac", "wav", "flac", "ogg", "m4a"])
     out = _media_edit_output(args, state, src, f".{fmt}")
     codec_map = {"mp3": "libmp3lame", "aac": "aac", "wav": "pcm_s16le", "flac": "flac", "ogg": "libvorbis", "m4a": "aac"}
     cmd = ["-i", str(src), "-vn", "-c:a", codec_map[fmt], str(out)]
     result = _run_ffmpeg(ffmpeg, cmd)
-    return _ok(path=str(out), src=str(src), format=fmt, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+    return _ok_tr(path=str(out), src=str(src), format=fmt, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
 
 
 def _media_edit_subtitles_extract(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -221,13 +231,13 @@ def _media_edit_subtitles_extract(ffmpeg: str, args: dict[str, Any], state: Agen
     cmd = ["-i", str(src), "-map", f"0:s:{track}", str(out)]
     result = _run_ffmpeg(ffmpeg, cmd)
     if result["exit_code"] != 0:
-        return _ok(
+        return _ok_tr(
             path=str(out), src=str(src), track=track,
             verified=False, status="needs_verification",
             note="No embedded subtitle track at that index, or ffmpeg cannot extract this codec.",
             **result,
         )
-    return _ok(path=str(out), src=str(src), track=track, verified=out.is_file() and out.stat().st_size > 0, size=out.stat().st_size if out.is_file() else 0, **result)
+    return _ok_tr(path=str(out), src=str(src), track=track, verified=out.is_file() and out.stat().st_size > 0, size=out.stat().st_size if out.is_file() else 0, **result)
 
 
 def _media_edit_normalize(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -238,7 +248,7 @@ def _media_edit_normalize(ffmpeg: str, args: dict[str, Any], state: AgentState) 
     # EBU R128 loudnorm: I=-23 LUFS, TP=-2 dB, LRA=7. Single-pass.
     cmd = ["-i", str(src), "-af", "loudnorm=I=-23:TP=-2:LRA=7", str(out)]
     result = _run_ffmpeg(ffmpeg, cmd, timeout=900)
-    return _ok(path=str(out), src=str(src), filter="loudnorm I=-23 TP=-2 LRA=7", verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+    return _ok_tr(path=str(out), src=str(src), filter="loudnorm I=-23 TP=-2 LRA=7", verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
 
 
 def _media_edit_thumbnail(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -249,7 +259,7 @@ def _media_edit_thumbnail(ffmpeg: str, args: dict[str, Any], state: AgentState) 
     out = _media_edit_output(args, state, src, ".png")
     cmd = ["-ss", at, "-i", str(src), "-frames:v", "1", str(out)]
     result = _run_ffmpeg(ffmpeg, cmd)
-    return _ok(path=str(out), src=str(src), at=at, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+    return _ok_tr(path=str(out), src=str(src), at=at, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
 
 
 def _media_edit_transcode(ffmpeg: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -265,6 +275,6 @@ def _media_edit_transcode(ffmpeg: str, args: dict[str, Any], state: AgentState) 
         acodec = "libopus" if fmt == "webm" else "aac"
         cmd = ["-i", str(src), "-c:v", vcodec, "-preset", preset, "-crf", str(crf), "-c:a", acodec, str(out)]
     else:
-        return _err(f"unsupported transcode format: {fmt}", supported=["mp4", "mkv", "webm"])
+        return _err_tr(f"unsupported transcode format: {fmt}", supported=["mp4", "mkv", "webm"])
     result = _run_ffmpeg(ffmpeg, cmd, timeout=1800)
-    return _ok(path=str(out), src=str(src), format=fmt, crf=crf, preset=preset, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)
+    return _ok_tr(path=str(out), src=str(src), format=fmt, crf=crf, preset=preset, verified=result["exit_code"] == 0 and out.is_file(), size=out.stat().st_size if out.is_file() else 0, **result)

@@ -43,6 +43,7 @@ from ._ps import (
     ps_safe_literal,
 )
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -58,6 +59,15 @@ __all__ = [
     "_maintenance_service_control",
     "_maintenance_restore_point_create",
 ]
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 def maintenance_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -78,7 +88,7 @@ def maintenance_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok(
+        return _ok_tr(
             powershell=bool(shutil.which("powershell")),
             backend="windows_native",
             note="Mutating maintenance actions (cleanup execution, update install) require explicit terminal commands.",
@@ -102,7 +112,7 @@ def maintenance_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "disk_cleanup_describe":
         # T2-maintenance-disk-cleanup-cmd-list-027: no devolvemos arrays
         # ejecutables, solo prosa. El LLM no puede copy-pegar a terminal.
-        return _ok(
+        return _ok_tr(
             note=(
                 "Disk cleanup must be run manually by the user. First run cleanmgr /sageset:1 in an "
                 "elevated terminal to pick categories, then cleanmgr /sagerun:1 to apply. This tool "
@@ -114,7 +124,7 @@ def maintenance_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         )
     if action == "restore_point_create":
         return _maintenance_restore_point_create(args)
-    return _err(
+    return _err_tr(
         "unknown maintenance action", action=action,
         valid_actions=[
             "status", "windows_update_status", "defender_status",
@@ -155,14 +165,14 @@ try {
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
     except (OSError, subprocess.TimeoutExpired):
-        return _err("windows update query timeout", reason="wuauserv_unresponsive")
+        return _err_tr("windows update query timeout", reason="wuauserv_unresponsive")
     if proc.returncode != 0:
-        return _err("windows_update_status failed", stderr=proc.stderr)
+        return _err_tr("windows_update_status failed", stderr=proc.stderr)
     try:
         data = json.loads(proc.stdout or "null")
     except json.JSONDecodeError:
-        return _err("windows_update_status invalid JSON", raw=proc.stdout[:500])
-    return _ok(**(data or {}))
+        return _err_tr("windows_update_status invalid JSON", raw=proc.stdout[:500])
+    return _ok_tr(**(data or {}))
 
 
 def _maintenance_defender_status() -> dict[str, Any]:
@@ -172,12 +182,12 @@ def _maintenance_defender_status() -> dict[str, Any]:
         capture_output=True, text=True, timeout=20,
     )
     if proc.returncode != 0:
-        return _err("Get-MpComputerStatus failed", stderr=proc.stderr)
+        return _err_tr("Get-MpComputerStatus failed", stderr=proc.stderr)
     try:
         data = json.loads(proc.stdout) if proc.stdout.strip() else {}
     except json.JSONDecodeError:
-        return _err("defender_status invalid JSON", raw=proc.stdout[:500])
-    return _ok(defender=data)
+        return _err_tr("defender_status invalid JSON", raw=proc.stdout[:500])
+    return _ok_tr(defender=data)
 
 
 def _maintenance_defender_quick_scan(state: AgentState) -> dict[str, Any]:
@@ -208,7 +218,7 @@ def _maintenance_defender_quick_scan(state: AgentState) -> dict[str, Any]:
     rid = resource.get("resource", {}).get("id")
     if rid:
         state.update_resource(rid, cleanup_args_patch={"action": "cancel", "job_id": rid})
-    return _ok(
+    return _ok_tr(
         scan="QuickScan",
         job_id=rid,
         pid=proc.pid,
@@ -225,14 +235,14 @@ def _maintenance_firewall_status() -> dict[str, Any]:
         capture_output=True, text=True, timeout=15,
     )
     if proc.returncode != 0:
-        return _err("firewall_status failed", stderr=proc.stderr)
+        return _err_tr("firewall_status failed", stderr=proc.stderr)
     try:
         data = json.loads(proc.stdout)
     except json.JSONDecodeError:
-        return _err("firewall_status invalid JSON", raw=proc.stdout[:500])
+        return _err_tr("firewall_status invalid JSON", raw=proc.stdout[:500])
     if isinstance(data, dict):
         data = [data]
-    return _ok(profiles=data, count=len(data))
+    return _ok_tr(profiles=data, count=len(data))
 
 
 def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
@@ -242,14 +252,14 @@ def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
     try:
         log = ps_safe_literal(log_raw, RX_LOG_NAME)
     except PSValidationError as exc:
-        return _err(f"invalid log name: {exc}", log=log_raw, status="needs_user")
+        return _err_tr(f"invalid log name: {exc}", log=log_raw, status="needs_user")
     level = args.get("level")  # 1=Critical 2=Error 3=Warning 4=Information
     try:
         hours = int(args.get("hours", 24))
         limit = int(args.get("limit", 50))
         level_int = int(level) if level is not None else None
     except (TypeError, ValueError):
-        return _err("invalid hours/limit/level (must be integers)", status="needs_user")
+        return _err_tr("invalid hours/limit/level (must be integers)", status="needs_user")
     env = {**os.environ, "GEMMA4_LOG_NAME": log}
     level_clause = "" if level_int is None else f"; Level={level_int}"
     cmd = (
@@ -264,17 +274,17 @@ def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], env=env, capture_output=True, text=True, timeout=30)
     except (OSError, subprocess.TimeoutExpired):
-        return _err("Get-WinEvent timeout", log=log, hours=hours, reason="event_log_too_large")
+        return _err_tr("Get-WinEvent timeout", log=log, hours=hours, reason="event_log_too_large")
     if proc.returncode != 0:
-        return _err("event_logs_query failed", stderr=proc.stderr)
+        return _err_tr("event_logs_query failed", stderr=proc.stderr)
     ok_parse, data = parse_ps_json(proc.stdout)
     if not ok_parse:
-        return _err("event_logs_query invalid JSON", raw=data)
+        return _err_tr("event_logs_query invalid JSON", raw=data)
     if data is None:
-        return _ok(log=log, events=[], count=0, hours=hours)
+        return _ok_tr(log=log, events=[], count=0, hours=hours)
     if isinstance(data, dict):
         data = [data]
-    return _ok(log=log, events=data, count=len(data), hours=hours)
+    return _ok_tr(log=log, events=data, count=len(data), hours=hours)
 
 
 def _maintenance_services_list(args: dict[str, Any]) -> dict[str, Any]:
@@ -285,44 +295,44 @@ def _maintenance_services_list(args: dict[str, Any]) -> dict[str, Any]:
         capture_output=True, text=True, timeout=20,
     )
     if proc.returncode != 0:
-        return _err("services_list failed", stderr=proc.stderr)
+        return _err_tr("services_list failed", stderr=proc.stderr)
     raw = proc.stdout.strip()
     if not raw:
-        return _ok(services=[], count=0)
+        return _ok_tr(services=[], count=0)
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return _err("services_list invalid JSON", raw=raw[:500])
+        return _err_tr("services_list invalid JSON", raw=raw[:500])
     if isinstance(data, dict):
         data = [data]
-    return _ok(services=data, count=len(data))
+    return _ok_tr(services=data, count=len(data))
 
 
 def _maintenance_service_status(args: dict[str, Any]) -> dict[str, Any]:
     from .domain_tools_helpers import _ps_quote
     name = str(args.get("name") or "").strip()
     if not name:
-        return _err("missing service name")
+        return _err_tr("missing service name")
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"Get-Service -Name '{_ps_quote(name)}' -ErrorAction SilentlyContinue | Select-Object Name,DisplayName,Status,StartType | ConvertTo-Json"],
         capture_output=True, text=True, timeout=15,
     )
     if proc.returncode != 0:
-        return _err("service_status failed", stderr=proc.stderr)
+        return _err_tr("service_status failed", stderr=proc.stderr)
     try:
         data = json.loads(proc.stdout) if proc.stdout.strip() else None
     except json.JSONDecodeError:
         data = None
     if not data:
-        return _err("service not found", name=name)
-    return _ok(service=data)
+        return _err_tr("service not found", name=name)
+    return _ok_tr(service=data)
 
 
 def _maintenance_service_control(action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .domain_tools_helpers import _ps_quote
     name = str(args.get("name") or "").strip()
     if not name:
-        return _err("missing service name")
+        return _err_tr("missing service name")
     verb = "Start" if action == "service_start" else "Stop"
     before = _maintenance_service_status({"name": name})
     if not before.get("ok"):
@@ -337,7 +347,7 @@ def _maintenance_service_control(action: str, args: dict[str, Any], state: Agent
         capture_output=True, text=True, timeout=30,
     )
     after = _maintenance_service_status({"name": name})
-    return _ok(
+    return _ok_tr(
         action=action, name=name,
         before=before.get("service"),
         after=after.get("service"),
@@ -357,10 +367,10 @@ def _maintenance_restore_point_create(args: dict[str, Any]) -> dict[str, Any]:
         capture_output=True, text=True, timeout=120,
     )
     if proc.returncode != 0:
-        return _err(
+        return _err_tr(
             "Checkpoint-Computer failed; System Restore may be disabled or rate-limited (1 per 24h on consumer Windows)",
             stderr=proc.stderr, exit_code=proc.returncode,
             status="needs_user",
             note="Enable System Protection on the system drive via Settings > System > About > Advanced system settings.",
         )
-    return _ok(description=description, exit_code=proc.returncode, verified=True)
+    return _ok_tr(description=description, exit_code=proc.returncode, verified=True)

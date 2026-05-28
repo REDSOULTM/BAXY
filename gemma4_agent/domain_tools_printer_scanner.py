@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 
 
 __all__ = [
@@ -37,11 +38,20 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def printer_scanner_tool(args: dict[str, Any]) -> dict[str, Any]:
     from .domain_tools_helpers import _powershell_json, _ps_quote
     action = str(args.get("action") or "printers_list").casefold()
     if action == "status":
-        return _ok(powershell=bool(shutil.which("powershell")), backend="Windows PrintManagement")
+        return _ok_tr(powershell=bool(shutil.which("powershell")), backend="Windows PrintManagement")
     if action in {"printers_list", "list"}:
         return _powershell_json("Get-Printer | Select-Object Name,DriverName,PortName,PrinterStatus,Default | ConvertTo-Json -Depth 3", "printers")
     if action == "printer_default_get":
@@ -60,7 +70,7 @@ def printer_scanner_tool(args: dict[str, Any]) -> dict[str, Any]:
         return _scanners_list()
     if action == "scan_document":
         return _scanner_scan(args)
-    return _err(
+    return _err_tr(
         "unknown printer_scanner action", action=action,
         valid_actions=[
             "status", "printers_list", "printer_default_get",
@@ -74,7 +84,7 @@ def _printer_set_default(args: dict[str, Any]) -> dict[str, Any]:
     from .domain_tools_helpers import _json_or_none
     name = str(args.get("name") or args.get("printer") or "").strip()
     if not name:
-        return _err("missing printer name")
+        return _err_tr("missing printer name")
     # The standard mechanism is the WScript.Network COM object's SetDefaultPrinter,
     # because Set-Printer doesn't expose a -Default flag in all builds.
     env = os.environ.copy()
@@ -87,18 +97,18 @@ def _printer_set_default(args: dict[str, Any]) -> dict[str, Any]:
     )
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err("failed to set default printer", stderr=proc.stderr, exit_code=proc.returncode)
-    return _ok(printer=name, default=_json_or_none(proc.stdout), verified=True)
+        return _err_tr("failed to set default printer", stderr=proc.stderr, exit_code=proc.returncode)
+    return _ok_tr(printer=name, default=_json_or_none(proc.stdout), verified=True)
 
 
 def _printer_print_file(args: dict[str, Any]) -> dict[str, Any]:
     from .domain_tools_helpers import _json_or_none, _powershell_json, _ps_quote
     path_raw = str(args.get("path") or args.get("file") or "").strip()
     if not path_raw:
-        return _err("missing file path")
+        return _err_tr("missing file path")
     path = Path(path_raw).expanduser()
     if not path.is_file():
-        return _err("file not found", path=str(path))
+        return _err_tr("file not found", path=str(path))
     printer_name = str(args.get("printer") or "").strip()
     # Start-Process -Verb Print sends the document to the default printer using the
     # registered handler for the file extension. To target a non-default printer,
@@ -130,14 +140,14 @@ try {
 """
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=60)
     if proc.returncode != 0:
-        return _err("print_file failed", stderr=proc.stderr, exit_code=proc.returncode)
+        return _err_tr("print_file failed", stderr=proc.stderr, exit_code=proc.returncode)
     data = _json_or_none(proc.stdout) or {}
     # Probe queue to confirm a job appeared (best-effort).
     queue_probe = _powershell_json(
         f"Get-PrintJob -PrinterName '{_ps_quote(printer_name)}' -ErrorAction SilentlyContinue | Select-Object ID,DocumentName,JobStatus | ConvertTo-Json -Depth 3" if printer_name else "Get-Printer | ForEach-Object { Get-PrintJob -PrinterName $_.Name -ErrorAction SilentlyContinue } | Select-Object ID,PrinterName,DocumentName,JobStatus | ConvertTo-Json -Depth 3",
         "jobs",
     )
-    return _ok(path=str(path), printer=printer_name or data.get("previous"), verified=bool(queue_probe.get("ok")), queue=queue_probe, evidence=data)
+    return _ok_tr(path=str(path), printer=printer_name or data.get("previous"), verified=bool(queue_probe.get("ok")), queue=queue_probe, evidence=data)
 
 
 def _printer_cancel_job(args: dict[str, Any]) -> dict[str, Any]:
@@ -145,7 +155,7 @@ def _printer_cancel_job(args: dict[str, Any]) -> dict[str, Any]:
     printer_name = str(args.get("printer") or "").strip()
     job_id = args.get("job_id") if args.get("job_id") is not None else args.get("id")
     if not printer_name:
-        return _err("missing printer name")
+        return _err_tr("missing printer name")
     if job_id is None:
         # cancel all
         script = f"Get-PrintJob -PrinterName '{_ps_quote(printer_name)}' -ErrorAction SilentlyContinue | Remove-PrintJob -Confirm:$false; [PSCustomObject]@{{ ok=$true; printer='{_ps_quote(printer_name)}'; cancelled='all' }} | ConvertTo-Json"
@@ -153,8 +163,8 @@ def _printer_cancel_job(args: dict[str, Any]) -> dict[str, Any]:
         script = f"Remove-PrintJob -PrinterName '{_ps_quote(printer_name)}' -ID {int(job_id)} -Confirm:$false; [PSCustomObject]@{{ ok=$true; printer='{_ps_quote(printer_name)}'; cancelled={int(job_id)} }} | ConvertTo-Json"
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err("cancel_job failed", stderr=proc.stderr, exit_code=proc.returncode)
-    return _ok(printer=printer_name, cancelled=job_id if job_id is not None else "all", result=_json_or_none(proc.stdout), verified=True)
+        return _err_tr("cancel_job failed", stderr=proc.stderr, exit_code=proc.returncode)
+    return _ok_tr(printer=printer_name, cancelled=job_id if job_id is not None else "all", result=_json_or_none(proc.stdout), verified=True)
 
 
 def _scanners_list() -> dict[str, Any]:
@@ -183,16 +193,16 @@ try {
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
     raw = proc.stdout.strip()
     if not raw:
-        return _ok(scanners=[], count=0, note="No WIA devices detected.")
+        return _ok_tr(scanners=[], count=0, note="No WIA devices detected.")
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return _err("scanner enumeration returned invalid JSON", raw=raw[:1000])
+        return _err_tr("scanner enumeration returned invalid JSON", raw=raw[:1000])
     if isinstance(data, dict):
         if "error" in data:
-            return _err(f"scanner enumeration failed: {data['error']}", status="needs_dependency", note="WIA may not be available; install scanner drivers.")
+            return _err_tr(f"scanner enumeration failed: {data['error']}", status="needs_dependency", note="WIA may not be available; install scanner drivers.")
         data = [data]
-    return _ok(scanners=data, count=len(data))
+    return _ok_tr(scanners=data, count=len(data))
 
 
 def _scanner_scan(args: dict[str, Any]) -> dict[str, Any]:
@@ -234,8 +244,8 @@ try {
 """
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=120)
     if proc.returncode != 0:
-        return _err("scan failed", stderr=proc.stderr, exit_code=proc.returncode)
+        return _err_tr("scan failed", stderr=proc.stderr, exit_code=proc.returncode)
     data = _json_or_none(proc.stdout) or {}
     if not data.get("ok"):
-        return _err(f"scan failed: {data.get('error')}", status="needs_dependency" if "No scanner" in str(data.get("error")) else None)
-    return _ok(path=str(out), size=out.stat().st_size if out.exists() else 0, verified=out.exists())
+        return _err_tr(f"scan failed: {data.get('error')}", status="needs_dependency" if "No scanner" in str(data.get("error")) else None)
+    return _ok_tr(path=str(out), size=out.stat().st_size if out.exists() else 0, verified=out.exists())

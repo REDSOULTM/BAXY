@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -39,18 +40,27 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def backup_sync_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .domain_tools_helpers import _resources_by_kind, _safe_name
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok(backend="zipfile", restore_supported=True, dedupe_supported=True, verify_supported=True)
+        return _ok_tr(backend="zipfile", restore_supported=True, dedupe_supported=True, verify_supported=True)
     if action == "list":
         resources = _resources_by_kind(state, "backup", include_closed=bool(args.get("include_closed", False)))
-        return _ok(backups=resources, count=len(resources))
+        return _ok_tr(backups=resources, count=len(resources))
     if action == "backup_create":
         src = Path(str(args.get("src") or args.get("path") or "")).expanduser()
         if not src.exists():
-            return _err("source path not found", src=str(src))
+            return _err_tr("source path not found", src=str(src))
         out_dir = state.path.parent / "backups"
         out_dir.mkdir(parents=True, exist_ok=True)
         dst = Path(str(args.get("dst") or out_dir / f"{_safe_name(src.name)}_{time.strftime('%Y%m%d_%H%M%S')}.zip")).expanduser()
@@ -63,14 +73,14 @@ def backup_sync_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                     if child.is_file():
                         archive.write(child, child.relative_to(src.parent))
         resource = state.register_resource("backup", dst.name, metadata={"src": str(src), "dst": str(dst), "created_at": datetime.now().isoformat(), "size": dst.stat().st_size})
-        return _ok(backup=resource.get("resource"), path=str(dst.resolve()), size=dst.stat().st_size)
+        return _ok_tr(backup=resource.get("resource"), path=str(dst.resolve()), size=dst.stat().st_size)
     if action == "restore":
         return _backup_restore(args, state)
     if action == "dedupe":
         return _backup_dedupe(args)
     if action == "verify":
         return _backup_verify(args, state)
-    return _err(
+    return _err_tr(
         "unknown backup_sync action", action=action,
         valid_actions=[
             "status", "backup_create", "list", "restore",
@@ -103,9 +113,9 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from ._shared import hard_gate as _hard_gate
     backup_path, resource = _backup_resolve(args, state)
     if not backup_path:
-        return _err("backup not found; pass id (res_*) or path to ZIP")
+        return _err_tr("backup not found; pass id (res_*) or path to ZIP")
     if backup_path.suffix.casefold() != ".zip":
-        return _err("only .zip backups are supported", path=str(backup_path))
+        return _err_tr("only .zip backups are supported", path=str(backup_path))
     dst_raw = str(args.get("dst") or args.get("to") or "").strip()
     if dst_raw:
         dst = Path(dst_raw).expanduser()
@@ -115,7 +125,7 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     dst.mkdir(parents=True, exist_ok=True)
     conflict_policy = str(args.get("conflict") or args.get("on_conflict") or "rename").casefold()
     if conflict_policy not in {"overwrite", "skip", "rename"}:
-        return _err("conflict policy must be overwrite|skip|rename")
+        return _err_tr("conflict policy must be overwrite|skip|rename")
     preview_only = bool(args.get("preview", False))
 
     # CC-101 / T2-backup_sync-restore-overwrite: gate duro si overwrite y no es preview.
@@ -142,7 +152,7 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         with zipfile.ZipFile(backup_path, "r") as archive:
             entries = archive.infolist()
             if preview_only:
-                return _ok(
+                return _ok_tr(
                     preview=True, backup=str(backup_path), dst=str(dst),
                     entries=[{"name": e.filename, "size": e.file_size} for e in entries[:200]],
                     total_entries=len(entries),
@@ -171,18 +181,18 @@ def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                     shutil.copyfileobj(src_fh, dst_fh)
                 extracted.append({"name": entry.filename, "size": entry.file_size, "dst": str(final_target)})
     except (zipfile.BadZipFile, OSError) as exc:
-        return _err(f"restore failed: {exc}", backup=str(backup_path), dst=str(dst))
+        return _err_tr(f"restore failed: {exc}", backup=str(backup_path), dst=str(dst))
     if blocked:
         # Si bloqueamos al menos uno, devolvemos status=failed para que el agente
         # surface el incidente; el resto extraído se reporta igual.
-        return _err(
+        return _err_tr(
             f"restore blocked {len(blocked)} entries that would escape dst (zip-slip)",
             backup=str(backup_path), dst=str(dst),
             blocked=blocked[:50], extracted_count=len(extracted),
             extracted=extracted[:50], status="failed",
         )
 
-    return _ok(
+    return _ok_tr(
         backup=str(backup_path), dst=str(dst), conflict_policy=conflict_policy,
         extracted_count=len(extracted), skipped_count=len(skipped),
         renamed_count=len(renamed), overwritten_count=len(overwritten),
@@ -212,10 +222,10 @@ def _backup_dedupe(args: dict[str, Any]) -> dict[str, Any]:
     import hashlib
     root_raw = str(args.get("path") or args.get("root") or "").strip()
     if not root_raw:
-        return _err("dedupe requires path")
+        return _err_tr("dedupe requires path")
     root = Path(root_raw).expanduser()
     if not root.exists() or not root.is_dir():
-        return _err("path is not an existing directory", path=str(root))
+        return _err_tr("path is not an existing directory", path=str(root))
     min_size = int(args.get("min_size_bytes", 1))
     by_hash: dict[str, list[str]] = {}
     scanned = 0
@@ -235,7 +245,7 @@ def _backup_dedupe(args: dict[str, Any]) -> dict[str, Any]:
             continue
     duplicates = {h: paths for h, paths in by_hash.items() if len(paths) > 1}
     duplicate_count = sum(len(paths) - 1 for paths in duplicates.values())
-    return _ok(
+    return _ok_tr(
         root=str(root), scanned=scanned, unique_hashes=len(by_hash),
         duplicate_groups=len(duplicates), duplicate_files=duplicate_count,
         groups=[{"sha256": h, "paths": paths} for h, paths in list(duplicates.items())[:50]],
@@ -245,10 +255,10 @@ def _backup_dedupe(args: dict[str, Any]) -> dict[str, Any]:
 def _backup_verify(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     backup_path, resource = _backup_resolve(args, state)
     if not backup_path:
-        return _err("backup not found")
+        return _err_tr("backup not found")
     try:
         with zipfile.ZipFile(backup_path, "r") as archive:
             bad = archive.testzip()
-            return _ok(backup=str(backup_path), size=backup_path.stat().st_size, entries=len(archive.infolist()), corrupted=bool(bad), bad_file=bad, verified=not bad)
+            return _ok_tr(backup=str(backup_path), size=backup_path.stat().st_size, entries=len(archive.infolist()), corrupted=bool(bad), bad_file=bad, verified=not bad)
     except (zipfile.BadZipFile, OSError) as exc:
-        return _err(f"verify failed: {exc}", backup=str(backup_path))
+        return _err_tr(f"verify failed: {exc}", backup=str(backup_path))

@@ -41,6 +41,7 @@ from ._ps import (
     ps_safe_literal,
 )
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -55,6 +56,15 @@ __all__ = [
     "_network_connections",
     "_network_public_ip",
 ]
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -84,7 +94,7 @@ def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             res.setdefault("delegated_from", "network." + (action or "connect"))
         return res
     if action == "status":
-        return _ok(
+        return _ok_tr(
             powershell=bool(shutil.which("powershell")),
             ping=bool(shutil.which("ping")),
             tracert=bool(shutil.which("tracert")),
@@ -108,11 +118,11 @@ def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "public_ip":
         return _network_public_ip()
     if action in {"firewall_allow", "firewall_block", "firewall_remove"}:
-        return _err(
+        return _err_tr(
             f"network.{action} is intentionally not exposed; modifying firewall rules requires explicit terminal commands",
             status="needs_user",
         )
-    return _err(
+    return _err_tr(
         "unknown network action", action=action,
         valid_actions=[
             "status", "ping", "traceroute", "dns_get", "dns_set",
@@ -125,19 +135,19 @@ def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 def _network_ping(args: dict[str, Any]) -> dict[str, Any]:
     host = str(args.get("host") or args.get("target") or "").strip()
     if not host:
-        return _err("missing host")
+        return _err_tr("missing host")
     count = int(args.get("count", 4))
     proc = subprocess.run(["ping", "-n", str(count), host], capture_output=True, text=True, timeout=30)
-    return _ok(host=host, count=count, exit_code=proc.returncode, stdout=proc.stdout[-3000:], reachable=proc.returncode == 0)
+    return _ok_tr(host=host, count=count, exit_code=proc.returncode, stdout=proc.stdout[-3000:], reachable=proc.returncode == 0)
 
 
 def _network_traceroute(args: dict[str, Any]) -> dict[str, Any]:
     host = str(args.get("host") or args.get("target") or "").strip()
     if not host:
-        return _err("missing host")
+        return _err_tr("missing host")
     max_hops = int(args.get("max_hops", 20))
     proc = subprocess.run(["tracert", "-h", str(max_hops), host], capture_output=True, text=True, timeout=120)
-    return _ok(host=host, max_hops=max_hops, exit_code=proc.returncode, stdout=proc.stdout[-4000:])
+    return _ok_tr(host=host, max_hops=max_hops, exit_code=proc.returncode, stdout=proc.stdout[-4000:])
 
 
 def _network_dns_get(args: dict[str, Any]) -> dict[str, Any]:
@@ -148,26 +158,26 @@ def _network_dns_get(args: dict[str, Any]) -> dict[str, Any]:
         cmd = f"Get-DnsClientServerAddress -InterfaceAlias '{_ps_quote(adapter)}' | Select-Object InterfaceAlias,AddressFamily,ServerAddresses | ConvertTo-Json -Depth 3"
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], capture_output=True, text=True, timeout=15)
     if proc.returncode != 0:
-        return _err("dns_get failed", stderr=proc.stderr)
+        return _err_tr("dns_get failed", stderr=proc.stderr)
     raw = proc.stdout.strip()
     if not raw:
-        return _ok(adapters=[], count=0)
+        return _ok_tr(adapters=[], count=0)
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return _err("dns_get invalid JSON", raw=raw[:500])
+        return _err_tr("dns_get invalid JSON", raw=raw[:500])
     if isinstance(data, dict):
         data = [data]
-    return _ok(adapters=data, count=len(data))
+    return _ok_tr(adapters=data, count=len(data))
 
 
 def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     adapter = str(args.get("adapter") or "").strip()
     if not adapter:
-        return _err("missing adapter (use dns_get first)")
+        return _err_tr("missing adapter (use dns_get first)")
     addresses = args.get("addresses") if isinstance(args.get("addresses"), list) else None
     if not addresses:
-        return _err("missing addresses (list of DNS server IPs)")
+        return _err_tr("missing addresses (list of DNS server IPs)")
     addresses = [str(a) for a in addresses if str(a).strip()]
     before = _network_dns_get({"adapter": adapter})
     rollback_addrs: list[str] = []
@@ -190,7 +200,7 @@ def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     else:
         for addr in addresses:
             if not (is_ipv4(addr) or is_ipv6(addr)):
-                return _err(f"invalid DNS address: {addr!r}", status="needs_user")
+                return _err_tr(f"invalid DNS address: {addr!r}", status="needs_user")
         env = {
             **os.environ,
             "GEMMA4_DNS_ADAPTER": adapter,
@@ -202,7 +212,7 @@ def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         )
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], env=env, capture_output=True, text=True, timeout=15)
     after = _network_dns_get({"adapter": adapter})
-    return _ok(
+    return _ok_tr(
         adapter=adapter, target=addresses, before=rollback_addrs, after=after,
         exit_code=proc.returncode, stderr=proc.stderr[-1000:],
         checkpoint=checkpoint.get("checkpoint"),
@@ -214,23 +224,23 @@ def _network_dns_resolve(args: dict[str, Any]) -> dict[str, Any]:
     from .domain_tools_helpers import _ps_quote
     name = str(args.get("name") or args.get("host") or "").strip()
     if not name:
-        return _err("missing name")
+        return _err_tr("missing name")
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"Resolve-DnsName '{_ps_quote(name)}' -ErrorAction SilentlyContinue | Select-Object Name,Type,IPAddress,NameHost,TTL | ConvertTo-Json -Depth 3"],
         capture_output=True, text=True, timeout=15,
     )
     if proc.returncode != 0 and not proc.stdout.strip():
-        return _err("dns_resolve failed", stderr=proc.stderr, name=name)
+        return _err_tr("dns_resolve failed", stderr=proc.stderr, name=name)
     raw = proc.stdout.strip()
     if not raw:
-        return _ok(name=name, records=[], count=0)
+        return _ok_tr(name=name, records=[], count=0)
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return _err("dns_resolve invalid JSON", raw=raw[:500])
+        return _err_tr("dns_resolve invalid JSON", raw=raw[:500])
     if isinstance(data, dict):
         data = [data]
-    return _ok(name=name, records=data, count=len(data))
+    return _ok_tr(name=name, records=data, count=len(data))
 
 
 def _network_port_check(args: dict[str, Any]) -> dict[str, Any]:
@@ -238,13 +248,13 @@ def _network_port_check(args: dict[str, Any]) -> dict[str, Any]:
     host = str(args.get("host") or args.get("target") or "").strip()
     port = args.get("port")
     if not host or port is None:
-        return _err("missing host or port")
+        return _err_tr("missing host or port")
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"Test-NetConnection -ComputerName '{_ps_quote(host)}' -Port {int(port)} -InformationLevel Quiet -WarningAction SilentlyContinue"],
         capture_output=True, text=True, timeout=20,
     )
     reachable = (proc.stdout or "").strip().casefold() == "true"
-    return _ok(host=host, port=int(port), reachable=reachable, exit_code=proc.returncode)
+    return _ok_tr(host=host, port=int(port), reachable=reachable, exit_code=proc.returncode)
 
 
 def _network_connections(args: dict[str, Any]) -> dict[str, Any]:
@@ -253,21 +263,21 @@ def _network_connections(args: dict[str, Any]) -> dict[str, Any]:
     try:
         state_filter = ps_safe_literal(state_filter_raw, RX_TCP_STATE)
     except PSValidationError as exc:
-        return _err(f"invalid state filter: {exc}", status="needs_user")
+        return _err_tr(f"invalid state filter: {exc}", status="needs_user")
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"Get-NetTCPConnection -State {state_filter} -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,OwningProcess | ConvertTo-Json -Depth 3"],
         capture_output=True, text=True, timeout=20,
     )
     if proc.returncode != 0:
-        return _err("connections query failed", stderr=proc.stderr)
+        return _err_tr("connections query failed", stderr=proc.stderr)
     ok_parse, data = parse_ps_json(proc.stdout)
     if not ok_parse:
-        return _err("connections invalid JSON", raw=data)
+        return _err_tr("connections invalid JSON", raw=data)
     if data is None:
-        return _ok(connections=[], count=0, state=state_filter)
+        return _ok_tr(connections=[], count=0, state=state_filter)
     if isinstance(data, dict):
         data = [data]
-    return _ok(connections=data, count=len(data), state=state_filter)
+    return _ok_tr(connections=data, count=len(data), state=state_filter)
 
 
 def _network_public_ip() -> dict[str, Any]:
@@ -275,6 +285,6 @@ def _network_public_ip() -> dict[str, Any]:
     try:
         req = urllib.request.Request("https://api.ipify.org", headers={"User-Agent": "Gemma4Agent/1.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            return _ok(ip=resp.read().decode("utf-8").strip(), source="api.ipify.org", verified=True)
+            return _ok_tr(ip=resp.read().decode("utf-8").strip(), source="api.ipify.org", verified=True)
     except Exception as exc:
-        return _err(f"public_ip failed: {exc}")
+        return _err_tr(f"public_ip failed: {exc}")
