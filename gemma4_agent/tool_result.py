@@ -71,7 +71,9 @@ class ToolResult:
     """Resultado tipado de un tool handler.
 
     Frozen para que sea hashable y los tests puedan comparar resultados.
-    Use `ToolResult.ok(**fields)` o `ToolResult.err(message, **fields)`.
+    Use `ToolResult.ok_result(**fields)` o `ToolResult.err(message, **fields)`.
+    (Nota: el constructor de éxito se llama `ok_result` — NO `ok` — porque
+    `ok` es el nombre del campo bool de la dataclass).
     """
     ok: bool
     error: str = ""

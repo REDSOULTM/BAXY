@@ -70,5 +70,45 @@ class TestToolResult(unittest.TestCase):
         self.assertEqual(r.extra["another"], 42)
 
 
+class TestToolResultAPIStability(unittest.TestCase):
+    """API stability tests — si esos campos/métodos cambian, los
+    consumers se rompen. Hard guard contra rename accidental."""
+
+    def test_api_constructors_exist(self):
+        self.assertTrue(callable(ToolResult.ok_result))
+        self.assertTrue(callable(ToolResult.err))
+        self.assertTrue(callable(ToolResult.from_dict))
+
+    def test_api_methods_exist(self):
+        r = ToolResult.ok_result()
+        self.assertTrue(hasattr(r, "to_dict") and callable(r.to_dict))
+
+    def test_api_typed_fields_exist(self):
+        r = ToolResult.ok_result()
+        for field_name in ("ok", "error", "status", "verified",
+                           "verified_by", "caveat", "evidence", "extra"):
+            self.assertTrue(hasattr(r, field_name),
+                            f"ToolResult.{field_name} field missing")
+
+    def test_api_frozen_dataclass(self):
+        """Debe ser frozen para ser hashable (los tests pueden
+        compararlas en sets)."""
+        r = ToolResult.ok_result(foo="bar")
+        with self.assertRaises(Exception):  # FrozenInstanceError
+            r.ok = False
+
+    def test_api_status_defaults_to_ok(self):
+        r = ToolResult.ok_result()
+        self.assertEqual(r.status, "ok")
+
+    def test_api_extra_dict_is_isolated(self):
+        """`extra` no debe ser shared entre instances (mutable default)."""
+        r1 = ToolResult.ok_result()
+        r2 = ToolResult.ok_result()
+        r1.extra["foo"] = "bar"
+        self.assertNotIn("foo", r2.extra,
+                         "extra dict shared between instances (mutable default bug)")
+
+
 if __name__ == "__main__":
     unittest.main()
