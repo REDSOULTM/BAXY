@@ -71,5 +71,61 @@ class BrowserOpenSiteNameTest(unittest.TestCase):
         self.assertEqual(res.get("action"), "search")
 
 
+class AppOpenWebFallbackTest(unittest.TestCase):
+    """app.open de un NOMBRE que no es app instalada (p.ej. 'pivigames') cae a
+    NAVEGAR por web (resuelto por búsqueda). Una app real NO cae a web. Incidente:
+    've a pivigames' -> el 4B rutea a app.open -> 'app not found' -> se quedaba sin
+    abrir el sitio. Mock-only: app_open/web_search/web_open_url mockeados."""
+
+    def setUp(self):
+        self.ag = Gemma4Agent(AgentConfig.from_env())
+        self.opened = []
+        self.ag.tools.web_open_url = lambda a: (
+            self.opened.append(a.get("url")),
+            {"ok": True, "url": a.get("url"), "opened": True})[1]
+
+    def test_unknown_app_name_falls_back_to_web(self):
+        with mock.patch.object(self.ag.tools, "app_open",
+                               return_value={"ok": False, "error": "app not found"}), \
+             mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": [
+                                   {"url": "https://pivigames.wordpress.com/", "title": "x"}]}):
+            res = self.ag.tools.t_app({"action": "open", "name": "pivigames"})
+        self.assertTrue(res["ok"])
+        self.assertEqual(res.get("delegated_from"), "app.open")
+        self.assertEqual(self.opened[-1], "https://pivigames.wordpress.com/")
+
+    def test_installed_app_does_not_fall_back(self):
+        # app real (ok=True) -> NO toca la web.
+        with mock.patch.object(self.ag.tools, "app_open",
+                               return_value={"ok": True, "name": "Calculadora"}), \
+             mock.patch.object(self.ag.tools, "web_search") as ws:
+            res = self.ag.tools.t_app({"action": "open", "name": "calculadora"})
+        self.assertTrue(res["ok"])
+        self.assertIsNone(res.get("delegated_from"))
+        ws.assert_not_called()
+        self.assertEqual(self.opened, [])
+
+    def test_app_not_found_and_no_web_result_keeps_honest_error(self):
+        # ni app ni sitio -> devuelve el 'not found' honesto (no inventa).
+        with mock.patch.object(self.ag.tools, "app_open",
+                               return_value={"ok": False, "error": "app not found"}), \
+             mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": []}):
+            res = self.ag.tools.t_app({"action": "open", "name": "zzqwerty"})
+        self.assertFalse(res.get("ok"))
+        self.assertEqual(res.get("error"), "app not found")
+        self.assertEqual(self.opened, [])
+
+    def test_path_like_name_does_not_fall_back(self):
+        # un nombre con ruta no es un sitio -> no web fallback.
+        with mock.patch.object(self.ag.tools, "app_open",
+                               return_value={"ok": False, "error": "app not found"}), \
+             mock.patch.object(self.ag.tools, "web_search") as ws:
+            res = self.ag.tools.t_app({"action": "open", "name": "C:/foo/bar.exe"})
+        self.assertFalse(res.get("ok"))
+        ws.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()

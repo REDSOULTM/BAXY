@@ -1548,7 +1548,34 @@ class ToolRegistry:
         if action == "search":
             return self.app_search({"query": name or "", "limit": args.get("limit", 10), "refresh": args.get("refresh", False)})
         if action == "open":
-            return self.app_open({"name": name or "", "refresh": args.get("refresh", False)})
+            res = self.app_open({"name": name or "", "refresh": args.get("refresh", False)})
+            # FALLBACK A WEB (2026-05-27): "ve a pivigames" -> el 4B a veces rutea a
+            # app.open, pero pivigames es un SITIO, no una app instalada. Si
+            # app.open agotó PATH/StartMenu/Steam/Epic/Registry y NO encontró nada
+            # ("app not found"), y el nombre parece un sitio/marca (no una ruta ni
+            # una app del sistema), intentamos NAVEGAR: resolver el sitio por
+            # búsqueda real y abrirlo. Garantía de outcome (mismo patrón que
+            # browser.open->app.open) — sin esto el usuario se queda con un "no
+            # encontré la app" cuando en realidad quería ir a la web. Si la web
+            # tampoco resuelve, devolvemos el "not found" honesto original.
+            nm = str(name or "").strip()
+            if (not res.get("ok") and str(res.get("error") or "") == "app not found"
+                    and nm and 3 <= len(nm) <= 40 and "\\" not in nm and "/" not in nm
+                    and len(nm.split()) <= 4):
+                try:
+                    resolved = self._resolve_site_by_search(nm)
+                except Exception:
+                    resolved = None
+                if resolved:
+                    opened = self.web_open_url({"url": resolved})
+                    if opened.get("ok"):
+                        opened.update(
+                            delegated_from="app.open",
+                            resolved_from_name=nm, resolved_url=resolved,
+                            note=(f"'{nm}' no es una app instalada; lo resolví "
+                                  f"como sitio web ({resolved}) y lo abrí."))
+                        return opened
+            return res
         if action == "close":
             return self.app_close({"name": name or ""})
         if action == "uninstall":
