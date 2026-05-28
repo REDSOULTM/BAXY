@@ -4401,35 +4401,10 @@ from .domain_tools_wifi import (  # noqa: F401  (re-export por compat)
 )
 
 
-def _device_bluetooth_status() -> dict[str, Any]:
-    script = (
-        "Get-PnpDevice -Class Bluetooth -ErrorAction SilentlyContinue | "
-        "Select-Object FriendlyName,Status,Class,InstanceId | ConvertTo-Json -Depth 3"
-    )
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
-    if proc.returncode != 0:
-        return _err("bluetooth status query failed", stderr=proc.stderr)
-    raw = proc.stdout.strip()
-    if not raw:
-        return _ok(devices=[], count=0, note="No Bluetooth class devices found.")
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        return _err("bluetooth status returned invalid JSON", raw=raw[:500])
-    if isinstance(data, dict):
-        data = [data]
-    # Also check the Bluetooth Support Service for radio state.
-    svc = subprocess.run(
-        ["powershell", "-NoProfile", "-Command", "Get-Service bthserv -ErrorAction SilentlyContinue | Select-Object Status,Name,StartType | ConvertTo-Json"],
-        capture_output=True, text=True, timeout=10,
-    )
-    service_info = None
-    if svc.returncode == 0 and svc.stdout.strip():
-        try:
-            service_info = json.loads(svc.stdout)
-        except json.JSONDecodeError:
-            pass
-    return _ok(devices=data, count=len(data), bthserv=service_info)
+# Bluetooth domain tool - extraído a domain_tools_bluetooth.py (R2 sprint
+# 2026-05-27). Un sólo método hoy; se aísla para que cuando aparezca más
+# (pair/disconnect/audio-routing) tenga su casa.
+from .domain_tools_bluetooth import _device_bluetooth_status  # noqa: F401
 
 
 def _device_display_list() -> dict[str, Any]:
