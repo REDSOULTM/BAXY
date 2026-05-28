@@ -23,6 +23,7 @@ import subprocess
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -33,6 +34,15 @@ __all__ = [
     "_device_power_plan_get",
     "_device_power_plan_set",
 ]
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -61,7 +71,7 @@ def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, A
 
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok(
+        return _ok_tr(
             netsh=bool(shutil.which("netsh")),
             powercfg=bool(shutil.which("powercfg")),
             powershell=bool(shutil.which("powershell")),
@@ -92,7 +102,7 @@ def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, A
     if action == "wifi_delete_profile":
         return _device_wifi_delete_profile(args)
     if action in {"bluetooth_toggle", "bluetooth_pair", "night_light", "display_set_resolution", "display_set_scale"}:
-        return _err(
+        return _err_tr(
             f"device_settings.{action} is deferred",
             status="needs_implementation",
             note=(
@@ -101,7 +111,7 @@ def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, A
                 " display resolution needs IADLXDisplayServices or DISPLAY_DEVICE Win32 calls."
             ),
         )
-    return _err(
+    return _err_tr(
         "unknown device_settings action", action=action,
         valid_actions=[
             "status", "wifi_status", "wifi_profiles", "wifi_scan",
@@ -122,40 +132,40 @@ $ctrls = Get-CimInstance -ClassName Win32_VideoController | Select-Object Name,C
 """
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err("display_list failed", stderr=proc.stderr)
+        return _err_tr("display_list failed", stderr=proc.stderr)
     try:
         data = json.loads(proc.stdout) if proc.stdout.strip() else {}
     except json.JSONDecodeError:
-        return _err("display_list returned invalid JSON", raw=proc.stdout[:500])
-    return _ok(data=data)
+        return _err_tr("display_list returned invalid JSON", raw=proc.stdout[:500])
+    return _ok_tr(data=data)
 
 
 def _device_power_plan_list() -> dict[str, Any]:
     proc = subprocess.run(["powercfg", "/list"], capture_output=True, text=True, timeout=10)
     if proc.returncode != 0:
-        return _err("powercfg /list failed", stderr=proc.stderr)
+        return _err_tr("powercfg /list failed", stderr=proc.stderr)
     plans: list[dict[str, Any]] = []
     for line in proc.stdout.splitlines():
         m = re.search(r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\s*\(([^)]+)\)\s*(\*?)", line, re.IGNORECASE)
         if m:
             plans.append({"guid": m.group(1), "name": m.group(2), "active": m.group(3) == "*"})
-    return _ok(plans=plans, count=len(plans))
+    return _ok_tr(plans=plans, count=len(plans))
 
 
 def _device_power_plan_get() -> dict[str, Any]:
     proc = subprocess.run(["powercfg", "/getactivescheme"], capture_output=True, text=True, timeout=10)
     if proc.returncode != 0:
-        return _err("powercfg /getactivescheme failed", stderr=proc.stderr)
+        return _err_tr("powercfg /getactivescheme failed", stderr=proc.stderr)
     m = re.search(r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\s*\(([^)]+)\)", proc.stdout, re.IGNORECASE)
     if not m:
-        return _ok(raw=proc.stdout.strip())
-    return _ok(guid=m.group(1), name=m.group(2), active=True)
+        return _ok_tr(raw=proc.stdout.strip())
+    return _ok_tr(guid=m.group(1), name=m.group(2), active=True)
 
 
 def _device_power_plan_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     target = str(args.get("guid") or args.get("name") or args.get("plan") or "").strip()
     if not target:
-        return _err("missing guid or name")
+        return _err_tr("missing guid or name")
     plans = _device_power_plan_list().get("plans", [])
     chosen = None
     for plan in plans:
@@ -163,7 +173,7 @@ def _device_power_plan_set(args: dict[str, Any], state: AgentState) -> dict[str,
             chosen = plan
             break
     if not chosen:
-        return _err("power plan not found", target=target, available=[(p["name"], p["guid"]) for p in plans])
+        return _err_tr("power plan not found", target=target, available=[(p["name"], p["guid"]) for p in plans])
     before = _device_power_plan_get()
     checkpoint = state.checkpoint(
         "power plan change",
@@ -172,7 +182,7 @@ def _device_power_plan_set(args: dict[str, Any], state: AgentState) -> dict[str,
     )
     proc = subprocess.run(["powercfg", "/setactive", chosen["guid"]], capture_output=True, text=True, timeout=10)
     after = _device_power_plan_get()
-    return _ok(
+    return _ok_tr(
         target=chosen,
         before=before,
         after=after,

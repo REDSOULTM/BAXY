@@ -41,6 +41,7 @@ from typing import Any
 
 from ._ps import PSValidationError, RX_ISO_DATETIME, ps_safe_literal
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -59,11 +60,20 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def notification_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     import shutil
     action = str(args.get("action") or "list").casefold()
     if action == "status":
-        return _ok(windows=True, scheduled_tasks=shutil.which("powershell") is not None, backend="windows_scheduled_tasks")
+        return _ok_tr(windows=True, scheduled_tasks=shutil.which("powershell") is not None, backend="windows_scheduled_tasks")
     if action == "history":
         return _notification_history(args, state)
     if action in {"list", "timer_list", "alarm_list", "reminder_list"}:
@@ -74,12 +84,12 @@ def notification_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
             items = [r for r in items if r.get("kind") == kind]
         # Enrich with live ScheduledTask info when available.
         enriched = [_enrich_notification_resource(item) for item in items]
-        return _ok(items=enriched, count=len(enriched))
+        return _ok_tr(items=enriched, count=len(enriched))
     if action in {"toast_now", "notify_sound"}:
         title = str(args.get("title") or "Gemma4 Agent").strip()
         text = str(args.get("text") or args.get("message") or title).strip()
         result = _show_message_box(title, text)
-        return _ok(title=title, text=text, attempted=True, verified=False, result=result, completion_status="notification_requested")
+        return _ok_tr(title=title, text=text, attempted=True, verified=False, result=result, completion_status="notification_requested")
     if action in {"timer_start", "alarm_create", "reminder_create", "toast_schedule"}:
         return _schedule_notification(args, state, kind=_kind_for_notification_action(action))
     if action in {"timer_cancel", "alarm_cancel", "reminder_delete", "delete"}:
@@ -88,7 +98,7 @@ def notification_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
         return _update_notification(args, state, kind="local_reminder")
     if action in {"timer_update", "alarm_update", "notification_update"}:
         return _update_notification(args, state, kind=_kind_for_notification_action(action.replace("_update", "")))
-    return _err(
+    return _err_tr(
         "unknown notification action", action=action,
         valid_actions=[
             "status", "history", "list", "timer_list", "alarm_list", "reminder_list",
@@ -152,7 +162,7 @@ def _schedule_notification(args: dict[str, Any], state: AgentState, *, kind: str
     try:
         due = _notification_due(args)
     except _NotificationDueError as exc:
-        return _err(str(exc), status="needs_user")
+        return _err_tr(str(exc), status="needs_user")
     task_name = f"Gemma4Agent_{kind}_{int(time.time())}"
     # CC-100 / T2-notification-ps-injection-023: el title/text vienen del LLM.
     # Persistimos el mensaje en un JSON dentro del state-dir y registramos la
@@ -171,7 +181,7 @@ def _schedule_notification(args: dict[str, Any], state: AgentState, *, kind: str
         due_literal = ps_safe_literal(due.strftime("%Y-%m-%d %H:%M:%S"), RX_ISO_DATETIME)
         safe_task_name = ps_safe_literal(task_name, re.compile(r"^Gemma4Agent_[A-Za-z0-9_]+$"))
     except PSValidationError as exc:
-        return _err(f"invalid schedule parameters: {exc}")
+        return _err_tr(f"invalid schedule parameters: {exc}")
     env = {
         **os.environ,
         "GEMMA4_NOTIF_TASK": safe_task_name,
@@ -190,7 +200,7 @@ Register-ScheduledTask -TaskName $task -TaskPath '\Gemma4Agent\' -Action $Action
 """
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], env=env, capture_output=True, text=True, timeout=30)
     if proc.returncode != 0:
-        return _err("failed to register scheduled notification", stderr=proc.stderr, exit_code=proc.returncode)
+        return _err_tr("failed to register scheduled notification", stderr=proc.stderr, exit_code=proc.returncode)
     resource = state.register_resource(
         kind,
         title,
@@ -198,7 +208,7 @@ Register-ScheduledTask -TaskName $task -TaskPath '\Gemma4Agent\' -Action $Action
         cleanup_args={"action": "delete", "task_name": task_name},
         metadata={"text": text, "due": due.isoformat(), "task_name": task_name},
     )
-    return _ok(kind=kind, title=title, text=text, due=due.isoformat(), task_name=task_name, resource=resource.get("resource"))
+    return _ok_tr(kind=kind, title=title, text=text, due=due.isoformat(), task_name=task_name, resource=resource.get("resource"))
 
 
 def _delete_notification(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -218,8 +228,8 @@ def _delete_notification(args: dict[str, Any], state: AgentState) -> dict[str, A
         result = {"task_name": None, "note": "no scheduled task name provided"}
     if rid:
         marked = state.mark_cleaned(rid, result)
-        return _ok(deleted=True, task=result, resource=marked.get("resource"))
-    return _ok(deleted=True, task=result)
+        return _ok_tr(deleted=True, task=result, resource=marked.get("resource"))
+    return _ok_tr(deleted=True, task=result)
 
 
 def _enrich_notification_resource(resource: dict[str, Any]) -> dict[str, Any]:
@@ -266,7 +276,7 @@ def _notification_history(args: dict[str, Any], state: AgentState) -> dict[str, 
     items.sort(key=lambda r: str(r.get("created_at", "")), reverse=True)
     items = items[:limit]
     enriched = [_enrich_notification_resource(item) for item in items]
-    return _ok(items=enriched, count=len(enriched), kinds=sorted(kinds))
+    return _ok_tr(items=enriched, count=len(enriched), kinds=sorted(kinds))
 
 
 def _update_notification(args: dict[str, Any], state: AgentState, *, kind: str) -> dict[str, Any]:
@@ -283,7 +293,7 @@ def _update_notification(args: dict[str, Any], state: AgentState, *, kind: str) 
                 resource = res
                 break
     if not resource:
-        return _err("notification not found", kind=kind, status="needs_user")
+        return _err_tr("notification not found", kind=kind, status="needs_user")
 
     old_task_name = str((resource.get("metadata") or {}).get("task_name") or "").strip()
     # Build merged args from old metadata + updates.
@@ -307,7 +317,7 @@ def _update_notification(args: dict[str, Any], state: AgentState, *, kind: str) 
     new = _schedule_notification(merged_args, state, kind=kind)
     if not new.get("ok"):
         return new
-    return _ok(updated=True, previous_task=old_task_name, previous_id=resource.get("id"), cleanup=cleanup, new=new)
+    return _ok_tr(updated=True, previous_task=old_task_name, previous_id=resource.get("id"), cleanup=cleanup, new=new)
 
 
 def _kind_for_notification_action(action: str) -> str:
