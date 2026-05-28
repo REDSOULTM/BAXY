@@ -231,6 +231,33 @@ class TestAuditMetrics(unittest.TestCase):
             + "\n  ".join(offenders[:10])
         )
 
+    def test_metric_zero_trivial_tests(self):
+        """Audit hygiene: cero tests cuyo cuerpo es solo `pass` o
+        solo un docstring (no asserts). Esos tests dan falsa sensación
+        de coverage."""
+        trivial = []
+        for p in PKG.rglob("test_*.py"):
+            if "node_modules" in p.parts:
+                continue
+            try:
+                tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
+            except SyntaxError:
+                continue
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
+                    if len(node.body) == 1:
+                        stmt = node.body[0]
+                        if isinstance(stmt, ast.Pass):
+                            trivial.append(f"{p.relative_to(PKG.parent)}:{node.lineno} {node.name}")
+                        elif (isinstance(stmt, ast.Expr)
+                              and isinstance(stmt.value, ast.Constant)):
+                            trivial.append(f"{p.relative_to(PKG.parent)}:{node.lineno} {node.name}")
+        self.assertEqual(
+            trivial, [],
+            f"Trivial tests (pass-only or docstring-only):\n  "
+            + "\n  ".join(trivial[:10])
+        )
+
     def test_metric_real_todos_under_5(self):
         """Audit hygiene: TODO/FIXME reales en producción ≤ 5.
         Filtramos el "todo" castellano (pronombre indefinido) usando
