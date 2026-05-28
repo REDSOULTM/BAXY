@@ -24,6 +24,7 @@ import subprocess
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -38,6 +39,15 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def peripheral_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """Compound tool for USB, HID controllers and device manager state.
 
@@ -47,7 +57,7 @@ def peripheral_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok(
+        return _ok_tr(
             powershell=bool(shutil.which("powershell")),
             backend="windows_pnp",
             note="USB/HID via Get-PnpDevice. Vendor RGB profiles are deferred.",
@@ -63,12 +73,12 @@ def peripheral_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action in {"device_disable", "device_enable"}:
         return _peripheral_device_toggle(action, args, state)
     if action in {"rgb_profile_set", "rgb_list", "rgb_set_color"}:
-        return _err(
+        return _err_tr(
             f"peripheral.{action} is deferred; vendor SDKs (Logitech G HUB, Razer Synapse, Corsair iCUE) each ship their own API/services",
             status="needs_implementation",
             note="If a vendor exposes a stable CLI or HTTP endpoint, we can add a specific binding later.",
         )
-    return _err(
+    return _err_tr(
         "unknown peripheral action", action=action,
         valid_actions=[
             "status", "usb_list", "hid_list", "controller_status",
@@ -116,26 +126,26 @@ def _peripheral_run_json(script: str, field: str) -> dict[str, Any]:
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
     except (OSError, subprocess.TimeoutExpired):
-        return _err("Get-PnpDevice timeout", field=field, reason="powershell_timeout")
+        return _err_tr("Get-PnpDevice timeout", field=field, reason="powershell_timeout")
     if proc.returncode != 0:
-        return _err("Get-PnpDevice failed", stderr=proc.stderr)
+        return _err_tr("Get-PnpDevice failed", stderr=proc.stderr)
     raw = proc.stdout.strip()
     if not raw:
-        return _ok(**{field: [], "count": 0})
+        return _ok_tr(**{field: [], "count": 0})
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return _err("Get-PnpDevice returned invalid JSON", raw=raw[:500])
+        return _err_tr("Get-PnpDevice returned invalid JSON", raw=raw[:500])
     if isinstance(data, dict):
         data = [data]
-    return _ok(**{field: data, "count": len(data)})
+    return _ok_tr(**{field: data, "count": len(data)})
 
 
 def _peripheral_device_toggle(action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .domain_tools_helpers import _ps_quote
     instance_id = str(args.get("instance_id") or args.get("id") or "").strip()
     if not instance_id:
-        return _err("missing instance_id (use usb_list/hid_list to find it)")
+        return _err_tr("missing instance_id (use usb_list/hid_list to find it)")
     verb = "Disable" if action == "device_disable" else "Enable"
     reverse = "device_enable" if action == "device_disable" else "device_disable"
     checkpoint = state.checkpoint(
@@ -145,7 +155,7 @@ def _peripheral_device_toggle(action: str, args: dict[str, Any], state: AgentSta
     )
     script = f"{verb}-PnpDevice -InstanceId '{_ps_quote(instance_id)}' -Confirm:$false"
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
-    return _ok(
+    return _ok_tr(
         action=action, instance_id=instance_id,
         exit_code=proc.returncode, stdout=proc.stdout.strip()[:500], stderr=proc.stderr[-2000:],
         checkpoint=checkpoint.get("checkpoint"),

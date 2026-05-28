@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -44,6 +45,15 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def creative_local_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """Compound tool for local generative ML backends (ComfyUI primarily).
 
@@ -55,13 +65,13 @@ def creative_local_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
     host = str(args.get("host") or os.environ.get("GEMMA4_COMFYUI_HOST") or "http://127.0.0.1:8188").rstrip("/")
     if action == "status":
         alive = _comfy_alive(host)
-        return _ok(
+        return _ok_tr(
             comfyui=alive,
             host=host,
             launch_instruction="Start ComfyUI manually: `python main.py` from your ComfyUI install. Set GEMMA4_COMFYUI_HOST if it listens on a different port.",
         )
     if not _comfy_alive(host):
-        return _err(
+        return _err_tr(
             f"ComfyUI is not reachable at {host}",
             status="needs_user", verified=False,
             completion_status="needs_comfyui_running",
@@ -79,7 +89,7 @@ def creative_local_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
         return _comfy_interrupt(host)
     if action == "models":
         return _comfy_models(host)
-    return _err(
+    return _err_tr(
         "unknown creative_local action", action=action,
         valid_actions=[
             "status", "list_models", "txt2img", "img2img", "queue_status",
@@ -128,51 +138,51 @@ def _comfy_submit(host: str, args: dict[str, Any], state: AgentState) -> dict[st
     if not workflow and workflow_path:
         p = Path(workflow_path).expanduser()
         if not p.is_file():
-            return _err("workflow_path not found", path=str(p))
+            return _err_tr("workflow_path not found", path=str(p))
         try:
             workflow = json.loads(p.read_text(encoding="utf-8", errors="replace"))
         except json.JSONDecodeError as exc:
-            return _err(f"workflow JSON invalid: {exc}", path=str(p))
+            return _err_tr(f"workflow JSON invalid: {exc}", path=str(p))
     if not isinstance(workflow, dict):
-        return _err("submit requires workflow (dict) or workflow_path (json file). ComfyUI 'API format' JSON expected.")
+        return _err_tr("submit requires workflow (dict) or workflow_path (json file). ComfyUI 'API format' JSON expected.")
     client_id = str(args.get("client_id") or "gemma4-agent")
     payload = {"prompt": workflow, "client_id": client_id}
     response = _comfy_post_json(host, "/prompt", payload)
     if response.get("_error"):
-        return _err(f"submit failed: {response['_error']}")
+        return _err_tr(f"submit failed: {response['_error']}")
     prompt_id = response.get("prompt_id")
     if not prompt_id:
-        return _err("ComfyUI did not return a prompt_id", response=response)
+        return _err_tr("ComfyUI did not return a prompt_id", response=response)
     state.register_resource(
         "comfy_prompt",
         f"comfy {prompt_id}",
         metadata={"prompt_id": prompt_id, "client_id": client_id, "host": host, "submitted_at": datetime.now().isoformat()},
     )
-    return _ok(prompt_id=prompt_id, client_id=client_id, host=host, response=response, note="Use action=wait or action=result to retrieve outputs.")
+    return _ok_tr(prompt_id=prompt_id, client_id=client_id, host=host, response=response, note="Use action=wait or action=result to retrieve outputs.")
 
 
 def _comfy_result(host: str, args: dict[str, Any]) -> dict[str, Any]:
     prompt_id = str(args.get("prompt_id") or args.get("id") or "").strip()
     if not prompt_id:
-        return _err("missing prompt_id")
+        return _err_tr("missing prompt_id")
     data = _comfy_get_json(host, f"/history/{prompt_id}")
     if data.get("_error"):
-        return _err(f"result fetch failed: {data['_error']}")
+        return _err_tr(f"result fetch failed: {data['_error']}")
     record = data.get(prompt_id)
     if not record:
-        return _ok(prompt_id=prompt_id, status="pending", note="No history entry yet; the prompt may still be running.")
+        return _ok_tr(prompt_id=prompt_id, status="pending", note="No history entry yet; the prompt may still be running.")
     outputs = record.get("outputs") or {}
     saved_images: list[dict[str, Any]] = []
     for node_id, node_output in outputs.items():
         for img in node_output.get("images") or []:
             saved_images.append({"node_id": node_id, "filename": img.get("filename"), "subfolder": img.get("subfolder"), "type": img.get("type")})
-    return _ok(prompt_id=prompt_id, status=record.get("status", {}).get("status_str"), outputs=outputs, images=saved_images, verified=True)
+    return _ok_tr(prompt_id=prompt_id, status=record.get("status", {}).get("status_str"), outputs=outputs, images=saved_images, verified=True)
 
 
 def _comfy_wait(host: str, args: dict[str, Any]) -> dict[str, Any]:
     prompt_id = str(args.get("prompt_id") or args.get("id") or "").strip()
     if not prompt_id:
-        return _err("missing prompt_id")
+        return _err_tr("missing prompt_id")
     timeout = float(args.get("timeout_sec", 300))
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -180,25 +190,25 @@ def _comfy_wait(host: str, args: dict[str, Any]) -> dict[str, Any]:
         if not data.get("_error") and prompt_id in data:
             return _comfy_result(host, {"prompt_id": prompt_id})
         time.sleep(2.0)
-    return _err("timeout waiting for prompt to finish", prompt_id=prompt_id, timeout_sec=timeout, status="needs_verification")
+    return _err_tr("timeout waiting for prompt to finish", prompt_id=prompt_id, timeout_sec=timeout, status="needs_verification")
 
 
 def _comfy_queue(host: str) -> dict[str, Any]:
     data = _comfy_get_json(host, "/queue")
     if data.get("_error"):
-        return _err(f"queue fetch failed: {data['_error']}")
-    return _ok(running=len(data.get("queue_running") or []), pending=len(data.get("queue_pending") or []), data=data)
+        return _err_tr(f"queue fetch failed: {data['_error']}")
+    return _ok_tr(running=len(data.get("queue_running") or []), pending=len(data.get("queue_pending") or []), data=data)
 
 
 def _comfy_interrupt(host: str) -> dict[str, Any]:
     response = _comfy_post_json(host, "/interrupt", {})
     if response.get("_error"):
-        return _err(f"interrupt failed: {response['_error']}")
-    return _ok(interrupted=True, response=response)
+        return _err_tr(f"interrupt failed: {response['_error']}")
+    return _ok_tr(interrupted=True, response=response)
 
 
 def _comfy_models(host: str) -> dict[str, Any]:
     data = _comfy_get_json(host, "/object_info")
     if data.get("_error"):
-        return _err(f"object_info fetch failed: {data['_error']}")
-    return _ok(node_types=len(data), sample=list(data.keys())[:30])
+        return _err_tr(f"object_info fetch failed: {data['_error']}")
+    return _ok_tr(node_types=len(data), sample=list(data.keys())[:30])
