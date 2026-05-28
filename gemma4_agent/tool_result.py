@@ -20,6 +20,45 @@ o `ToolResult.err(...)`. Consumers usan `.to_dict()` cuando aún no
 tipan; cuando todos consumers tipan, se elimina `.to_dict()`.
 
 Compatibilidad con dicts: `ToolResult.from_dict(d)` para inverso.
+
+## Handlers ya migrados (2026-05-28)
+
+Patrón usado: `_ok_tr/_err_tr` aliases internas que construyen `ToolResult`
+y llaman `.to_dict()` para mantener back-compat byte-a-byte. Buscar
+"R4 sprint 2026-05-28" en cualquier `domain_tools_*.py`.
+
+- `dependency_tool` (domain_tools_dependency.py)
+- `_device_bluetooth_status` (domain_tools_bluetooth.py)
+- `source_manager_tool` (domain_tools_source_manager.py)
+- `local_search_tool` (domain_tools_local_search.py)
+- `notes_tasks_tool` (domain_tools_notes.py)
+
+## Cómo migrar un nuevo handler
+
+```python
+# Antes:
+def my_tool(args, state):
+    if args.get('foo'):
+        return _ok(foo=args['foo'], verified=True)
+    return _err('missing foo', status='needs_user')
+
+# Después (paso 1 — interop):
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+def my_tool(args, state):
+    if args.get('foo'):
+        return _ok_tr(foo=args['foo'], verified=True)
+    return _err_tr('missing foo', status='needs_user')
+
+# Después (paso 2 — full typed, cuando consumers manejen ToolResult):
+def my_tool(args, state) -> ToolResult:
+    if args.get('foo'):
+        return ToolResult.ok_result(foo=args['foo'], verified=True)
+    return ToolResult.err('missing foo', status='needs_user')
+```
 """
 from __future__ import annotations
 
