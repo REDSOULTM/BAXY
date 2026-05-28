@@ -1549,19 +1549,36 @@ class ToolRegistry:
             return self.app_search({"query": name or "", "limit": args.get("limit", 10), "refresh": args.get("refresh", False)})
         if action == "open":
             res = self.app_open({"name": name or "", "refresh": args.get("refresh", False)})
-            # FALLBACK A WEB (2026-05-27): "ve a pivigames" -> el 4B a veces rutea a
-            # app.open, pero pivigames es un SITIO, no una app instalada. Si
-            # app.open agotó PATH/StartMenu/Steam/Epic/Registry y NO encontró nada
-            # ("app not found"), y el nombre parece un sitio/marca (no una ruta ni
-            # una app del sistema), intentamos NAVEGAR: resolver el sitio por
-            # búsqueda real y abrirlo. Garantía de outcome (mismo patrón que
-            # browser.open->app.open) — sin esto el usuario se queda con un "no
-            # encontré la app" cuando en realidad quería ir a la web. Si la web
-            # tampoco resuelve, devolvemos el "not found" honesto original.
+            # FALLBACK A WEB (2026-05-27): "ve a pivigames/gmail.com/portal uniej" ->
+            # el 4B rutea a app.open, pero es un SITIO, no una app instalada. Tres
+            # señales de que hay que NAVEGAR en vez de abrir una app:
+            #   (a) app.open no encontró NADA ("app not found"); o
+            #   (b) el nombre es un DOMINIO (tiene punto: "gmail.com") -> es web,
+            #       aunque app.open haya matcheado algo (falso: "Visite Java.com"); o
+            #   (c) app.open dijo ok pero, para una consulta MULTI-PALABRA, el match
+            #       es DÉBIL: "portal uniej" (2 palabras) -> "Portal de realidad mixta"
+            #       (score 55, solo "portal" coincide). OJO: NO aplicar a consultas de
+            #       UNA palabra — ahí app_open resuelve bien por alias/typo aunque el
+            #       _score crudo sea bajo ("calculadora"->calc.exe score 0; "calculadra"
+            #       ->Calculadora score 64). Esos son APPS reales, no falsos. Por eso el
+            #       weak-match SOLO cuenta con 2+ palabras (donde "1 palabra suelta
+            #       coincide" es señal fiable de falso match).
+            # Resolvemos el sitio por búsqueda real y abrimos. Si la web no resuelve,
+            # devolvemos el resultado original (honesto). Mismo patrón browser<->app.
+            from .tools import _score as _app_score  # noqa
             nm = str(name or "").strip()
-            if (not res.get("ok") and str(res.get("error") or "") == "app not found"
-                    and nm and 3 <= len(nm) <= 40 and "\\" not in nm and "/" not in nm
-                    and len(nm.split()) <= 4):
+            site_shaped = bool(nm) and 3 <= len(nm) <= 40 and "\\" not in nm and "/" not in nm and len(nm.split()) <= 4
+            not_found = (not res.get("ok")) and str(res.get("error") or "") == "app not found"
+            is_domain = "." in nm and " " not in nm  # "gmail.com", "pivigames.blog"
+            weak_match = False
+            if res.get("ok") and len(nm.split()) >= 2:  # solo multi-palabra
+                matched_name = str((res.get("opened") or {}).get("name") or "")
+                if matched_name:
+                    try:
+                        weak_match = _app_score(nm, matched_name) < 70
+                    except Exception:
+                        weak_match = False
+            if site_shaped and (not_found or is_domain or weak_match):
                 try:
                     resolved = self._resolve_site_by_search(nm)
                 except Exception:

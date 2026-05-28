@@ -137,15 +137,47 @@ class AppOpenWebFallbackTest(unittest.TestCase):
         self.assertEqual(self.opened[-1], "https://pivigames.wordpress.com/")
 
     def test_installed_app_does_not_fall_back(self):
-        # app real (ok=True) -> NO toca la web.
+        # app real (ok=True), match fuerte -> NO toca la web.
         with mock.patch.object(self.ag.tools, "app_open",
-                               return_value={"ok": True, "name": "Calculadora"}), \
+                               return_value={"ok": True, "opened": {"name": "Spotify"}}), \
              mock.patch.object(self.ag.tools, "web_search") as ws:
-            res = self.ag.tools.t_app({"action": "open", "name": "calculadora"})
+            res = self.ag.tools.t_app({"action": "open", "name": "spotify"})
         self.assertTrue(res["ok"])
         self.assertIsNone(res.get("delegated_from"))
         ws.assert_not_called()
         self.assertEqual(self.opened, [])
+
+    def test_single_word_alias_match_stays_app(self):
+        # "calculadora" -> app_open resuelve a 'calc' (alias, _score 0) pero es la
+        # app REAL. Consulta de 1 palabra -> NO weak-match -> sigue APP, no web.
+        with mock.patch.object(self.ag.tools, "app_open",
+                               return_value={"ok": True, "opened": {"name": "calc"}}), \
+             mock.patch.object(self.ag.tools, "web_search") as ws:
+            res = self.ag.tools.t_app({"action": "open", "name": "calculadora"})
+        self.assertIsNone(res.get("delegated_from"))
+        ws.assert_not_called()
+
+    def test_domain_name_goes_web_even_if_app_matched(self):
+        # "gmail.com" tiene punto -> es DOMINIO -> web, aunque app_open matcheara
+        # un falso ("Visite Java.com"). Incidente real.
+        with mock.patch.object(self.ag.tools, "app_open",
+                               return_value={"ok": True, "opened": {"name": "Visite Java.com"}}), \
+             mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": [{"url": "https://www.gmail.com/", "title": "x"}]}):
+            res = self.ag.tools.t_app({"action": "open", "name": "gmail.com"})
+        self.assertEqual(res.get("delegated_from"), "app.open")
+        self.assertEqual(self.opened[-1], "https://www.gmail.com/")
+
+    def test_multiword_weak_match_goes_web(self):
+        # "portal uniej" (2 palabras) -> app_open matchea FALSO "Portal de realidad
+        # mixta" (solo 'portal', score bajo) -> web. Incidente real.
+        with mock.patch.object(self.ag.tools, "app_open",
+                               return_value={"ok": True, "opened": {"name": "Portal de realidad mixta"}}), \
+             mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": [{"url": "https://portal.uniej.edu.sv/", "title": "x"}]}):
+            res = self.ag.tools.t_app({"action": "open", "name": "portal uniej"})
+        self.assertEqual(res.get("delegated_from"), "app.open")
+        self.assertIn("uniej", self.opened[-1])
 
     def test_app_not_found_and_no_web_result_keeps_honest_error(self):
         # ni app ni sitio -> devuelve el 'not found' honesto (no inventa).
