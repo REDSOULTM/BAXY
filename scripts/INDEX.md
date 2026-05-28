@@ -102,6 +102,9 @@ del [[architecture_audit_2026_05_27]] (2026-05-28).
 | `_r3_rewrite_imports.py` | R3: reescribe lazy → top-level imports. | R3 |
 | `_r3_resolve_stranded.py` | R3: limpia merge-stage huérfanos via `update-index`. | R3 |
 | `_r4_migrate_batch.py` | R4: migración batch _ok/_err → ToolResult con .to_dict(). | R4 |
+| `_r2_finalize_subpkg.py` | R2 finalize: convertir 36 siblings a sub-paquete `domain_tools/`. | R2 |
+| `_r2_fix_subpkg_imports.py` | R2 finalize: arregla imports relativos dentro del nuevo sub-paquete. | R2 |
+| `_r2_make_shims_aliased.py` | R2 finalize: shims `domain_tools_X.py` como aliases del módulo real (sys.modules). | R2 |
 
 ## Categoría G — Diagnoses ad-hoc (movibles a `_diag/`)
 

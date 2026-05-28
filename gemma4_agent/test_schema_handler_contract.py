@@ -331,13 +331,22 @@ class TestSchemaHandlerContract(unittest.TestCase):
             props = list(fn.get("parameters", {}).get("properties", {}).keys())
             if name not in _DEEP_DELEGATE_TOOLS or len(props) < 3:
                 continue
-            # Búsqueda global por nombre en archivos del package.
+            # Búsqueda global por nombre en archivos del package, incluyendo
+            # el subpaquete domain_tools/ (R2 finalize 2026-05-28).
             haystack_parts: list[str] = []
             for py in pkg_dir.glob("domain_tools*.py"):
                 try:
                     haystack_parts.append(py.read_text(encoding="utf-8"))
                 except Exception:
                     pass
+            # También buscar en el sub-paquete domain_tools/ (post R2 finalize)
+            sub_pkg = pkg_dir / "domain_tools"
+            if sub_pkg.is_dir():
+                for py in sub_pkg.glob("*.py"):
+                    try:
+                        haystack_parts.append(py.read_text(encoding="utf-8"))
+                    except Exception:
+                        pass
             haystack = "\n".join(haystack_parts)
             hits = sum(1 for p in props if f'"{p}"' in haystack or f"'{p}'" in haystack)
             ratio = hits / len(props)

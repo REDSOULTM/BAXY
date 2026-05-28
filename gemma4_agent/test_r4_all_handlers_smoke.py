@@ -92,11 +92,24 @@ class TestR4ImportSanity(unittest.TestCase):
                 importlib.import_module(f"gemma4_agent.{p.stem}")
 
     def test_migrated_count_is_at_least_30(self):
+        """Post R2-finalize: el código vive en `domain_tools/<area>.py`.
+        Los siblings `domain_tools_<area>.py` son shims sys.modules-aliased."""
         pkg = pathlib.Path(__file__).resolve().parent
-        migrated = sum(
-            1 for p in pkg.glob("domain_tools_*.py")
-            if "tool_result" in p.read_text(encoding="utf-8")
-        )
+        # Buscar en sub-paquete primero
+        subpkg = pkg / "domain_tools"
+        migrated = 0
+        if subpkg.is_dir():
+            migrated = sum(
+                1 for p in subpkg.glob("*.py")
+                if "tool_result" in p.read_text(encoding="utf-8")
+            )
+        # Fallback: siblings (pre-finalize)
+        if migrated < 30:
+            migrated_siblings = sum(
+                1 for p in pkg.glob("domain_tools_*.py")
+                if "tool_result" in p.read_text(encoding="utf-8")
+            )
+            migrated = max(migrated, migrated_siblings)
         self.assertGreaterEqual(migrated, 30, f"Solo {migrated} migrados (esperado ≥ 30)")
 
 

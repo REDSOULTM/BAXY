@@ -17,7 +17,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from ._ps import (
+from .._ps import (
     PSValidationError,
     RX_DAY_OF_WEEK,
     RX_HHMM,
@@ -30,7 +30,7 @@ from ._ps import (
     parse_ps_json,
     ps_safe_literal,
 )
-from .state import AgentState
+from ..state import AgentState
 
 
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
@@ -40,20 +40,20 @@ Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
 # (was duplicated against tools._redact_sensitive / ToolRegistry._hard_gate,
 # see audit §2.2). _ok/_err added 2026-05-27 (audit R3 sprint): were also
 # triplicated (domain_tools/ops_tools/tools, byte-identical bodies).
-from ._shared import (  # noqa: E402
+from .._shared import (  # noqa: E402
     _err,
     _ok,
     hard_gate as _hard_gate,
     redact_sensitive as _redact_credentials,
 )
-from .tool_result import ToolResult
+from ..tool_result import ToolResult
 
 # R3 sprint 2026-05-28: helpers cross-cutting movidos a domain_tools_helpers.py
 # (rompe los ~26 ciclos falsos-positivos del analizador estático que el patrón
 # lazy-import del R2 generaba). Re-exportamos acá para que callers existentes
 # (`from gemma4_agent import domain_tools as dt; dt._safe_name(...)` y
 # `from gemma4_agent.domain_tools import _existing_path`) sigan funcionando.
-from .domain_tools_helpers import (  # noqa: F401, E402
+from .helpers import (  # noqa: F401, E402
     _existing_path,
     _find_resource,
     _find_routine,
@@ -82,7 +82,7 @@ def _err_tr(msg, **kw):
 
 # Office (PPTX/DOCX/XLSX) - extraído a domain_tools_office.py
 # (R2 sprint 2026-05-28). 7 símbolos.
-from .domain_tools_office import (  # noqa: F401
+from .office import (  # noqa: F401
     _create_document,
     _create_presentation,
     _create_spreadsheet,
@@ -256,7 +256,7 @@ def _audio_get_app_routes() -> dict[str, Any]:
 # (R2 sprint 2026-05-27). domain_tools.py: ~-300 LOC. Re-export AL TOP para que
 # tools.py linea 52 () y los call-
 # sites internos sigan funcionando sin cambio.
-from .domain_tools_notifications import (  # noqa: F401  (re-export por compat)
+from .notifications import (  # noqa: F401  (re-export por compat)
     _NotificationDueError,
     _delete_notification,
     _enrich_notification_resource,
@@ -277,7 +277,7 @@ from .domain_tools_notifications import (  # noqa: F401  (re-export por compat)
 # (_looks_destructive) sigan funcionando sin cambio. _find_routine y
 # _register_routine_process_watcher quedan en domain_tools.py (los importa
 # routine_tool lazy).
-from .domain_tools_routine import (  # noqa: F401  (re-export por compat)
+from .routine import (  # noqa: F401  (re-export por compat)
     _DESTRUCTIVE_COMMAND_TOKENS,
     _append_routine_run,
     _build_routine_trigger_ps,
@@ -296,7 +296,7 @@ from .domain_tools_routine import (  # noqa: F401  (re-export por compat)
 
 # Smart Home (HomeAssistant + MQTT) - extraído a domain_tools_smart_home.py
 # (R2 sprint 2026-05-28). 10 funciones. Re-export para compat (tools.py linea 58).
-from .domain_tools_smart_home import (  # noqa: F401  (re-export por compat)
+from .smart_home import (  # noqa: F401  (re-export por compat)
     _hass_alive,
     _hass_area_control,
     _hass_area_list,
@@ -312,7 +312,7 @@ from .domain_tools_smart_home import (  # noqa: F401  (re-export por compat)
 
 # Study (flashcards + SM-2) - extraído a domain_tools_study.py
 # (R2 sprint 2026-05-28). 12 funciones (entry + 11 helpers).
-from .domain_tools_study import (  # noqa: F401  (re-export por compat)
+from .study import (  # noqa: F401  (re-export por compat)
     _study_card_add,
     _study_card_delete,
     _study_card_list,
@@ -330,7 +330,7 @@ from .domain_tools_study import (  # noqa: F401  (re-export por compat)
 
 # Accessibility (Magnifier/Narrator/settings) - extraído a
 # domain_tools_accessibility.py (R2 sprint 2026-05-28). 4 funciones.
-from .domain_tools_accessibility import (  # noqa: F401  (re-export por compat)
+from .accessibility import (  # noqa: F401  (re-export por compat)
     _accessibility_kill,
     _accessibility_launch,
     _process_running,
@@ -340,7 +340,7 @@ from .domain_tools_accessibility import (  # noqa: F401  (re-export por compat)
 
 # Peripheral (USB/HID/controllers/PnP) - extraído a domain_tools_peripheral.py
 # (R2 sprint 2026-05-28). 7 funciones.
-from .domain_tools_peripheral import (  # noqa: F401
+from .peripheral import (  # noqa: F401
     _peripheral_controller_status,
     _peripheral_device_problems,
     _peripheral_device_toggle,
@@ -353,7 +353,7 @@ from .domain_tools_peripheral import (  # noqa: F401
 
 # Form Filler - extraído a domain_tools_form_filler.py
 # (R2 sprint 2026-05-28). 6 funciones.
-from .domain_tools_form_filler import (  # noqa: F401
+from .form_filler import (  # noqa: F401
     _form_apply,
     _form_discover,
     _form_match_field,
@@ -365,7 +365,7 @@ from .domain_tools_form_filler import (  # noqa: F401
 
 # Creative Local (ComfyUI) - extraído a domain_tools_creative_local.py
 # (R2 sprint 2026-05-28). 9 funciones.
-from .domain_tools_creative_local import (  # noqa: F401
+from .creative_local import (  # noqa: F401
     _comfy_alive,
     _comfy_get_json,
     _comfy_interrupt,
@@ -382,7 +382,7 @@ from .domain_tools_creative_local import (  # noqa: F401
 # Database (sqlite/postgres/mysql) - extraído a domain_tools_database.py
 # (R2 sprint 2026-05-28). 10 funciones (entry + connect + list/schema/query/
 # execute/export + read-only enforcement + helpers).
-from .domain_tools_database import (  # noqa: F401
+from .database import (  # noqa: F401
     _apply_readonly,
     _database_connect,
     _database_execute,
@@ -399,7 +399,7 @@ from .domain_tools_database import (  # noqa: F401
 
 # Container (Docker / docker-compose) - extraído a domain_tools_container.py
 # (R2 sprint 2026-05-28). 8 funciones.
-from .domain_tools_container import (  # noqa: F401
+from .container import (  # noqa: F401
     _container_compose,
     _container_exec,
     _container_images,
@@ -413,7 +413,7 @@ from .domain_tools_container import (  # noqa: F401
 
 # Photo Library - extraído a domain_tools_photo_library.py
 # (R2 sprint 2026-05-28). 8 funciones + _PHOTO_EXTS.
-from .domain_tools_photo_library import (  # noqa: F401
+from .photo_library import (  # noqa: F401
     _PHOTO_EXTS,
     _photo_exif,
     _photo_extract_date,
@@ -428,7 +428,7 @@ from .domain_tools_photo_library import (  # noqa: F401
 
 # Fact Check (TF-IDF + cosine, pure-Python) - extraído a
 # domain_tools_fact_check.py (R2 sprint 2026-05-28).
-from .domain_tools_fact_check import (  # noqa: F401
+from .fact_check import (  # noqa: F401
     _NEGATION_CUES_EN,
     _NEGATION_CUES_ES,
     _fact_check_chunks,
@@ -439,7 +439,7 @@ from .domain_tools_fact_check import (  # noqa: F401
 
 # Data Analysis (pandas + matplotlib Agg) - extraído a
 # domain_tools_data_analysis.py (R2 sprint 2026-05-28). 8 funciones.
-from .domain_tools_data_analysis import (  # noqa: F401
+from .data_analysis import (  # noqa: F401
     _data_csv_describe,
     _data_csv_head,
     _data_csv_profile,
@@ -453,7 +453,7 @@ from .domain_tools_data_analysis import (  # noqa: F401
 
 # Network diagnostics - extraído a domain_tools_network.py
 # (R2 sprint 2026-05-28). 9 funciones (entry + 8 helpers).
-from .domain_tools_network import (  # noqa: F401
+from .network import (  # noqa: F401
     _network_connections,
     _network_dns_get,
     _network_dns_resolve,
@@ -470,7 +470,7 @@ from .domain_tools_network import (  # noqa: F401
 # (R2 sprint 2026-05-28). 9 funciones. _register_routine_process_watcher se
 # usa por routine_tool — éste lo importa lazy desde domain_tools que ahora
 # re-exporta desde aquí.
-from .domain_tools_watcher import (  # noqa: F401
+from .watcher import (  # noqa: F401
     _file_snapshot,
     _process_snapshot,
     _register_routine_process_watcher,
@@ -485,7 +485,7 @@ from .domain_tools_watcher import (  # noqa: F401
 
 # Job Manager (subprocess tracking) - extraído a domain_tools_job_manager.py
 # (R2 sprint 2026-05-28). 4 funciones.
-from .domain_tools_job_manager import (  # noqa: F401
+from .job_manager import (  # noqa: F401
     _job_manager_cancel,
     _job_manager_log,
     _job_manager_start,
@@ -499,7 +499,7 @@ from .domain_tools_job_manager import (  # noqa: F401
 
 # Maintenance (Win Update / Defender / Firewall / Services / Event Logs /
 # Restore Point) - extraído a domain_tools_maintenance.py (R2 sprint 2026-05-28).
-from .domain_tools_maintenance import (  # noqa: F401
+from .maintenance import (  # noqa: F401
     _maintenance_defender_quick_scan,
     _maintenance_defender_status,
     _maintenance_event_logs,
@@ -515,7 +515,7 @@ from .domain_tools_maintenance import (  # noqa: F401
 
 # Media Edit (ffmpeg) - extraído a domain_tools_media_edit.py
 # (R2 sprint 2026-05-28). 12 funciones.
-from .domain_tools_media_edit import (  # noqa: F401
+from .media_edit import (  # noqa: F401
     _media_edit_concat,
     _media_edit_extract_audio,
     _media_edit_input,
@@ -533,7 +533,7 @@ from .domain_tools_media_edit import (  # noqa: F401
 
 # Game Launcher (Epic/GOG/Xbox/Riot) - extraído a domain_tools_game_launcher.py
 # (R2 sprint 2026-05-28). 10 funciones.
-from .domain_tools_game_launcher import (  # noqa: F401
+from .game_launcher import (  # noqa: F401
     _discover_epic_games,
     _discover_gog_games,
     _discover_riot_games,
@@ -550,7 +550,7 @@ from .domain_tools_game_launcher import (  # noqa: F401
 # Device settings compound entry - extraído a domain_tools_device_settings.py
 # (R2 sprint 2026-05-28). Despacha a domain_tools_wifi/bluetooth y a los
 # display/power helpers que también viven en domain_tools_device_settings.
-from .domain_tools_device_settings import device_settings_tool  # noqa: F401
+from .device_settings import device_settings_tool  # noqa: F401
 
 
 # WiFi domain tools - extraídos a domain_tools_wifi.py (R2 sprint 2026-05-27).
@@ -560,7 +560,7 @@ from .domain_tools_device_settings import device_settings_tool  # noqa: F401
 # `from gemma4_agent import domain_tools as dt; dt._device_wifi_X`) sigan
 # funcionando sin tocar nada. Cuando los callers migren a importar
 # `gemma4_agent.domain_tools_wifi` directo, este re-export se puede borrar.
-from .domain_tools_wifi import (  # noqa: F401  (re-export por compat)
+from .wifi import (  # noqa: F401  (re-export por compat)
     _WIFI_FILLER,
     _device_wifi_add_profile,
     _device_wifi_connect,
@@ -578,12 +578,12 @@ from .domain_tools_wifi import (  # noqa: F401  (re-export por compat)
 # Bluetooth domain tool - extraído a domain_tools_bluetooth.py (R2 sprint
 # 2026-05-27). Un sólo método hoy; se aísla para que cuando aparezca más
 # (pair/disconnect/audio-routing) tenga su casa.
-from .domain_tools_bluetooth import _device_bluetooth_status  # noqa: F401
+from .bluetooth import _device_bluetooth_status  # noqa: F401
 
 
 # Display + power-plan helpers - extraídos a domain_tools_device_settings.py
 # (R2 sprint 2026-05-28). El compound device_settings_tool también vive ahí.
-from .domain_tools_device_settings import (  # noqa: F401
+from .device_settings import (  # noqa: F401
     _device_display_list,
     _device_power_plan_get,
     _device_power_plan_list,
@@ -593,7 +593,7 @@ from .domain_tools_device_settings import (  # noqa: F401
 
 # Developer workflows (detect/test/lint/format/git/dev_server) - extraído a
 # domain_tools_developer.py (R2 sprint 2026-05-28). 8 funciones.
-from .domain_tools_developer import (  # noqa: F401
+from .developer import (  # noqa: F401
     _developer_command,
     _developer_git,
     _developer_project_detect,
@@ -608,7 +608,7 @@ from .domain_tools_developer import (  # noqa: F401
 # Document parsing/extraction - extraído a domain_tools_document.py
 # (R2 sprint 2026-05-28). 13 funciones (entry + 12 helpers PDF/DOCX/XLSX/PPTX/
 # HTML/text + OCR Tesseract).
-from .domain_tools_document import (  # noqa: F401
+from .document import (  # noqa: F401
     _document_compare,
     _document_extract_docx,
     _document_extract_html,
@@ -627,7 +627,7 @@ from .domain_tools_document import (  # noqa: F401
 
 # active_phrase_triggers — movido a domain_tools_routine.py (R3 sprint 2026-05-28).
 # Re-export para compat (agent.py + server.py lo importan por este nombre).
-from .domain_tools_routine import active_phrase_triggers  # noqa: F401, E402
+from .routine import active_phrase_triggers  # noqa: F401, E402
 
 
 # Routine helpers - extraídos a domain_tools_routine.py (R2 sprint 2026-05-28).
@@ -2843,12 +2843,12 @@ def _media_search_local_library(args: dict[str, Any]) -> dict[str, Any]:
 
 # Source Manager - extraído a domain_tools_source_manager.py
 # (R2 sprint 2026-05-28).
-from .domain_tools_source_manager import source_manager_tool  # noqa: F401
+from .source_manager import source_manager_tool  # noqa: F401
 
 
 # Dependency catalog - extraído a domain_tools_dependency.py
 # (R2 sprint 2026-05-28). 4 funciones.
-from .domain_tools_dependency import (  # noqa: F401
+from .dependency import (  # noqa: F401
     _binary_dep,
     _dependency_catalog,
     _module_dep,
@@ -2863,7 +2863,7 @@ from .domain_tools_dependency import (  # noqa: F401
 # + _contacts_resolve_recipient + las 3 regex constants + 2 thresholds viven
 # ahora en domain_tools_contacts.py. Re-export acá para compat (dispatch lo
 # importa vía la clase ToolRegistry, mantenemos nombres en namespace).
-from .domain_tools_contacts import (  # noqa: F401  (re-export por compat)
+from .contacts import (  # noqa: F401  (re-export por compat)
     _CONTROL_CHARS_RE,
     _EMAIL_BASIC_RE,
     _PHONE_BASIC_RE,
@@ -3198,7 +3198,7 @@ def _verify_visible_whatsapp_text_status(executor: Executor, target_text: str) -
 
     try:
         from PIL import Image
-        from .ops_tools import ocr_find_text
+        from ..ops_tools import ocr_find_text
         image_path = Path(str(shot["image_path"]))
         img = Image.open(image_path)
         screen_left = int(shot.get("left", 0))
@@ -4037,13 +4037,13 @@ def whatsapp_tool(
 # Notes / Tasks domain tool - extraído a domain_tools_notes.py (R2 sprint
 # 2026-05-27). Re-export para compat (tools.py linea 51 hace
 # ).
-from .domain_tools_notes import notes_tasks_tool  # noqa: F401
+from .notes import notes_tasks_tool  # noqa: F401
 
 
 # Local Calendar (ICS) domain tool - extraído a domain_tools_calendar.py
 # (R2 sprint 2026-05-27). 9 funciones (entry + 8 helpers ICS). domain_tools.py
 # ~-260 LOC. Re-export para compat (tools.py linea 33).
-from .domain_tools_calendar import (  # noqa: F401  (re-export por compat)
+from .calendar import (  # noqa: F401  (re-export por compat)
     _calendar_event_update,
     _calendar_export_path,
     _calendar_ics_import,
@@ -4058,19 +4058,19 @@ from .domain_tools_calendar import (  # noqa: F401  (re-export por compat)
 
 
 # Habit Tracker - extraído a domain_tools_habit_tracker.py (R2 sprint 2026-05-28).
-from .domain_tools_habit_tracker import (  # noqa: F401
+from .habit_tracker import (  # noqa: F401
     _VALID_HABIT_FREQUENCIES,
     habit_tracker_tool,
 )
 
 
 # Local Search - extraído a domain_tools_local_search.py (R2 sprint 2026-05-28).
-from .domain_tools_local_search import local_search_tool  # noqa: F401
+from .local_search import local_search_tool  # noqa: F401
 
 
 # Printer & Scanner - extraído a domain_tools_printer_scanner.py
 # (R2 sprint 2026-05-28). 6 funciones (entry + 5 helpers).
-from .domain_tools_printer_scanner import (  # noqa: F401
+from .printer_scanner import (  # noqa: F401
     _printer_cancel_job,
     _printer_print_file,
     _printer_set_default,
@@ -4085,7 +4085,7 @@ from .domain_tools_printer_scanner import (  # noqa: F401
 
 # Desktop Layout (Win32 EnumWindows + MoveWindow) - extraído a
 # domain_tools_desktop_layout.py (R2 sprint 2026-05-28). 4 funciones.
-from .domain_tools_desktop_layout import (  # noqa: F401
+from .desktop_layout import (  # noqa: F401
     _desktop_layout_restore,
     _enum_windows_with_rect,
     _move_window_by_title,
@@ -4096,7 +4096,7 @@ from .domain_tools_desktop_layout import (  # noqa: F401
 # Backup & Sync - extraído a domain_tools_backup_sync.py (R2 sprint 2026-05-28).
 # Re-export incluye _next_available_path porque photo_library_tool lo usa
 # desde línea ~1856.
-from .domain_tools_backup_sync import (  # noqa: F401
+from .backup_sync import (  # noqa: F401
     _backup_dedupe,
     _backup_resolve,
     _backup_restore,

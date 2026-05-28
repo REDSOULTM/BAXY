@@ -38,10 +38,31 @@ class TestAudit8R(unittest.TestCase):
         self.assertLess(loc, 50, f"R1: run_content tiene {loc} LOC (esperado < 50)")
 
     def test_R2_at_least_30_sibling_modules(self):
-        """R2: domain_tools partido en ≥30 hermanos."""
+        """R2: domain_tools partido en ≥30 áreas. Acepta tanto el modelo
+        siblings `domain_tools_X.py` como el sub-paquete `domain_tools/X.py`
+        (post R2-finalize 2026-05-28: ambos coexisten — los siblings son
+        shims que aliasan al sub-paquete vía sys.modules)."""
         siblings = list(PKG.glob("domain_tools_*.py"))
-        self.assertGreaterEqual(len(siblings), 30,
-                                f"R2: solo {len(siblings)} hermanos (esperado ≥ 30)")
+        subpkg = PKG / "domain_tools"
+        subpkg_areas = list(subpkg.glob("*.py")) if subpkg.is_dir() else []
+        # Subpkg cuenta los .py adentro (excluyendo __init__ que es el core).
+        subpkg_count = sum(1 for p in subpkg_areas if p.stem != "__init__")
+        total = max(len(siblings), subpkg_count)
+        self.assertGreaterEqual(total, 30,
+                                f"R2: {len(siblings)} siblings, {subpkg_count} subpkg areas (esperado ≥ 30)")
+
+    def test_R2_subpkg_layout_complete(self):
+        """R2 finalize: el audit pedía sub-paquete `domain_tools/` proper.
+        Verifica que existe Y tiene áreas adentro Y que los shims viejos
+        siguen funcionando (back-compat)."""
+        subpkg = PKG / "domain_tools"
+        self.assertTrue(subpkg.is_dir(), "R2 finalize: domain_tools/ no es paquete")
+        init = subpkg / "__init__.py"
+        self.assertTrue(init.exists(), "R2 finalize: domain_tools/__init__.py falta")
+        # Al menos 30 áreas como submódulos
+        areas = [p for p in subpkg.glob("*.py") if p.stem != "__init__"]
+        self.assertGreaterEqual(len(areas), 30,
+                                f"R2 finalize: solo {len(areas)} áreas en sub-paquete")
 
     def test_R3_zero_top_level_cycles(self):
         """R3: cero ciclos top-level (lazy ok, esos no son ciclos runtime)."""
@@ -58,25 +79,27 @@ class TestAudit8R(unittest.TestCase):
         self.assertIn("0", cycle_line, f"R3: ciclos no son 0 — {cycle_line!r}")
 
     def test_R4_tool_result_exists_and_has_5_migrated(self):
-        """R4: ToolResult dataclass + al menos 5 handlers migrados."""
-        # ToolResult exists
+        """R4: ToolResult dataclass + al menos 5 handlers migrados.
+
+        Post R2-finalize: el código real vive en `domain_tools/<area>.py`.
+        Los siblings `domain_tools_<area>.py` son shims sys.modules-aliased.
+        Buscamos los marcadores R4 en el sub-paquete."""
         self.assertTrue((PKG / "tool_result.py").exists(), "R4: tool_result.py missing")
-        # Count migrated handlers (search for "_ok_tr" pattern)
-        migrated = []
+        migrated: set[str] = set()
+        # Buscar en sub-paquete domain_tools/<area>.py
+        subpkg = PKG / "domain_tools"
+        if subpkg.is_dir():
+            for p in subpkg.glob("*.py"):
+                src = p.read_text(encoding="utf-8")
+                if "_ok_tr" in src or "ToolResult.ok_result" in src or "ToolResult.err(" in src:
+                    migrated.add(p.name)
+        # También considerar siblings (pre-finalize) por compatibilidad
         for p in PKG.glob("domain_tools_*.py"):
-            if "_ok_tr" in p.read_text(encoding="utf-8"):
-                migrated.append(p.name)
-        # bluetooth uses ToolResult.ok_result directly, not _ok_tr alias
-        # check for that too
-        for p in PKG.glob("domain_tools_*.py"):
-            if "ToolResult.ok_result" in p.read_text(encoding="utf-8") and p.name not in migrated:
-                migrated.append(p.name)
-        # source_manager uses ToolResult.ok_result directly
-        for p in PKG.glob("domain_tools_*.py"):
-            if "ToolResult.err(" in p.read_text(encoding="utf-8") and p.name not in migrated:
-                migrated.append(p.name)
+            src = p.read_text(encoding="utf-8")
+            if "_ok_tr" in src or "ToolResult.ok_result" in src or "ToolResult.err(" in src:
+                migrated.add(p.name)
         self.assertGreaterEqual(len(migrated), 5,
-                                f"R4: solo {len(migrated)} handlers migrados (esperado ≥ 5): {migrated}")
+                                f"R4: solo {len(migrated)} handlers migrados (esperado ≥ 5)")
 
     def test_R5_schema_contract_test_exists(self):
         """R5: test_schema_handler_contract.py existe + corre."""
