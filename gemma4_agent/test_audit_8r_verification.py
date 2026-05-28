@@ -100,12 +100,13 @@ class TestAudit8R(unittest.TestCase):
         """R5: test_schema_handler_contract.py existe + corre."""
         contract = PKG / "test_schema_handler_contract.py"
         self.assertTrue(contract.exists(), "R5: test_schema_handler_contract.py missing")
-        # Verificar que tiene al menos los 3 tests esperados
+        # Verificar que tiene los 4 tests esperados (incluyendo enum coverage).
         src = contract.read_text(encoding="utf-8")
         for required in (
             "test_every_schema_property_is_read_by_handler",
             "test_every_compound_schema_has_handler",
             "test_deep_delegate_tools_actually_read_majority_of_props",
+            "test_schema_enums_are_referenced_in_handlers",
         ):
             self.assertIn(required, src, f"R5: falta test {required}")
 
@@ -117,9 +118,25 @@ class TestAudit8R(unittest.TestCase):
         for py in PKG.rglob("*.py"):
             if py.name == "test_no_eval_exec.py":
                 continue
+            # Skip vendored deps (node_modules).
+            if "node_modules" in py.parts:
+                continue
             for line_no, name in _find_builtin_eval_exec(py):
                 offenders.append(f"{py.relative_to(PKG.parent)}:{line_no} {name}")
         self.assertEqual(offenders, [], f"R6: builtins encontrados: {offenders}")
+
+    def test_R6_zero_bare_except_in_package(self):
+        """R6 extended: cero `except:` sin tipo (bare except) en producción."""
+        from .test_no_bare_except import _find_bare_except
+        offenders = []
+        for py in PKG.rglob("*.py"):
+            if py.name == "test_no_bare_except.py":
+                continue
+            if "node_modules" in py.parts:
+                continue
+            for line_no in _find_bare_except(py):
+                offenders.append(f"{py.relative_to(PKG.parent)}:{line_no}")
+        self.assertEqual(offenders, [], f"R6: bare-except encontrados: {offenders}")
 
     def test_R7_zero_prints_in_hot_path(self):
         """R7: cero prints en módulos hot-path runtime."""
@@ -141,6 +158,55 @@ class TestAudit8R(unittest.TestCase):
         # _diag should have ≥4 scripts (the ones we moved)
         diag_count = len(list((scripts_dir / "_diag").glob("*.py")))
         self.assertGreaterEqual(diag_count, 4, f"R8: solo {diag_count} en _diag/")
+
+    def test_extra_hygiene_repo_imports_cleanly(self):
+        """Audit cleanup extra: TODO el paquete `gemma4_agent` se importa
+        sin error. Detecta cualquier import roto en archivos productivos.
+        """
+        import importlib, pkgutil
+        import gemma4_agent
+        errors = []
+        for mod_info in pkgutil.walk_packages(
+            gemma4_agent.__path__, prefix="gemma4_agent."
+        ):
+            if "test_" in mod_info.name:
+                continue
+            if "node_modules" in mod_info.name:
+                continue
+            try:
+                importlib.import_module(mod_info.name)
+            except Exception as exc:
+                errors.append((mod_info.name, f"{type(exc).__name__}: {exc}"))
+        # Limit error report length.
+        if errors:
+            first_5 = "\n  ".join(f"{n}: {e[:120]}" for n, e in errors[:5])
+            self.fail(f"{len(errors)} módulos no importan limpio:\n  {first_5}")
+
+    def test_extra_hygiene_future_annotations_in_modern_files(self):
+        """Audit cleanup extra: cada archivo prod con type hints modernos
+        (X | None, list[X], dict[X, Y]) debe tener
+        `from __future__ import annotations`."""
+        offenders = []
+        for py in PKG.rglob("*.py"):
+            if py.name == "test_audit_8r_verification.py":
+                continue
+            if "test_" in py.name:
+                continue
+            if "node_modules" in py.parts:
+                continue
+            if py.name == "__init__.py":
+                continue  # initialization files often have less constraints
+            src = py.read_text(encoding="utf-8", errors="replace")
+            if "from __future__ import annotations" in src:
+                continue
+            # Look for modern type hints
+            if "list[" in src or "dict[" in src or "| None" in src:
+                offenders.append(str(py.relative_to(PKG.parent)))
+        self.assertEqual(
+            offenders, [],
+            f"Files con type hints modernos pero sin `from __future__ import annotations`:\n  "
+            + "\n  ".join(offenders[:10]),
+        )
 
 
 if __name__ == "__main__":

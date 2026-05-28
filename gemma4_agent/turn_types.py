@@ -1,4 +1,4 @@
-"""Dataclasses para las 3 fases de Gemma4Agent.run_content (R1 sprint
+"""Dataclasses para las fases de Gemma4Agent.run_content (R1 sprint
 2026-05-28).
 
 run_content históricamente era una función de 2193 LOC que mezclaba 3
@@ -9,9 +9,15 @@ responsabilidades:
   - finalizar (verifiers + accessibility nudges + reply formateado).
 
 R1 parte el método en `_decide_turn` → `_execute_turn` (con `_finalize_turn`
-llamado al final de execute). `TurnDecision` y `ExecutionResult` son los
-contratos de paso entre fases; el `early_reply` modela los caminos cortos
-que omiten las fases siguientes.
+llamado al final de execute). `TurnDecision` es el contrato de paso de
+decide → execute; el `early_reply` modela los caminos cortos que omiten
+las fases siguientes.
+
+Nota: el dataclass `ExecutionResult` originalmente declarado fue ELIMINADO
+en cleanup (2026-05-28) porque la implementación final del R1 no lo
+necesitó: `_execute_turn` devuelve `AgentReply` directo (el resultado
+terminal del turno), sin envoltorio. Si en el futuro se necesita pasar
+estado entre execute y finalize, se puede re-añadir acá.
 """
 from __future__ import annotations
 
@@ -51,17 +57,3 @@ class TurnDecision:
     selected_schemas: list[dict[str, Any]] = field(default_factory=list)
 
 
-@dataclass
-class ExecutionResult:
-    """Resultado de Gemma4Agent._execute_turn.
-
-    El execute lo hace TODO: LLM loop iterativo, tool dispatch, retries,
-    fallback nets, Y el cierre del turno (max_turns, loop_aborted, success).
-    Por eso ExecutionResult contiene SIEMPRE un AgentReply terminal — el
-    early_reply solo distingue caminos de error (chat exception) vs los
-    caminos normales (assistant terminó sin tool call, max_turns, loop).
-
-    R1.2 deja toda la lógica del finalize dentro de _execute_turn; R1.3 la
-    extrae a _finalize_turn como sub-fase llamada al final del execute.
-    """
-    reply: "AgentReply" = None  # type: ignore[assignment]
