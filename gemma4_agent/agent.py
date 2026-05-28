@@ -159,6 +159,19 @@ class AgentReply:
     mission: dict[str, Any] | None = None
 
 
+class _FinalizeContinue:
+    """Sentinel returned by Gemma4Agent._finalize_turn when the a11y
+    nudge re-prompted the LLM and the caller must `continue` its
+    outer for _turn loop. Single instance: _FINALIZE_CONTINUE.
+
+    R1 sprint 2026-05-28.
+    """
+    __slots__ = ()
+
+
+_FINALIZE_CONTINUE = _FinalizeContinue()
+
+
 class Gemma4Agent:
     def __init__(self, config: AgentConfig | None = None):
         self.config = config or AgentConfig.from_env()
@@ -2112,512 +2125,18 @@ class Gemma4Agent:
             )
 
             if not raw_tool_calls:
-                # REDES DETERMINISTAS (fallback final, 2026-05-27). Las redes de
-                # responder-mensaje / email / navegación son detectores de ALTA
-                # precisión (verbo + 'a <destinatario>' + cuerpo; o URL/sitio
-                # claros). Antes solo corrían dentro de forced_tool_retry_empty,
-                # que se SALTEA cuando el abstain-head juzga el turno "no-tool" y
-                # deja el subset sin la tool de dominio (medido: "respondele a mama
-                # que ya voy" -> subset=[session], el 4B se niega). Acá las
-                # disparamos AUNQUE el abstain head haya abstenido — desacopladas
-                # del router — pero SOLO si ninguna tool corrió aún este turno
-                # (len(events)==0) y el forced-retry no las probó ya. Cada red es
-                # conservadora (None si no hay match claro) -> no roba turnos de
-                # charla. Fallback seguro: error -> seguimos al flujo normal.
-                if (len(events) == 0
-                        and not getattr(self, "_det_nets_tried", False)):
-                    self._det_nets_tried = True
-                    try:
-                        _dn_ev = (self._deterministic_reply(raw_text_early)
-                                  or self._deterministic_email(raw_text_early)
-                                  or self._deterministic_navigate(raw_text_early))
-                    except Exception as _dnexc:
-                        _dn_ev = None
-                        try:
-                            self.trace.event(turn_id, "deterministic_net_error",
-                                             error=f"{type(_dnexc).__name__}: {_dnexc}")
-                        except Exception:
-                            pass
-                    if _dn_ev is not None and (_dn_ev.result or {}).get("ok"):
-                        events.append(_dn_ev)
-                        _nm = _dn_ev.name
-                        self.trace.event(turn_id, "deterministic_net_fallback",
-                                         tool=_nm)
-                        _res = _dn_ev.result or {}
-                        if _nm == "whatsapp":
-                            _rc = _res.get("reply_contact") or ""
-                            assistant_content = (
-                                f"Abrí el chat con {_rc} y dejé el mensaje listo. "
-                                "Revisalo y decime si lo envío.")
-                        elif _nm == "email":
-                            _to = _res.get("email_to") or ""
-                            assistant_content = (
-                                f"Abrí el borrador de correo para {_to}. "
-                                "Revisalo y decime si lo envío.")
-                        else:  # browser
-                            _u = _res.get("resolved_url") or _res.get("url") or ""
-                            assistant_content = f"Listo, abrí {_u}."
-                        raw_msg = {}
-                        # con la red disparada, saltamos los guards de "prometió
-                        # sin acción" (ya hay un evento real) y finalizamos.
-                        msg["content"] = assistant_content
-                # ACCESIBILIDAD (B3/B4) — CONTINUAR EN EL MISMO TURNO. En
-                # movilidad/no_vidente el agente debe HACER TODO por el usuario:
-                # si está por terminar con una respuesta que DELEGA la tarea
-                # ("revisá los resultados", "elegí cuál", "mirá la pantalla y
-                # decidí"), NO finalizamos — inyectamos un nudge y re-prompteamos
-                # al LLM para que ejecute el SIGUIENTE paso él mismo, dentro de
-                # este turno. Acotado por _A11Y_MAX_CONTINUES para "avanzar lo más
-                # posible y después parar honesto" (el 4B se traba en cadenas
-                # largas; no queremos un loop infinito). Aplica a CUALQUIER tarea,
-                # no solo compras. Fallback seguro: cualquier error -> finaliza.
-                _cont_delegates = None
-                try:
-                    from . import accessibility as _a11y_cont
-                    from .reply_validator import reply_delegates_task as _rdt_cont
-                    _cont_mode = _a11y_cont.get_active_mode()
-                    _cont_active = _cont_mode.hands_free_only or _cont_mode.narrate_all_actions
-                    if _cont_active:
-                        _cont_delegates = _rdt_cont(assistant_content or "")
-                except Exception:
-                    _cont_active = False
-                    _cont_delegates = False
-                # GUARD (2026-05-27, bug medido): el nudge "ejecutá vos el siguiente
-                # paso" SOLO tiene sentido en un turno de ACCIÓN (el usuario pidió
-                # HACER algo). En una pregunta META/charla ("¿qué podés hacer?",
-                # "¿quién eres?") el router ABSTUVO (subset sin tools de dominio) y
-                # no corrió ninguna acción: la respuesta DESCRIBE capacidades, no
-                # delega una tarea. Sin este gate, en movilidad/no_vidente el 4B
-                # tomaba la descripción ("...controlar tu sistema, gestionar apps...")
-                # como tarea-a-continuar y el nudge lo empujaba a sacar un screenshot
-                # para responder "¿qué podés hacer?" (absurdo, 5/5 medido). Actionable
-                # = se ofreció ≥1 tool de dominio este turno O se ejecutó una acción
-                # de dominio. Estructural (estado del router/ejecución), no contenido.
-                _cont_actionable = False
-                try:
-                    _dom_offered = bool(_domain_subset(list(selected_tool_names)))
-                    _dom_ran = any(
-                        e.name not in {"session", "safety", "state", "verify"}
-                        for e in events
-                    )
-                    _cont_actionable = _dom_offered or _dom_ran
-                except Exception:
-                    _cont_actionable = True  # ante la duda, no bloquear el nudge
-                if (_cont_active
-                        and _cont_actionable
-                        and self._a11y_continue_count < _A11Y_MAX_CONTINUES
-                        and _cont_delegates):
-                    self._a11y_continue_count += 1
-                    self.trace.event(
-                        turn_id, "a11y_continue_nudge",
-                        attempt=self._a11y_continue_count,
-                        reply_preview=(assistant_content or "")[:120],
-                    )
-                    self.history.append({"role": "assistant",
-                                         "content": assistant_content or ""})
-                    self.history.append({
-                        "role": "user",
-                        "content": (
-                            "[system note] No delegues la tarea en mí: no puedo "
-                            "revisar la pantalla, elegir ni hacer clic. EJECUTÁ "
-                            "vos el siguiente paso ahora con una tool-call "
-                            "(capturá la pantalla con vision si necesitás leer "
-                            "los resultados, abrí el resultado correcto vos "
-                            "mismo, y seguí). Si de verdad te trabás, decímelo "
-                            "con honestidad — pero primero intentá el próximo "
-                            "paso."
-                        ),
-                    })
-                    continue  # re-prompt en la próxima iteración del for _turn
-                chain_question = self._filesystem_search_clarification(
-                    events, raw_text_early,
+                # R1.3 sprint 2026-05-28: finalize (~500 LOC de post-procesamiento
+                # del reply sin tool calls) extraída a _finalize_turn. Devuelve
+                # AgentReply o el sentinel _FINALIZE_CONTINUE (que el caller
+                # traduce a `continue` del for _turn).
+                _fin_result = self._finalize_turn(
+                    content, assistant_content, events, msg,
+                    raw_text_early, turn_id, verifier_outcomes, mission_goal,
+                    plan, selected_tool_names, progress,
                 )
-                if chain_question:
-                    assistant_content = chain_question["content"]
-                    msg["content"] = assistant_content
-                    try:
-                        if hasattr(self.state, "set_pending_intent"):
-                            self.state.set_pending_intent(
-                                tool=str(chain_question.get("target_tool") or "office"),
-                                args=dict(chain_question.get("args") or {}),
-                                asks_for="file_selection",
-                                current_turn=self._turn_counter,
-                                ttl_turns=2,
-                            )
-                        self.trace.event(
-                            turn_id,
-                            "filesystem_search_clarification",
-                            candidates=len(chain_question.get("paths") or []),
-                            target_tool=str(chain_question.get("target_tool") or "office"),
-                        )
-                    except Exception as _exc:  # noqa: BLE001
-                        try:
-                            self.trace.event(
-                                turn_id,
-                                "silent_fallback",
-                                component="filesystem_search_clarification",
-                                error=f"{type(_exc).__name__}: {_exc}",
-                            )
-                        except Exception:
-                            pass
-                assistant_content = sanitize_text(assistant_content)
-                assistant_content = self._guard_unverified_final(assistant_content, events)
-                assistant_content = self._guard_phrase_confirm(assistant_content)
-                assistant_content = self._guard_plan_status(assistant_content)
-                assistant_content = self._guard_promise_without_action(
-                    assistant_content, events,
-                )
-                # Bug 3: grounding gate. Inline morphological check catches
-                # "Abrí X" / "busqué Y" / "agendé Z" claims when tool_events
-                # is empty — same family as promise guard but for past-tense
-                # action claims (vs future-tense promises). Async NLI check
-                # also fires to feed the lesson store for future RAG hits.
-                assistant_content = self._guard_grounded_action_claim(
-                    assistant_content, events, turn_id,
-                )
-                # Defensa: si el LLM emitio en el reply mismo un footer estilo
-                # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
-                # historial), lo strippeamos antes de pegar el nuestro. Sino,
-                # el reply muestra footers duplicados.
-                assistant_content = _strip_trailing_footers(assistant_content)
-                # IMPORTANTE: guardamos en el history la version SIN footers.
-                # Los footers son metadata para el usuario, no contenido. Si
-                # los pegaramos al history, el LLM los veria como contenido
-                # legitimo del asistente y los reproduciria proximo turn,
-                # bloating context + duplicando texto.
-                content_for_history = assistant_content
-                # TIER 1 #2: footer estructural honest del verifier per-tool.
-                # Solo aparece si hay failed o unverifiable; silencioso si todo OK.
-                verifier_footer = summarize_verifiers(verifier_outcomes)
-                if verifier_footer:
-                    assistant_content = assistant_content + verifier_footer
-                    self.trace.event(
-                        turn_id, "verifier_footer",
-                        confirmed=sum(1 for o in verifier_outcomes if o.confirmed is True),
-                        failed=sum(1 for o in verifier_outcomes if o.confirmed is False),
-                        unverifiable=sum(1 for o in verifier_outcomes if o.confirmed is None),
-                    )
-                # TIER 2 #5: MissionOutcome — status semantico final del turn.
-                # Combina mission_goal (objective fulfilled?) con verifier counts
-                # (per-tool measured effect) y emite footer SOLO si aporta info
-                # (PARTIAL/FAILED/INTENT_NOT_FULFILLED/TOOL_OK_VERIFIER_INCONCLUSIVE).
-                # The mission-outcome footer is post-reply ENRICHMENT (cosmetic
-                # metadata). A bug in build/compute/footer must NEVER destroy a
-                # reply the LLM already produced — same invariant as the verifier
-                # and tracing fixes. On failure keep assistant_content as-is and
-                # leave mission_outcome=None (guarded downstream).
-                mission_outcome = None
-                try:
-                    _tool_records_for_outcome = _build_tool_records(events, verifier_outcomes)
-                    mission_outcome = _compute_mission_outcome(
-                        mission_goal, _tool_records_for_outcome, content_for_history,
-                    )
-                    _mission_extra_footer = _mission_footer(mission_outcome)
-                    if _mission_extra_footer:
-                        assistant_content = assistant_content + _mission_extra_footer
-                    self.trace.event(
-                        turn_id, "mission_outcome",
-                        status=mission_outcome.status.value,
-                        summary=mission_outcome.summary,
-                        confirmed=mission_outcome.confirmed_count,
-                        failed=mission_outcome.failed_count,
-                        unverified=mission_outcome.unverified_count,
-                        expected_total=mission_outcome.expected_total,
-                        expected_satisfied=mission_outcome.expected_satisfied,
-                    )
-                except Exception as _mo_exc:  # noqa: BLE001
-                    import logging as _logging
-                    _logging.getLogger(__name__).warning(
-                        "mission outcome footer failed: %s", _mo_exc)
-                    try:
-                        self.trace.event(turn_id, "mission_outcome_error",
-                                         error=f"{type(_mo_exc).__name__}: {_mo_exc}")
-                    except Exception:
-                        pass
-                mission = evaluate_mission(events, assistant_content, plan)
-                # Enriquecer el mission dict legacy con el outcome estructural
-                # (no rompe consumidores existentes — agrega claves nuevas).
-                if isinstance(mission, dict) and mission_outcome is not None:
-                    mission["mission_goal_status"] = mission_outcome.status.value
-                    mission["mission_goal_summary"] = mission_outcome.summary
-                    mission["mission_goal_progress"] = [
-                        mission_outcome.expected_satisfied,
-                        mission_outcome.expected_total,
-                    ]
-                # History recibe la version SIN footers (ver comentario arriba).
-                self.history.append({"role": "assistant", "content": content_for_history})
-                # Subset summary: which sent tools were actually used vs idle.
-                used_tools = {e.name for e in events}
-                router_stats = {
-                    "subset_size": len(selected_tool_names),
-                    "used_count": len(used_tools),
-                    "unused_count": len(set(selected_tool_names) - used_tools),
-                    "used": sorted(used_tools),
-                    "unused": sorted(set(selected_tool_names) - used_tools),
-                }
-                self.trace.event(turn_id, "router_stats", **router_stats)
-                self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events), mission=mission)
-                # Persist this turn into semantic experience memory (hint-only,
-                # never blocks). Best-effort: failure is logged and swallowed.
-                # Bug 2: also persist provenance fields so future RAG hits
-                # can be formatted as policy hints (not reply templates).
-                try:
-                    from .semantic_router import embed as _embed_text
-                    raw_text = _extract_user_text(content)
-                    used_tools = sorted({e.name for e in events})
-                    mission_status = (mission or {}).get("mission_status") if isinstance(mission, dict) else None
-                    # Derive outcome_code (more specific than mission_status).
-                    outcome_code = _derive_outcome_code(mission_status, events)
-                    # capability_label was sourced from the NLI classifier
-                    # (removed in Sprint 3a). Future RAG rows go in with
-                    # capability_label=None until an alternative is wired.
-                    capability_label = None
-                    args_signature = _derive_args_signature(events)
-                    rec = self.experience.record(
-                        turn_id=turn_id,
-                        user_input=raw_text,
-                        tools_used=used_tools,
-                        outcome=assistant_content[:1000],
-                        mission_status=mission_status,
-                        summary=assistant_content[:400],
-                        embed_fn=_embed_text,
-                        outcome_code=outcome_code,
-                        capability_label=capability_label,
-                        args_signature=args_signature,
-                    )
-                    if rec.get("ok"):
-                        self.trace.event(turn_id, "experience_recorded", id=rec.get("id"))
-                except Exception as exc:
-                    self.trace.event(turn_id, "experience_record_failed", error=str(exc))
-                # Fact extraction: opt-in via env. Cooldown so we do not call
-                # the LLM every turn. Skips short / trivial turns.
-                # LATENCIA: este es un 2º LLM call (~200 tok) que NO aporta al
-                # reply del usuario — antes corría SÍNCRONO acá, sumando su decode
-                # al tiempo que el usuario espera. Lo movemos a un daemon thread:
-                # el reply se devuelve YA, la extracción de facts ocurre en
-                # background. Marcamos el cooldown ANTES de spawnnear (no dispara
-                # dos veces) y la persistencia (memory.auto_save) tiene su propio
-                # lock. Best-effort: un fallo en el thread se traza, no afecta el
-                # turno (que ya retornó).
-                if _fact_extraction_enabled():
-                    cooldown = _fact_extraction_cooldown_turns()
-                    if (self._turn_counter - self._fact_extract_last_run_turn) >= cooldown:
-                        raw_text_now = _extract_user_text(content)
-                        if raw_text_now and len(raw_text_now.split()) >= 5:
-                            self._fact_extract_last_run_turn = self._turn_counter
-                            _ft_user, _ft_reply, _ft_turn = (
-                                raw_text_now, assistant_content, turn_id)
-
-                            def _bg_extract_facts() -> None:
-                                try:
-                                    facts = self._extract_facts(_ft_user, _ft_reply)
-                                    if facts:
-                                        save_result = self.memory.auto_save(facts)
-                                        self.trace.event(_ft_turn, "facts_extracted",
-                                                         count=len(facts),
-                                                         added=save_result.get("added"),
-                                                         total_auto=save_result.get("total_auto"))
-                                    else:
-                                        self.trace.event(_ft_turn, "facts_extraction_empty")
-                                except Exception as exc:
-                                    self.trace.event(_ft_turn, "facts_extraction_failed",
-                                                     error=str(exc))
-
-                            import threading as _threading
-                            _threading.Thread(target=_bg_extract_facts,
-                                              name="gemma4-fact-extract",
-                                              daemon=True).start()
-
-                # Hotfix I 2026-05-17: pending_intent rescue when
-                # the LLM asks a clarifying question on its own
-                # (Bug D8 part 2 — no tool returned needs_user, the
-                # LLM just decided to ask). Only fires when nothing
-                # better is already stashed.
-                try:
-                    _pending_target = _should_set_pending_intent_from_reply(
-                        reply_text=assistant_content or "",
-                        tool_calls_this_turn=list(events),
-                        selected_tool_names=list(selected_tool_names),
-                    )
-                    if _pending_target and hasattr(self.state, "get_pending_intent") and not self.state.get_pending_intent(self._turn_counter):
-                        _target_tool, _asks_for = _pending_target
-                        self.state.set_pending_intent(
-                            tool=_target_tool,
-                            args={},
-                            asks_for=_asks_for,
-                            current_turn=self._turn_counter,
-                            ttl_turns=2,
-                        )
-                        self.trace.event(
-                            turn_id, "pending_intent_from_reply_shape",
-                            target_tool=_target_tool,
-                            reason="reply_ended_with_question_no_tool",
-                        )
-                except Exception as _exc:  # noqa: BLE001
-                    try:
-                        self.trace.event(
-                            turn_id, "silent_fallback",
-                            component="pending_intent_from_reply_shape",
-                            error=f"{type(_exc).__name__}: {_exc}",
-                        )
-                    except Exception:
-                        pass
-
-                # Hotfix I 2026-05-17: telemetry for the final-
-                # stage Bug D1 symptom — domain tool in the subset
-                # but the LLM didn't call anything. Pure
-                # observability; no behavior change. Operators grep
-                # for drift between subset selection and LLM use.
-                try:
-                    _domain = _domain_subset(list(selected_tool_names))
-                    if _domain and len(events) == 0:
-                        self.trace.event(
-                            turn_id, "tool_call_skipped_when_expected",
-                            domain_subset=_domain,
-                            reply_preview=(assistant_content or "")[:200],
-                        )
-                except Exception as _exc:  # noqa: BLE001
-                    try:
-                        self.trace.event(
-                            turn_id, "silent_fallback",
-                            component="tool_call_skipped_telemetry",
-                            error=f"{type(_exc).__name__}: {_exc}",
-                        )
-                    except Exception:
-                        pass
-
-                # Hotfix I 2026-05-17: structural backstop for
-                # 'Listo' on no-tool turns (Bug B residual). The
-                # prompt does 95% of the work; this catches the
-                # residual drift. Deferred-correction path: inject
-                # a corrective system message AFTER the assistant's
-                # bad reply so the LLM sees both in the next turn's
-                # context. Gemma4Agent has no _regen_reply method,
-                # and building one is out of scope for this hotfix.
-                try:
-                    from .reply_validator import (
-                        is_listo_on_no_tool_turn as _is_listo_on_no_tool_turn,
-                        LISTO_REGEN_HINT as _LISTO_REGEN_HINT,
-                        is_unverified_claim as _is_unverified_claim,
-                        UNVERIFIED_CLAIM_REGEN_HINT as _UNVERIFIED_CLAIM_HINT,
-                        asks_user_manual_action as _asks_user_manual_action,
-                        HANDS_FREE_REGEN_HINT as _HANDS_FREE_REGEN_HINT,
-                        reply_too_terse_for_blind as _reply_too_terse_for_blind,
-                        NARRATE_ACTION_REGEN_HINT as _NARRATE_ACTION_REGEN_HINT,
-                        reply_delegates_task as _reply_delegates_task,
-                        DELEGATE_REGEN_HINT as _DELEGATE_REGEN_HINT,
-                    )
-                    if _is_listo_on_no_tool_turn(
-                        assistant_content or "", list(events),
-                    ):
-                        self.trace.event(
-                            turn_id, "reply_anti_pattern_detected",
-                            pattern="listo_on_no_tool",
-                        )
-                        self.history.append({
-                            "role": "system",
-                            "content": _LISTO_REGEN_HINT,
-                        })
-                    # Anti-unverified-claim (Tier-1 auditoría Carter): el reply
-                    # AFIRMA un efecto externo (cualquier idioma, por embeddings)
-                    # pero ninguna tool verificada corrió. Generaliza el caso
-                    # 'Listo' a fraseos/idiomas no anticipados. Solo si Listo no
-                    # disparó ya (evita doble inyección). Gate por env.
-                    elif _os.environ.get("GEMMA4_ANTI_UNVERIFIED_CLAIM", "1").strip().lower() \
-                            not in {"0", "false", "no", "off"} and _is_unverified_claim(
-                                assistant_content or "", list(events)):
-                        self.trace.event(
-                            turn_id, "reply_anti_pattern_detected",
-                            pattern="unverified_claim",
-                        )
-                        self.history.append({
-                            "role": "system",
-                            "content": _UNVERIFIED_CLAIM_HINT,
-                        })
-                    # MOVILIDAD (B3): si el modo manos-libres está activo y el
-                    # reply le PIDIÓ al usuario una acción manual (clic/tecla/
-                    # typeo), inyectar la corrección — el agente debe ACTUAR, no
-                    # delegar en el usuario. Solo en modo movilidad: en otros
-                    # modos pedir un clic es válido. Independiente de los de
-                    # arriba (puede co-ocurrir con un claim).
-                    try:
-                        from . import accessibility as _a11y_chk
-                        _a11y_active = _a11y_chk.get_active_mode()
-                        _hands_free = _a11y_active.hands_free_only
-                        _narrate = _a11y_active.narrate_all_actions
-                    except Exception:
-                        _hands_free = False
-                        _narrate = False
-                    if _hands_free and _asks_user_manual_action(assistant_content or ""):
-                        self.trace.event(
-                            turn_id, "reply_anti_pattern_detected",
-                            pattern="hands_free_manual_request",
-                        )
-                        self.history.append({
-                            "role": "system",
-                            "content": _HANDS_FREE_REGEN_HINT,
-                        })
-                    # NO VIDENTE (B4): si el modo narra-todo está activo y corrió
-                    # una acción pero el reply quedó MUDO/escueto (un "Listo" que
-                    # no informa a quien no ve), pedir una confirmación hablada
-                    # descriptiva. Solo en no_vidente: en otros modos un ack corto
-                    # es válido. Independiente de las guardas de arriba.
-                    if _narrate and _reply_too_terse_for_blind(
-                        assistant_content or "", list(events)):
-                        self.trace.event(
-                            turn_id, "reply_anti_pattern_detected",
-                            pattern="terse_reply_blind",
-                        )
-                        self.history.append({
-                            "role": "system",
-                            "content": _NARRATE_ACTION_REGEN_HINT,
-                        })
-                    # UNIVERSAL movilidad/no_vidente: si el reply DELEGA la tarea
-                    # en el usuario ("revisá los resultados", "elegí cuál", "mirá
-                    # la pantalla y decidí") en vez de seguir actuando, corregir.
-                    # Aplica a CUALQUIER tarea (no solo compras): el usuario de
-                    # estos modos no puede revisar/elegir/clickear. Gateado a los
-                    # dos modos donde el usuario no puede intervenir a mano.
-                    if (_hands_free or _narrate) and _reply_delegates_task(
-                        assistant_content or ""):
-                        self.trace.event(
-                            turn_id, "reply_anti_pattern_detected",
-                            pattern="task_delegated_to_user",
-                        )
-                        self.history.append({
-                            "role": "system",
-                            "content": _DELEGATE_REGEN_HINT,
-                        })
-                except Exception as _exc:  # noqa: BLE001
-                    try:
-                        self.trace.event(
-                            turn_id, "silent_fallback",
-                            component="reply_validator",
-                            error=f"{type(_exc).__name__}: {_exc}",
-                        )
-                    except Exception:
-                        pass
-
-                self._compact_completed_history()
-                _progress(progress, "final", tools=len(events), mission=mission)
-                self._last_turn_ts = time.time()
-                self._remember_executed_tools(events)
-                # HONESTIDAD launch-no-confirmado: si el reply afirma haber abierto
-                # una app pero app.open quedó verified=false (Discord/Squirrel
-                # tarda >ventana de verificación), añadir un caveat honesto. El 4B
-                # no sigue la regla en prosa de app.md -> cierre DETERMINISTA acá.
-                try:
-                    from .reply_validator import soften_unverified_launch as _soften
-                    assistant_content = _soften(assistant_content or "", list(events))
-                except Exception:
-                    pass
-                # LECTURA DE PANTALLA (no-vidente): si vision produjo una
-                # descripción, ÚSALA como reply (el 4B no la relata fiable).
-                _scr = self._screen_description_reply(events)
-                if _scr:
-                    assistant_content = _scr
-                assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
-                return AgentReply(content=assistant_content, tool_events=events, mission=mission)
+                if _fin_result is _FINALIZE_CONTINUE:
+                    continue
+                return _fin_result
 
             # Validator: if the LLM declared an <intent> and chose a tool
             # that is on the reject list for that intent, reject and retry
@@ -3046,6 +2565,547 @@ class Gemma4Agent:
     # Sprint 6.4: bodies moved to :mod:`.agent_dispatch`. The wrappers
     # below adapt the agent's positional progress callback to the
     # progress_emit(event, payload) callable the pure functions take.
+
+    def _finalize_turn(
+        self,
+        content: str | list[dict[str, Any]],
+        assistant_content: str,
+        events: list[ToolEvent],
+        msg: dict[str, Any],
+        raw_text_early: str,
+        turn_id: str,
+        verifier_outcomes: list,
+        mission_goal: Any,
+        plan: dict[str, Any] | None,
+        selected_tool_names: list[str],
+        progress: ProgressCallback | None = None,
+    ) -> "AgentReply | _FinalizeContinue":
+        """R1 sprint 2026-05-28: finalize phase of a turn.
+
+        Runs ONLY when the LLM finished without emitting a tool call
+        (the natural success path). Applies post-processing:
+        accessibility nudges, mission outcome, verifier footer,
+        screen-description fallback, proactive suffix.
+
+        Returns the terminal AgentReply, OR _FINALIZE_CONTINUE if
+        the a11y nudge re-prompted (the caller must `continue` its
+        outer for _turn loop).
+        """
+        # R1.3 sprint 2026-05-28: imports que originalmente vivían dentro de
+        # _execute_turn pero el finalize body los usa. Replicados acá para
+        # mantener mecánica exacta sin tocar imports module-level.
+        from .verify_core import summarize_verifiers
+        from .mission_outcome import (
+            build_tool_records as _build_tool_records,
+            compute_mission_outcome as _compute_mission_outcome,
+            mission_footer as _mission_footer,
+        )
+        # REDES DETERMINISTAS (fallback final, 2026-05-27). Las redes de
+        # responder-mensaje / email / navegación son detectores de ALTA
+        # precisión (verbo + 'a <destinatario>' + cuerpo; o URL/sitio
+        # claros). Antes solo corrían dentro de forced_tool_retry_empty,
+        # que se SALTEA cuando el abstain-head juzga el turno "no-tool" y
+        # deja el subset sin la tool de dominio (medido: "respondele a mama
+        # que ya voy" -> subset=[session], el 4B se niega). Acá las
+        # disparamos AUNQUE el abstain head haya abstenido — desacopladas
+        # del router — pero SOLO si ninguna tool corrió aún este turno
+        # (len(events)==0) y el forced-retry no las probó ya. Cada red es
+        # conservadora (None si no hay match claro) -> no roba turnos de
+        # charla. Fallback seguro: error -> seguimos al flujo normal.
+        if (len(events) == 0
+                and not getattr(self, "_det_nets_tried", False)):
+            self._det_nets_tried = True
+            try:
+                _dn_ev = (self._deterministic_reply(raw_text_early)
+                          or self._deterministic_email(raw_text_early)
+                          or self._deterministic_navigate(raw_text_early))
+            except Exception as _dnexc:
+                _dn_ev = None
+                try:
+                    self.trace.event(turn_id, "deterministic_net_error",
+                                     error=f"{type(_dnexc).__name__}: {_dnexc}")
+                except Exception:
+                    pass
+            if _dn_ev is not None and (_dn_ev.result or {}).get("ok"):
+                events.append(_dn_ev)
+                _nm = _dn_ev.name
+                self.trace.event(turn_id, "deterministic_net_fallback",
+                                 tool=_nm)
+                _res = _dn_ev.result or {}
+                if _nm == "whatsapp":
+                    _rc = _res.get("reply_contact") or ""
+                    assistant_content = (
+                        f"Abrí el chat con {_rc} y dejé el mensaje listo. "
+                        "Revisalo y decime si lo envío.")
+                elif _nm == "email":
+                    _to = _res.get("email_to") or ""
+                    assistant_content = (
+                        f"Abrí el borrador de correo para {_to}. "
+                        "Revisalo y decime si lo envío.")
+                else:  # browser
+                    _u = _res.get("resolved_url") or _res.get("url") or ""
+                    assistant_content = f"Listo, abrí {_u}."
+                raw_msg = {}
+                # con la red disparada, saltamos los guards de "prometió
+                # sin acción" (ya hay un evento real) y finalizamos.
+                msg["content"] = assistant_content
+        # ACCESIBILIDAD (B3/B4) — CONTINUAR EN EL MISMO TURNO. En
+        # movilidad/no_vidente el agente debe HACER TODO por el usuario:
+        # si está por terminar con una respuesta que DELEGA la tarea
+        # ("revisá los resultados", "elegí cuál", "mirá la pantalla y
+        # decidí"), NO finalizamos — inyectamos un nudge y re-prompteamos
+        # al LLM para que ejecute el SIGUIENTE paso él mismo, dentro de
+        # este turno. Acotado por _A11Y_MAX_CONTINUES para "avanzar lo más
+        # posible y después parar honesto" (el 4B se traba en cadenas
+        # largas; no queremos un loop infinito). Aplica a CUALQUIER tarea,
+        # no solo compras. Fallback seguro: cualquier error -> finaliza.
+        _cont_delegates = None
+        try:
+            from . import accessibility as _a11y_cont
+            from .reply_validator import reply_delegates_task as _rdt_cont
+            _cont_mode = _a11y_cont.get_active_mode()
+            _cont_active = _cont_mode.hands_free_only or _cont_mode.narrate_all_actions
+            if _cont_active:
+                _cont_delegates = _rdt_cont(assistant_content or "")
+        except Exception:
+            _cont_active = False
+            _cont_delegates = False
+        # GUARD (2026-05-27, bug medido): el nudge "ejecutá vos el siguiente
+        # paso" SOLO tiene sentido en un turno de ACCIÓN (el usuario pidió
+        # HACER algo). En una pregunta META/charla ("¿qué podés hacer?",
+        # "¿quién eres?") el router ABSTUVO (subset sin tools de dominio) y
+        # no corrió ninguna acción: la respuesta DESCRIBE capacidades, no
+        # delega una tarea. Sin este gate, en movilidad/no_vidente el 4B
+        # tomaba la descripción ("...controlar tu sistema, gestionar apps...")
+        # como tarea-a-continuar y el nudge lo empujaba a sacar un screenshot
+        # para responder "¿qué podés hacer?" (absurdo, 5/5 medido). Actionable
+        # = se ofreció ≥1 tool de dominio este turno O se ejecutó una acción
+        # de dominio. Estructural (estado del router/ejecución), no contenido.
+        _cont_actionable = False
+        try:
+            _dom_offered = bool(_domain_subset(list(selected_tool_names)))
+            _dom_ran = any(
+                e.name not in {"session", "safety", "state", "verify"}
+                for e in events
+            )
+            _cont_actionable = _dom_offered or _dom_ran
+        except Exception:
+            _cont_actionable = True  # ante la duda, no bloquear el nudge
+        if (_cont_active
+                and _cont_actionable
+                and self._a11y_continue_count < _A11Y_MAX_CONTINUES
+                and _cont_delegates):
+            self._a11y_continue_count += 1
+            self.trace.event(
+                turn_id, "a11y_continue_nudge",
+                attempt=self._a11y_continue_count,
+                reply_preview=(assistant_content or "")[:120],
+            )
+            self.history.append({"role": "assistant",
+                                 "content": assistant_content or ""})
+            self.history.append({
+                "role": "user",
+                "content": (
+                    "[system note] No delegues la tarea en mí: no puedo "
+                    "revisar la pantalla, elegir ni hacer clic. EJECUTÁ "
+                    "vos el siguiente paso ahora con una tool-call "
+                    "(capturá la pantalla con vision si necesitás leer "
+                    "los resultados, abrí el resultado correcto vos "
+                    "mismo, y seguí). Si de verdad te trabás, decímelo "
+                    "con honestidad — pero primero intentá el próximo "
+                    "paso."
+                ),
+            })
+            return _FINALIZE_CONTINUE
+        chain_question = self._filesystem_search_clarification(
+            events, raw_text_early,
+        )
+        if chain_question:
+            assistant_content = chain_question["content"]
+            msg["content"] = assistant_content
+            try:
+                if hasattr(self.state, "set_pending_intent"):
+                    self.state.set_pending_intent(
+                        tool=str(chain_question.get("target_tool") or "office"),
+                        args=dict(chain_question.get("args") or {}),
+                        asks_for="file_selection",
+                        current_turn=self._turn_counter,
+                        ttl_turns=2,
+                    )
+                self.trace.event(
+                    turn_id,
+                    "filesystem_search_clarification",
+                    candidates=len(chain_question.get("paths") or []),
+                    target_tool=str(chain_question.get("target_tool") or "office"),
+                )
+            except Exception as _exc:  # noqa: BLE001
+                try:
+                    self.trace.event(
+                        turn_id,
+                        "silent_fallback",
+                        component="filesystem_search_clarification",
+                        error=f"{type(_exc).__name__}: {_exc}",
+                    )
+                except Exception:
+                    pass
+        assistant_content = sanitize_text(assistant_content)
+        assistant_content = self._guard_unverified_final(assistant_content, events)
+        assistant_content = self._guard_phrase_confirm(assistant_content)
+        assistant_content = self._guard_plan_status(assistant_content)
+        assistant_content = self._guard_promise_without_action(
+            assistant_content, events,
+        )
+        # Bug 3: grounding gate. Inline morphological check catches
+        # "Abrí X" / "busqué Y" / "agendé Z" claims when tool_events
+        # is empty — same family as promise guard but for past-tense
+        # action claims (vs future-tense promises). Async NLI check
+        # also fires to feed the lesson store for future RAG hits.
+        assistant_content = self._guard_grounded_action_claim(
+            assistant_content, events, turn_id,
+        )
+        # Defensa: si el LLM emitio en el reply mismo un footer estilo
+        # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
+        # historial), lo strippeamos antes de pegar el nuestro. Sino,
+        # el reply muestra footers duplicados.
+        assistant_content = _strip_trailing_footers(assistant_content)
+        # IMPORTANTE: guardamos en el history la version SIN footers.
+        # Los footers son metadata para el usuario, no contenido. Si
+        # los pegaramos al history, el LLM los veria como contenido
+        # legitimo del asistente y los reproduciria proximo turn,
+        # bloating context + duplicando texto.
+        content_for_history = assistant_content
+        # TIER 1 #2: footer estructural honest del verifier per-tool.
+        # Solo aparece si hay failed o unverifiable; silencioso si todo OK.
+        verifier_footer = summarize_verifiers(verifier_outcomes)
+        if verifier_footer:
+            assistant_content = assistant_content + verifier_footer
+            self.trace.event(
+                turn_id, "verifier_footer",
+                confirmed=sum(1 for o in verifier_outcomes if o.confirmed is True),
+                failed=sum(1 for o in verifier_outcomes if o.confirmed is False),
+                unverifiable=sum(1 for o in verifier_outcomes if o.confirmed is None),
+            )
+        # TIER 2 #5: MissionOutcome — status semantico final del turn.
+        # Combina mission_goal (objective fulfilled?) con verifier counts
+        # (per-tool measured effect) y emite footer SOLO si aporta info
+        # (PARTIAL/FAILED/INTENT_NOT_FULFILLED/TOOL_OK_VERIFIER_INCONCLUSIVE).
+        # The mission-outcome footer is post-reply ENRICHMENT (cosmetic
+        # metadata). A bug in build/compute/footer must NEVER destroy a
+        # reply the LLM already produced — same invariant as the verifier
+        # and tracing fixes. On failure keep assistant_content as-is and
+        # leave mission_outcome=None (guarded downstream).
+        mission_outcome = None
+        try:
+            _tool_records_for_outcome = _build_tool_records(events, verifier_outcomes)
+            mission_outcome = _compute_mission_outcome(
+                mission_goal, _tool_records_for_outcome, content_for_history,
+            )
+            _mission_extra_footer = _mission_footer(mission_outcome)
+            if _mission_extra_footer:
+                assistant_content = assistant_content + _mission_extra_footer
+            self.trace.event(
+                turn_id, "mission_outcome",
+                status=mission_outcome.status.value,
+                summary=mission_outcome.summary,
+                confirmed=mission_outcome.confirmed_count,
+                failed=mission_outcome.failed_count,
+                unverified=mission_outcome.unverified_count,
+                expected_total=mission_outcome.expected_total,
+                expected_satisfied=mission_outcome.expected_satisfied,
+            )
+        except Exception as _mo_exc:  # noqa: BLE001
+            import logging as _logging
+            _logging.getLogger(__name__).warning(
+                "mission outcome footer failed: %s", _mo_exc)
+            try:
+                self.trace.event(turn_id, "mission_outcome_error",
+                                 error=f"{type(_mo_exc).__name__}: {_mo_exc}")
+            except Exception:
+                pass
+        mission = evaluate_mission(events, assistant_content, plan)
+        # Enriquecer el mission dict legacy con el outcome estructural
+        # (no rompe consumidores existentes — agrega claves nuevas).
+        if isinstance(mission, dict) and mission_outcome is not None:
+            mission["mission_goal_status"] = mission_outcome.status.value
+            mission["mission_goal_summary"] = mission_outcome.summary
+            mission["mission_goal_progress"] = [
+                mission_outcome.expected_satisfied,
+                mission_outcome.expected_total,
+            ]
+        # History recibe la version SIN footers (ver comentario arriba).
+        self.history.append({"role": "assistant", "content": content_for_history})
+        # Subset summary: which sent tools were actually used vs idle.
+        used_tools = {e.name for e in events}
+        router_stats = {
+            "subset_size": len(selected_tool_names),
+            "used_count": len(used_tools),
+            "unused_count": len(set(selected_tool_names) - used_tools),
+            "used": sorted(used_tools),
+            "unused": sorted(set(selected_tool_names) - used_tools),
+        }
+        self.trace.event(turn_id, "router_stats", **router_stats)
+        self.trace.event(turn_id, "final", content=assistant_content, tool_events=len(events), mission=mission)
+        # Persist this turn into semantic experience memory (hint-only,
+        # never blocks). Best-effort: failure is logged and swallowed.
+        # Bug 2: also persist provenance fields so future RAG hits
+        # can be formatted as policy hints (not reply templates).
+        try:
+            from .semantic_router import embed as _embed_text
+            raw_text = _extract_user_text(content)
+            used_tools = sorted({e.name for e in events})
+            mission_status = (mission or {}).get("mission_status") if isinstance(mission, dict) else None
+            # Derive outcome_code (more specific than mission_status).
+            outcome_code = _derive_outcome_code(mission_status, events)
+            # capability_label was sourced from the NLI classifier
+            # (removed in Sprint 3a). Future RAG rows go in with
+            # capability_label=None until an alternative is wired.
+            capability_label = None
+            args_signature = _derive_args_signature(events)
+            rec = self.experience.record(
+                turn_id=turn_id,
+                user_input=raw_text,
+                tools_used=used_tools,
+                outcome=assistant_content[:1000],
+                mission_status=mission_status,
+                summary=assistant_content[:400],
+                embed_fn=_embed_text,
+                outcome_code=outcome_code,
+                capability_label=capability_label,
+                args_signature=args_signature,
+            )
+            if rec.get("ok"):
+                self.trace.event(turn_id, "experience_recorded", id=rec.get("id"))
+        except Exception as exc:
+            self.trace.event(turn_id, "experience_record_failed", error=str(exc))
+        # Fact extraction: opt-in via env. Cooldown so we do not call
+        # the LLM every turn. Skips short / trivial turns.
+        # LATENCIA: este es un 2º LLM call (~200 tok) que NO aporta al
+        # reply del usuario — antes corría SÍNCRONO acá, sumando su decode
+        # al tiempo que el usuario espera. Lo movemos a un daemon thread:
+        # el reply se devuelve YA, la extracción de facts ocurre en
+        # background. Marcamos el cooldown ANTES de spawnnear (no dispara
+        # dos veces) y la persistencia (memory.auto_save) tiene su propio
+        # lock. Best-effort: un fallo en el thread se traza, no afecta el
+        # turno (que ya retornó).
+        if _fact_extraction_enabled():
+            cooldown = _fact_extraction_cooldown_turns()
+            if (self._turn_counter - self._fact_extract_last_run_turn) >= cooldown:
+                raw_text_now = _extract_user_text(content)
+                if raw_text_now and len(raw_text_now.split()) >= 5:
+                    self._fact_extract_last_run_turn = self._turn_counter
+                    _ft_user, _ft_reply, _ft_turn = (
+                        raw_text_now, assistant_content, turn_id)
+
+                    def _bg_extract_facts() -> None:
+                        try:
+                            facts = self._extract_facts(_ft_user, _ft_reply)
+                            if facts:
+                                save_result = self.memory.auto_save(facts)
+                                self.trace.event(_ft_turn, "facts_extracted",
+                                                 count=len(facts),
+                                                 added=save_result.get("added"),
+                                                 total_auto=save_result.get("total_auto"))
+                            else:
+                                self.trace.event(_ft_turn, "facts_extraction_empty")
+                        except Exception as exc:
+                            self.trace.event(_ft_turn, "facts_extraction_failed",
+                                             error=str(exc))
+
+                    import threading as _threading
+                    _threading.Thread(target=_bg_extract_facts,
+                                      name="gemma4-fact-extract",
+                                      daemon=True).start()
+
+        # Hotfix I 2026-05-17: pending_intent rescue when
+        # the LLM asks a clarifying question on its own
+        # (Bug D8 part 2 — no tool returned needs_user, the
+        # LLM just decided to ask). Only fires when nothing
+        # better is already stashed.
+        try:
+            _pending_target = _should_set_pending_intent_from_reply(
+                reply_text=assistant_content or "",
+                tool_calls_this_turn=list(events),
+                selected_tool_names=list(selected_tool_names),
+            )
+            if _pending_target and hasattr(self.state, "get_pending_intent") and not self.state.get_pending_intent(self._turn_counter):
+                _target_tool, _asks_for = _pending_target
+                self.state.set_pending_intent(
+                    tool=_target_tool,
+                    args={},
+                    asks_for=_asks_for,
+                    current_turn=self._turn_counter,
+                    ttl_turns=2,
+                )
+                self.trace.event(
+                    turn_id, "pending_intent_from_reply_shape",
+                    target_tool=_target_tool,
+                    reason="reply_ended_with_question_no_tool",
+                )
+        except Exception as _exc:  # noqa: BLE001
+            try:
+                self.trace.event(
+                    turn_id, "silent_fallback",
+                    component="pending_intent_from_reply_shape",
+                    error=f"{type(_exc).__name__}: {_exc}",
+                )
+            except Exception:
+                pass
+
+        # Hotfix I 2026-05-17: telemetry for the final-
+        # stage Bug D1 symptom — domain tool in the subset
+        # but the LLM didn't call anything. Pure
+        # observability; no behavior change. Operators grep
+        # for drift between subset selection and LLM use.
+        try:
+            _domain = _domain_subset(list(selected_tool_names))
+            if _domain and len(events) == 0:
+                self.trace.event(
+                    turn_id, "tool_call_skipped_when_expected",
+                    domain_subset=_domain,
+                    reply_preview=(assistant_content or "")[:200],
+                )
+        except Exception as _exc:  # noqa: BLE001
+            try:
+                self.trace.event(
+                    turn_id, "silent_fallback",
+                    component="tool_call_skipped_telemetry",
+                    error=f"{type(_exc).__name__}: {_exc}",
+                )
+            except Exception:
+                pass
+
+        # Hotfix I 2026-05-17: structural backstop for
+        # 'Listo' on no-tool turns (Bug B residual). The
+        # prompt does 95% of the work; this catches the
+        # residual drift. Deferred-correction path: inject
+        # a corrective system message AFTER the assistant's
+        # bad reply so the LLM sees both in the next turn's
+        # context. Gemma4Agent has no _regen_reply method,
+        # and building one is out of scope for this hotfix.
+        try:
+            from .reply_validator import (
+                is_listo_on_no_tool_turn as _is_listo_on_no_tool_turn,
+                LISTO_REGEN_HINT as _LISTO_REGEN_HINT,
+                is_unverified_claim as _is_unverified_claim,
+                UNVERIFIED_CLAIM_REGEN_HINT as _UNVERIFIED_CLAIM_HINT,
+                asks_user_manual_action as _asks_user_manual_action,
+                HANDS_FREE_REGEN_HINT as _HANDS_FREE_REGEN_HINT,
+                reply_too_terse_for_blind as _reply_too_terse_for_blind,
+                NARRATE_ACTION_REGEN_HINT as _NARRATE_ACTION_REGEN_HINT,
+                reply_delegates_task as _reply_delegates_task,
+                DELEGATE_REGEN_HINT as _DELEGATE_REGEN_HINT,
+            )
+            if _is_listo_on_no_tool_turn(
+                assistant_content or "", list(events),
+            ):
+                self.trace.event(
+                    turn_id, "reply_anti_pattern_detected",
+                    pattern="listo_on_no_tool",
+                )
+                self.history.append({
+                    "role": "system",
+                    "content": _LISTO_REGEN_HINT,
+                })
+            # Anti-unverified-claim (Tier-1 auditoría Carter): el reply
+            # AFIRMA un efecto externo (cualquier idioma, por embeddings)
+            # pero ninguna tool verificada corrió. Generaliza el caso
+            # 'Listo' a fraseos/idiomas no anticipados. Solo si Listo no
+            # disparó ya (evita doble inyección). Gate por env.
+            elif _os.environ.get("GEMMA4_ANTI_UNVERIFIED_CLAIM", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"} and _is_unverified_claim(
+                        assistant_content or "", list(events)):
+                self.trace.event(
+                    turn_id, "reply_anti_pattern_detected",
+                    pattern="unverified_claim",
+                )
+                self.history.append({
+                    "role": "system",
+                    "content": _UNVERIFIED_CLAIM_HINT,
+                })
+            # MOVILIDAD (B3): si el modo manos-libres está activo y el
+            # reply le PIDIÓ al usuario una acción manual (clic/tecla/
+            # typeo), inyectar la corrección — el agente debe ACTUAR, no
+            # delegar en el usuario. Solo en modo movilidad: en otros
+            # modos pedir un clic es válido. Independiente de los de
+            # arriba (puede co-ocurrir con un claim).
+            try:
+                from . import accessibility as _a11y_chk
+                _a11y_active = _a11y_chk.get_active_mode()
+                _hands_free = _a11y_active.hands_free_only
+                _narrate = _a11y_active.narrate_all_actions
+            except Exception:
+                _hands_free = False
+                _narrate = False
+            if _hands_free and _asks_user_manual_action(assistant_content or ""):
+                self.trace.event(
+                    turn_id, "reply_anti_pattern_detected",
+                    pattern="hands_free_manual_request",
+                )
+                self.history.append({
+                    "role": "system",
+                    "content": _HANDS_FREE_REGEN_HINT,
+                })
+            # NO VIDENTE (B4): si el modo narra-todo está activo y corrió
+            # una acción pero el reply quedó MUDO/escueto (un "Listo" que
+            # no informa a quien no ve), pedir una confirmación hablada
+            # descriptiva. Solo en no_vidente: en otros modos un ack corto
+            # es válido. Independiente de las guardas de arriba.
+            if _narrate and _reply_too_terse_for_blind(
+                assistant_content or "", list(events)):
+                self.trace.event(
+                    turn_id, "reply_anti_pattern_detected",
+                    pattern="terse_reply_blind",
+                )
+                self.history.append({
+                    "role": "system",
+                    "content": _NARRATE_ACTION_REGEN_HINT,
+                })
+            # UNIVERSAL movilidad/no_vidente: si el reply DELEGA la tarea
+            # en el usuario ("revisá los resultados", "elegí cuál", "mirá
+            # la pantalla y decidí") en vez de seguir actuando, corregir.
+            # Aplica a CUALQUIER tarea (no solo compras): el usuario de
+            # estos modos no puede revisar/elegir/clickear. Gateado a los
+            # dos modos donde el usuario no puede intervenir a mano.
+            if (_hands_free or _narrate) and _reply_delegates_task(
+                assistant_content or ""):
+                self.trace.event(
+                    turn_id, "reply_anti_pattern_detected",
+                    pattern="task_delegated_to_user",
+                )
+                self.history.append({
+                    "role": "system",
+                    "content": _DELEGATE_REGEN_HINT,
+                })
+        except Exception as _exc:  # noqa: BLE001
+            try:
+                self.trace.event(
+                    turn_id, "silent_fallback",
+                    component="reply_validator",
+                    error=f"{type(_exc).__name__}: {_exc}",
+                )
+            except Exception:
+                pass
+
+        self._compact_completed_history()
+        _progress(progress, "final", tools=len(events), mission=mission)
+        self._last_turn_ts = time.time()
+        self._remember_executed_tools(events)
+        # HONESTIDAD launch-no-confirmado: si el reply afirma haber abierto
+        # una app pero app.open quedó verified=false (Discord/Squirrel
+        # tarda >ventana de verificación), añadir un caveat honesto. El 4B
+        # no sigue la regla en prosa de app.md -> cierre DETERMINISTA acá.
+        try:
+            from .reply_validator import soften_unverified_launch as _soften
+            assistant_content = _soften(assistant_content or "", list(events))
+        except Exception:
+            pass
+        # LECTURA DE PANTALLA (no-vidente): si vision produjo una
+        # descripción, ÚSALA como reply (el 4B no la relata fiable).
+        _scr = self._screen_description_reply(events)
+        if _scr:
+            assistant_content = _scr
+        assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
+        return AgentReply(content=assistant_content, tool_events=events, mission=mission)
 
     def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
         # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
