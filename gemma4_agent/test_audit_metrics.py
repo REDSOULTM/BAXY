@@ -165,6 +165,64 @@ class TestAuditMetrics(unittest.TestCase):
         missing = [p.name for p in scripts_dir.glob("*.py") if p.name not in idx]
         self.assertEqual(missing, [], f"R8: scripts sin entrada en INDEX: {missing}")
 
+    # ----- audit §8: reproducibilidad (data/ README) -----
+
+    def test_metric_data_dir_has_reproducibility_readme(self):
+        """audit §8: cada `.npz` / `.bin` / `.pkl` debería tener receta
+        documentada. README en `gemma4_agent/data/` documenta cómo se
+        regenera cada artefacto."""
+        readme = PKG / "data" / "README.md"
+        self.assertTrue(readme.exists(), f"audit §8: {readme} missing")
+        text = readme.read_text(encoding="utf-8")
+        # Cada `.npz` actual debe estar mencionado en el README
+        data_dir = PKG / "data"
+        if data_dir.is_dir():
+            npz_files = list(data_dir.glob("*.npz"))
+            for npz in npz_files:
+                self.assertIn(
+                    npz.name, text,
+                    f"audit §8: {npz.name} no documentado en data/README.md"
+                )
+
+    # ----- runtime health -----
+
+    def test_metric_all_prod_modules_import_cleanly(self):
+        """Todo el paquete prod importa sin error."""
+        import importlib, pkgutil
+        import gemma4_agent
+        errors = []
+        for mod_info in pkgutil.walk_packages(
+            gemma4_agent.__path__, prefix="gemma4_agent."
+        ):
+            if "test_" in mod_info.name:
+                continue
+            if "node_modules" in mod_info.name:
+                continue
+            try:
+                importlib.import_module(mod_info.name)
+            except Exception as exc:
+                errors.append((mod_info.name, f"{type(exc).__name__}: {exc}"))
+        self.assertEqual(
+            errors, [],
+            f"{len(errors)} módulos rotos:\n  "
+            + "\n  ".join(f"{n}: {e[:120]}" for n, e in errors[:5])
+        )
+
+    def test_metric_subpackage_areas_all_import(self):
+        """Cada uno de los 36 submódulos de `domain_tools/` importa."""
+        import importlib, pkgutil
+        import gemma4_agent.domain_tools
+        errors = []
+        for mod_info in pkgutil.iter_modules(
+            gemma4_agent.domain_tools.__path__,
+            prefix="gemma4_agent.domain_tools.",
+        ):
+            try:
+                importlib.import_module(mod_info.name)
+            except Exception as exc:
+                errors.append((mod_info.name, f"{type(exc).__name__}: {exc}"))
+        self.assertEqual(errors, [], f"subpkg imports broken: {errors}")
+
 
 if __name__ == "__main__":
     unittest.main()
