@@ -156,4 +156,24 @@ def fmt_tool_args(args: Any, max_chars: int = 120) -> str:
     return s
 
 
-__all__ = ["redact_sensitive", "hard_gate", "TurnRequest", "fmt_tool_args"]
+# Tool-result builders — by far the most repeated helpers in the codebase.
+# Were triplicated as private copies in domain_tools/ops_tools/tools (each
+# with the SAME body byte-for-byte). Consolidated here per audit R3 + R4
+# foundation: every tool handler in the repo returns dicts shaped like
+# ``{"ok": True/False, ...}`` so two single-source-of-truth constructors
+# avoid drift if/when a shape detail evolves (e.g. when ToolResult dataclass
+# from audit R4 is introduced, only THIS file needs to update).
+def _ok(**kwargs: Any) -> dict[str, Any]:
+    """Successful tool-result dict: ``{"ok": True, **kwargs}``."""
+    return {"ok": True, **kwargs}
+
+
+def _err(message: str, **kwargs: Any) -> dict[str, Any]:
+    """Failed tool-result dict: ``{"ok": False, "error": message, **kwargs}``."""
+    return {"ok": False, "error": message, **kwargs}
+
+
+__all__ = [
+    "redact_sensitive", "hard_gate", "TurnRequest", "fmt_tool_args",
+    "_ok", "_err",
+]

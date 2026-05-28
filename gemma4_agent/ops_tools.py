@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import unquote, urlparse
 
+from ._shared import _err, _ok  # consolidated 2026-05-27 (audit R3)
 from .state import AgentState
 
 
@@ -55,12 +56,7 @@ _BROWSER_SESSIONS: dict[str, dict[str, Any]] = _SESSIONS.sessions
 _PW: Any | None = None
 
 
-def _ok(**kwargs: Any) -> dict[str, Any]:
-    return {"ok": True, **kwargs}
-
-
-def _err(message: str, **kwargs: Any) -> dict[str, Any]:
-    return {"ok": False, "error": message, **kwargs}
+# _ok / _err importados desde ._shared (consolidados 2026-05-27, audit R3).
 
 
 def state_tool(args: dict[str, Any], state: AgentState, execute: Executor) -> dict[str, Any]:

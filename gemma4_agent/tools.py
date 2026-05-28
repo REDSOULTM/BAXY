@@ -84,12 +84,12 @@ WEB_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gemma4Agent/1.0"
 DEFAULT_WEB_SEARCH_PROVIDER = "duckduckgo_html"
 
 
-def _ok(**kwargs: Any) -> dict[str, Any]:
-    return {"ok": True, **kwargs}
-
-
-def _err(message: str, **kwargs: Any) -> dict[str, Any]:
-    return {"ok": False, "error": message, **kwargs}
+# _ok / _err: single source of truth en ._shared (consolidados 2026-05-27,
+# audit R3). Antes triplicados en tools/ops_tools/domain_tools (bodies
+# byte-idénticos). Importados acá temprano porque _ok/_err se usan en el
+# resto del módulo desde ~línea 100. El import de redact_sensitive más
+# abajo (línea ~190) se mantiene aparte por su historia (CC-105).
+from ._shared import _err, _ok  # noqa: E402
 
 
 # ----------------------------------------------------------------------

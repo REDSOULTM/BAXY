@@ -36,18 +36,13 @@ from .state import AgentState
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
 
 
-def _ok(**kwargs: Any) -> dict[str, Any]:
-    return {"ok": True, **kwargs}
-
-
-def _err(message: str, **kwargs: Any) -> dict[str, Any]:
-    return {"ok": False, "error": message, **kwargs}
-
-
 # CC-105 + CC-101: unified in Sprint 4 — bodies live in :mod:`._shared`
 # (was duplicated against tools._redact_sensitive / ToolRegistry._hard_gate,
-# see audit §2.2).
+# see audit §2.2). _ok/_err added 2026-05-27 (audit R3 sprint): were also
+# triplicated (domain_tools/ops_tools/tools, byte-identical bodies).
 from ._shared import (  # noqa: E402
+    _err,
+    _ok,
     hard_gate as _hard_gate,
     redact_sensitive as _redact_credentials,
 )
