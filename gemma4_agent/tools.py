@@ -1995,25 +1995,43 @@ class ToolRegistry:
         if action == "open":
             url = str(args.get("url") or "").strip() or query
             # SITE-NAME -> RESOLVER POR BÚSQUEDA (2026-05-27): "ve a la página de
-            # pivigames" da un NOMBRE de sitio, no una URL. Antes esto abría
-            # "https://pivigames" (host inexistente) o el 4B caía en browser.search
-            # y se quedaba en los resultados. Si el target es una palabra suelta
-            # (sin punto ni esquema), lo resolvemos con una búsqueda REAL y abrimos
-            # el primer resultado — NO adivinamos el TLD (CLAUDE.md: resolver por
-            # lookup, no por intuición). Una URL/dominio explícito sigue directo.
+            # pivigames" da un NOMBRE de sitio, no una URL. Si el target es una
+            # palabra suelta (sin punto ni esquema), lo resolvemos con una búsqueda
+            # REAL — NO adivinamos el TLD (CLAUDE.md: resolver por lookup). Guardamos
+            # el nombre original para el reporte; `url` queda con la URL resuelta.
+            _resolved_from = None
             if url and not url.startswith(("http://", "https://")) and "." not in url \
                     and "/" not in url and len(url) >= 3 and len(url.split()) <= 4:
                 resolved = self._resolve_site_by_search(url)
                 if resolved:
-                    res = self.web_open_url({"url": resolved})
-                    res.update(
-                        resolved_from_name=url, resolved_url=resolved,
-                        method="search_top_result",
-                        note=f"'{url}' no es un dominio; resolví por búsqueda a {resolved} y lo abrí.",
-                    )
-                    return res
-                # sin resultado fiable -> caer al flujo normal (que dará host inválido
-                # y un error honesto, mejor que abrir algo equivocado).
+                    _resolved_from, url = url, resolved
+                # sin resultado fiable -> url queda como estaba (web_open_url dará
+                # host inválido y un error honesto, mejor que abrir algo equivocado).
+            # ABRIR EN UN NAVEGADOR ESPECÍFICO (2026-05-27): "pon X en Opera" trae
+            # browser="Opera" + url. Antes el `browser=` se IGNORABA y la URL abría
+            # en el navegador POR DEFECTO (el "en Opera" se perdía silenciosamente).
+            # Ahora, si hay un navegador nombrado Y una URL real, lanzamos ESE
+            # navegador con la URL como argumento (navega ahí) y verificamos su
+            # ventana. Si no se puede resolver el navegador, caemos al default con
+            # una nota HONESTA (no fingimos que usamos el navegador pedido).
+            if browser and url.startswith(("http://", "https://")):
+                _b = self._open_url_in_browser(browser, url)
+                if _b is not None:
+                    if _resolved_from:
+                        _b.update(resolved_from_name=_resolved_from, resolved_url=url)
+                    return _b
+                # no se pudo abrir en ESE navegador -> default + nota honesta abajo.
+            if _resolved_from:
+                res = self.web_open_url({"url": url})
+                res.update(
+                    resolved_from_name=_resolved_from, resolved_url=url,
+                    method="search_top_result",
+                    note=f"'{_resolved_from}' no es un dominio; resolví por búsqueda a {url} y lo abrí.",
+                )
+                if browser:
+                    res["browser_note"] = (
+                        f"No pude abrir en {browser} específicamente; lo abrí en tu navegador por defecto.")
+                return res
             if not url:
                 # LAUNCH-THE-APP fallback: el modelo chico (E4B-Q4) interpreta
                 # "lanzá Chrome" / "abrí Firefox" como browser.open con
@@ -2040,6 +2058,11 @@ class ToolRegistry:
                 )
             result = self.web_open_url({"url": url})
             result.update(content_verified=False, completion_status="opened_url")
+            if browser:
+                # se pidió un navegador específico pero llegamos al default
+                # (no se pudo abrir en ése): nota honesta, no fingir.
+                result["browser_note"] = (
+                    f"No pude abrir en {browser} específicamente; lo abrí en tu navegador por defecto.")
             return result
         if action in {"youtube_play", "play_youtube", "play_media"}:
             return self.browser_youtube_play(args)
@@ -4179,6 +4202,52 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         if not top_url.startswith(("http://", "https://")):
             return None
         return top_url
+
+    def _open_url_in_browser(self, browser: str, url: str) -> dict[str, Any] | None:
+        """Abre `url` en el NAVEGADOR `browser` (honra "pon X en Opera"). Resuelve
+        el navegador con el AppResolver y lo lanza con la URL como argumento; luego
+        intenta verificar que su ventana apareció. Devuelve el result (ok=True con
+        navigated_url) o None si no se pudo resolver/lanzar ESE navegador (el caller
+        cae al navegador por defecto con nota honesta). NO finge: si no abrió en el
+        navegador pedido, devuelve None."""
+        name = (browser or "").strip()
+        if not name:
+            return None
+        try:
+            matches = self.apps.find(name)
+        except Exception:
+            matches = []
+        if not matches:
+            return None
+        try:
+            open_result = self.apps.open(matches[0], url_arg=url)
+        except Exception as exc:
+            return {"ok": False, "error": f"{type(exc).__name__}: {exc}", "browser": name}
+        if not open_result.get("ok") or not (open_result.get("candidate") or {}).get("navigated_url"):
+            # el resolver no pudo pasar la URL a ese navegador -> default honesto.
+            return None
+        # verificar ventana del navegador (best-effort; no bloquear si no confirma)
+        verified = False
+        try:
+            v = self.verify_app_opened({"name": name})
+            verified = bool(v.get("found"))
+        except Exception:
+            pass
+        # registrar el recurso para cleanup (igual que app_open)
+        try:
+            self.state.register_resource(
+                "browser_url", url, cleanup_tool=None, cleanup_args={},
+                metadata={"url": url, "browser": name})
+        except Exception:
+            pass
+        return _ok(
+            url=url, browser=name, opened=True,
+            navigated_url=url, method="launch_browser_with_url",
+            verified=verified, content_verified=False,
+            completion_status="opened_url_in_browser" if verified else "opened_url_in_browser_unverified",
+            note=f"Abrí {url} en {name}." + ("" if verified else
+                 " (no pude confirmar la ventana, pero se lanzó)."),
+        )
 
     def web_open_url(self, args: dict[str, Any]) -> dict[str, Any]:
         url = str(args.get("url", "")).strip()

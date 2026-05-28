@@ -606,7 +606,11 @@ $items | ConvertTo-Json -Depth 3
             return (exe, ["--force-renderer-accessibility=complete"], True)
         return None
 
-    def open(self, candidate: AppCandidate) -> dict[str, Any]:
+    def open(self, candidate: AppCandidate, *, url_arg: str | None = None) -> dict[str, Any]:
+        # url_arg (2026-05-27): si el candidato es un NAVEGADOR y nos pasan una URL,
+        # la lanzamos como argumento (exe <url>) para NAVEGAR a esa página en ESE
+        # navegador (honra "pon X en Opera"). Los navegadores aceptan la URL en argv.
+        _url = (url_arg or "").strip() or None
         # R1: Chromium/Electron -> lanzar con accesibilidad encendida (UIA web).
         ax = self._ax_launch_target(candidate)
         if ax is not None:
@@ -615,14 +619,27 @@ $items | ConvertTo-Json -Depth 3
                 env = dict(os.environ)
                 if is_electron:
                     env["ELECTRON_ENABLE_ACCESSIBILITY"] = "1"
-                subprocess.Popen([exe, *args], env=env,
+                cmd = [exe, *args] + ([_url] if _url else [])
+                subprocess.Popen(cmd, env=env,
                                  creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
                                  | getattr(subprocess, "DETACHED_PROCESS", 0))
                 return {"ok": True, "candidate": {"name": candidate.name,
                         "launch": exe, "launch_type": "ax_accessible",
-                        "ax_flag": bool(args) or is_electron}}
+                        "ax_flag": bool(args) or is_electron,
+                        "navigated_url": _url}}
             except Exception:
                 pass  # cualquier fallo -> caer al os.startfile normal (no romper)
+        # Navegador resoluble a exe directo (no Chromium-AX): lanzar exe <url>.
+        if _url and candidate.launch_type == "file" and str(candidate.launch).lower().endswith(".exe"):
+            try:
+                subprocess.Popen([str(candidate.launch), _url],
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+                                 | getattr(subprocess, "DETACHED_PROCESS", 0))
+                return {"ok": True, "candidate": {"name": candidate.name,
+                        "launch": str(candidate.launch), "launch_type": "file_with_url",
+                        "navigated_url": _url}}
+            except Exception:
+                pass
         # T2-app-startfile-no-error-042: capturamos OSError y devolvemos
         # un dict estructurado con detalle del candidate.
         try:
