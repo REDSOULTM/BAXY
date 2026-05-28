@@ -13,7 +13,14 @@ import unittest
 from unittest import mock
 
 from gemma4_agent import domain_tools as dt
+from gemma4_agent import domain_tools_wifi as dtw  # extraído 2026-05-27 (R2)
 from gemma4_agent.state import AgentState
+
+# El refactor R2 movió las funciones wifi a domain_tools_wifi.py; domain_tools
+# las re-exporta para compat, pero los mocks de subprocess y de funciones
+# wifi internas tienen que apuntar al MÓDULO REAL donde la función las
+# resuelve (lookup local). dt.X siguen funcionando para acceso de lectura
+# (re-export), pero mockear dt.X no afecta el binding interno de dtw.X.
 
 # perfiles realistas (tomados de la máquina real): duplicado por case, varios VTR
 REAL_PROFILES = [
@@ -61,9 +68,9 @@ class WifiMatchScoreTest(unittest.TestCase):
 
 class ResolveWifiTargetTest(unittest.TestCase):
     def setUp(self):
-        self.p = mock.patch.object(dt, "_device_wifi_profiles",
+        self.p = mock.patch.object(dtw, "_device_wifi_profiles",
                                    return_value=_profiles_ret(REAL_PROFILES))
-        self.s = mock.patch.object(dt, "_device_wifi_scan",
+        self.s = mock.patch.object(dtw, "_device_wifi_scan",
                                    return_value=_scan_ret([]))
         self.p.start(); self.s.start()
         self.addCleanup(self.p.stop); self.addCleanup(self.s.stop)
@@ -106,7 +113,7 @@ class ResolveWifiTargetTest(unittest.TestCase):
 
     def test_visible_ssid_without_profile(self):
         # un SSID visible que NO está en perfiles -> source=ssid
-        with mock.patch.object(dt, "_device_wifi_scan",
+        with mock.patch.object(dtw, "_device_wifi_scan",
                                return_value=_scan_ret(["CAFE_INVITADOS"])):
             r = dt._resolve_wifi_target("cafe invitados")
         self.assertEqual(r.get("source"), "ssid")
@@ -117,9 +124,9 @@ class DeviceWifiConnectTest(unittest.TestCase):
     """El connect completo, con netsh (subprocess.run) MOCKEADO — no toca la red."""
 
     def setUp(self):
-        self.p = mock.patch.object(dt, "_device_wifi_profiles",
+        self.p = mock.patch.object(dtw, "_device_wifi_profiles",
                                    return_value=_profiles_ret(REAL_PROFILES))
-        self.s = mock.patch.object(dt, "_device_wifi_scan",
+        self.s = mock.patch.object(dtw, "_device_wifi_scan",
                                    return_value=_scan_ret([]))
         self.p.start(); self.s.start()
         self.addCleanup(self.p.stop); self.addCleanup(self.s.stop)
@@ -132,7 +139,7 @@ class DeviceWifiConnectTest(unittest.TestCase):
         return m
 
     def test_connect_resolves_fuzzy_and_calls_netsh_with_real_name(self):
-        with mock.patch.object(dt.subprocess, "run",
+        with mock.patch.object(dtw.subprocess, "run",
                                return_value=self._mock_run()) as run:
             res = dt._device_wifi_connect({"name": "galaxy"})
         self.assertTrue(res["ok"])
@@ -143,7 +150,7 @@ class DeviceWifiConnectTest(unittest.TestCase):
         self.assertIn("name=Galaxy Phone 5G 0000", called_args)
 
     def test_connect_exact_no_resolution_flag(self):
-        with mock.patch.object(dt.subprocess, "run",
+        with mock.patch.object(dtw.subprocess, "run",
                                return_value=self._mock_run()):
             res = dt._device_wifi_connect({"name": "RV"})
         self.assertTrue(res["ok"])
@@ -151,7 +158,7 @@ class DeviceWifiConnectTest(unittest.TestCase):
         self.assertFalse(res["resolved_from_state"])
 
     def test_connect_ambiguous_asks_without_netsh(self):
-        with mock.patch.object(dt.subprocess, "run") as run:
+        with mock.patch.object(dtw.subprocess, "run") as run:
             res = dt._device_wifi_connect({"name": "vtr"})
         self.assertFalse(res.get("ok", False))
         self.assertEqual(res.get("status"), "needs_user")
@@ -159,9 +166,9 @@ class DeviceWifiConnectTest(unittest.TestCase):
         run.assert_not_called()  # NO conectó a nada ambiguo
 
     def test_connect_visible_ssid_without_password_asks(self):
-        with mock.patch.object(dt, "_device_wifi_scan",
+        with mock.patch.object(dtw, "_device_wifi_scan",
                                return_value=_scan_ret(["HOTEL_WIFI"])), \
-             mock.patch.object(dt.subprocess, "run") as run:
+             mock.patch.object(dtw.subprocess, "run") as run:
             res = dt._device_wifi_connect({"name": "hotel wifi"})
         self.assertFalse(res.get("ok", False))
         self.assertEqual(res.get("status"), "needs_user")
@@ -169,11 +176,11 @@ class DeviceWifiConnectTest(unittest.TestCase):
 
     def test_connect_visible_ssid_with_password_creates_profile(self):
         created = {"ok": True, "profile_added": "HOTEL_WIFI"}
-        with mock.patch.object(dt, "_device_wifi_scan",
+        with mock.patch.object(dtw, "_device_wifi_scan",
                                return_value=_scan_ret(["HOTEL_WIFI"])), \
-             mock.patch.object(dt, "_device_wifi_add_profile",
+             mock.patch.object(dtw, "_device_wifi_add_profile",
                                return_value=created) as add, \
-             mock.patch.object(dt.subprocess, "run",
+             mock.patch.object(dtw.subprocess, "run",
                                return_value=self._mock_run()):
             res = dt._device_wifi_connect({"name": "hotel wifi", "password": "12345678"})
         self.assertTrue(res["ok"])
@@ -182,16 +189,16 @@ class DeviceWifiConnectTest(unittest.TestCase):
 
     def test_connect_unknown_with_password_creates_as_new_ssid(self):
         created = {"ok": True, "profile_added": "NuevaRed"}
-        with mock.patch.object(dt, "_device_wifi_add_profile",
+        with mock.patch.object(dtw, "_device_wifi_add_profile",
                                return_value=created) as add, \
-             mock.patch.object(dt.subprocess, "run",
+             mock.patch.object(dtw.subprocess, "run",
                                return_value=self._mock_run()):
             res = dt._device_wifi_connect({"name": "NuevaRed", "password": "claveSegura1"})
         self.assertTrue(res["ok"])
         add.assert_called_once()
 
     def test_connect_unknown_no_password_asks_honestly(self):
-        with mock.patch.object(dt.subprocess, "run") as run:
+        with mock.patch.object(dtw.subprocess, "run") as run:
             res = dt._device_wifi_connect({"name": "red inexistente zzz"})
         self.assertFalse(res.get("ok", False))
         self.assertEqual(res.get("status"), "needs_user")
@@ -211,9 +218,9 @@ class NetworkDelegatesWifiConnectTest(unittest.TestCase):
         import tempfile
         from pathlib import Path
         self.state = AgentState(Path(tempfile.mkdtemp()) / "s.json")
-        self.p = mock.patch.object(dt, "_device_wifi_profiles",
+        self.p = mock.patch.object(dtw, "_device_wifi_profiles",
                                    return_value=_profiles_ret(REAL_PROFILES))
-        self.s = mock.patch.object(dt, "_device_wifi_scan",
+        self.s = mock.patch.object(dtw, "_device_wifi_scan",
                                    return_value=_scan_ret([]))
         self.p.start(); self.s.start()
         self.addCleanup(self.p.stop); self.addCleanup(self.s.stop)
@@ -223,14 +230,14 @@ class NetworkDelegatesWifiConnectTest(unittest.TestCase):
         return m
 
     def test_network_connect_action_delegates(self):
-        with mock.patch.object(dt.subprocess, "run", return_value=self._ok_run()):
+        with mock.patch.object(dtw.subprocess, "run", return_value=self._ok_run()):
             res = dt.network_tool({"action": "connect", "name": "RV"}, self.state)
         self.assertTrue(res["ok"])
         self.assertEqual(res["profile"], "RV")
         self.assertEqual(res.get("delegated_from"), "network.connect")
 
     def test_network_name_without_action_delegates(self):
-        with mock.patch.object(dt.subprocess, "run", return_value=self._ok_run()):
+        with mock.patch.object(dtw.subprocess, "run", return_value=self._ok_run()):
             res = dt.network_tool({"name": "galaxy"}, self.state)
         self.assertTrue(res["ok"])
         self.assertEqual(res["profile"], "Galaxy Phone 5G 0000")
@@ -241,7 +248,7 @@ class NetworkDelegatesWifiConnectTest(unittest.TestCase):
         self.assertIsNone(res.get("delegated_from"))
 
     def test_network_ping_unaffected(self):
-        with mock.patch.object(dt.subprocess, "run", return_value=self._ok_run()):
+        with mock.patch.object(dtw.subprocess, "run", return_value=self._ok_run()):
             res = dt.network_tool({"action": "ping", "host": "8.8.8.8"}, self.state)
         self.assertIsNone(res.get("delegated_from"))
 
