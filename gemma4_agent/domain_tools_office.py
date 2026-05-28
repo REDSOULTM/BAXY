@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -39,6 +40,15 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .domain_tools_helpers import _existing_path
     import os
@@ -46,7 +56,7 @@ def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     import webbrowser
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok(
+        return _ok_tr(
             python_pptx=importlib.util.find_spec("pptx") is not None,
             python_docx=importlib.util.find_spec("docx") is not None,
             openpyxl=importlib.util.find_spec("openpyxl") is not None,
@@ -63,29 +73,29 @@ def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "open":
         path = _existing_path(args)
         if not path:
-            return _err("missing or invalid path", status="needs_user")
+            return _err_tr("missing or invalid path", status="needs_user")
         try:
             if os.name == "nt":
                 os.startfile(path)  # type: ignore[attr-defined]
             else:
                 webbrowser.open(path.as_uri())
         except OSError as exc:
-            return _err(
+            return _err_tr(
                 f"failed to open office file: {exc}",
                 path=str(path), status="failed",
                 hint="no application registered to open this extension?",
             )
-        return _ok(path=str(path.resolve()), opened=True, verified=False,
+        return _ok_tr(path=str(path.resolve()), opened=True, verified=False,
                    note="Open requested; verification not performed (would require UIA).")
     if action in {"edit_presentation", "edit_document", "edit_spreadsheet", "export_pdf"}:
-        return _err(
+        return _err_tr(
             f"office.{action} is not implemented yet",
             status="needs_dependency",
             verified=False,
             completion_status="needs_implementation",
             note="Creation and inspection are implemented first; editing/export need template-specific handling.",
         )
-    return _err(
+    return _err_tr(
         "unknown office action", action=action,
         valid_actions=[
             "status", "create_presentation", "create_document",
@@ -99,7 +109,7 @@ def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 def _create_presentation(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .domain_tools_helpers import _safe_name
     if importlib.util.find_spec("pptx") is None:
-        return _err(
+        return _err_tr(
             "python-pptx is not installed",
             status="needs_dependency",
             verified=False,
@@ -148,13 +158,13 @@ def _create_presentation(args: dict[str, Any], state: AgentState) -> dict[str, A
         cleanup_args={"action": "delete", "path": str(path)},
         metadata={"kind": "presentation", "path": str(path), "slides": len(prs.slides)},
     )
-    return _ok(path=str(path.resolve()), kind="presentation", slides=len(prs.slides), resource=resource.get("resource"))
+    return _ok_tr(path=str(path.resolve()), kind="presentation", slides=len(prs.slides), resource=resource.get("resource"))
 
 
 def _create_document(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .domain_tools_helpers import _safe_name
     if importlib.util.find_spec("docx") is None:
-        return _err("python-docx is not installed", status="needs_dependency", verified=False, install_hint="python -m pip install python-docx")
+        return _err_tr("python-docx is not installed", status="needs_dependency", verified=False, install_hint="python -m pip install python-docx")
     from docx import Document
 
     title = str(args.get("title") or "Documento").strip()
@@ -166,13 +176,13 @@ def _create_document(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         doc.add_paragraph(paragraph)
     doc.save(str(path))
     resource = state.register_resource("office_file", path.name, cleanup_tool="filesystem", cleanup_args={"action": "delete", "path": str(path)}, metadata={"kind": "document", "path": str(path)})
-    return _ok(path=str(path.resolve()), kind="document", resource=resource.get("resource"))
+    return _ok_tr(path=str(path.resolve()), kind="document", resource=resource.get("resource"))
 
 
 def _create_spreadsheet(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .domain_tools_helpers import _safe_name
     if importlib.util.find_spec("openpyxl") is None:
-        return _err("openpyxl is not installed", status="needs_dependency", verified=False, install_hint="python -m pip install openpyxl")
+        return _err_tr("openpyxl is not installed", status="needs_dependency", verified=False, install_hint="python -m pip install openpyxl")
     from openpyxl import Workbook
 
     title = str(args.get("title") or "Hoja").strip()
@@ -180,7 +190,7 @@ def _create_spreadsheet(args: dict[str, Any], state: AgentState) -> dict[str, An
     wb = Workbook()
     ws = wb.active
     if ws is None:
-        return _err("openpyxl Workbook has no active sheet", verified=False)
+        return _err_tr("openpyxl Workbook has no active sheet", verified=False)
     ws.title = "Datos"
     raw_rows = args.get("rows")
     rows: list[Any] = raw_rows if isinstance(raw_rows, list) else []
@@ -190,15 +200,15 @@ def _create_spreadsheet(args: dict[str, Any], state: AgentState) -> dict[str, An
         ws.append(row if isinstance(row, list) else [str(row)])
     wb.save(str(path))
     resource = state.register_resource("office_file", path.name, cleanup_tool="filesystem", cleanup_args={"action": "delete", "path": str(path)}, metadata={"kind": "spreadsheet", "path": str(path), "rows": len(rows)})
-    return _ok(path=str(path.resolve()), kind="spreadsheet", rows=len(rows), resource=resource.get("resource"))
+    return _ok_tr(path=str(path.resolve()), kind="spreadsheet", rows=len(rows), resource=resource.get("resource"))
 
 
 def _inspect_office_file(args: dict[str, Any]) -> dict[str, Any]:
     from .domain_tools_helpers import _existing_path
     path = _existing_path(args)
     if not path:
-        return _err("missing or invalid path")
-    return _ok(path=str(path.resolve()), suffix=path.suffix.casefold(), size=path.stat().st_size)
+        return _err_tr("missing or invalid path")
+    return _ok_tr(path=str(path.resolve()), suffix=path.suffix.casefold(), size=path.stat().st_size)
 
 
 def _output_path(args: dict[str, Any], state: AgentState, stem: str, suffix: str) -> Path:

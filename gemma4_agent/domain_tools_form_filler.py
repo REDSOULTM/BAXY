@@ -23,6 +23,7 @@ import json
 from typing import Any, Callable
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -39,6 +40,15 @@ __all__ = [
 ]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def form_filler_tool(args: dict[str, Any], state: AgentState, executor: Executor) -> dict[str, Any]:
     """Compound tool to fill HTML forms with a review gate before submit.
 
@@ -52,7 +62,7 @@ def form_filler_tool(args: dict[str, Any], state: AgentState, executor: Executor
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok(
+        return _ok_tr(
             note="Requires an existing browser_real session (use browser_real.open or attach_visible first).",
             backend="browser_real_orchestration",
             review_gate_default=True,
@@ -66,7 +76,7 @@ def form_filler_tool(args: dict[str, Any], state: AgentState, executor: Executor
         return _form_apply(session_id, args, executor)
     if action == "submit":
         return _form_submit(session_id, args, executor, state)
-    return _err(
+    return _err_tr(
         "unknown form_filler action", action=action,
         valid_actions=[
             "status", "discover", "fill", "submit", "verify",
@@ -134,7 +144,7 @@ def _form_discover(session_id: str, executor: Executor) -> dict[str, Any]:
     if not result.get("ok"):
         return result
     value = result.get("value") or {}
-    return _ok(
+    return _ok_tr(
         session_id=session_id,
         fields=value.get("fields") or [],
         field_count=len(value.get("fields") or []),
@@ -147,7 +157,7 @@ def _form_discover(session_id: str, executor: Executor) -> dict[str, Any]:
 def _form_plan(session_id: str, args: dict[str, Any], executor: Executor) -> dict[str, Any]:
     values = args.get("values") if isinstance(args.get("values"), dict) else {}
     if not values:
-        return _err("plan requires values={'field label or name': value}")
+        return _err_tr("plan requires values={'field label or name': value}")
     discover = _form_discover(session_id, executor)
     if not discover.get("ok"):
         return discover
@@ -160,7 +170,7 @@ def _form_plan(session_id: str, args: dict[str, Any], executor: Executor) -> dic
             unmatched.append(str(key))
             continue
         plan.append({"selector": match["selector"], "label": match.get("label") or match.get("name") or match.get("placeholder"), "tag": match["tag"], "type": match["type"], "value": val})
-    return _ok(
+    return _ok_tr(
         session_id=session_id,
         plan=plan, plan_size=len(plan),
         unmatched=unmatched, unmatched_count=len(unmatched),
@@ -196,9 +206,9 @@ def _form_apply(session_id: str, args: dict[str, Any], executor: Executor) -> di
                 return built
             plan = built.get("plan", [])
         else:
-            return _err("apply requires plan (list) or values (dict)")
+            return _err_tr("apply requires plan (list) or values (dict)")
     if not plan:
-        return _err("plan is empty; nothing to apply")
+        return _err_tr("plan is empty; nothing to apply")
     applied: list[dict[str, Any]] = []
     failed: list[dict[str, Any]] = []
     for step in plan:
@@ -222,7 +232,7 @@ def _form_apply(session_id: str, args: dict[str, Any], executor: Executor) -> di
         else:
             result = executor("browser_real", {"action": "fill", "session_id": session_id, "selector": selector, "value": str(value)})
         (applied if result.get("ok") else failed).append({"step": step, "result": {"ok": result.get("ok"), "error": result.get("error")}})
-    return _ok(
+    return _ok_tr(
         session_id=session_id,
         applied=len(applied), failed=len(failed),
         applied_details=applied, failed_details=failed,
@@ -243,7 +253,7 @@ def _form_submit(session_id: str, args: dict[str, Any], executor: Executor, stat
             reason="Submitting a form to the live website. Verify the values are correct.",
             risk="medium",
         )
-        return _err(
+        return _err_tr(
             "form submission requires confirmation; review the screenshot then call safety(confirm,...) or re-call submit with confirmed=true",
             status="needs_confirmation", verified=False,
             completion_status="needs_user_confirmation",
@@ -259,6 +269,6 @@ def _form_submit(session_id: str, args: dict[str, Any], executor: Executor, stat
         discover = _form_discover(session_id, executor)
         submits = discover.get("submits", [])
         if not submits:
-            return _err("no submit button found; pass selector explicitly")
+            return _err_tr("no submit button found; pass selector explicitly")
         result = executor("browser_real", {"action": "click", "session_id": session_id, "selector": submits[0]["selector"]})
-    return _ok(session_id=session_id, submit_result=result, verified=result.get("ok"))
+    return _ok_tr(session_id=session_id, submit_result=result, verified=result.get("ok"))

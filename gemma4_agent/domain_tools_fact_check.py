@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
 
 
@@ -31,6 +32,15 @@ __all__ = [
     "_NEGATION_CUES_EN",
     "_NEGATION_CUES_ES",
 ]
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor=None) -> dict[str, Any]:
@@ -47,7 +57,7 @@ def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor=
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok(
+        return _ok_tr(
             backend="tfidf_cosine + bm25_fts5",
             note="Lexical only; no LLM call inside the tool. The agent itself writes the verdict from ranked snippets.",
         )
@@ -55,12 +65,12 @@ def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor=
         claim = str(args.get("claim") or "").strip()
         text = str(args.get("text") or "").strip()
         if not claim or not text:
-            return _err("compare requires claim and text")
+            return _err_tr("compare requires claim and text")
         chunks = _fact_check_chunks(text)
         ranked = _fact_check_rank(claim, [{"source": "<inline>", "title": "inline", "text": ch} for ch in chunks])
-        return _ok(claim=claim, matches=ranked[:10], evaluated=len(chunks))
+        return _ok_tr(claim=claim, matches=ranked[:10], evaluated=len(chunks))
     if action != "check":
-        return _err(
+        return _err_tr(
             "unknown fact_check action", action=action,
             valid_actions=["status", "check", "compare"],
             status="needs_user",
@@ -68,7 +78,7 @@ def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor=
 
     claim = str(args.get("claim") or "").strip()
     if not claim:
-        return _err("missing claim")
+        return _err_tr("missing claim")
     raw_sources = args.get("sources")
     sources_arg: list[Any] = raw_sources if isinstance(raw_sources, list) else []
     use_knowledge = bool(args.get("use_knowledge", True))
@@ -116,7 +126,7 @@ def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor=
                 candidates.append({"source": row.get("source") or row.get("title") or "knowledge", "title": row.get("title"), "text": snip})
 
     if not candidates:
-        return _ok(
+        return _ok_tr(
             claim=claim,
             verdict="no_evidence",
             evaluated=0,
@@ -140,7 +150,7 @@ def fact_check_tool(args: dict[str, Any], state: AgentState, knowledge_executor=
             verdict = "weakly_supports"
         else:
             verdict = "no_evidence"
-    return _ok(
+    return _ok_tr(
         claim=claim,
         verdict=verdict,
         evaluated=len(candidates),
