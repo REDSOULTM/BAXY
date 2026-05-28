@@ -23,7 +23,17 @@ import subprocess
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 from .state import AgentState
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 __all__ = [
@@ -49,12 +59,12 @@ def container_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "status").casefold()
     docker = shutil.which("docker") or shutil.which("docker.exe")
     if action == "status":
-        return _ok(
+        return _ok_tr(
             docker=bool(docker), docker_path=docker,
             install_hint="winget install Docker.DockerDesktop",
         )
     if not docker:
-        return _err(
+        return _err_tr(
             "docker is not installed or not on PATH",
             status="needs_dependency", verified=False,
             install_hint="winget install Docker.DockerDesktop",
@@ -77,7 +87,7 @@ def container_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _container_compose(docker, "down", args)
     if action == "compose_ps":
         return _container_compose(docker, "ps", args)
-    return _err(
+    return _err_tr(
         "unknown container action", action=action,
         valid_actions=[
             "status", "ps", "ps_all", "images", "inspect", "logs",
@@ -94,7 +104,7 @@ def _container_ps(docker: str, all_containers: bool) -> dict[str, Any]:
         cmd.insert(2, "-a")
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err("docker ps failed", stderr=proc.stderr, exit_code=proc.returncode)
+        return _err_tr("docker ps failed", stderr=proc.stderr, exit_code=proc.returncode)
     containers: list[dict[str, Any]] = []
     for line in proc.stdout.splitlines():
         line = line.strip()
@@ -104,13 +114,13 @@ def _container_ps(docker: str, all_containers: bool) -> dict[str, Any]:
             containers.append(json.loads(line))
         except json.JSONDecodeError:
             continue
-    return _ok(containers=containers, count=len(containers))
+    return _ok_tr(containers=containers, count=len(containers))
 
 
 def _container_images(docker: str) -> dict[str, Any]:
     proc = subprocess.run([docker, "images", "--format", "{{json .}}"], capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err("docker images failed", stderr=proc.stderr)
+        return _err_tr("docker images failed", stderr=proc.stderr)
     images: list[dict[str, Any]] = []
     for line in proc.stdout.splitlines():
         line = line.strip()
@@ -120,36 +130,36 @@ def _container_images(docker: str) -> dict[str, Any]:
             images.append(json.loads(line))
         except json.JSONDecodeError:
             continue
-    return _ok(images=images, count=len(images))
+    return _ok_tr(images=images, count=len(images))
 
 
 def _container_inspect(docker: str, args: dict[str, Any]) -> dict[str, Any]:
     target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
     if not target:
-        return _err("missing container name/id")
+        return _err_tr("missing container name/id")
     proc = subprocess.run([docker, "inspect", target], capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err("docker inspect failed", stderr=proc.stderr, target=target)
+        return _err_tr("docker inspect failed", stderr=proc.stderr, target=target)
     try:
         data = json.loads(proc.stdout)
     except json.JSONDecodeError:
-        return _err("inspect returned invalid JSON", raw=proc.stdout[:500])
-    return _ok(target=target, inspect=data)
+        return _err_tr("inspect returned invalid JSON", raw=proc.stdout[:500])
+    return _ok_tr(target=target, inspect=data)
 
 
 def _container_logs(docker: str, args: dict[str, Any]) -> dict[str, Any]:
     target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
     if not target:
-        return _err("missing container name/id")
+        return _err_tr("missing container name/id")
     tail = int(args.get("tail", 100))
     proc = subprocess.run([docker, "logs", "--tail", str(tail), target], capture_output=True, text=True, timeout=30)
-    return _ok(target=target, tail=tail, exit_code=proc.returncode, stdout=proc.stdout[-8000:], stderr=proc.stderr[-2000:])
+    return _ok_tr(target=target, tail=tail, exit_code=proc.returncode, stdout=proc.stdout[-8000:], stderr=proc.stderr[-2000:])
 
 
 def _container_lifecycle(docker: str, action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
     if not target:
-        return _err("missing container name/id")
+        return _err_tr("missing container name/id")
     reverse = {"start": "stop", "stop": "start", "restart": "restart"}.get(action)
     checkpoint = state.checkpoint(
         f"container {action} {target}",
@@ -157,7 +167,7 @@ def _container_lifecycle(docker: str, action: str, args: dict[str, Any], state: 
         metadata={"target": target, "action": action},
     )
     proc = subprocess.run([docker, action, target], capture_output=True, text=True, timeout=60)
-    return _ok(
+    return _ok_tr(
         action=action, target=target,
         exit_code=proc.returncode, stdout=proc.stdout.strip()[:500], stderr=proc.stderr[-1000:],
         checkpoint=checkpoint.get("checkpoint"),
@@ -169,17 +179,17 @@ def _container_exec(docker: str, args: dict[str, Any]) -> dict[str, Any]:
     target = str(args.get("name") or args.get("id") or args.get("container") or "").strip()
     cmd = args.get("command")
     if not target:
-        return _err("missing container name/id")
+        return _err_tr("missing container name/id")
     if isinstance(cmd, str):
         cmd_list = cmd.split()
     elif isinstance(cmd, list):
         cmd_list = [str(p) for p in cmd]
     else:
-        return _err("command must be string or list")
+        return _err_tr("command must be string or list")
     if not cmd_list:
-        return _err("command is empty")
+        return _err_tr("command is empty")
     proc = subprocess.run([docker, "exec", target, *cmd_list], capture_output=True, text=True, timeout=int(args.get("timeout_sec", 60)))
-    return _ok(target=target, command=cmd_list, exit_code=proc.returncode, stdout=proc.stdout[-8000:], stderr=proc.stderr[-2000:], verified=proc.returncode == 0)
+    return _ok_tr(target=target, command=cmd_list, exit_code=proc.returncode, stdout=proc.stdout[-8000:], stderr=proc.stderr[-2000:], verified=proc.returncode == 0)
 
 
 def _container_compose(docker: str, subcommand: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -193,4 +203,4 @@ def _container_compose(docker: str, subcommand: str, args: dict[str, Any]) -> di
         cmd.extend(["--format", "json"])
     cmd.extend(str(a) for a in extra)
     proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=int(args.get("timeout_sec", 180)))
-    return _ok(subcommand=subcommand, cwd=cwd, command=cmd, exit_code=proc.returncode, stdout=proc.stdout[-6000:], stderr=proc.stderr[-2000:], verified=proc.returncode == 0)
+    return _ok_tr(subcommand=subcommand, cwd=cwd, command=cmd, exit_code=proc.returncode, stdout=proc.stdout[-6000:], stderr=proc.stderr[-2000:], verified=proc.returncode == 0)

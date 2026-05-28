@@ -18,9 +18,19 @@ from typing import Any
 
 from ._shared import _err, _ok
 from .state import AgentState
+from .tool_result import ToolResult
 
 
 __all__ = ["habit_tracker_tool", "_VALID_HABIT_FREQUENCIES"]
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 _VALID_HABIT_FREQUENCIES = {"daily", "weekly", "monthly", "weekdays", "custom"}
@@ -35,16 +45,16 @@ def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     )
     action = str(args.get("action") or "list").casefold()
     if action == "status":
-        return _ok(habits=len(_resources_by_kind(state, "habit")))
+        return _ok_tr(habits=len(_resources_by_kind(state, "habit")))
     if action == "list":
-        return _ok(habits=_resources_by_kind(state, "habit", include_closed=bool(args.get("include_closed", False))))
+        return _ok_tr(habits=_resources_by_kind(state, "habit", include_closed=bool(args.get("include_closed", False))))
     if action == "create":
         name = str(args.get("name") or args.get("title") or "").strip()
         if not name:
-            return _err("missing habit name", status="needs_user")
+            return _err_tr("missing habit name", status="needs_user")
         frequency = str(args.get("frequency") or "daily").lower()
         if frequency not in _VALID_HABIT_FREQUENCIES:
-            return _err(
+            return _err_tr(
                 f"invalid frequency: {frequency!r}",
                 valid=sorted(_VALID_HABIT_FREQUENCIES), status="needs_user",
             )
@@ -55,11 +65,11 @@ def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
                 "created_at": datetime.now().isoformat(timespec="seconds"),
             },
         )
-        return _ok(habit=resource.get("resource"))
+        return _ok_tr(habit=resource.get("resource"))
     if action == "log":
         habit = _find_resource(args, state, "habit")
         if not habit:
-            return _err("habit not found", status="needs_user")
+            return _err_tr("habit not found", status="needs_user")
         # VALIDACION del campo `at` como ISO antes de persistir; si el LLM
         # pasa "hoy" como string, _parse_due_iso lo rechaza con un mensaje
         # claro en vez de guardarlo y romper stats downstream.
@@ -69,7 +79,7 @@ def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
         else:
             at_iso, err = _parse_due_iso(at_raw)
             if err:
-                return _err(err, field="at", value=at_raw, status="needs_user")
+                return _err_tr(err, field="at", value=at_raw, status="needs_user")
             if at_iso is None:
                 at_iso = datetime.now().isoformat(timespec="seconds")
         logs = list(habit.setdefault("metadata", {}).get("logs") or [])
@@ -82,7 +92,7 @@ def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     if action == "stats":
         habit = _find_resource(args, state, "habit")
         if not habit:
-            return _err("habit not found", status="needs_user")
+            return _err_tr("habit not found", status="needs_user")
         meta = habit.get("metadata", {}) or {}
         logs = meta.get("logs") or []
         # Calculo de streak basico para "daily": dias consecutivos contando
@@ -114,7 +124,7 @@ def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
                                 break
             except (ValueError, TypeError):
                 streak = 0
-        return _ok(
+        return _ok_tr(
             habit=habit, log_count=len(logs),
             last=logs[-1] if logs else None,
             current_streak=streak, frequency=meta.get("frequency"),
@@ -122,9 +132,9 @@ def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     if action == "delete":
         habit = _find_resource(args, state, "habit")
         if not habit:
-            return _err("habit not found", status="needs_user")
+            return _err_tr("habit not found", status="needs_user")
         return state.mark_cleaned(str(habit["id"]), {"deleted": True})
-    return _err(
+    return _err_tr(
         "unknown habit_tracker action", action=action,
         valid_actions=["status", "list", "create", "log", "stats", "delete"],
         status="needs_user",
