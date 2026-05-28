@@ -20,7 +20,7 @@ from ..tool_result import ToolResult
 __all__ = ["_device_bluetooth_status"]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult (con .to_dict() para
+# R4 sprint 2026-05-28: handler migrado a ToolResult (con  para
 # back-compat). Comportamiento idéntico al _ok/_err anterior.
 def _device_bluetooth_status() -> dict[str, Any]:
     script = (
@@ -29,14 +29,14 @@ def _device_bluetooth_status() -> dict[str, Any]:
     )
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return ToolResult.err("bluetooth status query failed", stderr=proc.stderr).to_dict()
+        return _err("bluetooth status query failed", stderr=proc.stderr)
     raw = proc.stdout.strip()
     if not raw:
-        return ToolResult.ok_result(devices=[], count=0, note="No Bluetooth class devices found.").to_dict()
+        return _ok(devices=[], count=0, note="No Bluetooth class devices found.")
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return ToolResult.err("bluetooth status returned invalid JSON", raw=raw[:500]).to_dict()
+        return _err("bluetooth status returned invalid JSON", raw=raw[:500])
     if isinstance(data, dict):
         data = [data]
     svc = subprocess.run(
@@ -49,4 +49,4 @@ def _device_bluetooth_status() -> dict[str, Any]:
             service_info = json.loads(svc.stdout)
         except json.JSONDecodeError:
             pass
-    return ToolResult.ok_result(devices=data, count=len(data), bthserv=service_info).to_dict()
+    return _ok(devices=data, count=len(data), bthserv=service_info)

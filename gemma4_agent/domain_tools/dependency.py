@@ -31,36 +31,36 @@ __all__ = [
 
 
 # R4 sprint 2026-05-28: este handler está MIGRADO a ToolResult internamente,
-# pero exporta dict via `.to_dict()` para back-compat con consumers viejos.
+# pero exporta dict via `` para back-compat con consumers viejos.
 # Sirve como ejemplo de referencia para la migración handler-por-handler.
 def dependency_tool(args: dict[str, Any]) -> dict[str, Any]:
     action = str(args.get("action") or "status").casefold()
     catalog = _dependency_catalog()
     if action in {"status", "list"}:
-        return ToolResult.ok_result(
+        return _ok(
             dependencies=list(catalog.values()),
             missing=[d for d in catalog.values() if not d["available"]],
-        ).to_dict()
+        )
     if action in {"verify", "explain_missing"}:
         name = str(args.get("name") or args.get("dependency") or "").strip().casefold()
         matches = [item for key, item in catalog.items() if name in {key, item["name"].casefold()}] if name else [d for d in catalog.values() if not d["available"]]
-        return ToolResult.ok_result(matches=matches, count=len(matches)).to_dict()
+        return _ok(matches=matches, count=len(matches))
     if action in {"install", "repair"}:
         name = str(args.get("name") or args.get("dependency") or "").strip().casefold()
         item = catalog.get(name)
-        return ToolResult.err(
+        return _err(
             "dependency.install is advisory in this local tool",
             status="needs_user",
             verified=False,
             completion_status="needs_user_install",
             dependency=item or name,
             install_hint=(item or {}).get("install_hint") or "Use package/terminal explicitly if you want installation.",
-        ).to_dict()
-    return ToolResult.err(
+        )
+    return _err(
         "unknown dependency action", action=action,
         valid_actions=["status", "list", "verify", "explain_missing"],
         status="needs_user",
-    ).to_dict()
+    )
 
 
 def _dependency_catalog() -> dict[str, dict[str, Any]]:
