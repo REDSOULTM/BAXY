@@ -2666,6 +2666,22 @@ class ToolRegistry:
                 "target": "los mensajes de chat visibles; leé en voz el/los "
                           "último(s) mensaje(s): quién lo envió y qué dice",
             })
+        # REDIRECCIÓN A EMAIL (2026-05-27, bug medido en vivo): el 4B a veces rutea
+        # "mandale un correo a ana@gmail.com" a whatsapp con contact="ana@gmail.com"
+        # (o "un correo a ana@gmail.com"). Un destinatario con '@...' (dominio) es un
+        # EMAIL, no un chat de WhatsApp. Lo redirigimos a la tool email (abre el
+        # redactor de Gmail pre-rellenado) — garantía de outcome a nivel de tool,
+        # como network->device_settings. Solo si el destinatario parece email real.
+        import re as _re
+        _rcpt = " ".join(str(args.get(k) or "") for k in ("contact", "to", "recipient", "name", "phone"))
+        _m = _re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", _rcpt)
+        if _act in {"send_message", "send", ""} and _m:
+            _to = _m.group(0)
+            _body = str(args.get("text") or args.get("body") or args.get("message") or "").strip()
+            res = self.t_email({"action": "send", "to": _to, "body": _body})
+            if isinstance(res, dict):
+                res.setdefault("delegated_from", "whatsapp(email-recipient)")
+            return res
         return whatsapp_tool(args, self.state, executor=self.execute)
 
     def t_notes_tasks(self, args: dict[str, Any]) -> dict[str, Any]:

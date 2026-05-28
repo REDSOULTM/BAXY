@@ -52,6 +52,28 @@ class WhatsAppReadDelegatesToVisionTest(unittest.TestCase):
             self.ag.tools.t_whatsapp({"action": "status"})
         self.assertEqual(len(self.calls), 0)
 
+    def test_email_recipient_redirects_to_email(self):
+        # BUG medido en vivo: el 4B rutea "mandale un correo a ana@gmail.com" a
+        # whatsapp con contact='ana@gmail.com'. Un destinatario con '@dominio' es
+        # EMAIL -> t_whatsapp lo redirige a la tool email (Gmail compose).
+        opened = []
+        self.ag.tools.web_open_url = lambda a: (opened.append(a.get("url")),
+                                                {"ok": True, "url": a.get("url")})[1]
+        res = self.ag.tools.t_whatsapp({"action": "send_message",
+                                        "contact": "ana@gmail.com", "text": "hola"})
+        self.assertEqual(res.get("delegated_from"), "whatsapp(email-recipient)")
+        self.assertIn("mail.google.com", opened[-1])
+        self.assertIn("ana%40gmail.com", opened[-1])
+
+    def test_normal_contact_stays_whatsapp(self):
+        # un contacto normal ('mama') NO se redirige a email.
+        with mock.patch("gemma4_agent.tools.whatsapp_tool",
+                        return_value={"ok": True, "sent": False, "via": "whatsapp"}) as wa:
+            res = self.ag.tools.t_whatsapp({"action": "send_message",
+                                            "contact": "mama", "text": "ya voy"})
+        wa.assert_called_once()
+        self.assertIsNone(res.get("delegated_from"))
+
 
 class DeterministicReplyTest(unittest.TestCase):
     """_deterministic_reply: backstop cuando el 4B se niega a responder un mensaje.
