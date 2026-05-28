@@ -63,22 +63,6 @@ _SPLIT_RE = re.compile(
     re.IGNORECASE,
 )
 
-# ELIPSIS DE VERBO DE NAVEGACIÓN (2026-05-27, bug medido — captura del user):
-# "Ve al portal uniej y luego a canvas" NO partía porque tras "y luego" viene
-# "a canvas" (preposición + nombre), no un verbo imperativo — el _SPLIT_RE
-# exige _IMPERATIVE tras la conjunción. El user elide el verbo en la 2da
-# cláusula ("y luego [ve] a canvas"). Patrón: conjunción + luego/después
-# OPCIONAL + preposición direccional + nombre. Multi-idioma.
-# Solo aplica cuando la 1RA cláusula YA es navegación (ver _expand_nav_ellipsis
-# abajo): si no, "comprá pan y a las 6 cenar" no se quiere partir mal.
-_NAV_ELLIPSIS_RE = re.compile(
-    r"\s*,?\s+(?:y|e|and|then|or|ou|et|und|oder|poi|oppure|e)\s+"
-    r"(?:luego\s+|despu[ée]s\s+|then\s+|after\s+that\s+|afterwards\s+|"
-    r"depois\s+|ensuite\s+|danach\s+)?"
-    r"(?=(?:a|al|to|para|au|aux|in|nel|su)\s+[A-Za-zÁÉÍÓÚÑáéíóúñ0-9])",
-    re.IGNORECASE,
-)
-
 # CAPA 2: conjunciones coordinantes multi-idioma (closed set, language-agnostic).
 # Sólo conjunción entre espacios (no "Disney" partido). El "?" de "después/luego"
 # español ya lo cubre la capa 1; acá conectores neutrales de varios idiomas.
@@ -252,50 +236,6 @@ def _is_bare_nav_to_app(clause: str) -> bool:
     return True
 
 
-_NAV_PREP_RE = re.compile(
-    r"^\s*(?:a|al|to|para|au|aux|in|nel|su)\s+", re.IGNORECASE,
-)
-
-
-def _expand_nav_ellipsis(utterance: str) -> list[str] | None:
-    """Si el utterance es "<nav cláusula 1> y/luego <prep + dest>", devuelve
-    [clausula1, "ve a <dest>"] reescribiendo la 2da con verbo de nav explícito.
-    Si no aplica, None.
-
-    Cubre la elipsis: "Ve al portal uniej y luego a canvas" → la 2da cláusula
-    "a canvas" hereda el verbo "Ve" de la 1ra. Sin esto, el _SPLIT_RE no parte
-    (no hay imperativo tras la conjunción) y el router no ve "a canvas" como
-    una navegación nueva. Estructural (regex prep + nombre), multi-idioma.
-    """
-    if not utterance:
-        return None
-    m = _NAV_ELLIPSIS_RE.search(utterance)
-    if not m:
-        return None
-    left = utterance[:m.start()].strip(" ,.;")
-    right = utterance[m.end():].strip(" ,.;")
-    if not left or not right:
-        return None
-    # La 1ra cláusula tiene que ser navegación (verbo nav o app.open/browser):
-    # si no, "comprá pan y a las 6 cenar" no se quiere mal-partir. La heurística
-    # más simple: que la 1ra cláusula matchee _PURE_NAV_VERB o tenga el verbo
-    # "abrí/abre/open" con un destino que parezca dominio/app.
-    nav_in_left = bool(_PURE_NAV_VERB.match(left)) or bool(
-        re.match(r"^\s*(?:abr[ií]|abre|abrime|open|öffne|ouvre|apri|abra)\b",
-                 left, re.IGNORECASE)
-    )
-    if not nav_in_left:
-        return None
-    # Si la 2da cláusula arranca con preposición direccional ("a X"), reescribir
-    # con "ve a X" para que el router/dispatcher la procese como navegación.
-    if _NAV_PREP_RE.match(right):
-        # ya viene con prep, solo prefijar verbo
-        right_expanded = "ve " + right.strip()
-    else:
-        right_expanded = right.strip()
-    return [left, right_expanded]
-
-
 def split_command(utterance: str) -> list[str]:
     """Parte un enunciado en cláusulas de acción. Devuelve [utterance] si no hay
     multi-intent claro (caso normal). Nunca lanza.
@@ -318,15 +258,6 @@ def split_command(utterance: str) -> list[str]:
         if len(parts) > MAX_CLAUSES:
             return [utterance]
         return parts
-    # CAPA 1.5: ELIPSIS DE VERBO DE NAVEGACIÓN (2026-05-27). Cuando la 2da
-    # cláusula arranca con preposición direccional ("y luego a canvas"), el
-    # _SPLIT_RE no parte (exige imperativo). Reescribimos la 2da con verbo
-    # explícito y dejamos que el router la rutee como otra navegación. Solo
-    # cuando la 1ra cláusula es navegación (evita falsos splits en cadenas
-    # heterogéneas).
-    nav_parts = _expand_nav_ellipsis(utterance)
-    if nav_parts is not None and len(nav_parts) <= MAX_CLAUSES:
-        return nav_parts
     # CAPA 2: multilingüe (solo si capa 1 no partió).
     return _split_multilingual(utterance)
 
