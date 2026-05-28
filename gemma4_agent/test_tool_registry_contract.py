@@ -30,9 +30,11 @@ class TestSchemasAPI(unittest.TestCase):
         self.reg = _make_registry()
 
     def test_schemas_returns_65_entries(self) -> None:
+        # 2026-05-28: el conteo crece según se agregan tools. Mantenemos un
+        # piso (no debería bajar de 65) pero permitimos crecimiento.
         out = self.reg.schemas
         self.assertIsInstance(out, list)
-        self.assertEqual(len(out), 65)
+        self.assertGreaterEqual(len(out), 65)
 
     def test_each_schema_has_openai_function_shape(self) -> None:
         for schema in self.reg.schemas:
@@ -46,10 +48,11 @@ class TestSchemasAPI(unittest.TestCase):
             self.assertIsInstance(fn.get("parameters"), dict)
 
     def test_schema_names_is_list_of_65_unique_strings(self) -> None:
+        # 2026-05-28: piso 65; lo que importa es uniqueness.
         names = self.reg.schema_names
         self.assertIsInstance(names, list)
-        self.assertEqual(len(names), 65)
-        self.assertEqual(len(set(names)), 65, "schema_names must be unique")
+        self.assertGreaterEqual(len(names), 65)
+        self.assertEqual(len(set(names)), len(names), "schema_names must be unique")
         for n in names:
             self.assertIsInstance(n, str)
             self.assertTrue(n)
@@ -86,7 +89,8 @@ class TestImplsIntegrity(unittest.TestCase):
         self.reg = _make_registry()
 
     def test_impls_has_exactly_65_entries(self) -> None:
-        self.assertEqual(len(self.reg._impls), 65)
+        # 2026-05-28: piso 65.
+        self.assertGreaterEqual(len(self.reg._impls), 65)
 
     def test_impls_keys_match_compound_schema_names(self) -> None:
         impl_names = set(self.reg._impls.keys())
