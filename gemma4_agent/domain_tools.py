@@ -3560,31 +3560,14 @@ def source_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
     )
 
 
-def dependency_tool(args: dict[str, Any]) -> dict[str, Any]:
-    action = str(args.get("action") or "status").casefold()
-    catalog = _dependency_catalog()
-    if action in {"status", "list"}:
-        return _ok(dependencies=list(catalog.values()), missing=[d for d in catalog.values() if not d["available"]])
-    if action in {"verify", "explain_missing"}:
-        name = str(args.get("name") or args.get("dependency") or "").strip().casefold()
-        matches = [item for key, item in catalog.items() if name in {key, item["name"].casefold()}] if name else [d for d in catalog.values() if not d["available"]]
-        return _ok(matches=matches, count=len(matches))
-    if action in {"install", "repair"}:
-        name = str(args.get("name") or args.get("dependency") or "").strip().casefold()
-        item = catalog.get(name)
-        return _err(
-            "dependency.install is advisory in this local tool",
-            status="needs_user",
-            verified=False,
-            completion_status="needs_user_install",
-            dependency=item or name,
-            install_hint=(item or {}).get("install_hint") or "Use package/terminal explicitly if you want installation.",
-        )
-    return _err(
-        "unknown dependency action", action=action,
-        valid_actions=["status", "list", "verify", "explain_missing"],
-        status="needs_user",
-    )
+# Dependency catalog - extraído a domain_tools_dependency.py
+# (R2 sprint 2026-05-28). 4 funciones.
+from .domain_tools_dependency import (  # noqa: F401
+    _binary_dep,
+    _dependency_catalog,
+    _module_dep,
+    dependency_tool,
+)
 
 
 # Regex laxas; el objetivo no es validar email/phone "correctos" sino
@@ -5237,39 +5220,7 @@ def _find_resource(args: dict[str, Any], state: AgentState, kinds: str | list[st
     return None
 
 
-def _dependency_catalog() -> dict[str, dict[str, Any]]:
-    items = [
-        _module_dep("playwright", "Playwright", "python -m pip install playwright && python -m playwright install chromium"),
-        _module_dep("pptx", "python-pptx", "python -m pip install python-pptx"),
-        _module_dep("docx", "python-docx", "python -m pip install python-docx"),
-        _module_dep("openpyxl", "openpyxl", "python -m pip install openpyxl"),
-        _module_dep("pyautogui", "pyautogui", "python -m pip install pyautogui"),
-        _module_dep("pycaw", "pycaw", "python -m pip install pycaw comtypes"),
-        _binary_dep("tesseract", "Tesseract OCR", "winget install UB-Mannheim.TesseractOCR"),
-        _binary_dep("ffmpeg", "FFmpeg", "winget install Gyan.FFmpeg"),
-        _binary_dep("git", "Git", "winget install Git.Git"),
-        _binary_dep("winget", "winget", "Install App Installer from Microsoft Store"),
-        _binary_dep("soffice", "LibreOffice", "winget install TheDocumentFoundation.LibreOffice"),
-        {
-            "name": "SoundVolumeView",
-            "key": "soundvolumeview",
-            "type": "binary",
-            "available": _find_soundvolumeview() is not None,
-            "path": str(_find_soundvolumeview()) if _find_soundvolumeview() else None,
-            "install_hint": "Download SoundVolumeView from NirSoft and set GEMMA4_SOUNDVOLUMEVIEW.",
-        },
-    ]
-    return {item["key"]: item for item in items}
-
-
-def _module_dep(module: str, name: str, hint: str) -> dict[str, Any]:
-    available = importlib.util.find_spec(module) is not None
-    return {"name": name, "key": module, "type": "python_module", "available": available, "install_hint": hint}
-
-
-def _binary_dep(binary: str, name: str, hint: str) -> dict[str, Any]:
-    path = shutil.which(binary) or shutil.which(f"{binary}.exe")
-    return {"name": name, "key": binary, "type": "binary", "available": bool(path), "path": path, "install_hint": hint}
+# Dependency catalog helpers - extraídos a domain_tools_dependency.py.
 
 
 # Calendar helpers (ICS export utils) - extraídos a domain_tools_calendar.py
