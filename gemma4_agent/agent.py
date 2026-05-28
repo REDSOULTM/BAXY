@@ -181,6 +181,37 @@ class Gemma4Agent:
             _logging.getLogger(__name__).warning(
                 "state.json purge_stale_closed failed: %s", _exc,
             )
+        # 2026-05-27 (bug medido): un `pending_intent` (tool aparcado el turno
+        # anterior esperando respuesta del usuario) es una señal de continuidad
+        # DENTRO de la misma sesión — se evalúa contra `_turn_counter`, que
+        # vuelve a 0 en cada proceso nuevo. Pero set_pending_intent lo PERSISTE
+        # en state.json; al reiniciar, su `created_turn` es de un contador que ya
+        # no existe y el primer turno (counter=1) lo ve "fresco" para siempre.
+        # Síntoma real: un computer_use aparcado sin args en una sesión vieja
+        # secuestraba "¿quién eres?" del arranque (forzaba computer_use + toda la
+        # unión semántica; en modo movilidad terminaba en screenshot+OCR para
+        # responder identidad — absurdo). Una aclaración aparcada y nunca resuelta
+        # antes de cerrar la sesión está ABANDONADA: la limpiamos al boot. Las
+        # aclaraciones legítimas (preguntar→responder) viven y mueren dentro de
+        # un mismo proceso, donde el TTL por turnos sí aplica. Best-effort.
+        try:
+            if hasattr(self.state, "get_pending_intent") and hasattr(
+                self.state, "clear_pending_intent"
+            ):
+                # Leer crudo (sin TTL, que depende del counter) directo del store.
+                _stale_pi = (self.state._load() or {}).get("_pending_intent")
+                if _stale_pi:
+                    self.state.clear_pending_intent()
+                    self.trace.event(
+                        "startup", "pending_intent_cleared_on_boot",
+                        tool=str((_stale_pi or {}).get("tool") or ""),
+                        asks_for=str((_stale_pi or {}).get("asks_for") or ""),
+                    )
+        except Exception as _exc:
+            import logging as _logging
+            _logging.getLogger(__name__).warning(
+                "state.json pending_intent clear-on-boot failed: %s", _exc,
+            )
         from .experience import ExperienceMemory
         self.experience = ExperienceMemory(self.config.memory_path.parent / "experience.sqlite")
         # JARVIS proactivo (inv 5): log de comportamiento para detectar rutinas
@@ -1416,7 +1447,18 @@ class Gemma4Agent:
             _a11y_prefs = _a11y_sub.get_active_mode().preferred_tools
         except Exception:
             _a11y_prefs = ()
-        if _a11y_prefs:
+        # GUARD (2026-05-27, bug medido): NO inyectar las tools del modo si el router
+        # ABSTUVO (no eligió ninguna tool de dominio) — eso significa charla/pregunta
+        # de identidad/smalltalk ("¿quién eres?", "gracias"). Inyectar gui/computer_use/
+        # uia ahí hacía que el 4B, en modo movilidad, sacara un screenshot y buscara
+        # texto en la pantalla para responder "¿quién eres?" (absurdo). Las
+        # preferred_tools deben REFORZAR un turno que YA es de acción (el router
+        # ofreció ≥1 tool de dominio), no FABRICAR uno desde una pregunta de charla.
+        try:
+            _has_domain_pick = bool(_domain_subset(list(selected_tool_names)))
+        except Exception:
+            _has_domain_pick = bool(selected_tool_names)
+        if _a11y_prefs and _has_domain_pick:
             existing = set(selected_tool_names)
             for tool_name in _a11y_prefs:
                 if tool_name not in existing:
@@ -2102,7 +2144,29 @@ class Gemma4Agent:
                 except Exception:
                     _cont_active = False
                     _cont_delegates = False
+                # GUARD (2026-05-27, bug medido): el nudge "ejecutá vos el siguiente
+                # paso" SOLO tiene sentido en un turno de ACCIÓN (el usuario pidió
+                # HACER algo). En una pregunta META/charla ("¿qué podés hacer?",
+                # "¿quién eres?") el router ABSTUVO (subset sin tools de dominio) y
+                # no corrió ninguna acción: la respuesta DESCRIBE capacidades, no
+                # delega una tarea. Sin este gate, en movilidad/no_vidente el 4B
+                # tomaba la descripción ("...controlar tu sistema, gestionar apps...")
+                # como tarea-a-continuar y el nudge lo empujaba a sacar un screenshot
+                # para responder "¿qué podés hacer?" (absurdo, 5/5 medido). Actionable
+                # = se ofreció ≥1 tool de dominio este turno O se ejecutó una acción
+                # de dominio. Estructural (estado del router/ejecución), no contenido.
+                _cont_actionable = False
+                try:
+                    _dom_offered = bool(_domain_subset(list(selected_tool_names)))
+                    _dom_ran = any(
+                        e.name not in {"session", "safety", "state", "verify"}
+                        for e in events
+                    )
+                    _cont_actionable = _dom_offered or _dom_ran
+                except Exception:
+                    _cont_actionable = True  # ante la duda, no bloquear el nudge
                 if (_cont_active
+                        and _cont_actionable
                         and self._a11y_continue_count < _A11Y_MAX_CONTINUES
                         and _cont_delegates):
                     self._a11y_continue_count += 1
