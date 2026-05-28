@@ -1,7 +1,8 @@
 # scripts/ — INDEX
 
-Inventario de los 76 scripts del repo, categorizados por rol. Sprint R8
-del [[architecture_audit_2026_05_27]] (2026-05-28).
+Inventario de scripts del repo, categorizados por rol. Sprint R8
+del [[architecture_audit_2026_05_27]] (2026-05-28). Cuenta actualizada
+automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 
 ## Convención de prefijos
 

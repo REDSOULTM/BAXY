@@ -70,6 +70,9 @@ class TestNoBuiltinEvalExec(unittest.TestCase):
         for py in root.rglob("*.py"):
             if py.name == "test_no_eval_exec.py":  # skip self
                 continue
+            # Skip vendored deps (node_modules, etc) — no son código del repo.
+            if "node_modules" in py.parts:
+                continue
             hits = _find_builtin_eval_exec(py)
             for lineno, name in hits:
                 offenders.append(f"{py.relative_to(root.parent)}:{lineno} `{name}(...)`")
