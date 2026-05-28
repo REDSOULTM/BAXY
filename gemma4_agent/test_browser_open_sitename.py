@@ -30,16 +30,19 @@ class BrowserOpenSiteNameTest(unittest.TestCase):
                           "results": [{"url": url, "title": "x"}]})
 
     def test_bare_name_resolves_via_search(self):
+        # el dominio matchea el nombre -> NORMALIZA a la HOMEPAGE (no la subpágina
+        # profunda). Incidente pivigames: abría /category/aviso/ (2018); ahora la raíz.
         with self._search_returns("https://pivigames.wordpress.com/category/aviso/") as s:
             res = self.ag.tools.t_browser({"action": "open", "url": "pivigames"})
         s.assert_called_once()  # hubo búsqueda real (no adivinó dominio)
         self.assertEqual(res.get("resolved_from_name"), "pivigames")
-        self.assertEqual(self.opened[-1], "https://pivigames.wordpress.com/category/aviso/")
+        self.assertEqual(self.opened[-1], "https://pivigames.wordpress.com/")
 
     def test_multiword_name_resolves(self):
+        # 'instant gaming' matchea instant-gaming.com -> homepage, no /en/.
         with self._search_returns("https://www.instant-gaming.com/en/"):
             res = self.ag.tools.t_browser({"action": "open", "url": "instant gaming"})
-        self.assertEqual(self.opened[-1], "https://www.instant-gaming.com/en/")
+        self.assertEqual(self.opened[-1], "https://www.instant-gaming.com/")
         self.assertEqual(res.get("resolved_from_name"), "instant gaming")
 
     def test_explicit_domain_goes_direct_no_search(self):
@@ -61,6 +64,44 @@ class BrowserOpenSiteNameTest(unittest.TestCase):
             res = self.ag.tools.t_browser({"action": "open", "url": "zzqq"})
         # no resolvió por nombre; web_open_url recibió "zzqq" (flujo normal)
         self.assertIsNone(res.get("resolved_from_name"))
+
+    def test_picks_domain_homepage_over_aggregators_and_deep_pages(self):
+        # Incidente real pivigames: el #0 era un mirror viejo en SUBPÁGINA y había
+        # redes/estado de por medio. La heurística debe: filtrar agregadores
+        # (reddit/instagram/patreon/ipaddress), preferir el dominio que matchea el
+        # nombre, y abrir su HOMEPAGE (no la subpágina).
+        results = [
+            {"url": "https://pivigames.wordpress.com/category/aviso/", "title": "AVISO"},
+            {"url": "https://www.patreon.com/cw/pivigames_official", "title": "patreon"},
+            {"url": "https://www.reddit.com/r/x/conocen_pivigames/", "title": "reddit"},
+            {"url": "https://www.instagram.com/pivigames_official/", "title": "ig"},
+            {"url": "https://www.ipaddress.com/website/pivigames.blog", "title": "ipaddr"},
+        ]
+        with mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": results}):
+            resolved = self.ag.tools._resolve_site_by_search("pivigames")
+        # NO un agregador, SÍ el dominio pivigames, y su RAÍZ (no /category/aviso/).
+        self.assertEqual(resolved, "https://pivigames.wordpress.com/")
+
+    def test_prefers_sld_match_over_subdomain_blog(self):
+        # 'youtube' -> youtube.com (SLD), NO blog.youtube (subdominio).
+        results = [
+            {"url": "https://blog.youtube/news/", "title": "YT blog"},
+            {"url": "https://www.youtube.com/", "title": "YouTube"},
+        ]
+        with mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": results}):
+            resolved = self.ag.tools._resolve_site_by_search("youtube")
+        self.assertEqual(resolved, "https://www.youtube.com/")
+
+    def test_all_aggregators_falls_back_to_first(self):
+        # si TODO es agregador (sitio sin web propia indexada), último recurso:
+        # primer resultado http válido (mejor que nada).
+        results = [{"url": "https://www.instagram.com/foo/", "title": "ig"}]
+        with mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": results}):
+            resolved = self.ag.tools._resolve_site_by_search("foo")
+        self.assertEqual(resolved, "https://www.instagram.com/foo/")
 
     def test_search_action_still_searches_not_open_top(self):
         # browser.search NO debe auto-abrir el top result: el usuario pidió buscar.

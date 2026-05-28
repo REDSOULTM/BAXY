@@ -4181,27 +4181,98 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         os.startfile(str(path.resolve()))  # type: ignore[attr-defined]
         return _ok(path=str(path.resolve()))
 
+    # Dominios que NO son "el sitio" sino agregadores/redes/estado-de-sitio: si el
+    # usuario dice "andá a pivigames", NO quiere su Instagram ni un check de uptime.
+    # Genérico (no per-sitio): son plataformas de terceros, no el sitio en sí.
+    _NON_SITE_HOSTS = (
+        "reddit.com", "instagram.com", "facebook.com", "twitter.com", "x.com",
+        "threads.com", "threads.net", "t.me", "telegram.me", "youtube.com",
+        "tiktok.com", "linktr.ee", "patreon.com", "ipaddress.com", "downornot",
+        "notopening.com", "shapes.inc", "pinterest.com", "linkedin.com",
+        "wikipedia.org", "play.google.com", "apps.apple.com",
+    )
+
     def _resolve_site_by_search(self, name: str) -> str | None:
-        """Resuelve el NOMBRE de un sitio ('pivigames') a una URL real vía búsqueda
-        web y devuelve el primer resultado. None si la búsqueda no da nada fiable.
-        NO adivina el TLD — usa un lookup real (CLAUDE.md). El homepage del primer
-        resultado suele ser el sitio que el usuario quiere."""
+        """Resuelve el NOMBRE de un sitio ('pivigames') a la URL del SITIO vía
+        búsqueda web. NO adivina el TLD (lookup real, CLAUDE.md). Heurística para
+        no abrir el resultado equivocado (incidente pivigames: el #0 era un mirror
+        viejo de 2018 en una subpágina, y otros eran redes/estado):
+          1. Filtrar agregadores/redes/estado-de-sitio (no son el sitio).
+          2. PREFERIR resultados cuyo DOMINIO contiene el nombre buscado (es 'su'
+             dominio), sobre un artículo que solo lo menciona.
+          3. Entre esos, preferir el de PATH más corto (homepage > subpágina) y
+             NORMALIZAR a la raíz del dominio (abrir https://dominio/, no un
+             /category/aviso/ profundo).
+          4. Si nada matchea el dominio, caer al primer resultado no-agregador.
+        None si no hay nada fiable."""
+        from urllib.parse import urlparse
         name = (name or "").strip()
         if not name:
             return None
         try:
-            r = self.web_search({"query": name, "limit": 5})
+            r = self.web_search({"query": name, "limit": 8})
         except Exception:
             return None
         if not isinstance(r, dict) or not r.get("ok"):
             return None
         results = r.get("results") or []
-        if not results:
+        # normalizar token de comparación: solo alfanumérico, minúsculas.
+        import re as _re
+        tok = _re.sub(r"[^a-z0-9]", "", name.lower())
+
+        def _host(u: str) -> str:
+            try:
+                return (urlparse(u).hostname or "").lower()
+            except Exception:
+                return ""
+
+        def _is_agg(host: str, sld_norm: str) -> bool:
+            # Es agregador SOLO si NO es el destino pedido. Si el usuario buscó
+            # "youtube", youtube.com es el DESTINO, no un agregador -> no filtrar.
+            if tok and tok == sld_norm:
+                return False
+            return any(h in host for h in self._NON_SITE_HOSTS)
+
+        cands: list[tuple[int, int, int, str]] = []  # (match_rank, path_len, host_len, url)
+        for res in results:
+            u = str((res or {}).get("url") or "").strip()
+            if not u.startswith(("http://", "https://")):
+                continue
+            host = _host(u)
+            if not host:
+                continue
+            labels = host.split(".")
+            # SLD = etiqueta principal del dominio (penúltima): youtube.com -> 'youtube';
+            # blog.youtube -> 'youtube' es el TLD-like (última), 'blog' la SLD -> NO match fuerte.
+            sld = labels[-2] if len(labels) >= 2 else (labels[0] if labels else "")
+            sld_norm = _re.sub(r"[^a-z0-9]", "", sld)
+            host_norm = _re.sub(r"[^a-z0-9]", "", host)
+            if _is_agg(host, sld_norm):
+                continue  # red/agregador que NO es el destino pedido -> descartar
+            if tok and tok == sld_norm:
+                match_rank = 2          # el token ES la SLD (youtube.com, github.com) — fuerte
+            elif tok and tok in host_norm:
+                match_rank = 1          # el token aparece en el host (subdominio/parcial)
+            else:
+                match_rank = 0
+            path = urlparse(u).path or "/"
+            path_len = len([p for p in path.split("/") if p])  # 0 = homepage
+            cands.append((match_rank, path_len, len(host), u))
+        if not cands:
+            # todo era agregador: último recurso, primer resultado http válido tal cual.
+            for res in results:
+                u = str((res or {}).get("url") or "").strip()
+                if u.startswith(("http://", "https://")):
+                    return u
             return None
-        top_url = str((results[0] or {}).get("url") or "").strip()
-        if not top_url.startswith(("http://", "https://")):
-            return None
-        return top_url
+        # ordenar: match_rank DESC, path_len ASC (homepage), host_len ASC (canónico).
+        cands.sort(key=lambda c: (-c[0], c[1], c[2]))
+        best_rank, _, _, best_url = cands[0]
+        # si el ganador matchea el dominio, abrir su RAÍZ (homepage), no la subpágina.
+        if best_rank >= 1:
+            p = urlparse(best_url)
+            return f"{p.scheme}://{p.netloc}/"
+        return best_url
 
     def _open_url_in_browser(self, browser: str, url: str) -> dict[str, Any] | None:
         """Abre `url` en el NAVEGADOR `browser` (honra "pon X en Opera"). Resuelve
