@@ -141,6 +141,7 @@ from .agent_prompt import (  # noqa: E402,F401
     TOOL_RULES,
     build_system_prompt,
 )
+from .turn_types import TurnDecision
 
 
 @dataclass
@@ -811,7 +812,15 @@ class Gemma4Agent:
         content = user_content(text, images=images, audios=audios)
         return self.run_content(content, progress=progress)
 
-    def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
+    def _decide_turn(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> TurnDecision:
+        """R1 sprint 2026-05-28: decide phase of a turn.
+
+        Runs router + abstain + planner + subset + pending_intent +
+        splitter + multi-intent carry. Returns a TurnDecision; if
+        `early_reply` is set, run_content propagates it without
+        executing the LLM (caso jarvis-pending handshake, multi-intent
+        re-dispatch, reply-message shortcut, explicit-plan only).
+        """
         self._turn_counter += 1
         # R8: resetear el presupuesto de acciones físicas GUI al EMPEZAR un turno
         # top-level (no por cláusula — las cláusulas de un multi-intent comparten
@@ -850,7 +859,7 @@ class Gemma4Agent:
         # handshake determinista, no hace falta inferencia. Short-circuit del turno.
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
-            return _jarvis_reply
+            return TurnDecision(early_reply=_jarvis_reply)
         # ACCESIBILIDAD (B2): si el usuario PIDE cambiar de modo de accesibilidad
         # ("activá modo no vidente", "no puedo usar las manos", "volvé a normal"),
         # lo detectamos por EMBEDDINGS multilingües (no keywords) y lo aplicamos/
@@ -898,7 +907,7 @@ class Gemma4Agent:
                 from .command_splitter import split_command
                 _clauses = split_command(content)
                 if len(_clauses) > 1:
-                    return self._run_multi_intent(_clauses, progress=progress)
+                    return TurnDecision(early_reply=self._run_multi_intent(_clauses, progress=progress))
         # RESPONDER MENSAJE — short-circuit determinista PRE-LLM (2026-05-27).
         # MEDIDO: ante "respondele a X que Y" el 4B es errático — a veces se niega
         # (sin tool), a veces llama gui/session (tool equivocada), CASI NUNCA
@@ -927,7 +936,7 @@ class Gemma4Agent:
                 _msg = (f"Abrí el chat con {_rc} y dejé el mensaje listo. "
                         "Revisalo y decime si lo envío.")
                 self._last_turn_ts = time.time()
-                return AgentReply(content=_msg, tool_events=[_reply_sc], mission=None)
+                return TurnDecision(early_reply=AgentReply(content=_msg, tool_events=[_reply_sc], mission=None))
         # Allow ONE forced tool-call retry per user turn (reset here; consumed
         # in the agent loop when a domain tool was expected but none was called).
         self._forced_tool_retry_done = False
@@ -1126,7 +1135,7 @@ class Gemma4Agent:
             _progress(progress, "final", tools=0, mission=None)
             self._last_turn_ts = time.time()
             self._remember_executed_tools([])
-            return AgentReply(content=reply, tool_events=[], mission=None)
+            return TurnDecision(early_reply=AgentReply(content=reply, tool_events=[], mission=None))
 
         # Semantic memory: recall similar past turns. Hint-only, never blocks.
         self._recent_recalls = []
@@ -1594,6 +1603,35 @@ class Gemma4Agent:
             phrase_fires=len(self._phrase_fires or []),
         )
         self._compact_completed_history()
+        return TurnDecision(
+            turn_id=turn_id,
+            mode=mode,
+            plan=plan,
+            raw_text_early=raw_text_early,
+            pending_intent=pending_intent,
+            selected_tool_names=selected_tool_names,
+            semantic_fallback=semantic_fallback,
+            selected_schemas=selected_schemas,
+        )
+
+    def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
+        # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
+        # ~782 LOC). Extraída a _decide_turn. early_reply propaga los 4 caminos
+        # cortos (jarvis-pending, multi-intent re-dispatch, reply-shortcut,
+        # explicit-plan-only). Los 8 campos restantes son las locales que
+        # cruzan la frontera decide → execute/finalize (mapeo AST verificó
+        # que no hay más).
+        _decision = self._decide_turn(content, progress)
+        if _decision.early_reply is not None:
+            return _decision.early_reply
+        turn_id = _decision.turn_id
+        mode = _decision.mode
+        plan = _decision.plan
+        raw_text_early = _decision.raw_text_early
+        pending_intent = _decision.pending_intent
+        selected_tool_names = _decision.selected_tool_names
+        semantic_fallback = _decision.semantic_fallback
+        selected_schemas = _decision.selected_schemas
         self.history.append({"role": "user", "content": _compact_live_content(content)})
         events: list[ToolEvent] = []
         failure_log: list[dict[str, Any]] = []

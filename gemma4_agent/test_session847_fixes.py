@@ -213,12 +213,13 @@ class TestPhraseFireSuppressesSession(unittest.TestCase):
     def test_suppression_runs_in_run_content(self):
         # We don't run the LLM here — we just assert the public attribute
         # behavior: with non-empty _phrase_fires, the subset-filter code
-        # path in agent.run_content removes 'session'.
-        # This is the smallest meaningful assertion without a live LLM.
+        # path removes 'session'. This is the smallest meaningful assertion
+        # without a live LLM.
+        # R1 sprint 2026-05-28: la lógica vive en _decide_turn (la fase
+        # decide fue extraída de run_content).
         from .agent import Gemma4Agent
-        # Validate the snippet exists in the source (lightweight contract test):
         import inspect
-        src = inspect.getsource(Gemma4Agent.run_content)
+        src = inspect.getsource(Gemma4Agent._decide_turn)
         self.assertIn("session_suppressed_by_phrase_fire", src)
         self.assertIn('"session" in selected_tool_names', src)
 
