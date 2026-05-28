@@ -28,9 +28,12 @@ def _total(q: str) -> int:
 class ToolHeadSubsetContract(unittest.TestCase):
     def test_crisp_commands_are_small(self):
         # The operator's exact complaint: no 11-tool subset for a trivial command.
+        # 2026-05-28: bump 7→8 — el router agregó `computer_use` como tool
+        # universal de operación in-app, lo cual añade un slot al subset
+        # para comandos crispy. Sigue siendo lejos del techo 11 original.
         for q in ["abre steam", "abre chrome", "mutea", "pausa", "pon musica",
                   "manda whatsapp a juan"]:
-            self.assertLessEqual(_total(q), 7,
+            self.assertLessEqual(_total(q), 8,
                                  f"{q!r} subset too large: {_domain(q)}")
 
     def test_real_command_not_empty(self):
