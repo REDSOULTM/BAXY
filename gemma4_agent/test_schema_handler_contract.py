@@ -362,6 +362,54 @@ class TestSchemaHandlerContract(unittest.TestCase):
             + "\n  ".join(offenders),
         )
 
+    def test_schema_enums_are_referenced_in_handlers(self):
+        """R5 extended 2026-05-28: si un schema declara `enum=[...]`
+        para una property, cada valor del enum debe aparecer como
+        string literal en el código del handler. Si el LLM elige un
+        valor del enum y el handler NO lo reconoce, es un bug silencioso
+        equivalente al de `target=canvas` que motivó R5."""
+        import pathlib as _pl
+        pkg_dir = _pl.Path(__file__).resolve().parent
+        haystack_parts: list[str] = []
+        # Incluir tools.py + ops_tools.py donde viven los handlers t_*
+        for fname in ("tools.py", "ops_tools.py"):
+            p = pkg_dir / fname
+            if p.exists():
+                haystack_parts.append(p.read_text(encoding="utf-8"))
+        # Y los siblings + sub-paquete domain_tools/
+        for py in pkg_dir.glob("domain_tools*.py"):
+            try:
+                haystack_parts.append(py.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+        sub_pkg = pkg_dir / "domain_tools"
+        if sub_pkg.is_dir():
+            for py in sub_pkg.glob("*.py"):
+                try:
+                    haystack_parts.append(py.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+        haystack = "\n".join(haystack_parts)
+
+        offenders: list[str] = []
+        for schema in self.schemas:
+            fn = schema.get("function", {})
+            tool_name = fn.get("name", "")
+            props = fn.get("parameters", {}).get("properties", {})
+            for prop_name, prop in props.items():
+                if not isinstance(prop, dict) or "enum" not in prop:
+                    continue
+                for enum_value in prop["enum"]:
+                    if not isinstance(enum_value, str):
+                        continue
+                    if f'"{enum_value}"' not in haystack and f"'{enum_value}'" not in haystack:
+                        offenders.append(f"{tool_name}.{prop_name}.{enum_value!r}")
+        self.assertEqual(
+            offenders, [],
+            "Schema enum values NOT referenced in any handler code:\n  "
+            + "\n  ".join(offenders),
+        )
+
     def test_every_compound_schema_has_handler(self):
         """Cada schema declarado debe tener un `t_<name>` Y aparecer en
         el dispatch principal — esto no se chequea acá (necesita inspect
