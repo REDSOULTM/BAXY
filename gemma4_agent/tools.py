@@ -2010,7 +2010,21 @@ class ToolRegistry:
         query = str(args.get("query") or "").strip()
         browser = str(args.get("browser") or "").strip()
         if action == "open":
-            url = str(args.get("url") or "").strip() or query
+            # Aliases para `url` que el 4B usa frecuentemente (bug medido
+            # 2026-05-27, captura del user: el modelo pasó `target:"canvas"` y
+            # la tool devolvió needs_user porque solo leía url/query). El
+            # schema DECLARA `target` como propiedad pero el handler antes lo
+            # ignoraba — inconsistencia schema↔handler. También aceptamos
+            # `site`/`domain` (formas que el 4B inventa por la descripción del
+            # schema). OJO: NO incluimos `name` aquí porque más abajo el
+            # bloque LAUNCH-THE-APP usa `name` para "lanzá Chrome" (donde name
+            # es la app navegador, no una URL). Orden: url > target > site >
+            # domain > query.
+            url = (str(args.get("url") or "").strip()
+                   or str(args.get("target") or "").strip()
+                   or str(args.get("site") or "").strip()
+                   or str(args.get("domain") or "").strip()
+                   or query)
             # SITE-NAME -> RESOLVER POR BÚSQUEDA (2026-05-27): "ve a la página de
             # pivigames" da un NOMBRE de sitio, no una URL. Si el target es una
             # palabra suelta (sin punto ni esquema), lo resolvemos con una búsqueda

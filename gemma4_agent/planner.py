@@ -452,6 +452,34 @@ def select_tool_names(
                 elif "computer_use" not in head_tools:
                     head_tools.insert(0, "computer_use")
 
+            # GOAL-MISSION STRUCTURAL BOOST (2026-05-27, captura del user): el
+            # patrón "ve/andá/entrá a X y/después/luego a Y" es UNA misión con
+            # GOAL FINAL (X = ruta/medio, Y = destino), NO una cadena de dos
+            # acciones independientes — el splitter NO la parte y el agente
+            # debería ejecutarla con computer_use(goal=frase completa) que
+            # descompone en pasos. Pero el encoder semántico da cu_score~0.40
+            # (debajo de _COMPUTER_USE_SEM_RESCUE=0.44) porque sus anchors
+            # enfatizan Discord/Slack, no navegación-en-sitio multi-paso. Red
+            # determinista estructural (gramática, no contenido): cuando el
+            # patrón aparece, forzar computer_use al frente del subset.
+            # Multilingüe (verbos nav + conectores en es/en/pt/it/fr/de).
+            _GOAL_MISSION_RE = re.compile(
+                # 1ra cláusula: verbo de nav + dest (cualquier nombre).
+                r"\b(?:ve|and[áa]|entr[áa]|naveg[áa]|dirig[íi]te|"
+                r"go|navigate|head|vai|va|entre)\s+(?:a|al|to|para|au|in|n[oa]|su)\s+"
+                r"\S+.*?"
+                # conector secuencial
+                r"\s+(?:y|e|and|then|or|ou|et|puis|und|dann|poi)\s+"
+                r"(?:luego\s+|despu[ée]s\s+|then\s+|after\s+that\s+|"
+                r"depois\s+|ensuite\s+|danach\s+|poi\s+)?"
+                # 2da cláusula: prep direccional + nombre (la meta)
+                r"(?:a|al|to|para|au|aux|in|nel|su)\s+\S+",
+                re.IGNORECASE,
+            )
+            if (_GOAL_MISSION_RE.search(raw_text) and "computer_use" not in names
+                    and not _abstain_veto and not _is_world_q):
+                names.insert(0, "computer_use")
+
             sem = [name for name, _ in scored]
             if head_tools:
                 # Head fired: it is the precise primary. Union with keyword hits
