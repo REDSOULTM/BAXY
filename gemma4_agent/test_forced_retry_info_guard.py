@@ -60,8 +60,18 @@ class TestForcedRetryInfoGuard(unittest.TestCase):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
     def _forced(self, tool_names, text) -> bool:
-        with mock.patch("gemma4_agent.planner.select_tool_names",
-                        return_value=list(tool_names)):
+        # Parchea AMBOS: el módulo origen (planner) Y la referencia local
+        # importada en agent.py at-module-load. Algunas órdenes de suite
+        # cargan agent.py antes que el test, dejando el ref local con la
+        # función real; parchar solo planner no llega. Configuramos un
+        # MagicMock con `_last_fallback_used` para que `getattr(fn,
+        # '_last_fallback_used', False)` devuelva False (no rompe el
+        # downstream que lee ese atributo).
+        from unittest.mock import MagicMock
+        fake = MagicMock(return_value=list(tool_names))
+        fake._last_fallback_used = False
+        with mock.patch("gemma4_agent.planner.select_tool_names", fake), \
+             mock.patch("gemma4_agent.agent.select_tool_names", fake):
             self._events.clear()
             self.agent.run_content(text)
         return "forced_tool_retry" in self._events
