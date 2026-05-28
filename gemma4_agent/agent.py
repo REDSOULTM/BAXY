@@ -1614,24 +1614,24 @@ class Gemma4Agent:
             selected_schemas=selected_schemas,
         )
 
-    def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
-        # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
-        # ~782 LOC). Extraída a _decide_turn. early_reply propaga los 4 caminos
-        # cortos (jarvis-pending, multi-intent re-dispatch, reply-shortcut,
-        # explicit-plan-only). Los 8 campos restantes son las locales que
-        # cruzan la frontera decide → execute/finalize (mapeo AST verificó
-        # que no hay más).
-        _decision = self._decide_turn(content, progress)
-        if _decision.early_reply is not None:
-            return _decision.early_reply
-        turn_id = _decision.turn_id
-        mode = _decision.mode
-        plan = _decision.plan
-        raw_text_early = _decision.raw_text_early
-        pending_intent = _decision.pending_intent
-        selected_tool_names = _decision.selected_tool_names
-        semantic_fallback = _decision.semantic_fallback
-        selected_schemas = _decision.selected_schemas
+    def _execute_turn(self, content: str | list[dict[str, Any]], decision: TurnDecision, progress: ProgressCallback | None = None) -> AgentReply:
+        """R1 sprint 2026-05-28: execute phase of a turn.
+
+        Runs the LLM loop iteratively: chat() -> tool dispatch ->
+        feedback -> chat() ... up to max_agent_turns. Inside the loop
+        the assistant's reply is post-processed (verifiers, accessibility
+        nudges, mission outcome, footer); termination is by
+        max_turns/loop_aborted/LLM-said-stop. Returns the AgentReply
+        terminal of the turn.
+        """
+        turn_id = decision.turn_id
+        mode = decision.mode
+        plan = decision.plan
+        raw_text_early = decision.raw_text_early
+        pending_intent = decision.pending_intent
+        selected_tool_names = decision.selected_tool_names
+        semantic_fallback = decision.semantic_fallback
+        selected_schemas = decision.selected_schemas
         self.history.append({"role": "user", "content": _compact_live_content(content)})
         events: list[ToolEvent] = []
         failure_log: list[dict[str, Any]] = []
@@ -3046,6 +3046,29 @@ class Gemma4Agent:
     # Sprint 6.4: bodies moved to :mod:`.agent_dispatch`. The wrappers
     # below adapt the agent's positional progress callback to the
     # progress_emit(event, payload) callable the pure functions take.
+
+    def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
+        # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
+        # ~782 LOC). Extraída a _decide_turn. early_reply propaga los 4 caminos
+        # cortos (jarvis-pending, multi-intent re-dispatch, reply-shortcut,
+        # explicit-plan-only). Los 8 campos restantes son las locales que
+        # cruzan la frontera decide → execute/finalize (mapeo AST verificó
+        # que no hay más).
+        _decision = self._decide_turn(content, progress)
+        if _decision.early_reply is not None:
+            return _decision.early_reply
+        turn_id = _decision.turn_id
+        mode = _decision.mode
+        plan = _decision.plan
+        raw_text_early = _decision.raw_text_early
+        pending_intent = _decision.pending_intent
+        selected_tool_names = _decision.selected_tool_names
+        semantic_fallback = _decision.semantic_fallback
+        selected_schemas = _decision.selected_schemas
+        # R1.2 sprint 2026-05-28: la fase execute vivía inline acá (LLM loop
+        # iterativo + tool dispatch + post-procesamiento). Extraída a
+        # _execute_turn que devuelve el AgentReply terminal del turno.
+        return self._execute_turn(content, _decision, progress)
 
     def _execute_calls_sequential(
         self,

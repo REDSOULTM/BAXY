@@ -8,18 +8,10 @@ responsabilidades:
   - ejecutar el LLM y dispatchear tool calls (con retries, fallback nets);
   - finalizar (verifiers + accessibility nudges + reply formateado).
 
-R1 (esta sesión: solo F1) parte la fase decide a `_decide_turn` que devuelve
-un `TurnDecision`. F2 (execute) y F3 (finalize) van en sesiones futuras.
-
-`TurnDecision.early_reply` modela los caminos cortos del decide (jarvis
-pending handshake, multi-intent re-entry, phrase-only routine fire, etc):
-si está seteado, run_content lo devuelve sin ejecutar las fases siguientes.
-
-Si `early_reply` es None, los demás campos son las locales del decide que
-el execute consume. Identificadas por AST: SOLO 10 variables cruzan la
-frontera decide→execute en el código original (turn_id, mode, plan,
-raw_text_early, raw_text, pending_intent, selected_tool_names,
-semantic_fallback, selected_schemas, _rc).
+R1 parte el método en `_decide_turn` → `_execute_turn` (con `_finalize_turn`
+llamado al final de execute). `TurnDecision` y `ExecutionResult` son los
+contratos de paso entre fases; el `early_reply` modela los caminos cortos
+que omiten las fases siguientes.
 """
 from __future__ import annotations
 
@@ -27,7 +19,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from .agent import AgentReply
+    from .agent import AgentReply, ToolEvent
     from .modes import AgentMode
 
 
@@ -52,3 +44,19 @@ class TurnDecision:
     selected_tool_names: list[str] = field(default_factory=list)
     semantic_fallback: bool = False
     selected_schemas: list[dict[str, Any]] = field(default_factory=list)
+
+
+@dataclass
+class ExecutionResult:
+    """Resultado de Gemma4Agent._execute_turn.
+
+    El execute lo hace TODO: LLM loop iterativo, tool dispatch, retries,
+    fallback nets, Y el cierre del turno (max_turns, loop_aborted, success).
+    Por eso ExecutionResult contiene SIEMPRE un AgentReply terminal — el
+    early_reply solo distingue caminos de error (chat exception) vs los
+    caminos normales (assistant terminó sin tool call, max_turns, loop).
+
+    R1.2 deja toda la lógica del finalize dentro de _execute_turn; R1.3 la
+    extrae a _finalize_turn como sub-fase llamada al final del execute.
+    """
+    reply: "AgentReply" = None  # type: ignore[assignment]
