@@ -52,6 +52,30 @@ Mantené ese estándar.
 - Distinguí siempre **validación sintética** de **prueba real**. Un
   0.88 sobre TTS no es un 0.88 con la voz del usuario. Decílo.
 
+### 3.5. Probá EN VIVO con el LLM y el agente. No entregues sin eso.
+**(Regla del usuario, 2026-05-27, tras un fallo repetido.)** Un cambio que
+toca el comportamiento del agente NO está "listo" hasta que lo corriste
+contra el LLM y el agente REALES, con el mensaje que el usuario escribiría,
+y viste la cadena completa de tools + el reply. Los tests unitarios mockeados
+y las pruebas de funciones aisladas NO bastan: el 4B es no-determinista y
+elige caminos que tu test no anticipó (caso real: arreglaste `browser.open`
+pero el 4B eligió `browser.search` y el fix no se activó; "funcionaba en los
+tests" pero fallaba en vivo).
+
+- **Vos corrés la prueba en vivo, NO se la delegás al usuario.** Nunca
+  cierres con "probalo vos". Arrancá el server (`scripts/_boot_server_for_eval.py`),
+  inyectá el mensaje con `agent.run_content(...)` (= la UI, seguro sin
+  SendInput) y verificá el resultado real. Solo lo FÍSICO irreversible que
+  no podés simular (envío real de WhatsApp con su sesión, etc.) queda para
+  el usuario — y eso se dice explícito, no es la regla general.
+- **Probá las VARIANTES de fraseo y los caminos de tool alternativos.** Si
+  arreglás una intención, corré 3-4 fraseos distintos en vivo: el 4B puede
+  rutear el mismo pedido a tools distintas (open vs search, app vs browser).
+  Un fix que solo cubre el camino que tu test eligió no es un fix.
+- Peligro=SOLO `gui.{type,click,keypress,...}` físico (cierra VS Code).
+  `run_content`, CDP, vision/screenshot, UIA-read son seguros. Ver
+  memoria `feedback_never_run_synthetic_input_lives_in_vscode_2026_05_25`.
+
 ### 4. Diagnosticá la causa raíz antes de "arreglar".
 Cuando algo falla, no parchees el síntoma. Reproducí, aislá, formá una
 hipótesis, probala con el experimento más chico posible, recién después

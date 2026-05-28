@@ -2125,16 +2125,21 @@ class ToolRegistry:
                     res["search_results_error"] = extracted.get("error") or extracted.get("message")
                 return res
             if browser and not browser_is_youtube_app:
-                opened = self.app_open({"name": browser})
-                time.sleep(float(args.get("delay_sec", 1.5)))
-                self.gui_keypress({"keys": "CTRL+L"})
-                self.gui_type({"text": url})
-                self.gui_keypress({"keys": "ENTER"})
-                return _with_search_results(_ok(
-                    browser=browser, url=url, opened=opened,
-                    method="targeted_browser_gui", content_verified=False,
-                    completion_status="opened_search_results",
-                ))
+                # ANTES (bug 2026-05-27): abría el navegador y tecleaba la URL con
+                # gui_keypress/gui_type (SendInput) — FRÁGIL (race de foco -> "stuck
+                # at attempted") y PELIGROSO (el SendInput va a la ventana enfocada;
+                # cerró VS Code en dev). Ahora lanzamos el navegador CON la URL como
+                # argumento (navega ahí, sin SendInput) vía _open_url_in_browser, que
+                # además verifica la ventana. Si no se puede, default honesto.
+                b = self._open_url_in_browser(browser, url)
+                if b is not None:
+                    return _with_search_results(b)
+                result = self.web_open_url({"url": url})
+                result["browser_note"] = (
+                    f"No pude abrir en {browser} específicamente; usé tu navegador por defecto.")
+                result.update(action="search", query=query, content_verified=False,
+                              completion_status="opened_search_results")
+                return _with_search_results(result)
             result = self.web_open_url({"url": url})
             result.update(action="search", query=query,
                           content_verified=False, completion_status="opened_search_results")

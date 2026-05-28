@@ -237,6 +237,42 @@ class OpenInSpecificBrowserTest(unittest.TestCase):
         mf.assert_not_called()   # sin browser= no toca el resolver
         self.assertEqual(self.opened_default[-1], "https://x.com")
 
+    def test_search_in_named_browser_uses_no_sendinput(self):
+        # BUG 2026-05-27: browser.search con browser= TECLEABA la URL con
+        # gui_keypress/gui_type (SendInput) -> frágil + cerró VS Code en dev.
+        # Ahora lanza el navegador con la URL como arg (0 SendInput).
+        sendinput = []
+        self.ag.tools.gui_keypress = lambda a: (sendinput.append("kp"), {"ok": True})[1]
+        self.ag.tools.gui_type = lambda a: (sendinput.append("ty"), {"ok": True})[1]
+        cand = self._fake_candidate()
+        with mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": []}), \
+             mock.patch.object(self.ag.tools.apps, "find", return_value=[cand]), \
+             mock.patch.object(self.ag.tools.apps, "open",
+                               return_value={"ok": True, "candidate": {
+                                   "name": "Opera GX", "navigated_url": "https://www.google.com/search?q=pivigames"}}) as mo, \
+             mock.patch.object(self.ag.tools, "verify_app_opened", return_value={"found": True}):
+            res = self.ag.tools.t_browser({"action": "search", "browser": "Opera",
+                                           "query": "pivigames"})
+        self.assertTrue(res["ok"])
+        self.assertEqual(sendinput, [])   # CERO SendInput (la clave del fix)
+        # se lanzó el navegador con la URL de búsqueda como argumento
+        self.assertIn("google.com/search", mo.call_args.kwargs.get("url_arg", ""))
+
+    def test_search_named_browser_unresolvable_falls_back_no_sendinput(self):
+        sendinput = []
+        self.ag.tools.gui_keypress = lambda a: (sendinput.append("kp"), {"ok": True})[1]
+        self.ag.tools.gui_type = lambda a: (sendinput.append("ty"), {"ok": True})[1]
+        with mock.patch.object(self.ag.tools, "web_search",
+                               return_value={"ok": True, "results": []}), \
+             mock.patch.object(self.ag.tools.apps, "find", return_value=[]):
+            res = self.ag.tools.t_browser({"action": "search", "browser": "NavRaro",
+                                           "query": "x"})
+        self.assertTrue(res["ok"])
+        self.assertEqual(sendinput, [])   # tampoco SendInput en el fallback
+        self.assertEqual(self.opened_default[-1], "https://www.google.com/search?q=x")
+        self.assertIn("browser_note", res)
+
 
 if __name__ == "__main__":
     unittest.main()
