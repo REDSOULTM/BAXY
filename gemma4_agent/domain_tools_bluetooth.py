@@ -14,11 +14,14 @@ import subprocess
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 
 
 __all__ = ["_device_bluetooth_status"]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult (con .to_dict() para
+# back-compat). Comportamiento idéntico al _ok/_err anterior.
 def _device_bluetooth_status() -> dict[str, Any]:
     script = (
         "Get-PnpDevice -Class Bluetooth -ErrorAction SilentlyContinue | "
@@ -26,17 +29,16 @@ def _device_bluetooth_status() -> dict[str, Any]:
     )
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err("bluetooth status query failed", stderr=proc.stderr)
+        return ToolResult.err("bluetooth status query failed", stderr=proc.stderr).to_dict()
     raw = proc.stdout.strip()
     if not raw:
-        return _ok(devices=[], count=0, note="No Bluetooth class devices found.")
+        return ToolResult.ok_result(devices=[], count=0, note="No Bluetooth class devices found.").to_dict()
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return _err("bluetooth status returned invalid JSON", raw=raw[:500])
+        return ToolResult.err("bluetooth status returned invalid JSON", raw=raw[:500]).to_dict()
     if isinstance(data, dict):
         data = [data]
-    # Also check the Bluetooth Support Service for radio state.
     svc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", "Get-Service bthserv -ErrorAction SilentlyContinue | Select-Object Status,Name,StartType | ConvertTo-Json"],
         capture_output=True, text=True, timeout=10,
@@ -47,4 +49,4 @@ def _device_bluetooth_status() -> dict[str, Any]:
             service_info = json.loads(svc.stdout)
         except json.JSONDecodeError:
             pass
-    return _ok(devices=data, count=len(data), bthserv=service_info)
+    return ToolResult.ok_result(devices=data, count=len(data), bthserv=service_info).to_dict()

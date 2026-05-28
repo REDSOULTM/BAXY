@@ -21,21 +21,31 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 
 
 __all__ = ["local_search_tool"]
 
 
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):  # local alias to keep the rest of the file readable
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
+
+
 def local_search_tool(args: dict[str, Any]) -> dict[str, Any]:
     action = str(args.get("action") or "search").casefold()
     if action == "status":
-        return _ok(everything_cli=bool(shutil.which("es.exe")), backend="python_rglob")
+        return _ok_tr(everything_cli=bool(shutil.which("es.exe")), backend="python_rglob")
     if action == "search":
         root = Path(str(args.get("root") or Path.home())).expanduser()
         if not root.exists():
-            return _err("root not found", root=str(root), status="needs_user")
+            return _err_tr("root not found", root=str(root), status="needs_user")
         if not root.is_dir():
-            return _err("root is not a directory", root=str(root), status="needs_user")
+            return _err_tr("root is not a directory", root=str(root), status="needs_user")
         query = str(args.get("query") or "").casefold()
         pattern = str(args.get("pattern") or "*")
         try:
@@ -91,20 +101,20 @@ def local_search_tool(args: dict[str, Any]) -> dict[str, Any]:
                     skipped_io += 1
                     continue
         except OSError as exc:
-            return _err(f"search failed: {exc}", root=str(root))
+            return _err_tr(f"search failed: {exc}", root=str(root))
         truncated = (
             len(results) >= limit
             or visited > max_visited
             or time.time() > deadline
         )
-        return _ok(
+        return _ok_tr(
             results=results, count=len(results), root=str(root),
             truncated=truncated, visited=visited, skipped_io=skipped_io,
         )
     if action == "recent":
         root = Path(str(args.get("root") or Path.home())).expanduser()
         if not root.exists() or not root.is_dir():
-            return _err("root not found or not a directory", root=str(root), status="needs_user")
+            return _err_tr("root not found or not a directory", root=str(root), status="needs_user")
         try:
             limit = max(1, min(int(args.get("limit", 20)), 200))
         except (TypeError, ValueError):
@@ -130,12 +140,12 @@ def local_search_tool(args: dict[str, Any]) -> dict[str, Any]:
             if len(files) > 5000:
                 break
         files.sort(reverse=True)
-        return _ok(
+        return _ok_tr(
             files=[{"path": str(p), "modified": datetime.fromtimestamp(ts).isoformat()} for ts, p in files[:limit]],
             visited=visited,
             truncated=visited > max_visited or time.time() > deadline,
         )
-    return _err(
+    return _err_tr(
         "unknown local_search action", action=action,
         valid_actions=["status", "search", "recent"], status="needs_user",
     )

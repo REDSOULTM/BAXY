@@ -24,9 +24,19 @@ from typing import Any
 
 from ._shared import _err, _ok
 from .state import AgentState
+from .tool_result import ToolResult
 
 
 __all__ = ["notes_tasks_tool"]
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -40,32 +50,32 @@ def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     )
     action = str(args.get("action") or "list").casefold()
     if action == "status":
-        return _ok(notes=len(_resources_by_kind(state, "note")), tasks=len(_resources_by_kind(state, "task")))
+        return _ok_tr(notes=len(_resources_by_kind(state, "note")), tasks=len(_resources_by_kind(state, "task")))
     if action in {"note_create", "create_note"}:
         title = str(args.get("title") or "").strip() or "Nota"
         text = str(args.get("text") or args.get("content") or "").strip()
         # WARNING (no error) si la nota es vacia. La nota se crea igual pero
         # el LLM ve que algo raro pasa y puede corregir en el siguiente turn.
         if not text and title == "Nota":
-            return _err(
+            return _err_tr(
                 "note_create needs at least title or text",
                 hint="pass title='...' or text='...'", status="needs_user",
             )
         resource = state.register_resource("note", title, metadata={"title": title, "text": text, "tags": args.get("tags"), "created_at": datetime.now().isoformat()})
-        out = _ok(note=resource.get("resource"))
+        out = _ok_tr(note=resource.get("resource"))
         if not text:
             out["warning"] = "note created with empty text"
         return out
     if action in {"task_create", "create_task"}:
         title = str(args.get("title") or args.get("text") or "").strip()
         if not title:
-            return _err(
+            return _err_tr(
                 "task_create requires title or text", status="needs_user",
             )
         due_raw = args.get("due")
         due_iso, due_err = _parse_due_iso(due_raw)
         if due_err:
-            return _err(due_err, value=due_raw, status="needs_user")
+            return _err_tr(due_err, value=due_raw, status="needs_user")
         resource = state.register_resource(
             "task", title,
             metadata={
@@ -74,16 +84,16 @@ def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 "created_at": datetime.now().isoformat(),
             },
         )
-        return _ok(task=resource.get("resource"))
+        return _ok_tr(task=resource.get("resource"))
     if action in {"note_list", "notes", "list"}:
-        return _ok(notes=_resources_by_kind(state, "note", include_closed=bool(args.get("include_closed", False))))
+        return _ok_tr(notes=_resources_by_kind(state, "note", include_closed=bool(args.get("include_closed", False))))
     if action in {"task_list", "tasks"}:
-        return _ok(tasks=_resources_by_kind(state, "task", include_closed=bool(args.get("include_closed", False))))
+        return _ok_tr(tasks=_resources_by_kind(state, "task", include_closed=bool(args.get("include_closed", False))))
     if action in {"note_search", "task_search", "search"}:
         kinds = ["note", "task"] if action == "search" else ["note"] if action.startswith("note") else ["task"]
         query = str(args.get("query") or "").strip().casefold()
         if not query:
-            return _err("missing query", status="needs_user")
+            return _err_tr("missing query", status="needs_user")
         try:
             limit = max(1, min(int(args.get("limit", 10)), 100))
         except (TypeError, ValueError):
@@ -101,21 +111,21 @@ def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             ]
             if any(query in h.casefold() for h in haystacks):
                 matches.append(r)
-        return _ok(matches=matches[:limit], count=len(matches), query=query)
+        return _ok_tr(matches=matches[:limit], count=len(matches), query=query)
     if action == "task_complete":
         task = _find_resource(args, state, "task")
         if not task:
-            return _err("task not found", status="needs_user")
+            return _err_tr("task not found", status="needs_user")
         return _update_resource_metadata(state, str(task["id"]), {"status": "completed", "completed_at": datetime.now().isoformat()})
     if action in {"note_delete", "task_delete", "delete"}:
         resource = _find_resource(args, state, ["note", "task"])
         if not resource:
-            return _err("note/task not found", status="needs_user")
+            return _err_tr("note/task not found", status="needs_user")
         return state.mark_cleaned(str(resource["id"]), {"deleted": True})
     if action in {"note_update", "task_update"}:
         resource = _find_resource(args, state, "note" if action.startswith("note") else "task")
         if not resource:
-            return _err("note/task not found", status="needs_user")
+            return _err_tr("note/task not found", status="needs_user")
         updates = {k: args[k] for k in ("title", "text", "content", "due", "tags") if k in args}
         if "content" in updates and "text" not in updates:
             updates["text"] = updates.pop("content")
@@ -123,13 +133,13 @@ def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         if "due" in updates:
             due_iso, due_err = _parse_due_iso(updates["due"])
             if due_err:
-                return _err(due_err, value=updates["due"], status="needs_user")
+                return _err_tr(due_err, value=updates["due"], status="needs_user")
             updates["due"] = due_iso
         if not updates:
-            return _err("no updatable fields provided", status="needs_user",
+            return _err_tr("no updatable fields provided", status="needs_user",
                         supported=["title", "text", "content", "due", "tags"])
         return _update_resource_metadata(state, str(resource["id"]), updates)
-    return _err(
+    return _err_tr(
         "unknown notes_tasks action", action=action,
         valid_actions=[
             "status", "note_create", "task_create", "note_list", "task_list",

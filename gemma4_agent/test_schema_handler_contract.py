@@ -316,6 +316,43 @@ class TestSchemaHandlerContract(unittest.TestCase):
             "razón documentada.",
         )
 
+    def test_deep_delegate_tools_actually_read_majority_of_props(self):
+        """Para los tools en _DEEP_DELEGATE_TOOLS, el AST scan no sigue
+        2+ niveles. Verifica que al menos el 50% de las props del schema
+        aparecen referenciadas en ALGÚN archivo del package — sirve como
+        sanity check de que la WHITELIST no esconda un tool wholly-broken.
+        """
+        import pathlib as _pl
+        pkg_dir = _pl.Path(__file__).resolve().parent
+        offenders: list[str] = []
+        for schema in self.schemas:
+            fn = schema.get("function", {})
+            name = fn.get("name", "")
+            props = list(fn.get("parameters", {}).get("properties", {}).keys())
+            if name not in _DEEP_DELEGATE_TOOLS or len(props) < 3:
+                continue
+            # Búsqueda global por nombre en archivos del package.
+            haystack_parts: list[str] = []
+            for py in pkg_dir.glob("domain_tools*.py"):
+                try:
+                    haystack_parts.append(py.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+            haystack = "\n".join(haystack_parts)
+            hits = sum(1 for p in props if f'"{p}"' in haystack or f"'{p}'" in haystack)
+            ratio = hits / len(props)
+            if ratio < 0.5:
+                offenders.append(
+                    f"{name}: solo {hits}/{len(props)} props del schema "
+                    f"aparecen en archivos domain_tools* del pkg ({ratio:.0%}). "
+                    f"Posible whitelist abuse."
+                )
+        self.assertEqual(
+            offenders, [],
+            "DEEP_DELEGATE tools cuyas props NO se leen mayoritariamente:\n  "
+            + "\n  ".join(offenders),
+        )
+
     def test_every_compound_schema_has_handler(self):
         """Cada schema declarado debe tener un `t_<name>` Y aparecer en
         el dispatch principal — esto no se chequea acá (necesita inspect
