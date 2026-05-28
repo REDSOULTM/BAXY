@@ -25,7 +25,6 @@ from pathlib import Path
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -41,15 +40,6 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
-
-
 def data_analysis_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """Compound tool for CSV/Excel local data analysis.
 
@@ -59,14 +49,14 @@ def data_analysis_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok_tr(
+        return _ok(
             pandas=importlib.util.find_spec("pandas") is not None,
             matplotlib=importlib.util.find_spec("matplotlib") is not None,
             openpyxl=importlib.util.find_spec("openpyxl") is not None,
             install_hint="python -m pip install pandas matplotlib openpyxl",
         )
     if importlib.util.find_spec("pandas") is None:
-        return _err_tr(
+        return _err(
             "pandas is not installed",
             status="needs_dependency", verified=False,
             install_hint="python -m pip install pandas matplotlib openpyxl",
@@ -83,7 +73,7 @@ def data_analysis_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
         return _data_csv_to_xlsx(args, state)
     if action in {"plot_histogram", "plot_scatter", "plot_line"}:
         return _data_plot(action, args, state)
-    return _err_tr(
+    return _err(
         "unknown data_analysis action", action=action,
         valid_actions=[
             "status", "csv_describe", "csv_filter", "csv_group_agg",
@@ -97,10 +87,10 @@ def _data_load_df(args: dict[str, Any]):
     import pandas as pd
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
-        return None, _err_tr("missing path")
+        return None, _err("missing path")
     path = Path(path_raw).expanduser()
     if not path.is_file():
-        return None, _err_tr("file not found", path=str(path))
+        return None, _err("file not found", path=str(path))
     sep = str(args.get("sep") or ",")
     try:
         if path.suffix.casefold() in {".xlsx", ".xls"}:
@@ -108,14 +98,14 @@ def _data_load_df(args: dict[str, Any]):
         else:
             df = pd.read_csv(path, sep=sep)
     except Exception as exc:
-        return None, _err_tr(f"failed to load: {exc}", path=str(path))
+        return None, _err(f"failed to load: {exc}", path=str(path))
     return df, None
 
 
 def _data_csv_profile(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
     if err or df is None:
-        return err or _err_tr("dataframe missing")
+        return err or _err("dataframe missing")
     cols = []
     for col in df.columns:
         s = df[col]
@@ -126,7 +116,7 @@ def _data_csv_profile(args: dict[str, Any]) -> dict[str, Any]:
             "null": int(s.isna().sum()),
             "unique": int(s.nunique(dropna=True)),
         })
-    return _ok_tr(
+    return _ok(
         path=str(args.get("path")),
         rows=int(len(df)),
         columns=int(len(df.columns)),
@@ -138,24 +128,24 @@ def _data_csv_profile(args: dict[str, Any]) -> dict[str, Any]:
 def _data_csv_describe(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
     if err or df is None:
-        return err or _err_tr("dataframe missing")
+        return err or _err("dataframe missing")
     desc = df.describe(include="all").fillna("").to_dict()
-    return _ok_tr(path=str(args.get("path")), rows=int(len(df)), describe=desc)
+    return _ok(path=str(args.get("path")), rows=int(len(df)), describe=desc)
 
 
 def _data_csv_query(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
     if err or df is None:
-        return err or _err_tr("dataframe missing")
+        return err or _err("dataframe missing")
     query = str(args.get("query") or "").strip()
     if not query:
-        return _err_tr("missing query (pandas .query() expression)")
+        return _err("missing query (pandas .query() expression)")
     # T2-data_analysis-pandas-query-eval-035: rechazar `@` (local var access) y
     # backticked column names (parsea con eval). Forzar engine='numexpr' si
     # disponible (más restrictivo); fallback al python engine sólo si numexpr
     # no está y la query no contiene caracteres peligrosos.
     if "@" in query or "`" in query:
-        return _err_tr(
+        return _err(
             "query contains '@' or backticks; refused for safety. Use plain column names and operators.",
             query=query,
             status="needs_user",
@@ -164,9 +154,9 @@ def _data_csv_query(args: dict[str, Any]) -> dict[str, Any]:
     try:
         result = df.query(query, engine=engine)
     except (ValueError, SyntaxError, KeyError, TypeError) as exc:
-        return _err_tr(f"query failed: {exc}", query=query, engine=engine)
+        return _err(f"query failed: {exc}", query=query, engine=engine)
     limit = int(args.get("limit", 50))
-    return _ok_tr(
+    return _ok(
         path=str(args.get("path")), query=query, engine=engine,
         matched_rows=int(len(result)),
         preview=result.head(limit).to_dict(orient="records"),
@@ -176,17 +166,17 @@ def _data_csv_query(args: dict[str, Any]) -> dict[str, Any]:
 def _data_csv_head(args: dict[str, Any]) -> dict[str, Any]:
     df, err = _data_load_df(args)
     if err or df is None:
-        return err or _err_tr("dataframe missing")
+        return err or _err("dataframe missing")
     n = int(args.get("n", 10))
-    return _ok_tr(path=str(args.get("path")), n=n, rows=df.head(n).to_dict(orient="records"))
+    return _ok(path=str(args.get("path")), n=n, rows=df.head(n).to_dict(orient="records"))
 
 
 def _data_csv_to_xlsx(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     df, err = _data_load_df(args)
     if err or df is None:
-        return err or _err_tr("dataframe missing")
+        return err or _err("dataframe missing")
     if importlib.util.find_spec("openpyxl") is None:
-        return _err_tr("openpyxl is required to write .xlsx", status="needs_dependency", install_hint="python -m pip install openpyxl")
+        return _err("openpyxl is required to write .xlsx", status="needs_dependency", install_hint="python -m pip install openpyxl")
     dst_raw = str(args.get("dst") or "").strip()
     if dst_raw:
         dst = Path(dst_raw).expanduser()
@@ -196,16 +186,16 @@ def _data_csv_to_xlsx(args: dict[str, Any], state: AgentState) -> dict[str, Any]
     try:
         df.to_excel(dst, index=False)
     except Exception as exc:
-        return _err_tr(f"to_excel failed: {exc}", dst=str(dst))
-    return _ok_tr(path=str(args.get("path")), dst=str(dst), rows=int(len(df)), verified=dst.is_file())
+        return _err(f"to_excel failed: {exc}", dst=str(dst))
+    return _ok(path=str(args.get("path")), dst=str(dst), rows=int(len(df)), verified=dst.is_file())
 
 
 def _data_plot(kind: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if importlib.util.find_spec("matplotlib") is None:
-        return _err_tr("matplotlib is not installed", status="needs_dependency", install_hint="python -m pip install matplotlib")
+        return _err("matplotlib is not installed", status="needs_dependency", install_hint="python -m pip install matplotlib")
     df, err = _data_load_df(args)
     if err or df is None:
-        return err or _err_tr("dataframe missing")
+        return err or _err("dataframe missing")
     import matplotlib
     matplotlib.use("Agg")  # headless backend; safe even when DISPLAY exists
     import matplotlib.pyplot as plt
@@ -220,7 +210,7 @@ def _data_plot(kind: str, args: dict[str, Any], state: AgentState) -> dict[str, 
         if kind == "plot_histogram":
             col = str(args.get("column") or "")
             if col not in df.columns:
-                return _err_tr("column not found", column=col, available=[str(c) for c in df.columns])
+                return _err("column not found", column=col, available=[str(c) for c in df.columns])
             df[col].dropna().hist(ax=ax, bins=int(args.get("bins", 20)))
             ax.set_title(f"Histogram of {col}")
             ax.set_xlabel(col)
@@ -229,20 +219,20 @@ def _data_plot(kind: str, args: dict[str, Any], state: AgentState) -> dict[str, 
             x = str(args.get("x") or args.get("x_col") or "")
             y = str(args.get("y") or args.get("y_col") or "")
             if x not in df.columns or y not in df.columns:
-                return _err_tr("x/y column not found", x=x, y=y, available=[str(c) for c in df.columns])
+                return _err("x/y column not found", x=x, y=y, available=[str(c) for c in df.columns])
             ax.scatter(df[x], df[y])
             ax.set_xlabel(x); ax.set_ylabel(y); ax.set_title(f"{y} vs {x}")
         elif kind == "plot_line":
             x = str(args.get("x") or args.get("x_col") or "")
             y = str(args.get("y") or args.get("y_col") or "")
             if x not in df.columns or y not in df.columns:
-                return _err_tr("x/y column not found", x=x, y=y, available=[str(c) for c in df.columns])
+                return _err("x/y column not found", x=x, y=y, available=[str(c) for c in df.columns])
             ax.plot(df[x], df[y])
             ax.set_xlabel(x); ax.set_ylabel(y); ax.set_title(f"{y} over {x}")
         fig.tight_layout()
         fig.savefig(dst, dpi=120)
     except Exception as exc:
-        return _err_tr(f"plot failed: {exc}")
+        return _err(f"plot failed: {exc}")
     finally:
         plt.close(fig)
-    return _ok_tr(path=str(args.get("path")), dst=str(dst), kind=kind, verified=dst.is_file(), size=dst.stat().st_size if dst.is_file() else 0)
+    return _ok(path=str(args.get("path")), dst=str(dst), kind=kind, verified=dst.is_file(), size=dst.stat().st_size if dst.is_file() else 0)

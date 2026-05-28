@@ -24,7 +24,6 @@ from pathlib import Path
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -44,15 +43,6 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
-
-
 def study_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """Compound tool for local flashcards + SM-2 spaced repetition.
 
@@ -69,7 +59,7 @@ def study_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             decks = cur.execute("SELECT COUNT(*) FROM decks").fetchone()[0]
             cards = cur.execute("SELECT COUNT(*) FROM cards").fetchone()[0]
             due_today = cur.execute("SELECT COUNT(*) FROM cards WHERE due_at <= ?", (_today_iso(),)).fetchone()[0]
-            return _ok_tr(db=str(db_path), decks=decks, cards=cards, due_today=due_today, algorithm="SM-2 (Wozniak 1990)")
+            return _ok(db=str(db_path), decks=decks, cards=cards, due_today=due_today, algorithm="SM-2 (Wozniak 1990)")
         if action == "deck_create":
             return _study_deck_create(conn, args)
         if action == "deck_list":
@@ -88,7 +78,7 @@ def study_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             return _study_review(conn, args)
         if action == "stats":
             return _study_stats(conn, args)
-        return _err_tr(
+        return _err(
             "unknown study action", action=action,
             valid_actions=[
                 "status", "deck_create", "deck_list", "deck_delete",
@@ -138,12 +128,12 @@ def _today_iso() -> str:
 def _study_deck_create(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     name = str(args.get("name") or "").strip()
     if not name:
-        return _err_tr("missing deck name")
+        return _err("missing deck name")
     import uuid
     deck_id = f"deck_{uuid.uuid4().hex[:10]}"
     conn.execute("INSERT INTO decks(id, name, created_at) VALUES (?, ?, ?)", (deck_id, name, _today_iso()))
     conn.commit()
-    return _ok_tr(deck_id=deck_id, name=name)
+    return _ok(deck_id=deck_id, name=name)
 
 
 def _study_deck_list(conn: Any) -> dict[str, Any]:
@@ -153,17 +143,17 @@ def _study_deck_list(conn: Any) -> dict[str, Any]:
         card_count = conn.execute("SELECT COUNT(*) FROM cards WHERE deck_id = ?", (row["id"],)).fetchone()[0]
         due_count = conn.execute("SELECT COUNT(*) FROM cards WHERE deck_id = ? AND due_at <= ?", (row["id"], _today_iso())).fetchone()[0]
         decks.append({"deck_id": row["id"], "name": row["name"], "created_at": row["created_at"], "cards": card_count, "due_today": due_count})
-    return _ok_tr(decks=decks, count=len(decks))
+    return _ok(decks=decks, count=len(decks))
 
 
 def _study_deck_delete(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     deck_id = str(args.get("deck_id") or args.get("id") or "").strip()
     if not deck_id:
-        return _err_tr("missing deck_id")
+        return _err("missing deck_id")
     conn.execute("DELETE FROM cards WHERE deck_id = ?", (deck_id,))
     cur = conn.execute("DELETE FROM decks WHERE id = ?", (deck_id,))
     conn.commit()
-    return _ok_tr(deck_id=deck_id, deleted=cur.rowcount)
+    return _ok(deck_id=deck_id, deleted=cur.rowcount)
 
 
 def _study_card_add(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
@@ -171,9 +161,9 @@ def _study_card_add(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     front = str(args.get("front") or args.get("question") or "").strip()
     back = str(args.get("back") or args.get("answer") or "").strip()
     if not deck_id or not front or not back:
-        return _err_tr("card_add requires deck_id, front, back")
+        return _err("card_add requires deck_id, front, back")
     if not conn.execute("SELECT id FROM decks WHERE id = ?", (deck_id,)).fetchone():
-        return _err_tr("deck not found", deck_id=deck_id)
+        return _err("deck not found", deck_id=deck_id)
     import uuid
     card_id = f"card_{uuid.uuid4().hex[:10]}"
     conn.execute(
@@ -181,7 +171,7 @@ def _study_card_add(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
         (card_id, deck_id, front, back, _today_iso(), _today_iso()),
     )
     conn.commit()
-    return _ok_tr(card_id=card_id, deck_id=deck_id, front=front, back=back, due_at=_today_iso())
+    return _ok(card_id=card_id, deck_id=deck_id, front=front, back=back, due_at=_today_iso())
 
 
 def _study_card_list(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
@@ -191,16 +181,16 @@ def _study_card_list(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     else:
         rows = conn.execute("SELECT id, deck_id, front, back, ef, interval_days, repetitions, due_at, last_grade FROM cards ORDER BY due_at LIMIT 500").fetchall()
     cards = [dict(row) for row in rows]
-    return _ok_tr(cards=cards, count=len(cards))
+    return _ok(cards=cards, count=len(cards))
 
 
 def _study_card_delete(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     card_id = str(args.get("card_id") or args.get("id") or "").strip()
     if not card_id:
-        return _err_tr("missing card_id")
+        return _err("missing card_id")
     cur = conn.execute("DELETE FROM cards WHERE id = ?", (card_id,))
     conn.commit()
-    return _ok_tr(card_id=card_id, deleted=cur.rowcount)
+    return _ok(card_id=card_id, deleted=cur.rowcount)
 
 
 def _study_due(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
@@ -210,7 +200,7 @@ def _study_due(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
         rows = conn.execute("SELECT id, deck_id, front, back, ef, interval_days, repetitions, due_at FROM cards WHERE deck_id = ? AND due_at <= ? ORDER BY due_at LIMIT ?", (deck_id, _today_iso(), limit)).fetchall()
     else:
         rows = conn.execute("SELECT id, deck_id, front, back, ef, interval_days, repetitions, due_at FROM cards WHERE due_at <= ? ORDER BY due_at LIMIT ?", (_today_iso(), limit)).fetchall()
-    return _ok_tr(due_cards=[dict(row) for row in rows], count=len(rows), today=_today_iso())
+    return _ok(due_cards=[dict(row) for row in rows], count=len(rows), today=_today_iso())
 
 
 def _study_review(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
@@ -218,16 +208,16 @@ def _study_review(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     card_id = str(args.get("card_id") or args.get("id") or "").strip()
     q = args.get("q") if args.get("q") is not None else args.get("grade")
     if not card_id or q is None:
-        return _err_tr("review requires card_id and q (0..5)")
+        return _err("review requires card_id and q (0..5)")
     try:
         q = int(q)
     except (TypeError, ValueError):
-        return _err_tr("q must be an integer 0..5")
+        return _err("q must be an integer 0..5")
     if not (0 <= q <= 5):
-        return _err_tr("q out of range; must be 0..5")
+        return _err("q out of range; must be 0..5")
     row = conn.execute("SELECT * FROM cards WHERE id = ?", (card_id,)).fetchone()
     if not row:
-        return _err_tr("card not found", card_id=card_id)
+        return _err("card not found", card_id=card_id)
     ef = float(row["ef"])
     interval = int(row["interval_days"])
     repetitions = int(row["repetitions"])
@@ -251,7 +241,7 @@ def _study_review(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
         (ef, interval, repetitions, due_at, _today_iso(), q, card_id),
     )
     conn.commit()
-    return _ok_tr(card_id=card_id, q=q, ef=round(ef, 4), interval_days=interval, repetitions=repetitions, due_at=due_at)
+    return _ok(card_id=card_id, q=q, ef=round(ef, 4), interval_days=interval, repetitions=repetitions, due_at=due_at)
 
 
 def _study_stats(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
@@ -262,4 +252,4 @@ def _study_stats(conn: Any, args: dict[str, Any]) -> dict[str, Any]:
     due_today = conn.execute(f"SELECT COUNT(*) FROM cards {where_clause + (' AND ' if where_clause else 'WHERE ')}due_at <= ?", (*params, _today_iso())).fetchone()[0]
     avg_ef = conn.execute(f"SELECT AVG(ef) FROM cards {where_clause}", params).fetchone()[0] or 2.5
     new_cards = conn.execute(f"SELECT COUNT(*) FROM cards {where_clause + (' AND ' if where_clause else 'WHERE ')}repetitions = 0", params).fetchone()[0]
-    return _ok_tr(deck_id=deck_id or None, total=total, due_today=due_today, new=new_cards, avg_ef=round(float(avg_ef), 4))
+    return _ok(deck_id=deck_id or None, total=total, due_today=due_today, new=new_cards, avg_ef=round(float(avg_ef), 4))

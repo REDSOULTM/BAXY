@@ -24,7 +24,6 @@ from pathlib import Path
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -34,15 +33,6 @@ __all__ = [
     "_accessibility_launch",
     "_accessibility_kill",
 ]
-
-
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -56,7 +46,7 @@ def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok_tr(
+        return _ok(
             magnifier_running=_process_running("Magnify.exe"),
             narrator_running=_process_running("Narrator.exe"),
             note="High Contrast toggle is deferred (requires registry + WM_SETTINGCHANGE broadcast). Use action=settings_panel to open the Accessibility Settings instead.",
@@ -71,7 +61,7 @@ def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
         return _accessibility_kill("Narrator.exe", state, kind="narrator")
     if action == "dictation_status":
         # Windows speech recognition runs under sapisvc / WindowsSpeechRecognition.
-        return _ok_tr(
+        return _ok(
             speech_service=_process_running("WindowsSpeech.exe") or _process_running("speech_runtime.exe"),
             shortcut="Win+H starts dictation in Windows 11.",
             note="Programmatic toggle requires the WinRT SpeechRecognizer namespace; not exposed here.",
@@ -79,14 +69,14 @@ def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
     if action in {"settings_panel", "open_settings"}:
         # ms-settings:easeofaccess opens the Accessibility settings page.
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", "Start-Process 'ms-settings:easeofaccess'"], capture_output=True, text=True, timeout=10)
-        return _ok_tr(opened=proc.returncode == 0, uri="ms-settings:easeofaccess", verified=proc.returncode == 0)
+        return _ok(opened=proc.returncode == 0, uri="ms-settings:easeofaccess", verified=proc.returncode == 0)
     if action in {"high_contrast_on", "high_contrast_off", "high_contrast_toggle"}:
-        return _err_tr(
+        return _err(
             f"accessibility.{action} is deferred; the safe path is the shortcut Left Alt + Left Shift + Print Screen which shows a confirmation dialog.",
             status="needs_user",
             note="If you want programmatic toggle, open ms-settings:easeofaccess-highcontrast (via accessibility settings_panel).",
         )
-    return _err_tr(
+    return _err(
         "unknown accessibility action", action=action,
         valid_actions=[
             "status", "magnifier_start", "magnifier_stop",
@@ -111,14 +101,14 @@ def _accessibility_launch(exe: str, state: AgentState, *, kind: str) -> dict[str
     try:
         proc = subprocess.Popen([exe], creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
     except FileNotFoundError:
-        return _err_tr(f"{exe} not found on PATH", status="needs_user")
+        return _err(f"{exe} not found on PATH", status="needs_user")
     state.register_resource(
         f"accessibility_{kind}", exe,
         cleanup_tool="accessibility",
         cleanup_args={"action": f"{kind}_stop"},
         metadata={"exe": exe, "pid": proc.pid, "started_at": datetime.now().isoformat()},
     )
-    return _ok_tr(kind=kind, exe=exe, pid=proc.pid, verified=True, note=f"{kind} started; close via {kind}_stop.")
+    return _ok(kind=kind, exe=exe, pid=proc.pid, verified=True, note=f"{kind} started; close via {kind}_stop.")
 
 
 def _accessibility_kill(exe: str, state: AgentState, *, kind: str) -> dict[str, Any]:
@@ -131,4 +121,4 @@ def _accessibility_kill(exe: str, state: AgentState, *, kind: str) -> dict[str, 
     # Mark any matching resource as cleaned.
     for res in _resources_by_kind(state, f"accessibility_{kind}", include_closed=False):
         state.mark_cleaned(str(res["id"]), {"killed": killed})
-    return _ok_tr(kind=kind, exe=exe, killed=killed, exit_code=proc.returncode, stderr=proc.stderr[-500:])
+    return _ok(kind=kind, exe=exe, killed=killed, exit_code=proc.returncode, stderr=proc.stderr[-500:])

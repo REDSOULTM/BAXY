@@ -41,7 +41,6 @@ import time
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -63,15 +62,6 @@ __all__ = [
     "_RESOLVE_AMBIGUOUS_MARGIN",
     "_RESOLVE_MIN_SCORE",
 ]
-
-
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 _EMAIL_BASIC_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
@@ -97,13 +87,13 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     )
     action = str(args.get("action") or "list").casefold()
     if action == "status":
-        return _ok_tr(local_state=True, count=len(_resources_by_kind(state, "contact")))
+        return _ok(local_state=True, count=len(_resources_by_kind(state, "contact")))
     if action == "list":
-        return _ok_tr(contacts=_resources_by_kind(state, "contact", include_closed=bool(args.get("include_closed", False))))
+        return _ok(contacts=_resources_by_kind(state, "contact", include_closed=bool(args.get("include_closed", False))))
     if action in {"create", "add"}:
         name = _clean_contact_field(args.get("name"))
         if not name:
-            return _err_tr("missing contact name", status="needs_user")
+            return _err("missing contact name", status="needs_user")
         email = _clean_contact_field(args.get("email"))
         phone = _clean_contact_field(args.get("phone"))
         notes = _clean_contact_field(args.get("notes"))
@@ -112,12 +102,12 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         # no convencionales (internacionales, extensiones) — solo lo
         # claramente roto.
         if email and not _EMAIL_BASIC_RE.match(email):
-            return _err_tr(
+            return _err(
                 f"invalid email format: {email!r}",
                 hint="expected user@host.tld; omit field to skip", status="needs_user",
             )
         if phone and not _PHONE_BASIC_RE.match(phone):
-            return _err_tr(
+            return _err(
                 f"invalid phone format: {phone!r}",
                 hint="digits + (space/dash/+/parens) only; use _vcard for international formats",
                 status="needs_user",
@@ -135,7 +125,7 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                 "created_at": datetime.now().isoformat(),
             },
         )
-        out = _ok_tr(contact=resource.get("resource"))
+        out = _ok(contact=resource.get("resource"))
         if existing:
             out["duplicate_warning"] = {
                 "count": len(existing),
@@ -150,7 +140,7 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "search":
         query = (_clean_contact_field(args.get("query") or args.get("name")) or "").casefold()
         if not query:
-            return _err_tr("missing query/name", status="needs_user")
+            return _err("missing query/name", status="needs_user")
         try:
             limit = max(1, min(int(args.get("limit", 10)), 100))
         except (TypeError, ValueError):
@@ -170,11 +160,11 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             ]
             if any(query in h.casefold() for h in haystacks):
                 matches.append(c)
-        return _ok_tr(matches=matches[:limit], count=len(matches), query=query)
+        return _ok(matches=matches[:limit], count=len(matches), query=query)
     if action == "delete":
         contact = _find_resource(args, state, "contact")
         if not contact:
-            return _err_tr("contact not found", status="needs_user")
+            return _err("contact not found", status="needs_user")
         return state.mark_cleaned(str(contact["id"]), {"deleted": True})
     if action == "update":
         return _contacts_update(args, state)
@@ -184,7 +174,7 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _contacts_import_vcard(args, state)
     if action == "resolve_recipient":
         return _contacts_resolve_recipient(args, state)
-    return _err_tr(
+    return _err(
         "unknown contacts action", action=action,
         valid_actions=[
             "status", "list", "create", "add", "search", "delete", "update",
@@ -198,13 +188,13 @@ def _contacts_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import _find_resource, _update_resource_metadata
     contact = _find_resource(args, state, "contact")
     if not contact:
-        return _err_tr("contact not found")
+        return _err("contact not found")
     updates: dict[str, Any] = {}
     for key in ("name", "email", "phone", "notes"):
         if key in args and args[key] is not None:
             updates[key] = args[key]
     if not updates:
-        return _err_tr("no updatable fields provided", supported=["name", "email", "phone", "notes"])
+        return _err("no updatable fields provided", supported=["name", "email", "phone", "notes"])
     if "name" in updates:
         state.update_resource(str(contact["id"]), label=str(updates["name"]))
     return _update_resource_metadata(state, str(contact["id"]), updates)
@@ -214,7 +204,7 @@ def _contacts_export_vcard(args: dict[str, Any], state: AgentState) -> dict[str,
     from .helpers import _resources_by_kind
     contacts = _resources_by_kind(state, "contact", include_closed=False)
     if not contacts:
-        return _err_tr("no contacts to export", status="needs_user")
+        return _err("no contacts to export", status="needs_user")
     path_raw = str(args.get("path") or "").strip()
     if path_raw:
         path = Path(path_raw).expanduser()
@@ -223,12 +213,12 @@ def _contacts_export_vcard(args: dict[str, Any], state: AgentState) -> dict[str,
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
     except OSError as exc:
-        return _err_tr("cannot create export directory", path=str(path.parent), reason=str(exc))
+        return _err("cannot create export directory", path=str(path.parent), reason=str(exc))
     body = "\r\n".join(_contact_to_vcard(c) for c in contacts) + "\r\n"
     try:
         path.write_text(body, encoding="utf-8")
     except (PermissionError, OSError) as exc:
-        return _err_tr(
+        return _err(
             "vcard write failed", path=str(path), reason=str(exc),
             status="needs_user" if isinstance(exc, PermissionError) else "failed",
         )
@@ -238,12 +228,12 @@ def _contacts_export_vcard(args: dict[str, Any], state: AgentState) -> dict[str,
     except OSError:
         size = -1
     if size != len(body.encode("utf-8")):
-        return _err_tr(
+        return _err(
             "vcard write incomplete", path=str(path),
             expected_bytes=len(body.encode("utf-8")), actual_bytes=size,
             status="failed",
         )
-    return _ok_tr(path=str(path.resolve()), exported=len(contacts), bytes=size, verified=True)
+    return _ok(path=str(path.resolve()), exported=len(contacts), bytes=size, verified=True)
 
 
 def _contact_to_vcard(contact: dict[str, Any]) -> str:
@@ -277,13 +267,13 @@ def _contacts_import_vcard(args: dict[str, Any], state: AgentState) -> dict[str,
     if path_raw:
         p = Path(path_raw).expanduser()
         if not p.is_file():
-            return _err_tr("vCard file not found", path=str(p))
+            return _err("vCard file not found", path=str(p))
         text = p.read_text(encoding="utf-8", errors="replace")
     if not text.strip():
-        return _err_tr("no vCard content provided")
+        return _err("no vCard content provided")
     cards = _vcard_parse(text)
     if not cards:
-        return _err_tr("no VCARD blocks found")
+        return _err("no VCARD blocks found")
     created = []
     for card in cards:
         name = card.get("fn") or card.get("n") or "Contact"
@@ -300,7 +290,7 @@ def _contacts_import_vcard(args: dict[str, Any], state: AgentState) -> dict[str,
             },
         )
         created.append(resource.get("resource"))
-    return _ok_tr(imported=len(created), contacts=created[:50], total_parsed=len(cards))
+    return _ok(imported=len(created), contacts=created[:50], total_parsed=len(cards))
 
 
 def _vcard_parse(text: str) -> list[dict[str, Any]]:
@@ -387,7 +377,7 @@ def _contacts_resolve_recipient(args: dict[str, Any], state: AgentState) -> dict
     from .helpers import _resources_by_kind
     query = str(args.get("query") or args.get("name") or args.get("recipient") or "").strip()
     if not query:
-        return _err_tr("missing query")
+        return _err("missing query")
     q = query.casefold()
     contacts = _resources_by_kind(state, "contact", include_closed=False)
     scored: list[tuple[int, dict[str, Any]]] = []
@@ -417,5 +407,5 @@ def _contacts_resolve_recipient(args: dict[str, Any], state: AgentState) -> dict
         and (matches[0]["score"] - matches[1]["score"]) <= _RESOLVE_AMBIGUOUS_MARGIN
         and matches[0]["score"] < 100  # un match exacto no es ambiguo
     )
-    return _ok_tr(query=query, matches=matches, count=len(matches),
+    return _ok(query=query, matches=matches, count=len(matches),
                best=matches[0] if matches else None, ambiguous=ambiguous)

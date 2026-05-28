@@ -34,7 +34,6 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -55,15 +54,6 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
-
-
 def game_launcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | None = None) -> dict[str, Any]:
     """Compound tool for non-Steam game launchers.
 
@@ -78,7 +68,7 @@ def game_launcher_tool(args: dict[str, Any], state: AgentState, executor: Execut
     action = str(args.get("action") or "status").casefold()
     if action == "status":
         epic_dir = _epic_manifests_dir()
-        return _ok_tr(
+        return _ok(
             launchers={
                 "epic": epic_dir is not None,
                 "gog": _gog_registry_has_games(),
@@ -95,22 +85,22 @@ def game_launcher_tool(args: dict[str, Any], state: AgentState, executor: Execut
     if action == "open_library_page":
         launcher = str(args.get("launcher") or "").casefold()
         if not executor:
-            return _err_tr("open_library_page requires executor", status="needs_implementation")
+            return _err("open_library_page requires executor", status="needs_implementation")
         target = {
             "epic": "com.epicgames.launcher://store",
             "gog": "goggalaxy://",
             "xbox": "ms-windows-store://home",
         }.get(launcher)
         if not target:
-            return _err_tr(f"launcher '{launcher}' not supported for library page", status="needs_user")
+            return _err(f"launcher '{launcher}' not supported for library page", status="needs_user")
         return executor("web", {"action": "open", "url": target})
     if action == "open_store_page":
-        return _err_tr(
+        return _err(
             "game_launcher.open_store_page is deferred; each store needs its own URI scheme and search",
             status="needs_implementation",
             note="Use browser_real or steam(store_page) instead.",
         )
-    return _err_tr(
+    return _err(
         "unknown game_launcher action", action=action,
         valid_actions=[
             "status", "discover", "launch", "open_launcher", "store_search",
@@ -160,7 +150,7 @@ def _game_launcher_discover(args: dict[str, Any]) -> dict[str, Any]:
     if not launcher or launcher == "riot":
         results["riot"] = _discover_riot_games()
     total = sum(len(v) for v in results.values())
-    return _ok_tr(games=results, total=total, launcher_filter=launcher or None)
+    return _ok(games=results, total=total, launcher_filter=launcher or None)
 
 
 def _discover_epic_games() -> list[dict[str, Any]]:
@@ -289,9 +279,9 @@ def _game_launcher_launch(args: dict[str, Any], state: AgentState, executor: Exe
     launcher = str(args.get("launcher") or "").casefold()
     query = str(args.get("game") or args.get("query") or args.get("name") or "").strip()
     if not launcher:
-        return _err_tr("missing launcher (epic|gog|xbox|riot)")
+        return _err("missing launcher (epic|gog|xbox|riot)")
     if not query:
-        return _err_tr("missing game name/query")
+        return _err("missing game name/query")
 
     discovery = _game_launcher_discover({"launcher": launcher})
     games = discovery.get("games", {}).get(launcher, [])
@@ -303,7 +293,7 @@ def _game_launcher_launch(args: dict[str, Any], state: AgentState, executor: Exe
             chosen = game
             break
     if not chosen:
-        return _err_tr(
+        return _err(
             f"no {launcher} game matching '{query}'",
             status="needs_user",
             available=[g.get("display_name") or g.get("name") for g in games][:30],
@@ -313,46 +303,46 @@ def _game_launcher_launch(args: dict[str, Any], state: AgentState, executor: Exe
         # Epic supports a launch URI: com.epicgames.launcher://apps/<AppName>?action=launch&silent=true
         app_name = chosen.get("app_name")
         if not app_name:
-            return _err_tr("epic game has no AppName in manifest", chosen=chosen)
+            return _err("epic game has no AppName in manifest", chosen=chosen)
         uri = f"com.epicgames.launcher://apps/{app_name}?action=launch&silent=true"
         os.startfile(uri) if os.name == "nt" else webbrowser.open(uri)
         state.register_resource(
             "game_session", chosen.get("display_name") or app_name,
             metadata={"launcher": "epic", "app_name": app_name, "uri": uri, "started_at": datetime.now().isoformat()},
         )
-        return _ok_tr(launcher="epic", game=chosen, uri=uri, verified=False, status="attempted", note="Epic launcher should open and start the game; verify via window list.")
+        return _ok(launcher="epic", game=chosen, uri=uri, verified=False, status="attempted", note="Epic launcher should open and start the game; verify via window list.")
     if launcher == "gog":
         exe = chosen.get("exe") or chosen.get("path")
         if not exe:
-            return _err_tr("gog game has no exe registered", chosen=chosen)
+            return _err("gog game has no exe registered", chosen=chosen)
         exe_path = Path(exe).expanduser()
         if not exe_path.is_file():
-            return _err_tr("gog exe path not found", path=str(exe_path))
+            return _err("gog exe path not found", path=str(exe_path))
         if os.name == "nt":
             os.startfile(exe_path)
         state.register_resource(
             "game_session", chosen.get("name") or exe,
             metadata={"launcher": "gog", "game_id": chosen.get("game_id"), "exe": str(exe_path), "started_at": datetime.now().isoformat()},
         )
-        return _ok_tr(launcher="gog", game=chosen, exe=str(exe_path), verified=False, status="attempted")
+        return _ok(launcher="gog", game=chosen, exe=str(exe_path), verified=False, status="attempted")
     if launcher == "xbox":
         uri = chosen.get("launch_uri")
         if not uri:
-            return _err_tr("xbox app has no launch URI", chosen=chosen)
+            return _err("xbox app has no launch URI", chosen=chosen)
         os.startfile(uri) if os.name == "nt" else webbrowser.open(uri)
         state.register_resource(
             "game_session", chosen.get("name") or uri,
             metadata={"launcher": "xbox", "uri": uri, "package_family_name": chosen.get("package_family_name"), "started_at": datetime.now().isoformat()},
         )
-        return _ok_tr(launcher="xbox", game=chosen, uri=uri, verified=False, status="attempted")
+        return _ok(launcher="xbox", game=chosen, uri=uri, verified=False, status="attempted")
     if launcher == "riot":
         client = chosen.get("client_path")
         if not client or not Path(client).is_file():
-            return _err_tr("riot client path missing", chosen=chosen)
+            return _err("riot client path missing", chosen=chosen)
         os.startfile(client) if os.name == "nt" else webbrowser.open(Path(client).as_uri())
         state.register_resource(
             "game_session", chosen.get("name") or client,
             metadata={"launcher": "riot", "client": client, "started_at": datetime.now().isoformat()},
         )
-        return _ok_tr(launcher="riot", game=chosen, client=client, verified=False, status="attempted")
-    return _err_tr(f"launcher '{launcher}' not supported")
+        return _ok(launcher="riot", game=chosen, client=client, verified=False, status="attempted")
+    return _err(f"launcher '{launcher}' not supported")

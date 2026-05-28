@@ -32,7 +32,6 @@ from pathlib import Path
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -46,15 +45,6 @@ __all__ = [
     "_developer_start_dev_server",
     "_developer_stop_dev_server",
 ]
-
-
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 def developer_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -78,7 +68,7 @@ def developer_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import _resources_by_kind
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok_tr(
+        return _ok(
             git=bool(shutil.which("git")),
             python=bool(shutil.which("python") or shutil.which("py")),
             node=bool(shutil.which("node")),
@@ -116,14 +106,14 @@ def developer_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _developer_stop_dev_server(args, state)
     if action == "list_dev_servers":
         servers = _resources_by_kind(state, "dev_server", include_closed=bool(args.get("include_closed", False)))
-        return _ok_tr(servers=servers, count=len(servers))
+        return _ok(servers=servers, count=len(servers))
     if action in {"git_commit", "git_push"}:
-        return _err_tr(
+        return _err(
             f"developer.{action} is intentionally not implemented; use terminal(...) so the command is visible to the user",
             status="needs_user",
             note="Mutating git actions should be explicit, not hidden behind a tool wrapper.",
         )
-    return _err_tr(
+    return _err(
         "unknown developer action", action=action,
         valid_actions=[
             "status", "project_detect", "run_tests", "run_build",
@@ -142,7 +132,7 @@ def _developer_project_root(args: dict[str, Any]) -> Path:
 def _developer_project_detect(args: dict[str, Any]) -> dict[str, Any]:
     root = _developer_project_root(args)
     if not root.exists():
-        return _err_tr("path not found", path=str(root))
+        return _err("path not found", path=str(root))
     markers = {
         "package.json": "node",
         "pyproject.toml": "python",
@@ -182,7 +172,7 @@ def _developer_project_detect(args: dict[str, Any]) -> dict[str, Any]:
         else:
             python_pm = "pip"
     is_git = (root / ".git").exists()
-    return _ok_tr(
+    return _ok(
         root=str(root),
         is_git=is_git,
         detected=detected,
@@ -206,17 +196,17 @@ def _developer_run(kind: str, args: dict[str, Any]) -> dict[str, Any]:
     priority = ["python", "node", "rust", "go", "java", "ruby", "php"]
     chosen_stack = next((s for s in priority if s in stacks), None)
     if not chosen_stack:
-        return _err_tr("no recognized stack to run for", kind=kind, detected=stacks, status="needs_user")
+        return _err("no recognized stack to run for", kind=kind, detected=stacks, status="needs_user")
     cmd = _developer_command(chosen_stack, kind, detect, extra_args)
     if not cmd:
-        return _err_tr(
+        return _err(
             f"developer.{kind} not wired for stack '{chosen_stack}'",
             stack=chosen_stack, kind=kind,
             status="needs_implementation",
             note="Pass explicit command via args=[...] to terminal(...) instead.",
         )
     proc = subprocess.run(cmd, cwd=str(root), capture_output=True, text=True, timeout=timeout)
-    return _ok_tr(
+    return _ok(
         stack=chosen_stack, kind=kind,
         command=cmd, cwd=str(root),
         exit_code=proc.returncode,
@@ -270,10 +260,10 @@ def _developer_command(stack: str, kind: str, detect: dict[str, Any], extra: lis
 def _developer_git(git_args: list[str], args: dict[str, Any]) -> dict[str, Any]:
     git = shutil.which("git")
     if not git:
-        return _err_tr("git is not installed", status="needs_dependency", install_hint="winget install Git.Git")
+        return _err("git is not installed", status="needs_dependency", install_hint="winget install Git.Git")
     root = _developer_project_root(args)
     proc = subprocess.run([git, *git_args], cwd=str(root), capture_output=True, text=True, timeout=30)
-    return _ok_tr(
+    return _ok(
         cwd=str(root),
         command=["git", *git_args],
         exit_code=proc.returncode,
@@ -287,7 +277,7 @@ def _developer_git(git_args: list[str], args: dict[str, Any]) -> dict[str, Any]:
 def _developer_start_dev_server(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     root = _developer_project_root(args)
     if not root.exists():
-        return _err_tr("path not found", path=str(root))
+        return _err("path not found", path=str(root))
     explicit = args.get("command")
     if isinstance(explicit, list) and explicit:
         cmd = [str(part) for part in explicit]
@@ -303,13 +293,13 @@ def _developer_start_dev_server(args: dict[str, Any], state: AgentState) -> dict
             cmd = [pm, "run", "dev"]
         elif "python" in stacks:
             # No universal dev command for python; the user must pass command=.
-            return _err_tr(
+            return _err(
                 "no default dev command for python; pass command='uvicorn app:app --reload' or similar",
                 stack="python",
                 status="needs_user",
             )
         else:
-            return _err_tr("no default dev command for detected stack", stacks=stacks, status="needs_user")
+            return _err("no default dev command for detected stack", stacks=stacks, status="needs_user")
     log_dir = state.path.parent / "dev_servers"
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"dev_{int(time.time())}.log"
@@ -336,7 +326,7 @@ def _developer_start_dev_server(args: dict[str, Any], state: AgentState) -> dict
     rid = resource.get("resource", {}).get("id")
     if rid:
         state.update_resource(rid, cleanup_args_patch={"action": "stop_dev_server", "server_id": rid})
-    return _ok_tr(
+    return _ok(
         server_id=rid, pid=proc.pid, cmd=cmd, cwd=str(root),
         log=str(log_path),
         note="Process detached; use list_dev_servers to inspect and stop_dev_server to terminate.",
@@ -360,17 +350,17 @@ def _developer_stop_dev_server(args: dict[str, Any], state: AgentState) -> dict[
         opens = _resources_by_kind(state, "dev_server", include_closed=False)
         target = opens[-1] if opens else None
     if not target:
-        return _err_tr("no dev_server found", status="needs_user")
+        return _err("no dev_server found", status="needs_user")
     pid = (target.get("metadata") or {}).get("pid")
     if not pid:
-        return _err_tr("dev_server has no pid", target=target)
+        return _err("dev_server has no pid", target=target)
     # CC-104 / T3-developer-stop-no-pid-alive-check-036: verificar identidad
     # antes de matar (Windows recicla PIDs).
     cmd = (target.get("metadata") or {}).get("cmd") or []
     expected = str(cmd[0]) if cmd else None
     matches, current_name = _pid_owned_by(int(pid), expected)
     if not matches:
-        return _err_tr(
+        return _err(
             "pid_recycled: refused to kill PID held by a different process",
             pid=pid,
             expected_exe=expected,
@@ -385,6 +375,6 @@ def _developer_stop_dev_server(args: dict[str, Any], state: AgentState) -> dict[
             os.kill(int(pid), 15)
         killed = True
     except (subprocess.SubprocessError, ProcessLookupError, PermissionError, OSError) as exc:
-        return _err_tr(f"failed to kill pid {pid}: {exc}", pid=pid)
+        return _err(f"failed to kill pid {pid}: {exc}", pid=pid)
     state.mark_cleaned(str(target["id"]), {"killed": killed, "pid": pid})
-    return _ok_tr(server_id=str(target["id"]), pid=pid, killed=killed, verified=killed)
+    return _ok(server_id=str(target["id"]), pid=pid, killed=killed, verified=killed)

@@ -20,7 +20,6 @@ import subprocess
 from typing import Any, Callable
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -35,24 +34,15 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
-
-
 def desktop_layout_tool(args: dict[str, Any], state: AgentState, executor: Executor) -> dict[str, Any]:
     from .helpers import _powershell_json
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok_tr(can_snapshot_windows=True, restore_supported=True, backend="win32_user32_movewindow")
+        return _ok(can_snapshot_windows=True, restore_supported=True, backend="win32_user32_movewindow")
     if action in {"windows", "list_windows"}:
         rich = _enum_windows_with_rect(int(args.get("limit", 120)))
         if rich:
-            return _ok_tr(windows=rich, count=len(rich), source="win32_enum")
+            return _ok(windows=rich, count=len(rich), source="win32_enum")
         return executor("window", {"action": "list", "limit": int(args.get("limit", 80))})
     if action == "displays":
         return _powershell_json("Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams | Select-Object InstanceName,MaxHorizontalImageSize,MaxVerticalImageSize,Active | ConvertTo-Json -Depth 3", "displays")
@@ -64,10 +54,10 @@ def desktop_layout_tool(args: dict[str, Any], state: AgentState, executor: Execu
             rollback=rollback,
             metadata={"windows": windows, "created_by": "desktop_layout"},
         )
-        return _ok_tr(snapshot=checkpoint.get("checkpoint"), windows=windows, count=len(windows))
+        return _ok(snapshot=checkpoint.get("checkpoint"), windows=windows, count=len(windows))
     if action == "restore":
         return _desktop_layout_restore(args, state)
-    return _err_tr(
+    return _err(
         "unknown desktop_layout action", action=action,
         valid_actions=[
             "status", "windows", "list_windows", "displays",
@@ -168,10 +158,10 @@ def _desktop_layout_restore(args: dict[str, Any], state: AgentState) -> dict[str
                     checkpoint = cp
                     break
         if not checkpoint:
-            return _err_tr("no desktop layout snapshot available")
+            return _err("no desktop layout snapshot available")
         windows = (checkpoint.get("metadata") or {}).get("windows") or []
     if not windows:
-        return _err_tr("snapshot has no windows to restore")
+        return _err("snapshot has no windows to restore")
 
     applied: list[dict[str, Any]] = []
     skipped: list[dict[str, Any]] = []
@@ -196,7 +186,7 @@ def _desktop_layout_restore(args: dict[str, Any], state: AgentState) -> dict[str
             applied.append({"title": title, "x": x, "y": y, "width": width, "height": height})
         else:
             skipped.append({"title": title, "reason": result.get("error") or "move failed"})
-    return _ok_tr(restored=len(applied), skipped=len(skipped), applied=applied, skipped_details=skipped, verified=bool(applied))
+    return _ok(restored=len(applied), skipped=len(skipped), applied=applied, skipped_details=skipped, verified=bool(applied))
 
 
 def _move_window_by_title(title: str, x: int, y: int, width: int, height: int) -> dict[str, Any]:
@@ -227,9 +217,9 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; title=$q 
 """
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
     if proc.returncode != 0:
-        return _err_tr("MoveWindow failed", stderr=proc.stderr)
+        return _err("MoveWindow failed", stderr=proc.stderr)
     try:
         data = json.loads(proc.stdout) if proc.stdout.strip() else {}
-        return data if isinstance(data, dict) else _err_tr("invalid MoveWindow result")
+        return data if isinstance(data, dict) else _err("invalid MoveWindow result")
     except json.JSONDecodeError:
-        return _err_tr("invalid MoveWindow JSON", stdout=proc.stdout[:1000])
+        return _err("invalid MoveWindow JSON", stdout=proc.stdout[:1000])

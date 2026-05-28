@@ -34,7 +34,6 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -52,15 +51,6 @@ __all__ = [
     "_register_watcher_scheduled_task",
     "_watcher_check",
 ]
-
-
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | None = None) -> dict[str, Any]:
@@ -81,14 +71,14 @@ def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     from .routine import _unregister_routine_scheduled_task
     action = str(args.get("action") or "list").casefold()
     if action == "status":
-        return _ok_tr(backend="windows_scheduled_tasks", runner_module="gemma4_agent.watcher_runner")
+        return _ok(backend="windows_scheduled_tasks", runner_module="gemma4_agent.watcher_runner")
     if action == "list":
         watchers = _resources_by_kind(state, "watcher", include_closed=bool(args.get("include_closed", False)))
-        return _ok_tr(watchers=watchers, count=len(watchers))
+        return _ok(watchers=watchers, count=len(watchers))
     if action == "delete":
         target = _find_resource(args, state, "watcher")
         if not target:
-            return _err_tr("watcher not found")
+            return _err("watcher not found")
         task_name = str((target.get("metadata") or {}).get("task_name") or "").strip()
         if task_name:
             _unregister_routine_scheduled_task(task_name)
@@ -99,7 +89,7 @@ def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         return _watcher_register_file(args, state)
     if action == "watch_url":
         return _watcher_register_url(args, state)
-    return _err_tr(
+    return _err(
         "unknown watcher action", action=action,
         valid_actions=[
             "status", "list", "watch_file", "watch_url", "check",
@@ -113,10 +103,10 @@ def _watcher_register_file(args: dict[str, Any], state: AgentState) -> dict[str,
     from .helpers import _safe_name
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
-        return _err_tr("missing path")
+        return _err("missing path")
     target = Path(path_raw).expanduser()
     if not target.exists():
-        return _err_tr("watch_file target does not exist (create it first or use watch_url)", path=str(target))
+        return _err("watch_file target does not exist (create it first or use watch_url)", path=str(target))
     on_change = args.get("on_change") if isinstance(args.get("on_change"), dict) else None
     interval = int(args.get("interval_seconds", 60))
     snapshot = _file_snapshot(target)
@@ -141,13 +131,13 @@ def _watcher_register_file(args: dict[str, Any], state: AgentState) -> dict[str,
         register = _register_watcher_scheduled_task(task_name, rid, interval, label)
         if not register.get("ok"):
             return register
-    return _ok_tr(watcher=resource.get("resource"), task_name=task_name, snapshot=snapshot)
+    return _ok(watcher=resource.get("resource"), task_name=task_name, snapshot=snapshot)
 
 
 def _watcher_register_url(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     url = str(args.get("url") or "").strip()
     if not url:
-        return _err_tr("missing url")
+        return _err("missing url")
     on_change = args.get("on_change") if isinstance(args.get("on_change"), dict) else None
     interval = int(args.get("interval_seconds", 300))
     snapshot = _url_snapshot(url)
@@ -174,7 +164,7 @@ def _watcher_register_url(args: dict[str, Any], state: AgentState) -> dict[str, 
         register = _register_watcher_scheduled_task(task_name, rid, interval, label)
         if not register.get("ok"):
             return register
-    return _ok_tr(watcher=resource.get("resource"), task_name=task_name, snapshot=snapshot)
+    return _ok(watcher=resource.get("resource"), task_name=task_name, snapshot=snapshot)
 
 
 def _file_snapshot(path: Path) -> dict[str, Any]:
@@ -195,7 +185,7 @@ def _url_snapshot(url: str) -> dict[str, Any]:
             digest = _hashlib.sha256(body).hexdigest()
             return {"ok": True, "status_code": resp.status, "sha256": digest, "bytes": len(body), "captured_at": datetime.now().isoformat()}
     except Exception as exc:
-        return _err_tr(f"url_snapshot failed: {exc}", url=url)
+        return _err(f"url_snapshot failed: {exc}", url=url)
 
 
 def _process_snapshot(process_name: str) -> dict[str, Any]:
@@ -238,7 +228,7 @@ def _register_routine_process_watcher(state: AgentState, routine_label: str, rou
         scheduled = _register_watcher_scheduled_task(task_name, watcher_id, interval_seconds, label)
         if not scheduled.get("ok"):
             return scheduled
-    return _ok_tr(watcher_id=watcher_id, task_name=task_name, snapshot=snapshot, edge=edge)
+    return _ok(watcher_id=watcher_id, task_name=task_name, snapshot=snapshot, edge=edge)
 
 
 def _register_watcher_scheduled_task(task_name: str, watcher_id: str, interval_seconds: int, label: str) -> dict[str, Any]:
@@ -246,7 +236,7 @@ def _register_watcher_scheduled_task(task_name: str, watcher_id: str, interval_s
     from .routine import _detect_python_executable
     python_exe = _detect_python_executable()
     if not python_exe:
-        return _err_tr("no python executable found", status="needs_dependency")
+        return _err("no python executable found", status="needs_dependency")
     arg_line = f'-m gemma4_agent.watcher_runner --id "{watcher_id}"'
     minutes = max(1, interval_seconds // 60)
     ps = f"""
@@ -261,17 +251,17 @@ Register-ScheduledTask -TaskName '{_ps_quote(task_name)}' -TaskPath '\\Gemma4Age
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, timeout=15)
     except (OSError, subprocess.TimeoutExpired):
-        return _err_tr("schedule task timeout", task_name=task_name, reason="taskscheduler_timeout")
+        return _err("schedule task timeout", task_name=task_name, reason="taskscheduler_timeout")
     if proc.returncode != 0:
-        return _err_tr("failed to register watcher scheduled task", stderr=proc.stderr, exit_code=proc.returncode)
-    return _ok_tr(task_name=task_name, interval_minutes=minutes)
+        return _err("failed to register watcher scheduled task", stderr=proc.stderr, exit_code=proc.returncode)
+    return _ok(task_name=task_name, interval_minutes=minutes)
 
 
 def _watcher_check(args: dict[str, Any], state: AgentState, executor: Executor | None) -> dict[str, Any]:
     from .helpers import _find_resource
     target = _find_resource(args, state, "watcher")
     if not target:
-        return _err_tr("watcher not found")
+        return _err("watcher not found")
     metadata = target.get("metadata") or {}
     kind = metadata.get("kind")
     snapshot_before = metadata.get("snapshot") or {}
@@ -285,7 +275,7 @@ def _watcher_check(args: dict[str, Any], state: AgentState, executor: Executor |
         process_name = str(metadata.get("process") or "")
         snapshot_after = _process_snapshot(process_name)
     else:
-        return _err_tr("unknown watcher kind", kind=kind)
+        return _err("unknown watcher kind", kind=kind)
 
     changed = snapshot_before != snapshot_after
     # For process watchers, only fire on the requested edge.
@@ -309,7 +299,7 @@ def _watcher_check(args: dict[str, Any], state: AgentState, executor: Executor |
             str(target["id"]),
             {"snapshot": snapshot_after, "last_change": datetime.now().isoformat()},
         )
-    return _ok_tr(
+    return _ok(
         watcher_id=str(target["id"]),
         kind=kind,
         changed=changed,

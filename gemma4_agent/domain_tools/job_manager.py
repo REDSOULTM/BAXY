@@ -24,7 +24,6 @@ from pathlib import Path
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -34,15 +33,6 @@ __all__ = [
     "_job_manager_log",
     "_job_manager_cancel",
 ]
-
-
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -61,14 +51,14 @@ def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import _find_resource, _pid_alive, _resources_by_kind
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok_tr(backend="subprocess+state", note="Jobs are tracked in state.json with PID, log path, label.")
+        return _ok(backend="subprocess+state", note="Jobs are tracked in state.json with PID, log path, label.")
     if action == "list":
         jobs = _resources_by_kind(state, "job", include_closed=bool(args.get("include_closed", False)))
         for job in jobs:
             pid = (job.get("metadata") or {}).get("pid")
             if pid:
                 job["alive"] = _pid_alive(int(pid))
-        return _ok_tr(jobs=jobs, count=len(jobs))
+        return _ok(jobs=jobs, count=len(jobs))
     if action == "start":
         return _job_manager_start(args, state)
     if action == "log":
@@ -76,12 +66,12 @@ def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action in {"status_of", "info"}:
         job = _find_resource(args, state, "job")
         if not job:
-            return _err_tr("job not found")
+            return _err("job not found")
         pid = (job.get("metadata") or {}).get("pid")
-        return _ok_tr(job=job, alive=_pid_alive(int(pid)) if pid else None)
+        return _ok(job=job, alive=_pid_alive(int(pid)) if pid else None)
     if action in {"cancel", "stop", "kill"}:
         return _job_manager_cancel(args, state)
-    return _err_tr(
+    return _err(
         "unknown job_manager action", action=action,
         valid_actions=[
             "status", "start", "list", "log", "status_of", "cancel",
@@ -100,13 +90,13 @@ def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any
         try:
             cmd = shlex.split(command, posix=False)
         except ValueError as exc:
-            return _err_tr(f"invalid command quoting: {exc}", command=command, status="needs_user")
+            return _err(f"invalid command quoting: {exc}", command=command, status="needs_user")
     elif isinstance(command, list):
         cmd = [str(part) for part in command]
     else:
-        return _err_tr("command must be a string or list")
+        return _err("command must be a string or list")
     if not cmd:
-        return _err_tr("command is empty")
+        return _err("command is empty")
     cwd = str(args.get("cwd") or "").strip() or None
     label = str(args.get("label") or " ".join(cmd)[:80]).strip()
     log_dir = state.path.parent / "jobs"
@@ -117,7 +107,7 @@ def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any
     try:
         proc = subprocess.Popen(cmd, cwd=cwd, stdout=log_file, stderr=subprocess.STDOUT, creationflags=creationflags)
     except OSError as exc:
-        return _err_tr(f"failed to start job: {exc}", command=cmd, cwd=cwd)
+        return _err(f"failed to start job: {exc}", command=cmd, cwd=cwd)
     resource = state.register_resource(
         "job", label,
         cleanup_tool="job_manager",
@@ -128,40 +118,40 @@ def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any
     if rid:
         # CC-102: cleanup_args via API pública.
         state.update_resource(rid, cleanup_args_patch={"action": "cancel", "job_id": rid})
-    return _ok_tr(job_id=rid, pid=proc.pid, cmd=cmd, log=str(log_path))
+    return _ok(job_id=rid, pid=proc.pid, cmd=cmd, log=str(log_path))
 
 
 def _job_manager_log(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import _find_resource
     job = _find_resource(args, state, "job")
     if not job:
-        return _err_tr("job not found")
+        return _err("job not found")
     log_path = Path((job.get("metadata") or {}).get("log") or "")
     if not log_path.is_file():
-        return _err_tr("job log not found", log=str(log_path))
+        return _err("job log not found", log=str(log_path))
     tail = int(args.get("tail", 100))
     try:
         text = log_path.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
-        return _err_tr(f"failed to read log: {exc}", log=str(log_path))
+        return _err(f"failed to read log: {exc}", log=str(log_path))
     lines = text.splitlines()
-    return _ok_tr(job_id=str(job["id"]), log=str(log_path), lines=lines[-tail:], total_lines=len(lines))
+    return _ok(job_id=str(job["id"]), log=str(log_path), lines=lines[-tail:], total_lines=len(lines))
 
 
 def _job_manager_cancel(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import _find_resource, _pid_owned_by
     job = _find_resource(args, state, "job")
     if not job:
-        return _err_tr("job not found")
+        return _err("job not found")
     pid = (job.get("metadata") or {}).get("pid")
     if not pid:
-        return _err_tr("job has no pid")
+        return _err("job has no pid")
     # CC-104: verify PID identity before taskkill.
     cmd = (job.get("metadata") or {}).get("cmd") or []
     expected = str(cmd[0]) if isinstance(cmd, list) and cmd else None
     matches, current_name = _pid_owned_by(int(pid), expected)
     if not matches:
-        return _err_tr(
+        return _err(
             "pid_recycled: refused to kill PID held by a different process",
             pid=pid,
             expected_exe=expected,
@@ -174,6 +164,6 @@ def _job_manager_cancel(args: dict[str, Any], state: AgentState) -> dict[str, An
         else:
             os.kill(int(pid), 15)
     except (subprocess.SubprocessError, ProcessLookupError, PermissionError, OSError) as exc:
-        return _err_tr(f"failed to kill pid {pid}: {exc}", pid=pid)
+        return _err(f"failed to kill pid {pid}: {exc}", pid=pid)
     state.mark_cleaned(str(job["id"]), {"killed": True, "pid": pid})
-    return _ok_tr(job_id=str(job["id"]), pid=pid, killed=True)
+    return _ok(job_id=str(job["id"]), pid=pid, killed=True)

@@ -43,15 +43,15 @@ def my_tool(args, state):
     return _err('missing foo', status='needs_user')
 
 # Después (paso 1 — interop):
-def _ok_tr(**kw):
+def _ok(**kw):
     return ToolResult.ok_result(**kw).to_dict()
-def _err_tr(msg, **kw):
+def _err(msg, **kw):
     return ToolResult.err(msg, **kw).to_dict()
 
 def my_tool(args, state):
     if args.get('foo'):
-        return _ok_tr(foo=args['foo'], verified=True)
-    return _err_tr('missing foo', status='needs_user')
+        return _ok(foo=args['foo'], verified=True)
+    return _err('missing foo', status='needs_user')
 
 # Después (paso 2 — full typed, cuando consumers manejen ToolResult):
 def my_tool(args, state) -> ToolResult:

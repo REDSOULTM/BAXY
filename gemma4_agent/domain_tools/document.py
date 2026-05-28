@@ -34,7 +34,6 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -58,15 +57,6 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
-
-
 def document_tool(args: dict[str, Any], state: AgentState, knowledge_executor: Executor | None = None) -> dict[str, Any]:
     """Compound tool for PDF/DOCX/XLSX/PPTX/HTML parsing and ingestion.
 
@@ -75,7 +65,7 @@ def document_tool(args: dict[str, Any], state: AgentState, knowledge_executor: E
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok_tr(
+        return _ok(
             backends={
                 "pdf_text": importlib.util.find_spec("pypdf") is not None,
                 "pdf_tables": importlib.util.find_spec("pdfplumber") is not None,
@@ -103,7 +93,7 @@ def document_tool(args: dict[str, Any], state: AgentState, knowledge_executor: E
         if not text_result.get("ok"):
             return text_result
         text = text_result.get("text") or ""
-        return _ok_tr(
+        return _ok(
             path=text_result.get("path"),
             chars=len(text),
             word_count=len(text.split()),
@@ -112,22 +102,22 @@ def document_tool(args: dict[str, Any], state: AgentState, knowledge_executor: E
         )
     if action == "ingest_to_knowledge":
         if not knowledge_executor:
-            return _err_tr("ingest_to_knowledge requires the knowledge executor", status="needs_implementation")
+            return _err("ingest_to_knowledge requires the knowledge executor", status="needs_implementation")
         path_raw = str(args.get("path") or "").strip()
         if not path_raw:
-            return _err_tr("missing path")
+            return _err("missing path")
         # Extract first, then feed to knowledge tool.
         extracted = _document_extract_text({"path": path_raw, "max_chars": int(args.get("max_chars", 200000))})
         if not extracted.get("ok"):
             return extracted
         text = extracted.get("text") or ""
         if not text.strip():
-            return _err_tr("no text extracted; cannot ingest", path=path_raw)
+            return _err("no text extracted; cannot ingest", path=path_raw)
         title = str(args.get("title") or Path(path_raw).name)
         return knowledge_executor("knowledge", {"action": "ingest", "title": title, "source": path_raw, "text": text})
     if action == "compare_documents":
         return _document_compare(args)
-    return _err_tr(
+    return _err(
         "unknown document action", action=action,
         valid_actions=[
             "status", "extract_text", "extract_tables", "extract_images",
@@ -140,15 +130,15 @@ def document_tool(args: dict[str, Any], state: AgentState, knowledge_executor: E
 def _document_extract_text(args: dict[str, Any]) -> dict[str, Any]:
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
-        return _err_tr("missing path")
+        return _err("missing path")
     path = Path(path_raw).expanduser()
     if not path.is_file():
-        return _err_tr("file not found", path=str(path))
+        return _err("file not found", path=str(path))
     suffix = path.suffix.casefold()
     max_chars = int(args.get("max_chars", 200000))
     if suffix in {".txt", ".md", ".csv", ".log", ".py", ".ps1", ".yaml", ".yml", ".json"}:
         text = path.read_text(encoding="utf-8", errors="replace")[:max_chars]
-        return _ok_tr(path=str(path), suffix=suffix, text=text, chars=len(text), backend="plain")
+        return _ok(path=str(path), suffix=suffix, text=text, chars=len(text), backend="plain")
     if suffix in {".html", ".htm"}:
         return _document_extract_html(path, max_chars)
     if suffix == ".pdf":
@@ -159,12 +149,12 @@ def _document_extract_text(args: dict[str, Any]) -> dict[str, Any]:
         return _document_extract_xlsx(path, max_chars)
     if suffix == ".pptx":
         return _document_extract_pptx(path, max_chars)
-    return _err_tr(f"unsupported extension: {suffix}", path=str(path))
+    return _err(f"unsupported extension: {suffix}", path=str(path))
 
 
 def _document_extract_pdf(path: Path, max_chars: int) -> dict[str, Any]:
     if importlib.util.find_spec("pypdf") is None:
-        return _err_tr(
+        return _err(
             "pypdf is not installed",
             status="needs_dependency", verified=False,
             install_hint="python -m pip install pypdf",
@@ -173,7 +163,7 @@ def _document_extract_pdf(path: Path, max_chars: int) -> dict[str, Any]:
     try:
         reader = PdfReader(str(path))
     except Exception as exc:
-        return _err_tr(f"failed to open PDF: {exc}", path=str(path))
+        return _err(f"failed to open PDF: {exc}", path=str(path))
     pages_text: list[str] = []
     for page in reader.pages:
         try:
@@ -182,7 +172,7 @@ def _document_extract_pdf(path: Path, max_chars: int) -> dict[str, Any]:
             pages_text.append("")
     text = "\n\n".join(pages_text)
     truncated = len(text) > max_chars
-    return _ok_tr(
+    return _ok(
         path=str(path), suffix=".pdf", backend="pypdf",
         pages=len(reader.pages),
         text=text[:max_chars], chars=len(text), truncated=truncated,
@@ -191,7 +181,7 @@ def _document_extract_pdf(path: Path, max_chars: int) -> dict[str, Any]:
 
 def _document_extract_docx(path: Path, max_chars: int) -> dict[str, Any]:
     if importlib.util.find_spec("docx") is None:
-        return _err_tr(
+        return _err(
             "python-docx is not installed",
             status="needs_dependency", verified=False,
             install_hint="python -m pip install python-docx",
@@ -200,11 +190,11 @@ def _document_extract_docx(path: Path, max_chars: int) -> dict[str, Any]:
     try:
         doc = Document(str(path))
     except Exception as exc:
-        return _err_tr(f"failed to open DOCX: {exc}", path=str(path))
+        return _err(f"failed to open DOCX: {exc}", path=str(path))
     paragraphs = [p.text for p in doc.paragraphs if p.text]
     text = "\n".join(paragraphs)
     truncated = len(text) > max_chars
-    return _ok_tr(
+    return _ok(
         path=str(path), suffix=".docx", backend="python-docx",
         paragraphs=len(paragraphs),
         text=text[:max_chars], chars=len(text), truncated=truncated,
@@ -213,7 +203,7 @@ def _document_extract_docx(path: Path, max_chars: int) -> dict[str, Any]:
 
 def _document_extract_xlsx(path: Path, max_chars: int) -> dict[str, Any]:
     if importlib.util.find_spec("openpyxl") is None:
-        return _err_tr(
+        return _err(
             "openpyxl is not installed",
             status="needs_dependency", verified=False,
             install_hint="python -m pip install openpyxl",
@@ -222,7 +212,7 @@ def _document_extract_xlsx(path: Path, max_chars: int) -> dict[str, Any]:
     try:
         wb = load_workbook(str(path), read_only=True, data_only=True)
     except Exception as exc:
-        return _err_tr(f"failed to open XLSX: {exc}", path=str(path))
+        return _err(f"failed to open XLSX: {exc}", path=str(path))
     sheets: list[dict[str, Any]] = []
     text_lines: list[str] = []
     for sheet_name in wb.sheetnames:
@@ -238,7 +228,7 @@ def _document_extract_xlsx(path: Path, max_chars: int) -> dict[str, Any]:
         if len("\n".join(text_lines)) > max_chars:
             break
     text = "\n".join(text_lines)[:max_chars]
-    return _ok_tr(
+    return _ok(
         path=str(path), suffix=".xlsx", backend="openpyxl",
         sheets=sheets, sheet_count=len(sheets),
         text=text, chars=len(text),
@@ -247,7 +237,7 @@ def _document_extract_xlsx(path: Path, max_chars: int) -> dict[str, Any]:
 
 def _document_extract_pptx(path: Path, max_chars: int) -> dict[str, Any]:
     if importlib.util.find_spec("pptx") is None:
-        return _err_tr(
+        return _err(
             "python-pptx is not installed",
             status="needs_dependency", verified=False,
             install_hint="python -m pip install python-pptx",
@@ -256,7 +246,7 @@ def _document_extract_pptx(path: Path, max_chars: int) -> dict[str, Any]:
     try:
         prs = Presentation(str(path))
     except Exception as exc:
-        return _err_tr(f"failed to open PPTX: {exc}", path=str(path))
+        return _err(f"failed to open PPTX: {exc}", path=str(path))
     slides_text: list[str] = []
     for slide in prs.slides:
         for shape in slide.shapes:
@@ -267,7 +257,7 @@ def _document_extract_pptx(path: Path, max_chars: int) -> dict[str, Any]:
                 slides_text.append(str(shape_text))
     text = "\n\n".join(slides_text)
     truncated = len(text) > max_chars
-    return _ok_tr(
+    return _ok(
         path=str(path), suffix=".pptx", backend="python-pptx",
         slides=len(prs.slides),
         text=text[:max_chars], chars=len(text), truncated=truncated,
@@ -283,28 +273,28 @@ def _document_extract_html(path: Path, max_chars: int) -> dict[str, Any]:
             tag.decompose()
         text = soup.get_text(separator="\n", strip=True)
         title = soup.title.string if soup.title else None
-        return _ok_tr(path=str(path), suffix=".html", backend="beautifulsoup4", title=title, text=text[:max_chars], chars=len(text))
+        return _ok(path=str(path), suffix=".html", backend="beautifulsoup4", title=title, text=text[:max_chars], chars=len(text))
     # Fallback: strip tags with regex.
     text = re.sub(r"<script[^>]*>.*?</script>", "", raw, flags=re.DOTALL | re.IGNORECASE)
     text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL | re.IGNORECASE)
     text = re.sub(r"<[^>]+>", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
-    return _ok_tr(path=str(path), suffix=".html", backend="regex_fallback", text=text[:max_chars], chars=len(text), note="Install beautifulsoup4 for better extraction.")
+    return _ok(path=str(path), suffix=".html", backend="regex_fallback", text=text[:max_chars], chars=len(text), note="Install beautifulsoup4 for better extraction.")
 
 
 def _document_extract_tables(args: dict[str, Any]) -> dict[str, Any]:
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
-        return _err_tr("missing path")
+        return _err("missing path")
     path = Path(path_raw).expanduser()
     if not path.is_file():
-        return _err_tr("file not found", path=str(path))
+        return _err("file not found", path=str(path))
     suffix = path.suffix.casefold()
     if suffix == ".xlsx":
         return _document_extract_xlsx(path, max_chars=200000)
     if suffix == ".pdf":
         if importlib.util.find_spec("pdfplumber") is None:
-            return _err_tr(
+            return _err(
                 "pdfplumber is not installed",
                 status="needs_dependency", verified=False,
                 install_hint="python -m pip install pdfplumber",
@@ -317,20 +307,20 @@ def _document_extract_tables(args: dict[str, Any]) -> dict[str, Any]:
                     page_tables = page.extract_tables() or []
                     for tbl_idx, tbl in enumerate(page_tables):
                         tables_out.append({"page": page_idx + 1, "index": tbl_idx, "rows": len(tbl), "data": tbl[:200]})
-            return _ok_tr(path=str(path), suffix=".pdf", backend="pdfplumber", tables=tables_out, table_count=len(tables_out))
+            return _ok(path=str(path), suffix=".pdf", backend="pdfplumber", tables=tables_out, table_count=len(tables_out))
         except Exception as exc:
-            return _err_tr(f"pdfplumber failed: {exc}", path=str(path))
-    return _err_tr(f"extract_tables does not support {suffix}", supported=[".pdf", ".xlsx"])
+            return _err(f"pdfplumber failed: {exc}", path=str(path))
+    return _err(f"extract_tables does not support {suffix}", supported=[".pdf", ".xlsx"])
 
 
 def _document_extract_images(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import _safe_name
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
-        return _err_tr("missing path")
+        return _err("missing path")
     path = Path(path_raw).expanduser()
     if not path.is_file():
-        return _err_tr("file not found", path=str(path))
+        return _err("file not found", path=str(path))
     suffix = path.suffix.casefold()
     out_dir = Path(str(args.get("out_dir") or state.path.parent / "extracted" / f"{_safe_name(path.stem)}_{int(time.time())}")).expanduser()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -346,11 +336,11 @@ def _document_extract_images(args: dict[str, Any], state: AgentState) -> dict[st
                             shutil.copyfileobj(src, dst)
                         extracted.append(str(target))
         except (zipfile.BadZipFile, OSError) as exc:
-            return _err_tr(f"failed to read OOXML media: {exc}", path=str(path))
-        return _ok_tr(path=str(path), suffix=suffix, backend="ooxml_zip", out_dir=str(out_dir), images=extracted, count=len(extracted))
+            return _err(f"failed to read OOXML media: {exc}", path=str(path))
+        return _ok(path=str(path), suffix=suffix, backend="ooxml_zip", out_dir=str(out_dir), images=extracted, count=len(extracted))
     if suffix == ".pdf":
         if importlib.util.find_spec("pypdf") is None:
-            return _err_tr("pypdf is not installed", status="needs_dependency", install_hint="python -m pip install pypdf")
+            return _err("pypdf is not installed", status="needs_dependency", install_hint="python -m pip install pypdf")
         from pypdf import PdfReader
         try:
             reader = PdfReader(str(path))
@@ -360,23 +350,23 @@ def _document_extract_images(args: dict[str, Any], state: AgentState) -> dict[st
                     target.write_bytes(img.data)
                     extracted.append(str(target))
         except Exception as exc:
-            return _err_tr(f"pypdf image extraction failed: {exc}", path=str(path))
-        return _ok_tr(path=str(path), suffix=".pdf", backend="pypdf", out_dir=str(out_dir), images=extracted, count=len(extracted))
-    return _err_tr(f"extract_images does not support {suffix}", supported=[".pdf", ".docx", ".pptx", ".xlsx"])
+            return _err(f"pypdf image extraction failed: {exc}", path=str(path))
+        return _ok(path=str(path), suffix=".pdf", backend="pypdf", out_dir=str(out_dir), images=extracted, count=len(extracted))
+    return _err(f"extract_images does not support {suffix}", supported=[".pdf", ".docx", ".pptx", ".xlsx"])
 
 
 def _document_ocr_pdf(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
-        return _err_tr("missing path")
+        return _err("missing path")
     path = Path(path_raw).expanduser()
     if not path.is_file():
-        return _err_tr("PDF not found", path=str(path))
+        return _err("PDF not found", path=str(path))
     if path.suffix.casefold() != ".pdf":
-        return _err_tr("ocr_pdf only accepts .pdf files", path=str(path))
+        return _err("ocr_pdf only accepts .pdf files", path=str(path))
     tesseract = shutil.which("tesseract") or shutil.which("tesseract.exe")
     if not tesseract:
-        return _err_tr(
+        return _err(
             "Tesseract OCR is not installed",
             status="needs_dependency", verified=False,
             install_hint="winget install UB-Mannheim.TesseractOCR",
@@ -389,7 +379,7 @@ def _document_ocr_pdf(args: dict[str, Any], state: AgentState) -> dict[str, Any]
         return _document_ocr_pdf_with_fitz(path, state, tesseract, args)
     if importlib.util.find_spec("pdf2image") is not None:
         return _document_ocr_pdf_with_pdf2image(path, state, tesseract, args)
-    return _err_tr(
+    return _err(
         "PDF rendering requires PyMuPDF (fitz) or pdf2image+poppler",
         status="needs_dependency", verified=False,
         install_hint="python -m pip install PyMuPDF (preferred, no external binary needed)",
@@ -412,9 +402,9 @@ def _document_ocr_pdf_with_fitz(path: Path, state: AgentState, tesseract: str, a
             proc = subprocess.run([tesseract, str(png_path), "stdout", "-l", lang, "--psm", "6"], capture_output=True, text=True, timeout=60)
             pages_text.append(proc.stdout if proc.returncode == 0 else "")
     except Exception as exc:
-        return _err_tr(f"OCR failed: {exc}", path=str(path))
+        return _err(f"OCR failed: {exc}", path=str(path))
     text = "\n\n".join(pages_text)
-    return _ok_tr(
+    return _ok(
         path=str(path), backend="fitz+tesseract", out_dir=str(out_dir),
         pages=len(pages_text), text=text[: int(args.get("max_chars", 200000))], chars=len(text), lang=lang,
     )
@@ -435,9 +425,9 @@ def _document_ocr_pdf_with_pdf2image(path: Path, state: AgentState, tesseract: s
             proc = subprocess.run([tesseract, str(png_path), "stdout", "-l", lang, "--psm", "6"], capture_output=True, text=True, timeout=60)
             pages_text.append(proc.stdout if proc.returncode == 0 else "")
     except Exception as exc:
-        return _err_tr(f"OCR failed: {exc}", path=str(path), install_hint="pdf2image requires poppler; install with: winget install oschwartz10612.Poppler")
+        return _err(f"OCR failed: {exc}", path=str(path), install_hint="pdf2image requires poppler; install with: winget install oschwartz10612.Poppler")
     text = "\n\n".join(pages_text)
-    return _ok_tr(
+    return _ok(
         path=str(path), backend="pdf2image+tesseract", out_dir=str(out_dir),
         pages=len(pages_text), text=text[: int(args.get("max_chars", 200000))], chars=len(text), lang=lang,
     )
@@ -447,11 +437,11 @@ def _document_compare(args: dict[str, Any]) -> dict[str, Any]:
     a_raw = str(args.get("a") or args.get("left") or "").strip()
     b_raw = str(args.get("b") or args.get("right") or "").strip()
     if not a_raw or not b_raw:
-        return _err_tr("compare_documents requires a/left and b/right paths")
+        return _err("compare_documents requires a/left and b/right paths")
     a = Path(a_raw).expanduser()
     b = Path(b_raw).expanduser()
     if not a.is_file() or not b.is_file():
-        return _err_tr("one or both documents not found", a=str(a), b=str(b))
+        return _err("one or both documents not found", a=str(a), b=str(b))
     ta = _document_extract_text({"path": str(a), "max_chars": 500000})
     tb = _document_extract_text({"path": str(b), "max_chars": 500000})
     if not ta.get("ok"):
@@ -463,7 +453,7 @@ def _document_compare(args: dict[str, Any]) -> dict[str, Any]:
     seq_b = (tb.get("text") or "").splitlines()
     diff = list(difflib.unified_diff(seq_a, seq_b, fromfile=a.name, tofile=b.name, lineterm=""))
     similarity = difflib.SequenceMatcher(None, ta.get("text") or "", tb.get("text") or "").ratio()
-    return _ok_tr(
+    return _ok(
         a=str(a), b=str(b),
         a_chars=ta.get("chars", 0), b_chars=tb.get("chars", 0),
         similarity=round(similarity, 4),

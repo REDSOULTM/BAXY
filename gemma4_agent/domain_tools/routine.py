@@ -54,7 +54,6 @@ from .._ps import (
     ps_safe_literal,
 )
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -105,15 +104,6 @@ __all__ = [
     "_routine_history",
     "_DESTRUCTIVE_COMMAND_TOKENS",
 ]
-
-
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 # Commands that imply destructive or system-altering side effects. If a
@@ -185,7 +175,7 @@ def import_triggercmd_entries(
     what worked and what didn't.
     """
     if not isinstance(entries, list):
-        return _err_tr("triggercmd payload must be a list of entries")
+        return _err("triggercmd payload must be a list of entries")
     existing_phrases: set[str] = set()
     if not overwrite_same_phrase:
         for r in active_phrase_triggers(state):
@@ -291,7 +281,7 @@ def import_triggercmd_entries(
 
         imported.append(report_item)
 
-    return _ok_tr(
+    return _ok(
         imported=imported,
         imported_count=len(imported),
         skipped=skipped,
@@ -320,7 +310,7 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     from .watcher import _register_routine_process_watcher
     action = str(args.get("action") or "list").casefold()
     if action == "status":
-        return _ok_tr(
+        return _ok(
             local_state=True,
             run_now=bool(executor),
             triggers=["manual", "cron", "once", "on_app_open", "on_app_close", "on_process_start", "on_process_exit", "on_phrase"],
@@ -335,31 +325,31 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     if action == "list":
         resources = state.list_resources(include_closed=bool(args.get("include_closed", False))).get("resources", [])
         routines = [_enrich_routine_resource(r) for r in resources if r.get("kind") == "routine"]
-        return _ok_tr(routines=routines, count=len(routines))
+        return _ok(routines=routines, count=len(routines))
     if action == "import":
         source = str(args.get("source") or "triggercmd").strip().casefold()
         if source != "triggercmd":
-            return _err_tr(f"import source '{source}' not supported; only triggercmd for now")
+            return _err(f"import source '{source}' not supported; only triggercmd for now")
         # Accept either a path to the JSON file or an inline `entries` array.
         raw_entries = args.get("entries")
         json_path = str(args.get("json_path") or args.get("path") or "").strip()
         if not raw_entries and not json_path:
-            return _err_tr("routine.import requires either entries=[...] or json_path='<file>.json'")
+            return _err("routine.import requires either entries=[...] or json_path='<file>.json'")
         if raw_entries is None and json_path:
             p = Path(json_path).expanduser()
             if not p.is_file():
-                return _err_tr(f"json_path does not exist: {p}")
+                return _err(f"json_path does not exist: {p}")
             try:
                 raw_entries = json.loads(p.read_text(encoding="utf-8"))
             except json.JSONDecodeError as exc:
-                return _err_tr(f"invalid JSON at {p}: {exc}")
+                return _err(f"invalid JSON at {p}: {exc}")
         if isinstance(raw_entries, str):
             try:
                 raw_entries = json.loads(raw_entries)
             except json.JSONDecodeError as exc:
-                return _err_tr(f"entries string is not valid JSON: {exc}")
+                return _err(f"entries string is not valid JSON: {exc}")
         if not isinstance(raw_entries, list):
-            return _err_tr("triggercmd entries must be a JSON array")
+            return _err("triggercmd entries must be a JSON array")
         return import_triggercmd_entries(
             raw_entries,
             state,
@@ -371,17 +361,17 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
             try:
                 steps = json.loads(steps)
             except json.JSONDecodeError:
-                return _err_tr("steps must be a JSON array of {tool,args}")
+                return _err("steps must be a JSON array of {tool,args}")
         if not isinstance(steps, list) or not steps:
-            return _err_tr("routine.create requires steps array")
+            return _err("routine.create requires steps array")
         # Validate each step
         for index, step in enumerate(steps, start=1):
             if not isinstance(step, dict):
-                return _err_tr(f"step {index} is not an object", step=step)
+                return _err(f"step {index} is not an object", step=step)
             if not str(step.get("tool") or "").strip():
-                return _err_tr(f"step {index} has no tool", step=step)
+                return _err(f"step {index} has no tool", step=step)
             if str(step.get("tool")).strip() == "routine":
-                return _err_tr(f"step {index} cannot call routine recursively")
+                return _err(f"step {index} cannot call routine recursively")
         label = str(args.get("name") or args.get("label") or f"Routine {int(time.time())}")
         raw_trigger = args.get("trigger")
         trigger: dict[str, Any] = (
@@ -392,7 +382,7 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         process_triggers = {"on_app_open", "on_app_close", "on_process_start", "on_process_exit"}
         phrase_triggers = {"on_phrase", "on_keyword"}
         if trigger_type not in {"manual", "cron", "once"} | process_triggers | phrase_triggers:
-            return _err_tr(
+            return _err(
                 f"trigger type '{trigger_type}' is not implemented yet; supported: manual, cron, once, on_app_open, on_app_close, on_phrase",
                 status="needs_implementation",
                 deferred=trigger_type,
@@ -401,9 +391,9 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         if trigger_type in phrase_triggers:
             phrase = str(trigger.get("phrase") or trigger.get("keyword") or "").strip()
             if not phrase:
-                return _err_tr(f"trigger '{trigger_type}' requires phrase=<text>")
+                return _err(f"trigger '{trigger_type}' requires phrase=<text>")
             if len(phrase) < 3:
-                return _err_tr("on_phrase requires a phrase of at least 3 chars to avoid spurious matches")
+                return _err("on_phrase requires a phrase of at least 3 chars to avoid spurious matches")
         task_name = None
         watcher_id = None
         if trigger_type in {"cron", "once"}:
@@ -414,7 +404,7 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
         elif trigger_type in process_triggers:
             process_name = str(trigger.get("process") or trigger.get("app") or "").strip()
             if not process_name:
-                return _err_tr(f"trigger '{trigger_type}' requires process=<exe-name>")
+                return _err(f"trigger '{trigger_type}' requires process=<exe-name>")
             # We register the routine first (below) then attach a watcher that
             # polls process state and fires routine.run_now on the right edge.
             # The watcher_id is patched into metadata after both exist.
@@ -444,15 +434,15 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
             watcher_id = watcher_result.get("watcher_id")
             # CC-102: usa API pública atómica.
             state.update_resource_metadata(routine_id, {"watcher_id": watcher_id})
-        return _ok_tr(routine=resource.get("resource"), trigger=trigger, task_name=task_name, watcher_id=watcher_id, status="done")
+        return _ok(routine=resource.get("resource"), trigger=trigger, task_name=task_name, watcher_id=watcher_id, status="done")
     if action == "run_now":
         routine = _find_routine(args, state)
         if not routine:
-            return _err_tr("routine not found")
+            return _err("routine not found")
         if not executor:
-            return _err_tr("routine.run_now requires an executor wired by the registry", status="needs_implementation", verified=False)
+            return _err("routine.run_now requires an executor wired by the registry", status="needs_implementation", verified=False)
         if routine.get("metadata", {}).get("enabled") is False:
-            return _err_tr("routine is disabled", routine=routine)
+            return _err("routine is disabled", routine=routine)
         results = []
         steps = routine.get("metadata", {}).get("steps") or []
         for index, step in enumerate(steps, start=1):
@@ -478,11 +468,11 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
             "results": results,
         }
         _append_routine_run(state, str(routine["id"]), run_record)
-        return _ok_tr(routine=routine, results=results, completed=completed, run=run_record)
+        return _ok(routine=routine, results=results, completed=completed, run=run_record)
     if action in {"delete", "enable", "disable"}:
         routine = _find_routine(args, state)
         if not routine:
-            return _err_tr("routine not found")
+            return _err("routine not found")
         if action == "delete":
             metadata_r = routine.get("metadata") or {}
             task_name = str(metadata_r.get("task_name") or "").strip()
@@ -507,10 +497,10 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     if action == "simulate":
         routine = _find_routine(args, state)
         if not routine:
-            return _err_tr("routine not found")
+            return _err("routine not found")
         steps = routine.get("metadata", {}).get("steps") or []
-        return _ok_tr(routine=routine, would_run=[{"tool": s.get("tool"), "args": s.get("args")} for s in steps if isinstance(s, dict)], step_count=len(steps), note="dry-run; nothing was executed")
-    return _err_tr(
+        return _ok(routine=routine, would_run=[{"tool": s.get("tool"), "args": s.get("args")} for s in steps if isinstance(s, dict)], step_count=len(steps), note="dry-run; nothing was executed")
+    return _err(
         "unknown routine action", action=action,
         valid_actions=[
             "status", "create", "list", "enable", "disable", "run_now",
@@ -534,15 +524,15 @@ def _register_routine_scheduled_task(task_name: str, routine_label: str, trigger
     """
     python_exe = _detect_python_executable()
     if not python_exe:
-        return _err_tr("no python executable found for scheduled task", status="needs_dependency", verified=False)
+        return _err("no python executable found for scheduled task", status="needs_dependency", verified=False)
     trigger_ps = _build_routine_trigger_ps(trigger)
     if not trigger_ps:
-        return _err_tr(f"invalid routine trigger: {trigger}", trigger=trigger)
+        return _err(f"invalid routine trigger: {trigger}", trigger=trigger)
     # Validamos task_name contra el patrón que produce _routine_task_name.
     try:
         safe_task_name = ps_safe_literal(task_name, re.compile(r"^Gemma4Routine_[A-Za-z0-9_]+$"))
     except PSValidationError as exc:
-        return _err_tr(f"invalid task name: {exc}", task_name=task_name)
+        return _err(f"invalid task name: {exc}", task_name=task_name)
     env = {
         **os.environ,
         "GEMMA4_ROUTINE_TASK": safe_task_name,
@@ -562,8 +552,8 @@ def _register_routine_scheduled_task(task_name: str, routine_label: str, trigger
     )
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], env=env, capture_output=True, text=True, timeout=30)
     if proc.returncode != 0:
-        return _err_tr("failed to register routine scheduled task", stderr=proc.stderr, exit_code=proc.returncode)
-    return _ok_tr(task_name=task_name, trigger=trigger)
+        return _err("failed to register routine scheduled task", stderr=proc.stderr, exit_code=proc.returncode)
+    return _ok(task_name=task_name, trigger=trigger)
 
 
 def _unregister_routine_scheduled_task(task_name: str) -> dict[str, Any]:
@@ -678,7 +668,7 @@ def _append_routine_run(state: AgentState, resource_id: str, run_record: dict[st
 def _routine_history(state: AgentState, routine: dict[str, Any] | None, *, limit: int = 20) -> dict[str, Any]:
     if routine:
         history = list((routine.get("metadata") or {}).get("history") or [])
-        return _ok_tr(routine_id=routine.get("id"), label=routine.get("label"), history=history[-limit:], count=len(history))
+        return _ok(routine_id=routine.get("id"), label=routine.get("label"), history=history[-limit:], count=len(history))
     # All routines
     out = []
     for res in state._load().get("resources", {}).values():
@@ -687,4 +677,4 @@ def _routine_history(state: AgentState, routine: dict[str, Any] | None, *, limit
         last = (res.get("metadata") or {}).get("last_run")
         if last:
             out.append({"routine_id": res.get("id"), "label": res.get("label"), "last_run": last})
-    return _ok_tr(runs=out, count=len(out))
+    return _ok(runs=out, count=len(out))

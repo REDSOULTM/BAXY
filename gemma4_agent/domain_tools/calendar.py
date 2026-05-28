@@ -28,7 +28,6 @@ from pathlib import Path
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -46,15 +45,6 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
-
-
 def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import (
         _find_resource,
@@ -63,13 +53,13 @@ def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
     )
     action = str(args.get("action") or "list").casefold()
     if action == "status":
-        return _ok_tr(local_state=True, event_count=len(_resources_by_kind(state, "calendar_event")))
+        return _ok(local_state=True, event_count=len(_resources_by_kind(state, "calendar_event")))
     if action in {"event_list", "list"}:
-        return _ok_tr(events=_resources_by_kind(state, "calendar_event", include_closed=bool(args.get("include_closed", False))))
+        return _ok(events=_resources_by_kind(state, "calendar_event", include_closed=bool(args.get("include_closed", False))))
     if action == "event_create":
         title = str(args.get("title") or "").strip()
         if not title:
-            return _err_tr("event_create requires title", status="needs_user")
+            return _err("event_create requires title", status="needs_user")
         # VALIDACION start/end como ISO. Antes acepta cualquier string lo que
         # rompe ics_export y comparaciones temporales downstream.
         start_raw = args.get("start") or args.get("due")
@@ -78,7 +68,7 @@ def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
         else:
             start_iso, err = _parse_due_iso(start_raw)
             if err:
-                return _err_tr(err, field="start", value=start_raw, status="needs_user")
+                return _err(err, field="start", value=start_raw, status="needs_user")
             if start_iso is None:
                 start_iso = datetime.now().isoformat(timespec="seconds")
         end_raw = args.get("end")
@@ -86,14 +76,14 @@ def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
         if end_raw:
             end_iso, err = _parse_due_iso(end_raw)
             if err:
-                return _err_tr(err, field="end", value=end_raw, status="needs_user")
+                return _err(err, field="end", value=end_raw, status="needs_user")
         else:
             end_iso = None
         # SANITY: end debe ser >= start si ambos estan presentes.
         if end_iso:
             try:
                 if datetime.fromisoformat(end_iso) < datetime.fromisoformat(start_iso):
-                    return _err_tr(
+                    return _err(
                         "event end is before start",
                         start=start_iso, end=end_iso, status="needs_user",
                     )
@@ -107,37 +97,37 @@ def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
                 "created_at": datetime.now().isoformat(timespec="seconds"),
             },
         )
-        return _ok_tr(event=resource.get("resource"))
+        return _ok(event=resource.get("resource"))
     if action in {"event_delete", "delete"}:
         event = _find_resource(args, state, "calendar_event")
         if not event:
-            return _err_tr("event not found", status="needs_user")
+            return _err("event not found", status="needs_user")
         return state.mark_cleaned(str(event["id"]), {"deleted": True})
     if action == "ics_export":
         events = _resources_by_kind(state, "calendar_event")
         if not events:
-            return _err_tr("no events to export", status="needs_user")
+            return _err("no events to export", status="needs_user")
         path = _calendar_export_path(args, state)
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
         except OSError as exc:
-            return _err_tr("cannot create export directory", path=str(path.parent), reason=str(exc))
+            return _err("cannot create export directory", path=str(path.parent), reason=str(exc))
         body = _events_to_ics(events)
         try:
             path.write_text(body, encoding="utf-8")
         except (PermissionError, OSError) as exc:
-            return _err_tr("ics write failed", path=str(path), reason=str(exc),
+            return _err("ics write failed", path=str(path), reason=str(exc),
                         status="needs_user" if isinstance(exc, PermissionError) else "failed")
         try:
             size = path.stat().st_size
         except OSError:
             size = -1
-        return _ok_tr(path=str(path.resolve()), events=len(events), bytes=size, verified=size > 0)
+        return _ok(path=str(path.resolve()), events=len(events), bytes=size, verified=size > 0)
     if action == "event_update":
         return _calendar_event_update(args, state)
     if action == "ics_import":
         return _calendar_ics_import(args, state)
-    return _err_tr(
+    return _err(
         "unknown local_calendar action", action=action,
         valid_actions=[
             "status", "event_list", "event_create", "event_delete",
@@ -151,13 +141,13 @@ def _calendar_event_update(args: dict[str, Any], state: AgentState) -> dict[str,
     from .helpers import _find_resource, _update_resource_metadata
     event = _find_resource(args, state, "calendar_event")
     if not event:
-        return _err_tr("event not found")
+        return _err("event not found")
     updates: dict[str, Any] = {}
     for key in ("title", "start", "end", "location", "notes"):
         if key in args and args[key] is not None:
             updates[key] = args[key]
     if not updates:
-        return _err_tr("no updatable fields provided", supported=["title", "start", "end", "location", "notes"])
+        return _err("no updatable fields provided", supported=["title", "start", "end", "location", "notes"])
     if "title" in updates:
         # CC-102: label patch atómico.
         state.update_resource(str(event["id"]), label=str(updates["title"]))
@@ -170,13 +160,13 @@ def _calendar_ics_import(args: dict[str, Any], state: AgentState) -> dict[str, A
     if path_raw:
         p = Path(path_raw).expanduser()
         if not p.is_file():
-            return _err_tr("ICS file not found", path=str(p))
+            return _err("ICS file not found", path=str(p))
         text = p.read_text(encoding="utf-8", errors="replace")
     if not text.strip():
-        return _err_tr("no ICS content provided (pass path or content)")
+        return _err("no ICS content provided (pass path or content)")
     events_parsed = _ics_parse_events(text)
     if not events_parsed:
-        return _err_tr("no VEVENT blocks found in input")
+        return _err("no VEVENT blocks found in input")
     created = []
     for evt in events_parsed:
         title = evt.get("summary") or "Evento"
@@ -194,7 +184,7 @@ def _calendar_ics_import(args: dict[str, Any], state: AgentState) -> dict[str, A
             },
         )
         created.append(resource.get("resource"))
-    return _ok_tr(imported=len(created), events=created[:50], total_parsed=len(events_parsed))
+    return _ok(imported=len(created), events=created[:50], total_parsed=len(events_parsed))
 
 
 def _ics_parse_events(text: str) -> list[dict[str, Any]]:

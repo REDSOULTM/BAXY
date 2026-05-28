@@ -37,7 +37,6 @@ from typing import Any
 
 from .._ps import PSValidationError, RX_SQL_IDENT, ps_safe_literal
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -56,15 +55,6 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
-
-
 def database_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """Compound tool for local databases.
 
@@ -77,7 +67,7 @@ def database_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """
     action = str(args.get("action") or "status").casefold()
     if action == "status":
-        return _ok_tr(
+        return _ok(
             sqlite=True,
             psycopg=importlib.util.find_spec("psycopg") is not None or importlib.util.find_spec("psycopg2") is not None,
             mysql_connector=importlib.util.find_spec("mysql.connector") is not None,
@@ -88,7 +78,7 @@ def database_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     try:
         conn, cleanup = _database_connect(driver, args)
     except Exception as exc:
-        return _err_tr(f"connect failed: {exc}", driver=driver)
+        return _err(f"connect failed: {exc}", driver=driver)
     try:
         if action == "list_tables":
             return _database_list_tables(conn, driver)
@@ -100,7 +90,7 @@ def database_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             return _database_execute(conn, driver, args, state)
         if action == "export_csv":
             return _database_export_csv(conn, driver, args, state)
-        return _err_tr(
+        return _err(
             "unknown database action", action=action,
             valid_actions=["status", "list_tables", "schema", "query"],
             status="needs_user",
@@ -193,18 +183,18 @@ def _database_list_tables(conn: Any, driver: str) -> dict[str, Any]:
                 tables.append(str(values[0]))
         elif isinstance(row, (list, tuple)) and row:
             tables.append(str(row[0]))
-    return _ok_tr(driver=driver, tables=tables, count=len(tables))
+    return _ok(driver=driver, tables=tables, count=len(tables))
 
 
 def _database_schema(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, Any]:
     table_raw = str(args.get("table") or "").strip()
     if not table_raw:
-        return _err_tr("missing table name")
+        return _err("missing table name")
     # CC-017 / T2-database-schema-fstring-injection-017: validar identifier.
     try:
         table = ps_safe_literal(table_raw, RX_SQL_IDENT)
     except PSValidationError:
-        return _err_tr(
+        return _err(
             "invalid table identifier (allowed: letters/digits/underscore, optional schema.table)",
             table=table_raw,
             status="needs_user",
@@ -219,7 +209,7 @@ def _database_schema(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, 
     else:
         cur.execute(f"DESCRIBE {table}")
         columns = [{"name": (r[0] if isinstance(r, (list, tuple)) else r.get("Field")), "type": (r[1] if isinstance(r, (list, tuple)) else r.get("Type"))} for r in cur.fetchall()]
-    return _ok_tr(driver=driver, table=table, columns=columns)
+    return _ok(driver=driver, table=table, columns=columns)
 
 
 def _apply_readonly(conn: Any, driver: str) -> None:
@@ -264,10 +254,10 @@ def _release_readonly(conn: Any, driver: str) -> None:
 def _database_query(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, Any]:
     sql = str(args.get("sql") or args.get("query") or "").strip()
     if not sql:
-        return _err_tr("missing sql")
+        return _err("missing sql")
     # Pre-check informativo; el enforcement real es a nivel de driver.
     if not _is_read_only_sql(sql):
-        return _err_tr(
+        return _err(
             "query is restricted to read-only statements (SELECT, WITH, EXPLAIN, PRAGMA, SHOW). Use execute(...) for mutations.",
             status="needs_user",
         )
@@ -289,7 +279,7 @@ def _database_query(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, A
                 serialized.append({k: _scalarize(row[k]) for k in row.keys()})
             else:
                 serialized.append({columns[i] if i < len(columns) else f"col{i}": _scalarize(v) for i, v in enumerate(row)})
-        return _ok_tr(sql=sql, columns=columns, row_count=len(rows), rows=serialized)
+        return _ok(sql=sql, columns=columns, row_count=len(rows), rows=serialized)
     finally:
         _release_readonly(conn, driver)
 
@@ -298,9 +288,9 @@ def _database_execute(conn: Any, driver: str, args: dict[str, Any], state: Agent
     from .._shared import hard_gate as _hard_gate
     sql = str(args.get("sql") or args.get("query") or "").strip()
     if not sql:
-        return _err_tr("missing sql")
+        return _err("missing sql")
     if _is_read_only_sql(sql):
-        return _err_tr("execute is for mutations; use query(...) for SELECT")
+        return _err("execute is for mutations; use query(...) for SELECT")
     # CC-101 / CC-019: gate duro independiente de safety_enabled.
     gate = _hard_gate(
         state,
@@ -319,13 +309,13 @@ def _database_execute(conn: Any, driver: str, args: dict[str, Any], state: Agent
     except Exception:
         pass
     rowcount = cur.rowcount if hasattr(cur, "rowcount") else None
-    return _ok_tr(sql=sql, driver=driver, rowcount=rowcount, verified=True)
+    return _ok(sql=sql, driver=driver, rowcount=rowcount, verified=True)
 
 
 def _database_export_csv(conn: Any, driver: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     sql = str(args.get("sql") or args.get("query") or "").strip()
     if not sql or not _is_read_only_sql(sql):
-        return _err_tr("export_csv requires a read-only SQL query")
+        return _err("export_csv requires a read-only SQL query")
     dst_raw = str(args.get("dst") or args.get("output") or "").strip()
     if dst_raw:
         dst = Path(dst_raw).expanduser()
@@ -349,7 +339,7 @@ def _database_export_csv(conn: Any, driver: str, args: dict[str, Any], state: Ag
                     writer.writerow([_scalarize(row[c]) for c in columns])
                 else:
                     writer.writerow([_scalarize(v) for v in row])
-        return _ok_tr(sql=sql, driver=driver, dst=str(dst), rows=len(rows), verified=dst.is_file())
+        return _ok(sql=sql, driver=driver, dst=str(dst), rows=len(rows), verified=dst.is_file())
     finally:
         _release_readonly(conn, driver)
 

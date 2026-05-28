@@ -26,7 +26,6 @@ import os
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
 from ..state import AgentState
 
 
@@ -42,15 +41,6 @@ __all__ = [
     "_hass_area_control",
     "_smart_home_mqtt_publish",
 ]
-
-
-# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -70,7 +60,7 @@ def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             mqtt_available = importlib.util.find_spec("paho") is not None
         except (ImportError, ValueError, ModuleNotFoundError):
             mqtt_available = False
-        return _ok_tr(
+        return _ok(
             home_assistant=bool(alive),
             host=host,
             has_token=bool(token),
@@ -78,7 +68,7 @@ def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             note="Set GEMMA4_HASS_HOST and GEMMA4_HASS_TOKEN (long-lived access token from /profile in your HA UI).",
         )
     if not alive:
-        return _err_tr(
+        return _err(
             f"Home Assistant is not reachable at {host}",
             status="needs_user", verified=False,
             completion_status="needs_home_assistant_running",
@@ -87,7 +77,7 @@ def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "mqtt_publish":
         return _smart_home_mqtt_publish(args)
     if not token:
-        return _err_tr(
+        return _err(
             "Home Assistant requires a long-lived access token",
             status="needs_user",
             completion_status="needs_user_auth",
@@ -105,13 +95,13 @@ def smart_home_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if action == "scene_run":
         scene = str(args.get("scene") or args.get("entity_id") or "").strip()
         if not scene:
-            return _err_tr("scene_run requires scene= or entity_id=")
+            return _err("scene_run requires scene= or entity_id=")
         return _hass_call_service(host, token, {"domain": "scene", "service": "turn_on", "data": {"entity_id": scene}}, state)
     if action in {"area_list", "areas"}:
         return _hass_area_list(host, token)
     if action == "area_control":
         return _hass_area_control(host, token, args, state)
-    return _err_tr(
+    return _err(
         "unknown smart_home action", action=action,
         valid_actions=[
             "status", "discover", "states", "service_call", "mqtt_publish",
@@ -156,30 +146,30 @@ def _hass_request(method: str, url: str, token: str, payload: dict[str, Any] | N
 def _hass_states(host: str, token: str, args: dict[str, Any]) -> dict[str, Any]:
     resp = _hass_request("GET", f"{host}/api/states", token)
     if not resp.get("_ok"):
-        return _err_tr(f"GET /api/states failed: {resp.get('_error')}")
+        return _err(f"GET /api/states failed: {resp.get('_error')}")
     states = resp.get("data") or []
     domain_filter = str(args.get("domain") or "").casefold()
     if domain_filter:
         states = [s for s in states if str(s.get("entity_id", "")).split(".", 1)[0].casefold() == domain_filter]
     limit = int(args.get("limit", 500))
-    return _ok_tr(count=len(states), states=states[:limit], domain_filter=domain_filter or None)
+    return _ok(count=len(states), states=states[:limit], domain_filter=domain_filter or None)
 
 
 def _hass_get_state(host: str, token: str, args: dict[str, Any]) -> dict[str, Any]:
     entity_id = str(args.get("entity_id") or "").strip()
     if not entity_id:
-        return _err_tr("missing entity_id")
+        return _err("missing entity_id")
     resp = _hass_request("GET", f"{host}/api/states/{entity_id}", token)
     if not resp.get("_ok"):
-        return _err_tr(f"GET state failed: {resp.get('_error')}", entity_id=entity_id)
-    return _ok_tr(entity_id=entity_id, state=resp.get("data"))
+        return _err(f"GET state failed: {resp.get('_error')}", entity_id=entity_id)
+    return _ok(entity_id=entity_id, state=resp.get("data"))
 
 
 def _hass_set_state(host: str, token: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     entity_id = str(args.get("entity_id") or "").strip()
     new_state = args.get("state")
     if not entity_id or new_state is None:
-        return _err_tr("set_state requires entity_id and state")
+        return _err("set_state requires entity_id and state")
     # Snapshot the previous state for rollback.
     before = _hass_get_state(host, token, {"entity_id": entity_id}).get("state") or {}
     payload = {"state": str(new_state), "attributes": args.get("attributes") if isinstance(args.get("attributes"), dict) else {}}
@@ -190,15 +180,15 @@ def _hass_set_state(host: str, token: str, args: dict[str, Any], state: AgentSta
     )
     resp = _hass_request("POST", f"{host}/api/states/{entity_id}", token, payload)
     if not resp.get("_ok"):
-        return _err_tr(f"set_state failed: {resp.get('_error')}", entity_id=entity_id, checkpoint=checkpoint.get("checkpoint"))
-    return _ok_tr(entity_id=entity_id, before=before, after=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
+        return _err(f"set_state failed: {resp.get('_error')}", entity_id=entity_id, checkpoint=checkpoint.get("checkpoint"))
+    return _ok(entity_id=entity_id, before=before, after=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
 
 
 def _hass_call_service(host: str, token: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     domain = str(args.get("domain") or "").strip()
     service = str(args.get("service") or "").strip()
     if not domain or not service:
-        return _err_tr("call_service requires domain and service")
+        return _err("call_service requires domain and service")
     raw_payload = args.get("data")
     payload: dict[str, Any] = raw_payload if isinstance(raw_payload, dict) else {}
     # Merge target into payload (HA accepts entity_id at top-level).
@@ -224,8 +214,8 @@ def _hass_call_service(host: str, token: str, args: dict[str, Any], state: Agent
     )
     resp = _hass_request("POST", f"{host}/api/services/{domain}/{service}", token, payload)
     if not resp.get("_ok"):
-        return _err_tr(f"call_service failed: {resp.get('_error')}", domain=domain, service=service)
-    return _ok_tr(domain=domain, service=service, payload=payload, response=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
+        return _err(f"call_service failed: {resp.get('_error')}", domain=domain, service=service)
+    return _ok(domain=domain, service=service, payload=payload, response=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
 
 
 def _hass_area_list(host: str, token: str) -> dict[str, Any]:
@@ -234,7 +224,7 @@ def _hass_area_list(host: str, token: str) -> dict[str, Any]:
     # the basics for naming.
     resp = _hass_request("GET", f"{host}/api/states", token)
     if not resp.get("_ok"):
-        return _err_tr(f"area_list failed: {resp.get('_error')}")
+        return _err(f"area_list failed: {resp.get('_error')}")
     states = resp.get("data") or []
     areas: dict[str, list[str]] = {}
     for s in states:
@@ -242,18 +232,18 @@ def _hass_area_list(host: str, token: str) -> dict[str, Any]:
         if not area:
             continue
         areas.setdefault(str(area), []).append(s.get("entity_id"))
-    return _ok_tr(areas=[{"area_id": k, "entities": v, "count": len(v)} for k, v in areas.items()], count=len(areas), note="Areas read from entity attributes; for the full area_registry use the WebSocket API.")
+    return _ok(areas=[{"area_id": k, "entities": v, "count": len(v)} for k, v in areas.items()], count=len(areas), note="Areas read from entity attributes; for the full area_registry use the WebSocket API.")
 
 
 def _hass_area_control(host: str, token: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     area = str(args.get("area") or args.get("area_id") or "").strip()
     service = str(args.get("service") or "turn_off").strip()
     if not area:
-        return _err_tr("missing area")
+        return _err("missing area")
     area_info = _hass_area_list(host, token)
     matching = next((a for a in area_info.get("areas", []) if a.get("area_id") == area or area.casefold() in str(a.get("area_id") or "").casefold()), None)
     if not matching:
-        return _err_tr("area not found", area=area, available=[a["area_id"] for a in area_info.get("areas", [])])
+        return _err("area not found", area=area, available=[a["area_id"] for a in area_info.get("areas", [])])
     # Group by domain so we call e.g. light.turn_off once per area.
     results: list[dict[str, Any]] = []
     by_domain: dict[str, list[str]] = {}
@@ -265,12 +255,12 @@ def _hass_area_control(host: str, token: str, args: dict[str, Any], state: Agent
             continue
         r = _hass_call_service(host, token, {"domain": domain, "service": service, "data": {"entity_id": entities}}, state)
         results.append({"domain": domain, "entities": entities, "result": {"ok": r.get("ok"), "error": r.get("error")}})
-    return _ok_tr(area=matching["area_id"], service=service, calls=results, verified=all(r["result"]["ok"] for r in results))
+    return _ok(area=matching["area_id"], service=service, calls=results, verified=all(r["result"]["ok"] for r in results))
 
 
 def _smart_home_mqtt_publish(args: dict[str, Any]) -> dict[str, Any]:
     if importlib.util.find_spec("paho.mqtt.client") is None:
-        return _err_tr(
+        return _err(
             "paho-mqtt is not installed",
             status="needs_dependency",
             install_hint="python -m pip install paho-mqtt",
@@ -278,7 +268,7 @@ def _smart_home_mqtt_publish(args: dict[str, Any]) -> dict[str, Any]:
     topic = str(args.get("topic") or "").strip()
     payload = args.get("payload")
     if not topic:
-        return _err_tr("missing topic")
+        return _err("missing topic")
     broker = str(args.get("broker") or os.environ.get("GEMMA4_MQTT_BROKER") or "127.0.0.1").strip()
     port = int(args.get("port", os.environ.get("GEMMA4_MQTT_PORT", 1883) or 1883))
     qos = int(args.get("qos", 0))
@@ -292,11 +282,11 @@ def _smart_home_mqtt_publish(args: dict[str, Any]) -> dict[str, Any]:
     try:
         client.connect(broker, port, keepalive=10)
     except Exception as exc:
-        return _err_tr(f"MQTT connect failed: {exc}", broker=broker, port=port)
+        return _err(f"MQTT connect failed: {exc}", broker=broker, port=port)
     if isinstance(payload, (dict, list)):
         payload_str = json.dumps(payload)
     else:
         payload_str = str(payload) if payload is not None else ""
     info = client.publish(topic, payload_str, qos=qos, retain=retain)
     client.disconnect()
-    return _ok_tr(topic=topic, payload_bytes=len(payload_str), broker=f"{broker}:{port}", qos=qos, retain=retain, rc=info.rc, verified=info.rc == 0)
+    return _ok(topic=topic, payload_bytes=len(payload_str), broker=f"{broker}:{port}", qos=qos, retain=retain, rc=info.rc, verified=info.rc == 0)

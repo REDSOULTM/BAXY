@@ -46,7 +46,6 @@ from .._shared import (  # noqa: E402
     hard_gate as _hard_gate,
     redact_sensitive as _redact_credentials,
 )
-from ..tool_result import ToolResult
 
 # R3 sprint 2026-05-28: helpers cross-cutting movidos a domain_tools_helpers.py
 # (rompe los ~26 ciclos falsos-positivos del analizador estático que el patrón
@@ -68,15 +67,6 @@ from .helpers import (  # noqa: F401, E402
     _safe_name,
     _update_resource_metadata,
 )
-
-# R4 sprint 2026-05-28: alias para migración _ok/_err -> ToolResult.to_dict().
-# Mantiene back-compat byte-a-byte con consumers viejos.
-def _ok_tr(**kw):
-    return ToolResult.ok_result(**kw).to_dict()
-
-
-def _err_tr(msg, **kw):
-    return ToolResult.err(msg, **kw).to_dict()
 
 
 
@@ -100,7 +90,7 @@ def audio_device_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
         svv_devices = _svv_list_devices() if helper else []
         devices = svv_devices if svv_devices else _audio_endpoints()
         defaults = _svv_current_defaults(svv_devices) if svv_devices else {}
-        return _ok_tr(
+        return _ok(
             devices=devices,
             count=len(devices),
             defaults=defaults,
@@ -118,7 +108,7 @@ def audio_device_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
             rollback=rollback,
             metadata={"devices": svv_devices or _audio_endpoints(), "defaults": defaults, "helper": str(helper) if helper else None},
         )
-        return _ok_tr(
+        return _ok(
             snapshot=checkpoint.get("checkpoint"),
             defaults=defaults,
             rollback_steps=len(rollback),
@@ -132,7 +122,7 @@ def audio_device_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]
         return _audio_set_app_route(args, state)
     if action == "get_app_routes":
         return _audio_get_app_routes()
-    return _err_tr(
+    return _err(
         "unknown audio_device action", action=action,
         valid_actions=[
             "status", "list", "snapshot", "set_default", "set_default_app",
@@ -151,7 +141,7 @@ def _audio_set_app_route(args: dict[str, Any], state: AgentState) -> dict[str, A
     """
     helper = _find_soundvolumeview()
     if not helper:
-        return _err_tr(
+        return _err(
             "set_app_route requires SoundVolumeView",
             status="needs_dependency",
             install_hint="Download SoundVolumeView.zip from NirSoft and set GEMMA4_SOUNDVOLUMEVIEW.",
@@ -159,11 +149,11 @@ def _audio_set_app_route(args: dict[str, Any], state: AgentState) -> dict[str, A
     device = str(args.get("device") or args.get("name") or "").strip()
     app = str(args.get("app") or args.get("process") or "").strip()
     if not device or not app:
-        return _err_tr("set_app_route requires device (or 'default') and app (process name or pid)")
+        return _err("set_app_route requires device (or 'default') and app (process name or pid)")
     direction = str(args.get("direction") or "render").casefold()  # render|capture
     role = str(args.get("role") or "1")  # 1=Multimedia by default
     if role not in {"0", "1", "2", "all"}:
-        return _err_tr("role must be 0|1|2|all (Console|Multimedia|Communications|all)")
+        return _err("role must be 0|1|2|all (Console|Multimedia|Communications|all)")
 
     # If the user just gave a friendly device name, the CLI expects either the
     # full "Device\Speakers\Render" path or the friendly name from /sjson.
@@ -188,7 +178,7 @@ def _audio_set_app_route(args: dict[str, Any], state: AgentState) -> dict[str, A
     )
     after_routes = _audio_get_app_routes().get("routes", [])
     matched_after = [r for r in after_routes if str(r.get("process") or "").casefold() == app.casefold()]
-    return _ok_tr(
+    return _ok(
         app=app, target=target_arg, role=role, direction=direction,
         helper=str(helper),
         exit_code=proc.returncode, stdout=proc.stdout.strip()[:500], stderr=proc.stderr[-500:],
@@ -205,7 +195,7 @@ def _audio_get_app_routes() -> dict[str, Any]:
     """List per-app audio overrides via SoundVolumeView /sjson (Type=Application rows)."""
     helper = _find_soundvolumeview()
     if not helper:
-        return _err_tr(
+        return _err(
             "get_app_routes requires SoundVolumeView",
             status="needs_dependency",
             install_hint="Download SoundVolumeView.zip from NirSoft and set GEMMA4_SOUNDVOLUMEVIEW.",
@@ -216,16 +206,16 @@ def _audio_get_app_routes() -> dict[str, Any]:
     try:
         proc = subprocess.run([str(helper), "/sjson", tmp_path], capture_output=True, text=True, timeout=20)
         if proc.returncode != 0:
-            return _err_tr("SoundVolumeView /sjson failed", stderr=proc.stderr, exit_code=proc.returncode)
+            return _err("SoundVolumeView /sjson failed", stderr=proc.stderr, exit_code=proc.returncode)
         raw = Path(tmp_path).read_text(encoding="utf-16", errors="replace").lstrip("﻿").strip()
         if not raw:
             raw = Path(tmp_path).read_text(encoding="utf-8", errors="replace").lstrip("﻿").strip()
         if not raw:
-            return _ok_tr(routes=[], count=0)
+            return _ok(routes=[], count=0)
         try:
             data = json.loads(raw)
         except json.JSONDecodeError:
-            return _err_tr("SoundVolumeView returned invalid JSON")
+            return _err("SoundVolumeView returned invalid JSON")
     finally:
         try:
             os.unlink(tmp_path)
@@ -249,7 +239,7 @@ def _audio_get_app_routes() -> dict[str, Any]:
             "muted": entry.get("Muted"),
             "volume_percent": entry.get("Volume Percent") or entry.get("Volume dB"),
         })
-    return _ok_tr(routes=routes, count=len(routes))
+    return _ok(routes=routes, count=len(routes))
 
 
 # Notification entry-point + helpers - extraídos a domain_tools_notifications.py
@@ -2226,7 +2216,7 @@ def _launch_streaming(
     """
     import urllib.parse
     if not query:
-        return _err_tr(
+        return _err(
             f"{canonical} provider requires a query (movie/series/song)",
             provider=canonical,
         )
@@ -2304,7 +2294,7 @@ def _launch_streaming(
                 final_note = (
                     f"{canonical}: playing — Spotify focused, Enter pressed on first result."
                 )
-            return _ok_tr(
+            return _ok(
                 action="play",
                 provider=canonical,
                 query=query,
@@ -2353,7 +2343,7 @@ def _launch_streaming(
                 try:
                     opened = webbrowser.open(web_url)
                 except Exception as exc:
-                    return _err_tr(
+                    return _err(
                         f"Could not open {canonical} "
                         f"(no app deeplink and webbrowser failed): {exc}",
                         provider=canonical, status="failed",
@@ -2362,14 +2352,14 @@ def _launch_streaming(
         try:
             opened = webbrowser.open(web_url)
         except Exception as exc:
-            return _err_tr(
+            return _err(
                 f"Could not open {canonical} "
                 f"(no app deeplink and webbrowser failed): {exc}",
                 provider=canonical, status="failed",
             )
 
     if not opened:
-        return _err_tr(
+        return _err(
             f"{canonical}: no native deeplink and default browser refused to open.",
             provider=canonical, status="needs_user",
             install_hint=install_hint,
@@ -2398,7 +2388,7 @@ def _launch_streaming(
         )
     else:
         note_msg = note
-    result = _ok_tr(
+    result = _ok(
         action="play",
         provider=f"{canonical}_web",
         query=query,
@@ -2436,7 +2426,7 @@ def _media_play_streaming(
     """Entry point unificado para Spotify/Netflix/Disney+/Max/Prime Video."""
     resolved = _resolve_streaming_provider(provider)
     if not resolved:
-        return _err_tr(
+        return _err(
             f"unsupported streaming provider: {provider!r}",
             provider=provider, status="needs_dependency",
             install_hint=(
@@ -2497,7 +2487,7 @@ def _media_play_streaming(
                 + ". " + str(rnd.get("needs_username_hint") or "")
             )
             completion = "opened_search_results_pending_play"
-        return _ok_tr(
+        return _ok(
             action="play",
             provider="spotify",
             query=query,
@@ -2539,7 +2529,7 @@ def _media_play_streaming(
                 # el contexto via su history — no persistimos pending state
                 # (eso causaba bugs donde turns ajenos eran atrapados como
                 # respuestas).
-                return _err_tr(
+                return _err(
                     f"need {canonical} profile to auto-play",
                     status="needs_user",
                     provider=canonical,
@@ -2578,7 +2568,7 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
                 "has_deeplink": spec.get("deeplink") is not None,
                 "web_url_template": spec.get("web_url"),
             }
-        return _ok_tr(
+        return _ok(
             backends=["browser_youtube", "windows_media_keys", "local_file",
                        "vlc_cli", "winrt_smtc",
                        "spotify", "netflix", "disney", "hbo_max", "prime_video"],
@@ -2603,14 +2593,14 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         if provider == "vlc":
             vlc = _find_vlc_executable()
             if not vlc:
-                return _err_tr(
+                return _err(
                     "VLC is not installed",
                     status="needs_dependency", verified=False,
                     install_hint="winget install VideoLAN.VLC",
                 )
             target = str(args.get("path") or args.get("url") or "").strip()
             if not target:
-                return _err_tr("vlc provider requires path or url")
+                return _err("vlc provider requires path or url")
             return _media_play_vlc(vlc, target)
         # Otros streaming providers sin soporte nativo: fallback honesto a
         # YouTube con nota explicita de que NO es el provider pedido.
@@ -2625,7 +2615,7 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
                     "played on YouTube instead."
                 )
             return result
-        return _err_tr(
+        return _err(
             f"unsupported media provider: {provider!r}",
             provider=provider, status="needs_dependency", verified=False,
             install_hint="Use provider=youtube (default), local_file with path=..., or vlc with path/url.",
@@ -2633,7 +2623,7 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
     if action == "open_local":
         path = str(args.get("path") or "").strip()
         if not path:
-            return _err_tr("missing path")
+            return _err("missing path")
         return _media_play_local(path, args)
     if action in {"pause", "resume", "play_pause"}:
         return executor("audio", {"action": "media_play_pause"})
@@ -2647,17 +2637,17 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         return _media_now_playing()
     if action in {"queue_add", "queue_clear", "queue_list"}:
         if not state:
-            return _err_tr("queue actions require state", status="needs_implementation")
+            return _err("queue actions require state", status="needs_implementation")
         return _media_queue(action, args, state)
     if action == "search_local_library":
         return _media_search_local_library(args)
     if action in {"volume_for_app", "cast_lan"}:
-        return _err_tr(
+        return _err(
             f"media.{action} is not implemented yet",
             status="needs_implementation", verified=False,
             note=("volume_for_app needs SoundVolumeView /SetAppVolume" if action == "volume_for_app" else "cast_lan needs UPnP/DLNA backend (deferred)"),
         )
-    return _err_tr(
+    return _err(
         "unknown media action", action=action,
         valid_actions=[
             "status", "play", "pause", "resume", "play_pause",
@@ -2670,13 +2660,13 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
 def _media_play_local(path_raw: str, args: dict[str, Any]) -> dict[str, Any]:
     target = Path(path_raw).expanduser()
     if not target.exists():
-        return _err_tr("media file not found", path=path_raw)
+        return _err("media file not found", path=path_raw)
     backend = str(args.get("backend") or "").casefold()
     if backend == "vlc":
         vlc = _find_vlc_executable()
         if vlc:
             return _media_play_vlc(vlc, str(target))
-        return _err_tr(
+        return _err(
             "VLC backend requested but vlc not on PATH",
             status="needs_dependency", install_hint="winget install VideoLAN.VLC",
         )
@@ -2684,7 +2674,7 @@ def _media_play_local(path_raw: str, args: dict[str, Any]) -> dict[str, Any]:
         os.startfile(target)
     else:
         webbrowser.open(target.as_uri())
-    return _ok_tr(action="play", provider="local_file", path=str(target.resolve()), opened=True, verified=True)
+    return _ok(action="play", provider="local_file", path=str(target.resolve()), opened=True, verified=True)
 
 
 def _media_play_vlc(vlc: str, target: str) -> dict[str, Any]:
@@ -2693,7 +2683,7 @@ def _media_play_vlc(vlc: str, target: str) -> dict[str, Any]:
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
     )
-    return _ok_tr(action="play", provider="vlc", target=target, pid=proc.pid, verified=False, status="attempted", note="VLC launched; verify via now_playing or window list.")
+    return _ok(action="play", provider="vlc", target=target, pid=proc.pid, verified=False, status="attempted", note="VLC launched; verify via now_playing or window list.")
 
 
 def _media_now_playing() -> dict[str, Any]:
@@ -2750,17 +2740,17 @@ try {
 """
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=20)
     if proc.returncode != 0:
-        return _err_tr("now_playing query failed", stderr=proc.stderr, exit_code=proc.returncode)
+        return _err("now_playing query failed", stderr=proc.stderr, exit_code=proc.returncode)
     raw = proc.stdout.strip()
     if not raw:
-        return _ok_tr(has_session=False, note="no active media session")
+        return _ok(has_session=False, note="no active media session")
     try:
         data = json.loads(raw)
     except json.JSONDecodeError:
-        return _err_tr("now_playing returned invalid JSON", raw=raw[:1000])
+        return _err("now_playing returned invalid JSON", raw=raw[:1000])
     if not data.get("has_session"):
-        return _ok_tr(has_session=False, raw=data)
-    return _ok_tr(
+        return _ok(has_session=False, raw=data)
+    return _ok(
         has_session=True,
         title=data.get("title"),
         artist=data.get("artist"),
@@ -2785,16 +2775,16 @@ def _media_queue(action: str, args: dict[str, Any], state: AgentState) -> dict[s
     if action == "queue_clear":
         for item in _resources_by_kind(state, "media_queue", include_closed=False):
             state.mark_cleaned(str(item["id"]), {"deleted": True})
-        return _ok_tr(cleared=True)
+        return _ok(cleared=True)
     if action == "queue_list":
         items = _resources_by_kind(state, "media_queue", include_closed=False)
         items.sort(key=lambda r: str(r.get("metadata", {}).get("added_at", "")))
-        return _ok_tr(queue=items, count=len(items))
+        return _ok(queue=items, count=len(items))
     if action == "queue_add":
         item_query = str(args.get("query") or args.get("title") or "").strip()
         item_path = str(args.get("path") or "").strip()
         if not item_query and not item_path:
-            return _err_tr("queue_add requires query or path")
+            return _err("queue_add requires query or path")
         label = item_query or Path(item_path).name
         resource = state.register_resource(
             "media_queue",
@@ -2806,8 +2796,8 @@ def _media_queue(action: str, args: dict[str, Any], state: AgentState) -> dict[s
                 "added_at": datetime.now().isoformat(),
             },
         )
-        return _ok_tr(queue_item=resource.get("resource"))
-    return _err_tr(
+        return _ok(queue_item=resource.get("resource"))
+    return _err(
         "unknown queue action", action=action,
         valid_actions=["enqueue", "dequeue", "list", "clear", "current"],
         status="needs_user",
@@ -2822,7 +2812,7 @@ def _media_search_local_library(args: dict[str, Any]) -> dict[str, Any]:
     else:
         root = Path(root_raw).expanduser()
     if not root.exists():
-        return _err_tr("library root not found", root=str(root))
+        return _err("library root not found", root=str(root))
     query = str(args.get("query") or "").casefold()
     extensions = {".mp3", ".flac", ".wav", ".m4a", ".aac", ".ogg", ".opus", ".wma"}
     limit = int(args.get("limit", 50))
@@ -2838,7 +2828,7 @@ def _media_search_local_library(args: dict[str, Any]) -> dict[str, Any]:
             continue
         if len(results) >= limit:
             break
-    return _ok_tr(results=results, count=len(results), root=str(root))
+    return _ok(results=results, count=len(results), root=str(root))
 
 
 # Source Manager - extraído a domain_tools_source_manager.py
@@ -2944,12 +2934,12 @@ def _resolve_whatsapp_recipient(
         Si phone resolvio -> (phone, normalized, source, None) — usar deeplink.
         Si solo hay nombre (contacto sin phone en store, o store vacio) ->
         (None, None, "gui_search", name_query) — usar GUI search en WhatsApp.
-      - dict de error _err_tr(...) si no se pudo resolver (sin phone ni nombre).
+      - dict de error _err(...) si no se pudo resolver (sin phone ni nombre).
     """
     explicit_phone = str(args.get("phone") or args.get("number") or "").strip()
     if explicit_phone:
         if not _WHATSAPP_PHONE_RE.match(explicit_phone):
-            return _err_tr(
+            return _err(
                 f"invalid phone format: {explicit_phone!r}",
                 hint=("Pass an international format like +54 9 11 1234-5678 or "
                       "just digits 5491112345678. WhatsApp requires country code."),
@@ -2957,7 +2947,7 @@ def _resolve_whatsapp_recipient(
             )
         normalized = _normalize_phone_for_whatsapp(explicit_phone)
         if len(normalized) < 7:
-            return _err_tr(
+            return _err(
                 f"phone too short after normalization: {normalized!r}",
                 hint="Include country code (e.g. 54 for Argentina, 1 for USA).",
                 status="needs_user",
@@ -2970,7 +2960,7 @@ def _resolve_whatsapp_recipient(
         or args.get("name") or ""
     ).strip()
     if not name_query:
-        return _err_tr(
+        return _err(
             "missing recipient: pass phone='+...' OR contact='<name>'",
             status="needs_user",
         )
@@ -2987,7 +2977,7 @@ def _resolve_whatsapp_recipient(
                 or m["contact"].get("label") or "?")
             for m in matches[:3]
         ]
-        return _err_tr(
+        return _err(
             f"contacto ambiguo para {name_query!r}",
             status="needs_user",
             contact_name=name_query,
@@ -3023,7 +3013,7 @@ def _resolve_whatsapp_recipient_legacy3(
     raw, normalized, source, name = r
     if normalized is None:
         # tests legacy no soportaban el path gui_search; devolver error util.
-        return _err_tr(
+        return _err(
             f"contact {name!r} found but has no phone number (use new GUI search path)",
             status="needs_user", contact_name=name,
         )
@@ -3813,7 +3803,7 @@ def whatsapp_tool(
 
     if action == "status":
         app_info = _find_whatsapp_app()
-        return _ok_tr(
+        return _ok(
             installed=app_info["kind"] is not None,
             app_kind=app_info["kind"],
             launch_target=app_info["launch_target"],
@@ -3826,7 +3816,7 @@ def whatsapp_tool(
         )
 
     if action not in {"send_message", "open_chat", "send"}:
-        return _err_tr(
+        return _err(
             f"unknown action: {action!r}",
             hint="Use action='send_message', 'open_chat', or 'status'.",
         )
@@ -3840,7 +3830,7 @@ def whatsapp_tool(
     # Mensaje (opcional para open_chat).
     text = str(args.get("text") or args.get("message") or args.get("body") or "").strip()
     if action in {"send_message", "send"} and not text:
-        return _err_tr(
+        return _err(
             "missing text for send_message",
             hint="Pass text='<your message>' or use action='open_chat' to just open the chat.",
             status="needs_user",
@@ -3867,7 +3857,7 @@ def whatsapp_tool(
     if source == "gui_search" and gui_search_name and executor is not None:
         app_info = _find_whatsapp_app()
         if not app_info["kind"]:
-            return _err_tr(
+            return _err(
                 f"WhatsApp Desktop not installed; cannot search for contact {gui_search_name!r}",
                 status="needs_user", provider="whatsapp",
                 hint=("Install WhatsApp Desktop from Microsoft Store, OR add "
@@ -3884,7 +3874,7 @@ def whatsapp_tool(
         )
         sent = bool(gui_result.get("sent"))
         chat_opened = bool(gui_result.get("chat_opened"))
-        return _ok_tr(
+        return _ok(
             action=action,
             provider="whatsapp_desktop_gui_search",
             recipient_contact=gui_search_name,
@@ -3912,7 +3902,7 @@ def whatsapp_tool(
             ),
         )
     if source == "gui_search" and executor is None:
-        return _err_tr(
+        return _err(
             f"contact {gui_search_name!r} requires GUI search but no executor "
             "available (CLI mode)",
             status="needs_user",
@@ -3959,7 +3949,7 @@ def whatsapp_tool(
             if auto_send and executor is not None:
                 auto_send_info = _whatsapp_auto_send(executor, wait_seconds)
             sent = bool(auto_send_info and auto_send_info.get("sent"))
-            return _ok_tr(
+            return _ok(
                 action=action,
                 provider="whatsapp_desktop",
                 recipient_phone=raw_phone,
@@ -3994,7 +3984,7 @@ def whatsapp_tool(
         import webbrowser
         opened = webbrowser.open(web_url)
         if opened:
-            result = _ok_tr(
+            result = _ok(
                 action=action,
                 provider="whatsapp_web",
                 recipient_phone=raw_phone,
@@ -4022,12 +4012,12 @@ def whatsapp_tool(
                 result["fallback_reason"] = desktop_err
             return result
     except Exception as exc:
-        return _err_tr(
+        return _err(
             f"Could not open WhatsApp (desktop deeplink and web both failed): {exc}",
             status="failed", provider="whatsapp",
             desktop_error=desktop_err,
         )
-    return _err_tr(
+    return _err(
         "WhatsApp: no desktop app and webbrowser refused to open wa.me",
         status="needs_user", provider="whatsapp",
         install_hint="winget install WhatsApp.WhatsApp",
@@ -4133,10 +4123,10 @@ def _audio_endpoints() -> list[dict[str, Any]]:
 def _set_default_audio_device(args: dict[str, Any], state: AgentState, *, communications: bool) -> dict[str, Any]:
     name = str(args.get("name") or args.get("device") or "").strip()
     if not name:
-        return _err_tr("missing device name")
+        return _err("missing device name")
     helper = _find_soundvolumeview()
     if not helper:
-        return _err_tr(
+        return _err(
             "setting default audio device needs SoundVolumeView or a custom WASAPI policy helper",
             requested=name,
             status="needs_dependency",
@@ -4148,7 +4138,7 @@ def _set_default_audio_device(args: dict[str, Any], state: AgentState, *, commun
     devices_before = _svv_list_devices()
     target = _svv_find_device(devices_before, name)
     if not target:
-        return _err_tr(
+        return _err(
             "audio device not found",
             requested=name,
             available=[d.get("Name") or d.get("Device Name") for d in devices_before],
@@ -4191,7 +4181,7 @@ def _set_default_audio_device(args: dict[str, Any], state: AgentState, *, commun
     defaults_after = _svv_current_defaults(devices_after)
     expected_roles = ["Communications"] if communications else ["Console", "Multimedia"]
     verified = _audio_verify_default(defaults_after, name, expected_roles)
-    return _ok_tr(
+    return _ok(
         requested=name,
         helper=str(helper),
         roles=roles,
@@ -4219,11 +4209,11 @@ def _restore_audio_default(args: dict[str, Any], state: AgentState) -> dict[str,
                 checkpoint = cp
                 break
     if not checkpoint:
-        return _err_tr("no audio checkpoint available; create one with audio_device(action=snapshot) first")
+        return _err("no audio checkpoint available; create one with audio_device(action=snapshot) first")
 
     helper = _find_soundvolumeview()
     if not helper:
-        return _err_tr(
+        return _err(
             "audio_device.restore requires SoundVolumeView",
             status="needs_dependency",
             verified=False,
@@ -4231,7 +4221,7 @@ def _restore_audio_default(args: dict[str, Any], state: AgentState) -> dict[str,
         )
     defaults = checkpoint.get("metadata", {}).get("defaults") or {}
     if not defaults:
-        return _err_tr("checkpoint has no defaults to restore", checkpoint_id=checkpoint.get("id"))
+        return _err("checkpoint has no defaults to restore", checkpoint_id=checkpoint.get("id"))
 
     role_to_int = {"Console": "0", "Multimedia": "1", "Communications": "2"}
     results = []
@@ -4253,7 +4243,7 @@ def _restore_audio_default(args: dict[str, Any], state: AgentState) -> dict[str,
     devices_after = _svv_list_devices()
     defaults_after = _svv_current_defaults(devices_after)
     verified = all(defaults_after.get(role) == device for role, device in defaults.items() if device)
-    return _ok_tr(
+    return _ok(
         restored_from=checkpoint.get("id"),
         defaults_requested=defaults,
         defaults_after=defaults_after,
