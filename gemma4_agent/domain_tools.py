@@ -47,6 +47,27 @@ from ._shared import (  # noqa: E402
     redact_sensitive as _redact_credentials,
 )
 
+# R3 sprint 2026-05-28: helpers cross-cutting movidos a domain_tools_helpers.py
+# (rompe los ~26 ciclos falsos-positivos del analizador estático que el patrón
+# lazy-import del R2 generaba). Re-exportamos acá para que callers existentes
+# (`from gemma4_agent import domain_tools as dt; dt._safe_name(...)` y
+# `from gemma4_agent.domain_tools import _existing_path`) sigan funcionando.
+from .domain_tools_helpers import (  # noqa: F401, E402
+    _existing_path,
+    _find_resource,
+    _find_routine,
+    _find_soundvolumeview,
+    _json_or_none,
+    _parse_due_iso,
+    _pid_alive,
+    _pid_owned_by,
+    _powershell_json,
+    _ps_quote,
+    _resources_by_kind,
+    _safe_name,
+    _update_resource_metadata,
+)
+
 
 # Office (PPTX/DOCX/XLSX) - extraído a domain_tools_office.py
 # (R2 sprint 2026-05-28). 7 símbolos.
@@ -461,45 +482,8 @@ from .domain_tools_job_manager import (  # noqa: F401
 )
 
 
-def _pid_owned_by(pid: int, expected_exe_basename: str | None) -> tuple[bool, str | None]:
-    """CC-104: Returns (matches, current_name). On Windows queries Get-Process
-    and compares ProcessName against the expected basename (without extension).
-    `matches` is True only if both checks succeed; False if PID does not exist
-    OR is a different process. `current_name` may be None when unknown.
-    """
-    if os.name != "nt":
-        try:
-            os.kill(int(pid), 0)
-            return True, None
-        except (ProcessLookupError, PermissionError, OSError):
-            return False, None
-    proc = subprocess.run(
-        ["powershell", "-NoProfile", "-Command",
-         f"$p = Get-Process -Id {int(pid)} -ErrorAction SilentlyContinue; "
-         f"if ($p) {{ $p.ProcessName }} else {{ '' }}"],
-        capture_output=True, text=True, timeout=10,
-    )
-    name = proc.stdout.strip()
-    if not name:
-        return False, None
-    if not expected_exe_basename:
-        return True, name
-    expected = Path(expected_exe_basename).stem.casefold()
-    return name.casefold() == expected or name.casefold().startswith(expected), name
-
-
-def _pid_alive(pid: int) -> bool:
-    if os.name == "nt":
-        proc = subprocess.run(
-            ["powershell", "-NoProfile", "-Command", f"if (Get-Process -Id {pid} -ErrorAction SilentlyContinue) {{ 1 }} else {{ 0 }}"],
-            capture_output=True, text=True, timeout=10,
-        )
-        return proc.returncode == 0 and proc.stdout.strip() == "1"
-    try:
-        os.kill(pid, 0)
-        return True
-    except OSError:
-        return False
+# _pid_owned_by + _pid_alive — extraídos a domain_tools_helpers.py
+# (R3 sprint 2026-05-28).
 
 
 # Maintenance (Win Update / Defender / Firewall / Services / Event Logs /
@@ -630,33 +614,9 @@ from .domain_tools_document import (  # noqa: F401
 )
 
 
-def active_phrase_triggers(state: AgentState) -> list[dict[str, Any]]:
-    """Return enabled on_phrase routines for the chat hook.
-
-    Each item has {id, label, phrase, steps, fold} so the caller can match
-    against the user's (folded) input cheaply. Disabled or closed routines
-    are skipped.
-    """
-    out: list[dict[str, Any]] = []
-    for resource in state._load().get("resources", {}).values():
-        if resource.get("kind") != "routine" or resource.get("status") != "open":
-            continue
-        meta = resource.get("metadata") or {}
-        if str(meta.get("trigger_type") or "").casefold() not in {"on_phrase", "on_keyword"}:
-            continue
-        if meta.get("enabled") is False:
-            continue
-        trigger = meta.get("trigger") or {}
-        phrase = str(trigger.get("phrase") or trigger.get("keyword") or "").strip()
-        if not phrase:
-            continue
-        out.append({
-            "id": str(resource.get("id") or ""),
-            "label": str(resource.get("label") or ""),
-            "phrase": phrase,
-            "steps": meta.get("steps") or [],
-        })
-    return out
+# active_phrase_triggers — movido a domain_tools_routine.py (R3 sprint 2026-05-28).
+# Re-export para compat (agent.py + server.py lo importan por este nombre).
+from .domain_tools_routine import active_phrase_triggers  # noqa: F401, E402
 
 
 # Routine helpers - extraídos a domain_tools_routine.py (R2 sprint 2026-05-28).
@@ -2912,43 +2872,7 @@ from .domain_tools_contacts import (  # noqa: F401  (re-export por compat)
 )
 
 
-def _parse_due_iso(value: Any) -> tuple[str | None, str | None]:
-    """Intenta normalizar un `due` a ISO 8601. Devuelve (iso_str_or_None, error_msg_or_None).
-
-    Acepta:
-      - "2026-05-20" -> "2026-05-20T00:00:00"
-      - "2026-05-20T15:30" -> "2026-05-20T15:30:00"
-      - ya-ISO -> passthrough
-      - None / "" -> (None, None)  (sin due es valido)
-
-    Rechaza strings de lenguaje natural ("mañana", "tomorrow") con un mensaje
-    claro para que el LLM resuelva el delta antes de llamar.
-    """
-    if value is None:
-        return None, None
-    if isinstance(value, str):
-        s = value.strip()
-        if not s:
-            return None, None
-        # Patron ISO laxo: YYYY-MM-DD opcional T HH:MM[:SS]
-        if re.match(r"^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?)?$", s):
-            if "T" not in s:
-                s = s + "T00:00:00"
-            elif s.count(":") == 1:
-                s = s + ":00"
-            return s, None
-        # Intentar parsear como datetime (cubre microseconds, timezones).
-        try:
-            datetime.fromisoformat(s)
-            return s, None
-        except ValueError:
-            pass
-        return None, (
-            f"due value {s!r} is not ISO 8601. Pass YYYY-MM-DD or YYYY-MM-DDTHH:MM; "
-            "for relative dates ('tomorrow', 'next week') resolve the absolute "
-            "date in the agent before calling."
-        )
-    return None, f"due must be a string, got {type(value).__name__}"
+# _parse_due_iso — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
 
 
 # ---------------------------------------------------------------------------
@@ -4145,15 +4069,7 @@ from .domain_tools_printer_scanner import (  # noqa: F401
 )
 
 
-def _json_or_none(text: str) -> dict[str, Any] | None:
-    raw = (text or "").strip()
-    if not raw:
-        return None
-    try:
-        data = json.loads(raw)
-        return data if isinstance(data, dict) else None
-    except json.JSONDecodeError:
-        return None
+# _json_or_none — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
 
 
 # Desktop Layout (Win32 EnumWindows + MoveWindow) - extraído a
@@ -4183,9 +4099,7 @@ from .domain_tools_backup_sync import (  # noqa: F401
 # Re-export en el entry point office_tool más arriba.
 
 
-def _safe_name(text: str) -> str:
-    clean = re.sub(r"[^A-Za-z0-9_-]+", "_", text.strip())[:50].strip("_")
-    return clean or "archivo"
+# _safe_name — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
 
 
 def _audio_endpoints() -> list[dict[str, Any]]:
@@ -4202,27 +4116,7 @@ def _audio_endpoints() -> list[dict[str, Any]]:
     return data if isinstance(data, list) else []
 
 
-def _find_soundvolumeview() -> Path | None:
-    raw = os.environ.get("GEMMA4_SOUNDVOLUMEVIEW")
-    candidates = [Path(raw)] if raw else []
-    candidates.extend([
-        # ~/.gemma4/tools/ — bundle path (agent puede bajarlo aca proactivamente)
-        Path.home() / ".gemma4" / "tools" / "SoundVolumeView.exe",
-        Path.cwd() / "tools" / "SoundVolumeView.exe",
-        Path.home() / "Downloads" / "SoundVolumeView.exe",
-        Path("C:/Tools/SoundVolumeView/SoundVolumeView.exe"),
-        Path("C:/Program Files/SoundVolumeView/SoundVolumeView.exe"),
-    ])
-    found = shutil.which("SoundVolumeView.exe")
-    if found:
-        candidates.append(Path(found))
-    for candidate in candidates:
-        try:
-            if candidate.is_file():
-                return candidate
-        except OSError:
-            continue
-    return None
+# _find_soundvolumeview — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
 
 
 def _set_default_audio_device(args: dict[str, Any], state: AgentState, *, communications: bool) -> dict[str, Any]:
@@ -4487,52 +4381,12 @@ def _audio_verify_default(defaults_after: dict[str, str], requested_name: str, e
 # point notification_tool más arriba (líneas ~263).
 
 
-def _find_routine(args: dict[str, Any], state: AgentState) -> dict[str, Any] | None:
-    rid = str(args.get("id") or args.get("resource_id") or "").strip()
-    name = str(args.get("name") or args.get("label") or "").strip().casefold()
-    resources = state._load().get("resources", {})
-    if rid and rid in resources:
-        return resources[rid]
-    for resource in resources.values():
-        if resource.get("kind") == "routine" and name and str(resource.get("label") or "").casefold() == name:
-            return resource
-    return None
-
-
-def _update_resource_metadata(state: AgentState, resource_id: str, updates: dict[str, Any]) -> dict[str, Any]:
-    # CC-102: delega en la API pública atómica.
-    result = state.update_resource_metadata(resource_id, updates)
-    if not result.get("ok"):
-        return _err("resource not found", resource_id=resource_id)
-    return _ok(resource=result.get("resource"))
-
-
-def _resources_by_kind(state: AgentState, kinds: str | list[str], include_closed: bool = False) -> list[dict[str, Any]]:
-    wanted = {kinds} if isinstance(kinds, str) else set(kinds)
-    resources = state._load().get("resources", {}).values()
-    out = []
-    for resource in resources:
-        if resource.get("kind") not in wanted:
-            continue
-        if not include_closed and resource.get("status") != "open":
-            continue
-        out.append(resource)
-    return out
-
-
-def _find_resource(args: dict[str, Any], state: AgentState, kinds: str | list[str]) -> dict[str, Any] | None:
-    rid = str(args.get("id") or args.get("resource_id") or "").strip()
-    query = str(args.get("query") or args.get("name") or args.get("title") or "").strip().casefold()
-    resources = state._load().get("resources", {})
-    wanted = {kinds} if isinstance(kinds, str) else set(kinds)
-    if rid and rid in resources and resources[rid].get("kind") in wanted:
-        return resources[rid]
-    for resource in resources.values():
-        if resource.get("kind") not in wanted:
-            continue
-        if query and query in json.dumps(resource, ensure_ascii=False).casefold():
-            return resource
-    return None
+# Cross-cutting helpers (_find_routine, _update_resource_metadata,
+# _resources_by_kind, _find_resource, _powershell_json, _ps_quote) — extraídos
+# a domain_tools_helpers.py (R3 sprint 2026-05-28). El re-export más arriba
+# del módulo (debajo del import de _ok/_err) deja `dt._X` accesible para los
+# callers que hacen `from gemma4_agent import domain_tools as dt`. Estos
+# bloques quedan como ancla histórica.
 
 
 # Dependency catalog helpers - extraídos a domain_tools_dependency.py.
@@ -4544,23 +4398,6 @@ def _find_resource(args: dict[str, Any], state: AgentState, kinds: str | list[st
 # en el bloque del entry point más arriba.
 
 
-def _powershell_json(script: str, field: str) -> dict[str, Any]:
-    proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=30)
-    if proc.returncode != 0:
-        return _err("powershell command failed", exit_code=proc.returncode, stderr=proc.stderr)
-    raw = proc.stdout.strip()
-    if not raw:
-        data: Any = []
-    else:
-        try:
-            data = json.loads(raw)
-        except json.JSONDecodeError:
-            return _err("failed to parse PowerShell JSON", stdout=raw[:1000])
-    if isinstance(data, dict) and field.endswith("s"):
-        data = [data]
-    return _ok(**{field: data, "count": len(data) if isinstance(data, list) else (1 if data else 0)})
-
-
 def _run_detached_powershell(script: str) -> dict[str, Any]:
     proc = subprocess.Popen(
         ["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", script],
@@ -4569,7 +4406,3 @@ def _run_detached_powershell(script: str) -> dict[str, Any]:
         creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
     )
     return {"pid": proc.pid}
-
-
-def _ps_quote(text: str) -> str:
-    return text.replace("'", "''")

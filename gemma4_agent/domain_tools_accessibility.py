@@ -89,7 +89,7 @@ def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
 
 
 def _process_running(exe_name: str) -> bool:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"if (Get-Process -Name '{_ps_quote(Path(exe_name).stem)}' -ErrorAction SilentlyContinue) {{ 1 }} else {{ 0 }}"],
         capture_output=True, text=True, timeout=10,
@@ -112,7 +112,7 @@ def _accessibility_launch(exe: str, state: AgentState, *, kind: str) -> dict[str
 
 
 def _accessibility_kill(exe: str, state: AgentState, *, kind: str) -> dict[str, Any]:
-    from .domain_tools import _resources_by_kind
+    from .domain_tools_helpers import _resources_by_kind
     # timeout 15 -> 5s: taskkill normalmente termina en <1s; si tarda 15s
     # algo esta mal (snapshot del sistema corrupto, AV interceptando) y
     # mejor reportar el error rapido que bloquear al caller.

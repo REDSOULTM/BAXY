@@ -314,7 +314,7 @@ def _document_extract_tables(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _document_extract_images(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
         return _err("missing path")
@@ -387,7 +387,7 @@ def _document_ocr_pdf(args: dict[str, Any], state: AgentState) -> dict[str, Any]
 
 
 def _document_ocr_pdf_with_fitz(path: Path, state: AgentState, tesseract: str, args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     import fitz  # type: ignore[import-not-found]  # PyMuPDF
     lang = str(args.get("lang") or "spa+eng")
     out_dir = state.path.parent / "extracted" / f"ocr_{_safe_name(path.stem)}_{int(time.time())}"
@@ -411,7 +411,7 @@ def _document_ocr_pdf_with_fitz(path: Path, state: AgentState, tesseract: str, a
 
 
 def _document_ocr_pdf_with_pdf2image(path: Path, state: AgentState, tesseract: str, args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     from pdf2image import convert_from_path
     lang = str(args.get("lang") or "spa+eng")
     out_dir = state.path.parent / "extracted" / f"ocr_{_safe_name(path.stem)}_{int(time.time())}"

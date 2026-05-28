@@ -141,7 +141,7 @@ def _network_traceroute(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _network_dns_get(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     adapter = str(args.get("adapter") or "").strip()
     cmd = "Get-DnsClientServerAddress | Where-Object { $_.ServerAddresses } | Select-Object InterfaceAlias,AddressFamily,ServerAddresses | ConvertTo-Json -Depth 3"
     if adapter:
@@ -211,7 +211,7 @@ def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _network_dns_resolve(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     name = str(args.get("name") or args.get("host") or "").strip()
     if not name:
         return _err("missing name")
@@ -234,7 +234,7 @@ def _network_dns_resolve(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _network_port_check(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     host = str(args.get("host") or args.get("target") or "").strip()
     port = args.get("port")
     if not host or port is None:

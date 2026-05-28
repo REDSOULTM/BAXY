@@ -48,7 +48,7 @@ def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     Distinct from `developer.start_dev_server` which is specialized for dev
     servers. job_manager is generic.
     """
-    from .domain_tools import _find_resource, _pid_alive, _resources_by_kind
+    from .domain_tools_helpers import _find_resource, _pid_alive, _resources_by_kind
     action = str(args.get("action") or "status").casefold()
     if action == "status":
         return _ok(backend="subprocess+state", note="Jobs are tracked in state.json with PID, log path, label.")
@@ -82,7 +82,7 @@ def job_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     command = args.get("command")
     if isinstance(command, str):
         # T2-job_manager-start-no-shell-flag-046: respeta quoting con shlex.
@@ -122,7 +122,7 @@ def _job_manager_start(args: dict[str, Any], state: AgentState) -> dict[str, Any
 
 
 def _job_manager_log(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _find_resource
+    from .domain_tools_helpers import _find_resource
     job = _find_resource(args, state, "job")
     if not job:
         return _err("job not found")
@@ -139,7 +139,7 @@ def _job_manager_log(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _job_manager_cancel(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _find_resource, _pid_owned_by
+    from .domain_tools_helpers import _find_resource, _pid_owned_by
     job = _find_resource(args, state, "job")
     if not job:
         return _err("job not found")

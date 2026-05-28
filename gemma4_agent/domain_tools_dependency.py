@@ -57,7 +57,7 @@ def dependency_tool(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _dependency_catalog() -> dict[str, dict[str, Any]]:
-    from .domain_tools import _find_soundvolumeview
+    from .domain_tools_helpers import _find_soundvolumeview
     items = [
         _module_dep("playwright", "Playwright", "python -m pip install playwright && python -m playwright install chromium"),
         _module_dep("pptx", "python-pptx", "python -m pip install python-pptx"),

@@ -40,7 +40,7 @@ __all__ = [
 
 
 def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _existing_path
+    from .domain_tools_helpers import _existing_path
     import os
     import shutil
     import webbrowser
@@ -97,7 +97,7 @@ def office_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _create_presentation(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     if importlib.util.find_spec("pptx") is None:
         return _err(
             "python-pptx is not installed",
@@ -152,7 +152,7 @@ def _create_presentation(args: dict[str, Any], state: AgentState) -> dict[str, A
 
 
 def _create_document(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     if importlib.util.find_spec("docx") is None:
         return _err("python-docx is not installed", status="needs_dependency", verified=False, install_hint="python -m pip install python-docx")
     from docx import Document
@@ -170,7 +170,7 @@ def _create_document(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _create_spreadsheet(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     if importlib.util.find_spec("openpyxl") is None:
         return _err("openpyxl is not installed", status="needs_dependency", verified=False, install_hint="python -m pip install openpyxl")
     from openpyxl import Workbook
@@ -194,7 +194,7 @@ def _create_spreadsheet(args: dict[str, Any], state: AgentState) -> dict[str, An
 
 
 def _inspect_office_file(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _existing_path
+    from .domain_tools_helpers import _existing_path
     path = _existing_path(args)
     if not path:
         return _err("missing or invalid path")

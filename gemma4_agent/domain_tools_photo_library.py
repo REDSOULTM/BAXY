@@ -172,7 +172,7 @@ def _photo_extract_date(path: Path) -> str | None:
 
 
 def _photo_group_by_date(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _next_available_path
+    from .domain_tools_backup_sync import _next_available_path
     root_raw = str(args.get("root") or "").strip()
     if not root_raw:
         return _err("missing root")

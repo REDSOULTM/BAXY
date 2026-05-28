@@ -27,7 +27,7 @@ _VALID_HABIT_FREQUENCIES = {"daily", "weekly", "monthly", "weekdays", "custom"}
 
 
 def habit_tracker_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import (
+    from .domain_tools_helpers import (
         _find_resource,
         _parse_due_iso,
         _resources_by_kind,

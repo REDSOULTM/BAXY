@@ -60,6 +60,35 @@ from .state import AgentState
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
 
 
+def active_phrase_triggers(state: AgentState) -> list[dict[str, Any]]:
+    """Return enabled on_phrase routines for the chat hook.
+
+    Each item has {id, label, phrase, steps, fold} so the caller can match
+    against the user's (folded) input cheaply. Disabled or closed routines
+    are skipped.
+    """
+    out: list[dict[str, Any]] = []
+    for resource in state._load().get("resources", {}).values():
+        if resource.get("kind") != "routine" or resource.get("status") != "open":
+            continue
+        meta = resource.get("metadata") or {}
+        if str(meta.get("trigger_type") or "").casefold() not in {"on_phrase", "on_keyword"}:
+            continue
+        if meta.get("enabled") is False:
+            continue
+        trigger = meta.get("trigger") or {}
+        phrase = str(trigger.get("phrase") or trigger.get("keyword") or "").strip()
+        if not phrase:
+            continue
+        out.append({
+            "id": str(resource.get("id") or ""),
+            "label": str(resource.get("label") or ""),
+            "phrase": phrase,
+            "steps": meta.get("steps") or [],
+        })
+    return out
+
+
 __all__ = [
     "routine_tool",
     "import_triggercmd_entries",
@@ -145,7 +174,6 @@ def import_triggercmd_entries(
     create calls. Returns a structured report so the caller can display
     what worked and what didn't.
     """
-    from .domain_tools import active_phrase_triggers
     if not isinstance(entries, list):
         return _err("triggercmd payload must be a list of entries")
     existing_phrases: set[str] = set()
@@ -278,11 +306,8 @@ def _terminal_args_for(command: str, ground: str) -> dict[str, Any]:
 
 
 def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | None = None) -> dict[str, Any]:
-    from .domain_tools import (
-        _find_routine,
-        _register_routine_process_watcher,
-        _update_resource_metadata,
-    )
+    from .domain_tools_helpers import _find_routine, _update_resource_metadata
+    from .domain_tools_watcher import _register_routine_process_watcher
     action = str(args.get("action") or "list").casefold()
     if action == "status":
         return _ok(
@@ -486,7 +511,7 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
 
 
 def _routine_task_name(label: str) -> str:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     return f"Gemma4Routine_{_safe_name(label)[:40]}_{int(time.time())}"
 
 
@@ -532,7 +557,7 @@ def _register_routine_scheduled_task(task_name: str, routine_label: str, trigger
 
 
 def _unregister_routine_scheduled_task(task_name: str) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     ps = f"Unregister-ScheduledTask -TaskPath '\\Gemma4Agent\\' -TaskName '{_ps_quote(task_name)}' -Confirm:$false -ErrorAction SilentlyContinue"
     proc = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True, timeout=20)
     return {"task_name": task_name, "exit_code": proc.returncode, "stderr": proc.stderr}
@@ -606,7 +631,7 @@ def _detect_python_executable() -> str | None:
 
 def _enrich_routine_resource(resource: dict[str, Any]) -> dict[str, Any]:
     """Add live ScheduledTask info if the routine has a task_name."""
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     metadata = resource.get("metadata") or {}
     task_name = str(metadata.get("task_name") or "").strip()
     if not task_name:

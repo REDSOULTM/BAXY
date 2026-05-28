@@ -202,7 +202,7 @@ Register-ScheduledTask -TaskName $task -TaskPath '\Gemma4Agent\' -Action $Action
 
 
 def _delete_notification(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _ps_quote  # vive aún en domain_tools.py
+    from .domain_tools_helpers import _ps_quote  # vive aún en domain_tools.py
     rid = str(args.get("id") or args.get("resource_id") or "").strip()
     task_name = str(args.get("task_name") or "").strip()
     resource = None
@@ -224,7 +224,7 @@ def _delete_notification(args: dict[str, Any], state: AgentState) -> dict[str, A
 
 def _enrich_notification_resource(resource: dict[str, Any]) -> dict[str, Any]:
     """Augment a notification resource with live Scheduled Task info."""
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     metadata = resource.get("metadata") or {}
     task_name = str(metadata.get("task_name") or "").strip()
     if not task_name:

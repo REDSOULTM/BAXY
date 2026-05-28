@@ -129,7 +129,7 @@ def _media_edit_input(args: dict[str, Any]) -> Path | dict[str, Any]:
 
 
 def _media_edit_output(args: dict[str, Any], state: AgentState, src: Path, suffix: str) -> Path:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     raw = str(args.get("output") or args.get("dst") or args.get("out") or "").strip()
     if raw:
         p = Path(raw).expanduser()

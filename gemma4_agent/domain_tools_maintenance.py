@@ -278,7 +278,7 @@ def _maintenance_event_logs(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _maintenance_services_list(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     name = str(args.get("name") or args.get("query") or "*").strip()
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"Get-Service -Name '{_ps_quote(name)}' -ErrorAction SilentlyContinue | Select-Object Name,DisplayName,Status,StartType | ConvertTo-Json"],
@@ -299,7 +299,7 @@ def _maintenance_services_list(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _maintenance_service_status(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     name = str(args.get("name") or "").strip()
     if not name:
         return _err("missing service name")
@@ -319,7 +319,7 @@ def _maintenance_service_status(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _maintenance_service_control(action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     name = str(args.get("name") or "").strip()
     if not name:
         return _err("missing service name")
@@ -349,7 +349,7 @@ def _maintenance_service_control(action: str, args: dict[str, Any], state: Agent
 
 
 def _maintenance_restore_point_create(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     description = str(args.get("description") or "Gemma4 Agent restore point").strip()
     # System Restore must be enabled on the system drive for this to work.
     proc = subprocess.run(

@@ -38,7 +38,7 @@ __all__ = [
 
 
 def printer_scanner_tool(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _powershell_json, _ps_quote
+    from .domain_tools_helpers import _powershell_json, _ps_quote
     action = str(args.get("action") or "printers_list").casefold()
     if action == "status":
         return _ok(powershell=bool(shutil.which("powershell")), backend="Windows PrintManagement")
@@ -71,7 +71,7 @@ def printer_scanner_tool(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _printer_set_default(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _json_or_none
+    from .domain_tools_helpers import _json_or_none
     name = str(args.get("name") or args.get("printer") or "").strip()
     if not name:
         return _err("missing printer name")
@@ -92,7 +92,7 @@ def _printer_set_default(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def _printer_print_file(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _json_or_none, _powershell_json, _ps_quote
+    from .domain_tools_helpers import _json_or_none, _powershell_json, _ps_quote
     path_raw = str(args.get("path") or args.get("file") or "").strip()
     if not path_raw:
         return _err("missing file path")
@@ -141,7 +141,7 @@ try {
 
 
 def _printer_cancel_job(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _json_or_none, _ps_quote
+    from .domain_tools_helpers import _json_or_none, _ps_quote
     printer_name = str(args.get("printer") or "").strip()
     job_id = args.get("job_id") if args.get("job_id") is not None else args.get("id")
     if not printer_name:
@@ -196,7 +196,7 @@ try {
 
 
 def _scanner_scan(args: dict[str, Any]) -> dict[str, Any]:
-    from .domain_tools import _json_or_none
+    from .domain_tools_helpers import _json_or_none
     out_raw = str(args.get("output") or args.get("path") or "").strip()
     if not out_raw:
         out = Path.home() / "Pictures" / f"scan_{time.strftime('%Y%m%d_%H%M%S')}.jpg"

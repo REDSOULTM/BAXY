@@ -65,7 +65,7 @@ def developer_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     Mutating git actions (git_commit/push) are intentionally NOT implemented:
     the agent must use terminal(...) explicitly so the user sees the command.
     """
-    from .domain_tools import _resources_by_kind
+    from .domain_tools_helpers import _resources_by_kind
     action = str(args.get("action") or "status").casefold()
     if action == "status":
         return _ok(
@@ -334,7 +334,7 @@ def _developer_start_dev_server(args: dict[str, Any], state: AgentState) -> dict
 
 
 def _developer_stop_dev_server(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _pid_owned_by, _resources_by_kind
+    from .domain_tools_helpers import _pid_owned_by, _resources_by_kind
     server_id = str(args.get("server_id") or args.get("id") or "").strip()
     pid = args.get("pid")
     target = None

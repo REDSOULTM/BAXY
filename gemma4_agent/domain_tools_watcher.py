@@ -67,7 +67,7 @@ def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     files, content hash for URLs). The schedule is registered as a Scheduled
     Task invoking `python -m gemma4_agent.watcher_runner`.
     """
-    from .domain_tools import _find_resource, _resources_by_kind
+    from .domain_tools_helpers import _find_resource, _resources_by_kind
     from .domain_tools_routine import _unregister_routine_scheduled_task
     action = str(args.get("action") or "list").casefold()
     if action == "status":
@@ -100,7 +100,7 @@ def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
 
 
 def _watcher_register_file(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     path_raw = str(args.get("path") or "").strip()
     if not path_raw:
         return _err("missing path")
@@ -190,7 +190,7 @@ def _url_snapshot(url: str) -> dict[str, Any]:
 
 def _process_snapshot(process_name: str) -> dict[str, Any]:
     """Snapshot whether a given process is running. Matches by exe name (case-insensitive)."""
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     if not process_name:
         return {"running": False, "process": process_name}
     base = Path(process_name).stem
@@ -203,7 +203,7 @@ def _process_snapshot(process_name: str) -> dict[str, Any]:
 
 def _register_routine_process_watcher(state: AgentState, routine_label: str, routine_id: str, process_name: str, interval_seconds: int, edge: str) -> dict[str, Any]:
     """Create a kind=process watcher that fires routine.run_now on the requested edge."""
-    from .domain_tools import _safe_name
+    from .domain_tools_helpers import _safe_name
     snapshot = _process_snapshot(process_name)
     label = f"process-trigger for {routine_label} ({process_name}, {edge})"
     task_name = f"Gemma4Watcher_proc_{_safe_name(process_name)[:30]}_{int(time.time())}"
@@ -232,7 +232,7 @@ def _register_routine_process_watcher(state: AgentState, routine_label: str, rou
 
 
 def _register_watcher_scheduled_task(task_name: str, watcher_id: str, interval_seconds: int, label: str) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     from .domain_tools_routine import _detect_python_executable
     python_exe = _detect_python_executable()
     if not python_exe:
@@ -258,7 +258,7 @@ Register-ScheduledTask -TaskName '{_ps_quote(task_name)}' -TaskPath '\\Gemma4Age
 
 
 def _watcher_check(args: dict[str, Any], state: AgentState, executor: Executor | None) -> dict[str, Any]:
-    from .domain_tools import _find_resource
+    from .domain_tools_helpers import _find_resource
     target = _find_resource(args, state, "watcher")
     if not target:
         return _err("watcher not found")

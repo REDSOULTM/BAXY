@@ -46,7 +46,7 @@ __all__ = [
 
 
 def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import (
+    from .domain_tools_helpers import (
         _find_resource,
         _parse_due_iso,
         _resources_by_kind,
@@ -138,7 +138,7 @@ def local_calendar_tool(args: dict[str, Any], state: AgentState) -> dict[str, An
 
 
 def _calendar_event_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _find_resource, _update_resource_metadata
+    from .domain_tools_helpers import _find_resource, _update_resource_metadata
     event = _find_resource(args, state, "calendar_event")
     if not event:
         return _err("event not found")

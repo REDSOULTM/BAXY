@@ -32,7 +32,7 @@ __all__ = ["notes_tasks_tool"]
 def notes_tasks_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     # Imports diferidos para evitar ciclo en import time (notes -> domain_tools
     # -> notes via re-export). En runtime el módulo ya está cargado.
-    from .domain_tools import (
+    from .domain_tools_helpers import (
         _find_resource,
         _parse_due_iso,
         _resources_by_kind,

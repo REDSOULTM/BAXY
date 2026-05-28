@@ -40,7 +40,7 @@ __all__ = [
 
 
 def backup_sync_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _resources_by_kind, _safe_name
+    from .domain_tools_helpers import _resources_by_kind, _safe_name
     action = str(args.get("action") or "status").casefold()
     if action == "status":
         return _ok(backend="zipfile", restore_supported=True, dedupe_supported=True, verify_supported=True)
@@ -100,7 +100,7 @@ def _backup_resolve(args: dict[str, Any], state: AgentState) -> tuple[Path | Non
 
 
 def _backup_restore(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _hard_gate
+    from ._shared import hard_gate as _hard_gate
     backup_path, resource = _backup_resolve(args, state)
     if not backup_path:
         return _err("backup not found; pass id (res_*) or path to ZIP")

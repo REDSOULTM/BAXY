@@ -132,7 +132,7 @@ def _peripheral_run_json(script: str, field: str) -> dict[str, Any]:
 
 
 def _peripheral_device_toggle(action: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _ps_quote
+    from .domain_tools_helpers import _ps_quote
     instance_id = str(args.get("instance_id") or args.get("id") or "").strip()
     if not instance_id:
         return _err("missing instance_id (use usb_list/hid_list to find it)")

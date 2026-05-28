@@ -24,7 +24,7 @@ __all__ = ["source_manager_tool"]
 
 
 def source_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _existing_path, _find_resource, _resources_by_kind
+    from .domain_tools_helpers import _existing_path, _find_resource, _resources_by_kind
     action = str(args.get("action") or "list").casefold()
     if action == "status":
         return _ok(local_state=True, source_count=len(_resources_by_kind(state, "source")))

@@ -81,7 +81,7 @@ def _clean_contact_field(value: Any) -> str | None:
 def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     # Imports diferidos para evitar ciclo en import time (contacts -> domain_tools
     # -> contacts). En runtime el módulo ya está cargado y la resolución es trivial.
-    from .domain_tools import (
+    from .domain_tools_helpers import (
         _find_resource,
         _resources_by_kind,
     )
@@ -185,7 +185,7 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _contacts_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _find_resource, _update_resource_metadata
+    from .domain_tools_helpers import _find_resource, _update_resource_metadata
     contact = _find_resource(args, state, "contact")
     if not contact:
         return _err("contact not found")
@@ -201,7 +201,7 @@ def _contacts_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _contacts_export_vcard(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _resources_by_kind
+    from .domain_tools_helpers import _resources_by_kind
     contacts = _resources_by_kind(state, "contact", include_closed=False)
     if not contacts:
         return _err("no contacts to export", status="needs_user")
@@ -374,7 +374,7 @@ _RESOLVE_MIN_SCORE = 60
 
 
 def _contacts_resolve_recipient(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _resources_by_kind
+    from .domain_tools_helpers import _resources_by_kind
     query = str(args.get("query") or args.get("name") or args.get("recipient") or "").strip()
     if not query:
         return _err("missing query")

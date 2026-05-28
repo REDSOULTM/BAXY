@@ -35,7 +35,7 @@ __all__ = [
 
 
 def desktop_layout_tool(args: dict[str, Any], state: AgentState, executor: Executor) -> dict[str, Any]:
-    from .domain_tools import _powershell_json
+    from .domain_tools_helpers import _powershell_json
     action = str(args.get("action") or "status").casefold()
     if action == "status":
         return _ok(can_snapshot_windows=True, restore_supported=True, backend="win32_user32_movewindow")

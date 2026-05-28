@@ -285,7 +285,7 @@ def _database_query(conn: Any, driver: str, args: dict[str, Any]) -> dict[str, A
 
 
 def _database_execute(conn: Any, driver: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
-    from .domain_tools import _hard_gate
+    from ._shared import hard_gate as _hard_gate
     sql = str(args.get("sql") or args.get("query") or "").strip()
     if not sql:
         return _err("missing sql")
