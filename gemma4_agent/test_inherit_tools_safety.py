@@ -121,7 +121,9 @@ class TestGuiContextInheritOverride(unittest.TestCase):
 
     def test_override_logic_present_in_source(self):
         import inspect
-        src = inspect.getsource(Gemma4Agent.run_content)
+        # R1 sprint 2026-05-28: el override vive en _decide_turn ahora (la
+        # fase decide fue extraída de run_content).
+        src = inspect.getsource(Gemma4Agent._decide_turn)
         # el override mantiene la herencia cuando el turno previo dejó GUI abierta
         self.assertIn("inherit_kept_gui_context", src)
         self.assertIn("_GUI_CONTEXT_TOOLS", src)
