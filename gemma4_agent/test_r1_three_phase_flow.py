@@ -89,5 +89,43 @@ class TestR1ThreePhaseFlow(unittest.TestCase):
             pass
 
 
+class TestR1EarlyReturnPaths(unittest.TestCase):
+    """Verifica los 4 caminos early-return del _decide_turn.
+
+    Esos caminos NO ejecutan el LLM ni dispatchean tools — short-circuit.
+    Si alguien rompe uno, esos tests lo detectan.
+    """
+
+    def test_jarvis_pending_suggestion_short_circuits(self):
+        """Si `_handle_pending_suggestion` devuelve un AgentReply,
+        `_decide_turn` debe devolver `TurnDecision(early_reply=...)`."""
+        from gemma4_agent.agent import AgentReply
+        a = _make_agent()
+        # Mockear el handler de pending suggestion para que devuelva un reply.
+        sentinel_reply = AgentReply(content="Jarvis test", tool_events=[], mission=None)
+        a._handle_pending_suggestion = lambda content: sentinel_reply
+        decision = a._decide_turn("sí", progress=None)
+        self.assertIsNotNone(decision.early_reply,
+                             "Early reply esperado tras jarvis-pending")
+        self.assertEqual(decision.early_reply.content, "Jarvis test")
+
+    def test_no_early_reply_on_normal_turn(self):
+        """Turno normal no debe disparar ningún short-circuit."""
+        a = _make_agent()
+        decision = a._decide_turn("¿qué hora es?", progress=None)
+        self.assertIsNone(decision.early_reply)
+
+    def test_decision_carries_required_fields_on_normal_turn(self):
+        """Un decide normal (sin early_reply) debe poblar los campos
+        necesarios para que `_execute_turn` corra el LLM."""
+        a = _make_agent()
+        decision = a._decide_turn("hola", progress=None)
+        self.assertIsNone(decision.early_reply)
+        self.assertTrue(decision.turn_id, "turn_id missing")
+        self.assertIsNotNone(decision.mode, "mode missing")
+        self.assertIsInstance(decision.selected_tool_names, list)
+        self.assertIsInstance(decision.selected_schemas, list)
+
+
 if __name__ == "__main__":
     unittest.main()
