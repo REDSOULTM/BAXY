@@ -18,9 +18,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+# R3 follow-up: NO importamos `.agent` — eso crearía agent → turn_types →
+# agent en el analizador estático. Los type hints a AgentReply/AgentMode
+# son STRINGS (forward refs) para que Python no evalúe el nombre en runtime
+# y el analizador no vea la dependencia. Si agregás un campo que necesite
+# AgentReply en runtime (constructor, isinstance check), mové AgentReply
+# acá en vez de importarlo.
 if TYPE_CHECKING:
-    from .agent import AgentReply, ToolEvent
-    from .modes import AgentMode
+    from .modes import AgentMode  # solo modes — no agent
 
 
 @dataclass
