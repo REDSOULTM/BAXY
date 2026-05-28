@@ -208,6 +208,43 @@ class TestAuditMetrics(unittest.TestCase):
             + "\n  ".join(f"{n}: {e[:120]}" for n, e in errors[:5])
         )
 
+    def test_metric_zero_mutable_default_args(self):
+        """Audit hygiene: cero funciones con default args mutables
+        (`def f(x=[])`, `def f(d={})`). Anti-pattern típico: el default
+        se comparte entre llamadas y acumula state."""
+        offenders = []
+        for p in _iter_prod_py():
+            try:
+                tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
+            except SyntaxError:
+                continue
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    for d in node.args.defaults:
+                        if isinstance(d, (ast.List, ast.Dict, ast.Set)):
+                            offenders.append(
+                                f"{p.relative_to(PKG.parent)}:{node.lineno} def {node.name}(...)"
+                            )
+        self.assertEqual(
+            offenders, [],
+            f"Mutable default args (pickled state across calls):\n  "
+            + "\n  ".join(offenders[:10])
+        )
+
+    def test_metric_real_todos_under_5(self):
+        """Audit hygiene: TODO/FIXME reales en producción ≤ 5.
+        Filtramos el "todo" castellano (pronombre indefinido) usando
+        pattern explícito `# TODO:` / `# FIXME:` / `# XXX:` / `# HACK:`."""
+        pattern = re.compile(r"#\s*(TODO|FIXME|XXX|HACK)(\s*[:(]|$)")
+        total = 0
+        for p in _iter_prod_py():
+            src = p.read_text(encoding="utf-8", errors="replace")
+            total += sum(1 for line in src.splitlines() if pattern.search(line))
+        self.assertLessEqual(
+            total, 5,
+            f"Audit hygiene: {total} TODO/FIXME reales en prod (techo 5)"
+        )
+
     def test_metric_subpackage_areas_all_import(self):
         """Cada uno de los 36 submódulos de `domain_tools/` importa."""
         import importlib, pkgutil

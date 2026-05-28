@@ -106,3 +106,18 @@ cycles = find_cycles()
 print(f"\n# CICLOS detectados: {len(cycles)}")
 for c in sorted(cycles)[:10]:
     print(f"  {' -> '.join(c)}")
+
+# Lazy imports stats — extension R3 sprint 2026-05-28.
+print(f"\n# LAZY IMPORTS (inside functions) — anti-pattern indicator")
+lazy_total = 0
+lazy_per_file = []
+for p in PROD:
+    txt = p.read_text(encoding="utf-8", errors="ignore")
+    n = len(re.findall(r"^\s+from \.", txt, re.M))
+    if n:
+        lazy_per_file.append((n, mod_name(p)))
+        lazy_total += n
+print(f"  Total: {lazy_total}")
+print(f"  Top-10 files by lazy count:")
+for n, m in sorted(lazy_per_file, reverse=True)[:10]:
+    print(f"    {n:>4}  {m}")

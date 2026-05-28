@@ -1571,8 +1571,8 @@ class Gemma4Agent:
                 _skip_upgrade = (mode.name == "fast_info") or (
                     _only_info and mode.name == "fast_action")
                 if _dom and not _skip_upgrade:
-                    from .modes import choose_mode as _choose_mode
-                    mode = _choose_mode("quick_action", "quick_action", self.config.max_tokens)
+                    # R3 cleanup 2026-05-28: choose_mode ya top-level (línea 18).
+                    mode = choose_mode("quick_action", "quick_action", self.config.max_tokens)
                     self.trace.event(turn_id, "mode_upgraded_for_tools",
                                      to="quick_action", tools=list(selected_tool_names))
             except Exception:
