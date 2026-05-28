@@ -6697,6 +6697,56 @@ Start-Sleep -Milliseconds 120
         path = Path(str(args.get("path", "")).strip()).expanduser()
         return _ok(path=str(path), exists=path.exists(), is_file=path.is_file(), is_dir=path.is_dir(), size=path.stat().st_size if path.exists() and path.is_file() else None)
 
+    # Procesos cuyo nombre identifica un navegador Chromium-family. Usado por
+    # verify_window_exists cuando el query es un DOMINIO (foo.bar.cl): el
+    # título de la ventana del navegador casi nunca contiene el dominio
+    # crudo (lleva el title de la pestaña activa). Antes esto daba found=False
+    # aunque la URL hubiera cargado bien — el agente narraba "no pude verificar"
+    # tras un browser.open exitoso (incidente 2026-05-27, capturas del user).
+    _BROWSER_PROCS: tuple[str, ...] = (
+        "chrome.exe", "msedge.exe", "firefox.exe", "opera.exe", "operagx.exe",
+        "brave.exe", "vivaldi.exe", "iexplore.exe",
+    )
+
+    @staticmethod
+    def _looks_like_domain(s: str) -> bool:
+        """Estructural: termina en .TLD (2+ letras) y no tiene espacios. Cubre
+        foo.com, sub.dom.cl, etc. Multilingüe (no usa lista de TLDs)."""
+        import re as _re
+        s = (s or "").strip()
+        if not s or " " in s:
+            return False
+        return bool(_re.search(r"\.[A-Za-z]{2,}(?:/|$)", s))
+
+    @staticmethod
+    def _cdp_url_match(domain: str, timeout_s: float = 1.0) -> dict[str, Any] | None:
+        """Si CDP :9222 está vivo, leer /json/list y matchear URL real contra
+        el dominio. Devuelve {found, url, title} o None si CDP no está. NO lanza
+        un navegador — solo lee. La instancia CDP dedicada del agente
+        (ver project_browser_cdp_dedicated_instance_2026_05_26) la habilita."""
+        import urllib.request as _ur, json as _json, re as _re
+        try:
+            with _ur.urlopen("http://127.0.0.1:9222/json/list", timeout=timeout_s) as r:
+                tabs = _json.loads(r.read())
+        except Exception:
+            return None
+        d = (domain or "").strip().lower()
+        # comparar host: el dominio query puede ser "portal2.uniej.cl" y la URL
+        # real "https://portal2.uniej.cl/ingresar-al-portal" -> match por host.
+        for t in tabs or []:
+            if (t.get("type") or "").lower() != "page":
+                continue
+            url = str(t.get("url") or "").lower()
+            if not url:
+                continue
+            try:
+                host = _re.sub(r"^[a-z]+://([^/]+).*", r"\1", url)
+            except Exception:
+                host = url
+            if d == host or d in host or host in d:
+                return {"found": True, "url": t.get("url"), "title": t.get("title")}
+        return {"found": False, "url": None, "title": None}
+
     def verify_window_exists(self, args: dict[str, Any]) -> dict[str, Any]:
         title = str(args.get("title") or args.get("query") or "").strip()
         if not title:
@@ -6707,7 +6757,44 @@ Start-Sleep -Milliseconds 120
             if self._match_query(title, str(w.get("title", "")))
             or self._match_query(title, str(w.get("process", "")))
         ]
-        return _ok(found=bool(matches), query=title, matches=matches[:10], match_count=len(matches))
+        if matches:
+            # Match fuerte: el query aparece en algún título/proceso.
+            return _ok(found=True, query=title, matches=matches[:10],
+                       match_count=len(matches), verified_by="window_title")
+        # Match NO encontrado por título/proceso. Si el query parece un DOMINIO,
+        # hay dos rescates honestos antes de declarar found=False:
+        # (1) CDP :9222 vivo -> leer URLs reales (verificación fuerte por URL).
+        # (2) Hay algún navegador abierto -> verificación INFERIDA (no podemos
+        #     leer la URL del Opera/Chrome del user porque Chromium 136+ ignora
+        #     --remote-debugging-port sobre el perfil real — hardening 2025).
+        # En (2) devolvemos found=True con caveat explícito: NO es mentira (el
+        # navegador SÍ se abrió), y el caveat le dice al LLM/usuario el límite.
+        if self._looks_like_domain(title):
+            cdp = self._cdp_url_match(title)
+            if cdp is not None:  # CDP responde
+                return _ok(
+                    found=bool(cdp.get("found")), query=title,
+                    matches=[{"url": cdp.get("url"), "title": cdp.get("title")}]
+                            if cdp.get("found") else [],
+                    match_count=1 if cdp.get("found") else 0,
+                    verified_by="cdp_url",
+                )
+            # CDP no disponible: buscar cualquier ventana de navegador conocido.
+            browsers_open = [
+                w for w in windows
+                if str(w.get("process", "")).lower() in self._BROWSER_PROCS
+            ]
+            if browsers_open:
+                return _ok(
+                    found=True, query=title, matches=browsers_open[:5],
+                    match_count=len(browsers_open),
+                    verified_by="browser_window_present",
+                    caveat=("dominio asumido cargado en navegador detectado; "
+                            "no se puede leer URL sin CDP — el perfil del user "
+                            "ignora --remote-debugging-port (Chromium 136+)."),
+                )
+        return _ok(found=False, query=title, matches=[], match_count=0,
+                   verified_by="none")
 
     def verify_clipboard_contains(self, args: dict[str, Any]) -> dict[str, Any]:
         text = str(args.get("text", ""))
