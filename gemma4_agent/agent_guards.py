@@ -21,7 +21,9 @@ import unicodedata
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .agent import ToolEvent  # noqa: F401  (only used in annotations)
+    # R3-real (2026-05-28): saqué `from .agent import ToolEvent` — no se usa
+    # en este módulo (era import muerto) y creaba el ciclo
+    # agent ↔ agent_guards reportado en la auditoría.
     from .tracing import TraceLogger  # noqa: F401
 
 

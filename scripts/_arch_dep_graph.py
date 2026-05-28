@@ -1,6 +1,10 @@
 """Mapa de dependencias REAL entre módulos de gemma4_agent — qué importa de qué,
 contando solo imports relativos (from .X import ... / from gemma4_agent.X import).
-Read-only. Output: fan-in/fan-out por módulo + ciclos detectados."""
+Read-only. Output: fan-in/fan-out por módulo + ciclos detectados.
+
+R3-real (2026-05-28): distingue imports TOP-LEVEL (a column 0) de imports
+LAZY (a indent > 0, dentro de función). Los ciclos solo se computan sobre
+top-level — un import lazy NO causa ciclo real en runtime."""
 from __future__ import annotations
 import re
 from pathlib import Path
@@ -10,8 +14,10 @@ ROOT = Path(__file__).resolve().parent.parent
 PKG = ROOT / "gemma4_agent"
 PROD = [p for p in PKG.rglob("*.py") if "test_" not in p.name]
 
-# Mapa: módulo (path stem) -> set de módulos importados
+# Mapa: módulo -> set de módulos importados TOP-LEVEL (para detectar ciclos).
 deps: dict[str, set[str]] = defaultdict(set)
+# Mapa adicional: módulo -> set de imports LAZY (informativo, no causa ciclo).
+deps_lazy: dict[str, set[str]] = defaultdict(set)
 module_of: dict[Path, str] = {}
 
 def mod_name(p: Path) -> str:
@@ -21,20 +27,31 @@ def mod_name(p: Path) -> str:
 for p in PROD:
     module_of[p] = mod_name(p)
 
-REL_IMPORT = re.compile(r"^\s*from\s+\.(\w[\w.]*)\s+import", re.M)
-ABS_IMPORT = re.compile(r"^\s*from\s+gemma4_agent\.(\w[\w.]*)\s+import", re.M)
-REL_FROM   = re.compile(r"^\s*from\s+\.\s+import\s+([\w,\s]+)", re.M)
+# Top-level: `from` literal en columna 0.
+REL_IMPORT_TOP = re.compile(r"^from\s+\.(\w[\w.]*)\s+import", re.M)
+ABS_IMPORT_TOP = re.compile(r"^from\s+gemma4_agent\.(\w[\w.]*)\s+import", re.M)
+REL_FROM_TOP   = re.compile(r"^from\s+\.\s+import\s+([\w,\s]+)", re.M)
+
+# Lazy: cualquier indent > 0 (dentro de función / método / clase).
+REL_IMPORT_LAZY = re.compile(r"^\s+from\s+\.(\w[\w.]*)\s+import", re.M)
+ABS_IMPORT_LAZY = re.compile(r"^\s+from\s+gemma4_agent\.(\w[\w.]*)\s+import", re.M)
+REL_FROM_LAZY   = re.compile(r"^\s+from\s+\.\s+import\s+([\w,\s]+)", re.M)
 
 for p in PROD:
     me = module_of[p]
     txt = p.read_text(encoding="utf-8", errors="ignore")
-    for rx in (REL_IMPORT, ABS_IMPORT):
+    for rx in (REL_IMPORT_TOP, ABS_IMPORT_TOP):
         for m in rx.finditer(txt):
-            tgt = m.group(1)
-            deps[me].add(tgt)
-    for m in REL_FROM.finditer(txt):
+            deps[me].add(m.group(1))
+    for m in REL_FROM_TOP.finditer(txt):
         for n in (s.strip() for s in m.group(1).split(",")):
             if n: deps[me].add(n)
+    for rx in (REL_IMPORT_LAZY, ABS_IMPORT_LAZY):
+        for m in rx.finditer(txt):
+            deps_lazy[me].add(m.group(1))
+    for m in REL_FROM_LAZY.finditer(txt):
+        for n in (s.strip() for s in m.group(1).split(",")):
+            if n: deps_lazy[me].add(n)
 
 # Fan-out: cuántos importa cada uno
 fan_out = {m: len(d) for m, d in deps.items()}
