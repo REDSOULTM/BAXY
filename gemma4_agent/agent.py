@@ -8,6 +8,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
+from . import agent_guards  # R3 cleanup 2026-05-28: top-level (eran 7 lazies)
+from . import command_splitter  # R3 cleanup 2026-05-28: top-level (eran 4 lazies)
+from . import reply_validator  # R3 cleanup 2026-05-28: top-level (eran 5 lazies)
 from .config import AgentConfig
 from .evaluator import evaluate_mission
 from .llm_client import LLMClient

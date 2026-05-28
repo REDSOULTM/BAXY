@@ -62,6 +62,8 @@ from .domain_tools import (
     whatsapp_tool,
 )
 from ._ps import parse_ps_json
+from . import gui_safety  # R3 cleanup 2026-05-28: subido a top-level (5 lazies)
+from . import gui_verify  # R3 cleanup 2026-05-28: subido a top-level (2 lazies)
 from .knowledge import KnowledgeStore
 from .memory import MemoryStore
 from .ops_tools import browser_real_tool, download_tool, email_tool, env_tool, input_tool, ocr_find_text, ocr_image, registry_tool, reminder_tool, state_tool
@@ -1565,7 +1567,9 @@ class ToolRegistry:
             #       coincide" es señal fiable de falso match).
             # Resolvemos el sitio por búsqueda real y abrimos. Si la web no resuelve,
             # devolvemos el resultado original (honesto). Mismo patrón browser<->app.
-            from .tools import _score as _app_score  # noqa
+            # R3 cleanup 2026-05-28: el `from .tools import _score` era circular
+            # (tools.py importándose a sí mismo). `_score` ya está en module scope.
+            _app_score = _score
             nm = str(name or "").strip()
             site_shaped = bool(nm) and 3 <= len(nm) <= 40 and "\\" not in nm and "/" not in nm and len(nm.split()) <= 4
             not_found = (not res.get("ok")) and str(res.get("error") or "") == "app not found"
@@ -1795,7 +1799,6 @@ class ToolRegistry:
         #  (b) no teclear en campos de contraseña (secret handoff).
         if action in self._GUI_PHYSICAL:
             try:
-                from . import gui_safety
                 # (0) cap de acciones físicas por turno (R8 anti pop-up/injection)
                 _bud = gui_safety.check_action_budget()
                 if _bud is not None:
@@ -1830,7 +1833,6 @@ class ToolRegistry:
             # SO cambió. Anota state_changed en el result (honestidad: el agente
             # deja de creer que hizo algo que no hizo). Best-effort, nunca rompe.
             try:
-                from . import gui_verify
                 _x = args.get("x"); _y = args.get("y")
                 _before = gui_verify.capture_before(
                     int(_x) if _x is not None else None,
@@ -1840,7 +1842,6 @@ class ToolRegistry:
             result = self._gui_dispatch_raw(action, args)
             try:
                 if _before is not None and isinstance(result, dict) and result.get("ok"):
-                    from . import gui_verify
                     _v = gui_verify.verify_after(_before)
                     result["state_changed"] = _v.get("state_changed")
                     result["state_verify"] = _v.get("reason")
@@ -2228,7 +2229,6 @@ class ToolRegistry:
             # ANCHOR-BINDING (R8.2): no clickear bait de pop-up no relacionado al
             # objetivo del turno (label frase-larga + cosine bajo). Conservador.
             try:
-                from . import gui_safety
                 _anc = gui_safety.check_anchor(str(args.get("query") or args.get("text")
                                                    or args.get("target") or ""))
                 if _anc is not None:
@@ -5149,7 +5149,6 @@ try {{ if (-not [Mouse]::SetProcessDpiAwarenessContext([IntPtr](-4))) {{ [Mouse]
         except (OSError, subprocess.TimeoutExpired):
             return _err("gui_click timeout", x=x, y=y, reason="powershell_timeout")
         try:
-            from . import gui_safety
             gui_safety.note_agent_input()  # marcar que ESTE input fue del agente
         except Exception:
             pass
@@ -5436,7 +5435,6 @@ Start-Sleep -Milliseconds 120
                 typed_into_window=fg_title, state_changed=False, verified=False)
         # 2) capturar estado antes + teclear + verificar (sin VLM)
         try:
-            from . import gui_verify
             before = gui_verify.capture_before(None, None)
         except Exception:
             before = None
@@ -5453,7 +5451,6 @@ Start-Sleep -Milliseconds 120
             return typed
         try:
             if before is not None:
-                from . import gui_verify
                 v = gui_verify.verify_after(before)
                 typed["state_changed"] = v.get("state_changed")
                 typed["state_verify"] = v.get("reason")
@@ -5565,7 +5562,6 @@ Start-Sleep -Milliseconds 120
         else:
             return None
         try:
-            from . import gui_verify
             before = gui_verify.capture_before(sx, sy)
         except Exception:
             before = None
@@ -5575,7 +5571,6 @@ Start-Sleep -Milliseconds 120
                         label=label, status="failed", grounding="ocr")
         try:
             if before is not None:
-                from . import gui_verify
                 v = gui_verify.verify_after(before)
                 clicked["state_changed"] = v.get("state_changed")
                 clicked["state_verify"] = v.get("reason")
@@ -5642,7 +5637,6 @@ Start-Sleep -Milliseconds 120
         # al objetivo del turno (frase larga + cosine bajo), no clickear sin
         # confirmar. Conservador (0 fricción en labels cortos legítimos).
         try:
-            from . import gui_safety
             _anc = gui_safety.check_anchor(label)
             if _anc is not None:
                 _anc["action"] = "click_button"
@@ -5745,7 +5739,6 @@ Start-Sleep -Milliseconds 120
         cx, cy = pt.get("x"), pt.get("y")
         # 2) capture_before en el punto -> click -> verify_after.
         try:
-            from . import gui_verify
             before = gui_verify.capture_before(cx, cy)
         except Exception:
             before = None
@@ -5769,7 +5762,6 @@ Start-Sleep -Milliseconds 120
                             label=label, element=el, status="failed")
         try:
             if before is not None:
-                from . import gui_verify
                 v = gui_verify.verify_after(before)
                 clicked["state_changed"] = v.get("state_changed")
                 clicked["state_verify"] = v.get("reason")
@@ -5809,7 +5801,6 @@ Start-Sleep -Milliseconds 120
             if focus_target:
                 self.window_control("focus", focus_target)
                 time.sleep(0.25)
-            from . import gui_verify
             before2 = gui_verify.capture_before(cx, cy)
             retry = self.gui_click({"x": int(cx), "y": int(cy)})
             if not retry.get("ok"):
@@ -5894,7 +5885,6 @@ Start-Sleep -Milliseconds 120
             el = best[1]
             # capturar estado antes (frame-diff) + invocar + verify.
             try:
-                from . import gui_verify
                 _before = gui_verify.capture_before(None, None)
             except Exception:
                 _before = None
@@ -5921,7 +5911,6 @@ Start-Sleep -Milliseconds 120
             changed = None
             try:
                 if _before is not None:
-                    from . import gui_verify
                     changed = gui_verify.verify_after(_before).get("state_changed")
             except Exception:
                 pass
@@ -5957,7 +5946,8 @@ Start-Sleep -Milliseconds 120
             if sem is not None:
                 return sem
             return {"ok": False, "error": "sin coincidencias UIA", "candidates": []}
-        from .tools import _score  # type: ignore  # noqa: F401  (módulo propio)
+        # R3 cleanup 2026-05-28: `_score` ya está en module scope, no necesitamos
+        # import circular del propio módulo.
         lab = label.casefold()
 
         def rank(m: dict) -> tuple:
@@ -6375,7 +6365,6 @@ Start-Sleep -Milliseconds 120
             result = self._gui_type_via_paste(text)
             if result.get("ok"):
                 try:
-                    from . import gui_safety
                     gui_safety.note_agent_input()
                 except Exception:
                     pass
@@ -6398,7 +6387,6 @@ Start-Sleep -Milliseconds 120
             _si = self._send_text_via_sendinput(text)
             if _si is not None and _si.get("ok"):
                 try:
-                    from . import gui_safety
                     gui_safety.note_agent_input()
                 except Exception:
                     pass
@@ -6420,7 +6408,6 @@ Start-Sleep -Milliseconds 120
             result = self._gui_type_via_paste(text)
             if result.get("ok"):
                 try:
-                    from . import gui_safety
                     gui_safety.note_agent_input()
                 except Exception:
                     pass
@@ -6451,7 +6438,6 @@ Start-Sleep -Milliseconds 120
         except (OSError, subprocess.TimeoutExpired):
             return _err("gui_type timeout", chars=len(text), reason="sendkeys_timeout")
         try:
-            from . import gui_safety
             gui_safety.note_agent_input()
         except Exception:
             pass
@@ -6605,7 +6591,6 @@ Start-Sleep -Milliseconds 120
         _si = None if _force_sendkeys else self._keypress_via_sendinput(keys)
         if _si is not None and _si.get("ok"):
             try:
-                from . import gui_safety
                 gui_safety.note_agent_input()
             except Exception:
                 pass
@@ -6619,7 +6604,6 @@ Start-Sleep -Milliseconds 120
         # modificador como ctrl+a): si no, la guarda de actividad-del-usuario
         # confunde estas teclas con el usuario y difiere la acción siguiente.
         try:
-            from . import gui_safety
             gui_safety.note_agent_input()
         except Exception:
             pass
