@@ -38,6 +38,7 @@ from pathlib import Path
 from typing import Any
 
 from ._shared import _err, _ok
+from .tool_result import ToolResult
 
 
 __all__ = [
@@ -53,6 +54,15 @@ __all__ = [
     "_xml_escape",
     "_WIFI_FILLER",
 ]
+
+
+# R4 sprint 2026-05-28: handler migrado a ToolResult con .to_dict().
+def _ok_tr(**kw):
+    return ToolResult.ok_result(**kw).to_dict()
+
+
+def _err_tr(msg, **kw):
+    return ToolResult.err(msg, **kw).to_dict()
 
 
 def _xml_escape(text: str) -> str:
@@ -73,9 +83,9 @@ def _device_wifi_add_profile(args: dict[str, Any]) -> dict[str, Any]:
     ssid = str(args.get("ssid") or args.get("name") or "").strip()
     password = str(args.get("password") or args.get("key") or "").strip()
     if not ssid or not password:
-        return _err("wifi_add_profile requires ssid and password")
+        return _err_tr("wifi_add_profile requires ssid and password")
     if len(password) < 8 or len(password) > 63:
-        return _err("WPA2 passphrase must be 8-63 ASCII characters", length=len(password))
+        return _err_tr("WPA2 passphrase must be 8-63 ASCII characters", length=len(password))
     auto_connect = bool(args.get("auto_connect", True))
     connection_mode = "auto" if auto_connect else "manual"
     profile_xml = f"""<?xml version="1.0"?>
@@ -119,8 +129,8 @@ def _device_wifi_add_profile(args: dict[str, Any]) -> dict[str, Any]:
         except OSError:
             pass
     if proc.returncode != 0:
-        return _err("netsh wlan add profile failed", stderr=proc.stderr, exit_code=proc.returncode, stdout=proc.stdout[-500:])
-    return _ok(
+        return _err_tr("netsh wlan add profile failed", stderr=proc.stderr, exit_code=proc.returncode, stdout=proc.stdout[-500:])
+    return _ok_tr(
         ssid=ssid,
         connection_mode=connection_mode,
         scope=scope if 'scope' in locals() else 'current',
@@ -134,9 +144,9 @@ def _device_wifi_add_profile(args: dict[str, Any]) -> dict[str, Any]:
 def _device_wifi_delete_profile(args: dict[str, Any]) -> dict[str, Any]:
     ssid = str(args.get("ssid") or args.get("name") or "").strip()
     if not ssid:
-        return _err("missing ssid")
+        return _err_tr("missing ssid")
     proc = subprocess.run(["netsh", "wlan", "delete", "profile", f"name={ssid}"], capture_output=True, text=True, timeout=10)
-    return _ok(
+    return _ok_tr(
         ssid=ssid,
         exit_code=proc.returncode,
         stdout=proc.stdout.strip()[:500],
@@ -152,9 +162,9 @@ def _device_wifi_status() -> dict[str, Any]:
     try:
         proc = subprocess.run(["netsh", "wlan", "show", "interfaces"], capture_output=True, text=True, timeout=6)
     except (OSError, subprocess.TimeoutExpired):
-        return _err("netsh wlan timeout", reason="wlansvc_unresponsive")
+        return _err_tr("netsh wlan timeout", reason="wlansvc_unresponsive")
     if proc.returncode != 0:
-        return _err("netsh wlan show interfaces failed", stderr=proc.stderr, exit_code=proc.returncode)
+        return _err_tr("netsh wlan show interfaces failed", stderr=proc.stderr, exit_code=proc.returncode)
     fields: dict[str, str] = {}
     for line in proc.stdout.splitlines():
         if ":" not in line:
@@ -167,7 +177,7 @@ def _device_wifi_status() -> dict[str, Any]:
             if fields.get(k.casefold()) is not None:
                 return fields.get(k.casefold())
         return None
-    return _ok(
+    return _ok_tr(
         ssid=pick("ssid"),
         state=pick("state", "estado"),
         signal=pick("signal", "señal"),
@@ -183,9 +193,9 @@ def _device_wifi_profiles() -> dict[str, Any]:
     try:
         proc = subprocess.run(["netsh", "wlan", "show", "profiles"], capture_output=True, text=True, timeout=6)
     except (OSError, subprocess.TimeoutExpired):
-        return _err("netsh wlan timeout", reason="wlansvc_unresponsive")
+        return _err_tr("netsh wlan timeout", reason="wlansvc_unresponsive")
     if proc.returncode != 0:
-        return _err("netsh wlan show profiles failed", stderr=proc.stderr)
+        return _err_tr("netsh wlan show profiles failed", stderr=proc.stderr)
     profiles: list[str] = []
     for line in proc.stdout.splitlines():
         if "All User Profile" in line or "Perfil de todos los usuarios" in line:
@@ -193,7 +203,7 @@ def _device_wifi_profiles() -> dict[str, Any]:
             name = name.strip()
             if name:
                 profiles.append(name)
-    return _ok(profiles=profiles, count=len(profiles))
+    return _ok_tr(profiles=profiles, count=len(profiles))
 
 
 def _device_wifi_scan() -> dict[str, Any]:
@@ -203,9 +213,9 @@ def _device_wifi_scan() -> dict[str, Any]:
     try:
         proc = subprocess.run(["netsh", "wlan", "show", "networks", "mode=bssid"], capture_output=True, text=True, timeout=10)
     except (OSError, subprocess.TimeoutExpired):
-        return _err("netsh wlan scan timeout", reason="wlansvc_unresponsive")
+        return _err_tr("netsh wlan scan timeout", reason="wlansvc_unresponsive")
     if proc.returncode != 0:
-        return _err("netsh wlan show networks failed", stderr=proc.stderr)
+        return _err_tr("netsh wlan show networks failed", stderr=proc.stderr)
     networks: list[dict[str, Any]] = []
     current: dict[str, Any] | None = None
     for line in proc.stdout.splitlines():
@@ -220,7 +230,7 @@ def _device_wifi_scan() -> dict[str, Any]:
             current[key.strip().casefold()] = value.strip()
     if current:
         networks.append(current)
-    return _ok(networks=networks[:50], count=len(networks))
+    return _ok_tr(networks=networks[:50], count=len(networks))
 
 
 # Palabras de relleno que el usuario/4B mete alrededor del NOMBRE de la red
@@ -357,7 +367,7 @@ def _resolve_wifi_target(name: str) -> dict[str, Any]:
 def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
     name = str(args.get("name") or args.get("ssid") or args.get("profile") or "").strip()
     if not name:
-        return _err("missing profile name; pass name=<existing profile>")
+        return _err_tr("missing profile name; pass name=<existing profile>")
     password = str(args.get("password") or args.get("key") or "").strip()
     created = None
 
@@ -369,7 +379,7 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
     target = _resolve_wifi_target(name)
     if target.get("ambiguous"):
         cands = target["ambiguous"]
-        return _err(
+        return _err_tr(
             f"varias redes coinciden con '{name}'; especificá cuál",
             status="needs_user",
             ambiguous_matches=cands,
@@ -388,7 +398,7 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
                 if not created.get("ok"):
                     return created
             else:
-                return _err(
+                return _err_tr(
                     f"'{resolved}' está visible pero no tiene perfil guardado; "
                     "necesito la contraseña para conectarme",
                     status="needs_user", matched_ssid=resolved,
@@ -404,7 +414,7 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
             if not created.get("ok"):
                 return created
         else:
-            return _err(
+            return _err_tr(
                 f"no encontré una red guardada ni visible que coincida con '{name}'; "
                 "pasá la contraseña para crear el perfil, o decime el nombre exacto",
                 status="needs_user",
@@ -413,7 +423,7 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
             )
 
     proc = subprocess.run(["netsh", "wlan", "connect", f"name={name}"], capture_output=True, text=True, timeout=20)
-    return _ok(
+    return _ok_tr(
         profile=name,
         requested=str(args.get("name") or args.get("ssid") or "").strip(),
         resolved_from_state=(name != str(args.get("name") or args.get("ssid") or "").strip()),
@@ -428,4 +438,4 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
 
 def _device_wifi_disconnect() -> dict[str, Any]:
     proc = subprocess.run(["netsh", "wlan", "disconnect"], capture_output=True, text=True, timeout=10)
-    return _ok(exit_code=proc.returncode, stdout=proc.stdout.strip(), verified=proc.returncode == 0)
+    return _ok_tr(exit_code=proc.returncode, stdout=proc.stdout.strip(), verified=proc.returncode == 0)
