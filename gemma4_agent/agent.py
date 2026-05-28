@@ -3382,6 +3382,17 @@ class Gemma4Agent:
         sí" sin nombre) -> el LLM pregunta a quién (honesto, no inventa)."""
         if not isinstance(text, str) or not text.strip():
             return None
+        # PRECEDENCIA EMAIL (2026-05-27, bug medido): "mandale un correo a
+        # ana@gmail.com diciendo X" matchea el verbo de mensaje ("mandale") y
+        # extract_message_to agarra "un correo a ana@gmail.com" como contacto ->
+        # mandaba a WhatsApp a un contacto basura. Si es intención de EMAIL, esta
+        # red de mensaje NO dispara (la cubre la red de email / la tool email).
+        try:
+            from .intent_router import wants_send_email
+            if wants_send_email(text):
+                return None
+        except Exception:
+            pass
         # Debe SER intención de responder/mandar mensaje (no cualquier "a X que Y").
         try:
             from .command_splitter import extract_message_to

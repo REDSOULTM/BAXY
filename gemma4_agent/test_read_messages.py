@@ -98,6 +98,18 @@ class DeterministicReplyTest(unittest.TestCase):
                 self.assertIsNone(self.ag._deterministic_reply(q), q)
         ex.assert_not_called()
 
+    def test_email_intent_not_hijacked_by_reply_net(self):
+        # BUG medido: "mandale un correo a ana@gmail.com diciendo X" -> el verbo
+        # "mandale" hacía que extract_message_to agarrara "un correo a ana@gmail.com"
+        # como contacto -> WhatsApp a contacto basura. La red de mensaje DEBE ceder
+        # ante intención de EMAIL.
+        with mock.patch.object(self.ag.tools, "execute") as ex:
+            for q in ("mandale un correo a ana@gmail.com diciendo que llego tarde",
+                      "escribile un email a juan que nos vemos",
+                      "envia un mail a pedro@x.com con asunto hola"):
+                self.assertIsNone(self.ag._deterministic_reply(q), q)
+        ex.assert_not_called()
+
 
 class ReplyShortCircuitTest(unittest.TestCase):
     """El short-circuit PRE-LLM de run_content: 'respondele a X que Y' (claro)
