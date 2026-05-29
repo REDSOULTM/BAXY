@@ -67,12 +67,18 @@ class TestErrorTypeField(unittest.TestCase):
 
 
 class TestGate(unittest.TestCase):
-    def test_default_off(self):
+    def test_default_on(self):
+        # 2026-05-29: flipeado a default-ON (validado en vivo + suite verde).
+        # El kill-switch GEMMA4_ERROR_RECOVERY=0 sigue funcionando.
         prev = os.environ.pop("GEMMA4_ERROR_RECOVERY", None)
         try:
-            self.assertFalse(_error_recovery_enabled())
+            self.assertTrue(_error_recovery_enabled())  # default ON ahora
+            os.environ["GEMMA4_ERROR_RECOVERY"] = "0"
+            self.assertFalse(_error_recovery_enabled())  # kill-switch
         finally:
-            if prev is not None:
+            if prev is None:
+                os.environ.pop("GEMMA4_ERROR_RECOVERY", None)
+            else:
                 os.environ["GEMMA4_ERROR_RECOVERY"] = prev
 
     def test_on(self):

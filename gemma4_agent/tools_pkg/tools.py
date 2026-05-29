@@ -4035,7 +4035,7 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         # PDFs reales tienen NUL bytes -> error abajo). Delegamos a document.extract_text
         # (texto real). Gated por el mismo flag que el subset-override.
         import os as _os_fr
-        if (_os_fr.environ.get("GEMMA4_FILE_TOOL_ROUTING", "0") or "0").strip().lower() not in {
+        if (_os_fr.environ.get("GEMMA4_FILE_TOOL_ROUTING", "1") or "1").strip().lower() not in {
                 "0", "false", "no", "off"} and path.suffix.lower() in {
                 ".pdf", ".docx", ".doc", ".pptx", ".ppt", ".html", ".htm"}:
             try:

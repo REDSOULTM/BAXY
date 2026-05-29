@@ -63,12 +63,14 @@ class TestRouteFileByExtension(unittest.TestCase):
         out = _route_file_by_extension("analizá ventas.csv", ["data_analysis"])
         self.assertEqual(out.count("data_analysis"), 1)
 
-    def test_gate_default_off(self):
+    def test_gate_default_on(self):
+        # 2026-05-29: flipeado a default-ON (validado 6/6 en vivo + suite verde).
+        # El kill-switch GEMMA4_FILE_TOOL_ROUTING=0 sigue funcionando.
         prev = os.environ.pop("GEMMA4_FILE_TOOL_ROUTING", None)
         try:
-            self.assertFalse(_file_tool_routing_enabled())
-            os.environ["GEMMA4_FILE_TOOL_ROUTING"] = "1"
-            self.assertTrue(_file_tool_routing_enabled())
+            self.assertTrue(_file_tool_routing_enabled())  # default ON ahora
+            os.environ["GEMMA4_FILE_TOOL_ROUTING"] = "0"
+            self.assertFalse(_file_tool_routing_enabled())  # kill-switch
         finally:
             if prev is None:
                 os.environ.pop("GEMMA4_FILE_TOOL_ROUTING", None)

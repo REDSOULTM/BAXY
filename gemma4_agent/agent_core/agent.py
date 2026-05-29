@@ -203,10 +203,12 @@ def _error_recovery_enabled() -> bool:
     (missing_precondition/param_mismatch/transient) y damos una directiva ESPECÍFICA
     para que el loop se auto-corrija (replan/amend) o pare honesto (skip). Capa
     GENÉRICA (el LLM decide la recuperación), no macro-por-intención. Opt-in
-    GEMMA4_ERROR_RECOVERY, default OFF hasta validar en vivo en box fresca."""
+    GEMMA4_ERROR_RECOVERY, default ON desde 2026-05-29 (validado en vivo + suite
+    verde 1980/1980; kill-switch GEMMA4_ERROR_RECOVERY=0). Sin costo por-turno: sólo
+    actúa en el path de fallo de una tool, no en el hot-path de cada turno."""
     import os as _os_er
     return (
-        _os_er.environ.get("GEMMA4_ERROR_RECOVERY", "0") or "0"
+        _os_er.environ.get("GEMMA4_ERROR_RECOVERY", "1") or "1"
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
@@ -258,10 +260,11 @@ def _recalled_success_tools(recalls: list | None, exclude, cap: int = 3) -> list
 def _file_tool_routing_enabled() -> bool:
     """Bug 2026-05-29 (medido en vivo): el 4B prefería filesystem.read sobre
     data_analysis (.csv/.xlsx) y document (.pdf/.docx/.pptx/.html), dando lecturas
-    crudas SIN análisis / binario sin decodificar. Gated GEMMA4_FILE_TOOL_ROUTING
-    (default off hasta validar). Las reglas de tool no bastaron solas (1/6 en vivo)."""
+    crudas SIN análisis / binario sin decodificar. GEMMA4_FILE_TOOL_ROUTING default
+    ON desde 2026-05-29 (validado 6/6 en vivo + suite verde; kill-switch =0). Las
+    reglas de tool no bastaron solas (1/6 en vivo); costo = unos regex en el subset."""
     import os as _os_fr
-    return (_os_fr.environ.get("GEMMA4_FILE_TOOL_ROUTING", "0") or "0").strip().lower() not in {
+    return (_os_fr.environ.get("GEMMA4_FILE_TOOL_ROUTING", "1") or "1").strip().lower() not in {
         "0", "false", "no", "off"}
 
 
