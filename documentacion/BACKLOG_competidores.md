@@ -7,18 +7,23 @@ gate de validación. Método: medir → implementar gateado → validar en vivo 
 
 Leyenda ROI/Esfuerzo/Riesgo: A(alto)/M(medio)/B(bajo).
 
-## ESTADO (actualizado 2026-05-29)
-- ✅ **B1** error-type recovery — GATED `GEMMA4_ERROR_RECOVERY`, 22 tests, commit `a3aef18`.
-- ✅ **B2** memory-guided tool-picking — GATED `GEMMA4_MEMORY_TOOLS`, 10 tests, commit `aa7d5ae`.
-- ✅ **B7** web fallback DDG→Bing — GATED `GEMMA4_WEB_FALLBACK`, 7 tests, commit `e2c248e`.
-- ⏸️ **B3** (streaming voz) — BLOQUEADO: B3a (flip del streaming-info ya construido) necesita validación de voz (RED jugando, GPU ocupada); B3b ("buscando…" hablado) = respuesta enlatada por idioma → viola la regla "nada enlatado" → hacerlo como **earcon no-verbal**, que también necesita validación de voz.
-- 🔎 **B8** (reminders) — HALLAZGO: el backend Task Scheduler YA EXISTE (`domain_tools/notifications.py`, `windows_scheduled_tasks`); el tool `reminder` (ops_tools) es SOLO state (no dispara). Gap = cablear `reminder`→notifications + validar disparo (tiempo/reinicio). Chunk, no quick-win.
-- ⬜ **B5/B6/B4/B9** — pendientes, cada uno esfuerzo DEDICADO: B5 refactor de guards de confirmación; B6 unificar file-processor; B4 code-exec sandbox (gate de SEGURIDAD primero); B9 cliente MCP (refactor grande, medir impacto en tool-calling del 4B).
+## ESTADO (actualizado 2026-05-29, post-validación-en-vivo)
+- ✅ **B1** error-type recovery — `GEMMA4_ERROR_RECOVERY` (gated), 22 tests, **validado en vivo**, commit `a3aef18`.
+- ✅ **B2** memory-guided tool-picking — `GEMMA4_MEMORY_TOOLS` (gated), 10 tests, **validado en vivo (ensanche real)**, commit `aa7d5ae`.
+- ✅ **B7** web fallback DDG→Bing — **DEFAULT-ON**, validado en vivo (2 bugs del scraper arreglados), commits `e2c248e`+`3052427`.
+- ✅ **B8** reminders confiables — **DEFAULT-ON** (`GEMMA4_REMINDER_SCHEDULE=0` killswitch). `reminder` con hora delega a Task Scheduler; validado en vivo (Task creado en SO). 8 tests, commit `e410250`.
+- ✅ **B3a** streaming-info TTS — veracidad validada en vivo (0 violaciones); gated `GEMMA4_STREAM_TTS`, flip pendiente escucha de voz.
+- ⏭️ **B5** confirmation policy — **SALTADO (ROI marginal)**: los irreversibles YA no se auto-ejecutan (email→redactor, whatsapp `auto_send=False`, guard de compra — validado en vivo). Centralizar = refactor de algo que funciona, riesgo de romper guards validados.
+- ✅ **B4** code-exec (datos) — **YA CUBIERTO** por `domain_tools/data_analysis.py` (CSV/XLSX profile/describe/query/head/plots via pandas, query segura sin eval). El code-exec genérico de Python es el caso más riesgoso (sandbox) y su uso principal ya existe → no reimplementar.
+- ✅ **B6** file-processor — **YA CUBIERTO** por `domain_tools/document.py` (PDF/DOCX/XLSX/PPTX/HTML/texto + tablas + imágenes + OCR Tesseract + compare, 8 acciones) + data_analysis + office + vision. "Analizá este archivo, 10+ tipos" ya existe.
+- 🟡 **B11/B12** — parcialmente cubiertos (microagents/ + mission_checkpoint.py ya existen). ROI incremental.
+- ⬜ **B9** cliente MCP — **único gap estratégico grande pendiente**. Sprint dedicado: +70 servidores, PERO más tools = tool-calling más DURO para el 4B (medir que el router/subset no degrade). NO grindear al final de sesión — medir en box fresca.
+- ⬜ **B3b** (earcon voz) / **B10** (tool cache, ROI chico) / **B13** (mejor TTS, eval voz) — oportunistas.
 
-**Los 3 gated (B1/B2/B7) NO cambian nada con default-off.** Validación pendiente en
-**una pasada batch en box FRESCA + sin gaming**: flipear B1/B2/B3a/B7 tras validar
-en vivo (el efecto del 4B es no-determinista). Los quick-wins limpios están hechos;
-B3 espera tu voz; B8/B5/B6/B4/B9 son esfuerzos dedicados (no se grindean sin validar).
+**Conclusión (regla #1: verificar contra el código real):** el backlog se escribió desde
+`ANALISIS_COMPETENCIA` y SOBREESTIMÓ los gaps — el repo ya tenía data_analysis/document/
+office/vision (= B4 datos + B6). Lo adoptable y no-redundante está hecho (B1/B2/B7/B8) o ya
+existía. El único pendiente de valor real es **B9 (MCP)**, sprint dedicado con medición.
 
 ---
 
