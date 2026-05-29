@@ -57,13 +57,14 @@ class _Self:
         self.trace = _Trace()
 
 
-def _run_stream(pieces, final=None):
+def _run_stream(pieces, final=None, guard_check=False):
     fed = []
     client = _StreamClient(pieces, final=final)
     s = _Self(client, fed.append)
-    resp = Gemma4Agent._chat_summary_streaming(
+    resp = Gemma4Agent._chat_streaming(
         s, [{"role": "user", "content": "x"}],
         model=None, max_tokens=160, thinking_budget=256, timeout_s=10, turn_id="t",
+        guard_check=guard_check,
     )
     return s, fed, resp
 
@@ -96,11 +97,45 @@ class TestSummaryStreaming(unittest.TestCase):
     def test_no_sink_marks_not_streamed(self):
         client = _StreamClient(["Listo."])
         s = _Self(client, None)
-        resp = Gemma4Agent._chat_summary_streaming(
+        resp = Gemma4Agent._chat_streaming(
             s, [{"role": "user", "content": "x"}],
             model=None, max_tokens=160, thinking_budget=256, timeout_s=10, turn_id="t")
         self.assertFalse(s._tts_streamed)
         self.assertEqual(resp["choices"][0]["message"]["content"], "Listo.")
+
+
+class TestInfoGuardCheck(unittest.TestCase):
+    """Info turns (guard_check=True, NO tool ran) where the content-replacing
+    guards CAN fire: clean prose streams; a claim/promise ABORTS before it is
+    ever voiced. Uses the REAL detectors (grounding_gate + agent_guards)."""
+
+    def test_clean_info_prose_streams(self):
+        s, fed, _ = _run_stream(
+            ["La fotosintesis ", "es el proceso ", "por el que las plantas ", "hacen energia."],
+            guard_check=True)
+        self.assertTrue(s._tts_streamed)
+        self.assertEqual("".join(fed),
+                         sanitize_text("La fotosintesis es el proceso por el que las plantas hacen energia."))
+
+    def test_promise_aborts_and_is_never_voiced(self):
+        # "te aviso" is a promise pattern -> guard fires -> abort before voicing it.
+        s, fed, _ = _run_stream(["Claro. ", "Te aviso ", "cuando termine."], guard_check=True)
+        voiced = "".join(fed)
+        self.assertFalse(s._tts_streamed)          # aborted -> runner voices full guarded reply
+        self.assertNotIn("aviso", voiced.lower())  # the promise was NEVER spoken
+        self.assertNotIn("aviso", s._tts_streamed_text.lower())
+
+    def test_action_claim_opening_aborts(self):
+        # opens with a 1st-person past-tense action claim and NO tool ran -> abort.
+        s, fed, _ = _run_stream(["Abrí el navegador.", " Ya está."], guard_check=True)
+        self.assertFalse(s._tts_streamed)
+        self.assertNotIn("Abrí", "".join(fed))
+
+    def test_summary_pass_does_not_guard_check(self):
+        # guard_check=False (a tool ran): a grounded "abrí" claim streams freely.
+        s, fed, _ = _run_stream(["Listo, ", "abrí Steam."], guard_check=False)
+        self.assertTrue(s._tts_streamed)
+        self.assertEqual("".join(fed), sanitize_text("Listo, abrí Steam."))
 
 
 class TestFeedTail(unittest.TestCase):

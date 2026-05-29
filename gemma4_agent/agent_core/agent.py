@@ -1815,7 +1815,7 @@ class Gemma4Agent:
             selected_schemas=selected_schemas,
         )
 
-    def _chat_summary_streaming(
+    def _chat_streaming(
         self,
         msgs: list[dict[str, Any]],
         *,
@@ -1824,21 +1824,50 @@ class Gemma4Agent:
         thinking_budget: int | None,
         timeout_s: float | None,
         turn_id: str,
+        tools: list[dict[str, Any]] | None = None,
+        enable_thinking: bool = False,
+        greedy: bool = False,
+        sampling: dict[str, Any] | None = None,
+        guard_check: bool = False,
     ) -> dict[str, Any]:
-        """Stream the summary-pass reply via ``chat_stream``, feeding sanitized
-        prose to the per-turn TTS sink as it arrives, and return a ``chat()``-shaped
-        dict so the rest of ``_execute_turn`` is unchanged.
+        """Stream a reply pass via ``chat_stream``, feeding sanitized prose to the
+        per-turn TTS sink as it arrives, and return a ``chat()``-shaped dict so the
+        rest of ``_execute_turn`` is unchanged.
 
-        Truthfulness is enforced, not assumed. Only called on the summary pass (a
-        tool ran -> the content-REPLACING guards are pass-through). Prose is
-        sanitized INCREMENTALLY (``sanitize_text`` over the growing buffer); if
-        sanitize ever fails to extend what was already fed (i.e. it would strip
-        text we already voiced), we ABORT feeding. The full RAW content is
-        returned so finalize re-applies the exact same sanitize + guards as the
-        blocking path; ``_feed_tts_tail`` then voices only the post-guard tail.
+        Truthfulness is ENFORCED, not assumed:
+        - SUMMARY pass (``guard_check=False``, a tool ran): the content-REPLACING
+          guards are pass-through, so streamed prose == final prose.
+        - INFO pass (``guard_check=True``, no tool): the replacing guards CAN fire,
+          so before voicing each increment we run the REAL detectors
+          (``detect_action_claim_without_evidence`` / ``reply_claims_action``) on
+          the accumulated buffer; the instant one would fire we ABORT (stop
+          feeding) and mark not-streamed, so the runner voices the FULL guarded
+          reply instead. Everything already voiced passed the detectors (clean).
+        Prose is sanitized incrementally; if sanitize shrinks already-voiced text
+        we also abort. Full RAW content is returned so finalize re-applies the
+        exact same sanitize + guards as the blocking path.
         """
         from ..support.reasoning import sanitize_text as _san
         sink = getattr(self, "_active_tts_sink", None)
+        _detectors = None
+        if guard_check:
+            from ..safety_pkg.grounding_gate import detect_action_claim_without_evidence
+            from .agent_guards import reply_claims_action
+            _detectors = (detect_action_claim_without_evidence, reply_claims_action)
+
+        def _guard_fires(text: str) -> bool:
+            if not _detectors or not text:
+                return False
+            claim_d, promise_d = _detectors
+            try:
+                if claim_d(text, []).should_replace:
+                    return True
+                if promise_d(text):
+                    return True
+            except Exception:  # noqa: BLE001
+                return False
+            return False
+
         acc_raw = ""
         fed = ""  # sanitized prose already handed to the sink (what was voiced)
         aborted = False
@@ -1846,9 +1875,9 @@ class Gemma4Agent:
         final_tool_calls: list[dict[str, Any]] = []
         final_finish: str | None = None
         for ev in self.client.chat_stream(
-            msgs, tools=None, enable_thinking=False,
+            msgs, tools=tools, enable_thinking=enable_thinking,
             thinking_budget=thinking_budget, max_tokens=max_tokens,
-            timeout_s=timeout_s, model=model,
+            timeout_s=timeout_s, model=model, greedy=greedy, sampling=sampling,
         ):
             etype = ev.get("type")
             if etype == "delta":
@@ -1857,28 +1886,39 @@ class Gemma4Agent:
                     continue
                 acc_raw += piece
                 san = _san(acc_raw)
-                if san.startswith(fed):
-                    new = san[len(fed):]
-                    if new:
-                        try:
-                            sink(new)
-                        except Exception:  # noqa: BLE001
-                            aborted = True
-                            continue
-                        fed = san
-                else:
-                    # sanitize changed/removed already-voiced text -> stop feeding
-                    # so we never leave a spoken claim that the final text drops.
+                if not san.startswith(fed):
+                    # sanitize changed/removed already-voiced text -> stop feeding.
                     aborted = True
                     self.trace.event(turn_id, "tts_stream_sanitize_abort",
                                      fed=fed[:80], san=san[:80])
+                    continue
+                if _guard_fires(san):
+                    # the new text would trip a content-replacing guard -> NEVER
+                    # voice it; the runner will speak the full guarded reply.
+                    aborted = True
+                    self.trace.event(turn_id, "tts_stream_guard_abort", san=san[:120])
+                    continue
+                new = san[len(fed):]
+                if new:
+                    try:
+                        sink(new)
+                    except Exception:  # noqa: BLE001
+                        aborted = True
+                        continue
+                    fed = san
             elif etype == "final":
                 final_content = ev.get("content") or acc_raw
                 final_tool_calls = ev.get("tool_calls") or []
                 final_finish = ev.get("finish_reason")
-        self._tts_streamed = bool(fed) and not aborted
-        self._tts_streamed_text = fed
-        self.trace.event(turn_id, "tts_streamed", chars=len(fed), aborted=aborted)
+        # If the model called a tool (narrate-then-call on an info pass), the
+        # streamed prose was a pre-tool DRAFT, not the final answer -> don't claim
+        # it as streamed (the runner voices the post-tool summary). The draft was
+        # honest, guard-checked prose; voicing it + the summary is redundant but
+        # never a lie. Keeps "voiced == final" true for the pure-prose info win.
+        self._tts_streamed = bool(fed) and not aborted and not final_tool_calls
+        self._tts_streamed_text = fed if self._tts_streamed else ""
+        self.trace.event(turn_id, "tts_streamed", chars=len(fed), aborted=aborted,
+                         guard_check=guard_check, tool_called=bool(final_tool_calls))
         return {
             "choices": [{
                 "message": {"content": final_content, "tool_calls": final_tool_calls},
@@ -2076,27 +2116,44 @@ class Gemma4Agent:
             # decisión de tool-call con baja entropía, más fiable sin reasoning.
             # En summary-pass / conversación NO greedy (necesita lenguaje natural).
             _greedy = bool(_pass_tools) and len(events) == 0 and not _is_summary_pass
-            # STREAMING TTS (GEMMA4_STREAM_TTS, default off): on the SUMMARY pass a
-            # tool already ran (len(events)>0), so the two content-REPLACING guards
-            # are provably pass-through (grounding_gate.py:206, agent_guards.py:253).
-            # That makes it safe to speak the confirmation prose sentence-by-sentence
-            # as it generates — first audio ~0.4s instead of after the full reply +
-            # synth — WITHOUT ever voicing something a guard would retract. Excluded:
-            # routines (phrase_fires -> a guard PREPENDS), no-tool turns (already
-            # <2.2s and where claim guards CAN fire). See SPRINT_streaming_tts_truthful.md.
+            # STREAMING TTS (GEMMA4_STREAM_TTS, default off). Two safe cases:
+            #  - SUMMARY pass (events>0): the content-REPLACING guards are provably
+            #    pass-through (grounding_gate.py:206, agent_guards.py:253) -> stream
+            #    the confirmation freely.
+            #  - INFO pass (events==0, fast_info): the reply is generated in one pass
+            #    (no pass-1+execute pre-wait) so streaming wins more; the claim guards
+            #    CAN fire here, so _chat_streaming runs the REAL detectors per
+            #    increment and ABORTS before voicing anything a guard would replace
+            #    (guard_check=True). Both require thinking OFF (no <think> in the
+            #    stream) and no routine (phrase_confirm PREPENDS). If the info pass
+            #    emits a tool_call instead of prose, no content is streamed (harmless;
+            #    the turn proceeds as an action). See SPRINT_streaming_tts_truthful.md.
             _stream_this = (
-                _is_summary_pass
-                and getattr(self, "_active_tts_sink", None) is not None
+                getattr(self, "_active_tts_sink", None) is not None
                 and not getattr(self, "_phrase_fires", None)
                 and _stream_tts_enabled()
+                and not _think_now
+                and not _is_describe_pass
+                and (_is_summary_pass or (len(events) == 0 and mode.name == "fast_info"))
             )
             try:
                 if _stream_this:
                     try:
-                        resp = self._chat_summary_streaming(
+                        resp = self._chat_streaming(
+                            # tools=None: a streamed pass is PURE PROSE. For the
+                            # info pass this is the truthfulness keystone — with no
+                            # tool offered the model answers from knowledge and the
+                            # turn CANNOT spawn a later tool+summary that would
+                            # supersede (and silently replace) what we already
+                            # voiced. The summary pass already uses tools=None.
                             _msgs, model=_call_model, max_tokens=_pass_max,
                             thinking_budget=mode.thinking_budget,
                             timeout_s=mode.request_timeout_s, turn_id=turn_id,
+                            tools=None, enable_thinking=_think_now,
+                            greedy=_greedy,
+                            sampling={"temperature": mode.temperature,
+                                      "top_p": mode.top_p, "top_k": mode.top_k},
+                            guard_check=(len(events) == 0),
                         )
                     except Exception as _stream_exc:  # noqa: BLE001
                         # Streaming failed mid-flight -> fall back to the blocking

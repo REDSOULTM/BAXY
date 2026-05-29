@@ -78,6 +78,34 @@ que después se retracta. **Misma veracidad que hoy, dicho antes.**
 4. **En vivo:** correr 3-4 acciones reales, confirmar reply hablado correcto y
    SIN contradicción (lo dicho coincide con lo hecho).
 
+## Item 2 — streaming de turnos INFO (2026-05-29)
+
+Extendido a turnos INFO (`fast_info`, events==0): el reply se genera en UNA pasada
+(sin la espera pass-1+execute), así que el win es REAL y grande. Seguridad: en
+turnos sin-tool los guards de claim PUEDEN disparar -> `_chat_streaming(guard_check=True)`
+corre los detectores REALES (`detect_action_claim_without_evidence` + `reply_claims_action`)
+por-incremento y ABORTA antes de hablar algo que un guard reemplazaría. Además
+fuerza `tools=None` en la pasada streameada (prosa pura desde el conocimiento del
+modelo). `chat_stream` extendido con `greedy`/`sampling` (paridad con `chat()`).
+
+**Medido EN VIVO (4 preguntas):** streameó 4/4, **first-audio 0.14-0.19s** vs reply
+base 1.2-3.5s -> **win 1.0-3.3s** (¡el win real del streaming, vs ~0 en acciones!).
+PERO veracidad 2/4:
+- `qué es Python`, `por qué el cielo es azul` (events=0): **voiced == final, TRUTH OK**, win 1.0-1.3s. ✅
+- `qué es la fotosíntesis`, `capital de Francia` (events=1): **TRUTH FAIL** — el agente
+  corre un tool DESPUÉS de la prosa streameada (forced-retry / red determinista),
+  produciendo un final post-tool DISTINTO que NO se habla (tts_streamed=True hace que
+  el runner lo saltee). Lo hablado es CORRECTO (no es mentira), pero ≠ el "final
+  verificado" del agente. En preguntas de conocimiento atemporal el tool post-prosa
+  es probablemente ESPURIO (el modelo ya sabe) -> streamear lo saltea y responde más
+  rápido; pero NO se garantiza que siempre sea espurio.
+
+**Decisión: GEMMA4_STREAM_TTS sigue default OFF.** El win de info es grande pero el
+caso events==1 (spoken ≠ final-verificado) es un trade-off de veracidad/verificación
+que decide RED. Tests: `test_stream_tts.py` 15/15 (incl guard-check: promesa/claim
+ABORTA, prosa limpia streamea). Infra dormant lista. Root-cause del tool-post-prosa
+(¿forced-retry mis-firing en info?) queda como follow-up.
+
 ## Estado
 
 - [x] Implementación (gated `GEMMA4_STREAM_TTS`, default OFF). 8 edits en

@@ -548,6 +548,8 @@ class LLMClient:
         timeout_s: float | None = None,
         thinking_budget: int | None = None,
         model: str | None = None,
+        greedy: bool = False,
+        sampling: dict[str, Any] | None = None,
     ) -> Iterator[dict[str, Any]]:
         """Streaming chat completion (SSE) against llama-server.
 
@@ -568,6 +570,21 @@ class LLMClient:
         ctk: dict[str, Any] = {"enable_thinking": thinking}
         if thinking_budget is not None:
             ctk["thinking_budget"] = int(thinking_budget)
+        # Mirror chat(): greedy (temp=0) for the action decision, or per-mode
+        # sampling overrides, so a STREAMED pass samples identically to the
+        # blocking one (e.g. info turns use temp=0.6, not the config default).
+        import os as _os_s
+        _greedy_on = greedy and (
+            _os_s.environ.get("GEMMA4_GREEDY_TOOLCALL", "1").strip().lower()
+            not in {"0", "false", "no", "off"})
+        _samp = sampling or {}
+        if _os_s.environ.get("GEMMA4_MODE_SAMPLING", "1").strip().lower() in {"0", "false", "no", "off"}:
+            _samp = {}
+
+        def _pick_s(key: str, cfg_default: Any) -> Any:
+            v = _samp.get(key)
+            return cfg_default if v is None else v
+
         body: dict[str, Any] = {
             # In router mode the agent passes the per-turn router preset name
             # ("<profile>-text" / "<profile>-vision"); else the configured model.
@@ -576,14 +593,14 @@ class LLMClient:
             "model": model or self.config.model,
             "stream": True,
             "messages": messages,
-            "temperature": self.config.temperature,
-            "top_p": self.config.top_p,
-            "top_k": self.config.top_k,
+            "temperature": 0.0 if _greedy_on else _pick_s("temperature", self.config.temperature),
+            "top_p": 1.0 if _greedy_on else _pick_s("top_p", self.config.top_p),
+            "top_k": 1 if _greedy_on else _pick_s("top_k", self.config.top_k),
             "repeat_penalty": self.config.repeat_penalty,
             "max_tokens": max_tokens or self.config.max_tokens,
             "chat_template_kwargs": ctk,
         }
-        if self.config.min_p is not None:
+        if self.config.min_p is not None and not _greedy_on:
             body["min_p"] = self.config.min_p
         if self.config.seed is not None and int(self.config.seed) >= 0:
             body["seed"] = int(self.config.seed)
