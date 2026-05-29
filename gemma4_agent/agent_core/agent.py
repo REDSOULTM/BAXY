@@ -178,16 +178,22 @@ def _stream_tts_enabled() -> bool:
 
 def _summary_keep_tools_enabled() -> bool:
     """Keep the tool schemas in the SUMMARY pass so its prompt PREFIX stays
-    byte-identical to pass-1, intended to turn the ~5k re-prefill into a
-    prefix-cache HIT. MEASURED 2026-05-28: standalone it does NOT help — pass-2
-    re-prefills fully (5919 KEEP vs 5243 DROP) because the prefix-cache is NOT
-    reusing within-turn regardless of prefix match (SWA/slot issue under
-    investigation, PROMPT_RESEARCH_prefill_cache_latency.md). So standalone it's a
-    LOSS (more tokens, no hit). Kept dormant (default OFF) because it BECOMES a win
-    only once cache-reuse is actually re-enabled. Do NOT flip on until then."""
+    byte-identical to pass-1 -> the llama.cpp prefix-cache HITS instead of
+    re-prefilling ~5k tokens. **Default ON (2026-05-29), validated live.**
+
+    History: keep-tools ALONE looked like a loss (pass-2 still re-prefilled 5919)
+    because a SECOND prefix divergence — toggling `enable_thinking` in
+    chat_template_kwargs (pass-1 True / summary False) — re-rendered the template
+    from token ~0 (MEASURED cache_n=4). The research (PROMPT_RESEARCH_prefill_cache_latency.md
+    / compass) pinned this. With BOTH fixed (keep tools + match enable_thinking,
+    success-gated in _execute_turn), pass-2 prefill drops 5229->82 tokens, ~1s
+    saved per successful action turn. SOAK: 7/8 cache hits, 0 runaways, replies
+    correct. Cache-mode is SUCCESS-GATED (failures use the slim/thinking-off path —
+    enable_thinking=True makes the model re-engage with a failed action). Toggle
+    off with GEMMA4_SUMMARY_KEEP_TOOLS=0."""
     import os as _os_skt
     return (
-        _os_skt.environ.get("GEMMA4_SUMMARY_KEEP_TOOLS", "0") or "0"
+        _os_skt.environ.get("GEMMA4_SUMMARY_KEEP_TOOLS", "1") or "1"
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
@@ -2108,6 +2114,7 @@ class Gemma4Agent:
             if _is_describe_pass:
                 _pass_tools = None          # forzar respuesta en texto (descripción)
                 _pass_max = max(mode.max_tokens, 512)
+                _keep_summary_tools = False
             else:
                 # SUMMARY slimming (2026-05-20) dropped tools to save ~1.5k prompt
                 # tokens — but that CHANGES the prefix vs pass-1 and busts the
@@ -2115,9 +2122,38 @@ class Gemma4Agent:
                 # GEMMA4_SUMMARY_KEEP_TOOLS the prefix stays identical -> cache hit
                 # (re-prefill only the ~50 new tool-result tokens). Net win if reuse
                 # works. See PROMPT_RESEARCH_prefill_cache_latency.md.
-                _keep_summary_tools = _is_summary_pass and _summary_keep_tools_enabled()
+                # Cache-hit mode (keep tools) ONLY after a clearly-SUCCESSFUL tool:
+                # there the byte-identical prefix yields a cache hit (~1s). On FAILURE
+                # the model re-engages with enable_thinking=True (measured runaway),
+                # so we keep the ORIGINAL slim path (drop tools + thinking off) — no
+                # cache hit but no runaway and no extra tokens. See compass / SPRINT.
+                _last_res = getattr(events[-1], "result", {}) or {} if events else {}
+                _last_ok = (
+                    _last_res.get("verified") is True or _last_res.get("ok") is True
+                    or str(_last_res.get("status") or "").lower() in {"ok", "success", "dispatched"}
+                )
+                _keep_summary_tools = (
+                    _is_summary_pass and _summary_keep_tools_enabled() and _last_ok
+                )
                 _pass_tools = None if (_is_summary_pass and not _keep_summary_tools) else selected_schemas
                 _pass_max = 160 if _is_summary_pass else mode.max_tokens
+            # CACHE-HIT (research compass, 2026-05-29): keeping the tools is NOT enough
+            # to hit the prefix cache — pass-1 rendered the prompt with
+            # enable_thinking=mode.enable_thinking, and if the summary TOGGLES it the
+            # chat template re-renders from token ~0 and the cache fully misses
+            # (MEASURED cache_n=4). _keep_summary_tools is already success-gated above
+            # (enable_thinking=True makes the model re-engage with a FAILED action ->
+            # runaway, so failures use the slim+thinking-off path). On success: match
+            # pass-1's enable_thinking (byte-identical prefix -> cache HIT) with a
+            # minimal thinking_budget (16; budget is a body sampler param, NOT part of
+            # chat_template_kwargs, so it doesn't affect the cached prefix — and a tiny
+            # budget avoids the budget-0 mid-think cut that also misbehaved).
+            if _keep_summary_tools:
+                _pass_enable_thinking = mode.enable_thinking
+                _pass_thinking_budget = 16
+            else:
+                _pass_enable_thinking = _think_now
+                _pass_thinking_budget = mode.thinking_budget
             # SAMPLING DUAL (inv 1, 2026-05-23): greedy en el turno de ACCIÓN
             # (hay tools ofrecidas, ninguna corrió aún, y NO es summary-pass) ->
             # decisión de tool-call con baja entropía, más fiable sin reasoning.
@@ -2183,8 +2219,8 @@ class Gemma4Agent:
                     resp = self.client.chat(
                         _msgs,
                         tools=_pass_tools,
-                        enable_thinking=_think_now,
-                        thinking_budget=mode.thinking_budget,
+                        enable_thinking=_pass_enable_thinking,
+                        thinking_budget=_pass_thinking_budget,
                         model=_call_model,
                         parallel_tool_calls=mode.parallel_tool_calls,
                         max_tokens=_pass_max,
