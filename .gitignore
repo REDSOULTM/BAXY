@@ -11,6 +11,11 @@ models/
 # llama.cpp build CUDA local
 C:/llamacpp-cuda/
 
+# llama.cpp CUDA runtime binaries (downloaded/installed locally, ~1.5GB each;
+# never tracked — like models/). b9260-backup is the pre-v22 safety copy.
+/tools/llama-cuda/
+/tools/llama-cuda.b9260-backup/
+
 # Pycache
 __pycache__/
 *.pyc
