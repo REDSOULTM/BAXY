@@ -210,6 +210,38 @@ def _error_recovery_enabled() -> bool:
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
+def _memory_tools_enabled() -> bool:
+    """B2 (competidores): tool-picking guiado por memoria. Agrega al subset las
+    tools que tuvieron ÉXITO en turnos PASADOS con intención similar (experience
+    recall por embedding, ya computado en _recent_recalls). El LLM sigue decidiendo
+    si llamarlas; sólo ensanchamos los candidatos (como exemplar/semantic), así una
+    tool que funcionó antes está disponible aunque el router no la elija hoy. Opt-in
+    GEMMA4_MEMORY_TOOLS, default OFF hasta validar en vivo."""
+    import os as _os_mt
+    return (
+        _os_mt.environ.get("GEMMA4_MEMORY_TOOLS", "0") or "0"
+    ).strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _recalled_success_tools(recalls: list | None, exclude, cap: int = 3) -> list[str]:
+    """Tools de recalls EXITOSOS (status sin 'FAIL') que NO estén ya en `exclude`,
+    deduplicadas y capadas a `cap`. Los recalls fallidos son lección de 'evitar'
+    (no se agregan). Pura para testear sin LLM/box."""
+    out: list[str] = []
+    excl = set(exclude or [])
+    for r in (recalls or []):
+        rr = r or {}
+        status = str(rr.get("outcome_code") or rr.get("mission_status") or "").upper()
+        if "FAIL" in status:
+            continue
+        for t in (rr.get("tools_used") or []):
+            if t and t not in excl and t not in out:
+                out.append(t)
+                if len(out) >= cap:
+                    return out
+    return out
+
+
 class _FinalizeContinue:
     """Sentinel returned by Gemma4Agent._finalize_turn when the a11y
     nudge re-prompted the LLM and the caller must `continue` its
@@ -1440,6 +1472,18 @@ class Gemma4Agent:
             last_assistant_text=last_assistant_text,
             pending_intent=pending_intent,
         )
+        # B2 (competidores): memory-guided tool-picking. Si turnos PASADOS con
+        # intención similar tuvieron ÉXITO usando ciertas tools, las agregamos al
+        # subset (cap 3) para que estén DISPONIBLES aunque el router no las elija
+        # hoy. El LLM sigue decidiendo si llamarlas — sólo ensanchamos candidatos.
+        # _recent_recalls ya viene del experience recall por embedding (arriba).
+        # Gated GEMMA4_MEMORY_TOOLS (default off -> sin cambio).
+        if _memory_tools_enabled():
+            _mem_tools = _recalled_success_tools(
+                getattr(self, "_recent_recalls", None), selected_tool_names)
+            if _mem_tools:
+                selected_tool_names = list(selected_tool_names) + _mem_tools
+                self.trace.event(turn_id, "memory_tools_added", tools=_mem_tools)
         # If a phrase-trigger routine already fired this turn, drop
         # session.cancel_turn from the subset. The user's phrase was
         # claimed by their saved routine; the LLM should confirm what
