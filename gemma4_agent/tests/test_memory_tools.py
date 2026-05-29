@@ -50,12 +50,18 @@ class TestRecalledSuccessTools(unittest.TestCase):
 
 
 class TestGate(unittest.TestCase):
-    def test_default_off(self):
+    def test_default_on(self):
+        # 2026-05-29: flipeado a default-ON (latency-free: reusa _recent_recalls;
+        # recall tight max_distance=0.9). Kill-switch GEMMA4_MEMORY_TOOLS=0 sigue activo.
         prev = os.environ.pop("GEMMA4_MEMORY_TOOLS", None)
         try:
-            self.assertFalse(_memory_tools_enabled())
+            self.assertTrue(_memory_tools_enabled())  # default ON
+            os.environ["GEMMA4_MEMORY_TOOLS"] = "0"
+            self.assertFalse(_memory_tools_enabled())  # kill-switch
         finally:
-            if prev is not None:
+            if prev is None:
+                os.environ.pop("GEMMA4_MEMORY_TOOLS", None)
+            else:
                 os.environ["GEMMA4_MEMORY_TOOLS"] = prev
 
     def test_on(self):

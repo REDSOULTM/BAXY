@@ -217,11 +217,14 @@ def _memory_tools_enabled() -> bool:
     tools que tuvieron ÉXITO en turnos PASADOS con intención similar (experience
     recall por embedding, ya computado en _recent_recalls). El LLM sigue decidiendo
     si llamarlas; sólo ensanchamos los candidatos (como exemplar/semantic), así una
-    tool que funcionó antes está disponible aunque el router no la elija hoy. Opt-in
-    GEMMA4_MEMORY_TOOLS, default OFF hasta validar en vivo."""
+    tool que funcionó antes está disponible aunque el router no la elija hoy.
+    GEMMA4_MEMORY_TOOLS default ON desde 2026-05-29; kill-switch =0. SEGURO: latency-free
+    (reusa _recent_recalls, ya computado para el recall_hint — sin embed extra); el recall
+    es TIGHT (max_distance=0.9≈cos0.55, anti-degradation) → solo agrega tools de éxitos
+    GENUINAMENTE similares; cap=3; el 4B decide; no-op si no hay historial relevante."""
     import os as _os_mt
     return (
-        _os_mt.environ.get("GEMMA4_MEMORY_TOOLS", "0") or "0"
+        _os_mt.environ.get("GEMMA4_MEMORY_TOOLS", "1") or "1"
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
