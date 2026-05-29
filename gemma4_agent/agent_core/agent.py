@@ -223,6 +223,18 @@ def _memory_tools_enabled() -> bool:
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
+def _skills_autoinject_enabled() -> bool:
+    """Trigger-inject de skills (2026-05-29). MEDIDO: el 4B nunca emite skill_load
+    (0/5 directo, 0/6727 prod) — no hace el meta-paso cargar->seguir. En vez de
+    esperar skill_load, inyectamos la receta de la skill que matchea semánticamente
+    el pedido (como microagents). Gated GEMMA4_SKILLS_AUTOINJECT, default off hasta
+    validar en vivo que el 4B siga la receta inyectada."""
+    import os as _os_sk
+    return (
+        _os_sk.environ.get("GEMMA4_SKILLS_AUTOINJECT", "0") or "0"
+    ).strip().lower() not in {"0", "false", "no", "off"}
+
+
 def _recalled_success_tools(recalls: list | None, exclude, cap: int = 3) -> list[str]:
     """Tools de recalls EXITOSOS (status sin 'FAIL') que NO estén ya en `exclude`,
     deduplicadas y capadas a `cap`. Los recalls fallidos son lección de 'evitar'
@@ -753,6 +765,24 @@ class Gemma4Agent:
                 self._cached_skills_critical = ""
         skills_critical = self._cached_skills_critical or ""
         skills_menu = self._cached_skills_menu or ""
+        # Trigger-inject de skills (2026-05-29): el 4B NO emite skill_load (0/5 en
+        # vivo, 0/6727 prod). Si el pedido matchea semánticamente una skill,
+        # inyectamos su receta full para que la SIGA (como microagents/critical),
+        # sin depender de que el 4B la cargue. Gated GEMMA4_SKILLS_AUTOINJECT.
+        skills_autoinject = ""
+        if _skills_autoinject_enabled():
+            try:
+                from ..tools_pkg.skills_registry import autoinject_skill, scan_skills
+                from ..routing.semantic_router import embed as _emb_sk
+                _sk_name, _sk_body = autoinject_skill(
+                    user_text or "", scan_skills(), embed_fn=_emb_sk)
+                if _sk_name:
+                    skills_autoinject = (
+                        f"\n# SKILL ACTIVADA — seguí esta receta paso a paso\n"
+                        f"## {_sk_name}\n{_sk_body}\n")
+                    self.trace.event("agent", "skill_autoinjected", skill=_sk_name)
+            except Exception:
+                pass
         # Validator hint: when the subset crosses an ambiguous pair (audio vs
         # window/browser/app/media), ask the LLM to emit an <intent> tag so
         # the dispatcher can reject obvious mismatches before they ship.
@@ -822,7 +852,7 @@ class Gemma4Agent:
             return {"role": "system", "content": stable + variable}
         return {
             "role": "system",
-            "content": f"{prompt_base}{mode_hint}{a11y_switch_note}{tools_section}{persona_hint}{accessibility_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
+            "content": f"{prompt_base}{mode_hint}{a11y_switch_note}{tools_section}{persona_hint}{accessibility_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_autoinject}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:

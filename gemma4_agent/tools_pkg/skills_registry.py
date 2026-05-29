@@ -408,6 +408,67 @@ def get_skill_cap(profile_name: str) -> int:
 
 
 # ============================================================================
+# Trigger-inject semántico (2026-05-29)
+# ============================================================================
+# MEDIDO en vivo: el 4B NUNCA emite skill_load (0/5 con pedidos directos, 0/6727
+# en prod) — no hace el meta-paso "cargar receta -> seguirla" (2 pasos, y el 4B no
+# encadena). Igual que data_analysis/document. Fix consistente con la lección
+# (auto-inyectar lo que el 4B no pide): si el pedido matchea SEMÁNTICAMENTE la
+# description de una skill (embeddings multilingües, NO keywords), inyectamos la
+# receta al prompt automáticamente. Umbral 0.45 calibrado (scripts/_calibrate_skills_match.py):
+# matches reales 0.50-0.73, charla/control <0.21.
+_DESC_EMB_CACHE: dict = {}
+
+
+def reset_autoinject_cache() -> None:
+    _DESC_EMB_CACHE.clear()
+
+
+def autoinject_skill(user_text: str, skills, *, embed_fn, threshold: float = 0.45):
+    """Devuelve (name, recipe_body) de la skill NON-critical cuya description matchea
+    user_text por embedding >= threshold, o (None, ''). Multilingüe, no keywords.
+    Fallback seguro: sin encoder / texto corto / nada supera el umbral -> (None,'')."""
+    import numpy as np
+    txt = (user_text or "").strip()
+    if len(txt) < 6 or embed_fn is None:
+        return None, ""
+    cands = [s for s in skills if s.priority != "critical"]
+    if not cands:
+        return None, ""
+
+    def _emb(t):
+        v = embed_fn(t)
+        if v is None:
+            return None
+        v = np.asarray(v, dtype="float32")
+        n = float(np.linalg.norm(v))
+        return v / n if n else v
+
+    try:
+        q = _emb(txt)
+        if q is None:
+            return None, ""
+        best_sim, best = -1.0, None
+        for s in cands:
+            emb = _DESC_EMB_CACHE.get(s.name)
+            if emb is None:
+                emb = _emb(s.description)
+                if emb is None:
+                    continue
+                _DESC_EMB_CACHE[s.name] = emb
+            sim = float(q @ emb)
+            if sim > best_sim:
+                best_sim, best = sim, s
+        if best is not None and best_sim >= threshold:
+            body = load_skill_content(best.name)
+            if body:
+                return best.name, body
+    except Exception:
+        pass
+    return None, ""
+
+
+# ============================================================================
 # CLI helper para debug
 # ============================================================================
 
