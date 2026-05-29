@@ -256,6 +256,16 @@ def guard_promise_without_action(
         return content, fallback_streak, last_fallback_user_text
     if phrase_fires:
         return content, fallback_streak, last_fallback_user_text
+    # NON-ACTION TURN EXEMPTION (fix 2026-05-29): si el router solo ofreció tools
+    # META (`session`: cancelaciones/negaciones como "No.", "no lo envíes"), NO hubo
+    # acción de SO posible, así que un ack ("cancelé eso" / "listo, lo dejo") NO es
+    # una FALSA confirmación de acción — es la verdad (no se hizo nada). Dejamos
+    # pasar el reply del LLM en vez del genérico "No alcancé a completar la acción".
+    # No debilita la honestidad: con CUALQUIER tool de acción en el subset, el guard
+    # dispara como siempre (ver guard_grounded_action_claim, misma exención).
+    _subset = {str(t) for t in (last_router_subset or ())}
+    if _subset and _subset.issubset({"session"}):
+        return content, fallback_streak, last_fallback_user_text
 
     low = content.lower()
     stripped_low = low.lstrip()
@@ -340,6 +350,27 @@ def guard_grounded_action_claim(
 
     verdict = detect_action_claim_without_evidence(content, events)
     if not verdict.should_replace:
+        return content, fallback_streak, last_fallback_user_text
+    # NON-ACTION TURN EXEMPTION (fix 2026-05-29): si el router solo ofreció tools
+    # META (p. ej. `session` para una cancelación/negación: "No.", "no lo envíes",
+    # "cancelá eso"), NO hubo ninguna acción de SO posible este turno. Entonces un
+    # "claim" como "cancelé eso" NO puede ser una mentira sobre una acción de SO —
+    # es un ack de INACCIÓN, que es lo verdadero. Dejamos pasar el reply del LLM en
+    # vez del genérico "No alcancé a completar la acción" (que implicaba falsamente
+    # que había una acción fallida y confundía al usuario; ver logs 2026-05-29).
+    # NO debilita la honestidad: si se ofreció CUALQUIER tool de acción (app/media/
+    # web/gui/...), el subset NO es meta-only -> el gate dispara como siempre.
+    _META_ONLY = {"session"}
+    _subset = {str(t) for t in (last_router_subset or ())}
+    if _subset and _subset.issubset(_META_ONLY):
+        if trace is not None:
+            try:
+                trace.event(
+                    turn_id, "grounded_action_claim_exempt_nonaction",
+                    subset=sorted(_subset), original=content[:120],
+                )
+            except Exception:
+                pass
         return content, fallback_streak, last_fallback_user_text
     if trace is not None:
         try:
