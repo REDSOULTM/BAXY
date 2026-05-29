@@ -172,7 +172,17 @@ class TestWhatsappContactResolution(unittest.TestCase):
         self.assertTrue(r["ok"], f"expected ok, got: {r}")
         self.assertEqual(r["recipient_normalized"], "5491187654321")
         self.assertTrue(r["recipient_source"].startswith("contact:"))
-        popen.assert_called_once()
+        # 2026-05-29 (fix flaky intermitente ~20%): assert el deeplink Popen ESPECÍFICO,
+        # no el conteo total. patch("...subprocess.Popen") es GLOBAL (parchea el atributo
+        # del módulo subprocess) -> captura CUALQUIER Popen del proceso durante el `with`,
+        # incluido el de threads de fondo (watchdog/health) o el subprocess.run interno de
+        # _find_whatsapp_app. Cuando uno cae en la ventana del with (timing), había 2 calls
+        # y assert_called_once flakeaba. Filtrar por "whatsapp://send" testea la intención
+        # real (deeplink lanzado 1 vez) y atrapa la regresión real (0 deeplinks).
+        deeplink_calls = [c for c in popen.call_args_list if "whatsapp://send" in str(c)]
+        self.assertEqual(
+            len(deeplink_calls), 1,
+            f"expected exactly 1 whatsapp:// deeplink Popen; got: {popen.call_args_list}")
 
     def test_contact_without_phone_falls_back_to_gui_search(self):
         # Post 2026-05-15: en vez de fallar cuando el contacto no tiene
