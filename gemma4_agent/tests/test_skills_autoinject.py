@@ -56,15 +56,12 @@ class TestAutoinjectSkill(unittest.TestCase):
 
 
 class TestGate(unittest.TestCase):
-    def test_default_on(self):
-        # 2026-05-29: flipeado a default-ON (validado live: el 4B sigue la receta;
-        # 0 falsos positivos; embed cache-hit del router + scan_skills cacheado).
-        # El kill-switch GEMMA4_SKILLS_AUTOINJECT=0 sigue funcionando.
+    def test_default_off(self):
         prev = os.environ.pop("GEMMA4_SKILLS_AUTOINJECT", None)
         try:
-            self.assertTrue(_skills_autoinject_enabled())  # default ON ahora
-            os.environ["GEMMA4_SKILLS_AUTOINJECT"] = "0"
-            self.assertFalse(_skills_autoinject_enabled())  # kill-switch
+            self.assertFalse(_skills_autoinject_enabled())
+            os.environ["GEMMA4_SKILLS_AUTOINJECT"] = "1"
+            self.assertTrue(_skills_autoinject_enabled())
         finally:
             if prev is None:
                 os.environ.pop("GEMMA4_SKILLS_AUTOINJECT", None)
