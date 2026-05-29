@@ -7,6 +7,19 @@ gate de validación. Método: medir → implementar gateado → validar en vivo 
 
 Leyenda ROI/Esfuerzo/Riesgo: A(alto)/M(medio)/B(bajo).
 
+## ESTADO (actualizado 2026-05-29)
+- ✅ **B1** error-type recovery — GATED `GEMMA4_ERROR_RECOVERY`, 22 tests, commit `a3aef18`.
+- ✅ **B2** memory-guided tool-picking — GATED `GEMMA4_MEMORY_TOOLS`, 10 tests, commit `aa7d5ae`.
+- ✅ **B7** web fallback DDG→Bing — GATED `GEMMA4_WEB_FALLBACK`, 7 tests, commit `e2c248e`.
+- ⏸️ **B3** (streaming voz) — BLOQUEADO: B3a (flip del streaming-info ya construido) necesita validación de voz (RED jugando, GPU ocupada); B3b ("buscando…" hablado) = respuesta enlatada por idioma → viola la regla "nada enlatado" → hacerlo como **earcon no-verbal**, que también necesita validación de voz.
+- 🔎 **B8** (reminders) — HALLAZGO: el backend Task Scheduler YA EXISTE (`domain_tools/notifications.py`, `windows_scheduled_tasks`); el tool `reminder` (ops_tools) es SOLO state (no dispara). Gap = cablear `reminder`→notifications + validar disparo (tiempo/reinicio). Chunk, no quick-win.
+- ⬜ **B5/B6/B4/B9** — pendientes, cada uno esfuerzo DEDICADO: B5 refactor de guards de confirmación; B6 unificar file-processor; B4 code-exec sandbox (gate de SEGURIDAD primero); B9 cliente MCP (refactor grande, medir impacto en tool-calling del 4B).
+
+**Los 3 gated (B1/B2/B7) NO cambian nada con default-off.** Validación pendiente en
+**una pasada batch en box FRESCA + sin gaming**: flipear B1/B2/B3a/B7 tras validar
+en vivo (el efecto del 4B es no-determinista). Los quick-wins limpios están hechos;
+B3 espera tu voz; B8/B5/B6/B4/B9 son esfuerzos dedicados (no se grindean sin validar).
+
 ---
 
 ## TIER 1 — Quick wins (fiabilidad/latencia, encajan, hacer primero)
