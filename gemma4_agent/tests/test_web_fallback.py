@@ -81,11 +81,14 @@ class TestWebFallback(unittest.TestCase):
         self.assertEqual(res, [])
         self.assertEqual(bing_called, [])
 
-    def test_gate_helper(self):
+    def test_gate_default_on_with_killswitch(self):
+        # B7 flipeado a default-ON tras validar en vivo (2026-05-29). Kill-switch = "0".
         prev = os.environ.get("GEMMA4_WEB_FALLBACK")
         try:
             os.environ.pop("GEMMA4_WEB_FALLBACK", None)
-            self.assertFalse(T._web_fallback_enabled())
+            self.assertTrue(T._web_fallback_enabled())   # default ON
+            os.environ["GEMMA4_WEB_FALLBACK"] = "0"
+            self.assertFalse(T._web_fallback_enabled())  # kill-switch
             os.environ["GEMMA4_WEB_FALLBACK"] = "1"
             self.assertTrue(T._web_fallback_enabled())
         finally:

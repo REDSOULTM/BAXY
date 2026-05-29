@@ -1248,21 +1248,40 @@ def _duckduckgo_search(query: str, limit: int = 6) -> list[dict[str, str]]:
     return results
 
 
+def _bing_decode_redirect(href: str) -> str:
+    """Bing envuelve el URL real en un redirect de tracking
+    (`.../ck/a?...&u=a1<base64>`). Desenvuelve el `u=a1<base64>` al URL real.
+    Si no es un redirect (link directo), devuelve el href tal cual. VERIFICADO
+    en vivo 2026-05-29 contra HTML real de Bing."""
+    m = re.search(r"[?&]u=a1([A-Za-z0-9_\-]+)", href)
+    if not m:
+        return href
+    import base64
+    raw = m.group(1).replace("-", "+").replace("_", "/")
+    raw += "=" * (-len(raw) % 4)
+    try:
+        dec = base64.b64decode(raw).decode("utf-8", "replace")
+        return dec if dec.startswith("http") else href
+    except Exception:
+        return href
+
+
 def _bing_search(query: str, limit: int = 6) -> list[dict[str, str]]:
     """B7 (competidores): búsqueda fallback vía Bing HTML — motor INDEPENDIENTE de
     DDG. Best-effort scraping; si el HTML no matchea el regex, devuelve [] (sin
-    daño: ya veníamos en blanco). Sólo se usa cuando DDG falló/vino vacío."""
+    daño: ya veníamos en blanco). Sólo se usa cuando DDG falló/vino vacío.
+    Regex VERIFICADO en vivo 2026-05-29: <h2 class=""><a href="redirect base64">."""
     page = _http_get_text(f"https://www.bing.com/search?q={quote_plus(query)}", timeout=12)["text"]
     results: list[dict[str, str]] = []
     for block in re.finditer(r"(?is)<li class=\"b_algo\".*?(?=<li class=\"b_algo\"|</ol>|$)", page):
         chunk = block.group(0)
-        a = re.search(r"(?is)<h2>\s*<a[^>]+href=\"([^\"]+)\"[^>]*>(.*?)</a>", chunk)
+        a = re.search(r"(?is)<h2[^>]*>\s*<a[^>]+href=\"([^\"]+)\"[^>]*>(.*?)</a>", chunk)
         if not a:
             continue
-        url = html.unescape(a.group(1))
-        title = _clean_html_text(a.group(2), limit=300)
-        if not url.startswith("http"):
+        url = _bing_decode_redirect(html.unescape(a.group(1)))
+        if not url.startswith("http") or "/ck/a" in url:  # redirect no resuelto -> descartar
             continue
+        title = _clean_html_text(a.group(2), limit=300)
         item = {"title": title, "url": url}
         snip = re.search(r"(?is)<p[^>]*>(.*?)</p>", chunk)
         if snip:
@@ -1274,11 +1293,11 @@ def _bing_search(query: str, limit: int = 6) -> list[dict[str, str]]:
 
 
 def _web_fallback_enabled() -> bool:
-    """B7: fallback dual de web search (DDG -> Bing). Opt-in GEMMA4_WEB_FALLBACK,
-    default OFF hasta validar en vivo que Bing devuelve resultados (mi regex puede
-    no matchear el HTML real). Es seguro: sólo actúa cuando DDG ya falló -> no es
-    regresión (peor caso = sigue en blanco, igual que hoy)."""
-    return (os.environ.get("GEMMA4_WEB_FALLBACK", "0") or "0").strip().lower() not in {
+    """B7: fallback dual de web search (DDG -> Bing). DEFAULT ON desde 2026-05-29
+    (validado EN VIVO: Bing devuelve 3/3 results reales con URLs base64 decodificadas).
+    Kill-switch GEMMA4_WEB_FALLBACK=0. Seguro: sólo actúa cuando DDG ya falló/vació
+    -> nunca regresión (peor caso = sigue en blanco; si Bing cambia su HTML -> [] -> sin daño)."""
+    return (os.environ.get("GEMMA4_WEB_FALLBACK", "1") or "1").strip().lower() not in {
         "0", "false", "no", "off"}
 
 
