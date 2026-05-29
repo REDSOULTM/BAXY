@@ -7,23 +7,31 @@ gate de validación. Método: medir → implementar gateado → validar en vivo 
 
 Leyenda ROI/Esfuerzo/Riesgo: A(alto)/M(medio)/B(bajo).
 
-## ESTADO (actualizado 2026-05-29, post-validación-en-vivo)
-- ✅ **B1** error-type recovery — `GEMMA4_ERROR_RECOVERY` (gated), 22 tests, **validado en vivo**, commit `a3aef18`.
-- ✅ **B2** memory-guided tool-picking — `GEMMA4_MEMORY_TOOLS` (gated), 10 tests, **validado en vivo (ensanche real)**, commit `aa7d5ae`.
-- ✅ **B7** web fallback DDG→Bing — **DEFAULT-ON**, validado en vivo (2 bugs del scraper arreglados), commits `e2c248e`+`3052427`.
-- ✅ **B8** reminders confiables — **DEFAULT-ON** (`GEMMA4_REMINDER_SCHEDULE=0` killswitch). `reminder` con hora delega a Task Scheduler; validado en vivo (Task creado en SO). 8 tests, commit `e410250`.
-- ✅ **B3a** streaming-info TTS — **DEFAULT-ON** (flip 2026-05-29 tras validación por ESCUCHA del usuario: "sonó todo bien, sin cortes ni nada raro"). Kill-switch `GEMMA4_STREAM_TTS=0`. SOLO modo voz (requiere `tts_sink`; texto/GUI/CLI = no-op). Veracidad 0-violaciones (voiced = prefijo del reply final). Tooling: `_listen_b3a_streaming.py` (escucha) + `_check_b3a_streams.py` (default-on sin audio).
-- ⏭️ **B5** confirmation policy — **SALTADO (ROI marginal)**: los irreversibles YA no se auto-ejecutan (email→redactor, whatsapp `auto_send=False`, guard de compra — validado en vivo). Centralizar = refactor de algo que funciona, riesgo de romper guards validados.
-- ✅ **B4** code-exec (datos) — **YA CUBIERTO** por `domain_tools/data_analysis.py` (CSV/XLSX profile/describe/query/head/plots via pandas, query segura sin eval). El code-exec genérico de Python es el caso más riesgoso (sandbox) y su uso principal ya existe → no reimplementar.
-- ✅ **B6** file-processor — **YA CUBIERTO** por `domain_tools/document.py` (PDF/DOCX/XLSX/PPTX/HTML/texto + tablas + imágenes + OCR Tesseract + compare, 8 acciones) + data_analysis + office + vision. "Analizá este archivo, 10+ tipos" ya existe.
-- 🟡 **B11/B12** — parcialmente cubiertos (microagents/ + mission_checkpoint.py ya existen). ROI incremental.
-- ⬜ **B9** cliente MCP — **único gap estratégico grande pendiente**. Sprint dedicado: +70 servidores, PERO más tools = tool-calling más DURO para el 4B (medir que el router/subset no degrade). NO grindear al final de sesión — medir en box fresca.
-- ⬜ **B3b** (earcon voz) / **B10** (tool cache, ROI chico) / **B13** (mejor TTS, eval voz) — oportunistas.
+## ESTADO (actualizado 2026-05-29)
 
-**Conclusión (regla #1: verificar contra el código real):** el backlog se escribió desde
-`ANALISIS_COMPETENCIA` y SOBREESTIMÓ los gaps — el repo ya tenía data_analysis/document/
-office/vision (= B4 datos + B6). Lo adoptable y no-redundante está hecho (B1/B2/B7/B8) o ya
-existía. El único pendiente de valor real es **B9 (MCP)**, sprint dedicado con medición.
+### A) Competidores (B1–B13)
+- ✅ **B1** error-type recovery — `GEMMA4_ERROR_RECOVERY` (gated), validado en vivo, commit `a3aef18`.
+- ✅ **B2** memory-guided tool-picking — `GEMMA4_MEMORY_TOOLS` default-ON, validado, commit `aa7d5ae`.
+- ✅ **B3a** streaming-info TTS — **DEFAULT-ON** (flip 2026-05-29, validado por escucha: "sonó bien, sin cortes"). Kill-switch `GEMMA4_STREAM_TTS=0`. Solo modo voz. Commit `56bd3c6`.
+- ✅ **B3b** earcon de progreso no-verbal — implementado + validado por escucha; gated `GEMMA4_PROGRESS_EARCON` (opt-in). Commits `936504a`/`fe9c7e4`.
+- ✅ **B4** code-exec (datos) — cubierto por `domain_tools/data_analysis.py`. El sandbox de Python genérico **NO se hizo a propósito** (gate "0-escapes" no satisfacible en Windows sin VM/contenedor; doc `B4_code_exec_decision.md`).
+- ✅ **B5** confirmation policy — **IMPLEMENTADO** (commit `f9ed2d1`): `classify_tool_call`→`should_confirm`, gate duro "nunca auto-aprobar lo irreversible", integrado en `tools.execute()`. (Corrige el viejo "SALTADO".)
+- ✅ **B6** file-processor — `file_process` unificado (commit `d36c3e2`) + cubierto por document/data_analysis/office/vision.
+- ✅ **B7** web fallback DDG→Bing — DEFAULT-ON, validado, commits `e2c248e`/`3052427`.
+- ✅ **B8** reminders confiables — DEFAULT-ON (Task Scheduler), validado, commit `e410250`.
+- ⬜ **B9** cliente MCP — **único gap estratégico grande pendiente**. Sprint dedicado; medir que el catálogo MCP no degrade el tool-calling del 4B. En box fresca.
+- 🟡 **B11/B12** parcialmente cubiertos (microagents/ + mission_checkpoint.py). **B10/B13** oportunistas.
+
+### B) Infra / Hardware / UX (sesión 2026-05-29)
+- 🟡 **Reskin GUI "Carter field"** (`ui_field`, React) — **EN PROGRESO**. Hecho: `.app-frame` con borde rojo viajero (rAF), recolor por estado (núcleo/cromo/barras), substrate al formato `.m-*` + perfiles con íconos (persona/ojo/silla = accesibilidad), split de surfaces (triggers/tools izq · sessions/memory der), ventana **frameless**. Pendiente: matchear EXACTO el prototipo (grafo/chat/Settings/tipografías), dedupe del CSS, y **commit** (nada commiteado aún).
+- ✅ **Fix crash WebView2 por GPU saturada** — la UI renderiza por **CPU** (`--disable-gpu` en `launcher.py`) → no compite con el juego/LLM por la GPU (era un crash nativo, no del reskin). Pendiente: commit.
+- 🟡 **Auto CPU-fallback (GPU ocupada → LLM en CPU)** — **CONSTRUIDO, gated** (`GEMMA4_AUTO_CPU_FALLBACK`, default OFF). Perfil `cpu` (`-ngl 0`, visión OFF, ~2GB RAM, 0 VRAM) + auto-switch vía `ProfileWatcher` (detecta GPU saturada por proceso ajeno → cambia a CPU, **libera la VRAM al juego** → vuelve a `vram4` al liberarse; aplicación segura fin-turno/idle). Velocidad CPU **medida**: ~30 tok/s decode + ~1400 tok/s prefill (desktop) → ~12-20 tok/s est. laptop. **PENDIENTE: validar en vivo con un juego real → flip default-ON + commit.**
+- ⬜ **Soporte SIN GPU (no-NVIDIA)** — a nivel software YA es posible (LLM en CPU vía perfil `cpu` + STT Parakeet CPU + TTS Piper CPU). **PENDIENTE, 2 piezas:** (1) **bundlear un build CPU/Vulkan de `llama-server`** (el actual `tools/llama-cuda/` es **solo-CUDA** → no arranca sin NVIDIA; Vulkan cubriría iGPU Intel/AMD); (2) **auto-default al perfil `cpu`** cuando no se detecta GPU NVIDIA al boot. Caveats: más lento, sin visión.
+- ⬜ **Frugalidad de RAM en CPU (laptops 8GB)** — el modelo usa `mmap` (páginas evictables bajo presión, ya hecho). Opcional: **unload del server CPU en idle** mientras se juega + **throttle de threads/prioridad** para no robarle CPU al juego.
+- ⬜ **Dedupe `prototype.css`** (quedó frankenfile ~2910 líneas: nuevo diseño anexado, funcional; limpiar reglas viejas superseded tras validar el reskin).
+- ⬜ **Fix flaky Qt** (`test_agent_thread_dryrun`) — pre-existente, NO bloqueante (segfault de teardown bajo box degradada; pasa aislado). Ver memoria `project-qt-ui-test-segfault`.
+
+**Conclusión:** del backlog de competidores, lo adoptable y no-redundante está **hecho** (B1–B8); el único gap estratégico es **B9 (MCP)**. El foco actual se movió a **hardware/accesibilidad**: el reskin (terminar el match visual + commit), el **CPU-fallback** (validar con juego real + flip) y el **soporte sin-GPU** (bundlear CPU/Vulkan + auto-default) — esto último expande el target de "GPU 4GB" a "cualquier laptop".
 
 ---
 
