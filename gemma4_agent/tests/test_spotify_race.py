@@ -79,7 +79,10 @@ class SpotifyPostPlayTitleVerifyTest(unittest.TestCase):
     # el camino del Spotify auto-play. El handler se reescribió para usar
     # UIA via PowerShell directo. Marcados expectedFailure hasta reescribir
     # mockeando `subprocess.run` con `_SPOTIFY_UIA_PLAY_PS`.
-    @unittest.expectedFailure
+    @unittest.skip("OBSOLETO (2026-05-28): _spotify_auto_play usa UIA PowerShell, "
+                   "no el executor mockeado; reescribir mockeando subprocess.run con "
+                   "_SPOTIFY_UIA_PLAY_PS. expectedFailure era frágil (3/4 pasaban trivial "
+                   "por query_match=None).")
     def test_query_match_true_when_title_contains_query_word(self) -> None:
         # Spotify after playing MJ: title like "Billie Jean • Michael Jackson"
         executor = self._make_executor("Spotify - Billie Jean • Michael Jackson")
@@ -88,7 +91,10 @@ class SpotifyPostPlayTitleVerifyTest(unittest.TestCase):
         self.assertTrue(result["played"])
         self.assertTrue(result["query_match"])
 
-    @unittest.expectedFailure
+    @unittest.skip("OBSOLETO (2026-05-28): _spotify_auto_play usa UIA PowerShell, "
+                   "no el executor mockeado; reescribir mockeando subprocess.run con "
+                   "_SPOTIFY_UIA_PLAY_PS. expectedFailure era frágil (3/4 pasaban trivial "
+                   "por query_match=None).")
     def test_query_match_false_when_title_unrelated(self) -> None:
         # Bug scenario: user asked MJ, Spotify played whatever was queued.
         executor = self._make_executor("Spotify - Some Random Track • Random Artist")
@@ -97,7 +103,10 @@ class SpotifyPostPlayTitleVerifyTest(unittest.TestCase):
         self.assertTrue(result["played"])
         self.assertFalse(result["query_match"])
 
-    @unittest.expectedFailure
+    @unittest.skip("OBSOLETO (2026-05-28): _spotify_auto_play usa UIA PowerShell, "
+                   "no el executor mockeado; reescribir mockeando subprocess.run con "
+                   "_SPOTIFY_UIA_PLAY_PS. expectedFailure era frágil (3/4 pasaban trivial "
+                   "por query_match=None).")
     def test_query_match_none_when_no_query_passed(self) -> None:
         executor = self._make_executor("Spotify")
         with patch("time.sleep"):
@@ -105,7 +114,10 @@ class SpotifyPostPlayTitleVerifyTest(unittest.TestCase):
         self.assertTrue(result["played"])
         self.assertIsNone(result["query_match"])
 
-    @unittest.expectedFailure
+    @unittest.skip("OBSOLETO (2026-05-28): _spotify_auto_play usa UIA PowerShell, "
+                   "no el executor mockeado; reescribir mockeando subprocess.run con "
+                   "_SPOTIFY_UIA_PLAY_PS. expectedFailure era frágil (3/4 pasaban trivial "
+                   "por query_match=None).")
     def test_query_match_none_when_query_has_no_long_words(self) -> None:
         # All query words <4 chars -> heuristica no aplica, retorna None.
         executor = self._make_executor("Spotify - Hi Song")

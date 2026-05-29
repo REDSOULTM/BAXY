@@ -134,6 +134,13 @@ de migración).
 | `_diag_portal_unab.py` | Portal UNIEJ |
 | `_diag_quien_eres.py` | "¿quién eres?" routing |
 | `_diag_unab_canvas_goal.py` | UNIEJ Canvas goal-mission |
+| `_diag_calc_route.py` | routing de "calculá" |
+| `_diag_empty_reply.py` | reply vacío |
+| `_diag_forced_retry.py` | forced-tool retry |
+| `_diag_info_tool.py` | info-turn que usa tool |
+| `_diag_prefix_divergence.py` | divergencia del prefix-cache |
+| `_diag_dump_history.py` | dump de history interna del turno |
+| `_diag_python_cancel.py` | mis-route "explicá Python" → cancelar (a11y) |
 
 ## Categoría H — Harnesses exhaustivos (one-shot)
 
@@ -174,6 +181,40 @@ de migración).
 | `guided_commands_set2.py` | Set-2 comandos guiados. |
 | `router_diag.py` | Diagnostic del router (output verbose). |
 | `watch.py` | Watch de cambios + auto-reload. |
+
+## Categoría L — Latencia / streaming / validación en vivo (2026-05-28/29)
+
+Scripts de las sesiones de latencia (v22, prefill-cache, streaming) y de
+adopción de competidores (B1/B2/B7). Validadores en vivo (regla #3.5) y
+mediciones one-shot. Muchos requieren el LLM en `:8080`.
+
+| script | propósito |
+|---|---|
+| `_validate_stream_tts.py` | Valida streaming TTS truthful (guards pass-through). |
+| `_validate_stream_info.py` | Valida streaming de turnos INFO + veracidad (voiced-prefix-of-final). |
+| `_validate_lean_frcot.py` | Valida lean-prompt + FR-CoT en vivo. |
+| `_validate_web_fallback.py` | B7: valida fallback web DDG→Bing (regex Bing vs HTML real). |
+| `_validate_b1_b2.py` | B1 (error-recovery) + B2 (memory-tools) en vivo. |
+| `_measure_pass1.py` | Mide latencia/tokens del pass-1. |
+| `_measure_thinking0.py` | Mide efecto de `thinking_budget=0`. |
+| `_measure_summary_cache.py` | Mide cache-hit del summary pass (lever de −1s). |
+| `_measure_crossturn_cache.py` | Mide cache cross-turn (intermitente). |
+| `_measure_history_growth.py` | Mide crecimiento del historial por turno. |
+| `_measure_agent_prompt_live.py` | Mide el prompt real del agente en vivo. |
+| `_measure_full_request.py` | Mide el request completo a llama-server. |
+| `_measure_prompt_size.py` | Mide tamaño del system prompt. |
+| `_measure_tool_schemas.py` | Mide tamaño de los schemas de tools. |
+| `_verify_cache_hit.py` | Verifica el cache-hit (`cache_n`) del prefix. |
+| `_verify_frcot.py` | Verifica FR-CoT (thinking estructurado). |
+| `_verify_a2_quality.py` | Verifica calidad tras Plan A2 (system prompt 9.4k→5k). |
+| `_verify_v22_defaults.py` | Verifica los defaults del bundle v22 (FA-off, lean). |
+| `_audit_prompt_tokens.py` | Audita el desglose de tokens del prompt. |
+| `_soak50.py` | Soak test 50 turnos (crash-safety del cache-hit). |
+| `_stress_v22.py` | Stress test del bundle v22. |
+| `_revert_live_probe.py` | Revierte un probe en vivo (cleanup). |
+| `_kill_eval_boot_procs.py` | Mata los procesos del boot de eval. |
+| `_kill_server_ports.py` | Libera los puertos del server (`:8080`). |
+| `_reset_server.py` | Reinicia el llama-server gestionado. |
 
 ## Cosas pendientes (futuras sesiones)
 

@@ -19,8 +19,10 @@ from gemma4_agent.agent_core import core_tools_pareto as ctp
 
 
 class TestDefaultCoreTools(unittest.TestCase):
-    def test_default_has_15_items(self):
-        self.assertEqual(len(ctp._default_core_tools()), 15)
+    def test_default_has_6_items(self):
+        # v22 2026-05-28 (Plan A2, commit 3898a54): 6 tools universales por voz
+        # (vs los 15 previos) -> system prompt ~5k tok. Validado EN VIVO 8/8.
+        self.assertEqual(len(ctp._default_core_tools()), 6)
 
     def test_default_is_sorted_for_byte_stability(self):
         default = ctp._default_core_tools()

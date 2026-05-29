@@ -26,8 +26,8 @@ class TestTtsReEnable(unittest.TestCase):
         pipe.load.return_value = True
         pipe.start.return_value = True
         self._patches = [
-            mock.patch("gemma4_agent.voice_runner.StreamingTTS", return_value=tts),
-            mock.patch("gemma4_agent.voice_runner.VoicePipeline", return_value=pipe),
+            mock.patch("gemma4_agent.infra.voice_runner.StreamingTTS", return_value=tts),
+            mock.patch("gemma4_agent.infra.voice_runner.VoicePipeline", return_value=pipe),
         ]
         for p in self._patches:
             p.start()
@@ -64,8 +64,8 @@ class TestTtsReEnable(unittest.TestCase):
         pipe = mock.MagicMock()
         pipe.load.return_value = True
         pipe.start.return_value = True
-        with mock.patch("gemma4_agent.voice_runner.StreamingTTS", return_value=tts), \
-                mock.patch("gemma4_agent.voice_runner.VoicePipeline", return_value=pipe):
+        with mock.patch("gemma4_agent.infra.voice_runner.StreamingTTS", return_value=tts), \
+                mock.patch("gemma4_agent.infra.voice_runner.VoicePipeline", return_value=pipe):
             self.assertTrue(runner.enable(), "voice must enable even if TTS load fails")
             tts.start.assert_not_called()  # never start an unloaded TTS worker
             runner.disable()
