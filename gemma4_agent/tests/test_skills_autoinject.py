@@ -56,12 +56,14 @@ class TestAutoinjectSkill(unittest.TestCase):
 
 
 class TestGate(unittest.TestCase):
-    def test_default_off(self):
+    def test_default_on(self):
+        # 2026-05-29: default-ON (validado live: 4B sigue la receta, 0 FP; perf OK
+        # ~2-4ms mediana < 5ms). Kill-switch GEMMA4_SKILLS_AUTOINJECT=0 sigue activo.
         prev = os.environ.pop("GEMMA4_SKILLS_AUTOINJECT", None)
         try:
-            self.assertFalse(_skills_autoinject_enabled())
-            os.environ["GEMMA4_SKILLS_AUTOINJECT"] = "1"
-            self.assertTrue(_skills_autoinject_enabled())
+            self.assertTrue(_skills_autoinject_enabled())  # default ON
+            os.environ["GEMMA4_SKILLS_AUTOINJECT"] = "0"
+            self.assertFalse(_skills_autoinject_enabled())  # kill-switch
         finally:
             if prev is None:
                 os.environ.pop("GEMMA4_SKILLS_AUTOINJECT", None)

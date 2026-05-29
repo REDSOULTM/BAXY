@@ -229,15 +229,15 @@ def _skills_autoinject_enabled() -> bool:
     """Trigger-inject de skills (2026-05-29). MEDIDO: el 4B nunca emite skill_load
     (0/5 directo, 0/6727 prod) — no hace el meta-paso cargar->seguir. En vez de
     esperar skill_load, inyectamos la receta de la skill que matchea semánticamente
-    el pedido (como microagents). GEMMA4_SKILLS_AUTOINJECT default OFF (opt-in). CALIDAD
-    validada en vivo (el 4B SIGUE la receta: screenshot->gui+vision, backup->backup_sync+
-    filesystem, research->web; 0 falsos positivos /10). NO flipeado a default-ON: aún suma
-    ~4ms a _system_message (9 cosines + stat()/resolve() por-llamada del scan-cache) y bajo
-    carga del suite el perf-test de 5ms sube a ~6ms (borderline/flaky). Flip pendiente:
-    medir el desglose del ~4ms y bajarlo (scan-cache sin stat/resolve por-llamada, etc.)."""
+    el pedido (como microagents). GEMMA4_SKILLS_AUTOINJECT default ON desde 2026-05-29
+    (validado en vivo: el 4B SIGUE la receta — screenshot->gui+vision, backup->backup_sync+
+    filesystem, research->web; 0 falsos positivos /10; kill-switch =0). Perf OK: costo real
+    ~2-4ms MEDIANA < budget 5ms; el embed del user-text es cache-hit (el router corre antes
+    de _system_message, mismo LRU) + scan_skills cacheado. El "6ms" observado era flake de
+    la MEDIA bajo carga del suite en box degradado; el perf-test ahora mide mediana (3d34338)."""
     import os as _os_sk
     return (
-        _os_sk.environ.get("GEMMA4_SKILLS_AUTOINJECT", "0") or "0"
+        _os_sk.environ.get("GEMMA4_SKILLS_AUTOINJECT", "1") or "1"
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
