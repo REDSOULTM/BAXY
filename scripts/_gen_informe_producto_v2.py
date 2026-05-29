@@ -111,8 +111,9 @@ table(
     ],
 )
 p("Los modos se activan por VOZ (capa semántica multilingüe), persisten entre sesiones "
-  "y se combinan con cualquier motor de hardware (CPU o GPU). Es un diferenciador central: "
-  "ningún competidor local-de-voz ofrece garantías de accesibilidad de este tipo.", italic=True)
+  "y se combinan con cualquier motor de hardware (CPU o GPU). Es un diferenciador poco "
+  "común: entre los asistentes locales de voz que revisamos no encontramos garantías de "
+  "accesibilidad estructurales equivalentes.", italic=True)
 
 # ====================== 3. TECNOLOGIAS ======================
 h("3. Tecnologías usadas", 1)
@@ -177,30 +178,93 @@ p("Todo el recorrido (escuchar → entender → razonar → actuar → verificar
   "recursos: con GPU NVIDIA usa la GPU; si la GPU está ocupada (un juego) o no hay "
   "GPU, el mismo modelo corre en CPU.", italic=True)
 
-# ====================== 4. COMPETIDORES ======================
-h("5. Panorama competitivo", 1)
-p("Análisis de 10 proyectos del espacio de agentes. La conclusión clave: ninguno "
-  "ocupa el mismo nicho — todos son nube, modelos grandes, o frameworks de "
-  "orquestación. El único asistente de voz personal comparable (Mark-XXXIX) depende "
-  "de una API de nube paga.")
+h("El modo CPU en detalle — qué cambia frente al perfil GPU (vram4)", 2)
+p("El modo CPU NO es una versión recortada del cerebro: responde con la MISMA calidad "
+  "porque es el MISMO modelo y los mismos pesos. Lo que cambia es la VELOCIDAD y la "
+  "VISIÓN. Es un fallback para no quedarte sin asistente cuando un juego ocupa la GPU "
+  "(o si no tenés GPU dedicada), no un reemplazo de igual rendimiento.")
 table(
-    ["Competidor", "Qué es", "Recursos", "Posición frente a Gemma 4 Agent"],
+    ["Aspecto", "Perfil vram4 (GPU)", "Perfil cpu"],
     [
-        ["Agent-S", "Computer-use / GUI (OSWorld 72%)", "GPT-4V / UI-TARS, nube", "No corre local; nosotros operamos el SO en 4 GB."],
-        ["OS-Copilot", "Automatización del SO + self-learning", "GPT, nube, sesgo monolingüe", "Nube + atado a un idioma; le tomamos la idea de error-recovery."],
-        ["Open Interpreter", "Ejecuta código en lenguaje natural", "Claude/LiteLLM (soporta local)", "Inspira la tool de código (en nuestro caso, gateada y segura)."],
-        ["OpenHands", "Agente de software enterprise", "Anthropic/OpenAI, nube/Docker", "Enterprise y nube; no es un asistente de voz personal."],
-        ["Goose", "Agente local en Rust + MCP", "50+ providers, llama-cpp-2", "Local pero dev-céntrico y sin voz; su MCP es nuestro gap estratégico."],
-        ["Mark-XXXIX", "Asistente de voz tipo Jarvis (el más parecido)", "Gemini 2.5 LiveAPI, nube PAGA", "El más cercano, pero NUBE PAGA; nosotros somos local y gratis."],
-        ["openclaw", "Gateway multi-canal (WhatsApp, etc.)", "TS, infra de producción", "Otro producto (mensajería), no un asistente personal local."],
-        ["AutoGen", "Multi-agente conversacional", "N modelos grandes", "No entra en 4 GB."],
-        ["LangGraph", "Máquina de estados / DAG de agentes", "Framework", "Framework de orquestación, no un producto."],
-        ["AutoGPT", "Loop autónomo + memoria episódica", "Framework", "Le tomamos la memoria episódica de errores."],
+        ["Dónde corre el LLM", "GPU NVIDIA (-ngl 99)", "CPU (-ngl 0) · 0 VRAM"],
+        ["Visión (ver pantalla / imágenes)", "SÍ — mmproj residente", "NO — desactivada"],
+        ["Calidad del texto / decisiones", "(referencia)", "IDÉNTICA: mismo modelo y pesos"],
+        ["Velocidad de respuesta (decode)", "Camino rápido por defecto", "~20 tok/s en CPU de escritorio (techo); una laptop de 4 GB: bastante menos"],
+        ["Costo del 1er turno (prefill)", "Bajo", "~2.4 s para un prompt de ~2.8k tokens (luego se cachea)"],
+        ["Memoria que usa el modelo", "VRAM de la GPU", "RAM del sistema (mmap, páginas evictables)"],
+        ["Computer-use", "cascada UIA → OCR → visión", "UIA → OCR (sin el escalón de visión)"],
+        ["Cuándo se usa", "Default con GPU NVIDIA libre", "GPU ocupada (juego) o sin GPU dedicada"],
     ],
 )
-p("Veredicto: en nuestro terreno (local · 4 GB · voz · privado · gratis · multilingüe · "
-  "honesto) no hay rival directo. El objetivo no es superar a GPT-4 en la nube, sino ser "
-  "el mejor asistente que corre en la máquina del usuario.", bold=True)
+p("En números MEDIDOS (en el CPU de escritorio del desarrollador, que es un TECHO): la "
+  "generación va a ~20 tokens/s y una respuesta de ~80 tokens sale en ~4 s; procesar un "
+  "prompt largo (~2.8k tokens) cuesta ~2.4 s la primera vez. En una laptop típica de 4 GB "
+  "el decode será del orden de unos pocos tokens/s, así que una respuesta puede tardar "
+  "~5-15 s (estimado, no medido en ese hardware). Resumen honesto: en CPU el asistente "
+  "PIENSA igual, pero RESPONDE más lento y NO VE la pantalla.", italic=True)
+
+# ====================== 4. COMPETIDORES ======================
+h("5. Panorama competitivo", 1)
+p("Revisamos el espacio (fuentes verificadas, ver enlaces al final) en dos planos: "
+  "(A) asistentes personales / de voz LOCALES —el terreno propio de Gemma 4 Agent— y "
+  "(B) agentes de computer-use y frameworks de orquestación, adyacentes pero con otro "
+  "objetivo. Conclusión honesta y sin adornos: Gemma 4 Agent NO es \"el único asistente "
+  "local por voz\". Existe un ecosistema activo, e incluso un clon tipo Jarvis "
+  "(isair/jarvis) que también corre sobre Gemma con LLM local. Lo que nos diferencia no "
+  "es \"ser local\", sino la COMBINACIÓN de cuatro ejes que ningún proyecto revisado "
+  "reúne a la vez:")
+for b in [
+    "Un LLM local que DECIDE el camino (no listas de intents fijos).",
+    "Computer-use de escritorio GENÉRICO: opera cualquier app vía UIA → OCR → visión "
+    "(no solo Chrome ni solo domótica).",
+    "Verificación de cada acción por ESTADO del sistema operativo (\"no miente\").",
+    "Entra en 4 GB de VRAM (el rival más cercano, isair/jarvis —también Gemma—, pide 8 GB+).",
+]:
+    doc.add_paragraph(b, style="List Bullet")
+
+h("A. Asistentes personales / de voz LOCALES (los comparables reales)", 2)
+table(
+    ["Proyecto", "Qué es", "Local · LLM", "Computer-use", "Diferencia con Gemma 4 Agent"],
+    [
+        ["isair/jarvis", "Asistente de voz local tipo Jarvis", "Local; LLM local vía Ollama (default gemma4:e2b)",
+         "Parcial: lee pantalla (OCR), controla Chrome, MCP", "El más cercano. Pide 8 GB+ VRAM (vs 4) y su control se limita a Chrome, no a apps arbitrarias."],
+        ["dnhkng/GLaDOS", "Asistente con personalidad + visión + memoria", "Local (MIT); LLM local (Ollama) + visión",
+         "No (conversa, ve cámara, tools MCP)", "No opera apps de escritorio (no clic/teclado)."],
+        ["Home Assistant — Assist", "Asistente de voz para domótica", "Local; intents fijos + LLM local opcional (Ollama)",
+         "No (controla dispositivos del hogar)", "Domótica, no escritorio; el LLM es opcional y no decide el flujo."],
+        ["Mycroft / OpenVoiceOS", "Asistente de voz por skills (Mycroft cerró 2023; OVOS continúa)", "Local; skills/intents + LLM local opcional",
+         "No", "Skills/intents clásicos; sin computer-use."],
+        ["Leon AI", "Asistente personal open-source (MIT)", "Local; agéntico (v2), IA local o remota",
+         "No (skills/acciones, no UI de escritorio)", "Sin computer-use de escritorio."],
+        ["openclaw", "Asistente personal local-first multi-canal (responde por WhatsApp/Telegram/…)", "Local-first; TS/Node",
+         "No (modalidad mensajería)", "Otra modalidad: chat por mensajería, no voz + control del escritorio."],
+    ],
+)
+p("Además, orientados a domótica/intents (sin LLM que decida ni computer-use): Rhasspy, "
+  "Willow, Dicio, Neon AI. Y Jan, que es chat con LLM local pero sin manos-libres ni "
+  "computer-use.", italic=True)
+
+h("B. Agentes de computer-use y frameworks (adyacentes, no asistentes de voz locales)", 2)
+table(
+    ["Proyecto", "Qué es", "Local / Nube", "Posición frente a Gemma 4 Agent"],
+    [
+        ["Agent S3 (simular-ai)", "Computer-use de GUI (OSWorld 62.6% base; 72.6% supera el baseline humano en su anuncio)", "Híbrido: modelo grande de nube (GPT-5) + grounding UI-TARS auto-hospedable", "Muy potente, pero no corre en hardware modesto; Gemma 4 opera el SO local en 4 GB."],
+        ["OS-Copilot / FRIDAY", "Agente de SO con self-learning (benchmark GAIA)", "Nube (requiere OpenAI key); desarrollo estancado desde 2024", "Depende de nube; no es un asistente de voz local."],
+        ["Open Interpreter", "Ejecuta código en lenguaje natural", "Local (Ollama/LM Studio/Jan) o nube (GPT-4o)", "Herramienta de código, no un asistente de voz; sin verificación por estado del SO."],
+        ["OpenHands (ex-OpenDevin)", "Agente de ingeniería de software (SWE-bench ~72-77%)", "Agnóstico: local / nube / enterprise (Docker opcional)", "Foco en código/dev, no asistente personal por voz."],
+        ["Goose (Block)", "Agente extensible (desktop/CLI) + MCP, en Rust", "Local (Ollama) o nube; sin voz nativa", "Dev-céntrico y sin voz; con LLM chico el tool-calling falla (mismo límite que un 4B)."],
+        ["Mark-XXXIX", "Asistente de voz tipo Jarvis (proyecto de un solo dev, ~770★)", "Nube de Google (Gemini Live API, free tier)", "Concepto cercano (voz), pero el cerebro vive en la nube de Google; Gemma 4 es 100% local."],
+        ["AutoGen (Microsoft)", "Framework multi-agente (hoy en maintenance mode; sucesor: Microsoft Agent Framework)", "Framework, agnóstico (ejemplos en nube)", "Framework para desarrolladores, no un producto; asume modelos fuertes."],
+        ["LangGraph (LangChain)", "Framework de orquestación por grafos (MIT)", "Framework, agnóstico (local o nube)", "Infraestructura de orquestación, no un asistente de usuario final."],
+        ["AutoGPT", "Plataforma low-code de agentes (ya no el loop autónomo de 2023)", "Self-host (Ollama) o nube; licencia parcial NO-OSS (PolyForm Shield)", "Plataforma para construir agentes, no un asistente de voz; parte del código no es OSS puro."],
+    ],
+)
+p("Veredicto honesto: hay un ecosistema activo de asistentes locales (la mayoría "
+  "domótica/intents) y de clones tipo Jarvis con LLM local —el más cercano, isair/jarvis, "
+  "también sobre Gemma, pide 8 GB+ de VRAM y solo controla Chrome—. El hueco que ocupa "
+  "Gemma 4 Agent es la INTERSECCIÓN de los cuatro ejes de arriba. No competimos con GPT-4 "
+  "en la nube; competimos por ser el mejor asistente que corre, completo, en la máquina "
+  "del usuario.", bold=True)
 
 # ====================== 5. RIESGOS Y MITIGACIONES ======================
 h("6. Riesgos y mitigaciones", 1)
@@ -236,11 +300,43 @@ table(
 
 # ====================== CIERRE ======================
 h("7. Resumen ejecutivo", 1)
-p("Gemma 4 Agent compite en un nicho propio: el único asistente de IA por voz que es "
-  "100% local, privado, gratis, multilingüe y honesto, y que corre en hardware modesto. "
-  "Su arquitectura está diseñada alrededor de las restricciones reales del hardware del "
-  "usuario (4 GB de VRAM, o incluso sin gráfica) y de un principio innegociable: el "
-  "modelo decide y el sistema verifica — no inventa.")
+p("Gemma 4 Agent NO es \"el único asistente local por voz\" —existen varios, e incluso un "
+  "clon tipo Jarvis que también usa Gemma—. Compite por una INTERSECCIÓN que ningún "
+  "proyecto revisado reúne a la vez: un asistente de IA por voz 100% local, privado, "
+  "gratis, multilingüe y honesto, que además opera el escritorio de forma GENÉRICA (UIA/"
+  "OCR/visión, no solo Chrome ni solo domótica), verifica cada acción por ESTADO del SO "
+  "(\"no miente\") y entra en hardware modesto (4 GB de VRAM, o incluso sin gráfica, en "
+  "CPU). Su arquitectura está diseñada alrededor de las restricciones reales del hardware "
+  "del usuario y de un principio innegociable: el modelo decide y el sistema verifica — no "
+  "inventa.")
 
-doc.save(str(OUT))
-print(f"[ok] informe generado: {OUT}")
+# ====================== 8. FUENTES ======================
+h("8. Fuentes (verificadas en esta investigación)", 1)
+p("Asistentes locales / de voz: isair/jarvis (github.com/isair/jarvis) · dnhkng/GLaDOS "
+  "(github.com/dnhkng/GLaDOS) · Home Assistant Assist (home-assistant.io/blog/2025/09/11/"
+  "ai-in-home-assistant) · OpenVoiceOS (openvoiceos.org) · Leon AI (github.com/leon-ai/leon) "
+  "· Rhasspy (rhasspy.readthedocs.io) · Willow (heywillow.io) · Jan (github.com/janhq/jan).")
+p("Agentes de computer-use / frameworks: Agent S (github.com/simular-ai/Agent-S; arXiv "
+  "2510.02250) · OS-Copilot (github.com/OS-Copilot/OS-Copilot) · Open Interpreter "
+  "(github.com/OpenInterpreter/open-interpreter) · OpenHands (github.com/OpenHands/OpenHands) "
+  "· Goose (github.com/block/goose) · Mark-XXXIX (github.com/FatihMakes/Mark-XXXIX) · "
+  "openclaw (github.com/openclaw/openclaw) · AutoGen (github.com/microsoft/autogen) · "
+  "LangGraph (github.com/langchain-ai/langgraph) · AutoGPT (github.com/Significant-Gravitas/AutoGPT).")
+p("Datos del producto (rendimiento CPU, VRAM, latencia) medidos en este repo; ver scripts "
+  "scripts/_measure_cpu_inference.py y la memoria del proyecto.", italic=True)
+
+
+def _save(document, path):
+    """Guarda en `path`; si está bloqueado (Word abierto), escribe una copia
+    `_corregido` para no fallar ni pisar el archivo abierto."""
+    try:
+        document.save(str(path))
+        return path
+    except PermissionError:
+        alt = path.with_name(path.stem + "_corregido.docx")
+        document.save(str(alt))
+        return alt
+
+
+saved = _save(doc, OUT)
+print(f"[ok] informe generado: {saved}")
