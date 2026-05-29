@@ -274,9 +274,10 @@ def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
     low = (content or "").lower()
     if _re.search(r"\b(borr[aá]|borrar|borralo|elimin[aá]|eliminar|mueve|mov[eé]|"
                   r"mover|movelo|copi[aá]|copiar|renombr[aá]|renombrar|comprime|"
-                  r"comprim[ií]|comprimir|archiv[aá]|archivar|list[aá]|listar|"
-                  r"delete|move|copy|rename|archive|compress|zip|list)\b", low):
-        return names  # file-op explícito (voseo c/tilde incluido) -> no tocar filesystem
+                  r"comprim[ií]|comprimir|archiv[aá]|archivar|"
+                  r"delete|move|copy|rename|archive|compress|zip)\b", low):
+        return names  # file-op MUTANTE (borrar/mover/...) -> filesystem se queda
+        # (listar/buscar NO mutan -> caen al routing local de abajo, que sí necesita filesystem)
     is_data = bool(_re.search(r"\.(csv|xlsx?)\b", low))
     is_doc = bool(_re.search(r"\.(pdf|docx?|pptx?|html?)\b", low))
     if is_data:
@@ -293,6 +294,17 @@ def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
         out = list(names)
         if "document" not in out:
             out.append("document")
+        return out
+    # Búsqueda de archivos LOCALES (folder ref + tipo de archivo + verbo de
+    # búsqueda/apertura) -> filesystem, NO web. Bug medido (harness item4 2026-05-29):
+    # "buscá un word en documentos" -> web (internet) 0/4. El usuario quiere SU archivo,
+    # no resultados de internet. Estructural (señal de carpeta local + tipo).
+    if (_re.search(r"\b(documentos?|descargas?|downloads|escritorio|desktop|carpeta|m[uú]sica|musica|videos?)\b", low)
+            and _re.search(r"\b(word|docx?|pdf|excel|xlsx?|archivos?|files?|documentos?|fotos?|im[aá]genes?|imagen|canci[oó]n|m[uú]sica|musica|videos?|mp3|mp4|pptx?)\b", low)
+            and _re.search(r"\b(busc|encontr|list|mostr|abr|reproduc|trae|tra[eé]|dame|necesito)\w*", low)):
+        out = [t for t in names if t != "web"]
+        if "filesystem" not in out:
+            out.append("filesystem")
         return out
     return names
 

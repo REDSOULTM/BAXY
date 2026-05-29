@@ -45,6 +45,20 @@ class TestRouteFileByExtension(unittest.TestCase):
         names = ["filesystem", "web", "app"]
         self.assertEqual(_route_file_by_extension("analizá mis cosas", names), names)
 
+    def test_local_file_search_routes_to_filesystem(self):
+        # "buscá un word en documentos" -> filesystem (local), NO web (internet).
+        for cmd in ("buscá un word en mis documentos", "listá los archivos de descargas",
+                    "buscá un pdf en el escritorio", "mostrame las fotos de mi carpeta"):
+            out = _route_file_by_extension(cmd, ["web", "browser"])
+            self.assertIn("filesystem", out, cmd)
+            self.assertNotIn("web", out, cmd)
+
+    def test_generic_web_search_not_touched(self):
+        # búsqueda web genérica (sin carpeta local ni tipo de archivo) -> web se queda
+        for cmd in ("buscá noticias de hoy", "qué es la fotosíntesis", "buscá recetas"):
+            out = _route_file_by_extension(cmd, ["web"])
+            self.assertIn("web", out, cmd)
+
     def test_idempotent_when_data_analysis_present(self):
         out = _route_file_by_extension("analizá ventas.csv", ["data_analysis"])
         self.assertEqual(out.count("data_analysis"), 1)
