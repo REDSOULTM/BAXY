@@ -69,17 +69,26 @@ class TestSystemMessageBudget(unittest.TestCase):
     def test_system_message_warm_under_budget(self):
         """_system_message runs every turn. Budget 5ms (measured ~1.06ms with the
         microagent cache; ~2.08ms without). A jump past 5ms means the per-turn
-        disk-read regression (microagent cache removed) is back."""
+        disk-read regression (microagent cache removed) is back.
+
+        Mide la MEDIANA de N llamadas, no la media: bajo carga concurrente del suite
+        el SO desplaza el proceso e infla llamadas sueltas (la MEDIA flakea — medido
+        2026-05-29: ~6-7ms en suite full sobre box degradado, ~1ms aislado). La
+        MEDIANA refleja el costo de cómputo real; una regresión REAL frena TODAS las
+        llamadas y también sube la mediana, así que no se pierde poder de detección."""
+        import statistics
         from gemma4_agent.infra.config import AgentConfig
         from gemma4_agent.agent_core.agent import Gemma4Agent
         agent = Gemma4Agent(AgentConfig.from_env())
         agent._system_message(user_text="abre Steam")  # warm caches
         N = 100
-        t0 = time.perf_counter()
+        samples = []
         for _ in range(N):
+            s = time.perf_counter()
             agent._system_message(user_text="abre Steam")
-        per = (time.perf_counter() - t0) / N
-        self.assertLess(per, 0.005, f"_system_message {per*1000:.3f}ms/turn (budget 5ms)")
+            samples.append(time.perf_counter() - s)
+        per = statistics.median(samples)
+        self.assertLess(per, 0.005, f"_system_message median {per*1000:.3f}ms/turn (budget 5ms)")
 
 
 class TestWakeThrottleBudget(unittest.TestCase):
