@@ -1248,11 +1248,63 @@ def _duckduckgo_search(query: str, limit: int = 6) -> list[dict[str, str]]:
     return results
 
 
+def _bing_search(query: str, limit: int = 6) -> list[dict[str, str]]:
+    """B7 (competidores): búsqueda fallback vía Bing HTML — motor INDEPENDIENTE de
+    DDG. Best-effort scraping; si el HTML no matchea el regex, devuelve [] (sin
+    daño: ya veníamos en blanco). Sólo se usa cuando DDG falló/vino vacío."""
+    page = _http_get_text(f"https://www.bing.com/search?q={quote_plus(query)}", timeout=12)["text"]
+    results: list[dict[str, str]] = []
+    for block in re.finditer(r"(?is)<li class=\"b_algo\".*?(?=<li class=\"b_algo\"|</ol>|$)", page):
+        chunk = block.group(0)
+        a = re.search(r"(?is)<h2>\s*<a[^>]+href=\"([^\"]+)\"[^>]*>(.*?)</a>", chunk)
+        if not a:
+            continue
+        url = html.unescape(a.group(1))
+        title = _clean_html_text(a.group(2), limit=300)
+        if not url.startswith("http"):
+            continue
+        item = {"title": title, "url": url}
+        snip = re.search(r"(?is)<p[^>]*>(.*?)</p>", chunk)
+        if snip:
+            item["snippet"] = _clean_html_text(snip.group(1), limit=700)
+        results.append(item)
+        if len(results) >= limit:
+            break
+    return results
+
+
+def _web_fallback_enabled() -> bool:
+    """B7: fallback dual de web search (DDG -> Bing). Opt-in GEMMA4_WEB_FALLBACK,
+    default OFF hasta validar en vivo que Bing devuelve resultados (mi regex puede
+    no matchear el HTML real). Es seguro: sólo actúa cuando DDG ya falló -> no es
+    regresión (peor caso = sigue en blanco, igual que hoy)."""
+    return (os.environ.get("GEMMA4_WEB_FALLBACK", "0") or "0").strip().lower() not in {
+        "0", "false", "no", "off"}
+
+
 def _web_search_provider(query: str, limit: int = 6) -> tuple[str, list[dict[str, str]]]:
     provider = os.environ.get("GEMMA4_WEB_SEARCH_PROVIDER", DEFAULT_WEB_SEARCH_PROVIDER).strip().casefold()
+    if not _web_fallback_enabled():
+        # Comportamiento ORIGINAL (sin fallback) — default, sin cambio.
+        if provider in {"duckduckgo", "duckduckgo_html", "ddg"}:
+            return "duckduckgo_html", _duckduckgo_search(query, limit=limit)
+        return provider or DEFAULT_WEB_SEARCH_PROVIDER, []
+    # B7: con fallback dual. DDG primario; si falla/vacío -> Bing (independiente).
+    name, results = (provider or DEFAULT_WEB_SEARCH_PROVIDER), []
     if provider in {"duckduckgo", "duckduckgo_html", "ddg"}:
-        return "duckduckgo_html", _duckduckgo_search(query, limit=limit)
-    return provider or DEFAULT_WEB_SEARCH_PROVIDER, []
+        try:
+            results = _duckduckgo_search(query, limit=limit) or []
+            name = "duckduckgo_html"
+        except Exception:
+            results = []
+    if not results:
+        try:
+            bing = _bing_search(query, limit=limit)
+            if bing:
+                return "bing_html_fallback", bing
+        except Exception:
+            pass
+    return name, results
 
 
 def _pretty_exe_name(path: Path) -> str:
