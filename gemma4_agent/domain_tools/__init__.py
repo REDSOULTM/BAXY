@@ -2080,8 +2080,37 @@ def _spotify_auto_play(
     wait_seconds: float,
     query: str | None = None,
 ) -> dict[str, Any]:
-    """Tras enviar spotify:search:<q>, esperar render y reproducir via UI
-    Automation (clic real en el boton "Reproducir <X>" del resultado).
+    """Reproduce via UIA con REINTENTOS (fix 2026-05-29).
+
+    La búsqueda de Spotify tarda 2-4s en renderizar (más en frío). El click UIA
+    en el botón 'Reproducir' es FIABLE; lo que fallaba intermitentemente era llegar
+    ANTES del render con un único intento de wait FIJO → el árbol UIA aún no tenía
+    el botón → "no pude verificar"/"debes pulsar Enter" (medido en los logs del
+    usuario: 4/5 intentos de Spotify fallaron así). Reintentamos con esperas
+    crecientes hasta que el botón aparezca y reproduzca (played=True)."""
+    import time as _time
+    waits = [max(0.5, wait_seconds), 2.0, 2.5]
+    last: dict[str, Any] = {
+        "played": False, "focus_verified": False,
+        "abort_reason": "no attempt", "wait_seconds": wait_seconds,
+    }
+    for _i, _w in enumerate(waits):
+        res = _spotify_auto_play_once(executor, _w, query)
+        if res.get("played"):
+            res["attempts"] = _i + 1
+            return res
+        last = res
+    last["attempts"] = len(waits)
+    return last
+
+
+def _spotify_auto_play_once(
+    executor: Executor,
+    wait_seconds: float,
+    query: str | None = None,
+) -> dict[str, Any]:
+    """Un intento: tras enviar spotify:search:<q>, esperar render y reproducir via
+    UI Automation (clic real en el boton "Reproducir <X>" del resultado).
 
     DESCUBRIMIENTO 2026-05-22 (validado en vivo): Tab+Enter / media-keys NO
     reproducen de forma fiable desde la busqueda de Spotify. Spotify Electron
