@@ -248,6 +248,11 @@ class VoicePipeline:
         # of the same speaker as the mic input. Research report C.6
         # plan A — software-mute path, no AEC dependency.
         self._tts_busy_fn: Callable[[], bool] | None = None
+        # True while wake detection is paused because TTS is speaking. Tracked
+        # so the pause/resume is logged ONCE per transition (not per audio
+        # chunk, which would spam ~12 lines/sec) — lets the operator confirm
+        # the echo-gate actually fires at runtime.
+        self._wake_paused_for_tts: bool = False
 
         # Pre-wake ring buffer (PREROLL_SECONDS worth of chunks).
         preroll_chunks = int(PREROLL_SECONDS * SAMPLE_RATE / CHUNK_SAMPLES)
@@ -402,13 +407,21 @@ class VoicePipeline:
         self._preroll.append(chunk)
         # Software-mute: pause wake detection while TTS is speaking.
         # Without echo cancellation, hearing 'gemma' in TTS output
-        # would self-trigger via the mic.
+        # would self-trigger via the mic. Logged on TRANSITION (not per
+        # chunk) so the operator can confirm the echo-gate actually fires.
         if self._tts_busy_fn is not None:
             try:
-                if self._tts_busy_fn():
-                    return
+                busy = bool(self._tts_busy_fn())
             except Exception:
-                pass
+                busy = False
+            if busy:
+                if not self._wake_paused_for_tts:
+                    self._wake_paused_for_tts = True
+                    logger.info("wake paused (Gemma hablando — anti-eco)")
+                return
+            if self._wake_paused_for_tts:
+                self._wake_paused_for_tts = False
+                logger.info("wake reanudado (TTS terminó)")
         # Feed wake unconditionally — no VAD gate. See docstring.
         self._wake.feed(chunk)
 
