@@ -139,6 +139,7 @@ de migración).
 | `_diag_forced_retry.py` | forced-tool retry |
 | `_diag_info_tool.py` | info-turn que usa tool |
 | `_diag_prefix_divergence.py` | divergencia del prefix-cache |
+| `_diag_reminder_semantic.py` | ranking semántico + subset del planner para "recordame X" |
 | `_diag_dump_history.py` | dump de history interna del turno |
 | `_diag_python_cancel.py` | mis-route "explicá Python" → cancelar (a11y) |
 
@@ -204,6 +205,8 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_validate_skills_autoinject_live.py` | Valida el trigger-inject de skills en vivo (¿se inyecta la receta + el 4B la sigue?). |
 | `_validate_mcp_real.py` | Valida el cliente MCP contra un servidor real (npx server-filesystem): discover + call. |
 | `_harness_validate_tools.py` | Valida el ROUTING de N tools en vivo (todo mockeado + syscall neutralizado = sin efecto físico). |
+| `_validate_filesystem_routing_live.py` | Valida en vivo el fix de routing filesystem (búsqueda local→filesystem, no web) + controles web. |
+| `_validate_reminder_routing_live.py` | Valida en vivo el fix de routing reminder ("recordame [acción] [tiempo]"→notification/reminder) + controles memory. |
 | `_measure_pass1.py` | Mide latencia/tokens del pass-1. |
 | `_measure_thinking0.py` | Mide efecto de `thinking_budget=0`. |
 | `_measure_summary_cache.py` | Mide cache-hit del summary pass (lever de −1s). |

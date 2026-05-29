@@ -90,12 +90,14 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "clipboard": "read or write the clipboard text",
     "terminal": "execute a shell command",
     "memory": (
-        "remember facts about the user and their preferences: my name is X, "
-        "call me X from now on, remember that I prefer Y, what is my name, "
-        "what project am I working on, what preference do I have, change or "
-        "forget my setting; recordar datos del usuario, me llamo X, "
-        "llamame X, recuerda que prefiero, que preferencia tengo, que "
-        "proyecto estoy trabajando, de que proyecto, olvida mi configuracion"
+        "remember a FACT or preference ABOUT the user (no time, not an action "
+        "to do later): my name is X, call me X from now on, remember that I "
+        "prefer Y, remember that I am allergic to Z, what is my name, what "
+        "project am I working on, what preference do I have, change or forget "
+        "my setting; recordar un DATO o preferencia del usuario, me llamo X, "
+        "llamame X, recuerda que prefiero, recordame que prefiero el café, "
+        "recordame que soy alérgico, que preferencia tengo, que proyecto "
+        "estoy trabajando, de que proyecto, olvida mi configuracion"
     ),
     "verify": "verify app opened, file exists, window exists, clipboard contains",
     "state": "list open resources, cleanup, checkpoint, rollback",
@@ -113,7 +115,17 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "browser_real": "drive a real browser via Playwright: tabs, fill forms, click, extract text",
     "knowledge": "ingest documents and search a local knowledge base",
     "office": "create PowerPoint, Word, Excel documents",
-    "notification": "schedule timers, alarms, reminders, toast notifications",
+    "notification": (
+        "set a TIMED reminder, alarm, timer or toast notification to alert at a "
+        "FUTURE time: remind me to DO an action at/in a time — remind me to buy "
+        "bread at 5, remind me to call mom in an hour, remind me about the "
+        "meeting tomorrow 9am, wake me at 7, timer for 10 minutes, alert me in 5 "
+        "minutes; recordame/recuérdame HACER algo a una hora o en un rato — "
+        "recordame comprar pan a las 5, recordame llamar a mamá, recordame sacar "
+        "la basura mañana, recordame la reunión a las 9, avisame/avísame en 10 "
+        "minutos, despertame a las 7, alarma a las 7, temporizador de 10 minutos, "
+        "recordatorio de tomar agua en una hora"
+    ),
     "routine": "create automation routines with manual, cron, or on-app-open triggers",
     "media": "play music or video, pause, stop, next, previous, now playing",
     "source_manager": "save research sources, snapshots, citations",
