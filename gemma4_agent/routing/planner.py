@@ -204,8 +204,18 @@ def select_tool_names(
         exemplar_tools = []
     for step in plan.steps:
         names.extend(step.suggested_tools)
+    _kw_hits = _suggest_tools(text)
     if not names:
-        names.extend(_suggest_tools(text))
+        names.extend(_kw_hits)
+    # MUSIC-PLAY force-include (fix 2026-05-29): _suggest_tools (que agrega `media`
+    # ante "pon/reproducí una canción/música") SOLO corría como fallback (if not
+    # names). Si el exemplar/plan ya puso otras tools, un pedido de reproducir
+    # música perdía `media` y el LLM caía a `web` -> abría una URL random (bug
+    # medido: "Pon una canción en Spotify" -> web search). Si el keyword router
+    # detecta media-play, aseguramos `media` en el subset (el LLM decide si la usa).
+    # Targeted: SOLO `media`; no cambia el resto del ruteo.
+    elif "media" not in names and "media" in _kw_hits:
+        names.insert(0, "media")
 
     # Continuation hint: si el agente preguntó por perfil de streaming en
     # el turn anterior y este turn parece una respuesta corta (no es un
