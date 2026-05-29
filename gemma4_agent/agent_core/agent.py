@@ -1917,6 +1917,13 @@ class Gemma4Agent:
         # never a lie. Keeps "voiced == final" true for the pure-prose info win.
         self._tts_streamed = bool(fed) and not aborted and not final_tool_calls
         self._tts_streamed_text = fed if self._tts_streamed else ""
+        if guard_check:
+            # Mark that we streamed an INFO (no-tool) pass. If the turn later runs
+            # a tool anyway (the model emits a web-call as text that the RESCUE
+            # parser executes -> a post-prose tool+summary), finalize demotes this
+            # to NOT-streamed so the runner voices the verified post-tool final
+            # (never bypass verification; the streamed knowledge prose was honest).
+            self._tts_info_stream = self._tts_streamed
         self.trace.event(turn_id, "tts_streamed", chars=len(fed), aborted=aborted,
                          guard_check=guard_check, tool_called=bool(final_tool_calls))
         return {
@@ -3506,6 +3513,16 @@ class Gemma4Agent:
         if _scr:
             assistant_content = _scr
         assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
+        # If we streamed an INFO pass but the turn then ran a tool (the model
+        # emitted a web-call as text that the RESCUE executed -> a post-prose
+        # tool+summary), the streamed knowledge prose was superseded by a verified
+        # answer. Demote to NOT-streamed so the runner voices the VERIFIED final
+        # (truthful, no verification bypass — the streamed prose was honest but is
+        # no longer "the answer"). Pure-prose info turns (events==0) stay streamed.
+        if getattr(self, "_tts_info_stream", False) and len(events) > 0:
+            self._tts_streamed = False
+            self._tts_streamed_text = ""
+            self.trace.event(turn_id, "tts_info_stream_superseded", tools=len(events))
         # STREAMING TTS: if the prose was already voiced sentence-by-sentence
         # during generation, speak only the post-guard tail (an appended hedge or
         # footer). For a clean success this is empty. Truthful by construction
@@ -3524,6 +3541,7 @@ class Gemma4Agent:
         self._active_tts_sink = tts_sink
         self._tts_streamed = False
         self._tts_streamed_text = ""
+        self._tts_info_stream = False  # did we stream an INFO (no-tool) pass this turn?
         # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
         # ~782 LOC). Extraída a _decide_turn. early_reply propaga los 4 caminos
         # cortos (jarvis-pending, multi-intent re-dispatch, reply-shortcut,

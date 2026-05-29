@@ -100,11 +100,36 @@ PERO veracidad 2/4:
   es probablemente ESPURIO (el modelo ya sabe) -> streamear lo saltea y responde más
   rápido; pero NO se garantiza que siempre sea espurio.
 
-**Decisión: GEMMA4_STREAM_TTS sigue default OFF.** El win de info es grande pero el
-caso events==1 (spoken ≠ final-verificado) es un trade-off de veracidad/verificación
-que decide RED. Tests: `test_stream_tts.py` 15/15 (incl guard-check: promesa/claim
-ABORTA, prosa limpia streamea). Infra dormant lista. Root-cause del tool-post-prosa
-(¿forced-retry mis-firing en info?) queda como follow-up.
+### Root-cause del tool-post-prosa (investigado 2026-05-29, `scripts/_diag_info_tool.py`)
+
+NO es el forced-retry (que YA se saltea en fast_info por `_info_answered`). Es el
+**MODELO**: para preguntas de BÚSQUEDA-DE-DATO ("qué es X", "cuál es X") emite
+`web(action="search", query=...)` como TEXTO PLANO → el **RESCUE parser** lo
+ejecuta como tool `web` real → turno de 2 pasadas (web + summary). Para preguntas
+EXPLICATIVAS ("explicame X", "por qué X") responde en prosa directa (events=0).
+El router mete `web` en el subset (kw_matches ['web','knowledge']) para ambas.
+
+El web en una pregunta de conocimiento atemporal es probablemente ESPURIO (el
+modelo ya sabe), pero es INDISTINGUIBLE de un web genuino de info-actual sin tocar
+el router → suprimirlo arriesga respuestas obsoletas en preguntas de info-actual
+(riesgo de "miente"). Speak-both es veraz pero redundante.
+
+### Fix aplicado: demote-on-tool (veraz, sin bypass)
+
+`_chat_streaming(guard_check=True)` marca `_tts_info_stream`. En `_finalize_turn`,
+si se streameó un pase INFO **y** corrió un tool (events>0) → `tts_streamed=False`
+→ el runner habla el FINAL VERIFICADO (post-tool), nunca saltea verificación.
+Pasadas de info prosa-pura (events==0) siguen streameadas y limpias.
+
+**Medido EN VIVO (post-fix): streameó 2/4, veracidad OK (0 violaciones).**
+- explicativas (Python, cielo): streamean limpio, win ~1.0-1.3s, voiced==final. ✅
+- búsqueda-de-dato (fotosíntesis, capital): demote → habla el final verificado. ✅
+  RESIDUAL: redundancia (se oye el draft de conocimiento + el summary verificado).
+
+**Decisión: GEMMA4_STREAM_TTS sigue default OFF.** Es VERAZ (0 violaciones) pero la
+redundancia en preguntas de búsqueda-de-dato no es 100% limpia. Limpieza total =
+que el router NO meta `web` en preguntas de conocimiento atemporal (cambio de router,
+riesgoso, separado). Tests: `test_stream_tts.py` 15/15. Infra dormant lista.
 
 ## Estado
 
