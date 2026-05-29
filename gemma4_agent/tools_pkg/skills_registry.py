@@ -266,6 +266,14 @@ def _enabled() -> bool:
     return raw not in {"1", "true", "yes", "on"}
 
 
+# Cache de scan_skills: evita re-leer+parsear las carpetas SKILL.md de disco cada
+# turno (_system_message corre por turno; ver test_perf_budget). Keyed por (dir,
+# mtime-del-dir) -> se invalida al agregar/quitar/renombrar skills, o vía
+# reset_autoinject_cache(). Edits de contenido dentro de una skill existente se ven
+# al reiniciar (skills estáticas en runtime).
+_SCAN_CACHE: dict = {}
+
+
 def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
     """Scan skills_dir/ y devuelve metadata de skills validos, eligibility-checked.
 
@@ -278,6 +286,15 @@ def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
         skills_dir = _default_skills_dir()
     if not skills_dir.exists() or not skills_dir.is_dir():
         return []
+
+    _cache_key = None
+    try:
+        _cache_key = (str(skills_dir.resolve()), skills_dir.stat().st_mtime_ns)
+        _cached = _SCAN_CACHE.get(_cache_key)
+        if _cached is not None:
+            return _cached
+    except OSError:
+        _cache_key = None
 
     skills: list[SkillMeta] = []
     for folder in sorted(skills_dir.iterdir()):
@@ -324,6 +341,8 @@ def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
     skills = [s for s in skills if check_skill_eligibility(s)]
     priority_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
     skills.sort(key=lambda s: (priority_order.get(s.priority, 2), s.name))
+    if _cache_key is not None:
+        _SCAN_CACHE[_cache_key] = skills
     return skills
 
 
@@ -422,6 +441,7 @@ _DESC_EMB_CACHE: dict = {}
 
 def reset_autoinject_cache() -> None:
     _DESC_EMB_CACHE.clear()
+    _SCAN_CACHE.clear()
 
 
 def autoinject_skill(user_text: str, skills, *, embed_fn, threshold: float = 0.45):
