@@ -87,6 +87,11 @@ class AgentRunner:
         # server sin tener que recrear el manager (que perderia la
         # referencia al subprocess vivo).
         self._server_manager: Any = None
+        # Auto CPU-fallback (GEMMA4_AUTO_CPU_FALLBACK): ProfileWatcher que, al
+        # detectar la GPU saturada por algo ajeno (juego/app pesada), cambia al
+        # perfil `cpu` (-ngl 0) — libera la VRAM para el juego y sigue respondiendo
+        # en CPU. None hasta que _maybe_start_profile_watcher() lo arranca.
+        self._profile_watcher: Any = None
 
     def is_warmed_up(self) -> bool:
         return self._warmed_up and self._agent is not None
@@ -103,6 +108,12 @@ class AgentRunner:
     def stop(self) -> None:
         self._running = False
         self._stop_event.set()
+        pw = self._profile_watcher
+        if pw is not None:
+            try:
+                pw.stop(timeout_s=2.0)
+            except Exception:  # noqa: BLE001
+                pass
         # sentinel so the queue.get unblocks
         self._inbox.put(_TurnRequest(text="__stop__", images=[], audios=[]))
 
@@ -576,6 +587,7 @@ class AgentRunner:
                        progress=100.0)
             BUS.publish({"type": "state", "value": "idle"})
             BUS.publish({"type": "agent", "built": True, "healthy": True, "ready": True})
+            self._maybe_start_profile_watcher()
         else:
             _publish_activity("SYSTEM", f"warmup failed · {warmup_err}")
             emit_stage(BUS.publish, "llama_warmup",
@@ -633,10 +645,76 @@ class AgentRunner:
             BUS.publish({"type": "state", "value": "standby"})
         # event == "start" is intentionally dropped — state already transitioned.
 
+    # ------------------------------------------------------------------
+    # auto CPU-fallback (GPU ocupada -> perfil `cpu`)
+    # ------------------------------------------------------------------
+
+    def _maybe_start_profile_watcher(self) -> None:
+        """Arranca el ProfileWatcher. Cuando detecta la GPU saturada por un proceso
+        ajeno (juego/render/training) 30s sostenidos, encola el cambio al perfil
+        `cpu` (-ngl 0): apaga el server GPU (libera ~3.4 GB VRAM para el juego) y lo
+        levanta en CPU; vuelve a vram4 al liberarse la GPU 60s. El switch se aplica
+        en un momento SEGURO (fin-de-turno / idle, nunca con un turno en vuelo).
+        Gated por GEMMA4_AUTO_CPU_FALLBACK — default OFF hasta validar en vivo con
+        un juego real; =1 lo activa."""
+        import os
+        flag = (os.environ.get("GEMMA4_AUTO_CPU_FALLBACK", "0") or "0").strip().lower()
+        if flag in {"0", "false", "no", "off"}:
+            return
+        if self._profile_watcher is not None:
+            return
+        try:
+            from ..infra.profile_watcher import ProfileWatcher, WatcherConfig
+            cfg = WatcherConfig(
+                enabled=True,
+                downgrade_to="cpu",
+                restore_to="vram4",
+                trigger_on_vram=True,  # detecta CUALQUIER cosa pesada en GPU, sin listas de nombres
+            )
+            self._profile_watcher = ProfileWatcher(cfg, on_change=self._on_profile_switch)
+            self._profile_watcher.start()
+            _publish_activity("BOOT", "auto CPU-fallback armado · si la GPU se satura, paso a CPU")
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("profile watcher no arrancó: %s", exc)
+
+    def _on_profile_switch(self, name: str, reason: str) -> None:
+        """Callback del watcher: avisa en el log de actividad + publica el cambio
+        de perfil para que la UI lo refleje."""
+        if name == "cpu":
+            _publish_activity(
+                "SYSTEM",
+                f"GPU ocupada ({reason}) · paso a CPU — respuestas más lentas, GPU libre para el juego",
+            )
+        else:
+            _publish_activity("SYSTEM", f"GPU libre · vuelvo a {name} (GPU)")
+        try:
+            BUS.publish({"type": "profile", "active": name, "reason": reason})
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _apply_pending_profile_switch(self) -> None:
+        """Aplica un switch de perfil encolado por el watcher (si hay). Se llama a
+        fin-de-turno y en idle: SIEMPRE sin un turno en vuelo, así el restart del
+        llama-server nunca pisa un request."""
+        pw = self._profile_watcher
+        if pw is None:
+            return
+        try:
+            pw.apply_pending()
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("apply_pending del watcher falló: %s", exc)
+
     def _run(self) -> None:
         self._build_agent()
         while self._running:
-            req = self._inbox.get()
+            try:
+                # timeout corto: en idle despertamos para aplicar un switch de
+                # perfil encolado por el watcher (libera VRAM para el juego aunque
+                # no haya turnos). Sin turno en vuelo => seguro reiniciar el server.
+                req = self._inbox.get(timeout=5.0)
+            except queue.Empty:
+                self._apply_pending_profile_switch()
+                continue
             if not self._running or req.text == "__stop__":
                 break
             if self._agent is None:
@@ -706,6 +784,10 @@ class AgentRunner:
                 logger.exception("agent turn crashed")
                 _publish_activity("SYSTEM", f"turn failed: {exc}")
                 BUS.publish({"type": "state", "value": "standby"})
+
+            # Fin de turno (éxito o error): aplicar un switch de perfil encolado
+            # por el watcher ahora que no hay nada en vuelo.
+            self._apply_pending_profile_switch()
 
 
 # module-level singleton, started lazily on first submit()

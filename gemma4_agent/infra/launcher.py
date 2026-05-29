@@ -329,14 +329,34 @@ def run_ui(args: argparse.Namespace) -> int:
             server.should_exit = True
         return 0
 
+    # WebView2 renderiza con la GPU por defecto. En este deployment la GPU es
+    # para el LLM (y a veces un juego en simultaneo). Cuando esta saturada (~97%)
+    # el proceso de GPU del WebView2 CRASHEA y se lleva toda la ventana/proceso
+    # con el (no hay traceback de Python: es un crash nativo, vuelve al prompt).
+    # Forzamos compositing por CPU para que la UI NUNCA compita por la GPU; el
+    # grafo neuronal + el borde viajero corren bien en CPU. Debe setearse ANTES
+    # de crear la ventana (WebView2 lee la env var al inicializar).
+    _wv2_args = os.environ.get("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "")
+    if "--disable-gpu" not in _wv2_args:
+        os.environ["WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"] = (
+            f"{_wv2_args} --disable-gpu --disable-gpu-compositing".strip()
+        )
+
     print(color("ok", f"abriendo ventana · {url}"))
+    # frameless: el rediseño "field" no tiene barra de titulo del SO — el marco
+    # rojo (.app-frame) es el borde superior. La ventana se dimensiona al
+    # instrumento (1040x600 css) + un margen oscuro fino, como el prototipo.
+    # easy_drag=False para no robar el click/seleccion del input de chat; cerrar
+    # con Alt+F4 (o agregamos un control propio si se pide).
     webview.create_window(
         "gemma 4 · field",
         url,
-        width=1320,
-        height=860,
-        min_size=(1024, 700),
+        width=1080,
+        height=640,
+        min_size=(1000, 600),
         background_color="#0A0E14",
+        frameless=True,
+        easy_drag=False,
     )
     try:
         # webview.start() blocks on the main thread until the window closes.
