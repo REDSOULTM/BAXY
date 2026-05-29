@@ -75,8 +75,8 @@ TABLE = [
     ("reminder", ["recordame comprar pan a las 5", "recordame la reunión mañana 9am", "recordame llamar a mamá", "recordatorio de tomar agua en 1 hora"], {"reminder", "notification"}),
     ("notification", ["alarma a las 7am", "timer de 10 minutos", "avisame en 5 minutos", "alarma para mañana 8am"], {"notification", "reminder"}),
     ("network", ["conectate al wifi de casa", "qué redes wifi hay", "estado de la conexión", "cuál es mi ip"], {"network", "device_settings"}),
-    ("vision", ["qué hay en mi pantalla", "leé la pantalla", "describí lo que ves", "qué ventana está abierta"], {"vision", "gui", "uia"}),
-    ("gui", ["escribí hola mundo", "apretá enter", "escribí mi nombre", "clickeá aceptar"], {"gui", "computer_use", "uia"}),
+    ("vision", ["qué hay en mi pantalla", "leé la pantalla", "describí lo que ves", "qué ventana está abierta"], {"vision", "gui", "uia", "window"}),
+    ("gui", ["escribí hola mundo", "apretá enter", "escribí mi nombre", "clickeá aceptar"], {"gui", "computer_use", "uia", "input"}),
     ("whatsapp", ["mandale un whatsapp a Juan", "escribile a mamá por whatsapp", "enviá un mensaje a Pedro", "whatsapp a mi hermano"], {"whatsapp"}),
     ("email", ["mandá un correo a juan@x.com", "escribile un email a mi jefe", "enviá un mail", "redactá un correo"], {"email"}),
 ]
