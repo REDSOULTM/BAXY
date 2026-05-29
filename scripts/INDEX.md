@@ -210,6 +210,7 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_validate_peak_threshold_live.py` | Valida en vivo el fix _SEM_PEAK_KEEP 0.60→0.50 (comandos cortos sin keyword→tool correcta; smalltalk sigue sin tool). |
 | `_validate_skills_quality_live.py` | Valida en vivo la calidad de skills-autoinject (receta inyectada + el 4B la sigue) para decidir el flip. |
 | `_validate_flips_default_live.py` | Valida en vivo que los 3 flips (file-routing/error-recovery/skills) funcionan POR DEFECTO (sin env vars). |
+| `_listen_b3b_earcon.py` | PRUEBA DE ESCUCHA (la corre el user): reproduce el earcon B3b en 4 tools lentas para juzgar el sonido. Impls mockeadas (seguro). |
 | `_measure_pass1.py` | Mide latencia/tokens del pass-1. |
 | `_measure_thinking0.py` | Mide efecto de `thinking_budget=0`. |
 | `_measure_summary_cache.py` | Mide cache-hit del summary pass (lever de −1s). |
