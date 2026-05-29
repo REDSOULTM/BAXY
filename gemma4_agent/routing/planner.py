@@ -295,6 +295,16 @@ def select_tool_names(
             scored = suggest_tools_scored(raw_text, k=12)
             top_score = scored[0][1] if scored else 0.0
             confident = top_score >= _SEM_CONFIDENT_SCORE
+            # MULTILINGUAL media-play (fix 2026-05-29): el force-include de play por
+            # keyword (_kw_hits arriba) es ES+EN. Para CUALQUIER idioma usamos la
+            # señal SEMÁNTICA (embeddings 50+ idiomas): si `media` es un match
+            # FUERTE, lo agregamos a names — queda protegido por _kw_protect (abajo)
+            # y sobrevive el cap, igual que el regex. Así "mets une chanson",
+            # "spiel ein Lied", "toca uma música" ofrecen `media` como "pon una
+            # canción". No es lista de keywords por idioma: es el encoder multilingüe.
+            _media_score = next((s for t, s in scored if t == "media"), 0.0)
+            if "media" not in names and _media_score >= _SEM_PEAK_KEEP:
+                names.insert(0, "media")
 
             # Step 2 (2026-05-21): CALIBRATED abstention head. All four
             # research reports converged: NO-TOOL keep (0.51) is the weak
