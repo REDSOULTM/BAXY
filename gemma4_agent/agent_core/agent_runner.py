@@ -647,11 +647,21 @@ class AgentRunner:
                 _publish_activity("YOU", req.text)
                 BUS.publish({"type": "state", "value": "thinking"})
 
+                # Voice TTS sink: with GEMMA4_STREAM_TTS on, the agent streams the
+                # summary-pass confirmation into this sink sentence-by-sentence
+                # (truthful — only fires when a tool ran). Passing it is harmless
+                # when the flag is off (the agent simply never calls it).
+                try:
+                    from ..infra.voice_runner import VOICE as _voice_for_sink
+                    _tts_sink = _voice_for_sink.feed_tts
+                except Exception:  # noqa: BLE001
+                    _tts_sink = None
                 reply = self._agent.run_text(
                     req.text,
                     images=[Path(p) for p in req.images] if req.images else None,
                     audios=[Path(p) for p in req.audios] if req.audios else None,
                     progress=self._progress_forwarder,
+                    tts_sink=_tts_sink,
                 )
 
                 content = getattr(reply, "content", "") or ""
@@ -676,7 +686,12 @@ class AgentRunner:
                         # care about the rewrite.
                         try:
                             from ..infra.voice_runner import VOICE
-                            VOICE.feed_tts(content)
+                            # If the prose was already streamed to TTS during
+                            # generation (GEMMA4_STREAM_TTS), do NOT re-feed it or
+                            # we'd double-speak; the agent already fed the prose +
+                            # any post-guard tail. Otherwise feed the full reply.
+                            if not getattr(reply, "tts_streamed", False):
+                                VOICE.feed_tts(content)
                             # CRITICAL: feed_tts only enqueues sentences that
                             # end in . ? ! — the reply often doesn't, so the
                             # tail stays buffered and is never spoken. flush

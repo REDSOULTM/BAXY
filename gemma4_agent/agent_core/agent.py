@@ -160,6 +160,35 @@ class AgentReply:
     tool_events: list[ToolEvent] = field(default_factory=list)
     error: str | None = None
     mission: dict[str, Any] | None = None
+    # True when the reply prose was already streamed to the TTS sink
+    # sentence-by-sentence during generation (GEMMA4_STREAM_TTS). The voice
+    # runner uses this to avoid re-feeding `content` (which would double-speak).
+    tts_streamed: bool = False
+
+
+def _stream_tts_enabled() -> bool:
+    """Opt-in flag for streaming the summary-pass reply to TTS sentence by
+    sentence (GEMMA4_STREAM_TTS). Default OFF until validated live. See
+    documentacion/SPRINT_streaming_tts_truthful.md."""
+    import os as _os_stream
+    return (
+        _os_stream.environ.get("GEMMA4_STREAM_TTS", "0") or "0"
+    ).strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _summary_keep_tools_enabled() -> bool:
+    """Keep the tool schemas in the SUMMARY pass so its prompt PREFIX stays
+    byte-identical to pass-1, intended to turn the ~5k re-prefill into a
+    prefix-cache HIT. MEASURED 2026-05-28: standalone it does NOT help — pass-2
+    re-prefills fully (5919 KEEP vs 5243 DROP) because the prefix-cache is NOT
+    reusing within-turn regardless of prefix match (SWA/slot issue under
+    investigation, PROMPT_RESEARCH_prefill_cache_latency.md). So standalone it's a
+    LOSS (more tokens, no hit). Kept dormant (default OFF) because it BECOMES a win
+    only once cache-reuse is actually re-enabled. Do NOT flip on until then."""
+    import os as _os_skt
+    return (
+        _os_skt.environ.get("GEMMA4_SUMMARY_KEEP_TOOLS", "0") or "0"
+    ).strip().lower() not in {"0", "false", "no", "off"}
 
 
 class _FinalizeContinue:
@@ -902,9 +931,11 @@ class Gemma4Agent:
         images: list[Path] | None = None,
         audios: list[Path] | None = None,
         progress: ProgressCallback | None = None,
+        *,
+        tts_sink: "Callable[[str], int | None] | None" = None,
     ) -> AgentReply:
         content = user_content(text, images=images, audios=audios)
-        return self.run_content(content, progress=progress)
+        return self.run_content(content, progress=progress, tts_sink=tts_sink)
 
     def _decide_turn(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> TurnDecision:
         """R1 sprint 2026-05-28: decide phase of a turn.
@@ -1784,6 +1815,100 @@ class Gemma4Agent:
             selected_schemas=selected_schemas,
         )
 
+    def _chat_summary_streaming(
+        self,
+        msgs: list[dict[str, Any]],
+        *,
+        model: str | None,
+        max_tokens: int,
+        thinking_budget: int | None,
+        timeout_s: float | None,
+        turn_id: str,
+    ) -> dict[str, Any]:
+        """Stream the summary-pass reply via ``chat_stream``, feeding sanitized
+        prose to the per-turn TTS sink as it arrives, and return a ``chat()``-shaped
+        dict so the rest of ``_execute_turn`` is unchanged.
+
+        Truthfulness is enforced, not assumed. Only called on the summary pass (a
+        tool ran -> the content-REPLACING guards are pass-through). Prose is
+        sanitized INCREMENTALLY (``sanitize_text`` over the growing buffer); if
+        sanitize ever fails to extend what was already fed (i.e. it would strip
+        text we already voiced), we ABORT feeding. The full RAW content is
+        returned so finalize re-applies the exact same sanitize + guards as the
+        blocking path; ``_feed_tts_tail`` then voices only the post-guard tail.
+        """
+        from ..support.reasoning import sanitize_text as _san
+        sink = getattr(self, "_active_tts_sink", None)
+        acc_raw = ""
+        fed = ""  # sanitized prose already handed to the sink (what was voiced)
+        aborted = False
+        final_content = ""
+        final_tool_calls: list[dict[str, Any]] = []
+        final_finish: str | None = None
+        for ev in self.client.chat_stream(
+            msgs, tools=None, enable_thinking=False,
+            thinking_budget=thinking_budget, max_tokens=max_tokens,
+            timeout_s=timeout_s, model=model,
+        ):
+            etype = ev.get("type")
+            if etype == "delta":
+                piece = ev.get("content_delta") or ""
+                if not piece or aborted or sink is None:
+                    continue
+                acc_raw += piece
+                san = _san(acc_raw)
+                if san.startswith(fed):
+                    new = san[len(fed):]
+                    if new:
+                        try:
+                            sink(new)
+                        except Exception:  # noqa: BLE001
+                            aborted = True
+                            continue
+                        fed = san
+                else:
+                    # sanitize changed/removed already-voiced text -> stop feeding
+                    # so we never leave a spoken claim that the final text drops.
+                    aborted = True
+                    self.trace.event(turn_id, "tts_stream_sanitize_abort",
+                                     fed=fed[:80], san=san[:80])
+            elif etype == "final":
+                final_content = ev.get("content") or acc_raw
+                final_tool_calls = ev.get("tool_calls") or []
+                final_finish = ev.get("finish_reason")
+        self._tts_streamed = bool(fed) and not aborted
+        self._tts_streamed_text = fed
+        self.trace.event(turn_id, "tts_streamed", chars=len(fed), aborted=aborted)
+        return {
+            "choices": [{
+                "message": {"content": final_content, "tool_calls": final_tool_calls},
+                "finish_reason": final_finish or "stop",
+            }],
+        }
+
+    def _feed_tts_tail(self, final_spoken: str, turn_id: str) -> None:
+        """After finalize built the guarded+footer reply, voice ONLY the tail not
+        already streamed (an appended hedge/footer). startswith-guarded: if the
+        final text diverges from what was voiced (unreachable when a tool ran,
+        since the replacing guards are pass-through) we log and voice nothing
+        extra -- never double-speak, never contradict."""
+        sink = getattr(self, "_active_tts_sink", None)
+        spoken = getattr(self, "_tts_streamed_text", "") or ""
+        if sink is None or not getattr(self, "_tts_streamed", False):
+            return
+        if final_spoken.startswith(spoken):
+            tail = final_spoken[len(spoken):]
+            if tail.strip():
+                try:
+                    sink(tail)
+                except Exception:  # noqa: BLE001
+                    pass
+        elif spoken.startswith(final_spoken):
+            return  # final is a prefix of what we voiced (guard trimmed) -> nothing to add
+        else:
+            self.trace.event(turn_id, "tts_stream_tail_divergence",
+                             spoken=spoken[:80], final=final_spoken[:80])
+
     def _execute_turn(self, content: str | list[dict[str, Any]], decision: TurnDecision, progress: ProgressCallback | None = None) -> AgentReply:
         """R1 sprint 2026-05-28: execute phase of a turn.
 
@@ -1937,32 +2062,78 @@ class Gemma4Agent:
                 _pass_tools = None          # forzar respuesta en texto (descripción)
                 _pass_max = max(mode.max_tokens, 512)
             else:
-                _pass_tools = None if _is_summary_pass else selected_schemas
+                # SUMMARY slimming (2026-05-20) dropped tools to save ~1.5k prompt
+                # tokens — but that CHANGES the prefix vs pass-1 and busts the
+                # prefix-cache (measured: pass-2 re-prefills ~5.3k tok, ~1s). With
+                # GEMMA4_SUMMARY_KEEP_TOOLS the prefix stays identical -> cache hit
+                # (re-prefill only the ~50 new tool-result tokens). Net win if reuse
+                # works. See PROMPT_RESEARCH_prefill_cache_latency.md.
+                _keep_summary_tools = _is_summary_pass and _summary_keep_tools_enabled()
+                _pass_tools = None if (_is_summary_pass and not _keep_summary_tools) else selected_schemas
                 _pass_max = 160 if _is_summary_pass else mode.max_tokens
             # SAMPLING DUAL (inv 1, 2026-05-23): greedy en el turno de ACCIÓN
             # (hay tools ofrecidas, ninguna corrió aún, y NO es summary-pass) ->
             # decisión de tool-call con baja entropía, más fiable sin reasoning.
             # En summary-pass / conversación NO greedy (necesita lenguaje natural).
             _greedy = bool(_pass_tools) and len(events) == 0 and not _is_summary_pass
+            # STREAMING TTS (GEMMA4_STREAM_TTS, default off): on the SUMMARY pass a
+            # tool already ran (len(events)>0), so the two content-REPLACING guards
+            # are provably pass-through (grounding_gate.py:206, agent_guards.py:253).
+            # That makes it safe to speak the confirmation prose sentence-by-sentence
+            # as it generates — first audio ~0.4s instead of after the full reply +
+            # synth — WITHOUT ever voicing something a guard would retract. Excluded:
+            # routines (phrase_fires -> a guard PREPENDS), no-tool turns (already
+            # <2.2s and where claim guards CAN fire). See SPRINT_streaming_tts_truthful.md.
+            _stream_this = (
+                _is_summary_pass
+                and getattr(self, "_active_tts_sink", None) is not None
+                and not getattr(self, "_phrase_fires", None)
+                and _stream_tts_enabled()
+            )
             try:
-                resp = self.client.chat(
-                    _msgs,
-                    tools=_pass_tools,
-                    enable_thinking=_think_now,
-                    thinking_budget=mode.thinking_budget,
-                    model=_call_model,
-                    parallel_tool_calls=mode.parallel_tool_calls,
-                    max_tokens=_pass_max,
-                    greedy=_greedy,
-                    # SAMPLING POR MODO (inv 0 T4): baja-T en modos de acción/info
-                    # breve. Greedy gana sobre esto en el turno de tool-call.
-                    sampling={"temperature": mode.temperature, "top_p": mode.top_p,
-                              "top_k": mode.top_k},
-                    # Per-mode deadline so a hung/slow call fails fast instead of
-                    # blocking up to the global 180s * max_agent_turns. Derived
-                    # from the token budget (see AgentMode.request_timeout_s).
-                    timeout_s=mode.request_timeout_s,
-                )
+                if _stream_this:
+                    try:
+                        resp = self._chat_summary_streaming(
+                            _msgs, model=_call_model, max_tokens=_pass_max,
+                            thinking_budget=mode.thinking_budget,
+                            timeout_s=mode.request_timeout_s, turn_id=turn_id,
+                        )
+                    except Exception as _stream_exc:  # noqa: BLE001
+                        # Streaming failed mid-flight -> fall back to the blocking
+                        # call (truthful, just slower). tts_streamed reset so the
+                        # runner re-feeds the full reply; any clean prose already
+                        # queued may briefly repeat (rare error path, not a lie).
+                        self.trace.event(turn_id, "tts_stream_fallback", error=str(_stream_exc))
+                        self._tts_streamed = False
+                        self._tts_streamed_text = ""
+                        resp = self.client.chat(
+                            _msgs, tools=_pass_tools, enable_thinking=_think_now,
+                            thinking_budget=mode.thinking_budget, model=_call_model,
+                            parallel_tool_calls=mode.parallel_tool_calls,
+                            max_tokens=_pass_max, greedy=_greedy,
+                            sampling={"temperature": mode.temperature, "top_p": mode.top_p,
+                                      "top_k": mode.top_k},
+                            timeout_s=mode.request_timeout_s,
+                        )
+                else:
+                    resp = self.client.chat(
+                        _msgs,
+                        tools=_pass_tools,
+                        enable_thinking=_think_now,
+                        thinking_budget=mode.thinking_budget,
+                        model=_call_model,
+                        parallel_tool_calls=mode.parallel_tool_calls,
+                        max_tokens=_pass_max,
+                        greedy=_greedy,
+                        # SAMPLING POR MODO (inv 0 T4): baja-T en modos de acción/info
+                        # breve. Greedy gana sobre esto en el turno de tool-call.
+                        sampling={"temperature": mode.temperature, "top_p": mode.top_p,
+                                  "top_k": mode.top_k},
+                        # Per-mode deadline so a hung/slow call fails fast instead of
+                        # blocking up to the global 180s * max_agent_turns. Derived
+                        # from the token budget (see AgentMode.request_timeout_s).
+                        timeout_s=mode.request_timeout_s,
+                    )
             except Exception as exc:
                 if _looks_like_context_overflow(str(exc)):
                     _progress(progress, "context_retry", error=str(exc), tools=len(events))
@@ -3278,9 +3449,24 @@ class Gemma4Agent:
         if _scr:
             assistant_content = _scr
         assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
-        return AgentReply(content=assistant_content, tool_events=events, mission=mission)
+        # STREAMING TTS: if the prose was already voiced sentence-by-sentence
+        # during generation, speak only the post-guard tail (an appended hedge or
+        # footer). For a clean success this is empty. Truthful by construction
+        # (see _feed_tts_tail / SPRINT_streaming_tts_truthful.md).
+        if getattr(self, "_tts_streamed", False):
+            self._feed_tts_tail(assistant_content, turn_id)
+        return AgentReply(content=assistant_content, tool_events=events, mission=mission,
+                          tts_streamed=getattr(self, "_tts_streamed", False))
 
-    def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> AgentReply:
+    def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None,
+                    *, tts_sink: "Callable[[str], int | None] | None" = None) -> AgentReply:
+        # Per-turn TTS streaming sink (GEMMA4_STREAM_TTS, default off). _execute_turn
+        # streams the summary-pass prose into this sink as it generates; _finalize_turn
+        # feeds the post-guard tail. None in text/GUI mode -> no streaming (the
+        # unchanged blocking path). Reset every turn so a stale sink never leaks.
+        self._active_tts_sink = tts_sink
+        self._tts_streamed = False
+        self._tts_streamed_text = ""
         # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
         # ~782 LOC). Extraída a _decide_turn. early_reply propaga los 4 caminos
         # cortos (jarvis-pending, multi-intent re-dispatch, reply-shortcut,
