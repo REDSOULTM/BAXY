@@ -144,5 +144,59 @@ class TestFileProcessIntegration(unittest.TestCase):
             self._restore(prev)
 
 
+class TestFileProcessRouting(unittest.TestCase):
+    """Connect: cuando GEMMA4_FILE_PROCESSOR está on, _route_file_by_extension AGREGA
+    file_process al subset para queries de data/doc (additivo; document/data_analysis
+    quedan de fallback). Cuando off, no aparece (conducta histórica)."""
+
+    def _set(self, value):
+        prev = os.environ.get("GEMMA4_FILE_PROCESSOR")
+        if value is None:
+            os.environ.pop("GEMMA4_FILE_PROCESSOR", None)
+        else:
+            os.environ["GEMMA4_FILE_PROCESSOR"] = value
+        return prev
+
+    def _restore(self, prev):
+        if prev is None:
+            os.environ.pop("GEMMA4_FILE_PROCESSOR", None)
+        else:
+            os.environ["GEMMA4_FILE_PROCESSOR"] = prev
+
+    def _route(self, content, names):
+        from ..agent_core.agent import _route_file_by_extension
+        return _route_file_by_extension(content, names)
+
+    def test_data_query_offers_file_process_when_on(self):
+        prev = self._set("1")
+        try:
+            out = self._route("analizá ventas.csv", ["filesystem", "office"])
+            self.assertIn("file_process", out)
+            self.assertIn("data_analysis", out)  # fallback queda
+        finally:
+            self._restore(prev)
+
+    def test_doc_query_offers_file_process_when_on(self):
+        prev = self._set("1")
+        try:
+            out = self._route("qué dice reporte.pdf", ["filesystem", "web"])
+            self.assertIn("file_process", out)
+            self.assertIn("document", out)  # fallback queda
+        finally:
+            self._restore(prev)
+
+    def test_no_file_process_when_off(self):
+        prev = self._set(None)
+        try:
+            data = self._route("analizá ventas.csv", ["filesystem", "office"])
+            self.assertNotIn("file_process", data)
+            self.assertIn("data_analysis", data)  # conducta histórica intacta
+            doc = self._route("qué dice reporte.pdf", ["filesystem", "web"])
+            self.assertNotIn("file_process", doc)
+            self.assertIn("document", doc)
+        finally:
+            self._restore(prev)
+
+
 if __name__ == "__main__":
     unittest.main()

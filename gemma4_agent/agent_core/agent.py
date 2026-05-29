@@ -275,11 +275,24 @@ def _file_tool_routing_enabled() -> bool:
         "0", "false", "no", "off"}
 
 
+def _file_processor_on() -> bool:
+    """B6 gate (lazy): ¿ofrecer la tool unificada file_process en el subset?
+    GEMMA4_FILE_PROCESSOR (default-off). Sin él, file-routing rutea a
+    document/data_analysis como siempre (file_process queda inerte)."""
+    try:
+        from ..domain_tools.file_process import file_processor_enabled
+        return file_processor_enabled()
+    except Exception:
+        return False
+
+
 def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
     """Para LECTURA/ANÁLISIS de un archivo de datos/documento (por EXTENSIÓN = estado
     del archivo), quita filesystem (lectura cruda inútil) y asegura la tool específica:
     .csv/.xlsx -> data_analysis; .pdf/.docx/.pptx/.html -> document. NO aplica si hay
-    verbo de file-op (mover/borrar/copiar/listar): ahí filesystem se queda. Pura."""
+    verbo de file-op (mover/borrar/copiar/listar): ahí filesystem se queda.
+    B6: si GEMMA4_FILE_PROCESSOR está on, AGREGA file_process (entrada unificada)
+    para data/doc — additivo, document/data_analysis quedan de fallback."""
     import re as _re
     low = (content or "").lower()
     if _re.search(r"\b(borr[aá]|borrar|borralo|elimin[aá]|eliminar|mueve|mov[eé]|"
@@ -294,6 +307,8 @@ def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
         # DATA: medido en vivo 3/3 — sin filesystem compitiendo, el 4B usa
         # data_analysis con la action correcta (csv_query/describe). Lo sacamos.
         out = [t for t in names if t != "filesystem"]
+        if _file_processor_on() and "file_process" not in out:
+            out.append("file_process")  # B6 opt-in: entrada unificada
         if "data_analysis" not in out:
             out.append("data_analysis")
         return out
@@ -302,6 +317,8 @@ def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
         # — el 4B insiste en filesystem.read para "leer" (prior arraigado). Lo
         # dejamos y filesystem.read delega a document para .pdf/.docx (ver tools.py).
         out = list(names)
+        if _file_processor_on() and "file_process" not in out:
+            out.append("file_process")  # B6 opt-in: entrada unificada
         if "document" not in out:
             out.append("document")
         return out
