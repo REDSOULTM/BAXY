@@ -230,7 +230,13 @@ class TestCDPHappyPath(unittest.TestCase):
                     return {"ok": True, "active_tab": {"url": "https://www.netflix.com/watch/12345"}}
             return {"ok": True}
 
-        with patch("time.sleep"):
+        # Mock _try_cdp_attach -> available: evita _ensure_cdp_browser() (que
+        # auto-lanza un browser REAL -> abría webbrowser y colgaba el test en
+        # entornos sin Chrome en :9222). El _exec mockea el resto del CDP play.
+        with patch("time.sleep"), \
+             patch("gemma4_agent.domain_tools._try_cdp_attach",
+                   return_value={"available": True, "session_id": "streaming",
+                                 "reason": None, "launched_browser": None}):
             r = media_tool(
                 {"action": "play", "provider": "netflix",
                  "query": "Stranger Things"},
