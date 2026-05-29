@@ -1,19 +1,32 @@
 import { useEffect, useState } from 'react';
-import type { ConvState, ModelInfo, MetricSnapshot, HardwareInfo } from '../types';
-import type { FieldReadout, CtxBudget } from '../hooks/useEventStream';
+import type { ConvState, ModelInfo, MetricSnapshot } from '../types';
+import type { CtxBudget, SurfacesCount } from '../hooks/useEventStream';
 import { LogoMark } from './LogoMark';
-import { ParticleCluster } from './ParticleCluster';
+import { Icon, type IconName } from './Icon';
+
+type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
+
+// the redesign splits the four surfaces: triggers/tools live on the LEFT
+// (substrate), sessions/memory on the RIGHT (activity).
+const SURFACES_LEFT: { id: SurfaceId; label: string; unit: string }[] = [
+  { id: 'triggers', label: 'triggers', unit: 'active' },
+  { id: 'tools', label: 'tools', unit: 'wired' },
+];
 
 interface Props {
   convState: ConvState;
   wsModel: ModelInfo | null;
-  field: FieldReadout | null;
   ctx: CtxBudget | null;
   tokens: number;
-  profile: string;
-  onProfile: (p: string) => void;
   accessMode: string;
   onAccessMode: (m: string) => void;
+  /** online/standby toggle — maps to mic on/off (drives the field standby). */
+  powered: boolean;
+  onTogglePower: () => void;
+  /** live surface counts (shared with the activity column). */
+  surfaces: SurfacesCount | null;
+  activeSurface: SurfaceId;
+  onSurface: (id: SurfaceId) => void;
 }
 
 interface ModelState {
@@ -25,27 +38,15 @@ const INITIAL_MODEL: ModelState = { status: 'loading' };
 const INITIAL_METRICS: MetricSnapshot = {
   cpu: 0, mem: 0, gpu: 0, net: 0, dsk: 0, tmp: 0, uptime: '00:00:00',
 };
-const INITIAL_HARDWARE: HardwareInfo = {
-  cpu: 'unknown', cpu_cores: 0,
-  mem: 'unknown', mem_total_gb: 0,
-  gpu: 'unknown', gpu_vram_gb: 0,
-};
 
-// Perfiles nombrados por VRAM (2026-05-20). Cada uno trae voz + transcripción
-// 2026-05-26: el producto se colapsó a UN solo perfil operante, vram4 (E2B-Q4,
-// todo en ≤4 GB con voz/STT en CPU + visión). `standby` apaga el server. Ya no
-// hay escalera por VRAM ni selector de N perfiles. El backend (PUT /profile)
-// acepta estos nombres; GET /profile devuelve el activo. Cualquier nombre viejo
-// resuelve a vram4 en el backend (_resolve_alias).
-const PROFILES = ['vram4', 'standby'] as const;
-
-// Modos de accesibilidad (B5). normal = sin ajustes; no_vidente = todo por voz
-// (narra/lee pantalla); movilidad = control 100% por voz (manos libres). El
-// backend (PUT /accessibility) persiste; también se puede activar por voz.
-const ACCESS_MODES: { id: string; label: string }[] = [
-  { id: 'normal', label: 'normal' },
-  { id: 'no_vidente', label: 'no vidente' },
-  { id: 'movilidad', label: 'movilidad' },
+// Accessibility profile (B5) — the prototype's "perfil" column is exactly this:
+// normal (person) / no vidente (eye-off) / movilidad (wheelchair). Persisted by
+// the backend (PUT /accessibility); also settable by voice. The VRAM profile
+// (vram4/standby) is no longer shown here — it lives in Settings + the power row.
+const ACCESS_MODES: { id: string; label: string; icon: IconName }[] = [
+  { id: 'normal', label: 'normal', icon: 'person' },
+  { id: 'no_vidente', label: 'no vidente', icon: 'eye-off' },
+  { id: 'movilidad', label: 'movilidad', icon: 'wheelchair' },
 ];
 
 function fmtK(n: number): string {
@@ -53,21 +54,20 @@ function fmtK(n: number): string {
 }
 
 export function SubstratePanel({
-  convState, wsModel, field, ctx, tokens, profile, onProfile,
-  accessMode, onAccessMode,
+  convState, wsModel, ctx, tokens, accessMode, onAccessMode, powered, onTogglePower,
+  surfaces, activeSurface, onSurface,
 }: Props) {
   const [model, setModel] = useState<ModelState>(INITIAL_MODEL);
   const [metrics, setMetrics] = useState<MetricSnapshot>(INITIAL_METRICS);
-  const [hardware, setHardware] = useState<HardwareInfo>(INITIAL_HARDWARE);
 
+  // poll real system metrics every 1.5s (same endpoint as before the reskin).
   useEffect(() => {
     let cancelled = false;
     const fetchMetrics = async () => {
       try {
         const r = await fetch('/metrics');
         if (cancelled || !r.ok) return;
-        const data = (await r.json()) as MetricSnapshot;
-        setMetrics(data);
+        setMetrics((await r.json()) as MetricSnapshot);
       } catch { /* ignore */ }
     };
     fetchMetrics();
@@ -75,18 +75,7 @@ export function SubstratePanel({
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const r = await fetch('/hardware');
-        if (cancelled || !r.ok) return;
-        setHardware((await r.json()) as HardwareInfo);
-      } catch { /* ignore */ }
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
+  // model info: WS event wins; otherwise poll /model until ready.
   useEffect(() => {
     if (wsModel) return;
     let cancelled = false;
@@ -110,19 +99,14 @@ export function SubstratePanel({
   const loaded = info && (wsModel !== null || model.status === 'ready') ? info : null;
   const isMock = info?.runtime === 'mock';
 
-  // global "substrate %" — weighted average like the prototype:
-  // 0.35 cpu + 0.25 mem + 0.4 gpu, clamped to 0..100.
-  const systemPct = Math.round(
-    metrics.cpu * 0.35 + metrics.mem * 0.25 + metrics.gpu * 0.40,
-  );
+  // global "system %" — weighted average like the prototype.
+  const systemPct = Math.round(metrics.cpu * 0.35 + metrics.mem * 0.25 + metrics.gpu * 0.40);
 
-  // mem headline: gb used (matches prototype which divides mem by 32gb total)
-  const memUsedGb = metrics.mem_used_gb && metrics.mem_used_gb > 0
-    ? metrics.mem_used_gb : 0;
+  // mem headline: gb used when the backend reports it, else the % figure.
+  const memUsedGb = metrics.mem_used_gb && metrics.mem_used_gb > 0 ? metrics.mem_used_gb : 0;
   const memText = memUsedGb > 0 ? memUsedGb.toFixed(1) : metrics.mem.toFixed(0);
   const memUnit = memUsedGb > 0 ? 'gb' : '%';
 
-  // normalized 0..1 values feed the particle cluster intensity
   const norm = {
     cpu: Math.min(1, metrics.cpu / 100),
     mem: Math.min(1, metrics.mem / 100),
@@ -142,126 +126,98 @@ export function SubstratePanel({
       {/* ---- left header ---- */}
       <div className="left-header">
         <div className="row">
-          <span className="mark">
-            <LogoMark size={14} state={convState} />
-          </span>
+          <span className="mark"><LogoMark size={14} state={convState} /></span>
           <span className="name">
             {loaded ? loaded.family : <span className="dim">loading…</span>}
           </span>
           <span className="dots">···</span>
-          {isMock && <span className="muted" style={{ fontSize: 9, letterSpacing: '0.14em' }}>MOCK</span>}
+          {isMock && (
+            <span className="muted" style={{ fontSize: 9, letterSpacing: '0.14em' }}>MOCK</span>
+          )}
         </div>
         <div className="sub">
           {loaded ? `${loaded.params} · ${loaded.runtime} · ${loaded.quant}` : '—'}
         </div>
       </div>
 
-      {/* ---- substrate header + 6 metric rows ---- */}
-      <div className="sec-head">
-        <span>substrate</span>
-        <span className="ref">{systemPct}%</span>
-      </div>
-      <div>
-        <MetricRow
-          big seed={11} label="cpu" spec={hardware.cpu}
-          value={metrics.cpu.toFixed(0)} unit="%" norm={norm.cpu}
-        />
-        <MetricRow
-          big seed={23} label="mem" spec={hardware.mem}
-          value={memText} unit={memUnit} norm={norm.mem}
-        />
-        <MetricRow
-          big seed={37} label="gpu" spec={hardware.gpu}
-          value={metrics.gpu.toFixed(0)} unit="%" norm={norm.gpu}
-        />
-      </div>
-      <div style={{ height: 2 }} />
-      <div>
-        <MetricRow
-          seed={51} label="net"
-          value={metrics.net.toFixed(1)} unit="mb/s" norm={norm.net}
-        />
-        <MetricRow
-          seed={67} label="dsk"
-          value={metrics.dsk.toFixed(0)} unit="%" norm={norm.dsk}
-        />
-        <MetricRow
-          seed={83} label="tmp" hot={tmpHot}
-          value={metrics.tmp.toFixed(0)} unit="°c" norm={norm.tmp}
-        />
+      {/* ---- power / standby toggle (mic on/off) ---- */}
+      <button
+        type="button"
+        className={`power-row ${powered ? 'on' : 'off'}`}
+        onClick={onTogglePower}
+        aria-pressed={powered}
+      >
+        <span className="power-ic"><Icon name="power" size={15} /></span>
+        <span className="power-lbl">{powered ? 'online' : 'standby'}</span>
+        <span className="power-dot" />
+      </button>
+
+      {/* ---- system metrics (compact m-* lines, bar uses --bar-color) ---- */}
+      <div className="min-block">
+        <div className="sec-head"><span>system</span><span className="ref">{systemPct}%</span></div>
+        <div className="m-list">
+          <MetricLine label="cpu" unit="%" norm={norm.cpu} text={metrics.cpu.toFixed(0)} />
+          <MetricLine label="mem" unit={memUnit} norm={norm.mem} text={memText} />
+          <MetricLine label="gpu" unit="%" norm={norm.gpu} text={metrics.gpu.toFixed(0)} />
+          <MetricLine label="net" unit="mb/s" norm={norm.net} text={metrics.net.toFixed(1)} />
+          <MetricLine label="dsk" unit="%" norm={norm.dsk} text={metrics.dsk.toFixed(0)} />
+          <MetricLine label="tmp" unit="°c" norm={norm.tmp} text={metrics.tmp.toFixed(0)} hot={tmpHot} />
+        </div>
       </div>
 
-      <div className="hair" />
+      {/* ---- accessibility profile (icon rows) ---- */}
+      <div className="min-block">
+        <div className="sec-head"><span>perfil</span></div>
+        <div className="profile-list" role="radiogroup" aria-label="accessibility mode">
+          {ACCESS_MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              role="radio"
+              aria-checked={accessMode === m.id}
+              className={`prow${accessMode === m.id ? ' on' : ''}`}
+              onClick={() => onAccessMode(m.id)}
+            >
+              <span className="prow-ic"><Icon name={m.icon} size={14} /></span>
+              <span className="prow-lbl">{m.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* ---- ctx budget ---- */}
-      <div className="ctx-panel">
-        <div className="ctx-row">
-          <span className="k">ctx · budget</span>
-          <span className="v">{fmtK(ctxUsed)} / {fmtK(ctxTotal)}</span>
+      <div className="min-block">
+        <div className="m-list">
+          <MetricLine label="ctx" unit={` / ${fmtK(ctxTotal)}`} norm={ctxPct / 100} text={fmtK(ctxUsed)} />
         </div>
-        <div className="ctx-bar" style={{ '--fill': `${ctxPct}%` } as React.CSSProperties} />
       </div>
 
-      <div className="hair" />
-
-      {/* ---- profile chips ---- */}
-      <div className="sec-head">
-        <span>profile</span>
-        <span className="ref">{profile}</span>
-      </div>
-      <div className="profile-chips" role="radiogroup" aria-label="vram profile">
-        {PROFILES.map((p) => (
-          <button
-            key={p}
-            type="button"
-            role="radio"
-            aria-checked={profile === p}
-            className={`chip${profile === p ? ' on' : ''}`}
-            onClick={() => onProfile(p)}
-          >
-            {p}
-          </button>
-        ))}
-      </div>
-
-      {/* ---- accessibility mode chips (B5) ---- */}
-      <div className="sec-head">
-        <span>access</span>
-        <span className="ref">{accessMode}</span>
-      </div>
-      <div className="profile-chips" role="radiogroup" aria-label="accessibility mode">
-        {ACCESS_MODES.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            role="radio"
-            aria-checked={accessMode === m.id}
-            className={`chip${accessMode === m.id ? ' on' : ''}`}
-            onClick={() => onAccessMode(m.id)}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="hair" />
-
-      {/* ---- field key/value ----
-            we only render the rows the backend actually produces. ctx is
-            always available (from cfg + WS); the rest (`entropy`, `temp`,
-            `tokens_per_s`, `draw_w`) need a live `field` event — until that
-            wires up they'd just be "—" forever, so we skip them. */}
-      <div className="sec-head"><span>field</span></div>
-      <div className="kv">
-        <KvRow k="ctx · used" v={ctx ? `${ctxPct} %` : '—'} />
-        {field && (
-          <>
-            <KvRow k="entropy"     v={field.entropy.toFixed(2)} />
-            <KvRow k="temperature" v={field.temperature.toFixed(2)} />
-            <KvRow k="tokens/s"    v={field.tokens_per_s.toFixed(1)} />
-            <KvRow k="draw · w"    v={String(field.draw_w)} />
-          </>
-        )}
+      {/* ---- surfaces (triggers / tools — left half of the four) ---- */}
+      <div className="surfaces-wrap">
+        <div className="surfaces">
+          {SURFACES_LEFT.map((s) => {
+            const active = activeSurface === s.id;
+            return (
+              <div
+                key={s.id}
+                className={`scard${active ? ' active' : ''}`}
+                onClick={() => onSurface(s.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSurface(s.id); }
+                }}
+                aria-pressed={active}
+              >
+                <div className="lbl">{s.label}</div>
+                <div className="count">
+                  {surfaces ? String(surfaces[s.id]) : '—'}
+                  <span className="unit">{s.unit}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* ---- left footer ---- */}
@@ -275,46 +231,26 @@ export function SubstratePanel({
 
 /* ---------- internal ---------- */
 
-interface MetricRowProps {
+interface MetricLineProps {
   label: string;
-  value: string;
+  text: string;
   unit: string;
   norm: number;
-  seed: number;
-  big?: boolean;
   hot?: boolean;
-  spec?: string;
 }
 
-function MetricRow({ label, value, unit, norm, seed, big, hot, spec }: MetricRowProps) {
-  const pct = Math.round(norm * 100);
-  const clusterColor = hot ? 'var(--carmine)'
-    : label === 'cpu' ? 'var(--carmine)'
-    : label === 'gpu' ? 'var(--p-blue-hi)'
-    : label === 'tmp' ? 'var(--tag-mem)'
-    : 'var(--p-blue)';
+function MetricLine({ label, text, unit, norm, hot }: MetricLineProps) {
+  const pct = Math.round(Math.min(1, Math.max(0, norm)) * 100);
   return (
-    <div className={`metric${big ? ' big' : ''}${hot ? ' hot' : ''}`}>
-      <ParticleCluster
-        value={norm}
-        seed={seed}
-        size={big ? 36 : 30}
-        color={clusterColor}
-      />
-      <div className="body">
-        <div className="row1">
-          <span className="label">{label}</span>
-          <span className="value">
-            {value}
-            <span className="unit">{unit}</span>
-          </span>
-        </div>
-        {big && spec ? <div className="spec">{spec}</div> : null}
-        <div
-          className="bar"
-          style={{ '--fill': `${pct}%` } as React.CSSProperties}
-          aria-hidden="true"
-        />
+    <div className="m-line">
+      <div className="m-head">
+        <span className="m-label">{label}</span>
+        <span className={`m-val${hot ? ' hot' : ''}`}>
+          {text}<span className="m-unit">{unit}</span>
+        </span>
+      </div>
+      <div className={`m-bar${hot ? ' hot' : ''}`} aria-hidden="true">
+        <span style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

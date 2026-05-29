@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubstratePanel } from './components/SubstratePanel';
 import { ActivityPanel } from './components/ActivityPanel';
 import { FieldCenter } from './components/FieldCenter';
-import { TopBar } from './components/TopBar';
-import { BottomBar } from './components/BottomBar';
 import { SettingsPanel } from './components/SettingsPanel';
 import { SessionsPanel } from './components/SessionsPanel';
 import { MemoryPanel } from './components/MemoryPanel';
@@ -12,6 +10,7 @@ import { ToolsPanel } from './components/ToolsPanel';
 import { ToastHost } from './components/ToastHost';
 import { useClock } from './hooks/useClock';
 import { useEventStream } from './hooks/useEventStream';
+import type { SurfacesCount } from './hooks/useEventStream';
 import { toastError } from './hooks/useToast';
 import type { ConvState } from './types';
 // the prototype's styles.css is loaded literal — this is the single source of
@@ -32,7 +31,7 @@ const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', '
 const PROFILE_CYCLE = ['vram4', 'standby'];
 
 export default function App() {
-  const { clock, date } = useClock();
+  const { clock } = useClock();
   const stream = useEventStream();
 
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
@@ -108,6 +107,26 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('field.surface', activeSurface);
   }, [activeSurface]);
+
+  // poll /surfaces every 5s for counts (WS event wins when present). Lifted here
+  // from ActivityPanel so BOTH columns share the same live counts — the redesign
+  // splits the four surfaces: triggers/tools on the left, sessions/memory on the
+  // right.
+  const [polledSurfaces, setPolledSurfaces] = useState<SurfacesCount | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const fetchSurfaces = async () => {
+      try {
+        const r = await fetch('/surfaces');
+        if (cancelled || !r.ok) return;
+        setPolledSurfaces((await r.json()) as SurfacesCount);
+      } catch { /* ignore */ }
+    };
+    fetchSurfaces();
+    const id = window.setInterval(fetchSurfaces, 5000);
+    return () => { cancelled = true; window.clearInterval(id); };
+  }, []);
+  const liveSurfaces = stream.surfaces ?? polledSurfaces;
 
   // vision_threshold warning: el banner aparece cuando llega el evento
   // del WS; visionDismissedAt guarda el image_count que el usuario ya
@@ -436,73 +455,152 @@ export default function App() {
     setOpenPanel(id);
   }, []);
 
+  // ---- power: micMode drives online/standby. mic off → effectiveState becomes
+  // 'standby' (above), which stops the border + fades the neurons, exactly like
+  // the prototype's power toggle. powered also rules the substrate power-row. ----
+  const powered = micMode !== 'off';
+  const poweredRef = useRef(powered);
+  useEffect(() => { poweredRef.current = powered; }, [powered]);
+
+  // Drive the traveling border light. Ramps speed UP when powered and decelerates
+  // smoothly to a stop on standby (prototype app.jsx border loop, verbatim params).
+  useEffect(() => {
+    const frame = document.querySelector<HTMLElement>('.app-frame');
+    if (!frame) return;
+    let raf = 0;
+    let last = performance.now();
+    let angle = 0;
+    let speed = 1; // 0..1 fraction of full speed
+    const FULL = 360 / 3.4; // deg/s at full speed
+    const loop = (now: number) => {
+      // Skip the repaint while the window is hidden (minimised) — no point
+      // animating a border nobody sees, and it spares the CPU while gaming.
+      if (typeof document !== 'undefined' && document.hidden) {
+        last = now;
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const target = poweredRef.current ? 1 : 0;
+      speed += (target - speed) * Math.min(1, dt * 2.6);
+      if (target === 0 && speed < 0.012) speed = 0;
+      angle = (angle + speed * FULL * dt) % 360;
+      frame.style.setProperty('--bd-angle', angle.toFixed(2) + 'deg');
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // Recolor the border, the chrome accent (--carmine) and the metric bars
+  // (--bar-color) per state — the prototype's SET table, verbatim. Chrome stays
+  // carmesí at rest (idle/standby) and only takes the contrast color during an
+  // active conversation state (listening/thinking/speaking), then returns to red.
+  useEffect(() => {
+    const frame = document.querySelector<HTMLElement>('.app-frame');
+    if (!frame) return;
+    const SET: Record<string, { base: string; mid: string; hi: string; peak: string; glow: string; bar: string }> = {
+      standby:   { base: '#2a2f3a', mid: '#5B6580', hi: '#8B95A8', peak: '#D8DCE6', glow: 'rgba(139,149,168,0.75)', bar: '#5B6580' },
+      idle:      { base: '#5a1a22', mid: '#B83A4A', hi: '#FF4D63', peak: '#FFE3E7', glow: 'rgba(255,77,99,0.9)',    bar: '#5B7FDB' },
+      listening: { base: '#7A1E2B', mid: '#E55366', hi: '#FF6677', peak: '#FFFFFF', glow: 'rgba(255,102,119,0.95)', bar: '#6FA8B0' },
+      thinking:  { base: '#1B2A5E', mid: '#2E4BA0', hi: '#5B7FDB', peak: '#C8D6F5', glow: 'rgba(91,127,219,0.9)',   bar: '#C9A66B' },
+      speaking:  { base: '#6B5A2F', mid: '#C9A66B', hi: '#E8C98E', peak: '#F8EED2', glow: 'rgba(232,201,142,0.9)',  bar: '#7B95D9' },
+    };
+    const c = SET[effectiveState] || SET.idle;
+    frame.style.setProperty('--bd-base', c.base);
+    frame.style.setProperty('--bd-mid', c.mid);
+    frame.style.setProperty('--bd-hi', c.hi);
+    frame.style.setProperty('--bd-peak', c.peak);
+    frame.style.setProperty('--bd-glow', c.glow);
+    frame.style.setProperty('--bar-color', c.bar);
+    const active = effectiveState === 'listening' || effectiveState === 'thinking' || effectiveState === 'speaking';
+    frame.style.setProperty('--carmine', active ? c.bar : '#B83A4A');
+  }, [effectiveState]);
+
   return (
-    <div className="shell">
-      <TopBar
-        convState={effectiveState}
-        clock={clock}
-        connected={stream.connected}
-        onOpenSettings={() => setOpenPanel('settings')}
-        onOpenSessions={() => setOpenPanel('sessions')}
-        onNewSession={onNewSession}
-        onHelp={onHelp}
-        visionThreshold={effectiveVisionThreshold}
-        onRecycleServer={onRecycleServer}
-        onDismissVisionWarning={onDismissVisionWarning}
-      />
-      <div className="cols">
-        <div className="col left">
-          <SubstratePanel
-            convState={effectiveState}
-            wsModel={stream.model}
-            field={stream.field}
-            ctx={stream.ctx}
-            tokens={stream.tokens}
+    <div className="app-frame">
+      <div className="shell">
+        {effectiveVisionThreshold && (
+          <div className="vision-banner" role="alert" aria-live="polite">
+            <span className="vision-banner-msg">
+              vision leak ·{' '}
+              <b>{effectiveVisionThreshold.imageCount}/{effectiveVisionThreshold.threshold}</b>{' '}
+              imagenes procesadas · recyclar llama-server recomendado{' '}
+              <span className="vision-banner-issue">({effectiveVisionThreshold.issue})</span>
+            </span>
+            <button type="button" className="vision-banner-btn" onClick={onRecycleServer}>
+              recycle now
+            </button>
+            <button
+              type="button"
+              className="vision-banner-dismiss"
+              onClick={onDismissVisionWarning}
+              aria-label="dismiss warning"
+            >
+              ×
+            </button>
+          </div>
+        )}
+        <div className="cols">
+          <div className="col left">
+            <SubstratePanel
+              convState={effectiveState}
+              wsModel={stream.model}
+              ctx={stream.ctx}
+              tokens={stream.tokens}
+              accessMode={accessMode}
+              onAccessMode={setAccessMode}
+              powered={powered}
+              onTogglePower={onMicLeftClick}
+              surfaces={liveSurfaces}
+              activeSurface={activeSurface}
+              onSurface={onSurface}
+            />
+          </div>
+          <div className="col center">
+            <FieldCenter
+              convState={effectiveState}
+              onDebugState={debugOn ? setDebugState : null}
+              ctx={stream.ctx}
+              micMode={micMode}
+              micLoading={micLoading}
+              onMicLeftClick={onMicLeftClick}
+              onMicRightClick={onMicRightClick}
+              agent={stream.agent}
+              bootStage={stream.bootStage}
+            />
+          </div>
+          <div className="col right">
+            <ActivityPanel
+              entries={stream.entries}
+              session={stream.session}
+              surfaces={liveSurfaces}
+              activeSurface={activeSurface}
+              onSurface={onSurface}
+              clock={clock}
+              settingsOpen={openPanel === 'settings'}
+              onSettings={() => setOpenPanel(openPanel === 'settings' ? null : 'settings')}
+              onNewSession={onNewSession}
+              onHelp={onHelp}
+            />
+          </div>
+        </div>
+
+        {openPanel === 'settings' && (
+          <SettingsPanel
+            onClose={closePanel}
             profile={profile}
             onProfile={setProfile}
-            accessMode={accessMode}
-            onAccessMode={setAccessMode}
           />
-        </div>
-        <div className="col center">
-          <FieldCenter
-            convState={effectiveState}
-            onDebugState={debugOn ? setDebugState : null}
-            ctx={stream.ctx}
-            micMode={micMode}
-            micLoading={micLoading}
-            onMicLeftClick={onMicLeftClick}
-            onMicRightClick={onMicRightClick}
-            agent={stream.agent}
-            bootStage={stream.bootStage}
-          />
-        </div>
-        <div className="col right">
-          <ActivityPanel
-            entries={stream.entries}
-            session={stream.session}
-            surfaces={stream.surfaces}
-            activeSurface={activeSurface}
-            onSurface={onSurface}
-            clock={clock}
-          />
-        </div>
+        )}
+        {openPanel === 'sessions' && <SessionsPanel onClose={closePanel} />}
+        {openPanel === 'memory' && <MemoryPanel onClose={closePanel} />}
+        {openPanel === 'triggers' && <TriggersPanel onClose={closePanel} />}
+        {openPanel === 'tools' && <ToolsPanel onClose={closePanel} />}
+
+        <ToastHost />
       </div>
-      <BottomBar clock={clock} date={date} session={stream.session} />
-
-      {openPanel === 'settings' && (
-        <SettingsPanel
-          onClose={closePanel}
-          profile={profile}
-          onProfile={setProfile}
-        />
-      )}
-      {openPanel === 'sessions' && <SessionsPanel onClose={closePanel} />}
-      {openPanel === 'memory' && <MemoryPanel onClose={closePanel} />}
-      {openPanel === 'triggers' && <TriggersPanel onClose={closePanel} />}
-      {openPanel === 'tools' && <ToolsPanel onClose={closePanel} />}
-
-      <ToastHost />
     </div>
   );
 }

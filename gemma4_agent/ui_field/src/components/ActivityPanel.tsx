@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import type { ActivityEntry, SourceTag } from '../types';
 import type { SessionInfo, SurfacesCount } from '../hooks/useEventStream';
+import { Icon } from './Icon';
 
 type SurfaceId = 'sessions' | 'memory' | 'triggers' | 'tools';
 
@@ -10,11 +11,11 @@ interface SurfaceCard {
   unit: string;
 }
 
+// the redesign splits the four surfaces: sessions/memory live on the RIGHT
+// (activity); triggers/tools moved to the LEFT (substrate).
 const SURFACES: SurfaceCard[] = [
   { id: 'sessions', label: 'sessions', unit: 'cached' },
   { id: 'memory',   label: 'memory',   unit: 'pinned' },
-  { id: 'triggers', label: 'triggers', unit: 'active' },
-  { id: 'tools',    label: 'tools',    unit: 'wired' },
 ];
 
 interface Props {
@@ -24,29 +25,18 @@ interface Props {
   activeSurface: SurfaceId;
   onSurface: (id: SurfaceId) => void;
   clock: string;
+  /** toolbar actions relocated here from the removed TopBar (prototype model). */
+  settingsOpen: boolean;
+  onSettings: () => void;
+  onNewSession: () => void;
+  onHelp: () => void;
 }
 
 export function ActivityPanel({
   entries, session, surfaces, activeSurface, onSurface, clock,
+  settingsOpen, onSettings, onNewSession, onHelp,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  // poll /surfaces every 5s for counts that aren't on the WS bus yet.
-  // when the agent updates them (after a tool/memory write), the next poll
-  // picks them up.
-  const [polled, setPolled] = useState<SurfacesCount | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    const fetchSurfaces = async () => {
-      try {
-        const r = await fetch('/surfaces');
-        if (cancelled || !r.ok) return;
-        setPolled((await r.json()) as SurfacesCount);
-      } catch { /* ignore */ }
-    };
-    fetchSurfaces();
-    const id = window.setInterval(fetchSurfaces, 5000);
-    return () => { cancelled = true; window.clearInterval(id); };
-  }, []);
 
   const ordered = useMemo(() => entries, [entries]);
 
@@ -54,15 +44,32 @@ export function ActivityPanel({
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [entries.length]);
 
-  // WS event wins when present (it's authoritative and fresher); fall back
-  // to the polled snapshot for steady-state counts.
-  const live = surfaces ?? polled;
-  const surfaceCount = (id: SurfaceId): string => live ? String(live[id]) : '—';
+  // surface counts arrive pre-merged from App (WS event ?? /surfaces poll).
+  const surfaceCount = (id: SurfaceId): string => (surfaces ? String(surfaces[id]) : '—');
   const entryCount = entries.length;
   const sessionId = session?.id ?? 'none';
 
   return (
     <>
+      {/* action toolbar — relocated from the removed TopBar (prototype model) */}
+      <div className="act-toolbar">
+        <button className="ibtn xs" data-tip="new session" onClick={onNewSession} aria-label="new session">
+          <Icon name="plus" size={13} />
+        </button>
+        <button className="ibtn xs" data-tip="shortcuts" onClick={onHelp} aria-label="shortcuts">
+          <Icon name="help" size={13} />
+        </button>
+        <button
+          className={`ibtn xs labeled${settingsOpen ? ' active' : ''}`}
+          data-tip="settings · configure agent"
+          onClick={onSettings}
+          aria-label="settings"
+        >
+          <Icon name="settings" size={13} />
+          <span>settings</span>
+        </button>
+      </div>
+
       <div className="sec-head">
         <span>activity</span>
         <span className="ref">{entryCount} entries · #{sessionId}</span>
