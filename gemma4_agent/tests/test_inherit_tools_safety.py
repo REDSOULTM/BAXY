@@ -15,6 +15,8 @@ from __future__ import annotations
 import time
 import unittest
 
+from ._src_helpers import agent_method_src  # robusto: lee agent.py de disco (no flakea)
+
 from gemma4_agent.agent_core.agent import (
     DANGEROUS_TOOLS_NEVER_INHERIT,
     INHERIT_TTL_SEC,
@@ -120,10 +122,9 @@ class TestGuiContextInheritOverride(unittest.TestCase):
         self.assertNotIn("uia", prev_tools)
 
     def test_override_logic_present_in_source(self):
-        import inspect
         # R1 sprint 2026-05-28: el override vive en _decide_turn ahora (la
         # fase decide fue extraída de run_content).
-        src = inspect.getsource(Gemma4Agent._decide_turn)
+        src = agent_method_src("_decide_turn")
         # el override mantiene la herencia cuando el turno previo dejó GUI abierta
         self.assertIn("inherit_kept_gui_context", src)
         self.assertIn("_GUI_CONTEXT_TOOLS", src)
@@ -135,13 +136,11 @@ class TestAgentInheritState(unittest.TestCase):
     def test_last_turn_ts_attribute_exists(self):
         # Check via class introspection that __init__ sets _last_turn_ts.
         # We don't actually instantiate (avoids DB/LLM setup). Read source.
-        import inspect
-        src = inspect.getsource(Gemma4Agent.__init__)
+        src = agent_method_src("__init__")
         self.assertIn("_last_turn_ts", src)
 
     def test_clear_resets_last_turn_ts(self):
-        import inspect
-        src = inspect.getsource(Gemma4Agent.clear)
+        src = agent_method_src("clear")
         self.assertIn("_last_turn_ts", src)
 
 

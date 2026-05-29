@@ -15,18 +15,18 @@ from __future__ import annotations
 import inspect
 import unittest
 
+from ._src_helpers import agent_method_src  # robusto: lee agent.py de disco (no flakea)
+
 
 class TestGuardsRespectPhraseFires(unittest.TestCase):
 
     def test_promise_guard_skips_when_phrase_fires(self):
-        from gemma4_agent.agent_core.agent import Gemma4Agent
-        src = inspect.getsource(Gemma4Agent._guard_promise_without_action)
+        src = agent_method_src("_guard_promise_without_action")
         self.assertIn("_phrase_fires", src,
                       "guard must check self._phrase_fires")
 
     def test_grounding_gate_skips_when_phrase_fires(self):
-        from gemma4_agent.agent_core.agent import Gemma4Agent
-        src = inspect.getsource(Gemma4Agent._guard_grounded_action_claim)
+        src = agent_method_src("_guard_grounded_action_claim")
         self.assertIn("_phrase_fires", src,
                       "grounding gate must check self._phrase_fires")
 

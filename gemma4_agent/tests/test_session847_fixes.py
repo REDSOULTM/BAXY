@@ -217,9 +217,8 @@ class TestPhraseFireSuppressesSession(unittest.TestCase):
         # without a live LLM.
         # R1 sprint 2026-05-28: la lógica vive en _decide_turn (la fase
         # decide fue extraída de run_content).
-        from ..agent_core.agent import Gemma4Agent
-        import inspect
-        src = inspect.getsource(Gemma4Agent._decide_turn)
+        from ._src_helpers import agent_method_src  # robusto: lee agent.py de disco
+        src = agent_method_src("_decide_turn")
         self.assertIn("session_suppressed_by_phrase_fire", src)
         self.assertIn('"session" in selected_tool_names', src)
 
