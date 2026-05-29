@@ -1425,6 +1425,7 @@ class ToolRegistry:
             "subagent": self.t_subagent,
             "safety": self.t_safety,
             "session": self.t_session,
+            "mcp": self.t_mcp,
         }
         # T3-browser_real-global-session-dict-039: al inicio del proceso, las
         # browser_real resources del run anterior son stale (el dict global
@@ -2843,6 +2844,30 @@ class ToolRegistry:
 
     def t_data_analysis(self, args: dict[str, Any]) -> dict[str, Any]:
         return data_analysis_tool(args, self.state)
+
+    def t_mcp(self, args: dict[str, Any]) -> dict[str, Any]:
+        """B9: tool puente a servidores MCP (Model Context Protocol). Gated
+        GEMMA4_MCP. action=list descubre las tools de los servidores declarados;
+        action=call ejecuta una tool MCP. UNA tool puente (no N tools en el catálogo)
+        para no inflar el subset del 4B (R7)."""
+        from .mcp_client import mcp_enabled, discover_mcp_tools, call_mcp_tool
+        if not mcp_enabled():
+            return _err("MCP disabled (set GEMMA4_MCP=1 and configure ~/.gemma4/mcp_servers.json)",
+                        status="needs_user")
+        action = str(args.get("action") or "list").casefold()
+        if action == "list":
+            tools = discover_mcp_tools()
+            return _ok(
+                tools=[{"server": t["server"], "name": t["name"],
+                        "description": t["description"]} for t in tools],
+                count=len(tools))
+        if action == "call":
+            server = str(args.get("server") or "").strip()
+            tool = str(args.get("tool") or args.get("name") or "").strip()
+            if not server or not tool:
+                return _err("mcp call needs 'server' and 'tool'", status="needs_user")
+            return call_mcp_tool(server, tool, args.get("arguments") or args.get("args") or {})
+        return _err("unknown mcp action", valid_actions=["list", "call"], status="needs_user")
 
     def t_fact_check(self, args: dict[str, Any]) -> dict[str, Any]:
         return fact_check_tool(args, self.state, knowledge_executor=self.execute)

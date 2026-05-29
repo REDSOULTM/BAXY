@@ -202,6 +202,7 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_validate_skills_live.py` | ¿el 4B emite skill_load cuando el pedido matchea una skill? (medir el skill_load inerte). |
 | `_calibrate_skills_match.py` | Calibra el umbral de embedding del trigger-inject de skills (pedido↔description). |
 | `_validate_skills_autoinject_live.py` | Valida el trigger-inject de skills en vivo (¿se inyecta la receta + el 4B la sigue?). |
+| `_validate_mcp_real.py` | Valida el cliente MCP contra un servidor real (npx server-filesystem): discover + call. |
 | `_measure_pass1.py` | Mide latencia/tokens del pass-1. |
 | `_measure_thinking0.py` | Mide efecto de `thinking_budget=0`. |
 | `_measure_summary_cache.py` | Mide cache-hit del summary pass (lever de −1s). |
