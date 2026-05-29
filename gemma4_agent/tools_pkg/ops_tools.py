@@ -704,6 +704,17 @@ def email_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         )
 
 
+def _reminder_schedule_enabled() -> bool:
+    """B8 (competidores): cuando un reminder trae HORA, delegar al backend de
+    Task Scheduler (notification) para que DISPARE (toast) aunque la app reinicie.
+    DEFAULT-ON desde 2026-05-29 (validado en vivo: el Scheduled Task se crea en el SO).
+    Kill-switch GEMMA4_REMINDER_SCHEDULE=0 (vuelve a state-only). El backend ya existe
+    y es CC-100-safe; esto sólo lo cablea al tool `reminder`. Seguro: sólo actúa con
+    `due` presente y si el scheduling falla cae a state-only (no pierde el reminder)."""
+    return (os.environ.get("GEMMA4_REMINDER_SCHEDULE", "1") or "1").strip().lower() not in {
+        "0", "false", "no", "off"}
+
+
 def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     action = str(args.get("action") or "list").casefold()
     backend = str(args.get("backend") or "state").casefold()
@@ -711,12 +722,23 @@ def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _ok(local_state=True, graph_token=bool(os.environ.get("GEMMA4_GRAPH_TOKEN") or os.environ.get("MS_GRAPH_TOKEN")))
     if action == "list":
         resources = state.list_resources(include_closed=bool(args.get("include_closed", False))).get("resources", [])
-        reminders = [res for res in resources if res.get("kind") == "reminder"]
+        # B8: incluir local_reminder (recordatorios programados en Task Scheduler).
+        reminders = [res for res in resources if res.get("kind") in ("reminder", "local_reminder")]
         return _ok(reminders=reminders, count=len(reminders))
     if action == "delete":
         rid = str(args.get("id") or args.get("resource_id") or "").strip()
         if not rid:
             return _err("missing reminder id", status="needs_user")
+        # B8: si es un reminder PROGRAMADO (local_reminder con task_name), hay que
+        # borrar también el Scheduled Task del SO (si no, seguiría disparando).
+        try:
+            res = (state._load().get("resources", {}) or {}).get(rid) or {}
+            if (res.get("kind") == "local_reminder"
+                    and (res.get("metadata") or {}).get("task_name")):
+                from ..domain_tools.notifications import notification_tool
+                return notification_tool({"action": "reminder_delete", "id": rid}, state)
+        except Exception:
+            pass
         return state.mark_cleaned(rid, {"deleted": True})
     if action != "create":
         return _err(
@@ -768,6 +790,23 @@ def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                             status="needs_user",
                             hint="decime la hora exacta (ej: 'a las 3 de la tarde de hoy' o 'mañana a las 9')",
                         )
+    # B8 (competidores): si hay una HORA (due) y el scheduling está habilitado,
+    # delegamos al backend de Task Scheduler (notification) para que el recordatorio
+    # DISPARE (toast) aunque la app se reinicie — backend YA existe, robusto, CC-100-safe.
+    # Sin due (recordatorio sin hora) o gated-off -> state-only (comportamiento original).
+    if due_normalized and _reminder_schedule_enabled():
+        try:
+            from ..domain_tools.notifications import notification_tool
+            sched = notification_tool({
+                "action": "reminder_create",
+                "title": title,
+                "text": args.get("text") or title,
+                "due": due_normalized,
+            }, state)
+            if isinstance(sched, dict) and sched.get("ok"):
+                return sched  # programado en el SO; resource ya registrado (kind=local_reminder)
+        except Exception:
+            pass  # si el scheduling falla, caemos a state-only (no perdemos el reminder)
     resource = state.register_resource(
         "reminder",
         title,
