@@ -242,6 +242,49 @@ def _recalled_success_tools(recalls: list | None, exclude, cap: int = 3) -> list
     return out
 
 
+# --- File-by-extension routing override (2026-05-29) ---
+def _file_tool_routing_enabled() -> bool:
+    """Bug 2026-05-29 (medido en vivo): el 4B prefería filesystem.read sobre
+    data_analysis (.csv/.xlsx) y document (.pdf/.docx/.pptx/.html), dando lecturas
+    crudas SIN análisis / binario sin decodificar. Gated GEMMA4_FILE_TOOL_ROUTING
+    (default off hasta validar). Las reglas de tool no bastaron solas (1/6 en vivo)."""
+    import os as _os_fr
+    return (_os_fr.environ.get("GEMMA4_FILE_TOOL_ROUTING", "0") or "0").strip().lower() not in {
+        "0", "false", "no", "off"}
+
+
+def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
+    """Para LECTURA/ANÁLISIS de un archivo de datos/documento (por EXTENSIÓN = estado
+    del archivo), quita filesystem (lectura cruda inútil) y asegura la tool específica:
+    .csv/.xlsx -> data_analysis; .pdf/.docx/.pptx/.html -> document. NO aplica si hay
+    verbo de file-op (mover/borrar/copiar/listar): ahí filesystem se queda. Pura."""
+    import re as _re
+    low = (content or "").lower()
+    if _re.search(r"\b(borr[aá]|borrar|borralo|elimin[aá]|eliminar|mueve|mov[eé]|"
+                  r"mover|movelo|copi[aá]|copiar|renombr[aá]|renombrar|comprime|"
+                  r"comprim[ií]|comprimir|archiv[aá]|archivar|list[aá]|listar|"
+                  r"delete|move|copy|rename|archive|compress|zip|list)\b", low):
+        return names  # file-op explícito (voseo c/tilde incluido) -> no tocar filesystem
+    is_data = bool(_re.search(r"\.(csv|xlsx?)\b", low))
+    is_doc = bool(_re.search(r"\.(pdf|docx?|pptx?|html?)\b", low))
+    if is_data:
+        # DATA: medido en vivo 3/3 — sin filesystem compitiendo, el 4B usa
+        # data_analysis con la action correcta (csv_query/describe). Lo sacamos.
+        out = [t for t in names if t != "filesystem"]
+        if "data_analysis" not in out:
+            out.append("data_analysis")
+        return out
+    if is_doc:
+        # DOC: additivo (NO sacar filesystem). Medido: sacarlo EMPEORA a "sin-tool"
+        # — el 4B insiste en filesystem.read para "leer" (prior arraigado). Lo
+        # dejamos y filesystem.read delega a document para .pdf/.docx (ver tools.py).
+        out = list(names)
+        if "document" not in out:
+            out.append("document")
+        return out
+    return names
+
+
 class _FinalizeContinue:
     """Sentinel returned by Gemma4Agent._finalize_turn when the a11y
     nudge re-prompted the LLM and the caller must `continue` its
@@ -1484,6 +1527,15 @@ class Gemma4Agent:
             if _mem_tools:
                 selected_tool_names = list(selected_tool_names) + _mem_tools
                 self.trace.event(turn_id, "memory_tools_added", tools=_mem_tools)
+        # Bug routing 2026-05-29: lectura/análisis de archivo de datos/documento ->
+        # tool específica (data_analysis/document), NO filesystem.read crudo. Las
+        # tool_rules no bastaron (el 4B chico las ignora con filesystem disponible);
+        # este override estructural por EXTENSIÓN saca filesystem del subset. Gated.
+        if _file_tool_routing_enabled():
+            _routed = _route_file_by_extension(content, list(selected_tool_names))
+            if _routed != list(selected_tool_names):
+                self.trace.event(turn_id, "file_routing_override", subset=_routed)
+                selected_tool_names = _routed
         # If a phrase-trigger routine already fired this turn, drop
         # session.cancel_turn from the subset. The user's phrase was
         # claimed by their saved routine; the LLM should confirm what

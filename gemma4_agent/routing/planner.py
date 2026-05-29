@@ -824,9 +824,19 @@ def _suggest_tools(step: str) -> list[str]:
         low,
     ):
         tools.append("office")
-    if re.search(r"\b(csv|tabla|grafico|estadistica|analisis de datos|limpia datos|"
+    # Análisis de datos -> data_analysis (la tool específica con pandas). Bug
+    # 2026-05-29 (medido en vivo 1/6): esta regla agregaba filesystem+office y el
+    # 4B prefería filesystem.read (lectura CRUDA sin análisis) sobre data_analysis.
+    # Ahora data_analysis va SIEMPRE para keywords de análisis; filesystem/office
+    # sólo si hay verbo de file-op (mover/borrar/copiar) — no romper "borrá el csv".
+    if re.search(r"\b(csv|tabla|grafico|gr[aá]fico|estadistica|estad[ií]stica|"
+                 r"analisis de datos|an[aá]lisis de datos|limpia datos|"
                  r"table|chart|graph|statistics|data analysis|clean data)\b", low):
-        tools.extend(["filesystem", "office"])
+        tools.append("data_analysis")
+        if re.search(r"\b(borra|borrar|elimina|eliminar|mueve|mover|copia|copiar|"
+                     r"renombra|renombrar|comprime|comprimir|archiva|archivar|"
+                     r"delete|move|copy|rename|archive|compress|zip)\b", low):
+            tools.extend(["filesystem", "office"])
 
     # app
     if re.search(r"\b(abre|abrir|cierra|cerrar|app|programa|juego|"

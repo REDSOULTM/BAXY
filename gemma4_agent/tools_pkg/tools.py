@@ -4005,6 +4005,20 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         limit = int(args.get("max_chars", 12000))
         if not path.is_file():
             return _err("file does not exist", path=str(path))
+        # Bug 2026-05-29 (handler-delegation): el 4B usa filesystem.read para "leer/
+        # qué dice/resumime" un PDF/Word/PPT (prior arraigado) -> binario inútil (los
+        # PDFs reales tienen NUL bytes -> error abajo). Delegamos a document.extract_text
+        # (texto real). Gated por el mismo flag que el subset-override.
+        import os as _os_fr
+        if (_os_fr.environ.get("GEMMA4_FILE_TOOL_ROUTING", "0") or "0").strip().lower() not in {
+                "0", "false", "no", "off"} and path.suffix.lower() in {
+                ".pdf", ".docx", ".doc", ".pptx", ".ppt", ".html", ".htm"}:
+            try:
+                _doc = self.t_document({"action": "extract_text", "path": str(path)})
+                if isinstance(_doc, dict) and _doc.get("ok"):
+                    return _doc
+            except Exception:
+                pass  # si falla, cae a la lectura normal (no perdemos el read)
         try:
             size = path.stat().st_size
         except OSError as exc:
