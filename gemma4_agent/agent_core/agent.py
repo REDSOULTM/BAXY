@@ -167,12 +167,16 @@ class AgentReply:
 
 
 def _stream_tts_enabled() -> bool:
-    """Opt-in flag for streaming the summary-pass reply to TTS sentence by
-    sentence (GEMMA4_STREAM_TTS). Default OFF until validated live. See
+    """Stream the reply to TTS sentence by sentence (GEMMA4_STREAM_TTS).
+    Default ON — flipped 2026-05-29 tras validación EN VIVO por escucha del
+    usuario ("sonó todo bien, sin cortes ni nada raro"); veracidad ya validada
+    0-violaciones (voiced es prefijo del reply final). Kill-switch:
+    GEMMA4_STREAM_TTS=0. SOLO afecta modo voz: _stream_this exige _active_tts_sink
+    (texto/GUI/CLI pasan tts_sink=None -> no-op). See
     documentacion/SPRINT_streaming_tts_truthful.md."""
     import os as _os_stream
     return (
-        _os_stream.environ.get("GEMMA4_STREAM_TTS", "0") or "0"
+        _os_stream.environ.get("GEMMA4_STREAM_TTS", "1") or "1"
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 

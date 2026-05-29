@@ -1,4 +1,4 @@
-"""Unit tests for streaming token->TTS (GEMMA4_STREAM_TTS, default off).
+"""Unit tests for streaming token->TTS (GEMMA4_STREAM_TTS, default ON 2026-05-29).
 
 Tests the SAFETY-CRITICAL primitives in isolation (fake client + fake sink, no
 server, no audio): the summary-pass streamer feeds sanitized prose incrementally
@@ -180,10 +180,13 @@ class TestFeedTail(unittest.TestCase):
 
 
 class TestGate(unittest.TestCase):
-    def test_default_off(self):
+    def test_default_on(self):
+        # Flipped a default-ON 2026-05-29 tras validación en vivo por escucha del
+        # usuario (streaming natural, 0 cortes). El kill-switch (=0/false/no/off ->
+        # False) lo cubre test_on_values. Solo afecta modo voz (requiere tts_sink).
         prev = os.environ.pop("GEMMA4_STREAM_TTS", None)
         try:
-            self.assertFalse(_stream_tts_enabled())
+            self.assertTrue(_stream_tts_enabled())
         finally:
             if prev is not None:
                 os.environ["GEMMA4_STREAM_TTS"] = prev
