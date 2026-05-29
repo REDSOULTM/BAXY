@@ -58,6 +58,24 @@ class VerifierOutcome:
     reason: str
     detail: dict | None = None
     evidence_keys: list[str] = field(default_factory=list)
+    # B1 (competidores, 2026-05-29): clasificación del fallo para recuperación
+    # por TIPO (replan/amend/skip). None hasta que un verifier lo setee o
+    # classify_failure() lo infiera. Ver ERR_* abajo.
+    error_type: str | None = None
+
+
+# --- B1: tipos de error para recuperación (replan/amend/skip) --------------
+# missing_precondition: el efecto requiere algo que no existe aún (ventana/app
+#   no abierta, archivo inexistente) -> REPLAN (hacer el prerequisito primero).
+# param_mismatch: faltó/erró un argumento (sin target, ruta mala) -> AMEND
+#   (reintentar la misma tool con args corregidos).
+# transient: timeout/red/recurso ocupado -> SKIP (no culpa de la tool; reintento
+#   no garantiza).  unknown: no clasificable -> SKIP conservador (sin recuperación).
+ERR_MISSING_PRECONDITION = "missing_precondition"
+ERR_PARAM_MISMATCH = "param_mismatch"
+ERR_TRANSIENT = "transient"
+ERR_UNKNOWN = "unknown"
+RECOVERABLE_ERROR_TYPES = frozenset({ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH})
 
 
 # Registry global de verifiers. Una entrada por tool_name. Si una tool tiene
@@ -179,6 +197,40 @@ def collect_evidence_keys(outcomes: list[VerifierOutcome]) -> list[str]:
         if o.confirmed is True and o.evidence_keys:
             keys.extend(o.evidence_keys)
     return keys
+
+
+def classify_failure(result: dict | None, reason: str = "", *, given: str | None = None) -> str:
+    """Clasifica un fallo (confirmed=False) en un ERR_* para decidir la recuperación.
+
+    PREFIERE señales ESTRUCTURADAS (status codes, campos del result). Si el verifier
+    ya seteó `error_type` (given), eso gana. Ante la duda devolvemos ERR_UNKNOWN
+    (-> SKIP, sin recuperación) — nunca recuperamos a ciegas.
+
+    NB: el fallback de texto usa subcadenas multi-idioma como heurística best-effort
+    (no autoritativa, erra a UNKNOWN). La señal primaria es estructural; lo ideal es
+    que cada verifier setee error_type. Una mis-clasificación a un tipo recuperable
+    sólo dispara un HINT de reintento (daño bajo); a unknown/transient -> skip (seguro).
+    """
+    if given in {ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT, ERR_UNKNOWN}:
+        return given
+    r = result or {}
+    status = str(r.get("status") or "").casefold()
+    if status in {"needs_dependency", "needs_resource"}:
+        return ERR_MISSING_PRECONDITION
+    if r.get("missing"):  # algunos tools declaran qué argumento faltó (estructural)
+        return ERR_PARAM_MISMATCH
+    blob = f"{reason} {r.get('error') or ''} {r.get('completion_status') or ''}".casefold()
+    if any(k in blob for k in ("not found", "no encontr", "no existe", "doesn't exist",
+                               "introuvable", "nicht gefunden", "inexistent", "no such")):
+        return ERR_MISSING_PRECONDITION
+    if any(k in blob for k in ("no se especific", "no se proporcion", "missing", "required",
+                               "requiere", "falta", "not specified", "sin destinatario",
+                               "qué ventana", "which window", "no target")):
+        return ERR_PARAM_MISMATCH
+    if any(k in blob for k in ("timeout", "timed out", "network", "connection", "conexión",
+                               "temporal", "busy", "ocupad", "rate limit", "try again")):
+        return ERR_TRANSIENT
+    return ERR_UNKNOWN
 
 
 def registered_tool_names() -> list[str]:

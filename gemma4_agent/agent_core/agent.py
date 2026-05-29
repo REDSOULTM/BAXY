@@ -197,6 +197,19 @@ def _summary_keep_tools_enabled() -> bool:
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
+def _error_recovery_enabled() -> bool:
+    """B1 (competidores): recuperación por TIPO de error. Cuando una tool falla
+    (confirmed=False), en vez del nudge genérico "reintentá", clasificamos el error
+    (missing_precondition/param_mismatch/transient) y damos una directiva ESPECÍFICA
+    para que el loop se auto-corrija (replan/amend) o pare honesto (skip). Capa
+    GENÉRICA (el LLM decide la recuperación), no macro-por-intención. Opt-in
+    GEMMA4_ERROR_RECOVERY, default OFF hasta validar en vivo en box fresca."""
+    import os as _os_er
+    return (
+        _os_er.environ.get("GEMMA4_ERROR_RECOVERY", "0") or "0"
+    ).strip().lower() not in {"0", "false", "no", "off"}
+
+
 class _FinalizeContinue:
     """Sentinel returned by Gemma4Agent._finalize_turn when the a11y
     nudge re-prompted the LLM and the caller must `continue` its
@@ -2000,7 +2013,11 @@ class Gemma4Agent:
         # outcome trae evidence_keys, los inyecta al loop_state para resetear
         # warning_count en progreso real (integration con TIER 1 #1).
         from .. import verifiers as _verifiers_registry  # noqa: F401  registra via decorators
-        from ..safety_pkg.verify_core import verify as _verify, summarize_verifiers, VerifierOutcome
+        from ..safety_pkg.verify_core import (
+            verify as _verify, summarize_verifiers, VerifierOutcome,
+            classify_failure as _classify_failure,
+            ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT,
+        )
         verifier_outcomes: list[VerifierOutcome] = []
 
         # TIER 2 #5: MissionGoal — verifier estructural por-mision (Voyager pattern).
@@ -2894,24 +2911,54 @@ class Gemma4Agent:
             # Honesty guard: if any tool in the just-processed batch returned
             # unverified/failed/needs_verification, inject an explicit user-role
             # note so Gemma cannot silently move on as if everything succeeded.
-            unverified_in_batch = [
-                (raw_call.get("function") or {}).get("name", "")
+            unverified_pairs = [
+                ((raw_call.get("function") or {}).get("name", ""), ev.result)
                 for raw_call, ev in zip(raw_tool_calls, events[-len(raw_tool_calls):])
                 if _is_unverified_result(ev.result)
             ]
+            unverified_in_batch = [name for name, _ in unverified_pairs]
             if unverified_in_batch:
                 summary = ", ".join(unverified_in_batch[:6])
-                self.history.append({
-                    "role": "user",
-                    "content": (
-                        "[system note] In the previous step, these tools returned "
-                        f"unverified/failed results: {summary}. Do NOT claim those "
-                        "actions are complete. Either run a verify(...), retry with "
-                        "different args, or tell the user honestly what could not be "
-                        "verified."
-                    ),
-                })
-                self.trace.event(turn_id, "unverified_intermediate_warning", tools=unverified_in_batch)
+                if _error_recovery_enabled():
+                    # B1 (competidores): recuperación por TIPO de error. Clasificamos
+                    # el fallo y damos una directiva ESPECÍFICA (replan/amend/skip) en
+                    # vez del nudge genérico, para que el loop se auto-corrija. Sólo
+                    # cambia el TEXTO del hint (mismo mecanismo, mismo loop_detector
+                    # + max_turns de guarda) -> bajo riesgo. Capa genérica, el LLM decide.
+                    _etypes = {n: _classify_failure(r, "") for n, r in unverified_pairs}
+                    _vals = list(_etypes.values())
+                    if ERR_MISSING_PRECONDITION in _vals:
+                        _directive = ("El objetivo aún no existe (falta un paso previo): primero "
+                                      "hacé el prerequisito (abrir/crear lo que falta) y RECIÉN "
+                                      "ahí reintentá. No afirmes que ya está.")
+                    elif ERR_PARAM_MISMATCH in _vals:
+                        _directive = ("Faltó o erró un dato: reintentá la MISMA acción corrigiendo "
+                                      "los argumentos, o pedile al usuario el dato que falta. No "
+                                      "afirmes que ya está.")
+                    elif ERR_TRANSIENT in _vals:
+                        _directive = ("Falló por algo temporal: reintentá UNA vez; si vuelve a "
+                                      "fallar, decile honestamente al usuario que no se pudo.")
+                    else:
+                        _directive = ("Reintentá con otra herramienta o argumentos distintos, o "
+                                      "decile honestamente qué no se pudo verificar.")
+                    self.history.append({
+                        "role": "user",
+                        "content": f"[system note] La(s) acción(es) {summary} NO se verificaron. {_directive}",
+                    })
+                    self.trace.event(turn_id, "error_recovery_hint",
+                                     tools=unverified_in_batch, types=_vals)
+                else:
+                    self.history.append({
+                        "role": "user",
+                        "content": (
+                            "[system note] In the previous step, these tools returned "
+                            f"unverified/failed results: {summary}. Do NOT claim those "
+                            "actions are complete. Either run a verify(...), retry with "
+                            "different args, or tell the user honestly what could not be "
+                            "verified."
+                        ),
+                    })
+                    self.trace.event(turn_id, "unverified_intermediate_warning", tools=unverified_in_batch)
 
             # CHAINING NUDGE (2026-05-23, Problema B): un tool de BÚSQUEDA/LISTADO
             # (filesystem.search, local_search, ...) que devuelve ITEMS NO es el
