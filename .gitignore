@@ -104,3 +104,5 @@ Testing Inicial/**/*.wav
 data/stt_eval/audio/
 data/stt_eval/voices/
 data/stt_eval/real_es/*.wav
+Gemma4_Agent_Producto_Riesgos_y_Competencia.docx
+scripts/_out_*.log

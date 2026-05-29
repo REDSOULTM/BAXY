@@ -198,6 +198,7 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_validate_reminder_schedule.py` | B8: valida que reminder con hora crea un Scheduled Task real en el SO (+ cleanup). |
 | `_validate_b4_b6_direct.py` | B4/B6 capacidad (sin LLM): data_analysis sobre CSV + document sobre PDF funcionan. |
 | `_validate_b4_b6_live.py` | B4/B6 conexión: ¿el 4B elige data_analysis/document en vivo? (gap de routing medido). |
+| `_gen_product_doc.py` | Genera el Word de producto (riesgos+mitigaciones + comparativa competencia) con python-docx. |
 | `_measure_pass1.py` | Mide latencia/tokens del pass-1. |
 | `_measure_thinking0.py` | Mide efecto de `thinking_budget=0`. |
 | `_measure_summary_cache.py` | Mide cache-hit del summary pass (lever de −1s). |
