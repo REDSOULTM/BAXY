@@ -2829,6 +2829,15 @@ class Gemma4Agent:
                         args = {**args, "path": repaired}
                 in_subset = name in subset_set
                 self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset, parse_error=parse_error)
+                # B3b: earcon de progreso NO-VERBAL antes de una tool LENTA (web/visión/
+                # ~3s). Reemplaza el "buscando…" hablado (viola "nada enlatado"). Gated
+                # GEMMA4_PROGRESS_EARCON (default-off), best-effort, non-blocking, throttled.
+                try:
+                    from ..voice.earcon import SLOW_TOOLS as _slow_earcon, play_progress_earcon
+                    if name in _slow_earcon:
+                        play_progress_earcon()
+                except Exception:
+                    pass
                 if not in_subset:
                     self.trace.event(turn_id, "router_miss", name=name, sent=sorted(subset_set))
                 # Hotfix I 2026-05-17: pre-dispatch safety hook for
