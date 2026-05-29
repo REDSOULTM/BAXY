@@ -44,7 +44,13 @@ _SEM_CONF_BAND = float(_os.environ.get("GEMMA4_SEM_CONF_BAND", "0.12"))
 # clears _SEM_PEAK_KEEP AND beats the runner-up by _SEM_PEAK_GAP is treated as a
 # real command even if the abstain head leans no-tool (e.g. "mutea"→audio).
 # Tuned for the fine-tuned encoder's higher cosine scale (dev).
-_SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.60"))
+# 2026-05-29: 0.60→0.50. The abstain head misfires on short keyword-less commands
+# ("cuál es mi ip"→network 0.55 gap 0.19) that 0.60 wiped to ['session'] (lost the
+# top-1 semantic tool). MEDIDO: smalltalk peaks flat (gap<0.15: "hola" 0.54/gap.08,
+# "qué tal" 0.52/gap.07, "qué es pytest" 0.42/gap.02) so the _SEM_PEAK_GAP=0.15
+# AND-condition keeps gating chitchat — only PEAKED commands (gap>=0.15) escape.
+# Validated against test_router_corpus accuracy gate (no regression).
+_SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.50"))
 _SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.15"))
 # When one tool clearly dominates ("abre steam"->steam 0.74), keep only tools
 # within this band of it (drops the noisy tail -> small subset). Recall-safe:

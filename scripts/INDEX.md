@@ -207,6 +207,7 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_harness_validate_tools.py` | Valida el ROUTING de N tools en vivo (todo mockeado + syscall neutralizado = sin efecto físico). |
 | `_validate_filesystem_routing_live.py` | Valida en vivo el fix de routing filesystem (búsqueda local→filesystem, no web) + controles web. |
 | `_validate_reminder_routing_live.py` | Valida en vivo el fix de routing reminder ("recordame [acción] [tiempo]"→notification/reminder) + controles memory. |
+| `_validate_peak_threshold_live.py` | Valida en vivo el fix _SEM_PEAK_KEEP 0.60→0.50 (comandos cortos sin keyword→tool correcta; smalltalk sigue sin tool). |
 | `_measure_pass1.py` | Mide latencia/tokens del pass-1. |
 | `_measure_thinking0.py` | Mide efecto de `thinking_budget=0`. |
 | `_measure_summary_cache.py` | Mide cache-hit del summary pass (lever de −1s). |
