@@ -53,12 +53,13 @@ VRAM_THRESHOLD_PCT = 40
 
 @dataclass
 class WatcherConfig:
-    # 2026-05-26: sistema colapsado a un solo perfil (vram4). El auto-downgrade/
-    # upgrade ya no tiene a dónde ir: downgrade y restore apuntan ambos a vram4,
-    # así que aunque alguien active el watcher (enabled=True) los switches son
-    # no-ops. Se deja el módulo funcional (no se borra) para no romper imports.
+    # 2026-05-29: revivido para el auto CPU-fallback. Antes era no-op (un solo
+    # perfil, vram4). Ahora existe el perfil `cpu` (-ngl 0): cuando la GPU se
+    # satura (juego/app pesada), downgrade a `cpu` libera la VRAM y sigue en CPU;
+    # restore a `vram4` al liberarse. El AgentRunner lo arma con downgrade_to="cpu"
+    # (gated por GEMMA4_AUTO_CPU_FALLBACK). Defaults aquí siguen conservadores.
     enabled: bool = False
-    downgrade_to: str = "vram4"
+    downgrade_to: str = "cpu"
     restore_to: str = "vram4"
     game_watchlist: list[str] = field(default_factory=list)
     trigger_on_game: bool = False  # nombre-based: opt-in solo si el user lo quiere

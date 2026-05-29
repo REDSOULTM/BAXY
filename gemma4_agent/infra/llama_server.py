@@ -336,8 +336,10 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         # El cliente tiene UI propia (PyQt6 + React UI Field); el webui
         # interno es superficie de ataque innecesaria.
         "--no-webui",
+        # -ngl from the profile: 99 = full GPU offload (GPU profiles), 0 = pure
+        # CPU (the `cpu` fallback profile, used when the GPU is busy with a game).
         "-ngl",
-        "99",
+        str(int(profile.n_gpu_layers)),
         "-c",
         str(int(profile.context_size)),
         "--parallel",
@@ -356,11 +358,10 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         # tambien (#17109). Sin cache-reuse el LCP simple via
         # --keep -1 + --swa-full sigue capturando el system prompt
         # estable byte-a-byte sin shifting.
-        "--ctx-checkpoints",
-        "0",
-        "--cache-ram",
-        "0",
-        "--no-cache-idle-slots",
+        # NOTE: las mitigaciones anti-crash CUDA (--ctx-checkpoints 0 / --cache-ram 0
+        # / --no-cache-idle-slots) se agregan ABAJO, condicionadas a GPU (ngl>0).
+        # En CPU NO van: no hay CUDA que crashee y desactivar el prompt-cache forzaría
+        # re-prefill del prompt entero cada turno (brutal a velocidad de CPU).
         "--flash-attn",
         # v22 2026-05-28: DEFAULT "off". MEDIDO: el crash CUDA #22527 vive en el
         # kernel flash-attn + SWA de Gemma 4 (head sizes hibridos 512/256) en la
@@ -406,8 +407,18 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     if api_key_env:
         cmd.extend(["--api-key", api_key_env])
 
+    # CUDA-crash mitigations (#22527): SOLO GPU. Desactivan además el prompt-cache,
+    # lo que en CPU obligaría a re-prefilear el system prompt (~5k tok) CADA turno —
+    # inusable a velocidad de CPU. Por eso van solo con offload a GPU (ngl>0); el
+    # fallback CPU conserva el prompt-cache de llama.cpp. El path GPU queda idéntico
+    # al de antes (vram4 tiene ngl=99 → recibe las tres flags).
+    if int(profile.n_gpu_layers) > 0:
+        cmd.extend(["--ctx-checkpoints", "0", "--cache-ram", "0", "--no-cache-idle-slots"])
+
     # VRAM-tight: el único perfil (vram4, ≤4 GB) usa --no-mmap para evitar el
     # double-buffer entre RAM mapeada y VRAM (crítico con budget apretado).
+    # En CPU (perfil `cpu`) NO se usa --no-mmap: mmap deja que el SO pagine el
+    # modelo desde disco, lo cual conviene con poca RAM (target 8 GB).
     _VRAM_TIGHT = {"vram4"}
     if profile.name in _VRAM_TIGHT:
         cmd.append("--no-mmap")

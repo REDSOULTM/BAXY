@@ -85,6 +85,13 @@ class Profile:
     # (e.g. Moondream) running alongside. Off everywhere today; the field
     # exists so profiles + UI can carry it without a later schema change.
     camera_enabled: bool = False
+    # GPU layers to offload (llama.cpp -ngl). Default 99 = full GPU offload (the
+    # GPU profiles). A CPU-fallback profile sets this to 0 → the model runs
+    # entirely on CPU (0 VRAM), used when the GPU is saturated by a game / heavy
+    # app so the assistant keeps responding WITHOUT competing for the GPU. The
+    # llama-server command reads this (was hardcoded "99"). Design + sources:
+    # docs/research/investigaciones_recibidas/6_estabilidad.md (Punto 4).
+    n_gpu_layers: int = 99
 
 
 # Defaults — copiados aqui para que sean editables sin tocar profiles.json.
@@ -161,6 +168,37 @@ PROFILES: dict[str, Profile] = {
             "completo en 4 GB; para tool-calling 91% con >4 GB usá vram6 (E4B)."
         ),
         est_vram_mb=3360,
+    ),
+    "cpu": Profile(
+        name="cpu",
+        display_name="CPU (GPU ocupada)",
+        context_size=16384,
+        # Mismo modelo que vram4 (E2B-Q4) pero TODO en CPU (n_gpu_layers=0): 0 VRAM.
+        # Para cuando el usuario JUEGA o corre algo pesado y la GPU está saturada:
+        # el asistente sigue respondiendo (más lento, usable para respuestas cortas)
+        # SIN competir por la GPU — que queda libre para el juego. Visión OFF (mmproj
+        # no se carga: ahorra RAM y en CPU es muy pesada). Voz+STT siguen ON (Piper/
+        # Whisper corren en CPU, 0 VRAM). Diseño SWITCH (no 2º server paralelo) porque
+        # el target real es laptop 4GB-VRAM con ~8GB RAM, donde NO entran dos modelos.
+        # Fuente: docs/research/investigaciones_recibidas/6_estabilidad.md (Punto 4).
+        model_path=_E2B_Q4_K_M,
+        mmproj_path=None,
+        vision_enabled=False,
+        rerank_enabled=False,
+        parallel_tools=False,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        camera_enabled=False,
+        n_gpu_layers=0,
+        description=(
+            "Fallback CPU para GPU ocupada (juego / app pesada). E2B-Q4 en CPU "
+            "(-ngl 0): 0 VRAM, ~2 GB RAM. Respuestas más lentas pero el asistente "
+            "no pelea por la GPU (queda libre para el juego). Visión OFF. Voz+STT "
+            "siguen (CPU). Pensado para auto-activarse al detectar la GPU saturada "
+            "y volver a vram4 al liberarse."
+        ),
+        est_vram_mb=0,
     ),
     "standby": Profile(
         name="standby",
