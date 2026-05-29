@@ -1509,8 +1509,13 @@ class ToolRegistry:
                 return _normalize_tool_result(name, clean_args, err)
         if self.safety_enabled and not confirmed and name != "safety":
             decision = classify_tool_call(name, clean_args)
-            if decision.requires_confirmation:
-                pending = self.state.create_confirmation(name, _redact_sensitive(clean_args), decision.reason, decision.risk)
+            # B5: la POLÍTICA de confirmación decide si confirmar (default confirm_risky
+            # = conducta histórica idéntica; never auto-aprueba lo reversible pero SIEMPRE
+            # confirma lo irreversible; always confirma todo). Guarda estructural, sin LLM.
+            from ..safety_pkg.confirmation_policy import should_confirm as _should_confirm
+            if _should_confirm(decision):
+                _c_reason = decision.reason or f"política de confirmación activa ({name})"
+                pending = self.state.create_confirmation(name, _redact_sensitive(clean_args), _c_reason, decision.risk or "policy")
                 return _normalize_tool_result(
                     name,
                     clean_args,
