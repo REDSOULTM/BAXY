@@ -229,11 +229,14 @@ def _skills_autoinject_enabled() -> bool:
     """Trigger-inject de skills (2026-05-29). MEDIDO: el 4B nunca emite skill_load
     (0/5 directo, 0/6727 prod) — no hace el meta-paso cargar->seguir. En vez de
     esperar skill_load, inyectamos la receta de la skill que matchea semánticamente
-    el pedido (como microagents). Gated GEMMA4_SKILLS_AUTOINJECT, default off hasta
-    validar en vivo que el 4B siga la receta inyectada."""
+    el pedido (como microagents). GEMMA4_SKILLS_AUTOINJECT default ON desde 2026-05-29
+    (validado en vivo: el 4B SIGUE la receta — screenshot→gui+vision, backup→backup_sync+
+    filesystem, research→web; 0 falsos positivos sobre 10 queries comunes; kill-switch =0).
+    Sin costo por-turno: scan_skills cacheado + el embed del user-text es cache-hit (el
+    router corre ANTES de _system_message y ya lo embebió en el mismo LRU)."""
     import os as _os_sk
     return (
-        _os_sk.environ.get("GEMMA4_SKILLS_AUTOINJECT", "0") or "0"
+        _os_sk.environ.get("GEMMA4_SKILLS_AUTOINJECT", "1") or "1"
     ).strip().lower() not in {"0", "false", "no", "off"}
 
 
