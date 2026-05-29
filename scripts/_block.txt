@@ -1,0 +1,4 @@
+# Device settings compound entry - extraído a domain_tools_device_settings.py
+# (R2 sprint 2026-05-28). Despacha a domain_tools_wifi/bluetooth y a los
+# display/power helpers que también viven en domain_tools_device_settings.
+from .domain_tools_device_settings import device_settings_tool  # noqa: F401

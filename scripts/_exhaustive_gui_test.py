@@ -13,9 +13,10 @@ import sys, time, json, subprocess, tempfile, collections
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from gemma4_agent.tools import ToolRegistry
-from gemma4_agent.memory import MemoryStore
-from gemma4_agent import gui_safety
+from gemma4_agent.tools_pkg.tools import ToolRegistry
+from gemma4_agent.memory_pkg.memory import MemoryStore
+from gemma4_agent.computer_use_pkg import gui_safety
+
 
 tmp = Path(tempfile.mkdtemp())
 reg = ToolRegistry(memory=MemoryStore(tmp/"m.json"), captures_dir=tmp)

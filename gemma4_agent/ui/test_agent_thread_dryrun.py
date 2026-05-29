@@ -12,7 +12,7 @@ from typing import Any
 
 from PyQt6.QtCore import QCoreApplication
 
-from gemma4_agent.agent import AgentReply, ToolEvent
+from gemma4_agent.agent_core.agent import AgentReply, ToolEvent
 from gemma4_agent.ui.agent_thread import AgentWorker
 
 

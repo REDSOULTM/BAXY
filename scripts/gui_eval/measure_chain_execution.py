@@ -19,9 +19,9 @@ sys.path.insert(0, str(ROOT))
 
 os.environ.setdefault("GEMMA4_ACCESSIBILITY_MODE", "movilidad")
 
-from gemma4_agent.config import AgentConfig
-from gemma4_agent.agent import Gemma4Agent
-from gemma4_agent.computer_use import PlanExecutor
+from gemma4_agent.infra.config import AgentConfig
+from gemma4_agent.agent_core.agent import Gemma4Agent
+from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
 
 # Planes FIJOS correctos (aislamos el ejecutor). Cadenas web verificables.
 CHAINS = [

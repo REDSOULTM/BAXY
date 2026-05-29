@@ -37,7 +37,7 @@ from typing import Any
 
 from .._ps import PSValidationError, RX_SQL_IDENT, ps_safe_literal
 from .._shared import _err, _ok
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 __all__ = [

@@ -105,10 +105,10 @@ class _Agent:
 
 
 def run_live() -> dict[str, Any]:
-    from gemma4_agent.memory import MemoryStore
-    from gemma4_agent.state import AgentState
-    from gemma4_agent.tools import ToolRegistry
-    from gemma4_agent.computer_use import PlanExecutor, summarize_result
+    from gemma4_agent.memory_pkg.memory import MemoryStore
+    from gemma4_agent.memory_pkg.state import AgentState
+    from gemma4_agent.tools_pkg.tools import ToolRegistry
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor, summarize_result
 
     with tempfile.TemporaryDirectory(prefix="gemma4_cu_live_") as tmp_s:
         tmp = Path(tmp_s)

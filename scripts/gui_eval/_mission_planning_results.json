@@ -1,0 +1,240 @@
+[
+  {
+    "goal": "entra a youtube",
+    "parseable": true,
+    "ops": [
+      "open_url"
+    ],
+    "exp": [
+      "open_url"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "abrí la calculadora y escribí 2+2",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "type",
+      "keypress"
+    ],
+    "exp": [
+      "focus_app",
+      "type"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "mutea mi microfono en discord",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "discord_control"
+    ],
+    "exp": [
+      "focus_app",
+      "discord_control"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "mandale hola a juan en discord",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "entra al canal de voz musica en discord",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "open_voice"
+    ],
+    "exp": [
+      "focus_app",
+      "open_voice"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "anda a instant gaming y busca resident evil requiem",
+    "parseable": true,
+    "ops": [
+      "open_url",
+      "wait",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "open_url",
+      "type",
+      "send"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "activa las notificaciones",
+    "parseable": true,
+    "ops": [
+      "toggle"
+    ],
+    "exp": [
+      "toggle"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "rellena el campo email con ana@example.com",
+    "parseable": true,
+    "ops": [
+      "fill_field"
+    ],
+    "exp": [
+      "fill_field"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "anda a instant gaming, busca resident evil requiem y abri el primer resultado",
+    "parseable": true,
+    "ops": [
+      "open_url",
+      "wait",
+      "type",
+      "send",
+      "click"
+    ],
+    "exp": [
+      "open_url",
+      "type",
+      "send",
+      "click"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "abri el navegador, entra a gmail y escribi un correo nuevo",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "wait",
+      "click",
+      "focus_app",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "open_url",
+      "click"
+    ],
+    "correct": false,
+    "err": ""
+  },
+  {
+    "goal": "entra a discord, anda al canal general y escribi buenas a todos",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "exp": [
+      "focus_app",
+      "open_chat",
+      "type",
+      "send"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "busca un video de gatos en youtube y reproduci el primero",
+    "parseable": true,
+    "ops": [
+      "open_url",
+      "wait",
+      "type",
+      "send",
+      "wait",
+      "click"
+    ],
+    "exp": [
+      "open_url",
+      "type",
+      "send",
+      "click"
+    ],
+    "correct": true,
+    "err": ""
+  },
+  {
+    "goal": "abri la configuracion de windows y activa el modo oscuro",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "toggle"
+    ],
+    "exp": [
+      "focus_app",
+      "click",
+      "toggle"
+    ],
+    "correct": false,
+    "err": ""
+  },
+  {
+    "goal": "anda a amazon, busca un teclado y agregalo al carrito",
+    "parseable": true,
+    "ops": [
+      "open_url",
+      "wait",
+      "type",
+      "click",
+      "click"
+    ],
+    "exp": [
+      "open_url",
+      "type",
+      "send",
+      "click"
+    ],
+    "correct": false,
+    "err": ""
+  },
+  {
+    "goal": "abri spotify y reproduci mi lista de favoritos",
+    "parseable": true,
+    "ops": [
+      "focus_app",
+      "click"
+    ],
+    "exp": [
+      "focus_app",
+      "type",
+      "send"
+    ],
+    "correct": false,
+    "err": ""
+  }
+]

@@ -17,7 +17,7 @@ from datetime import datetime
 from typing import Any
 
 from .._shared import _err, _ok
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 __all__ = ["habit_tracker_tool", "_VALID_HABIT_FREQUENCIES"]

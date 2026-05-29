@@ -20,7 +20,7 @@ local, usar `launcher.py`.
 ### stdio (Claude Desktop, Cursor)
 
 ```bash
-python -m gemma4_agent.mcp_server
+python -m gemma4_agent.tools_pkg.mcp_server
 ```
 
 Lee JSON-RPC de stdin, escribe a stdout (line-delimited). Logs van a stderr.
@@ -28,7 +28,7 @@ Lee JSON-RPC de stdin, escribe a stdout (line-delimited). Logs van a stderr.
 ### HTTP (debugging, integraciones lan)
 
 ```bash
-python -m gemma4_agent.mcp_server --port 8765
+python -m gemma4_agent.tools_pkg.mcp_server --port 8765
 # health check:  curl http://127.0.0.1:8765/
 # JSON-RPC:      curl -X POST http://127.0.0.1:8765/ -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
@@ -73,7 +73,7 @@ las 63 compound tools de Gemma 4.
 goose configure
 # Add MCP extension
 # Type: STDIO
-# Command: python -m gemma4_agent.mcp_server
+# Command: python -m gemma4_agent.tools_pkg.mcp_server
 ```
 
 ## Protocolo
@@ -116,7 +116,7 @@ printf '%s\n' \
   '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' \
   '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
   '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"system","arguments":{"action":"time"}}}' \
-  | python -m gemma4_agent.mcp_server
+  | python -m gemma4_agent.tools_pkg.mcp_server
 ```
 
 Esperás 3 respuestas: `initialize`, `tools/list` (63 tools), `tools/call`

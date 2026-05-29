@@ -26,8 +26,8 @@ from gemma4_agent.domain_tools import (  # noqa: E402
     _set_streaming_preference,
     media_tool,
 )
-from gemma4_agent.ops_tools import browser_real_tool  # noqa: E402
-from gemma4_agent.state import AgentState  # noqa: E402
+from gemma4_agent.tools_pkg.ops_tools import browser_real_tool  # noqa: E402
+from gemma4_agent.memory_pkg.state import AgentState  # noqa: E402
 
 
 def _make_state() -> AgentState:

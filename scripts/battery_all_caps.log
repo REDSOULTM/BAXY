@@ -1,0 +1,102 @@
+[boot] started
+W0527 22:36:00.770000 8244 site-packages\torch\distributed\elastic\multiprocessing\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs.
+  [apps        ] OK  abre la calculadora                        dom=['app'] 14.4s | 'Listo, abrí la calculadora.'
+  [apps        ] XX  abrí el bloc de notas                      dom=[]  9.9s | 'De nada.'
+  [apps        ] OK  cierra el bloc de notas                    dom=['window']  3.4s | 'No encuentro la ventana del bloc de notas.\n\n[1 no confirmada(s)]'
+  [apps        ] OK  open the file explorer                     dom=['app']  3.0s | 'No pude abrir el explorador de archivos en este momento.\n\n[1 no confirmada('
+  [ventanas    ] XX  minimiza todas las ventanas                dom=[]  0.4s | 'minimizo todas las ventanas ahora mismo.'
+  [ventanas    ] OK  maximiza la ventana actual                 dom=['window']  2.0s | 'No pude maximizar la ventana porque no especificaste qué ventana deseas max'
+  [ventanas    ] OK  cierra esta ventana                        dom=['window']  7.0s | 'Listo, no encontré ninguna ventana con ese título.\n\n[1 no confirmada(s)]'
+  [audio       ] OK  pon el volumen al 30                       dom=['audio']  1.4s | 'Listo, el volumen está al 30.'
+  [audio       ] OK  sube el volumen                            dom=['audio']  3.3s | 'Listo, el volumen actual es el 29 por ciento.'
+  [audio       ] OK  mutea el sonido                            dom=['audio']  2.1s | 'Listo, el sonido está silenciado.'
+  [audio       ] OK  turn up the volume                         dom=['audio']  1.7s | 'Listo, el volumen actual es del 29 por ciento.'
+  [media       ] OK  pon música en spotify                      dom=['media']  5.8s | 'Listo, se ha enviado la música en Spotify.'
+  [media       ] OK  pausa la música                            dom=['media']  2.8s | 'intent_type:stop_media\nListo, se ha pausado la música.'
+  [media       ] OK  pon un video de lofi en youtube            dom=['media']  6.7s | 'Listo, el video de lofi está reproduciéndose en youtube.'
+  [media       ] XX  prende algo en netflix                     dom=[] 11.0s | 'No tengo una herramienta para controlar Netflix.'
+  [sistema     ] OK  sacá un screenshot                         dom=['gui']  2.3s | 'Listo, se ha tomado una captura de pantalla.\n\n[1 no confirmada(s)]'
+  [sistema     ] OK  cuánta RAM estoy usando                    dom=['system']  3.7s | 'Usas 5175756 MB de memoria física libre.'
+  [sistema     ] OK  lista los procesos que más consumen        dom=['web']  1.1s | 'No pude encontrar una respuesta verificada sobre los procesos que más consu'
+  [vision      ] OK  qué hay en mi pantalla                     dom=['vision']  3.4s | '(descripción de pantalla simulada)'
+  [vision      ] OK  leéme lo que dice la pantalla              dom=['vision']  2.8s | '(descripción de pantalla simulada)'
+  [navegar     ] OK  andá a youtube                             dom=['browser']  4.6s | 'Intent:{"intent_type":"open","target":"youtube"}\nAbriendo youtube.'
+  [navegar     ] OK  entrá a la página de wikipedia             dom=['browser']  3.8s | 'Listo, abrí la página de Wikipedia.'
+  [buscar      ] OK  buscá teclados mecánicos en google         dom=['web']  4.6s | 'intent:{"intent_type":"search","target":"teclados mecánicos"}\nBusco teclado'
+  [buscar      ] OK  busca el clima en internet                 dom=['web']  4.0s | 'Intent declaration {"intent_type":"search","target":"el clima"}\nBusco el cl'
+  [preguntas   ] OK  quién es Lionel Messi                      dom=[]  1.2s | 'Lionel Messi es un futbolista argentino conocido por ser uno de los mejores'
+  [preguntas   ] OK  qué es una GPU                             dom=[]  1.2s | 'Una GPU es una Unidad de Procesamiento Gráfico que se especializa en render'
+  [preguntas   ] OK  cuánto es 25 por 4                         dom=[]  0.5s | 'Diez por cuatro es treinta y uno.'
+  [clima       ] OK  qué clima hace hoy                         dom=['web']  0.8s | 'No pude obtener la información del clima hoy.\n\n[1 no confirmada(s)]'
+  [clima       ] OK  va a llover mañana                         dom=['web']  0.8s | 'No pude verificar la información sobre si va a llover mañana.\n\n[1 no confir'
+  [email       ] OK  mandale un correo a ana@gmail.com dicien   dom=['email']  2.3s | 'El correo no se envió. Se abrió la ventana de composición de Gmail con el m'
+  [email       ] OK  escribile un mail a juan@hotmail.com       dom=['email']  9.1s | 'Listo, se ha redactado un borrador de correo electrónico para juan@hotmail.'
+  [wa_send     ] OK  mandale un whatsapp a mamá diciendo que    dom=['whatsapp'] 12.7s | 'Abrí el chat con un whatsapp a mamá y dejé el mensaje listo. Revisalo y dec'
+  [wa_send     ] XX  escribile por whatsapp a Pedro             dom=[] 14.7s | '¿Qué quieres escribirle a Pedro?'
+  [wa_reply    ] OK  respondele a mamá que sí                   dom=['whatsapp'] 12.6s | 'Abrí el chat con mamá y dejé el mensaje listo. Revisalo y decime si lo enví'
+  [wa_reply    ] XX  contestale que llego en 10                 dom=[]  0.5s | 'No tengo acceso a enviar mensajes a contactos.'
+  [wa_read     ] XX  leéme el último mensaje de Pedro           dom=[]  2.1s | 'No pude leer el último mensaje de Pedro porque la herramienta session no so'
+  [wa_read     ] XX  qué me escribió mamá                       dom=[]  0.5s | 'No tengo acceso a tus mensajes personales. Solo puedo responder preguntas g'
+  [contactos   ] OK  agendá a Carlos con el número 1133445566   dom=['contacts']  3.7s | 'Listo, agregué a Carlos con el número 1133445566.'
+  [contactos   ] OK  guardá el contacto de Lucía 1199887766     dom=['contacts']  2.0s | 'Listo, guardé el contacto de Lucía.'
+  [recordatorio] OK  recordame comprar pan a las 6 de la tard   dom=['reminder'] 10.4s | 'Intent declaration:{"intent_type":"create","target":"comprar pan"}\nListo, g'
+  [recordatorio] OK  avisame en 20 minutos que saque la comid   dom=['notification']  5.2s | 'Listo, te avisaré en 20 minutos que saques la comida.'
+  [alarma      ] OK  poné una alarma a las 7 de la mañana       dom=['notification']  4.3s | 'Alarma creada para las siete de la mañana.'
+  [alarma      ] OK  despertame a las 8 y media                 dom=['notification']  7.9s | 'Listo, te he configurado una alarma para las 8 de la mañana. ¿Qué quieres r'
+  [timer       ] OK  poné un timer de 5 minutos                 dom=['notification']  3.9s | 'Listo, he iniciado un temporizador de 5 minutos.'
+  [timer       ] OK  contá 10 minutos                           dom=['system']  0.6s | 'No pude iniciar un temporizador porque no tengo esa funcionalidad disponibl'
+  [agenda      ] OK  qué tengo agendado para hoy                dom=['local_calendar']  2.8s | 'Tienes agendada una Smoke Event, una Reunión de prueba, una Reunión y otra '
+  [agenda      ] OK  agendá una reunión el viernes a las 3      dom=['local_calendar']  4.5s | 'No pude agendar la reunión porque la fecha no estaba en formato correcto. P'
+  [notas       ] OK  tomá nota: comprar leche                   dom=['notes_tasks']  4.4s | 'Listo, tomé nota de comprar leche.'
+  [notas       ] OK  anotá que tengo que llamar al dentista     dom=['notes_tasks']  3.4s | 'Listo, anoté que tienes que llamar al dentista.'
+  [wifi        ] OK  apagá el wifi                              dom=['device_settings']  3.1s | 'Listo, he desconectado el wifi.'
+  [wifi        ] XX  conectate al wifi de casa                  dom=[] 14.7s | 'Necesito el nombre de la red y la contraseña para conectarte al wifi de cas'
+  [bluetooth   ] OK  prendé el bluetooth                        dom=['device_settings']  2.4s | 'No pude activar el bluetooth porque la función de cambio estaba diferida.\n\n'
+  [bluetooth   ] OK  desactivá el bluetooth                     dom=['device_settings']  3.2s | 'No pude desactivar el bluetooth porque la acción está diferida.\n\n[1 no conf'
+  [archivos    ] OK  buscá el archivo presupuesto.xlsx          dom=['filesystem']  9.0s | 'No encontré el archivo presupuesto.xlsx en tu sistema.'
+  [archivos    ] OK  abrí mi carpeta de descargas               dom=['filesystem']  3.2s | 'No pude abrir la carpeta de descargas porque la ruta no existe.'
+  [portapapeles] OK  copiá esto al portapapeles: hola mundo     dom=['clipboard']  3.3s | 'Listo, copié hola mundo al portapapeles.'
+  [portapapeles] OK  qué hay en el portapapeles                 dom=['clipboard']  2.1s | 'No hay nada en el portapapeles.'
+  [charla      ] OK  hola                                       dom=[]  0.4s | 'Hola, ¿en qué puedo ayudarte hoy?'
+  [charla      ] OK  gracias                                    dom=[]  0.2s | 'De nada.'
+  [charla      ] OK  quién eres                                 dom=[]  0.6s | 'Soy un agente de voz local impulsado por Gemma 4. Soy un modelo de lenguaje'
+  [charla      ] OK  qué podés hacer                            dom=[]  0.8s | 'Puedo ayudarte a buscar información, controlar tu sistema, gestionar archiv'
+
+==== BATERÍA INTEGRAL (agente fresco, físico stubeado) ====
+  apps          3/4  <-- revisar
+  ventanas      2/3  <-- revisar
+  audio         4/4
+  media         3/4  <-- revisar
+  sistema       3/3
+  vision        2/2
+  navegar       2/2
+  buscar        2/2
+  preguntas     3/3
+  clima         2/2
+  email         2/2
+  wa_send       1/2  <-- revisar
+  wa_reply      1/2  <-- revisar
+  wa_read       0/2  <-- revisar
+  contactos     2/2
+  recordatorio  2/2
+  alarma        2/2
+  timer         2/2
+  agenda        2/2
+  notas         2/2
+  wifi          1/2  <-- revisar
+  bluetooth     2/2
+  archivos      2/2
+  portapapeles  2/2
+  charla        4/4
+
+  OVERALL: 53/61 = 0.87
+
+  === 8 a revisar ===
+    [apps] 'abrí el bloc de notas': sin tool de dominio; reply='De nada.'
+    [ventanas] 'minimiza todas las ventanas': sin tool de dominio; reply='minimizo todas las ventanas ahora mismo.'
+    [media] 'prende algo en netflix': sin tool de dominio; reply='No tengo una herramienta para controlar Netflix.'
+    [wa_send] 'escribile por whatsapp a Pedro': sin tool de dominio; reply='¿Qué quieres escribirle a Pedro?'
+    [wa_reply] 'contestale que llego en 10': sin tool de dominio; reply='No tengo acceso a enviar mensajes a contactos.'
+    [wa_read] 'leéme el último mensaje de Pedro': sin tool de dominio; reply='No pude leer el último mensaje de Pedro porque la herramienta session no so'
+    [wa_read] 'qué me escribió mamá': sin tool de dominio; reply='No tengo acceso a tus mensajes personales. Solo puedo responder preguntas g'
+    [wifi] 'conectate al wifi de casa': sin tool de dominio; reply='Necesito el nombre de la red y la contraseña para conectarte al wifi de cas'

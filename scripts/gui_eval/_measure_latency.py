@@ -3,7 +3,7 @@ verify? Si el LLM domina, R5 (cache UIA) NO mueve la aguja -> no construir."""
 import os, sys, time, subprocess
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE","vram4")
 sys.path.insert(0, os.path.dirname(__file__))
-import gemma4_agent.agent as A
+import gemma4_agent.agent_core.agent as A
 from eval_set import _reset_calc_clean
 ag=A.Gemma4Agent(); tb=ag.tools
 # instrumentar: medir tiempo de cada _uia_run y del turno completo

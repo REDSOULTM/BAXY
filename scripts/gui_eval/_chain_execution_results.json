@@ -1,0 +1,26 @@
+[
+  {
+    "chain": "abrir youtube y buscar gatos",
+    "n_steps": 4,
+    "steps_run": 4,
+    "verified_steps": 3,
+    "ok": true,
+    "failed_at": null
+  },
+  {
+    "chain": "abrir github y buscar python",
+    "n_steps": 4,
+    "steps_run": 4,
+    "verified_steps": 3,
+    "ok": true,
+    "failed_at": null
+  },
+  {
+    "chain": "navegar a example.com (1 paso, control)",
+    "n_steps": 1,
+    "steps_run": 1,
+    "verified_steps": 1,
+    "ok": true,
+    "failed_at": null
+  }
+]

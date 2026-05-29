@@ -37,10 +37,10 @@ Reglas:
 
 ```powershell
 # Listar todos los microagents cargados
-python -m gemma4_agent.microagents list
+python -m gemma4_agent.memory_pkg.microagents list
 
 # Probar match con un texto
-python -m gemma4_agent.microagents test "qué significa HKCR"
+python -m gemma4_agent.memory_pkg.microagents test "qué significa HKCR"
 ```
 
 ## Opt-out

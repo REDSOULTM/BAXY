@@ -1,7 +1,7 @@
 ﻿import os, sys, time, json
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE","vram4")
 sys.path.insert(0, "scripts/gui_eval")
-import gemma4_agent.agent as A
+import gemma4_agent.agent_core.agent as A
 from eval_set import process_running
 ag=A.Gemma4Agent()
 for utt in ["abrí VLC","open VLC","abre o VLC"]:

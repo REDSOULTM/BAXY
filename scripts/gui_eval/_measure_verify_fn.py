@@ -4,7 +4,7 @@ corto, ¿state_changed reporta True correctamente?"""
 import os, sys, time, subprocess
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE","vram4")
 sys.path.insert(0, os.path.dirname(__file__))
-import gemma4_agent.agent as A
+import gemma4_agent.agent_core.agent as A
 from eval_set import _kill_process, _clear_notepad_session, _launch_detached, uia_window_has_text
 ag=A.Gemma4Agent(); tb=ag.tools
 cases=["a","ok","12","x","si"]  # texto MUY corto (el peor caso para dHash)

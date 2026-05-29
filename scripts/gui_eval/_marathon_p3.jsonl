@@ -1,0 +1,88 @@
+{"i": 0, "kind": "multi", "lang": "fr", "cmd": "ouvre la calculatrice et tape 2+2", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 1, "kind": "multi", "lang": "fr", "cmd": "ouvre la calculatrice et tape 2+2", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 2, "kind": "multi", "lang": "fr", "cmd": "ouvre la calculatrice et tape 2+2", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 3, "kind": "multi", "lang": "fr", "cmd": "va sur opera et ouvre python.org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 4, "kind": "multi", "lang": "fr", "cmd": "va sur opera et ouvre python.org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 5, "kind": "multi", "lang": "fr", "cmd": "va sur opera et ouvre python.org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 6, "kind": "multi", "lang": "fr", "cmd": "écris bonjour dans le bloc-notes", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 7, "kind": "multi", "lang": "fr", "cmd": "écris bonjour dans le bloc-notes", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 8, "kind": "multi", "lang": "fr", "cmd": "écris bonjour dans le bloc-notes", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 9, "kind": "multi", "lang": "fr", "cmd": "envoie un message à juan sur discord disant salut", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 10, "kind": "multi", "lang": "fr", "cmd": "envoie un message à juan sur discord disant salut", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 11, "kind": "multi", "lang": "fr", "cmd": "envoie un message à juan sur discord disant salut", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 12, "kind": "multi", "lang": "de", "cmd": "öffne den Rechner und tippe 5*5", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 13, "kind": "multi", "lang": "de", "cmd": "öffne den Rechner und tippe 5*5", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 14, "kind": "multi", "lang": "de", "cmd": "öffne den Rechner und tippe 5*5", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 15, "kind": "multi", "lang": "de", "cmd": "geh zu opera und öffne github.com", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 16, "kind": "multi", "lang": "de", "cmd": "geh zu opera und öffne github.com", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 17, "kind": "multi", "lang": "de", "cmd": "geh zu opera und öffne github.com", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 18, "kind": "multi", "lang": "de", "cmd": "schreibe hallo in den Editor", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 19, "kind": "multi", "lang": "de", "cmd": "schreibe hallo in den Editor", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 20, "kind": "multi", "lang": "de", "cmd": "schreibe hallo in den Editor", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 21, "kind": "multi", "lang": "de", "cmd": "schick juan auf discord eine Nachricht hallo", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 22, "kind": "multi", "lang": "de", "cmd": "schick juan auf discord eine Nachricht hallo", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 23, "kind": "multi", "lang": "de", "cmd": "schick juan auf discord eine Nachricht hallo", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 24, "kind": "multi", "lang": "it", "cmd": "apri la calcolatrice e digita 9+1", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 25, "kind": "multi", "lang": "it", "cmd": "apri la calcolatrice e digita 9+1", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 26, "kind": "multi", "lang": "it", "cmd": "apri la calcolatrice e digita 9+1", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 27, "kind": "multi", "lang": "it", "cmd": "vai su opera e apri wikipedia.org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 28, "kind": "multi", "lang": "it", "cmd": "vai su opera e apri wikipedia.org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 29, "kind": "multi", "lang": "it", "cmd": "vai su opera e apri wikipedia.org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "open_url"], "parseable": true, "correct": true}
+{"i": 30, "kind": "multi", "lang": "it", "cmd": "scrivi ciao nel blocco note", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 31, "kind": "multi", "lang": "it", "cmd": "scrivi ciao nel blocco note", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 32, "kind": "multi", "lang": "it", "cmd": "scrivi ciao nel blocco note", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 33, "kind": "multi", "lang": "it", "cmd": "manda a juan su discord il messaggio ciao", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 34, "kind": "multi", "lang": "it", "cmd": "manda a juan su discord il messaggio ciao", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 35, "kind": "multi", "lang": "it", "cmd": "manda a juan su discord il messaggio ciao", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 36, "kind": "chain", "lang": "es", "cmd": "abrí la calculadora y calculá 7*8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 37, "kind": "chain", "lang": "es", "cmd": "abrí la calculadora y calculá 7*8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 38, "kind": "chain", "lang": "es", "cmd": "abrí la calculadora y calculá 7*8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 39, "kind": "chain", "lang": "es", "cmd": "abrí la calculadora y calculá 7*8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 40, "kind": "chain", "lang": "es", "cmd": "en opera entrá a github.com y después a python.org", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 41, "kind": "chain", "lang": "es", "cmd": "en opera entrá a github.com y después a python.org", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 42, "kind": "chain", "lang": "es", "cmd": "en opera entrá a github.com y después a python.org", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 43, "kind": "chain", "lang": "es", "cmd": "en opera entrá a github.com y después a python.org", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 44, "kind": "chain", "lang": "es", "cmd": "abrí el bloc de notas y escribí hola y apretá enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 45, "kind": "chain", "lang": "es", "cmd": "abrí el bloc de notas y escribí hola y apretá enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 46, "kind": "chain", "lang": "es", "cmd": "abrí el bloc de notas y escribí hola y apretá enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 47, "kind": "chain", "lang": "es", "cmd": "abrí el bloc de notas y escribí hola y apretá enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 48, "kind": "chain", "lang": "es", "cmd": "andá a discord al chat de juan y escribile que llego", "exp": ["focus_app", "open_chat", "type"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 49, "kind": "chain", "lang": "es", "cmd": "andá a discord al chat de juan y escribile que llego", "exp": ["focus_app", "open_chat", "type"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 50, "kind": "chain", "lang": "es", "cmd": "andá a discord al chat de juan y escribile que llego", "exp": ["focus_app", "open_chat", "type"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 51, "kind": "chain", "lang": "es", "cmd": "andá a discord al chat de juan y escribile que llego", "exp": ["focus_app", "open_chat", "type"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 52, "kind": "chain", "lang": "en", "cmd": "open calculator type 3+3 and press enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 53, "kind": "chain", "lang": "en", "cmd": "open calculator type 3+3 and press enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 54, "kind": "chain", "lang": "en", "cmd": "open calculator type 3+3 and press enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 55, "kind": "chain", "lang": "en", "cmd": "open calculator type 3+3 and press enter", "exp": ["focus_app", "type", "keypress"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 56, "kind": "chain", "lang": "en", "cmd": "go to opera open reddit.com then youtube.com", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 57, "kind": "chain", "lang": "en", "cmd": "go to opera open reddit.com then youtube.com", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 58, "kind": "chain", "lang": "en", "cmd": "go to opera open reddit.com then youtube.com", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 59, "kind": "chain", "lang": "en", "cmd": "go to opera open reddit.com then youtube.com", "exp": ["focus_app", "open_url", "open_url"], "ops": ["focus_app", "open_url", "open_url"], "parseable": true, "correct": true}
+{"i": 60, "kind": "adversarial", "lang": "es", "cmd": "kalkuladora 2+2", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 61, "kind": "adversarial", "lang": "es", "cmd": "kalkuladora 2+2", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 62, "kind": "adversarial", "lang": "es", "cmd": "kalkuladora 2+2", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 63, "kind": "adversarial", "lang": "es", "cmd": "kalkuladora 2+2", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 64, "kind": "adversarial", "lang": "es", "cmd": "ponme spotify", "exp": ["focus_app"], "ops": ["focus_app"], "parseable": true, "correct": true}
+{"i": 65, "kind": "adversarial", "lang": "es", "cmd": "ponme spotify", "exp": ["focus_app"], "ops": ["focus_app"], "parseable": true, "correct": true}
+{"i": 66, "kind": "adversarial", "lang": "es", "cmd": "ponme spotify", "exp": ["focus_app"], "ops": ["focus_app"], "parseable": true, "correct": true}
+{"i": 67, "kind": "adversarial", "lang": "es", "cmd": "ponme spotify", "exp": ["focus_app"], "ops": ["focus_app"], "parseable": true, "correct": true}
+{"i": 68, "kind": "adversarial", "lang": "es", "cmd": "discord chat de juan", "exp": ["focus_app", "open_chat"], "ops": ["focus_app", "open_chat"], "parseable": true, "correct": true}
+{"i": 69, "kind": "adversarial", "lang": "es", "cmd": "discord chat de juan", "exp": ["focus_app", "open_chat"], "ops": ["focus_app", "open_chat"], "parseable": true, "correct": true}
+{"i": 70, "kind": "adversarial", "lang": "es", "cmd": "discord chat de juan", "exp": ["focus_app", "open_chat"], "ops": ["focus_app", "open_chat"], "parseable": true, "correct": true}
+{"i": 71, "kind": "adversarial", "lang": "es", "cmd": "discord chat de juan", "exp": ["focus_app", "open_chat"], "ops": ["focus_app", "open_chat"], "parseable": true, "correct": true}
+{"i": 72, "kind": "adversarial", "lang": "es", "cmd": "opera python punto org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "type"], "parseable": true, "correct": false}
+{"i": 73, "kind": "adversarial", "lang": "es", "cmd": "opera python punto org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "type"], "parseable": true, "correct": false}
+{"i": 74, "kind": "adversarial", "lang": "es", "cmd": "opera python punto org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "type"], "parseable": true, "correct": false}
+{"i": 75, "kind": "adversarial", "lang": "es", "cmd": "opera python punto org", "exp": ["focus_app", "open_url"], "ops": ["focus_app", "type"], "parseable": true, "correct": false}
+{"i": 76, "kind": "adversarial", "lang": "es", "cmd": "escribi en el block de notas: prueba", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 77, "kind": "adversarial", "lang": "es", "cmd": "escribi en el block de notas: prueba", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 78, "kind": "adversarial", "lang": "es", "cmd": "escribi en el block de notas: prueba", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 79, "kind": "adversarial", "lang": "es", "cmd": "escribi en el block de notas: prueba", "exp": ["focus_app", "type"], "ops": ["focus_app", "type"], "parseable": true, "correct": true}
+{"i": 80, "kind": "adversarial", "lang": "en", "cmd": "calc 8x8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 81, "kind": "adversarial", "lang": "en", "cmd": "calc 8x8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 82, "kind": "adversarial", "lang": "en", "cmd": "calc 8x8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 83, "kind": "adversarial", "lang": "en", "cmd": "calc 8x8", "exp": ["focus_app", "type"], "ops": ["focus_app", "type", "keypress"], "parseable": true, "correct": true}
+{"i": 84, "kind": "adversarial", "lang": "en", "cmd": "disc msg juan hi", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 85, "kind": "adversarial", "lang": "en", "cmd": "disc msg juan hi", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 86, "kind": "adversarial", "lang": "en", "cmd": "disc msg juan hi", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}
+{"i": 87, "kind": "adversarial", "lang": "en", "cmd": "disc msg juan hi", "exp": ["focus_app", "open_chat", "type", "send"], "ops": ["focus_app", "open_chat", "type", "send"], "parseable": true, "correct": true}

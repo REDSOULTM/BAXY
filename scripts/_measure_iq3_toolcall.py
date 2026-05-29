@@ -56,8 +56,8 @@ def main():
     os.environ["GEMMA4_AGENT_MODEL"] = "default"  # el server simple expone 1 modelo
     os.environ.setdefault("GEMMA4_AGENT_CONTEXT", "16384")
     try:
-        from gemma4_agent.agent import Gemma4Agent
-        from gemma4_agent.config import AgentConfig
+        from gemma4_agent.agent_core.agent import Gemma4Agent
+        from gemma4_agent.infra.config import AgentConfig
         ag = Gemma4Agent(AgentConfig.from_env())
         # NO ejecutar acciones reales (no tocar volumen/apps del user mientras usa la
         # PC): stubear tools.execute -> devuelve ok sin efecto. Medimos si el MODELO

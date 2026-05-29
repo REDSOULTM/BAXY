@@ -13,8 +13,8 @@ sys.path.insert(0, str(ROOT))
 # Router mode ON (lazy-vision, el path de prod) y perfil vram4.
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
 
-from gemma4_agent.profiles import get_active_profile, apply_profile_to_env
-from gemma4_agent.llama_server import get_shared_manager
+from gemma4_agent.infra.profiles import get_active_profile, apply_profile_to_env
+from gemma4_agent.infra.llama_server import get_shared_manager
 
 prof = get_active_profile()
 apply_profile_to_env(prof)

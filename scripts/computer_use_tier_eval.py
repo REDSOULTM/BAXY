@@ -158,7 +158,7 @@ def _plan_json(case: TierCase) -> str:
 
 
 def run_dry() -> tuple[bool, list[dict[str, Any]]]:
-    from gemma4_agent.computer_use import parse_plan
+    from gemma4_agent.computer_use_pkg.computer_use import parse_plan
     from gemma4_agent.computer_use_caps.policy import choose_policy
     from gemma4_agent.computer_use_caps.router import CapabilityRouter
 

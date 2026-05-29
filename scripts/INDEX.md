@@ -88,6 +88,8 @@ automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 | `measure_vram_profiles.py` | Mide VRAM real por perfil. |
 | `vram_calculator.py` | Calculadora de VRAM (paper Q×n_ctx). |
 | `_ort_throttle.py` | Helper ONNX Runtime throttling (anti-freeze). |
+| `mine_tool_failures.py` | Mineria forense de fallos por tool desde `traces.jsonl` (per-tool fail rate, top errores, orfanos, proxy zombies). |
+| `stress_test_cuda_crash.py` | Stress test del bug CUDA #22527 (Plan A research v3). Mide crashes en N turnos diversos con/sin thinking. |
 
 ## Categoría F — Análisis arquitectural / refactor sprints
 
@@ -109,6 +111,16 @@ automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 | `_r4_revert_aliases.py` | R4 cleanup: revierte `_ok_tr/_err_tr` aliases a `_ok/_err` directos. | R4 |
 | `_r4_final_cleanup.py` | R4 cleanup: borra defs duplicadas tras el revert, limpia imports. | R4 |
 | `_r3_remove_redundant_lazies.py` | R3 deep cleanup: elimina lazies que duplican imports top-level del mismo archivo. | R3 |
+| `_reorg_tests_to_subpkg.py` | Reorg 2026-05-28: mueve 181 `test_*.py` a `gemma4_agent/tests/` + reescribe imports relativos. | reorg |
+| `_reorg_fix_paths.py` | Reorg 2026-05-28: ajusta cadenas `Path(__file__).resolve().parent` tras mover tests al sub-directorio. | reorg |
+| `_reorg_pkg_subpackage.py` | Reorg 2026-05-28: mueve N modulos a `gemma4_agent/<subpkg>/` + crea shims aliased (patron R2). | reorg |
+| `_reorg_finalize_subpkg.py` | Reorg 2026-05-28: completa shims + reescribe imports para archivos ya movidos a un subpkg (recovery del move parcial). | reorg |
+| `_reorg_kill_shims.py` | Reorg 2026-05-28: migra imports externos + borra shims top-level (post-validacion). | reorg |
+| `_reorg_fix_relative_imports.py` | Reorg 2026-05-28: tras matar shims, ajusta `from ..X` y `from .X` y absolutos a los subpkgs reales. | reorg |
+| `_reorg_fix_from_pkg_import.py` | Reorg 2026-05-28: reescribe `from gemma4_agent import X as Y` -> subpkg real. | reorg |
+| `_reorg_fix_intra_subpkg.py` | Reorg 2026-05-28: convierte `from ..X` a `from .X` cuando X esta en el mismo subpkg. | reorg |
+| `_reorg_migrate_python_m_docs.py` | Reorg 2026-05-28: actualiza `python -m gemma4_agent.X` -> `python -m gemma4_agent.<subpkg>.X` en docs activos (NO sprints/_archive). | reorg |
+| `_reorg_create_runnable_shims.py` | Reorg 2026-05-28: crea 12 shims fisicos para los modulos runnable (`python -m gemma4_agent.X` sin RuntimeWarning, compat con Windows Scheduled Tasks). | reorg |
 
 ## Categoría G — Diagnoses ad-hoc (movibles a `_diag/`)
 

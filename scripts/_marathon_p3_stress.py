@@ -62,9 +62,9 @@ def is_subseq(small,big):
     it=iter(big); return all(x in it for x in small)
 
 def main():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
-    from gemma4_agent.computer_use import plan_for
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
+    from gemma4_agent.computer_use_pkg.computer_use import plan_for
     ag=Gemma4Agent(AgentConfig.from_env()); ag.run_text("hola")
     cases=gen()
     out=ROOT/"scripts"/"gui_eval"/"_marathon_p3.jsonl"; out.parent.mkdir(parents=True,exist_ok=True)

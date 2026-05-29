@@ -41,7 +41,7 @@ from typing import Any
 
 from .._ps import PSValidationError, RX_ISO_DATETIME, ps_safe_literal
 from .._shared import _err, _ok
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 __all__ = [
@@ -355,7 +355,7 @@ def _notification_due(args: dict[str, Any]) -> datetime:
     # (datetime_parse.py): si NO resuelve con confianza -> error honesto (no
     # inventamos un horario; una alarma a la hora equivocada es inútil).
     try:
-        from ..datetime_parse import parse_when as _parse_when
+        from ..support.datetime_parse import parse_when as _parse_when
         _iso = _parse_when(raw)
     except Exception:
         _iso = None

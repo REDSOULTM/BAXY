@@ -194,7 +194,7 @@ class MemoryDialog(QDialog):
             self._exp_view.setPlainText("(experience memory not available)")
             return
         try:
-            from ..semantic_router import embed
+            from ..routing.semantic_router import embed
         except Exception:
             embed = None  # type: ignore[assignment]
         q = self._exp_query.text().strip()

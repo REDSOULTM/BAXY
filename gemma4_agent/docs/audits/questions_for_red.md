@@ -7,7 +7,7 @@ Ordenado por urgencia. Cada item con el eje del norte rector afectado.
 intérprete (build CPU-only) y `nvidia-smi` mostró 6.7 GB ya en uso en la GPU con
 el usuario potencialmente jugando. Levantar un modelo de ~6 GB encima arriesgaba
 OOM-ear el proceso residente (CLAUDE.md mand. 6). **Recomendación:** cuando
-liberes la GPU, corré `python -m gemma4_agent.launcher start-server` + medí tiempo
+liberes la GPU, corré `python -m gemma4_agent.infra.launcher start-server` + medí tiempo
 a primera respuesta y que `boot_progress` reporte stages. El path ya está
 auditado limpio (rondas 1/6) y cubierto por tests mockeados; solo falta el E2E.
 

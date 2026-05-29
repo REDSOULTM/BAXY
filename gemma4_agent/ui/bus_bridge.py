@@ -44,7 +44,7 @@ from typing import Any
 
 from PyQt6.QtCore import QObject, pyqtSignal
 
-from ..events_bus import BUS
+from ..infra.events_bus import BUS
 
 logger = logging.getLogger(__name__)
 

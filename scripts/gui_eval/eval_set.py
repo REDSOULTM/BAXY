@@ -748,7 +748,7 @@ def _focus_window_substr(substr: str) -> None:
             return
         hwnd, title = target[0]
         try:
-            from gemma4_agent.win_focus import focus_and_maximize
+            from gemma4_agent.computer_use_pkg.win_focus import focus_and_maximize
             focus_and_maximize(hwnd, expected_title_substr=title or None)
             return
         except Exception:

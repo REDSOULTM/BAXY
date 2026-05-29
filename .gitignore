@@ -2,6 +2,12 @@
 models/
 *.gguf
 
+# v22 2026-05-28: data de eval/modelos (~24GB), salidas y logs top-level —
+# regenerables, NUNCA commitear (antes solo se ignoraban subdirs puntuales).
+/data/
+/output/
+/logs/
+
 # llama.cpp build CUDA local
 C:/llamacpp-cuda/
 

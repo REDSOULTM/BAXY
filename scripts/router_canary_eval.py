@@ -30,7 +30,7 @@ def main() -> int:
 
     import warnings
     warnings.filterwarnings("ignore")
-    from gemma4_agent.planner import select_tool_names, plan_mission
+    from gemma4_agent.routing.planner import select_tool_names, plan_mission
 
     rows = [json.loads(l) for l in CANARIES.read_text(encoding="utf-8").splitlines() if l.strip()]
     passed = 0

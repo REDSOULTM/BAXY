@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from gemma4_agent.profiles import PROFILES  # noqa: E402
+from gemma4_agent.infra.profiles import PROFILES  # noqa: E402
 
 # ---- GGUF metadata reader (header only; does not read tensor data) ---------
 _GGUF_TYPES_FIXED = {

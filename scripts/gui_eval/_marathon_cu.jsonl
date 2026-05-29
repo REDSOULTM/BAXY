@@ -1,0 +1,180 @@
+{"i": 1, "kind": "calc_type", "app": "calc", "cmd": "calculá 2+2 en la calculadora", "ok": true, "reply": "Listo, escribí «2+2» en Calculadora.", "lat": 6.0}
+{"i": 2, "kind": "calc_type", "app": "calc", "cmd": "calculá 5*5 en la calculadora", "ok": true, "reply": "Listo, escribí «5*5» en Calculadora.", "lat": 2.5}
+{"i": 3, "kind": "calc_type", "app": "calc", "cmd": "calculá 9+1 en la calculadora", "ok": true, "reply": "Listo, escribí «9+1» en Calculadora.", "lat": 2.4}
+{"i": 4, "kind": "calc_type", "app": "calc", "cmd": "calculá 8-3 en la calculadora", "ok": true, "reply": "Listo, escribí «8-3» en Calculadora.", "lat": 2.4}
+{"i": 5, "kind": "calc_type", "app": "calc", "cmd": "calculá 6*7 en la calculadora", "ok": true, "reply": "Listo, escribí «6*7» en Calculadora.", "lat": 2.4}
+{"i": 6, "kind": "calc_type", "app": "calc", "cmd": "calculá 12+12 en la calculadora", "ok": true, "reply": "Listo, escribí «12+12» en Calculadora.", "lat": 2.5}
+{"i": 7, "kind": "calc_type", "app": "calc", "cmd": "calculá 100/4 en la calculadora", "ok": true, "reply": "Listo, escribí «100/4» en Calculadora.", "lat": 2.5}
+{"i": 8, "kind": "calc_type", "app": "calc", "cmd": "calculá 7+8 en la calculadora", "ok": true, "reply": "Listo, escribí «7+8» en Calculadora.", "lat": 2.5}
+{"i": 9, "kind": "calc_type", "app": "calc", "cmd": "calculá 11*11 en la calculadora", "ok": true, "reply": "Listo, escribí «11*11» en Calculadora.", "lat": 2.5}
+{"i": 10, "kind": "calc_type", "app": "calc", "cmd": "calculá 50-8 en la calculadora", "ok": true, "reply": "Listo, escribí «50-8» en Calculadora.", "lat": 2.4}
+{"i": 11, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a python.org", "ok": true, "reply": "Listo, entré a https://www.python.org en Opera.", "lat": 11.3}
+{"i": 12, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a github.com", "ok": true, "reply": "Listo, entré a github.com en Opera.", "lat": 4.8}
+{"i": 13, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a wikipedia.org", "ok": true, "reply": "Listo, entré a wikipedia.org en Opera.", "lat": 5.0}
+{"i": 14, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a example.com", "ok": true, "reply": "Listo, entré a example.com en Opera.", "lat": 4.8}
+{"i": 15, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a reddit.com", "ok": true, "reply": "Listo, entré a reddit.com en Opera.", "lat": 4.9}
+{"i": 16, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a stackoverflow.com", "ok": true, "reply": "Listo, entré a stackoverflow.com en Opera.", "lat": 8.6}
+{"i": 17, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a gmail.com", "ok": true, "reply": "Listo, entré a gmail.com en Opera.", "lat": 4.9}
+{"i": 18, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a youtube.com", "ok": false, "reply": "", "lat": 3.6}
+{"i": 19, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a bing.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 20, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a duckduckgo.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 21, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de cbayeah", "ok": false, "reply": "", "lat": 4.1}
+{"i": 22, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de juanpi", "ok": false, "reply": "", "lat": 4.1}
+{"i": 23, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de pierosky", "ok": false, "reply": "", "lat": 4.1}
+{"i": 24, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de ShooterCOCK", "ok": false, "reply": "", "lat": 4.1}
+{"i": 25, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Ron92", "ok": false, "reply": "", "lat": 4.1}
+{"i": 26, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Migue_STg", "ok": true, "reply": "", "lat": 4.1}
+{"i": 27, "kind": "open_app", "app": "paint", "cmd": "abrí paint", "ok": true, "reply": "", "lat": 4.1}
+{"i": 28, "kind": "open_app", "app": "explorer", "cmd": "abrí el explorador de archivos", "ok": true, "reply": "", "lat": 4.1}
+{"i": 29, "kind": "open_app", "app": "spotify", "cmd": "abrí spotify", "ok": true, "reply": "", "lat": 4.1}
+{"i": 30, "kind": "open_app", "app": "steam", "cmd": "abrí steam", "ok": true, "reply": "", "lat": 4.1}
+{"i": 31, "kind": "calc_type", "app": "calc", "cmd": "calculá 2+2 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 32, "kind": "calc_type", "app": "calc", "cmd": "calculá 5*5 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 33, "kind": "calc_type", "app": "calc", "cmd": "calculá 9+1 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 34, "kind": "calc_type", "app": "calc", "cmd": "calculá 8-3 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 35, "kind": "calc_type", "app": "calc", "cmd": "calculá 6*7 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 36, "kind": "calc_type", "app": "calc", "cmd": "calculá 12+12 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 37, "kind": "calc_type", "app": "calc", "cmd": "calculá 100/4 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 38, "kind": "calc_type", "app": "calc", "cmd": "calculá 7+8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 39, "kind": "calc_type", "app": "calc", "cmd": "calculá 11*11 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 40, "kind": "calc_type", "app": "calc", "cmd": "calculá 50-8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 41, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a python.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 42, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a github.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 43, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a wikipedia.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 44, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a example.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 45, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a reddit.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 46, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a stackoverflow.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 47, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a gmail.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 48, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a youtube.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 49, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a bing.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 50, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a duckduckgo.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 51, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de cbayeah", "ok": false, "reply": "", "lat": 4.1}
+{"i": 52, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de juanpi", "ok": false, "reply": "", "lat": 4.1}
+{"i": 53, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de pierosky", "ok": false, "reply": "", "lat": 4.1}
+{"i": 54, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de ShooterCOCK", "ok": false, "reply": "", "lat": 4.1}
+{"i": 55, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Ron92", "ok": false, "reply": "", "lat": 4.1}
+{"i": 56, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Migue_STg", "ok": true, "reply": "", "lat": 4.1}
+{"i": 57, "kind": "open_app", "app": "paint", "cmd": "abrí paint", "ok": true, "reply": "", "lat": 4.1}
+{"i": 58, "kind": "open_app", "app": "explorer", "cmd": "abrí el explorador de archivos", "ok": true, "reply": "", "lat": 4.1}
+{"i": 59, "kind": "open_app", "app": "spotify", "cmd": "abrí spotify", "ok": true, "reply": "", "lat": 4.1}
+{"i": 60, "kind": "open_app", "app": "steam", "cmd": "abrí steam", "ok": true, "reply": "", "lat": 4.1}
+{"i": 61, "kind": "calc_type", "app": "calc", "cmd": "calculá 2+2 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 62, "kind": "calc_type", "app": "calc", "cmd": "calculá 5*5 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 63, "kind": "calc_type", "app": "calc", "cmd": "calculá 9+1 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 64, "kind": "calc_type", "app": "calc", "cmd": "calculá 8-3 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 65, "kind": "calc_type", "app": "calc", "cmd": "calculá 6*7 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 66, "kind": "calc_type", "app": "calc", "cmd": "calculá 12+12 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 67, "kind": "calc_type", "app": "calc", "cmd": "calculá 100/4 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 68, "kind": "calc_type", "app": "calc", "cmd": "calculá 7+8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 69, "kind": "calc_type", "app": "calc", "cmd": "calculá 11*11 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 70, "kind": "calc_type", "app": "calc", "cmd": "calculá 50-8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 71, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a python.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 72, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a github.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 73, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a wikipedia.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 74, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a example.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 75, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a reddit.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 76, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a stackoverflow.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 77, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a gmail.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 78, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a youtube.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 79, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a bing.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 80, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a duckduckgo.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 81, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de cbayeah", "ok": false, "reply": "", "lat": 4.1}
+{"i": 82, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de juanpi", "ok": false, "reply": "", "lat": 4.1}
+{"i": 83, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de pierosky", "ok": false, "reply": "", "lat": 4.1}
+{"i": 84, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de ShooterCOCK", "ok": false, "reply": "", "lat": 4.1}
+{"i": 85, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Ron92", "ok": false, "reply": "", "lat": 4.1}
+{"i": 86, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Migue_STg", "ok": true, "reply": "", "lat": 4.1}
+{"i": 87, "kind": "open_app", "app": "paint", "cmd": "abrí paint", "ok": true, "reply": "", "lat": 4.1}
+{"i": 88, "kind": "open_app", "app": "explorer", "cmd": "abrí el explorador de archivos", "ok": true, "reply": "", "lat": 4.1}
+{"i": 89, "kind": "open_app", "app": "spotify", "cmd": "abrí spotify", "ok": true, "reply": "", "lat": 4.1}
+{"i": 90, "kind": "open_app", "app": "steam", "cmd": "abrí steam", "ok": true, "reply": "", "lat": 4.1}
+{"i": 91, "kind": "calc_type", "app": "calc", "cmd": "calculá 2+2 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 92, "kind": "calc_type", "app": "calc", "cmd": "calculá 5*5 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 93, "kind": "calc_type", "app": "calc", "cmd": "calculá 9+1 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 94, "kind": "calc_type", "app": "calc", "cmd": "calculá 8-3 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 95, "kind": "calc_type", "app": "calc", "cmd": "calculá 6*7 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 96, "kind": "calc_type", "app": "calc", "cmd": "calculá 12+12 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 97, "kind": "calc_type", "app": "calc", "cmd": "calculá 100/4 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 98, "kind": "calc_type", "app": "calc", "cmd": "calculá 7+8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 99, "kind": "calc_type", "app": "calc", "cmd": "calculá 11*11 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 100, "kind": "calc_type", "app": "calc", "cmd": "calculá 50-8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 101, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a python.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 102, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a github.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 103, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a wikipedia.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 104, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a example.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 105, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a reddit.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 106, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a stackoverflow.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 107, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a gmail.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 108, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a youtube.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 109, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a bing.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 110, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a duckduckgo.com", "ok": false, "reply": "", "lat": 4.0}
+{"i": 111, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de cbayeah", "ok": false, "reply": "", "lat": 4.1}
+{"i": 112, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de juanpi", "ok": false, "reply": "", "lat": 4.1}
+{"i": 113, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de pierosky", "ok": false, "reply": "", "lat": 4.1}
+{"i": 114, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de ShooterCOCK", "ok": false, "reply": "", "lat": 4.1}
+{"i": 115, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Ron92", "ok": false, "reply": "", "lat": 4.1}
+{"i": 116, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Migue_STg", "ok": true, "reply": "", "lat": 4.1}
+{"i": 117, "kind": "open_app", "app": "paint", "cmd": "abrí paint", "ok": true, "reply": "", "lat": 4.1}
+{"i": 118, "kind": "open_app", "app": "explorer", "cmd": "abrí el explorador de archivos", "ok": true, "reply": "", "lat": 4.1}
+{"i": 119, "kind": "open_app", "app": "spotify", "cmd": "abrí spotify", "ok": true, "reply": "", "lat": 4.1}
+{"i": 120, "kind": "open_app", "app": "steam", "cmd": "abrí steam", "ok": true, "reply": "", "lat": 4.1}
+{"i": 121, "kind": "calc_type", "app": "calc", "cmd": "calculá 2+2 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 122, "kind": "calc_type", "app": "calc", "cmd": "calculá 5*5 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 123, "kind": "calc_type", "app": "calc", "cmd": "calculá 9+1 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 124, "kind": "calc_type", "app": "calc", "cmd": "calculá 8-3 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 125, "kind": "calc_type", "app": "calc", "cmd": "calculá 6*7 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 126, "kind": "calc_type", "app": "calc", "cmd": "calculá 12+12 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 127, "kind": "calc_type", "app": "calc", "cmd": "calculá 100/4 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 128, "kind": "calc_type", "app": "calc", "cmd": "calculá 7+8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 129, "kind": "calc_type", "app": "calc", "cmd": "calculá 11*11 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 130, "kind": "calc_type", "app": "calc", "cmd": "calculá 50-8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 131, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a python.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 132, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a github.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 133, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a wikipedia.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 134, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a example.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 135, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a reddit.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 136, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a stackoverflow.com", "ok": false, "reply": "", "lat": 4.0}
+{"i": 137, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a gmail.com", "ok": true, "reply": "", "lat": 4.1}
+{"i": 138, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a youtube.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 139, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a bing.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 140, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a duckduckgo.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 141, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de cbayeah", "ok": false, "reply": "", "lat": 4.1}
+{"i": 142, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de juanpi", "ok": false, "reply": "", "lat": 4.1}
+{"i": 143, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de pierosky", "ok": false, "reply": "", "lat": 4.1}
+{"i": 144, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de ShooterCOCK", "ok": false, "reply": "", "lat": 4.1}
+{"i": 145, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Ron92", "ok": false, "reply": "", "lat": 4.1}
+{"i": 146, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Migue_STg", "ok": true, "reply": "", "lat": 4.1}
+{"i": 147, "kind": "open_app", "app": "paint", "cmd": "abrí paint", "ok": true, "reply": "", "lat": 4.1}
+{"i": 148, "kind": "open_app", "app": "explorer", "cmd": "abrí el explorador de archivos", "ok": true, "reply": "", "lat": 4.1}
+{"i": 149, "kind": "open_app", "app": "spotify", "cmd": "abrí spotify", "ok": true, "reply": "", "lat": 4.1}
+{"i": 150, "kind": "open_app", "app": "steam", "cmd": "abrí steam", "ok": true, "reply": "", "lat": 4.1}
+{"i": 151, "kind": "calc_type", "app": "calc", "cmd": "calculá 2+2 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 152, "kind": "calc_type", "app": "calc", "cmd": "calculá 5*5 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 153, "kind": "calc_type", "app": "calc", "cmd": "calculá 9+1 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 154, "kind": "calc_type", "app": "calc", "cmd": "calculá 8-3 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 155, "kind": "calc_type", "app": "calc", "cmd": "calculá 6*7 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 156, "kind": "calc_type", "app": "calc", "cmd": "calculá 12+12 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 157, "kind": "calc_type", "app": "calc", "cmd": "calculá 100/4 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 158, "kind": "calc_type", "app": "calc", "cmd": "calculá 7+8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 159, "kind": "calc_type", "app": "calc", "cmd": "calculá 11*11 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 160, "kind": "calc_type", "app": "calc", "cmd": "calculá 50-8 en la calculadora", "ok": false, "reply": "", "lat": 4.1}
+{"i": 161, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a python.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 162, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a github.com", "ok": true, "reply": "", "lat": 4.1}
+{"i": 163, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a wikipedia.org", "ok": false, "reply": "", "lat": 4.1}
+{"i": 164, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a example.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 165, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a reddit.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 166, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a stackoverflow.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 167, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a gmail.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 168, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a youtube.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 169, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a bing.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 170, "kind": "browser_url", "app": "opera", "cmd": "en opera entrá a duckduckgo.com", "ok": false, "reply": "", "lat": 4.1}
+{"i": 171, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de cbayeah", "ok": false, "reply": "", "lat": 4.1}
+{"i": 172, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de juanpi", "ok": false, "reply": "", "lat": 4.1}
+{"i": 173, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de pierosky", "ok": false, "reply": "", "lat": 4.1}
+{"i": 174, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de ShooterCOCK", "ok": false, "reply": "", "lat": 4.1}
+{"i": 175, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Ron92", "ok": false, "reply": "", "lat": 4.1}
+{"i": 176, "kind": "chat_open", "app": "discord", "cmd": "andá a discord al chat de Migue_STg", "ok": true, "reply": "", "lat": 4.1}
+{"i": 177, "kind": "open_app", "app": "paint", "cmd": "abrí paint", "ok": true, "reply": "", "lat": 4.1}
+{"i": 178, "kind": "open_app", "app": "explorer", "cmd": "abrí el explorador de archivos", "ok": true, "reply": "", "lat": 4.1}
+{"i": 179, "kind": "open_app", "app": "spotify", "cmd": "abrí spotify", "ok": true, "reply": "", "lat": 4.1}
+{"i": 180, "kind": "open_app", "app": "steam", "cmd": "abrí steam", "ok": true, "reply": "", "lat": 4.0}

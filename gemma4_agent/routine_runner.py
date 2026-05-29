@@ -1,20 +1,23 @@
-"""Backwards-compatible thin wrapper around :mod:`gemma4_agent.task_runner`.
+"""Runnable wrapper: `python -m gemma4_agent.routine_runner` -> `gemma4_agent.infra.routine_runner`.
 
-The Scheduled Tasks already registered in Windows invoke this module
-by name (``python -m gemma4_agent.routine_runner ...``). Implementation
-moved to :mod:`gemma4_agent.task_runner` to share code with the watcher
-runner; this file forwards the call.
+Reorg 2026-05-28: el modulo real vive en `gemma4_agent.infra.routine_runner`.
+Este archivo es un ejecutable minimo que reexpone `main()` para que las
+Windows Scheduled Tasks y los atajos del usuario sigan funcionando con
+el path historico.
+
+Para `import` (no `python -m`), usar el path real:
+    from gemma4_agent.infra.routine_runner import X
+
+No re-aliasa sys.modules para no provocar RuntimeWarning en runpy.
 """
 from __future__ import annotations
 
-import sys
-
-from .task_runner import main as _main
-
 
 def main() -> int:
-    return _main(["--type", "routine", *sys.argv[1:]])
+    from .infra.routine_runner import main as _main
+    return _main()
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import sys as _sys
+    _sys.exit(main() or 0)

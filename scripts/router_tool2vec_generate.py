@@ -114,7 +114,7 @@ def main() -> int:
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args()
 
-    from gemma4_agent.semantic_router import TOOL_DESCRIPTIONS
+    from gemma4_agent.routing.semantic_router import TOOL_DESCRIPTIONS
 
     base, model = _server()
     print(f"server={base} model={model}")

@@ -34,7 +34,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .._shared import _err, _ok
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
@@ -65,7 +65,7 @@ def watcher_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
       - delete(watcher_id)
     Watchers persist in state as kind=watcher with a snapshot (mtime+size for
     files, content hash for URLs). The schedule is registered as a Scheduled
-    Task invoking `python -m gemma4_agent.watcher_runner`.
+    Task invoking `python -m gemma4_agent.infra.watcher_runner`.
     """
     from .helpers import _find_resource, _resources_by_kind
     from .routine import _unregister_routine_scheduled_task

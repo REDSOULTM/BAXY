@@ -34,8 +34,8 @@ def calc_dig():
     return "".join(c for c in d if c.isdigit())
 
 def build_agent():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
     return Gemma4Agent(AgentConfig.from_env())
 
 def kill_calc():
@@ -69,7 +69,8 @@ def _clear_keep_chain(ag):
     # Escape determinista SIN romper la herencia GUI: ejecuta el keypress y deja
     # _last_executed_tools=['gui'] para que el siguiente turno deíctico herede.
     try:
-        from gemma4_agent import gui_safety
+        from gemma4_agent.computer_use_pkg import gui_safety
+
         gui_safety.reset_action_budget()
         ag.tools.execute("gui",{"action":"keypress","keys":"escape"}); time.sleep(0.25)
         ag._last_executed_tools = ["gui"]

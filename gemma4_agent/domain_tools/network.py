@@ -41,7 +41,7 @@ from .._ps import (
     ps_safe_literal,
 )
 from .._shared import _err, _ok
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 __all__ = [

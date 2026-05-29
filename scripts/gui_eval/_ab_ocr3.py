@@ -1,7 +1,7 @@
 import sys, os, time, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 sys.path.insert(0, os.path.dirname(__file__))
-from gemma4_agent.ops_tools import ocr_image
+from gemma4_agent.tools_pkg.ops_tools import ocr_image
 from pathlib import Path
 imgs=[("white_on_blue","scripts/gui_eval/fixtures/ocr_white_on_blue.png",["enviar","buscar","configuracion","reproducir"]),
       ("dark_on_light","scripts/gui_eval/fixtures/ocr_dark_on_light.png",["presupuesto","reunion","factura","informe"])]

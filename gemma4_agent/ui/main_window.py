@@ -95,9 +95,9 @@ class ServerBootWorker(QThread):
     def run(self) -> None:
         # Imports locales para no cargar el manager si la GUI nunca dispara boot.
         try:
-            from ..config import AgentConfig
-            from ..llama_server import LlamaServerManager, port_in_use
-            from ..profiles import apply_profile_to_env, get_active_profile
+            from ..infra.config import AgentConfig
+            from ..infra.llama_server import LlamaServerManager, port_in_use
+            from ..infra.profiles import apply_profile_to_env, get_active_profile
         except Exception as exc:
             self.log.emit(f"server boot failed at import: {exc}", "err")
             self.finished_with_result.emit("missing_files")
@@ -125,7 +125,7 @@ class ServerBootWorker(QThread):
             )
             # Check context mismatch (mismo helper que en _apply_profile)
             try:
-                from ..llama_server import get_external_server_context
+                from ..infra.llama_server import get_external_server_context
                 ext_ctx = get_external_server_context()
                 if ext_ctx is not None and ext_ctx < int(profile.context_size):
                     self.log.emit(
@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
         self._pending_attachments_aud: list[str] = []
 
         # Sessions backend (lazy)
-        from ..sessions import Session, SessionStore
+        from ..memory_pkg.sessions import Session, SessionStore
         self._SessionStore_cls = SessionStore
         self._Session_cls = Session
         self._session_store: SessionStore | None = None
@@ -369,7 +369,7 @@ class MainWindow(QMainWindow):
 
         # Context budget bar
         try:
-            from ..agent import _compute_context_budget
+            from ..agent_core.agent import _compute_context_budget
             cfg = self.worker.get_config()
             ctx = int(getattr(cfg, "context_size", 16384) or 16384)
             agent = self.worker.get_agent()
@@ -396,7 +396,7 @@ class MainWindow(QMainWindow):
             return
         # Fase V — bloquear envio si profile activo es STANDBY
         try:
-            from ..profiles import get_active_profile
+            from ..infra.profiles import get_active_profile
             if get_active_profile().name == "standby":
                 self.log.append("Server offline — switch profile to chat.", "warn")
                 return
@@ -404,7 +404,7 @@ class MainWindow(QMainWindow):
             pass
         # log appears in worker via log signal (you tag)
         if self._current_session is not None:
-            from ..sessions import SessionTurn
+            from ..memory_pkg.sessions import SessionTurn
             self._current_session.turns.append(SessionTurn(role="user", content=text))
         self.worker.submit(
             text,
@@ -564,7 +564,7 @@ class MainWindow(QMainWindow):
 
         def _warm_embedder() -> None:
             try:
-                from ..semantic_router import _ensure_loaded
+                from ..routing.semantic_router import _ensure_loaded
                 t0 = __import__("time").monotonic()
                 ok = _ensure_loaded()
                 dt = __import__("time").monotonic() - t0
@@ -584,8 +584,8 @@ class MainWindow(QMainWindow):
             # rebota a Qt para que aparezcan en el HUD/log. Respeta el opt-out
             # GEMMA4_DISABLE_PREWARM.
             try:
-                from ..prewarm import prewarm_kv
-                from ..events_bus import BUS
+                from ..infra.prewarm import prewarm_kv
+                from ..infra.events_bus import BUS
                 agent = self.worker.get_agent()
                 if agent is None or agent.client is None:
                     return
@@ -613,7 +613,7 @@ class MainWindow(QMainWindow):
 
     def _on_reply(self, content: str, events: list[Any]) -> None:
         if self._current_session is not None and self._session_store is not None:
-            from ..sessions import SessionTurn, auto_title
+            from ..memory_pkg.sessions import SessionTurn, auto_title
             self._current_session.turns.append(SessionTurn(
                 role="assistant", content=content or "", tool_count=len(events)
             ))
@@ -888,7 +888,7 @@ class MainWindow(QMainWindow):
         restart del worker.
         """
         try:
-            from ..sessions import is_enabled as sessions_on
+            from ..memory_pkg.sessions import is_enabled as sessions_on
             enabled = sessions_on()
         except Exception:
             enabled = False
@@ -940,7 +940,7 @@ class MainWindow(QMainWindow):
             btn.clicked.connect(lambda _=False, n=full_name: self._on_profile_button_clicked(n))
             # Tooltip
             try:
-                from ..profiles import PROFILES
+                from ..infra.profiles import PROFILES
                 p = PROFILES[full_name]
                 btn.setToolTip(
                     f"{p.display_name}  -  ~{p.est_vram_mb} MB est.\n\n{p.description}\n\n"
@@ -952,7 +952,7 @@ class MainWindow(QMainWindow):
     def _refresh_profile_selector(self) -> None:
         """Pinta el boton activo y los demas mas apagados."""
         try:
-            from ..profiles import get_active_profile
+            from ..infra.profiles import get_active_profile
             active = get_active_profile().name
         except Exception:
             active = "vram4"
@@ -973,7 +973,7 @@ class MainWindow(QMainWindow):
 
     def _on_profile_button_clicked(self, name: str) -> None:
         """Click en una pildora -> aplica perfil con confirmacion solo para STANDBY."""
-        from ..profiles import PROFILES, get_active_profile
+        from ..infra.profiles import PROFILES, get_active_profile
 
         if name not in PROFILES:
             return
@@ -999,7 +999,7 @@ class MainWindow(QMainWindow):
         # al modelo principal del usuario (apply_profile_to_env no toca
         # GEMMA4_MODEL_PATH si el archivo falta). Antes era hardcode "light".
         try:
-            from ..profiles import PROFILES, model_missing, _resolve_alias
+            from ..infra.profiles import PROFILES, model_missing, _resolve_alias
             if model_missing(name):
                 canonical = _resolve_alias(name)
                 path = PROFILES[canonical].model_path or "(no configurado)"
@@ -1021,7 +1021,7 @@ class MainWindow(QMainWindow):
 
     def _apply_profile(self, name: str) -> None:
         """Persiste perfil + aplica env vars + reinicia server y worker."""
-        from ..profiles import (
+        from ..infra.profiles import (
             PROFILES, apply_profile_to_env, get_active_profile,
             requires_server_restart, set_active_profile,
         )
@@ -1049,7 +1049,7 @@ class MainWindow(QMainWindow):
 
         # Server: stop/start segun server_running. NO matamos servers externos.
         try:
-            from ..llama_server import LlamaServerManager, port_in_use
+            from ..infra.llama_server import LlamaServerManager, port_in_use
             if self._llama_manager is None:
                 cfg = self.worker.get_config()
                 self._llama_manager = LlamaServerManager(config=cfg)
@@ -1084,7 +1084,7 @@ class MainWindow(QMainWindow):
                     )
                     # Tarea 2 — check context mismatch
                     try:
-                        from ..llama_server import get_external_server_context
+                        from ..infra.llama_server import get_external_server_context
                         ext_ctx = get_external_server_context()
                         if ext_ctx is not None and ext_ctx < int(profile.context_size):
                             self.log.append(
@@ -1144,7 +1144,7 @@ class MainWindow(QMainWindow):
         """Si el usuario habilito voice en gui.json y el perfil lo permite, arranca."""
         try:
             from .settings import load_persisted
-            from ..profiles import get_active_profile
+            from ..infra.profiles import get_active_profile
             voice_cfg = (load_persisted().get("voice") or {})
             if not voice_cfg.get("enabled"):
                 return
@@ -1177,8 +1177,8 @@ class MainWindow(QMainWindow):
         if tts_voice:
             os.environ["GEMMA4_VOICE_TTS_VOICE"] = str(tts_voice)
 
-        from ..voice_runner import VOICE
-        from ..agent_runner import RUNNER
+        from ..infra.voice_runner import VOICE
+        from ..agent_core.agent_runner import RUNNER
 
         # Bridge so pipeline callbacks (audio thread) reach the GUI thread
         # safely. state_changed is already wired to _on_voice_state_main,
@@ -1386,7 +1386,7 @@ class MainWindow(QMainWindow):
         user_wants = bool(voice_cfg.get("enabled"))
         running = self._voice_controller is not None
         try:
-            from ..profiles import get_active_profile
+            from ..infra.profiles import get_active_profile
             profile_allows = get_active_profile().server_running
         except Exception:
             profile_allows = True
@@ -1532,8 +1532,8 @@ class MainWindow(QMainWindow):
         if self._server_booting:
             return
         try:
-            from ..llama_server import port_in_use
-            from ..profiles import get_active_profile
+            from ..infra.llama_server import port_in_use
+            from ..infra.profiles import get_active_profile
         except Exception as exc:
             self.log.append(f"autostart: import failed: {exc}", "err")
             return
@@ -1609,7 +1609,7 @@ class MainWindow(QMainWindow):
             return
         # No booteando ni warmup-ing: estado normal segun perfil
         try:
-            from ..profiles import get_active_profile
+            from ..infra.profiles import get_active_profile
             is_standby = (get_active_profile().name == "standby")
         except Exception:
             is_standby = False
@@ -1624,7 +1624,7 @@ class MainWindow(QMainWindow):
 
     def _reconfigure_profile_watcher(self, auto_cfg: dict[str, Any]) -> None:
         """Aplica config de auto-switch: arranca o para el thread del watcher."""
-        from ..profile_watcher import ProfileWatcher, WatcherConfig
+        from ..infra.profile_watcher import ProfileWatcher, WatcherConfig
 
         # Stop existente si lo hay
         if self._profile_watcher is not None:
@@ -1673,7 +1673,7 @@ class MainWindow(QMainWindow):
     def _cycle_profile(self) -> None:
         """Ctrl+Shift+G: PERF -> BAL -> LIGHT -> STDBY -> PERF."""
         from PyQt6.QtWidgets import QToolTip
-        from ..profiles import PROFILE_NAMES, get_active_profile
+        from ..infra.profiles import PROFILE_NAMES, get_active_profile
         order: list[str] = [str(n) for n in PROFILE_NAMES]
         current = get_active_profile().name
         try:

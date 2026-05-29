@@ -28,16 +28,16 @@ from scripts.router_eval import CURATED, _split_of, _NON_DOMAIN  # noqa: E402
 
 def _stage_sources(q: str) -> dict[str, set[str]]:
     """Return tools contributed by each stage (best-effort decomposition)."""
-    from gemma4_agent.planner import _suggest_tools, _fold_text
+    from gemma4_agent.routing.planner import _suggest_tools, _fold_text
     out: dict[str, set[str]] = {}
     out["kw"] = set(_suggest_tools(q))
     try:
-        from gemma4_agent.semantic_router import suggest_tools_semantic
+        from gemma4_agent.routing.semantic_router import suggest_tools_semantic
         out["sem"] = set(suggest_tools_semantic(q, k=12)) if q.strip() else set()
     except Exception:
         out["sem"] = set()
     try:
-        from gemma4_agent.intent_router import wants_knowledge
+        from gemma4_agent.routing.intent_router import wants_knowledge
         out["intent"] = {"web", "knowledge"} if wants_knowledge(q) else set()
     except Exception:
         out["intent"] = set()

@@ -60,7 +60,7 @@ def load_persisted() -> dict:
 
 def save_persisted(data: dict) -> None:
     try:
-        from ..state import atomic_write_json
+        from ..memory_pkg.state import atomic_write_json
         atomic_write_json(SETTINGS_PATH, data)
     except OSError:
         pass
@@ -568,7 +568,7 @@ class SettingsDialog(QDialog):
     def _tab_profiles(self) -> QWidget:
         """Fase V — PROFILES tab: detection, auto-switch, editable defaults."""
         from PyQt6.QtWidgets import QPlainTextEdit, QTableWidget, QTableWidgetItem
-        from ..profiles import PROFILES, detect_vram_mb, load_overrides, recommend_profile, save_overrides
+        from ..infra.profiles import PROFILES, detect_vram_mb, load_overrides, recommend_profile, save_overrides
 
         w = QWidget()
         outer = QVBoxLayout(w)
@@ -755,7 +755,7 @@ class SettingsDialog(QDialog):
         return w
 
     def _on_prof_redetect(self) -> None:
-        from ..profiles import detect_vram_mb, recommend_profile
+        from ..infra.profiles import detect_vram_mb, recommend_profile
         mb = detect_vram_mb()
         if mb is None:
             self._prof_vram_lbl.setText("VRAM detectada: no detectada (nvidia-smi/rocm-smi no respondio)")
@@ -767,7 +767,7 @@ class SettingsDialog(QDialog):
 
     def _on_prof_restore_defaults(self) -> None:
         from PyQt6.QtWidgets import QTableWidgetItem
-        from ..profiles import PROFILES
+        from ..infra.profiles import PROFILES
         cols = ("vram4",)  # único perfil (2026-05-26)
         fields = ("context_size", "vision_enabled", "rerank_enabled", "parallel_tools", "voice_enabled", "model_path")
         for r, field_name in enumerate(fields):
@@ -811,7 +811,7 @@ class SettingsDialog(QDialog):
             ("voice_enabled", bool),
             ("model_path", str),
         )
-        from ..profiles import PROFILES
+        from ..infra.profiles import PROFILES
         overrides: dict[str, dict[str, _Any]] = {}
         for c, prof_name in enumerate(cols):
             base = PROFILES[prof_name]
@@ -1066,7 +1066,7 @@ class SettingsDialog(QDialog):
         lay.addWidget(title)
 
         try:
-            from ..agent import SYSTEM_PROMPT
+            from ..agent_core.agent import SYSTEM_PROMPT
             text = SYSTEM_PROMPT
         except Exception as exc:
             text = f"<could not load: {exc}>"
@@ -1201,7 +1201,7 @@ class SettingsDialog(QDialog):
         try:
             auto, overrides = self._gather_profiles()
             data["profiles_auto"] = auto
-            from ..profiles import save_overrides
+            from ..infra.profiles import save_overrides
             save_overrides(overrides)
         except Exception:
             pass
@@ -1220,7 +1220,7 @@ class SettingsDialog(QDialog):
         try:
             auto, overrides = self._gather_profiles()
             data["profiles_auto"] = auto
-            from ..profiles import save_overrides
+            from ..infra.profiles import save_overrides
             save_overrides(overrides)
         except Exception:
             pass

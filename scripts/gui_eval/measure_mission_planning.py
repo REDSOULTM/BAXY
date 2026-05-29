@@ -16,9 +16,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from gemma4_agent.config import AgentConfig
-from gemma4_agent.llm_client import LLMClient
-from gemma4_agent.computer_use import plan_for, PRIMITIVES
+from gemma4_agent.infra.config import AgentConfig
+from gemma4_agent.infra.llm_client import LLMClient
+from gemma4_agent.computer_use_pkg.computer_use import plan_for, PRIMITIVES
 
 
 class _StubAgent:

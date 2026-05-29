@@ -25,9 +25,12 @@ from pathlib import Path
 # raíz del repo al path (igual que correrlo con `-m scripts.accessibility_eval`).
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from gemma4_agent import accessibility as a11y
-from gemma4_agent import accessibility_voice as av
-from gemma4_agent import reply_validator as rv
+from gemma4_agent.computer_use_pkg import accessibility as a11y
+
+from gemma4_agent.computer_use_pkg import accessibility_voice as av
+
+from gemma4_agent.safety_pkg import reply_validator as rv
+
 
 
 def _ok_tool():
@@ -138,7 +141,7 @@ def gate_g5() -> tuple[bool, str]:
 
 def gate_g6() -> tuple[bool, str]:
     """Store/web tasks must route to browser, local launch tasks stay local."""
-    from gemma4_agent.planner import plan_mission, select_tool_names
+    from gemma4_agent.routing.planner import plan_mission, select_tool_names
 
     store_cases = [
         "anda a la pagina de Instant Gaming",
@@ -168,7 +171,7 @@ def gate_g6() -> tuple[bool, str]:
 
 def gate_g7() -> tuple[bool, str]:
     """Computer-use primitive contract stays closed and verifier-aware."""
-    from gemma4_agent.computer_use import PlanExecutor, parse_plan
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor, parse_plan
     from gemma4_agent.computer_use_caps.router import CapabilityRouter
 
     plan = parse_plan('[{"op":"fill_field","arg":"email=a@b.com"},'
@@ -211,7 +214,7 @@ def gate_g8() -> tuple[bool, str]:
 
 def gate_g9() -> tuple[bool, str]:
     """No false-pass: unverified computer-use result must not summarize as done."""
-    from gemma4_agent.computer_use import summarize_result
+    from gemma4_agent.computer_use_pkg.computer_use import summarize_result
 
     reply = summarize_result(
         "abrir el resultado",
@@ -294,7 +297,7 @@ def gate_g12() -> tuple[bool, str]:
 
 def gate_g13() -> tuple[bool, str]:
     """A click with ok=True but no verifier must stay unverified."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
 
     class _Tools:
         def execute(self, *_args, **_kwargs):
@@ -309,7 +312,7 @@ def gate_g13() -> tuple[bool, str]:
 
 def gate_g14() -> tuple[bool, str]:
     """Unverified hard-fail steps stop the chain before later writes."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
     from gemma4_agent.computer_use_caps.policy import choose_policy
     from gemma4_agent.computer_use_caps.registry import family_for_snapshot
 
@@ -362,7 +365,7 @@ def gate_g14() -> tuple[bool, str]:
 
 def gate_g14b() -> tuple[bool, str]:
     """Unverified type must stop before send."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
     from gemma4_agent.computer_use_caps.policy import choose_policy
     from gemma4_agent.computer_use_caps.registry import family_for_snapshot
 
@@ -414,7 +417,7 @@ def gate_g14b() -> tuple[bool, str]:
 
 def gate_g15() -> tuple[bool, str]:
     """Hard-fail caused by unverified action must summarize as unverifiable."""
-    from gemma4_agent.computer_use import summarize_result
+    from gemma4_agent.computer_use_pkg.computer_use import summarize_result
 
     reply = summarize_result(
         "abrir el resultado",
@@ -457,7 +460,7 @@ def gate_g16() -> tuple[bool, str]:
 
 def gate_g17() -> tuple[bool, str]:
     """Plans with no verified evidence must not become verified by all([])."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
     from gemma4_agent.computer_use_caps.policy import choose_policy
     from gemma4_agent.computer_use_caps.registry import family_for_snapshot
 
@@ -535,7 +538,7 @@ def gate_g19() -> tuple[bool, str]:
 
 def gate_g20() -> tuple[bool, str]:
     """fill_field must not type after an unverified fallback click."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
 
     calls = []
 
@@ -560,7 +563,7 @@ def gate_g20() -> tuple[bool, str]:
 
 def gate_g21() -> tuple[bool, str]:
     """Secret handoff from UIA must not fall back to generic typing."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
 
     calls = []
 
@@ -639,7 +642,7 @@ def gate_g23() -> tuple[bool, str]:
 
 def gate_g24() -> tuple[bool, str]:
     """Structured writes/key presses must require explicit verifier fields."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
     from gemma4_agent.computer_use_caps.browser import BrowserCapability
 
     class _UiaTools:
@@ -704,7 +707,7 @@ def gate_g24a() -> tuple[bool, str]:
 
 def gate_g24b() -> tuple[bool, str]:
     """computer_use type primitive should use the verifying type_into path."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
 
     calls = []
 
@@ -722,7 +725,7 @@ def gate_g24b() -> tuple[bool, str]:
 
 def gate_g24c() -> tuple[bool, str]:
     """browser_real structured write actions must be allowed by the catalog."""
-    from gemma4_agent.tools import ACTION_ENUMS
+    from gemma4_agent.tools_pkg.tools import ACTION_ENUMS
 
     actions = ACTION_ENUMS.get("browser_real", [])
     required = {"click_accessible", "toggle_accessible", "type_text"}
@@ -837,7 +840,7 @@ def gate_g26() -> tuple[bool, str]:
 
 def gate_g27() -> tuple[bool, str]:
     """If no structural/visual layer exists, executor must fail before acting."""
-    from gemma4_agent.computer_use import PlanExecutor
+    from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor
     from gemma4_agent.computer_use_caps.policy import choose_policy
     from gemma4_agent.computer_use_caps.registry import family_for_snapshot
 
@@ -891,7 +894,7 @@ def gate_g27() -> tuple[bool, str]:
 
 def gate_g28() -> tuple[bool, str]:
     """Known capability/secret failures should summarize with the real reason."""
-    from gemma4_agent.computer_use import summarize_result
+    from gemma4_agent.computer_use_pkg.computer_use import summarize_result
 
     no_layer = summarize_result(
         "activar un boton",

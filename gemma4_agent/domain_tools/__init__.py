@@ -30,7 +30,7 @@ from .._ps import (
     parse_ps_json,
     ps_safe_literal,
 )
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
@@ -3188,7 +3188,7 @@ def _verify_visible_whatsapp_text_status(executor: Executor, target_text: str) -
 
     try:
         from PIL import Image
-        from ..ops_tools import ocr_find_text
+        from ..tools_pkg.ops_tools import ocr_find_text
         image_path = Path(str(shot["image_path"]))
         img = Image.open(image_path)
         screen_left = int(shot.get("left", 0))

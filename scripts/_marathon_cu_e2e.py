@@ -56,8 +56,8 @@ def restore(s):
     if hd: win32gui.ShowWindow(hd[0], win32con.SW_RESTORE)
 
 def build():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
     return Gemma4Agent(AgentConfig.from_env())
 
 # ----- verificadores por estado del SO -----

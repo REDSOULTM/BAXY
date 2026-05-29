@@ -159,7 +159,7 @@ def main() -> int:
     # Corrida real contra el agente
     import os
     os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
-    from gemma4_agent.agent import Gemma4Agent
+    from gemma4_agent.agent_core.agent import Gemma4Agent
     agent = Gemma4Agent()
     print("[gui-eval] agente construido; corriendo misiones contra el SO real...\n")
 

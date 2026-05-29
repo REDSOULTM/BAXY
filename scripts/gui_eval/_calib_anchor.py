@@ -6,7 +6,7 @@ import os, sys, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE","vram4")
 sys.path.insert(0, os.path.dirname(__file__))
-from gemma4_agent.semantic_router import embed
+from gemma4_agent.routing.semantic_router import embed
 def cos(a,b): return sum(x*y for x,y in zip(a,b))
 
 # Pares LEGÍTIMOS: el objetivo del turno y un control que el agente DEBE clickear.

@@ -56,8 +56,8 @@ BATTERY: list[tuple[str, bool]] = [
 
 def run_battery(runs: int, label: str) -> None:
     os.environ.setdefault("GEMMA4_AGENT_CONTEXT", "16384")
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
     ag = Gemma4Agent(AgentConfig.from_env())
 
     results: dict[str, list[bool]] = defaultdict(list)

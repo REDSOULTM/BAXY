@@ -41,10 +41,10 @@ def _split_of(q: str) -> str:
 def _features_for(q: str) -> dict[str, float]:
     """Compute the SAME feature vector the planner will compute at runtime.
     Reuses the live intent_router + semantic_router so train/serve match."""
-    from gemma4_agent.abstain_head import build_features
-    from gemma4_agent.intent_router import classify_intent
-    from gemma4_agent.semantic_router import suggest_tools_scored
-    from gemma4_agent.planner import _suggest_tools, _expand_abbreviations, _fold_text
+    from gemma4_agent.safety_pkg.abstain_head import build_features
+    from gemma4_agent.routing.intent_router import classify_intent
+    from gemma4_agent.routing.semantic_router import suggest_tools_scored
+    from gemma4_agent.routing.planner import _suggest_tools, _expand_abbreviations, _fold_text
 
     intent = classify_intent(q)
     scored = suggest_tools_scored(q, k=12)
@@ -65,7 +65,7 @@ def main() -> int:
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import StratifiedKFold
 
-    from gemma4_agent.abstain_head import FEATURE_NAMES
+    from gemma4_agent.safety_pkg.abstain_head import FEATURE_NAMES
 
     rows = [json.loads(l) for l in CORPUS.read_text(encoding="utf-8").splitlines() if l.strip()]
     dev = [r for r in rows if _split_of(r["q"]) == "dev"]

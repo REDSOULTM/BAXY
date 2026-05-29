@@ -71,8 +71,8 @@ def restore(substr):
     if hd: win32gui.ShowWindow(hd[0], win32con.SW_RESTORE)
 
 def build():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
     return Gemma4Agent(AgentConfig.from_env())
 
 # ---- misiones: (tipo, comando, setup_fn|None, verify_fn) ----
@@ -98,7 +98,8 @@ def v_npad(word):
     return lambda: npad_has(word)
 
 def setup_calc_clear():
-    from gemma4_agent import gui_safety
+    from gemma4_agent.computer_use_pkg import gui_safety
+
     gui_safety.reset_action_budget()
     # focus calc + Escape para limpiar
     try:
@@ -108,7 +109,8 @@ def setup_calc_clear():
 def setup_opera_home():
     pass
 def setup_discord_ron():
-    from gemma4_agent import gui_safety
+    from gemma4_agent.computer_use_pkg import gui_safety
+
     gui_safety.reset_action_budget()
     try:
         AG.tools._focus_window_chen("Discord"); time.sleep(0.8)
@@ -140,7 +142,7 @@ MISSIONS = [
 print("=== OPCIÓN A (ejecutor de planes) — apps variadas ===", flush=True)
 AG = build()
 AG.run_text("hola")
-from gemma4_agent.computer_use import plan_for, PlanExecutor
+from gemma4_agent.computer_use_pkg.computer_use import plan_for, PlanExecutor
 EXEC = PlanExecutor(AG)
 
 # asegurar apps abiertas
@@ -187,7 +189,8 @@ for kind, cmd, setup, verify in MISSIONS:
 # notepad: limpiar el campo de LA MISMA ventana que el executor va a enfocar
 # ("Bloc de notas"), no una específica — así el clear y el type caen en la misma.
 for kind, cmd, word in NPAD_CASES:
-    from gemma4_agent import gui_safety
+    from gemma4_agent.computer_use_pkg import gui_safety
+
     gui_safety.reset_action_budget()
     try:
         AG.tools._focus_window_chen("Bloc de notas"); time.sleep(0.3)

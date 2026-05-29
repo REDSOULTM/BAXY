@@ -54,7 +54,7 @@ from .._ps import (
     ps_safe_literal,
 )
 from .._shared import _err, _ok
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]

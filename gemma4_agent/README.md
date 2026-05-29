@@ -12,23 +12,23 @@ OpenAI-compatible, tools reales, memoria explicita y entradas multimodales.
     --jinja --port 8080 -ngl 99 -c 16384 `
     --parallel 1 --ctx-checkpoints 1 --flash-attn on
 
-python -m gemma4_agent.chat
+python -m gemma4_agent.support.chat
 ```
 
 El agente tambien puede levantar el servidor:
 
 ```powershell
-python -m gemma4_agent.chat --start-server
+python -m gemma4_agent.support.chat --start-server
 ```
 
 Tambien hay un launcher local inspirado en Jarvis, sin auth/web/voz/camara:
 
 ```powershell
-python -m gemma4_agent.launcher
-python -m gemma4_agent.launcher chat
-python -m gemma4_agent.launcher status
-python -m gemma4_agent.launcher smoke
-python -m gemma4_agent.launcher shortcut
+python -m gemma4_agent.infra.launcher
+python -m gemma4_agent.infra.launcher chat
+python -m gemma4_agent.infra.launcher status
+python -m gemma4_agent.infra.launcher smoke
+python -m gemma4_agent.infra.launcher shortcut
 ```
 
 El launcher permite abrir el chat con `--start-server`, ver diagnostico local,
@@ -42,8 +42,8 @@ solo cuando la VRAM y la latencia lo permitan.
 ## Multimodal
 
 ```powershell
-python -m gemma4_agent.chat --image .\foto.png
-python -m gemma4_agent.chat --audio .\audio.wav
+python -m gemma4_agent.support.chat --image .\foto.png
+python -m gemma4_agent.support.chat --audio .\audio.wav
 ```
 
 Dentro del chat:
@@ -59,7 +59,7 @@ siguiente turno para que Gemma 4 pueda razonar visualmente.
 
 El chat muestra una barra de progreso mientras Gemma piensa y ejecuta tools:
 modo elegido, pasos planeados, turno actual y tool activa. Se puede apagar con
-`python -m gemma4_agent.chat --no-progress` o alternar dentro del chat con
+`python -m gemma4_agent.support.chat --no-progress` o alternar dentro del chat con
 `/progress`.
 
 ## Memoria
@@ -190,7 +190,7 @@ Por defecto `GEMMA4_AGENT_MODE=auto`. El router elige:
 Tambien se puede forzar:
 
 ```powershell
-python -m gemma4_agent.chat --mode research
+python -m gemma4_agent.support.chat --mode research
 $env:GEMMA4_AGENT_MODE = "deep_action"
 ```
 

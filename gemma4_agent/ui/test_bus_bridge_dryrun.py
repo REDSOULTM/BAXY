@@ -22,7 +22,7 @@ def main() -> int:
 
     app = QApplication.instance() or QApplication(sys.argv)
 
-    from gemma4_agent.events_bus import BUS
+    from gemma4_agent.infra.events_bus import BUS
     from gemma4_agent.ui.bus_bridge import EventBusBridge
 
     captured: dict[str, list[dict]] = {

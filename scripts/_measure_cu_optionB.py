@@ -45,8 +45,8 @@ def restore(s):
     win32gui.EnumWindows(c,None)
     if hd: win32gui.ShowWindow(hd[0], win32con.SW_RESTORE)
 def build():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
     return Gemma4Agent(AgentConfig.from_env())
 
 def v_calc(e):
@@ -58,8 +58,9 @@ def v_np(w): return lambda: npad_has(w)
 
 print("=== OPCIÓN B (embeddings verbo->primitiva) — apps variadas ===", flush=True)
 AG=build(); AG.run_text("hola")
-from gemma4_agent.computer_use_b import run_single_primitive
-from gemma4_agent import gui_safety
+from gemma4_agent.computer_use_pkg.computer_use_b import run_single_primitive
+from gemma4_agent.computer_use_pkg import gui_safety
+
 
 def setup_calc():
     gui_safety.reset_action_budget()

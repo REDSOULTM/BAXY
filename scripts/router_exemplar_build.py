@@ -33,7 +33,7 @@ def main() -> int:
         return 1
 
     import numpy as np
-    from gemma4_agent.semantic_router import TOOL_DESCRIPTIONS, embed
+    from gemma4_agent.routing.semantic_router import TOOL_DESCRIPTIONS, embed
 
     known = set(TOOL_DESCRIPTIONS)
     rows = [

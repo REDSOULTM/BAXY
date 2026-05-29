@@ -22,8 +22,8 @@ sys.path.insert(0, str(ROOT))
 
 os.environ.setdefault("GEMMA4_ACCESSIBILITY_MODE", "movilidad")
 
-from gemma4_agent.config import AgentConfig
-from gemma4_agent.agent import Gemma4Agent
+from gemma4_agent.infra.config import AgentConfig
+from gemma4_agent.agent_core.agent import Gemma4Agent
 
 # Acciones GUI FÍSICAS (SendInput, roban foco -> peligro para VS Code). SOLO
 # estas: type/click/keypress/hotkey/scroll/drag. gui.screenshot / locate_* son

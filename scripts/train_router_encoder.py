@@ -72,7 +72,7 @@ def main() -> int:
     print(f"CUDA: {torch.cuda.is_available()}  device: "
           f"{torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'cpu'}")
 
-    from gemma4_agent.semantic_router import TOOL_DESCRIPTIONS
+    from gemma4_agent.routing.semantic_router import TOOL_DESCRIPTIONS
 
     # Positives: synthetic (query, tool-description) pairs + dev real rows.
     pairs: list[tuple[str, str]] = []

@@ -1,0 +1,41 @@
+[
+  {
+    "mission": "subi el volumen",
+    "reply": "Listo, el volumen actual es del 24 por ciento.",
+    "tools": [
+      "audio"
+    ],
+    "used_physical_gui": false
+  },
+  {
+    "mission": "baja el volumen",
+    "reply": "",
+    "tools": [
+      "audio",
+      "session"
+    ],
+    "used_physical_gui": false
+  },
+  {
+    "mission": "pausa la musica",
+    "reply": "Listo, pausé la música.",
+    "tools": [
+      "media"
+    ],
+    "used_physical_gui": false
+  },
+  {
+    "mission": "mutea el sonido",
+    "reply": "Listo, el sonido está silenciado.",
+    "tools": [
+      "audio"
+    ],
+    "used_physical_gui": false
+  },
+  {
+    "mission": "pone el volumen al 50 por ciento",
+    "reply": "set_volume(level=50)",
+    "tools": [],
+    "used_physical_gui": false
+  }
+]

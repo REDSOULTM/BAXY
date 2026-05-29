@@ -9,14 +9,14 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
 
-from gemma4_agent.profiles import get_active_profile, apply_profile_to_env
-from gemma4_agent.llama_server import get_shared_manager
+from gemma4_agent.infra.profiles import get_active_profile, apply_profile_to_env
+from gemma4_agent.infra.llama_server import get_shared_manager
 
 prof = get_active_profile(); apply_profile_to_env(prof)
 print("[boot]", get_shared_manager().start(prof, wait_health=True, timeout_s=120), flush=True)
 
-from gemma4_agent.agent import Gemma4Agent
-from gemma4_agent.config import AgentConfig
+from gemma4_agent.agent_core.agent import Gemma4Agent
+from gemma4_agent.infra.config import AgentConfig
 
 def _stub_open(*a, **k):
     return {"ok": True, "opened": True, "stubbed": True}

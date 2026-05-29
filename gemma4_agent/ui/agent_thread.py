@@ -65,8 +65,8 @@ class AgentWorker(QThread):
     def _build_agent(self) -> None:
         from pathlib import Path
 
-        from ..agent import Gemma4Agent
-        from ..config import AgentConfig
+        from ..agent_core.agent import Gemma4Agent
+        from ..infra.config import AgentConfig
 
         self.state_changed.emit("INITIALISING")
         self.log.emit("Building agent config from environment...", "sys")

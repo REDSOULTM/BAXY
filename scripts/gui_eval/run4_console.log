@@ -1,0 +1,124 @@
+[gui-eval] 104 misiones (tier=all)
+[gui-eval] agente construido; corriendo misiones contra el SO real...
+
+W0524 02:45:18.328000 33920 site-packages\torch\distributed\elastic\multiprocessing\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs.
+[1/104] PASS   t1_vol_30                steps=1 12.3s | volumen=30 (target 30±4)
+[2/104] PASS   t1_vol_50_en             steps=1 2.35s | volumen=50 (target 50±4)
+[3/104] PASS   t1_vol_10_pt             steps=1 2.15s | volumen=10 (target 10±4)
+[4/104] PASS   t1_mute                  steps=1 1.95s | muted=True (esperado True)
+[5/104] PASS   t1_open_notepad          steps=1 3.93s | ventana 'notas' visible=True
+[6/104] PASS   t1_open_calc             steps=1 2.99s | calc proc=True
+[7/104] PASS   t1_notepad_write         steps=1 4.98s | Notepad contiene 'hola mundo'=True
+[8/104] PASS   t1_vol_5_es_1            steps=1 2.31s | volumen=5 (target 5±4)
+[9/104] PASS   t1_vol_15_es_2           steps=1 2.07s | volumen=15 (target 15±4)
+[10/104] PASS   t1_vol_25_es_3           steps=1 2.11s | volumen=25 (target 25±4)
+[11/104] PASS   t1_vol_35_es_4           steps=1 2.14s | volumen=35 (target 35±4)
+[12/104] PASS   t1_vol_45_en_5           steps=1 2.2s | volumen=45 (target 45±4)
+[13/104] PASS   t1_vol_55_en_6           steps=1 2.3s | volumen=55 (target 55±4)
+[14/104] PASS   t1_vol_65_en_7           steps=1 2.66s | volumen=65 (target 65±4)
+[15/104] PASS   t1_vol_75_pt_8           steps=1 2.12s | volumen=75 (target 75±4)
+[16/104] PASS   t1_vol_85_pt_9           steps=1 2.12s | volumen=85 (target 85±4)
+[17/104] PASS   t1_vol_95_fr_10          steps=1 2.15s | volumen=95 (target 95±4)
+[18/104] PASS   t1_vol_20_de_11          steps=1 2.37s | volumen=20 (target 20±4)
+[19/104] PASS   t1_vol_40_it_12          steps=1 2.32s | volumen=40 (target 40±4)
+[20/104] PASS   t1_vol_60_es_13          steps=1 2.13s | volumen=60 (target 60±4)
+[21/104] PASS   t1_vol_80_es_14          steps=1 2.31s | volumen=80 (target 80±4)
+[22/104] PASS   t1_vol_10_es_15          steps=1 2.07s | volumen=10 (target 10±4)
+[23/104] PASS   t1_vol_30_es_16          steps=1 2.23s | volumen=30 (target 30±4)
+[24/104] PASS   t1_vol_50_en_17          steps=1 2.17s | volumen=50 (target 50±4)
+[25/104] PASS   t1_vol_70_en_18          steps=1 2.23s | volumen=70 (target 70±4)
+[26/104] PASS   t1_vol_90_en_19          steps=1 2.14s | volumen=90 (target 90±4)
+[27/104] PASS   t1_vol_100_pt_20         steps=1 2.67s | volumen=100 (target 100±4)
+[28/104] PASS   t1_mute_es_0             steps=1 2.46s | muted=True (esperado True)
+[29/104] PASS   t1_mute_es_1             steps=1 2.16s | muted=True (esperado True)
+[30/104] PASS   t1_mute_en_2             steps=1 2.5s | muted=True (esperado True)
+[31/104] PASS   t1_mute_pt_3             steps=1 2.15s | muted=True (esperado True)
+[32/104] PASS   t1_mute_fr_4             steps=1 2.58s | muted=True (esperado True)
+[33/104] FAIL   t1_mute_de_5             steps=0 6.15s | muted=False (esperado True)
+[34/104] PASS   t1_mute_es_6             steps=1 2.29s | muted=True (esperado True)
+[35/104] PASS   t1_mute_en_7             steps=1 2.04s | muted=True (esperado True)
+[36/104] PASS   t1_unmute_es_0           steps=1 2.51s | muted=False (esperado False)
+[37/104] FAIL   t1_unmute_es_1           steps=1 1.22s | muted=True (esperado False) <<FALSO-PASS
+[38/104] FAIL   t1_unmute_en_2           steps=0 0.42s | muted=True (esperado False)
+[39/104] PASS   t1_unmute_pt_3           steps=1 2.23s | muted=False (esperado False)
+[40/104] PASS   t1_unmute_fr_4           steps=1 2.29s | muted=False (esperado False)
+[41/104] FAIL   t1_unmute_de_5           steps=1 1.14s | muted=True (esperado False) <<FALSO-PASS
+[42/104] PASS   t1_open_notepad_0        steps=1 3.63s | proceso 'notepad'(exact) corriendo=True
+[43/104] PASS   t1_open_notepad_1        steps=1 4.03s | proceso 'notepad'(exact) corriendo=True
+[44/104] PASS   t1_open_notepad_2        steps=1 3.78s | proceso 'notepad'(exact) corriendo=True
+[45/104] PASS   t1_open_notepad_3        steps=1 4.1s | proceso 'notepad'(exact) corriendo=True
+[46/104] PASS   t1_open_notepad_4        steps=1 3.04s | proceso 'notepad'(exact) corriendo=True
+[47/104] PASS   t1_open_calc_0           steps=1 2.57s | proceso 'CalculatorApp'(exact) corriendo=True
+[48/104] PASS   t1_open_calc_1           steps=1 6.9s | proceso 'CalculatorApp'(exact) corriendo=True
+[49/104] PASS   t1_open_calc_2           steps=1 2.89s | proceso 'CalculatorApp'(exact) corriendo=True
+[50/104] PASS   t1_open_calc_3           steps=1 3.13s | proceso 'CalculatorApp'(exact) corriendo=True
+[51/104] PASS   t1_open_calc_4           steps=1 4.87s | proceso 'CalculatorApp'(exact) corriendo=True
+[52/104] PASS   t1_open_mspaint_0        steps=1 3.53s | proceso 'mspaint'(exact) corriendo=True
+[53/104] PASS   t1_open_mspaint_1        steps=1 2.62s | proceso 'mspaint'(exact) corriendo=True
+[54/104] PASS   t1_open_mspaint_2        steps=1 2.75s | proceso 'mspaint'(exact) corriendo=True
+[55/104] PASS   t1_write_0               steps=1 6.16s | notas contiene 'hola mundo'=True
+[56/104] PASS   t1_write_1               steps=1 4.86s | notas contiene 'prueba uno dos tres'=True
+[57/104] PASS   t1_write_2               steps=1 4.63s | notas contiene 'buenos dias'=True
+[58/104] PASS   t2_open_chrome_0         steps=1 3.4s | proceso 'chrome' corriendo=True
+[59/104] PASS   t2_open_chrome_1         steps=1 3.03s | proceso 'chrome' corriendo=True
+[60/104] PASS   t2_open_chrome_2         steps=1 3.01s | proceso 'chrome' corriendo=True
+[61/104] PASS   t2_open_chrome_3         steps=1 6.46s | proceso 'chrome' corriendo=True
+[62/104] PASS   t2_open_msedge_0         steps=1 5.44s | proceso 'msedge' corriendo=True
+[63/104] PASS   t2_open_msedge_1         steps=1 4.24s | proceso 'msedge' corriendo=True
+[64/104] FAIL   t3_open_Discord_0        steps=1 3.96s | proceso 'Discord' corriendo=False <<FALSO-PASS
+[65/104] FAIL   t3_open_Discord_1        steps=1 3.6s | proceso 'Discord' corriendo=False <<FALSO-PASS
+[66/104] FAIL   t3_open_Discord_2        steps=1 2.79s | proceso 'Discord' corriendo=False <<FALSO-PASS
+[67/104] PASS   t3_open_Spotify_0        steps=1 3.2s | proceso 'Spotify' corriendo=True
+[68/104] PASS   t3_open_Spotify_1        steps=1 2.75s | proceso 'Spotify' corriendo=True
+[69/104] PASS   t3_open_Spotify_2        steps=1 2.94s | proceso 'Spotify' corriendo=True
+[70/104] PASS   t3_open_Spotify_3        steps=1 6.1s | proceso 'Spotify' corriendo=True
+[71/104] PASS   t3_open_steam_0          steps=1 3.94s | proceso 'steam' corriendo=True
+[72/104] PASS   t3_open_steam_1          steps=1 2.39s | proceso 'steam' corriendo=True
+[73/104] FAIL   t3_open_vlc_0            steps=1 3.77s | proceso 'vlc' corriendo=False
+[74/104] FAIL   t3_open_vlc_1            steps=1 3.04s | proceso 'vlc' corriendo=False
+[75/104] FAIL   t3_open_vlc_2            steps=1 2.69s | proceso 'vlc' corriendo=False
+[76/104] PASS   t3_open_Telegram_0       steps=1 6.28s | proceso 'Telegram' corriendo=True
+[77/104] PASS   t3_open_Telegram_1       steps=1 2.73s | proceso 'Telegram' corriendo=True
+[78/104] PASS   t2_open_WINWORD_0        steps=1 4.2s | proceso 'WINWORD' corriendo=True
+[79/104] PASS   t2_open_WINWORD_1        steps=1 3.18s | proceso 'WINWORD' corriendo=True
+[80/104] PASS   t2_open_EXCEL_0          steps=1 3.23s | proceso 'EXCEL' corriendo=True
+[81/104] PASS   t2_open_EXCEL_1          steps=1 3.31s | proceso 'EXCEL' corriendo=True
+[82/104] PASS   t1_close_notepad_0       steps=1 3.66s | ventanas ['bloc de notas', 'notepad'] visibles=0 (esperado 0)
+[83/104] PASS   t1_close_notepad_1       steps=1 2.75s | ventanas ['bloc de notas', 'notepad'] visibles=0 (esperado 0)
+[84/104] PASS   t1_close_notepad_2       steps=1 3.26s | ventanas ['bloc de notas', 'notepad'] visibles=0 (esperado 0)
+[85/104] PASS   t1_close_mspaint_0       steps=1 2.53s | proceso 'mspaint'(exact) corriendo=False (esperado cerrado)
+[86/104] PASS   t1_close_mspaint_1       steps=1 2.58s | proceso 'mspaint'(exact) corriendo=False (esperado cerrado)
+[87/104] PASS   t1_close_CalculatorApp_0 steps=1 2.14s | proceso 'CalculatorApp'(exact) corriendo=False (esperado cerrado)
+[88/104] PASS   t1_close_CalculatorApp_1 steps=1 3.84s | proceso 'CalculatorApp'(exact) corriendo=False (esperado cerrado)
+[89/104] PASS   t1_vol2_12_es            steps=1 2.52s | volumen=12 (target 12±4)
+[90/104] PASS   t1_vol2_22_es            steps=1 2.32s | volumen=22 (target 22±4)
+[91/104] PASS   t1_vol2_33_en            steps=1 2.27s | volumen=33 (target 33±4)
+[92/104] PASS   t1_vol2_44_en            steps=1 2.38s | volumen=44 (target 44±4)
+[93/104] PASS   t1_vol2_56_pt            steps=1 2.25s | volumen=56 (target 56±4)
+[94/104] PASS   t1_vol2_66_fr            steps=1 2.29s | volumen=66 (target 66±4)
+[95/104] PASS   t1_vol2_77_de            steps=1 6.32s | volumen=77 (target 77±4)
+[96/104] PASS   t1_vol2_88_it            steps=1 2.48s | volumen=88 (target 88±4)
+[97/104] PASS   t1_vol2_8_es             steps=1 2.03s | volumen=8 (target 8±4)
+[98/104] PASS   t1_vol2_18_es            steps=1 2.09s | volumen=18 (target 18±4)
+[99/104] PASS   t1_vol2_28_en            steps=1 2.05s | volumen=28 (target 28±4)
+[100/104] PASS   t1_vol2_38_en            steps=1 2.19s | volumen=38 (target 38±4)
+[101/104] PASS   t1_vol2_48_pt            steps=1 2.09s | volumen=48 (target 48±4)
+[102/104] PASS   t1_vol2_58_fr            steps=1 2.14s | volumen=58 (target 58±4)
+[103/104] PASS   t1_vol2_68_de            steps=1 5.92s | volumen=68 (target 68±4)
+[104/104] PASS   t1_vol2_78_it            steps=1 2.93s | volumen=78 (target 78±4)
+
+=== RESUMEN FASE 0 (estado actual, contra el SO real) ===
+{
+  "total": 104,
+  "pass": 94,
+  "fail": 10,
+  "inconclusive": 0,
+  "task_success_rate": 0.904,
+  "false_pass_count": 5,
+  "false_pass_rate": 0.048,
+  "latency_p50_s": 2.62,
+  "latency_p95_s": 6.16
+}
+
+>> FALSO-PASS rate = 0.048 (el número crítico: agente cree que sí, SO dice que no)
+>> resultados en scripts/gui_eval/results_106_run4.json

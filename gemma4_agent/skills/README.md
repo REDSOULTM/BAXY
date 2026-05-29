@@ -100,10 +100,10 @@ las ve, no las intenta cargar).
 
 ```powershell
 # Listar skills + menu preview
-python -m gemma4_agent.skills_registry list
+python -m gemma4_agent.tools_pkg.skills_registry list
 
 # Imprimir el body de uno
-python -m gemma4_agent.skills_registry load install-steam-game
+python -m gemma4_agent.tools_pkg.skills_registry load install-steam-game
 ```
 
 ## Opt-out

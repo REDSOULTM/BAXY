@@ -26,8 +26,8 @@ subprocess.run(["taskkill","/F","/IM","CalculatorApp.exe"],capture_output=True);
 subprocess.Popen(["calc.exe"]); time.sleep(2.5)
 restore("Opera"); restore("Discord"); time.sleep(1.0)
 
-from gemma4_agent.agent import Gemma4Agent
-from gemma4_agent.config import AgentConfig
+from gemma4_agent.agent_core.agent import Gemma4Agent
+from gemma4_agent.infra.config import AgentConfig
 ag=Gemma4Agent(AgentConfig.from_env()); ag.run_text("hola")
 
 def fired(ag, cmd):

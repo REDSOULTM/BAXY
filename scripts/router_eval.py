@@ -133,7 +133,7 @@ def run_router(q: str, prev: str | None = None) -> set[str]:
     # prev is the PREVIOUS USER TURN (corpus `prev` field), passed as
     # prev_user_text so deictic continuations can resolve their referent —
     # this is what the planner sees at runtime when context is available.
-    from gemma4_agent.planner import select_tool_names, plan_mission
+    from gemma4_agent.routing.planner import select_tool_names, plan_mission
     return set(select_tool_names(
         q, plan_mission(q), safety_enabled=True,
         prev_user_text=prev,
@@ -148,7 +148,7 @@ def run_router(q: str, prev: str | None = None) -> set[str]:
 # tool). --inherit reproduces that so we see the real production recall.
 # We mirror agent.py's rules: <=6 words, and never inherit dangerous tools.
 try:
-    from gemma4_agent.agent import DANGEROUS_TOOLS_NEVER_INHERIT as _DANGEROUS
+    from gemma4_agent.agent_core.agent import DANGEROUS_TOOLS_NEVER_INHERIT as _DANGEROUS
 except Exception:
     _DANGEROUS = frozenset({
         "whatsapp", "whatsapp_send", "file_delete", "file_write",
@@ -187,7 +187,7 @@ def _head_strongly_abstains(q: str) -> bool:
     """True when the calibrated abstain head is confident (p >= max(thr,0.80))
     that q is no-tool. Matches the runtime inherit gate in agent.py."""
     try:
-        from gemma4_agent.abstain_head import (
+        from gemma4_agent.safety_pkg.abstain_head import (
             load_model, build_features, is_enabled,
         )
         if not is_enabled():
@@ -195,8 +195,8 @@ def _head_strongly_abstains(q: str) -> bool:
         m = load_model()
         if m is None:
             return False
-        from gemma4_agent.intent_router import classify_intent
-        from gemma4_agent.semantic_router import suggest_tools_scored
+        from gemma4_agent.routing.intent_router import classify_intent
+        from gemma4_agent.routing.semantic_router import suggest_tools_scored
         intent = None
         try:
             intent = classify_intent(q)

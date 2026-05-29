@@ -110,9 +110,9 @@ def is_subseq(small, big):
 
 
 def main():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
-    from gemma4_agent.computer_use import plan_for
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
+    from gemma4_agent.computer_use_pkg.computer_use import plan_for
     ag = Gemma4Agent(AgentConfig.from_env())
     ag.run_text("hola")  # warm
 

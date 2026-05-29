@@ -87,8 +87,8 @@ CASES: list[tuple[str, str, bool]] = [
 
 
 def _build_agent():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
     return Gemma4Agent(AgentConfig.from_env())
 
 

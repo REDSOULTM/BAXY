@@ -2,7 +2,7 @@ import os, sys, time
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
 sys.path.insert(0, os.path.dirname(__file__))
 from eval_set import missions_for_tier
-from gemma4_agent.agent import Gemma4Agent
+from gemma4_agent.agent_core.agent import Gemma4Agent
 agent = Gemma4Agent()
 ms = [m for m in missions_for_tier(1) if "mute" in m.id]
 for m in ms:

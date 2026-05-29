@@ -2,7 +2,7 @@ import os, sys, time
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE","vram4")
 sys.path.insert(0, os.path.dirname(__file__))
 from eval_set import missions_for_tier
-import gemma4_agent.agent as A
+import gemma4_agent.agent_core.agent as A
 ag=A.Gemma4Agent()
 ms=[m for m in missions_for_tier(None) if 'clickbtn' in m.id]
 p=0

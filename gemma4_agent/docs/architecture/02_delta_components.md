@@ -210,14 +210,14 @@ combinados de código idéntico estructuralmente).
 
 **API:**
 ```bash
-python -m gemma4_agent.task_runner --type {routine,watcher} --id <id>
+python -m gemma4_agent.infra.task_runner --type {routine,watcher} --id <id>
                                     [--label <label>]
 ```
 
 **Compatibilidad:** los wrappers viejos siguen existiendo (~15 LOC
 cada uno) — preprenden `--type routine|watcher` y delegan. Esto
 preserva los Scheduled Tasks de Windows ya registrados que invocan
-`python -m gemma4_agent.routine_runner` etc.
+`python -m gemma4_agent.infra.routine_runner` etc.
 
 ## 3. Tabla resumen de impacto
 

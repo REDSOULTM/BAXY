@@ -50,7 +50,7 @@ def main() -> int:
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import StratifiedKFold
 
-    from gemma4_agent.semantic_router import embed, TOOL_DESCRIPTIONS
+    from gemma4_agent.routing.semantic_router import embed, TOOL_DESCRIPTIONS
 
     tools = sorted(TOOL_DESCRIPTIONS.keys())
     tool_idx = {t: i for i, t in enumerate(tools)}

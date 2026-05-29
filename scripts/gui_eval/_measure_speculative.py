@@ -12,7 +12,7 @@ import os, sys, time
 os.environ["GEMMA4_MULTI_INTENT"] = "0"   # APAGAR el splitter determinista
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
 sys.path.insert(0, os.path.dirname(__file__))
-import gemma4_agent.agent as A
+import gemma4_agent.agent_core.agent as A
 from eval_set import _kill_process, _clear_notepad_session, uia_window_has_text
 
 ag = A.Gemma4Agent()

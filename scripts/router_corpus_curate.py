@@ -45,7 +45,7 @@ OUT = ROOT / "gemma4_agent" / "data" / "router_eval_corpus.curated.jsonl"
 
 
 def _valid_tools() -> set[str]:
-    from gemma4_agent.tool_schemas import COMPOUND_TOOL_SCHEMAS as S
+    from gemma4_agent.tools_pkg.tool_schemas import COMPOUND_TOOL_SCHEMAS as S
     return {sch.get("function", {}).get("name", "") for sch in S} - {""}
 
 

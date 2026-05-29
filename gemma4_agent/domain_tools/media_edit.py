@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Any
 
 from .._shared import _err, _ok
-from ..state import AgentState
+from ..memory_pkg.state import AgentState
 
 
 __all__ = [

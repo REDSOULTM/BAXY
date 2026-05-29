@@ -1,0 +1,25 @@
+W0524 14:06:05.739000 29812 site-packages\torch\distributed\elastic\multiprocessing\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs.
+[gui-eval] 5 misiones (tier=4)
+[gui-eval] agente construido; corriendo misiones contra el SO real...
+
+[1/5] PASS   t4_calc_chain_4          steps=1 15.59s | display Calculadora='Se muestra 4' contiene '4'=True
+[2/5] FAIL   t4_calc_chain_8          steps=0 15.45s | display Calculadora='Se muestra 0' contiene '8'=False
+[3/5] PASS   t4_calc_chain_42         steps=1 7.35s | display Calculadora='Se muestra 42' contiene '42'=True
+[4/5] PASS   t4_npad_chain_informe_final steps=1 5.95s | Notepad contiene 'informe final'=True
+[5/5] FAIL   t4_npad_chain_hola_mundo steps=1 19.56s | Notepad contiene 'hola mundo'=False
+
+=== RESUMEN FASE 0 (estado actual, contra el SO real) ===
+{
+  "total": 5,
+  "pass": 3,
+  "fail": 2,
+  "inconclusive": 0,
+  "task_success_rate": 0.6,
+  "false_pass_count": 0,
+  "false_pass_rate": 0.0,
+  "latency_p50_s": 15.45,
+  "latency_p95_s": 19.56
+}
+
+>> FALSO-PASS rate = 0.0 (el número crítico: agente cree que sí, SO dice que no)
+>> resultados en scripts/gui_eval/results_tier4_chains.json

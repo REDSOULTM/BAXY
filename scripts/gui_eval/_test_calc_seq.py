@@ -2,7 +2,7 @@ import os, sys, time, subprocess, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE","vram4")
 sys.path.insert(0, os.path.dirname(__file__))
-import gemma4_agent.agent as A
+import gemma4_agent.agent_core.agent as A
 from eval_set import _reset_calc_clean, _calc_display_value
 ag=A.Gemma4Agent(); tb=ag.tools
 _reset_calc_clean()

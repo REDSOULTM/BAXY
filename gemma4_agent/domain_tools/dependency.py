@@ -19,7 +19,7 @@ import shutil
 from typing import Any
 
 from .._shared import _err, _ok
-from ..tool_result import ToolResult
+from ..tools_pkg.tool_result import ToolResult
 
 
 __all__ = [

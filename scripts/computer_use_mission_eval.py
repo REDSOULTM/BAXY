@@ -185,7 +185,7 @@ def _plan_json(mission: MissionCase) -> str:
 
 
 def run_dry(include_blocked: bool = True) -> tuple[bool, list[dict[str, Any]]]:
-    from gemma4_agent.computer_use import parse_plan
+    from gemma4_agent.computer_use_pkg.computer_use import parse_plan
     from gemma4_agent.computer_use_caps.policy import choose_policy
     from gemma4_agent.computer_use_caps.router import CapabilityRouter
 

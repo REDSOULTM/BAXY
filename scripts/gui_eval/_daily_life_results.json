@@ -1,0 +1,177 @@
+[
+  {
+    "text": "recordame tomar la pastilla a las tres de la tarde",
+    "tools": [
+      "reminder"
+    ],
+    "expected": [
+      "local_calendar",
+      "notification",
+      "reminder"
+    ],
+    "reply": "Listo, he recordado que debes tomar la pastilla a las tres de la tarde.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "ponme un temporizador de diez minutos",
+    "tools": [
+      "notification"
+    ],
+    "expected": [
+      "notification"
+    ],
+    "reply": "Listo, el temporizador de diez minutos ha comenzado.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "anota que tengo que llamar al medico manana",
+    "tools": [
+      "notes_tasks"
+    ],
+    "expected": [
+      "notes_tasks",
+      "reminder"
+    ],
+    "reply": "Listo, he anotado que tienes que llamar al médico mañana.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "agenda una reunion el viernes a las cinco",
+    "tools": [
+      "local_calendar"
+    ],
+    "expected": [
+      "local_calendar"
+    ],
+    "reply": "Listo, he agregado una reunión para el viernes a las cinco.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "subi el volumen",
+    "tools": [
+      "audio"
+    ],
+    "expected": [
+      "audio"
+    ],
+    "reply": "Listo, el volumen ha subido al cien por ciento.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "guarda el numero de juan: 351 555 1234",
+    "tools": [
+      "contacts"
+    ],
+    "expected": [
+      "contacts"
+    ],
+    "reply": "Listo, he guardado el número de Juan.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "que hora es",
+    "tools": [
+      "system"
+    ],
+    "expected": [],
+    "reply": "La hora actual es las 16:32:17.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "que tengo agendado para hoy",
+    "tools": [
+      "local_calendar"
+    ],
+    "expected": [
+      "local_calendar",
+      "notes_tasks",
+      "reminder"
+    ],
+    "reply": "Tienes agendada una \"Smoke Event\", una \"Reunión de prueba\", una \"Reunión\" y otra \"Reunión\" hoy.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "escribi un correo a ana diciendo que llego tarde",
+    "tools": [
+      "email"
+    ],
+    "expected": [
+      "email"
+    ],
+    "reply": "No pude enviar el correo porque no tengo el token de Microsoft Graph.\n\n[1 no confirmada(s)]",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "activa el narrador de windows",
+    "tools": [
+      "accessibility"
+    ],
+    "expected": [
+      "accessibility"
+    ],
+    "reply": "Listo, el narrador de Windows ha sido activado.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "lee lo que hay en la pantalla",
+    "tools": [
+      "vision"
+    ],
+    "expected": [
+      "vision"
+    ],
+    "reply": "",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "conectate a la red wifi de casa",
+    "tools": [
+      "device_settings"
+    ],
+    "expected": [
+      "device_settings"
+    ],
+    "reply": "No pude conectar la red Wi-Fi porque me falta el nombre del perfil. Por favor, dime el nombre del perfil de la red.\n\n[1 ",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "pon musica",
+    "tools": [
+      "media"
+    ],
+    "expected": [
+      "app",
+      "browser",
+      "media"
+    ],
+    "reply": "Listo, la música se está reproduciendo en Spotify.",
+    "ok": true,
+    "physical_gui": false
+  },
+  {
+    "text": "apaga la computadora en una hora",
+    "tools": [
+      "system"
+    ],
+    "expected": [
+      "job_manager",
+      "notification",
+      "system"
+    ],
+    "reply": "El apagado de la computadora en una hora fue solicitado, pero requirió confirmación antes de ejecutarse.",
+    "ok": true,
+    "physical_gui": false
+  }
+]

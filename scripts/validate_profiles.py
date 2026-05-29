@@ -23,11 +23,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from gemma4_agent.config import AgentConfig          # noqa: E402
-from gemma4_agent.llama_server import (               # noqa: E402
+from gemma4_agent.infra.config import AgentConfig          # noqa: E402
+from gemma4_agent.infra.llama_server import (               # noqa: E402
     LlamaServerManager, _kill_server_on_port,
 )
-from gemma4_agent.profiles import PROFILES            # noqa: E402
+from gemma4_agent.infra.profiles import PROFILES            # noqa: E402
 
 LOG = Path(__file__).resolve().parent.parent / "gemma4_agent" / "logs" / "llama-server.out.log"
 GPU_TOTAL = 16380  # 4060 Ti; informational

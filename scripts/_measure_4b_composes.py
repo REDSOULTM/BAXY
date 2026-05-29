@@ -52,8 +52,8 @@ def restore_min(name):
         win32gui.ShowWindow(hd[0], win32con.SW_RESTORE)
 
 def build_agent():
-    from gemma4_agent.agent import Gemma4Agent
-    from gemma4_agent.config import AgentConfig
+    from gemma4_agent.agent_core.agent import Gemma4Agent
+    from gemma4_agent.infra.config import AgentConfig
     return Gemma4Agent(AgentConfig.from_env())
 
 # (comando, verificador(title_fn)->bool tras correr). Misiones de nav-en-app que

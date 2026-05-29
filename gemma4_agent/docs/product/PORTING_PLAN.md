@@ -867,8 +867,8 @@ de `carter_v5/mcp_server.py` con dos cambios:
 2. `_handle_tools_call()` dispatcha al agente Gemma 4 vía `Toolbelt.execute()`.
 
 Modos:
-- `python -m gemma4_agent.mcp_server` → stdio (Claude Desktop default).
-- `python -m gemma4_agent.mcp_server --port 8765` → HTTP.
+- `python -m gemma4_agent.tools_pkg.mcp_server` → stdio (Claude Desktop default).
+- `python -m gemma4_agent.tools_pkg.mcp_server --port 8765` → HTTP.
 
 **Wiring en `launcher.py`**:
 
@@ -900,7 +900,7 @@ En `~/.config/Claude/claude_desktop_config.json`:
 ## Para Goose
 
 ```bash
-goose config add gemma4-mcp --command "python -m gemma4_agent.mcp_server"
+goose config add gemma4-mcp --command "python -m gemma4_agent.tools_pkg.mcp_server"
 ```
 ```
 
@@ -908,7 +908,7 @@ goose config add gemma4-mcp --command "python -m gemma4_agent.mcp_server"
 
 - Smoke con `curl` al modo HTTP:
   ```bash
-  python -m gemma4_agent.mcp_server --port 8765 &
+  python -m gemma4_agent.tools_pkg.mcp_server --port 8765 &
   curl -X POST http://127.0.0.1:8765/mcp -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
   ```
 - Verificar shape de respuesta MCP-compliant.

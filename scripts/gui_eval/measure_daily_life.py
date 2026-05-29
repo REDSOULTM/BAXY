@@ -21,8 +21,8 @@ sys.path.insert(0, str(ROOT))
 
 os.environ.setdefault("GEMMA4_ACCESSIBILITY_MODE", "movilidad")
 
-from gemma4_agent.config import AgentConfig
-from gemma4_agent.agent import Gemma4Agent
+from gemma4_agent.infra.config import AgentConfig
+from gemma4_agent.agent_core.agent import Gemma4Agent
 
 _PHYSICAL_GUI_ACTIONS = {"type", "type_into", "click", "double_click",
                          "right_click", "click_button", "keypress", "hotkey",

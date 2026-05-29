@@ -1,0 +1,10 @@
+=== CALC type_into x10 ===
+  2+2=4: 'Se muestra 4' OK
+Traceback (most recent call last):
+  File "C:\Users\usuario\Desktop\ETC\Programacion\Probando Gemma 4\scripts\_exhaustive_gui_test.py", line 57, in <module>
+    d=calc_display() or ""; dig="".join(c for c in d if c.isdigit())
+  File "C:\Users\usuario\Desktop\ETC\Programacion\Probando Gemma 4\scripts\_exhaustive_gui_test.py", line 18, in calc_display
+    if "alculadora" in (w.Name or ""):
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python310\lib\site-packages\uiautomation\uiautomation.py", line 6799, in Name
+    return self.Element.CurrentName or ''   # CurrentName may be None
+_ctypes.COMError: (-2147220991, 'Un evento no pudo invocar a ninguno de los subscriptores', (None, None, None, 0, None))

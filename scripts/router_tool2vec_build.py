@@ -28,7 +28,7 @@ OUT = ROOT / "gemma4_agent" / "data" / "tool2vec_centroids.npz"
 
 def main() -> int:
     import numpy as np
-    from gemma4_agent.semantic_router import embed, _MODEL_NAME_DEFAULT
+    from gemma4_agent.routing.semantic_router import embed, _MODEL_NAME_DEFAULT
 
     if not QUERIES.exists():
         print(f"missing {QUERIES} — run router_tool2vec_generate.py first")
