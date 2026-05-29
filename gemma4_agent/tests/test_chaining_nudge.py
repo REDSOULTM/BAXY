@@ -62,6 +62,28 @@ class ChainingNudgeTest(unittest.TestCase):
                                 "matches": ["song1.mp3"]})]
         self.assertIsNotNone(_nudge(rc, ev))
 
+    def test_web_search_offers_synthesize_not_just_open(self):
+        # Bug 2026-05-29: para BÚSQUEDA WEB el nudge debe ofrecer "sintetizá y
+        # respondé" (no solo "abrir el resultado"), si no las preguntas conceptuales
+        # ("explicame qué es Python") se descarrilaban ("no hay acción"/"cancelo").
+        rc = [{"function": {"name": "web"}}]
+        ev = [ToolEvent(name="web", args={"action": "search"},
+                        result={"ok": True, "action": "search",
+                                "results": [{"title": "x", "url": "http://x"}]})]
+        n = _nudge(rc, ev)
+        self.assertIsNotNone(n)
+        self.assertIn("sintetiz", n.lower())          # ofrece responder/sintetizar
+        self.assertNotIn("reproducir", n.lower())     # NO es el nudge de recurso-local
+
+    def test_filesystem_search_keeps_resource_action_nudge(self):
+        # Recurso LOCAL: el nudge sigue empujando a la acción (abrir/reproducir/leer).
+        rc = [{"function": {"name": "filesystem"}}]
+        ev = [ToolEvent(name="filesystem", args={"action": "search"},
+                        result={"ok": True, "action": "search", "paths": ["C:/a.docx"]})]
+        n = _nudge(rc, ev)
+        self.assertIsNotNone(n)
+        self.assertIn("reproducir", n.lower())        # nudge de recurso-local intacto
+
 
 class FilesystemSearchClarificationTest(unittest.TestCase):
     def test_asks_which_file_to_open_after_search_results(self):

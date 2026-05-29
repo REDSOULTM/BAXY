@@ -3217,17 +3217,30 @@ class Gemma4Agent:
         # = se ofreció ≥1 tool de dominio este turno O se ejecutó una acción
         # de dominio. Estructural (estado del router/ejecución), no contenido.
         _cont_actionable = False
+        _only_web_search = False
         try:
             _dom_offered = bool(_domain_subset(list(selected_tool_names)))
-            _dom_ran = any(
-                e.name not in {"session", "safety", "state", "verify"}
-                for e in events
-            )
+            _dom_events = [e for e in events
+                           if e.name not in {"session", "safety", "state", "verify"}]
+            _dom_ran = bool(_dom_events)
             _cont_actionable = _dom_offered or _dom_ran
+            # Bug 2026-05-29 (movilidad/no_vidente): si lo ÚNICO que corrió fue una
+            # BÚSQUEDA WEB informacional, NO hay tarea física pendiente — responder/
+            # sintetizar YA completó el turno. Sin este guard, el continue-nudge
+            # empujaba a un "siguiente paso" físico inexistente y el 4B colapsaba a
+            # reply VACÍO ("explicame qué es Python" -> web -> ""). Estructural.
+            _only_web_search = _dom_ran and all(
+                e.name in {"web", "browser", "browser_real"}
+                and isinstance(getattr(e, "result", None), dict)
+                and "search" in str((e.result or {}).get("action") or "").casefold()
+                for e in _dom_events
+            )
         except Exception:
             _cont_actionable = True  # ante la duda, no bloquear el nudge
+            _only_web_search = False
         if (_cont_active
                 and _cont_actionable
+                and not _only_web_search
                 and self._a11y_continue_count < _A11Y_MAX_CONTINUES
                 and _cont_delegates):
             self._a11y_continue_count += 1
@@ -4298,6 +4311,12 @@ class Gemma4Agent:
         "filesystem", "local_search", "photo_library", "web", "browser",
         "browser_real",
     })
+    # Búsquedas WEB: el "segundo paso" es AMBIGUO (puede ser navegar/abrir, o puede
+    # ser que la búsqueda fuera para RESPONDER una pregunta -> sintetizar es el final).
+    # Reciben un nudge distinto (ver _chaining_nudge). Bug destapado en vivo 2026-05-29:
+    # con el nudge de recurso-local, "explicame qué es Python" -> web -> el 4B se
+    # descarrilaba ("no hay acción"/"listo cancelo") buscando un 2do paso inexistente.
+    _WEB_SEARCH_LIKE = frozenset({"web", "browser", "browser_real"})
 
     def _chaining_nudge(
         self, raw_tool_calls: list[dict[str, Any]], events: list[Any],
@@ -4325,6 +4344,20 @@ class Gemma4Agent:
                      or res.get("files") or res.get("items"))
             if not items:
                 continue  # vacío -> honesty guard responde "no encontré nada"
+            if name in self._WEB_SEARCH_LIKE:
+                # Búsqueda WEB: ofrecer las DOS salidas. El nudge de recurso-local
+                # asumía "abrir SIEMPRE" y descarrilaba las preguntas conceptuales
+                # (el 4B no hallaba 2do paso -> "no hay acción"/"cancelo"). Acá la
+                # SÍNTESIS de los resultados es una salida válida y final.
+                return (
+                    "[system note] Ya tenés los resultados de la búsqueda. Elegí UNA "
+                    "salida y terminá el turno: (a) si el usuario pidió ABRIR/IR a una "
+                    "página, abrila con browser.open(url=...) usando `top_result_url` o "
+                    "el primer resultado; (b) si pidió una EXPLICACIÓN, un DATO o una "
+                    "RESPUESTA, contestá AHORA en lenguaje natural sintetizando lo que "
+                    "encontraste y NO llames más herramientas. La respuesta misma ES la "
+                    "acción: no informes que 'no hay acción pendiente' ni canceles."
+                )
             return (
                 "[system note] La búsqueda encontró resultados. Si la tarea del "
                 "usuario requería un SEGUNDO paso con el resultado (abrir, "
