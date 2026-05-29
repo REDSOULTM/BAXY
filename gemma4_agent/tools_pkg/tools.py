@@ -1412,6 +1412,7 @@ class ToolRegistry:
             "job_manager": self.t_job_manager,
             "network": self.t_network,
             "data_analysis": self.t_data_analysis,
+            "file_process": self.t_file_process,
             "fact_check": self.t_fact_check,
             "photo_library": self.t_photo_library,
             "container": self.t_container,
@@ -2849,6 +2850,32 @@ class ToolRegistry:
 
     def t_data_analysis(self, args: dict[str, Any]) -> dict[str, Any]:
         return data_analysis_tool(args, self.state)
+
+    def t_file_process(self, args: dict[str, Any]) -> dict[str, Any]:
+        """B6: file-processor unificado. Detecta el tipo del archivo (por extensión) y
+        DELEGA al procesador correcto (data_analysis/document/vision-OCR) vía execute(),
+        sin que el 4B tenga que elegir. Patrón "analizá este archivo" (Mark-XXXIX).
+        Gated GEMMA4_FILE_PROCESSOR. Guarda estructural (extensión, sin LLM/keywords)."""
+        from ..domain_tools.file_process import (
+            detect_file_kind, plan_for_kind, file_processor_enabled,
+        )
+        if not file_processor_enabled():
+            return _err("file_process disabled (set GEMMA4_FILE_PROCESSOR=1)", status="needs_user")
+        raw = str(args.get("path") or args.get("file") or "").strip()
+        p = Path(raw).expanduser() if raw else None
+        if not raw or p is None or not p.is_file():
+            return _err(f"file not found: {raw!r}", status="needs_user")
+        kind = detect_file_kind(p)
+        plan = plan_for_kind(kind)
+        if plan is None:
+            return _err(
+                f"file_process: tipo '{kind}' ({p.suffix}) no auto-procesable todavía",
+                status="needs_user", file_kind=kind, path=str(p))
+        tool, action, path_arg = plan
+        result = self.execute(tool, {"action": action, path_arg: str(p)})
+        if isinstance(result, dict):
+            result.setdefault("file_process", {"kind": kind, "delegated_to": f"{tool}.{action}"})
+        return result
 
     def t_mcp(self, args: dict[str, Any]) -> dict[str, Any]:
         """B9: tool puente a servidores MCP (Model Context Protocol). Gated

@@ -160,7 +160,7 @@ def _alias_domain_tools_shims() -> None:
         "accessibility", "backup_sync", "bluetooth", "calendar", "contacts",
         "container", "creative_local", "data_analysis", "database",
         "dependency", "desktop_layout", "developer", "device_settings",
-        "document", "fact_check", "form_filler", "game_launcher",
+        "document", "fact_check", "file_process", "form_filler", "game_launcher",
         "habit_tracker", "helpers", "job_manager", "local_search",
         "maintenance", "media_edit", "network", "notes", "notifications",
         "office", "peripheral", "photo_library", "printer_scanner",
