@@ -18,7 +18,7 @@ from ..memory_pkg.memory import MemoryStore
 from ..support.modes import AgentMode, choose_mode
 from ..tools_pkg.multimodal import image_part, user_content
 from ..routing.planner import MissionPlan, plan_mission, select_tool_names
-from ..support.reasoning import detect_leaked_tool_call, sanitize_assistant_message, sanitize_text
+from ..support.reasoning import build_action_to_tool, detect_leaked_tool_call, sanitize_assistant_message, sanitize_text
 from ..memory_pkg.state import AgentState
 from ..tools_pkg.tools import ToolRegistry
 from ..infra.tracing import TraceLogger, summarize_content
@@ -2613,13 +2613,16 @@ class Gemma4Agent:
             # no hubo tool_calls y el content matchea "<tool>(args...)",
             # lo reescribimos como real tool_call antes de continuar.
             if not raw_tool_calls and assistant_content:
+                _amap = None
                 try:
-                    from ..tools_pkg.tools import COMPOUND_TOOL_SCHEMAS as _CTS
+                    from ..tools_pkg.tools import COMPOUND_TOOL_SCHEMAS as _CTS, ACTION_ENUMS as _AE
                     known_names = {
                         s["function"]["name"] for s in _CTS
                         if isinstance(s, dict) and isinstance(s.get("function"), dict)
                         and isinstance(s["function"].get("name"), str)
                     }
+                    # action→tool: rescata `mute(state:true)`→audio(action='mute').
+                    _amap = build_action_to_tool(known_names, _AE)
                 except Exception as _exc:
                     try:
                         self.trace.event(
@@ -2631,7 +2634,7 @@ class Gemma4Agent:
                         pass
                     known_names = None
                 rescued = detect_leaked_tool_call(
-                    assistant_content, known_tool_names=known_names,
+                    assistant_content, known_tool_names=known_names, action_to_tool=_amap,
                 )
                 if rescued is not None:
                     self.trace.event(
@@ -2809,8 +2812,11 @@ class Gemma4Agent:
                                            for s in (selected_schemas or [])
                                            if isinstance(s, dict)}
                                     _kn.discard(None)
+                                    from ..tools_pkg.tools import ACTION_ENUMS as _AE_f
+                                    _amap_f = build_action_to_tool(_kn, _AE_f)
                                     _resc_f = detect_leaked_tool_call(
-                                        _raw_f, known_tool_names=_kn or None)
+                                        _raw_f, known_tool_names=_kn or None,
+                                        action_to_tool=_amap_f)
                                 except Exception:
                                     _resc_f = None
                                 if _resc_f is not None:

@@ -446,5 +446,57 @@ class TestGemmaSpecialTokenStrip(unittest.TestCase):
         self.assertEqual(sanitize_text(txt), txt)
 
 
+class TestActionNameRescue(unittest.TestCase):
+    """R-latencia 2026-05-30: el 4B leakea la ACCIÓN como tool standalone
+    (`mute(state: true)`, con COLON) en vez de `audio(action='mute')` → el turno
+    entraba a un forced-retry lento que terminaba vacío. build_action_to_tool
+    (derivado del schema) + el rescue mapean action→tool, estructural."""
+
+    def setUp(self):
+        from ..support.reasoning import build_action_to_tool
+        from ..tools_pkg.tools import ACTION_ENUMS
+        self.known = {"audio", "app", "system"}
+        self.amap = build_action_to_tool(self.known, ACTION_ENUMS)
+
+    def test_build_map_mute_to_audio(self):
+        self.assertEqual(self.amap.get("mute"), "audio")
+
+    def test_build_map_excludes_ambiguous(self):
+        from ..support.reasoning import build_action_to_tool
+        from ..tools_pkg.tools import ACTION_ENUMS
+        # 'open' está en app Y steam → ambiguo en ese subset → NO se mapea.
+        amap = build_action_to_tool({"app", "steam"}, ACTION_ENUMS)
+        self.assertNotIn("open", amap)
+
+    def test_mute_colon_leak_maps_to_audio(self):
+        r = detect_leaked_tool_call("mute(state: true)",
+                                    known_tool_names=self.known, action_to_tool=self.amap)
+        self.assertIsNotNone(r)
+        self.assertEqual(r["function"]["name"], "audio")
+        args = json.loads(r["function"]["arguments"])
+        self.assertEqual(args.get("action"), "mute")
+        self.assertIs(args.get("state"), True)  # bool real, no la string "true"
+
+    def test_mute_leak_with_narration(self):
+        r = detect_leaked_tool_call("mute(state: true)\nListo, el volumen",
+                                    known_tool_names=self.known, action_to_tool=self.amap)
+        self.assertEqual((r or {}).get("function", {}).get("name"), "audio")
+
+    def test_no_map_means_no_rescue(self):
+        # Sin action_to_tool, 'mute' no es tool → NO se rescata (back-compat).
+        self.assertIsNone(detect_leaked_tool_call("mute(state=true)", known_tool_names=self.known))
+
+    def test_real_tool_unaffected(self):
+        r = detect_leaked_tool_call('audio(action="mute")',
+                                    known_tool_names=self.known, action_to_tool=self.amap)
+        self.assertEqual(r["function"]["name"], "audio")
+
+    def test_colon_kwargs_parse(self):
+        from ..support.reasoning import _parse_colon_kwargs
+        self.assertEqual(_parse_colon_kwargs("state: true"), {"state": True})
+        self.assertEqual(_parse_colon_kwargs("level: 30"), {"level": 30})
+        self.assertEqual(_parse_colon_kwargs("nada aqui"), None)
+
+
 if __name__ == "__main__":
     unittest.main()

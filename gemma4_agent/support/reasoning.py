@@ -282,6 +282,28 @@ def _find_matching_paren(text: str, start: int = 0) -> int:
     return -1
 
 
+def _parse_colon_kwargs(text: str) -> dict[str, Any] | None:
+    """Fallback para la forma COLON `k: v, k2: v2` que el 4B leakea (p.ej.
+    `mute(state: true)` — dict sin llaves, booleans en minúscula). ast NO la
+    parsea. Regex tolerante para los valores simples de un tool-call: bool / int /
+    string (quoted o bareword corto). Sólo se llama cuando el parse de ast falló,
+    así que es ADITIVO (no toca el path de `k=v` que ya anda)."""
+    pairs = re.findall(r"(\w+)\s*:\s*('[^']*'|\"[^\"]*\"|[^,]+)", text)
+    if not pairs:
+        return None
+    out: dict[str, Any] = {}
+    for k, v in pairs:
+        v = v.strip()
+        low = v.lower()
+        if low in ("true", "false"):
+            out[k] = (low == "true")
+        elif v.lstrip("-").isdigit():
+            out[k] = int(v)
+        else:
+            out[k] = v.strip("'\"")
+    return out or None
+
+
 def _parse_kwargs(text: str) -> dict[str, Any] | None:
     """Best-effort parse of Python-like kwargs (action="x", query="y") or
     a single dict literal ({"action": "x", ...}). Returns dict or None."""
@@ -329,9 +351,11 @@ def _parse_kwargs(text: str) -> dict[str, Any] | None:
                     return val
             except Exception:
                 pass
-        return result
+        # ast parseó pero sin kwargs (p.ej. body con colon `state: true`) → fallback.
+        return result if result else (_parse_colon_kwargs(text) or result)
     except Exception:
-        return None
+        # ast no parseó (syntax error por el colon) → fallback colon-kwargs.
+        return _parse_colon_kwargs(text)
 
 
 # Dotted-method leak: the model writes the compound tool's ACTION as a
@@ -376,14 +400,37 @@ def _detect_dotted_method_call(
     }
 
 
+def build_action_to_tool(
+    subset_names, action_enums: dict[str, list[str]]
+) -> dict[str, str]:
+    """Mapa ACCIÓN→TOOL para rescatar leaks de action-name (R-latencia 2026-05-30).
+    MEDIDO: el 4B leakea `mute(state: true)` (usa la ACCIÓN 'mute' como si fuera un
+    tool standalone) en vez de `audio(action='mute')`. Construimos action→tool SOLO
+    para acciones que pertenecen a EXACTAMENTE UN tool del subset (sin ambigüedad) y
+    que no son ellas mismas un tool name. Derivado del schema (ACTION_ENUMS),
+    estructural — NO una lista hardcoded de keywords."""
+    subset = set(subset_names or [])
+    counts: dict[str, list[str]] = {}
+    for tool in subset:
+        for act in action_enums.get(tool, []) or []:
+            counts.setdefault(act, []).append(tool)
+    return {act: tools[0] for act, tools in counts.items()
+            if len(tools) == 1 and act not in subset}
+
+
 def detect_leaked_tool_call(
     content: str,
     *,
     known_tool_names: set[str] | None = None,
+    action_to_tool: dict[str, str] | None = None,
 ) -> dict[str, Any] | None:
     """Detect if `content` looks like a leaked tool call. Returns an
     OpenAI-shaped tool_call dict suitable to feed back into the loop, or
     None if no leak detected.
+
+    `action_to_tool` (de build_action_to_tool): si el nombre leaked NO es un tool
+    pero ES una acción de un compound tool del subset, se sintetiza el call al tool
+    con `action=<nombre>` inyectado (rescata `mute(state:true)`→audio(action='mute')).
 
     Returns shape:
         {"id": "call_<uuid>", "type": "function",
@@ -418,20 +465,36 @@ def detect_leaked_tool_call(
     # `system(action="memory") system(action="recall")`, where the greedy
     # whole-string regex below would grab a broken body. F-007: first match,
     # not last.
+    def _resolve(cand_name: str, parsed: dict[str, Any]) -> tuple[str, dict[str, Any]] | None:
+        """cand_name → (tool, args). Tool conocido → tal cual. Si NO es tool pero
+        ES acción de un tool del subset (action_to_tool), mapea e inyecta action."""
+        if known_tool_names is None or cand_name in known_tool_names:
+            return cand_name, parsed
+        if action_to_tool and cand_name in action_to_tool:
+            new_parsed = dict(parsed)
+            new_parsed.setdefault("action", cand_name)
+            return action_to_tool[cand_name], new_parsed
+        return None
+
     def _scan_first_valid() -> tuple[str, dict[str, Any]] | None:
         # First char [a-zA-Z]: el 4B capitaliza el nombre ("Web(...)"); se baja
         # a minúsculas antes del allowlist (tools registradas son lowercase).
         for cand in re.finditer(r"\b([a-zA-Z][a-z0-9_]{1,40})\s*\(", stripped):
             cand_name = cand.group(1).lower()
-            if known_tool_names is not None and cand_name not in known_tool_names:
+            # precheck barato: tool conocido O acción mapeable (evita parsear prosa).
+            if not (known_tool_names is None or cand_name in known_tool_names
+                    or (action_to_tool and cand_name in action_to_tool)):
                 continue
             open_idx = cand.end() - 1
             close_idx = _find_matching_paren(stripped, open_idx)
             if close_idx <= open_idx:
                 continue
             cand_parsed = _parse_kwargs(stripped[open_idx + 1: close_idx])
-            if cand_parsed is not None:
-                return cand_name, cand_parsed
+            if cand_parsed is None:
+                continue
+            resolved = _resolve(cand_name, cand_parsed)
+            if resolved is not None:
+                return resolved
         return None
 
     # Allow content like "web(action=...)" possibly with trailing punctuation.
@@ -441,10 +504,11 @@ def detect_leaked_tool_call(
     if m:
         # Normaliza la capitalización del 4B ("Web" -> "web") antes del allowlist.
         cand_name, body = m.group(1).lower(), m.group(2)
-        if known_tool_names is None or cand_name in known_tool_names:
-            cand_parsed = _parse_kwargs(body)
-            if cand_parsed is not None:
-                name, parsed = cand_name, cand_parsed
+        cand_parsed = _parse_kwargs(body)
+        if cand_parsed is not None:
+            resolved = _resolve(cand_name, cand_parsed)
+            if resolved is not None:
+                name, parsed = resolved
     if parsed is None:
         # Primary didn't match, or matched with an unparseable (greedy) body
         # → scan for the first valid balanced call instead of giving up.
