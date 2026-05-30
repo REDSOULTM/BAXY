@@ -97,6 +97,17 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         email = _clean_contact_field(args.get("email"))
         phone = _clean_contact_field(args.get("phone"))
         notes = _clean_contact_field(args.get("notes"))
+        # is_group: distingue un CHAT GRUPAL de un contacto individual. Es
+        # metadata estructural (no una lista por idioma): cura del bug
+        # "mandale a mamá -> fue al grupo Música" en su raíz. Un send_message
+        # sin "grupo" explícito NO debe resolver a un grupo. Default False
+        # (la inmensa mayoría de contactos son individuos). Acepta el bool del
+        # LLM o strings truthy.
+        is_group_raw = args.get("is_group", False)
+        if isinstance(is_group_raw, str):
+            is_group = is_group_raw.strip().casefold() in {"1", "true", "yes", "on", "si", "sí"}
+        else:
+            is_group = bool(is_group_raw)
         # VALIDACION laxa de formato: si el LLM pasa email=123 o phone="abc",
         # devolvemos status=needs_user con el motivo. NO rechazamos formatos
         # no convencionales (internacionales, extensiones) — solo lo
@@ -122,6 +133,7 @@ def contacts_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
             "contact", name,
             metadata={
                 "name": name, "email": email, "phone": phone, "notes": notes,
+                "is_group": is_group,
                 "created_at": datetime.now().isoformat(),
             },
         )
@@ -193,8 +205,16 @@ def _contacts_update(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     for key in ("name", "email", "phone", "notes"):
         if key in args and args[key] is not None:
             updates[key] = args[key]
+    # is_group: bool estructural, se permite re-clasificar un contacto mal
+    # marcado (un grupo que entró como individuo, o viceversa).
+    if "is_group" in args and args["is_group"] is not None:
+        ig_raw = args["is_group"]
+        if isinstance(ig_raw, str):
+            updates["is_group"] = ig_raw.strip().casefold() in {"1", "true", "yes", "on", "si", "sí"}
+        else:
+            updates["is_group"] = bool(ig_raw)
     if not updates:
-        return _err("no updatable fields provided", supported=["name", "email", "phone", "notes"])
+        return _err("no updatable fields provided", supported=["name", "email", "phone", "notes", "is_group"])
     if "name" in updates:
         state.update_resource(str(contact["id"]), label=str(updates["name"]))
     return _update_resource_metadata(state, str(contact["id"]), updates)
@@ -378,11 +398,18 @@ def _contacts_resolve_recipient(args: dict[str, Any], state: AgentState) -> dict
     query = str(args.get("query") or args.get("name") or args.get("recipient") or "").strip()
     if not query:
         return _err("missing query")
+    # exclude_groups: cuando el caller (p.ej. WhatsApp send_message) quiere
+    # SOLO contactos individuales, no grupos. Cura el bug "mamá -> grupo Música":
+    # un envío directo nunca debe aterrizar en un grupo salvo que el usuario lo
+    # pida explícito (el caller pasa exclude_groups=False en ese caso).
+    exclude_groups = bool(args.get("exclude_groups", False))
     q = query.casefold()
     contacts = _resources_by_kind(state, "contact", include_closed=False)
     scored: list[tuple[int, dict[str, Any]]] = []
     for c in contacts:
         meta = c.get("metadata") or {}
+        if exclude_groups and bool(meta.get("is_group", False)):
+            continue
         name = str(meta.get("name") or c.get("label") or "").casefold()
         email = str(meta.get("email") or "").casefold()
         phone = str(meta.get("phone") or "").casefold()

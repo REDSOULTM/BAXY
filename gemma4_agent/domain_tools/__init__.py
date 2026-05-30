@@ -2995,7 +2995,13 @@ def _resolve_whatsapp_recipient(
         )
 
     # 1. Intentar contacts store local (rapido si esta).
-    resolve_result = _contacts_resolve_recipient({"query": name_query, "limit": 5}, state)
+    # exclude_groups=True: un envío directo por NOMBRE nunca debe resolver a un
+    # grupo (cura de raíz del bug "mandale a mamá -> grupo Música"). Si el
+    # usuario quiere un grupo, el LLM debe pasar el phone/JID del grupo
+    # explícito o el contacto marcado is_group debe nombrarse aparte.
+    resolve_result = _contacts_resolve_recipient(
+        {"query": name_query, "limit": 5, "exclude_groups": True}, state,
+    )
     matches = resolve_result.get("matches") or []
     # Inv 2 (grounding): si la resolución es AMBIGUA (dos contactos casi
     # empatados), NO adivinar — pedir desempate. Mandar al chat equivocado es

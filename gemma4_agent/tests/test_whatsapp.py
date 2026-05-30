@@ -868,5 +868,61 @@ class TestSpotifyAutoPlay(unittest.TestCase):
         self.assertEqual(r.get("asks_for"), "streaming_profile")
 
 
+class TestWhatsappGroupGrounding(unittest.TestCase):
+    """Regresión del bug 'mandale a mamá -> aterrizó en el grupo Música'
+    (Ola 1, perfection roadmap 2026-05-29). is_group estructural + el envío
+    directo por nombre excluye grupos. Cura de raíz de C2.
+    """
+
+    def setUp(self):
+        from ..domain_tools import contacts_tool
+        self.state = _fresh_state()
+        self._contacts = contacts_tool
+        # "mamá": contacto individual SIN teléfono (forzaría GUI search).
+        self._contacts({"action": "create", "name": "mamá"}, self.state)
+        # "Música": grupo con nombre que solapa fonéticamente/textualmente.
+        self._contacts({"action": "create", "name": "Música", "is_group": True}, self.state)
+
+    def test_is_group_persisted(self):
+        r = self._contacts({"action": "list"}, self.state)
+        metas = {(c.get("metadata") or {}).get("name"): (c.get("metadata") or {}).get("is_group")
+                 for c in r["contacts"]}
+        self.assertEqual(metas.get("mamá"), False)
+        self.assertEqual(metas.get("Música"), True)
+
+    def test_resolve_recipient_excludes_groups_when_asked(self):
+        from ..domain_tools.contacts import _contacts_resolve_recipient
+        # Resolver "Música" con exclude_groups debe NO devolver el grupo.
+        r = _contacts_resolve_recipient(
+            {"query": "Música", "exclude_groups": True}, self.state)
+        names = [(m["contact"].get("metadata") or {}).get("name") for m in r["matches"]]
+        self.assertNotIn("Música", names)
+
+    def test_resolve_recipient_includes_groups_by_default(self):
+        from ..domain_tools.contacts import _contacts_resolve_recipient
+        # Sin exclude_groups (default), el grupo SÍ es visible (otros usos).
+        r = _contacts_resolve_recipient({"query": "Música"}, self.state)
+        names = [(m["contact"].get("metadata") or {}).get("name") for m in r["matches"]]
+        self.assertIn("Música", names)
+
+    def test_whatsapp_send_does_not_resolve_to_group(self):
+        # El bug original: send_message a un nombre de grupo NO debe abrir el
+        # chat del grupo como si fuera un envío directo. Con exclude_groups el
+        # grupo queda fuera de la resolución -> cae a gui_search (honesto) o
+        # needs_user, NUNCA a un deeplink/contact:<id> del grupo.
+        resolved = _resolve_whatsapp_recipient(
+            {"action": "send_message", "contact": "Música", "text": "hola"},
+            self.state,
+        )
+        if isinstance(resolved, dict):
+            # error honesto (needs_user) también es aceptable: NO resolvió grupo.
+            self.assertNotIn("contact:", str(resolved))
+        else:
+            raw_phone, normalized, source, gui_name = resolved
+            # No debe haber resuelto el grupo a un contact:<id>.
+            self.assertNotEqual(source, "contact")
+            self.assertFalse(str(source).startswith("contact:"))
+
+
 if __name__ == "__main__":
     unittest.main()
