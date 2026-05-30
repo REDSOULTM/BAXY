@@ -37,6 +37,9 @@ ALLOWED_KINDS = frozenset({
     "app_close",    # cerró una app
     "cmd",          # comando de voz/texto ejecutado (key = intent/tool)
     "correction",   # el usuario corrigió algo (key = qué)
+    # R-Jarvis (2026-05-30): observador ambiente. METADATA, no contenido.
+    "media_play",   # algo se reprodujo (key = "artista — título"), via SMTC
+    "app_focus",    # app en foco del usuario (key = proc name), via win32 foreground
 })
 
 _SCHEMA_VERSION = 1

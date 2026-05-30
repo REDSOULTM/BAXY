@@ -208,6 +208,8 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_microagents_gate.py` | Gate del selector de microagents (R3.3): recall GOLD + 0 FP en hard-negatives ("RAG"⊂"Dragon", "que es"⊂"gordo") + regresión. |
 | `_live_verify_microagents.py` | Verificación EN VIVO (4B real) del selector de microagents: TP matchean, bug substring erradicado. |
 | `_validate_skills_autoinject_recall.py` | Mide recall+precision del auto-inject de skills sobre GOLD + mensajes reales (R3). |
+| `_proto_ambient_observer.py` | Prototipo/demo del observador ambiente (R-Jarvis): muestra qué apps/tiempo vería sin escribir (o --commit). |
+| `_measure_subagent_emission.py` | Mide si el 4B emite la tool `subagent` cuando un pedido lo justifica (medido: 0/4, muerto como skill_load). |
 | `_skill_desc_recall_test.py` | Mide el recall de las descripciones de skills (pedido↔description) para calibrar el auto-inject. |
 | `_skill_desc_recall_screenshot.py` | Variante del recall-test de descripciones enfocada en el caso screenshot (colisión "pantalla"). |
 | `_check_inventory_membership.py` | Chequea que cada script top-level esté mencionado en INDEX.md (guarda R8 reproducible). |

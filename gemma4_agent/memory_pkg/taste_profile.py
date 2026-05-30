@@ -1,0 +1,199 @@
+"""Perfil de gustos del usuario — la capa de REFLEXIÓN del Jarvis (R-Jarvis, 2026-05-30).
+
+Convierte las observaciones crudas del ambient_observer (qué app usás, qué música
+escuchás, en qué franja) en INSIGHTS de quién sos, y los inyecta al prompt de Gemma4
+para que el modelo te conozca y dé una mejor experiencia.
+
+Diseño respaldado por investigación verificada:
+  - Generative Agents (arXiv:2304.03442): observación → reflexión → insight. Acá la
+    reflexión es DETERMINISTA (agregación por conteo/tiempo) en vez de LLM, porque:
+    (a) es barata y confiable (el 4B es ruidoso para esto), (b) CLAUDE.md prohíbe
+    depender del LLM para clasificar gustos sin necesidad. La síntesis del PÁRRAFO
+    final sí puede pasar por el LLM (opt-in), pero los insights base son medidos.
+  - Guided Profile Generation (arXiv:2409.13093, +37%): inyectar un PÁRRAFO en
+    lenguaje natural, no el log crudo.
+  - On-device (Google) + privacidad: local, inspectable (profile_text), borrable
+    (forget), pausable (gate). Metadata, no contenido.
+
+NO usa LLM para decidir gustos (determinista). NO inyecta el log crudo. NO guarda
+títulos de ventana ni contenido. El perfil es un párrafo compacto (<~250 tokens).
+
+Gate: GEMMA4_TASTE_PROFILE=0 desactiva la inyección del perfil.
+"""
+from __future__ import annotations
+
+import logging
+import os
+from collections import Counter, defaultdict
+from dataclasses import dataclass, field
+
+logger = logging.getLogger(__name__)
+
+# Cuántos días de comportamiento mirar y umbrales mínimos para afirmar un gusto
+# (anti-ruido: no inventamos un perfil con 2 datos). Calibrables por env.
+_WINDOW_DAYS = 30
+_MIN_APP_DWELL_S = 600.0     # 10 min totales en una app para que cuente
+_MIN_MEDIA_PLAYS = 3         # 3 reproducciones de un artista para "te gusta"
+_TOP_APPS = 4
+_TOP_ARTISTS = 4
+
+
+def _profile_enabled() -> bool:
+    raw = (os.environ.get("GEMMA4_TASTE_PROFILE") or "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
+@dataclass
+class TasteProfile:
+    """Insights agregados del comportamiento. Todo derivado, ninguno inventado."""
+    top_apps: list[tuple[str, float]] = field(default_factory=list)        # (app, horas)
+    apps_by_slot: dict[str, str] = field(default_factory=dict)             # slot -> app dominante
+    top_artists: list[tuple[str, int]] = field(default_factory=list)       # (artista, plays)
+    music_slots: list[str] = field(default_factory=list)                   # franjas donde escucha música
+    total_observations: int = 0
+
+    def is_empty(self) -> bool:
+        return not (self.top_apps or self.top_artists)
+
+
+def _artist_of(media_key: str) -> str:
+    """'Soda Stereo — De Música Ligera' -> 'Soda Stereo'. Sin artista -> ''."""
+    return media_key.split(" — ", 1)[0].strip() if " — " in media_key else ""
+
+
+def build_profile(behavior_log, *, window_days: int = _WINDOW_DAYS) -> TasteProfile:
+    """Lee el behavior_log y agrega los insights de gustos. Determinista, barato."""
+    import time as _t
+    since_ms = int((_t.time() - window_days * 86400) * 1000)
+    try:
+        events = behavior_log.events(since_ms=since_ms)
+    except Exception:
+        return TasteProfile()
+
+    app_dwell: dict[str, float] = defaultdict(float)
+    slot_app_dwell: dict[str, Counter] = defaultdict(Counter)
+    artist_plays: Counter = Counter()
+    music_slot_count: Counter = Counter()
+    n = 0
+
+    for e in events:
+        ctx = e.get("context") or {}
+        # Solo eventos AMBIENTE (lo que hace el user), no lo que abrió el agente.
+        if ctx.get("source") != "ambient":
+            continue
+        n += 1
+        kind = e.get("kind")
+        key = e.get("key") or ""
+        slot = ctx.get("slot") or ""
+        if kind == "app_focus":
+            d = float(ctx.get("dwell_s") or 0.0)
+            app_dwell[key] += d
+            if slot:
+                slot_app_dwell[slot][key] += d
+        elif kind == "media_play":
+            artist = _artist_of(key)
+            if artist:
+                artist_plays[artist] += 1
+            if slot:
+                music_slot_count[slot] += 1
+
+    prof = TasteProfile(total_observations=n)
+    prof.top_apps = [(a, round(s / 3600.0, 1))
+                     for a, s in app_dwell.most_common(_TOP_APPS)
+                     if s >= _MIN_APP_DWELL_S] if hasattr(app_dwell, "most_common") else \
+        [(a, round(s / 3600.0, 1))
+         for a, s in Counter(app_dwell).most_common(_TOP_APPS) if s >= _MIN_APP_DWELL_S]
+    prof.apps_by_slot = {slot: c.most_common(1)[0][0]
+                         for slot, c in slot_app_dwell.items() if c}
+    prof.top_artists = [(a, p) for a, p in artist_plays.most_common(_TOP_ARTISTS)
+                        if p >= _MIN_MEDIA_PLAYS]
+    prof.music_slots = [s for s, _ in music_slot_count.most_common(2)]
+    return prof
+
+
+def _clean_app(name: str) -> str:
+    """code.exe -> Code, spotify.exe -> Spotify (para que el párrafo se lea humano)."""
+    base = name.rsplit(".", 1)[0] if "." in name else name
+    return base[:1].upper() + base[1:] if base else name
+
+
+def _title_artist(name: str) -> str:
+    """'soda stereo' -> 'Soda Stereo' (capitaliza cada palabra del artista)."""
+    return " ".join(w[:1].upper() + w[1:] if w else w for w in name.split())
+
+
+def profile_text(prof: TasteProfile) -> str:
+    """Renderiza el perfil como PÁRRAFO en lenguaje natural (GPG arXiv:2409.13093).
+    Compacto (<~250 tokens). Vacío si no hay señal suficiente."""
+    if prof.is_empty():
+        return ""
+    parts: list[str] = []
+    if prof.top_apps:
+        apps = ", ".join(f"{_clean_app(a)}" for a, _ in prof.top_apps)
+        parts.append(f"Las apps que más usa: {apps}.")
+    if prof.apps_by_slot:
+        # Agrupar franjas con la MISMA app dominante: "a la mañana y a la tarde
+        # en Code; a la noche en Opera" (en vez de repetir Code dos veces).
+        by_app: dict[str, list[str]] = defaultdict(list)
+        for slot, app in prof.apps_by_slot.items():
+            by_app[_clean_app(app)].append(slot)
+        rhythm = "; ".join(
+            f"a la {' y a la '.join(slots)} suele estar en {app}"
+            for app, slots in by_app.items())
+        parts.append(f"Ritmo diario: {rhythm}.")
+    if prof.top_artists:
+        arts = ", ".join(_title_artist(a) for a, _ in prof.top_artists)
+        parts.append(f"Música que escucha: {arts}.")
+    if prof.music_slots:
+        parts.append(f"Suele escuchar música a la {', a la '.join(prof.music_slots)}.")
+    return " ".join(parts)
+
+
+def build_profile_block(behavior_log) -> str:
+    """Bloque listo para el system_prompt de Gemma4 (o '' si no aplica/sin datos).
+    Etiquetado como BACKGROUND para que el 4B no lo recite (anti-parroting)."""
+    if not _profile_enabled():
+        return ""
+    try:
+        prof = build_profile(behavior_log)
+    except Exception:
+        return ""
+    txt = profile_text(prof)
+    if not txt:
+        return ""
+    return (
+        "\n\n# SOBRE EL USUARIO (contexto de fondo — NO lo menciones salvo que venga al caso)\n"
+        f"{txt}\n"
+        "Usá esto para personalizar tus respuestas y sugerencias, sin recitarlo.")
+
+
+# --------------------------------------------------------------------- privacidad
+
+def inspect_text(behavior_log) -> str:
+    """Lo que el sistema CREE saber del usuario, legible. Para un comando
+    'qué sabés de mí'. Privacidad table-stakes: inspectable."""
+    prof = build_profile(behavior_log)
+    if prof.is_empty():
+        return ("Todavía no aprendí lo suficiente sobre vos (necesito observar "
+                "tu uso unos días). No tengo un perfil armado aún.")
+    txt = profile_text(prof)
+    return (f"Esto es lo que aprendí observando tu uso ({prof.total_observations} "
+            f"observaciones, todo local):\n{txt}")
+
+
+def forget(behavior_log) -> int:
+    """Borra los datos de comportamiento AMBIENTE (privacidad: borrable).
+    Devuelve cuántos eventos borró. NO toca el chat ni la experiencia."""
+    try:
+        conn = behavior_log._open()
+        if conn is None:
+            return 0
+        cur = conn.execute(
+            "SELECT COUNT(*) FROM behavior_events WHERE kind IN ('app_focus','media_play')")
+        n = cur.fetchone()[0]
+        conn.execute("DELETE FROM behavior_events WHERE kind IN ('app_focus','media_play')")
+        conn.commit()
+        return int(n)
+    except Exception as exc:
+        logger.debug("forget failed: %s", exc)
+        return 0

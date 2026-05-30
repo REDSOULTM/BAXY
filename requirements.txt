@@ -58,6 +58,7 @@ pywin32==311                    # provides win32api / win32con / win32gui / win3
 comtypes==1.4.16
 pycaw==20251023
 psutil==6.1.1
+winsdk==1.0.0b10                 # SMTC (Windows.Media.Control) — ambient observer "now playing" (R-Jarvis)
 nvidia-ml-py>=12.560            # imported as `pynvml` (only used in server.py for GPU stats)
 
 # --- Offline ground-truth tooling (Sprint N, used by scripts/testaudio_groundtruth.py) ---

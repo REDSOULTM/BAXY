@@ -429,6 +429,8 @@ class Gemma4Agent:
         self._jarvis_on = _os_j.environ.get("GEMMA4_JARVIS", "1").strip().lower() \
             not in {"0", "false", "no", "off"}
         self.behavior = None
+        self.ambient_observer = None
+        self._pending_profile_forget = False  # confirmación de borrado de perfil
         if self._jarvis_on:
             try:
                 from ..memory_pkg.behavior_log import BehaviorLog
@@ -436,6 +438,17 @@ class Gemma4Agent:
                 self.behavior.record("boot", "agent")  # arranque de sesión
             except Exception:
                 self.behavior = None
+            # Observador ambiente (R-Jarvis 2026-05-30): la "capa viva" que mira el
+            # comportamiento REAL del usuario (música via SMTC + app en foco) para
+            # que Gemma4 aprenda quién es. Thread daemon, metadata-no-contenido,
+            # gate GEMMA4_AMBIENT_OBSERVER. Best-effort: nunca rompe el boot.
+            if self.behavior is not None:
+                try:
+                    from ..memory_pkg.ambient_observer import AmbientObserver
+                    self.ambient_observer = AmbientObserver(self.behavior)
+                    self.ambient_observer.start()
+                except Exception:
+                    self.ambient_observer = None
         # WATCHDOG de VRAM (inv 6): muestrea VRAM libre con TTL para detectar
         # presión ANTES de despachar visión y evitar el OOM que deja a
         # llama-server zombie (issue #13085). No-op sin GPU NVIDIA. Barato,
@@ -761,6 +774,18 @@ class Gemma4Agent:
         project_section = f"\n\n{project_block}" if project_block else ""
         recall_hint = format_recall_for_prompt(self._recent_recalls)
         recall_section = f"\n\n{recall_hint}" if recall_hint else ""
+        # Perfil de gustos del usuario (R-Jarvis 2026-05-30): párrafo sintetizado
+        # de quién es el usuario (apps/música/ritmo observados por el ambient
+        # observer), para que Gemma4 personalice. GPG arXiv:2409.13093 (+37%):
+        # párrafo NL, no log crudo. Cacheado por turno-set (estable, cache-friendly).
+        # Gate GEMMA4_TASTE_PROFILE. Best-effort: error -> sin perfil.
+        profile_section = ""
+        if self.behavior is not None:
+            try:
+                from ..memory_pkg.taste_profile import build_profile_block
+                profile_section = build_profile_block(self.behavior)
+            except Exception:
+                profile_section = ""
         explicit_block = _format_explicit_plan(self._explicit_plan_text)
         explicit_section = f"\n\n{explicit_block}" if explicit_block else ""
         phrase_section = _format_phrase_fires(self._phrase_fires)
@@ -896,7 +921,7 @@ class Gemma4Agent:
             # VARIABLE al final: mode-hint, tool-schemas (filtrados por subset
             # por ahora), project/plan/recall/phrase/microagents/intent/memoria.
             variable = (f"{mode_hint}{a11y_switch_note}{tools_section}"
-                        f"{project_section}{plan_hint}{explicit_section}"
+                        f"{project_section}{profile_section}{plan_hint}{explicit_section}"
                         f"{recall_section}{phrase_section}{microagents_section}"
                         f"{intent_hint}\n\n# Persistent memory\n"
                         f"{self.memory.prompt_summary_for(user_text)}")
@@ -908,14 +933,14 @@ class Gemma4Agent:
             tool_rules_section = f"\n\n{tool_rules_tail}" if tool_rules_tail else ""
             stable = f"{core_stable}{persona_hint}{accessibility_hint}{skills_critical}{skills_menu}"
             variable = (f"{mode_hint}{a11y_switch_note}{tool_rules_section}{tools_section}"
-                        f"{project_section}{plan_hint}{explicit_section}"
+                        f"{project_section}{profile_section}{plan_hint}{explicit_section}"
                         f"{recall_section}{phrase_section}{microagents_section}"
                         f"{intent_hint}\n\n# Persistent memory\n"
                         f"{self.memory.prompt_summary_for(user_text)}")
             return {"role": "system", "content": stable + variable}
         return {
             "role": "system",
-            "content": f"{prompt_base}{mode_hint}{a11y_switch_note}{tools_section}{persona_hint}{accessibility_hint}{project_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_autoinject}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
+            "content": f"{prompt_base}{mode_hint}{a11y_switch_note}{tools_section}{persona_hint}{accessibility_hint}{project_section}{profile_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_autoinject}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
@@ -1172,6 +1197,14 @@ class Gemma4Agent:
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
             return TurnDecision(early_reply=_jarvis_reply)
+        # PERFIL DE GUSTOS — privacidad inspectable/borrable (R-Jarvis 2026-05-30).
+        # "¿qué sabés de mí?" / "olvidate de mis datos" tienen respuesta DETERMINISTA
+        # (mostrar/borrar el perfil). MEDIDO: el router las clasifica como acción y el
+        # 4B devuelve reply vacío → short-circuit. Detección por EMBEDDINGS (no
+        # keywords). forget PIDE CONFIRMACIÓN (irreversible). Resuelto ANTES del LLM.
+        _profile_reply = self._handle_profile_intent(content)
+        if _profile_reply is not None:
+            return TurnDecision(early_reply=_profile_reply)
         # ACCESIBILIDAD (B2): si el usuario PIDE cambiar de modo de accesibilidad
         # ("activá modo no vidente", "no puedo usar las manos", "volvé a normal"),
         # lo detectamos por EMBEDDINGS multilingües (no keywords) y lo aplicamos/
@@ -4546,6 +4579,77 @@ class Gemma4Agent:
                               tool_events=[], mission=None)
         return AgentReply(content=_jp(_lang, "create_fail"),
                           tool_events=[], mission=None)
+
+    def _handle_profile_intent(self, content: Any) -> "AgentReply | None":
+        """Perfil de gustos — privacidad inspectable/borrable (R-Jarvis 2026-05-30).
+        Short-circuit determinista para "¿qué sabés de mí?" (inspect) y "olvidate de
+        mis datos" (forget). Detección por EMBEDDINGS (profile_intent, no keywords).
+        forget PIDE CONFIRMACIÓN antes de borrar (irreversible, CLAUDE.md #6).
+        Devuelve AgentReply o None (sigue el turno normal)."""
+        if self.behavior is None:
+            return None
+        text = content if isinstance(content, str) else " ".join(
+            p.get("text", "") for p in content if isinstance(p, dict))
+        text = (text or "").strip()
+        if len(text) < 4:
+            return None
+
+        # ¿Hay un forget pendiente de confirmar del turno anterior? Resolver sí/no.
+        if getattr(self, "_pending_profile_forget", False):
+            import re as _re
+            words = set(_re.findall(r"\w+", text.lower(), _re.UNICODE))
+            yes = bool(words & _JARVIS_YES)
+            no = bool(words & _JARVIS_NO)
+            if yes and not no:
+                self._pending_profile_forget = False
+                try:
+                    from ..memory_pkg.taste_profile import forget as _forget
+                    n = _forget(self.behavior)
+                except Exception:
+                    n = 0
+                return AgentReply(
+                    content=f"Listo, borré lo que sabía de vos ({n} observaciones). "
+                            "Empiezo de cero.", tool_events=[], mission=None)
+            if no and not yes:
+                self._pending_profile_forget = False
+                return AgentReply(content="Perfecto, no borro nada.",
+                                  tool_events=[], mission=None)
+            # ambiguo: dejar pendiente, seguir turno normal
+            return None
+
+        try:
+            from ..memory_pkg.profile_intent import detect_profile_intent
+            intent = detect_profile_intent(text)
+        except Exception:
+            return None
+        if intent is None:
+            return None
+
+        if intent == "inspect":
+            try:
+                from ..memory_pkg.taste_profile import inspect_text
+                msg = inspect_text(self.behavior)
+            except Exception:
+                return None
+            return AgentReply(content=msg, tool_events=[], mission=None)
+
+        if intent == "forget":
+            # NO borra directo: confirma (irreversible). Si no hay nada que borrar,
+            # decirlo sin armar confirmación.
+            try:
+                from ..memory_pkg.taste_profile import build_profile
+                if build_profile(self.behavior).is_empty():
+                    return AgentReply(
+                        content="No tengo datos tuyos guardados, así que no hay nada que borrar.",
+                        tool_events=[], mission=None)
+            except Exception:
+                pass
+            self._pending_profile_forget = True
+            return AgentReply(
+                content="¿Seguro que querés que borre todo lo que aprendí sobre vos "
+                        "(apps, música, hábitos)? Es irreversible. Decime sí o no.",
+                tool_events=[], mission=None)
+        return None
 
     def _screen_description_reply(self, events: list["ToolEvent"]) -> str | None:
         """Si una tool de visión produjo una DESCRIPCIÓN de pantalla
