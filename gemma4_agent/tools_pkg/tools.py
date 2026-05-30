@@ -3832,19 +3832,38 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
                             "match": post2.get("match"),
                         }
                         break
+        # HONESTIDAD TRI-ESTADO (perfection roadmap C3, 2026-05-29). Cuando el
+        # auto-verify NO confirmó la ventana, eso NO es "falló" (verified=False)
+        # — es "no medible aún" (verified=None): el launch se despachó sin error
+        # y la app puede seguir cargando (Steam/Epic tardan 10-30s). Antes
+        # devolvíamos verified=False explícito, que (a) peleaba con el propio
+        # _normalize_tool_result (launch_requested ∈ _DISPATCH_OK_COMPLETIONS lo
+        # mapea a verified=None vía setdefault, pero el False explícito lo
+        # bloqueaba), y (b) disparaba el guard "no dejó evidencia" + reintentos
+        # = el flakeo events=0 medido (auditoría 2026-05-15). verified=None deja
+        # que el normalizador y el verifier traten esto como dispatch async
+        # honesto. Si la app ya estaba abierta -> True. Si verificamos -> True.
+        # Si no -> None (no mentimos: el note lo dice claro).
+        verified_tristate: bool | None
+        if verified or preexisting.get("found"):
+            verified_tristate = True
+        else:
+            verified_tristate = None
         return _ok(
             query=name,
             opened=best.as_dict(),
             alternatives=[m.as_dict() for m in matches[1:5]],
             preexisting=bool(preexisting.get("found")),
             resource=resource,
-            status=("done" if verified else "attempted"),
-            verified=verified,
+            status=("done" if verified_tristate else "dispatched"),
+            verified=verified_tristate,
             completion_status=("launch_verified" if verified else "launch_requested"),
             evidence={"resolved_target": best.as_dict(), **verify_evidence},
             note=(
                 "Auto-verify confirmed a window or process matching the requested app."
                 if verified
+                else "App was already running (window/process found before launch)."
+                if preexisting.get("found")
                 else "Launch sent to Windows but no window matched within the auto-verify window. The app may still be loading (Steam/Epic games can take 10-30s); call verify(action='app_opened') again if needed."
             ),
         )
