@@ -23,6 +23,7 @@ import json
 import logging
 import os
 import sqlite3
+import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -57,7 +58,16 @@ class BehaviorLog:
 
     user: str = field(default_factory=_current_user)
     dir_path: Path = _DEFAULT_DIR
-    _conn: sqlite3.Connection | None = None
+    # Conexión SQLite POR THREAD (threading.local). Una conexión sqlite3 sólo puede
+    # usarse en el thread que la creó (check_same_thread). El behavior_log lo tocan
+    # VARIOS threads —el main (lee el perfil cada turno), el ambient_observer (escribe
+    # app_focus/media_play desde su daemon), la reflexión LLM— así que una conexión
+    # ÚNICA compartida hacía que las ops del thread "equivocado" fallaran SILENCIOSAS
+    # (record→False, events→[]). MEDIDO 2026-05-30: el observador perdía registros.
+    # WAL (PRAGMA abajo) soporta multi-conexión a la misma DB → una conexión por thread
+    # es el patrón correcto. `_disabled` sí es compartido (si la DB está corrupta, lo
+    # está para todos).
+    _local: "threading.local" = field(default_factory=threading.local, repr=False, compare=False)
     _disabled: bool = False
 
     @property
@@ -69,8 +79,9 @@ class BehaviorLog:
     def _open(self) -> sqlite3.Connection | None:
         if self._disabled:
             return None
-        if self._conn is not None:
-            return self._conn
+        conn = getattr(self._local, "conn", None)
+        if conn is not None:
+            return conn
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             conn = sqlite3.connect(str(self.path), timeout=5.0)
@@ -88,7 +99,7 @@ class BehaviorLog:
             conn.execute("INSERT OR IGNORE INTO meta(k,v) VALUES('schema',?)",
                          (str(_SCHEMA_VERSION),))
             conn.commit()
-            self._conn = conn
+            self._local.conn = conn
             return conn
         except sqlite3.DatabaseError as exc:
             # CORRUPTION RECOVERY (mismo patrón que experience.py): cuarentena +
@@ -109,7 +120,7 @@ class BehaviorLog:
                     " key TEXT NOT NULL, context TEXT,"
                     " PRIMARY KEY (ts, user, kind, key))")
                 conn.commit()
-                self._conn = conn
+                self._local.conn = conn
                 return conn
             except sqlite3.DatabaseError:
                 self._disabled = True
@@ -181,9 +192,12 @@ class BehaviorLog:
             return 0
 
     def close(self) -> None:
-        if self._conn is not None:
+        # Cierra la conexión de ESTE thread (cada thread tiene la suya). Best-effort:
+        # las conexiones de otros threads se liberan al terminar el proceso/GC.
+        conn = getattr(self._local, "conn", None)
+        if conn is not None:
             try:
-                self._conn.close()
+                conn.close()
             except sqlite3.Error:
                 pass
-            self._conn = None
+            self._local.conn = None

@@ -23,8 +23,9 @@ import logging
 import os
 import re
 import sqlite3
+import threading
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -79,7 +80,13 @@ class ExperienceMemory:
     """Append-only semantic log of past turns. Lazy-loads sqlite-vec."""
 
     path: Path
-    _conn: sqlite3.Connection | None = None
+    # Conexión SQLite POR THREAD (threading.local). Una conexión sqlite3 sólo sirve
+    # en el thread que la creó (check_same_thread). Hoy ExperienceMemory se accede
+    # sólo desde el main thread, pero el patrón de conexión-única-compartida es el
+    # MISMO landmine que rompía el behavior_log cuando un 2º thread lo tocaba (medido
+    # 2026-05-30: registros perdidos silenciosos). Per-thread future-proofs esto sin
+    # cambiar el comportamiento single-thread actual. `_disabled` es compartido.
+    _local: "threading.local" = field(default_factory=threading.local, repr=False, compare=False)
     _disabled: bool = False
 
     def __post_init__(self) -> None:
@@ -90,8 +97,9 @@ class ExperienceMemory:
     def _open(self) -> sqlite3.Connection | None:
         if self._disabled:
             return None
-        if self._conn is not None:
-            return self._conn
+        conn = getattr(self._local, "conn", None)
+        if conn is not None:
+            return conn
         try:
             return self._connect_and_setup()
         except sqlite3.DatabaseError as exc:
@@ -123,12 +131,13 @@ class ExperienceMemory:
     def _quarantine_corrupt_db(self) -> bool:
         """Rename the corrupt DB (and its -wal/-shm sidecars) out of the way so
         a fresh one can be created. Returns True on success."""
-        if self._conn is not None:
+        conn = getattr(self._local, "conn", None)
+        if conn is not None:
             try:
-                self._conn.close()
+                conn.close()
             except Exception:
                 pass
-            self._conn = None
+            self._local.conn = None
         import time as _t
         stamp = _t.strftime("%Y%m%d-%H%M%S")
         ok = False
@@ -166,8 +175,8 @@ class ExperienceMemory:
         # touch the file pages). On a corrupt file those raise DatabaseError, and
         # the recovery path must be able to close THIS connection before renaming
         # the file — otherwise Windows blocks the rename (WinError 32, file in
-        # use). _quarantine_corrupt_db closes self._conn.
-        self._conn = conn
+        # use). _quarantine_corrupt_db cierra la conexión de ESTE thread.
+        self._local.conn = conn
         conn.execute(
             """CREATE TABLE IF NOT EXISTS experiences (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -230,13 +239,15 @@ class ExperienceMemory:
             f"embedding float[{_EMBED_DIM}])"
         )
         conn.commit()
-        self._conn = conn
+        self._local.conn = conn
         return conn
 
     def close(self) -> None:
-        if self._conn is not None:
-            self._conn.close()
-            self._conn = None
+        # Cierra la conexión de ESTE thread (cada thread tiene la suya).
+        conn = getattr(self._local, "conn", None)
+        if conn is not None:
+            conn.close()
+            self._local.conn = None
 
     # ----------------------------------------------------------- public writes
 

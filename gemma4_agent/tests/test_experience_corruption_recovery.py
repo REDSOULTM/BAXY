@@ -62,6 +62,39 @@ class TestExperienceCorruptionRecovery(unittest.TestCase):
         self.assertEqual(list(self.dir.glob("*.corrupt-*")), [],
                          "a healthy/new DB must never be quarantined")
 
+    def test_cross_thread_record(self):
+        # REGRESIÓN (2026-05-30): conexión SQLite POR THREAD. Una conexión única
+        # compartida fallaba silenciosa desde el thread que no la creó (mismo bug
+        # MEDIDO en behavior_log: el ambient_observer perdía registros). Experience
+        # hoy es main-thread, pero el fix future-proofs el landmine + carga sqlite_vec
+        # por conexión. Main escribe, otro thread escribe+lee; ambos ven los datos.
+        import threading
+        from gemma4_agent.memory_pkg.experience import _EMBED_DIM
+
+        def _embed(_text):
+            return [0.1] * _EMBED_DIM
+
+        mem = ExperienceMemory(path=self.path)
+        mem.record(turn_id="t0", user_input="hola", tools_used=[], outcome="ok",
+                   mission_status="done", summary="a", embed_fn=_embed)  # main abre conn
+        res: dict = {}
+
+        def worker():
+            res["rec"] = mem.record(
+                turn_id="t1", user_input="chau", tools_used=[], outcome="ok",
+                mission_status="done", summary="b", embed_fn=_embed).get("ok")
+            res["count"] = mem._open().execute(
+                "SELECT COUNT(*) FROM experiences").fetchone()[0]
+
+        t = threading.Thread(target=worker)
+        t.start()
+        t.join()
+        self.assertTrue(res.get("rec"), "record cross-thread debe persistir")
+        self.assertEqual(res.get("count"), 2, "el worker (su conexión) debe ver ambos")
+        self.assertEqual(
+            mem._open().execute("SELECT COUNT(*) FROM experiences").fetchone()[0], 2,
+            "el main también debe ver el registro del worker")
+
 
 if __name__ == "__main__":
     unittest.main()

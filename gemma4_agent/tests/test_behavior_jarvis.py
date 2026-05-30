@@ -54,6 +54,29 @@ class BehaviorLogTest(unittest.TestCase):
         self.assertIn("boot", ALLOWED_KINDS)
         self.assertIn("app_close", ALLOWED_KINDS)
 
+    def test_cross_thread_record_and_read(self):
+        # REGRESIÓN (2026-05-30): el ambient_observer escribe desde su daemon thread
+        # mientras el main lee el perfil cada turno. Con una conexión SQLite ÚNICA
+        # compartida, las ops del thread que NO la creó fallaban SILENCIOSAS
+        # (record→False, events→[]) → el observador perdía registros. Fix: conexión
+        # por-thread (threading.local) sobre la DB WAL. Acá: main abre, otro thread
+        # escribe+lee, y los datos deben verse desde ambos.
+        import threading
+        self.bl.record("boot", "pc")  # main thread abre la conexión
+        result: dict = {}
+
+        def worker():
+            result["record"] = self.bl.record("app_focus", "code.exe",
+                                               {"source": "ambient"})
+            result["events_seen"] = len(self.bl.events())
+
+        t = threading.Thread(target=worker)
+        t.start()
+        t.join()
+        self.assertTrue(result["record"], "record cross-thread debe persistir")
+        self.assertEqual(result["events_seen"], 2, "el otro thread debe leer ambos")
+        self.assertEqual(len(self.bl.events()), 2, "el main debe ver el del worker")
+
 
 class PatternMinerTest(unittest.TestCase):
     def _events_red_case(self, days=10, close_n=8):

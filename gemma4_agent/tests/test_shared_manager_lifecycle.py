@@ -73,15 +73,22 @@ class TestAtexitStop(unittest.TestCase):
         ls._SHARED_MANAGER = None
         ls._ATEXIT_REGISTERED = False
         # atexit is imported inside get_shared_manager; patch the stdlib symbol.
+        # C7 (b819081) añadió un atexit POR INSTANCIA (_atexit_stop_self) en el
+        # __init__ del manager — intencional, uno por manager. Este test fija el
+        # contrato del singleton MODULE-LEVEL (_atexit_stop_shared_manager): se
+        # registra exactamente una vez y no se re-registra. Contamos sólo ése
+        # (no los por-instancia), filtrando por la función registrada.
         with mock.patch("atexit.register") as reg:
+            def _module_regs() -> int:
+                return sum(1 for c in reg.call_args_list
+                           if c.args and c.args[0] is ls._atexit_stop_shared_manager)
             ls.get_shared_manager()
-            first_calls = reg.call_count
-            self.assertEqual(first_calls, 1, "registers once on first build")
-            # second build path must NOT re-register
+            self.assertEqual(_module_regs(), 1, "module-level atexit registers once")
+            # second build path must NOT re-register the module-level handler
             ls._SHARED_MANAGER = None
             ls.get_shared_manager()
-            self.assertEqual(reg.call_count, first_calls,
-                             "atexit handler registered at most once per process")
+            self.assertEqual(_module_regs(), 1,
+                             "module-level atexit registered at most once per process")
         self.assertTrue(ls._ATEXIT_REGISTERED)
 
 

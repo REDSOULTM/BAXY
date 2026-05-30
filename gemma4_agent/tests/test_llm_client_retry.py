@@ -64,13 +64,16 @@ class TestPostChatWithRecovery(unittest.TestCase):
 
     def test_reset_then_healthy_retries_once(self):
         # 1ra llamada: connection reset; despues health=True; 2da llamada: ok.
+        # H4 (b819081): el recovery exige /health AND /slots, no solo /health
+        # (que miente bajo carga). Mockeamos ambos como listos.
         responses = [
             RuntimeError("[WinError 10054] connection reset"),
             {"choices": [{"message": {"content": "ok after retry"}}]},
         ]
         with patch.object(self.client, "_post_chat",
                           side_effect=responses) as mock_post, \
-             patch.object(self.client, "health", return_value=True):
+             patch.object(self.client, "health", return_value=True), \
+             patch.object(self.client, "_probe_slots_alive", return_value=True):
             result = self.client._post_chat_with_recovery(self.body, timeout=30.0)
             self.assertEqual(mock_post.call_count, 2)
             self.assertEqual(result["choices"][0]["message"]["content"], "ok after retry")
@@ -87,11 +90,12 @@ class TestPostChatWithRecovery(unittest.TestCase):
             self.assertIn("llm_connection_reset_no_recovery", str(ctx.exception))
 
     def test_reset_then_reset_again_raises(self):
-        # connection reset; health=True; pero segundo intento tambien reset:
-        # propaga sin tercer retry.
+        # connection reset; health=True+/slots OK; pero segundo intento tambien
+        # reset: propaga sin tercer retry. (H4 b819081: recovery exige /health AND /slots.)
         with patch.object(self.client, "_post_chat",
                           side_effect=RuntimeError("[WinError 10054] connection reset")), \
              patch.object(self.client, "health", return_value=True), \
+             patch.object(self.client, "_probe_slots_alive", return_value=True), \
              patch("time.sleep"):
             with self.assertRaises(RuntimeError) as ctx:
                 self.client._post_chat_with_recovery(self.body, timeout=30.0)
