@@ -131,6 +131,25 @@ def test_open_browser_not_abstained() -> None:
         assert not domain, f"{q!r} should abstain, got {sorted(domain)}"
 
 
+def test_browser_real_collapsed_on_simple_nav() -> None:
+    """S3d (2026-05-30) precision. browser_real (fine CDP control) was offered
+    on EVERY browser turn as noise (measured: 78 noise rows vs 2 that truly need
+    it). The hierarchical collapse drops browser_real when the turn wants simple
+    navigation — discriminated by score (encoder ranks `browser` > `browser_real`
+    for "open/go to", and `browser_real` >= `browser` for "fill the form"/"click").
+    Recall-neutral, measured 0 loss on both corpora. NOT a keyword rule."""
+    # Simple navigation → browser_real must be gone (browser stays).
+    for q in ("abre el navegador", "abre chrome", "ve a youtube"):
+        subset = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        assert "browser_real" not in subset, (
+            f"{q!r} is simple nav; browser_real is noise, got {sorted(subset)}")
+    # Real web control → browser_real MUST be kept (score protects it).
+    for q in ("llena el formulario de esta pagina", "rellena el formulario de la web"):
+        subset = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        assert "browser_real" in subset, (
+            f"{q!r} needs CDP control; browser_real must stay, got {sorted(subset)}")
+
+
 def run() -> int:
     passes = 0
     fails: list[str] = []

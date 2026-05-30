@@ -96,6 +96,45 @@ _DOMAIN_CLUSTERS: tuple[tuple[frozenset[str], str], ...] = (
     (frozenset({"app", "window"}), "app"),                  # apps; window solo si keyword
 )
 
+# CLUSTERS JERÁRQUICOS simple↔avanzado (S3d, 2026-05-30). Distintos del collapse
+# de arriba: acá hay una tool SIMPLE (la acción por defecto) y otra AVANZADA
+# (control fino) que comparten dominio. La avanzada se ofrece de más casi
+# siempre como RUIDO. Discriminador MEDIDO (no keywords): cuando el usuario
+# quiere la versión simple, el encoder puntúa la SIMPLE más alto que la
+# avanzada; cuando quiere la avanzada (formulario, click), la AVANZADA puntúa
+# igual o más. Regla: si `simple` y `avanzada` ambas en el subset Y
+# score(simple) > score(avanzada) Y la avanzada NO fue keyword-fired -> quitar
+# la avanzada. MEDIDO recall-neutral en AMBOS corpus (curado 1268 + real 1071,
+# 0 recall perdido) y ruido -0.05/-0.15 por turno. Ejemplo ancla: "abre el
+# navegador" daba app+browser+browser_real+computer_use; browser_real(control
+# CDP) es ruido frente a browser (abrir/navegar) — solo "llená el formulario"
+# /"clickeá aceptar" la necesitan, y ahí browser_real>=browser.
+# (simple, avanzada). DEFAULT ON (gate de recall pasó en logs reales).
+_HIER_CLUSTERS: tuple[tuple[str, str], ...] = (
+    ("browser", "browser_real"),   # navegar/abrir  vs  control CDP (formularios/click)
+)
+
+
+def _collapse_hierarchical(tools: list[str], scored: dict[str, float],
+                           keep: set[str]) -> list[str]:
+    """Quita la tool AVANZADA de un cluster simple↔avanzado cuando el turno
+    pide la versión simple (score(simple) > score(avanzada)) y la avanzada no
+    fue pedida explícito (keyword). Preserva orden. Gate
+    GEMMA4_HIER_COLLAPSE=0 lo desactiva."""
+    import os as _os_hc
+    if (_os_hc.environ.get("GEMMA4_HIER_COLLAPSE", "1") or "1").strip().lower() \
+            not in {"1", "true", "yes", "on"}:
+        return tools
+    present = set(tools)
+    drop: set[str] = set()
+    for simple, advanced in _HIER_CLUSTERS:
+        if simple in present and advanced in present and advanced not in keep:
+            # Si la SIMPLE puntúa estrictamente más alto, el turno es el caso
+            # simple -> la avanzada es ruido. Empate o avanzada>simple = se queda.
+            if scored.get(simple, -1.0) > scored.get(advanced, -1.0):
+                drop.add(advanced)
+    return [t for t in tools if t not in drop] if drop else tools
+
 
 def _collapse_domain_clusters(tools: list[str], scored: dict[str, float],
                               keep: set[str]) -> list[str]:
@@ -783,6 +822,11 @@ def select_tool_names(
     # _kw_hits (línea ~272) son las tools que el keyword disparó: señal fuerte de
     # intención explícita -> nunca colapsarlas (el usuario las pidió).
     expanded = _collapse_domain_clusters(_dedupe(expanded), _collapse_scored, set(_kw_hits))
+    # Collapse jerárquico simple↔avanzado (S3d): quita la tool de control fino
+    # (browser_real) cuando el turno pide la versión simple (browser). Va ANTES
+    # del cap para que el cap no recorte señal por culpa del ruido. Recall-neutral
+    # medido en ambos corpus.
+    expanded = _collapse_hierarchical(_dedupe(expanded), _collapse_scored, set(_kw_hits))
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
     # Hotfix F 2026-05-17: pending_intent injection. If a previous turn
     # left a tool waiting on user input (status='needs_user'), inject
