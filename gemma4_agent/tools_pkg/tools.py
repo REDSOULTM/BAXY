@@ -1558,6 +1558,21 @@ class ToolRegistry:
             err = validator(clean_args)
             if err is not None:
                 return _normalize_tool_result(name, clean_args, err)
+        # ITEM 3 (perfection roadmap): catálogo de PRECONDICIONES (ley #5). Antes
+        # de actuar, chequear estado del SO (app instalada, whatsapp presente). Un
+        # False MEDIDO bloquea con mensaje accionable -> needs_user (que el recovery
+        # clasifica como ERR_MISSING_PRECONDITION, budget=1). None/unknown NO bloquea
+        # (fail-open). Gated GEMMA4_PRECONDITIONS (default off). 0 overhead si off.
+        try:
+            from ..safety_pkg.preconditions import ensure_preconditions
+            _prec = ensure_preconditions(name, clean_args)
+            if _prec is not None:
+                return _normalize_tool_result(name, clean_args, _err(
+                    _prec.detail, status="needs_user",
+                    completion_status="needs_dependency",
+                    precondition=_prec.name))
+        except Exception:
+            pass
         if self.safety_enabled and not confirmed and name != "safety":
             decision = classify_tool_call(name, clean_args)
             # B5: la POLÍTICA de confirmación decide si confirmar (default confirm_risky
