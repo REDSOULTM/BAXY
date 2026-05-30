@@ -92,6 +92,13 @@ class Profile:
     # llama-server command reads this (was hardcoded "99"). Design + sources:
     # docs/research/investigaciones_recibidas/6_estabilidad.md (Punto 4).
     n_gpu_layers: int = 99
+    # Ola 2.4 RAM-frugality (perfection roadmap 2026-05-29): para el perfil CPU
+    # (n_gpu_layers=0), limitar los threads + bajar la prioridad del proceso para
+    # NO robarle CPU al juego que motivó el fallback. None = default de llama.cpp
+    # (usa todos los cores) — solo el perfil CPU lo setea. Es un knob de RECURSOS,
+    # no una lista por idioma. Verificado en la build (b9090+): -t y --prio existen;
+    # --keep-alive/idle-unload NO -> no se promete unload-on-idle (regla #3).
+    cpu_threads: int | None = None
 
 
 # Defaults — copiados aqui para que sean editables sin tocar profiles.json.
@@ -225,6 +232,9 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         n_gpu_layers=0,
+        # RAM-frugality: 4 threads + prioridad baja (abajo en el command builder)
+        # para no saturar la CPU mientras el usuario juega. Override GEMMA4_CPU_THREADS.
+        cpu_threads=4,
         description=(
             "Fallback CPU para GPU ocupada (juego / app pesada). E2B-Q4 en CPU "
             "(-ngl 0): 0 VRAM, ~2 GB RAM. Respuestas más lentas pero el asistente "

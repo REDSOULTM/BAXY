@@ -415,6 +415,25 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     if int(profile.n_gpu_layers) > 0:
         cmd.extend(["--ctx-checkpoints", "0", "--cache-ram", "0", "--no-cache-idle-slots"])
 
+    # Ola 2.4 RAM-frugality: SOLO el perfil CPU (ngl=0). Limita threads + baja la
+    # prioridad para no robarle CPU al juego que motivó el fallback. Verificado en
+    # la build (b9090+): -t y --prio existen; --keep-alive/idle-unload NO (no se
+    # promete unload-on-idle). El path GPU queda byte-idéntico (no entra acá).
+    # Mismo espíritu que scripts/_ort_throttle.py (no saturar cores con otra carga).
+    if int(profile.n_gpu_layers) == 0:
+        _cpu_threads = os.environ.get("GEMMA4_CPU_THREADS") or (
+            str(profile.cpu_threads) if profile.cpu_threads else "")
+        if _cpu_threads.strip():
+            try:
+                cmd.extend(["-t", str(int(_cpu_threads))])
+            except (TypeError, ValueError):
+                pass
+        # --prio low (-1): el server CPU corre por debajo de lo normal, así el
+        # juego/app pesada mantiene la CPU. Opt-out GEMMA4_CPU_PRIO_LOW=0.
+        if (os.environ.get("GEMMA4_CPU_PRIO_LOW", "1") or "1").strip().lower() \
+                not in {"0", "false", "no", "off"}:
+            cmd.extend(["--prio", "-1"])
+
     # VRAM-tight: el único perfil (vram4, ≤4 GB) usa --no-mmap para evitar el
     # double-buffer entre RAM mapeada y VRAM (crítico con budget apretado).
     # En CPU (perfil `cpu`) NO se usa --no-mmap: mmap deja que el SO pagine el
