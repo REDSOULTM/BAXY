@@ -66,7 +66,15 @@ _MCP_PEAK_KEEP = float(_os.environ.get("GEMMA4_MCP_PEAK_KEEP", "0.30"))
 _SEM_PEAK_BAND = float(_os.environ.get("GEMMA4_SEM_PEAK_BAND", "0.20"))
 # Budget for speculative related-tool deps (the gui/uia/vision/window fan-out
 # that, stacked on the semantic union, produced the operator's "11 tools").
-_RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "3"))
+# PRECISIÓN (2026-05-29, pedido del usuario: ofrecer SOLO lo necesario): bajado de
+# 3 a 1. MEDIDO sobre el corpus curado (1733 filas): related-budget 3→1 NO cambia
+# el recall (holdout 0.9964, dev 0.9939, NO-TOOL 1.0000 idénticos) pero baja el
+# RUIDO de 1.86 a 1.63 extra/turno (−26% turnos muy ruidosos). El budget 3 metía
+# deps especulativas (steam→app+window+verify) que el corpus confirma como ruido
+# puro: 0 recall protegido. Budget 1 conserva la dep #1 (p.ej. verify) por si una
+# cadena genuina la necesita; =0 (aún más limpio, recall idéntico) queda por env
+# para experimentar con la eval e2e. 45 tests de router verdes con el cambio.
+_RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "1"))
 # Per-tool head firing filters: a tool must clear its threshold by this margin
 # (weak just-over-bar firings are noise), and at most this many head tools.
 _HEAD_MIN_MARGIN = float(_os.environ.get("GEMMA4_HEAD_MIN_MARGIN", "0.05"))
