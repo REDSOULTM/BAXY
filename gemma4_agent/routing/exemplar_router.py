@@ -18,6 +18,18 @@ _PATH = Path(__file__).resolve().parent.parent / "data" / "router_exemplars.npz"
 _TOP_K = int(os.environ.get("GEMMA4_EXEMPLAR_TOP_K", "5"))
 _MIN_SCORE = float(os.environ.get("GEMMA4_EXEMPLAR_MIN_SCORE", "0.92"))
 _CONFLICT_SCORE = float(os.environ.get("GEMMA4_EXEMPLAR_CONFLICT_SCORE", "0.975"))
+# Margen relativo que el voto-ABSTENCIÓN debe superar al mejor voto-TOOL para
+# que el exemplar abstenga (S3c, 2026-05-30). CAUSA RAÍZ medida: un imperativo
+# limpio ("abre el navegador") tiene como vecino-top una PREGUNTA reflexiva
+# casi idéntica en el espacio de embeddings ("me abrí el navegador?" label []),
+# cuyo voto-abstención (score² ~0.896) vencía por 0.005 a los 4 vecinos-comando
+# ("abre el navegador ese" [app,web], ~0.891). El exemplar abstenía y
+# cortocircuitaba TODO el resto del planner -> subset vacío en un comando obvio.
+# Exigir que la abstención GANE por margen (no por un pelo) evita que un único
+# vecino-pregunta envenene 4 vecinos-comando. NO afecta la charla genuina, donde
+# la abstención domina por mucho ("gracias", "holas"). Medido global antes de
+# fijar el default.
+_ABSTAIN_MARGIN = float(os.environ.get("GEMMA4_EXEMPLAR_ABSTAIN_MARGIN", "0.05"))
 
 
 @dataclass(frozen=True)
@@ -95,7 +107,11 @@ def match(text: str) -> ExemplarMatch | None:
                     votes[tool] = votes.get(tool, 0.0) + weight
         if not votes:
             return ExemplarMatch(tools=(), score=best_score, source="semantic")
-        if abstain_vote > max(votes.values(), default=0.0):
+        # Abstener SOLO si el voto-abstención SUPERA al mejor voto-tool por un
+        # margen (no por un empate ínfimo): un único vecino-pregunta no debe
+        # silenciar un imperativo respaldado por varios vecinos-comando. La
+        # charla real abstiene por mucho y cruza el margen sin problema.
+        if abstain_vote > max(votes.values(), default=0.0) * (1.0 + _ABSTAIN_MARGIN):
             return ExemplarMatch(tools=(), score=best_score, source="semantic")
         ranked = tuple(t for t, _ in sorted(votes.items(), key=lambda kv: -kv[1])[:4])
         return ExemplarMatch(tools=ranked, score=best_score, source="semantic")

@@ -109,6 +109,28 @@ CASES: list[Case] = [
 ]
 
 
+def test_open_browser_not_abstained() -> None:
+    """S3c (2026-05-30) regression. "abre el navegador" used to yield an EMPTY
+    domain subset: its nearest exemplar was a reflexive question ("me abrí el
+    navegador?" label []) whose abstain vote edged 4 command-neighbors by ~0.005,
+    and the exemplar abstention short-circuited the whole planner. The
+    abstain-MARGIN fix requires the no-tool vote to BEAT the best tool vote, not
+    merely tie it. A bare "open the browser" imperative must offer app/browser.
+    NB: we assert recall only (app reachable), not the cap — these queries pull a
+    same-domain cluster (app+browser+browser_real+computer_use) that exceeds 5;
+    trimming that noise is the precision sprint, tracked separately."""
+    for q in ("abre el navegador", "Abri el navegador",
+              "abre el navegador predeterminado"):
+        subset = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        assert "app" in subset or "browser" in subset, (
+            f"{q!r} must offer app/browser, got {sorted(subset)}")
+    # The fix must NOT silence genuine no-tool turns (reflexive question / meta).
+    for q in ("me abrí el navegador?",):
+        subset = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        domain = subset - {"session", "safety"}
+        assert not domain, f"{q!r} should abstain, got {sorted(domain)}"
+
+
 def run() -> int:
     passes = 0
     fails: list[str] = []

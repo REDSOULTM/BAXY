@@ -137,6 +137,40 @@ class TestIntentRouter(unittest.TestCase):
                 f"world question {q!r} should NOT be flagged conversational",
             )
 
+    def test_tell_me_about_entity_is_knowledge(self):
+        # S3b (2026-05-30): "hablame de X / contame sobre X / dame info de X /
+        # qué sabés de X" about a concrete entity are world-knowledge requests.
+        # They used to fall into chitchat (the short proper-noun object embeds
+        # near smalltalk) or fail the vs-action margin. Anchors anchoring the
+        # "verbo-pedir-info + ENTIDAD" pattern fixed it. Multilingual — these
+        # must fire wants_knowledge across the longer descriptive subjects that
+        # the encoder reliably places (short bare names like "messi" stay a
+        # documented hard boundary the LLM resolves from full text).
+        for q in [
+            "hablame de bruno mars",
+            "contame sobre bruno mars",
+            "dame info de la nasa",
+            "que sabes de napoleon",
+            "hablame de la segunda guerra mundial",
+            "contame de los dinosaurios",
+        ]:
+            self.assertTrue(
+                wants_knowledge(q),
+                f"'tell me about X' {q!r} should request web/knowledge",
+            )
+
+    def test_tell_me_about_does_not_overtrigger(self):
+        # The new info anchors must NOT pull commands or smalltalk into
+        # knowledge: real actions and chitchat stay out (anti-regression).
+        for q in [
+            "abre whatsapp", "pon musica", "sube el volumen",
+            "gracias", "hola", "quien eres",
+        ]:
+            self.assertFalse(
+                wants_knowledge(q),
+                f"{q!r} must NOT be misread as a knowledge request",
+            )
+
     # NB: clear imperatives ("abre Steam", "pon una canción") may or may not
     # be flagged conversational by the standalone gate — that's harmless,
     # because the keyword stage and the high-confidence semantic override
