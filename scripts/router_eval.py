@@ -217,6 +217,15 @@ def _evaluate(rows: list[dict], use_prev: bool = False,
     recall_fails: list[tuple[str, list[str], list[str]]] = []
     notool_fails: list[tuple[str, list[str]]] = []
     per_tool = collections.defaultdict(lambda: [0, 0])
+    # PRECISIÓN (2026-05-29, pedido del usuario: ofrecer SOLO lo necesario, no ruido).
+    # Para cada turno-con-tool medimos el RUIDO = tools de dominio ofrecidas que NO
+    # estaban esperadas. domain_subset = subset menos las non-domain (session/safety/
+    # state/verify, siempre alcanzables). noise = |domain_subset \ expected|.
+    # Un router perfecto: domain_subset == expected (noise 0). Hoy ~3.7 de ruido.
+    precision_rows = 0          # turnos con tool evaluados
+    domain_size_sum = 0         # suma de |domain_subset| (para el promedio)
+    noise_sum = 0               # suma de tools de dominio EXTRA (el ruido)
+    noisy_examples: list[tuple[str, list[str], list[str]]] = []  # (q, expected, extra)
     # per-slice [recall_ok, recall_total, notool_ok, notool_total]
     per_slice = collections.defaultdict(lambda: [0, 0, 0, 0])
     # executed-tool map for the inherit simulation (built from the WHOLE
@@ -245,6 +254,14 @@ def _evaluate(rows: list[dict], use_prev: bool = False,
                 recall_ok += 1
             else:
                 recall_fails.append((q, expected, sorted(subset)))
+            # PRECISIÓN: cuánto RUIDO (tools de dominio extra) ofrece el router.
+            domain_subset = subset - _NON_DOMAIN
+            extra = domain_subset - set(expected)
+            precision_rows += 1
+            domain_size_sum += len(domain_subset)
+            noise_sum += len(extra)
+            if len(extra) >= 3:  # turnos especialmente ruidosos
+                noisy_examples.append((q, expected, sorted(extra)))
             for t in expected:
                 per_tool[t][1] += 1
                 if hit:
@@ -269,6 +286,9 @@ def _evaluate(rows: list[dict], use_prev: bool = False,
         "notool_ok": notool_ok, "notool_total": notool_total,
         "recall_fails": recall_fails, "notool_fails": notool_fails,
         "per_tool": per_tool, "per_slice": per_slice,
+        "precision_rows": precision_rows,
+        "domain_size_sum": domain_size_sum, "noise_sum": noise_sum,
+        "noisy_examples": noisy_examples,
     }
 
 
@@ -279,9 +299,24 @@ def _print_block(name: str, m: dict) -> None:
           f"NO-TOOL keep {no}/{nt}={no/max(1,nt):.4f}   "
           f"(recall misses {len(m['recall_fails'])}, "
           f"over-offers {len(m['notool_fails'])})")
+    # PRECISIÓN (pedido del usuario): subset de dominio promedio + ruido promedio.
+    pr = m.get("precision_rows", 0)
+    if pr:
+        avg_dom = m["domain_size_sum"] / pr
+        avg_noise = m["noise_sum"] / pr
+        print(f"  [{name}]  PRECISIÓN: subset-dominio medio {avg_dom:.2f} tools/turno  "
+              f"RUIDO medio {avg_noise:.2f} extra/turno  "
+              f"(turnos muy ruidosos ≥3: {len(m['noisy_examples'])})")
 
 
 def main() -> int:
+    # Fix ceguera cp1252 (2026-05-29): en Windows el stdout default es cp1252 y
+    # crashea al imprimir queries non-latin (ru/ja/zh/ar) del held-out de idioma.
+    # Forzar UTF-8 para poder EVALUAR esos idiomas (antes ni se imprimían).
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
     ap = argparse.ArgumentParser()
     ap.add_argument("--show-fails", action="store_true")
     ap.add_argument("--by-tool", action="store_true")
