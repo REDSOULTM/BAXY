@@ -3571,3 +3571,189 @@
 {"tool": "whatsapp", "q": "answer her yes"}
 {"tool": "whatsapp", "q": "responde ao joao que sim"}
 {"tool": "whatsapp", "q": "reponds-lui que oui"}
+{"tool": "audio", "q": "Sube tres"}
+{"tool": "audio", "q": "Baja un poco"}
+{"tool": "audio", "q": "Silencia todo"}
+{"tool": "audio", "q": "Volumen a diez"}
+{"tool": "audio", "q": "Increase volume now"}
+{"tool": "audio", "q": "Lower it by two"}
+{"tool": "audio", "q": "Mute it totally"}
+{"tool": "audio", "q": "Set volume to five"}
+{"tool": "audio", "q": "Aumenta o volume"}
+{"tool": "audio", "q": "Diminui um pouco"}
+{"tool": "audio", "q": "Silencia agora"}
+{"tool": "audio", "q": "Volume três"}
+{"tool": "audio", "q": "Augmente le son de trois"}
+{"tool": "audio", "q": "Baisse le volume de deux"}
+{"tool": "audio", "q": "Silencie ça maintenant"}
+{"tool": "audio", "q": "Mets le son au max"}
+{"tool": "audio", "q": "laut auf drei"}
+{"tool": "audio", "q": "laut mehr"}
+{"tool": "audio", "q": "laut max"}
+{"tool": "audio", "q": "laut runter"}
+{"tool": "audio", "q": "subisci cinque"}
+{"tool": "audio", "q": "bassa un po"}
+{"tool": "audio", "q": "silenzia tutto"}
+{"tool": "audio", "q": "volume massimo"}
+{"tool": "system", "q": "Increase brightness now"}
+{"tool": "system", "q": "Dim it down"}
+{"tool": "system", "q": "Set to max"}
+{"tool": "system", "q": "Set to min"}
+{"tool": "system", "q": "aumenta o brilho"}
+{"tool": "system", "q": "diminui brilho"}
+{"tool": "system", "q": "brilho no max"}
+{"tool": "system", "q": "brilho no min"}
+{"tool": "system", "q": "monter le bril"}
+{"tool": "system", "q": "baisser un peu"}
+{"tool": "system", "q": "brillance max"}
+{"tool": "system", "q": "brillance min"}
+{"tool": "system", "q": "Leucht max"}
+{"tool": "system", "q": "Helligkeit runter"}
+{"tool": "system", "q": "Brillo"}
+{"tool": "system", "q": "Aumenta il brillo"}
+{"tool": "system", "q": "Brillo massimo"}
+{"tool": "system", "q": "Diminuisci subito"}
+{"tool": "system", "q": "Brillo minimo"}
+{"tool": "gui", "q": "tecla uno"}
+{"tool": "gui", "q": "escribe esto ya"}
+{"tool": "gui", "q": "teclea la letra"}
+{"tool": "gui", "q": "apretar la tecla"}
+{"tool": "gui", "q": "Type that number"}
+{"tool": "gui", "q": "Press the key"}
+{"tool": "gui", "q": "Input ten"}
+{"tool": "gui", "q": "Type max"}
+{"tool": "gui", "q": "digita dez"}
+{"tool": "gui", "q": "tecla agora"}
+{"tool": "gui", "q": "aperta o S"}
+{"tool": "gui", "q": "digita dois"}
+{"tool": "gui", "q": "tape ça vite"}
+{"tool": "gui", "q": "entre deux"}
+{"tool": "gui", "q": "appuie la touche"}
+{"tool": "gui", "q": "texte trois"}
+{"tool": "gui", "q": "schreib das jetzt"}
+{"tool": "gui", "q": "tippe die ziffer"}
+{"tool": "gui", "q": "drueck die taste"}
+{"tool": "gui", "q": "gib sechs ein"}
+{"tool": "gui", "q": "Scrivi dieci adesso"}
+{"tool": "gui", "q": "Premi la tecla"}
+{"tool": "gui", "q": "Metti due punti"}
+{"tool": "gui", "q": "Tasto cinque max"}
+{"tool": "uia", "q": "Toca el boton"}
+{"tool": "uia", "q": "Click una vez"}
+{"tool": "uia", "q": "Abrir la app"}
+{"tool": "uia", "q": "Dale toque"}
+{"tool": "uia", "q": "Tap it now"}
+{"tool": "uia", "q": "Click that one"}
+{"tool": "uia", "q": "Tap the button"}
+{"tool": "uia", "q": "Click max"}
+{"tool": "uia", "q": "toca esse botao"}
+{"tool": "uia", "q": "clica um"}
+{"tool": "uia", "q": "toca o primeiro"}
+{"tool": "uia", "q": "clica o dois"}
+{"tool": "uia", "q": "Clique sur le bouton"}
+{"tool": "uia", "q": "Appuie trois fois"}
+{"tool": "uia", "q": "Cliquez le premier"}
+{"tool": "uia", "q": "Touche max"}
+{"tool": "uia", "q": "tast das jetzt"}
+{"tool": "uia", "q": "klick die erste"}
+{"tool": "uia", "q": "drück button zwei"}
+{"tool": "uia", "q": "wähl drei"}
+{"tool": "uia", "q": "tocca quello subito"}
+{"tool": "uia", "q": "clicca qui ora"}
+{"tool": "uia", "q": "tocca tre volte"}
+{"tool": "uia", "q": "clicca massimo"}
+{"tool": "window", "q": "Cierra esa ventana"}
+{"tool": "window", "q": "Minimiza la activa"}
+{"tool": "window", "q": "Cambia a la dos"}
+{"tool": "window", "q": "Ver procesos ahora"}
+{"tool": "window", "q": "Close window now"}
+{"tool": "window", "q": "Minimize window one"}
+{"tool": "window", "q": "Change active window"}
+{"tool": "window", "q": "Show window processes"}
+{"tool": "window", "q": "fecha a janela"}
+{"tool": "window", "q": "minimiza isso"}
+{"tool": "window", "q": "mudar a tela"}
+{"tool": "window", "q": "mostra processos"}
+{"tool": "window", "q": "ferme la fenetre"}
+{"tool": "window", "q": "minimise la fenêtre"}
+{"tool": "window", "q": "changer la fenêtre"}
+{"tool": "window", "q": "regarde les processus"}
+{"tool": "window", "q": "schließe die fenster jetzt"}
+{"tool": "window", "q": "fenster minimiere bitte"}
+{"tool": "window", "q": "fenster wechseln auf drei"}
+{"tool": "window", "q": "fenster auf max stellen"}
+{"tool": "window", "q": "chiudi la finestra ora"}
+{"tool": "window", "q": "minimizza quella"}
+{"tool": "window", "q": "cambia la finestra uno"}
+{"tool": "window", "q": "mostra i processi"}
+{"tool": "input", "q": "Escribe esto ya"}
+{"tool": "input", "q": "Input tres veces"}
+{"tool": "input", "q": "Pega la secuencia"}
+{"tool": "input", "q": "Input al maximo"}
+{"tool": "input", "q": "Input that now"}
+{"tool": "input", "q": "Type that sequence"}
+{"tool": "input", "q": "Paste ten keys"}
+{"tool": "input", "q": "Input max speed"}
+{"tool": "input", "q": "Escreve isso agora"}
+{"tool": "input", "q": "Digita um mil"}
+{"tool": "input", "q": "Cola a sequência"}
+{"tool": "input", "q": "Pega a letra zero"}
+{"tool": "input", "q": "écris ça vite"}
+{"tool": "input", "q": "tape la suite"}
+{"tool": "input", "q": "pege le texte"}
+{"tool": "input", "q": "ecris deux lignes"}
+{"tool": "input", "q": "schreib das jetzt"}
+{"tool": "input", "q": "input max"}
+{"tool": "input", "q": "teke die seq"}
+{"tool": "input", "q": "pege die reihe"}
+{"tool": "input", "q": "Scrivi questo adesso"}
+{"tool": "input", "q": "Incolla dieci caratteri"}
+{"tool": "input", "q": "Tocca cinque volte"}
+{"tool": "input", "q": "Scrivi massimo tre"}
+{"tool": "media", "q": "pausa lo"}
+{"tool": "media", "q": "siguiente uno"}
+{"tool": "media", "q": "anterior dos"}
+{"tool": "media", "q": "reanuda ya"}
+{"tool": "media", "q": "pause that now"}
+{"tool": "media", "q": "next song please"}
+{"tool": "media", "q": "play next one"}
+{"tool": "media", "q": "go back one"}
+{"tool": "media", "q": "Pausa agora"}
+{"tool": "media", "q": "Segue um"}
+{"tool": "media", "q": "Próximo"}
+{"tool": "media", "q": "Anterior"}
+{"tool": "media", "q": "Pause maintenant"}
+{"tool": "media", "q": "Suivant un"}
+{"tool": "media", "q": "An"}
+{"tool": "media", "q": "Pause das jetzt"}
+{"tool": "media", "q": "Nächste bitte"}
+{"tool": "media", "q": "Zurück drei"}
+{"tool": "media", "q": "Wiederanfang"}
+{"tool": "media", "q": "ferma ora"}
+{"tool": "media", "q": "segui il prossimo"}
+{"tool": "media", "q": "vai indietro"}
+{"tool": "media", "q": "ripeti una volta"}
+{"tool": "audio_device", "q": "Cambia a entrada"}
+{"tool": "audio_device", "q": "Salida al otro"}
+{"tool": "audio_device", "q": "Manda al audio"}
+{"tool": "audio_device", "q": "Cambia al primero"}
+{"tool": "audio_device", "q": "Switch audio input now"}
+{"tool": "audio_device", "q": "Change output to second"}
+{"tool": "audio_device", "q": "Audio device switch one"}
+{"tool": "audio_device", "q": "Set input to max"}
+{"tool": "audio_device", "q": "Muda a saida"}
+{"tool": "audio_device", "q": "Troca a entrada"}
+{"tool": "audio_device", "q": "Para o primeiro"}
+{"tool": "audio_device", "q": "Muda pro outro"}
+{"tool": "audio_device", "q": "Change audio premier"}
+{"tool": "audio_device", "q": "Entree autre canal"}
+{"tool": "audio_device", "q": "Sortie max"}
+{"tool": "audio_device", "q": "Audio deux"}
+{"tool": "audio_device", "q": "wechseln auf den anderen"}
+{"tool": "audio_device", "q": "audio ausgang erst"}
+{"tool": "audio_device", "q": "wechsel auf input zwei"}
+{"tool": "audio_device", "q": "audio an den ersten"}
+{"tool": "audio_device", "q": "cambia uscita ora"}
+{"tool": "audio_device", "q": "salta all'altro dispositivo"}
+{"tool": "audio_device", "q": "audio uno massimo"}
+{"tool": "audio_device", "q": "metti l'input due"}
