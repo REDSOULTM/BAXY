@@ -54,12 +54,17 @@ _SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.50"))
 _SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.15"))
 # Bar PROPIO para promover una tool MCP (perfection roadmap 2026-05-29). Las MCP
 # usan descripciones crudas de servidores externos (no el encoder FT entrenado con
-# las nativas), así que viven en un rango de cosine MÁS BAJO (MEDIDO: weather MCP
-# ~0.33-0.38 en clima vs el bar nativo 0.50). Un bar propio más bajo deja que la
-# MCP relevante compita SIN aflojar el umbral nativo. Conservador (0.30): MEDIDO
-# que en queries NO-relevantes la mejor MCP ni entra al top-12, así que 0.30 no
-# mete ruido. Override GEMMA4_MCP_PEAK_KEEP.
-_MCP_PEAK_KEEP = float(_os.environ.get("GEMMA4_MCP_PEAK_KEEP", "0.30"))
+# las nativas), así que viven en un rango de cosine MÁS BAJO que el bar nativo 0.50.
+# Un bar propio más bajo deja que la MCP relevante compita SIN aflojar el umbral
+# nativo. RE-CALIBRADO 2026-05-30 para el encoder FT 3ep (fc60ed2): el FT cambió el
+# rango y la calibración 0.30 quedó desfasada — MEDIDO con la weather MCP enrolada:
+#   relevantes "qué clima/temperatura/tiempo/va a llover" → 0.455-0.685
+#   irrelevantes → "qué hora es" 0.304 (¡SE COLABA con 0.30!), "qué día es hoy" 0.251, resto fuera del top-14
+# El gap limpio [0.304, 0.455] ubica el bar en 0.40: bloquea el leak de "qué hora es"
+# (margen 0.10) y conserva todas las relevantes (margen 0.055 bajo la más baja). El
+# comentario viejo decía "la MCP no entra al top-12 en no-relevantes" — el FT lo
+# invalidó. Override GEMMA4_MCP_PEAK_KEEP.
+_MCP_PEAK_KEEP = float(_os.environ.get("GEMMA4_MCP_PEAK_KEEP", "0.40"))
 # When one tool clearly dominates ("abre steam"->steam 0.74), keep only tools
 # within this band of it (drops the noisy tail -> small subset). Recall-safe:
 # the labeled tool IS the dominant peak in these crisp single-intent commands.

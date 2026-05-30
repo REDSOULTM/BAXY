@@ -44,8 +44,22 @@ class ToolHeadSubsetContract(unittest.TestCase):
         self.assertIn("whatsapp", _domain("manda whatsapp a juan"))
 
     def test_smalltalk_and_knowledge_abstain(self):
-        for q in ["hola", "gracias", "que es pytest"]:
+        # Smalltalk puro: abstención estricta (ninguna tool de dominio).
+        for q in ["hola", "gracias"]:
             self.assertEqual(_domain(q), [], f"{q!r} should abstain")
+        # "qué es X" (pregunta de conocimiento): tras S3b (info-anchors, 19e1192)
+        # y el reentreno FT 3ep (fc60ed2), una pregunta "qué es X" puede llegar a
+        # una tool de LOOKUP (web/knowledge/source_manager) — el agente PUEDE
+        # buscar info autoritativa/actual; el INTENT anti-bloat real es que NO
+        # dispare una tool de ACCIÓN espuria (developer/app/gui/system...). VERIFICADO
+        # EN VIVO (agent.run_content): "qué es pytest" → el 4B responde la definición
+        # directo (subset vacío con tilde) o con web disponible (sin tilde) — nunca
+        # abre una app ni teclea. Afirmamos eso: a lo sumo lookup, jamás acción.
+        _LOOKUP = {"web", "knowledge", "source_manager"}
+        d = set(_domain("que es pytest"))
+        self.assertTrue(
+            d <= _LOOKUP,
+            f"'que es pytest' no debe ofrecer tools de acción (solo lookup); got {sorted(d)}")
 
     def test_knowledge_world_question_reaches_web(self):
         # "what is X about" / "who is X" should reach web/knowledge.

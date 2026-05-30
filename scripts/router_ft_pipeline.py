@@ -2,8 +2,11 @@
 
 After scripts/train_router_encoder.py produces the fine-tuned encoder, the rest
 of the router stack must be re-derived with THAT encoder (its vector geometry
-changed): the Tool2Vec centroids re-embedded, the abstain head retrained on the
-new feature distribution, then the holdout measured ONCE.
+changed): the Tool2Vec centroids re-embedded, the semantic EXEMPLAR store
+re-embedded (router_exemplars.npz — its cosine compares query vs PRE-computed
+vectors, so a stale store mixes two embedding spaces and corrupts the abstain
+margin), the abstain head retrained on the new feature distribution, then the
+holdout measured ONCE.
 
 This wires GEMMA4_SEMANTIC_MODEL to the fine-tuned dir for the whole sequence so
 every component sees the same encoder, exactly as the runtime would with that
@@ -41,6 +44,15 @@ def main() -> int:
 
     # 1. Re-embed Tool2Vec centroids with the FT encoder.
     _run([PY, "scripts/router_tool2vec_build.py"], env)
+    # 1b. Re-embed the semantic EXEMPLAR store with the FT encoder. CRÍTICO: el
+    # exemplar router (exemplar_router.py) compara la query embebida en query-time
+    # contra los vectores PRE-COMPUTADOS en router_exemplars.npz; si NO se regenera
+    # con el nuevo encoder, compara dos espacios distintos -> la decisión de
+    # abstención (margen S3c/S3c-bis) se corrompe y comandos crispos como "abre el
+    # navegador" se silencian. Bug medido el 2026-05-30 (el FT 3ep dejó el store con
+    # embeddings de 5 días antes). Las labels no cambian, sólo se re-alinean los
+    # vectores. (gitignored/regenerable.)
+    _run([PY, "scripts/router_exemplar_build.py"], env)
     # 2. Retrain the abstain head on the FT feature distribution.
     _run([PY, "scripts/train_abstain_head.py", "--recall-floor", "0.95"], env)
     # set threshold 0.68 (dev-tuned balanced point)

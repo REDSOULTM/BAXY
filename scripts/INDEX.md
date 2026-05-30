@@ -48,6 +48,7 @@ automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 | `router_ft_pipeline.py` | Fine-tuning del encoder del router. |
 | `router_tool2vec_build.py` | Construye centroides tool2vec. |
 | `router_tool2vec_generate.py` | Genera embeddings tool2vec. |
+| `router_tool2vec_generate_deictic.py` | Genera queries tool2vec cortas/deícticas multilingües (LLM local) para el cluster short-imperative. |
 | `train_abstain_head.py` | Entrena la cabeza de abstención. |
 | `train_hey_gemma_v8.py` | Entrenamiento wake v8 (legacy). |
 | `train_hey_gemma_v9.py` | Entrenamiento wake v9 (legacy, hoy se usa LiveKit). |
