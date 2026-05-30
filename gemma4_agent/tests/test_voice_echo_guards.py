@@ -76,7 +76,24 @@ class TestTtsBusyGrace(unittest.TestCase):
         t._queue = Queue()
         t._synthesizing = False
         t._last_audio_ts = 0.0
+        t._streaming = False
+        t._last_feed_ts = 0.0
         return t
+
+    def test_busy_while_streaming_even_if_queue_empty(self):
+        import time
+        t = self._fresh_tts()
+        t._streaming = True
+        t._last_feed_ts = time.monotonic()
+        self.assertTrue(t._queue.empty() and not t._synthesizing)
+        self.assertTrue(t.is_busy(), "busy mientras streamea: puentea el hueco entre frases")
+
+    def test_not_busy_when_streaming_stale(self):
+        import time
+        t = self._fresh_tts()
+        t._streaming = True
+        t._last_feed_ts = time.monotonic() - (tts_mod.STREAM_STALE_S + 1.0)
+        self.assertFalse(t.is_busy(), "stale-guard: una respuesta colgada NO mutea para siempre")
 
     def test_busy_while_synthesizing_even_if_queue_empty(self):
         t = self._fresh_tts()

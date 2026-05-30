@@ -38,6 +38,15 @@ DEFAULT_VOICE = "es_MX-claude-high"
 # grace keeps the mic muted until the room is actually quiet again.
 TTS_TAIL_GRACE_S = float(os.environ.get("GEMMA4_TTS_TAIL_GRACE_S", "0.6"))
 
+# While the agent is STREAMING a reply (between the first feed_text and flush),
+# is_busy() stays True even if the synth queue momentarily drains between
+# sentences. Without this, when default-on streaming TTS makes Piper speak
+# sentence-by-sentence and the LLM stalls >TAIL_GRACE between them, the wake
+# detector un-pauses in the gap and the NEXT spoken sentence leaks into the mic
+# as a phantom command (self-hearing → garbage STT). Bounded by STREAM_STALE_S
+# so a stalled/aborted reply can never mute the mic forever.
+STREAM_STALE_S = float(os.environ.get("GEMMA4_TTS_STREAM_STALE_S", "8.0"))
+
 # URLs hardcoded de huggingface.co/rhasspy/piper-voices, main branch.
 # Si rompe en el futuro, el usuario ve el error y puede bajar manualmente.
 PIPER_VOICE_URLS = {
@@ -184,6 +193,10 @@ class StreamingTTS:
         # True through synth+play and a short tail, preventing self-hearing.
         self._synthesizing: bool = False
         self._last_audio_ts: float = 0.0
+        # Streaming-utterance bridge (anti self-hearing across inter-sentence
+        # gaps): True from the first feed_text of a reply until flush().
+        self._streaming: bool = False
+        self._last_feed_ts: float = 0.0
         # First-chunk fast path: flush the opening clause of an utterance early
         # so Piper starts speaking ~1-2s sooner; re-armed on each flush().
         self._first_chunk_done: bool = False
@@ -228,6 +241,10 @@ class StreamingTTS:
             return False
         if self._synthesizing:
             return True
+        # Streaming bridge: stay busy across inter-sentence gaps while a reply is
+        # actively being fed (see STREAM_STALE_S). Closes the self-hearing gap.
+        if self._streaming and (time.monotonic() - self._last_feed_ts) < STREAM_STALE_S:
+            return True
         if not self._queue.empty():
             return True
         # Tail grace: stay busy briefly after the last audio finished.
@@ -254,6 +271,7 @@ class StreamingTTS:
     def stop(self) -> None:
         """Detiene playback inmediato y vacia la cola."""
         self._running = False
+        self._streaming = False
         # Drenar cola
         try:
             while True:
@@ -276,6 +294,10 @@ class StreamingTTS:
         (so later commas don't fragment the audio). Re-armed by flush()."""
         if not self._loaded or self._muted:
             return 0
+        # Mark the streaming utterance live so is_busy() bridges inter-sentence
+        # gaps (mic stays muted across the whole reply, not just per sentence).
+        self._streaming = True
+        self._last_feed_ts = time.monotonic()
         self._buffer += chunk
         queued = 0
 
@@ -304,6 +326,9 @@ class StreamingTTS:
 
         Also re-arms the first-chunk fast path for the NEXT utterance."""
         self._first_chunk_done = False
+        # Agent done feeding this utterance: the tail (queued sentences still
+        # playing + TAIL_GRACE) keeps the mic muted from here; clear the bridge.
+        self._streaming = False
         if not self._loaded or self._muted:
             self._buffer = ""
             return 0
