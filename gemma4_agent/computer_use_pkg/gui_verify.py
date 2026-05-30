@@ -111,7 +111,17 @@ def capture_before(x: int | None = None, y: int | None = None) -> dict[str, Any]
         return {"_off": True}
     roi = _roi_bounds(x, y)
     cap = _capture(roi)
-    return {"roi": roi, "hash": cap.hash, "fg": cap.fg_hwnd, "x": x, "y": y}
+    # ITEM 2 (3ª señal): arrancar el recorder de eventos UI (SetWinEventHook).
+    # None si gated off / no disponible -> la fusión sigue con 2 señales. Seguro
+    # (observación pura, no SendInput).
+    winevent = None
+    try:
+        from . import gui_verify_winevent as _wev
+        winevent = _wev.start_recording()
+    except Exception:
+        winevent = None
+    return {"roi": roi, "hash": cap.hash, "fg": cap.fg_hwnd, "x": x, "y": y,
+            "_winevent": winevent}
 
 
 def verify_after(before: dict[str, Any]) -> dict[str, Any]:
@@ -136,24 +146,36 @@ def verify_after(before: dict[str, Any]) -> dict[str, Any]:
     fg_before, fg_after = before.get("fg"), after.fg_hwnd
     fg_changed = (fg_before is not None and fg_after is not None
                   and fg_before != fg_after)
-    fg_lost = (fg_before is not None and fg_after is not None
-               and fg_before != fg_after)  # cambió el foreground
 
-    # Fusión honesta:
-    #  - si el ROI cambió O el foreground cambió -> algo pasó (changed=True).
-    #  - si NINGUNA señal medible cambió (y al menos una se pudo medir) -> False.
-    #  - si nada medible -> None (honesto: no sabemos).
-    if px_signal is True or fg_changed:
+    # Señal 3 (ITEM 2): eventos UI (SetWinEventHook). None si gated off / no
+    # disponible -> no afecta la fusión (se queda en 2 señales). True = se observó
+    # un INVOKED/VALUECHANGE/STATECHANGE en la ventana objetivo (atrapa el toggle
+    # que no repinta el ROI: el false-PASS del frame-diff).
+    winevent_fired: bool | None = None
+    try:
+        from . import gui_verify_winevent as _wev
+        winevent_fired = _wev.stop_and_check(before.get("_winevent"), fg_after)
+    except Exception:
+        winevent_fired = None
+
+    # Fusión honesta 2-de-3 (cuando la 3ª señal está activa):
+    #  - cualquier señal POSITIVA medible (ROI cambió / foreground cambió / evento
+    #    UI disparó) -> algo pasó (changed=True).
+    #  - si NINGUNA señal positiva y el pixel se midió como NO-cambió -> False.
+    #  - si nada medible -> None (honesto). winevent NUNCA convierte un False
+    #    medido en True por sí solo si el pixel dijo False y no hubo evento — pero
+    #    SÍ rescata el caso pixel=False + evento=True (el toggle invisible).
+    if px_signal is True or fg_changed or winevent_fired is True:
         state_changed: bool | None = True
-    elif px_signal is False:
-        state_changed = False  # pudimos medir el pixel y NO cambió
+    elif px_signal is False and winevent_fired is not True:
+        state_changed = False  # pixel medido NO cambió y no hubo evento UI
     else:
         state_changed = None
 
     return {
         "state_changed": state_changed,
         "signals": {"roi_hamming": hamming, "roi_changed": px_signal,
-                    "fg_changed": fg_changed},
+                    "fg_changed": fg_changed, "winevent_fired": winevent_fired},
         "reason": _reason(state_changed, px_signal, fg_changed),
     }
 
