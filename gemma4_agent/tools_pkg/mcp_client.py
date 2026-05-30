@@ -88,10 +88,24 @@ def _run_async(coro_factory) -> Any:
     return result.get("value")
 
 
+def _server_params(server: dict[str, Any]):
+    """Construye StdioServerParameters pasando el `env` del config MERGEADO con el
+    entorno actual. Necesario para servers que requieren un token (p.ej. GitHub
+    lee GITHUB_PERSONAL_ACCESS_TOKEN). Un valor vacío en el config NO pisa el del
+    entorno (así el usuario puede setear el token por env var en vez del JSON)."""
+    from mcp import StdioServerParameters
+    env = dict(os.environ)
+    for k, v in (server.get("env") or {}).items():
+        if v:  # solo override si el config trae un valor no-vacío
+            env[str(k)] = str(v)
+    return StdioServerParameters(
+        command=server["command"], args=server.get("args") or [], env=env)
+
+
 async def _discover_async(server: dict[str, Any]) -> list[dict[str, Any]]:
-    from mcp import ClientSession, StdioServerParameters
+    from mcp import ClientSession
     from mcp.client.stdio import stdio_client
-    params = StdioServerParameters(command=server["command"], args=server.get("args") or [])
+    params = _server_params(server)
     out: list[dict[str, Any]] = []
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:
@@ -126,9 +140,9 @@ def discover_mcp_tools(*, force: bool = False) -> list[dict[str, Any]]:
 
 
 async def _call_async(server: dict[str, Any], tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
-    from mcp import ClientSession, StdioServerParameters
+    from mcp import ClientSession
     from mcp.client.stdio import stdio_client
-    params = StdioServerParameters(command=server["command"], args=server.get("args") or [])
+    params = _server_params(server)
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()

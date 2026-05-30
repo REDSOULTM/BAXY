@@ -62,6 +62,31 @@ class TestConfig(_EnvBase):
             self.assertEqual(M._load_config(), [])
 
 
+class TestServerParamsEnv(unittest.TestCase):
+    """El env del config se mergea con el entorno (necesario para tokens como el
+    PAT de GitHub). Valor vacío NO pisa la env var del usuario."""
+
+    def test_merges_and_preserves_env(self):
+        os.environ["MCP_TEST_EXISTING"] = "keep"
+        try:
+            p = M._server_params({"command": "npx", "args": ["x"],
+                                  "env": {"FORCED": "yes", "EMPTY": ""}})
+            e = dict(p.env or {})
+            self.assertEqual(e.get("MCP_TEST_EXISTING"), "keep")  # preserva entorno
+            self.assertEqual(e.get("FORCED"), "yes")              # valor no-vacío aplica
+        finally:
+            os.environ.pop("MCP_TEST_EXISTING", None)
+
+    def test_empty_value_does_not_override_envvar(self):
+        os.environ["MCP_TEST_TOKEN"] = "real_token"
+        try:
+            p = M._server_params({"command": "npx", "args": ["x"],
+                                  "env": {"MCP_TEST_TOKEN": ""}})
+            self.assertEqual(dict(p.env or {}).get("MCP_TEST_TOKEN"), "real_token")
+        finally:
+            os.environ.pop("MCP_TEST_TOKEN", None)
+
+
 class TestDiscoverCall(_EnvBase):
     def test_discover_gate_off(self):
         self._off()
