@@ -211,7 +211,8 @@ def _head_strongly_abstains(q: str) -> bool:
 
 
 def _evaluate(rows: list[dict], use_prev: bool = False,
-              inherit: bool = False, all_rows: list[dict] | None = None):
+              inherit: bool = False, all_rows: list[dict] | None = None,
+              equiv: bool = False):
     recall_total = recall_ok = 0
     notool_total = notool_ok = 0
     recall_fails: list[tuple[str, list[str], list[str]]] = []
@@ -249,7 +250,11 @@ def _evaluate(rows: list[dict], use_prev: bool = False,
         slices = _slices_of(r)
         if expected:
             recall_total += 1
-            hit = bool(subset & set(expected))
+            # --equiv: cuenta hit si el router ofreció una tool del MISMO dominio
+            # (expected_equiv), no solo la exacta. Separa el miss-real del label
+            # ruidoso. El RUIDO (precisión) se sigue midiendo contra el estricto.
+            _hit_set = set(r.get("expected_equiv") or expected) if equiv else set(expected)
+            hit = bool(subset & _hit_set)
             if hit:
                 recall_ok += 1
             else:
@@ -325,6 +330,10 @@ def main() -> int:
                          "continuation, multilingual, per-language). Anti-"
                          "overfit: a balanced 0.88 beats a lopsided 0.90.")
     ap.add_argument("--corpus", type=Path, default=CURATED)
+    ap.add_argument("--equiv", action="store_true",
+                    help="cuenta hit si el router ofreció una tool del MISMO "
+                         "dominio (expected_equiv), separando miss-real de label "
+                         "ruidoso. Solo aplica a corpus con expected_equiv.")
     ap.add_argument("--split", choices=["dev", "holdout", "all", "both"],
                     default="both")
     ap.add_argument("--limit", type=int, default=0)
@@ -369,7 +378,7 @@ def main() -> int:
     last = None
     for name, subset_rows in targets:
         m = _evaluate(subset_rows, use_prev=args.use_prev,
-                      inherit=args.inherit, all_rows=rows)
+                      inherit=args.inherit, all_rows=rows, equiv=args.equiv)
         _print_block(name, m)
         last = (name, m)
 

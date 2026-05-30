@@ -33,6 +33,36 @@ _NON_DOMAIN = {"session", "safety", "state", "verify"}
 _CONFIRM_ONLY = {"si", "sí", "ok", "okay", "dale", "yes", "no", "bueno", "vale",
                  "claro", "hazlo", "hacelo", "y", "ya"}
 
+# CURADO multi-label (S3, 2026-05-29): la tool que el agente EJECUTÓ no es la única
+# correcta — varias tools del MISMO dominio funcional son igual de válidas para la
+# misma intención. Ej: "reanuda el video" puede ser media O audio; "abre Spotify"
+# puede ser app O media; "buscá en internet" puede ser web O browser. El corpus
+# crudo etiqueta solo lo que corrió esa vez (ruidoso); acá expandimos `expected`
+# con las tools de dominio-equivalente -> el recall medido refleja la VERDAD
+# (un router que ofrece una tool del dominio correcto NO es un miss). Esto NO es
+# circular: la equivalencia es estructural (qué tools comparten capacidad), no
+# depende de lo que el router predice.
+_DOMAIN_EQUIV: tuple[frozenset[str], ...] = (
+    frozenset({"audio", "media", "audio_device"}),         # reproducir / volumen
+    frozenset({"app", "media", "window", "steam"}),         # abrir cosas
+    frozenset({"download", "filesystem"}),                  # archivos
+    frozenset({"web", "browser", "browser_real", "knowledge"}),  # info / navegar
+    frozenset({"gui", "uia", "window", "vision", "computer_use", "desktop_layout"}),  # pantalla
+    frozenset({"system", "audio", "audio_device", "device_settings"}),  # ajustes PC
+)
+
+
+def _expand_equivalent(tools: list[str]) -> list[str]:
+    """Multi-label: por cada tool, agrega las del mismo dominio funcional."""
+    out = list(tools)
+    for t in tools:
+        for fam in _DOMAIN_EQUIV:
+            if t in fam:
+                for sib in fam:
+                    if sib not in out:
+                        out.append(sib)
+    return out
+
 
 def main() -> int:
     try:
@@ -84,8 +114,13 @@ def main() -> int:
         if key in seen_q:
             continue
         seen_q.add(key)
-        rows.append({"q": q, "expected": tools, "source": "real_logs",
-                     "turn_id": tid})
+        # expected = estricto (la tool exacta ejecutada — el norte de precisión).
+        # expected_equiv = + las del mismo dominio (para descartar falsos misses
+        # donde el router ofreció una tool igual de válida). El eval mide el
+        # estricto por default; --equiv usa el permisivo para separar miss-real.
+        rows.append({"q": q, "expected": tools,
+                     "expected_equiv": _expand_equivalent(tools),
+                     "source": "real_logs", "turn_id": tid})
 
     OUT.write_text(
         "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
