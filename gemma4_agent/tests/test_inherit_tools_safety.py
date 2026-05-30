@@ -129,6 +129,75 @@ class TestGuiContextInheritOverride(unittest.TestCase):
         self.assertIn("inherit_kept_gui_context", src)
         self.assertIn("_GUI_CONTEXT_TOOLS", src)
 
+    def test_knowledge_release_guard_present_in_source(self):
+        # 2026-05-30: el override NO debe mantener GUI cuando el turno es una
+        # pregunta-del-mundo clara (wants_knowledge) — heredar [app,gui,uia] le
+        # quita web/knowledge al 4B y emite el search como texto (`Web(...)`).
+        src = agent_method_src("_decide_turn")
+        self.assertIn("inherit_released_for_knowledge", src)
+        self.assertIn("wants_knowledge", src)
+        # el guard combina prev_gui con la negación de wants_knowledge
+        self.assertIn("_prev_gui and not _wants_know", src)
+
+
+class TestKnowledgeReleaseDiscriminator(unittest.TestCase):
+    """El discriminador del release (wants_knowledge) debe separar limpio:
+    PREGUNTA-DEL-MUNDO (suelta GUI → web) vs OPERATE-APP (mantiene GUI).
+
+    Regresión 2026-05-30: tras abrir una app, "cuál es el mejor lego batman"
+    heredaba [app,gui,uia] (sin web) → el 4B emitía `Web(action="search"...)`
+    como texto crudo al usuario. wants_knowledge es intención por EMBEDDINGS
+    multilingüe (no keywords), mide info>action por margen.
+
+    CRÍTICO (anti-regresión del caso calculadora): los 'operate-app' deben dar
+    wants_knowledge=False para que SIGAN heredando GUI. Si el encoder no carga,
+    wants_knowledge devuelve False (fallback seguro) → se mantiene el override.
+    """
+
+    def _wk(self):
+        from gemma4_agent.routing.intent_router import wants_knowledge
+        return wants_knowledge
+
+    def test_world_questions_release_gui(self):
+        wk = self._wk()
+        # Preguntas del mundo CLARAS (info>>action por margen): deben SOLTAR el
+        # contexto GUI (→ web/knowledge). Estas son las que el log mostró
+        # emitiendo `Web(action="search"...)` como texto.
+        for q in ("cuál es el mejor lego batman",
+                  "qué es un dinosaurio",
+                  "buscame el precio del iphone 15",
+                  "qué hora es"):
+            self.assertTrue(wk(q), f"{q!r} debería ser wants_knowledge=True (soltar GUI)")
+
+    def test_weather_is_borderline_not_released(self):
+        # HONESTIDAD (CLAUDE.md): "qué tiempo hace en Madrid" NO dispara
+        # wants_knowledge — el encoder embebe "hace" hacia ACTION (action 0.16 >
+        # info 0.04). El guard es conservador (el alcance que eligió el usuario):
+        # suelta solo lo info-claro; el clima sigue heredando GUI. NO es
+        # catastrófico: si el 4B emite `Web(...)`, el rescate del fix anterior lo
+        # atrapa. Documentado como límite del encoder base (mismo que el DE).
+        wk = self._wk()
+        self.assertFalse(wk("qué tiempo hace en Madrid"),
+                         "clima es borderline para el encoder — documentado, no se fuerza")
+
+    def test_operate_app_continuations_keep_gui(self):
+        wk = self._wk()
+        # Continuaciones que OPERAN la app abierta: NO son pregunta-del-mundo,
+        # deben MANTENER la herencia GUI (anti-regresión caso calculadora).
+        for q in ("ahora sumá 2+2",
+                  "pero quiero que lo hagas tú",
+                  "dale, hacelo",
+                  "escribí hola"):
+            self.assertFalse(wk(q), f"{q!r} NO debería ser wants_knowledge (mantener GUI)")
+
+    def test_safe_fallback_returns_false(self):
+        # Invariante de seguridad: ante cualquier error, wants_knowledge no debe
+        # explotar el camino de herencia; el guard usa try/except → False, y
+        # False MANTIENE el override actual (degrada al comportamiento previo).
+        wk = self._wk()
+        # texto vacío / no-pregunta no debe soltar GUI espuriamente
+        self.assertFalse(wk(""))
+
 
 class TestAgentInheritState(unittest.TestCase):
     """Verify the agent instance has _last_turn_ts state plumbed in."""

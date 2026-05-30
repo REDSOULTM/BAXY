@@ -1740,9 +1740,39 @@ class Gemma4Agent:
                                 _prev_gui = bool(
                                     set(self._last_executed_tools) & _GUI_CONTEXT_TOOLS
                                 )
-                                if _prev_gui:
+                                # EXCEPCIÓN al override (2026-05-30): si el turno es
+                                # una PREGUNTA-DEL-MUNDO clara (wants_knowledge: "cuál
+                                # es el mejor lego batman", "qué tiempo hace") el user
+                                # NO está operando la app abierta — quiere información.
+                                # Heredar [app,gui,uia] le QUITA web/knowledge al 4B,
+                                # que entonces emitía el search como TEXTO (`Web(...)`,
+                                # caso real del log). wants_knowledge es intención por
+                                # EMBEDDINGS multilingüe (no keywords; ley de producto)
+                                # y MIDE info>action por margen. Los 'operate-app'
+                                # ("ahora sumá 2+2", "hacelo tú") dan wants_knowledge
+                                # =False (medido) → siguen heredando, sin regresión del
+                                # caso calculadora. Fallback seguro: sin encoder/ error
+                                # → False → se mantiene el override actual.
+                                _wants_know = False
+                                try:
+                                    from ..routing.intent_router import wants_knowledge as _wk
+                                    _wants_know = bool(_wk(raw_text))
+                                except Exception:
+                                    _wants_know = False
+                                if _prev_gui and not _wants_know:
                                     self.trace.event(
                                         turn_id, "inherit_kept_gui_context",
+                                        p_no_tool=round(_ahm.p_no_tool(_f), 3),
+                                        prev_tools=list(self._last_executed_tools),
+                                        user_text=raw_text[:60],
+                                    )
+                                elif _prev_gui and _wants_know:
+                                    # Pregunta-del-mundo con app abierta: soltar el
+                                    # contexto GUI para que el router ofrezca
+                                    # web/knowledge. NO hereda.
+                                    is_short_continuation = False
+                                    self.trace.event(
+                                        turn_id, "inherit_released_for_knowledge",
                                         p_no_tool=round(_ahm.p_no_tool(_f), 3),
                                         prev_tools=list(self._last_executed_tools),
                                         user_text=raw_text[:60],
