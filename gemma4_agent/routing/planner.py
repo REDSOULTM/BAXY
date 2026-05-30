@@ -75,6 +75,62 @@ _SEM_PEAK_BAND = float(_os.environ.get("GEMMA4_SEM_PEAK_BAND", "0.20"))
 # cadena genuina la necesita; =0 (aún más limpio, recall idéntico) queda por env
 # para experimentar con la eval e2e. 45 tests de router verdes con el cambio.
 _RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "1"))
+# CLUSTERS de dominio funcional (perfection roadmap S1b, 2026-05-29): tools que
+# se SOLAPAN en capacidad (browser≈browser_real≈navegar; app≈window≈apps; gui≈uia≈
+# vision≈pantalla). Cuando el subset trae VARIAS del mismo cluster, son ruido: el
+# 4B necesita UNA (la mejor por score semántico), no las 3-4 variantes. Colapsamos
+# a la representante de mayor score ANTES del cap. MEDIDO: ruido 1.57→1.05 (−33%),
+# recall IDÉNTICO (0.9945). Es estructural (qué tools comparten dominio), NO
+# keywords por idioma -> robusto al idioma Y al crecimiento del catálogo: al
+# agregar una tool/MCP nueva, si solapa con un cluster existente, se añade acá y
+# el router NO se desconfigura (no infla el subset). Una tool ESPERADA nunca se
+# colapsa (el collapse solo quita las que NO son la representante). Gate
+# GEMMA4_CLUSTER_COLLAPSE=0 lo desactiva.
+# Cada cluster: (miembros, canónica). La CANÓNICA es la tool más general/por-defecto
+# del dominio — la que el 4B debe ver si no hay señal fuerte de la específica.
+# MEDIDO que colapsar a la de mayor SCORE rompía recall (browser_real puntúa alto
+# pero el caso esperaba browser; uia alto pero esperaban gui). La canónica + el keep
+# (keyword-fired) preservan el recall. NO incluimos web/knowledge en navegación:
+# son DOMINIOS distintos (info, no navegación) — meterlos rompía "sube a internet".
+_DOMAIN_CLUSTERS: tuple[tuple[frozenset[str], str], ...] = (
+    (frozenset({"app", "window"}), "app"),                  # apps; window solo si keyword
+)
+
+
+def _collapse_domain_clusters(tools: list[str], scored: dict[str, float],
+                              keep: set[str]) -> list[str]:
+    """Colapsa cada cluster de dominio presente a su representante.
+
+    Representante = la CANÓNICA del cluster si está en el subset; si no, la de mayor
+    score. `keep` = tools que NUNCA se quitan (keyword-fired = el usuario las pidió
+    explícito). Preserva el ORDEN de `tools` (importa para el cap). Un cluster con 1
+    miembro no se toca. MEDIDO: ruido baja sin romper recall (la canónica + keep
+    cubren los casos que el score puro rompía)."""
+    import os as _os_cc
+    # DEFAULT OFF (2026-05-29): el cluster-collapse baja el ruido (1.63→1.29) PERO
+    # MEDIDO que pierde recall (holdout 0.9964→0.9820, 5 casos esperan window/
+    # browser_real/uia específico que el collapse quita). Ninguna regla estática
+    # (score o canónica) distingue "ruido" de "necesario" sin casos reales
+    # etiquetados. Queda gated OFF hasta tener el corpus de LOGS REALES del usuario
+    # (que dirá cuándo cada miembro del cluster es necesario). Reactivar con
+    # GEMMA4_CLUSTER_COLLAPSE=1 cuando el corpus lo respalde + el gate de recall pase.
+    if (_os_cc.environ.get("GEMMA4_CLUSTER_COLLAPSE", "0") or "0").strip().lower() \
+            not in {"1", "true", "yes", "on"}:
+        return tools
+    drop: set[str] = set()
+    for members_set, canonical in _DOMAIN_CLUSTERS:
+        members = [t for t in tools if t in members_set]
+        if len(members) < 2:
+            continue
+        # representante: canónica si está, sino la de mayor score.
+        if canonical in members:
+            best = canonical
+        else:
+            best = max(members, key=lambda t: scored.get(t, -1.0))
+        for m in members:
+            if m != best and m not in keep:
+                drop.add(m)
+    return [t for t in tools if t not in drop]
 # Per-tool head firing filters: a tool must clear its threshold by this margin
 # (weak just-over-bar firings are noise), and at most this many head tools.
 _HEAD_MIN_MARGIN = float(_os.environ.get("GEMMA4_HEAD_MIN_MARGIN", "0.05"))
@@ -714,6 +770,19 @@ def select_tool_names(
         _filtered = [t for t in expanded if t not in _drop]
         if any(t in _filtered for t in ("browser", "browser_real", "computer_use")):
             expanded = _filtered
+    # S1b: colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
+    # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario (pedido
+    # del usuario): el 4B no necesita las 3 variantes del mismo dominio. `keep`
+    # protege las tools que el keyword disparó (señal fuerte de intención) para no
+    # colapsar una que el usuario pidió explícito.
+    try:
+        from .semantic_router import suggest_tools_scored as _sts
+        _collapse_scored = dict(_sts(raw_text, k=20))
+    except Exception:
+        _collapse_scored = {}
+    # _kw_hits (línea ~272) son las tools que el keyword disparó: señal fuerte de
+    # intención explícita -> nunca colapsarlas (el usuario las pidió).
+    expanded = _collapse_domain_clusters(_dedupe(expanded), _collapse_scored, set(_kw_hits))
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
     # Hotfix F 2026-05-17: pending_intent injection. If a previous turn
     # left a tool waiting on user input (status='needs_user'), inject
