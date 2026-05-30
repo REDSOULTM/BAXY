@@ -34,6 +34,13 @@ THINKING_PATTERNS = (
 # never sees raw control tokens.
 _CONTROL_TOKEN_RE = re.compile(r"<\|[a-z_]+\|>", re.IGNORECASE)
 
+# Tokens especiales SIN pipes que Gemma 4 emite cuando degenera: <unused49>,
+# <unusedNN>, <pad>, <eos>... El bug <unused49> está documentado (llama.cpp
+# issue #21338): bajo ciertas condiciones el 4B entra en loop emitiendo este
+# token hasta agotar el budget. El _CONTROL_TOKEN_RE de arriba solo cubre
+# <|...|> (con pipes); este cubre la forma <...> con dígitos.
+_GEMMA_SPECIAL_TOKEN_RE = re.compile(r"<unused\d+>|<(?:pad|eos|bos|unk)>", re.IGNORECASE)
+
 # El LLM a veces emite el formato de tool_call como TEXTO (string en el
 # content) en vez de via el mecanismo nativo de tool_calls. Eso es un bug
 # del parser/template. Si llega al user lo confunde — ve un mensaje como
@@ -90,6 +97,8 @@ def sanitize_text(text: Any) -> str:
     # stopped at, or a token from a truncated turn). Done last so the patterns
     # above keep their lookahead semantics.
     text = _CONTROL_TOKEN_RE.sub("", text)
+    # Tokens especiales de Gemma sin pipes (<unused49> degeneración, <pad>...).
+    text = _GEMMA_SPECIAL_TOKEN_RE.sub("", text)
     return text.strip()
 
 
@@ -394,9 +403,14 @@ def detect_leaked_tool_call(
     dotted = _detect_dotted_method_call(stripped, known_tool_names)
     if dotted is not None:
         return dotted
-    # Quick reject for the Python-function form: must contain '(' and ')'
-    # and start with a lowercase letter.
-    if "(" not in stripped or not stripped[0].isalpha():
+    # Quick reject for the Python-function form: must contain '('. (Antes
+    # exigía además stripped[0].isalpha(), pero eso DESCARTABA texto que el 4B
+    # antepone al tool-call — p.ej. `<intent>{...}</intent>\nweb(query="x")` o
+    # narración previa. MEDIDO 2026-05-30: el forced-retry de "investigá X"
+    # devolvía justo eso y el rescate fallaba → reply vacío. El scanner abajo ya
+    # busca la primera llamada balanceada en CUALQUIER posición, así que el
+    # ancla-al-inicio del _LEAKED_CALL_RE no debe gatear el scanner.)
+    if "(" not in stripped:
         return None
     # Scanner: find the FIRST balanced tool(...) call whose name is known and
     # whose body parses. Handles narration ("Voy a llamar web(...)") and

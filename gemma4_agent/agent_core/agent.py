@@ -2760,6 +2760,32 @@ class Gemma4Agent:
                         choice_f = (resp_f.get("choices") or [{}])[0]
                         msg_f = sanitize_assistant_message(choice_f.get("message") or {})
                         tc_f = msg_f.get("tool_calls") or []
+                        # RESCATE tool-call-as-text (2026-05-30). MEDIDO: con
+                        # tool_choice=required el 4B a veces emite el tool-call como
+                        # TEXTO PLANO (`<intent>...</intent>\nweb(action="research",
+                        # query="x")`) en vez de estructura → llama-server NO lo
+                        # parsea (tc_f vacío) y el turno quedaba VACÍO (finish=length,
+                        # 0.2% de turnos reales). Antes de rendirse, intentamos
+                        # rescatar el tool-call del texto crudo del forced-retry con
+                        # el MISMO detector que el primer pass.
+                        if not tc_f:
+                            _raw_f = (choice_f.get("message") or {}).get("content") or ""
+                            if _raw_f.strip():
+                                try:
+                                    _kn = {s.get("function", {}).get("name")
+                                           for s in (selected_schemas or [])
+                                           if isinstance(s, dict)}
+                                    _kn.discard(None)
+                                    _resc_f = detect_leaked_tool_call(
+                                        _raw_f, known_tool_names=_kn or None)
+                                except Exception:
+                                    _resc_f = None
+                                if _resc_f is not None:
+                                    tc_f = [_resc_f]
+                                    self.trace.event(
+                                        turn_id, "forced_tool_retry_rescued",
+                                        tool=_resc_f["function"]["name"],
+                                        raw=_raw_f[:160])
                         if tc_f:
                             raw_tool_calls = tc_f
                             assistant_content = ""
