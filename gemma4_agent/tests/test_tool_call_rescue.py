@@ -314,5 +314,65 @@ class TestMultiCallLeak(unittest.TestCase):
         self.assertIsNone(out)
 
 
+class TestCapitalizedToolName(unittest.TestCase):
+    """Regresión 2026-05-30 (CATASTRÓFICA): el 4B capitalizó el nombre de la
+    tool como si fuera nombre propio — `Web(action="search", query="mejor lego
+    batman")` en vez de `web(...)`. Los regex del detector exigían `[a-z]` como
+    primer char, así que NO matcheaban `Web`, el rescue fallaba, y el texto
+    crudo `Web(action="search"...)` llegó LITERAL al usuario como respuesta.
+
+    Fix: primer char [a-zA-Z] + normalizar el nombre a minúsculas antes del
+    allowlist. Seguro: las 68 tools registradas son lowercase, sin colisiones
+    al bajar a minúsculas. El allowlist sigue rechazando nombres que no son
+    tools (`Banana(...)`), capitalizados o no.
+    """
+
+    K = {"web", "media", "browser", "whatsapp", "system", "window", "steam"}
+
+    def test_capitalized_web_kwargs_rescued_as_lowercase(self):
+        out = detect_leaked_tool_call(
+            'Web(action="search", query="mejor lego batman")',
+            known_tool_names=self.K)
+        self.assertIsNotNone(out, "Web(...) capitalizado debe rescatarse")
+        self.assertEqual(out["function"]["name"], "web")
+        args = json.loads(out["function"]["arguments"])
+        self.assertEqual(args["action"], "search")
+        self.assertEqual(args["query"], "mejor lego batman")
+
+    def test_lowercase_still_works(self):
+        # Regresión inversa: el fix no debe romper el caso lowercase normal.
+        out = detect_leaked_tool_call(
+            'web(action="search", query="x")', known_tool_names=self.K)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "web")
+
+    def test_capitalized_dotted_method_rescued(self):
+        out = detect_leaked_tool_call(
+            'Window.close(query="das Fenster")', known_tool_names=self.K)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "window")
+        args = json.loads(out["function"]["arguments"])
+        self.assertEqual(args.get("action"), "close")
+
+    def test_capitalized_json_form_rescued(self):
+        out = detect_leaked_tool_call(
+            '{"name": "Steam", "arguments": {"action": "open"}}',
+            known_tool_names=self.K)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "steam")
+
+    def test_capitalized_unknown_tool_still_rejected(self):
+        # El allowlist debe seguir rechazando un nombre-capitalizado que NO es
+        # tool — el fix no abre la puerta a leer prosa como call.
+        out = detect_leaked_tool_call(
+            'Banana(action="peel")', known_tool_names=self.K)
+        self.assertIsNone(out)
+
+    def test_capitalized_prose_not_a_call(self):
+        out = detect_leaked_tool_call(
+            "Esto(es algo) que dije.", known_tool_names=self.K)
+        self.assertIsNone(out)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -122,8 +122,13 @@ def sanitize_assistant_message(message: dict[str, Any]) -> dict[str, Any]:
 # Regex tuned to common shapes: "<tool_name>(<args>)" at start of line or
 # whole content. Tool names are snake_case ASCII. Args span until the
 # matching close paren (we count manually to handle nested parens/quotes).
+# First char [a-zA-Z]: el 4B a veces CAPITALIZA el nombre de la tool como
+# si fuera nombre propio — `Web(action="search", ...)` en vez de `web(...)`
+# (caso real 2026-05-30: el reply crudo llegó tal cual al usuario). El nombre
+# se normaliza a minúsculas antes del allowlist (todas las 68 tools son
+# lowercase, sin colisiones), así que `Web` resuelve a la tool real `web`.
 _LEAKED_CALL_RE = re.compile(
-    r"^\s*([a-z][a-z0-9_]{1,40})\s*\((.*)\)\s*$",
+    r"^\s*([a-zA-Z][a-z0-9_]{1,40})\s*\((.*)\)\s*$",
     re.DOTALL,
 )
 
@@ -139,7 +144,9 @@ _LEAKED_CALL_RE = re.compile(
 # extract the balanced object (regex can't reliably match nested JSON),
 # and parse it. The Python-function form `steam(action="open")` is
 # handled separately by _LEAKED_CALL_RE.
-_NAME_KEY_RE = re.compile(r'"(?:name|tool_name)"\s*:\s*"[a-z][a-z0-9_]{1,40}"')
+# First char [a-zA-Z]: el 4B puede capitalizar el nombre ("Web"); se
+# normaliza a minúsculas en _gemma_obj_to_call antes del allowlist.
+_NAME_KEY_RE = re.compile(r'"(?:name|tool_name)"\s*:\s*"[a-zA-Z][a-z0-9_]{1,40}"')
 
 
 def _extract_balanced_json(text: str, open_idx: int) -> str | None:
@@ -211,6 +218,9 @@ def _gemma_obj_to_call(
     name = obj.get("name") or obj.get("tool_name")
     if not isinstance(name, str) or not name:
         return None
+    # Normaliza la capitalización del 4B ("Web" -> "web"): todas las tools
+    # registradas son lowercase, sin colisiones, así matchea el allowlist real.
+    name = name.lower()
     if known_tool_names is not None and name not in known_tool_names:
         return None
     raw_args = obj.get("arguments")
@@ -321,8 +331,10 @@ def _parse_kwargs(text: str) -> dict[str, Any] | None:
 # "schliesse das Fenster" (DE) 2026-05-20: it leaked as text, unrescued,
 # so the window never closed. We rewrite tool.action(args) into the normal
 # compound form with action injected.
+# First char [a-zA-Z] en la tool: el 4B puede capitalizar ("Window.close(...)").
+# El nombre se normaliza a minúsculas antes del allowlist (abajo).
 _DOTTED_CALL_RE = re.compile(
-    r"^\s*([a-z][a-z0-9_]{1,40})\.([a-z][a-z0-9_]{1,40})\s*\((.*)\)\s*$",
+    r"^\s*([a-zA-Z][a-z0-9_]{1,40})\.([a-z][a-z0-9_]{1,40})\s*\((.*)\)\s*$",
     re.DOTALL,
 )
 
@@ -334,6 +346,9 @@ def _detect_dotted_method_call(
     if not m:
         return None
     tool, action, body = m.group(1), m.group(2), m.group(3)
+    # Normaliza la capitalización del 4B: `Window` -> `window` (todas las
+    # tools registradas son lowercase, sin colisiones), así matchea el allowlist.
+    tool = tool.lower()
     if known_tool_names is not None and tool not in known_tool_names:
         return None
     parsed = _parse_kwargs(body)
@@ -390,8 +405,10 @@ def detect_leaked_tool_call(
     # whole-string regex below would grab a broken body. F-007: first match,
     # not last.
     def _scan_first_valid() -> tuple[str, dict[str, Any]] | None:
-        for cand in re.finditer(r"\b([a-z][a-z0-9_]{1,40})\s*\(", stripped):
-            cand_name = cand.group(1)
+        # First char [a-zA-Z]: el 4B capitaliza el nombre ("Web(...)"); se baja
+        # a minúsculas antes del allowlist (tools registradas son lowercase).
+        for cand in re.finditer(r"\b([a-zA-Z][a-z0-9_]{1,40})\s*\(", stripped):
+            cand_name = cand.group(1).lower()
             if known_tool_names is not None and cand_name not in known_tool_names:
                 continue
             open_idx = cand.end() - 1
@@ -408,7 +425,8 @@ def detect_leaked_tool_call(
     name: str | None = None
     parsed: dict[str, Any] | None = None
     if m:
-        cand_name, body = m.group(1), m.group(2)
+        # Normaliza la capitalización del 4B ("Web" -> "web") antes del allowlist.
+        cand_name, body = m.group(1).lower(), m.group(2)
         if known_tool_names is None or cand_name in known_tool_names:
             cand_parsed = _parse_kwargs(body)
             if cand_parsed is not None:
