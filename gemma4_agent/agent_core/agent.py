@@ -3091,6 +3091,31 @@ class Gemma4Agent:
                         tool=_img_tool, reason="action_self_verification_screenshot",
                     )
                     continue
+                # OLA 2.2 (perfection roadmap C6, 2026-05-29): PRE-FLIGHT de VRAM
+                # antes de inyectar una imagen capturada A MITAD de turno. El
+                # pre-flight de _decide_turn solo corre para mode=='vision_action'
+                # (imagen de ENTRADA); una imagen pedida por el LLM inline (un
+                # gui.screenshot en un turno de texto) fuerza el preset de visión
+                # -> carga mmproj (~946 MiB) -> OOM/zombie en 4GB SIN chequeo.
+                # Acá el watchdog ACTÚA (no solo loguea): si no es seguro, reciclar;
+                # si sigue inseguro, NO inyectar y dejar una nota honesta para el
+                # LLM (mejor "no pude verla" que petar el server). Sin GPU NVIDIA
+                # el watchdog es no-op (vision_safe()=True) -> no cambia nada.
+                if not self._image_inject_vram_safe(turn_id):
+                    self.history.append({
+                        "role": "user",
+                        "content": (
+                            "[system note] No pude analizar la imagen visualmente: "
+                            "la VRAM está demasiado ocupada para cargar el modelo de "
+                            "visión sin arriesgar un crash. Respondé con lo que ya "
+                            "sabés del texto/estado, o pedile al usuario que libere "
+                            "memoria. NO inventes lo que habría en la imagen."
+                        ),
+                    })
+                    self.trace.event(
+                        turn_id, "tool_image_not_injected",
+                        tool=_img_tool, reason="vram_unsafe_for_vision_inline")
+                    continue
                 _progress(progress, "image_injected", path=str(image_path))
                 self._inject_tool_image(image_path, result)
 
@@ -4742,6 +4767,41 @@ class Gemma4Agent:
             return True
         action = str(result.get("action") or "").casefold()
         return any(tok in action for tok in self._VISUAL_ACTIONS)
+
+    def _image_inject_vram_safe(self, turn_id: str = "") -> bool:
+        """¿Hay VRAM para cargar mmproj y procesar una imagen inline sin OOM?
+
+        OLA 2.2 (C6): el watchdog ACTÚA. Si no es seguro, intenta reciclar el
+        server (libera VRAM fragmentada + recarga limpia) y re-chequea. Devuelve
+        True si es seguro inyectar la imagen, False si conviene saltarla. Sin GPU
+        NVIDIA o sin watchdog -> True (no bloquear sin evidencia)."""
+        wd = getattr(self, "vram_watchdog", None)
+        if wd is None:
+            return True
+        try:
+            if wd.vision_safe():
+                return True
+            # No es seguro: intentar reciclar el server (descarga mmproj + reload
+            # limpio) y re-medir. Best-effort.
+            try:
+                from ..infra.llama_server import get_shared_manager
+                recycled = get_shared_manager().recycle_for_vision_leak()
+            except Exception:
+                recycled = False
+            snap = wd.snapshot(force=True)
+            safe_now = wd.vision_safe()
+            try:
+                self.trace.event(
+                    turn_id, "vram_preflight_image_inline",
+                    free_mib=snap.free_mib, level=snap.level,
+                    recycled=recycled, safe=safe_now)
+            except Exception:
+                pass
+            return safe_now
+        except Exception:
+            # Ante un error del watchdog, NO bloquear (fail-open: el path viejo
+            # inyectaba siempre; no empeoramos).
+            return True
 
     def _inject_tool_image(self, path: Path, result: dict[str, Any]) -> None:
         if not path.exists():

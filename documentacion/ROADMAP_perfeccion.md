@@ -64,7 +64,11 @@ expansión de público bloqueada por falta de binario CPU/Vulkan. Ninguno requie
   override `GEMMA4_LLAMA_GPU_VENDOR`. 25 tests + EN VIVO 5/5. **PENDIENTE OPERACIONAL (usuario):**
   bundlear el binario CPU/Vulkan de llama.cpp y apuntarlo con `GEMMA4_LLAMA_SERVER_EXE` (el perfil
   `cpu` usa `-ngl 0` y ya funciona con un binario no-CUDA; el build-check avisa si falta).
-- **vram_watchdog que ACTÚA + pre-flight de imagen** (C6). → **Gate: 0 OOM en 4GB con visión.**
+- ✅ **vram_watchdog que ACTÚA + pre-flight de imagen INLINE** (C6): el pre-flight de _decide_turn solo
+  cubría mode=='vision_action' (imagen de entrada); una imagen pedida por el LLM inline (gui.screenshot
+  en turno de texto) cargaba mmproj sin chequeo → OOM en 4GB. `_image_inject_vram_safe` ahora actúa antes
+  de `_inject_tool_image`: seguro→inyecta, inseguro→recicla+remide, sigue inseguro→NO inyecta + nota
+  honesta. Fail-open ante error; no-op sin GPU. `agent.py:3088,4746`. 22 tests + EN VIVO 5/5.
 - **vram_watchdog que ACTÚA + pre-flight de imagen** (C6). → **Gate: 0 OOM en 4GB con visión.**
 - **mmproj Q8_0** (560 vs 992 MiB) + lazy-load. → **Gate: headroom ≥1.5GB.**
 - **Frugalidad RAM** (idle-unload + thread throttle).
