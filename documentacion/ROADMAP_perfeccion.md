@@ -59,7 +59,12 @@ expansión de público bloqueada por falta de binario CPU/Vulkan. Ninguno requie
 6. **3ª señal de verify (SetWinEventHook) + anchor-gate labels cortos** (opt-in). → **Gate: false-PASS <2%.**
 
 ### Ola 2 — Robustez de hardware (expandir el público)
-- **Binario CPU/Vulkan + auto-default 'cpu' sin NVIDIA** (H5). → **Gate: 100% boot en 0-NVIDIA.**
+- ✅ **Auto-default 'cpu' sin NVIDIA** (H5, software): `has_usable_cuda_gpu()` + `recommend_profile`
+  cae a `cpu` sin NVIDIA + guard del default forzado (`profiles.py`). Gate `GEMMA4_NO_GPU_AUTOCPU`,
+  override `GEMMA4_LLAMA_GPU_VENDOR`. 25 tests + EN VIVO 5/5. **PENDIENTE OPERACIONAL (usuario):**
+  bundlear el binario CPU/Vulkan de llama.cpp y apuntarlo con `GEMMA4_LLAMA_SERVER_EXE` (el perfil
+  `cpu` usa `-ngl 0` y ya funciona con un binario no-CUDA; el build-check avisa si falta).
+- **vram_watchdog que ACTÚA + pre-flight de imagen** (C6). → **Gate: 0 OOM en 4GB con visión.**
 - **vram_watchdog que ACTÚA + pre-flight de imagen** (C6). → **Gate: 0 OOM en 4GB con visión.**
 - **mmproj Q8_0** (560 vs 992 MiB) + lazy-load. → **Gate: headroom ≥1.5GB.**
 - **Frugalidad RAM** (idle-unload + thread throttle).

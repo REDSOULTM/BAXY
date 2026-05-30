@@ -304,6 +304,37 @@ def detect_vram_mb() -> int | None:
     return None
 
 
+def has_usable_cuda_gpu() -> bool:
+    """¿Hay una GPU NVIDIA con driver usable (CUDA) en esta máquina?
+
+    Ola 2.1 (perfection roadmap 2026-05-29): el perfil `vram4` asume el binario
+    `llama-server` CUDA-only. En una máquina SIN NVIDIA (laptop con iGPU Intel/AMD
+    o sin GPU dedicada) ese binario NO arranca. Necesitamos distinguir "hay CUDA"
+    de "no hay" para auto-caer al perfil `cpu` en vez de fallar en el boot.
+
+    Distinto de detect_vram_mb(): esa también detecta AMD (rocm) y devuelve MB;
+    acá sólo nos importa NVIDIA-con-driver, que es lo que el binario CUDA exige.
+    `nvidia-smi` responde 0 SÓLO si hay driver NVIDIA cargado -> señal fiable.
+
+    Override: GEMMA4_LLAMA_GPU_VENDOR fuerza la decisión sin probar hardware:
+      - "cuda"        -> True  (forzar GPU, p.ej. binario CUDA presente seguro)
+      - "cpu"/"vulkan"/"hip" -> False (forzar el camino sin-CUDA / perfil cpu)
+    """
+    vendor = (os.environ.get("GEMMA4_LLAMA_GPU_VENDOR") or "").strip().casefold()
+    if vendor == "cuda":
+        return True
+    if vendor in {"cpu", "vulkan", "hip", "rocm", "none"}:
+        return False
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
+            capture_output=True, text=True, timeout=3, check=False,
+        )
+        return result.returncode == 0 and bool(result.stdout.strip())
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+        return False
+
+
 # Reserva fija de VRAM para Windows/WDDM + driver buffers + headroom CUDA.
 # El informe de auditoria externa (Bloque F1, item I1 #10) cita evidencia
 # anecdotica de foros Microsoft / Tom's Hardware de 0.6-1.2 GB para dwm.exe
@@ -314,14 +345,23 @@ WINDOWS_VRAM_RESERVE_MB = 1500
 
 
 def recommend_profile(vram_mb: int | None) -> str:
-    """Devuelve SIEMPRE "vram4" — el único perfil del producto.
+    """Recomienda el perfil de arranque según el hardware.
 
-    2026-05-26: el sistema multi-perfil se colapsó a un solo perfil (vram4 =
-    E2B-Q4, TODO en ≤4 GB). Ya no hay escalera por VRAM ni auto-recomendación.
-    `vram_mb` se conserva en la firma (callers existentes lo pasan; la UI sigue
-    mostrando la VRAM detectada como dato informativo) pero no influye en la
-    decisión. detect_vram_mb() se mantiene para ese display, no para elegir.
+    2026-05-26: el sistema multi-perfil se colapsó a un solo perfil GPU (vram4 =
+    E2B-Q4, TODO en ≤4 GB). Ya no hay escalera por VRAM. `vram_mb` se conserva en
+    la firma (callers existentes lo pasan; la UI muestra la VRAM detectada como
+    dato informativo) pero no influye en la decisión entre los perfiles GPU.
+
+    Ola 2.1 (perfection roadmap 2026-05-29): si NO hay GPU NVIDIA usable (CUDA),
+    el binario `vram4` (CUDA-only) no arrancaría -> recomendamos el perfil `cpu`
+    (E2B-Q4 en CPU, 0 VRAM, visión OFF) para que el agente FUNCIONE en laptops
+    sin NVIDIA en vez de fallar en el boot. Esto NO afecta a usuarios con NVIDIA
+    (siguen en vram4). Gate GEMMA4_NO_GPU_AUTOCPU=0 desactiva la auto-caída (vuelve
+    al comportamiento viejo: siempre vram4) para diagnóstico.
     """
+    autocpu = (os.environ.get("GEMMA4_NO_GPU_AUTOCPU", "1") or "1").strip().casefold()
+    if autocpu not in {"0", "false", "no", "off"} and not has_usable_cuda_gpu():
+        return "cpu"
     return "vram4"
 
 
@@ -351,6 +391,21 @@ def get_active_profile() -> Profile:
     if not ACTIVE_PROFILE_PATH.is_file():
         # Si hay override de default, respetarlo y persistirlo (no auto-detectar).
         if _env_default and _env_default in PROFILES:
+            # Ola 2.1 GUARD: un default forzado a un perfil GPU (vram4) NO arranca
+            # en una máquina sin NVIDIA (binario CUDA-only). El código garantiza
+            # su precondición (CLAUDE.md #5): caemos a 'cpu' aunque el default sea
+            # vram4, para no fallar en el boot. Respeta el gate y el override de
+            # vendor (has_usable_cuda_gpu los honra). Un default no-GPU (standby/
+            # cpu) se respeta tal cual.
+            _gpu_default = _env_default == "vram4"
+            _autocpu = (os.environ.get("GEMMA4_NO_GPU_AUTOCPU", "1") or "1").strip().casefold()
+            if (_gpu_default and _autocpu not in {"0", "false", "no", "off"}
+                    and not has_usable_cuda_gpu()):
+                try:
+                    set_active_profile("cpu")
+                except Exception:
+                    pass
+                return _profile_with_overrides(PROFILES["cpu"])
             try:
                 set_active_profile(_env_default)
             except Exception:
