@@ -81,7 +81,15 @@ expansión de público bloqueada por falta de binario CPU/Vulkan. Ninguno requie
 - **Estabilidad lifecycle** (C7/H4/H6: atexit a nivel módulo, /slots en recovery, _restart_lock). → **Gate: recovery ≥95%.**
 
 ### Ola 3 — Capacidad estratégica
-- **MCP client (B9)** con disciplina de router-subset. → **Gate: 30 tools MCP → router devuelve ≤5.**
+- ✅ **MCP client (B9)** con disciplina de router-subset: el cliente (descubrir/llamar) y la tool-puente
+  `mcp` ya existían; agregué el ENROLAMIENTO al router. Tools MCP descubiertas → namespaced `mcp__server__tool`
+  → enroladas en `TOOL_DESCRIPTIONS` (router las rankea por embeddings) → cap `MAX_SELECTED_TOOLS=5` las
+  limita junto a las compound → dispatcher las rutea transparente a `call_mcp_by_id`. Enrolamiento al boot,
+  best-effort, gated `GEMMA4_MCP` (default OFF). **GATE VERDE: con 40 tools MCP el subset nunca trae las 40.**
+  SDK `mcp` 1.27.1 instalado + servidor de prueba (`scripts/_mcp_test_server.py`). `mcp_client.py`,
+  `semantic_router.py:enroll_mcp_tools`, `tools.py:execute+schemas_for_names`. 9 tests + EN VIVO 4/4 fases
+  end-to-end con servidor real (discover→enroll→route+cap→dispatch). **Falta operacional: declarar servidores
+  reales en `~/.gemma4/mcp_servers.json` + validar que el 4B no degrada con catálogo grande antes de flip ON.**
 - **Slot-extraction deíctico** (ring de entidades) — **multilingüe por embeddings, NO regex es-only.**
 - **Code-exec sandbox** — solo si el gate 0-escapes es satisfacible en Windows (probablemente no).
 

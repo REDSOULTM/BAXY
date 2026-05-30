@@ -1433,6 +1433,33 @@ class ToolRegistry:
         # _BROWSER_SESSIONS está vacío). Las marcamos como cerradas para
         # evitar cleanup_plan/state.cleanup contra sesiones que no existen.
         self._prune_stale_browser_sessions()
+        # Ola 3 (B9): enrolar las tools MCP al router UNA vez al boot (gated
+        # GEMMA4_MCP, default off). Best-effort: si falla (SDK ausente, servidor
+        # caído, timeout), el agente arranca igual sin MCP. NO bloquea el caso
+        # feliz: discover tiene timeout y cachea.
+        self._enroll_mcp_tools_best_effort()
+
+    def _enroll_mcp_tools_best_effort(self) -> None:
+        try:
+            from .mcp_client import mcp_enabled, discover_mcp_tools
+            if not mcp_enabled():
+                return
+            discovered = discover_mcp_tools()
+            if not discovered:
+                return
+            from .mcp_client import mcp_tool_id
+            from ..routing.semantic_router import enroll_mcp_tools
+            payload = [
+                {"id": mcp_tool_id(t["server"], t["name"]),
+                 "description": t.get("description") or t["name"]}
+                for t in discovered
+            ]
+            n = enroll_mcp_tools(payload)
+            import logging as _lg
+            _lg.getLogger(__name__).info("MCP: enrolled %d tools into router", n)
+        except Exception as exc:  # noqa: BLE001
+            import logging as _lg
+            _lg.getLogger(__name__).warning("MCP enroll skipped: %s", exc)
 
     def _prune_stale_browser_sessions(self) -> None:
         try:
@@ -1459,6 +1486,17 @@ class ToolRegistry:
             for schema in COMPOUND_TOOL_SCHEMAS
             if str(schema.get("function", {}).get("name", "")) in wanted
         ]
+        # Ola 3 (B9): si el subset incluye tools MCP enroladas (nombres mcp__*),
+        # resolvemos sus schemas dinámicos desde el cliente MCP (aditivo, NO muta
+        # el literal global COMPOUND_TOOL_SCHEMAS). Solo si el subset realmente las
+        # pidió -> 0 overhead cuando no hay MCP en el turno.
+        if any(str(n).startswith("mcp__") for n in wanted):
+            try:
+                from .mcp_client import mcp_tool_schemas
+                out.extend(s for s in mcp_tool_schemas()
+                           if str(s.get("function", {}).get("name", "")) in wanted)
+            except Exception:
+                pass
         # v22-next: descripciones lean opt-in (GEMMA4_LEAN_RULES) — SOLO en el subset
         # que ve el LLM; no muta el literal global. Default off = sin cambio.
         if _lean_descriptions_on():
@@ -1480,6 +1518,18 @@ class ToolRegistry:
         # tool has no `level`; a numeric level means the user wanted VOLUME,
         # so route to audio.set_volume. (Repro: "baja el vol del pc a 10".)
         name, clean_args = _correct_known_misroute(name, clean_args)
+        # Ola 3 (B9): tool MCP enrolada (nombre 'mcp__server__tool'). El router la
+        # rankeó y el cap la limitó como una tool más; acá la ruteamos transparente
+        # al cliente MCP (no aparece en _impls porque es dinámica). Gated por
+        # mcp_enabled() dentro de call_mcp_by_id (fallback honesto si está off).
+        try:
+            from .mcp_client import is_mcp_tool_name, call_mcp_by_id
+            if is_mcp_tool_name(name):
+                mcp_args = dict(clean_args)
+                mcp_args.pop("confirmed", None)
+                return _normalize_tool_result(name, clean_args, call_mcp_by_id(name, mcp_args))
+        except Exception as exc:
+            return _normalize_tool_result(name, clean_args, _err(f"MCP dispatch error: {exc}"))
         impl = self._impls.get(name)
         if not impl:
             # Gemma 4 a veces ensucia el nombre (mayúsculas, "gui()",

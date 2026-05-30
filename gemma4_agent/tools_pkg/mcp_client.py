@@ -160,3 +160,67 @@ def reset_cache() -> None:
     """Limpia el cache de tools (tests / reconfig)."""
     global _TOOLS_CACHE
     _TOOLS_CACHE = None
+
+
+# --- Ola 3 (perfection roadmap B9, 2026-05-29): enrolamiento al router-subset ---
+# En vez de obligar al 4B a hacer el baile mcp(action=list) -> leer -> mcp(action=
+# call), las tools MCP descubiertas se ENROLAN como tools de primera clase: el
+# router las rankea y RECORTA junto a las compound (mismo cap MAX_SELECTED_TOOLS=5),
+# y el dispatcher las rutea por su nombre namespaced. NUNCA se le dan las N tools de
+# golpe al 4B (la disciplina de subset es la mitigación del riesgo R7).
+
+_MCP_NAME_PREFIX = "mcp__"  # namespacing: mcp__<server>__<tool> (evita colisiones)
+
+
+def mcp_tool_id(server: str, tool: str) -> str:
+    """Nombre namespaced y estable de una tool MCP para el catálogo del agente."""
+    return f"{_MCP_NAME_PREFIX}{server}__{tool}"
+
+
+def parse_mcp_tool_id(name: str) -> tuple[str, str] | None:
+    """Inverso de mcp_tool_id: 'mcp__fs__read' -> ('fs','read'). None si no es MCP."""
+    if not name.startswith(_MCP_NAME_PREFIX):
+        return None
+    rest = name[len(_MCP_NAME_PREFIX):]
+    server, sep, tool = rest.partition("__")
+    if not sep or not server or not tool:
+        return None
+    return server, tool
+
+
+def is_mcp_tool_name(name: str) -> bool:
+    return name.startswith(_MCP_NAME_PREFIX)
+
+
+def mcp_tool_schemas() -> list[dict[str, Any]]:
+    """Schemas OpenAI-compat de las tools MCP descubiertas, namespaced.
+
+    [] si gate off / sin servidores / SDK ausente (fallback seguro). El agente
+    los suma a su catálogo para que el router los rankee y el cap los limite."""
+    out: list[dict[str, Any]] = []
+    for t in discover_mcp_tools():
+        schema = t.get("schema") if isinstance(t.get("schema"), dict) else {}
+        params = schema if schema.get("type") == "object" else {
+            "type": "object", "properties": {}}
+        out.append({
+            "type": "function",
+            "function": {
+                "name": mcp_tool_id(t["server"], t["name"]),
+                "description": (
+                    f"[MCP:{t['server']}] {t.get('description') or t['name']}"),
+                "parameters": params,
+            },
+        })
+    return out
+
+
+def call_mcp_by_id(name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Ejecuta una tool MCP por su nombre namespaced ('mcp__server__tool').
+
+    El dispatcher del agente llama esto cuando ve un nombre con el prefijo MCP,
+    de forma transparente (el LLM la llamó por su nombre, no via mcp(action=call))."""
+    parsed = parse_mcp_tool_id(name)
+    if parsed is None:
+        return {"ok": False, "error": f"not an MCP tool name: {name}", "status": "failed"}
+    server, tool = parsed
+    return call_mcp_tool(server, tool, arguments or {})

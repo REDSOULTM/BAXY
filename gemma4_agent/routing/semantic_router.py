@@ -412,6 +412,34 @@ def reset_cache() -> None:
     _EMBED_CACHE_ORDER.clear()
 
 
+# Marca de qué nombres MCP enrolamos, para poder des-enrolar/re-enrolar idempotente.
+_MCP_ENROLLED: set[str] = set()
+
+
+def enroll_mcp_tools(tools: list[dict[str, str]]) -> int:
+    """Ola 3 (B9): enrola tools MCP en el catálogo del router por EMBEDDINGS.
+
+    `tools` = [{"id": "mcp__server__tool", "description": "..."}]. Las agrega a
+    TOOL_DESCRIPTIONS para que `suggest_tools_semantic` las rankee JUNTO a las
+    compound; el cap MAX_SELECTED_TOOLS=5 del planner las limita igual (NUNCA se le
+    dan las N al 4B — esa es la disciplina de subset que mitiga R7). Idempotente:
+    re-enrolar reemplaza el set previo. Invalida el cache de embeds (re-embed lazy).
+    Devuelve cuántas quedaron enroladas. 0 si la lista está vacía (des-enrola todo)."""
+    global _MCP_ENROLLED
+    # Quitar las MCP previas (idempotencia: una reconfig no deja zombies).
+    for old in _MCP_ENROLLED:
+        TOOL_DESCRIPTIONS.pop(old, None)
+    _MCP_ENROLLED = set()
+    for t in tools or []:
+        tid = str(t.get("id") or "").strip()
+        if not tid.startswith("mcp__"):
+            continue
+        TOOL_DESCRIPTIONS[tid] = str(t.get("description") or tid)[:400]
+        _MCP_ENROLLED.add(tid)
+    reset_cache()  # re-embed con el catálogo nuevo
+    return len(_MCP_ENROLLED)
+
+
 # PERF: LRU cache para embeds del input del usuario. El embed de un texto
 # corto cuesta 50-150ms en CPU; con cache, queries repetidas ("abre Steam"
 # dos veces) son 0ms. Tamaño 256 cubre conversaciones largas sin crecer
