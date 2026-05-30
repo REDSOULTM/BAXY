@@ -3294,8 +3294,15 @@ class Gemma4Agent:
                 self.trace.event(turn_id, "replan_start", failures=len(failure_log))
                 try:
                     from ..mission.explicit_plan import replan
+                    # `raw_text` vivía en _decide_turn; al extraer _execute_turn
+                    # (refactor R1, 25261147) quedó como variable libre acá — un
+                    # NameError latente que solo dispara en el trigger de replan
+                    # (2+ fallas de tool con plan explícito). En este scope el
+                    # texto del usuario es `raw_text_early` (= decision.raw_text_early),
+                    # que es justo el `user_text` que replan() espera. Misma
+                    # clase que el bug `_os` de 2026-05-30.
                     revised = replan(
-                        raw_text,
+                        raw_text_early or "",
                         self._explicit_plan_text,
                         failure_log,
                         chat_fn=lambda msgs: self.client.chat(msgs, tools=None, enable_thinking=False, parallel_tool_calls=False, max_tokens=350, timeout_s=45.0),
@@ -3772,6 +3779,16 @@ class Gemma4Agent:
         # context. Gemma4Agent has no _regen_reply method,
         # and building one is out of scope for this hotfix.
         try:
+            # `os` se importa local en cada función de este archivo (convención
+            # del módulo: nunca hay `import os` top-level). Esta función NO lo
+            # tenía en scope, así que el `_os.environ.get(...)` del gate de
+            # abajo lanzaba NameError en TODO turno y el `except` lo tragaba en
+            # silencio → la capa entera de validación de reply (anti-'Listo',
+            # anti-unverified-claim, manos-libres, narra-todo, delega-al-user)
+            # nunca corría. Bug latente desde a82d439, arrastrado por el
+            # refactor R1.3 (25261147) al extraer _finalize_turn. Fix: bindear
+            # `_os` acá, antes de su único uso en la línea del gate.
+            import os as _os
             from ..safety_pkg.reply_validator import (
                 is_listo_on_no_tool_turn as _is_listo_on_no_tool_turn,
                 LISTO_REGEN_HINT as _LISTO_REGEN_HINT,
