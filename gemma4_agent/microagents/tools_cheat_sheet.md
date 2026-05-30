@@ -1,7 +1,7 @@
 ---
 name: tools-cheat-sheet
-triggers: ["que puedes hacer", "qué puedes hacer", "que sabes hacer", "qué sabes hacer", "que herramientas", "qué herramientas", "que podes hacer", "qué podés hacer", "lista de tools", "lista de herramientas", "tools disponibles", "herramientas disponibles", "tus capacidades", "tus tools", "ayuda", "help me"]
 priority: low
+examples: ["qué cosas podés hacer por mí, cuáles son tus capacidades", "en qué me podés ayudar, qué herramientas tenés", "qué sabés hacer, mostrame tu lista de herramientas", "what can you do for me, what are your capabilities", "o que você consegue fazer, quais são suas ferramentas"]
 ---
 
 # Tools disponibles (cheat sheet)

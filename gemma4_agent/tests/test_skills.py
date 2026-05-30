@@ -82,6 +82,49 @@ requires:
     assert req["os"] == ["windows"]
 
 
+def test_yaml_nested_sublists_under_metadata() -> None:
+    """R3.2 (2026-05-30): metadata con VARIAS sub-listas anidadas (examples,
+    when_to_use, limitations) debe parsearse como dict con cada lista SEPARADA.
+    Antes del fix el parser aplanaba las tres a una sola lista mezclada — eso
+    haría que un `limitations` ("no para imprimir") se tratara como POSITIVO y
+    rompiera la supresión de hard-negatives."""
+    text = """
+name: zzz
+description: a skill
+metadata:
+  examples:
+    - ejemplo uno
+    - ejemplo dos
+  when_to_use:
+    - cuando pasa esto
+  limitations:
+    - no para esto otro
+    - tampoco para aquello
+requires:
+  os: [windows]
+"""
+    parsed = _parse_yaml_simple(text)
+    md = parsed["metadata"]
+    assert isinstance(md, dict), f"metadata debe ser dict, fue {type(md)}"
+    assert md["examples"] == ["ejemplo uno", "ejemplo dos"]
+    assert md["when_to_use"] == ["cuando pasa esto"]
+    assert md["limitations"] == ["no para esto otro", "tampoco para aquello"]
+    # requires (sub-dict hermano) sigue intacto tras el bloque metadata
+    assert parsed["requires"]["os"] == ["windows"]
+
+
+def test_real_skills_have_limitations_loaded() -> None:
+    """Las skills con FP medidos (screenshot, download, voice-record, research,
+    safe-file-cleanup) deben exponer `limitations` no vacíos tras scan_skills —
+    si no, la supresión de hard-negatives está rota silenciosamente."""
+    by_name = {s.name: s for s in scan_skills()}
+    for nm in ("screenshot-and-analyze", "download-file",
+               "voice-record-transcribe", "research-and-summarize",
+               "safe-file-cleanup"):
+        if nm in by_name:  # tolerante a eligibility por OS
+            assert by_name[nm].limitations, f"{nm} sin limitations cargadas"
+
+
 def test_yaml_booleans() -> None:
     text = "honest_critical: true\nlazy: false"
     parsed = _parse_yaml_simple(text)
@@ -319,16 +362,30 @@ def test_build_menu_empty() -> None:
     assert build_menu([]) == ""
 
 
-def test_build_menu_with_critical_marker() -> None:
+def test_build_menu_empty_by_default() -> None:
+    """R1 (2026-05-30): el menú "# SKILLS AVAILABLE" es OPT-IN. Por default está
+    vacío — MEDIDO que el 4B emite skill_load 1/117764 veces (no hace el meta-paso
+    menú→cargar→seguir). Las skills entran por auto-inject (embeddings), no por menú.
+    Ahorra ~558 tok/turno. Ver project_audit / skills_registry._menu_enabled."""
+    import os
     skills = [
         _mk_skill("crit-skill", priority="critical", description="critical thing"),
         _mk_skill("normal", priority="high", description="normal thing"),
     ]
-    menu = build_menu(skills)
-    assert "# SKILLS AVAILABLE" in menu
-    assert "crit-skill" in menu
-    assert "[ALWAYS LOADED]" in menu
-    assert "[lazy, priority=high]" in menu
+    prev = os.environ.pop("GEMMA4_SKILLS_MENU", None)
+    try:
+        assert build_menu(skills) == ""  # default: vacío
+        os.environ["GEMMA4_SKILLS_MENU"] = "1"
+        menu = build_menu(skills)  # opt-in: se genera
+        assert "# SKILLS AVAILABLE" in menu
+        assert "crit-skill" in menu
+        assert "[ALWAYS LOADED]" in menu
+        assert "[lazy, priority=high]" in menu
+    finally:
+        if prev is None:
+            os.environ.pop("GEMMA4_SKILLS_MENU", None)
+        else:
+            os.environ["GEMMA4_SKILLS_MENU"] = prev
 
 
 def test_build_critical_block_only_critical() -> None:
@@ -368,6 +425,7 @@ TESTS = [
     # YAML
     test_yaml_scalar_and_list,
     test_yaml_block_dict,
+    test_yaml_nested_sublists_under_metadata,
     test_yaml_booleans,
     test_yaml_comments_skipped,
     # eligibility
@@ -389,10 +447,11 @@ TESTS = [
     # real
     test_real_skills_dir_has_purchase_guard_critical,
     test_real_skills_load_content,
+    test_real_skills_have_limitations_loaded,
     test_load_invalid_name_returns_none,
     # menu
     test_build_menu_empty,
-    test_build_menu_with_critical_marker,
+    test_build_menu_empty_by_default,
     test_build_critical_block_only_critical,
     # opt-out
     test_opt_out_via_env,

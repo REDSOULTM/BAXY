@@ -2,6 +2,24 @@
 name: research-and-summarize
 description: Research a topic from the web with multi-source extraction, optionally ingest results to local knowledge base, and write an honest summary citing sources. Use when user asks to "investigate", "research", "summarize from the web".
 priority: medium
+metadata:
+  examples:
+    - "investigá sobre este tema en internet"
+    - "averiguá qué es esto y resumime"
+    - "buscá información sobre esto y hacé un resumen"
+    - "investigá a fondo y citame las fuentes"
+    - "investigá qué pasó con este tema y contame"
+    - "averiguá qué es esto y explicámelo"
+    - "research this topic online and summarize it"
+    - "pesquise sobre isso na internet e resuma"
+  when_to_use:
+    - "el usuario quiere que busques información nueva en internet sobre un tema"
+    - "averiguar sobre algo desconocido consultando fuentes en la web"
+  limitations:
+    - "resumir todo lo anterior de la charla o de esta conversación"
+    - "no es para resumir un texto que el usuario ya te dio"
+    - "hacer un resumen de los mensajes previos sin buscar en internet"
+    - "not for summarizing the previous conversation or a text already given"
 ---
 
 # Research and summarize

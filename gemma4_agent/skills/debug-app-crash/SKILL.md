@@ -2,6 +2,14 @@
 name: debug-app-crash
 description: Investigate why an app crashed, froze, or won't respond. Checks process status, event logs, system resources, and recent files. Use when user reports "X se colgó", "X dejó de responder", "X tira error".
 priority: medium
+metadata:
+  examples:
+    - "mi app se colgó, diagnosticá por qué"
+    - "el programa dejó de responder, qué pasó"
+    - "esta aplicación tira error, averiguá la causa"
+    - "se me crasheó el programa, ayudame a diagnosticar"
+    - "this app crashed, help me debug why"
+    - "o aplicativo travou, descubra o porquê"
 requires:
   os: [windows]
 ---

@@ -2,6 +2,20 @@
 name: voice-record-transcribe
 description: Record audio from microphone and transcribe via Whisper STT. Save transcript to a file. Confirm device before recording.
 priority: medium
+metadata:
+  examples:
+    - "grabá lo que voy a dictar y transcribilo a texto"
+    - "grabá una nota de voz y pasala a texto escrito"
+    - "registrá mi dictado por micrófono y transcribilo"
+    - "record my voice memo and transcribe it to text"
+    - "grave minha nota de voz e transcreva para texto"
+  when_to_use:
+    - "el usuario va a dictar algo después y quiere que quede como texto"
+    - "convertir lo dicho por el micrófono en un archivo de texto"
+  limitations:
+    - "no es para silenciar o activar el micrófono"
+    - "no es para mutear o desmutear el micrófono en una llamada"
+    - "not for muting or unmuting the microphone"
 requires:
   os: [windows]
 ---

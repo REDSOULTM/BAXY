@@ -2,6 +2,21 @@
 name: screenshot-and-analyze
 description: Take a screenshot, run vision/OCR on it, report what's visible. Use when user asks "qué ves", "leé la pantalla", "describí lo que aparece", or when an action needs visual verification before/after.
 priority: medium
+metadata:
+  examples:
+    - "sacá una captura y describime qué ves ahí"
+    - "tomá un screenshot y leeme el texto que aparece"
+    - "hacé un pantallazo y contame qué se ve"
+    - "take a screenshot and describe what you see"
+    - "faça uma captura de tela e me diga o que aparece"
+  when_to_use:
+    - "el usuario quiere que mires la imagen en pantalla y le cuentes el contenido"
+    - "hace falta verificar visualmente qué hay en una ventana"
+  limitations:
+    - "no es para subir o bajar el brillo de la pantalla"
+    - "no es para poner un video en pantalla completa"
+    - "no es para imprimir un documento en la impresora"
+    - "not for changing screen brightness or printing a document"
 requires:
   os: [windows]
 ---

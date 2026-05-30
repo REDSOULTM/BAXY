@@ -2,6 +2,14 @@
 name: new-development-project
 description: Scaffold a new Python, Node.js, or generic project folder with git init, README, .gitignore, and basic structure. Confirm location and stack before creating files.
 priority: low
+metadata:
+  examples:
+    - "creame un proyecto nuevo de python con git"
+    - "armá la estructura de un proyecto node nuevo"
+    - "scaffold un proyecto nuevo con readme y gitignore"
+    - "empezá un proyecto desde cero con git inicializado"
+    - "scaffold a new python project with git"
+    - "crie um novo projeto com git e readme"
 requires:
   any_bins: [git, git.exe]
   os: [windows, linux, darwin]

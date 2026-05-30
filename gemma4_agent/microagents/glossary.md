@@ -1,6 +1,6 @@
 ---
 name: glossary
-triggers: ["que significa", "qué significa", "que es", "qué es", "definicion", "definición", "definir", "glossary", "vocabulario", "jerga", "siglas", "HKCR", "HKLM", "HKCU", "mmproj", "deeplink", "winget", "psutil", "pycaw", "WDDM", "GGUF", "llama.cpp", "llama-server", "MCP", "RAG", "embedding", "KV cache", "quantization", "Q4_K_M", "Q6_K", "VRAM"]
+triggers: ["HKCR", "HKLM", "HKCU", "mmproj", "deeplink", "winget", "psutil", "pycaw", "WDDM", "GGUF", "llama.cpp", "llama-server", "embeddings", "quantization", "Q4_K_M", "Q5_K_M", "Q6_K", "VRAM", "GGML", "prewarm"]
 priority: medium
 ---
 

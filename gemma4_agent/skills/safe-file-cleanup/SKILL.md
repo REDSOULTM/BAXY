@@ -2,6 +2,21 @@
 name: safe-file-cleanup
 description: Safely delete files or directories. Always preview before deleting; refuse without explicit confirmation; never bulk delete user data without naming each target.
 priority: high
+metadata:
+  examples:
+    - "borrá estos archivos pero con cuidado"
+    - "eliminá esta carpeta de forma segura"
+    - "limpiá estos archivos mostrándome antes qué vas a borrar"
+    - "quiero borrar archivos pero confirmame primero"
+    - "safely delete these files with a preview first"
+    - "apague estes arquivos com cuidado"
+  when_to_use:
+    - "el usuario quiere borrar archivos o carpetas del disco con cuidado"
+    - "eliminar archivos mostrando antes qué se va a borrar"
+  limitations:
+    - "quitar el primer elemento mostrado de una lista"
+    - "borrar un elemento de una lista que se mostró antes en la respuesta"
+    - "not for picking or removing an item from a shown list"
 requires:
   os: [windows, linux, darwin]
 ---

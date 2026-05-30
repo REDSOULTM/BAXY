@@ -203,6 +203,43 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_validate_skills_live.py` | ¿el 4B emite skill_load cuando el pedido matchea una skill? (medir el skill_load inerte). |
 | `_calibrate_skills_match.py` | Calibra el umbral de embedding del trigger-inject de skills (pedido↔description). |
 | `_validate_skills_autoinject_live.py` | Valida el trigger-inject de skills en vivo (¿se inyecta la receta + el 4B la sigue?). |
+| `_skills_autoinject_gate.py` | Gate adversarial del auto-inject de skills (R3.2): recall GOLD + 0 FP-hard (brillo/mutea/imprime) + regresión sobre mensajes reales. |
+| `_live_verify_skills_autoinject.py` | Verificación EN VIVO (4B real, run_content) del auto-inject de skills: TP inyectan skill correcta, hard-negatives suprimidos. |
+| `_microagents_gate.py` | Gate del selector de microagents (R3.3): recall GOLD + 0 FP en hard-negatives ("RAG"⊂"Dragon", "que es"⊂"gordo") + regresión. |
+| `_live_verify_microagents.py` | Verificación EN VIVO (4B real) del selector de microagents: TP matchean, bug substring erradicado. |
+| `_validate_skills_autoinject_recall.py` | Mide recall+precision del auto-inject de skills sobre GOLD + mensajes reales (R3). |
+| `_skill_desc_recall_test.py` | Mide el recall de las descripciones de skills (pedido↔description) para calibrar el auto-inject. |
+| `_skill_desc_recall_screenshot.py` | Variante del recall-test de descripciones enfocada en el caso screenshot (colisión "pantalla"). |
+| `_check_inventory_membership.py` | Chequea que cada script top-level esté mencionado en INDEX.md (guarda R8 reproducible). |
+| `_live_verify_app_open_honesty.py` | Verificación en vivo: app.open reporta honestamente si la app abrió (no miente verified). |
+| `_live_verify_click_honesty.py` | Verificación en vivo: click_button reporta honestamente el efecto (no falso-PASS). |
+| `_live_verify_cpu_autoprofile.py` | Verificación en vivo del auto-perfil CPU (fallback sin GPU). |
+| `_live_verify_deictic.py` | Verificación en vivo de la herencia de contexto deíctico (continuación corta tras GUI). |
+| `_live_verify_image_vram_preflight.py` | Verificación en vivo del pre-flight de VRAM antes de cargar mmproj (visión, anti-OOM 4GB). |
+| `_live_verify_lifecycle.py` | Verificación en vivo del ciclo de vida del server (zombie auto-recovery). |
+| `_live_verify_mcp_e2e.py` | Verificación en vivo end-to-end del cliente MCP contra un server real. |
+| `_live_verify_retry_budget.py` | Verificación en vivo del presupuesto de reintentos (forced-retry) por turno. |
+| `_live_verify_router_s3.py` | Verificación en vivo del router (sprint S3) sobre pedidos reales. |
+| `_live_verify_whatsapp_group.py` | Verificación en vivo del envío a grupo de WhatsApp (is_group) — físico lo corre el user. |
+| `_verify_knowledge_release_live.py` | Verificación en vivo del release de knowledge (RAG search/ingest). |
+| `_verify_leaked_call_fix_live.py` | Verificación en vivo del fix de tool-call-as-text (leaked call capitalizado). |
+| `_verify_os_fix_live.py` | Verificación en vivo del fix `_os` NameError en _finalize_turn. |
+| `_mcp_test_server.py` | Server MCP de prueba (filesystem) para los tests del cliente MCP. |
+| `_validate_b_media_routing.py` | Valida el routing de media (play/pause) — competidor backlog B. |
+| `_validate_b_multilang.py` | Valida el routing multilingüe (backlog B). |
+| `_validate_c_negation.py` | Valida el manejo de negación en clasificación de intención (backlog C). |
+| `_validate_e_identity.py` | Valida la identidad del asistente (backlog E). |
+| `_validate_e_multilang.py` | Valida la identidad multilingüe (backlog E). |
+| `_verify_informe.py` | Verifica el informe de producto generado (claims con fuentes). |
+| `_gen_informe_producto_v2.py` | Genera el informe de producto v2 (Word) con competidores verificados. |
+| `_smoke_cpu_fallback.py` | Smoke test del fallback CPU (render sin GPU). |
+| `_measure_cpu_inference.py` | Mide la latencia de inferencia en CPU (perfil de fallback). |
+| `_test_mbs_safety.py` | Test del MBS (minimum-bayes-risk) safety para STT (medido y rechazado). |
+| `_compare_decoding.py` | Compara estrategias de decoding STT (greedy vs alternativas). |
+| `_check_parakeet_loads.py` | Chequea que Parakeet-TDT (sherpa-onnx) carga correctamente. |
+| `_triage_parakeet_now.py` | Triage rápido del estado de Parakeet (carga + transcripción mínima). |
+| `_eval_parakeet_real_mic.py` | Eval de Parakeet con micrófono real (la corre el user). |
+| `router_corpus_from_logs.py` | Construye corpus del router desde los logs/traces de producción. |
 | `_validate_mcp_real.py` | Valida el cliente MCP contra un servidor real (npx server-filesystem): discover + call. |
 | `_harness_validate_tools.py` | Valida el ROUTING de N tools en vivo (todo mockeado + syscall neutralizado = sin efecto físico). |
 | `_validate_filesystem_routing_live.py` | Valida en vivo el fix de routing filesystem (búsqueda local→filesystem, no web) + controles web. |

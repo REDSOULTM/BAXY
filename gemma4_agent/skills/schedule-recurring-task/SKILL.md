@@ -2,6 +2,14 @@
 name: schedule-recurring-task
 description: Create a recurring routine (cron-like, on_phrase, or on_app_open trigger) and confirm with the user before activating. Use when user says "cada N hours/days do X", "cuando diga X haz Y", "todas las mañanas Y".
 priority: medium
+metadata:
+  examples:
+    - "programá una tarea para que se repita cada día"
+    - "todas las mañanas hacé esto automáticamente"
+    - "cuando diga tal frase ejecutá tal acción"
+    - "creame una rutina que corra cada N horas"
+    - "schedule a recurring task every morning"
+    - "agende uma tarefa recorrente todos os dias"
 ---
 
 # Schedule recurring task

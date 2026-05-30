@@ -288,25 +288,51 @@ def test_build_section_merges_dedupes() -> None:
 # Real microagents content sanity
 # ============================================================================
 
+def _real_embed():
+    """Encoder real del proyecto para los tests semánticos de R3.3. None si no
+    carga (entonces el test se auto-skipea: el path semántico no es ejercitable)."""
+    try:
+        from ..routing.semantic_router import embed, _ensure_loaded
+        return embed if _ensure_loaded() else None
+    except Exception:
+        return None
+
+
 def test_real_glossary_matches_definicional_query() -> None:
+    # R3.3: glossary dispara por TÉRMINO TÉCNICO exacto (word-boundary léxico),
+    # no por "qué significa" genérico. "mmproj" es un trigger léxico → matchea
+    # incluso sin encoder.
     loaded = load_microagents()
     matched = select_microagents("qué significa mmproj", loaded)
     assert any(m.name == "glossary" for m in matched)
 
 
-def test_real_troubleshoot_matches_failure_query() -> None:
+def test_real_glossary_no_fp_on_substring() -> None:
+    """R3.3 regresión: el bug "RAG" ⊂ "Dragon" y "que es" ⊂ "estoy"/"gordo" NO
+    debe disparar glossary (word-boundary, no substring)."""
     loaded = load_microagents()
-    matched = select_microagents("no funciona el audio", loaded)
+    for txt in ("House of Dragon", "dile a Sebastián que es gordo",
+                "el video que estoy viendo"):
+        matched = select_microagents(txt, loaded, embed_fn=_real_embed())
+        assert not any(m.name == "glossary" for m in matched), \
+            f"glossary FP (substring) en {txt!r}"
+
+
+def test_real_troubleshoot_matches_failure_query() -> None:
+    # R3.3: troubleshoot es SEMÁNTICO (examples), requiere encoder.
+    emb = _real_embed()
+    if emb is None:
+        return  # encoder no disponible: path semántico no ejercitable
+    loaded = load_microagents()
+    matched = select_microagents(
+        "una app no responde, ayudame a arreglarlo", loaded, embed_fn=emb)
     assert any(m.name == "troubleshoot" for m in matched)
 
 
 def test_real_microagents_no_match_returns_empty() -> None:
     loaded = load_microagents()
-    matched = select_microagents("abre Steam", loaded)
-    # Probable que "abre Steam" no matchee NINGUN microagent (no es definicional,
-    # no es troubleshoot, no menciona comando/powershell/etc).
-    # Si en el futuro agregamos un microagent con trigger genérico, esto puede
-    # fallar — entonces ajustar el trigger, no este test.
+    matched = select_microagents("abre Steam", loaded, embed_fn=_real_embed())
+    # "abre Steam" no es definicional, ni troubleshoot, ni comando → no match.
     assert matched == [], f"esperado no match para 'abre Steam', got {[m.name for m in matched]}"
 
 

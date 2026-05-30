@@ -2,6 +2,14 @@
 name: install-steam-game
 description: Install or launch a Steam game by name. Searches user's library first, falls back to store with purchase confirmation. Verifies the game/store opened.
 priority: high
+metadata:
+  examples:
+    - "instalá este juego de steam"
+    - "abrí este juego de mi biblioteca de steam"
+    - "descargá e instalá tal juego en steam"
+    - "lanzá el juego de steam por nombre"
+    - "install this steam game by name"
+    - "instale este jogo da steam"
 requires:
   any_bins: [steam, steam.exe]
   os: [windows]

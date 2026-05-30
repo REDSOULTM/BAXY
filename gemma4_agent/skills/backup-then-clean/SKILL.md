@@ -2,6 +2,13 @@
 name: backup-then-clean
 description: Create a ZIP backup of files/directories before any cleanup or large file operation. Verify backup integrity before proceeding to deletes. Use when user wants to "limpiar X pero por las dudas guardame copia", "antes de borrar respaldá".
 priority: high
+metadata:
+  examples:
+    - "hacé una copia de respaldo antes de borrar estos archivos"
+    - "respaldá en un zip antes de limpiar y eliminar"
+    - "antes de borrar guardame una copia de seguridad por las dudas"
+    - "back up these files to a zip before deleting them"
+    - "faça um backup em zip antes de apagar os arquivos"
 ---
 
 # Backup then clean

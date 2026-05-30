@@ -1398,8 +1398,13 @@ class Gemma4Agent:
         # was unobservable in traces.jsonl.
         if raw_text_early:
             try:
-                from ..memory_pkg.microagents import load_microagents, select_microagents
-                _matched_ma = select_microagents(raw_text_early, load_microagents())
+                from ..memory_pkg.microagents import (
+                    load_microagents, select_microagents, _default_embed_fn)
+                # R3.3: pasar el encoder para que el trace refleje la selección
+                # SEMÁNTICA real (no solo el path léxico word-boundary).
+                _matched_ma = select_microagents(
+                    raw_text_early, load_microagents(),
+                    embed_fn=_default_embed_fn())
                 if _matched_ma:
                     self.trace.event(
                         turn_id, "microagent_matched",

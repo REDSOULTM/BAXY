@@ -92,12 +92,35 @@ CAP_PER_PROFILE: dict[str, int] = {
 
 @dataclass(frozen=True)
 class SkillMeta:
-    """Metadata de un skill (no incluye el body — lazy)."""
+    """Metadata de un skill (no incluye el body — lazy).
+
+    `examples` (R3, 2026-05-30): fraseos de ejemplo que el usuario diría para
+    disparar la skill. NO son keywords — son queries semánticas multilingües que
+    el auto-inject embebe como VECTORES SEPARADOS y scorea por MAX contra la
+    query (técnica Re-Invoke / document-expansion, arXiv:2408.01875). Resuelve
+    el intent-mismatch medido ("investiga"→debug) y el recall bajo de la
+    descripción abstracta. Ver documentacion/router/07_SKILL_RETRIEVAL_research.md.
+    """
     name: str
     description: str
     priority: Priority
     path: Path              # ruta al SKILL.md
     requires: dict = field(default_factory=dict)
+    examples: tuple[str, ...] = ()
+    # Document-expansion (R3.2, 2026-05-30, arXiv:2510.22670 "Tools are
+    # under-documented"). Dos campos en prosa natural multilingüe — NO keyword
+    # lists:
+    #   when_to_use: fraseos/situaciones POSITIVAS extra. Se suman al pool de
+    #     vectores MAX (refuerzan el recall del intent correcto).
+    #   limitations: fraseos de lo que la skill NO cubre ("no para imprimir, no
+    #     para subir brillo"). Se embeben como vectores de PENALIZACIÓN: si la
+    #     query matchea más un `limitations` que el mejor positivo, se suprime el
+    #     disparo. Resuelve el hard-negative de solapamiento por sustantivo
+    #     (brillo/pantalla, mutea/micrófono) que un umbral global no separa
+    #     (TP 0.457 < FP 0.656 medido). Ver
+    #     documentacion/router/07_SKILL_RETRIEVAL_research.md.
+    when_to_use: tuple[str, ...] = ()
+    limitations: tuple[str, ...] = ()
 
 
 # ============================================================================
@@ -115,11 +138,17 @@ def _is_valid_skill_name(name: str) -> bool:
     return bool(_VALID_NAME_RE.match(name)) and len(name) <= 64
 
 
+def _indent(line: str) -> int:
+    return len(line) - len(line.lstrip(" "))
+
+
 def _parse_yaml_simple(text: str) -> dict:
     """YAML subset que cubre frontmatter de SKILL.md:
        - scalars
        - inline lists `key: [a, b]`
        - block sub-dict/sub-lists indentados con "  "
+       - block sub-dict CON sub-listas anidadas (`metadata:` con `examples:`,
+         `when_to_use:`, `limitations:` cada uno con items `- `) — R3.2
        - booleans
     NO soporta block scalar `|`, anchors, ni tipos complejos.
     """
@@ -139,13 +168,20 @@ def _parse_yaml_simple(text: str) -> dict:
         val = val.strip()
 
         if val == "":
-            # Block sub-dict o sub-lista
+            # Block sub-dict o sub-lista. Puede contener sub-claves con sus
+            # propias sub-listas anidadas (2 niveles), p.ej.:
+            #   metadata:
+            #     examples:
+            #       - a
+            #     limitations:
+            #       - b
+            base_indent = _indent(line)
             sub_items: list = []
             sub_dict: dict = {}
             i += 1
             while i < len(lines):
                 sub_line = lines[i]
-                if not sub_line.startswith("  ") and sub_line.strip():
+                if sub_line.strip() and _indent(sub_line) <= base_indent:
                     break
                 stripped = sub_line.strip()
                 if not stripped:
@@ -153,6 +189,7 @@ def _parse_yaml_simple(text: str) -> dict:
                     continue
                 if stripped.startswith("- "):
                     sub_items.append(stripped[2:].strip().strip('"').strip("'"))
+                    i += 1
                 elif ":" in stripped:
                     sk, _, sv = stripped.partition(":")
                     sk = sk.strip()
@@ -165,9 +202,26 @@ def _parse_yaml_simple(text: str) -> dict:
                             if p:
                                 items_inline.append(p)
                         sub_dict[sk] = items_inline
+                        i += 1
+                    elif sv == "":
+                        # sub-clave con su propia sub-lista anidada
+                        sub_indent = _indent(sub_line)
+                        nested: list[str] = []
+                        i += 1
+                        while i < len(lines):
+                            nl = lines[i]
+                            if nl.strip() and _indent(nl) <= sub_indent:
+                                break
+                            ns = nl.strip()
+                            if ns.startswith("- "):
+                                nested.append(ns[2:].strip().strip('"').strip("'"))
+                            i += 1
+                        sub_dict[sk] = nested
                     else:
                         sub_dict[sk] = sv.strip('"').strip("'")
-                i += 1
+                        i += 1
+                else:
+                    i += 1
             out[key] = sub_items if sub_items else (sub_dict if sub_dict else "")
             continue
 
@@ -189,6 +243,36 @@ def _parse_yaml_simple(text: str) -> dict:
             out[key] = cleaned
         i += 1
     return out
+
+
+def _extract_meta_list(meta_dict: dict, key: str) -> tuple[str, ...]:
+    """Lee una sub-lista (`examples`, `when_to_use`, `limitations`) del
+    frontmatter, tolerante a las variantes del parser simple:
+      - `metadata: {<key>: [a, b]}`  (estándar Anthropic, dict)  ← caso actual
+      - `<key>: [a, b]` top-level (legacy)
+      - SOLO para `examples`: `metadata:` aplanado a lista por parsers viejos.
+    Devuelve tupla de strings no vacíos."""
+    raw = None
+    md = meta_dict.get("metadata")
+    if isinstance(md, dict) and md.get(key):
+        raw = md[key]
+    elif key == "examples" and isinstance(md, list) and md:
+        # Compat: parser viejo aplanaba `metadata:\n examples:\n - a` a lista.
+        raw = md
+    elif meta_dict.get(key):
+        raw = meta_dict[key]
+    if raw is None:
+        return ()
+    if isinstance(raw, str):
+        raw = [raw]
+    if not isinstance(raw, (list, tuple)):
+        return ()
+    return tuple(str(e).strip() for e in raw if str(e).strip())
+
+
+def _extract_examples(meta_dict: dict) -> tuple[str, ...]:
+    """Back-compat wrapper: fraseos `examples` para el auto-inject multi-vector."""
+    return _extract_meta_list(meta_dict, "examples")
 
 
 def _parse_skill_md(path: Path) -> Optional[tuple[dict, str]]:
@@ -326,12 +410,25 @@ def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
                 priority = "medium"
             requires_raw = meta_dict.get("requires") or {}
             requires = dict(requires_raw) if isinstance(requires_raw, dict) else {}
+            # examples (R3): fraseos de ejemplo multilingües para el auto-inject
+            # multi-vector. Estándar Anthropic Agent Skills: campos custom van bajo
+            # `metadata:`. Aceptamos `metadata.examples` (estándar) o `examples`
+            # top-level (legacy). El parser simple aplana `metadata:\n examples:\n
+            # - a\n - b` a una lista directa -> también lo tomamos.
+            examples_raw = _extract_examples(meta_dict)
+            # Document-expansion (R3.2): when_to_use (positivo extra) +
+            # limitations (negativo estructural). Prosa multilingüe, no keywords.
+            when_to_use_raw = _extract_meta_list(meta_dict, "when_to_use")
+            limitations_raw = _extract_meta_list(meta_dict, "limitations")
             skills.append(SkillMeta(
                 name=name,
                 description=description,
                 priority=priority,  # type: ignore[arg-type]
                 path=skill_md,
                 requires=requires,
+                examples=examples_raw,
+                when_to_use=when_to_use_raw,
+                limitations=limitations_raw,
             ))
         except Exception as exc:  # noqa: BLE001
             logger.warning("skill frontmatter invalido en %s: %s", skill_md, exc)
@@ -350,16 +447,31 @@ def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
 # Builders del system_prompt
 # ============================================================================
 
+# R1 (2026-05-30): el menú "# SKILLS AVAILABLE" ocupaba ~558 tokens en CADA
+# turno del system prompt y le decía al 4B "llamá skill_load(...)". MEDIDO sobre
+# 117.764 eventos reales: el 4B emite skill_load 1 SOLA vez — no hace el meta-paso
+# "ver menú → cargar → seguir". Las skills lazy YA entran por AUTO-INJECT
+# (autoinject_skill por embeddings, 41 disparos reales), que NO depende de que el
+# 4B decida. Y la skill `purchase-guard` (critical, seguridad) entra por
+# build_critical_block, NO por este menú. Conclusión: el menú es ~558 tok/turno de
+# ruido puro que el 4B ignora. DEFAULT OFF (menú vacío). Gate GEMMA4_SKILLS_MENU=1
+# lo restaura (por si un modelo futuro sí usa skill_load).
+def _menu_enabled() -> bool:
+    raw = (os.environ.get("GEMMA4_SKILLS_MENU") or "0").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
 def build_menu(skills: list[SkillMeta], max_chars_per_entry: int = 200) -> str:
     """Construye el menu compacto inyectado al system_prompt al boot.
 
-    Una linea por skill: `- **name** [tag]: description`. El LLM ve esto
-    y emite skill_load(name="X") cuando quiere usar uno.
+    R1 (2026-05-30): DEFAULT vacío. El 4B no emite skill_load (1/117.764); las
+    skills entran por auto-inject. El menú solo gastaba ~558 tok/turno. Restaurar
+    con GEMMA4_SKILLS_MENU=1 (un modelo más grande sí lo aprovecharía).
 
-    Critical skills aparecen con tag [ALWAYS LOADED] (eager).
-    Resto aparecen con [lazy, priority=X].
+    Cuando está habilitado: una linea por skill `- **name** [tag]: description`.
+    Critical skills con [ALWAYS LOADED], resto [lazy, priority=X].
     """
-    if not skills:
+    if not skills or not _menu_enabled():
         return ""
     lines = [
         "\n# SKILLS AVAILABLE",
@@ -444,11 +556,89 @@ def reset_autoinject_cache() -> None:
     _SCAN_CACHE.clear()
 
 
-def autoinject_skill(user_text: str, skills, *, embed_fn, threshold: float = 0.45):
-    """Devuelve (name, recipe_body) de la skill NON-critical cuya description matchea
-    user_text por embedding >= threshold, o (None, ''). Multilingüe, no keywords.
-    Fallback seguro: sin encoder / texto corto / nada supera el umbral -> (None,'')."""
+def _autoinject_threshold() -> float:
+    """Umbral absoluto del auto-inject multi-vector. RECALIBRADO 0.45→0.62 (R3,
+    2026-05-30) al pasar a multi-vector; con `limitations`+gap-rule (R3.2) el
+    umbral absoluto baja un poco (0.58) porque el gap relativo y la supresión por
+    negativos hacen el trabajo fino, no el umbral solo. Gate GEMMA4_SKILLS_THRESHOLD."""
+    import os as _os_th
+    try:
+        return float(_os_th.environ.get("GEMMA4_SKILLS_THRESHOLD", "0.58"))
+    except ValueError:
+        return 0.58
+
+
+def _autoinject_margin() -> float:
+    """Margen mínimo top1−top2 (gap-rule, arXiv:2410.02914 score-refinement). El
+    síntoma medido — un TP legítimo (0.457) puntúa MÁS BAJO que un FP por
+    solapamiento de sustantivo (0.656) — prueba que el umbral ABSOLUTO es el
+    estadístico equivocado. El gap relativo entre la mejor skill y la segunda es
+    robusto a ese solapamiento: si dos skills empatan alto, ninguna es claramente
+    la correcta → abstener. Gate GEMMA4_SKILLS_MARGIN."""
+    import os as _os_th
+    try:
+        return float(_os_th.environ.get("GEMMA4_SKILLS_MARGIN", "0.05"))
+    except ValueError:
+        return 0.05
+
+
+def _autoinject_neg_guard() -> float:
+    """Cuánto margen necesita un `limitations` (negativo) sobre el positivo para
+    SUPRIMIR la skill. Si el match a "lo que la skill NO hace" supera al positivo
+    por este margen, la skill se descarta. 0.0 = suprime si neg≥pos. Gate
+    GEMMA4_SKILLS_NEGGUARD."""
+    import os as _os_th
+    try:
+        return float(_os_th.environ.get("GEMMA4_SKILLS_NEGGUARD", "0.0"))
+    except ValueError:
+        return 0.0
+
+
+def _skill_vectors(s, _emb):
+    """Vectores (pos, neg) de una skill, cacheados. pos = description + examples
+    + when_to_use (Re-Invoke multi-vector). neg = limitations (hard-negatives en
+    prosa, arXiv:2510.22670). Lista vacía si el encoder falló para todos."""
+    cached = _DESC_EMB_CACHE.get(s.name)
+    if cached is not None:
+        return cached
+    pos = []
+    for text in (s.description, *s.examples, *getattr(s, "when_to_use", ())):
+        e = _emb(text)
+        if e is not None:
+            pos.append(e)
+    neg = []
+    for text in getattr(s, "limitations", ()):
+        e = _emb(text)
+        if e is not None:
+            neg.append(e)
+    cached = (pos, neg)
+    _DESC_EMB_CACHE[s.name] = cached
+    return cached
+
+
+def autoinject_skill(user_text: str, skills, *, embed_fn, threshold: float | None = None):
+    """Devuelve (name, recipe_body) de la skill NON-critical que mejor matchea
+    user_text, o (None, '') si ninguna supera el gate. Tres mecanismos, todos
+    embeddings/estructurales (NO keyword lists), todos CPU, fallback seguro:
+
+    1. MULTI-VECTOR MAX (Re-Invoke arXiv:2408.01875): cada skill = varios vectores
+       POSITIVOS (description + examples + when_to_use). Score = MAX coseno. NO se
+       promedia (concatenar DILUYE — Tool-DE arXiv:2510.22670).
+    2. SUPRESIÓN POR `limitations` (hard-negatives en prosa, arXiv:2510.22670):
+       cada skill tiene vectores de lo que NO hace ("no para imprimir, no para
+       subir brillo"). Si la query matchea MÁS un negativo que el mejor positivo,
+       la skill se SUPRIME. Resuelve el solapamiento por sustantivo (pantalla→
+       brillo, micrófono→mutear) que un umbral global no separa.
+    3. GAP-RULE / margin (score-refinement arXiv:2410.02914): dispara solo si
+       top1 ≥ threshold Y (top1 − top2) ≥ margin. El gap relativo es robusto al
+       caso medido TP 0.457 < FP 0.656: si dos skills empatan alto, abstiene.
+
+    Multilingüe (es/en/pt). Ver documentacion/router/07_SKILL_RETRIEVAL_research.md."""
     import numpy as np
+    if threshold is None:
+        threshold = _autoinject_threshold()
+    margin = _autoinject_margin()
+    neg_guard = _autoinject_neg_guard()
     txt = (user_text or "").strip()
     if len(txt) < 6 or embed_fn is None:
         return None, ""
@@ -468,21 +658,29 @@ def autoinject_skill(user_text: str, skills, *, embed_fn, threshold: float = 0.4
         q = _emb(txt)
         if q is None:
             return None, ""
-        best_sim, best = -1.0, None
+        scored = []  # (pos_sim, skill) — solo skills NO suprimidas por negativo
         for s in cands:
-            emb = _DESC_EMB_CACHE.get(s.name)
-            if emb is None:
-                emb = _emb(s.description)
-                if emb is None:
+            pos, neg = _skill_vectors(s, _emb)
+            if not pos:
+                continue
+            pos_sim = max(float(q @ v) for v in pos)
+            # Supresión estructural: si la query se parece más a "lo que la skill
+            # NO hace" que a lo que sí hace, descartar esta skill.
+            if neg:
+                neg_sim = max(float(q @ v) for v in neg)
+                if neg_sim >= pos_sim - neg_guard:
                     continue
-                _DESC_EMB_CACHE[s.name] = emb
-            sim = float(q @ emb)
-            if sim > best_sim:
-                best_sim, best = sim, s
-        if best is not None and best_sim >= threshold:
-            body = load_skill_content(best.name)
+            scored.append((pos_sim, s))
+        if not scored:
+            return None, ""
+        scored.sort(key=lambda t: t[0], reverse=True)
+        top_sim, top = scored[0]
+        second_sim = scored[1][0] if len(scored) > 1 else 0.0
+        # Gate: umbral absoluto Y gap relativo sobre la 2da skill.
+        if top_sim >= threshold and (top_sim - second_sim) >= margin:
+            body = load_skill_content(top.name)
             if body:
-                return best.name, body
+                return top.name, body
     except Exception:
         pass
     return None, ""

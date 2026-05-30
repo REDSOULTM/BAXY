@@ -1,7 +1,8 @@
 ---
 name: windows-commands
-triggers: ["comando", "como ejecuto", "cómo ejecuto", "como corro", "cómo corro", "terminal", "shell", "powershell", "cmd", "bash", "wsl", "linea de comando", "línea de comando"]
 priority: medium
+triggers: ["powershell", "cmd", "bash", "wsl"]
+examples: ["cómo ejecuto un comando en la terminal de windows", "qué comando de powershell o cmd uso para esto", "cómo corro esto desde la línea de comandos", "how do I run a command in the terminal", "que comando uso en la consola para esto"]
 ---
 
 # Windows commands cheatsheet

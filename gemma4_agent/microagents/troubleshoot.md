@@ -1,7 +1,7 @@
 ---
 name: troubleshoot
-triggers: ["no funciona", "no anda", "se rompio", "se rompió", "no abre", "no abrio", "no abrió", "no se abre", "no responde", "no carga", "no escucha", "no escuchas", "no me oyes", "no me escuchas", "no escribi", "no escribió", "error", "falla", "falló", "fallo", "no aparece"]
 priority: high
+examples: ["una app no abre o no responde o se colgó", "algo dejó de funcionar y no sé por qué", "no me responde o se quedó colgado", "esto falla o da error, ayudame a arreglarlo", "an app crashed or stopped responding, help me fix it", "algo parou de funcionar e não sei por quê"]
 ---
 
 # Troubleshoot flow

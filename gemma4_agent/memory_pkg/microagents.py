@@ -55,6 +55,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+import numpy as np  # dep core (ya cargada en runtime); usada en select_microagents
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,6 +71,14 @@ class Microagent:
     priority: str            # "high" | "medium" | "low"
     content: str             # body markdown (sin frontmatter)
     source_path: Optional[Path] = None
+    # R3.3 (2026-05-30): selección SEMÁNTICA. `examples` son frases multilingües
+    # que el usuario diría para necesitar este microagent — se embeben y scorean
+    # por coseno multi-vector (igual que skills). Reemplaza el substring matching
+    # de `triggers` que daba FP graves ("RAG" ⊂ "Dragon", "que es" ⊂ "estoy").
+    # `triggers` se mantiene como guarda LÉXICA word-boundary (no substring) SOLO
+    # para términos técnicos exactos (siglas universales: HKCR, GGUF, VRAM) que un
+    # encoder de intención no captura. Ver documentacion/router/08_MICROAGENT_*.
+    examples: tuple[str, ...] = ()
 
 
 # ============================================================================
@@ -76,6 +86,35 @@ class Microagent:
 # ============================================================================
 
 _FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
+
+
+def _split_inline_list(inner: str) -> list[str]:
+    """Parte una lista YAML inline `"a, b", "c"` por comas TOP-LEVEL, respetando
+    las comillas. Antes se hacía `re.split(r",\\s*", inner)` que partía las comas
+    DENTRO de un string entre comillas ("qué hacés, mostrame" → 2 items, bug R3.3
+    que duplicaba `examples`). Ahora una coma dentro de comillas no parte."""
+    items: list[str] = []
+    buf: list[str] = []
+    quote: str | None = None
+    for ch in inner:
+        if quote is not None:
+            if ch == quote:
+                quote = None
+            else:
+                buf.append(ch)
+        elif ch in ('"', "'"):
+            quote = ch
+        elif ch == ",":
+            part = "".join(buf).strip()
+            if part:
+                items.append(part)
+            buf = []
+        else:
+            buf.append(ch)
+    part = "".join(buf).strip()
+    if part:
+        items.append(part)
+    return items
 
 
 def _parse_frontmatter(text: str) -> Optional[tuple[dict, str]]:
@@ -101,12 +140,7 @@ def _parse_frontmatter(text: str) -> Optional[tuple[dict, str]]:
         v = v.strip()
         if v.startswith("[") and v.endswith("]"):
             inner = v[1:-1].strip()
-            items: list[str] = []
-            for part in re.split(r",\s*", inner):
-                p = part.strip().strip('"').strip("'")
-                if p:
-                    items.append(p)
-            meta[k] = items
+            meta[k] = _split_inline_list(inner)
         elif v.lower() in {"true", "false"}:
             meta[k] = (v.lower() == "true")
         else:
@@ -200,12 +234,17 @@ def load_microagents(directory: Path | None = None) -> list[Microagent]:
         meta, body = parsed
         name = str(meta.get("name") or "").strip()
         triggers_raw = meta.get("triggers") or []
-        if not name or not triggers_raw:
-            logger.warning("microagent missing name/triggers: %s", path.name)
-            continue
-        triggers = [str(t) for t in triggers_raw if str(t).strip()]
-        if not triggers:
-            logger.warning("microagent has empty triggers: %s", path.name)
+        triggers = [str(t) for t in triggers_raw if str(t).strip()] \
+            if isinstance(triggers_raw, (list, tuple)) else []
+        examples_raw = meta.get("examples") or []
+        examples = tuple(
+            str(e).strip() for e in examples_raw if str(e).strip()
+        ) if isinstance(examples_raw, (list, tuple)) else ()
+        # R3.3: un microagent es válido si tiene name + (examples semánticos O
+        # triggers léxicos). Antes exigía triggers; ahora examples basta.
+        if not name or (not triggers and not examples):
+            logger.warning(
+                "microagent missing name/(examples|triggers): %s", path.name)
             continue
         priority = str(meta.get("priority") or "medium").lower()
         if priority not in {"high", "medium", "low"}:
@@ -222,6 +261,7 @@ def load_microagents(directory: Path | None = None) -> list[Microagent]:
             priority=priority,
             content=body_clean,
             source_path=path,
+            examples=examples,
         ))
     _MICROAGENT_CACHE[cache_key] = (sig, out)
     return out
@@ -231,29 +271,127 @@ def load_microagents(directory: Path | None = None) -> list[Microagent]:
 # Selector
 # ============================================================================
 
+_MA_EMB_CACHE: dict = {}
+
+
+def reset_microagent_emb_cache() -> None:
+    _MA_EMB_CACHE.clear()
+
+
+def _ma_semantic_threshold() -> float:
+    """Umbral de coseno para disparar un microagent por intención semántica.
+    Calibrado sobre mensajes reales (R3.3). Gate GEMMA4_MICROAGENT_THRESHOLD."""
+    try:
+        return float(os.environ.get("GEMMA4_MICROAGENT_THRESHOLD", "0.60"))
+    except ValueError:
+        return 0.60
+
+
+def _ma_semantic_margin() -> float:
+    """Margen top1−top2 para abstención (evita inyectar 2 microagents que
+    empatan ambiguamente). Gate GEMMA4_MICROAGENT_MARGIN."""
+    try:
+        return float(os.environ.get("GEMMA4_MICROAGENT_MARGIN", "0.03"))
+    except ValueError:
+        return 0.03
+
+
+# Tokeniza en palabras Unicode-aware (letras+dígitos), para word-boundary
+# matching SIN substring. "RAG" NO matchea dentro de "Dragon"; "VRAM" sí matchea
+# como palabra suelta. Universal (siglas técnicas son iguales en todo idioma) —
+# NO es una lista de keywords por idioma, es una guarda de FORMA (límite de token).
+_WORD_RE = re.compile(r"\w+", re.UNICODE)
+
+
+def _word_boundary_hit(trigger: str, text_words: set[str], text_folded: str) -> bool:
+    """True si `trigger` aparece en el texto respetando límites de palabra.
+    Para triggers de UNA palabra: la palabra debe estar entre las tokens del
+    texto (no como substring). Para triggers multi-palabra (frase): se exige la
+    frase folded delimitada por espacios (no substring de una palabra mayor)."""
+    tf = _fold(trigger)
+    parts = tf.split()
+    if len(parts) == 1:
+        return tf in text_words
+    return f" {tf} " in f" {text_folded} "
+
+
 def select_microagents(
     user_text: str,
     microagents: list[Microagent],
     *,
     max_microagents: int = 3,
+    embed_fn=None,
 ) -> list[Microagent]:
-    """Elige hasta `max_microagents` microagents cuyos triggers matchean el
-    user_text. Matching es case+accent insensitive (fold).
+    """Elige hasta `max_microagents` microagents relevantes al user_text.
 
-    Sort por priority (high → medium → low), tie-break alfabético.
-    """
+    DOS mecanismos (R3.3, 2026-05-30), ambos multilingües/estructurales, NO
+    substring matching (que daba FP graves: "RAG" ⊂ "Dragon", "que es" ⊂ "estoy"):
+
+      1. SEMÁNTICO (primario): si el microagent tiene `examples`, se embeben y se
+         scorea coseno multi-vector MAX contra la query. Dispara si top ≥ umbral
+         Y gap top1−top2 ≥ margen (abstención calibrada). Multilingüe vía el
+         encoder. Requiere embed_fn; sin encoder, se omite (fallback a léxico).
+
+      2. LÉXICO word-boundary (secundario): los `triggers` se matchean por LÍMITE
+         DE PALABRA (no substring). Reservado para términos técnicos exactos
+         (siglas universales HKCR/GGUF/VRAM) que el encoder de intención no capta.
+         "House of Dragon" ya NO dispara "RAG".
+
+    Sort por priority (high → medium → low), tie-break alfabético. Fallback
+    seguro: sin encoder y sin triggers → no dispara (no inyecta ruido)."""
     if not user_text or not microagents:
         return []
     text_folded = _fold(user_text)
-    matched: list[Microagent] = []
+    text_words = {_fold(w) for w in _WORD_RE.findall(user_text)}
+    matched: dict[str, Microagent] = {}
+
+    # --- 2. Léxico word-boundary (rápido, siempre disponible) ---
     for ma in microagents:
         for trig in ma.triggers:
-            if _fold(trig) in text_folded:
-                matched.append(ma)
-                break  # un match por microagent es suficiente
+            if _word_boundary_hit(trig, text_words, text_folded):
+                matched[ma.name] = ma
+                break
+
+    # --- 1. Semántico (si hay encoder) ---
+    sem = [ma for ma in microagents if ma.examples]
+    if embed_fn is not None and sem:
+        try:
+            def _emb(t):
+                v = embed_fn(t)
+                if v is None:
+                    return None
+                v = np.asarray(v, dtype="float32")
+                n = float(np.linalg.norm(v))
+                return v / n if n else v
+
+            q = _emb(user_text)
+            if q is not None:
+                scored = []
+                for ma in sem:
+                    vecs = _MA_EMB_CACHE.get(ma.name)
+                    if vecs is None:
+                        vecs = [e for e in (_emb(x) for x in ma.examples)
+                                if e is not None]
+                        if not vecs:
+                            continue
+                        _MA_EMB_CACHE[ma.name] = vecs
+                    sim = max(float(q @ v) for v in vecs)
+                    scored.append((sim, ma))
+                scored.sort(key=lambda t: t[0], reverse=True)
+                thr = _ma_semantic_threshold()
+                mgn = _ma_semantic_margin()
+                if scored:
+                    top_sim, top = scored[0]
+                    second = scored[1][0] if len(scored) > 1 else 0.0
+                    if top_sim >= thr and (top_sim - second) >= mgn:
+                        matched[top.name] = top
+        except Exception:
+            pass
+
+    out = list(matched.values())
     priority_order = {"high": 0, "medium": 1, "low": 2}
-    matched.sort(key=lambda m: (priority_order.get(m.priority, 1), m.name))
-    return matched[:max_microagents]
+    out.sort(key=lambda m: (priority_order.get(m.priority, 1), m.name))
+    return out[:max_microagents]
 
 
 # ============================================================================
@@ -284,11 +422,22 @@ def _enabled() -> bool:
 # High-level API for agent.py
 # ============================================================================
 
+def _default_embed_fn():
+    """Encoder multilingüe del proyecto (mismo que skills/router). None si no
+    carga (fallback seguro: el selector cae a léxico word-boundary)."""
+    try:
+        from ..routing.semantic_router import embed
+        return embed
+    except Exception:
+        return None
+
+
 def build_microagents_section(
     user_text: str,
     *,
     cached: list[Microagent] | None = None,
     max_microagents: int = 3,
+    embed_fn=None,
 ) -> tuple[str, list[Microagent]]:
     """Función de alto nivel para `agent._system_message()`.
 
@@ -306,7 +455,11 @@ def build_microagents_section(
     if not _enabled():
         return "", []
     all_ma = load_microagents()
-    matched = select_microagents(user_text or "", all_ma, max_microagents=max_microagents)
+    if embed_fn is None:
+        embed_fn = _default_embed_fn()
+    matched = select_microagents(
+        user_text or "", all_ma,
+        max_microagents=max_microagents, embed_fn=embed_fn)
 
     if cached:
         # Merge: cached + matched, dedupe por name, mantener orden por

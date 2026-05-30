@@ -201,5 +201,71 @@ class TestAddingToolsDoesNotRegress(unittest.TestCase):
                 f"de-enrolar MCPs no restauró el subset de {q!r}")
 
 
+class TestDeadMetaToolsNotOfferedToLLM(unittest.TestCase):
+    """R1+R2 (2026-05-30): skill_load y subagent son meta-tools MUERTAS — el 4B
+    las emitió 1 y 0 veces respectivamente en 117.764 eventos reales. No deben
+    llegar al 4B: ni el router las ofrece, ni el menú de skills las anuncia. Las
+    skills entran por AUTO-INJECT (determinista), no por skill_load. Estos tests
+    congelan que nadie las reintroduzca al prompt del 4B por accidente."""
+
+    def _router_available(self) -> bool:
+        try:
+            from ..routing.semantic_router import _ensure_loaded
+            return bool(_ensure_loaded())
+        except Exception:
+            return False
+
+    def test_router_never_offers_dead_meta_tools(self) -> None:
+        """Ni siquiera en queries que 'ameritarían' skill_load/subagent el router
+        debe ofrecerlas (el 4B no las usa; las skills entran por auto-inject)."""
+        if not self._router_available():
+            self.skipTest("encoder semántico no disponible")
+        from ..routing.planner import select_tool_names, plan_mission
+        tempting = [
+            "saca una captura y decime que ves",       # screenshot skill
+            "investiga sobre rust en internet",         # research skill
+            "busca en mi biblioteca los juegos metroidvania",  # subagent-bait
+            "hace backup antes de limpiar",             # backup skill
+            "delega esta tarea a otro agente",          # subagent-bait literal
+        ]
+        for q in tempting:
+            sub = set(select_tool_names(q, plan_mission(q), safety_enabled=True))
+            self.assertNotIn("skill_load", sub,
+                             f"el router ofreció skill_load (muerta) en {q!r}")
+            self.assertNotIn("subagent", sub,
+                             f"el router ofreció subagent (muerta) en {q!r}")
+
+    def test_skills_menu_empty_by_default(self) -> None:
+        """R1: el menú '# SKILLS AVAILABLE' (que instruye skill_load) está vacío
+        por default — ~558 tok/turno que el 4B ignoraba. Restaurable con
+        GEMMA4_SKILLS_MENU=1."""
+        import os
+        from ..tools_pkg.skills_registry import scan_skills, build_menu
+        # Asegurar el default (el test no debe depender del env del runner).
+        prev = os.environ.pop("GEMMA4_SKILLS_MENU", None)
+        try:
+            menu = build_menu(scan_skills())
+            self.assertEqual(menu, "",
+                             "el menú de skills debe estar vacío por default (R1)")
+            # Con el gate ON, el menú vuelve (no se perdió la capacidad).
+            os.environ["GEMMA4_SKILLS_MENU"] = "1"
+            menu_on = build_menu(scan_skills())
+            # Puede estar vacío si no hay skills, pero con skills debe traer el header.
+            if scan_skills():
+                self.assertIn("SKILLS AVAILABLE", menu_on)
+        finally:
+            os.environ.pop("GEMMA4_SKILLS_MENU", None)
+            if prev is not None:
+                os.environ["GEMMA4_SKILLS_MENU"] = prev
+
+    def test_purchase_guard_still_active(self) -> None:
+        """La skill critical de SEGURIDAD (purchase-guard) NO se ve afectada por
+        R1 — entra por el critical block, no por el menú."""
+        from ..tools_pkg.skills_registry import scan_skills, build_critical_block
+        crit = build_critical_block(scan_skills())
+        self.assertIn("purchase-guard", crit,
+                      "purchase-guard (seguridad) debe seguir en el critical block")
+
+
 if __name__ == "__main__":
     unittest.main()
