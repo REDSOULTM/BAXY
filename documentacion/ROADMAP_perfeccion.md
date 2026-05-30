@@ -70,7 +70,13 @@ expansión de público bloqueada por falta de binario CPU/Vulkan. Ninguno requie
   de `_inject_tool_image`: seguro→inyecta, inseguro→recicla+remide, sigue inseguro→NO inyecta + nota
   honesta. Fail-open ante error; no-op sin GPU. `agent.py:3088,4746`. 22 tests + EN VIVO 5/5.
 - **vram_watchdog que ACTÚA + pre-flight de imagen** (C6). → **Gate: 0 OOM en 4GB con visión.**
-- **mmproj Q8_0** (560 vs 992 MiB) + lazy-load. → **Gate: headroom ≥1.5GB.**
+- 🟡 **mmproj Q8_0** (560 vs 940 MiB): **el artefacto NO EXISTE (verificado 2026-05-29)** — Unsloth solo
+  publica F16/F32/BF16 y `llama-quantize` falla con "unsupported architecture: clip" (cuantización de
+  mmproj es feature AÚN ABIERTO, [llama.cpp#18881](https://github.com/ggml-org/llama.cpp/issues/18881)).
+  El research asumía un Q8_0 que no está → **0 ahorro real hoy**. Implementado: `_resolve_mmproj_path`
+  prefiere una variante Q* cuando exista (gate `GEMMA4_MMPROJ_PREFER_QUANT`), 0 cambio de comportamiento
+  hoy (devuelve F16). El agente queda LISTO: dejar un mmproj-Q8_0 en models/E2B/ lo activa sin tocar
+  código. `profiles.py:_resolve_mmproj_path`. 5 tests. **DESBLOQUEA cuando exista el GGUF.**
 - **Frugalidad RAM** (idle-unload + thread throttle).
 - **Estabilidad lifecycle** (C7/H4/H6: atexit a nivel módulo, /slots en recovery, _restart_lock). → **Gate: recovery ≥95%.**
 

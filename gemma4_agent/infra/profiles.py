@@ -112,7 +112,41 @@ _E2B = _PROJECT_ROOT / "models" / "E2B"
 # perfil vía profiles.json override o GEMMA4_MODEL_PATH — sólo se borró el
 # código que ya no los referenciaba, no los archivos.
 _E2B_Q4_K_M  = str(_E2B / "gemma-4-E2B-it-Q4_K_M.gguf")      # 2.16 novis / 3.36 +vis @4K
-_MMPROJ_E2B  = str(_E2B / "mmproj-F16.gguf")                 # vision encoder (~1.2 GB loaded)
+
+
+def _resolve_mmproj_path(model_dir: Path) -> str:
+    """Elige el mmproj a usar, prefiriendo una variante CUANTIZADA si existe.
+
+    Ola 2.3 (perfection roadmap H7, 2026-05-29): el research pedía mmproj Q8_0
+    (~560 MiB vs ~940 del F16, -430 MiB de headroom en 4GB). VERIFICADO 2026-05-29:
+    ese artefacto NO existe hoy — Unsloth solo publica F16/F32/BF16 y `llama-quantize`
+    falla con "unsupported architecture: clip" (cuantización de mmproj es feature
+    AÚN ABIERTO en llama.cpp, issue #18881). Así que HOY no hay ahorro real.
+
+    Esta función deja el agente LISTO: cuando aparezca un mmproj-Q8_0 (oficial o
+    cuando llama.cpp habilite clip-quantize), basta dejarlo en models/E2B/ y se usa
+    automáticamente — sin tocar código. Orden de preferencia por tamaño/calidad
+    (más chico primero, que es el objetivo del headroom; F16 es el default actual).
+    Gate GEMMA4_MMPROJ_PREFER_QUANT=0 fuerza el F16 clásico. Si nada cuantizado
+    existe, devuelve el F16 de siempre (0 cambio de comportamiento hoy).
+    """
+    default = model_dir / "mmproj-F16.gguf"
+    prefer = (os.environ.get("GEMMA4_MMPROJ_PREFER_QUANT", "1") or "1").strip().casefold()
+    if prefer in {"0", "false", "no", "off"}:
+        return str(default)
+    # Candidatos cuantizados, del más liviano al más pesado. Solo Q* (más chicas
+    # que el F16). NO incluimos BF16/F32: el BF16 (~987 MiB) es MÁS grande que el
+    # F16 (~940), elegirlo empeoraría el headroom. F16/F32 son el fallback, no una
+    # "preferencia". Solo elegimos algo distinto al default si REALMENTE existe
+    # en disco (no asumimos artefactos que no están — VERIFICADO: ninguno existe hoy).
+    for name in ("mmproj-Q4_K_M.gguf", "mmproj-Q5_K_M.gguf", "mmproj-Q8_0.gguf"):
+        cand = model_dir / name
+        if cand.is_file():
+            return str(cand)
+    return str(default)
+
+
+_MMPROJ_E2B  = _resolve_mmproj_path(_E2B)                    # vision encoder (~940 MiB F16 hoy)
 
 
 # ===========================================================================
