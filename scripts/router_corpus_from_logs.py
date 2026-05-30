@@ -94,7 +94,20 @@ def main() -> int:
 
     rows: list[dict] = []
     seen_q: set[str] = set()
-    for tid, t in turns.items():
+    # Orden temporal por turn_id (formato YYYYMMDD_HHMMSS_hash) -> reconstruir el
+    # `prev` (la query del turno inmediatamente anterior). El router en prod recibe
+    # este contexto para resolver deícticos/continuaciones ("subelo", "no mejor a
+    # 30"); el eval con --inherit lo usa. Sin prev, esos turnos parecen misses que
+    # en prod NO lo son.
+    ordered_tids = sorted(turns.keys())
+    prev_q_for: dict[str, str | None] = {}
+    _last_q: str | None = None
+    for tid in ordered_tids:
+        prev_q_for[tid] = _last_q
+        if (turns[tid]["q"] or "").strip():
+            _last_q = turns[tid]["q"].strip()
+    for tid in ordered_tids:
+        t = turns[tid]
         q = (t["q"] or "").strip()
         if not q:
             continue
@@ -120,6 +133,7 @@ def main() -> int:
         # estricto por default; --equiv usa el permisivo para separar miss-real.
         rows.append({"q": q, "expected": tools,
                      "expected_equiv": _expand_equivalent(tools),
+                     "prev": prev_q_for.get(tid),
                      "source": "real_logs", "turn_id": tid})
 
     OUT.write_text(
