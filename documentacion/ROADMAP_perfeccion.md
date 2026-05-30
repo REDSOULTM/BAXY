@@ -77,7 +77,7 @@ expansión de público bloqueada por falta de binario CPU/Vulkan. Ninguno requie
   prefiere una variante Q* cuando exista (gate `GEMMA4_MMPROJ_PREFER_QUANT`), 0 cambio de comportamiento
   hoy (devuelve F16). El agente queda LISTO: dejar un mmproj-Q8_0 en models/E2B/ lo activa sin tocar
   código. `profiles.py:_resolve_mmproj_path`. 5 tests. **DESBLOQUEA cuando exista el GGUF.**
-- **Frugalidad RAM** (idle-unload + thread throttle). *(pendiente)*
+- ✅ **Frugalidad RAM** (CPU profile): -t 4 + --prio low (idle-unload NO existe en la build, verificado). 33 tests.
 - ✅ **Estabilidad lifecycle** (C7/H4/H6): los 3 bugs CONFIRMADOS reales (workflow de auditoría). **C7**:
   atexit POR INSTANCIA en `LlamaServerManager.__init__` (`_atexit_stop_self`, registro fuerte) — antes solo
   el singleton se limpiaba, las 4 rutas directas (chat/ui×2/server) dejaban el child huérfano →6GB VRAM.
