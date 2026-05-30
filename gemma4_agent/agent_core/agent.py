@@ -500,6 +500,14 @@ class Gemma4Agent:
         # instead of hallucinating. The history scan can't see these because
         # _compact_completed_history drops tool_calls/tool messages.
         self._last_executed_tools: list[str] = []
+        # ITEM 4 (perfection roadmap): entity ring para resolución deíctica
+        # ("abrilo/ponelo/open it" -> el último path/url/id útil). Detección
+        # multilingüe por embeddings (NO regex por idioma). Gated GEMMA4_DEICTIC.
+        try:
+            from ..routing.deictic_detector import EntityRing as _EntityRing
+            self._entity_ring = _EntityRing(maxlen=5)
+        except Exception:
+            self._entity_ring = None
         self._mi_carry_tools: list[str] = []  # multi-intent: tools de contexto GUI a arrastrar
         # NOTE: NLI warmup at __init__ was REMOVED — it raced with the voice
         # stack (faster_whisper) loading huggingface_hub from another thread,
@@ -667,6 +675,16 @@ class Gemma4Agent:
             nm = getattr(e, "name", None) or getattr(e, "tool", None)
             if isinstance(nm, str) and nm and nm not in names:
                 names.append(nm)
+            # ITEM 4: alimentar el entity ring con identificadores útiles del
+            # result (path/url/id) — extracción estructural, best-effort.
+            ring = getattr(self, "_entity_ring", None)
+            if ring is not None:
+                res = getattr(e, "result", None)
+                if isinstance(res, dict):
+                    try:
+                        ring.push_from_result(str(nm or ""), res)
+                    except Exception:
+                        pass
         if names:
             self._last_executed_tools = names
 
@@ -678,6 +696,8 @@ class Gemma4Agent:
         self._turn_counter = 0
         self._cached_microagents = []
         self._last_executed_tools = []
+        if getattr(self, "_entity_ring", None) is not None:
+            self._entity_ring.clear()
         # Skills cache: reset para que scan_skills() vuelva a leer disk en el
         # proximo turn (util si el dev agrega/modifica un SKILL.md durante
         # desarrollo). En produccion el catalogo no cambia mid-session.
@@ -1353,6 +1373,26 @@ class Gemma4Agent:
         raw_text_early = _extract_user_text(content)
         # Track current user text for the fallback-streak detector.
         self._current_user_text = (raw_text_early or "").strip().lower()
+        # ITEM 4: si el turno es DEÍCTICO (multilingüe por embeddings) y el entity
+        # ring tiene un identificador reciente, inyectar el referente LITERAL al
+        # final del historial (el 4B sufre lost-in-the-middle: el referente debe ir
+        # junto al pronombre). Gated GEMMA4_DEICTIC, best-effort, fallback seguro.
+        try:
+            ring = getattr(self, "_entity_ring", None)
+            if ring is not None and not ring.is_empty() and raw_text_early:
+                from ..routing.deictic_detector import (
+                    needs_deictic_context, deictic_context_block)
+                if needs_deictic_context(raw_text_early):
+                    block = deictic_context_block(ring)
+                    if block:
+                        self.history.append({"role": "user", "content": block})
+                        try:
+                            self.trace.event(turn_id, "deictic_context_injected",
+                                             entity=ring.most_recent())
+                        except Exception:
+                            pass
+        except Exception:
+            pass
         # sprint2: log which microagents matched this turn (independent of
         # the cache-merge step inside _system_message). Sprint 2.1 found this
         # was unobservable in traces.jsonl.

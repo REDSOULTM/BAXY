@@ -391,6 +391,22 @@ def suggest_tools_scored(
     return out
 
 
+def encode_text(text: str):
+    """Embedding multilingüe normalizado de un texto, REUSANDO el encoder ya
+    cargado (no carga un 2º modelo). None si el modelo no está disponible.
+
+    Lo usa el detector deíctico (ITEM 4) para comparar el turno del usuario contra
+    frases de referencia en varios idiomas — generalización multilingüe del encoder
+    (paraphrase-multilingual-MiniLM, 50+ idiomas), NO una lista de keywords."""
+    if not _ensure_loaded():
+        return None
+    try:
+        return _STATE.model.encode([text], normalize_embeddings=True,  # type: ignore[union-attr]
+                                   show_progress_bar=False)[0]
+    except Exception:
+        return None
+
+
 def warm_up() -> None:
     """Eager-load the model (useful for tests/benchmarks)."""
     _ensure_loaded()
