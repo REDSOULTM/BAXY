@@ -69,13 +69,51 @@ class VerifierOutcome:
 #   no abierta, archivo inexistente) -> REPLAN (hacer el prerequisito primero).
 # param_mismatch: faltó/erró un argumento (sin target, ruta mala) -> AMEND
 #   (reintentar la misma tool con args corregidos).
-# transient: timeout/red/recurso ocupado -> SKIP (no culpa de la tool; reintento
-#   no garantiza).  unknown: no clasificable -> SKIP conservador (sin recuperación).
+# transient: timeout/red/recurso ocupado -> SKIP/retry-1 (no culpa de la tool).
+# tool_not_found: la tool/acción no existe (unknown tool, action fuera del enum)
+#   -> IRRECUPERABLE por reintento: la MISMA call siempre falla igual. budget=0.
+# unknown: no clasificable -> SKIP conservador (sin recuperación).
 ERR_MISSING_PRECONDITION = "missing_precondition"
 ERR_PARAM_MISMATCH = "param_mismatch"
 ERR_TRANSIENT = "transient"
+ERR_TOOL_NOT_FOUND = "tool_not_found"
 ERR_UNKNOWN = "unknown"
-RECOVERABLE_ERROR_TYPES = frozenset({ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH})
+RECOVERABLE_ERROR_TYPES = frozenset(
+    {ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT})
+
+
+# --- H2 (perfection roadmap 2026-05-29): presupuesto de retry POR CLASE ------
+# El research midió "466 de 513 retries desperdiciados en errores que NINGÚN
+# retry arregla". El límite global de max_agent_turns no distingue: un
+# TOOL_NOT_FOUND irrecuperable quemaba los 8 turnos reintentando, mientras un
+# TRANSIENT legítimo competía por los mismos turnos. El budget por-clase corta
+# el desperdicio en la raíz: cuando una clase agota su budget, el hint pasa de
+# "reintentá" a "no reintentes más esta acción, escalá honestamente al usuario".
+#
+# Valores (conservadores, basados en la semántica del tipo, no en magia):
+#   tool_not_found      = 0  -> la misma call SIEMPRE falla; reintentar es inútil.
+#   unknown             = 0  -> no sabemos qué arreglar; reintentar a ciegas = ruido.
+#   param_mismatch      = 1  -> 1 corrección de args (el caso típico se arregla en 1).
+#   missing_precondition= 1  -> 1 replan (hacer el prerequisito y reintentar).
+#   transient           = 2  -> red/timeout puede ceder; 2 reintentos con backoff.
+_RETRY_BUDGET: dict[str, int] = {
+    ERR_TOOL_NOT_FOUND: 0,
+    ERR_UNKNOWN: 0,
+    ERR_PARAM_MISMATCH: 1,
+    ERR_MISSING_PRECONDITION: 1,
+    ERR_TRANSIENT: 2,
+}
+
+
+def retry_budget_for(error_type: str | None) -> int:
+    """Presupuesto de reintentos para una clase de error (H2). 0 = no reintentar.
+
+    Pura: no toca estado. El agente lleva el contador `spent[err_class]` por turno
+    y, al agotarlo, deja de pedir reintentos para esa clase. Un tipo desconocido
+    cae a 0 (conservador: nunca reintentar a ciegas)."""
+    if not error_type:
+        return 0
+    return _RETRY_BUDGET.get(error_type, 0)
 
 
 # Registry global de verifiers. Una entrada por tool_name. Si una tool tiene
@@ -211,10 +249,22 @@ def classify_failure(result: dict | None, reason: str = "", *, given: str | None
     que cada verifier setee error_type. Una mis-clasificación a un tipo recuperable
     sólo dispara un HINT de reintento (daño bajo); a unknown/transient -> skip (seguro).
     """
-    if given in {ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT, ERR_UNKNOWN}:
+    if given in {ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT,
+                 ERR_TOOL_NOT_FOUND, ERR_UNKNOWN}:
         return given
     r = result or {}
     status = str(r.get("status") or "").casefold()
+    # ESTRUCTURAL primero (autoritativo, no depende de idioma):
+    # tool/acción inexistente -> IRRECUPERABLE (budget=0). El dispatcher marca
+    # "unknown tool: X" o devuelve validation_errors para una acción fuera del
+    # enum. Reintentar la MISMA call siempre da el mismo error -> tool_not_found.
+    err_blob = str(r.get("error") or "").casefold()
+    if err_blob.startswith("unknown tool") or "unknown tool:" in err_blob:
+        return ERR_TOOL_NOT_FOUND
+    if r.get("validation_errors") or err_blob.startswith("invalid tool arguments"):
+        # acción/arg fuera del enum: el 4B inventó una acción que no existe.
+        # Corregible reintentando con la acción válida -> param_mismatch (budget 1).
+        return ERR_PARAM_MISMATCH
     if status in {"needs_dependency", "needs_resource"}:
         return ERR_MISSING_PRECONDITION
     if r.get("missing"):  # algunos tools declaran qué argumento faltó (estructural)

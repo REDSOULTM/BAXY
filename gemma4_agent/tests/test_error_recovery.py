@@ -43,16 +43,63 @@ class TestClassifyFailure(unittest.TestCase):
             self.assertEqual(classify_failure({"error": err}), ERR_TRANSIENT, err)
 
     def test_unknown_default_is_conservative(self):
-        # sin señal clara -> UNKNOWN -> NO recuperable (skip), nunca recuperación ciega
+        # sin señal clara -> UNKNOWN -> NO recuperable (skip), nunca recuperación ciega.
+        # H3 (perfection roadmap 2026-05-29): TRANSIENT SÍ es recuperable (el agente
+        # ya lo retría; antes el set lo OMITÍA = bomba de tiempo latente). Corregido.
         self.assertEqual(classify_failure({"error": "weird internal glitch xyz"}), ERR_UNKNOWN)
         self.assertNotIn(ERR_UNKNOWN, RECOVERABLE_ERROR_TYPES)
-        self.assertNotIn(ERR_TRANSIENT, RECOVERABLE_ERROR_TYPES)
+        self.assertIn(ERR_TRANSIENT, RECOVERABLE_ERROR_TYPES)  # H3: ahora consistente
         self.assertIn(ERR_MISSING_PRECONDITION, RECOVERABLE_ERROR_TYPES)
         self.assertIn(ERR_PARAM_MISMATCH, RECOVERABLE_ERROR_TYPES)
 
     def test_empty_result(self):
         self.assertEqual(classify_failure(None), ERR_UNKNOWN)
         self.assertEqual(classify_failure({}), ERR_UNKNOWN)
+
+    def test_tool_not_found_is_structural(self):
+        # H3 (perfection roadmap): "unknown tool: X" -> TOOL_NOT_FOUND (budget 0).
+        from ..safety_pkg.verify_core import ERR_TOOL_NOT_FOUND
+        self.assertEqual(classify_failure({"error": "unknown tool: xyzzy"}), ERR_TOOL_NOT_FOUND)
+        self.assertEqual(classify_failure({"error": "Unknown Tool: foo"}), ERR_TOOL_NOT_FOUND)
+
+    def test_invalid_args_is_param_mismatch(self):
+        # acción fuera del enum (system(action='calculator')) -> corregible.
+        self.assertEqual(
+            classify_failure({"error": "invalid tool arguments",
+                              "validation_errors": ["action not in enum"]}),
+            ERR_PARAM_MISMATCH)
+
+    def test_tool_not_found_beats_text_fallback(self):
+        # estructural manda: aunque el texto diga "not found", un unknown-tool
+        # es TOOL_NOT_FOUND (irrecuperable), no MISSING_PRECONDITION (recuperable).
+        from ..safety_pkg.verify_core import ERR_TOOL_NOT_FOUND
+        self.assertEqual(
+            classify_failure({"error": "unknown tool: not found anywhere"}),
+            ERR_TOOL_NOT_FOUND)
+
+
+class TestRetryBudget(unittest.TestCase):
+    """H2 (perfection roadmap): presupuesto de retry por clase. Ataca el
+    '466/513 retries desperdiciados': lo irrecuperable NO se reintenta."""
+
+    def test_irrecoverable_budget_zero(self):
+        from ..safety_pkg.verify_core import (
+            retry_budget_for, ERR_TOOL_NOT_FOUND, ERR_UNKNOWN)
+        self.assertEqual(retry_budget_for(ERR_TOOL_NOT_FOUND), 0)
+        self.assertEqual(retry_budget_for(ERR_UNKNOWN), 0)
+
+    def test_recoverable_budgets_positive(self):
+        from ..safety_pkg.verify_core import (
+            retry_budget_for, ERR_PARAM_MISMATCH, ERR_MISSING_PRECONDITION,
+            ERR_TRANSIENT)
+        self.assertEqual(retry_budget_for(ERR_PARAM_MISMATCH), 1)
+        self.assertEqual(retry_budget_for(ERR_MISSING_PRECONDITION), 1)
+        self.assertEqual(retry_budget_for(ERR_TRANSIENT), 2)
+
+    def test_none_and_unknown_class_are_zero(self):
+        from ..safety_pkg.verify_core import retry_budget_for
+        self.assertEqual(retry_budget_for(None), 0)
+        self.assertEqual(retry_budget_for("garbage_class_xyz"), 0)
 
 
 class TestErrorTypeField(unittest.TestCase):

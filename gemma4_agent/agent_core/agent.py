@@ -2185,9 +2185,17 @@ class Gemma4Agent:
         from ..safety_pkg.verify_core import (
             verify as _verify, summarize_verifiers, VerifierOutcome,
             classify_failure as _classify_failure,
+            retry_budget_for as _retry_budget_for,
             ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT,
+            ERR_TOOL_NOT_FOUND, ERR_UNKNOWN,
         )
         verifier_outcomes: list[VerifierOutcome] = []
+        # H2 (perfection roadmap): contador de retries GASTADOS por clase de error
+        # en ESTE turno. Cuando una clase agota su budget (retry_budget_for), el
+        # hint deja de pedir reintento y pasa a "escalá honestamente". Ataca el
+        # "466/513 retries desperdiciados". Vive en el frame del turno -> se
+        # resetea solo en cada _execute_turn (no leakea entre turnos).
+        _retry_spent: dict[str, int] = {}
 
         # TIER 2 #5: MissionGoal — verifier estructural por-mision (Voyager pattern).
         # Construido al inicio del turn desde el user_text crudo. Cada tool call
@@ -3105,26 +3113,60 @@ class Gemma4Agent:
                     # + max_turns de guarda) -> bajo riesgo. Capa genérica, el LLM decide.
                     _etypes = {n: _classify_failure(r, "") for n, r in unverified_pairs}
                     _vals = list(_etypes.values())
+                    # H2: elegir la clase DOMINANTE por prioridad de recuperabilidad
+                    # (precondition > param > transient > tool_not_found > unknown).
+                    # Luego consultar el budget POR CLASE: si ya se gastó, el hint
+                    # deja de pedir reintento y pasa a "escalá honestamente".
                     if ERR_MISSING_PRECONDITION in _vals:
+                        _cls = ERR_MISSING_PRECONDITION
+                    elif ERR_PARAM_MISMATCH in _vals:
+                        _cls = ERR_PARAM_MISMATCH
+                    elif ERR_TRANSIENT in _vals:
+                        _cls = ERR_TRANSIENT
+                    elif ERR_TOOL_NOT_FOUND in _vals:
+                        _cls = ERR_TOOL_NOT_FOUND
+                    else:
+                        _cls = ERR_UNKNOWN
+                    _budget = _retry_budget_for(_cls)
+                    _spent = _retry_spent.get(_cls, 0)
+                    _budget_left = _spent < _budget
+                    if not _budget_left:
+                        # Budget agotado (o clase irrecuperable: tool_not_found /
+                        # unknown tienen budget 0 -> directo a escalar). NO pedir más
+                        # reintentos: eso es el "466/513 desperdiciados". Honestidad.
+                        if _cls == ERR_TOOL_NOT_FOUND:
+                            _directive = ("Esa herramienta/acción NO existe: reintentarla da el "
+                                          "mismo error. Elegí OTRA herramienta del subset, o decile "
+                                          "honestamente al usuario que no tenés esa capacidad. NO "
+                                          "repitas la misma llamada.")
+                        else:
+                            _directive = ("Ya se agotaron los reintentos para este tipo de fallo. "
+                                          "NO reintentes más la misma acción: decile honestamente al "
+                                          "usuario qué no se pudo y, si hace falta, pedile ayuda.")
+                    elif _cls == ERR_MISSING_PRECONDITION:
                         _directive = ("El objetivo aún no existe (falta un paso previo): primero "
                                       "hacé el prerequisito (abrir/crear lo que falta) y RECIÉN "
                                       "ahí reintentá. No afirmes que ya está.")
-                    elif ERR_PARAM_MISMATCH in _vals:
+                    elif _cls == ERR_PARAM_MISMATCH:
                         _directive = ("Faltó o erró un dato: reintentá la MISMA acción corrigiendo "
                                       "los argumentos, o pedile al usuario el dato que falta. No "
                                       "afirmes que ya está.")
-                    elif ERR_TRANSIENT in _vals:
+                    elif _cls == ERR_TRANSIENT:
                         _directive = ("Falló por algo temporal: reintentá UNA vez; si vuelve a "
                                       "fallar, decile honestamente al usuario que no se pudo.")
                     else:
                         _directive = ("Reintentá con otra herramienta o argumentos distintos, o "
                                       "decile honestamente qué no se pudo verificar.")
+                    if _budget_left:
+                        _retry_spent[_cls] = _spent + 1
                     self.history.append({
                         "role": "user",
                         "content": f"[system note] La(s) acción(es) {summary} NO se verificaron. {_directive}",
                     })
                     self.trace.event(turn_id, "error_recovery_hint",
-                                     tools=unverified_in_batch, types=_vals)
+                                     tools=unverified_in_batch, types=_vals,
+                                     err_class=_cls, budget_left=_budget_left,
+                                     spent=_retry_spent.get(_cls, 0))
                 else:
                     self.history.append({
                         "role": "user",
