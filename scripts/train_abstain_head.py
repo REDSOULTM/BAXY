@@ -59,6 +59,17 @@ def main() -> int:
                          "(protects recall). Threshold is the highest that keeps "
                          "tool-row abstention below 1-floor on dev CV.")
     ap.add_argument("--C", type=float, default=1.0, help="inverse L2 strength")
+    # 2026-05-30: el head se entrenaba SOLO sobre el corpus curado (formas largas
+    # ES) y vetaba los comandos terse/deícticos ("subelo a 40", "escribí 2+2").
+    # Esta opción inyecta una muestra ACOTADA de las queries tool2vec CORTAS
+    # (<= --extra-max-words palabras) como tool-rows (y=0), para que el head
+    # aprenda que el registro terse SÍ es acción. Acotado para NO desbalancear
+    # (volcar las 5124 mata el NO-TOOL keep). Holdout-safe: las tool2vec son
+    # sintéticas (LLM), nunca texto de holdout. Default 0 = comportamiento previo.
+    ap.add_argument("--extra-short-tool-queries", type=int, default=0,
+                    help="inject up to N short tool2vec queries as tool-rows (y=0)")
+    ap.add_argument("--extra-max-words", type=int, default=5,
+                    help="only inject tool2vec queries with <= this many words")
     args = ap.parse_args()
 
     import numpy as np
@@ -81,6 +92,38 @@ def main() -> int:
         qs.append(q)
         if (i + 1) % 200 == 0:
             print(f"  featurized {i+1}/{len(dev)}")
+
+    # OPCIONAL (2026-05-30): inyectar queries tool2vec CORTAS como tool-rows (y=0)
+    # para enseñarle al head que el registro terse es acción. Acotado y dedup;
+    # holdout-safe (sintéticas, nunca holdout). Default off.
+    if args.extra_short_tool_queries > 0:
+        import random
+        t2v = ROOT / "gemma4_agent" / "data" / "tool2vec_queries.jsonl"
+        seen = {q.strip().lower() for q in qs}
+        pool = []
+        for ln in t2v.read_text(encoding="utf-8").splitlines():
+            if not ln.strip():
+                continue
+            tq = json.loads(ln)["q"]
+            if len(tq.split()) > args.extra_max_words:
+                continue
+            k = tq.strip().lower()
+            if k in seen or _split_of(tq) != "dev":  # no dup, no holdout-hash text
+                continue
+            seen.add(k)
+            pool.append(tq)
+        random.Random(7).shuffle(pool)
+        inject = pool[: args.extra_short_tool_queries]
+        print(f"injecting {len(inject)} short tool2vec queries as tool-rows "
+              f"(<= {args.extra_max_words} words, dedup, holdout-hash excluded)")
+        for j, tq in enumerate(inject):
+            feats = _features_for(tq)
+            X.append([feats[n] for n in FEATURE_NAMES])
+            y.append(0)  # tool-row
+            qs.append(tq)
+            if (j + 1) % 100 == 0:
+                print(f"  featurized extra {j+1}/{len(inject)}")
+
     X = np.asarray(X, dtype="float64")
     y = np.asarray(y, dtype="int64")
     print(f"no-tool positives: {int(y.sum())}/{len(y)} ({y.mean():.1%})")
