@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import unittest
 
-from ..support.reasoning import detect_leaked_tool_call
+from ..support.reasoning import detect_leaked_tool_call, sanitize_text
 
 
 KNOWN = {"web", "media", "browser", "whatsapp", "memory", "steam", "system"}
@@ -372,6 +372,78 @@ class TestCapitalizedToolName(unittest.TestCase):
         out = detect_leaked_tool_call(
             "Esto(es algo) que dije.", known_tool_names=self.K)
         self.assertIsNone(out)
+
+
+class TestRescueWithIntentPrefix(unittest.TestCase):
+    """Regresión 2026-05-30 (reply-vacío): cuando el router fuerza una tool
+    (tool_choice=required), el 4B a veces emite el tool-call como TEXTO PLANO
+    PRECEDIDO de un bloque <intent>...</intent> y narración, p.ej.:
+        <intent>{"intent_type":"research","target":"la fotosíntesis"}</intent>
+        web(action="research", query="fotosintesis")
+        listo, investigando.
+    llama-server NO lo parsea como tool_call → el forced-retry lo descartaba →
+    turno vacío. El quick-reject de detect_leaked_tool_call exigía
+    stripped[0].isalpha(), descartando todo texto que empieza con '<' (el
+    <intent>); el scanner busca la primera llamada balanceada en CUALQUIER
+    posición, así que el ancla-al-inicio no debe gatearlo. Causa raíz medida
+    con el texto crudo del modelo."""
+
+    K = {"web", "browser", "browser_real", "source_manager",
+         "session", "knowledge", "vision", "gui"}
+
+    def test_intent_prefix_then_call_rescued(self):
+        out = detect_leaked_tool_call(
+            '<intent>{"intent_type":"research","target":"la fotosíntesis"}</intent>\n'
+            'web(action="research", query="fotosintesis")\n'
+            'listo, estoy investigando.',
+            known_tool_names=self.K)
+        self.assertIsNotNone(out, "el tool-call tras <intent> debe rescatarse")
+        self.assertEqual(out["function"]["name"], "web")
+        args = json.loads(out["function"]["arguments"])
+        self.assertEqual(args["action"], "research")
+        self.assertEqual(args["query"], "fotosintesis")
+
+    def test_angle_bracket_prefix_does_not_block_scanner(self):
+        # Cualquier prefijo que empiece con '<' (no solo <intent>) no debe
+        # impedir que el scanner encuentre la llamada balanceada.
+        out = detect_leaked_tool_call(
+            '<foo>bar</foo> web(query="clima")', known_tool_names=self.K)
+        self.assertIsNotNone(out)
+        self.assertEqual(out["function"]["name"], "web")
+
+    def test_intent_prefix_with_prose_no_call_is_none(self):
+        # Prefijo <intent> pero SIN una tool-call real → None (no inventa).
+        out = detect_leaked_tool_call(
+            '<intent>{"intent_type":"chat"}</intent>\n'
+            'La fotosíntesis es el proceso (de las plantas) que convierte luz.',
+            known_tool_names=self.K)
+        self.assertIsNone(out)
+
+
+class TestGemmaSpecialTokenStrip(unittest.TestCase):
+    """Regresión 2026-05-30 (reply-vacío, parte 2): bug Gemma4/llama.cpp #21338
+    — bajo ciertas condiciones el 4B degenera en un loop del token especial
+    <unused49> hasta agotar el budget. El _CONTROL_TOKEN_RE viejo sólo cubría
+    <|...|> (con pipes); este caso es <...> con dígitos. sanitize_text ahora lo
+    limpia para que el token de degeneración NUNCA llegue al usuario."""
+
+    def test_unused_token_stripped_keeps_real_text(self):
+        out = sanitize_text("<unused49>" * 10 + "La fotosíntesis es el proceso.")
+        self.assertNotIn("unused", out)
+        self.assertEqual(out, "La fotosíntesis es el proceso.")
+
+    def test_pure_degeneration_becomes_empty(self):
+        # Reply 100% basura → vacío (mejor que mostrar el token roto).
+        self.assertEqual(sanitize_text("<unused49>" * 30), "")
+
+    def test_other_special_tokens_stripped(self):
+        # <pad>/<eos>/<bos>/<unk> también se limpian.
+        self.assertEqual(sanitize_text("<pad><eos>hola<unk>"), "hola")
+
+    def test_normal_text_untouched(self):
+        # Texto normal con '<' que NO es token especial queda intacto.
+        txt = "el valor es a < b en matemáticas"
+        self.assertEqual(sanitize_text(txt), txt)
 
 
 if __name__ == "__main__":
