@@ -3410,9 +3410,22 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
             return _err(f"audio_set_volume failed: {type(exc).__name__}: {exc}", status="failed")
 
     def audio_mute(self, args: dict[str, Any]) -> dict[str, Any]:
-        state = bool(args.get("state", True))
+        raw = args.get("state")
         try:
             volume = self._audio_endpoint_volume()
+            if raw is None:
+                # El 4B a veces emite action='mute' SIN state (sobre todo al pedir
+                # DESMUTEAR: "quitá el silencio"/"reactivá el sonido" — MEDIDO 2/3
+                # fraseos de unmute omiten state). El viejo default True MUTEABA un
+                # pedido de DESMUTEAR (lo opuesto). Sin state explícito → TOGGLE:
+                # invertir el estado actual, lo intuitivo para un mute/unmute pelado.
+                state = not bool(volume.GetMute())
+            elif isinstance(raw, str):
+                # El parser de leaks puede dar "false"/"true" como STRING, y
+                # bool("false") daba True (mutea al pedir desmutear). Coerción real.
+                state = raw.strip().lower() not in {"false", "no", "0", "off", ""}
+            else:
+                state = bool(raw)
             volume.SetMute(int(state), None)
             # Verificar que SetMute aplico comparando con el state pedido.
             actual = bool(volume.GetMute())
