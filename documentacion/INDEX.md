@@ -36,6 +36,20 @@ Si solo vas a leer una cosa: [REPORTE_GEMMA4_PARA_CARTER.md](../docs/REPORTE_GEM
 | [graficos/](graficos/) | 16 PNG comparativos generados con matplotlib |
 | [datos_crudos/](datos_crudos/) | JSONs y CSV originales referenciados |
 
+### 🧭 Router de tools (subsistema)
+
+| Documento | Tema |
+|---|---|
+| [router/](router/) | ⭐ **Carpeta completa del router** — punto de entrada único para entenderlo |
+| [router/README.md](router/README.md) | Visión general, estado actual, arranque rápido |
+| [router/01_ARQUITECTURA.md](router/01_ARQUITECTURA.md) | El pipeline de 6 capas, diagrama de flujo por turno |
+| [router/02_COMPONENTES.md](router/02_COMPONENTES.md) | Cada módulo y artefacto de datos, con su receta de regeneración |
+| [router/03_GATES_Y_CONFIG.md](router/03_GATES_Y_CONFIG.md) | Todas las env vars `GEMMA4_*` con default y efecto |
+| [router/04_EVAL_Y_METRICAS.md](router/04_EVAL_Y_METRICAS.md) | Corpus, `router_eval.py`, métricas y gates de éxito |
+| [router/05_HISTORIAL_SPRINTS.md](router/05_HISTORIAL_SPRINTS.md) | S0–S6 con resultados medidos |
+| [router/06_PENDIENTE_Y_NO_FORZADO.md](router/06_PENDIENTE_Y_NO_FORZADO.md) | Lo diferido/rechazado con su medición + lo que sigue |
+| [PLAN_MAESTRO_router.md](PLAN_MAESTRO_router.md) | Plan maestro original del programa router |
+
 ---
 
 ## 🖼️ Tour visual rápido
