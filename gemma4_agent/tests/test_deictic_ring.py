@@ -61,13 +61,25 @@ class EntityRingTest(unittest.TestCase):
 
 
 class GateTest(unittest.TestCase):
-    def test_default_off(self):
+    def test_default_on_after_validation(self):
+        # 2026-05-29: flippeado a DEFAULT-ON tras validar en vivo (3/3 idiomas).
         prev = os.environ.pop("GEMMA4_DEICTIC", None)
+        try:
+            self.assertTrue(D.deictic_enabled())  # default ON
+        finally:
+            if prev is not None:
+                os.environ["GEMMA4_DEICTIC"] = prev
+
+    def test_kill_switch_off(self):
+        prev = os.environ.get("GEMMA4_DEICTIC")
+        os.environ["GEMMA4_DEICTIC"] = "0"
         try:
             self.assertFalse(D.deictic_enabled())
             self.assertFalse(D.needs_deictic_context("abrilo"))  # off -> False
         finally:
-            if prev is not None:
+            if prev is None:
+                os.environ.pop("GEMMA4_DEICTIC", None)
+            else:
                 os.environ["GEMMA4_DEICTIC"] = prev
 
 

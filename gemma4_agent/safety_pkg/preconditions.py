@@ -55,7 +55,11 @@ class Precondition:
 
 
 def preconditions_enabled() -> bool:
-    return (os.environ.get("GEMMA4_PRECONDITIONS", "0") or "0").strip().lower() not in {
+    # DEFAULT ON desde 2026-05-29: validado EN VIVO (3/4 fraseos bloquearon honesto
+    # una app inexistente, 0 mentiras; el caso restante el 4B no ruteó a app y el
+    # grounding gate igual fue honesto). Fail-open (None no bloquea) + checks
+    # estructurales -> bajo riesgo. Kill-switch GEMMA4_PRECONDITIONS=0.
+    return (os.environ.get("GEMMA4_PRECONDITIONS", "1") or "1").strip().lower() not in {
         "0", "false", "no", "off"}
 
 

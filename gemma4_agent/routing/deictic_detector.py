@@ -28,7 +28,12 @@ from typing import Any
 
 
 def deictic_enabled() -> bool:
-    return (os.environ.get("GEMMA4_DEICTIC", "0") or "0").strip().lower() not in {
+    # DEFAULT ON desde 2026-05-29: validado EN VIVO (3/3 idiomas es/en/pt detectan
+    # el deíctico Y el referente del ring se inyecta correcto). Discriminador de 2
+    # clases (recall 17/17 en 6 idiomas, 0 falsos positivos) + fallback seguro
+    # (sin encoder -> False, no rompe). Inyección condicional (0 tokens si no
+    # dispara). Kill-switch GEMMA4_DEICTIC=0.
+    return (os.environ.get("GEMMA4_DEICTIC", "1") or "1").strip().lower() not in {
         "0", "false", "no", "off"}
 
 
