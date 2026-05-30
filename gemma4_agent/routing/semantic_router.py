@@ -47,7 +47,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "subir/bajar el brillo de la pantalla, atenuar la pantalla, set screen "
         "brightness; battery level, shutdown restart sleep"
     ),
-    "audio": "audio volume, mute and unmute the sound (silenciar, desmutear, stummschalten, ton an, couper/rétablir le son, silenciar/reativar o som), system sound, media keys, audio devices listing",
+    "audio": "audio volume, raise or lower the sound volume, turn it up or down (subir/bajar el volumen, lauter/leiser machen, alza/abbassa il volume, aumenta/diminui o volume, monter/baisser le volume); mute and unmute the sound (silenciar, desmutear, stummschalten, ton an, couper/rétablir le son, silenciar/reativar o som), system sound, media keys, audio devices listing",
     "audio_device": "change default audio output/input device, per-app audio routing",
     "app": "abrir, cerrar o encontrar un programa o juego ya instalado en esta computadora, desde el menú de inicio; open, close or find an installed desktop application on this PC by name",
     "steam": "Steam game library, Steam store, launch installed Steam games",
@@ -127,7 +127,7 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "recordatorio de tomar agua en una hora"
     ),
     "routine": "create automation routines with manual, cron, or on-app-open triggers",
-    "media": "play music or video, pause, stop, next, previous, now playing",
+    "media": "play music or a video, pause, stop, next, previous, now playing; reproducir una canción o video, poner música, spiel ein Lied ab, metti una canzone, toca uma música, mets une chanson, abspielen",
     "source_manager": "save research sources, snapshots, citations",
     "dependency": "diagnose missing Python modules or binaries",
     "contacts": "manage contacts: create, search, vCard import/export, resolve recipient",
