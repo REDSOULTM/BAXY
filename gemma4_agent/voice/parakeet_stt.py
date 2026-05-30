@@ -60,6 +60,19 @@ def _resolve_model_dir() -> Path:
 DEFAULT_MODEL_DIR = _resolve_model_dir()
 
 
+def _blank_penalty() -> float:
+    """Penalización positiva al token blank en greedy (resta del logit del blank).
+    Combate el modo de fallo TDT de Parakeet: se SALTA sílabas/tokens y se come
+    nombres cortos ("Zoom"->"su", "Outlook"->"o"). La research lo marca verificado
+    y gratis (0 latencia/RAM); rango 0.5-1.0, >2.5 inserta. Env-tunable; 0 lo apaga.
+    Fuente: parakeet_beam_nombres_propios_decoding.md (Issue #2605)."""
+    try:
+        v = float(os.environ.get("GEMMA4_PARAKEET_BLANK_PENALTY", "0.8"))
+    except (TypeError, ValueError):
+        v = 0.8
+    return max(0.0, min(2.5, v))
+
+
 def _optimal_threads() -> int:
     """min(4, cores físicos). El speed-up de FastConformer en CPU se satura
     entre 2-4 hilos físicos; los lógicos (hyperthread) degradan por contención
@@ -124,6 +137,7 @@ class ParakeetSTT:
                 num_threads=self._num_threads,
                 model_type="nemo_transducer",
                 decoding_method="greedy_search",
+                blank_penalty=_blank_penalty(),
             )
             elapsed = time.time() - t0
             self._loaded = True

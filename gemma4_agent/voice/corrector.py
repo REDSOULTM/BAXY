@@ -124,13 +124,20 @@ def _licenses_next(token_norm: str) -> bool:
 
 
 def _normalise(s: str) -> str:
-    """Lowercase + strip accents/diacritics, for fair comparison."""
+    """Lowercase + strip accents/diacritics + strip punctuation, for fair
+    comparison. Parakeet appends '.' to the last token of EVERY utterance and
+    varies hyphens/apostrophes ("Counter-Strike", "Baldur's"); leaving that
+    punctuation in degraded the fuzzy/phonetic match of the final token — which
+    is usually the proper name we most need to rescue ("Kimp."!=gimp, "red."!=
+    reddit). Map every non-alphanumeric to a space and collapse, so window and
+    inventory are normalised identically. (Measured gap, real_mic eval.)"""
     s = s.lower()
     s = "".join(
         c for c in unicodedata.normalize("NFD", s)
         if unicodedata.category(c) != "Mn"
     )
-    return s
+    s = "".join(c if (c.isalnum() or c.isspace()) else " " for c in s)
+    return " ".join(s.split())
 
 
 def _metaphone(s: str) -> str:
