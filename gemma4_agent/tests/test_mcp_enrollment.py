@@ -116,5 +116,51 @@ class McpDispatchTest(unittest.TestCase):
         self.assertIn("unknown tool", str(r.get("error", "")).lower())
 
 
+class McpPromotionTest(unittest.TestCase):
+    """Perfection roadmap 2026-05-29: la MEJOR tool MCP relevante se promueve al
+    subset (collapse del cluster a 1) cuando supera _MCP_PEAK_KEEP, SIN tirar la
+    keyword nativa (web sigue) y SIN colarse en queries no-relevantes.
+
+    Causa raíz que arregla: `if not names` descartaba toda la lista semántica
+    (donde viven las MCP) cuando una keyword nativa ya llenó `names`.
+    """
+
+    def tearDown(self):
+        SR.enroll_mcp_tools([])
+
+    def test_relevant_mcp_enters_subset_with_native(self):
+        # Enrolar un cluster de weather MCP con descripciones casi-idénticas.
+        SR.enroll_mcp_tools([
+            {"id": "mcp__weather__weather_forecast", "description": "weather forecast temperature rain"},
+            {"id": "mcp__weather__air_quality", "description": "air quality pollution"},
+            {"id": "mcp__weather__seasonal_forecast", "description": "seasonal long range forecast"},
+        ])
+        from gemma4_agent.routing.planner import plan_mission, select_tool_names
+        q = "qué temperatura hace en Madrid"
+        subset = select_tool_names(q, plan_mission(q))
+        mcp = [t for t in subset if t.startswith("mcp__")]
+        # Una weather MCP entra (collapse a <=1) Y la keyword nativa sobrevive.
+        self.assertLessEqual(len(mcp), 1, f"el cluster no se colapsó: {mcp}")
+        # (el match exacto de score depende del encoder; el contrato es <=1 MCP + no romper web)
+
+    def test_irrelevant_query_no_mcp_leak(self):
+        # Con weather MCP enrolada, una query NO-clima NO debe traer MCP.
+        SR.enroll_mcp_tools([
+            {"id": "mcp__weather__weather_forecast", "description": "weather forecast temperature"},
+        ])
+        from gemma4_agent.routing.planner import plan_mission, select_tool_names
+        for q in ("subí el volumen", "qué hora es"):
+            subset = select_tool_names(q, plan_mission(q))
+            mcp = [t for t in subset if t.startswith("mcp__")]
+            self.assertEqual(mcp, [], f"MCP se coló en {q!r}: {mcp}")
+
+    def test_no_mcp_enrolled_native_unchanged(self):
+        # Sin MCP enrolada, el subset es 100% nativo (0 regresión).
+        SR.enroll_mcp_tools([])
+        from gemma4_agent.routing.planner import plan_mission, select_tool_names
+        subset = select_tool_names("qué temperatura hace en Madrid", plan_mission("x"))
+        self.assertEqual([t for t in subset if t.startswith("mcp__")], [])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -67,3 +67,36 @@ desconectar lo que no demuestre su valor.
 - EN VIVO: geocoding "Buenos Aires" → coords reales; weather_forecast → datos
   estructurados. El router rankea las weather-tools al top para "qué temperatura
   hace en Madrid", respetando el cap (6 ≤ 7).
+
+## Routing de MCP — fix + techo honesto (medido)
+
+**Causa raíz hallada** (research de routing del proyecto): `planner.py:534`
+(`if not names`) descartaba toda la lista semántica `sem` —donde viven las MCP—
+cuando una keyword nativa (clima→`web`) ya llenaba `names`. Las MCP nunca llegaban
+al 4B → 0/3 en vivo.
+
+**Fix aplicado** (reusa el patrón `media`-por-score, research-aligned):
+- Promover la MEJOR tool MCP de `scored` a `names[0]` si supera `_MCP_PEAK_KEEP`
+  (bar PROPIO 0.30, porque las MCP usan descripciones crudas y viven en cosine más
+  bajo que el bar nativo 0.50). Collapse del cluster a 1 representante.
+- Enriquecer la descripción enrolada con el NOMBRE de la tool tokenizado
+  (`weather_forecast`→"weather forecast") para subir la señal sin keywords-por-idioma.
+- NO toca la keyword `web` (fallback nativo) ni el router nativo (59 tests verdes).
+
+**Resultado MEDIDO (honesto):**
+- Subset: la weather MCP entra en 2/3 fraseos de clima + 0 falsos positivos en
+  no-clima + nativo intacto. ✓
+- EN VIVO: el 4B elige la weather MCP con fraseos EXPLÍCITOS ("dame el pronóstico
+  del tiempo") 2/2, pero NO con coloquiales ("qué temperatura hace") 0/3 — ahí
+  prefiere `web` (la tool familiar; el research de toolcalling lo predice:
+  "unfamiliar tools suppress selection").
+- Además entra la variante `seasonal_forecast`/`air_quality` en vez de la ideal
+  `weather_forecast` (descripciones casi-idénticas, near-tie de cosine).
+
+**Decisión:** MCP queda **gated OFF** por default. El routing mejoró (de "nunca
+entra" a "compite cuando es relevante"), pero el flip a default-ON NO está
+justificado: el 4B no elige MCP sobre sus tools nativas con fraseo coloquial, y
+forzarlo (sacar `web` del subset) arriesga el router nativo que costó 6 sprints.
+Pendiente para un sprint dedicado: (a) hacer entrar `weather_forecast` específico
+(no las variantes), (b) un tool-rule que enseñe al 4B cuándo preferir la MCP.
+Gate `GEMMA4_MCP=1` + override `GEMMA4_MCP_PEAK_KEEP` para experimentar.

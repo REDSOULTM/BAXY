@@ -450,7 +450,19 @@ def enroll_mcp_tools(tools: list[dict[str, str]]) -> int:
         tid = str(t.get("id") or "").strip()
         if not tid.startswith("mcp__"):
             continue
-        TOOL_DESCRIPTIONS[tid] = str(t.get("description") or tid)[:400]
+        # ENRIQUECIMIENTO de la descripción (perfection roadmap 2026-05-29): las
+        # descripciones crudas del servidor MCP suelen ser técnicas y casi-idénticas
+        # entre variantes ("Get weather forecast data for coordinates using
+        # Open-Meteo"), dando cosines BAJOS (~0.36) y near-ties que el 4B no
+        # discrimina. MEDIDO que sin esto la MCP weather no entra al subset. Fix
+        # research-aligned (Tool2Vec): anteponer el NOMBRE de la tool tokenizado
+        # ("weather forecast") al texto embebido. El nombre ES la capacidad en
+        # lenguaje natural — NO es una lista de keywords por idioma; el encoder
+        # multilingüe lo generaliza. Sube la señal sin aflojar el umbral.
+        _server, _, _tool = tid[len("mcp__"):].partition("__")
+        _name_words = (_tool or _server).replace("_", " ").strip()
+        _desc = str(t.get("description") or "").strip()
+        TOOL_DESCRIPTIONS[tid] = f"{_name_words}. {_desc}"[:400]
         _MCP_ENROLLED.add(tid)
     reset_cache()  # re-embed con el catálogo nuevo
     return len(_MCP_ENROLLED)

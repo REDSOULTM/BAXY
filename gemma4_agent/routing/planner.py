@@ -52,6 +52,14 @@ _SEM_CONF_BAND = float(_os.environ.get("GEMMA4_SEM_CONF_BAND", "0.12"))
 # Validated against test_router_corpus accuracy gate (no regression).
 _SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.50"))
 _SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.15"))
+# Bar PROPIO para promover una tool MCP (perfection roadmap 2026-05-29). Las MCP
+# usan descripciones crudas de servidores externos (no el encoder FT entrenado con
+# las nativas), así que viven en un rango de cosine MÁS BAJO (MEDIDO: weather MCP
+# ~0.33-0.38 en clima vs el bar nativo 0.50). Un bar propio más bajo deja que la
+# MCP relevante compita SIN aflojar el umbral nativo. Conservador (0.30): MEDIDO
+# que en queries NO-relevantes la mejor MCP ni entra al top-12, así que 0.30 no
+# mete ruido. Override GEMMA4_MCP_PEAK_KEEP.
+_MCP_PEAK_KEEP = float(_os.environ.get("GEMMA4_MCP_PEAK_KEEP", "0.30"))
 # When one tool clearly dominates ("abre steam"->steam 0.74), keep only tools
 # within this band of it (drops the noisy tail -> small subset). Recall-safe:
 # the labeled tool IS the dominant peak in these crisp single-intent commands.
@@ -305,6 +313,22 @@ def select_tool_names(
             _media_score = next((s for t, s in scored if t == "media"), 0.0)
             if "media" not in names and _media_score >= _SEM_PEAK_KEEP:
                 names.insert(0, "media")
+
+            # MCP promotion (perfection roadmap 2026-05-29): las tools MCP enroladas
+            # SOLO viven en la lista semántica `sem`, que se descarta cuando una
+            # keyword nativa ya llenó `names` (rama `if not names` abajo). Resultado
+            # MEDIDO: para "qué clima hace en X" la keyword mete `web` -> sem se tira
+            # -> el 4B nunca ve mcp__weather__* -> elige `web` (familiar). 0/3 en vivo.
+            # FIX (mismo patrón que `media` arriba, research-aligned tight-cluster):
+            # promover la MEJOR MCP de `scored` a names[0] si supera el bar calibrado
+            # — COLLAPSE del cluster a 1 representante (no las 4-5 variantes near-tie),
+            # language-agnostic (decide por embedding, no keywords), SIN tocar la
+            # keyword nativa (web sigue como fallback -> gate nativo verde). Respeta
+            # el cap (inserta 1). Gate `GEMMA4_MCP` ya filtró el enrolamiento.
+            _best_mcp = next(((t, s) for t, s in scored if t.startswith("mcp__")), None)
+            if (_best_mcp is not None and _best_mcp[1] >= _MCP_PEAK_KEEP
+                    and not any(t.startswith("mcp__") for t in names)):
+                names.insert(0, _best_mcp[0])
 
             # Step 2 (2026-05-21): CALIBRATED abstention head. All four
             # research reports converged: NO-TOOL keep (0.51) is the weak
