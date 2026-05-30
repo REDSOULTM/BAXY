@@ -108,6 +108,19 @@ _INFO_ANCHORS = [
     "informacion sobre una pelicula juego o persona",
     "que es este concepto", "como funciona esta tecnologia",
     "explicame este tema", "que significa esta palabra",
+    # "hablame de X / contame sobre X / dame info de X / qué sabés de X" —
+    # PEDIR INFO sobre una entidad concreta (persona/tema/evento). Medido
+    # (2026-05-30): sin estos, "hablame de bruno mars" caía en chitchat (el
+    # nombre propio corto embebe cerca de la charla) y "contame sobre X" no
+    # batía a action por margen. Estos anchors anclan el patrón "verbo-de-
+    # pedir-info + ENTIDAD" en el centroide info. Multilingües → generaliza,
+    # NO es lista de keywords. Recupera 8 misses de logs reales sin regresar
+    # ningún negativo (14/14 charla/comando intactos).
+    "hablame de una persona famosa", "contame sobre un cantante o actor",
+    "dame informacion sobre un tema o persona",
+    "contame de un evento historico", "me podes contar sobre algo o alguien",
+    "que sabes de este personaje", "dame datos sobre un personaje conocido",
+    "contame quien es este futbolista o artista",
     # English/Spanish — searching the INTERNET for external info (prices,
     # news, images, how-to) as opposed to searching local files.
     "search the internet for something", "look up prices online",
@@ -122,6 +135,9 @@ _INFO_ANCHORS = [
     "was bedeutet das", "che cosa significa",
     "procurar na internet", "chercher sur internet",
     "im internet suchen", "cercare su internet",
+    # "hablame de X" multilingüe (pedir info sobre una entidad).
+    "fala sobre uma pessoa ou assunto", "parle moi de quelque chose ou quelquun",
+    "erzahl mir von etwas oder jemandem", "raccontami di qualcosa o qualcuno",
 ]
 
 _ACTION_ANCHORS = [
