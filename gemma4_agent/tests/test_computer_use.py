@@ -681,5 +681,72 @@ class ExecutorDispatchTest(unittest.TestCase):
         ))
 
 
+class ClickTriStateHonestyTest(unittest.TestCase):
+    """Perfection roadmap C4/C5 (2026-05-29). El _click debe propagar el
+    tri-estado verified (True/False/None). 'No medible' (None) NO es 'falló'
+    (False): antes se colapsaba a False, disparando el retry del PlanExecutor
+    (DOBLE-CLICK físico) y haciendo mentir a summarize_result.
+    """
+
+    def _executor(self, gui_result):
+        import gemma4_agent.computer_use_pkg.computer_use as cu
+        ag = MagicMock()
+        ag.tools.execute.return_value = gui_result
+        return cu.PlanExecutor(ag)
+
+    def test_click_unmeasurable_stays_none_not_false(self):
+        # UIA demorado: ok=True, sin verified ni state_changed -> None (no medible).
+        ex = self._executor({"ok": True})  # no 'verified', no 'state_changed'
+        r = ex._click("Aceptar", "Discord")
+        self.assertTrue(r["ok"])
+        self.assertIsNone(r["verified"], "no-medible debe quedar None, no False")
+
+    def test_click_measured_no_change_is_false(self):
+        # state_changed=False -> medido y NADA cambió -> verified False (false-PASS atrapado).
+        ex = self._executor({"ok": True, "state_changed": False})
+        r = ex._click("Aceptar", "Discord")
+        self.assertIs(r["verified"], False)
+
+    def test_click_measured_change_is_true(self):
+        ex = self._executor({"ok": True, "verified": True, "state_changed": True})
+        r = ex._click("Aceptar", "Discord")
+        self.assertIs(r["verified"], True)
+
+    def test_click_none_does_not_trigger_retry_in_aggregate(self):
+        # Un step click con verified=None NO debe marcar el plan como fallo duro
+        # (unverified_hard_step usa `is False`, None no lo dispara).
+        from gemma4_agent.computer_use_pkg.computer_use import summarize_result
+        # plan global verificado por otro step; el click es None.
+        plan = [{"op": "click", "arg": "Aceptar"}]
+        res = {"ok": True, "verified": True, "focused_app": "Discord",
+               "steps": [{"op": "click", "arg": "Aceptar", "ok": True,
+                          "verified": None, "state_changed": None}]}
+        msg = summarize_result("clickeá aceptar", plan, res)
+        # Honesto: no afirma "Listo, hice click" a secas; admite la no-confirmación.
+        self.assertIn("no pude confirmar", msg.lower())
+
+    def test_summary_no_change_is_honest_not_a_lie(self):
+        # C5: click corrió pero state_changed=False -> NO decir "Listo, hice click".
+        from gemma4_agent.computer_use_pkg.computer_use import summarize_result
+        plan = [{"op": "click", "arg": "Comprar"}]
+        res = {"ok": True, "verified": True, "focused_app": "Tienda",
+               "steps": [{"op": "click", "arg": "Comprar", "ok": True,
+                          "verified": False, "state_changed": False}]}
+        msg = summarize_result("clickeá comprar", plan, res)
+        self.assertIn("no vi ningún cambio", msg.lower())
+        self.assertNotIn("listo, hice click", msg.lower())
+
+    def test_summary_verified_click_still_says_done(self):
+        # Regresión inversa: un click verificado SÍ debe decir "Listo, hice click".
+        from gemma4_agent.computer_use_pkg.computer_use import summarize_result
+        plan = [{"op": "click", "arg": "Guardar"}]
+        res = {"ok": True, "verified": True, "focused_app": "Editor",
+               "steps": [{"op": "click", "arg": "Guardar", "ok": True,
+                          "verified": True, "state_changed": True}]}
+        msg = summarize_result("guardá", plan, res)
+        self.assertIn("hice click", msg.lower())
+        self.assertNotIn("no vi", msg.lower())
+
+
 if __name__ == "__main__":
     unittest.main()

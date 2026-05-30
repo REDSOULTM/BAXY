@@ -345,6 +345,18 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
         return f"Listo, aparecio {target}." + (f" en {app}." if app else ".")
     if _click_step:
         label = _click_step.get("arg") or _click_step.get("label") or "el objetivo"
+        # HONESTIDAD (perfection roadmap C5, 2026-05-29). No afirmar "hice click"
+        # si la señal del SO dice que NADA cambió (state_changed=False) o no se
+        # pudo medir (verified None). El click pudo no tener efecto (botón
+        # deshabilitado, hover sin acción). Reportamos lo que el estado confirma.
+        _cv = _click_step.get("verified")
+        _csc = _click_step.get("state_changed")
+        if _csc is False:
+            return (f"Hice click en «{label}» pero no vi ningún cambio en pantalla"
+                    + (f" ({app})." if app else "."))
+        if _cv is None and _csc is None:
+            return (f"Hice click en «{label}»{' en ' + app if app else ''}, "
+                    "aunque no pude confirmar el efecto.")
         return f"Listo, hice click en «{label}»" + (f" en {app}." if app else ".")
     if typed:
         return f"Listo, escribí «{typed}»" + (f" en {app}." if app else ".")
@@ -574,17 +586,27 @@ class PlanExecutor:
         try:
             r = self.tools.execute("gui", {"action": "click_button", "label": label, "window": win})
             inner = r.get("result", r) if isinstance(r, dict) else {}
+            # HONESTIDAD TRI-ESTADO (perfection roadmap C4, 2026-05-29). El
+            # click_button puede devolver:
+            #   verified=True   -> medido OK (el SO confirmó el cambio).
+            #   verified=False  -> medido y NO cambió nada (false-PASS atrapado).
+            #   verified=None   -> NO MEDIBLE (UIA demorado en Electron/Discord).
+            # Antes colapsábamos None -> False, lo que (a) marcaba el click como
+            # fallo, disparando el retry del PlanExecutor = DOBLE-CLICK físico, y
+            # (b) hacía mentir a summarize_result. "No sé" NO es "falló": lo
+            # propagamos como None (igual que _open_url ya hace). state_changed
+            # es la señal medible cruda; si existe, manda sobre verified ausente.
             verified = inner.get("verified")
-            if verified is None and inner.get("state_changed") is not None:
-                verified = bool(inner.get("state_changed"))
-            if verified is None:
-                verified = False
-            return {"ok": bool(inner.get("ok")), "verified": bool(verified),
+            state_changed = inner.get("state_changed")
+            if verified is None and state_changed is not None:
+                verified = bool(state_changed)
+            # verified queda None si de verdad no se pudo medir (tri-estado).
+            return {"ok": bool(inner.get("ok")), "verified": verified,
                     "label": label, "grounding": inner.get("grounding"),
-                    "state_changed": inner.get("state_changed"),
+                    "state_changed": state_changed,
                     "completion_status": inner.get("completion_status")}
         except Exception as exc:
-            return {"ok": False, "error": str(exc)}
+            return {"ok": False, "verified": False, "error": str(exc)}
 
     @staticmethod
     def _split_field_value(spec: str) -> tuple[str, str] | None:
