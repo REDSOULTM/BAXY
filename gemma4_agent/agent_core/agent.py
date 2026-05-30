@@ -777,15 +777,25 @@ class Gemma4Agent:
         # Perfil de gustos del usuario (R-Jarvis 2026-05-30): párrafo sintetizado
         # de quién es el usuario (apps/música/ritmo observados por el ambient
         # observer), para que Gemma4 personalice. GPG arXiv:2409.13093 (+37%):
-        # párrafo NL, no log crudo. Cacheado por turno-set (estable, cache-friendly).
+        # párrafo NL, no log crudo. build_profile_block CACHEA con TTL (corre por
+        # turno; sin caché re-leía 15.7k eventos → ~18ms/turno, rompía el budget).
         # Gate GEMMA4_TASTE_PROFILE. Best-effort: error -> sin perfil.
         profile_section = ""
         if self.behavior is not None:
             try:
                 from ..memory_pkg.taste_profile import build_profile_block
                 profile_section = build_profile_block(self.behavior)
+                # Reflexión por LLM (R-Jarvis fase 1, opt-in GEMMA4_TASTE_LLM_REFLECTION):
+                # gustos FINOS inferidos en background. reflection_block sólo LEE el caché
+                # (barato); maybe_refresh_async dispara el pase LLM en un thread si venció
+                # (NO per-turn). Gate OFF -> ambos no-op. Best-effort.
+                from ..memory_pkg.taste_reflection import (
+                    reflection_block as _refl_block, maybe_refresh_async as _refl_refresh)
+                if profile_section:
+                    profile_section += _refl_block(self.behavior)
+                _refl_refresh(self.behavior, self.client)
             except Exception:
-                profile_section = ""
+                pass
         explicit_block = _format_explicit_plan(self._explicit_plan_text)
         explicit_section = f"\n\n{explicit_block}" if explicit_block else ""
         phrase_section = _format_phrase_fires(self._phrase_fires)
@@ -4631,6 +4641,9 @@ class Gemma4Agent:
                 try:
                     from ..memory_pkg.taste_profile import forget as _forget
                     n = _forget(self.behavior)
+                    # Borrar también los gustos finos inferidos por LLM (privacidad).
+                    from ..memory_pkg.taste_reflection import forget_reflection
+                    forget_reflection(self.behavior)
                 except Exception:
                     n = 0
                 return AgentReply(
@@ -4655,6 +4668,11 @@ class Gemma4Agent:
             try:
                 from ..memory_pkg.taste_profile import inspect_text
                 msg = inspect_text(self.behavior)
+                # Sumar los gustos finos inferidos por LLM (si el gate está ON y hay).
+                from ..memory_pkg.taste_reflection import cached_insights
+                _ins = cached_insights(self.behavior)
+                if _ins:
+                    msg += "\nY algo que fui infiriendo: " + " ".join(i.text for i in _ins)
             except Exception:
                 return None
             return AgentReply(content=msg, tool_events=[], mission=None)

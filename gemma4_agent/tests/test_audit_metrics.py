@@ -106,14 +106,21 @@ class TestAuditMetrics(unittest.TestCase):
         n = int(match.group(1)) if match else -1
         self.assertEqual(n, 0, f"R3: {n} ciclos top-level detectados")
 
-    def test_metric_lazy_imports_under_510(self):
-        """Lazy imports totales en producción < 510 (sprint dejó ~460; HEAD pre-R3.3
-        ya estaba en 507 — deuda preexistente). R3.3 (2026-05-30) suma +1: el lazy
+    def test_metric_lazy_imports_under_525(self):
+        """Lazy imports totales en producción < 525 (sprint dejó ~460; HEAD pre-R3.3
+        ya estaba en 507 — deuda preexistente). R3.3 (2026-05-30) sumó +1: el lazy
         `from ..routing.semantic_router import embed` en microagents._default_embed_fn
         es INTENCIONAL — top-level cargaría el encoder (sentence-transformers) al
-        importar microagents, ralentizando el boot. Techo 500→510 para reconocer el
-        baseline real + el lazy justificado. Si crece mucho MÁS, alguien introdujo
-        lazy en vez de top-level sin justificación."""
+        importar microagents, ralentizando el boot. R-Jarvis CAPA VIVA (2026-05-30)
+        suma +5 JUSTIFICADOS: el lazy `from ..memory_pkg.ambient_observer import
+        AmbientObserver` evita cargar `winsdk` (dep pesada Windows-only) al importar el
+        agente, y 4 `from ..memory_pkg.taste_profile import ...` viven en bloques
+        best-effort. R-Jarvis REFLEXIÓN-LLM (2026-05-30) suma +4: 3 en agent.py
+        (reflection_block/maybe_refresh_async/forget_reflection/cached_insights, mismo
+        patrón best-effort opt-in) + 1 en taste_reflection.py (`resolve_turn_model` de
+        infra/llama_server, pesado, lazy a propósito; los imports livianos del módulo
+        —taste_profile, behavior_log— SÍ son top-level). Techo 520→525 por eso.
+        Si crece mucho MÁS, alguien introdujo lazy en vez de top-level sin justificación."""
         total = 0
         for p in _iter_prod_py():
             try:
@@ -122,8 +129,8 @@ class TestAuditMetrics(unittest.TestCase):
                 continue
             total += len(re.findall(r"^\s+from \.", src, re.M))
         self.assertLess(
-            total, 510,
-            f"R3: {total} lazy imports en producción (techo 510)"
+            total, 525,
+            f"R3: {total} lazy imports en producción (techo 525)"
         )
 
     # ----- R4: ToolResult disponible -----

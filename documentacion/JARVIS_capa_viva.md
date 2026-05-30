@@ -82,12 +82,32 @@ de forget borraría datos. Hard-negatives: "borrá estos archivos" ≠ borrar el
 `GEMMA4_JARVIS` (master, default ON) · `GEMMA4_AMBIENT_OBSERVER` · `GEMMA4_TASTE_PROFILE`
 · `GEMMA4_PROFILE_INTENT_*` / `_FORGET_*` (umbrales del detector).
 
+## Reflexión por LLM — gustos finos (fase 1, 2026-05-30) — `memory_pkg/taste_reflection.py`
+Capa OPT-IN que extiende la reflexión determinista: pasa las observaciones agregadas
+por el 4B LOCAL para inferir gustos de MÁS ALTO NIVEL ("preferís rock latino de los
+90", "programás de día con música de noche") — el paso de reflexión por LLM de
+Generative Agents que el diseño reservaba. Verificado en vivo (4B real): sobre
+Soda Stereo/Cerati infiere *"rock latino de finales de los 90 / principios de los 2000"*.
+- **Gate `GEMMA4_TASTE_LLM_REFLECTION` default OFF**: opt-in. La base determinista
+  manda intacta; esta capa AUMENTA, nunca reemplaza.
+- **Background, NO per-turn**: el pase LLM corre en un thread daemon cada
+  `GEMMA4_TASTE_REFLECTION_TTL_S` (6h); la inyección al prompt sólo LEE un caché en
+  disco. (SQLite no es cross-thread → el thread reconstruye su propia conexión.)
+- **Guard estructural anti-alucinación**: cada insight DEBE citar (campo `evidencia`)
+  una observación REAL; si no referencia ninguna app/artista/franja, se descarta.
+  Mide la FORMA (grounding), no confía en el contenido. Precisión > recall.
+- **thinking OFF** (MEDIDO: con thinking el 4B gasta el budget en `reasoning_content`
+  y devuelve content vacío) + temp 0.3 → JSON limpio.
+- **Privacidad**: 4B LOCAL, observaciones AGREGADAS (metadata). Los insights son
+  inspectables ("¿qué sabés de mí?" los suma) y borrables (forget limpia el caché).
+
 ## Pendiente (no forzado)
-- **Reflexión por LLM opcional**: hoy el insight es determinista; un pase LLM periódico
-  (estilo GA, en background) podría sacar gustos más finos ("preferís rock de los 80").
-  No urgente: el determinista ya da el perfil base sin coste ni riesgo.
 - **Más señales**: navegación (títulos de pestaña) suma intereses pero roza privacidad
   — quedó fuera por la regla metadata-no-contenido. Es la decisión del usuario.
+- **Precisión de la reflexión**: el guard valida que la EVIDENCIA sea real, no que la
+  INFERENCIA se siga de ella (un "death metal" citando un artista real pasaría). Mitigado
+  por: insights = contexto de fondo (bajo daño), inspectables y borrables. Subir precisión
+  = self-consistency (N corridas) o verify adversarial (1 pase extra). No urgente.
 - **Consolidación Mem0** (ADD/UPDATE/DELETE/NOOP, arXiv:2504.19413): si el perfil
   crece, evitar que se infle. Hoy los umbrales + top-N alcanzan.
 

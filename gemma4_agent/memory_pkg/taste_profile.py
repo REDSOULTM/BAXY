@@ -24,10 +24,35 @@ from __future__ import annotations
 
 import logging
 import os
+import threading
+import time as _time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
+
+# Caché del bloque inyectado al prompt. build_profile_block() corre en CADA turno
+# dentro de _system_message; sin caché re-lee TODO el behavior_log (medido: 15.7k
+# eventos → ~18ms/turno, rompía el budget de 5ms de _system_message y el de
+# latencia tier-Alexa). El perfil cambia en escala de minutos, no de segundos, así
+# que un TTL corto es seguro. forget() invalida el caché para que un borrado se
+# refleje YA (privacidad). inspect_text() NO usa el caché (siempre fresco). El
+# caché se keyea por id(behavior_log) para no cruzar perfiles entre agentes (tests).
+_BLOCK_CACHE: dict = {"log_id": None, "ts": 0.0, "text": ""}
+_BLOCK_LOCK = threading.Lock()
+
+
+def _block_ttl_s() -> float:
+    try:
+        return float(os.environ.get("GEMMA4_TASTE_PROFILE_TTL_S", "300"))
+    except (TypeError, ValueError):
+        return 300.0
+
+
+def invalidate_block_cache() -> None:
+    """Fuerza el rebuild del bloque en la próxima llamada (tras forget/cambios)."""
+    with _BLOCK_LOCK:
+        _BLOCK_CACHE.update(log_id=None, ts=0.0, text="")
 
 # Cuántos días de comportamiento mirar y umbrales mínimos para afirmar un gusto
 # (anti-ruido: no inventamos un perfil con 2 datos). Calibrables por env.
@@ -149,11 +174,8 @@ def profile_text(prof: TasteProfile) -> str:
     return " ".join(parts)
 
 
-def build_profile_block(behavior_log) -> str:
-    """Bloque listo para el system_prompt de Gemma4 (o '' si no aplica/sin datos).
-    Etiquetado como BACKGROUND para que el 4B no lo recite (anti-parroting)."""
-    if not _profile_enabled():
-        return ""
+def _render_block(behavior_log) -> str:
+    """Construye el bloque desde cero (sin caché). Vacío si no hay señal."""
     try:
         prof = build_profile(behavior_log)
     except Exception:
@@ -165,6 +187,27 @@ def build_profile_block(behavior_log) -> str:
         "\n\n# SOBRE EL USUARIO (contexto de fondo — NO lo menciones salvo que venga al caso)\n"
         f"{txt}\n"
         "Usá esto para personalizar tus respuestas y sugerencias, sin recitarlo.")
+
+
+def build_profile_block(behavior_log) -> str:
+    """Bloque listo para el system_prompt de Gemma4 (o '' si no aplica/sin datos).
+    Etiquetado como BACKGROUND para que el 4B no lo recite (anti-parroting).
+    CACHEADO con TTL: corre por turno, así que NO re-lee el behavior_log entero cada
+    vez (ver _BLOCK_CACHE)."""
+    if not _profile_enabled():
+        return ""
+    now = _time.time()
+    log_id = id(behavior_log)
+    with _BLOCK_LOCK:
+        if (_BLOCK_CACHE["log_id"] == log_id
+                and (now - _BLOCK_CACHE["ts"]) < _block_ttl_s()):
+            return _BLOCK_CACHE["text"]
+    # Rebuild FUERA del lock (build_profile hace I/O a SQLite) — peor caso, dos
+    # turnos casi-simultáneos rebuildan; inocuo y raro (el runtime de voz es serial).
+    block = _render_block(behavior_log)
+    with _BLOCK_LOCK:
+        _BLOCK_CACHE.update(log_id=log_id, ts=now, text=block)
+    return block
 
 
 # --------------------------------------------------------------------- privacidad
@@ -193,6 +236,7 @@ def forget(behavior_log) -> int:
         n = cur.fetchone()[0]
         conn.execute("DELETE FROM behavior_events WHERE kind IN ('app_focus','media_play')")
         conn.commit()
+        invalidate_block_cache()  # el borrado debe reflejarse YA en el prompt (privacidad)
         return int(n)
     except Exception as exc:
         logger.debug("forget failed: %s", exc)
