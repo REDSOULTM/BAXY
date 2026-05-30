@@ -2755,6 +2755,29 @@ class Gemma4Agent:
                     _msgs_f = self._messages(mode, plan,
                                              selected_tool_names=selected_tool_names,
                                              user_text=raw_text_early)
+                    # LATENCIA (2026-05-30, MEDIDO): cuando el forced-retry NO logra
+                    # emitir un tool-call limpio, el 4B RAMBLEA hasta agotar los 512
+                    # tokens (comp_tok=512, ~8-13s a ~60 tok/s) y termina VACÍO
+                    # (forced_tool_retry_empty) — desastre en comandos comunes ("muteá"
+                    # 8.7s, "abrí Spotify" 12.6s). Un tool-call (estructurado o leaked-
+                    # text que rescata detect_leaked_tool_call) es CORTO (~50-80 tok);
+                    # los 512 son ramble puro. CAPEAMOS el decode para acotar el peor
+                    # caso a ~2-3s. NO tocamos enable_thinking: togglearlo bustea el
+                    # prefix-cache (MEDIDO: cached 7662→4, +5s de re-prefill) — el cap
+                    # preserva el cache (thinking=mode) y solo corta el ramble.
+                    # Gate GEMMA4_FORCED_RETRY_MAXTOK (default 128; 0 = sin cap). MEDIDO:
+                    # 512→8-13s; 192→~4s/6.6s; 128→~3s/5.5s; 96→~2.5s/5.3s + fallback
+                    # más honesto. 128 = buen balance (headroom p/un retry exitoso raro).
+                    import os as _os_fr
+                    try:
+                        _fr_cap = int(_os_fr.environ.get("GEMMA4_FORCED_RETRY_MAXTOK", "128"))
+                    except ValueError:
+                        _fr_cap = 128
+                    # Sólo capeamos si max_tokens es un int real (en tests mode es un
+                    # MagicMock; el original pasaba mode.max_tokens crudo, robusto a eso).
+                    _fr_maxtok = (min(mode.max_tokens, _fr_cap)
+                                  if (_fr_cap > 0 and isinstance(mode.max_tokens, int))
+                                  else mode.max_tokens)
                     try:
                         resp_f = self.client.chat(
                             _msgs_f,
@@ -2763,7 +2786,7 @@ class Gemma4Agent:
                             thinking_budget=mode.thinking_budget,
                             model=self._router_model_for(_msgs_f),
                             parallel_tool_calls=mode.parallel_tool_calls,
-                            max_tokens=mode.max_tokens,
+                            max_tokens=_fr_maxtok,
                             force_tool=True,
                             greedy=True,  # forced-retry = decisión pura de tool-call
                         )
