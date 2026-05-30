@@ -64,7 +64,12 @@ class TestAtexitHandlersWired(unittest.TestCase):
                       inspect.getsource(ops_tools))
 
     def test_llama_server_atexit_registered_on_shared_manager(self):
-        # get_shared_manager registers _atexit_stop_shared_manager exactly once.
+        # C7 (2026-05-29): get_shared_manager registra DOS handlers atexit:
+        #   1. el del singleton (_atexit_stop_shared_manager), redundante pero
+        #      inofensivo (atexit acepta el mismo callback varias veces);
+        #   2. el POR INSTANCIA (_atexit_stop_self), que el __init__ registra para
+        #      cubrir TODAS las rutas de instanciación (no solo el singleton).
+        # El singleton handler debe seguir presente (back-compat).
         from gemma4_agent.infra import llama_server as ls
 
         ls._SHARED_MANAGER = None
@@ -72,8 +77,14 @@ class TestAtexitHandlersWired(unittest.TestCase):
         try:
             with mock.patch("atexit.register") as reg:
                 ls.get_shared_manager()
-                self.assertEqual(reg.call_count, 1)
-                self.assertIs(reg.call_args[0][0], ls._atexit_stop_shared_manager)
+                self.assertEqual(reg.call_count, 2)
+                registered = [c[0][0] for c in reg.call_args_list]
+                self.assertIn(ls._atexit_stop_shared_manager, registered)
+                # y un handler de instancia (_atexit_stop_self ligado al mgr)
+                self.assertTrue(
+                    any(getattr(f, "__name__", "") == "_atexit_stop_self"
+                        for f in registered),
+                    "falta el atexit por-instancia (C7)")
         finally:
             ls._SHARED_MANAGER = None
 

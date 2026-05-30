@@ -294,6 +294,37 @@ class LLMClient:
         except Exception:
             return False
 
+    def _probe_slots_alive(self, timeout_s: float = 0.5) -> bool:
+        """True si /slots responde HTTP en absoluto (server escucha y atiende).
+
+        H4 (perfection roadmap 2026-05-29): /health miente bajo carga — responde
+        200 aunque el slot del LLM no esté listo, así que el recovery reintentaba
+        el chat y fallaba ("server recuperado pero sigue roto"). El bootstrap
+        (_wait_for_health) ya exige health AND slots; el recovery no lo hacía.
+        Este probe replica LlamaServerManager._probe_slots_alive (gemelo
+        DELIBERADO: LLMClient no debe importar llama_server -> evita un ciclo de
+        import, y el repo tiene historial de ciclos rompiendo el router). Si
+        tocás uno, tocá el otro.
+
+        CUALQUIER respuesta HTTP (200/400/404/503) = vivo; el build b9090 da 400
+        a /slots y está perfectamente vivo. Solo connection-refused/timeout = muerto."""
+        import urllib.error
+        url = self.config.server_url.rstrip("/") + "/slots"
+
+        def _is_alive_status(code: int) -> bool:
+            if code == 503:
+                return True
+            return code < 500
+
+        try:
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+                return _is_alive_status(resp.status)
+        except urllib.error.HTTPError as exc:
+            return _is_alive_status(exc.code)
+        except (urllib.error.URLError, TimeoutError, OSError):
+            return False
+
     def chat(
         self,
         messages: list[dict[str, Any]],
@@ -497,7 +528,10 @@ class LLMClient:
                 )
                 healthy = False
                 while time.monotonic() < deadline:
-                    if self.health(timeout_s=1.0):
+                    # H4: exigir /health AND /slots (no solo /health, que miente
+                    # bajo carga). El bootstrap ya lo hace; el recovery también
+                    # ahora, para no reintentar el chat contra un slot no-listo.
+                    if self.health(timeout_s=1.0) and self._probe_slots_alive(timeout_s=0.5):
                         healthy = True
                         break
                     time.sleep(0.5)

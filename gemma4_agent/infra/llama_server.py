@@ -822,6 +822,33 @@ class LlamaServerManager:
         # port ("NOT responding" / "boot timed out"). With the lock they run
         # one-after-another and the last state wins cleanly.
         self._restart_lock = threading.Lock()
+        # C7 (perfection roadmap 2026-05-29): atexit POR INSTANCIA. El registro
+        # del singleton (get_shared_manager) solo cubría _SHARED_MANAGER; las 4
+        # rutas de instanciación DIRECTA (chat.py, ui/main_window.py x2,
+        # server.py vision-recycle) dejaban su child llama-server HUÉRFANO al
+        # salir -> retiene ~6GB VRAM en Windows (el Popen child no muere con el
+        # padre) y el próximo arranque ve un server 'external' en :8080. stop()
+        # es idempotente y no-opea sobre externos / _proc muerto, así que esto
+        # NUNCA mata un server del usuario ni falla si nunca arrancamos. Registro
+        # fuerte (no weakref): los managers son pocos y livianos; weakref tenía un
+        # caso de borde con el manager efímero de vision-recycle GC'd antes del exit.
+        self._register_atexit_cleanup()
+
+    def _register_atexit_cleanup(self) -> None:
+        """Registra stop() de ESTA instancia en atexit (idempotente por instancia)."""
+        if getattr(self, "_atexit_registered", False):
+            return
+        import atexit
+        atexit.register(self._atexit_stop_self)
+        self._atexit_registered = True
+
+    def _atexit_stop_self(self) -> None:
+        """Best-effort stop de NUESTRO child al salir el intérprete. No-op seguro
+        sobre externos / proceso muerto (stop() ya lo garantiza)."""
+        try:
+            self.stop()
+        except Exception:
+            pass
 
     def _close_log_handles(self, handles: list | None = None) -> None:
         """Close the parent-side child-log file objects (best-effort).
@@ -1220,18 +1247,30 @@ class LlamaServerManager:
             return self.start(profile, wait_health=wait_health, timeout_s=timeout_s)
 
     def restart(self, profile: Profile, **start_kwargs: object) -> str:
-        """stop() + start(profile).
+        """stop() + start(profile), serializado y a prueba de race en el puerto.
 
-        v21 2026-05-28: REVERTIDO al diseño del 27-may. La sesion previa
-        habia agregado lock + port_in_use loop hasta 10s + _kill_server_on_port,
-        sumando hasta 11s antes de empezar el start. En router-mode esto era
-        innecesario: stop() ya pidi mata el front del router que a su vez mata
-        al child. Si el puerto sigue ocupado tras stop() es bug ajeno; el
-        start() siguiente fallara con error claro en vez de esconderlo."""
-        self.stop()
+        H6 (perfection roadmap 2026-05-29): el revert v21 quitó el lock + el
+        port-wait por LATENCIA, asumiendo router-mode (stop() mata el front que
+        mata al child rápido). Pero dejó una RACE real: entre stop() y start(),
+        otro hilo (o force_restart_for_profile concurrente) puede bindear :8080;
+        start() lo ve como 'external' y NO arranca el nuestro -> turno colgado.
+        Fix: serializar con _restart_lock (mismo lock que force_restart, así no
+        se pisan) + esperar a que el SO libere el puerto. El loop sale APENAS el
+        puerto está libre (break inmediato), así que en el caso router-mode normal
+        el costo extra es ~0 (no los 10s del diseño viejo que motivó el revert).
+        _restart_lock NO es reentrante: verificado que restart() no se llama desde
+        dentro de force_restart (no hay deadlock)."""
         wait_health = bool(start_kwargs.get("wait_health", True))
         timeout_s = int(start_kwargs.get("timeout_s", 90))  # type: ignore[arg-type]
-        return self.start(profile, wait_health=wait_health, timeout_s=timeout_s)
+        with self._restart_lock:
+            self.stop()
+            # Esperar a que el SO libere el puerto antes de re-bind (mismo patrón
+            # que force_restart_for_profile). break inmediato si ya está libre.
+            for _ in range(40):
+                if not port_in_use():
+                    break
+                time.sleep(0.25)
+            return self.start(profile, wait_health=wait_health, timeout_s=timeout_s)
 
     def _wait_for_health(self, timeout_s: int = 90) -> bool:
         """Polea /health Y /slots hasta que ambos respondan, o expira.
@@ -1270,6 +1309,10 @@ class LlamaServerManager:
 
     def _probe_slots_alive(self, timeout_s: float = 0.5) -> bool:
         """True si /slots responde HTTP en absoluto (server escucha y respondio).
+
+        GEMELO DELIBERADO de LLMClient._probe_slots_alive (H4): la misma lógica
+        vive en el cliente para que su recovery exija health AND slots sin importar
+        llama_server (evita un ciclo de import). Si tocás uno, tocá el otro.
 
         CUALQUIER respuesta HTTP (200, 400, 404, 503) significa que el server
         esta vivo y atendiendo. Solo connection-refused o timeout son "muerto".
