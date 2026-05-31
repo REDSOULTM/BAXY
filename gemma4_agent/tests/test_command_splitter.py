@@ -248,6 +248,28 @@ class DependentOpenTest(unittest.TestCase):
             self.assertFalse(self.D(q), msg=q)
 
 
+class IsBareInappNavTest(unittest.TestCase):
+    """is_bare_inapp_nav: nav PELADA a un destino DENTRO de una app, para el
+    chain-context ("abrí Discord y andá al canal X" -> clause2 navega en la app).
+    Excluye 'abrí'=app-open y los verbos de tipeo/click/envío (2026-05-31)."""
+    def setUp(self):
+        from ..routing.command_splitter import is_bare_inapp_nav
+        self.N = is_bare_inapp_nav
+
+    def test_fires_on_bare_nav(self):
+        for q in ("andá al canal general", "entrá al canal de música",
+                  "ve a la playlist de rock", "navegá a la pestaña de tareas",
+                  "andá a youtube", "go to the general channel", "entrá a configuración"):
+            self.assertTrue(self.N(q), msg=q)
+
+    def test_not_on_open_type_click_send(self):
+        # 'abrí' (app-open ambiguo), tipeo, click, envío, charla -> NO es nav in-app
+        for q in ("abrí Discord", "abrí Spotify", "escribí hola", "clickeá Guardar",
+                  "poné rock", "mandale a juan que ya voy", "qué hora es",
+                  "subí el volumen", "buscá gatos", "ve el partido"):
+            self.assertFalse(self.N(q), msg=q)
+
+
 class NavExcludesAmbiguousTest(unittest.TestCase):
     """ETAPA 2 (2026-05-31): "abrí Spotify y poné rock" NO debe ser nav_action
     (poné=play=media, no tipear). Solo verbos de tipeo/click inequívocos."""

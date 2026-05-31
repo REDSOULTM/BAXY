@@ -614,6 +614,32 @@ def extract_app_action(clause: str) -> dict | None:
     return None
 
 
+# Verbos de MOVIMIENTO a un destino DENTRO de una app (NO 'abrí/abre/open' = app-open
+# AMBIGUO). Para el chain-context (2026-05-31): "abrí Discord y ANDÁ AL canal X" -> la
+# 2da cláusula navega DENTRO de la app abierta por la 1ra; sola, el 4B la PIERDE (charla).
+_BARE_NAV_VERB = (
+    r"and[áa]|anda|entr[áa]|entra|ve|vamos|vam[oó]nos|llev[áa]me|"          # es
+    r"naveg[áa]|navega|and[áa]te|"
+    r"go|navigate|head|switch|"                                            # en
+    r"v[áa]|entre|va|vai|geh"                                              # pt/fr/de/it
+)
+_BARE_INAPP_NAV = re.compile(
+    r"^\s*(?:" + _BARE_NAV_VERB + r")\b\s+(?:a|al|hacia|to|into|en|para)\s+\S+",
+    re.IGNORECASE)
+
+
+def is_bare_inapp_nav(clause: str) -> bool:
+    """True si la cláusula es una NAVEGACIÓN pelada a un destino ('andá al canal X',
+    've a la playlist Y', 'entrá a la pestaña Z'). Para el chain-context: navegar
+    DENTRO de la app que abrió la cláusula previa. Excluye 'abrí/abre/open' (ambiguo
+    con abrir-app) y los verbos de tipeo/click/envío (manejados por sus macros
+    ANTES en _run_multi_intent). ESTRUCTURAL, multi-idioma. El caller la gatea por
+    carry_window (solo aplica mid-chain) y rutea a cu(goal + 'en <app>')."""
+    if not clause or not clause.strip():
+        return False
+    return bool(_BARE_INAPP_NAV.match(clause.strip()))
+
+
 # Verbos de TIPEO (subconjunto de _AA_ACT: solo escribir/teclear/poner, NO click).
 # Para construir un PLAN DETERMINISTA focus_app+type sin depender del 4B planner
 # (que a veces devuelve plan vacío o mete toda la frase como texto — MEDIDO).

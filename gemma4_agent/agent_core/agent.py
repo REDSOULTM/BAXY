@@ -4523,6 +4523,55 @@ class Gemma4Agent:
                                          at_clause=_clause_idx, label=_click_target[:60])
                         break
                     continue
+                # IN-APP NAV en cadena (2026-05-31): "abrí Discord y andá al canal
+                # general" -> la 2da cláusula navega DENTRO de la app abierta por la
+                # 1ra; sola, el 4B la PIERDE (charla). La ruteamos a cu(goal + 'en
+                # <app>'): el planner arma open_chat/open_url/etc. (MEDIDO: plan correcto
+                # — open_chat para canal de Discord, open_url para web). Gate carry_window
+                # (mid-chain) + nav-de-movimiento pelado (is_bare_inapp_nav excluye
+                # 'abrí'=app-open y los verbos de tipeo/click ya manejados arriba).
+                # GEMMA4_CHAIN_INAPP_NAV=0 lo apaga.
+                _inapp_nav = False
+                if carry_window:
+                    import os as _os_nav
+                    if _os_nav.environ.get("GEMMA4_CHAIN_INAPP_NAV", "1").strip().lower() \
+                            not in {"0", "false", "no", "off"}:
+                        try:
+                            from ..routing.command_splitter import is_bare_inapp_nav
+                            _inapp_nav = is_bare_inapp_nav(clause)
+                        except Exception:
+                            _inapp_nav = False
+                if _inapp_nav:
+                    _nav_goal = f"{clause.strip()} en {carry_window}"
+                    try:
+                        res = self.tools.t_computer_use({"goal": _nav_goal})
+                    except Exception as exc:
+                        res = {"ok": False, "error": str(exc)}
+                    ok = isinstance(res, dict) and res.get("ok")
+                    verified = res.get("verified") if isinstance(res, dict) else None
+                    _nav_ok = bool(ok) and verified is not False
+                    if _nav_ok:
+                        replies.append(f"Fui a «{clause.strip()}» en {carry_window}.")
+                    else:
+                        replies.append(f"Intenté «{clause.strip()}» en {carry_window} "
+                                       "pero no pude confirmarlo.")
+                    all_events.append(ToolEvent(name="computer_use",
+                        args={"goal": _nav_goal},
+                        result=res if isinstance(res, dict) else {}))
+                    self.trace.event("multi_intent", "inapp_nav_macro",
+                                     goal=_nav_goal[:80], ok=ok, verified=verified)
+                    if _mission_id and _mc is not None:
+                        try: _mc.mark_done(self.state.path, _mission_id, _clause_idx, replies[-1])
+                        except Exception: pass
+                    if not _nav_ok:
+                        _chain_failed = True
+                        if _clause_idx + 1 < len(clauses):
+                            replies.append(f"Paré la secuencia acá: faltaron los pasos "
+                                           f"{_clause_idx + 2} en adelante. Decime si reintento.")
+                        self.trace.event("multi_intent", "chain_stopped_on_failure",
+                                         at_clause=_clause_idx, goal=_nav_goal[:60])
+                        break
+                    continue
                 # Propagar el contexto GUI de la cláusula anterior a ESTA, para
                 # que "escribí X" tras "abrí Notepad" herede gui/window y no
                 # caiga a 'session' (charla). Bypassa el veto conversacional del
