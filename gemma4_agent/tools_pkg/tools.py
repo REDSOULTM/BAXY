@@ -2837,12 +2837,22 @@ class ToolRegistry:
         import re as _re
         _rcpt = " ".join(str(args.get(k) or "") for k in ("contact", "to", "recipient", "name", "phone"))
         _m = _re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", _rcpt)
+        _body = str(args.get("text") or args.get("body") or args.get("message") or "").strip()
         if _act in {"send_message", "send", ""} and _m:
             _to = _m.group(0)
-            _body = str(args.get("text") or args.get("body") or args.get("message") or "").strip()
             res = self.t_email({"action": "send", "to": _to, "body": _body})
             if isinstance(res, dict):
                 res.setdefault("delegated_from", "whatsapp(email-recipient)")
+            return res
+        # ABRIR LA APP (no un chat): "abre whatsapp" — el 4B a veces elige el tool
+        # whatsapp en vez de app.open (MEDIDO en el replay 2026-05-30), pero
+        # whatsapp_tool SOLO abre CHATS (necesita contacto/teléfono) y fallaría.
+        # Sin destinatario NI mensaje, la intención es abrir la APP → delegamos a
+        # app.open (mismo patrón que la redirección a email). `status` sí va al tool.
+        if _act not in {"status"} and not _rcpt.strip() and not _body:
+            res = self.t_app({"action": "open", "name": "WhatsApp"})
+            if isinstance(res, dict):
+                res.setdefault("delegated_from", "whatsapp(open-app)")
             return res
         return whatsapp_tool(args, self.state, executor=self.execute)
 

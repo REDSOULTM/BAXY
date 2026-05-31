@@ -3761,6 +3761,21 @@ class Gemma4Agent:
                 mission_outcome.expected_satisfied,
                 mission_outcome.expected_total,
             ]
+        # NET de empty-reply (replay de logs 2026-05-30): si tras TODO el rescue/
+        # retry/finalización el reply queda VACÍO, NUNCA dejar al user en silencio
+        # (medido: el 4B a veces devuelve content vacío, p.ej. gui-calc "escribí
+        # 11x11"). Fallback context-aware: con tools ejecutadas = confirmación; sin
+        # tools = pedir reformular. Es una GUARDA estructural de último recurso (la
+        # forma es "reply vacío", no una respuesta enlatada a una query) + queda el
+        # event para diagnóstico de la causa de fondo.
+        if not (assistant_content or "").strip():
+            assistant_content = ("Listo." if events
+                                 else "Perdón, no pude generar una respuesta. ¿La reformulás?")
+            content_for_history = assistant_content
+            try:
+                self.trace.event(turn_id, "empty_reply_fallback", had_tools=bool(events))
+            except Exception:
+                pass
         # History recibe la version SIN footers (ver comentario arriba).
         self.history.append({"role": "assistant", "content": content_for_history})
         # Subset summary: which sent tools were actually used vs idle.
@@ -4081,7 +4096,7 @@ class Gemma4Agent:
         # que no hay más).
         _decision = self._decide_turn(content, progress)
         if _decision.early_reply is not None:
-            return _decision.early_reply
+            return self._ensure_nonempty_reply(_decision.early_reply)
         turn_id = _decision.turn_id
         mode = _decision.mode
         plan = _decision.plan
@@ -4093,7 +4108,30 @@ class Gemma4Agent:
         # R1.2 sprint 2026-05-28: la fase execute vivía inline acá (LLM loop
         # iterativo + tool dispatch + post-procesamiento). Extraída a
         # _execute_turn que devuelve el AgentReply terminal del turno.
-        return self._execute_turn(content, _decision, progress)
+        return self._ensure_nonempty_reply(self._execute_turn(content, _decision, progress))
+
+    def _ensure_nonempty_reply(self, reply: "AgentReply | None") -> "AgentReply | None":
+        """Net UNIVERSAL de empty-reply (replay 2026-05-30): el user NUNCA recibe
+        silencio. Si el content del reply quedó vacío (error del LLM, degeneración
+        del 4B, path no previsto), un fallback HONESTO context-aware. El runner
+        TTS-ea reply.content cuando no hubo streaming → sin divergencia audio/display.
+        Guarda estructural de último recurso (mide la FORMA 'reply vacío', no es una
+        respuesta enlatada a una query); el event queda para diagnóstico."""
+        if reply is None or (getattr(reply, "content", "") or "").strip():
+            return reply
+        if getattr(reply, "error", None):
+            reply.content = "Tuve un problema técnico procesando eso. ¿Lo intentás de nuevo?"
+        elif getattr(reply, "tool_events", None):
+            reply.content = "Listo."
+        else:
+            reply.content = "Perdón, no pude generar una respuesta. ¿La reformulás?"
+        try:
+            self.trace.event("turn", "empty_reply_fallback_universal",
+                             had_tools=bool(getattr(reply, "tool_events", None)),
+                             had_error=bool(getattr(reply, "error", None)))
+        except Exception:
+            pass
+        return reply
 
     def _execute_calls_sequential(
         self,
