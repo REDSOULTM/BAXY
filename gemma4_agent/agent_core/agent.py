@@ -1270,7 +1270,8 @@ class Gemma4Agent:
                 and _os_aa.environ.get("GEMMA4_APP_ACTION_NET", "1").strip().lower() \
                     not in {"0", "false", "no", "off"}:
             try:
-                from ..routing.command_splitter import extract_app_action, split_command
+                from ..routing.command_splitter import (
+                    extract_app_action, split_command, parse_type_action)
                 _aa = extract_app_action(content)
             except Exception:
                 _aa = None
@@ -1309,8 +1310,7 @@ class Gemma4Agent:
                         # escribí 5+5" o metía toda la frase como texto en "poné R a las
                         # 5 en notepad"). Para nav multi-paso/otros cae al planner.
                         try:
-                            from ..routing.command_splitter import parse_type_action
-                            _tp = parse_type_action(content)
+                            _tp = parse_type_action(content)   # import arriba (bloque app-action)
                         except Exception:
                             _tp = None
                         if _tp:
@@ -1352,6 +1352,36 @@ class Gemma4Agent:
                 _clauses = split_command(content)
                 if len(_clauses) > 1:
                     return TurnDecision(early_reply=self._run_multi_intent(_clauses, progress=progress))
+        # OPEN PELADO de app: "abrí la calculadora"/"abrí discord". MEDIDO 2026-05-31
+        # (físico, PC del user): el router/4B NO rutea ciertos nombres a app.open de
+        # forma CONSISTENTE ("abrí la calculadora"/"abrí discord" -> NADA 3/3, aunque
+        # app.open resuelve TODOS: calc.exe etc.). Detector estructural -> INTENTAR
+        # app.open; si resolvió a una app real, listo (early_reply); si NO (carpeta/
+        # URL/chat la tool da ok=False), caer al flujo normal (la tool es la guarda de
+        # precisión). NO gateado por _splitting (sub-cláusulas de "abrí X y abrí Y"
+        # también). Gate GEMMA4_APP_OPEN_NET=0.
+        import os as _os_ao
+        if isinstance(content, str) and content.strip() \
+                and _os_ao.environ.get("GEMMA4_APP_OPEN_NET", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+            try:
+                from ..routing.command_splitter import extract_app_open
+                _ao_name = extract_app_open(content)
+            except Exception:
+                _ao_name = None
+            if _ao_name:
+                _ao_res = self.tools.execute("app", {"action": "open", "name": _ao_name})
+                if isinstance(_ao_res, dict) and _ao_res.get("ok"):
+                    try:
+                        self.trace.event(turn_id, "app_open_shortcircuit", name=_ao_name)
+                    except Exception:
+                        pass
+                    _ao_ev = ToolEvent(name="app", args={"action": "open", "name": _ao_name},
+                                       result=_ao_res)
+                    self._last_turn_ts = time.time()
+                    return TurnDecision(early_reply=AgentReply(
+                        content=f"Listo, abrí {_ao_name}.", tool_events=[_ao_ev], mission=None))
+                # no resolvió a una app -> sigue el flujo normal (carpeta/URL/chat)
         # RESPONDER MENSAJE — short-circuit determinista PRE-LLM (2026-05-27).
         # MEDIDO: ante "respondele a X que Y" el 4B es errático — a veces se niega
         # (sin tool), a veces llama gui/session (tool equivocada), CASI NUNCA

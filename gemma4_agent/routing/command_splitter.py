@@ -289,6 +289,46 @@ def is_dependent_open(clause: str) -> bool:
     return bool(clause and _DEP_OPEN_RE.match(clause.strip()))
 
 
+# OPEN PELADO de una app: "abrí la calculadora", "abrí discord". MEDIDO 2026-05-31
+# (PC del user, físico): el router/4B NO rutea ciertos nombres a app.open de forma
+# CONSISTENTE ("abrí la calculadora"/"abrí discord" -> NADA 3/3, pero "abrí spotify"
+# -> app 3/3). La tool app.open SÍ resuelve todos (calc.exe etc.). Detector
+# estructural -> el caller INTENTA app.open(nombre); si resuelve a una app, listo;
+# si no (carpeta/URL/chat), cae al flujo normal (la tool es la guarda de precisión).
+_APP_OPEN_VERB = re.compile(
+    r"^\s*(?:abr[íi]\w*|abre|abrir|abrime|lanz[áa]\w*|ejecut[áa]\w*|"             # es
+    r"open|launch|start|run|"                                                     # en
+    r"abra|ouvre|lance|[öo]ffne|starte|apri|avvia)\s+",                           # pt/fr/de/it
+    re.IGNORECASE)
+# marcadores de NO-app: chat/canal (in-app), carpeta (filesystem), URL/sitio (browser).
+_NON_APP_MARK = re.compile(
+    r"\b(?:chat|canal|conversaci[óo]n|grupo|carpeta|folder|directorio|"
+    r"p[áa]gina|sitio|website|http|www)\b|[/@]|\.\w{2,4}\b",
+    re.IGNORECASE)
+_OPEN_LEAD_ART = re.compile(r"^(?:el|la|los|las|the|un|una|mi|le|les|der|die|das|il|lo)\s+",
+                            re.IGNORECASE)
+
+
+def extract_app_open(clause: str) -> str | None:
+    """Si la cláusula es "abrí/abre/open <app>" (open PELADO de una app, nombre corto,
+    sin acción ni marcadores de chat/carpeta/URL), devuelve el nombre de la app (sin
+    artículo). None si no. El caller intenta app.open(nombre) y SOLO se queda con el
+    resultado si la tool resolvió a una app real (si no, sigue el flujo normal)."""
+    if not clause or not clause.strip():
+        return None
+    c = clause.strip()
+    m = _APP_OPEN_VERB.match(c)
+    if not m:
+        return None
+    rest = c[m.end():].strip(" .,:;\"'«»")
+    if not rest or len(rest.split()) > 4:        # nombre de app corto
+        return None
+    if _NON_APP_MARK.search(rest):               # chat/carpeta/URL -> no es app.open
+        return None
+    rest = _OPEN_LEAD_ART.sub("", rest).strip()
+    return rest or None
+
+
 def plan_clauses(utterance: str) -> list[dict]:
     """Devuelve [{text, depends_on_prev}] por cláusula. depends_on_prev=True =>
     ejecutar serializado (el resultado de la anterior alimenta esta)."""

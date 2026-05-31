@@ -269,6 +269,28 @@ class NavExcludesAmbiguousTest(unittest.TestCase):
             self.assertEqual(r["pattern"], "nav_action", msg=q)
 
 
+class AppOpenTest(unittest.TestCase):
+    """extract_app_open: "abrí la calculadora" -> 'calculadora' (open pelado de app).
+    MEDIDO físico (2026-05-31): el 4B NO ruteaba calculadora/discord a app.open
+    consistentemente. El caller intenta app.open; la tool resuelve o cae al flujo."""
+    def setUp(self):
+        from ..routing.command_splitter import extract_app_open
+        self.E = extract_app_open
+
+    def test_extracts_app_name(self):
+        for q, app in [("abrí la calculadora", "calculadora"), ("abrí discord", "discord"),
+                       ("abrí el bloc de notas", "bloc de notas"), ("abrí spotify", "spotify"),
+                       ("open calculator", "calculator"), ("lanzá steam", "steam")]:
+            self.assertEqual(self.E(q), app, msg=q)
+
+    def test_excludes_non_apps(self):
+        # chat (in-app), carpeta (filesystem), URL (browser), página, no-open-verb
+        for q in ("abrí el chat de juan", "abrí la carpeta descargas", "abrí instagram.com",
+                  "abrí la página de google", "escribí hola", "subí el volumen",
+                  "qué hora es", "abrí el canal general"):
+            self.assertIsNone(self.E(q), msg=q)
+
+
 class NavTargetExtractTest(unittest.TestCase):
     """extract_nav_target: 'entrá/andá a [app] al [servidor/canal] X' -> X (control
     a clickear por Name UIA dentro de la app abierta). Validación Discord 2026-05-25."""
