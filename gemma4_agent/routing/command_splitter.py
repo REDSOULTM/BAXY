@@ -283,7 +283,7 @@ def plan_clauses(utterance: str) -> list[dict]:
 # Comillas: si el texto va entre comillas, se respeta literal.
 _WRITE_VERB_STEM = re.compile(
     r"^\s*(?:"
-    r"escrib[íie]\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|"          # es
+    r"escr[íi]b\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|"          # es
     r"type|write|enter|input|"                                        # en
     r"escrev[ae]\w*|digit[ae]\w*|"                                    # pt
     r"[ée]cri[st]\w*|tap[ae]\w*|"                                     # fr
@@ -302,7 +302,7 @@ _WRITE_VERB_STEM = re.compile(
 # multi-idioma (stems); el caller confirma por estado del SO (app abierta).
 _MSG_VERB_STEM = re.compile(
     r"^\s*(?:"
-    r"escrib[íie]\w*|mand[áa]\w*|manda\w*|m[áa]ndale|mandale|decil[ée]?|"   # es
+    r"escr[íi]b\w*|mand[áa]\w*|manda\w*|m[áa]ndale|mandale|decil[ée]?|"   # es
     r"dile|dec[íi]\w*|envi[áa]\w*|envia\w*|"                                # es
     r"respond[ée]\w*|respondele|contest[áae]\w*|contestale|"               # es (responder)
     r"write|send|message|msg|text|tell|repl(?:y|ies|ied)|answer|"          # en (+reply/answer)
@@ -474,7 +474,7 @@ def extract_write_payload(clause: str) -> str | None:
 # Verbos de ACCIÓN-EN-APP: tipear/clickear/poner/hacer-en. Excluye a propósito
 # buscar/reproducir/abrir-simple (tienen tools dedicadas: web/media/app que andan).
 _AA_ACT = (
-    r"escrib[íie]\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|"             # es escribir
+    r"escr[íi]b\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|"             # es escribir
     r"pon[ée]\w*|col[oó]c\w*|met[ée]\w*|"                                 # es poner
     r"clicke[áa]\w*|click\w*|apret[áa]\w*|toc[áa]\w*|"                    # es click
     r"seleccion[áa]\w*|presion[áa]\w*|marc[áa]\w*|"                       # es click2
