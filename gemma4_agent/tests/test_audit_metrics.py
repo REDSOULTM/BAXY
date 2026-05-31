@@ -124,7 +124,10 @@ class TestAuditMetrics(unittest.TestCase):
         import ...` en agent.py, TODOS mismo patrón anti-circular (routing<->agent):
         extract_app_action+split_command (app-action routing, _decide_turn), parse_type_action
         (plan determinista focus+type), is_dependent_open (encadenamiento dependiente
-        'instalá X y abrilo' en _run_multi_intent). Techo 525→528. Si crece mucho MÁS,
+        'instalá X y abrilo' en _run_multi_intent). +extract_app_open (open pelado
+        'abrí la calculadora') -1 por consolidar parse_type_action. STAGE 3 honestidad de
+        cadena: +1 `from ..safety_pkg.reply_validator import is_unverified_claim` en
+        _run_multi_intent (mismo patrón anti-circular). Techo 528→529. Si crece mucho MÁS,
         alguien introdujo lazy en vez de top-level sin justificación."""
         total = 0
         for p in _iter_prod_py():
@@ -134,8 +137,8 @@ class TestAuditMetrics(unittest.TestCase):
                 continue
             total += len(re.findall(r"^\s+from \.", src, re.M))
         self.assertLess(
-            total, 528,
-            f"R3: {total} lazy imports en producción (techo 528)"
+            total, 529,
+            f"R3: {total} lazy imports en producción (techo 529)"
         )
 
     # ----- R4: ToolResult disponible -----

@@ -4563,6 +4563,34 @@ class Gemma4Agent:
                     if _tg and isinstance(_tg, str) and len(_tg.strip()) >= 2:
                         carry_target = _tg.strip()
                         break
+                # STAGE 3 — HONESTIDAD DE LA CADENA (2026-05-31): si la cláusula AFIRMA
+                # un efecto pero NINGUNA tool exitosa lo sustenta -> FALSO ÉXITO (el 4B
+                # alucinó). MEDIDO: "abrí Discord y mandá hola al canal" -> clause2 decía
+                # "mandé hola" SIN correr tool. Reemplazar el reply por uno honesto y
+                # PARAR la cadena (deja el checkpoint para reanudar). El finalize de cada
+                # cláusula solo inyecta un hint de regen, no ablanda el reply combinado.
+                # Gate GEMMA4_CHAIN_HONESTY=0.
+                import os as _os_ch
+                if c and _os_ch.environ.get("GEMMA4_CHAIN_HONESTY", "1").strip().lower() \
+                        not in {"0", "false", "no", "off"}:
+                    try:
+                        from ..safety_pkg.reply_validator import is_unverified_claim as _iuc
+                        _unverified = bool(_iuc(c, list(ev or [])))
+                    except Exception:
+                        _unverified = False
+                    if _unverified:
+                        _honest = f"Intenté «{clause}» pero no pude confirmar que se hiciera."
+                        if replies and replies[-1] == c:
+                            replies[-1] = _honest
+                        else:
+                            replies.append(_honest)
+                        try:
+                            self.trace.event(turn_id, "chain_step_unverified",
+                                             clause=clause[:60])
+                        except Exception:
+                            pass
+                        _chain_failed = True
+                        break   # parar la cadena; el checkpoint queda para reanudar
                 if _mission_id and _mc is not None:
                     try:
                         _mc.mark_done(self.state.path, _mission_id, _clause_idx, c)
