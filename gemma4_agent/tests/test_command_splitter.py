@@ -102,6 +102,76 @@ class MessageToExtractTest(unittest.TestCase):
             self.assertIsNone(extract_message_to(q), msg=q)
 
 
+class AppActionExtractTest(unittest.TestCase):
+    """extract_app_action: ACCESIBILIDAD — "escribí/hacé X en app Y", "andá a Y y
+    escribí X", screenshot -> orquestador computer_use. MEDIDO (2026-05-31): ~1/10
+    de estos pedidos llegaba a computer_use; el resto charlaba/mis-ruteaba."""
+    def setUp(self):
+        from ..routing.command_splitter import extract_app_action
+        self.A = extract_app_action
+
+    def test_act_in_app_needs_verify(self):
+        # "escribí X en <app>" -> act_in_app con verify_app=True (el caller confirma
+        # por estado del SO que <app> es ventana real).
+        for q in ("escribí sigue en claude code",
+                  "escribí hola mundo en el bloc de notas",
+                  "poné reunión a las 5 en notepad",
+                  "type hello world in notepad",
+                  "escribí gracias en Discord"):
+            r = self.A(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertTrue(r["verify_app"], msg=q)
+            self.assertEqual(r["goal"], q)
+
+    def test_in_app_act_app_first(self):
+        # "en <app> escribí X" (app primero) tambien -> verify_app.
+        r = self.A("en claude code escribí quién eres")
+        self.assertIsNotNone(r)
+        self.assertEqual(r["pattern"], "in_app_act")
+        self.assertTrue(r["verify_app"])
+        self.assertIn("claude", (r["app_hint"] or "").lower())
+
+    def test_a_preposition_app_target(self):
+        # Caso REAL del user: "escribile sigue A claude code" (con "a", no "en").
+        # Dispara act_in_app (verify_app) -> el OS-check decide (claude code abierto
+        # -> cu; 'a juan' -> no es ventana -> cae a whatsapp).
+        r = self.A("escribile sigue a claude code")
+        self.assertIsNotNone(r)
+        self.assertTrue(r["verify_app"])
+
+    def test_nav_action_no_verify(self):
+        # "andá a <app> y <acción>" -> nav_action, sin OS-check (gramática basta).
+        for q in ("andá a Claude Code y escribí continuá",
+                  "andá a notepad y escribí mi nombre",
+                  "abrí el word y guardá"):
+            r = self.A(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["pattern"], "nav_action", msg=q)
+            self.assertFalse(r["verify_app"], msg=q)
+
+    def test_screenshot(self):
+        for q in ("sacá un screenshot", "captura de pantalla", "tomá una captura de pantalla"):
+            r = self.A(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["pattern"], "screen", msg=q)
+            self.assertFalse(r["verify_app"], msg=q)
+
+    def test_does_not_fire_on_non_app_actions(self):
+        # Controles: mensajería, notes, audio, web, preguntas, abrir-simple. NO deben
+        # disparar a NIVEL DE GRAMÁTICA (mandale/anotá/subí/buscá/qué/abrí-solo).
+        for q in ("mandale a juan que ya voy", "anotá comprar pan en mi lista",
+                  "recordame comprar pan mañana", "subí el volumen",
+                  "buscá noticias de hoy", "qué hora es", "abrí spotify",
+                  "reproducí algo en spotify", "cómo está el clima", "gracias"):
+            self.assertIsNone(self.A(q), msg=q)
+
+    def test_nav_action_excludes_media_messaging_chains(self):
+        # "andá a YouTube y reproducí X" (=media) y "abrí WhatsApp y mandale a juan"
+        # (=whatsapp) NO deben ir a cu: reproducir/mandar no están en el set nav.
+        self.assertIsNone(self.A("andá a YouTube y reproducí música"))
+        self.assertIsNone(self.A("abrí WhatsApp y mandale a juan hola"))
+
+
 class NavTargetExtractTest(unittest.TestCase):
     """extract_nav_target: 'entrá/andá a [app] al [servidor/canal] X' -> X (control
     a clickear por Name UIA dentro de la app abierta). Validación Discord 2026-05-25."""

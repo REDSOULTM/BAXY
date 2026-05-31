@@ -457,6 +457,98 @@ def extract_write_payload(clause: str) -> str | None:
     return payload or None
 
 
+# --- Detección de ACCIÓN-EN-APP / META para el orquestador computer_use -------
+# ACCESIBILIDAD (núcleo del producto): el usuario dicta y el agente debe ACTUAR en
+# una app/pantalla — escribir, clickear, o "andá a X y hacé Y". MEDIDO en vivo
+# (2026-05-31): estos pedidos casi NUNCA llegaban a computer_use — el 4B charlaba
+# ("escribí sigue en claude code"→"Sigo en Claude Code"), respondía la pregunta
+# ("en claude code escribí quién eres"→la contestaba), o el router los mandaba a
+# notes_tasks/local_search/browser/whatsapp/nada. Solo ~1/10 llegaba al orquestador.
+# Este detector ESTRUCTURAL (gramática multi-idioma, NO listas de apps ni de
+# intenciones) reconoce la FORMA "acción dirigida a una app". NO es un macro
+# por-intención: es UNA capa que detecta la forma; el orquestador resuelve el QUÉ
+# universalmente. La PRECISIÓN de los casos ambiguos ("escribí X en <Y>") la cierra
+# el caller verificando por ESTADO DEL SO que <Y> sea una app/ventana real (así
+# 'anotá la reunión en mi lista' NO se hijackea -> sigue yendo a notes).
+#
+# Verbos de ACCIÓN-EN-APP: tipear/clickear/poner/hacer-en. Excluye a propósito
+# buscar/reproducir/abrir-simple (tienen tools dedicadas: web/media/app que andan).
+_AA_ACT = (
+    r"escrib[íie]\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|"             # es escribir
+    r"pon[ée]\w*|col[oó]c\w*|met[ée]\w*|"                                 # es poner
+    r"clicke[áa]\w*|click\w*|apret[áa]\w*|toc[áa]\w*|"                    # es click
+    r"seleccion[áa]\w*|presion[áa]\w*|marc[áa]\w*|"                       # es click2
+    r"type|write|input|enter|put|click|press|tap|select|check|"          # en
+    r"escrev\w*|clic\w*|"                                                 # pt
+    r"[ée]cri\w*|clique\w*|"                                              # fr
+    r"schreib\w*|tipp\w*|klick\w*|"                                       # de
+    r"scriv\w*|clicc\w*|premi\w*"                                         # it
+)
+# Verbos de NAVEGACIÓN a una app/sitio (para "andá a X y <acción> Y").
+_AA_NAV = (
+    r"ve|and[áa]|anda|abr[íi]|abre|abrir|entr[áa]|entra|llev[áa]me|"      # es
+    r"go|open|navigate|head|launch|"                                     # en
+    r"abra|v[áa]|entre|ouvre|va|[öo]ffne|geh|apri|vai"                   # pt/fr/de/it
+)
+_AA_CONN = (r"y|e|and|then|luego|despu[ée]s|after|et|puis|und|dann|poi|o")
+_AA_PREP = (r"a|al|to|para|en|in|into|on|n[oa]|su|the|im|dans")
+
+# A: "andá a <X> y <acción> ..." (nav + acción). El contexto nav+conector garantiza
+# una META de computadora; la acción admite verbos IN-APP inequívocos (tipear/
+# clickear de _AA_ACT + guardar/cerrar/borrar). NO incluye mandar/buscar/reproducir:
+# esos solapan con whatsapp/web/media (que tienen tools dedicadas) -> dejarlos fuera
+# para no hijackear "abrí YouTube y reproducí X" (=media) ni "abrí WhatsApp y mandale
+# a juan" (=whatsapp). Solo lo que es genuinamente operar-dentro-de-la-app.
+_AA_ACT_NAV = (_AA_ACT +
+    r"|cerr[áa]\w*|guard[áa]\w*|borr[áa]\w*|elimin[áa]\w*|"   # es: cerrar/guardar/borrar
+    r"close|save|delete")                                     # en
+_AA_NAV_ACTION = re.compile(
+    r"\b(?:" + _AA_NAV + r")\b\s+(?:" + _AA_PREP + r")?\s*\S+.*?"
+    r"\s+(?:" + _AA_CONN + r")\s+(?:luego\s+|despu[ée]s\s+|then\s+)?"
+    r"(?:" + _AA_ACT_NAV + r")\b", re.IGNORECASE)
+# B: "<acción> <payload> en|a <app>" — ambiguo -> verify_app. Incluye "a" (caso
+# real "escribile sigue A claude code") pero SIEMPRE gateado por el OS-check del
+# caller: 'escribile a juan' -> app_hint='juan' no es ventana -> NO dispara cu
+# (sigue a whatsapp). Solo 'a <app-abierta>' rutea al orquestador.
+_AA_ACT_IN_APP = re.compile(
+    r"\b(?:" + _AA_ACT + r")\b.*?\s+(?:en|in|into|on|sobre|dentro\s+de|dans|im|su|no|a|al)\s+(?P<app>.+)$",
+    re.IGNORECASE)
+# B2: "en <app> <acción> ..." (app primero) — ambiguo -> verify_app.
+_AA_IN_APP_ACT = re.compile(
+    r"^\s*(?:en|in|into|on|dentro\s+de|dans|im|su|no)\s+(?P<app>.+?)\s+(?:" + _AA_ACT + r")\b",
+    re.IGNORECASE)
+# C: acción de PANTALLA explícita (screenshot). Alta precisión, sin app.
+_AA_SCREEN = re.compile(
+    r"\b(?:captura(?:r|me)?(?:\s+de)?\s+(?:pantalla|la\s+pantalla)|screenshot|"
+    r"screen\s*shot|print\s*screen|pantallazo|"
+    r"saca\w*\s+(?:una\s+|me\s+)?(?:foto|captura)\s+(?:de\s+)?(?:la\s+)?pantalla)\b",
+    re.IGNORECASE)
+
+
+def extract_app_action(clause: str) -> dict | None:
+    """Si la cláusula es una ACCIÓN-EN-APP/META para el orquestador computer_use,
+    devuelve {goal, app_hint, verify_app, pattern}; None si no. ESTRUCTURAL
+    (gramática, no contenido/listas). `verify_app=True` => el caller DEBE confirmar
+    por estado del SO que `app_hint` es una app/ventana real antes de rutear (cura
+    de precisión: 'poné X en mi lista' no es computer_use). Ver comentario de bloque."""
+    if not clause or not clause.strip():
+        return None
+    c = clause.strip()
+    if _AA_SCREEN.search(c):
+        return {"goal": c, "app_hint": None, "verify_app": False, "pattern": "screen"}
+    if _AA_NAV_ACTION.search(c):
+        return {"goal": c, "app_hint": None, "verify_app": False, "pattern": "nav_action"}
+    m = _AA_IN_APP_ACT.search(c)
+    if m:
+        return {"goal": c, "app_hint": m.group("app").strip(" .,:\"'«»"),
+                "verify_app": True, "pattern": "in_app_act"}
+    m = _AA_ACT_IN_APP.search(c)
+    if m:
+        return {"goal": c, "app_hint": m.group("app").strip(" .,:\"'«»"),
+                "verify_app": True, "pattern": "act_in_app"}
+    return None
+
+
 # --- Extracción de TARGET de CLICK (Fase B computer-use) ---------------------
 # Simétrico a la escritura: una cláusula "apretá/clickeá/tocá/seleccioná <botón>"
 # en contexto GUI debe ir a la macro determinista click_button(label) — UIA find

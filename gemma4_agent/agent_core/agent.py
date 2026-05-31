@@ -1250,6 +1250,59 @@ class Gemma4Agent:
         # otra, con sus parámetros. Su impl (tools.t_computer_use) corre el plan
         # executor internamente. Sin gate frágil, sin secuestro — unificado.
         turn_id = self.trace.new_turn_id()
+        # ACCIÓN-EN-APP / META (ACCESIBILIDAD, 2026-05-31, núcleo del producto).
+        # MEDIDO en vivo: los pedidos "escribí/hacé X en app Y", "en Y escribí X" y
+        # "andá a Y y escribí X" casi nunca llegaban al orquestador computer_use
+        # (~1/10) — el 4B charlaba ("escribí sigue en claude code"->"Sigo en Claude
+        # Code"), respondía la pregunta en vez de tipearla, o el router los mandaba a
+        # notes_tasks/local_search/browser/whatsapp/nada. Toda la cascada UIA→OCR→
+        # visión quedaba INALCANZABLE. Detector ESTRUCTURAL (extract_app_action:
+        # gramática multi-idioma, mide la FORMA, NO listas de apps/intenciones —
+        # CLAUDE.md (b)) + cierre de precisión por ESTADO DEL SO (el target debe ser
+        # una app/ventana REAL — CLAUDE.md (c)): así 'poné X en mi lista' NO se
+        # hijackea (no es ventana) -> sigue a notes. Va ANTES del split (así "andá a
+        # X y escribí Y" va ENTERO a cu, no se parte mal) y antes del reply-net (así
+        # "escribile X a <app-abierta>" no se confunde con WhatsApp). NO gateado por
+        # _splitting: una cláusula de tipeo suelta también debe rutear. Short-circuit:
+        # cu(goal) — el orquestador planifica+verifica+resume honesto. GEMMA4_APP_ACTION_NET=0.
+        import os as _os_aa
+        if isinstance(content, str) and content.strip() \
+                and _os_aa.environ.get("GEMMA4_APP_ACTION_NET", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+            try:
+                from ..routing.command_splitter import extract_app_action, split_command
+                _aa = extract_app_action(content)
+            except Exception:
+                _aa = None
+            if _aa is not None:
+                if _aa.get("pattern") in ("nav_action", "screen"):
+                    _aa_route = True                       # frase entera = goal coherente
+                else:                                      # act_in_app / in_app_act
+                    try:                                   # multi-cláusula -> deja que el
+                        _aa_route = len(split_command(content)) <= 1   # split lo maneje
+                    except Exception:
+                        _aa_route = True
+                if _aa_route and _aa.get("verify_app"):    # PRECISIÓN: target = app real
+                    try:
+                        _aa_route = bool(self._window_title_in_text(_aa.get("app_hint") or ""))
+                    except Exception:
+                        _aa_route = False
+                if _aa_route:
+                    try:
+                        self.trace.event(turn_id, "app_action_shortcircuit",
+                                         pattern=_aa.get("pattern"),
+                                         app_hint=_aa.get("app_hint"))
+                    except Exception:
+                        pass
+                    _aa_goal = _aa.get("goal") or content
+                    _aa_res = self.tools.execute("computer_use", {"goal": _aa_goal})
+                    _aa_ev = ToolEvent(name="computer_use", args={"goal": _aa_goal},
+                                       result=_aa_res if isinstance(_aa_res, dict) else {})
+                    _aa_msg = (_aa_res.get("reply") if isinstance(_aa_res, dict) else None) \
+                        or "Listo."
+                    self._last_turn_ts = time.time()
+                    return TurnDecision(early_reply=AgentReply(
+                        content=_aa_msg, tool_events=[_aa_ev], mission=None))
         # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
         # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
         # LLM y corremos cada cláusula como su propio turno (serializado si la
