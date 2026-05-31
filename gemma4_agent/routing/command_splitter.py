@@ -640,6 +640,34 @@ def is_bare_inapp_nav(clause: str) -> bool:
     return bool(_BARE_INAPP_NAV.match(clause.strip()))
 
 
+# Pedido de LEER/MOSTRAR lo que hay EN PANTALLA. Para el chain-context (2026-05-31):
+# tras navegar a una PÁGINA (browser), "mostrame/leeme/ve las tareas" debe LEER la
+# pantalla por visión, NO la tool LOCAL (notes_tasks). El user FLAGSHIP: "entrá a Canvas
+# y MOSTRAME las tareas que debo hacer". Verbos VISUALES (mostrar/leer/mirar/ver), NO
+# 'decime/dime' (ambiguo: "decime qué hora es" no es leer-pantalla).
+_READ_SCREEN_RE = re.compile(
+    r"^\s*(?:mostr[áa]\w*|mu[ée]str\w*|mostrame|"          # mostrame/muestra
+    r"le[ée]me|leeme|le[ée]\b|leer\b|"                     # leeme/leé/leer
+    r"mir[áa]\w*|mira\b|f[íi]jate|fijate|"                 # mirá/fijate
+    r"ve\b|v[ée]\b|"                                       # ve/vé (mirar; 've a X'=nav lo agarra antes)
+    r"show(?:\s+me)?|read)\b\s+\S+",
+    re.IGNORECASE)
+
+
+def is_read_screen_request(clause: str) -> bool:
+    """True si la cláusula pide LEER/MOSTRAR lo que hay EN PANTALLA ('mostrame las
+    tareas', 'leeme lo que dice', 've las tareas'). Para el chain-context: tras navegar
+    a una página/app, leer su CONTENIDO por VISIÓN, no una tool local (notes_tasks).
+    El caller la gatea por carry de navegación web (browser). ESTRUCTURAL. 've a X' (nav)
+    lo agarra is_bare_inapp_nav ANTES; acá 've <sustantivo>' = mirar. Excluye 'decime/
+    dime' (ambiguo). El user FLAGSHIP: 'entrá a Canvas y mostrame las tareas'."""
+    if not clause or not clause.strip():
+        return False
+    if is_bare_inapp_nav(clause):  # "ve a X" = NAVEGAR (otro macro), no leer-pantalla
+        return False
+    return bool(_READ_SCREEN_RE.match(clause.strip()))
+
+
 # Verbos de TIPEO (subconjunto de _AA_ACT: solo escribir/teclear/poner, NO click).
 # Para construir un PLAN DETERMINISTA focus_app+type sin depender del 4B planner
 # (que a veces devuelve plan vacío o mete toda la frase como texto — MEDIDO).

@@ -4617,6 +4617,41 @@ class Gemma4Agent:
                                            f"{_clause_idx + 2} en adelante. Decime si reintento.")
                         break
                     continue
+                # CHAIN read-screen (2026-05-31, FLAGSHIP del user): tras navegar a una
+                # PÁGINA (browser), "mostrame/leeme/ve las tareas" debe LEER la pantalla
+                # por VISIÓN (describe_screen), NO la tool LOCAL (notes_tasks). Caso real:
+                # "entrá a Canvas y mostrame las tareas" -> "las tareas" caía a notes_tasks
+                # en vez de leer la página de Canvas. Gate: carry incluye browser +
+                # is_read_screen_request (verbos visuales). GEMMA4_CHAIN_READ=0.
+                _read_scr = False
+                if carry and any("browser" in str(_c) for _c in carry):
+                    import os as _os_rd
+                    if _os_rd.environ.get("GEMMA4_CHAIN_READ", "1").strip().lower() \
+                            not in {"0", "false", "no", "off"}:
+                        try:
+                            from ..routing.command_splitter import is_read_screen_request
+                            _read_scr = is_read_screen_request(clause)
+                        except Exception:
+                            _read_scr = False
+                if _read_scr:
+                    res = self.tools.execute("vision",
+                        {"action": "describe_screen", "target": clause.strip()})
+                    ok = isinstance(res, dict) and res.get("ok")
+                    _desc = ""
+                    if isinstance(res, dict):
+                        _desc = str(res.get("description") or res.get("text")
+                                    or res.get("answer") or res.get("summary") or "").strip()
+                    replies.append(_desc if _desc else
+                                   f"Miré la pantalla pero no pude leer «{clause.strip()}».")
+                    all_events.append(ToolEvent(name="vision",
+                        args={"action": "describe_screen", "target": clause.strip()},
+                        result=res if isinstance(res, dict) else {}))
+                    self.trace.event("multi_intent", "chain_read_screen",
+                                     target=clause.strip()[:60], ok=ok)
+                    if _mission_id and _mc is not None:
+                        try: _mc.mark_done(self.state.path, _mission_id, _clause_idx, replies[-1])
+                        except Exception: pass
+                    continue
                 # Propagar el contexto GUI de la cláusula anterior a ESTA, para
                 # que "escribí X" tras "abrí Notepad" herede gui/window y no
                 # caiga a 'session' (charla). Bypassa el veto conversacional del

@@ -270,6 +270,27 @@ class IsBareInappNavTest(unittest.TestCase):
             self.assertFalse(self.N(q), msg=q)
 
 
+class ReadScreenRequestTest(unittest.TestCase):
+    """is_read_screen_request: pedir LEER/MOSTRAR la pantalla ('mostrame las tareas')
+    para el chain-context-read (tras navegar a una página, leer su contenido por visión,
+    no la tool local). FLAGSHIP del user: 'entrá a Canvas y mostrame las tareas'."""
+    def setUp(self):
+        from ..routing.command_splitter import is_read_screen_request
+        self.R = is_read_screen_request
+
+    def test_fires_on_read_show(self):
+        for q in ("mostrame las tareas", "mostrame las tareas que debo hacer",
+                  "leeme lo que dice", "ve las tareas", "mirá qué hay en la pantalla",
+                  "fijate las notificaciones", "show me the tasks", "leé el mensaje"):
+            self.assertTrue(self.R(q), msg=q)
+
+    def test_not_on_other(self):
+        # 'decime' (ambiguo), nav ('ve a X'), tipeo, play, controles -> NO leer-pantalla
+        for q in ("decime qué hora es", "ve a youtube", "andá al canal general",
+                  "poné rock", "escribí hola", "subí el volumen", "buscá gatos"):
+            self.assertFalse(self.R(q), msg=q)
+
+
 class NavExcludesAmbiguousTest(unittest.TestCase):
     """ETAPA 2 (2026-05-31): "abrí Spotify y poné rock" NO debe ser nav_action
     (poné=play=media, no tipear). Solo verbos de tipeo/click inequívocos."""
