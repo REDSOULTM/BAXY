@@ -4541,7 +4541,15 @@ class Gemma4Agent:
                     all_events.extend(ev)
                 # actualizar carry con las tools de contexto GUI que ESTA cláusula
                 # ejecutó (para la siguiente).
-                ran = [n for n in (self._last_executed_tools or []) if n in _GUI_CTX]
+                # carry de contexto GUI: de _last_executed_tools O de los tool_events de
+                # ESTA cláusula. Los short-circuits (open-pelado, app-action) devuelven
+                # early_reply SIN pasar por _execute_turn -> NO setean _last_executed_tools,
+                # pero su ToolEvent (app/gui) SÍ está en `ev`. MEDIDO 2026-05-31: sin esto
+                # "abrí la calc, escribí 5 y ..." perdía el carry tras el open-pelado y el
+                # "escribí 5" no heredaba la ventana (caía a charla "cancelo").
+                _ev_names = [getattr(_e, "name", None) for _e in (ev or [])]
+                ran = [n for n in (list(self._last_executed_tools or []) + _ev_names)
+                       if n in _GUI_CTX]
                 if ran:
                     carry = ran
                     # capturar el nombre de la app/ventana abierta para que la
