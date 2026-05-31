@@ -56,6 +56,12 @@ _ANCHORS: dict[str, list[str]] = {
         # hard-negatives de FORGET: borrar ARCHIVOS no es borrar el perfil
         "borrá estos archivos", "eliminá esta carpeta", "limpiá la carpeta de descargas",
         "borrá el archivo viejo", "eliminá los temporales",
+        # hard-negatives de INSPECT: TIPEAR "mi nombre"/mis datos EN una app es una
+        # ACCIÓN, no preguntar por el perfil (MEDIDO 2026-05-31: "en notepad poné mi
+        # nombre" matcheaba inspect y volcaba el perfil en vez de tipear).
+        "en notepad poné mi nombre", "escribí mi nombre en el bloc de notas",
+        "anotá mi nombre en el documento", "escribe mi nombre en el word",
+        "write my name in notepad", "pon mi correo en el formulario",
     ],
 }
 

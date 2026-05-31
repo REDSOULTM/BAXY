@@ -103,9 +103,12 @@ class TestProfileIntent(unittest.TestCase):
     def test_normal_use_not_detected(self):
         if not self.ready:
             self.skipTest("encoder no disponible")
-        # incluyendo los hard-negatives medidos (borrar ARCHIVOS != borrar perfil).
+        # incluyendo los hard-negatives medidos (borrar ARCHIVOS != borrar perfil;
+        # TIPEAR "mi nombre"/mis datos en una app != preguntar por el perfil).
         for q in ("qué sabés de python", "qué hora es", "abrí spotify",
-                  "borrá estos archivos", "recomendame música", "hola"):
+                  "borrá estos archivos", "recomendame música", "hola",
+                  "en notepad poné mi nombre", "poné mi nombre en el word",
+                  "escribí mi nombre en el bloc de notas", "write my name in notepad"):
             self.assertIsNone(self.detect(q), f"falso positivo en {q!r}")
 
 
