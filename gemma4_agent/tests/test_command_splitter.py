@@ -69,6 +69,38 @@ class MessageToExtractTest(unittest.TestCase):
         for q in ("que hora es", "abre discord", "andá al canal general"):
             self.assertIsNone(extract_message_to(q), msg=q)
 
+    def test_bare_send_verb_without_recipient_is_none(self):
+        # BUG REPORTADO EN VIVO (2026-05-30): "manda un mensaje por wsp" (SIN
+        # destinatario) -> el stem PELADO `manda` hacía implies_recipient=True, no
+        # exigía "a", y el PASO 3 agarraba el artículo "un" como contacto ->
+        # "Abrí el chat con un" / el 4B alucinaba +34 123456. Un imperativo de
+        # envío PELADO (sin clítico dativo -le ni "a <quién>") NO es un mensaje-a-
+        # alguien -> None -> el LLM pregunta a quién (honesto, no inventa).
+        for q in ("manda un mensaje por wsp",
+                  "mandá un wsp",
+                  "manda un mensaje por whatsapp",
+                  "envia un mensaje",
+                  "escribe un mensaje de whatsapp",
+                  "decí hola",
+                  "schick eine nachricht",   # de pelado
+                  "envoie un message",       # fr pelado
+                  "invia un messaggio"):     # it pelado
+            self.assertIsNone(extract_message_to(q), msg=q)
+
+    def test_clitic_or_explicit_a_still_extracts(self):
+        # No-regresión: el clítico dativo -le (mandaLE/deciLE/escribiLE) o el "a
+        # <quién>" explícito SIGUEN extrayendo destinatario.
+        self.assertEqual(extract_message_to("manda a pedro nos vemos")[0], "pedro")
+        self.assertEqual(extract_message_to("escribile a mama que ya voy"),
+                         ("mama", "que ya voy"))
+        self.assertEqual(extract_message_to("tell juan hi"), ("juan", "hi"))
+
+    def test_reply_verbs_still_none(self):
+        # respondele/contestale tienen "-le" pero su destinatario es el ÚLTIMO que
+        # escribió (reply-a-último) -> este extractor debe devolver None.
+        for q in ("respondele que sí", "contestale que ya voy"):
+            self.assertIsNone(extract_message_to(q), msg=q)
+
 
 class NavTargetExtractTest(unittest.TestCase):
     """extract_nav_target: 'entrá/andá a [app] al [servidor/canal] X' -> X (control

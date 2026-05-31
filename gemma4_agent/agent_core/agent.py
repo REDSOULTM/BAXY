@@ -1416,6 +1416,14 @@ class Gemma4Agent:
         raw_text_early = _extract_user_text(content)
         # Track current user text for the fallback-streak detector.
         self._current_user_text = (raw_text_early or "").strip().lower()
+        # Plumbear el texto del turno al ToolRegistry: las tools que necesitan
+        # GROUNDING DE PROCEDENCIA (p.ej. whatsapp: ¿el user DICTÓ este número, o
+        # el 4B lo alucinó?) lo leen de ahí. Sin esto el registry no ve el mensaje
+        # original. Best-effort: si self.tools aún no existe, no rompe.
+        try:
+            self.tools._current_user_text = self._current_user_text
+        except Exception:
+            pass
         # ITEM 4: si el turno es DEÍCTICO (multilingüe por embeddings) y el entity
         # ring tiene un identificador reciente, inyectar el referente LITERAL al
         # final del historial (el 4B sufre lost-in-the-middle: el referente debe ir
@@ -4088,6 +4096,16 @@ class Gemma4Agent:
         self._tts_streamed = False
         self._tts_streamed_text = ""
         self._tts_info_stream = False  # did we stream an INFO (no-tool) pass this turn?
+        # GROUNDING: plumbear el texto del turno al ToolRegistry ANTES de cualquier
+        # despacho de tool (incl. short-circuits de _decide_turn). Las tools que
+        # validan PROCEDENCIA (whatsapp: ¿el user DICTÓ este número o el 4B lo
+        # alucinó?) lo leen de ahí. Acá es el único punto que corre SIEMPRE, antes
+        # de los early-return. Best-effort.
+        try:
+            self.tools._current_user_text = (
+                _extract_user_text(content) or "").strip().lower()
+        except Exception:
+            pass
         # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
         # ~782 LOC). Extraída a _decide_turn. early_reply propaga los 4 caminos
         # cortos (jarvis-pending, multi-intent re-dispatch, reply-shortcut,

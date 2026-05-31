@@ -2854,6 +2854,46 @@ class ToolRegistry:
             if isinstance(res, dict):
                 res.setdefault("delegated_from", "whatsapp(open-app)")
             return res
+        # GROUNDING DE PROCEDENCIA DEL TELÉFONO (C1 "destinatario equivocado =
+        # daño irreversible", 2026-05-30). Cuando el user NO da destinatario
+        # ("manda un mensaje por wsp") el 4B a veces ALUCINA un número placeholder
+        # (caso REAL del user: phone='+34 123456' -> WhatsApp abre y muestra "el
+        # número +34 123456 no está en WhatsApp"). El 4B NO tiene la base de
+        # contactos: un `phone=` que emite es, o bien lo que el user DICTÓ, o bien
+        # inventado. Guarda ESTRUCTURAL que mide la FORMA (no keyword-lists ni
+        # idioma): el teléfono explícito es de fiar solo si el user dictó esos
+        # dígitos en su mensaje (solapamiento bidireccional tolera que el 4B
+        # complete el código de país). Si no -> está fabricado -> NO abrir un chat
+        # con basura: soltar el número y resolver por nombre si hay, o PREGUNTAR.
+        # Solo activo si el agente plumeó el texto del turno (sin él = no-op, igual
+        # que antes — no rompe tests/CLI que no lo setean).
+        _ut = (getattr(self, "_current_user_text", "") or "").strip()
+        _phone_arg = str(args.get("phone") or args.get("number") or "").strip()
+        if _ut and _phone_arg and _act in {"send_message", "send", "open_chat", ""}:
+            _pd = _re.sub(r"\D", "", _phone_arg)
+            _ud = _re.sub(r"\D", "", _ut)
+            _grounded = bool(_pd) and len(_ud) >= 6 and (_pd in _ud or _ud in _pd)
+            if not _grounded:
+                _name_alt = str(args.get("contact") or args.get("recipient")
+                                or args.get("to") or args.get("name") or "").strip()
+                if _name_alt:
+                    # Hay un nombre alternativo: soltar el teléfono fabricado y
+                    # dejar que el resolver use el nombre (contacto / GUI search).
+                    args = {k: v for k, v in args.items()
+                            if k not in ("phone", "number")}
+                else:
+                    # Sin destinatario real: pedirlo. El LLM formula la pregunta en
+                    # el idioma del user; status=needs_user la gatea. NUNCA mandar
+                    # a un número inventado.
+                    return {
+                        "ok": False, "status": "needs_user", "provider": "whatsapp",
+                        "error": "no me dijiste a quién mandarle el mensaje",
+                        "hint": ("Faltó el destinatario: preguntá al usuario a quién "
+                                 "mandar el mensaje (nombre de contacto o número con "
+                                 "código de país). NUNCA inventes ni uses un número "
+                                 "de ejemplo como +34 123456."),
+                        "fabricated_phone": _phone_arg,
+                    }
         return whatsapp_tool(args, self.state, executor=self.execute)
 
     def t_notes_tasks(self, args: dict[str, Any]) -> dict[str, Any]:

@@ -360,9 +360,27 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
     # "mandar 2+2 al contacto ''". (Verbos como mandale/decile YA implican
     # destinatario aunque no repitan "a": ese caso se cubre abajo.)
     _verb = clause[m.start():m.end()].strip().lower()
-    _verb_implies_recipient = bool(re.match(
-        r"mand|m[áa]ndale|mandale|decil|dile|dec[íi]|tell|text|message|msg|"
-        r"schick|envoie|invia", _verb))
+    # ¿El verbo IMPLICA un destinatario que sigue (y por eso puede omitir el "a
+    # <quién>")? SOLO si lleva el CLÍTICO DATIVO es/pt "-le/-les" sobre una raíz
+    # de ENVIAR/DECIR/ESCRIBIR (mandaLE, deciLE, diLE, escribiLE, envíaLE) o es un
+    # verbo en/persona-directa (tell/text/message/msg). Los imperativos PELADOS
+    # multi-idioma (manda, envía, escribí, decí, send, write, schick, envoie,
+    # invia) NO implican destinatario: exigen un "a/to/para/à/an <quién>"
+    # explícito. Mide la FORMA (morfología), no listas de nombres.
+    #
+    # BUG QUE ESTO CURA (2026-05-30, reportado en vivo): "manda un mensaje por
+    # wsp" (SIN destinatario) — el stem pelado `mand` hacía implies=True, no
+    # exigía "a", y el PASO 3 agarraba el 1er token "un" (artículo) como contacto
+    # -> "Abrí el chat con un". Mismo bug-class en de/fr/it ("schick eine
+    # nachricht"). Ahora sin clítico ni "a" -> None -> el LLM pregunta a quién.
+    #
+    # Excluye los verbos de RESPUESTA (respondeLE/contestaLE): tienen "-le" pero
+    # su destinatario es el ÚLTIMO que escribió, no uno que sigue en el texto; el
+    # flujo de reply-a-último los maneja (y este extractor debe devolver None).
+    _verb_implies_recipient = bool(
+        (re.search(r"(?:le|les)$", _verb)
+         and re.match(r"(?:m[áa]nd|mand|dec|d[íi]|escr[íi]b|env[íi])", _verb))
+        or re.match(r"(?:tell|text|message|msg)\b", _verb))
     m_to = re.match(r"^(?:a|al|to|para|à|an)\s+", rest, flags=re.IGNORECASE)
     if m_to:
         rest = rest[m_to.end():].strip()
