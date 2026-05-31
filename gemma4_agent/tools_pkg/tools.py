@@ -2062,7 +2062,14 @@ class ToolRegistry:
             return _err("computer_use no disponible (sin agente)", status="failed")
         try:
             from ..computer_use_pkg.computer_use import plan_for, PlanExecutor, summarize_result
-            plan = plan_for(agent, goal)
+            # PLAN DETERMINISTA (accesibilidad, 2026-05-31): el caller puede pasar un
+            # plan ya construido (`steps`) para los casos estructurados claros (p.ej.
+            # "escribí X en app Y" -> [focus_app(Y), type(X)]) y NO depender del 4B
+            # planner, que MEDIDO devolvía plan vacío o metía toda la frase como texto.
+            # Si no hay steps, planifica el 4B (caminos abiertos: nav multi-paso, etc.).
+            plan = args.get("steps") or args.get("plan")
+            if not (isinstance(plan, list) and plan and all(isinstance(s, dict) for s in plan)):
+                plan = plan_for(agent, goal)
             if not plan:
                 return _err("no pude planificar la acción", goal=goal[:60], status="failed")
             result = PlanExecutor(agent).execute(plan, "cu_tool")

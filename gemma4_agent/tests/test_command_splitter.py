@@ -171,6 +171,63 @@ class AppActionExtractTest(unittest.TestCase):
         self.assertIsNone(self.A("andá a YouTube y reproducí música"))
         self.assertIsNone(self.A("abrí WhatsApp y mandale a juan hola"))
 
+    def test_accented_imperative_escribele(self):
+        # BUG real del user (voz): "escríbele/escríbe" (acento en la 1ra i) debe
+        # matchear. Antes 'escrib[íie]' lo perdía -> el comando iba a notes_tasks.
+        self.assertIsNotNone(self.A("Abre el bloque de notas y escríbele Hola Mundo"))
+        self.assertIsNotNone(self.A("escríbele hola en notepad"))
+
+
+class ParseTypeActionTest(unittest.TestCase):
+    """parse_type_action: extrae (app, payload) para el PLAN DETERMINISTA
+    focus_app+type. Evita los planes vacíos / payload-mal del 4B planner (MEDIDO)."""
+    def setUp(self):
+        from ..routing.command_splitter import parse_type_action
+        self.P = parse_type_action
+
+    def test_type_in_app(self):
+        for q, app, pay in [
+            ("escribí hola mundo en el bloc de notas", "el bloc de notas", "hola mundo"),
+            ("escríbele hola en notepad", "notepad", "hola"),
+            ("type hello world in notepad", "notepad", "hello world"),
+            ("escribí gracias en Discord", "Discord", "gracias"),
+        ]:
+            r = self.P(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["app"], app, msg=q)
+            self.assertEqual(r["payload"], pay, msg=q)
+
+    def test_prefers_en_over_a_locator(self):
+        # "poné R a las 5 en notepad": el 'en' final manda, NO el 'a' de 'a las 5'.
+        r = self.P("poné reunión a las 5 en el bloc de notas")
+        self.assertEqual(r["app"], "el bloc de notas")
+        self.assertEqual(r["payload"], "reunión a las 5")
+
+    def test_a_locator_fallback(self):
+        # Sin 'en', usa 'a' (caso real "escribile sigue a claude code").
+        r = self.P("escribile sigue a claude code")
+        self.assertEqual(r["app"], "claude code")
+        self.assertEqual(r["payload"], "sigue")
+
+    def test_in_app_first(self):
+        r = self.P("en notepad escribí mi nombre")
+        self.assertEqual(r["app"], "notepad")
+        self.assertEqual(r["payload"], "mi nombre")
+
+    def test_nav_then_type(self):
+        for q, pay in [("andá a Claude Code y escribí continuá", "continuá"),
+                       ("abrí la calculadora y escribí 5+5", "5+5"),
+                       ("Abre el bloque de notas y escríbele Hola Mundo", "Hola Mundo")]:
+            r = self.P(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["payload"], pay, msg=q)
+
+    def test_non_type_returns_none(self):
+        for q in ("mandale a juan que ya voy", "anotá comprar pan en mi lista",
+                  "subí el volumen", "sacá un screenshot", "qué hora es",
+                  "abrí spotify", "hacé clic en guardar"):
+            self.assertIsNone(self.P(q), msg=q)
+
 
 class NavTargetExtractTest(unittest.TestCase):
     """extract_nav_target: 'entrá/andá a [app] al [servidor/canal] X' -> X (control

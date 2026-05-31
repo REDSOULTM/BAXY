@@ -1265,7 +1265,7 @@ class Gemma4Agent:
         # "escribile X a <app-abierta>" no se confunde con WhatsApp). NO gateado por
         # _splitting: una cláusula de tipeo suelta también debe rutear. Short-circuit:
         # cu(goal) — el orquestador planifica+verifica+resume honesto. GEMMA4_APP_ACTION_NET=0.
-        import os as _os_aa
+        import os as _os_aa, re as _re_aa
         if isinstance(content, str) and content.strip() \
                 and _os_aa.environ.get("GEMMA4_APP_ACTION_NET", "1").strip().lower() \
                     not in {"0", "false", "no", "off"}:
@@ -1295,11 +1295,47 @@ class Gemma4Agent:
                     except Exception:
                         pass
                     _aa_goal = _aa.get("goal") or content
-                    _aa_res = self.tools.execute("computer_use", {"goal": _aa_goal})
-                    _aa_ev = ToolEvent(name="computer_use", args={"goal": _aa_goal},
+                    if _aa.get("pattern") == "screen":
+                        # "sacá un screenshot" -> tool de captura directa (gui.screenshot),
+                        # NO el orquestador (no tiene primitiva de screenshot). Ruta
+                        # determinista: capturar la pantalla y devolver el path.
+                        _aa_tool, _aa_args = "gui", {"action": "screenshot"}
+                    else:
+                        _aa_tool = "computer_use"
+                        _aa_args = {"goal": _aa_goal}
+                        # PLAN DETERMINISTA para type-actions claros: parsea (app,
+                        # payload) y arma [focus_app(app), type(payload)] -> NO depende
+                        # del 4B planner (que MEDIDO daba plan vacío en "abrí calc y
+                        # escribí 5+5" o metía toda la frase como texto en "poné R a las
+                        # 5 en notepad"). Para nav multi-paso/otros cae al planner.
+                        try:
+                            from ..routing.command_splitter import parse_type_action
+                            _tp = parse_type_action(content)
+                        except Exception:
+                            _tp = None
+                        if _tp:
+                            # limpiar artículo inicial ("el bloque de notas" ->
+                            # "bloque de notas") para que app.open resuelva mejor el
+                            # nombre cuando la app está cerrada (_focus_app la abre).
+                            _app = _re_aa.sub(r"^(?:el|la|los|las|the|mi|mis|un|una)\s+",
+                                              "", _tp["app"], flags=_re_aa.IGNORECASE) or _tp["app"]
+                            _aa_args["steps"] = [
+                                {"op": "focus_app", "arg": _app},
+                                {"op": "type", "arg": _tp["payload"]},
+                            ]
+                    # Para cu con plan determinista (steps) llamamos al handler DIRECTO:
+                    # execute() valida el schema del 4B (additionalProperties=false) y
+                    # rechazaría 'steps'. El handler acepta el plan pre-construido. El
+                    # caso goal-only y screen sí van por execute (schema-válidos).
+                    if _aa_tool == "computer_use" and _aa_args.get("steps"):
+                        _aa_res = self.tools.t_computer_use(_aa_args)
+                    else:
+                        _aa_res = self.tools.execute(_aa_tool, _aa_args)
+                    _aa_ev = ToolEvent(name=_aa_tool, args=_aa_args,
                                        result=_aa_res if isinstance(_aa_res, dict) else {})
                     _aa_msg = (_aa_res.get("reply") if isinstance(_aa_res, dict) else None) \
-                        or "Listo."
+                        or ("Listo, saqué la captura." if _aa.get("pattern") == "screen"
+                            else "Listo.")
                     self._last_turn_ts = time.time()
                     return TurnDecision(early_reply=AgentReply(
                         content=_aa_msg, tool_events=[_aa_ev], mission=None))

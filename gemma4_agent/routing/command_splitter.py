@@ -549,6 +549,77 @@ def extract_app_action(clause: str) -> dict | None:
     return None
 
 
+# Verbos de TIPEO (subconjunto de _AA_ACT: solo escribir/teclear/poner, NO click).
+# Para construir un PLAN DETERMINISTA focus_app+type sin depender del 4B planner
+# (que a veces devuelve plan vacío o mete toda la frase como texto — MEDIDO).
+_AA_TYPE_VERB = re.compile(
+    r"(?:escr[íi]b\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|"
+    r"pon[ée]\w*|col[oó]c\w*|met[ée]\w*|"
+    r"type|write|input|enter|put|"
+    r"escrev\w*|[ée]cri\w*|schreib\w*|tipp\w*|scriv\w*)", re.IGNORECASE)
+# Localizadores preferidos (en/in/on...) y de respaldo (a/al). "a" es ambiguo
+# ("a las 5") -> se prueba SOLO si no hay un "en". 2 pasadas.
+_AA_LOC_PREF = r"en|in|into|on|sobre|dentro\s+de|dans|im|su"
+_AA_NAV_RE = re.compile(r"\b(?:" + _AA_NAV + r")\b\s+(?:" + _AA_PREP + r")?\s*", re.IGNORECASE)
+_AA_CONN_RE = re.compile(r"\s+(?:" + _AA_CONN + r")\s+(?:luego\s+|despu[ée]s\s+|then\s+)?", re.IGNORECASE)
+
+
+def _strip_quotes(s: str) -> str:
+    s = (s or "").strip(" .,:;\"'«»")
+    return s
+
+
+def parse_type_action(clause: str) -> dict | None:
+    """Extrae {app, payload} de un pedido de TIPEO-EN-APP para construir un plan
+    DETERMINISTA focus_app(app)+type(payload). None si no es un type-action limpio
+    (el caller cae al planner del 4B). ESTRUCTURAL, multi-idioma. Cubre:
+      "escribí X en/a APP", "en APP escribí X", "andá a APP y escribí X".
+    Dos pasadas para el localizador (prefiere 'en' sobre 'a' -> 'poné R a las 5 en
+    notepad' = payload 'R a las 5', app 'notepad', no 'las 5')."""
+    if not clause or not clause.strip():
+        return None
+    c = clause.strip()
+    # 1) NAV + TYPE: "andá a APP y escribí X"
+    nav = _AA_NAV_RE.match(c)
+    if nav:
+        rest = c[nav.end():]
+        conn = _AA_CONN_RE.search(rest)
+        if conn:
+            app = _strip_quotes(rest[:conn.start()])
+            after = rest[conn.end():]
+            vt = _AA_TYPE_VERB.match(after)
+            if vt and app:
+                payload = _strip_quotes(after[vt.end():])
+                if payload:
+                    return {"app": app, "payload": payload, "pattern": "nav_type"}
+    # 2) IN_APP + TYPE: "en APP escribí X"
+    m_in = re.match(r"^\s*(?:en|in|into|on|dentro\s+de|dans|im|su)\s+(?P<app>.+?)\s+"
+                    r"(?P<rest>(?:escr[íi]b\w*|tecle[áa]\w*|tipe[áa]\w*|type|write|"
+                    r"pon[ée]\w*|escrev\w*|[ée]cri\w*|schreib\w*|scriv\w*)\b.*)$",
+                    c, flags=re.IGNORECASE)
+    if m_in:
+        app = _strip_quotes(m_in.group("app"))
+        vt = _AA_TYPE_VERB.match(m_in.group("rest"))
+        if vt and app:
+            payload = _strip_quotes(m_in.group("rest")[vt.end():])
+            if payload:
+                return {"app": app, "payload": payload, "pattern": "in_app_type"}
+    # 3) TYPE + "en/a" APP: "escribí X en APP" (prefiere 'en', respaldo 'a')
+    vt = _AA_TYPE_VERB.match(c)
+    if vt:
+        body = c[vt.end():]
+        for loc in (_AA_LOC_PREF, r"a|al"):
+            # ÚLTIMO localizador (para 'X a las 5 en notepad' tomar el 'en' final)
+            matches = list(re.finditer(r"\s+(?:" + loc + r")\s+", body, flags=re.IGNORECASE))
+            if matches:
+                last = matches[-1]
+                payload = _strip_quotes(body[:last.start()])
+                app = _strip_quotes(body[last.end():])
+                if payload and app:
+                    return {"app": app, "payload": payload, "pattern": "type_in_app"}
+    return None
+
+
 # --- Extracción de TARGET de CLICK (Fase B computer-use) ---------------------
 # Simétrico a la escritura: una cláusula "apretá/clickeá/tocá/seleccioná <botón>"
 # en contexto GUI debe ir a la macro determinista click_button(label) — UIA find
