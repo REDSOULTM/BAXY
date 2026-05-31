@@ -1588,7 +1588,12 @@ def _browser_wait_for_download(session_id: str, session: dict[str, Any], page: A
         return _err(f"wait_for_download failed: {exc}", status="needs_verification")
 
 
-def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35) -> dict[str, Any]:
+def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35, psm: int = 6) -> dict[str, Any]:
+    # psm (page segmentation mode): 6 = bloque uniforme de texto (default, bueno
+    # para documentos/párrafos). 11 = "sparse text" — pensado para texto DISPERSO
+    # como labels de UI; medido 2026-05-31 que detecta más labels (9/12 vs 7/12).
+    # El grounding de pantalla (ocr_find_text) pasa psm=11; los lectores de docs
+    # quedan en 6.
     if not image_path.is_file():
         return _err("image not found", image_path=str(image_path))
     tesseract = shutil.which("tesseract") or shutil.which("tesseract.exe")
@@ -1600,7 +1605,7 @@ def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35) ->
             completion_status="needs_dependency",
             install_hint="winget install UB-Mannheim.TesseractOCR",
         )
-    cmd = [tesseract, str(image_path), "stdout", "-l", lang, "--psm", "6", "tsv"]
+    cmd = [tesseract, str(image_path), "stdout", "-l", lang, "--psm", str(int(psm)), "tsv"]
     # BUG cp1252 (2026-05-25): con text=True, Python decodía el stdout TSV de
     # Tesseract con la code-page de consola (cp1252 en Windows ES) y CRASHEABA
     # en bytes no-ASCII (texto acentuado en la UI) -> el OCR devolvía 0 líneas
@@ -1626,28 +1631,124 @@ def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35) ->
     )
 
 
-def ocr_find_text(image_path: Path, target: str, *, lang: str = "spa+eng", min_conf: int = 25) -> dict[str, Any]:
-    ocr = ocr_image(image_path, lang=lang, min_conf=min_conf)
-    if not ocr.get("ok"):
-        return ocr
+def _merge_ocr_box(items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Caja fusionada de un grupo de palabras OCR (centro = centro del grupo)."""
+    left = min(int(it["left"]) for it in items)
+    top = min(int(it["top"]) for it in items)
+    right = max(int(it["left"]) + int(it["width"]) for it in items)
+    bottom = max(int(it["top"]) + int(it["height"]) for it in items)
+    return {
+        "text": " ".join(str(it["text"]) for it in items),
+        "left": left, "top": top, "width": right - left, "height": bottom - top,
+        "center_x": left + (right - left) // 2,
+        "center_y": top + (bottom - top) // 2,
+        "conf": min(float(it.get("conf", 0) or 0) for it in items),
+    }
+
+
+def _find_word_span(words: list[dict[str, Any]], target_tokens: list[str]) -> dict[str, Any] | None:
+    """Caja del run CONSECUTIVO de palabras (dentro de una misma línea) cuyo texto
+    plegado contiene el target multi-palabra. Devuelve la caja FUSIONADA de SOLO ese
+    span (no la línea entera) → el click cae sobre el label, no sobre el medio de la fila."""
+    from collections import defaultdict
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for w in words:
+        groups[(str(w.get("block")), str(w.get("line")))].append(w)
+    target_join = " ".join(target_tokens)
+    max_window = len(target_tokens) + 3  # tolera splits raros del OCR
+    best: dict[str, Any] | None = None
+    for items in groups.values():
+        items = sorted(items, key=lambda x: int(x.get("left", 0)))
+        folded = [_fold_local(str(it.get("text") or "")) for it in items]
+        n = len(items)
+        for i in range(n):
+            acc: list[str] = []
+            for j in range(i, min(n, i + max_window)):
+                acc.append(folded[j])
+                if target_join in " ".join(acc).strip():
+                    span = _merge_ocr_box(items[i:j + 1])
+                    if best is None or span["width"] < best["width"]:
+                        best = span
+                    break
+    return best
+
+
+def _locate_in_ocr(ocr: dict[str, Any], target: str) -> list[dict[str, Any]]:
+    """Localiza el target en un resultado de ocr_image, devolviendo cajas RANKEADAS
+    por precisión (palabra > span multi-palabra > línea). Centro = punto de click."""
     target_fold = _fold_local(target)
-    matches = []
-    for line in ocr.get("lines", []):
-        line_text = str(line.get("text") or "")
-        if target_fold and target_fold in _fold_local(line_text):
-            matches.append(line)
-    if not matches:
-        for word in ocr.get("words", []):
-            if target_fold and target_fold in _fold_local(str(word.get("text") or "")):
-                matches.append(word)
+    if not target_fold:
+        return []
+    words = ocr.get("words", [])
+    lines = ocr.get("lines", [])
+    # (rank, top, left, box) — rank menor = match más preciso.
+    ranked: list[tuple[int, int, int, dict[str, Any]]] = []
+    tokens = target_fold.split()
+    if len(tokens) <= 1:
+        # Target de UNA palabra → caja a nivel de PALABRA (click PRECISO). Antes
+        # esto matcheaba la LÍNEA entera y el click caía en su centro (medido
+        # 2026-05-31: "File"/"Edit"/"Run" daban TODOS center (696,16) = el medio
+        # de la barra de menú, no la palabra). Preferí exacta > sub-token > substring.
+        for w in words:
+            wf = _fold_local(str(w.get("text") or ""))
+            if not wf:
+                continue
+            if wf == target_fold:
+                rank = 0
+            elif target_fold in wf.split():
+                rank = 1
+            elif target_fold in wf:
+                rank = 2
+            else:
+                continue
+            ranked.append((rank, int(w.get("top", 0)), int(w.get("left", 0)), w))
+    else:
+        # Target multi-palabra → span consecutivo de palabras (caja fusionada del
+        # span, no de la línea entera).
+        span = _find_word_span(words, tokens)
+        if span is not None:
+            ranked.append((0, int(span.get("top", 0)), int(span.get("left", 0)), span))
+    # Fallback: nivel de LÍNEA (último recurso). Conserva la recall histórica si
+    # el OCR partió el texto de forma que ni palabra ni span matchean.
+    if not ranked:
+        for line in lines:
+            if target_fold in _fold_local(str(line.get("text") or "")):
+                ranked.append((3, int(line.get("top", 0)), int(line.get("left", 0)), line))
+    ranked.sort(key=lambda r: (r[0], r[1], r[2]))
+    return [box for _r, _t, _l, box in ranked]
+
+
+def ocr_find_text(image_path: Path, target: str, *, lang: str = "spa+eng", min_conf: int = 25) -> dict[str, Any]:
+    # Grounding de UI: psm 11 ("sparse text") primero — detecta más labels dispersos
+    # (medido 2026-05-31: 9/12 vs 7/12 de psm 6). Si NO encuentra, reintenta con psm 6
+    # (bloque) por si el target era texto corrido — la unión sube a 10/12. El 2º pase
+    # solo se paga en el miss (que de todos modos iba a fallar y caer a visión).
+    last_ocr: dict[str, Any] = {}
+    for psm in (11, 6):
+        ocr = ocr_image(image_path, lang=lang, min_conf=min_conf, psm=psm)
+        if not ocr.get("ok"):
+            return ocr
+        last_ocr = ocr
+        matches = _locate_in_ocr(ocr, target)
+        if matches:
+            return _ok(
+                image_path=str(image_path.resolve()),
+                target=target,
+                found=True,
+                matches=matches[:20],
+                ocr_text=ocr.get("text", ""),
+                psm=psm,
+                content_verified=True,
+                visual_verified=True,
+            )
     return _ok(
         image_path=str(image_path.resolve()),
         target=target,
-        found=bool(matches),
-        matches=matches[:20],
-        ocr_text=ocr.get("text", ""),
-        content_verified=bool(matches),
-        visual_verified=bool(matches),
+        found=False,
+        matches=[],
+        ocr_text=last_ocr.get("text", ""),
+        content_verified=False,
+        visual_verified=False,
     )
 
 
