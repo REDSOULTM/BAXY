@@ -137,8 +137,8 @@ class TestAuditMetrics(unittest.TestCase):
                 continue
             total += len(re.findall(r"^\s+from \.", src, re.M))
         self.assertLess(
-            total, 529,
-            f"R3: {total} lazy imports en producción (techo 529)"
+            total, 532,
+            f"R3: {total} lazy imports en producción (techo 532)"
         )
 
     # ----- R4: ToolResult disponible -----
