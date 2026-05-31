@@ -267,6 +267,28 @@ def has_back_reference(clause: str) -> bool:
     return bool(_DEP_RE.search(clause))
 
 
+# "abrilo/lanzalo/abrí eso/open it": ABRIR (lanzar) el REFERENTE de la cláusula
+# previa. Verbo de apertura/lanzamiento + (clítico/pronombre opcional), SIN target
+# explícito (si hay target propio como "abrí el bloc" NO matchea -> es su propia
+# acción). Cura el encadenamiento dependiente "instalá VLC Y ABRILO" (MEDIDO
+# 2026-05-31: 'abrilo' leakeaba como texto porque package no está en el carry GUI).
+_DEP_OPEN_RE = re.compile(
+    r"^\s*(?:abr[íia]\w*|abrir|abre|lanz[áa]\w*|ejecut[áa]\w*|corr[ée]\w*|"   # es
+    r"open|launch|run|start|"                                                  # en
+    r"abra|abrí\w*|lance\w*|"                                                  # pt
+    r"ouvre\w*|lance\w*|[öo]ffne\w*|apri\w*|avvia\w*)"                          # fr/de/it
+    r"\s*(?:lo|la|los|las|le|eso|esa|esto|aquello|it|that|them|"
+    r"el\s+programa|la\s+app|the\s+app)?\s*$",
+    re.IGNORECASE)
+
+
+def is_dependent_open(clause: str) -> bool:
+    """True si la cláusula es un 'abrilo/lanzalo/abrí eso' BARE: abrir/lanzar el
+    REFERENTE de la cláusula previa (sin target explícito). El caller resuelve el
+    referente al target de la cláusula anterior."""
+    return bool(clause and _DEP_OPEN_RE.match(clause.strip()))
+
+
 def plan_clauses(utterance: str) -> list[dict]:
     """Devuelve [{text, depends_on_prev}] por cláusula. depends_on_prev=True =>
     ejecutar serializado (el resultado de la anterior alimenta esta)."""
@@ -494,14 +516,17 @@ _AA_CONN = (r"y|e|and|then|luego|despu[ée]s|after|et|puis|und|dann|poi|o")
 _AA_PREP = (r"a|al|to|para|en|in|into|on|n[oa]|su|the|im|dans")
 
 # A: "andá a <X> y <acción> ..." (nav + acción). El contexto nav+conector garantiza
-# una META de computadora; la acción admite verbos IN-APP inequívocos (tipear/
-# clickear de _AA_ACT + guardar/cerrar/borrar). NO incluye mandar/buscar/reproducir:
-# esos solapan con whatsapp/web/media (que tienen tools dedicadas) -> dejarlos fuera
-# para no hijackear "abrí YouTube y reproducí X" (=media) ni "abrí WhatsApp y mandale
-# a juan" (=whatsapp). Solo lo que es genuinamente operar-dentro-de-la-app.
-_AA_ACT_NAV = (_AA_ACT +
-    r"|cerr[áa]\w*|guard[áa]\w*|borr[áa]\w*|elimin[áa]\w*|"   # es: cerrar/guardar/borrar
-    r"close|save|delete")                                     # en
+# una META de computadora; la acción admite verbos IN-APP INEQUÍVOCOS: tipear,
+# clickear, guardar/cerrar/borrar. NO incluye mandar/buscar/reproducir (solapan con
+# whatsapp/web/media), NI poné/colocá/metá/put (AMBIGUOS: 'abrí Spotify y poné rock'
+# = PLAY=media, no tipear — MEDIDO 2026-05-31 que el inherit los mandaba a type).
+# Conjunto CURADO explícito (no hereda _AA_ACT, que sí trae poné para el caso
+# 'poné X en notepad' donde el 'en notepad' lo desambigua).
+_AA_ACT_NAV = (
+    r"escr[íi]b\w*|tecle[áa]\w*|tipe[áa]\w*|digit[áa]\w*|type|write|input|"        # tipear
+    r"clicke[áa]\w*|click\w*|apret[áa]\w*|toc[áa]\w*|seleccion[áa]\w*|presion[áa]\w*|"  # click es
+    r"press|tap|select|clic\w*|clique\w*|klick\w*|clicc\w*|premi\w*|"             # click otros
+    r"cerr[áa]\w*|guard[áa]\w*|borr[áa]\w*|elimin[áa]\w*|close|save|delete")       # in-app
 _AA_NAV_ACTION = re.compile(
     r"\b(?:" + _AA_NAV + r")\b\s+(?:" + _AA_PREP + r")?\s*\S+.*?"
     r"\s+(?:" + _AA_CONN + r")\s+(?:luego\s+|despu[ée]s\s+|then\s+)?"

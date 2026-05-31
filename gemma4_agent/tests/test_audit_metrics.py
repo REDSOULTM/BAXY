@@ -120,7 +120,12 @@ class TestAuditMetrics(unittest.TestCase):
         patrón best-effort opt-in) + 1 en taste_reflection.py (`resolve_turn_model` de
         infra/llama_server, pesado, lazy a propósito; los imports livianos del módulo
         —taste_profile, behavior_log— SÍ son top-level). Techo 520→525 por eso.
-        Si crece mucho MÁS, alguien introdujo lazy en vez de top-level sin justificación."""
+        COMPUTER-USE Etapa 1+2 (2026-05-31) suma +3 lazy `from ..routing.command_splitter
+        import ...` en agent.py, TODOS mismo patrón anti-circular (routing<->agent):
+        extract_app_action+split_command (app-action routing, _decide_turn), parse_type_action
+        (plan determinista focus+type), is_dependent_open (encadenamiento dependiente
+        'instalá X y abrilo' en _run_multi_intent). Techo 525→528. Si crece mucho MÁS,
+        alguien introdujo lazy en vez de top-level sin justificación."""
         total = 0
         for p in _iter_prod_py():
             try:
@@ -129,8 +134,8 @@ class TestAuditMetrics(unittest.TestCase):
                 continue
             total += len(re.findall(r"^\s+from \.", src, re.M))
         self.assertLess(
-            total, 525,
-            f"R3: {total} lazy imports en producción (techo 525)"
+            total, 528,
+            f"R3: {total} lazy imports en producción (techo 528)"
         )
 
     # ----- R4: ToolResult disponible -----

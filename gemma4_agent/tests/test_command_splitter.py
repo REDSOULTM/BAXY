@@ -229,6 +229,46 @@ class ParseTypeActionTest(unittest.TestCase):
             self.assertIsNone(self.P(q), msg=q)
 
 
+class DependentOpenTest(unittest.TestCase):
+    """is_dependent_open: "instalá VLC Y ABRILO" -> 'abrilo' abre el referente (VLC)
+    de la cláusula previa. ETAPA 2 encadenamiento dependiente (2026-05-31)."""
+    def setUp(self):
+        from ..routing.command_splitter import is_dependent_open
+        self.D = is_dependent_open
+
+    def test_fires_on_bare_open_clitic(self):
+        for q in ("abrilo", "abrila", "abrilos", "abrir", "lanzalo", "ejecutalo",
+                  "corrélo", "abrí eso", "open it", "run it", "launch it"):
+            self.assertTrue(self.D(q), msg=q)
+
+    def test_not_on_explicit_target(self):
+        # con target propio o sin verbo de apertura -> NO es dependiente
+        for q in ("abrí el bloc de notas", "escribí hola", "poné rock",
+                  "instalá VLC", "abrí Spotify", "buscá gatos", "subí el volumen"):
+            self.assertFalse(self.D(q), msg=q)
+
+
+class NavExcludesAmbiguousTest(unittest.TestCase):
+    """ETAPA 2 (2026-05-31): "abrí Spotify y poné rock" NO debe ser nav_action
+    (poné=play=media, no tipear). Solo verbos de tipeo/click inequívocos."""
+    def setUp(self):
+        from ..routing.command_splitter import extract_app_action
+        self.A = extract_app_action
+
+    def test_pone_play_not_nav(self):
+        # poné/colocá/metá ambiguos -> NO nav_action -> split -> media
+        self.assertIsNone(self.A("abrí Spotify y poné rock"))
+        self.assertIsNone(self.A("abrí YouTube y poné música relajante"))
+
+    def test_unambiguous_type_still_nav(self):
+        for q in ("abrí el bloc de notas y escribí hola",
+                  "andá a Word y escribí mi nombre",
+                  "abrí el word y guardá"):
+            r = self.A(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["pattern"], "nav_action", msg=q)
+
+
 class NavTargetExtractTest(unittest.TestCase):
     """extract_nav_target: 'entrá/andá a [app] al [servidor/canal] X' -> X (control
     a clickear por Name UIA dentro de la app abierta). Validación Discord 2026-05-25."""

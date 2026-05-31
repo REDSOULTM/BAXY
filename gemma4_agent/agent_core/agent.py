@@ -1275,13 +1275,13 @@ class Gemma4Agent:
             except Exception:
                 _aa = None
             if _aa is not None:
-                if _aa.get("pattern") in ("nav_action", "screen"):
-                    _aa_route = True                       # frase entera = goal coherente
-                else:                                      # act_in_app / in_app_act
-                    try:                                   # multi-cláusula -> deja que el
-                        _aa_route = len(split_command(content)) <= 1   # split lo maneje
-                    except Exception:
-                        _aa_route = True
+                if _aa.get("pattern") == "nav_action":
+                    _aa_route = True                       # "abrí X y escribí Y" = goal coherente
+                else:                                      # screen / act_in_app / in_app_act:
+                    try:                                   # solo cláusula ÚNICA; si es multi
+                        _aa_route = len(split_command(content)) <= 1   # ("sacá screenshot y
+                    except Exception:                      # abrí X") -> deja que el split lo
+                        _aa_route = True                   # maneje (screenshot + app.open)
                 if _aa_route and _aa.get("verify_app"):    # PRECISIÓN: target = app real
                     try:
                         _aa_route = bool(self._window_title_in_text(_aa.get("app_hint") or ""))
@@ -4319,6 +4319,8 @@ class Gemma4Agent:
         _GUI_CTX = {"app", "gui", "window", "uia", "steam", "browser", "office"}
         carry: list[str] = []  # tools de contexto GUI que arrastra la cláusula previa
         carry_window: str = ""  # nombre de la app/ventana abierta por la cláusula previa
+        carry_target: str = ""  # ENTIDAD/app target de la cláusula previa (p.ej. "VLC"
+        #                         tras "instalá VLC") -> referente de "abrilo/lanzalo"
         # CHECKPOINT de misión (Fase 7): persistir progreso clause-by-clause para
         # poder reanudar si la misión se interrumpe (crash/reinicio/cancel). Solo
         # para misiones de varios pasos. Best-effort, no bloquea.
@@ -4346,6 +4348,30 @@ class Gemma4Agent:
                 # código teclea directo en la ventana activa con type_into, que
                 # verifica el efecto. El 4B dio el objetivo (el texto); el código
                 # hace el cómo (Agent-S2 mixture of grounding). Universal.
+                # ENCADENAMIENTO DEPENDIENTE (2026-05-31): "instalá VLC Y ABRILO" ->
+                # 'abrilo' abre el REFERENTE (VLC) de la cláusula previa. Determinista:
+                # app.open(carry_target). MEDIDO: sin esto 'abrilo' leakeaba como texto
+                # (package no está en el carry GUI, y 'abrilo' no es payload de escritura).
+                if carry_target:
+                    try:
+                        from ..routing.command_splitter import is_dependent_open
+                        _dep_open = is_dependent_open(clause)
+                    except Exception:
+                        _dep_open = False
+                    if _dep_open:
+                        _open_res = self.tools.execute("app", {"action": "open", "name": carry_target})
+                        _open_ok = isinstance(_open_res, dict) and _open_res.get("ok")
+                        replies.append(f"Listo, abrí {carry_target}." if _open_ok
+                                       else f"Intenté abrir {carry_target} pero no pude confirmarlo.")
+                        all_events.append(ToolEvent(name="app",
+                            args={"action": "open", "name": carry_target},
+                            result=_open_res if isinstance(_open_res, dict) else {}))
+                        if _open_ok:
+                            carry_window = carry_target; carry = ["app"]
+                        if _mission_id and _mc is not None:
+                            try: _mc.mark_done(self.state.path, _mission_id, _clause_idx, replies[-1])
+                            except Exception: pass
+                        continue
                 _payload = None
                 if carry:
                     try:
@@ -4497,6 +4523,16 @@ class Gemma4Agent:
                             if _nm:
                                 carry_window = str(_nm)
                                 break
+                # capturar el TARGET (app/entidad) de ESTA cláusula para resolver un
+                # 'abrilo/lanzalo' siguiente. De los args de CUALQUIER tool con
+                # name/query/target -> incluye `package` (instalar), que NO está en
+                # _GUI_CTX pero cuyo target SÍ es el referente ("instalá VLC"->VLC).
+                for _ev in (ev or []):
+                    _a2 = getattr(_ev, "args", {}) or {}
+                    _tg = _a2.get("name") or _a2.get("query") or _a2.get("target") or _a2.get("app")
+                    if _tg and isinstance(_tg, str) and len(_tg.strip()) >= 2:
+                        carry_target = _tg.strip()
+                        break
                 if _mission_id and _mc is not None:
                     try:
                         _mc.mark_done(self.state.path, _mission_id, _clause_idx, c)
