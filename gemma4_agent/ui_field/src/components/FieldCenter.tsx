@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import type { ConvState } from '../types';
 import type { MicMode } from '../App';
 import type { AgentStatus, BootStage, CtxBudget } from '../hooks/useEventStream';
-import { NeuralGraph, NODE_COUNT, EDGE_COUNT } from './NeuralGraph';
+import { NeuralGraph } from './NeuralGraph';
 import { Icon, type IconName } from './Icon';
 
 interface Props {
@@ -42,30 +42,6 @@ const MIC_ARIA: Record<MicMode, string> = {
   listening: 'microphone always listening',
   ptt: 'microphone push-to-talk',
   off: 'microphone off',
-};
-
-const STATE_READOUT: Record<ConvState, string> = {
-  standby:   'field offline · voice channel muted',
-  idle:      'field stable · listening for wake word',
-  listening: 'field receptive · capturing voice',
-  thinking:  'field traversing · 47 paths active',
-  speaking:  'field emitting · voice channel open',
-};
-
-const FOCAL_DESCR: Record<ConvState, string> = {
-  standby:   '—',
-  idle:      'voice · ambient',
-  listening: 'voice · agent',
-  thinking:  'router · memory · context',
-  speaking:  'voice · tools',
-};
-
-const STATE_VERB: Record<ConvState, string> = {
-  standby:   'offline',
-  idle:      'stable',
-  listening: 'receptive',
-  thinking:  'traversing',
-  speaking:  'emitting',
 };
 
 const DEBUG_STATES: ConvState[] = ['standby', 'idle', 'listening', 'thinking', 'speaking'];
@@ -191,9 +167,6 @@ export function FieldCenter({
     });
   };
 
-  // strip the leading "field <verb> · " so we can render the verb in accent.
-  const readoutTail = STATE_READOUT[convState].replace(/^field \S+ · /, '');
-
   // estimated tokens of the draft vs the model's ctx budget — same heuristic
   // as the prototype: ~4 chars per token, capped at 4096 so the counter
   // visually fits without scientific notation.
@@ -203,56 +176,32 @@ export function FieldCenter({
 
   return (
     <div className="center-wrap">
-      {/* state line */}
-      <div className="state-line" role="status" aria-live="polite">
-        <div className="left">
-          <span className={`dot-status ${convState}`} aria-hidden="true" />
-          <span>state</span>
-          <span className="sep">·</span>
-          <span className={`state-name state-${convState}`}>{convState}</span>
-          <span className="sep">·</span>
-          <span>focal</span>
-          <span className="muted">{FOCAL_DESCR[convState]}</span>
-          {showRetry && (
-            <>
-              <span className="sep">·</span>
-              <span className="boot-err" title={bootStage?.error ?? undefined}>
-                {bootStage?.error ? `error · ${bootStage.error}` : 'boot failed'}
-              </span>
-              <button
-                type="button"
-                className="boot-retry"
-                onClick={retryAgent}
-                aria-label="retry agent boot"
-                data-tip="restart agent"
-              >
-                <Icon name="restart" size={11} />
-                <span>retry</span>
-              </button>
-            </>
-          )}
+      {/* Boot-error recovery — only mounts on a real boot failure. At rest
+          (the design's idle layout) this renders nothing, so the center column
+          matches the handoff prototype exactly; it appears only when the agent
+          actually fails to boot, surfacing a retry the user would otherwise
+          lack. */}
+      {showRetry && (
+        <div className="boot-banner" role="alert" aria-live="polite">
+          <span className="boot-err" title={bootStage?.error ?? undefined}>
+            {bootStage?.error ? `agent boot failed · ${bootStage.error}` : 'agent boot failed'}
+          </span>
+          <button
+            type="button"
+            className="boot-retry"
+            onClick={retryAgent}
+            aria-label="retry agent boot"
+            data-tip="restart agent"
+          >
+            <Icon name="restart" size={11} />
+            <span>retry</span>
+          </button>
         </div>
-        <div className="graph-meta">graph · {NODE_COUNT} nodes · {EDGE_COUNT} edges</div>
-      </div>
+      )}
 
       <NeuralGraph state={convState} />
 
-      <div className="field-readout">
-        <span className="dot" />
-        <span className="focal">field </span>
-        <span className="accent">{STATE_VERB[convState]}</span>
-        <span className="focal"> · {readoutTail}</span>
-      </div>
-
       <div className="chat">
-        <div className="hint">
-          <span>
-            <span className="kbd">enter</span> sends · <span className="kbd">/</span> focus
-            · <span className="kbd">ctrl+n</span> new · <span className="kbd">ctrl+l</span> clear
-          </span>
-          <span className="muted">draft · {draft.length} ch</span>
-        </div>
-
         <form className={`line${ready ? '' : ' booting'}`} onSubmit={handleSubmit}>
           <span className="chev">›</span>
           <input
@@ -309,38 +258,40 @@ export function FieldCenter({
           </div>
         </form>
 
-        <div className="attachments">
-          {attachments.length === 0 ? (
-            <span className="muted">no attachments</span>
-          ) : (
-            <div className="att-list">
-              {attachments.map((a) => {
-                const failed = !a.uploading && a.path === null;
-                return (
-                  <span
-                    className="att-pill"
-                    key={a.id}
-                    style={failed ? { color: 'var(--carmine)' } : undefined}
-                    title={a.uploading ? 'uploading…' : failed ? 'upload failed' : a.path ?? a.name}
-                  >
-                    <Icon name="attach" size={11} />
-                    <span className="att-name">{a.name}</span>
-                    <span className="att-size">
-                      {a.uploading ? 'uploading…' : failed ? 'failed' : fmtKb(a.size)}
-                    </span>
-                    <button
-                      type="button"
-                      className="att-x"
-                      onClick={() => setAttachments((p) => p.filter((x) => x.id !== a.id))}
-                      aria-label={`remove ${a.name}`}
+        <div className="chat-bottom">
+          <div className="attachments">
+            {attachments.length === 0 ? (
+              <span className="muted">no attachments</span>
+            ) : (
+              <div className="att-list">
+                {attachments.map((a) => {
+                  const failed = !a.uploading && a.path === null;
+                  return (
+                    <span
+                      className="att-pill"
+                      key={a.id}
+                      style={failed ? { color: 'var(--carmine)' } : undefined}
+                      title={a.uploading ? 'uploading…' : failed ? 'upload failed' : a.path ?? a.name}
                     >
-                      <Icon name="x" size={10} />
-                    </button>
-                  </span>
-                );
-              })}
-            </div>
-          )}
+                      <Icon name="attach" size={11} />
+                      <span className="att-name">{a.name}</span>
+                      <span className="att-size">
+                        {a.uploading ? 'uploading…' : failed ? 'failed' : fmtKb(a.size)}
+                      </span>
+                      <button
+                        type="button"
+                        className="att-x"
+                        onClick={() => setAttachments((p) => p.filter((x) => x.id !== a.id))}
+                        aria-label={`remove ${a.name}`}
+                      >
+                        <Icon name="x" size={10} />
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {onDebugState && (

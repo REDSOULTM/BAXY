@@ -17,7 +17,6 @@ interface Props {
   convState: ConvState;
   wsModel: ModelInfo | null;
   ctx: CtxBudget | null;
-  tokens: number;
   accessMode: string;
   onAccessMode: (m: string) => void;
   /** online/standby toggle — maps to mic on/off (drives the field standby). */
@@ -54,7 +53,7 @@ function fmtK(n: number): string {
 }
 
 export function SubstratePanel({
-  convState, wsModel, ctx, tokens, accessMode, onAccessMode, powered, onTogglePower,
+  convState, wsModel, ctx, accessMode, onAccessMode, powered, onTogglePower,
   surfaces, activeSurface, onSurface,
 }: Props) {
   const [model, setModel] = useState<ModelState>(INITIAL_MODEL);
@@ -97,7 +96,6 @@ export function SubstratePanel({
 
   const info: ModelInfo | undefined = wsModel ?? model.info;
   const loaded = info && (wsModel !== null || model.status === 'ready') ? info : null;
-  const isMock = info?.runtime === 'mock';
 
   // global "system %" — weighted average like the prototype.
   const systemPct = Math.round(metrics.cpu * 0.35 + metrics.mem * 0.25 + metrics.gpu * 0.40);
@@ -130,13 +128,9 @@ export function SubstratePanel({
           <span className="name">
             {loaded ? loaded.family : <span className="dim">loading…</span>}
           </span>
-          <span className="dots">···</span>
-          {isMock && (
-            <span className="muted" style={{ fontSize: 9, letterSpacing: '0.14em' }}>MOCK</span>
-          )}
         </div>
         <div className="sub">
-          {loaded ? `${loaded.params} · ${loaded.runtime} · ${loaded.quant}` : '—'}
+          {loaded ? `${loaded.params} · ${loaded.runtime}` : '—'}
         </div>
       </div>
 
@@ -188,7 +182,7 @@ export function SubstratePanel({
       {/* ---- ctx budget ---- */}
       <div className="min-block">
         <div className="m-list">
-          <MetricLine label="ctx" unit={` / ${fmtK(ctxTotal)}`} norm={ctxPct / 100} text={fmtK(ctxUsed)} />
+          <MetricLine label="ctx" unit={`/ ${fmtK(ctxTotal)}`} norm={ctxPct / 100} text={fmtK(ctxUsed)} />
         </div>
       </div>
 
@@ -212,7 +206,7 @@ export function SubstratePanel({
                 <div className="lbl">{s.label}</div>
                 <div className="count">
                   {surfaces ? String(surfaces[s.id]) : '—'}
-                  <span className="unit">{s.unit}</span>
+                  <span className="unit"> {s.unit}</span>
                 </div>
               </div>
             );
@@ -223,7 +217,6 @@ export function SubstratePanel({
       {/* ---- left footer ---- */}
       <div className="left-footer">
         <KvRow k="uptime" v={metrics.uptime ?? '00:00:00'} />
-        <KvRow k="tokens" v={tokens.toLocaleString()} />
       </div>
     </>
   );

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { SubstratePanel } from './components/SubstratePanel';
 import { ActivityPanel } from './components/ActivityPanel';
 import { FieldCenter } from './components/FieldCenter';
+import { TitleBar } from './components/TitleBar';
 import { SettingsPanel } from './components/SettingsPanel';
 import { SessionsPanel } from './components/SessionsPanel';
 import { MemoryPanel } from './components/MemoryPanel';
@@ -95,6 +96,11 @@ export default function App() {
     return localStorage.getItem('field.accessMode') ?? 'normal';
   });
   const accessSynced = useRef(false);
+  // value last adopted FROM the backend (the persisted "last config"). The
+  // push-effect skips PUTting when accessMode equals this, so reconciling the
+  // backend value never fires a redundant PUT (which emitted a spurious
+  // "accessibility · X" activity entry on every boot).
+  const accessReconciled = useRef<string | null>(null);
   const [activeSurface, setActiveSurface] = useState<SurfaceId>(() => {
     const stored = localStorage.getItem('field.surface');
     if (stored === 'sessions' || stored === 'memory' || stored === 'triggers' || stored === 'tools') {
@@ -192,8 +198,10 @@ export default function App() {
       .catch(() => toastError('profile change failed · backend unreachable'));
   }, [profile]);
 
-  // Accessibility mode: reconcile from backend on mount (source of truth =
-  // the persisted active_accessibility_mode.txt), then PUT on user change.
+  // Accessibility mode: the backend's persisted active_accessibility_mode.txt is
+  // the source of truth for "what the user left last time". Reconcile from it on
+  // mount and remember that value so the push-effect below does NOT PUT it back
+  // (which would emit a spurious activity entry and could clobber it on boot).
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -201,7 +209,12 @@ export default function App() {
         const r = await fetch('/accessibility');
         if (!cancelled && r.ok) {
           const data = await r.json();
-          if (data?.active) setAccessMode(String(data.active));
+          if (data?.active) {
+            const active = String(data.active);
+            accessReconciled.current = active;
+            localStorage.setItem('field.accessMode', active);
+            setAccessMode(active);
+          }
         }
       } catch { /* keep localStorage default */ }
       finally { accessSynced.current = true; }
@@ -211,6 +224,10 @@ export default function App() {
 
   useEffect(() => {
     if (!accessSynced.current) return;  // don't PUT until reconciled
+    // Skip the PUT when this value is exactly what we just read from the backend
+    // — it's already persisted there; re-PUTting it only spams the activity log.
+    if (accessMode === accessReconciled.current) return;
+    accessReconciled.current = null;  // subsequent equal values are user-driven
     localStorage.setItem('field.accessMode', accessMode);
     fetch('/accessibility', {
       method: 'PUT',
@@ -519,7 +536,9 @@ export default function App() {
   }, [effectiveState]);
 
   return (
-    <div className="app-frame">
+    <div className="window-root">
+      <TitleBar />
+      <div className="app-frame">
       <div className="shell">
         {effectiveVisionThreshold && (
           <div className="vision-banner" role="alert" aria-live="polite">
@@ -548,7 +567,6 @@ export default function App() {
               convState={effectiveState}
               wsModel={stream.model}
               ctx={stream.ctx}
-              tokens={stream.tokens}
               accessMode={accessMode}
               onAccessMode={setAccessMode}
               powered={powered}
@@ -600,6 +618,7 @@ export default function App() {
         {openPanel === 'tools' && <ToolsPanel onClose={closePanel} />}
 
         <ToastHost />
+      </div>
       </div>
     </div>
   );

@@ -176,7 +176,9 @@ function STCheck({
         }
       }}
     >
-      <span className={`check-box${value ? ' on' : ''}`} aria-hidden="true" />
+      <span className={`check-box${value ? ' on' : ''}`} aria-pressed={value}>
+        {value ? <Icon name="check" size={9} /> : null}
+      </span>
       <div className="check-body">
         <span className="check-label">{label}</span>
         {hint && <span className="check-hint">{hint}</span>}
@@ -882,6 +884,7 @@ function AboutTab() {
       <div className="st-about-sub">local ai agent · gemma4 build · runs entirely offline</div>
       <div className="hair" style={{ margin: '16px 0' }} />
       <div className="kv">
+        <div className="kv-row"><span className="k">python</span><span className="v">3.10.11</span></div>
         <div className="kv-row"><span className="k">settings file</span><span className="v">~/.gemma4/gui.json</span></div>
         <div className="kv-row"><span className="k">agent module</span><span className="v">gemma4_agent/</span></div>
         <div className="kv-row"><span className="k">build</span><span className="v">gemma4 · 2026.05</span></div>

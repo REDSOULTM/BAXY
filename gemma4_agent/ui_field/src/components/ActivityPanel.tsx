@@ -90,7 +90,6 @@ export function ActivityPanel({
       </div>
 
       <div className="surfaces-wrap">
-        <div className="sec-head"><span>surfaces</span></div>
         <div className="surfaces">
           {SURFACES.map((s) => {
             const active = activeSurface === s.id;
@@ -112,7 +111,7 @@ export function ActivityPanel({
                 <div className="lbl">{s.label}</div>
                 <div className="count">
                   {surfaceCount(s.id)}
-                  <span className="unit">{s.unit}</span>
+                  <span className="unit"> {s.unit}</span>
                 </div>
               </div>
             );
@@ -128,14 +127,20 @@ export function ActivityPanel({
   );
 }
 
+// maps a source tag to its CSS color class; unknown tags fall back to `you`
+// (var(--tag-you)) exactly like the handoff, instead of an unstyled class.
+const SOURCE_CLASS: Record<SourceTag, string> = {
+  TOOL: 'tool', YOU: 'you', GEMMA: 'gemma', MEMORY: 'memory', TRIGGER: 'trigger',
+  BOOT: 'boot', THOUGHT: 'thought', SYSTEM: 'system', CONTEXT: 'context',
+};
+
 function ActivityRow({ entry }: { entry: ActivityEntry }) {
+  const cls = SOURCE_CLASS[entry.src] ?? 'you';
   return (
     <div className="act fade-in">
       <div className="meta">
         <span className="ts">{entry.ts}</span>
-        <span className={`src ${entry.src.toLowerCase() as Lowercase<SourceTag>}`}>
-          {entry.src}
-        </span>
+        <span className={`src ${cls}`}>{entry.src}</span>
       </div>
       <div className="msg">{entry.msg}</div>
     </div>

@@ -4,7 +4,8 @@
 export type IconName =
   | 'attach' | 'send' | 'mic' | 'mic-off' | 'mic-ptt' | 'settings' | 'sessions' | 'plus'
   | 'help' | 'bolt' | 'search' | 'check' | 'folder' | 'restart' | 'x'
-  | 'ghost' | 'trigger' | 'wave' | 'person' | 'power' | 'eye-off' | 'wheelchair';
+  | 'ghost' | 'trigger' | 'wave' | 'person' | 'power' | 'eye-off' | 'wheelchair'
+  | 'win-min' | 'win-max' | 'win-restore';
 
 interface Props {
   name: IconName;
@@ -174,6 +175,28 @@ export function Icon({ name, size = 14, strokeWidth = 1.25 }: Props) {
         <svg {...common}>
           <path d="M 4 4 L 12 12" />
           <path d="M 12 4 L 4 12" />
+        </svg>
+      );
+    case 'win-min':
+      // window minimize — a single horizontal rule centered low, like the OS chrome
+      return (
+        <svg {...common}>
+          <path d="M 3.5 9 L 12.5 9" />
+        </svg>
+      );
+    case 'win-max':
+      // window maximize — an empty square
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="3.5" width="9" height="9" rx="0.5" />
+        </svg>
+      );
+    case 'win-restore':
+      // window restore — two stacked squares (offset), shown when maximized
+      return (
+        <svg {...common}>
+          <rect x="3" y="5" width="8" height="8" rx="0.5" />
+          <path d="M 5.5 5 L 5.5 3 L 13 3 L 13 10.5 L 11 10.5" />
         </svg>
       );
     case 'ghost':

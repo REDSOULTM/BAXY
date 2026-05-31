@@ -205,11 +205,11 @@ export function SessionsPanel({ onClose }: Props) {
           style={{ color: 'var(--carmine)' }}
         >delete</button>
         <span className="muted" style={{ marginLeft: 'auto' }}>
-          {list.length} sessions
+          {list.length} sessions · all local
         </span>
         <button type="button" className="panel-btn" onClick={newSession} disabled={pending}>
           <Icon name="plus" size={12} />
-          <span>new</span>
+          <span>new session</span>
         </button>
       </div>
     </Panel>

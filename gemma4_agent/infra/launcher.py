@@ -343,14 +343,69 @@ def run_ui(args: argparse.Namespace) -> int:
         )
 
     print(color("ok", f"abriendo ventana · {url}"))
-    # frameless: el rediseño "field" no tiene barra de titulo del SO — el marco
-    # rojo (.app-frame) es el borde superior. La ventana se dimensiona al
-    # instrumento (1040x600 css) + un margen oscuro fino, como el prototipo.
-    # easy_drag=False para no robar el click/seleccion del input de chat; cerrar
-    # con Alt+F4 (o agregamos un control propio si se pide).
-    webview.create_window(
+
+    # The window is frameless (the "field" redesign has no OS title bar — the
+    # red .app-frame is the visible chrome). The UI draws its OWN thin title bar
+    # (TitleBar.tsx) with min/maximize/close + a `.pywebview-drag-region` handle
+    # so the window can be moved. These controls call back into Python through
+    # the js_api below. easy_drag stays OFF so a stray click on the chat input
+    # never drags the window — only the explicit drag region moves it.
+    class _WindowControls:
+        """Exposed to JS as window.pywebview.api.* — drives the native window
+        from the custom title bar.
+
+        CRITICAL: the pywebview Window reference is stored as `_window`
+        (underscore-prefixed). pywebview introspects the js_api object with
+        `dir()` and RECURSES into every public, non-callable attribute to expose
+        it (webview/util.py get_functions). A public `self.window = <Window>`
+        makes it recurse into `window.native` → the .NET WinForms form →
+        `.AccessibilityObject.Owner.ActiveControl.Controls.Owner.ModifierKeys…`
+        — a circular COM graph → `maximum recursion depth exceeded` storm that
+        crashes the bridge. Underscore-prefixed names are skipped by get_functions,
+        so `_window` is invisible to the introspection. Only the win_* methods
+        are exposed. Bound right after create_window; methods run post-load."""
+
+        def __init__(self) -> None:
+            self._window = None  # set below; underscore = NOT introspected
+            self._maximized = False
+
+        def win_minimize(self):
+            if self._window is not None:
+                self._window.minimize()
+
+        def win_toggle_maximize(self) -> bool:
+            if self._window is None:
+                return self._maximized
+            if self._maximized:
+                self._window.restore()
+                self._maximized = False
+            else:
+                self._window.maximize()
+                self._maximized = True
+            return self._maximized
+
+        def win_is_maximized(self) -> bool:
+            return self._maximized
+
+        def win_close(self):
+            if self._window is not None:
+                self._window.destroy()
+
+        # keep _maximized accurate even when the OS maximizes/restores the window
+        # WITHOUT our button (double-click the drag region, Win+Up, aero-snap):
+        # pywebview fires these events, and the UI re-reads win_is_maximized on
+        # focus, so the CSS expand/compact follows every path.
+        def _on_maximized(self):
+            self._maximized = True
+
+        def _on_restored(self):
+            self._maximized = False
+
+    controls = _WindowControls()
+    window = webview.create_window(
         "gemma 4 · field",
         url,
+        js_api=controls,
         width=1080,
         height=640,
         min_size=(1000, 600),
@@ -358,6 +413,14 @@ def run_ui(args: argparse.Namespace) -> int:
         frameless=True,
         easy_drag=False,
     )
+    controls._window = window
+    # track OS-driven maximize/restore so win_is_maximized stays truthful for
+    # the UI's expand/compact CSS (not just our own button).
+    try:
+        window.events.maximized += controls._on_maximized
+        window.events.restored += controls._on_restored
+    except Exception:  # noqa: BLE001 — events are best-effort, button path still works
+        pass
     try:
         # webview.start() blocks on the main thread until the window closes.
         # http_server=False because uvicorn already serves the dist/ bundle.

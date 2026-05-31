@@ -299,7 +299,7 @@ export function NeuralGraph({ state }: Props) {
     const ro = new ResizeObserver((ents) => {
       for (const e of ents) {
         const cr = e.contentRect;
-        setSize({ w: Math.max(320, cr.width), h: Math.max(220, cr.height) });
+        setSize({ w: Math.max(200, cr.width), h: Math.max(160, cr.height) });
       }
     });
     ro.observe(wrapRef.current);
@@ -402,14 +402,14 @@ export function NeuralGraph({ state }: Props) {
   }, []);
 
   const { w, h } = size;
-  const pad = 24;
+  const pad = 14;
   const inW = w - pad * 2;
   const inH = h - pad * 2;
   const px = (n: NodeT) => pad + n.x * inW;
   const py = (n: NodeT) => pad + n.y * inH;
   const cx = pad + 0.5 * inW;
   const cy = pad + 0.5 * inH;
-  const coreR = Math.max(56, Math.min(120, Math.min(inW, inH) * 0.18));
+  const coreR = Math.max(48, Math.min(112, Math.min(inW, inH) * 0.18));
   const ringInner = coreR * 2.4;
   const ringOuter = coreR * 3.6;
 
@@ -452,10 +452,8 @@ export function NeuralGraph({ state }: Props) {
   return (
     <div className="field-stage" ref={wrapRef}>
       <svg
-        width="100%"
-        height="100%"
-        viewBox={`0 0 ${w} ${h}`}
-        preserveAspectRatio="xMidYMid meet"
+        width={w}
+        height={h}
         style={{ display: 'block' }}
         role="img"
         aria-label="agent state visualization"

@@ -1343,17 +1343,28 @@ button, input, textarea { font: inherit; color: inherit; }
   font-style: italic;
 }
 
-/* boot-stage error + retry button sit inline in the state-line. */
-.state-line .boot-err {
+/* boot-stage error + retry — a thin banner above the field that mounts ONLY on
+   a real agent boot failure (showRetry). At rest it renders nothing, so the
+   center column matches the handoff prototype; it appears only to surface a
+   retry the design's mock never needed. */
+.boot-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px 6px;
+  min-width: 0;
+}
+.boot-banner .boot-err {
   color: var(--carmine);
   font-family: var(--mono);
   font-size: 11px;
-  max-width: 280px;
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.state-line .boot-retry {
+.boot-banner .boot-retry {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1367,11 +1378,11 @@ button, input, textarea { font: inherit; color: inherit; }
   text-transform: lowercase;
   cursor: pointer;
   border-radius: 2px;
-  margin-left: 4px;
+  flex: 0 0 auto;
 }
-.state-line .boot-retry:hover {
+.boot-banner .boot-retry:hover {
   background: var(--carmine);
-  color: var(--bg);
+  color: var(--bg-base);
 }
 
 /* toasts — bottom-right stack. zero deps. */
@@ -1554,14 +1565,96 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  /* less top padding: the title bar consumes the top margin now */
+  padding: 8px 24px 24px;
+}
+
+/* the whole movable window: thin title bar stacked above the red instrument
+   frame. centered as a unit inside #root. */
+.window-root {
+  display: flex;
+  flex-direction: column;
+  width: min(1040px, 100%);
+  height: min(632px, 100%);
+  min-height: 0;
+}
+
+/* maximized: drop the compact cap so the instrument fills the whole window
+   like a normal app. #root padding shrinks to a hair so the red frame hugs the
+   screen edges. Driven by TitleBar reflecting win_is_maximized onto <html>. */
+html[data-maximized="true"] #root {
+  padding: 6px 10px 10px;
+}
+html[data-maximized="true"] .window-root {
+  width: 100%;
+  height: 100%;
+}
+
+/* ------- custom title bar (frameless window chrome) ------- */
+.titlebar {
+  flex: 0 0 32px;
+  display: flex;
+  align-items: stretch;
+  /* sits just above the red frame; a hair of breathing room below */
+  margin-bottom: 6px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.titlebar-drag {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  min-width: 0;
+  /* the OS drag cursor hint on hover */
+  cursor: default;
+}
+.titlebar-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--t-second);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.titlebar-title .accent { color: var(--carmine); font-weight: 600; }
+.titlebar-title .dim { color: var(--t-muted); }
+.titlebar-controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+.winbtn {
+  width: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--t-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: background 120ms, color 120ms;
+}
+.winbtn:hover {
+  color: var(--t-bone);
+  background: var(--bg-elev);
+}
+.winbtn:active { background: var(--hair); }
+.winbtn-close:hover {
+  color: #fff;
+  background: var(--carmine);
 }
 
 /* centered frame that carries the traveling border glow (not clipped) */
 .app-frame {
   position: relative;
-  width: min(1040px, 100%);
-  height: min(600px, 100%);
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
   --bd-base: #5a1a22;
   --bd-mid:  #B83A4A;
   --bd-hi:   #FF4D63;
