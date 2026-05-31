@@ -534,11 +534,13 @@ class TestWhatsappGuiSearch(unittest.TestCase):
             if name == "window" and args.get("action") == "active":
                 return {"ok": True, "active": {"title": "WhatsApp"}}
             if name == "gui":
-                # El verify de chat (locate_text) debe confirmar el contacto:
-                # simulamos que el OCR encontró el nombre en el header del chat.
+                # El verify de chat (locate_text) confirma SOLO si el match cae en
+                # la REGIÓN del encabezado. Con rect (100,100,1100,900) la región es
+                # x∈[400,980], y∈[116,244]; devolvemos un match ahí (screen_x/y).
                 if args.get("action") == "locate_text":
                     return {"ok": True, "found": True,
-                            "matches": [{"text": args.get("text", "")}]}
+                            "matches": [{"text": args.get("text", ""),
+                                         "screen_x": 500, "screen_y": 150}]}
                 return {"ok": True}
             return {"ok": False}
         return MagicMock(side_effect=_exec)
@@ -591,10 +593,10 @@ class TestWhatsappGuiSearch(unittest.TestCase):
         self.assertTrue(r["sent"], f"expected sent=True, got {r}")
         self.assertEqual(r["provider"], "whatsapp_desktop_gui_search")
         self.assertEqual(r["recipient_source"], "gui_search")
-        # Steps esperados: dispatch + focus + ctrl+f + type name + enter + type msg + enter.
+        # Steps esperados: dispatch + focus + BUSCADOR PRINCIPAL + type name + down+enter + type msg + enter.
         steps = r["gui_search_info"]["steps"]
         self.assertIn("dispatched_deeplink", steps)
-        self.assertIn("opened_new_chat_search", steps)
+        self.assertIn("focused_main_search", steps)
         self.assertIn("typed_contact_name", steps)
         self.assertIn("selected_first_match", steps)
         self.assertIn("focused_compose_box", steps)
@@ -665,8 +667,11 @@ class TestWhatsappGuiSearch(unittest.TestCase):
         self.assertEqual(r["completion_status"], "search_aborted")
         info = r["gui_search_info"]
         self.assertFalse(info["physical_actions_ok"])
-        self.assertIn("open new chat search", info["abort_reason"])
-        self.assertNotIn("opened_new_chat_search", info["steps"])
+        # Un keypress bloqueado (gui_safety) aborta el envío. Con el buscador
+        # principal el 1er keypress es el Ctrl+A ("select contact search text");
+        # lo importante es que aborta por bloqueo, no el step exacto.
+        self.assertIn("blocked", info["abort_reason"].lower())
+        self.assertNotIn("typed_message", info["steps"])
 
     def test_gui_search_does_not_trust_uia_search_result_as_header(self):
         # UIA puede encontrar el contacto en la lista/busqueda sin que el chat

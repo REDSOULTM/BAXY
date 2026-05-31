@@ -3155,39 +3155,55 @@ def _verify_chat_header_status(executor: Executor, contact_name: str) -> str:
         s = "".join(ch for ch in s if not unicodedata.combining(ch))
         return _re.sub(r"[^a-z0-9 ]", " ", s)
 
-    # Do NOT use broad UIA find here. It can match the contact in the search
-    # results/sidebar while the active chat is still the old one. For the final
-    # send gate we need visible header evidence after the search overlay is gone.
+    # BUG CRÍTICO MEDIDO (2026-05-31): la versión vieja hacía
+    # locate_text(contact) sobre TODA la pantalla y devolvía "confirmed" si lo
+    # encontraba EN CUALQUIER LADO — pero el nombre buscado SIGUE ESCRITO en la
+    # caja de búsqueda → falso "confirmed" → tipeaba/enviaba al chat ABIERTO
+    # (equivocado). Es el C1 "destinatario equivocado = daño irreversible".
+    # FIX: confirmar SOLO si el nombre aparece en la REGIÓN DEL ENCABEZADO (banda
+    # superior del área de chat, a la derecha del sidebar) — NO en el buscador
+    # (izquierda) ni en un mensaje (abajo). El texto del header es chico y de baja
+    # confianza OCR (~20-24) → min_conf=20 (medido: el header cae a ~0.33W/0.09H).
     try:
-        shot = executor("gui", {"action": "locate_text", "text": contact_name})
+        import win32gui  # type: ignore
+        hwnd = win32gui.GetForegroundWindow()
+        if "whatsapp" not in (win32gui.GetWindowText(hwnd) or "").lower():
+            return "unknown"
+        L, T, Rr, Bb = win32gui.GetWindowRect(hwnd)
+    except Exception:
+        return "unknown"
+    W, Hh = Rr - L, Bb - T
+    if W <= 0 or Hh <= 0:
+        return "unknown"
+    try:
+        shot = executor("gui", {"action": "locate_text", "text": contact_name, "min_conf": 20})
     except Exception:
         return "unknown"
     if not isinstance(shot, dict):
         return "unknown"
-    if shot.get("found"):
-        return "confirmed"
-    ocr_text = ""
-    for key in ("text", "ocr_text", "full_text"):
-        v = shot.get(key)
-        if isinstance(v, str) and v.strip():
-            ocr_text = v
-            break
-    if not ocr_text and isinstance(shot.get("matches"), list):
-        ocr_text = " ".join(
-            str(m.get("text", "")) for m in shot["matches"] if isinstance(m, dict))
-    ocr_norm = _fold(ocr_text)
-    target_tokens = [t for t in _fold(contact_name).split() if len(t) >= 3]
-    if not target_tokens or not ocr_norm.strip():
+    matches = shot.get("matches")
+    if not isinstance(matches, list):
         return "unknown"
-    if any(t in ocr_norm for t in target_tokens):
-        return "confirmed"
-    # Si OCR devolvio un texto corto, probablemente es el header visible; si no
-    # contiene el contacto pedido, es un chat distinto. Textos largos suelen ser OCR
-    # de toda la pantalla/lista, no evidencia fiable para bloquear.
-    visible_tokens = [t for t in _re.split(r"\s+", ocr_norm) if len(t) >= 2]
-    if visible_tokens and len(visible_tokens) <= 6:
-        return "wrong_chat"
-    return "unknown"
+    # Región del encabezado en coords de PANTALLA. Excluye sidebar (x<0.30W) y
+    # mensajes (y>0.18H). locate_text añade screen_x/screen_y pre-traducidos.
+    hx0, hx1 = L + W * 0.30, L + W * 0.88
+    hy0, hy1 = T + Hh * 0.02, T + Hh * 0.18
+    saw_anywhere = False
+    for m in matches:
+        if not isinstance(m, dict):
+            continue
+        sxv = m.get("screen_x"); syv = m.get("screen_y")
+        if sxv is None or syv is None:
+            continue
+        saw_anywhere = True
+        try:
+            if hx0 <= float(sxv) <= hx1 and hy0 <= float(syv) <= hy1:
+                return "confirmed"
+        except (TypeError, ValueError):
+            continue
+    # Apareció en pantalla pero NO en el encabezado -> chat equivocado (no enviar).
+    # No apareció en ningún lado -> unknown (WebView2 puede no exponer el header).
+    return "wrong_chat" if saw_anywhere else "unknown"
 
 
 def _verify_visible_whatsapp_text_status(executor: Executor, target_text: str) -> str:
@@ -3526,22 +3542,39 @@ def _whatsapp_send_via_gui_search(
     # Extra grace tras maximize — el window manager necesita repaint.
     _time.sleep(0.4)
 
-    # 3. Ctrl+N abre el selector global de nuevo chat. Ctrl+F puede quedarse en
-    # "buscar dentro del chat actual", lo que produjo falsos positivos: se
-    # tipeaba el contacto en la busqueda del chat viejo y luego el mensaje no
-    # salia al destinatario pedido.
+    # 3. BUSCADOR PRINCIPAL (NO Ctrl+N). MEDIDO 2026-05-31: Ctrl+N abre "Nuevo chat"
+    # que busca solo CONTACTOS, no GRUPOS -> "Letras" daba "sin resultados" y el
+    # texto terminaba en el chat ABIERTO (destinatario equivocado, daño irreversible).
+    # El buscador principal (arriba-izq) SÍ encuentra grupos Y contactos. Lo enfocamos
+    # por OCR del placeholder "Buscar" (fallback: coords sup-izq de la ventana).
+    _search_pt = None
+    try:
+        import win32gui as _wg  # type: ignore
+        _hwnd = _wg.GetForegroundWindow()
+        _L, _T, _R, _B = _wg.GetWindowRect(_hwnd); _W, _H = _R - _L, _B - _T
+        # Default: coords sup-izq de la ventana (donde vive el buscador principal).
+        # OCR del placeholder "Buscar" lo refina si hay screenshot disponible.
+        _search_pt = (int(_L + _W * 0.12), int(_T + _H * 0.095))
+        _sshot = executor("gui", {"action": "screenshot", "monitor": "all"})
+        if isinstance(_sshot, dict) and _sshot.get("image_path"):
+            from ..tools_pkg.ops_tools import ocr_find_text as _oft
+            _sx0 = int(_sshot.get("left", 0)); _sy0 = int(_sshot.get("top", 0))
+            _f = _oft(Path(str(_sshot["image_path"])), "Buscar", min_conf=20)
+            for _m in (_f.get("matches", []) if _f.get("found") else []):
+                _cx = _m["center_x"] + _sx0; _cy = _m["center_y"] + _sy0
+                if _cx < _L + _W * 0.32 and _cy < _T + _H * 0.20:
+                    _search_pt = (int(_cx), int(_cy)); break
+    except Exception:
+        _search_pt = None
+    if _search_pt is None:
+        return _abort("focus main search", "could not locate WhatsApp search box")
     result, reason = _checked_executor(
-        "gui",
-        {
-            "action": "keypress", "keys": "ctrl+n",
-            "window": "WhatsApp", "method": "sendkeys",
-        },
-        "open new chat search",
-    )
+        "gui", {"action": "click", "x": _search_pt[0], "y": _search_pt[1]},
+        "focus main search box")
     if reason:
-        return _abort("open new chat search", reason, result=result)
-    steps.append("opened_new_chat_search")
-    _time.sleep(0.6)
+        return _abort("focus main search box", reason, result=result)
+    steps.append("focused_main_search")
+    _time.sleep(0.5)
 
     result, reason = _checked_executor(
         "gui",
@@ -3585,6 +3618,11 @@ def _whatsapp_send_via_gui_search(
             reason or "lost WhatsApp focus before selecting contact",
             result=result,
         )
+    # En el buscador principal hay que BAJAR al primer resultado y abrirlo (Down+Enter).
+    _checked_executor(
+        "gui", {"action": "keypress", "keys": "down", "window": "WhatsApp", "method": "sendkeys"},
+        "highlight first result")
+    _time.sleep(0.3)
     result, reason = _checked_executor(
         "gui",
         {

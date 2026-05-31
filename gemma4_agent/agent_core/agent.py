@@ -4572,6 +4572,51 @@ class Gemma4Agent:
                                          at_clause=_clause_idx, goal=_nav_goal[:60])
                         break
                     continue
+                # CHAIN messaging a WhatsApp (2026-05-31): "abrí WhatsApp y mandale a
+                # X Y" -> la 2da cláusula es un MENSAJE a la app abierta (WhatsApp), NO
+                # un email. El router solo (sin el contexto del chain) default a email
+                # (MEDIDO). Gate: carry_window es WhatsApp + extract_message_to da
+                # (contacto, cuerpo). Ruteamos al tool whatsapp (GUI-search del chat +
+                # envío con su verificación de destinatario). GEMMA4_CHAIN_WSP=0 lo apaga.
+                _wsp_msg = None
+                if carry_window and "whatsapp" in carry_window.lower():
+                    import os as _os_wsp
+                    if _os_wsp.environ.get("GEMMA4_CHAIN_WSP", "1").strip().lower() \
+                            not in {"0", "false", "no", "off"}:
+                        try:
+                            from ..routing.command_splitter import extract_message_to
+                            _wsp_msg = extract_message_to(clause)
+                        except Exception:
+                            _wsp_msg = None
+                if _wsp_msg and _wsp_msg[0]:
+                    _wc, _wb = _wsp_msg[0].strip(), (_wsp_msg[1] or "").strip()
+                    res = self.tools.execute("whatsapp",
+                        {"action": "send_message", "contact": _wc, "text": _wb})
+                    ok = isinstance(res, dict) and res.get("ok")
+                    _status = res.get("status") if isinstance(res, dict) else None
+                    if ok:
+                        replies.append(f"Le mandé «{_wb}» a {_wc} por WhatsApp." if _wb
+                                       else f"Abrí el chat con {_wc} en WhatsApp.")
+                    elif _status == "needs_user":
+                        replies.append(str(res.get("error") or "Falta info para mandar el mensaje."))
+                    else:
+                        replies.append(f"Intenté mandarle «{_wb}» a {_wc} por WhatsApp "
+                                       "pero no pude confirmarlo.")
+                    all_events.append(ToolEvent(name="whatsapp",
+                        args={"action": "send_message", "contact": _wc, "text": _wb},
+                        result=res if isinstance(res, dict) else {}))
+                    self.trace.event("multi_intent", "chain_whatsapp",
+                                     contact=_wc[:40], ok=ok, status=_status)
+                    if _mission_id and _mc is not None:
+                        try: _mc.mark_done(self.state.path, _mission_id, _clause_idx, replies[-1])
+                        except Exception: pass
+                    if not ok:
+                        _chain_failed = True
+                        if _clause_idx + 1 < len(clauses):
+                            replies.append(f"Paré la secuencia acá: faltaron los pasos "
+                                           f"{_clause_idx + 2} en adelante. Decime si reintento.")
+                        break
+                    continue
                 # Propagar el contexto GUI de la cláusula anterior a ESTA, para
                 # que "escribí X" tras "abrí Notepad" herede gui/window y no
                 # caiga a 'session' (charla). Bypassa el veto conversacional del
