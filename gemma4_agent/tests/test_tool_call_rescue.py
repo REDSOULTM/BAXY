@@ -445,6 +445,21 @@ class TestGemmaSpecialTokenStrip(unittest.TestCase):
         txt = "el valor es a < b en matemáticas"
         self.assertEqual(sanitize_text(txt), txt)
 
+    def test_intent_block_stripped(self):
+        # Replay de logs reales 2026-05-30: el 4B antepone <intent>{...}</intent>
+        # al reply y leakeaba al user (consultas CSV/filesystem).
+        out = sanitize_text('<intent>{"intent_type":"read","target":"x.csv"}</intent>\n'
+                            'La venta total fue 10 unidades.')
+        self.assertEqual(out, "La venta total fue 10 unidades.")
+
+    def test_orphan_intent_close_stripped(self):
+        self.assertEqual(sanitize_text("Listé archivos y no encontré nada.</intent>"),
+                         "Listé archivos y no encontré nada.")
+
+    def test_intent_does_not_eat_normal_text(self):
+        self.assertEqual(sanitize_text("El intento de hoy salió bien."),
+                         "El intento de hoy salió bien.")
+
 
 class TestActionNameRescue(unittest.TestCase):
     """R-latencia 2026-05-30: el 4B leakea la ACCIÓN como tool standalone

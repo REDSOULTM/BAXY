@@ -41,6 +41,15 @@ _CONTROL_TOKEN_RE = re.compile(r"<\|[a-z_]+\|>", re.IGNORECASE)
 # <|...|> (con pipes); este cubre la forma <...> con dígitos.
 _GEMMA_SPECIAL_TOKEN_RE = re.compile(r"<unused\d+>|<(?:pad|eos|bos|unk)>", re.IGNORECASE)
 
+# Declaración de intención que el 4B antepone al reply: `<intent>{"intent_type":
+# "read","target":"..."}</intent>`. MEDIDO en el replay de logs reales 2026-05-30
+# (consultas CSV/filesystem): el bloque entero —o un `</intent>` huérfano— LEAKEABA
+# al reply visible ("<intent>{...}</intent>\nLa venta total..."). El rescue ya tolera
+# el prefijo para extraer el tool-call; acá lo BORRAMOS del texto final que ve el
+# user. Estructural (mide la FORMA del tag), defense-in-depth como los otros strips.
+_INTENT_LEAK_RE = re.compile(r"<intent\b[^>]*>.*?</intent>|</?intent\b[^>]*>",
+                             re.IGNORECASE | re.DOTALL)
+
 # El LLM a veces emite el formato de tool_call como TEXTO (string en el
 # content) en vez de via el mecanismo nativo de tool_calls. Eso es un bug
 # del parser/template. Si llega al user lo confunde — ve un mensaje como
@@ -99,6 +108,8 @@ def sanitize_text(text: Any) -> str:
     text = _CONTROL_TOKEN_RE.sub("", text)
     # Tokens especiales de Gemma sin pipes (<unused49> degeneración, <pad>...).
     text = _GEMMA_SPECIAL_TOKEN_RE.sub("", text)
+    # Declaración <intent>...</intent> (o tag huérfano) que leakea al reply.
+    text = _INTENT_LEAK_RE.sub("", text)
     return text.strip()
 
 
