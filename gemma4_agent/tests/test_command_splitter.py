@@ -584,6 +584,26 @@ class ParseCalcActionTest(unittest.TestCase):
             self.assertIsNone(parse_calc_action(q), msg=q)
 
 
+class DisfluencyStripTest(unittest.TestCase):
+    """split_command quita muletillas/disfluencias iniciales (ruido del STT) antes de
+    partir. MEDIDO 2026-05-31: 'Eh, pon una canción' -> ['Eh','pon una canción'] y la
+    cláusula 'Eh' generaba reply junk ('listo, cancelo') que se concatenaba."""
+
+    def test_strips_leading_fillers(self):
+        self.assertEqual(split_command("Eh, pon una canción en Spotify"),
+                         ["pon una canción en Spotify"])
+        self.assertEqual(split_command("Dije, cierra WhatsApp"), ["cierra WhatsApp"])
+        self.assertEqual(split_command("ah, subí el volumen"), ["subí el volumen"])
+        self.assertEqual(split_command("gemma, reproduce el video"),
+                         ["reproduce el video"])
+
+    def test_does_not_eat_real_word_prefixes(self):
+        # 'ahora' NO es 'ah'+'ora'; 'umbral' NO es 'um'+'bral'; 'este'/'a ver' = contenido
+        for q in ("ahora pon música", "umbral de 5", "ahí está",
+                  "este documento abrilo", "a ver las tareas"):
+            self.assertEqual(split_command(q), [q], msg=q)
+
+
 class ExtractAppActionNavInAppTest(unittest.TestCase):
     """nav-en-app: 've a <dest> en <app>' -> pattern 'nav_in_app' -> cu(focus_app+open).
     MEDIDO en vivo 2026-05-31: 'gemma Ve a Cotele en Discord' no llegaba a computer_use

@@ -238,6 +238,20 @@ def _is_bare_nav_to_app(clause: str) -> bool:
     return True
 
 
+# Disfluencias/muletillas INICIALES del habla (ruido del STT, NO comando): non-léxicas
+# universales (eh/ah/um...) + repeat-markers ("dije,...") + wake-word/vocativo. Se quitan
+# como RUIDO antes de partir (no deciden intención — igual que el wake-word). El `[\s,]+`
+# separador y `(?=\S)`-implícito por el `+` evitan comer prefijos de palabras reales
+# ('ahora' NO -> 'ah'+'ora'; 'umbral' NO -> 'um'+'bral'). EXCLUYE léxicas ambiguas
+# (este/a ver/bueno) que pueden ser contenido ('este documento', 'a ver las tareas').
+_LEADING_FILLER_RE = re.compile(
+    r"^\s*(?:(?:eh+|ah+|oh+|um+|uh+|em+|ehm|mmm+|hmm+|aj[áa]|"        # non-léxicas
+    r"dij[eo]|digo|"                                                  # repeat-markers
+    r"hey\s+gemma|ok\s+gemma|che\s+gemma|gemma)"                      # wake-word/vocativo
+    r"[\s,]+)+",
+    re.IGNORECASE)
+
+
 def split_command(utterance: str) -> list[str]:
     """Parte un enunciado en cláusulas de acción. Devuelve [utterance] si no hay
     multi-intent claro (caso normal). Nunca lanza.
@@ -245,6 +259,13 @@ def split_command(utterance: str) -> list[str]:
     Capa 1 (español, rápida) primero; si no parte, capa 2 (multilingüe semántica)."""
     if not utterance or not utterance.strip():
         return [utterance]
+    # Quitar disfluencias/muletillas INICIALES (ruido del STT, NO comando) antes de
+    # partir. MEDIDO en vivo 2026-05-31: "Eh, pon una canción" -> ['Eh','pon una
+    # canción'] y la cláusula 'Eh' generaba un reply junk ("listo, cancelo") que se
+    # concatenaba. Se quitan como RUIDO (igual que el wake-word), no deciden intención.
+    _clean = _LEADING_FILLER_RE.sub("", utterance).strip()
+    if _clean:
+        utterance = _clean
     # CAPA 1: regex español (exacta, barata, ya validada).
     parts = [p.strip(" ,.;") for p in _SPLIT_RE.split(utterance) if p and p.strip(" ,.;")]
     if len(parts) > 1:
