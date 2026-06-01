@@ -754,6 +754,17 @@ def verify_media(args: dict, result: dict) -> VerifierOutcome:
                 "URL/deeplink dispatched, no playback signal",
                 {"url": result.get("url"), "deeplink": result.get("deeplink")},
             )
+        # PLAY GLOBAL via tecla de media (sin username -> sin deeplink/auto_play_info):
+        # es un DISPATCH de tecla (como pause/next), NO un fallo. confirmed=None (no
+        # confirmable sin foco/SMTC), consistente con el deeplink de YouTube. MEDIDO en
+        # vivo 2026-05-31: "pon una canción en Spotify" caía al catch-all de abajo
+        # (confirmed=False) -> "No pude verificar la reproducción" aunque la tecla SÍ
+        # se mandó. Solo si played=True (la tecla se dispatcheó).
+        if result.get("mode") == "global_play_key" and result.get("played"):
+            return _unverifiable(
+                "media", "media key dispatched to spotify, no playback signal",
+                {"mode": "global_play_key"},
+            )
     return _unverifiable("media", "no playback evidence in tool result")
 
 

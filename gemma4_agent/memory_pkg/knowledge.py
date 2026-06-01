@@ -202,15 +202,32 @@ class KnowledgeStore:
         else:
             final_rows = bm25_rows[:limit]
             rerank_info = {"used": False, "skipped": "off_by_caller_or_env" if not do_rerank else "no_candidates"}
-        return {
+        result: dict[str, Any] = {
             "ok": True,
             "query": query,
             "results": final_rows,
             "count": len(final_rows),
             "bm25_candidates": len(bm25_rows),
             "rerank": rerank_info,
-            "content_verified": bool(final_rows),
         }
+        if final_rows:
+            result["content_verified"] = True
+        else:
+            # Búsqueda EXITOSA sin coincidencias en las notas/documentos PERSONALES del
+            # usuario. NO es un fallo de verificación: marcar content_verified=False
+            # hacía que el pipeline lo tratara como tool-fallido (status
+            # needs_verification) y el 4B respondiera "No pude encontrar la
+            # información". Pero "¿cuántos segundos hay en un minuto?" es conocimiento
+            # GENERAL -> lo debe responder el LLM. MEDIDO en vivo 2026-05-31. Quitamos
+            # la señal de no-verificado (NO seteamos content_verified) y guiamos al LLM
+            # con una nota para que responda de su propio conocimiento.
+            result["completion_status"] = "search_complete_no_matches"
+            result["note"] = (
+                "Sin coincidencias en las notas/documentos personales del usuario. "
+                "Si es una pregunta de conocimiento general, respondela vos "
+                "directamente con tu conocimiento; NO digas que no la encontraste."
+            )
+        return result
 
     def list_documents(self, *, limit: int = 100) -> dict[str, Any]:
         with self._connect() as conn:
