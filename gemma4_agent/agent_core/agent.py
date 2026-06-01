@@ -1285,7 +1285,28 @@ class Gemma4Agent:
                         _aa_route = True                   # maneje (screenshot + app.open)
                 if _aa_route and _aa.get("verify_app"):    # PRECISIÓN: target = app real
                     try:
-                        _aa_route = bool(self._window_title_in_text(_aa.get("app_hint") or ""))
+                        _hint = _aa.get("app_hint") or ""
+                        # App real = ventana ABIERTA, O el nombre RESUELVE a una app
+                        # instalada (AppResolver: PATH/StartMenu/registry/Steam — la misma
+                        # resolución de app.open, ESTADO DEL SO). MEDIDO 2026-05-31 EN VIVO:
+                        # "escribí X en el bloc de notas" con Notepad CERRADO caía a
+                        # notes_tasks; el plan cu YA abre la app (focus_app) pero el gate la
+                        # bloqueaba. "mi lista" NO resuelve -> sigue a notes (sin regresión).
+                        _aa_route = bool(self._window_title_in_text(_hint))
+                        # "mi/mis <notas/lista/agenda/...>" = la LISTA LOCAL del user (notes_
+                        # tasks), NO una app — aunque AppResolver matchee "mis notas" a la app
+                        # Notes/Sticky Notes (MEDIDO). NO usar el fallback ahí (preserva -> notes).
+                        _is_local_list = bool(_re_aa.match(
+                            r"^\s*(?:mi|mis)\s+(?:notas?|listas?|agenda|recordatorios?|"
+                            r"tareas?|apuntes|pendientes)\b", _hint, _re_aa.IGNORECASE))
+                        if not _aa_route and _hint.strip() and not _is_local_list:
+                            _hint2 = _re_aa.sub(r"^(?:el|la|los|las|the|mi|mis|un|una)\s+",
+                                                "", _hint, flags=_re_aa.IGNORECASE).strip() or _hint
+                            try:
+                                from ..tools_pkg.app_resolver import AppResolver
+                                _aa_route = bool(AppResolver().find(_hint2))
+                            except Exception:
+                                _aa_route = False
                     except Exception:
                         _aa_route = False
                 if _aa_route:
