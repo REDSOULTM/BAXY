@@ -1250,6 +1250,30 @@ class Gemma4Agent:
         # otra, con sus parámetros. Su impl (tools.t_computer_use) corre el plan
         # executor internamente. Sin gate frágil, sin secuestro — unificado.
         turn_id = self.trace.new_turn_id()
+        # ARITMÉTICA (2026-05-31): el 4B chico improvisa cálculos y FALLA (MEDIDO en vivo:
+        # "cuánto es 47 por 8" -> "58.5", es 376). Si el texto reduce a una expresión
+        # aritmética PURA, la computamos DETERMINISTA (AST seguro, sin eval/exec — respeta
+        # R6). Alta precisión: try_arithmetic solo devuelve algo para aritmética clara (si no,
+        # None -> el turno sigue normal). NO es respuesta enlatada: es COMPUTAR, como una
+        # calculadora (el resultado es exacto, no una tabla de keywords). GEMMA4_ARITH=0.
+        if isinstance(content, str) and content.strip():
+            import os as _os_ar
+            if _os_ar.environ.get("GEMMA4_ARITH", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..routing.arithmetic import try_arithmetic as _try_arith
+                    _arith = _try_arith(content)
+                except Exception:
+                    _arith = None
+                if _arith is not None:
+                    try: self.trace.event(turn_id, "arithmetic_shortcircuit", result=_arith)
+                    except Exception: pass
+                    self._last_turn_ts = time.time()
+                    return TurnDecision(early_reply=AgentReply(
+                        content=f"Es {_arith}.",
+                        tool_events=[ToolEvent(name="calc", args={"expr": content[:80]},
+                                               result={"ok": True, "result": _arith})],
+                        mission=None))
         # ACCIÓN-EN-APP / META (ACCESIBILIDAD, 2026-05-31, núcleo del producto).
         # MEDIDO en vivo: los pedidos "escribí/hacé X en app Y", "en Y escribí X" y
         # "andá a Y y escribí X" casi nunca llegaban al orquestador computer_use
