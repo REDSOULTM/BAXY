@@ -51,9 +51,14 @@ class TestMissionFooterResilience(unittest.TestCase):
                       "the LLM reply must survive a footer-computation crash")
 
     def test_reply_survives_mission_footer_raising(self):
+        # NOTA (2026-06-01): el input era "abre Steam", pero el app_open_shortcircuit
+        # (det. 2026-05-31) lo intercepta y LANZA Steam DE VERDAD -> el test colgaba el
+        # run de la suite (app_resolver.open física). Uso "hola" como los tests hermanos:
+        # el footer post-reply se computa igual para cualquier turno, así que el patch de
+        # mission_footer (raise) se ejerce sin acción física.
         with patch("gemma4_agent.mission_outcome.mission_footer",
                    side_effect=RuntimeError("boom")):
-            reply = self.agent.run_text("abre Steam")
+            reply = self.agent.run_text("hola")
         self.assertIsInstance(reply, AgentReply)
         self.assertIn("ok", reply.content)
 
