@@ -12,7 +12,7 @@ import unittest
 from gemma4_agent.routing.command_splitter import (
     split_command, has_back_reference, plan_clauses,
     extract_click_target, is_key_name, extract_write_payload,
-    extract_nav_target, extract_message_to,
+    extract_nav_target, extract_message_to, parse_calc_action,
 )
 
 
@@ -554,6 +554,33 @@ class MultilingualSplitTest(unittest.TestCase):
                 len(split_command("abrí Spotify y bajá el volumen")), 2)
         finally:
             os.environ["GEMMA4_SPLIT_MULTILANG"] = "1"
+
+
+class ParseCalcActionTest(unittest.TestCase):
+    """parse_calc_action: 'suma 2+2 en la calculadora' -> {'expr': '2+2'} (plan
+    determinista focus_app(calc)+type+enter). MEDIDO 2026-05-31: el 4B tipeaba sin
+    enfocar la Calc -> verifier 'type failed' -> 4 reintentos. Estructural+aritmético."""
+
+    def test_arithmetic_in_calculator(self):
+        cases = {
+            "Suma 2 más 2 en la Calculadora": "2+2",
+            "Suma dos más dos en la Calculadora": "2+2",
+            "gemma Suma 2 más 2 en la Calculadora": "2+2",
+            "en la calculadora hacé 5 por 3": "5*3",
+            "calculá 100 dividido 4 con la calculadora": "100/4",
+            "multiplicá 6 por 7 en la calc": "6*7",
+        }
+        for q, exp in cases.items():
+            got = parse_calc_action(q)
+            self.assertIsNotNone(got, msg=q)
+            self.assertEqual(got.get("expr"), exp, msg=q)
+
+    def test_none_when_not_calc_arithmetic(self):
+        # sin app calc, o sin aritmética pura -> None (no se hijackea)
+        for q in ("abrí la calculadora", "suma 2+2",                # falta uno de los dos
+                  "anotá la reunión en mi lista", "poné hola en notepad",
+                  "qué hora es", ""):
+            self.assertIsNone(parse_calc_action(q), msg=q)
 
 
 if __name__ == "__main__":

@@ -24,6 +24,8 @@ from __future__ import annotations
 import os
 import re
 
+from .arithmetic import arith_expr_for_calc  # standalone (stdlib), sin ciclo
+
 # Verbos imperativos español (es rioplatense/voseo + estándar) — CAPA 1 rápida.
 # Formas con clítico (abrilo, ponelo...) van PRIMERO; SIN \b al final.
 _IMPERATIVE = (
@@ -612,6 +614,42 @@ def extract_app_action(clause: str) -> dict | None:
         return {"goal": c, "app_hint": m.group("app").strip(" .,:\"'«»"),
                 "verify_app": True, "pattern": "act_in_app"}
     return None
+
+
+# Operación aritmética EN LA CALCULADORA: "suma 2+2 en la calculadora", "en la calc
+# hacé 5*3", "calculá 10/2 con la calculadora", "Suma dos más dos en la Calculadora".
+# MEDIDO en vivo 2026-05-31: el 4B tipeaba `gui.type("2+2")` SIN enfocar la Calc -> el
+# sendinput iba a la ventana equivocada (reporta ok:True igual) -> el verifier no
+# encontraba "2+2" en la Calc ("type failed") -> el agente REINTENTABA idéntico 4 veces
+# ("4 no confirmadas" + 18s). Fix: detectar [app calculadora + expresión aritmética
+# pura] y devolver {'expr': '2+2'} para que el caller arme el plan DETERMINISTA
+# [focus_app(calc), type(expr), keypress(enter)] (abre/enfoca ANTES de tipear).
+# ESTRUCTURAL (gramática + aritmética, NO listas de intenciones — CLAUDE.md (b)).
+_CALC_APP_RE = re.compile(
+    r"\b(?:calculadora|calculator|calcolatrice|calculatrice|rechner|kalkulator|calc)\b",
+    re.IGNORECASE)
+
+
+def parse_calc_action(clause: str) -> dict | None:
+    """Si la cláusula pide una operación aritmética EN LA CALCULADORA, devuelve
+    {'expr': '<expresión compacta a tipear>'}; None si no. Requiere AMBOS: mención de
+    la app calculadora Y que el resto reduzca a aritmética pura (alta precisión: 'abrí
+    la calculadora' sola -> None; 'anotá la cuenta en la calculadora que diga X' -> None)."""
+    if not clause or not clause.strip():
+        return None
+    if not _CALC_APP_RE.search(clause):
+        return None
+    # quitar la mención de la app ("en la calculadora", "con la calc", "la calculadora")
+    txt = re.sub(
+        r"\b(?:en|con|usando|using|in|im|dans|na|sobre|use|usa|abr[íi]\w*|abre|open|"
+        r"desde|from)\s+(?:la|el|the|mi|tu|una?|der|die|das)?\s*"
+        r"(?:calculadora|calculator|calcolatrice|calculatrice|rechner|kalkulator|calc)\b",
+        " ", clause, flags=re.IGNORECASE)
+    txt = _CALC_APP_RE.sub(" ", txt)   # cualquier mención residual de la app
+    expr = arith_expr_for_calc(txt)
+    if not expr:
+        return None
+    return {"expr": expr}
 
 
 # Verbos de MOVIMIENTO a un destino DENTRO de una app (NO 'abrí/abre/open' = app-open

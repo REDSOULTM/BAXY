@@ -127,8 +127,12 @@ class TestAuditMetrics(unittest.TestCase):
         'instalá X y abrilo' en _run_multi_intent). +extract_app_open (open pelado
         'abrí la calculadora') -1 por consolidar parse_type_action. STAGE 3 honestidad de
         cadena: +1 `from ..safety_pkg.reply_validator import is_unverified_claim` en
-        _run_multi_intent (mismo patrón anti-circular). Techo 528→529. Si crece mucho MÁS,
-        alguien introdujo lazy en vez de top-level sin justificación."""
+        _run_multi_intent (mismo patrón anti-circular). Techo 528→529. LATENCIA+FALLAS
+        (2026-05-31): el short-circuit CALC-EN-APP suma +1 `from ..routing.command_splitter
+        import parse_calc_action` en _decide_turn (MISMO patrón anti-circular routing<->agent;
+        el import command_splitter->arithmetic SÍ es top-level, standalone sin ciclo) +
+        los short-circuits de aritmética/app-action de la misma tanda. Techo 535→545. Si
+        crece mucho MÁS, alguien introdujo lazy en vez de top-level sin justificación."""
         total = 0
         for p in _iter_prod_py():
             try:
@@ -137,8 +141,8 @@ class TestAuditMetrics(unittest.TestCase):
                 continue
             total += len(re.findall(r"^\s+from \.", src, re.M))
         self.assertLess(
-            total, 535,
-            f"R3: {total} lazy imports en producción (techo 535)"
+            total, 545,
+            f"R3: {total} lazy imports en producción (techo 545)"
         )
 
     # ----- R4: ToolResult disponible -----

@@ -1274,6 +1274,43 @@ class Gemma4Agent:
                         tool_events=[ToolEvent(name="calc", args={"expr": content[:80]},
                                                result={"ok": True, "result": _arith})],
                         mission=None))
+        # CALC-EN-APP (2026-05-31): "suma 2+2 en la calculadora" -> el 4B tipeaba
+        # `gui.type("2+2")` SIN enfocar la Calc; el sendinput iba a la ventana equivocada
+        # (reporta ok:True igual) -> el verifier no encontraba "2+2" en la Calc
+        # ("type failed: ?") -> el agente REINTENTABA idéntico 4 veces ("4 no
+        # confirmadas" + 18s, MEDIDO en vivo). Plan DETERMINISTA [focus_app(calc),
+        # type(expr), keypress(enter)]: abre/enfoca la Calc ANTES de tipear, así el type
+        # aterriza, cambia el estado y el verifier confirma (corta la tormenta de
+        # reintentos). Va ANTES del app-action net (que NO agarra "suma": no es verbo de
+        # tipeo). ESTRUCTURAL (gramática+aritmética, no listas). GEMMA4_CALC_ACTION=0.
+        if isinstance(content, str) and content.strip():
+            import os as _os_calc
+            if _os_calc.environ.get("GEMMA4_CALC_ACTION", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..routing.command_splitter import parse_calc_action as _parse_calc
+                    _calc = _parse_calc(content)
+                except Exception:
+                    _calc = None
+                if _calc and _calc.get("expr"):
+                    _calc_expr = _calc["expr"]
+                    try:
+                        self.trace.event(turn_id, "calc_action_shortcircuit", expr=_calc_expr)
+                    except Exception:
+                        pass
+                    _calc_args = {"goal": content, "steps": [
+                        {"op": "focus_app", "arg": "calc"},
+                        {"op": "type", "arg": _calc_expr},
+                        {"op": "keypress", "arg": "enter"},
+                    ]}
+                    _calc_res = self.tools.t_computer_use(_calc_args)
+                    _calc_ev = ToolEvent(name="computer_use", args=_calc_args,
+                                         result=_calc_res if isinstance(_calc_res, dict) else {})
+                    _calc_msg = (_calc_res.get("reply") if isinstance(_calc_res, dict) else None) \
+                        or "Listo, lo hice en la calculadora."
+                    self._last_turn_ts = time.time()
+                    return TurnDecision(early_reply=AgentReply(
+                        content=_calc_msg, tool_events=[_calc_ev], mission=None))
         # ACCIÓN-EN-APP / META (ACCESIBILIDAD, 2026-05-31, núcleo del producto).
         # MEDIDO en vivo: los pedidos "escribí/hacé X en app Y", "en Y escribí X" y
         # "andá a Y y escribí X" casi nunca llegaban al orquestador computer_use
