@@ -573,6 +573,20 @@ _AA_NAV_ACTION = re.compile(
     r"\b(?:" + _AA_NAV + r")\b\s+(?:" + _AA_PREP + r")?\s*\S+.*?"
     r"\s+(?:" + _AA_CONN + r")\s+(?:luego\s+|despu[ée]s\s+|then\s+)?"
     r"(?:" + _AA_ACT_NAV + r")\b", re.IGNORECASE)
+# A2: "<nav> a <dest> en <app>" — navegar a un DESTINO dentro de una app NOMBRADA
+# ('ve a Cotele en Discord', 'entrá al canal general en Discord', 'abrí la playlist X
+# en Spotify'). MEDIDO en vivo 2026-05-31: "Ve a Cotele en Discord" no llegaba a
+# computer_use (ve=nav, sin verbo de acción ni 2da cláusula -> extract_app_action=None
+# -> el 4B no emitía tool -> "No alcancé a completar"). El orquestador hace
+# focus_app(app)+open_chat(dest). verify_app gatea (la app debe ser real). EXCLUYE
+# navegadores: 've a github en Opera' tiene tool dedicada (browser.open con target).
+_BROWSER_APP_RE = re.compile(
+    r"^(?:el\s+|la\s+|mi\s+)?(?:navegador|browser|chrome|opera(?:\s*gx)?|firefox|"
+    r"edge|safari|brave|chromium|explorer|naveg\w*)\b", re.IGNORECASE)
+_AA_NAV_IN_APP = re.compile(
+    r"^\s*(?:" + _AA_NAV + r")\b\s+(?:(?:a|al|hacia|to|into|para|hasta)\s+)?"
+    r"(?P<dest>.+?)\s+(?:en|in|into|dentro\s+de|dans|im|su)\s+(?P<app>\S.*)$",
+    re.IGNORECASE)
 # B: "<acción> <payload> en|a <app>" — ambiguo -> verify_app. Incluye "a" (caso
 # real "escribile sigue A claude code") pero SIEMPRE gateado por el OS-check del
 # caller: 'escribile a juan' -> app_hint='juan' no es ventana -> NO dispara cu
@@ -590,6 +604,9 @@ _AA_SCREEN = re.compile(
     r"screen\s*shot|print\s*screen|pantallazo|"
     r"saca\w*\s+(?:una\s+|me\s+)?(?:foto|captura)\s+(?:de\s+)?(?:la\s+)?pantalla)\b",
     re.IGNORECASE)
+# Vocativo/wake-word inicial: "gemma, ...", "hey gemma ...", "ok gemma ...". (?=\S)
+# exige contenido después (no vacía "gemma" solo).
+_re_strip_wake = re.compile(r"^(?:hey\s+|ok\s+|oye\s+|che\s+)?gemma[\s,]+(?=\S)", re.IGNORECASE)
 
 
 def extract_app_action(clause: str) -> dict | None:
@@ -601,10 +618,23 @@ def extract_app_action(clause: str) -> dict | None:
     if not clause or not clause.strip():
         return None
     c = clause.strip()
+    # quitar el vocativo/wake-word inicial ("gemma, ...") — el user lo antepone seguido
+    # (MEDIDO: "gemma Ve a Cotele en Discord", "gemma Suma 2+2"). Es el nombre del
+    # asistente, seguro de quitar; el `^...(?=\S)` evita vaciar la cláusula.
+    _wo_wake = _re_strip_wake.sub("", c)
+    if _wo_wake:
+        c = _wo_wake
     if _AA_SCREEN.search(c):
         return {"goal": c, "app_hint": None, "verify_app": False, "pattern": "screen"}
     if _AA_NAV_ACTION.search(c):
         return {"goal": c, "app_hint": None, "verify_app": False, "pattern": "nav_action"}
+    m = _AA_NAV_IN_APP.search(c)
+    if m:
+        _nav_app = m.group("app").strip(" .,:\"'«»")
+        # navegadores tienen tool dedicada (browser.open por nombre/target) -> no cu.
+        if _nav_app and not _BROWSER_APP_RE.match(_nav_app):
+            return {"goal": c, "app_hint": _nav_app,
+                    "verify_app": True, "pattern": "nav_in_app"}
     m = _AA_IN_APP_ACT.search(c)
     if m:
         return {"goal": c, "app_hint": m.group("app").strip(" .,:\"'«»"),

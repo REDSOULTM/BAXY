@@ -13,6 +13,7 @@ from gemma4_agent.routing.command_splitter import (
     split_command, has_back_reference, plan_clauses,
     extract_click_target, is_key_name, extract_write_payload,
     extract_nav_target, extract_message_to, parse_calc_action,
+    extract_app_action,
 )
 
 
@@ -581,6 +582,42 @@ class ParseCalcActionTest(unittest.TestCase):
                   "anotá la reunión en mi lista", "poné hola en notepad",
                   "qué hora es", ""):
             self.assertIsNone(parse_calc_action(q), msg=q)
+
+
+class ExtractAppActionNavInAppTest(unittest.TestCase):
+    """nav-en-app: 've a <dest> en <app>' -> pattern 'nav_in_app' -> cu(focus_app+open).
+    MEDIDO en vivo 2026-05-31: 'gemma Ve a Cotele en Discord' no llegaba a computer_use
+    (ve=nav sin 2da acción -> extract_app_action=None -> 'No alcancé a completar')."""
+
+    def test_routes_nav_in_named_app(self):
+        cases = {
+            "ve a Cotele en Discord": "Discord",
+            "gemma Ve a Cotele en Discord": "Discord",          # wake-word
+            "entrá al canal general en Discord": "Discord",     # prep 'al'
+            "abrí la playlist rock en Spotify": "Spotify",      # sin prep
+            "open the chat with Ana in Telegram": "Telegram",   # inglés
+        }
+        for q, app in cases.items():
+            r = extract_app_action(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r.get("pattern"), "nav_in_app", msg=q)
+            self.assertEqual(r.get("app_hint"), app, msg=q)
+            self.assertTrue(r.get("verify_app"), msg=q)   # gate por estado del SO
+
+    def test_browsers_and_plain_nav_not_hijacked(self):
+        # navegadores tienen tool dedicada; nav sin 'en <app>' va a browser.open
+        for q in ("ve a github", "ve a la página de pivigames",
+                  "ve a las noticias en Opera", "ve a noticias en el navegador"):
+            r = extract_app_action(q)
+            self.assertNotEqual(
+                (r or {}).get("pattern"), "nav_in_app", msg=q)
+
+    def test_type_and_open_patterns_unchanged(self):
+        # no regresar los patrones existentes
+        self.assertEqual(extract_app_action("escribí hola en notepad")["pattern"], "act_in_app")
+        self.assertEqual(extract_app_action("en notepad escribí hola")["pattern"], "in_app_act")
+        self.assertIsNone(extract_app_action("abrí Spotify"))          # app-open puro
+        self.assertIsNone(extract_app_action("gemma reproduce el video"))
 
 
 if __name__ == "__main__":
