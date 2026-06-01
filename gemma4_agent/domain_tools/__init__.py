@@ -1054,14 +1054,20 @@ def _is_valid_profile_name(name: str) -> bool:
 # SOLO tokens >=3 letras y semanticamente fuertes (nunca preposiciones cortas
 # como "de", que matchearian "Despacito").
 _GENERIC_CONTENT_ROOTS = (
-    # play verbs
-    "pon", "reproduc", "toca", "play", "put", "metel", "echa", "dale",
+    # play verbs — es/en + it/pt/fr/de/sv/nl (match por PREFIJO, cubre conjugaciones).
+    # MEDIDO 2026-06-01: el set viejo solo cubría es/en de verdad → "spiele musik",
+    # "reproduz uma musica", "riproduci/metti una canzone", "spela musik" caían a
+    # búsqueda literal. Raíces >=4 letras y distintivas para no pisar títulos.
+    "pon", "reproduc", "reproduz", "toca", "play", "put", "metel", "echa", "dale",
+    "riproduc", "metti", "spiel", "spela", "speel", "mets", "joue", "suona",
     # music nouns
     "cancion", "canción", "music", "música", "rola", "tema", "song", "tune",
-    "cancao", "canzon", "chanson", "musik", "lied",
+    "cancao", "canção", "canzon", "chanson", "musik", "muziek", "musica", "musique",
+    "lied", "morceau", "brano",
     # vague quantifiers / "anything"
     "algo", "cualquier", "random", "aleatori", "something", "anything",
-    "whatever", "some", "qualquer", "qualcosa", "quelque", "irgend",
+    "whatever", "some", "qualquer", "qualcosa", "quelque", "irgend", "nagot",
+    "iets", "etwas",
 )
 # FILLER de funcion (articulos/preposiciones/pronombres). Se matchean EXACTO
 # (no prefijo) para no pisar titulos. Multi-idioma, pero es funcion pura.
@@ -2700,10 +2706,24 @@ def _media_play_local(path_raw: str, args: dict[str, Any]) -> dict[str, Any]:
             status="needs_dependency", install_hint="winget install VideoLAN.VLC",
         )
     if os.name == "nt":
-        os.startfile(target)
-    else:
-        webbrowser.open(target.as_uri())
-    return _ok(action="play", provider="local_file", path=str(target.resolve()), opened=True, verified=True)
+        # os.startfile NO retorna estado de éxito (doc oficial: "no way to retrieve
+        # the application's exit status"). Windows puede fallar en silencio si el
+        # archivo no tiene app asociada. Es un dispatch async no medible desde Python
+        # → verified=None (honesto), NO verified=True (mentira). Mismo criterio que
+        # _media_play_vlc, que es verified=False/attempted. Ley #2.
+        os.startfile(target)  # type: ignore[attr-defined]
+        return _ok(
+            action="play", provider="local_file", path=str(target.resolve()),
+            opened=True, verified=None, status="dispatched",
+            note="Handed off to the OS default app; open could not be measured from Python.",
+        )
+    # POSIX: webbrowser.open SÍ devuelve un bool — usémoslo en vez de asumir éxito.
+    opened = webbrowser.open(target.as_uri())
+    return _ok(
+        action="play", provider="local_file", path=str(target.resolve()),
+        opened=bool(opened), verified=bool(opened) or None,
+        status="dispatched" if opened else "attempted",
+    )
 
 
 def _media_play_vlc(vlc: str, target: str) -> dict[str, Any]:

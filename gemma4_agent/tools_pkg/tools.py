@@ -60,6 +60,10 @@ from ..domain_tools import (
     study_tool,
     watcher_tool,
     whatsapp_tool,
+    # Detector estructural multilingüe de pedidos de música (raíces por prefijo,
+    # cubre es/en/it/pt/fr/de) — reusado para NO repetir listas de keywords por
+    # idioma acá (ley de producto #1/#3). Ver _is_generic_music_query en domain_tools.
+    _is_generic_music_query,
 )
 from .._ps import parse_ps_json
 from ..computer_use_pkg import gui_safety  # R3 + reorg 2026-05-28
@@ -348,6 +352,15 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "subagent": ["status", "run"],
     "safety": ["status", "pending", "confirm", "cancel"],
     "session": ["cancel_turn"],
+    # whatsapp/mcp tenían `action` libre (sin enum) → el 4B podía inventar acciones
+    # inválidas (ej. 'send_whatsapp') que solo se rechazaban tras intentar, gastando
+    # un turno de retry. Con enum, _coerce_and_validate_tool_args rechaza a nivel
+    # schema (más barato). El set incluye TODAS las acciones que los handlers aceptan
+    # (whatsapp suma los alias de LECTURA que t_whatsapp intercepta y rutea a vision).
+    "whatsapp": ["status", "send_message", "send", "open_chat", "read", "read_message",
+                 "read_messages", "read_chat", "last_message", "unread", "list_messages",
+                 "get_messages"],
+    "mcp": ["list", "call"],
 }
 
 
@@ -1074,41 +1087,44 @@ foreach ($p in $targets) {
     return data if isinstance(data, dict) else {"count": 0, "data": data}
 
 
+# Subconjunto de RAÍCES que son SUSTANTIVO-de-música o CUANTIFICADOR (NO verbos de
+# play). _looks_like_music_request usa solo estas para conservar la semántica
+# original: un pedido cuenta como "de música" por mencionar canción/música/etc o un
+# cuantificador vago, NO por el solo verbo "pon" (así 'pon Bad Bunny' sigue abriendo
+# resultados de búsqueda, no auto-reproduce). Derivado por prefijo de la tupla
+# compartida para no duplicar la lista por idioma.
+_MUSIC_NOUN_ROOTS = (
+    "cancion", "canción", "music", "música", "musica", "musik", "muziek", "musique",
+    "rola", "tema", "song", "tune", "cancao", "canção", "canzon", "chanson", "lied",
+    "morceau", "brano",
+    "algo", "cualquier", "random", "aleatori", "something", "anything", "whatever",
+    "some", "qualquer", "qualcosa", "quelque", "irgend", "nagot", "iets", "etwas",
+)
+
+
 def _looks_like_music_request(query: str) -> bool:
-    folded = _fold(query)
+    """¿El query MENCIONA música (sustantivo de canción o cuantificador vago)?
+    Estructural y multilingüe: matchea RAÍCES por prefijo (es/en/it/pt/fr/de) en vez
+    de una lista de keywords por idioma. Así 'una canzone', 'spiele musik' o 'uma
+    música' matchean igual que 'una canción' (ley de producto #1/#3). NO cuenta el
+    solo verbo de play como música (conserva la conducta vieja: 'pon X' con título
+    abre búsqueda, no auto-reproduce)."""
+    norm = " ".join(_fold(query).split()).strip(" .!?,;:\"'")
+    if not norm:
+        return False
     return any(
-        token in folded
-        for token in (
-            "cancion",
-            "musica",
-            "music",
-            "song",
-            "tema",
-            "track",
-            "aleatoria",
-            "random",
-            "playlist",
-        )
+        word.startswith(root)
+        for word in norm.split()
+        for root in _MUSIC_NOUN_ROOTS
     )
 
 
 def _is_generic_song_query(query: str) -> bool:
-    folded = _fold(query)
-    if not folded:
-        return True
-    generic = {
-        "cancion",
-        "una cancion",
-        "cancion aleatoria",
-        "musica",
-        "musica aleatoria",
-        "pon musica",
-        "pon una cancion",
-        "random song",
-        "song",
-        "music",
-    }
-    return folded in generic or ("aleatoria" in folded and any(word in folded for word in ("cancion", "musica", "song", "music")))
+    """El user pidió música SIN nombrar un título → reproducir algo genérico.
+    Delega en el detector estructural multilingüe de domain_tools (raíces por
+    prefijo + filler de función), que NO enumera frases por idioma y cubre
+    es/en/it/pt/fr/de. Reemplaza la vieja tabla de 10 frases es/en (ley #1/#3)."""
+    return _is_generic_music_query(query)
 
 
 def _looks_like_youtube_watch_url(text: str) -> bool:
@@ -1510,7 +1526,16 @@ class ToolRegistry:
         # los reintroduce vía `execute_routine_step` (ver más abajo).
         for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create"):
             clean_args.pop(forbidden, None)
-        confirmed = bool(clean_args.pop("confirmed", False))
+        # Coerción honesta de `confirmed`: el 4B a veces emite el flag como STRING
+        # ("false"/"no"/"0") y `bool("false")` daba True (string no-vacío es truthy)
+        # → la op irreversible procedía SIN confirmar, salteando el safety gate de
+        # abajo. Mismo bug-class ya arreglado para `state` del mute (ver audio_mute):
+        # un string solo cuenta como confirmado si NO es un negativo conocido.
+        _raw_confirmed = clean_args.pop("confirmed", False)
+        if isinstance(_raw_confirmed, str):
+            confirmed = _raw_confirmed.strip().lower() not in {"false", "no", "0", "off", ""}
+        else:
+            confirmed = bool(_raw_confirmed)
         # Output-coherence guard: catch a known LLM misroute where the call
         # itself proves the wrong tool was chosen, and redirect it. This
         # validates the model's OUTPUT (not the user's words), so it stays
@@ -1523,8 +1548,26 @@ class ToolRegistry:
         # al cliente MCP (no aparece en _impls porque es dinámica). Gated por
         # mcp_enabled() dentro de call_mcp_by_id (fallback honesto si está off).
         try:
-            from .mcp_client import is_mcp_tool_name, call_mcp_by_id
+            from .mcp_client import is_mcp_tool_name, call_mcp_by_id, mcp_tool_annotations
             if is_mcp_tool_name(name):
+                # Las tools MCP son externas y de semántica desconocida. ANTES saltaban
+                # el safety classifier por completo (este early-return precede al gate de
+                # abajo): una mcp__fs__delete_file se ejecutaba sin confirmar aunque
+                # safety estuviera ON. Acá aplicamos un gate equivalente, honrando un
+                # `confirmed` previo. La decisión es ESTRUCTURAL (annotations del
+                # protocolo MCP o verbo del nombre), no por idioma del usuario.
+                if self.safety_enabled and not confirmed:
+                    from ..safety_pkg.safety import classify_mcp_call
+                    from ..safety_pkg.confirmation_policy import should_confirm as _should_confirm
+                    _decision = classify_mcp_call(name, mcp_tool_annotations(name))
+                    if _should_confirm(_decision):
+                        _reason = _decision.reason or f"confirmación de tool MCP externa ({name})"
+                        pending = self.state.create_confirmation(
+                            name, _redact_sensitive(clean_args), _reason, _decision.risk or "mcp")
+                        return _normalize_tool_result(name, clean_args, _err(
+                            "confirmation required", status="needs_confirmation",
+                            verified=False, completion_status="needs_confirmation",
+                            confirmation=pending.get("confirmation")))
                 mcp_args = dict(clean_args)
                 mcp_args.pop("confirmed", None)
                 return _normalize_tool_result(name, clean_args, call_mcp_by_id(name, mcp_args))
@@ -1840,14 +1883,315 @@ class ToolRegistry:
             if not query:
                 return _err("missing search query")
             return self.steam_store_page(args, query)
-        if action == "install":
+        if action in {"install", "play_or_install"}:
+            # INSTALAR un juego (lo que el usuario realmente pidió: "instalame
+            # doom eternal"). El URI steam://install/<appid> abre el DIÁLOGO de
+            # instalación NATIVO de Steam (el usuario confirma la descarga ahí
+            # mismo) — NO solo la página de la tienda.
+            #
+            # BUG histórico: el 4B casi nunca conoce el AppID numérico; emite
+            # steam(action='install', query='doom eternal'). El handler viejo,
+            # al no tener `appid`, caía a search_store -> solo ABRÍA la página de
+            # la tienda y NUNCA instalaba (reportado por el usuario 2026-05-31).
+            # Fix: resolver el NOMBRE -> AppID con la MISMA cascada que
+            # store_page (biblioteca local de Steam -> búsqueda real en la
+            # store) y recién ahí disparar steam://install/<appid>.
             appid = str(args.get("appid") or "").strip()
+            match_source = "explicit_appid" if appid else ""
+            matched: dict[str, Any] | None = None
+            # Sin appid Y sin query no hay nada que instalar: pedir el juego en
+            # vez de "abrir la tienda" a ciegas (que tampoco abriría nada y
+            # mentiría — review 2026-05-31, mentira estructural).
+            if not appid and not query:
+                return _err("missing game name to install", action="install",
+                            status="needs_user",
+                            hint="¿Qué juego querés instalar? Pasá el nombre en query o el appid.")
+            if not appid:
+                resolved = self._resolve_steam_appid(query)
+                if resolved:
+                    appid = resolved["appid"]
+                    matched = resolved.get("match")
+                    match_source = resolved.get("source", "")
             if appid:
                 uri = f"steam://install/{appid}"
                 os.startfile(uri)  # type: ignore[attr-defined]
-                return _ok(appid=appid, uri=uri)
-            return self.t_steam({"action": "search_store", "query": query})
+                game_name = (matched or {}).get("name") or query or appid
+                resource = self.state.register_resource(
+                    "steam", f"Steam install: {game_name}",
+                    cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"},
+                    metadata={"appid": appid, "uri": uri},
+                )
+                # Confianza de la resolución: explicit_appid y la biblioteca
+                # LOCAL son altas; el resultado de búsqueda en la store es BAJA
+                # (puede traer el juego equivocado y arrancar una descarga de
+                # varios GB). Lo marcamos para que el reply le diga al usuario
+                # QUÉ juego se está instalando y pueda cancelar en el diálogo de
+                # Steam si no es el correcto (review 2026-05-31).
+                low_confidence = match_source == "steam_store_search"
+
+                # AUTO-CONFIRMAR el diálogo de instalación (lo que el user pidió
+                # 2026-05-31: "que lo instale, no que lo deje abierto"). Steam NO
+                # tiene instalación silenciosa (doc oficial de Valve) y SteamCMD
+                # necesita credenciales -> la ÚNICA vía es confirmar el diálogo.
+                # MEDIDO en vivo: el diálogo (SDL_app) expone su botón de instalar
+                # con InvokePattern funcional -> lo invocamos por ACCESIBILIDAD
+                # (NO SendInput; el click físico ni siquiera serviría: los botones
+                # reportan bounds 0,0). El botón se elige por EMBEDDINGS
+                # multilingües (no lista de keywords por idioma). SOLO en alta
+                # confianza: si el juego salió de búsqueda en la store, dejamos el
+                # diálogo abierto para que el user verifique (evita descargar el
+                # juego equivocado, varios GB). Gate de entorno por si rompe.
+                confirm: dict[str, Any] | None = None
+                _auto = os.environ.get("GEMMA4_STEAM_AUTOCONFIRM_INSTALL", "1").strip().lower()
+                if _auto not in {"0", "false", "no", "off"} and not low_confidence:
+                    confirm = self._steam_confirm_install_dialog(game_name)
+
+                installed = bool(confirm and confirm.get("confirmed"))
+                if installed:
+                    return _ok(
+                        action="install", query=query or None, appid=appid,
+                        resolved_game=game_name, uri=uri, matched=matched,
+                        match_source=match_source or None,
+                        resolution_confidence="high",
+                        resource=resource.get("resource"),
+                        opened_in="steam_client",
+                        confirm=confirm,
+                        completion_status="confirmed_install_download_started",
+                        note=(
+                            f"Started installing '{game_name}': resolved the "
+                            f"AppID, opened Steam's install dialog, and confirmed "
+                            f"it via accessibility (UIA InvokePattern), so the "
+                            f"download is now running in Steam. No manual click "
+                            f"was needed."
+                        ),
+                    )
+                # No se auto-confirmó (baja confianza, gate off, no apareció el
+                # diálogo, o el botón no era invocable): dejamos el diálogo abierto
+                # y lo decimos honestamente — el user aprieta Instalar.
+                reason = (confirm or {}).get("reason") if confirm else (
+                    "store_search_low_confidence" if low_confidence else "autoconfirm_disabled")
+                return _ok(
+                    action="install",
+                    query=query or None,
+                    appid=appid,
+                    resolved_game=game_name,
+                    uri=uri,
+                    matched=matched,
+                    match_source=match_source or None,
+                    resolution_confidence="low" if low_confidence else "high",
+                    resource=resource.get("resource"),
+                    opened_in="steam_client",
+                    confirm=confirm,
+                    completion_status="opened_steam_install_dialog",
+                    note=(
+                        f"Opened Steam's install dialog for '{game_name}' "
+                        f"(steam://install/{appid}); the user needs to press "
+                        f"Install to start the download (reason: {reason})."
+                        + (" The game was matched by a Steam store SEARCH (not "
+                           "the local library), so confirm with the user that "
+                           f"'{game_name}' is the game they meant before "
+                           "installing — they can cancel in Steam's dialog if "
+                           "it's the wrong title."
+                           if low_confidence else "")
+                    ),
+                )
+            # No se pudo resolver el AppID (nombre desconocido o sin red): caemos
+            # a la página de la tienda para que el usuario encuentre el juego y
+            # presione Instalar manualmente. SOLO afirmamos que se abrió la
+            # tienda si REALMENTE se abrió (fallback.ok) — si no, no mentimos.
+            fallback = self.t_steam({"action": "store_page", "query": query})
+            if isinstance(fallback, dict):
+                opened = bool(fallback.get("ok"))
+                fallback.update(
+                    requested_action="install",
+                    install_status=("appid_unresolved_opened_store_page" if opened
+                                    else "appid_unresolved_store_page_failed"),
+                    note=(
+                        "Could not resolve a Steam AppID for the requested game, "
+                        "so the Steam store page was opened instead of the "
+                        "install dialog. Ask the user to confirm the exact game, "
+                        "or press Install on the store page."
+                        if opened else
+                        "Could not resolve a Steam AppID and could not open the "
+                        "store page either. Ask the user for the exact game name "
+                        "or its Steam AppID."
+                    ),
+                )
+            return fallback
         return _err("unknown steam action", action=action)
+
+    # Tipos de control "botón de acción" del diálogo de Steam (medido: el botón
+    # Instalar es ButtonControl con InvokePattern). ControlTypeName de uiautomation.
+    _STEAM_DIALOG_BTN_TYPES = {"ButtonControl", "SplitButtonControl"}
+
+    def _steam_confirm_install_dialog(
+        self, game_name: str, timeout_s: float = 12.0
+    ) -> dict[str, Any]:
+        """Confirma el diálogo de instalación de Steam por ACCESIBILIDAD (UIA
+        InvokePattern), SIN input físico (CLAUDE.md / feedback_never_run_synthetic
+        _input_lives_in_vscode). El diálogo es una ventana SDL_app cuyo árbol UIA
+        expone los botones (medido 2026-05-31): Instalar/Install/Installieren,
+        Cancelar, selectores de disco, checkboxes de acceso directo.
+
+        Elige el botón de confirmar por EMBEDDINGS multilingües (no lista de
+        keywords por idioma — cumple el constraint de producto): el concepto
+        'install / confirm install' matchea 'Instalar'/'Install'/'Installieren' y
+        NO 'Cancelar'/'Cancel'. Umbral + margen para no arriesgar (igual que el
+        matcher cross-lingual de gui_click_button). Invoca por InvokePattern y
+        VERIFICA que el diálogo se cerró. Si no aparece el diálogo, el botón no es
+        invocable, o no hay match con confianza -> se DETIENE y reporta
+        confirmed=False con la razón (NUNCA cae a click físico).
+
+        Devuelve {confirmed: bool, reason, button?, candidates?}.
+        """
+        try:
+            import uiautomation as auto
+        except Exception:
+            return {"confirmed": False, "reason": "uiautomation_unavailable"}
+        try:
+            from ..routing.semantic_router import embed as _embed
+        except Exception:
+            _embed = None  # type: ignore[assignment]
+
+        if _embed is None:
+            return {"confirmed": False, "reason": "no_encoder_for_button_match"}
+        # Concepto multi-idioma: el encoder es multilingüe, así que 'install'
+        # ancla bien contra Instalar/Installieren/Installer/Установить, etc.
+        qv = _embed("install")
+        if qv is None:
+            return {"confirmed": False, "reason": "encoder_returned_none"}
+
+        def _confident_install_button(window):
+            # De los botones de `window`, elegir el que mejor matchea 'install'
+            # por embeddings, SOLO si supera umbral+margen. Devuelve
+            # (button_el, name, sim) o None. Esto es a la vez el DISCRIMINADOR del
+            # diálogo (la ventana principal de Steam NO tiene un botón que matchee
+            # 'install' con confianza -> no la confundimos con el diálogo) y el
+            # selector del botón a invocar. Multi-idioma, sin keywords.
+            names = []
+            for el in self._steam_collect_dialog_buttons(window):
+                try:
+                    nm = (el.Name or "").strip()
+                except Exception:
+                    nm = ""
+                if nm:
+                    names.append((nm, el))
+            if not names:
+                return None
+            scored = []
+            for nm, el in names:
+                nv = _embed(nm)
+                if nv is None:
+                    continue
+                sim = float(sum(a * b for a, b in zip(qv, nv)))
+                scored.append((sim, nm, el))
+            if not scored:
+                return None
+            scored.sort(key=lambda x: -x[0])
+            top_sim, top_name, top_el = scored[0]
+            second = scored[1][0] if len(scored) > 1 else 0.0
+            if top_sim < self._XLING_SIM_MIN or (top_sim - second) < self._XLING_MARGIN:
+                return None
+            return top_el, top_name, top_sim
+
+        def _find_dialog():
+            # El diálogo de instalación: WindowControl SDL_app que contiene un
+            # botón que matchea 'install' CON CONFIANZA. Ese requisito lo
+            # distingue de la ventana PRINCIPAL de Steam (también SDL_app, pero
+            # sin un botón 'install' de alta similitud) — caso real medido
+            # 2026-05-31 donde la heurística vieja (≥2 botones) matcheaba la
+            # biblioteca por error.
+            for w in auto.GetRootControl().GetChildren():
+                try:
+                    if "SDL" not in (w.ClassName or ""):
+                        continue
+                except Exception:
+                    continue
+                hit = _confident_install_button(w)
+                if hit is not None:
+                    return w, hit
+            return None, None
+
+        # 1) Poll hasta que aparezca el diálogo (Steam tarda en despertar/resolver).
+        dialog = None
+        hit = None
+        deadline = time.monotonic() + timeout_s
+        while time.monotonic() < deadline:
+            dialog, hit = _find_dialog()
+            if dialog is not None:
+                break
+            time.sleep(0.5)
+        if dialog is None or hit is None:
+            return {"confirmed": False, "reason": "install_dialog_not_found"}
+
+        top_el, top_name, top_sim = hit
+
+        # 3) Si el botón de instalar está DESHABILITADO, Steam no puede proceder
+        #    (caso real medido 2026-05-31: "NO HAY SUFICIENTE ESPACIO" — ningún
+        #    disco tenía ~80GB libres -> Instalar disabled). Invocarlo no haría
+        #    nada; reportamos honestamente el bloqueo en vez de afirmar que se
+        #    apretó. No leemos el texto por idioma: usamos IsEnabled (estructural).
+        try:
+            if top_el.IsEnabled is False:
+                return {"confirmed": False, "reason": "install_button_disabled",
+                        "button": top_name,
+                        "hint": ("Steam no puede instalar ahora — el botón está "
+                                 "deshabilitado (típicamente falta de espacio en "
+                                 "disco o el juego no está disponible). El usuario "
+                                 "debe liberar espacio / elegir otro disco.")}
+        except Exception:
+            pass
+
+        # 4) Invocar por InvokePattern (accesibilidad, NO SendInput).
+        try:
+            ip = top_el.GetInvokePattern()
+            if ip is None:
+                return {"confirmed": False, "reason": "button_no_invoke_pattern",
+                        "button": top_name}
+            ip.Invoke()
+        except Exception as exc:
+            return {"confirmed": False, "reason": f"invoke_failed: {exc}",
+                    "button": top_name}
+        try:
+            from .. import gui_safety as _gs
+            _gs.note_agent_input()
+        except Exception:
+            pass
+
+        # 5) Verificar el efecto: el diálogo de instalación debe haberse cerrado
+        #    (al confirmar, Steam lo cierra y arranca la descarga). Si sigue
+        #    abierto, NO afirmamos éxito (honestidad estructural).
+        time.sleep(1.5)
+        still_open, _ = _find_dialog()
+        confirmed = still_open is None
+        return {
+            "confirmed": confirmed,
+            "reason": "dialog_closed_after_invoke" if confirmed
+            else "invoked_but_dialog_still_open",
+            "button": top_name,
+            "button_sim": round(top_sim, 3),
+            "grounding": "uia_invoke_multilingual",
+        }
+
+    def _steam_collect_dialog_buttons(self, window: Any) -> list[Any]:
+        """Recorre el subárbol de una ventana y devuelve sus controles botón
+        (acotado en profundidad para no colgarse). Reusado por el confirmador."""
+        out: list[Any] = []
+        stack = [window]
+        depth = 0
+        while stack and depth < 6000:
+            el = stack.pop()
+            depth += 1
+            try:
+                if (el.ControlTypeName or "") in self._STEAM_DIALOG_BTN_TYPES:
+                    out.append(el)
+            except Exception:
+                pass
+            try:
+                stack.extend(el.GetChildren())
+            except Exception:
+                pass
+        return out
 
     def t_window(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="list")
@@ -2502,27 +2846,40 @@ class ToolRegistry:
             "direct_video": False,
         }
 
+    def _resolve_steam_appid(self, query: str) -> dict[str, Any] | None:
+        """Resolve a game NAME to a Steam AppID via the local-then-store cascade.
+
+        Returns {"appid", "match", "source"} or None when nothing resolves.
+        Shared by store_page and install so both use the SAME resolution: first
+        the local Steam library metadata (instant, offline), then a real Steam
+        store search (network). Kept as one method so the two call sites can
+        never drift apart. Does NOT take an explicit appid — callers that have
+        one should short-circuit before calling this.
+        """
+        if not query:
+            return None
+        local_matches = self.apps.find_steam_library(query, limit=5)
+        if local_matches:
+            best = local_matches[0]
+            local_appid = _steam_appid_from_launch(best.launch)
+            if local_appid:
+                return {"appid": local_appid, "match": best.as_dict(), "source": best.source}
+        store_match = _steam_store_first_result(query)
+        if store_match:
+            return {"appid": store_match["appid"], "match": store_match, "source": "steam_store_search"}
+        return None
+
     def steam_store_page(self, args: dict[str, Any], query: str) -> dict[str, Any]:
         appid = str(args.get("appid") or "").strip()
         matched: dict[str, Any] | None = None
         source = "explicit_appid" if appid else ""
 
         if not appid:
-            local_matches = self.apps.find_steam_library(query, limit=5)
-            if local_matches:
-                best = local_matches[0]
-                local_appid = _steam_appid_from_launch(best.launch)
-                if local_appid:
-                    appid = local_appid
-                    matched = best.as_dict()
-                    source = best.source
-
-        if not appid:
-            store_match = _steam_store_first_result(query)
-            if store_match:
-                appid = store_match["appid"]
-                matched = store_match
-                source = "steam_store_search"
+            resolved = self._resolve_steam_appid(query)
+            if resolved:
+                appid = resolved["appid"]
+                matched = resolved.get("match")
+                source = resolved.get("source", "")
 
         if appid:
             uri = _steam_store_uri(appid)

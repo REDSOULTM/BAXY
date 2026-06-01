@@ -48,6 +48,13 @@ _IRREVERSIBLE_RISKS = frozenset({
     "registry_mutation",        # registry add/delete/import
     "persistent_env_change",    # env user/machine
     "download",                 # archivos sin verificar hash/firma
+    # Tools MCP externas (semántica desconocida): una mcp__fs__delete_file o un
+    # create_issue son irreversibles/efecto-real. Bajo CUALQUIER política se confirman
+    # (no auto-aprobar código de terceros). El readOnly declarado NO entra acá (no
+    # marca requires_confirmation), así las lecturas MCP siguen sin fricción.
+    "mcp_destructive",          # MCP annotation destructiveHint=True
+    "mcp_mutation",             # nombre del tool MCP sugiere mutación
+    "mcp_external_unknown",     # MCP externo sin señal -> fail-safe
 })
 
 

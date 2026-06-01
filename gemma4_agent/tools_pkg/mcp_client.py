@@ -112,11 +112,23 @@ async def _discover_async(server: dict[str, Any]) -> list[dict[str, Any]]:
             await session.initialize()
             tools = await session.list_tools()
             for t in tools.tools:
+                # Tool annotations del spec MCP (readOnlyHint/destructiveHint/...) —
+                # la señal HONESTA del propio servidor sobre si la tool muta o no.
+                # Las usamos en el gate de confirmación (classify_mcp_call). Muchos
+                # servers viejos no las exponen -> {} y caemos a la heurística de nombre.
+                ann_obj = getattr(t, "annotations", None)
+                annotations: dict[str, Any] = {}
+                if ann_obj is not None:
+                    for key in ("readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint", "title"):
+                        val = getattr(ann_obj, key, None)
+                        if val is not None:
+                            annotations[key] = val
                 out.append({
                     "server": server["name"],
                     "name": t.name,
                     "description": (t.description or "")[:400],
                     "schema": t.inputSchema if isinstance(t.inputSchema, dict) else {},
+                    "annotations": annotations,
                 })
     return out
 
@@ -226,6 +238,23 @@ def mcp_tool_schemas() -> list[dict[str, Any]]:
             },
         })
     return out
+
+
+def mcp_tool_annotations(name: str) -> dict[str, Any]:
+    """Annotations del protocolo MCP para una tool namespaced ('mcp__server__tool').
+
+    Las usa el gate de confirmación (classify_mcp_call) para decidir si confirmar.
+    {} si la tool no se conoce, el discovery no las capturó, o el server no las
+    expone (fallback seguro: el classifier cae a la heurística de nombre)."""
+    parsed = parse_mcp_tool_id(name)
+    if parsed is None:
+        return {}
+    server, tool = parsed
+    for t in (_TOOLS_CACHE or []):
+        if t.get("server") == server and t.get("name") == tool:
+            ann = t.get("annotations")
+            return ann if isinstance(ann, dict) else {}
+    return {}
 
 
 def call_mcp_by_id(name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:

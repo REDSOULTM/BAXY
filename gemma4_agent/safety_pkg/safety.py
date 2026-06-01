@@ -67,6 +67,69 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
     return SafetyDecision(False)
 
 
+# Verbos de MUTACIÓN en nombres de tool MCP. NO es una lista de keywords por idioma
+# del usuario (eso sí está prohibido): los nombres de tools MCP son identificadores
+# del PROTOCOLO, siempre en inglés por convención del spec (read_file/write_file/
+# delete/create_issue/...). Es una guarda ESTRUCTURAL sobre la FORMA del nombre del
+# tool externo, no sobre el contenido del pedido del usuario. Fuente: spec MCP de
+# tool naming + tool annotations (readOnlyHint/destructiveHint).
+_MCP_MUTATION_VERBS = (
+    "write", "delete", "remove", "create", "update", "edit", "modify", "move",
+    "rename", "put", "post", "patch", "insert", "append", "set", "push", "send",
+    "drop", "truncate", "exec", "run", "install", "uninstall", "kill", "destroy",
+    "publish", "merge", "commit", "revert", "reset", "clear", "purge", "upload",
+)
+# Verbos de LECTURA (no mutan). Si el nombre del tool MCP empieza con / contiene uno
+# de estos y NINGÚN verbo de mutación, lo tratamos como lectura -> sin confirmación
+# (evita fricción en el caso común: read_file/list_directory/get_*/search/query).
+# Igual que arriba: identificadores del PROTOCOLO (inglés), guarda estructural.
+_MCP_READ_VERBS = (
+    "read", "list", "get", "fetch", "search", "query", "find", "show", "view",
+    "describe", "inspect", "status", "info", "stat", "head", "peek", "lookup",
+    "count", "exists", "check", "browse", "tail",
+)
+
+
+def classify_mcp_call(tool_name: str, annotations: dict[str, Any] | None = None) -> SafetyDecision:
+    """Clasifica una tool MCP (externa, semántica desconocida) para el gate de
+    confirmación. Las tools MCP saltaban el classifier por completo (early-return en
+    el dispatcher): una `mcp__fs__delete_file` se ejecutaba sin confirmar aunque
+    safety estuviera ON. Esto lo cierra.
+
+    PRIORIDAD de la decisión (de más a menos confiable):
+      1. ANNOTATIONS del protocolo MCP (la señal honesta del propio servidor):
+         readOnlyHint=True  -> nunca confirmar (es lectura declarada).
+         destructiveHint=True -> confirmar (mutación destructiva declarada).
+      2. Estructura del NOMBRE: si el identificador del tool (inglés del protocolo)
+         contiene un verbo de mutación -> confirmar.
+      3. Default para MCP desconocido -> CONFIRMAR (fail-safe: es código externo
+         arbitrario y no podemos medir su efecto; la honestidad manda confirmar).
+
+    `annotations` es el dict ToolAnnotations del MCP (si el discovery lo capturó);
+    None si el servidor no las expone (la mayoría de los servers viejos)."""
+    ann = annotations if isinstance(annotations, dict) else {}
+    # 1. Annotations del protocolo (lo más honesto).
+    if ann.get("readOnlyHint") is True:
+        return SafetyDecision(False, "mcp_read_only", f"MCP tool {tool_name} declares readOnlyHint")
+    if ann.get("destructiveHint") is True:
+        return SafetyDecision(True, "mcp_destructive", f"MCP tool {tool_name} declares destructiveHint")
+    # 2. Estructura del nombre del tool (último segmento del namespaced).
+    leaf = tool_name
+    # tomar el último segmento del nombre namespaced 'mcp__server__tool' -> 'tool'
+    if "__" in leaf:
+        leaf = leaf.rsplit("__", 1)[-1]
+    low = leaf.casefold()
+    tokens = set(low.replace("-", "_").split("_"))
+    # mutación gana sobre lectura (ej. 'get_and_delete' es mutación).
+    if tokens & set(_MCP_MUTATION_VERBS) or any(low.startswith(v) for v in _MCP_MUTATION_VERBS):
+        return SafetyDecision(True, "mcp_mutation", f"MCP tool {tool_name} name suggests a mutating action")
+    if tokens & set(_MCP_READ_VERBS) or any(low.startswith(v) for v in _MCP_READ_VERBS):
+        return SafetyDecision(False, "mcp_read_only", f"MCP tool {tool_name} name suggests a read-only action")
+    # 3. Default: MCP externo sin señal clara -> confirmar (fail-safe, no auto-aprobar
+    #    código arbitrario de terceros). El usuario puede confirmar una vez.
+    return SafetyDecision(True, "mcp_external_unknown", f"MCP tool {tool_name} is external; confirming before running")
+
+
 def _terminal_risky(command: str, args: dict[str, Any]) -> bool:
     low = " ".join([command, " ".join(str(item) for item in args.get("args") or [])]).casefold()
     risky_tokens = (

@@ -181,7 +181,26 @@ def _hass_set_state(host: str, token: str, args: dict[str, Any], state: AgentSta
     resp = _hass_request("POST", f"{host}/api/states/{entity_id}", token, payload)
     if not resp.get("_ok"):
         return _err(f"set_state failed: {resp.get('_error')}", entity_id=entity_id, checkpoint=checkpoint.get("checkpoint"))
-    return _ok(entity_id=entity_id, before=before, after=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
+    # Honestidad estructural (ley #2): un HTTP 200 NO prueba que el device cambió
+    # de estado (HA puede aceptar el POST con el device offline o ignorarlo). HA es
+    # local → confirmamos con un GET y comparamos el estado pedido vs el real.
+    confirmed_state = _hass_get_state(host, token, {"entity_id": entity_id}).get("state") or {}
+    actual = confirmed_state.get("state") if isinstance(confirmed_state, dict) else None
+    if actual is not None and str(actual) == str(new_state):
+        verified: bool | None = True
+    elif actual is not None:
+        verified = False  # el GET respondió pero el estado NO es el pedido
+    else:
+        verified = None   # no pudimos medir (GET falló) → honesto, no mentimos éxito
+    extra: dict[str, Any] = {}
+    if verified is False:
+        extra["completion_status"] = "state_not_confirmed"
+    return _ok(
+        entity_id=entity_id, before=before, after=confirmed_state or resp.get("data"),
+        requested=str(new_state), actual=actual,
+        checkpoint=checkpoint.get("checkpoint"),
+        verified=verified, **extra,
+    )
 
 
 def _hass_call_service(host: str, token: str, args: dict[str, Any], state: AgentState) -> dict[str, Any]:
@@ -215,7 +234,33 @@ def _hass_call_service(host: str, token: str, args: dict[str, Any], state: Agent
     resp = _hass_request("POST", f"{host}/api/services/{domain}/{service}", token, payload)
     if not resp.get("_ok"):
         return _err(f"call_service failed: {resp.get('_error')}", domain=domain, service=service)
-    return _ok(domain=domain, service=service, payload=payload, response=resp.get("data"), checkpoint=checkpoint.get("checkpoint"), verified=True)
+    # Honestidad estructural (ley #2): el HTTP 200 no prueba el efecto. SOLO podemos
+    # medir turn_on/turn_off/toggle sobre UN entity_id (leemos el estado real post). El
+    # resto (scenes, multi-entity, servicios arbitrarios) NO es medible → verified=None.
+    verified: bool | None = None
+    actual_state = None
+    if service in {"turn_on", "turn_off", "toggle"} and payload.get("entity_id"):
+        eid_raw = payload["entity_id"]
+        eid = eid_raw if isinstance(eid_raw, str) else (eid_raw[0] if eid_raw else None)
+        if eid:
+            after = _hass_get_state(host, token, {"entity_id": eid}).get("state") or {}
+            actual_state = after.get("state") if isinstance(after, dict) else None
+            if actual_state is not None:
+                expected = {"turn_on": "on", "turn_off": "off"}.get(service)
+                if expected is None:           # toggle: no sabemos el estado previo con certeza
+                    verified = None
+                elif str(actual_state) == expected:
+                    verified = True
+                else:
+                    verified = False
+    extra: dict[str, Any] = {}
+    if verified is False:
+        extra["completion_status"] = "state_not_confirmed"
+    return _ok(
+        domain=domain, service=service, payload=payload, response=resp.get("data"),
+        actual=actual_state, checkpoint=checkpoint.get("checkpoint"),
+        verified=verified, **extra,
+    )
 
 
 def _hass_area_list(host: str, token: str) -> dict[str, Any]:
