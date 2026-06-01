@@ -3646,7 +3646,20 @@ def _whatsapp_send_via_gui_search(
     chat_verified = chat_status == "confirmed"
     steps.append(f"chat_header_verified:{chat_verified}")
     steps.append(f"chat_header_status:{chat_status}")
-    if chat_status != "confirmed":
+    # GATE de destinatario por nivel de RIESGO (2026-05-31):
+    #  - ENVIAR (text presente, DESTRUCTIVO): exigir "confirmed". Nunca escribir a
+    #    ciegas — evita C1 "destinatario equivocado = daño irreversible" (caso
+    #    Letras/Vecinos). "unknown"/"wrong_chat" -> abort.
+    #  - ABRIR (open_chat, sin text, NO destructivo): basta con NO detectar un chat
+    #    EQUIVOCADO. "unknown" (WebView2 no expone el header por OCR/UIA) SIGUE: el chat
+    #    casi seguro abrió con Down+Enter sobre el primer resultado y el usuario lo ve
+    #    por screenshot. Solo "wrong_chat" (header corto y distinto) aborta.
+    #    MEDIDO en vivo: "Abre el chat de Pedro y sacá una foto" abortaba en "unknown"
+    #    (27s) aunque el chat ESTABA abierto — Pedro es contacto real (no en el store
+    #    del agente -> gui_search) y el header no es OCR-legible.
+    _is_send = bool(text)
+    _gate_fail = (chat_status != "confirmed") if _is_send else (chat_status == "wrong_chat")
+    if _gate_fail:
         return {
             "sent": False,
             "chat_opened": chat_status == "wrong_chat",

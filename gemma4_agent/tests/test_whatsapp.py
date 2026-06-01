@@ -702,6 +702,40 @@ class TestWhatsappGuiSearch(unittest.TestCase):
         self.assertNotIn("typed_message", steps)
         self.assertNotIn("sent_enter", steps)
 
+    def test_open_chat_proceeds_on_unknown_header(self):
+        # open_chat (sin text, NO destructivo): si el header NO es OCR-legible
+        # ("unknown", típico en WebView2) NO debe abortar — el chat abrió con
+        # Down+Enter y el user lo ve por screenshot. Solo "wrong_chat" aborta.
+        # MEDIDO en vivo 2026-05-31: "Abre el chat de Pedro y sacá una foto"
+        # abortaba en "unknown" (27s) aunque el chat ESTABA abierto (Pedro es
+        # contacto real, no en el store -> gui_search; header no OCR-legible).
+        def _exec(name, args):
+            if name == "window" and args.get("action") == "focus":
+                return {"ok": True}
+            if name == "window" and args.get("action") == "active":
+                return {"ok": True, "active": {"title": "WhatsApp"}}
+            if name == "gui":
+                if args.get("action") == "locate_text":
+                    return {"ok": True, "found": False, "matches": []}  # header ilegible
+                return {"ok": True}
+            return {"ok": False}
+        executor = MagicMock(side_effect=_exec)
+        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
+             patch("win32gui.GetForegroundWindow", return_value=1), \
+             patch("win32gui.GetWindowText", return_value="WhatsApp"), \
+             patch("win32gui.GetWindowRect", return_value=(100, 100, 1100, 900)):
+            r = whatsapp_tool(
+                {"action": "open_chat", "contact": "Pedro"},
+                self.state, executor=executor,
+            )
+        info = r["gui_search_info"]
+        self.assertTrue(info["chat_opened"], f"debió abrir el chat en unknown: {r}")
+        self.assertIsNone(info["abort_reason"], f"NO debió abortar en unknown: {r}")
+        self.assertIn("chat_header_status:unknown", info["steps"])
+        self.assertNotIn("typed_message", info["steps"])   # open: nunca escribe
+
     def test_gui_search_aborts_when_focus_lost(self):
         # Si la ventana activa cambia mid-flow, abort sin completar.
         call_count = [0]
