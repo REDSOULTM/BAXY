@@ -87,8 +87,12 @@ class TestForcedRetryInfoGuard(unittest.TestCase):
     def test_action_tool_offered_still_forces_retry(self):
         # An ACTION tool (app/window) on an ACTION command + prose-without-call =
         # a skipped action -> the forced retry must still fire (unchanged behavior).
+        # NOTA (2026-06-01): el input era "abre la calculadora", pero el
+        # app_open_shortcircuit (det. 2026-05-31) ahora maneja "abrí/abre X" ANTES del
+        # LLM -> nunca llegaba al forced-retry (test stale). Uso una acción de ventana
+        # que NO short-circuita (minimizar) y sí ejerce el camino LLM->prosa->retry.
         self.assertTrue(
-            self._forced(["app", "window"], "abre la calculadora"),
+            self._forced(["app", "window"], "minimizá la ventana actual"),
             "action turn with prose-skip MUST still force a tool retry")
 
     def test_mixed_info_and_action_still_forces(self):

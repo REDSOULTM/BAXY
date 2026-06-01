@@ -95,7 +95,12 @@ class TestWhatsAppGuiUsesCorrectHotkey(unittest.TestCase):
         self.assertEqual(dummy.seen["method"], "sendkeys")
         self.assertEqual(dummy.seen["window"], "WhatsApp")
 
-    def test_ctrl_n_via_keypress_not_typed_literal(self):
+    def test_keypresses_structural_not_typed_literal(self):
+        # ACTUALIZADO (2026-06-01): el flujo viejo usaba Ctrl+N (nuevo chat); d3bf5a1 lo
+        # cambió al BUSCADOR PRINCIPAL (type contacto + Down + Enter) porque Ctrl+N NO
+        # halla grupos. El valor del test se conserva: los combos van por keypress
+        # estructural (method=sendkeys), NUNCA tecleados como texto literal (el bug
+        # original 2026-05-15 de "ctrl+f" como texto en el chat).
         from ..domain_tools import _whatsapp_send_via_gui_search
         calls = []
         def _exec(name, args):
@@ -110,22 +115,24 @@ class TestWhatsAppGuiUsesCorrectHotkey(unittest.TestCase):
         with patch("gemma4_agent.domain_tools.subprocess.Popen"), \
              patch("time.sleep"):
             r = _whatsapp_send_via_gui_search(_exec, "Amor", "te amo", 0.5, True)
-        # Buscar el keypress de ctrl+n (nuevo chat / selector global).
-        ctrl_n_calls = [
+        # El flujo nuevo usa keypress estructural (down/enter/ctrl+a) por sendkeys.
+        keypress_calls = [
             args for name, args in calls
             if name == "gui" and args.get("action") == "keypress"
-            and "ctrl+n" in str(args.get("keys", "")).lower()
         ]
-        self.assertGreaterEqual(len(ctrl_n_calls), 1,
-                                 f"expected at least 1 ctrl+n keypress, got calls: {calls}")
-        # IMPORTANTE: NO debe ser type con text='ctrl+f' (el bug original).
+        self.assertGreaterEqual(len(keypress_calls), 1,
+                                f"expected structural keypresses, got calls: {calls}")
+        self.assertTrue(
+            all(a.get("method") == "sendkeys" for a in keypress_calls),
+            f"los keypress de WhatsApp deben forzar sendkeys: {keypress_calls}")
+        # IMPORTANTE: NUNCA un combo (ctrl+...) tecleado como texto literal (bug original).
         bad_type_calls = [
             args for name, args in calls
             if name == "gui" and args.get("action") == "type"
             and "ctrl" in str(args.get("text", "")).lower()
         ]
         self.assertEqual(len(bad_type_calls), 0,
-                         f"ctrl+f should NEVER be typed as literal text. Bad calls: {bad_type_calls}")
+                         f"un combo NUNCA debe teclearse como texto: {bad_type_calls}")
 
 
 if __name__ == "__main__":
