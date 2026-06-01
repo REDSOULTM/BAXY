@@ -16,10 +16,11 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-# Techo MEDIDO 2026-06-01. NO subir sin justificar: si tu cambio agrega un
-# `except ...: pass` alrededor de LÓGICA, logueá el error (trace/logger) en vez de
-# tragarlo en silencio. La observabilidad es la que atrapó los bugs de esta semana.
-SILENT_LOGIC_CEILING = 371
+# Techo MEDIDO 2026-06-01 sobre el código ESTABLE del agente (el audit excluye
+# vision_input/ = subsistema de cámara en desarrollo por otro workstream). NO subir sin
+# justificar: si tu cambio agrega un `except ...: pass` alrededor de LÓGICA, logueá el
+# error (trace/logger) en vez de tragarlo. La observabilidad atrapó los bugs de esta semana.
+SILENT_LOGIC_CEILING = 358
 
 
 def _load_audit():

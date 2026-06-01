@@ -79,7 +79,10 @@ def audit() -> tuple[int, int, list[str]]:
     logic_sites: list[str] = []
     for p in ROOT.rglob("*.py"):
         sp = str(p)
-        if "test" in sp or "_diag" in sp or "__pycache__" in sp:
+        # vision_input/ = subsistema de cámara EN DESARROLLO por otro workstream (Codex);
+        # tiene su propio ciclo de vida -> no se ratchea contra el baseline del agente.
+        if ("test" in sp or "_diag" in sp or "__pycache__" in sp
+                or "vision_input" in sp):
             continue
         try:
             tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
