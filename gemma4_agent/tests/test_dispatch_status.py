@@ -188,7 +188,7 @@ class TestGuardUnverifiedFinal(unittest.TestCase):
 
     def test_nota_still_emitted_for_genuine_failure(self):
         # Si la tool genuinamente fallo (gui.click_text con found=False),
-        # SI queremos la nota.
+        # SI queremos la nota DURA de no-confirmacion.
         event = self._event(
             "gui", {"action": "click_text"},
             {
@@ -197,8 +197,43 @@ class TestGuardUnverifiedFinal(unittest.TestCase):
             },
         )
         out = self.agent._guard_unverified_final("Click hecho.", [event])
-        # Genuine unverified -> Nota debe aparecer.
+        # Genuine measured-fail (found=False) -> nota DURA.
         self.assertIn("Nota:", out)
+        self.assertIn("no dejo evidencia suficiente", out.lower())
+        self.assertNotIn("no pude confirmar el efecto", out.lower())
+
+    def test_soft_note_for_unmeasured_steps(self):
+        # TRI-ESTADO (2026-06-01): un plan computer_use con steps NO medibles
+        # colapsa al top-level verified=False (PlanExecutor L1283) pero la verdad
+        # vive en steps[*].verified=None. El guard debe leer steps y dar la nota
+        # SUAVE ("no pude confirmar el efecto"), NUNCA afirmar fallo.
+        event = ToolEvent(
+            name="computer_use", args={"goal": "x"},
+            result={
+                "ok": True, "verified": False, "status": "attempted",
+                "completion_status": "attempted",
+                "steps": [{"op": "type", "verified": None, "state_changed": None},
+                          {"op": "keypress", "verified": None, "state_changed": None}],
+            },
+        )
+        out = self.agent._guard_unverified_final("Listo.", [event])
+        self.assertIn("no pude confirmar el efecto", out.lower())
+        self.assertNotIn("no dejo evidencia suficiente", out.lower())
+
+    def test_fail_note_when_any_step_measured_false(self):
+        # Mismo colapso, pero un step SÍ midió no-cambio -> fallo DURO.
+        event = ToolEvent(
+            name="computer_use", args={"goal": "x"},
+            result={
+                "ok": True, "verified": False, "status": "attempted",
+                "completion_status": "attempted",
+                "steps": [{"op": "click_button", "verified": False,
+                           "state_changed": False}],
+            },
+        )
+        out = self.agent._guard_unverified_final("Listo.", [event])
+        self.assertIn("no dejo evidencia suficiente", out.lower())
+        self.assertNotIn("no pude confirmar el efecto", out.lower())
 
 
 class TestSummarizeVerifiersSilent(unittest.TestCase):
