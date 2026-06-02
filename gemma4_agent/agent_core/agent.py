@@ -522,6 +522,11 @@ class Gemma4Agent:
         except Exception:
             self._entity_ring = None
         self._mi_carry_tools: list[str] = []  # multi-intent: tools de contexto GUI a arrastrar
+        # EAGER read-only (opt-in GEMMA4_EAGER_READONLY, default OFF): cache
+        # per-turn de tools de SOLO-LECTURA pre-ejecutadas en background en
+        # paralelo al pase-1 del LLM. Se crea/llena en _decide_turn y se
+        # consume en el dispatch de _execute_turn. None = sin eager este turno.
+        self._eager_cache = None
         # NOTE: NLI warmup at __init__ was REMOVED — it raced with the voice
         # stack (faster_whisper) loading huggingface_hub from another thread,
         # causing intermittent "cannot import name 'logging' from
@@ -2353,6 +2358,31 @@ class Gemma4Agent:
             phrase_fires=len(self._phrase_fires or []),
         )
         self._compact_completed_history()
+        # EAGER read-only (opt-in GEMMA4_EAGER_READONLY, default OFF). Si el
+        # router ofreció una tool de SOLO-LECTURA (system.time/cpu_ram_gpu/disk/
+        # battery), dispararla AHORA en background: corre en paralelo al pase-1
+        # del LLM que sigue en _execute_turn, así si el LLM la pide el resultado
+        # ya está listo (ahorra el tiempo de la tool). Si el LLM no la pide o
+        # falla, se descarta — es read-only puro, sin efecto. SEGURO por diseño:
+        # eager_candidates exige 3 barreras (tabla declarativa + verbo-de-lectura
+        # estructural + clasificador de seguridad); NUNCA dispara una escritura.
+        # Fail-safe: ante cualquier error, el cache queda None y el dispatch corre
+        # la tool normal.
+        self._eager_cache = None
+        try:
+            from . import eager_readonly as _eager
+            _cands = _eager.eager_candidates(selected_tool_names)
+            if _cands:
+                _cache = _eager.EagerReadOnlyCache(self.tools.execute)
+                _cache.fire(_cands)
+                self._eager_cache = _cache
+                try:
+                    self.trace.event(turn_id, "eager_readonly_fired",
+                                     calls=[f"{t}.{a}" for (t, a) in _cache.fired])
+                except Exception:
+                    pass
+        except Exception:
+            self._eager_cache = None
         return TurnDecision(
             turn_id=turn_id,
             mode=mode,
@@ -3313,6 +3343,29 @@ class Gemma4Agent:
                         )
                     except Exception:
                         pass
+                # EAGER read-only (opt-in): si pre-ejecutamos esta lectura en
+                # background (en _decide_turn, en paralelo al pase-1) y el LLM la
+                # pidió tal cual (read-only, sin args con efectos), servimos el
+                # resultado YA listo en vez de re-ejecutar la tool — ahorra su
+                # latencia. SOLO si NO hubo parse-error NI un pre-block de safety
+                # (safety SIEMPRE gana). El get() re-verifica eager-safety contra
+                # los args REALES del LLM: una variante con efectos NO se sirve.
+                # Fail-safe: cache miss/None -> dispatch normal corre la tool.
+                if (_pre_dispatch_result is None and not parse_error
+                        and getattr(self, "_eager_cache", None) is not None
+                        and isinstance(args, dict)):
+                    try:
+                        _eager_action = str(args.get("action") or "")
+                        _eager_hit = self._eager_cache.get(name, _eager_action, args)
+                    except Exception:
+                        _eager_hit = None
+                    if isinstance(_eager_hit, dict):
+                        _pre_dispatch_result = _eager_hit
+                        try:
+                            self.trace.event(turn_id, "eager_readonly_hit",
+                                             tool=name, action=_eager_action)
+                        except Exception:
+                            pass
                 prepared.append({
                     "raw_call": raw_call,
                     "name": name,
