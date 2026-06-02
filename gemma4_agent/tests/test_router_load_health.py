@@ -90,6 +90,44 @@ class LexicalGateTest(unittest.TestCase):
             is_q, _ = is_question_lexical(cmd)
             self.assertFalse(is_q, f"{cmd!r} es acción, no pregunta")
 
+    def test_accent_agnostic_questions(self):
+        """ACENTO-AGNÓSTICO (2026-06-02): el matcher pliega el input (NFKD,
+        sin marcas combinantes) ANTES del regex, así que CUALQUIER variante de
+        acento — o su ausencia — matchea igual. Antes el regex enumeraba a mano
+        solo el acento agudo (`qu[eé]`, `c[oó]mo`) y fallaba silencioso con el
+        grave `perchè`, el circunflejo `quê` o el garble del ASR `quànto`.
+        Causa raíz: desajuste fold-vs-regex (la C2 #4 / 'wants_knowledge
+        accent-sensitive' de memoria)."""
+        from gemma4_agent.routing.intent_router import is_question_lexical
+        # Mismo significado, distinto acento — TODOS deben ser pregunta.
+        pairs = [
+            ("qué es mortal kombat", "que es mortal kombat"),   # ES agudo / sin
+            ("cuándo salió", "cuando salio"),                   # ES agudo / sin
+            ("o que é isso", "o que e isso"),                   # PT
+            ("cosa è", "cosa e"),                               # IT grave / sin
+            ("perché", "perche"),                               # IT agudo / sin
+        ]
+        for accented, plain in pairs:
+            for q in (accented, plain):
+                is_q, conf = is_question_lexical(q)
+                self.assertTrue(is_q, f"{q!r} debería ser pregunta (accent-agnóstico)")
+                self.assertGreaterEqual(conf, 0.55)
+        # Variantes de acento que el regex VIEJO NO cubría (regresión que el
+        # fix elimina): grave/circunflejo/garble del ASR.
+        for q in ["perchè e questo", "quê é isso", "quànto cuesta esto"]:
+            is_q, _ = is_question_lexical(q)
+            self.assertTrue(is_q, f"{q!r} debería ser pregunta (variante de acento)")
+
+    def test_action_verbs_accent_agnostic(self):
+        """Verbos de comando con tilde ('ábreme', 'lanzá', 'envía') deben
+        seguir siendo ACCIÓN tras el plegado del input — no volverse pregunta
+        por perder la tilde."""
+        from gemma4_agent.routing.intent_router import is_question_lexical
+        for cmd in ["ábreme Spotify", "lanzá el juego", "envía un correo",
+                    "creá una nota", "reproducí música"]:
+            is_q, _ = is_question_lexical(cmd)
+            self.assertFalse(is_q, f"{cmd!r} es acción, no pregunta")
+
     def test_fallback_when_model_down(self):
         # Si classify_intent → None (router caído, p.ej. torchcodec),
         # wants_knowledge debe usar el léxico, NO devolver False y mis-rutear.

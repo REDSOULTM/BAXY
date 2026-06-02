@@ -26,8 +26,25 @@ from __future__ import annotations
 
 import os
 import re
+import unicodedata
 from dataclasses import dataclass
 from typing import Any
+
+
+def _fold(text: str) -> str:
+    """Lowercase + strip ALL accents (NFKD + drop combining marks).
+
+    Universal, language-agnostic. Collapses every accent variant of a word
+    to one canonical form so the lexical matcher below is robust to the
+    accent the ASR/user actually produced (acute `qué`, grave `perchè`,
+    circumflex `quê`, dieresis, or none `que`). This is the ONLY correct way
+    to be accent-agnostic: enumerating accent variants by hand inside the
+    regex (the old `qu[eé]`, `c[oó]mo`) silently misses the ones nobody typed
+    — grave/circumflex/ASR-garble — which is exactly the bug this fixes.
+    Same algorithm as planner._fold_text / support.modes._fold_text; kept
+    local so intent_router stays import-cycle-free."""
+    text = unicodedata.normalize("NFKD", text.casefold())
+    return "".join(ch for ch in text if not unicodedata.combining(ch))
 
 # ---------------------------------------------------------------------------
 # Gate LÉXICO interrogativo (zero-ML, sub-ms). Complemento DETERMINISTA del
@@ -39,21 +56,34 @@ from typing import Any
 #   2. Prior: refuerza la rama info cuando hay interrogativa sin verbo de acción.
 # Las palabras interrogativas son conjunto CERRADO por idioma -> regex casi
 # perfecta en es/en/pt/it. NO sustituye al semántico (que generaliza), lo respalda.
+#
+# ACENTO-AGNÓSTICO POR DISEÑO (2026-06-02): el texto se PLIEGA con `_fold`
+# (NFKD, sin marcas combinantes) ANTES de matchear, así que aquí las palabras
+# van en su forma SIN tilde (qué/qué→que, perché/perchè→perche). Antes el regex
+# enumeraba a mano algunas variantes (`qu[eé]`, `c[oó]mo`) y silenciosamente
+# fallaba con las que nadie tipeó — acento grave `perchè`, circunflejo `quê`,
+# o garble del ASR `quànto`. Plegar primero las colapsa todas a una sola forma:
+# así cualquier acento (o ninguno) matchea igual, sin lista de variantes.
 _WH_WORDS = (
-    # español (con y sin tilde — el ASR a veces no la pone)
-    r"qu[eé]|qui[eé]n|qui[eé]nes|c[oó]mo|d[oó]nde|cu[aá]ndo|por\s*qu[eé]|"
-    r"cu[aá]l|cu[aá]les|cu[aá]nto|cu[aá]ntos|cu[aá]nta|cu[aá]ntas|"
+    # español (formas plegadas, sin tilde)
+    r"que|quien|quienes|como|donde|cuando|por\s*que|"
+    r"cual|cuales|cuanto|cuantos|cuanta|cuantas|"
     # inglés
     r"what|who|how|where|when|why|which|whose|"
-    # portugués / italiano
+    # portugués / italiano / francés (formas plegadas)
     r"o\s*que|quem|onde|quando|qual|quais|quanto|"
-    r"cosa|chi|dove|quando|perch[eé]|quale|quali"
+    r"cosa|chi|dove|perche|quale|quali"
 )
+# El input ya viene plegado (sin tilde, minúsculas) → IGNORECASE es redundante
+# pero inofensivo; lo dejamos por robustez si alguien llama el regex crudo.
 _WH_RE = re.compile(r"(?:^|\b)(?:" + _WH_WORDS + r")\b", re.IGNORECASE)
 _Q_MARK_RE = re.compile(r"[¿?]")
 # Verbos de COMANDO (acción sobre la PC). Si aparecen, NO es pregunta-info aunque
 # tenga forma interrogativa ("¿podés abrir Spotify?" es acción). Multi-idioma.
-_ACTION_VERBS = frozenset({
+# Formas PLEGADAS (sin tilde): se comparan contra tokens del input ya plegado por
+# `_fold`, así "ábreme"/"abreme", "lanzá"/"lanza", "envía"/"envia" colapsan a una
+# sola forma y no hace falta listar cada variante de acento. El frozenset dedupea.
+_ACTION_VERBS = frozenset(_fold(v) for v in {
     "abre", "abrir", "abreme", "ábreme", "abrime", "lanza", "lanzá", "ejecuta",
     "ejecutá", "inicia", "arranca", "cierra", "cerrar", "cerrá",
     "reproduce", "reproducir", "reproducí", "pon", "poné", "ponme", "play",
@@ -73,13 +103,21 @@ def is_question_lexical(text: str) -> tuple[bool, float]:
     modelo de embeddings esté caído — ese es el punto."""
     if not text or not text.strip():
         return (False, 0.0)
-    t = text.strip().lower()
-    has_q = bool(_Q_MARK_RE.search(t))
+    # `?`/`¿` survive el plegado (no son marcas combinantes) → detectarlos sobre
+    # el texto crudo es seguro y evita depender del fold para el signo.
+    has_q = bool(_Q_MARK_RE.search(text))
+    # Plegá ANTES de matchear wh-words y verbos: colapsa todo acento a una forma
+    # canónica (qué/qué→que, perchè→perche) → robusto a cualquier tilde o a su
+    # ausencia. Causa raíz del bug accent-sensitive: el regex viejo solo cubría
+    # las variantes de acento que el autor tipeó a mano.
+    t = _fold(text.strip())
     has_wh = bool(_WH_RE.search(t))
     if not (has_q or has_wh):
         return (False, 0.0)
-    # verbo de comando en los primeros tokens -> es acción, no pregunta-info
-    toks = re.findall(r"[a-záéíóúüñ]+", t)
+    # verbo de comando en los primeros tokens -> es acción, no pregunta-info.
+    # Tras plegar, los tokens son solo ASCII (ñ→n, acentos quitados); el set
+    # _ACTION_VERBS también está plegado, así que comparan limpio.
+    toks = re.findall(r"[a-z]+", t)
     if any(v in _ACTION_VERBS for v in toks[:3]):
         return (False, 0.0)
     if has_wh and has_q:
