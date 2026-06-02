@@ -36,7 +36,10 @@ import time
 from pathlib import Path
 from typing import Any
 
-from .verify_core import VerifierOutcome, register_verifier
+from .verify_core import (
+    VerifierOutcome, register_verifier,
+    ERR_MISSING_PRECONDITION, ERR_TRANSIENT,
+)
 
 
 # ============================================================================
@@ -52,11 +55,17 @@ def _ok_evidence(tool: str, reason: str, keys: list[str] | None = None,
 
 
 def _unverifiable(tool: str, reason: str, detail: dict | None = None) -> VerifierOutcome:
+    # confirmed=None NO lleva error_type: "no medible" no es un fallo a reintentar.
     return VerifierOutcome(tool_name=tool, confirmed=None, reason=reason, detail=detail)
 
 
-def _failed(tool: str, reason: str, detail: dict | None = None) -> VerifierOutcome:
-    return VerifierOutcome(tool_name=tool, confirmed=False, reason=reason, detail=detail)
+def _failed(tool: str, reason: str, detail: dict | None = None,
+            error_type: str | None = None) -> VerifierOutcome:
+    # H1: cuando el verifier CONOCE la clase estructural del fallo (p.ej. la app
+    # no apareció = falta una precondición) la pasa explícita; si no, verify_core
+    # la infiere con classify_failure. Un error_type explícito siempre gana.
+    return VerifierOutcome(tool_name=tool, confirmed=False, reason=reason,
+                           detail=detail, error_type=error_type)
 
 
 def _result_says_unverified(result: dict) -> bool:
@@ -120,7 +129,15 @@ def verify_app(args: dict, result: dict) -> VerifierOutcome:
         if not name:
             return _unverifiable("app", "no name to verify")
         if _result_says_unverified(result):
-            return _failed("app", f"tool reported failure: {result.get('error', '?')}")
+            # H1: un open() que la tool reportó fallido es casi siempre falta de
+            # precondición (la app no está instalada / no se resolvió un launcher).
+            # MISSING_PRECONDITION -> el recovery pide hacer el prerequisito, no
+            # reintentar la misma open a ciegas. classify_failure infiere lo mismo
+            # del texto "app not found", pero lo dejamos explícito (autoritativo).
+            return _failed(
+                "app", f"tool reported failure: {result.get('error', '?')}",
+                error_type=ERR_MISSING_PRECONDITION,
+            )
 
         # Si la tool ya hizo auto-verify y dice True, trust eso.
         if result.get("verified") is True:
@@ -165,9 +182,12 @@ def verify_app(args: dict, result: dict) -> VerifierOutcome:
         from ..tools_pkg.tools import _running_process_names
         procs = _running_process_names()
         if _proc_matches(name, procs):
+            # H1: el proceso sigue vivo tras un close ok -> puede ceder con un
+            # segundo intento (la app pidió guardar, taskkill /F en cola).
+            # TRANSIENT -> budget 2 reintentos, no irrecuperable.
             return _failed(
                 "app", f"proceso matching '{name}' sigue corriendo tras close",
-                detail={"via": "psutil"},
+                detail={"via": "psutil"}, error_type=ERR_TRANSIENT,
             )
         return _ok_evidence(
             "app", f"proceso '{name}' ausente post-close",
