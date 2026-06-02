@@ -2371,7 +2371,12 @@ class Gemma4Agent:
         self._eager_cache = None
         try:
             from . import eager_readonly as _eager
-            _cands = _eager.eager_candidates(selected_tool_names)
+            # Pasar el texto del turno para AFINAR por intent (embeddings
+            # multilingües): dispara SOLO la(s) read que el turno sugiere, no
+            # las 4 de `system` siempre. Sin texto/encoder -> fallback al
+            # comportamiento previo (todas). El turno ya está embebido por el
+            # router este turno (cache-hit, costo ~0).
+            _cands = _eager.eager_candidates(selected_tool_names, raw_text_early)
             if _cands:
                 _cache = _eager.EagerReadOnlyCache(self.tools.execute)
                 _cache.fire(_cands)

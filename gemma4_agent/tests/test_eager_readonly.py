@@ -284,6 +284,108 @@ class Gating(unittest.TestCase):
         os.environ.pop("GEMMA4_EAGER_READONLY", None)
 
 
+def _encoder_available() -> bool:
+    """True si el encoder multilingüe carga (sentence-transformers presente y
+    descargable). Sin él, el afinamiento por intent cae al fallback (todas) — los
+    tests de discriminación se saltan, NO fallan."""
+    try:
+        from gemma4_agent.routing.semantic_router import embed
+        return embed("ping") is not None
+    except Exception:
+        return False
+
+
+class IntentFilterFallsBackSafely(unittest.TestCase):
+    """El afinamiento por intent NUNCA es peor que la versión previa: sin texto o
+    sin encoder dispara TODAS las eager-safe del subset (no-op respecto al merge
+    ya validado). No depende del encoder."""
+
+    def setUp(self) -> None:
+        os.environ["GEMMA4_EAGER_READONLY"] = "1"
+
+    def tearDown(self) -> None:
+        os.environ.pop("GEMMA4_EAGER_READONLY", None)
+
+    def test_no_text_keeps_all_eager_safe(self) -> None:
+        # Sin turn_text -> comportamiento previo: las 4 reads de system.
+        cands = E.eager_candidates(["system"])
+        self.assertEqual(
+            set(cands),
+            {("system", "time"), ("system", "cpu_ram_gpu"),
+             ("system", "disk"), ("system", "battery")})
+
+    def test_encoder_absent_keeps_all_eager_safe(self) -> None:
+        # Si embed() devuelve None (encoder ausente), fallback a TODAS.
+        with mock.patch("gemma4_agent.routing.semantic_router.embed",
+                        return_value=None):
+            cands = E.eager_candidates(["system"], "qué hora es")
+        self.assertEqual(len(cands), 4)
+
+    def test_filter_never_invents_a_candidate(self) -> None:
+        # El filtro SOLO puede REDUCIR el set, nunca agregar algo fuera de la
+        # tabla (defensa: ninguna escritura puede entrar por el intent).
+        cands = E.eager_candidates(["system"], "cuánta batería queda")
+        for c in cands:
+            self.assertIn(c, E.EAGER_READONLY_CALLS)
+
+
+@unittest.skipUnless(_encoder_available(),
+                     "encoder multilingüe no disponible -> intent filter en fallback")
+class IntentFilterFiresOnlyRelevantRead(unittest.TestCase):
+    """GATE medido: el afinamiento dispara SOLO la(s) read que el turno sugiere,
+    no las 4 de system siempre. Embeddings multilingües (no keywords es-only)."""
+
+    def setUp(self) -> None:
+        os.environ["GEMMA4_EAGER_READONLY"] = "1"
+
+    def tearDown(self) -> None:
+        os.environ.pop("GEMMA4_EAGER_READONLY", None)
+
+    def test_time_question_fires_only_time(self) -> None:
+        # GATE: "qué hora es" -> SOLO system.time (no las 4).
+        for q in ("qué hora es", "what time is it", "quelle heure est-il"):
+            cands = E.eager_candidates(["system"], q)
+            self.assertEqual(
+                cands, [("system", "time")],
+                f"{q!r} disparó {cands}, esperaba solo system.time")
+
+    def test_volume_turn_fires_zero_reads(self) -> None:
+        # GATE: "subí el volumen" — system viaja en el subset junto a audio por
+        # ser compound, pero el turno NO pide ninguna lectura -> 0 reads.
+        for q in ("subí el volumen", "turn up the volume", "bajá el volumen"):
+            cands = E.eager_candidates(["system", "audio"], q)
+            self.assertEqual(cands, [], f"{q!r} disparó {cands}, esperaba 0 reads")
+
+    def test_smalltalk_fires_zero_reads(self) -> None:
+        # Smalltalk no se parece a ninguna lectura -> 0 (no desperdiciar).
+        for q in ("hola cómo estás", "contame un chiste"):
+            cands = E.eager_candidates(["system"], q)
+            self.assertEqual(cands, [], f"{q!r} disparó {cands}, esperaba 0 reads")
+
+    def test_shutdown_turn_fires_zero_reads(self) -> None:
+        # Un pedido de apagar (escritura) no matchea ninguna lectura -> 0.
+        cands = E.eager_candidates(["system"], "apaga la computadora")
+        self.assertEqual(cands, [])
+
+    def test_resource_questions_fire_their_own_read(self) -> None:
+        # Cada consulta de recurso dispara SU lectura (no las 4).
+        ram = E.eager_candidates(["system"], "cuánta RAM tengo")
+        self.assertIn(("system", "cpu_ram_gpu"), ram)
+        self.assertNotIn(("system", "time"), ram)
+        disk = E.eager_candidates(["system"], "cuánto espacio libre en disco queda")
+        self.assertIn(("system", "disk"), disk)
+        bat = E.eager_candidates(["system"], "cuánta batería queda")
+        self.assertIn(("system", "battery"), bat)
+
+    def test_a_write_never_fires_even_with_matching_text(self) -> None:
+        # SEGURIDAD: aunque el texto sea de "apagar", el intent jamás puede
+        # introducir una escritura (shutdown no está en la tabla read-only).
+        cands = E.eager_candidates(
+            ["system"], "apaga reinicia suspende apaga la pc shutdown")
+        write_pairs = {(t, a) for (t, a, _) in WRITE_CALLS}
+        self.assertEqual(set(cands) & write_pairs, set())
+
+
 class SavingsSimulation(unittest.TestCase):
     """Mide el AHORRO: la tool read-only (lenta) se solapa con el 'pase-1' del
     LLM, así que cuando el dispatch la pide el resultado ya está -> ~0 espera

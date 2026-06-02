@@ -80,6 +80,74 @@ EAGER_READONLY_CALLS: frozenset[tuple[str, str]] = frozenset({
 })
 
 
+# ---------------------------------------------------------------------------
+# AFINAMIENTO POR INTENT (2026-06-02): NO disparar las 4 reads de ``system``
+# en CADA turno que ofrezca la tool ``system``. El router rutea a nivel TOOL
+# (no por acción): basta que ``system`` clasifique para que aparezca en el
+# subset, aunque el turno pida ``shutdown`` (escritura) o nada de lectura
+# (p.ej. "subí el volumen", donde ``system`` viaja junto a ``audio``). Eso
+# dispara 4 PowerShell/psutil en background y descarta 3.
+#
+# Señal de discriminación: el TEXTO del turno comparado por EMBEDDINGS
+# MULTILINGÜES contra una descripción de intent por acción (mismo mecanismo
+# sancionado que TOOL_DESCRIPTIONS del semantic_router — NO una lista de
+# keywords por idioma; es-only está PROHIBIDO por CLAUDE.md). El encoder es
+# el mismo ``embed()`` ya cargado por el router (sin 2º modelo) y el turno ya
+# fue embebido ese turno (cache-hit, costo ~0). Disparamos SOLO la(s) read
+# cuya similitud supera un umbral; si ninguna lo supera -> 0 reads.
+#
+# Descripciones de intent (brand-free, multi-idioma natural): qué INFORMACIÓN
+# pide cada lectura. El encoder generaliza a idiomas/fraseos no listados — no
+# son keywords a matchear, son anclas semánticas.
+# ---------------------------------------------------------------------------
+_ACTION_INTENT_DESCRIPTIONS: dict[tuple[str, str], str] = {
+    ("system", "time"): (
+        "what time is it now, the current time and date, qué hora es, qué "
+        "día es hoy, wie spät ist es, quelle heure est-il, che ore sono, "
+        "que horas são, hora y fecha actual, clock"
+    ),
+    ("system", "cpu_ram_gpu"): (
+        "how much memory RAM is used, CPU GPU usage and load, processor and "
+        "graphics card status, cuánta memoria RAM tengo o queda, uso de "
+        "procesador, wie viel Arbeitsspeicher, utilisation du processeur, "
+        "system performance, specs"
+    ),
+    ("system", "disk"): (
+        "how much disk space is free, storage capacity remaining, hard drive "
+        "space, cuánto espacio libre en disco queda, almacenamiento, "
+        "Speicherplatz auf der Festplatte, espace disque disponible, "
+        "espaço em disco"
+    ),
+    ("system", "battery"): (
+        "battery level and charge percentage, is it charging, how much "
+        "battery is left, nivel de batería, cuánta batería queda, está "
+        "cargando, Akkustand, niveau de batterie, livello batteria, "
+        "carga de la pila"
+    ),
+}
+
+# Umbral de similitud coseno (encoder L2-normalizado -> coseno == dot). Una
+# acción se dispara eager SOLO si el turno se le parece >= este valor.
+#
+# CALIBRACIÓN MEDIDA (2026-06-02, encoder router-FT MiniLM, matriz turno×acción):
+#   - hits genuinos ("qué hora es", "cuánta RAM", "battery level", ...): 0.49-0.74
+#   - smalltalk falso-positivo ("hola cómo estás" -> time): 0.332
+#   - volumen cross-talk ("subí/bajá el volumen" -> disk/battery): <= 0.215
+#   - alemán débil ("wie spät ist es" -> time): 0.208 (el encoder folda mal el
+#     acento; queda por debajo y NO dispara -> fail-safe: el dispatch corre la
+#     tool normal, sin error).
+# 0.40 separa los hits genuinos (>=0.49) del ruido (smalltalk 0.332, volumen
+# 0.215): mata el desperdicio sin perder ninguna consulta clara. Preferimos
+# disparar 0 (y dejar que el dispatch corra la read) antes que desperdiciar en
+# cada smalltalk. Override por env para tuning en vivo sin redeploy.
+_INTENT_FIRE_THRESHOLD = 0.40
+try:
+    _INTENT_FIRE_THRESHOLD = float(
+        os.environ.get("GEMMA4_EAGER_INTENT_THRESHOLD", "") or _INTENT_FIRE_THRESHOLD)
+except Exception:
+    _INTENT_FIRE_THRESHOLD = 0.40
+
+
 def is_enabled() -> bool:
     """Gate ``GEMMA4_EAGER_READONLY``. **Default OFF** — es una optimización
     riesgosa; opt-in hasta validación en vivo exhaustiva. Cualquier valor
@@ -170,13 +238,76 @@ def is_eager_safe(tool: str, action: str, args: dict[str, Any] | None = None) ->
     return _safety_clears(tool, action, {})
 
 
-def eager_candidates(subset_names: list[str] | tuple[str, ...] | set[str] | None) -> list[tuple[str, str]]:
+def _intent_filter(
+    candidates: list[tuple[str, str]], turn_text: str,
+) -> list[tuple[str, str]] | None:
+    """Reduce ``candidates`` a la(s) read cuya descripción de intent se parece al
+    ``turn_text`` por EMBEDDINGS multilingües (>= ``_INTENT_FIRE_THRESHOLD``).
+
+    Devuelve:
+      - una lista (posiblemente VACÍA) de las candidatas que matchean el intent,
+        cuando el encoder está disponible y el texto trae señal — incluso [] si
+        NINGUNA read es relevante (p.ej. "subí el volumen" no se parece a
+        time/cpu/disk/battery -> 0 reads). Ese 0 es el resultado deseado.
+      - ``None`` si NO se puede discriminar (sin texto, encoder ausente, o todas
+        las candidatas sin descripción): el caller cae al comportamiento previo
+        (disparar todas las eager-safe del subset). Fail-safe: nunca degradar
+        por debajo de la versión ya mergeada+validada.
+
+    Estructural y multilingüe: usa el MISMO encoder del router (``embed``),
+    reusa el embedding del turno (cache-hit), y compara contra anclas de intent
+    (NO una lista de keywords es-only). CLAUDE.md (a)."""
+    text = (turn_text or "").strip()
+    if not text:
+        return None
+    # Solo podemos discriminar las candidatas que tienen descripción de intent.
+    describable = [c for c in candidates if c in _ACTION_INTENT_DESCRIPTIONS]
+    if not describable or len(describable) != len(candidates):
+        # Si alguna candidata no tiene ancla de intent, no podemos decidir con
+        # seguridad cuál omitir -> fallback (no arriesgamos perder un hit).
+        return None
+    try:
+        from ..routing.semantic_router import embed as _embed
+    except Exception:
+        return None
+    q = _embed(text)
+    if q is None:
+        return None  # encoder no disponible -> fallback al comportamiento previo
+    try:
+        import numpy as _np
+        qv = _np.asarray(q, dtype=_np.float32)
+        kept: list[tuple[str, str]] = []
+        for cand in describable:
+            av = _embed(_ACTION_INTENT_DESCRIPTIONS[cand])
+            if av is None:
+                # ancla no embebible -> no podemos discriminar limpio -> fallback
+                return None
+            sim = float(_np.asarray(av, dtype=_np.float32) @ qv)
+            if sim >= _INTENT_FIRE_THRESHOLD:
+                kept.append(cand)
+        return kept
+    except Exception:
+        return None  # cualquier fallo de cómputo -> fallback seguro
+
+
+def eager_candidates(
+    subset_names: list[str] | tuple[str, ...] | set[str] | None,
+    turn_text: str | None = None,
+) -> list[tuple[str, str]]:
     """Dado el subset de tools que el router ofreció ESTE turno, devuelve las
     (tool, action) read-only a disparar en background. Una candidata exige que:
       - el flag esté ON,
       - la TOOL esté en el subset (el router la ofreció), y
       - (tool, action) sea eager-safe (tabla + clasificador).
-    Si el flag está OFF o el subset es vacío -> [] (no-op total)."""
+    Si el flag está OFF o el subset es vacío -> [] (no-op total).
+
+    AFINAMIENTO (2026-06-02): si se pasa ``turn_text`` y el encoder está
+    disponible, se filtra por INTENT (embeddings multilingües) para disparar
+    SOLO la(s) read que el turno realmente sugiere, en vez de las 4 de
+    ``system`` siempre. "qué hora es" -> [system.time]; "subí el volumen"
+    (system viajó junto a audio) -> []. Sin texto / sin encoder -> se mantiene
+    el comportamiento previo (todas las eager-safe del subset): fail-safe puro,
+    nunca peor que la versión ya validada."""
     if not is_enabled():
         return []
     names = {str(n) for n in (subset_names or [])}
@@ -186,7 +317,11 @@ def eager_candidates(subset_names: list[str] | tuple[str, ...] | set[str] | None
     for (tool, action) in EAGER_READONLY_CALLS:
         if tool in names and is_eager_safe(tool, action, {}):
             out.append((tool, action))
-    return out
+    if not out:
+        return out
+    # Afinar por intent del turno. None -> no se pudo discriminar -> dejar todas.
+    refined = _intent_filter(out, turn_text or "")
+    return out if refined is None else refined
 
 
 class EagerReadOnlyCache:
