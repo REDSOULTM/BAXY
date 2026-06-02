@@ -3795,14 +3795,46 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
         except (OSError, subprocess.TimeoutExpired):
             return _err("system_brightness_set timeout", level=level, reason="wmi_unresponsive")
         if proc.returncode != 0:
+            # (a) FALLO DEL SO honesto: WMI rechazó el set (monitor sin
+            # WmiMonitorBrightnessMethods / sin DDC-CI). NO es un bug del agente;
+            # es una limitación de hardware. _err con hint -> el reply dice "no se
+            # puede en este monitor", no miente con un éxito.
             return _err(
                 "brightness_set rejected by WMI",
                 level=level, exit_code=proc.returncode,
+                reason="wmi_unsupported",
                 stderr=_truncate(proc.stderr.strip(), 1000),
                 hint="WmiMonitorBrightness only works on laptops; desktop monitors need DDC/CI helper.",
             )
-        return _ok(level=level, requested=level, verified=False,
-                   note="brightness set request sent; verify by calling brightness_get.")
+        # El set NO falló, pero WmiSetBrightness es fire-and-hope: en algunos
+        # paneles el WMI acepta la llamada (returncode 0) y el brillo NO cambia.
+        # Igual que audio_set_volume re-lee el endpoint, RE-LEEMOS el nivel post-set
+        # y comparamos con lo pedido. Tri-estado honesto (mismo contrato que
+        # keypress/audio/_DISPATCH_OK_COMPLETIONS):
+        #   verified=True  -> medido y dentro de tolerancia (±5%): éxito real.
+        #   verified=False -> medido y NO cambió: honesto, NO afirmamos éxito.
+        #   verified=None  -> no medible (monitor sin DDC reporta null): dispatched,
+        #                     "se envió pero no se pudo confirmar" (NO es fallo).
+        post = self.system_brightness_get({})
+        actual = self._extract_brightness_level(post.get("brightness"))
+        if actual is None:
+            # No se pudo RE-LEER el nivel (WmiMonitorBrightness null/ausente, aunque
+            # el set no diera error). No medible != fallo: honesto verified=None.
+            return _ok(
+                level=level, requested=level, verified=None,
+                status="dispatched",
+                note="brightness set request sent but the level could not be re-read to confirm it changed.",
+            )
+        if abs(actual - level) <= 5:  # tolerancia ~5% (paneles cuantizan a pasos)
+            return _ok(level=actual, requested=level, verified=True)
+        # (b) Se intentó pero el panel NO aplicó el cambio: honesto, no afirmamos
+        # éxito plano. verified=False -> el guard de honestidad no dirá "Listo".
+        return _err(
+            f"brightness set to {level} but monitor reports {actual}",
+            level=actual, requested=level, verified=False,
+            status="failed", reason="brightness_unchanged",
+            hint="WMI accepted the call but the panel did not apply it; the monitor may not honor software brightness.",
+        )
 
     def audio_get_volume(self, args: dict[str, Any]) -> dict[str, Any]:
         try:
