@@ -1335,7 +1335,8 @@ class Gemma4Agent:
                     not in {"0", "false", "no", "off"}:
             try:
                 from ..routing.command_splitter import (
-                    extract_app_action, split_command, parse_type_action)
+                    extract_app_action, split_command, parse_type_action,
+                    parse_keypress_action)
                 _aa = extract_app_action(content)
             except Exception:
                 _aa = None
@@ -1408,6 +1409,28 @@ class Gemma4Agent:
                                 {"op": "focus_app", "arg": _app},
                                 {"op": "type", "arg": _tp["payload"]},
                             ]
+                        # PLAN DETERMINISTA para PULSAR-UNA-TECLA-EN-APP (2026-06-01):
+                        # "en la calculadora apretá el 5" / "apretá el 5 en la calc" ->
+                        # [focus_app(app), keypress(key)]. MEDIDO en vivo: sin esto caía
+                        # a cu(goal genérico) y el 4B planner devolvía "no pude planificar
+                        # la acción" para un keypress trivial. parse_keypress_action exige
+                        # que la TECLA sea inequívoca (dígito/tecla-nombrada/letra sola),
+                        # así NO le roba a click_button ('apretá enviar') ni a media ('tocá
+                        # una canción'). Solo si parse_type_action NO armó plan (verbos
+                        # disjuntos: type vs press; el guard evita doble-plan).
+                        if not _aa_args.get("steps"):
+                            try:
+                                _kp = parse_keypress_action(content)
+                            except Exception:
+                                _kp = None
+                            if _kp:
+                                _kapp = _re_aa.sub(
+                                    r"^(?:el|la|los|las|the|mi|mis|un|una)\s+",
+                                    "", _kp["app"], flags=_re_aa.IGNORECASE) or _kp["app"]
+                                _aa_args["steps"] = [
+                                    {"op": "focus_app", "arg": _kapp},
+                                    {"op": "keypress", "arg": _kp["key"]},
+                                ]
                     # Para cu con plan determinista (steps) llamamos al handler DIRECTO:
                     # execute() valida el schema del 4B (additionalProperties=false) y
                     # rechazaría 'steps'. El handler acepta el plan pre-construido. El

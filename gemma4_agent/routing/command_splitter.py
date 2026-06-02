@@ -890,6 +890,133 @@ def is_key_name(label: str | None) -> bool:
     return label.strip().casefold() in _KEY_NAMES
 
 
+# PULSAR UNA TECLA EN UNA APP (accesibilidad, 2026-06-01). MEDIDO en vivo: "en la
+# calculadora apretá el 5" -> extract_app_action lo detecta (pattern=in_app_act,
+# app_hint='la calculadora') pero NO había constructor de plan determinista para un
+# keypress simple -> caía a computer_use(goal genérico) -> el 4B planner devolvía "no
+# pude planificar la acción" para un keypress trivial. (En cambio "abrí la calculadora
+# y apretá el 5" SÍ andaba: toma el patrón nav_action.) Análogo a parse_type_action /
+# parse_calc_action: detecta ESTRUCTURALMENTE "<verbo-pulsar> <TECLA> en <app>" (y "en
+# <app> <verbo-pulsar> <TECLA>") y devuelve {app, key} para que el caller arme el plan
+# DETERMINISTA [focus_app(app), keypress(key)] saltando el planner del 4B.
+#
+# PRECISIÓN (no robarle a otras tools): la TECLA debe ser un token CORTO e inequívoco
+# — un dígito 0-9, una tecla NOMBRADA (_KEY_NAMES: enter/escape/tab/flechas/F1...) o
+# una letra sola. Si el "target" es una palabra de contenido ('enviar', 'una canción',
+# 'guardar') -> None: eso es un BOTÓN (click_button) o PLAY (media), no keypress. Si es
+# texto largo -> None: eso lo cubre parse_type_action. Así "apretá enviar en WhatsApp"
+# y "tocá una canción en Spotify" NO matchean. ESTRUCTURAL + multi-idioma (es/en/pt/it/
+# fr/de) por morfología del verbo, NO listas de intenciones — CLAUDE.md (b).
+#
+# Verbos de PULSAR-TECLA: subconjunto morfológico de _AA_ACT (apretar/presionar/pulsar/
+# tocar/press/tap/hit/...). NO incluye 'click/clickear/clic' ni 'hacé clic' (eso busca
+# un control por Name = click_button, no una tecla física). NO incluye 'escribir/poner/
+# teclear' (texto = parse_type_action). NO incluye 'sumá/restá' (aritmética = parse_calc).
+_KP_VERB = (
+    r"apret[áa]\w*|apreta|apriet\w*|"                                   # es apretar
+    r"presion[áa]\w*|presiona\w*|puls[áa]\w*|pulsa\w*|"                 # es presionar/pulsar
+    r"toc[áa]\w*|toca\w*|"                                              # es tocar
+    r"press(?:ed|es|ing)?|tap(?:ped|s|ping)?|hit\w*|"                  # en
+    r"aperte\w*|aperta\w*|toqu\w*|"                                     # pt
+    r"appui\w*|appuie\w*|"                                              # fr
+    r"dr[üu]ck\w*|tipp\w*|"                                             # de pulsar/teclear-tecla
+    r"premi\w*|schiacc\w*"                                              # it premere/schiacciare
+)
+# Localizador app-segundo ("... en <app>") — preferimos 'en'/'in' (no 'a', ambiguo).
+_KP_LOC = r"en|in|into|on|sobre|dentro\s+de|dans|im|su|no"
+# Artículo/conector opcional entre el verbo y la TECLA ("apretá EL 5", "press THE enter,
+# "toca a tecla X"). Closed set multi-idioma, sólo al frente del target.
+_KP_KEY_LEAD = re.compile(
+    r"^(?:(?:el|la|los|las|the|le|il|lo|der|die|das|a|o)\s+)?"
+    r"(?:(?:tecla|key|botón|boton|taste|tasto|touche|tecla)\s+)?",
+    re.IGNORECASE,
+)
+# "en <app> <verbo> <tecla>" (app primero). El verbo NO al frente.
+_KP_IN_APP = re.compile(
+    r"^\s*(?:" + _KP_LOC + r")\s+(?P<app>.+?)\s+(?:" + _KP_VERB + r")\b\s*(?P<key>.+)$",
+    re.IGNORECASE,
+)
+# "<verbo> <tecla> en <app>" (acción primero). 'en'/'in' obligatorio (no 'a').
+_KP_ACT_IN = re.compile(
+    r"^\s*(?:" + _KP_VERB + r")\b\s+(?P<key>.+?)\s+(?:" + _KP_LOC + r")\s+(?P<app>\S.*)$",
+    re.IGNORECASE,
+)
+
+
+def _kp_normalize_key(raw: str | None) -> str | None:
+    """Devuelve la TECLA canónica si `raw` es un token inequívoco para keypress
+    (un dígito 0-9, una tecla nombrada de _KEY_NAMES, o una letra sola); None si es
+    una palabra de contenido / texto largo (-> botón o type, NO keypress). Pela el
+    artículo/conector inicial ('el', 'the', 'tecla'...) y comillas/puntuación. Mapea
+    sinónimos de tecla al nombre físico (intro->enter, espacio->space, ...)."""
+    if not raw:
+        return None
+    key = _KP_KEY_LEAD.sub("", raw.strip(), count=1).strip()
+    key = key.strip(" .,;:!?\"'«»()[]")
+    if not key:
+        return None
+    low = key.casefold()
+    # 1) tecla NOMBRADA (enter/tab/escape/flechas/F1...): vocabulario CERRADO físico.
+    if is_key_name(key):
+        return _KP_KEY_CANON.get(low, low)
+    # 2) un único dígito (0-9): inequívoco. (Sólo UNO: "apretá 25" = ambiguo -> None.)
+    if len(key) == 1 and key.isdigit():
+        return key
+    # 3) una sola letra (alfabética, 1 char): "apretá la a" -> 'a'. Multi-idioma por
+    #    .isalpha() (cubre acentos/ñ); el caller lo manda como tecla literal.
+    if len(key) == 1 and key.isalpha():
+        return low
+    return None
+
+
+# Sinónimos de tecla -> nombre físico que entiende gui.keypress (intro/retorno=enter,
+# espacio=space, supr=delete...). Closed set, multi-idioma; NO contenido.
+_KP_KEY_CANON = {
+    "intro": "enter", "return": "enter", "retorno": "enter",
+    "espacio": "space", "tabulador": "tab",
+    "supr": "delete", "suprimir": "delete", "del": "delete",
+    "retroceso": "backspace",
+    "arriba": "up", "abajo": "down", "izquierda": "left", "derecha": "right",
+    "inicio": "home", "fin": "end",
+}
+
+
+def parse_keypress_action(clause: str) -> dict | None:
+    """Extrae {app, key, pattern} de un pedido de PULSAR-UNA-TECLA-EN-APP para
+    construir un plan DETERMINISTA [focus_app(app), keypress(key)]. None si no es un
+    keypress-action limpio (cae a parse_type_action / parse_calc / el planner del 4B).
+    ESTRUCTURAL, multi-idioma. Cubre:
+      "apretá/presioná/tocá/pulsá/press/tap <TECLA> en <app>"  y
+      "en <app> apretá/presioná/... <TECLA>".
+    PRECISIÓN: la TECLA debe ser inequívoca (dígito 0-9 / tecla nombrada / letra sola);
+    si es palabra de contenido ('enviar', 'una canción') o texto largo -> None (eso es
+    botón=click_button o texto=type, no keypress)."""
+    if not clause or not clause.strip():
+        return None
+    c = clause.strip()
+    # 1) "en <app> <verbo> <tecla>" (app primero).
+    m = _KP_IN_APP.match(c)
+    if m:
+        app = _strip_quotes(m.group("app"))
+        key = _kp_normalize_key(m.group("key"))
+        if app and key:
+            return {"app": app, "key": key, "pattern": "in_app_keypress"}
+    # 2) "<verbo> <tecla> en <app>" (acción primero). 'en'/'in' obligatorio (no 'a',
+    #    que es ambiguo: 'apretá a las 5' no es una tecla). El último localizador manda
+    #    para que 'apretá la X en la calc' tome 'la calc' como app.
+    vm = re.match(r"^\s*(?:" + _KP_VERB + r")\b", c, re.IGNORECASE)
+    if vm:
+        body = c[vm.end():]
+        matches = list(re.finditer(r"\s+(?:" + _KP_LOC + r")\s+", body, re.IGNORECASE))
+        if matches:
+            last = matches[-1]
+            key = _kp_normalize_key(body[:last.start()])
+            app = _strip_quotes(body[last.end():])
+            if app and key:
+                return {"app": app, "key": key, "pattern": "keypress_in_app"}
+    return None
+
+
 def extract_click_target(clause: str) -> str | None:
     """Si la cláusula es "<verbo-click> <label>", devuelve <label> (botón a
     clickear por Name UIA). None si no es una cláusula de click, o si refiere a

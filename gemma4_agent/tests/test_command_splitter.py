@@ -230,6 +230,78 @@ class ParseTypeActionTest(unittest.TestCase):
             self.assertIsNone(self.P(q), msg=q)
 
 
+class ParseKeypressActionTest(unittest.TestCase):
+    """parse_keypress_action: extrae (app, key) para el PLAN DETERMINISTA
+    focus_app+keypress. MEDIDO en vivo (2026-06-01): "en la calculadora apretá el 5"
+    caía a cu(goal genérico) -> el 4B planner devolvía "no pude planificar la acción"
+    para un keypress trivial. La TECLA debe ser inequívoca (dígito/tecla-nombrada/letra
+    sola) -> NO le roba a click_button ('apretá enviar') ni a media ('tocá una canción').
+    """
+    def setUp(self):
+        from ..routing.command_splitter import parse_keypress_action
+        self.P = parse_keypress_action
+
+    def test_in_app_first(self):
+        for q, app, key in [
+            ("en la calculadora apretá el 5", "la calculadora", "5"),
+            ("en Discord apretá enter", "Discord", "enter"),
+            ("en la calc tocá el 7", "la calc", "7"),
+            ("en notepad apretá la a", "notepad", "a"),
+            ("en el teclado apretá espacio", "el teclado", "space"),
+            ("en Discord tocá f5", "Discord", "f5"),
+        ]:
+            r = self.P(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["app"], app, msg=q)
+            self.assertEqual(r["key"], key, msg=q)
+
+    def test_action_first(self):
+        for q, app, key in [
+            ("apretá el 5 en la calculadora", "la calculadora", "5"),
+            ("presioná enter en Discord", "Discord", "enter"),
+            ("pulsá escape en el navegador", "el navegador", "escape"),
+            ("apretá arriba en el juego", "el juego", "up"),
+        ]:
+            r = self.P(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["app"], app, msg=q)
+            self.assertEqual(r["key"], key, msg=q)
+
+    def test_multilingual_verbs(self):
+        for q, key in [("press 5 in the calculator", "5"),
+                       ("tap tab in the browser", "tab"),
+                       ("toca intro en discord", "enter")]:   # intro -> enter
+            r = self.P(q)
+            self.assertIsNotNone(r, msg=q)
+            self.assertEqual(r["key"], key, msg=q)
+
+    def test_key_synonyms_canonicalize(self):
+        # intro/retorno->enter, espacio->space, supr->delete, arriba->up.
+        for q, key in [("en notepad apretá intro", "enter"),
+                       ("en notepad apretá espacio", "space"),
+                       ("en notepad apretá supr", "delete")]:
+            self.assertEqual(self.P(q)["key"], key, msg=q)
+
+    def test_precision_does_not_steal(self):
+        # 'enviar'/'guardar'=BOTÓN (click_button); 'una canción'=PLAY (media);
+        # 'escribí hola'=TYPE; 'sumá 2+2'=CALC; '25'=ambiguo (2 dígitos); 'clic'=button.
+        for q in ("apretá enviar en WhatsApp",
+                  "tocá una canción en Spotify",
+                  "escribí hola en notepad",
+                  "en la calculadora sumá 2+2",
+                  "apretá el botón de guardar en Word",
+                  "apretá 25 en la calculadora",
+                  "hacé clic en guardar en Word",
+                  "en spotify tocá play",
+                  "abrí la calculadora",
+                  "reproducí música en spotify"):
+            self.assertIsNone(self.P(q), msg=q)
+
+    def test_empty_and_degenerate_safe(self):
+        for q in ("", "   ", "apretá", "en la calculadora apretá", None):
+            self.assertIsNone(self.P(q), msg=repr(q))
+
+
 class DependentOpenTest(unittest.TestCase):
     """is_dependent_open: "instalá VLC Y ABRILO" -> 'abrilo' abre el referente (VLC)
     de la cláusula previa. ETAPA 2 encadenamiento dependiente (2026-05-31)."""
