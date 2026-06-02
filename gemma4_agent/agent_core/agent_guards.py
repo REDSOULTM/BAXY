@@ -141,6 +141,79 @@ def build_user_facing_fallback(
 
 
 # ---------------------------------------------------------------------------
+# Tri-estado honesto (compartido por guard_unverified_final / honest_action_reply)
+# ---------------------------------------------------------------------------
+
+# Las DOS redacciones de no-éxito que emite el guard. La distinción es la regla
+# del usuario (2026-06-01, ley): "si NO se pudo medir el efecto, el reply debe ser
+# honesto ('lo hice, no pude confirmar el efecto') — NO 'Hecho.' a secas, NI
+# afirmar que falló". summarize_verifiers (verify_core) ya respeta el tri-estado
+# (confirmed=None -> silencio; confirmed=False -> "no confirmada"); acá lo
+# alineamos para el camino del guard, que antes colapsaba None y False al MISMO
+# note "no dejó evidencia suficiente" (sonaba a fallo para un caso no-medible).
+_NOTE_MEASURED_FAIL = (
+    "\n\nNota: la ultima tool no dejo evidencia suficiente de finalizacion "
+    "(status={status}, verified={verified}, evidence={evidence})."
+)
+_NOTE_UNMEASURED = (
+    "\n\nNota: lo intente, pero no pude confirmar el efecto de la accion "
+    "(no fue medible)."
+)
+
+
+def _has_measured_failure(last: dict[str, Any]) -> bool:
+    """True si la acción se MIDIÓ y NO cambió/falló (señal de fallo DURA).
+
+    Estructural (mide la FORMA del result, no frases por idioma). El tri-estado
+    REAL vive en ``last["steps"][*]["verified"]`` y ``["state_changed"]`` (lo
+    preserva PlanExecutor; nace en gui_verify.verify_after). El top-level colapsa
+    None->False (PlanExecutor.execute / t_computer_use), por eso NO alcanza con
+    leer ``last["verified"]``: hay que mirar los steps para distinguir
+    "medido-y-falló" (False) de "no-medible" (None).
+
+    Señales de fallo DURA, en orden de prioridad:
+      - cualquier step con ``verified is False`` o ``state_changed is False``
+        (el SO confirmó que NO cambió nada -> false-PASS atrapado);
+      - cualquier step con ``found is False`` o ``content_verified is False``
+        (no se halló el target / el contenido no coincidió);
+      - sin steps: las mismas señales a nivel top-level (p.ej. gui.click_text
+        con found=False -> needs_verification, verified=False genuino);
+      - ``ok`` es False (la tool reportó fallo explícito).
+
+    Si NINGUNA de estas dispara pero el top-level está colapsado a
+    verified=False/None, es NO-MEDIBLE (None), no un fallo.
+    """
+    if last.get("ok") is False:
+        return True
+    steps = last.get("steps")
+    if isinstance(steps, list) and steps:
+        for s in steps:
+            if not isinstance(s, dict):
+                continue
+            if s.get("verified") is False:
+                return True
+            if s.get("state_changed") is False:
+                return True
+            if s.get("found") is False:
+                return True
+            if s.get("content_verified") is False:
+                return True
+        # Hubo steps y NINGUNO falló-medido -> el colapso del top-level a
+        # verified=False/None es por steps no-medibles (None): NO es fallo.
+        return False
+    # Sin steps: leemos las señales de fallo duras directo del top-level.
+    if last.get("found") is False:
+        return True
+    if last.get("content_verified") is False:
+        return True
+    if last.get("state_changed") is False:
+        return True
+    if last.get("verified") is False:
+        return True
+    return False
+
+
+# ---------------------------------------------------------------------------
 # Guards
 # ---------------------------------------------------------------------------
 
@@ -182,12 +255,20 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     )
     if already_honest:
         return content
-    evidence = last.get("evidence") or last.get("completion_status") or status or "sin evidencia"
-    note = (
-        "\n\nNota: la ultima tool no dejo evidencia suficiente de finalizacion "
-        f"(status={status or 'desconocido'}, verified={verified}, evidence={evidence})."
-    )
-    return content.rstrip() + note
+    # TRI-ESTADO honesto (2026-06-01, regla del usuario es ley). Hasta acá
+    # llegan SOLO los casos no-éxito (verified no-True, no-dispatched, ...). Pero
+    # "no-éxito" se parte en dos verdades distintas que ANTES compartían el MISMO
+    # note (que sonaba a fallo):
+    #   (a) MEDIDO-y-falló  -> nota dura "no dejó evidencia" (la conserva
+    #       test_dispatch_status::test_nota_still_emitted_for_genuine_failure).
+    #   (b) NO-MEDIBLE (None) -> nota SUAVE "lo intenté, no pude confirmar el
+    #       efecto" — NUNCA afirma que se hizo, NUNCA se disculpa como si fallara.
+    # La señal tri-estado real vive en steps[*]; _has_measured_failure la lee.
+    if _has_measured_failure(last):
+        evidence = last.get("evidence") or last.get("completion_status") or status or "sin evidencia"
+        return content.rstrip() + _NOTE_MEASURED_FAIL.format(
+            status=status or "desconocido", verified=verified, evidence=evidence)
+    return content.rstrip() + _NOTE_UNMEASURED
 
 
 def honest_action_reply(reply: Any) -> Any:

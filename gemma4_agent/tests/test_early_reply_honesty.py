@@ -32,8 +32,18 @@ from gemma4_agent.agent_core import agent_guards
 
 
 # La FORMA de la honestidad: el guard agrega una nota de "sin evidencia".
+# (Genérica: matchea CUALQUIERA de las dos redacciones honestas.)
 _HONEST_NOTE = re.compile(
     r"(no dej[oó] evidencia|no pude|no se pudo|no confirm|verifi)", re.IGNORECASE)
+
+# TRI-ESTADO (2026-06-01): dos redacciones DISTINTAS según se haya MEDIDO o no.
+# Antes este archivo usaba SOLO _HONEST_NOTE (laxo), que dejaba pasar la nota
+# de FALLO ("no dejó evidencia suficiente de finalización") incluso para casos
+# NO-MEDIBLES (verified=None) — violando la regla del usuario: "si no se pudo
+# medir, decí 'lo hice, no pude confirmar el efecto', NO afirmar que falló".
+# Endurecemos: el caso None exige la redacción SUAVE y PROHÍBE la de fallo.
+_FAIL_NOTE = re.compile(r"no dej[oó] evidencia suficiente", re.IGNORECASE)
+_UNMEASURED_NOTE = re.compile(r"no pude confirmar el efecto", re.IGNORECASE)
 
 
 def _agent():
@@ -48,15 +58,47 @@ class HonestActionReplyUnitTest(unittest.TestCase):
             content="Hecho.",
             tool_events=[ToolEvent(name="computer_use", args={}, result=result)])
 
-    def test_unverified_false_gets_honest_note(self):
+    def test_unverified_false_gets_fail_note(self):
+        # verified=False top-level SIN steps = fallo medido (la tool lo midió y
+        # reportó False directo) -> nota DURA de no-confirmación.
         r = agent_guards.honest_action_reply(self._reply(
             {"ok": True, "verified": False, "status": "attempted"}))
-        self.assertTrue(_HONEST_NOTE.search(r.content), r.content)
+        self.assertTrue(_FAIL_NOTE.search(r.content), r.content)
+        self.assertFalse(_UNMEASURED_NOTE.search(r.content), r.content)
 
-    def test_none_needs_verification_gets_honest_note(self):
+    def test_none_needs_verification_gets_soft_note(self):
+        # ENDURECIDO (2026-06-01): verified=None sin señal de fallo dura = NO
+        # MEDIBLE. Debe recibir la redacción SUAVE ("no pude confirmar el
+        # efecto"), NO la de fallo ("no dejó evidencia suficiente"). El criterio
+        # viejo (regex laxo) dejaba pasar la nota de fallo aquí — eso mentía:
+        # implicaba que la acción había fallado cuando solo no se pudo medir.
         r = agent_guards.honest_action_reply(self._reply(
             {"ok": True, "verified": None, "status": "needs_verification"}))
-        self.assertTrue(_HONEST_NOTE.search(r.content), r.content)
+        self.assertTrue(_UNMEASURED_NOTE.search(r.content), r.content)
+        self.assertFalse(_FAIL_NOTE.search(r.content), r.content)
+
+    def test_collapsed_topfalse_but_steps_none_is_soft(self):
+        # CAMINO DE PRODUCCIÓN REAL: t_computer_use COLAPSA verified=None->False
+        # al top-level (PlanExecutor.execute L1283 + tools.py L2432), pero la
+        # verdad tri-estado SOBREVIVE en steps[*]. El guard debe leer steps y
+        # dar la nota SUAVE, no la de fallo. (Antes daba la de fallo: mentía.)
+        r = agent_guards.honest_action_reply(self._reply(
+            {"ok": True, "verified": False, "status": "attempted",
+             "completion_status": "attempted",
+             "steps": [{"op": "click_button", "verified": None,
+                        "state_changed": None}]}))
+        self.assertTrue(_UNMEASURED_NOTE.search(r.content), r.content)
+        self.assertFalse(_FAIL_NOTE.search(r.content), r.content)
+
+    def test_collapsed_topfalse_with_failed_step_is_fail(self):
+        # Mismo colapso top-level, pero un step SÍ midió False -> fallo DURO.
+        r = agent_guards.honest_action_reply(self._reply(
+            {"ok": True, "verified": False, "status": "attempted",
+             "completion_status": "attempted",
+             "steps": [{"op": "click_button", "verified": False,
+                        "state_changed": False}]}))
+        self.assertTrue(_FAIL_NOTE.search(r.content), r.content)
+        self.assertFalse(_UNMEASURED_NOTE.search(r.content), r.content)
 
     def test_verified_true_is_untouched(self):
         r = agent_guards.honest_action_reply(self._reply(
@@ -86,12 +128,19 @@ class CalcActionEarlyReplyHonestyTest(unittest.TestCase):
             return self.ag._decide_turn(text)
 
     def test_unverified_calc_does_not_claim_success(self):
+        # Camino real: steps no-medibles -> top-level colapsa a verified=False
+        # pero steps[*].verified=None. Debe dar la nota SUAVE, no la de fallo.
         dec = self._decide("Suma 2 más 2 en la Calculadora",
                            {"ok": True, "verified": False, "status": "attempted",
+                            "completion_status": "attempted",
+                            "steps": [{"op": "type", "verified": None,
+                                       "state_changed": None}],
                             "reply": "Hecho."})
         self.assertIsNotNone(dec.early_reply)
-        self.assertTrue(_HONEST_NOTE.search(dec.early_reply.content),
+        self.assertTrue(_UNMEASURED_NOTE.search(dec.early_reply.content),
                         dec.early_reply.content)
+        self.assertFalse(_FAIL_NOTE.search(dec.early_reply.content),
+                         dec.early_reply.content)
 
     def test_verified_calc_still_claims_success(self):
         dec = self._decide("Suma 2 más 2 en la Calculadora",
@@ -115,22 +164,36 @@ class AppActionEarlyReplyHonestyTest(unittest.TestCase):
                                return_value=tool_result):
             return self.ag._decide_turn(text)
 
-    def test_unverified_discord_control_is_honest(self):
-        # "en Discord apretá silenciar" -> verified=False -> NO "Hecho." pelado.
+    def test_measured_failed_discord_control_is_fail_note(self):
+        # step que SÍ midió no-cambio (state_changed=False) -> fallo DURO.
         dec = self._decide("en Discord apretá silenciar",
                            {"ok": True, "verified": False, "status": "attempted",
+                            "completion_status": "attempted",
+                            "steps": [{"op": "click_button", "verified": False,
+                                       "state_changed": False}],
                             "reply": "Hecho."})
         self.assertIsNotNone(dec.early_reply)
-        self.assertTrue(_HONEST_NOTE.search(dec.early_reply.content),
+        self.assertTrue(_FAIL_NOTE.search(dec.early_reply.content),
                         dec.early_reply.content)
+        self.assertFalse(_UNMEASURED_NOTE.search(dec.early_reply.content),
+                         dec.early_reply.content)
 
-    def test_unmeasurable_click_is_honest(self):
+    def test_unmeasurable_click_is_soft_note(self):
+        # ENDURECIDO (2026-06-01): click NO medible (UIA demorado en Electron/
+        # Discord) -> steps[*].verified=None. NO afirma "Hecho." NI "falló":
+        # redacción SUAVE "no pude confirmar el efecto". Este es el caso CENTRAL
+        # del bug — antes recibía la nota de fallo y sonaba a que no funcionó.
         dec = self._decide("en Discord apretá silenciar",
-                           {"ok": True, "verified": None,
-                            "status": "needs_verification", "reply": "Listo."})
+                           {"ok": True, "verified": False,
+                            "status": "attempted", "completion_status": "attempted",
+                            "steps": [{"op": "click_button", "verified": None,
+                                       "state_changed": None}],
+                            "reply": "Listo."})
         self.assertIsNotNone(dec.early_reply)
-        self.assertTrue(_HONEST_NOTE.search(dec.early_reply.content),
+        self.assertTrue(_UNMEASURED_NOTE.search(dec.early_reply.content),
                         dec.early_reply.content)
+        self.assertFalse(_FAIL_NOTE.search(dec.early_reply.content),
+                         dec.early_reply.content)
 
     def test_verified_action_still_claims_success(self):
         dec = self._decide("en Discord apretá silenciar",
@@ -150,14 +213,18 @@ class AppOpenEarlyReplyHonestyTest(unittest.TestCase):
                                return_value=tool_result):
             return self.ag._decide_turn(text)
 
-    def test_verified_false_open_is_honest(self):
-        # app.open con verified=False explícito (en el gate) -> nota honesta.
+    def test_verified_false_open_is_fail_note(self):
+        # app.open con verified=False explícito y SIN steps (la cascada midió
+        # ausencia del proceso) = fallo medido -> nota DURA. (Distinto de
+        # status=dispatched/verified=None abajo, que mantiene "Listo, abrí X".)
         dec = self._decide("abrí Discord",
                            {"ok": True, "verified": False, "status": "attempted",
                             "name": "Discord"})
         self.assertIsNotNone(dec.early_reply)
-        self.assertTrue(_HONEST_NOTE.search(dec.early_reply.content),
+        self.assertTrue(_FAIL_NOTE.search(dec.early_reply.content),
                         dec.early_reply.content)
+        self.assertFalse(_UNMEASURED_NOTE.search(dec.early_reply.content),
+                         dec.early_reply.content)
 
     def test_dispatched_open_keeps_listo(self):
         # launch despachado (verified=None, status=dispatched) -> "Listo, abrí X"
