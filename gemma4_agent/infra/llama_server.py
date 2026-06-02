@@ -407,6 +407,45 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     if api_key_env:
         cmd.extend(["--api-key", api_key_env])
 
+    # --reasoning-budget-message: cierre limpio del thinking cuando se agota el
+    # budget. Sin esto, llama.cpp fuerza el end-of-thinking tag EN SECO a mitad
+    # de razonamiento; el modelo no "aterriza" su conclusión y la respuesta/
+    # tool-call sale degradada. Este flag inyecta un mensaje corto JUSTO ANTES
+    # del end-of-thinking tag (forcing state del sampler), dándole al modelo una
+    # señal para concluir antes del cierre.
+    #
+    # Tag de cierre de Gemma 4 = `<channel|>` (NO `</think>` de deepseek). VERIFICADO
+    # en dos fuentes esta sesión:
+    #   1. El chat template embebido en el GGUF (tokenizer.chat_template): el thinking
+    #      vive en `<|channel>thought\n ... \n<channel|>` y el cierre es `<channel|>`
+    #      (línea "{{- '<|channel>thought\\n<channel|>' -}}" cuando thinking=OFF).
+    #   2. llama.cpp common_chat_params_init_gemma4(): thinking_start_tag="<|channel>thought",
+    #      thinking_end_tag="<channel|>" (PR ggml-org/llama.cpp#21697, build b9090+).
+    # El sampler fuerza ese tag tras inyectar el mensaje, así que el MENSAJE es texto
+    # plano puro: NO debe contener tags ni markdown. Va dentro del canal de thinking
+    # (oculto al usuario; sanitize_text ya strippea el canal del reply visible).
+    #
+    # IMPACTO ESPERADO (honesto): PEQUEÑO en este repo. El thinking de acciones ya es
+    # chico (0-102 tok medido) y solo quick_action (budget=32) llega al corte con
+    # regularidad; fast_action/fast_info tienen thinking OFF (flag inerte) y research/
+    # deep_action (budget 1024-2048) rara vez lo agotan. El +11pp HumanEval es de Qwen3,
+    # NO de Gemma — NO asumir esa magnitud acá. Beneficio = tool-calls de quick_action
+    # menos truncados; sin medición viva del lift no se promete número.
+    #
+    # Gate: DEFAULT ON. Riesgo bajo — el tag está verificado en dos fuentes y el flag
+    # solo actúa al agotarse el budget (mayormente quick_action). GEMMA4_REASONING_BUDGET_MSG=0
+    # lo desactiva; setear la env var a un texto la usa como mensaje custom (tuning sin
+    # tocar código). Mensaje neutro y multi-idioma-agnóstico (instrucción corta de cierre).
+    _rbm_env = os.environ.get("GEMMA4_REASONING_BUDGET_MSG")
+    if _rbm_env is None:
+        _rbm_msg = "\nTime to answer. Stop reasoning and give the final answer or tool call now."
+    elif _rbm_env.strip().lower() in {"0", "false", "no", "off", ""}:
+        _rbm_msg = ""
+    else:
+        _rbm_msg = _rbm_env
+    if _rbm_msg:
+        cmd.extend(["--reasoning-budget-message", _rbm_msg])
+
     # CUDA-crash mitigations (#22527): SOLO GPU. Desactivan además el prompt-cache,
     # lo que en CPU obligaría a re-prefilear el system prompt (~5k tok) CADA turno —
     # inusable a velocidad de CPU. Por eso van solo con offload a GPU (ngl>0); el
