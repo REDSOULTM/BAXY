@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import unquote, urlparse
 
-from .._shared import _err, _ok  # consolidated 2026-05-27 (audit R3)
+from .._shared import _err, _ok, hard_gate as _hard_gate  # consolidated 2026-05-27 (audit R3)
 from ..memory_pkg.state import AgentState
 
 
@@ -391,6 +391,16 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                     f"{value_type} requires integer data; got {data!r}",
                     type=value_type, data=data, status="needs_user",
                 )
+        # Gate duro INDEPENDIENTE de safety_enabled (defensa en profundidad, igual que
+        # database.execute). Mutar el registro es irreversible: el backup .reg es
+        # recuperación, NO una confirmación. Si safety está OFF o la policy se bypasea,
+        # esto igual exige confirmed. (Auditoría 2026-06-01, hallazgo registry-hard_gate.)
+        gate = _hard_gate(
+            state, tool="registry", action="add", args=args,
+            reason=f"registry.add will write {key}\\{name}", risk="high",
+        )
+        if gate is not None:
+            return gate
         backup = registry_tool({"action": "backup", "key": key}, state)
         if backup.get("ok"):
             rollback = [{"tool": "registry", "args": {"action": "import", "file": backup.get("file")}}]
@@ -420,6 +430,14 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return result
 
     if action == "delete":
+        # Gate duro independiente de safety_enabled (ver registry.add arriba).
+        gate = _hard_gate(
+            state, tool="registry", action="delete", args=args,
+            reason=f"registry.delete will remove {key}" + (f"\\{name}" if name else " (whole key)"),
+            risk="high",
+        )
+        if gate is not None:
+            return gate
         backup = registry_tool({"action": "backup", "key": key}, state)
         rollback = [{"tool": "registry", "args": {"action": "import", "file": backup.get("file")}}] if backup.get("ok") else []
         checkpoint = state.checkpoint(f"registry {key} before delete", rollback=rollback, metadata={"backup": backup})

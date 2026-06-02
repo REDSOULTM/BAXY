@@ -89,7 +89,15 @@ def hard_gate(
     name = tool if tool is not None else tool_name
     if not name:
         raise TypeError("hard_gate requires `tool` (or legacy `tool_name`)")
-    if bool(args.get("confirmed")):
+    # Coerción honesta de `confirmed`: si llega como STRING ("false"/"no"/"0"),
+    # `bool("false")` daba True (string no-vacío) y abría el gate sin confirmar.
+    # Defensa en profundidad: el dispatcher ya coerce, pero los callers directos
+    # de domain_tools podrían pasar el raw. (Auditoría 2026-06-01, mismo bug-class
+    # que el `state` del mute y el `confirmed` del dispatcher.)
+    _conf = args.get("confirmed")
+    if isinstance(_conf, str):
+        _conf = _conf.strip().lower() not in {"false", "no", "0", "off", ""}
+    if bool(_conf):
         return None
     if routine_context is None:
         routine_context = bool(args.get("routine_context"))

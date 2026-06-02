@@ -15,12 +15,26 @@ import unittest
 
 from ..tools_pkg import tools as T
 
-HEAVY = ["whatsapp", "computer_use", "media", "audio"]
+HEAVY = [
+    "whatsapp", "computer_use", "media", "audio",
+    # Extensión 2026-06-01 (auditoría, hallazgo LEAN-coverage).
+    "window", "gui", "uia", "browser_real", "session", "routine", "developer",
+    "device_settings",
+]
 CRITICAL = {
     "whatsapp": ["send_message", "SLOT FILLING", "auto_send", "contact", "no tengo"],
     "computer_use": ["goal", "Discord", "NOT for", "whatsapp"],
     "media": ["provider", "spotify", "streaming_profile", "auto_play"],
     "audio": ["set_volume", "media_stop", "NOT to close"],
+    # Cada lean nueva preserva: qué hace (acción clave) + el límite/desambiguación.
+    "window": ["close", "tab_close", "media_stop"],
+    "gui": ["click_button", "type_into", "screenshot"],
+    "uia": ["click", "do NOT tree/find first"],
+    "browser_real": ["attach_visible", "tab_close", "window.close"],
+    "session": ["cancel_turn", "NOT for"],
+    "routine": ["trigger", "cron", "on_app_open"],
+    "developer": ["run_tests", "git_commit", "NOT exposed"],
+    "device_settings": ["brightness", "wifi_connect", "power_plan"],
 }
 
 

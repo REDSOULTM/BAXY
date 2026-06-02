@@ -141,4 +141,45 @@ for kind, msg in WA_VARIANTS:
     print(f"  {hit}[{kind}] {msg!r:48} whatsapp_calls={wa_calls} | reply={text[:45]!r}")
 
 agent.tools.execute = _real2
+
+print("\n=== LEAN extension: los tools con descripción acortada ¿siguen ruteando bien? ===")
+# GEMMA4_LEAN_RULES default ON -> el 4B ve las descripciones LEAN nuevas. Verificamos
+# que la selección de tool no se degradó por el trim. Mockeamos el dispatch físico.
+executed_l = []
+_real3 = agent.tools.execute
+
+
+def spy3(name, args):
+    executed_l.append((name, dict(args or {})))
+    return {"ok": True, "tool": name, "action": (args or {}).get("action"),
+            "mocked": True, "verified": None, "status": "dispatched"}
+
+
+agent.tools.execute = spy3
+# (mensaje, tool(s) esperado(s) — al menos uno debe aparecer)
+LEAN_VARIANTS = [
+    ("window.close", "cerrá la ventana de YouTube", {"window", "browser_real"}),
+    ("device(bright)", "bajá el brillo de la pantalla", {"device_settings", "system"}),
+    ("device(wifi)", "conectate al wifi de casa", {"device_settings"}),
+    ("developer", "corré los tests del proyecto", {"developer"}),
+    ("session.cancel", "pará, cambié de idea", {"session"}),
+    ("gui.screenshot", "sacá una captura de pantalla", {"gui", "vision"}),
+]
+lean_ok = 0
+for label, msg, expect in LEAN_VARIANTS:
+    del executed_l[:]
+    try:
+        r = agent.run_content(msg)
+        text = getattr(r, "content", str(r))
+    except Exception as e:
+        text = f"ERR {type(e).__name__}: {e}"
+    tools = [n for n, _ in executed_l]
+    hit = bool(set(tools) & expect)
+    if hit:
+        lean_ok += 1
+    flag = "OK " if hit else "XX "
+    print(f"  {flag}[{label}] {msg!r:38} tools={tools} (esperaba {expect}) | reply={text[:32]!r}")
+print(f"  -> LEAN routing: {lean_ok}/{len(LEAN_VARIANTS)} OK")
+
+agent.tools.execute = _real3
 print("\n[done]")

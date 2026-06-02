@@ -6,6 +6,7 @@ import csv
 import difflib
 import html
 import json
+import logging
 import os
 import random
 import re
@@ -76,6 +77,8 @@ from ..memory_pkg.state import AgentState
 
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
+
+_log = logging.getLogger(__name__)
 
 
 DEFAULT_YOUTUBE_SONGS = [
@@ -1572,6 +1575,9 @@ class ToolRegistry:
                 mcp_args.pop("confirmed", None)
                 return _normalize_tool_result(name, clean_args, call_mcp_by_id(name, mcp_args))
         except Exception as exc:
+            # Preservar el traceback en el log de dev (antes se perdía: solo el
+            # mensaje llegaba al LLM, dificultando distinguir bug de error esperado).
+            _log.exception("MCP dispatch error for %s", name)
             return _normalize_tool_result(name, clean_args, _err(f"MCP dispatch error: {exc}"))
         impl = self._impls.get(name)
         if not impl:
@@ -1645,6 +1651,10 @@ class ToolRegistry:
         try:
             result = impl(impl_args)
         except Exception as exc:
+            # Traceback al log de dev (el mensaje conciso sigue yendo al LLM). Antes
+            # se perdía el stack -> imposible distinguir un bug (None.method, index
+            # error) de un error esperado al depurar. (Auditoría 2026-06-01.)
+            _log.exception("tool %s raised during execute", name)
             result = _err(f"{type(exc).__name__}: {exc}")
         return _normalize_tool_result(name, clean_args, result)
 
@@ -1670,6 +1680,7 @@ class ToolRegistry:
         try:
             result = impl(impl_args)
         except Exception as exc:
+            _log.exception("tool %s raised during routine step", name)
             result = _err(f"{type(exc).__name__}: {exc}")
         return _normalize_tool_result(name, clean_args, result)
 
@@ -7502,7 +7513,10 @@ LEAN_DESCRIPTIONS: dict[str, str] = {
         "contacts. Ex: 'Mandale a mama por whatsapp que llego tarde' -> "
         "whatsapp(action='send_message', contact='mama', text='que llego tarde'). Missing "
         "body ('dile amor') -> ask 'qué mensaje y a quién?'. NEVER say 'no tengo "
-        "herramienta para enviar mensaje' — this tool exists; ask the missing slot."
+        "herramienta para enviar mensaje' — this tool exists; ask the missing slot. "
+        "CANONICAL params (aliases exist but prefer these): contact (or phone), text. "
+        "Resolution if several given: phone>number; text>message>body; "
+        "contact>recipient>to>name."
     ),
     "computer_use": (
         "Operate INSIDE an already-open app when no dedicated tool exists: open a chat/"
@@ -7536,6 +7550,81 @@ LEAN_DESCRIPTIONS: dict[str, str] = {
         "media_stop/media_play_pause send the global Windows media key (affects whatever "
         "holds media focus). Use ONLY to pause/stop the audio/video itself — NOT to close "
         "the host app/tab (use window.close / app.close for that)."
+    ),
+    # Extensión 2026-06-01 (auditoría, hallazgo LEAN-coverage): los próximos tools más
+    # pesados. PRESERVAN qué hace + límites NO-usar-para + desambiguación; cortan
+    # ejemplos multi-línea. Opt-in (GEMMA4_LEAN_RULES), no muta el literal global.
+    "window": (
+        "Compound window management. Actions: list, active, focus, close, minimize, "
+        "maximize, restore, move_resize. close(query|title) closes a top-level window by "
+        "visible-title substring (any app, any language: 'cierra/close/fecha/chiudi X'). "
+        "If the target is a SINGLE TAB inside a multi-tab browser, prefer "
+        "browser_real.tab_close. Don't confuse 'cerrar X' (this) with 'stop X media' "
+        "(audio.media_stop)."
+    ),
+    "gui": (
+        "Compound GUI/mouse/keyboard. Actions: screenshot, click, double_click, "
+        "right_click, type, type_into, click_button, keypress, hotkey, scroll, drag, "
+        "wait_for, locate_text, click_text, locate_image. click_button(label=) finds a "
+        "clickable control by name via UIA and clicks WITH verification (use for 'click "
+        "Send' instead of guessing x/y; optional window=<title> scopes it). type_into types "
+        "into the target window with verification. locate_text/click_text use local OCR and "
+        "return screen_x/screen_y. screenshot monitor='primary'|'all'|'<index>'. type "
+        "escapes SendKeys metacharacters unless raw_sendkeys=true."
+    ),
+    "uia": (
+        "Compound Windows UI Automation. Actions: tree, find, click, focus, set_value. "
+        "Prefer over raw gui clicks for standard Windows controls (returns names, types, "
+        "ids, bounds, clickable points). Scope with window/title; find with "
+        "query/text/target. To CLICK a control whose name you know, call action='click' "
+        "DIRECTLY with query=<label> — do NOT tree/find first (those only READ). The click "
+        "action locates the best match and verifies the effect."
+    ),
+    "browser_real": (
+        "Real browser automation via Playwright. Actions: status, open, goto, tabs, click, "
+        "click_accessible, toggle_accessible, fill, press, type_text, text, screenshot, "
+        "evaluate, connect_cdp, close, attach_visible, active_tab, tab_open, tab_close, "
+        "tab_focus, click_text, extract, wait_for_download, set_download_path. "
+        "attach_visible connects to the user's Chrome/Edge/Opera/Brave only if it's running "
+        "with --remote-debugging-port=9222, else returns needs_user with the launch cmd. "
+        "extract mode=main_text|tables|links|html. tab_close closes ONE tab (browser stays "
+        "open) — prefer it over window.close when the wording targets a single tab AND the "
+        "browser is attached; for plain 'cierra YouTube' use window.close."
+    ),
+    "session": (
+        "Meta-session control. Action cancel_turn: the user wants to interrupt/cancel/abort/"
+        "stop the current turn (does NOT perform a domain action — just stops and "
+        "acknowledges briefly). Use for short messages meaning 'stop what you're doing' / 'I "
+        "changed my mind' / 'wait, hold on', or a single word that conventionally means "
+        "'time out'/'enough' in ANY language (judge from context, not a keyword list). NOT "
+        "for 'para la música' (audio.media_play_pause) or 'wait, can you also…' (normal "
+        "amending turn). After it fires, reply a one-line ack in the user's language."
+    ),
+    "routine": (
+        "Local routine/automation. Actions: status, create, list, enable, disable, delete, "
+        "run_now, simulate, history, import. A routine stores a trigger + ordered steps "
+        "(e.g. [{tool:'audio', args:{action:'set_volume', level:20}}]). Triggers: manual, "
+        "once ({type:'once', at:'2026-05-15 09:00'}), cron ({type:'cron', "
+        "cadence:'daily|weekly|hourly|minutes', at:'09:00', days_of_week:[...]}), "
+        "on_app_open/on_app_close ({type:'on_app_open', process:'steam.exe'}). import "
+        "bulk-loads phrase routines from a TriggerCMD commands.json."
+    ),
+    "developer": (
+        "Developer workflow. Actions: status, project_detect, run_tests, run_lint, "
+        "run_format, git_status, git_diff, git_log, start_dev_server, stop_dev_server, "
+        "list_dev_servers. project_detect reports stack + package manager. run_tests/lint/"
+        "format dispatch by stack (pytest/ruff, npm/yarn/pnpm, cargo, go). git_commit/"
+        "git_push are intentionally NOT exposed — use terminal(...) so the user sees the "
+        "command. start_dev_server spawns a detached process tracked for stop_dev_server."
+    ),
+    "device_settings": (
+        "WiFi, Bluetooth, SCREEN BRIGHTNESS, displays, power plans. Actions: status, "
+        "wifi_status/list/scan/connect/disconnect/add_profile/delete_profile, "
+        "bluetooth_status, brightness_get/set/up/down (set: level 0-100 OR delta +/-N; "
+        "up/down for 'subí/bajá el brillo'), display_list, power_plan_list/get/set. "
+        "wifi_connect REQUIRES the network name in `name` (auto-creates WPA2 profile when "
+        "password= is passed). bluetooth_toggle/night_light/display_set_resolution are "
+        "deferred. power_plan_set snapshots the previous plan for rollback."
     ),
 }
 

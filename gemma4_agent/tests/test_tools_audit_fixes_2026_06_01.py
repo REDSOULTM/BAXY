@@ -35,6 +35,9 @@ from ..tools_pkg.tools import (
 from ..safety_pkg.safety import classify_mcp_call
 from ..safety_pkg.confirmation_policy import should_confirm
 from ..memory_pkg.memory import MemoryStore
+from ..memory_pkg.state import AgentState
+from ..tools_pkg.ops_tools import registry_tool
+import gemma4_agent.tools_pkg.ops_tools as ot
 import gemma4_agent.domain_tools as dt
 import gemma4_agent.domain_tools.smart_home as sh
 import gemma4_agent.tools_pkg.mcp_client as mc
@@ -273,6 +276,88 @@ class TestActionEnums(unittest.TestCase):
         r = reg.execute("whatsapp", {"action": "send_whatsapp", "contact": "x", "text": "y"})
         self.assertEqual(r.get("status"), "failed")
         self.assertIn("invalid", str(r.get("error", "")).lower())
+
+
+class TestRegistryHardGate(unittest.TestCase):
+    """Hallazgo menor — registry add/delete con hard_gate independiente de safety."""
+
+    def _setup(self):
+        tmp = Path(tempfile.mkdtemp())
+        return AgentState(tmp / "state.json")
+
+    def test_add_gated_without_confirm(self):
+        ran = {"n": 0}
+
+        def fake_run(cmd, timeout=20):
+            ran["n"] += 1
+            return {"ok": True, "stdout": "", "exit_code": 0}
+
+        with mock.patch.object(ot, "_run_cmd", fake_run):
+            st = self._setup()
+            r = registry_tool({"action": "add", "key": "HKCU\\Software\\T", "name": "v", "data": "x"}, st)
+            self.assertEqual(r.get("status"), "needs_confirmation")
+            self.assertEqual(ran["n"], 0, "reg.exe NO debe correr sin confirmar")
+
+    def test_delete_gated_without_confirm(self):
+        ran = {"n": 0}
+
+        def fake_run(cmd, timeout=20):
+            ran["n"] += 1
+            return {"ok": True, "stdout": "", "exit_code": 0}
+
+        with mock.patch.object(ot, "_run_cmd", fake_run):
+            st = self._setup()
+            r = registry_tool({"action": "delete", "key": "HKCU\\Software\\T", "name": "v"}, st)
+            self.assertEqual(r.get("status"), "needs_confirmation")
+            self.assertEqual(ran["n"], 0)
+
+    def test_string_false_confirmed_still_gates(self):
+        # hard_gate también coerce el string 'false' (mismo bug-class).
+        ran = {"n": 0}
+
+        def fake_run(cmd, timeout=20):
+            ran["n"] += 1
+            return {"ok": True, "stdout": "", "exit_code": 0}
+
+        with mock.patch.object(ot, "_run_cmd", fake_run):
+            st = self._setup()
+            r = registry_tool({"action": "delete", "key": "HKCU\\Software\\T", "confirmed": "false"}, st)
+            self.assertEqual(r.get("status"), "needs_confirmation")
+            self.assertEqual(ran["n"], 0)
+
+    def test_confirmed_true_proceeds(self):
+        ran = {"n": 0}
+
+        def fake_run(cmd, timeout=20):
+            ran["n"] += 1
+            return {"ok": True, "stdout": "", "exit_code": 0}
+
+        with mock.patch.object(ot, "_run_cmd", fake_run):
+            st = self._setup()
+            registry_tool({"action": "add", "key": "HKCU\\Software\\T", "name": "v", "data": "x", "confirmed": True}, st)
+            self.assertGreater(ran["n"], 0, "con confirmed=True debe ejecutar reg.exe")
+
+
+class TestDispatchLogsTraceback(unittest.TestCase):
+    """Hallazgo menor — los except del dispatch loguean el traceback (DX)."""
+
+    def test_tool_exception_is_logged_with_traceback(self):
+        tmp = Path(tempfile.mkdtemp())
+        reg = ToolRegistry(MemoryStore(tmp / "m.json"), tmp / "caps", safety_enabled=False)
+
+        def boom(_args):
+            raise ValueError("kaboom")
+
+        reg._impls["system"] = boom
+        with self.assertLogs("gemma4_agent.tools_pkg.tools", level="ERROR") as cm:
+            r = reg.execute("system", {"action": "time"})
+        # el LLM sigue recibiendo el mensaje conciso
+        self.assertFalse(r.get("ok"))
+        self.assertIn("kaboom", str(r.get("error", "")))
+        # y el traceback quedó en el log
+        joined = "\n".join(cm.output)
+        self.assertIn("Traceback", joined)
+        self.assertIn("kaboom", joined)
 
 
 if __name__ == "__main__":
