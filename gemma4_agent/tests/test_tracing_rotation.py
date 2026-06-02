@@ -116,6 +116,41 @@ class TestRotation(unittest.TestCase):
         # Internal counter is reset to 0 after each check.
         self.assertLess(logger._event_counter, 100)
 
+    def test_live_rotation_through_events_reopens_handle(self) -> None:
+        # The latency fix holds a PERSISTENT handle on the active file. The
+        # risky path is rotation triggered WHILE that handle is open: on
+        # Windows you can't rename an open file, so _maybe_rotate must close
+        # the handle first, and the next event() must reopen the fresh active
+        # file. ROTATE_CHECK_EVERY=100, so we cross the throttle and the size
+        # cap together to force a real live rotation, then keep writing.
+        from gemma4_agent.infra import tracing
+
+        path = self.tmp / "traces.jsonl"
+        logger = _make_logger(self.tmp, max_size_mb=1, keep_files=3)
+        # Open the handle and pre-grow the active file past the 1 MB cap so the
+        # next throttle check rotates. We write through event() (the held
+        # handle) then top it up directly to exceed the cap deterministically.
+        logger.event("warm", "open_handle")
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write("x" * (1024 * 1024 + 1024))  # push active file > 1 MB
+        # Drive past ROTATE_CHECK_EVERY so _maybe_rotate fires on the live file.
+        for i in range(tracing.ROTATE_CHECK_EVERY):
+            logger.event(f"turn{i}", "tiny")
+        # Rotation happened: the big file moved to .1.
+        self.assertTrue((self.tmp / "traces.jsonl.1").exists())
+        # The active file was reopened fresh and is receiving new events.
+        marker = "post_rotation_marker"
+        logger.event("after", marker)
+        logger.close()  # flush/close so we can read the tail
+        self.assertTrue(path.exists())
+        active_text = path.read_text(encoding="utf-8")
+        self.assertIn(marker, active_text)
+        # The fresh active file must be small (only post-rotation events),
+        # proving we are NOT still appending to the rotated-away big inode.
+        self.assertLess(path.stat().st_size, 1024 * 1024)
+        # The pre-rotation bulk lives in the archive, not the active file.
+        self.assertGreater((self.tmp / "traces.jsonl.1").stat().st_size, 1024 * 1024)
+
 
 if __name__ == "__main__":
     unittest.main()
