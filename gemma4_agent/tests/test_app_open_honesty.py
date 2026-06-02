@@ -102,5 +102,53 @@ class AppOpenHonestyTest(unittest.TestCase):
                          "launch_requested + verified=None no es unverified-signal")
 
 
+class AppOpenFalsePositiveGateTest(unittest.TestCase):
+    """C3 GATE (perfection roadmap): 0 false-positive de verified con proceso
+    AUSENTE. El tool nunca debe declarar verified=True si el estado del SO no
+    confirma proceso/ventana. Ejercemos la cascada con la app NO apareciendo.
+    """
+
+    def test_absent_process_never_verified_true(self):
+        # La app no aparece en NINGÚN chequeo (preexisting=False, post=False*3).
+        # GATE: verified DEBE ser None (no medible), JAMÁS True.
+        reg = _reg_with(verify_found_sequence=[False, False, False],
+                        preexisting_found=False)
+        r = reg.app_open({"name": "Discord"})
+        self.assertTrue(r["ok"], "el launch se despachó sin error")
+        self.assertIsNot(r["verified"], True,
+                         "FALSE-POSITIVE: verified=True con proceso ausente")
+        self.assertIsNone(r["verified"])
+        self.assertEqual(r["completion_status"], "launch_requested")
+
+    def test_verifier_never_confirms_absent_process(self):
+        # El VERIFIER estructural (lee tasklist real) no debe confirmar una app
+        # ausente. Mockeamos _running_process_names a vacío y verified=None del
+        # tool -> el verifier hace su propio check y NO halla el proceso.
+        import gemma4_agent.verifiers  # noqa: F401  registra decorators
+        from gemma4_agent.safety_pkg.verify_core import verify
+        from unittest import mock
+        result = {"ok": True, "verified": None, "status": "dispatched",
+                  "completion_status": "launch_requested"}
+        with mock.patch("gemma4_agent.tools_pkg.tools._running_process_names",
+                        return_value=set()):
+            out = verify("app", {"action": "open", "name": "Discord"}, result)
+        # proceso ausente -> NUNCA confirmed=True (a lo sumo None "no medible").
+        self.assertIsNot(out.confirmed, True,
+                         "FALSE-POSITIVE: verifier confirmó app ausente")
+
+    def test_verifier_confirms_present_process(self):
+        # Control positivo: si el proceso SÍ está, el verifier confirma.
+        import gemma4_agent.verifiers  # noqa: F401
+        from gemma4_agent.safety_pkg.verify_core import verify
+        from unittest import mock
+        result = {"ok": True, "verified": None, "status": "dispatched",
+                  "completion_status": "launch_requested"}
+        with mock.patch("gemma4_agent.tools_pkg.tools._running_process_names",
+                        return_value={"discord.exe"}):
+            out = verify("app", {"action": "open", "name": "Discord"}, result)
+        self.assertIs(out.confirmed, True)
+        self.assertIn("app:Discord", out.evidence_keys)
+
+
 if __name__ == "__main__":
     unittest.main()

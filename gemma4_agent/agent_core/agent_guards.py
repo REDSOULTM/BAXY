@@ -141,6 +141,79 @@ def build_user_facing_fallback(
 
 
 # ---------------------------------------------------------------------------
+# Tri-estado honesto (compartido por guard_unverified_final / honest_action_reply)
+# ---------------------------------------------------------------------------
+
+# Las DOS redacciones de no-éxito que emite el guard. La distinción es la regla
+# del usuario (2026-06-01, ley): "si NO se pudo medir el efecto, el reply debe ser
+# honesto ('lo hice, no pude confirmar el efecto') — NO 'Hecho.' a secas, NI
+# afirmar que falló". summarize_verifiers (verify_core) ya respeta el tri-estado
+# (confirmed=None -> silencio; confirmed=False -> "no confirmada"); acá lo
+# alineamos para el camino del guard, que antes colapsaba None y False al MISMO
+# note "no dejó evidencia suficiente" (sonaba a fallo para un caso no-medible).
+_NOTE_MEASURED_FAIL = (
+    "\n\nNota: la ultima tool no dejo evidencia suficiente de finalizacion "
+    "(status={status}, verified={verified}, evidence={evidence})."
+)
+_NOTE_UNMEASURED = (
+    "\n\nNota: lo intente, pero no pude confirmar el efecto de la accion "
+    "(no fue medible)."
+)
+
+
+def _has_measured_failure(last: dict[str, Any]) -> bool:
+    """True si la acción se MIDIÓ y NO cambió/falló (señal de fallo DURA).
+
+    Estructural (mide la FORMA del result, no frases por idioma). El tri-estado
+    REAL vive en ``last["steps"][*]["verified"]`` y ``["state_changed"]`` (lo
+    preserva PlanExecutor; nace en gui_verify.verify_after). El top-level colapsa
+    None->False (PlanExecutor.execute / t_computer_use), por eso NO alcanza con
+    leer ``last["verified"]``: hay que mirar los steps para distinguir
+    "medido-y-falló" (False) de "no-medible" (None).
+
+    Señales de fallo DURA, en orden de prioridad:
+      - cualquier step con ``verified is False`` o ``state_changed is False``
+        (el SO confirmó que NO cambió nada -> false-PASS atrapado);
+      - cualquier step con ``found is False`` o ``content_verified is False``
+        (no se halló el target / el contenido no coincidió);
+      - sin steps: las mismas señales a nivel top-level (p.ej. gui.click_text
+        con found=False -> needs_verification, verified=False genuino);
+      - ``ok`` es False (la tool reportó fallo explícito).
+
+    Si NINGUNA de estas dispara pero el top-level está colapsado a
+    verified=False/None, es NO-MEDIBLE (None), no un fallo.
+    """
+    if last.get("ok") is False:
+        return True
+    steps = last.get("steps")
+    if isinstance(steps, list) and steps:
+        for s in steps:
+            if not isinstance(s, dict):
+                continue
+            if s.get("verified") is False:
+                return True
+            if s.get("state_changed") is False:
+                return True
+            if s.get("found") is False:
+                return True
+            if s.get("content_verified") is False:
+                return True
+        # Hubo steps y NINGUNO falló-medido -> el colapso del top-level a
+        # verified=False/None es por steps no-medibles (None): NO es fallo.
+        return False
+    # Sin steps: leemos las señales de fallo duras directo del top-level.
+    if last.get("found") is False:
+        return True
+    if last.get("content_verified") is False:
+        return True
+    if last.get("state_changed") is False:
+        return True
+    if last.get("verified") is False:
+        return True
+    return False
+
+
+# ---------------------------------------------------------------------------
 # Guards
 # ---------------------------------------------------------------------------
 
@@ -182,12 +255,54 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     )
     if already_honest:
         return content
-    evidence = last.get("evidence") or last.get("completion_status") or status or "sin evidencia"
-    note = (
-        "\n\nNota: la ultima tool no dejo evidencia suficiente de finalizacion "
-        f"(status={status or 'desconocido'}, verified={verified}, evidence={evidence})."
-    )
-    return content.rstrip() + note
+    # TRI-ESTADO honesto (2026-06-01, regla del usuario es ley). Hasta acá
+    # llegan SOLO los casos no-éxito (verified no-True, no-dispatched, ...). Pero
+    # "no-éxito" se parte en dos verdades distintas que ANTES compartían el MISMO
+    # note (que sonaba a fallo):
+    #   (a) MEDIDO-y-falló  -> nota dura "no dejó evidencia" (la conserva
+    #       test_dispatch_status::test_nota_still_emitted_for_genuine_failure).
+    #   (b) NO-MEDIBLE (None) -> nota SUAVE "lo intenté, no pude confirmar el
+    #       efecto" — NUNCA afirma que se hizo, NUNCA se disculpa como si fallara.
+    # La señal tri-estado real vive en steps[*]; _has_measured_failure la lee.
+    if _has_measured_failure(last):
+        evidence = last.get("evidence") or last.get("completion_status") or status or "sin evidencia"
+        return content.rstrip() + _NOTE_MEASURED_FAIL.format(
+            status=status or "desconocido", verified=verified, evidence=evidence)
+    return content.rstrip() + _NOTE_UNMEASURED
+
+
+def honest_action_reply(reply: Any) -> Any:
+    """Honestidad para los early_reply de ACCIÓN de ``_decide_turn``.
+
+    Bug Ola 1 (2026-06-01, MEDIDO en vivo contra el 4B): los short-circuits de
+    acción (calc_action / app_action / app_open) devuelven
+    ``TurnDecision(early_reply=AgentReply(content=...))`` SALTÁNDOSE todo
+    ``_finalize_turn`` — y con él ``guard_unverified_final``. Resultado: el tool
+    reportaba honesto (``verified=False/None``, ``status=attempted/
+    needs_verification``) pero el reply al usuario MENTÍA ("Hecho." / "Listo,
+    abrí X"). Medido: 3/6 casos clave mentían, con guard invocado 0 veces.
+
+    Este helper aplica el MISMO ``guard_unverified_final`` (única fuente de
+    verdad — no duplica su lógica de exenciones: dispatched / needs_user /
+    deeplink / launch_requested siguen pasando) sobre el ``content`` del reply
+    usando sus propios ``tool_events`` como evidencia. Estructural: mide la
+    FORMA del result (verified/status), no listas de frases por idioma. Si el
+    reply no tiene tool_events (no es de acción) o ya es honesto, lo devuelve
+    intacto -> el camino feliz (verified=True) NO se toca.
+
+    Devuelve el mismo objeto reply (con ``content`` reescrito si hizo falta)
+    para que el caller pueda seguir usándolo tal cual.
+    """
+    events = getattr(reply, "tool_events", None)
+    if not events:
+        return reply
+    content = getattr(reply, "content", None)
+    if not isinstance(content, str) or not content:
+        return reply
+    new_content = guard_unverified_final(content, events)
+    if new_content != content:
+        reply.content = new_content
+    return reply
 
 
 def guard_phrase_confirm(
@@ -421,6 +536,7 @@ def guard_plan_status(
 __all__ = [
     "build_user_facing_fallback",
     "guard_unverified_final",
+    "honest_action_reply",
     "guard_phrase_confirm",
     "guard_promise_without_action",
     "guard_grounded_action_claim",

@@ -1309,8 +1309,11 @@ class Gemma4Agent:
                     _calc_msg = (_calc_res.get("reply") if isinstance(_calc_res, dict) else None) \
                         or "Listo, lo hice en la calculadora."
                     self._last_turn_ts = time.time()
-                    return TurnDecision(early_reply=AgentReply(
-                        content=_calc_msg, tool_events=[_calc_ev], mission=None))
+                    # Honestidad Ola 1 (2026-06-01): el early_reply de acción NO pasa por
+                    # _finalize_turn -> guard_unverified_final. Lo aplicamos acá para que
+                    # NO afirme éxito si el tool no confirmó (verified=False/None).
+                    return TurnDecision(early_reply=agent_guards.honest_action_reply(
+                        AgentReply(content=_calc_msg, tool_events=[_calc_ev], mission=None)))
         # ACCIÓN-EN-APP / META (ACCESIBILIDAD, 2026-05-31, núcleo del producto).
         # MEDIDO en vivo: los pedidos "escribí/hacé X en app Y", "en Y escribí X" y
         # "andá a Y y escribí X" casi nunca llegaban al orquestador computer_use
@@ -1419,8 +1422,11 @@ class Gemma4Agent:
                         or ("Listo, saqué la captura." if _aa.get("pattern") == "screen"
                             else "Listo.")
                     self._last_turn_ts = time.time()
-                    return TurnDecision(early_reply=AgentReply(
-                        content=_aa_msg, tool_events=[_aa_ev], mission=None))
+                    # Honestidad Ola 1 (2026-06-01): este early_reply SALTA _finalize_turn;
+                    # pasamos el content por el MISMO guard de honestidad que el flujo normal
+                    # (verified=False/None -> nota honesta; verified=True -> intacto).
+                    return TurnDecision(early_reply=agent_guards.honest_action_reply(
+                        AgentReply(content=_aa_msg, tool_events=[_aa_ev], mission=None)))
         # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
         # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
         # LLM y corremos cada cláusula como su propio turno (serializado si la
@@ -1461,8 +1467,13 @@ class Gemma4Agent:
                     _ao_ev = ToolEvent(name="app", args={"action": "open", "name": _ao_name},
                                        result=_ao_res)
                     self._last_turn_ts = time.time()
-                    return TurnDecision(early_reply=AgentReply(
-                        content=f"Listo, abrí {_ao_name}.", tool_events=[_ao_ev], mission=None))
+                    # Honestidad Ola 1 (2026-06-01): early_reply salta _finalize_turn. El
+                    # guard respeta el tri-estado de app.open: launch confirmado/preexistente
+                    # (verified=True) o despachado (status=dispatched, launch_requested) ->
+                    # "Listo, abrí X" intacto; verified=False -> nota honesta.
+                    return TurnDecision(early_reply=agent_guards.honest_action_reply(
+                        AgentReply(content=f"Listo, abrí {_ao_name}.",
+                                   tool_events=[_ao_ev], mission=None)))
                 # no resolvió a una app -> sigue el flujo normal (carpeta/URL/chat)
         # RESPONDER MENSAJE — short-circuit determinista PRE-LLM (2026-05-27).
         # MEDIDO: ante "respondele a X que Y" el 4B es errático — a veces se niega
@@ -3504,6 +3515,20 @@ class Gemma4Agent:
             # Honesty guard: if any tool in the just-processed batch returned
             # unverified/failed/needs_verification, inject an explicit user-role
             # note so Gemma cannot silently move on as if everything succeeded.
+            # H1: mapear cada result (por identidad) al error_type que el VERIFIER
+            # ya clasificó en este mismo batch. Así la clasificación del verifier
+            # (autoritativa: conoce el estado del SO que midió) gana sobre la
+            # re-inferencia ciega por texto del result. Antes este bloque llamaba
+            # classify_failure(r, "") con given=None -> ignoraba el error_type del
+            # verifier por completo (el campo era 100% inerte fuera de su declaración).
+            # events[-N:] y verifier_outcomes[-N:] son 1:1 (Phase 3 appendea uno de
+            # cada por call, mismo orden que raw_tool_calls).
+            _n_batch = len(raw_tool_calls)
+            _result_etype = {
+                id(ev.result): outcome.error_type
+                for ev, outcome in zip(events[-_n_batch:],
+                                       verifier_outcomes[-_n_batch:])
+            }
             unverified_pairs = [
                 ((raw_call.get("function") or {}).get("name", ""), ev.result)
                 for raw_call, ev in zip(raw_tool_calls, events[-len(raw_tool_calls):])
@@ -3518,7 +3543,11 @@ class Gemma4Agent:
                     # vez del nudge genérico, para que el loop se auto-corrija. Sólo
                     # cambia el TEXTO del hint (mismo mecanismo, mismo loop_detector
                     # + max_turns de guarda) -> bajo riesgo. Capa genérica, el LLM decide.
-                    _etypes = {n: _classify_failure(r, "") for n, r in unverified_pairs}
+                    # H1: given = el error_type del verifier (si lo seteó) -> autoritativo.
+                    _etypes = {
+                        n: _classify_failure(r, "", given=_result_etype.get(id(r)))
+                        for n, r in unverified_pairs
+                    }
                     _vals = list(_etypes.values())
                     # H2: elegir la clase DOMINANTE por prioridad de recuperabilidad
                     # (precondition > param > transient > tool_not_found > unknown).

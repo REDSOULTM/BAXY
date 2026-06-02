@@ -42,7 +42,7 @@ class TestWhatsappStatus(unittest.TestCase):
 
     def test_status_reports_installed_when_app_present(self):
         state = _fresh_state()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "shell:AppsFolder\\X!App"}):
             r = whatsapp_tool({"action": "status"}, state)
         self.assertTrue(r["ok"])
@@ -51,7 +51,7 @@ class TestWhatsappStatus(unittest.TestCase):
 
     def test_status_reports_not_installed(self):
         state = _fresh_state()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": None, "launch_target": None}):
             r = whatsapp_tool({"action": "status"}, state)
         self.assertTrue(r["ok"])
@@ -66,9 +66,9 @@ class TestWhatsappSendMessage(unittest.TestCase):
     def test_send_with_explicit_phone_opens_deeplink_no_executor(self):
         # Sin executor (CLI / tests), auto_send se desactiva graceful y solo
         # se abre el chat — sent=False es correcto en este path.
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "shell:AppsFolder\\X!App"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen") as popen:
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen") as popen:
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+54 9 11 1234-5678", "text": "hola"},
                 self.state, executor=None,
@@ -82,9 +82,9 @@ class TestWhatsappSendMessage(unittest.TestCase):
         popen.assert_called_once()
 
     def test_send_falls_back_to_web_when_no_app(self):
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": None, "launch_target": None}), \
-             patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True) as wb:
+             patch("gemma4_agent.domain_tools.whatsapp.webbrowser.open", return_value=True) as wb:
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
                 self.state, executor=None,
@@ -130,9 +130,9 @@ class TestWhatsappSendMessage(unittest.TestCase):
 
     def test_open_chat_without_text(self):
         # open_chat NO requiere text.
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "open_chat", "phone": "+54 9 11 1234-5678"},
                 self.state,
@@ -162,9 +162,9 @@ class TestWhatsappContactResolution(unittest.TestCase):
         )
 
     def test_send_by_contact_name_uses_stored_phone(self):
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen") as popen:
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen") as popen:
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "Juan", "text": "hola"},
                 self.state,
@@ -277,9 +277,9 @@ class TestWhatsappAliases(unittest.TestCase):
         self.state = _fresh_state()
 
     def test_to_alias_works(self):
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "to": "+1 555 123 4567", "message": "hi"},
                 self.state,
@@ -291,9 +291,9 @@ class TestWhatsappAliases(unittest.TestCase):
         self.assertFalse(r["ok"])
 
     def test_message_alias_for_text(self):
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567", "message": "hola via alias"},
                 self.state,
@@ -302,9 +302,9 @@ class TestWhatsappAliases(unittest.TestCase):
         self.assertEqual(r["text"], "hola via alias")
 
     def test_body_alias_for_text(self):
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567", "body": "via body"},
                 self.state,
@@ -338,10 +338,15 @@ class TestWhatsappAutoSend(unittest.TestCase):
         return MagicMock(side_effect=_exec)
 
     def test_auto_send_default_true_for_send_message(self):
+        # H8 (2026-06-01): el deeplink ahora exige confirmación POR PANTALLA de
+        # que el mensaje salió antes de afirmar sent=True (cura el sent=True
+        # falso sin login). Mockeamos esa verificación como "confirmed".
         executor = self._mock_executor_focus_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools.whatsapp._verify_visible_whatsapp_text_status",
+                   return_value="confirmed"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
                 self.state, executor=executor,
@@ -350,8 +355,53 @@ class TestWhatsappAutoSend(unittest.TestCase):
         self.assertTrue(r["sent"], f"expected sent=True, got {r}")
         self.assertTrue(r["verified"])
         self.assertEqual(r["completion_status"], "message_sent")
+        self.assertEqual(r["auto_send_info"]["delivery_verified"], "confirmed")
         # Executor llamado para focus, active, keypress (al menos 3 calls).
         self.assertGreaterEqual(executor.call_count, 3)
+
+    def test_auto_send_false_sent_when_logged_out_qr(self):
+        # H8 gate: si WhatsApp está deslogueado (pantalla QR), el mensaje NO
+        # sale: el OCR no ve el texto y el área de chat no cambia. El tool NO
+        # debe reportar sent=True falso. Reproduce el bug H8 del roadmap.
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools.whatsapp._capture_whatsapp_chat_area",
+                   return_value=None), \
+             patch("gemma4_agent.domain_tools.whatsapp._whatsapp_chat_area_changed",
+                   return_value=False), \
+             patch("gemma4_agent.domain_tools.whatsapp._verify_visible_whatsapp_text_status",
+                   return_value="unknown"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
+                self.state, executor=executor,
+            )
+        self.assertTrue(r["ok"])  # el chat se abrió, eso sí pasó
+        self.assertFalse(r["sent"], f"MUST NOT claim sent=True without screen proof: {r}")
+        self.assertFalse(r["verified"])
+        self.assertEqual(r["auto_send_info"]["delivery_verified"], "unverified")
+        self.assertIn("desloguead", r["auto_send_info"]["abort_reason"].lower())
+
+    def test_auto_send_sent_when_chat_area_changed(self):
+        # Si el OCR no confirma el texto exacto pero el área de chat CAMBIÓ tras
+        # el Enter (mensaje nuevo visible), es evidencia estructural suficiente.
+        executor = self._mock_executor_focus_ok()
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
+                   return_value={"kind": "uwp", "launch_target": "X"}), \
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools.whatsapp._capture_whatsapp_chat_area",
+                   return_value={"image": object(), "box": (0, 0, 1, 1)}), \
+             patch("gemma4_agent.domain_tools.whatsapp._whatsapp_chat_area_changed",
+                   return_value=True), \
+             patch("gemma4_agent.domain_tools.whatsapp._verify_visible_whatsapp_text_status",
+                   return_value="unknown"):
+            r = whatsapp_tool(
+                {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
+                self.state, executor=executor,
+            )
+        self.assertTrue(r["sent"], f"changed chat area is valid proof: {r}")
+        self.assertEqual(r["auto_send_info"]["delivery_verified"], "changed")
 
     def test_auto_send_aborts_when_wrong_window_focused(self):
         def _exec_wrong(name, args):
@@ -361,9 +411,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
                 return {"ok": True, "active": {"title": "VS Code - test.py", "pid": 999}}
             return {"ok": True}
         executor = MagicMock(side_effect=_exec_wrong)
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567", "text": "rm -rf /"},
                 self.state, executor=executor,
@@ -379,9 +429,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
 
     def test_auto_send_false_skips_enter_completely(self):
         executor = self._mock_executor_focus_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567",
                  "text": "hi", "auto_send": False},
@@ -396,9 +446,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
     def test_auto_send_false_via_string(self):
         # LLM puede pasar "false" como string en JSON args.
         executor = self._mock_executor_focus_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567",
                  "text": "hi", "auto_send": "false"},
@@ -409,9 +459,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
     def test_open_chat_never_auto_sends(self):
         # action=open_chat es solo "abre el chat", nunca enviar.
         executor = self._mock_executor_focus_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "open_chat", "phone": "+1 555 123 4567"},
                 self.state, executor=executor,
@@ -423,9 +473,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
     def test_wait_seconds_is_clamped(self):
         # wait_seconds=999 debe clampearse a 10s max.
         executor = self._mock_executor_focus_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567",
                  "text": "hi", "wait_seconds": 999},
@@ -438,9 +488,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
         def _exec_explode(name, args):
             raise RuntimeError("simulated executor crash")
         executor = MagicMock(side_effect=_exec_explode)
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567", "text": "hi"},
                 self.state, executor=executor,
@@ -453,9 +503,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
     def test_web_fallback_never_auto_sends(self):
         # Path 2 (wa.me) nunca auto-envia, aunque auto_send=true.
         executor = self._mock_executor_focus_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": None, "launch_target": None}), \
-             patch("gemma4_agent.domain_tools.webbrowser.open", return_value=True):
+             patch("gemma4_agent.domain_tools.whatsapp.webbrowser.open", return_value=True):
             r = whatsapp_tool(
                 {"action": "send_message", "phone": "+1 555 123 4567",
                  "text": "hi", "auto_send": True},
@@ -561,9 +611,9 @@ class TestWhatsappGuiSearch(unittest.TestCase):
                 return {"ok": True}
             return {"ok": False}
         executor = MagicMock(side_effect=_exec)
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "mamá",
                  "text": "que la quiero mucho"},
@@ -577,10 +627,10 @@ class TestWhatsappGuiSearch(unittest.TestCase):
 
     def test_gui_search_end_to_end_sends(self):
         executor = self._mock_executor_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
-             patch("gemma4_agent.domain_tools._verify_visible_whatsapp_text_status",
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools.whatsapp._verify_visible_whatsapp_text_status",
                    return_value="confirmed"), \
              patch("win32gui.GetForegroundWindow", return_value=1), \
              patch("win32gui.GetWindowText", return_value="WhatsApp"), \
@@ -607,10 +657,10 @@ class TestWhatsappGuiSearch(unittest.TestCase):
 
     def test_gui_search_forces_whatsapp_safe_input_methods(self):
         executor = self._mock_executor_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
-             patch("gemma4_agent.domain_tools._verify_visible_whatsapp_text_status",
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools.whatsapp._verify_visible_whatsapp_text_status",
                    return_value="confirmed"), \
              patch("win32gui.GetForegroundWindow", return_value=1), \
              patch("win32gui.GetWindowText", return_value="WhatsApp"), \
@@ -655,9 +705,9 @@ class TestWhatsappGuiSearch(unittest.TestCase):
                 return {"ok": True}
             return {"ok": False}
         executor = MagicMock(side_effect=_exec)
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "Amor", "text": "te amo"},
                 self.state, executor=executor,
@@ -689,9 +739,9 @@ class TestWhatsappGuiSearch(unittest.TestCase):
                 return {"ok": True}
             return {"ok": False}
         executor = MagicMock(side_effect=_exec)
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "Amor", "text": "te amo"},
                 self.state, executor=executor,
@@ -720,9 +770,9 @@ class TestWhatsappGuiSearch(unittest.TestCase):
                 return {"ok": True}
             return {"ok": False}
         executor = MagicMock(side_effect=_exec)
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"), \
              patch("win32gui.GetForegroundWindow", return_value=1), \
              patch("win32gui.GetWindowText", return_value="WhatsApp"), \
              patch("win32gui.GetWindowRect", return_value=(100, 100, 1100, 900)):
@@ -750,9 +800,9 @@ class TestWhatsappGuiSearch(unittest.TestCase):
                 return {"ok": True, "active": {"title": "VS Code - main.py"}}
             return {"ok": True}
         executor = MagicMock(side_effect=_exec)
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"):
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "Amor", "text": "rm -rf /"},
                 self.state, executor=executor,
@@ -762,9 +812,9 @@ class TestWhatsappGuiSearch(unittest.TestCase):
 
     def test_gui_search_auto_send_false_stops_after_message(self):
         executor = self._mock_executor_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"), \
+             patch("gemma4_agent.domain_tools.whatsapp.subprocess.Popen"), \
              patch("win32gui.GetForegroundWindow", return_value=1), \
              patch("win32gui.GetWindowText", return_value="WhatsApp"), \
              patch("win32gui.GetWindowRect", return_value=(100, 100, 1100, 900)):
@@ -790,7 +840,7 @@ class TestWhatsappGuiSearch(unittest.TestCase):
 
     def test_gui_search_no_whatsapp_app_returns_error(self):
         executor = self._mock_executor_ok()
-        with patch("gemma4_agent.domain_tools._find_whatsapp_app",
+        with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": None, "launch_target": None}):
             r = whatsapp_tool(
                 {"action": "send_message", "contact": "Amor", "text": "hi"},
@@ -961,6 +1011,54 @@ class TestWhatsappGroupGrounding(unittest.TestCase):
             # No debe haber resuelto el grupo a un contact:<id>.
             self.assertNotEqual(source, "contact")
             self.assertFalse(str(source).startswith("contact:"))
+
+
+class TestWhatsappContactGroupCollision(unittest.TestCase):
+    """C1/C2 (2026-06-01): un nombre que coincide con un CONTACTO (con phone) y
+    un GRUPO del mismo nombre NO debe resolver silencioso al individuo —
+    exclude_groups ocultaba el grupo antes del scoring. Ahora se devuelven
+    AMBOS candidatos (kind contacto/grupo) para que el LLM/usuario desempate.
+    Mandar al chat equivocado es daño irreversible."""
+
+    def setUp(self):
+        from ..domain_tools import contacts_tool
+        self.state = _fresh_state()
+        self._contacts = contacts_tool
+
+    def test_same_name_contact_and_group_asks(self):
+        # 'Pizza' es a la vez un contacto (con phone) y un grupo de pedidos.
+        self._contacts({"action": "create", "name": "Pizza",
+                        "phone": "+54 9 11 5555-5555"}, self.state)
+        self._contacts({"action": "create", "name": "Pizza", "is_group": True}, self.state)
+        resolved = _resolve_whatsapp_recipient(
+            {"contact": "Pizza", "text": "hola"}, self.state)
+        self.assertIsInstance(resolved, dict)  # needs_user, no 4-tuple
+        self.assertEqual(resolved.get("status"), "needs_user")
+        kinds = {c["kind"] for c in resolved["candidates"]}
+        self.assertEqual(kinds, {"contact", "group"})
+        # NUNCA debe haber resuelto a un deeplink/contact:<id> silencioso.
+        self.assertNotIn("contact:", str(resolved.get("source", "")))
+
+    def test_individual_only_does_not_false_ask(self):
+        # Sin grupo homónimo, el individuo con phone resuelve directo (no molesta).
+        self._contacts({"action": "create", "name": "Juan",
+                        "phone": "+54 9 11 1111-1111"}, self.state)
+        resolved = _resolve_whatsapp_recipient(
+            {"contact": "Juan", "text": "hola"}, self.state)
+        self.assertIsInstance(resolved, tuple)
+        raw, normalized, source, name = resolved
+        self.assertTrue(source.startswith("contact:"))
+
+    def test_individual_with_unrelated_group_does_not_false_ask(self):
+        # Un grupo de nombre DISTINTO no debe disparar el desempate (score lejano).
+        self._contacts({"action": "create", "name": "Carlos",
+                        "phone": "+54 9 11 2222-2222"}, self.state)
+        self._contacts({"action": "create", "name": "Familia", "is_group": True}, self.state)
+        resolved = _resolve_whatsapp_recipient(
+            {"contact": "Carlos", "text": "hola"}, self.state)
+        self.assertIsInstance(resolved, tuple)
+        _, _, source, _ = resolved
+        self.assertTrue(source.startswith("contact:"))
 
 
 if __name__ == "__main__":

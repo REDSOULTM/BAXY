@@ -6,7 +6,11 @@ build-backend = "setuptools.build_meta"
 name = "gemma4_agent"
 version = "0.1.0"
 description = "Local voice-first agent runtime (Gemma 4 / Gemma 3n) with PyQt6 + FastAPI surfaces."
-requires-python = ">=3.11"
+# Runtime interpreter is CPython 3.10 (verified: 3.10.11). The 3.11-only
+# training stack (livekit-wakeword) lives in the isolated .venv_livekit and
+# is NOT part of this installable package — see CLAUDE.md "Python 3.10
+# (runtime) vs 3.11 (training)".
+requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["dependencies"]
 

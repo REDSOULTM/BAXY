@@ -6583,10 +6583,23 @@ Start-Sleep -Milliseconds 120
                     changed = gui_verify.verify_after(_before).get("state_changed")
             except Exception:
                 pass
+            # HONESTIDAD TRI-ESTADO (perfection roadmap C4/C5, Ola 1 #2).
+            # `changed` es la señal CRUDA del verifier de estado del SO:
+            #   True  -> el SO confirmó el cambio (click verificado).
+            #   False -> medido y NADA cambió (false-PASS atrapado).
+            #   None  -> NO se pudo medir (sin _before, o verify_after crasheó:
+            #            UIA demorado en Electron/Discord, frame-diff no disponible).
+            # ANTES emitíamos `verified = changed is True`, que coaccionaba None->
+            # False: "no sé" se reportaba como "falló". Eso (a) hacía que el
+            # PlanExecutor reintentara = DOBLE-CLICK físico, y (b) volvía inútil la
+            # recuperación tri-estado de _click (que sólo restaura desde verified
+            # None). Propagamos `changed` TAL CUAL como verified (None=no medible),
+            # consistente con las otras capas (_uia_run/OCR/recover_click) que NUNCA
+            # ponen verified=False salvo state_changed=False.
             return {"ok": bool(invoked), "grounding": "uia_inproc",
                     "element": {"name": (el.Name or "")[:80],
                                 "type": el.ControlTypeName},
-                    "state_changed": changed, "verified": changed is True,
+                    "state_changed": changed, "verified": changed,
                     "label": label}
         except Exception as exc:
             return {"ok": False, "error": f"uia_inproc falló: {exc}",
