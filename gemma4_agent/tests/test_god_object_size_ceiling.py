@@ -18,7 +18,10 @@ from pathlib import Path
 CEILINGS = {
     "tools_pkg/tools.py": 7700,
     "agent_core/agent.py": 6450,
-    "domain_tools/__init__.py": 4560,
+    # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
+    # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
+    # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).
+    "domain_tools/__init__.py": 3370,
     "tools_pkg/ops_tools.py": 2300,
 }
 
