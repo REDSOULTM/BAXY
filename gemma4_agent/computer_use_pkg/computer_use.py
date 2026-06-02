@@ -709,16 +709,25 @@ class PlanExecutor:
                 if uia_before is not None and uia_after is not None:
                     state_changed = (uia_after != uia_before)
                     inserted = self._keypress_inserted_literal(keys)
+                    # CERO SEÑAL FALSA (decisión del usuario 2026-06-01): un literal
+                    # alfanumérico común (dígito/letra) coincide trivialmente con
+                    # texto de fondo de la MISMA ventana — p.ej. apretar '5' mientras
+                    # un reloj pasa 14:04->14:05 sube la cuenta de '5' = false-True.
+                    # Solo la puntuación de cómputo INEQUÍVOCA (= + * / ...) es señal
+                    # atribuible confiable; los alfanuméricos caen a None honesto
+                    # ("lo hice, no pude confirmar"), nunca a un "Hecho." falso.
                     attributable = (
                         state_changed
                         and inserted is not None
+                        and inserted in self._UNAMBIGUOUS_LITERAL_KEYS
                         and inserted in uia_after
                         and uia_after.count(inserted) > uia_before.count(inserted)
                     )
                     if attributable:
-                        # El literal esperado APARECIÓ en la ventana objetivo:
-                        # señal atribuible a la tecla, infalsificable por texto
-                        # ajeno -> verified=True REAL.
+                        # El literal INEQUÍVOCO esperado APARECIÓ en la ventana
+                        # objetivo: señal atribuible a la tecla, infalsificable por
+                        # texto ajeno (la puntuación de cómputo no aparece en relojes
+                        # ni prosa de fondo) -> verified=True REAL.
                         verified = True
                     elif state_changed:
                         # Algo cambió en la ventana scopeada pero NO es atribuible a
@@ -744,6 +753,16 @@ class PlanExecutor:
     _LITERAL_PUNCT_KEYS = frozenset(
         "=+-*/.,;:%^()[]{}<>!?@#$&|~`'\"\\ _"
     )
+
+    # Subconjunto INEQUÍVOCO para atribuir verified=True (decisión del usuario
+    # 2026-06-01: cero señal falsa). Son símbolos de cómputo/operadores que NO
+    # aparecen en relojes, prosa ni texto de fondo de una ventana -> si el literal
+    # sube su cuenta tras la tecla, es atribuible a la tecla, infalsificable. Se
+    # EXCLUYEN a propósito: alfanuméricos (dígitos/letras coinciden con relojes,
+    # contadores, texto), y separadores comunes (. , : ; espacio _) que abundan en
+    # cualquier UI. Para esos, _keypress devuelve None honesto ("no pude confirmar"),
+    # nunca un "Hecho." que en realidad fue ruido de fondo.
+    _UNAMBIGUOUS_LITERAL_KEYS = frozenset("=+*/%^()[]{}<>!?@#$&|~\\")
 
     @classmethod
     def _keypress_inserted_literal(cls, keys: str) -> str | None:
