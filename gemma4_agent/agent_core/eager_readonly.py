@@ -149,11 +149,15 @@ except Exception:
 
 
 def is_enabled() -> bool:
-    """Gate ``GEMMA4_EAGER_READONLY``. **Default OFF** — es una optimización
-    riesgosa; opt-in hasta validación en vivo exhaustiva. Cualquier valor
-    truthy ('1','true','yes','on') la activa."""
-    return (os.environ.get("GEMMA4_EAGER_READONLY", "0") or "0").strip().lower() \
-        in {"1", "true", "yes", "on"}
+    """Gate ``GEMMA4_EAGER_READONLY``. **Default ON desde 2026-06-02** tras
+    validación EXHAUSTIVA: seguridad adversarial (32/32 escrituras nunca eager +
+    args-de-efecto bloqueados) + vivo contra el 4B (9/9 escrituras → 0 eager,
+    "apagá la compu" nunca pre-ejecuta shutdown) + afinamiento por embeddings
+    (dispara SOLO la read relevante, 0 derroche: "qué hora es"→[system.time],
+    "subí el volumen"→[]). 3 barreras anti-escritura + fail-safe (eager falla →
+    turno idéntico). Kill-switch ``GEMMA4_EAGER_READONLY=0``."""
+    return (os.environ.get("GEMMA4_EAGER_READONLY", "1") or "1").strip().lower() \
+        not in {"0", "false", "no", "off"}
 
 
 # BARRERA ESTRUCTURAL sobre la FORMA del nombre de la acción (no listas por

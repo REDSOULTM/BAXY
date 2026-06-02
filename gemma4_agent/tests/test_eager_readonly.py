@@ -265,14 +265,18 @@ class FailSafe(unittest.TestCase):
 
 
 class Gating(unittest.TestCase):
-    def test_default_off(self) -> None:
+    def test_default_on(self) -> None:
+        # DEFAULT ON desde 2026-06-02 (validado exhaustivo: seguridad adversarial
+        # 32/32 + vivo 9/9 + afinamiento por embeddings). Antes era OFF (opt-in
+        # hasta validar). Ausente o vacío => ON (mismo patrón que los demás flags
+        # default-on del repo: LEAN_RULES, STREAM_TTS).
         os.environ.pop("GEMMA4_EAGER_READONLY", None)
-        self.assertFalse(E.is_enabled())
-        # con el flag OFF no hay candidatas, aunque la tool esté ofrecida
-        self.assertEqual(E.eager_candidates(["system"]), [])
+        self.assertTrue(E.is_enabled())
 
     def test_explicit_off_values(self) -> None:
-        for val in ("0", "false", "no", "off", ""):
+        # Solo los valores OFF EXPLÍCITOS desactivan (kill-switch). El vacío "" NO
+        # es off: es ausencia => default ON (coherente con `or "1"` en is_enabled).
+        for val in ("0", "false", "no", "off"):
             os.environ["GEMMA4_EAGER_READONLY"] = val
             self.assertFalse(E.is_enabled(), f"{val!r} debería ser OFF")
         os.environ.pop("GEMMA4_EAGER_READONLY", None)
