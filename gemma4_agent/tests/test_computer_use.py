@@ -747,6 +747,96 @@ class ClickTriStateHonestyTest(unittest.TestCase):
         self.assertIn("hice click", msg.lower())
         self.assertNotIn("no vi", msg.lower())
 
+    # --- Regresión de FUENTE (Ola 1 #2, 2026-06-01) -------------------------
+    # El bug residual NO estaba en _click sino en la capa PRIMARIA del raw
+    # click (_uia_click_inproc, tools.py:6589) que emitía verified=(changed is
+    # True) y coaccionaba None->False ANTES de que _click lo viera. Estos casos
+    # usan el output CRUDO REAL de esa capa tras el fix.
+
+    def test_real_inproc_unmeasurable_output_stays_none(self):
+        # tools.py:_uia_click_inproc con changed=None -> {ok, state_changed:None,
+        # verified:None}. _click debe preservar None (no coaccionar a False).
+        ex = self._executor({"ok": True, "state_changed": None, "verified": None})
+        r = ex._click("Aceptar", "Discord")
+        self.assertTrue(r["ok"])
+        self.assertIsNone(r["verified"], "el None de la fuente debe sobrevivir _click")
+        self.assertIsNone(r["state_changed"])
+
+    def test_real_inproc_no_change_output_is_false(self):
+        # changed=False -> {ok, state_changed:False, verified:False}. false-PASS atrapado.
+        ex = self._executor({"ok": True, "state_changed": False, "verified": False})
+        r = ex._click("Aceptar", "Discord")
+        self.assertIs(r["verified"], False)
+        self.assertIs(r["state_changed"], False)
+
+
+class ClickNoDoubleClickOnNoneTest(unittest.TestCase):
+    """Ola 1 #2 GATE: un click NO-MEDIBLE (verified=None) NO debe disparar el
+    retry del PlanExecutor (= doble-click físico). El retry se gobierna por
+    `res.get('verified') is False` (línea ~1224): None NO lo cumple. Contamos
+    los dispatches de click para probar que se ejecutó UNA sola vez."""
+
+    def _agent(self):
+        ag = MagicMock()
+        ag.tools._focus_window_chen.return_value = True
+        ag._window_title_in_text.return_value = "Calc"
+        return ag
+
+    def _executor_with_uia_policy(self, ag):
+        """PlanExecutor cuyo detector/policy son DETERMINISTAS (no leen el OS real):
+        un layer UIA usable para que el `click` llegue siempre a _click. Sin esto,
+        choose_policy puede caer a honest_fail según el escritorio del runner y el
+        click ni se despacha (test order-dependiente: el bug que cazó la suite)."""
+        from gemma4_agent.computer_use_caps.policy import LayerPolicy
+        ex = PlanExecutor(ag)
+        ex.detector.snapshot = MagicMock(return_value={
+            "app_kind": "native_uia", "uia_available": True,
+            "ocr_available": False, "vision_available": False, "is_browser": False})
+        ex.choose_policy = MagicMock(return_value=LayerPolicy(
+            primary="uia_control_pattern", reason="test", risk="normal"))
+        ex.capability_family = MagicMock(return_value="native_uia")
+        return ex
+
+    def test_unmeasurable_click_executes_once_no_retry(self):
+        ag = self._agent()
+        # cada gui.click_button (vía capabilities.run -> _click -> tools.execute)
+        # devuelve el output REAL inproc no-medible. Si hubiera retry, habría >1.
+        ag.tools.execute.return_value = {
+            "ok": True, "state_changed": None, "verified": None,
+            "action": "click_button"}
+        ex = self._executor_with_uia_policy(ag)
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            res = ex.execute([{"op": "click", "arg": "5"}], "t")
+        click_dispatches = [
+            c for c in ag.tools.execute.call_args_list
+            if c.args and c.args[0] == "gui"
+            and (c.args[1] if len(c.args) > 1 else {}).get("action") == "click_button"
+        ]
+        self.assertEqual(len(click_dispatches), 1,
+                         f"None gatilló retry/doble-click: {len(click_dispatches)} dispatches")
+        # plan no-medible: ok=True (se ejecutó) pero NO verificado a True.
+        self.assertTrue(res["ok"])
+        self.assertNotEqual(res.get("verified"), True)
+
+    def test_measured_no_change_click_does_retry(self):
+        # Contraste: state_changed=False SÍ es un fallo medible -> el retry es
+        # legítimo (el click no tuvo efecto, reintentar tras re-enfocar es válido).
+        ag = self._agent()
+        ag.tools.execute.return_value = {
+            "ok": True, "state_changed": False, "verified": False,
+            "action": "click_button"}
+        ex = self._executor_with_uia_policy(ag)
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            ex.execute([{"op": "click", "arg": "5"}], "t")
+        click_dispatches = [
+            c for c in ag.tools.execute.call_args_list
+            if c.args and c.args[0] == "gui"
+            and (c.args[1] if len(c.args) > 1 else {}).get("action") == "click_button"
+        ]
+        # _STEP_RETRIES default 2 -> 1 intento inicial + hasta 2 reintentos = 3.
+        self.assertGreater(len(click_dispatches), 1,
+                           "state_changed=False debería reintentar (fallo medible)")
+
 
 if __name__ == "__main__":
     unittest.main()
