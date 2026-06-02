@@ -109,3 +109,27 @@ Gemma4_Agent_Producto_Riesgos_y_Competencia*.docx
 scripts/_out_*.log
 scripts/_out_*.txt
 _out_today.txt
+
+# ---------------------------------------------------------------------------
+# Diagnostic / scratch artifacts dumped at the REPO ROOT during live sessions
+# (Ola 4 housekeeping, 2026-06-01). These are throwaway outputs of one-off
+# repro/diag runs — NOT artifacts-with-a-recipe and NOT source. Every pattern
+# is anchored with a leading "/" so it ONLY matches the repo root and never
+# shadows the TRACKED diagnostic tools under scripts/ (scripts/_diag/*.py,
+# scripts/_arch_dep_graph.py, ...) or Testing Inicial/bench/_*.py.
+#
+# Reproducibility note: these are stdout captures, not generated datasets.
+# Anything with a build recipe (models, eval data) is ignored separately above.
+/_diag_*.txt
+/_diag_*.py
+/_repro_*.py
+/_repro_*.txt
+/_trace_*.py
+/_trace_*.txt
+/_gate_*.txt
+/_grp*.txt
+/_imp_test.txt
+/_pytest_*.txt
+/_t_router.txt
+/_server_boot.log
+/_abstain_*.json
