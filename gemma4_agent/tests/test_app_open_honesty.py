@@ -150,5 +150,129 @@ class AppOpenFalsePositiveGateTest(unittest.TestCase):
         self.assertIn("app:Discord", out.evidence_keys)
 
 
+class SiteResolutionRelevanceTest(unittest.TestCase):
+    """Ola 1 honestidad (2026-06-01): el discriminador estructural nombre<->host.
+
+    El fallback app.open->web resolvía un nombre GIBBERISH a CUALQUIER resultado
+    del buscador y declaraba 'Listo, abrí X' (mentira). El discriminador exige
+    relación estructural (token del nombre en el host / variante difusa de la
+    SLD), sin listas de dominios. Multilingüe (folding NFKD).
+    """
+
+    def test_helper_rejects_gibberish_unrelated_host(self):
+        from gemma4_agent.tools_pkg.tools import _site_resolution_relevant
+        # buscador devuelve algo irrelevante para un nombre inexistente.
+        self.assertFalse(_site_resolution_relevant(
+            "aplicacion ZxqwInexistente9000",
+            "https://www.softonic.com/downloads/applications"))
+        self.assertFalse(_site_resolution_relevant(
+            "ZxqwInexistente9000", "https://es.wikipedia.org/wiki/Aplicacion"))
+
+    def test_helper_accepts_real_sites(self):
+        from gemma4_agent.tools_pkg.tools import _site_resolution_relevant
+        # nombre -> host que CONTIENE un token del nombre (feature querida).
+        self.assertTrue(_site_resolution_relevant("pivigames", "https://pivigames.blog/"))
+        self.assertTrue(_site_resolution_relevant("gmail.com", "https://www.gmail.com/"))
+        self.assertTrue(_site_resolution_relevant("instant gaming", "https://www.instant-gaming.com/"))
+        self.assertTrue(_site_resolution_relevant("portal uniej", "https://www.uniej.cl/"))
+        self.assertTrue(_site_resolution_relevant("portal uniej", "https://aulavirtual.uniej.cl/login"))
+
+    def test_helper_accepts_voice_typo_via_fuzzy(self):
+        # 'spotfy' (typo de voz) -> spotify.com: la SLD es variante difusa.
+        from gemma4_agent.tools_pkg.tools import _site_resolution_relevant
+        self.assertTrue(_site_resolution_relevant("spotfy", "https://www.spotify.com/"))
+
+    def test_helper_rejects_when_only_filler_token_matches(self):
+        # nombre todo-andamiaje ('la pagina web') NO identifica un sitio.
+        from gemma4_agent.tools_pkg.tools import _site_resolution_relevant
+        self.assertFalse(_site_resolution_relevant("la pagina web", "https://example.com/"))
+
+    def test_helper_handles_garbage_url(self):
+        from gemma4_agent.tools_pkg.tools import _site_resolution_relevant
+        self.assertFalse(_site_resolution_relevant("pivigames", ""))
+        self.assertFalse(_site_resolution_relevant("pivigames", "not a url"))
+
+
+class TAppWebFallbackHonestyTest(unittest.TestCase):
+    """GATE de honestidad sobre t_app(action='open') con el fallback a web.
+
+    Mock-only: app_open SIEMPRE no-encuentra (para forzar el fallback),
+    web_search devuelve un mapa controlado, web_open_url NO abre nada real.
+    """
+
+    def _reg(self, search_results):
+        from gemma4_agent.tools_pkg.tools import ToolRegistry
+        reg = ToolRegistry.__new__(ToolRegistry)
+        reg.app_open = lambda a: {"ok": False, "error": "app not found",
+                                  "query": a.get("name")}
+        reg.web_search = lambda a: {"ok": True, "results": search_results}
+        reg.web_open_url = lambda a: {"ok": True, "opened": True,
+                                      "url": a.get("url"),
+                                      "completion_status": "open_url_requested"}
+        return reg
+
+    def test_gibberish_is_honest_not_opened(self):
+        # GATE: gibberish -> NO 'abierto con éxito'; resultado honesto app-not-found.
+        reg = self._reg([
+            {"url": "https://www.softonic.com/downloads/applications"},
+            {"url": "https://es.wikipedia.org/wiki/Aplicacion"},
+        ])
+        out = reg.t_app({"action": "open", "name": "aplicacion ZxqwInexistente9000"})
+        self.assertFalse(out.get("ok"),
+                         "MENTIRA: t_app declaró éxito para gibberish")
+        self.assertNotEqual(out.get("completion_status"), "open_url_requested")
+        self.assertEqual(out.get("error"), "app not found")
+
+    def test_real_sitename_still_opens(self):
+        # FEATURE QUERIDA (274d0c3): 'pivigames' -> abre pivigames.blog.
+        reg = self._reg([
+            {"url": "https://pivigames.blog/2018/old/category/aviso/"},
+            {"url": "https://pivigames.blog/"},
+        ])
+        out = reg.t_app({"action": "open", "name": "pivigames"})
+        self.assertTrue(out.get("ok"))
+        self.assertTrue(out.get("opened"))
+        self.assertEqual(out.get("completion_status"), "open_url_requested")
+        self.assertEqual(out.get("resolved_url"), "https://pivigames.blog/")
+
+    def test_domain_still_opens(self):
+        # 'gmail.com' (dominio) -> abre gmail.
+        reg = self._reg([{"url": "https://www.gmail.com/"}])
+        out = reg.t_app({"action": "open", "name": "gmail.com"})
+        self.assertTrue(out.get("ok"))
+        self.assertTrue(out.get("opened"))
+
+    def test_multiword_sitename_still_opens(self):
+        # 'portal uniej' -> Canvas de la UNIEJ (host contiene 'uniej').
+        reg = self._reg([
+            {"url": "https://aulavirtual.uniej.cl/login"},
+            {"url": "https://www.uniej.cl/"},
+        ])
+        out = reg.t_app({"action": "open", "name": "portal uniej"})
+        self.assertTrue(out.get("ok"))
+        self.assertTrue(out.get("opened"))
+
+    def test_instant_gaming_still_opens(self):
+        reg = self._reg([{"url": "https://www.instant-gaming.com/es/"}])
+        out = reg.t_app({"action": "open", "name": "instant gaming"})
+        self.assertTrue(out.get("ok"))
+        self.assertTrue(out.get("opened"))
+
+    def test_real_app_open_unaffected(self):
+        # App real: app_open tiene ÉXITO -> ni siquiera entra al fallback web.
+        from gemma4_agent.tools_pkg.tools import ToolRegistry
+        reg = ToolRegistry.__new__(ToolRegistry)
+        reg.app_open = lambda a: {"ok": True, "opened": {"name": "Discord"},
+                                  "completion_status": "launch_verified"}
+        # si tocara web_search/web_open_url sería un bug -> los hacemos explotar.
+        def _boom(_a):
+            raise AssertionError("app real NO debe caer al fallback web")
+        reg.web_search = _boom
+        reg.web_open_url = _boom
+        out = reg.t_app({"action": "open", "name": "Discord"})
+        self.assertTrue(out.get("ok"))
+        self.assertEqual(out.get("completion_status"), "launch_verified")
+
+
 if __name__ == "__main__":
     unittest.main()

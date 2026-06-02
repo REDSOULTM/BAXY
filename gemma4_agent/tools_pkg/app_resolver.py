@@ -651,4 +651,55 @@ $items | ConvertTo-Json -Depth 3
         return {"ok": True, "candidate": {"name": candidate.name, "launch": str(candidate.launch), "launch_type": candidate.launch_type}}
 
 
-__all__ = ["AppCandidate", "AppResolver"]
+# Andamiaje genérico de un pedido ("abrí la PÁGINA de X", "la APLICACIÓN Y"):
+# vocabulario de pedido que NUNCA identifica un sitio por sí solo (NO es lista de
+# dominios ni de apps). Si el único token que matchea el host es uno de éstos, no
+# hay relevancia real. ES + EN.
+_SITE_REQUEST_FILLERS = frozenset({
+    "app", "apps", "aplicacion", "aplicaciones", "application", "applications",
+    "pagina", "paginas", "page", "pages", "sitio", "sitios", "site", "sites",
+    "web", "www", "com", "net", "org", "online", "portal",
+})
+
+
+def _site_resolution_relevant(name: str, resolved_url: str) -> bool:
+    """¿El sitio resuelto por búsqueda guarda relación con el NOMBRE pedido?
+
+    Honestidad (Ola 1, 2026-06-01): el buscador SIEMPRE devuelve algo, así que el
+    fallback app.open->web resolvía gibberish ('ZxqwInexistente9000') a cualquier
+    resultado (softonic/wikipedia) y declaraba "Listo, abrí X" = MENTIRA. Señal
+    ESTRUCTURAL (forma, no listas; multilingüe via _fold): un TOKEN de contenido
+    del nombre (>=3 chars, sin fillers) debe ser substring del host normalizado o
+    variante difusa de la SLD (typo de voz: 'spotfy'->spotify.com). Pasan
+    pivigames->pivigames.blog, gmail.com, 'instant gaming'->instant-gaming.com,
+    'portal uniej'->uniej.cl. Falso negativo conocido: un rebrand cuyo dominio no
+    comparte tokens ('X'->twitter.com) -> preferimos el resultado HONESTO antes
+    que mentir (lado seguro)."""
+    import difflib
+    from urllib.parse import urlparse
+    from .tools import _fold  # lazy: evita el ciclo top-level con tools.py
+    host = ""
+    try:
+        host = (urlparse(resolved_url).hostname or "").lower()
+    except Exception:
+        host = ""
+    if not host:
+        return False
+    host_norm = re.sub(r"[^a-z0-9]", "", host)
+    labels = host.split(".")
+    sld = labels[-2] if len(labels) >= 2 else (labels[0] if labels else "")
+    sld_norm = re.sub(r"[^a-z0-9]", "", sld)
+    toks = [t for t in _fold(name).split()
+            if len(t) >= 3 and t not in _SITE_REQUEST_FILLERS]
+    if not toks:
+        # nombre todo-genérico / demasiado corto: sin señal fiable -> no afirmar.
+        return False
+    for t in toks:
+        if t in host_norm:
+            return True
+        if sld_norm and difflib.SequenceMatcher(None, t, sld_norm).ratio() >= 0.75:
+            return True
+    return False
+
+
+__all__ = ["AppCandidate", "AppResolver", "_site_resolution_relevant", "_SITE_REQUEST_FILLERS"]

@@ -832,13 +832,9 @@ def _score(query: str, candidate: str) -> int:
     return 0
 
 
-# AppCandidate + AppResolver live in :mod:`.app_resolver`.
-# Re-export here so existing `from .tools import AppCandidate, AppResolver`
-# call sites (and external callers) keep working. The two classes pull the
-# small ranking / parsing helpers (_fold, _score, _acf_value,
-# _nearest_steam_appid, _pretty_exe_name, _looks_like_uninstaller) lazily
-# from this module to avoid a top-level import cycle.
-from .app_resolver import AppCandidate, AppResolver  # noqa: E402,F401
+# AppCandidate/AppResolver + _site_resolution_relevant (discriminador nombre<->host
+# del fix de honestidad gibberish) viven en :mod:`.app_resolver`, re-exportados acá.
+from .app_resolver import AppCandidate, AppResolver, _SITE_REQUEST_FILLERS, _site_resolution_relevant  # noqa: E402,F401
 
 
 def _acf_value(text: str, key: str) -> str | None:
@@ -1812,7 +1808,10 @@ class ToolRegistry:
                     resolved = self._resolve_site_by_search(nm)
                 except Exception:
                     resolved = None
-                if resolved:
+                # HONESTIDAD: el buscador SIEMPRE devuelve algo (gibberish->softonic),
+                # antes abríamos y mentíamos. Solo "abierto con éxito" si el sitio
+                # resuelto guarda relación estructural con el nombre (ver la función).
+                if resolved and _site_resolution_relevant(nm, resolved):
                     opened = self.web_open_url({"url": resolved})
                     if opened.get("ok"):
                         opened.update(
@@ -2565,10 +2564,11 @@ class ToolRegistry:
             if url and not url.startswith(("http://", "https://")) and "." not in url \
                     and "/" not in url and len(url) >= 3 and len(url.split()) <= 4:
                 resolved = self._resolve_site_by_search(url)
-                if resolved:
+                # Mismo guard de honestidad que app.open: aceptar el sitio resuelto
+                # solo si guarda relación estructural con el nombre (ver la función).
+                if resolved and _site_resolution_relevant(url, resolved):
                     _resolved_from, url = url, resolved
-                # sin resultado fiable -> url queda como estaba (web_open_url dará
-                # host inválido y un error honesto, mejor que abrir algo equivocado).
+                # sin resultado fiable -> url queda como estaba (error honesto).
             # ABRIR EN UN NAVEGADOR ESPECÍFICO (2026-05-27): "pon X en Opera" trae
             # browser="Opera" + url. Antes el `browser=` se IGNORABA y la URL abría
             # en el navegador POR DEFECTO (el "en Opera" se perdía silenciosamente).
