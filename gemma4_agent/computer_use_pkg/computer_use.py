@@ -53,6 +53,26 @@ import os as _os_cu
 _STEP_RETRIES = int(_os_cu.environ.get("GEMMA4_CU_STEP_RETRIES", "2"))
 
 
+def _env_off(name: str, default: str = "1") -> bool:
+    """¿El flag está APAGADO? (False/0/no/off, case-insensitive)."""
+    return (_os_cu.environ.get(name, default).strip().lower()
+            in {"0", "false", "no", "off"})
+
+
+def _tristate_verified(value: Any) -> bool | None:
+    """Mapea el `verified` de un tool a tri-estado HONESTO en la frontera del
+    paso: True si es exactamente True, False si es exactamente False, None en
+    cualquier otro caso (no medible). NO colapsa None->False (criterio del
+    usuario 2026-06-01: 'no medible' != 'medido y no cambió'). Ver auditoría B,
+    finding C: las primitivas hacían `r.get('verified') is True`, aplanando el
+    None del tool subyacente en False y confundiendo al honesty-guard."""
+    if value is True:
+        return True
+    if value is False:
+        return False
+    return None
+
+
 def _is_concrete_browser(app_hint: str) -> bool:
     folded = re.sub(r"\s+", " ", (app_hint or "").casefold()).strip()
     if not folded:
@@ -295,14 +315,29 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
             return f"No aparecio {what} antes del timeout."
         return f"No pude completar «{goal}» (falló {failed})."
     # éxito: describir según las primitivas que corrieron.
+    # TRI-ESTADO HONESTO (auditoría B, finding D + criterio del usuario 2026-06-01):
+    #   verified is False -> algún paso se MIDIÓ y NO cambió = falló de verdad.
+    #   verified is None  -> hubo pasos legítimos NO MEDIBLES (Electron/WebView2,
+    #                        sin UIA) -> 'lo hice, no pude confirmar el efecto',
+    #                        NO 'no pude verificar'/fallo. Distinción clave: el
+    #                        usuario exige que 'no medible' NO se reporte como falla.
     if result.get("verified") is False:
         unverified = [
             str(s.get("op") or "")
             for s in steps
-            if s.get("verified") is not True
+            # un paso explícitamente False es el que MIDIÓ-y-no-cambió; los None
+            # (no medibles) no son la causa del fallo y no se listan como tales.
+            if s.get("verified") is False
         ]
         detail = ", ".join(op for op in unverified if op) or "pasos criticos"
         return f"Intente completar '{goal}', pero no pude verificar: {detail}."
+    if result.get("verified") is None:
+        # acción ejecutada pero el efecto no fue medible. Caemos a la descripción
+        # por-primitiva (que ya tiene honestidad fina para click/discord); si esa
+        # ruta no aplica una nota honesta, la añadimos abajo en el fallback.
+        _unmeasurable = True
+    else:
+        _unmeasurable = False
     ops = [s["op"] for s in steps]
     sent = "send" in ops
     typed = next((s["arg"] for s in steps if s["op"] == "type"), "")
@@ -327,6 +362,11 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
             return f"Listo, {phrase} en Discord."
         return f"Ejecute {phrase} en Discord, pero no pude verificar el estado."
     if sent and chat:
+        if _unmeasurable:
+            # WebView2/Electron (WhatsApp/Discord): el ENTER no es medible por UIA.
+            # No afirmamos "Listo" a secas: tecleamos y enviamos, sin confirmar.
+            return (f"Le escribí «{typed}» a {chat} y mandé el mensaje, "
+                    "aunque no pude confirmar el envío.")
         return f"Listo, le escribí «{typed}» a {chat}."
     if voice:
         return f"Listo, entre al canal de voz '{voice}'" + (f" en {app}." if app else ".")
@@ -359,7 +399,13 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
                     "aunque no pude confirmar el efecto.")
         return f"Listo, hice click en «{label}»" + (f" en {app}." if app else ".")
     if typed:
+        if _unmeasurable:
+            return (f"Escribí «{typed}»{' en ' + app if app else ''}, "
+                    "aunque no pude confirmar el efecto.")
         return f"Listo, escribí «{typed}»" + (f" en {app}." if app else ".")
+    if _unmeasurable:
+        # ejecuté lo pedido pero el efecto no fue medible -> honesto, NO "Hecho.".
+        return "Lo hice, aunque no pude confirmar el efecto."
     return f"Listo." if app else "Hecho."
 
 
@@ -565,22 +611,108 @@ class PlanExecutor:
             if _fold_label(win) == "discord":
                 args["method"] = "sendkeys"
             r = self.tools.execute("gui", args)
-            return {"ok": bool(r.get("ok")), "verified": r.get("verified") is True, "text": text}
+            # TRI-ESTADO (auditoría B, finding C): gui_type_into ya expone señales
+            # UIA finas (uia_confirmed / uia_changed / state_changed). Si el tool
+            # confirmó por UIA que el texto entró o que el contenido cambió ->
+            # verified=True genuino; si midió y NO cambió -> False; si no se pudo
+            # medir (WebView2/Electron sin UIA, frame-diff no medible) -> None
+            # HONESTO en vez de colapsar a False. Default-ON (preserva tri-estado);
+            # GEMMA4_CU_TRISTATE=0 vuelve al colapso previo (verified is True).
+            verified = _tristate_verified(r.get("verified"))
+            if not _env_off("GEMMA4_CU_TRISTATE"):
+                if r.get("uia_confirmed") is True or r.get("uia_changed") is True:
+                    verified = True
+                elif verified is None and r.get("state_changed") is True:
+                    verified = True
+                elif verified is None and r.get("state_changed") is False:
+                    verified = False
+            else:
+                verified = r.get("verified") is True
+            return {"ok": bool(r.get("ok")), "verified": verified, "text": text,
+                    "state_changed": r.get("state_changed"),
+                    "completion_status": r.get("completion_status")}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
     def _send(self, win: str) -> dict:
         return self._keypress("enter", win)
 
+    # Teclas cuyo efecto NO es observable leyendo el texto/valor de la ventana
+    # (navegación pura, escape, foco). Para estas el snapshot-delta no aplica ->
+    # verified=None HONESTO (no forzamos True ni False). Estable cross-locale (son
+    # nombres de tecla, no idioma). El resto de teclas (enter/=/backspace/ctrl+s…)
+    # SÍ pueden cambiar el display/valor y se verifican por snapshot UIA.
+    _NONOBSERVABLE_KEYS = frozenset({
+        "esc", "escape", "tab", "up", "down", "left", "right",
+        "pageup", "pagedown", "home", "end", "f1", "f2", "f3", "f4", "f5",
+        "f6", "f7", "f8", "f9", "f10", "f11", "f12",
+    })
+
     def _keypress(self, keys: str, win: str) -> dict:
         try:
             if win:
                 self.tools._focus_window_chen(win)
                 time.sleep(0.2)
+            # COBERTURA NUEVA (auditoría B, finding A): el ENTER de la calculadora
+            # MATERIALIZA el efecto (=> el resultado '4') pero gui_keypress devuelve
+            # verified=True confirmando SOLO que SendInput disparó — sin releer el
+            # display. Aquí leemos el texto/valor de la ventana ANTES y DESPUÉS por
+            # UIA (la MISMA maquinaria que type_into usa: _uia_focused_text_snapshot)
+            # y derivamos un tri-estado HONESTO:
+            #   display cambió  -> verified=True REAL (el efecto se materializó).
+            #   no cambió       -> verified=False (medido y sin efecto).
+            #   UIA no medible  -> verified=None (Electron/WebView2, o sin uiautomation).
+            # Para teclas sin efecto observable (esc/flechas/F-keys) NO medimos por
+            # delta (no aplica) y dejamos el tri-estado del tool. Gateado default-ON;
+            # GEMMA4_CU_KEYPRESS_VERIFY=0 vuelve a 'verified = r.get(...) is True'.
+            _verify_by_uia = (
+                not _env_off("GEMMA4_CU_KEYPRESS_VERIFY")
+                and self._key_is_observable(keys)
+            )
+            uia_before = None
+            if _verify_by_uia:
+                try:
+                    uia_before = self.tools._uia_focused_text_snapshot(win or "")
+                except Exception:
+                    uia_before = None
             r = self.tools.execute("gui", {"action": "keypress", "keys": keys, "window": win})
-            return {"ok": bool(r.get("ok")), "verified": r.get("verified") is True, "keys": keys}
+            verified = _tristate_verified(r.get("verified"))
+            if not _env_off("GEMMA4_CU_TRISTATE"):
+                # base tri-estado del tool (no colapsar None->False).
+                pass
+            else:
+                verified = r.get("verified") is True
+            state_changed = None
+            if _verify_by_uia and bool(r.get("ok")):
+                try:
+                    time.sleep(0.15)  # dejar que el display se asiente en el árbol UIA
+                    uia_after = self.tools._uia_focused_text_snapshot(win or "")
+                except Exception:
+                    uia_after = None
+                if uia_before is not None and uia_after is not None:
+                    state_changed = (uia_after != uia_before)
+                    # El snapshot UIA es la señal MÁS fuerte: manda sobre el
+                    # verified ciego del tool. cambió -> True; no cambió -> False.
+                    verified = bool(state_changed)
+                # uia_before/after None (sin uiautomation) -> dejamos verified
+                # como vino (tri-estado del tool, típicamente None) = honesto.
+            return {"ok": bool(r.get("ok")), "verified": verified, "keys": keys,
+                    "state_changed": state_changed,
+                    "completion_status": r.get("completion_status")}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
+
+    @classmethod
+    def _key_is_observable(cls, keys: str) -> bool:
+        """¿La tecla puede cambiar el texto/valor visible de la ventana? Las teclas
+        de navegación pura (esc/flechas/F-keys) no -> no medibles por snapshot. Un
+        combo (ctrl+s, ctrl+z) o una tecla de edición/cómputo (enter, =, backspace)
+        sí. Conservador: si el último token es de navegación, no observable."""
+        k = (keys or "").strip().lower()
+        if not k:
+            return False
+        last = k.split("+")[-1].strip()
+        return last not in cls._NONOBSERVABLE_KEYS
 
     def _click(self, label: str, win: str) -> dict:
         try:
@@ -598,11 +730,31 @@ class PlanExecutor:
             # es la señal medible cruda; si existe, manda sobre verified ausente.
             verified = inner.get("verified")
             state_changed = inner.get("state_changed")
+            grounding = inner.get("grounding")
             if verified is None and state_changed is not None:
                 verified = bool(state_changed)
+            # FINDING B (auditoría B, 2026-06-01): el camino in-process del
+            # click_button (_uia_click_inproc, el PREFERIDO y dominante) colapsa
+            # None->False — devuelve verified=(changed is True) midiendo con ROI de
+            # PANTALLA COMPLETA (frame-diff débil: un botón chico no mueve 6 bits
+            # sobre toda la pantalla) -> state_changed cae a None y se reporta
+            # verified=False, perdiendo el tri-estado que sí respeta la vía de
+            # coordenadas. NO podemos tocar tools.py (lo edita otro agente), así que
+            # rescatamos AQUÍ: si el Invoke se DISPARÓ (ok=True) por la vía
+            # in-process pero el frame-diff NO pudo medir el cambio (state_changed
+            # is None), 'no medible' != 'falló' -> propagamos verified=None HONESTO
+            # en vez del False colapsado. Si state_changed SÍ se midió como False
+            # (botón medido y sin efecto) lo respetamos como False. Default-ON;
+            # GEMMA4_CU_CLICK_TRISTATE=0 vuelve al colapso previo.
+            if (not _env_off("GEMMA4_CU_CLICK_TRISTATE")
+                    and grounding == "uia_inproc"
+                    and bool(inner.get("ok"))
+                    and verified is False
+                    and state_changed is None):
+                verified = None
             # verified queda None si de verdad no se pudo medir (tri-estado).
             return {"ok": bool(inner.get("ok")), "verified": verified,
-                    "label": label, "grounding": inner.get("grounding"),
+                    "label": label, "grounding": grounding,
                     "state_changed": state_changed,
                     "completion_status": inner.get("completion_status")}
         except Exception as exc:
@@ -840,7 +992,20 @@ class PlanExecutor:
             except Exception:
                 n = -5
             r = self.tools.execute("gui", {"action": "scroll", "amount": n, "window": win})
-            return {"ok": bool(r.get("ok")), "verified": r.get("verified") is True, "amount": n}
+            # TRI-ESTADO (auditoría B, finding C): un scroll en un panel ya al
+            # fondo NO cambia nada (False), pero un scroll cuyo efecto no se pudo
+            # medir es None HONESTO, no False. Default-ON; GEMMA4_CU_TRISTATE=0
+            # vuelve al colapso previo.
+            if _env_off("GEMMA4_CU_TRISTATE"):
+                verified = r.get("verified") is True
+            else:
+                verified = _tristate_verified(r.get("verified"))
+                if verified is None and r.get("state_changed") is True:
+                    verified = True
+                elif verified is None and r.get("state_changed") is False:
+                    verified = False
+            return {"ok": bool(r.get("ok")), "verified": verified, "amount": n,
+                    "state_changed": r.get("state_changed")}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
@@ -1280,5 +1445,30 @@ class PlanExecutor:
             s for s in steps_out
             if self.capabilities.is_verified_step(str(s.get("op") or ""))
         ]
-        verified = bool(verified_steps) and all(s.get("verified") is True for s in verified_steps)
+        verified = self._aggregate_verified(verified_steps)
         return {"ok": True, "verified": verified, "steps": steps_out, "focused_app": app_token}
+
+    @staticmethod
+    def _aggregate_verified(verified_steps: list[dict]) -> bool | None:
+        """Veredicto tri-estado a nivel PLAN (auditoría B, finding D + criterio del
+        usuario 2026-06-01). Distingue los TRES casos que el usuario exige:
+          - True  : hay pasos verificables y TODOS son True (efecto confirmado).
+          - False : ALGÚN paso verificable es explícitamente False (medido y NO
+                    cambió = falló de verdad).
+          - None  : no hay ningún False, pero al menos un paso quedó None (hubo
+                    pasos legítimos que NO se pudieron medir) -> reply honesto
+                    'lo hice, no pude confirmar el efecto', NO 'falló'.
+        Antes esto era `all(s.verified is True)`, que colapsaba None->False y hacía
+        que un solo paso no-medible marcara el plan ENTERO como no verificado. El
+        colapso default-ON anterior se preserva con GEMMA4_CU_TRISTATE=0."""
+        if not verified_steps:
+            return False
+        states = [s.get("verified") for s in verified_steps]
+        if _env_off("GEMMA4_CU_TRISTATE"):
+            return all(v is True for v in states)
+        if any(v is False for v in states):
+            return False
+        if all(v is True for v in states):
+            return True
+        # ningún False, pero hay al menos un None -> no medible, honesto.
+        return None

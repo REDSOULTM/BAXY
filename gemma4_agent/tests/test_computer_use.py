@@ -748,5 +748,266 @@ class ClickTriStateHonestyTest(unittest.TestCase):
         self.assertNotIn("no vi", msg.lower())
 
 
+class KeypressVerifyByUiaTest(unittest.TestCase):
+    """Auditoría B, finding A (2026-06-01): el ENTER que MATERIALIZA el efecto
+    (calc => '4') NO se verificaba — gui_keypress devolvía verified=True
+    confirmando solo que SendInput disparó. Ahora _keypress lee el display por
+    UIA (snapshot) ANTES/DESPUÉS y deriva un tri-estado HONESTO. Sin GUI: se
+    mockea _uia_focused_text_snapshot y gui.execute (no toca SendInput real)."""
+
+    def _executor(self, gui_result, snap_before, snap_after):
+        import gemma4_agent.computer_use_pkg.computer_use as cu
+        ag = MagicMock()
+        ag.tools.execute.return_value = gui_result
+        ag.tools._uia_focused_text_snapshot.side_effect = [snap_before, snap_after]
+        ex = cu.PlanExecutor(ag)
+        return ex
+
+    def test_enter_display_changed_is_verified_true(self):
+        # calc: display '0' -> '4' tras ENTER -> verified=True REAL (no ciego).
+        ex = self._executor({"ok": True}, "0", "4")
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("enter", "Calculadora")
+        self.assertTrue(r["ok"])
+        self.assertIs(r["verified"], True)
+        self.assertIs(r["state_changed"], True)
+
+    def test_enter_display_unchanged_is_false(self):
+        # el display NO cambió tras la tecla -> medido y sin efecto -> False.
+        ex = self._executor({"ok": True}, "0", "0")
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("enter", "Calculadora")
+        self.assertIs(r["verified"], False)
+        self.assertIs(r["state_changed"], False)
+
+    def test_uia_unavailable_is_none_honest(self):
+        # UIA no disponible (snapshot None) -> tri-estado NONE honesto, NO True
+        # falso ni False. Distinción medible-pero-no-intentado vs no-medible.
+        import gemma4_agent.computer_use_pkg.computer_use as cu
+        ag = MagicMock()
+        ag.tools.execute.return_value = {"ok": True}  # tool no reporta verified
+        ag.tools._uia_focused_text_snapshot.return_value = None  # sin uiautomation
+        ex = cu.PlanExecutor(ag)
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("enter", "Calculadora")
+        self.assertTrue(r["ok"])
+        self.assertIsNone(r["verified"], "sin UIA debe quedar None honesto")
+
+    def test_navigation_key_is_not_measured_by_snapshot(self):
+        # tecla de navegación (esc) -> NO observable por display-delta. No se llama
+        # al snapshot y el verified queda como tri-estado del tool (None aquí).
+        import gemma4_agent.computer_use_pkg.computer_use as cu
+        ag = MagicMock()
+        ag.tools.execute.return_value = {"ok": True}  # sin verified
+        ex = cu.PlanExecutor(ag)
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("esc", "Calculadora")
+        self.assertTrue(r["ok"])
+        self.assertIsNone(r["verified"])
+        ag.tools._uia_focused_text_snapshot.assert_not_called()
+
+    def test_keypress_verify_flag_off_falls_back_to_blind(self):
+        # GEMMA4_CU_KEYPRESS_VERIFY=0 -> comportamiento previo (no relee display);
+        # verified = (tool.verified is True). Aquí el tool dice verified=True.
+        import os
+        ex = self._executor({"ok": True, "verified": True}, "0", "0")
+        with patch.dict(os.environ, {"GEMMA4_CU_KEYPRESS_VERIFY": "0"}), \
+             patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("enter", "Calculadora")
+        self.assertIs(r["verified"], True)
+        ex.tools._uia_focused_text_snapshot.assert_not_called()
+
+    def test_key_is_observable_classifier(self):
+        from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor as PE
+        self.assertTrue(PE._key_is_observable("enter"))
+        self.assertTrue(PE._key_is_observable("="))
+        self.assertTrue(PE._key_is_observable("ctrl+s"))
+        self.assertTrue(PE._key_is_observable("backspace"))
+        self.assertFalse(PE._key_is_observable("esc"))
+        self.assertFalse(PE._key_is_observable("down"))
+        self.assertFalse(PE._key_is_observable("f5"))
+        self.assertFalse(PE._key_is_observable(""))
+
+
+class TypeScrollTriStateTest(unittest.TestCase):
+    """Auditoría B, finding C (2026-06-01): _type/_scroll colapsaban None->False en
+    la frontera del paso (`r.get('verified') is True`). Ahora preservan el
+    tri-estado y aprovechan las señales UIA que el tool ya expone."""
+
+    def _executor(self, gui_result):
+        import gemma4_agent.computer_use_pkg.computer_use as cu
+        ag = MagicMock()
+        ag.tools.execute.return_value = gui_result
+        return cu.PlanExecutor(ag)
+
+    def test_type_uia_confirmed_is_true(self):
+        ex = self._executor({"ok": True, "uia_confirmed": True})
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._type("2+2", "")
+        self.assertIs(r["verified"], True)
+
+    def test_type_uia_changed_is_true(self):
+        # calc: el literal '2+2' no aparece pero el contenido cambió.
+        ex = self._executor({"ok": True, "uia_changed": True})
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._type("2+2", "")
+        self.assertIs(r["verified"], True)
+
+    def test_type_unmeasurable_is_none_not_false(self):
+        # WebView2 sin UIA: tool reporta verified=None, sin señales -> None honesto.
+        ex = self._executor({"ok": True, "verified": None})
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._type("hola", "WhatsApp")
+        self.assertIsNone(r["verified"], "type no-medible debe quedar None")
+
+    def test_type_measured_no_effect_is_false(self):
+        ex = self._executor({"ok": True, "verified": False, "state_changed": False})
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._type("hola", "Notepad")
+        self.assertIs(r["verified"], False)
+
+    def test_scroll_unmeasurable_is_none(self):
+        ex = self._executor({"ok": True})  # sin verified ni state_changed
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._scroll("-6", "Opera")
+        self.assertIsNone(r["verified"])
+
+    def test_scroll_flag_off_collapses_to_bool(self):
+        import os
+        ex = self._executor({"ok": True})
+        with patch.dict(os.environ, {"GEMMA4_CU_TRISTATE": "0"}), \
+             patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._scroll("-6", "Opera")
+        self.assertIs(r["verified"], False)
+
+
+class ClickInprocTriStateRescueTest(unittest.TestCase):
+    """Auditoría B, finding B (2026-06-01): el camino in-process de click_button
+    (grounding=uia_inproc, el dominante) colapsa None->False midiendo con ROI
+    full-screen. _click rescata AQUÍ: Invoke disparado (ok=True) + frame-diff no
+    medible (state_changed=None) -> verified=None HONESTO, no False colapsado."""
+
+    def _executor(self, gui_result):
+        import gemma4_agent.computer_use_pkg.computer_use as cu
+        ag = MagicMock()
+        ag.tools.execute.return_value = gui_result
+        return cu.PlanExecutor(ag)
+
+    def test_inproc_invoked_unmeasurable_is_none(self):
+        # Lo que _uia_click_inproc devuelve hoy en el caso colapsado: ok=True,
+        # verified=False (changed is True == None->False), state_changed=None,
+        # grounding=uia_inproc. El rescate lo convierte a None honesto.
+        ex = self._executor({"ok": True, "verified": False, "state_changed": None,
+                             "grounding": "uia_inproc"})
+        r = ex._click("Aceptar", "Discord")
+        self.assertTrue(r["ok"])
+        self.assertIsNone(r["verified"], "Invoke disparado + no medible -> None")
+
+    def test_inproc_measured_no_change_stays_false(self):
+        # si SÍ se midió que no cambió (state_changed=False) -> False legítimo.
+        ex = self._executor({"ok": True, "verified": False, "state_changed": False,
+                             "grounding": "uia_inproc"})
+        r = ex._click("Aceptar", "Discord")
+        self.assertIs(r["verified"], False)
+
+    def test_inproc_measured_change_stays_true(self):
+        ex = self._executor({"ok": True, "verified": True, "state_changed": True,
+                             "grounding": "uia_inproc"})
+        r = ex._click("Aceptar", "Discord")
+        self.assertIs(r["verified"], True)
+
+    def test_non_inproc_path_unaffected_by_rescue(self):
+        # grounding distinto (uia/ocr): el rescate NO aplica; el False medido del
+        # camino por coordenadas se respeta tal cual.
+        ex = self._executor({"ok": True, "verified": False, "state_changed": False,
+                             "grounding": "uia"})
+        r = ex._click("Aceptar", "Editor")
+        self.assertIs(r["verified"], False)
+
+    def test_rescue_flag_off_keeps_collapse(self):
+        import os
+        ex = self._executor({"ok": True, "verified": False, "state_changed": None,
+                             "grounding": "uia_inproc"})
+        with patch.dict(os.environ, {"GEMMA4_CU_CLICK_TRISTATE": "0"}):
+            r = ex._click("Aceptar", "Discord")
+        self.assertIs(r["verified"], False)
+
+
+class AggregateTriStateTest(unittest.TestCase):
+    """Auditoría B, finding D + criterio del usuario (2026-06-01): el agregado
+    top-level del plan debe distinguir TRES casos, no colapsar None->False:
+      True  -> todos los pasos verificables True.
+      False -> algún paso verificable explícitamente False (falló de verdad).
+      None  -> sin ningún False pero hay al menos un None (no medible) -> honesto.
+    """
+
+    def _agg(self, *states):
+        from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor as PE
+        steps = [{"op": "click", "verified": s} for s in states]
+        return PE._aggregate_verified(steps)
+
+    def test_all_true_is_true(self):
+        self.assertIs(self._agg(True, True), True)
+
+    def test_any_false_is_false(self):
+        self.assertIs(self._agg(True, False, None), False)
+
+    def test_none_without_false_is_none(self):
+        self.assertIsNone(self._agg(True, None))
+
+    def test_empty_is_false(self):
+        from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor as PE
+        self.assertIs(PE._aggregate_verified([]), False)
+
+    def test_flag_off_collapses_none_to_false(self):
+        import os
+        with patch.dict(os.environ, {"GEMMA4_CU_TRISTATE": "0"}):
+            self.assertIs(self._agg(True, None), False)
+
+
+class SummarizeTriStateTest(unittest.TestCase):
+    """El reply debe ser HONESTO con el tri-estado top-level: None -> 'lo hice,
+    no pude confirmar el efecto' (NO 'no pude verificar'/fallo ni 'Hecho.')."""
+
+    def test_top_level_none_typed_is_honest(self):
+        from gemma4_agent.computer_use_pkg.computer_use import summarize_result
+        plan = [{"op": "type", "arg": "hola"}]
+        res = {"ok": True, "verified": None, "focused_app": "WhatsApp",
+               "steps": [{"op": "type", "arg": "hola", "ok": True, "verified": None}]}
+        msg = summarize_result("escribí hola", plan, res).lower()
+        self.assertIn("no pude confirmar", msg)
+        self.assertNotIn("no pude verificar", msg)
+
+    def test_top_level_none_generic_is_honest_not_done(self):
+        from gemma4_agent.computer_use_pkg.computer_use import summarize_result
+        plan = [{"op": "keypress", "arg": "enter"}]
+        res = {"ok": True, "verified": None, "focused_app": "",
+               "steps": [{"op": "keypress", "arg": "enter", "ok": True, "verified": None}]}
+        msg = summarize_result("apretá enter", plan, res).lower()
+        self.assertIn("no pude confirmar", msg)
+        self.assertNotEqual(msg.strip(), "hecho.")
+
+    def test_top_level_false_still_reports_failure(self):
+        from gemma4_agent.computer_use_pkg.computer_use import summarize_result
+        plan = [{"op": "keypress", "arg": "enter"}]
+        res = {"ok": True, "verified": False, "focused_app": "Calc",
+               "steps": [{"op": "keypress", "arg": "enter", "ok": True,
+                          "verified": False, "state_changed": False}]}
+        msg = summarize_result("calculá", plan, res).lower()
+        self.assertIn("no pude verificar", msg)
+
+    def test_send_to_chat_unmeasurable_is_honest(self):
+        from gemma4_agent.computer_use_pkg.computer_use import summarize_result
+        plan = [{"op": "open_chat", "arg": "Juan"}, {"op": "type", "arg": "hola"},
+                {"op": "send", "arg": ""}]
+        res = {"ok": True, "verified": None, "focused_app": "WhatsApp",
+               "steps": [{"op": "open_chat", "arg": "Juan", "ok": True,
+                          "verified": True, "opened": "Juan"},
+                         {"op": "type", "arg": "hola", "ok": True, "verified": True},
+                         {"op": "send", "arg": "", "ok": True, "verified": None}]}
+        msg = summarize_result("mandale hola a juan", plan, res).lower()
+        self.assertIn("no pude confirmar", msg)
+
+
 if __name__ == "__main__":
     unittest.main()
