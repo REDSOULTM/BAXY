@@ -656,51 +656,120 @@ class PlanExecutor:
             # COBERTURA NUEVA (auditoría B, finding A): el ENTER de la calculadora
             # MATERIALIZA el efecto (=> el resultado '4') pero gui_keypress devuelve
             # verified=True confirmando SOLO que SendInput disparó — sin releer el
-            # display. Aquí leemos el texto/valor de la ventana ANTES y DESPUÉS por
-            # UIA (la MISMA maquinaria que type_into usa: _uia_focused_text_snapshot)
-            # y derivamos un tri-estado HONESTO:
-            #   display cambió  -> verified=True REAL (el efecto se materializó).
-            #   no cambió       -> verified=False (medido y sin efecto).
-            #   UIA no medible  -> verified=None (Electron/WebView2, o sin uiautomation).
+            # display. Leemos el texto/valor de la ventana ANTES y DESPUÉS por UIA
+            # (la MISMA maquinaria que type_into: _uia_focused_text_snapshot) y
+            # derivamos un tri-estado HONESTO. Pero "algo cambió en la ventana" NO
+            # basta para afirmar verified=True (HUECO ADVERSARIAL 2026-06-01): el
+            # snapshot puede moverse por causas AJENAS a la tecla (un redraw, un
+            # reloj, un badge de notificación). Por eso:
+            #   - True  SOLO con evidencia ATRIBUIBLE a la tecla: para una tecla
+            #            que INSERTA un carácter literal (=, dígito, letra), ese
+            #            carácter aparece en el snapshot DESPUÉS y no antes — texto
+            #            no-relacionado NO puede falsificarlo (mismo principio que
+            #            uia_confirmed de type_into). El '=' de la calculadora
+            #            materializa el resultado, no el literal — eso cae en None.
+            #   - None  ("lo hice, no pude confirmar el efecto") cuando el snapshot
+            #            CAMBIÓ pero el cambio NO es atribuible a la tecla (enter,
+            #            backspace, ctrl+s: no hay literal esperado), o cuando NO se
+            #            pudo medir (Electron/WebView2, sin uiautomation), o cuando
+            #            win está vacío (medir sin scope = fingerprint desktop-wide
+            #            que cualquier app de fondo perturba -> mentira por señal
+            #            espuria; NO medimos).
+            #   - False SOLO si se MIDIÓ y el contenido scopeado NO cambió nada.
             # Para teclas sin efecto observable (esc/flechas/F-keys) NO medimos por
             # delta (no aplica) y dejamos el tri-estado del tool. Gateado default-ON;
             # GEMMA4_CU_KEYPRESS_VERIFY=0 vuelve a 'verified = r.get(...) is True'.
+            # CORRECCIÓN (1): exigir win no-vacío -> la medición queda SCOPEADA a la
+            # ventana objetivo (_uia_focused_text_snapshot filtra por window_substr).
+            # Con win="" el snapshot recorre TODAS las ventanas root = desktop-wide
+            # -> no se mide (None honesto), nunca True por ruido de fondo.
             _verify_by_uia = (
                 not _env_off("GEMMA4_CU_KEYPRESS_VERIFY")
                 and self._key_is_observable(keys)
+                and bool((win or "").strip())
             )
             uia_before = None
             if _verify_by_uia:
                 try:
-                    uia_before = self.tools._uia_focused_text_snapshot(win or "")
+                    uia_before = self.tools._uia_focused_text_snapshot(win)
                 except Exception:
                     uia_before = None
             r = self.tools.execute("gui", {"action": "keypress", "keys": keys, "window": win})
             verified = _tristate_verified(r.get("verified"))
-            if not _env_off("GEMMA4_CU_TRISTATE"):
-                # base tri-estado del tool (no colapsar None->False).
-                pass
-            else:
+            if _env_off("GEMMA4_CU_TRISTATE"):
                 verified = r.get("verified") is True
+            # base tri-estado del tool (no colapsar None->False) si TRISTATE on.
             state_changed = None
             if _verify_by_uia and bool(r.get("ok")):
                 try:
                     time.sleep(0.15)  # dejar que el display se asiente en el árbol UIA
-                    uia_after = self.tools._uia_focused_text_snapshot(win or "")
+                    uia_after = self.tools._uia_focused_text_snapshot(win)
                 except Exception:
                     uia_after = None
                 if uia_before is not None and uia_after is not None:
                     state_changed = (uia_after != uia_before)
-                    # El snapshot UIA es la señal MÁS fuerte: manda sobre el
-                    # verified ciego del tool. cambió -> True; no cambió -> False.
-                    verified = bool(state_changed)
-                # uia_before/after None (sin uiautomation) -> dejamos verified
-                # como vino (tri-estado del tool, típicamente None) = honesto.
+                    inserted = self._keypress_inserted_literal(keys)
+                    attributable = (
+                        state_changed
+                        and inserted is not None
+                        and inserted in uia_after
+                        and uia_after.count(inserted) > uia_before.count(inserted)
+                    )
+                    if attributable:
+                        # El literal esperado APARECIÓ en la ventana objetivo:
+                        # señal atribuible a la tecla, infalsificable por texto
+                        # ajeno -> verified=True REAL.
+                        verified = True
+                    elif state_changed:
+                        # Algo cambió en la ventana scopeada pero NO es atribuible a
+                        # la tecla (sin literal esperado, o no apareció) -> honesto
+                        # None ("lo hice, no pude confirmar el efecto"), NO True.
+                        verified = None
+                    else:
+                        # Se midió y el contenido scopeado NO cambió -> False real.
+                        verified = False
+                # uia_before/after None (sin uiautomation o sin scope) -> dejamos
+                # verified como vino (tri-estado del tool, típicamente None) = honesto.
             return {"ok": bool(r.get("ok")), "verified": verified, "keys": keys,
                     "state_changed": state_changed,
                     "completion_status": r.get("completion_status")}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
+
+    # Caracteres-tecla que INSERTAN un literal observable en el texto de la
+    # ventana (puntuación/símbolos de un solo char). Una letra/dígito sueltos
+    # también insertan su literal. Combos con modificador (ctrl+/alt+/win+) NO
+    # insertan el literal del último token (ctrl+s NO escribe 's') -> None.
+    # Estable cross-locale: son caracteres, no idioma.
+    _LITERAL_PUNCT_KEYS = frozenset(
+        "=+-*/.,;:%^()[]{}<>!?@#$&|~`'\"\\ _"
+    )
+
+    @classmethod
+    def _keypress_inserted_literal(cls, keys: str) -> str | None:
+        """Si la tecla inserta un CARÁCTER literal observable en el texto, devuelve
+        ese carácter; si no (combo con modificador, enter/backspace/tab, tecla
+        nombrada), devuelve None. Esto define la señal ATRIBUIBLE de _keypress: el
+        literal esperado presente DESPUÉS = prueba que la tecla tuvo su efecto,
+        infalsificable por texto no-relacionado (mismo principio que type_into
+        uia_confirmed). Conservador: NUNCA inventa atribución para teclas cuyo
+        efecto no es un carácter predecible (enter materializa un resultado que NO
+        conocemos de antemano -> None)."""
+        k = (keys or "").strip()
+        if not k:
+            return None
+        # Combo con modificador: el "literal" del último token no se escribe.
+        if "+" in k and len(k) > 1:
+            return None
+        kl = k.lower()
+        # Teclas nombradas (enter/space/backspace/...) no son un literal observable
+        # predecible: enter MATERIALIZA un resultado desconocido, backspace BORRA.
+        if len(kl) != 1:
+            return None
+        ch = k  # preservar el char original (mayúsc/minúsc/símbolo)
+        if ch in cls._LITERAL_PUNCT_KEYS or ch.isalnum():
+            return ch
+        return None
 
     @classmethod
     def _key_is_observable(cls, keys: str) -> bool:

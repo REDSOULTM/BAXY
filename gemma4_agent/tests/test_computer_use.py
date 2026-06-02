@@ -839,11 +839,15 @@ class ClickNoDoubleClickOnNoneTest(unittest.TestCase):
 
 
 class KeypressVerifyByUiaTest(unittest.TestCase):
-    """Auditoría B, finding A (2026-06-01): el ENTER que MATERIALIZA el efecto
-    (calc => '4') NO se verificaba — gui_keypress devolvía verified=True
-    confirmando solo que SendInput disparó. Ahora _keypress lee el display por
-    UIA (snapshot) ANTES/DESPUÉS y deriva un tri-estado HONESTO. Sin GUI: se
-    mockea _uia_focused_text_snapshot y gui.execute (no toca SendInput real)."""
+    """Auditoría B, finding A (2026-06-01) + FIX HUECO ADVERSARIAL (2026-06-01):
+    el ENTER que MATERIALIZA el efecto (calc => '4') NO se verificaba — gui_keypress
+    devolvía verified=True confirmando solo que SendInput disparó. _keypress lee el
+    display por UIA (snapshot) ANTES/DESPUÉS y deriva un tri-estado HONESTO. PERO
+    'algo cambió en la ventana' NO basta para True (cualquier redraw/badge ajeno lo
+    falsea): True SOLO con señal ATRIBUIBLE (el literal de la tecla apareció);
+    cambio NO atribuible -> None; no medible / win vacío -> None; medido-sin-cambio
+    -> False. Sin GUI: se mockea _uia_focused_text_snapshot y gui.execute (no toca
+    SendInput real)."""
 
     def _executor(self, gui_result, snap_before, snap_after):
         import gemma4_agent.computer_use_pkg.computer_use as cu
@@ -853,26 +857,74 @@ class KeypressVerifyByUiaTest(unittest.TestCase):
         ex = cu.PlanExecutor(ag)
         return ex
 
-    def test_enter_display_changed_is_verified_true(self):
-        # calc: display '0' -> '4' tras ENTER -> verified=True REAL (no ciego).
-        ex = self._executor({"ok": True}, "0", "4")
+    def test_attributable_literal_present_is_verified_true(self):
+        # ACCIÓN ATRIBUIBLE -> True: la tecla '=' inserta su literal '='; el '='
+        # aparece en el snapshot DESPUÉS (campo de expresión '2+2' -> '2+2=') y su
+        # cuenta sube -> evidencia atribuible a la tecla, infalsificable por texto
+        # ajeno. (Antes esto se 'verificaba' por mero delta; ahora exige el literal.)
+        ex = self._executor({"ok": True}, "2+2", "2+2=")
         with patch("gemma4_agent.computer_use.time.sleep"):
-            r = ex._keypress("enter", "Calculadora")
+            r = ex._keypress("=", "Calculadora")
         self.assertTrue(r["ok"])
         self.assertIs(r["verified"], True)
         self.assertIs(r["state_changed"], True)
 
-    def test_enter_display_unchanged_is_false(self):
-        # el display NO cambió tras la tecla -> medido y sin efecto -> False.
+    def test_enter_change_not_attributable_is_none(self):
+        # CAMBIO NO ATRIBUIBLE -> None: ENTER no inserta un literal predecible; el
+        # display '0' -> '4' cambió, pero 'algo cambió en la ventana' NO prueba que
+        # lo causó el ENTER (un redraw/reloj/badge de fondo también muta el snapshot).
+        # HONESTO: 'lo hice, no pude confirmar el efecto' (None), NO True falso.
+        ex = self._executor({"ok": True}, "0", "4")
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("enter", "Calculadora")
+        self.assertTrue(r["ok"])
+        self.assertIsNone(r["verified"])
+        self.assertIs(r["state_changed"], True)
+
+    def test_modifier_combo_change_not_attributable_is_none(self):
+        # ctrl+s no escribe 's'; aunque la ventana cambie, no es atribuible -> None.
+        ex = self._executor({"ok": True}, "doc", "doc*saved*")
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("ctrl+s", "Editor")
+        self.assertIsNone(r["verified"])
+        self.assertIs(r["state_changed"], True)
+
+    def test_literal_present_but_not_from_this_key_stays_none(self):
+        # El literal '=' YA estaba antes y su cuenta NO sube -> NO atribuible a ESTA
+        # tecla (texto ajeno no puede falsificar el True) -> None honesto.
+        ex = self._executor({"ok": True}, "a=b", "a=c")
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("=", "Editor")
+        self.assertIsNone(r["verified"])
+        self.assertIs(r["state_changed"], True)
+
+    def test_measured_no_change_is_false(self):
+        # MEDIDO Y NO CAMBIÓ -> False real: el snapshot scopeado es idéntico.
         ex = self._executor({"ok": True}, "0", "0")
         with patch("gemma4_agent.computer_use.time.sleep"):
             r = ex._keypress("enter", "Calculadora")
         self.assertIs(r["verified"], False)
         self.assertIs(r["state_changed"], False)
 
+    def test_empty_window_not_measured_is_none(self):
+        # CORRECCIÓN (1) del adversario: win vacío -> _uia_focused_text_snapshot
+        # recorrería TODAS las ventanas (fingerprint desktop-wide que cualquier app
+        # de fondo perturba). NO medimos por snapshot; verified queda tri-estado del
+        # tool (None aquí). NO se llama al snapshot.
+        import gemma4_agent.computer_use_pkg.computer_use as cu
+        ag = MagicMock()
+        ag.tools.execute.return_value = {"ok": True}  # tool no reporta verified
+        ex = cu.PlanExecutor(ag)
+        with patch("gemma4_agent.computer_use.time.sleep"):
+            r = ex._keypress("enter", "")
+        self.assertTrue(r["ok"])
+        self.assertIsNone(r["verified"], "sin scope de ventana NO se mide -> None")
+        ag.tools._uia_focused_text_snapshot.assert_not_called()
+
     def test_uia_unavailable_is_none_honest(self):
-        # UIA no disponible (snapshot None) -> tri-estado NONE honesto, NO True
-        # falso ni False. Distinción medible-pero-no-intentado vs no-medible.
+        # NO MEDIBLE -> None: UIA no disponible (snapshot None) -> tri-estado NONE
+        # honesto, NO True falso ni False. Distinción medible-pero-no-intentado vs
+        # no-medible.
         import gemma4_agent.computer_use_pkg.computer_use as cu
         ag = MagicMock()
         ag.tools.execute.return_value = {"ok": True}  # tool no reporta verified
@@ -917,6 +969,22 @@ class KeypressVerifyByUiaTest(unittest.TestCase):
         self.assertFalse(PE._key_is_observable("down"))
         self.assertFalse(PE._key_is_observable("f5"))
         self.assertFalse(PE._key_is_observable(""))
+
+    def test_inserted_literal_classifier(self):
+        # Define la señal ATRIBUIBLE: solo las teclas que insertan un char literal
+        # observable devuelven ese char; enter/backspace/combos -> None (sin literal
+        # predecible, no se puede atribuir un True a un mero delta).
+        from gemma4_agent.computer_use_pkg.computer_use import PlanExecutor as PE
+        self.assertEqual(PE._keypress_inserted_literal("="), "=")
+        self.assertEqual(PE._keypress_inserted_literal("a"), "a")
+        self.assertEqual(PE._keypress_inserted_literal("5"), "5")
+        self.assertEqual(PE._keypress_inserted_literal("+"), "+")
+        self.assertIsNone(PE._keypress_inserted_literal("enter"))
+        self.assertIsNone(PE._keypress_inserted_literal("backspace"))
+        self.assertIsNone(PE._keypress_inserted_literal("ctrl+s"))
+        self.assertIsNone(PE._keypress_inserted_literal("ctrl+v"))
+        self.assertIsNone(PE._keypress_inserted_literal("tab"))
+        self.assertIsNone(PE._keypress_inserted_literal(""))
 
 
 class TypeScrollTriStateTest(unittest.TestCase):
