@@ -101,6 +101,40 @@ class TestRetryBudget(unittest.TestCase):
         self.assertEqual(retry_budget_for(None), 0)
         self.assertEqual(retry_budget_for("garbage_class_xyz"), 0)
 
+    def test_gate_tool_not_found_zero_transient_retried(self):
+        """GATE explícito (perfection roadmap #4): TOOL_NOT_FOUND=0 reintentos,
+        TRANSIENT >=80% reintentado. Mide el budget POR CLASE de punta a punta:
+        clasificación estructural -> budget. Ataca el '466/513 desperdiciados'."""
+        from ..safety_pkg.verify_core import (
+            classify_failure, retry_budget_for, ERR_TOOL_NOT_FOUND, ERR_TRANSIENT)
+        # Resultados representativos del dispatcher para cada clase.
+        tool_not_found_cases = [
+            {"error": "unknown tool: xyzzy"},
+            {"error": "Unknown Tool: foobar"},
+            {"error": "unknown tool: not found anywhere"},
+        ]
+        transient_cases = [
+            {"error": "connection timeout", "status": "failed"},
+            {"error": "network error"},
+            {"error": "el recurso está ocupado"},
+            {"error": "rate limit exceeded"},
+            {"error": "timed out, try again"},
+        ]
+        # GATE 1: TOOL_NOT_FOUND -> budget 0 SIEMPRE (0 reintentos).
+        for r in tool_not_found_cases:
+            cls = classify_failure(r)
+            self.assertEqual(cls, ERR_TOOL_NOT_FOUND, r)
+            self.assertEqual(retry_budget_for(cls), 0,
+                             f"TOOL_NOT_FOUND debe ser 0 reintentos: {r}")
+        # GATE 2: TRANSIENT -> >=80% clasificado correcto Y con budget>0.
+        retried = sum(
+            1 for r in transient_cases
+            if classify_failure(r) == ERR_TRANSIENT and retry_budget_for(ERR_TRANSIENT) > 0
+        )
+        frac = retried / len(transient_cases)
+        self.assertGreaterEqual(frac, 0.80,
+                                f"TRANSIENT reintentado {frac:.0%} (<80%)")
+
 
 class TestErrorTypeField(unittest.TestCase):
     def test_default_none(self):
@@ -111,6 +145,66 @@ class TestErrorTypeField(unittest.TestCase):
         o = VerifierOutcome(tool_name="app", confirmed=False, reason="x",
                             error_type=ERR_MISSING_PRECONDITION)
         self.assertEqual(o.error_type, ERR_MISSING_PRECONDITION)
+
+
+class TestVerifySetsErrorType(unittest.TestCase):
+    """H1 (perfection roadmap): el GATE pide que los verifiers SETEEN error_type.
+
+    Antes el campo estaba 100% inerte: declarado en VerifierOutcome pero ningún
+    verifier lo poblaba y classify_failure se llamaba con given=None. Ahora
+    verify_core.verify() es el chokepoint que lo garantiza por construcción:
+    TODO outcome confirmed=False sale con error_type != None.
+    """
+
+    def setUp(self):
+        # Asegurar registry cargado (los decorators registran al importar).
+        import gemma4_agent.verifiers  # noqa: F401
+
+    def test_failed_outcome_always_classified(self):
+        from ..safety_pkg.verify_core import verify, ERR_MISSING_PRECONDITION
+        # app.open con la tool reportando fallo -> el verifier marca confirmed=False
+        # y DEBE traer error_type (no None). El verify_app lo setea explícito a
+        # MISSING_PRECONDITION (app no instalada / no resuelta).
+        out = verify("app", {"action": "open", "name": "Discord"},
+                     {"ok": False, "error": "app not found"})
+        self.assertIs(out.confirmed, False)
+        self.assertIsNotNone(out.error_type, "H1: failed outcome sin error_type")
+        self.assertEqual(out.error_type, ERR_MISSING_PRECONDITION)
+
+    def test_inferred_when_verifier_did_not_set(self):
+        # Un fallo transitorio que el verifier reportó sin clase explícita ->
+        # verify_core lo infiere con classify_failure (no se queda en None).
+        from ..safety_pkg.verify_core import verify, ERR_TRANSIENT
+        out = verify("audio", {"action": "set_volume", "level": 50},
+                     {"ok": False, "status": "failed", "error": "connection timeout"})
+        self.assertIs(out.confirmed, False)
+        self.assertEqual(out.error_type, ERR_TRANSIENT)
+
+    def test_confirmed_true_has_no_error_type(self):
+        # confirmed=True no es un fallo -> no se le inventa una clase de error.
+        from ..safety_pkg.verify_core import verify
+        out = verify("app", {"action": "open", "name": "Discord"},
+                     {"ok": True, "verified": True})
+        self.assertIs(out.confirmed, True)
+        self.assertIsNone(out.error_type)
+
+    def test_explicit_error_type_not_overwritten(self):
+        # Si el verifier YA seteó error_type, verify_core NO lo pisa con la
+        # inferencia de texto (el verifier conoce mejor su semántica).
+        from ..safety_pkg.verify_core import (
+            verify, _VERIFIERS, ERR_PARAM_MISMATCH)
+        from ..safety_pkg.verify_core import VerifierOutcome as VO
+        sentinel = "____h1_test_tool____"
+        _VERIFIERS[sentinel] = lambda a, r: VO(
+            tool_name=sentinel, confirmed=False, reason="boom",
+            error_type=ERR_PARAM_MISMATCH)
+        try:
+            # result dice "timeout" (-> TRANSIENT por texto) pero el verifier
+            # ya dijo PARAM_MISMATCH: gana el verifier.
+            out = verify(sentinel, {}, {"ok": False, "error": "connection timeout"})
+            self.assertEqual(out.error_type, ERR_PARAM_MISMATCH)
+        finally:
+            _VERIFIERS.pop(sentinel, None)
 
 
 class TestGate(unittest.TestCase):

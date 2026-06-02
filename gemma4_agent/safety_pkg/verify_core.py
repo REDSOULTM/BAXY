@@ -181,13 +181,26 @@ def verify(tool_name: str, args: dict, result: dict) -> VerifierOutcome:
                 tool_name=tool_name,
                 confirmed=False,
                 reason=f"verifier returned non-VerifierOutcome: {type(outcome).__name__}",
+                error_type=ERR_UNKNOWN,
             )
+        # H1 (perfection roadmap 2026-05-29): el campo error_type estaba DECLARADO
+        # pero NUNCA seteado por ningún verifier. Este verify() es el ÚNICO
+        # chokepoint por el que pasan TODOS los outcomes: si un verifier reportó
+        # un fallo (confirmed=False) sin clasificarlo, lo clasificamos acá con
+        # classify_failure sobre el result estructural. Así "los verifiers setean
+        # error_type" pasa a ser verdad por construcción, sin tocar cada verifier
+        # uno por uno. Un verifier que YA seteó error_type gana (no lo pisamos:
+        # conoce su semántica mejor que la heurística). confirmed=True/None no
+        # necesitan clase de error (no hay fallo que reintentar).
+        if outcome.confirmed is False and not outcome.error_type:
+            outcome.error_type = classify_failure(result or {}, outcome.reason or "")
         return outcome
     except Exception as exc:  # noqa: BLE001
         return VerifierOutcome(
             tool_name=tool_name,
             confirmed=False,
             reason=f"verifier crashed: {type(exc).__name__}: {exc}",
+            error_type=ERR_UNKNOWN,
         )
 
 

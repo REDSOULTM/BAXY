@@ -3504,6 +3504,20 @@ class Gemma4Agent:
             # Honesty guard: if any tool in the just-processed batch returned
             # unverified/failed/needs_verification, inject an explicit user-role
             # note so Gemma cannot silently move on as if everything succeeded.
+            # H1: mapear cada result (por identidad) al error_type que el VERIFIER
+            # ya clasificó en este mismo batch. Así la clasificación del verifier
+            # (autoritativa: conoce el estado del SO que midió) gana sobre la
+            # re-inferencia ciega por texto del result. Antes este bloque llamaba
+            # classify_failure(r, "") con given=None -> ignoraba el error_type del
+            # verifier por completo (el campo era 100% inerte fuera de su declaración).
+            # events[-N:] y verifier_outcomes[-N:] son 1:1 (Phase 3 appendea uno de
+            # cada por call, mismo orden que raw_tool_calls).
+            _n_batch = len(raw_tool_calls)
+            _result_etype = {
+                id(ev.result): outcome.error_type
+                for ev, outcome in zip(events[-_n_batch:],
+                                       verifier_outcomes[-_n_batch:])
+            }
             unverified_pairs = [
                 ((raw_call.get("function") or {}).get("name", ""), ev.result)
                 for raw_call, ev in zip(raw_tool_calls, events[-len(raw_tool_calls):])
@@ -3518,7 +3532,11 @@ class Gemma4Agent:
                     # vez del nudge genérico, para que el loop se auto-corrija. Sólo
                     # cambia el TEXTO del hint (mismo mecanismo, mismo loop_detector
                     # + max_turns de guarda) -> bajo riesgo. Capa genérica, el LLM decide.
-                    _etypes = {n: _classify_failure(r, "") for n, r in unverified_pairs}
+                    # H1: given = el error_type del verifier (si lo seteó) -> autoritativo.
+                    _etypes = {
+                        n: _classify_failure(r, "", given=_result_etype.get(id(r)))
+                        for n, r in unverified_pairs
+                    }
                     _vals = list(_etypes.values())
                     # H2: elegir la clase DOMINANTE por prioridad de recuperabilidad
                     # (precondition > param > transient > tool_not_found > unknown).
