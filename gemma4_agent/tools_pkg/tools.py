@@ -1500,6 +1500,22 @@ class ToolRegistry:
 
     def schemas_for_names(self, names: list[str] | tuple[str, ...] | set[str]) -> list[dict[str, Any]]:
         wanted = {str(name) for name in names}
+        has_mcp = any(n.startswith("mcp__") for n in wanted)
+        lean_on = _lean_descriptions_on()
+        # Cache por-subset (clave = subset + flag LEAN). Bypaseamos cuando el
+        # subset pide tools MCP dinámicas: su catalogo puede cambiar en runtime
+        # (discover_mcp_tools/reset_cache) y NO queremos servir un schema MCP
+        # stale. Ver _SCHEMAS_FOR_NAMES_CACHE para el racional completo.
+        cache_key: tuple | None = None
+        if not has_mcp:
+            cache_key = (frozenset(wanted), lean_on)
+            cached = _SCHEMAS_FOR_NAMES_CACHE.get(cache_key)
+            if cached is not None:
+                # Copia de la lista externa: el cache es dueño de su lista; el
+                # caller no debe poder mutarla. Los dicts internos se comparten
+                # (igual que el path sin cache: out referencia los literales
+                # globales cuando LEAN esta off, y copias estables cuando on).
+                return list(cached)
         out = [
             schema
             for schema in COMPOUND_TOOL_SCHEMAS
@@ -1509,7 +1525,7 @@ class ToolRegistry:
         # resolvemos sus schemas dinámicos desde el cliente MCP (aditivo, NO muta
         # el literal global COMPOUND_TOOL_SCHEMAS). Solo si el subset realmente las
         # pidió -> 0 overhead cuando no hay MCP en el turno.
-        if any(str(n).startswith("mcp__") for n in wanted):
+        if has_mcp:
             try:
                 from .mcp_client import mcp_tool_schemas
                 out.extend(s for s in mcp_tool_schemas()
@@ -1518,8 +1534,12 @@ class ToolRegistry:
                 pass
         # v22-next: descripciones lean opt-in (GEMMA4_LEAN_RULES) — SOLO en el subset
         # que ve el LLM; no muta el literal global. Default off = sin cambio.
-        if _lean_descriptions_on():
+        if lean_on:
             out = [_with_lean_description(s) for s in out]
+        if cache_key is not None:
+            # Guardamos una copia: si despues mutaramos out (no lo hacemos hoy)
+            # el cache quedaria intacto. list() basta (dicts compartidos a proposito).
+            _SCHEMAS_FOR_NAMES_CACHE[cache_key] = list(out)
         return out
 
     def execute(self, name: str, args: dict[str, Any] | None) -> dict[str, Any]:
@@ -7690,6 +7710,35 @@ def _with_lean_description(schema: dict[str, Any]) -> dict[str, Any]:
     new_fn = dict(fn)
     new_fn["description"] = lean
     return {**schema, "function": new_fn}
+
+
+# ---------------------------------------------------------------------------
+# Cache por-subset de schemas_for_names (2026-06-02, deuda tecnica oportunista).
+#
+# schemas_for_names reconstruye la lista filtrando COMPOUND_TOOL_SCHEMAS +
+# aplicando LEAN en CADA llamada (1-2 veces/turno). El ahorro MEDIDO es
+# despreciable (~16 us/call, 0.016 ms -- trabajo en memoria sin I/O; ver el
+# reporte del sprint), pero el cache es correcto y barato.
+#
+# CLAVE = (frozenset(names), lean_on). Solo cacheamos lo ESTABLE en la sesion:
+#   - El subset de nombres pedidos (orden irrelevante -> frozenset).
+#   - El flag LEAN (afecta el CONTENIDO de las descripciones; se lee por-llamada
+#     y los tests lo togglean -> DEBE estar en la clave, si no servimos stale).
+#
+# INVALIDACION del catalogo MCP: las tools mcp__* son DINAMICAS (se descubren al
+# boot, re-descubribles con discover_mcp_tools(force=True)/reset_cache()). En vez
+# de versionar el catalogo MCP, BYPASEAMOS el cache cuando el subset pide alguna
+# mcp__* -> asi NUNCA servimos un schema MCP stale (ni uno lean cuando es full).
+# Los subsets con MCP son raros (GEMMA4_MCP default OFF) -> costo nulo. El cache
+# cubre el 100% del caso comun (sin MCP) y es imposible que devuelva MCP obsoleto.
+_SCHEMAS_FOR_NAMES_CACHE: dict[tuple, list[dict[str, Any]]] = {}
+
+
+def _invalidate_schemas_cache() -> None:
+    """Vacia el cache por-subset. Llamar si LEAN_DESCRIPTIONS o el catalogo
+    estatico mutan en runtime (tests / reconfig). El caso normal NO lo necesita:
+    LEAN esta en la clave y los subsets MCP bypasean el cache."""
+    _SCHEMAS_FOR_NAMES_CACHE.clear()
 
 
 # ---------------------------------------------------------------------------
