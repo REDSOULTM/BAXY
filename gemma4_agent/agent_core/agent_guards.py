@@ -190,6 +190,40 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     return content.rstrip() + note
 
 
+def honest_action_reply(reply: Any) -> Any:
+    """Honestidad para los early_reply de ACCIÓN de ``_decide_turn``.
+
+    Bug Ola 1 (2026-06-01, MEDIDO en vivo contra el 4B): los short-circuits de
+    acción (calc_action / app_action / app_open) devuelven
+    ``TurnDecision(early_reply=AgentReply(content=...))`` SALTÁNDOSE todo
+    ``_finalize_turn`` — y con él ``guard_unverified_final``. Resultado: el tool
+    reportaba honesto (``verified=False/None``, ``status=attempted/
+    needs_verification``) pero el reply al usuario MENTÍA ("Hecho." / "Listo,
+    abrí X"). Medido: 3/6 casos clave mentían, con guard invocado 0 veces.
+
+    Este helper aplica el MISMO ``guard_unverified_final`` (única fuente de
+    verdad — no duplica su lógica de exenciones: dispatched / needs_user /
+    deeplink / launch_requested siguen pasando) sobre el ``content`` del reply
+    usando sus propios ``tool_events`` como evidencia. Estructural: mide la
+    FORMA del result (verified/status), no listas de frases por idioma. Si el
+    reply no tiene tool_events (no es de acción) o ya es honesto, lo devuelve
+    intacto -> el camino feliz (verified=True) NO se toca.
+
+    Devuelve el mismo objeto reply (con ``content`` reescrito si hizo falta)
+    para que el caller pueda seguir usándolo tal cual.
+    """
+    events = getattr(reply, "tool_events", None)
+    if not events:
+        return reply
+    content = getattr(reply, "content", None)
+    if not isinstance(content, str) or not content:
+        return reply
+    new_content = guard_unverified_final(content, events)
+    if new_content != content:
+        reply.content = new_content
+    return reply
+
+
 def guard_phrase_confirm(
     content: str,
     *,
@@ -421,6 +455,7 @@ def guard_plan_status(
 __all__ = [
     "build_user_facing_fallback",
     "guard_unverified_final",
+    "honest_action_reply",
     "guard_phrase_confirm",
     "guard_promise_without_action",
     "guard_grounded_action_claim",
