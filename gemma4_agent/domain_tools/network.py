@@ -169,6 +169,16 @@ def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     if not addresses:
         return _err("missing addresses (list of DNS server IPs)")
     addresses = [str(a) for a in addresses if str(a).strip()]
+    # CC-100 / T2-network-dns-set-injection-033 + wart de orden (2026-06-01):
+    # validar cada IP ANTES de cualquier efecto colateral (snapshot de red +
+    # checkpoint de estado). Si una dirección es inválida (potencial inyección)
+    # se rechaza sin tocar la red ni persistir estado huérfano. AUTO/auto es
+    # un sentinel reconocido (reset a DHCP), no requiere validación de IP.
+    is_auto = addresses == ["AUTO"] or addresses == ["auto"]
+    if not is_auto:
+        for addr in addresses:
+            if not (is_ipv4(addr) or is_ipv6(addr)):
+                return _err(f"invalid DNS address: {addr!r}", status="needs_user")
     before = _network_dns_get({"adapter": adapter})
     rollback_addrs: list[str] = []
     for adapter_info in before.get("adapters", []):
@@ -181,16 +191,12 @@ def _network_dns_set(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         rollback=[rollback_step] if rollback_addrs else [],
         metadata={"before": before, "target_addresses": addresses},
     )
-    # CC-100 / T2-network-dns-set-injection-033: validar cada IP antes de
-    # interpolar; adapter va por env-var; addresses van también via env-var
-    # como string separado por comas.
-    if addresses == ["AUTO"] or addresses == ["auto"]:
+    # adapter va por env-var; addresses van también via env-var como string
+    # separado por comas (ya validadas arriba para el camino no-AUTO).
+    if is_auto:
         env = {**os.environ, "GEMMA4_DNS_ADAPTER": adapter}
         cmd = "Set-DnsClientServerAddress -InterfaceAlias $env:GEMMA4_DNS_ADAPTER -ResetServerAddresses"
     else:
-        for addr in addresses:
-            if not (is_ipv4(addr) or is_ipv6(addr)):
-                return _err(f"invalid DNS address: {addr!r}", status="needs_user")
         env = {
             **os.environ,
             "GEMMA4_DNS_ADAPTER": adapter,

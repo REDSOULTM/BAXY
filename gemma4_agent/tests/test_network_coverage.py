@@ -159,20 +159,21 @@ class TestNetworkDnsSetInjectionGuard(unittest.TestCase):
     def test_missing_addresses(self):
         self.assertFalse(network._network_dns_set({"adapter": "Ethernet"}, self.state)["ok"])
 
-    def test_invalid_ip_refused_and_set_command_never_runs(self):
-        # CC-100 / T2-network-dns-set-injection-033: una IP inválida (potencial
-        # inyección) debe rechazarse con needs_user. Lo CRÍTICO es que el comando
-        # destructivo Set-DnsClientServerAddress NUNCA se ejecute.
-        # NOTA (no-bug, observado al testear): _network_dns_set toma el snapshot
-        # 'before' (1 subprocess dns_get) y crea un checkpoint ANTES de validar
-        # las IPs, así que sí hay un read+state-write previo al rechazo; pero la
-        # escritura peligrosa queda correctamente bloqueada.
+    def test_invalid_ip_refused_with_zero_side_effects(self):
+        # CC-100 / T2-network-dns-set-injection-033 + fix wart de orden
+        # (2026-06-01): una IP inválida (potencial inyección) debe rechazarse con
+        # needs_user SIN NINGÚN efecto colateral. Antes del fix, _network_dns_set
+        # tomaba el snapshot 'before' (1 subprocess dns_get) y persistía un
+        # checkpoint ANTES de validar las IPs -> 1 read de red + 1 escritura de
+        # estado huérfana. Tras el fix, la validación corre PRIMERO:
+        #   IP inválida -> 0 subprocess de red + 0 checkpoint + needs_user.
         calls = []
 
         def fake_run(argv, *a, **k):
             calls.append(argv)
-            return _proc(0, "")  # dns_get (before) devuelve vacío -> serializable
+            return _proc(0, "")
 
+        before_chk = self.state.list_checkpoints()["count"]
         with patch.object(network.subprocess, "run", side_effect=fake_run):
             r = network._network_dns_set(
                 {"adapter": "Ethernet", "addresses": ["169.254.0.1; rm -rf /"]},
@@ -180,9 +181,57 @@ class TestNetworkDnsSetInjectionGuard(unittest.TestCase):
             )
         self.assertFalse(r["ok"])
         self.assertEqual(r["status"], "needs_user")
-        # ningún comando ejecutado debe contener Set-DnsClientServerAddress
-        joined = " ".join(" ".join(str(p) for p in c) for c in calls)
-        self.assertNotIn("Set-DnsClientServerAddress", joined)
+        # GATE 1: cero subprocess de red (ni el dns_get del snapshot ni el set)
+        self.assertEqual(calls, [], "una IP inválida no debe gatillar ningún subprocess")
+        # GATE 2: cero checkpoint persistido (sin escritura de estado huérfana)
+        self.assertEqual(self.state.list_checkpoints()["count"], before_chk)
+
+    def test_valid_ip_keeps_snapshot_checkpoint_set_order(self):
+        # CAMINO FELIZ intacto tras el fix: IP válida -> snapshot (dns_get) +
+        # checkpoint persistido + comando Set-DnsClientServerAddress, en ese
+        # orden. Verifica que el fix NO degradó el flujo correcto.
+        calls = []
+
+        def fake_run(argv, *a, **k):
+            calls.append(argv)
+            joined = " ".join(str(p) for p in argv)
+            if "Set-DnsClientServerAddress" in joined and "Get-DnsClient" not in joined:
+                return _proc(0, "")  # el set destructivo
+            return _proc(0, "[]")  # los dns_get (before/after) -> JSON serializable
+
+        before_chk = self.state.list_checkpoints()["count"]
+        with patch.object(network.subprocess, "run", side_effect=fake_run):
+            r = network._network_dns_set(
+                {"adapter": "Ethernet", "addresses": ["8.8.8.8", "1.1.1.1"]},
+                self.state,
+            )
+        self.assertTrue(r["ok"])
+        self.assertTrue(r["verified"])  # returncode 0 del set -> verified True (honesto)
+        self.assertEqual(r["exit_code"], 0)
+        # checkpoint SÍ se persiste en el camino feliz
+        self.assertEqual(self.state.list_checkpoints()["count"], before_chk + 1)
+        self.assertIsNotNone(r["checkpoint"])
+        # el comando destructivo SÍ corrió, y vino DESPUÉS del snapshot
+        joined_all = [" ".join(str(p) for p in c) for c in calls]
+        set_idx = next(i for i, c in enumerate(joined_all) if "Set-DnsClientServerAddress" in c)
+        # hubo al menos un dns_get (snapshot 'before') ANTES del set
+        self.assertGreater(set_idx, 0, "el snapshot before debe correr antes del set")
+
+    def test_invalid_set_returncode_is_not_verified(self):
+        # HONESTIDAD: si el set destructivo falla (returncode!=0), verified=False.
+        def fake_run(argv, *a, **k):
+            joined = " ".join(str(p) for p in argv)
+            if "Set-DnsClientServerAddress" in joined and "Get-DnsClient" not in joined:
+                return _proc(1, "", "Access denied")
+            return _proc(0, "[]")
+
+        with patch.object(network.subprocess, "run", side_effect=fake_run):
+            r = network._network_dns_set(
+                {"adapter": "Ethernet", "addresses": ["8.8.8.8"]},
+                self.state,
+            )
+        self.assertFalse(r["verified"])  # returncode 1 -> NO verified
+        self.assertEqual(r["exit_code"], 1)
 
 
 class TestNetworkPublicIp(unittest.TestCase):
