@@ -117,6 +117,29 @@ class HonestActionReplyUnitTest(unittest.TestCase):
         r = agent_guards.honest_action_reply(AgentReply(content="Es 4.", tool_events=[]))
         self.assertEqual(r.content, "Es 4.")
 
+    def test_hard_fail_no_reply_key_does_not_claim_success(self):
+        # HUECO ADVERSARIAL (2026-06-01): t_computer_use puede devolver un error
+        # DURO ok=False/status=failed SIN clave "reply" (tools.py:2429/2438, p.ej.
+        # "no pude planificar la acción"). Antes, el short-circuit caía al texto de
+        # ÉXITO HARDCODEADO ("Hecho.") y guard_unverified_final lo EXIMÍA intacto en
+        # la rama `status==failed and not ok` -> el reply AFIRMABA ÉXITO en un fallo
+        # duro (mentira). El reply final NO debe afirmar éxito: nota DURA.
+        r = agent_guards.honest_action_reply(self._reply(
+            {"ok": False, "error": "no pude planificar la accion",
+             "status": "failed", "goal": "sumar"}))
+        self.assertNotEqual(r.content, "Hecho.")
+        self.assertTrue(_FAIL_NOTE.search(r.content), r.content)
+
+    def test_hard_fail_already_honest_content_is_untouched(self):
+        # CONTRACAUTELA: el ok=False cuyo content YA es honesto (el flujo normal de
+        # error ya lo surfaceó) NO se re-anota -> queda intacto (sin doble nota).
+        r = agent_guards.honest_action_reply(AgentReply(
+            content="No pude planificar la accion.",
+            tool_events=[ToolEvent(name="computer_use", args={},
+                                   result={"ok": False, "status": "failed",
+                                           "error": "x"})]))
+        self.assertEqual(r.content, "No pude planificar la accion.")
+
 
 class CalcActionEarlyReplyHonestyTest(unittest.TestCase):
     def setUp(self):
@@ -149,6 +172,21 @@ class CalcActionEarlyReplyHonestyTest(unittest.TestCase):
         self.assertIsNotNone(dec.early_reply)
         self.assertEqual(dec.early_reply.content, "Listo, lo hice en la calculadora.")
         self.assertFalse(_HONEST_NOTE.search(dec.early_reply.content))
+
+    def test_hard_fail_no_reply_key_calc_does_not_claim_success(self):
+        # CAMINO DE PRODUCCIÓN REAL del hueco: t_computer_use devuelve el error DURO
+        # ok=False/status=failed SIN clave "reply" (tools.py:2429 "no pude
+        # planificar la acción"). El short-circuit calc cae al texto de ÉXITO
+        # hardcodeado "Listo, lo hice en la calculadora." -> el reply final NO debe
+        # afirmar éxito (debe llevar la nota DURA de no-confirmación).
+        dec = self._decide("Suma 2 más 2 en la Calculadora",
+                           {"ok": False, "error": "no pude planificar la accion",
+                            "status": "failed", "goal": "suma 2 mas 2"})
+        self.assertIsNotNone(dec.early_reply)
+        self.assertNotEqual(dec.early_reply.content,
+                            "Listo, lo hice en la calculadora.")
+        self.assertTrue(_FAIL_NOTE.search(dec.early_reply.content),
+                        dec.early_reply.content)
 
 
 class AppActionEarlyReplyHonestyTest(unittest.TestCase):

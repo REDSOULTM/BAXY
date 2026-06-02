@@ -245,9 +245,21 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     if last.get("opened") is True and (last.get("url") or last.get("deeplink") or last.get("uri")):
         return content
 
-    if status == "failed" and not last.get("ok"):
-        return content
-
+    # HUECO ADVERSARIAL cerrado (2026-06-01, regla del usuario es ley). Acá había
+    # `if status == "failed" and not ok: return content`, que eximía TODO result
+    # con ok=False asumiendo "ok=False ya lo manejó el flujo de error upstream".
+    # Eso vale en `_finalize_turn` (ahí el error ya se surfaceó honesto), pero los
+    # short-circuits de acción de `_decide_turn` (calc/app_action/app_open) NO
+    # pasan por ese flujo: cuando t_computer_use devuelve ok=False/status=failed
+    # SIN clave "reply" (tools.py:2429/2438), el short-circuit cae al texto de
+    # ÉXITO HARDCODEADO ("Listo, lo hice en la calculadora." / "Hecho.") y este
+    # guard era su ÚLTIMA defensa — pero lo eximía intacto -> el reply AFIRMABA
+    # ÉXITO en un fallo DURO. Eso es mentir.
+    # FIX (estructural, mide la FORMA): se elimina la exención ciega por ok=False.
+    # El `already_honest` de abajo SÍ exime el ok=False cuyo content YA es honesto
+    # (el caso que la vieja rama protegía); pero si el content afirma éxito, ahora
+    # cae a la lógica tri-estado, donde _has_measured_failure (True para ok is
+    # False) emite la nota DURA de no-confirmación. Sin listas de frases de éxito.
     low = content.casefold()
     already_honest = any(
         token in low
