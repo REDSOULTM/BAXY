@@ -175,6 +175,71 @@ def _collapse_domain_clusters(tools: list[str], scored: dict[str, float],
             if m != best and m not in keep:
                 drop.add(m)
     return [t for t in tools if t not in drop]
+
+
+# Tools de INFRAESTRUCTURA que NUNCA son candidatas primarias y van al FINAL del
+# subset por diseño (no por su score). `session` se appendea aparte tras el cap
+# pero lo incluimos acá por si ya viniera dentro. _UTILITY_TOOLS (verify/state/
+# dependency/safety) ya van al fondo en _cap_tools; replicamos la intención en el
+# reorden anti-primacy para no pisar ese diseño.
+_INFRA_TAIL_TOOLS = frozenset({"session", "verify", "state", "dependency", "safety"})
+
+
+def _antiprimacy_order(
+    tools: list[str],
+    scored: dict[str, float],
+    *,
+    pin_first: str | None = None,
+) -> list[str]:
+    """Reordena el subset poniendo la tool de DOMINIO de mayor confianza primero.
+
+    Anti-primacy: los LLMs atienden más a lo que aparece PRIMERO en el prompt
+    (efecto de primacía, p.ej. Liu et al. 2023 "Lost in the Middle",
+    arXiv:2307.03172). Poner la tool de mayor score/confianza al frente del subset
+    sube la probabilidad de que el 4B la elija. Margen teórico +5-15pp en papers
+    genéricos; NO medido en Gemma (el router ya está saturado en español, holdout
+    0.9964) — el reorden es seguro porque NO cambia el CONJUNTO, solo el orden.
+
+    Invariantes (el orden actual NO es arbitrario, ver Hotfix F 2026-05-17 y el
+    diseño de _cap_tools):
+      * `pin_first` (la pending_intent del turno previo) queda SIEMPRE primera.
+      * Las tools de INFRAESTRUCTURA (_INFRA_TAIL_TOOLS) quedan al FINAL, en su
+        orden de aparición original (no se reordenan por score).
+      * Las tools de DOMINIO se ordenan por score DESCENDENTE; los empates y las
+        no-puntuadas (keyword-only / MCP / sin embedding) preservan su orden
+        relativo original (sort ESTABLE) -> sin cambios de conjunto, sin perder
+        la señal de orden de mención cuando no hay score que la rompa.
+
+    Gate GEMMA4_ANTIPRIMACY=0 lo desactiva (A/B en vivo). Default ON: es un
+    reorden conservador que respeta todas las precondiciones existentes.
+    """
+    if (_os.environ.get("GEMMA4_ANTIPRIMACY", "1") or "1").strip().lower() \
+            not in {"1", "true", "yes", "on"}:
+        return tools
+    if not tools:
+        return tools
+    # Partición: pinned (pending_intent) | dominio | infraestructura.
+    pinned: list[str] = []
+    domain: list[str] = []
+    infra: list[str] = []
+    for t in tools:
+        if pin_first is not None and t == pin_first:
+            pinned.append(t)
+        elif t in _INFRA_TAIL_TOOLS:
+            infra.append(t)
+        else:
+            domain.append(t)
+    # Score descendente, ESTABLE: enumerate da el índice original como desempate,
+    # así empates y no-puntuadas (default sentinela < min_score real) preservan
+    # su orden de aparición. min_score de suggest_tools_scored es 0.25 > 0.0, así
+    # que el sentinela -1.0 deja siempre las no-puntuadas detrás de las puntuadas.
+    domain_sorted = [
+        name for _, name in sorted(
+            enumerate(domain),
+            key=lambda pair: (-scored.get(pair[1], -1.0), pair[0]),
+        )
+    ]
+    return pinned + domain_sorted + infra
 # Per-tool head firing filters: a tool must clear its threshold by this margin
 # (weak just-over-bar firings are noise), and at most this many head tools.
 _HEAD_MIN_MARGIN = float(_os.environ.get("GEMMA4_HEAD_MIN_MARGIN", "0.05"))
@@ -838,10 +903,20 @@ def select_tool_names(
     # the tool at the head so it survives the cap. Language-agnostic:
     # the slot is set on a STRUCTURAL tool result, never inferred from
     # user text.
+    pi_tool = ""
     if pending_intent:
         pi_tool = str((pending_intent or {}).get("tool") or "")
-        if pi_tool and pi_tool not in capped:
-            capped.insert(0, pi_tool)
+    # ANTI-PRIMACY (2026-06-02): el cap ya decidió QUÉ tools entran; este reorden
+    # solo cambia el ORDEN de las de DOMINIO, poniendo la de mayor confianza
+    # primero (los LLMs atienden más a lo primero del prompt). Preserva
+    # invariantes: pending_intent primero (pin_first), infra (session/safety/
+    # state/verify/dependency) al final. _collapse_scored = suggest_tools_scored,
+    # ya calculado arriba (línea ~824) para los collapses -> reusamos esos scores,
+    # no hay que threadear nada nuevo. set(antes)==set(después).
+    capped = _antiprimacy_order(capped, _collapse_scored,
+                                pin_first=(pi_tool or None))
+    if pi_tool and pi_tool not in capped:
+        capped.insert(0, pi_tool)
     # session.cancel_turn is always reachable so the LLM can interrupt the
     # current turn in any language without depending on a keyword list. We
     # append it AFTER the cap so it cannot be dropped — its description is
