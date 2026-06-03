@@ -80,7 +80,7 @@ Skills auto-inyectadas (las 41):
  2  debug-app-crash            2  schedule-recurring-task
 ```
 
-**Conclusión medida:** El 4B (E4B-Q4) **no hace meta-pasos** — no "carga una
+**Conclusión medida:** El 4B (E2B-FT) **no hace meta-pasos** — no "carga una
 herramienta para después seguirla" ni "delega a otro agente". Eso es esperable:
 es un modelo chico optimizado para acción directa, no para orquestación
 reflexiva. El proyecto YA lo descubrió (Sprint 2.1: "0 skill_load en 6727

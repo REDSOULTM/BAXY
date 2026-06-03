@@ -16,7 +16,7 @@ legacy. Se está re-skineando para que matchee el nuevo prototipo:
 - Substrate compacto (métricas `m-*`, perfiles con íconos = modos de accesibilidad),
   split de paneles (triggers/tools a la izquierda, sessions/memory a la derecha),
   ventana **frameless** (sin barra de título del SO).
-- **EN PROGRESO**: falta el match visual exacto del grafo/chat/Settings y el commit.
+- **Aplicado (UI web)**: el reskin de `ui_field` está aplicado sobre la UI web.
 
 ### Estabilidad bajo carga de GPU
 - **Crash al usar la app mientras se juega → arreglado.** Era el proceso de render
@@ -50,7 +50,7 @@ Eso impone límites duros, todos **medidos**:
 | **Modelo** | Solo **Gemma 4 E2B-Q4_K_M** | Es el único Gemma 4 que entra **completo** (modelo + visión residente + KV) en ≤4 GB: **3.36 GB medido**. E4B/26B no entran ni en su cuantización más baja. |
 | **Tool-calling** | ~**75%** (E2B) vs ~91% (E4B) | Trade-off aceptado por entrar en 4 GB. El `forced-tool-retry` lo sube en producción. Con >4 GB se usaría E4B. |
 | **Visión** | Residente, ~**1.2 GB** (mmproj) | Entra en 4 GB pero es lo más caro; en modo CPU se desactiva. |
-| **Contexto** | **16 K** (piso, no menos) | El system prompt arma ~4.6 K tokens en un "hola" y ~9.2 K en multi-tool; con menos contexto no entra ni un saludo. |
+| **Contexto** | **12288** (piso, no menos) | El system prompt arma ~4.6 K tokens en un "hola" y ~9.2 K en multi-tool; con menos contexto no entra ni un saludo. |
 | **flash-attn** | **OFF** por default | Con FA on, los prompts >~10 K disparan un crash CUDA (#22527). Con FA off: estable (medido 37/37). Costo: prefill ~2× (mitigado). |
 | **Voz / STT** | En **CPU** (0 VRAM) | TTS Piper + STT Parakeet (default) / Whisper (fallback) corren en CPU. No tocan la VRAM. |
 | **Latencia** | ~2.2 s por acción | Tras el fix de cache-hit del summary-pass; las respuestas de info son más rápidas. |

@@ -13,7 +13,7 @@ Decisiones del usuario (2026-05-26):
 ## PARTE A — vram4 como único perfil
 
 ### A1. `profiles.py` — colapsar a un solo perfil
-- `PROFILES` queda solo con `vram4` (E2B-Q4_K_M, mmproj E2B, ctx 16K, visión ON, voz ON) y `standby` (necesario: apaga el server; la UI lo usa).
+- `PROFILES` queda solo con `vram4` (E2B-Q4_K_M, mmproj E2B, ctx 12288, visión ON, voz ON) y `standby` (necesario: apaga el server; la UI lo usa).
 - `PROFILE_NAMES = ("vram4", "standby")`.
 - `recommend_profile(...)` → siempre `"vram4"` (sin escalera; documentar por qué).
 - `_LEGACY_ALIASES`: TODOS los nombres viejos (vram3/6/8/12/16/performance/balanced/light…) → `"vram4"`. Así un `active_profile.txt` viejo no rompe.

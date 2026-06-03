@@ -10,7 +10,7 @@
 ## Qué es el router
 
 El router decide, en cada turno de voz/texto, **qué subconjunto pequeño de
-herramientas** se le ofrece al LLM (Gemma 4 E4B-Q4) para que elija. No ejecuta
+herramientas** se le ofrece al LLM (Gemma 4 E2B-FT) para que elija. No ejecuta
 nada; solo arma una lista de ≤5 tools (más algunas meta-tools) a partir del
 mensaje del usuario.
 

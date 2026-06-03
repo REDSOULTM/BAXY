@@ -64,7 +64,7 @@ mean_subset (holdout)   = 4.58 tools (máx 6);  no-tool → {safety,session} 86/
 
 ## 2. El norte: qué es un router "perfecto" aquí
 
-Un router "perfecto" para este sistema (4B local, 65 tools compuestas, voz, CPU, multi-usuario/multi-idioma) **no es "100% en el holdout curado"** — eso ya está casi logrado y es engañoso. El máximo real se define sobre **cinco ejes simultáneos**, con gates duros:
+Un router "perfecto" para este sistema (4B local, el catálogo actual de tools compuestas, voz, CPU, multi-usuario/multi-idioma) **no es "100% en el holdout curado"** — eso ya está casi logrado y es engañoso. El máximo real se define sobre **cinco ejes simultáneos**, con gates duros:
 
 | Eje | Métrica | "Hoy" (medido) | Máximo objetivo | Por qué ese número |
 |---|---|---|---|---|
@@ -173,7 +173,7 @@ Secuenciado **de mayor palanca / menor riesgo → más difícil**. Cada sprint t
 
 ### SPRINT 2 — Expansión de corpus multilingüe + dominio (eje C, alimenta train)
 **Objetivo:** cerrar el sesgo 99%-ES.
-**Cambios:** generar **30 queries × 65 tools × 6+ idiomas** con ruido de transcripción/registro (Tool2Vec/Re-Invoke), con filtro de consenso teacher (descartar donde LLM-teacher y cross-encoder-teacher discrepan). Versionar el corpus (git hash + config hash). Añadir los misses reales como filas etiquetadas.
+**Cambios:** generar **30 queries × (catálogo actual de tools compuestas) × 6+ idiomas** con ruido de transcripción/registro (Tool2Vec/Re-Invoke), con filtro de consenso teacher (descartar donde LLM-teacher y cross-encoder-teacher discrepan). Versionar el corpus (git hash + config hash). Añadir los misses reales como filas etiquetadas.
 **Gate:** corpus train multilingüe balanceado; el held-out de idioma (Sprint 0) sube su piso **sin regresar ES** (paridad ≤0.05 tras reentrenar en Sprint 3).
 **Riesgo:** medio (quirks del generador → 3-LLM + spot-check; sobre-ajuste a tics sintéticos → diversidad en 3 ejes: idioma/registro/ruido).
 **Dependencias:** Sprint 0.
