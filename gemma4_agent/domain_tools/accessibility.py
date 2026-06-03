@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -107,7 +108,18 @@ def _accessibility_launch(exe: str, state: AgentState, *, kind: str) -> dict[str
         cleanup_args={"action": f"{kind}_stop"},
         metadata={"exe": exe, "pid": proc.pid, "started_at": datetime.now().isoformat()},
     )
-    return _ok(kind=kind, exe=exe, pid=proc.pid, verified=True, note=f"{kind} started; close via {kind}_stop.")
+    # Popen exitoso = el proceso se SPAWNeo, NO que la feature de accesibilidad sigue
+    # viva (narrator.exe puede bloquearse por politica de grupo / morir al instante).
+    # Afirmar "Narrator iniciado" sin re-leer el estado del SO es el anti-patron de
+    # honestidad. Reusamos _process_running (lo mismo que ya usa la accion `status`).
+    time.sleep(0.4)  # darle al proceso un instante para aparecer en la tabla del SO
+    alive = _process_running(exe)
+    return _ok(
+        kind=kind, exe=exe, pid=proc.pid,
+        verified=True if alive else None,  # tri-estado: None = lanzado, sin confirmar vivo
+        note=(f"{kind} started; close via {kind}_stop." if alive
+              else f"{kind} lanzado pero no se confirmo el proceso vivo; close via {kind}_stop."),
+    )
 
 
 def _accessibility_kill(exe: str, state: AgentState, *, kind: str) -> dict[str, Any]:

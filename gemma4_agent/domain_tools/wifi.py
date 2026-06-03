@@ -33,6 +33,7 @@ import os
 import re
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -412,6 +413,31 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
             )
 
     proc = subprocess.run(["netsh", "wlan", "connect", f"name={name}"], capture_output=True, text=True, timeout=20)
+    # `netsh wlan connect` exit 0 = la SOLICITUD se DESPACHO, NO que la asociacion/
+    # autenticacion tuvo exito (es async: clave mala / AP fuera de rango / timeout DHCP
+    # fallan DESPUES con netsh ya en 0). Afirmar "conectado" con solo el exit-code es el
+    # mismo anti-patron que os.startfile/app.open ya combatieron. Re-leemos el estado
+    # real del adaptador y solo confirmamos si quedo conectado a ESTE perfil. La
+    # asociacion tarda; reintentamos unos segundos antes de rendirnos.
+    connected_ssid = None
+    state_now = None
+    if proc.returncode == 0:
+        for _ in range(5):  # ~hasta 5s: la asociacion no es instantanea
+            time.sleep(1.0)
+            st = _device_wifi_status()
+            state_now = str(st.get("state") or "").strip().casefold()
+            connected_ssid = str(st.get("ssid") or "").strip()
+            # netsh localiza el estado: "connected"/"conectado". Confirmamos por SSID
+            # (== el perfil pedido) para no festejar una conexion preexistente a otra red.
+            if state_now in {"connected", "conectado"} and connected_ssid == name:
+                break
+    verified: bool | None
+    if proc.returncode != 0:
+        verified = False  # netsh rechazo la solicitud de plano
+    elif state_now in {"connected", "conectado"} and connected_ssid == name:
+        verified = True   # re-leido del SO: efectivamente conectado a este perfil
+    else:
+        verified = None   # despachado pero sin confirmar (tri-estado honesto)
     return _ok(
         profile=name,
         requested=str(args.get("name") or args.get("ssid") or "").strip(),
@@ -420,8 +446,12 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
         exit_code=proc.returncode,
         stdout=proc.stdout.strip()[:500],
         stderr=proc.stderr.strip()[:500],
-        verified=proc.returncode == 0,
-        status="done" if proc.returncode == 0 else "needs_verification",
+        connected_ssid=connected_ssid,
+        wifi_state=state_now,
+        verified=verified,
+        status=("done" if verified is True
+                else "needs_verification" if verified is None
+                else "failed"),
     )
 
 

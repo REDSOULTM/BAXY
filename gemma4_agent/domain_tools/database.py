@@ -303,11 +303,23 @@ def _database_execute(conn: Any, driver: str, args: dict[str, Any], state: Agent
         return gate
     cur = conn.cursor()
     cur.execute(sql)
+    # El commit DEBE confirmar la durabilidad. Tragar su excepcion y reportar
+    # verified=True igual seria mentir sobre una mutacion no persistida (DB bloqueada,
+    # disco lleno, constraint diferido): es el anti-patron "claim verified pese a que
+    # el paso de persistencia fallo", y database.execute es high-risk + destructivo.
+    rowcount = cur.rowcount if hasattr(cur, "rowcount") else None
     try:
         conn.commit()
-    except Exception:
-        pass
-    rowcount = cur.rowcount if hasattr(cur, "rowcount") else None
+    except Exception as exc:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        return _err(
+            f"la mutacion se ejecuto pero el commit fallo: {exc}",
+            status="failed", reason="commit_failed", sql=sql, driver=driver,
+            rowcount=rowcount, verified=False,
+        )
     return _ok(sql=sql, driver=driver, rowcount=rowcount, verified=True)
 
 

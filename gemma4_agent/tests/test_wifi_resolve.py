@@ -145,9 +145,16 @@ class DeviceWifiConnectTest(unittest.TestCase):
         self.assertTrue(res["ok"])
         self.assertEqual(res["profile"], "Galaxy Phone 5G 0000")
         self.assertTrue(res["resolved_from_state"])
-        # netsh fue llamado con el NOMBRE REAL resuelto, no con 'galaxy'
-        called_args = run.call_args.args[0]
-        self.assertIn("name=Galaxy Phone 5G 0000", called_args)
+        # netsh CONNECT (primera llamada a subprocess.run) fue invocado con el NOMBRE
+        # REAL resuelto, no con 'galaxy'. Tras el connect el tool re-lee el estado
+        # ('show interfaces') para verificar honestamente -> hay >1 llamada; el connect
+        # es la primera.
+        connect_args = run.call_args_list[0].args[0]
+        self.assertIn("connect", connect_args)
+        self.assertIn("name=Galaxy Phone 5G 0000", connect_args)
+        # el stdout del mock no confirma conexion -> verified honesto = None (despachado,
+        # sin confirmar), NO True. Esto es lo que arregla el bug de honestidad.
+        self.assertIsNone(res["verified"])
 
     def test_connect_exact_no_resolution_flag(self):
         with mock.patch.object(dtw.subprocess, "run",
@@ -156,6 +163,26 @@ class DeviceWifiConnectTest(unittest.TestCase):
         self.assertTrue(res["ok"])
         self.assertEqual(res["profile"], "RV")
         self.assertFalse(res["resolved_from_state"])
+
+    def test_connect_verified_true_when_status_confirms(self):
+        # Camino feliz: tras el connect, _device_wifi_status() re-lee el SO y confirma
+        # state=connected + SSID == perfil pedido -> verified=True HONESTO (no por exit-code).
+        with mock.patch.object(dtw.subprocess, "run", return_value=self._mock_run()), \
+             mock.patch.object(dtw, "_device_wifi_status",
+                               return_value=dtw._ok(ssid="RV", state="connected")):
+            res = dt._device_wifi_connect({"name": "RV"})
+        self.assertTrue(res["ok"])
+        self.assertTrue(res["verified"])
+        self.assertEqual(res["connected_ssid"], "RV")
+        self.assertEqual(res["status"], "done")
+
+    def test_connect_verified_false_when_netsh_rejects(self):
+        # netsh rechaza la solicitud (exit != 0) -> verified=False, status=failed.
+        with mock.patch.object(dtw.subprocess, "run",
+                               return_value=self._mock_run(returncode=1, stderr="error")):
+            res = dt._device_wifi_connect({"name": "RV"})
+        self.assertFalse(res["verified"])
+        self.assertEqual(res["status"], "failed")
 
     def test_connect_ambiguous_asks_without_netsh(self):
         with mock.patch.object(dtw.subprocess, "run") as run:
