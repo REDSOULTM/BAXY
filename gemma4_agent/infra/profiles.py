@@ -172,18 +172,23 @@ _MMPROJ_E2B  = _resolve_mmproj_path(_E2B)                    # vision encoder (~
 # Columna "cargado" = delta real de nvidia-smi sobre idle Windows (2.06 GB),
 # CON visión y al ctx indicado. "física" = cargado + 1.5 GB reserva WDDM.
 #
-# PISO DE CONTEXTO (medido 2026-05-20): el system prompt del agente arma
-# 4.6k tokens en un "hola" y hasta ~9.2k en un turno multi-tool. Por eso
-# NINGÚN perfil baja de 16K de contexto — con menos, el propio prompt no entra
-# y hasta "hola" da 400 exceed_context_size. (Antes vram3/4/6 estaban en
-# 2K/4K/8K y eran INUSABLES.) El KV cache a 16K cuesta poca VRAM (~0.4-0.7 GB
-# con flash-attn + SWA); el modelo sigue siendo el costo dominante.
+# PISO DE CONTEXTO (re-medido 2026-06-03 con el tokenizer REAL del GGUF, no la
+# estimación vieja): tras la optimización LEAN del system prompt, el prompt real
+# es MUCHO más chico que el "9.2k" de 2026-05-20 (esa cifra era pre-LEAN y quedó
+# obsoleta). Medido hoy: "hola"/mínimo ~4.25k tok, multi-tool 5 (cap) ~4.8k,
+# grande-12 ~5.6k. Por eso vram4 bajó 16384→12288: ahorra ~168 MB de KV cache
+# (672→504 MB con swa-full) SIN riesgo — 12288 conserva el modo `compact` de
+# tool-schemas (umbral en agent.py:_tool_schemas_hint es ctx>=12288) y el peor
+# caso realista (12 tools + historial + imagen ~8.3k) entra con ~4k libres.
+# NO bajar a 8192: ahorraría 168 MB más pero apaga `compact` (riesgo no medido
+# en el E2B), parte el budget de historial a la mitad y deja el peor caso al
+# borde. El modelo sigue siendo el costo dominante de VRAM.
 # ===========================================================================
 PROFILES: dict[str, Profile] = {
     "vram4": Profile(
         name="vram4",
         display_name="VRAM 4GB",
-        context_size=16384,
+        context_size=12288,  # 2026-06-03: 16384→12288 (ahorra ~168 MB KV, conserva compact). Ver comentario arriba.
         # E2B-Q4_K_M (2026-05-25, DEFAULT para PC de 4 GB — pedido de RED: la app
         # debe entrar en ≤4 GB de VRAM con TODO funcionando a la vez). MEDIDO: el
         # ÚNICO Gemma 4 que mete modelo + VISIÓN RESIDENTE + KV simultáneos dentro de
