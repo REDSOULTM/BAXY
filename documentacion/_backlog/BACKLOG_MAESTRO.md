@@ -93,9 +93,11 @@ DESCARTADOS (causan OOM/peor, no tocar): `--no-flash-attn`, `--no-swa-full`, red
 | **B2 corpus multilingüe de eval** (hoy ~98% ES) | 🔲 PENDIENTE-REAL | prerrequisito de todo lo multilingüe; sin bloqueador técnico, es construir datos |
 | **B1 encoder FT alemán/multilingüe** (GAP-2) | ⏸️ BLOQUEADO | ~12h GPU 4060Ti + depende de B2 |
 | **B4 calibración abstain por idioma** (GAP-4) | ⏸️ BLOQUEADO | infra lista (`thresholds_by_lang`) pero artefacto vacío; depende de B1+B2 |
-| SPRINT5 anti-primacy ordering | 🔲 PENDIENTE | no implementado; +5-15pp teórico |
-| SPRINT5 few-shot turn-specific | 🔲 PENDIENTE | no implementado; MCP-prefer −50% teórico |
-| cap=5→8 (GAP-5; FA-off ya mató el crash) | 🔲 PENDIENTE-revisión | requiere repro CUDA en vivo; producto tiende a dejar 5 (precisión>recall) |
+| SPRINT5 anti-primacy ordering | ✅ | `b812841` — estaba mergeado pero INERTE: `schemas_for_names` (tools.py:1495) descartaba el orden del router (filtraba por `set`). Fix: ordena por posición en `names` + cache keyed por tuple. Validado E2E (browser antes que media llega al LLM), 27/27 verde. |
+| SPRINT5 few-shot turn-specific | ❌ DESCARTADO | research: baseline ya 6/6; prefill mal hecho ROMPE el tool-call; complejidad+riesgo sin ganancia medible. |
+| cap=5→8 (GAP-5; FA-off ya mató el crash) | ❌ NO tocar | crash CUDA ya muerto, pero el norte del user es precisión>recall (MENOS tools). Va en contra. |
+| **ruido router: wants_web_store falso-positivo** (ALTO, MEDIDO) | 🔲 PENDIENTE-vivo | `planner.py:835-846` — wants_web_store sobre-dispara en menciones de entretenimiento/celebridad ("quien es batman", "pon stranger things") → inyecta browser+browser_real de ruido en 189 tool-turns. A/B con OFF: ruido 1.519→1.453, recall SUBE 0.9929→0.9953. Fix: exigir verbo de compra/nav-a-sitio, o no insertar el par browser cuando wants_knowledge. NO aplicado: toca clasificador semántico, exige validación EN VIVO (regla #3.5). |
+| **ruido router: web→source_manager + head débil** (los 3 canarios, MEDIDO) | 🔲 PENDIENTE-vivo | `planner.py:1503` + head firing :637-660 — "que dia es hoy"/"what time is it"→web (forbidden, es fecha local); "que es pytest"→web+knowledge+source_manager (debería ser EMPTY). Causa: per-tool head dispara web con margen débil (0.05-0.10) evadiendo la guarda `_LOCAL_FACT` que SÍ funciona en `_suggest_tools`; + `_related_tools('web')` arrastra source_manager. Fix: aplicar la guarda local-fact/wants-knowledge también al head, y source_manager solo con intent explícito. NO aplicado: router, exige validación EN VIVO. |
 
 ---
 
