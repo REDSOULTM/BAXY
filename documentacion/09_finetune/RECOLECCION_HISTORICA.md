@@ -1,7 +1,7 @@
-# Recolección histórica de mensajes — Carter → Gemma4 Agent
+# Recolección histórica de mensajes — Carter → Carter Agent
 
 **Pedido del usuario (2026-06-02):** recopilar TODOS los mensajes históricos desde el
-primer mensaje a Carter (predecesor) hasta el último a Gemma4 Agent, para curarlos como
+primer mensaje a Carter (predecesor) hasta el último a Carter Agent, para curarlos como
 dataset de ejemplos PERFECTOS y tunear el sistema (router + LLM 4B) sin overfitting.
 
 Este documento registra QUÉ se recolectó, DE DÓNDE, CUÁNTOS y en QUÉ FORMATO.

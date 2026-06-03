@@ -1,5 +1,5 @@
 """Genera el informe Word del PRODUCTO TERMINADO (no el estado de sesión):
-Gemma 4 Agent — Producto, Riesgos y Competencia (v2).
+Carter Agent (antes Gemma 4 Agent) — Producto, Riesgos y Competencia (v2).
 
 Cubre: resumen del producto, tecnologías usadas, diagrama de cómo funciona todo,
 tabla de competidores, y riesgos + mitigaciones. Usa python-docx (ya instalado:

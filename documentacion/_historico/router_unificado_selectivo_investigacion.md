@@ -1,4 +1,4 @@
-# Router unificado y selectivo para Gemma 4 Agent
+# Router unificado y selectivo para Carter Agent
 
 **Executive summary.** Tras revisar el repositorio adjunto, mi recomendación es **no** consolidar el sistema alrededor de `router_v2` ni mantener `planner.py` como cascada autoritativa. La mejor arquitectura unificada, bajo tus restricciones, es un **router semántico selectivo con un solo encoder multilingüe compartido, una cabeza explícita de abstención/triage calibrada, una cabeza de “operator semantics” para read-vs-write, y una recuperación por prototipos de tools fusionada con estado de sesión**. En corto: primero decide **si corresponde ofrecer tools**; después decide **cuáles**. Esa separación ataca el fallo que el propio repo ya evidencia: el problema dominante no es “encontrar semánticamente algún tool”, sino **sobre-ofrecer tools cuando debería abstenerse**. La literatura reciente sobre tool retrieval también va en esa dirección: los recuperadores genéricos rinden peor de lo esperado en tool retrieval, la expansión sintética tipo Tool2Vec/Re-Invoke ayuda mucho, y reducir el conjunto de tools visibles mejora la selección downstream del LLM. citeturn13view2turn13view4turn13view0turn12view3
 
@@ -191,4 +191,4 @@ El checklist de rollout debería ser muy corto y muy estricto.
 **Cuatro:** 100% solo cuando el score end-to-end con Gemma mejore, no solo el router offline.  
 **Cinco:** conservar un kill switch para volver temporalmente a v1 durante dos ciclos de release.
 
-Mi conclusión final es simple: **quédate con la intuición buena de v1 —abstención, continuidad y pragmatismo—, pero reimplántala en una arquitectura semántica única y calibrada; no con más regex, y tampoco con un BM25+RRF puro**. El mejor router para este Gemma 4 Agent no es “más retrieval”, sino **retrieval subordinado a una decisión selectiva de abstención y a una semántica explícita de operador y estado**.
+Mi conclusión final es simple: **quédate con la intuición buena de v1 —abstención, continuidad y pragmatismo—, pero reimplántala en una arquitectura semántica única y calibrada; no con más regex, y tampoco con un BM25+RRF puro**. El mejor router para este Carter Agent no es “más retrieval”, sino **retrieval subordinado a una decisión selectiva de abstención y a una semántica explícita de operador y estado**.

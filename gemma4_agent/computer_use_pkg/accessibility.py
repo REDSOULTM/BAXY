@@ -1,4 +1,4 @@
-"""Accessibility modes for the Gemma 4 agent.
+"""Accessibility modes for the Carter agent.
 
 Un MODO de accesibilidad es una capa de comportamiento más fuerte que una
 `persona` (personas.py): además de un `system_hint` (que modula CÓMO responde

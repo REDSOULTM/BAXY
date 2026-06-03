@@ -1,4 +1,4 @@
-"""Subagent execution: delegate a task to a fresh Gemma 4 agent instance.
+"""Subagent execution: delegate a task to a fresh Carter agent instance.
 
 Inspired by Goose's SubagentExecutionTool. The parent agent picks a focused
 task that's bounded enough to delegate (e.g. "search my Steam library for

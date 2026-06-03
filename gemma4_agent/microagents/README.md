@@ -1,4 +1,4 @@
-# Gemma 4 Agent microagents
+# Carter Agent microagents
 
 Markdown files con frontmatter YAML que se inyectan condicionalmente al
 system_prompt cuando alguno de sus `triggers` aparece (case+accent insensitive)

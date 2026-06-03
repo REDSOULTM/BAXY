@@ -1,4 +1,4 @@
-# Gemma4 Agent
+# Carter Agent
 
 Agente local desde cero para Gemma 4 en Windows. Usa `llama-server`
 OpenAI-compatible, tools reales, memoria explicita y entradas multimodales.

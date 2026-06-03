@@ -1,4 +1,4 @@
-"""Explicit persistent memory for the Gemma 4 agent."""
+"""Explicit persistent memory for the Carter agent."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# Prompt de investigación — Encadenamiento multi-paso + foco/maximize + latencia (Gemma 4 Agent)
+# Prompt de investigación — Encadenamiento multi-paso + foco/maximize + latencia (Carter Agent)
 
 Copiá esto a claude.ai (con research/web). Contiene la arquitectura REAL del
 sistema (extraída del código, con rutas y snippets) para que investigues sobre

@@ -1,6 +1,6 @@
-# Gemma 4 Agent as MCP Server
+# Carter Agent as MCP Server
 
-Gemma 4 puede exponer sus **compound tools** como un servidor
+Carter puede exponer sus **compound tools** como un servidor
 [MCP (Model Context Protocol)](https://modelcontextprotocol.io/), el
 standard de facto que usan Claude Desktop, Cursor, Goose, OpenHands
 y otros agentes para hablar con tool providers.
@@ -50,7 +50,7 @@ python -m gemma4_agent.tools_pkg.mcp_server --port 8765
 ```
 
 Reiniciar Claude Desktop. En el menu de herramientas deberian aparecer
-las 63 compound tools de Gemma 4.
+las 63 compound tools de Carter.
 
 ## Configurar Cursor
 

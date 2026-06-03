@@ -1,4 +1,4 @@
-# PERSONALIDAD — Character Card del Gemma 4 Agent
+# PERSONALIDAD — Character Card del Carter Agent
 
 **Fecha:** 2026-06-02. **Propósito:** darle PERSONALIDAD contextual al asistente
 de voz local (Gemma 4) **vía fine-tuning**, sin romper honestidad, sin enlatar,

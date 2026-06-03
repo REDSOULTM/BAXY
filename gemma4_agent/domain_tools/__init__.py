@@ -1,4 +1,4 @@
-"""Higher-level local domain tools for the Gemma4 agent."""
+"""Higher-level local domain tools for the Carter agent."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# Gemma 4 Agent skills
+# Carter Agent skills
 
 Skills son **recetas markdown** que el LLM carga **lazy** via la tool
 `skill_load(name="X")` cuando matchea semánticamente el pedido del usuario.

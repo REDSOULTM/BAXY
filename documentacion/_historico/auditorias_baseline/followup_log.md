@@ -1,4 +1,4 @@
-# Followup Log — Gemma4 Agent
+# Followup Log — Carter Agent
 - Sesión: 2026-05-15 (autónoma nocturna, continuación)
 - Disparador: hallazgos del smoke test 50/50 (`audit/smoke_summary.md`)
 - Reglas: igual que la sesión anterior. NO se hace git.

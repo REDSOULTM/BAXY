@@ -1,4 +1,4 @@
-# Auditoría arquitectural — Gemma 4 Agent (2026-05-27)
+# Auditoría arquitectural — Carter Agent (2026-05-27)
 
 **Alcance**: análisis arquitectural alto nivel del paquete `gemma4_agent/`
 (65,180 LOC de producción, 141 archivos). No es revisión línea-por-línea; se

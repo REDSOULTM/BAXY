@@ -2,7 +2,7 @@
 
 This documents the router overhaul that applied the consensus of four
 independent deep-research investigations (1 Gemini, 1 ChatGPT, 2 Claude) on how
-to build an optimal local/offline tool router for the Gemma 4 Agent.
+to build an optimal local/offline tool router for the Carter Agent.
 
 ## Result (measured on the never-seen 20% holdout)
 

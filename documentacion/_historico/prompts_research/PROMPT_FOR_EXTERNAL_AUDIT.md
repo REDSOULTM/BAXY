@@ -1,4 +1,4 @@
-# Prompt para auditoría externa de Gemma4 Agent
+# Prompt para auditoría externa de Carter Agent
 
 > Copy/paste el bloque de abajo a una conversación nueva con Claude
 > (claude.ai, Sonnet 4.6 o superior recomendado). Después pegale los
@@ -10,7 +10,7 @@
 
 ```
 Necesito que audites la arquitectura de un agente local Windows
-voice-first llamado Gemma4 Agent. El objetivo del proyecto es:
+voice-first llamado Carter Agent. El objetivo del proyecto es:
 "asistente de voz local que cubre el uso TOTAL del PC del usuario"
 (similar a Jarvis/Alexa pero 100% local, sobre llama.cpp + Gemma 4
 GGUF).

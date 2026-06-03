@@ -1,4 +1,4 @@
-# Informe técnico CARTER OS / "Gemma 4 Agent" — Router robusto, Encadenamiento multi-tool y Foco/Maximize Windows
+# Informe técnico CARTER OS / "Carter Agent" (antes Gemma 4 Agent) — Router robusto, Encadenamiento multi-tool y Foco/Maximize Windows
 
 ## TL;DR (decisión)
 - **Problema A — Router**: implementar (1) un **gate sintáctico interrogativo multilingüe (es/en/pt/it) ANTES del retrieval** (coste <1 ms, robusto a nombres propios) y (2) un **health-check del encoder al startup** que verifica que el modelo `paraphrase-multilingual-MiniLM-L12-v2` produce vectores de 384 dimensiones (per la model card oficial de sentence-transformers en HuggingFace: *"This is a sentence-transformers model: It maps sentences & paragraphs to a 384 dimensional dense vector space"*), norma no-cero, y similitudes esperadas en pares canónicos. Si falla, **CARTER no debe arrancar** (fail-loud, no fallback silencioso). El NER masking se descarta para el camino caliente del router por coste de latencia (10–50 ms) y se conserva como herramienta de debug offline.

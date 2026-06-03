@@ -1,4 +1,4 @@
-# Reporte de sesión overnight — Gemma4 Agent — 2026-05-21
+# Reporte de sesión overnight — Carter Agent — 2026-05-21
 
 Continuación de la auditoría arquitectura/fiabilidad/latencia (rondas 1–10
 previas, 21 bugs). Esta sesión: **ronda 11 (5 bugs) + suite de smokes + validación

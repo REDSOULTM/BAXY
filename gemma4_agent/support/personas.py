@@ -1,4 +1,4 @@
-"""Persona profiles for the Gemma 4 agent.
+"""Persona profiles for the Carter agent.
 
 A persona is a small bundle that nudges the agent toward a particular
 tone and set of preferred tools. The user picks one at startup (env

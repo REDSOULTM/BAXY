@@ -77,8 +77,14 @@ LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
 # small safety margin. 7x the custom-OWW baseline (0.110) at zero false fires.
 LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.25"))
 
+# Stem del modelo LiveKit, configurable por env. El rebrand a "Carter" reentrena
+# la wake word ("hey/oye carter"); cuando el hey_carter.onnx pase el gate
+# (recall>=0.60, fp/hr<=1.0) se cambia este default a "hey_carter". Hasta entonces
+# el default queda en el modelo VALIDADO existente (hey_gemma) para no romper el
+# runtime — el .onnx de carter todavía se está entrenando.
+LIVEKIT_MODEL_STEM = os.environ.get("GEMMA4_LIVEKIT_MODEL_STEM", "hey_gemma")
 LIVEKIT_MODEL_PATH = (
-    Path(__file__).resolve().parent / "models" / "livekit" / "hey_gemma.onnx"
+    Path(__file__).resolve().parent / "models" / "livekit" / f"{LIVEKIT_MODEL_STEM}.onnx"
 )
 
 # ----- openWakeWord backend (fallback) -------------------------------

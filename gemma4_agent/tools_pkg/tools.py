@@ -1,4 +1,4 @@
-"""Real Windows tools for the standalone Gemma 4 agent."""
+"""Real Windows tools for the standalone Carter agent."""
 
 from __future__ import annotations
 

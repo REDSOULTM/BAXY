@@ -1,4 +1,4 @@
-"""Interactive CLI for the standalone Gemma 4 agent."""
+"""Interactive CLI for the standalone Carter agent."""
 
 from __future__ import annotations
 

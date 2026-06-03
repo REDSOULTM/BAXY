@@ -1,4 +1,4 @@
-# Roadmap de perfeccionamiento — Gemma4 Agent (2026-05-29)
+# Roadmap de perfeccionamiento — Carter Agent (2026-05-29)
 
 > Síntesis de **10 auditorías multi-agente sobre el CÓDIGO REAL** (no los docs, que
 > están parcialmente obsoletos post-R1–R8) + el research no-digerido (auditorías 360

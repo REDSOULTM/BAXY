@@ -1,4 +1,4 @@
-# Reporte de sesión de continuación — Gemma4 Agent — 2026-05-21
+# Reporte de sesión de continuación — Carter Agent — 2026-05-21
 
 Continuación de la auditoría (rondas 1–13, 26 bugs). Esta sesión NO fue caza de
 bugs en bordes (eso se agotó con 2 rondas limpias) sino **profundizar confianza

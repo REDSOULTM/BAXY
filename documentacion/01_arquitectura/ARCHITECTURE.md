@@ -1,4 +1,6 @@
-# Gemma4 Agent — Arquitectura (verificada por la auditoría 2026-05-21)
+# Carter Agent — Arquitectura (verificada por la auditoría 2026-05-21)
+
+> Nota: el proyecto se llama ahora **Carter Agent** (antes Gemma 4 Agent).
 
 Este documento captura la arquitectura que la auditoría de tres sesiones
 (rondas 1–13 + continuación + cierre) **verificó leyendo el código y midiendo en

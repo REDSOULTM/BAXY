@@ -438,7 +438,7 @@ Adicionalmente, escribí `docs/architecture/PLAN_CERRADO.md` (raíz
 de docs/architecture, no en sprint_prompts):
 
 ```markdown
-# Plan de optimización Gemma4 Agent — Cerrado
+# Plan de optimización Carter Agent — Cerrado
 
 ## Resumen
 

@@ -1,7 +1,9 @@
-# Gemma 4 Agent
+# Carter Agent
 
 **Asistente de voz local para Windows — privado, OSS y corriendo en 4 GB de VRAM.**
 *A local-first voice assistant for Windows, powered by Gemma 4 — 100% offline, no paid APIs.*
+
+> **Nota:** el proyecto se llamaba **Gemma 4 Agent** y se renombró a **Carter** (el nombre del asistente). El modelo de lenguaje sigue siendo **Gemma 4** (de Google); solo cambió el nombre del producto y la palabra de activación.
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg)](#-requisitos)
@@ -12,7 +14,7 @@
 
 ## ¿Qué es?
 
-**Gemma 4 Agent** es un asistente de voz y texto que corre **100% en tu máquina**. Hablás (o escribís), el agente decide qué herramienta usar, opera tu PC y te responde por voz. No hay nube, no hay APIs de pago, no se envían tus datos a ningún lado: el modelo de lenguaje (Gemma 4 en formato GGUF) se sirve localmente con `llama.cpp` y todo el razonamiento, la transcripción y la síntesis de voz ocurren offline.
+**Carter** es un asistente de voz y texto que corre **100% en tu máquina**. Hablás (o escribís), el agente decide qué herramienta usar, opera tu PC y te responde por voz. No hay nube, no hay APIs de pago, no se envían tus datos a ningún lado: el modelo de lenguaje (Gemma 4 en formato GGUF) se sirve localmente con `llama.cpp` y todo el razonamiento, la transcripción y la síntesis de voz ocurren offline.
 
 Está diseñado para **hardware modesto**: el target real es una laptop Windows con una GPU NVIDIA de **4 GB de VRAM** (o incluso sin GPU dedicada, cayendo a un perfil de CPU). El LLM, su visión multimodal y el cache de contexto entran completos en ese presupuesto; la transcripción y la voz corren en CPU para no robarle VRAM al modelo.
 

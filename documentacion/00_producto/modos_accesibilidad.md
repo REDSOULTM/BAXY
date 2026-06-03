@@ -1,11 +1,11 @@
-# Modos de accesibilidad — Gemma 4 Agent
+# Modos de accesibilidad — Carter Agent
 
 **Fecha:** 2026-05-26
 **Estado:** implementado y medido (capa lógica); verificación física end-to-end pendiente del usuario.
 
 ## Propuesta de valor (lo "defendible")
 
-Gemma 4 es un asistente de voz **100% local y gratuito** que corre en **≤4 GB de
+Carter es un asistente de voz **100% local y gratuito** que corre en **≤4 GB de
 VRAM** (perfil único `vram4` = E2B-Q4, con voz + transcripción en CPU + visión
 residente). Esto habilita una propuesta de valor que un asistente en la nube no
 puede igualar de forma trivial:

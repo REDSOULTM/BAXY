@@ -37,7 +37,7 @@ graph LR
     Web((Internet))
     MCP[MCP clients<br/>Claude/Cursor/goose<br/>opcional]
 
-    Gemma{{Gemma4 Agent<br/>proceso local}}
+    Gemma{{Carter Agent<br/>proceso local}}
 
     User -- "voz mic" --> Gemma
     Gemma -- "voz speakers" --> User
@@ -63,7 +63,7 @@ graph LR
 
 ## 2. C4 Nivel 2 — Containers (vista de alto nivel)
 
-La pregunta clave es: ¿qué procesos / subsistemas con identidad propia hay dentro de "Gemma4 Agent"? Después de leer el código real, identifico **15 containers** agrupados en 6 zonas:
+La pregunta clave es: ¿qué procesos / subsistemas con identidad propia hay dentro de "Carter Agent"? Después de leer el código real, identifico **15 containers** agrupados en 6 zonas:
 
 ```mermaid
 %% Fig 1.2 — Containers (C4 N2) — vista de alto nivel
@@ -594,7 +594,7 @@ digraph SystemContext {
     Models    [shape=cylinder, label="Modelos en disco\nGGUF+Vosk+Whisper+...+ST"];
     FS        [shape=cylinder, label="Filesystem usuario"];
     MCP       [label="MCP clients\nClaude/Cursor/goose"];
-    Gemma     [shape=doublecircle, label="Gemma4 Agent\n(proceso local)"];
+    Gemma     [shape=doublecircle, label="Carter Agent\n(proceso local)"];
 
     User    -> Gemma [label="voz mic / texto"];
     Gemma   -> User  [label="voz speakers / texto"];

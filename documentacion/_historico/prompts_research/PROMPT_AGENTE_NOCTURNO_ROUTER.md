@@ -1,7 +1,7 @@
 # MISIÓN AUTÓNOMA NOCTURNA — LLEVAR EL ROUTER DE GEMMA4 AL MÁXIMO ABSOLUTO
 
 Vas a trabajar **SIN PARAR** hasta lograr el mejor resultado posible del router de
-tools de Gemma4 Agent. El usuario se va a dormir. Tenés **permiso TOTAL** sobre la
+tools de Carter Agent. El usuario se va a dormir. Tenés **permiso TOTAL** sobre la
 máquina: instalar dependencias gratuitas, correr cualquier comando, modificar
 cualquier archivo del proyecto Gemma4. Trabajá toda la noche. Cuando el usuario
 despierte, quiere ver el máximo resultado posible y la bitácora completa de todo lo

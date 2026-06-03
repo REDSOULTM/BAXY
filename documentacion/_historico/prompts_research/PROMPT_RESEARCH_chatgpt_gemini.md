@@ -1,8 +1,8 @@
-# Deep-Research Prompt — Make the Gemma4 Agent tool router PERFECT
+# Deep-Research Prompt — Make the Carter Agent tool router PERFECT
 ### (version for ChatGPT / Gemini — same ZIP, decisions pre-answered, fixed output format)
 
 Attached is a ZIP (`gemma4_router_audit.zip`) with the COMPLETE tool router of a
-**local, offline, low-latency Windows voice assistant** ("Gemma 4 Agent"): the
+**local, offline, low-latency Windows voice assistant** ("Carter Agent"): the
 source of all routing layers, the eval harness, a 1733-query hand-labeled
 corpus, prior research docs, and tests. Read every file, then return a concrete,
 evidence-backed plan to push routing accuracy toward ~100% WITHOUT breaking the

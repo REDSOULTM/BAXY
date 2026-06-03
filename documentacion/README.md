@@ -1,4 +1,4 @@
-# Documentación — Gemma 4 Agent
+# Documentación — Carter Agent (antes Gemma 4 Agent)
 
 Puerta de entrada a toda la documentación del proyecto. **Asistente de voz
 local para Windows** sobre **Gemma 4 E2B-FT** (GGUF Q4_K_M), corriendo en

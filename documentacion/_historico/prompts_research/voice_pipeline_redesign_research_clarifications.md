@@ -11,7 +11,7 @@
 
 **Picovoice Porcupine queda EXCLUIDO del análisis**, incluso si fuera técnicamente superior. Razones:
 
-- Gemma 4 Agent debe poder ser **descargado y usado sin pagar nada**, ahora y siempre.
+- Carter Agent debe poder ser **descargado y usado sin pagar nada**, ahora y siempre.
 - No quiero ningún componente del stack que requiera license fee, ni en plan personal ni en plan comercial futuro.
 - Picovoice tiene "free for personal use" pero comercial es paid — eso introduce ambigüedad para el usuario final del proyecto OSS. Lo excluyo de raíz.
 
@@ -66,7 +66,7 @@ No es lock-in. Es un default razonable pero negociable si hay evidencia de que e
 2. **"OK Gemma"** — patrón análogo a "OK Google". La oclusiva fuerte de "OK" puede ser más distintiva que "Hey".
 3. **"Hey Gemma four"** — explícito 4-sílabas, más distintivo, costo: ergonomía decir 4 sílabas.
 4. **"Computer"** — referencia Star Trek, tiene precedente cultural, costo: aparece en películas/podcasts.
-5. **"Jarvis"** — modelo pre-trained existe en openWakeWord upstream (entrenado masivamente). Costo: branding mismatch con "Gemma 4 Agent".
+5. **"Jarvis"** — modelo pre-trained existe en openWakeWord upstream (entrenado masivamente). Costo: branding mismatch con "Carter Agent".
 6. **Wake-phrase totalmente custom que la investigación proponga**, justificado por features acústicas (oclusivas + vocales abiertas + N sílabas + baja frecuencia en corpora naturales).
 
 **Pedido específico al investigador**:
@@ -79,7 +79,7 @@ Incluir una **sección breve de "wake phrase design"** evaluando estas 6 opcione
 - Compatibilidad cross-lingual (¿suena igual o aceptable cuando un hispanohablante, anglo, o francófono lo pronuncia?).
 - Posibilidad de generar dataset positivo sintético con Piper voices en N idiomas sin grabar audio humano.
 
-**Si "Hey Gemma" sale último**, recomendá la mejor alternativa con justificación cuantitativa. **No me casé con el nombre**, sí con que el agente se llame Gemma 4 Agent (eso queda) — la wake phrase puede ser otra cosa.
+**Si "Hey Gemma" sale último**, recomendá la mejor alternativa con justificación cuantitativa. **No me casé con el nombre**, sí con que el agente se llame Carter Agent (eso queda) — la wake phrase puede ser otra cosa.
 
 ---
 

@@ -1,4 +1,4 @@
-# Informe técnico — Gemma 4 Agent (asistente de voz 100% local) — Problemas A, B, C, D
+# Informe técnico — Carter Agent (asistente de voz 100% local) — Problemas A, B, C, D
 
 **Fecha:** 23 de mayo de 2026
 **Stack confirmado:** Gemma 4 E4B-it Q4_K_M (GGUF) + llama.cpp `llama-server` b9090+ + Parakeet-TDT-v3 (STT) en Windows, 6 GB de VRAM, monoslot.

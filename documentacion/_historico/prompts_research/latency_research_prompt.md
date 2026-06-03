@@ -1,4 +1,4 @@
-# Prompt de investigación — Optimización de latencia de un asistente de voz local (Gemma 4 Agent)
+# Prompt de investigación — Optimización de latencia de un asistente de voz local (Carter Agent)
 
 > Pegá este documento completo en claude.ai con **Deep Research** activado.
 > Es autocontenido: describe un sistema real, con cifras medidas, y pide una
@@ -60,7 +60,7 @@ violan no entran al ranking de impacto, ni siquiera como "quick win".
 
 # 1. Qué es el sistema
 
-**Gemma 4 Agent**: asistente de voz local para Windows, multi-idioma (default
+**Carter Agent**: asistente de voz local para Windows, multi-idioma (default
 español), 100% open-source y gratis (sin Picovoice, sin APIs cloud de pago). Corre
 un pipeline en cascada **wake-word → VAD → STT → LLM agente con tools → TTS**.
 El LLM hace tool-calling real (abrir apps, volumen, ventanas, media, web, screenshot

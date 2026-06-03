@@ -1,4 +1,4 @@
-# Smoke Test Summary — Gemma4 Agent
+# Smoke Test Summary — Carter Agent
 
 - Sesión: 2026-05-15 (autónoma nocturna)
 - Modelo en llama-server: `gemma-4-E4B-it-Q6_K.gguf` (más chico que el target IQ4_XS 26B; importante para interpretar Modo B)

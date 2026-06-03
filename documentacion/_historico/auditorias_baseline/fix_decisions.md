@@ -1,4 +1,4 @@
-# Fix Decisions — Gemma4 Agent
+# Fix Decisions — Carter Agent
 Decisiones tomadas autónomamente durante la sesión (regla conservadora: menos código, sin nuevas deps, sin cambio de firmas públicas).
 
 ---

@@ -1,4 +1,4 @@
-# Fix Summary — Gemma4 Agent (sesión autónoma 2026-05-15)
+# Fix Summary — Carter Agent (sesión autónoma 2026-05-15)
 
 ## Conteo por severidad
 

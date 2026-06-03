@@ -1,4 +1,4 @@
-# Gemma4 Agent — Auditoría Integral de Tools
+# Carter Agent — Auditoría Integral de Tools
 
 - **Proyecto**: gemma4-agent
 - **Fecha**: 2026-05-15

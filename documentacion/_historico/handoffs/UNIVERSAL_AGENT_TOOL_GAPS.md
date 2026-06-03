@@ -1,8 +1,8 @@
-# Gemma4 Agent Universal Tool Gap Map
+# Carter Agent Universal Tool Gap Map
 
 Fecha: 2026-05-12
 
-Objetivo: mapear los huecos para convertir Gemma4 Agent en un asistente
+Objetivo: mapear los huecos para convertir Carter Agent en un asistente
 tipo Alexa/Jarvis, pero orientado primero a control local de Windows. La regla
 de diseno se mantiene: pocas tools compuestas por dominio, evidencia de
 ejecucion, rollback/cleanup cuando toque estado, y honestidad cuando falte una

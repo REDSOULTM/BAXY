@@ -9,7 +9,7 @@
 
 ## Contexto del proyecto
 
-Estoy construyendo **Gemma 4 Agent**, un asistente de voz local estilo Alexa/Siri que corre completamente en la máquina del usuario (sin cloud). El LLM principal es Gemma 4 vía Ollama. Necesito reemplazar la pipeline de voz actual (wake-word detection + speech-to-text) porque la implementación que tengo es frágil: dispara con ruido ambiente del micrófono y transcribe mal anglicismos.
+Estoy construyendo **Carter Agent**, un asistente de voz local estilo Alexa/Siri que corre completamente en la máquina del usuario (sin cloud). El LLM principal es Gemma 4 vía Ollama. Necesito reemplazar la pipeline de voz actual (wake-word detection + speech-to-text) porque la implementación que tengo es frágil: dispara con ruido ambiente del micrófono y transcribe mal anglicismos.
 
 ### Lo que la pipeline de voz tiene que hacer
 

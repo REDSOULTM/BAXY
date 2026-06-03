@@ -1,4 +1,4 @@
-## Gemma 4 Agent — Informe de Optimización (auditoría externa)
+## Carter Agent — Informe de Optimización (auditoría externa)
 
 **Auditor:** Investigador senior, sistemas de IA local.
 **Fecha:** 2026-05-15 (Gemma 4 lleva 43 días publicado).

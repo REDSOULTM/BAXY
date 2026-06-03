@@ -1,4 +1,4 @@
-# Índice de prompts de investigación — Gemma 4 Agent (vram4)
+# Índice de prompts de investigación — Carter Agent (vram4)
 
 8 prompts para mandar a Claude (research). Cada uno es independiente y lleva la
 RESTRICCIÓN DURA: todo debe correr en **vram4 = Gemma 4 E4B-it Q4_K_M** (~4B, GPU

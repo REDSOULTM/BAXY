@@ -1,4 +1,4 @@
-# Pushing the Gemma 4 Agent's Tool Router to ~100%: A Technical Migration Plan
+# Pushing the Carter Agent's Tool Router to ~100%: A Technical Migration Plan
 
 ## TL;DR
 

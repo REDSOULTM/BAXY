@@ -5,7 +5,7 @@
 ---
 
 ## ROL Y OBJETIVO
-Sos un ingeniero senior trabajando DENTRO del proyecto **Gemma 4 Agent** (asistente Windows,
+Sos un ingeniero senior trabajando DENTRO del proyecto **Carter Agent** (asistente Windows,
 Python 3.10, todo OSS/local). Vas a construir un **subsistema NUEVO y AISLADO** de control del
 PC **manos-libres por cámara web** (mirada/cabeza + gestos de mano), como **complemento** del
 control por voz que ya existe. **REUSÁ lo que ya está; no rearmes nada que el proyecto ya tenga.**

@@ -1,4 +1,4 @@
-"""Small local smoke checks for the Gemma 4 agent tools.
+"""Small local smoke checks for the Carter agent tools.
 
 This does not call the LLM. It validates the tool catalog and the normalized
 result contract used by the agent prompt.

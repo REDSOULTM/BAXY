@@ -1,5 +1,5 @@
 """Genera el Word de producto FINAL (Riesgos+Mitigaciones + Comparativa) para
-Gemma 4 Agent. PRODUCTO TERMINADO: las afirmaciones son ciertas y coherentes para
+Carter Agent (antes Gemma 4 Agent). PRODUCTO TERMINADO: las afirmaciones son ciertas y coherentes para
 un producto que ya funciona, no metas. Insumos verificados: profiles.py (E2B-Q4,
 no 4B), ANALISIS_COMPETENCIA, vram_real_medida.csv. Honestidad:
 [MEDIDO] / [ESTIMADO] / techos honestos declarados, sin números inventados.

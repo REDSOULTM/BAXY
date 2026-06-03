@@ -1,4 +1,4 @@
-# Gemma4 Agent — Consolidación final de la auditoría
+# Carter Agent — Consolidación final de la auditoría
 
 Documento de cierre de TODA la auditoría: tres sesiones (overnight + continuación
 + cierre), 13 rondas de caza + profundización + guardrails. Fecha: 2026-05-21.
@@ -7,7 +7,7 @@ Documento de cierre de TODA la auditoría: tres sesiones (overnight + continuaci
 
 ## VEREDICTO HONESTO
 
-**Gemma4 Agent está consolidado en arquitectura y fiabilidad. La rama
+**Carter Agent está consolidado en arquitectura y fiabilidad. La rama
 `PortandoLoMejor` está lista para review, con un único hueco de confianza
 acotado (validación LLM E2E) que depende de liberar la GPU.**
 

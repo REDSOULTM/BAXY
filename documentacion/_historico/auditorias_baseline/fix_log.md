@@ -1,4 +1,4 @@
-# Fix Log — Gemma4 Agent
+# Fix Log — Carter Agent
 - Sesión: 2026-05-15 (autónoma nocturna)
 - Fuente: `audit/audit_findings.json`
 - Reglas: 1 unidad lógica por CC / 1 unidad por finding_id. NO se hace git.

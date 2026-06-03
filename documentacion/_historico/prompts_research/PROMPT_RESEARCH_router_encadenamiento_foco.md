@@ -1,4 +1,4 @@
-# Prompt de investigación — Router robusto + Encadenamiento multi-tool + Foco/maximize (Gemma 4 Agent)
+# Prompt de investigación — Router robusto + Encadenamiento multi-tool + Foco/maximize (Carter Agent)
 
 Copiá esto a claude.ai (con research/web). Es la profundización de implementación
 de 3 problemas (A router, B encadenamiento, C foco GUI) sobre NUESTRA arquitectura

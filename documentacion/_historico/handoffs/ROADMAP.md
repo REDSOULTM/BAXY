@@ -1,4 +1,4 @@
-# Gemma4 Agent — Roadmap Honesto
+# Carter Agent — Roadmap Honesto
 
 Fecha: 2026-05-13
 Audiencia: la siguiente sesion (yo o Codex) que continue el agente.

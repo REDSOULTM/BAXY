@@ -1,4 +1,4 @@
-# BACKLOG MAESTRO — Gemma 4 Agent
+# BACKLOG MAESTRO — Carter Agent
 
 **Fuente única de verdad.** Consolida los 5 backlogs históricos (ROADMAP_perfeccion,
 IDEAS_research_backlog, BACKLOG_competidores, router/06_PENDIENTE, BACKLOG_research_cruzado)

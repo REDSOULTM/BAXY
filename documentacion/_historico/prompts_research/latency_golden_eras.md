@@ -1,4 +1,4 @@
-# Épocas de oro de Gemma 4 Agent — arqueología de latencia y calidad
+# Épocas de oro de Carter Agent — arqueología de latencia y calidad
 
 Análisis forense de `~/.gemma4/logs/_pre_session/full.log` (303 turnos reales,
 **2026-05-15 → 2026-05-20**) cruzado con `git log`. Objetivo: encontrar las
@@ -64,7 +64,7 @@ pero **duplicó la latencia**: de ~2.7 s a 6-8 s.
 
 ## 1. Latencia por día (todo el historial disponible)
 
-> **Alcance temporal.** El proyecto **Gemma 4 Agent nace el 12-may-2026**
+> **Alcance temporal.** El proyecto **Carter Agent nace el 12-may-2026**
 > (commit `4748cb6`); antes era el proyecto **Carter** (`harness_carter540`), que
 > el usuario descartó por malo y NO se analiza acá. No existe en esta PC ningún
 > log/sesión/commit de Gemma 4 anterior al 12-may (verificado en git reflog,
@@ -160,7 +160,7 @@ routing/pending-intent que llegaron *después* (May 19-20).
 
 ### 12-14 de mayo — era fundacional (texto/chat) · `4748cb6`..`3f77637`
 
-Los primeros días de Gemma 4 Agent, sobre todo **chat de texto** (la GUI PyQt6 y el
+Los primeros días de Carter Agent, sobre todo **chat de texto** (la GUI PyQt6 y el
 runtime de voz aún se estaban armando; el wake/STT redesign llega recién el 19).
 Datos de los JSON de sesión (resolución 1 s):
 

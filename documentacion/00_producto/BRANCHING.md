@@ -1,4 +1,4 @@
-# Modelo de ramas — Gemma 4 Agent
+# Modelo de ramas — Carter Agent
 
 > Documento autoritativo del modelo de ramas del repo. Actualizar acá ANTES de
 > renombrar/agregar/borrar ramas para que la próxima sesión encuentre el mapa.

@@ -1,4 +1,4 @@
-# Gemma 4 Agent — Estado técnico y límites de hardware (2026-05-29)
+# Carter Agent — Estado técnico y límites de hardware (2026-05-29)
 
 > Sección para incorporar al informe **Producto, Riesgos y Competencia**. Resume el
 > trabajo de la sesión y, sobre todo, **los límites reales de hardware**: qué corre

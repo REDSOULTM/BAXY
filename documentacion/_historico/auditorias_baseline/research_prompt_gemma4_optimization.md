@@ -1,4 +1,4 @@
-# Prompt de auditoría exhaustiva — Optimización de Gemma 4 Agent (local Windows)
+# Prompt de auditoría exhaustiva — Optimización de Carter Agent (local Windows)
 
 > **Cómo usar este prompt**: pegarlo verbatim en un agente de investigación con
 > acceso a web (Perplexity Pro, ChatGPT Deep Research, Claude con web search,
@@ -40,7 +40,7 @@ referencial pero no normativo para esta familia.
 
 ### 1.1 Identidad del proyecto
 
-- **Nombre**: Gemma 4 Agent (paquete Python `gemma4_agent`).
+- **Nombre**: Carter Agent (antes Gemma 4 Agent; paquete Python `gemma4_agent`).
 - **Plataforma**: Windows 11 nativo (no WSL, no Docker, no servidor).
 - **Lenguaje**: Python 3.10+, ~32 600 LoC.
 - **Modo de operación**: agente con herramientas (tool-calling) +
@@ -347,7 +347,7 @@ Métricas, frecuencia, almacenamiento.
 Estructura obligatoria del informe:
 
 ```
-# Gemma 4 Agent — Informe de Optimización (auditoría externa)
+# Carter Agent — Informe de Optimización (auditoría externa)
 
 ## TL;DR ejecutivo (máx 1 página, 8 bullet points clave con citas)
 

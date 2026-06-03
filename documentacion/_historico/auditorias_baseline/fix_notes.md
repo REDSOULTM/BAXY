@@ -1,4 +1,4 @@
-# Fix Notes — Gemma4 Agent
+# Fix Notes — Carter Agent
 Observaciones fuera de scope (no se arreglan; quedan para próxima auditoría).
 
 ---

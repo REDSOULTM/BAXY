@@ -1,4 +1,4 @@
-# Prompt de investigación — Arquitectura del LLM en Gemma 4 Agent (refinamiento)
+# Prompt de investigación — Arquitectura del LLM en Carter Agent (refinamiento)
 
 Copiá esto a Claude (research/web). El objetivo es mejorar cómo el LLM interactúa
 con TODO el programa. CRÍTICO: abajo está lo que YA tenemos implementado y medido

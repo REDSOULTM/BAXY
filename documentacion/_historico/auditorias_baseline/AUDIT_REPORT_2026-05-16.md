@@ -1,4 +1,4 @@
-# Auditoría Gemma4 Agent — 2026-05-16
+# Auditoría Carter Agent — 2026-05-16
 
 Auditor: Claude Opus 4.7 (read-only). Sin edits. Pytest corrido en local.
 

@@ -1,4 +1,4 @@
-# Plan de optimización Gemma4 Agent — Cerrado
+# Plan de optimización Carter Agent — Cerrado
 
 **Fecha de cierre:** 2026-05-17
 **Rama:** `PortandoLoMejor`

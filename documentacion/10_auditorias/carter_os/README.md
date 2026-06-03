@@ -1,4 +1,4 @@
-# Auditoría profunda — Carter OS AI vs Gemma 4 Agent (este proyecto)
+# Auditoría profunda — Carter OS AI vs Carter Agent (este proyecto, antes Gemma 4 Agent)
 
 **Fecha:** 2026-05-23
 **Pedido por:** RED — "audita ambas carpetas de investigaciones + TODO el proyecto

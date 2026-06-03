@@ -1,4 +1,4 @@
-"""Persistent chat sessions for the Gemma 4 agent.
+"""Persistent chat sessions for the Carter agent.
 
 Each session is a JSON file under `~/.gemma4/sessions/<session_id>.json` with
 shape:

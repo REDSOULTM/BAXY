@@ -1,7 +1,7 @@
-"""Gemma 4 Agent as MCP server — expose compound tools to other agents (TIER 2 #7).
+"""Carter Agent (antes Gemma 4 Agent) as MCP server — expose compound tools to other agents (TIER 2 #7).
 
 Pattern from goose (Block / Linux Foundation AAIF): MCP (Model Context Protocol)
-es el standard de facto para agent-tool interop. Al exponer Gemma 4 como un
+es el standard de facto para agent-tool interop. Al exponer Carter como un
 servidor MCP, otros agentes (Cursor, Claude Desktop, OpenHands, goose) pueden
 usar nuestras compound tools como backend para automation de Windows local.
 

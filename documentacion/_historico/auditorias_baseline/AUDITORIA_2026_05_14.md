@@ -1,4 +1,4 @@
-# Auditoría Gemma4 Agent — 2026-05-14
+# Auditoría Carter Agent — 2026-05-14
 
 Modo READ-ONLY. Ningún archivo de código fue modificado. Solo se creó este
 reporte en la raíz del proyecto.

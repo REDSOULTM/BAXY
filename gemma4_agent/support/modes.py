@@ -1,4 +1,4 @@
-"""Turn-level mode selection for the Gemma 4 agent."""
+"""Turn-level mode selection for the Carter agent."""
 
 from __future__ import annotations
 
