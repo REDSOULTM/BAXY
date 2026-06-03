@@ -65,7 +65,10 @@ unsloth_compiled_cache/
 /Contextoclaude.md
 /_live_eager_tuned.py
 /_hagrid_license_extracted.txt
-# Capturas/proofs de diag bajo scripts/_diag (PNGs y subdirs de screenshots, no fuente)
+# Capturas/proofs de diag bajo scripts/_diag (PNGs y screenshots en CUALQUIER
+# subdir, no fuente). El ** cubre _florence/, _live/battery/, _battery/, etc.
+scripts/_diag/**/*.png
+scripts/_diag/**/*.jpg
 scripts/_diag/*.png
 scripts/_diag/_battery/
 scripts/_diag/_ocr_click/
