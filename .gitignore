@@ -44,6 +44,11 @@ harness_carter540/results/_vulkan_archive/
 Thumbs.db
 .DS_Store
 
+# Archivos personales del usuario que no son parte del proyecto (zips de
+# portafolio, chats exportados, docs de negocio sueltos). NUNCA al repo publico.
+*.zip
+Chat de WhatsApp*
+
 # Testing Inicial/ eliminado del repo 2026-06-03 (322 archivos, 80M de artefactos
 # de pruebas viejas: harness_carter540, evidencias, results, backups timestamped).
 # No es fuente; queda en el historial de git. Ignorado por si el harness regenera.
