@@ -1,0 +1,15 @@
+# Optional Phase 0 camera-control POC dependencies.
+# Kept separate from requirements.txt so the webcam subsystem remains opt-in.
+#
+# Licenses checked 2026-06-01:
+# - mediapipe: Apache-2.0
+# - opencv-python / opencv-contrib-python: Apache-2.0
+# - flatbuffers: Apache-2.0
+#
+# OpenCV 4.13 currently requires numpy>=2 on Python 3.10. The repo pins
+# numpy==1.26.4, so this file pins OpenCV 4.11 to avoid moving the LLM stack.
+mediapipe==0.10.35
+opencv-python==4.11.0.86
+opencv-contrib-python==4.11.0.86
+flatbuffers==25.12.19
+
