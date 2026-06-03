@@ -1,7 +1,7 @@
 # 03 — Delta Classes (UML actualizado de god classes)
 
 > Solo las clases que **cambiaron significativamente**. Para el UML
-> baseline completo ver [`_baseline_audit/03_classes/`](_baseline_audit/03_classes/).
+> baseline completo ver [`_baseline_audit/03_classes/`](../_historico/baseline_audit/03_classes/).
 
 ## 1. `Gemma4Agent` (agent.py) — descompuesto en 4 colaboradores
 

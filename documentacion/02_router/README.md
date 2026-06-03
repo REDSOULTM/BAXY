@@ -2,7 +2,7 @@
 
 > **Punto de entrada único** para entender el router de selección de tools.
 > Estado a 2026-05-30. Esta carpeta es la fuente AUTORITATIVA y vigente; el
-> research histórico en [`gemma4_agent/docs/research/router/`](../../gemma4_agent/docs/research/router/)
+> research histórico en [`documentacion/_historico/`](../_historico/)
 > incluye documentos OBSOLETOS (ver aviso abajo).
 
 ---
@@ -38,7 +38,7 @@ disciplina que mantiene el subset chico Y correcto.
 | [05_HISTORIAL_SPRINTS.md](05_HISTORIAL_SPRINTS.md) | Qué se hizo y por qué: S0–S6 con resultados MEDIDOS |
 | [06_PENDIENTE_Y_NO_FORZADO.md](06_PENDIENTE_Y_NO_FORZADO.md) | **Lo diferido y lo rechazado** con la medición que lo justifica. Lo que se debería hacer después |
 
-Plan maestro original (vivo): [`../PLAN_MAESTRO_router.md`](../PLAN_MAESTRO_router.md).
+Plan maestro original (vivo): [`PLAN_MAESTRO_router.md`](PLAN_MAESTRO_router.md).
 
 ---
 
@@ -73,7 +73,7 @@ viejas (0.835 / 0.881) son de OTRO sistema. **No apliques esos fixes directo.**
 El research que SÍ sigue vigente: el principio de "abstención calibrada como
 decisión única", "el encoder base es el techo para queries cortas de voz", y la
 idea del encoder FT sobre la distribución propia. Ver
-[`router_rebuild_2026_05_21.md`](../../gemma4_agent/docs/research/router/router_rebuild_2026_05_21.md).
+[`router_rebuild_2026_05_21.md`](../_historico/router_rebuild_2026_05_21.md).
 
 ---
 

@@ -100,25 +100,57 @@ def build_profile(behavior_log, *, window_days: int = _WINDOW_DAYS) -> TasteProf
     artist_plays: Counter = Counter()
     music_slot_count: Counter = Counter()
     n = 0
+    # Dedup de SESIÓN para media (F1): el ambient_observer poll-ea cada ~5s y, ante
+    # micro-variaciones del título reportado por SMTC o gaps de playback, graba la
+    # MISMA canción decenas/cientos de veces (medido: "Canserbero — Maquiavélico" 267
+    # filas = 1 sola canción sonando un rato, NO 267 escuchas). `_last_media` en el
+    # observer solo dedupea contra la fila INMEDIATAMENTE anterior y la PK incluye el
+    # ts en ms, así que el INSERT OR IGNORE nunca colapsa. Contar filas hacía que
+    # top_artists midiera TIEMPO-EN-PANTALLA, no preferencia. Acá colapsamos por
+    # SESIÓN: filas consecutivas con la misma key (dentro de un gap razonable) =
+    # una escucha. Una repetición real (misma canción tras otra distinta, o tras un
+    # gap largo) sí cuenta como nueva sesión. Los eventos vienen ordenados por ts ASC.
+    _last_media_key: str | None = None
+    _last_media_ts: int = 0
+    # Una pausa > este gap reabre la sesión (volviste a poner la misma canción).
+    _SESSION_GAP_MS = int(float(os.environ.get(
+        "GEMMA4_MEDIA_SESSION_GAP_S", "1800")) * 1000)  # 30 min default
 
     for e in events:
         ctx = e.get("context") or {}
         # Solo eventos AMBIENTE (lo que hace el user), no lo que abrió el agente.
         if ctx.get("source") != "ambient":
             continue
-        n += 1
         kind = e.get("kind")
         key = e.get("key") or ""
         slot = ctx.get("slot") or ""
         if kind == "app_focus":
+            n += 1
             d = float(ctx.get("dwell_s") or 0.0)
             app_dwell[key] += d
             if slot:
                 slot_app_dwell[slot][key] += d
         elif kind == "media_play":
+            ts = int(e.get("ts") or 0)
+            # ¿Es la MISMA canción que la sesión en curso (poll repetido)? -> ignorar.
+            same_session = (
+                key == _last_media_key
+                and 0 <= (ts - _last_media_ts) <= _SESSION_GAP_MS)
+            _last_media_key = key
+            _last_media_ts = ts
+            if same_session:
+                continue
+            # F5: SMTC reporta CUALQUIER reproductor (Spotify, navegador, VLC,
+            # PotPlayer...). Un título sin separador "artista — título" es casi
+            # siempre un VIDEO/película (medido: "the.green.inferno.2015...mp4"),
+            # no música. Solo lo que tiene artista cuenta como MÚSICA — así
+            # "escucha música a la madrugada" no afirma que mirabas una peli.
             artist = _artist_of(key)
-            if artist:
-                artist_plays[artist] += 1
+            if not artist:
+                continue
+            # Nueva sesión de escucha (canción distinta o re-play tras gap): cuenta 1.
+            n += 1
+            artist_plays[artist] += 1
             if slot:
                 music_slot_count[slot] += 1
 
@@ -136,10 +168,26 @@ def build_profile(behavior_log, *, window_days: int = _WINDOW_DAYS) -> TasteProf
     return prof
 
 
+_EXE_SUFFIXES = (".exe", ".app", ".bin", ".com")
+
+
 def _clean_app(name: str) -> str:
-    """code.exe -> Code, spotify.exe -> Spotify (para que el párrafo se lea humano)."""
-    base = name.rsplit(".", 1)[0] if "." in name else name
-    return base[:1].upper() + base[1:] if base else name
+    """code.exe -> Code, spotify.exe -> Spotify, whatsapp.root.exe -> Whatsapp.
+
+    Estructural (sin lista de apps por idioma): saca el sufijo de ejecutable y
+    luego, si el resto AÚN tiene puntos (p.ej. 'whatsapp.root'), se queda con el
+    PRIMER segmento (el nombre primario), no con el último. El bug previo usaba
+    rsplit('.',1) que dejaba 'whatsapp.root' en el prompt.
+    """
+    base = (name or "").strip()
+    low = base.lower()
+    for suf in _EXE_SUFFIXES:
+        if low.endswith(suf):
+            base = base[: -len(suf)]
+            break
+    if "." in base:
+        base = base.split(".", 1)[0]  # nombre primario, no el qualifier
+    return base[:1].upper() + base[1:] if base else (name or "")
 
 
 def _title_artist(name: str) -> str:
@@ -162,10 +210,16 @@ def profile_text(prof: TasteProfile) -> str:
         by_app: dict[str, list[str]] = defaultdict(list)
         for slot, app in prof.apps_by_slot.items():
             by_app[_clean_app(app)].append(slot)
-        rhythm = "; ".join(
-            f"a la {' y a la '.join(slots)} suele estar en {app}"
-            for app, slots in by_app.items())
-        parts.append(f"Ritmo diario: {rhythm}.")
+        # F4: el "ritmo" solo informa si DISTINGUE franjas. Si una sola app domina
+        # TODAS (Code en mañana/tarde/noche/madrugada), la frase "a la tarde y a la
+        # noche y a la madrugada y a la mañana suele estar en Code" no aporta nada
+        # (ya lo dice "las apps que más usa") y es ruido que daña a modelos chicos
+        # (arXiv:2502.01609). Se emite solo si hay >1 app dominante distinta.
+        if len(by_app) > 1:
+            rhythm = "; ".join(
+                f"a la {' y a la '.join(slots)} suele estar en {app}"
+                for app, slots in by_app.items())
+            parts.append(f"Ritmo diario: {rhythm}.")
     if prof.top_artists:
         arts = ", ".join(_title_artist(a) for a, _ in prof.top_artists)
         parts.append(f"Música que escucha: {arts}.")

@@ -46,12 +46,11 @@ Thumbs.db
 
 # Archivos personales del usuario que no son parte del proyecto (zips de
 # portafolio, chats exportados, docs de negocio sueltos). NUNCA al repo publico.
-/*.zip
+*.zip
 Chat de WhatsApp*
-# EXCEPCION: los archivos de logs respaldados como documentacion SI se versionan
-# (estan bajo documentacion/_historico/, no en la raiz, por eso /*.zip ya no los
-# atrapa — pero lo dejamos explicito).
-!documentacion/**/*.zip
+# PRIVACIDAD: los zips de logs archivados contienen transcripciones de voz REALES
+# del usuario (PII de terceros). NUNCA se versionan — quedan solo en disco local.
+# (Se quito la excepcion !documentacion/**/*.zip que los exponia.)
 
 # Testing Inicial/ eliminado del repo 2026-06-03 (322 archivos, 80M de artefactos
 # de pruebas viejas: harness_carter540, evidencias, results, backups timestamped).

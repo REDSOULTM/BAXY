@@ -430,7 +430,10 @@ class Gemma4Agent:
             try:
                 from ..memory_pkg.behavior_log import BehaviorLog
                 self.behavior = BehaviorLog()
-                self.behavior.record("boot", "agent")  # arranque de sesión
+                # Boot throttleado + retención: la política (gap, prune 60d) vive en
+                # BehaviorLog.record_boot (F2/F3), no acá. Sin throttle la DB se
+                # inflaba a ~21.4k boots en restart-loops y envenenaba al miner.
+                self.behavior.record_boot()
             except Exception:
                 self.behavior = None
             # Observador ambiente: la "capa viva" que mira el

@@ -54,9 +54,9 @@ docs/architecture/
 - **¿Querés entender qué quedó como deuda y qué se conservó a
   propósito?** [08_findings_post_plan.md](08_findings_post_plan.md).
 - **¿Querés entender el plan ejecutado?** [PLAN_CERRADO.md](PLAN_CERRADO.md)
-  y los logs en [sprint_prompts/](sprint_prompts/).
+  y los logs en [../_historico/sprints/](../_historico/sprints/).
 - **¿Querés el estado PRE-refactor para comparar?**
-  [_baseline_audit/](_baseline_audit/) tiene la auditoría original.
+  [../_historico/baseline_audit/](../_historico/baseline_audit/) tiene la auditoría original.
 
 ## Estado del plan
 

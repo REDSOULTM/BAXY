@@ -1,7 +1,7 @@
 # 05 — Delta Data (persistencia + state.json + 4 sinks → 3)
 
 > Cambios en superficies de persistencia post-plan. Para inventario
-> baseline completo ver [`_baseline_audit/05_data.md`](_baseline_audit/05_data.md).
+> baseline completo ver [`_baseline_audit/05_data.md`](../_historico/baseline_audit/05_data.md).
 
 ## 1. Eliminación de Timeline (4 sinks → 3)
 

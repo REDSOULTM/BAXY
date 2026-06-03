@@ -202,7 +202,7 @@ Hacerlas opt-out via env: `GEMMA4_LOOP_DETECTOR_OFF=1` los bypassea.
 ### Por qué importa
 
 Hoy las herramientas mezclan ejecución y verificación inline. Ejemplo en
-[gemma4_agent/tools.py:3097](gemma4_agent/tools.py#L3097):
+[gemma4_agent/tools_pkg/tools.py](../../gemma4_agent/tools_pkg/tools.py):
 
 ```python
 preexisting = self.verify_app_opened({"name": name})

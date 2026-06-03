@@ -2,7 +2,7 @@
 
 > Detalle técnico de los **9 módulos nuevos** creados durante el plan
 > + cambios significativos en módulos existentes.
-> **Para los componentes baseline ver:** [`_baseline_audit/02_components/`](_baseline_audit/02_components/).
+> **Para los componentes baseline ver:** [`_baseline_audit/02_components/`](../_historico/baseline_audit/02_components/).
 
 ## 1. Mapa de extracciones
 

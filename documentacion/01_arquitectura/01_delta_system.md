@@ -2,7 +2,7 @@
 
 > **Comparación:** baseline (15 containers) vs HEAD (containers
 > actualizados con módulos extraídos y stack NLI eliminado).
-> **Para el diagrama original ver:** [`_baseline_audit/01_system.md`](_baseline_audit/01_system.md).
+> **Para el diagrama original ver:** [`_baseline_audit/01_system.md`](../_historico/baseline_audit/01_system.md).
 
 ## 1. Qué cambió a nivel de container
 
@@ -285,7 +285,7 @@ graph TB
 
 ### 6.1 Detección de crash
 
-[`gemma4_agent/llama_server.py:LlamaServerManager.detect_crash_signature()`](../../gemma4_agent/llama_server.py)
+[`gemma4_agent/infra/llama_server.py:LlamaServerManager.detect_crash_signature()`](../../gemma4_agent/infra/llama_server.py)
 inspecciona el tail del `err.log` buscando patrones conocidos de
 crash:
 

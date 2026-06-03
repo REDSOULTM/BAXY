@@ -2,7 +2,7 @@
 
 > Cambios en el grafo de imports interno + dependencias externas
 > (`requirements.txt` que ahora **sí existe**).
-> Para grafo baseline ver [`_baseline_audit/06_dependencies.md`](_baseline_audit/06_dependencies.md).
+> Para grafo baseline ver [`_baseline_audit/06_dependencies.md`](../_historico/baseline_audit/06_dependencies.md).
 
 ## 1. requirements.txt — la diferencia más grande
 

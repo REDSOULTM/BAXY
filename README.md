@@ -16,7 +16,7 @@
 
 Está diseñado para **hardware modesto**: el target real es una laptop Windows con una GPU NVIDIA de **4 GB de VRAM** (o incluso sin GPU dedicada, cayendo a un perfil de CPU). El LLM, su visión multimodal y el cache de contexto entran completos en ese presupuesto; la transcripción y la voz corren en CPU para no robarle VRAM al modelo.
 
-Pensado para ser **universal**: multi-idioma y multi-acento (el routing de intención usa embeddings multilingües, no listas de keywords por idioma), con **modos de accesibilidad** de primera clase (control 100% por voz para movilidad reducida, narración de cada acción para personas no videntes). El agente expone **66 herramientas compuestas** que cubren desde controlar el sistema operativo, navegadores, juegos y mensajería, hasta operar *cualquier* aplicación abierta mediante accesibilidad (UIA → OCR → visión nativa de Gemma).
+Pensado para ser **universal**: multi-idioma y multi-acento (el routing de intención usa embeddings multilingües, no listas de keywords por idioma), con **modos de accesibilidad** de primera clase (control 100% por voz para movilidad reducida, narración de cada acción para personas no videntes). El agente expone **67 herramientas compuestas** que cubren desde controlar el sistema operativo, navegadores, juegos y mensajería, hasta operar *cualquier* aplicación abierta mediante accesibilidad (UIA → OCR → visión nativa de Gemma).
 
 ---
 
@@ -43,7 +43,7 @@ Pensado para ser **universal**: multi-idioma y multi-acento (el routing de inten
   - 🦮 **No vidente** — narra cada acción, lee la pantalla a demanda, describe errores y diálogos.
   - ♿ **Movilidad / manos libres** — control total por voz, nunca asume teclado/mouse, confirma por voz lo irreversible.
 
-### 🧰 Herramientas (66 tools compuestas)
+### 🧰 Herramientas (67 tools compuestas)
 - **Sistema y hardware** — procesos, CPU/RAM/GPU, batería, brillo, energía; WiFi/Bluetooth/monitores; Windows Update, Defender, firewall, servicios, restore points; registro de Windows (con backup y rollback); variables de entorno; red (ping, traceroute, DNS, IP pública); periféricos/controles; impresoras y escáner (WIA); winget; Docker.
 - **Audio y multimedia** — volumen/mute/media-keys; ruteo de audio por app; reproducción multi-provider (YouTube, Spotify, Netflix, Disney+, HBO Max, Prime Video, VLC, archivo local) con *now playing* vía SMTC; edición con ffmpeg (trim, concat, subtítulos, normalize EBU R128).
 - **Apps, juegos y ventanas** — abrir/cerrar/desinstalar apps y juegos; **Steam** (resuelve AppID, lanza, instala y auto-confirma el diálogo); Epic/GOG/Xbox/Riot; gestión y *layout* de ventanas.

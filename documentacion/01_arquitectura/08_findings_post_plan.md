@@ -2,7 +2,7 @@
 
 > **Tipo:** delta auditoría — qué quedó por hacer después de 8 sprints.
 > Para los findings originales ver
-> [`_baseline_audit/08_findings.md`](_baseline_audit/08_findings.md).
+> [`_baseline_audit/08_findings.md`](../_historico/baseline_audit/08_findings.md).
 > Este documento es el **mapa de oportunidades futuras**, ordenado por
 > ROI y riesgo.
 

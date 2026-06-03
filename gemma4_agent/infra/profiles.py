@@ -190,8 +190,7 @@ PROFILES: dict[str, Profile] = {
         # que se pasa; E4B no entra en 4 GB ni en su cuant más baja). Tool-calling
         # 9/12=75% medido (las 2 fallas son "narra la función como texto" → el
         # forced-tool-retry las rescata en prod). Trade-off aceptado: -16pp de
-        # tool-calling vs E4B a cambio de TODO en 4 GB. Quien tenga >4 GB usa
-        # vram6 (E4B-Q4, 91%).
+        # tool-calling vs E4B a cambio de TODO en 4 GB.
         model_path=_E2B_Q4_K_M,
         mmproj_path=_MMPROJ_E2B,
         vision_enabled=True,
@@ -203,9 +202,9 @@ PROFILES: dict[str, Profile] = {
         camera_enabled=False,
         description=(
             "GPU de 4 GB (DEFAULT). E2B-Q4_K_M: TODO en ≤4 GB — modelo + VISIÓN "
-            "residente + KV = 3.36 GB medido. Voz+STT ON (CPU, 0 VRAM). ctx 16K. "
+            "residente + KV = 3.36 GB medido. Voz+STT ON (CPU, 0 VRAM). ctx 12K. "
             "Tool-calling 75% (forced-retry lo sube). El único Gemma 4 que entra "
-            "completo en 4 GB; para tool-calling 91% con >4 GB usá vram6 (E4B)."
+            "completo en 4 GB."
         ),
         est_vram_mb=3360,
     ),
