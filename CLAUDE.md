@@ -1,10 +1,18 @@
 # CLAUDE.md — Cómo trabajar en este repo
 
 Instrucciones operativas para cualquier agente Claude que trabaje en
-**Gemma 4 Agent** (asistente de voz local Windows). Estas reglas tienen
-prioridad sobre tu comportamiento por defecto. No son aspiracionales:
-son verificables, y violarlas ya costó reinicios forzados, noches de GPU
-y 6 sprints fallidos. Léelas antes de tocar código.
+**Carter** (asistente de voz local Windows; antes "Gemma 4 Agent" — el
+modelo sigue siendo Gemma 4). Estas reglas tienen prioridad sobre tu
+comportamiento por defecto. No son aspiracionales: son verificables, y
+violarlas ya costó reinicios forzados, noches de GPU y 6 sprints fallidos.
+Léelas antes de tocar código.
+
+> Nota: los **principios del producto** (medí-no-celebres, honestidad
+> estructural, el LLM responde, universalidad, OSS, reproducibilidad,
+> confirmá lo irreversible) viven en el **README** como filosofía del
+> proyecto. Acá se repiten como reglas de trabajo porque Claude debe
+> respetarlas al tocar código — pero la fuente de verdad de los valores
+> del producto es el README.
 
 ---
 

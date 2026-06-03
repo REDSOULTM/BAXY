@@ -56,16 +56,6 @@ Estos vienen del corazón del proyecto y los revisamos en cada PR:
 7. **Confirmá lo irreversible.** Las operaciones destructivas (borrar, sobrescribir,
    matar procesos del usuario) van gateadas con confirmación.
 
-## Estilo de código y commits
-
-- **Comentarios técnicos, no meta-históricos.** Explicá *qué* hace el código y
-  *por qué* (el mecanismo, el bug que arregla, la fuente del número). Evitá
-  "agregado en el sprint X" o referencias a quién lo pidió — eso vive en el
-  historial de git, no en el código.
-- **Commits temáticos** con el porqué + métricas cuando aplique. Un cambio por
-  commit, mensaje claro.
-- Seguí la convención del repo (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`).
-
 ## Reportar bugs
 
 Incluí: qué esperabas, qué pasó, el comando/fraseo exacto, y (si aplica) el log.

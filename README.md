@@ -22,11 +22,24 @@ Pensado para ser **universal**: multi-idioma y multi-acento (el routing de inten
 
 ---
 
+## 🧭 Principios del proyecto
+
+Los valores de diseño que definen a Carter. No son aspiracionales: están cableados en el código y en los *gates* de aceptación, y se revisan en cada cambio.
+
+- **El asistente no miente.** Nunca afirma haber hecho algo que no pudo verificar. Si una acción no se confirmó, la respuesta lo dice — no hay "éxitos" fabricados ni respuestas enlatadas. Cada acción se valida contra el estado real del sistema.
+- **Inteligencia, no árboles de `if`.** Las decisiones (qué herramienta usar, qué responder) las toma el modelo, no tablas de respuestas fijas ni listas de keywords por idioma. Lo determinista se limita a clasificación por **embeddings multilingües**, **guardas estructurales** (que miden la forma, no el contenido) y **lectura del estado del SO**.
+- **Universal por diseño.** Multi-idioma y multi-acento: funciona igual para cualquier persona, no se ajusta a una sola voz o idioma. La calidad se mide contra conjuntos diversos (por ejemplo, la *wake-word* se evalúa sobre un *held-out* de 25 voces en 13 idiomas).
+- **Privado y local.** Todo corre en tu máquina: sin nube, sin APIs de pago obligatorias, sin enviar tus datos a ningún lado. Construido sobre software abierto y gratuito.
+- **Medible y reproducible.** Nada se da por "funcionando" sin un número contra un criterio definido de antemano, y todo dataset o artefacto se puede regenerar desde scripts versionados.
+- **Cuidadoso con lo irreversible.** Las operaciones destructivas (borrar, sobrescribir, cerrar lo que estás usando) piden confirmación antes de proceder.
+
+---
+
 ## ✨ Características
 
 ### 🎙️ Voz
 - **Pipeline de voz local de punta a punta**: `audio → VAD → wake-word → STT → corrector → LLM → TTS`.
-- **Wake-word** "hey gemma" (LiveKit conv-attention sobre ONNX; fallbacks openWakeWord), con *throttle* de inferencia para no clavar la CPU en reposo.
+- **Wake-word** **"Hey Carter" / "Carter" / "Oye Carter"** (LiveKit conv-attention sobre ONNX; fallbacks openWakeWord), entrenada multi-idioma/multi-acento, con *throttle* de inferencia para no clavar la CPU en reposo.
 - **VAD** con Silero + gate de silencio anti-alucinación.
 - **STT** intercambiable: Whisper-small en CPU/int8 (faster-whisper, default) o Parakeet-TDT via sherpa-onnx (más rápido, no alucina en silencio). Corrector fuzzy (RapidFuzz + fonético) para nombres propios mal transcriptos.
 - **TTS** Piper en streaming (voz default `es_MX-claude-high`): corta por oración y reproduce mientras el LLM sigue generando, con ventana anti-self-hearing.
@@ -97,7 +110,7 @@ Decide qué subconjunto de tools ofrecer al LLM por turno — una **cascada sem�
 | **sherpa-onnx** + Parakeet-TDT | 1.13.2 | STT alternativo (más rápido, CPU int8) |
 | **Piper TTS** | 1.4.2 | TTS por defecto (streaming por oración) |
 | **silero-vad** | 6.2.1 | Voice Activity Detection |
-| **openWakeWord** / LiveKit ONNX | >=0.6 | Wake-word ("hey gemma") |
+| **openWakeWord** / LiveKit ONNX | >=0.6 | Wake-word ("Hey Carter" / "Carter" / "Oye Carter") |
 | **onnxruntime** | 1.23.2 | Backend ONNX (wake-word, VAD) |
 | **sounddevice** | 0.5.5 | I/O de audio (PortAudio) |
 | **rapidfuzz** / **jellyfish** | 3.14.5 / 1.2.1 | Corrección fuzzy + fonética |
