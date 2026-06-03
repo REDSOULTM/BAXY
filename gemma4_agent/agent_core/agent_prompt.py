@@ -1,19 +1,15 @@
 """System prompt + per-tool rules + builder (lazy-load from ``prompts/``).
 
-Extracted from :mod:`gemma4_agent.agent` in Sprint 5b. Originally the
-two literals (``CORE_PROMPT``, ``TOOL_RULES``) were inline string
-literals (~550 LOC of prose embedded in Python).
+The two literals (``CORE_PROMPT``, ``TOOL_RULES``) live in markdown
+files under ``gemma4_agent/prompts/``. This module loads them ONCE at
+import time into module-level singletons that preserve SAME object
+identity semantics: when two tool aliases share a rule, they share the
+same ``str`` object — ``id(rule_a) == id(rule_b)``. That identity is
+load-bearing: ``build_system_prompt`` deduplicates by ``id(rule)`` to
+avoid repeating a shared rule when multiple aliases of it land in the
+same subset.
 
-Post-plan (this commit): the literals live in markdown files under
-``gemma4_agent/prompts/``. This module loads them ONCE at import time
-into module-level singletons that preserve the SAME object identity
-semantics as before (i.e. when two tool aliases share a rule, they
-share the same ``str`` object — ``id(rule_a) == id(rule_b)``). That
-identity is load-bearing: ``build_system_prompt`` deduplicates by
-``id(rule)`` to avoid repeating a shared rule when multiple aliases
-of it land in the same subset.
-
-API público preservado (idéntico al pre-refactor):
+Public API:
     CORE_PROMPT: str
     TOOL_RULES: dict[str, str]   (35 keys, 26 distinct string objects)
     SYSTEM_PROMPT: str
@@ -22,8 +18,8 @@ API público preservado (idéntico al pre-refactor):
 agent.py re-exports them so existing callers and tests do not need
 to change.
 
-Why lazy-load instead of eager-literal:
-- Iterating on the prompt no longer requires editing Python source.
+Why lazy-load from markdown instead of inline string literals:
+- Iterating on the prompt does not require editing Python source.
 - Each rule lives in its own ``.md`` file → easier diffing.
 - ``CORE_PROMPT`` (~8.7 KB) and each rule (50-5000 chars) are loaded
   once per process; SYSTEM_PROMPT is still cached as a single string.
@@ -35,47 +31,45 @@ Why we don't lazy-load PER-CALL (i.e. only when the rule is needed):
   KV cache of a 4 GB GGUF.
 
 Byte-level invariance: the resulting ``SYSTEM_PROMPT`` is guaranteed
-to be sha256-identical to the pre-refactor version, validated by
-``test_system_prompt_scope.py`` and the SHA snapshot in the Sprint
-5b.2c / Sprint 6 commits.
+to be sha256-identical across loads, validated by
+``test_system_prompt_scope.py`` and a SHA snapshot.
 """
 from __future__ import annotations
 
 from pathlib import Path
 
 
-_PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"  # gemma4_agent/prompts/ (reorg 2026-05-28)
+_PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"  # gemma4_agent/prompts/
 _CORE_PATH = _PROMPTS_DIR / "core.md"
 _CORE_LEAN_PATH = _PROMPTS_DIR / "core_lean.md"
 _TOOL_RULES_DIR = _PROMPTS_DIR / "tool_rules"
 
-# Per-profile CORE selection (2026-05-21). The repo's own latency research
-# (latency_golden_eras.md) flagged prompt thickening as the cold-start Achilles
-# heel; RAG-MCP (arXiv:2505.03275) and EasyTool (arXiv:2401.06201) show a
+# Per-profile CORE selection. Prompt thickening is the cold-start latency
+# bottleneck; RAG-MCP (arXiv:2505.03275) and EasyTool (arXiv:2401.06201) show a
 # shorter prompt is BOTH faster (less prefill) AND more accurate (less attention
 # dilution) — especially on the smaller models. So low-VRAM profiles (small/
 # weak models, where latency hurts most) get the LEAN core (~920 tok); larger
 # profiles get the FULL core (~2900 tok) with all the nuance. Env override:
 # GEMMA4_CORE_TIER=lean|full.
 #
-# 2026-05-26: el único perfil operante es vram4 (E2B-Q4) -> LEAN core (~920 tok):
-# es el tier más chico y más sensible a latencia (voz en GPU modesta), donde el
-# prompt corto es a la vez más rápido (menos prefill) y más preciso (menos
-# dilución de atención). El live tool-call test (2026-05-21) lo validó en E4B:
-# 7/7 correcto y más rápido con lean. standby no corre server (su tier es
-# irrelevante). Override manual: GEMMA4_CORE_TIER=lean|full.
+# El único perfil operante es vram4 (E2B-Q4) -> LEAN core (~920 tok): es el tier
+# más chico y más sensible a latencia (voz en GPU modesta), donde el prompt corto
+# es a la vez más rápido (menos prefill) y más preciso (menos dilución de
+# atención). Validado en vivo (tool-call): 7/7 correcto y más rápido con lean.
+# standby no corre server (su tier es irrelevante). Override manual:
+# GEMMA4_CORE_TIER=lean|full.
 _LEAN_PROFILES = {"vram4"}
 _FULL_PROFILES = {"standby"}
 
 
-# FR-CoT (v22-next, OPT-IN via GEMMA4_FRCOT=1, DORMANT por default). Plantilla de
-# thinking ESTRUCTURADO y BREVE para turnos de accion. El thinking libre del E2B
-# divaga (p90 268 tok ~4s @ 62 tok/s); FR-CoT lo acota a ~4 lineas (<=32 tok) Y sube
-# la fiabilidad de tool-call (arXiv:2604.02155, Qi 2026: 44%->64%, alucinacion
-# 3%->0%). NO validado en vivo todavia: un intento previo filtro el formato al reply
-# y rompio media (6/6->3/6). Mitigacion: el formato se scopea al canal <think> Y hay
-# una guarda estructural en reasoning.sanitize_text que lo borra del reply si se
-# filtra. Validar EN VIVO antes de default-on. Ver SPRINT_frcot_latencia_accion.md.
+# FR-CoT (OPT-IN via GEMMA4_FRCOT=1, DORMANT por default). Plantilla de thinking
+# ESTRUCTURADO y BREVE para turnos de accion. El thinking libre del E2B divaga
+# (p90 268 tok ~4s @ 62 tok/s); FR-CoT lo acota a ~4 lineas (<=32 tok) Y sube la
+# fiabilidad de tool-call (arXiv:2604.02155, Qi 2026: 44%->64%, alucinacion
+# 3%->0%). NO validado en vivo todavia: el formato puede filtrarse al reply y
+# romper media (medido 6/6->3/6 en un intento). Mitigacion: el formato se scopea
+# al canal <think> Y hay una guarda estructural en reasoning.sanitize_text que lo
+# borra del reply si se filtra. Validar EN VIVO antes de default-on.
 FRCOT_DIRECTIVE = (
     "[BRIEF REASONING — action turns] When the user asks you to ACT (open/play/send/"
     "set/search/control something) and a tool can do it, reason BRIEFLY using EXACTLY "
@@ -114,7 +108,7 @@ def _core_for_profile() -> str:
         except Exception:
             pass
     # FR-CoT directive: constante cuando el flag esta on -> el prefijo del system
-    # prompt sigue byte-estable turno-a-turno (no rompe el prefix-cache de Camino C).
+    # prompt sigue byte-estable turno-a-turno (no rompe el prefix-cache).
     if _frcot_enabled():
         return base + "\n\n" + FRCOT_DIRECTIVE
     return base
@@ -162,15 +156,14 @@ def _load_tool_rules() -> dict[str, str]:
     rules: dict[str, str] = {}
     if not _TOOL_RULES_DIR.is_dir():
         return rules
-    # v22-next (OPT-IN GEMMA4_LEAN_RULES, dormant): si on, preferimos
-    # ``<canonical>.lean.md`` (version DENSA, mismo contenido/anti-patrones, menos
-    # prosa) cuando existe -> menos tokens de prompt -> menos prefill FA-off. Default
-    # off = los .md de siempre (sin cambio). Validar EN VIVO antes de default-on
-    # (cada rule codifica bugfixes; ver PLAN_optimizacion_prompt_tokens.md).
+    # GEMMA4_LEAN_RULES: si on, preferimos ``<canonical>.lean.md`` (version DENSA,
+    # mismo contenido/anti-patrones, menos prosa) cuando existe -> menos tokens de
+    # prompt -> menos prefill con flash-attn off. Cada rule codifica bugfixes, por
+    # eso la version lean conserva el contenido tecnico, solo recorta prosa.
     import os as _os_lean
-    # v22 2026-05-28: lean mode DEFAULT ON (validado EN VIVO: routing 12/12, p50
-    # -28% vs full, hasta ARREGLA bugs de routing del baseline — menos dilución de
-    # atención en el E2B débil). GEMMA4_LEAN_RULES=0 para opt-out (volver a .md full).
+    # Lean mode DEFAULT ON (validado EN VIVO: routing 12/12, p50 -28% vs full, hasta
+    # ARREGLA bugs de routing del baseline — menos dilución de atención en el E2B
+    # débil). GEMMA4_LEAN_RULES=0 para opt-out (volver a .md full).
     _lean = (_os_lean.environ.get("GEMMA4_LEAN_RULES", "1") or "1").strip().lower() not in {"0", "false", "no", "off"}
     for md_path in sorted(_TOOL_RULES_DIR.iterdir()):
         if md_path.suffix != ".md" or md_path.name.endswith(".lean.md"):
@@ -213,27 +206,26 @@ CORE_LEAN_PROMPT: str = _load_core_lean_prompt()
 def build_core_only() -> str:
     """Solo el CORE estable del system prompt (sin TOOL_RULES por tool).
 
-    Usado por el layout cache-friendly (inv: fragmentación de prompt): el CORE no
-    depende del subset de tools del turno, así que va al PRINCIPIO del prompt y
-    se cachea entre turnos aunque las tools cambien. Las TOOL_RULES (variables por
-    subset) se mueven al final vía build_tool_rules_tail()."""
+    Usado por el layout cache-friendly: el CORE no depende del subset de tools del
+    turno, así que va al PRINCIPIO del prompt y se cachea entre turnos aunque las
+    tools cambien. Las TOOL_RULES (variables por subset) se mueven al final vía
+    build_tool_rules_tail()."""
     return _core_for_profile()
 
 
-# PERF — Camino C del informe prefill_latency_llama_server_gemma4.md (2026-05-28):
-# Los 15 tools mas usados como prefijo estable del system; el resto del subset
-# va como hint al final del user msg (no rompe cache de prefix).
+# PERF — prefijo estable del system prompt: los 15 tools mas usados van como
+# prefijo estable del system; el resto del subset va como hint al final del user
+# msg (no rompe cache de prefix).
 #
-# DINAMICO (2026-05-28): el set se lee UNA vez al import del modulo desde
+# DINAMICO: el set se lee UNA vez al import del modulo desde
 # ~/.gemma4/core_tools_pareto.json (si existe) o defaultea al top 15 global
-# medido en research. core_tools_pareto.maybe_recompute_in_background() se
-# llama al boot del agente para que la PROXIMA sesion vea el set adaptado al
-# usuario.
+# medido. core_tools_pareto.maybe_recompute_in_background() se llama al boot del
+# agente para que la PROXIMA sesion vea el set adaptado al usuario.
 #
 # Por que NO se actualiza en caliente: cambiar las CORE_TOOL_RULES en medio de
-# la sesion rompe el prefix-cache de llama-server (Camino C se basa en bytes
-# estables turno-a-turno). Mejor estabilidad: el set queda fijo durante la
-# sesion, se actualiza entre sesiones.
+# la sesion rompe el prefix-cache de llama-server (se basa en bytes estables
+# turno-a-turno). Mejor estabilidad: el set queda fijo durante la sesion, se
+# actualiza entre sesiones.
 def _load_core_tool_rule_names() -> tuple[str, ...]:
     try:
         from .core_tools_pareto import read_user_core_tools
@@ -251,10 +243,10 @@ CORE_TOOL_RULE_NAMES: tuple[str, ...] = _load_core_tool_rule_names()
 
 
 def build_core_tool_rules_stable() -> str:
-    """Camino C 2026-05-28: reglas de los CORE_TOOL_RULE_NAMES SIEMPRE incluidas
-    (sin filtrar por subset). Bytes byte-a-byte iguales turno-tras-turno -> el
-    prefix-cache de llama-server alcanza ~99% hit. Las reglas para tools FUERA del
-    core se inyectan via build_tool_rules_extras_for_user_msg() en el user msg.
+    """Reglas de los CORE_TOOL_RULE_NAMES SIEMPRE incluidas (sin filtrar por
+    subset). Bytes byte-a-byte iguales turno-tras-turno -> el prefix-cache de
+    llama-server alcanza ~99% hit. Las reglas para tools FUERA del core se inyectan
+    via build_tool_rules_extras_for_user_msg() en el user msg.
     """
     seen_ids: set[int] = set()
     rules: list[str] = []
@@ -272,7 +264,7 @@ def build_core_tool_rules_stable() -> str:
 
 
 def build_tool_rules_extras_for_user_msg(selected_tool_names: list[str] | None) -> str:
-    """Camino C: reglas de tools que estan en el subset pero NO en CORE.
+    """Reglas de tools que estan en el subset pero NO en CORE.
     Devuelve un bloque chico para anteponer al user msg (NO al system).
 
     Devuelve "" si no hay extras o el subset es None/vacio."""

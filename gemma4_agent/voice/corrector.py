@@ -1,6 +1,6 @@
 """RapidFuzz post-corrector against domain inventory.
 
-The killer feature from the research report. Whisper-small with
+Whisper-small with
 `language='es'` will phoneticise English nouns ("Chrome" -> "Aurekrom",
 "Benson Boone" -> "Benson Mould"). Re-training Whisper to handle this
 is out of scope (CPU-only constraint, multi-user). Instead, we do
@@ -21,8 +21,7 @@ Properties:
   - Bounded latency: O(N * M) where N = transcript tokens, M = inventory
     size. With M < 200, runs in single-digit milliseconds.
   - Conservative: keeps original token unless a CLEAR fuzzy match exists.
-    Threshold 78 is the operating point recommended in the research
-    report. Lower → over-correction. Higher → misses good corrections.
+    Lower threshold → over-correction. Higher → misses good corrections.
 
 Inspired by commercial Alexa/Google personalized entity resolution.
 """
@@ -36,8 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 # Match threshold (0-100). Below this, we keep the original token.
-# Research report recommended 78 but empirical testing shows that's
-# too strict for phonetic mistranscriptions:
+# 78 is too strict for phonetic mistranscriptions (measured):
 #   'aurekrom' vs 'chrome' = 43 (Whisper's mistranscription score)
 #   'benson mould' vs 'benson boone' = 66
 #   'cross' vs 'chrome' = 55
@@ -46,14 +44,14 @@ logger = logging.getLogger(__name__)
 DEFAULT_THRESHOLD = 65
 
 # Phonetic threshold (0-100). Applied to fuzz.ratio OVER the Metaphone codes
-# of the window vs the inventory item. STT Tier-1 (2026-05-22): los
-# anglicismos que Whisper-small fonetiza al español ("Chrome"->"aurekrom",
-# "Steam"->"estimulo", "Gemma"->"jema", "Spotify"->"espotify") son matches
-# FONÉTICOS, inalcanzables por edit-distance de texto. Medido contra los casos
-# reales de los traces: positivos ("estimulo"->steam=75, "espotify"->spotify=93,
-# "netflis"->netflix=91, "jema"->gemma=100) caen ≥75; negativos (palabras
-# comunes "abre"=40, "pon"=40, "musica"=36, "hola"=22) caen ≤40. 72 separa
-# limpio sin falsos positivos. Fuente: compass research (Sun et al. arXiv
+# of the window vs the inventory item. Los anglicismos que Whisper-small
+# fonetiza al español ("Chrome"->"aurekrom", "Steam"->"estimulo",
+# "Gemma"->"jema", "Spotify"->"espotify") son matches FONÉTICOS, inalcanzables
+# por edit-distance de texto. Medido contra casos reales: positivos
+# ("estimulo"->steam=75, "espotify"->spotify=93, "netflis"->netflix=91,
+# "jema"->gemma=100) caen ≥75; negativos (palabras comunes "abre"=40, "pon"=40,
+# "musica"=36, "hola"=22) caen ≤40. 72 separa limpio sin falsos positivos.
+# Fuente: Sun et al. arXiv
 # 2309.09552, +10% recall code-switching con phonetic matching + Whisper frozen).
 # jellyfish.metaphone es inglés-tuned, lo cual ENCAJA: el problema es justamente
 # anglicismos ingleses mal oídos en fonología española.
@@ -70,11 +68,11 @@ except Exception:  # pragma: no cover - depende del entorno
 
 
 # Stop-list de palabras españolas frecuentes que NUNCA deben corregirse contra
-# el inventario, aunque colisionen fuzzy/fonéticamente con un verbo o app. Bug
-# PRE-EXISTENTE detectado 2026-05-22: "musica"->"buscar" (txt_adj 67>umbral),
-# "guerra"->"cierra"/"sierra". Son palabras válidas del español que el corrector
-# corrompía. La investigación (compass, Sun et al.) recomienda exactamente este
-# "cap" de vocabulario frecuente contra over-correction. Normalizado (sin
+# el inventario, aunque colisionen fuzzy/fonéticamente con un verbo o app. Sin
+# esta lista el corrector corrompe palabras válidas del español: "musica"->
+# "buscar" (txt_adj 67>umbral), "guerra"->"cierra"/"sierra". Sun et al.
+# recomienda exactamente este "cap" de vocabulario frecuente contra
+# over-correction. Normalizado (sin
 # acentos). Solo palabras de contenido común que colisionan; NO incluir términos
 # que el user podría querer como nombre propio.
 _SPANISH_STOPWORDS = frozenset({
@@ -85,7 +83,7 @@ _SPANISH_STOPWORDS = frozenset({
     "hola", "gracias", "adios", "bien", "mal", "ahora", "luego", "hoy", "manana",
     "que", "cual", "quien", "como", "cuando", "donde", "porque", "cuanto",
     # números en palabra: nunca son nombres propios; protegen dictados con
-    # cifras ("treinta"->"Torrent" medido 2026-05-23 sobre FLEURS).
+    # cifras (sin esto "treinta"->"Torrent", medido sobre FLEURS).
     "cero", "uno", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete",
     "ocho", "nueve", "diez", "once", "doce", "veinte", "treinta", "cuarenta",
     "cincuenta", "cien", "ciento", "mil", "millon", "millones", "medio",
@@ -96,14 +94,14 @@ _SPANISH_STOPWORDS = frozenset({
 
 
 # Verbos de COMANDO que licencian corregir el TOKEN SIGUIENTE (el argumento).
-# Diseño estructural (round 2, 2026-05-22): el corrector token-por-token sobre
-# TODO el transcript corrompía habla real ("persona"->"prende", "el hombre"->
-# "el Chrome"). Los nombres propios del inventario aparecen en POSICIÓN DE
-# ARGUMENTO: "abre <APP>", "pon <X> en <STREAMER>". Frases declarativas
-# conversacionales ("la granizada destruyó...") NO tienen verbo-de-comando
-# inicial, así que NO se corrigen. Esto elimina la corrupción de raíz sin una
-# lista infinita de stopwords. (doc 1 §8.4 "skill prefix biasing"; patrón de
-# Alexa/Google: el ASR solo resuelve el slot tras el intent.)
+# Diseño estructural: corregir token-por-token sobre TODO el transcript corrompe
+# habla real ("persona"->"prende", "el hombre"->"el Chrome"). Los nombres
+# propios del inventario aparecen en POSICIÓN DE ARGUMENTO: "abre <APP>",
+# "pon <X> en <STREAMER>". Frases declarativas conversacionales ("la granizada
+# destruyó...") NO tienen verbo-de-comando inicial, así que NO se corrigen. Esto
+# elimina la corrupción de raíz sin una lista infinita de stopwords. (patrón
+# Alexa/Google "skill prefix biasing": el ASR solo resuelve el slot tras el
+# intent.)
 _COMMAND_VERB_ROOTS = (
     "abre", "abri", "cierra", "cerr", "pon", "pone", "ponme", "reproduc",
     "toca", "play", "prende", "prend", "enciende", "encende", "busca", "busc",
@@ -130,7 +128,7 @@ def _normalise(s: str) -> str:
     punctuation in degraded the fuzzy/phonetic match of the final token — which
     is usually the proper name we most need to rescue ("Kimp."!=gimp, "red."!=
     reddit). Map every non-alphanumeric to a space and collapse, so window and
-    inventory are normalised identically. (Measured gap, real_mic eval.)"""
+    inventory are normalised identically."""
     s = s.lower()
     s = "".join(
         c for c in unicodedata.normalize("NFD", s)
@@ -156,11 +154,11 @@ def _metaphone(s: str) -> str:
 # Spanish Metaphone (Mosquera 2012): segunda clave fonética, codificada según
 # fonología ESPAÑOLA. Necesaria porque Parakeet (multilingüe, sesgo es) fusiona
 # nombres ingleses a sonido español ("vlc"->"BLC", "netflis", "disnei"); el
-# Metaphone inglés no acerca esos códigos pero el español sí. MEDIDO 2026-05-23:
+# Metaphone inglés no acerca esos códigos pero el español sí. Medido:
 # blc/vlc ES=100 (EN=67), netflis/netflix ES=100, disnei/disney ES=100. Para
 # fusiones donde Parakeet PIERDE fonemas (crumb/chrome, echo/edge) el inglés
 # sigue siendo mejor -> usamos el MÁXIMO de ambas codificaciones (dual ES↔EN),
-# que domina a cualquiera sola. Plan §Axis-3 "codificación dual + match cruzado".
+# que domina a cualquiera sola (codificación dual + match cruzado).
 try:
     from gemma4_agent.voice.phonetic_es import spanish_metaphone as _spanish_metaphone
     _HAS_ES_PHONETIC = True
@@ -169,16 +167,16 @@ except Exception:  # pragma: no cover
     _HAS_ES_PHONETIC = False
 
 
-# Gate de LONGITUD de enunciado (anti-overfit, medido 2026-05-23): un asistente
-# de voz recibe COMANDOS, no párrafos. Los comandos son cortos (sobre 84 reales
-# de RED: p50=3 tokens, p90=6, MAX=8; 81/84 ≤6); el habla declarativa es larga
+# Gate de LONGITUD de enunciado (anti-overfit, medido): un asistente de voz
+# recibe COMANDOS, no párrafos. Los comandos son cortos (sobre 84 reales:
+# p50=3 tokens, p90=6, MAX=8; 81/84 ≤6); el habla declarativa es larga
 # (sobre 180 clips humanos FLEURS+chileno: p50=21 tokens, solo 18/180 ≤6). Con el
-# inventario grande (discovery, 125+ apps) el corrector corrompía 20/180 frases
+# inventario grande (discovery, 125+ apps) el corrector corrompe 20/180 frases
 # declarativas ("Esto"->"stop", "repollo"->"Apollo", "setenta"->"Counter-Strike").
-# Solución estructural (plan §Axis-3 "slot por posición"): NO corregir enunciados
-# largos. Umbral 8 = el máximo real de un comando de RED. Esto protege a CUALQUIER
-# usuario hablando frases largas sin perder ninguna corrección de comando real.
-# (CLAUDE.md: anti-regresión por dominio; uso universal, no overfit a una voz.)
+# Solución estructural (slot por posición): NO corregir enunciados largos. Umbral
+# 8 = el máximo real de un comando medido. Esto protege a CUALQUIER usuario
+# hablando frases largas sin perder ninguna corrección de comando real.
+# (anti-regresión por dominio; uso universal, no overfit a una voz.)
 MAX_COMMAND_TOKENS = 8
 
 
@@ -246,7 +244,7 @@ class FuzzyCorrector:
             best_replacement: str = tokens[i]
             best_score: float = 0
             best_size: int = 1
-            # GATE POSICIONAL (round 2): solo corregimos un token si está en
+            # GATE POSICIONAL: solo corregimos un token si está en
             # posición de ARGUMENTO de comando — i.e. el token anterior (en la
             # SALIDA ya corregida) es un verbo de comando o un conector. La
             # posición 0 siempre es corregible (puede ser el verbo mismo, p.ej.
@@ -254,7 +252,7 @@ class FuzzyCorrector:
             prev_norm = _normalise(out[-1]) if out else ""
             is_command_start = (i == 0)
             in_arg_position = is_command_start or _licenses_next(prev_norm)
-            # DOS REGÍMENES (round 2, medido contra 180 clips reales):
+            # DOS REGÍMENES (medido contra 180 clips reales):
             #   - En posición de comando/argumento -> corrección PLENA (texto +
             #     fonético, thresholds normales): ahí es donde viven los nombres
             #     propios y el contexto es seguro.
@@ -281,8 +279,8 @@ class FuzzyCorrector:
                 #   - multi-grama que CONTIENE una stopword -> no colapsar (ej.
                 #     "en disnei" no debe volverse "enciende"; "en" debe quedar
                 #     suelto y "disnei" matchear como 1-grama). Esto evita que un
-                #     2-grama con preposición absorba el token real. (bug medido
-                #     2026-05-22: "pon loki en disnei" -> "...enciende").
+                #     2-grama con preposición absorba el token real (sin esto
+                #     "pon loki en disnei" -> "...enciende").
                 norm_parts = [_normalise(t) for t in window_tokens]
                 if any(p in _SPANISH_STOPWORDS for p in norm_parts):
                     continue
@@ -291,8 +289,8 @@ class FuzzyCorrector:
                 for cat, normalized_items in self._normalized.items():
                     # No corregir a un verbo si: estamos en posición de argumento
                     # (los args son nombres propios), o el window es multi-token
-                    # (un verbo de comando es UNA palabra; "si busca"->"buscar"
-                    # era un colapso 2-gram->verbo erróneo).
+                    # (un verbo de comando es UNA palabra; corregir 2-gram->verbo
+                    # colapsa erróneamente, p.ej. "si busca"->"buscar").
                     if cat == "verbs" and (skip_verbs or ngram > 1):
                         continue
                     for norm_item, meta_item, meta_item_es, orig_item in normalized_items:
@@ -315,7 +313,7 @@ class FuzzyCorrector:
                         # no alcanza ("jema"->gemma, "netflis"->netflix,
                         # "disnei"->disney).
                         #
-                        # GATE anti-falso-positivo (medido 2026-05-22): el
+                        # GATE anti-falso-positivo (medido): el
                         # fonético solo NO separa anglicismos reales de palabras
                         # españolas que colisionan ("ventana"~"finder" FNTN/FNTR
                         # =75, "cierra"~"sierra"=100). Por eso exigimos TAMBIÉN un
@@ -325,8 +323,8 @@ class FuzzyCorrector:
                         # española distinta no ("ventana"/"finder" txt=15). Así
                         # la rama fonética solo "rescata" tokens ya plausiblemente
                         # parecidos, no inventa correcciones sobre vocabulario
-                        # común. (compass research: capear el corrector contra
-                        # over-correction de vocabulario frecuente.)
+                        # común (cap del corrector contra over-correction de
+                        # vocabulario frecuente).
                         # Fonético: NO en strict_mode (declarativo) y NO para
                         # verbos. Los verbos son cortos y colisionan fonéticamente
                         # ("cuales"->close KLS/KLS=100, "fue"->ver) — se corrigen

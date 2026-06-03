@@ -1,9 +1,9 @@
 """Semantic intent classification — universal, multilingual, keyword-free.
 
-Sprint 8 (2026-05-20): the keyword/regex router missed informational
-questions ("quién es X", "who is X", "de qué trata X") because the
-intent lives in the *wording*, not in any single keyword, and varies by
-language. Measured info-recall over 367 real queries was 0.48.
+The keyword/regex router missed informational questions ("quién es X",
+"who is X", "de qué trata X") because the intent lives in the *wording*,
+not in any single keyword, and varies by language. Measured info-recall
+over 367 real queries was 0.48.
 
 Instead of more keywords (fragile, per-language), we classify the user's
 INTENT semantically: compare the query embedding against two anchor
@@ -48,16 +48,17 @@ def _fold(text: str) -> str:
 
 # ---------------------------------------------------------------------------
 # Gate LÉXICO interrogativo (zero-ML, sub-ms). Complemento DETERMINISTA del
-# clasificador semántico. Dos usos (2026-05-23, informe latencia/router):
+# clasificador semántico. Dos usos:
 #   1. Fallback cuando el modelo de embeddings NO cargó (classify_intent=None):
 #      una pregunta clara ("¿qué es Mortal Kombat?") debe ir a INFO aunque el
 #      router esté degradado, en vez de caer al fallback que solo ofrecía office
-#      (el bug que torchcodec destapó). [[project_torchcodec_breaks_router]]
+#      (el bug que torchcodec destapó: importar torchcodec/optimum/tensorflow
+#      rompe sentence-transformers y deja el encoder sin cargar en silencio).
 #   2. Prior: refuerza la rama info cuando hay interrogativa sin verbo de acción.
 # Las palabras interrogativas son conjunto CERRADO por idioma -> regex casi
 # perfecta en es/en/pt/it. NO sustituye al semántico (que generaliza), lo respalda.
 #
-# ACENTO-AGNÓSTICO POR DISEÑO (2026-06-02): el texto se PLIEGA con `_fold`
+# ACENTO-AGNÓSTICO POR DISEÑO: el texto se PLIEGA con `_fold`
 # (NFKD, sin marcas combinantes) ANTES de matchear, así que aquí las palabras
 # van en su forma SIN tilde (qué/qué→que, perché/perchè→perche). Antes el regex
 # enumeraba a mano algunas variantes (`qu[eé]`, `c[oó]mo`) y silenciosamente
@@ -147,13 +148,13 @@ _INFO_ANCHORS = [
     "que es este concepto", "como funciona esta tecnologia",
     "explicame este tema", "que significa esta palabra",
     # "hablame de X / contame sobre X / dame info de X / qué sabés de X" —
-    # PEDIR INFO sobre una entidad concreta (persona/tema/evento). Medido
-    # (2026-05-30): sin estos, "hablame de bruno mars" caía en chitchat (el
-    # nombre propio corto embebe cerca de la charla) y "contame sobre X" no
-    # batía a action por margen. Estos anchors anclan el patrón "verbo-de-
-    # pedir-info + ENTIDAD" en el centroide info. Multilingües → generaliza,
-    # NO es lista de keywords. Recupera 8 misses de logs reales sin regresar
-    # ningún negativo (14/14 charla/comando intactos).
+    # PEDIR INFO sobre una entidad concreta (persona/tema/evento). Medido:
+    # sin estos, "hablame de bruno mars" caía en chitchat (el nombre propio
+    # corto embebe cerca de la charla) y "contame sobre X" no batía a action
+    # por margen. Estos anchors anclan el patrón "verbo-de-pedir-info +
+    # ENTIDAD" en el centroide info. Multilingües → generaliza, NO es lista
+    # de keywords. Recupera 8 misses de logs reales sin regresar ningún
+    # negativo (14/14 charla/comando intactos).
     "hablame de una persona famosa", "contame sobre un cantante o actor",
     "dame informacion sobre un tema o persona",
     "contame de un evento historico", "me podes contar sobre algo o alguien",
@@ -242,8 +243,8 @@ _SELF_ANCHORS = [
 
 # META-DIRECTIVES: the user is instructing the agent about HOW to behave or
 # answer THIS turn, not asking it to act on the world. Two flavours, both of
-# which must NOT pull domain tools (all four 2026-05-21 research models flagged
-# this as the missing 5th class behind the 0.51 no-tool keep):
+# which must NOT pull domain tools (this is the 5th class; without it the
+# no-tool keep measured 0.51):
 #   (a) explicit tool policy: "no uses tools", "responde sin herramientas",
 #       "usa tools solo si hace falta", "no abras el navegador".
 #   (b) mission-behavior policy: "arregla todo el repo como sea", "termina la
@@ -255,11 +256,11 @@ _SELF_ANCHORS = [
 # "termina") so the chitchat/selfref centroids miss them. A dedicated centroid
 # pulls them out. Multilingual anchors so it generalizes, not a keyword list.
 #
-# IMPORTANT scoping lesson (2026-05-21 dev measurement): the FIRST cut also
-# included mission-behaviour anchors ("termina la misión dejando log", "arregla
-# el repo como sea", "si el tool call falla repregunta"). Those absorbed real
-# commands-with-a-qualifier ("corre hardcode_guard si existe", "lista procesos
-# Python", "resume el log sin cargar todo") and cost 2.4 pts of recall on dev.
+# IMPORTANT scoping lesson (measured on dev): including mission-behaviour
+# anchors ("termina la misión dejando log", "arregla el repo como sea", "si el
+# tool call falla repregunta") absorbed real commands-with-a-qualifier ("corre
+# hardcode_guard si existe", "lista procesos Python", "resume el log sin cargar
+# todo") and cost 2.4 pts of recall on dev.
 # A command WITH a constraint is still a command. So META is scoped TIGHTLY to
 # explicit TOOL/ANSWER POLICY only — "should I use tools at all / how should I
 # answer" — never mission constraints. The mission directives that are truly
@@ -448,10 +449,10 @@ def wants_knowledge(text: str) -> bool:
     X" in any language. Used by the planner so the LLM can look things up
     even when no keyword fired.
 
-    FALLBACK LÉXICO (2026-05-23): si el modelo de embeddings no cargó
-    (classify_intent → None), una pregunta interrogativa clara SIN verbo de
-    comando se trata como info igual. Esto evita el mis-ruteo a 'office' que
-    pasó cuando torchcodec rompió el router en silencio."""
+    FALLBACK LÉXICO: si el modelo de embeddings no cargó (classify_intent →
+    None), una pregunta interrogativa clara SIN verbo de comando se trata como
+    info igual. Esto evita el mis-ruteo a 'office' que ocurre cuando torchcodec
+    rompe el router en silencio (deja el encoder sin cargar)."""
     s = classify_intent(text)
     if s is None:
         # Router degradado: confiar en el léxico para no mis-rutear preguntas.
@@ -509,8 +510,8 @@ def router_health() -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
-# Intención de COMPRA/BÚSQUEDA EN TIENDA WEB (2026-05-26). Caso real: "comprá un
-# juego en Instant Gaming" se mis-ruteaba a game_launcher/app porque el NOMBRE
+# Intención de COMPRA/BÚSQUEDA EN TIENDA WEB. "comprá un juego en Instant
+# Gaming" se mis-ruteaba a game_launcher/app porque el NOMBRE
 # de la tienda ("Instant Gaming") embebe cerca de las tools de juegos. Ninguna
 # descripción de tool lo vence (las negaciones no funcionan en espacio de
 # embeddings). Solución: clasificar la INTENCIÓN ("buscar/comprar un producto en
@@ -618,7 +619,7 @@ def wants_web_store(text: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Intención de NAVEGAR A UNA WEB (2026-05-27). Caso medido: "andá a la página de
+# Intención de NAVEGAR A UNA WEB. Medido: "andá a la página de
 # Instant Gaming" / "entrá a youtube" ruteaban inconsistente (browser / web-a-
 # Google / computer_use) porque el subset ofrecía 4 tools de navegación y el 4B
 # elegía mal (web=Google en vez de abrir el sitio), o game_launcher ganaba por la
@@ -708,11 +709,11 @@ def wants_web_navigation(text: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Intención de MANDAR UN EMAIL (2026-05-27). El 4B ni emite el tool-call de email
-# (medido: reply vacío). Para un usuario sin manos, mandar correo por voz es
-# diario. Este clasificador detecta "mandá/escribí un correo a X" para que la red
-# determinista abra el redactor web pre-rellenado (sin token, usa la sesión
-# logueada). Distinto de notas/mensajes-de-chat. Embeddings, fallback seguro.
+# Intención de MANDAR UN EMAIL. El 4B no emite el tool-call de email (medido:
+# reply vacío), así que un clasificador determinista detecta "mandá/escribí un
+# correo a X" para que la red abra el redactor web pre-rellenado (sin token, usa
+# la sesión logueada). Distinto de notas/mensajes-de-chat. Embeddings, fallback
+# seguro.
 # ---------------------------------------------------------------------------
 _EMAIL_ANCHORS = [
     "manda un correo a juan", "escribi un email a ana", "envia un mail a soporte",

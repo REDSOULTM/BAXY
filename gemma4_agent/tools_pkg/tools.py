@@ -66,8 +66,8 @@ from ..domain_tools import (
     _is_generic_music_query,
 )
 from .._ps import parse_ps_json
-from ..computer_use_pkg import gui_safety  # R3 + reorg 2026-05-28
-from ..computer_use_pkg import gui_verify  # R3 + reorg 2026-05-28
+from ..computer_use_pkg import gui_safety
+from ..computer_use_pkg import gui_verify
 from ..memory_pkg.knowledge import KnowledgeStore
 from ..memory_pkg.memory import MemoryStore
 from .ops_tools import browser_real_tool, download_tool, email_tool, env_tool, input_tool, ocr_find_text, ocr_image, registry_tool, reminder_tool, state_tool
@@ -92,11 +92,11 @@ WEB_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gemma4Agent/1.0"
 DEFAULT_WEB_SEARCH_PROVIDER = "duckduckgo_html"
 
 
-# _ok / _err: single source of truth en ._shared (consolidados 2026-05-27,
-# audit R3). Antes triplicados en tools/ops_tools/domain_tools (bodies
-# byte-idénticos). Importados acá temprano porque _ok/_err se usan en el
-# resto del módulo desde ~línea 100. El import de redact_sensitive más
-# abajo (línea ~190) se mantiene aparte por su historia (CC-105).
+# _ok / _err: single source of truth en ._shared. No duplicar en
+# tools/ops_tools/domain_tools (los bodies deben ser byte-idénticos).
+# Importados acá temprano porque _ok/_err se usan en el resto del módulo
+# desde ~línea 100. El import de redact_sensitive más abajo se mantiene
+# aparte.
 from .._shared import _err, _ok  # noqa: E402
 
 
@@ -129,11 +129,11 @@ def _prevalidate_notification(args: dict[str, Any]) -> dict[str, Any] | None:
         return None
     except ValueError:
         pass
-    # LENGUAJE NATURAL (2026-05-27): "a las 7 de la mañana", "mañana a las 9". El
+    # LENGUAJE NATURAL: "a las 7 de la mañana", "mañana a las 9". El
     # tool (_notification_due) ya las resuelve vía datetime_parse; el validador
     # debe DEJARLAS PASAR si parse_when las entiende con confianza. Si NO -> sigue
     # rechazando (honesto: pedir hora exacta, no inventar). Misma capa que
-    # reminder. Alinea alarmas/timers con recordatorios (antes solo ISO/HH:MM).
+    # reminder, para alarmas/timers (no solo ISO/HH:MM).
     try:
         from ..support.datetime_parse import parse_when as _pw
         if _pw(raw):
@@ -191,8 +191,8 @@ _PRE_VALIDATORS: dict[str, Any] = {
 }
 
 
-# CC-105: unified in Sprint 4 — the body now lives in :mod:`._shared`
-# (was duplicated against domain_tools._redact_credentials, see audit §2.2).
+# redact_sensitive: single source of truth en :mod:`._shared`. No duplicar
+# contra domain_tools._redact_credentials.
 from .._shared import redact_sensitive as _redact_sensitive  # noqa: E402
 
 
@@ -203,11 +203,10 @@ from .._shared import redact_sensitive as _redact_sensitive  # noqa: E402
 #   - status="dispatched" (nuevo bucket distinto de done/attempted/needs_verif).
 #   - verified=None (honest tristate: True medido / False medido y mal / None
 #                    no medible).
-# Auditoria 2026-05-15 mostro 40+ falsos positivos donde tools dispatch
-# (browser.youtube_play, media.play_pause via media key, browser.open url,
-# steam.store_page, app.open con launch_requested) reportaban verified=False
-# y disparaban el guard "Nota: no dejo evidencia suficiente" aunque la
-# accion SI habia ocurrido.
+# Sin estos, los tools que despachan (browser.youtube_play, media.play_pause
+# via media key, browser.open url, steam.store_page, app.open con
+# launch_requested) reportan verified=False y disparan el guard "Nota: no
+# dejo evidencia suficiente" aunque la accion SI ocurrio: falso positivo.
 _DISPATCH_OK_COMPLETIONS = frozenset({
     "opened_youtube_video_for_playback",
     "opened_youtube_search_unverified",
@@ -226,9 +225,9 @@ def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, An
     result.setdefault("tool", name)
     if args.get("action") and "action" not in result:
         result["action"] = str(args["action"])
-    # CC-105 / CC-credential-args-traced-105: redacción de keys sensibles
-    # antes de que el resultado llegue a traces/jsonl o se devuelva al LLM.
-    # Mutamos el dict result in-place a través de un walk recursivo.
+    # Redacción de keys sensibles antes de que el resultado llegue a
+    # traces/jsonl o se devuelva al LLM. Mutamos el dict result in-place a
+    # través de un walk recursivo.
     redacted = _redact_sensitive(result)
     if isinstance(redacted, dict) and redacted is not result:
         result.clear()
@@ -501,7 +500,7 @@ def _coerce_and_validate_tool_args(name: str, args: dict[str, Any]) -> tuple[dic
 
 def _invalid_args_result(name: str, clean_args: dict[str, Any],
                          validation_errors: list[str]) -> dict[str, Any]:
-    """Error de argumentos inválidos CORREGIBLE en 1 reintento (auditoría §7.2).
+    """Error de argumentos inválidos CORREGIBLE en 1 reintento.
 
     El caso típico (system(action='calculator')) es un enum de acción inválido: la
     grammar de --jinja de Gemma fuerza la ESTRUCTURA del tool-call pero NO el enum
@@ -592,14 +591,13 @@ def _truncate(text: str, limit: int) -> str:
     return text if len(text) <= limit else text[:limit] + f"...<truncated {len(text) - limit} chars>"
 
 
-# Maquinaria SendInput CACHEADA a nivel módulo (auditoría §7.1, DIAGNOSTICADO +
-# MEDIDO 2026-05-24). CAUSA RAÍZ del "anda ~6 veces y muere": recrear WinDLL +
-# redeclarar argtypes + redefinir las clases Structure en CADA llamada acumula
-# estado en el proceso hasta que SendInput deja de entregar (la cola de input se
-# corrompe). MEDIDO: con todo recreado por llamada -> 3-6 OK luego falla, PC quieta,
-# 1 sola calc (descartado: actividad del usuario, apertura/cierre de la app, foco).
-# Construir la maquinaria UNA sola vez elimina el acumulador. _SENDINPUT = None
-# hasta el primer uso; en no-Windows queda None y el caller cae al path legacy.
+# Maquinaria SendInput CACHEADA a nivel módulo. CAUSA RAÍZ del "anda ~6 veces
+# y muere": recrear WinDLL + redeclarar argtypes + redefinir las clases
+# Structure en CADA llamada acumula estado en el proceso hasta que SendInput
+# deja de entregar (la cola de input se corrompe). Medido: con todo recreado
+# por llamada -> 3-6 OK luego falla. Construir la maquinaria UNA sola vez
+# elimina el acumulador. _SENDINPUT = None hasta el primer uso; en no-Windows
+# queda None y el caller cae al path legacy.
 _SENDINPUT = None
 
 
@@ -778,7 +776,7 @@ def _score(query: str, candidate: str) -> int:
     c_words = set(c.split())
     if not q_words:
         return 0
-    # 2026-05-20: exclude stopwords from the "meaningful overlap" count.
+    # Exclude stopwords from the "meaningful overlap" count.
     # "League of Legends" vs "Sea of Thieves" shared only "of" and scored 50,
     # so "Call of Duty" could resolve to "God of War" when the real game
     # isn't installed. A shared connective word is not a real app match.
@@ -797,7 +795,7 @@ def _score(query: str, candidate: str) -> int:
     # un score bajo pero positivo para que el candidato no se descarte.
     import difflib
     full_ratio = difflib.SequenceMatcher(None, q, c).ratio()
-    # 2026-05-20: first-character guard. Short near-anagrams ("teams" vs
+    # First-character guard. Short near-anagrams ("teams" vs
     # "steam", ratio ~0.8) were fuzzy-matching and "abre Teams" opened Steam.
     # A real typo almost always keeps the first letter ("spotfy"->"spotify",
     # "calculadra"->"calculadora"); a different first letter on a short query
@@ -834,7 +832,7 @@ def _score(query: str, candidate: str) -> int:
     return 0
 
 
-# Sprint 5b: AppCandidate + AppResolver moved to :mod:`.app_resolver`.
+# AppCandidate + AppResolver live in :mod:`.app_resolver`.
 # Re-export here so existing `from .tools import AppCandidate, AppResolver`
 # call sites (and external callers) keep working. The two classes pull the
 # small ranking / parsing helpers (_fold, _score, _acf_value,
@@ -1181,14 +1179,14 @@ def _youtube_title_near_video_id(text: str, video_id: str) -> str | None:
         return match.group(1)
 
 
-# Sprint 5b: _is_private_host + _SSRFGuardRedirectHandler moved to
-# :mod:`.ssrf_guard`. Re-export here so the internal callers
-# (_http_get_text below + the audit/smoke harness) keep working.
+# _is_private_host + _SSRFGuardRedirectHandler live in :mod:`.ssrf_guard`.
+# Re-export here so the internal callers (_http_get_text below + the
+# audit/smoke harness) keep working.
 from ..safety_pkg.ssrf_guard import _is_private_host, _SSRFGuardRedirectHandler  # noqa: E402,F401
 
 
 def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000, allow_private: bool = False) -> dict[str, Any]:
-    # T2-web-no-redirect-cap-014: SSRF guard pre-request y en redirects.
+    # SSRF guard pre-request y en redirects.
     from urllib.parse import urlparse
     host = urlparse(url).hostname or ""
     if not allow_private and _is_private_host(host):
@@ -1268,8 +1266,8 @@ def _duckduckgo_search(query: str, limit: int = 6) -> list[dict[str, str]]:
 def _bing_decode_redirect(href: str) -> str:
     """Bing envuelve el URL real en un redirect de tracking
     (`.../ck/a?...&u=a1<base64>`). Desenvuelve el `u=a1<base64>` al URL real.
-    Si no es un redirect (link directo), devuelve el href tal cual. VERIFICADO
-    en vivo 2026-05-29 contra HTML real de Bing."""
+    Si no es un redirect (link directo), devuelve el href tal cual. Verificado
+    contra HTML real de Bing."""
     m = re.search(r"[?&]u=a1([A-Za-z0-9_\-]+)", href)
     if not m:
         return href
@@ -1284,10 +1282,10 @@ def _bing_decode_redirect(href: str) -> str:
 
 
 def _bing_search(query: str, limit: int = 6) -> list[dict[str, str]]:
-    """B7 (competidores): búsqueda fallback vía Bing HTML — motor INDEPENDIENTE de
-    DDG. Best-effort scraping; si el HTML no matchea el regex, devuelve [] (sin
-    daño: ya veníamos en blanco). Sólo se usa cuando DDG falló/vino vacío.
-    Regex VERIFICADO en vivo 2026-05-29: <h2 class=""><a href="redirect base64">."""
+    """Búsqueda fallback vía Bing HTML — motor INDEPENDIENTE de DDG. Best-effort
+    scraping; si el HTML no matchea el regex, devuelve [] (sin daño: ya veníamos
+    en blanco). Sólo se usa cuando DDG falló/vino vacío. Regex verificado contra
+    el HTML real de Bing: <h2 class=""><a href="redirect base64">."""
     page = _http_get_text(f"https://www.bing.com/search?q={quote_plus(query)}", timeout=12)["text"]
     results: list[dict[str, str]] = []
     for block in re.finditer(r"(?is)<li class=\"b_algo\".*?(?=<li class=\"b_algo\"|</ol>|$)", page):
@@ -1310,8 +1308,7 @@ def _bing_search(query: str, limit: int = 6) -> list[dict[str, str]]:
 
 
 def _web_fallback_enabled() -> bool:
-    """B7: fallback dual de web search (DDG -> Bing). DEFAULT ON desde 2026-05-29
-    (validado EN VIVO: Bing devuelve 3/3 results reales con URLs base64 decodificadas).
+    """Fallback dual de web search (DDG -> Bing). DEFAULT ON.
     Kill-switch GEMMA4_WEB_FALLBACK=0. Seguro: sólo actúa cuando DDG ya falló/vació
     -> nunca regresión (peor caso = sigue en blanco; si Bing cambia su HTML -> [] -> sin daño)."""
     return (os.environ.get("GEMMA4_WEB_FALLBACK", "1") or "1").strip().lower() not in {
@@ -1325,7 +1322,7 @@ def _web_search_provider(query: str, limit: int = 6) -> tuple[str, list[dict[str
         if provider in {"duckduckgo", "duckduckgo_html", "ddg"}:
             return "duckduckgo_html", _duckduckgo_search(query, limit=limit)
         return provider or DEFAULT_WEB_SEARCH_PROVIDER, []
-    # B7: con fallback dual. DDG primario; si falla/vacío -> Bing (independiente).
+    # Con fallback dual. DDG primario; si falla/vacío -> Bing (independiente).
     name, results = (provider or DEFAULT_WEB_SEARCH_PROVIDER), []
     if provider in {"duckduckgo", "duckduckgo_html", "ddg"}:
         try:
@@ -1444,15 +1441,15 @@ class ToolRegistry:
             "session": self.t_session,
             "mcp": self.t_mcp,
         }
-        # T3-browser_real-global-session-dict-039: al inicio del proceso, las
-        # browser_real resources del run anterior son stale (el dict global
-        # _BROWSER_SESSIONS está vacío). Las marcamos como cerradas para
-        # evitar cleanup_plan/state.cleanup contra sesiones que no existen.
+        # Al inicio del proceso, las browser_real resources del run anterior
+        # son stale (el dict global _BROWSER_SESSIONS está vacío). Las marcamos
+        # como cerradas para evitar cleanup_plan/state.cleanup contra sesiones
+        # que no existen.
         self._prune_stale_browser_sessions()
-        # Ola 3 (B9): enrolar las tools MCP al router UNA vez al boot (gated
-        # GEMMA4_MCP, default off). Best-effort: si falla (SDK ausente, servidor
-        # caído, timeout), el agente arranca igual sin MCP. NO bloquea el caso
-        # feliz: discover tiene timeout y cachea.
+        # Enrolar las tools MCP al router UNA vez al boot (gated GEMMA4_MCP,
+        # default off). Best-effort: si falla (SDK ausente, servidor caído,
+        # timeout), el agente arranca igual sin MCP. NO bloquea el caso feliz:
+        # discover tiene timeout y cachea.
         self._enroll_mcp_tools_best_effort()
 
     def _enroll_mcp_tools_best_effort(self) -> None:
@@ -1518,7 +1515,7 @@ class ToolRegistry:
             for schema in COMPOUND_TOOL_SCHEMAS
             if str(schema.get("function", {}).get("name", "")) in wanted
         ]
-        # Ola 3 (B9): si el subset incluye tools MCP enroladas (nombres mcp__*),
+        # Si el subset incluye tools MCP enroladas (nombres mcp__*),
         # resolvemos sus schemas dinámicos desde el cliente MCP (aditivo, NO muta
         # el literal global COMPOUND_TOOL_SCHEMAS). Solo si el subset realmente las
         # pidió -> 0 overhead cuando no hay MCP en el turno.
@@ -1529,7 +1526,7 @@ class ToolRegistry:
                            if str(s.get("function", {}).get("name", "")) in wanted)
             except Exception:
                 pass
-        # v22-next: descripciones lean opt-in (GEMMA4_LEAN_RULES) — SOLO en el subset
+        # Descripciones lean opt-in (GEMMA4_LEAN_RULES) — SOLO en el subset
         # que ve el LLM; no muta el literal global. Default off = sin cambio.
         if lean_on:
             out = [_with_lean_description(s) for s in out]
@@ -1541,7 +1538,7 @@ class ToolRegistry:
 
     def execute(self, name: str, args: dict[str, Any] | None) -> dict[str, Any]:
         clean_args = dict(args or {})
-        # CC-101: campos internos NUNCA aceptan inyección desde el LLM —
+        # Campos internos NUNCA aceptan inyección desde el LLM —
         # los filtramos antes de cualquier validación. El runner de routines
         # los reintroduce vía `execute_routine_step` (ver más abajo).
         for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create"):
@@ -1563,9 +1560,9 @@ class ToolRegistry:
         # tool has no `level`; a numeric level means the user wanted VOLUME,
         # so route to audio.set_volume. (Repro: "baja el vol del pc a 10".)
         name, clean_args = _correct_known_misroute(name, clean_args)
-        # Ola 3 (B9): tool MCP enrolada (nombre 'mcp__server__tool'). El router la
-        # rankeó y el cap la limitó como una tool más; acá la ruteamos transparente
-        # al cliente MCP (no aparece en _impls porque es dinámica). Gated por
+        # Tool MCP enrolada (nombre 'mcp__server__tool'). El router la rankeó y
+        # el cap la limitó como una tool más; acá la ruteamos transparente al
+        # cliente MCP (no aparece en _impls porque es dinámica). Gated por
         # mcp_enabled() dentro de call_mcp_by_id (fallback honesto si está off).
         try:
             from .mcp_client import is_mcp_tool_name, call_mcp_by_id, mcp_tool_annotations
@@ -1624,11 +1621,11 @@ class ToolRegistry:
             err = validator(clean_args)
             if err is not None:
                 return _normalize_tool_result(name, clean_args, err)
-        # ITEM 3 (perfection roadmap): catálogo de PRECONDICIONES (ley #5). Antes
-        # de actuar, chequear estado del SO (app instalada, whatsapp presente). Un
-        # False MEDIDO bloquea con mensaje accionable -> needs_user (que el recovery
-        # clasifica como ERR_MISSING_PRECONDITION, budget=1). None/unknown NO bloquea
-        # (fail-open). Gated GEMMA4_PRECONDITIONS (default off). 0 overhead si off.
+        # Catálogo de PRECONDICIONES: antes de actuar, chequear estado del SO
+        # (app instalada, whatsapp presente). Un False medido bloquea con mensaje
+        # accionable -> needs_user (que el recovery clasifica como
+        # ERR_MISSING_PRECONDITION, budget=1). None/unknown NO bloquea (fail-open).
+        # Gated GEMMA4_PRECONDITIONS (default off). 0 overhead si off.
         try:
             from ..safety_pkg.preconditions import ensure_preconditions
             _prec = ensure_preconditions(name, clean_args)
@@ -1641,9 +1638,9 @@ class ToolRegistry:
             pass
         if self.safety_enabled and not confirmed and name != "safety":
             decision = classify_tool_call(name, clean_args)
-            # B5: la POLÍTICA de confirmación decide si confirmar (default confirm_risky
-            # = conducta histórica idéntica; never auto-aprueba lo reversible pero SIEMPRE
-            # confirma lo irreversible; always confirma todo). Guarda estructural, sin LLM.
+            # La POLÍTICA de confirmación decide si confirmar (default confirm_risky:
+            # never auto-aprueba lo reversible pero SIEMPRE confirma lo irreversible;
+            # always confirma todo). Guarda estructural, sin LLM.
             from ..safety_pkg.confirmation_policy import should_confirm as _should_confirm
             if _should_confirm(decision):
                 _c_reason = decision.reason or f"política de confirmación activa ({name})"
@@ -1659,18 +1656,18 @@ class ToolRegistry:
                         confirmation=pending.get("confirmation"),
                     ),
                 )
-        # CC-101: reinyectamos `confirmed` despues de validar para que los
-        # gates duros (terminal/system/package/database/backup_sync/filesystem)
-        # puedan respetar la confirmacion previa sin chocar con el schema.
+        # Reinyectamos `confirmed` despues de validar para que los gates duros
+        # (terminal/system/package/database/backup_sync/filesystem) puedan
+        # respetar la confirmacion previa sin chocar con el schema.
         impl_args = dict(clean_args)
         if confirmed:
             impl_args["confirmed"] = True
         try:
             result = impl(impl_args)
         except Exception as exc:
-            # Traceback al log de dev (el mensaje conciso sigue yendo al LLM). Antes
-            # se perdía el stack -> imposible distinguir un bug (None.method, index
-            # error) de un error esperado al depurar. (Auditoría 2026-06-01.)
+            # Traceback al log de dev (el mensaje conciso sigue yendo al LLM). Sin
+            # esto se pierde el stack -> imposible distinguir un bug (None.method,
+            # index error) de un error esperado al depurar.
             _log.exception("tool %s raised during execute", name)
             result = _err(f"{type(exc).__name__}: {exc}")
         return _normalize_tool_result(name, clean_args, result)
@@ -1728,7 +1725,7 @@ class ToolRegistry:
                 a["delta"] = -20
             return self.system_brightness_set(a)
         if action in ("shutdown", "restart", "sleep"):
-            # CC-101 / T1-system-shutdown-no-confirmation-002: gate duro.
+            # gate duro: confirmación obligatoria antes de power-off/restart/sleep.
             gate = self._hard_gate(
                 tool_name="system",
                 action=action,
@@ -1770,7 +1767,7 @@ class ToolRegistry:
             return self.app_search({"query": name or "", "limit": args.get("limit", 10), "refresh": args.get("refresh", False)})
         if action == "open":
             res = self.app_open({"name": name or "", "refresh": args.get("refresh", False)})
-            # FALLBACK A WEB (2026-05-27): "ve a pivigames/gmail.com/portal uniej" ->
+            # FALLBACK A WEB: "ve a pivigames/gmail.com/portal uniej" ->
             # el 4B rutea a app.open, pero es un SITIO, no una app instalada. Tres
             # señales de que hay que NAVEGAR en vez de abrir una app:
             #   (a) app.open no encontró NADA ("app not found"); o
@@ -1786,8 +1783,8 @@ class ToolRegistry:
             #       coincide" es señal fiable de falso match).
             # Resolvemos el sitio por búsqueda real y abrimos. Si la web no resuelve,
             # devolvemos el resultado original (honesto). Mismo patrón browser<->app.
-            # R3 cleanup 2026-05-28: el `from .tools import _score` era circular
-            # (tools.py importándose a sí mismo). `_score` ya está en module scope.
+            # Usamos `_score` directo del module scope: `from .tools import _score`
+            # sería circular (tools.py importándose a sí mismo).
             _app_score = _score
             nm = str(name or "").strip()
             site_shaped = bool(nm) and 3 <= len(nm) <= 40 and "\\" not in nm and "/" not in nm and len(nm.split()) <= 4
@@ -1912,24 +1909,23 @@ class ToolRegistry:
                 return _err("missing search query")
             return self.steam_store_page(args, query)
         if action in {"install", "play_or_install"}:
-            # INSTALAR un juego (lo que el usuario realmente pidió: "instalame
-            # doom eternal"). El URI steam://install/<appid> abre el DIÁLOGO de
-            # instalación NATIVO de Steam (el usuario confirma la descarga ahí
-            # mismo) — NO solo la página de la tienda.
+            # INSTALAR un juego ("instalame doom eternal"). El URI
+            # steam://install/<appid> abre el DIÁLOGO de instalación NATIVO de
+            # Steam (el usuario confirma la descarga ahí mismo) — NO solo la
+            # página de la tienda.
             #
-            # BUG histórico: el 4B casi nunca conoce el AppID numérico; emite
-            # steam(action='install', query='doom eternal'). El handler viejo,
-            # al no tener `appid`, caía a search_store -> solo ABRÍA la página de
-            # la tienda y NUNCA instalaba (reportado por el usuario 2026-05-31).
-            # Fix: resolver el NOMBRE -> AppID con la MISMA cascada que
+            # El 4B casi nunca conoce el AppID numérico; emite
+            # steam(action='install', query='doom eternal'). Sin `appid`, caer a
+            # search_store solo ABRE la página de la tienda y NUNCA instala. Por
+            # eso resolvemos el NOMBRE -> AppID con la MISMA cascada que
             # store_page (biblioteca local de Steam -> búsqueda real en la
-            # store) y recién ahí disparar steam://install/<appid>.
+            # store) y recién ahí disparamos steam://install/<appid>.
             appid = str(args.get("appid") or "").strip()
             match_source = "explicit_appid" if appid else ""
             matched: dict[str, Any] | None = None
             # Sin appid Y sin query no hay nada que instalar: pedir el juego en
             # vez de "abrir la tienda" a ciegas (que tampoco abriría nada y
-            # mentiría — review 2026-05-31, mentira estructural).
+            # mentiría — mentira estructural).
             if not appid and not query:
                 return _err("missing game name to install", action="install",
                             status="needs_user",
@@ -1954,14 +1950,14 @@ class ToolRegistry:
                 # (puede traer el juego equivocado y arrancar una descarga de
                 # varios GB). Lo marcamos para que el reply le diga al usuario
                 # QUÉ juego se está instalando y pueda cancelar en el diálogo de
-                # Steam si no es el correcto (review 2026-05-31).
+                # Steam si no es el correcto.
                 low_confidence = match_source == "steam_store_search"
 
-                # AUTO-CONFIRMAR el diálogo de instalación (lo que el user pidió
-                # 2026-05-31: "que lo instale, no que lo deje abierto"). Steam NO
-                # tiene instalación silenciosa (doc oficial de Valve) y SteamCMD
-                # necesita credenciales -> la ÚNICA vía es confirmar el diálogo.
-                # MEDIDO en vivo: el diálogo (SDL_app) expone su botón de instalar
+                # AUTO-CONFIRMAR el diálogo de instalación (instalar de verdad, no
+                # dejar el diálogo abierto). Steam NO tiene instalación silenciosa
+                # (doc oficial de Valve) y SteamCMD necesita credenciales -> la
+                # ÚNICA vía es confirmar el diálogo.
+                # Medido: el diálogo (SDL_app) expone su botón de instalar
                 # con InvokePattern funcional -> lo invocamos por ACCESIBILIDAD
                 # (NO SendInput; el click físico ni siquiera serviría: los botones
                 # reportan bounds 0,0). El botón se elige por EMBEDDINGS
@@ -2056,10 +2052,9 @@ class ToolRegistry:
         self, game_name: str, timeout_s: float = 12.0
     ) -> dict[str, Any]:
         """Confirma el diálogo de instalación de Steam por ACCESIBILIDAD (UIA
-        InvokePattern), SIN input físico (CLAUDE.md / feedback_never_run_synthetic
-        _input_lives_in_vscode). El diálogo es una ventana SDL_app cuyo árbol UIA
-        expone los botones (medido 2026-05-31): Instalar/Install/Installieren,
-        Cancelar, selectores de disco, checkboxes de acceso directo.
+        InvokePattern), SIN input físico. El diálogo es una ventana SDL_app cuyo
+        árbol UIA expone los botones: Instalar/Install/Installieren, Cancelar,
+        selectores de disco, checkboxes de acceso directo.
 
         Elige el botón de confirmar por EMBEDDINGS multilingües (no lista de
         keywords por idioma — cumple el constraint de producto): el concepto
@@ -2126,9 +2121,8 @@ class ToolRegistry:
             # El diálogo de instalación: WindowControl SDL_app que contiene un
             # botón que matchea 'install' CON CONFIANZA. Ese requisito lo
             # distingue de la ventana PRINCIPAL de Steam (también SDL_app, pero
-            # sin un botón 'install' de alta similitud) — caso real medido
-            # 2026-05-31 donde la heurística vieja (≥2 botones) matcheaba la
-            # biblioteca por error.
+            # sin un botón 'install' de alta similitud) — una heurística por
+            # conteo (≥2 botones) matchea la biblioteca por error.
             for w in auto.GetRootControl().GetChildren():
                 try:
                     if "SDL" not in (w.ClassName or ""):
@@ -2155,8 +2149,8 @@ class ToolRegistry:
         top_el, top_name, top_sim = hit
 
         # 3) Si el botón de instalar está DESHABILITADO, Steam no puede proceder
-        #    (caso real medido 2026-05-31: "NO HAY SUFICIENTE ESPACIO" — ningún
-        #    disco tenía ~80GB libres -> Instalar disabled). Invocarlo no haría
+        #    (caso real: "NO HAY SUFICIENTE ESPACIO" — ningún disco tenía ~80GB
+        #    libres -> Instalar disabled). Invocarlo no haría
         #    nada; reportamos honestamente el bloqueo en vez de afirmar que se
         #    apretó. No leemos el texto por idioma: usamos IsEnabled (estructural).
         try:
@@ -2319,7 +2313,7 @@ class ToolRegistry:
         #  (b) no teclear en campos de contraseña (secret handoff).
         if action in self._GUI_PHYSICAL:
             try:
-                # (0) cap de acciones físicas por turno (R8 anti pop-up/injection)
+                # (0) cap de acciones físicas por turno (anti pop-up/injection)
                 _bud = gui_safety.check_action_budget()
                 if _bud is not None:
                     _bud["action"] = action
@@ -2382,9 +2376,9 @@ class ToolRegistry:
                 shot["target"] = target
                 return shot
             found = ocr_find_text(Path(str(shot["image_path"])), target, lang=str(args.get("lang") or "spa+eng"), min_conf=int(args.get("min_conf", 25)))
-            # CC-106 / CC-window-virtualscreen-coords-106: añade screen_x/screen_y
-            # (pre-traducidos) a cada match para que el LLM pueda clickear sin
-            # re-aplicar shot.left/top. center_x/center_y siguen siendo image-local.
+            # Añade screen_x/screen_y (pre-traducidos) a cada match para que el
+            # LLM pueda clickear sin re-aplicar shot.left/top. center_x/center_y
+            # siguen siendo image-local.
             shot_left = int(shot.get("left", 0))
             shot_top = int(shot.get("top", 0))
             enriched_matches = []
@@ -2434,10 +2428,10 @@ class ToolRegistry:
             return _err("computer_use no disponible (sin agente)", status="failed")
         try:
             from ..computer_use_pkg.computer_use import plan_for, PlanExecutor, summarize_result
-            # PLAN DETERMINISTA (accesibilidad, 2026-05-31): el caller puede pasar un
-            # plan ya construido (`steps`) para los casos estructurados claros (p.ej.
+            # PLAN DETERMINISTA (accesibilidad): el caller puede pasar un plan ya
+            # construido (`steps`) para los casos estructurados claros (p.ej.
             # "escribí X en app Y" -> [focus_app(Y), type(X)]) y NO depender del 4B
-            # planner, que MEDIDO devolvía plan vacío o metía toda la frase como texto.
+            # planner, que MEDIDO devuelve plan vacío o mete toda la frase como texto.
             # Si no hay steps, planifica el 4B (caminos abiertos: nav multi-paso, etc.).
             plan = args.get("steps") or args.get("plan")
             if not (isinstance(plan, list) and plan and all(isinstance(s, dict) for s in plan)):
@@ -2477,8 +2471,8 @@ class ToolRegistry:
         shot = self.gui_screenshot(args)
         shot["vision_action"] = action
         shot["target"] = args.get("target") or args.get("text")
-        # DESCRIBE DIRECTO (2026-05-27, crítico no-vidente): en vez de devolver
-        # solo el screenshot y confiar en que el loop del agente lo describa (el
+        # DESCRIBE DIRECTO (crítico para accesibilidad no-vidente): en vez de
+        # devolver solo el screenshot y confiar en que el loop del agente lo describa (el
         # 4B débil fumblea: re-llama vision o cancela), hacemos AQUÍ una llamada
         # de visión LIMPIA y enfocada (thinking off, sin tools, prompt único) —
         # exactamente lo que SÍ funciona — y devolvemos la descripción como texto.
@@ -2538,11 +2532,11 @@ class ToolRegistry:
         query = str(args.get("query") or "").strip()
         browser = str(args.get("browser") or "").strip()
         if action == "open":
-            # Aliases para `url` que el 4B usa frecuentemente (bug medido
-            # 2026-05-27, captura del user: el modelo pasó `target:"canvas"` y
-            # la tool devolvió needs_user porque solo leía url/query). El
-            # schema DECLARA `target` como propiedad pero el handler antes lo
-            # ignoraba — inconsistencia schema↔handler. También aceptamos
+            # Aliases para `url` que el 4B usa frecuentemente (caso medido: el
+            # modelo pasó `target:"canvas"` y la tool devolvía needs_user porque
+            # solo leía url/query). El schema DECLARA `target` como propiedad
+            # pero el handler lo ignoraba — inconsistencia schema↔handler que se
+            # corrige leyendo el alias acá. También aceptamos
             # `site`/`domain` (formas que el 4B inventa por la descripción del
             # schema). OJO: NO incluimos `name` aquí porque más abajo el
             # bloque LAUNCH-THE-APP usa `name` para "lanzá Chrome" (donde name

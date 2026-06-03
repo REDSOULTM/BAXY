@@ -1,13 +1,13 @@
 """Registro de eventos de comportamiento del usuario para el loop proactivo.
 
-Base del "Jarvis" (investigación 5, 2026-05-23): observar qué hace el usuario
-(apps que abre/cierra, comandos, arranques) para que el miner detecte patrones
-repetidos y el asistente OFREZCA automatizarlos ("veo que cerrás Discord al
-prender la PC, ¿te lo automatizo?").
+Base del "Jarvis": observar qué hace el usuario (apps que abre/cierra, comandos,
+arranques) para que el miner detecte patrones repetidos y el asistente OFREZCA
+automatizarlos ("veo que cerrás Discord al prender la PC, ¿te lo automatizo?").
 
-Decisiones de diseño (del informe):
-  - Tabla SQLite SEPARADA de ExperienceMemory (NO contaminar el log de chat; el
-    incidente del 52% de DB contaminada fue por mezclar todo).
+Decisiones de diseño:
+  - Tabla SQLite SEPARADA de ExperienceMemory (NO contaminar el log de chat;
+    mezclar todo en una sola DB la contamina —se midió hasta 52% de registros
+    espurios— y degrada las consultas).
   - WHITELIST estricta de tipos de evento (anti-poison): solo señales estables.
   - Per-usuario (Windows username) → no mezcla perfiles (multi-usuario universal).
   - Append-only, barato (<10 MB, <50 ms); la minería corre APARTE, no acá.
@@ -31,14 +31,15 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 # WHITELIST anti-poison: solo estos tipos de evento se registran. Cualquier otro
-# se ignora (evita que basura/tests contaminen el log como pasó con la otra DB).
+# se ignora (evita que basura/tests contaminen el log, como ocurre cuando una DB
+# acepta cualquier tipo de evento sin filtrar).
 ALLOWED_KINDS = frozenset({
     "boot",         # arranque de la PC / sesión del agente
     "app_open",     # el usuario (o el agente) abrió una app
     "app_close",    # cerró una app
     "cmd",          # comando de voz/texto ejecutado (key = intent/tool)
     "correction",   # el usuario corrigió algo (key = qué)
-    # R-Jarvis (2026-05-30): observador ambiente. METADATA, no contenido.
+    # Observador de ambiente: registra METADATA (qué/cuándo), no contenido.
     "media_play",   # algo se reprodujo (key = "artista — título"), via SMTC
     "app_focus",    # app en foco del usuario (key = proc name), via win32 foreground
 })
@@ -63,7 +64,7 @@ class BehaviorLog:
     # VARIOS threads —el main (lee el perfil cada turno), el ambient_observer (escribe
     # app_focus/media_play desde su daemon), la reflexión LLM— así que una conexión
     # ÚNICA compartida hacía que las ops del thread "equivocado" fallaran SILENCIOSAS
-    # (record→False, events→[]). MEDIDO 2026-05-30: el observador perdía registros.
+    # (record→False, events→[]): medido, el observador en daemon perdía registros.
     # WAL (PRAGMA abajo) soporta multi-conexión a la misma DB → una conexión por thread
     # es el patrón correcto. `_disabled` sí es compartido (si la DB está corrupta, lo
     # está para todos).

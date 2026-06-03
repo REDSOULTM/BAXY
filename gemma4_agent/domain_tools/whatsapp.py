@@ -1,13 +1,11 @@
-"""WhatsApp domain tool — extraído de domain_tools/__init__.py (2026-06-01).
+"""WhatsApp domain tool.
 
-Antes vivía inline en domain_tools/__init__.py (~líneas 2928-4238). Extraído acá
-como módulo hermano (patrón R2) para que el archivo-dios __init__.py no crezca al
-agregar el fix de C1/C2/H8 (ratchet test_god_object_size_ceiling). __init__.py
-re-exporta los símbolos públicos para que los callers existentes (dispatch via
-ToolRegistry, tests que hacen `from gemma4_agent.domain_tools import whatsapp_tool`
-y `patch("gemma4_agent.domain_tools.whatsapp.<name>")`) sigan funcionando.
+Módulo hermano de domain_tools/__init__.py, que re-exporta los símbolos públicos
+para que los callers existentes (dispatch via ToolRegistry, tests que hacen
+`from gemma4_agent.domain_tools import whatsapp_tool` y
+`patch("gemma4_agent.domain_tools.whatsapp.<name>")`) sigan funcionando.
 
-GOTCHA de mocking (R2): los tests que parchean internos del flujo whatsapp deben
+GOTCHA de mocking: los tests que parchean internos del flujo whatsapp deben
 apuntar a ESTE módulo (`gemma4_agent.domain_tools.whatsapp._X`), NO al re-export en
 `gemma4_agent.domain_tools._X` — los callers internos resuelven el nombre en el
 namespace de ESTE módulo. (`_find_whatsapp_app`, `subprocess.Popen`, `webbrowser.open`,
@@ -17,7 +15,7 @@ namespace de ESTE módulo. (`_find_whatsapp_app`, `subprocess.Popen`, `webbrowse
 Contenido: detección de la app (UWP), normalización de teléfono, resolución de
 destinatario (con exclude_groups + desempate contacto-vs-grupo), verificación del
 chat/header por UIA→OCR (tri-state), captura del área de chat, GUI-search como
-último recurso, auto-send con gate de entrega por pantalla (H8), y el entry point
+último recurso, auto-send con gate de entrega por pantalla, y el entry point
 whatsapp_tool.
 """
 from __future__ import annotations
@@ -124,16 +122,17 @@ def _resolve_whatsapp_recipient(
 
     # 1. Intentar contacts store local (rapido si esta).
     # exclude_groups=True: un envío directo por NOMBRE nunca debe resolver a un
-    # grupo (cura de raíz del bug "mandale a mamá -> grupo Música"). Si el
-    # usuario quiere un grupo, el LLM debe pasar el phone/JID del grupo
-    # explícito o el contacto marcado is_group debe nombrarse aparte.
+    # grupo — un nombre que matchea tanto a un contacto como a un grupo no debe
+    # caer silenciosamente al grupo. Si el usuario quiere un grupo, el LLM debe
+    # pasar el phone/JID del grupo explícito o el contacto marcado is_group debe
+    # nombrarse aparte.
     resolve_result = _contacts_resolve_recipient(
         {"query": name_query, "limit": 5, "exclude_groups": True}, state,
     )
     matches = resolve_result.get("matches") or []
-    # Inv 2 (grounding): si la resolución es AMBIGUA (dos contactos casi
-    # empatados), NO adivinar — pedir desempate. Mandar al chat equivocado es
-    # daño irreversible (bug "mamá"->"Música"). Mejor preguntar.
+    # Grounding: si la resolución es AMBIGUA (dos contactos casi empatados), NO
+    # adivinar — pedir desempate. Mandar al chat equivocado es daño irreversible.
+    # Mejor preguntar.
     if resolve_result.get("ambiguous") and len(matches) >= 2:
         cand_names = [
             str((m["contact"].get("metadata") or {}).get("name")
@@ -147,11 +146,11 @@ def _resolve_whatsapp_recipient(
             candidates=cand_names,
             hint=f"¿A cuál querías: {', '.join(cand_names)}?",
         )
-    # C1/C2 colisión contacto-vs-grupo (2026-06-01): exclude_groups oculta los
-    # grupos ANTES del scoring, así que un nombre que matchea FUERTE tanto a un
-    # individuo (con phone) como a un grupo del mismo nombre resolvía SILENCIOSO
-    # al individuo — el usuario que quería el grupo (o viceversa) recibía el chat
-    # equivocado. Es daño irreversible. Re-resolvemos SIN excluir grupos y, si
+    # Colisión contacto-vs-grupo: exclude_groups oculta los grupos ANTES del
+    # scoring, así que un nombre que matchea FUERTE tanto a un individuo (con
+    # phone) como a un grupo del mismo nombre resolvía SILENCIOSO al individuo —
+    # quien quería el grupo (o viceversa) recibía el chat equivocado. Es daño
+    # irreversible. Re-resolvemos SIN excluir grupos y, si
     # hay un grupo igual de fuerte que el individuo elegido, NO adivinamos:
     # devolvemos los candidatos (kind contacto/grupo) para que el LLM/usuario
     # desempate. Estructural (mide la FORMA: mismo nombre, dos tipos), sin listas.
@@ -228,7 +227,7 @@ def _resolve_whatsapp_recipient_legacy3(
 
 
 def _verify_chat_header_uia(executor: Executor, contact_name: str) -> bool | None:
-    """Inv 8 (UIA primary): verifica el chat activo leyendo el ÁRBOL DE
+    """UIA primary: verifica el chat activo leyendo el ÁRBOL DE
     ACCESIBILIDAD de WhatsApp (no OCR, no mmproj, sub-segundo). WhatsApp Desktop
     moderno es WebView2/Chromium: el nombre del contacto aparece como el `Name`
     de un control (heading/text/listitem). Buscamos un token significativo del
@@ -265,10 +264,10 @@ def _verify_chat_header_uia(executor: Executor, contact_name: str) -> bool | Non
 def _verify_chat_header(executor: Executor, contact_name: str) -> bool:
     """Confirma que el chat abierto en WhatsApp es del contacto pedido.
 
-    Bug #847b: el Enter a ciegas tras buscar abría el chat equivocado (mensaje a
-    'mamá' cayó en el grupo 'Música'). Antes de escribir verificamos el chat
-    activo. Inv 8: PRIMERO por UIA (árbol de accesibilidad, barato, sin mmproj);
-    si UIA no da evidencia, FALLBACK a OCR de la franja superior. Conservador: si
+    El Enter a ciegas tras buscar puede abrir el chat equivocado (un nombre puede
+    matchear un grupo distinto), así que antes de escribir verificamos el chat
+    activo. PRIMERO por UIA (árbol de accesibilidad, barato, sin mmproj); si UIA
+    no da evidencia, FALLBACK a OCR de la franja superior. Conservador: si
     NINGUNO verifica, devolvemos False -> el caller NO escribe (mejor no mandar
     que mandar al chat equivocado).
 
@@ -276,7 +275,7 @@ def _verify_chat_header(executor: Executor, contact_name: str) -> bool:
     basta con que un token alfabético >=3 chars del contacto aparezca.
     """
     import re as _re
-    # Inv 8: UIA primero (más rápido y fiable que OCR, no carga mmproj).
+    # UIA primero (más rápido y fiable que OCR, no carga mmproj).
     uia_ok = _verify_chat_header_uia(executor, contact_name)
     if uia_ok is True:
         return True
@@ -317,8 +316,9 @@ def _verify_chat_header_status(executor: Executor, contact_name: str) -> str:
         "wrong_chat"  -> el OCR leyo un header corto y claramente distinto.
         "unknown"     -> UIA/OCR no dio evidencia suficiente.
 
-    El bool historico _verify_chat_header mezclaba "wrong_chat" con "unknown" y eso
-    rompio WhatsApp: cuando WebView2 no exponia el header, abortaba envios validos.
+    Un bool que mezcle "wrong_chat" con "unknown" rompe envíos válidos: cuando
+    WebView2 no expone el header, "unknown" se confundiría con chat equivocado y
+    abortaría. El tri-state distingue "no hay evidencia" de "chat distinto".
     """
     import re as _re
 
@@ -327,12 +327,11 @@ def _verify_chat_header_status(executor: Executor, contact_name: str) -> str:
         s = "".join(ch for ch in s if not unicodedata.combining(ch))
         return _re.sub(r"[^a-z0-9 ]", " ", s)
 
-    # BUG CRÍTICO MEDIDO (2026-05-31): la versión vieja hacía
-    # locate_text(contact) sobre TODA la pantalla y devolvía "confirmed" si lo
-    # encontraba EN CUALQUIER LADO — pero el nombre buscado SIGUE ESCRITO en la
-    # caja de búsqueda → falso "confirmed" → tipeaba/enviaba al chat ABIERTO
-    # (equivocado). Es el C1 "destinatario equivocado = daño irreversible".
-    # FIX: confirmar SOLO si el nombre aparece en la REGIÓN DEL ENCABEZADO (banda
+    # No hacer locate_text(contact) sobre TODA la pantalla y confirmar si aparece
+    # EN CUALQUIER LADO: el nombre buscado SIGUE ESCRITO en la caja de búsqueda
+    # → falso "confirmed" → tipearía/enviaría al chat ABIERTO (equivocado). El
+    # destinatario equivocado es daño irreversible.
+    # Confirmar SOLO si el nombre aparece en la REGIÓN DEL ENCABEZADO (banda
     # superior del área de chat, a la derecha del sidebar) — NO en el buscador
     # (izquierda) ni en un mensaje (abajo). El texto del header es chico y de baja
     # confianza OCR (~20-24) → min_conf=20 (medido: el header cae a ~0.33W/0.09H).
@@ -714,9 +713,9 @@ def _whatsapp_send_via_gui_search(
     # Extra grace tras maximize — el window manager necesita repaint.
     _time.sleep(0.4)
 
-    # 3. BUSCADOR PRINCIPAL (NO Ctrl+N). MEDIDO 2026-05-31: Ctrl+N abre "Nuevo chat"
-    # que busca solo CONTACTOS, no GRUPOS -> "Letras" daba "sin resultados" y el
-    # texto terminaba en el chat ABIERTO (destinatario equivocado, daño irreversible).
+    # 3. BUSCADOR PRINCIPAL (NO Ctrl+N). Ctrl+N abre "Nuevo chat" que busca solo
+    # CONTACTOS, no GRUPOS -> un nombre de grupo da "sin resultados" y el texto
+    # termina en el chat ABIERTO (destinatario equivocado, daño irreversible).
     # El buscador principal (arriba-izq) SÍ encuentra grupos Y contactos. Lo enfocamos
     # por OCR del placeholder "Buscar" (fallback: coords sup-izq de la ventana).
     _search_pt = None
@@ -812,23 +811,22 @@ def _whatsapp_send_via_gui_search(
     # necesitamos conservar el presupuesto fisico para enfocar la caja de mensaje.
 
     # 5b. Verificacion hard gate. Nunca escribir/enviar si no vemos evidencia
-    # del header del chat pedido. Antes "unknown" seguia adelante y podia marcar
-    # sent=True aunque el texto hubiera quedado en un buscador o en otro chat.
+    # del header del chat pedido. Dejar pasar "unknown" podría marcar sent=True
+    # aunque el texto hubiera quedado en un buscador o en otro chat.
     chat_status = _verify_chat_header_status(executor, contact_name)
     chat_verified = chat_status == "confirmed"
     steps.append(f"chat_header_verified:{chat_verified}")
     steps.append(f"chat_header_status:{chat_status}")
-    # GATE de destinatario por nivel de RIESGO (2026-05-31):
+    # GATE de destinatario por nivel de RIESGO:
     #  - ENVIAR (text presente, DESTRUCTIVO): exigir "confirmed". Nunca escribir a
-    #    ciegas — evita C1 "destinatario equivocado = daño irreversible" (caso
-    #    Letras/Vecinos). "unknown"/"wrong_chat" -> abort.
+    #    ciegas — el destinatario equivocado es daño irreversible.
+    #    "unknown"/"wrong_chat" -> abort.
     #  - ABRIR (open_chat, sin text, NO destructivo): basta con NO detectar un chat
     #    EQUIVOCADO. "unknown" (WebView2 no expone el header por OCR/UIA) SIGUE: el chat
     #    casi seguro abrió con Down+Enter sobre el primer resultado y el usuario lo ve
     #    por screenshot. Solo "wrong_chat" (header corto y distinto) aborta.
-    #    MEDIDO en vivo: "Abre el chat de Pedro y sacá una foto" abortaba en "unknown"
-    #    (27s) aunque el chat ESTABA abierto — Pedro es contacto real (no en el store
-    #    del agente -> gui_search) y el header no es OCR-legible.
+    #    Caso típico: un contacto que no está en el store local (-> gui_search) cuyo
+    #    header no es OCR-legible abortaría en "unknown" aunque el chat ya esté abierto.
     _is_send = bool(text)
     _gate_fail = (chat_status != "confirmed") if _is_send else (chat_status == "wrong_chat")
     if _gate_fail:
@@ -955,18 +953,16 @@ def _whatsapp_auto_send(
     la app que el user tenia en focus (IDE, browser, terminal con comando
     peligroso, etc.).
 
-    H8 (login pre-check, 2026-06-01): la versión vieja devolvía sent=True ni
-    bien apretaba Enter, sin mirar la pantalla. Si WhatsApp estaba DESLOGUEADO
-    (pantalla de QR) el deeplink abría igual, el título seguía conteniendo
-    "WhatsApp", y reportábamos sent=True FALSO (el mensaje nunca salió). El
-    path GUI-search ya verificaba el envío por pantalla; este path no. Ahora
-    ambos comparten el mismo gate ESTRUCTURAL y MULTILINGÜE: el mensaje se
-    declara enviado SOLO si el texto aparece en el chat (OCR) o el área de
-    chat cambió visualmente tras el Enter. Si no hay evidencia -> sent=False
-    con abort honesto (cubre desloguear/QR y cualquier fallo de entrega). NO
-    usamos listas de strings "Escanea el QR" por idioma (frágil, monolingüe):
-    medimos la FORMA (apareció el mensaje / cambió el área), no el contenido
-    del cartel de login.
+    Login pre-check: declarar sent=True ni bien se aprieta Enter, sin mirar la
+    pantalla, es falso si WhatsApp está DESLOGUEADO (pantalla de QR): el deeplink
+    abre igual, el título sigue conteniendo "WhatsApp", y el mensaje nunca sale.
+    Este path comparte el mismo gate ESTRUCTURAL y MULTILINGÜE que el path
+    GUI-search: el mensaje se declara enviado SOLO si el texto aparece en el chat
+    (OCR) o el área de chat cambió visualmente tras el Enter. Si no hay evidencia
+    -> sent=False con abort honesto (cubre desloguear/QR y cualquier fallo de
+    entrega). NO usamos listas de strings "Escanea el QR" por idioma (frágil,
+    monolingüe): medimos la FORMA (apareció el mensaje / cambió el área), no el
+    contenido del cartel de login.
     """
     import time as _time
     # 1. Esperar a que WhatsApp termine de cargar el chat + rellenar texto.
@@ -1037,7 +1033,7 @@ def _whatsapp_auto_send(
             "delivery_verified": "unverified",
         }
 
-    # 5. GATE H8 de entrega: confirmar por PANTALLA que el mensaje salió.
+    # 5. GATE de entrega: confirmar por PANTALLA que el mensaje salió.
     #    "confirmed" = el texto del mensaje aparece en el chat (OCR).
     #    "changed"   = el área de chat cambió tras el Enter (mensaje nuevo).
     #    "unverified"= ni una ni otra -> probablemente deslogueado / QR / falló.
@@ -1056,7 +1052,7 @@ def _whatsapp_auto_send(
 
     if delivery == "unverified":
         # No vimos el mensaje ni cambio de pantalla: NO afirmar sent=True.
-        # Cubre el caso H8 (deslogueado/QR) y cualquier no-entrega silenciosa.
+        # Cubre el caso deslogueado/QR y cualquier no-entrega silenciosa.
         return {
             "sent": False, "focus_verified": True,
             "abort_reason": (

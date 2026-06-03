@@ -71,10 +71,10 @@ class Microagent:
     priority: str            # "high" | "medium" | "low"
     content: str             # body markdown (sin frontmatter)
     source_path: Optional[Path] = None
-    # R3.3 (2026-05-30): selección SEMÁNTICA. `examples` son frases multilingües
-    # que el usuario diría para necesitar este microagent — se embeben y scorean
-    # por coseno multi-vector (igual que skills). Reemplaza el substring matching
-    # de `triggers` que daba FP graves ("RAG" ⊂ "Dragon", "que es" ⊂ "estoy").
+    # Selección SEMÁNTICA. `examples` son frases multilingües que el usuario
+    # diría para necesitar este microagent — se embeben y scorean por coseno
+    # multi-vector (igual que skills). Reemplaza el substring matching de
+    # `triggers`, que daba FP graves ("RAG" ⊂ "Dragon", "que es" ⊂ "estoy").
     # `triggers` se mantiene como guarda LÉXICA word-boundary (no substring) SOLO
     # para términos técnicos exactos (siglas universales: HKCR, GGUF, VRAM) que un
     # encoder de intención no captura. Ver documentacion/router/08_MICROAGENT_*.
@@ -90,9 +90,9 @@ _FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
 
 def _split_inline_list(inner: str) -> list[str]:
     """Parte una lista YAML inline `"a, b", "c"` por comas TOP-LEVEL, respetando
-    las comillas. Antes se hacía `re.split(r",\\s*", inner)` que partía las comas
-    DENTRO de un string entre comillas ("qué hacés, mostrame" → 2 items, bug R3.3
-    que duplicaba `examples`). Ahora una coma dentro de comillas no parte."""
+    las comillas. Un `re.split(r",\\s*", inner)` ingenuo parte también las comas
+    DENTRO de un string entre comillas ("qué hacés, mostrame" → 2 items en vez de
+    1, duplicando `examples`). Acá una coma dentro de comillas no parte."""
     items: list[str] = []
     buf: list[str] = []
     quote: str | None = None
@@ -166,7 +166,7 @@ def _fold(s: str) -> str:
 # ============================================================================
 
 def _default_microagents_dir() -> Path:
-    """Directorio default: gemma4_agent/microagents/ (reorg 2026-05-28: ahora vive en el paquete padre)."""
+    """Directorio default: gemma4_agent/microagents/ (vive en el paquete padre)."""
     return Path(__file__).parent.parent / "microagents"
 
 
@@ -240,8 +240,8 @@ def load_microagents(directory: Path | None = None) -> list[Microagent]:
         examples = tuple(
             str(e).strip() for e in examples_raw if str(e).strip()
         ) if isinstance(examples_raw, (list, tuple)) else ()
-        # R3.3: un microagent es válido si tiene name + (examples semánticos O
-        # triggers léxicos). Antes exigía triggers; ahora examples basta.
+        # Un microagent es válido si tiene name + (examples semánticos O
+        # triggers léxicos): basta cualquiera de los dos mecanismos de match.
         if not name or (not triggers and not examples):
             logger.warning(
                 "microagent missing name/(examples|triggers): %s", path.name)
@@ -280,7 +280,7 @@ def reset_microagent_emb_cache() -> None:
 
 def _ma_semantic_threshold() -> float:
     """Umbral de coseno para disparar un microagent por intención semántica.
-    Calibrado sobre mensajes reales (R3.3). Gate GEMMA4_MICROAGENT_THRESHOLD."""
+    Calibrado sobre mensajes reales. Gate GEMMA4_MICROAGENT_THRESHOLD."""
     try:
         return float(os.environ.get("GEMMA4_MICROAGENT_THRESHOLD", "0.60"))
     except ValueError:
@@ -324,8 +324,8 @@ def select_microagents(
 ) -> list[Microagent]:
     """Elige hasta `max_microagents` microagents relevantes al user_text.
 
-    DOS mecanismos (R3.3, 2026-05-30), ambos multilingües/estructurales, NO
-    substring matching (que daba FP graves: "RAG" ⊂ "Dragon", "que es" ⊂ "estoy"):
+    DOS mecanismos, ambos multilingües/estructurales, NO substring matching
+    (que da FP graves: "RAG" ⊂ "Dragon", "que es" ⊂ "estoy"):
 
       1. SEMÁNTICO (primario): si el microagent tiene `examples`, se embeben y se
          scorea coseno multi-vector MAX contra la query. Dispara si top ≥ umbral
@@ -335,7 +335,7 @@ def select_microagents(
       2. LÉXICO word-boundary (secundario): los `triggers` se matchean por LÍMITE
          DE PALABRA (no substring). Reservado para términos técnicos exactos
          (siglas universales HKCR/GGUF/VRAM) que el encoder de intención no capta.
-         "House of Dragon" ya NO dispara "RAG".
+         Por límite de palabra, "House of Dragon" no dispara "RAG".
 
     Sort por priority (high → medium → low), tie-break alfabético. Fallback
     seguro: sin encoder y sin triggers → no dispara (no inyecta ruido)."""

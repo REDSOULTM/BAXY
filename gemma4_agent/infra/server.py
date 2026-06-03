@@ -11,7 +11,7 @@ Python agent. The server:
 - accepts user prompts via `POST /turn`, handed to the AgentRunner thread
   which runs Gemma4Agent.run_text and publishes progress events to BUS
 - streams agent events over `WS /events`, fed by the in-process BUS that
-  agent.py will publish to in a future pass
+  agent.py publishes to
 """
 
 from __future__ import annotations
@@ -169,7 +169,7 @@ def _detect_hardware() -> dict[str, Any]:
     except Exception:
         pass
 
-    # FALLBACK nvidia-smi (2026-05-23): NVML/pynvml a veces NO está instalado
+    # FALLBACK nvidia-smi: NVML/pynvml a veces NO está instalado
     # (ModuleNotFoundError), dejando gpu="unknown" y el context budget sin
     # auto-rellenar en la Field UI. nvidia-smi viene con el driver y ya se usa
     # en profile_watcher/metrics. Solo se invoca si NVML no resolvió la GPU.
@@ -491,8 +491,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
     from ..agent_core.agent_runner import RUNNER
     RUNNER.start()
 
-    # Voice loop boot removed in Sprint R3.1 clean-slate (2026-05-19).
-    # The new voice pipeline (wake + STT) is pending the research output
+    # The voice pipeline (wake + STT) is not booted here; see the research
     # at docs/architecture/voice_pipeline_redesign_research_prompt.md.
     # TTS (Piper) is still available at gemma4_agent.voice.tts when needed.
 
@@ -624,7 +623,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
 
     @app.post("/agent/recycle_server")
     def agent_recycle_server() -> Any:
-        """Sprint 6 / item 1.7 — recycle solo llama-server, sin tocar agent.
+        """Recycle solo llama-server, sin tocar agent.
 
         Util para mitigar mmproj leak (#21690) sin perder estado del agente.
         Diferencia con /agent/restart: este solo mata+relanza el subprocess
@@ -695,7 +694,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         # router_ready: el router semántico terminó (o está deshabilitado/
         # degradado-tolerado). Sin esta 4ª condición, este PULL (poll de 4s /
         # cliente tardío) recomputaría ready SIN saber del router y abriría la
-        # casilla con el router a medias (2026-06-02, pedido del usuario).
+        # casilla de chat con el router a medias.
         router_ready = RUNNER.is_router_ready()
         healthy = False
         if built:
@@ -745,7 +744,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         return {"status": "accepted"}
 
     # ---------- voice ----------
-    # Voice pipeline v2 (Sprint 2). VOICE singleton lives in
+    # Voice pipeline v2. VOICE singleton lives in
     # voice_runner.py and owns the VoicePipeline + StreamingTTS.
 
     @app.get("/voice/status")
@@ -1346,9 +1345,9 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
     # a function-local Pydantic model can't be resolved from the stringized
     # forward-ref annotation and silently breaks body binding (422).
 
-    # 2026-05-26: el sistema se colapsó a un solo perfil (vram4) + standby. Todos
-    # los chips/nombres viejos de cualquier UI cacheada (perf/bal8/bal/light y
-    # también vram3/6/8/12/16) caen a vram4. set_active_profile + _resolve_alias
+    # El sistema usa un solo perfil (vram4) + standby. Todos los chips/nombres
+    # viejos de cualquier UI cacheada (perf/bal8/bal/light y también
+    # vram3/6/8/12/16) caen a vram4. set_active_profile + _resolve_alias
     # ya resuelven los nombres legacy igualmente; este map sólo cubre los chips
     # cortos de la UI vieja que NO son nombres de perfil. stdby -> standby.
     _PROFILE_UI_ALIASES: dict[str, str] = {

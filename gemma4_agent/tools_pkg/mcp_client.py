@@ -1,14 +1,14 @@
-"""Cliente MCP (Model Context Protocol) — B9 del backlog de competidores.
+"""Cliente MCP (Model Context Protocol).
 
 Adopta MCP como CLIENTE para conectar a servidores MCP existentes (filesystem,
 git, APIs, etc.) sin escribir cada tool a mano. Usa el SDK oficial `mcp`
 (ClientSession + stdio_client) — NO reimplementa el protocolo.
 
-DISEÑO (informado por research/1_toolcalling.md: el router ya manda un SUBSET de
-4-6 tools por turno, lo que MITIGA el riesgo R7 de "muchas tools degradan el
-tool-calling del 4B"). Las tools MCP se DESCUBREN (list_tools), se registran con su
-description, y el router semántico las incluye en el pool y las recorta a 4-6. NUNCA
-se le dan todas las tools MCP al 4B de golpe.
+DISEÑO: el router ya manda un SUBSET de 4-6 tools por turno, lo que MITIGA el
+riesgo de que "muchas tools degraden el tool-calling del 4B". Las tools MCP se
+DESCUBREN (list_tools), se registran con su description, y el router semántico
+las incluye en el pool y las recorta a 4-6. NUNCA se le dan todas las tools MCP
+al 4B de golpe.
 
 GATING: GEMMA4_MCP (default off). Sin servidores configurados o gate off -> no-op
 total (0 tools MCP, 0 overhead). Config en ~/.gemma4/mcp_servers.json:
@@ -41,9 +41,9 @@ _CALL_TIMEOUT_S = 30.0
 
 
 def mcp_enabled() -> bool:
-    """B9 gate. Default OFF (opt-in GEMMA4_MCP) — más tools = tool-calling más
-    duro para el 4B (R7); se prende cuando el usuario quiere extender con servidores
-    MCP y tras medir que el router no degrada."""
+    """Gate del cliente MCP. Default OFF (opt-in GEMMA4_MCP) — más tools = tool-calling
+    más duro para el 4B; se prende para extender con servidores MCP cuando se verificó
+    que el router no degrada."""
     return (os.environ.get("GEMMA4_MCP", "0") or "0").strip().lower() not in {
         "0", "false", "no", "off"}
 
@@ -188,12 +188,12 @@ def reset_cache() -> None:
     _TOOLS_CACHE = None
 
 
-# --- Ola 3 (perfection roadmap B9, 2026-05-29): enrolamiento al router-subset ---
+# --- Enrolamiento al router-subset ---
 # En vez de obligar al 4B a hacer el baile mcp(action=list) -> leer -> mcp(action=
 # call), las tools MCP descubiertas se ENROLAN como tools de primera clase: el
 # router las rankea y RECORTA junto a las compound (mismo cap MAX_SELECTED_TOOLS=5),
 # y el dispatcher las rutea por su nombre namespaced. NUNCA se le dan las N tools de
-# golpe al 4B (la disciplina de subset es la mitigación del riesgo R7).
+# golpe al 4B (la disciplina de subset mitiga la degradación del tool-calling).
 
 _MCP_NAME_PREFIX = "mcp__"  # namespacing: mcp__<server>__<tool> (evita colisiones)
 

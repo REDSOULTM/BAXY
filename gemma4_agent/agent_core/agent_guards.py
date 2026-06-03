@@ -7,12 +7,10 @@ subset of Gemma4Agent state: the trace logger, ``_phrase_fires``,
 ``_fallback_streak``, ``_last_router_subset``, ``_explicit_plan_status``.
 
 This module exposes each guard as a pure function that takes those
-fields explicitly. The methods on ``Gemma4Agent`` are now 5-line
-wrappers that pull the fields off ``self`` and write back the
-mutated streak / last-text. That keeps the agent's external API
-identical while letting the guard logic live in one file.
-
-No behavior change vs the inline implementations they replace.
+fields explicitly. The methods on ``Gemma4Agent`` are thin wrappers
+that pull the fields off ``self`` and write back the mutated streak /
+last-text. That keeps the agent's external API identical while letting
+the guard logic live in one file.
 """
 from __future__ import annotations
 
@@ -21,9 +19,8 @@ import unicodedata
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    # R3-real (2026-05-28): saqué `from .agent import ToolEvent` — no se usa
-    # en este módulo (era import muerto) y creaba el ciclo
-    # agent ↔ agent_guards reportado en la auditoría.
+    # NO importar `ToolEvent` desde `.agent`: este módulo no lo usa y ese
+    # import crea el ciclo agent ↔ agent_guards.
     from ..infra.tracing import TraceLogger  # noqa: F401
 
 
@@ -144,13 +141,13 @@ def build_user_facing_fallback(
 # Tri-estado honesto (compartido por guard_unverified_final / honest_action_reply)
 # ---------------------------------------------------------------------------
 
-# Las DOS redacciones de no-éxito que emite el guard. La distinción es la regla
-# del usuario (2026-06-01, ley): "si NO se pudo medir el efecto, el reply debe ser
-# honesto ('lo hice, no pude confirmar el efecto') — NO 'Hecho.' a secas, NI
-# afirmar que falló". summarize_verifiers (verify_core) ya respeta el tri-estado
-# (confirmed=None -> silencio; confirmed=False -> "no confirmada"); acá lo
-# alineamos para el camino del guard, que antes colapsaba None y False al MISMO
-# note "no dejó evidencia suficiente" (sonaba a fallo para un caso no-medible).
+# Las DOS redacciones de no-éxito que emite el guard. La distinción es honestidad
+# tri-estado: si NO se pudo medir el efecto, el reply debe ser honesto ("lo hice,
+# no pude confirmar el efecto") — NO "Hecho." a secas, NI afirmar que falló.
+# summarize_verifiers (verify_core) ya respeta el tri-estado (confirmed=None ->
+# silencio; confirmed=False -> "no confirmada"); acá lo alineamos para el camino
+# del guard, que de lo contrario colapsaría None y False al MISMO note "no dejó
+# evidencia suficiente" (sonaría a fallo para un caso no-medible).
 _NOTE_MEASURED_FAIL = (
     "\n\nNota: la ultima tool no dejo evidencia suficiente de finalizacion "
     "(status={status}, verified={verified}, evidence={evidence})."
@@ -232,16 +229,16 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     if status in {"needs_user", "needs_dependency", "needs_permission",
                   "needs_confirmation", "needs_verification_async"}:
         return content
-    # HUECO ADVERSARIAL cerrado (2026-06-02, cazado por validación EN VIVO): una
-    # tool READ-ONLY (verified=None: ej. source_manager status, que devuelve ok=True
-    # sin cambiar nada) NO debe sustentar un reply que AFIRMA un EFECTO FÍSICO. Caso
-    # real medido: "bajá el termostato" → el 4B ruteó a source_manager (ok=True,
-    # verified=None) y fabricó "Listo, bajé la temperatura" — MENTIRA. La rama de
-    # abajo eximía TODO verified=None. Ahora: si el result no cambió estado del mundo
-    # (no state_changed, no opened/deeplink, no count de efecto) Y el reply afirma
-    # semánticamente un efecto externo, NO eximimos → cae a la nota honesta. Mide la
-    # FORMA (embeddings de claim-de-efecto), no listas de frases. Fallback seguro: sin
-    # encoder _reply_asserts_effect devuelve False → comportamiento previo intacto.
+    # Hueco adversarial: una tool READ-ONLY (verified=None: ej. source_manager
+    # status, que devuelve ok=True sin cambiar nada) NO debe sustentar un reply que
+    # AFIRMA un EFECTO FÍSICO. Ej: "bajá el termostato" → el 4B rutea a
+    # source_manager (ok=True, verified=None) y fabrica "Listo, bajé la temperatura"
+    # — MENTIRA. La rama de abajo eximía TODO verified=None. Por eso: si el result
+    # no cambió estado del mundo (no state_changed, no opened/deeplink, no count de
+    # efecto) Y el reply afirma semánticamente un efecto externo, NO eximimos → cae a
+    # la nota honesta. Mide la FORMA (embeddings de claim-de-efecto), no listas de
+    # frases. Fallback seguro: sin encoder _reply_asserts_effect devuelve False →
+    # comportamiento previo intacto.
     _changed_world = (
         last.get("state_changed") is True
         or last.get("opened") is True
@@ -270,21 +267,19 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     if last.get("opened") is True and (last.get("url") or last.get("deeplink") or last.get("uri")):
         return content
 
-    # HUECO ADVERSARIAL cerrado (2026-06-01, regla del usuario es ley). Acá había
-    # `if status == "failed" and not ok: return content`, que eximía TODO result
-    # con ok=False asumiendo "ok=False ya lo manejó el flujo de error upstream".
-    # Eso vale en `_finalize_turn` (ahí el error ya se surfaceó honesto), pero los
-    # short-circuits de acción de `_decide_turn` (calc/app_action/app_open) NO
-    # pasan por ese flujo: cuando t_computer_use devuelve ok=False/status=failed
-    # SIN clave "reply" (tools.py:2429/2438), el short-circuit cae al texto de
-    # ÉXITO HARDCODEADO ("Listo, lo hice en la calculadora." / "Hecho.") y este
-    # guard era su ÚLTIMA defensa — pero lo eximía intacto -> el reply AFIRMABA
-    # ÉXITO en un fallo DURO. Eso es mentir.
-    # FIX (estructural, mide la FORMA): se elimina la exención ciega por ok=False.
-    # El `already_honest` de abajo SÍ exime el ok=False cuyo content YA es honesto
-    # (el caso que la vieja rama protegía); pero si el content afirma éxito, ahora
-    # cae a la lógica tri-estado, donde _has_measured_failure (True para ok is
-    # False) emite la nota DURA de no-confirmación. Sin listas de frases de éxito.
+    # Hueco adversarial: NO eximir ciegamente todo result con ok=False. Eximir por
+    # ok=False asume "el flujo de error upstream ya lo manejó honesto", lo cual vale
+    # en `_finalize_turn` pero NO en los short-circuits de acción de `_decide_turn`
+    # (calc/app_action/app_open): cuando t_computer_use devuelve ok=False/
+    # status=failed SIN clave "reply" (tools.py:2429/2438), el short-circuit cae al
+    # texto de ÉXITO HARDCODEADO ("Listo, lo hice en la calculadora." / "Hecho.") y
+    # este guard es su ÚLTIMA defensa — eximirlo intacto haría que el reply AFIRMARA
+    # ÉXITO en un fallo DURO, o sea mentir.
+    # Estructural (mide la FORMA): no hay exención ciega por ok=False. El
+    # `already_honest` de abajo SÍ exime el ok=False cuyo content YA es honesto;
+    # pero si el content afirma éxito, cae a la lógica tri-estado, donde
+    # _has_measured_failure (True para ok is False) emite la nota DURA de
+    # no-confirmación. Sin listas de frases de éxito.
     low = content.casefold()
     already_honest = any(
         token in low
@@ -292,10 +287,10 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     )
     if already_honest:
         return content
-    # TRI-ESTADO honesto (2026-06-01, regla del usuario es ley). Hasta acá
-    # llegan SOLO los casos no-éxito (verified no-True, no-dispatched, ...). Pero
-    # "no-éxito" se parte en dos verdades distintas que ANTES compartían el MISMO
-    # note (que sonaba a fallo):
+    # TRI-ESTADO honesto. Hasta acá llegan SOLO los casos no-éxito (verified
+    # no-True, no-dispatched, ...). Pero "no-éxito" se parte en dos verdades
+    # distintas que de lo contrario compartirían el MISMO note (que sonaría a
+    # fallo):
     #   (a) MEDIDO-y-falló  -> nota dura "no dejó evidencia" (la conserva
     #       test_dispatch_status::test_nota_still_emitted_for_genuine_failure).
     #   (b) NO-MEDIBLE (None) -> nota SUAVE "lo intenté, no pude confirmar el
@@ -311,13 +306,12 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
 def honest_action_reply(reply: Any) -> Any:
     """Honestidad para los early_reply de ACCIÓN de ``_decide_turn``.
 
-    Bug Ola 1 (2026-06-01, MEDIDO en vivo contra el 4B): los short-circuits de
-    acción (calc_action / app_action / app_open) devuelven
+    Los short-circuits de acción (calc_action / app_action / app_open) devuelven
     ``TurnDecision(early_reply=AgentReply(content=...))`` SALTÁNDOSE todo
-    ``_finalize_turn`` — y con él ``guard_unverified_final``. Resultado: el tool
-    reportaba honesto (``verified=False/None``, ``status=attempted/
-    needs_verification``) pero el reply al usuario MENTÍA ("Hecho." / "Listo,
-    abrí X"). Medido: 3/6 casos clave mentían, con guard invocado 0 veces.
+    ``_finalize_turn`` — y con él ``guard_unverified_final``. Sin este helper el
+    tool reporta honesto (``verified=False/None``, ``status=attempted/
+    needs_verification``) pero el reply al usuario MENTIRÍA ("Hecho." / "Listo,
+    abrí X") porque el guard final nunca corre por ese camino.
 
     Este helper aplica el MISMO ``guard_unverified_final`` (única fuente de
     verdad — no duplica su lógica de exenciones: dispatched / needs_user /
@@ -408,8 +402,8 @@ def guard_promise_without_action(
         return content, fallback_streak, last_fallback_user_text
     if phrase_fires:
         return content, fallback_streak, last_fallback_user_text
-    # NON-ACTION TURN EXEMPTION (fix 2026-05-29): si el router solo ofreció tools
-    # META (`session`: cancelaciones/negaciones como "No.", "no lo envíes"), NO hubo
+    # EXENCIÓN DE TURNO SIN-ACCIÓN: si el router solo ofreció tools META
+    # (`session`: cancelaciones/negaciones como "No.", "no lo envíes"), NO hubo
     # acción de SO posible, así que un ack ("cancelé eso" / "listo, lo dejo") NO es
     # una FALSA confirmación de acción — es la verdad (no se hizo nada). Dejamos
     # pasar el reply del LLM en vez del genérico "No alcancé a completar la acción".
@@ -503,13 +497,13 @@ def guard_grounded_action_claim(
     verdict = detect_action_claim_without_evidence(content, events)
     if not verdict.should_replace:
         return content, fallback_streak, last_fallback_user_text
-    # NON-ACTION TURN EXEMPTION (fix 2026-05-29): si el router solo ofreció tools
-    # META (p. ej. `session` para una cancelación/negación: "No.", "no lo envíes",
-    # "cancelá eso"), NO hubo ninguna acción de SO posible este turno. Entonces un
-    # "claim" como "cancelé eso" NO puede ser una mentira sobre una acción de SO —
-    # es un ack de INACCIÓN, que es lo verdadero. Dejamos pasar el reply del LLM en
-    # vez del genérico "No alcancé a completar la acción" (que implicaba falsamente
-    # que había una acción fallida y confundía al usuario; ver logs 2026-05-29).
+    # EXENCIÓN DE TURNO SIN-ACCIÓN: si el router solo ofreció tools META (p. ej.
+    # `session` para una cancelación/negación: "No.", "no lo envíes", "cancelá
+    # eso"), NO hubo ninguna acción de SO posible este turno. Entonces un "claim"
+    # como "cancelé eso" NO puede ser una mentira sobre una acción de SO — es un ack
+    # de INACCIÓN, que es lo verdadero. Dejamos pasar el reply del LLM en vez del
+    # genérico "No alcancé a completar la acción" (que implicaría falsamente que
+    # había una acción fallida y confundiría al usuario).
     # NO debilita la honestidad: si se ofreció CUALQUIER tool de acción (app/media/
     # web/gui/...), el subset NO es meta-only -> el gate dispara como siempre.
     _META_ONLY = {"session"}

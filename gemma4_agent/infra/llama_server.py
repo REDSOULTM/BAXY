@@ -1,8 +1,8 @@
-"""Fase V — LlamaServerManager.
+"""LlamaServerManager.
 
-Gestiona el ciclo de vida de llama-server segun el perfil activo. Antes de
-Fase V, launcher.py disparaba un subprocess.Popen y olvidaba el handle; ahora
-lo guardamos para poder hacer stop() y restart() limpios.
+Gestiona el ciclo de vida de llama-server segun el perfil activo. Guarda el
+handle del subprocess.Popen (en vez de dispararlo y olvidarlo) para poder
+hacer stop() y restart() limpios.
 
 Reglas:
 - Si detectamos un server externo escuchando en el puerto (socket.connect_ex),
@@ -200,13 +200,12 @@ def get_shared_manager(config: "AgentConfig | None" = None) -> "LlamaServerManag
 
 
 # Build minimo requerido para soporte correcto de tool-calling en Gemma 4.
-# Esta constante refleja el roadmap del informe de auditoria (item I1 #1):
 # llama.cpp b9090+ contiene los PRs #21418 (parser dedicado Gemma 4),
 # #21326 y #21343 (tokenizer + token spam fixes). Builds anteriores producen
 # tool_calls con tokens corruptos o argumentos serializados como string.
 #
-# CUDA 13.2 esta bloqueado por advertencia de Unsloth (2026-04-11): produce
-# poor outputs en cualquier GGUF de Gemma 4. Recomendar CUDA 13.1 o 12.x.
+# CUDA 13.2 esta bloqueado por advertencia de Unsloth: produce poor outputs
+# en cualquier GGUF de Gemma 4. Recomendar CUDA 13.1 o 12.x.
 LLAMA_CPP_BUILD_MIN = "b9090"
 CUDA_RUNTIME_BLOCKED = "13.2"
 
@@ -326,15 +325,15 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "-m",
         str(model_path.resolve()),
         "--jinja",
-        # Sprint 12 — hardening: forzar bind a loopback. El brief del
-        # proyecto es "100% local"; jamas debe escuchar en 0.0.0.0.
+        # Forzar bind a loopback: el proyecto es 100% local; jamas debe
+        # escuchar en 0.0.0.0.
         "--host",
         "127.0.0.1",
         "--port",
         "8080",
-        # Sprint 12 — deshabilitar el webui interno de llama-server.
-        # El cliente tiene UI propia (PyQt6 + React UI Field); el webui
-        # interno es superficie de ataque innecesaria.
+        # Deshabilitar el webui interno de llama-server: el cliente tiene UI
+        # propia (PyQt6 + React UI Field) y el webui interno es superficie de
+        # ataque innecesaria.
         "--no-webui",
         # -ngl from the profile: 99 = full GPU offload (GPU profiles), 0 = pure
         # CPU (the `cpu` fallback profile, used when the GPU is busy with a game).
@@ -344,44 +343,41 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         str(int(profile.context_size)),
         "--parallel",
         "1",
-        # v17 2026-05-28: revert del revert v16. MEDIDO live (5/6 FAIL con
-        # llm_proxy_zombie_no_recovery + CUDA illegal-access nuevo en
-        # logs/llama-server.err.log linea 59396). El doc Plan A
-        # (RESULTADO_FINAL_PLAN_A.md) era correcto: ctx-checkpoints=0
-        # + cache-ram=0 + no-cache-idle-slots evita el crash CUDA
-        # #22527 disparado por el prompt cache RAM. Server log lo
-        # confirma: "srv load_model: use --cache-ram 0 to disable
-        # the prompt cache" inmediatamente seguido de "CUDA error:
-        # an illegal memory access was encountered".
-        # cache-reuse REMOVIDO: en sesion anterior se midio que la
-        # secuencia memory_seq_rm + seq_add + seq_cp dispara CUDA
-        # tambien (#17109). Sin cache-reuse el LCP simple via
-        # --keep -1 + --swa-full sigue capturando el system prompt
-        # estable byte-a-byte sin shifting.
+        # ctx-checkpoints=0 + cache-ram=0 + no-cache-idle-slots evita el crash
+        # CUDA #22527 disparado por el prompt cache RAM. MEDIDO live: con el
+        # prompt cache activo, 5/6 turnos fallan (zombie del proxy sin recovery
+        # + CUDA illegal-access). El server log lo confirma: "srv load_model:
+        # use --cache-ram 0 to disable the prompt cache" inmediatamente seguido
+        # de "CUDA error: an illegal memory access was encountered".
+        # cache-reuse REMOVIDO: la secuencia memory_seq_rm + seq_add + seq_cp
+        # dispara CUDA tambien (#17109). Sin cache-reuse el LCP simple via
+        # --keep -1 + --swa-full sigue capturando el system prompt estable
+        # byte-a-byte sin shifting.
         # NOTE: las mitigaciones anti-crash CUDA (--ctx-checkpoints 0 / --cache-ram 0
         # / --no-cache-idle-slots) se agregan ABAJO, condicionadas a GPU (ngl>0).
         # En CPU NO van: no hay CUDA que crashee y desactivar el prompt-cache forzaría
         # re-prefill del prompt entero cada turno (brutal a velocidad de CPU).
         "--flash-attn",
-        # v22 2026-05-28: DEFAULT "off". MEDIDO: el crash CUDA #22527 vive en el
-        # kernel flash-attn + SWA de Gemma 4 (head sizes hibridos 512/256) en la
-        # transicion prefill->decode. Con FA on, prompts >~10k toks crashean
-        # (stress 37 turnos: 6/37 OK); con FA off, 37/37 OK (prompts hasta 20k),
-        # +0.17 GB VRAM (SWA acota el KV -> entra en 4GB). Costo: prefill ~2x mas
-        # lento (mitigado por Plan A2). A/B: GEMMA4_FLASH_ATTN=on (FA on, crashea).
+        # DEFAULT "off". El crash CUDA #22527 vive en el kernel flash-attn + SWA
+        # de Gemma 4 (head sizes hibridos 512/256) en la transicion
+        # prefill->decode. MEDIDO: con FA on, prompts >~10k toks crashean (stress
+        # 37 turnos: 6/37 OK); con FA off, 37/37 OK (prompts hasta 20k), +0.17 GB
+        # VRAM (SWA acota el KV -> entra en 4GB). Costo: prefill ~2x mas lento
+        # (mitigado por la reduccion del system prompt). A/B: GEMMA4_FLASH_ATTN=on
+        # (FA on, crashea).
         os.environ.get("GEMMA4_FLASH_ATTN", "off"),
         # --keep -1: preserva todo el system prompt entre turnos.
         "--keep",
         "-1",
-        # v19 2026-05-28: --batch-size + --ubatch-size = ctx-size.
-        # MEDIDO live: compute buffer pasa de 532 MiB -> 17040 MiB (32x);
-        # el child carga pero el primer prompt real agota la VRAM en 4GB
-        # y el recovery falla en cascada (3 restarts dan False). REVERTIDO.
-        # Conclusion: el crash CUDA #22527 NO es por los shifts intermedios
-        # (PID 11864 procesa todo en 1 pasada y crashea igual al iniciar
-        # generation). El bug es el tamano absoluto del prompt + flash-attn
-        # + SWA en transicion a decode. Camino restante = reducir el
-        # system prompt para que NO cruce ~10k tokens (Plan A2).
+        # --batch-size + --ubatch-size = ctx-size NO se usan. MEDIDO live: el
+        # compute buffer pasa de 532 MiB -> 17040 MiB (32x); el child carga pero
+        # el primer prompt real agota la VRAM en 4GB y el recovery falla en
+        # cascada (3 restarts dan False).
+        # Conclusion: el crash CUDA #22527 NO es por los shifts intermedios (el
+        # child procesa todo en 1 pasada y crashea igual al iniciar generation).
+        # El bug es el tamano absoluto del prompt + flash-attn + SWA en
+        # transicion a decode. Camino restante = reducir el system prompt para
+        # que NO cruce ~10k tokens.
         # "--batch-size", "16384",
         # "--ubatch-size", "16384",
         # --swa-full: CRITICAL for cache-reuse on Gemma 4. Gemma uses Sliding
@@ -396,8 +392,8 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         "--swa-full",
     ]
 
-    # Sprint 12 — API key opt-in via env var. Si GEMMA4_LLAMA_API_KEY esta
-    # seteado, el server exige Authorization: Bearer <key> en cada request.
+    # API key opt-in via env var. Si GEMMA4_LLAMA_API_KEY esta seteado, el
+    # server exige Authorization: Bearer <key> en cada request.
     # No lo forzamos por default para no romper el flujo "el agente Python
     # habla con llama-server en localhost"; pero si el usuario expone el
     # puerto a otra red local (errores de config), esto provee defense in
@@ -415,7 +411,7 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     # señal para concluir antes del cierre.
     #
     # Tag de cierre de Gemma 4 = `<channel|>` (NO `</think>` de deepseek). VERIFICADO
-    # en dos fuentes esta sesión:
+    # en dos fuentes:
     #   1. El chat template embebido en el GGUF (tokenizer.chat_template): el thinking
     #      vive en `<|channel>thought\n ... \n<channel|>` y el cierre es `<channel|>`
     #      (línea "{{- '<|channel>thought\\n<channel|>' -}}" cuando thinking=OFF).
@@ -454,11 +450,12 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     if int(profile.n_gpu_layers) > 0:
         cmd.extend(["--ctx-checkpoints", "0", "--cache-ram", "0", "--no-cache-idle-slots"])
 
-    # Ola 2.4 RAM-frugality: SOLO el perfil CPU (ngl=0). Limita threads + baja la
-    # prioridad para no robarle CPU al juego que motivó el fallback. Verificado en
-    # la build (b9090+): -t y --prio existen; --keep-alive/idle-unload NO (no se
-    # promete unload-on-idle). El path GPU queda byte-idéntico (no entra acá).
-    # Mismo espíritu que scripts/_ort_throttle.py (no saturar cores con otra carga).
+    # RAM-frugality: SOLO el perfil CPU (ngl=0). Limita threads + baja la
+    # prioridad para no robarle CPU al juego/app pesada que motiva el fallback a
+    # CPU. Verificado en la build (b9090+): -t y --prio existen;
+    # --keep-alive/idle-unload NO (no se promete unload-on-idle). El path GPU
+    # queda byte-idéntico (no entra acá). Mismo espíritu que
+    # scripts/_ort_throttle.py (no saturar cores con otra carga).
     if int(profile.n_gpu_layers) == 0:
         _cpu_threads = os.environ.get("GEMMA4_CPU_THREADS") or (
             str(profile.cpu_threads) if profile.cpu_threads else "")
@@ -482,10 +479,9 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
         cmd.append("--no-mmap")
 
     # KV cache quantization (opt-in via GEMMA4_LLAMA_KV_TYPE). Default: F16.
-    # El informe de optimizacion externa (Bloque B1, item I1 #5, TL;DR-6)
-    # advierte contra KV quant en Gemma 4 sin medir:
-    #   localbench (2026-04): KL 0.377 con q8_0 KV en 26B-A4B
-    #                         (vs Qwen <0.04), KL 0.108 en 31B Q8_0.
+    # KV quant en Gemma 4 degrada calidad sin medir primero:
+    #   localbench: KL 0.377 con q8_0 KV en 26B-A4B (vs Qwen <0.04),
+    #               KL 0.108 en 31B Q8_0.
     # Si el usuario aun asi lo activa por env var, lo respetamos pero con
     # WARNING grande. Solo aceptamos valores conocidos por llama.cpp.
     _ALLOWED_KV_TYPES = {"f16", "f32", "bf16", "q8_0", "q5_1", "q5_0", "q4_1", "q4_0"}
@@ -505,7 +501,7 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                     "localbench (2026-04) measured KL 0.377 for Gemma 4 "
                     "26B-A4B with q8_0 KV (vs Qwen <0.04). Quality may "
                     "degrade on long-context / tool-call tasks. Recommended: "
-                    "leave unset (F16 default) until benchmarked on Carter 540.",
+                    "leave unset (F16 default) until benchmarked on your hardware.",
                     kv_type_env,
                 )
                 logger.warning("=" * 70)
@@ -514,13 +510,12 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                 "--cache-type-v", kv_type_env,
             ])
 
-    # Speculative decoding opt-in via env var (item 2.2 del roadmap).
+    # Speculative decoding opt-in via env var.
     #
-    # Bloque D3 del informe externo: speculative decoding E2B-draft -> E4B/
-    # 26B-A4B-target funciona con --spec-draft-model en llama.cpp upstream.
-    # Acceptance rate estimado 40-60% en Carter (sin medir). VRAM: solo viable
-    # en perfil `performance` con VRAM >=12 GB; E2B-Q4 ~1.85 GB + E4B-Q4 ~5.6 GB
-    # = 7.45 GB no entra en 6 GB.
+    # Speculative decoding E2B-draft -> E4B/26B-A4B-target funciona con
+    # --spec-draft-model en llama.cpp upstream. Acceptance rate estimado 40-60%
+    # (sin medir). VRAM: solo viable en perfil `performance` con VRAM >=12 GB;
+    # E2B-Q4 ~1.85 GB + E4B-Q4 ~5.6 GB = 7.45 GB no entra en 6 GB.
     #
     # ADVERTENCIA: bench externo hackmd.io/ODXuOQNzSiyUITz7g9mtBw mide que en
     # RTX 3090 con Qwen3.6-35B-A3B speculative resulta MAS LENTO que baseline
@@ -528,9 +523,8 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     # avisamos del riesgo. Si acceptance < 50% en la maquina, dejar off.
     spec_draft_env = (os.environ.get("GEMMA4_SPEC_DRAFT_MODEL") or "").strip()
     if spec_draft_env:
-        # 2026-05-26: el único perfil es vram4 (≤4 GB). Speculative decoding
-        # (draft E2B + target E4B = ~7.45 GB) NO entra ni en 6 GB, menos en 4.
-        # Antes se gateaba a 'vram16' (≥12 GB), que ya no existe. Queda
+        # El único perfil es vram4 (≤4 GB). Speculative decoding (draft E2B +
+        # target E4B = ~7.45 GB) NO entra ni en 6 GB, menos en 4. Queda
         # inalcanzable por VRAM; se ignora con aviso si alguien lo opta-in.
         _SPEC_OK = False
         if not _SPEC_OK:
@@ -579,12 +573,12 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                 except ValueError:
                     logger.warning("invalid spec-draft numeric env var; ignoring extra flags")
 
-    # NGRAM-CACHE speculative decoding (auditoría §7.6, opt-in via
-    # GEMMA4_NGRAM_SPEC=1). A diferencia del draft model, NO consume VRAM extra
-    # (no carga un 2º modelo): predice tokens desde n-gramas del propio contexto.
-    # GANA en prompts repetitivos / RAG / citado del contexto; en conversación
-    # VARIADA los 3 informes de la auditoría coinciden en ~0% mejora (Maher, DEV
-    # Community). Por eso es OPT-IN, no default: medir con GEMMA4_NGRAM_SPEC=1 y
+    # NGRAM-CACHE speculative decoding (opt-in via GEMMA4_NGRAM_SPEC=1). A
+    # diferencia del draft model, NO consume VRAM extra (no carga un 2º modelo):
+    # predice tokens desde n-gramas del propio contexto. GANA en prompts
+    # repetitivos / RAG / citado del contexto; en conversación VARIADA las
+    # fuentes coinciden en ~0% mejora (Maher, DEV Community). Por eso es OPT-IN,
+    # no default: medir con GEMMA4_NGRAM_SPEC=1 y
     # comparar tok/s + tool-call success antes de confiar. Reversible (quitar la
     # env var). NO incompatible con --swa-full ni cache-reuse (es otra capa).
     if (os.environ.get("GEMMA4_NGRAM_SPEC") or "").strip().lower() in {"1", "true", "yes", "on"}:
@@ -598,7 +592,7 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
             cmd.extend(["--spec-type", "ngram-cache", "--spec-draft-n-max", n_draft])
             logger.warning(
                 "ngram-cache speculative ENABLED (opt-in). Gana en prompts "
-                "repetitivos; ~0%% en conversación variada (auditoría §7.6). "
+                "repetitivos; ~0%% en conversación variada. "
                 "Medir tok/s antes de confiar. spec-draft-n-max=%s", n_draft)
         except ValueError:
             logger.warning("GEMMA4_NGRAM_DRAFT_MAX inválido; ignorando ngram-cache")
@@ -616,7 +610,7 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
                 # --no-mmproj-offload cuando VRAM efectiva es tight (perfiles
                 # con --no-mmap suelen ser los de 6 GB o menos). Mitiga la
                 # interaccion con issue #19980 (--fit no contabiliza VRAM del
-                # mmproj). Item I1 #8 / Bloque E1 del informe.
+                # mmproj).
                 if profile.name in _VRAM_TIGHT:
                     cmd.append("--no-mmproj-offload")
             else:
@@ -629,7 +623,7 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Router mode (lazy vision) — 2026-05-20
+# Router mode (lazy vision)
 # ---------------------------------------------------------------------------
 # MEASURED root cause of high latency: with --mmproj loaded, llama.cpp prints
 # "cache_reuse is not supported by multimodal, it will be disabled", so EVERY
@@ -765,7 +759,7 @@ def write_router_presets(config: AgentConfig, profile: Profile) -> Path | None:
 
     text_name, vision_name = router_model_names(profile)
     ctx = int(profile.context_size)
-    tight = profile.name in {"vram4"}  # único perfil ≤4 GB (era vram3/4/6)
+    tight = profile.name in {"vram4"}  # único perfil ≤4 GB
 
     lines: list[str] = []
 
@@ -774,18 +768,18 @@ def write_router_presets(config: AgentConfig, profile: Profile) -> Path | None:
             f"model = {Path(model_path).resolve()}",
             f"ctx-size = {ctx}",
             "ngl = 99",
-            # v22 2026-05-28: DEFAULT "off" (router mode usa este INI para el
-            # child, el que crashea). El crash CUDA #22527 es del kernel
-            # flash-attn + SWA de Gemma 4; FA off lo ELIMINA (37/37 vs 6/37) por
-            # +0.17 GB VRAM. A/B: GEMMA4_FLASH_ATTN=on. Ver comment en _build_server_cmd.
+            # DEFAULT "off" (router mode usa este INI para el child, el que
+            # crashea). El crash CUDA #22527 es del kernel flash-attn + SWA de
+            # Gemma 4; FA off lo ELIMINA (37/37 vs 6/37) por +0.17 GB VRAM. A/B:
+            # GEMMA4_FLASH_ATTN=on. Ver el mismo flag en llama_command().
             f"flash-attn = {os.environ.get('GEMMA4_FLASH_ATTN', 'off')}",
             "jinja = true",
             "parallel = 1",
-            # v19: batch=ubatch=ctx REVERTIDO. Compute buffer se inflo de
-            # 532MiB -> 17GiB (32x) y agoto los 4GB en vram4. El crash CUDA
-            # no es por los shifts intermedios -> ver comment en CLI.
+            # batch=ubatch=ctx NO se usa: el compute buffer se infla de 532MiB
+            # -> 17GiB (32x) y agota los 4GB en vram4. El crash CUDA no es por
+            # los shifts intermedios -> ver el comentario en llama_command().
             # swa-full: CRITICAL for Gemma cache-reuse, same as the --swa-full CLI
-            # flag in _build_server_cmd. Gemma uses SWA (n_swa=512); WITHOUT this
+            # flag in llama_command(). Gemma uses SWA (n_swa=512); WITHOUT this
             # the KV cache only keeps the sliding window, so the stable system-
             # prompt prefix is evicted each turn ("erased invalidated context
             # checkpoint, n_swa=512") and EVERY turn reprocesses the full ~6K-tok
@@ -800,16 +794,16 @@ def write_router_presets(config: AgentConfig, profile: Profile) -> Path | None:
         block.extend(extra)
         return block
 
-    # text preset: Plan A flags. cache-reuse REMOVIDO (memory_seq_rm dispara
-    # CUDA #17109/#22527 con flash-attn + Gemma 4). El LCP simple via
-    # keep=-1 + swa-full=true (heredado de _common) preserva el system
-    # prompt estable sin shifting -> sin crash.
+    # text preset. cache-reuse REMOVIDO (memory_seq_rm dispara CUDA
+    # #17109/#22527 con flash-attn + Gemma 4). El LCP simple via keep=-1 +
+    # swa-full=true (heredado de _common) preserva el system prompt estable sin
+    # shifting -> sin crash.
     lines.append(f"[{text_name}]")
-    # v22 2026-05-28: cache-ram env-gated. Plan A lo puso en 0 porque el prompt
-    # cache RAM disparaba el crash CUDA #22527 CON flash-attn. Con FA off
-    # (GEMMA4_FLASH_ATTN=off) ese crash no existe, asi que re-habilitar el cache
-    # (GEMMA4_CACHE_RAM=<MiB>) convierte los full-reprocess de los turnos
-    # multi-call en cache hits -> menos prefill -> menos latencia. Default 0 = v21.
+    # cache-ram env-gated. El default es 0 porque el prompt cache RAM disparaba
+    # el crash CUDA #22527 CON flash-attn. Con FA off (GEMMA4_FLASH_ATTN=off) ese
+    # crash no existe, asi que re-habilitar el cache (GEMMA4_CACHE_RAM=<MiB>)
+    # convierte los full-reprocess de los turnos multi-call en cache hits ->
+    # menos prefill -> menos latencia.
     _cache_ram = (os.environ.get("GEMMA4_CACHE_RAM", "0") or "0").strip()
     _cache_on = _cache_ram not in ("", "0")
     lines.extend(_common([
@@ -880,16 +874,16 @@ class LlamaServerManager:
         # port ("NOT responding" / "boot timed out"). With the lock they run
         # one-after-another and the last state wins cleanly.
         self._restart_lock = threading.Lock()
-        # C7 (perfection roadmap 2026-05-29): atexit POR INSTANCIA. El registro
-        # del singleton (get_shared_manager) solo cubría _SHARED_MANAGER; las 4
-        # rutas de instanciación DIRECTA (chat.py, ui/main_window.py x2,
-        # server.py vision-recycle) dejaban su child llama-server HUÉRFANO al
-        # salir -> retiene ~6GB VRAM en Windows (el Popen child no muere con el
-        # padre) y el próximo arranque ve un server 'external' en :8080. stop()
-        # es idempotente y no-opea sobre externos / _proc muerto, así que esto
-        # NUNCA mata un server del usuario ni falla si nunca arrancamos. Registro
-        # fuerte (no weakref): los managers son pocos y livianos; weakref tenía un
-        # caso de borde con el manager efímero de vision-recycle GC'd antes del exit.
+        # atexit POR INSTANCIA. El registro del singleton (get_shared_manager)
+        # solo cubre _SHARED_MANAGER; las 4 rutas de instanciación DIRECTA
+        # (chat.py, ui/main_window.py x2, server.py vision-recycle) dejarían su
+        # child llama-server HUÉRFANO al salir -> retiene ~6GB VRAM en Windows
+        # (el Popen child no muere con el padre) y el próximo arranque ve un
+        # server 'external' en :8080. stop() es idempotente y no-opea sobre
+        # externos / _proc muerto, así que esto NUNCA mata un server del usuario
+        # ni falla si nunca arrancamos. Registro fuerte (no weakref): los
+        # managers son pocos y livianos; weakref tenía un caso de borde con el
+        # manager efímero de vision-recycle GC'd antes del exit.
         self._register_atexit_cleanup()
 
     def _register_atexit_cleanup(self) -> None:
@@ -1109,7 +1103,7 @@ class LlamaServerManager:
         # ejecutar el binario si no esta presente).
         check_llama_build(exe)
 
-        # Item 1.9 / Bloque A3: avisar si el modelo es MXFP4 (experimental).
+        # Avisar si el modelo es MXFP4 (experimental).
         try:
             from .model_info import is_experimental_quant
             flagged, pattern = is_experimental_quant(str(model))
@@ -1215,11 +1209,10 @@ class LlamaServerManager:
 
         Devuelve True si efectivamente se reciclo. Publica al BUS de eventos
         un payload {kind:"boot_stage", stage:"vision_relaunch"} antes y
-        despues del swap. Item 1.7 / Bloque E1 del roadmap.
+        despues del swap.
 
-        Lectura: counter de imagenes se mantiene en multimodal.py; este
-        metodo es solo el "como" del relanch, decidido y disparado por el
-        orchestrator (NO por agent.py).
+        El counter de imagenes se mantiene en multimodal.py; este metodo es
+        solo el "como" del relanch, decidido y disparado por el orchestrator.
         """
         if self._external_detected:
             logger.info("recycle_for_vision_leak(): external server, skipping")
@@ -1307,15 +1300,13 @@ class LlamaServerManager:
     def restart(self, profile: Profile, **start_kwargs: object) -> str:
         """stop() + start(profile), serializado y a prueba de race en el puerto.
 
-        H6 (perfection roadmap 2026-05-29): el revert v21 quitó el lock + el
-        port-wait por LATENCIA, asumiendo router-mode (stop() mata el front que
-        mata al child rápido). Pero dejó una RACE real: entre stop() y start(),
+        Sin el lock + el port-wait hay una RACE real: entre stop() y start(),
         otro hilo (o force_restart_for_profile concurrente) puede bindear :8080;
         start() lo ve como 'external' y NO arranca el nuestro -> turno colgado.
-        Fix: serializar con _restart_lock (mismo lock que force_restart, así no
-        se pisan) + esperar a que el SO libere el puerto. El loop sale APENAS el
-        puerto está libre (break inmediato), así que en el caso router-mode normal
-        el costo extra es ~0 (no los 10s del diseño viejo que motivó el revert).
+        Por eso se serializa con _restart_lock (mismo lock que force_restart, así
+        no se pisan) + se espera a que el SO libere el puerto. El loop sale
+        APENAS el puerto está libre (break inmediato), así que en el caso
+        router-mode normal el costo extra es ~0.
         _restart_lock NO es reentrante: verificado que restart() no se llama desde
         dentro de force_restart (no hay deadlock)."""
         wait_health = bool(start_kwargs.get("wait_health", True))
@@ -1333,8 +1324,8 @@ class LlamaServerManager:
     def _wait_for_health(self, timeout_s: int = 90) -> bool:
         """Polea /health Y /slots hasta que ambos respondan, o expira.
 
-        Por que dos endpoints (investigacion 6.3): /health puede devolver 200
-        ANTES de que el slot este listo para servir requests, sobre todo bajo
+        Por que dos endpoints: /health puede devolver 200 ANTES de que el slot
+        este listo para servir requests, sobre todo bajo
         carga o justo despues de cargar el modelo (issues llama.cpp #20684,
         #20921). Si solo esperamos /health y entregamos el control, el
         siguiente chat puede recibir "Failed to read connection" del proxy.
@@ -1368,19 +1359,18 @@ class LlamaServerManager:
     def _probe_slots_alive(self, timeout_s: float = 0.5) -> bool:
         """True si /slots responde HTTP en absoluto (server escucha y respondio).
 
-        GEMELO DELIBERADO de LLMClient._probe_slots_alive (H4): la misma lógica
+        GEMELO DELIBERADO de LLMClient._probe_slots_alive: la misma lógica
         vive en el cliente para que su recovery exija health AND slots sin importar
         llama_server (evita un ciclo de import). Si tocás uno, tocá el otro.
 
         CUALQUIER respuesta HTTP (200, 400, 404, 503) significa que el server
         esta vivo y atendiendo. Solo connection-refused o timeout son "muerto".
 
-        Por que NO filtrar por status code (fix 2026-05-28): el build b9090
-        responde 400 a `/slots?fail_on_no_slot=1` (no soporta ese query
-        param), pero esta perfectamente vivo. Antes solo aceptabamos 200/503
-        y eso colgaba el boot indefinidamente con logs llenos de "GET /slots
-        400". El proposito de este probe es solo "TCP+HTTP vivo", no
-        validar la semantica del endpoint."""
+        Por que NO filtrar por status code: el build b9090 responde 400 a
+        `/slots?fail_on_no_slot=1` (no soporta ese query param), pero esta
+        perfectamente vivo. Filtrar solo 200/503 colgaba el boot indefinidamente
+        con logs llenos de "GET /slots 400". El proposito de este probe es solo
+        "TCP+HTTP vivo", no validar la semantica del endpoint."""
         import urllib.error
         import urllib.request
         url = self._config.server_url.rstrip("/") + "/slots"

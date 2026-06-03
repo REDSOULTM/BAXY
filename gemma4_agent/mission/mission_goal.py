@@ -1,17 +1,16 @@
-"""MissionGoal — verifier por-mision estructural (TIER 2 #5).
+"""MissionGoal — verifier por-mision estructural.
 
 Voyager NeurIPS 2023 pattern: "Self-verification verifies the OBJECTIVE,
 not the action." En otras palabras, una tool retornando ok=True NO
 significa que la INTENCION del usuario se cumplio. El verifier per-tool
-(verify_core.py / TIER 1 #2) mide el efecto de cada llamada. Este
-verifier mide si lo que el usuario PIDIO quedo cumplido.
+(verify_core.py) mide el efecto de cada llamada. Este verifier mide si
+lo que el usuario PIDIO quedo cumplido.
 
 Diferencia con verify_core.py:
   - verify_core (per-tool): "abriste algo"? si/no/no medible.
   - mission_goal (per-mission): "abriste lo que pediste"? si/no.
 
-Adaptado de carter_v5/mission/goal.py a las compound tools de Gemma 4:
-en Gemma 4 las tools son compuestas (`app`, `steam`, `gui`, `web`...) con
+Las tools de Gemma 4 son compuestas (`app`, `steam`, `gui`, `web`...) con
 un campo `action` que discrimina sub-comportamiento. _kinds_for_call()
 inspecciona action + otros args para decidir qué ExpectedOutcome.kind
 satisface cada llamada concreta.
@@ -36,12 +35,12 @@ from typing import Any
 
 
 # ---------------------------------------------------------------------------
-# Outcome contracts (mirror Carter v5 types — local to avoid import cycles)
+# Outcome contracts (definidos local para evitar ciclos de import)
 # ---------------------------------------------------------------------------
 
 
 class OutcomeStatus(str, Enum):
-    """Estado final del turn — 9 valores explicitos (Carter v4 inheritance)."""
+    """Estado final del turn — 9 valores explicitos."""
     COMPLETED = "COMPLETED"                                          # mission fulfilled + verifiers OK
     PARTIAL = "PARTIAL"                                              # progress but not all
     FAILED = "FAILED"                                                # tried, verifiers said No
@@ -221,7 +220,7 @@ _TOOL_TO_KINDS: dict[str, tuple[str, ...]] = {
     "email": ("set_state",),
     "whatsapp": ("set_state", "navigate"),
     "input": ("set_state", "read_state"),
-    # smart_home ELIMINADA 2026-06-02 (pedido del usuario).
+    # smart_home no esta registrada: el tool fue retirado del agente.
     "subagent": ("read_state",),
     "safety": ("read_state",),
     "network": ("read_state",),

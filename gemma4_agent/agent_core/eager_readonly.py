@@ -1,4 +1,4 @@
-"""Pre-ejecución EAGER de tools READ-ONLY (opt-in, 2026-06-02).
+"""Pre-ejecución EAGER de tools READ-ONLY.
 
 QUÉ HACE
 ========
@@ -8,7 +8,7 @@ efectivamente la pide, el resultado YA está listo (ahorra el tiempo de la
 tool, ~0.1-1 s percibidos). Si el LLM NO la pide o pide otra cosa, el
 resultado eager se DESCARTA — no afecta nada, porque era una lectura pura.
 
-REGLA DURA (no negociable, CLAUDE.md + brief): **NUNCA pre-ejecutar una
+REGLA DURA (no negociable): **NUNCA pre-ejecutar una
 ESCRITURA / acción con efectos secundarios.** Pre-ejecutar un envío de
 WhatsApp, un borrado, un brillo, un volumen = catastrófico e irreversible.
 El eager-exec SÓLO toca tools 100% read-only / idempotentes / sin efectos
@@ -56,7 +56,7 @@ from typing import Any, Callable
 # ---------------------------------------------------------------------------
 # TABLA DECLARATIVA: (tool, action) que son 100% READ-ONLY / idempotentes /
 # sin efectos observables. Cada entrada está verificada contra su impl en
-# tools.py (2026-06-02) y justificada. NO agregar nada acá sin leer la impl
+# tools.py y justificada. NO agregar nada acá sin leer la impl
 # y confirmar que NO escribe estado, NO toca el SO de forma observable, NO es
 # irreversible. El default del producto es NO pre-ejecutar; esta tabla es la
 # ÚNICA puerta, y es chica a propósito.
@@ -81,7 +81,7 @@ EAGER_READONLY_CALLS: frozenset[tuple[str, str]] = frozenset({
 
 
 # ---------------------------------------------------------------------------
-# AFINAMIENTO POR INTENT (2026-06-02): NO disparar las 4 reads de ``system``
+# AFINAMIENTO POR INTENT: NO disparar las 4 reads de ``system``
 # en CADA turno que ofrezca la tool ``system``. El router rutea a nivel TOOL
 # (no por acción): basta que ``system`` clasifique para que aparezca en el
 # subset, aunque el turno pida ``shutdown`` (escritura) o nada de lectura
@@ -129,7 +129,7 @@ _ACTION_INTENT_DESCRIPTIONS: dict[tuple[str, str], str] = {
 # Umbral de similitud coseno (encoder L2-normalizado -> coseno == dot). Una
 # acción se dispara eager SOLO si el turno se le parece >= este valor.
 #
-# CALIBRACIÓN MEDIDA (2026-06-02, encoder router-FT MiniLM, matriz turno×acción):
+# CALIBRACIÓN MEDIDA (encoder router-FT MiniLM, matriz turno×acción):
 #   - hits genuinos ("qué hora es", "cuánta RAM", "battery level", ...): 0.49-0.74
 #   - smalltalk falso-positivo ("hola cómo estás" -> time): 0.332
 #   - volumen cross-talk ("subí/bajá el volumen" -> disk/battery): <= 0.215
@@ -149,7 +149,7 @@ except Exception:
 
 
 def is_enabled() -> bool:
-    """Gate ``GEMMA4_EAGER_READONLY``. **Default ON desde 2026-06-02** tras
+    """Gate ``GEMMA4_EAGER_READONLY``. **Default ON** tras
     validación EXHAUSTIVA: seguridad adversarial (32/32 escrituras nunca eager +
     args-de-efecto bloqueados) + vivo contra el 4B (9/9 escrituras → 0 eager,
     "apagá la compu" nunca pre-ejecuta shutdown) + afinamiento por embeddings
@@ -164,7 +164,7 @@ def is_enabled() -> bool:
 # idioma del usuario: son verbos del PROTOCOLO de las tools, identificadores en
 # inglés del schema — guarda sobre la forma del identificador, CLAUDE.md (b)).
 #
-# IMPORTANTE (finding 2026-06-02): el clasificador de seguridad
+# IMPORTANTE: el clasificador de seguridad
 # (safety.classify_tool_call) NO sirve como barrera read-only — sólo decide
 # CONFIRMACIÓN (irreversible/alto-riesgo). MUCHAS escrituras de bajo riesgo
 # (audio.set_volume, media.play, brightness por algunos paths) devuelven
@@ -305,7 +305,7 @@ def eager_candidates(
       - (tool, action) sea eager-safe (tabla + clasificador).
     Si el flag está OFF o el subset es vacío -> [] (no-op total).
 
-    AFINAMIENTO (2026-06-02): si se pasa ``turn_text`` y el encoder está
+    AFINAMIENTO: si se pasa ``turn_text`` y el encoder está
     disponible, se filtra por INTENT (embeddings multilingües) para disparar
     SOLO la(s) read que el turno realmente sugiere, en vez de las 4 de
     ``system`` siempre. "qué hora es" -> [system.time]; "subí el volumen"

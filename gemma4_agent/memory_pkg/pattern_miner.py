@@ -1,14 +1,14 @@
 """Detección de patrones de comportamiento (Capa A: conteo contextual).
 
-Investigación 5 (Jarvis, 2026-05-23): código DETERMINISTA que mina el
-behavior_log y detecta rutinas repetidas del usuario para OFRECER automatizarlas.
-El LLM NO mina (sería lento/alucinógeno en 4B); solo conversa la sugerencia.
+Código DETERMINISTA que mina el behavior_log y detecta rutinas repetidas del
+usuario para OFRECER automatizarlas. El LLM NO mina (sería lento/alucinógeno en
+4B); solo conversa la sugerencia.
 
 Capa A — conteo contextual: para cada par (trigger, target) dentro de una ventana
 temporal, contar cuántas veces el target sigue al trigger. Si supera umbrales
 CONSERVADORES, es candidato. Cubre el caso de RED ("cierro Discord al arrancar").
 
-Umbrales (del informe, conservadores para no molestar — Horvitz 1999, TaraHome):
+Umbrales conservadores para no molestar sin evidencia (Horvitz 1999, TaraHome):
   - min_count: 5 ocurrencias del patrón.
   - min_consistency: 0.6 (el target sigue al trigger ≥60% de las veces).
   - window_days: 7 mínimo (filtra experimentos de un día).
@@ -38,7 +38,7 @@ class PatternCandidate:
     consistency: float  # count / veces que ocurrió el trigger
     delta_median_s: float  # mediana del delay trigger→target
 
-    # Plantillas del patrón por idioma (inv5 multilingüe). Solo conectivos/verbos
+    # Plantillas del patrón por idioma (multilingüe). Solo conectivos/verbos
     # genéricos; los nombres de app (target_key) son neutrales. {trig}/{act} se
     # rellenan con las sub-plantillas. Cubre es/en/pt/fr/de/it; fallback es.
     _DESC = {
@@ -51,7 +51,7 @@ class PatternCandidate:
     }
 
     def describe(self, lang: str = "es") -> str:
-        """Texto natural del patrón en el idioma del usuario (inv5 multilingüe)."""
+        """Texto natural del patrón en el idioma del usuario (multilingüe)."""
         boot_t, open_t, act_map, frame = self._DESC.get(lang, self._DESC["es"])
         trig = boot_t if self.trigger_kind == "boot" else open_t.format(k=self.trigger_key)
         act = act_map.get(self.target_kind, f"{self.target_kind} {self.target_key}").format(k=self.target_key)
@@ -63,7 +63,7 @@ class PatternCandidate:
 
     def to_routine_trigger(self) -> dict[str, Any] | None:
         """Mapea el patrón a un trigger del routine_tool existente (traducción
-        1-a-1 del informe). None si no hay mapping claro."""
+        1-a-1). None si no hay mapping claro."""
         if self.trigger_kind == "boot":
             tt = "cron"  # boot ≈ tarea al inicio de sesión
         elif self.trigger_kind == "app_open":
@@ -83,10 +83,11 @@ class PatternCandidate:
                 "action": action}
 
 
-# Frases del handshake de Jarvis por idioma (inv5 multilingüe). {desc} = la
-# descripción del patrón ya en el idioma del usuario. Excepción permitida por
-# CLAUDE.md: handshake sí/no del propio agente (no es respuesta enlatada a una
-# pregunta del usuario). Cubre es/en/pt/fr/de/it; fallback es.
+# Frases del handshake de sugerencia proactiva por idioma (multilingüe). {desc}
+# = la descripción del patrón ya en el idioma del usuario. No es una respuesta
+# enlatada a una pregunta del usuario: es el handshake sí/no que inicia el propio
+# agente, por eso es texto fijo y no pasa por el LLM. Cubre es/en/pt/fr/de/it;
+# fallback es.
 JARVIS_PHRASES = {
     "es": {"offer": "\n\nPor cierto: noté que {desc}. ¿Querés que lo automatice? (decí sí o no)",
            "rejected": "Listo, no lo automatizo. Avisame si cambiás de idea.",

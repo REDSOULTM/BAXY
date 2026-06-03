@@ -1,6 +1,6 @@
 """Structural per-tool verifier registry.
 
-Filosofia (heredada de ContextoCarter V3/V4): una tool retornando ok=True NO
+Filosofia: una tool retornando ok=True NO
 es suficiente. El agente debe LEER el estado real del sistema y declarar si
 el efecto se materializo. Si no se puede medir, decir "no verificable"
 explicitamente — no fingir.
@@ -15,10 +15,9 @@ Diseño:
   - `summarize_verifiers(outcomes)` produce el footer que se concatena al
     reply del LLM para que el usuario vea cuantas tools se verificaron.
   - `record_evidence_for_loop` extrae los evidence_keys del outcome y los
-    inyecta al LoopState para resetear el warning_count en progreso real
-    (TIER 1 #1 + #2 integration).
+    inyecta al LoopState para resetear el warning_count en progreso real.
 
-NO usa LLM para verificar (eso fue un bug historico de generaciones previas).
+NO usa LLM para verificar: un LLM puede alucinar que el efecto se materializo.
 Cada verifier es una funcion pura sobre el estado del SO.
 
 Opt-out: GEMMA4_VERIFIER_OFF=1 desactiva todo el sistema; verify() siempre
@@ -51,20 +50,20 @@ class VerifierOutcome:
     evidence_keys: lista de strings tipo "app:Steam" / "file:/tmp/x" /
     "window:Notepad". Si confirmed=True, el agent llamara
     loop_state.record_evidence(key) para resetear el warning_count del
-    loop detector (TIER 1 #1).
+    loop detector.
     """
     tool_name: str
     confirmed: bool | None
     reason: str
     detail: dict | None = None
     evidence_keys: list[str] = field(default_factory=list)
-    # B1 (competidores, 2026-05-29): clasificación del fallo para recuperación
-    # por TIPO (replan/amend/skip). None hasta que un verifier lo setee o
-    # classify_failure() lo infiera. Ver ERR_* abajo.
+    # clasificación del fallo para recuperación por TIPO (replan/amend/skip).
+    # None hasta que un verifier lo setee o classify_failure() lo infiera.
+    # Ver ERR_* abajo.
     error_type: str | None = None
 
 
-# --- B1: tipos de error para recuperación (replan/amend/skip) --------------
+# --- tipos de error para recuperación (replan/amend/skip) ------------------
 # missing_precondition: el efecto requiere algo que no existe aún (ventana/app
 #   no abierta, archivo inexistente) -> REPLAN (hacer el prerequisito primero).
 # param_mismatch: faltó/erró un argumento (sin target, ruta mala) -> AMEND
@@ -82,9 +81,9 @@ RECOVERABLE_ERROR_TYPES = frozenset(
     {ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT})
 
 
-# --- H2 (perfection roadmap 2026-05-29): presupuesto de retry POR CLASE ------
-# El research midió "466 de 513 retries desperdiciados en errores que NINGÚN
-# retry arregla". El límite global de max_agent_turns no distingue: un
+# --- presupuesto de retry POR CLASE ----------------------------------------
+# Medido: 466 de 513 retries desperdiciados en errores que NINGÚN retry
+# arregla. El límite global de max_agent_turns no distingue: un
 # TOOL_NOT_FOUND irrecuperable quemaba los 8 turnos reintentando, mientras un
 # TRANSIENT legítimo competía por los mismos turnos. El budget por-clase corta
 # el desperdicio en la raíz: cuando una clase agota su budget, el hint pasa de
@@ -106,7 +105,7 @@ _RETRY_BUDGET: dict[str, int] = {
 
 
 def retry_budget_for(error_type: str | None) -> int:
-    """Presupuesto de reintentos para una clase de error (H2). 0 = no reintentar.
+    """Presupuesto de reintentos para una clase de error. 0 = no reintentar.
 
     Pura: no toca estado. El agente lleva el contador `spent[err_class]` por turno
     y, al agotarlo, deja de pedir reintentos para esa clase. Un tipo desconocido
@@ -183,9 +182,9 @@ def verify(tool_name: str, args: dict, result: dict) -> VerifierOutcome:
                 reason=f"verifier returned non-VerifierOutcome: {type(outcome).__name__}",
                 error_type=ERR_UNKNOWN,
             )
-        # H1 (perfection roadmap 2026-05-29): el campo error_type estaba DECLARADO
-        # pero NUNCA seteado por ningún verifier. Este verify() es el ÚNICO
-        # chokepoint por el que pasan TODOS los outcomes: si un verifier reportó
+        # Backstop de clasificación: este verify() es el ÚNICO chokepoint por el
+        # que pasan TODOS los outcomes, así que clasificamos acá los fallos que
+        # un verifier dejó sin error_type. Si un verifier reportó
         # un fallo (confirmed=False) sin clasificarlo, lo clasificamos acá con
         # classify_failure sobre el result estructural. Así "los verifiers setean
         # error_type" pasa a ser verdad por construcción, sin tocar cada verifier
@@ -211,10 +210,10 @@ def summarize_verifiers(outcomes: list[VerifierOutcome]) -> str:
       - failed > 0  ->  emite footer (importante para el user)
       - todos confirmed=True / None / mix -> NO emite (sin failure no aporta).
 
-    2026-05-15 post-audit: el "N no verificable(s)" generaba ruido visual
-    en el user cuando una tool dispatch async legitima (URL abierta,
-    deeplink, media key) reportaba confirmed=None. El user lo interpretaba
-    como fallo de la accion. Ahora solo emitimos cuando hay un failed real.
+    No emitimos "N no verificable(s)" por si solo: una tool dispatch async
+    legitima (URL abierta, deeplink, media key) reporta confirmed=None, y
+    surfacearlo se lee como fallo de la accion aunque no lo sea. Solo emitimos
+    cuando hay un failed real.
     """
     if not outcomes:
         return ""

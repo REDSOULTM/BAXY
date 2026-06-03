@@ -1,9 +1,9 @@
-"""Wake-word detection — Sprint 7 (LiveKit) with openWakeWord fallback.
+"""Wake-word detection — LiveKit (preferred) with openWakeWord fallback.
 
-Sprint 7 (2026-05-19): replaced openWakeWord with LiveKit WakeWord as
-the preferred backend, after Sprint 6's universal eval showed v9 OWW
-recall = 0.110 across 25 voices / 13 languages. LiveKit's conv-attention
-head reports 60x lower AUT and 17% better recall vs OWW in their bench.
+LiveKit WakeWord is the preferred backend: the custom openWakeWord model
+measured recall = 0.110 on the universal held-out (25 voices / 13
+languages), while LiveKit's conv-attention head reports 60x lower AUT and
+17% better recall vs OWW in their bench.
 
 Backend selection (in order):
   (1) LiveKit: `gemma4_agent/voice/models/livekit/hey_gemma.onnx`
@@ -11,7 +11,7 @@ Backend selection (in order):
       × SLERP) + ACAV100M negatives + MIT RIRs. Stateless predict()
       taking ~2 s windows.
   (2) openWakeWord custom: `gemma4_agent/voice/models/oww/hey_gemma.onnx`
-      Sprint 5 v9 model — kept as fallback during transition.
+      Custom-trained model — kept as fallback (recall 0.110, see above).
   (3) openWakeWord stock "hey_jarvis": pretrained from upstream OWW
       catalog. Last-resort if neither custom model loads.
 
@@ -57,8 +57,8 @@ LIVEKIT_WINDOW_SAMPLES = int(LIVEKIT_WINDOW_SECONDS * LIVEKIT_SAMPLE_RATE)
 # Predict throttle: the audio pump delivers 32 ms chunks (~31/s), and running
 # the conv-attention ONNX model on the full 2 s window EVERY chunk is ~31
 # inferences/second of continuous CPU while idle-listening — the dominant idle
-# cost of the wake stage (ONNX-without-throttle is what froze the PC in earlier
-# sprints). A 2 s wake phrase does NOT need 31 Hz sampling: scoring the rolling
+# cost of the wake stage (ONNX-without-throttle clamps the CPU to 100% and can
+# freeze Windows). A 2 s wake phrase does NOT need 31 Hz sampling: scoring the rolling
 # window every Nth chunk still samples the phrase ~16 times. Decimate to ~8 Hz
 # (every 4th chunk) -> ~75% less wake CPU, no measurable recall loss (the window
 # is unchanged; we just score it less often). Env-tunable for tuning/measurement.
@@ -66,7 +66,7 @@ LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
     os.environ.get("GEMMA4_WAKE_PREDICT_EVERY_N", "4")))
 
 # Fire threshold for LiveKit conv-attention output.
-# Sprint 7 calibration (2026-05-19) on the universal held-out
+# Calibrated on the universal held-out
 # (500 clips / 25 voices / 13 languages + 7.7h LibriSpeech negatives):
 #   thr 0.50: recall 0.550, fp/hr 0.000
 #   thr 0.40: recall 0.636, fp/hr 0.000
@@ -74,7 +74,7 @@ LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
 #   thr 0.25: recall 0.744, fp/hr 0.000   <- chosen
 #   thr 0.20: recall 0.764, fp/hr 0.000
 # FP rate is 0.000 even at 0.20, so we pick 0.25 for max recall with a
-# small safety margin. 7x the v9 baseline (0.110) at zero false fires.
+# small safety margin. 7x the custom-OWW baseline (0.110) at zero false fires.
 LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.25"))
 
 LIVEKIT_MODEL_PATH = (
@@ -92,7 +92,7 @@ OWW_CUSTOM_MODEL_PATH = (
 )
 OWW_STOCK_MODEL_NAME = "hey_jarvis"
 
-# Back-compat alias — callers (tests, pipeline) used to import these.
+# Back-compat aliases — callers (tests, pipeline) import these names.
 CUSTOM_MODEL_PATH = OWW_CUSTOM_MODEL_PATH
 STOCK_MODEL_NAME = OWW_STOCK_MODEL_NAME
 
@@ -175,7 +175,7 @@ class WakeDetector:
                     exc,
                 )
 
-        # Try OWW custom (Sprint 5 v9).
+        # Try OWW custom (custom-trained fallback model).
         try:
             from openwakeword import Model
             from openwakeword.utils import download_models

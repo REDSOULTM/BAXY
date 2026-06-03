@@ -12,19 +12,19 @@ STEP_SPLIT_RE = re.compile(
     r"\b(?:luego|despues|después|entonces|y luego|y despues|y después|,\s*luego)\b|[;]\s*",
     re.IGNORECASE,
 )
-# Cap on tools offered per turn. Lowered 16->10 (2026-05-20 latency): a big
-# subset bloats the LLM prefill AND pushes the agent into thinking-ON mode for
-# no benefit. Measured on the curated router corpus: holdout recall is
-# IDENTICAL at 10 vs 16 (0.8345) — the anti-overfit metric doesn't move — and
-# dev only drops 0.840->0.826. The planner orders by priority (utility tools
-# last), so the cap trims the low-value tail, not the relevant head. Over-offer
-# cases like "abre Spotify" (no dedicated tool) go 16->10 tools.
+# Cap on tools offered per turn. A big subset bloats the LLM prefill AND pushes
+# the agent into thinking-ON mode for no benefit. Measured on the curated router
+# corpus: holdout recall is IDENTICAL at 10 vs 16 (0.8345) — the anti-overfit
+# metric doesn't move — and dev only drops 0.840->0.826. The planner orders by
+# priority (utility tools last), so the cap trims the low-value tail, not the
+# relevant head. Over-offer cases like "abre Spotify" (no dedicated tool) go
+# 16->10 tools.
 #
-# v20 2026-05-28: BAJADO de 8 -> 5 por bug CUDA #22527. MEDIDO en vivo con
-# scripts/_measure_agent_prompt_live.py: subset 9 tools (8 cap + session) ->
-# prompt total ~14.6k tokens -> dispara CUDA illegal-access en Gemma 4 +
-# flash-attn + SWA. Subset 5 + session ~10k -> debajo del umbral del crash
-# (~13k visto en el log). Override via GEMMA4_MAX_SELECTED_TOOLS=N para A/B.
+# Lowered further 8 -> 5 to avoid a CUDA illegal-access crash (llama.cpp
+# #22527). Measured in vivo: subset of 9 tools (8 cap + session) -> prompt
+# total ~14.6k tokens -> triggers CUDA illegal-access on Gemma 4 + flash-attn +
+# SWA. Subset 5 + session ~10k -> below the crash threshold (~13k seen in the
+# log). Override via GEMMA4_MAX_SELECTED_TOOLS=N for A/B.
 import os as _os_max_tools
 try:
     MAX_SELECTED_TOOLS = int(_os_max_tools.environ.get("GEMMA4_MAX_SELECTED_TOOLS", "5"))
@@ -44,47 +44,47 @@ _SEM_CONF_BAND = float(_os.environ.get("GEMMA4_SEM_CONF_BAND", "0.12"))
 # clears _SEM_PEAK_KEEP AND beats the runner-up by _SEM_PEAK_GAP is treated as a
 # real command even if the abstain head leans no-tool (e.g. "mutea"→audio).
 # Tuned for the fine-tuned encoder's higher cosine scale (dev).
-# 2026-05-29: 0.60→0.50. The abstain head misfires on short keyword-less commands
-# ("cuál es mi ip"→network 0.55 gap 0.19) that 0.60 wiped to ['session'] (lost the
-# top-1 semantic tool). MEDIDO: smalltalk peaks flat (gap<0.15: "hola" 0.54/gap.08,
-# "qué tal" 0.52/gap.07, "qué es pytest" 0.42/gap.02) so the _SEM_PEAK_GAP=0.15
-# AND-condition keeps gating chitchat — only PEAKED commands (gap>=0.15) escape.
-# Validated against test_router_corpus accuracy gate (no regression).
+# Bar set to 0.50 (not 0.60): the abstain head misfires on short keyword-less
+# commands ("cuál es mi ip"→network 0.55 gap 0.19) that 0.60 wiped to
+# ['session'] (lost the top-1 semantic tool). Measured: smalltalk peaks flat
+# (gap<0.15: "hola" 0.54/gap.08, "qué tal" 0.52/gap.07, "qué es pytest"
+# 0.42/gap.02) so the _SEM_PEAK_GAP=0.15 AND-condition keeps gating chitchat —
+# only PEAKED commands (gap>=0.15) escape. Validated against test_router_corpus
+# accuracy gate (no regression).
 _SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.50"))
 _SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.15"))
-# Bar PROPIO para promover una tool MCP (perfection roadmap 2026-05-29). Las MCP
-# usan descripciones crudas de servidores externos (no el encoder FT entrenado con
-# las nativas), así que viven en un rango de cosine MÁS BAJO que el bar nativo 0.50.
-# Un bar propio más bajo deja que la MCP relevante compita SIN aflojar el umbral
-# nativo. RE-CALIBRADO 2026-05-30 para el encoder FT 3ep (fc60ed2): el FT cambió el
-# rango y la calibración 0.30 quedó desfasada — MEDIDO con la weather MCP enrolada:
+# Bar PROPIO para promover una tool MCP. Las MCP usan descripciones crudas de
+# servidores externos (no el encoder FT entrenado con las nativas), así que viven
+# en un rango de cosine MÁS BAJO que el bar nativo 0.50. Un bar propio más bajo
+# deja que la MCP relevante compita SIN aflojar el umbral nativo. Calibrado para
+# el encoder FT 3ep: el FT cambió el rango y una calibración de 0.30 queda
+# desfasada — MEDIDO con la weather MCP enrolada:
 #   relevantes "qué clima/temperatura/tiempo/va a llover" → 0.455-0.685
 #   irrelevantes → "qué hora es" 0.304 (¡SE COLABA con 0.30!), "qué día es hoy" 0.251, resto fuera del top-14
 # El gap limpio [0.304, 0.455] ubica el bar en 0.40: bloquea el leak de "qué hora es"
-# (margen 0.10) y conserva todas las relevantes (margen 0.055 bajo la más baja). El
-# comentario viejo decía "la MCP no entra al top-12 en no-relevantes" — el FT lo
-# invalidó. Override GEMMA4_MCP_PEAK_KEEP.
+# (margen 0.10) y conserva todas las relevantes (margen 0.055 bajo la más baja).
+# Override GEMMA4_MCP_PEAK_KEEP.
 _MCP_PEAK_KEEP = float(_os.environ.get("GEMMA4_MCP_PEAK_KEEP", "0.40"))
 # When one tool clearly dominates ("abre steam"->steam 0.74), keep only tools
 # within this band of it (drops the noisy tail -> small subset). Recall-safe:
 # the labeled tool IS the dominant peak in these crisp single-intent commands.
 _SEM_PEAK_BAND = float(_os.environ.get("GEMMA4_SEM_PEAK_BAND", "0.20"))
 # Budget for speculative related-tool deps (the gui/uia/vision/window fan-out
-# that, stacked on the semantic union, produced the operator's "11 tools").
-# PRECISIÓN (2026-05-29, pedido del usuario: ofrecer SOLO lo necesario): bajado de
-# 3 a 1. MEDIDO sobre el corpus curado (1733 filas): related-budget 3→1 NO cambia
-# el recall (holdout 0.9964, dev 0.9939, NO-TOOL 1.0000 idénticos) pero baja el
-# RUIDO de 1.86 a 1.63 extra/turno (−26% turnos muy ruidosos). El budget 3 metía
-# deps especulativas (steam→app+window+verify) que el corpus confirma como ruido
+# that, stacked on the semantic union, produced subsets of "11 tools").
+# Por PRECISIÓN (ofrecer SOLO lo necesario): fijado en 1, no 3. MEDIDO sobre el
+# corpus curado (1733 filas): related-budget 3→1 NO cambia el recall (holdout
+# 0.9964, dev 0.9939, NO-TOOL 1.0000 idénticos) pero baja el RUIDO de 1.86 a
+# 1.63 extra/turno (−26% turnos muy ruidosos). El budget 3 metía deps
+# especulativas (steam→app+window+verify) que el corpus confirma como ruido
 # puro: 0 recall protegido. Budget 1 conserva la dep #1 (p.ej. verify) por si una
 # cadena genuina la necesita; =0 (aún más limpio, recall idéntico) queda por env
-# para experimentar con la eval e2e. 45 tests de router verdes con el cambio.
+# para experimentar con la eval e2e.
 _RELATED_BUDGET = int(_os.environ.get("GEMMA4_RELATED_BUDGET", "1"))
-# CLUSTERS de dominio funcional (perfection roadmap S1b, 2026-05-29): tools que
-# se SOLAPAN en capacidad (browser≈browser_real≈navegar; app≈window≈apps; gui≈uia≈
-# vision≈pantalla). Cuando el subset trae VARIAS del mismo cluster, son ruido: el
-# 4B necesita UNA (la mejor por score semántico), no las 3-4 variantes. Colapsamos
-# a la representante de mayor score ANTES del cap. MEDIDO: ruido 1.57→1.05 (−33%),
+# CLUSTERS de dominio funcional: tools que se SOLAPAN en capacidad
+# (browser≈browser_real≈navegar; app≈window≈apps; gui≈uia≈vision≈pantalla).
+# Cuando el subset trae VARIAS del mismo cluster, son ruido: el 4B necesita UNA
+# (la mejor por score semántico), no las 3-4 variantes. Colapsamos a la
+# representante de mayor score ANTES del cap. MEDIDO: ruido 1.57→1.05 (−33%),
 # recall IDÉNTICO (0.9945). Es estructural (qué tools comparten dominio), NO
 # keywords por idioma -> robusto al idioma Y al crecimiento del catálogo: al
 # agregar una tool/MCP nueva, si solapa con un cluster existente, se añade acá y
@@ -101,19 +101,19 @@ _DOMAIN_CLUSTERS: tuple[tuple[frozenset[str], str], ...] = (
     (frozenset({"app", "window"}), "app"),                  # apps; window solo si keyword
 )
 
-# CLUSTERS JERÁRQUICOS simple↔avanzado (S3d, 2026-05-30). Distintos del collapse
-# de arriba: acá hay una tool SIMPLE (la acción por defecto) y otra AVANZADA
-# (control fino) que comparten dominio. La avanzada se ofrece de más casi
-# siempre como RUIDO. Discriminador MEDIDO (no keywords): cuando el usuario
-# quiere la versión simple, el encoder puntúa la SIMPLE más alto que la
-# avanzada; cuando quiere la avanzada (formulario, click), la AVANZADA puntúa
-# igual o más. Regla: si `simple` y `avanzada` ambas en el subset Y
-# score(simple) > score(avanzada) Y la avanzada NO fue keyword-fired -> quitar
-# la avanzada. MEDIDO recall-neutral en AMBOS corpus (curado 1268 + real 1071,
-# 0 recall perdido) y ruido -0.05/-0.15 por turno. Ejemplo ancla: "abre el
-# navegador" daba app+browser+browser_real+computer_use; browser_real(control
-# CDP) es ruido frente a browser (abrir/navegar) — solo "llená el formulario"
-# /"clickeá aceptar" la necesitan, y ahí browser_real>=browser.
+# CLUSTERS JERÁRQUICOS simple↔avanzado. Distintos del collapse de arriba: acá
+# hay una tool SIMPLE (la acción por defecto) y otra AVANZADA (control fino) que
+# comparten dominio. La avanzada se ofrece de más casi siempre como RUIDO.
+# Discriminador MEDIDO (no keywords): cuando el usuario quiere la versión simple,
+# el encoder puntúa la SIMPLE más alto que la avanzada; cuando quiere la avanzada
+# (formulario, click), la AVANZADA puntúa igual o más. Regla: si `simple` y
+# `avanzada` ambas en el subset Y score(simple) > score(avanzada) Y la avanzada
+# NO fue keyword-fired -> quitar la avanzada. MEDIDO recall-neutral en AMBOS
+# corpus (curado 1268 + real 1071, 0 recall perdido) y ruido -0.05/-0.15 por
+# turno. Ejemplo ancla: "abre el navegador" daba
+# app+browser+browser_real+computer_use; browser_real(control CDP) es ruido
+# frente a browser (abrir/navegar) — solo "llená el formulario"/"clickeá
+# aceptar" la necesitan, y ahí browser_real>=browser.
 # (simple, avanzada). DEFAULT ON (gate de recall pasó en logs reales).
 _HIER_CLUSTERS: tuple[tuple[str, str], ...] = (
     ("browser", "browser_real"),   # navegar/abrir  vs  control CDP (formularios/click)
@@ -151,13 +151,13 @@ def _collapse_domain_clusters(tools: list[str], scored: dict[str, float],
     miembro no se toca. MEDIDO: ruido baja sin romper recall (la canónica + keep
     cubren los casos que el score puro rompía)."""
     import os as _os_cc
-    # DEFAULT OFF (2026-05-29): el cluster-collapse baja el ruido (1.63→1.29) PERO
-    # MEDIDO que pierde recall (holdout 0.9964→0.9820, 5 casos esperan window/
-    # browser_real/uia específico que el collapse quita). Ninguna regla estática
-    # (score o canónica) distingue "ruido" de "necesario" sin casos reales
-    # etiquetados. Queda gated OFF hasta tener el corpus de LOGS REALES del usuario
-    # (que dirá cuándo cada miembro del cluster es necesario). Reactivar con
-    # GEMMA4_CLUSTER_COLLAPSE=1 cuando el corpus lo respalde + el gate de recall pase.
+    # DEFAULT OFF: el cluster-collapse baja el ruido (1.63→1.29) PERO MEDIDO que
+    # pierde recall (holdout 0.9964→0.9820, 5 casos esperan window/browser_real/
+    # uia específico que el collapse quita). Ninguna regla estática (score o
+    # canónica) distingue "ruido" de "necesario" sin casos reales etiquetados.
+    # Queda gated OFF hasta tener un corpus de logs reales (que dirá cuándo cada
+    # miembro del cluster es necesario). Reactivar con GEMMA4_CLUSTER_COLLAPSE=1
+    # cuando el corpus lo respalde + el gate de recall pase.
     if (_os_cc.environ.get("GEMMA4_CLUSTER_COLLAPSE", "0") or "0").strip().lower() \
             not in {"1", "true", "yes", "on"}:
         return tools
@@ -200,8 +200,8 @@ def _antiprimacy_order(
     genéricos; NO medido en Gemma (el router ya está saturado en español, holdout
     0.9964) — el reorden es seguro porque NO cambia el CONJUNTO, solo el orden.
 
-    Invariantes (el orden actual NO es arbitrario, ver Hotfix F 2026-05-17 y el
-    diseño de _cap_tools):
+    Invariantes (el orden actual NO es arbitrario, ver la inyección de
+    pending_intent y el diseño de _cap_tools):
       * `pin_first` (la pending_intent del turno previo) queda SIEMPRE primera.
       * Las tools de INFRAESTRUCTURA (_INFRA_TAIL_TOOLS) quedan al FINAL, en su
         orden de aparición original (no se reordenan por score).
@@ -388,8 +388,8 @@ def select_tool_names(
     _kw_hits = _suggest_tools(text)
     if not names:
         names.extend(_kw_hits)
-    # MUSIC-PLAY force-include (fix 2026-05-29): _suggest_tools (que agrega `media`
-    # ante "pon/reproducí una canción/música") SOLO corría como fallback (if not
+    # MUSIC-PLAY force-include: _suggest_tools (que agrega `media` ante
+    # "pon/reproducí una canción/música") SOLO corría como fallback (if not
     # names). Si el exemplar/plan ya puso otras tools, un pedido de reproducir
     # música perdía `media` y el LLM caía a `web` -> abría una URL random (bug
     # medido: "Pon una canción en Spotify" -> web search). Si el keyword router
@@ -421,16 +421,16 @@ def select_tool_names(
 
     semantic_fallback_used = False
     if raw_text.strip():
-        # Sprint 8 (2026-05-20): the semantic router runs ALWAYS now, not
-        # only when keywords come up empty. Keyword matching is precise for
-        # action verbs but blind to intent expressed in wording our regex
-        # doesn't cover — especially informational questions in any
-        # language ("quién es X", "who is X", "de qué trata X"). The
-        # embedding model (paraphrase-multilingual, 50+ languages) covers
-        # that universally. We UNION the semantic suggestions onto the
-        # keyword names: keywords guarantee the action tools stay (no
-        # regression), semantics add the knowledge/intent tools keywords
-        # miss. Smalltalk/greetings still short-circuit to no tools.
+        # The semantic router runs ALWAYS, not only when keywords come up
+        # empty. Keyword matching is precise for action verbs but blind to
+        # intent expressed in wording our regex doesn't cover — especially
+        # informational questions in any language ("quién es X", "who is X",
+        # "de qué trata X"). The embedding model (paraphrase-multilingual,
+        # 50+ languages) covers that universally. We UNION the semantic
+        # suggestions onto the keyword names: keywords guarantee the action
+        # tools stay (no regression), semantics add the knowledge/intent
+        # tools keywords miss. Smalltalk/greetings still short-circuit to no
+        # tools.
         word_count = len(raw_text.split())
         casual = re.search(
             r"^\s*(hola|hello|hi|hey|hola!|buenos dias|buenas tardes|buenas noches|buen dia|"
@@ -442,9 +442,9 @@ def select_tool_names(
             r"que tal|how are you|como estas|como estan|tudo bem|ca va|come stai)\b",
             _fold_text(raw_text),
         )
-        # Semantic abstention gate (2026-05-20 night): the semantic router
-        # returns its top-k for ANY input above a low cosine floor, so on
-        # conversational turns (smalltalk, "quién eres", "no entiendo") it
+        # Semantic abstention gate: the semantic router returns its top-k for
+        # ANY input above a low cosine floor, so on conversational turns
+        # (smalltalk, "quién eres", "no entiendo") it
         # over-offers domain tools the user never requested — the dominant
         # source of NO-TOOL over-offers in the eval. is_conversational()
         # decides PURELY by intent (chitchat/selfref outrank action/info)
@@ -476,8 +476,8 @@ def select_tool_names(
             scored = suggest_tools_scored(raw_text, k=12)
             top_score = scored[0][1] if scored else 0.0
             confident = top_score >= _SEM_CONFIDENT_SCORE
-            # MULTILINGUAL media-play (fix 2026-05-29): el force-include de play por
-            # keyword (_kw_hits arriba) es ES+EN. Para CUALQUIER idioma usamos la
+            # MULTILINGUAL media-play: el force-include de play por keyword
+            # (_kw_hits arriba) es ES+EN. Para CUALQUIER idioma usamos la
             # señal SEMÁNTICA (embeddings 50+ idiomas): si `media` es un match
             # FUERTE, lo agregamos a names — queda protegido por _kw_protect (abajo)
             # y sobrevive el cap, igual que el regex. Así "mets une chanson",
@@ -487,12 +487,12 @@ def select_tool_names(
             if "media" not in names and _media_score >= _SEM_PEAK_KEEP:
                 names.insert(0, "media")
 
-            # MCP promotion (perfection roadmap 2026-05-29): las tools MCP enroladas
-            # SOLO viven en la lista semántica `sem`, que se descarta cuando una
-            # keyword nativa ya llenó `names` (rama `if not names` abajo). Resultado
-            # MEDIDO: para "qué clima hace en X" la keyword mete `web` -> sem se tira
-            # -> el 4B nunca ve mcp__weather__* -> elige `web` (familiar). 0/3 en vivo.
-            # FIX (mismo patrón que `media` arriba, research-aligned tight-cluster):
+            # MCP promotion: las tools MCP enroladas SOLO viven en la lista
+            # semántica `sem`, que se descarta cuando una keyword nativa ya llenó
+            # `names` (rama `if not names` abajo). Resultado MEDIDO: para "qué clima
+            # hace en X" la keyword mete `web` -> sem se tira -> el 4B nunca ve
+            # mcp__weather__* -> elige `web` (familiar). 0/3 en vivo.
+            # Fix (mismo patrón que `media` arriba, research-aligned tight-cluster):
             # promover la MEJOR MCP de `scored` a names[0] si supera el bar calibrado
             # — COLLAPSE del cluster a 1 representante (no las 4-5 variantes near-tie),
             # language-agnostic (decide por embedding, no keywords), SIN tocar la
@@ -503,8 +503,7 @@ def select_tool_names(
                     and not any(t.startswith("mcp__") for t in names)):
                 names.insert(0, _best_mcp[0])
 
-            # Step 2 (2026-05-21): CALIBRATED abstention head. All four
-            # research reports converged: NO-TOOL keep (0.51) is the weak
+            # CALIBRATED abstention head. NO-TOOL keep (0.51) is the weak
             # spot, and the fix is a learned reject option over cheap
             # query-comparable features, not another raw-cosine threshold.
             # The head sees the 5 intent-centroid scores, the semantic-cosine
@@ -533,8 +532,7 @@ def select_tool_names(
             except Exception:
                 abstain = None
 
-            # ONE authoritative abstention decision (2026-05-21 rebuild). All
-            # four research reports were unanimous: abstention must be a single
+            # ONE authoritative abstention decision: abstention must be a single
             # calibrated decision, not a residual that survives only if every
             # tool-adding path happens to miss. The CALIBRATED head decides;
             # two narrow escapes protect real commands the head over-suppresses.
@@ -613,9 +611,9 @@ def select_tool_names(
                     scored = []
                     names = list(_kw_protect) + [n for n in _knowledge_keep
                                                  if n not in _kw_protect]
-            # PER-TOOL LOGIT HEAD (2026-05-21) — the research's anti-bloat
-            # architecture. Instead of taking the semantic top-k / a band (which
-            # drags a flat-distribution cluster like "pausa"->media,app,study,
+            # PER-TOOL LOGIT HEAD — anti-bloat architecture. Instead of taking
+            # the semantic top-k / a band (which drags a flat-distribution
+            # cluster like "pausa"->media,app,study,
             # accessibility into the subset), each tool has its OWN calibrated
             # threshold; the subset is only the tools that individually clear
             # their bar. "pausa" fires {media}; "abre steam" fires {steam,app};
@@ -685,9 +683,9 @@ def select_tool_names(
                 elif "computer_use" not in head_tools:
                     head_tools.insert(0, "computer_use")
 
-            # GOAL-MISSION STRUCTURAL BOOST (2026-05-27, captura del user): el
-            # patrón "ve/andá/entrá a X y/después/luego a Y" es UNA misión con
-            # GOAL FINAL (X = ruta/medio, Y = destino), NO una cadena de dos
+            # GOAL-MISSION STRUCTURAL BOOST: el patrón "ve/andá/entrá a X
+            # y/después/luego a Y" es UNA misión con GOAL FINAL (X = ruta/medio,
+            # Y = destino), NO una cadena de dos
             # acciones independientes — el splitter NO la parte y el agente
             # debería ejecutarla con computer_use(goal=frase completa) que
             # descompone en pasos. Pero el encoder semántico da cu_score~0.40
@@ -733,9 +731,9 @@ def select_tool_names(
                     semantic_fallback_used = True
                 # else: keyword hits stand alone (precise); no semantic flood.
 
-    # NOTE: continuation resolution via prev_user_text was tried (night of
-    # 2026-05-20) and abandoned: on this corpus the previous-user-turn rarely
-    # carries the deictic's referent ("mutea" ← prev "saca pantallazo";
+    # NOTE: continuation resolution via prev_user_text was tried and abandoned:
+    # on this corpus the previous-user-turn rarely carries the deictic's
+    # referent ("mutea" ← prev "saca pantallazo";
     # "ciérralo" ← prev "ponlo bajito"; many have prev=None). The real
     # continuation signal is the actually-executed tool of the prior turn,
     # which the AGENT inherits from real history (agent.py) — not derivable
@@ -784,8 +782,8 @@ def select_tool_names(
         base = ["session"]
         if safety_enabled:
             base.append("safety")
-        # 2026-05-20: a parked tool (prior turn returned needs_user) must
-        # survive even when THIS reply is smalltalk-shaped. The classic case:
+        # A parked tool (prior turn returned needs_user) must survive even when
+        # THIS reply is smalltalk-shaped. The classic case:
         # media asks "what's your Disney profile?" and the user replies
         # "Mi perfil es Ema" (no keyword → names empty). Without this, the
         # pending intent was dropped here (before the injection below) and
@@ -821,9 +819,9 @@ def select_tool_names(
     # fan-out (every app/media tool dragging in gui/uia/vision/window/browser/
     # audio) was the second bloat engine behind the "11 tools" complaint.
     # Directly-matched tools are always kept; deps fill only up to the budget.
-    # NAVEGACIÓN/COMPRA WEB UNIFICADA (2026-05-27, GATE 0 medido): "andá a la
-    # página de X" / "comprá en Instant Gaming" / "entrá a youtube" ruteaban
-    # INCONSISTENTE — a veces browser.open (bien), a veces web-search-a-Google,
+    # NAVEGACIÓN/COMPRA WEB UNIFICADA: "andá a la página de X" / "comprá en
+    # Instant Gaming" / "entrá a youtube" ruteaban INCONSISTENTE — a veces
+    # browser.open (bien), a veces web-search-a-Google,
     # a veces computer_use — porque el subset ofrecía 4 tools de navegación y el
     # 4B elegía mal, o game_launcher ganaba por la colisión de marca ("Gaming").
     # Cuando la intención es NAVEGAR a una web o COMPRAR en una tienda web
@@ -879,40 +877,39 @@ def select_tool_names(
         _filtered = [t for t in expanded if t not in _drop]
         if any(t in _filtered for t in ("browser", "browser_real", "computer_use")):
             expanded = _filtered
-    # S1b: colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
-    # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario (pedido
-    # del usuario): el 4B no necesita las 3 variantes del mismo dominio. `keep`
-    # protege las tools que el keyword disparó (señal fuerte de intención) para no
-    # colapsar una que el usuario pidió explícito.
+    # Colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
+    # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario: el 4B
+    # no necesita las 3 variantes del mismo dominio. `keep` protege las tools que
+    # el keyword disparó (señal fuerte de intención) para no colapsar una que el
+    # usuario pidió explícito.
     try:
         from .semantic_router import suggest_tools_scored as _sts
         _collapse_scored = dict(_sts(raw_text, k=20))
     except Exception:
         _collapse_scored = {}
-    # _kw_hits (línea ~272) son las tools que el keyword disparó: señal fuerte de
-    # intención explícita -> nunca colapsarlas (el usuario las pidió).
+    # _kw_hits son las tools que el keyword disparó: señal fuerte de intención
+    # explícita -> nunca colapsarlas (el usuario las pidió).
     expanded = _collapse_domain_clusters(_dedupe(expanded), _collapse_scored, set(_kw_hits))
-    # Collapse jerárquico simple↔avanzado (S3d): quita la tool de control fino
+    # Collapse jerárquico simple↔avanzado: quita la tool de control fino
     # (browser_real) cuando el turno pide la versión simple (browser). Va ANTES
     # del cap para que el cap no recorte señal por culpa del ruido. Recall-neutral
     # medido en ambos corpus.
     expanded = _collapse_hierarchical(_dedupe(expanded), _collapse_scored, set(_kw_hits))
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
-    # Hotfix F 2026-05-17: pending_intent injection. If a previous turn
-    # left a tool waiting on user input (status='needs_user'), inject
-    # the tool at the head so it survives the cap. Language-agnostic:
-    # the slot is set on a STRUCTURAL tool result, never inferred from
-    # user text.
+    # pending_intent injection. If a previous turn left a tool waiting on user
+    # input (status='needs_user'), inject the tool at the head so it survives
+    # the cap. Language-agnostic: the slot is set on a STRUCTURAL tool result,
+    # never inferred from user text.
     pi_tool = ""
     if pending_intent:
         pi_tool = str((pending_intent or {}).get("tool") or "")
-    # ANTI-PRIMACY (2026-06-02): el cap ya decidió QUÉ tools entran; este reorden
-    # solo cambia el ORDEN de las de DOMINIO, poniendo la de mayor confianza
-    # primero (los LLMs atienden más a lo primero del prompt). Preserva
-    # invariantes: pending_intent primero (pin_first), infra (session/safety/
-    # state/verify/dependency) al final. _collapse_scored = suggest_tools_scored,
-    # ya calculado arriba (línea ~824) para los collapses -> reusamos esos scores,
-    # no hay que threadear nada nuevo. set(antes)==set(después).
+    # ANTI-PRIMACY: el cap ya decidió QUÉ tools entran; este reorden solo cambia
+    # el ORDEN de las de DOMINIO, poniendo la de mayor confianza primero (los
+    # LLMs atienden más a lo primero del prompt). Preserva invariantes:
+    # pending_intent primero (pin_first), infra (session/safety/state/verify/
+    # dependency) al final. _collapse_scored = suggest_tools_scored, ya calculado
+    # arriba para los collapses -> reusamos esos scores, no hay que threadear
+    # nada nuevo. set(antes)==set(después).
     capped = _antiprimacy_order(capped, _collapse_scored,
                                 pin_first=(pi_tool or None))
     if pi_tool and pi_tool not in capped:
@@ -959,10 +956,10 @@ def _suggest_tools(step: str) -> list[str]:
     """Keyword-based tool router. Spanish + English buckets.
 
     The folded text drops accents (NFKD + combining strip) so we can match
-    "música" and "musica" with the same pattern. Keywords were trimmed in
-    Sprint 3a to ES + EN only (CORE_PROMPT commits the agent to reply in
-    Spanish; the PT/FR/IT branches were unused output paths). The embedding
-    fallback in select_tool_names handles whatever this misses.
+    "música" and "musica" with the same pattern. Keywords are ES + EN only
+    (CORE_PROMPT commits the agent to reply in Spanish; the PT/FR/IT branches
+    were unused output paths). The embedding fallback in select_tool_names
+    handles whatever this misses.
     """
     low = _fold_text(step)
     tools: list[str] = []
@@ -1004,15 +1001,15 @@ def _suggest_tools(step: str) -> list[str]:
                  r"research|cite|citation|reference|save source)\b", low):
         tools.extend(["web", "source_manager"])
     # Current-facts the model can't know from training → web. Weather is the
-    # big one (live repro 2026-05-20: "que temperatura hay en Madrid" /
-    # "weather in London" routed to NOTHING; the embedder doesn't tie
-    # clima/tiempo/weather to web search). Also live prices/rates/scores.
+    # big one (live repro: "que temperatura hay en Madrid" / "weather in London"
+    # routed to NOTHING; the embedder doesn't tie clima/tiempo/weather to web
+    # search). Also live prices/rates/scores.
     if re.search(r"\b(clima|tiempo que hace|que tiempo hace|temperatura|"
                  r"va a llover|llovera|pronostico|forecast|weather|"
                  r"cotizacion|precio actual|cuanto vale|cuanto esta|"
                  r"tipo de cambio|resultado del partido|marcador|"
-                 # 2026-05-20: release dates the model can't know — "cuando
-                 # sale gta 6", "cuando se estrena/lanza X". Real fail logs.
+                 # release dates the model can't know — "cuando sale gta 6",
+                 # "cuando se estrena/lanza X" (seen in real fail logs).
                  r"cuando sale|cuando sale|cuando se estrena|cuando estrena|"
                  r"cuando se lanza|cuando lanzan|fecha de (salida|lanzamiento|estreno)|"
                  r"when does .* (release|come out)|release date)\b", low):
@@ -1023,14 +1020,14 @@ def _suggest_tools(step: str) -> list[str]:
                  r"file|folder|directory|write|create|delete|copy|move|rename|extract|unzip)\b", low):
         tools.append("filesystem")
     # A filename WITH an extension is an unambiguous file operation, whatever
-    # the verb. 2026-05-20 live repro: "agrega una linea al final de notas.txt"
-    # routed to notes_tasks (the word "notas") instead of filesystem. Detect a
-    # name.ext token and force filesystem in. Structural signal, not a keyword.
+    # the verb. Live repro: "agrega una linea al final de notas.txt" routed to
+    # notes_tasks (the word "notas") instead of filesystem. Detect a name.ext
+    # token and force filesystem in. Structural signal, not a keyword.
     if re.search(r"\b[\w\-]+\.(txt|md|csv|json|log|pdf|docx?|xlsx?|pptx?|py|js|ts|"
                  r"html?|xml|yaml|yml|ini|cfg|zip|png|jpe?g|mp3|mp4|mkv|avi|mov|wav|flac)\b", low) or \
        re.search(r"(?<!\w)\.(txt|md|csv|json|log|pdf|docx?|xlsx?|pptx?|mp3|mp4|mkv|avi|mov|wav|flac)\b", low):
         tools.append("filesystem")
-    # Local file search/action by natural folder names. Gates from RED:
+    # Local file search/action by natural folder names. Examples:
     # "Buscá un Excel en Documentos y abrilo", "Reproducí un mp3 de Descargas",
     # "Abre el documento más reciente de mi escritorio". These may not contain
     # the literal word "archivo", but they are still filesystem operations.
@@ -1061,8 +1058,8 @@ def _suggest_tools(step: str) -> list[str]:
     # before the \b...\b single-word pattern, because re.search with \b on a
     # multi-word alternative requires the WHOLE compound to live between word
     # boundaries — which it does, but \bpowerpoint\b won't match "power point"
-    # (two words). The Sprint 7 follow-up audit caught this: "Puedes hacerme
-    # un power point?" was routed to web instead of office.
+    # (two words). Without the multi-word variants "Puedes hacerme un power
+    # point?" routes to web instead of office.
     if re.search(
         r"\b(powerpoint|presentacion|diapositiva|pptx|word|docx|excel|xlsx|"
         r"spreadsheet|hoja de calculo|pdf|"
@@ -1075,10 +1072,10 @@ def _suggest_tools(step: str) -> list[str]:
         low,
     ):
         tools.append("office")
-    # Análisis de datos -> data_analysis (la tool específica con pandas). Bug
-    # 2026-05-29 (medido en vivo 1/6): esta regla agregaba filesystem+office y el
-    # 4B prefería filesystem.read (lectura CRUDA sin análisis) sobre data_analysis.
-    # Ahora data_analysis va SIEMPRE para keywords de análisis; filesystem/office
+    # Análisis de datos -> data_analysis (la tool específica con pandas). Si esta
+    # regla agrega también filesystem+office, el 4B prefiere filesystem.read
+    # (lectura CRUDA sin análisis) sobre data_analysis (medido en vivo 1/6). Por
+    # eso data_analysis va SIEMPRE para keywords de análisis; filesystem/office
     # sólo si hay verbo de file-op (mover/borrar/copiar) — no romper "borrá el csv".
     if re.search(r"\b(csv|tabla|grafico|gr[aá]fico|estadistica|estad[ií]stica|"
                  r"analisis de datos|an[aá]lisis de datos|limpia datos|"
@@ -1119,9 +1116,9 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(dependencia|dependency|libreria|modulo|instala dependencia|falta|missing)\b", low):
         tools.append("dependency")
     if re.search(r"\b(contacto|contactos|telefono|email de|correo de|vcard|"
-                 # 2026-05-20: natural read/write phrasings were missed —
-                 # "tengo el numero de X", "agrega a X con numero", "guardado
-                 # el contacto de". \bnumero\b near a name = contact op.
+                 # natural read/write phrasings — "tengo el numero de X",
+                 # "agrega a X con numero", "guardado el contacto de".
+                 # \bnumero\b near a name = contact op.
                  r"numero de|el numero|guardado el contacto|agrega a |agregar a |"
                  r"contact|phone|email of|number of)\b", low):
         tools.append("contacts")
@@ -1135,9 +1132,9 @@ def _suggest_tools(step: str) -> list[str]:
                  r"note|notes|task|to-do|to do list|todo list)\b", low):
         tools.append("notes_tasks")
     if re.search(r"\b(calendario|agenda|agendad[oa]|agendar|evento|eventos|ics|"
-                 # 2026-05-20: calendar READ phrasings were missed (write was
-                 # fine). "que tengo agendado para hoy" / "que reuniones tengo"
-                 # routed to nothing. \bagenda\b doesn't match "agendado".
+                 # calendar READ phrasings (write was already covered). "que
+                 # tengo agendado para hoy" / "que reuniones tengo" routed to
+                 # nothing. \bagenda\b doesn't match "agendado".
                  r"reunion|reuniones|cita medica|citas medicas|que tengo (hoy|manana|el)|"
                  r"calendar|event|meeting|appointment|schedule)\b", low):
         tools.append("local_calendar")
@@ -1176,9 +1173,9 @@ def _suggest_tools(step: str) -> list[str]:
     # ("cuanto", "dija", "diega") because users mistype these often.
     if re.search(r"\b(rutina|automatiza|automatizacion|cuando pase|cada vez|"
                  r"cuando te diga|cuando te dija|cuanto te diga|cuanto te dija|"
-                 # 2026-05-20: also the "te"-less Alexa phrasing the user
-                 # actually says — "cuando diga buenos dias abre X" was being
-                 # routed to the action/notification instead of `routine`.
+                 # also the "te"-less Alexa phrasing — "cuando diga buenos dias
+                 # abre X" was being routed to the action/notification instead
+                 # of `routine`.
                  r"cuando diga|cuando dija|cuanto diga|cuando digas|"
                  r"cuando le diga|si te digo|si digo|cada vez que diga|"
                  r"si te escribo|cuando escriba|cuando escribas|cuando ponga|"
@@ -1293,8 +1290,8 @@ def _suggest_tools(step: str) -> list[str]:
                  r"keyboard)\b", low):
         tools.append("input")
     if re.search(r"\b(winget|paquete|instalar app|desinstalar|"
-                 # 2026-05-20: "esta instalado X" / "tengo instalado X" (the
-                 # READ — is a program installed) were missed.
+                 # "esta instalado X" / "tengo instalado X" (the READ — is a
+                 # program installed).
                  r"instalad[oa]|tengo instalad|esta instalad|version de \w+ (que tengo|instalada)|"
                  r"package|install app|uninstall|is .* installed)\b", low):
         tools.append("package")
@@ -1378,13 +1375,12 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(flashcard|flashcards|tarjeta de estudio|repaso espaciado|spaced repetition|anki|deck de estudio|repeticion espaciada|"
                  r"study card|spaced rep|deck)\b", low):
         tools.append("study")
-    # smart_home: ELIMINADA 2026-06-02 (pedido del usuario — el agente NO tiene
-    # capacidad de casa inteligente). NO ofrecer la tool muerta: si no hay tool
-    # relevante, el LLM responde honestamente "no controlo casa inteligente" en
-    # vez de rutear "termostato"/"luces" a un fallback que miente éxito
-    # (source_manager devolvía ok=True y el 4B fabricaba "bajé el termostato").
-    # La validación EN VIVO cazó esto; el keyword rule + 'thermostat/luces/...'
-    # se quitaron a propósito. Ver [[project_finetune_e2b_v2_2026_06_02]].
+    # smart_home: ELIMINADA — el agente NO tiene capacidad de casa inteligente.
+    # NO ofrecer la tool muerta: si no hay tool relevante, el LLM responde
+    # honestamente "no controlo casa inteligente" en vez de rutear
+    # "termostato"/"luces" a un fallback que miente éxito (source_manager
+    # devolvía ok=True y el 4B fabricaba "bajé el termostato"). El keyword rule +
+    # 'thermostat/luces/...' se quitaron a propósito.
     # document: (read|extract|summarize verb) + (pdf|docx|xlsx|pptx|html|documento) wins.
     _doc_verb = re.search(
         r"\b(lee|leer|leyendo|lea|leas|"
@@ -1438,10 +1434,10 @@ def _suggest_tools(step: str) -> list[str]:
             tools.append("knowledge")
 
     # FACTUAL KNOWLEDGE questions ("quién es X", "de qué trata X", "who is
-    # X", "wer ist X" ...). Sprint 8 (2026-05-20): replaced the
-    # per-language interrogative regex with a SEMANTIC intent classifier
-    # (intent_router.wants_knowledge) — universal across languages, robust
-    # on short queries, no keyword maintenance. If the user's intent is
+    # X", "wer ist X" ...). Detected by a SEMANTIC intent classifier
+    # (intent_router.wants_knowledge) instead of a per-language interrogative
+    # regex — universal across languages, robust on short queries, no keyword
+    # maintenance. If the user's intent is
     # informational (about the world, not a PC action), ensure web +
     # knowledge are reachable so the LLM can look things up. We add them
     # even when an entity name (a game, a person) already pulled action
@@ -1642,9 +1638,9 @@ _ABBREV_EXPANSIONS: tuple[tuple[str, str], ...] = (
     # Multilingual ACTION VERBS the keyword router only knows in ES/EN. We
     # normalize the verb to its Spanish equivalent so an Italian/French/German
     # command routes like the Spanish one ("apri"→"abre", "schliesse"→"cierra").
-    # Live repro 2026-05-20: "apri la calcolatrice"/"ouvre la calculatrice" did
-    # not pull `app`; "schliesse das Fenster" failed. The noun stays in its
-    # language — only the verb is mapped, and the embedder handles the rest.
+    # Live repro: "apri la calcolatrice"/"ouvre la calculatrice" did not pull
+    # `app`; "schliesse das Fenster" failed. The noun stays in its language —
+    # only the verb is mapped, and the embedder handles the rest.
     (r"\bapri\b", "abre"),            # IT open
     (r"\bouvre\b", "abre"),           # FR open
     (r"\boeffne\b", "abre"),          # DE open (oe for ö)

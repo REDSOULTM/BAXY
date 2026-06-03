@@ -1,6 +1,6 @@
 """Computer-use UNIVERSAL — ejecutor de planes (NO un macro por intención).
 
-Diseño (decidido por medición 2026-05-25, gates en CLAUDE.md):
+Diseño (decidido por medición, gates en CLAUDE.md):
   - El 4B NO encadena acciones solo (medido 2/10: hace focus_app y para).
   - El 4B SÍ emite un PLAN de primitivas (medido 10/10 parseable, 7/10 correcto).
   -> El LLM da el OBJETIVO crudo (cualquier idioma/fraseo). Un PLANIFICADOR (el
@@ -40,8 +40,8 @@ PRIMITIVES = (
 # Si el app_hint de open_url matchea uno de estos, navegamos en ESA ventana por la
 # barra de direcciones. Si NO (palabra genérica "navegador"/"browser", o vacío, o
 # una app que no es navegador), usamos el navegador POR DEFECTO del SO
-# (web_open_url / webbrowser.open) que SIEMPRE funciona — fix del caso "andá al
-# navegador y comprá X" que fallaba porque "navegador" no es una app instalada.
+# (web_open_url / webbrowser.open) que SIEMPRE funciona: una palabra genérica como
+# "navegador" no es una app instalada y no se puede enfocar como ventana.
 _CONCRETE_BROWSER_TOKENS = (
     "chrome", "edge", "opera", "brave", "firefox", "vivaldi", "msedge", "operagx",
 )
@@ -62,10 +62,9 @@ def _env_off(name: str, default: str = "1") -> bool:
 def _tristate_verified(value: Any) -> bool | None:
     """Mapea el `verified` de un tool a tri-estado HONESTO en la frontera del
     paso: True si es exactamente True, False si es exactamente False, None en
-    cualquier otro caso (no medible). NO colapsa None->False (criterio del
-    usuario 2026-06-01: 'no medible' != 'medido y no cambió'). Ver auditoría B,
-    finding C: las primitivas hacían `r.get('verified') is True`, aplanando el
-    None del tool subyacente en False y confundiendo al honesty-guard."""
+    cualquier otro caso (no medible). NO colapsa None->False: 'no medible' !=
+    'medido y no cambió'. Colapsar `r.get('verified') is True` aplana el None del
+    tool subyacente en False y confunde al honesty-guard."""
     if value is True:
         return True
     if value is False:
@@ -315,12 +314,12 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
             return f"No aparecio {what} antes del timeout."
         return f"No pude completar «{goal}» (falló {failed})."
     # éxito: describir según las primitivas que corrieron.
-    # TRI-ESTADO HONESTO (auditoría B, finding D + criterio del usuario 2026-06-01):
+    # TRI-ESTADO HONESTO:
     #   verified is False -> algún paso se MIDIÓ y NO cambió = falló de verdad.
     #   verified is None  -> hubo pasos legítimos NO MEDIBLES (Electron/WebView2,
     #                        sin UIA) -> 'lo hice, no pude confirmar el efecto',
-    #                        NO 'no pude verificar'/fallo. Distinción clave: el
-    #                        usuario exige que 'no medible' NO se reporte como falla.
+    #                        NO 'no pude verificar'/fallo. Distinción clave:
+    #                        'no medible' NO se reporta como falla.
     if result.get("verified") is False:
         unverified = [
             str(s.get("op") or "")
@@ -385,10 +384,10 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
         return f"Listo, aparecio {target}." + (f" en {app}." if app else ".")
     if _click_step:
         label = _click_step.get("arg") or _click_step.get("label") or "el objetivo"
-        # HONESTIDAD (perfection roadmap C5, 2026-05-29). No afirmar "hice click"
-        # si la señal del SO dice que NADA cambió (state_changed=False) o no se
-        # pudo medir (verified None). El click pudo no tener efecto (botón
-        # deshabilitado, hover sin acción). Reportamos lo que el estado confirma.
+        # HONESTIDAD. No afirmar "hice click" si la señal del SO dice que NADA
+        # cambió (state_changed=False) o no se pudo medir (verified None). El
+        # click pudo no tener efecto (botón deshabilitado, hover sin acción).
+        # Reportamos lo que el estado confirma.
         _cv = _click_step.get("verified")
         _csc = _click_step.get("state_changed")
         if _csc is False:
@@ -480,10 +479,10 @@ class PlanExecutor:
         exact = self.ag._title_now_matches(win, name, before) if win else False
         # ÉXITO TOLERANTE A TYPOS: el quick-switcher de las apps de chat hace FUZZY
         # match — "shotercock" (typo) abre "ShooterCOCK". El verify exacto por
-        # substring fallaba aunque el chat SÍ se abrió (bug medido 2026-05-25: el
-        # usuario veía "No encontré" de un éxito real). Si el título CAMBIÓ a un chat
-        # nuevo (navegó), lo contamos como éxito y reportamos el chat REAL abierto
-        # (honesto: "abrí X" con el nombre que muestra la app, no el que tipeó mal).
+        # substring falla aunque el chat SÍ se abrió, reportando "No encontré" de un
+        # éxito real. Si el título CAMBIÓ a un chat nuevo (navegó), lo contamos como
+        # éxito y reportamos el chat REAL abierto (honesto: "abrí X" con el nombre
+        # que muestra la app, no el que tipeó mal).
         navigated = bool(after) and after != before
         ok = exact or navigated
         # nombre real del chat = primer segmento del título (sin la app), si navegó.
@@ -545,9 +544,9 @@ class PlanExecutor:
         # palabra GENÉRICA "navegador"/"browser", o está vacío, o es otra app, NO
         # tipeamos a ciegas en una ventana que quizás no existe: usamos el
         # navegador POR DEFECTO del SO (web_open_url), que SIEMPRE abre la URL.
-        # (Fix 2026-05-26: "andá al navegador y comprá X" fallaba porque
-        # focus_app("navegador") no resuelve ninguna app y luego se tipeaba en la
-        # ventana equivocada -> verify fallaba -> needs_verification.)
+        # Con app_hint genérico ("navegador"), focus_app no resuelve ninguna app y
+        # tipear a ciegas iría a la ventana equivocada -> verify falla ->
+        # needs_verification.
         win = app_hint if _is_concrete_browser(app_hint) else ""
         dispatched = False  # ¿el SO ACEPTÓ abrir la URL? (web_open_url opened=True)
         try:
@@ -583,11 +582,11 @@ class PlanExecutor:
         token = host.split(".")[0]
         def _norm(s): return re.sub(r"[^a-z0-9]", "", (s or "").lower())
         title_match = bool(token) and _norm(token) in _norm(after)
-        # SEMÁNTICA HONESTA (fix 2026-05-27, cadenas largas): abrir una URL es una
-        # acción DISPATCH-async. El SO acepta el open (web_open_url opened=True) pero
-        # la pestaña/ventana puede NO estar al frente al instante (otra app enfocada
-        # -> el título no matchea) -> ANTES eso daba ok=False y ABORTABA la cadena
-        # entera por un falso-negativo. Ahora:
+        # SEMÁNTICA HONESTA (cadenas largas): abrir una URL es una acción
+        # DISPATCH-async. El SO acepta el open (web_open_url opened=True) pero la
+        # pestaña/ventana puede NO estar al frente al instante (otra app enfocada ->
+        # el título no matchea); tratar eso como ok=False ABORTA la cadena entera por
+        # un falso-negativo. Por eso:
         #   - título matchea -> verificado FUERTE (ok=True, verified=True).
         #   - despachado pero sin confirmar foreground -> ok=True (la URL se abrió),
         #     verified=None (no pude CONFIRMAR el foreground, pero NO es un fallo).
@@ -611,8 +610,8 @@ class PlanExecutor:
             if _fold_label(win) == "discord":
                 args["method"] = "sendkeys"
             r = self.tools.execute("gui", args)
-            # TRI-ESTADO (auditoría B, finding C): gui_type_into ya expone señales
-            # UIA finas (uia_confirmed / uia_changed / state_changed). Si el tool
+            # TRI-ESTADO: gui_type_into expone señales UIA finas
+            # (uia_confirmed / uia_changed / state_changed). Si el tool
             # confirmó por UIA que el texto entró o que el contenido cambió ->
             # verified=True genuino; si midió y NO cambió -> False; si no se pudo
             # medir (WebView2/Electron sin UIA, frame-diff no medible) -> None
@@ -653,15 +652,14 @@ class PlanExecutor:
             if win:
                 self.tools._focus_window_chen(win)
                 time.sleep(0.2)
-            # COBERTURA NUEVA (auditoría B, finding A): el ENTER de la calculadora
-            # MATERIALIZA el efecto (=> el resultado '4') pero gui_keypress devuelve
-            # verified=True confirmando SOLO que SendInput disparó — sin releer el
-            # display. Leemos el texto/valor de la ventana ANTES y DESPUÉS por UIA
-            # (la MISMA maquinaria que type_into: _uia_focused_text_snapshot) y
-            # derivamos un tri-estado HONESTO. Pero "algo cambió en la ventana" NO
-            # basta para afirmar verified=True (HUECO ADVERSARIAL 2026-06-01): el
-            # snapshot puede moverse por causas AJENAS a la tecla (un redraw, un
-            # reloj, un badge de notificación). Por eso:
+            # El ENTER de la calculadora MATERIALIZA el efecto (=> el resultado '4')
+            # pero gui_keypress devuelve verified=True confirmando SOLO que SendInput
+            # disparó — sin releer el display. Leemos el texto/valor de la ventana
+            # ANTES y DESPUÉS por UIA (la MISMA maquinaria que type_into:
+            # _uia_focused_text_snapshot) y derivamos un tri-estado HONESTO. Pero
+            # "algo cambió en la ventana" NO basta para afirmar verified=True
+            # (hueco adversarial): el snapshot puede moverse por causas AJENAS a la
+            # tecla (un redraw, un reloj, un badge de notificación). Por eso:
             #   - True  SOLO con evidencia ATRIBUIBLE a la tecla: para una tecla
             #            que INSERTA un carácter literal (=, dígito, letra), ese
             #            carácter aparece en el snapshot DESPUÉS y no antes — texto
@@ -679,8 +677,8 @@ class PlanExecutor:
             # Para teclas sin efecto observable (esc/flechas/F-keys) NO medimos por
             # delta (no aplica) y dejamos el tri-estado del tool. Gateado default-ON;
             # GEMMA4_CU_KEYPRESS_VERIFY=0 vuelve a 'verified = r.get(...) is True'.
-            # CORRECCIÓN (1): exigir win no-vacío -> la medición queda SCOPEADA a la
-            # ventana objetivo (_uia_focused_text_snapshot filtra por window_substr).
+            # Exigir win no-vacío -> la medición queda SCOPEADA a la ventana
+            # objetivo (_uia_focused_text_snapshot filtra por window_substr).
             # Con win="" el snapshot recorre TODAS las ventanas root = desktop-wide
             # -> no se mide (None honesto), nunca True por ruido de fondo.
             _verify_by_uia = (
@@ -709,9 +707,9 @@ class PlanExecutor:
                 if uia_before is not None and uia_after is not None:
                     state_changed = (uia_after != uia_before)
                     inserted = self._keypress_inserted_literal(keys)
-                    # CERO SEÑAL FALSA (decisión del usuario 2026-06-01): un literal
-                    # alfanumérico común (dígito/letra) coincide trivialmente con
-                    # texto de fondo de la MISMA ventana — p.ej. apretar '5' mientras
+                    # CERO SEÑAL FALSA: un literal alfanumérico común (dígito/letra)
+                    # coincide trivialmente con texto de fondo de la MISMA ventana —
+                    # p.ej. apretar '5' mientras
                     # un reloj pasa 14:04->14:05 sube la cuenta de '5' = false-True.
                     # Solo la puntuación de cómputo INEQUÍVOCA (= + * / ...) es señal
                     # atribuible confiable; los alfanuméricos caen a None honesto
@@ -754,9 +752,9 @@ class PlanExecutor:
         "=+-*/.,;:%^()[]{}<>!?@#$&|~`'\"\\ _"
     )
 
-    # Subconjunto INEQUÍVOCO para atribuir verified=True (decisión del usuario
-    # 2026-06-01: cero señal falsa). Son símbolos de cómputo/operadores que NO
-    # aparecen en relojes, prosa ni texto de fondo de una ventana -> si el literal
+    # Subconjunto INEQUÍVOCO para atribuir verified=True (cero señal falsa). Son
+    # símbolos de cómputo/operadores que NO aparecen en relojes, prosa ni texto de
+    # fondo de una ventana -> si el literal
     # sube su cuenta tras la tecla, es atribuible a la tecla, infalsificable. Se
     # EXCLUYEN a propósito: alfanuméricos (dígitos/letras coinciden con relojes,
     # contadores, texto), y separadores comunes (. , : ; espacio _) que abundan en
@@ -806,14 +804,13 @@ class PlanExecutor:
         try:
             r = self.tools.execute("gui", {"action": "click_button", "label": label, "window": win})
             inner = r.get("result", r) if isinstance(r, dict) else {}
-            # HONESTIDAD TRI-ESTADO (perfection roadmap C4, 2026-05-29). El
-            # click_button puede devolver:
+            # HONESTIDAD TRI-ESTADO. El click_button puede devolver:
             #   verified=True   -> medido OK (el SO confirmó el cambio).
             #   verified=False  -> medido y NO cambió nada (false-PASS atrapado).
             #   verified=None   -> NO MEDIBLE (UIA demorado en Electron/Discord).
-            # Antes colapsábamos None -> False, lo que (a) marcaba el click como
-            # fallo, disparando el retry del PlanExecutor = DOBLE-CLICK físico, y
-            # (b) hacía mentir a summarize_result. "No sé" NO es "falló": lo
+            # Colapsar None -> False (a) marca el click como fallo, disparando el
+            # retry del PlanExecutor = DOBLE-CLICK físico, y (b) hace mentir a
+            # summarize_result. "No sé" NO es "falló": lo
             # propagamos como None (igual que _open_url ya hace). state_changed
             # es la señal medible cruda; si existe, manda sobre verified ausente.
             verified = inner.get("verified")
@@ -821,14 +818,14 @@ class PlanExecutor:
             grounding = inner.get("grounding")
             if verified is None and state_changed is not None:
                 verified = bool(state_changed)
-            # FINDING B (auditoría B, 2026-06-01): el camino in-process del
-            # click_button (_uia_click_inproc, el PREFERIDO y dominante) colapsa
-            # None->False — devuelve verified=(changed is True) midiendo con ROI de
-            # PANTALLA COMPLETA (frame-diff débil: un botón chico no mueve 6 bits
-            # sobre toda la pantalla) -> state_changed cae a None y se reporta
-            # verified=False, perdiendo el tri-estado que sí respeta la vía de
-            # coordenadas. NO podemos tocar tools.py (lo edita otro agente), así que
-            # rescatamos AQUÍ: si el Invoke se DISPARÓ (ok=True) por la vía
+            # El camino in-process del click_button (_uia_click_inproc, el
+            # PREFERIDO y dominante) colapsa None->False — devuelve
+            # verified=(changed is True) midiendo con ROI de PANTALLA COMPLETA
+            # (frame-diff débil: un botón chico no mueve 6 bits sobre toda la
+            # pantalla) -> state_changed cae a None y se reporta verified=False,
+            # perdiendo el tri-estado que sí respeta la vía de coordenadas. Como no
+            # tocamos tools.py, rescatamos AQUÍ: si el Invoke se DISPARÓ (ok=True)
+            # por la vía
             # in-process pero el frame-diff NO pudo medir el cambio (state_changed
             # is None), 'no medible' != 'falló' -> propagamos verified=None HONESTO
             # en vez del False colapsado. Si state_changed SÍ se midió como False
@@ -1080,8 +1077,8 @@ class PlanExecutor:
             except Exception:
                 n = -5
             r = self.tools.execute("gui", {"action": "scroll", "amount": n, "window": win})
-            # TRI-ESTADO (auditoría B, finding C): un scroll en un panel ya al
-            # fondo NO cambia nada (False), pero un scroll cuyo efecto no se pudo
+            # TRI-ESTADO: un scroll en un panel ya al fondo NO cambia nada (False),
+            # pero un scroll cuyo efecto no se pudo
             # medir es None HONESTO, no False. Default-ON; GEMMA4_CU_TRISTATE=0
             # vuelve al colapso previo.
             if _env_off("GEMMA4_CU_TRISTATE"):
@@ -1457,11 +1454,11 @@ class PlanExecutor:
                 })
                 return {"ok": False, "steps": steps_out, "focused_app": app_token,
                         "failed_at": op}
-            # REINTENTO ACOTADO POR PASO (universal, 2026-05-27). Antes un solo
-            # fallo TRANSITORIO de un paso hard-fail (ventana sin foco aún, página
-            # cargando) abortaba la cadena ENTERA. La literatura (Plan-and-Act) y
-            # la medición lo confirman: la fragilidad por-paso es el techo de las
-            # cadenas largas. Reintentamos un paso hard-fail/verificado hasta
+            # REINTENTO ACOTADO POR PASO (universal). Un solo fallo TRANSITORIO de
+            # un paso hard-fail (ventana sin foco aún, página cargando) abortaría la
+            # cadena ENTERA. La literatura (Plan-and-Act) y la medición lo confirman:
+            # la fragilidad por-paso es el techo de las cadenas largas. Reintentamos
+            # un paso hard-fail/verificado hasta
             # _STEP_RETRIES veces, re-tomando el snapshot y re-enfocando entre
             # intentos, ANTES de rendirnos. Universal: no sabe de "tiendas" ni de
             # casos de uso — reintenta CUALQUIER primitiva frágil. Pasos best-
@@ -1538,17 +1535,16 @@ class PlanExecutor:
 
     @staticmethod
     def _aggregate_verified(verified_steps: list[dict]) -> bool | None:
-        """Veredicto tri-estado a nivel PLAN (auditoría B, finding D + criterio del
-        usuario 2026-06-01). Distingue los TRES casos que el usuario exige:
+        """Veredicto tri-estado a nivel PLAN. Distingue los TRES casos:
           - True  : hay pasos verificables y TODOS son True (efecto confirmado).
           - False : ALGÚN paso verificable es explícitamente False (medido y NO
                     cambió = falló de verdad).
           - None  : no hay ningún False, pero al menos un paso quedó None (hubo
                     pasos legítimos que NO se pudieron medir) -> reply honesto
                     'lo hice, no pude confirmar el efecto', NO 'falló'.
-        Antes esto era `all(s.verified is True)`, que colapsaba None->False y hacía
-        que un solo paso no-medible marcara el plan ENTERO como no verificado. El
-        colapso default-ON anterior se preserva con GEMMA4_CU_TRISTATE=0."""
+        Un `all(s.verified is True)` colapsaría None->False y haría que un solo
+        paso no-medible marcara el plan ENTERO como no verificado. El colapso se
+        preserva con GEMMA4_CU_TRISTATE=0."""
         if not verified_steps:
             return False
         states = [s.get("verified") for s in verified_steps]

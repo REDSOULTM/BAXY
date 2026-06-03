@@ -23,11 +23,12 @@ MAX_TOTAL_ITEMS = 500  # explicit; el cap de auto: es aparte (max_total kwarg)
 _INVALID_CONTROL_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
-# Filtro anti-junk para la extracción PASIVA (auto_save). El incidente reportado
-# (inv 2 §4): el 52% de la memoria era basura de pruebas. Solo aplica a auto:* —
-# el `save` explícito (el user lo pidió) NUNCA se filtra. Universal: valores tipo
-# test/asdf/solo-dígitos/ruido, sin keywords de idioma. Conservador: ante la duda
-# se guarda (mejor un hecho marginal que perder uno útil).
+# Filtro anti-junk para la extracción PASIVA (auto_save). Sin este filtro, la
+# extracción pasiva envenena la memoria con basura de pruebas (medido: ~52% de
+# entradas eran junk de tests). Solo aplica a auto:* — el `save` explícito NUNCA
+# se filtra (es un hecho que el caller pidió persistir deliberadamente).
+# Universal: valores tipo test/asdf/solo-dígitos/ruido, sin keywords de idioma.
+# Conservador: ante la duda se guarda (mejor un hecho marginal que perder uno útil).
 _JUNK_VALUE_RE = re.compile(
     r"^\s*(?:"
     r"test\d*|testing|asdf+|qwerty|foo(?:bar)?|bar|baz|"  # placeholders dev
@@ -40,14 +41,14 @@ _JUNK_VALUE_RE = re.compile(
 )
 _MIN_VALUE_CHARS = 2  # un valor de 1 char nunca es un hecho útil
 
-# SALIENCE (inv 2 §4): importancia de un hecho, para que el cap NO evicte algo
-# importante (p.ej. "mi cumpleaños") por ser viejo, dejando basura reciente. La
-# eviction pasa de "el más viejo" a "el menos importante, y entre iguales el más
-# viejo". Simple a propósito (LoCoMo: retrieval simple bien hecho > esquema
-# sofisticado mal aplicado en un 4B). Sin sqlite-vec/EmbeddingGemma: reusa lo que
-# hay. Hechos sin campo salience (datos viejos) = SALIENCE_AUTO (degradan primero,
-# seguro). Recall/uso de un hecho lo sube (lo accedido es importante).
-SALIENCE_EXPLICIT = 3   # el user lo pidió guardar (save) -> importante
+# SALIENCE: importancia de un hecho, para que el cap NO evicte algo importante
+# (p.ej. "mi cumpleaños") por ser viejo, dejando basura reciente. La eviction
+# pasa de "el más viejo" a "el menos importante, y entre iguales el más viejo".
+# Simple a propósito (LoCoMo: retrieval simple bien hecho > esquema sofisticado
+# mal aplicado en un 4B). Sin sqlite-vec/EmbeddingGemma: reusa lo que hay. Hechos
+# sin campo salience (datos viejos) = SALIENCE_AUTO (degradan primero, seguro).
+# Recall/uso de un hecho lo sube (lo accedido es importante).
+SALIENCE_EXPLICIT = 3   # guardado explícito (save) -> importante
 SALIENCE_AUTO = 1       # extraído pasivamente (auto:) -> bajo por defecto
 SALIENCE_MAX = 5
 # TTL: hechos auto de salience mínima más viejos que esto degradan primero en el
@@ -151,7 +152,7 @@ class MemoryStore:
             # entry mas vieja (por updated_at). Explicit pueden eliminar a
             # auto:* y viceversa — el cap es global porque el storage es uno.
             if clean_key not in items and len(items) >= MAX_TOTAL_ITEMS:
-                # eviction por SALIENCE-luego-edad (inv2): no perder un hecho
+                # eviction por SALIENCE-luego-edad: no perder un hecho
                 # importante viejo por basura reciente.
                 ev = _evict_key(items)
                 if ev is not None:
@@ -159,8 +160,8 @@ class MemoryStore:
                 evicted = ev
             else:
                 evicted = None
-            # el save EXPLÍCITO es importante (el user lo pidió). Si ya existía,
-            # sube la salience (re-guardar = reforzar), capada.
+            # el save EXPLÍCITO es importante (persistido deliberadamente). Si ya
+            # existía, sube la salience (re-guardar = reforzar), capada.
             prev_sal = _salience_of(items.get(clean_key)) if clean_key in items else 0
             items[clean_key] = {
                 "value": clean_value,
@@ -191,8 +192,8 @@ class MemoryStore:
                 if not key or not value:
                     skipped.append({"reason": "empty_key_or_value", "fact": fact})
                     continue
-                # Anti-junk (inv 2 §4): la extracción pasiva NO debe envenenar la
-                # memoria con basura de pruebas. El save explícito no pasa por acá.
+                # Anti-junk: la extracción pasiva NO debe envenenar la memoria
+                # con basura de pruebas. El save explícito no pasa por acá.
                 if _is_junk_value(value):
                     skipped.append({"reason": "junk_value", "fact": fact})
                     continue
@@ -206,8 +207,8 @@ class MemoryStore:
                     "salience": max(SALIENCE_AUTO, prev_sal),
                 }
                 added.append(stamped_key)
-            # Evict auto:* bajo cap por SALIENCE-luego-edad (inv2): primero la
-            # basura de baja importancia y vieja, no el auto-fact reciente útil.
+            # Evict auto:* bajo cap por SALIENCE-luego-edad: primero la basura
+            # de baja importancia y vieja, no el auto-fact reciente útil.
             # Explicit (non-auto) entries are never touched.
             auto_keys = [k for k in items if k.startswith("auto:")]
             if len(auto_keys) > max_total:
@@ -233,8 +234,8 @@ class MemoryStore:
             k: v for k, v in items.items()
             if q in k.casefold() or q in str(v.get("value", "")).casefold()
         }
-        # SALIENCE bump (inv2): un hecho RECUPERADO se está usando -> es
-        # importante; subir su salience (capado) para que sobreviva al cap.
+        # SALIENCE bump: un hecho RECUPERADO se está usando -> es importante;
+        # subir su salience (capado) para que sobreviva al cap.
         # Best-effort, no rompe el recall si falla la escritura.
         if matches:
             try:
@@ -281,8 +282,8 @@ class MemoryStore:
         return "\n".join(lines)
 
     def prompt_summary_for(self, user_text: str | None) -> str:
-        """Memoria EN CAPAS para el prompt (inv 2): core siempre + hechos
-        relevantes al turno por retrieval semántico cuando el store es grande.
+        """Memoria EN CAPAS para el prompt: core siempre + hechos relevantes
+        al turno por retrieval semántico cuando el store es grande.
         Para stores chicos == prompt_summary() (vuelca todo). Best-effort: ante
         cualquier fallo cae a prompt_summary() (nunca esconde hechos a ciegas)."""
         with self._lock:

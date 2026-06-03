@@ -27,22 +27,21 @@ class AgentMode:
     max_tokens: int
     system_hint: str
     # Cap on reasoning tokens when enable_thinking is True. -1 = unbounded.
-    # MEASURED (2026-05-20): with thinking unbounded, some turns generate
-    # 13k-15k reasoning tokens — at ~50 tok/s on CPU that's MINUTES, blowing
-    # the 4-5s voice budget. A simple action only needs ~90 reasoning tokens
-    # to emit the tool-call, so action modes cap tight; research/deep keep a
-    # larger budget for genuine multi-step reasoning. llama.cpp honors this
-    # via `thinking_budget_tokens` in the request body (verified on b9090).
+    # MEASURED: with thinking unbounded, some turns generate 13k-15k reasoning
+    # tokens — at ~50 tok/s on CPU that's MINUTES, blowing the 4-5s voice
+    # budget. A simple action only needs ~90 reasoning tokens to emit the
+    # tool-call, so action modes cap tight; research/deep keep a larger budget
+    # for genuine multi-step reasoning. llama.cpp honors this via
+    # `thinking_budget_tokens` in the request body (verified on build b9090).
     thinking_budget: int = -1
-    # SAMPLING POR MODO (inv 0 T4, 2026-05-23). Los defaults de Gemma
-    # (T=1.0/top_p=0.95/top_k=64) son para chat/thinking; en modos de ACCIÓN con
-    # gramática activa son innecesariamente altos y dan varianza turno-a-turno en
-    # el nombre de la tool y los args. Una T más baja en acción estabiliza sin
-    # empobrecer el lenguaje (esos modos emiten tool-call o summary corto, no
-    # prosa larga). None = usar el default del config (sin override). NO se aplica
-    # cuando el cliente ya va greedy (la decisión de tool-call manda con temp=0).
-    # Fuente: tabla T4 del informe de arquitectura + práctica industria (greedy/
-    # baja-T para JSON estructurado y function-calling).
+    # SAMPLING POR MODO. Los defaults de Gemma (T=1.0/top_p=0.95/top_k=64) son
+    # para chat/thinking; en modos de ACCIÓN con gramática activa son
+    # innecesariamente altos y dan varianza turno-a-turno en el nombre de la tool
+    # y los args. Una T más baja en acción estabiliza sin empobrecer el lenguaje
+    # (esos modos emiten tool-call o summary corto, no prosa larga). None = usar
+    # el default del config (sin override). NO se aplica cuando el cliente ya va
+    # greedy (la decisión de tool-call manda con temp=0). Práctica de industria:
+    # greedy/baja-T para JSON estructurado y function-calling.
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
@@ -73,10 +72,10 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         configured = "auto"
 
     inferred = configured if configured != "auto" else _infer_mode(content)
-    # Helper 2026-05-28 v14: control fino sobre thinking para evitar el CUDA
-    # crash (issue #22527). Por default thinking sigue ON pero con budget MUY
-    # chico (32 tokens, lo minimo para emitir el tool-call). Esto mantiene
-    # fiabilidad de tool-call sin acumular KV que dispara el bug.
+    # Control fino sobre thinking para evitar el CUDA crash (llama.cpp issue
+    # #22527). Por default thinking sigue ON pero con budget MUY chico (32
+    # tokens, lo minimo para emitir el tool-call). Esto mantiene fiabilidad de
+    # tool-call sin acumular KV que dispara el bug.
     # GEMMA4_FORCE_THINKING_OFF=1 → thinking OFF total (defensa extrema).
     import os as _os_th2
     _force_off = _os_th2.environ.get(
@@ -104,23 +103,22 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
     if inferred == "fast_info":
         # Preguntas informativas que el modelo responde de su conocimiento
         # paramétrico (explica/compara/diferencia/por qué/qué es), SIN necesidad
-        # de retrieval web. MEDIDO (2026-05-22, vram12-text E4B-Q6 en vivo):
-        # thinking ON en estas preguntas es PURO costo de latencia y A MENUDO
-        # PEOR calidad — el reasoning se come el budget y deja content VACÍO
-        # (finish=length): cx1 "fotosíntesis" OFF 0.73s correcto vs ON 7.2s VACÍO;
-        # cx5 "RAM vs disco" OFF 7.1s correcto vs ON VACÍO; fs2 "GTA5" OFF 0.44s
-        # vs ON 4.81s. Para recall factual el thinking NO aporta. Por eso:
-        # thinking OFF + hint conciso de voz + max_tokens moderado (evita el muro
-        # de markdown verboso que el modelo escupe sin guía). Antes estas caían
-        # en `research` (thinking ON, 2048 tok) — el origen de los outliers de
-        # 15-48s del baseline.
+        # de retrieval web. MEDIDO (E4B-Q6 en vivo): thinking ON en estas
+        # preguntas es PURO costo de latencia y A MENUDO PEOR calidad — el
+        # reasoning se come el budget y deja content VACÍO (finish=length):
+        # "fotosíntesis" OFF 0.73s correcto vs ON 7.2s VACÍO; "RAM vs disco" OFF
+        # 7.1s correcto vs ON VACÍO; "GTA5" OFF 0.44s vs ON 4.81s. Para recall
+        # factual el thinking NO aporta. Por eso: thinking OFF + hint conciso de
+        # voz + max_tokens moderado (evita el muro de markdown verboso que el
+        # modelo escupe sin guía). Estas preguntas, ruteadas a `research`
+        # (thinking ON, 2048 tok), eran el origen de outliers de 15-48s.
         return AgentMode(
             name="fast_info",
             enable_thinking=False,
             parallel_tool_calls=False,
             max_tokens=min(base_max_tokens, 320),
             system_hint=_INFO_HINT,
-            # T4: algo de variance para razonamiento breve factual, pero por
+            # Algo de variance para razonamiento breve factual, pero por
             # debajo del default 1.0 (recall factual no necesita creatividad).
             temperature=0.6, top_p=0.95, top_k=40,
         )
@@ -161,15 +159,15 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         )
     if inferred == "quick_action":
         # quick_action: comando de UNA sola acción ("abre steam", "pon música").
-        # MEDIDO (2026-05-20, E4B-Q4): con thinking OFF Gemma4 emite el tool-call
-        # solo ~2/6 veces (promete en texto); con thinking ON, 6/6. El
-        # razonamiento es lo que hace fiable el tool-calling en Gemma4. El costo
-        # es ~+1s de latencia (0.8s -> 1.7s LLM), holgado bajo el budget 4-5s.
-        # Por eso un comando de acción usa thinking ON, pero con el budget chico
-        # de fast_action (respuesta corta estilo voz) y su mismo system_hint.
-        # FIX 2026-05-28 v13: thinking_budget MUY BAJO (32 tokens) para
-        # mantener la fiabilidad del tool-call SIN acumular el KV cache que
-        # dispara el CUDA crash (issue #22527). MEDIDO:
+        # MEDIDO (E4B-Q4): con thinking OFF Gemma4 emite el tool-call solo ~2/6
+        # veces (promete en texto); con thinking ON, 6/6. El razonamiento es lo
+        # que hace fiable el tool-calling en Gemma4. El costo es ~+1s de latencia
+        # (0.8s -> 1.7s LLM), holgado bajo el budget 4-5s. Por eso un comando de
+        # acción usa thinking ON, pero con el budget chico de fast_action
+        # (respuesta corta estilo voz) y su mismo system_hint.
+        # thinking_budget MUY BAJO (32 tokens) para mantener la fiabilidad del
+        # tool-call SIN acumular el KV cache que dispara el CUDA crash (llama.cpp
+        # issue #22527). MEDIDO:
         #  - thinking=True budget 256 → crashes en turn 2-3
         #  - thinking=False → tool-call falla 4/10 (LLM no emite)
         #  - thinking=True budget 32 → balance: tool-call OK + crash retrasado
@@ -183,9 +181,9 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
             thinking_budget=32 if _allow_thinking else 256,
         )
     # fast_action: smalltalk + confirmaciones cortas ("hola", "gracias",
-    # "Listo, abrí Spotify"). MEDIDO (log de sesión): un "hola" generaba 512
-    # tokens (el modelo no encuentra stop y divaga) -> 512 * 24.5 ms = 12.5 s
-    # con el 26B (~40 tok/s). ESO es el "se demora 10s en un hola".
+    # "Listo, abrí Spotify"). MEDIDO: un "hola" generaba 512 tokens (el modelo
+    # no encuentra stop y divaga) -> 512 * 24.5 ms = 12.5 s con el 26B
+    # (~40 tok/s), la causa del "se demora 10s en un hola".
     # Una respuesta conversacional de voz real es ~10-40 tokens. Capamos a 128
     # (worst case: 128/40 = 3.2s en el 26B; 128/80 = 1.6s en E4B) — holgado
     # bajo el budget 4-5s en CUALQUIER perfil. El system_hint ya pide "1-2
@@ -198,7 +196,7 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         parallel_tool_calls=False,
         max_tokens=min(base_max_tokens, 128),
         system_hint=_FAST_ACTION_HINT,
-        # T4: smalltalk/confirmaciones cortas -> baja-T estabiliza la respuesta
+        # smalltalk/confirmaciones cortas -> baja-T estabiliza la respuesta
         # sin empobrecerla (son 1-2 frases). Reduce varianza turno-a-turno.
         temperature=0.4, top_p=0.9, top_k=40,
     )
@@ -236,12 +234,12 @@ _FAST_ACTION_HINT = (
 )
 
 
-# FR-CoT (Function-Routing Chain-of-Thought, informe thinking-latencia 2026-05-23):
-# para modelos chicos, un thinking BREVE y ESTRUCTURADO es más fiable Y más rápido
-# que el thinking libre. Evidencia: Qi 2026 (arXiv 2604.02155, BFCL v3) — brief
-# CoT@32 sube tool-call de 44%->64% en Qwen2.5-1.5B y baja alucinación a 0%. NUESTRO
-# E4B genera p90=268 / max=841 tok de thinking (hasta 4.3s); esto lo acota a ≤4
-# líneas. Gate GEMMA4_FRCOT=0 lo desactiva (las cifras son de Qwen, NO de Gemma —
+# FR-CoT (Function-Routing Chain-of-Thought): para modelos chicos, un thinking
+# BREVE y ESTRUCTURADO es más fiable Y más rápido que el thinking libre.
+# Evidencia: Qi 2026 (arXiv 2604.02155, BFCL v3) — brief CoT@32 sube tool-call
+# de 44%->64% en Qwen2.5-1.5B y baja alucinación a 0%. NUESTRO E4B genera
+# p90=268 / max=841 tok de thinking (hasta 4.3s); esto lo acota a ≤4 líneas.
+# Gate GEMMA4_FRCOT=0 lo desactiva (las cifras son de Qwen, NO de Gemma —
 # MEDIR tokens antes/después en nuestro modelo, por eso reversible).
 _FRCOT_HINT = (
     "\n\nTHINKING: razoná BREVE, máximo 4 líneas, en este formato exacto, "
@@ -256,13 +254,13 @@ _FRCOT_HINT = (
 
 
 def _frcot_hint() -> str:
-    # DEFAULT OFF (medido 2026-05-23 en NUESTRO E4B, no Qwen): FR-CoT MEJORA
-    # apps/audio (audio 5.2s->2.4s, 11/12->12/12) PERO REGRESIONA media (6/6->
-    # 3/6, 7.3s->10.5s): Gemma E4B a veces emite el formato INTENT/TOOL/ARGS como
+    # DEFAULT OFF (medido en NUESTRO E4B, no Qwen): FR-CoT MEJORA apps/audio
+    # (audio 5.2s->2.4s, 11/12->12/12) PERO REGRESIONA media (6/6->3/6,
+    # 7.3s->10.5s): Gemma E4B a veces emite el formato INTENT/TOOL/ARGS como
     # TEXTO DE SALIDA en vez de en el canal de pensamiento, y eso rompe el
-    # tool-call. El informe avisó que sus cifras eran de Qwen, no Gemma — y acá
-    # se ve la diferencia. Net negativo -> opt-in (=1) para experimentar, NO
-    # default. (CLAUDE.md #3: medir; el formato no sobrevivió en media.)
+    # tool-call. Las cifras de Qi 2026 eran de Qwen, no Gemma — y acá se ve la
+    # diferencia. Net negativo -> opt-in (=1) para experimentar, NO default
+    # (el formato no sobrevivió en el dominio media).
     import os as _os
     if (_os.environ.get("GEMMA4_FRCOT", "0").strip().lower()
             not in {"1", "true", "yes", "on"}):
@@ -333,10 +331,10 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
     if action_score >= 1:
         return "quick_action"
 
-    # F-004: queries informativas (explicaciones, comparaciones, listas,
-    # cronologias) necesitan budget grande. fast_action con max_tokens=384
-    # trunca mid-sentence en respuestas de 2+ parrafos. Markers ya estan
-    # "folded" (lowercase + sin acentos) porque `low` paso por _fold_text.
+    # Queries informativas (explicaciones, comparaciones, listas, cronologias)
+    # necesitan budget grande. fast_action con max_tokens=384 trunca
+    # mid-sentence en respuestas de 2+ parrafos. Markers ya estan "folded"
+    # (lowercase + sin acentos) porque `low` paso por _fold_text.
     info_markers = (
         " explica ", " explicame ", " explicar ",
         " describ ", " describime ", " describeme ",
@@ -353,7 +351,7 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
     # "quién escribió X", "cuántos planetas hay". El router a veces ofrece tools
     # de acción por una palabra clave del objeto ("GTA" -> game_launcher), lo que
     # disparaba upgrade-a-thinking + forced-retry y volvía lento un turno que es
-    # SOLO una pregunta de conocimiento (fs2 medido 16s). Si hay palabra
+    # SOLO una pregunta de conocimiento (medido 16s). Si hay palabra
     # interrogativa y NINGÚN verbo de acción (action_score==0, ya chequeado
     # arriba), es fast_info. NOTA: el `?` no es requisito (el STT a veces no lo
     # transcribe); detectamos por palabra interrogativa folded.

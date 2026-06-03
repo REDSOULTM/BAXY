@@ -23,8 +23,7 @@ Decisiones:
   GEMMA4_MODEL_PATH -- el caller debe detectar y caer al modelo principal.
 
 VRAM estimada (est_vram_mb) en cada perfil es solo display en UI; no se
-usa para decisiones. Numeros vienen de docs/architecture/INFORME_ARQUITECTURA_6GB.md de
-esta misma sesion de investigacion.
+usa para decisiones. Numeros vienen de docs/architecture/INFORME_ARQUITECTURA_6GB.md.
 """
 from __future__ import annotations
 
@@ -37,13 +36,12 @@ from typing import Any
 from ..memory_pkg.state import atomic_write_json
 
 
-# 2026-05-26: COLAPSADO A UN SOLO PERFIL (pedido del operador). vram4 (E2B-Q4)
-# es el ÚNICO perfil operante — el target del producto: TODO (modelo + visión
-# residente + KV + voz/STT en CPU) dentro de ≤4 GB de VRAM. Se eliminaron
-# vram3/6/8/12/16: ya no hay selector ni auto-detección por VRAM. `standby` se
-# conserva porque apaga llama-server y la UI lo necesita. Cualquier nombre viejo
-# (vram3/6/8/.../performance/balanced/light) resuelve a vram4 vía _LEGACY_ALIASES
-# para no romper un ~/.gemma4/active_profile.txt preexistente.
+# Un solo perfil GPU operante: vram4 (E2B-Q4) — el target del producto: TODO
+# (modelo + visión residente + KV + voz/STT en CPU) dentro de ≤4 GB de VRAM. No
+# hay selector ni auto-detección por VRAM (no existen vram3/6/8/12/16). `standby`
+# se conserva porque apaga llama-server y la UI lo necesita. Cualquier nombre
+# viejo (vram3/6/8/.../performance/balanced/light) resuelve a vram4 vía
+# _LEGACY_ALIASES para no romper un ~/.gemma4/active_profile.txt preexistente.
 PROFILE_NAMES = ("vram4", "standby")
 
 ACTIVE_PROFILE_PATH = Path.home() / ".gemma4" / "active_profile.txt"
@@ -89,15 +87,15 @@ class Profile:
     # GPU profiles). A CPU-fallback profile sets this to 0 → the model runs
     # entirely on CPU (0 VRAM), used when the GPU is saturated by a game / heavy
     # app so the assistant keeps responding WITHOUT competing for the GPU. The
-    # llama-server command reads this (was hardcoded "99"). Design + sources:
+    # llama-server command reads this. Design + sources:
     # docs/research/investigaciones_recibidas/6_estabilidad.md (Punto 4).
     n_gpu_layers: int = 99
-    # Ola 2.4 RAM-frugality (perfection roadmap 2026-05-29): para el perfil CPU
-    # (n_gpu_layers=0), limitar los threads + bajar la prioridad del proceso para
-    # NO robarle CPU al juego que motivó el fallback. None = default de llama.cpp
-    # (usa todos los cores) — solo el perfil CPU lo setea. Es un knob de RECURSOS,
-    # no una lista por idioma. Verificado en la build (b9090+): -t y --prio existen;
-    # --keep-alive/idle-unload NO -> no se promete unload-on-idle (regla #3).
+    # RAM-frugality: para el perfil CPU (n_gpu_layers=0), limitar los threads +
+    # bajar la prioridad del proceso para NO robarle CPU al juego que motivó el
+    # fallback. None = default de llama.cpp (usa todos los cores) — solo el perfil
+    # CPU lo setea. Es un knob de RECURSOS, no una lista por idioma. En la build
+    # b9090+ existen -t y --prio; --keep-alive/idle-unload NO -> no se promete
+    # unload-on-idle.
     cpu_threads: int | None = None
 
 
@@ -108,34 +106,33 @@ class Profile:
 # documentacion/datos_crudos/vram_real_medida.csv. NO confundir con "delta
 # del modelo" (peso del modelo vs idle Windows): el cargado es lo que el
 # usuario ve en nvidia-smi y es el que cuenta para el budget.
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent  # reorg 2026-05-28: infra/ es subdir
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent  # infra/ es subdir, subir 3 niveles
 _E2B = _PROJECT_ROOT / "models" / "E2B"
 
-# GGUF paths del ÚNICO perfil (vram4 = E2B-Q4). VRAM en comentarios = delta REAL
-# de nvidia-smi sobre idle Windows (2.06 GB), medido 2026-05-20 en RTX 4060 Ti
+# GGUF paths del ÚNICO perfil GPU (vram4 = E2B-Q4). VRAM en comentarios = delta
+# REAL de nvidia-smi sobre idle Windows (2.06 GB), medido en RTX 4060 Ti
 # (scripts/measure_vram_profiles.py, flash-attn on, -ngl 99).
-# 2026-05-26: se quitaron las constantes de E4B/26B (perfiles eliminados). Los
-# GGUF siguen en disco (models/E4B, models/26B-A4B) por si se reintroduce un
-# perfil vía profiles.json override o GEMMA4_MODEL_PATH — sólo se borró el
-# código que ya no los referenciaba, no los archivos.
+# No hay constantes de E4B/26B (esos perfiles no existen). Los GGUF siguen en
+# disco (models/E4B, models/26B-A4B) por si se reintroduce un perfil vía
+# profiles.json override o GEMMA4_MODEL_PATH.
 _E2B_Q4_K_M  = str(_E2B / "gemma-4-E2B-it-Q4_K_M.gguf")      # 2.16 novis / 3.36 +vis @4K
 
 
 def _resolve_mmproj_path(model_dir: Path) -> str:
     """Elige el mmproj a usar, prefiriendo una variante CUANTIZADA si existe.
 
-    Ola 2.3 (perfection roadmap H7, 2026-05-29): el research pedía mmproj Q8_0
-    (~560 MiB vs ~940 del F16, -430 MiB de headroom en 4GB). VERIFICADO 2026-05-29:
-    ese artefacto NO existe hoy — Unsloth solo publica F16/F32/BF16 y `llama-quantize`
-    falla con "unsupported architecture: clip" (cuantización de mmproj es feature
-    AÚN ABIERTO en llama.cpp, issue #18881). Así que HOY no hay ahorro real.
+    Un mmproj Q8_0 (~560 MiB vs ~940 del F16) daría -430 MiB de headroom en 4GB,
+    pero ese artefacto no existe hoy — Unsloth solo publica F16/F32/BF16 y
+    `llama-quantize` falla con "unsupported architecture: clip" (cuantización de
+    mmproj es feature AÚN ABIERTO en llama.cpp, issue #18881). Así que HOY no hay
+    ahorro real.
 
     Esta función deja el agente LISTO: cuando aparezca un mmproj-Q8_0 (oficial o
     cuando llama.cpp habilite clip-quantize), basta dejarlo en models/E2B/ y se usa
     automáticamente — sin tocar código. Orden de preferencia por tamaño/calidad
     (más chico primero, que es el objetivo del headroom; F16 es el default actual).
     Gate GEMMA4_MMPROJ_PREFER_QUANT=0 fuerza el F16 clásico. Si nada cuantizado
-    existe, devuelve el F16 de siempre (0 cambio de comportamiento hoy).
+    existe, devuelve el F16 de siempre.
     """
     default = model_dir / "mmproj-F16.gguf"
     prefer = (os.environ.get("GEMMA4_MMPROJ_PREFER_QUANT", "1") or "1").strip().casefold()
@@ -145,7 +142,7 @@ def _resolve_mmproj_path(model_dir: Path) -> str:
     # que el F16). NO incluimos BF16/F32: el BF16 (~987 MiB) es MÁS grande que el
     # F16 (~940), elegirlo empeoraría el headroom. F16/F32 son el fallback, no una
     # "preferencia". Solo elegimos algo distinto al default si REALMENTE existe
-    # en disco (no asumimos artefactos que no están — VERIFICADO: ninguno existe hoy).
+    # en disco (no asumimos artefactos que no están).
     for name in ("mmproj-Q4_K_M.gguf", "mmproj-Q5_K_M.gguf", "mmproj-Q8_0.gguf"):
         cand = model_dir / name
         if cand.is_file():
@@ -157,47 +154,44 @@ _MMPROJ_E2B  = _resolve_mmproj_path(_E2B)                    # vision encoder (~
 
 
 # ===========================================================================
-# Perfiles nombrados por VRAM (2026-05-20). Reemplazan los nombres antiguos
-# (perf/bal8/bal/light); los viejos se conservan como ALIASES (ver _ALIASES y
-# get/set) para no romper ~/.gemma4/active_profile.txt de usuarios existentes.
+# Perfiles nombrados por VRAM. Los nombres antiguos (perf/bal8/bal/light) se
+# conservan como ALIASES (ver _LEGACY_ALIASES y get/set) para no romper
+# ~/.gemma4/active_profile.txt de usuarios existentes.
 #
-# REGLA DE DISEÑO (pedido del operador): TODOS los perfiles activos tienen
-# voz (Piper, CPU) + transcripción (Whisper, CPU) + VISIÓN (mmproj). La voz y
-# STT cuestan 0 VRAM (corren en CPU); la visión cuesta ~1.2 GB cargado, y la
-# medición real (scripts/measure_vram_profiles.py) confirmó que ENTRA incluso
-# en 4 GB. Cada perfil escala el MODELO (cuantización) y el contexto: del más
-# chico (vram3) al más grande (vram16). camera_enabled queda reservado para
-# un VLM de webcam futuro (Moondream-like) — off en todos hoy.
+# REGLA DE DISEÑO: TODOS los perfiles activos tienen voz (Piper, CPU) +
+# transcripción (Whisper, CPU) + VISIÓN (mmproj). La voz y STT cuestan 0 VRAM
+# (corren en CPU); la visión cuesta ~1.2 GB cargado, y la medición real
+# (scripts/measure_vram_profiles.py) confirmó que ENTRA incluso en 4 GB.
+# camera_enabled queda reservado para un VLM de webcam futuro (Moondream-like)
+# — off en todos hoy.
 #
 # Columna "cargado" = delta real de nvidia-smi sobre idle Windows (2.06 GB),
 # CON visión y al ctx indicado. "física" = cargado + 1.5 GB reserva WDDM.
 #
-# PISO DE CONTEXTO (re-medido 2026-06-03 con el tokenizer REAL del GGUF, no la
-# estimación vieja): tras la optimización LEAN del system prompt, el prompt real
-# es MUCHO más chico que el "9.2k" de 2026-05-20 (esa cifra era pre-LEAN y quedó
-# obsoleta). Medido hoy: "hola"/mínimo ~4.25k tok, multi-tool 5 (cap) ~4.8k,
-# grande-12 ~5.6k. Por eso vram4 bajó 16384→12288: ahorra ~168 MB de KV cache
-# (672→504 MB con swa-full) SIN riesgo — 12288 conserva el modo `compact` de
-# tool-schemas (umbral en agent.py:_tool_schemas_hint es ctx>=12288) y el peor
-# caso realista (12 tools + historial + imagen ~8.3k) entra con ~4k libres.
-# NO bajar a 8192: ahorraría 168 MB más pero apaga `compact` (riesgo no medido
-# en el E2B), parte el budget de historial a la mitad y deja el peor caso al
-# borde. El modelo sigue siendo el costo dominante de VRAM.
+# PISO DE CONTEXTO (medido con el tokenizer REAL del GGUF): tras la optimización
+# LEAN del system prompt, el prompt real es chico — "hola"/mínimo ~4.25k tok,
+# multi-tool 5 (cap) ~4.8k, grande-12 ~5.6k. Por eso vram4 usa 12288 en vez de
+# 16384: ahorra ~168 MB de KV cache (672→504 MB con swa-full) SIN riesgo — 12288
+# conserva el modo `compact` de tool-schemas (umbral en agent.py:_tool_schemas_hint
+# es ctx>=12288) y el peor caso realista (12 tools + historial + imagen ~8.3k)
+# entra con ~4k libres. NO bajar a 8192: ahorraría 168 MB más pero apaga
+# `compact` (riesgo no medido en el E2B), parte el budget de historial a la mitad
+# y deja el peor caso al borde. El modelo sigue siendo el costo dominante de VRAM.
 # ===========================================================================
 PROFILES: dict[str, Profile] = {
     "vram4": Profile(
         name="vram4",
         display_name="VRAM 4GB",
-        context_size=12288,  # 2026-06-03: 16384→12288 (ahorra ~168 MB KV, conserva compact). Ver comentario arriba.
-        # E2B-Q4_K_M (2026-05-25, DEFAULT para PC de 4 GB — pedido de RED: la app
-        # debe entrar en ≤4 GB de VRAM con TODO funcionando a la vez). MEDIDO: el
-        # ÚNICO Gemma 4 que mete modelo + VISIÓN RESIDENTE + KV simultáneos dentro de
-        # 4 GB: 2.16 GB texto / 3.36 GB con visión (vs E4B-IQ3_XXS 4.78 GB con visión,
+        context_size=12288,  # 12288 (no 16384): ahorra ~168 MB KV, conserva compact. Ver comentario arriba.
+        # E2B-Q4_K_M (DEFAULT para PC de 4 GB — requisito: la app debe entrar en
+        # ≤4 GB de VRAM con TODO funcionando a la vez). MEDIDO: el ÚNICO Gemma 4
+        # que mete modelo + VISIÓN RESIDENTE + KV simultáneos dentro de 4 GB:
+        # 2.16 GB texto / 3.36 GB con visión (vs E4B-IQ3_XXS 4.78 GB con visión,
         # que se pasa; E4B no entra en 4 GB ni en su cuant más baja). Tool-calling
-        # 9/12=75% con los fixes de hoy (subió desde ~0% histórico; las 2 fallas son
-        # "narra la función como texto" → el forced-tool-retry las rescata en prod).
-        # Trade-off aceptado: -16pp de tool-calling vs E4B a cambio de TODO en 4 GB.
-        # Quien tenga >4 GB usa vram6 (E4B-Q4, 91%). Ver project_tool_calling_weak_models.
+        # 9/12=75% medido (las 2 fallas son "narra la función como texto" → el
+        # forced-tool-retry las rescata en prod). Trade-off aceptado: -16pp de
+        # tool-calling vs E4B a cambio de TODO en 4 GB. Quien tenga >4 GB usa
+        # vram6 (E4B-Q4, 91%).
         model_path=_E2B_Q4_K_M,
         mmproj_path=_MMPROJ_E2B,
         vision_enabled=True,
@@ -272,10 +266,10 @@ PROFILES: dict[str, Profile] = {
     ),
 }
 
-# Aliases de compatibilidad: TODOS los nombres viejos -> vram4 (el único perfil).
-# Mantienen funcionando un ~/.gemma4/active_profile.txt o profiles.json escrito
-# por una versión anterior (que pudo persistir vram3/6/8/12/16 o performance/
-# balanced/light). set/get_active_profile y apply los resuelven vía
+# Aliases de compatibilidad: TODOS los nombres viejos -> vram4 (el único perfil
+# GPU). Mantienen funcionando un ~/.gemma4/active_profile.txt o profiles.json
+# escrito por una versión anterior (que pudo persistir vram3/6/8/12/16 o
+# performance/balanced/light). set/get_active_profile y apply los resuelven vía
 # _resolve_alias(). `standby` se mantiene con su nombre (sigue existiendo).
 _LEGACY_ALIASES: dict[str, str] = {
     "performance": "vram4",
@@ -356,10 +350,10 @@ def detect_vram_mb() -> int | None:
 def has_usable_cuda_gpu() -> bool:
     """¿Hay una GPU NVIDIA con driver usable (CUDA) en esta máquina?
 
-    Ola 2.1 (perfection roadmap 2026-05-29): el perfil `vram4` asume el binario
-    `llama-server` CUDA-only. En una máquina SIN NVIDIA (laptop con iGPU Intel/AMD
-    o sin GPU dedicada) ese binario NO arranca. Necesitamos distinguir "hay CUDA"
-    de "no hay" para auto-caer al perfil `cpu` en vez de fallar en el boot.
+    El perfil `vram4` asume el binario `llama-server` CUDA-only. En una máquina
+    SIN NVIDIA (laptop con iGPU Intel/AMD o sin GPU dedicada) ese binario NO
+    arranca. Necesitamos distinguir "hay CUDA" de "no hay" para auto-caer al
+    perfil `cpu` en vez de fallar en el boot.
 
     Distinto de detect_vram_mb(): esa también detecta AMD (rocm) y devuelve MB;
     acá sólo nos importa NVIDIA-con-driver, que es lo que el binario CUDA exige.
@@ -396,17 +390,17 @@ WINDOWS_VRAM_RESERVE_MB = 1500
 def recommend_profile(vram_mb: int | None) -> str:
     """Recomienda el perfil de arranque según el hardware.
 
-    2026-05-26: el sistema multi-perfil se colapsó a un solo perfil GPU (vram4 =
-    E2B-Q4, TODO en ≤4 GB). Ya no hay escalera por VRAM. `vram_mb` se conserva en
-    la firma (callers existentes lo pasan; la UI muestra la VRAM detectada como
-    dato informativo) pero no influye en la decisión entre los perfiles GPU.
+    Hay un solo perfil GPU (vram4 = E2B-Q4, TODO en ≤4 GB): no hay escalera por
+    VRAM. `vram_mb` se conserva en la firma (callers existentes lo pasan; la UI
+    muestra la VRAM detectada como dato informativo) pero no influye en la
+    decisión entre los perfiles GPU.
 
-    Ola 2.1 (perfection roadmap 2026-05-29): si NO hay GPU NVIDIA usable (CUDA),
-    el binario `vram4` (CUDA-only) no arrancaría -> recomendamos el perfil `cpu`
-    (E2B-Q4 en CPU, 0 VRAM, visión OFF) para que el agente FUNCIONE en laptops
-    sin NVIDIA en vez de fallar en el boot. Esto NO afecta a usuarios con NVIDIA
-    (siguen en vram4). Gate GEMMA4_NO_GPU_AUTOCPU=0 desactiva la auto-caída (vuelve
-    al comportamiento viejo: siempre vram4) para diagnóstico.
+    Si NO hay GPU NVIDIA usable (CUDA), el binario `vram4` (CUDA-only) no
+    arrancaría -> recomendamos el perfil `cpu` (E2B-Q4 en CPU, 0 VRAM, visión
+    OFF) para que el agente FUNCIONE en laptops sin NVIDIA en vez de fallar en el
+    boot. Esto NO afecta a usuarios con NVIDIA (siguen en vram4). Gate
+    GEMMA4_NO_GPU_AUTOCPU=0 desactiva la auto-caída (siempre vram4) para
+    diagnóstico.
     """
     autocpu = (os.environ.get("GEMMA4_NO_GPU_AUTOCPU", "1") or "1").strip().casefold()
     if autocpu not in {"0", "false", "no", "off"} and not has_usable_cuda_gpu():
@@ -424,12 +418,11 @@ def get_active_profile() -> Profile:
     Default fallback: vram4 (si no se puede detectar VRAM). Resuelve nombres
     legacy (balanced/light/...) escritos por versiones anteriores.
 
-    Override GEMMA4_DEFAULT_PROFILE (2026-05-23, pedido de RED): si está seteado
-    a un perfil válido, ese es el default en el PRIMER arranque (en vez de
-    auto-detectar por VRAM y recomendar el más grande). Opt-in -> no afecta a
-    otros usuarios (multi-usuario universal). NO pisa un active_profile.txt ya
-    existente (el usuario manda si ya eligió). Sirve para fijar vram4 default
-    aunque la GPU tenga 16 GB.
+    Override GEMMA4_DEFAULT_PROFILE: si está seteado a un perfil válido, ese es
+    el default en el PRIMER arranque (en vez de auto-detectar por VRAM y
+    recomendar el más grande). Opt-in -> no afecta a otros usuarios (multi-usuario
+    universal). NO pisa un active_profile.txt ya existente (el usuario manda si ya
+    eligió). Sirve para fijar vram4 default aunque la GPU tenga 16 GB.
     """
     _DEFAULT = "vram4"
     _env_default = (os.environ.get("GEMMA4_DEFAULT_PROFILE") or "").strip().casefold()
@@ -440,12 +433,11 @@ def get_active_profile() -> Profile:
     if not ACTIVE_PROFILE_PATH.is_file():
         # Si hay override de default, respetarlo y persistirlo (no auto-detectar).
         if _env_default and _env_default in PROFILES:
-            # Ola 2.1 GUARD: un default forzado a un perfil GPU (vram4) NO arranca
-            # en una máquina sin NVIDIA (binario CUDA-only). El código garantiza
-            # su precondición (CLAUDE.md #5): caemos a 'cpu' aunque el default sea
-            # vram4, para no fallar en el boot. Respeta el gate y el override de
-            # vendor (has_usable_cuda_gpu los honra). Un default no-GPU (standby/
-            # cpu) se respeta tal cual.
+            # GUARD: un default forzado a un perfil GPU (vram4) NO arranca en una
+            # máquina sin NVIDIA (binario CUDA-only). Caemos a 'cpu' aunque el
+            # default sea vram4, para no fallar en el boot. Respeta el gate y el
+            # override de vendor (has_usable_cuda_gpu los honra). Un default no-GPU
+            # (standby/cpu) se respeta tal cual.
             _gpu_default = _env_default == "vram4"
             _autocpu = (os.environ.get("GEMMA4_NO_GPU_AUTOCPU", "1") or "1").strip().casefold()
             if (_gpu_default and _autocpu not in {"0", "false", "no", "off"}
@@ -564,7 +556,7 @@ def apply_profile_to_env(profile: Profile) -> None:
                                           archivo existe en disco;
                                           NO se toca en cualquier otro caso
 
-    Casos no-obvios documentados (cubiertos por tests V3/V8):
+    Casos no-obvios documentados (cubiertos por tests):
 
     - vision_enabled=True NO sobreescribe GEMMA4_MMPROJ_PATH. Respetamos el
       path que el usuario configuro via Settings, porque cada usuario tiene

@@ -46,18 +46,17 @@ PREROLL_SECONDS = 0.5            # audio kept before the wake event
 # Hard cap on how long a single command can be (from wake to forced cut).
 COMMAND_TIMEOUT_S = float(_os.environ.get("GEMMA4_VOICE_COMMAND_TIMEOUT_S", "8.0"))
 
-# Trailing silence required to end CAPTURE (= cuánto callás DESPUÉS del comando
-# antes de que transcribamos). Este es el delay que el usuario siente al
-# terminar de hablar (reporte 2026-05-22).
+# Trailing silence required to end CAPTURE (= cuánto silencio DESPUÉS del
+# comando antes de transcribir). Este es el delay percibido al terminar de
+# hablar, así que se mantiene lo más bajo posible sin cortar a mitad de frase.
 #
-# HISTORIA: estaba en 0.7s, se subió a 1.4s porque "cortaba en la pausa entre
-# 'hey gemma' y el comando". PERO ese diagnóstico apuntaba al knob equivocado:
-# la pausa POST-WAKE ya está protegida por MIN_CAPTURE_S (el EOS ni siquiera
-# puede disparar en el primer 1.0s de captura). Así que el 1.4s solo agrega
-# latencia al FINAL sin necesidad. La literatura de VAD para comandos cortos
+# La pausa POST-WAKE (micro-pausa entre 'hey gemma' y el comando) NO debe
+# regularse acá: ya está protegida por MIN_CAPTURE_S (el EOS no puede disparar
+# en el primer 1.0s de captura). Subir este valor solo agrega latencia al FINAL
+# sin proteger esa pausa. La literatura de VAD para comandos cortos
 # (faster-whisper VAD: min_silence ~300ms; pausas naturales intra-comando
-# ~200-400ms) indica que 0.8s es de sobra para no cortar a mitad de frase y
-# ~600ms más rápido que 1.4s. Tunable por env si alguien habla muy pausado.
+# ~200-400ms) indica que 0.8s es de sobra para no cortar a mitad de frase.
+# Tunable por env si alguien habla muy pausado.
 END_OF_SPEECH_SILENCE_S = float(_os.environ.get("GEMMA4_VOICE_EOS_SILENCE_S", "0.8"))
 
 # Minimum capture duration before end-of-speech can fire at all. Guards
@@ -74,7 +73,7 @@ EOS_VAD_THRESHOLD = 0.5          # stricter for end-of-speech
 # --- Silence gate before transcription -------------------------------------
 # Whisper HALLUCINATES on silence/near-silence: trained on YouTube captions,
 # it emits artifacts like "¡Suscríbete!" / "Gracias por ver el video" / "..."
-# when fed a buffer with no real speech. The operator saw exactly this. Guard:
+# when fed a buffer with no real speech. Guard:
 # require the captured audio to contain at least one short window whose energy
 # exceeds a speech floor, else skip transcription entirely (no command emitted).
 #
@@ -110,10 +109,10 @@ def _buffer_rms(audio: "np.ndarray") -> float:
 # and "SUSCRÍBETE" both hit. Kept as whole-string equality (not substring) so a
 # real command CONTAINING one of these words ("suscríbete a este canal",
 # "gracias, ahora pon música") is NOT dropped.
-# STT Tier-1 (2026-05-22): lista ampliada con la "Bag-of-Hallucinations"
-# publicada (Barański et al., AGH Kraków, arXiv 2501.11378) + Calm-Whisper fig.1
-# + outros típicos de YouTube en es/en. Whole-string match (folded) para no
-# tocar comandos que CONTENGAN una de estas palabras.
+# Lista ampliada con la "Bag-of-Hallucinations" publicada (Barański et al.,
+# AGH Kraków, arXiv 2501.11378) + Calm-Whisper fig.1 + outros típicos de
+# YouTube en es/en. Whole-string match (folded) para no tocar comandos que
+# CONTENGAN una de estas palabras.
 _SILENCE_HALLUCINATIONS = frozenset({
     # --- original ---
     "suscribete", "suscribete a", "gracias por ver", "gracias por ver el video",
@@ -208,7 +207,7 @@ class VoicePipeline:
         on_wake_event: Callable[[], None] | None = None,
     ) -> None:
         self._on_command = on_command
-        # Optional UI hooks (Sprint 7): on_state(state_name) fires on every
+        # Optional UI hooks: on_state(state_name) fires on every
         # state transition so the HUD can animate idle→listening→thinking;
         # on_wake_event() fires the instant the wake word triggers (for the
         # beep / "I heard you" feedback).
@@ -217,13 +216,13 @@ class VoicePipeline:
         self._vad = SileroVAD()
         self._wake = WakeDetector(on_wake=self._on_wake)
         # Motor STT por env GEMMA4_STT_ENGINE. DEFAULT: parakeet (sherpa-onnx
-        # Parakeet-TDT-v3), aprobado para prod por RED 2026-05-23. MEDIDO sobre
-        # voz real: Parakeet+corrector EntRecall comandos 81% [70,89] vs Whisper
-        # 70%, WER 0.26 vs 0.90, p50 78ms vs 1593ms (21x), 0 regresión en voz de
-        # terceros, robusto a música de fondo (88% @20dB SNR). Ambos exponen
-        # load()+transcribe(int16,...) -> drop-in. GEMMA4_STT_ENGINE=whisper
-        # fuerza el motor viejo. La carga real (con fallback a Whisper si el
-        # modelo Parakeet falta/falla) ocurre en load() -> voz nunca queda rota.
+        # Parakeet-TDT-v3). MEDIDO sobre voz real: Parakeet+corrector EntRecall
+        # comandos 81% [70,89] vs Whisper 70%, WER 0.26 vs 0.90, p50 78ms vs
+        # 1593ms (21x), 0 regresión en voz de terceros, robusto a música de
+        # fondo (88% @20dB SNR). Ambos exponen load()+transcribe(int16,...) ->
+        # drop-in. GEMMA4_STT_ENGINE=whisper fuerza el motor viejo. La carga real
+        # (con fallback a Whisper si el modelo Parakeet falta/falla) ocurre en
+        # load() -> voz nunca queda rota.
         import os as _os
         self._stt_engine = _os.environ.get("GEMMA4_STT_ENGINE", "parakeet").lower()
         self._stt = self._build_stt(self._stt_engine)
@@ -245,13 +244,13 @@ class VoicePipeline:
         # Optional: callable that returns True while the agent is
         # speaking (TTS busy). When set and returns True, wake detection
         # is paused to avoid self-triggering on Piper output going out
-        # of the same speaker as the mic input. Research report C.6
-        # plan A — software-mute path, no AEC dependency.
+        # of the same speaker as the mic input. Software-mute path: pause
+        # the wake detector instead of running acoustic echo cancellation.
         self._tts_busy_fn: Callable[[], bool] | None = None
         # True while wake detection is paused because TTS is speaking. Tracked
         # so the pause/resume is logged ONCE per transition (not per audio
-        # chunk, which would spam ~12 lines/sec) — lets the operator confirm
-        # the echo-gate actually fires at runtime.
+        # chunk, which would spam ~12 lines/sec) — gives a single log line per
+        # echo-gate fire/release instead of a flood.
         self._wake_paused_for_tts: bool = False
 
         # Pre-wake ring buffer (PREROLL_SECONDS worth of chunks).
@@ -305,8 +304,8 @@ class VoicePipeline:
             return False
         if not self._stt.load():
             # FALLBACK: si Parakeet no carga (modelo ausente en esta máquina),
-            # caemos a Whisper para que la voz NUNCA quede rota. (CLAUDE.md: el
-            # código garantiza sus precondiciones; sin carga de setup al user.)
+            # caemos a Whisper para que la voz NUNCA quede rota: el código
+            # garantiza sus precondiciones, sin descargar setup en el usuario.
             if self._stt_engine == "parakeet":
                 logger.warning(
                     "Parakeet STT no cargó (%s); fallback a Whisper-small",
@@ -367,7 +366,7 @@ class VoicePipeline:
     def set_tts_busy_fn(self, fn: Callable[[], bool] | None) -> None:
         """Register a callable that returns True while TTS is playing.
         The wake detector pauses while this returns True (software-mute
-        echo avoidance, per research report C.6 plan A).
+        echo avoidance: no acoustic echo cancellation needed).
         """
         self._tts_busy_fn = fn
 
@@ -392,23 +391,22 @@ class VoicePipeline:
     def _handle_idle(self, chunk: np.ndarray) -> None:
         """In IDLE, keep preroll updated and run wake detection.
 
-        Sprint 5 fix (2026-05-19): the wake detector accumulates
+        Do NOT VAD-gate the wake input: the wake detector accumulates
         80 ms windows internally; if we drop chunks via a VAD gate
         upstream, we destroy that continuity and the wake never sees
-        a complete window. Empirically this took recall from 7/105 to
-        0/105 on Grabación (2).wav.
+        a complete window. Measured: a VAD gate upstream dropped recall
+        from 7/105 to 0/105 on a held-out recording.
 
-        Conclusion: feed wake EVERY chunk. The wake model's own
-        threshold + the same_phrase_cooldown handle ambient-noise
-        FP rejection adequately for v9. The VAD is still used DOWN-
-        stream (end-of-speech detection during CAPTURE) where it
-        belongs.
+        So: feed wake EVERY chunk. The wake model's own threshold +
+        the same_phrase_cooldown handle ambient-noise FP rejection
+        adequately. The VAD is still used DOWNstream (end-of-speech
+        detection during CAPTURE) where it belongs.
         """
         self._preroll.append(chunk)
         # Software-mute: pause wake detection while TTS is speaking.
         # Without echo cancellation, hearing 'gemma' in TTS output
         # would self-trigger via the mic. Logged on TRANSITION (not per
-        # chunk) so the operator can confirm the echo-gate actually fires.
+        # chunk) so each echo-gate fire/release is one log line, not a flood.
         if self._tts_busy_fn is not None:
             try:
                 busy = bool(self._tts_busy_fn())
@@ -532,7 +530,7 @@ class VoicePipeline:
             self._emit_state("IDLE_LISTENING")
             return
 
-        # VAD TRIM (STT Tier-1): recortar silencio lateral antes de Whisper.
+        # VAD TRIM: recortar silencio lateral antes de Whisper.
         # El silencio al inicio/final es la causa #1 de alucinación en clips
         # cortos. Reseteamos el estado RNN del VAD (la detección de EOS ya lo
         # consumió) para un escaneo limpio. Si el VAD no está o falla, devuelve

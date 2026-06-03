@@ -144,9 +144,9 @@ class AgentState:
         (the patched value must itself be a list); `max_append` trims the
         oldest entries when given.
 
-        CC-102 / T3-routine-state-private-api-029: este es el reemplazo
-        público del idiom `state._load(); ...; state._save(data)` que
-        antes saltaba el RLock entre read y write.
+        Reemplazo público del idiom `state._load(); ...; state._save(data)`,
+        que saltaba el RLock entre el read y el write (read-modify-save
+        atómico bajo el lock).
         """
         with self._lock:
             data = self._load()
@@ -192,10 +192,9 @@ class AgentState:
 
         Open resources are never touched, regardless of age.
 
-        Sprint 7.2: introduced to prevent state.json from accumulating
-        zombie ``closed`` entries forever. Called once on Gemma4Agent
-        startup, in a try/except so a malformed state.json never breaks
-        boot.
+        Prevents state.json from accumulating zombie ``closed`` entries
+        forever. Called once on Gemma4Agent startup, in a try/except so a
+        malformed state.json never breaks boot.
         """
         import datetime as _dt
         cutoff = _dt.datetime.now().astimezone() - _dt.timedelta(days=max_age_days)
@@ -315,7 +314,7 @@ class AgentState:
             return {"ok": True, "confirmation": item}
 
     # ------------------------------------------------------------------
-    # Pending intent (hotfix F 2026-05-17)
+    # Pending intent
     # ------------------------------------------------------------------
     # Cross-turn rescue slot. Triggered when a tool result returns
     # status='needs_user'; consumed by the planner (pending_intent) as a tool
@@ -362,7 +361,7 @@ class AgentState:
                 self._save(data)
 
     # ------------------------------------------------------------------
-    # Pending question (hotfix I 2026-05-17)
+    # Pending question
     # ------------------------------------------------------------------
     # Separate from pending_intent. Triggered when a tool succeeded but
     # emitted a clarification_needed / partial_reason field — the tool

@@ -18,14 +18,14 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import unquote, urlparse
 
-from .._shared import _err, _ok, hard_gate as _hard_gate  # consolidated 2026-05-27 (audit R3)
+from .._shared import _err, _ok, hard_gate as _hard_gate  # _ok/_err/hard_gate viven en un solo módulo compartido
 from ..memory_pkg.state import AgentState
 
 
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
 
 
-# F-013: encapsular state global de Playwright + sesiones en un registry
+# Encapsular el state global de Playwright + sesiones en un registry
 # singleton, para que los tests puedan resetearlo cleanly entre runs y los
 # callers compartan un solo source-of-truth. Los nombres `_PW` y
 # `_BROWSER_SESSIONS` se mantienen como aliases hacia los attrs del registry
@@ -56,7 +56,7 @@ _BROWSER_SESSIONS: dict[str, dict[str, Any]] = _SESSIONS.sessions
 _PW: Any | None = None
 
 
-# _ok / _err importados desde ._shared (consolidados 2026-05-27, audit R3).
+# _ok / _err importados desde ._shared (un solo módulo compartido).
 
 
 def state_tool(args: dict[str, Any], state: AgentState, execute: Executor) -> dict[str, Any]:
@@ -321,7 +321,7 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         cmd = ["reg", "query", key]
         if name:
             cmd.extend(["/v", name])
-        result = _run_cmd(cmd, timeout=15)  # antes 20, suficiente.
+        result = _run_cmd(cmd, timeout=15)
         # CONSISTENCIA: reg query devuelve exit 1 si la clave/valor no existe.
         # Esto NO es un error del agente; es informacion semantica. Convertir
         # a _ok(exists=False) para que el LLM distinga "registry call broken"
@@ -394,7 +394,7 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         # Gate duro INDEPENDIENTE de safety_enabled (defensa en profundidad, igual que
         # database.execute). Mutar el registro es irreversible: el backup .reg es
         # recuperación, NO una confirmación. Si safety está OFF o la policy se bypasea,
-        # esto igual exige confirmed. (Auditoría 2026-06-01, hallazgo registry-hard_gate.)
+        # esto igual exige confirmed.
         gate = _hard_gate(
             state, tool="registry", action="add", args=args,
             reason=f"registry.add will write {key}\\{name}", risk="high",
@@ -405,8 +405,9 @@ def registry_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         if backup.get("ok"):
             rollback = [{"tool": "registry", "args": {"action": "import", "file": backup.get("file")}}]
         else:
-            # T2-registry-backup-trust-015: solo permitimos fallback-to-delete
-            # si confirmamos que la clave/valor NO existía antes del add.
+            # Solo permitimos fallback-to-delete como rollback si confirmamos
+            # que la clave/valor NO existía antes del add (si no, un rollback
+            # destruiría un valor previo).
             pre = _run_cmd(["reg", "query", key, "/v", name], timeout=10)
             if pre.get("ok"):
                 # Existía un valor previo y el backup falló: rehusamos para no
@@ -556,8 +557,8 @@ Invoke-WebRequest -Uri $env:GEMMA4_DOWNLOAD_URL -OutFile $env:GEMMA4_DOWNLOAD_PA
     actual = str(hash_result.get("hash") or "").casefold()
     hash_verified = bool(expected and actual and expected == actual)
     sig_result = _authenticode_signature(dst) if dst.suffix.casefold() in {".exe", ".msi", ".ps1", ".dll"} else {}
-    # T2-download-signature-trust-016: Authenticode 'Valid' NO promueve a verified=True;
-    # solo el hash explicit-expected lo hace. La firma queda como signal informativo
+    # Authenticode 'Valid' NO promueve a verified=True; solo el hash
+    # explicit-expected lo hace. La firma queda como signal informativo
     # para que el agente la presente al usuario.
     signature_present = sig_result.get("status") == "Valid" if sig_result else False
     signer_subject = None
@@ -624,22 +625,22 @@ def email_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         )
     to = _string_list(args.get("to"))
     if not token:
-        # SIN token de Graph: en vez de fallar (que dejaba al usuario sin manos
-        # sin forma de mandar un correo), abrimos el REDACTOR web pre-rellenado
-        # de Gmail con la sesión que el usuario ya tiene logueada — cero setup
-        # (CLAUDE.md #5: el código garantiza su precondición). NO enviamos acá:
-        # componer no es irreversible, enviar sí (CLAUDE.md #6) → el usuario
-        # revisa y manda en el redactor. El open real lo hace t_email (tiene el
-        # browser); acá solo armamos la URL y señalamos el fallback.
+        # SIN token de Graph: en vez de fallar (que dejaría sin forma de mandar
+        # un correo), abrimos el REDACTOR web pre-rellenado de Gmail con la
+        # sesión que el usuario ya tiene logueada — cero setup, el código
+        # garantiza su precondición. NO enviamos acá: componer no es
+        # irreversible, enviar sí → el usuario revisa y manda en el redactor.
+        # El open real lo hace t_email (tiene el browser); acá solo armamos la
+        # URL y señalamos el fallback.
         if not to:
             return _err("missing email recipient", status="needs_user", verified=False)
         # NO validamos formato de email acá (a diferencia del send por Graph): el
         # redactor NO envía, así que un NOMBRE pelado ("juan") es válido — va al
         # campo "Para" de Gmail, donde el autocompletado de contactos del usuario
         # lo resuelve y el usuario elige antes de mandar. El 4B a veces pasa el
-        # nombre sin expandir a correo; rechazarlo dejaría al usuario sin manos
-        # sin poder escribir el mail. Gmail no manda nada hasta que el user lo
-        # confirma, así que abrir el borrador es siempre más útil que abortar.
+        # nombre sin expandir a correo; rechazarlo abortaría la redacción sin
+        # motivo. Gmail no manda nada hasta que el user lo confirma, así que
+        # abrir el borrador es siempre más útil que abortar.
         from urllib.parse import quote as _q
         url = ("https://mail.google.com/mail/?view=cm&fs=1"
                f"&to={_q(','.join(to))}")
@@ -723,12 +724,11 @@ def email_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
 
 
 def _reminder_schedule_enabled() -> bool:
-    """B8 (competidores): cuando un reminder trae HORA, delegar al backend de
-    Task Scheduler (notification) para que DISPARE (toast) aunque la app reinicie.
-    DEFAULT-ON desde 2026-05-29 (validado en vivo: el Scheduled Task se crea en el SO).
-    Kill-switch GEMMA4_REMINDER_SCHEDULE=0 (vuelve a state-only). El backend ya existe
-    y es CC-100-safe; esto sólo lo cablea al tool `reminder`. Seguro: sólo actúa con
-    `due` presente y si el scheduling falla cae a state-only (no pierde el reminder)."""
+    """Cuando un reminder trae HORA, delegar al backend de Task Scheduler
+    (notification) para que DISPARE (toast) aunque la app reinicie. DEFAULT-ON
+    (crea un Scheduled Task en el SO). Kill-switch GEMMA4_REMINDER_SCHEDULE=0
+    vuelve a state-only. Sólo actúa con `due` presente; si el scheduling falla
+    cae a state-only (no pierde el reminder)."""
     return (os.environ.get("GEMMA4_REMINDER_SCHEDULE", "1") or "1").strip().lower() not in {
         "0", "false", "no", "off"}
 
@@ -740,14 +740,14 @@ def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
         return _ok(local_state=True, graph_token=bool(os.environ.get("GEMMA4_GRAPH_TOKEN") or os.environ.get("MS_GRAPH_TOKEN")))
     if action == "list":
         resources = state.list_resources(include_closed=bool(args.get("include_closed", False))).get("resources", [])
-        # B8: incluir local_reminder (recordatorios programados en Task Scheduler).
+        # Incluir local_reminder (recordatorios programados en Task Scheduler).
         reminders = [res for res in resources if res.get("kind") in ("reminder", "local_reminder")]
         return _ok(reminders=reminders, count=len(reminders))
     if action == "delete":
         rid = str(args.get("id") or args.get("resource_id") or "").strip()
         if not rid:
             return _err("missing reminder id", status="needs_user")
-        # B8: si es un reminder PROGRAMADO (local_reminder con task_name), hay que
+        # Si es un reminder PROGRAMADO (local_reminder con task_name), hay que
         # borrar también el Scheduled Task del SO (si no, seguiría disparando).
         try:
             res = (state._load().get("resources", {}) or {}).get(rid) or {}
@@ -808,10 +808,10 @@ def reminder_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
                             status="needs_user",
                             hint="decime la hora exacta (ej: 'a las 3 de la tarde de hoy' o 'mañana a las 9')",
                         )
-    # B8 (competidores): si hay una HORA (due) y el scheduling está habilitado,
-    # delegamos al backend de Task Scheduler (notification) para que el recordatorio
-    # DISPARE (toast) aunque la app se reinicie — backend YA existe, robusto, CC-100-safe.
-    # Sin due (recordatorio sin hora) o gated-off -> state-only (comportamiento original).
+    # Si hay una HORA (due) y el scheduling está habilitado, delegamos al backend
+    # de Task Scheduler (notification) para que el recordatorio DISPARE (toast)
+    # aunque la app se reinicie. Sin due (recordatorio sin hora) o gated-off ->
+    # state-only.
     if due_normalized and _reminder_schedule_enabled():
         try:
             from ..domain_tools.notifications import notification_tool
@@ -876,12 +876,12 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
     if action == "connect_cdp":
         endpoint = str(args.get("endpoint") or args.get("url") or "http://127.0.0.1:9222").strip()
         session = _connect_cdp_session(session_id, endpoint)
-        # BUG OBSERVED 2026-05-16 20:00: calling _tabs(session) right after
-        # CDP attach can hang 60+s because page.title()/page.url block on
-        # CDP messages for background pages / service workers / pages with
-        # SSE streams (e.g. claude.ai). The streaming flow never needs the
-        # pre-existing tabs (it opens a fresh new_tab). Caller can request
-        # tabs explicitly via action="tabs" if needed.
+        # Calling _tabs(session) right after CDP attach can hang 60+s because
+        # page.title()/page.url block on CDP messages for background pages /
+        # service workers / pages with SSE streams (e.g. claude.ai). The
+        # streaming flow never needs the pre-existing tabs (it opens a fresh
+        # new_tab). Caller can request tabs explicitly via action="tabs" if
+        # needed.
         return _ok(
             session_id=session_id, endpoint=endpoint, tabs=[],
             tabs_count=len(session.get("pages") or []),
@@ -1083,9 +1083,9 @@ def browser_real_tool(args: dict[str, Any], state: AgentState, captures_dir: Pat
         script = str(args.get("script") or "")
         if not script:
             return _err("evaluate requires script")
-        # T3-browser_real-evaluate-arbitrary-js-038: si la sesión es CDP
-        # (browser visible del usuario), exigir confirmación. En sesiones
-        # headless propias del agente, pass-through.
+        # Si la sesión es CDP (browser visible del usuario), ejecutar JS
+        # arbitrario expone sus cookies/tokens → exigir confirmación. En
+        # sesiones headless propias del agente, pass-through.
         if session.get("cdp") and not bool(args.get("confirmed")):
             pending = state.create_confirmation(
                 "browser_real",
@@ -1609,9 +1609,8 @@ def _browser_wait_for_download(session_id: str, session: dict[str, Any], page: A
 def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35, psm: int = 6) -> dict[str, Any]:
     # psm (page segmentation mode): 6 = bloque uniforme de texto (default, bueno
     # para documentos/párrafos). 11 = "sparse text" — pensado para texto DISPERSO
-    # como labels de UI; medido 2026-05-31 que detecta más labels (9/12 vs 7/12).
-    # El grounding de pantalla (ocr_find_text) pasa psm=11; los lectores de docs
-    # quedan en 6.
+    # como labels de UI; medido: detecta más labels (9/12 vs 7/12). El grounding
+    # de pantalla (ocr_find_text) pasa psm=11; los lectores de docs quedan en 6.
     if not image_path.is_file():
         return _err("image not found", image_path=str(image_path))
     tesseract = shutil.which("tesseract") or shutil.which("tesseract.exe")
@@ -1624,11 +1623,11 @@ def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35, ps
             install_hint="winget install UB-Mannheim.TesseractOCR",
         )
     cmd = [tesseract, str(image_path), "stdout", "-l", lang, "--psm", str(int(psm)), "tsv"]
-    # BUG cp1252 (2026-05-25): con text=True, Python decodía el stdout TSV de
-    # Tesseract con la code-page de consola (cp1252 en Windows ES) y CRASHEABA
-    # en bytes no-ASCII (texto acentuado en la UI) -> el OCR devolvía 0 líneas
-    # silenciosamente. Mismo gotcha que espeak-ng/gui_type (CLAUDE.md). FIX:
-    # capturar BYTES y decodificar utf-8 con errors=replace.
+    # Con text=True, Python decodifica el stdout TSV de Tesseract con la
+    # code-page de consola (cp1252 en Windows ES) y CRASHEA en bytes no-ASCII
+    # (texto acentuado en la UI) -> el OCR devuelve 0 líneas silenciosamente.
+    # Mismo gotcha que espeak-ng/gui_type (CLAUDE.md). FIX: capturar BYTES y
+    # decodificar utf-8 con errors=replace.
     proc = subprocess.run(cmd, capture_output=True, timeout=60)
     if proc.returncode != 0:
         _stderr = (proc.stderr or b"").decode("utf-8", errors="replace")
@@ -1703,10 +1702,10 @@ def _locate_in_ocr(ocr: dict[str, Any], target: str) -> list[dict[str, Any]]:
     ranked: list[tuple[int, int, int, dict[str, Any]]] = []
     tokens = target_fold.split()
     if len(tokens) <= 1:
-        # Target de UNA palabra → caja a nivel de PALABRA (click PRECISO). Antes
-        # esto matcheaba la LÍNEA entera y el click caía en su centro (medido
-        # 2026-05-31: "File"/"Edit"/"Run" daban TODOS center (696,16) = el medio
-        # de la barra de menú, no la palabra). Preferí exacta > sub-token > substring.
+        # Target de UNA palabra → caja a nivel de PALABRA (click PRECISO). A
+        # nivel de LÍNEA el click cae en su centro (medido: "File"/"Edit"/"Run"
+        # daban TODOS center (696,16) = el medio de la barra de menú, no la
+        # palabra). Preferí exacta > sub-token > substring.
         for w in words:
             wf = _fold_local(str(w.get("text") or ""))
             if not wf:
@@ -1738,7 +1737,7 @@ def _locate_in_ocr(ocr: dict[str, Any], target: str) -> list[dict[str, Any]]:
 
 def ocr_find_text(image_path: Path, target: str, *, lang: str = "spa+eng", min_conf: int = 25) -> dict[str, Any]:
     # Grounding de UI: psm 11 ("sparse text") primero — detecta más labels dispersos
-    # (medido 2026-05-31: 9/12 vs 7/12 de psm 6). Si NO encuentra, reintenta con psm 6
+    # (medido: 9/12 vs 7/12 de psm 6). Si NO encuentra, reintenta con psm 6
     # (bloque) por si el target era texto corrido — la unión sube a 10/12. El 2º pase
     # solo se paga en el miss (que de todos modos iba a fallar y caer a visión).
     last_ocr: dict[str, Any] = {}
@@ -1771,8 +1770,8 @@ def ocr_find_text(image_path: Path, target: str, *, lang: str = "spa+eng", min_c
 
 
 def _playwright() -> Any:
-    # F-013: instanciar a traves del registry; mantener `_PW` global como
-    # alias compat (algunos tests/lecturas externas lo inspeccionan).
+    # Instanciar a traves del registry; mantener `_PW` global como alias compat
+    # (algunos tests/lecturas externas lo inspeccionan).
     global _PW
     if _SESSIONS.pw is None:
         from playwright.sync_api import sync_playwright
@@ -1783,8 +1782,8 @@ def _playwright() -> Any:
 
 
 def _get_browser_session(session_id: str, state: AgentState, *, headless: bool) -> dict[str, Any]:
-    # T3-browser_real-headless-fixed-after-open-040: si la sesión existe con
-    # otro headless, fallar rápido.
+    # Si la sesión ya existe con otro valor de headless, fallar rápido (el
+    # browser ya está lanzado; headless no se puede cambiar en caliente).
     session = _BROWSER_SESSIONS.get(session_id)
     if session:
         if session.get("headless") != headless:
@@ -1814,10 +1813,10 @@ def _connect_cdp_session(session_id: str, endpoint: str) -> dict[str, Any]:
     if existing:
         _close_browser_session(session_id)
     pw = _playwright()
-    # BUG OBSERVED 2026-05-16 19:18: connect_over_cdp without timeout hangs
-    # indefinitely when Opera GX is running but the CDP websocket is not
-    # ready (e.g. user opened browser without --remote-debugging-port).
-    # 8s is generous; if it doesn't connect in 8s, it never will.
+    # connect_over_cdp without timeout hangs indefinitely when the browser is
+    # running but the CDP websocket is not ready (e.g. the user opened the
+    # browser without --remote-debugging-port). 8s is generous; if it doesn't
+    # connect in 8s, it never will.
     browser = pw.chromium.connect_over_cdp(endpoint, timeout=8000)
     context = browser.contexts[0] if browser.contexts else browser.new_context()
     pages = list(context.pages)
@@ -1871,11 +1870,11 @@ def _tabs(session: dict[str, Any]) -> list[dict[str, Any]]:
     pages = [page for page in ctx.pages if not page.is_closed()]
     session["pages"] = pages
     for index, page in enumerate(pages):
-        # BUG OBSERVED 2026-05-16 20:00: page.title() is a SYNC CDP call
-        # without a usable client-side timeout. It blocks indefinitely on
-        # tabs with long-lived event streams (claude.ai SSE, gmail websocket)
-        # or pending dialogs. page.url is a cached attribute (instant) and
-        # is enough to identify a tab; title is only informational. Drop it.
+        # page.title() is a SYNC CDP call without a usable client-side timeout.
+        # It blocks indefinitely on tabs with long-lived event streams
+        # (claude.ai SSE, gmail websocket) or pending dialogs. page.url is a
+        # cached attribute (instant) and is enough to identify a tab; title is
+        # only informational. Drop it.
         try:
             url = page.url
         except Exception:
@@ -2054,7 +2053,7 @@ foreach ($lang in (Get-WinUserLanguageList)) {
 }
 $items | ConvertTo-Json -Depth 4
 """
-    # timeout 20 -> 8s + try/except.
+    # timeout 8s + try/except.
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
     except (OSError, subprocess.TimeoutExpired):
@@ -2087,7 +2086,7 @@ public class KeyboardNative {
 $hkl = [KeyboardNative]::GetKeyboardLayout(0).ToInt64()
 [PSCustomObject]@{ hkl=("0x{0:X}" -f $hkl); language_id=("0x{0:X4}" -f ($hkl -band 0xffff)) } | ConvertTo-Json
 """
-    # timeout 15 -> 6s. Add-Type ya cachea el assembly tras primer uso;
+    # timeout 6s. Add-Type ya cachea el assembly tras primer uso;
     # GetKeyboardLayout es instant. 6s da headroom 10x.
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=6)
@@ -2130,7 +2129,7 @@ if ($action -eq "set") { [Environment]::SetEnvironmentVariable($name,$value,$tar
 $v=[Environment]::GetEnvironmentVariable($name,$target)
 [PSCustomObject]@{ name=$name; scope=$target; value=$v; exists=($null -ne $v) } | ConvertTo-Json
 """
-    # timeout 20 -> 10s + try/except. SetEnvironmentVariable es instant;
+    # timeout 10s + try/except. SetEnvironmentVariable es instant;
     # GetEnvironmentVariables del scope Machine sobre HKLM puede tardar
     # 2-5s con muchas vars; 10s es generoso.
     try:
@@ -2205,7 +2204,7 @@ def _authenticode_signature(path: Path) -> dict[str, Any]:
         return _err("file not found", path=str(path))
     env = {**os.environ, "GEMMA4_SIG_PATH": str(path)}
     script = "Get-AuthenticodeSignature -LiteralPath $env:GEMMA4_SIG_PATH | Select-Object Status,StatusMessage,SignerCertificate,Path | ConvertTo-Json -Depth 4"
-    # timeout 30 -> 12s + try/except. signature check normalmente <2s; los
+    # timeout 12s + try/except. signature check normalmente <2s; los
     # que requieren CRL revocation pueden tardar 3-8s. 12s es suficiente.
     try:
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=12)
@@ -2241,9 +2240,9 @@ def _truncate(text: str, limit: int) -> str:
     return text if len(text) <= limit else text[:limit] + f"...<truncated {len(text) - limit} chars>"
 
 
-# F-006: cleanup atexit para _BROWSER_SESSIONS. Sin esto, los Chromium
-# spawned via Playwright pueden dejar handles/sockets vivos al exit del
-# proceso (en runs largos se acumulan en RAM hasta OOM).
+# Cleanup atexit para _BROWSER_SESSIONS. Sin esto, los Chromium spawned via
+# Playwright pueden dejar handles/sockets vivos al exit del proceso (en runs
+# largos se acumulan en RAM hasta OOM).
 def _cleanup_all_browser_sessions() -> None:
     for sid in list(_BROWSER_SESSIONS.keys()):
         try:

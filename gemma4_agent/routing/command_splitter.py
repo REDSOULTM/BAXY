@@ -1,11 +1,11 @@
-"""Splitter de comandos multi-intent — MULTILINGÜE (investigación 7, 2026-05-23).
+"""Splitter de comandos multi-intent — MULTILINGÜE.
 
 "abrí Spotify y bajá el volumen" son DOS acciones. Un 4B causal colapsa el
 multi-intent (MIDLM, COLING 2025: la atención causal no maneja multi-intent como
 un 7B bidireccional). La cura NO es agrandar el modelo: es partir el enunciado en
 cláusulas ANTES de que el LLM lo vea y rutear cada una como su propio turno.
 
-UNIVERSAL (CLAUDE.md: la app la usa cualquier hablante; nada de regex es-only):
+UNIVERSAL (la app la usa cualquier hablante; nada de regex es-only):
   - Capa 1 (rápida, español): regex de verbos imperativos. Atajo barato exacto.
   - Capa 2 (multilingüe): si la capa 1 no parte, intentar partir en una
     CONJUNCIÓN de cualquier idioma (y/and/e/und/et/o/or/oder...) y CONFIRMAR por
@@ -39,7 +39,7 @@ _IMPERATIVE = (
     r"escrib[íi]|escribe|tecle[áa]|teclea|tipe[áa]|tipea|digit[áa]|digita|"
     r"crea|cre[áa]|apag[áa]|apaga|prend[ée]|prende|"
     r"enciend[ee]|cancel[áa]|cancela|borr[áa]|borra|elimin[áa]|elimina|"
-    # verbos de CLICK/INTERACCIÓN (Fase B computer-use): "apretá/clickeá/tocá/
+    # verbos de CLICK/INTERACCIÓN (computer-use): "apretá/clickeá/tocá/
     # seleccioná/elegí <botón>". Sin estos, una cadena "...y apretá enter" no
     # partía la 3ra cláusula. Voseo + estándar.
     r"apret[áa]|apreta|clicke[áa]|clickea|click[ée]a?|toc[áa]|toca|"
@@ -55,10 +55,10 @@ _SPLIT_RE = re.compile(
     r";\s+(?=(?:" + _IMPERATIVE + r"))"
     r"|,?\s+(?:y|e|o)\s+(?:despu[ée]s\s+|luego\s+|tambi[ée]n\s+)?(?=(?:" + _IMPERATIVE + r"))"
     # ASÍNDETON: coma SIN conjunción seguida de un imperativo ("abrí la calc,
-    # escribí X y apretá enter"). 2026-05-24: el eval Tier-4 mostró que la coma
-    # antes de la 1ra acción dejaba dos acciones pegadas en una cláusula -> el 4B
-    # abría pero no tecleaba. Requiere un VERBO imperativo tras la coma, así
-    # "sal, pimienta, azúcar" (sustantivos) NO parte.
+    # escribí X y apretá enter"). Sin esta rama, la coma antes de la 1ra acción
+    # dejaba dos acciones pegadas en una cláusula -> el 4B abría pero no tecleaba.
+    # Requiere un VERBO imperativo tras la coma, así "sal, pimienta, azúcar"
+    # (sustantivos) NO parte.
     r"|,\s+(?=(?:" + _IMPERATIVE + r"))"
     r"|\s+(?:despu[ée]s|luego)\s+(?=(?:" + _IMPERATIVE + r"))"
     r")",
@@ -86,13 +86,13 @@ _DEP_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Cap de cláusulas por misión. **VERIFICADO = 3** (2026-05-24): cadenas de 2-3
-# pasos (abrir+escribir+enter) se midieron estables contra el SO real con
-# falso-PASS 0%. El soporte del código llega a más, pero NO se afirma >3: las
-# cadenas de 4-5 pasos no se pudieron verificar ESTABLES (la capa de tecleo del
-# SO —SendKeys a apps recién abiertas— se degrada de forma no-determinista bajo
-# carga; ver memoria project_gui_chains). Mantener el cap en lo MEDIDO, no en lo
-# aspiracional. >3 cláusulas = no partir (status quo: el LLM ve el comando entero).
+# Cap de cláusulas por misión. **VERIFICADO = 3**: cadenas de 2-3 pasos
+# (abrir+escribir+enter) se midieron estables contra el SO real con falso-PASS
+# 0%. El soporte del código llega a más, pero NO se afirma >3: las cadenas de
+# 4-5 pasos no se pudieron verificar ESTABLES (la capa de tecleo del SO
+# —SendKeys a apps recién abiertas— se degrada de forma no-determinista bajo
+# carga). Mantener el cap en lo MEDIDO, no en lo aspiracional. >3 cláusulas =
+# no partir (status quo: el LLM ve el comando entero).
 MAX_CLAUSES = 3
 
 # Margen mínimo (action - noun) para tratar una cláusula como ACCIÓN (medido:
@@ -260,9 +260,9 @@ def split_command(utterance: str) -> list[str]:
     if not utterance or not utterance.strip():
         return [utterance]
     # Quitar disfluencias/muletillas INICIALES (ruido del STT, NO comando) antes de
-    # partir. MEDIDO en vivo 2026-05-31: "Eh, pon una canción" -> ['Eh','pon una
-    # canción'] y la cláusula 'Eh' generaba un reply junk ("listo, cancelo") que se
-    # concatenaba. Se quitan como RUIDO (igual que el wake-word), no deciden intención.
+    # partir. Sin esto, "Eh, pon una canción" -> ['Eh','pon una canción'] y la
+    # cláusula 'Eh' generaba un reply junk ("listo, cancelo") que se concatenaba.
+    # Se quitan como RUIDO (igual que el wake-word), no deciden intención.
     _clean = _LEADING_FILLER_RE.sub("", utterance).strip()
     if _clean:
         utterance = _clean
@@ -270,8 +270,8 @@ def split_command(utterance: str) -> list[str]:
     parts = [p.strip(" ,.;") for p in _SPLIT_RE.split(utterance) if p and p.strip(" ,.;")]
     if len(parts) > 1:
         # NO PARTIR cuando la 1ra cláusula es un "ir/entrar a <app>" puro: es un
-        # PREFIJO DE CONTEXTO de lo que sigue, no una acción aparte. Bug medido
-        # 2026-05-25: "Ve a discord y pon el chat de cbayeah" se partía en
+        # PREFIJO DE CONTEXTO de lo que sigue, no una acción aparte. Bug que cura:
+        # "Ve a discord y pon el chat de cbayeah" se partía en
         # ["Ve a discord","pon el chat de cbayeah"]; la 2da, aislada, perdía
         # "discord" -> el router la mandaba a WhatsApp (whatsapp=0.58) y abría el
         # chat en la app equivocada. Manteniéndolas juntas, _window_title_in_text
@@ -293,8 +293,8 @@ def has_back_reference(clause: str) -> bool:
 # "abrilo/lanzalo/abrí eso/open it": ABRIR (lanzar) el REFERENTE de la cláusula
 # previa. Verbo de apertura/lanzamiento + (clítico/pronombre opcional), SIN target
 # explícito (si hay target propio como "abrí el bloc" NO matchea -> es su propia
-# acción). Cura el encadenamiento dependiente "instalá VLC Y ABRILO" (MEDIDO
-# 2026-05-31: 'abrilo' leakeaba como texto porque package no está en el carry GUI).
+# acción). Cura el encadenamiento dependiente "instalá VLC Y ABRILO": sin esto,
+# 'abrilo' leakeaba como texto porque package no está en el carry GUI.
 _DEP_OPEN_RE = re.compile(
     r"^\s*(?:abr[íia]\w*|abrir|abre|lanz[áa]\w*|ejecut[áa]\w*|corr[ée]\w*|"   # es
     r"open|launch|run|start|"                                                  # en
@@ -312,10 +312,10 @@ def is_dependent_open(clause: str) -> bool:
     return bool(clause and _DEP_OPEN_RE.match(clause.strip()))
 
 
-# OPEN PELADO de una app: "abrí la calculadora", "abrí discord". MEDIDO 2026-05-31
-# (PC del user, físico): el router/4B NO rutea ciertos nombres a app.open de forma
-# CONSISTENTE ("abrí la calculadora"/"abrí discord" -> NADA 3/3, pero "abrí spotify"
-# -> app 3/3). La tool app.open SÍ resuelve todos (calc.exe etc.). Detector
+# OPEN PELADO de una app: "abrí la calculadora", "abrí discord". MEDIDO: el
+# router/4B NO rutea ciertos nombres a app.open de forma CONSISTENTE ("abrí la
+# calculadora"/"abrí discord" -> NADA 3/3, pero "abrí spotify" -> app 3/3). La
+# tool app.open SÍ resuelve todos (calc.exe etc.). Detector
 # estructural -> el caller INTENTA app.open(nombre); si resuelve a una app, listo;
 # si no (carpeta/URL/chat), cae al flujo normal (la tool es la guarda de precisión).
 _APP_OPEN_VERB = re.compile(
@@ -360,7 +360,7 @@ def plan_clauses(utterance: str) -> list[dict]:
             for i, c in enumerate(clauses)]
 
 
-# --- Extracción de payload de ESCRITURA (Fase 2 computer-use) ----------------
+# --- Extracción de payload de ESCRITURA (computer-use) -----------------------
 # Una cláusula "escribí/tecleá/type <texto>" en un contexto GUI debe ir a la
 # macro determinista type_into, NO a que el 4B forme la llamada. El verbo de
 # escritura inicial es vocabulario CERRADO y morfológico (no clasifica intención
@@ -453,8 +453,8 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
     # invia) NO implican destinatario: exigen un "a/to/para/à/an <quién>"
     # explícito. Mide la FORMA (morfología), no listas de nombres.
     #
-    # BUG QUE ESTO CURA (2026-05-30, reportado en vivo): "manda un mensaje por
-    # wsp" (SIN destinatario) — el stem pelado `mand` hacía implies=True, no
+    # BUG QUE ESTO CURA: "manda un mensaje por wsp" (SIN destinatario) — el stem
+    # pelado `mand` hacía implies=True, no
     # exigía "a", y el PASO 3 agarraba el 1er token "un" (artículo) como contacto
     # -> "Abrí el chat con un". Mismo bug-class en de/fr/it ("schick eine
     # nachricht"). Ahora sin clítico ni "a" -> None -> el LLM pregunta a quién.
@@ -544,8 +544,8 @@ def extract_write_payload(clause: str) -> str | None:
 
 # --- Detección de ACCIÓN-EN-APP / META para el orquestador computer_use -------
 # ACCESIBILIDAD (núcleo del producto): el usuario dicta y el agente debe ACTUAR en
-# una app/pantalla — escribir, clickear, o "andá a X y hacé Y". MEDIDO en vivo
-# (2026-05-31): estos pedidos casi NUNCA llegaban a computer_use — el 4B charlaba
+# una app/pantalla — escribir, clickear, o "andá a X y hacé Y". MEDIDO: estos
+# pedidos casi NUNCA llegaban a computer_use — el 4B charlaba
 # ("escribí sigue en claude code"→"Sigo en Claude Code"), respondía la pregunta
 # ("en claude code escribí quién eres"→la contestaba), o el router los mandaba a
 # notes_tasks/local_search/browser/whatsapp/nada. Solo ~1/10 llegaba al orquestador.
@@ -582,7 +582,7 @@ _AA_PREP = (r"a|al|to|para|en|in|into|on|n[oa]|su|the|im|dans")
 # una META de computadora; la acción admite verbos IN-APP INEQUÍVOCOS: tipear,
 # clickear, guardar/cerrar/borrar. NO incluye mandar/buscar/reproducir (solapan con
 # whatsapp/web/media), NI poné/colocá/metá/put (AMBIGUOS: 'abrí Spotify y poné rock'
-# = PLAY=media, no tipear — MEDIDO 2026-05-31 que el inherit los mandaba a type).
+# = PLAY=media, no tipear — MEDIDO que el inherit los mandaba a type).
 # Conjunto CURADO explícito (no hereda _AA_ACT, que sí trae poné para el caso
 # 'poné X en notepad' donde el 'en notepad' lo desambigua).
 _AA_ACT_NAV = (
@@ -596,7 +596,7 @@ _AA_NAV_ACTION = re.compile(
     r"(?:" + _AA_ACT_NAV + r")\b", re.IGNORECASE)
 # A2: "<nav> a <dest> en <app>" — navegar a un DESTINO dentro de una app NOMBRADA
 # ('ve a Cotele en Discord', 'entrá al canal general en Discord', 'abrí la playlist X
-# en Spotify'). MEDIDO en vivo 2026-05-31: "Ve a Cotele en Discord" no llegaba a
+# en Spotify'). MEDIDO: "Ve a Cotele en Discord" no llegaba a
 # computer_use (ve=nav, sin verbo de acción ni 2da cláusula -> extract_app_action=None
 # -> el 4B no emitía tool -> "No alcancé a completar"). El orquestador hace
 # focus_app(app)+open_chat(dest). verify_app gatea (la app debe ser real). EXCLUYE
@@ -669,13 +669,13 @@ def extract_app_action(clause: str) -> dict | None:
 
 # Operación aritmética EN LA CALCULADORA: "suma 2+2 en la calculadora", "en la calc
 # hacé 5*3", "calculá 10/2 con la calculadora", "Suma dos más dos en la Calculadora".
-# MEDIDO en vivo 2026-05-31: el 4B tipeaba `gui.type("2+2")` SIN enfocar la Calc -> el
-# sendinput iba a la ventana equivocada (reporta ok:True igual) -> el verifier no
-# encontraba "2+2" en la Calc ("type failed") -> el agente REINTENTABA idéntico 4 veces
-# ("4 no confirmadas" + 18s). Fix: detectar [app calculadora + expresión aritmética
-# pura] y devolver {'expr': '2+2'} para que el caller arme el plan DETERMINISTA
+# MEDIDO: el 4B tipeaba `gui.type("2+2")` SIN enfocar la Calc -> el sendinput iba a
+# la ventana equivocada (reporta ok:True igual) -> el verifier no encontraba "2+2"
+# en la Calc ("type failed") -> el agente REINTENTABA idéntico 4 veces ("4 no
+# confirmadas" + 18s). Fix: detectar [app calculadora + expresión aritmética pura]
+# y devolver {'expr': '2+2'} para que el caller arme el plan DETERMINISTA
 # [focus_app(calc), type(expr), keypress(enter)] (abre/enfoca ANTES de tipear).
-# ESTRUCTURAL (gramática + aritmética, NO listas de intenciones — CLAUDE.md (b)).
+# ESTRUCTURAL (gramática + aritmética, NO listas de intenciones).
 _CALC_APP_RE = re.compile(
     r"\b(?:calculadora|calculator|calcolatrice|calculatrice|rechner|kalkulator|calc)\b",
     re.IGNORECASE)
@@ -704,8 +704,8 @@ def parse_calc_action(clause: str) -> dict | None:
 
 
 # Verbos de MOVIMIENTO a un destino DENTRO de una app (NO 'abrí/abre/open' = app-open
-# AMBIGUO). Para el chain-context (2026-05-31): "abrí Discord y ANDÁ AL canal X" -> la
-# 2da cláusula navega DENTRO de la app abierta por la 1ra; sola, el 4B la PIERDE (charla).
+# AMBIGUO). Para el chain-context: "abrí Discord y ANDÁ AL canal X" -> la 2da cláusula
+# navega DENTRO de la app abierta por la 1ra; sola, el 4B la PIERDE (charla).
 _BARE_NAV_VERB = (
     r"and[áa]|anda|entr[áa]|entra|ve|vamos|vam[oó]nos|llev[áa]me|"          # es
     r"naveg[áa]|navega|and[áa]te|"
@@ -729,10 +729,10 @@ def is_bare_inapp_nav(clause: str) -> bool:
     return bool(_BARE_INAPP_NAV.match(clause.strip()))
 
 
-# Pedido de LEER/MOSTRAR lo que hay EN PANTALLA. Para el chain-context (2026-05-31):
-# tras navegar a una PÁGINA (browser), "mostrame/leeme/ve las tareas" debe LEER la
-# pantalla por visión, NO la tool LOCAL (notes_tasks). El user FLAGSHIP: "entrá a Canvas
-# y MOSTRAME las tareas que debo hacer". Verbos VISUALES (mostrar/leer/mirar/ver), NO
+# Pedido de LEER/MOSTRAR lo que hay EN PANTALLA. Para el chain-context: tras navegar
+# a una PÁGINA (browser), "mostrame/leeme/ve las tareas" debe LEER la pantalla por
+# visión, NO la tool LOCAL (notes_tasks). Caso de referencia: "entrá a Canvas y
+# MOSTRAME las tareas que debo hacer". Verbos VISUALES (mostrar/leer/mirar/ver), NO
 # 'decime/dime' (ambiguo: "decime qué hora es" no es leer-pantalla).
 _READ_SCREEN_RE = re.compile(
     r"^\s*(?:mostr[áa]\w*|mu[ée]str\w*|mostrame|"          # mostrame/muestra
@@ -749,7 +749,7 @@ def is_read_screen_request(clause: str) -> bool:
     a una página/app, leer su CONTENIDO por VISIÓN, no una tool local (notes_tasks).
     El caller la gatea por carry de navegación web (browser). ESTRUCTURAL. 've a X' (nav)
     lo agarra is_bare_inapp_nav ANTES; acá 've <sustantivo>' = mirar. Excluye 'decime/
-    dime' (ambiguo). El user FLAGSHIP: 'entrá a Canvas y mostrame las tareas'."""
+    dime' (ambiguo). Ej: 'entrá a Canvas y mostrame las tareas'."""
     if not clause or not clause.strip():
         return False
     if is_bare_inapp_nav(clause):  # "ve a X" = NAVEGAR (otro macro), no leer-pantalla
@@ -828,7 +828,7 @@ def parse_type_action(clause: str) -> dict | None:
     return None
 
 
-# --- Extracción de TARGET de CLICK (Fase B computer-use) ---------------------
+# --- Extracción de TARGET de CLICK (computer-use) ----------------------------
 # Simétrico a la escritura: una cláusula "apretá/clickeá/tocá/seleccioná <botón>"
 # en contexto GUI debe ir a la macro determinista click_button(label) — UIA find
 # por Name + InvokePattern + verify — NO a que el 4B forme la llamada (medido
@@ -890,7 +890,7 @@ def is_key_name(label: str | None) -> bool:
     return label.strip().casefold() in _KEY_NAMES
 
 
-# PULSAR UNA TECLA EN UNA APP (accesibilidad, 2026-06-01). MEDIDO en vivo: "en la
+# PULSAR UNA TECLA EN UNA APP (accesibilidad). MEDIDO: "en la
 # calculadora apretá el 5" -> extract_app_action lo detecta (pattern=in_app_act,
 # app_hint='la calculadora') pero NO había constructor de plan determinista para un
 # keypress simple -> caía a computer_use(goal genérico) -> el 4B planner devolvía "no
@@ -906,7 +906,7 @@ def is_key_name(label: str | None) -> bool:
 # 'guardar') -> None: eso es un BOTÓN (click_button) o PLAY (media), no keypress. Si es
 # texto largo -> None: eso lo cubre parse_type_action. Así "apretá enviar en WhatsApp"
 # y "tocá una canción en Spotify" NO matchean. ESTRUCTURAL + multi-idioma (es/en/pt/it/
-# fr/de) por morfología del verbo, NO listas de intenciones — CLAUDE.md (b).
+# fr/de) por morfología del verbo, NO listas de intenciones.
 #
 # Verbos de PULSAR-TECLA: subconjunto morfológico de _AA_ACT (apretar/presionar/pulsar/
 # tocar/press/tap/hit/...). NO incluye 'click/clickear/clic' ni 'hacé clic' (eso busca
@@ -1044,7 +1044,7 @@ def extract_click_target(clause: str) -> str | None:
     return label.strip(" .,;") or None
 
 
-# --- NAVEGACIÓN-EN-APP (2026-05-25, validación Discord) ---------------------
+# --- NAVEGACIÓN-EN-APP ------------------------------------------------------
 # "entrá/andá/ve a [el servidor/canal/pestaña/sección] <TARGET> [de la app]" en una
 # app YA abierta -> el TARGET es un control a clickear por Name UIA. El 4B no forma
 # la llamada uia desde estos verbos ambiguos (medido: dice "no tengo herramienta"),

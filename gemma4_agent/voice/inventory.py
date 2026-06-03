@@ -8,7 +8,7 @@ The inventory has FOUR sources, merged at load time:
   1. STATIC_INVENTORY (this file)  — core verbs + common app names
   2. ~/.gemma4/voice_inventory.json — operator-editable additions
   3. installed-apps discovery (best-effort, OS-specific stubs here)
-  4. recently-played media (future Sprint, stubbed for now)
+  4. recently-played media (stubbed for now)
 
 Design principle: be SMALL by default (<200 entries) so RapidFuzz
 remains <10 ms. Large inventories degrade match quality (more
@@ -37,7 +37,7 @@ STATIC_INVENTORY: dict[str, list[str]] = {
         "open", "close", "play", "pause", "stop", "search",
         "minimize", "maximize", "send", "turn", "set",
     ],
-    # Common desktop apps. The dynamic discoverer (future) augments this
+    # Common desktop apps. The dynamic discoverer augments this
     # with the operator's actually-installed apps.
     "apps": [
         "Chrome", "Firefox", "Edge", "Brave", "Safari", "Opera",
@@ -51,9 +51,9 @@ STATIC_INVENTORY: dict[str, list[str]] = {
         "Disney Plus", "Disney+", "HBO Max", "Max", "Prime Video", "Apple Music",
         "Explorer", "Finder", "Files",
         # Apps de productividad/creación GLOBALMENTE comunes (universales, no
-        # del operador). Antes faltaban y Parakeet las fusionaba sin target:
+        # del operador). Sin ellas el STT las fusiona cuando no hay target:
         # gimp->equipe, vlc->blc, reddit->red. El gate de longitud evita que
-        # esta ampliación corrompa habla declarativa. (Etapa 1b, 2026-05-23.)
+        # esta ampliación corrompa habla declarativa.
         "GIMP", "VLC", "Blender", "Krita", "Photoshop", "Illustrator",
         "Premiere", "After Effects", "Lightroom",
         "Word", "Excel", "PowerPoint", "Outlook", "OneNote", "Access",
@@ -75,7 +75,7 @@ STATIC_INVENTORY: dict[str, list[str]] = {
         "Los Redonditos de Ricota", "Soda Stereo", "Charly García",
         "Arctic Monkeys", "Radiohead",
         # Artistas GLOBALMENTE top (Spotify/charts mundiales) — universales, no
-        # del operador. Nombres de pila ingleses cortos que Parakeet fusiona
+        # del operador. Nombres de pila ingleses cortos que el STT fusiona
         # (billy->billie, dualipa->dua lipa). El gate de longitud los protege.
         "Billie Eilish", "Dua Lipa", "The Weeknd", "Karol G", "Sabrina Carpenter",
         "Hozier", "Michael Jackson", "Ariana Grande", "Drake", "Ed Sheeran",
@@ -186,7 +186,7 @@ def get_inventory(include_discovery: bool = True) -> dict[str, list[str]]:
 def build_hotwords(inv: dict[str, list[str]] | None = None) -> str:
     """Lista de nombres propios (apps + artistas) separados por espacio para el
     parámetro `hotwords` de faster-whisper. Sesga el decoder hacia ellos.
-    MEDIDO 2026-05-22: rescata casos que el initial_prompt solo no ("te liera"
+    Medido: rescata casos que el initial_prompt solo no ("te liera"
     ->Telegram) sin dañar habla real. Cap a ~40 nombres para no inflar el prompt
     (hotwords comparte el budget de 224 tokens)."""
     if inv is None:

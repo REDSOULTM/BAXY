@@ -36,10 +36,10 @@ from ..memory_pkg.state import AgentState
 Executor = Callable[[str, dict[str, Any]], dict[str, Any]]
 
 
-# CC-105 + CC-101: unified in Sprint 4 — bodies live in :mod:`._shared`
-# (was duplicated against tools._redact_sensitive / ToolRegistry._hard_gate,
-# see audit §2.2). _ok/_err added 2026-05-27 (audit R3 sprint): were also
-# triplicated (domain_tools/ops_tools/tools, byte-identical bodies).
+# Shared primitives live in :mod:`._shared` to avoid duplication. _hard_gate /
+# _redact_credentials were once duplicated against tools._redact_sensitive /
+# ToolRegistry._hard_gate; _ok/_err were triplicated byte-identically across
+# domain_tools/ops_tools/tools. All unified here.
 from .._shared import (  # noqa: E402
     _err,
     _ok,
@@ -47,11 +47,11 @@ from .._shared import (  # noqa: E402
     redact_sensitive as _redact_credentials,
 )
 
-# R3 sprint 2026-05-28: helpers cross-cutting movidos a domain_tools_helpers.py
-# (rompe los ~26 ciclos falsos-positivos del analizador estático que el patrón
-# lazy-import del R2 generaba). Re-exportamos acá para que callers existentes
-# (`from gemma4_agent import domain_tools as dt; dt._safe_name(...)` y
-# `from gemma4_agent.domain_tools import _existing_path`) sigan funcionando.
+# Cross-cutting helpers live in .helpers (separating them breaks the ~26
+# false-positive cycles the static analyzer reports for the lazy-import pattern).
+# Re-exported here so existing callers keep working:
+# `from gemma4_agent import domain_tools as dt; dt._safe_name(...)` and
+# `from gemma4_agent.domain_tools import _existing_path`.
 from .helpers import (  # noqa: F401, E402
     _existing_path,
     _find_resource,
@@ -70,8 +70,7 @@ from .helpers import (  # noqa: F401, E402
 
 
 
-# Office (PPTX/DOCX/XLSX) - extraído a domain_tools_office.py
-# (R2 sprint 2026-05-28). 7 símbolos.
+# Office (PPTX/DOCX/XLSX) lives in .office (7 symbols). Re-exported for compat.
 from .office import (  # noqa: F401
     _create_document,
     _create_presentation,
@@ -242,10 +241,8 @@ def _audio_get_app_routes() -> dict[str, Any]:
     return _ok(routes=routes, count=len(routes))
 
 
-# Notification entry-point + helpers - extraídos a domain_tools_notifications.py
-# (R2 sprint 2026-05-27). domain_tools.py: ~-300 LOC. Re-export AL TOP para que
-# tools.py linea 52 () y los call-
-# sites internos sigan funcionando sin cambio.
+# Notification entry-point + helpers live in .notifications. Re-exported at the
+# top of the module so tools.py and internal call-sites keep working unchanged.
 from .notifications import (  # noqa: F401  (re-export por compat)
     _NotificationDueError,
     _delete_notification,
@@ -261,12 +258,10 @@ from .notifications import (  # noqa: F401  (re-export por compat)
 )
 
 
-# Routine entry-point + import_triggercmd + destructive command detection
-# - extraído a domain_tools_routine.py (R2 sprint 2026-05-28). 13 símbolos.
-# Re-export AL TOP para que tools.py linea 57 y agent.py linea 1019
-# (_looks_destructive) sigan funcionando sin cambio. _find_routine y
-# _register_routine_process_watcher quedan en domain_tools.py (los importa
-# routine_tool lazy).
+# Routine entry-point + import_triggercmd + destructive command detection live
+# in .routine (13 symbols). Re-exported at the top of the module so tools.py and
+# agent.py's _looks_destructive keep working unchanged. _find_routine and
+# _register_routine_process_watcher are imported lazily by routine_tool.
 from .routine import (  # noqa: F401  (re-export por compat)
     _DESTRUCTIVE_COMMAND_TOKENS,
     _append_routine_run,
@@ -284,12 +279,7 @@ from .routine import (  # noqa: F401  (re-export por compat)
 )
 
 
-# Smart Home (HomeAssistant + MQTT) ELIMINADA 2026-06-02 (pedido del usuario).
-# Handler smart_home.py borrado, schema fuera de tool_schemas.py, fuera del dataset y router.
-
-
-# Study (flashcards + SM-2) - extraído a domain_tools_study.py
-# (R2 sprint 2026-05-28). 12 funciones (entry + 11 helpers).
+# Study (flashcards + SM-2) lives in .study (12 functions: entry + 11 helpers).
 from .study import (  # noqa: F401  (re-export por compat)
     _study_card_add,
     _study_card_delete,
@@ -306,8 +296,7 @@ from .study import (  # noqa: F401  (re-export por compat)
 )
 
 
-# Accessibility (Magnifier/Narrator/settings) - extraído a
-# domain_tools_accessibility.py (R2 sprint 2026-05-28). 4 funciones.
+# Accessibility (Magnifier/Narrator/settings) lives in .accessibility (4 functions).
 from .accessibility import (  # noqa: F401  (re-export por compat)
     _accessibility_kill,
     _accessibility_launch,
@@ -316,8 +305,7 @@ from .accessibility import (  # noqa: F401  (re-export por compat)
 )
 
 
-# Peripheral (USB/HID/controllers/PnP) - extraído a domain_tools_peripheral.py
-# (R2 sprint 2026-05-28). 7 funciones.
+# Peripheral (USB/HID/controllers/PnP) lives in .peripheral (7 functions).
 from .peripheral import (  # noqa: F401
     _peripheral_controller_status,
     _peripheral_device_problems,
@@ -329,8 +317,7 @@ from .peripheral import (  # noqa: F401
 )
 
 
-# Form Filler - extraído a domain_tools_form_filler.py
-# (R2 sprint 2026-05-28). 6 funciones.
+# Form Filler lives in .form_filler (6 functions).
 from .form_filler import (  # noqa: F401
     _form_apply,
     _form_discover,
@@ -341,8 +328,7 @@ from .form_filler import (  # noqa: F401
 )
 
 
-# Creative Local (ComfyUI) - extraído a domain_tools_creative_local.py
-# (R2 sprint 2026-05-28). 9 funciones.
+# Creative Local (ComfyUI) lives in .creative_local (9 functions).
 from .creative_local import (  # noqa: F401
     _comfy_alive,
     _comfy_get_json,
@@ -357,9 +343,8 @@ from .creative_local import (  # noqa: F401
 )
 
 
-# Database (sqlite/postgres/mysql) - extraído a domain_tools_database.py
-# (R2 sprint 2026-05-28). 10 funciones (entry + connect + list/schema/query/
-# execute/export + read-only enforcement + helpers).
+# Database (sqlite/postgres/mysql) lives in .database (10 functions: entry +
+# connect + list/schema/query/execute/export + read-only enforcement + helpers).
 from .database import (  # noqa: F401
     _apply_readonly,
     _database_connect,
@@ -375,8 +360,7 @@ from .database import (  # noqa: F401
 )
 
 
-# Container (Docker / docker-compose) - extraído a domain_tools_container.py
-# (R2 sprint 2026-05-28). 8 funciones.
+# Container (Docker / docker-compose) lives in .container (8 functions).
 from .container import (  # noqa: F401
     _container_compose,
     _container_exec,
@@ -389,8 +373,7 @@ from .container import (  # noqa: F401
 )
 
 
-# Photo Library - extraído a domain_tools_photo_library.py
-# (R2 sprint 2026-05-28). 8 funciones + _PHOTO_EXTS.
+# Photo Library lives in .photo_library (8 functions + _PHOTO_EXTS).
 from .photo_library import (  # noqa: F401
     _PHOTO_EXTS,
     _photo_exif,
@@ -404,8 +387,7 @@ from .photo_library import (  # noqa: F401
 )
 
 
-# Fact Check (TF-IDF + cosine, pure-Python) - extraído a
-# domain_tools_fact_check.py (R2 sprint 2026-05-28).
+# Fact Check (TF-IDF + cosine, pure-Python) lives in .fact_check.
 from .fact_check import (  # noqa: F401
     _NEGATION_CUES_EN,
     _NEGATION_CUES_ES,
@@ -415,8 +397,7 @@ from .fact_check import (  # noqa: F401
 )
 
 
-# Data Analysis (pandas + matplotlib Agg) - extraído a
-# domain_tools_data_analysis.py (R2 sprint 2026-05-28). 8 funciones.
+# Data Analysis (pandas + matplotlib Agg) lives in .data_analysis (8 functions).
 from .data_analysis import (  # noqa: F401
     _data_csv_describe,
     _data_csv_head,
@@ -429,8 +410,7 @@ from .data_analysis import (  # noqa: F401
 )
 
 
-# Network diagnostics - extraído a domain_tools_network.py
-# (R2 sprint 2026-05-28). 9 funciones (entry + 8 helpers).
+# Network diagnostics lives in .network (9 functions: entry + 8 helpers).
 from .network import (  # noqa: F401
     _network_connections,
     _network_dns_get,
@@ -444,10 +424,9 @@ from .network import (  # noqa: F401
 )
 
 
-# Watcher (file/url/process) - extraído a domain_tools_watcher.py
-# (R2 sprint 2026-05-28). 9 funciones. _register_routine_process_watcher se
-# usa por routine_tool — éste lo importa lazy desde domain_tools que ahora
-# re-exporta desde aquí.
+# Watcher (file/url/process) lives in .watcher (9 functions).
+# _register_routine_process_watcher is used by routine_tool, which lazy-imports
+# it from domain_tools (re-exported from here).
 from .watcher import (  # noqa: F401
     _file_snapshot,
     _process_snapshot,
@@ -461,8 +440,7 @@ from .watcher import (  # noqa: F401
 )
 
 
-# Job Manager (subprocess tracking) - extraído a domain_tools_job_manager.py
-# (R2 sprint 2026-05-28). 4 funciones.
+# Job Manager (subprocess tracking) lives in .job_manager (4 functions).
 from .job_manager import (  # noqa: F401
     _job_manager_cancel,
     _job_manager_log,
@@ -471,12 +449,11 @@ from .job_manager import (  # noqa: F401
 )
 
 
-# _pid_owned_by + _pid_alive — extraídos a domain_tools_helpers.py
-# (R3 sprint 2026-05-28).
+# _pid_owned_by + _pid_alive live in .helpers (re-exported above).
 
 
 # Maintenance (Win Update / Defender / Firewall / Services / Event Logs /
-# Restore Point) - extraído a domain_tools_maintenance.py (R2 sprint 2026-05-28).
+# Restore Point) lives in .maintenance.
 from .maintenance import (  # noqa: F401
     _maintenance_defender_quick_scan,
     _maintenance_defender_status,
@@ -491,8 +468,7 @@ from .maintenance import (  # noqa: F401
 )
 
 
-# Media Edit (ffmpeg) - extraído a domain_tools_media_edit.py
-# (R2 sprint 2026-05-28). 12 funciones.
+# Media Edit (ffmpeg) lives in .media_edit (12 functions).
 from .media_edit import (  # noqa: F401
     _media_edit_concat,
     _media_edit_extract_audio,
@@ -509,8 +485,7 @@ from .media_edit import (  # noqa: F401
 )
 
 
-# Game Launcher (Epic/GOG/Xbox/Riot) - extraído a domain_tools_game_launcher.py
-# (R2 sprint 2026-05-28). 10 funciones.
+# Game Launcher (Epic/GOG/Xbox/Riot) lives in .game_launcher (10 functions).
 from .game_launcher import (  # noqa: F401
     _discover_epic_games,
     _discover_gog_games,
@@ -525,19 +500,18 @@ from .game_launcher import (  # noqa: F401
 )
 
 
-# Device settings compound entry - extraído a domain_tools_device_settings.py
-# (R2 sprint 2026-05-28). Despacha a domain_tools_wifi/bluetooth y a los
-# display/power helpers que también viven en domain_tools_device_settings.
+# Device settings compound entry lives in .device_settings. It dispatches to
+# .wifi / .bluetooth and to the display/power helpers that also live in
+# .device_settings.
 from .device_settings import device_settings_tool  # noqa: F401
 
 
-# WiFi domain tools - extraídos a domain_tools_wifi.py (R2 sprint 2026-05-27).
-# Las 9 funciones _device_wifi_* + _wifi_match_score + _resolve_wifi_target +
-# _xml_escape + _WIFI_FILLER viven ahora en su propio módulo. Re-exportamos acá
-# para que callers existentes (test_wifi_resolve.py:
-# `from gemma4_agent import domain_tools as dt; dt._device_wifi_X`) sigan
-# funcionando sin tocar nada. Cuando los callers migren a importar
-# `gemma4_agent.domain_tools_wifi` directo, este re-export se puede borrar.
+# WiFi domain tools live in .wifi: the 9 _device_wifi_* functions +
+# _wifi_match_score + _resolve_wifi_target + _xml_escape + _WIFI_FILLER.
+# Re-exported here so existing callers (e.g. test_wifi_resolve.py:
+# `from gemma4_agent import domain_tools as dt; dt._device_wifi_X`) keep
+# working. When callers migrate to importing `gemma4_agent.domain_tools.wifi`
+# directly, this re-export can be removed.
 from .wifi import (  # noqa: F401  (re-export por compat)
     _WIFI_FILLER,
     _device_wifi_add_profile,
@@ -553,14 +527,13 @@ from .wifi import (  # noqa: F401  (re-export por compat)
 )
 
 
-# Bluetooth domain tool - extraído a domain_tools_bluetooth.py (R2 sprint
-# 2026-05-27). Un sólo método hoy; se aísla para que cuando aparezca más
-# (pair/disconnect/audio-routing) tenga su casa.
+# Bluetooth domain tool lives in .bluetooth. A single method today; isolated so
+# future additions (pair/disconnect/audio-routing) have a home.
 from .bluetooth import _device_bluetooth_status  # noqa: F401
 
 
-# Display + power-plan helpers - extraídos a domain_tools_device_settings.py
-# (R2 sprint 2026-05-28). El compound device_settings_tool también vive ahí.
+# Display + power-plan helpers live in .device_settings, alongside the compound
+# device_settings_tool.
 from .device_settings import (  # noqa: F401
     _device_display_list,
     _device_power_plan_get,
@@ -569,8 +542,8 @@ from .device_settings import (  # noqa: F401
 )
 
 
-# Developer workflows (detect/test/lint/format/git/dev_server) - extraído a
-# domain_tools_developer.py (R2 sprint 2026-05-28). 8 funciones.
+# Developer workflows (detect/test/lint/format/git/dev_server) live in
+# .developer (8 functions).
 from .developer import (  # noqa: F401
     _developer_command,
     _developer_git,
@@ -583,9 +556,8 @@ from .developer import (  # noqa: F401
 )
 
 
-# Document parsing/extraction - extraído a domain_tools_document.py
-# (R2 sprint 2026-05-28). 13 funciones (entry + 12 helpers PDF/DOCX/XLSX/PPTX/
-# HTML/text + OCR Tesseract).
+# Document parsing/extraction lives in .document (13 functions: entry + 12
+# helpers for PDF/DOCX/XLSX/PPTX/HTML/text + OCR via Tesseract).
 from .document import (  # noqa: F401
     _document_compare,
     _document_extract_docx,
@@ -603,14 +575,13 @@ from .document import (  # noqa: F401
 )
 
 
-# active_phrase_triggers — movido a domain_tools_routine.py (R3 sprint 2026-05-28).
-# Re-export para compat (agent.py + server.py lo importan por este nombre).
+# active_phrase_triggers lives in .routine. Re-exported here so agent.py and
+# server.py keep importing it by this name.
 from .routine import active_phrase_triggers  # noqa: F401, E402
 
 
-# Routine helpers - extraídos a domain_tools_routine.py (R2 sprint 2026-05-28).
-# El cluster de helpers de Scheduled Task vivía acá; el re-export está en el
-# bloque del entry point routine_tool más arriba (~línea 285).
+# Routine helpers (Scheduled Task cluster) live in .routine; re-exported in the
+# routine_tool entry-point block above.
 
 
 def _find_vlc_executable() -> str | None:
@@ -654,20 +625,17 @@ def _find_spotify_executable() -> str | None:
     return None
 
 
-# Streaming platforms — registro centralizado de cada plataforma.
-# Cada entry: (canonical_name, normalized_aliases, UWP package_family_name,
-#              exe_path_candidates, deeplink_template, web_url_template,
-#              install_hint, post_open_note)
+# Streaming platforms — central registry of each platform.
 #
-# {q} en templates se reemplaza con la query URL-encoded.
+# {q} in templates is replaced with the URL-encoded query.
 #
-# Notas:
-#   - UWP package family names recolectados de docs publicas; pueden variar
-#     levemente por region. Usamos shell:AppsFolder\<pfn>!App via `start`.
-#     Si el pfn no matchea, Windows no abre nada y caemos a web.
-#   - Deeplinks: solo Spotify y Disney+ tienen scheme propio confiable.
-#     Netflix/HBO/Prime no exponen schemes documentados → siempre web.
-#   - Web URLs verificadas en 2025-2026 (post-rebrand HBO Max -> Max).
+# Notes:
+#   - UWP package family names collected from public docs; may vary slightly by
+#     region. We use shell:AppsFolder\<pfn>!App via `start`. If the pfn does not
+#     match, Windows opens nothing and we fall back to web.
+#   - Deeplinks: only Spotify and Disney+ have a reliable proprietary scheme.
+#     Netflix/HBO/Prime expose no documented schemes → always web.
+#   - Web URLs verified post-rebrand (HBO Max -> Max).
 # Streaming platform specs. Each entry:
 #   aliases:           set of user-friendly names that map to this canonical key.
 #   uwp_pfn / exe_paths: how to detect the app on Windows (UWP package or EXE).
@@ -688,16 +656,16 @@ def _find_spotify_executable() -> str | None:
 #   install_hint:      ms-windows-store URI for the user to install if they want.
 #   post_open_note:    short note returned in the tool result.
 #
-# Sources for selectors and URLs: see docs/research/streaming/streaming_playback_field_guide_2026.md (research
-# 2026-05-16) — Netflix data-uia family, Disney+/HBO Max data-testid/aria,
-# Prime Video data-automation-id. All marked "needs live test" by the research
-# are CANDIDATES that the agent tries in order; the first that matches wins.
+# Sources for selectors and URLs: see
+# docs/research/streaming/streaming_playback_field_guide_2026.md — Netflix
+# data-uia family, Disney+/HBO Max data-testid/aria, Prime Video
+# data-automation-id. Selectors marked "needs live test" by the research are
+# CANDIDATES that the agent tries in order; the first that matches wins.
 #
-# IMPORTANT: the search_shortcut field was REMOVED (2026-05-16) — no platform
-# has a reliable global hotkey to open search ("/" and "s" do NOT work on
-# Netflix/Disney+/HBO Max despite earlier code assuming so). For Disney+/HBO
-# Max we MUST land on the search page URL and type into the input via DOM
-# or via gui.type after focusing the input.
+# IMPORTANT: there is no search_shortcut field — no platform has a reliable
+# global hotkey to open search ("/" and "s" do NOT work on Netflix/Disney+/HBO
+# Max). For Disney+/HBO Max we MUST land on the search page URL and type into
+# the input via DOM or via gui.type after focusing the input.
 _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
     "spotify": {
         "aliases": {"spotify"},
@@ -720,7 +688,7 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "uwp_pfn": "4DF9E0F8.Netflix_mcm4njqhnhss8",
         "exe_paths": [],
         "deeplink": None,
-        # Verified via CDP probe 2026-05-16:
+        # Verified via CDP probe:
         # - `?q=` works post-login.
         # - search results: a[data-uia='search-gallery-video-card'] with href
         #   `/search?q=X&jbv=<title_id>`. Click opens DP (mini-modal).
@@ -762,11 +730,11 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "uwp_pfn": "Disney.37853FC22B2CE_6rarf9sa4v8jt",
         "exe_paths": [],
         "deeplink": None,
-        # Verified via CDP probe 2026-05-16: /es-419/browse/search is the
-        # ONLY URL that works (logged in). Other /search variants return 404.
-        # F-009: template + default_locale para permitir override segun region
-        # del user (es-es, en-us, etc). `web_url` se mantiene como fallback
-        # cuando no se puede resolver locale dinamicamente.
+        # Verified via CDP probe: /es-419/browse/search is the ONLY URL that
+        # works (logged in). Other /search variants return 404.
+        # template + default_locale allow override per user region (es-es,
+        # en-us, etc). `web_url` stays as fallback when the locale can't be
+        # resolved dynamically.
         "web_url": "https://www.disneyplus.com/es-419/browse/search",
         "web_url_template": "https://www.disneyplus.com/{locale}/browse/search",
         "default_locale": "es-419",
@@ -797,9 +765,9 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         ),
     },
     "hbo_max": {
-        # Rebrand back to HBO Max on 9 July 2025. Verified via CDP probe
-        # 2026-05-16: play.hbomax.com/search?q= works; play.max.com redirects
-        # to play.hbomax.com. Anchors use data-testid='<uuid>_tile'.
+        # Rebranded back to HBO Max on 9 July 2025. Verified via CDP probe:
+        # play.hbomax.com/search?q= works; play.max.com redirects to
+        # play.hbomax.com. Anchors use data-testid='<uuid>_tile'.
         "aliases": {"hbo_max", "hbo max", "hbomax", "max", "hbo"},
         "uwp_pfn": None,
         "exe_paths": [],
@@ -843,7 +811,7 @@ _STREAMING_PLATFORMS: dict[str, dict[str, Any]] = {
         "uwp_pfn": "AmazonVideo.PrimeVideo_pwbj9vvecjh7j",
         "exe_paths": [],
         "deeplink": None,
-        # Verified via CDP probe 2026-05-16: ?phrase= works, cards via
+        # Verified via CDP probe: ?phrase= works, cards via
         # 'article a[href*=/detail/]'. Detail page auto-opens an inline
         # player (data-testid='draper-player') — explicit play often
         # unnecessary because preview already runs.
@@ -887,7 +855,7 @@ def _resolve_streaming_web_url(
     *,
     state: AgentState | None = None,
 ) -> str:
-    """F-009: resuelve la URL web del provider contemplando locale.
+    """Resuelve la URL web del provider contemplando locale.
 
     Si el spec define `web_url_template` (con `{locale}` placeholder) y un
     `default_locale`, formatea segun el locale del user. Si no hay state o
@@ -1341,12 +1309,12 @@ def _detect_default_browser_progid() -> str:
 def _running_chromium_process_names() -> set[str]:
     """Set de process names (sin .exe, lowercase) de los Chromium vivos AHORA.
 
-    User-reported 2026-05-22: el agente abria Opera GX (default del registro)
-    aunque el user tenia Chrome abierto y logueado en Disney/Netflix. El
-    navegador donde vive la sesion es el que esta CORRIENDO, no el default
-    nominal del registro. Devolvemos los process names para que
-    `_pick_cdp_browser` priorice relanzar ese mismo navegador (preservando su
-    --user-data-dir, asi conserva login + tabs via session restore).
+    El navegador donde vive la sesion es el que esta CORRIENDO, no el default
+    nominal del registro: abrir el default del registro (p.ej. Opera GX) cuando
+    el user tiene Chrome abierto y logueado en Disney/Netflix pierde la sesion.
+    Devolvemos los process names para que `_pick_cdp_browser` priorice relanzar
+    ese mismo navegador (preservando su --user-data-dir, asi conserva login +
+    tabs via session restore).
     """
     if os.name != "nt":
         return set()
@@ -1372,8 +1340,8 @@ def _running_chromium_process_names() -> set[str]:
 
 
 def _pick_cdp_browser() -> dict[str, Any] | None:
-    """Choose which Chromium browser to launch with CDP. Priority (user
-    decision 2026-05-22 — respetar el navegador default del user):
+    """Choose which Chromium browser to launch with CDP. Priority (respect the
+    user's default browser, then whichever holds the live session):
        1. The user's DEFAULT browser if it's currently RUNNING — relaunch it with
           the same --user-data-dir to preserve the logged-in session + tabs.
        2. The user's default browser even if not running (launch fresh).
@@ -1435,15 +1403,15 @@ def _ensure_cdp_browser(timeout_total: float = 10.0) -> dict[str, Any]:
     # reales). Para no matar Opera del dev cada vez que corren tests,
     # respetar GEMMA4_DISABLE_AUTO_CDP_LAUNCH=1 o detectar una corrida de tests.
     #
-    # BUG 2026-05-22 (trace #847): `"unittest" in sys.modules` y
-    # `"pytest" in sys.modules` son FALSOS POSITIVOS en produccion — torch /
-    # transformers / numpy.testing importan `unittest` al cargar, asi que el
-    # runtime de voz SIEMPRE creia estar en tests y NUNCA lanzaba CDP -> Disney
-    # caia a webbrowser.open (abria la pagina pero nunca tipeaba la query).
-    # Verificado: importar torch/transformers mete unittest en sys.modules.
-    # Señal confiable de "corriendo DENTRO de un test": la env var
-    # PYTEST_CURRENT_TEST (pytest la setea por test) o flags explicitos. La
-    # presencia del modulo importado NO sirve.
+    # BUG: `"unittest" in sys.modules` y `"pytest" in sys.modules` son FALSOS
+    # POSITIVOS en produccion — torch / transformers / numpy.testing importan
+    # `unittest` al cargar, asi que el runtime de voz SIEMPRE creia estar en
+    # tests y NUNCA lanzaba CDP -> Disney caia a webbrowser.open (abria la
+    # pagina pero nunca tipeaba la query). Verificado: importar
+    # torch/transformers mete unittest en sys.modules. Señal confiable de
+    # "corriendo DENTRO de un test": la env var PYTEST_CURRENT_TEST (pytest la
+    # setea por test) o flags explicitos. La presencia del modulo importado NO
+    # sirve.
     in_test_env = (
         os.environ.get("GEMMA4_DISABLE_AUTO_CDP_LAUNCH") == "1"
         or "PYTEST_CURRENT_TEST" in os.environ
@@ -1472,9 +1440,9 @@ def _ensure_cdp_browser(timeout_total: float = 10.0) -> dict[str, Any]:
 
     # Cerrar instancias corriendo del mismo browser. Si tenia tabs abiertas,
     # Opera/Chrome las restauran al abrir de nuevo (session restore default).
-    # F-003: cierre graceful primero (CloseMainWindow envia WM_CLOSE -> browser
-    # guarda session/forms), 3s de espera, solo entonces Stop-Process -Force
-    # como ultimo recurso. Reduce perdida de trabajo del user.
+    # Cierre graceful primero (CloseMainWindow envia WM_CLOSE -> browser guarda
+    # session/forms), 3s de espera, solo entonces Stop-Process -Force como
+    # ultimo recurso. Reduce perdida de trabajo del user.
     import time as _time
     try:
         running = subprocess.run(
@@ -1599,8 +1567,8 @@ def _streaming_cdp_play(
     cached_url: str | None,
     state: AgentState | None = None,
 ) -> dict[str, Any]:
-    """CDP-first playback via Playwright + selectores REALES (verificados
-    via probe 2026-05-16 contra Opera GX logueado).
+    """CDP-first playback via Playwright + selectores REALES (verificados via
+    probe contra Opera GX logueado).
 
     Flow:
       0. Si cached_url -> goto directo. Si click_card_starts_playback=True
@@ -1658,11 +1626,11 @@ def _streaming_cdp_play(
         return ""
 
     def _bring_browser_to_front() -> None:
-        """User-reported bug 2026-05-16 21:23: after media play, the browser
-        window stays in background and the user can't see what's playing.
-        Issue a `window focus` with the provider name as query — Opera's
-        page title contains "Disney+" / "Netflix" / etc. for the active tab,
-        so this matches and brings it forward (auto-maximizes if small).
+        """After media play the browser window stays in the background and the
+        user can't see what's playing. Issue a `window focus` with the provider
+        name as query — Opera's page title contains "Disney+" / "Netflix" / etc.
+        for the active tab, so this matches and brings it forward (auto-maximizes
+        if small).
         """
         try:
             provider_title = {
@@ -1705,9 +1673,9 @@ def _streaming_cdp_play(
             "abort_reason": f"goto exception: {exc}",
             "via_cache": via_cache,
         }
-    # F-012: reducido 5.5s -> 2.5s. _try_selectors con timeout_sec interno
-    # actua como wait_for_selector con polling, asi que el sleep inicial
-    # solo necesita cubrir el DOMContentLoaded -> JS-hydration gap minimo.
+    # 2.5s (no 5.5s): _try_selectors con timeout_sec interno actua como
+    # wait_for_selector con polling, asi que el sleep inicial solo necesita
+    # cubrir el DOMContentLoaded -> JS-hydration gap minimo.
     _time.sleep(2.5)
 
     # FAST PATH: cached URL para Netflix etc.
@@ -1748,8 +1716,8 @@ def _streaming_cdp_play(
         prof_res = _try_selectors("click", prof_selectors, timeout_sec=3)
         if prof_res["ok"]:
             steps.append(f"clicked_profile:{profile_name}")
-            # F-012: reducido 8s -> 4s. Selector polling del fill/click
-            # subsiguiente cubre el resto de espera con timeout interno.
+            # 4s (no 8s): el selector polling del fill/click subsiguiente
+            # cubre el resto de espera con timeout interno.
             _time.sleep(4.0)
         else:
             # No vimos profile picker (Netflix recuerda sesion) -> continue.
@@ -1769,13 +1737,12 @@ def _streaming_cdp_play(
                         + ", ".join(selectors_input),
             }
         steps.append(f"filled_search:{fill_res['selector']}")
-        # F-012: reducido 4s -> 2s post-fill. El polling del click_card
-        # subsiguiente (timeout_sec=12) absorbe el resto del wait.
+        # 2s post-fill (no 4s): el polling del click_card subsiguiente
+        # (timeout_sec=12) absorbe el resto del wait.
         _time.sleep(2.0)
 
-    # 4. Click primer result card.
-    # F-012: removido 'extra render time' de 2s — _try_selectors timeout=12
-    # ya hace polling activo del selector.
+    # 4. Click primer result card. Sin 'extra render time' fijo —
+    # _try_selectors con timeout=12 ya hace polling activo del selector.
     card_res = _try_selectors("click", selectors_card, timeout_sec=12)
     if not card_res["ok"]:
         return {
@@ -1786,8 +1753,8 @@ def _streaming_cdp_play(
             "hint": "Selectors: " + ", ".join(selectors_card),
         }
     steps.append(f"clicked_first_result:{card_res['selector']}")
-    # F-012: reducido 5s -> 2.5s post-card-click. El click_play subsiguiente
-    # (timeout_sec=10) cubre el resto con polling activo.
+    # 2.5s post-card-click (no 5s): el click_play subsiguiente (timeout_sec=10)
+    # cubre el resto con polling activo.
     _time.sleep(2.5)
 
     # 5. Cache URL post-click.
@@ -1850,7 +1817,7 @@ def _streaming_web_auto_play(
 ) -> dict[str, Any]:
     """Auto-play en web para Netflix/Disney+/HBO Max/Prime Video.
 
-    Estrategia (compass research 2026-05-16):
+    Estrategia:
       1. Intentar CDP attach al Chrome real del user (puerto 9222).
          Si funciona: DOM-level via Playwright + selectors estables.
          Si NO funciona: cae a webbrowser.open + report honesto al user.
@@ -1955,9 +1922,8 @@ def _spotify_play_random(
     state: AgentState | None,
     auto_play_wait: float,
 ) -> dict[str, Any]:
-    """User pidio 'una cancion' / 'musica' sin nombrar titulo.
-
-    Decision del user (2026-05-22):
+    """Reproduce algo cuando el pedido es generico ('una cancion'/'musica' sin
+    titulo). Buscar la palabra literal nunca reproduce nada util, asi que:
       - Si tenemos el username de Spotify -> reproducir 'Me Gusta' (Liked Songs)
         en shuffle via deeplink spotify:user:<user>:collection.
       - Si NO -> mandar Play global (media key): reanuda lo que Spotify tenga
@@ -2017,10 +1983,10 @@ def _is_spotify_track_title(title: str) -> bool:
 
 
 # Script PowerShell que reproduce en Spotify Desktop via UI Automation.
-# VALIDADO EN VIVO 2026-05-22 (track/artista/cancion). Spotify (Electron)
-# expone su arbol de accesibilidad: cada item reproducible tiene un boton
-# cuyo Name empieza con "Reproducir <X>" (o "Play <X>" en ingles). El TAB+ENTER
-# a ciegas NO reproduce nada — el clic UIA via InvokePattern SI.
+# VALIDADO EN VIVO (track/artista/cancion). Spotify (Electron) expone su arbol
+# de accesibilidad: cada item reproducible tiene un boton cuyo Name empieza con
+# "Reproducir <X>" (o "Play <X>" en ingles). El TAB+ENTER a ciegas NO reproduce
+# nada — el clic UIA via InvokePattern SI.
 #
 # Estrategia:
 #   1. Tomar la ventana de Spotify, leer su title ANTES.
@@ -2074,14 +2040,14 @@ def _spotify_auto_play(
     wait_seconds: float,
     query: str | None = None,
 ) -> dict[str, Any]:
-    """Reproduce via UIA con REINTENTOS (fix 2026-05-29).
+    """Reproduce via UIA con REINTENTOS.
 
     La búsqueda de Spotify tarda 2-4s en renderizar (más en frío). El click UIA
     en el botón 'Reproducir' es FIABLE; lo que fallaba intermitentemente era llegar
     ANTES del render con un único intento de wait FIJO → el árbol UIA aún no tenía
-    el botón → "no pude verificar"/"debes pulsar Enter" (medido en los logs del
-    usuario: 4/5 intentos de Spotify fallaron así). Reintentamos con esperas
-    crecientes hasta que el botón aparezca y reproduzca (played=True)."""
+    el botón → "no pude verificar"/"debes pulsar Enter" (medido: 4/5 intentos de
+    Spotify fallaban así). Reintentamos con esperas crecientes hasta que el botón
+    aparezca y reproduzca (played=True)."""
     import time as _time
     waits = [max(0.5, wait_seconds), 2.0, 2.5]
     last: dict[str, Any] = {
@@ -2106,8 +2072,8 @@ def _spotify_auto_play_once(
     """Un intento: tras enviar spotify:search:<q>, esperar render y reproducir via
     UI Automation (clic real en el boton "Reproducir <X>" del resultado).
 
-    DESCUBRIMIENTO 2026-05-22 (validado en vivo): Tab+Enter / media-keys NO
-    reproducen de forma fiable desde la busqueda de Spotify. Spotify Electron
+    Hallazgo (validado en vivo): Tab+Enter / media-keys NO reproducen de forma
+    fiable desde la busqueda de Spotify. Spotify Electron
     SI expone su arbol UIA: cada resultado tiene un boton "Reproducir <X>".
     Clickearlo via InvokePattern reproduce de verdad — y eligiendo el que
     matchea la query reproduce EXACTAMENTE lo pedido (track/artista/genero).
@@ -2138,7 +2104,7 @@ def _spotify_auto_play_once(
 
     # IMPORTANTE: pasar un script multilinea con params via `-Command` lo
     # mangla (PowerShell rompe el param binding). Escribir a un .ps1 temporal
-    # y correr con `-File` es robusto. Validado en vivo 2026-05-22.
+    # y correr con `-File` es robusto. Validado en vivo.
     import tempfile as _tempfile
     ps_path = None
     try:
@@ -2278,9 +2244,9 @@ def _launch_streaming(
             if auto_play and executor is not None and canonical == "spotify":
                 # El UIA play necesita que los RESULTADOS de busqueda esten
                 # renderizados (los botones "Reproducir <X>" recien existen en
-                # el arbol cuando el grid cargo). Validado en vivo 2026-05-22:
-                # ~5s alcanza. Piso 4.5s cold, 5.5s si ya estaba abierto (el
-                # deeplink navega de player-view a search, mas lento en warm).
+                # el arbol cuando el grid cargo). Validado en vivo: ~5s alcanza.
+                # Piso 4.5s cold, 5.5s si ya estaba abierto (el deeplink navega
+                # de player-view a search, mas lento en warm).
                 already_open = _detect_spotify_already_running(executor)
                 effective_wait = (
                     max(auto_play_wait, 5.5) if already_open

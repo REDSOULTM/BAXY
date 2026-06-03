@@ -8,9 +8,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
-from . import agent_guards  # R3 + reorg 2026-05-28: sibling en agent_core/
-from ..routing import command_splitter  # R3 + reorg 2026-05-28
-from ..safety_pkg import reply_validator  # R3 + reorg 2026-05-28
+from . import agent_guards  # sibling en agent_core/
+from ..routing import command_splitter
+from ..safety_pkg import reply_validator
 from ..infra.config import AgentConfig
 from ..support.evaluator import evaluate_mission
 from ..infra.llm_client import LLMClient
@@ -27,9 +27,9 @@ from ..infra.tracing import TraceLogger, summarize_content
 ProgressCallback = Callable[[str, dict[str, Any]], None]
 
 
-# F-005: inherit-tools safety knobs.
+# Inherit-tools safety knobs.
 # TTL: si pasaron mas de 5 min entre turns, NO heredar tools del turno
-# previo (user retomo la sesion tras mucho tiempo, su contexto cambio).
+# previo (el contexto del usuario pudo cambiar tras un hueco largo).
 INHERIT_TTL_SEC = 300
 # Tools nunca-heredables por safety: una respuesta corta del user
 # ("ok", "si") jamas debe disparar uno de estos sin re-confirmacion.
@@ -55,11 +55,11 @@ _GUI_CONTEXT_TOOLS = frozenset({"gui", "uia", "app", "window", "vision"})
 import os as _os_a11y
 _A11Y_MAX_CONTINUES = int(_os_a11y.environ.get("GEMMA4_A11Y_MAX_CONTINUES", "3"))
 
-# Confirmación/negación a la oferta de automatización del Jarvis (inv 5). El
+# Confirmación/negación a la oferta de automatización proactiva. El
 # "sí/no" es vocabulario CERRADO y universal -> lista multilingüe (no embeddings:
 # 1-2 palabras dan señal pobre). Cubre los idiomas más comunes; lo no reconocido
-# NO se consume (cae a None, el turno sigue normal). Principio del usuario: la app
-# la usa cualquier hablante -> nada de solo-español. [[feedback_no_monolingual_regex]]
+# NO se consume (cae a None, el turno sigue normal). La app la usa cualquier
+# hablante -> nada de solo-español. [[feedback_no_monolingual_regex]]
 _JARVIS_YES = frozenset({
     # es
     "si", "sí", "dale", "bueno", "hacelo", "hazlo", "automatizalo", "automatízalo",
@@ -91,7 +91,7 @@ _JARVIS_NO = frozenset({
 })
 
 
-# CORE-SET para PREFIJO ESTABLE del prompt (latencia, medido 2026-05-23).
+# CORE-SET para PREFIJO ESTABLE del prompt (latencia).
 # El system prompt + tool-schemas se filtran al subset que el router elige por
 # turno; como el subset cambia con la query, el INICIO del prompt cambia y ROMPE
 # el prefix-cache de llama.cpp -> cada turno reprocesa ~1100ms en vez de ~100ms
@@ -100,7 +100,7 @@ _JARVIS_NO = frozenset({
 # así el prefijo (reglas+schemas del core) es idéntico turno-a-turno y el cache
 # lo reusa. Los picks extra del router van DESPUÉS (siguen disponibles para el
 # modelo). El orden es FIJO (no sorted del subset variable) — esa es la clave.
-# Grounding: los 15 tools más llamados en logs reales (#847) + verify/filesystem
+# Grounding: los 15 tools más llamados en logs reales + verify/filesystem
 # de infraestructura. ~4956 tokens estables, deja ~11K de 16K ctx para historial.
 # Gate: GEMMA4_STABLE_TOOL_PREFIX (default ON; =0 vuelve al comportamiento viejo).
 _CACHE_CORE_SET: tuple[str, ...] = (
@@ -117,14 +117,14 @@ def _stabilize_tool_order(picks: list[str]) -> list[str]:
     primero SIEMPRE en el mismo orden (de ahí el cache-hit); los extras del
     router quedan al final (varían, pero ya no rompen el prefijo del core)."""
     import os as _os
-    # DEFAULT OFF (medido 2026-05-23): el core-set fijo estabiliza el prefijo y
+    # DEFAULT OFF (medido): el core-set fijo estabiliza el prefijo y
     # baja el prefill en AISLADO (1126->100ms), PERO en el smoke E2E real salió
     # ~2x MÁS LENTO (audio 3.4s OFF vs 6.5s ON): el prompt más grande (17 tools
     # fijos vs 4-6 del router) infla ~3000 tok/turno y el historial creciente
     # rompe el cache en la cola igual, así que el ahorro no compensa. El router
     # ya da subsets chicos que se cachean cuando se repiten. Se deja como opt-in
-    # (=1) para experimentar, pero NO es la solución de latencia. (CLAUDE.md #3:
-    # medir, no celebrar — la teoría del prefix-cache no sobrevivió al E2E real.)
+    # (=1) para experimentar, pero NO es la solución de latencia: la teoría del
+    # prefix-cache no sobrevivió al E2E real (medir, no celebrar).
     if (_os.environ.get("GEMMA4_STABLE_TOOL_PREFIX", "0").strip().lower()
             not in {"1", "true", "yes", "on"}):
         return picks
@@ -135,7 +135,7 @@ def _stabilize_tool_order(picks: list[str]) -> list[str]:
     return list(_CACHE_CORE_SET) + extras
 
 
-# Sprint 5b: CORE_PROMPT + TOOL_RULES + build_system_prompt + SYSTEM_PROMPT
+# CORE_PROMPT + TOOL_RULES + build_system_prompt + SYSTEM_PROMPT
 # moved to :mod:`.agent_prompt`. Re-export keeps existing callers (tests,
 # ui/, server.py /agent/system_prompt endpoint, mcp_server) working.
 from .agent_prompt import (  # noqa: E402,F401
@@ -168,12 +168,10 @@ class AgentReply:
 
 def _stream_tts_enabled() -> bool:
     """Stream the reply to TTS sentence by sentence (GEMMA4_STREAM_TTS).
-    Default ON — flipped 2026-05-29 tras validación EN VIVO por escucha del
-    usuario ("sonó todo bien, sin cortes ni nada raro"); veracidad ya validada
+    Default ON — validado en vivo por escucha (sin cortes); veracidad validada
     0-violaciones (voiced es prefijo del reply final). Kill-switch:
     GEMMA4_STREAM_TTS=0. SOLO afecta modo voz: _stream_this exige _active_tts_sink
-    (texto/GUI/CLI pasan tts_sink=None -> no-op). See
-    documentacion/SPRINT_streaming_tts_truthful.md."""
+    (texto/GUI/CLI pasan tts_sink=None -> no-op)."""
     import os as _os_stream
     return (
         _os_stream.environ.get("GEMMA4_STREAM_TTS", "1") or "1"
@@ -183,18 +181,17 @@ def _stream_tts_enabled() -> bool:
 def _summary_keep_tools_enabled() -> bool:
     """Keep the tool schemas in the SUMMARY pass so its prompt PREFIX stays
     byte-identical to pass-1 -> the llama.cpp prefix-cache HITS instead of
-    re-prefilling ~5k tokens. **Default ON (2026-05-29), validated live.**
+    re-prefilling ~5k tokens. **Default ON, validated live.**
 
-    History: keep-tools ALONE looked like a loss (pass-2 still re-prefilled 5919)
-    because a SECOND prefix divergence — toggling `enable_thinking` in
-    chat_template_kwargs (pass-1 True / summary False) — re-rendered the template
-    from token ~0 (MEASURED cache_n=4). The research (PROMPT_RESEARCH_prefill_cache_latency.md
-    / compass) pinned this. With BOTH fixed (keep tools + match enable_thinking,
-    success-gated in _execute_turn), pass-2 prefill drops 5229->82 tokens, ~1s
-    saved per successful action turn. SOAK: 7/8 cache hits, 0 runaways, replies
-    correct. Cache-mode is SUCCESS-GATED (failures use the slim/thinking-off path —
-    enable_thinking=True makes the model re-engage with a failed action). Toggle
-    off with GEMMA4_SUMMARY_KEEP_TOOLS=0."""
+    Why both fixes are needed: keep-tools ALONE looks like a loss (pass-2 still
+    re-prefills 5919) because a SECOND prefix divergence — toggling
+    `enable_thinking` in chat_template_kwargs (pass-1 True / summary False) —
+    re-renders the template from token ~0 (MEASURED cache_n=4). With BOTH fixed
+    (keep tools + match enable_thinking, success-gated in _execute_turn), pass-2
+    prefill drops 5229->82 tokens, ~1s saved per successful action turn. SOAK: 7/8
+    cache hits, 0 runaways, replies correct. Cache-mode is SUCCESS-GATED (failures
+    use the slim/thinking-off path — enable_thinking=True makes the model re-engage
+    with a failed action). Toggle off with GEMMA4_SUMMARY_KEEP_TOOLS=0."""
     import os as _os_skt
     return (
         _os_skt.environ.get("GEMMA4_SUMMARY_KEEP_TOOLS", "1") or "1"
@@ -202,13 +199,13 @@ def _summary_keep_tools_enabled() -> bool:
 
 
 def _error_recovery_enabled() -> bool:
-    """B1 (competidores): recuperación por TIPO de error. Cuando una tool falla
+    """Recuperación por TIPO de error. Cuando una tool falla
     (confirmed=False), en vez del nudge genérico "reintentá", clasificamos el error
     (missing_precondition/param_mismatch/transient) y damos una directiva ESPECÍFICA
     para que el loop se auto-corrija (replan/amend) o pare honesto (skip). Capa
     GENÉRICA (el LLM decide la recuperación), no macro-por-intención. Opt-in
-    GEMMA4_ERROR_RECOVERY, default ON desde 2026-05-29 (validado en vivo + suite
-    verde 1980/1980; kill-switch GEMMA4_ERROR_RECOVERY=0). Sin costo por-turno: sólo
+    GEMMA4_ERROR_RECOVERY, default ON (validado en vivo + suite verde;
+    kill-switch GEMMA4_ERROR_RECOVERY=0). Sin costo por-turno: sólo
     actúa en el path de fallo de una tool, no en el hot-path de cada turno."""
     import os as _os_er
     return (
@@ -217,12 +214,12 @@ def _error_recovery_enabled() -> bool:
 
 
 def _memory_tools_enabled() -> bool:
-    """B2 (competidores): tool-picking guiado por memoria. Agrega al subset las
+    """Tool-picking guiado por memoria. Agrega al subset las
     tools que tuvieron ÉXITO en turnos PASADOS con intención similar (experience
     recall por embedding, ya computado en _recent_recalls). El LLM sigue decidiendo
     si llamarlas; sólo ensanchamos los candidatos (como exemplar/semantic), así una
     tool que funcionó antes está disponible aunque el router no la elija hoy.
-    GEMMA4_MEMORY_TOOLS default ON desde 2026-05-29; kill-switch =0. SEGURO: latency-free
+    GEMMA4_MEMORY_TOOLS default ON; kill-switch =0. SEGURO: latency-free
     (reusa _recent_recalls, ya computado para el recall_hint — sin embed extra); el recall
     es TIGHT (max_distance=0.9≈cos0.55, anti-degradation) → solo agrega tools de éxitos
     GENUINAMENTE similares; cap=3; el 4B decide; no-op si no hay historial relevante."""
@@ -233,15 +230,15 @@ def _memory_tools_enabled() -> bool:
 
 
 def _skills_autoinject_enabled() -> bool:
-    """Trigger-inject de skills (2026-05-29). MEDIDO: el 4B nunca emite skill_load
+    """Trigger-inject de skills. MEDIDO: el 4B nunca emite skill_load
     (0/5 directo, 0/6727 prod) — no hace el meta-paso cargar->seguir. En vez de
     esperar skill_load, inyectamos la receta de la skill que matchea semánticamente
-    el pedido (como microagents). GEMMA4_SKILLS_AUTOINJECT default ON desde 2026-05-29
+    el pedido (como microagents). GEMMA4_SKILLS_AUTOINJECT default ON
     (validado en vivo: el 4B SIGUE la receta — screenshot->gui+vision, backup->backup_sync+
     filesystem, research->web; 0 falsos positivos /10; kill-switch =0). Perf OK: costo real
     ~2-4ms MEDIANA < budget 5ms; el embed del user-text es cache-hit (el router corre antes
-    de _system_message, mismo LRU) + scan_skills cacheado. El "6ms" observado era flake de
-    la MEDIA bajo carga del suite en box degradado; el perf-test ahora mide mediana (3d34338)."""
+    de _system_message, mismo LRU) + scan_skills cacheado. El perf-test mide mediana, no
+    la media (un pico aislado de ~6ms es flake del suite en box degradado, no costo real)."""
     import os as _os_sk
     return (
         _os_sk.environ.get("GEMMA4_SKILLS_AUTOINJECT", "1") or "1"
@@ -267,12 +264,12 @@ def _recalled_success_tools(recalls: list | None, exclude, cap: int = 3) -> list
     return out
 
 
-# --- File-by-extension routing override (2026-05-29) ---
+# --- File-by-extension routing override ---
 def _file_tool_routing_enabled() -> bool:
-    """Bug 2026-05-29 (medido en vivo): el 4B prefería filesystem.read sobre
+    """Bug medido en vivo: el 4B prefería filesystem.read sobre
     data_analysis (.csv/.xlsx) y document (.pdf/.docx/.pptx/.html), dando lecturas
     crudas SIN análisis / binario sin decodificar. GEMMA4_FILE_TOOL_ROUTING default
-    ON desde 2026-05-29 (validado 6/6 en vivo + suite verde; kill-switch =0). Las
+    ON (validado 6/6 en vivo + suite verde; kill-switch =0). Las
     reglas de tool no bastaron solas (1/6 en vivo); costo = unos regex en el subset."""
     import os as _os_fr
     return (_os_fr.environ.get("GEMMA4_FILE_TOOL_ROUTING", "1") or "1").strip().lower() not in {
@@ -280,7 +277,7 @@ def _file_tool_routing_enabled() -> bool:
 
 
 def _file_processor_on() -> bool:
-    """B6 gate (lazy): ¿ofrecer la tool unificada file_process en el subset?
+    """Gate (lazy): ¿ofrecer la tool unificada file_process en el subset?
     GEMMA4_FILE_PROCESSOR (default-off). Sin él, file-routing rutea a
     document/data_analysis como siempre (file_process queda inerte)."""
     try:
@@ -295,7 +292,7 @@ def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
     del archivo), quita filesystem (lectura cruda inútil) y asegura la tool específica:
     .csv/.xlsx -> data_analysis; .pdf/.docx/.pptx/.html -> document. NO aplica si hay
     verbo de file-op (mover/borrar/copiar/listar): ahí filesystem se queda.
-    B6: si GEMMA4_FILE_PROCESSOR está on, AGREGA file_process (entrada unificada)
+    Si GEMMA4_FILE_PROCESSOR está on, AGREGA file_process (entrada unificada)
     para data/doc — additivo, document/data_analysis quedan de fallback."""
     import re as _re
     low = (content or "").lower()
@@ -312,7 +309,7 @@ def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
         # data_analysis con la action correcta (csv_query/describe). Lo sacamos.
         out = [t for t in names if t != "filesystem"]
         if _file_processor_on() and "file_process" not in out:
-            out.append("file_process")  # B6 opt-in: entrada unificada
+            out.append("file_process")  # opt-in: entrada unificada
         if "data_analysis" not in out:
             out.append("data_analysis")
         return out
@@ -322,12 +319,12 @@ def _route_file_by_extension(content: str, names: list[str]) -> list[str]:
         # dejamos y filesystem.read delega a document para .pdf/.docx (ver tools.py).
         out = list(names)
         if _file_processor_on() and "file_process" not in out:
-            out.append("file_process")  # B6 opt-in: entrada unificada
+            out.append("file_process")  # opt-in: entrada unificada
         if "document" not in out:
             out.append("document")
         return out
     # Búsqueda de archivos LOCALES (folder ref + tipo de archivo + verbo de
-    # búsqueda/apertura) -> filesystem, NO web. Bug medido (harness item4 2026-05-29):
+    # búsqueda/apertura) -> filesystem, NO web. Bug medido:
     # "buscá un word en documentos" -> web (internet) 0/4. El usuario quiere SU archivo,
     # no resultados de internet. Estructural (señal de carpeta local + tipo).
     if (_re.search(r"\b(documentos?|descargas?|downloads|escritorio|desktop|carpeta|m[uú]sica|musica|videos?)\b", low)
@@ -344,8 +341,6 @@ class _FinalizeContinue:
     """Sentinel returned by Gemma4Agent._finalize_turn when the a11y
     nudge re-prompted the LLM and the caller must `continue` its
     outer for _turn loop. Single instance: _FINALIZE_CONTINUE.
-
-    R1 sprint 2026-05-28.
     """
     __slots__ = ()
 
@@ -364,7 +359,7 @@ class Gemma4Agent:
         # Gemma4Agent. We give the registry a back-reference so it can call us.
         self.tools.parent_agent = self  # type: ignore[attr-defined]
         self.trace = TraceLogger(self.config.trace_path, self.config.enable_tracing)
-        # Camino C dinamico (2026-05-28): lanzar background recompute del set
+        # Camino C dinamico: lanzar background recompute del set
         # CORE_TOOL_RULE_NAMES desde el trace historico. La sesion actual ya
         # se inicializo con el set leido al import-time de agent_prompt; este
         # bg recompute persiste el set adaptado para la PROXIMA sesion. No
@@ -377,7 +372,7 @@ class Gemma4Agent:
             _logging.getLogger(__name__).debug(
                 "core_tools_pareto bg recompute failed: %s", _exc,
             )
-        # Sprint 7.2: TTL purge of stale closed resources on startup so
+        # TTL purge of stale closed resources on startup so
         # state.json doesn't accumulate zombie entries forever. Wrapped in
         # try/except — purge MUST NEVER break boot.
         try:
@@ -389,7 +384,7 @@ class Gemma4Agent:
             _logging.getLogger(__name__).warning(
                 "state.json purge_stale_closed failed: %s", _exc,
             )
-        # 2026-05-27 (bug medido): un `pending_intent` (tool aparcado el turno
+        # Bug medido: un `pending_intent` (tool aparcado el turno
         # anterior esperando respuesta del usuario) es una señal de continuidad
         # DENTRO de la misma sesión — se evalúa contra `_turn_counter`, que
         # vuelve a 0 en cada proceso nuevo. Pero set_pending_intent lo PERSISTE
@@ -422,7 +417,7 @@ class Gemma4Agent:
             )
         from ..memory_pkg.experience import ExperienceMemory
         self.experience = ExperienceMemory(self.config.memory_path.parent / "experience.sqlite")
-        # JARVIS proactivo (inv 5): log de comportamiento para detectar rutinas
+        # Capa proactiva: log de comportamiento para detectar rutinas
         # del usuario y ofrecer automatizarlas. SEPARADO de experience (no
         # contamina). Best-effort: si falla, no rompe nada. Gate GEMMA4_JARVIS=0.
         import os as _os_j
@@ -438,7 +433,7 @@ class Gemma4Agent:
                 self.behavior.record("boot", "agent")  # arranque de sesión
             except Exception:
                 self.behavior = None
-            # Observador ambiente (R-Jarvis 2026-05-30): la "capa viva" que mira el
+            # Observador ambiente: la "capa viva" que mira el
             # comportamiento REAL del usuario (música via SMTC + app en foco) para
             # que Gemma4 aprenda quién es. Thread daemon, metadata-no-contenido,
             # gate GEMMA4_AMBIENT_OBSERVER. Best-effort: nunca rompe el boot.
@@ -449,7 +444,7 @@ class Gemma4Agent:
                     self.ambient_observer.start()
                 except Exception:
                     self.ambient_observer = None
-        # WATCHDOG de VRAM (inv 6): muestrea VRAM libre con TTL para detectar
+        # WATCHDOG de VRAM: muestrea VRAM libre con TTL para detectar
         # presión ANTES de despachar visión y evitar el OOM que deja a
         # llama-server zombie (issue #13085). No-op sin GPU NVIDIA. Barato,
         # cabe en vram4. Self-check al boot = fail-loud (no degradar en silencio).
@@ -493,27 +488,27 @@ class Gemma4Agent:
         # Persona: nudges system prompt + preferred tools. Default = no nudge.
         from ..support.personas import from_env as _persona_from_env
         self._persona = _persona_from_env()
-        # TIER 1 #3: cache de microagents seleccionados a lo largo de la sesion.
+        # Cache de microagents seleccionados a lo largo de la sesion.
         # Cuando un microagent matchea un turn, se agrega al cache y persiste
         # para siguientes turns (mantiene el KV cache caliente). agent.clear()
         # lo resetea junto con history.
         self._cached_microagents: list = []
-        # TIER 1 #4: skills menu + critical block. Cacheado a nivel-instancia
+        # Skills menu + critical block. Cacheado a nivel-instancia
         # porque el catalogo de skills es estatico (folder skills/ no cambia
         # mid-session). El KV cache del llama-server reutiliza el prefix.
         self._cached_skills_menu: str | None = None
         self._cached_skills_critical: str | None = None
-        # F-005: timestamp del ultimo turn cerrado, para TTL del inherit-tools
+        # Timestamp del ultimo turn cerrado, para TTL del inherit-tools
         # path (gap > 5 min => no heredar, evita disparar tools peligrosos
-        # cuando el user retoma la sesion tras mucho tiempo).
+        # cuando se retoma la sesion tras mucho tiempo).
         self._last_turn_ts: float | None = None
-        # 2026-05-20: the tools the PREVIOUS turn actually executed. Survives
+        # The tools the PREVIOUS turn actually executed. Survives
         # history compaction (which strips tool messages), so a short
         # continuation ("subelo un poco mas") can inherit the real prior tool
         # instead of hallucinating. The history scan can't see these because
         # _compact_completed_history drops tool_calls/tool messages.
         self._last_executed_tools: list[str] = []
-        # ITEM 4 (perfection roadmap): entity ring para resolución deíctica
+        # Entity ring para resolución deíctica
         # ("abrilo/ponelo/open it" -> el último path/url/id útil). Detección
         # multilingüe por embeddings (NO regex por idioma). Gated GEMMA4_DEICTIC.
         try:
@@ -552,7 +547,7 @@ class Gemma4Agent:
         # de un EnumWindows propio con callback efímero — ese daba error 126 (el GC
         # recolecta el callback antes de que ctypes lo use). list_windows devuelve
         # {ok, windows:[{title,...}]}.
-        # LIMIT ALTO (bug medido 2026-05-25): list_windows corta en `limit` (default
+        # LIMIT ALTO (bug medido): list_windows corta en `limit` (default
         # 30) y EnumWindows devuelve en Z-ORDER, que cambia entre llamadas (la ventana
         # al frente se mueve). Con 30, una app abierta (Discord) caía FUERA del corte
         # en llamadas sucesivas -> match INTERMITENTE (ok la 1ª vez, None las
@@ -573,14 +568,14 @@ class Gemma4Agent:
         return None
 
     # computer-use = tool del registry (tools.t_computer_use), NO un método del
-    # agente. El short-circuit pre-LLM se eliminó (secuestraba turnos). Los
+    # agente. No hay short-circuit pre-LLM (secuestraba turnos). Los
     # helpers de abajo (_app_window_title/_title_now_matches/_quick_switcher_nav)
     # los reusa el PlanExecutor de computer_use.py.
-    # NOTA (2026-05-25): _try_in_app_message y _try_in_app_nav (macros por
-    # INTENCIÓN) fueron REEMPLAZADOS por _try_computer_use (capa universal:
-    # el 4B planifica primitivas, un ejecutor las corre). Medido: A 16/16 en
-    # apps variadas. Los helpers _quick_switcher_nav/_title_now_matches/
-    # _app_window_title siguen — los reusa el PlanExecutor.
+    # Las macros por INTENCIÓN (in-app message/nav) están REEMPLAZADAS por la
+    # capa universal de computer_use (el 4B planifica primitivas, un ejecutor las
+    # corre). Medido: 16/16 en apps variadas. Los helpers
+    # _quick_switcher_nav/_title_now_matches/_app_window_title siguen — los reusa
+    # el PlanExecutor.
     def _app_window_title(self, win_hint: str) -> str:
         """Título ACTUAL de la ventana de la app (por el último token del hint, p.ej.
         'Discord'). Para verificar navegación-en-app por estado del SO. '' si no se
@@ -790,7 +785,7 @@ class Gemma4Agent:
             try:
                 from ..memory_pkg.taste_profile import build_profile_block
                 profile_section = build_profile_block(self.behavior)
-                # Reflexión por LLM (R-Jarvis fase 1, opt-in GEMMA4_TASTE_LLM_REFLECTION):
+                # Reflexión por LLM (opt-in GEMMA4_TASTE_LLM_REFLECTION):
                 # gustos FINOS inferidos en background. reflection_block sólo LEE el caché
                 # (barato); maybe_refresh_async dispara el pase LLM en un thread si venció
                 # (NO per-turn). Gate OFF -> ambos no-op. Best-effort.
@@ -805,9 +800,8 @@ class Gemma4Agent:
         explicit_section = f"\n\n{explicit_block}" if explicit_block else ""
         phrase_section = _format_phrase_fires(self._phrase_fires)
         phrase_section = f"\n\n{phrase_section}" if phrase_section else ""
-        # Sprint 1 / item I1 #7: bloque "Tool Schemas EXACT" del informe de
-        # optimizacion. Patron Daniel Farina (OpenCode-on-Gemma-4): reduce
-        # errores de tool selection y argument naming. Opt-out via env var
+        # Bloque "Tool Schemas EXACT". Patron Daniel Farina (OpenCode-on-Gemma-4):
+        # reduce errores de tool selection y argument naming. Opt-out via env var
         # GEMMA4_DISABLE_TOOL_SCHEMAS_HINT por si el dev necesita prompts
         # mas cortos en debug. Cacheado a nivel-instancia para no recompilar
         # el markdown en cada turno (62 tools = ~6 KB de markdown).
@@ -821,7 +815,7 @@ class Gemma4Agent:
         # reglas de las tools que el router eligio. Reduce ~7K chars sin
         # perder capacidad (cuando el LLM use la tool, la regla aparecera).
         prompt_base = build_system_prompt(selected_tool_names)
-        # TIER 1 #3: microagents — markdown files con frontmatter que se
+        # Microagents — markdown files con frontmatter que se
         # inyectan al system_prompt cuando user_text matchea sus triggers.
         # Diferencia ortogonal con TOOL_RULES:
         #   TOOL_RULES["X"]: como usar la tool X (regla de uso, viene con
@@ -846,7 +840,7 @@ class Gemma4Agent:
             except Exception:
                 pass
             microagents_section = ""
-        # TIER 1 #4: skills menu (compact, una linea por skill) + critical
+        # Skills menu (compact, una linea por skill) + critical
         # block (full body de skills con priority=critical). Cacheado a
         # nivel-instancia: el catalogo skills/ no cambia mid-session.
         if self._cached_skills_menu is None or self._cached_skills_critical is None:
@@ -868,7 +862,7 @@ class Gemma4Agent:
                 self._cached_skills_critical = ""
         skills_critical = self._cached_skills_critical or ""
         skills_menu = self._cached_skills_menu or ""
-        # Trigger-inject de skills (2026-05-29): el 4B NO emite skill_load (0/5 en
+        # Trigger-inject de skills: el 4B NO emite skill_load (0/5 en
         # vivo, 0/6727 prod). Si el pedido matchea semánticamente una skill,
         # inyectamos su receta full para que la SIGA (como microagents/critical),
         # sin depender de que el 4B la cargue. Gated GEMMA4_SKILLS_AUTOINJECT.
@@ -894,17 +888,15 @@ class Gemma4Agent:
             from ..safety_pkg.intent_validator import INTENT_TAG_INSTRUCTION, needs_intent_tag
             if needs_intent_tag(selected_tool_names):
                 intent_hint = INTENT_TAG_INSTRUCTION
-        # LAYOUT cache-friendly (medido 2026-05-23 V2, refinado 2026-05-28 V3):
+        # LAYOUT cache-friendly (medido):
         # el system prompt diverge al ~28% porque las TOOL_RULES (variables por
         # subset del router) iban temprano -> cambiar de dominio de tools
         # (Spotify->volumen) reprocesaba ~4000 tok (892ms). V2 reordeno:
-        # ESTABLE primero, VARIABLE al final. Pero medicion 2026-05-28 mostro
-        # que el prefijo comun caia a 33-46% entre turns reales porque las
-        # tool_rules y tool_schemas filtrados por subset (variables) seguian
-        # en el system.
+        # ESTABLE primero, VARIABLE al final. Pero el prefijo comun caia a 33-46%
+        # entre turns reales porque las tool_rules y tool_schemas filtrados por
+        # subset (variables) seguian en el system.
         #
-        # V3 (Camino C de research/latency/prefill_latency_llama_server_gemma4.md):
-        # las CORE_TOOL_RULES de los 15 tools mas usados (93.8% Pareto) y los
+        # V3: las CORE_TOOL_RULES de los 15 tools mas usados (93.8% Pareto) y los
         # CORE_TOOL_SCHEMAS van en el SYSTEM SIEMPRE (bytes estables turno-a-
         # turno). Las tool-rules y schemas para tools fuera del core van como
         # hint al inicio del USER msg. cache_hit medido en simulacion: 0.19% V2
@@ -961,8 +953,7 @@ class Gemma4Agent:
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
         """Construye el bloque "Tool Schemas EXACT" una sola vez por agent.
 
-        Sprint 1 del optimization_roadmap.md. Mode seleccionado por el
-        context_size del perfil activo:
+        Mode seleccionado por el context_size del perfil activo:
           - ctx >= 32K  -> full (~11.6K tokens) — best argument fidelity.
           - ctx >= 16K  -> compact (~5.9K tokens) — descripciones cortas.
           - ctx <  16K  -> off (no hint; el catalogo nativo de tools del
@@ -984,8 +975,8 @@ class Gemma4Agent:
             ctx = int(self.config.context_size or 0)
             # full: solo en perfiles con ctx >=32K (performance). El hint
             # full es ~11.6K tokens, ~35% de un context 32K — aceptable.
-            # compact: ~5.9K tokens. Activo en ctx >=12K (balanced_8gb post
-            # Polish P2 que bajo de 16K -> 12K por VRAM tight) para que
+            # compact: ~5.9K tokens. Activo en ctx >=12K (balanced_8gb usa
+            # 12K, no 16K, por VRAM tight) para que
             # queden >=6K tokens libres para conversacion + memoria.
             # off: ctx <12K (balanced 8K, light 4K) — el catalogo nativo
             # de tools via --jinja sigue siendo el camino sin overhead.
@@ -1075,7 +1066,7 @@ class Gemma4Agent:
         route_context: bool = False,
     ) -> list[dict[str, Any]]:
         history = self._history_for_turn(user_text) if route_context else self.history
-        # Camino C (2026-05-28): si LAYOUT_V3 esta activo y hay tools FUERA del
+        # Camino C: si LAYOUT_V3 esta activo y hay tools FUERA del
         # core en el subset, inyectar sus rules como prefijo del ultimo user msg
         # (NO al system, para no romper el cache). El system queda byte-a-byte
         # estable entre turnos -> prefix-cache real ~99% turn-a-turn.
@@ -1174,7 +1165,7 @@ class Gemma4Agent:
         re-dispatch, reply-message shortcut, explicit-plan only).
         """
         self._turn_counter += 1
-        # R8: resetear el presupuesto de acciones físicas GUI al EMPEZAR un turno
+        # Resetear el presupuesto de acciones físicas GUI al EMPEZAR un turno
         # top-level (no por cláusula — las cláusulas de un multi-intent comparten
         # el presupuesto del turno). Acota cuántos clicks/types a ciegas puede
         # encadenar el agente (anti pop-up/visual injection).
@@ -1182,7 +1173,7 @@ class Gemma4Agent:
             try:
                 from .. import gui_safety
                 gui_safety.reset_action_budget()
-                # anchor-binding (R8.2): fijar el objetivo del turno para detectar
+                # anchor-binding: fijar el objetivo del turno para detectar
                 # clicks a bait de pop-up no relacionado.
                 try:
                     _goal_txt = content if isinstance(content, str) else ""
@@ -1191,7 +1182,7 @@ class Gemma4Agent:
                             str(p.get("text", "")) for p in content
                             if isinstance(p, dict) and p.get("type") == "text")
                     gui_safety.set_turn_goal(_goal_txt)
-                    # idioma del turno (inv5: la oferta de Jarvis va en el idioma
+                    # idioma del turno (la oferta proactiva va en el idioma
                     # del usuario). Heurística por stopwords, fallback es.
                     try:
                         from ..safety_pkg.reply_validator import _guess_lang as _gl2
@@ -1206,13 +1197,13 @@ class Gemma4Agent:
         # cualquier short-circuit para que no filtre de un turno al siguiente.
         self._a11y_switch_note = ""
         self._a11y_continue_count = 0  # re-prompts de accesibilidad usados este turno
-        # JARVIS (inv 5): si el turno anterior ofreció automatizar una rutina y
+        # Si el turno anterior ofreció automatizar una rutina y
         # el usuario responde sí/no, resolverlo ACÁ (antes del LLM) — es un
         # handshake determinista, no hace falta inferencia. Short-circuit del turno.
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
             return TurnDecision(early_reply=_jarvis_reply)
-        # PERFIL DE GUSTOS — privacidad inspectable/borrable (R-Jarvis 2026-05-30).
+        # PERFIL DE GUSTOS — privacidad inspectable/borrable.
         # "¿qué sabés de mí?" / "olvidate de mis datos" tienen respuesta DETERMINISTA
         # (mostrar/borrar el perfil). MEDIDO: el router las clasifica como acción y el
         # 4B devuelve reply vacío → short-circuit. Detección por EMBEDDINGS (no
@@ -1220,7 +1211,7 @@ class Gemma4Agent:
         _profile_reply = self._handle_profile_intent(content)
         if _profile_reply is not None:
             return TurnDecision(early_reply=_profile_reply)
-        # ACCESIBILIDAD (B2): si el usuario PIDE cambiar de modo de accesibilidad
+        # ACCESIBILIDAD: si el usuario PIDE cambiar de modo de accesibilidad
         # ("activá modo no vidente", "no puedo usar las manos", "volvé a normal"),
         # lo detectamos por EMBEDDINGS multilingües (no keywords) y lo aplicamos/
         # persistimos ACÁ, antes de elegir tools. NO short-circuiteamos con una

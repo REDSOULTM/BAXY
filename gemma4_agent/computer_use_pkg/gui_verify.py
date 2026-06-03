@@ -1,16 +1,16 @@
-"""verify_post_action — cierra el "click/type ciego" (Fase 1 computer-use).
+"""verify_post_action — cierra el "click/type ciego".
 
-PROBLEMA (medido, baseline Fase 0 2026-05-24): el tool `gui` despacha clicks/types
+PROBLEMA (medido): el tool `gui` despacha clicks/types
 y reporta ok=True sin verificar que el SO cambió. En misiones multi-paso el 4B
 "cree" que hizo algo que no hizo (falso-PASS 14.3% en el eval-set).
 
-SOLUCIÓN (triangulada por la investigación, SIN VLM, cabe en vram4): tras la
+SOLUCIÓN (SIN VLM, cabe en vram4): tras la
 acción, comparar el estado de la PANTALLA antes/después en una REGIÓN acotada
 (ROI alrededor del punto de acción) + chequear el foreground. Si nada cambió y
 encima se perdió el foco -> la acción probablemente no tuvo efecto.
 
 Señales (las baratas que aplican a clicks por coordenada; UIA-delta requiere el
-elemento, que el click ciego no tiene — se suma en Fase 2 con las macros):
+elemento, que el click ciego no tiene — eso lo cubren las macros con elemento):
   1. frame-diff de ROI con dHash 8x8 (Hamming). Trampa conocida: cursor/reloj/
      blink dan falsos -> por eso ROI acotado (no full-screen) + excluir esquina
      del reloj. ~5ms.

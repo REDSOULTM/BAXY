@@ -1,12 +1,11 @@
 """App / game discovery on Windows.
 
-Pulled out of :mod:`gemma4_agent.tools` in Sprint 5b. Behaviour is
-identical; the two classes are re-exported from ``tools`` so existing
+The two classes are also re-exported from ``tools`` so existing
 ``from .tools import AppResolver, AppCandidate`` callers keep working.
 
 Implementation note: the small ranking / parsing helpers
 (`_fold`, `_score`, `_acf_value`, `_nearest_steam_appid`,
-`_pretty_exe_name`, `_looks_like_uninstaller`) still live in
+`_pretty_exe_name`, `_looks_like_uninstaller`) live in
 ``tools`` because they are also consumed by code outside this
 module. We import them lazily *inside* methods to avoid a top-level
 cycle with ``tools``.
@@ -29,9 +28,8 @@ from typing import Any, Callable
 # French "bloc-notes" or German "Editor" fuzzy-scores 0 against "notepad" and
 # the app is never found. This is NOT intent routing (the semantic router has
 # already chosen the `app` tool) and NOT a canned reply — it is a name-translation
-# table for a SMALL, FIXED set of OS-shipped binaries, the same precedent as the
-# streaming-app alias table in domain_tools.py. Keys are folded (lowercase, no
-# accents/punctuation — must match tools._fold output). We translate the
+# table for a SMALL, FIXED set of OS-shipped binaries. Keys are folded (lowercase,
+# no accents/punctuation — must match tools._fold output). We translate the
 # localized name to the canonical binary query, then let normal discovery rank it.
 # Sources: Windows shell names per MS docs (notepad.exe, calc, mspaint, cmd);
 # localized labels from the OS UI in es/en/pt/fr/de/it.
@@ -143,7 +141,7 @@ class AppResolver:
             if key in seen:
                 continue
             seen.add(key)
-            # 2026-05-20 tiebreaks (both observed live):
+            # Tiebreaks (both observed in practice):
             #  1. NAME match beats LAUNCH-stem match. PWA shortcuts ("YouTube",
             #     "southpark") launch via Chrome.exe, so they score 100 on the
             #     launch stem for query "Chrome" — but the user asking for
@@ -153,13 +151,13 @@ class AppResolver:
             #     "Microsoft Edge" (browser) and "MicrosoftEdgeBCHost" (helper);
             #     length-distance favors the real app over the longer helper.
             # name_in: 0 if the query actually appears in the NAME (any score
-            # > 0), else 1. This is the real Chrome fix: "Google Chrome" has
+            # > 0), else 1. Example: query "Chrome" — "Google Chrome" has
             # name_score 75 (query in name) while the "YouTube" PWA has
             # name_score 0 (only its Chrome.exe launch stem matched). Prefer
             # the candidate the user actually named.
             name_in = 0 if name_score > 0 else 1
             length_gap = abs(len(_fold(app.name)) - q_len)
-            # 2026-05-24: DEMOTE shortcuts muertos. Un .lnk cuyo target ya no
+            # DEMOTE shortcuts muertos. Un .lnk cuyo target ya no
             # existe (p.ej. vlc.lnk -> D:\...\vlc.exe borrado) rankea primero por
             # nombre pero al lanzarlo el SO devuelve error ("operación cancelada"
             # / no abre). Si hay otro candidato vivo (VLC en Program Files), debe
@@ -521,9 +519,9 @@ $items | ConvertTo-Json -Depth 3
         return out
 
     # Ejecutables Chromium/Electron conocidos: lanzarlos con la flag de
-    # accesibilidad (R1) enciende el árbol UIA del WebContents desde el arranque
+    # accesibilidad enciende el árbol UIA del WebContents desde el arranque
     # -> el agente puede leer/clickear controles web por UIA (evita caer a OCR) y
-    # detectar campos de contraseña web por UIA IsPassword (R6). Verificado:
+    # detectar campos de contraseña web por UIA IsPassword. Verificado:
     # --force-renderer-accessibility=complete expone IsPassword en inputs web.
     _CHROMIUM_EXES = ("chrome.exe", "msedge.exe", "brave.exe", "vivaldi.exe",
                       "opera.exe", "opera_gx.exe")
@@ -567,7 +565,7 @@ $items | ConvertTo-Json -Depth 3
         para lanzarlo con la flag de accesibilidad. Resuelve .lnk (TargetPath),
         shell:appsFolder (registry App Paths por nombre) o exe directo. None si no
         aplica / no se pudo resolver un exe. Gated por GEMMA4_GUI_AX_LAUNCH
-        (default ON; agresivo por decisión de RED)."""
+        (default ON: agresivo, prioriza encender UIA web siempre que se pueda)."""
         if os.environ.get("GEMMA4_GUI_AX_LAUNCH", "1").strip().lower() in {"0", "false", "no", "off"}:
             return None
         launch = candidate.launch or ""
@@ -593,8 +591,8 @@ $items | ConvertTo-Json -Depth 3
         if base in self._CHROMIUM_EXES:
             return (exe, ["--force-renderer-accessibility=complete"], False)
         if base in self._ELECTRON_EXES:
-            # Electron: el flag CLI + env var son BEST-EFFORT, pero VALIDADO
-            # (2026-05-25) que para apps EMPAQUETADAS (Discord=Squirrel) el flag CLI
+            # Electron: el flag CLI + env var son BEST-EFFORT, pero está VALIDADO
+            # que para apps EMPAQUETADAS (Discord=Squirrel) el flag CLI
             # NO llega al renderer (Squirrel lo descarta -> 0 controles UIA con
             # nombre). La vía que SÍ funciona para Discord es agregar
             # `force-renderer-accessibility: complete` a chromiumSwitches en su
@@ -607,11 +605,11 @@ $items | ConvertTo-Json -Depth 3
         return None
 
     def open(self, candidate: AppCandidate, *, url_arg: str | None = None) -> dict[str, Any]:
-        # url_arg (2026-05-27): si el candidato es un NAVEGADOR y nos pasan una URL,
+        # url_arg: si el candidato es un NAVEGADOR y nos pasan una URL,
         # la lanzamos como argumento (exe <url>) para NAVEGAR a esa página en ESE
         # navegador (honra "pon X en Opera"). Los navegadores aceptan la URL en argv.
         _url = (url_arg or "").strip() or None
-        # R1: Chromium/Electron -> lanzar con accesibilidad encendida (UIA web).
+        # Chromium/Electron -> lanzar con accesibilidad encendida (UIA web).
         ax = self._ax_launch_target(candidate)
         if ax is not None:
             exe, args, is_electron = ax
@@ -640,8 +638,8 @@ $items | ConvertTo-Json -Depth 3
                         "navigated_url": _url}}
             except Exception:
                 pass
-        # T2-app-startfile-no-error-042: capturamos OSError y devolvemos
-        # un dict estructurado con detalle del candidate.
+        # Capturamos OSError y devolvemos un dict estructurado con detalle
+        # del candidate (no propagar la excepción al caller).
         try:
             os.startfile(candidate.launch)  # type: ignore[attr-defined]
         except OSError as exc:

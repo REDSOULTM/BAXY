@@ -4,14 +4,12 @@ These run after the LLM emits its turn's final reply. If a
 structural anti-pattern is detected, the agent injects a
 corrective system message into self.history so the NEXT turn's
 LLM sees both its previous mistake and the correction note in
-the same context window — the deferred-correction path
-(Gemma4Agent has no _regen_reply method, building one is out of
-scope for this hotfix).
+the same context window — deferred correction (Gemma4Agent has
+no _regen_reply method, so the fix lands on the next turn, not
+the current one).
 
 The validators NEVER match user text — only the shape of the
 LLM's own reply and the structural tool_call activity this turn.
-
-Hotfix I 2026-05-17.
 """
 from __future__ import annotations
 
@@ -62,9 +60,10 @@ def is_listo_on_no_tool_turn(
     successfully this turn.
 
     'Listo' is the template the fast_action prompt teaches for
-    POST-TOOL acks. Emitting it without a tool is the anti-pattern
-    Bug B caught. The fix in B was prompt-level; this is the
-    structural backstop.
+    POST-TOOL acks. Emitting it without a tool is the anti-pattern:
+    the model defaults to the ack template even on a turn where no
+    tool ran. The prompt teaches the correct usage; this is the
+    structural backstop in case it doesn't.
     """
     if not reply_text or not _LISTO_PATTERN.match(reply_text):
         return False
@@ -82,10 +81,10 @@ LISTO_REGEN_HINT = (
 
 
 # ---------------------------------------------------------------------------
-# Anti-unverified-claim (guarda estructural, candidato Tier-1 de la auditoría
-# Carter OS). Detecta cuando el reply AFIRMA que una acción/estado externo
-# ocurrió ("ya lo abrí", "the window is open", "el volumen quedó en 50") SIN que
-# este turno haya corrido una tool VERIFICADA que sustente esa afirmación.
+# Anti-unverified-claim (guarda estructural). Detecta cuando el reply AFIRMA que
+# una acción/estado externo ocurrió ("ya lo abrí", "the window is open", "el
+# volumen quedó en 50") SIN que este turno haya corrido una tool VERIFICADA que
+# sustente esa afirmación.
 #
 # CUMPLE las reglas del proyecto:
 #  - NO lista de keywords por idioma: la detección de "afirma efecto" es por
@@ -97,8 +96,8 @@ LISTO_REGEN_HINT = (
 # ---------------------------------------------------------------------------
 
 # Margen mínimo (claim - conv) para considerar que el reply AFIRMA un efecto.
-# Medido (2026-05-23, 9 casos / 4 idiomas): afirmaciones reales caen en +0.25..
-# +0.39; preguntas/conversación en <=+0.16. 0.20 separa limpio con margen.
+# Medido (9 casos / 4 idiomas): afirmaciones reales caen en +0.25..+0.39;
+# preguntas/conversación en <=+0.16. 0.20 separa limpio con margen.
 _CLAIM_MARGIN = 0.20
 
 _CLAIM_ANCHORS = [
@@ -111,10 +110,10 @@ _CLAIM_ANCHORS = [
     # pt / fr / de / it
     "pronto, abri o app", "a janela está aberta", "c'est ouvert",
     "fertig, ich habe es geöffnet", "fatto, l'ho aperto",
-    # Efecto FÍSICO sobre el mundo (domótica/dispositivos) — 2026-06-02: la
-    # validación EN VIVO cazó "Listo, bajé la temperatura del termostato" como un
-    # claim de éxito FABRICADO que el detector NO reconocía (sus anchors eran solo
-    # de PC). El agente NO controla casa inteligente; afirmar que lo hizo es mentir.
+    # Efecto FÍSICO sobre el mundo (domótica/dispositivos): sin estos anchors el
+    # detector (solo de PC) NO reconocía "Listo, bajé la temperatura del termostato"
+    # como un claim de éxito FABRICADO. El agente NO controla casa inteligente;
+    # afirmar que lo hizo es mentir.
     "listo, prendí las luces", "ya bajé la temperatura del termostato",
     "apagué las luces de la sala", "encendí el aire acondicionado",
     "I turned on the living room lights", "I set the thermostat to 20 degrees",
@@ -248,11 +247,10 @@ def _guess_lang(text: str) -> str:
     Solo para elegir la frase-caveat / el idioma de la oferta de Jarvis; NO
     decide intención (eso es por embeddings en el router).
 
-    2026-05-27: arreglado el falso 'fr' en español. " la " es compartida es/fr
-    (señal pobre) y los empates iban al primero del dict (fr antes que es) ->
-    "entra a la pagina de youtube" daba 'fr'. Fix: (a) markers DISCRIMINANTES por
-    idioma (sin tokens compartidos ambiguos como " la "), (b) empate -> es
-    (default seguro: la app se usó históricamente en español)."""
+    Evita el falso 'fr' en español: " la " es compartida es/fr (señal pobre) y los
+    empates iban al primero del dict (fr antes que es) -> "entra a la pagina de
+    youtube" daba 'fr'. Por eso: (a) markers DISCRIMINANTES por idioma (sin tokens
+    compartidos ambiguos como " la "), (b) empate -> es (default seguro)."""
     t = f" {text.lower()} "
     # Markers elegidos para DISCRIMINAR, no solo "aparecer". Evitamos " la "/" el "
     # (es+fr+otros). Acentos y formas verbales son la señal fuerte por idioma.
@@ -308,7 +306,7 @@ def soften_unverified_launch(reply_text: str, tool_calls_this_turn: list[Any]) -
 
 
 # ---------------------------------------------------------------------------
-# Anti-"pedir input manual" (MODO MOVILIDAD, B3). En modo movilidad el usuario NO
+# Anti-"pedir input manual" (MODO MOVILIDAD). En modo movilidad el usuario NO
 # puede usar teclado/mouse: el agente debe ACTUAR por él, nunca pedirle que toque
 # algo. Esta guarda estructural detecta cuando el reply le INSTRUYE al usuario una
 # acción MANUAL ("hacé clic en...", "apretá Enter", "escribí tu contraseña",
@@ -327,7 +325,7 @@ def soften_unverified_launch(reply_text: str, tool_calls_this_turn: list[Any]) -
 # (una instrucción manual que se cuela) antes que un falso-POSITIVO (regen
 # espurio sobre un reply legítimo, p.ej. una pregunta aclaratoria). El system_hint
 # de movilidad es la defensa primaria; esta guarda es el backstop estructural.
-# Medido (2026-05-26, encoder real, 14 casos): 13/14, 0 falsos-positivos.
+# Medido (encoder real, 14 casos): 13/14, 0 falsos-positivos.
 _HANDS_FREE_MARGIN = float(__import__("os").environ.get("GEMMA4_HANDS_FREE_MARGIN", "0.15"))
 
 # Anclas "pedile al usuario que haga una acción MANUAL en pantalla".
@@ -437,19 +435,19 @@ HANDS_FREE_REGEN_HINT = (
 
 
 # ---------------------------------------------------------------------------
-# Anti-DELEGACIÓN / tarea-abandonada-a-medias (MOVILIDAD + NO VIDENTE, B3/B4).
-# Caso real: en movilidad, "comprá X en Instant Gaming" -> el agente hizo UN
-# paso (búsqueda en Google) y respondió "revisá los resultados para ver el
-# precio". Eso NO es pedir un clic explícito (la guarda hands-free no lo atrapa)
-# pero le PASA la tarea al usuario — que en movilidad/no_vidente no puede
-# revisar/elegir/clickear. Esta guarda detecta cuando el reply DELEGA la
-# continuación de la tarea en el usuario (revisá/fijate/elegí cuál/mirá la
-# pantalla y decidí) en vez de seguir actuando hasta completar o trabarse.
+# Anti-DELEGACIÓN / tarea-abandonada-a-medias (MOVILIDAD + NO VIDENTE).
+# Patrón: en movilidad, "comprá X en Instant Gaming" -> el agente hace UN paso
+# (búsqueda en Google) y responde "revisá los resultados para ver el precio". Eso
+# NO es pedir un clic explícito (la guarda hands-free no lo atrapa) pero le PASA
+# la tarea al usuario — que en movilidad/no_vidente no puede revisar/elegir/
+# clickear. Esta guarda detecta cuando el reply DELEGA la continuación de la tarea
+# en el usuario (revisá/fijate/elegí cuál/mirá la pantalla y decidí) en vez de
+# seguir actuando hasta completar o trabarse.
 #
 # Estructural y multilingüe (embeddings). Distingue DELEGAR (malo) de: el agente
 # YA terminó, el agente pregunta un dato puntual por voz, o el agente avisa
-# HONESTAMENTE que se trabó (eso último es válido — avanzar lo más posible +
-# avisar, según la decisión de producto 2026-05-26).
+# HONESTAMENTE que se trabó (eso último es válido por decisión de producto:
+# avanzar lo más posible + avisar).
 # ---------------------------------------------------------------------------
 _DELEGATE_MARGIN = float(__import__("os").environ.get("GEMMA4_DELEGATE_MARGIN", "0.10"))
 
@@ -568,7 +566,7 @@ DELEGATE_REGEN_HINT = (
 
 
 # ---------------------------------------------------------------------------
-# Anti-respuesta-muda (MODO NO VIDENTE, B4). Un usuario que no ve necesita que
+# Anti-respuesta-muda (MODO NO VIDENTE). Un usuario que no ve necesita que
 # el resultado de una acción se le DIGA: una respuesta como "Listo." tras abrir
 # una app no le informa NADA (no ve la ventana). Esta guarda detecta el caso
 # estructural "corrió una tool con éxito PERO el reply es demasiado escueto para

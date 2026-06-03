@@ -21,16 +21,15 @@ from dataclasses import dataclass
 from typing import Any
 
 _BASE_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-# Step 6 (2026-05-21): a router-domain fine-tune of the base MiniLM, trained on
-# our synthetic multilingual tool queries + the dev split (holdout excluded).
-# On the held-out corpus it lifts recall 0.835->0.878 and NO-TOOL keep
-# 0.512->0.628, and IMPROVES multilingual probes (0.79->0.90) — the fine-tune is
-# the encoder lever the research identified (the base model's short-query
-# topical geometry was the ceiling). Same 384-dim MiniLM size => same CPU
-# latency. If the artifact is absent (fresh checkout before training), we fall
-# back to the base model automatically. Regenerate via
+# Router-domain fine-tune of the base MiniLM, trained on synthetic multilingual
+# tool queries + the dev split (holdout excluded). On the held-out corpus it
+# lifts recall 0.835->0.878 and NO-TOOL keep 0.512->0.628, and improves
+# multilingual probes (0.79->0.90): the base model's short-query topical
+# geometry was the ceiling, and the fine-tune raises it. Same 384-dim MiniLM
+# size => same CPU latency. If the artifact is absent (fresh checkout before
+# training), we fall back to the base model automatically. Regenerate via
 # scripts/train_router_encoder.py + scripts/router_ft_pipeline.py.
-_FT_MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "router_encoder_ft")  # reorg 2026-05-28: data/ vive en el paquete padre
+_FT_MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "router_encoder_ft")  # data/ lives in the parent package
 _MODEL_NAME_DEFAULT = (
     _FT_MODEL_DIR if os.path.isdir(_FT_MODEL_DIR) else _BASE_MODEL_NAME
 )
@@ -179,11 +178,11 @@ class _State:
     model: Any | None = None
     tool_names: list[str] | None = None
     tool_embeddings: Any | None = None  # np.ndarray (DESCRIPTION embeddings)
-    # Tool2Vec (Step 4, 2026-05-21): per-tool centroid of synthetic example
-    # QUERIES, aligned to tool_names. The runtime tool vector is a blend of the
-    # description embedding and this query-centroid — example queries land far
-    # closer to real short voice phrasings than a terse English description
-    # does (Tool2Vec arXiv:2409.02141 / Re-Invoke arXiv:2408.01875).
+    # Tool2Vec: per-tool centroid of synthetic example QUERIES, aligned to
+    # tool_names. The runtime tool vector is a blend of the description
+    # embedding and this query-centroid — example queries land far closer to
+    # real short voice phrasings than a terse English description does
+    # (Tool2Vec arXiv:2409.02141 / Re-Invoke arXiv:2408.01875).
     tool2vec: Any | None = None  # np.ndarray [N,384] aligned to tool_names, or None
     permanently_disabled: bool = False  # set only when the lib is missing
     last_attempt_ts: float = 0.0
@@ -197,7 +196,7 @@ class _State:
 import os as _os2
 _TOOL2VEC_ALPHA = float(_os2.environ.get("GEMMA4_TOOL2VEC_ALPHA", "0.6"))
 _TOOL2VEC_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "data", "tool2vec_centroids.npz")  # reorg 2026-05-28
+    os.path.dirname(os.path.dirname(__file__)), "data", "tool2vec_centroids.npz")  # data/ lives in the parent package
 
 
 _STATE = _State()
@@ -275,10 +274,10 @@ def _ensure_loaded_locked(known_tool_names: list[str] | None) -> bool:
     try:
         model = SentenceTransformer(model_name)
     except Exception as exc:
-        # ROBUSTNESS (2026-05-21): if the fine-tuned encoder fails to load (a
-        # corrupt artifact, a transformers-version tokenizer mismatch, etc.),
-        # DON'T leave the router disabled (which looks like "stuck forever" in
-        # the UI). Fall back to the base multilingual model so routing keeps
+        # ROBUSTNESS: if the fine-tuned encoder fails to load (a corrupt
+        # artifact, a transformers-version tokenizer mismatch, etc.), DON'T
+        # leave the router disabled (which looks like "stuck forever" in the
+        # UI). Fall back to the base multilingual model so routing keeps
         # working at base quality. Only if THAT also fails do we report.
         _STATE.last_error = f"FT encoder load failed, falling back to base: {exc}"
         if model_name != _BASE_MODEL_NAME:
@@ -394,7 +393,7 @@ def encode_text(text: str):
     """Embedding multilingüe normalizado de un texto, REUSANDO el encoder ya
     cargado (no carga un 2º modelo). None si el modelo no está disponible.
 
-    Lo usa el detector deíctico (ITEM 4) para comparar el turno del usuario contra
+    Lo usa el detector deíctico para comparar el turno del usuario contra
     frases de referencia en varios idiomas — generalización multilingüe del encoder
     (paraphrase-multilingual-MiniLM, 50+ idiomas), NO una lista de keywords."""
     if not _ensure_loaded():
@@ -432,12 +431,12 @@ _MCP_ENROLLED: set[str] = set()
 
 
 def enroll_mcp_tools(tools: list[dict[str, str]]) -> int:
-    """Ola 3 (B9): enrola tools MCP en el catálogo del router por EMBEDDINGS.
+    """Enrola tools MCP en el catálogo del router por EMBEDDINGS.
 
     `tools` = [{"id": "mcp__server__tool", "description": "..."}]. Las agrega a
     TOOL_DESCRIPTIONS para que `suggest_tools_semantic` las rankee JUNTO a las
     compound; el cap MAX_SELECTED_TOOLS=5 del planner las limita igual (NUNCA se le
-    dan las N al 4B — esa es la disciplina de subset que mitiga R7). Idempotente:
+    dan las N al 4B — esa es la disciplina de subset que acota el ruido). Idempotente:
     re-enrolar reemplaza el set previo. Invalida el cache de embeds (re-embed lazy).
     Devuelve cuántas quedaron enroladas. 0 si la lista está vacía (des-enrola todo)."""
     global _MCP_ENROLLED
@@ -449,14 +448,14 @@ def enroll_mcp_tools(tools: list[dict[str, str]]) -> int:
         tid = str(t.get("id") or "").strip()
         if not tid.startswith("mcp__"):
             continue
-        # ENRIQUECIMIENTO de la descripción (perfection roadmap 2026-05-29): las
-        # descripciones crudas del servidor MCP suelen ser técnicas y casi-idénticas
-        # entre variantes ("Get weather forecast data for coordinates using
-        # Open-Meteo"), dando cosines BAJOS (~0.36) y near-ties que el 4B no
-        # discrimina. MEDIDO que sin esto la MCP weather no entra al subset. Fix
-        # research-aligned (Tool2Vec): anteponer el NOMBRE de la tool tokenizado
-        # ("weather forecast") al texto embebido. El nombre ES la capacidad en
-        # lenguaje natural — NO es una lista de keywords por idioma; el encoder
+        # ENRIQUECIMIENTO de la descripción: las descripciones crudas del
+        # servidor MCP suelen ser técnicas y casi-idénticas entre variantes
+        # ("Get weather forecast data for coordinates using Open-Meteo"), dando
+        # cosines BAJOS (~0.36) y near-ties que el 4B no discrimina. Medido: sin
+        # esto la MCP weather no entra al subset. Fix research-aligned
+        # (Tool2Vec): anteponer el NOMBRE de la tool tokenizado ("weather
+        # forecast") al texto embebido. El nombre ES la capacidad en lenguaje
+        # natural — NO es una lista de keywords por idioma; el encoder
         # multilingüe lo generaliza. Sube la señal sin aflojar el umbral.
         _server, _, _tool = tid[len("mcp__"):].partition("__")
         _name_words = (_tool or _server).replace("_", " ").strip()

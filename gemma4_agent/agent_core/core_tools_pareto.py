@@ -1,4 +1,4 @@
-"""Camino C dinamico (2026-05-28): set de tools CORE adaptado por usuario.
+"""Camino C dinamico: set de tools CORE adaptado por usuario.
 
 Disenio:
   - Boot del agente -> read_user_core_tools() lee ~/.gemma4/core_tools_pareto.json
@@ -37,12 +37,13 @@ logger = logging.getLogger(__name__)
 
 
 # Cuantos tools tener en el core (set always-on de tool-rules en el system
-# prompt). v22 2026-05-28 (Plan A2): BAJADO 15->6. Con 15 reglas always-on el
-# piso del system prompt era ~9.4k tok -> CADA turno cruzaba la zona del crash
-# CUDA #22527 (con FA on) y enlentecia el prefill (con FA off). MEDIDO: 6 reglas
-# -> piso ~5k tok, tool-calling EN VIVO 8/8 (las reglas de los tools del subset
-# se inyectan on-demand via build_tool_rules_extras_for_user_msg, asi que reducir
-# el always-on NO quita guia a los tools del turno). Override: GEMMA4_CORE_RULES.
+# prompt). Fijado en 6 (no 15): con 15 reglas always-on el piso del system
+# prompt era ~9.4k tok -> CADA turno cruzaba la zona del crash CUDA #22527 (con
+# FA on) y enlentecia el prefill (con FA off). Con 6 reglas el piso baja a ~5k
+# tok; medido tool-calling EN VIVO 8/8 correcto, porque las reglas de los tools
+# del subset se inyectan on-demand via build_tool_rules_extras_for_user_msg, asi
+# que reducir el always-on NO quita guia a los tools del turno. Override:
+# GEMMA4_CORE_RULES.
 CORE_SIZE = 6
 
 # Umbral de cambio: si el nuevo set comparte >=80% (Jaccard) con el viejo,
@@ -58,12 +59,12 @@ _CORE_TOOLS_PATH = _USER_HOME / "core_tools_pareto.json"
 
 
 def _default_core_tools() -> tuple[str, ...]:
-    """Default global del set always-on. v22 2026-05-28 (Plan A2): 6 tools
-    universales por voz (vs los 15 previos). El resto de las reglas se inyectan
-    on-demand cuando su tool entra al subset del turno (extras en el user msg),
-    asi que esto NO quita guia a media/browser/whatsapp/gui/etc cuando se usan.
-    Validado EN VIVO: 8/8 tool-calling correcto + piso del system prompt ~5k tok
-    (vs ~9.4k con 15). Override explicito: GEMMA4_CORE_RULES=a,b,c."""
+    """Default global del set always-on: 6 tools universales por voz. El resto
+    de las reglas se inyectan on-demand cuando su tool entra al subset del turno
+    (extras en el user msg), asi que esto NO quita guia a
+    media/browser/whatsapp/gui/etc cuando se usan. Medido EN VIVO: 8/8
+    tool-calling correcto + piso del system prompt ~5k tok (vs ~9.4k con 15
+    reglas always-on). Override explicito: GEMMA4_CORE_RULES=a,b,c."""
     return ("app", "audio", "session", "system", "web", "window")
 
 
@@ -73,11 +74,11 @@ def read_user_core_tools() -> tuple[str, ...]:
     Llamado UNA VEZ al boot del agente. La sesion actual queda con este set
     fijo (no cambia turno-a-turno -> prefix-cache estable).
     """
-    # v22 2026-05-28 (Plan A2): override explicito del set always-on via
-    # GEMMA4_CORE_RULES (lista separada por comas). Achica el piso del system
-    # prompt (~9.4k tok con 15 reglas always-on) que empuja CADA turno a la zona
-    # del crash CUDA #22527 y enlentece el prefill con flash-attn off. Las reglas
-    # de los tools del subset SIGUEN incluyendose on-demand via
+    # Override explicito del set always-on via GEMMA4_CORE_RULES (lista
+    # separada por comas). Achica el piso del system prompt (~9.4k tok con 15
+    # reglas always-on) que empuja CADA turno a la zona del crash CUDA #22527 y
+    # enlentece el prefill con flash-attn off. Las reglas de los tools del
+    # subset SIGUEN incluyendose on-demand via
     # build_tool_rules_extras_for_user_msg, asi que reducir el set always-on no
     # quita guia a los tools relevantes del turno. Unset/vacio = default.
     # Fuentes: RAG-MCP (arXiv:2505.03275), EasyTool (arXiv:2401.06201) -> prompt

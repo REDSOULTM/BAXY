@@ -1,23 +1,22 @@
-"""Detección deíctica MULTILINGÜE + entity ring (perfection roadmap ITEM 4, 2026-05-29).
+"""Detección deíctica MULTILINGÜE + entity ring.
 
 Cuando el usuario dice "abrilo / ponelo / open it / abre isso", se refiere a algo
 del turno anterior (un archivo, una URL, un id). El 4B sufre "lost in the middle":
 el referente debe inyectarse LITERAL al final del prompt, junto al pronombre.
 
-⚠️ TRAMPA EVITADA: el research 4_contexto.md propone un regex hardcoded de español
-chileno (\\b(eso|esa|ábrelo|súbelo|bórralo)\\b). Eso VIOLA la ley de producto
-("nada de listas de keywords por idioma"): un usuario en EN/PT/FR/DE/IT no
-dispararía. Acá la detección es por EMBEDDINGS multilingües: comparamos el turno
-contra ~12 frases deícticas de referencia en 6 idiomas; el encoder
-(paraphrase-multilingual-MiniLM) generaliza a 50+ idiomas. Las frases son
-EJEMPLOS SEMÁNTICOS, no un whitelist. Fallback seguro: sin encoder -> False
-(degrada al inherit-tools actual, nunca rompe).
+⚠️ TRAMPA EVITADA: un regex hardcoded de español (\\b(eso|esa|ábrelo|súbelo|
+bórralo)\\b) VIOLA la ley de producto ("nada de listas de keywords por idioma"):
+un usuario en EN/PT/FR/DE/IT no dispararía. Acá la detección es por EMBEDDINGS
+multilingües: comparamos el turno contra ~12 frases deícticas de referencia en 6
+idiomas; el encoder (paraphrase-multilingual-MiniLM) generaliza a 50+ idiomas.
+Las frases son EJEMPLOS SEMÁNTICOS, no un whitelist. Fallback seguro: sin encoder
+-> False (degrada al inherit-tools actual, nunca rompe).
 
 El ENTITY RING (deque) guarda los últimos identificadores ÚTILES extraídos de los
 tool_results (paths/urls/ids) — extracción ESTRUCTURAL (mide la FORMA, permitida),
 no por idioma. En un turno deíctico se inyecta el más reciente.
 
-GATING: GEMMA4_DEICTIC (default off). Opt-in hasta validar multilingüe en vivo.
+GATING: GEMMA4_DEICTIC (default on; kill-switch GEMMA4_DEICTIC=0).
 """
 from __future__ import annotations
 

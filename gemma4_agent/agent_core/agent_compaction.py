@@ -1,9 +1,9 @@
 """History-compaction helpers extracted from :mod:`gemma4_agent.agent`.
 
-Sprint 6.3 split: the eight pure helpers below (plus the three
-character-budget constants they use) live here so the
-Gemma4Agent's compaction methods read like orchestration on top of
-named primitives instead of inline blobs.
+The eight pure helpers below (plus the three character-budget
+constants they use) live here so the Gemma4Agent's compaction
+methods read like orchestration on top of named primitives instead
+of inline blobs.
 
 The methods themselves (`_compact_completed_history`,
 `_compact_active_history_for_retry`, `_extract_facts`,
@@ -20,12 +20,11 @@ import re
 from typing import Any
 
 
-# Hotfix H 2026-05-17: stitch_breadcrumbs (hotfix C+D+E) appends
-# `[breadcrumb: k=v ...]` lines to assistant.content. Repeated
-# compactions stack these indefinitely (~9KB observed after 5
-# tool-call turns). _compact_old_breadcrumbs collapses all but
-# the most recent so the LLM keeps the latest locator without
-# context bloat.
+# stitch_breadcrumbs appends `[breadcrumb: k=v ...]` lines to
+# assistant.content. Repeated compactions stack these indefinitely
+# (~9KB observed after 5 tool-call turns). _compact_old_breadcrumbs
+# collapses all but the most recent so the LLM keeps the latest
+# locator without context bloat.
 _BREADCRUMB_PATTERN = re.compile(
     r"\n\[breadcrumb:[^\n\]]*\]",
     re.DOTALL,
@@ -238,10 +237,10 @@ def compact_tool_result(name: str, args: dict[str, Any], result: dict[str, Any])
         "image_path",
         "title",
         "selected_title",
-        # Hotfix F 2026-05-17: aligns with _LOCATOR_KEYS — deeplink
-        # was preserved by the breadcrumb pre-pass but dropped here
-        # when payload exceeded TOOL_RESULT_LIMIT. EVIDENCE CITATION
-        # in core.md promises deeplink survives compaction.
+        # Aligns with _LOCATOR_KEYS — deeplink was preserved by the
+        # breadcrumb pre-pass but dropped here when payload exceeded
+        # TOOL_RESULT_LIMIT. EVIDENCE CITATION in core.md promises
+        # deeplink survives compaction.
         "deeplink",
         "level",
         "query",
@@ -276,7 +275,7 @@ def compact_tool_result(name: str, args: dict[str, Any], result: dict[str, Any])
 # rule in core.md (EVIDENCE CITATION) and we want them to drift together.
 _LOCATOR_KEYS: tuple[str, ...] = ("path", "url", "selected_title", "image_path", "deeplink")
 
-# Compact "tabular evidence" pre-pass — hotfix D 2026-05-17.
+# Compact "tabular evidence" pre-pass.
 # The scalar-locator breadcrumb above (path/url/...) survives turns but
 # small tabular results (e.g. disks list from system.disk) do not. When
 # we see such tables in a tool_result, summarize each row as
@@ -286,9 +285,9 @@ _LOCATOR_KEYS: tuple[str, ...] = ("path", "url", "selected_title", "image_path",
 #   user "y en F?" -> next turn had no F data -> LLM hallucinated 350 GB.
 _TABULAR_KEYS: tuple[str, ...] = (
     "disks", "processes", "devices", "results", "items", "windows", "tabs",
-    # Hotfix E 2026-05-17: more list-of-dict result keys observed in
-    # real tool outputs. Bounded by _TABULAR_MAX_ROWS=20, so large
-    # lists still produce a clipped breadcrumb.
+    # More list-of-dict result keys observed in real tool outputs.
+    # Bounded by _TABULAR_MAX_ROWS=20, so large lists still produce a
+    # clipped breadcrumb.
     "games", "installed_apps", "tracks", "events",
     "contacts", "notes", "tasks", "reminders",
 )
@@ -296,16 +295,16 @@ _TABULAR_MAX_ROWS = 20
 _TABULAR_MAX_ROW_CHARS = 200
 _TABULAR_MAX_TOTAL_CHARS = 1200
 # Overall cap on the breadcrumb suffix — must fit locators + at most
-# one tabular blob comfortably. Raised from 600 -> 1800 in hotfix D.
+# one tabular blob comfortably (1800 chars).
 _BREADCRUMB_MAX_CHARS = 1800
 
 
 def stitch_breadcrumbs(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Stitch locator-key breadcrumbs onto assistant replies pre-drop.
 
-    Hotfix C 2026-05-17 (scalar locators) + hotfix D 2026-05-17 (tabular
-    evidence). Before `_compact_completed_history` drops the role="tool"
-    messages, harvest:
+    Harvests both scalar locators and tabular evidence. Before
+    `_compact_completed_history` drops the role="tool" messages,
+    harvest:
       - scalar locator keys (`path`, `url`, `selected_title`,
         `image_path`, `deeplink`),
       - tabular keys (`disks`, `processes`, `devices`, `results`,
@@ -346,8 +345,8 @@ def stitch_breadcrumbs(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     v = parsed.get(k)
                     if isinstance(v, str) and v.strip() and len(v) <= 400:
                         pending.append((k, v.strip()))
-                # Tabular harvest (hotfix D). Bound each row, each table,
-                # and the total — small tables only.
+                # Tabular harvest. Bound each row, each table, and the
+                # total — small tables only.
                 for tk in _TABULAR_KEYS:
                     rows = parsed.get(tk)
                     if not isinstance(rows, list) or not rows:

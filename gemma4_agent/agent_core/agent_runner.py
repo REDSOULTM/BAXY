@@ -91,10 +91,9 @@ class AgentRunner:
         # long comment in _build_agent. The agent_status endpoint and the
         # WS handshake read this so the UI gate is correct everywhere.
         self._warmed_up: bool = False
-        # Sprint 4: referencia persistente al LlamaServerManager para que
-        # el callback de vision_relaunch (item 1.7) pueda reciclar el
-        # server sin tener que recrear el manager (que perderia la
-        # referencia al subprocess vivo).
+        # Referencia persistente al LlamaServerManager para que el callback de
+        # vision_relaunch pueda reciclar el server sin recrear el manager (que
+        # perdería la referencia al subprocess vivo).
         self._server_manager: Any = None
         # Auto CPU-fallback (GEMMA4_AUTO_CPU_FALLBACK): ProfileWatcher que, al
         # detectar la GPU saturada por algo ajeno (juego/app pesada), cambia al
@@ -103,9 +102,9 @@ class AgentRunner:
         self._profile_watcher: Any = None
         # Handle del thread de warmup del router. _build_agent lo joinea ANTES
         # de publicar ready, para que la casilla de chat NO se abra con el
-        # router a medio cargar (2026-06-02: el usuario reportó que el primer
-        # turno se demoraba porque la casilla se desbloqueaba antes de que el
-        # router/embeddings estuvieran listos -> caía al fallback léxico).
+        # router a medio cargar: si la casilla se desbloquea antes de que el
+        # router/embeddings estén listos, el primer turno cae al fallback léxico
+        # (ruteo degradado) en vez de usar el ruteo semántico.
         self._router_thread: threading.Thread | None = None
         # Latch que los PULL de server.py (/agent/status, WS handshake) leen vía
         # is_router_ready(). El gate real es ready = built ∧ warmed ∧ healthy ∧
@@ -310,9 +309,9 @@ class AgentRunner:
             _publish_activity("SYSTEM", f"llama-server up · {result}")
             emit_stage(BUS.publish, STAGE_HEALTH,
                        f"llama-server healthy · {result}", progress=100.0)
-            # Sprint 4: registrar callback de vision_relaunch (item 1.7).
-            # Cuando multimodal._bump_image_counter cruce IMAGE_RELAUNCH_THRESHOLD,
-            # reciclamos el server para mitigar mmproj leak (#21690).
+            # Registrar callback de vision_relaunch: cuando
+            # multimodal._bump_image_counter cruce IMAGE_RELAUNCH_THRESHOLD,
+            # reciclamos el server para mitigar el mmproj leak (#21690).
             # Solo registramos si tenemos manager vivo Y el perfil tiene
             # vision_enabled. Para perfiles sin vision el counter sube pero
             # el callback es no-op (lo verifica recycle_for_vision_leak).
@@ -393,9 +392,8 @@ class AgentRunner:
         # Pre-load the semantic router's BertModel + tool embeddings BEFORE
         # we let the UI unlock the input. Otherwise the first turn pays the
         # one-shot ~3-5s sentence-transformers download/load cost while the
-        # user thinks the agent is thinking — the regression captured in
-        # screenshots: "loading weights 199/199" + BertModel LOAD REPORT
-        # appearing AFTER the user sent their first message.
+        # user thinks the agent is thinking — i.e. the BertModel LOAD REPORT
+        # and "loading weights 199/199" land AFTER the first message is sent.
         #
         # PERF: el _ensure_loaded toma 6-8s (BertModel + 62 embeddings). Antes
         # era SECUENCIAL con el health check + warmup del llama-server (los
@@ -439,9 +437,9 @@ class AgentRunner:
                         _ir._ensure_centroids()
                         _ir.is_conversational("warmup")
                         semantic_router.embed("warmup")
-                        # HEALTH-CHECK ruidoso (2026-05-23): si el encoder no
-                        # cargó, el router clasifica/rutea MAL en silencio (lo
-                        # que torchcodec destapó: "¿qué es X?" creó un documento).
+                        # HEALTH-CHECK ruidoso: si el encoder no cargó, el router
+                        # clasifica/rutea MAL en silencio (síntoma observado:
+                        # "¿qué es X?" creó un documento en vez de responder).
                         # Avisar fuerte para que se note, en vez de degradar mudo.
                         try:
                             _ok, _detail = _ir.router_health()
@@ -454,11 +452,10 @@ class AgentRunner:
                                 logger.error("router health FAILED: %s", _detail)
                         except Exception:
                             pass
-                        # 2026-05-21: also warm the abstain head + per-tool logit
-                        # head HERE, so they never load lazily on the user's
-                        # first turn (the critical path). Both are tiny numpy
-                        # artifacts; loading them is fast but must not race the
-                        # first route.
+                        # Also warm the abstain head + per-tool logit head HERE,
+                        # so they never load lazily on the user's first turn (the
+                        # critical path). Both are tiny numpy artifacts; loading
+                        # them is fast but must not race the first route.
                         try:
                             from .. import abstain_head as _ah
                             if _ah.is_enabled():
@@ -504,9 +501,8 @@ class AgentRunner:
         # the binary is bound to the port — that's BEFORE load_tensors has
         # finished moving weights to VRAM. If we trusted /health alone, the
         # UI would unlock the input and the user's first POST /turn would
-        # queue inside llama-server while it kept loading (the regression
-        # the user saw: first turn took 30-90s even though the input was
-        # already enabled).
+        # queue inside llama-server while it kept loading — the first turn would
+        # take 30-90s even though the input was already enabled.
         #
         # To gate `ready` honestly we follow up with a 1-token chat warmup:
         # llama-server can't reply to a completion until load_tensors is
@@ -538,15 +534,15 @@ class AgentRunner:
         # Router mode: warm the TEXT preset (the one used by voice/text turns,
         # the common case). This triggers its on-demand load so the user's
         # first turn is fast and the cache-reuse prefix is primed.
-        # CRITICAL FIX (2026-05-21): resolve the warmup model SERVER-DRIVEN from
-        # the running llama-server's /v1/models. The old path trusted the
-        # in-process manager's router_model_for(), which returns None when the
-        # agent attaches to an already-running / external router-mode server —
-        # so the warmup fell back to the config default "gemma-4", which a
-        # router-mode server (advertising only vram8-text/vram8-vision) REJECTS
-        # with HTTP 400 "model 'gemma-4' not found". That left the field
-        # permanently OFFLINE (warmed=False) — the "never loads" the operator
-        # reported. resolve_turn_model() probes the server and is authoritative.
+        # CRITICAL: resolve the warmup model SERVER-DRIVEN from the running
+        # llama-server's /v1/models. Trusting the in-process manager's
+        # router_model_for() is wrong: it returns None when the agent attaches
+        # to an already-running / external router-mode server — so the warmup
+        # falls back to the config default "gemma-4", which a router-mode server
+        # (advertising only vram8-text/vram8-vision) REJECTS with HTTP 400
+        # "model 'gemma-4' not found". That leaves the field permanently OFFLINE
+        # (warmed=False) — it never finishes loading. resolve_turn_model()
+        # probes the server and is authoritative.
         _warm_model = None
         try:
             from ..infra.llama_server import resolve_turn_model
@@ -569,15 +565,14 @@ class AgentRunner:
             warmup_err = str(exc)
 
         if warmup_ok:
-            # Polish P4 / Sprint 7: pre-warm del KV cache con el system
-            # prompt completo del agente (system prompt + tool_schemas_hint
-            # + memoria). El warmup de arriba ya forzo load_tensors a
-            # terminar, pero NO calento el KV con el prefix real que el
-            # usuario va a usar en su primer turno. Con PR #22288 merged
-            # (Polish P1) + --cache-reuse 256 activo, este prewarm le da
-            # al server la oportunidad de cachear el prefix entero antes
-            # de que entre el primer turno real. Beneficio esperado:
-            # primer turno real ~unidades de segundos vs ~30s+ sin prewarm.
+            # Pre-warm del KV cache con el system prompt completo del agente
+            # (system prompt + tool_schemas_hint + memoria). El warmup de arriba
+            # ya forzó load_tensors a terminar, pero NO calentó el KV con el
+            # prefix real que el usuario va a usar en su primer turno. Con
+            # PR #22288 merged + --cache-reuse 256 activo, este prewarm le da
+            # al server la oportunidad de cachear el prefix entero antes de que
+            # entre el primer turno real. Beneficio esperado: primer turno real
+            # ~unidades de segundos vs ~30s+ sin prewarm.
             #
             # Best-effort: si falla, NO cambia el estado del agente. El
             # primer turno simplemente paga el TTFT completo.
@@ -589,8 +584,8 @@ class AgentRunner:
                 #      subsets to <=16), so warming the full catalog warms a
                 #      prefix that's never actually reused.
                 #   2. With all tools the prompt is ~22k tokens and OVERFLOWS
-                #      any profile under 32K (the 400 exceed_context_size the
-                #      user hit). The base+minimal subset (~4-5k) fits every
+                #      any profile under 32K (HTTP 400 exceed_context_size).
+                #      The base+minimal subset (~4-5k) fits every
                 #      profile (>=16K) and still primes the bulk of the reused
                 #      prefix (core prompt + guards + memory).
                 sys_msg = self._agent._system_message(
@@ -627,10 +622,10 @@ class AgentRunner:
                 _publish_activity("SYSTEM", f"KV prewarm crashed (non-fatal): {exc}")
 
             self._warmed_up = True
-            # Gate del ROUTER (2026-06-02, pedido del usuario): el warmup del
-            # modelo ya terminó, pero la casilla de chat NO debe abrirse hasta
-            # que el router semántico también esté listo — si no, el primer
-            # turno cae al fallback léxico mientras el router carga embeddings.
+            # Gate del ROUTER: el warmup del modelo ya terminó, pero la casilla
+            # de chat NO debe abrirse hasta que el router semántico también esté
+            # listo — si no, el primer turno cae al fallback léxico mientras el
+            # router carga embeddings.
             # Joineamos el thread de warmup del router con timeout. El paralelismo
             # se preservó: el thread arrancó mucho antes (durante el warmup del
             # modelo). Si ya terminó, el join retorna al instante.
@@ -832,11 +827,9 @@ class AgentRunner:
                         # crude tokens estimate (4 chars ≈ 1 token) for the counter
                         BUS.publish({"type": "tokens", "delta": max(1, len(content) // 4)})
                         # If voice mode is active, stream the reply through
-                        # Piper TTS. Voice pipeline v2 (Sprint 2 of
-                        # voice_pipeline_redesign): the VOICE singleton
-                        # exposes feed_tts() with the same shape as the
-                        # old runner, so this call site doesn't need to
-                        # care about the rewrite.
+                        # Piper TTS. The VOICE singleton exposes feed_tts() with
+                        # a stable shape, so this call site stays decoupled from
+                        # the voice-pipeline internals.
                         try:
                             from ..infra.voice_runner import VOICE
                             # If the prose was already streamed to TTS during

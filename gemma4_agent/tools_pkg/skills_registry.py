@@ -1,4 +1,4 @@
-"""Skills registry — Anthropic Agent Skills spec con extensiones de Carter.
+"""Skills registry — Anthropic Agent Skills spec con extensiones locales.
 
 Pattern: Anthropic Agent Skills. Cada skill es una carpeta con SKILL.md.
 Frontmatter YAML declara name + description + priority + requires.
@@ -43,9 +43,11 @@ Limite por profile (cuantas skill_load() puede emitir el LLM en 1 turn):
   balanced_8gb: 3
   performance: 5
 
+Las extensiones `priority` y `requires` no están en el spec oficial; ver
+sus descripciones arriba.
+
 Refs:
   - https://www.anthropic.com/news/agent-skills (spec oficial)
-  - Inspirado en carter_v5/skills/registry.py (extension priority + requires)
 """
 from __future__ import annotations
 
@@ -69,11 +71,10 @@ Priority = Literal["critical", "high", "medium", "low"]
 
 # Cap por profile de Gemma 4: cuantas skill_load() puede emitir el LLM en un
 # turn. Escala con el context_size del perfil. standby NO carga skills.
-# 2026-05-26: colapsado a un solo perfil operante (vram4, ctx 16K) + standby.
-# vram4 = 3 (coherente con su ctx 16K — antes ese tier era el de vram8). Las
-# claves legacy y los nombres viejos por-VRAM se mantienen como alias -> 3 para
-# no romper callers viejos; cualquier clave desconocida cae al default 3
-# (ver _cap_for_profile abajo).
+# Hay un solo perfil operante (vram4, ctx 16K) + standby. vram4 = 3 (coherente
+# con su ctx 16K). Las claves legacy y los nombres viejos por-VRAM se mantienen
+# como alias -> 3 para no romper callers viejos; cualquier clave desconocida cae
+# al default 3 (ver get_skill_cap abajo).
 CAP_PER_PROFILE: dict[str, int] = {
     "standby":      0,
     "vram4":        3,   # ctx 16K (único perfil)
@@ -94,12 +95,12 @@ CAP_PER_PROFILE: dict[str, int] = {
 class SkillMeta:
     """Metadata de un skill (no incluye el body — lazy).
 
-    `examples` (R3, 2026-05-30): fraseos de ejemplo que el usuario diría para
-    disparar la skill. NO son keywords — son queries semánticas multilingües que
-    el auto-inject embebe como VECTORES SEPARADOS y scorea por MAX contra la
-    query (técnica Re-Invoke / document-expansion, arXiv:2408.01875). Resuelve
-    el intent-mismatch medido ("investiga"→debug) y el recall bajo de la
-    descripción abstracta. Ver documentacion/router/07_SKILL_RETRIEVAL_research.md.
+    `examples`: fraseos de ejemplo que el usuario diría para disparar la skill.
+    NO son keywords — son queries semánticas multilingües que el auto-inject
+    embebe como VECTORES SEPARADOS y scorea por MAX contra la query (técnica
+    Re-Invoke / document-expansion, arXiv:2408.01875). Resuelve el intent-mismatch
+    medido ("investiga"→debug) y el recall bajo de la descripción abstracta. Ver
+    documentacion/router/07_SKILL_RETRIEVAL_research.md.
     """
     name: str
     description: str
@@ -107,9 +108,8 @@ class SkillMeta:
     path: Path              # ruta al SKILL.md
     requires: dict = field(default_factory=dict)
     examples: tuple[str, ...] = ()
-    # Document-expansion (R3.2, 2026-05-30, arXiv:2510.22670 "Tools are
-    # under-documented"). Dos campos en prosa natural multilingüe — NO keyword
-    # lists:
+    # Document-expansion (arXiv:2510.22670 "Tools are under-documented"). Dos
+    # campos en prosa natural multilingüe — NO keyword lists:
     #   when_to_use: fraseos/situaciones POSITIVAS extra. Se suman al pool de
     #     vectores MAX (refuerzan el recall del intent correcto).
     #   limitations: fraseos de lo que la skill NO cubre ("no para imprimir, no
@@ -148,7 +148,7 @@ def _parse_yaml_simple(text: str) -> dict:
        - inline lists `key: [a, b]`
        - block sub-dict/sub-lists indentados con "  "
        - block sub-dict CON sub-listas anidadas (`metadata:` con `examples:`,
-         `when_to_use:`, `limitations:` cada uno con items `- `) — R3.2
+         `when_to_use:`, `limitations:` cada uno con items `- `)
        - booleans
     NO soporta block scalar `|`, anchors, ni tipos complejos.
     """
@@ -341,7 +341,7 @@ def check_skill_eligibility(skill: SkillMeta) -> bool:
 # ============================================================================
 
 def _default_skills_dir() -> Path:
-    """Default: gemma4_agent/skills/ (reorg 2026-05-28: ahora en el paquete padre)."""
+    """Default: gemma4_agent/skills/ (en el paquete padre, no en tools_pkg/)."""
     return Path(__file__).parent.parent / "skills"
 
 
@@ -410,14 +410,14 @@ def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
                 priority = "medium"
             requires_raw = meta_dict.get("requires") or {}
             requires = dict(requires_raw) if isinstance(requires_raw, dict) else {}
-            # examples (R3): fraseos de ejemplo multilingües para el auto-inject
+            # examples: fraseos de ejemplo multilingües para el auto-inject
             # multi-vector. Estándar Anthropic Agent Skills: campos custom van bajo
             # `metadata:`. Aceptamos `metadata.examples` (estándar) o `examples`
             # top-level (legacy). El parser simple aplana `metadata:\n examples:\n
             # - a\n - b` a una lista directa -> también lo tomamos.
             examples_raw = _extract_examples(meta_dict)
-            # Document-expansion (R3.2): when_to_use (positivo extra) +
-            # limitations (negativo estructural). Prosa multilingüe, no keywords.
+            # Document-expansion: when_to_use (positivo extra) + limitations
+            # (negativo estructural). Prosa multilingüe, no keywords.
             when_to_use_raw = _extract_meta_list(meta_dict, "when_to_use")
             limitations_raw = _extract_meta_list(meta_dict, "limitations")
             skills.append(SkillMeta(
@@ -447,15 +447,15 @@ def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
 # Builders del system_prompt
 # ============================================================================
 
-# R1 (2026-05-30): el menú "# SKILLS AVAILABLE" ocupaba ~558 tokens en CADA
-# turno del system prompt y le decía al 4B "llamá skill_load(...)". MEDIDO sobre
-# 117.764 eventos reales: el 4B emite skill_load 1 SOLA vez — no hace el meta-paso
-# "ver menú → cargar → seguir". Las skills lazy YA entran por AUTO-INJECT
-# (autoinject_skill por embeddings, 41 disparos reales), que NO depende de que el
-# 4B decida. Y la skill `purchase-guard` (critical, seguridad) entra por
-# build_critical_block, NO por este menú. Conclusión: el menú es ~558 tok/turno de
-# ruido puro que el 4B ignora. DEFAULT OFF (menú vacío). Gate GEMMA4_SKILLS_MENU=1
-# lo restaura (por si un modelo futuro sí usa skill_load).
+# El menú "# SKILLS AVAILABLE" ocupaba ~558 tokens en CADA turno del system
+# prompt y le decía al 4B "llamá skill_load(...)". Medido sobre 117.764 eventos
+# reales: el 4B emite skill_load 1 SOLA vez — no hace el meta-paso "ver menú →
+# cargar → seguir". Las skills lazy YA entran por AUTO-INJECT (autoinject_skill
+# por embeddings, 41 disparos reales), que NO depende de que el 4B decida. Y la
+# skill `purchase-guard` (critical, seguridad) entra por build_critical_block, NO
+# por este menú. Conclusión: el menú es ~558 tok/turno de ruido puro que el 4B
+# ignora. DEFAULT OFF (menú vacío). Gate GEMMA4_SKILLS_MENU=1 lo restaura (por si
+# un modelo futuro sí usa skill_load).
 def _menu_enabled() -> bool:
     raw = (os.environ.get("GEMMA4_SKILLS_MENU") or "0").strip().lower()
     return raw in {"1", "true", "yes", "on"}
@@ -464,9 +464,9 @@ def _menu_enabled() -> bool:
 def build_menu(skills: list[SkillMeta], max_chars_per_entry: int = 200) -> str:
     """Construye el menu compacto inyectado al system_prompt al boot.
 
-    R1 (2026-05-30): DEFAULT vacío. El 4B no emite skill_load (1/117.764); las
-    skills entran por auto-inject. El menú solo gastaba ~558 tok/turno. Restaurar
-    con GEMMA4_SKILLS_MENU=1 (un modelo más grande sí lo aprovecharía).
+    DEFAULT vacío. El 4B no emite skill_load (1/117.764); las skills entran por
+    auto-inject. El menú solo gastaba ~558 tok/turno. Restaurar con
+    GEMMA4_SKILLS_MENU=1 (un modelo más grande sí lo aprovecharía).
 
     Cuando está habilitado: una linea por skill `- **name** [tag]: description`.
     Critical skills con [ALWAYS LOADED], resto [lazy, priority=X].
@@ -539,14 +539,14 @@ def get_skill_cap(profile_name: str) -> int:
 
 
 # ============================================================================
-# Trigger-inject semántico (2026-05-29)
+# Trigger-inject semántico
 # ============================================================================
-# MEDIDO en vivo: el 4B NUNCA emite skill_load (0/5 con pedidos directos, 0/6727
+# Medido en vivo: el 4B NUNCA emite skill_load (0/5 con pedidos directos, 0/6727
 # en prod) — no hace el meta-paso "cargar receta -> seguirla" (2 pasos, y el 4B no
-# encadena). Igual que data_analysis/document. Fix consistente con la lección
-# (auto-inyectar lo que el 4B no pide): si el pedido matchea SEMÁNTICAMENTE la
-# description de una skill (embeddings multilingües, NO keywords), inyectamos la
-# receta al prompt automáticamente. Umbral 0.45 calibrado (scripts/_calibrate_skills_match.py):
+# encadena). Igual que data_analysis/document. Por eso auto-inyectamos lo que el
+# 4B no pide: si el pedido matchea SEMÁNTICAMENTE la description de una skill
+# (embeddings multilingües, NO keywords), inyectamos la receta al prompt
+# automáticamente. Umbral 0.45 calibrado (scripts/_calibrate_skills_match.py):
 # matches reales 0.50-0.73, charla/control <0.21.
 _DESC_EMB_CACHE: dict = {}
 
@@ -557,10 +557,10 @@ def reset_autoinject_cache() -> None:
 
 
 def _autoinject_threshold() -> float:
-    """Umbral absoluto del auto-inject multi-vector. RECALIBRADO 0.45→0.62 (R3,
-    2026-05-30) al pasar a multi-vector; con `limitations`+gap-rule (R3.2) el
-    umbral absoluto baja un poco (0.58) porque el gap relativo y la supresión por
-    negativos hacen el trabajo fino, no el umbral solo. Gate GEMMA4_SKILLS_THRESHOLD."""
+    """Umbral absoluto del auto-inject multi-vector. Recalibrado 0.45→0.62 al
+    pasar a multi-vector; con `limitations`+gap-rule el umbral absoluto baja un
+    poco (0.58) porque el gap relativo y la supresión por negativos hacen el
+    trabajo fino, no el umbral solo. Gate GEMMA4_SKILLS_THRESHOLD."""
     import os as _os_th
     try:
         return float(_os_th.environ.get("GEMMA4_SKILLS_THRESHOLD", "0.58"))

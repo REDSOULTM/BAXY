@@ -83,9 +83,9 @@ class ExperienceMemory:
     # Conexión SQLite POR THREAD (threading.local). Una conexión sqlite3 sólo sirve
     # en el thread que la creó (check_same_thread). Hoy ExperienceMemory se accede
     # sólo desde el main thread, pero el patrón de conexión-única-compartida es el
-    # MISMO landmine que rompía el behavior_log cuando un 2º thread lo tocaba (medido
-    # 2026-05-30: registros perdidos silenciosos). Per-thread future-proofs esto sin
-    # cambiar el comportamiento single-thread actual. `_disabled` es compartido.
+    # MISMO landmine que rompe cuando un 2º thread toca la conexión: registros
+    # perdidos silenciosos. Per-thread future-proofs esto sin cambiar el
+    # comportamiento single-thread actual. `_disabled` es compartido.
     _local: "threading.local" = field(default_factory=threading.local, repr=False, compare=False)
     _disabled: bool = False
 
@@ -189,10 +189,10 @@ class ExperienceMemory:
                 summary TEXT
             )"""
         )
-        # Bug 2: provenance fields added in 2026-05. Existing rows have NULL
-        # for these columns; format_recall_for_prompt handles NULL gracefully.
-        # Adding columns is idempotent: each ALTER is wrapped in try/except
-        # so re-running on a migrated DB is a no-op.
+        # Provenance fields. Existing rows have NULL for these columns;
+        # format_recall_for_prompt handles NULL gracefully. Adding columns is
+        # idempotent: each ALTER is wrapped in try/except so re-running on a
+        # migrated DB is a no-op.
         for col_def in (
             "ALTER TABLE experiences ADD COLUMN outcome_code TEXT",
             "ALTER TABLE experiences ADD COLUMN failure_reason_code TEXT",
@@ -204,13 +204,14 @@ class ExperienceMemory:
                 conn.execute(col_def)
             except sqlite3.OperationalError:
                 pass  # column already exists
-        # Sprint 7.4: fail-loud after the ALTER block. If the
+        # Fail-loud after the ALTER block. If the
         # `except sqlite3.OperationalError: pass` above ever swallows a
         # *real* failure (e.g. the DB was locked by antivirus / OneDrive
         # sync during cold-start so the ALTER couldn't run AND the
         # column doesn't already exist), subsequent reads will fail
         # silently. Detect that here and raise with a clear remediation
-        # message so the user sees the problem on day 1.
+        # message so the user sees the problem immediately instead of
+        # a silently-degraded memory.
         cur = conn.execute("PRAGMA table_info(experiences)")
         existing_cols = {row[1] for row in cur.fetchall()}
         expected_cols = {
@@ -268,21 +269,21 @@ class ExperienceMemory:
     ) -> dict[str, Any]:
         """Append one turn to the store. embed_fn(text) must return a 384-dim list/np.
 
-        Bug 2 provenance fields (all optional, written when caller knows them):
+        Provenance fields (all optional, written when caller knows them):
           - outcome_code: enum-like short tag (PASS_VERIFIED / PASS_UNVERIFIED /
             PARTIAL / FAILED / NEEDS_USER). Distinct from `outcome` prose.
           - failure_reason_code: enum (search_page_only, no_evidence, timeout, ...).
           - args_signature: dict of normalized tool args (e.g. {"provider":"disney_plus"}).
-          - capability_label: from CAPABILITY_LABELS taxonomy (Bug 1).
+          - capability_label: from the CAPABILITY_LABELS taxonomy.
         """
         if not is_enabled():
             return {"ok": False, "skipped": "memory_disabled"}
         if not user_input.strip():
             return {"ok": False, "skipped": "empty_input"}
-        # 2026-05-20 (anti-degradation): never store automated-test / smoke
-        # inputs as real experiences. Before this guard, 52% of the DB was
-        # `echo prueba` / `phrase_hook_test_*` junk that crowded out genuine
-        # recalls and dragged the model toward noise over a long session.
+        # Anti-degradation: never store automated-test / smoke inputs as real
+        # experiences. Without this guard, 52% of the DB was `echo prueba` /
+        # `phrase_hook_test_*` junk that crowded out genuine recalls and
+        # dragged the model toward noise over a long session.
         if _is_test_junk(user_input):
             return {"ok": False, "skipped": "test_junk"}
         conn = self._open()
@@ -322,7 +323,7 @@ class ExperienceMemory:
             return {"ok": False, "error": f"record_failed: {exc}"}
 
     def flag_grounding(self, experience_id: int, *, reason: str | None = None) -> dict[str, Any]:
-        """Bug 2/3b — Mark an experience row as having a hallucinated reply.
+        """Mark an experience row as having a hallucinated reply.
 
         Called from the async NLI callback. Future RAG hits on this row will
         include `WARNING_past_reply_was_hallucinated` in their hint so the
@@ -436,14 +437,13 @@ class ExperienceMemory:
         embeddings, distance ~= 2*(1-cos). 1.2 corresponds to cos >= 0.4 which
         is a permissive 'kind of similar' bar.
 
-        2026-05-20 (anti-degradation): a recalled turn that FAILED while using
-        NO tool teaches nothing — it only feeds the model its own past
-        non-action ("cierra steam"→FAILED tools=[]). Worse, the experience DB
-        is 34% failures, so unfiltered recall steadily injects bad precedent
-        as the user keeps using Gemma — the "it starts failing after a while"
-        symptom. We over-fetch and drop those empty failures so the k slots go
-        to experiences that actually carry a lesson (a tool that worked, or a
-        tool to AVOID).
+        Anti-degradation: a recalled turn that FAILED while using NO tool
+        teaches nothing — it only feeds the model its own past non-action
+        ("cierra steam"→FAILED tools=[]). Worse, the experience DB is 34%
+        failures, so unfiltered recall steadily injects bad precedent as the
+        DB grows — the "it starts failing after a while" symptom. We over-fetch
+        and drop those empty failures so the k slots go to experiences that
+        actually carry a lesson (a tool that worked, or a tool to AVOID).
         """
         if not is_enabled():
             return []
@@ -505,7 +505,7 @@ class ExperienceMemory:
                     "tools_used": tools_used,
                     "mission_status": row["mission_status"],
                     "summary": row["summary"],
-                    # Bug 2 provenance fields (may be NULL for legacy rows).
+                    # Provenance fields (may be NULL for legacy rows).
                     "outcome_code": row["outcome_code"],
                     "failure_reason_code": row["failure_reason_code"],
                     "args_signature": args_sig,
@@ -588,7 +588,7 @@ def _vec_blob(vec: Any) -> Any:
 
 
 def format_recall_for_prompt(recalls: list[dict[str, Any]]) -> str:
-    """Bug 2 — Provenance-tagged RAG.
+    """Provenance-tagged RAG.
 
     Render recalled past turns as POLICY HINTS (what worked / what failed),
     NEVER as reply text the LLM could copy. Critical: the past `summary` /
@@ -620,11 +620,11 @@ def format_recall_for_prompt(recalls: list[dict[str, Any]]) -> str:
         cap = r.get("capability_label")
 
         if is_failure:
-            # 2026-05-20 (anti-degradation): a past FAILURE must be an
-            # AVOID lesson, never a neutral precedent the model might copy.
-            # Otherwise recall feeds the model its own past mistakes (e.g.
-            # "baja volumen"→audio_device FAILED) and it repeats them — the
-            # "starts failing after a while" symptom. Phrase it as a warning.
+            # Anti-degradation: a past FAILURE must be an AVOID lesson, never
+            # a neutral precedent the model might copy. Otherwise recall feeds
+            # the model its own past mistakes (e.g. "baja volumen"→audio_device
+            # FAILED) and it repeats them — the "starts failing after a while"
+            # symptom. Phrase it as a warning.
             parts = [
                 f"input similar=\"{text}\"",
                 f"EVITAR: el intento pasado con tools=[{tools}] FALLÓ",

@@ -1,23 +1,24 @@
-"""Catálogo declarativo de PRECONDICIONES (perfection roadmap ITEM 3, 2026-05-29).
+"""Catálogo declarativo de PRECONDICIONES.
 
-Ley del proyecto #5: "el código garantiza sus precondiciones". Hoy esto vive
-ad-hoc por tool (app_open verifica `apps.find`; whatsapp verifica instalación).
-Este módulo centraliza el patrón en un catálogo reusable + testeable:
+Ley del proyecto #5: "el código garantiza sus precondiciones". La verificación
+de precondiciones vive ad-hoc por tool (app_open verifica `apps.find`; whatsapp
+verifica instalación). Este módulo centraliza el patrón en un catálogo reusable
++ testeable:
 
     tool -> [Precondition(name, check, repair)]
 
 evaluado ANTES de actuar. `check()` lee ESTADO DEL SO (registry, tasklist, UIA)
 — NUNCA listas de keywords por idioma. `repair()` es idempotente; si no puede,
 devuelve needs_user honesto (que encaja con ERR_MISSING_PRECONDITION del
-recovery, budget=1). Fuente research: 3_verificacion §4 (InferAct arXiv:2407.11843).
+recovery, budget=1). Fuente research: InferAct arXiv:2407.11843.
 
 DISEÑO HONESTO: si un check no puede medir de forma fiable (UIA inconsistente),
 devuelve None ("no sé") en vez de adivinar — el llamador NO bloquea ante None
 (fail-open: mejor intentar que rechazar sin evidencia). Solo un False MEDIDO
 bloquea con un mensaje accionable.
 
-GATING: GEMMA4_PRECONDITIONS (DEFAULT ON desde 2026-05-29, tras validar en vivo que
-no agrega latencia ni falsos bloqueos — ver nota en preconditions_enabled()).
+GATING: GEMMA4_PRECONDITIONS (DEFAULT ON: validado en vivo que no agrega latencia
+ni falsos bloqueos — ver nota en preconditions_enabled()).
 Kill-switch GEMMA4_PRECONDITIONS=0. Sin servidores/tools configurados -> no-op.
 """
 from __future__ import annotations
@@ -56,8 +57,8 @@ class Precondition:
 
 
 def preconditions_enabled() -> bool:
-    # DEFAULT ON desde 2026-05-29: validado EN VIVO (3/4 fraseos bloquearon honesto
-    # una app inexistente, 0 mentiras; el caso restante el 4B no ruteó a app y el
+    # DEFAULT ON: validado en vivo (3/4 fraseos bloquearon honesto una app
+    # inexistente, 0 mentiras; en el caso restante el 4B no ruteó a app y el
     # grounding gate igual fue honesto). Fail-open (None no bloquea) + checks
     # estructurales -> bajo riesgo. Kill-switch GEMMA4_PRECONDITIONS=0.
     return (os.environ.get("GEMMA4_PRECONDITIONS", "1") or "1").strip().lower() not in {

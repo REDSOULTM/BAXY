@@ -1,4 +1,4 @@
-"""Guardas de seguridad para acciones GUI (Fase 5 computer-use).
+"""Guardas de seguridad para acciones GUI (computer-use).
 
 Dos protecciones estructurales, deterministas, que miden la FORMA/el ESTADO del
 SO (no el contenido) — alineadas con CLAUDE.md (#6 respetar recursos del usuario;
@@ -41,7 +41,7 @@ def _env_off(name: str) -> bool:
     return os.environ.get(name, "1").strip().lower() in {"0", "false", "no", "off"}
 
 
-# --- 3. activity-budget por turno (R8: anti pop-up / visual injection) -------
+# --- 3. activity-budget por turno (anti pop-up / visual injection) -----------
 # Cap duro de ACCIONES FÍSICAS (click/type/drag/...) por turno de voz. Acota el
 # blast-radius de un pop-up adversarial: un pop-up solo puede capturar N clicks
 # antes de que el agente se detenga y pida confirmación, en vez de "distraerse"
@@ -91,8 +91,8 @@ def note_action() -> None:
     _GUI_ACTIONS_THIS_TURN += 1
 
 
-# --- 4. anchor-binding (R8.2: clic a bait de pop-up no relacionado al objetivo)
-# CALIBRADO (2026-05-25): un umbral de cosine(goal,label) solo NO separa (legit
+# --- 4. anchor-binding (clic a bait de pop-up no relacionado al objetivo) -----
+# CALIBRADO: un umbral de cosine(goal,label) solo NO separa (legit
 # 'Guardar'=0.156 se solapa con inject 0.267). La señal robusta es COMBINADA: un
 # control real es CORTO (<=3 palabras); el bait de pop-up es una FRASE imperativa
 # LARGA y NO relacionada al objetivo del turno. Flag SOLO si (label >=4 palabras)

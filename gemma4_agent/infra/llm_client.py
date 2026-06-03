@@ -43,7 +43,7 @@ def _is_recoverable_connection_error(exc: Exception) -> bool:
     return any(token in s for token in _RECOVERABLE_CONN_ERRORS)
 
 
-# ZOMBIE del proxy en router-mode (2026-05-27). En router mode (front en :8080 +
+# ZOMBIE del proxy en router-mode. En router mode (front en :8080 +
 # child por modelo), si el child worker MUERE (OOM CUDA en 4GB —issue #13085—, o
 # un crash del child bajo carga), el FRONT sigue vivo y responde HTTP 500 con un
 # body tipo "proxy error: Could not establish connection" / "Failed to read
@@ -73,14 +73,11 @@ def _try_restart_managed_server() -> bool:
     externo del usuario). Best-effort: True si quedó healthy. Import perezoso
     para no acoplar el cliente al manager en el happy-path.
 
-    v21 2026-05-28: REVERTIDO al diseño del commit 7b2377d (27-may). El usuario
-    reportó que ese día "no se daba cuenta" del crash, pero la sesión PREVIA
-    a la mía (no committeada) reescribió esto agregando smoke-probe (8s),
-    _kill_server_on_port y wait largo que llevaron el recovery de ~3s a ~30s.
-    A esa latencia el usuario sí lo percibe como "el server se cae". Esta
-    versión sólo hace mgr.restart() y reporta el status — el smoke-probe
-    falso-positivo en caso de que el child re-crashee es preferible a 30s
-    de pausa cierta en cada crash."""
+    Diseño deliberadamente minimal: sólo hace mgr.restart() y reporta el
+    status. Agregar smoke-probe (8s), _kill_server_on_port y wait largo lleva
+    el recovery de ~3s a ~30s — a esa latencia el crash se percibe como
+    "el server se cae". El falso-positivo de no smoke-probear (si el child
+    re-crashea) es preferible a 30s de pausa cierta en cada crash."""
     try:
         from .llama_server import get_shared_manager
         from .profiles import get_active_profile
@@ -105,9 +102,9 @@ def _smoke_probe_chat(timeout_s: float = 8.0) -> bool:
     gap entre /health y /v1/chat/completions del router-mode: el front
     puede estar vivo pero el child todavia no acepta requests.
 
-    Fix 2026-05-28 v9: en router-mode el cfg.model="gemma-4" NO es valido
-    (server espera "vram4-text"). El smoke probe debe usar el modelo REAL
-    del active profile (router_model_text del manager), no el cfg.
+    En router-mode el cfg.model="gemma-4" NO es valido (el server espera
+    "vram4-text"). El smoke probe debe usar el modelo REAL del active
+    profile (router_model_text del manager), no el cfg.
     """
     try:
         from .config import AgentConfig
@@ -152,10 +149,10 @@ def _smoke_probe_chat(timeout_s: float = 8.0) -> bool:
 
 
 def _request_headers(content_type: str = "application/json", sse: bool = False) -> dict[str, str]:
-    """Sprint 12 hardening: si GEMMA4_LLAMA_API_KEY esta seteado, añade
-    el header Authorization: Bearer <key> que llama-server espera cuando
-    arranca con --api-key. Si no esta seteado, headers sin Authorization
-    (el server tampoco lo va a pedir)."""
+    """Si GEMMA4_LLAMA_API_KEY esta seteado, añade el header
+    Authorization: Bearer <key> que llama-server espera cuando arranca con
+    --api-key. Si no esta seteado, headers sin Authorization (el server
+    tampoco lo va a pedir)."""
     headers: dict[str, str] = {"Content-Type": content_type}
     if sse:
         headers["Accept"] = "text/event-stream"
@@ -165,21 +162,21 @@ def _request_headers(content_type: str = "application/json", sse: bool = False) 
     return headers
 
 
-# Circuit breaker (fix CUDA crash 2026-05-28 v7 - reforzado tras research v3):
-# El bug CUDA illegal memory access en Gemma 4 + flash-attn + swa-full
-# (llama.cpp issue #22527) es INTRINSECO al modelo (PR #21309), no se arregla
-# con flags ni body params (verificado en stress test 50 turns con --ctx-checkpoints
-# 0 + --cache-ram 2048: 45/50 crashes, first crash en turn 5).
+# Circuit breaker contra el crash CUDA illegal memory access en Gemma 4 +
+# flash-attn + swa-full (llama.cpp issue #22527). El bug es INTRINSECO al
+# modelo (PR #21309), no se arregla con flags ni body params (medido en
+# stress test 50 turns con --ctx-checkpoints 0 + --cache-ram 2048: 45/50
+# crashes, primer crash en turn 5).
 #
-# Plan A (research v3) NO bastó - crash dispara via memory_seq_rm intra-batch,
-# no por checkpoints. Plan C (proxy erase) NO disponible en router-mode (#18703).
+# El crash dispara via memory_seq_rm intra-batch, no por checkpoints, así que
+# manejar checkpoints no basta. El proxy erase NO esta disponible en
+# router-mode (#18703).
 #
-# Plan E REFORZADO: bajar threshold a 4 requests (antes del primer crash en turn 5).
-# Cada 4 requests forzamos restart preventivo del server gestionado. Coste:
-# ~1.5s cada 4 turns + reload child al primer chat post-restart.
+# Mitigacion: cada N requests forzar restart preventivo del server gestionado
+# antes del primer crash. Coste: ~1.5s cada N turns + reload child al primer
+# chat post-restart.
 #
 # Gate GEMMA4_CIRCUIT_BREAKER_THRESHOLD=N (0 desactiva).
-# Default ahora 4 (era 12). El user puede subirlo si el crash se demora mas.
 _CB_REQUEST_COUNTER = 0
 _CB_LOCK = __import__("threading").Lock()
 
@@ -241,23 +238,23 @@ def _maybe_circuit_break_restart(*, risk_weight: int = 1) -> bool:
     """Incrementa el counter y limpia el slot (o reinicia el server) al
     llegar al threshold. Devuelve True si se hizo algo.
 
-    risk_weight (2026-05-28 v10): cuanto incrementar el contador para ESTE
-    turno. Default 1 = turno normal. Pasar 3-4 para turnos riesgosos (con
-    thinking activo + prompt grande + tools) que aceleran el crash.
+    risk_weight: cuanto incrementar el contador para ESTE turno. Default 1 =
+    turno normal. Pasar 3-4 para turnos riesgosos (con thinking activo +
+    prompt grande + tools) que aceleran el crash.
 
-    Medicion en sesion del UI real: el crash llega tras 2-3 turnos con
-    thinking + 14K tokens de prompt (vs 15-20 turnos con prompts simples).
-    Riesgo proporcional al tamano del prompt + thinking activo.
+    Medido: el crash llega tras 2-3 turnos con thinking + 14K tokens de
+    prompt (vs 15-20 turnos con prompts simples). Riesgo proporcional al
+    tamano del prompt + thinking activo.
     """
     global _CB_REQUEST_COUNTER
-    # Default 0 (v15 2026-05-28): DESHABILITADO. Medicion en UI real muestra
-    # que el restart preventivo era PEOR que dejar al server crashear (causaba
-    # 2 restarts por turno: cb + recovery). Ahora solo recovery reactivo.
+    # Default 0: DESHABILITADO. Medido: el restart preventivo era PEOR que
+    # dejar al server crashear (causaba 2 restarts por turno: cb + recovery).
+    # Ahora solo recovery reactivo.
     threshold_raw = os.environ.get("GEMMA4_CIRCUIT_BREAKER_THRESHOLD", "0")
     try:
         threshold = int(threshold_raw)
     except ValueError:
-        threshold = 0  # invalid -> disabled (v15)
+        threshold = 0  # invalid -> disabled
     if threshold <= 0:
         return False
     with _CB_LOCK:
@@ -297,10 +294,10 @@ class LLMClient:
     def _probe_slots_alive(self, timeout_s: float = 0.5) -> bool:
         """True si /slots responde HTTP en absoluto (server escucha y atiende).
 
-        H4 (perfection roadmap 2026-05-29): /health miente bajo carga — responde
-        200 aunque el slot del LLM no esté listo, así que el recovery reintentaba
-        el chat y fallaba ("server recuperado pero sigue roto"). El bootstrap
-        (_wait_for_health) ya exige health AND slots; el recovery no lo hacía.
+        /health miente bajo carga — responde 200 aunque el slot del LLM no esté
+        listo, así que un recovery que sólo mira /health reintenta el chat y
+        falla ("server recuperado pero sigue roto"). El bootstrap
+        (_wait_for_health) ya exige health AND slots; el recovery también debe.
         Este probe replica LlamaServerManager._probe_slots_alive (gemelo
         DELIBERADO: LLMClient no debe importar llama_server -> evita un ciclo de
         import, y el repo tiene historial de ciclos rompiendo el router). Si
@@ -347,8 +344,8 @@ class LLMClient:
         HTTP request - if exceeded, raises RuntimeError('llm_timeout: ...').
 
         greedy=True: SAMPLING DETERMINISTA para el turno de ACCIÓN (decidir y
-        emitir el tool-call). Investigación 1 (2026-05-23): los defaults de Gemma
-        (temp=1.0/top_k=64) son para escritura creativa; en una decisión discreta
+        emitir el tool-call). Los defaults de Gemma (temp=1.0/top_k=64) son
+        para escritura creativa; en una decisión discreta
         (elegir 1 de 6 tools + args) la alta entropía del primer token hace al 4B
         "narrar" en vez de disparar <|tool_call|> (el 2/6 sin reasoning). Greedy
         (temp=0, top_k=1) reduce esa entropía -> tool-call más fiable SIN el costo
@@ -361,7 +358,7 @@ class LLMClient:
         _greedy_on = greedy and (
             _os.environ.get("GEMMA4_GREEDY_TOOLCALL", "1").strip().lower()
             not in {"0", "false", "no", "off"})
-        # SAMPLING POR MODO (inv 0 T4): el modo puede pasar overrides
+        # SAMPLING POR MODO: el modo puede pasar overrides
         # {temperature, top_p, top_k} para bajar la entropía en modos de acción /
         # info breve (los defaults de Gemma son para chat). Greedy GANA sobre esto
         # (la decisión de tool-call manda con temp=0). Gate GEMMA4_MODE_SAMPLING=0.
@@ -385,16 +382,15 @@ class LLMClient:
             "max_tokens": max_tokens or self.config.max_tokens,
             "chat_template_kwargs": {"enable_thinking": thinking},
         }
-        # NOTA: cache_prompt=false fue probado 2026-05-28 v5 (research Pregunta 3)
-        # y NO arregla el CUDA crash. Causa raiz real: el llama-server b9090 hace
-        # `memory_seq_rm` interno cuando un prompt >2048 tokens se procesa por
-        # batches (no por cache reuse). El seq_rm intra-batch dispara el bug
-        # CUDA igual sin cache reuse. Mantener cache_prompt default (true) da
-        # cache hit del Camino C V3 sin empeorar la estabilidad.
-        # El fix definitivo es opcion A del research (downgrade build a commit
-        # 149b2493c) u opcion 5 (cambiar a modelo sin SWA: Llama-3.2-3B-Q4_K_M
-        # o Qwen2.5-3B-Q4_K_M). Mientras tanto, soft-retry + restart en cliente
-        # cubre los crashes.
+        # NOTA: cache_prompt=false fue probado y NO arregla el CUDA crash.
+        # Causa raiz real: el llama-server b9090 hace `memory_seq_rm` interno
+        # cuando un prompt >2048 tokens se procesa por batches (no por cache
+        # reuse). El seq_rm intra-batch dispara el bug CUDA igual sin cache
+        # reuse. Mantener cache_prompt default (true) da cache hit sin empeorar
+        # la estabilidad.
+        # El fix definitivo es downgrade del build a commit 149b2493c, o cambiar
+        # a un modelo sin SWA (Llama-3.2-3B-Q4_K_M o Qwen2.5-3B-Q4_K_M).
+        # Mientras tanto, soft-retry + restart en cliente cubre los crashes.
         if self.config.min_p is not None and not _greedy_on:
             body["min_p"] = self.config.min_p
         if self.config.seed is not None and int(self.config.seed) >= 0:
@@ -425,10 +421,10 @@ class LLMClient:
         # threshold, restart proactivo evita el crash CUDA (issue #22527).
         # El restart cuesta ~1.5s, el crash cuesta ~12s (soft-retry + recovery).
         #
-        # Risk weight (v14 2026-05-28): cada turno cuenta como N en el
-        # contador segun riesgo. Medido en UI real con tools + thinking +
-        # prompt 20K: crash en turn 2. Para restartear ANTES del turn 2 con
-        # threshold 8: risk_weight=4 para turno pesado.
+        # Risk weight: cada turno cuenta como N en el contador segun riesgo.
+        # Medido con tools + thinking + prompt 20K: crash en turn 2. Para
+        # restartear ANTES del turn 2 con threshold 8: risk_weight=4 para
+        # turno pesado.
         risk = 1
         try:
             prompt_chars = sum(
@@ -443,9 +439,9 @@ class LLMClient:
                 risk += 1
         except Exception:
             risk = 1
-        # Circuit breaker (v15 2026-05-28): DESHABILITADO por default.
-        # Medido en UI real: restart preventivo causaba 2 restarts por turno
-        # (cb + recovery del crash) totalizando ~15-20s/turno. Mejor dejar al
+        # Circuit breaker: DESHABILITADO por default.
+        # Medido: restart preventivo causaba 2 restarts por turno (cb +
+        # recovery del crash) totalizando ~15-20s/turno. Mejor dejar al
         # server vivir hasta crashear y restartear UNA vez (solo recovery).
         # Gate: GEMMA4_CIRCUIT_BREAKER_THRESHOLD=N>0 para reactivar (default 0).
         if os.environ.get("GEMMA4_CIRCUIT_BREAKER_THRESHOLD", "0") not in {"0",""}:
@@ -481,24 +477,19 @@ class LLMClient:
             #      pero el child esta caido. Aqui SI hay que reiniciar el
             #      managed server.
             #
-            # Antes (commit 7b2377d) reiniciabamos en ambos casos -> el (A)
-            # comun escalaba a restart innecesario y durante el restart
-            # volvia a haber otra carga lazy -> otro race -> el segundo
-            # intento tambien fallaba con
-            # "llm_proxy_zombie_after_restart" (regression detectada en vivo
-            # 2026-05-28: thrash text<->vision con --models-max 1 disparaba
-            # restarts en cascada).
+            # Reiniciar en AMBOS casos es un error: el (A) comun escala a
+            # restart innecesario y durante el restart vuelve a haber otra
+            # carga lazy -> otro race -> el segundo intento tambien falla con
+            # "llm_proxy_zombie_after_restart" (thrash text<->vision con
+            # --models-max 1 dispara restarts en cascada).
             #
-            # Politica nueva: primero hacer un SOFT-RETRY (esperar al child
-            # mientras carga, hasta ~12s con poll de /health). Si el retry
-            # responde -> caso A, todo bien sin tocar el server. Si el retry
-            # tambien da el mismo 500 -> caso B, ahi si reiniciar.
-            # Caso 0: ZOMBIE del proxy. v21 2026-05-28: REVERTIDO al diseño
-            # del commit 7b2377d. La sesion previa habia metido soft-retry
-            # (12s espera) + bucle de 3 attempts (hasta ~90s total). Eso
-            # convertia cada crash en un congelamiento perceptible. El
-            # diseño original: 1 restart + 1 reintento. Si el child re-
-            # crashea en el reintento, propaga error claro. El user puede
+            # Un soft-retry (esperar al child mientras carga, hasta ~12s con
+            # poll de /health) distingue A de B pero convierte cada crash en
+            # un congelamiento perceptible, especialmente con un bucle de
+            # reintentos (hasta ~90s total).
+            #
+            # Diseño actual minimal: 1 restart + 1 reintento. Si el child
+            # re-crashea en el reintento, propaga error claro y se puede
             # reintentar manualmente; total de pausa ~3-5s.
             if _is_proxy_zombie_error(exc):
                 logger.warning(
@@ -597,8 +588,8 @@ class LLMClient:
             Emitted once at the end. tool_calls is the accumulated array
             with id/function.name/function.arguments fully assembled.
 
-        Fase W pre-requisito: el TTS consume "delta" para sentence-chunking
-        en cuanto el LLM empieza a emitir. agent.py todavia usa chat() no-stream.
+        El TTS consume "delta" para sentence-chunking en cuanto el LLM
+        empieza a emitir. agent.py todavia usa chat() no-stream.
         """
         thinking = self.config.enable_thinking if enable_thinking is None else enable_thinking
         ctk: dict[str, Any] = {"enable_thinking": thinking}
@@ -622,8 +613,8 @@ class LLMClient:
         body: dict[str, Any] = {
             # In router mode the agent passes the per-turn router preset name
             # ("<profile>-text" / "<profile>-vision"); else the configured model.
-            # Without this the stream sent "gemma-4" and the router 400'd — the
-            # reason agent.py never adopted streaming. Now threaded through.
+            # Without this the stream sends "gemma-4" and the router 400's, so
+            # the model name must be threaded through here.
             "model": model or self.config.model,
             "stream": True,
             "messages": messages,
@@ -784,8 +775,6 @@ def normalize_tool_call_arguments(raw: Any) -> dict[str, Any]:
     Recibe: dict, str (JSON), list (raro), None.
     Devuelve: dict siempre. Si el parsing falla en todos los caminos
     razonables, devuelve {"_raw": str(raw), "_parse_error": "..."}.
-
-    Item I1 #5 + Bloque C2/D4 del informe de optimizacion externa.
     """
     if raw is None:
         return {}

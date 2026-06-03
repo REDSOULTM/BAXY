@@ -42,11 +42,11 @@ _CONTROL_TOKEN_RE = re.compile(r"<\|[a-z_]+\|>", re.IGNORECASE)
 _GEMMA_SPECIAL_TOKEN_RE = re.compile(r"<unused\d+>|<(?:pad|eos|bos|unk)>", re.IGNORECASE)
 
 # Declaración de intención que el 4B antepone al reply: `<intent>{"intent_type":
-# "read","target":"..."}</intent>`. MEDIDO en el replay de logs reales 2026-05-30
-# (consultas CSV/filesystem): el bloque entero —o un `</intent>` huérfano— LEAKEABA
-# al reply visible ("<intent>{...}</intent>\nLa venta total..."). El rescue ya tolera
-# el prefijo para extraer el tool-call; acá lo BORRAMOS del texto final que ve el
-# user. Estructural (mide la FORMA del tag), defense-in-depth como los otros strips.
+# "read","target":"..."}</intent>`. MEDIDO en consultas CSV/filesystem: el bloque
+# entero —o un `</intent>` huérfano— LEAKEA al reply visible ("<intent>{...}</intent>
+# \nLa venta total..."). El rescue ya tolera el prefijo para extraer el tool-call;
+# acá lo BORRAMOS del texto final que ve el user. Estructural (mide la FORMA del
+# tag), defense-in-depth como los otros strips.
 _INTENT_LEAK_RE = re.compile(r"<intent\b[^>]*>.*?</intent>|</?intent\b[^>]*>",
                              re.IGNORECASE | re.DOTALL)
 
@@ -58,7 +58,7 @@ _INTENT_LEAK_RE = re.compile(r"<intent\b[^>]*>.*?</intent>|</?intent\b[^>]*>",
 # El system_prompt ya dice "Never invent custom tool-call syntax"; este
 # es defense in depth.
 TOOL_CALL_LEAK_PATTERNS = (
-    # Forma observada en sesion 11:43: <|tool_call>...<tool_call|>
+    # Forma observada: <|tool_call>...<tool_call|>
     re.compile(r"<\|tool_call\|?>.*?<\|?tool_call\|>", re.IGNORECASE | re.DOTALL),
     re.compile(r"<\|tool_call>.*?</?tool_call\|>", re.IGNORECASE | re.DOTALL),
     # Forma con call:<name>{...}
@@ -70,9 +70,9 @@ TOOL_CALL_LEAK_PATTERNS = (
 
 # FR-CoT (opt-in GEMMA4_FRCOT): guarda ESTRUCTURAL. Si el modelo FILTRA el formato
 # de thinking estructurado (INTENT:/TOOL:/ARGS:/GO) al content visible en vez de
-# dejarlo en <think>, lo borramos del reply. El intento previo de FR-CoT rompio
-# media JUSTO por esta fuga. Mide la FORMA (3 claves en orden), no el contenido;
-# solo activa con el flag (sin el, el modelo nunca produce ese formato igual).
+# dejarlo en <think>, lo borramos del reply. Esta fuga al content visible rompe el
+# reply (el formato interno llega al user). Mide la FORMA (3 claves en orden), no el
+# contenido; solo activa con el flag (sin el, el modelo nunca produce ese formato igual).
 import os as _os
 _FRCOT_LEAK_RE = re.compile(
     r"(?is)\bINTENT:\s*\S.*?\bTOOL:.*?\bARGS:[^\n]*(?:\s*\n?\s*GO\b)?",
@@ -144,7 +144,7 @@ def sanitize_assistant_message(message: dict[str, Any]) -> dict[str, Any]:
 # matching close paren (we count manually to handle nested parens/quotes).
 # First char [a-zA-Z]: el 4B a veces CAPITALIZA el nombre de la tool como
 # si fuera nombre propio — `Web(action="search", ...)` en vez de `web(...)`
-# (caso real 2026-05-30: el reply crudo llegó tal cual al usuario). El nombre
+# (sin normalizar, el reply crudo llega tal cual al usuario). El nombre
 # se normaliza a minúsculas antes del allowlist (todas las 68 tools son
 # lowercase, sin colisiones), así que `Web` resuelve a la tool real `web`.
 _LEAKED_CALL_RE = re.compile(
@@ -371,10 +371,10 @@ def _parse_kwargs(text: str) -> dict[str, Any] | None:
 
 # Dotted-method leak: the model writes the compound tool's ACTION as a
 # Python method — `window.close(query="das Fenster")`, `audio.set_volume(
-# level=20)` — instead of `window(action="close", ...)`. Seen live on
-# "schliesse das Fenster" (DE) 2026-05-20: it leaked as text, unrescued,
-# so the window never closed. We rewrite tool.action(args) into the normal
-# compound form with action injected.
+# level=20)` — instead of `window(action="close", ...)`. Seen on
+# "schliesse das Fenster" (DE): it leaks as text, unrescued, so the window
+# never closes. We rewrite tool.action(args) into the normal compound form
+# with action injected.
 # First char [a-zA-Z] en la tool: el 4B puede capitalizar ("Window.close(...)").
 # El nombre se normaliza a minúsculas antes del allowlist (abajo).
 _DOTTED_CALL_RE = re.compile(
@@ -414,7 +414,7 @@ def _detect_dotted_method_call(
 def build_action_to_tool(
     subset_names, action_enums: dict[str, list[str]]
 ) -> dict[str, str]:
-    """Mapa ACCIÓN→TOOL para rescatar leaks de action-name (R-latencia 2026-05-30).
+    """Mapa ACCIÓN→TOOL para rescatar leaks de action-name.
     MEDIDO: el 4B leakea `mute(state: true)` (usa la ACCIÓN 'mute' como si fuera un
     tool standalone) en vez de `audio(action='mute')`. Construimos action→tool SOLO
     para acciones que pertenecen a EXACTAMENTE UN tool del subset (sin ambigüedad) y
@@ -464,18 +464,18 @@ def detect_leaked_tool_call(
     # Quick reject for the Python-function form: must contain '('. (Antes
     # exigía además stripped[0].isalpha(), pero eso DESCARTABA texto que el 4B
     # antepone al tool-call — p.ej. `<intent>{...}</intent>\nweb(query="x")` o
-    # narración previa. MEDIDO 2026-05-30: el forced-retry de "investigá X"
-    # devolvía justo eso y el rescate fallaba → reply vacío. El scanner abajo ya
-    # busca la primera llamada balanceada en CUALQUIER posición, así que el
-    # ancla-al-inicio del _LEAKED_CALL_RE no debe gatear el scanner.)
+    # narración previa. MEDIDO: el forced-retry de "investigá X" devolvía justo
+    # eso y el rescate fallaba → reply vacío. El scanner abajo ya busca la primera
+    # llamada balanceada en CUALQUIER posición, así que el ancla-al-inicio del
+    # _LEAKED_CALL_RE no debe gatear el scanner.)
     if "(" not in stripped:
         return None
     # Scanner: find the FIRST balanced tool(...) call whose name is known and
     # whose body parses. Handles narration ("Voy a llamar web(...)") and
     # MULTI-CALL leaks — incl. two space-separated calls
     # `system(action="memory") system(action="recall")`, where the greedy
-    # whole-string regex below would grab a broken body. F-007: first match,
-    # not last.
+    # whole-string regex below would grab a broken body. Take the first match,
+    # not the last.
     def _resolve(cand_name: str, parsed: dict[str, Any]) -> tuple[str, dict[str, Any]] | None:
         """cand_name → (tool, args). Tool conocido → tal cual. Si NO es tool pero
         ES acción de un tool del subset (action_to_tool), mapea e inyecta action."""

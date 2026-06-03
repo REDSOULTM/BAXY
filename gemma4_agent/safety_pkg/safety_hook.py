@@ -13,8 +13,6 @@ call itself proceeds in that case.
 
 Structural detection — operates on args (URLs, action names) but
 NEVER on user text or LLM reply text.
-
-Hotfix I 2026-05-17.
 """
 from __future__ import annotations
 
@@ -91,16 +89,16 @@ def evaluate_tool_call(
             "pattern": f"action:{tool_name}.{action}",
         }
 
-    # HUECO CERRADO 2026-05-26: un click GENÉRICO (gui/computer_use/uia) se
-    # colaba en una pantalla de PAGO — no es URL de checkout ni tool
-    # 'steam.purchase'. Caso real: gui(click_button, label="Comprar") en Steam.
-    # Decisión de producto (2026-05-26): si la ventana AL FRENTE es una tienda/
-    # checkout, CUALQUIER click pide confirmación — sin depender del label del
-    # botón (clasificarlo por su texto corto es frágil; un falso-negativo COBRA
-    # plata, mucho peor que pedir confirmar una vez de más). La señal fuerte y
-    # fiable es el ESTADO DEL SO (título de la ventana = tienda conocida). El
-    # usuario hands-free igual avanza diciendo "sí" al handshake. Navegar/abrir
-    # la tienda NO se bloquea: solo los CLICKS dentro de un checkout.
+    # Un click GENÉRICO (gui/computer_use/uia) puede colarse en una pantalla de
+    # PAGO sin ser URL de checkout ni tool 'steam.purchase' — p.ej.
+    # gui(click_button, label="Comprar") en Steam. Por eso: si la ventana AL
+    # FRENTE es una tienda/checkout, CUALQUIER click pide confirmación, sin
+    # depender del label del botón (clasificarlo por su texto corto es frágil;
+    # un falso-negativo COBRA plata, mucho peor que pedir confirmar una vez de
+    # más). La señal fuerte y fiable es el ESTADO DEL SO (título de la ventana =
+    # tienda conocida). El flujo hands-free igual avanza diciendo "sí" al
+    # handshake. Navegar/abrir la tienda NO se bloquea: solo los CLICKS dentro
+    # de un checkout.
     if tool_name in {"gui", "computer_use", "uia"} and _is_click(args):
         if _foreground_is_checkout():
             return {

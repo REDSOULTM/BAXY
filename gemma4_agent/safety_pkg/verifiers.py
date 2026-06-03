@@ -61,7 +61,7 @@ def _unverifiable(tool: str, reason: str, detail: dict | None = None) -> Verifie
 
 def _failed(tool: str, reason: str, detail: dict | None = None,
             error_type: str | None = None) -> VerifierOutcome:
-    # H1: cuando el verifier CONOCE la clase estructural del fallo (p.ej. la app
+    # Cuando el verifier CONOCE la clase estructural del fallo (p.ej. la app
     # no apareció = falta una precondición) la pasa explícita; si no, verify_core
     # la infiere con classify_failure. Un error_type explícito siempre gana.
     return VerifierOutcome(tool_name=tool, confirmed=False, reason=reason,
@@ -129,7 +129,7 @@ def verify_app(args: dict, result: dict) -> VerifierOutcome:
         if not name:
             return _unverifiable("app", "no name to verify")
         if _result_says_unverified(result):
-            # H1: un open() que la tool reportó fallido es casi siempre falta de
+            # Un open() que la tool reportó fallido es casi siempre falta de
             # precondición (la app no está instalada / no se resolvió un launcher).
             # MISSING_PRECONDITION -> el recovery pide hacer el prerequisito, no
             # reintentar la misma open a ciegas. classify_failure infiere lo mismo
@@ -182,7 +182,7 @@ def verify_app(args: dict, result: dict) -> VerifierOutcome:
         from ..tools_pkg.tools import _running_process_names
         procs = _running_process_names()
         if _proc_matches(name, procs):
-            # H1: el proceso sigue vivo tras un close ok -> puede ceder con un
+            # El proceso sigue vivo tras un close ok -> puede ceder con un
             # segundo intento (la app pidió guardar, taskkill /F en cola).
             # TRANSIENT -> budget 2 reintentos, no irrecuperable.
             return _failed(
@@ -233,7 +233,8 @@ def verify_steam(args: dict, result: dict) -> VerifierOutcome:
         if _result_says_unverified(result):
             return _failed("steam", f"launch_game failed: {result.get('error', '?')}")
         # No medimos el proceso del juego (varia segun titulo); marcamos inconclusive.
-        # El usuario puede pedir verify(action="app_opened", name="<game>") explicito.
+        # La confirmacion del proceso queda para un verify(action="app_opened",
+        # name="<game>") explicito.
         matched = result.get("matched_game") or {}
         return _unverifiable(
             "steam",
@@ -741,7 +742,7 @@ def verify_whatsapp(args: dict, result: dict) -> VerifierOutcome:
 
 
 # ============================================================================
-# 14. media (hotfix F 2026-05-17)
+# 14. media
 # ============================================================================
 
 @register_verifier("media")
@@ -776,10 +777,10 @@ def verify_media(args: dict, result: dict) -> VerifierOutcome:
             )
         # PLAY GLOBAL via tecla de media (sin username -> sin deeplink/auto_play_info):
         # es un DISPATCH de tecla (como pause/next), NO un fallo. confirmed=None (no
-        # confirmable sin foco/SMTC), consistente con el deeplink de YouTube. MEDIDO en
-        # vivo 2026-05-31: "pon una canción en Spotify" caía al catch-all de abajo
-        # (confirmed=False) -> "No pude verificar la reproducción" aunque la tecla SÍ
-        # se mandó. Solo si played=True (la tecla se dispatcheó).
+        # confirmable sin foco/SMTC), consistente con el deeplink de YouTube. Sin esta
+        # rama, "pon una canción en Spotify" cae al catch-all de abajo (confirmed=False)
+        # -> "No pude verificar la reproducción" aunque la tecla SÍ se mandó. Solo si
+        # played=True (la tecla se dispatcheó).
         if result.get("mode") == "global_play_key" and result.get("played"):
             return _unverifiable(
                 "media", "media key dispatched to spotify, no playback signal",
@@ -789,7 +790,7 @@ def verify_media(args: dict, result: dict) -> VerifierOutcome:
 
 
 # ============================================================================
-# 15. office (hotfix F 2026-05-17)
+# 15. office
 # ============================================================================
 
 @register_verifier("office")
@@ -823,7 +824,7 @@ def verify_office(args: dict, result: dict) -> VerifierOutcome:
 
 
 # ============================================================================
-# 16. email (hotfix F 2026-05-17)
+# 16. email
 # ============================================================================
 
 @register_verifier("email")
@@ -848,7 +849,7 @@ def verify_email(args: dict, result: dict) -> VerifierOutcome:
 
 
 # ============================================================================
-# 17. notification (hotfix F 2026-05-17)
+# 17. notification
 # ============================================================================
 
 @register_verifier("notification")
@@ -879,7 +880,7 @@ def verify_notification(args: dict, result: dict) -> VerifierOutcome:
 
 
 # ============================================================================
-# 18. routine (hotfix F 2026-05-17)
+# 18. routine
 # ============================================================================
 
 @register_verifier("routine")
@@ -905,7 +906,7 @@ def verify_routine(args: dict, result: dict) -> VerifierOutcome:
 
 
 # ============================================================================
-# 19-28. Round 2: 10 more structural verifiers (hotfix I 2026-05-17)
+# 19-28. 10 more structural verifiers
 # ============================================================================
 
 @register_verifier("browser_real")

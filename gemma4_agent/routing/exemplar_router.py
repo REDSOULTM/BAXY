@@ -14,12 +14,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-_PATH = Path(__file__).resolve().parent.parent / "data" / "router_exemplars.npz"  # reorg 2026-05-28
+_PATH = Path(__file__).resolve().parent.parent / "data" / "router_exemplars.npz"
 _TOP_K = int(os.environ.get("GEMMA4_EXEMPLAR_TOP_K", "5"))
 _MIN_SCORE = float(os.environ.get("GEMMA4_EXEMPLAR_MIN_SCORE", "0.92"))
 _CONFLICT_SCORE = float(os.environ.get("GEMMA4_EXEMPLAR_CONFLICT_SCORE", "0.975"))
 # Margen relativo que el voto-ABSTENCIÓN debe superar al mejor voto-TOOL para
-# que el exemplar abstenga (S3c, 2026-05-30). CAUSA RAÍZ medida: un imperativo
+# que el exemplar abstenga. CAUSA RAÍZ medida: un imperativo
 # limpio ("abre el navegador") tiene como vecino-top una PREGUNTA reflexiva
 # casi idéntica en el espacio de embeddings ("me abrí el navegador?" label []),
 # cuyo voto-abstención (score² ~0.896) vencía por 0.005 a los 4 vecinos-comando
@@ -31,17 +31,17 @@ _CONFLICT_SCORE = float(os.environ.get("GEMMA4_EXEMPLAR_CONFLICT_SCORE", "0.975"
 # fijar el default.
 _ABSTAIN_MARGIN = float(os.environ.get("GEMMA4_EXEMPLAR_ABSTAIN_MARGIN", "0.05"))
 # Banda bajo el mejor vecino dentro de la cual un vecino-TOOL "casi-cruza" el
-# MIN_SCORE (S3c-bis, 2026-05-30). CAUSA RAÍZ medida tras el reentreno FT 3ep:
-# cuando el ÚNICO vecino sobre MIN_SCORE es no-tool (una pregunta reflexiva casi
-# idéntica, p.ej. "recuerdas todo de mí?" label []) y el vecino-tool correcto
-# ("qué cosas recuerdas sobre Carter?"→memory) cae JUSTO debajo del corte (0.79
-# vs 0.92), el voto sale vacío y el exemplar abstenía, cortocircuitando el head
-# calibrado (que dice should_abstain=False) y el encoder (memory 0.739). El fix
-# S3c (margen) sólo protege cuando AMBOS vecinos cruzan el umbral. Acá NO cruzan,
-# así que generalizamos: si hay un vecino-tool fuerte dentro de esta banda bajo el
-# mejor no-tool, el exemplar DEFIERE (return None) al head en vez de silenciar.
-# La charla pura no tiene vecino-tool cercano → sigue abstaniéndose. NO baja el
-# MIN_SCORE global (no agrega ruido); sólo evita el cortocircuito ambiguo.
+# MIN_SCORE. CAUSA RAÍZ medida: cuando el ÚNICO vecino sobre MIN_SCORE es no-tool
+# (una pregunta reflexiva casi idéntica, p.ej. "recuerdas todo de mí?" label [])
+# y el vecino-tool correcto ("qué cosas recuerdas sobre Carter?"→memory) cae
+# JUSTO debajo del corte (0.79 vs 0.92), el voto sale vacío y el exemplar abstenía,
+# cortocircuitando el head calibrado (que dice should_abstain=False) y el encoder
+# (memory 0.739). El margen relativo (_ABSTAIN_MARGIN) sólo protege cuando AMBOS
+# vecinos cruzan el umbral. Acá NO cruzan, así que generalizamos: si hay un
+# vecino-tool fuerte dentro de esta banda bajo el mejor no-tool, el exemplar
+# DEFIERE (return None) al head en vez de silenciar. La charla pura no tiene
+# vecino-tool cercano → sigue abstaniéndose. NO baja el MIN_SCORE global (no
+# agrega ruido); sólo evita el cortocircuito ambiguo.
 _ABSTAIN_NEAR_BAND = float(os.environ.get("GEMMA4_EXEMPLAR_ABSTAIN_NEAR_BAND", "0.15"))
 
 
@@ -123,8 +123,8 @@ def match(text: str) -> ExemplarMatch | None:
             # quedó JUSTO debajo del corte (dentro de _ABSTAIN_NEAR_BAND del mejor
             # no-tool), la abstención es AMBIGUA: deferir al abstain head calibrado
             # en vez de cortocircuitar. La charla pura no tiene vecino-tool cercano
-            # y sigue abstaniéndose. (S3c-bis: generaliza el margen al caso en que
-            # el vecino-tool no llega a votar por caer bajo el umbral.)
+            # y sigue abstaniéndose. Generaliza el margen al caso en que el
+            # vecino-tool no llega a votar por caer bajo el umbral.
             near_tool = any(
                 idx.labels[int(i)]
                 and float(scores[int(i)]) >= best_score - _ABSTAIN_NEAR_BAND

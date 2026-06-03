@@ -40,7 +40,6 @@ def _alias_subpkg_modules() -> None:
         "turn_types": "agent_core",
         # computer_use_pkg
         "computer_use": "computer_use_pkg",
-        "computer_use_b": "computer_use_pkg",
         "gui_safety": "computer_use_pkg",
         "gui_verify": "computer_use_pkg",
         "gui_vision_gate": "computer_use_pkg",
