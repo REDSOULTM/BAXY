@@ -43,6 +43,29 @@ harness_carter540/results/_vulkan_archive/
 Thumbs.db
 .DS_Store
 
+# ---------------------------------------------------------------------------
+# Basura/no-fuente nueva (housekeeping 2026-06-03 antes de commitear el estado):
+# venvs aislados, caches de compilación, datasets de FT (GBs, con receta aparte),
+# repos externos clonados, PNGs/licencias sueltas de sesiones de diag, y temporales
+# del root. NUNCA son fuente del proyecto.
+.venv_router_train/
+unsloth_compiled_cache/
+/dataset_finetune/
+/Gemma4Jarvis-main/
+/_audio_test/
+/test/
+.claude/scheduled_tasks.lock
+# PNGs y licencias/CSVs sueltos en el root (capturas de diag, no fuente)
+/*.png
+/_hagrid_license.*
+/_kinivi_keypoint.csv
+/_mp_modelcard.txt
+/_permon_check.txt
+/_e2b_embedded_template.jinja
+/Contextoclaude.md
+/_live_eager_tuned.py
+/_hagrid_license_extracted.txt
+
 # IDE
 .vscode/
 .idea/
