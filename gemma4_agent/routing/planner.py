@@ -1378,26 +1378,13 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(flashcard|flashcards|tarjeta de estudio|repaso espaciado|spaced repetition|anki|deck de estudio|repeticion espaciada|"
                  r"study card|spaced rep|deck)\b", low):
         tools.append("study")
-    # smart_home: any (turn|switch|encender|apagar) + (light|luz) anywhere wins.
-    # Plus brand keywords (home assistant, hass, mqtt, etc).
-    _smart_home_action = re.search(
-        r"\b(enciende|encender|enciendan|"
-        r"apaga|apague|apaguen|apagar|"
-        r"prende|prender|prendan|"
-        r"turn on|turn off|switch on|switch off)\b",
-        low,
-    )
-    _smart_home_target = re.search(
-        r"\b(luz|luces|lampara|lamparas|light|lights|lamp|lamps)\b",
-        low,
-    )
-    if (_smart_home_action and _smart_home_target) or re.search(
-        r"\b(home assistant|domotica|escena cine|escena de luces|"
-        r"termostato|sensor de temperatura|hass|mqtt|persianas|"
-        r"smart home|home automation|scene|thermostat|blinds)\b",
-        low,
-    ):
-        tools.append("smart_home")
+    # smart_home: ELIMINADA 2026-06-02 (pedido del usuario — el agente NO tiene
+    # capacidad de casa inteligente). NO ofrecer la tool muerta: si no hay tool
+    # relevante, el LLM responde honestamente "no controlo casa inteligente" en
+    # vez de rutear "termostato"/"luces" a un fallback que miente éxito
+    # (source_manager devolvía ok=True y el 4B fabricaba "bajé el termostato").
+    # La validación EN VIVO cazó esto; el keyword rule + 'thermostat/luces/...'
+    # se quitaron a propósito. Ver [[project_finetune_e2b_v2_2026_06_02]].
     # document: (read|extract|summarize verb) + (pdf|docx|xlsx|pptx|html|documento) wins.
     _doc_verb = re.search(
         r"\b(lee|leer|leyendo|lea|leas|"
@@ -1575,8 +1562,6 @@ def _related_tools(name: str, text: str) -> list[str]:
         return ["state"]
     if name == "study":
         return ["state"]
-    if name == "smart_home":
-        return ["state", "dependency"]
     if name == "document":
         return ["filesystem", "knowledge", "dependency"]
     return []
@@ -1592,7 +1577,7 @@ _PRIMARY_TOOLS = {
     "developer", "device_settings", "game_launcher", "media_edit",
     "maintenance", "network", "data_analysis", "container", "database",
     "photo_library", "creative_local", "form_filler", "peripheral",
-    "accessibility", "study", "smart_home",
+    "accessibility", "study",
     "memory", "notification", "routine", "watcher", "job_manager",
     "contacts", "notes_tasks", "local_calendar", "habit_tracker",
     "local_search", "printer_scanner", "desktop_layout", "backup_sync",
