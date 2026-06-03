@@ -273,6 +273,8 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_kill_eval_boot_procs.py` | Mata los procesos del boot de eval. |
 | `_kill_server_ports.py` | Libera los puertos del server (`:8080`). |
 | `_reset_server.py` | Reinicia el llama-server gestionado. |
+| `_gen_a11y_variants.py` | Genera variantes movilidad/no_vidente del dataset a11y para el FT. |
+| `_live_validate_ft_session.py` | Validación en vivo (run_content) del modelo FT: router, smart_home, a11y. |
 
 ## Cosas pendientes (futuras sesiones)
 

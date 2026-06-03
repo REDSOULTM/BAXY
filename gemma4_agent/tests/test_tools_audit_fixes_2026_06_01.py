@@ -39,8 +39,8 @@ from ..memory_pkg.state import AgentState
 from ..tools_pkg.ops_tools import registry_tool
 import gemma4_agent.tools_pkg.ops_tools as ot
 import gemma4_agent.domain_tools as dt
-import gemma4_agent.domain_tools.smart_home as sh
 import gemma4_agent.tools_pkg.mcp_client as mc
+# smart_home ELIMINADA 2026-06-02 — TestSmartHomeHonesty removida con la tool.
 
 
 class TestConfirmedStringCoercion(unittest.TestCase):
@@ -82,62 +82,6 @@ class TestConfirmedStringCoercion(unittest.TestCase):
         res, victim = self._delete_call("true")
         self.assertNotEqual(res.get("status"), "needs_confirmation")
         self.assertFalse(victim.exists(), "confirmed='true' debe proceder con el borrado")
-
-
-class TestSmartHomeHonesty(unittest.TestCase):
-    """Fix #2 — verified refleja el estado REAL medido, no solo el HTTP 200."""
-
-    def _state(self):
-        st = mock.MagicMock()
-        st.checkpoint.return_value = {"checkpoint": "cp"}
-        return st
-
-    def test_set_state_confirmed_is_verified_true(self):
-        def req(method, url, token, payload=None):
-            return {"_ok": True, "data": {"state": "on", "entity_id": "light.x"}}
-        with mock.patch.object(sh, "_hass_request", side_effect=req):
-            r = sh._hass_set_state("h", "t", {"entity_id": "light.x", "state": "on"}, self._state())
-        self.assertIs(r.get("verified"), True)
-
-    def test_set_state_unchanged_is_verified_false(self):
-        def req(method, url, token, payload=None):
-            if method == "POST":
-                return {"_ok": True, "data": {"state": "on"}}
-            return {"_ok": True, "data": {"state": "off", "entity_id": "light.x"}}  # GET: no cambió
-        with mock.patch.object(sh, "_hass_request", side_effect=req):
-            r = sh._hass_set_state("h", "t", {"entity_id": "light.x", "state": "on"}, self._state())
-        self.assertIs(r.get("verified"), False)
-        self.assertEqual(r.get("completion_status"), "state_not_confirmed")
-
-    def test_set_state_unmeasurable_is_verified_none(self):
-        def req(method, url, token, payload=None):
-            if method == "POST":
-                return {"_ok": True, "data": {"state": "on"}}
-            return {"_ok": False, "_error": "timeout"}  # GET falló -> no medible
-        with mock.patch.object(sh, "_hass_request", side_effect=req):
-            r = sh._hass_set_state("h", "t", {"entity_id": "light.x", "state": "on"}, self._state())
-        self.assertIsNone(r.get("verified"))
-
-    def test_call_service_turn_on_confirmed(self):
-        def req(method, url, token, payload=None):
-            return {"_ok": True, "data": {"state": "on", "entity_id": "light.x"}}
-        with mock.patch.object(sh, "_hass_request", side_effect=req):
-            r = sh._hass_call_service(
-                "h", "t",
-                {"domain": "light", "service": "turn_on", "data": {"entity_id": "light.x"}},
-                self._state(),
-            )
-        self.assertIs(r.get("verified"), True)
-
-    def test_call_service_no_entity_is_verified_none(self):
-        # scene / multi-entity / servicio arbitrario -> no medible -> verified=None (no True).
-        def req(method, url, token, payload=None):
-            return {"_ok": True, "data": {}}
-        with mock.patch.object(sh, "_hass_request", side_effect=req):
-            r = sh._hass_call_service(
-                "h", "t", {"domain": "scene", "service": "turn_on", "data": {}}, self._state()
-            )
-        self.assertIsNone(r.get("verified"))
 
 
 class TestMediaLocalHonesty(unittest.TestCase):

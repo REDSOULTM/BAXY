@@ -49,7 +49,7 @@ HANDLERS: dict[str, tuple[str, callable]] = {
     "contacts":         ("contacts_tool",          lambda s: ({"action": "status"}, s)),
     "calendar":         ("local_calendar_tool",    lambda s: ({"action": "status"}, s)),
     "notifications":    ("notification_tool",      lambda s: ({"action": "status"}, s)),
-    "smart_home":       ("smart_home_tool",        lambda s: ({"action": "status"}, s)),
+    # smart_home ELIMINADA 2026-06-02 (pedido del usuario) — handler removido.
     "developer":        ("developer_tool",         lambda s: ({"action": "status"}, s)),
     "device_settings":  ("device_settings_tool",   lambda s: ({"action": "status"}, s)),
     "routine":          ("routine_tool",           lambda s: ({"action": "status"}, s)),

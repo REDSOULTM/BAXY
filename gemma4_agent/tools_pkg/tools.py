@@ -56,7 +56,6 @@ from ..domain_tools import (
     photo_library_tool,
     printer_scanner_tool,
     routine_tool,
-    smart_home_tool,
     source_manager_tool,
     study_tool,
     watcher_tool,
@@ -351,7 +350,6 @@ ACTION_ENUMS: dict[str, list[str]] = {
     "peripheral": ["status", "usb_list", "hid_list", "controller_status", "device_manager_problems", "problems", "device_disable", "device_enable", "rgb_profile_set", "rgb_list", "rgb_set_color"],
     "accessibility": ["status", "magnifier_start", "magnifier_stop", "narrator_start", "narrator_stop", "dictation_status", "settings_panel", "open_settings", "high_contrast_on", "high_contrast_off", "high_contrast_toggle"],
     "study": ["status", "deck_create", "deck_list", "deck_delete", "card_add", "card_list", "card_delete", "due", "review", "stats"],
-    "smart_home": ["status", "discover", "states", "get_state", "set_state", "call_service", "scene_run", "area_list", "areas", "area_control", "mqtt_publish"],
     "subagent": ["status", "run"],
     "safety": ["status", "pending", "confirm", "cancel"],
     "session": ["cancel_turn"],
@@ -1441,7 +1439,6 @@ class ToolRegistry:
             "peripheral": self.t_peripheral,
             "accessibility": self.t_accessibility,
             "study": self.t_study,
-            "smart_home": self.t_smart_home,
             "subagent": self.t_subagent,
             "safety": self.t_safety,
             "session": self.t_session,
@@ -3437,9 +3434,6 @@ class ToolRegistry:
 
     def t_study(self, args: dict[str, Any]) -> dict[str, Any]:
         return study_tool(args, self.state)
-
-    def t_smart_home(self, args: dict[str, Any]) -> dict[str, Any]:
-        return smart_home_tool(args, self.state)
 
     def t_subagent(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="run")

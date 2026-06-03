@@ -5110,7 +5110,8 @@ class Gemma4Agent:
             if wants_send_email(text):
                 return None
         except Exception:
-            pass
+            import logging as _logging
+            _logging.getLogger(__name__).debug("extract_message_to: wants_send_email falló; sigo", exc_info=True)
         # Debe SER intención de responder/mandar mensaje (no cualquier "a X que Y").
         try:
             from ..routing.command_splitter import extract_message_to
@@ -5284,7 +5285,8 @@ class Gemma4Agent:
                         content="No tengo datos tuyos guardados, así que no hay nada que borrar.",
                         tool_events=[], mission=None)
             except Exception:
-                pass
+                import logging as _logging
+                _logging.getLogger(__name__).debug("forget: build_profile().is_empty() falló; sigo a confirmación", exc_info=True)
             self._pending_profile_forget = True
             return AgentReply(
                 content="¿Seguro que querés que borre todo lo que aprendí sobre vos "

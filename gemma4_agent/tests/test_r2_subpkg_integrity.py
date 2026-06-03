@@ -23,7 +23,7 @@ PKG_AREAS = [
     "fact_check", "form_filler", "game_launcher", "habit_tracker",
     "helpers", "job_manager", "local_search", "maintenance", "media_edit",
     "network", "notes", "notifications", "office", "peripheral",
-    "photo_library", "printer_scanner", "routine", "smart_home",
+    "photo_library", "printer_scanner", "routine",
     "source_manager", "study", "watcher", "wifi",
 ]
 
@@ -87,7 +87,6 @@ class TestR2SubpkgIntegrity(unittest.TestCase):
             ("contacts", "contacts_tool"),
             ("calendar", "local_calendar_tool"),
             ("notifications", "notification_tool"),
-            ("smart_home", "smart_home_tool"),
             ("developer", "developer_tool"),
             ("device_settings", "device_settings_tool"),
             ("routine", "routine_tool"),

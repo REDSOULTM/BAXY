@@ -131,8 +131,13 @@ class TestAuditMetrics(unittest.TestCase):
         (2026-05-31): el short-circuit CALC-EN-APP suma +1 `from ..routing.command_splitter
         import parse_calc_action` en _decide_turn (MISMO patrón anti-circular routing<->agent;
         el import command_splitter->arithmetic SÍ es top-level, standalone sin ciclo) +
-        los short-circuits de aritmética/app-action de la misma tanda. Techo 535→545. Si
-        crece mucho MÁS, alguien introdujo lazy en vez de top-level sin justificación."""
+        los short-circuits de aritmética/app-action de la misma tanda. Techo 535→545.
+        VISION_INPUT (control por cámara/gestos, 2026-06-01) suma +11 lazy `from .X`
+        INTRA-PAQUETE en gemma4_agent/vision_input/ (gestures<->landmarks, controller<->
+        snap/monitors, poc/window_control<->camera/dpi, pointer<->gaze): TODOS son imports
+        diferidos dentro de funciones para cortar ciclos internos del paquete y evitar
+        cargar cv2/mediapipe (deps pesadas opt-in) al importar el subpaquete. Techo 545→555.
+        Si crece mucho MÁS, alguien introdujo lazy en vez de top-level sin justificación."""
         total = 0
         for p in _iter_prod_py():
             try:
@@ -141,8 +146,8 @@ class TestAuditMetrics(unittest.TestCase):
                 continue
             total += len(re.findall(r"^\s+from \.", src, re.M))
         self.assertLess(
-            total, 545,
-            f"R3: {total} lazy imports en producción (techo 545)"
+            total, 555,
+            f"R3: {total} lazy imports en producción (techo 555)"
         )
 
     # ----- R4: ToolResult disponible -----
