@@ -111,6 +111,14 @@ _CLAIM_ANCHORS = [
     # pt / fr / de / it
     "pronto, abri o app", "a janela está aberta", "c'est ouvert",
     "fertig, ich habe es geöffnet", "fatto, l'ho aperto",
+    # Efecto FÍSICO sobre el mundo (domótica/dispositivos) — 2026-06-02: la
+    # validación EN VIVO cazó "Listo, bajé la temperatura del termostato" como un
+    # claim de éxito FABRICADO que el detector NO reconocía (sus anchors eran solo
+    # de PC). El agente NO controla casa inteligente; afirmar que lo hizo es mentir.
+    "listo, prendí las luces", "ya bajé la temperatura del termostato",
+    "apagué las luces de la sala", "encendí el aire acondicionado",
+    "I turned on the living room lights", "I set the thermostat to 20 degrees",
+    "the lights are now on", "done, I turned off the lights",
 ]
 _CONV_ANCHORS = [
     # es

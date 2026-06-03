@@ -232,9 +232,34 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     if status in {"needs_user", "needs_dependency", "needs_permission",
                   "needs_confirmation", "needs_verification_async"}:
         return content
+    # HUECO ADVERSARIAL cerrado (2026-06-02, cazado por validación EN VIVO): una
+    # tool READ-ONLY (verified=None: ej. source_manager status, que devuelve ok=True
+    # sin cambiar nada) NO debe sustentar un reply que AFIRMA un EFECTO FÍSICO. Caso
+    # real medido: "bajá el termostato" → el 4B ruteó a source_manager (ok=True,
+    # verified=None) y fabricó "Listo, bajé la temperatura" — MENTIRA. La rama de
+    # abajo eximía TODO verified=None. Ahora: si el result no cambió estado del mundo
+    # (no state_changed, no opened/deeplink, no count de efecto) Y el reply afirma
+    # semánticamente un efecto externo, NO eximimos → cae a la nota honesta. Mide la
+    # FORMA (embeddings de claim-de-efecto), no listas de frases. Fallback seguro: sin
+    # encoder _reply_asserts_effect devuelve False → comportamiento previo intacto.
+    _changed_world = (
+        last.get("state_changed") is True
+        or last.get("opened") is True
+        or bool(last.get("url") or last.get("deeplink") or last.get("uri"))
+        or last.get("verified") is True
+    )
+    _asserts_physical_effect = False
+    if not _changed_world:
+        try:
+            from ..safety_pkg.reply_validator import _reply_asserts_effect
+            _asserts_physical_effect = _reply_asserts_effect(content)
+        except Exception:
+            _asserts_physical_effect = False
     if verified is None and status not in {"attempted", "needs_verification", "failed"}:
-        return content
-    if verified is not False and status not in {"attempted", "needs_verification", "failed"}:
+        if not _asserts_physical_effect:
+            return content
+        # afirma efecto físico sobre una tool que no cambió el mundo → no eximir.
+    elif verified is not False and status not in {"attempted", "needs_verification", "failed"}:
         return content
 
     completion = str(last.get("completion_status") or "").casefold()
