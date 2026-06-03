@@ -181,3 +181,6 @@ _out_today.txt
 /_t_router.txt
 /_server_boot.log
 /_abstain_*.json
+
+# Trabajo academico personal del usuario (tesis/curso) — NO al repo del software
+/_tesis_curso/
