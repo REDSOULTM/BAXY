@@ -392,15 +392,8 @@ class StreamingTTS:
         import time as _time
         _t0 = _time.monotonic()
         logger.warning("tts_started text_len=%d", len(text))
-        # Hotfix L 2026-05-17: lazy import so the recorder module
-        # is optional for environments that don't have the voice
-        # package set up fully. Resolved once per utterance.
-        _recorder = None
-        try:
-            from .recorder import VoiceRecorder
-            _recorder = VoiceRecorder.get()
-        except Exception:
-            _recorder = None
+        # Privacidad: NO se graba ni persiste el audio del usuario ni el sintetizado.
+        # El audio se reproduce en streaming y se descarta; nada toca el disco.
         try:
             for chunk in self._piper.synthesize(text):
                 if not self._running or self._muted:
@@ -413,12 +406,6 @@ class StreamingTTS:
                 if audio is None or len(audio) == 0:
                     continue
                 out_stream.write(audio)
-                # Tap for recording (no-op if no active turn / disabled).
-                if _recorder is not None:
-                    try:
-                        _recorder.capture_tts_chunk(audio)
-                    except Exception:
-                        pass
             logger.warning(
                 "tts_finished duration_s=%.3f reason=ok",
                 _time.monotonic() - _t0,
