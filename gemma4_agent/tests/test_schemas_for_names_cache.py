@@ -65,22 +65,37 @@ class TestSchemasForNamesCache(unittest.TestCase):
         )
 
     def test_cache_matches_uncached_reference(self) -> None:
+        # La salida respeta el ORDEN de `subset` (anti-primacy del router), no el
+        # orden global de COMPOUND_TOOL_SCHEMAS. La referencia se ordena por la
+        # posicion en subset para reflejar el contrato actual.
         subset = ["audio", "media", "window", "gui"]
         with _LeanEnv(True):
             T._invalidate_schemas_cache()
             got = self.reg.schemas_for_names(subset)
             wanted = set(subset)
+            pos = {n: i for i, n in enumerate(subset)}
             ref = [s for s in T.COMPOUND_TOOL_SCHEMAS
                    if s.get("function", {}).get("name") in wanted]
+            ref.sort(key=lambda s: pos.get(s.get("function", {}).get("name"), len(pos)))
             ref = [T._with_lean_description(s) for s in ref]
             self.assertEqual(got, ref)
+            self.assertEqual(
+                [s["function"]["name"] for s in got], subset,
+                "schemas_for_names debe devolver en el ORDEN pedido (anti-primacy)")
 
-    def test_order_independent_key(self) -> None:
+    def test_order_preserving_key(self) -> None:
+        # El orden de `names` IMPORTA: es el reorden anti-primacy del router (tool
+        # de mayor score primero, contra el primacy bias del 4B). Dos subsets con
+        # las mismas tools en distinto orden son entradas de cache DISTINTAS — si
+        # colisionaran, el cache congelaria el primer orden y la feature
+        # anti-primacy volveria a quedar inerte (era el bug original).
         T._invalidate_schemas_cache()
         a = self.reg.schemas_for_names(["audio", "media", "window"])
         b = self.reg.schemas_for_names(["window", "media", "audio"])
-        self.assertEqual(a, b)
-        self.assertEqual(len(T._SCHEMAS_FOR_NAMES_CACHE), 1)
+        self.assertEqual([s["function"]["name"] for s in a], ["audio", "media", "window"])
+        self.assertEqual([s["function"]["name"] for s in b], ["window", "media", "audio"])
+        self.assertNotEqual(a, b)  # distinto orden -> distinta salida
+        self.assertEqual(len(T._SCHEMAS_FOR_NAMES_CACHE), 2)  # 2 claves distintas
 
     def test_returned_list_is_defensive_copy(self) -> None:
         subset = ["audio", "media"]

@@ -89,7 +89,7 @@ DESCARTADOS (causan OOM/peor, no tocar): `--no-flash-attn`, `--no-swa-full`, red
 | MCP-prefer en router (`_MCP_PEAK_KEEP=0.40`, collapse-a-1) | ✅ | `planner.py:67,436-439` |
 | Deícticos ring-buffer multilingüe | ✅ default ON | `routing/deictic_detector.py` |
 | greedy action-mode | ✅ | `llm_client.py:361` |
-| 🔨 **accent en is_question_lexical** (PT/IT/FR sin tilde) | 🔲 PENDIENTE (próximo fix) | `intent_router.py:76` |
+| accent en is_question_lexical (PT/IT/FR sin tilde) | ✅ | `intent_router.py:46,114` — `_fold` (NFKD acento-agnóstico) pliega ANTES de matchear; wh-words y verbos en forma plegada. Verificado en vivo 9/9 (perchè/quê/quanto/cosa/chi/dove). |
 | **B2 corpus multilingüe de eval** (hoy ~98% ES) | 🔲 PENDIENTE-REAL | prerrequisito de todo lo multilingüe; sin bloqueador técnico, es construir datos |
 | **B1 encoder FT alemán/multilingüe** (GAP-2) | ⏸️ BLOQUEADO | ~12h GPU 4060Ti + depende de B2 |
 | **B4 calibración abstain por idioma** (GAP-4) | ⏸️ BLOQUEADO | infra lista (`thresholds_by_lang`) pero artefacto vacío; depende de B1+B2 |

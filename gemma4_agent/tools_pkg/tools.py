@@ -1493,16 +1493,20 @@ class ToolRegistry:
         return [str(schema.get("function", {}).get("name", "")) for schema in COMPOUND_TOOL_SCHEMAS]
 
     def schemas_for_names(self, names: list[str] | tuple[str, ...] | set[str]) -> list[dict[str, Any]]:
+        # PRESERVAR EL ORDEN de `names`: el router (planner._antiprimacy_order) ya
+        # las ordena por score desc (mayor confianza primero) contra el primacy
+        # bias del 4B (Liu et al. 2023 "Lost in the Middle"). Iterar
+        # COMPOUND_TOOL_SCHEMAS y filtrar por `set` PERDERIA ese reorden (la feature
+        # quedaba inerte). La clave de cache incluye el ORDEN (tuple, no frozenset):
+        # mismo subset en distinto orden = entradas distintas, si no el cache
+        # congelaria el primer orden. MCP bypasea el cache (catalogo dinamico).
         wanted = {str(name) for name in names}
+        order = {str(name): i for i, name in enumerate(names)}  # 1ra aparicion gana
         has_mcp = any(n.startswith("mcp__") for n in wanted)
         lean_on = _lean_descriptions_on()
-        # Cache por-subset (clave = subset + flag LEAN). Bypaseamos cuando el
-        # subset pide tools MCP dinámicas: su catalogo puede cambiar en runtime
-        # (discover_mcp_tools/reset_cache) y NO queremos servir un schema MCP
-        # stale. Ver _SCHEMAS_FOR_NAMES_CACHE para el racional completo.
         cache_key: tuple | None = None
         if not has_mcp:
-            cache_key = (frozenset(wanted), lean_on)
+            cache_key = (tuple(str(n) for n in names), lean_on)
             cached = _SCHEMAS_FOR_NAMES_CACHE.get(cache_key)
             if cached is not None:
                 # Copia de la lista externa: el cache es dueño de su lista; el
@@ -1526,6 +1530,11 @@ class ToolRegistry:
                            if str(s.get("function", {}).get("name", "")) in wanted)
             except Exception:
                 pass
+        # Reordenar al orden pedido por `names` (anti-primacy del router). Sort
+        # estable: tools con la misma posicion (no deberia pasar) preservan el
+        # orden de COMPOUND_TOOL_SCHEMAS. Aca es donde el reorden del router al fin
+        # llega al subset que ve el LLM.
+        out.sort(key=lambda s: order.get(str(s.get("function", {}).get("name", "")), len(order)))
         # Descripciones lean opt-in (GEMMA4_LEAN_RULES) — SOLO en el subset
         # que ve el LLM; no muta el literal global. Default off = sin cambio.
         if lean_on:
