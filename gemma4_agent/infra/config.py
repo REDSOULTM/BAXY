@@ -17,11 +17,12 @@ class AgentConfig:
     server_url: str = "http://127.0.0.1:8080"
     model: str = "gemma-4"
     llama_server_exe: Path = Path("C:/llamacpp-cuda/bin/llama-server.exe")
-    # Default conservador: E4B-Q4_K_M (4.6 GB) entra en 6 GB de VRAM con KV q8_0.
-    # El usuario puede sobreescribir con GEMMA4_MODEL_PATH (por ej. Q6_K para
-    # desarrollo con 12+ GB) o cambiando el perfil a Performance.
-    model_path: Path = PROJECT_ROOT / "models" / "E4B" / "gemma-4-E4B-it-Q4_K_M.gguf"
-    mmproj_path: Path = PROJECT_ROOT / "models" / "E4B" / "mmproj-F16.gguf"
+    # Default = E2B-Q4_K_M (perfil vram4, el ÚNICO activo desde 2026-05-26; ~3.36GB +visión @4K).
+    # 2026-06-02: actualizado de E4B→E2B porque models/E4B (GGUF) se borró (no lo usaba prod;
+    # el perfil vram4 ya sobreescribía con E2B vía profiles.py:196). El usuario puede sobreescribir
+    # con GEMMA4_MODEL_PATH. Nota: el FT entrena E4B en formato HF aparte (otra ruta, no este GGUF).
+    model_path: Path = PROJECT_ROOT / "models" / "E2B" / "gemma-4-E2B-it-Q4_K_M.gguf"
+    mmproj_path: Path = PROJECT_ROOT / "models" / "E2B" / "mmproj-F16.gguf"
     temperature: float = 1.0
     top_p: float = 0.95
     top_k: int = 64

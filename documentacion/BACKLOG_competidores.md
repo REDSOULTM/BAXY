@@ -19,7 +19,7 @@ Leyenda ROI/Esfuerzo/Riesgo: A(alto)/M(medio)/B(bajo).
 - ✅ **B6** file-processor — `file_process` unificado (commit `d36c3e2`) + cubierto por document/data_analysis/office/vision.
 - ✅ **B7** web fallback DDG→Bing — DEFAULT-ON, validado, commits `e2c248e`/`3052427`.
 - ✅ **B8** reminders confiables — DEFAULT-ON (Task Scheduler), validado, commit `e410250`.
-- ⬜ **B9** cliente MCP — **único gap estratégico grande pendiente**. Sprint dedicado; medir que el catálogo MCP no degrade el tool-calling del 4B. En box fresca.
+- 🟡 **B9** cliente MCP — **CONSTRUIDO y cableado** (mcp_client.py + enrolamiento al router + dispatch `mcp__*`), gated `GEMMA4_MCP=0`. NO es gap de implementación. Falta OPERACIONAL: declarar servidores en ~/.gemma4/mcp_servers.json + validar EN VIVO que el catálogo MCP no degrade el tool-calling del 4B → recién ahí flip ON. (Verificado en código 2026-06-02 — ver BACKLOG_MAESTRO.md.)
 - 🟡 **B11/B12** parcialmente cubiertos (microagents/ + mission_checkpoint.py). **B10/B13** oportunistas.
 
 ### B) Infra / Hardware / UX (sesión 2026-05-29)
@@ -31,7 +31,7 @@ Leyenda ROI/Esfuerzo/Riesgo: A(alto)/M(medio)/B(bajo).
 - ⬜ **Dedupe `prototype.css`** (quedó frankenfile ~2910 líneas: nuevo diseño anexado, funcional; limpiar reglas viejas superseded tras validar el reskin).
 - ⬜ **Fix flaky Qt** (`test_agent_thread_dryrun`) — pre-existente, NO bloqueante (segfault de teardown bajo box degradada; pasa aislado). Ver memoria `project-qt-ui-test-segfault`.
 
-**Conclusión:** del backlog de competidores, lo adoptable y no-redundante está **hecho** (B1–B8); el único gap estratégico es **B9 (MCP)**. El foco actual se movió a **hardware/accesibilidad**: el reskin (terminar el match visual + commit), el **CPU-fallback** (validar con juego real + flip) y el **soporte sin-GPU** (bundlear CPU/Vulkan + auto-default) — esto último expande el target de "GPU 4GB" a "cualquier laptop".
+**Conclusión:** del backlog de competidores, lo adoptable y no-redundante está **hecho** (B1–B9: B9/MCP está CONSTRUIDO, gated OFF — lo que falta de B9 es operacional, no código). El foco actual se movió a **hardware/accesibilidad**: el reskin (terminar el match visual + commit), el **CPU-fallback** (validar con juego real + flip) y el **soporte sin-GPU** (bundlear CPU/Vulkan + auto-default) — esto último expande el target de "GPU 4GB" a "cualquier laptop". (Estado verificado contra código 2026-06-02 → ver BACKLOG_MAESTRO.md como fuente única.)
 
 ---
 
@@ -123,6 +123,11 @@ Leyenda ROI/Esfuerzo/Riesgo: A(alto)/M(medio)/B(bajo).
 ## TIER 3 — Estratégico / arquitectura (sprint dedicado)
 
 ### B9 · Cliente MCP (Model Context Protocol)  ROI:A(estratégico) Esf:A Riesgo:M
+- **ESTADO (2026-06-02, verificado en código):** CONSTRUIDO y cableado. `tools_pkg/mcp_client.py`
+  (`mcp_enabled`, `mcp_tool_schemas`), enrolamiento al router (`semantic_router.py:enroll_mcp_tools`,
+  `planner.py:_MCP_PEAK_KEEP`), dispatch transparente (`tools.py` resuelve `mcp__server__tool`).
+  Gated `GEMMA4_MCP=0`. Lo que sigue NO es código sino OPERACIONAL: declarar servidores reales +
+  validar el gate de no-degradación antes de flip ON.
 - **De:** Goose (`rmcp`, 70+ servidores), openclaw (plugin-SDK), OS-Copilot.
 - **Qué:** adoptar MCP como CLIENTE → 70+ servidores existentes (filesystem, git, APIs) sin escribir cada tool.
   Futuro-proof + interoperable con el ecosistema.

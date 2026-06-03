@@ -38,6 +38,9 @@ sys.path.insert(0, str(ROOT))
 
 QUERIES = ROOT / "gemma4_agent" / "data" / "tool2vec_queries.jsonl"
 CORPUS = ROOT / "gemma4_agent" / "data" / "router_eval_corpus.curated.jsonl"
+# FASE 4 fine-tune (2026-06-02): corpus curado del historial Carter+Gemma4 (mensaje→tool
+# CORREGIDA). Misma forma {q, expected}; holdout excluido por _split_of. Fuente NUEVA, aditiva.
+CORPUS_FT = ROOT / "gemma4_agent" / "data" / "router_corpus_curated_ft.jsonl"
 TOOL_DESC_OUT = ROOT / "gemma4_agent" / "data" / "router_encoder_meta.json"
 OUT_DIR = ROOT / "gemma4_agent" / "data" / "router_encoder_ft"
 _HOLDOUT_SALT = "router-eval-2026-05-20"
@@ -94,7 +97,21 @@ def main() -> int:
             desc = TOOL_DESCRIPTIONS.get(t)
             if desc:
                 pairs.append((r["q"], desc))
-    print(f"training pairs: {len(pairs)} (synthetic + dev real; holdout excluded)")
+    # FASE 4: corpus curado del historial (mensaje→tool corregida). Mismo split/holdout.
+    n_ft = 0
+    if CORPUS_FT.exists():
+        for ln in CORPUS_FT.read_text(encoding="utf-8").splitlines():
+            if not ln.strip():
+                continue
+            r = json.loads(ln)
+            if _split_of(r["q"]) != "dev":
+                continue
+            # expected + expected_equiv (todas las tools válidas para esta query)
+            for t in list(dict.fromkeys((r.get("expected") or []) + (r.get("expected_equiv") or []))):
+                desc = TOOL_DESCRIPTIONS.get(t)
+                if desc:
+                    pairs.append((r["q"], desc)); n_ft += 1
+    print(f"training pairs: {len(pairs)} (synthetic + dev real + {n_ft} FT-curated; holdout excluded)")
     if args.limit:
         import random
         random.Random(7).shuffle(pairs)

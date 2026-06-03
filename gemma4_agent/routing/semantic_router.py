@@ -159,7 +159,6 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "peripheral": "USB devices, controllers, HID listing, device manager problems",
     "accessibility": "Magnifier, Narrator, accessibility settings panel",
     "study": "flashcards with SM-2 spaced repetition",
-    "smart_home": "Home Assistant / MQTT: control EXTERNAL smart-home devices (smart lights, plugs, thermostat, sensors) — NOT the computer's own screen brightness or volume",
 }
 
 # Discord in-app control lives in computer_use: channel navigation, text send,

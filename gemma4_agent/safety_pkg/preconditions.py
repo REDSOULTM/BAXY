@@ -16,8 +16,9 @@ devuelve None ("no sé") en vez de adivinar — el llamador NO bloquea ante None
 (fail-open: mejor intentar que rechazar sin evidencia). Solo un False MEDIDO
 bloquea con un mensaje accionable.
 
-GATING: GEMMA4_PRECONDITIONS (default off). Opt-in hasta validar en vivo que no
-agrega latencia ni falsos bloqueos. Sin servidores/tools configurados -> no-op.
+GATING: GEMMA4_PRECONDITIONS (DEFAULT ON desde 2026-05-29, tras validar en vivo que
+no agrega latencia ni falsos bloqueos — ver nota en preconditions_enabled()).
+Kill-switch GEMMA4_PRECONDITIONS=0. Sin servidores/tools configurados -> no-op.
 """
 from __future__ import annotations
 
