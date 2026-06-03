@@ -1,6 +1,6 @@
 # Auditoría de flags GEMMA4_* (scripts/_diag/_flag_audit.py)
 
-Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproceso ($env:/env[...]): **47**  |  DEAD (sin lectura): **0**
+Total: **284**  |  leídos como TOGGLE/config: **225**  |  solo IPC de subproceso ($env:/env[...]): **47**  |  DEAD (sin lectura): **0**
 
 ## 🗑️ DEAD — sin NINGUNA lectura (toggle, subscript, $env: ni env[...]=). Borrables.
 
@@ -8,19 +8,19 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 
 ## 🔌 SOLO-IPC — env de subproceso (NO borrar: rompe el worker PowerShell)
 
-- GEMMA4_CLOSE_QUERY — gemma4_agent\tools_pkg\tools.py:1011
-- GEMMA4_DNS_ADAPTER — gemma4_agent\domain_tools\network.py:188
-- GEMMA4_DNS_ADDRS — gemma4_agent\domain_tools\network.py:197
-- GEMMA4_DOWNLOAD_PATH — gemma4_agent\tools_pkg\ops_tools.py:496
-- GEMMA4_DOWNLOAD_URL — gemma4_agent\tools_pkg\ops_tools.py:495
-- GEMMA4_ENV_ACTION — gemma4_agent\tools_pkg\ops_tools.py:2089
-- GEMMA4_ENV_NAME — gemma4_agent\tools_pkg\ops_tools.py:2091
-- GEMMA4_ENV_TARGET — gemma4_agent\tools_pkg\ops_tools.py:2090
-- GEMMA4_ENV_VALUE — gemma4_agent\tools_pkg\ops_tools.py:2092
+- GEMMA4_CLOSE_QUERY — gemma4_agent\tools_pkg\tools.py:1025
+- GEMMA4_DNS_ADAPTER — gemma4_agent\domain_tools\network.py:197
+- GEMMA4_DNS_ADDRS — gemma4_agent\domain_tools\network.py:203
+- GEMMA4_DOWNLOAD_PATH — gemma4_agent\tools_pkg\ops_tools.py:514
+- GEMMA4_DOWNLOAD_URL — gemma4_agent\tools_pkg\ops_tools.py:513
+- GEMMA4_ENV_ACTION — gemma4_agent\tools_pkg\ops_tools.py:2107
+- GEMMA4_ENV_NAME — gemma4_agent\tools_pkg\ops_tools.py:2109
+- GEMMA4_ENV_TARGET — gemma4_agent\tools_pkg\ops_tools.py:2108
+- GEMMA4_ENV_VALUE — gemma4_agent\tools_pkg\ops_tools.py:2110
 - GEMMA4_FORCE — gemma4_agent\tools_pkg\ops_tools.py:149
 - GEMMA4_H — gemma4_agent\domain_tools\desktop_layout.py:198
-- GEMMA4_HASH_PATH — gemma4_agent\tools_pkg\ops_tools.py:2170
-- GEMMA4_KEYS — gemma4_agent\tools_pkg\tools.py:7079
+- GEMMA4_HASH_PATH — gemma4_agent\tools_pkg\ops_tools.py:2188
+- GEMMA4_KEYS — gemma4_agent\tools_pkg\tools.py:7192
 - GEMMA4_LANGUAGE_TAGS — gemma4_agent\tools_pkg\ops_tools.py:148
 - GEMMA4_LIMIT — gemma4_agent\domain_tools\desktop_layout.py:74
 - GEMMA4_LOG_NAME — gemma4_agent\domain_tools\maintenance.py:253
@@ -29,8 +29,8 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_NOTIF_DUE — gemma4_agent\domain_tools\notifications.py:178
 - GEMMA4_NOTIF_RUNNER — gemma4_agent\domain_tools\notifications.py:179
 - GEMMA4_NOTIF_TASK — gemma4_agent\domain_tools\notifications.py:177
-- GEMMA4_OWN_PID — gemma4_agent\tools_pkg\tools.py:1019
-- GEMMA4_PARENT_PID — gemma4_agent\tools_pkg\tools.py:1021
+- GEMMA4_OWN_PID — gemma4_agent\tools_pkg\tools.py:1033
+- GEMMA4_PARENT_PID — gemma4_agent\tools_pkg\tools.py:1035
 - GEMMA4_PRINTER — gemma4_agent\domain_tools\printer_scanner.py:81
 - GEMMA4_PRINT_PATH — gemma4_agent\domain_tools\printer_scanner.py:108
 - GEMMA4_PRINT_PRINTER — gemma4_agent\domain_tools\printer_scanner.py:109
@@ -39,24 +39,24 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_ROUTINE_TASK — gemma4_agent\domain_tools\routine.py:538
 - GEMMA4_SCAN_DEVICE — gemma4_agent\domain_tools\printer_scanner.py:209
 - GEMMA4_SCAN_OUT — gemma4_agent\domain_tools\printer_scanner.py:208
-- GEMMA4_SCREENSHOT_MODE — gemma4_agent\tools_pkg\tools.py:5640
-- GEMMA4_SCREENSHOT_PATH — gemma4_agent\tools_pkg\tools.py:5639
-- GEMMA4_SHORTCUT — gemma4_agent\tools_pkg\tools.py:891
-- GEMMA4_SIG_PATH — gemma4_agent\tools_pkg\ops_tools.py:2188
+- GEMMA4_SCREENSHOT_MODE — gemma4_agent\tools_pkg\tools.py:5740
+- GEMMA4_SCREENSHOT_PATH — gemma4_agent\tools_pkg\tools.py:5739
+- GEMMA4_SHORTCUT — gemma4_agent\tools_pkg\tools.py:905
+- GEMMA4_SIG_PATH — gemma4_agent\tools_pkg\ops_tools.py:2206
 - GEMMA4_TITLE — gemma4_agent\domain_tools\desktop_layout.py:194
-- GEMMA4_TYPE_TEXT — gemma4_agent\tools_pkg\tools.py:7048
-- GEMMA4_UIA_ACTION — gemma4_agent\tools_pkg\tools.py:5302
-- GEMMA4_UIA_LIMIT — gemma4_agent\tools_pkg\tools.py:5306
-- GEMMA4_UIA_QUERY — gemma4_agent\tools_pkg\tools.py:5303
-- GEMMA4_UIA_VALUE — gemma4_agent\tools_pkg\tools.py:5305
-- GEMMA4_UIA_WINDOW — gemma4_agent\tools_pkg\tools.py:5304
+- GEMMA4_TYPE_TEXT — gemma4_agent\tools_pkg\tools.py:7161
+- GEMMA4_UIA_ACTION — gemma4_agent\tools_pkg\tools.py:5402
+- GEMMA4_UIA_LIMIT — gemma4_agent\tools_pkg\tools.py:5406
+- GEMMA4_UIA_QUERY — gemma4_agent\tools_pkg\tools.py:5403
+- GEMMA4_UIA_VALUE — gemma4_agent\tools_pkg\tools.py:5405
+- GEMMA4_UIA_WINDOW — gemma4_agent\tools_pkg\tools.py:5404
 - GEMMA4_W — gemma4_agent\domain_tools\desktop_layout.py:197
-- GEMMA4_WINDOW_ACTION — gemma4_agent\tools_pkg\tools.py:4140
-- GEMMA4_WINDOW_QUERY — gemma4_agent\tools_pkg\tools.py:4139
+- GEMMA4_WINDOW_ACTION — gemma4_agent\tools_pkg\tools.py:4240
+- GEMMA4_WINDOW_QUERY — gemma4_agent\tools_pkg\tools.py:4239
 - GEMMA4_X — gemma4_agent\domain_tools\desktop_layout.py:195
 - GEMMA4_Y — gemma4_agent\domain_tools\desktop_layout.py:196
 
-## ✅ TOGGLE/config (226) — feature on/off o tuning
+## ✅ TOGGLE/config (225) — feature on/off o tuning
 
 - GEMMA4_A11Y_MAX_CONTINUES
 - GEMMA4_A11Y_SWITCH_FLOOR
@@ -101,6 +101,7 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_AGENT_TRACE_PATH
 - GEMMA4_AGENT_TRACING
 - GEMMA4_AMBIENT_OBSERVER
+- GEMMA4_ANTIPRIMACY
 - GEMMA4_ANTI_UNVERIFIED_CLAIM
 - GEMMA4_APP_ACTION_NET
 - GEMMA4_APP_OPEN_AUTOVERIFY
@@ -135,6 +136,8 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_DELEGATE_MARGIN
 - GEMMA4_DISABLE_AUTO_CDP_LAUNCH
 - GEMMA4_DISABLE_TOOL_SCHEMAS_HINT
+- GEMMA4_EAGER_INTENT_THRESHOLD
+- GEMMA4_EAGER_READONLY
 - GEMMA4_EMAIL_MARGIN
 - GEMMA4_ERROR_RECOVERY
 - GEMMA4_EXEMPLAR_ABSTAIN_MARGIN
@@ -163,8 +166,6 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_GUI_XLING
 - GEMMA4_HANDS_FREE_MARGIN
 - GEMMA4_HARD_TOOL_CAP
-- GEMMA4_HASS_HOST
-- GEMMA4_HASS_TOKEN
 - GEMMA4_HEAD_MIN_MARGIN
 - GEMMA4_HEAD_TOP_N
 - GEMMA4_HIER_COLLAPSE
@@ -196,10 +197,6 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_MMPROJ_PREFER_QUANT
 - GEMMA4_MODEL_PATH
 - GEMMA4_MODE_SAMPLING
-- GEMMA4_MQTT_BROKER
-- GEMMA4_MQTT_PASSWORD
-- GEMMA4_MQTT_PORT
-- GEMMA4_MQTT_USER
 - GEMMA4_MULTI_INTENT
 - GEMMA4_NARRATE_MIN_CHARS
 - GEMMA4_NAV_MARGIN
@@ -219,6 +216,7 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_PROGRESS_EARCON
 - GEMMA4_PROMPT_LAYOUT_V2
 - GEMMA4_PROMPT_LAYOUT_V3
+- GEMMA4_REASONING_BUDGET_MSG
 - GEMMA4_RELATED_BUDGET
 - GEMMA4_REMINDER_SCHEDULE
 - GEMMA4_REPLY_NET
@@ -227,6 +225,7 @@ Total: **282**  |  leídos como TOGGLE/config: **226**  |  solo IPC de subproces
 - GEMMA4_RERANKER_TOPK
 - GEMMA4_RERANK_ABSTAIN_MAX
 - GEMMA4_RERANK_MODEL
+- GEMMA4_ROUTER_JOIN_TIMEOUT_S
 - GEMMA4_ROUTER_MODE
 - GEMMA4_SEMANTIC_FALLBACK
 - GEMMA4_SEMANTIC_MODEL
