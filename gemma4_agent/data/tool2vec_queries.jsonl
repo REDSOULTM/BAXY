@@ -1758,36 +1758,6 @@
 {"tool": "study", "q": "Flashcards de línguas, por favor"}
 {"tool": "study", "q": "Devo ripassare l'inglese"}
 {"tool": "study", "q": "Studiamo il periodo rinascimentale"}
-{"tool": "smart_home", "q": "Spanish"}
-{"tool": "smart_home", "q": "Enciende las luces del salón ahora mismo"}
-{"tool": "smart_home", "q": "¿Cómo está la temperatura en la cocina?"}
-{"tool": "smart_home", "q": "Pon el termostato a veinte grados"}
-{"tool": "smart_home", "q": "Abre las persianas de la habitación principal"}
-{"tool": "smart_home", "q": "¿Podrías subir el volumen de la música?"}
-{"tool": "smart_home", "q": "Cierra la puerta principal por favor"}
-{"tool": "smart_home", "q": "English"}
-{"tool": "smart_home", "q": "Turn off the kitchen lights immediately"}
-{"tool": "smart_home", "q": "What is the current temperature inside?"}
-{"tool": "smart_home", "q": "Please lock the front door"}
-{"tool": "smart_home", "q": "Set the thermostat to seventy-two"}
-{"tool": "smart_home", "q": "Are the blinds open or closed?"}
-{"tool": "smart_home", "q": "Check the status of the security camera"}
-{"tool": "smart_home", "q": "Portuguese"}
-{"tool": "smart_home", "q": "Ligue as luzes da sala agora"}
-{"tool": "smart_home", "q": "Qual é a temperatura da casa?"}
-{"tool": "smart_home", "q": "Feche a porta da garagem por favor"}
-{"tool": "smart_home", "q": "Defina o aquecedor para vinte"}
-{"tool": "smart_home", "q": "As janelas estão abertas ou fechadas?"}
-{"tool": "smart_home", "q": "Verifique o status da casa inteligente"}
-{"tool": "smart_home", "q": "French"}
-{"tool": "smart_home", "q": "Allumer la lumière du salon s'il vous plaît"}
-{"tool": "smart_home", "q": "Quelle est la température actuelle ici?"}
-{"tool": "smart_home", "q": "Verrouillez la porte d'entrée maintenant"}
-{"tool": "smart_home", "q": "Réglez le chauffage à vingt degrés"}
-{"tool": "smart_home", "q": "Est-ce que les volets sont fermés?"}
-{"tool": "smart_home", "q": "Vérifie l'état de la maison"}
-{"tool": "smart_home", "q": "German"}
-{"tool": "smart_home", "q": "Schalte das Wohnzimmerlicht ein"}
 {"tool": "audio", "q": "Volumen, bajalo"}
 {"tool": "audio", "q": "Mute, please"}
 {"tool": "audio", "q": "O som? Manda"}
@@ -3232,31 +3202,6 @@
 {"tool": "study", "q": "german lernen bitte"}
 {"tool": "study", "q": "flash. el volumen"}
 {"tool": "study", "q": "deberes, ¿qué hay?"}
-{"tool": "smart_home", "q": "la luz del cuarto"}
-{"tool": "smart_home", "q": "abre las persianas ahora"}
-{"tool": "smart_home", "q": "lo otro también"}
-{"tool": "smart_home", "q": "the lights down please"}
-{"tool": "smart_home", "q": "la tempurature baja"}
-{"tool": "smart_home", "q": "turn on the lamp"}
-{"tool": "smart_home", "q": "mi casa control"}
-{"tool": "smart_home", "q": "dim the lightes"}
-{"tool": "smart_home", "q": "aumenta el volumen"}
-{"tool": "smart_home", "q": "das Licht an bitte"}
-{"tool": "smart_home", "q": "apri eso"}
-{"tool": "smart_home", "q": "acende las cortinas"}
-{"tool": "smart_home", "q": "the heat is too high"}
-{"tool": "smart_home", "q": "baja esa luz"}
-{"tool": "smart_home", "q": "la cosa del MQTT"}
-{"tool": "smart_home", "q": "faiblo el volumen"}
-{"tool": "smart_home", "q": "c'est la lumière"}
-{"tool": "smart_home", "q": "il faut baisser"}
-{"tool": "smart_home", "q": "dabei das smart home"}
-{"tool": "smart_home", "q": "il est fermé"}
-{"tool": "smart_home", "q": "accende eso"}
-{"tool": "smart_home", "q": "volumen mucho más"}
-{"tool": "smart_home", "q": "la ventana abre"}
-{"tool": "smart_home", "q": "the sensor reading"}
-{"tool": "smart_home", "q": "mi termostato"}
 {"tool": "window", "q": "minimiza la ventana"}
 {"tool": "window", "q": "minimiza esta ventana"}
 {"tool": "window", "q": "minimiza la de VS Code"}

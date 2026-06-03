@@ -1,7 +1,6 @@
 {"q": "abre steam", "expect_any": ["steam"], "forbid": ["web", "knowledge", "media"]}
 {"q": "abre spotify", "expect_any": ["app"], "forbid": ["web", "knowledge"]}
 {"q": "mutea", "expect_any": ["audio"], "forbid": ["web", "media_edit"]}
-{"q": "sube el volumen", "expect_any": ["audio"], "forbid": ["smart_home", "media_edit", "web"]}
 {"q": "pausa la musica", "expect_any": ["media"], "forbid": ["web", "knowledge"]}
 {"q": "reproduce daddy yankee", "expect_any": ["media"], "forbid": ["web"]}
 {"q": "que hora es", "expect_any": ["system"], "forbid": ["web", "knowledge"]}
@@ -30,7 +29,6 @@
 {"q": "restaura la ventana", "expect_any": ["window", "desktop_layout"], "forbid": []}
 {"q": "cierra youtube", "expect_any": ["app", "window"], "forbid": ["media"]}
 {"q": "cierra steam", "expect_any": ["steam", "app"], "forbid": ["web", "media"]}
-{"q": "cierra este", "expect_any": ["app", "window"], "forbid": ["smart_home"]}
 {"q": "cuantas pestanas tengo abiertas", "expect_any": ["window", "browser"], "forbid": []}
 {"q": "lista las ventanas abiertas", "expect_any": ["window", "desktop_layout"], "forbid": ["notes_tasks"]}
 {"q": "ponme un recordatorio para llamar al dentista", "expect_any": ["notification", "reminder"], "forbid": ["media", "browser", "audio"]}
@@ -56,7 +54,6 @@
 {"q": "hazme un excel con 3 columnas", "expect_any": ["office"], "forbid": ["web"]}
 {"q": "Puedes hacerme un power point", "expect_any": ["office"], "forbid": ["web"]}
 {"q": "registra que hoy hice ejercicio", "expect_any": ["habit_tracker"], "forbid": ["web"]}
-{"q": "apaga las luces de la sala", "expect_any": ["smart_home"], "forbid": ["web"]}
 {"q": "extrae el texto de un pdf", "expect_any": ["document", "filesystem"], "forbid": ["web"]}
 {"q": "abre la calculadora", "expect_any": ["app"], "forbid": ["web", "media"]}
 {"q": "open the calculator", "expect_any": ["app"], "forbid": ["web", "media"]}

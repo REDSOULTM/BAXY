@@ -164,7 +164,7 @@ def _alias_domain_tools_shims() -> None:
         "habit_tracker", "helpers", "job_manager", "local_search",
         "maintenance", "media_edit", "network", "notes", "notifications",
         "office", "peripheral", "photo_library", "printer_scanner",
-        "routine", "smart_home", "source_manager", "study", "watcher",
+        "routine", "source_manager", "study", "watcher", "whatsapp",
         "wifi",
     )
     pkg = _sys.modules.get("gemma4_agent")

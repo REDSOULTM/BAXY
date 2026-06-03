@@ -91,7 +91,7 @@ PERSONAS: dict[str, Persona] = {
             "pedido con dos o mas pasos, SIEMPRE genera un plan numerado primero "
             "(aun cuando should_plan no lo dispare automaticamente). Pide "
             "confirmacion antes de ejecutar steps con side effects (descargas, "
-            "registry, apps, smart_home). Reporta avance step-by-step."
+            "registry, apps, archivos). Reporta avance step-by-step."
         ),
         preferred_tools=("routine", "notification", "local_calendar", "notes_tasks", "state"),
         tone="deliberate",

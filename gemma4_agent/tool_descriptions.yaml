@@ -884,28 +884,8 @@
       - "connect to postgres on localhost"
       - "how many records in customers"
 
-- name: smart_home
-  purpose: |
-    Home Assistant / Alexa / Google Home bridges — lights,
-    thermostats, locks, scenes, switches.
-    Hogar inteligente — luces, termostatos, cerraduras, escenas, interruptores.
-  domain: iot
-  example_queries:
-    es:
-      - "prende las luces del living"
-      - "apaga todas las luces de la casa"
-      - "subi el aire a 22 grados"
-      - "activa el modo cine"
-      - "cerrame el portazgo de la entrada"
-      - "que temperatura hay en el dormitorio"
-      - "encendeme la cafetera"
-    en:
-      - "turn on the living room lights"
-      - "turn off all lights"
-      - "set ac to 22 degrees"
-      - "activate movie mode"
-      - "lock the front door"
-      - "what's the bedroom temperature"
+# smart_home ELIMINADA 2026-06-02 (pedido del usuario — el agente no controla
+# casa inteligente; este YAML no alimenta el router runtime pero se limpia por higiene).
 
 - name: device_settings
   purpose: |

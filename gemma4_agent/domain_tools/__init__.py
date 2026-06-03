@@ -284,20 +284,8 @@ from .routine import (  # noqa: F401  (re-export por compat)
 )
 
 
-# Smart Home (HomeAssistant + MQTT) - extraído a domain_tools_smart_home.py
-# (R2 sprint 2026-05-28). 10 funciones. Re-export para compat (tools.py linea 58).
-from .smart_home import (  # noqa: F401  (re-export por compat)
-    _hass_alive,
-    _hass_area_control,
-    _hass_area_list,
-    _hass_call_service,
-    _hass_get_state,
-    _hass_request,
-    _hass_set_state,
-    _hass_states,
-    _smart_home_mqtt_publish,
-    smart_home_tool,
-)
+# Smart Home (HomeAssistant + MQTT) ELIMINADA 2026-06-02 (pedido del usuario).
+# Handler smart_home.py borrado, schema fuera de tool_schemas.py, fuera del dataset y router.
 
 
 # Study (flashcards + SM-2) - extraído a domain_tools_study.py

@@ -221,7 +221,7 @@ _TOOL_TO_KINDS: dict[str, tuple[str, ...]] = {
     "email": ("set_state",),
     "whatsapp": ("set_state", "navigate"),
     "input": ("set_state", "read_state"),
-    "smart_home": ("set_state", "read_state"),
+    # smart_home ELIMINADA 2026-06-02 (pedido del usuario).
     "subagent": ("read_state",),
     "safety": ("read_state",),
     "network": ("read_state",),
