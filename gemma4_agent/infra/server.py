@@ -692,6 +692,11 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         agent = getattr(RUNNER, "_agent", None)
         built = agent is not None
         warmed = RUNNER.is_warmed_up()
+        # router_ready: el router semántico terminó (o está deshabilitado/
+        # degradado-tolerado). Sin esta 4ª condición, este PULL (poll de 4s /
+        # cliente tardío) recomputaría ready SIN saber del router y abriría la
+        # casilla con el router a medias (2026-06-02, pedido del usuario).
+        router_ready = RUNNER.is_router_ready()
         healthy = False
         if built:
             try:
@@ -701,7 +706,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         return {
             "built": built,
             "healthy": healthy,
-            "ready": built and warmed and healthy,
+            "ready": built and warmed and healthy and router_ready,
         }
 
     @app.get("/settings")
@@ -1553,6 +1558,10 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
             agent = getattr(RUNNER, "_agent", None)
             built = agent is not None
             warmed = RUNNER.is_warmed_up()
+            # 4ª condición del gate: el router semántico listo (o deshabilitado/
+            # degradado-tolerado). Igual que el PULL de /agent/status — un cliente
+            # que abre el WS tarde debe ver ready solo si el router también está.
+            router_ready = RUNNER.is_router_ready()
             healthy = False
             if built:
                 try:
@@ -1563,7 +1572,7 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
                 "type": "agent",
                 "built": built,
                 "healthy": healthy,
-                "ready": built and warmed and healthy,
+                "ready": built and warmed and healthy and router_ready,
             }))
 
             async def reader() -> None:

@@ -33,6 +33,15 @@ from ..infra.events_bus import BUS
 
 logger = logging.getLogger(__name__)
 
+import os as _os
+
+# Tope de espera del join del router antes de abrir la casilla en modo léxico
+# degradado. Cubre _ensure_loaded (6-8s, BertModel + N embeddings de tools) +
+# intent centroids (~14s en frío) + reranker first-load (~13s) con margen, sin
+# dejar la casilla colgada si el router se cuelga en red (HF download sin
+# local_files_only, ver semantic_router). Env-overridable.
+ROUTER_JOIN_TIMEOUT_S = float(_os.environ.get("GEMMA4_ROUTER_JOIN_TIMEOUT_S", "45"))
+
 
 def _ts() -> str:
     n = datetime.datetime.now()
@@ -92,9 +101,27 @@ class AgentRunner:
         # perfil `cpu` (-ngl 0) — libera la VRAM para el juego y sigue respondiendo
         # en CPU. None hasta que _maybe_start_profile_watcher() lo arranca.
         self._profile_watcher: Any = None
+        # Handle del thread de warmup del router. _build_agent lo joinea ANTES
+        # de publicar ready, para que la casilla de chat NO se abra con el
+        # router a medio cargar (2026-06-02: el usuario reportó que el primer
+        # turno se demoraba porque la casilla se desbloqueaba antes de que el
+        # router/embeddings estuvieran listos -> caía al fallback léxico).
+        self._router_thread: threading.Thread | None = None
+        # Latch que los PULL de server.py (/agent/status, WS handshake) leen vía
+        # is_router_ready(). El gate real es ready = built ∧ warmed ∧ healthy ∧
+        # router. True = router terminó (OK, degradado-tolerado, o deshabilitado);
+        # False = todavía cargando. Sin esto, un cliente que se conecta tarde o
+        # el poll de 4s recomputan ready SIN saber del router (2 de 3 caminos).
+        self._router_ready: bool = False
 
     def is_warmed_up(self) -> bool:
         return self._warmed_up and self._agent is not None
+
+    def is_router_ready(self) -> bool:
+        """True cuando el router semántico terminó de cargar (OK o degradado),
+        o cuando está deshabilitado (no hay nada que esperar). El gate de la
+        casilla de chat es: ready = built ∧ warmed ∧ healthy ∧ is_router_ready()."""
+        return self._router_ready
 
     def start(self) -> None:
         with self._build_lock:
@@ -145,6 +172,8 @@ class AgentRunner:
         _publish_activity("BOOT", "agent restart requested · re-running boot sequence")
         self._agent = None
         self._warmed_up = False
+        self._router_ready = False
+        self._router_thread = None
         threading.Thread(
             target=self._build_agent,
             name="gemma4-agent-restart",
@@ -335,6 +364,8 @@ class AgentRunner:
         # restart of the boot sequence: clear the previous warmup latch so
         # the gate stays closed until we re-do the 1-token completion test.
         self._warmed_up = False
+        self._router_ready = False
+        self._router_thread = None
         BUS.publish({"type": "agent", "built": False, "healthy": False, "ready": False})
 
         # autostart llama-server if needed BEFORE constructing the agent —
@@ -378,6 +409,12 @@ class AgentRunner:
         except Exception as exc:
             logger.warning("semantic_router import failed (rerank disabled): %s", exc)
             semantic_router = None  # type: ignore[assignment]
+        self._router_thread = None
+        self._router_ready = False
+        if not (semantic_router is not None and semantic_router.is_enabled()):
+            # Router deshabilitado o no importó: no hay nada que esperar, el
+            # gate no debe bloquearse por él.
+            self._router_ready = True
         if semantic_router is not None and semantic_router.is_enabled():
             _publish_activity("BOOT", "loading semantic router · BertModel + tool embeddings (background)")
             emit_stage(BUS.publish, "rerank_load",
@@ -447,12 +484,21 @@ class AgentRunner:
                     emit_stage(BUS.publish, "rerank_load",
                                f"semantic router failed: {exc}",
                                error=str(exc))
+                finally:
+                    # Router terminó (OK, degradado por fallback léxico, o
+                    # retornó False sin lanzar). Desbloquea el join + los PULL.
+                    # Degradado cuenta como "listo": no colgamos el gate. (NO
+                    # cubre el caso "el thread se cuelga sin retornar nunca" —
+                    # p.ej. SentenceTransformer colgado en red; para eso está
+                    # el timeout del join en _build_agent.)
+                    self._router_ready = True
 
-            threading.Thread(
+            self._router_thread = threading.Thread(
                 target=_bg_warmup_router,
                 name="gemma4-router-warmup",
                 daemon=True,
-            ).start()
+            )
+            self._router_thread.start()
 
         # health check against llama-server. /health responds 200 as soon as
         # the binary is bound to the port — that's BEFORE load_tensors has
@@ -581,6 +627,35 @@ class AgentRunner:
                 _publish_activity("SYSTEM", f"KV prewarm crashed (non-fatal): {exc}")
 
             self._warmed_up = True
+            # Gate del ROUTER (2026-06-02, pedido del usuario): el warmup del
+            # modelo ya terminó, pero la casilla de chat NO debe abrirse hasta
+            # que el router semántico también esté listo — si no, el primer
+            # turno cae al fallback léxico mientras el router carga embeddings.
+            # Joineamos el thread de warmup del router con timeout. El paralelismo
+            # se preservó: el thread arrancó mucho antes (durante el warmup del
+            # modelo). Si ya terminó, el join retorna al instante.
+            rt = self._router_thread
+            if rt is not None and rt.is_alive():
+                _publish_activity("BOOT", "esperando al router · terminando embeddings de tools")
+                emit_stage(BUS.publish, "router_join", "esperando al router semántico")
+                rt.join(timeout=ROUTER_JOIN_TIMEOUT_S)
+                if rt.is_alive():
+                    # Timeout: el router sigue cargando (o colgado en red).
+                    # Abrimos la casilla igual en modo léxico degradado para no
+                    # dejarla bloqueada para siempre. El thread es daemon, sigue
+                    # solo y su finally prenderá el latch cuando termine.
+                    self._router_ready = True  # tolerado: no colgar el gate
+                    _publish_activity(
+                        "SYSTEM",
+                        "⚠ router lento · abro la casilla en modo léxico; el "
+                        "primer turno puede ser más lento hasta que termine")
+                    emit_stage(BUS.publish, "router_join",
+                               "router lento · sigo en modo léxico")
+                else:
+                    emit_stage(BUS.publish, "router_join",
+                               "router semántico listo", progress=100.0)
+            # rt is None o ya murió: el router terminó antes (latch ya True vía
+            # el finally del thread) o estaba deshabilitado (latch True arriba).
             _publish_activity("SYSTEM", f"llama-server online · {cfg.server_url}")
             emit_stage(BUS.publish, "ready",
                        f"ready · {n_tools} tools · model in VRAM",
