@@ -1,8 +1,10 @@
-"""Contract tests for AgentRunner (threading) and AgentWorker (PyQt6).
+"""Contract tests for AgentRunner (el worker de la UI web ui_field).
 
-Sprint 5b is going to collapse both workers onto a shared
-AgentSerialWorker base. Without these parity tests, a change to one
-worker's submit/stop semantics would silently desync the other.
+2026-06-03: la GUI vieja PyQt6 (gemma4_agent/ui/) y su AgentWorker se
+eliminaron; quedó SOLO el AgentRunner (threading, consumido por server/CLI/
+web UI). Antes este archivo verificaba la PARIDAD entre ambos workers — ya no
+hay dos, así que se quitaron las clases TestAPIParity y TestAgentWorkerHeadless
+(dependían de ..ui.agent_thread.AgentWorker, ahora inexistente).
 
 What we DO test here:
   - submit() enqueues without blocking and does NOT launch the agent.
@@ -10,48 +12,17 @@ What we DO test here:
     needed to unblock `queue.Queue.get()`.
   - restart() drops references to the in-flight agent.
   - The singleton RUNNER (module-level) is consistent across imports.
-  - The two classes share the critical public surface: `submit`,
-    `stop`. Each may have extra methods (Qt slots etc) — only the
-    common surface is asserted.
-  - AgentWorker headless smoke test: instantiation + signal attrs
-    exist (requires QApplication, runs offscreen).
 
 What we DON'T test here:
   - The full `_build_agent` path (would autostart llama-server / load
     the LLM client / sentence-transformers).
-  - The worker loop (`_run` / `run`) running real turns — that's
+  - The worker loop (`_run`) running real turns — that's
     TestRunTextToolCallFlow's job in test_gemma4agent_contract.
-
-If PyQt6 cannot offscreen-init, the AgentWorker class is skipped with
-a clear reason. AgentRunner tests do not need Qt and always run.
 """
 from __future__ import annotations
 
-import os
-import threading
 import time
 import unittest
-
-# Force PyQt6 to use the offscreen platform for headless test runners.
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-
-
-def _qt_available() -> tuple[bool, str]:
-    """Return (ok, reason). True iff a QApplication can be instantiated."""
-    try:
-        from PyQt6.QtWidgets import QApplication  # type: ignore[import-not-found]
-    except ImportError as exc:
-        return False, f"PyQt6 not installed: {exc}"
-    try:
-        # Reuse an existing app if some other test created one.
-        app = QApplication.instance() or QApplication([])
-        del app
-        return True, ""
-    except Exception as exc:  # noqa: BLE001
-        return False, f"QApplication init failed: {exc}"
-
-
-_QT_OK, _QT_REASON = _qt_available()
 
 
 class TestAgentRunnerSubmit(unittest.TestCase):
@@ -153,86 +124,6 @@ class TestRunnerSingleton(unittest.TestCase):
     def test_runner_is_AgentRunner_instance(self) -> None:
         from ..agent_core.agent_runner import RUNNER, AgentRunner
         self.assertIsInstance(RUNNER, AgentRunner)
-
-
-class TestAPIParity(unittest.TestCase):
-    """The minimal public surface both workers share. Sprint 5b's
-    AgentSerialWorker base must keep these reachable from both."""
-
-    @unittest.skipUnless(_QT_OK, _QT_REASON)
-    def test_submit_and_stop_in_both(self) -> None:
-        from ..agent_core.agent_runner import AgentRunner
-        from ..ui.agent_thread import AgentWorker
-
-        runner_methods = {m for m in dir(AgentRunner) if not m.startswith("_")}
-        worker_methods = {m for m in dir(AgentWorker) if not m.startswith("_")}
-        common = runner_methods & worker_methods
-
-        self.assertIn("submit", common,
-                      "Both workers must expose `submit` (consumed by CLI/server/UI)")
-        self.assertIn("stop", common,
-                      "Both workers must expose `stop` (consumed by shutdown paths)")
-
-    @unittest.skipUnless(_QT_OK, _QT_REASON)
-    def test_submit_signature_compatible(self) -> None:
-        """Both submit() methods accept text + keyword images + keyword audios."""
-        import inspect
-        from ..agent_core.agent_runner import AgentRunner
-        from ..ui.agent_thread import AgentWorker
-
-        sig_runner = inspect.signature(AgentRunner.submit)
-        sig_worker = inspect.signature(AgentWorker.submit)
-        for sig in (sig_runner, sig_worker):
-            params = sig.parameters
-            self.assertIn("text", params)
-            self.assertIn("images", params)
-            self.assertIn("audios", params)
-
-
-class TestAgentWorkerHeadless(unittest.TestCase):
-    """Headless smoke test for the PyQt6 worker — instantiation +
-    signal attribute presence. We deliberately do NOT call .start();
-    that would spin up _build_agent against a non-existent llama-server."""
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        if not _QT_OK:
-            raise unittest.SkipTest(_QT_REASON)
-        from PyQt6.QtWidgets import QApplication
-        cls.app = QApplication.instance() or QApplication([])  # type: ignore[attr-defined]
-
-    def test_instantiates_without_crashing(self) -> None:
-        from ..ui.agent_thread import AgentWorker
-        w = AgentWorker()
-        self.addCleanup(w.deleteLater)
-        # Signals are pyqtSignal descriptors at class level; on the
-        # instance they expose `.emit` / `.connect`.
-        for sig_name in ("state_changed", "progress", "log", "reply_ready",
-                         "llm_error", "connection_changed", "health_status"):
-            self.assertTrue(hasattr(w, sig_name),
-                            f"AgentWorker must expose `{sig_name}` signal")
-            sig = getattr(w, sig_name)
-            self.assertTrue(hasattr(sig, "emit"),
-                            f"`{sig_name}` must be a pyqtSignal (has .emit)")
-            self.assertTrue(hasattr(sig, "connect"),
-                            f"`{sig_name}` must be a pyqtSignal (has .connect)")
-
-    def test_submit_enqueues_without_starting_thread(self) -> None:
-        from ..ui.agent_thread import AgentWorker
-        w = AgentWorker()
-        self.addCleanup(w.deleteLater)
-        self.assertEqual(w._inbox.qsize(), 0)
-        w.submit("hola")
-        self.assertEqual(w._inbox.qsize(), 1)
-
-    def test_stop_sets_running_false(self) -> None:
-        from ..ui.agent_thread import AgentWorker
-        w = AgentWorker()
-        self.addCleanup(w.deleteLater)
-        self.assertTrue(w._running)
-        w.stop()
-        self.assertFalse(w._running)
-        self.assertTrue(w._stop_event.is_set())
 
 
 if __name__ == "__main__":

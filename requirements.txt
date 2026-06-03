@@ -27,8 +27,9 @@ sherpa-onnx==1.13.2            # parakeet_stt.py — Parakeet STT + hotword bias
 rapidfuzz==3.14.5             # voice/corrector.py — fuzzy proper-name correction
 jellyfish==1.2.1             # voice/corrector.py + domain_tools/contacts.py — phonetic match
 
-# --- UI desktop (PyQt6 surface + native webview launcher) ---
-PyQt6==6.11.0
+# --- UI desktop (native webview launcher) ---
+# PyQt6 eliminado 2026-06-03: la GUI vieja PyQt6 (gemma4_agent/ui/) se borró;
+# la UI default es la web ui_field/ servida en una ventana pywebview.
 pywebview==6.2.1
 
 # --- UI field / server (FastAPI surface) ---

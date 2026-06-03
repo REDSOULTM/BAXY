@@ -23,11 +23,9 @@ import unittest
 
 
 # Permitidos: cada uno es method call `<expr>.exec(...)`, NO builtin.
-ALLOWED = {
-    # PyQt event-loop entry points
-    "gemma4_agent/ui/app.py",
-    "gemma4_agent/ui/main_window.py",
-}
+# (Las entradas de gemma4_agent/ui/* se quitaron al eliminar la GUI vieja
+# PyQt6 el 2026-06-03 — ya no hay .exec() de Qt en el repo.)
+ALLOWED: set[str] = set()
 
 
 def _is_method_call(node: ast.Call) -> bool:

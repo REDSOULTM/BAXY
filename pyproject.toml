@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gemma4_agent"
 version = "0.1.0"
-description = "Local voice-first agent runtime (Gemma 4 / Gemma 3n) with PyQt6 + FastAPI surfaces."
+description = "Local voice-first agent runtime (Gemma 4 / Gemma 3n) with a web UI (FastAPI + pywebview)."
 # Runtime interpreter is CPython 3.10 (verified: 3.10.11). The 3.11-only
 # training stack (livekit-wakeword) lives in the isolated .venv_livekit and
 # is NOT part of this installable package — see CLAUDE.md "Python 3.10
@@ -16,7 +16,8 @@ dynamic = ["dependencies"]
 
 [project.scripts]
 gemma4-chat = "gemma4_agent.chat:main"
-gemma4-ui = "gemma4_agent.ui.app:main"
+# gemma4-ui eliminado 2026-06-03: apuntaba a la GUI vieja PyQt6 (borrada).
+# Para abrir la UI web: `gemma4-launcher ui` (o python -m gemma4_agent.launcher ui).
 gemma4-server = "gemma4_agent.server:main"
 gemma4-launcher = "gemma4_agent.launcher:main"
 

@@ -237,17 +237,14 @@ def run_ui(args: argparse.Namespace) -> int:
     """Open the Field UI.
 
     Modes:
-      default        — pywebview window (native, like the legacy PyQt6 GUI)
+      default        — pywebview window (native)
       --browser      — open the system default browser
       --no-window    — server only, no GUI (useful for headless dev)
-      --legacy-ui    — fall back to the PyQt6 GUI that lived here before
     """
-    if getattr(args, "legacy_ui", False):
-        cmd = [sys.executable, "-m", "gemma4_agent.ui"]
-        return subprocess.run(cmd, cwd=str(PROJECT_ROOT)).returncode
-
-    # Web UI path: import locally so users who only need the legacy GUI
-    # don't pay the fastapi/uvicorn import cost on every launcher invocation.
+    # Web UI path: import locally para no pagar el costo de import de
+    # fastapi/uvicorn en cada invocación del launcher.
+    # (La GUI vieja PyQt6 + el flag --legacy-ui se eliminaron 2026-06-03;
+    # la UI default es la web ui_field/.)
     try:
         import uvicorn
     except ImportError:
@@ -260,7 +257,6 @@ def run_ui(args: argparse.Namespace) -> int:
     if not (UI_DIST / "index.html").exists():
         print(color("warn", f"UI bundle no encontrado en {UI_DIST}."))
         print(color("dim", "  cd gemma4_agent/ui_field && pnpm install && pnpm run build"))
-        print(color("dim", "  o usa --legacy-ui para abrir la GUI PyQt6 anterior."))
         return 2
 
     config = config_with_args(args)
@@ -547,7 +543,6 @@ def build_parser() -> argparse.ArgumentParser:
     smoke.add_argument("--web", action="store_true")
 
     ui = sub.add_parser("ui", help="Abrir la Field UI (ventana nativa por defecto)")
-    ui.add_argument("--legacy-ui", action="store_true", help="Abrir la GUI PyQt6 anterior")
     ui.add_argument("--browser", action="store_true",
                     help="Abrir en el browser del sistema en lugar de una ventana nativa")
     ui.add_argument("--no-window", action="store_true",
