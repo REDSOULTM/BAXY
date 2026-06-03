@@ -175,10 +175,9 @@ class TestLanguageAwareFallback(unittest.TestCase):
         self.assertEqual(detect_reply_language("Done, I opened YouTube for you"), "en")
 
     def test_unknown_language_falls_back_to_spanish(self):
-        # Sprint 3a: _LANG_HINTS was trimmed to es+en (PT/IT/DE never
-        # appeared in real traces). Inputs in other languages now fall
-        # through to the ES default, which is the safe choice for the
-        # Spanish-by-default agent.
+        # _LANG_HINTS is trimmed to es+en (PT/IT/DE never appeared in real
+        # traces). Inputs in other languages fall through to the ES default,
+        # which is the safe choice for the Spanish-by-default agent.
         self.assertEqual(detect_reply_language("Fatto, ho aperto YouTube"), "es")
         self.assertEqual(detect_reply_language("Fertig, ich habe YouTube geöffnet"), "es")
 
@@ -215,8 +214,8 @@ class TestPhraseFireSuppressesSession(unittest.TestCase):
         # behavior: with non-empty _phrase_fires, the subset-filter code
         # path removes 'session'. This is the smallest meaningful assertion
         # without a live LLM.
-        # R1 sprint 2026-05-28: la lógica vive en _decide_turn (la fase
-        # decide fue extraída de run_content).
+        # La lógica vive en _decide_turn (la fase decide fue extraída de
+        # run_content).
         from ._src_helpers import agent_method_src  # robusto: lee agent.py de disco
         src = agent_method_src("_decide_turn")
         self.assertIn("session_suppressed_by_phrase_fire", src)

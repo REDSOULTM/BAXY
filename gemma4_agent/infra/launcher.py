@@ -24,7 +24,7 @@ from ..tools_pkg.tools import COMPOUND_TOOL_SCHEMAS
 
 
 def _shutdown_voice_recorder() -> None:
-    """Voice recorder removed in Sprint R3.1 clean-slate (2026-05-19).
+    """Voice recorder removed in the clean-slate rewrite.
     Stub kept so atexit registration doesn't error; replaced when
     the new voice pipeline lands."""
     pass

@@ -1,5 +1,5 @@
 """Study domain tool (flashcards + SM-2 spaced repetition) — extracted from
-domain_tools.py (R2 sprint 2026-05-28).
+domain_tools.py.
 
 Flashcards locales, persistencia SQLite en <state_dir>/study.sqlite. Algoritmo
 SM-2 (Wozniak 1990) por carta — el clásico de spaced-repetition. NO cloud, NO

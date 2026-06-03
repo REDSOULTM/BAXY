@@ -1,5 +1,4 @@
-"""Job Manager domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Job Manager domain tool — extracted from domain_tools.py.
 
 Tracking de jobs subprocess de larga duración. Distinto de
 developer.start_dev_server (especializado): job_manager es genérico. Cada job

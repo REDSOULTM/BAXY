@@ -1,5 +1,5 @@
-"""ITEM 2 (perfection roadmap 2026-05-29): 3ª señal de verify GUI vía
-SetWinEventHook. Fusión 2-de-3, gated OFF, observación pura (no SendInput).
+"""3ª señal de verify GUI vía SetWinEventHook.
+Fusión 2-de-3, gated OFF, observación pura (no SendInput).
 
 Foco: la LÓGICA de fusión (un evento UI rescata el false-PASS del frame-diff) y
 el gating. El hook Win32 real necesita una app + ventana (verificación en vivo);

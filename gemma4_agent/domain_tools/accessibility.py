@@ -1,5 +1,4 @@
-"""Accessibility domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Accessibility domain tool — extracted from domain_tools.py.
 
 Wraps Windows accessibility executables: Magnifier (magnify.exe), Narrator
 (narrator.exe), and the Settings page (ms-settings:easeofaccess). High

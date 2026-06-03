@@ -1,5 +1,4 @@
-"""Ola 3 (perfection roadmap B9, 2026-05-29): enrolamiento de tools MCP al
-router-subset + dispatch transparente.
+"""Enrolamiento de tools MCP al router-subset + dispatch transparente.
 
 EL GATE CRÍTICO: por muchas tools MCP que se enrolen, el subset que ve el 4B
 NUNCA excede MAX_SELECTED_TOOLS (=5). Esa es la disciplina de subset que mitiga
@@ -117,9 +116,9 @@ class McpDispatchTest(unittest.TestCase):
 
 
 class McpPromotionTest(unittest.TestCase):
-    """Perfection roadmap 2026-05-29: la MEJOR tool MCP relevante se promueve al
-    subset (collapse del cluster a 1) cuando supera _MCP_PEAK_KEEP, SIN tirar la
-    keyword nativa (web sigue) y SIN colarse en queries no-relevantes.
+    """La MEJOR tool MCP relevante se promueve al subset (collapse del cluster
+    a 1) cuando supera _MCP_PEAK_KEEP, SIN tirar la keyword nativa (web sigue)
+    y SIN colarse en queries no-relevantes.
 
     Causa raíz que arregla: `if not names` descartaba toda la lista semántica
     (donde viven las MCP) cuando una keyword nativa ya llenó `names`.

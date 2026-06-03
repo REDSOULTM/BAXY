@@ -1,8 +1,8 @@
 """Voice runner — single entry point that wires VoicePipeline + TTS into
 the agent.
 
-Sprint 2 of the voice redesign. Replaces the previous voice_runner.py
-(deleted in the clean-slate commit b098e22) with a thin wrapper that:
+Replaces the previous voice_runner.py (deleted in the clean-slate
+commit b098e22) with a thin wrapper that:
 
   - Owns the VoicePipeline (mic → VAD → wake → STT → corrector).
   - Owns the StreamingTTS (Piper output).

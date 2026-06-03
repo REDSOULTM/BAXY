@@ -1,12 +1,11 @@
-"""Tests for the fail-loud schema check in experience.sqlite (Sprint 7.4).
+"""Tests for the fail-loud schema check in experience.sqlite.
 
 If the ALTER TABLE block in ExperienceMemory._open is silently
 swallowing failures (e.g. because the DB file is locked by antivirus
 or a sync client during cold start), the per-row reads later in the
 session crash with confusing 'no such column' errors deep inside
-format_recall_for_prompt. Sprint 7.4 makes the schema check
-fail-loud at open time so the user sees a clean error with a
-remediation hint.
+format_recall_for_prompt. The schema check is fail-loud at open
+time so the user sees a clean error with a remediation hint.
 """
 from __future__ import annotations
 
@@ -49,7 +48,7 @@ class TestSchemaDrift(unittest.TestCase):
         mem.close()
 
     def test_existing_pre_migration_db_gets_columns_added(self) -> None:
-        # Simulate a pre-Sprint-2 DB: just the 7 base columns.
+        # Simulate a pre-migration DB: just the 7 base columns.
         conn = sqlite3.connect(self.path)
         conn.execute("""
             CREATE TABLE experiences (

@@ -1,5 +1,4 @@
-"""Ola 2.2 (perfection roadmap C6, 2026-05-29): pre-flight de VRAM antes de
-inyectar una imagen capturada A MITAD de turno.
+"""Pre-flight de VRAM antes de inyectar una imagen capturada A MITAD de turno.
 
 El pre-flight de _decide_turn solo cubría mode=='vision_action' (imagen de
 ENTRADA). Una imagen pedida por el LLM inline (gui.screenshot en turno de texto)

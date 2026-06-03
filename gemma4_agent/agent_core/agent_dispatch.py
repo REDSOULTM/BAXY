@@ -1,6 +1,6 @@
 """Tool-call execution helpers extracted from :mod:`gemma4_agent.agent`.
 
-Sprint 6.4 split: the two `_execute_calls_*` methods on Gemma4Agent
+The two `_execute_calls_*` methods on Gemma4Agent
 are nearly entirely about iterating a prepared-call list, dispatching
 through `tools.execute`, and writing the result back into each
 prep dict. They depend on `self.tools` and `self.trace` but not on

@@ -1,4 +1,4 @@
-"""ITEM 3 (perfection roadmap 2026-05-29): catálogo de precondiciones.
+"""Catálogo de precondiciones.
 
 Antes de actuar, chequear estado del SO (app instalable, whatsapp presente). Un
 False MEDIDO bloquea con needs_user; None/unknown NO bloquea (fail-open). Gated

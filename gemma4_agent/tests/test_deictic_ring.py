@@ -1,4 +1,4 @@
-"""ITEM 4 (perfection roadmap 2026-05-29): deíctico ring multilingüe.
+"""Deíctico ring multilingüe.
 
 CRÍTICO (anti-trampa): la detección es por EMBEDDINGS multilingües, NO un regex
 por idioma. El test valida deixis en VARIOS idiomas (es/en/pt/fr) — un regex
@@ -62,7 +62,7 @@ class EntityRingTest(unittest.TestCase):
 
 class GateTest(unittest.TestCase):
     def test_default_on_after_validation(self):
-        # 2026-05-29: flippeado a DEFAULT-ON tras validar en vivo (3/3 idiomas).
+        # DEFAULT-ON tras validar en vivo (3/3 idiomas).
         prev = os.environ.pop("GEMMA4_DEICTIC", None)
         try:
             self.assertTrue(D.deictic_enabled())  # default ON

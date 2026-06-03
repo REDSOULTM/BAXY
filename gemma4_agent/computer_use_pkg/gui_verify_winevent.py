@@ -1,4 +1,4 @@
-"""3ª señal de verify GUI vía SetWinEventHook (perfection roadmap ITEM 2, 2026-05-29).
+"""3ª señal de verify GUI vía SetWinEventHook.
 
 gui_verify usa 2 señales (frame-diff ROI + foreground). El research (11_plan P2)
 recomienda una 3ª: observar EVENTOS de UI Automation (EVENT_OBJECT_INVOKED /

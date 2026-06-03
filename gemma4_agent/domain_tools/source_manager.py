@@ -1,5 +1,4 @@
-"""Source Manager domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Source Manager domain tool — extracted from domain_tools.py.
 
 Bibliografía y snapshots de texto local persistidos en state.json como
 resources kind=source. Cada source guarda title/url/source/text/saved_at.
@@ -24,8 +23,7 @@ from ..tools_pkg.tool_result import ToolResult
 __all__ = ["source_manager_tool"]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult (con  para
-# back-compat).
+# Handler migrado a ToolResult (con  para back-compat).
 def source_manager_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     from .helpers import _existing_path, _find_resource, _resources_by_kind
     action = str(args.get("action") or "list").casefold()

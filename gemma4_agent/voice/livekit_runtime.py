@@ -1,7 +1,7 @@
 """Pure-onnxruntime LiveKit wake-word inference for Python 3.10.
 
-Sprint 7 (2026-05-19): the trained LiveKit model lives as 3 ONNX
-graphs. The `livekit-wakeword` PyPI package requires Python 3.11, but
+The trained LiveKit model lives as 3 ONNX graphs. The
+`livekit-wakeword` PyPI package requires Python 3.11, but
 the Gemma 4 runtime is 3.10. This module reimplements LiveKit's
 inference pipeline using ONLY onnxruntime + numpy, so it loads in 3.10.
 

@@ -1,5 +1,5 @@
-"""Compartido entre domain_tools.py y los módulos hermanos extraídos durante
-el sprint R2 (2026-05-28). Existe para que cada hermano pueda hacer
+"""Compartido entre domain_tools.py y los módulos hermanos extraídos de él.
+Existe para que cada hermano pueda hacer
 `from .helpers import _X` a top-level — antes el patrón obligaba
 a `from . import _X` LAZY dentro de cada función para evitar
 ciclos. Eso pasaba el runtime (lazy resuelve) pero el analizador estático
@@ -12,8 +12,7 @@ Reglas:
 - _ok/_err siguen viviendo en _shared.py (el tipo de retorno canónico).
 - Cada helper se importa también desde domain_tools.py para compat con
   callers que hacen `from gemma4_agent import domain_tools as dt; dt._X`.
-
-R3 sprint 2026-05-28."""
+"""
 from __future__ import annotations
 
 import json
@@ -52,12 +51,11 @@ def _existing_path(args: dict[str, Any]) -> Path | None:
     Devuelve None si falta el arg o el path no existe. Usado por office y
     source_manager para snapshots/inspección de archivos arbitrarios.
 
-    Restaurado en R3 (2026-05-28). Originalmente vivía en domain_tools.py;
-    al extraer office en R2.26 se borró de allí pero los re-exports de
-    office_tool/source_manager_tool seguían referenciándolo con lazy import,
-    dejando un bug latente (AttributeError al primer uso). El sweep de tests
-    no lo detectó porque ningún test invoca office.snapshot_file/inspect ni
-    source_manager.snapshot_file directamente.
+    Originalmente vivía en domain_tools.py; al extraer office se borró de allí
+    pero los re-exports de office_tool/source_manager_tool seguían
+    referenciándolo con lazy import, dejando un bug latente (AttributeError al
+    primer uso). El sweep de tests no lo detectó porque ningún test invoca
+    office.snapshot_file/inspect ni source_manager.snapshot_file directamente.
     """
     raw = str(args.get("path") or "").strip()
     if not raw:

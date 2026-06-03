@@ -1,15 +1,15 @@
-"""R7 sprint 2026-05-28: prevenir prints en módulos runtime productivos.
+"""Prevenir prints en módulos runtime productivos.
 
 El audit `architecture_audit_2026_05_27.md` contó 195 `print()` (78 en
 archivos no-CLI). Análisis ulterior: la mayoría vive en CLIs interactivos
 (`chat.py`, `launcher.py`, `microagents.py`) donde print es la UX
 legítima, y en scripts diagnósticos one-shot.
 
-Este test **no migra los prints existentes** (sería un sprint dedicado;
-y para chat/launcher el comportamiento del print es deliberado). Lo que
-hace es **guardia anti-regresión** sobre los módulos del HOT PATH del
-runtime de voz/agente — esos no deben usar `print()` porque rompen el
-flujo de logs estructurados que el operador usa para post-mortem.
+Este test **no migra los prints existentes** (y para chat/launcher el
+comportamiento del print es deliberado). Lo que hace es **guardia
+anti-regresión** sobre los módulos del HOT PATH del runtime de
+voz/agente — esos no deben usar `print()` porque rompen el flujo de logs
+estructurados que el operador usa para post-mortem.
 
 Hot-path runtime modules (whitelist explícita):
 """
@@ -69,8 +69,7 @@ def _find_real_prints(src: str) -> list[int]:
 def _find_fstring_in_logger(src: str) -> list[int]:
     """Devuelve `lineno` de calls `logger.<level>(f"...")` — anti-pattern
     de performance porque el f-string se evalúa SIEMPRE aunque el nivel
-    no esté activo. R7 sprint del audit recomienda lazy logging
-    `logger.warning("X=%s", x)`.
+    no esté activo. Lazy logging recomendado: `logger.warning("X=%s", x)`.
     """
     import ast as _ast
     try:
@@ -124,13 +123,11 @@ class TestNoPrintInRuntime(unittest.TestCase):
         )
 
     def test_no_fstring_in_hot_path_logger_calls(self):
-        """R7 sprint 2026-05-28: `logger.warning(f"X={x}")` evalúa el
-        f-string siempre, aunque el nivel no esté activo. Usar lazy:
-        `logger.warning("X=%s", x)`.
+        """`logger.warning(f"X={x}")` evalúa el f-string siempre, aunque el
+        nivel no esté activo. Usar lazy: `logger.warning("X=%s", x)`.
 
         Solo se chequea en hot-path runtime para no romper código
-        legacy de CLIs. Si fuera trivial migrar todo, sería un sprint
-        dedicado.
+        legacy de CLIs.
         """
         root = pathlib.Path(__file__).resolve().parent.parent
         offenders: list[str] = []

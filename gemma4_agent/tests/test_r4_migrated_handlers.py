@@ -1,4 +1,4 @@
-"""R4 sprint 2026-05-28: tests del subset MIGRADO a ToolResult.
+"""Tests del subset MIGRADO a ToolResult.
 
 Verifica que los 5 handlers ya migrados producen dicts byte-a-byte
 compatibles con el patrón legacy `_ok/_err`. Si la migración rompe

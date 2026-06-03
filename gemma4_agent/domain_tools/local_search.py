@@ -1,5 +1,4 @@
-"""Local filesystem search — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Local filesystem search — extracted from domain_tools.py.
 
 Búsqueda recursiva sobre el filesystem local con:
   - budget temporal (default 10s)

@@ -1,5 +1,4 @@
-"""Device settings compound tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Device settings compound tool — extracted from domain_tools.py.
 
 Compound entry dispatch para WiFi/Bluetooth/displays/power plans. Las
 sub-áreas viven en sus propios módulos hermanos (wifi, bluetooth); acá

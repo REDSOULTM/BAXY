@@ -1,6 +1,6 @@
 """Tests for Bug 3: grounding gate (inline morphology check only).
 
-The async NLI layer was removed in Sprint 3a along with the rest of the
+The async NLI layer was removed along with the rest of the
 NLI stack; tests for it were removed too. The inline gate uses
 morphological heuristics (suffix + stem hint), NOT a closed verb list.
 We test that it generalizes to verbs NOT pre-enumerated.

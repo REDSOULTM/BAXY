@@ -1,5 +1,4 @@
-"""Office (PPTX/DOCX/XLSX) domain tool — extracted from domain_tools.py
-(R2 sprint 2026-05-28).
+"""Office (PPTX/DOCX/XLSX) domain tool — extracted from domain_tools.py.
 
 Creación local de archivos Office via python-pptx / python-docx / openpyxl.
 inspect/open son read-only (size + suffix). edit/export PDF DEFERRED (necesitan

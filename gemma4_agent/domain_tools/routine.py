@@ -1,4 +1,4 @@
-"""Routine domain tool — extracted from domain_tools.py (R2 sprint 2026-05-28).
+"""Routine domain tool — extracted from domain_tools.py.
 
 Sistema de rutinas (macros) persistidas: triggers (manual/cron/once/on_app_*/
 on_process_*/on_phrase), steps (lista de tool+args). Persistencia + scheduling

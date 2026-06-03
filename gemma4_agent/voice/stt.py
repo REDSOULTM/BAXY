@@ -1,7 +1,7 @@
 """STT via faster-whisper (CTranslate2, CPU, int8).
 
-Sprint VoiceRedesign (2026-05-19): clean STT after the v1 prompt-
-biasing approach proved too brittle for anglicisms. The new design
+Clean STT after the v1 prompt-biasing approach proved too brittle
+for anglicisms. The new design
 shifts most of the correction burden OUT of the model and into a
 deterministic RapidFuzz post-corrector (see corrector.py).
 

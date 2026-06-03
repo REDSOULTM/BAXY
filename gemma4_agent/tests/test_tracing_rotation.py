@@ -1,4 +1,4 @@
-"""Tests for TraceLogger size-based rotation (Sprint 7.3).
+"""Tests for TraceLogger size-based rotation.
 
 Cascade scheme: when traces.jsonl crosses max_size_mb, the file moves
 to traces.jsonl.1; any pre-existing .1 → .2 → .3 → discarded.

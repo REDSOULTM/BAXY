@@ -10,9 +10,9 @@ thread-safe — the runtime is bound to the thread that called
 Fix: dispatchers run thread-affine tools (browser_real, media, browser)
 INLINE without the watchdog. Other tools keep their watchdog.
 
-Sprint 6.4: dispatcher bodies moved from Gemma4Agent._execute_calls_*
-to gemma4_agent.agent_dispatch. The Gemma4Agent methods are now thin
-wrappers, so we inspect the agent_dispatch module source instead.
+Dispatcher bodies live in gemma4_agent.agent_dispatch; the Gemma4Agent
+methods are thin wrappers, so we inspect the agent_dispatch module source
+instead.
 """
 from __future__ import annotations
 

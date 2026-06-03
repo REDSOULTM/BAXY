@@ -1,5 +1,4 @@
-"""Notifications domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-27).
+"""Notifications domain tool — extracted from domain_tools.py.
 
 Una sola entry point pública (notification_tool) que maneja timer/alarm/
 reminder/toast/notification vía actions. Persistencia + scheduling via Windows
@@ -348,7 +347,7 @@ def _notification_due(args: dict[str, Any]) -> datetime:
         if candidate <= now:
             candidate = candidate + timedelta(days=1)
         return candidate
-    # LENGUAJE NATURAL (2026-05-27): "a las 7 de la mañana", "mañana a las 9",
+    # LENGUAJE NATURAL: "a las 7 de la mañana", "mañana a las 9",
     # "las 6 de la tarde". El 4B NO convierte fiable estas frases a HH:MM/ISO
     # (medido), así que las alarmas/timers fallaban con NL aunque los recordatorios
     # ya lo soportan. Misma capa universal y conservadora que reminder_tool

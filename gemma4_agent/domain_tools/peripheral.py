@@ -1,5 +1,4 @@
-"""Peripheral domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Peripheral domain tool — extracted from domain_tools.py.
 
 USB / HID / game controllers / device manager state vía Get-PnpDevice. Vendor
 RGB APIs deferidas (Logitech G HUB, Razer Synapse, Corsair iCUE) — cada

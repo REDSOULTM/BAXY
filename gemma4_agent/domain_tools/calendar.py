@@ -1,5 +1,4 @@
-"""Local calendar (ICS) domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-27).
+"""Local calendar (ICS) domain tool — extracted from domain_tools.py.
 
 Calendario LOCAL — eventos persistidos como resources en state.json. Import/
 export ICS (RFC 5545: line-folding, DATE-TIME floating/UTC/TZID). No habla con

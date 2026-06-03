@@ -1,4 +1,4 @@
-"""Tests for AgentState.purge_stale_closed (Sprint 7.2).
+"""Tests for AgentState.purge_stale_closed.
 
 The purge runs once on Gemma4Agent boot. It must:
   - Drop closed resources older than max_age_days.

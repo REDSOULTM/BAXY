@@ -1,4 +1,4 @@
-"""R4 sprint 2026-05-28: tests de interoperabilidad ToolResult ↔ dict legacy.
+"""Tests de interoperabilidad ToolResult ↔ dict legacy.
 
 Demuestra que un handler migrado a `ToolResult` se puede consumir
 exactamente como antes (los consumers hacen `.get("ok")`, `.get("error")`

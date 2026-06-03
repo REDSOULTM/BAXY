@@ -1,4 +1,4 @@
-"""Tests for Sprint 5 threshold/partial-wake calibration.
+"""Tests for the threshold/partial-wake calibration.
 
 Verifies the wake detector's threshold logic without needing the
 actual openwakeword model — we mock the predict() call.
@@ -18,9 +18,8 @@ class WakeThresholdTest(unittest.TestCase):
         """Construct a WakeDetector whose OWW model.predict returns the
         given score, and capture wake fires.
 
-        Sprint 7: the WakeDetector now supports two backends; we force
-        the OWW path by setting _backend='oww_custom' and mocking the
-        OWW slots.
+        The WakeDetector supports two backends; we force the OWW path by
+        setting _backend='oww_custom' and mocking the OWW slots.
         """
         from gemma4_agent.voice import wake
         fires: list[tuple[str, float]] = []
@@ -93,8 +92,8 @@ class ThresholdConstantsTest(unittest.TestCase):
         from gemma4_agent.voice.wake import OWW_THRESHOLD
         self.assertEqual(
             OWW_THRESHOLD, 0.3,
-            "Sprint 5 calibration: default threshold should be 0.3 "
-            "(was 0.5 before, lowered to recover ~40% recall)",
+            "default threshold should be 0.3 "
+            "(lowered from 0.5 to recover ~40% recall)",
         )
 
     def test_partial_threshold_below_main(self):
@@ -106,7 +105,7 @@ class ThresholdConstantsTest(unittest.TestCase):
 
     def test_cooldown_under_200ms(self):
         from gemma4_agent.voice.wake import SAME_PHRASE_COOLDOWN_S
-        # Sprint 5 lowered cooldown so repeated tries aren't gated.
+        # The cooldown is low so repeated tries aren't gated.
         self.assertLess(SAME_PHRASE_COOLDOWN_S, 0.20)
 
 

@@ -1,9 +1,9 @@
 """Tests for the semantic intent classifier (intent_router.py).
 
-Sprint 8 (2026-05-20): the router now decides "informational question
-about the world" vs "PC action" semantically (multilingual, keyword-
-free) instead of per-language regex. These tests pin the behavior in
-several languages so a future change can't silently regress it.
+The router decides "informational question about the world" vs "PC
+action" semantically (multilingual, keyword-free) instead of per-language
+regex. These tests pin the behavior in several languages so a future
+change can't silently regress it.
 
 The embedding model loads lazily; if it's unavailable the classifier
 returns None and wants_knowledge() is False (graceful degrade) — those
@@ -138,8 +138,8 @@ class TestIntentRouter(unittest.TestCase):
             )
 
     def test_tell_me_about_entity_is_knowledge(self):
-        # S3b (2026-05-30): "hablame de X / contame sobre X / dame info de X /
-        # qué sabés de X" about a concrete entity are world-knowledge requests.
+        # "hablame de X / contame sobre X / dame info de X / qué sabés de X"
+        # about a concrete entity are world-knowledge requests.
         # They used to fall into chitchat (the short proper-noun object embeds
         # near smalltalk) or fail the vs-action margin. Anchors anchoring the
         # "verbo-pedir-info + ENTIDAD" pattern fixed it. Multilingual — these

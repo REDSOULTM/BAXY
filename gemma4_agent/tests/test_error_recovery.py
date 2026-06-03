@@ -44,11 +44,11 @@ class TestClassifyFailure(unittest.TestCase):
 
     def test_unknown_default_is_conservative(self):
         # sin señal clara -> UNKNOWN -> NO recuperable (skip), nunca recuperación ciega.
-        # H3 (perfection roadmap 2026-05-29): TRANSIENT SÍ es recuperable (el agente
+        # TRANSIENT SÍ es recuperable (el agente
         # ya lo retría; antes el set lo OMITÍA = bomba de tiempo latente). Corregido.
         self.assertEqual(classify_failure({"error": "weird internal glitch xyz"}), ERR_UNKNOWN)
         self.assertNotIn(ERR_UNKNOWN, RECOVERABLE_ERROR_TYPES)
-        self.assertIn(ERR_TRANSIENT, RECOVERABLE_ERROR_TYPES)  # H3: ahora consistente
+        self.assertIn(ERR_TRANSIENT, RECOVERABLE_ERROR_TYPES)  # ahora consistente
         self.assertIn(ERR_MISSING_PRECONDITION, RECOVERABLE_ERROR_TYPES)
         self.assertIn(ERR_PARAM_MISMATCH, RECOVERABLE_ERROR_TYPES)
 
@@ -57,7 +57,7 @@ class TestClassifyFailure(unittest.TestCase):
         self.assertEqual(classify_failure({}), ERR_UNKNOWN)
 
     def test_tool_not_found_is_structural(self):
-        # H3 (perfection roadmap): "unknown tool: X" -> TOOL_NOT_FOUND (budget 0).
+        # "unknown tool: X" -> TOOL_NOT_FOUND (budget 0).
         from ..safety_pkg.verify_core import ERR_TOOL_NOT_FOUND
         self.assertEqual(classify_failure({"error": "unknown tool: xyzzy"}), ERR_TOOL_NOT_FOUND)
         self.assertEqual(classify_failure({"error": "Unknown Tool: foo"}), ERR_TOOL_NOT_FOUND)
@@ -79,7 +79,7 @@ class TestClassifyFailure(unittest.TestCase):
 
 
 class TestRetryBudget(unittest.TestCase):
-    """H2 (perfection roadmap): presupuesto de retry por clase. Ataca el
+    """Presupuesto de retry por clase. Ataca el
     '466/513 retries desperdiciados': lo irrecuperable NO se reintenta."""
 
     def test_irrecoverable_budget_zero(self):
@@ -102,7 +102,7 @@ class TestRetryBudget(unittest.TestCase):
         self.assertEqual(retry_budget_for("garbage_class_xyz"), 0)
 
     def test_gate_tool_not_found_zero_transient_retried(self):
-        """GATE explícito (perfection roadmap #4): TOOL_NOT_FOUND=0 reintentos,
+        """GATE explícito: TOOL_NOT_FOUND=0 reintentos,
         TRANSIENT >=80% reintentado. Mide el budget POR CLASE de punta a punta:
         clasificación estructural -> budget. Ataca el '466/513 desperdiciados'."""
         from ..safety_pkg.verify_core import (
@@ -148,7 +148,7 @@ class TestErrorTypeField(unittest.TestCase):
 
 
 class TestVerifySetsErrorType(unittest.TestCase):
-    """H1 (perfection roadmap): el GATE pide que los verifiers SETEEN error_type.
+    """El GATE pide que los verifiers SETEEN error_type.
 
     Antes el campo estaba 100% inerte: declarado en VerifierOutcome pero ningún
     verifier lo poblaba y classify_failure se llamaba con given=None. Ahora
@@ -209,7 +209,7 @@ class TestVerifySetsErrorType(unittest.TestCase):
 
 class TestGate(unittest.TestCase):
     def test_default_on(self):
-        # 2026-05-29: flipeado a default-ON (validado en vivo + suite verde).
+        # Default-ON (validado en vivo + suite verde).
         # El kill-switch GEMMA4_ERROR_RECOVERY=0 sigue funcionando.
         prev = os.environ.pop("GEMMA4_ERROR_RECOVERY", None)
         try:

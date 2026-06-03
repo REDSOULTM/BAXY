@@ -1,4 +1,4 @@
-"""Tri-estado HONESTO del click in-process (perfection roadmap C4/C5, Ola 1 #2).
+"""Tri-estado HONESTO del click in-process.
 
 CAUSA RAÍZ medida (repro: scripts/_diag/_repro_click_tristate.py):
 `_uia_click_inproc` (la capa PRIMARIA de gui_click_button — la que corre primero

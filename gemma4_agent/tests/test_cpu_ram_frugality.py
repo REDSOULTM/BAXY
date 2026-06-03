@@ -1,4 +1,4 @@
-"""Ola 2.4 RAM-frugality (perfection roadmap 2026-05-29): el perfil CPU limita
+"""RAM-frugality: el perfil CPU limita
 threads (-t) y baja prioridad (--prio low) para no robarle CPU al juego que
 motivó el fallback. El path GPU queda byte-idéntico (anti-regresión CUDA).
 

@@ -1,5 +1,4 @@
-"""Game Launcher domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Game Launcher domain tool — extracted from domain_tools.py.
 
 Lanzadores NO-Steam: Epic, GOG, Xbox/UWP, Riot. Steam tiene su propio tool
 dedicado. Cada lanzador tiene un mecanismo distinto:

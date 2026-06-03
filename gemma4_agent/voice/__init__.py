@@ -20,7 +20,7 @@ Module map:
     pipeline      — orchestrator: composes the above into a state machine
     tts           — Piper TTS (kept from v1, unchanged)
 
-Wake phrase: "Hey Gemma" (planned via custom training in Sprint 4).
+Wake phrase: "Hey Gemma" (planned via custom training).
 Until the custom hey_gemma.onnx exists, the pipeline falls back to
 the stock `hey_jarvis` openWakeWord model so the system is usable
 during development. The fallback is logged loud and clear.

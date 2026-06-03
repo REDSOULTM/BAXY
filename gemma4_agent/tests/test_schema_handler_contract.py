@@ -1,5 +1,5 @@
-"""R5 sprint 2026-05-28: contract-check entre COMPOUND_TOOL_SCHEMAS y los
-handlers `t_<name>` de ToolRegistry.
+"""Contract-check entre COMPOUND_TOOL_SCHEMAS y los handlers `t_<name>`
+de ToolRegistry.
 
 Motivación: el commit `c546677` arregló el bug donde `browser` schema
 declaraba `target` pero el handler lo ignoraba — el LLM elegía el campo
@@ -140,7 +140,7 @@ WHITELIST: dict[str, set[str]] = {
         "song",  # alias para youtube_play(query) — el handler la lee via args.get fallback
     },
     "email": {
-        # email_tool vive en ops_tools.py (R2.6 skip), no detectable desde acá
+        # email_tool vive en ops_tools.py, no detectable desde acá
         "action", "to", "subject", "body", "save_to_sent", "timeout_sec",
     },
     "whatsapp": {
@@ -236,8 +236,8 @@ def _get_handler_source(registry: Any, tool_name: str) -> str | None:
 def _find_function_anywhere(name: str):
     """Search the gemma4_agent package modules for a function named `name`.
 
-    Reorg 2026-05-28: usa walk_packages (recursivo) porque los handlers
-    productivos viven en subpkgs (tools_pkg/, domain_tools/, etc.).
+    Usa walk_packages (recursivo) porque los handlers productivos viven en
+    subpkgs (tools_pkg/, domain_tools/, etc.).
     """
     import importlib, pkgutil
     import gemma4_agent
@@ -338,14 +338,14 @@ class TestSchemaHandlerContract(unittest.TestCase):
             if name not in _DEEP_DELEGATE_TOOLS or len(props) < 3:
                 continue
             # Búsqueda global por nombre en archivos del package, incluyendo
-            # el subpaquete domain_tools/ (R2 finalize 2026-05-28).
+            # el subpaquete domain_tools/.
             haystack_parts: list[str] = []
             for py in pkg_dir.glob("domain_tools*.py"):
                 try:
                     haystack_parts.append(py.read_text(encoding="utf-8"))
                 except Exception:
                     pass
-            # También buscar en el sub-paquete domain_tools/ (post R2 finalize)
+            # También buscar en el sub-paquete domain_tools/
             sub_pkg = pkg_dir / "domain_tools"
             if sub_pkg.is_dir():
                 for py in sub_pkg.glob("*.py"):
@@ -369,16 +369,15 @@ class TestSchemaHandlerContract(unittest.TestCase):
         )
 
     def test_schema_enums_are_referenced_in_handlers(self):
-        """R5 extended 2026-05-28: si un schema declara `enum=[...]`
-        para una property, cada valor del enum debe aparecer como
-        string literal en el código del handler. Si el LLM elige un
-        valor del enum y el handler NO lo reconoce, es un bug silencioso
-        equivalente al de `target=canvas` que motivó R5."""
+        """Si un schema declara `enum=[...]` para una property, cada valor
+        del enum debe aparecer como string literal en el código del
+        handler. Si el LLM elige un valor del enum y el handler NO lo
+        reconoce, es un bug silencioso equivalente al de `target=canvas`."""
         import pathlib as _pl
         pkg_dir = _pl.Path(__file__).resolve().parent.parent
         haystack_parts: list[str] = []
         # Incluir tools.py + ops_tools.py donde viven los handlers t_*
-        # Reorg 2026-05-28: ahora viven en tools_pkg/
+        # (ahora viven en tools_pkg/).
         for relpath in ("tools_pkg/tools.py", "tools_pkg/ops_tools.py",
                         "tools.py", "ops_tools.py"):
             p = pkg_dir / relpath

@@ -1,4 +1,4 @@
-"""Ola 2.1 (perfection roadmap 2026-05-29): auto-perfil CPU sin GPU NVIDIA.
+"""Auto-perfil CPU sin GPU NVIDIA.
 
 En una máquina sin NVIDIA usable, el binario vram4 (CUDA-only) no arranca. El
 agente debe AUTO-CAER al perfil 'cpu' (E2B-Q4 en CPU, 0 VRAM) en vez de fallar

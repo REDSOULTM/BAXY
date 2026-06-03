@@ -141,8 +141,8 @@ class TurnRequest:
     Was duplicated as ``_TurnRequest`` in :mod:`agent_runner` and
     :mod:`ui.agent_thread` (audit §2.1). The two workers diverge in
     everything ELSE (threading model, output channel, build steps) so
-    Sprint 4 only unifies what was byte-identical. Full ``AgentSerialWorker``
-    extraction is deferred to Sprint 5.
+    only the byte-identical part is unified here. Full ``AgentSerialWorker``
+    extraction is not done yet.
     """
     text: str
     images: list[str]

@@ -1,6 +1,6 @@
 """SSRF protection helpers for outbound HTTP from tool handlers.
 
-Pulled out of :mod:`gemma4_agent.tools` in Sprint 5b. Pure stdlib;
+Pulled out of :mod:`gemma4_agent.tools`. Pure stdlib;
 no internal dependencies. ``_http_get_text`` in tools still uses both
 names — they are re-exported from there so existing callers keep
 working.

@@ -1,5 +1,4 @@
-"""Desktop Layout domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Desktop Layout domain tool — extracted from domain_tools.py.
 
 Snapshot + restore de layout de ventanas (positions + sizes). Usa Win32
 EnumWindows + GetWindowRect para enumerar, MoveWindow para restaurar. Va

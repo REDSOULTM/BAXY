@@ -172,9 +172,9 @@ class TestWhatsappContactResolution(unittest.TestCase):
         self.assertTrue(r["ok"], f"expected ok, got: {r}")
         self.assertEqual(r["recipient_normalized"], "5491187654321")
         self.assertTrue(r["recipient_source"].startswith("contact:"))
-        # 2026-05-29 (fix flaky intermitente ~20%): assert el deeplink Popen ESPECÍFICO,
-        # no el conteo total. patch("...subprocess.Popen") es GLOBAL (parchea el atributo
-        # del módulo subprocess) -> captura CUALQUIER Popen del proceso durante el `with`,
+        # Assert el deeplink Popen ESPECÍFICO, no el conteo total (evita un flaky
+        # intermitente ~20%). patch("...subprocess.Popen") es GLOBAL (parchea el
+        # atributo del módulo subprocess) -> captura CUALQUIER Popen del proceso durante el `with`,
         # incluido el de threads de fondo (watchdog/health) o el subprocess.run interno de
         # _find_whatsapp_app. Cuando uno cae en la ventana del with (timing), había 2 calls
         # y assert_called_once flakeaba. Filtrar por "whatsapp://send" testea la intención
@@ -185,9 +185,9 @@ class TestWhatsappContactResolution(unittest.TestCase):
             f"expected exactly 1 whatsapp:// deeplink Popen; got: {popen.call_args_list}")
 
     def test_contact_without_phone_falls_back_to_gui_search(self):
-        # Post 2026-05-15: en vez de fallar cuando el contacto no tiene
-        # phone, el resolver indica gui_search para que el caller use la
-        # busqueda dentro de WhatsApp Desktop.
+        # En vez de fallar cuando el contacto no tiene phone, el resolver
+        # indica gui_search para que el caller use la busqueda dentro de
+        # WhatsApp Desktop.
         result = _resolve_whatsapp_recipient(
             {"contact": "Maria"}, self.state,
         )
@@ -338,9 +338,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
         return MagicMock(side_effect=_exec)
 
     def test_auto_send_default_true_for_send_message(self):
-        # H8 (2026-06-01): el deeplink ahora exige confirmación POR PANTALLA de
-        # que el mensaje salió antes de afirmar sent=True (cura el sent=True
-        # falso sin login). Mockeamos esa verificación como "confirmed".
+        # El deeplink exige confirmación POR PANTALLA de que el mensaje salió
+        # antes de afirmar sent=True (cura el sent=True falso sin login).
+        # Mockeamos esa verificación como "confirmed".
         executor = self._mock_executor_focus_ok()
         with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
@@ -360,9 +360,9 @@ class TestWhatsappAutoSend(unittest.TestCase):
         self.assertGreaterEqual(executor.call_count, 3)
 
     def test_auto_send_false_sent_when_logged_out_qr(self):
-        # H8 gate: si WhatsApp está deslogueado (pantalla QR), el mensaje NO
-        # sale: el OCR no ve el texto y el área de chat no cambia. El tool NO
-        # debe reportar sent=True falso. Reproduce el bug H8 del roadmap.
+        # Si WhatsApp está deslogueado (pantalla QR), el mensaje NO sale: el OCR
+        # no ve el texto y el área de chat no cambia. El tool NO debe reportar
+        # sent=True falso.
         executor = self._mock_executor_focus_ok()
         with patch("gemma4_agent.domain_tools.whatsapp._find_whatsapp_app",
                    return_value={"kind": "uwp", "launch_target": "X"}), \
@@ -756,7 +756,7 @@ class TestWhatsappGuiSearch(unittest.TestCase):
         # open_chat (sin text, NO destructivo): si el header NO es OCR-legible
         # ("unknown", típico en WebView2) NO debe abortar — el chat abrió con
         # Down+Enter y el user lo ve por screenshot. Solo "wrong_chat" aborta.
-        # MEDIDO en vivo 2026-05-31: "Abre el chat de Pedro y sacá una foto"
+        # MEDIDO en vivo: "Abre el chat de Pedro y sacá una foto"
         # abortaba en "unknown" (27s) aunque el chat ESTABA abierto (Pedro es
         # contacto real, no en el store -> gui_search; header no OCR-legible).
         def _exec(name, args):
@@ -874,14 +874,14 @@ class TestSpotifyAutoPlay(unittest.TestCase):
 
     @unittest.expectedFailure
     def test_spotify_auto_plays_first_result(self):
-        # OBSOLETO 2026-05-28: _spotify_auto_play se reescribió para usar
-        # UIA via PowerShell directo. El mock del executor ya no intercepta
-        # los pasos clave. Marcado expectedFailure hasta reescribir
-        # mockeando `subprocess.run` con `_SPOTIFY_UIA_PLAY_PS`.
+        # OBSOLETO: _spotify_auto_play se reescribió para usar UIA via
+        # PowerShell directo. El mock del executor ya no intercepta los pasos
+        # clave. Marcado expectedFailure hasta reescribir mockeando
+        # `subprocess.run` con `_SPOTIFY_UIA_PLAY_PS`.
         from ..domain_tools import media_tool
-        # 2026-05-17: con el post-play title verify, el mock devuelve un
-        # title que coincide con la query — sino el resultado es
-        # media_playing_wrong_track (que tambien es valido pero distinto).
+        # Con el post-play title verify, el mock devuelve un title que coincide
+        # con la query — sino el resultado es media_playing_wrong_track (que
+        # tambien es valido pero distinto).
         executor = self._mock_executor_spotify_ok(
             post_play_title="Spotify - Beautiful Things • Benson Boone",
         )
@@ -900,8 +900,8 @@ class TestSpotifyAutoPlay(unittest.TestCase):
 
     @unittest.expectedFailure
     def test_spotify_auto_play_aborts_on_wrong_window(self):
-        # OBSOLETO 2026-05-28: ver nota arriba — UIA directo, executor
-        # ya no es la vía. Marcado expectedFailure.
+        # OBSOLETO: ver nota arriba — UIA directo, executor ya no es la vía.
+        # Marcado expectedFailure.
         from ..domain_tools import media_tool
         def _exec(name, args):
             if name == "window" and args.get("action") == "focus":
@@ -940,8 +940,8 @@ class TestSpotifyAutoPlay(unittest.TestCase):
         executor.assert_not_called()
 
     def test_netflix_requires_profile_first_time(self):
-        # Post 2026-05-15: Netflix SI hace auto_play web via GUI flow,
-        # pero la primera vez pide el profile (asks_for=streaming_profile).
+        # Netflix SI hace auto_play web via GUI flow, pero la primera vez pide
+        # el profile (asks_for=streaming_profile).
         from ..domain_tools import media_tool
         executor = self._mock_executor_spotify_ok()
         with patch("gemma4_agent.domain_tools._find_streaming_app",
@@ -958,9 +958,8 @@ class TestSpotifyAutoPlay(unittest.TestCase):
 
 
 class TestWhatsappGroupGrounding(unittest.TestCase):
-    """Regresión del bug 'mandale a mamá -> aterrizó en el grupo Música'
-    (Ola 1, perfection roadmap 2026-05-29). is_group estructural + el envío
-    directo por nombre excluye grupos. Cura de raíz de C2.
+    """Regresión del bug 'mandale a mamá -> aterrizó en el grupo Música'.
+    is_group estructural + el envío directo por nombre excluye grupos.
     """
 
     def setUp(self):
@@ -1014,8 +1013,8 @@ class TestWhatsappGroupGrounding(unittest.TestCase):
 
 
 class TestWhatsappContactGroupCollision(unittest.TestCase):
-    """C1/C2 (2026-06-01): un nombre que coincide con un CONTACTO (con phone) y
-    un GRUPO del mismo nombre NO debe resolver silencioso al individuo —
+    """Un nombre que coincide con un CONTACTO (con phone) y un GRUPO del mismo
+    nombre NO debe resolver silencioso al individuo —
     exclude_groups ocultaba el grupo antes del scoring. Ahora se devuelven
     AMBOS candidatos (kind contacto/grupo) para que el LLM/usuario desempate.
     Mandar al chat equivocado es daño irreversible."""

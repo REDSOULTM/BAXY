@@ -1,7 +1,7 @@
-"""Ola 2.3 (perfection roadmap H7, 2026-05-29): selección preferente de mmproj
-cuantizado SI existe, con fallback transparente al F16.
+"""Selección preferente de mmproj cuantizado SI existe, con fallback
+transparente al F16.
 
-VERIFICADO 2026-05-29: el mmproj-Q8_0 NO existe hoy (Unsloth solo publica
+VERIFICADO (medido): el mmproj-Q8_0 NO existe hoy (Unsloth solo publica
 F16/F32/BF16; llama-quantize falla con 'unsupported architecture: clip', feature
 abierto issue #18881). Por eso esta función NO cambia el comportamiento hoy
 (devuelve F16); deja el agente listo para cuando aparezca una variante Q*.

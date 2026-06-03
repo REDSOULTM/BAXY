@@ -1,7 +1,7 @@
 """Guard: every third-party runtime import of gemma4_agent is declared in
-requirements.txt (Ola 4 housekeeping, 2026-06-01).
+requirements.txt.
 
-WHY: requirements.txt was generated once at Sprint 0.1 and silently drifted —
+WHY: requirements.txt was generated once and silently drifted —
 10 packages imported by the package (sherpa-onnx, rapidfuzz, jellyfish, mss,
 uiautomation, onnxruntime, dateparser, mcp, ...) were missing, so a fresh
 `pip install -r requirements.txt` produced an env that ImportErrors at runtime.

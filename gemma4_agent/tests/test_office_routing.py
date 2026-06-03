@@ -1,4 +1,4 @@
-"""Regression test for the planner office-routing bug found post-Sprint 7.
+"""Regression test for the planner office-routing bug.
 
 User said "Puedes hacerme un power point?" and the agent answered "no
 tengo herramienta" because:

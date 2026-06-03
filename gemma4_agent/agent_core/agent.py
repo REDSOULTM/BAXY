@@ -774,7 +774,7 @@ class Gemma4Agent:
         project_section = f"\n\n{project_block}" if project_block else ""
         recall_hint = format_recall_for_prompt(self._recent_recalls)
         recall_section = f"\n\n{recall_hint}" if recall_hint else ""
-        # Perfil de gustos del usuario (R-Jarvis 2026-05-30): párrafo sintetizado
+        # Perfil de gustos del usuario: párrafo sintetizado
         # de quién es el usuario (apps/música/ritmo observados por el ambient
         # observer), para que Gemma4 personalice. GPG arXiv:2409.13093 (+37%):
         # párrafo NL, no log crudo. build_profile_block CACHEA con TTL (corre por
@@ -1156,7 +1156,7 @@ class Gemma4Agent:
         return self.run_content(content, progress=progress, tts_sink=tts_sink)
 
     def _decide_turn(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> TurnDecision:
-        """R1 sprint 2026-05-28: decide phase of a turn.
+        """Decide phase of a turn.
 
         Runs router + abstain + planner + subset + pending_intent +
         splitter + multi-intent carry. Returns a TurnDecision; if
@@ -1238,7 +1238,7 @@ class Gemma4Agent:
                         pass
             except Exception:
                 pass
-        # COMPUTER-USE ES UNA TOOL (rediseño 2026-05-25, pedido de RED): operar dentro
+        # COMPUTER-USE ES UNA TOOL (pedido de RED): operar dentro
         # de una app abierta ya NO es un short-circuit pre-LLM que secuestraba turnos
         # (causaba: "abre steam"->enfoca/minimiza, WhatsApp->escribe en la caja
         # equivocada, "router no ofrece tools"). Ahora `computer_use(goal=...)` es una
@@ -1246,7 +1246,7 @@ class Gemma4Agent:
         # otra, con sus parámetros. Su impl (tools.t_computer_use) corre el plan
         # executor internamente. Sin gate frágil, sin secuestro — unificado.
         turn_id = self.trace.new_turn_id()
-        # ARITMÉTICA (2026-05-31): el 4B chico improvisa cálculos y FALLA (MEDIDO en vivo:
+        # ARITMÉTICA: el 4B chico improvisa cálculos y FALLA (MEDIDO en vivo:
         # "cuánto es 47 por 8" -> "58.5", es 376). Si el texto reduce a una expresión
         # aritmética PURA, la computamos DETERMINISTA (AST seguro, sin eval/exec — respeta
         # R6). Alta precisión: try_arithmetic solo devuelve algo para aritmética clara (si no,
@@ -1270,7 +1270,7 @@ class Gemma4Agent:
                         tool_events=[ToolEvent(name="calc", args={"expr": content[:80]},
                                                result={"ok": True, "result": _arith})],
                         mission=None))
-        # CALC-EN-APP (2026-05-31): "suma 2+2 en la calculadora" -> el 4B tipeaba
+        # CALC-EN-APP: "suma 2+2 en la calculadora" -> el 4B tipeaba
         # `gui.type("2+2")` SIN enfocar la Calc; el sendinput iba a la ventana equivocada
         # (reporta ok:True igual) -> el verifier no encontraba "2+2" en la Calc
         # ("type failed: ?") -> el agente REINTENTABA idéntico 4 veces ("4 no
@@ -1305,12 +1305,12 @@ class Gemma4Agent:
                     _calc_msg = (_calc_res.get("reply") if isinstance(_calc_res, dict) else None) \
                         or "Listo, lo hice en la calculadora."
                     self._last_turn_ts = time.time()
-                    # Honestidad Ola 1 (2026-06-01): el early_reply de acción NO pasa por
+                    # Honestidad: el early_reply de acción NO pasa por
                     # _finalize_turn -> guard_unverified_final. Lo aplicamos acá para que
                     # NO afirme éxito si el tool no confirmó (verified=False/None).
                     return TurnDecision(early_reply=agent_guards.honest_action_reply(
                         AgentReply(content=_calc_msg, tool_events=[_calc_ev], mission=None)))
-        # ACCIÓN-EN-APP / META (ACCESIBILIDAD, 2026-05-31, núcleo del producto).
+        # ACCIÓN-EN-APP / META (ACCESIBILIDAD, núcleo del producto).
         # MEDIDO en vivo: los pedidos "escribí/hacé X en app Y", "en Y escribí X" y
         # "andá a Y y escribí X" casi nunca llegaban al orquestador computer_use
         # (~1/10) — el 4B charlaba ("escribí sigue en claude code"->"Sigo en Claude
@@ -1349,7 +1349,7 @@ class Gemma4Agent:
                         _hint = _aa.get("app_hint") or ""
                         # App real = ventana ABIERTA, O el nombre RESUELVE a una app
                         # instalada (AppResolver: PATH/StartMenu/registry/Steam — la misma
-                        # resolución de app.open, ESTADO DEL SO). MEDIDO 2026-05-31 EN VIVO:
+                        # resolución de app.open, ESTADO DEL SO). MEDIDO EN VIVO:
                         # "escribí X en el bloc de notas" con Notepad CERRADO caía a
                         # notes_tasks; el plan cu YA abre la app (focus_app) pero el gate la
                         # bloqueaba. "mi lista" NO resuelve -> sigue a notes (sin regresión).
@@ -1405,7 +1405,7 @@ class Gemma4Agent:
                                 {"op": "focus_app", "arg": _app},
                                 {"op": "type", "arg": _tp["payload"]},
                             ]
-                        # PLAN DETERMINISTA para PULSAR-UNA-TECLA-EN-APP (2026-06-01):
+                        # PLAN DETERMINISTA para PULSAR-UNA-TECLA-EN-APP:
                         # "en la calculadora apretá el 5" / "apretá el 5 en la calc" ->
                         # [focus_app(app), keypress(key)]. MEDIDO en vivo: sin esto caía
                         # a cu(goal genérico) y el 4B planner devolvía "no pude planificar
@@ -1441,7 +1441,7 @@ class Gemma4Agent:
                         or ("Listo, saqué la captura." if _aa.get("pattern") == "screen"
                             else "Listo.")
                     self._last_turn_ts = time.time()
-                    # Honestidad Ola 1 (2026-06-01): este early_reply SALTA _finalize_turn;
+                    # Honestidad: este early_reply SALTA _finalize_turn;
                     # pasamos el content por el MISMO guard de honestidad que el flujo normal
                     # (verified=False/None -> nota honesta; verified=True -> intacto).
                     return TurnDecision(early_reply=agent_guards.honest_action_reply(
@@ -1459,7 +1459,7 @@ class Gemma4Agent:
                 _clauses = split_command(content)
                 if len(_clauses) > 1:
                     return TurnDecision(early_reply=self._run_multi_intent(_clauses, progress=progress))
-        # OPEN PELADO de app: "abrí la calculadora"/"abrí discord". MEDIDO 2026-05-31
+        # OPEN PELADO de app: "abrí la calculadora"/"abrí discord". MEDIDO
         # (físico, PC del user): el router/4B NO rutea ciertos nombres a app.open de
         # forma CONSISTENTE ("abrí la calculadora"/"abrí discord" -> NADA 3/3, aunque
         # app.open resuelve TODOS: calc.exe etc.). Detector estructural -> INTENTAR
@@ -1486,7 +1486,7 @@ class Gemma4Agent:
                     _ao_ev = ToolEvent(name="app", args={"action": "open", "name": _ao_name},
                                        result=_ao_res)
                     self._last_turn_ts = time.time()
-                    # Honestidad Ola 1 (2026-06-01): early_reply salta _finalize_turn. El
+                    # Honestidad: early_reply salta _finalize_turn. El
                     # guard respeta el tri-estado de app.open: launch confirmado/preexistente
                     # (verified=True) o despachado (status=dispatched, launch_requested) ->
                     # "Listo, abrí X" intacto; verified=False -> nota honesta.
@@ -1494,7 +1494,7 @@ class Gemma4Agent:
                         AgentReply(content=f"Listo, abrí {_ao_name}.",
                                    tool_events=[_ao_ev], mission=None)))
                 # no resolvió a una app -> sigue el flujo normal (carpeta/URL/chat)
-        # RESPONDER MENSAJE — short-circuit determinista PRE-LLM (2026-05-27).
+        # RESPONDER MENSAJE — short-circuit determinista PRE-LLM.
         # MEDIDO: ante "respondele a X que Y" el 4B es errático — a veces se niega
         # (sin tool), a veces llama gui/session (tool equivocada), CASI NUNCA
         # whatsapp. Un detector ESTRUCTURAL de alta precisión (extract_message_to:
@@ -1628,7 +1628,7 @@ class Gemma4Agent:
                         pass
             except Exception:
                 pass
-        # sprint2: persona is currently visible only via tool_subset.persona,
+        # Persona is currently visible only via tool_subset.persona,
         # which isn't emitted on every turn. Emit one canonical event per turn
         # so the usage report can quantify which personas actually run.
         try:
@@ -1675,8 +1675,8 @@ class Gemma4Agent:
                             pass
         except Exception:
             pass
-        # sprint2: log which microagents matched this turn (independent of
-        # the cache-merge step inside _system_message). Sprint 2.1 found this
+        # Log which microagents matched this turn (independent of
+        # the cache-merge step inside _system_message). Without this it
         # was unobservable in traces.jsonl.
         if raw_text_early:
             try:
@@ -1815,7 +1815,7 @@ class Gemma4Agent:
         try:
             from ..routing.semantic_router import embed as _embed_text
             if raw_text and len(raw_text.split()) >= 2:
-                # 2026-05-20 (anti-degradation): tighter than the permissive
+                # Anti-degradation: tighter than the permissive
                 # default (1.2 ≈ cos 0.4). 0.9 ≈ cos 0.55 — only inject a past
                 # turn that is genuinely similar. A weak match just adds prompt
                 # tokens (latency) and can mislead with loosely-related
@@ -1900,7 +1900,7 @@ class Gemma4Agent:
                 if isinstance(c, str) and c.strip():
                     last_assistant_text = c
                     break
-        # Hotfix F 2026-05-17: pending_intent cross-turn rescue.
+        # Hotfix F: pending_intent cross-turn rescue.
         # When a previous tool returned status='needs_user', the slot
         # holds the tool name so the next turn's planner can widen the
         # subset toward it — regardless of the user's reply text
@@ -1927,7 +1927,7 @@ class Gemma4Agent:
             if _mem_tools:
                 selected_tool_names = list(selected_tool_names) + _mem_tools
                 self.trace.event(turn_id, "memory_tools_added", tools=_mem_tools)
-        # Bug routing 2026-05-29: lectura/análisis de archivo de datos/documento ->
+        # Bug routing: lectura/análisis de archivo de datos/documento ->
         # tool específica (data_analysis/document), NO filesystem.read crudo. Las
         # tool_rules no bastaron (el 4B chico las ignora con filesystem disponible);
         # este override estructural por EXTENSIÓN saca filesystem del subset. Gated.
@@ -1950,11 +1950,11 @@ class Gemma4Agent:
         # heredar las tools del turno previo. Sin esto, "Prefiero cronologico"
         # tras un web research, o "subelo un poco mas" tras un audio.set_volume,
         # deja el subset solo con [session, safety] y el LLM, sin la tool real,
-        # ALUCINA una llamada invalida (repro 2026-05-20: "subelo un poco mas"
+        # ALUCINA una llamada invalida (repro: "subelo un poco mas"
         # -> system({action:"audio.set_volume"}) -> invalid tool arguments).
-        # 2026-05-20: antes era `if not selected_tool_names` (subset VACIO),
-        # pero el planner agrega session/safety, asi que nunca disparaba para
-        # continuaciones reales. Ahora dispara cuando no hay tool de dominio.
+        # NOTA: `if not selected_tool_names` (subset VACIO) no sirve acá,
+        # porque el planner agrega session/safety, asi que nunca dispararia para
+        # continuaciones reales. Dispara cuando no hay tool de dominio.
         _NON_DOMAIN_TOOLS = {"session", "safety", "state", "verify"}
         if not (set(selected_tool_names) - _NON_DOMAIN_TOOLS):
             raw_text = ""
@@ -1969,7 +1969,7 @@ class Gemma4Agent:
             is_short_continuation = (
                 raw_text and len(raw_text.split()) <= 6
             )
-            # Step 5 (2026-05-21): fold the abstention decision INTO the
+            # Step 5: fold the abstention decision INTO the
             # inheritance gate. Before, ANY short turn that the planner left
             # tool-less would inherit the prior tool — including deliberate
             # smalltalk/meta ("gracias", "qué hora es", "no uses tools"), which
@@ -2027,7 +2027,7 @@ class Gemma4Agent:
                                 _prev_gui = bool(
                                     set(self._last_executed_tools) & _GUI_CONTEXT_TOOLS
                                 )
-                                # EXCEPCIÓN al override (2026-05-30): si el turno es
+                                # EXCEPCIÓN al override: si el turno es
                                 # una PREGUNTA-DEL-MUNDO clara (wants_knowledge: "cuál
                                 # es el mejor lego batman", "qué tiempo hace") el user
                                 # NO está operando la app abierta — quiere información.
@@ -2151,7 +2151,7 @@ class Gemma4Agent:
                             user_text=raw_text[:60],
                         )
         semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
-        # router_v2 (BM25+RRF hybrid) was removed 2026-05-21. All four router
+        # router_v2 (BM25+RRF hybrid) was removed. All four router
         # research reports agreed it was structurally wrong for short voice
         # queries (TF collapses to 1; RRF amplifies the degenerate lexical
         # ranker's noise) and a live probe caught it routing garbage. The
@@ -2179,7 +2179,7 @@ class Gemma4Agent:
             _a11y_prefs = _a11y_sub.get_active_mode().preferred_tools
         except Exception:
             _a11y_prefs = ()
-        # GUARD (2026-05-27, bug medido): NO inyectar las tools del modo si el router
+        # GUARD (bug medido): NO inyectar las tools del modo si el router
         # ABSTUVO (no eligió ninguna tool de dominio) — eso significa charla/pregunta
         # de identidad/smalltalk ("¿quién eres?", "gracias"). Inyectar gui/computer_use/
         # uia ahí hacía que el 4B, en modo movilidad, sacara un screenshot y buscara
@@ -2196,7 +2196,7 @@ class Gemma4Agent:
                 if tool_name not in existing:
                     selected_tool_names.append(tool_name)
                     existing.add(tool_name)
-        # The NLI-based capability classifier (Bug 1) was removed in Sprint 3a:
+        # The NLI-based capability classifier (Bug 1) was removed:
         # 3.2% cache hit rate over 5 days of use (vs 20% kill threshold per
         # 08_findings.md §2.10) for a 280MB mDeBERTa model + worker thread.
         # The keyword planner + semantic_router fallback remain.
@@ -2221,7 +2221,7 @@ class Gemma4Agent:
                     selected_tool_names.append(_t)
             self.trace.event(turn_id, "multi_intent_carry",
                              carried=_carry, subset=selected_tool_names)
-        # NOTA (2026-05-25): acá vivía un bloque que, si una ventana abierta matcheaba
+        # NOTA: acá vivía un bloque que, si una ventana abierta matcheaba
         # el comando, inyectaba uia/gui y DROPPEABA distractores incluido `whatsapp`.
         # Eso REGRESIONÓ los comandos de WhatsApp ("escribile a X en wsp"): si Discord
         # u otra ventana coincidía con un token del comando, se sacaba `whatsapp` y el
@@ -2234,7 +2234,7 @@ class Gemma4Agent:
             self.trace.event(turn_id, "tool_prefix_stabilized",
                              router_picks=_router_picks,
                              stabilized=selected_tool_names)
-        # v20 2026-05-28: HARD CAP FINAL despues de persona+a11y+carry+stabilize.
+        # HARD CAP FINAL despues de persona+a11y+carry+stabilize.
         # MEDIDO: a11y mode `no_vidente` agrega 5 tools (vision/uia/gui/
         # computer_use/browser_real) DESPUES del cap del planner; suma puede
         # llegar a 11 tools -> prompt ~14.6k toks -> dispara CUDA #22527.
@@ -2266,8 +2266,8 @@ class Gemma4Agent:
         # (thinking ON) — Gemma 4 emits tool-calls reliably only with reasoning
         # (E4B plain-OFF: 2-4/6 through the full agent).
         #
-        # 2026-05-21: tool_choice=required + thinking-OFF was MEASURED as a way
-        # to recover the 15-May golden-era ~1s pass-1 with reliability. It works
+        # MEASURED: tool_choice=required + thinking-OFF was tested as a way
+        # to recover the golden-era ~1s pass-1 with reliability. It works
         # for clear commands (abre steam, mutea: 0.5-1.8s) BUT on ambiguous ones
         # ("quita el silencio") the forced grammar runs away to max_tokens with
         # NO tool-call (200 tok, ~6s, then forced-retry) — worse than thinking,
@@ -2279,7 +2279,7 @@ class Gemma4Agent:
         if not mode.enable_thinking:
             try:
                 _dom = _domain_subset(list(selected_tool_names))
-                # LATENCIA (2026-05-22): NO upgradear a thinking cuando el turno es
+                # LATENCIA: NO upgradear a thinking cuando el turno es
                 # INFORMATIVO (fast_info) y los únicos domain-tools ofrecidos son
                 # de info-retrieval (web/knowledge/memory/...). MEDIDO en vivo:
                 # esas preguntas el modelo las responde de su conocimiento SIN
@@ -2301,7 +2301,7 @@ class Gemma4Agent:
                 _skip_upgrade = (mode.name == "fast_info") or (
                     _only_info and mode.name == "fast_action")
                 if _dom and not _skip_upgrade:
-                    # R3 cleanup 2026-05-28: choose_mode ya top-level (línea 18).
+                    # choose_mode ya top-level (línea 18).
                     mode = choose_mode("quick_action", "quick_action", self.config.max_tokens)
                     self.trace.event(turn_id, "mode_upgraded_for_tools",
                                      to="quick_action", tools=list(selected_tool_names))
@@ -2532,7 +2532,7 @@ class Gemma4Agent:
                              spoken=spoken[:80], final=final_spoken[:80])
 
     def _execute_turn(self, content: str | list[dict[str, Any]], decision: TurnDecision, progress: ProgressCallback | None = None) -> AgentReply:
-        """R1 sprint 2026-05-28: execute phase of a turn.
+        """Execute phase of a turn.
 
         Runs the LLM loop iteratively: chat() -> tool dispatch ->
         feedback -> chat() ... up to max_agent_turns. Inside the loop
@@ -2577,7 +2577,7 @@ class Gemma4Agent:
             ERR_TOOL_NOT_FOUND, ERR_UNKNOWN,
         )
         verifier_outcomes: list[VerifierOutcome] = []
-        # H2 (perfection roadmap): contador de retries GASTADOS por clase de error
+        # Contador de retries GASTADOS por clase de error
         # en ESTE turno. Cuando una clase agota su budget (retry_budget_for), el
         # hint deja de pedir reintento y pasa a "escalá honestamente". Ataca el
         # "466/513 retries desperdiciados". Vive en el frame del turno -> se
@@ -2609,7 +2609,7 @@ class Gemma4Agent:
             mission_goal = _MissionGoal(user_text="", expected=[])
         validator_retries_used = 0
 
-        # Sprint 7.1: prompt_built_tokens — emit ONCE per turn (before the
+        # prompt_built_tokens — emit ONCE per turn (before the
         # retry loop) so we can track p50/p95 of input size. Estimation is
         # chars/4, conservative for a multilingual prompt. We materialize
         # the messages list here to measure exactly what the first chat
@@ -2665,7 +2665,7 @@ class Gemma4Agent:
             # image (e.g. screenshot) into history mid-turn, which forces the
             # vision preset even on a text-mode turn. See _messages_have_image.
             _call_model = self._router_model_for(_msgs)
-            # SUMMARY-PASS slimming (2026-05-20 latency). After a tool has run on
+            # SUMMARY-PASS slimming (latency). After a tool has run on
             # a SINGLE-ACTION turn (fast/quick_action), the next pass just
             # summarizes the result ("Listo, abrí Steam"). There, the tool-
             # schemas catalog is dead weight in the prefill (~800-1500 tokens)
@@ -2684,7 +2684,7 @@ class Gemma4Agent:
                 and mode.name in {"fast_action", "quick_action"}
                 and not _messages_have_image(_msgs)
             )
-            # DESCRIBE-PASS (2026-05-27, crítico no-vidente): tras inyectar una
+            # DESCRIBE-PASS (crítico no-vidente): tras inyectar una
             # imagen para DESCRIBIRLA (vision describe_screen / leer pantalla), el
             # 4B debe RESPONDER EN TEXTO la descripción — NO llamar más tools. Si
             # le dejamos tools, el modelo débil a veces elige session.cancel_turn
@@ -2697,7 +2697,7 @@ class Gemma4Agent:
                 _pass_max = max(mode.max_tokens, 512)
                 _keep_summary_tools = False
             else:
-                # SUMMARY slimming (2026-05-20) dropped tools to save ~1.5k prompt
+                # SUMMARY slimming dropped tools to save ~1.5k prompt
                 # tokens — but that CHANGES the prefix vs pass-1 and busts the
                 # prefix-cache (measured: pass-2 re-prefills ~5.3k tok, ~1s). With
                 # GEMMA4_SUMMARY_KEEP_TOOLS the prefix stays identical -> cache hit
@@ -2718,7 +2718,7 @@ class Gemma4Agent:
                 )
                 _pass_tools = None if (_is_summary_pass and not _keep_summary_tools) else selected_schemas
                 _pass_max = 160 if _is_summary_pass else mode.max_tokens
-            # CACHE-HIT (research compass, 2026-05-29): keeping the tools is NOT enough
+            # CACHE-HIT (research compass): keeping the tools is NOT enough
             # to hit the prefix cache — pass-1 rendered the prompt with
             # enable_thinking=mode.enable_thinking, and if the summary TOGGLES it the
             # chat template re-renders from token ~0 and the cache fully misses
@@ -2735,7 +2735,7 @@ class Gemma4Agent:
             else:
                 _pass_enable_thinking = _think_now
                 _pass_thinking_budget = mode.thinking_budget
-            # SAMPLING DUAL (inv 1, 2026-05-23): greedy en el turno de ACCIÓN
+            # SAMPLING DUAL (inv 1): greedy en el turno de ACCIÓN
             # (hay tools ofrecidas, ninguna corrió aún, y NO es summary-pass) ->
             # decisión de tool-call con baja entropía, más fiable sin reasoning.
             # En summary-pass / conversación NO greedy (necesita lenguaje natural).
@@ -2923,7 +2923,7 @@ class Gemma4Agent:
                     # actually emits (vs guessing the format). Pure telemetry;
                     # no behaviour change. Grep traces for "rescue_missed".
                     #
-                    # 2026-05-22: gate it on a DOMAIN tool actually being in the
+                    # Gate it on a DOMAIN tool actually being in the
                     # subset. The leak we calibrate against only exists when an
                     # action was expected; on pure-chat turns (no domain tool
                     # offered, e.g. "hola") there is nothing to rescue, so the
@@ -2939,7 +2939,7 @@ class Gemma4Agent:
                             raw_content=(assistant_content or "")[:400],
                         )
 
-            # FORCED tool-call retry (2026-05-20, research-backed). If the
+            # FORCED tool-call retry (research-backed). If the
             # router put a DOMAIN tool in the subset but the model emitted no
             # tool_call (and the leak-rescue above didn't recover one), the
             # model "promised" the action in prose instead of calling — the
@@ -2975,7 +2975,7 @@ class Gemma4Agent:
                 # (forced_tool_retry_empty). El forced-retry sigue para turnos de
                 # ACCIÓN (fast_action/quick_action) con prosa-sin-llamada.
                 _info_answered = (mode.name == "fast_info") and _answered_in_prose
-                # SEMANTIC-FALLBACK guard (2026-05-22, mined from today's traces).
+                # SEMANTIC-FALLBACK guard (mined from traces).
                 # When the router had LOW confidence it grabs a generic grab-bag
                 # subset (memory/web/smart_home/terminal...) and flags it
                 # `semantic_fallback`. On smalltalk / roleplay / noise ("Salud.",
@@ -3027,7 +3027,7 @@ class Gemma4Agent:
                     _msgs_f = self._messages(mode, plan,
                                              selected_tool_names=selected_tool_names,
                                              user_text=raw_text_early)
-                    # LATENCIA (2026-05-30, MEDIDO): cuando el forced-retry NO logra
+                    # LATENCIA (MEDIDO): cuando el forced-retry NO logra
                     # emitir un tool-call limpio, el 4B RAMBLEA hasta agotar los 512
                     # tokens (comp_tok=512, ~8-13s a ~60 tok/s) y termina VACÍO
                     # (forced_tool_retry_empty) — desastre en comandos comunes ("muteá"
@@ -3065,7 +3065,7 @@ class Gemma4Agent:
                         choice_f = (resp_f.get("choices") or [{}])[0]
                         msg_f = sanitize_assistant_message(choice_f.get("message") or {})
                         tc_f = msg_f.get("tool_calls") or []
-                        # RESCATE tool-call-as-text (2026-05-30). MEDIDO: con
+                        # RESCATE tool-call-as-text. MEDIDO: con
                         # tool_choice=required el 4B a veces emite el tool-call como
                         # TEXTO PLANO (`<intent>...</intent>\nweb(action="research",
                         # query="x")`) en vez de estructura → llama-server NO lo
@@ -3104,7 +3104,7 @@ class Gemma4Agent:
                                              tool=tc_f[0].get("function", {}).get("name"))
                         else:
                             self.trace.event(turn_id, "forced_tool_retry_empty")
-                            # RED DETERMINISTA EMAIL (backstop, 2026-05-27). MEDIDO:
+                            # RED DETERMINISTA EMAIL (backstop). MEDIDO:
                             # el 4B SÍ emite el tool-call de email de forma fiable
                             # (3/3 en vivo), así que el camino NORMAL ya lo cubre vía
                             # la tool `email` (que sin Graph token abre el redactor
@@ -3113,7 +3113,7 @@ class Gemma4Agent:
                             # si el turno pide mandar un correo con destinatario,
                             # disparamos la MISMA tool email. Más específico que
                             # navegación -> va primero.
-                            # RED DETERMINISTA RESPONDER MENSAJE (2026-05-27): el 4B
+                            # RED DETERMINISTA RESPONDER MENSAJE: el 4B
                             # a veces SE NIEGA ("no puedo enviar mensajes") ante
                             # "respondele a X que Y" aunque la tool whatsapp esté
                             # ofrecida (medido). Si hay destinatario + cuerpo claros,
@@ -3143,7 +3143,7 @@ class Gemma4Agent:
                                         "Revisalo y decime si lo envío.")
                                     raw_msg = {}
                                     raw_tool_calls = []  # no seguir buscando tool
-                            # RED DETERMINISTA DE NAVEGACIÓN (2026-05-27, GATE 0):
+                            # RED DETERMINISTA DE NAVEGACIÓN (GATE 0):
                             # E2B-Q4 a veces NO emite el tool-call NI forzado
                             # (medido: forced_tool_retry_empty en "andá a github").
                             # Si el turno es navegación-web de ALTA confianza Y
@@ -3172,7 +3172,7 @@ class Gemma4Agent:
                         self.trace.event(turn_id, "forced_tool_retry_error",
                                          error=f"{type(_fexc).__name__}: {_fexc}")
 
-            # PERF instrumentation 2026-05-28 (research/latency/prefill_*.md
+            # PERF instrumentation (research/latency/prefill_*.md
             # Punto 1 "Como medir"): el campo timings.cache_n / prompt_n del
             # response de llama-server expone el prefix-cache real. cache_n =
             # tokens reusados; prompt_n = reprocesados. Meta: hit_ratio >= 0.80
@@ -3205,7 +3205,7 @@ class Gemma4Agent:
             )
 
             if not raw_tool_calls:
-                # R1.3 sprint 2026-05-28: finalize (~500 LOC de post-procesamiento
+                # finalize (~500 LOC de post-procesamiento
                 # del reply sin tool calls) extraída a _finalize_turn. Devuelve
                 # AgentReply o el sentinel _FINALIZE_CONTINUE (que el caller
                 # traduce a `continue` del for _turn).
@@ -3268,7 +3268,7 @@ class Gemma4Agent:
                 fn = raw_call.get("function") or {}
                 name = fn.get("name", "")
                 args, parse_error = _parse_args(fn.get("arguments", {}))
-                # AUTO-REPAIR de path (2026-05-23, informe B): el modelo (E4B,4B)
+                # AUTO-REPAIR de path (informe B): el modelo (E4B,4B)
                 # encadena search->open pero llama office.open / media.play /
                 # filesystem.read con path AUSENTE o inválido (no copia el
                 # resultado del search). En vez de fallar "ruta no válida",
@@ -3294,7 +3294,7 @@ class Gemma4Agent:
                     pass
                 if not in_subset:
                     self.trace.event(turn_id, "router_miss", name=name, sent=sorted(subset_set))
-                # Hotfix I 2026-05-17: pre-dispatch safety hook for
+                # Hotfix I: pre-dispatch safety hook for
                 # purchase / paid-action attempts. Inspects args
                 # for checkout-pattern URLs and known paid action
                 # names. When safety_enabled, a hit pre-loads a
@@ -3399,9 +3399,9 @@ class Gemma4Agent:
                             self.behavior.record(f"app_{_act}", _nm)
                     except Exception:
                         pass
-                # sprint2: surface which skill the LLM loaded so usage reports
+                # Surface which skill the LLM loaded so usage reports
                 # can answer "which skills earn their spot in the menu?".
-                # Sprint 2.1 found no skill_load activity in any of 6727 events.
+                # (No skill_load activity was observed in 6727 events.)
                 if name == "skill_load" and isinstance(result, dict) and result.get("ok"):
                     self.trace.event(
                         turn_id, "skill_loaded",
@@ -3462,7 +3462,7 @@ class Gemma4Agent:
                     else:
                         self.trace.event(turn_id, "failure_excluded_from_replan", tool=name, status=status_norm, completion=completion)
 
-                # Hotfix F 2026-05-17: pending_intent cross-turn rescue.
+                # Hotfix F: pending_intent cross-turn rescue.
                 # When a tool returns status='needs_user' (a structural
                 # signal — never inferred from text), stash the intent
                 # so the next turn's router has a hint regardless of
@@ -3496,7 +3496,7 @@ class Gemma4Agent:
                         turn_id, "pending_intent_cleared", tool=name,
                     )
 
-                # Hotfix I 2026-05-17: pending_question slot. The
+                # Hotfix I: pending_question slot. The
                 # tool ran but emitted clarification_needed (or
                 # partial_reason). Separate slot from pending_intent
                 # because the semantics differ — "ran-but-partial"
@@ -3541,7 +3541,7 @@ class Gemma4Agent:
                 # VISUAL — i.e. a vision mode, or the image came from a
                 # vision/screenshot tool whose deliverable IS the picture.
                 #
-                # Regresión 2026-05-22 (minada de traces): action tools like
+                # Regresión (minada de traces): action tools like
                 # `media`/`browser` (play music/video) attach a self-VERIFICATION
                 # screenshot (`screenshot is provided for visual verification`,
                 # a 3840x1944 / 1.7 MB capture). That image is for the verifier,
@@ -3556,7 +3556,7 @@ class Gemma4Agent:
                         tool=_img_tool, reason="action_self_verification_screenshot",
                     )
                     continue
-                # OLA 2.2 (perfection roadmap C6, 2026-05-29): PRE-FLIGHT de VRAM
+                # PRE-FLIGHT de VRAM
                 # antes de inyectar una imagen capturada A MITAD de turno. El
                 # pre-flight de _decide_turn solo corre para mode=='vision_action'
                 # (imagen de ENTRADA); una imagen pedida por el LLM inline (un
@@ -3688,7 +3688,7 @@ class Gemma4Agent:
                     })
                     self.trace.event(turn_id, "unverified_intermediate_warning", tools=unverified_in_batch)
 
-            # CHAINING NUDGE (2026-05-23, Problema B): un tool de BÚSQUEDA/LISTADO
+            # CHAINING NUDGE (Problema B): un tool de BÚSQUEDA/LISTADO
             # (filesystem.search, local_search, ...) que devuelve ITEMS NO es el
             # final del turno — el usuario casi siempre quiere ALGO con el primer
             # resultado (abrir/reproducir/leer). Gemma E4B (4B) tiende a parar ahí
@@ -3743,7 +3743,7 @@ class Gemma4Agent:
                     # (2+ fallas de tool con plan explícito). En este scope el
                     # texto del usuario es `raw_text_early` (= decision.raw_text_early),
                     # que es justo el `user_text` que replan() espera. Misma
-                    # clase que el bug `_os` de 2026-05-30.
+                    # clase que el bug `_os`.
                     revised = replan(
                         raw_text_early or "",
                         self._explicit_plan_text,
@@ -3788,7 +3788,7 @@ class Gemma4Agent:
         final = (final or "") + self._maybe_proactive_suffix()
         return AgentReply(content=final, tool_events=events, mission=mission)
 
-    # Sprint 6.4: bodies moved to :mod:`.agent_dispatch`. The wrappers
+    # Bodies moved to :mod:`.agent_dispatch`. The wrappers
     # below adapt the agent's positional progress callback to the
     # progress_emit(event, payload) callable the pure functions take.
 
@@ -3806,7 +3806,7 @@ class Gemma4Agent:
         selected_tool_names: list[str],
         progress: ProgressCallback | None = None,
     ) -> "AgentReply | _FinalizeContinue":
-        """R1 sprint 2026-05-28: finalize phase of a turn.
+        """Finalize phase of a turn.
 
         Runs ONLY when the LLM finished without emitting a tool call
         (the natural success path). Applies post-processing:
@@ -3817,7 +3817,7 @@ class Gemma4Agent:
         the a11y nudge re-prompted (the caller must `continue` its
         outer for _turn loop).
         """
-        # R1.3 sprint 2026-05-28: imports que originalmente vivían dentro de
+        # Imports que originalmente vivían dentro de
         # _execute_turn pero el finalize body los usa. Replicados acá para
         # mantener mecánica exacta sin tocar imports module-level.
         from ..safety_pkg.verify_core import summarize_verifiers
@@ -3826,7 +3826,7 @@ class Gemma4Agent:
             compute_mission_outcome as _compute_mission_outcome,
             mission_footer as _mission_footer,
         )
-        # REDES DETERMINISTAS (fallback final, 2026-05-27). Las redes de
+        # REDES DETERMINISTAS (fallback final). Las redes de
         # responder-mensaje / email / navegación son detectores de ALTA
         # precisión (verbo + 'a <destinatario>' + cuerpo; o URL/sitio
         # claros). Antes solo corrían dentro de forced_tool_retry_empty,
@@ -3896,7 +3896,7 @@ class Gemma4Agent:
         except Exception:
             _cont_active = False
             _cont_delegates = False
-        # GUARD (2026-05-27, bug medido): el nudge "ejecutá vos el siguiente
+        # GUARD (bug medido): el nudge "ejecutá vos el siguiente
         # paso" SOLO tiene sentido en un turno de ACCIÓN (el usuario pidió
         # HACER algo). En una pregunta META/charla ("¿qué podés hacer?",
         # "¿quién eres?") el router ABSTUVO (subset sin tools de dominio) y
@@ -3915,7 +3915,7 @@ class Gemma4Agent:
                            if e.name not in {"session", "safety", "state", "verify"}]
             _dom_ran = bool(_dom_events)
             _cont_actionable = _dom_offered or _dom_ran
-            # Bug 2026-05-29 (movilidad/no_vidente): si lo ÚNICO que corrió fue una
+            # Bug (movilidad/no_vidente): si lo ÚNICO que corrió fue una
             # BÚSQUEDA WEB informacional, NO hay tarea física pendiente — responder/
             # sintetizar YA completó el turno. Sin este guard, el continue-nudge
             # empujaba a un "siguiente paso" físico inexistente y el 4B colapsaba a
@@ -4071,7 +4071,7 @@ class Gemma4Agent:
                 mission_outcome.expected_satisfied,
                 mission_outcome.expected_total,
             ]
-        # NET de empty-reply (replay de logs 2026-05-30): si tras TODO el rescue/
+        # NET de empty-reply (replay de logs): si tras TODO el rescue/
         # retry/finalización el reply queda VACÍO, NUNCA dejar al user en silencio
         # (medido: el 4B a veces devuelve content vacío, p.ej. gui-calc "escribí
         # 11x11"). Fallback context-aware: con tools ejecutadas = confirmación; sin
@@ -4111,7 +4111,7 @@ class Gemma4Agent:
             # Derive outcome_code (more specific than mission_status).
             outcome_code = _derive_outcome_code(mission_status, events)
             # capability_label was sourced from the NLI classifier
-            # (removed in Sprint 3a). Future RAG rows go in with
+            # (since removed). Future RAG rows go in with
             # capability_label=None until an alternative is wired.
             capability_label = None
             args_signature = _derive_args_signature(events)
@@ -4170,7 +4170,7 @@ class Gemma4Agent:
                                       name="gemma4-fact-extract",
                                       daemon=True).start()
 
-        # Hotfix I 2026-05-17: pending_intent rescue when
+        # Hotfix I: pending_intent rescue when
         # the LLM asks a clarifying question on its own
         # (Bug D8 part 2 — no tool returned needs_user, the
         # LLM just decided to ask). Only fires when nothing
@@ -4205,7 +4205,7 @@ class Gemma4Agent:
             except Exception:
                 pass
 
-        # Hotfix I 2026-05-17: telemetry for the final-
+        # Hotfix I: telemetry for the final-
         # stage Bug D1 symptom — domain tool in the subset
         # but the LLM didn't call anything. Pure
         # observability; no behavior change. Operators grep
@@ -4228,7 +4228,7 @@ class Gemma4Agent:
             except Exception:
                 pass
 
-        # Hotfix I 2026-05-17: structural backstop for
+        # Hotfix I: structural backstop for
         # 'Listo' on no-tool turns (Bug B residual). The
         # prompt does 95% of the work; this catches the
         # residual drift. Deferred-correction path: inject
@@ -4408,8 +4408,8 @@ class Gemma4Agent:
                 _extract_user_text(content) or "").strip().lower()
         except Exception:
             pass
-        # R1 sprint 2026-05-28: la fase decide vivía inline acá (LOC 815-1596,
-        # ~782 LOC). Extraída a _decide_turn. early_reply propaga los 4 caminos
+        # La fase decide vivía inline acá (~782 LOC).
+        # Extraída a _decide_turn. early_reply propaga los 4 caminos
         # cortos (jarvis-pending, multi-intent re-dispatch, reply-shortcut,
         # explicit-plan-only). Los 8 campos restantes son las locales que
         # cruzan la frontera decide → execute/finalize (mapeo AST verificó
@@ -4425,13 +4425,13 @@ class Gemma4Agent:
         selected_tool_names = _decision.selected_tool_names
         semantic_fallback = _decision.semantic_fallback
         selected_schemas = _decision.selected_schemas
-        # R1.2 sprint 2026-05-28: la fase execute vivía inline acá (LLM loop
+        # La fase execute vivía inline acá (LLM loop
         # iterativo + tool dispatch + post-procesamiento). Extraída a
         # _execute_turn que devuelve el AgentReply terminal del turno.
         return self._ensure_nonempty_reply(self._execute_turn(content, _decision, progress))
 
     def _ensure_nonempty_reply(self, reply: "AgentReply | None") -> "AgentReply | None":
-        """Net UNIVERSAL de empty-reply (replay 2026-05-30): el user NUNCA recibe
+        """Net UNIVERSAL de empty-reply: el user NUNCA recibe
         silencio. Si el content del reply quedó vacío (error del LLM, degeneración
         del 4B, path no previsto), un fallback HONESTO context-aware. El runner
         TTS-ea reply.content cuando no hubo streaming → sin divergencia audio/display.
@@ -4561,7 +4561,7 @@ class Gemma4Agent:
                 # código teclea directo en la ventana activa con type_into, que
                 # verifica el efecto. El 4B dio el objetivo (el texto); el código
                 # hace el cómo (Agent-S2 mixture of grounding). Universal.
-                # ENCADENAMIENTO DEPENDIENTE (2026-05-31): "instalá VLC Y ABRILO" ->
+                # ENCADENAMIENTO DEPENDIENTE: "instalá VLC Y ABRILO" ->
                 # 'abrilo' abre el REFERENTE (VLC) de la cláusula previa. Determinista:
                 # app.open(carry_target). MEDIDO: sin esto 'abrilo' leakeaba como texto
                 # (package no está en el carry GUI, y 'abrilo' no es payload de escritura).
@@ -4596,7 +4596,7 @@ class Gemma4Agent:
                     # Pasamos el hint de ventana objetivo (la app que abrió la
                     # cláusula previa, p.ej. "bloc de notas") para que type_into
                     # enfoque ESA ventana y no escriba en la que casualmente tenga
-                    # el foco (Word, un toast, etc.). Bug 2026-05-24.
+                    # el foco (Word, un toast, etc.).
                     _ti_args = {"action": "type_into", "text": _payload}
                     if carry_window:
                         _ti_args["window"] = carry_window
@@ -4666,7 +4666,7 @@ class Gemma4Agent:
                     changed = res.get("state_changed") if isinstance(res, dict) else None
                     # Cortar SÓLO ante fallo positivo (ok False o changed medido
                     # False). Inconcluso (None) NO corta. EXCEPCIÓN keypress
-                    # (decisión RED 2026-05-24): una pulsación de tecla (Enter/Tab/
+                    # (decisión RED): una pulsación de tecla (Enter/Tab/
                     # Esc) casi nunca produce un cambio de PÍXELES medible — el
                     # frame-diff da changed=False aunque la tecla SÍ funcionó (Enter
                     # en calc/Notepad: el display ya mostraba el parcial / sólo baja
@@ -4706,7 +4706,7 @@ class Gemma4Agent:
                                          at_clause=_clause_idx, label=_click_target[:60])
                         break
                     continue
-                # IN-APP NAV en cadena (2026-05-31): "abrí Discord y andá al canal
+                # IN-APP NAV en cadena: "abrí Discord y andá al canal
                 # general" -> la 2da cláusula navega DENTRO de la app abierta por la
                 # 1ra; sola, el 4B la PIERDE (charla). La ruteamos a cu(goal + 'en
                 # <app>'): el planner arma open_chat/open_url/etc. (MEDIDO: plan correcto
@@ -4755,7 +4755,7 @@ class Gemma4Agent:
                                          at_clause=_clause_idx, goal=_nav_goal[:60])
                         break
                     continue
-                # CHAIN messaging a WhatsApp (2026-05-31): "abrí WhatsApp y mandale a
+                # CHAIN messaging a WhatsApp: "abrí WhatsApp y mandale a
                 # X Y" -> la 2da cláusula es un MENSAJE a la app abierta (WhatsApp), NO
                 # un email. El router solo (sin el contexto del chain) default a email
                 # (MEDIDO). Gate: carry_window es WhatsApp + extract_message_to da
@@ -4800,7 +4800,7 @@ class Gemma4Agent:
                                            f"{_clause_idx + 2} en adelante. Decime si reintento.")
                         break
                     continue
-                # CHAIN read-screen (2026-05-31, FLAGSHIP del user): tras navegar a una
+                # CHAIN read-screen (FLAGSHIP del user): tras navegar a una
                 # PÁGINA (browser), "mostrame/leeme/ve las tareas" debe LEER la pantalla
                 # por VISIÓN (describe_screen), NO la tool LOCAL (notes_tasks). Caso real:
                 # "entrá a Canvas y mostrame las tareas" -> "las tareas" caía a notes_tasks
@@ -4856,7 +4856,7 @@ class Gemma4Agent:
                 # carry de contexto GUI: de _last_executed_tools O de los tool_events de
                 # ESTA cláusula. Los short-circuits (open-pelado, app-action) devuelven
                 # early_reply SIN pasar por _execute_turn -> NO setean _last_executed_tools,
-                # pero su ToolEvent (app/gui) SÍ está en `ev`. MEDIDO 2026-05-31: sin esto
+                # pero su ToolEvent (app/gui) SÍ está en `ev`. MEDIDO: sin esto
                 # "abrí la calc, escribí 5 y ..." perdía el carry tras el open-pelado y el
                 # "escribí 5" no heredaba la ventana (caía a charla "cancelo").
                 _ev_names = [getattr(_e, "name", None) for _e in (ev or [])]
@@ -4883,7 +4883,7 @@ class Gemma4Agent:
                     if _tg and isinstance(_tg, str) and len(_tg.strip()) >= 2:
                         carry_target = _tg.strip()
                         break
-                # STAGE 3 — HONESTIDAD DE LA CADENA (2026-05-31): si la cláusula AFIRMA
+                # STAGE 3 — HONESTIDAD DE LA CADENA: si la cláusula AFIRMA
                 # un efecto pero NINGUNA tool exitosa lo sustenta -> FALSO ÉXITO (el 4B
                 # alucinó). MEDIDO: "abrí Discord y mandá hola al canal" -> clause2 decía
                 # "mandé hola" SIN correr tool. Reemplazar el reply por uno honesto y
@@ -5042,7 +5042,7 @@ class Gemma4Agent:
     def _deterministic_email(self, text: str) -> "ToolEvent | None":
         """RED DETERMINISTA EMAIL (backstop): si el turno pide mandar un correo
         (alta confianza, embeddings) y hay destinatario, dispara la tool `email`
-        con action=send. MEDIDO 2026-05-27: el 4B SÍ emite el tool-call de email
+        con action=send. MEDIDO: el 4B SÍ emite el tool-call de email
         de forma fiable (3/3 en vivo), así que el camino normal ya lo cubre vía
         la tool — y la tool, sin Graph token, abre el REDACTOR web pre-rellenado
         (Gmail compose) con la sesión logueada (sin enviar; el usuario confirma).
@@ -5091,7 +5091,7 @@ class Gemma4Agent:
         sí" sin nombre) -> el LLM pregunta a quién (honesto, no inventa)."""
         if not isinstance(text, str) or not text.strip():
             return None
-        # PRECEDENCIA EMAIL (2026-05-27, bug medido): "mandale un correo a
+        # PRECEDENCIA EMAIL (bug medido): "mandale un correo a
         # ana@gmail.com diciendo X" matchea el verbo de mensaje ("mandale") y
         # extract_message_to agarra "un correo a ana@gmail.com" como contacto ->
         # mandaba a WhatsApp a un contacto basura. Si es intención de EMAIL, esta
@@ -5206,7 +5206,7 @@ class Gemma4Agent:
                           tool_events=[], mission=None)
 
     def _handle_profile_intent(self, content: Any) -> "AgentReply | None":
-        """Perfil de gustos — privacidad inspectable/borrable (R-Jarvis 2026-05-30).
+        """Perfil de gustos — privacidad inspectable/borrable.
         Short-circuit determinista para "¿qué sabés de mí?" (inspect) y "olvidate de
         mis datos" (forget). Detección por EMBEDDINGS (profile_intent, no keywords).
         forget PIDE CONFIRMACIÓN antes de borrar (irreversible, CLAUDE.md #6).
@@ -5287,7 +5287,7 @@ class Gemma4Agent:
 
     def _screen_description_reply(self, events: list["ToolEvent"]) -> str | None:
         """Si una tool de visión produjo una DESCRIPCIÓN de pantalla
-        (describe_screen describe directo, 2026-05-27), devolverla para usarla
+        (describe_screen describe directo), devolverla para usarla
         como reply — el 4B débil NO la relata fiable desde el tool-result (medido:
         respondía 'no hay instrucción' con la descripción ahí mismo). Crítico para
         un usuario no-vidente: la lectura de pantalla DEBE llegarle. Toma la
@@ -5344,7 +5344,7 @@ class Gemma4Agent:
     })
     # Búsquedas WEB: el "segundo paso" es AMBIGUO (puede ser navegar/abrir, o puede
     # ser que la búsqueda fuera para RESPONDER una pregunta -> sintetizar es el final).
-    # Reciben un nudge distinto (ver _chaining_nudge). Bug destapado en vivo 2026-05-29:
+    # Reciben un nudge distinto (ver _chaining_nudge). Bug destapado en vivo:
     # con el nudge de recurso-local, "explicame qué es Python" -> web -> el 4B se
     # descarrilaba ("no hay acción"/"listo cancelo") buscando un 2do paso inexistente.
     _WEB_SEARCH_LIKE = frozenset({"web", "browser", "browser_real"})
@@ -5584,9 +5584,9 @@ class Gemma4Agent:
 
         True for genuine vision turns / visual-deliverable tools; False for an
         action tool's self-verification screenshot (see the injection site for
-        the 2026-05-22 regression this prevents)."""
+        the regression this prevents)."""
         # Si la tool YA produjo una descripción de texto (vision describe_screen
-        # describe directo, 2026-05-27), NO re-inyectamos la imagen: el texto ya
+        # describe directo), NO re-inyectamos la imagen: el texto ya
         # está listo y re-inyectar haría que el 4B débil fumblee (re-llamar vision
         # / cancelar). El reply usa la `description` del resultado.
         if str(result.get("description") or "").strip():
@@ -5601,7 +5601,7 @@ class Gemma4Agent:
     def _image_inject_vram_safe(self, turn_id: str = "") -> bool:
         """¿Hay VRAM para cargar mmproj y procesar una imagen inline sin OOM?
 
-        OLA 2.2 (C6): el watchdog ACTÚA. Si no es seguro, intenta reciclar el
+        El watchdog ACTÚA. Si no es seguro, intenta reciclar el
         server (libera VRAM fragmentada + recarga limpia) y re-chequea. Devuelve
         True si es seguro inyectar la imagen, False si conviene saltarla. Sin GPU
         NVIDIA o sin watchdog -> True (no bloquear sin evidencia)."""
@@ -5649,7 +5649,7 @@ class Gemma4Agent:
     def _compact_completed_history(self) -> None:
         """Keep future turns small after a completed tool cycle.
 
-        PRE-PASS (hotfix C 2026-05-17): before dropping tool messages,
+        PRE-PASS (hotfix C): before dropping tool messages,
         harvest locator-keys from tool_results and stitch them as a
         discreet breadcrumb onto the assistant reply of the same turn.
         This preserves "where did the file get saved" across turns even
@@ -5770,7 +5770,7 @@ class Gemma4Agent:
         if not choices:
             return []
         raw = str((choices[0].get("message") or {}).get("content") or "").strip()
-        # R3 cleanup 2026-05-28: sanitize_text ya está top-level (línea 18).
+        # sanitize_text ya está top-level (línea 18).
         cleaned = sanitize_text(raw).strip()
         # The LLM sometimes wraps in ```json ... ``` despite instructions.
         if cleaned.startswith("```"):
@@ -5884,7 +5884,7 @@ class Gemma4Agent:
         self.history = trimmed
 
 
-    # Sprint 6: post-reply guards' bodies live in :mod:`.agent_guards`.
+    # Post-reply guards' bodies live in :mod:`.agent_guards`.
     # The wrappers below pull the per-instance state the pure functions
     # need and persist any mutated streak/last-text back on self.
 
@@ -5971,7 +5971,7 @@ class Gemma4Agent:
         )
 
 
-# Sprint 6.3: compaction helpers moved to :mod:`.agent_compaction`. The
+# Compaction helpers moved to :mod:`.agent_compaction`. The
 # original module-level names live there now; we re-import here so call
 # sites inside agent.py keep working without explicit qualification.
 from .agent_compaction import (  # noqa: E402,F401
@@ -6135,7 +6135,7 @@ def _is_unverified_result(result: dict[str, Any]) -> bool:
     return status in {"failed", "needs_verification", "attempted", "needs_confirmation"}
 
 
-# Hotfix I 2026-05-17. Module-level set of "meta" tools — these
+# Hotfix I. Module-level set of "meta" tools — these
 # manage agent state / safety / verification rather than perform
 # domain actions, so they do not count when deciding whether the
 # LLM "should have called something".
@@ -6164,7 +6164,7 @@ _QUESTION_CHARS: frozenset[str] = frozenset({"?", "¿", "؟", "？"})
 def _domain_subset(selected_tool_names: list[str]) -> list[str]:
     """Return only the non-meta tools from a router subset.
 
-    Hotfix I 2026-05-17. Lifted to module-level for testability —
+    Hotfix I. Lifted to module-level for testability —
     used by both I1 (reply-shape pending_intent) and I5
     (tool_call_skipped_when_expected telemetry).
     """
@@ -6199,7 +6199,7 @@ def _should_set_pending_intent_from_reply(
 ) -> tuple[str, str] | None:
     """Decide whether to stash a pending_intent based on reply shape.
 
-    Hotfix I 2026-05-17. Hotfix F1 already handles the case where
+    Hotfix I. Hotfix F1 already handles the case where
     a tool returns status='needs_user'. This helper covers the
     OTHER case: the LLM asked a clarifying question on its own
     (Bug D8 part 2). 100% structural — only inspects the final
@@ -6404,7 +6404,7 @@ def _looks_like_context_overflow(message: str) -> bool:
 # context + duplicando texto en pantalla. Strippeamos antes de guardar al
 # history Y antes de devolver al display.
 #
-# 2026-05-15: user explicitly asked for "[misión: ...]" to NEVER appear. El
+# User explicitly asked for "[misión: ...]" to NEVER appear. El
 # patron es case-insensitive y captura variantes con / sin acento. Tambien
 # detecta "Mision" (sin acento, Capitalizado) que el LLM podria emitir.
 import re as _re_footers
@@ -6473,7 +6473,7 @@ def _progress(callback: ProgressCallback | None, event: str, **payload: Any) -> 
         callback(event, payload)
     except Exception as exc:
         try:
-            # R7 sprint 2026-05-28: era `print(..., file=sys.stderr)`.
+            # Era `print(..., file=sys.stderr)`.
             # logger.warning va al mismo handler stderr en default config y
             # se enruta donde corresponda en prod.
             logger.warning("progress callback error in event=%s: %s", event, exc)

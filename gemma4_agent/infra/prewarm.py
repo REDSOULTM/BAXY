@@ -1,5 +1,5 @@
-"""Pre-warm del KV cache con el system prompt al startup (Sprint 7 /
-item I1 #4 del informe de optimizacion externa).
+"""Pre-warm del KV cache con el system prompt al startup (item I1 #4 del
+informe de optimizacion externa).
 
 Mientras issue ggml-org/llama.cpp #21468 (cache-reuse roto en Gemma 4 por
 shared-KV) este abierto, el PRIMER turno con el system prompt + 62 tools

@@ -1,4 +1,4 @@
-"""Watcher domain tool — extracted from domain_tools.py (R2 sprint 2026-05-28).
+"""Watcher domain tool — extracted from domain_tools.py.
 
 File/URL/process watchers persistidos en state.json. Cada watcher tiene un
 snapshot (mtime+size para files, sha256 para URLs, running-bool para process)

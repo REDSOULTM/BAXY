@@ -1,5 +1,4 @@
-"""Maintenance domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Maintenance domain tool — extracted from domain_tools.py.
 
 Windows maintenance + security diagnostics. Acciones de READ vs WRITE:
   - Read: windows_update_status, defender_status, firewall_status,

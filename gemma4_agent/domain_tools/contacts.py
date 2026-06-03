@@ -1,9 +1,9 @@
-"""Contacts domain tool — extracted from domain_tools.py (R2 sprint 2026-05-27).
+"""Contacts domain tool — extracted from domain_tools.py.
 
-Antes vivía inline en domain_tools.py (~ líneas 7718-8053). Extraído acá como
-segundo paso del refactor R2. domain_tools.py re-exporta los símbolos públicos
-para que los callers existentes (no hay tests dedicados de contactos hoy, pero
-sí lo importa indirectamente vía dispatch) sigan funcionando.
+Antes vivía inline en domain_tools.py (~ líneas 7718-8053). domain_tools.py
+re-exporta los símbolos públicos para que los callers existentes (no hay tests
+dedicados de contactos hoy, pero sí lo importa indirectamente vía dispatch)
+sigan funcionando.
 
 Funciones extraídas (10) + 3 regex constants + 2 thresholds:
   contacts_tool                  (entry point, 9 acciones)

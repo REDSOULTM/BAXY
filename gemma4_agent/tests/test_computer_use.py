@@ -1,6 +1,6 @@
 """Tests de la capa UNIVERSAL de computer-use (computer_use.py).
 
-Rediseño 2026-05-25: NO un macro por intención, sino el 4B emite un PLAN de
+El diseño NO es un macro por intención, sino el 4B emite un PLAN de
 primitivas y UN ejecutor las corre. Estos tests cubren el parseo del plan
 (vocabulario cerrado) y el dispatch del ejecutor (con tools mockeadas, sin GUI).
 La validación e2e real (calc/browser/chat/notepad 16/16) está en
@@ -75,7 +75,7 @@ class SummarizeResultTest(unittest.TestCase):
 class OpenUrlVerifyTest(unittest.TestCase):
     """El verify de open_url normaliza (quita espacios/puntuación) en AMBOS lados:
     el título "espacia" el dominio ("stackoverflow"->"Stack Overflow") y el match
-    contiguo daba falso-negativo (bug medido en la maratón 2026-05-25)."""
+    contiguo daba falso-negativo (bug medido)."""
 
     def _run(self, url, fg_title):
         import gemma4_agent.computer_use_pkg.computer_use as cu
@@ -100,7 +100,7 @@ class OpenUrlVerifyTest(unittest.TestCase):
 
 
 class OpenUrlGenericBrowserTest(unittest.TestCase):
-    """FIX 2026-05-26: 'andá al navegador y abrí X' fallaba porque
+    """'andá al navegador y abrí X' fallaba porque
     focus_app('navegador') no resuelve y se tipeaba en la ventana equivocada.
     Ahora open_url usa el navegador POR DEFECTO del SO (web_open_url) salvo que
     se nombre un navegador CONCRETO (Opera/Chrome/...)."""
@@ -145,7 +145,7 @@ class OpenUrlGenericBrowserTest(unittest.TestCase):
 class OpenChatFuzzyTest(unittest.TestCase):
     """open_chat es tolerante a typos: el quick-switcher de las apps de chat hace
     fuzzy match ("shotercock"->"ShooterCOCK"). Si el título CAMBIÓ a un chat nuevo,
-    es éxito y se reporta el chat REAL abierto (no el typo). Bug medido 2026-05-25:
+    es éxito y se reporta el chat REAL abierto (no el typo). Bug medido:
     el usuario veía "No encontré" de un éxito real."""
 
     def _exec(self, before_title, after_title):
@@ -453,7 +453,7 @@ class ExecutorDispatchTest(unittest.TestCase):
             len(a) > 1 and a[1].get("text") == "no debe tipearse" for a in calls))
 
     def test_critical_step_retries_before_aborting(self):
-        # REINTENTO (2026-05-27): un paso CRÍTICO que falla TRANSITORIAMENTE (1ra
+        # REINTENTO: un paso CRÍTICO que falla TRANSITORIAMENTE (1ra
         # vez) pero anda al reintento NO debe abortar la cadena. Mockeamos
         # capabilities.run para fallar focus_app una vez y luego OK.
         ag = self._agent()
@@ -473,7 +473,7 @@ class ExecutorDispatchTest(unittest.TestCase):
         self.assertEqual(ex.capabilities.run.call_count, 3)
 
     def test_prefer_cdp_set_when_chain_interacts_in_page(self):
-        # prefer_cdp (2026-05-27): si la cadena tiene type/click/send DESPUÉS de
+        # prefer_cdp: si la cadena tiene type/click/send DESPUÉS de
         # open_url, la capability de navegador debe preferir CDP (robusto, no roba
         # foco) para esos pasos en-página.
         ag = self._agent()
@@ -682,7 +682,7 @@ class ExecutorDispatchTest(unittest.TestCase):
 
 
 class ClickTriStateHonestyTest(unittest.TestCase):
-    """Perfection roadmap C4/C5 (2026-05-29). El _click debe propagar el
+    """El _click debe propagar el
     tri-estado verified (True/False/None). 'No medible' (None) NO es 'falló'
     (False): antes se colapsaba a False, disparando el retry del PlanExecutor
     (DOBLE-CLICK físico) y haciendo mentir a summarize_result.
@@ -726,7 +726,7 @@ class ClickTriStateHonestyTest(unittest.TestCase):
         self.assertIn("no pude confirmar", msg.lower())
 
     def test_summary_no_change_is_honest_not_a_lie(self):
-        # C5: click corrió pero state_changed=False -> NO decir "Listo, hice click".
+        # click corrió pero state_changed=False -> NO decir "Listo, hice click".
         from gemma4_agent.computer_use_pkg.computer_use import summarize_result
         plan = [{"op": "click", "arg": "Comprar"}]
         res = {"ok": True, "verified": True, "focused_app": "Tienda",
@@ -747,7 +747,7 @@ class ClickTriStateHonestyTest(unittest.TestCase):
         self.assertIn("hice click", msg.lower())
         self.assertNotIn("no vi", msg.lower())
 
-    # --- Regresión de FUENTE (Ola 1 #2, 2026-06-01) -------------------------
+    # --- Regresión de FUENTE -----------------------------------------------
     # El bug residual NO estaba en _click sino en la capa PRIMARIA del raw
     # click (_uia_click_inproc, tools.py:6589) que emitía verified=(changed is
     # True) y coaccionaba None->False ANTES de que _click lo viera. Estos casos
@@ -771,7 +771,7 @@ class ClickTriStateHonestyTest(unittest.TestCase):
 
 
 class ClickNoDoubleClickOnNoneTest(unittest.TestCase):
-    """Ola 1 #2 GATE: un click NO-MEDIBLE (verified=None) NO debe disparar el
+    """GATE: un click NO-MEDIBLE (verified=None) NO debe disparar el
     retry del PlanExecutor (= doble-click físico). El retry se gobierna por
     `res.get('verified') is False` (línea ~1224): None NO lo cumple. Contamos
     los dispatches de click para probar que se ejecutó UNA sola vez."""

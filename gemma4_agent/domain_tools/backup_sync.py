@@ -1,5 +1,4 @@
-"""Backup & Sync domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Backup & Sync domain tool — extracted from domain_tools.py.
 
 Backups locales como archivos ZIP. Restore con políticas overwrite/skip/rename
 (default rename, contra zip-slip). Dedupe por SHA-256. Verify con

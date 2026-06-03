@@ -1,5 +1,4 @@
-"""Form Filler domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Form Filler domain tool — extracted from domain_tools.py.
 
 Llenado de formularios HTML con review-gate antes de submit. Sobre una sesión
 browser_real existente (pass session_id):

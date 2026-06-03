@@ -1,5 +1,4 @@
-"""Printer & Scanner domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Printer & Scanner domain tool — extracted from domain_tools.py.
 
 Imprimir y escanear desde Windows usando PowerShell + WIA (COM via
 WScript.Network y WIA.DeviceManager).

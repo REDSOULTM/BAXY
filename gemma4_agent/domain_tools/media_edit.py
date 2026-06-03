@@ -1,5 +1,4 @@
-"""Media Edit (ffmpeg) domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Media Edit (ffmpeg) domain tool — extracted from domain_tools.py.
 
 Audio/video editing via ffmpeg. status reporta ffmpeg+ffprobe disponibles.
 Cada action devuelve path output + exit_code + command. Lossless cuando es

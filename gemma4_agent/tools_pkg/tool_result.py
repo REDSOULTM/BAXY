@@ -1,4 +1,4 @@
-"""R4 sprint 2026-05-28: ToolResult dataclass.
+"""ToolResult dataclass.
 
 Formaliza el patrón ya existente en el repo:
 - `ok: bool` — éxito o fallo.
@@ -21,11 +21,10 @@ tipan; cuando todos consumers tipan, se elimina `.to_dict()`.
 
 Compatibilidad con dicts: `ToolResult.from_dict(d)` para inverso.
 
-## Handlers ya migrados (2026-05-28)
+## Handlers ya migrados
 
 Patrón usado: `_ok_tr/_err_tr` aliases internas que construyen `ToolResult`
-y llaman `.to_dict()` para mantener back-compat byte-a-byte. Buscar
-"R4 sprint 2026-05-28" en cualquier `domain_tools_*.py`.
+y llaman `.to_dict()` para mantener back-compat byte-a-byte.
 
 - `dependency_tool` (domain_tools_dependency.py)
 - `_device_bluetooth_status` (domain_tools_bluetooth.py)

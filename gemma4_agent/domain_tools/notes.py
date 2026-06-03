@@ -1,5 +1,4 @@
-"""Notes / Tasks domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-27).
+"""Notes / Tasks domain tool — extracted from domain_tools.py.
 
 Notas y tareas pendientes locales, persistidas como recursos del state. NO toca
 ninguna app externa (ni MS Tasks ni Notion); todo vive en state.json. Esa es

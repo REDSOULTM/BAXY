@@ -3,9 +3,8 @@
 These four pieces — ``_normalize_tool_result``,
 ``_coerce_and_validate_tool_args``, ``_PRE_VALIDATORS``,
 ``_parameters_for_tool`` — are the dispatch pipeline of the registry.
-Sprint 5b deferred their extraction because they have many private-helper
-dependencies; this file is the pre-requisite for Sprint 6.6 to do that
-extraction safely.
+They have many private-helper dependencies; this file freezes their
+contract so the pipeline can be extracted safely.
 
 No LLM contact; everything runs on dicts.
 """
@@ -247,7 +246,7 @@ class TestPreValidatorsRegistry(unittest.TestCase):
         self.assertIn("tomorrow morning", out["error"])
 
     def test_notification_validator_accepts_natural_language_time(self) -> None:
-        # 2026-05-27: alarmas/timers aceptan NL que parse_when resuelve (igual que
+        # alarmas/timers aceptan NL que parse_when resuelve (igual que
         # recordatorios). Antes el validador rechazaba todo lo no-ISO/HH:MM.
         fn = _PRE_VALIDATORS["notification"]
         for raw in ("a las 7 de la mañana", "mañana a las 9", "a las 11 de la noche"):

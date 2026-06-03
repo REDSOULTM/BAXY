@@ -1,5 +1,5 @@
-"""Ola 2.4 (perfection roadmap, 2026-05-29): estabilidad de ciclo de vida del
-llama-server. Tres edges donde viven los bugs (recovery/teardown):
+"""Estabilidad de ciclo de vida del llama-server. Tres edges donde viven
+los bugs (recovery/teardown):
 
   H6 — race en :8080: restart() ahora toma _restart_lock + espera el puerto.
   H4 — /health miente: el recovery del cliente exige /health AND /slots.

@@ -1,5 +1,4 @@
-"""Container domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Container domain tool — extracted from domain_tools.py.
 
 Docker / docker-compose wrappers. exec acepta command list explícita (no
 wrap arbitrary shells). lifecycle start/stop/restart con checkpoint+rollback.

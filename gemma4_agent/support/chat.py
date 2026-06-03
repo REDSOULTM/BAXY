@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 if __package__ in {None, ""}:
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # reorg 2026-05-28: support/ es subdir
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # support/ es subdir
     from gemma4_agent.agent_core.agent import Gemma4Agent
     from gemma4_agent.infra.config import AgentConfig
     from gemma4_agent.memory_pkg.sessions import Session, SessionStore, auto_title, is_enabled as sessions_enabled
@@ -250,7 +250,7 @@ def _start_llama_server(config: AgentConfig) -> bool:
         print(f"  llama-server.exe: {config.llama_server_exe}")
         print(f"  model:            {config.model_path}")
         return False
-    log_dir = Path(__file__).resolve().parent.parent / "logs"  # reorg 2026-05-28
+    log_dir = Path(__file__).resolve().parent.parent / "logs"
     print(
         f"{PALETTE['error']}llama-server no quedo listo en 90s. "
         f"Revisa {log_dir / 'llama-server.err.log'}{PALETTE['reset']}"
@@ -437,7 +437,7 @@ def main() -> int:
 
         progress = ProgressDisplay(enabled=progress_enabled)
         progress.start()
-        # Sprint 4: dropped the TimelineWriter wrapper that used to mirror
+        # Dropped the TimelineWriter wrapper that used to mirror
         # every progress event into ~/.gemma4/timeline/. TraceLogger
         # (self.trace inside Gemma4Agent) already persists the same data
         # via gemma4_agent/data/traces.jsonl, which is what

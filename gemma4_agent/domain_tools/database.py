@@ -1,5 +1,4 @@
-"""Database domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Database domain tool — extracted from domain_tools.py.
 
 SQLite (stdlib siempre) + Postgres (psycopg/psycopg2 opcional) + MySQL
 (mysql-connector-python / pymysql opcional). Cada call pasa sus connection

@@ -1,5 +1,4 @@
-"""Data Analysis (CSV/Excel) domain tool — extracted from domain_tools.py
-(R2 sprint 2026-05-28).
+"""Data Analysis (CSV/Excel) domain tool — extracted from domain_tools.py.
 
 Análisis local de CSV/XLSX via pandas + matplotlib (Agg headless). Acciones:
 profile, describe, query, head, to_xlsx + 3 plot kinds. NO sale a internet.

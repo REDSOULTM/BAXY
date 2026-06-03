@@ -1,11 +1,10 @@
-"""Network diagnostics domain tool — extracted from domain_tools.py
-(R2 sprint 2026-05-28).
+"""Network diagnostics domain tool — extracted from domain_tools.py.
 
 ping/traceroute/dns_get/dns_set/dns_resolve/port_check/connections/public_ip.
 PS-injection protection (CC-100 / T2-network-dns-set-injection-033): adapter
 y addresses van por env-var, allowlists para IP/state filter.
 
-DELEGACIÓN wifi-connect (2026-05-27): el modelo chico a veces rutea "conectá
+DELEGACIÓN wifi-connect: el modelo chico a veces rutea "conectá
 a la red X" a network (diagnóstico) en vez de device_settings; en vez de
 fallar/ignorar, network_tool delega a _device_wifi_connect cuando ve intent
 de UNIRSE a una red.
@@ -67,7 +66,7 @@ def network_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any]:
     """
     from .wifi import _device_wifi_connect
     action = str(args.get("action") or "status").casefold()
-    # DELEGACIÓN wifi-connect (2026-05-27): el modelo chico a veces rutea
+    # DELEGACIÓN wifi-connect: el modelo chico a veces rutea
     # "conectá a la red X" a `network` (diagnóstico) en vez de device_settings
     # (que tiene wifi_connect). En vez de fallar/ignorar — que deja al usuario sin
     # manos sin conexión — garantizamos la precondición delegando a la conexión

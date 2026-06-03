@@ -7,8 +7,8 @@ guard) to flag obvious "abrí X / busqué Y / agendé Z" claims when
 `tool_events == []`. Returns a verdict; the agent's existing
 `_guard_promise_without_action` keeps catching prefix cases.
 
-The async NLI grounding layer (`schedule_grounding_check`) was removed
-in Sprint 3a — its cache hit rate over 5 days of use was 3.2 %, below
+The async NLI grounding layer (`schedule_grounding_check`) was removed:
+its cache hit rate over 5 days of use was 3.2 %, below
 the 20 % keep/kill threshold from `08_findings.md §2.10`.
 """
 from __future__ import annotations
@@ -141,7 +141,7 @@ _FALLBACKS_BY_LANG: dict[str, dict[str, str]] = {
 }
 
 
-# Sprint 3a: tables trimmed from 6 langs to es+en. PT/FR/IT/DE branches
+# Tables trimmed from 6 langs to es+en. PT/FR/IT/DE branches
 # were never observed in 5 days of traces and the CORE_PROMPT commits
 # the agent to Spanish output by default.
 _LANG_HINTS: tuple[tuple[str, tuple[str, ...]], ...] = (

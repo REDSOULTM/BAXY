@@ -2834,13 +2834,11 @@ def _media_search_local_library(args: dict[str, Any]) -> dict[str, Any]:
     return _ok(results=results, count=len(results), root=str(root))
 
 
-# Source Manager - extraído a domain_tools_source_manager.py
-# (R2 sprint 2026-05-28).
+# Source Manager - extraído a domain_tools_source_manager.py.
 from .source_manager import source_manager_tool  # noqa: F401
 
 
-# Dependency catalog - extraído a domain_tools_dependency.py
-# (R2 sprint 2026-05-28). 4 funciones.
+# Dependency catalog - extraído a domain_tools_dependency.py. 4 funciones.
 from .dependency import (  # noqa: F401
     _binary_dep,
     _dependency_catalog,
@@ -2851,8 +2849,8 @@ from .dependency import (  # noqa: F401
 
 # Regex laxas; el objetivo no es validar email/phone "correctos" sino
 # rechazar valores claramente invalidos (caracteres de control, ints crudos).
-# Contacts domain tool - extraído a domain_tools_contacts.py (R2 sprint
-# 2026-05-27). Las 10 funciones contacts_tool + helpers vCard + name_similarity
+# Contacts domain tool - extraído a domain_tools_contacts.py.
+# Las 10 funciones contacts_tool + helpers vCard + name_similarity
 # + _contacts_resolve_recipient + las 3 regex constants + 2 thresholds viven
 # ahora en domain_tools_contacts.py. Re-export acá para compat (dispatch lo
 # importa vía la clase ToolRegistry, mantenemos nombres en namespace).
@@ -2876,7 +2874,7 @@ from .contacts import (  # noqa: F401  (re-export por compat)
 )
 
 
-# _parse_due_iso — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
+# _parse_due_iso — extraído a domain_tools_helpers.py.
 
 
 # ---------------------------------------------------------------------------
@@ -2905,14 +2903,14 @@ from .whatsapp import (  # noqa: F401  (re-export por compat)
 
 
 
-# Notes / Tasks domain tool - extraído a domain_tools_notes.py (R2 sprint
-# 2026-05-27). Re-export para compat (tools.py linea 51 hace
+# Notes / Tasks domain tool - extraído a domain_tools_notes.py.
+# Re-export para compat (tools.py linea 51 hace
 # ).
 from .notes import notes_tasks_tool  # noqa: F401
 
 
-# Local Calendar (ICS) domain tool - extraído a domain_tools_calendar.py
-# (R2 sprint 2026-05-27). 9 funciones (entry + 8 helpers ICS). domain_tools.py
+# Local Calendar (ICS) domain tool - extraído a domain_tools_calendar.py.
+# 9 funciones (entry + 8 helpers ICS). domain_tools.py
 # ~-260 LOC. Re-export para compat (tools.py linea 33).
 from .calendar import (  # noqa: F401  (re-export por compat)
     _calendar_event_update,
@@ -2928,19 +2926,19 @@ from .calendar import (  # noqa: F401  (re-export por compat)
 )
 
 
-# Habit Tracker - extraído a domain_tools_habit_tracker.py (R2 sprint 2026-05-28).
+# Habit Tracker - extraído a domain_tools_habit_tracker.py.
 from .habit_tracker import (  # noqa: F401
     _VALID_HABIT_FREQUENCIES,
     habit_tracker_tool,
 )
 
 
-# Local Search - extraído a domain_tools_local_search.py (R2 sprint 2026-05-28).
+# Local Search - extraído a domain_tools_local_search.py.
 from .local_search import local_search_tool  # noqa: F401
 
 
-# Printer & Scanner - extraído a domain_tools_printer_scanner.py
-# (R2 sprint 2026-05-28). 6 funciones (entry + 5 helpers).
+# Printer & Scanner - extraído a domain_tools_printer_scanner.py.
+# 6 funciones (entry + 5 helpers).
 from .printer_scanner import (  # noqa: F401
     _printer_cancel_job,
     _printer_print_file,
@@ -2951,11 +2949,11 @@ from .printer_scanner import (  # noqa: F401
 )
 
 
-# _json_or_none — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
+# _json_or_none — extraído a domain_tools_helpers.py.
 
 
 # Desktop Layout (Win32 EnumWindows + MoveWindow) - extraído a
-# domain_tools_desktop_layout.py (R2 sprint 2026-05-28). 4 funciones.
+# domain_tools_desktop_layout.py. 4 funciones.
 from .desktop_layout import (  # noqa: F401
     _desktop_layout_restore,
     _enum_windows_with_rect,
@@ -2964,7 +2962,7 @@ from .desktop_layout import (  # noqa: F401
 )
 
 
-# Backup & Sync - extraído a domain_tools_backup_sync.py (R2 sprint 2026-05-28).
+# Backup & Sync - extraído a domain_tools_backup_sync.py.
 # Re-export incluye _next_available_path porque photo_library_tool lo usa
 # desde línea ~1856.
 from .backup_sync import (  # noqa: F401
@@ -2977,11 +2975,11 @@ from .backup_sync import (  # noqa: F401
 )
 
 
-# Office helpers - extraídos a domain_tools_office.py (R2 sprint 2026-05-28).
+# Office helpers - extraídos a domain_tools_office.py.
 # Re-export en el entry point office_tool más arriba.
 
 
-# _safe_name — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
+# _safe_name — extraído a domain_tools_helpers.py.
 
 
 def _audio_endpoints() -> list[dict[str, Any]]:
@@ -2998,7 +2996,7 @@ def _audio_endpoints() -> list[dict[str, Any]]:
     return data if isinstance(data, list) else []
 
 
-# _find_soundvolumeview — extraído a domain_tools_helpers.py (R3 sprint 2026-05-28).
+# _find_soundvolumeview — extraído a domain_tools_helpers.py.
 
 
 def _set_default_audio_device(args: dict[str, Any], state: AgentState, *, communications: bool) -> dict[str, Any]:
@@ -3257,15 +3255,15 @@ def _audio_verify_default(defaults_after: dict[str, str], requested_name: str, e
     return True
 
 
-# Notification helpers - extraídos a domain_tools_notifications.py (R2 sprint
-# 2026-05-27). Los 9 helpers + _NotificationDueError + _notification_due
+# Notification helpers - extraídos a domain_tools_notifications.py.
+# Los 9 helpers + _NotificationDueError + _notification_due
 # (parsing NL) viven ahora afuera; el re-export está en el bloque del entry
 # point notification_tool más arriba (líneas ~263).
 
 
 # Cross-cutting helpers (_find_routine, _update_resource_metadata,
 # _resources_by_kind, _find_resource, _powershell_json, _ps_quote) — extraídos
-# a domain_tools_helpers.py (R3 sprint 2026-05-28). El re-export más arriba
+# a domain_tools_helpers.py. El re-export más arriba
 # del módulo (debajo del import de _ok/_err) deja `dt._X` accesible para los
 # callers que hacen `from gemma4_agent import domain_tools as dt`. Estos
 # bloques quedan como ancla histórica.
@@ -3274,8 +3272,8 @@ def _audio_verify_default(defaults_after: dict[str, str], requested_name: str, e
 # Dependency catalog helpers - extraídos a domain_tools_dependency.py.
 
 
-# Calendar helpers (ICS export utils) - extraídos a domain_tools_calendar.py
-# (R2 sprint 2026-05-27). Los 4 helpers (_calendar_export_path, _events_to_ics,
+# Calendar helpers (ICS export utils) - extraídos a domain_tools_calendar.py.
+# Los 4 helpers (_calendar_export_path, _events_to_ics,
 # _ics_time, _ics_escape) viven junto al resto del calendar; el re-export está
 # en el bloque del entry point más arriba.
 

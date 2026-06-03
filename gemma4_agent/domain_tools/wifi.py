@@ -1,8 +1,7 @@
-"""WiFi domain tools — extracted from domain_tools.py (R2 sprint 2026-05-27).
+"""WiFi domain tools — extracted from domain_tools.py.
 
-Antes vivían inline en domain_tools.py (líneas ~4382-4756). Extraído acá como
-primer paso del refactor R2 (auditoría arquitectural): mover el área wifi a su
-propio módulo. domain_tools.py re-exporta TODO lo público con `from
+Antes vivían inline en domain_tools.py (líneas ~4382-4756); el área wifi se
+movió a su propio módulo. domain_tools.py re-exporta TODO lo público con `from
 .domain_tools_wifi import *` para que callers existentes (test_wifi_resolve.py
 hace `from gemma4_agent import domain_tools as dt; dt._device_wifi_X`) sigan
 funcionando sin cambios.
@@ -361,7 +360,7 @@ def _device_wifi_connect(args: dict[str, Any]) -> dict[str, Any]:
     password = str(args.get("password") or args.get("key") or "").strip()
     created = None
 
-    # RESOLUCIÓN POR ESTADO DEL SO (2026-05-27, usuario sin manos): el usuario
+    # RESOLUCIÓN POR ESTADO DEL SO (usuario sin manos): el usuario
     # dice el nombre de la red como lo recuerda ('la de la familia', 'vtr'), no
     # el SSID exacto guardado ('Familia Prueba'). Antes exigíamos match exacto
     # -> "profile not found". Ahora resolvemos contra perfiles guardados + SSIDs

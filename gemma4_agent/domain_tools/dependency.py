@@ -1,5 +1,4 @@
-"""Dependency catalog domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Dependency catalog domain tool — extracted from domain_tools.py.
 
 Reporta qué dependencias opcionales están instaladas (Python modules + binarios
 externos). NO instala — install action devuelve needs_user con el hint;
@@ -30,9 +29,9 @@ __all__ = [
 ]
 
 
-# R4 sprint 2026-05-28: este handler está MIGRADO a ToolResult internamente,
-# pero exporta dict via `` para back-compat con consumers viejos.
-# Sirve como ejemplo de referencia para la migración handler-por-handler.
+# Este handler está MIGRADO a ToolResult internamente, pero exporta dict via
+# `` para back-compat con consumers viejos. Sirve como ejemplo de referencia
+# para la migración handler-por-handler.
 def dependency_tool(args: dict[str, Any]) -> dict[str, Any]:
     action = str(args.get("action") or "status").casefold()
     catalog = _dependency_catalog()

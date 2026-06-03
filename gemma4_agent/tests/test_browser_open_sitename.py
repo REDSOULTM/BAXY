@@ -104,8 +104,8 @@ class BrowserOpenSiteNameTest(unittest.TestCase):
         self.assertEqual(resolved, "https://www.instagram.com/foo/")
 
     def test_search_action_still_searches_not_open_top(self):
-        # browser.search NO debe auto-abrir el top result: el usuario pidió buscar.
-        # (cubre que el fix de open no contamina search)
+        # browser.search NO debe auto-abrir el top result: la intención es buscar,
+        # no navegar. Cubre que la resolución de open no contamina search.
         with mock.patch.object(self.ag.tools, "web_search",
                                return_value={"ok": True, "results": [{"url": "https://x.com", "title": "x"}]}):
             res = self.ag.tools.t_browser({"action": "search", "query": "pivigames", "browser": ""})

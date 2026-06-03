@@ -2747,7 +2747,7 @@ class ToolRegistry:
         if action == "find":
             return self.uia_find(args)
         if action == "click":
-            # ANCHOR-BINDING (R8.2): no clickear bait de pop-up no relacionado al
+            # ANCHOR-BINDING: no clickear bait de pop-up no relacionado al
             # objetivo del turno (label frase-larga + cosine bajo). Conservador.
             try:
                 _anc = gui_safety.check_anchor(str(args.get("query") or args.get("text")
@@ -4375,7 +4375,7 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
                             "match": post2.get("match"),
                         }
                         break
-        # HONESTIDAD TRI-ESTADO (perfection roadmap C3, 2026-05-29). Cuando el
+        # HONESTIDAD TRI-ESTADO. Cuando el
         # auto-verify NO confirmó la ventana, eso NO es "falló" (verified=False)
         # — es "no medible aún" (verified=None): el launch se despachó sin error
         # y la app puede seguir cargando (Steam/Epic tardan 10-30s). Antes
@@ -5236,7 +5236,7 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         """CC-101: confirmation gate independent of ``safety_enabled``.
 
         Thin wrapper around :func:`gemma4_agent._shared.hard_gate` — the
-        body was unified with ``domain_tools._hard_gate`` in Sprint 4
+        body was unified with ``domain_tools._hard_gate``
         (audit §2.2). The wrapper still exists so callers can keep
         invoking ``self._hard_gate(...)`` without knowing where state
         comes from.
@@ -6342,7 +6342,7 @@ Start-Sleep -Milliseconds 120
                     or args.get("text") or "").strip()
         if not label:
             return _err("click_button requiere 'label'", status="needs_user")
-        # ANCHOR-BINDING (R8.2): si el label parece bait de pop-up no relacionado
+        # ANCHOR-BINDING: si el label parece bait de pop-up no relacionado
         # al objetivo del turno (frase larga + cosine bajo), no clickear sin
         # confirmar. Conservador (0 fricción en labels cortos legítimos).
         try:
@@ -6623,7 +6623,7 @@ Start-Sleep -Milliseconds 120
                     changed = gui_verify.verify_after(_before).get("state_changed")
             except Exception:
                 pass
-            # HONESTIDAD TRI-ESTADO (perfection roadmap C4/C5, Ola 1 #2).
+            # HONESTIDAD TRI-ESTADO.
             # `changed` es la señal CRUDA del verifier de estado del SO:
             #   True  -> el SO confirmó el cambio (click verificado).
             #   False -> medido y NADA cambió (false-PASS atrapado).
@@ -6668,7 +6668,7 @@ Start-Sleep -Milliseconds 120
             if sem is not None:
                 return sem
             return {"ok": False, "error": "sin coincidencias UIA", "candidates": []}
-        # R3 cleanup 2026-05-28: `_score` ya está en module scope, no necesitamos
+        # `_score` ya está en module scope, no necesitamos
         # import circular del propio módulo.
         lab = label.casefold()
 
@@ -7535,7 +7535,7 @@ Start-Sleep -Milliseconds 120
     def memory_delete(self, args: dict[str, Any]) -> dict[str, Any]:
         return self.memory.delete(str(args.get("key", "")))
 
-from .tool_schemas import COMPOUND_TOOL_SCHEMAS  # Sprint 5b: literal moved to tool_schemas.py
+from .tool_schemas import COMPOUND_TOOL_SCHEMAS  # literal moved to tool_schemas.py
 
 _apply_action_enums(COMPOUND_TOOL_SCHEMAS)
 
@@ -7683,7 +7683,7 @@ LEAN_DESCRIPTIONS: dict[str, str] = {
 
 
 def _lean_descriptions_on() -> bool:
-    # v22 2026-05-28: DEFAULT ON (validado en vivo junto a las lean rules).
+    # DEFAULT ON (validado en vivo junto a las lean rules).
     # GEMMA4_LEAN_RULES=0 para opt-out.
     return (os.environ.get("GEMMA4_LEAN_RULES", "1") or "1").strip().lower() not in {"0", "false", "no", "off"}
 

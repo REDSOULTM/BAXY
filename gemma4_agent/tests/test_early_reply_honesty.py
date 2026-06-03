@@ -1,4 +1,4 @@
-"""Honestidad de los early_reply de ACCIÓN (Ola 1, 2026-06-01).
+"""Honestidad de los early_reply de ACCIÓN.
 
 BUG (MEDIDO en vivo contra el 4B real, confirmado pre-existente en d9f776b):
 los short-circuits de acción de `_decide_turn` (calc_action / app_action /

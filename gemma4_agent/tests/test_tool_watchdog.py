@@ -48,10 +48,9 @@ class TestRunWithTimeout(unittest.TestCase):
 class TestAgentToolExecutionWrapsTimeout(unittest.TestCase):
     """The sequential and parallel tool dispatchers must call the watchdog.
 
-    Sprint 6.4: dispatcher bodies moved from Gemma4Agent._execute_calls_*
-    to gemma4_agent.agent_dispatch.execute_calls_*. The watchdog wiring
-    (run_with_timeout for sequential, concurrent.futures.TimeoutError
-    handling for parallel) lives in the new module now.
+    Dispatcher bodies live in gemma4_agent.agent_dispatch.execute_calls_*.
+    The watchdog wiring (run_with_timeout for sequential,
+    concurrent.futures.TimeoutError handling for parallel) lives there.
     """
 
     def test_sequential_dispatcher_uses_run_with_timeout(self):

@@ -1,4 +1,4 @@
-"""Bluetooth domain tool — extracted from domain_tools.py (R2 sprint 2026-05-27).
+"""Bluetooth domain tool — extracted from domain_tools.py.
 
 Por ahora una sola función pero la pongo en su propio módulo para mantener el
 patrón 1-área-1-archivo (cuando montemos sub-paquete domain_tools/ proper, todo
@@ -20,8 +20,8 @@ from ..tools_pkg.tool_result import ToolResult
 __all__ = ["_device_bluetooth_status"]
 
 
-# R4 sprint 2026-05-28: handler migrado a ToolResult (con  para
-# back-compat). Comportamiento idéntico al _ok/_err anterior.
+# Handler migrado a ToolResult (con  para back-compat). Comportamiento
+# idéntico al _ok/_err anterior.
 def _device_bluetooth_status() -> dict[str, Any]:
     script = (
         "Get-PnpDevice -Class Bluetooth -ErrorAction SilentlyContinue | "

@@ -80,7 +80,7 @@ class TestInheritToolsSafety(unittest.TestCase):
 class TestGuiContextInheritOverride(unittest.TestCase):
     """Override por estado del SO: una continuación corta tras una tarea GUI
     abierta (app/window/gui/uia) NO debe tratarse como charla aunque el abstain
-    head la lea como conversacional. Repro real (traces 2026-05-24): tras "abre
+    head la lea como conversacional. Repro real medido (traces): tras "abre
     la calculadora y suma 2+2" (ejecutó `app`), "Pero quiero que lo hagas tu" dio
     p_no_tool=0.924 -> subset [session] -> el 4B alucinó system(action=calculator).
     """
@@ -122,15 +122,15 @@ class TestGuiContextInheritOverride(unittest.TestCase):
         self.assertNotIn("uia", prev_tools)
 
     def test_override_logic_present_in_source(self):
-        # R1 sprint 2026-05-28: el override vive en _decide_turn ahora (la
-        # fase decide fue extraída de run_content).
+        # el override vive en _decide_turn (la fase decide fue extraída de
+        # run_content).
         src = agent_method_src("_decide_turn")
         # el override mantiene la herencia cuando el turno previo dejó GUI abierta
         self.assertIn("inherit_kept_gui_context", src)
         self.assertIn("_GUI_CONTEXT_TOOLS", src)
 
     def test_knowledge_release_guard_present_in_source(self):
-        # 2026-05-30: el override NO debe mantener GUI cuando el turno es una
+        # el override NO debe mantener GUI cuando el turno es una
         # pregunta-del-mundo clara (wants_knowledge) — heredar [app,gui,uia] le
         # quita web/knowledge al 4B y emite el search como texto (`Web(...)`).
         src = agent_method_src("_decide_turn")
@@ -144,7 +144,7 @@ class TestKnowledgeReleaseDiscriminator(unittest.TestCase):
     """El discriminador del release (wants_knowledge) debe separar limpio:
     PREGUNTA-DEL-MUNDO (suelta GUI → web) vs OPERATE-APP (mantiene GUI).
 
-    Regresión 2026-05-30: tras abrir una app, "cuál es el mejor lego batman"
+    Regresión: tras abrir una app, "cuál es el mejor lego batman"
     heredaba [app,gui,uia] (sin web) → el 4B emitía `Web(action="search"...)`
     como texto crudo al usuario. wants_knowledge es intención por EMBEDDINGS
     multilingüe (no keywords), mide info>action por margen.

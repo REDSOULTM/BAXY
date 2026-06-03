@@ -1,5 +1,4 @@
-"""Document parsing/extraction domain tool — extracted from domain_tools.py
-(R2 sprint 2026-05-28).
+"""Document parsing/extraction domain tool — extracted from domain_tools.py.
 
 Lectura de PDF/DOCX/XLSX/PPTX/HTML/texto plano + extracción de tablas/images
 + OCR (Tesseract). Soporte por capas, cada backend reporta needs_dependency

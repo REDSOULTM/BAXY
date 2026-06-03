@@ -1,5 +1,4 @@
-"""Developer workflows domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Developer workflows domain tool — extracted from domain_tools.py.
 
 Detect project stack (Python/Node/Rust/Go/Java/Ruby/PHP) by markers + run
 tests/lint/format with the right runner. Git status/diff/log read-only.

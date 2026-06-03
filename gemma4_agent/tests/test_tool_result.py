@@ -1,4 +1,4 @@
-"""R4 sprint 2026-05-28: tests del ToolResult dataclass.
+"""Tests del ToolResult dataclass.
 
 Verifica round-trip dict <-> ToolResult y los campos tipados.
 """

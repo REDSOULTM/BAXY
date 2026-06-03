@@ -12,9 +12,8 @@ from pathlib import Path
 from typing import Any, TextIO
 
 
-# Sprint 7.3: rotation thresholds. The defaults give ~150MB worth of
-# history across the active file + 3 archives before the oldest is
-# discarded.
+# Rotation thresholds. The defaults give ~150MB worth of history across
+# the active file + 3 archives before the oldest is discarded.
 DEFAULT_MAX_SIZE_MB = 50
 DEFAULT_KEEP_FILES = 3
 ROTATE_CHECK_EVERY = 100  # only stat() the file every N events

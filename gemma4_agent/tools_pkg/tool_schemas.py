@@ -1,6 +1,6 @@
 """Authoritative list of compound tool schemas exposed to the LLM.
 
-Pulled out of ``gemma4_agent.tools`` in Sprint 5b. The literal stays
+Pulled out of ``gemma4_agent.tools``. The literal stays
 verbatim so contract tests (test_tool_registry_contract.TestSchemasAPI)
 detect any drift. The action-enum decoration still happens in
 ``tools.py`` right after this import, against the same shared list.

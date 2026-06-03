@@ -1,5 +1,5 @@
-"""R4 sprint 2026-05-28: smoke test EXHAUSTIVO de todos los handlers
-migrados a ToolResult. Por cada `domain_tools_X.py` con ToolResult:
+"""Smoke test EXHAUSTIVO de todos los handlers migrados a ToolResult.
+Por cada `domain_tools_X.py` con ToolResult:
 - importa el módulo sin error
 - llama a la entry-action 'status' (la más segura)
 - verifica que devuelve un dict con clave 'ok'
@@ -49,7 +49,7 @@ HANDLERS: dict[str, tuple[str, callable]] = {
     "contacts":         ("contacts_tool",          lambda s: ({"action": "status"}, s)),
     "calendar":         ("local_calendar_tool",    lambda s: ({"action": "status"}, s)),
     "notifications":    ("notification_tool",      lambda s: ({"action": "status"}, s)),
-    # smart_home ELIMINADA 2026-06-02 (pedido del usuario) — handler removido.
+    # smart_home eliminada — handler removido.
     "developer":        ("developer_tool",         lambda s: ({"action": "status"}, s)),
     "device_settings":  ("device_settings_tool",   lambda s: ({"action": "status"}, s)),
     "routine":          ("routine_tool",           lambda s: ({"action": "status"}, s)),
@@ -92,13 +92,13 @@ class TestR4ImportSanity(unittest.TestCase):
                 importlib.import_module(f"gemma4_agent.{p.stem}")
 
     def test_at_least_30_sub_package_areas(self):
-        """Post R2-finalize: el sub-paquete tiene ≥ 30 áreas como
-        submódulos. (El audit pedía ≥ 30 áreas; el R4 migration por
-        dataclass quedó como infraestructura disponible — la migración
-        real handler-por-handler es trabajo futuro)."""
+        """El sub-paquete tiene ≥ 30 áreas como submódulos (el audit pedía
+        ≥ 30 áreas). La migración por dataclass quedó como infraestructura
+        disponible; la migración real handler-por-handler es trabajo
+        futuro."""
         pkg = pathlib.Path(__file__).resolve().parent.parent
         subpkg = pkg / "domain_tools"
-        self.assertTrue(subpkg.is_dir(), "R2-finalize: subpkg missing")
+        self.assertTrue(subpkg.is_dir(), "subpkg missing")
         areas = [p for p in subpkg.glob("*.py") if p.stem != "__init__"]
         self.assertGreaterEqual(len(areas), 30, f"Solo {len(areas)} áreas")
 

@@ -1,9 +1,9 @@
-"""R1 sprint 2026-05-28: integration tests del flow de 3 fases.
+"""Integration tests del flow de 3 fases.
 
 Verifica que `_decide_turn` / `_execute_turn` / `_finalize_turn` se
-ejecutan correctamente end-to-end con LLM mockeado. Si el split del R1
-se rompe (ejemplo: alguien añade un return en mal lugar), estos tests
-lo detectan.
+ejecutan correctamente end-to-end con LLM mockeado. Si el split de las
+fases se rompe (ejemplo: alguien añade un return en mal lugar), estos
+tests lo detectan.
 """
 from __future__ import annotations
 

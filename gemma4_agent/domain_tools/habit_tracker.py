@@ -1,5 +1,4 @@
-"""Habit Tracker domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Habit Tracker domain tool — extracted from domain_tools.py.
 
 Hábitos persistidos como resources en state.json. Frecuencias: daily / weekly
 / monthly / weekdays / custom. Streak basico para 'daily' contando días

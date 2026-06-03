@@ -173,10 +173,10 @@ class TestRescueMultiCallPicksFirst(unittest.TestCase):
 
 
 class TestRescueGemmaJsonForm(unittest.TestCase):
-    """Sprint 8 (2026-05-20): Gemma 4 sometimes leaks tool calls in its
-    native JSON shape (not the python-function shape), which the
-    llama-server parser fails to lift into tool_calls. These must be
-    rescued too. Formats documented in llama.cpp #21384 / mlx-lm #1096.
+    """Gemma 4 sometimes leaks tool calls in its native JSON shape (not the
+    python-function shape), which the llama-server parser fails to lift into
+    tool_calls. These must be rescued too. Formats documented in
+    llama.cpp #21384 / mlx-lm #1096.
     """
 
     def test_bare_json(self):
@@ -249,8 +249,8 @@ class TestRescueGemmaJsonForm(unittest.TestCase):
 class TestDottedMethodRescue(unittest.TestCase):
     """The model sometimes writes a compound tool's ACTION as a Python method
     — window.close(query="x") instead of window(action="close", query="x").
-    Live repro 2026-05-20: "schliesse das Fenster" leaked window.close(...) as
-    text and the window never closed. The rescue must rewrite it."""
+    Live repro: "schliesse das Fenster" leaked window.close(...) as text and
+    the window never closed. The rescue must rewrite it."""
 
     DOTTED_KNOWN = {"window", "app", "audio", "media", "steam", "web"}
 
@@ -286,9 +286,9 @@ class TestDottedMethodRescue(unittest.TestCase):
 
 class TestMultiCallLeak(unittest.TestCase):
     """Two space-separated leaked calls — `system(action='memory')
-    system(action='recall')` — must rescue the FIRST. Live repro 2026-05-20:
-    the greedy whole-string regex grabbed a broken body and gave up, so the
-    reminder turn ran no tool."""
+    system(action='recall')` — must rescue the FIRST. Live repro: the greedy
+    whole-string regex grabbed a broken body and gave up, so the reminder
+    turn ran no tool."""
 
     K = {"system", "memory", "reminder", "web", "whatsapp"}
 
@@ -315,11 +315,11 @@ class TestMultiCallLeak(unittest.TestCase):
 
 
 class TestCapitalizedToolName(unittest.TestCase):
-    """Regresión 2026-05-30 (CATASTRÓFICA): el 4B capitalizó el nombre de la
-    tool como si fuera nombre propio — `Web(action="search", query="mejor lego
-    batman")` en vez de `web(...)`. Los regex del detector exigían `[a-z]` como
-    primer char, así que NO matcheaban `Web`, el rescue fallaba, y el texto
-    crudo `Web(action="search"...)` llegó LITERAL al usuario como respuesta.
+    """Regresión catastrófica: el 4B capitalizó el nombre de la tool como si
+    fuera nombre propio — `Web(action="search", query="mejor lego batman")` en
+    vez de `web(...)`. Los regex del detector exigían `[a-z]` como primer char,
+    así que NO matcheaban `Web`, el rescue fallaba, y el texto crudo
+    `Web(action="search"...)` llegó LITERAL al usuario como respuesta.
 
     Fix: primer char [a-zA-Z] + normalizar el nombre a minúsculas antes del
     allowlist. Seguro: las 68 tools registradas son lowercase, sin colisiones
@@ -375,7 +375,7 @@ class TestCapitalizedToolName(unittest.TestCase):
 
 
 class TestRescueWithIntentPrefix(unittest.TestCase):
-    """Regresión 2026-05-30 (reply-vacío): cuando el router fuerza una tool
+    """Regresión reply-vacío: cuando el router fuerza una tool
     (tool_choice=required), el 4B a veces emite el tool-call como TEXTO PLANO
     PRECEDIDO de un bloque <intent>...</intent> y narración, p.ej.:
         <intent>{"intent_type":"research","target":"la fotosíntesis"}</intent>
@@ -421,8 +421,8 @@ class TestRescueWithIntentPrefix(unittest.TestCase):
 
 
 class TestGemmaSpecialTokenStrip(unittest.TestCase):
-    """Regresión 2026-05-30 (reply-vacío, parte 2): bug Gemma4/llama.cpp #21338
-    — bajo ciertas condiciones el 4B degenera en un loop del token especial
+    """Regresión reply-vacío (parte 2): bug Gemma4/llama.cpp #21338 — bajo
+    ciertas condiciones el 4B degenera en un loop del token especial
     <unused49> hasta agotar el budget. El _CONTROL_TOKEN_RE viejo sólo cubría
     <|...|> (con pipes); este caso es <...> con dígitos. sanitize_text ahora lo
     limpia para que el token de degeneración NUNCA llegue al usuario."""
@@ -446,8 +446,8 @@ class TestGemmaSpecialTokenStrip(unittest.TestCase):
         self.assertEqual(sanitize_text(txt), txt)
 
     def test_intent_block_stripped(self):
-        # Replay de logs reales 2026-05-30: el 4B antepone <intent>{...}</intent>
-        # al reply y leakeaba al user (consultas CSV/filesystem).
+        # En logs reales el 4B antepone <intent>{...}</intent> al reply y
+        # leakeaba al user (consultas CSV/filesystem).
         out = sanitize_text('<intent>{"intent_type":"read","target":"x.csv"}</intent>\n'
                             'La venta total fue 10 unidades.')
         self.assertEqual(out, "La venta total fue 10 unidades.")
@@ -462,10 +462,10 @@ class TestGemmaSpecialTokenStrip(unittest.TestCase):
 
 
 class TestActionNameRescue(unittest.TestCase):
-    """R-latencia 2026-05-30: el 4B leakea la ACCIÓN como tool standalone
-    (`mute(state: true)`, con COLON) en vez de `audio(action='mute')` → el turno
-    entraba a un forced-retry lento que terminaba vacío. build_action_to_tool
-    (derivado del schema) + el rescue mapean action→tool, estructural."""
+    """El 4B leakea la ACCIÓN como tool standalone (`mute(state: true)`, con
+    COLON) en vez de `audio(action='mute')` → el turno entraba a un forced-retry
+    lento que terminaba vacío. build_action_to_tool (derivado del schema) + el
+    rescue mapean action→tool, estructural."""
 
     def setUp(self):
         from ..support.reasoning import build_action_to_tool

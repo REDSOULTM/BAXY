@@ -1,5 +1,4 @@
-"""Photo Library domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Photo Library domain tool — extracted from domain_tools.py.
 
 Librería de fotos/videos local. Acciones: scan + EXIF + group_by_date
 (copy/move/symlink/dry_run) + thumbnails (PIL) + find_by_date.

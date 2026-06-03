@@ -1,4 +1,4 @@
-"""R8 sprint 2026-05-28: guarda anti-drift del inventario `scripts/INDEX.md`.
+"""Guarda anti-drift del inventario `scripts/INDEX.md`.
 
 Detecta cuando aparecen scripts nuevos sin entrar al INDEX. NO obliga a
 documentar diagnoses one-shot (`_diag_*` viven en `_diag/`) pero sí los
@@ -34,7 +34,7 @@ class TestScriptsInventory(unittest.TestCase):
     def test_index_mentions_all_top_level_scripts(self):
         """Cada `.py` en scripts/ (no `_diag/`) debe estar mencionado por
         nombre en INDEX.md. Permitimos los `_r1_*`/`_r2_*`/`_r3_*`/`_r8_*`
-        helpers de sprint que ya tienen su entrada agrupada.
+        helpers que ya tienen su entrada agrupada.
         """
         root = pathlib.Path(__file__).resolve().parent.parent.parent / "scripts"
         idx_text = (root / "INDEX.md").read_text(encoding="utf-8")

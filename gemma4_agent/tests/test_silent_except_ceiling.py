@@ -16,10 +16,10 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-# Techo MEDIDO 2026-06-01 sobre el código ESTABLE del agente (el audit excluye
-# vision_input/ = subsistema de cámara en desarrollo por otro workstream). NO subir sin
+# Techo MEDIDO sobre el código ESTABLE del agente (el audit excluye vision_input/,
+# el subsistema de cámara, que tiene su propio ciclo de vida). NO subir sin
 # justificar: si tu cambio agrega un `except ...: pass` alrededor de LÓGICA, logueá el
-# error (trace/logger) en vez de tragarlo. La observabilidad atrapó los bugs de esta semana.
+# error (trace/logger) en vez de tragarlo. La observabilidad atrapa bugs silenciosos.
 SILENT_LOGIC_CEILING = 358
 
 

@@ -1,8 +1,8 @@
 """Contract tests for Gemma4Agent's public API.
 
 The 4 user-facing surfaces (CLI chat, UI Desktop, UI Field server, MCP)
-all consume the same Gemma4Agent surface. Sprint 5b is going to split
-the 1 852-LOC run_content; these tests pin the contract:
+all consume the same Gemma4Agent surface. These tests pin the contract
+so refactors of run_content cannot break it:
 
   - Constructor state shape
   - clear() reset behaviour
@@ -109,7 +109,7 @@ class TestClear(unittest.TestCase):
 
 class TestPersona(unittest.TestCase):
     """set_persona / get_persona contract used by /agent/persona endpoint
-    and the SettingsDialog. Sprint 5b must preserve this exact shape."""
+    and the SettingsDialog. This exact shape must be preserved."""
 
     def setUp(self) -> None:
         self.tmp = Path(tempfile.mkdtemp(prefix="gemma4_agent_persona_"))
@@ -257,7 +257,7 @@ class TestRunTextToolCallFlow(unittest.TestCase):
 
 
 class TestGuardsSpy(unittest.TestCase):
-    """The 6 _guard_* methods must still fire after Sprint 5b's split. We
+    """The 6 _guard_* methods must still fire after the run_content split. We
     don't test what they do (that's the job of test_promise_guard etc.);
     we just spy that the agent invokes them post-reply."""
 

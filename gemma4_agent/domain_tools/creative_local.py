@@ -1,5 +1,5 @@
 """Creative Local domain tool (ComfyUI primarily) — extracted from
-domain_tools.py (R2 sprint 2026-05-28).
+domain_tools.py.
 
 Local generative ML backends. Talks to ComfyUI HTTP server (default
 http://127.0.0.1:8188, override con GEMMA4_COMFYUI_HOST). Submit recibe el

@@ -1,5 +1,4 @@
-"""Fact-Check domain tool — extracted from domain_tools.py (R2 sprint
-2026-05-28).
+"""Fact-Check domain tool — extracted from domain_tools.py.
 
 Verificación LÉXICA de claims contra fuentes locales: TF-IDF + cosine
 similarity por chunk (pure-Python, sin sklearn). NO llama LLM — devuelve

@@ -1,4 +1,4 @@
-"""Telemetria local opt-in (Sprint 11 / Item I4 del informe externo).
+"""Telemetria local opt-in (Item I4 del informe externo).
 
 Almacena metricas anonimas en SQLite local bajo
 `<AgentConfig.state_path>.parent / telemetry.sqlite` para que el dev pueda

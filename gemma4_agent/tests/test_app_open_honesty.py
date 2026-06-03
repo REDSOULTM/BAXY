@@ -1,4 +1,4 @@
-"""Perfection roadmap C3 (2026-05-29): app.open honesto tri-estado.
+"""app.open honesto tri-estado.
 
 Antes app_open devolvía verified=False explícito cuando el auto-verify NO
 confirmaba la ventana. Eso (a) peleaba con _normalize_tool_result (que mapea
@@ -103,7 +103,7 @@ class AppOpenHonestyTest(unittest.TestCase):
 
 
 class AppOpenFalsePositiveGateTest(unittest.TestCase):
-    """C3 GATE (perfection roadmap): 0 false-positive de verified con proceso
+    """GATE: 0 false-positive de verified con proceso
     AUSENTE. El tool nunca debe declarar verified=True si el estado del SO no
     confirma proceso/ventana. Ejercemos la cascada con la app NO apareciendo.
     """
