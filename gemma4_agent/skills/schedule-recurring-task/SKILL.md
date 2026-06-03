@@ -14,133 +14,20 @@ metadata:
 
 # Schedule recurring task
 
-**Tools used**: `routine`, `notification`, `verify`.
-**Honesty-critical**: yes — never silently activate destructive routines.
-Always confirm before enabling.
+Tools: `routine`, `notification`, `verify`. Honesty-critical: SÍ — nunca activar routines destructivas en silencio. Confirmar siempre antes de habilitar.
 
-## Cuándo usar este skill
-
-El usuario dice:
-- "todas las mañanas a las 9 mostrame X"
-- "cada hora chequeá Y"
-- "cuando diga 'pomodoro' arrancá un timer de 25 min"
-- "cuando abra Steam, mutea el sistema"
-- "todos los lunes hacé Z"
-
-Diferencia con `notification`:
-- `notification`: one-shot timer/alarm/reminder (15 min, mañana 8am, etc).
-- `routine`: **recurrente** o **disparada por evento** (phrase/app_open).
-
-Si el usuario dice "recordame en 10 min algo", **usar `notification`**,
-NO este skill. Este skill es para cosas que se repiten.
+Usar cuando: "todas las mañanas a las 9 mostrame X", "cada hora chequeá Y", "cuando diga 'pomodoro' arrancá timer 25 min", "cuando abra Steam mutea", "todos los lunes hacé Z". Diferencia con `notification`: esa es one-shot (timer/alarm/reminder); `routine` es **recurrente** o **disparada por evento** (phrase/app_open). Si dice "recordame en 10 min algo" → usar `notification`, NO este skill.
 
 ## Steps
 
-### 1. Identificar el trigger
-
-Tres tipos de trigger soportados:
-
-#### 1a. Time-based (cron-like)
-
-Si el usuario dice "todas las mañanas a las 9", "cada hora", "los lunes":
-
-```python
-trigger = {
-    "type": "cron",
-    "schedule": "0 9 * * *",   # 9 AM cada día
-    # o "0 * * * *" cada hora, "0 9 * * 1" lunes 9 AM
-}
-```
-
-Si no estás 100% seguro del cron expression, **decirle al usuario**
-qué cron interpretaste antes de crear:
-
-> "Voy a programarlo como `0 9 * * *` = todas las mañanas a las 9. ¿OK?"
-
-#### 1b. Phrase-triggered
-
-Si el usuario dice "cuando diga X haz Y":
-
-```python
-trigger = {
-    "type": "on_phrase",
-    "phrase": "<keyword>",  # case-insensitive, accent-folded
-}
-```
-
-La phrase debe ser distintiva (≥3 chars). Confirmar con el usuario:
-
-> "Vas a poder activarlo diciendo '<phrase>'. ¿Es OK o querés cambiar
-> el keyword?"
-
-#### 1c. Process-triggered
-
-Si el usuario dice "cuando abra X, hacé Y":
-
-```python
-trigger = {
-    "type": "on_app_open",   # o "on_app_close"
-    "process": "<exe.exe>",
-    "interval_minutes": 2,   # polling
-}
-```
-
-### 2. Definir los steps
-
-Cada step es una tool call. Ejemplo:
-
-```python
-steps = [
-    {"tool": "audio", "args": {"action": "mute", "state": True}},
-    {"tool": "notification", "args": {"action": "toast_now",
-                                       "title": "Muted",
-                                       "text": "System volume muted on Steam open"}},
-]
-```
-
-**Validar** que las tools existen y los args son correctos antes de
-crear la routine — si la tool falla en runtime el usuario no se entera
-hasta el primer dispatch.
-
-### 3. Detectar si es destructive
-
-Si CUALQUIER step tiene una tool destructive (filesystem.delete,
-registry.delete, terminal con comandos destructive), **NO crear sin
-confirmación explícita del usuario**:
-
-> "Esta routine incluye un paso destructivo: `<tool.action>`. ¿Confirmás
-> que sí lo querés? Una vez activa, se ejecuta automáticamente sin
-> nuevas preguntas. (sí/no)"
-
-Esperar al próximo turn.
-
-### 4. Crear
-
-```
-routine(action="create",
-        label="<descriptive name>",
-        trigger=<trigger dict>,
-        steps=<steps list>,
-        enabled=True)
-```
-
-Si trigger es `on_phrase` y algún step es destructive, **PASAR**
-`confirmed_at_create=True` solo si el usuario explicitamente confirmó.
-
-### 5. Verificar y reportar
-
-```
-routine(action="list")
-```
-
-Confirmar que la routine aparece con `enabled=True`. Reportar:
-
-> "Creada la routine `<label>`:
-> - Trigger: [descripción human-readable del trigger]
-> - Steps: [N pasos, listar tools usadas]
-> - Próxima ejecución estimada: [si time-based, el next fire time]
->
-> Podés desactivarla con `routine(action="disable", id=<id>)`."
+1. **Identificar el trigger** (3 tipos):
+   - 1a. **Time-based (cron)** — "todas las mañanas a las 9", "cada hora", "los lunes": `trigger={"type":"cron","schedule":"0 9 * * *"}` (`0 * * * *`=cada hora, `0 9 * * 1`=lunes 9 AM). Si no estás 100% seguro del cron, decirle al usuario qué interpretaste antes de crear: "Voy a programarlo como `0 9 * * *` = todas las mañanas a las 9. ¿OK?"
+   - 1b. **Phrase-triggered** — "cuando diga X haz Y": `trigger={"type":"on_phrase","phrase":"<keyword>"}` (case-insensitive, accent-folded). La phrase debe ser distintiva (≥3 chars). Confirmar: "Vas a poder activarlo diciendo '<phrase>'. ¿OK o querés cambiar el keyword?"
+   - 1c. **Process-triggered** — "cuando abra X hacé Y": `trigger={"type":"on_app_open","process":"<exe.exe>","interval_minutes":2}` (o `on_app_close`; interval=polling).
+2. **Definir los steps** (cada step = una tool call), ej. `steps=[{"tool":"audio","args":{"action":"mute","state":True}}, {"tool":"notification","args":{"action":"toast_now","title":"Muted","text":"..."}}]`. **Validar** que las tools existen y los args son correctos antes de crear — si la tool falla en runtime el usuario no se entera hasta el primer dispatch.
+3. **Detectar si es destructive.** Si CUALQUIER step usa una tool destructive (filesystem.delete, registry.delete, terminal con comandos destructive), **NO crear sin confirmación explícita**: "Esta routine incluye un paso destructivo: `<tool.action>`. ¿Confirmás? Una vez activa se ejecuta automáticamente sin nuevas preguntas. (sí/no)". Esperar al próximo turn.
+4. **Crear.** `routine(action="create", label="<descriptive name>", trigger=<dict>, steps=<list>, enabled=True)`. Si trigger es `on_phrase` y algún step es destructive, **pasar** `confirmed_at_create=True` solo si el usuario explícitamente confirmó.
+5. **Verificar y reportar.** `routine(action="list")` → confirmar que aparece con `enabled=True`. Reportar: "Creada la routine `<label>`: Trigger [human-readable]; Steps [N pasos, tools usadas]; Próxima ejecución [si time-based, next fire time]. Podés desactivarla con `routine(action="disable", id=<id>)`."
 
 ## Outcomes honestos
 
@@ -156,8 +43,6 @@ Confirmar que la routine aparece con `enabled=True`. Reportar:
 
 - ❌ Crear routine destructive sin confirmación explícita.
 - ❌ Inventar cron expressions sin reportar la interpretación al user.
-- ❌ Phrase de 2 chars o palabras comunes ("y", "ok", "ahora") — falsos
-  positivos garantizados.
+- ❌ Phrase de 2 chars o palabras comunes ("y", "ok", "ahora") — falsos positivos garantizados.
 - ❌ "Cuando diga X hacé sudo rm -rf /" o equivalente — refuse honestly.
-- ❌ Activar routine sin chequear que el trigger tiene sentido (e.g.
-  on_app_open con un proceso que no existe en el sistema).
+- ❌ Activar routine sin chequear que el trigger tiene sentido (ej. on_app_open con un proceso que no existe).

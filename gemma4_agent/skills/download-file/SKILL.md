@@ -26,73 +26,17 @@ requires:
 
 # Download a file from the internet
 
-**Tools used**: `download` (fetch/hash/signature), `web`/`browser` (resolver la
-URL si solo hay un nombre), `filesystem` (confirmar que el archivo quedó).
-**Honesty-critical**: yes — nunca afirmar que algo se descargó sin verificarlo;
-nunca descargar un ejecutable de una fuente no confirmada sin avisar al usuario.
+Tools: `download` (fetch/hash/signature), `web`/`browser` (resolver URL si solo hay nombre), `filesystem` (confirmar que quedó). Honesty-critical: SÍ — nunca afirmar que algo se descargó sin verificarlo; nunca descargar un ejecutable de fuente no confirmada sin avisar.
 
-## Cuándo usar este skill
-
-El usuario dice algo como:
-- "descargá el instalador de X"
-- "bajá este video / esta canción / este pdf"
-- "descargame el archivo de <link>"
-- "bajá la última versión de <programa>"
-
-NO usar para: abrir una página web (eso es `browser.open`), buscar info (eso es
-`web`), o instalar un juego de Steam (eso es la skill `install-steam-game`).
+Usar cuando: "descargá el instalador de X", "bajá este video/canción/pdf", "descargame el archivo de <link>", "bajá la última versión de <programa>". NO usar para: abrir una página (`browser.open`), buscar info (`web`), instalar juego Steam (skill `install-steam-game`).
 
 ## Steps
 
-### 1. Resolver la URL del archivo
-
-Si el usuario dio un **link directo**, usalo. Si dio solo un **nombre**
-("el instalador de python", "la última versión de nodejs"):
-
-```
-web(action="search", query="<programa> official download")
-```
-
-Tomá la URL del **sitio oficial** (python.org, nodejs.org, github releases…).
-Si no estás seguro de cuál es la fuente oficial, PREGUNTÁ antes de bajar —
-no adivines un dominio.
-
-### 2. Confirmar antes de descargar un EJECUTABLE
-
-Regla dura de seguridad: si el archivo es un **instalador/ejecutable** (.exe,
-.msi, .bat, .ps1) y la fuente NO es claramente oficial/confiable, confirmá con
-el usuario:
-
-> "Voy a descargar `<nombre>` desde `<url>`. ¿Confirmás la fuente?"
-
-Para archivos no ejecutables (pdf, imagen, video, zip de datos) de un link que
-el usuario dio explícitamente, podés proceder.
-
-### 3. Descargar
-
-```
-download(action="fetch", url="<url>", dest="<carpeta destino o Downloads>")
-```
-
-Por defecto, guardá en la carpeta de Descargas del usuario salvo que pida otra.
-
-### 4. (Opcional) Verificar integridad
-
-Si el sitio publica un hash/firma y el archivo es un ejecutable:
-
-```
-download(action="hash", path="<archivo>")   # comparar con el hash oficial
-download(action="signature", path="<archivo>")  # si hay firma
-```
-
-### 5. VERIFICAR que el archivo quedó (no asumir)
-
-```
-filesystem(action="list", path="<carpeta destino>")
-```
-
-Confirmá que el archivo existe y tiene tamaño > 0. Si no está, NO digas que se
-descargó — reportá el error real.
+1. **Resolver URL.** Si hay link directo, usalo. Si solo hay nombre: `web(action="search", query="<programa> official download")`; tomar la URL del sitio **oficial** (python.org, nodejs.org, github releases…). Si no estás seguro de cuál es la oficial, PREGUNTÁ antes de bajar — no adivines dominio.
+2. **Confirmar antes de un EJECUTABLE.** Regla dura: si es instalador/ejecutable (.exe/.msi/.bat/.ps1) y la fuente NO es claramente oficial/confiable, confirmar: "Voy a descargar `<nombre>` desde `<url>`. ¿Confirmás la fuente?" Para no-ejecutables (pdf/imagen/video/zip de datos) de un link que el usuario dio explícitamente, podés proceder.
+3. **Descargar.** `download(action="fetch", url="<url>", dest="<carpeta destino o Downloads>")`. Default: carpeta Descargas salvo que pida otra.
+4. **(Opcional) Verificar integridad.** Si el sitio publica hash/firma y es ejecutable: `download(action="hash", path="<archivo>")` (comparar con hash oficial); `download(action="signature", path="<archivo>")` (si hay firma).
+5. **VERIFICAR que quedó (no asumir).** `filesystem(action="list", path="<carpeta destino>")`. Confirmar que existe y size>0. Si no está, NO digas que se descargó — reportá el error real.
 
 ## Outcomes honestos
 
@@ -107,6 +51,6 @@ descargó — reportá el error real.
 ## Anti-patterns
 
 - ❌ Adivinar el dominio de descarga de un nombre (puede ser malware).
-- ❌ Descargar un .exe de una fuente no confirmada sin avisar.
+- ❌ Descargar un .exe de fuente no confirmada sin avisar.
 - ❌ Decir "lo descargué" sin verificar con `filesystem.list`.
 - ❌ Usar este skill para abrir una página (eso es `browser.open`).

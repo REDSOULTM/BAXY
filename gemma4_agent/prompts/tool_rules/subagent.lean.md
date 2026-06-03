@@ -1,0 +1,2 @@
+subagent(action="run", task="<focused instruction>", max_turns=4): ONLY when the parent task has a clearly bounded sub-task benefiting from a fresh smaller context (e.g. "scan Steam library, return only metroidvania-tagged games"). Child starts EMPTY history + only the tools you pass in tools=[...] (subset).
+Do NOT use for the main user request (parent's job). No recursive subagent chaining unless the user explicitly asks.

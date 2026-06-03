@@ -24,68 +24,16 @@ metadata:
 
 # Research and summarize
 
-**Tools used**: `web`, `document`, `knowledge`, `memory`.
-**Honesty-critical**: yes — never invent source URLs or quotes; report what
-the tool returned, including failures.
+Tools: `web`, `document`, `knowledge`, `memory`. Honesty-critical: SÍ — nunca inventar URLs ni quotes; reportar lo que la tool devolvió, incluidas las fallas.
 
-## Cuándo usar este skill
-
-El usuario dice algo como:
-- "investigá X y resumime"
-- "buscá info sobre X en internet"
-- "compará Y vs Z según fuentes"
-- "armame un resumen de noticias sobre W"
-- "qué dicen los reviews de <producto>"
-
-NO usar para preguntas de conocimiento general que el LLM puede responder
-directamente ("quién es Batman", "qué es Python"). Este skill es para
-**información actual** que requiere fetch externo.
+Usar cuando: "investigá X y resumime", "buscá info sobre X en internet", "compará Y vs Z según fuentes", "armame un resumen de noticias sobre W", "qué dicen los reviews de <producto>". NO usar para conocimiento general que el LLM responde directo ("quién es Batman", "qué es Python"). Este skill es para **información actual** que requiere fetch externo.
 
 ## Steps
 
-### 1. Multi-source research
-
-```
-web(action="research", query="<topic>", search_limit=6, read_limit=3, per_page_chars=4500)
-```
-
-Esto hace search → extract content de top-3 results. Devuelve:
-- `sources`: lista con `title`, `url`, `excerpt`, `status_code`.
-- `failures`: URLs que no se pudieron leer (con error).
-- `source_count`: cuántas se leyeron exitosamente.
-
-**Si `source_count == 0`**: NO inventar. Reportar: "No pude leer ninguna
-fuente para '<topic>'. ¿Querés que pruebe con otros términos?"
-
-### 2. (Opcional) Ingest a knowledge base local
-
-Si el usuario quiere que el contenido quede disponible para futuras
-consultas:
-
-```
-knowledge(action="ingest", text="<excerpt>", source="<url>", title="<page title>")
-```
-
-Una llamada por source. Después se puede consultar via
-`knowledge(action="search", query=...)` sin re-fetch.
-
-### 3. Escribir resumen honesto
-
-Reglas para el resumen:
-- **Citar fuentes**: cada afirmación debe tener URL asociada
-  (e.g. "Según <url>, X").
-- **No promediar** opiniones contradictorias como si fueran consenso.
-  Si 2 sources dicen A y 1 source dice B, reportar ambos.
-- **Reconocer incertidumbre**: si las sources discrepan, decirlo.
-- **No extrapolar** más allá de lo que las fuentes dicen.
-
-### 4. (Opcional) Guardar nota en memoria
-
-Si el usuario lo pide o si es un fact que vale la pena recordar:
-
-```
-memory(action="save", key="<topic>", value="<conclusion en 1-2 frases + fecha>")
-```
+1. **Multi-source research.** `web(action="research", query="<topic>", search_limit=6, read_limit=3, per_page_chars=4500)`. Hace search → extract de top-3. Devuelve: `sources` (title/url/excerpt/status_code), `failures` (URLs no leídas + error), `source_count`. **Si `source_count == 0`**: NO inventar. Reportar: "No pude leer ninguna fuente para '<topic>'. ¿Pruebo con otros términos?"
+2. **(Opcional) Ingest a knowledge base local.** Si el usuario quiere que quede para futuras consultas: `knowledge(action="ingest", text="<excerpt>", source="<url>", title="<page title>")` — una llamada por source. Luego se consulta vía `knowledge(action="search", query=...)` sin re-fetch.
+3. **Escribir resumen honesto.** Reglas: **citar fuentes** (cada afirmación con su URL, ej. "Según <url>, X"); **no promediar** opiniones contradictorias como consenso (si 2 dicen A y 1 dice B, reportar ambos); **reconocer incertidumbre** si discrepan; **no extrapolar** más allá de lo que las fuentes dicen.
+4. **(Opcional) Guardar nota en memoria.** Si lo pide o vale la pena recordar: `memory(action="save", key="<topic>", value="<conclusión en 1-2 frases + fecha>")`.
 
 ## Outcomes honestos
 
