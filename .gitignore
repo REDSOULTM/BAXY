@@ -65,6 +65,13 @@ unsloth_compiled_cache/
 /Contextoclaude.md
 /_live_eager_tuned.py
 /_hagrid_license_extracted.txt
+# Capturas/proofs de diag bajo scripts/_diag (PNGs y subdirs de screenshots, no fuente)
+scripts/_diag/*.png
+scripts/_diag/_battery/
+scripts/_diag/_ocr_click/
+scripts/_diag/_wsp/
+# Backups .bak de reskins de UI (no fuente)
+*.bak
 
 # IDE
 .vscode/
