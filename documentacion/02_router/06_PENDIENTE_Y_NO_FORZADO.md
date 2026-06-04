@@ -62,6 +62,17 @@ Distinguir hechos medidos de hipótesis.
   features de un encoder con cobertura DE débil; reentrenarlo no arregla
   features malas.
 
+### A8. Few-shot turn-specific en formato nativo (SPRINT 5 del PLAN_MAESTRO)
+- **Qué sería:** el router sintetiza un ejemplo `call:tool{...}` por turno para
+  enseñarle al 4B la FORMA de la invocación específica.
+- **Por qué NO:** **DESCARTADO** (BACKLOG_MAESTRO). El baseline ya da 6/6 en
+  tool-calling; el prefill mal hecho ROMPE el tool-call (la memoria del repo:
+  prefill `<|tool_call|>` fue mala apuesta, thinking es load-bearing 4/6→0/6).
+  Complejidad + riesgo sin ganancia medible.
+- **Lo que SÍ se shippeó del SPRINT 5:** el reorden **anti-primacy** (`b812841`,
+  gate `GEMMA4_ANTIPRIMACY`, default ON) — ver
+  [05_HISTORIAL_SPRINTS](05_HISTORIAL_SPRINTS.md).
+
 ---
 
 ## B. DIFERIDO (vale la pena, pero requiere presupuesto)
@@ -74,9 +85,13 @@ Distinguir hechos medidos de hipótesis.
   (paraphrase-multilingual-MiniLM) con cobertura débil del DE corto. "mach"
   (hacer) embebe en chitchat (chit 0.41 > act 0.35). Ninguna capa de arriba lo
   arregla (probado en A6, A7).
-- **Costo:** ~12 h en GPU 4060 Ti, venv `.venv_router_train` (3.11 + CUDA).
-- **Presupuesto a estimar antes de lanzar:** tiempo (~12h), VRAM, disco; qué
-  pasa si falla a mitad. NO lanzar a ciegas (regla del proyecto).
+- **Costo:** el entreno del encoder en sí es **rápido (~2-3 min en la 4060 Ti**,
+  3 epochs / batch 64 — medido en el retrain 2026-05-30; la cifra histórica de
+  "~12h" era una estimación pesimista nunca observada). El COSTO real está en
+  GENERAR y CURAR el corpus DE multilingüe antes (B2), no en el GPU-time. Venv
+  `.venv_router_train` (3.11 + CUDA).
+- **Presupuesto a estimar antes de lanzar:** el grueso es construir el corpus DE
+  (B2); el training es minutos. NO lanzar a ciegas (regla del proyecto).
 - **Receta:** `scripts/train_router_encoder.py` → `scripts/router_ft_pipeline.py`
   (re-deriva Tool2Vec + abstain_head + tool_head con el encoder nuevo).
 - **Datos a agregar primero:** más pares tool2vec en DE (y acentos diversos) para
@@ -92,19 +107,42 @@ Distinguir hechos medidos de hipótesis.
 - **Qué hacer:** construir un held-out diverso por idioma (no fine-tune sobre una
   voz/idioma — eso degrada a los demás, ley del producto).
 
-### B3. Revisar cap = 5
+### B3. Revisar cap = 5 — **[DECIDIDO: NO tocar]**
 - **Estado:** `MAX_SELECTED_TOOLS=5` fue workaround del crash CUDA #22527, que
   flash-attn-OFF ya eliminó.
-- **Qué medir:** ¿subir el cap mejora recall sin degradar el tool-calling del 4B?
-  PERO ojo: el norte del usuario es MENOS tools, no más. Subir el cap va en
-  contra de la precisión. Medir el trade-off real con el 4B en vivo antes de
-  tocar. Probablemente NO se toca.
+- **Decisión (BACKLOG_MAESTRO, "cap=5→8 ❌ NO tocar"):** aunque el crash ya está
+  muerto, el norte del usuario es **precisión > recall (MENOS tools)**. Subir el
+  cap va en contra del norte. **No se toca.** Queda el override
+  `GEMMA4_MAX_SELECTED_TOOLS` por si hace falta un A/B puntual.
 
 ### B4. Calibración del abstain head por idioma
 - **Qué sería:** umbrales de abstención per-idioma (el DE necesita un umbral más
   permisivo que el ES).
 - **Bloqueado por:** B1 (sin un encoder que separe el DE, el umbral no alcanza) y
   B2 (sin corpus DE no se calibra honestamente).
+
+### B5. Ruido `wants_web_store` falso-positivo (MEDIDO, sin aplicar)
+- **Qué pasa:** `wants_web_store` (`planner.py:835-846`) sobre-dispara en
+  menciones de entretenimiento/celebridad ("quién es batman", "pon stranger
+  things") → inyecta `browser+browser_real` de ruido en **189 tool-turns**.
+- **Medición A/B (OFF):** ruido **1.519→1.453**, recall **SUBE** 0.9929→0.9953.
+- **Fix propuesto:** exigir verbo de compra/nav-a-sitio, o no insertar el par
+  `browser` cuando `wants_knowledge`.
+- **Por qué NO aplicado todavía:** toca el clasificador semántico → exige
+  validación EN VIVO (regla #3.5 de CLAUDE.md). Está en el
+  [BACKLOG_MAESTRO](../_backlog/BACKLOG_MAESTRO.md) como ALTO.
+
+### B6. Ruido `web→source_manager` + head débil (MEDIDO, los 3 canarios)
+- **Qué pasa:** "qué día es hoy" / "what time is it" → `web` (PROHIBIDO: es dato
+  local, no de internet); "qué es pytest" → `web+knowledge+source_manager`
+  (debería ser EMPTY).
+- **Causa raíz medida:** el per-tool head dispara `web` con margen débil
+  (0.05–0.10) EVADIENDO la guarda `_LOCAL_FACT` que SÍ funciona en
+  `_suggest_tools`; además `_related_tools('web')` arrastra `source_manager`
+  (`planner.py:1503` + head firing :637-660).
+- **Fix propuesto:** aplicar la guarda local-fact / wants-knowledge también al
+  head; `source_manager` solo con intent explícito.
+- **Por qué NO aplicado todavía:** router en hot-path → exige validación EN VIVO.
 
 ---
 
@@ -143,10 +181,12 @@ presupuesto de GPU que aún no se gastó.
 
 | Prioridad | Ítem | Bloqueante |
 |-----------|------|------------|
-| 1 | B2 — corpus multilingüe de eval | ninguno (es construcción de datos) |
-| 2 | B1 — encoder FT con datos DE | presupuesto GPU 12h + B2 para medir |
-| 3 | B4 — calibración abstain por idioma | B1 + B2 |
-| — | B3 — revisar cap=5 | medir con 4B en vivo (probablemente no tocar) |
+| 1 | B5/B6 — ruido medido (`wants_web_store`, `web→source_manager`) | validación EN VIVO (no GPU; el A/B ya muestra recall↑) |
+| 2 | B2 — corpus multilingüe de eval | ninguno (es construcción de datos) |
+| 3 | B1 — encoder FT con datos DE | B2 para medir (el GPU-time es minutos, no 12h) |
+| 4 | B4 — calibración abstain por idioma | B1 + B2 |
+| — | B3 — revisar cap=5 | **DECIDIDO: no tocar** (norte = menos tools) |
 
 El orden importa: **sin B2 (corpus) no se puede medir B1/B4 honestamente.**
-Construir el corpus multilingüe primero.
+Construir el corpus multilingüe primero. B5/B6 son los únicos con ganancia de
+precisión MEDIDA disponible hoy — solo les falta el pase EN VIVO.

@@ -1,5 +1,12 @@
 # MISIÓN COMPLETA — Handoff anti-compact (2026-06-02)
 
+> **DOCUMENTO HISTÓRICO + estado final del deploy.** Documenta el cierre del FT: el modelo
+> **ya está desplegado in-place** (sección "ESTADO DEL MODELO" + "CIERRE POST-COMPACT", esta
+> última confirma el deploy por hash de cabecera y cuenta los 2 bugs que la validación en
+> vivo cazó). La sección "PENDIENTE" de abajo es del momento de escritura; varios ítems se
+> resolvieron en el "CIERRE POST-COMPACT" (ver notas inline). Producto = **Baxy** (el
+> documento dice "Gemma 4 Agent"/"el agente"; el MODELO es Gemma 4 de Google).
+
 ## LO QUE EL USUARIO PIDIÓ (exacto, para cumplir bien)
 1. Fine-tunear Gemma 4 para asistente de voz local en **4GB VRAM**, dándole personalidad.
 2. **Optimizar al MÁXIMO TODO el sistema de prompts** — no solo los 74 tool_rules, sino
@@ -47,6 +54,13 @@ Audit completo entregó (archivo:línea, ahorro, validación):
   leans_with_missing_rules (si un lean perdió una regla, REGENERARLO YA).
 
 ## PENDIENTE (en orden, para terminar la misión)
+
+> [ACTUALIZADO] Ítems 5 (handler smart_home) y la validación en vivo (ítems 2/6) se
+> COMPLETARON en el "CIERRE POST-COMPACT" de abajo. Los ítems 3 (optimización de código
+> TIER 1) y 4 (tool_schemas PHASE-2) quedaron: PHASE-2 fue MEDIDA y RECHAZADA (ya óptima,
+> ver "CIERRE POST-COMPACT"); las de código TIER 1 siguen auditadas pero NO aplicadas
+> (requieren validación viva). El modelo en sí ya está desplegado.
+
 1. **Revisar output de wip3mgf6w**: si algún lean perdió regla → regenerar. Aplicar safe_now.
 2. **VALIDACIÓN VIVA A/B de TODO** (harness `dataset_finetune/scripts/_validate_leans_live.py`):
    bootear agente, correr 15 frases con GEMMA4_LEAN_RULES=1 vs =0, confirmar 0 regresión routing.
@@ -54,9 +68,9 @@ Audit completo entregó (archivo:línea, ahorro, validación):
 3. **Aplicar optimizaciones de código** TIER 1 (personas, intent_validator, taste_profile — riesgo bajo)
    con validación viva. TIER 3 (accessibility) SOLO con sign-off usuario real.
 4. **tool_schemas PHASE-2** (params opcionales, gate GEMMA4_LEAN_PARAMETERS, -500/800 tok/turno).
-5. **Borrar handler smart_home**: `gemma4_agent/domain_tools/smart_home.py` + re-export
-   `domain_tools/__init__.py:289` (schema+router YA limpios; falta el handler).
-6. **Validación en vivo final** (regla #3.5): frases reales + 3 perfiles a11y con el modelo nuevo.
+5. ~~**Borrar handler smart_home**~~ [COMPLETADO] handler + keyword rule del planner + refs
+   eliminados (ver "CIERRE POST-COMPACT" BUG A/B; el LLM ahora admite que no tiene la capacidad).
+6. ~~**Validación en vivo final** (regla #3.5)~~ [COMPLETADO] hecha con `run_content`; cazó 2 bugs.
 
 ## GOTCHAS CLAVE
 - Validar TODO en vivo (regla #3.5): cada regla de prompt codifica un bugfix; comprimir sin validar = riesgo.

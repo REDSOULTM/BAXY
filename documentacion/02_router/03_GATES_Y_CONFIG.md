@@ -16,6 +16,7 @@ reales). Un cambio que mejora un caso suele romper otros. La regla dura es
 |----------|--------:|--------|
 | `GEMMA4_MAX_SELECTED_TOOLS` | `5` | Máximo de tools de dominio en el subset. Disciplina de precisión (más degrada el 4B). Ver nota cap=5 en [01_ARQUITECTURA](01_ARQUITECTURA.md). |
 | `GEMMA4_RELATED_BUDGET` | `1` | Cuántas tools "relacionadas" (deps especulativas) agregar. **S1a lo bajó 3→1**: el related metía ruido puro (steam→app+window+verify) sin proteger recall. |
+| `GEMMA4_ANTIPRIMACY` | `1` (ON) | **S5 (`b812841`).** Reordena el subset tras el cap: la tool de DOMINIO de mayor score va PRIMERA (sesgo de primacía del LLM). NO cambia el conjunto, solo el orden. `pending_intent` queda fija al frente; infra (session/verify/state/dependency/safety) al final (`planner.py:188,906-913`). |
 
 ---
 
@@ -88,7 +89,7 @@ reales). Un cambio que mejora un caso suele romper otros. La regla dura es
 | Variable | Default | Efecto |
 |----------|--------:|--------|
 | `GEMMA4_MCP` | gate | Activa el enrolamiento de tools MCP al router. |
-| `GEMMA4_MCP_PEAK_KEEP` | `0.30` | Barra separada para tools MCP (viven en rango coseno más bajo). Una MCP que la cruza se promueve al frente. |
+| `GEMMA4_MCP_PEAK_KEEP` | `0.40` | Barra separada para tools MCP (viven en rango coseno más bajo). Una MCP que la cruza se promueve al frente. **Subido 0.30→0.40 al regenerar el encoder FT (3ep):** con la weather MCP enrolada, las relevantes ("qué clima/temperatura") caen 0.455–0.685 y "qué hora es" 0.304 (se colaba con 0.30); el gap limpio [0.304, 0.455] ubica el bar en 0.40 (`planner.py:67`). |
 
 ---
 

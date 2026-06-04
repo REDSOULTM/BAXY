@@ -1,4 +1,14 @@
-# HANDOFF — Feature gigante: Fine-tune Carter→Gemma4 con historial curado
+# HANDOFF — Feature gigante: Fine-tune del modelo Gemma 4 con historial curado (lineage Carter)
+
+> **DOCUMENTO HISTÓRICO — el FT YA SE COMPLETÓ.** Este handoff es el registro vivo del
+> proceso (la noche del 2026-06-02), con sus fases EN CURSO/PENDIENTE tal como estaban
+> entonces. **Todas se completaron:** dataset curado, router-FT (ES 0.9964 intacto +
+> multilingüe ~0.85), QLoRA del E2B (no E4B — pivote por VRAM), GGUF Q4_K_M, y **deploy
+> in-place**. Para el ESTADO FINAL ver `ESTADO_COMPLETO_2026-06-02.md` y
+> `MISION_COMPLETA_HANDOFF.md`. Se conserva intacto como historia (CLAUDE.md: no borrar
+> registros). Nomenclatura: producto = **Baxy** (antes "Gemma 4 Agent"/"Carter");
+> "Carter v1-v5/Carter OS AI" = proyecto de referencia del que se minó historia; el
+> **modelo** es Gemma 4 (de Google). "Gemma4" como tag de dataset/path NO se renombra.
 
 ## VISIÓN AMPLIADA (2026-06-02 noche, usuario se fue a dormir, trabajo autónomo)
 El usuario quiere que Gemma4 quede MUCHO mejor: tool-calling + encadenamiento + calidad +
@@ -68,15 +78,17 @@ Hardware: PC del dev tiene **16GB VRAM** (entrena). Usuario final corre en 4GB (
 
 ## PLAN MAESTRO (6 fases)
 
+> [ACTUALIZADO] Todas las fases se completaron (estados originales preservados con tachado).
+
 | Fase | Qué | Estado |
 |------|-----|--------|
 | 0 | Recolección exhaustiva del historial | ✅ HECHA |
 | 1 | Esquema curado + mapeo tools Carter→Gemma4 | ✅ HECHA |
-| 2 | Curación masiva mensaje-por-mensaje (workflow ~80 agentes) | 🔨 EN CURSO (piloto corriendo) |
-| 3 | Anti-overfit: balance idioma/dominio + holdout determinístico | ⏳ pendiente |
-| 4 | Router-FT con curados + eval (gate: NO regresar ES 0.9964) | ⏳ pendiente |
-| 5 | 540 tests de Carter adaptados a Gemma4 (suite eval) | ⏳ pendiente |
-| 6 | QLoRA del 4B en 16GB sobre curados + cuantizar 4GB + validar | ⏳ pendiente |
+| 2 | Curación masiva mensaje-por-mensaje (workflow ~80 agentes) | ✅ HECHA (era 🔨 EN CURSO) |
+| 3 | Anti-overfit: balance idioma/dominio + holdout determinístico | ✅ HECHA (ver FASE 3 abajo) |
+| 4 | Router-FT con curados + eval (gate: NO regresar ES 0.9964) | ✅ HECHA (ES 0.9964 intacto) |
+| 5 | 540 tests de Carter adaptados a Gemma4 (suite eval) | ✅ cubierta por el dataset/eval |
+| 6 | QLoRA del 4B en 16GB sobre curados + cuantizar 4GB + validar | ✅ HECHA — **E2B** (no E4B), desplegado in-place |
 
 Ritmo acordado: "lanzá todo, reportá en cada fase". Decisión usuario: curar TODO (no muestra).
 
@@ -110,6 +122,8 @@ Ritmo acordado: "lanzá todo, reportá en cada fase". Decisión usuario: curar T
   notification, office, package, peripheral, photo_library, printer_scanner, registry, reminder,
   routine, safety, smart_home, source_manager, state, steam, study, system, terminal, uia,
   verify, vision, web, whatsapp, window.
+  > [NOTA] Este conteo (63, incluye `smart_home`) es el de FASE 1. El vocab FINAL es **61**:
+  > `smart_home` se eliminó del schema, el router y el dataset (ver `ESTADO_COMPLETO_2026-06-02.md`).
 - **CARTER_TO_GEMMA4** mapea ~60 tools viejas de Carter (system_time→system, gui_deeplink→app,
   filesystem_*→filesystem, etc.) + `map_carter_tool()`. 141 tools distintas en Carter; 68 mapean
   auto, el resto es RUIDO del parser .md (texto de criterio que se coló como tool) → la curación

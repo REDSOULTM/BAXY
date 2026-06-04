@@ -20,6 +20,8 @@
 | **S3e/f** | — | Medir collapse de computer_use/source_manager/media | **RECHAZADOS** (pierden recall) → techo de poda |
 | **S5** | `4ce36d5` | Invariantes de robustez (5 tests) | Protege contra desconfiguración al agregar tools/MCPs |
 | **S6** | `2ed5f62` | Descripciones multilingües audio/media | **IT/PT/FR recuperados a 100%**; DE = límite encoder base |
+| **S5-AP** | `b812841` | Anti-primacy ordering del subset (post-cap) | Estaba mergeado pero **INERTE** (`schemas_for_names` descartaba el orden con un `set`); fix: orden por posición en `names` + cache keyed por tuple. E2E: browser antes que media llega al LLM; 27/27 verde |
+| **(regen)** | 2026-06-02 | Regeneración encoder FT + cabezas + eliminación `smart_home` | holdout ES 0.9964 vigente; `tool_head` 62→**61** tools; fix desalineación de índices |
 
 ---
 
@@ -94,11 +96,44 @@ invariant.py` (5 tests). Hallazgo: 68 tools en schema, tool_head conoce 62; las
 descripciones↔schema; enrolar 12 MCPs irrelevantes no quita nativa, no se cuela,
 de-enrolar restaura subset EXACTO.
 
+> **[ACTUALIZADO 2026-06-02]** Tras eliminar `smart_home`, el `tool_head` pasó a
+> conocer **61 tools** (no 62) y las de dominio bajaron en consecuencia. El test
+> calcula los conteos dinámicamente (no hardcodea 62/68), así que sigue vigente
+> sin tocarlo; los números de arriba son los del momento del sprint.
+
 ### S6 — Multilingüe (ley "uso universal")
 Fuga medida: recall audio/media por idioma — DE 0/5 (el peor). Fix: enriquecer
 la DESCRIPCIÓN SEMÁNTICA de audio (volumen) y media (reproducir) en DE/IT/PT/FR.
 **Recupera IT/PT/FR a 100%.** 0 regresión. Límite del alemán: ver
 [06_PENDIENTE_Y_NO_FORZADO](06_PENDIENTE_Y_NO_FORZADO.md).
+
+---
+
+### S5-AP — Anti-primacy ordering (commit `b812841`, 2026-06-02/03)
+Del PLAN_MAESTRO (SPRINT 5, eje D): poner la tool específica/de-mayor-confianza
+PRIMERA en el subset para subir P(el 4B la elija) — efecto de primacía ("Lost in
+the Middle", arXiv:2307.03172). **Causa raíz contraintuitiva:** el reorden ya
+estaba codeado pero quedaba **INERTE** porque `schemas_for_names` (`tools.py`)
+filtraba por `set`, descartando el orden que el router producía. Fix:
+`schemas_for_names` preserva el orden de `names` + cache keyed por tuple (dos
+subsets con las mismas tools en distinto orden son claves distintas).
+`_antiprimacy_order` (`planner.py:188`) corre DESPUÉS del cap (`planner.py:906-913`):
+no cambia el CONJUNTO, solo el orden; `pending_intent` fija al frente, infra
+(session/verify/state/dependency/safety) al final. Gate `GEMMA4_ANTIPRIMACY=1`
+(default ON). Validado E2E (browser antes que media llega al LLM), 27/27 verde.
+**Honesto:** el margen +5-15pp es de papers genéricos, NO medido en Gemma (el
+router ya está saturado en ES 0.9964); el reorden es seguro porque no cambia el
+conjunto. El few-shot turn-specific del mismo sprint se **DESCARTÓ** (research:
+baseline ya 6/6; prefill mal hecho rompe el tool-call).
+
+### (regen) — Regeneración de artefactos + baja de `smart_home` (2026-06-02)
+Se regeneró el encoder FT + las 3 cabezas (cierra el exemplar-staleness que
+abstenía comandos crispos) y se eliminó la tool `smart_home` de raíz
+(schema+handler+dataset+router-data). El holdout ES **0.9964 sigue vigente**.
+**Gotcha medido:** quitar `smart_home` dejó `tool_head.tools`(61) desalineado de
+los pesos(62) → 13 tools leían el umbral del vecino → "qué es pytest" ofrecía
+`whatsapp`. Fix: quitar la tool del MISMO índice en los 4 arrays paralelos. Ver
+[BACKLOG_MAESTRO](../_backlog/BACKLOG_MAESTRO.md).
 
 ---
 

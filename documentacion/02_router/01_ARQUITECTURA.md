@@ -101,7 +101,21 @@ texto del usuario
 └─────────────────────────────────────────────────────────────────┘
       │
       ▼
-   subset final (≤5 tools de dominio + meta) → al LLM
+┌─────────────────────────────────────────────────────────────────┐
+│ 7. REORDEN ANTI-PRIMACY (_antiprimacy_order)  [S5, b812841]      │
+│    El cap ya decidió QUÉ tools entran; este reorden cambia solo  │
+│    el ORDEN, no el CONJUNTO. La tool de DOMINIO de mayor score   │
+│    va PRIMERA (los LLMs atienden más a lo primero — "Lost in the │
+│    Middle", arXiv:2307.03172). pending_intent queda fija al      │
+│    frente; las tools de infra (session/verify/state/dependency/  │
+│    safety) quedan al final. Gate GEMMA4_ANTIPRIMACY=1 (default). │
+│    [Estaba mergeado pero INERTE hasta b812841: schemas_for_names │
+│     descartaba el orden con un set; fix = preservar orden de     │
+│     `names` + cache keyed por tuple.]                            │
+└─────────────────────────────────────────────────────────────────┘
+      │
+      ▼
+   subset final ordenado (≤5 tools de dominio + meta) → al LLM (modelo Gemma 4 E2B-FT)
 ```
 
 ---
@@ -116,6 +130,7 @@ texto del usuario
 | **Abstain head** | Calibrado | UNA decisión NO-TOOL; mata el ruido en charla/preguntas |
 | **Per-tool head** | Anti-bloat | Subset chico por construcción (cada tool su umbral) |
 | **Reranker (cross-encoder)** | Rescate condicional | Solo en la banda "vacío-pero-no-charla"; el camino común no paga |
+| **Anti-primacy (orden)** | Sesgo de elección | Reordena el subset (la tool top-score primero) para subir P(el 4B la elija). NO cambia el conjunto. [S5, gate `GEMMA4_ANTIPRIMACY`] |
 
 **Regla de no-regresión:** la keyword y el exemplar GARANTIZAN que un comando
 real nunca se silencie; el abstain head solo puede vetar lo que NINGUNA señal

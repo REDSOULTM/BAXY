@@ -94,7 +94,19 @@ python scripts/router_canary_eval.py
 
 ---
 
-## Snapshot actual (2026-05-30)
+## Snapshot (medido 2026-05-30 — PRE-regeneración de artefactos)
+
+> ⚠️ Este snapshot se midió ANTES de:
+> - la regeneración del encoder FT + cabezas del 2026-06-02 (resolvió el
+>   exemplar-staleness; el holdout ES **0.9964 sigue vigente**, confirmado en el
+>   [BACKLOG_MAESTRO](../_backlog/BACKLOG_MAESTRO.md));
+> - la eliminación de `smart_home` y el fix de desalineación del `tool_head`
+>   (62→61 tools);
+> - el SPRINT5 anti-primacy (`b812841`).
+>
+> Las cifras de RUIDO y de logs reales pueden haberse movido levemente. Para el
+> número exacto de HOY, corré `python scripts/router_eval.py`. El gate de
+> no-regresión (recall 0.9964 / NO-TOOL 1.0000) es lo que se mantiene.
 
 ```
 CURADO (1733):

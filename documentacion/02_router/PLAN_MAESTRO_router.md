@@ -1,5 +1,23 @@
 # Plan Maestro — Router de tools al estado máximo (2026-05-29)
 
+> **[ESTADO al 2026-06-04 — leer antes que el plan]** Este es el plan ORIGINAL
+> del 2026-05-29 (producto = "Gemma 4 Agent", hoy **Baxy**; el MODELO sigue
+> siendo Gemma 4). Se conserva como registro. Avances desde entonces:
+> - **SPRINT 0–6 (router mastery):** ejecutados — ver
+>   [05_HISTORIAL_SPRINTS](05_HISTORIAL_SPRINTS.md) (S0–S6).
+> - **SPRINT 5 (eje D):** el **anti-primacy ordering** se SHIPPEÓ (`b812841`,
+>   gate `GEMMA4_ANTIPRIMACY`); el **few-shot turn-specific** y el **prefill
+>   `<|tool_call|>`** se DESCARTARON con medición (ver
+>   [06_PENDIENTE_Y_NO_FORZADO](06_PENDIENTE_Y_NO_FORZADO.md) A8).
+> - **SPRINT 6 (cap=5):** DECIDIDO **no tocar** (norte = menos tools).
+> - **Artefactos regenerados 2026-06-02:** encoder FT + cabezas; `smart_home`
+>   eliminado → `tool_head` ahora **61 tools** (no 62); abstain head: 12
+>   features, bias 1.4445, **threshold 0.69** (no 0.66); encoder meta
+>   **n_pairs 8123**. Las cifras de §1.2/§1.3 abajo son del 2026-05-29 y quedaron
+>   desfasadas en esos detalles (el holdout **0.9964 sigue vigente**).
+> - **PENDIENTE-real:** SPRINT 0–2 (corpus/eval multilingüe) + ruido medido
+>   `wants_web_store` / `web→source_manager` (B5/B6 en el doc 06).
+>
 > Producto de un workflow de 14 agentes que leyó TODO el research de router (9 docs + PDF)
 > + auditó el código + artefactos + corpus. Norte (pedido del usuario): el router debe
 > ofrecer SOLO las tools necesarias — no meter ruido. Recall ya está ~99.6%; el gap real

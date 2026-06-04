@@ -1,5 +1,9 @@
 # Datasets externos — DECISIÓN (research licencias 2026-06-02)
 
+> Nota: este doc dice "63 tools" (el vocab del momento del research). El vocab FINAL es
+> **61 tools** (se eliminó `smart_home`; ver `ESTADO_COMPLETO_2026-06-02.md`). Donde diga 63,
+> entender 61. Producto = **Baxy**; el MODELO es Gemma 4.
+
 Producto se VENDE → solo datasets con licencia comercial-OK y SIN taint de OpenAI/GPT
 (los ToS de OpenAI prohíben entrenar competidores; la etiqueta Apache del repo NO sanea
 outputs de GPT). El dominio propio (~4000 curados + 119 encadenamiento) es el NÚCLEO,
@@ -38,4 +42,10 @@ los externos SUPLEMENTAN (no reemplazan, no diluyen las 63 tools).
   traducir query a es/pt/fr/de/it, recortar reply a estilo voz.
 - Aya/OASST: filtrar por idioma + calidad, aplanar a turnos, recortar a estilo voz hablado.
 
-NO se descargó nada aún (research). Fuentes completas en task a91076713.
+> **[ACTUALIZADO al cierre del FT]** del research a la práctica: el dataset final usó de
+> los externos **Aya (553 ejemplos) + OASST (288)** como aporte conversacional 0-tool
+> multilingüe (ver `ESTADO_COMPLETO_2026-06-02.md` §DATASET). xLAM/BFCL no terminaron en el
+> dataset final; el núcleo propio (cobertura de las 61 tools + flujos multi-paso) quedó como
+> mayoría. La nota original "NO se descargó nada aún" era del momento del research.
+
+Fuentes completas en task a91076713.

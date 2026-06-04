@@ -2,7 +2,10 @@
 
 **Fecha:** 2026-06-02 · **Método:** 4 workflows multi-agente (~46 agentes, verificación
 adversarial) anclados a la build real llama.cpp 9090 (5757c4dcb) y a mediciones del repo.
-**Estado:** investigación cerrada. Ejecución PENDIENTE de OK del usuario.
+**Estado:** investigación cerrada · **EJECUTADA** (el plan recomendado abajo se llevó a
+cabo: E2B-FT entrenado, gate pasado, **desplegado in-place** en `models/E2B/`; ver
+`ESTADO_COMPLETO_2026-06-02.md` y `MISION_COMPLETA_HANDOFF.md`). Este doc se conserva como
+el registro de la decisión y su evidencia. Producto = **Baxy**; el MODELO es Gemma 4.
 
 ---
 
@@ -98,8 +101,9 @@ con cobertura COMPLETA verificada (`llama-imatrix --show-statistics`).
 - (iii) sin regresión por idioma ni en perfiles a11y.
 - Medir vía `agent.run_content` (prod), no crudo. n≥50 con-tool por idioma para significancia.
 
-**PASO 5:** despliegue = reemplazo in-place del GGUF en `models/E2B/` (parity de chat_template
-es automática: prod usa `--jinja` sin path = template embebido en el GGUF). `-fa off` se hereda.
+**PASO 5 [COMPLETADO]:** despliegue = reemplazo in-place del GGUF en `models/E2B/` (parity de
+chat_template es automática: prod usa `--jinja` sin path = template embebido en el GGUF).
+`-fa off` se hereda. Hecho: el `.gguf` de PROD es el FT; base respaldado en `...BASE-BACKUP.gguf`.
 
 ---
 

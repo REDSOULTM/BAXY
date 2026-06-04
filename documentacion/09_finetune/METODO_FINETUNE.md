@@ -1,6 +1,15 @@
 # Método de fine-tuning — DECISIÓN (research 2026-06-02, evidencia citada)
 
-**Veredicto:** entrenar **Gemma 4 E4B-it con LoRA 16-bit** (rank 16-32, target=all-linear) en
+> **[SUPERADO en el target de modelo] — el RESTO del método sigue vigente.** Este doc
+> recomienda el tamaño **E4B**; el proyecto luego **pivoteó a E2B** porque el E4B-FT no
+> entra en 4 GB de VRAM (Q4_K_M ~5 GB) — ver `DECISION_MAESTRA_4GB.md`. El **método** en
+> sí (LoRA/QLoRA en Unsloth → merge bf16 → GGUF `--outtype bf16` → Q4_K_M + imatrix
+> multilingüe, `train_on_responses_only`, gotcha bf16→f16) **se aplicó tal cual al E2B** y
+> sigue siendo la receta correcta; solo cambió E4B→E2B y, por VRAM, se usó **QLoRA-4bit**
+> (no LoRA-16bit). El FT del E2B ya está entrenado y **desplegado in-place** (ver
+> `ESTADO_COMPLETO_2026-06-02.md`). Producto = **Baxy**; el MODELO es Gemma 4 (Google).
+
+**Veredicto [del research original, ver banner]:** entrenar **Gemma 4 E4B-it con LoRA 16-bit** (rank 16-32, target=all-linear) en
 **Unsloth**, mergear en **bf16**, convertir a GGUF `--outtype bf16` (NO f16), cuantizar a
 **Q4_K_M con imatrix multilingüe** para los 4GB del usuario final. QLoRA = plan B si falta VRAM.
 **NO DoRA** (peor calidad a rank bajo + 0 ventaja de latencia post-merge — el "DoRA mejora
