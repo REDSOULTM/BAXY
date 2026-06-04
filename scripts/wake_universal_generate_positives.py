@@ -32,20 +32,39 @@ from wake_universal_voices import HELD_OUT_VOICES
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 log = logging.getLogger("gen_positives")
 
+import os
+
 VOICES_DIR = ROOT / "data" / "wake_universal_eval" / "voices"
-OUT_DIR = ROOT / "data" / "wake_universal_eval" / "positives"
+# Salida y frases parametrizables por env para reusar el MISMO held-out (25 voces,
+# 13 idiomas) con distintas wake words sin duplicar el script. Default = "gemma"
+# (no rompe el held-out histórico). Para Carter: GEMMA4_EVAL_WAKE=carter.
+_WAKE = os.environ.get("GEMMA4_EVAL_WAKE", "gemma").strip().lower()
+OUT_DIR = ROOT / "data" / "wake_universal_eval" / (
+    "positives" if _WAKE == "gemma" else f"positives_{_WAKE}")
 TARGET_SR = 16000
 
 # Phrase variations. Keep the count modest so we hit ~500 total across
-# 25 voices: 25 × 5 × 4 = 500. The phrases cover anglo + latin
-# pronunciations of "hey gemma" since the wake must work for both.
-PHRASE_VARIATIONS = [
-    "hey gemma",
-    "hey gemma.",
-    "Hey Gemma!",
-    "ey gemma",        # Hispanic informal h-drop
-    "hey gema",        # Spanish phonetic
-]
+# 25 voices: 25 × 5 × 4 = 500. The phrases cover anglo + latin pronunciations.
+_PHRASE_SETS = {
+    "gemma": [
+        "hey gemma", "hey gemma.", "Hey Gemma!",
+        "ey gemma",        # Hispanic informal h-drop
+        "hey gema",        # Spanish phonetic
+    ],
+    # El held-out DEBE matchear el patrón entrenado (si no, mide ruido). El modelo
+    # se entrena con "hey carter" (1 patrón), así que el eval usa "hey carter"
+    # variando prosodia + h-drop. Las voces siguen siendo las 25 held-out universales
+    # (nunca vistas en training) — lo único alineado es la FRASE.
+    "carter": [
+        "hey carter", "hey carter.", "Hey Carter!", "ey carter", "ay carter",
+    ],
+    # Held-out de "baxy": mismas frases que el config baxy.yaml (1 patrón, prosodia).
+    # Voces = 25 held-out universales nunca vistas; lo alineado es la FRASE.
+    "baxy": [
+        "baxy", "baxy.", "Baxy!", "baxi", "backsy",
+    ],
+}
+PHRASE_VARIATIONS = _PHRASE_SETS.get(_WAKE, _PHRASE_SETS["gemma"])
 CLIPS_PER_PHRASE = 4  # 4 prosody variants per (voice, phrase)
 
 

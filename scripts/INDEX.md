@@ -20,6 +20,14 @@ automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 - `eval_*.py` / `*_eval.py` — evaluadores oficiales (gates)
 - `setup_*.py` / `download_*.py` — bootstrap
 
+## Wake-word "Baxy" (entrenamiento + GPU)
+
+| script | propósito |
+|---|---|
+| `_train_carter_throttled.py` | Orquestador del entreno de wake-word (generate→augment→train→export). `--config <name>` (default baxy). GPU en las 3 fases, UTF-8, log a archivo, sin OOM. Previene los 7 gotchas (ver `documentacion/03_voz_stt/PLAN_MAESTRO_wake_carter.md`). |
+| `_patch_feature_extractor_gpu.py` | Patchea livekit feature_extractor a CUDA EP (la fase lenta corre en GPU). Patch-en-venv, idempotente, fallback a CPU. |
+| `_diag/_diag_wake_recall_probe.py` | Eval rápido del gate (recall por idioma, onnxruntime puro + throttle, 500 clips en ~12s). NO el eval oficial que cuelga. |
+
 ## Categoría A — Evaluadores oficiales (correr antes/después de cambios grandes)
 
 | script | propósito |

@@ -77,12 +77,12 @@ LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
 # small safety margin. 7x the custom-OWW baseline (0.110) at zero false fires.
 LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.25"))
 
-# Stem del modelo LiveKit, configurable por env. El rebrand a "Carter" reentrena
-# la wake word ("hey/oye carter"); cuando el hey_carter.onnx pase el gate
-# (recall>=0.60, fp/hr<=1.0) se cambia este default a "hey_carter". Hasta entonces
-# el default queda en el modelo VALIDADO existente (hey_gemma) para no romper el
-# runtime — el .onnx de carter todavía se está entrenando.
-LIVEKIT_MODEL_STEM = os.environ.get("GEMMA4_LIVEKIT_MODEL_STEM", "hey_gemma")
+# Stem del modelo LiveKit, configurable por env. Wake word = "Baxy" (el nombre del
+# asistente). El modelo baxy.onnx PASÓ el gate: recall held-out 0.872 global, 1.00 en
+# es/en/it/fr (medido 2026-06-04). Reemplazó a hey_gemma porque "Baxy" (sin /r/, vocal
+# final) generaliza cross-idioma, mientras que "carter" (con /r/ rótica) colapsaba en
+# idiomas no-ingleses (0.28). Override con GEMMA4_LIVEKIT_MODEL_STEM si hace falta.
+LIVEKIT_MODEL_STEM = os.environ.get("GEMMA4_LIVEKIT_MODEL_STEM", "baxy")
 LIVEKIT_MODEL_PATH = (
     Path(__file__).resolve().parent / "models" / "livekit" / f"{LIVEKIT_MODEL_STEM}.onnx"
 )

@@ -89,10 +89,10 @@ STATIC_INVENTORY: dict[str, list[str]] = {
     ],
     # Brand of the assistant. Used by the wake-word transcript suppressor
     # (the LLM downstream shouldn't see the wake phrase as part of the command).
-    # Rebrand a "Carter" (antes "Gemma"): se listan las frases de Carter como
-    # principales; se conservan las de gemma porque el modelo ONNX activo sigue
-    # siendo hey_gemma hasta que hey_carter pase el gate (recall>=0.60, fp/hr<=1.0).
-    "wake_words": ["hey carter", "oye carter", "carter",
+    # Wake word ACTIVA = "Baxy" (modelo baxy.onnx, recall held-out 0.872). Se listan
+    # las variantes de Baxy primero; se conservan gemma/jarvis como alias por si el
+    # usuario las dice (no rompe). "carter" se quitó (su modelo falló el gate).
+    "wake_words": ["baxy", "baxi", "backsy", "hey baxy",
                    "hey gemma", "gemma", "hey jarvis", "jarvis"],
 }
 

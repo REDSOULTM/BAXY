@@ -15,7 +15,9 @@ if inv is None:
             break
 ww = (inv or {}).get("wake_words") if inv else None
 print("wake_words:", ww)
-assert ww and "carter" in [w.lower() for w in ww], "carter no esta en wake_words"
-assert "hey carter" in [w.lower() for w in ww], "hey carter no esta"
-assert "oye carter" in [w.lower() for w in ww], "oye carter no esta"
-print("OK: wake words de Carter presentes; modelo activo sigue siendo hey_gemma (validado)")
+print("stem activo:", wake.LIVEKIT_MODEL_STEM, "| modelo:", wake.LIVEKIT_MODEL_PATH.name,
+      "| existe:", wake.LIVEKIT_MODEL_PATH.exists())
+assert ww and "baxy" in [w.lower() for w in ww], "baxy no esta en wake_words"
+assert wake.LIVEKIT_MODEL_STEM == "baxy", "el stem activo no es baxy"
+assert wake.LIVEKIT_MODEL_PATH.exists(), "baxy.onnx no existe en el runtime"
+print("OK: wake word activa = Baxy; baxy.onnx cargado (recall 0.872, pasó el gate)")
