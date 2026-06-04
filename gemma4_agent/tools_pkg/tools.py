@@ -4343,12 +4343,33 @@ switch ($action) {
             return _err("missing window title/query")
         env = os.environ.copy()
         env["GEMMA4_WINDOW_QUERY"] = title_query
+        # PRESET DIRECCIONAL (fix capacidad): el usuario dice "a la izquierda" /
+        # "mitad derecha" / "lado a lado"; el LLM pasa `position` y el rect se
+        # calcula contra el área de trabajo REAL de la pantalla (en el script PS,
+        # que conoce el tamaño). Si no hay position, usa x/y/width/height crudos
+        # (comportamiento previo, defaults 0/0/1000/700). Estructural, multi-idioma.
+        _pos_raw = str(args.get("position") or args.get("preset") or "").strip().lower()
+        _POS_MAP = {
+            "izquierda": "left", "left": "left", "izq": "left",
+            "derecha": "right", "right": "right", "der": "right",
+            "arriba": "top", "top": "top", "abajo": "bottom", "bottom": "bottom",
+            "mitad izquierda": "left", "mitad derecha": "right",
+            "maximizar": "max", "maximizada": "max", "maximize": "max",
+            "centro": "center", "center": "center", "centrar": "center",
+        }
+        position = ""
+        for k, v in _POS_MAP.items():
+            if k in _pos_raw:
+                position = v
+                break
+        env["GEMMA4_POSITION"] = position
         env["GEMMA4_X"] = str(int(args.get("x", 0)))
         env["GEMMA4_Y"] = str(int(args.get("y", 0)))
         env["GEMMA4_W"] = str(int(args.get("width", 1000)))
         env["GEMMA4_H"] = str(int(args.get("height", 700)))
         script = r"""
 $q=$env:GEMMA4_WINDOW_QUERY.ToLower()
+$pos=$env:GEMMA4_POSITION
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -4356,10 +4377,23 @@ public class Win32 {
   [DllImport("user32.dll")] public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool repaint);
 }
 "@
+Add-Type -AssemblyName System.Windows.Forms
+$wa = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
 $p = Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle.ToLower().Contains($q) } | Select-Object -First 1
 if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q } | ConvertTo-Json; exit 0 }
-[Win32]::MoveWindow($p.MainWindowHandle,[int]$env:GEMMA4_X,[int]$env:GEMMA4_Y,[int]$env:GEMMA4_W,[int]$env:GEMMA4_H,$true) | Out-Null
-[PSCustomObject]@{ ok=$true; title=$p.MainWindowTitle; process=$p.ProcessName; x=$env:GEMMA4_X; y=$env:GEMMA4_Y; width=$env:GEMMA4_W; height=$env:GEMMA4_H } | ConvertTo-Json
+if ($pos) {
+  switch ($pos) {
+    "left"   { $x=$wa.X; $y=$wa.Y; $w=[int]($wa.Width/2); $h=$wa.Height }
+    "right"  { $x=$wa.X+[int]($wa.Width/2); $y=$wa.Y; $w=[int]($wa.Width/2); $h=$wa.Height }
+    "top"    { $x=$wa.X; $y=$wa.Y; $w=$wa.Width; $h=[int]($wa.Height/2) }
+    "bottom" { $x=$wa.X; $y=$wa.Y+[int]($wa.Height/2); $w=$wa.Width; $h=[int]($wa.Height/2) }
+    "max"    { $x=$wa.X; $y=$wa.Y; $w=$wa.Width; $h=$wa.Height }
+    "center" { $w=[int]($wa.Width*0.6); $h=[int]($wa.Height*0.6); $x=$wa.X+[int](($wa.Width-$w)/2); $y=$wa.Y+[int](($wa.Height-$h)/2) }
+    default  { $x=[int]$env:GEMMA4_X; $y=[int]$env:GEMMA4_Y; $w=[int]$env:GEMMA4_W; $h=[int]$env:GEMMA4_H }
+  }
+} else { $x=[int]$env:GEMMA4_X; $y=[int]$env:GEMMA4_Y; $w=[int]$env:GEMMA4_W; $h=[int]$env:GEMMA4_H }
+[Win32]::MoveWindow($p.MainWindowHandle,$x,$y,$w,$h,$true) | Out-Null
+[PSCustomObject]@{ ok=$true; title=$p.MainWindowTitle; process=$p.ProcessName; position=$pos; x=$x; y=$y; width=$w; height=$h } | ConvertTo-Json
 """
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
         ok, data = parse_ps_json(proc.stdout)

@@ -4341,6 +4341,25 @@ class Gemma4Agent:
                     "role": "system",
                     "content": _UNVERIFIED_CLAIM_HINT,
                 })
+            # GUARD CRUZADO intención↔dominio (alto riesgo, gate DEFAULT-OFF hasta
+            # medir en vivo): el reply afirma una operación de VENTANA pero la tool
+            # exitosa fue de dominio-ARCHIVO (mentira medida "moví Notepad y lo
+            # renombré a Notepad_Left.txt"). is_unverified_claim NO lo atrapa porque
+            # la tool (equivocada) "tuvo éxito". Estructural, anti-falso-positivo
+            # medido (7/7). GEMMA4_INTENT_DOMAIN_GUARD=1 lo activa.
+            elif _os.environ.get("GEMMA4_INTENT_DOMAIN_GUARD", "0").strip().lower() \
+                    in {"1", "true", "yes", "on"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        intent_domain_mismatch as _idm,
+                        INTENT_DOMAIN_MISMATCH_HINT as _idm_hint)
+                    if _idm(getattr(self, "_current_user_text", "") or "",
+                            assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="intent_domain_mismatch")
+                        self.history.append({"role": "system", "content": _idm_hint})
+                except Exception:
+                    pass
             # MOVILIDAD (B3): si el modo manos-libres está activo y el
             # reply le PIDIÓ al usuario una acción manual (clic/tecla/
             # typeo), inyectar la corrección — el agente debe ACTUAR, no

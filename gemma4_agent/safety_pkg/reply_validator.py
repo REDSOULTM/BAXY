@@ -209,6 +209,87 @@ UNVERIFIED_CLAIM_REGEN_HINT = (
 )
 
 
+# Dominio de cada tool (familias incompatibles). NO es lista de apps: es la
+# taxonomía estructural de QUÉ recurso del SO toca cada tool. Acotado a los
+# dominios donde se midió el bug (ventana vs archivo, etc.).
+_TOOL_DOMAIN = {
+    "window": "window", "filesystem": "file", "office": "file",
+    "app": "app", "steam": "app", "game_launcher": "app",
+    "browser": "web", "browser_real": "web", "web": "web",
+    "media": "media", "audio": "audio", "system": "system",
+    "notes_tasks": "notes", "memory": "memory", "knowledge": "knowledge",
+    "whatsapp": "messaging", "computer_use": "computer_use", "gui": "gui",
+    "clipboard": "clipboard", "vision": "vision",
+}
+# Señal de que el USER pidió una operación de VENTANA (mover/foco/min/max/
+# restaurar una ventana). Estructural, multi-idioma, mide la FORMA. Pensado
+# para el bug "mueve Notepad a la izquierda" -> filesystem.rename + mentira.
+_INTENT_WINDOW_RE = re.compile(
+    r"\b(?:mueve|mov[ée]\w*|mover|move|coloca|pon[ée]?)\b[^.]{0,40}\b"
+    r"(?:izquierda|derecha|arriba|abajo|left|right|top|bottom|mitad|half|"
+    r"lado\s+a\s+lado|side\s+by\s+side)\b"
+    r"|\b(?:minimiz|maximiz|restaur|restore|foco|focus|enfoc|"
+    r"trae(?:r)?\s+al\s+frente|bring\s+to\s+front)\w*\b"
+    # "mover/mové LA VENTANA ..." (ventana explícita) = intención-ventana inequívoca
+    r"|\b(?:mueve|mov[ée]\w*|mover|move)\b[^.]{0,15}\bventana\b",
+    re.IGNORECASE)
+# Afirmación-de-efecto: el detector por embeddings (_reply_asserts_effect) es
+# frágil con fraseos compuestos ("moví X y lo renombré"). Para el guard cruzado
+# (que YA tiene contexto fuerte: intención-ventana + tool-archivo exitosa), un
+# reply que ABRE con un marcador de acción-hecha basta como afirmación. Mide la
+# FORMA del inicio del reply, multi-idioma.
+_EFFECT_LEAD_RE = re.compile(
+    r"^\s*(?:listo|hecho|done|ok|mov[íi]|renombr[ée]|abr[íi]|cerr[ée]|"
+    r"hice|cambi[ée]|coloqu[ée]|moved|renamed|i\s+moved)\b",
+    re.IGNORECASE)
+# Familias-archivo cuyo "éxito" NO sustenta una afirmación de operación-ventana.
+_FILE_DOMAINS = {"file"}
+
+INTENT_DOMAIN_MISMATCH_HINT = (
+    "Your previous reply claimed you did what the user asked, but the tool that "
+    "ran belongs to a DIFFERENT domain than the request. The user asked for a "
+    "WINDOW operation (move/focus/minimize a window) and a FILE tool ran instead "
+    "(e.g. you renamed a file rather than moving the window). Do NOT claim the "
+    "window action succeeded. Use window(...) for window ops, and if you cannot, "
+    "say so honestly — in the user's language."
+)
+
+
+def intent_domain_mismatch(
+    user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff: el USER pidió una operación de VENTANA, la afirmación del reply
+    suena a efecto-hecho, PERO la(s) tool(s) exitosa(s) son de un dominio
+    INCOMPATIBLE (archivo) — sin ninguna tool de window. Cierra la mentira
+    "moví la ventana y la renombré a X.txt" que pasa porque filesystem.rename
+    'tuvo éxito' y el verificador per-tool es ciego a la intención.
+
+    Conservador (gateado por env, default OFF hasta medir): exige (1) señal CLARA
+    de intención-ventana en el user_text, (2) el reply afirma efecto, (3) corrió
+    ≥1 tool exitosa de dominio-archivo y NINGUNA de window/computer_use/gui (las
+    que SÍ podrían mover una ventana). Si window/cu/gui corrió, no flaggea."""
+    if not isinstance(user_text, str) or not _INTENT_WINDOW_RE.search(user_text):
+        return False
+    # afirma efecto: por embeddings O por marcador de acción-hecha al inicio
+    # (el embeddings solo es frágil con fraseos compuestos; el contexto ya es
+    # fuerte, así que el lead-marker es señal suficiente y robusta).
+    if not (_reply_asserts_effect(reply_text)
+            or _EFFECT_LEAD_RE.match(reply_text or "")):
+        return False
+    successful = [c for c in tool_calls_this_turn if _is_successful_call(c)]
+    if not successful:
+        return False  # ya lo cubre is_unverified_claim
+    domains = set()
+    for c in successful:
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        domains.add(_TOOL_DOMAIN.get(str(name).lower(), "other"))
+    # Si alguna tool que SÍ puede operar ventanas corrió, no es mismatch.
+    if domains & {"window", "computer_use", "gui"}:
+        return False
+    # Mismatch solo si lo que corrió fue dominio-archivo (la mentira medida).
+    return bool(domains & _FILE_DOMAINS)
+
+
 # Frases-caveat por idioma para apps cuyo lanzamiento NO se pudo confirmar. NO
 # es una respuesta enlatada (el LLM YA respondió; esto solo AÑADE honestidad a
 # una sobre-afirmación que la propia tool marcó como no confirmada). Se elige por
