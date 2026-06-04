@@ -1,5 +1,11 @@
 # sherpa-onnx 1.13.2 + Parakeet-TDT-0.6B-v3: cómo (y hasta dónde) forzar nombres propios ingleses dentro de español
 
+> **Nota de nomenclatura:** la wake word del producto es hoy **"Baxy"**. Los
+> ejemplos "Hey Gemma → A Hema" de abajo son **mediciones de error de ASR sobre
+> la wake word de entonces ("Gemma")** y se conservan tal cual como hallazgo de
+> research. El **modelo** sigue siendo Gemma 4 (de Google); no confundir la wake
+> word con el LLM.
+
 ## TL;DR
 - El motivo más probable de que `hotwords_score=3.0` empeore la salida es una combinación de tres cosas: (a) **formato de `bpe.vocab` incorrecto** (el modelo no trae `bpe.vocab` ni `bpe.model`, y un tokenizador BPE hecho a mano desde `tokens.txt` NO es compatible — sherpa-onnx espera el formato SentencePiece de dos columnas `pieza\tlog_prob`); (b) **score demasiado alto** (los ejemplos oficiales usan 1.5–2.0, no 3.0); (c) un bug conocido del decodificador NeMo+MBS+TDT (#3267) que sólo se arregló en **v1.13.2 vía PR #3589** — estás en la versión correcta, pero ese fix no elimina toda la inestabilidad; el path MBS sigue siendo más frágil que `greedy_search` en este modelo.
 - La calidad base mala en Spanglish (`Hey Gemma → A Hema`, `Stranger Things → Ponstrom Gertis`) **no es bug tuyo**: los propios autores de NVIDIA confirman en la discusión “Code switching” del model card que Parakeet-TDT-0.6B-v3 *“its not fully tuned for codeswitching capabilities”* y el model card avisa *“The model may produce transcription errors, particularly with code-switching or noisy input.”* Sí, parte de tu medición está sesgada por TTS Piper, pero el límite duro del modelo es real. Validar con voz humana es imprescindible antes de tomar decisiones grandes.

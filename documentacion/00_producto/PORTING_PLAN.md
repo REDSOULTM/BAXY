@@ -22,16 +22,16 @@ Tests totales sumando todos los suites de los TIER portados: **177**
 
 ## TL;DR
 
-Carter v5 tiene 7 patrones que Carter Agent no implementa y que aportan
+Carter v5 tiene 7 patrones que Baxy no implementa y que aportan
 **capacidad real, no tweaks de latencia**. Son portables porque:
 
-1. Carter v5 es Python local sobre `llama-server` igual que Carter Agent.
+1. Carter v5 es Python local sobre `llama-server` igual que Baxy.
 2. Ya tenemos los puntos de extensión: `run_content` loop, semantic router,
    system_prompt builder, tools registry.
 3. El código de referencia es chico (~1.7K líneas para los 7 patrones).
 
-Después de portar los 4 TIER 1 + (opcionalmente) los 3 TIER 2, Carter
-Agent va a ser:
+Después de portar los 4 TIER 1 + (opcionalmente) los 3 TIER 2, Baxy
+va a ser:
 
 - Más **honesto** (verifier estructural + mission goal)
 - Más **robusto** (loop detection real, no `max_turns` ciego)
@@ -41,7 +41,7 @@ Agent va a ser:
 Estimación total: **8-12 días de trabajo** para TIER 1 completo; TIER 2
 opcional añade 5-7 días más.
 
-## Estado actual de Carter Agent (baseline, no inventar)
+## Estado actual de Baxy (baseline, no inventar)
 
 Lo que YA tiene (verificado leyendo el código):
 
@@ -112,7 +112,7 @@ result → se detecta limpio.
 - `carter_v5/loop/detection.py` (239 LOC, self-contained, sin imports de Carter)
 - Usado en `carter_v5/core/execution.py:81,149,199-204`
 
-### Plan de port — Carter
+### Plan de port — Baxy
 
 **Archivo nuevo**: `gemma4_agent/loop_detection.py` (~250 LOC)
 
@@ -238,7 +238,7 @@ by design**, no parchado con prompting.
   `verify_terminal_run`, `verify_gui_screenshot`).
 - Status enum: `COMPLETED | UNVERIFIED | PARTIAL | BLOCKED`.
 
-### Plan de port — Carter
+### Plan de port — Baxy
 
 **Archivo nuevo**: `gemma4_agent/verify_core.py` (~250 LOC, copia adaptada de
 `carter_v5/verify/core.py`).
@@ -435,7 +435,7 @@ glosarios/troubleshoot cuando el texto del usuario coincide con triggers.
   `troubleshoot.md`, `tools_cheat_sheet.md` — ejemplos.
 - Pattern original: OpenHands `.openhands/microagents/`.
 
-### Plan de port — Carter
+### Plan de port — Baxy
 
 **Archivo nuevo**: `gemma4_agent/microagents.py` (~150 LOC) — port directo de
 `carter_v5/microagents/loader.py`.
@@ -552,7 +552,7 @@ para constraints universales tipo `purchase-guard` que nunca deben olvidarse.
 - Cap por tier: `tier_6gb=1, tier_8gb=2, tier_16gb=5`.
 - Spec: Anthropic Agent Skills (`code.claude.com/docs/en/custom-skills`).
 
-### Plan de port — Carter
+### Plan de port — Baxy
 
 **Archivo nuevo**: `gemma4_agent/skills_registry.py` (~300 LOC) — port adaptado
 de `carter_v5/skills/registry.py`.
@@ -573,7 +573,7 @@ def check_skill_eligibility(skill) -> bool: ...
 def build_menu(skills, max_chars=200) -> str: ...
 def build_critical_block(skills) -> str: ...
 def load_skill_content(name, skills_dir=None) -> str | None: ...
-def get_skill_cap(profile_name: str) -> int: ...  # Carter usa profiles, no tiers
+def get_skill_cap(profile_name: str) -> int: ...  # Baxy usa profiles, no tiers
 ```
 
 **Cap por perfil** (mapear los 5 perfiles VRAM):
@@ -763,7 +763,7 @@ biblioteca no esté visible. Con mission goal, recibe footer
   combina `MissionGoal.is_fulfilled()` con counts de verifier outcomes.
 - Inspirado en Voyager (NeurIPS 2023).
 
-### Plan de port — Carter
+### Plan de port — Baxy
 
 **Archivos nuevos**:
 
@@ -821,7 +821,7 @@ verifying, awaiting_user) y edges (condicionales). Permite:
   resume.
 - Visualización del grafo → debug visual.
 
-### Plan de port — Carter
+### Plan de port — Baxy
 
 **Esfuerzo**: alto. Refactor de `run_content` (~600 LOC actuales) a un
 state machine. Probablemente +1500 / -500 LOC.
@@ -840,16 +840,16 @@ No portar; integrar.
 
 ### Por qué importa
 
-Carter Agent hoy es **consumer** de tools (las llama internamente). Si lo
+Baxy hoy es **consumer** de tools (las llama internamente). Si lo
 exponemos como **MCP server**, otros agentes (Claude Desktop, Cursor, Goose,
-OpenHands) pueden usar Carter como backend.
+OpenHands) pueden usar Baxy como backend.
 
 Caso de uso real: el usuario tiene Cursor abierto, le dice a Cursor "abre
 Steam y verificá que mi juego se actualizó". Cursor (que ya soporta MCP)
-llama al MCP server de Carter que ejecuta `steam.launch_game` + `verify`.
+llama al MCP server de Baxy que ejecuta `steam.launch_game` + `verify`.
 
 **Diferencial competitivo**: Carter v5 hizo esto, Carter v5 es el único Jarvis
-local que también es MCP tool provider. Si Carter Agent lo hace, gana esa
+local que también es MCP tool provider. Si Baxy lo hace, gana esa
 batalla.
 
 ### Origen
@@ -858,13 +858,13 @@ batalla.
   (initialize, tools/list, tools/call).
 - Spec MCP: `modelcontextprotocol.io/`.
 
-### Plan de port — Carter
+### Plan de port — Baxy
 
 **Archivo nuevo**: `gemma4_agent/mcp_server.py` (~250 LOC). Port casi directo
 de `carter_v5/mcp_server.py` con dos cambios:
 
-1. `_build_tool_list()` lee de `COMPOUND_TOOL_SCHEMAS` de Carter (62 tools).
-2. `_handle_tools_call()` dispatcha al agente Carter vía `Toolbelt.execute()`.
+1. `_build_tool_list()` lee de `COMPOUND_TOOL_SCHEMAS` de Baxy (62 tools).
+2. `_handle_tools_call()` dispatcha al agente Baxy vía `Toolbelt.execute()`.
 
 Modos:
 - `python -m gemma4_agent.tools_pkg.mcp_server` → stdio (Claude Desktop default).
@@ -874,14 +874,14 @@ Modos:
 
 ```python
 # Nuevo subcomando:
-mcp = sub.add_parser("mcp", help="Expose Carter tools as MCP server")
+mcp = sub.add_parser("mcp", help="Expose Baxy tools as MCP server")
 mcp.add_argument("--port", type=int, default=None)
 ```
 
 **Documentación** (`docs/MCP.md`):
 
 ```markdown
-# Carter Agent como MCP server
+# Baxy como MCP server
 
 ## Para Claude Desktop
 
@@ -919,7 +919,7 @@ goose config add gemma4-mcp --command "python -m gemma4_agent.tools_pkg.mcp_serv
   no funcionar bien sobre MCP porque MCP es stateless. Mitigación: para esa
   primera versión, deshabilitar tools destructivas sobre MCP (whitelist
   de tools "safe-to-expose").
-- **VRAM compartida**: si Cursor y la GUI de Carter corren a la vez, el
+- **VRAM compartida**: si Cursor y la GUI de Baxy corren a la vez, el
   llama-server tiene un solo slot. Documentar.
 
 ---
@@ -953,7 +953,7 @@ goose config add gemma4-mcp --command "python -m gemma4_agent.tools_pkg.mcp_serv
 
 # Decisiones de diseño no negociables
 
-Heredadas de Carter v5 ContextoCarter.md (25 valores) que ya aplican a Carter Agent:
+Heredadas de Carter v5 ContextoCarter.md (25 valores) que ya aplican a Baxy:
 
 1. **Honesty by construction**: no decir "listo" sin verifier confirmed.
 2. **Multilingüe estructural**: regex multilingüe sin keyword lists per idioma.
@@ -971,7 +971,7 @@ Medir en el log real del agente:
 | Mensajes "abrió Steam pero no abrió" reportados | ocasional | 0 (verifier los reescribe) |
 | Workflows complejos (install-game, etc.) | no soportados | soportados via skills |
 | Tiempo entre user input y tool_call (promedio) | ~2-3s (post fase 3) | igual o mejor (no afecta) |
-| Capacidad para usar Carter desde Cursor / Claude Desktop | no | sí (post MCP) |
+| Capacidad para usar Baxy desde Cursor / Claude Desktop | no | sí (post MCP) |
 
 # Apéndice: archivos clave a leer antes de portar
 

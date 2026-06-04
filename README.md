@@ -1,9 +1,9 @@
-# Carter Agent
+# Baxy Agent
 
 **Asistente de voz local para Windows — privado, OSS y corriendo en 4 GB de VRAM.**
 *A local-first voice assistant for Windows, powered by Gemma 4 — 100% offline, no paid APIs.*
 
-> **Nota:** el proyecto se llamaba **Gemma 4 Agent** y se renombró a **Carter** (el nombre del asistente). El modelo de lenguaje sigue siendo **Gemma 4** (de Google); solo cambió el nombre del producto y la palabra de activación.
+> **Nota:** el proyecto se renombró a **Baxy** (antes **Gemma 4 Agent**, brevemente **Carter**) — ese es el nombre del asistente. El modelo de lenguaje sigue siendo **Gemma 4** (de Google); solo cambió el nombre del producto y la palabra de activación.
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg)](#-requisitos)
@@ -14,7 +14,7 @@
 
 ## ¿Qué es?
 
-**Carter** es un asistente de voz y texto que corre **100% en tu máquina**. Hablás (o escribís), el agente decide qué herramienta usar, opera tu PC y te responde por voz. No hay nube, no hay APIs de pago, no se envían tus datos a ningún lado: el modelo de lenguaje (Gemma 4 en formato GGUF) se sirve localmente con `llama.cpp` y todo el razonamiento, la transcripción y la síntesis de voz ocurren offline.
+**Baxy** es un asistente de voz y texto que corre **100% en tu máquina**. Hablás (o escribís), el agente decide qué herramienta usar, opera tu PC y te responde por voz. No hay nube, no hay APIs de pago, no se envían tus datos a ningún lado: el modelo de lenguaje (Gemma 4 en formato GGUF) se sirve localmente con `llama.cpp` y todo el razonamiento, la transcripción y la síntesis de voz ocurren offline.
 
 Está diseñado para **hardware modesto**: el target real es una laptop Windows con una GPU NVIDIA de **4 GB de VRAM** (o incluso sin GPU dedicada, cayendo a un perfil de CPU). El LLM, su visión multimodal y el cache de contexto entran completos en ese presupuesto; la transcripción y la voz corren en CPU para no robarle VRAM al modelo.
 
@@ -24,7 +24,7 @@ Pensado para ser **universal**: multi-idioma y multi-acento (el routing de inten
 
 ## 🧭 Principios del proyecto
 
-Los valores de diseño que definen a Carter. No son aspiracionales: están cableados en el código y en los *gates* de aceptación, y se revisan en cada cambio.
+Los valores de diseño que definen a Baxy. No son aspiracionales: están cableados en el código y en los *gates* de aceptación, y se revisan en cada cambio.
 
 - **El asistente no miente.** Nunca afirma haber hecho algo que no pudo verificar. Si una acción no se confirmó, la respuesta lo dice — no hay "éxitos" fabricados ni respuestas enlatadas. Cada acción se valida contra el estado real del sistema.
 - **Inteligencia, no árboles de `if`.** Las decisiones (qué herramienta usar, qué responder) las toma el modelo, no tablas de respuestas fijas ni listas de keywords por idioma. Lo determinista se limita a clasificación por **embeddings multilingües**, **guardas estructurales** (que miden la forma, no el contenido) y **lectura del estado del SO**.
@@ -39,7 +39,7 @@ Los valores de diseño que definen a Carter. No son aspiracionales: están cable
 
 ### 🎙️ Voz
 - **Pipeline de voz local de punta a punta**: `audio → VAD → wake-word → STT → corrector → LLM → TTS`.
-- **Wake-word** **"Hey Carter" / "Carter" / "Oye Carter"** (LiveKit conv-attention sobre ONNX; fallbacks openWakeWord), entrenada multi-idioma/multi-acento, con *throttle* de inferencia para no clavar la CPU en reposo.
+- **Wake-word** **"Baxy"** (variantes reconocidas: *baxy* / *baxi* / *hey baxy*) (LiveKit conv-attention sobre ONNX; fallbacks openWakeWord), entrenada multi-idioma/multi-acento, con *throttle* de inferencia para no clavar la CPU en reposo.
 - **VAD** con Silero + gate de silencio anti-alucinación.
 - **STT** intercambiable: Whisper-small en CPU/int8 (faster-whisper, default) o Parakeet-TDT via sherpa-onnx (más rápido, no alucina en silencio). Corrector fuzzy (RapidFuzz + fonético) para nombres propios mal transcriptos.
 - **TTS** Piper en streaming (voz default `es_MX-claude-high`): corta por oración y reproduce mientras el LLM sigue generando, con ventana anti-self-hearing.
@@ -110,7 +110,7 @@ Decide qué subconjunto de tools ofrecer al LLM por turno — una **cascada sem�
 | **sherpa-onnx** + Parakeet-TDT | 1.13.2 | STT alternativo (más rápido, CPU int8) |
 | **Piper TTS** | 1.4.2 | TTS por defecto (streaming por oración) |
 | **silero-vad** | 6.2.1 | Voice Activity Detection |
-| **openWakeWord** / LiveKit ONNX | >=0.6 | Wake-word ("Hey Carter" / "Carter" / "Oye Carter") |
+| **openWakeWord** / LiveKit ONNX | >=0.6 | Wake-word ("Baxy"; variantes: baxy / baxi / hey baxy) |
 | **onnxruntime** | 1.23.2 | Backend ONNX (wake-word, VAD) |
 | **sounddevice** | 0.5.5 | I/O de audio (PortAudio) |
 | **rapidfuzz** / **jellyfish** | 3.14.5 / 1.2.1 | Corrección fuzzy + fonética |

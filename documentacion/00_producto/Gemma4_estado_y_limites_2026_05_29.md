@@ -1,4 +1,4 @@
-# Carter Agent — Estado técnico y límites de hardware (2026-05-29)
+# Baxy — Estado técnico y límites de hardware (2026-05-29)
 
 > Sección para incorporar al informe **Producto, Riesgos y Competencia**. Resume el
 > trabajo de la sesión y, sobre todo, **los límites reales de hardware**: qué corre
@@ -8,7 +8,7 @@
 
 ## 1. Qué se hizo en esta sesión
 
-### Interfaz (reskin "Carter field")
+### Interfaz (reskin "Baxy field")
 La GUI real es la web `ui_field` (React/Vite, servida por pywebview), **no** la PyQt
 legacy. Se está re-skineando para que matchee el nuevo prototipo:
 - Marco con **borde rojo viajero** (animado) y **recoloreo por estado** (idle/listening/

@@ -26,8 +26,8 @@ reviewed end-to-end before any code change.
   not feature design — but the result is the same: no interruption.
 
 **Consequence for UX:**
-1. User says "gemma, cuenta hasta cien" → agent enters SPEAKING.
-2. User says "gemma, parate" → ignored. The user has to wait until
+1. User says "Baxy, cuenta hasta cien" → agent enters SPEAKING.
+2. User says "Baxy, parate" → ignored. The user has to wait until
    the count finishes, then say it again.
 
 For an assistant that markets itself as Jarvis-like / voice-first,
@@ -138,9 +138,9 @@ the leak is still measurable.
 - Require the `_AudioDucker` to be active during SPEAKING (already is)
   and bump its attenuation when barge-in is enabled.
 - Run a **wake-word pre-check** on the suspected barge-in chunk: if
-  Vosk doesn't detect "gemma" in the 500 ms post-trigger, treat as
+  Vosk doesn't detect "baxy" in the 500 ms post-trigger, treat as
   echo and abort the barge-in. More conservative; sacrifices the
-  "just talk to interrupt" UX for "say gemma to interrupt".
+  "just talk to interrupt" UX for "say Baxy to interrupt".
 - Cancellation echo: pycaw supports AEC on some Windows audio
   devices. Out of scope for Sprint 8 first cut; flagged for Sprint 9.
 
@@ -180,10 +180,10 @@ def _check_barge_in(self, chunk):
     if is_voiced:
         self._barge_voiced_run += 1
         if self._barge_voiced_run >= self._barge_threshold_chunks:
-            # Conservative gate: require the user say "gemma" again.
+            # Conservative gate: require the user say "baxy" again.
             # This costs one extra Vosk hit per detected sustained voice.
             wake_text = self._wake.check_recent(seconds=0.5)
-            if "gemma" not in wake_text.lower():
+            if "baxy" not in wake_text.lower():
                 self._barge_voiced_run = 0
                 return False
             return True
@@ -192,7 +192,7 @@ def _check_barge_in(self, chunk):
     return False
 ```
 
-This is "say gemma to interrupt" instead of "say anything to
+This is "say Baxy to interrupt" instead of "say anything to
 interrupt". Worth A/B testing in Sprint 8 once both paths are wired.
 
 ---
@@ -238,7 +238,7 @@ both modes.
 ## 7. Acceptance criteria for Sprint 8
 
 - All 5 tests above green.
-- Manual smoke: in a quiet room, user can say "gemma, parate" mid-TTS
+- Manual smoke: in a quiet room, user can say "Baxy, parate" mid-TTS
   and the agent stops within 800 ms.
 - No regression: `test_voice_state_machine_*` in
   `test_gx_features.py` still green (the SPEAKING transition contract

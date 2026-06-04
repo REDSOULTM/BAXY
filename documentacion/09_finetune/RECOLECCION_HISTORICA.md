@@ -1,7 +1,13 @@
-# Recolección histórica de mensajes — Carter → Carter Agent
+# Recolección histórica de mensajes — lineage Carter OS → Baxy
+
+> Nota de nomenclatura: el producto se llama hoy **Baxy** (antes "Gemma 4 Agent",
+> brevemente "Carter"). En este documento, "Carter v1-v5" / "Carter OS AI" / los
+> paths `Carter OS AI/...` y las etiquetas de dataset (`carter_*`, `project:carter`,
+> `CARTER_TO_GEMMA4`) refieren al **proyecto de referencia externo** del que se
+> minan mensajes históricos — NO se renombran. El **modelo** sigue siendo Gemma 4.
 
 **Pedido del usuario (2026-06-02):** recopilar TODOS los mensajes históricos desde el
-primer mensaje a Carter (predecesor) hasta el último a Carter Agent, para curarlos como
+primer mensaje del lineage Carter (predecesor) hasta el último a Baxy, para curarlos como
 dataset de ejemplos PERFECTOS y tunear el sistema (router + LLM 4B) sin overfitting.
 
 Este documento registra QUÉ se recolectó, DE DÓNDE, CUÁNTOS y en QUÉ FORMATO.

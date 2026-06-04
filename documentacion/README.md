@@ -1,4 +1,4 @@
-# Documentación — Carter Agent (antes Gemma 4 Agent)
+# Documentación — Baxy (antes Gemma 4 Agent, brevemente Carter)
 
 Puerta de entrada a toda la documentación del proyecto. **Asistente de voz
 local para Windows** sobre **Gemma 4 E2B-FT** (GGUF Q4_K_M), corriendo en
@@ -45,7 +45,7 @@ documentos son históricos (lo avisan en su cabecera).
 | [`07_latencia/`](07_latencia/) | Optimización de latencia: tokens del prompt, cache-hit del prefill, thinking. |
 | [`08_memoria_jarvis/`](08_memoria_jarvis/) | Memoria y capa "Jarvis": observador de ambiente, perfil de gustos, skills/subagents. |
 | `09_finetune/` | Fine-tune del modelo (E2B-FT). *Carpeta reservada, aún vacía.* |
-| [`10_auditorias/`](10_auditorias/) | Auditorías: flags, comparación con Carter OS. |
+| [`10_auditorias/`](10_auditorias/) | Auditorías: flags, comparación con Carter OS (proyecto de referencia externo). |
 | [`11_research_recibido/`](11_research_recibido/) | Investigaciones externas recibidas (sin procesar). |
 | [`_backlog/`](_backlog/) | **`BACKLOG_MAESTRO.md` — fuente de verdad del estado.** |
 | [`_historico/`](_historico/) | Archivo de proceso (sprints, baselines, benchmarks). **No es el estado actual.** |

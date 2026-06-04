@@ -1,6 +1,6 @@
 # FASE 0 — Verificación de viabilidad: biasing de nombres propios en STT
 
-> Sprint biasing — Carter Agent. NO se implementa código de producción en esta
+> Sprint biasing — Baxy. NO se implementa código de producción en esta
 > fase. Se evalúan 3 rutas con spike mínimo y se recomienda UNA con datos.
 > Entorno medido: faster-whisper 1.2.1, ctranslate2 4.7.1, Python 3.10, Windows,
 > RTX 4060 (training) / CPU int8 (runtime prod).

@@ -1,5 +1,12 @@
 # PLAN MAESTRO — Wake-word "Hey Carter"
 
+> **RESUELTO 2026-06-04: la wake word final es BAXY** (recall **0.872**, supera a
+> gemma **0.74**). Carter se descartó por la **/r/** rótica cross-idioma (esta es la
+> lección que conserva el resto de este documento). La wake word del producto es ahora
+> "Baxy" (sin "hey/oye"; variantes aceptadas: baxy / baxi / hey baxy). Ver commit de
+> activación. El análisis de Carter de abajo se mantiene intacto como el porqué del
+> descarte y la saga medida que llevó a Baxy.
+
 Estado: **NO ENTRENAR** hasta orden explícita del usuario (instrucción 2026-06-03).
 Este documento consolida lo MEDIDO y deja todo listo para decidir/ejecutar.
 Última consolidación: 2026-06-03.

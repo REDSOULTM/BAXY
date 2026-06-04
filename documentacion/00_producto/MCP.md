@@ -1,6 +1,6 @@
-# Carter Agent as MCP Server
+# Baxy as MCP Server
 
-Carter puede exponer sus **compound tools** como un servidor
+Baxy puede exponer sus **compound tools** como un servidor
 [MCP (Model Context Protocol)](https://modelcontextprotocol.io/), el
 standard de facto que usan Claude Desktop, Cursor, Goose, OpenHands
 y otros agentes para hablar con tool providers.
@@ -50,7 +50,7 @@ python -m gemma4_agent.tools_pkg.mcp_server --port 8765
 ```
 
 Reiniciar Claude Desktop. En el menu de herramientas deberian aparecer
-las 63 compound tools de Carter.
+las 63 compound tools de Baxy.
 
 ## Configurar Cursor
 

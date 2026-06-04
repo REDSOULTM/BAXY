@@ -1,5 +1,15 @@
+> **Nota sobre la wake word (actualización de nomenclatura):** la wake
+> word del producto es hoy **"Baxy"**. Esta investigación se escribió
+> cuando la palabra de activación era "Gemma", y los ejemplos de colisión
+> fonética que cita ("Hey Gemma" → "Hey Kema", re-segmentación de "Gemma")
+> son **hallazgos de research sobre esa palabra concreta** y se conservan
+> tal cual por trazabilidad. Donde el texto solo usa la wake word como
+> ejemplo genérico del patrón "wake-word + comando", leelo como **"Baxy"**.
+> El **modelo** sigue siendo Gemma 4 (de Google); no confundir la wake
+> word con el LLM.
+
 Resumen ejecutivo y diagnóstico del problema
-Optimización de faster-whisper small int8 CPU para asistente de voz local en español (Gemma4 Voice Stack)
+Optimización de faster-whisper small int8 CPU para asistente de voz local en español (Voice Stack)
 Resumen ejecutivo y diagnóstico del problema
 El comportamiento descrito ("Hey Gemma, abre Steam" → "Hey Kema! ¡Aurestín!", "abre estímulo", invenciones varias) corresponde a un patrón muy bien documentado de Whisper cuando se le entrega audio corto, con silencios al inicio/final, sin contexto previo y con vocabulario fuera de distribución (anglicismos como Steam, Spotify). Las causas confirmadas por la literatura y por issues oficiales son:
 

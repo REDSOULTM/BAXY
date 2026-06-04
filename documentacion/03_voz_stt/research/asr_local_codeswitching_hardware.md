@@ -1,5 +1,11 @@
 # **Informe de Investigación: Maximización de la Precisión ASR Local en Entornos de Code-Switching bajo Restricciones de Hardware**
 
+> **Nota de nomenclatura:** la wake word del producto es hoy **"Baxy"**. Donde el
+> informe cita la wake word como "Hey Gemma" (p.ej. como prefijo de las locuciones
+> de evaluación) se refiere a la palabra de activación de entonces; leelo como
+> **"Baxy"**. El **modelo** sigue siendo Gemma 4 (de Google); no confundir la
+> wake word con el LLM.
+
 ## **1\. Análisis Estratégico y Priorización de Retorno de Inversión**
 
 El despliegue de sistemas de Reconocimiento Automático de Habla (ASR) en entornos locales y perimetrales (Edge Computing) enfrenta fricciones fundamentales dictadas por la física del hardware subyacente y la arquitectura de los modelos fundacionales. La especificación técnica analizada describe un escenario de alta exigencia: un procesador de arquitectura x86 de cuatro a ocho núcleos asumiendo la carga de inferencia acústica, con la memoria de la Unidad de Procesamiento Gráfico (GPU) completamente saturada por un Modelo de Lenguaje Grande (LLM) operando concurrentemente. A esta limitación computacional se añade una restricción lingüística severa: la necesidad de transcribir comandos de voz en un entorno de *code-switching* u oscilación de código, comúnmente denominado "Spanglish". En este contexto, el usuario enuncia la matriz gramatical y fonológica en idioma español, pero inserta entidades nombradas, aplicaciones y comandos específicos ("Chrome", "Spotify", "Counter-Strike") que obedecen a la ortografía y fonética del idioma inglés.  

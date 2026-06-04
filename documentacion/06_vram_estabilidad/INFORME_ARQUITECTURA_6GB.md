@@ -1,4 +1,4 @@
-# Informe — Arquitectura Carter Agent en 6 GB VRAM (voz + visión + LLM)
+# Informe — Arquitectura Baxy en 6 GB VRAM (voz + visión + LLM)
 
 **Sesión:** investigación y auditoría, sin tocar código.
 **Fecha:** 2026-05-14.
@@ -579,4 +579,4 @@ Si saca <80% → degradar a ARQ-C con E4B-Q4 como default texto y E2B+mmproj sol
 - Si el bench E2B-Q4 saca ≥80% en 540 → ARQ-B. Si saca menos → ARQ-C.
 - Si la visión es opcional y el usuario prefiere máxima calidad LLM → ARQ-A (con margen VRAM apretado).
 
-El resto es ejecución acotada. El presupuesto VRAM cierra, la latencia STT ≤2 s cierra, las arquitecturas existen. Esto es Carter Agent en 6 GB.
+El resto es ejecución acotada. El presupuesto VRAM cierra, la latencia STT ≤2 s cierra, las arquitecturas existen. Esto es Baxy en 6 GB.

@@ -1,4 +1,10 @@
-# Auditoría profunda — Carter OS AI vs Carter Agent (este proyecto, antes Gemma 4 Agent)
+# Auditoría profunda — Carter OS AI vs Baxy (este proyecto, antes Gemma 4 Agent, brevemente Carter)
+
+> Nota de nomenclatura: **"Carter OS AI" / "Carter v1..v5" / `carter_v5/`** son el
+> **proyecto de referencia externo** que se audita acá — NO cambian de nombre. "Baxy"
+> es **este** proyecto (el asistente propio), que antes se llamó "Gemma 4 Agent" y
+> brevemente "Carter". Donde el texto diga "Carter Agent" / "este proyecto" /
+> "nosotros", se refiere a **Baxy**.
 
 **Fecha:** 2026-05-23
 **Pedido por:** RED — "audita ambas carpetas de investigaciones + TODO el proyecto

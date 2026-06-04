@@ -1,5 +1,13 @@
 # Historial de nombres — wake-word / marca del asistente
 
+> **Resultado final (2026-06): el nombre y la wake word son "Baxy".** El producto
+> se llamó "Gemma 4 Agent" (original), luego brevemente "Carter", y finalmente
+> **Baxy**. Este documento conserva el registro de los candidatos evaluados y
+> **por qué se descartaron** (incluido "Carter", rechazado por recall 0.28 / /r/
+> rótica). NO renombrar esos registros: son la evidencia histórica del proceso de
+> elección. El **modelo** sigue siendo Gemma 4 (de Google), no confundir con la
+> wake word.
+
 Registro de nombres evaluados para renombrar el asistente (antes "Gemma 4 Agent").
 Evita re-investigar candidatos ya descartados. Cada nombre se evalúa en **dos ejes**:
 

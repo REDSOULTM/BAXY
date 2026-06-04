@@ -1,4 +1,4 @@
-# Modelo de ramas — Carter Agent
+# Modelo de ramas — Baxy
 
 > Documento autoritativo del modelo de ramas del repo. Actualizar acá ANTES de
 > renombrar/agregar/borrar ramas para que la próxima sesión encuentre el mapa.

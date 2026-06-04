@@ -2,6 +2,11 @@
 
 > Eje VIABILIDAD. NO es producción. Verifica la ruta que la investigación de
 > RED recomendó como GANADORA. Medido contra clips reales+sintéticos existentes.
+>
+> **Nota de nomenclatura:** la wake word del producto es hoy **"Baxy"**. El
+> ejemplo "Hey Gemma → ..." de abajo es una **medición de error de ASR sobre la
+> wake word de entonces ("Gemma")** y se conserva como hallazgo. El **modelo**
+> sigue siendo Gemma 4 (de Google); no confundir la wake word con el LLM.
 
 ## Lo que SÍ se confirmó (a favor)
 

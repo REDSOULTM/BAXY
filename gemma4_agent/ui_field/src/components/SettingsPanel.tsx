@@ -79,7 +79,7 @@ const DEFAULTS: SettingsConfig = {
   phraseTriggerTimeout: 30, llmTimeout: 180, maxExpRecords: 5000,
   sttProvider: 'sherpa-onnx (local)', sttModel: 'parakeet-tdt-0.6b-v3-int8', sttLanguage: 'auto',
   ttsProvider: 'piper (local)', ttsVoice: 'es_MX-claude-high', ttsRate: 1.0,
-  wakeWord: 'hey gemma', wakeWordEnabled: true,
+  wakeWord: 'baxy', wakeWordEnabled: true,
   voiceEnabled: true, wakeBeep: true, wakeHudBlink: true, wakeTts: false,
   inputDevice: 'system default',
   followUpWindow: 5, followUpClosePhrases: 'gracias\nlisto\nya está\ncancelar', muteTts: false,
@@ -534,9 +534,9 @@ function TranscriptTab({ c, set }: { c: SettingsConfig; set: Setter }) {
       <SliderRow label="tts speech rate" value={c.ttsRate} onChange={set('ttsRate')} min={0.5} max={2} step={0.05} fmt={(v) => v.toFixed(2)} />
       <Field
         label="wake words"
-        hint={wakeHint ?? "LiveKit hey_gemma is the preferred local wake model"}
+        hint={wakeHint ?? "LiveKit baxy is the active local wake model"}
       >
-        <span className="muted mono">hey gemma</span>
+        <span className="muted mono">baxy</span>
       </Field>
       <Field label=" "><STCheck value={c.wakeWordEnabled} onChange={set('wakeWordEnabled')} label="wake word enabled" hint="passive listening" /></Field>
     </STSection>
@@ -549,7 +549,7 @@ function VoiceTab({ c, set }: { c: SettingsConfig; set: Setter }) {
       <STTip>local voice — LiveKit wake + Parakeet STT + Piper TTS. all cpu.</STTip>
       <Field label=" "><STCheck value={c.voiceEnabled} onChange={set('voiceEnabled')} label="enable voice" hint="master switch" /></Field>
       <Field label="wake words" hint="custom LiveKit model; transcript cleanup also strips short wake variants">
-        <span className="muted mono">hey gemma</span>
+        <span className="muted mono">baxy</span>
       </Field>
       <Field label="wake feedback">
         <div className="check-row">
