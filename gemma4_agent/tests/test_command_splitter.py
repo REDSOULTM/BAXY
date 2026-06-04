@@ -430,6 +430,19 @@ class AppOpenTest(unittest.TestCase):
                   "qué hora es", "abrí el canal general"):
             self.assertIsNone(self.E(q), msg=q)
 
+    def test_nav_prep_word_boundary_preserves_app_name(self):
+        # BUG real (eval run3): "open Notepad and type X" -> _AA_PREP incluía n[oa]
+        # sin word-boundary y comía el "No" de "Notepad" -> app="tepad" ->
+        # focus_app("tepad") fallaba. El \b de cierre evita consumir parte de la app.
+        from ..routing.command_splitter import parse_type_action
+        r = parse_type_action("open Notepad and type my todo list")
+        self.assertIsNotNone(r)
+        self.assertEqual(r["app"].lower(), "notepad")
+        r2 = parse_type_action("abrí Notepad y escribí hola")
+        self.assertEqual(r2["app"].lower(), "notepad")
+        # no-regresión: la preposición real ("a"/"en") sigue consumiéndose bien.
+        self.assertEqual(parse_type_action("andá a Discord y escribí hola")["app"], "Discord")
+
     def test_execute_command_is_not_app_open(self):
         # BUG real (eval dataset run2, 2026-06-04): "ejecuta pytest" matcheaba
         # _APP_OPEN_VERB (incluía ejecut/run/start) -> app.open("pytest") -> fallback

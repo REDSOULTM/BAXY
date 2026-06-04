@@ -802,7 +802,11 @@ _AA_TYPE_VERB = re.compile(
 # Localizadores preferidos (en/in/on...) y de respaldo (a/al). "a" es ambiguo
 # ("a las 5") -> se prueba SOLO si no hay un "en". 2 pasadas.
 _AA_LOC_PREF = r"en|in|into|on|sobre|dentro\s+de|dans|im|su"
-_AA_NAV_RE = re.compile(r"\b(?:" + _AA_NAV + r")\b\s+(?:" + _AA_PREP + r")?\s*", re.IGNORECASE)
+# La preposición opcional se ancla a PALABRA COMPLETA (\b...\b): sin el word-boundary
+# de cierre, "open No" matcheaba (n[oa] de _AA_PREP comía el "No" de "Notepad") ->
+# parse_type_action devolvía app="tepad" -> focus_app("tepad") fallaba (BUG real eval
+# run3, "open Notepad and type X"). Con \b la prep solo se consume si es token entero.
+_AA_NAV_RE = re.compile(r"\b(?:" + _AA_NAV + r")\b\s+(?:(?:" + _AA_PREP + r")\b\s+)?", re.IGNORECASE)
 _AA_CONN_RE = re.compile(r"\s+(?:" + _AA_CONN + r")\s+(?:luego\s+|despu[ée]s\s+|then\s+)?", re.IGNORECASE)
 
 

@@ -134,6 +134,17 @@ def _mock_execute(self, n, a):
     executed.append(n)
     return {"ok": True, "status": "ok", "verified": True, "_eval_mock": True}
 ToolRegistry.execute = _mock_execute
+# Los short-circuits llaman a t_computer_use DIRECTO (no por .execute), y su
+# PlanExecutor despacha pasos internos vía execute("app"/"gui") -> el eval grababa
+# ["app","gui"] cuando en realidad CORRIÓ computer_use (label-noise que infló el
+# "mismatch app/gui vs computer_use"). Envolvemos t_computer_use para registrar
+# "computer_use" explícito y NO ejecutar el plan físico (devolvemos mock).
+if hasattr(ToolRegistry, "t_computer_use"):
+    def _mock_cu(self, a):
+        executed.append("computer_use")
+        return {"ok": True, "status": "ok", "verified": True,
+                "completion_status": "simulated", "_eval_mock": True}
+    ToolRegistry.t_computer_use = _mock_cu
 for _m in ["gui_type", "gui_keypress", "gui_click", "gui_type_into", "gui_click_button",
            "gui_hotkey", "gui_scroll", "gui_drag", "_send_text_via_sendinput"]:
     if hasattr(ToolRegistry, _m):
