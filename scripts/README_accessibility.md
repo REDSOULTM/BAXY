@@ -1,4 +1,4 @@
-# Accesibilidad de apps Chromium/Electron para Gemma 4 Agent
+# Accesibilidad de apps Chromium/Electron para Baxy
 
 ## Qué resuelve
 

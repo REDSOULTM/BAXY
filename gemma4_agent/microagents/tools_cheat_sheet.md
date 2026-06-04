@@ -6,7 +6,7 @@ examples: ["qué cosas podés hacer por mí, cuáles son tus capacidades", "en q
 
 # Tools disponibles (cheat sheet)
 
-Gemma 4 Agent tiene 62 tools por dominio. El router muestra solo un subset por turn — esta lista es referencia, no lo que el LLM ve por turn.
+Baxy tiene 62 tools por dominio. El router muestra solo un subset por turn — esta lista es referencia, no lo que el LLM ve por turn.
 
 ## Sistema y procesos
 - **system**: time, processes, cpu_ram_gpu, disk, battery, brightness_get/set, shutdown, restart, sleep.

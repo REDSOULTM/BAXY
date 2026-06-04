@@ -11,7 +11,7 @@ Referencia para preguntas definicionales del usuario.
 ## Modelos y runtime
 - **GGUF**: formato de archivo de modelos cuantizados para llama.cpp (binario, `.gguf`). Reemplaza GGML.
 - **llama.cpp**: motor de inferencia C++ que corre GGUF (CUDA/Metal/CPU).
-- **llama-server**: binario HTTP de llama.cpp; expone API OpenAI-compatible (default Gemma 4 Agent: puerto 8080).
+- **llama-server**: binario HTTP de llama.cpp; expone API OpenAI-compatible (default Baxy: puerto 8080).
 - **mmproj**: "multimodal projector" de llama.cpp; proyecta tokens de imagen/audio al espacio del texto. Necesario para Gemma 4 vision.
 - **KV cache**: caché de los key/value del prefill; reutiliza prefijo común entre turns sin recomputar.
 - **prewarm**: mensaje sintético al boot que llena el KV cache con el system prompt antes del 1er turn real.
@@ -36,9 +36,9 @@ Referencia para preguntas definicionales del usuario.
 
 ## Patrones del agente
 - **deeplink**: URI scheme (`steam://`, `spotify:`, `vscode://`); forma más limpia de abrir apps sin GUI.
-- **MCP**: Model Context Protocol; JSON-RPC para exponer tools entre agentes. Lo hablan Carter, Goose, Cursor, Claude Desktop.
+- **MCP**: Model Context Protocol; JSON-RPC para exponer tools entre agentes. Lo hablan Baxy, Goose, Cursor, Claude Desktop.
 - **RAG**: Retrieval-Augmented Generation; busca fragmentos relevantes antes del LLM. Aquí: `knowledge(action=search)`.
-- **embedding**: vector ~384-dim que captura el significado de un texto. Gemma 4 Agent usa `multilingual-e5-small` para el semantic router.
+- **embedding**: vector ~384-dim que captura el significado de un texto. Baxy usa `multilingual-e5-small` para el semantic router.
 
 ## Estados honestos del agente
 - **COMPLETED**: tool ejecutada Y verifier confirmó el efecto.
