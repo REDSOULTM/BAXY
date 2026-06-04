@@ -99,6 +99,66 @@ class WakePhraseStrippingTest(unittest.TestCase):
         self.assertEqual(self.c.strip_wake_phrase(""), "")
 
 
+# Inventory mirroring production: the active wake word is the INVENTED word
+# "baxy" (+ spelled variants). Because it is outside the STT vocabulary,
+# Parakeet maps it to nearby REAL words (Paxi/Bixby/Max...). The fuzzy stage
+# of strip_wake_phrase must catch those without eating real command openers.
+BAXY_INV = {
+    "apps":    ["Chrome", "Spotify", "Max"],   # 'Max' = real app (HBO Max)
+    "verbs":   ["abre", "busca", "manda", "pon", "minimiza"],
+    "wake_words": ["baxy", "baxi", "backsy", "hey baxy"],
+}
+
+
+class WakeFuzzyStrippingTest(unittest.TestCase):
+    """Regression for the Baxy STT-mishearing leak (logs 2026-06-03): the user
+    said 'Baxy' but Parakeet wrote 'Paxi,'/'Bixby,'/'Max'. Those mis-heard
+    tokens leaked into the command. Thresholds measured in
+    scripts/_diag/_diag_wake_strip_threshold.py (80 strict / 72 with comma)."""
+
+    def setUp(self):
+        self.c = FuzzyCorrector(BAXY_INV)
+
+    def test_strips_exact_baxy(self):
+        self.assertEqual(self.c.strip_wake_phrase("baxy abre Chrome"), "abre Chrome")
+
+    def test_strips_hey_baxy(self):
+        self.assertEqual(self.c.strip_wake_phrase("hey baxy pon música"), "pon música")
+
+    def test_strips_misheard_bixby_with_comma(self):
+        # Real log: "Bixby, ¿qué juego estoy jugando?"
+        out = self.c.strip_wake_phrase("Bixby, ¿qué juego estoy jugando?")
+        self.assertEqual(out, "¿qué juego estoy jugando?")
+
+    def test_strips_misheard_paxi_with_comma(self):
+        # Real log: "Paxi, va a la página ..."
+        out = self.c.strip_wake_phrase("Paxi, va a la página de inicio")
+        self.assertEqual(out, "va a la página de inicio")
+
+    def test_strips_misheard_high_phonetic_no_comma(self):
+        # Phonetic >=80 without comma still strips (Backy ~ baxy).
+        out = self.c.strip_wake_phrase("Backy abre Spotify")
+        self.assertEqual(out, "abre Spotify")
+
+    def test_does_not_strip_real_command_opener(self):
+        # 'busca' must survive — it is a legit command verb, not the wake.
+        for cmd in ("busca el clima en Madrid",
+                    "manda un mensaje a Pedro",
+                    "máximo volumen por favor",
+                    "pásame al siguiente tema",
+                    "abre el navegador"):
+            self.assertEqual(self.c.strip_wake_phrase(cmd), cmd,
+                             f"false-stripped: {cmd!r}")
+
+    def test_max_without_comma_is_left_alone(self):
+        # MEASURED limitation: 'Max' (phon 67) collides with the real app 'Max'
+        # and the word 'máximo'. Below the 80 threshold WITHOUT a comma, so we
+        # deliberately do NOT strip it — stripping it would break "Max volumen".
+        # The LLM still understands the trailing question; honest ceiling.
+        out = self.c.strip_wake_phrase("Max ¿qué juego estoy jugando?")
+        self.assertEqual(out, "Max ¿qué juego estoy jugando?")
+
+
 class InventoryTest(unittest.TestCase):
     def test_static_inventory_well_formed(self):
         # Must have at least the categories the corrector + prompt need.
@@ -130,11 +190,13 @@ class PhoneticCorrectionTest(unittest.TestCase):
         self.c = FuzzyCorrector(get_inventory(include_discovery=False))
 
     def test_anglicisms_corrected_phonetically(self):
-        # "netflis"->Netflix, "disnei"->Disney, "jema"->gemma son matches
-        # fonéticos inalcanzables por texto puro.
+        # "netflis"->Netflix, "disnei"->Disney, "espotify"->Spotify son matches
+        # fonéticos inalcanzables por texto puro. (El histórico "jema"->gemma se
+        # retiró: tras el rebrand a Baxy, "gemma" ya NO es entidad reconocible
+        # del inventario — la wake word es "baxy" y su strip vive en
+        # WakeFuzzyStrippingTest, no en correct().)
         self.assertIn("Netflix", self.c.correct("abre netflis"))
         self.assertIn("Disney", self.c.correct("pon loki en disnei"))
-        self.assertIn("gemma", self.c.correct("jema que hora es").lower())
         self.assertIn("Spotify", self.c.correct("pon espotify"))
 
     def test_streaming_command_preserves_preposition(self):

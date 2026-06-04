@@ -1335,10 +1335,43 @@ class Gemma4Agent:
             try:
                 from ..routing.command_splitter import (
                     extract_app_action, split_command, parse_type_action,
-                    parse_keypress_action)
+                    parse_keypress_action, extract_message_to)
                 _aa = extract_app_action(content)
             except Exception:
                 _aa = None
+            # PRECEDENCIA: un ENVÍO-A-CONTACTO ("escribíLE a Juan que voy ... en
+            # Discord") tiene FORMA de mensajería, no de tecleo-en-app. La red de
+            # app-action lo secuestraría (gate verify_app pasa porque "Discord" está
+            # en títulos de ventana) y parse_type_action metería "a Juan que voy ..."
+            # como payload literal -> tipea el destinatario DENTRO del mensaje (BUG
+            # real, log turno 7). ESTRUCTURAL: extract_message_to ya exige clítico
+            # dativo -le o "a <quién>" (7d07cff); el tecleo legítimo ("escribí 2+2 en
+            # la calc") da None y NO se desvía (MEDIDO: 4/4 None).
+            #   - Mensajería a WhatsApp o SIN app nombrada -> cedé a la red de
+            #     mensajería (reply-net abajo), que separa destinatario/cuerpo y abre
+            #     WhatsApp con auto_send=False -> _aa=None.
+            #   - Mensajería a OTRA app (Discord/Slack/Teams): se queda en app-action
+            #     PERO con goal=content (computer_use descompone la frase entera —
+            #     "escribile a pedro en discord que llego tarde" es su ejemplo
+            #     canónico), NUNCA el plan parse_type_action (que rompe el payload).
+            #     Marcamos _aa para forzar goal-only.
+            if _aa is not None:
+                try:
+                    _emt = extract_message_to(content)
+                except Exception:
+                    _emt = None
+                if _emt:
+                    _is_wa = False
+                    try:
+                        from ..routing.planner import _looks_like_whatsapp as _llw
+                        _is_wa = bool(_llw(content))
+                    except Exception:
+                        _is_wa = False
+                    if _is_wa:
+                        _aa = None              # -> reply-net (WhatsApp tool)
+                    else:
+                        # mensajería a app no-WhatsApp -> cu(goal), sin plan steps roto
+                        _aa["_force_goal_only"] = True
             if _aa is not None:
                 if _aa.get("pattern") == "nav_action":
                     _aa_route = True                       # "abrí X y escribí Y" = goal coherente
@@ -1394,10 +1427,17 @@ class Gemma4Agent:
                         # del 4B planner (que MEDIDO daba plan vacío en "abrí calc y
                         # escribí 5+5" o metía toda la frase como texto en "poné R a las
                         # 5 en notepad"). Para nav multi-paso/otros cae al planner.
-                        try:
-                            _tp = parse_type_action(content)   # import arriba (bloque app-action)
-                        except Exception:
+                        # EXCEPCIÓN (BUG A): un ENVÍO-A-CONTACTO a una app no-WhatsApp
+                        # ("escribíle a Juan ... en Discord") NO debe usar el plan
+                        # parse_type_action (metería "a Juan ..." como payload). Pasa
+                        # como goal entero -> cu descompone destinatario/cuerpo/canal.
+                        if _aa.get("_force_goal_only"):
                             _tp = None
+                        else:
+                            try:
+                                _tp = parse_type_action(content)   # import arriba (bloque app-action)
+                            except Exception:
+                                _tp = None
                         if _tp:
                             # limpiar artículo inicial ("el bloque de notas" ->
                             # "bloque de notas") para que app.open resuelva mejor el
@@ -1417,7 +1457,7 @@ class Gemma4Agent:
                         # así NO le roba a click_button ('apretá enviar') ni a media ('tocá
                         # una canción'). Solo si parse_type_action NO armó plan (verbos
                         # disjuntos: type vs press; el guard evita doble-plan).
-                        if not _aa_args.get("steps"):
+                        if not _aa_args.get("steps") and not _aa.get("_force_goal_only"):
                             try:
                                 _kp = parse_keypress_action(content)
                             except Exception:
@@ -4333,8 +4373,17 @@ class Gemma4Agent:
             # Aplica a CUALQUIER tarea (no solo compras): el usuario de
             # estos modos no puede revisar/elegir/clickear. Gateado a los
             # dos modos donde el usuario no puede intervenir a mano.
-            if (_hands_free or _narrate) and _reply_delegates_task(
-                assistant_content or ""):
+            # GUARD (mismo bug-class que el a11y_continue_nudge, 3953-3979): una
+            # pregunta META/charla ("¿qué podés hacer?", "¿quién sos?") donde el
+            # router ABSTUVO (subset sin dominio) y NO corrió acción NO es una
+            # tarea delegada — la respuesta DESCRIBE capacidades. Reusamos el
+            # _cont_actionable ya computado (estado del router/ejecución, no
+            # contenido). Sin esto, una respuesta de capacidades con un cierre
+            # invitador ("...decime qué necesitás") cruza el margen del detector
+            # y se marca falso-positivo task_delegated_to_user.
+            if ((_hands_free or _narrate) and _cont_actionable
+                    and not _only_web_search
+                    and _reply_delegates_task(assistant_content or "")):
                 self.trace.event(
                     turn_id, "reply_anti_pattern_detected",
                     pattern="task_delegated_to_user",

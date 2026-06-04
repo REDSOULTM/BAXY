@@ -313,6 +313,74 @@ class MissionPlan:
         return "\n".join(lines)
 
 
+# WhatsApp = la ÚNICA app de mensajería con tool dedicada (Discord/Slack/Teams
+# van por computer_use). Este detector estructural decide si un envío-de-mensaje
+# va a WhatsApp (o no nombra app -> default WhatsApp) vs a otra app. Reutiliza el
+# mismo vocabulario ES/EN + fonéticas de Whisper que el routing de keywords
+# (planner ~L1209). Mide la FORMA (nombre de app), no el contenido del mensaje.
+_WHATSAPP_NAME_RE = re.compile(
+    r"\b(whatsapp|wsp|wpp|wasap|guasap|guazap|huatsap|whats|wa\.me)\b",
+    re.IGNORECASE,
+)
+# Otras apps de mensajería con UI propia (las maneja computer_use, NO la red
+# WhatsApp). Si el comando las nombra, NO es un envío-WhatsApp.
+_OTHER_MSG_APP_RE = re.compile(
+    r"\b(discord|slack|teams|telegram|signal|messenger|instagram|"
+    r"insta|ig|dm|skype)\b",
+    re.IGNORECASE,
+)
+
+
+def _looks_like_whatsapp(text: str) -> bool:
+    """True si un envío-de-mensaje va a WhatsApp: nombra WhatsApp explícito, O no
+    nombra NINGUNA app de mensajería (default histórico = WhatsApp). False si
+    nombra otra app (Discord/Slack/...) -> esos van por computer_use, no por la
+    red determinista de WhatsApp. ESTRUCTURAL, multi-idioma."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    if _WHATSAPP_NAME_RE.search(text):
+        return True
+    if _OTHER_MSG_APP_RE.search(text):
+        return False
+    return True  # sin app nombrada -> default WhatsApp (comportamiento histórico)
+
+
+# Pregunta sobre el ESTADO LOCAL del SO ("¿qué juego/app/ventana está
+# abierta/activa/en foco?", "what am I running/playing?"). La responde
+# window(action=active) -> GetForegroundWindow, NO charla ni web. BUG real
+# (log turnos 13/14): el abstain_head trata esta pregunta como smalltalk (FP
+# frágil a mayúscula/?/wake-leak) y el fallback caía a ["session"] -> el 4B
+# elegía session.cancel_turn ante una PREGUNTA. Detector ESTRUCTURAL (mide la
+# FORMA, multi-idioma) que protege `window` igual que _is_world_q protege web.
+# Combina (a) un interrogador/forma-de-pregunta con (b) un sustantivo de
+# entidad-en-pantalla + (c) un predicado de foco/ejecución. NO matchea
+# acciones ("cerrá la ventana", "abrí el juego") porque exige forma-pregunta.
+_LOCAL_STATE_ENTITY = (
+    r"(?:juego|game|gioco|jeu|spiel|jogo|"
+    r"app|aplicaci[oó]n|application|programa|program|"
+    r"ventana|window|finestra|fen[eê]tre|pantalla|screen)")
+_LOCAL_STATE_PREDICATE = (
+    r"(?:jug(?:ando|ar)|playing|gioca(?:ndo|re)|jou(?:ant|er)|"
+    r"abiert[oa]|open|apert[oa]|activ[oa]|active|attiv[oa]|"
+    r"en foco|in focus|foreground|en primer plano|"
+    r"corriendo|running|ejecut|usando|using|delante|adelante)")
+_LOCAL_STATE_Q_RE = re.compile(
+    # forma-pregunta (¿/?/qué/cuál/which/what/que) + entidad + predicado, en
+    # cualquier orden razonable (entidad..predicado o predicado..entidad).
+    r"(?:[¿?]|\bqu[eé]\b|\bcu[aá]l\b|\bwhat\b|\bwhich\b|\bwelche|\bquel|\bche\b|\bqual)"
+    r".*?(?:" + _LOCAL_STATE_ENTITY + r".*?" + _LOCAL_STATE_PREDICATE
+    + r"|" + _LOCAL_STATE_PREDICATE + r".*?" + _LOCAL_STATE_ENTITY + r")",
+    re.IGNORECASE | re.DOTALL)
+
+
+def _is_local_state_question(text: str) -> bool:
+    """True si el texto pregunta por el estado local del SO (qué app/juego/ventana
+    está activa). La tool correcta es window(action=active). ESTRUCTURAL."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    return bool(_LOCAL_STATE_Q_RE.search(text))
+
+
 def plan_mission(content: str | list[dict[str, Any]]) -> MissionPlan:
     text = _content_text(content)
     parts = _split_steps(text)
@@ -776,6 +844,18 @@ def select_tool_names(
             pass
 
     if not names:
+        # BUG real (log turnos 13/14): una PREGUNTA de estado local del SO ("¿qué
+        # juego estoy jugando?") caía acá (el abstain_head la trató como smalltalk)
+        # y devolvía solo ["session"] -> el 4B forzaba session.cancel_turn ante una
+        # pregunta. La responde window(action=active). Ofrecé `window` (estructural,
+        # antes de session) para que el LLM tenga la tool correcta. Análogo a cómo
+        # _is_world_q protege web/knowledge.
+        if _is_local_state_question(raw_text):
+            base = ["window", "session"]
+            if safety_enabled:
+                base.append("safety")
+            select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
+            return base
         # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",
         # "stop", "espera"). Expose session.cancel_turn so the LLM can pick
         # it without falling back to a generic reply.
@@ -1578,6 +1658,12 @@ _PRIMARY_TOOLS = {
     "contacts", "notes_tasks", "local_calendar", "habit_tracker",
     "local_search", "printer_scanner", "desktop_layout", "backup_sync",
     "source_manager", "email", "reminder",
+    # Messaging + computer-use son tools de DOMINIO; sin ellas el cap las
+    # demote a mid-tier (rank 50) y el encoder las descartaba aun rankeando
+    # whatsapp #1 (bug #respondele_mama, 2026-06-04: "respondele a mama"
+    # daba subset sin whatsapp). Ver test_router_coverage_invariant
+    # (_PRIMARY_TOOLS debe cubrir todo dominio).
+    "whatsapp", "computer_use",
     "registry", "env", "input", "download", "package",
 }
 _UTILITY_TOOLS = {"verify": 90, "state": 91, "dependency": 92, "safety": 99}

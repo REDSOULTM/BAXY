@@ -131,6 +131,31 @@ def test_open_browser_not_abstained() -> None:
         assert not domain, f"{q!r} should abstain, got {sorted(domain)}"
 
 
+def test_local_state_question_offers_window_not_only_session() -> None:
+    """BUG real (log voz turnos 13/14, 2026-06-03): "¿qué juego estoy jugando?"
+    -> el abstain_head trató la pregunta de ESTADO LOCAL como smalltalk (FP frágil
+    a mayúscula/?/wake-leak) y el fallback devolvía solo ['session'] -> el 4B
+    forzaba session.cancel_turn ante una PREGUNTA. La responde window(action=
+    'active'). El router debe ofrecer `window` y NUNCA dejar SOLO ['session']."""
+    for q in ("Bixby, ¿qué juego estoy jugando?",   # wake-leak + acento + ?
+              "Max ¿qué juego estoy jugando?",
+              "¿qué juego estoy jugando?",
+              "Que juego estoy jugando?",            # May + ? sin ¿ (caía a session)
+              "qué aplicación está abierta",
+              "qué ventana está activa",
+              "what game am I playing"):
+        subset = select_tool_names(q, plan_mission(q), safety_enabled=False)
+        assert "window" in subset, f"{q!r} must offer window, got {subset}"
+        assert subset != ["session"], f"{q!r} fell back to only session"
+
+    # ANTI-REGRESIÓN: el detector NO debe robar acciones ni smalltalk genuino.
+    # Una ACCIÓN ("cerrá la ventana") sigue su ruta (window por keyword, no por
+    # el fallback de estado-local); smalltalk real NO debe traer window por esto.
+    for q in ("hola qué tal", "gracias", "contame un chiste"):
+        subset = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        assert "window" not in subset, f"{q!r} should not offer window, got {sorted(subset)}"
+
+
 def test_browser_real_collapsed_on_simple_nav() -> None:
     """S3d (2026-05-30) precision. browser_real (fine CDP control) was offered
     on EVERY browser turn as noise (measured: 78 noise rows vs 2 that truly need

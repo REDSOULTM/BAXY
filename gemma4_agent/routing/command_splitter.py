@@ -416,6 +416,15 @@ _MSG_BODY_LEAD = re.compile(
 # "en <app>" al final del contacto, para pelarlo. App = una palabra (no frase).
 _MSG_APP_TAIL = re.compile(
     r"\s+(?:en|in|on|im|su|no|dans)\s+\w+\s*$", re.IGNORECASE)
+# Apps de MENSAJERÍA con UI propia (set cerrado y finito + fonéticas de Whisper).
+# Solo se usan para decidir si pelar un "en <app>" residual del CUERPO de un
+# mensaje (no para routing). Cerrado = seguro: no toca palabras comunes ("casa",
+# "bar", "10 minutos"). Incluye WhatsApp porque "a Ana en WhatsApp que ..." cae
+# en el mismo PASO 1-fallback.
+_MSG_KNOWN_APP_RE = re.compile(
+    r"(?:whatsapp|wsp|wpp|wasap|guasap|discord|telegram|slack|teams|signal|"
+    r"messenger|instagram|insta|skype|sms)",
+    re.IGNORECASE)
 
 
 def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | None:
@@ -501,6 +510,24 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
         contact = contact[:mapp.start()].strip(" ,:")
         if tail and not body:                    # mensaje pegado tras "en app"
             body = tail
+    # PASO 2b: el "en <app>" puede haber quedado al FINAL del CUERPO, no del
+    # contacto, cuando el "que" precede al "en app" ("a Juan QUE voy ... EN
+    # Discord" -> PASO 1 dejó body="que voy ... en Discord"). Pelarlo del body
+    # SOLO si la última palabra es una APP DE MENSAJERÍA conocida — distingue
+    # "en Discord" (app) de "en casa"/"en 10 minutos" (lugar/tiempo legítimos del
+    # mensaje). MEDIDO: el pelado ciego rompía "te espero en casa"->"te espero"
+    # y AppResol(fuzzy) matcheaba "casa" como app (CLAUDE.md: medí, no celebré).
+    # Las apps de mensajería son un set CERRADO y finito -> cobertura segura,
+    # multi-idioma, sin tocar palabras comunes. (Si la app está en el app_hint
+    # del SO, también vale.)
+    if body:
+        mtail = _MSG_APP_TAIL.search(body)
+        if mtail:
+            tail_word = re.findall(r"\w+", mtail.group(0))[-1].lower()  # palabra tras "en"
+            _is_app = bool(_MSG_KNOWN_APP_RE.fullmatch(tail_word)) or (
+                bool(app_hint) and tail_word in app_hint.lower())
+            if _is_app:
+                body = _MSG_APP_TAIL.sub("", body).strip(" ,:")
     # PASO 3 (fallback): si NO hubo conector ni "en app" y el contacto tiene varias
     # palabras, la 1ª es el contacto y el resto el mensaje ("CbaYeah hola como va",
     # "juan hola"). Conservador: el contacto suele ser UNA palabra (handle/nombre).
@@ -836,6 +863,19 @@ def parse_type_action(clause: str) -> dict | None:
 # (solo SEPARA verbo de label) -> stems multi-idioma. Universal.
 _CLICK_VERB_STEM = re.compile(
     r"^\s*(?:"
+    # PERÍFRASIS OPCIONAL "hacé/haz/hagá/dale/dá click", "make/do/give a click",
+    # "faz/fai/mach ... click" (BUG real #click_boton, 2026-06-04: "hace click en
+    # el botón rojo" no matcheaba -> el 4B respondía cualquier cosa). El lookahead
+    # (?=...click...) hace que la perífrasis SOLO se consuma si el sustantivo que
+    # sigue ES click/clic -> "hacé la tarea"/"haz que suene rock" NO matchean
+    # (sin sobre-captura, sin listas por idioma). Mide la FORMA.
+    r"(?:hac[eéê]?r?|haz|hag[áa]|dale|d[áa]|"                             # es
+    r"mak(?:e|é)|do|give|"                                                # en
+    r"fa(?:zer|z|ça)|fai(?:re|s)|mach(?:e|en)?)"                          # pt/fr/de
+    r"\s+(?:un[ao]?\s+|a\s+|the\s+|el\s+)?"                               # artículo opcional
+    r"(?=cl[íi]?c|click|klick|clic|clicc)"                                # lookahead: SÍ es click
+    r")?\s*"
+    r"(?:"
     r"apret[áa]\w*|clicke[áa]\w*|click\w*|toc[áa]\w*|toca\w*|"            # es
     r"seleccion[áa]\w*|elegí|elige|elig[ée]\w*|presion[áa]\w*|"          # es
     r"click|press|tap|select|choose|hit|"                                # en

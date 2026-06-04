@@ -102,6 +102,30 @@ class MessageToExtractTest(unittest.TestCase):
         for q in ("respondele que sí", "contestale que ya voy"):
             self.assertIsNone(extract_message_to(q), msg=q)
 
+    def test_body_does_not_drag_app_when_que_precedes_en_app(self):
+        # BUG REAL (log voz turno 7, 2026-06-03): "escríbele a Juan que voy en un
+        # momento en Discord" -> el PASO 1-fallback "que" partía dejando body="que
+        # voy ... EN DISCORD" (el "en app" no se pelaba del body, solo del contacto)
+        # -> se tipeaba el nombre de la app dentro del mensaje. El "en <app>" residual
+        # se pela del body SOLO si es una app de mensajería conocida.
+        self.assertEqual(
+            extract_message_to("escríbele a Juan que voy en un momento en Discord"),
+            ("Juan", "que voy en un momento"))
+        self.assertEqual(
+            extract_message_to("escribile a Ana en WhatsApp que ya salgo"),
+            ("Ana", "que ya salgo"))
+
+    def test_body_preserves_real_en_phrase_not_app(self):
+        # ANTI-REGRESIÓN del fix anterior: un "en <lugar/tiempo>" legítimo al final
+        # del cuerpo NO debe pelarse (solo apps de mensajería conocidas). MEDIDO: el
+        # pelado ciego rompía "te espero en casa" -> "te espero".
+        c, b = extract_message_to("decile a Juan que te espero en casa")
+        self.assertEqual(c, "Juan")
+        self.assertIn("en casa", b)
+        c2, b2 = extract_message_to("mandale a mama que llego en 10 minutos")
+        self.assertEqual(c2, "mama")
+        self.assertIn("10 minutos", b2)
+
 
 class AppActionExtractTest(unittest.TestCase):
     """extract_app_action: ACCESIBILIDAD — "escribí/hacé X en app Y", "andá a Y y
@@ -562,6 +586,28 @@ class ClickTargetExtractTest(unittest.TestCase):
         }
         for inp, exp in cases.items():
             self.assertEqual(extract_click_target(inp), exp, msg=inp)
+
+    def test_periphrastic_click_extracts_label(self):
+        # BUG real #click_boton (log voz 2026-06-04): "hace click en el boton rojo"
+        # NO matcheaba -> el 4B respondía cualquier cosa ("Soy Gemma"). La perífrasis
+        # "hacé/haz/make/do + click" ahora se reconoce (lookahead exige que el
+        # sustantivo sea click, sin sobre-captura).
+        cases = {
+            "hace click en el boton rojo": "boton rojo",
+            "hacer click en aceptar": "aceptar",
+            "haz click en Enviar": "Enviar",
+            "haz un click en OK": "OK",
+            "make a click on OK": "OK",
+            "do click on Cancel": "Cancel",
+        }
+        for inp, exp in cases.items():
+            self.assertEqual(extract_click_target(inp), exp, msg=inp)
+
+    def test_periphrastic_does_not_overcapture(self):
+        # El lookahead evita que "hacé/haz X" no-click matchee como click.
+        for inp in ("hacé la tarea", "haz que suene rock", "hace una foto",
+                    "haz un resumen", "hacé un café"):
+            self.assertIsNone(extract_click_target(inp), msg=inp)
 
     def test_non_click_returns_none(self):
         for inp in ("escribí hola", "abrí Chrome", "apretá", "bajá el volumen"):

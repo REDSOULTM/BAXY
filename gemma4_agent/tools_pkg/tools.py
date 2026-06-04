@@ -221,7 +221,21 @@ _DISPATCH_OK_COMPLETIONS = frozenset({
 })
 
 
-def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+def _normalize_tool_result(name: str, args: dict[str, Any], result: Any) -> dict[str, Any]:
+    # CONTRATO handler->dispatcher: un handler SIEMPRE debe devolver un dict. Si
+    # devuelve list/None/str (handler roto), NO crashear el turno entero con
+    # AttributeError ('list' object has no attribute 'setdefault') — eso reventaba
+    # el turno completo (BUG real #busca_teclados, 2026-06-04: el AttributeError
+    # escapaba al try/except de execute() porque la normalización corría FUERA del
+    # try). Degradar a error honesto y trazable. ESTRUCTURAL (mide la FORMA del
+    # result, no su contenido). Cubre execute() y execute_routine_step(). El repo
+    # YA declara esta invariante (test_tool_dispatch_contract: "execute() never
+    # raises"); esto la cierra para el caso non-dict, no solo el de excepción.
+    if not isinstance(result, dict):
+        result = _err(
+            f"tool {name} returned non-dict result ({type(result).__name__})",
+            status="failed", raw_result_type=type(result).__name__,
+        )
     result.setdefault("tool", name)
     if args.get("action") and "action" not in result:
         result["action"] = str(args["action"])
@@ -7017,6 +7031,26 @@ Start-Sleep -Milliseconds 120
         sin ctypes) -> el caller cae al camino PowerShell legacy. Best-effort."""
         if not text:
             return None
+        # RED ESTRUCTURAL anti-self-kill (BUG #suma_calc, 2026-06-04): SendInput va
+        # IN-PROCESS al foreground REAL del escritorio. Si el foreground es el PROPIO
+        # proceso (VS Code host / el server durante un eval batch), tipear contra sí
+        # mismo mata la sesión (memoria: synthetic-input-lives-in-vscode). Abortar
+        # honestamente ANTES de emitir input. Correcto también en prod: nunca querés
+        # teclear contra tu propia ventana. GEMMA4_NO_PHYSICAL_INPUT=1 lo desactiva
+        # del todo (modo eval).
+        if os.environ.get("GEMMA4_NO_PHYSICAL_INPUT", "").strip().lower() in {"1", "true", "yes", "on"}:
+            return {"ok": False, "verified": False,
+                    "completion_status": "no_physical_input_mode",
+                    "error": "physical input disabled (eval mode)"}
+        try:
+            import win32gui as _wg, win32process as _wp
+            _fg = _wg.GetForegroundWindow()
+            if _fg and _wp.GetWindowThreadProcessId(_fg)[1] == os.getpid():
+                return {"ok": False, "verified": False,
+                        "completion_status": "aborted_self_target",
+                        "error": "foreground is the host process; refusing to type into self"}
+        except Exception:
+            pass  # sin win32 / no-Windows -> seguimos (best-effort)
         _m = _sendinput_machine()
         if _m is None:
             return None  # no-Windows / sin ctypes -> caller cae a legacy
