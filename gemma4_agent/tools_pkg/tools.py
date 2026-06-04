@@ -2574,6 +2574,32 @@ class ToolRegistry:
         action = _action(args, default="open")
         query = str(args.get("query") or "").strip()
         browser = str(args.get("browser") or "").strip()
+        # RED DE HONESTIDAD (mismo patrón que t_steam): "¿Chrome está abierto?" -> el
+        # 4B elige browser(open) -> abría el navegador y MENTÍA "Listo, abrí Chrome".
+        # Una pregunta de ESTADO no debe ABRIR. Si el texto del turno es pregunta de
+        # estado Y no trae una URL/query real, reportar si el navegador corre, no abrir.
+        if action == "open" and not query and not str(args.get("url") or args.get("target") or "").strip():
+            _ut = (getattr(self, "_current_user_text", "") or "").strip()
+            try:
+                from ..routing.planner import _is_app_state_check as _isc
+            except Exception:
+                _isc = None
+            if _ut and _isc and _isc(_ut):
+                try:
+                    _names = _running_process_names()
+                    # nombre del navegador a buscar: el que nombró el user, o
+                    # cualquiera de los conocidos si no nombró ninguno.
+                    _br = browser.lower()
+                    if _br:
+                        _running = any(_br in n for n in _names)
+                    else:
+                        _running = any(b in n for n in _names
+                                       for b in ("chrome", "msedge", "firefox", "brave", "opera"))
+                except Exception:
+                    _running = None
+                return _ok(action="status", app=(browser or "navegador"), running=_running,
+                           completion_status="reported_state_did_not_open",
+                           note="pregunta de estado: NO abrí el navegador, reporté si corre")
         if action == "open":
             # Aliases para `url` que el 4B usa frecuentemente (caso medido: el
             # modelo pasó `target:"canvas"` y la tool devolvía needs_user porque

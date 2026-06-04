@@ -49,6 +49,25 @@ class SteamStateHonestyTest(unittest.TestCase):
         r = reg.t_steam({"action": "open"})
         self.assertNotEqual(r.get("completion_status"), "reported_state_did_not_open")
 
+    def test_browser_state_question_does_not_open(self):
+        # Mismo patrón que steam: "¿Chrome está abierto?" NO debe abrir el navegador.
+        reg = _reg()
+        for q in ("revisa si Chrome está abierto", "is Firefox running?",
+                  "¿está abierto el navegador?"):
+            reg._current_user_text = q
+            r = reg.t_browser({"action": "open", "browser": "Chrome"})
+            self.assertEqual(r.get("completion_status"), "reported_state_did_not_open",
+                             msg=f"{q!r} no debería abrir el navegador")
+            self.assertIn("running", r)
+
+    def test_browser_open_with_url_still_opens(self):
+        # No-regresión: abrir una URL real NO se intercepta (aunque el texto sea
+        # una pregunta, lo que manda es que hay url/query concreta).
+        reg = _reg()
+        reg._current_user_text = "abrí youtube.com"
+        r = reg.t_browser({"action": "open", "url": "youtube.com"})
+        self.assertNotEqual(r.get("completion_status"), "reported_state_did_not_open")
+
 
 if __name__ == "__main__":
     unittest.main()
