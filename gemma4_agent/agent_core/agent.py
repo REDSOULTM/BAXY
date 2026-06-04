@@ -4341,14 +4341,15 @@ class Gemma4Agent:
                     "role": "system",
                     "content": _UNVERIFIED_CLAIM_HINT,
                 })
-            # GUARD CRUZADO intención↔dominio (alto riesgo, gate DEFAULT-OFF hasta
-            # medir en vivo): el reply afirma una operación de VENTANA pero la tool
-            # exitosa fue de dominio-ARCHIVO (mentira medida "moví Notepad y lo
-            # renombré a Notepad_Left.txt"). is_unverified_claim NO lo atrapa porque
-            # la tool (equivocada) "tuvo éxito". Estructural, anti-falso-positivo
-            # medido (7/7). GEMMA4_INTENT_DOMAIN_GUARD=1 lo activa.
-            elif _os.environ.get("GEMMA4_INTENT_DOMAIN_GUARD", "0").strip().lower() \
-                    in {"1", "true", "yes", "on"}:
+            # GUARD CRUZADO intención↔dominio (DEFAULT-ON tras medición): el reply
+            # afirma una operación de VENTANA pero la tool exitosa fue de dominio-
+            # ARCHIVO (mentira medida "moví Notepad y lo renombré a Notepad_Left.txt").
+            # is_unverified_claim NO lo atrapa porque la tool (equivocada) "tuvo
+            # éxito". ACTIVADO por default: medido sobre los 6162 turnos reales del
+            # dataset -> flagea 1 (la mentira real), 0 falsos positivos; stress 21/21.
+            # GEMMA4_INTENT_DOMAIN_GUARD=0 lo desactiva si algo apareciera en prod.
+            elif _os.environ.get("GEMMA4_INTENT_DOMAIN_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
                 try:
                     from ..safety_pkg.reply_validator import (
                         intent_domain_mismatch as _idm,

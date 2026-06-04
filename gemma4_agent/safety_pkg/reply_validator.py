@@ -228,8 +228,15 @@ _INTENT_WINDOW_RE = re.compile(
     r"\b(?:mueve|mov[ée]\w*|mover|move|coloca|pon[ée]?)\b[^.]{0,40}\b"
     r"(?:izquierda|derecha|arriba|abajo|left|right|top|bottom|mitad|half|"
     r"lado\s+a\s+lado|side\s+by\s+side)\b"
-    r"|\b(?:minimiz|maximiz|restaur|restore|foco|focus|enfoc|"
-    r"trae(?:r)?\s+al\s+frente|bring\s+to\s+front)\w*\b"
+    # verbos de control-de-ventana inequívocos. NO incluye restaur/restore en el
+    # set genérico: "restore" matcheaba paths como "sandbox/restore_test" (falso+
+    # MEDIDO en el dataset, 2 turnos). minimiz/maximiz/foco/enfoc no colisionan
+    # con paths comunes. Seguidos de \b (no \w* que comería "_test").
+    r"|\b(?:minimiz\w*|maximiz\w*|enfoc\w*|trae(?:r)?\s+al\s+frente|"
+    r"bring\s+to\s+front)\b"
+    r"|\b(?:foco|focus)\b"
+    # restaurar/restore SOLO si menciona ventana explícita (no paths con 'restore')
+    r"|\b(?:restaur\w*|restore)\b[^.]{0,20}\bventana\b"
     # "mover/mové LA VENTANA ..." (ventana explícita) = intención-ventana inequívoca
     r"|\b(?:mueve|mov[ée]\w*|mover|move)\b[^.]{0,15}\bventana\b",
     re.IGNORECASE)
