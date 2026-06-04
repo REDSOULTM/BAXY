@@ -318,9 +318,16 @@ def is_dependent_open(clause: str) -> bool:
 # tool app.open SÍ resuelve todos (calc.exe etc.). Detector
 # estructural -> el caller INTENTA app.open(nombre); si resuelve a una app, listo;
 # si no (carpeta/URL/chat), cae al flujo normal (la tool es la guarda de precisión).
+# SOLO verbos de ABRIR-APP. NO "ejecutar/run/start": "ejecuta pytest"/"run pytest"
+# es un COMANDO (terminal), no abrir-app — incluirlos hacía que el short-circuit
+# secuestrara 42 comandos shell del dataset y, peor, "ejecuta pytest" caía al
+# fallback web de app.open (pytest→pytest.org) y MENTÍA "Listo, abrí pytest" (BUG
+# real medido eval run2, 2026-06-04). "ejecutar X" llega ahora al router+LLM, que
+# ya ofrecen terminal/developer y desambiguan bien (verificado en vivo). El único
+# "ejecuta <app>" del dataset (taskkill) ya cae por _NON_APP_MARK (tiene '/').
 _APP_OPEN_VERB = re.compile(
-    r"^\s*(?:abr[íi]\w*|abre|abrir|abrime|lanz[áa]\w*|ejecut[áa]\w*|"             # es
-    r"open|launch|start|run|"                                                     # en
+    r"^\s*(?:abr[íi]\w*|abre|abrir|abrime|lanz[áa]\w*|"                           # es
+    r"open|launch|"                                                               # en
     r"abra|ouvre|lance|[öo]ffne|starte|apri|avvia)\s+",                           # pt/fr/de/it
     re.IGNORECASE)
 # marcadores de NO-app: chat/canal (in-app), carpeta (filesystem), URL/sitio (browser).

@@ -38,6 +38,20 @@ STRATIFIED = os.environ.get("GEMMA4_EVAL_STRATIFIED", "0") == "1"
 DATASET = ROOT / "dataset_finetune" / "curated" / "curated.jsonl"
 OUT = ROOT / "_finetune_eval_results.jsonl"
 
+# SKIP de ejemplos ya corridos en una pasada previa (GEMMA4_EVAL_SKIP_FILE apunta
+# a un JSON con [[user_text_low, prev_low], ...]). Para barrer el RESTO del dataset
+# en una 2da corrida sin repetir lo ya medido.
+_skip = set()
+_skip_path = os.environ.get("GEMMA4_EVAL_SKIP_FILE", "")
+if _skip_path and Path(_skip_path).exists():
+    try:
+        import json as _json
+        for _k in _json.loads(Path(_skip_path).read_text(encoding="utf-8")):
+            _skip.add((str(_k[0]).strip().lower(), str(_k[1]).strip().lower()))
+        print(f"[skip] {len(_skip)} ejemplos ya vistos serán saltados", flush=True)
+    except Exception as _e:
+        print(f"[skip] no se pudo cargar skip-file: {_e}", flush=True)
+
 # Cargar ejemplos ÚNICOS por (user_text, prev_text). Guardar ground-truth.
 rows = []
 seen = set()
@@ -57,6 +71,8 @@ for line in DATASET.read_text(encoding="utf-8", errors="replace").splitlines():
     if key in seen:
         continue
     seen.add(key)
+    if key in _skip:          # ya medido en una corrida previa -> saltar
+        continue
     rows.append({
         "user_text": ut,
         "prev_text": (d.get("prev_text") or "").strip(),

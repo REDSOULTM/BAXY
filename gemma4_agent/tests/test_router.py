@@ -156,6 +156,27 @@ def test_local_state_question_offers_window_not_only_session() -> None:
         assert "window" not in subset, f"{q!r} should not offer window, got {sorted(subset)}"
 
 
+def test_app_state_check_offers_system_not_app_tool() -> None:
+    """BUG real (eval dataset run2, 2026-06-04): "¿Steam está abierto?" ofrecía
+    `steam` (cuyo default es ABRIR) -> el 4B abría Steam y MENTÍA "Listo, abrí
+    Steam". Una pregunta de ESTADO read-only la responde system(processes)/window;
+    el router debe RETIRAR steam/browser/app e inyectar system/window."""
+    for q in ("revisa si Steam está abierto", "Steam está cerrado?",
+              "revisa si Chrome está abierto", "is Discord running?"):
+        subset = select_tool_names(q, plan_mission(q), safety_enabled=False)
+        assert "system" in subset or "window" in subset, f"{q!r} -> {subset}"
+        assert "steam" not in subset and "browser" not in subset, (
+            f"{q!r} no debe ofrecer la tool de la app (abre, no chequea): {subset}")
+
+    # ANTI-REGRESIÓN: una ACCIÓN sobre la app NO debe ser tratada como chequeo.
+    s_open = select_tool_names("abrí Steam", plan_mission("abrí Steam"))
+    assert "steam" in s_open or "app" in s_open, f"'abrí Steam' debe ofrecer steam/app: {s_open}"
+    # "si X está abierto, cerralo" lleva acción -> NO retirar (debe quedar window/app)
+    s_cond = select_tool_names("si Chrome está abierto cierralo",
+                               plan_mission("si Chrome está abierto cierralo"))
+    assert "window" in s_cond or "app" in s_cond, f"condicional-acción: {s_cond}"
+
+
 def test_browser_real_collapsed_on_simple_nav() -> None:
     """S3d (2026-05-30) precision. browser_real (fine CDP control) was offered
     on EVERY browser turn as noise (measured: 78 noise rows vs 2 that truly need

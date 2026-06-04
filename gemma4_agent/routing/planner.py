@@ -381,6 +381,50 @@ def _is_local_state_question(text: str) -> bool:
     return bool(_LOCAL_STATE_Q_RE.search(text))
 
 
+# Pregunta de ESTADO/EXISTENCIA de una app NOMBRADA: "¿Steam está abierto?",
+# "revisá si Chrome está corriendo", "is Discord running?". La responde
+# system(processes) o window(list), NO la tool de la app (steam/browser) cuyo
+# default es ABRIR — BUG real (eval run2): "¿Steam está abierto?" -> steam(open)
+# -> "Listo, abrí Steam" MENTIRA + acción no pedida. Diferente de
+# _LOCAL_STATE_Q_RE: acá el sujeto es un NOMBRE PROPIO (no "juego/app" genérico),
+# va sin marca-de-pregunta obligatoria (imperativo "revisá si..."), y DEBE excluir
+# verbos de ACCIÓN ("si Chrome está abierto, cerralo" -> eso SÍ es acción).
+# Mide la FORMA (predicado de estado + chequeo, sin acción), multi-idioma.
+_STATE_CHECK_VERB = (
+    r"(?:revis[áa]\w*|fij[áa]te|f[íi]jate|comprob[áa]\w*|verific[áa]\w*|chequ[ée]\w*|"
+    r"mir[áa]|ve[ée]\b|"
+    r"check|verify|see\s+if|tell\s+me\s+if|is|are|"
+    r"v[êe]rifi\w*|pr[üu]f\w*|controll\w*)")
+# verbos de ACCIÓN imperativos/infinitivos que, si están, lo hacen acción (no solo
+# chequeo) -> NO disparar. OJO: el participio-estado "cerrado/abierto" NO es acción
+# (es el predicado de la pregunta) -> excluido (cerr\w* capturaba "cerrado", bug).
+# Solo imperativo "cerrá/cerrar/cierra", no "cerrado".
+_STATE_ACTION_VERB = re.compile(
+    r"\b(?:cierr[ae]\w*|cerr[áa]\b|cerrar\b|close\b|abr[íi]\w*|abre\b|abrir\b|open\b|"
+    r"mat[áa]\w*|matar\b|kill\b|minimiz\w*|maximiz\w*|enfoc\w*|focus\b|"
+    r"reinici\w*|restart\b)\b", re.IGNORECASE)
+_STATE_WORD = r"(?:abiert[oa]s?|cerrad[oa]s?|open|closed|corriendo|running|activ[oa]s?|ejecut\w*)"
+# (a) verbo-de-chequeo + ... + estado;  (b) '¿' + ... + estado;
+# (c) afirmación '... está <estado> ?' (signo de pregunta al final, sin verbo de
+#     chequeo: "Steam está cerrado?").
+_APP_STATE_CHECK_RE = re.compile(
+    r"(?:" + _STATE_CHECK_VERB + r"\b.{0,40}?" + _STATE_WORD
+    + r"|[¿].{0,40}?" + _STATE_WORD
+    + r"|\b(?:est[áa]\w*|is|are|sigue)\s+" + _STATE_WORD + r".*?\?)",
+    re.IGNORECASE | re.DOTALL)
+
+
+def _is_app_state_check(text: str) -> bool:
+    """True si el texto PREGUNTA por el estado de una app nombrada ('¿X está
+    abierto/cerrado/corriendo?', 'revisá si X corre') SIN pedir una acción sobre
+    ella. Responder=system/window, NO la tool de la app. ESTRUCTURAL, multi-idioma."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    if _STATE_ACTION_VERB.search(text):   # "si X está abierto, cerralo" -> es acción
+        return False
+    return bool(_APP_STATE_CHECK_RE.search(text))
+
+
 def plan_mission(content: str | list[dict[str, Any]]) -> MissionPlan:
     text = _content_text(content)
     parts = _split_steps(text)
@@ -856,6 +900,15 @@ def select_tool_names(
                 base.append("safety")
             select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
             return base
+        # Pregunta de estado de app NOMBRADA ("is Discord running?", "¿Steam está
+        # cerrado?") que ninguna keyword/encoder agarró -> NO dejar solo session
+        # (el 4B no podría responder). system(processes)+window(list) la responden.
+        if _is_app_state_check(raw_text):
+            base = ["system", "window", "session"]
+            if safety_enabled:
+                base.append("safety")
+            select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
+            return base
         # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",
         # "stop", "espera"). Expose session.cancel_turn so the LLM can pick
         # it without falling back to a generic reply.
@@ -975,6 +1028,21 @@ def select_tool_names(
     # del cap para que el cap no recorte señal por culpa del ruido. Recall-neutral
     # medido en ambos corpus.
     expanded = _collapse_hierarchical(_dedupe(expanded), _collapse_scored, set(_kw_hits))
+    # ESTADO-DE-APP-NOMBRADA (BUG real eval run2): "¿Steam está abierto?" ->
+    # _suggest_tools antepone `steam`/`browser` (tool homónima de la app), cuyo
+    # default es ABRIR -> el 4B abría Steam y MENTÍA "Listo, abrí Steam". Una
+    # pregunta de estado read-only la responde system(processes)/window(list).
+    # Medido: reordenar no basta (el 2B elige la tool homónima igual) -> RETIRAR
+    # steam/browser/app del subset e inyectar system+window al frente. El detector
+    # excluye verbos de acción ("si X está abierto, cerralo" NO dispara -> es acción).
+    try:
+        if _is_app_state_check(raw_text):
+            expanded = [t for t in expanded if t not in {"steam", "browser", "browser_real", "app"}]
+            for _t in ("window", "system"):
+                if _t not in expanded:
+                    expanded.insert(0, _t)
+    except Exception:
+        pass
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
     # pending_intent injection. If a previous turn left a tool waiting on user
     # input (status='needs_user'), inject the tool at the head so it survives
@@ -1238,10 +1306,19 @@ def _suggest_tools(step: str) -> list[str]:
     # unambiguous `window` op — anchor it so the head's noise can't dominate.
     if re.search(r"\b(minimiza|minimizar|maximiza|maximizar|restaura(r)? la ventana|"
                  r"restaura(r)? ventana|mueve la ventana|cambia de ventana|"
-                 r"trae(r)? al frente|enfoca|foco a|"
+                 r"trae(r)? al frente|enfoca|foco a|foco en|foco sobre|pon[ée]? el foco|"
                  r"minimize|maximize|restore window|move (the )?window|focus (the )?window|"
-                 r"bring to front)\b", low):
+                 r"focus on|put focus|bring to front)\b", low):
         tools.append("window")
+    # "mover X a la izquierda/derecha/arriba/abajo/mitad" = mover la VENTANA (no un
+    # archivo). El DIRECCIONAL desambigua de filesystem.move (BUG real eval run2:
+    # "mueve Notepad a la izquierda" -> filesystem.rename + MENTÍA "lo renombré a
+    # Notepad_Left.txt"). Estructural: verbo-mover + direccional, sin lista de apps.
+    if re.search(r"\b(mueve|mover|move|mov[ée]\w*|coloca|pon[ée]?)\b[^.]{0,30}"
+                 r"\b(a\s+la\s+)?(izquierda|derecha|arriba|abajo|left|right|"
+                 r"top|bottom|mitad|half|lado\s+a\s+lado|side\s+by\s+side)\b", low):
+        if "window" not in tools:
+            tools.append("window")
     if re.search(r"\b(backup|respaldo|copia de seguridad|restore|restaurar|dedupe|duplicados|"
                  r"deduplicate|duplicates)\b", low):
         tools.append("backup_sync")

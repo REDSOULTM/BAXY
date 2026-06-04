@@ -1401,7 +1401,19 @@ class Gemma4Agent:
                                                 "", _hint, flags=_re_aa.IGNORECASE).strip() or _hint
                             try:
                                 from ..tools_pkg.app_resolver import AppResolver
-                                _aa_route = bool(AppResolver().find(_hint2))
+                                from ..tools_pkg.tools import _score as _app_score
+                                from pathlib import Path as _Path
+                                # EXIGIR match FUERTE (>=85), no cualquier resultado fuzzy.
+                                # bool(find(...)) aceptaba basura: "Google: diodo zener para
+                                # que sirve" matcheaba "Registro de telemetría Office" score 45
+                                # -> falso computer_use sobre una BÚSQUEDA web (BUG real eval
+                                # run2). Apps legítimas dan 90-100; query-garbage <=55. Mismo
+                                # patrón que app_resolver:107.
+                                _cands = AppResolver().find(_hint2)
+                                _aa_route = bool(_cands) and max(
+                                    _app_score(_hint2, _cands[0].name),
+                                    _app_score(_hint2, _Path(_cands[0].launch).stem),
+                                ) >= 85
                             except Exception:
                                 _aa_route = False
                     except Exception:

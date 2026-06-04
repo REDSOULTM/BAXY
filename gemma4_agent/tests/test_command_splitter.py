@@ -430,6 +430,20 @@ class AppOpenTest(unittest.TestCase):
                   "qué hora es", "abrí el canal general"):
             self.assertIsNone(self.E(q), msg=q)
 
+    def test_execute_command_is_not_app_open(self):
+        # BUG real (eval dataset run2, 2026-06-04): "ejecuta pytest" matcheaba
+        # _APP_OPEN_VERB (incluía ejecut/run/start) -> app.open("pytest") -> fallback
+        # web abría pytest.org y MENTÍA "Listo, abrí pytest". "ejecutar X" es un
+        # COMANDO (terminal/developer), no abrir-app -> debe devolver None y llegar
+        # al router+LLM. 42 comandos del dataset estaban siendo hijackeados.
+        for q in ("ejecuta pytest", "ejecuta python --version", "ejecuta npm install",
+                  "ejecuta git status", "run pytest", "start the server",
+                  "ejecutá los tests", "run the build"):
+            self.assertIsNone(self.E(q), msg=q)
+        # No-regresión: abrir-app legítimo sigue funcionando.
+        self.assertEqual(self.E("abrí discord"), "discord")
+        self.assertEqual(self.E("lanzá Chrome"), "Chrome")
+
 
 class NavTargetExtractTest(unittest.TestCase):
     """extract_nav_target: 'entrá/andá a [app] al [servidor/canal] X' -> X (control
