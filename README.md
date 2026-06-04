@@ -68,18 +68,82 @@ Los valores de diseño que definen a Baxy. No son aspiracionales: están cablead
 - **Productividad** — notas y tareas; calendario offline (ICS RFC 5545); recordatorios/alarmas persistentes vía Task Scheduler; hábitos; *flashcards* con repetición espaciada (SM-2); Office (PowerPoint/Word/Excel, export PDF); rutinas con triggers; *watchers* de archivos/URLs.
 - **Desarrollo** — detección de stack, tests/lint/format (pytest/ruff/npm/cargo/go), git status/diff/log, dev servers; terminal (gateado); *job manager*; bridge a ComfyUI.
 
-### 🧠 Memoria y personalización
-- **Capa "Jarvis"** — observador de ambiente (artista/título que suena vía SMTC, app en foco, franja horaria — **metadata, no contenido**) que arma un perfil de gustos inyectado al prompt. Inferencia de gustos finos opcional con el propio Gemma local (default-OFF, en background, con guard anti-alucinación). Local, inspectable y borrable.
+### 🧠 Memoria, conocimiento y personalización
+- **Knowledge / RAG local** — base de conocimiento sobre tus documentos (BM25 sobre SQLite FTS5 + rerank semántico opcional). *On por default.*
+- **Memoria multicapa** — hechos explícitos, memoria semántica de turnos pasados (experience replay) y la capa **"Jarvis"** que aprende tus gustos observando *metadata* (app en foco, música que suena) — nunca contenido.
 - **Skills** (spec Anthropic Agent Skills) — recetas en disco cargadas *lazy* por el LLM (selección semántica, sin keywords).
 - **Microagents** (patrón OpenHands) — conocimiento de dominio inyectado por trigger.
-- **Knowledge / RAG local** — SQLite FTS5 + rerank cross-encoder opcional.
 - **Personas y perfiles de VRAM** — tono del asistente + perfiles que escalan los *caps* por turno.
+
+> El detalle a fondo de cada subsistema (modelo, fine-tuning, RAG, memoria, skills y routing) está en **[🧬 El LLM y sus capas inteligentes](#-el-llm-y-sus-capas-inteligentes)**.
 
 ### 🧭 Routing inteligente
 Decide qué subconjunto de tools ofrecer al LLM por turno — una **cascada semántica, no un árbol de if/else**:
 - **Encoder fine-tuneado** (`paraphrase-multilingual-MiniLM-L12-v2`) re-entrenado en queries de tools multilingües.
 - **Abstain head** calibrado: decide cuándo *no* ofrecer ninguna tool (charla, preguntas), con forward pass sub-milisegundo.
-- **Tool2Vec + capa de keywords + confident-peak escape**, con cap de 5 tools por turno.
+- **Tool2Vec + capa de keywords + confident-peak escape + reorden anti-primacy**, con cap de 5 tools por turno.
+
+---
+
+## 🧬 El LLM y sus capas inteligentes
+
+El corazón de Baxy es **Gemma 4** (de Google) servido localmente, rodeado de varias capas que lo hacen *conocer* tu PC, tus documentos y tu historial — todas locales, sin nube. Esta sección documenta cada una en detalle, marcando lo que está **ON por default**, lo **opt-in** y lo **POC/experimental**.
+
+### 🤖 El modelo y su contrato
+
+- **Modelo:** **Gemma 4 E2B** en formato GGUF (`Q4_K_M`), servido por `llama.cpp` / `llama-server` con API OpenAI-compatible en loopback. El perfil `vram4` (default) lo corre con visión residente + KV cache en ~3.36 GB; el perfil `cpu` corre el mismo E2B-Q4 enteramente en CPU (visión off). Configurado en `infra/config.py` (`AgentConfig`, default `models/E2B/gemma-4-E2B-it-Q4_K_M.gguf`).
+- **Contexto y sampling:** ventana de contexto **16384** tokens por default (`context_size`, el perfil `vram4` la fija en `12288`); sampling con `temperature=1.0`, `top_p=0.95`, `top_k=64`, `seed=-1` (aleatorio por request). Todo override-able por env `GEMMA4_AGENT_*` (ver tabla de Configuración). `max_tokens` por respuesta = 1280; hasta `max_agent_turns=8` de tool-calling encadenado por pedido.
+- **Tool-calling:** el agente pasa los schemas de las tools al server y parsea las `tool_calls` que Gemma emite (`parse_tool_calls=True`); las llamadas son **secuenciales** por default (`parallel_tool_calls=False`). El cliente normaliza las respuestas y tiene rescues estructurales para cuando el modelo "leakea" una llamada como texto (`infra/llm_client.py`).
+- **Thinking:** el modo *thinking* (razonamiento explícito) está **OFF por default** (`enable_thinking=False`) — togglearlo bustea el prefix-cache de `llama-server`, así que se mantiene apagado salvo cuando el flujo lo activa puntualmente.
+- **Visión multimodal:** vía el **mmproj** de Gemma 4 (proyector F16). Los screenshots se re-inyectan al modelo para razonamiento visual. *On por default en el perfil `vram4`; off en el perfil `cpu`* y desactivable con `GEMMA4_MMPROJ_PATH=""`.
+
+#### Fine-tuning del LLM (QLoRA — *honestidad de tool-calling*)
+
+El modelo base de Gemma 4 tiende a **inventar tools** que no existen cuando se le ofrece un catálogo grande. Se hizo un **fine-tune QLoRA** sobre Gemma 4 (familia E2B) cuyo objetivo medido es **0% de tools inventadas en producción** (con el array de tools provisto en el prompt). El gate se pasó: 0% de tools alucinadas en prod. Aprendizajes clave del proceso (auditar el 100% del dataset antes de entrenar, serializar bien los argumentos de tools) quedaron documentados en `dataset_finetune/`. Es una mejora de **fiabilidad del tool-calling**, no de conocimiento general: Gemma sigue siendo Gemma, solo deja de inventar herramientas.
+
+> **Nota de honestidad:** el GGUF que corre en producción por default es el E2B-Q4 (ver `infra/config.py`). El pipeline de fine-tuning entrena en formato HF aparte; el binario GGUF activo se elige por el perfil de VRAM. Si no tenés el artefacto FT, el sistema corre igual con el modelo base.
+
+### 📚 RAG / Knowledge base local
+
+Baxy tiene una base de conocimiento **local** sobre *tus* documentos. **No es un RAG vectorial**: el retrieval base es **léxico (BM25) sobre SQLite FTS5** (un solo archivo `knowledge.sqlite`), con un **re-rank semántico opcional** que solo reordena los candidatos que BM25 ya trajo. El LLM redacta la respuesta a partir de los snippets recuperados — el tool *no* llama al modelo.
+
+- **Tool `knowledge`** (compuesto: `status` / `ingest` / `search` / `list` / `delete`). **Registrado y ON por default** (lo ofrece el router; no está gated).
+- **Ingesta:** parte el texto en chunks de ~2200 chars con 250 de solape, dedup por `sha256` del contenido, y lo guarda en una tabla virtual FTS5. Ingiere **directamente** solo texto plano: `.txt .md .json .csv .log .py .ps1 .yaml .yml`.
+- **PDF / DOCX / XLSX / PPTX / HTML:** soporte **real pero indirecto** — pasan por un tool **separado** `document` (`domain_tools/document.py`, action `ingest_to_knowledge`), que extrae el texto con el backend correspondiente (pypdf/pdfplumber/python-docx/openpyxl/python-pptx/beautifulsoup4) y recién entonces lo entrega al knowledge store. Cada backend es **opt-in por dependencia** (reporta `needs_dependency` si falta).
+- **Búsqueda + rerank:** BM25 trae los candidatos; si el rerank está activo, un **cross-encoder** (`cross-encoder/ms-marco-MiniLM-L-6-v2`, ~80 MB, vía `sentence-transformers`) re-puntúa los pares *(query, snippet)* para subir precisión. **ON por default**, degradable: `GEMMA4_KNOWLEDGE_RERANK=false` → BM25 puro; `GEMMA4_RERANK_MODEL` cambia el modelo; el llamador puede pasar `rerank=true/false` por tool-call. Si `sentence-transformers` o el modelo no están, **cae limpio a BM25** (no falla).
+- **Honestidad:** si la búsqueda no encuentra coincidencias **no** marca el resultado como "falso" (eso hacía que el modelo dijera "no lo encontré"); setea `search_complete_no_matches` y guía al LLM a responder con su propio conocimiento si es pregunta general.
+
+> **Alcance honesto:** es RAG **léxico** (BM25) con rerank semántico opcional sobre *tus notas y documentos personales* — no un RAG vectorial/semántico de gran escala sobre el contenido. Es funcional y testeado, no POC.
+>
+> *Fuente: `memory_pkg/knowledge.py`, `domain_tools/document.py`, `tools_pkg/tools.py`.*
+
+### 🧠 Memoria multicapa
+
+Baxy tiene **cuatro** sistemas de memoria distintos, todos **locales** (`~/.gemma4/` y el `state_dir`), sin nube, dimensionados para hardware modesto:
+
+1. **Hechos explícitos** (`memory_pkg/memory.py`) — store JSON clave/valor de hechos sobre vos ("mi ciudad es…"). Lo escribe el LLM con la tool `memory.save`, o se auto-extrae del chat si activás la extracción (**OFF por default**). Tope 500 hechos con evicción por *salience*: un hecho explícito pesa más que uno auto-extraído, y recordarlo lo refuerza. Se inyecta entero al prompt si es chico, o por relevancia semántica si crece.
+2. **Memoria semántica de experiencias** (`memory_pkg/experience.py`) — el *experience replay* del producto, **ON por default** (`GEMMA4_EXPERIENCE_MEMORY=false` lo apaga). Cada turno completado se embedea (384-dim, el mismo MiniLM multilingüe del router) y se guarda en SQLite con `sqlite-vec`. En el turno siguiente recupera los top-K (k=3) turnos pasados más parecidos y le inyecta **lecciones de tool-selection** ("para este tipo de pedido, estas tools funcionaron / **EVITAR**: esto falló"). **Clave de honestidad:** *no* le pasa al modelo el **texto** de la respuesta pasada (para que un modelo chico no lo copie como plantilla), solo qué-tools-con-qué-args-y-qué-resultado. Auto-prune por antigüedad/tamaño y recuperación ante corrupción de la DB.
+3. **Capa "Jarvis" proactiva** (`ambient_observer.py`, `behavior_log.py`, `taste_profile.py`, `pattern_miner.py`) — observa qué hacés *realmente* para conocerte. Un observador de ambiente mira **qué app tenés en foco** y **qué música suena** (vía Windows SMTC), registrando **solo METADATA**: nombre de proceso y `"artista - título"` + franja horaria — **nunca** títulos de ventana, teclado, clipboard, pantalla ni navegación (por diseño, ver docstring de `ambient_observer.py`). De ahí arma un **perfil de gustos determinista** (sin LLM: cuenta dwell por app, artista dominante, franjas; con umbrales anti-ruido y dedup de sesión) que se rinde como **párrafo en lenguaje natural** (técnica *Guided Profile Generation*, arXiv:2409.13093) y se inyecta al prompt como contexto de fondo, cacheado con TTL para no romper el budget de latencia. Un **minero de patrones** detecta rutinas repetidas y, con cooldowns anti-molestia, te **ofrece** automatizarlas.
+4. **Reflexión de gustos por LLM** (`taste_reflection.py`) — capa **OPT-IN** (default-OFF, corre en *background*, no por turno) que pasa el perfil observado por el propio Gemma local para inferir gustos de más alto nivel ("preferís rock latino de los 90"), con un **guard anti-alucinación** que descarta toda inferencia que no cite un dato observado real.
+
+**Privacidad:** todo es local, **inspectable** ("¿qué sabés de mí?"), **borrable** ("olvidá lo que sabés de mí", con confirmación porque es irreversible) y **pausable por flags**. Además están las **sesiones** y el **estado** (`sessions.py`, `state.py`) para mantener contexto e identidad del turno.
+
+### 🧩 Skills + Microagents
+
+Dos mecanismos ortogonales para darle conocimiento/recetas al LLM **sin keywords**:
+
+- **Skills** (`tools_pkg/skills_registry.py`, spec **Anthropic Agent Skills**) — cada skill es una carpeta con `SKILL.md` (frontmatter YAML: `name`, `description`, `priority`, `requires`). Al boot se escanean y se inyecta un **menú** (name + description, ~50 tokens c/u) al system prompt; el LLM decide **semánticamente** cuál cargar full vía `skill_load()` — carga **lazy on-demand**. Las skills `priority: critical` se eager-loadean (reservado para guardas de seguridad/honestidad). `requires` filtra por elegibilidad (exes en PATH, env vars, OS). Cap de `skill_load()` por turno según el perfil de VRAM. Opt-out: `GEMMA4_SKILLS_OFF=1`.
+- **Microagents** (`memory_pkg/microagents.py`, patrón **OpenHands**) — markdown con frontmatter (`name`, `triggers`, `priority`). Cuando un trigger matchea el turno, el body se **appendea al system prompt** como conocimiento de dominio (qué significa "HKCR", "mmproj", etc.). Selección **semántica con word-boundary** (no substring crudo, que confundía "RAG" ⊂ "Dragon"). Cache por sesión para preservar el KV-cache, cap defensivo de 3 por selección. Opt-out: `GEMMA4_MICROAGENTS_OFF=1`.
+
+### 🧭 Routing semántico (qué tools se le ofrecen al LLM)
+
+El router (`routing/`) decide **qué subconjunto de tools ofrecer** al LLM en cada turno. Es una **cascada semántica**, no un árbol de if/else, y su norte es la **precisión** (ofrecer solo lo necesario), porque el recall ya está saturado (holdout 0.9964):
+
+- **Encoder fine-tuneado** — `paraphrase-multilingual-MiniLM-L12-v2` (384-dim) re-entrenado en queries de tools multilingües sintéticas + el split de dev. Sube el recall de holdout 0.835 → 0.878 y el *NO-TOOL keep* 0.512 → 0.628, con la **misma latencia CPU**. Si el artefacto FT no está (checkout fresco), **cae al modelo base** automáticamente (`routing/semantic_router.py`). Regenerable con `scripts/train_router_encoder.py` + `scripts/router_ft_pipeline.py`.
+- **Abstain head** calibrado — decide cuándo **no** ofrecer ninguna tool (charla, preguntas), con forward pass sub-milisegundo, más un *confident-peak escape*: una tool cuyo coseno domina claramente y le gana al runner-up por un gap escapa del gate de abstención (p.ej. "mutea" → `audio`).
+- **Tool2Vec + capa de keywords** — embeddings por tool alineados al catálogo + señales léxicas, con bar propio para tools MCP (que viven en un rango de coseno más bajo que las nativas).
+- **Reorden anti-primacy** (**ON por default**, `GEMMA4_ANTIPRIMACY=0` lo apaga) — pone la tool de dominio de mayor confianza **primera** en el subset (los LLMs atienden más a lo que aparece primero, *Lost in the Middle*, arXiv:2307.03172). No cambia el **conjunto**, solo el **orden**: las tools de infraestructura quedan al final y se respetan los invariantes del `pending_intent`.
+- **Cap de 5 tools por turno** (`MAX_SELECTED_TOOLS`, override `GEMMA4_MAX_SELECTED_TOOLS`) — un subset grande infla el prefill y empuja al modo thinking sin beneficio; medido, el recall de holdout es idéntico con 10 vs 16 tools, así que el cap recorta la cola de bajo valor.
 
 ---
 
