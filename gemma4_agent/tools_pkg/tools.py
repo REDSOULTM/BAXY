@@ -1844,6 +1844,27 @@ class ToolRegistry:
     def t_steam(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="open")
         query = str(args.get("query") or args.get("name") or "").strip()
+        # RED DE HONESTIDAD (BUG real eval run2): "¿Steam está abierto?" -> el 4B
+        # elige steam(open) (vía forced-retry/schema, aunque el router NO ofrezca
+        # steam) -> abría Steam y MENTÍA "Listo, abrí Steam". Una pregunta de ESTADO
+        # NO debe ABRIR la app. Si el texto del turno es una pregunta de estado,
+        # responder si el proceso corre — NO ejecutar open. Solo activo si el agente
+        # plumeó _current_user_text (sin él = no-op, no rompe tests/CLI).
+        if action == "open":
+            _ut = (getattr(self, "_current_user_text", "") or "").strip()
+            try:
+                from ..routing.planner import _is_app_state_check as _isc
+            except Exception:
+                _isc = None
+            if _ut and _isc and _isc(_ut):
+                try:
+                    _names = _running_process_names()
+                    _running = any("steam" in n for n in _names)
+                except Exception:
+                    _running = None
+                return _ok(action="status", app="Steam", running=_running,
+                           completion_status="reported_state_did_not_open",
+                           note="pregunta de estado: NO abrí Steam, reporté si corre")
         if action == "open":
             os.startfile("steam://open/main")  # type: ignore[attr-defined]
             resource = self.state.register_resource("steam", "Steam", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"})

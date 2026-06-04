@@ -1,0 +1,54 @@
+"""Red de honestidad: "¿Steam está abierto?" NO debe ABRIR Steam ni mentir.
+
+BUG real (eval run2, 2026-06-04): el 4B elegía steam(open) ante "¿Steam está
+abierto?" (aunque el router NO ofreciera steam, llegaba por forced-retry/schema)
+-> abría Steam y respondía "Listo, abrí Steam" = MENTIRA + acción NO pedida sobre
+una pregunta read-only. Fix B (tools.t_steam): si el texto del turno es una
+pregunta de estado (_is_app_state_check), reportar si el proceso corre, NO abrir.
+"""
+from __future__ import annotations
+
+import tempfile
+import unittest
+from pathlib import Path
+
+from gemma4_agent.tools_pkg.tools import ToolRegistry
+from gemma4_agent.memory_pkg.memory import MemoryStore
+from gemma4_agent.memory_pkg.state import AgentState
+
+
+def _reg() -> ToolRegistry:
+    tmp = Path(tempfile.mkdtemp(prefix="gemma4_steam_"))
+    return ToolRegistry(MemoryStore(tmp / "m.json"), tmp / "cap",
+                        state=AgentState(tmp / "s.json"), safety_enabled=False)
+
+
+class SteamStateHonestyTest(unittest.TestCase):
+    def test_state_question_does_not_open_steam(self):
+        reg = _reg()
+        for q in ("revisa si Steam está abierto", "Steam está cerrado?",
+                  "is Steam running?", "fijate si Steam está corriendo"):
+            reg._current_user_text = q
+            r = reg.t_steam({"action": "open"})
+            self.assertEqual(r.get("completion_status"), "reported_state_did_not_open",
+                             msg=f"{q!r} no debería abrir Steam")
+            self.assertNotIn("uri", r, msg=f"{q!r} disparó steam://open")
+            self.assertIn("running", r)
+
+    def test_genuine_open_still_opens(self):
+        # No-regresión: "abrí Steam" (acción real) SÍ abre.
+        reg = _reg()
+        reg._current_user_text = "abrí Steam"
+        r = reg.t_steam({"action": "open"})
+        # action open real -> uri presente (o al menos NO el short-circuit de estado)
+        self.assertNotEqual(r.get("completion_status"), "reported_state_did_not_open")
+
+    def test_no_user_text_is_noop(self):
+        # Sin _current_user_text plumeado (tests/CLI viejos) -> comportamiento previo.
+        reg = _reg()
+        r = reg.t_steam({"action": "open"})
+        self.assertNotEqual(r.get("completion_status"), "reported_state_did_not_open")
+
+
+if __name__ == "__main__":
+    unittest.main()
