@@ -188,3 +188,13 @@ los TOP clusters que el juez marcó como bugs de alto volumen, contra el hunt js
    bug #1 de honestidad, RESUELTO en el acto (antes solo hint diferido).
 MEDICIÓN: BUG-real trend del juez 236(t2)->227(t3)->219(t4) declinante. El "bug rate"
 residual es pre-fix-dataset + mock-inflación, NO regresiones. Verificado contra data cruda.
+
+## SEGURIDAD del media inline-repair (verificación bidireccional, 2026-06-05):
+- RECALL: 80/80 fabricaciones en t1-t5 detectadas+reparadas, 0 huecos.
+- PRECISIÓN: de 204 replies CONSISTENTES (user nombró plataforma X y el reply SOLO
+  menciona X), el guard disparó en 0 -> el inline-repair NUNCA reemplaza un reply
+  legítimo. Los 3 fires donde el user SÍ nombró una plataforma resultaron casos donde
+  el 4B fabricó OTRA plataforma encima ("en youtube..." -> "Spotify reproduciendo en
+  YouTube" autocontradictorio; "en disney" -> "abrí YouTube y puse X en Disney+"):
+  reemplazarlos por "puse lo que pediste" es lo HONESTO. El fix es seguro en ambas
+  direcciones. (CLAUDE.md: probar el fix adversarialmente antes de cerrarlo.)
