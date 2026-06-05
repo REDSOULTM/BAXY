@@ -360,6 +360,55 @@ def click_claim_without_click(reply_text: str, tool_calls_this_turn: list[Any]) 
     return True
 
 
+# El reply afirma que los TESTS PASARON / fueron exitosos / verificado. BUG medido
+# (tanda 1, A2): "corrí los tests y todos pasaron" sin que el ToolResult traiga el
+# conteo pass/fail real. CLAUDE.md: nunca declarar éxito sin un número.
+_TESTS_PASSED_RE = re.compile(
+    r"\b(?:tests?|pruebas?|pytest)\b[^.]{0,40}"
+    r"\b(?:pasaron|pasar[oó]n|exitos\w*|verificad\w*|ok\b|todos?\s+(?:bien|verde)|"
+    r"sin\s+(?:fallos?|errores?)|all\s+pass\w*|passed|succeeded)\b"
+    r"|\b(?:todos?\s+(?:los\s+)?tests?|all\s+tests?)\b[^.]{0,20}"
+    r"\b(?:pasaron|passed|ok|verde)\b",
+    re.IGNORECASE)
+# tools de testing cuyo result DEBE traer evidencia de conteo para sustentar el claim.
+_TEST_TOOLS = {"developer", "terminal"}
+
+
+def tests_passed_without_evidence(reply_text: str, tool_calls_this_turn: list[Any]) -> bool:
+    """True iff el reply afirma que los tests PASARON pero el ToolResult de la tool
+    de testing NO trae evidencia de conteo (pass/fail, exit-code, recuento). No se
+    puede declarar éxito de tests sin el número real (CLAUDE.md)."""
+    if not _TESTS_PASSED_RE.search(reply_text or ""):
+        return False
+    for c in tool_calls_this_turn:
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        if str(name).lower() not in _TEST_TOOLS:
+            continue
+        res = _result_of(c)
+        # evidencia válida: el result trae conteo estructurado (claves passed/failed/
+        # exit_code con un número) O el output crudo con "N passed/failed".
+        if isinstance(res, dict):
+            for k in ("passed", "failed", "exit_code", "returncode", "tests_run", "count"):
+                v = res.get(k)
+                if isinstance(v, (int, float)) or (isinstance(v, str) and v.strip().isdigit()):
+                    return False  # conteo estructurado real -> sustentado
+        blob = " ".join(str(res.get(k, "")) for k in
+                        ("output", "stdout", "summary", "result", "text")).lower()
+        if re.search(r"\b\d+\s*(?:passed|pass|failed|fail|test)|exit[_\s]?code|"
+                     r"\bpassed\b|\bfailed\b|\d+\s*/\s*\d+", blob):
+            return False  # output crudo con números pass/fail -> sustentado
+    return True  # afirmó pasaron pero ninguna tool de test trajo el número
+
+
+TESTS_PASSED_HINT = (
+    "Your previous reply claimed the tests passed / succeeded, but the test tool's "
+    "result did NOT include a real pass/fail count or exit code. Do NOT claim tests "
+    "passed without the actual numbers. Report the real result (e.g. 'N passed, M "
+    "failed'), or say you ran them but could not read the outcome — never fabricate "
+    "a green run — in the user's language."
+)
+
+
 CLICK_CLAIM_HINT = (
     "Your previous reply claimed you clicked/pressed a control, but no tool that "
     "actually clicks ran this turn (find/locate only LOCATE a control, they do NOT "

@@ -11,6 +11,7 @@ from gemma4_agent.safety_pkg.reply_validator import (
     intent_domain_mismatch as idm,
     media_fabricated_claim as mfc,
     click_claim_without_click as ccc,
+    tests_passed_without_evidence as tpe,
 )
 
 
@@ -111,6 +112,31 @@ class ClickClaimWithoutClickTest(unittest.TestCase):
         # "hasta que la presiones / cuando cliquees" = acción del USER, no claim.
         self.assertFalse(ccc("Listo, apagué la PC hasta que la presiones de nuevo.", [_call("system")]))
         self.assertFalse(ccc("Cuando cliquees Aceptar avisame.", [_call("session")]))
+
+
+class TestsPassedWithoutEvidenceTest(unittest.TestCase):
+    """Honestidad (CLAUDE.md: no declarar éxito sin un número): afirmar que los
+    tests pasaron sin conteo pass/fail real es fabricar. BUG medido (tanda 1, A2)."""
+
+    def _dc(self, **res):
+        return {"name": "developer", "result": res, "args": {}}
+
+    def test_flags_passed_without_count(self):
+        for r in ["Listo, corrí los tests y todos pasaron.",
+                  "Listo, ejecuté pytest -q y los tests pasaron verificado.",
+                  "Los tests corrieron y pasaron con pytest."]:
+            self.assertTrue(tpe(r, [self._dc(ok=True)]), msg=r)
+
+    def test_no_flag_with_structured_count(self):
+        self.assertFalse(tpe("10/10 pasaron.", [self._dc(passed=10, failed=0)]))
+
+    def test_no_flag_with_output_numbers(self):
+        self.assertFalse(tpe("Listo, 42 passed, 0 failed.",
+                             [self._dc(output="42 passed in 3.2s")]))
+
+    def test_no_flag_on_failure_or_no_claim(self):
+        self.assertFalse(tpe("Los tests fallaron: 3 failed.", [self._dc(output="3 failed")]))
+        self.assertFalse(tpe("Listo, abrí Chrome.", [_call("app")]))
 
 
 if __name__ == "__main__":

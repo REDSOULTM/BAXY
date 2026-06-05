@@ -4411,6 +4411,22 @@ class Gemma4Agent:
                         self.history.append({"role": "system", "content": _ccc_hint})
                 except Exception:
                     pass
+            # TESTS PASARON SIN EVIDENCIA (honestidad, DEFAULT-ON): el reply afirma
+            # "los tests pasaron/exitoso" pero el ToolResult no trae conteo pass/fail
+            # real. CLAUDE.md prohíbe declarar éxito sin un número. BUG medido (tanda
+            # 1, A2): 8 casos. GEMMA4_TESTS_EVIDENCE_GUARD=0 apaga.
+            if _os.environ.get("GEMMA4_TESTS_EVIDENCE_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        tests_passed_without_evidence as _tpe,
+                        TESTS_PASSED_HINT as _tpe_hint)
+                    if _tpe(assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="tests_passed_no_evidence")
+                        self.history.append({"role": "system", "content": _tpe_hint})
+                except Exception:
+                    pass
             # MOVILIDAD (B3): si el modo manos-libres está activo y el
             # reply le PIDIÓ al usuario una acción manual (clic/tecla/
             # typeo), inyectar la corrección — el agente debe ACTUAR, no
