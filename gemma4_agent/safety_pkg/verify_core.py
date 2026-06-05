@@ -220,15 +220,15 @@ def summarize_verifiers(outcomes: list[VerifierOutcome]) -> str:
     failed = sum(1 for o in outcomes if o.confirmed is False)
     if failed == 0:
         return ""
-    # Solo cuando hay un failed real, surfaceamos el conteo con contexto.
-    confirmed = sum(1 for o in outcomes if o.confirmed is True)
-    unverifiable = sum(1 for o in outcomes if o.confirmed is None)
-    parts = [f"{failed} no confirmada(s)"]
-    if confirmed:
-        parts.insert(0, f"{confirmed} verificada(s)")
-    if unverifiable:
-        parts.append(f"{unverifiable} no verificable(s)")
-    return f"\n\n[{', '.join(parts)}]"
+    # Solo cuando hay un failed real, surfaceamos el conteo. PROSA honesta natural
+    # (no un marker técnico "[N no confirmada(s)]"): el asistente es de VOZ, el
+    # footer se LEE en voz alta — un corchete con conteo crudo suena a error de
+    # software (BUG medido cacería tanda 1: "Listo, cerré Spotify. [1 no
+    # confirmada(s)]" leakeaba 63 veces). Mantiene la información de honestidad pero
+    # en lenguaje del usuario.
+    if failed == 1:
+        return " (aunque no pude confirmar que se completara)"
+    return f" (aunque no pude confirmar {failed} de las acciones)"
 
 
 def collect_evidence_keys(outcomes: list[VerifierOutcome]) -> list[str]:

@@ -97,16 +97,18 @@ def test_summarize_all_confirmed_returns_empty_string() -> None:
 
 
 def test_summarize_mixed_shows_counts() -> None:
+    # El footer ahora es PROSA honesta natural (para voz), no un marker técnico
+    # "[N no confirmada(s)]" (BUG medido: leakeaba crudo al usuario). Reporta el
+    # failed en lenguaje del usuario; un solo failed -> "no pude confirmar que se
+    # completara".
     outcomes = [
         VerifierOutcome("app", True, "ok"),
         VerifierOutcome("audio", False, "fail"),
         VerifierOutcome("gui", None, "no_verifier"),
     ]
     footer = summarize_verifiers(outcomes)
-    assert "1 verificada(s)" in footer
-    assert "1 no confirmada(s)" in footer
-    assert "1 no verificable(s)" in footer
-    assert footer.startswith("\n\n[") and footer.endswith("]")
+    assert "no pude confirmar" in footer.lower()
+    assert "[" not in footer and "]" not in footer, "no debe ser un marker con corchetes"
 
 
 def test_collect_evidence_only_from_confirmed_true() -> None:
