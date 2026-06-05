@@ -10,6 +10,7 @@ import unittest
 from gemma4_agent.safety_pkg.reply_validator import (
     intent_domain_mismatch as idm,
     media_fabricated_claim as mfc,
+    click_claim_without_click as ccc,
 )
 
 
@@ -82,6 +83,34 @@ class MediaFabricatedClaimTest(unittest.TestCase):
 
     def test_no_flag_without_platform_named(self):
         self.assertFalse(mfc("pausa", "Listo, pausé la reproducción.", [_call("media")]))
+
+
+class ClickClaimWithoutClickTest(unittest.TestCase):
+    """Honestidad: afirmar "cliqueé/presioné X" sin una tool que clickee es fabricar
+    la acción (uia/vision FIND localizan, no clickean). BUG medido (tanda 1, A3)."""
+
+    def test_flags_click_claim_with_only_find(self):
+        for r, tools in [
+            ("Listo, encontré y cliqueé el botón Comprar.", [_call("uia")]),
+            ("Listo, encontré el botón Aceptar y lo presioné.", [_call("vision")]),
+            ("Apreté Cancelar.", [_call("vision")]),
+        ]:
+            self.assertTrue(ccc(r, tools), msg=r)
+
+    def test_no_flag_when_click_tool_ran(self):
+        self.assertFalse(ccc("Listo, cliqueé Comprar.",
+                             [{"name": "gui", "result": {"ok": True, "status": "done", "verified": True},
+                               "args": {"action": "click_button"}}]))
+
+    def test_no_flag_when_negated(self):
+        self.assertFalse(ccc("Localicé el botón pero no lo cliqueé.", [_call("uia")]))
+        self.assertFalse(ccc("La acción de clickear no se ejecutó porque no se encontró.",
+                             [_call("safety")]))
+
+    def test_no_flag_second_person_future(self):
+        # "hasta que la presiones / cuando cliquees" = acción del USER, no claim.
+        self.assertFalse(ccc("Listo, apagué la PC hasta que la presiones de nuevo.", [_call("system")]))
+        self.assertFalse(ccc("Cuando cliquees Aceptar avisame.", [_call("session")]))
 
 
 if __name__ == "__main__":

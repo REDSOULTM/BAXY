@@ -304,6 +304,70 @@ def media_fabricated_claim(
     return True
 
 
+# El reply afirma un CLICK ("cliqueé/presioné/apreté X", "I clicked/pressed X") que
+# requiere una tool de click real. BUG medido (tanda 1, A3): "cliqueé el botón
+# Comprar" con solo uia.find/vision.find (que LOCALIZAN, no clickean) -> claim de
+# acción no ejecutada. Las tools que SÍ clickean: gui (click/click_button/keypress),
+# uia (invoke), computer_use. find/locate/tree NO clickean.
+# Claim del AGENTE = verbo de click en 1ª persona PRETÉRITO (cliqueé/presioné/
+# apreté/toqué/hice clic). NO la 2ª persona/subjuntivo ("hasta que la presiones",
+# "cliqueá vos") que refiere a una acción del USUARIO, no del agente (falso+
+# medido: "apagué... hasta que la presiones de nuevo").
+_CLICK_CLAIM_RE = re.compile(
+    r"\b(?:clique[é]\b|cliqu[ée]é\b|click[eé]é\b|presion[é]\b|apret[é]\b|"
+    r"toqu[é]\b|seleccion[é]\b|hice\s+clic\w*|hice\s+click\w*|"
+    r"i\s+clicked|i\s+pressed|i\s+tapped|\bclicked\b|\bpressed\b)",
+    re.IGNORECASE)
+# tools (con su action) que REALMENTE producen un click/efecto sobre un control.
+_CLICK_CAPABLE = {
+    ("gui", "click"), ("gui", "double_click"), ("gui", "right_click"),
+    ("gui", "click_button"), ("gui", "click_text"), ("gui", "keypress"),
+    ("gui", "hotkey"), ("gui", "type"), ("gui", "type_into"),
+    ("uia", "invoke"), ("uia", "click"), ("computer_use", None),
+    ("browser_real", None), ("input", None),
+}
+
+
+_CLICK_NEGATED_RE = re.compile(
+    # negación ANTES del verbo de click ("no lo cliqueé")
+    r"\b(?:no|sin|not|n't|didn|couldn|pero no|but)\b[^.]{0,20}"
+    r"(?:clique[ée]\w*|cliqu[ée]\w*|click\w*|presion[ée]\w*|apret[ée]\w*|toqu[ée]\w*)"
+    # o negación DESPUÉS ("clickear X no se ejecutó/no se pudo/no se encontró/falló")
+    r"|(?:clic\w*|click\w*|presion\w*|apret\w*|toqu\w*)[^.]{0,40}"
+    r"\b(?:no\s+se\s+(?:ejecut|pudo|realiz|complet|encontr)\w*|"
+    r"no\s+(?:pude|pudo|se\s+pudo)|fall[óo]|wasn'?t|couldn'?t|did\s+not)\b",
+    re.IGNORECASE)
+
+
+def click_claim_without_click(reply_text: str, tool_calls_this_turn: list[Any]) -> bool:
+    """True iff el reply afirma haber CLICKEADO/presionado un control PERO ninguna
+    tool capaz de click corrió. uia.find/vision.find LOCALIZAN, no clickean ->
+    afirmar el click es fabricar la acción."""
+    if not _CLICK_CLAIM_RE.search(reply_text or ""):
+        return False
+    # NEGACIÓN: "no lo cliqueé" / "localicé pero no cliqueé" = honesto, NO es claim.
+    if _CLICK_NEGATED_RE.search(reply_text or ""):
+        return False
+    for c in tool_calls_this_turn:
+        if not _is_successful_call(c):
+            continue
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        args = c.get("args", {}) if isinstance(c, dict) else (getattr(c, "args", {}) or {})
+        action = str((args or {}).get("action") or "").lower()
+        name = str(name).lower()
+        if (name, action) in _CLICK_CAPABLE or (name, None) in _CLICK_CAPABLE:
+            return False  # sí corrió una tool de click -> el claim está sustentado
+    return True
+
+
+CLICK_CLAIM_HINT = (
+    "Your previous reply claimed you clicked/pressed a control, but no tool that "
+    "actually clicks ran this turn (find/locate only LOCATE a control, they do NOT "
+    "click it). Do NOT claim a click you did not perform — actually click with the "
+    "right tool, or say honestly you located but did not click — in the user's language."
+)
+
+
 MEDIA_FABRICATED_HINT = (
     "Your previous reply named a specific streaming title/platform (e.g. a show "
     "name or 'on Netflix') that did NOT come from the user's request or any tool "

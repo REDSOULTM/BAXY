@@ -4394,6 +4394,23 @@ class Gemma4Agent:
                         self.history.append({"role": "system", "content": _mfc_hint})
                 except Exception:
                     pass
+            # CLICK FABRICADO (honestidad, DEFAULT-ON): el reply afirma "cliqueé/
+            # presioné X" pero ninguna tool capaz de click corrió (uia/vision FIND
+            # localizan, no clickean). BUG medido (tanda 1, A3): "encontré y cliqueé
+            # el botón Comprar" con solo uia.find. Medido 4/4 + 6/6, 2 mentiras reales
+            # en la tanda, 0 falsos+. GEMMA4_CLICK_CLAIM_GUARD=0 apaga.
+            if _os.environ.get("GEMMA4_CLICK_CLAIM_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        click_claim_without_click as _ccc,
+                        CLICK_CLAIM_HINT as _ccc_hint)
+                    if _ccc(assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="click_claim_no_click")
+                        self.history.append({"role": "system", "content": _ccc_hint})
+                except Exception:
+                    pass
             # MOVILIDAD (B3): si el modo manos-libres está activo y el
             # reply le PIDIÓ al usuario una acción manual (clic/tecla/
             # typeo), inyectar la corrección — el agente debe ACTUAR, no
