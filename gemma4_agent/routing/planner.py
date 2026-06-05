@@ -554,6 +554,49 @@ _TRIGGER_DECL_RE = re.compile(
     re.IGNORECASE)
 
 
+# PREFERENCIA DE ESTILO DE RESPUESTA o DATO PERSONAL declarado por el user. BUG
+# real (cacería tanda 2, cluster A8 ~10): "responde en inglés"/"tuteame"/"usa
+# emojis"/"en formato lista" disparaban media.play/gui.type/git_status; "trabajo en
+# Microsoft"/"mi email es X" abrían Word/actualizaban email. Una PREFERENCIA o un
+# DATO sobre el usuario NO es un comando de acción de SO: el asistente debe
+# acusar/recordar (lo maneja el LLM + memoria), no actuar. Estructural, multi-idioma.
+# (a) PREFERENCIA de cómo RESPONDER/HABLAR (meta-instrucción sobre el output):
+_RESPONSE_PREF_RE = re.compile(
+    r"\b(?:"
+    # responder/contestar/hablar/escribir + en/con/de forma/en formato ...
+    r"(?:respond\w*|contest\w*|h[áa]bla\w*|escrib\w*|repl\w*|answer|speak|talk|write)\s+"
+    r"(?:me\s+|siempre\s+|ahora\s+|always\s+)?"
+    r"(?:en\s+|con\s+|de\s+forma\s+|en\s+formato\s+|in\s+|with\s+|more\s+|m[áa]s\s+)"
+    # tuteo/voseo/trato
+    r"|tute[áa]\w*|vose[áa]\w*|h[áa]blame\s+de\s+(?:t[úu]|usted)|"
+    r"trat[áa]\w*\s+de\s+(?:t[úu]|usted)|use\s+(?:formal|informal)\s+address|"
+    # usa emojis / no uses / sin emojis / más corto / más formal
+    r"(?:usa|us[áa]|no\s+uses|sin|use|don'?t\s+use)\s+\w*\s*(?:emoji\w*|emoticon\w*)|"
+    r"s[ée]\s+(?:m[áa]s\s+)?(?:formal|informal|breve|conciso|corto)|"
+    r"be\s+(?:more\s+)?(?:formal|informal|brief|concise|short)"
+    r")\b",
+    re.IGNORECASE)
+# (b) DATO PERSONAL declarado ("trabajo en X", "mi email/nombre/cumpleaños es Y",
+# "me llamo Z", "i work at X", "my email is Y"). NO una orden.
+_PERSONAL_DATA_RE = re.compile(
+    r"\b(?:"
+    r"trabajo\s+(?:en|para)\b|i\s+work\s+(?:at|for)\b|"
+    r"mi\s+(?:email|correo|nombre|tel[ée]fono|cumplea[ñn]os|direcci[óo]n|"
+    r"color\s+favorito|comida\s+favorita|m[úu]sica\s+favorita|equipo)\s+(?:es|favorit\w*)\b|"
+    r"my\s+(?:email|name|phone|birthday|address|favorite\s+\w+)\s+is\b|"
+    r"me\s+llamo\b|my\s+name\s+is\b|soy\s+de\b|i'?m\s+from\b)",
+    re.IGNORECASE)
+
+
+def _is_preference_or_personal(text: str) -> bool:
+    """True si el texto es una PREFERENCIA de estilo de respuesta o un DATO PERSONAL
+    declarado, NO un comando de acción de SO. El asistente debe acusar/recordar, no
+    ejecutar una tool de acción. ESTRUCTURAL, multi-idioma (cluster A8, tanda 2)."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    return bool(_RESPONSE_PREF_RE.search(text) or _PERSONAL_DATA_RE.search(text))
+
+
 def _is_trigger_declaration(text: str) -> bool:
     """True si el texto DECLARA una rutina por frase-gatillo ('cuando diga X haz
     Y'), que debe CREARSE (routine), no ejecutarse ahora. ESTRUCTURAL."""
@@ -1272,6 +1315,20 @@ def select_tool_names(
             expanded = [t for t in expanded if t in _keep]
             if "routine" not in expanded:
                 expanded.insert(0, "routine")
+    except Exception:
+        pass
+    # PREFERENCIA/DATO PERSONAL (cluster A8, tanda 2): "responde en inglés",
+    # "tuteame", "trabajo en Microsoft", "mi email es X" disparaban media/gui/app/
+    # email. NO son comandos de acción: el LLM debe acusar/recordar. Retiramos las
+    # tools de ACCIÓN; dejamos memory (para persistir el dato/preferencia) + infra.
+    # Guarda: si hay pending_intent (el dato responde a una pregunta previa), NO
+    # gatear (el flujo normal ya lo maneja).
+    try:
+        if not pending_intent and _is_preference_or_personal(raw_text):
+            _keep_pref = {"memory", "session", "safety", "verify", "routine"}
+            expanded = [t for t in expanded if t in _keep_pref]
+            if "memory" not in expanded:
+                expanded.insert(0, "memory")
     except Exception:
         pass
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)

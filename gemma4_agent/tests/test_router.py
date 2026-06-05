@@ -236,6 +236,28 @@ def test_web_target_detector() -> None:
         assert not _is_web_target(t), f"{t!r} es nombre de app, NO web"
 
 
+def test_preference_or_personal_suppresses_action() -> None:
+    """BUG real (cacería tanda 2, cluster A8 ~10): 'responde en inglés'/'tuteame'/
+    'trabajo en Microsoft'/'mi email es X' disparaban media.play/gui.type/app.open/
+    email.update. Una PREFERENCIA de estilo o un DATO PERSONAL no es un comando de
+    acción: el router retira las tools de acción y deja memory/infra."""
+    from ..routing.planner import _is_preference_or_personal as pref
+    for q in ("responde en inglés", "respond in English from now on", "tuteame",
+              "responde en mayúsculas", "responde en formato lista", "usa emojis",
+              "sé más formal", "trabajo en Microsoft", "i work at Google",
+              "mi email es test@x.com", "me llamo Pedro", "mi color favorito es azul"):
+        assert pref(q), f"{q!r} es preferencia/dato personal"
+    for q in ("abrí Spotify", "poné música", "subí el volumen", "buscá noticias",
+              "qué hora es", "mandale un mensaje a Pedro", "borrá la carpeta tmp"):
+        assert not pref(q), f"{q!r} es comando real, NO preferencia"
+    # routing: preferencia/dato -> sin tools de acción
+    ACTION = {"media", "gui", "app", "email", "whatsapp", "developer", "browser",
+              "filesystem", "audio"}
+    for q in ("responde en inglés", "trabajo en Microsoft", "mi email es x@y.com"):
+        s = set(select_tool_names(q, plan_mission(q)))
+        assert not (s & ACTION), f"preferencia/dato {q!r} no debe ofrecer acción: {sorted(s)}"
+
+
 def test_trigger_declaration_routes_to_routine_not_action() -> None:
     """BUG real (cacería tanda 1, B2): "cuando diga X quiero que hagas Y" debe CREAR
     una rutina, NO ejecutar Y ahora. "cuando diga pantallazo saca captura" sacaba la
