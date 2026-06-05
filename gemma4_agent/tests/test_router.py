@@ -177,6 +177,30 @@ def test_app_state_check_offers_system_not_app_tool() -> None:
     assert "window" in s_cond or "app" in s_cond, f"condicional-acción: {s_cond}"
 
 
+def test_howto_question_suppresses_destructive_tools() -> None:
+    """BUG real (cacería tanda 1): "cómo elimino una carpeta" -> filesystem.delete
+    BORRÓ la carpeta ante una PREGUNTA (daño irreversible). Una pregunta how-to/info
+    pide EXPLICACIÓN, no ejecución: el router retira las tools destructivas."""
+    from ..routing.planner import _is_howto_or_info_question
+    # detector: how-to/info = True, imperativo = False
+    for q in ("cómo elimino una carpeta de pruebas", "cómo cierro Spotify",
+              "qué es Python", "para qué sirve pytest", "how do I delete a folder"):
+        assert _is_howto_or_info_question(q), f"{q!r} debe ser how-to"
+    for q in ("elimina la carpeta de pruebas", "cerrá Spotify",
+              "borra mi carpeta Documentos", "como siempre abrí Discord",
+              "ordená como quieras"):
+        assert not _is_howto_or_info_question(q), f"{q!r} NO es how-to"
+
+    # routing: how-to no ofrece destructivas; imperativo sí.
+    DESTRUCTIVE = {"filesystem", "system", "package", "developer"}
+    s_howto = set(select_tool_names("cómo elimino una carpeta de pruebas",
+                                    plan_mission("cómo elimino una carpeta de pruebas")))
+    assert not (s_howto & DESTRUCTIVE), f"how-to no debe ofrecer destructivas: {s_howto}"
+    s_imp = set(select_tool_names("elimina la carpeta de pruebas",
+                                  plan_mission("elimina la carpeta de pruebas")))
+    assert "filesystem" in s_imp, f"imperativo SÍ debe ofrecer filesystem: {s_imp}"
+
+
 def test_browser_real_collapsed_on_simple_nav() -> None:
     """S3d (2026-05-30) precision. browser_real (fine CDP control) was offered
     on EVERY browser turn as noise (measured: 78 noise rows vs 2 that truly need

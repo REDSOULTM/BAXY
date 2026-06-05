@@ -68,6 +68,23 @@ class SteamStateHonestyTest(unittest.TestCase):
         r = reg.t_browser({"action": "open", "url": "youtube.com"})
         self.assertNotEqual(r.get("completion_status"), "reported_state_did_not_open")
 
+    def test_howto_does_not_delete(self):
+        # BUG real (cacería tanda 1): "cómo elimino una carpeta" -> filesystem.delete
+        # BORRABA la carpeta ante una PREGUNTA. El handler rechaza el delete si el
+        # texto del turno es una pregunta how-to.
+        reg = _reg()
+        reg._current_user_text = "cómo elimino una carpeta de pruebas"
+        r = reg.filesystem_delete({"path": "C:/no/importa", "recursive": True})
+        self.assertEqual(r.get("completion_status"), "howto_not_executed")
+
+    def test_imperative_delete_not_intercepted_by_howto_guard(self):
+        # No-regresión: un imperativo real NO es interceptado por el guard how-to
+        # (cae al flujo normal de delete -> error por path inexistente, no al guard).
+        reg = _reg()
+        reg._current_user_text = "borrá la carpeta vieja"
+        r = reg.filesystem_delete({"path": "C:/ruta/que/no/existe/zzz", "recursive": False})
+        self.assertNotEqual(r.get("completion_status"), "howto_not_executed")
+
 
 if __name__ == "__main__":
     unittest.main()

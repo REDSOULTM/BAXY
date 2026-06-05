@@ -381,6 +381,45 @@ def _is_local_state_question(text: str) -> bool:
     return bool(_LOCAL_STATE_Q_RE.search(text))
 
 
+# Pregunta HOW-TO / INFORMATIVA ("cómo elimino una carpeta", "qué es Python",
+# "para qué sirve X", "cómo cierro Spotify"). El usuario pide una EXPLICACIÓN, no
+# que se EJECUTE la acción. BUG real medido (cacería tanda 1): "cómo elimino una
+# carpeta de pruebas" -> filesystem.delete BORRÓ la carpeta (daño irreversible
+# ante una PREGUNTA). El router debe SUPRIMIR tools destructivas/de-acción ante
+# estas preguntas y dejar que el LLM explique. ESTRUCTURAL, multi-idioma, mide la
+# FORMA (interrogador how-to/qué-es al INICIO), NO listas de acciones.
+_HOWTO_INFO_RE = re.compile(
+    r"^\s*(?:"
+    # "cómo" CON TILDE = casi siempre pregunta how-to (el STT suele conservarla).
+    r"cómo\b"
+    # "como" SIN tilde: solo how-to si sigue un pronombre/verbo de pregunta claro,
+    # NO un adverbio de comparación ("como siempre/un/el/quieras/loco").
+    r"|como\s+(?:se\b|puedo\b|hago\b|debo\b|funciona\b|elimin\w+|cierr\w+|borr\w+|"
+    r"instal\w+|abr\w+|cre\w+|hac\w+)\b"
+    r"|how\s+(?:do|to|can)\b|come\s+(?:faccio|si)\b|comment\b|wie\s+(?:kann|mache)\b|"
+    # qué es / para qué sirve / qué significa -> definición
+    r"qu[ée]\s+es\b|qu[ée]\s+significa\b|para\s+qu[ée]\s+(?:sirve|es)\b|"
+    r"what\s+(?:is|are|does)\b|what'?s\b|"
+    r"o\s+que\s+[ée]\b|cos'?[èe]\b|qu'?est[\s-]?ce\b|was\s+ist\b|"
+    # diferencia entre / explicame
+    r"(?:cu[áa]l\s+es\s+la\s+)?diferencia\s+entre\b|explica\w*\b|expl[íi]came\b|"
+    r"difference\s+between\b|explain\b"
+    r")",
+    re.IGNORECASE)
+# Verbos de acción DESTRUCTIVA/irreversible que NUNCA deben ejecutarse ante una
+# pregunta how-to. Si la pregunta es "cómo X", suprimimos el dominio de estas.
+_DESTRUCTIVE_TOOLS = {"filesystem", "system", "app", "steam", "registry",
+                      "package", "developer", "office"}
+
+
+def _is_howto_or_info_question(text: str) -> bool:
+    """True si el texto es una pregunta HOW-TO o informativa ('cómo X', 'qué es X',
+    'para qué sirve X'). El user pide EXPLICACIÓN, no ejecución. ESTRUCTURAL."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    return bool(_HOWTO_INFO_RE.match(text.strip()))
+
+
 # Pregunta de ESTADO/EXISTENCIA de una app NOMBRADA: "¿Steam está abierto?",
 # "revisá si Chrome está corriendo", "is Discord running?". La responde
 # system(processes) o window(list), NO la tool de la app (steam/browser) cuyo
@@ -1041,6 +1080,18 @@ def select_tool_names(
             for _t in ("window", "system"):
                 if _t not in expanded:
                     expanded.insert(0, _t)
+    except Exception:
+        pass
+    # PREGUNTA HOW-TO/INFO (BUG real medido, cacería tanda 1): "cómo elimino una
+    # carpeta" -> filesystem.delete BORRÓ la carpeta (daño irreversible ante una
+    # PREGUNTA); "qué es Python" -> abrió el navegador. El user pide EXPLICACIÓN, no
+    # ejecución. Retiramos las tools DESTRUCTIVAS/de-acción del subset para que el
+    # LLM responda en texto, no actúe. Si tras retirarlas no queda dominio, el LLM
+    # responde de su conocimiento (lo correcto para how-to/qué-es). NO toca preguntas
+    # de estado (_is_app_state_check ya las maneja arriba).
+    try:
+        if _is_howto_or_info_question(raw_text):
+            expanded = [t for t in expanded if t not in _DESTRUCTIVE_TOOLS]
     except Exception:
         pass
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)

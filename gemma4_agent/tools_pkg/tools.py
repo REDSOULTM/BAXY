@@ -4883,6 +4883,21 @@ if ($pos) {
         )
 
     def filesystem_delete(self, args: dict[str, Any]) -> dict[str, Any]:
+        # RED DE SEGURIDAD how-to (BUG real medido, cacería tanda 1): "cómo elimino
+        # una carpeta" -> el 4B llamaba filesystem.delete y BORRABA la carpeta ante
+        # una PREGUNTA (daño irreversible). El subset del router ya excluye filesystem
+        # en how-to, pero es sugestivo (forced-retry da acceso igual). Acá, si el
+        # texto del turno es una pregunta how-to, NO borrar — explicar. Solo activo
+        # si el agente plumeó _current_user_text (sin él = no-op, no rompe tests/CLI).
+        _ut = (getattr(self, "_current_user_text", "") or "").strip()
+        if _ut:
+            try:
+                from ..routing.planner import _is_howto_or_info_question as _howto
+                if _howto(_ut):
+                    return _ok(action="explain", completion_status="howto_not_executed",
+                               note="pregunta how-to: NO borré nada; el asistente explica cómo, no ejecuta")
+            except Exception:
+                pass
         raw_path = str(args.get("path", "")).strip()
         if not raw_path:
             return _err("empty path")
