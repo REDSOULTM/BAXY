@@ -154,3 +154,37 @@ Tools destructivas y su gate (a verificar en vivo, sin mock):
   ahora RESUELTO inline. El resto del "255 BUG" del juez es pre-fix-dataset + mock-
   inflación + cola de latencia que el breaker ya maneja. NO se justifican fixes nuevos
   de t5 más allá del inline-repair (medición rechazó: A1-título-artista, C2, latencia).
+
+## VERIFICACIÓN de clusters del juez contra DATA CRUDA (disciplina medir, 2026-06-05)
+Construí scripts/_diag/_verify_hunt_clean.py (detectores OBJETIVOS, sin el juez). Verifiqué
+los TOP clusters que el juez marcó como bugs de alto volumen, contra el hunt jsonl crudo:
+- **B3 conocimiento->web/acción: 0 casos en t5 real** (el juez dijo ~18). El A6
+  _INFO_SUPPRESS_TOOLS (commit 5f68fb5) ya suprime web/vision para how-to/info. CERRADO.
+- **C1 web-loop degenerado (>15 tool_calls): trend DECLINANTE** t3=4, t4=4, t5=1. Todos
+  son tareas multi-paso GENUINAS ("conecta wifi+abre correo+lee", "abre la última app
+  que cerraste") — NO batch degenerado (eso lo mata dedup_degenerate_batch). El
+  circuit-breaker engancha (cancel_turn) y aborta honesto. El juez dijo ~28 (IDs t1
+  pre-fix). 1-4/1000 declinando, NO chase (bajar umbral arriesga multi-step legítimo).
+- **C2 cancel_turn FP: 1 caso t5 real** (i=4204 "Stim" garble). Juez dijo ~14. No regresión.
+- **GUARD DESTRUCTIVO A1: era MI bug.** El harness midió 8/9 FP del guard que escribí en
+  5f68fb5. Causas: preguntas-de-confirmación, rechazos-en-futuro, "registr\w*" matcheaba
+  el verbo, "sistema" target genérico, path C:\ profundo, exec-genérico+path benigno.
+  Tightened (commit 8fbff58): residual 9->3 (1 real DOOM + 1 bluetooth defensible + 1
+  mock-leak). Sanity 5 TP/5 FP. LECCIÓN: una guarda nueva DEBE pasar el harness sobre
+  data cruda antes de cerrarla; los FP no salen en los unit tests curados.
+
+## ESTADO FIXES UNIVERSALES (cacería t1-t6, todos gated default-ON, 0-FP verificado):
+1. (t1) 9 fixes: loop'actual', media-fabricado-deferred, how-to, anti-injection, click-
+   claim, tests-passed, footer-prosa, intent-domain, window-direccional.
+2. (t1) C1 dedup_degenerate_batch + cap research; B3 _is_low_signal_noise.
+3. (t2) A6 _INFO_SUPPRESS_TOOLS (conocimiento no dispara web/vision).
+4. (t2) A7 _is_web_target + divert app.open->browser.
+5. (t2) A1 destructive_claim_without_evidence (+ precisión t1-t5, commit 8fbff58).
+6. (t2) A8 preferencia/dato-personal suprime acción.
+7. (t3-t5) A5 profile_intent hard-negatives (capability/identity/system/multilingüe-
+   emocional). FP jarvis 22->7->~0.
+8. (t2) C2-leak sanitizer <|...|>/memory{...}.
+9. (t2-t5) media-fabricado INLINE-REPAIR (commit 13ef80f): 80/80 t1-t5, 0 huecos. EL
+   bug #1 de honestidad, RESUELTO en el acto (antes solo hint diferido).
+MEDICIÓN: BUG-real trend del juez 236(t2)->227(t3)->219(t4) declinante. El "bug rate"
+residual es pre-fix-dataset + mock-inflación, NO regresiones. Verificado contra data cruda.
