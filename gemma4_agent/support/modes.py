@@ -284,8 +284,13 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
         " internet ",
         " noticia ",
         " noticias ",
-        " actual ",
-        " actualiza ",
+        # NO " actual ": colisiona con la palabra española más común para
+        # "current/este" — "la ventana/canción/app/pestaña ACTUAL" son COMANDOS,
+        # no research. Ruteaba esos a modo research (parallel + 2048 tok), donde
+        # el 4B emitía un batch degenerado de ~140 tool_calls (BUG real medido,
+        # "minimiza la ventana actual" -> 140 tools/30s). El research genuino
+        # ("información actual/noticias actuales") lo cubren los otros markers
+        # (noticias/reciente/internet/fuentes) y el router por embeddings.
         " actualizado ",
         " ultimo ",
         " ultima ",

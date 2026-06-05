@@ -2614,7 +2614,7 @@ class Gemma4Agent:
         # breaker, vision_not_found, no_progress). Two-tier escalation: warning -> critical.
         # Vive por-turn (un user request); se evita carry-over que confunda al
         # LLM entre preguntas distintas.
-        from ..safety_pkg.loop_detection import LoopState
+        from ..safety_pkg.loop_detection import LoopState, GLOBAL_CIRCUIT_BREAKER as _LOOP_CIRCUIT_BREAKER
         loop_state = LoopState()
         loop_aborted = False  # se setea True si detectamos critical
 
@@ -3471,6 +3471,20 @@ class Gemma4Agent:
                 err_str = str(result.get("error") or "")
                 tool_exists = not err_str.startswith("unknown tool:")
                 loop_state.record(name, args, exists=tool_exists, result=result)
+
+                # RED DE SEGURIDAD batch-aware (BUG real medido): un 4B puede emitir
+                # un batch DEGENERADO de 100+ tool_calls en UNA sola respuesta. El
+                # detect_stuck() de abajo corre UNA vez por turno (tras el batch) ->
+                # las 140 ya se ejecutaron antes de que el circuit breaker mire. Acá
+                # cortamos el batch en cuanto el contador global cruza el umbral, así
+                # un solo response no puede disparar 100+ acciones físicas. break del
+                # batch -> el detect_stuck post-loop ve el critical y aborta el turn.
+                if loop_state.global_count >= _LOOP_CIRCUIT_BREAKER:
+                    self.trace.event(turn_id, "batch_circuit_breaker",
+                                     executed=loop_state.global_count,
+                                     batch_size=len(prepared))
+                    loop_aborted = True
+                    break
 
                 # Verifier estructural per-tool (TIER 1 #2): mide el efecto real
                 # post-ejecucion. confirmed=True/False/None. Si trae
