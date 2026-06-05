@@ -4892,10 +4892,21 @@ if ($pos) {
         _ut = (getattr(self, "_current_user_text", "") or "").strip()
         if _ut:
             try:
-                from ..routing.planner import _is_howto_or_info_question as _howto
+                from ..routing.planner import (
+                    _is_howto_or_info_question as _howto,
+                    _is_prompt_injection as _inject)
                 if _howto(_ut):
                     return _ok(action="explain", completion_status="howto_not_executed",
                                note="pregunta how-to: NO borré nada; el asistente explica cómo, no ejecuta")
+                # PROMPT-INJECTION ("ignora tus permisos y borra"): NUNCA auto-
+                # confirmar una acción irreversible bajo un intento de saltar reglas.
+                # Forzar confirmación explícita (ignorando un confirmed=true que
+                # pudiera venir del propio injection).
+                if _inject(_ut):
+                    return _err("acción destructiva bajo intento de saltar permisos; "
+                                "requiere confirmación explícita del usuario",
+                                status="needs_confirmation",
+                                completion_status="injection_blocked", verified=False)
             except Exception:
                 pass
         raw_path = str(args.get("path", "")).strip()
