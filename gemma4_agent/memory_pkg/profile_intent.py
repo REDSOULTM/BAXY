@@ -96,6 +96,20 @@ _ANCHORS: dict[str, list[str]] = {
         #   charla / filosófico ("tenés sentimientos?", "tenés memes?", "sé honesto")
         "tenés sentimientos", "tenés algún meme", "sé honesto conmigo",
         "qué significa hecho para vos", "do you have feelings", "be honest with me",
+        #   CHARLA EMOCIONAL/FILOSÓFICA multilingüe (cacería t5): el short-circuit de
+        #   perfil disparaba ante desahogo/reflexión en pt/de/fr ("pensás en mí?",
+        #   "creés que soy buena persona?", "quiero rendirme"). NO son inspección del
+        #   perfil; el LLM debe responder con empatía. Incluye casos de malestar.
+        "pensás en mí a veces", "creés que soy buena persona", "me entendés",
+        "quiero rendirme", "estoy triste", "me siento mal", "estoy orgulloso de mí",
+        "do you think about me", "do you think i am a good person", "i feel sad",
+        "i want to give up", "you understand me",
+        # portugués
+        "você pensa em mim", "você acha que sou uma boa pessoa", "você me entende",
+        "acho que vou desistir", "estou triste", "tenho orgulho de mim",
+        # alemán / francés
+        "denkst du über mich nach", "verstehst du mich",
+        "penses-tu à moi", "je suis fier de moi", "tu me comprends",
     ],
 }
 

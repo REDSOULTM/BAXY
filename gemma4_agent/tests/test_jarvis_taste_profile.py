@@ -123,7 +123,15 @@ class TestProfileIntent(unittest.TestCase):
                   "sé honesto conmigo", "qué significa hecho para ti?",
                   "tenés algún meme?", "quiero que me recuerdes como red",
                   "qué tengo en mi pc ahora mismo?", "qué puedo pedirte",
-                  "qué no podés hacer", "tenés sentimientos?"):
+                  "qué no podés hacer", "tenés sentimientos?",
+                  # identidad del asistente / capacidad / system query (t4)
+                  "quién eres", "háblame de ti", "presentate ante mí",
+                  "qué puedes hacer por mí", "cuánta vram tengo", "qué juegos tengo",
+                  "who created you",
+                  # charla emocional/filosófica multilingüe (t5) — incl. malestar
+                  "Você acha que sou uma boa pessoa?", "Acho que vou desistir de tudo",
+                  "Denkst du manchmal über mich nach?", "Je suis fier de moi",
+                  "estoy muy triste hoy"):
             self.assertIsNone(self.detect(q), f"falso positivo (A5) en {q!r}")
 
     def test_genuine_memory_questions_still_detected(self):
