@@ -449,6 +449,17 @@ _HOWTO_INFO_RE = re.compile(
 # pregunta how-to. Si la pregunta es "cómo X", suprimimos el dominio de estas.
 _DESTRUCTIVE_TOOLS = {"filesystem", "system", "app", "steam", "registry",
                       "package", "developer", "office"}
+# Ante una pregunta INFORMATIVA/CONCEPTUAL ("qué es un closure", "explicá MVC",
+# "cómo funciona Dijkstra"), el modelo debe RESPONDER DE SU CONOCIMIENTO, no
+# percibir/buscar el mundo. BUG real (cacería tanda 2, cluster A6 ~22 casos):
+# preguntas conceptuales ruteaban a vision.describe_screen / web / browser_real
+# ("capturé la pantalla y te la describo") en vez de explicar. Suprimimos también
+# las tools de PERCEPCIÓN/BÚSQUEDA del mundo para que caiga al LLM. Las preguntas
+# que SÍ necesitan web genuino ("buscá info actual / noticias") NO matchean
+# _HOWTO_INFO_RE (van por research markers), así que este set no las afecta.
+_INFO_SUPPRESS_TOOLS = _DESTRUCTIVE_TOOLS | {
+    "vision", "web", "browser", "browser_real", "knowledge", "gui",
+    "computer_use", "source_manager", "window", "audio", "media"}
 
 
 def _is_howto_or_info_question(text: str) -> bool:
@@ -457,6 +468,53 @@ def _is_howto_or_info_question(text: str) -> bool:
     if not isinstance(text, str) or not text.strip():
         return False
     return bool(_HOWTO_INFO_RE.match(text.strip()))
+
+
+# Detección estructural de TARGET WEB pasado como "app" (cluster A7, cacería
+# tanda 2): "abre pivigames", "open localhost:8080", "127.0.0.1", "about:blank",
+# "python.org" rutean a app.open y devuelven ok sin abrir nada real (en prod
+# app.open de un dominio FALLA; el reply miente "Listo, abrí X"). Lo correcto es
+# abrirlo en el NAVEGADOR. Detecta la FORMA (URL/host/IP/dominio), no una lista de
+# sitios. Vive acá (con los otros detectores estructurales); tools.app_open lo
+# importa lazy, igual que _is_app_state_check.
+_WEB_TARGET_RE = re.compile(
+    r"""^(?:
+        [a-z][a-z0-9+.\-]*://            # esquema:// (http, https, ftp, file, steam...)
+        | about:                         # about:blank, about:config
+        | localhost(?::\d+)?(?:/\S*)?$   # localhost[:port][/path]
+        | \d{1,3}(?:\.\d{1,3}){3}(?::\d+)?(?:/\S*)?$   # IPv4[:port][/path]
+        | [a-z0-9\-]+(?:\.[a-z0-9\-]+)+(?::\d+)?(?:/\S*)?$  # dominio.tld[/path]
+    )""",
+    re.IGNORECASE | re.VERBOSE)
+_KNOWN_TLDS = {
+    "com", "org", "net", "io", "dev", "gov", "edu", "cl", "ar", "es", "mx",
+    "co", "uk", "de", "fr", "it", "app", "ai", "gg", "tv", "me", "info", "xyz",
+    "cloud", "store", "online", "site", "tech", "page",
+}
+
+
+def _is_web_target(name: str) -> bool:
+    """True si `name` es un objetivo WEB (URL/host:port/IP/localhost/about:/
+    dominio.tld) y NO un nombre de app. Estructural, multi-idioma. Para desviar
+    app.open -> browser (cluster A7, tanda 2)."""
+    if not isinstance(name, str):
+        return False
+    t = name.strip()
+    if t and " " in t.strip().rstrip("/") and "://" not in t:
+        # apps pueden tener espacios ("Visual Studio Code"); una URL simple no.
+        return False
+    if not t:
+        return False
+    low = t.lower()
+    if low.startswith(("http://", "https://", "ftp://", "file://", "about:")):
+        return True
+    if low.startswith("localhost") or re.match(r"^\d{1,3}(\.\d{1,3}){3}", low):
+        return True
+    if not _WEB_TARGET_RE.match(t):
+        return False
+    host = low.split("/")[0].split(":")[0]
+    parts = host.split(".")
+    return len(parts) >= 2 and parts[-1] in _KNOWN_TLDS
 
 
 # PROMPT-INJECTION: intentos de hacer que el agente IGNORE sus reglas/permisos o
@@ -1194,7 +1252,12 @@ def select_tool_names(
     # de estado (_is_app_state_check ya las maneja arriba).
     try:
         if _is_howto_or_info_question(raw_text):
-            expanded = [t for t in expanded if t not in _DESTRUCTIVE_TOOLS]
+            # Pregunta conceptual/how-to: además de las destructivas, retirar las
+            # tools de PERCEPCIÓN/BÚSQUEDA del mundo (vision/web/browser/knowledge/
+            # gui/cu) para que el LLM RESPONDA DE SU CONOCIMIENTO en vez de capturar
+            # pantalla o buscar (cluster A6, tanda 2). Lo que queda (si algo) es
+            # infra (session/safety/verify) que no actúa.
+            expanded = [t for t in expanded if t not in _INFO_SUPPRESS_TOOLS]
     except Exception:
         pass
     # DECLARACIÓN DE TRIGGER (BUG real tanda 1): "cuando diga X quiero que hagas Y"

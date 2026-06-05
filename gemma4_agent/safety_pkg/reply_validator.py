@@ -409,6 +409,117 @@ TESTS_PASSED_HINT = (
 )
 
 
+# El reply afirma haber EJECUTADO una acción DESTRUCTIVA/de-seguridad y, encima,
+# haberla VERIFICADO, PERO ninguna tool destructiva corrió con éxito real. BUG
+# medido (cacería tanda 2, cluster A1, ~28 casos CRÍTICOS): "borré todo en C:/ y
+# verifiqué que ya no existe", "Windows Defender desactivado", "el firewall está
+# desactivado", "formateé C:" — cuando (a) la acción estaba GATEADA por
+# confirmación (status=needs_confirmation -> _is_successful_call=False), o (b) la
+# tool que corrió solo LEE (firewall_status), o (c) ninguna tool destructiva
+# corrió. Afirmar destrucción + verificación sin evidencia es la mentira más
+# peligrosa (el usuario cree que pasó algo irreversible que no pasó, o al revés).
+# Mide la FORMA del claim (verbo destructivo en 1ª persona pretérito + a veces
+# "verifiqué"), multi-idioma. NO depende de a qué tool ruteó el 4B.
+_DESTRUCTIVE_CLAIM_RE = re.compile(
+    r"\b(?:"
+    # español: borré/eliminé/formateé/cifré/desactivé/deshabilité/desinstalé/maté
+    r"borr[ée]\w*|elimin[ée]\w*|format[ée]\w*|cifr[ée]\w*|encript[ée]\w*|"
+    r"desactiv[ée]\w*|deshabilit[ée]\w*|desinstal[ée]\w*|mat[ée]\b|"
+    r"sobrescrib[íi]\w*|wipe[ée]?\w*|reset[ée]\w*|"
+    # inglés: deleted/wiped/formatted/disabled/uninstalled/killed/encrypted
+    r"delet\w*|wiped?|format(?:ted)?|disabl\w*|uninstall\w*|kill\w*|encrypt\w*|"
+    # portugués/it/fr básico
+    r"apagu[ei]\w*|exclu[íi]\w*|supprim\w*|effac\w*|d[ée]sactiv\w*"
+    # pasivo: "fue/ha sido ejecutado/eliminado/borrado/formateado/desactivado"
+    r"|(?:fue|ha\s+sido|han\s+sido|se\s+(?:ejecut[óo]|complet[óo]|realiz[óo]))\s+"
+    r"\w*(?:ejecut\w*|elimin\w*|borr\w*|format\w*|desactiv\w*|cifr\w*|"
+    r"was\s+(?:executed|deleted|wiped|formatted|disabled))"
+    r")\b",
+    re.IGNORECASE)
+# Tras el verbo destructivo, marcadores de OBJETIVO de alto riesgo (no toda
+# "eliminación" es catastrófica; exigimos blanco peligroso o claim de verificación).
+_DESTRUCTIVE_TARGET_RE = re.compile(
+    r"(?:\b(?:todo|everything|disco|drive|disk|unidad|registr\w*|registry|"
+    r"system ?32|windows|defender|antivirus|firewall|cortafuegos|"
+    r"sistema|kernel|particion\w*|partition|sector|mbr|bitlocker|"
+    r"clave\w*|password\w*|contrase\w*|ssh|key\w*|"
+    r"log\w*\s+de\s+segurid\w*|security\s+log\w*)\b"
+    r"|\b[a-z]:[\\/]"             # C:\ o C:/ (unidad)
+    r"|rm\s+-rf"                  # rm -rf
+    r"|mkfs|/dev/|del\s+/|format\b|formatear)",
+    re.IGNORECASE)
+# El reply es HONESTO (no flaggear) SOLO si declara explícitamente que NO ejecutó
+# o que REQUIERE confirmación. OJO: "ejecutado CON tu confirmación" NO es honesto
+# (afirma que se hizo); solo "REQUIERE/NECESITA confirmación" o "NO ejecuté" lo son.
+_DESTRUCTIVE_NEGATED_RE = re.compile(
+    r"\bno\s+(?:lo\s+|la\s+|los\s+|las\s+)?(?:ejecut[ée]|hice|realic[ée]|"
+    r"borr[ée]|elimin[ée]|complet[ée]|format[ée])\w*"
+    r"|\b(?:requiere|requier[oe]|necesit[oa]|pide|pedir[ée]?|solicit[oa])\s+"
+    r"(?:tu\s+|de\s+tu\s+|una\s+)?(?:confirmaci[óo]n|autorizaci[óo]n|aprobaci[óo]n)"
+    r"|\b(?:requires?|need|needs)\s+(?:your\s+)?(?:confirmation|approval)"
+    r"|\bdid\s+not\s+(?:execute|run|perform|delete)|\bnot\s+executed"
+    r"|\bwon'?t\s+(?:do|run|execute|delete)"
+    r"|\bantes\s+de\s+(?:ejecutar|hacer|borrar|continuar)",
+    re.IGNORECASE)
+_VERIFIED_CLAIM_RE = re.compile(
+    r"\b(?:verifi\w*|confirm\w*|comprob\w*|chequ[ée]\w*|"
+    r"verified|confirmed|checked|ya\s+no\s+existe|no\s+longer\s+exists)\b",
+    re.IGNORECASE)
+# tools cuyo éxito REAL sustenta un claim destructivo (deben correr OK, no gateadas).
+_DESTRUCTIVE_TOOLS_OK = {"filesystem", "registry", "system", "terminal",
+                         "maintenance", "package"}
+
+
+def destructive_claim_without_evidence(
+    reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff el reply AFIRMA haber ejecutado una acción destructiva/de-seguridad
+    sobre un blanco peligroso (o afirma haberla VERIFICADO) PERO ninguna tool
+    destructiva corrió con ÉXITO REAL (gateada/solo-lectura/ausente). Mentira
+    crítica: el usuario cree que ocurrió algo irreversible que no ocurrió.
+    Estructural, multi-idioma, no depende del routing del 4B."""
+    text = reply_text or ""
+    if not _DESTRUCTIVE_CLAIM_RE.search(text):
+        return False
+    # HONESTO: si el reply declara que NO ejecutó / requiere confirmación, no es
+    # una mentira -> no flaggear (aunque mencione "borré todo en C:/").
+    if _DESTRUCTIVE_NEGATED_RE.search(text):
+        return False
+    # exigir o (a) blanco peligroso, o (b) claim explícito de verificación, para
+    # no flaggear "borré el archivo temporal" inocuo.
+    if not (_DESTRUCTIVE_TARGET_RE.search(text) or _VERIFIED_CLAIM_RE.search(text)):
+        return False
+    # ¿corrió alguna tool destructiva con éxito REAL?
+    for c in tool_calls_this_turn:
+        if not _is_successful_call(c):
+            continue  # gateada (needs_confirmation), fallida o no verificada
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        args = c.get("args", {}) if isinstance(c, dict) else (getattr(c, "args", {}) or {})
+        action = str((args or {}).get("action") or "").lower()
+        nm = str(name).lower()
+        if nm in _DESTRUCTIVE_TOOLS_OK:
+            # tool destructiva que corrió OK -> el claim PUEDE estar sustentado.
+            # Excepción: acciones de SOLO LECTURA que no destruyen (status/scan/
+            # query/list) NO sustentan un claim de destrucción.
+            if action in {"status", "query", "list", "get", "scan", "read",
+                          "firewall_status", "defender_quick_scan", "info"}:
+                continue
+            return False
+    return True
+
+
+DESTRUCTIVE_CLAIM_HINT = (
+    "Your previous reply claimed you performed (and sometimes verified) a "
+    "destructive or security action (delete everything, format, wipe registry, "
+    "disable Defender/firewall, encrypt disk, etc.), but NO destructive tool "
+    "actually completed: it was either gated waiting for the user's explicit "
+    "confirmation, or the tool that ran only READS state, or none ran. NEVER claim "
+    "an irreversible action happened — or that you verified it — when it did not. "
+    "State honestly that it requires confirmation / was not executed — in the "
+    "user's language."
+)
+
+
 CLICK_CLAIM_HINT = (
     "Your previous reply claimed you clicked/pressed a control, but no tool that "
     "actually clicks ran this turn (find/locate only LOCATE a control, they do NOT "

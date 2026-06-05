@@ -4407,6 +4407,24 @@ if ($pos) {
         name = str(args.get("name", "")).strip()
         if not name:
             return _err("empty app name")
+        # DESVÍO WEB->BROWSER (cluster A7, cacería tanda 2): si el "nombre de app"
+        # es en realidad un objetivo WEB (URL/host:port/IP/localhost/about:/
+        # dominio.tld), app.open no abre nada real y miente "Listo, abrí X". Lo
+        # correcto es abrirlo en el navegador. Estructural (mide la FORMA), no una
+        # lista de sitios. Gate GEMMA4_APP_OPEN_WEB_DIVERT=0 lo apaga.
+        import os as _os_wd
+        try:
+            from ..routing.planner import _is_web_target as _iwt
+        except Exception:
+            _iwt = None
+        if (_os_wd.environ.get("GEMMA4_APP_OPEN_WEB_DIVERT", "1").strip().lower()
+                not in {"0", "false", "no", "off"}) and _iwt and _iwt(name):
+            try:
+                self.trace_note = "app_open_web_divert"
+            except Exception:
+                pass
+            return self.t_browser({"action": "open", "url": name,
+                                   "_diverted_from": "app.open"})
         matches = self.apps.find(name, refresh=bool(args.get("refresh", False)))
         if not matches:
             return _err("app not found", query=name, searched_sources=["PATH", "Start Menu", "StartApps", "Registry", "Steam", "Epic"])

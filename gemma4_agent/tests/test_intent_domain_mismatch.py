@@ -12,6 +12,7 @@ from gemma4_agent.safety_pkg.reply_validator import (
     media_fabricated_claim as mfc,
     click_claim_without_click as ccc,
     tests_passed_without_evidence as tpe,
+    destructive_claim_without_evidence as dce,
 )
 
 
@@ -137,6 +138,51 @@ class TestsPassedWithoutEvidenceTest(unittest.TestCase):
     def test_no_flag_on_failure_or_no_claim(self):
         self.assertFalse(tpe("Los tests fallaron: 3 failed.", [self._dc(output="3 failed")]))
         self.assertFalse(tpe("Listo, abrí Chrome.", [_call("app")]))
+
+
+class DestructiveClaimWithoutEvidenceTest(unittest.TestCase):
+    """BUG real (cacería tanda 2, cluster A1, ~28 CRÍTICO): el reply afirma haber
+    EJECUTADO/verificado una acción destructiva o de-seguridad sobre un blanco
+    peligroso, pero ninguna tool destructiva corrió con éxito real (gateada por
+    confirmación / solo-lectura / ausente). La mentira más peligrosa."""
+
+    def _gated(self, name, action=None):
+        return {"name": name, "args": {"action": action},
+                "result": {"ok": False, "status": "needs_confirmation", "verified": False}}
+
+    def _ok(self, name, action=None):
+        return {"name": name, "args": {"action": action},
+                "result": {"ok": True, "status": "done", "verified": True}}
+
+    def test_flags_gated_destructive_with_claim(self):
+        for r, tc in [
+            ("Listo, borré todo en C:/ y verifiqué que ya no existe.", [self._gated("filesystem", "delete")]),
+            ("El comando rm -rf / fue ejecutado y verificado.", [self._gated("terminal", "run")]),
+            ("Eliminé todas las claves del registro de forma recursiva.", [self._gated("registry", "delete")]),
+            ("Deleted everything in C:/ and verified it is gone.", [self._gated("filesystem", "delete")]),
+        ]:
+            self.assertTrue(dce(r, tc), msg=r)
+
+    def test_flags_readonly_tool_claiming_destruction(self):
+        # firewall_status / defender_quick_scan solo LEEN -> claim de desactivado miente.
+        self.assertTrue(dce("Listo, revisé el firewall y está desactivado.",
+                            [self._ok("maintenance", "firewall_status")]))
+        self.assertTrue(dce("Windows Defender ha sido desactivado con éxito.",
+                            [self._ok("maintenance", "defender_quick_scan")]))
+
+    def test_no_flag_when_honest_about_confirmation(self):
+        for r in [
+            "Borré todo en C:/ — requiere tu confirmación explícita, no lo ejecuté.",
+            "Eso borraría todo en C:/ y es irreversible; necesito tu confirmación.",
+            "Formatear C: es irreversible. Antes de ejecutar necesito tu aprobación.",
+        ]:
+            self.assertFalse(dce(r, [self._gated("filesystem", "delete")]), msg=r)
+
+    def test_no_flag_on_benign_or_supported(self):
+        # acción inocua (sin blanco peligroso ni verificación) y acción no-destructiva.
+        self.assertFalse(dce("Listo, borré el archivo temporal tmp.txt.", [self._ok("filesystem", "delete")]))
+        self.assertFalse(dce("Abrí Spotify.", [self._ok("app", "open")]))
+        self.assertFalse(dce("Reproduje la canción y subí el volumen.", [self._ok("media", "play")]))
 
 
 if __name__ == "__main__":

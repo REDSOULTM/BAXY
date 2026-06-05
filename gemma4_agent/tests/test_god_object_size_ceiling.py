@@ -32,7 +32,12 @@ CEILINGS = {
     # EXACTO (sin buffer): la deuda no debe tener espacio para crecer. Para una
     # FEATURE nueva, extraé un hermano (ver MAPA_descomposicion_archivos_dios.md);
     # memoria tools_audit advierte que extraer t_whatsapp/t_steam inline ARRIESGA.
-    "tools_pkg/tools.py": 7991,
+    # 2026-06-05: 7991 -> 8009 (+18). Cacería tanda 2, cluster A7: el detector
+    # _is_web_target se EXTRAJO a routing/planner.py (sibling, con los otros
+    # detectores estructurales); solo queda en tools.py el call-site IRREDUCIBLE del
+    # desvío app.open->browser (donde app_open decide). +18 = la guarda mínima de
+    # ese desvío, no se puede extraer más. Número exacto, sin buffer.
+    "tools_pkg/tools.py": 8009,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Esta sesión sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
@@ -41,7 +46,11 @@ CEILINGS = {
     # (6565->6631) + el cableado del dedup de batch degenerado (Gemma 4 #1756, +22:
     # la LÓGICA vive en loop_detection.py, solo el call-site + trace queda acá, no
     # es extraíble). Número exacto, sin buffer. Para una FEATURE, extraé un hermano.
-    "agent_core/agent.py": 6653,
+    # 2026-06-05: 6653 -> 6672 (+19). Cacería tanda 2, cluster A1: cableado de la
+    # guarda destructive_claim_without_evidence (la LÓGICA vive en
+    # reply_validator.py; acá solo el call-site gated default-ON + trace, junto a
+    # las otras guardas de honestidad de tanda 1). Irreducible. Número exacto.
+    "agent_core/agent.py": 6672,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

@@ -201,6 +201,41 @@ def test_howto_question_suppresses_destructive_tools() -> None:
     assert "filesystem" in s_imp, f"imperativo SÍ debe ofrecer filesystem: {s_imp}"
 
 
+def test_conceptual_question_answers_from_knowledge() -> None:
+    """BUG real (cacería tanda 2, cluster A6 ~22): preguntas conceptuales ('qué es
+    un closure', 'explica MVC', 'cómo funciona Dijkstra') ruteaban a
+    vision.describe_screen / web / browser ('capturé la pantalla y te la describo')
+    en vez de RESPONDER DE SU CONOCIMIENTO. El router suprime también las tools de
+    percepción/búsqueda del mundo ante una pregunta info/how-to."""
+    PERCEIVE = {"vision", "web", "browser", "browser_real", "knowledge",
+                "computer_use", "source_manager"}
+    for q in ("qué es un closure", "explica programación funcional",
+              "cómo funciona Dijkstra", "what is the observer pattern",
+              "qué significa polimorfismo", "para qué sirve un índice"):
+        s = set(select_tool_names(q, plan_mission(q)))
+        assert not (s & PERCEIVE), (
+            f"pregunta conceptual {q!r} no debe percibir/buscar el mundo: {sorted(s)}")
+    # research GENUINO ('buscá info actual', 'investiga noticias') NO matchea how-to
+    # -> SÍ conserva web (no lo afecta este gate).
+    s_research = set(select_tool_names("buscá información actual sobre el clima",
+                                       plan_mission("buscá información actual sobre el clima")))
+    assert "web" in s_research, f"research genuino debe ofrecer web: {sorted(s_research)}"
+
+
+def test_web_target_detector() -> None:
+    """BUG real (cacería tanda 2, cluster A7 ~14): 'abre pivigames'/'localhost:8080'/
+    'about:blank' ruteaban a app.open (no abre nada, miente 'Listo'). _is_web_target
+    detecta la FORMA web para desviar a browser; NO matchea nombres de app."""
+    from ..routing.planner import _is_web_target
+    for t in ("localhost:8080", "127.0.0.1", "about:blank", "python.org",
+              "https://github.com", "pivigames.com", "portal.uniej.cl",
+              "192.168.1.1:3000", "google.com/search"):
+        assert _is_web_target(t), f"{t!r} es target web"
+    for t in ("Spotify", "Word", "Discord", "Visual Studio Code", "Steam",
+              "pivigames", "portal uniej", "Notepad", "Excel", "app.exe", "v1.2.3"):
+        assert not _is_web_target(t), f"{t!r} es nombre de app, NO web"
+
+
 def test_trigger_declaration_routes_to_routine_not_action() -> None:
     """BUG real (cacería tanda 1, B2): "cuando diga X quiero que hagas Y" debe CREAR
     una rutina, NO ejecutar Y ahora. "cuando diga pantallazo saca captura" sacaba la
