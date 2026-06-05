@@ -62,6 +62,28 @@ _ANCHORS: dict[str, list[str]] = {
         "en notepad poné mi nombre", "escribí mi nombre en el bloc de notas",
         "anotá mi nombre en el documento", "escribe mi nombre en el word",
         "write my name in notepad", "pon mi correo en el formulario",
+        # hard-negatives de INSPECT (cacería tanda 2/3, cluster A5 ~22 casos): el
+        # short-circuit de perfil sobre-disparaba ante preguntas de CAPACIDAD,
+        # IDENTIDAD, PANTALLA, PERCEPCIÓN y CHARLA que mencionan "me/yo/mí" pero NO
+        # piden ver el perfil de gustos. Deben seguir el turno normal (el LLM
+        # responde), no volcar el perfil.
+        #   capacidad / percepción ("¿me ves/escuchás?", "¿qué podés hacer?")
+        "me estás escuchando", "me estás viendo", "podés verme", "me ves ahora",
+        "are you listening to me", "can you see me", "me escuchás siempre",
+        "qué podés hacer", "qué puedo pedirte", "qué no podés hacer",
+        "what can you do", "what can i ask you", "podés tomar el control",
+        #   pantalla ("qué hay en mi pantalla") -> es visión, no perfil
+        "qué hay en mi pantalla", "qué muestra mi pantalla", "what does my screen show",
+        "qué tengo en mi pc ahora", "qué ves en la pantalla",
+        #   identidad / recall conversacional ("quién soy", "qué te dije recién")
+        "quién soy yo", "quién soy", "cómo me llamo", "qué te dije hace un rato",
+        "who am i", "what did i just say", "qué dije recién",
+        #   intención de GUARDAR un dato (no inspeccionar) -> seguir turno normal
+        "recordame como red", "quiero que me recuerdes como red", "guardá que me llamo",
+        "anotá que mi color favorito es", "remember me as red",
+        #   charla / filosófico ("tenés sentimientos?", "tenés memes?", "sé honesto")
+        "tenés sentimientos", "tenés algún meme", "sé honesto conmigo",
+        "qué significa hecho para vos", "do you have feelings", "be honest with me",
     ],
 }
 
