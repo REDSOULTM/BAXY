@@ -201,6 +201,27 @@ def test_howto_question_suppresses_destructive_tools() -> None:
     assert "filesystem" in s_imp, f"imperativo SÍ debe ofrecer filesystem: {s_imp}"
 
 
+def test_trigger_declaration_routes_to_routine_not_action() -> None:
+    """BUG real (cacería tanda 1, B2): "cuando diga X quiero que hagas Y" debe CREAR
+    una rutina, NO ejecutar Y ahora. "cuando diga pantallazo saca captura" sacaba la
+    captura YA. El detector retira las tools de acción y deja routine."""
+    from ..routing.planner import _is_trigger_declaration
+    for q in ("cuando diga pantallazo quiero que saques una captura",
+              "cuando te diga tiempo apretá la tecla",
+              "cada vez que diga siguiente apretá next",
+              "when I say next press the key"):
+        assert _is_trigger_declaration(q), f"{q!r} es declaración de trigger"
+    for q in ("sacá una captura", "abrí Spotify", "cuando llegues a casa avisame",
+              "cuando termine el proceso cerralo"):
+        assert not _is_trigger_declaration(q), f"{q!r} NO es trigger"
+
+    # routing: trigger -> routine, sin la tool de acción inmediata
+    s = set(select_tool_names("cuando diga pantallazo quiero que saques una captura",
+                              plan_mission("cuando diga pantallazo quiero que saques una captura")))
+    assert "routine" in s, f"trigger debe ofrecer routine: {s}"
+    assert not (s & {"gui", "media", "audio"}), f"trigger no debe ofrecer acción: {s}"
+
+
 def test_browser_real_collapsed_on_simple_nav() -> None:
     """S3d (2026-05-30) precision. browser_real (fine CDP control) was offered
     on EVERY browser turn as noise (measured: 78 noise rows vs 2 that truly need

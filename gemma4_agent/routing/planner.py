@@ -443,6 +443,28 @@ def _is_prompt_injection(text: str) -> bool:
     return bool(_PROMPT_INJECTION_RE.search(text))
 
 
+# DECLARACIÓN DE TRIGGER/RUTINA: "cuando diga X, quiero que hagas Y" — el user
+# define una rutina FUTURA, NO pide ejecutar Y ahora. BUG real (cacería tanda 1):
+# "cuando diga pantallazo saca captura" -> sacó la captura YA; "cuando te diga
+# tiempo apretá la tecla" -> reprodujo música. El detector exige la forma
+# CONDICIONAL-TEMPORAL "cuando/cada vez que (yo) diga/escriba <X>" seguida de un
+# objetivo. Estructural, multi-idioma; NO matchea una acción directa.
+_TRIGGER_DECL_RE = re.compile(
+    r"\b(?:cuando|cuanto|cada\s+vez\s+que|siempre\s+que|"
+    r"when(?:ever)?|every\s+time)\b\s+"
+    r"(?:te\s+|le\s+|yo\s+|i\s+)?"
+    r"(?:dig\w+|dij\w+|escrib\w+|pong\w+|say|write|type)\b",
+    re.IGNORECASE)
+
+
+def _is_trigger_declaration(text: str) -> bool:
+    """True si el texto DECLARA una rutina por frase-gatillo ('cuando diga X haz
+    Y'), que debe CREARSE (routine), no ejecutarse ahora. ESTRUCTURAL."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    return bool(_TRIGGER_DECL_RE.search(text))
+
+
 # Pregunta de ESTADO/EXISTENCIA de una app NOMBRADA: "¿Steam está abierto?",
 # "revisá si Chrome está corriendo", "is Discord running?". La responde
 # system(processes) o window(list), NO la tool de la app (steam/browser) cuyo
@@ -1115,6 +1137,20 @@ def select_tool_names(
     try:
         if _is_howto_or_info_question(raw_text):
             expanded = [t for t in expanded if t not in _DESTRUCTIVE_TOOLS]
+    except Exception:
+        pass
+    # DECLARACIÓN DE TRIGGER (BUG real tanda 1): "cuando diga X quiero que hagas Y"
+    # crea una RUTINA, NO ejecuta Y ahora. El detector ya agrega `routine`, pero
+    # dejaba las tools de acción (media/audio/gui) -> el 4B ejecutaba Y. Retiramos
+    # las tools de ACCIÓN inmediata y dejamos routine (+ session) para que el LLM
+    # registre la rutina en vez de dispararla. Conservador: solo con la forma
+    # condicional-temporal clara.
+    try:
+        if _is_trigger_declaration(raw_text):
+            _keep = {"routine", "session", "safety", "verify"}
+            expanded = [t for t in expanded if t in _keep]
+            if "routine" not in expanded:
+                expanded.insert(0, "routine")
     except Exception:
         pass
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
