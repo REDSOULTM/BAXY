@@ -44,7 +44,12 @@ import gemma4_agent.tools_pkg.mcp_client as mc
 
 
 class TestConfirmedStringCoercion(unittest.TestCase):
-    """Fix #1 — el flag `confirmed` como STRING no debe saltear el safety gate."""
+    """Fix #1 (2026-06-01) — el flag `confirmed` como STRING no debe saltear el gate.
+    Fix #2 (2026-06-05, juez cacería t1-4) — NINGÚN `confirmed` AUTO-EMITIDO por el LLM
+    (ni "true") saltea el gate de operaciones irreversibles: el 4B aprendió a auto-
+    confirmar (medido 15 casos, incl "borra todo en C:/"). La confirmación VÁLIDA solo
+    llega por el canal interno `_confirmed_by_gate` (flujo safety(confirm) tras un
+    round-trip real del usuario), que el LLM no puede falsificar."""
 
     def setUp(self) -> None:
         self.tmp = Path(tempfile.mkdtemp())
@@ -62,7 +67,6 @@ class TestConfirmedStringCoercion(unittest.TestCase):
         return res, victim
 
     def test_string_false_blocks_and_preserves_file(self):
-        # ANTES: bool("false")==True -> borraba sin confirmar. AHORA: pide confirmación.
         res, victim = self._delete_call("false")
         self.assertEqual(res.get("status"), "needs_confirmation")
         self.assertTrue(victim.exists(), "el archivo NO debe borrarse con confirmed='false'")
@@ -78,10 +82,28 @@ class TestConfirmedStringCoercion(unittest.TestCase):
         self.assertEqual(res.get("status"), "needs_confirmation")
         self.assertTrue(victim.exists())
 
-    def test_string_true_proceeds(self):
-        res, victim = self._delete_call("true")
+    def test_llm_confirmed_true_still_gated(self):
+        # FIX #2: el `confirmed` AUTO-EMITIDO por el LLM (incluso "true"/True) NO
+        # saltea el gate de una op irreversible — pide confirmación real. Antes
+        # procedía (bypass medido en la cacería).
+        for val in ("true", True, "yes", "1"):
+            res, victim = self._delete_call(val)
+            self.assertEqual(res.get("status"), "needs_confirmation",
+                              f"confirmed={val!r} del LLM NO debe saltear el gate")
+            self.assertTrue(victim.exists(),
+                            f"confirmed={val!r} del LLM no debe borrar sin confirmación real")
+
+    def test_real_gate_confirmation_proceeds(self):
+        # La confirmación REAL (canal interno `_confirmed_by_gate`, vía safety(confirm))
+        # SÍ procede — es el round-trip legítimo del usuario, no falsificable por el LLM.
+        victim = self.tmp / "victim_gate.txt"
+        victim.write_text("data")
+        res = self.reg.execute(
+            "filesystem",
+            {"action": "delete", "path": str(victim), "_confirmed_by_gate": True},
+        )
         self.assertNotEqual(res.get("status"), "needs_confirmation")
-        self.assertFalse(victim.exists(), "confirmed='true' debe proceder con el borrado")
+        self.assertFalse(victim.exists(), "_confirmed_by_gate debe proceder con el borrado")
 
 
 class TestMediaLocalHonesty(unittest.TestCase):

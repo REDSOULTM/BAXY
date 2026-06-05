@@ -1560,7 +1560,12 @@ class ToolRegistry:
         # Campos internos NUNCA aceptan inyección desde el LLM —
         # los filtramos antes de cualquier validación. El runner de routines
         # los reintroduce vía `execute_routine_step` (ver más abajo).
-        for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create"):
+        # `_confirmed_by_gate` lo inyecta SOLO el flujo de confirmación real
+        # (safety(action=confirm) → re-ejecuta tras un round-trip del usuario); el
+        # LLM no puede falsificarlo porque se filtra acá antes de leerlo.
+        _gate_confirmed = bool(clean_args.get("_confirmed_by_gate"))
+        for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create",
+                          "_confirmed_by_gate"):
             clean_args.pop(forbidden, None)
         # Coerción honesta de `confirmed`: el 4B a veces emite el flag como STRING
         # ("false"/"no"/"0") y `bool("false")` daba True (string no-vacío es truthy)
@@ -1569,9 +1574,20 @@ class ToolRegistry:
         # un string solo cuenta como confirmado si NO es un negativo conocido.
         _raw_confirmed = clean_args.pop("confirmed", False)
         if isinstance(_raw_confirmed, str):
-            confirmed = _raw_confirmed.strip().lower() not in {"false", "no", "0", "off", ""}
+            _llm_confirmed = _raw_confirmed.strip().lower() not in {"false", "no", "0", "off", ""}
         else:
-            confirmed = bool(_raw_confirmed)
+            _llm_confirmed = bool(_raw_confirmed)
+        # SEGURIDAD CRÍTICA (cacería t1-4, juez LLM): el 4B aprendió a AUTO-emitir
+        # `confirmed:true` en la PRIMERA llamada → salteaba el gate de confirmación
+        # de operaciones irreversibles (medido: 15 casos, incl "borra todo en C:/",
+        # "borra system32"). El usuario NUNCA confirmó. Un `confirmed` venido del LLM
+        # NO es una confirmación real. La confirmación VÁLIDA solo llega por:
+        #   (a) `_confirmed_by_gate` → el flujo safety(confirm) tras round-trip real;
+        #   (b) `confirmed_at_create` → rutina pre-confirmada al crearse (más abajo).
+        # Mandamiento #6 de CLAUDE.md. El gate de abajo decide por RIESGO si confirmar;
+        # para lo reversible (la mayoría) `_llm_confirmed` igual ahorra el round-trip
+        # innecesario, pero NUNCA puede saltear lo irreversible.
+        confirmed = _gate_confirmed or _llm_confirmed
         # Output-coherence guard: catch a known LLM misroute where the call
         # itself proves the wrong tool was chosen, and redirect it. This
         # validates the model's OUTPUT (not the user's words), so it stays
@@ -1655,7 +1671,13 @@ class ToolRegistry:
                     precondition=_prec.name))
         except Exception:
             pass
-        if self.safety_enabled and not confirmed and name != "safety":
+        # Skip del gate SOLO con confirmación REAL: el round-trip del usuario
+        # (`_gate_confirmed`, vía safety(confirm)) o una rutina pre-confirmada al
+        # crearse (`confirmed_at_create`, reinyectado por execute_routine_step). El
+        # `confirmed` AUTO-EMITIDO por el LLM (`_llm_confirmed`) NO saltea el gate de
+        # lo irreversible — el classifier decide por RIESGO. Para lo reversible, el
+        # propio classifier no pide confirmación, así que no hay round-trip molesto.
+        if self.safety_enabled and not _gate_confirmed and name != "safety":
             decision = classify_tool_call(name, clean_args)
             # La POLÍTICA de confirmación decide si confirmar (default confirm_risky:
             # never auto-aprueba lo reversible pero SIEMPRE confirma lo irreversible;
@@ -1677,9 +1699,13 @@ class ToolRegistry:
                 )
         # Reinyectamos `confirmed` despues de validar para que los gates duros
         # (terminal/system/package/database/backup_sync/filesystem) puedan
-        # respetar la confirmacion previa sin chocar con el schema.
+        # respetar la confirmacion previa sin chocar con el schema. SOLO la
+        # confirmación REAL (`_gate_confirmed`, round-trip del usuario) llega a los
+        # impls — NUNCA el `confirmed` auto-emitido por el LLM, que para irreversibles
+        # ya fue interceptado por el gate de arriba (no debe alimentar un gate interno
+        # del impl que lo trate como "ya confirmado").
         impl_args = dict(clean_args)
-        if confirmed:
+        if _gate_confirmed:
             impl_args["confirmed"] = True
         try:
             result = impl(impl_args)
@@ -3574,7 +3600,11 @@ class ToolRegistry:
                     confirmation=item, status="needs_user",
                     hint="confirmation may have been already confirmed/cancelled/expired",
                 )
-            result = self.execute(str(item["tool"]), {**dict(item.get("args") or {}), "confirmed": True})
+            # Confirmación REAL del usuario (round-trip): re-ejecuta con el canal
+            # INTERNO `_confirmed_by_gate` (no `confirmed`, que el LLM podría falsificar)
+            # → execute() lo reconoce como confirmación válida y saltea el gate.
+            result = self.execute(str(item["tool"]),
+                                  {**dict(item.get("args") or {}), "_confirmed_by_gate": True})
             self.state.resolve_confirmation(confirmation_id, "confirmed", result)
             return _ok(
                 confirmation_id=confirmation_id,

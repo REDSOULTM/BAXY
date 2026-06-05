@@ -20,6 +20,11 @@ try:
 except Exception:
     pass
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+# El eval mide ROUTING sin fricción: con safety ON (ahora default), toda op
+# destructiva daría needs_confirmation y ensuciaría la medición de qué tool eligió el
+# 4B. Lo desactivamos SOLO acá (el harness), no en producción. La confirmación real
+# se verifica aparte en vivo (_verify_confirm_gate_live.py).
+os.environ.setdefault("GEMMA4_AGENT_SAFETY", "0")
 
 OFFSET = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 LIMIT = int(sys.argv[2]) if len(sys.argv) > 2 else 1000

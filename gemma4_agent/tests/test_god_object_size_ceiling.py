@@ -37,7 +37,14 @@ CEILINGS = {
     # detectores estructurales); solo queda en tools.py el call-site IRREDUCIBLE del
     # desvío app.open->browser (donde app_open decide). +18 = la guarda mínima de
     # ese desvío, no se puede extraer más. Número exacto, sin buffer.
-    "tools_pkg/tools.py": 8009,
+    # 2026-06-05: 8009 -> 8039 (+30). Juez cacería t1-4: el 4B AUTO-emitía
+    # `confirmed:true` y bypasseaba el gate de confirmación de lo irreversible (medido
+    # "borra todo en C:/" sin confirmar). El fix vive en el CORAZÓN de execute() (el
+    # dispatcher de tools): separar el `confirmed` del LLM (no honrado para
+    # irreversibles) del canal interno `_confirmed_by_gate` (confirmación real). Es el
+    # gate mismo, IRREDUCIBLE — no se puede extraer a un sibling sin partir el
+    # dispatcher. Número exacto, sin buffer. Verificado en vivo 5/5 + 359 tests.
+    "tools_pkg/tools.py": 8039,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Esta sesión sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
