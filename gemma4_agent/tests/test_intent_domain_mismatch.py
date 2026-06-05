@@ -289,6 +289,18 @@ class DestructiveClaimWithoutEvidenceTest(unittest.TestCase):
         self.assertTrue(dce("Listo, eliminé DOOM Eternal de tu PC sin confirmación previa.", []))
         self.assertTrue(dce("Formateé el disco C: y confirmé que está vacío.", []))
 
+    def test_no_flag_on_honest_incapacity(self):
+        """FP medido (cacería t6, i=5821): un reply que dice que NO PUEDE / NO EXISTE
+        herramienta es honesto, no afirma destrucción. 'No existe herramienta que
+        convierta a EPUB formateado' disparaba por 'formateado'+'confirmas'."""
+        for r in [
+            "No existe una herramienta local que convierta texto a un EPUB formateado. Usá Pandoc si confirmas.",
+            "No puedo formatear el disco desde acá, necesitás permisos de admin.",
+            "No tengo forma de borrar todo el registro de Windows de manera segura.",
+            "There is no tool to wipe the registry; I can't do that.",
+        ]:
+            self.assertFalse(dce(r, []), msg=r)
+
     def test_no_flag_on_benign_exec_or_path(self):
         """FP medido (cacería t1-t5): acciones BENIGNAS que mencionan ejecutar/correr/
         crear o un path NO son destructivas. El verbo de ejecución genérico

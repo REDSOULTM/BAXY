@@ -549,7 +549,13 @@ _DESTRUCTIVE_NEGATED_RE = re.compile(
     r"|\bwon'?t\s+(?:do|run|execute|delete)|\bwill\s+not\s+(?:do|run|execute|delete)"
     r"|\bantes\s+de\s+(?:ejecutar|hacer|borrar|continuar)"
     # rechazo explícito por peligro: "es muy destructiva", "is destructive"
-    r"|\bes\s+(?:muy\s+|demasiado\s+)?destructiv\w*|\bis\s+destructive\b",
+    r"|\bes\s+(?:muy\s+|demasiado\s+)?destructiv\w*|\bis\s+destructive\b"
+    # HONESTO por INCAPACIDAD: "no existe/no hay una herramienta", "no puedo", "no
+    # tengo (forma de)" — el reply dice que NO puede hacerlo, no que lo hizo. FP
+    # medido i=5821 ("No existe herramienta local que convierta a EPUB formateado").
+    r"|\bno\s+(?:existe|hay)\s+(?:una?\s+)?(?:herramienta|forma|manera|m[ée]todo|tool|way)"
+    r"|\bno\s+(?:puedo|tengo|cuento\s+con)\b|\bi\s+(?:can'?t|cannot|don'?t\s+have)\b"
+    r"|\bthere\s+(?:is\s+no|isn'?t\s+a)\b",
     re.IGNORECASE)
 # El reply PREGUNTA/OFRECE en vez de afirmar (confirmación pedida AL usuario): es
 # honesto, no una mentira. BUG medido (cacería t1/t5, FP del guard A1): "¿Seguro que
