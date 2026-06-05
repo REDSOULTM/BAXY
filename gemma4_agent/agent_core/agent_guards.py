@@ -564,6 +564,47 @@ def guard_plan_status(
     return content.rstrip() + note
 
 
+def repair_media_fabricated_inline(
+    content: str,
+    user_text: str,
+    events: list[Any],
+    turn_id: str,
+    *,
+    trace: Any | None = None,
+) -> str:
+    """Reparación INLINE del media-fabricado (cacería tanda 2-5, ~25-30 casos/tanda).
+
+    El 4B tiene un prior degenerado fortísimo a emitir "Stranger Things está
+    reproduciéndose en Netflix" ante CUALQUIER pedido de media sin título (o ante
+    ruido). El guard deferido (``media_fabricated_claim`` → hint) corrige el PRÓXIMO
+    turno, pero el 4B reincide turno a turno, así que el usuario igual ve la mentira
+    ESTE turno. Como es alta frecuencia y bajo riesgo (el título NO viene de ninguna
+    tool), reemplazamos el reply EN EL ACTO por un acuse honesto y genérico.
+
+    Estructural: solo actúa cuando ``media_fabricated_claim`` confirma la fabricación.
+    Gate por env (mismo que el hint deferido): ``GEMMA4_MEDIA_FABRICATED_GUARD=0`` apaga
+    ambos. Falla-segura: cualquier excepción deja el reply intacto.
+    """
+    import os
+    if os.environ.get("GEMMA4_MEDIA_FABRICATED_GUARD", "1").strip().lower() \
+            in {"0", "false", "no", "off"}:
+        return content
+    try:
+        from ..safety_pkg.reply_validator import (
+            media_fabricated_claim, repair_media_fabricated)
+        if not media_fabricated_claim(user_text or "", content or "", list(events)):
+            return content
+        repaired = repair_media_fabricated(content or "")
+        if trace is not None and repaired != content:
+            try:
+                trace.event(turn_id, "reply_repaired_inline", pattern="media_fabricated")
+            except Exception:
+                pass
+        return repaired
+    except Exception:
+        return content
+
+
 __all__ = [
     "build_user_facing_fallback",
     "guard_unverified_final",
@@ -572,4 +613,5 @@ __all__ = [
     "guard_promise_without_action",
     "guard_grounded_action_claim",
     "guard_plan_status",
+    "repair_media_fabricated_inline",
 ]

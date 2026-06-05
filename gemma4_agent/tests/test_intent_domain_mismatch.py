@@ -10,6 +10,8 @@ import unittest
 from gemma4_agent.safety_pkg.reply_validator import (
     intent_domain_mismatch as idm,
     media_fabricated_claim as mfc,
+    repair_media_fabricated as rmf,
+    MEDIA_FAB_REPAIR_REPLY,
     click_claim_without_click as ccc,
     tests_passed_without_evidence as tpe,
     destructive_claim_without_evidence as dce,
@@ -85,6 +87,40 @@ class MediaFabricatedClaimTest(unittest.TestCase):
 
     def test_no_flag_without_platform_named(self):
         self.assertFalse(mfc("pausa", "Listo, pausé la reproducción.", [_call("media")]))
+
+
+class RepairMediaFabricatedTest(unittest.TestCase):
+    """Reparación INLINE del media-fabricado (cacería tanda 2-5, ~25-30/tanda). El 4B
+    reincide turno a turno pese al hint diferido, así que el reply fabricado se
+    REEMPLAZA en el acto por un acuse honesto y genérico. Se llama SOLO cuando
+    media_fabricated_claim ya devolvió True; por eso la reparación no necesita
+    re-detectar — devuelve el acuse honesto independientemente del texto de entrada."""
+
+    def test_replaces_fabricated_reply_with_honest_ack(self):
+        # los fraseos garbleados que el regex anterior corrompía: ahora todos -> acuse.
+        for r in [
+            "Listo, Stranger Things está reproduciéndose en Netflix.",
+            "Listo, abrí Netflix y estoy reproduciendo Stranger Things.",
+            "Bohemian Rhapsody está reproduciéndose en Spotify.",
+            "Now playing Stranger Things on Netflix.",
+        ]:
+            self.assertEqual(rmf(r), MEDIA_FAB_REPAIR_REPLY, msg=r)
+
+    def test_repair_is_honest_and_nonempty(self):
+        # el acuse no afirma título/plataforma alguna y no queda vacío.
+        out = rmf("Listo, Stranger Things está reproduciéndose en Netflix.")
+        self.assertTrue(out.strip())
+        for forbidden in ("Stranger", "Netflix", "Spotify", "reproduci"):
+            self.assertNotIn(forbidden, out)
+
+    def test_detect_then_repair_endtoend(self):
+        # flujo real: detectar -> reparar. Legítimo -> NO se repara (no detecta).
+        u, r = "7.63", "Listo, Stranger Things está reproduciéndose en Netflix."
+        self.assertTrue(mfc(u, r, [_call("media")]))
+        self.assertEqual(rmf(r), MEDIA_FAB_REPAIR_REPLY)
+        # legítimo: plataforma la pidió el user -> detector False -> repair no se llama.
+        self.assertFalse(mfc("pon algo en spotify", "Listo, reproduciendo en Spotify.",
+                             [_call("media")]))
 
 
 class ClickClaimWithoutClickTest(unittest.TestCase):

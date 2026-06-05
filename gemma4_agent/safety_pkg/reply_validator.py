@@ -304,6 +304,30 @@ def media_fabricated_claim(
     return True
 
 
+# REPARACIÓN INLINE de media-fabricado (cacería tanda 2-5, ~25-30 casos POR TANDA):
+# el 4B tiene un PRIOR degenerado fortísimo a emitir "Stranger Things está
+# reproduciéndose en Netflix" ante CUALQUIER pedido de media sin título (o ruido).
+# El guard media_fabricated_claim lo DETECTA e inyecta un hint diferido, pero el 4B
+# reincide turno a turno. Para este caso de alta frecuencia y bajo riesgo, REPARAMOS
+# el reply en el acto.
+#
+# Decisión de diseño: NO editamos la cláusula in-place. Un regex que recorta "el
+# título y la plataforma" del medio de la oración deja fragmentos garbleados
+# ("...puse lo que pedistetranger Things on Netflix") porque el título es texto
+# arbitrario sin límites claros. En vez de eso, REEMPLAZAMOS EL REPLY ENTERO por un
+# acuse honesto y genérico. Es lossless en intención (el único contenido del reply
+# fabricado ERA la afirmación falsa) y no puede corromper texto. Mismo criterio que
+# los otros guards inline que reescriben el reply completo (_guard_unverified_final).
+# Estructural: solo se llama cuando media_fabricated_claim ya confirmó la fabricación.
+MEDIA_FAB_REPAIR_REPLY = "Listo, puse lo que pediste."
+
+
+def repair_media_fabricated(reply_text: str) -> str:
+    """Devuelve un acuse honesto y genérico en reemplazo del reply con título/
+    plataforma fabricados. Llamar SOLO cuando media_fabricated_claim devolvió True."""
+    return MEDIA_FAB_REPAIR_REPLY
+
+
 # El reply afirma un CLICK ("cliqueé/presioné/apreté X", "I clicked/pressed X") que
 # requiere una tool de click real. BUG medido (tanda 1, A3): "cliqueé el botón
 # Comprar" con solo uia.find/vision.find (que LOCALIZAN, no clickean) -> claim de

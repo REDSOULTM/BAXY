@@ -50,7 +50,13 @@ CEILINGS = {
     # guarda destructive_claim_without_evidence (la LÓGICA vive en
     # reply_validator.py; acá solo el call-site gated default-ON + trace, junto a
     # las otras guardas de honestidad de tanda 1). Irreducible. Número exacto.
-    "agent_core/agent.py": 6672,
+    # 2026-06-05: 6672 -> 6687 (+15). Cacería tanda 2-5: reparación INLINE de
+    # media-fabricado ("Stranger Things en Netflix", ~25-30 casos/tanda, el #1
+    # persistente). La LÓGICA se EXTRAJO a agent_guards.py (sibling,
+    # repair_media_fabricated_inline, ~40 LOC); acá solo queda el método wrapper
+    # thin + el call-site en _finalize_turn — mismo patrón que los otros _guard_*.
+    # Irreducible. Número exacto, sin buffer.
+    "agent_core/agent.py": 6687,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

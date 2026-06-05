@@ -4093,6 +4093,9 @@ class Gemma4Agent:
         assistant_content = self._guard_grounded_action_claim(
             assistant_content, events, turn_id,
         )
+        assistant_content = self._repair_media_fabricated_inline(
+            assistant_content, raw_text_early, events, turn_id,
+        )
         # Defensa: si el LLM emitio en el reply mismo un footer estilo
         # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
         # historial), lo strippeamos antes de pegar el nuestro. Sino,
@@ -6152,6 +6155,18 @@ class Gemma4Agent:
             self._fallback_streak = new_streak
             self._last_fallback_user_text = new_last
         return out
+
+    def _repair_media_fabricated_inline(
+        self,
+        content: str,
+        user_text: str,
+        events: list[ToolEvent],
+        turn_id: str,
+    ) -> str:
+        from .agent_guards import repair_media_fabricated_inline
+        return repair_media_fabricated_inline(
+            content, user_text, list(events), turn_id, trace=self.trace,
+        )
 
     def _guard_plan_status(self, content: str) -> str:
         from .agent_guards import guard_plan_status
