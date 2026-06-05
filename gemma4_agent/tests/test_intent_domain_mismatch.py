@@ -88,6 +88,42 @@ class MediaFabricatedClaimTest(unittest.TestCase):
     def test_no_flag_without_platform_named(self):
         self.assertFalse(mfc("pausa", "Listo, pausé la reproducción.", [_call("media")]))
 
+    def test_no_flag_when_not_now_playing(self):
+        """(A) auditoría adversarial t1-t5: si el reply NO afirma reproducción-en-curso
+        (solo abre app, lista apps observadas, ofrece o pregunta), NO es media-
+        fabrication aunque nombre una plataforma. Mata ~13 FP."""
+        for u, r, tc in [
+            ("qué apps uso", "Las apps que más usás: Spotify y Code.", []),
+            ("abrí spotify", "Listo, abrí Spotify.", [{"name": "app", "args": {"name": "Spotify"}, "result": {"ok": True}}]),
+            ("pon música", "Si querés, puedo poner música en Spotify.", []),
+            ("reproducí", "Encontré Spotify. ¿Querés que lo reproduzca?", []),
+            ("qué ves", "No tengo herramienta que me diga qué ves en Netflix, no pude.", []),
+        ]:
+            self.assertFalse(mfc(u, r, tc), msg=r)
+
+    def test_no_flag_when_other_tool_grounds_platform(self):
+        """(B) auditoría adversarial t1-t5: la plataforma está grounded si la tocó
+        CUALQUIER tool real (no solo `media`): app.name, audio_device.app, browser.url.
+        Mata ~17 FP."""
+        self.assertFalse(mfc("cambia el audio", "Listo, cambié la ruta de audio de Spotify al AUX.",
+                             [{"name": "audio_device", "args": {"app": "Spotify.exe"}, "result": {"ok": True}}]))
+        self.assertFalse(mfc("ver superman", "Abrí el enlace de YouTube y reproduzco el video.",
+                             [{"name": "browser", "args": {"url": "https://youtube.com/watch?v=x"}, "result": {"ok": True}}]))
+
+    def test_flags_fabrication_through_auto_fabricated_media_args(self):
+        """(C) auditoría adversarial t1-t5: el caso CANÓNICO del docstring NO disparaba
+        porque el 4B auto-fabrica media.args (provider/query/app=netflix) y el guard
+        viejo lo tomaba como grounding. Bajo mock el RESULT viene vacío -> ES
+        fabricación. Los media.args NUNCA grounnd-ean (los inventa el 4B)."""
+        for u, r, args in [
+            ("7.63", "Listo, Stranger Things está reproduciéndose en Netflix.",
+             {"provider": "netflix", "query": "Stranger Things"}),
+            ("puedes reanudar el video?", "Reanudé Stranger Things en Netflix.",
+             {"app": "netflix", "query": "Stranger Things"}),
+        ]:
+            tc = [{"name": "media", "args": args, "result": {"ok": True, "_eval_mock": True}}]
+            self.assertTrue(mfc(u, r, tc), msg=r)
+
 
 class RepairMediaFabricatedTest(unittest.TestCase):
     """Reparación INLINE del media-fabricado (cacería tanda 2-5, ~25-30/tanda). El 4B
@@ -149,6 +185,22 @@ class ClickClaimWithoutClickTest(unittest.TestCase):
         # "hasta que la presiones / cuando cliquees" = acción del USER, no claim.
         self.assertFalse(ccc("Listo, apagué la PC hasta que la presiones de nuevo.", [_call("system")]))
         self.assertFalse(ccc("Cuando cliquees Aceptar avisame.", [_call("session")]))
+
+    def test_flags_click_claim_multilingual(self):
+        """FN medido (auditoría adversarial t1-t5, i=4573 PT): el regex solo cubría
+        ES/EN. El 4B afirma click en PT/IT/FR 1ª persona pretérito sin tool de click.
+        Mide la FORMA (conjugación), no contenido -> cumple la regla del proyecto."""
+        for r in [
+            "Listo, cliquei no botão OK na janela.",        # PT
+            "Apertei o botão Salvar.",                      # PT
+            "Ho cliccato sul pulsante Salva.",              # IT
+            "J'ai cliqué sur le bouton Annuler.",           # FR
+        ]:
+            self.assertTrue(ccc(r, [_call("uia")]), msg=r)
+        # y NO sobre-corregir: con tool de click real, el claim PT está sustentado.
+        self.assertFalse(ccc("Cliquei no botão Comprar.",
+                             [{"name": "gui", "result": {"ok": True, "status": "done", "verified": True},
+                               "args": {"action": "click_button"}}]))
 
 
 class TestsPassedWithoutEvidenceTest(unittest.TestCase):

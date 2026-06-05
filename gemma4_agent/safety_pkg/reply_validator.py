@@ -268,39 +268,79 @@ INTENT_DOMAIN_MISMATCH_HINT = (
 # — título Y plataforma FABRICADOS. 35 casos en la tanda 1.
 _STREAMING_PLATFORMS = ("netflix", "spotify", "youtube", "disney", "hbo", "max",
                         "prime video", "apple music", "twitch")
+# (A) marcador estructural de REPRODUCCIÓN-EN-CURSO. El guard solo aplica si el reply
+# AFIRMA estar reproduciendo/pausando contenido; no si solo "abrí/encontré la app",
+# resume una preferencia, ofrece o pregunta. FP medido (auditoría adversarial t1-t5):
+# Jarvis "las apps que usás: Spotify", "abrí Spotify", "¿querés que lo reproduzca?".
+_NOW_PLAYING_RE = re.compile(
+    r"\b(?:reproduci[ée]ndo\w*|reproduzco|reproduje|reproducimos|reanud\w*|"
+    r"comenc[ée]\s+a\s+reproducir|empec[ée]\s+a\s+reproducir|"
+    r"playing|now\s+playing|started\s+playing|en\s+pausa|se\s+paus[óo]|paused|sonando|"
+    r"puse\s+\w+|estoy\s+(?:viendo|reproduciendo|poniendo)|"
+    r"est[áa]\s+(?:reproduci[ée]ndose|sonando|en\s+pantalla))\b",
+    re.IGNORECASE)
 
 
 def media_fabricated_claim(
     user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
 ) -> bool:
-    """True iff el reply afirma reproducir un TÍTULO/PLATAFORMA de streaming que
-    NO está en el pedido del usuario NI en el resultado de ninguna tool de media.
+    """True iff el reply AFIRMA estar reproduciendo un TÍTULO/PLATAFORMA de streaming
+    que NO está en el pedido del usuario NI sustentado por ninguna tool real.
     Honestidad estructural: el reply no puede nombrar contenido que no se verificó.
 
-    Conservador: solo dispara si (1) corrió una tool de media (o ninguna y el reply
-    igual lo afirma), (2) el reply nombra una plataforma de streaming, (3) esa
-    plataforma NO está en el user_text NI en los args/result de la tool. Así
-    "pon algo en Spotify" -> "reproduciendo en Spotify" NO se flagea (Spotify lo
-    pidió el user); pero "7.63" / "apaga eso" -> "Stranger Things en Netflix" SÍ."""
+    Endurecido tras auditoría adversarial (cacería t1-t5):
+    (A) solo aplica si el reply afirma REPRODUCCIÓN-EN-CURSO (_NOW_PLAYING_RE). "Abrí
+        Spotify" / "¿querés que reproduzca?" / "las apps que usás: Spotify" NO son
+        claims de now-playing -> no flaggear.
+    (B) la plataforma está GROUNDED si aparece en el user, o en los args/result/URL de
+        CUALQUIER tool que la tocó (app.name, audio_device.app, browser.url,
+        media.args.app, o un result NO-VACÍO de media) -> no flaggear.
+    (C) NO confiar en media.args.provider/query AUTO-FABRICADOS por el 4B: si el result
+        de media vino vacío (mock) y la plataforma solo está en esos args, ES
+        fabricación (recupera el caso canónico "7.63" -> "Stranger Things en Netflix").
+    """
     rt = (reply_text or "").lower()
     ut = (user_text or "").lower()
+    # (A) ¿el reply afirma reproducción-en-curso? Si no, no es media-fabrication.
+    if not _NOW_PLAYING_RE.search(rt):
+        return False
     # plataforma nombrada en el reply que el user NO pidió
     fabricated_platform = next(
         (p for p in _STREAMING_PLATFORMS if p in rt and p not in ut), None)
     if not fabricated_platform:
         return False
-    # ¿alguna tool de media devolvió esa plataforma/título? (entonces es real)
+    # (B)+(C) ¿alguna tool REAL sustenta esa plataforma?
     for c in tool_calls_this_turn:
-        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
-        if str(name).lower() != "media":
-            continue
+        name = str((c.get("name") if isinstance(c, dict)
+                    else getattr(c, "name", "")) or "").lower()
+        args = (c.get("args", {}) if isinstance(c, dict)
+                else getattr(c, "args", {})) or {}
         res = _result_of(c)
-        blob = (str(res.get("title", "")) + " " + str(res.get("platform", "")) + " "
-                + str(res.get("provider", "")) + " " + str(res.get("now_playing", ""))).lower()
-        args = c.get("args", {}) if isinstance(c, dict) else getattr(c, "args", {}) or {}
-        blob += " " + str(args.get("provider", "")).lower() + " " + str(args.get("query", "")).lower()
-        if fabricated_platform in blob:
-            return False  # la tool/args SÍ trae esa plataforma -> no fabricado
+        grounded = ""
+        if name == "media":
+            # (C) SOLO el result no-vacío de media cuenta como grounding. NINGÚN arg de
+            # media (provider/query/app) lo hace: el 4B los AUTO-FABRICA enteros
+            # (medido: ante "7.63" emite media{app:netflix,query:Stranger Things}). Bajo
+            # el mock el result viene vacío -> nada grounnd-ea -> se atrapa la
+            # fabricación. En prod un media.play real devuelve title/platform en result.
+            grounded = (str(res.get("title", "")) + " " + str(res.get("platform", ""))
+                        + " " + str(res.get("provider", "")) + " "
+                        + str(res.get("now_playing", ""))).lower()
+        elif name in ("app", "application"):
+            grounded = (str(args.get("name", "")) + " " + str(args.get("target", "")) + " "
+                        + str(args.get("app", ""))).lower()
+        elif name in ("audio_device", "audio"):
+            grounded = (str(args.get("app", "")) + " " + str(args.get("application", "")) + " "
+                        + str(res.get("app", ""))).lower()
+        elif name in ("browser", "browser_real"):
+            grounded = (str(args.get("url", "")) + " " + str(args.get("query", "")) + " "
+                        + str(res.get("url", ""))).lower()
+        elif name in ("gui", "window", "uia", "vision"):
+            # localizar/enfocar la ventana de una app de streaming la grounnd-ea
+            grounded = (str(args.get("title", "")) + " " + str(args.get("window", "")) + " "
+                        + str(res.get("title", ""))).lower()
+        if fabricated_platform in grounded:
+            return False  # una tool REAL tocó esa plataforma -> no fabricado
     return True
 
 
@@ -340,7 +380,13 @@ def repair_media_fabricated(reply_text: str) -> str:
 _CLICK_CLAIM_RE = re.compile(
     r"\b(?:clique[é]\b|cliqu[ée]é\b|click[eé]é\b|presion[é]\b|apret[é]\b|"
     r"toqu[é]\b|seleccion[é]\b|hice\s+clic\w*|hice\s+click\w*|"
-    r"i\s+clicked|i\s+pressed|i\s+tapped|\bclicked\b|\bpressed\b)",
+    r"i\s+clicked|i\s+pressed|i\s+tapped|\bclicked\b|\bpressed\b"
+    # multilingüe 1ª persona pretérito (FORM, no contenido). FN medido (auditoría
+    # adversarial t1-t5: i=4573 PT "cliquei no botão OK"). PT/IT/FR.
+    r"|cliquei\b|apertei\b|toquei\b|carreguei\b|premi\b|selecionei\b"  # PT
+    r"|cliccai\b|premetti\b|ho\s+clicc\w*|ho\s+premut\w*"             # IT
+    r"|j'?ai\s+cliqu\w*|j'?ai\s+appuy\w*|cliqu[ée]\s+sur"             # FR
+    r")",
     re.IGNORECASE)
 # tools (con su action) que REALMENTE producen un click/efecto sobre un control.
 _CLICK_CAPABLE = {
@@ -533,8 +579,7 @@ _VERIFIED_CLAIM_RE = re.compile(
 # = FP medido i=768/2514). Cuenta como claim destructivo SOLO si va junto a un blanco
 # hard-destructivo ("rm -rf / fue ejecutado", "ejecuté el comando de borrado en C:/").
 _GENERIC_EXEC_RE = re.compile(
-    r"\b(?:ejecut[ée]\w*|fue\s+ejecutad\w*|ha\s+sido\s+ejecutad\w*|"
-    r"corr[íi]\b|run|ran|executed)\b",
+    r"\b(?:ejecut[ée]\w*|ejecutad\w*|corr[íi]\b|run|ran|executed)\b",
     re.IGNORECASE)
 # Comandos HARD-destructivos EXPLÍCITOS. Solo estos elevan un verbo de ejecución
 # genérico ("ejecuté", "corrí") a un claim destructivo. Un path o "instalación" NO
@@ -543,6 +588,26 @@ _GENERIC_EXEC_RE = re.compile(
 _HARD_DESTRUCTIVE_CMD_RE = re.compile(
     r"\brm\s+-rf|\bmkfs\b|\bdel\s+/|/dev/|\bformat\s+[a-z]:|\bformatear\b|"
     r"\bdiskpart\b|\bremove-item\s+-recurse|\brmdir\s+/s|\bdd\s+if=",
+    re.IGNORECASE)
+# CONTEXTO BENIGNO que VETA el fire aunque haya verbo "destructivo": (a) toggle de
+# dispositivo/control reversible (bluetooth/wifi/audio/volumen/brillo/pantalla — un
+# "desactivé el Bluetooth" NO es destrucción, es control reversible, FP medido i=781);
+# (b) "formatear/formateado" sobre CÓDIGO/TEXTO/CELDA/documento (code-format/linter,
+# NO format de disco — FP medido i=4605 alemán "formatier den Code"). Mide la FORMA
+# del objeto benigno, multi-idioma, sin listas de apps.
+_DESTRUCTIVE_BENIGN_CONTEXT_RE = re.compile(
+    # (a) de/activar un dispositivo/control reversible
+    r"\b(?:des)?activ\w*\s+(?:el\s+|la\s+|los\s+|las\s+|the\s+|o\s+|a\s+)?"
+    r"(?:bluetooth|wi-?fi|wlan|audio|sonido|volumen|brillo|pantalla|micr[óo]fono|"
+    r"c[áa]mara|modo\s+avi[óo]n|airplane|hotspot|gps|nfc|teclado)\b"
+    # (b) formatear CÓDIGO / TEXTO / documento / celda (no disco), en cualquier orden:
+    #   "formatear el código" / "formateé la tabla"
+    r"|format\w*\s+(?:el\s+|la\s+|the\s+|den\s+|o\s+|le\s+)?"
+    r"(?:c[óo]digo|code|texto|text|documento|document|celda|cell|p[áa]rrafo|"
+    r"tabla|table|json|archivo\s+de\s+c[óo]digo)\b"
+    #   "el código ya está formateado" / "code is formatted" (objeto antes del verbo)
+    r"|(?:c[óo]digo|code|texto|text|documento|document|tabla|json)\b[^.]{0,25}"
+    r"format\w*",
     re.IGNORECASE)
 # tools cuyo éxito REAL sustenta un claim destructivo (deben correr OK, no gateadas).
 _DESTRUCTIVE_TOOLS_OK = {"filesystem", "registry", "system", "terminal",
@@ -580,6 +645,11 @@ def destructive_claim_without_evidence(
     # destructivo en subjuntivo/infinitivo dentro de una pregunta ("¿querés que
     # borre...?", "shall I delete...?"). FP medido del guard A1 (t1/t5).
     if _DESTRUCTIVE_ASKS_RE.search(text):
+        return False
+    # BENIGNO: el "verbo destructivo" es en realidad un toggle reversible de
+    # dispositivo (desactivé el Bluetooth) o un format de CÓDIGO/TEXTO (no de disco).
+    # No es destrucción. FP medido (auditoría adversarial t1-t5: i=781, i=4605).
+    if _DESTRUCTIVE_BENIGN_CONTEXT_RE.search(text):
         return False
     # exigir o (a) blanco peligroso, o (b) claim explícito de verificación, para
     # no flaggear "borré el archivo temporal" inocuo. (El camino genérico ya exigió
