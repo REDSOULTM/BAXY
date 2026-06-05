@@ -24,7 +24,10 @@ os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
 OFFSET = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 LIMIT = int(sys.argv[2]) if len(sys.argv) > 2 else 1000
 DATASET = ROOT / "dataset_finetune" / "curated" / "curated.jsonl"
-OUT = ROOT / "scripts" / "_diag" / f"_hunt_tanda_{OFFSET}.jsonl"
+# Prefijo de salida configurable (env GEMMA4_HUNT_PREFIX) para no pisar los hunts
+# originales pre-fix: el re-run final usa prefijo "_rerun_tanda_".
+_PREFIX = os.environ.get("GEMMA4_HUNT_PREFIX", "_hunt_tanda_")
+OUT = ROOT / "scripts" / "_diag" / f"{_PREFIX}{OFFSET}.jsonl"
 
 # Cargar ejemplos ÚNICOS por (user_text, prev_text), orden estable del dataset.
 rows, seen = [], set()
