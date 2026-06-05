@@ -4375,6 +4375,25 @@ class Gemma4Agent:
                         self.history.append({"role": "system", "content": _idm_hint})
                 except Exception:
                     pass
+            # MEDIA FABRICADO (honestidad, DEFAULT-ON): el reply nombra un TÍTULO/
+            # PLATAFORMA de streaming ("Stranger Things en Netflix") que el user NO
+            # pidió y ningún tool de media devolvió. BUG medido: ante ruido ("7.63")
+            # o cualquier pedido de media el 4B fabrica el mismo título/servicio (58
+            # casos/tanda 1). Independiente de los guards de arriba (puede co-ocurrir).
+            # Medido 4/4 + 6/6, 0 falsos+ sobre la tanda. GEMMA4_MEDIA_FABRICATED_GUARD=0 apaga.
+            if _os.environ.get("GEMMA4_MEDIA_FABRICATED_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        media_fabricated_claim as _mfc,
+                        MEDIA_FABRICATED_HINT as _mfc_hint)
+                    if _mfc(getattr(self, "_current_user_text", "") or "",
+                            assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="media_fabricated")
+                        self.history.append({"role": "system", "content": _mfc_hint})
+                except Exception:
+                    pass
             # MOVILIDAD (B3): si el modo manos-libres está activo y el
             # reply le PIDIÓ al usuario una acción manual (clic/tecla/
             # typeo), inyectar la corrección — el agente debe ACTUAR, no

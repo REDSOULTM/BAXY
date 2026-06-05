@@ -262,6 +262,57 @@ INTENT_DOMAIN_MISMATCH_HINT = (
 )
 
 
+# Plataformas de streaming que el reply puede nombrar legítimamente SOLO si el
+# usuario las pidió o el tool las devolvió. El bug medido: ante CUALQUIER pedido de
+# media (o ruido), el 4B rellena "Stranger Things está reproduciéndose en Netflix"
+# — título Y plataforma FABRICADOS. 35 casos en la tanda 1.
+_STREAMING_PLATFORMS = ("netflix", "spotify", "youtube", "disney", "hbo", "max",
+                        "prime video", "apple music", "twitch")
+
+
+def media_fabricated_claim(
+    user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff el reply afirma reproducir un TÍTULO/PLATAFORMA de streaming que
+    NO está en el pedido del usuario NI en el resultado de ninguna tool de media.
+    Honestidad estructural: el reply no puede nombrar contenido que no se verificó.
+
+    Conservador: solo dispara si (1) corrió una tool de media (o ninguna y el reply
+    igual lo afirma), (2) el reply nombra una plataforma de streaming, (3) esa
+    plataforma NO está en el user_text NI en los args/result de la tool. Así
+    "pon algo en Spotify" -> "reproduciendo en Spotify" NO se flagea (Spotify lo
+    pidió el user); pero "7.63" / "apaga eso" -> "Stranger Things en Netflix" SÍ."""
+    rt = (reply_text or "").lower()
+    ut = (user_text or "").lower()
+    # plataforma nombrada en el reply que el user NO pidió
+    fabricated_platform = next(
+        (p for p in _STREAMING_PLATFORMS if p in rt and p not in ut), None)
+    if not fabricated_platform:
+        return False
+    # ¿alguna tool de media devolvió esa plataforma/título? (entonces es real)
+    for c in tool_calls_this_turn:
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        if str(name).lower() != "media":
+            continue
+        res = _result_of(c)
+        blob = (str(res.get("title", "")) + " " + str(res.get("platform", "")) + " "
+                + str(res.get("provider", "")) + " " + str(res.get("now_playing", ""))).lower()
+        args = c.get("args", {}) if isinstance(c, dict) else getattr(c, "args", {}) or {}
+        blob += " " + str(args.get("provider", "")).lower() + " " + str(args.get("query", "")).lower()
+        if fabricated_platform in blob:
+            return False  # la tool/args SÍ trae esa plataforma -> no fabricado
+    return True
+
+
+MEDIA_FABRICATED_HINT = (
+    "Your previous reply named a specific streaming title/platform (e.g. a show "
+    "name or 'on Netflix') that did NOT come from the user's request or any tool "
+    "result. Do NOT invent what is playing or where. State only what the media "
+    "tool actually reported, or say plainly that playback started without naming "
+    "a title you cannot verify — in the user's language."
+)
+
+
 def intent_domain_mismatch(
     user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
 ) -> bool:

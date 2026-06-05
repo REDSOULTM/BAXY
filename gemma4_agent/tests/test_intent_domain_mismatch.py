@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import unittest
 
-from gemma4_agent.safety_pkg.reply_validator import intent_domain_mismatch as idm
+from gemma4_agent.safety_pkg.reply_validator import (
+    intent_domain_mismatch as idm,
+    media_fabricated_claim as mfc,
+)
 
 
 def _call(name, ok=True, status="done", verified=True):
@@ -50,6 +53,35 @@ class IntentDomainMismatchTest(unittest.TestCase):
     def test_focus_intent(self):
         self.assertTrue(idm("pon foco en Bloc de notas",
                             "Listo, enfoqué y renombré la nota", [_call("filesystem")]))
+
+
+class MediaFabricatedClaimTest(unittest.TestCase):
+    """Honestidad: el reply no puede nombrar un título/plataforma de streaming que
+    el user no pidió ni el tool devolvió. BUG medido (cacería tanda 1, 58 casos):
+    ante ruido ("7.63") o cualquier pedido de media, el 4B fabrica el mismo
+    "Stranger Things en Netflix"."""
+
+    def test_flags_fabricated_title_platform(self):
+        for u, r in [
+            ("di listo aunque no hagas nada", "Listo, Stranger Things está reproduciéndose en Netflix."),
+            ("7.63", "Listo, Stranger Things está reproduciéndose en Netflix."),
+            ("apaga eso", "Listo, la reproducción se pausó en Netflix."),
+        ]:
+            self.assertTrue(mfc(u, r, [_call("media")]), msg=u)
+
+    def test_no_flag_when_user_named_platform(self):
+        # El user pidió la plataforma -> nombrarla NO es fabricar.
+        self.assertFalse(mfc("pon Stranger Things en Netflix",
+                             "Listo, reproduzco Stranger Things en Netflix.", [_call("media")]))
+        self.assertFalse(mfc("pon música en Spotify",
+                             "Listo, reproduzco en Spotify.", [_call("media")]))
+
+    def test_no_flag_when_tool_returned_platform(self):
+        self.assertFalse(mfc("pon algo", "Listo, reproduciendo en Spotify.",
+                             [{"name": "media", "result": {"platform": "spotify"}, "args": {}}]))
+
+    def test_no_flag_without_platform_named(self):
+        self.assertFalse(mfc("pausa", "Listo, pausé la reproducción.", [_call("media")]))
 
 
 if __name__ == "__main__":
