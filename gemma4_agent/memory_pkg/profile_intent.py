@@ -26,7 +26,8 @@ _ANCHORS: dict[str, list[str]] = {
         "qué sabés de mí", "qué sabes sobre mí", "qué aprendiste de mí",
         "qué conocés de mis gustos", "describime cómo soy según lo que viste",
         "qué tenés guardado sobre mí", "mostrame mi perfil", "qué pensás que me gusta",
-        "qué datos tenés míos", "cómo me ves",
+        "qué datos tenés míos", "cómo me ves", "qué recordás de mí",
+        "qué recuerdas de mí", "qué memoria tenés de mí",
         # inglés
         "what do you know about me", "what have you learned about me",
         "show me my profile", "what do you think i like",
@@ -72,6 +73,17 @@ _ANCHORS: dict[str, list[str]] = {
         "are you listening to me", "can you see me", "me escuchás siempre",
         "qué podés hacer", "qué puedo pedirte", "qué no podés hacer",
         "what can you do", "what can i ask you", "podés tomar el control",
+        "qué podés hacer por mí", "qué cosas podés hacer", "en qué me podés ayudar",
+        "what can you do for me", "how can you help me",
+        #   IDENTIDAD DEL ASISTENTE (quién SOS VOS, no qué sabés de MÍ) -> el LLM
+        #   se presenta; NO es inspección del perfil del usuario.
+        "quién sos", "quién eres", "qué sos", "presentate", "preséntate ante mí",
+        "háblame de ti", "hablame de vos", "qué se supone que hacés",
+        "who are you", "what are you", "who created you", "quién te creó",
+        "por qué me hablás", "para qué servís",
+        #   consulta de SISTEMA/LIBRERÍA (vram/juegos/disco) -> tool de sistema, no perfil
+        "cuánta vram tengo", "qué juegos tengo", "cuánta ram tengo",
+        "how much vram do i have", "what games do i have", "qué hay en mi disco",
         #   pantalla ("qué hay en mi pantalla") -> es visión, no perfil
         "qué hay en mi pantalla", "qué muestra mi pantalla", "what does my screen show",
         "qué tengo en mi pc ahora", "qué ves en la pantalla",
