@@ -87,17 +87,39 @@ detector (positivos "cuando diga X" / negativos "diga lo que diga", "cuando lleg
 a casa" que NO es frase-gatillo del agente), (3) verificar en vivo, (4) test, (5)
 commit.
 
+## C1 / C2 / B3 — CERRADOS (2026-06-04, sesión post-compact)
+
+RE-MEDIDOS los 15 casos C1/C2/B3 contra el código actual
+(`scripts/_diag/_remeasure_loops.py` -> `_remeasure_loops.jsonl`). Resultado:
+
+- **C2 (loop cancel_turn, tarea trivial): 8/8 YA MITIGADOS** por el fix del loop
+  "actual" (research_markers) + el batch circuit-breaker. Antes 64-142 tools/30s,
+  ahora 1-2 tools/1-3s. NO quedaba un bug C2 separado. Re-medido, no es regresión.
+- **C1 (Q&A loop): 8/10 mitigados** por el fix "actual" ("regression test",
+  "3 datos de Marte", "Dune" ahora responden de saber propio en 1-3s). Los 2
+  restantes eran **research GENUINO** ("Investiga en internet h2o", "Investiga
+  cuándo salió gta5") que loopeaban distinto: el 4B emitía un **batch degenerado
+  de 66-72 tool_calls duplicados en UNA respuesta** (bug Gemma 4 lmstudio #1756,
+  ignora parallel_tool_calls=false). Decode de 2048 tok = ~30s a 97 tok/s medido.
+  **FIX (commit c84551e):** (a) `dedup_degenerate_batch` en loop_detection colapsa
+  duplicados exactos + capa a 8 calls distintas ANTES de ejecutar (corta la
+  amplificación del history); (b) research mode max_tokens 2048->768,
+  thinking_budget 2048->512, + hint anti-dup (acota el decode). MEDIDO en vivo:
+  h2o 72tools/30s-ABORT -> 6tools/20.5s-RESPONDE; gta5 69/32-ABORT -> 8/19.5-OK;
+  research genuino (clima/noticias) sigue OK. 9 tests dedup + 351 loop/batch/
+  dispatch/parallel verdes.
+- **B3 (ruido-como-comando): CERRADO** (commit a65dd4e). Número/medición suelto
+  ("2.14s","7.63","12.66") ruteaba a window.active/media.play arbitrario. **FIX:**
+  `_is_low_signal_noise` + gate al inicio de select_tool_names -> abstiene
+  (subset=["session"]) -> el LLM pide aclaración. Guarda pending_intent (un número
+  que responde "¿qué volumen?" NO se gatea). MEDIDO: 18/18 pos, 12/12 neg, en vivo
+  abstiene 0.5s, controles intactos. Tokens técnicos sueltos ("Endpoint") NO se
+  gatean (honesto: gatearlos por lista sería frágil/monolingüe vs CLAUDE.md).
+
 ## PENDIENTE (para retomar tras pausa)
 
-- **B2** terminar (ver arriba).
-- **B3 ruido-como-comando (~16)**: "7.63", "E4B-Q6_K", tokens técnicos rutean a
-  tool. Gate de abstención para input de baja señal. (medio)
-- **C1 Q&A-loop (~12)**: "qué es H2O" entra en loop de web. El fix del loop "actual"
-  pudo ayudar; re-medir. (medio)
-- **C2 loop cancel_turn (~16)**: tareas triviales -> 50-142 tools. ALTO ESFUERZO,
-  diagnóstico profundo (el batch circuit-breaker del fix loop ya mitiga parte —
-  re-medir en tanda 2 si persiste).
 - **Tandas 2-6**: 5000 casos sin correr. `_diag_hunt_tanda.py 1000 1000`, etc.
+  (el user avisará para arrancarlas).
 
 ## ESTADO GIT
 
