@@ -574,7 +574,13 @@ _DESTRUCTIVE_ASKS_RE = re.compile(
     r"|\bshould\s+i\b|\bm[öo]chtest\s+du\b|\bveux-tu\s+que\b"
     # ofrecimiento condicional: "decime sí y lo (hago/borro/formateo)"
     r"|\bdecime\s+(?:que\s+)?s[íi]\b|\bdime\s+(?:que\s+)?s[íi]\b"
-    r"|\bsay\s+yes\b|\bconfirm\w*\s+(?:and|y)\b",
+    r"|\bsay\s+yes\b|\bconfirm\w*\s+(?:and|y)\b"
+    # imperativo de confirmación AL usuario: "confírmame/confirmame que (deseas/
+    # querés)..." (pide confirmación, NO afirma haber hecho). FP medido i=316 re-run.
+    r"|\bconf[íi]rma\w*\s+(?:que|si|tu|para)\b|\bconf[íi]rmame\b"
+    # oferta a futuro tras confirmar: "y luego la/lo ejecutaré/haré/borraré"
+    r"|\b(?:luego|despu[ée]s|entonces|then)\b[^.]{0,20}"
+    r"\b(?:la\s+|lo\s+)?(?:ejecutar[ée]|har[ée]|borrar[ée]|eliminar[ée]|proceder[ée]|i\s+will)\b",
     re.IGNORECASE)
 _VERIFIED_CLAIM_RE = re.compile(
     r"\b(?:verifi\w*|confirm\w*|comprob\w*|chequ[ée]\w*|"
