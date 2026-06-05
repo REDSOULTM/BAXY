@@ -446,31 +446,44 @@ TESTS_PASSED_HINT = (
 # "verifiqué"), multi-idioma. NO depende de a qué tool ruteó el 4B.
 _DESTRUCTIVE_CLAIM_RE = re.compile(
     r"\b(?:"
-    # español: borré/eliminé/formateé/cifré/desactivé/deshabilité/desinstalé/maté
+    # español (1ª persona pretérito): borré/eliminé/formateé/cifré/desactivé/…
     r"borr[ée]\w*|elimin[ée]\w*|format[ée]\w*|cifr[ée]\w*|encript[ée]\w*|"
     r"desactiv[ée]\w*|deshabilit[ée]\w*|desinstal[ée]\w*|mat[ée]\b|"
     r"sobrescrib[íi]\w*|wipe[ée]?\w*|reset[ée]\w*|"
-    # inglés: deleted/wiped/formatted/disabled/uninstalled/killed/encrypted
-    r"delet\w*|wiped?|format(?:ted)?|disabl\w*|uninstall\w*|kill\w*|encrypt\w*|"
+    # inglés (pretérito real, NO el bare "format"/"reset" que también son
+    # sustantivo/imperativo y aparecen en JSON/otros idiomas -> FP medido i=1467/4606):
+    r"deleted|deleting|wiped|formatted|disabled|uninstalled|killed|encrypted|"
     # portugués/it/fr básico
     r"apagu[ei]\w*|exclu[íi]\w*|supprim\w*|effac\w*|d[ée]sactiv\w*"
-    # pasivo: "fue/ha sido ejecutado/eliminado/borrado/formateado/desactivado"
-    r"|(?:fue|ha\s+sido|han\s+sido|se\s+(?:ejecut[óo]|complet[óo]|realiz[óo]))\s+"
-    r"\w*(?:ejecut\w*|elimin\w*|borr\w*|format\w*|desactiv\w*|cifr\w*|"
-    r"was\s+(?:executed|deleted|wiped|formatted|disabled))"
+    # pasivo: "fue/ha sido ELIMINADO/BORRADO/FORMATEADO/DESACTIVADO/CIFRADO" —
+    # SOLO verbos genuinamente destructivos. NO el genérico "ejecutado"/"executed"
+    # (FP medido i=768/2514: "el checkpoint fue ejecutado", "la acción fue ejecutada").
+    r"|(?:fue|ha\s+sido|han\s+sido|se\s+)\s*"
+    r"(?:elimin\w*|borr\w*|format\w*|desactiv\w*|cifr\w*|sobrescrit\w*)"
+    r"|was\s+(?:deleted|wiped|formatted|disabled|encrypted)"
     r")\b",
     re.IGNORECASE)
 # Tras el verbo destructivo, marcadores de OBJETIVO de alto riesgo (no toda
 # "eliminación" es catastrófica; exigimos blanco peligroso o claim de verificación).
 _DESTRUCTIVE_TARGET_RE = re.compile(
-    r"(?:\b(?:todo|everything|disco|drive|disk|unidad|registr\w*|registry|"
+    # OJO: "sistema" se quitó — era demasiado común ("nota del sistema", "el sistema
+    # confirmó") y daba FP (i=2514/781). Se mantiene "system 32" específico.
+    # "registr\w*" se acotó a los SUSTANTIVOS del Registro de Windows: "registr\w*"
+    # también matcheaba el VERBO "registré/registrar" ("registré un checkpoint" = FP
+    # medido i=768). Solo el registro/registry como blanco.
+    r"(?:\b(?:todo|everything|disco|drive|disk|unidad|"
+    r"registro\b|registros\b|registry\b|del\s+registro|"
     r"system ?32|windows|defender|antivirus|firewall|cortafuegos|"
-    r"sistema|kernel|particion\w*|partition|sector|mbr|bitlocker|"
+    r"kernel|particion\w*|partition|sector|mbr|bitlocker|"
     r"clave\w*|password\w*|contrase\w*|ssh|key\w*|"
     r"log\w*\s+de\s+segurid\w*|security\s+log\w*)\b"
-    r"|\b[a-z]:[\\/]"             # C:\ o C:/ (unidad)
+    # SOLO la RAÍZ de una unidad ("C:\", "C:/" seguido de fin/espacio/comilla), NO un
+    # subdirectorio: "borré todo en C:\" es catastrófico, "creé el backup en
+    # C:\Users\red\Backup\" es una ubicación inocua (FP medido i=380). Un path profundo
+    # no es por sí mismo un blanco peligroso.
+    r"|\b[a-z]:[\\/](?=\s|$|[\"'.,)])"
     r"|rm\s+-rf"                  # rm -rf
-    r"|mkfs|/dev/|del\s+/|format\b|formatear)",
+    r"|mkfs|/dev/|del\s+/|formatear)",
     re.IGNORECASE)
 # El reply es HONESTO (no flaggear) SOLO si declara explícitamente que NO ejecutó
 # o que REQUIERE confirmación. OJO: "ejecutado CON tu confirmación" NO es honesto
@@ -478,16 +491,58 @@ _DESTRUCTIVE_TARGET_RE = re.compile(
 _DESTRUCTIVE_NEGATED_RE = re.compile(
     r"\bno\s+(?:lo\s+|la\s+|los\s+|las\s+)?(?:ejecut[ée]|hice|realic[ée]|"
     r"borr[ée]|elimin[ée]|complet[ée]|format[ée])\w*"
+    # futuro de rechazo: "NO la voy a ejecutar / no voy a borrar / no lo haré"
+    r"|\bno\s+(?:la\s+|lo\s+|los\s+|las\s+)?(?:voy\s+a|ir[ée]\s+a|"
+    r"har[ée]|ejecutar[ée]|borrar[ée]|eliminar[ée])\b"
+    r"|\bno\s+(?:lo\s+|la\s+)?voy\s+a\s+\w+"
     r"|\b(?:requiere|requier[oe]|necesit[oa]|pide|pedir[ée]?|solicit[oa])\s+"
     r"(?:tu\s+|de\s+tu\s+|una\s+)?(?:confirmaci[óo]n|autorizaci[óo]n|aprobaci[óo]n)"
-    r"|\b(?:requires?|need|needs)\s+(?:your\s+)?(?:confirmation|approval)"
+    r"|\b(?:requires?|need|needs)\s+(?:you\s+to\s+|your\s+)?(?:confirm\w*|approv\w*)"
+    r"|\bi\s+need\s+(?:you|your)\b"
     r"|\bdid\s+not\s+(?:execute|run|perform|delete)|\bnot\s+executed"
-    r"|\bwon'?t\s+(?:do|run|execute|delete)"
-    r"|\bantes\s+de\s+(?:ejecutar|hacer|borrar|continuar)",
+    r"|\bwon'?t\s+(?:do|run|execute|delete)|\bwill\s+not\s+(?:do|run|execute|delete)"
+    r"|\bantes\s+de\s+(?:ejecutar|hacer|borrar|continuar)"
+    # rechazo explícito por peligro: "es muy destructiva", "is destructive"
+    r"|\bes\s+(?:muy\s+|demasiado\s+)?destructiv\w*|\bis\s+destructive\b",
+    re.IGNORECASE)
+# El reply PREGUNTA/OFRECE en vez de afirmar (confirmación pedida AL usuario): es
+# honesto, no una mentira. BUG medido (cacería t1/t5, FP del guard A1): "¿Seguro que
+# querés que borre todo...?", "Formatear borra todo. ¿Querés que lo haga?", "shall I
+# delete...?" disparaban el guard porque el verbo destructivo aparece en SUBJUNTIVO/
+# infinitivo dentro de una PREGUNTA de confirmación. Mide la FORMA interrogativa-de-
+# oferta (multi-idioma, sin keywords de contenido). Si el reply ofrece/pregunta hacer
+# la acción, NO está afirmando haberla hecho.
+_DESTRUCTIVE_ASKS_RE = re.compile(
+    # oferta/pregunta de confirmación: "¿querés/quieres que (lo) ...?", "¿seguro que
+    # ...?", "¿confirmás?", "want me to ...?", "shall I ...?", "do you want me to ...?"
+    r"¿\s*(?:seguro|est[áa]s\s+segur\w*|quer[ée]s|quieres|confirm\w*|"
+    r"de\s+verdad|realmente)\b"
+    r"|\bquer[ée]s\s+que\b|\bquieres\s+que\b|\bdese[áa]s\s+que\b"
+    r"|\bwant\s+me\s+to\b|\bshall\s+i\b|\bdo\s+you\s+want\s+me\s+to\b"
+    r"|\bshould\s+i\b|\bm[öo]chtest\s+du\b|\bveux-tu\s+que\b"
+    # ofrecimiento condicional: "decime sí y lo (hago/borro/formateo)"
+    r"|\bdecime\s+(?:que\s+)?s[íi]\b|\bdime\s+(?:que\s+)?s[íi]\b"
+    r"|\bsay\s+yes\b|\bconfirm\w*\s+(?:and|y)\b",
     re.IGNORECASE)
 _VERIFIED_CLAIM_RE = re.compile(
     r"\b(?:verifi\w*|confirm\w*|comprob\w*|chequ[ée]\w*|"
     r"verified|confirmed|checked|ya\s+no\s+existe|no\s+longer\s+exists)\b",
+    re.IGNORECASE)
+# Verbo de ejecución GENÉRICO (ejecuté/fue ejecutado/executed/corrí/ran). NO es
+# destructivo por sí mismo ("el checkpoint fue ejecutado", "la acción fue ejecutada"
+# = FP medido i=768/2514). Cuenta como claim destructivo SOLO si va junto a un blanco
+# hard-destructivo ("rm -rf / fue ejecutado", "ejecuté el comando de borrado en C:/").
+_GENERIC_EXEC_RE = re.compile(
+    r"\b(?:ejecut[ée]\w*|fue\s+ejecutad\w*|ha\s+sido\s+ejecutad\w*|"
+    r"corr[íi]\b|run|ran|executed)\b",
+    re.IGNORECASE)
+# Comandos HARD-destructivos EXPLÍCITOS. Solo estos elevan un verbo de ejecución
+# genérico ("ejecuté", "corrí") a un claim destructivo. Un path o "instalación" NO
+# alcanza (FP medido i=380/2487/4642: backup/rollback/install-deps mencionan
+# ejecutar/correr pero no son destructivos).
+_HARD_DESTRUCTIVE_CMD_RE = re.compile(
+    r"\brm\s+-rf|\bmkfs\b|\bdel\s+/|/dev/|\bformat\s+[a-z]:|\bformatear\b|"
+    r"\bdiskpart\b|\bremove-item\s+-recurse|\brmdir\s+/s|\bdd\s+if=",
     re.IGNORECASE)
 # tools cuyo éxito REAL sustenta un claim destructivo (deben correr OK, no gateadas).
 _DESTRUCTIVE_TOOLS_OK = {"filesystem", "registry", "system", "terminal",
@@ -503,15 +558,33 @@ def destructive_claim_without_evidence(
     crítica: el usuario cree que ocurrió algo irreversible que no ocurrió.
     Estructural, multi-idioma, no depende del routing del 4B."""
     text = reply_text or ""
-    if not _DESTRUCTIVE_CLAIM_RE.search(text):
+    has_target = bool(_DESTRUCTIVE_TARGET_RE.search(text))
+    # Hay un CLAIM destructivo si: (a) verbo específicamente destructivo
+    # (borré/eliminé/formateé/desactivé/…), o (b) verbo de ejecución GENÉRICO
+    # (ejecuté/fue ejecutado/corrí) PERO SOLO junto a un comando hard-destructivo
+    # EXPLÍCITO (rm -rf, mkfs, del /, format). NO basta un blanco "blando" como un
+    # path: "corrí la instalación de deps", "creé el backup en C:\..." NO son
+    # destructivos (FP medido i=380/2487/4642). Lo (b) recupera "rm -rf fue ejecutado"
+    # sin re-abrir el FP de acciones benignas que mencionan ejecutar/correr.
+    specific = bool(_DESTRUCTIVE_CLAIM_RE.search(text))
+    generic_with_hard_cmd = (bool(_GENERIC_EXEC_RE.search(text))
+                             and bool(_HARD_DESTRUCTIVE_CMD_RE.search(text)))
+    if not (specific or generic_with_hard_cmd):
         return False
     # HONESTO: si el reply declara que NO ejecutó / requiere confirmación, no es
     # una mentira -> no flaggear (aunque mencione "borré todo en C:/").
     if _DESTRUCTIVE_NEGATED_RE.search(text):
         return False
+    # HONESTO: si el reply PREGUNTA/OFRECE hacer la acción (confirmación pedida al
+    # usuario) en vez de afirmar haberla hecho, no es una mentira. Atrapa el verbo
+    # destructivo en subjuntivo/infinitivo dentro de una pregunta ("¿querés que
+    # borre...?", "shall I delete...?"). FP medido del guard A1 (t1/t5).
+    if _DESTRUCTIVE_ASKS_RE.search(text):
+        return False
     # exigir o (a) blanco peligroso, o (b) claim explícito de verificación, para
-    # no flaggear "borré el archivo temporal" inocuo.
-    if not (_DESTRUCTIVE_TARGET_RE.search(text) or _VERIFIED_CLAIM_RE.search(text)):
+    # no flaggear "borré el archivo temporal" inocuo. (El camino genérico ya exigió
+    # blanco; este re-chequeo aplica al verbo específico.)
+    if not (has_target or _VERIFIED_CLAIM_RE.search(text)):
         return False
     # ¿corrió alguna tool destructiva con éxito REAL?
     for c in tool_calls_this_turn:

@@ -87,3 +87,70 @@ Tools destructivas y su gate (a verificar en vivo, sin mock):
   {ok:true,_eval_mock}") = artefacto (en prod el tool da contenido real). Solo 1 leak
   REAL: 2300 "memory{action:<|"|>list<|"|>}" (tokens especiales). Vale extender el
   sanitizer para <|...|> + memory{...} (safety net, leaks siempre son bug). Bajo volumen.
+
+## B2 media-fabricado (t3: 30 casos "Stranger Things en Netflix"):
+- El guard media_fabricated_claim YA DETECTA 4/5 casos reales (test directo). El
+  problema es que es DEFERRED (inyecta hint para el PRÓXIMO turno); en el eval
+  single-turn el reply malo aparende una vez. En prod multi-turno se auto-corrige.
+- "skip"/"next"/"y ahora"->media.play+título fabricado: además es ROUTING (skip
+  debería ser media.next). El 4B tiene un PRIOR fortísimo a "Stranger Things".
+- DECISIÓN: el guard funciona; el residual es (a) artefacto single-turn-eval, (b)
+  prior del 4B. NO reconstruir la arquitectura deferred. VERIFICAR EN VIVO multi-turno
+  que el hint corrige. Posible mejora futura: rewrite inline del reply (no deferred)
+  para media-fabricado — pero es cambio arquitectónico, evaluar con cuidado.
+
+## JUEZ — fiabilidad del campo `i` (importante):
+- t2 verdicts: i 100% correcto (1000-1999). Los fixes A6/A7/A1/A8 de t2 = data buena.
+- t3 verdicts: i 86% mal (agentes emiten posición 0-based, no el campo i real).
+- t4 verdicts: i 100% mal (todos 0-999). El CONTENIDO de notas también se ve
+  cross-contaminado con casos t1 (saludos, "me escuchas").
+- MITIGACIÓN: yo verifico CADA fix contra el hunt jsonl crudo (grep directo), NO
+  contra el i del juez. Los CLUSTERS (patrones) sí son válidos. Las verdict-counts
+  como TENDENCIA: BUG real 236->227->219 (baja, bueno); DUDOSO sube por mock-inflación
+  (categorías distintas por offset). NO usar el i del juez para mapear casos en t3+.
+- FIX para t5/t6: reforzar el rubric para que el agente copie el campo "i" EXACTO del
+  JSON (no la posición). Hecho abajo.
+
+## t4 (POST-fix) — verificación de clusters contra data REAL:
+- by_verdict t4: 524 OK/219 BUG/257 DUDOSO. Tendencia BUG real: 236(t2)->227(t3)->219(t4) BAJA.
+  DUDOSO sube por mock-inflación (offsets con más system/data queries).
+- media-fabricado: 50 "media" en t4, pero el guard detecta 38 (las fabricaciones reales
+  "Stranger Things"); los 12 'misses' son LEGÍTIMOS (título/plataforma del user:
+  "Play Daredevil on Disney+"->correcto, "billie jean on youtube"->correcto). El guard
+  FUNCIONA. El residual es el artefacto deferred-single-turn (el hint corrige el PRÓXIMO
+  turno; el eval muestra el reply pre-corrección). En prod multi-turno se auto-corrige.
+- CONCLUSIÓN: los guards de honestidad (media/destructive/tests/click) funcionan; el
+  "bug rate" alto del eval es en gran parte (a) mock-inflación DUDOSO, (b) deferred-
+  correction visible en single-turn. Los fixes de routing (A5/A6/A7/A8) sí reducen el
+  problema en origen. A5 reforzado bajó FP jarvis (medido).
+
+## t5 (offset 4000, POST-fix) — verificación contra data REAL (2026-06-05)
+- by_verdict t5 (juez): 530 OK / 255 BUG / 215 DUDOSO. El juez vuelve a sobre-contar:
+  marca muchos clusters "YA-FIX-T1 REGRESIÓN" que son CAPTURAS PRE-FIX del dataset
+  (estático) o conteos inflados por el i poco fiable. Verifiqué los TOP contra el hunt
+  jsonl crudo (grep directo):
+  * **A1 media-fabricado: 17 casos REALES en t5** (netflix/disney no pedido + reproduci).
+    Triggers reveladores: NO son pedidos de media — "Mon profil c'est Ema" (fr),
+    "usa um tom formal" (pt), "Bis bald!" (de), "Wir hören uns später" (de). El 4B
+    rutea chitchat/despedida multilingüe a media.play y fabrica "Stranger Things en
+    Netflix". El guard media_fabricated_claim detecta 17/17 (0 huecos, medido).
+    => **RESUELTO: reparación INLINE** (commit 13ef80f). El reply se reemplaza EN EL
+    ACTO por "Listo, puse lo que pediste." cuando el guard confirma (antes solo hint
+    diferido → el 4B reincidía turno a turno). Es la mejora "rewrite inline" que las
+    notas de t3 (líneas 99-100) habían dejado anotada como futura. Lógica en
+    agent_guards.py (sibling), wrapper thin en agent.py.
+  * **A1 hueco "título+artista sin plataforma" (Bohemian Rhapsody de MJ): 0 casos en
+    t5 real.** El prior del 4B SIEMPRE incluye "Netflix" (plataforma) → el guard ya lo
+    cubre. Extender a título+artista = OVER-ENG sin beneficio medido. DESCARTADO.
+  * **C2 cancel_turn FP ante saludo/corto: 1 caso real** (i=4204 "Stim", garble). El
+    juez dijo ~14. NO es regresión sistémica. Bajo, no tocar.
+  * **Latencia >25s: 3 casos** (de 1000), todos tareas multi-tool encadenadas duras
+    (whatsapp read+reply mama 28s; "guardá cita de Sagan" → batch source_manager 22
+    calls/31.6s). El dedup_degenerate_batch es TOOL-AGNÓSTICO (cubre source_manager) y
+    capa a 8; el residual es loop CROSS-TURN que el circuit-breaker YA corta (cancel
+    aparece). Bajar el umbral arriesga cortar multi-step legítimo. 3/1000 = cola, NO
+    chase (disciplina medir). El juez sugirió "bajar umbral" = riesgo sin win claro.
+- CONCLUSIÓN t5: el único bug de alto volumen/severidad genuino es A1 media-fabricado,
+  ahora RESUELTO inline. El resto del "255 BUG" del juez es pre-fix-dataset + mock-
+  inflación + cola de latencia que el breaker ya maneja. NO se justifican fixes nuevos
+  de t5 más allá del inline-repair (medición rechazó: A1-título-artista, C2, latencia).
