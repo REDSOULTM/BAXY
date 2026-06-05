@@ -2915,6 +2915,28 @@ class Gemma4Agent:
             msg = sanitize_assistant_message(raw_msg)
             assistant_content = msg.get("content") or ""
             raw_tool_calls = msg.get("tool_calls") or []
+            # DEDUP DE BATCH DEGENERADO (bug Gemma 4 lmstudio #1756, medido en
+            # cacería tanda 1): el 4B emite el MISMO tool_call decenas de veces en
+            # UNA respuesta, ignorando parallel_tool_calls=false. "Investiga en
+            # internet que es el h2o" -> 72 calls que colapsan a 5 únicos; ~30s de
+            # decode + re-alimentación del history. Colapsamos duplicados exactos
+            # y capamos a MAX_TOOL_CALLS_PER_RESPONSE distintas ANTES de ejecutar,
+            # cortando la amplificación del loop. Estructural (mide la FORMA, no el
+            # contenido). Gate GEMMA4_BATCH_DEDUP_OFF=1 lo apaga. Sincronizamos msg
+            # para que el history que va al LLM refleje lo realmente ejecutado.
+            if len(raw_tool_calls) > 1:
+                from ..safety_pkg.loop_detection import dedup_degenerate_batch
+                _deduped, _dd_info = dedup_degenerate_batch(raw_tool_calls)
+                if _dd_info["kept"] < _dd_info["original"]:
+                    raw_tool_calls = _deduped
+                    msg["tool_calls"] = _deduped
+                    self.trace.event(
+                        turn_id, "batch_dedup",
+                        original=_dd_info["original"],
+                        kept=_dd_info["kept"],
+                        dropped_duplicates=_dd_info["dropped_duplicates"],
+                        dropped_over_cap=_dd_info["dropped_over_cap"],
+                    )
             # Extract optional <intent> tag from content (validator). The tag
             # is stripped from the visible reply but kept on the side so the
             # tool-selection validator can compare declared intent vs chosen

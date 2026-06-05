@@ -82,15 +82,32 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
         "GEMMA4_FORCE_THINKING_OFF", "0").strip().lower() in {"1","true","yes","on"}
     _allow_thinking = not _force_off
     if inferred == "research":
+        # BUDGET DE DECODE ACOTADO (cacería tanda 1 + bug Gemma 4 #1756). El
+        # decode corre a ~97 tok/s en la 4060Ti (medido): 2048 tok = ~21s SOLO de
+        # generación, y el 4B LLENA ese budget con un batch DEGENERADO de tool_calls
+        # duplicados ("Investiga en internet h2o" -> 72 calls que colapsan a 5
+        # únicos, 30s). Un turno research REAL necesita ~8 tool_calls (~400 tok) en
+        # la pasada de decisión + una respuesta de voz de 2-4 frases (~300 tok). NO
+        # necesita 2048. Capamos a 768/512: worst-case ~(768+512)/97≈13s (antes
+        # ~30-42s) sin tocar la capacidad de research genuino (medido: research útil
+        # usa 2-7 calls + reply corto). El dedup de batch (loop_detection) corta los
+        # duplicados que aún se cuelen; este cap corta el COSTO de decodificarlos.
+        # Gate GEMMA4_RESEARCH_TOK para subirlo si hiciera falta más profundidad.
+        import os as _os_rt
+        try:
+            _rt = int(_os_rt.environ.get("GEMMA4_RESEARCH_TOK", "768"))
+        except Exception:
+            _rt = 768
         return AgentMode(
             name="research",
             enable_thinking=_allow_thinking,
             parallel_tool_calls=True,
-            max_tokens=max(base_max_tokens, 2048),
+            max_tokens=max(base_max_tokens, _rt),
             system_hint=(
                 "Mode: research. Use web(...) for extracted sources. You may use multiple "
                 "independent web/search tool calls in one assistant turn, but do not claim "
-                "facts without returned source evidence. "
+                "facts without returned source evidence. DO NOT repeat the same web/search "
+                "call — one call per distinct query is enough; duplicates are ignored. "
                 "REPLY FORMAT: voice assistant style. 2-4 frases corridas en texto plano. "
                 "NO markdown, NO bullets, NO **bold**, NO headers '#', NO listas numeradas. "
                 "Solo el dato pedido en prosa fluida. Si el user pide algo factual "
@@ -98,7 +115,7 @@ def choose_mode(content: str | list[dict[str, Any]], configured: str, base_max_t
                 "después una breve elaboración si aporta. Ej: 'GTA 5 salió el 17 de "
                 "septiembre de 2013 en PS3 y Xbox 360. La versión de PC llegó en 2015.'"
             ),
-            thinking_budget=2048,  # research reasons more, but cap the runaway
+            thinking_budget=512,  # research razona más, pero acotado al decode budget
         )
     if inferred == "fast_info":
         # Preguntas informativas que el modelo responde de su conocimiento
