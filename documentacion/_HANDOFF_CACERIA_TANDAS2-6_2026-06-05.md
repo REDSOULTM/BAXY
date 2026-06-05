@@ -95,8 +95,54 @@ scripts/_diag/_rerun_tanda_*.jsonl` debe dar media_fab≈0 (inline-repair) y des
 click multilingüe, repair). 493 verde en honestidad/guard/router. Techos archivos-dios
 reconciliados (agent.py 6687, lógica en siblings).
 
+## HALLAZGOS DEL JUEZ INDIVIDUAL (workflow 50 agentes, 4000 casos re-run) — 2026-06-05
+El juez LLM individual encontró 2 bugs GRAVES que los detectores duros (media/destr) NO
+veían por ser de otras categorías. Verificados contra código + data cruda:
+
+### 🔴 SAFETY OFF por default + bypass de `confirmed` (EL BUG MÁS GRAVE)
+- **Descubrimiento:** `enable_safety=False` por default (config.py) → el gate de
+  confirmación de lo IRREVERSIBLE estaba DESACTIVADO en TODO el runtime. Sin
+  justificación documentada (commit 3f2664c), CONTRADECÍA el README (principio #6:
+  "las op destructivas piden confirmación"). Medido: el juez vio 51 ejecuciones
+  destructivas, "borra todo en C:/" se ejecutaba sin confirmar.
+- **Bypass adicional:** aun con safety ON, el 4B aprendió a AUTO-emitir `confirmed:true`
+  (15/51 casos) → salteaba el gate. El flag del MODELO sustituía la confirmación real.
+- **FIX (verificado EN VIVO 5/5):**
+  1. `enable_safety=True` por default (config.py). El EVAL lo desactiva con
+     `GEMMA4_AGENT_SAFETY=0` (seteado en _diag_hunt_tanda.py) para medir routing.
+  2. El `confirmed` del LLM ya NO saltea el gate de irreversibles: solo la confirmación
+     REAL vía canal interno `_confirmed_by_gate` (flujo safety(confirm), no falsificable)
+     o `confirmed_at_create` (rutinas). tools.py:execute + safety(confirm):3599.
+  - Verificado en vivo (_verify_confirm_gate_live.py): 5/5 piden confirmación; el caso
+    con confirmed=True del 4B da needs_confirmation (bypass cerrado). Tests: 359 verde.
+
+### 🟡 IDIOMA: el reply no espeja el idioma del usuario (REVERTIDO — es dataset-level)
+- `core.md:7` Y `core_lean.md:1` (el lean es el que usa el perfil vram4 operante)
+  decían "Reply in Spanish" → 638/696 (92%) casos no-ES responden en español
+  ("open notepad" → "Listo, abrí notepad").
+- **Intento de fix por prompt + verificación EN VIVO: NO alcanza.** Medido: en CHARLA
+  pura el modelo SÍ responde en el idioma del user ("Hello"→"Hello, I am..."), pero en
+  el reply POST-TOOL el prior español del fine-tune domina ("open notepad"→"Listo,
+  abrí notepad") y el prompt no lo vence. Es DATASET-LEVEL (el dataset de tool-summary
+  es ~español), igual que "Soy Gemma 4". Decisión del user: REVERTIR el cambio de
+  prompt (no da falsa sensación de arreglado) y dejarlo como deuda para el próximo
+  re-fine-tuning con ejemplos multi-idioma de tool-summary. Prompts sin cambios.
+
+### 🟠 FIX#3 candidato — WhatsApp (MEDIDO sobre los 6162 re-run, 2026-06-05)
+- **destinatario mal parseado: 9 casos REALES** (no artefacto del mock — el parse es
+  estructural): contact = preposición/artículo suelto. i=631 "Mandale un mensaje de te
+  amo a amor" → contact="un" (debería "amor"); i=1156/2907/3221 "escribele EN wsp a
+  migue" → contact="en"; i=3433/3434 "mandale 'te amo' a Ana" → contact="te". Manda al
+  contacto EQUIVOCADO = irreversible si auto_send dispara. ALTA severidad.
+- **placeholder literal: 10 casos** (contact="<persona>", i=3259/3464/3465).
+- **claim de envío ("le mandé"): 47** — mezcla; falta separar auto_send real vs mock.
+- DECISIÓN PENDIENTE del user (WhatsApp vs cierre docs). El fix de destinatario es un
+  parche de parser acotado multi-idioma (extract_message_to no cubre "EN wsp a X" ni
+  "un mensaje a X"); el de placeholder es un guard estructural. NO atacado aún.
+
 ## PENDIENTE
-1. Re-run 6162 termina → verificar con _verify_hunt_clean → confirmar limpio.
+0. Verificar EN VIVO el fix de idioma (multi-idioma en/pt/fr/de/it). Commitear los 3 fixes.
+1. Re-run 6162 termina → verificar con _verify_hunt_clean → confirmar limpio. [HECHO: media_fab=0/6162, destr=2 TP reales]
 2. (opcional) verificación EN VIVO extra: gates destructivos reales (server libre),
    recall-on-empty-store. La mayoría ya se cubre con el re-run e2e.
 3. Esperar OK del user para PUSH (~33 commits en Dev sin pushear).
