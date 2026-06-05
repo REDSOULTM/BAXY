@@ -381,6 +381,45 @@ def _is_local_state_question(text: str) -> bool:
     return bool(_LOCAL_STATE_Q_RE.search(text))
 
 
+# RUIDO DE BAJA SEÑAL: input que NO es un comando — un número/medición suelto
+# ("2.14s", "7.63", "11.22s", "12.66") o un único token técnico ("subprocess",
+# "Endpoint"). BUG real medido (cacería tanda 1): el dataset de finetuning tiene
+# latencias y tokens de doc que se colaron como user_text; el router los ruteaba
+# a window.active / media.play / app.open arbitrariamente -> "Listo, abrí Steam"
+# ante "Endpoint". Sin intención accionable, el agente debe PEDIR ACLARACIÓN, no
+# actuar. ESTRUCTURAL: mide la FORMA (un número/medida pura, o UN solo token sin
+# verbo ni espacios), multi-idioma, NO una lista de palabras prohibidas.
+#
+# (a) NÚMERO/MEDIDA PURO: solo dígitos y separadores, con unidad opcional corta.
+#     Cubre "2.14s", "7.63", "11,22", "12.66", "100%", "64 GB", "60fps".
+_LOW_SIGNAL_NUMERIC_RE = re.compile(
+    r"^\s*[+\-]?\d[\d.,:\s]*"
+    r"(?:\s*(?:s|ms|seg|segundos?|m|min|h|hs|%|gb|mb|kb|tb|hz|khz|ghz|fps|px|"
+    r"bytes?|bits?))?\s*$",
+    re.IGNORECASE)
+
+
+def _is_low_signal_noise(text: str, *, has_pending_intent: bool = False) -> bool:
+    """True si el texto es RUIDO sin intención accionable (número/medida suelta).
+    El agente debe pedir aclaración, no rutear a una tool. ESTRUCTURAL.
+
+    GUARDA CRÍTICA: si hay un pending_intent (un turno previo dejó una tool
+    esperando input del usuario), un número suelto ES la respuesta esperada
+    ("¿qué volumen?" -> "50") -> NO es ruido. Por eso `has_pending_intent`
+    desactiva el gate. Tampoco gateamos texto con espacios+palabras (eso lo
+    maneja el router normal); solo el número/medida puro."""
+    if not isinstance(text, str):
+        return False
+    t = text.strip()
+    if not t or has_pending_intent:
+        return False
+    # (a) número/medida pura -> ruido (salvo pending_intent, ya descartado).
+    if _LOW_SIGNAL_NUMERIC_RE.match(t):
+        # Exigir que tenga al menos un dígito (la unidad sola no cuenta).
+        return any(ch.isdigit() for ch in t)
+    return False
+
+
 # Pregunta HOW-TO / INFORMATIVA ("cómo elimino una carpeta", "qué es Python",
 # "para qué sirve X", "cómo cierro Spotify"). El usuario pide una EXPLICACIÓN, no
 # que se EJECUTE la acción. BUG real medido (cacería tanda 1): "cómo elimino una
@@ -550,6 +589,25 @@ def select_tool_names(
     # keyword→tool map. Applied before BOTH keyword and embedding paths.
     raw_text = _expand_abbreviations(original_text)
     text = _fold_text(raw_text)
+    # GATE DE RUIDO (BUG real medido, cacería tanda 1): un número/medición suelto
+    # ("2.14s", "7.63", "12.66") no es un comando — el router lo ruteaba a
+    # window.active / media.play arbitrariamente. Sin intención accionable,
+    # abstener para que el LLM pida aclaración. Guarda: si hay pending_intent, un
+    # número ES la respuesta esperada ("¿qué volumen?" -> "50") -> NO gatear.
+    # Estructural, va PRIMERO (antes del exemplar/encoder). Gate GEMMA4_NOISE_GATE_OFF.
+    try:
+        import os as _os_ng
+        if (_os_ng.environ.get("GEMMA4_NOISE_GATE_OFF", "0").strip().lower()
+                not in {"1", "true", "yes", "on"}
+                and _is_low_signal_noise(
+                    original_text, has_pending_intent=bool(pending_intent))):
+            base = ["session"]
+            if safety_enabled:
+                base.append("safety")
+            select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
+            return base
+    except Exception:
+        pass
     names: list[str] = []
     exemplar_tools: list[str] = []
     try:

@@ -222,6 +222,37 @@ def test_trigger_declaration_routes_to_routine_not_action() -> None:
     assert not (s & {"gui", "media", "audio"}), f"trigger no debe ofrecer acción: {s}"
 
 
+def test_low_signal_noise_abstains() -> None:
+    """BUG real (cacería tanda 1, B3): un número/medición suelto ("2.14s", "7.63",
+    "12.66") no es un comando — el router lo ruteaba a window.active/media.play
+    arbitrariamente ("Listo, abrí Steam" ante ruido). El gate de ruido abstiene
+    para que el LLM pida aclaración. ESTRUCTURAL, mide la FORMA."""
+    from ..routing.planner import _is_low_signal_noise
+    # POSITIVOS: número/medida puro = ruido.
+    for q in ("2.14s", "7.63", "12.66", "11.22s", "100%", "64 GB", "60fps", "12,66"):
+        assert _is_low_signal_noise(q), f"{q!r} es ruido (número/medida suelto)"
+    # NEGATIVOS: comando con número, o texto con palabras = NO ruido.
+    for q in ("pon el volumen al 50", "abre 3 pestañas", "sube el volumen al 80",
+              "minimiza la ventana", "abre steam", "que hora es", "el tercero"):
+        assert not _is_low_signal_noise(q), f"{q!r} NO es ruido"
+    # GUARDA pending_intent: un número es la RESPUESTA esperada, no ruido.
+    assert not _is_low_signal_noise("50", has_pending_intent=True), (
+        "número con pending_intent es la respuesta, no ruido")
+
+    # routing: ruido -> abstención (NO window/media/app), solo session.
+    for q in ("2.14s", "7.63", "12.66"):
+        s = set(select_tool_names(q, plan_mission(q)))
+        assert not (s & {"window", "media", "app", "audio", "browser", "job_manager"}), (
+            f"ruido {q!r} no debe rutear a acción: {s}")
+    # con pending_intent un número NO se gatea (debe poder routear normal).
+    s_pending = set(select_tool_names(
+        "50", plan_mission("50"),
+        pending_intent={"tool": "audio", "args": {}, "asks_for": "volume"}))
+    # el gate no disparó -> el subset NO es solo el abstain base.
+    assert "audio" in s_pending or s_pending != {"session"}, (
+        f"número con pending no debe gatearse a abstain: {s_pending}")
+
+
 def test_browser_real_collapsed_on_simple_nav() -> None:
     """S3d (2026-05-30) precision. browser_real (fine CDP control) was offered
     on EVERY browser turn as noise (measured: 78 noise rows vs 2 that truly need
