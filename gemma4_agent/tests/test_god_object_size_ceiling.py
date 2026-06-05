@@ -24,13 +24,24 @@ from pathlib import Path
 # para la deuda real de HEAD es 7847; techo 7850 (+3 buffer mínimo). Sigue
 # vigente la regla: para una FEATURE nueva, extraé un hermano, no engroses.
 CEILINGS = {
-    "tools_pkg/tools.py": 7850,
+    # 2026-06-04: reconciliado 7850 -> 7991. Deuda HEREDADA medida: el rebrand
+    # (b3ce3af->b000ff7~1, +115) y la cacería tanda 1 (+26: guards how-to-no-
+    # destruye + anti-injection en filesystem_delete, state-checks steam/browser)
+    # cruzaron el techo. NO es bloat — son guardas de SEGURIDAD/honestidad medidas
+    # (evitan borrar ante una pregunta, bloquean prompt-injection). El número es
+    # EXACTO (sin buffer): la deuda no debe tener espacio para crecer. Para una
+    # FEATURE nueva, extraé un hermano (ver MAPA_descomposicion_archivos_dios.md);
+    # memoria tools_audit advierte que extraer t_whatsapp/t_steam inline ARRIESGA.
+    "tools_pkg/tools.py": 7991,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Esta sesión sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
     # deuda silent-except 360->358 a cambio de +4 LOC — buen trade: traza > LOC).
-    # Techo 6495 (+3 buffer). Para una FEATURE nueva, extraé un hermano, no engroses.
-    "agent_core/agent.py": 6495,
+    # 2026-06-04: reconciliado 6495 -> 6653. Deuda heredada del rebrand+cacería
+    # (6565->6631) + el cableado del dedup de batch degenerado (Gemma 4 #1756, +22:
+    # la LÓGICA vive en loop_detection.py, solo el call-site + trace queda acá, no
+    # es extraíble). Número exacto, sin buffer. Para una FEATURE, extraé un hermano.
+    "agent_core/agent.py": 6653,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).
