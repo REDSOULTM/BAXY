@@ -1429,9 +1429,12 @@ def _suggest_tools(step: str) -> list[str]:
        re.search(r"\b(pon|ponme|poneme)\b.*\b(cancion|musica|video|tema|playlist|"
                  r"rock|jazz|pop|reggaeton|algo de|music|song)\b", low):
         tools.append("media")
-    # audio: volume / mute
-    if re.search(r"\b(volumen|mute|silencio|audio|sonido|"
-                 r"volume|silence|sound)\b", low):
+    # audio: volume / mute / UNMUTE. "desmutea"/"desmuteá"/"unmute" no matcheaban
+    # antes (bug medido 2026-06-07: "desmutea el pc" caía a ['session'] -> el 4B
+    # forzaba cancel_turn por no tener tool de audio). "mute" con \b no captura
+    # "desMUTEa" (letras pegadas) -> agregamos las raíces de des/un-mute explícitas.
+    if re.search(r"\b(volumen|mute|mutea\w*|desmute\w*|unmute\w*|silenci\w*|audio|sonido|"
+                 r"volume|silence|sound|sub[íi]\s+el\s+volumen|baj[áa]\s+el\s+volumen)\b", low):
         tools.append("audio")
     # audio_device
     if re.search(r"\b(dispositivo de audio|salida de audio|entrada de audio|altavoz|altavoces|microfono|"
@@ -1439,9 +1442,14 @@ def _suggest_tools(step: str) -> list[str]:
                  r"audio device|audio output|audio input|speaker|speakers|microphone|mic)\b", low):
         tools.append("audio_device")
 
-    # browser
-    if re.search(r"\b(opera|chrome|edge|firefox|youtube|google|navegador|browser|web|pagina|page|url|tab|pestana|"
-                 r"website|site)\b", low):
+    # browser. Incluye NAVEGACIÓN imperativa "ve a / andá a / entrá a / ir a X"
+    # (bug medido 2026-06-07: "ve a pivigames" caía a ['session'] -> el 4B forzaba
+    # cancel_turn por no tener tool. La FORMA "verbo-de-ir + destino" indica navegar
+    # aunque el destino no esté en la lista de sitios conocidos). Multi-idioma.
+    if re.search(r"\b(opera|chrome|edge|firefox|youtube|google|navegador|browser|web|pagina|p[áa]gina|page|url|tab|pestana|pesta[ñn]a|"
+                 r"website|site)\b", low) or \
+       re.search(r"\b(ve|and[áa]|anda|entr[áa]|entra|ir|vamos|vam[oó]s|llev[áa]me|go|navigate|open)\s+a\s+\w|"
+                 r"\b(go to|navigate to|browse)\b", low):
         tools.append("browser")
         if re.search(r"\b(lee|leer|investiga|investigar|extrae|extraer|contenido|fuente|noticia|actual|"
                      r"read|research|extract|content|source|news|current|latest)\b", low):
