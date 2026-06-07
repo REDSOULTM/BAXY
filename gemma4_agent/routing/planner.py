@@ -630,11 +630,15 @@ _STATE_ACTION_VERB = re.compile(
 _STATE_WORD = r"(?:abiert[oa]s?|cerrad[oa]s?|open|closed|corriendo|running|activ[oa]s?|ejecut\w*)"
 # (a) verbo-de-chequeo + ... + estado;  (b) '¿' + ... + estado;
 # (c) afirmación '... está <estado> ?' (signo de pregunta al final, sin verbo de
-#     chequeo: "Steam está cerrado?").
+#     chequeo: "Steam está cerrado?" / "está Steam abierto?"). El estado puede ir
+#     INMEDIATO al verbo ("está abierto?") o con la APP en medio ("está Steam
+#     abierto?") — por eso 0-3 tokens entre el verbo y la palabra de estado. El "?"
+#     final garantiza que es pregunta (no "está Steam abierto, cerralo").
 _APP_STATE_CHECK_RE = re.compile(
     r"(?:" + _STATE_CHECK_VERB + r"\b.{0,40}?" + _STATE_WORD
     + r"|[¿].{0,40}?" + _STATE_WORD
-    + r"|\b(?:est[áa]\w*|is|are|sigue)\s+" + _STATE_WORD + r".*?\?)",
+    + r"|\b(?:est[áa]\w*|is|are|sigue|tengo|ten[ée]s|hay)\s+(?:\w+\s+){0,3}?"
+    + _STATE_WORD + r"\b[^.!]*\?)",
     re.IGNORECASE | re.DOTALL)
 
 
@@ -951,6 +955,16 @@ def select_tool_names(
                 _is_world_q = _wk2(raw_text)
             except Exception:
                 _is_world_q = False
+            # PRIORIDAD del estado-local sobre world-q (bug 2026-06-06): "qué
+            # aplicación está abierta" / "qué ventana tengo activa" son preguntas
+            # del SO LOCAL (window.active), NO de mundo/web — pero wants_knowledge
+            # las marcaba como world-q y mantenía web/knowledge, tapando el bloque
+            # local_state de abajo (que solo corre con names vacío). Si es estado
+            # local, NO es world-q -> el local_state gana y ofrece window.
+            if _is_world_q and _is_local_state_question(raw_text):
+                _is_world_q = False
+                names = [n for n in names
+                         if n not in {"web", "knowledge", "source_manager"}]
             _knowledge_keep = [n for n in names if n in {"web", "knowledge",
                                "source_manager"}] if _is_world_q else []
 
@@ -1522,9 +1536,15 @@ def _suggest_tools(step: str) -> list[str]:
                      r"delete|move|copy|rename|archive|compress|zip)\b", low):
             tools.extend(["filesystem", "office"])
 
-    # app
-    if re.search(r"\b(abre|abrir|cierra|cerrar|app|programa|juego|"
-                 r"open|close|launch|quit|exit|program|application|game)\b", low) and "steam" not in low:
+    # app. Incluye VOSEO argentino con tilde (abrí/cerrá) + clíticos (cerralo/
+    # abrilo/cerrala) — bug medido 2026-06-06: "cerrá Spotify"/"cerrá discord"
+    # caían a ['session'] (sin tool para cerrar) porque el regex solo tenía
+    # "cierra/cerrar", no "cerrá". El user vosea. matalo/cerralo/abrilo cubren el
+    # imperativo+clítico. \w* en la raíz captura las conjugaciones.
+    if re.search(r"\b(abr[ie]\w*|abr[íi]\b|cierr[ae]\w*|cerr[áa]\w*|cerrar\b|"
+                 r"matar?\b|mat[áa]\w*|app|programa|juego|ventana\s+de|"
+                 r"open|close|launch|quit|exit|kill|program|application|game)\b",
+                 low) and "steam" not in low:
         tools.append("app")
     # gui/uia/vision: click/type/screen
     if re.search(r"\b(click|clic|teclea|teclear|escribe en pantalla|pantalla|boton|"

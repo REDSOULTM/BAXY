@@ -506,9 +506,22 @@ def guard_grounded_action_claim(
     # había una acción fallida y confundiría al usuario).
     # NO debilita la honestidad: si se ofreció CUALQUIER tool de acción (app/media/
     # web/gui/...), el subset NO es meta-only -> el gate dispara como siempre.
+    # EXCEPCIÓN A LA EXENCIÓN (bug routing 2026-06-06): una pregunta HOW-TO ("cómo
+    # cierro Spotify?") deja el subset meta-only (el planner retira app/steam para
+    # que el LLM EXPLIQUE, no actúe) — pero ahí "Listo, cerré Spotify" SÍ es mentira
+    # (el user preguntó CÓMO, no pidió cerrar). La exención meta-only es solo para
+    # cancelaciones/negaciones ("cancelé eso"=ack de inacción verdadero), NO para
+    # how-to. Detecta la FORMA (interrogador how-to), no listas.
+    _is_howto = False
+    if current_user_text:
+        try:
+            from ..routing.planner import _is_howto_or_info_question as _ishw
+            _is_howto = _ishw(current_user_text)
+        except Exception:
+            _is_howto = False
     _META_ONLY = {"session"}
     _subset = {str(t) for t in (last_router_subset or ())}
-    if _subset and _subset.issubset(_META_ONLY):
+    if _subset and _subset.issubset(_META_ONLY) and not _is_howto:
         if trace is not None:
             try:
                 trace.event(

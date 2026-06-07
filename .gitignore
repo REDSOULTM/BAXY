@@ -183,3 +183,23 @@ _out_today.txt
 
 # Trabajo academico personal del usuario (tesis/curso) — NO al repo del software
 /_tesis_curso/
+
+# --- Artefactos de diagnóstico/eval (temporales, no van al repo) 2026-06-06 ---
+# Logs de corridas (hunt/cacería, finetune eval, gates) en la raíz
+/_*.log
+/_*.jsonl
+/_finetune_eval_*.json
+/_finetune_eval_seen_*.json
+# scripts/_diag: harnesses .py SÍ se versionan (reproducibilidad), pero sus
+# salidas (logs/json/jsonl/txt dumps) NO.
+scripts/_diag/*.log
+scripts/_diag/*.json
+scripts/_diag/*.jsonl
+scripts/_diag/*.txt
+scripts/_diag/_ftfail/
+# Docs de handoff interno (work-in-progress, prefijo _) — no para repo público
+documentacion/_PENDIENTES_*.md
+documentacion/_PLAN_*.md
+documentacion/_REFINETUNING_*.md
+documentacion/_HANDOFF_*.md
+scripts/_diag/_jbatch/

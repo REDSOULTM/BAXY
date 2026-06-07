@@ -166,6 +166,102 @@ class AgentReply:
     tts_streamed: bool = False
 
 
+_LANGID_SET = ("en", "es", "pt", "fr", "de", "it")
+
+# Verbos IMPERATIVOS de comando por idioma — desempate para inputs CORTOS donde
+# el clasificador estadístico falla (medido: py3langid da "open spotify"/"close
+# chrome"/"open notepad" -> 'de' porque Spotify/Chrome son nombres propios
+# internacionales sin señal de idioma). NO son respuestas enlatadas ni deciden la
+# respuesta — solo desambiguan el IDIOMA del comando (mide la FORMA verbal, lo que
+# el CLAUDE.md permite como guarda estructural). El reply lo sigue generando el LLM.
+# Medido: detector híbrido 15/16 vs py3langid solo 8/14.
+_IMPERATIVE_VERBS = (
+    ("en", (" open ", " close ", " play ", " mute ", " unmute ", " set ", " take ",
+            " show ", " turn ", " stop ", " start ", " search ", " lower ", " raise ",
+            " maximize ", " minimize ", " lock ", " pause ", " skip ", " next ")),
+    ("it", (" apri ", " chiudi ", " imposta ", " riproduci ", " metti ", " cerca ",
+            " abbassa ", " alza ", " disattiva ", " attiva ")),
+    ("fr", (" ouvre ", " ferme ", " mets ", " fais ", " lance ", " cherche ",
+            " baisse ", " monte ", " coupe ", " active ")),
+    ("de", (" öffne ", " schließe ", " schliesse ", " stell ", " spiele ", " starte ",
+            " suche ", " mach ", " schalte ", " erhöhe ")),
+    ("pt", (" abre ", " fecha ", " coloca ", " tira ", " toca ", " procura ",
+            " abaixa ", " aumenta ", " silencia ", " liga ")),
+    ("es", (" abrí ", " cerrá ", " poné ", " subí ", " bajá ", " buscá ", " cerra ",
+            " silenciá ", " mostrá ", " sacá ", " pausá ")),
+)
+
+
+_SPANISH_LEAK_MARKERS = (
+    # marcas ES INEQUÍVOCAS en confirmaciones post-acción (el reply leakeado típico).
+    # Verbos ES 1ª persona pretérito (con tilde — distinguen de pt "fechei"/it/fr) +
+    # variantes con diptongo ("cierré", "minimicé") + frases ES que NO coinciden
+    # token-a-token en pt/fr/de/it + el caveat ES de soften_unverified_launch. NO
+    # incluye "Listo," solo (el modelo lo prefija a un cuerpo PT correcto -> falso+).
+    # Mide la FORMA, no decide la respuesta: solo señala que el reply quedó en ES.
+    # Lista deliberadamente amplia en variantes verbales (el 4B escribe "cerré"/
+    # "cierré"); ampliarla es legítimo (detector de FORMA, no tabla de respuestas).
+    "abrí", "cerré", "cierré", "saqué", "silencié", "minimicé", "maximicé",
+    "ajusté", "configuré", "dejé el volumen", "lo hice", "lo que pediste",
+    " pediste", "está abierto", "la captura", "la pantalla", "verifiqué",
+    "el trabajo de impresión", "puse lo que", "tomé la captura", "se tomó",
+    "el volumen está", "el volumen a", "el volumen en", "la ventana que",
+    "que me indicaste", "no pude confirmar", "que se completara", "cola de impresión",
+)
+
+
+def _looks_spanish(text: str) -> bool:
+    """True si `text` tiene marcadores INEQUÍVOCOS de español (para detectar que un
+    reply post-acción leakeó a ES cuando el user pidió otro idioma). Robusto donde
+    py3langid falla (un "Listo, cerré Chrome" corto se mis-detecta como fr). Mide la
+    FORMA (verbos ES 1ª persona + "Listo,"), no decide la respuesta. Conservador:
+    requiere una marca ES fuerte — no se dispara con texto en/pt/fr/de/it."""
+    if not text:
+        return False
+    low = f" {text.lower()} "
+    return any(m in low for m in _SPANISH_LEAK_MARKERS)
+
+
+def _detect_lang(text: str) -> str:
+    """Detecta el idioma de `text` entre los 6 soportados, robusto en comandos
+    CORTOS. Estrategia híbrida (medida 15/16): (1) verbo imperativo distintivo del
+    comando (desempate de FORMA para inputs de 2 palabras donde lo estadístico
+    falla), (2) py3langid restringido a nuestros idiomas, (3) fallback `_guess_lang`
+    si py3langid no está. SOLO para decidir el idioma del reply post-tool (no decide
+    intención — eso es el router por embeddings).
+
+    Por qué la lista de verbos: py3langid manda "open spotify"/"close chrome" a
+    'de' (nombres propios internacionales sin señal); el verbo imperativo es la
+    única señal de idioma fiable en esos casos. Es desambiguación de idioma por la
+    FORMA verbal, NO una tabla de respuestas — el reply lo genera el LLM."""
+    t = (text or "").strip()
+    if not t:
+        return "es"
+    # (1) verbo imperativo distintivo (señal fuerte en comandos cortos)
+    s = f" {t.lower()} "
+    for lang, verbs in _IMPERATIVE_VERBS:
+        if any(v in s for v in verbs):
+            return lang
+    # (2) py3langid restringido
+    try:
+        import py3langid as _langid
+        try:
+            _langid.set_languages(list(_LANGID_SET))
+        except Exception:
+            pass
+        lang, _conf = _langid.classify(t)
+        if lang in _LANGID_SET:
+            return lang
+    except Exception:
+        pass
+    # (3) fallback keyword
+    try:
+        from ..safety_pkg.reply_validator import _guess_lang as _gl
+        return _gl(t)
+    except Exception:
+        return "es"
+
+
 def _stream_tts_enabled() -> bool:
     """Stream the reply to TTS sentence by sentence (GEMMA4_STREAM_TTS).
     Default ON — validado en vivo por escucha (sin cortes); veracidad validada
@@ -1158,6 +1254,86 @@ class Gemma4Agent:
         content = user_content(text, images=images, audios=audios)
         return self.run_content(content, progress=progress, tts_sink=tts_sink)
 
+    def _describe_events_for_reply(self, events: "list[ToolEvent]") -> str:
+        """Resume los tool events ejecutados en una frase NEUTRA en inglés, para
+        que `_llm_action_reply` la confirme en el idioma del usuario sin arrastrar
+        el español del contexto. Describe la FORMA (tool+action+target), no inventa
+        resultados. Si no hay nada claro, frase genérica."""
+        parts: list[str] = []
+        for ev in (events or [])[-3:]:
+            name = getattr(ev, "name", "") or ""
+            args = getattr(ev, "args", {}) or {}
+            action = str(args.get("action") or "").replace("_", " ").strip()
+            target = str(args.get("name") or args.get("app") or args.get("browser")
+                         or args.get("url") or args.get("target") or args.get("query")
+                         or args.get("level") or "").strip()
+            seg = " ".join(p for p in (action, name, target) if p) or name
+            if seg:
+                parts.append(seg)
+        return ("performed: " + "; ".join(parts)) if parts else "the requested action was completed"
+
+    def _llm_action_reply(self, user_text: str, did: str, fallback: str,
+                          target_lang: str | None = None) -> str:
+        """Genera la confirmación POST-ACCIÓN con el LLM, en el IDIOMA del usuario.
+
+        Reemplaza los short-circuits que devolvían "Listo, abrí X" hardcodeado en
+        español (violaba CLAUDE.md "el LLM responde" + rompía multi-idioma: el FT
+        multilingüe nunca veía estos replies → 0/5 idioma en vivo aunque el modelo
+        respondía 6/7 en smoke). `did` describe la acción ejecutada (en inglés
+        neutro, p.ej. "opened the app Notepad") para que el LLM la confirme en el
+        idioma del usuario. `target_lang` (código ISO: en/pt/fr/de/it/es) FUERZA el
+        idioma explícitamente — MEDIDO necesario: con comandos cortos ("chiudi
+        chrome") el LLM infería mal el idioma (→ inglés) si solo veía el comando;
+        pasarle el idioma ya detectado por py3langid lo clava. Fallback = el string
+        ES previo (si el LLM falla/tarda, no rompemos el turno). Gate
+        GEMMA4_LLM_ACTION_REPLY=0.
+
+        Latencia: 1 pass corto del LLM (max_tokens chico, sin thinking). Los
+        short-circuits existían para AHORRAR este pass; medido ~0.1s (prefix cache).
+        """
+        import os as _os_lar
+        if _os_lar.environ.get("GEMMA4_LLM_ACTION_REPLY", "1").strip().lower() \
+                in {"0", "false", "no", "off"}:
+            return fallback
+        try:
+            _LANG_NAMES = {"en": "English", "es": "Spanish", "pt": "Portuguese",
+                           "fr": "French", "de": "German", "it": "Italian"}
+            if target_lang and target_lang in _LANG_NAMES:
+                _lang_rule = (f"Reply ONLY in {_LANG_NAMES[target_lang]} "
+                              f"(the user's language). ")
+            else:
+                _lang_rule = ("Reply in the SAME language the user wrote their "
+                              "message in. ")
+            sys_p = (
+                "You are Baxy, a local Windows voice assistant. An action was just "
+                "performed successfully. Reply with ONE very short sentence confirming "
+                f"it was done. {_lang_rule}"
+                "Plain text, no markdown, no emojis. Just the confirmation."
+            )
+            usr_p = f"User said: {user_text[:300]}\nAction performed: {did}\nConfirmation:"
+            # GOTCHA (memoria): el model default "gemma-4" NO existe en el server
+            # (sirve 'vram4-text') → 400. resolve_turn_model da el id correcto.
+            _model = self._router_model_for(
+                [{"role": "user", "content": usr_p}])
+            resp = self.client.chat(
+                [{"role": "system", "content": sys_p},
+                 {"role": "user", "content": usr_p}],
+                tools=None, enable_thinking=False, parallel_tool_calls=False,
+                max_tokens=40, timeout_s=12.0, model=_model,
+            )
+            choices = resp.get("choices") or []
+            raw = str((choices[0].get("message") or {}).get("content") or "").strip() if choices else ""
+            raw = sanitize_text(raw)
+            return raw or fallback
+        except Exception as _exc:
+            try:
+                self.trace.event("agent", "silent_fallback",
+                                 component="llm_action_reply",
+                                 error=f"{type(_exc).__name__}: {_exc}")
+            except Exception:
+                pass
+            return fallback
+
     def _decide_turn(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> TurnDecision:
         """Decide phase of a turn.
 
@@ -1495,6 +1671,22 @@ class Gemma4Agent:
                     _aa_msg = (_aa_res.get("reply") if isinstance(_aa_res, dict) else None) \
                         or ("Listo, saqué la captura." if _aa.get("pattern") == "screen"
                             else "Listo.")
+                    # IDIOMA: si NO vino reply del tool y el user escribió en otro
+                    # idioma, generar la confirmación con el LLM en su idioma (no el
+                    # hardcode ES). Este early_reply salta _finalize_turn (donde está
+                    # el repair central), así que lo hacemos acá. Ok=True gate aparte.
+                    if (not (isinstance(_aa_res, dict) and _aa_res.get("reply"))
+                            and isinstance(content, str) and content.strip()):
+                        _aa_lang = _detect_lang(content)
+                        if _aa_lang != "es":
+                            _aa_did = ("took a screenshot" if _aa.get("pattern") == "screen"
+                                       else self._describe_events_for_reply([_aa_ev]))
+                            _aa_fixed = self._llm_action_reply(content, did=_aa_did,
+                                                               fallback=_aa_msg, target_lang=_aa_lang)
+                            # aceptar si NO quedó en español (mismo guard robusto que el
+                            # repair central — no depender de detectar bien el reply corto)
+                            if _aa_fixed and _aa_fixed.strip() and not _looks_spanish(_aa_fixed):
+                                _aa_msg = _aa_fixed
                     self._last_turn_ts = time.time()
                     # Honestidad: este early_reply SALTA _finalize_turn;
                     # pasamos el content por el MISMO guard de honestidad que el flujo normal
@@ -1544,9 +1736,18 @@ class Gemma4Agent:
                     # Honestidad: early_reply salta _finalize_turn. El
                     # guard respeta el tri-estado de app.open: launch confirmado/preexistente
                     # (verified=True) o despachado (status=dispatched, launch_requested) ->
-                    # "Listo, abrí X" intacto; verified=False -> nota honesta.
+                    # confirmación intacta; verified=False -> nota honesta.
+                    # IDIOMA: el reply lo genera el LLM en el idioma del usuario (no
+                    # hardcode ES) — fallback al ES previo si el LLM falla. target_lang
+                    # detectado con py3langid (clava el idioma en comandos cortos).
+                    _ao_utext = content if isinstance(content, str) else _ao_name
+                    _ao_reply = self._llm_action_reply(
+                        _ao_utext,
+                        did=f"opened the application {_ao_name}",
+                        fallback=f"Listo, abrí {_ao_name}.",
+                        target_lang=_detect_lang(_ao_utext))
                     return TurnDecision(early_reply=agent_guards.honest_action_reply(
-                        AgentReply(content=f"Listo, abrí {_ao_name}.",
+                        AgentReply(content=_ao_reply,
                                    tool_events=[_ao_ev], mission=None)))
                 # no resolvió a una app -> sigue el flujo normal (carpeta/URL/chat)
         # RESPONDER MENSAJE — short-circuit determinista PRE-LLM.
@@ -4577,6 +4778,42 @@ class Gemma4Agent:
         # during generation, speak only the post-guard tail (an appended hedge or
         # footer). For a clean success this is empty. Truthful by construction
         # (see _feed_tts_tail / SPRINT_streaming_tts_truthful.md).
+        # IDIOMA post-tool (language confusion — investigación 2026-06-06): el
+        # summary pass se ancla al idioma del CONTEXTO (schemas/results/historia en
+        # ES) por encima del system prompt y devuelve el reply de acción en español
+        # aunque el user escribió en otro idioma (medido: 15/21 leaks). Mitigación
+        # con EVIDENCIA (EMNLP 2024 §6.3 + Anthropic context-engineering): regenerar
+        # el reply con CONTEXTO LIMPIO (sin el contexto ES que arrastra). Dispara
+        # cuando (a) hubo tool ejecutado, (b) el user NO escribió en ES, (c) el reply
+        # leakeó al idioma equivocado. DECISIÓN (medido + user 2026-06-06): el idioma
+        # del INPUT lo detecta el híbrido _detect_lang FIABLEMENTE (27/27); el del
+        # REPLY corto NO (un "Listo, cerré Chrome" se mis-detecta como fr, y perseguir
+        # cada variante verbal ES con una lista de marcadores es interminable — el 4B
+        # siempre inventa otra). Por eso NO condicionamos el disparo a detectar el
+        # reply: si el user escribió en un idioma NO-es y hubo acción, REGENERAMOS
+        # SIEMPRE el reply con el LLM (contexto limpio, target_lang explícito). Cubre
+        # el 100% de los leaks sin el juego de variantes. Costo: ~0.1s extra SOLO en
+        # turnos noES (minoría; ES→ES no entra). Guard de seguridad: aceptar el _fixed
+        # solo si NO quedó en español (si el LLM fallara y devolviera ES, mantenemos
+        # el original). NO se toca si ya se streameó por TTS. Gate GEMMA4_LLM_ACTION_REPLY=0.
+        if (events and assistant_content
+                and not getattr(self, "_tts_streamed", False)):
+            try:
+                _utext = raw_text_early or _extract_user_text(content) or ""
+                _user_lang = _detect_lang(_utext)
+                if _user_lang != "es" and _utext.strip():
+                    _did = self._describe_events_for_reply(events)
+                    _fixed = self._llm_action_reply(_utext, did=_did, fallback=assistant_content,
+                                                    target_lang=_user_lang)
+                    # aceptar solo si mejora: el _fixed NO está en español (o el
+                    # original SÍ lo estaba — siempre vale reemplazar un leak ES).
+                    if _fixed and _fixed.strip() and not _looks_spanish(_fixed):
+                        self.trace.event(turn_id, "posttool_lang_repair",
+                                         user_lang=_user_lang,
+                                         before=assistant_content[:40], after=_fixed[:40])
+                        assistant_content = _fixed
+            except Exception:
+                pass
         if getattr(self, "_tts_streamed", False):
             self._feed_tts_tail(assistant_content, turn_id)
         return AgentReply(content=assistant_content, tool_events=events, mission=mission,
