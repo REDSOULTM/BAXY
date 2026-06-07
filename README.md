@@ -219,7 +219,11 @@ sqlite-vec, pandas, openpyxl · Pillow, python-docx, python-pptx, pypdf, PyMuPDF
 - **llama.cpp / llama-server con CUDA** (binario externo, **no incluido**). Build mínimo recomendado con soporte de tool-calling de Gemma 4 (PRs de parser/tokenizer). Esperado por default en `C:\llamacpp-cuda\bin\llama-server.exe`.
 - **Runtime CUDA 12** para faster-whisper GPU (wheels `nvidia-cublas-cu12` / `nvidia-cudnn-cu12`; `scripts/setup_cuda_runtime.py` reubica las DLLs en Windows).
 - **Node + pnpm** para buildear la UI web (React 19 + Vite 8 + TS).
-- **Modelos GGUF** E2B-Q4_K_M + mmproj-F16 (descarga aparte, no versionados).
+- **Modelos GGUF** — el fine-tune de Baxy (texto + visión) está publicado en
+  **[huggingface.co/REDSOULTM/baxy-gemma4-E2B-GGUF](https://huggingface.co/REDSOULTM/baxy-gemma4-E2B-GGUF)**
+  (~4.4 GB, descarga aparte; no van en git por tamaño). El CLI `hf` viene con
+  `huggingface_hub`, que se instala con `requirements.txt` (dependencia de
+  `sentence-transformers`); si hiciera falta: `pip install -U huggingface_hub`.
 - **Deps de sistema gratis** (el agente puede instalarlas): **ffmpeg** (audio), **espeak-ng** (fonemizador de Piper), **VLC** (media).
 
 ---
@@ -228,8 +232,8 @@ sqlite-vec, pandas, openpyxl · Pillow, python-docx, python-pptx, pypdf, PyMuPDF
 
 ```powershell
 # 1. Clonar el repo
-git clone <repo>
-cd "Probando Gemma 4"
+git clone https://github.com/REDSOULTM/Baxy.git
+cd Baxy
 
 # 2. venv Python 3.10 + deps de runtime
 py -3.10 -m venv .venv
@@ -247,9 +251,13 @@ python scripts\setup_cuda_runtime.py
 #    C:\llamacpp-cuda\bin\llama-server.exe
 #    (o configurá GEMMA4_LLAMA_SERVER_EXE con otra ruta)
 
-# 5. Descargar el modelo GGUF (Hugging Face / Unsloth)
-hf download unsloth/gemma-4-E2B-it-GGUF gemma-4-E2B-it-Q4_K_M.gguf --local-dir models\E2B
-hf download unsloth/gemma-4-E2B-it-GGUF mmproj-F16.gguf            --local-dir models\E2B
+# 5. Descargar el modelo GGUF — el FINE-TUNEADO de Baxy (texto + visión)
+#    (es el que corre en producción: 0% tools inventadas + replies multi-idioma)
+hf download REDSOULTM/baxy-gemma4-E2B-GGUF gemma-4-E2B-it-Q4_K_M.gguf --local-dir models\E2B
+hf download REDSOULTM/baxy-gemma4-E2B-GGUF mmproj-F16.gguf            --local-dir models\E2B
+#    Alternativa (Gemma 4 BASE de Unsloth, SIN el fine-tune de Baxy): reemplazá
+#    el repo por `unsloth/gemma-4-E2B-it-GGUF`. Baxy corre igual, pero el modelo
+#    base puede inventar tools y responder siempre en español tras una acción.
 
 # 6. Build de la UI web (React/Vite)
 cd gemma4_agent\ui_field
