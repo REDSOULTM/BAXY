@@ -14,7 +14,10 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LLM = ROOT / "dataset_finetune" / "curated" / "curated.jsonl"
+# USAR train.jsonl, NO curated.jsonl: curated INCLUYE el holdout (1619 ej de
+# evaluación). Meterlos al corpus del encoder es contaminación de datos (el encoder
+# "ve" ejemplos de test). Higiene: solo el split de TRAIN. (Corrección 2026-06-07.)
+LLM = ROOT / "dataset_finetune" / "curated" / "train.jsonl"
 T2V = ROOT / "gemma4_agent" / "data" / "tool2vec_queries.jsonl"
 
 # tools de INFRAESTRUCTURA que NO son "intención de dominio" — no enseñan routing
