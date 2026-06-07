@@ -46,21 +46,40 @@ class BrowserOpenSiteNameTest(unittest.TestCase):
         self.assertEqual(res.get("resolved_from_name"), "instant gaming")
 
     def test_explicit_domain_goes_direct_no_search(self):
+        # PROCEDENCIA (2026-06-07): si el user DICTÓ el dominio (aparece en su texto),
+        # va directo SIN búsqueda. Es su intención explícita -> cero latencia.
+        self.ag.tools._current_user_text = "abrí github.com"
         with mock.patch.object(self.ag.tools, "web_search") as s:
             self.ag.tools.t_browser({"action": "open", "url": "github.com"})
-        s.assert_not_called()                       # NO búsqueda para un dominio
+        s.assert_not_called()                       # NO búsqueda para un dominio dictado
         self.assertEqual(self.opened[-1], "github.com")
 
     def test_full_url_goes_direct(self):
+        # URL con PATH real -> no es un dominio "adivinado" (el 4B no inventa paths) ->
+        # va directo aunque no esté en el texto del user.
         with mock.patch.object(self.ag.tools, "web_search") as s:
             self.ag.tools.t_browser({"action": "open", "url": "https://example.com/path"})
         s.assert_not_called()
         self.assertEqual(self.opened[-1], "https://example.com/path")
 
+    def test_guessed_domain_not_in_user_text_re_resolves(self):
+        # PROCEDENCIA: el 4B emite 'pivigames.com' pero el user dijo 've a pivigames'
+        # (el NOMBRE, no el dominio) -> el .com fue ADIVINADO -> re-resolver por
+        # búsqueda al sitio real (pivigames.blog), NO abrir el adivinado. (2026-06-07.)
+        self.ag.tools._current_user_text = "ve a pivigames"
+        with self._search_returns("https://pivigames.blog/") as s:
+            res = self.ag.tools.t_browser({"action": "open", "url": "https://www.pivigames.com/"})
+        s.assert_called()                            # SÍ buscó (dominio adivinado)
+        self.assertEqual(self.opened[-1], "https://pivigames.blog/")
+        # re-resolvió: el campo guarda la URL adivinada original como "de dónde vino".
+        self.assertEqual(res.get("resolved_from_name"), "https://www.pivigames.com/")
+
     def test_search_no_result_falls_through(self):
         # sin resultado fiable -> NO inventa; cae al flujo normal (host inválido).
+        # el 2do pase (todos los backends) también vacío -> mock para no pegar a la red.
         with mock.patch.object(self.ag.tools, "web_search",
-                               return_value={"ok": True, "results": []}):
+                               return_value={"ok": True, "results": []}), \
+             mock.patch.object(self.ag.tools, "_site_search_all_backends", return_value=[]):
             res = self.ag.tools.t_browser({"action": "open", "url": "zzqq"})
         # no resolvió por nombre; web_open_url recibió "zzqq" (flujo normal)
         self.assertIsNone(res.get("resolved_from_name"))
@@ -94,14 +113,17 @@ class BrowserOpenSiteNameTest(unittest.TestCase):
             resolved = self.ag.tools._resolve_site_by_search("youtube")
         self.assertEqual(resolved, "https://www.youtube.com/")
 
-    def test_all_aggregators_falls_back_to_first(self):
-        # si TODO es agregador (sitio sin web propia indexada), último recurso:
-        # primer resultado http válido (mejor que nada).
+    def test_all_aggregators_returns_none_no_garbage(self):
+        # si TODO es agregador (sitio sin web propia indexada), NO abrir basura:
+        # error honesto (None). Cambio 2026-06-07 (guard anti-basura + CLAUDE.md):
+        # antes abría el primer agregador (instagram.com/foo) = página equivocada.
+        # El 2do pase (todos los backends) también mockeado vacío -> no pega a la red.
         results = [{"url": "https://www.instagram.com/foo/", "title": "ig"}]
         with mock.patch.object(self.ag.tools, "web_search",
-                               return_value={"ok": True, "results": results}):
+                               return_value={"ok": True, "results": results}), \
+             mock.patch.object(self.ag.tools, "_site_search_all_backends", return_value=[]):
             resolved = self.ag.tools._resolve_site_by_search("foo")
-        self.assertEqual(resolved, "https://www.instagram.com/foo/")
+        self.assertIsNone(resolved)
 
     def test_search_action_still_searches_not_open_top(self):
         # browser.search NO debe auto-abrir el top result: la intención es buscar,
@@ -220,6 +242,9 @@ class OpenInSpecificBrowserTest(unittest.TestCase):
 
     def test_named_browser_opens_url_in_it(self):
         cand = self._fake_candidate()
+        # el user dictó el dominio -> va directo (no re-resuelve); el foco del test
+        # es el RUTEO al navegador nombrado, no la resolución de sitio.
+        self.ag.tools._current_user_text = "pon pivigames.com en opera"
         with mock.patch.object(self.ag.tools.apps, "find", return_value=[cand]), \
              mock.patch.object(self.ag.tools.apps, "open",
                                return_value={"ok": True, "candidate": {
@@ -254,6 +279,7 @@ class OpenInSpecificBrowserTest(unittest.TestCase):
 
     def test_unresolvable_browser_falls_back_to_default_honestly(self):
         # navegador no encontrado -> abre en default + nota honesta (no finge).
+        self.ag.tools._current_user_text = "abrí pivigames.com en NavegadorRaro"
         with mock.patch.object(self.ag.tools.apps, "find", return_value=[]):
             res = self.ag.tools.t_browser({"action": "open", "browser": "NavegadorRaro",
                                            "url": "https://pivigames.com"})
@@ -263,6 +289,7 @@ class OpenInSpecificBrowserTest(unittest.TestCase):
         self.assertIn("NavegadorRaro", res["browser_note"])
 
     def test_no_browser_named_uses_default(self):
+        self.ag.tools._current_user_text = "abrí https://x.com"
         with mock.patch.object(self.ag.tools.apps, "find") as mf:
             res = self.ag.tools.t_browser({"action": "open", "url": "https://x.com"})
         self.assertTrue(res["ok"])

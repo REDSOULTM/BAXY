@@ -1324,6 +1324,46 @@ def _decode_duckduckgo_href(href: str) -> str:
     return href
 
 
+_USER_COUNTRY_CACHE: list[str | None] = []   # [code] o [None]; lista = memo de 1 slot
+
+
+def _user_country_code() -> str | None:
+    """Código ISO-3166 alpha-2 del PAÍS del usuario según el ESTADO DEL SO (no una
+    lista hardcoded): en Windows, la REGIÓN configurada (`GetUserGeoID` +
+    `GetGeoInfo`). Sirve para DESEMPATAR cuando varios sitios igual de relevantes
+    comparten nombre en países distintos ('portal uniej' existe en CL/PE/CO/SV) —
+    preferimos el del país del usuario (su .cl). NO es el idioma: medido en esta
+    PC el locale es es-MX pero la región es CL (el usuario está en Chile con
+    Windows en español de México) -> usamos la REGIÓN, que es la ubicación real.
+    Fallback multiplataforma: locale -> sufijo de país. None si no se puede
+    determinar (entonces el desempate cae al ranking de búsqueda, sin daño)."""
+    if _USER_COUNTRY_CACHE:
+        return _USER_COUNTRY_CACHE[0]
+    code: str | None = None
+    try:
+        import ctypes  # Windows: región del usuario (independiente del idioma)
+        geo = ctypes.windll.kernel32.GetUserGeoID(16)  # GEOCLASS_NATION
+        if geo:
+            buf = ctypes.create_unicode_buffer(16)
+            # GEO_ISO2 = 4 -> código de país de 2 letras (p.ej. 'CL')
+            if ctypes.windll.kernel32.GetGeoInfoW(geo, 4, buf, 16, 0) and buf.value:
+                code = buf.value.strip().upper() or None
+    except Exception:
+        code = None
+    if not code:
+        try:
+            import locale
+            loc = (locale.getlocale()[0] or "") or (locale.getdefaultlocale()[0] or "")
+            # 'Spanish_Chile' / 'es_CL' -> intentar el sufijo de país
+            m = re.search(r"[_-]([A-Za-z]{2})$", loc)
+            if m:
+                code = m.group(1).upper()
+        except Exception:
+            code = None
+    _USER_COUNTRY_CACHE.append(code if (code and len(code) == 2 and code.isalpha()) else None)
+    return _USER_COUNTRY_CACHE[0]
+
+
 def _ddgs_search(query: str, limit: int = 6) -> list[dict[str, str]]:
     """Búsqueda vía la librería `ddgs` (metasearch: agrega Google/Brave/Bing/DDG/
     Mojeek/Startpage...). 2026-06-07: reemplaza el scraper DDG-HTML como primario
@@ -1360,6 +1400,53 @@ def _ddgs_search(query: str, limit: int = 6) -> list[dict[str, str]]:
             if out:
                 return out
     return []
+
+
+def _ddgs_search_all_backends(query: str, limit: int = 8) -> list[dict[str, str]]:
+    """Igual que `_ddgs_search` pero AGREGA (no corta en el primero) los resultados
+    de TODOS los backends y deduplica por host. Motivo (2026-06-07, bug 'portal
+    uniej'): cada backend indexa distinto — para 'portalunab' el backend google
+    devuelve basura (academicjobs) y se queda ahí, pero brave SÍ trae el dominio
+    real (portal2.uniej.cl). `_ddgs_search` devuelve el primer backend con CUALQUIER
+    resultado, así que nunca veía brave. Esta variante junta todo para que el
+    resolvedor de sitio tenga el dominio real disponible. Preserva el orden
+    (google primero = ranking que el user ve), brave/bing/auto agregan lo que falte.
+    Solo se usa en la RESOLUCIÓN de sitio (no en web_search general, que prioriza
+    velocidad)."""
+    try:
+        from ddgs import DDGS
+    except ImportError:
+        return []
+    seen_hosts: set[str] = set()
+    merged: list[dict[str, str]] = []
+    from urllib.parse import urlparse as _up
+    # backends que ddgs expone (NO 'bing' — no existe en ddgs; sí duckduckgo/brave/
+    # google). Cada uno indexa distinto -> juntamos para no perder el dominio real.
+    for backend in ("google", "brave", "duckduckgo", "auto"):
+        try:
+            kw: dict[str, object] = {"max_results": limit}
+            if backend != "auto":
+                kw["backend"] = backend
+            raw = DDGS().text(query, **kw) or []
+        except Exception:
+            raw = []
+        for r in raw:
+            url = str(r.get("href") or r.get("url") or "").strip()
+            if not url:
+                continue
+            try:
+                host = (_up(url).hostname or "").lower()
+            except Exception:
+                host = ""
+            if not host or host in seen_hosts:
+                continue
+            seen_hosts.add(host)
+            item = {"title": str(r.get("title") or "")[:300], "url": url}
+            _sn = r.get("body") or r.get("snippet")
+            if _sn:
+                item["snippet"] = str(_sn)[:700]
+            merged.append(item)
+    return merged
 
 
 def _duckduckgo_search(query: str, limit: int = 6) -> list[dict[str, str]]:
@@ -2807,7 +2894,20 @@ class ToolRegistry:
                 # solo si guarda relación estructural con el nombre (ver la función).
                 if resolved and _site_resolution_relevant(_lookup, resolved):
                     _resolved_from, url = url, resolved
-                # sin resultado fiable -> url queda como estaba (error honesto).
+                elif _guessed_domain:
+                    # El dominio fue ADIVINADO por el 4B y la búsqueda NO encontró el
+                    # real -> NO abrir el inventado (bug medido 2026-06-07: 've a
+                    # portal uniej' -> 4B armó portalunab.mx INEXISTENTE ->
+                    # ERR_NAME_NOT_RESOLVED). Abrir un dominio inventado es PEOR que
+                    # decir honestamente que no se encontró. CLAUDE.md: no inventar.
+                    return _err(
+                        f"no encontré el sitio de «{_lookup}»; el dominio que se "
+                        f"formó ({url}) puede no existir y no quiero abrir una "
+                        f"página equivocada",
+                        status="needs_user", action="open",
+                        attempted_name=_lookup, attempted_url=url,
+                        completion_status="site_not_resolved")
+                # _bare_name sin resolver (no adivinado) -> url queda como estaba.
             # ABRIR EN UN NAVEGADOR ESPECÍFICO (2026-05-27): "pon X en Opera" trae
             # browser="Opera" + url. Antes el `browser=` se IGNORABA y la URL abría
             # en el navegador POR DEFECTO (el "en Opera" se perdía silenciosamente).
@@ -5283,6 +5383,13 @@ if ($pos) {
         "wikipedia.org", "play.google.com", "apps.apple.com",
     )
 
+    def _site_search_all_backends(self, name: str, limit: int = 12) -> list[dict[str, str]]:
+        """Wrapper de método sobre `_ddgs_search_all_backends` (agrega todos los
+        backends de ddgs). Es método para que los tests mock-only puedan parchearlo
+        y NO peguen a la red en el 2do pase del resolvedor. En prod delega a la
+        función de módulo."""
+        return _ddgs_search_all_backends(name, limit=limit)
+
     def _resolve_site_by_search(self, name: str) -> str | None:
         """Resuelve el NOMBRE de un sitio ('pivigames') a la URL del SITIO vía
         búsqueda web. NO adivina el TLD (lookup real, CLAUDE.md). Heurística para
@@ -5310,6 +5417,12 @@ if ($pos) {
         # normalizar token de comparación: solo alfanumérico, minúsculas.
         import re as _re
         tok = _re.sub(r"[^a-z0-9]", "", name.lower())
+        # tokens individuales del nombre (>=3, sin fillers): 'portal uniej' -> {portal,uniej}.
+        # Sirven para el caso multi-palabra cuyo dominio NO concatena los tokens
+        # (portal2.uniej.cl): el tok concatenado 'portalunab' no es substring de
+        # 'portal2unabcl', pero AMBOS tokens sí aparecen. (Bug 'portal uniej', 2026-06-07.)
+        _name_toks = [t for t in _re.sub(r"[^a-z0-9 ]", " ", name.lower()).split()
+                      if len(t) >= 3 and t not in _SITE_REQUEST_FILLERS]
 
         def _host(u: str) -> str:
             try:
@@ -5324,36 +5437,79 @@ if ($pos) {
                 return False
             return any(h in host for h in self._NON_SITE_HOSTS)
 
-        # (match_rank, google_pos, path_len, host_len, url). google_pos = posición
-        # original en los resultados de búsqueda: el #0 es el MÁS relevante/visitado
-        # (lo que el user pediría: "el de siempre"). 2026-06-07: a igual relevancia
-        # de nombre, se RESPETA el ranking de Google (antes desempataba por host_len,
-        # que ignoraba qué sitio es realmente el principal). Pedido del user.
-        cands: list[tuple[int, int, int, int, str]] = []
-        for _idx, res in enumerate(results):
-            u = str((res or {}).get("url") or "").strip()
-            if not u.startswith(("http://", "https://")):
-                continue
-            host = _host(u)
-            if not host:
-                continue
-            labels = host.split(".")
-            # SLD = etiqueta principal del dominio (penúltima): youtube.com -> 'youtube';
-            # blog.youtube -> 'youtube' es el TLD-like (última), 'blog' la SLD -> NO match fuerte.
-            sld = labels[-2] if len(labels) >= 2 else (labels[0] if labels else "")
-            sld_norm = _re.sub(r"[^a-z0-9]", "", sld)
-            host_norm = _re.sub(r"[^a-z0-9]", "", host)
-            if _is_agg(host, sld_norm):
-                continue  # red/agregador que NO es el destino pedido -> descartar
-            if tok and tok == sld_norm:
-                match_rank = 2          # el token ES la SLD (youtube.com, github.com) — fuerte
-            elif tok and tok in host_norm:
-                match_rank = 1          # el token aparece en el host (subdominio/parcial)
-            else:
-                match_rank = 0
-            path = urlparse(u).path or "/"
-            path_len = len([p for p in path.split("/") if p])  # 0 = homepage
-            cands.append((match_rank, _idx, path_len, len(host), u))
+        # candidato = (match_rank, country_bonus, google_pos, path_len, host_len, url).
+        # google_pos = posición original en los resultados: el #0 es el MÁS relevante/
+        # visitado (lo que el user pediría: "el de siempre"). 2026-06-07: a igual
+        # relevancia de nombre se RESPETA el ranking de búsqueda; el country_bonus
+        # (ccTLD del país del user) desempata ANTES que el ranking para homónimos.
+        # país del usuario (estado del SO) para DESEMPATAR sitios homónimos de
+        # distintos países ('portal uniej' CL vs PE vs CO vs SV). El ccTLD del país
+        # del usuario gana el empate. None -> sin desempate por país (cae al ranking).
+        _cc = (_user_country_code() or "").lower()
+
+        def _build_cands(res_list: list) -> list[tuple[int, int, int, int, int, str]]:
+            cs: list[tuple[int, int, int, int, int, str]] = []
+            for _idx, res in enumerate(res_list):
+                u = str((res or {}).get("url") or "").strip()
+                if not u.startswith(("http://", "https://")):
+                    continue
+                host = _host(u)
+                if not host:
+                    continue
+                labels = host.split(".")
+                # SLD = etiqueta principal del dominio (penúltima): youtube.com -> 'youtube';
+                # blog.youtube -> 'youtube' es el TLD-like (última), 'blog' la SLD -> NO match fuerte.
+                sld = labels[-2] if len(labels) >= 2 else (labels[0] if labels else "")
+                sld_norm = _re.sub(r"[^a-z0-9]", "", sld)
+                host_norm = _re.sub(r"[^a-z0-9]", "", host)
+                if _is_agg(host, sld_norm):
+                    continue  # red/agregador que NO es el destino pedido -> descartar
+                # multi-palabra: TODOS los tokens del nombre presentes en el host
+                # ('portal'+'uniej' en 'portal2unabcl') aunque un dígito los separe.
+                _all_toks = bool(_name_toks) and all(t in host_norm for t in _name_toks)
+                if tok and tok == sld_norm:
+                    match_rank = 2          # el token ES la SLD (youtube.com, github.com) — fuerte
+                elif (tok and tok in host_norm) or _all_toks:
+                    # el nombre aparece en el host: concatenado ('portalunab' en
+                    # 'portalunabedupe') O por tokens ('portal'+'uniej' en 'portal2unabcl').
+                    # Ambos significan "es su dominio" — MISMO rango para que el
+                    # desempate por país decida entre homónimos (.cl vs .pe vs .co).
+                    match_rank = 1
+                else:
+                    match_rank = 0
+                # DESEMPATE por país (estado del SO): si el host termina en el ccTLD
+                # del usuario (.cl para Chile) o lo contiene como label (uniej.edu.CL),
+                # bonus. Resuelve 'portal uniej' al .cl del usuario sobre el .pe/.co/.sv
+                # de universidades homónimas. Solo desempata; no anula el match por nombre.
+                country_bonus = 1 if (_cc and (host.endswith("." + _cc) or
+                                               ("." + _cc + ".") in ("." + host + "."))) else 0
+                path = urlparse(u).path or "/"
+                path_len = len([p for p in path.split("/") if p])  # 0 = homepage
+                cs.append((match_rank, country_bonus, _idx, path_len, len(host), u))
+            return cs
+
+        cands = [c for c in _build_cands(results) if c[0] > 0]
+        # ¿Hay AMBIGÜEDAD por país? El usuario tiene país (CL) pero ningún candidato
+        # del 1er pase está en su ccTLD (todos .pe/.co/.sv = universidades homónimas
+        # de otros países). El dominio del usuario puede estar en OTRO backend.
+        _country_ambiguous = bool(_cc and cands and not any(c[1] for c in cands))
+        if not cands or _country_ambiguous:
+            # 2do intento: AGREGAR todos los backends de ddgs (google+brave+bing) y
+            # reintentar. Cada motor indexa distinto — el dominio real (o el del país
+            # del usuario) puede estar en brave aunque google devuelva basura/otro país
+            # (bug 'portal uniej' -> portal2.uniej.cl solo lo trae brave). NO es hardcode:
+            # es consultar más motores; el mismo criterio estructural decide. Solo se
+            # paga el costo (~4s) cuando hace falta: 0 candidatos o ambigüedad de país.
+            try:
+                broad = self._site_search_all_backends(name, limit=12)
+            except Exception:
+                broad = []
+            if broad:
+                broad_cands = [c for c in _build_cands(broad) if c[0] > 0]
+                if broad_cands:
+                    # mezclar: el pase amplio reemplaza si trae candidato del país del
+                    # usuario; si no, conservar lo que ya teníamos (no perder el 1er pase).
+                    cands = broad_cands if (not cands or any(c[1] for c in broad_cands)) else cands
         if not cands:
             # todo era agregador / sin candidato con el nombre en el dominio.
             # NO abrir basura (2026-06-07: 'github' devolvía support.google.com/...
@@ -5362,17 +5518,17 @@ if ($pos) {
             # cosa. CLAUDE.md: nunca mentir/abrir el resultado equivocado.
             return None
         # ordenar: match_rank DESC (el dominio que contiene el nombre gana), luego
-        # google_pos ASC (el que Google rankeó primero = más visitado/oficial), luego
-        # path_len ASC (homepage), host_len ASC (canónico). El ranking de Google
-        # decide ENTRE candidatos igual de relevantes por nombre.
-        cands.sort(key=lambda c: (-c[0], c[1], c[2], c[3]))
-        best_rank, _, _, _, best_url = cands[0]
-        # GUARD ANTI-BASURA: si NINGÚN resultado tiene el nombre en su dominio
-        # (best_rank==0), la búsqueda no encontró "el sitio de X" — devolvió algo
-        # tangencial. NO abrirlo a ciegas: error honesto (None). El _site_resolution_
-        # relevant del llamador es una 2da red, pero acá ya cortamos el caso github.
-        if best_rank == 0:
-            return None
+        # country_bonus DESC (el ccTLD del país del usuario desempata homónimos),
+        # luego google_pos ASC (el que Google rankeó primero = más visitado/oficial),
+        # path_len ASC (homepage), host_len ASC (canónico). El país solo decide
+        # ENTRE candidatos igual de relevantes por nombre.
+        cands.sort(key=lambda c: (-c[0], -c[1], c[2], c[3], c[4]))
+        best_url = cands[0][5]
+        # GUARD ANTI-BASURA: `cands` ya está filtrado a match_rank>0 (el nombre
+        # aparece en el dominio), así que acá siempre hay un candidato fiable. Si la
+        # búsqueda solo devolvió cosas tangenciales (caso 'github'->support.google),
+        # `cands` quedó vacío arriba y ya retornamos None. CLAUDE.md: nunca abrir el
+        # resultado equivocado.
         # el ganador matchea el dominio: abrir su RAÍZ (homepage), no la subpágina.
         p = urlparse(best_url)
         return f"{p.scheme}://{p.netloc}/"
