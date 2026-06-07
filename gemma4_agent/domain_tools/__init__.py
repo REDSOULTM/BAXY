@@ -2547,6 +2547,19 @@ def _media_play_spotify(query: str, args: dict[str, Any]) -> dict[str, Any]:
 
 def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | None = None) -> dict[str, Any]:
     action = str(args.get("action") or "play").casefold()
+    # REPARACIÓN ESTRUCTURAL (bug medido 2026-06-07): "pon despacito en spotify"
+    # -> el 4B emitía media(action=pause, query="pon una cancion despacito") y la
+    # tool PAUSABA fielmente. Es una CONTRADICCIÓN DE FORMA, no de idioma: las
+    # acciones de transporte (pause/stop/resume/play_pause/next/previous) IGNORAN
+    # el contenido — no pausás "una canción específica". Si la llamada trae un tema
+    # para reproducir (query/song/title con contenido), la intención REAL es PLAY,
+    # sin importar qué action puso el 4B. Mide la forma (action transporte + payload
+    # de contenido), no keywords ni listas por idioma -> universal. NO toca play ni
+    # las transport-calls legítimas (pause sin query queda pause).
+    _content = str(args.get("query") or args.get("song") or args.get("title") or "").strip()
+    if action in {"pause", "stop", "resume", "play_pause", "next", "previous"} and _content:
+        action = "play"
+        args = {**args, "action": "play"}
     if action == "status":
         streaming = {}
         for canonical, spec in _STREAMING_PLATFORMS.items():
@@ -2569,7 +2582,15 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
     if action == "play":
         query = str(args.get("query") or args.get("song") or args.get("title") or "").strip()
         path = str(args.get("path") or "").strip()
+        # El 4B a veces indica la plataforma en `app` en vez de `provider` (medido:
+        # "pon despacito en spotify" -> args incluían app="spotify"). Si `provider`
+        # no es un streaming conocido pero `app` SÍ lo es, usar `app` como provider
+        # para reproducir en la plataforma pedida (no caer a YouTube por defecto).
         provider = str(args.get("provider") or "youtube").casefold()
+        if not _resolve_streaming_provider(provider):
+            _app = str(args.get("app") or "").casefold()
+            if _app and _resolve_streaming_provider(_app):
+                provider = _app
         if path:
             return _media_play_local(path, args)
         # Streaming providers con soporte nativo (Spotify, Netflix, Disney+,
