@@ -865,6 +865,32 @@ _KNOWN_REAL_DOMAINS = frozenset({
 })
 
 
+def _registrable_label(url: str):
+    """Devuelve (SLD, TLD) de una URL/host SIN path real, o None si NO es
+    candidata a 'dominio simple a verificar'. Normaliza esquema y www.
+    Ejemplos:
+      'https://www.pivigames.com/' -> ('pivigames','com')
+      'pivigames.com'              -> ('pivigames','com')
+      'https://github.com/u/repo'  -> None   (tiene path real -> respetar)
+      'youtube.com'                -> ('youtube','com')
+    Devuelve None si tiene path/query/fragment (URL deliberada del user) o si no
+    es un host con al menos etiqueta.tld."""
+    u = (url or "").strip().lower()
+    if not u:
+        return None
+    from urllib.parse import urlparse
+    p = urlparse(u if "//" in u else "//" + u)   # tolera 'pivigames.com' sin esquema
+    if (p.path not in ("", "/")) or p.query or p.fragment:
+        return None   # path/query/fragment real -> es una URL deliberada, no tocar
+    host = (p.hostname or "").lstrip(".")
+    if host.startswith("www."):
+        host = host[4:]
+    labels = host.split(".")
+    if len(labels) < 2 or not all(labels):
+        return None   # no es etiqueta.tld (IP, host suelto, etc.)
+    return labels[-2], labels[-1]
+
+
 def _is_probably_guessed_domain(url: str) -> bool:
     """True si `url` parece un dominio ADIVINADO por el LLM (le pegó .com a un
     nombre) y conviene VERIFICARLO por búsqueda antes de abrirlo, en vez de a
@@ -2702,12 +2728,28 @@ class ToolRegistry:
             _bare_name = (url and not url.startswith(("http://", "https://"))
                           and "." not in url and "/" not in url
                           and len(url) >= 3 and len(url.split()) <= 4)
+            # PROCEDENCIA (fix 2026-06-07, approach B): el 4B emite la URL COMPLETA
+            # "https://www.pivigames.com/" adivinando el .com. No se puede distinguir
+            # de un dominio real POR LA FORMA (google.com y pivigames.com son iguales).
+            # La señal de adivinanza es la PROCEDENCIA: el user dijo "ve a pivigames"
+            # (el NOMBRE) pero NUNCA dijo "pivigames.com" -> el dominio+TLD NO aparece
+            # en su texto -> el modelo lo inventó -> resolver por búsqueda. Si el user
+            # SÍ tipeó/dictó el dominio ("andá a lanacion.com") -> abrir directo (cero
+            # latencia). Mismo patrón que el grounding del teléfono de WhatsApp.
             _guessed_domain = False
+            _lookup = url
             if url and not _bare_name:
-                _guessed_domain = _is_probably_guessed_domain(url)
+                _reg = _registrable_label(url)   # (sld, tld) o None si tiene path real
+                if _reg:
+                    _sld, _tld = _reg
+                    _dom = f"{_sld}.{_tld}"
+                    _ut_low = (getattr(self, "_current_user_text", "") or "").lower()
+                    # ADIVINADO si: NO es un dominio obviamente real (allowlist) Y el
+                    # dominio completo NO aparece en el texto del user (no lo dictó).
+                    if _sld not in _KNOWN_REAL_DOMAINS and _dom not in _ut_low:
+                        _guessed_domain = True
+                        _lookup = _sld   # buscar por el nombre, sin el TLD inventado
             if url and (_bare_name or _guessed_domain):
-                _lookup = url if _bare_name else url.split("//")[-1].split("/")[0]
-                _lookup = _lookup.rsplit(".", 1)[0] if _guessed_domain else _lookup
                 resolved = self._resolve_site_by_search(_lookup)
                 # Mismo guard de honestidad que app.open: aceptar el sitio resuelto
                 # solo si guarda relación estructural con el nombre (ver la función).
