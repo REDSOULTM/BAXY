@@ -111,6 +111,38 @@ class TestProfileIntent(unittest.TestCase):
                   "escribí mi nombre en el bloc de notas", "write my name in notepad"):
             self.assertIsNone(self.detect(q), f"falso positivo en {q!r}")
 
+    def test_capability_identity_chat_not_detected(self):
+        """BUG real (cacería tanda 2/3, cluster A5 ~22): el short-circuit de perfil
+        sobre-disparaba ante preguntas de CAPACIDAD/IDENTIDAD/PANTALLA/CHARLA y ante
+        intención de GUARDAR un dato — todas mencionan 'me/yo/mí' pero NO piden ver el
+        perfil de gustos. Deben seguir el turno normal (el LLM responde)."""
+        if not self.ready:
+            self.skipTest("encoder no disponible")
+        for q in ("what does my screen show", "quién soy yo", "quién soy",
+                  "me estás escuchando siempre?", "me estás viendo?",
+                  "sé honesto conmigo", "qué significa hecho para ti?",
+                  "tenés algún meme?", "quiero que me recuerdes como red",
+                  "qué tengo en mi pc ahora mismo?", "qué puedo pedirte",
+                  "qué no podés hacer", "tenés sentimientos?",
+                  # identidad del asistente / capacidad / system query (t4)
+                  "quién eres", "háblame de ti", "presentate ante mí",
+                  "qué puedes hacer por mí", "cuánta vram tengo", "qué juegos tengo",
+                  "who created you",
+                  # charla emocional/filosófica multilingüe (t5) — incl. malestar
+                  "Você acha que sou uma boa pessoa?", "Acho que vou desistir de tudo",
+                  "Denkst du manchmal über mich nach?", "Je suis fier de moi",
+                  "estoy muy triste hoy"):
+            self.assertIsNone(self.detect(q), f"falso positivo (A5) en {q!r}")
+
+    def test_genuine_memory_questions_still_detected(self):
+        """No sobre-corregir: las preguntas REALES de inspección de memoria deben
+        seguir disparando inspect."""
+        if not self.ready:
+            self.skipTest("encoder no disponible")
+        for q in ("qué datos míos guardas?", "qué recuerdas sobre mis preferencias?",
+                  "mostrame mi perfil"):
+            self.assertEqual(self.detect(q), "inspect", f"esperaba inspect en {q!r}")
+
 
 if __name__ == "__main__":
     unittest.main()

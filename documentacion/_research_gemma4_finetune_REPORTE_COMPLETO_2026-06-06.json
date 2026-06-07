@@ -1,0 +1,332 @@
+{
+  "summary": "Deep research harness — fan-out web searches, fetch sources, adversarially verify claims, synthesize a cited report.",
+  "agentCount": 103,
+  "logs": [
+    "Q: How to correctly fine-tune Google's Gemma 4 (gemma-4-E2B-it, model_type \"gemma4\"…",
+    "Decomposed into 5 angles: broad/primary — official Gemma 4 + chat template/tokens, practitioner/implementation — Unsloth Gemma 4 LoRA, bug/contrarian — merge corruption issue, technical — llama.cpp GGUF conversion for gemma4, tuning/tradeoffs — hyperparameters + catastrophic forgetting",
+    "technical — llama.cpp GGUF conversion for gemma4: 6 results",
+    "practitioner/implementation — Unsloth Gemma 4 LoRA: 6 results",
+    "practitioner/implementation — Unsloth Gemma 4 LoRA: 5 novel (1 filtered)",
+    "bug/contrarian — merge corruption issue: 6 results",
+    "bug/contrarian — merge corruption issue: 4 novel (2 filtered)",
+    "tuning/tradeoffs — hyperparameters + catastrophic forgetting: 6 results",
+    "tuning/tradeoffs — hyperparameters + catastrophic forgetting: 2 novel (4 filtered)",
+    "broad/primary — official Gemma 4 + chat template/tokens: 6 results",
+    "broad/primary — official Gemma 4 + chat template/tokens: 4 novel (2 filtered)",
+    "Fetched 21 sources → 92 claims → verifying top 25",
+    "\"A tool/function result is returned to the model in…\": 3-0 ✓",
+    "\"The model emits a tool call in the literal form ca…\": 3-0 ✓",
+    "\"The official model card does NOT document the exac…\": 3-0 ✓",
+    "\"Gemma 4's function-calling chat template uses pair…\": 3-0 ✓",
+    "\"Gemma 4 uses standard system, assistant, and user …\": 3-0 ✓",
+    "\"Gemma 4 E2B-it uses model_type \"gemma4\" with archi…\": 3-0 ✓",
+    "\"The model's config.json sets eos_token_id to the L…\": 3-0 ✓",
+    "\"Gemma 4's chat template in Unsloth is selected via…\": 3-0 ✓",
+    "\"Gemma 4 introduces new special tokens for turns an…\": 2-1 ✓",
+    "\"Gemma 4's chat template uses '<|turn>' to open a t…\": 3-0 ✓",
+    "\"Gemma 4 E2B/E4B share KV state across layers, and …\": 2-1 ✓",
+    "\"For Gemma 4 LoRA, Unsloth exposes the flags finetu…\": 2-1 ✓",
+    "\"Gemma 4 has a custom layer Gemma4ClippableLinear t…\": 3-0 ✓",
+    "\"Unsloth confirms a Gemma 4 bug where use_cache=Fal…\": 1-2 ✗",
+    "\"Gibberish or repeated output after export/training…\": 3-0 ✓",
+    "\"Gemma 4 fine-tuning/inference in Unsloth requires …\": 0-3 ✗",
+    "\"Unsloth's recommended Gemma 4 E2B LoRA hyperparame…\": 0-3 ✗",
+    "\"Unsloth's recommended merge-and-save method to 16-…\": 2-1 ✓",
+    "\"Before this release, Gemma 4 E2B and E4B produced …\": 0-3 ✗",
+    "\"Correct GGUF conversion of Gemma 4 requires add_bo…\": 3-0 ✓",
+    "\"Unsloth provides Gemma 4 GGUF conversion via the s…\": 3-0 ✓",
+    "\"Unsloth v0.1.36-beta patches PEFT for the Gemma4Cl…\": 0-3 ✗",
+    "\"Gemma 4's End-of-Sentence (turn-ending) token is <…\": 3-0 ✓",
+    "\"Unsloth attributes gibberish/corrupted generation …\": 0-3 ✗",
+    "\"Unsloth's documented way to merge a LoRA adapter a…\": 3-0 ✓",
+    "Verify done: 25 claims → 19 confirmed, 6 killed"
+  ],
+  "result": {
+    "question": "How to correctly fine-tune Google's Gemma 4 (gemma-4-E2B-it, model_type \"gemma4\", architecture Gemma4ForConditionalGeneration, released ~April 2026, Apache 2.0, MatFormer architecture, ~2B active params, requires transformers 5.5.0) with LoRA/QLoRA via Unsloth on a single 16GB GPU for tool-calling + multilingual response generation. SPECIFIC questions I need answered from official/primary sources (Google ai.google.dev/gemma docs, the gemma-4 HuggingFace model card google/gemma-4-E2B-it, Unsloth's Gemma 4 docs/notebooks, GitHub issues): (1) the EXACT chat template format and special tokens — I observe it uses <|turn>user / <turn|> / <|turn>model / <|tool_call>call:NAME{...}<tool_call|> / <|tool_response> and eos_token_id is a LIST [1, 106] where 1=<eos> and 106=<turn|> and start_of_turn=105; which token actually ends an assistant turn for training and is the EOS handling different from Gemma 2/3? (2) correct target_modules for LoRA — does Gemma 4 have custom layers (I see Gemma4ClippableLinear which raw PEFT rejects) and does Unsloth require finetune_language_layers / finetune_vision_layers flags? (3) the CORRECT way to merge a Gemma 4 LoRA adapter to bf16 for GGUF conversion — I found that Unsloth's save_pretrained_merged(save_method=\"merged_16bit\") produces gibberish/corrupted output for Gemma 4 while PEFT merge_and_unload on the unsloth-loaded bf16 model works; is this a known Unsloth+Gemma4 bug and what is the recommended merge method? (4) recommended LoRA hyperparameters for Gemma 4 E2B (rank, alpha, dropout, learning rate, epochs, batch) for instruction/tool-call fine-tuning without catastrophic forgetting of multilingual ability; (5) llama.cpp convert_hf_to_gguf.py + quantization gotchas specific to gemma4 model_type (any required PRs, the right --outtype, imatrix). Prioritize sources from 2026, official Google Gemma 4 docs, the official model card, and Unsloth official Gemma 4 material.",
+    "summary": "To fine-tune Gemma 4 E2B-it with Unsloth on a 16GB GPU: (1) Use the new turn-based chat template — `<|turn>{role}\\n{content}<turn|>` with roles system/user/model, where `<turn|>` (token id 106) is the assistant-turn terminator (NOT `<eos>`/id 1) — selected via Unsloth's `get_chat_template(tokenizer, chat_template=\"gemma-4\")` (or \"gemma-4-thinking\"); tool calls use native special-token syntax `<|tool_call>call:NAME{param:<|\"|>value<|\"|>}<tool_call|>` and results `<|tool_response>response:NAME{...}<tool_response|>`, with `<|\"|>` (not JSON quotes) as the string delimiter. (2) For LoRA, use Unsloth's `target_modules=\"all-linear\"` plus the `finetune_language_layers/finetune_attention_modules/finetune_mlp_modules` flags; this routes around the custom `Gemma4ClippableLinear` layer that raw PEFT rejects (PEFT issue #3129), which Unsloth patches in unsloth-zoo's `get_peft_regex`. (3) The most credible root cause of gibberish/corrupted output is a chat-template/EOS mismatch at inference and/or the documented Gemma-4 merge bug where `save_pretrained_merged(merged_16bit)` silently rewrites `eos_token` from `<turn|>` to `<eos>` (issue #5386, fixed in PR #5451) — so reusing the exact training template/EOS and a current Unsloth (>= v0.1.36-beta) is essential; a separate use_cache=False KV-sharing bug also corrupts training-time logits and is fixed by Unsloth. (4) For GGUF, use a current llama.cpp build (Unsloth v0.1.36-beta bundles five Gemma-4-specific fixes: add_bos=True, BPE byte-token handling, a Gemma 4 parser, final_logit_softcapping, custom newline split); the documented merge paths are `save_pretrained_gguf(...)` one-step or `save_pretrained_merged(merged_16bit)` then `convert_hf_to_gguf.py --outtype f16`. The exact recommended LoRA hyperparameters could NOT be confirmed (the candidate values were refuted).",
+    "findings": [
+      {
+        "claim": "Gemma 4 uses a NEW turn-based chat template distinct from Gemma 2/3: turns are opened with `<|turn>` and closed with `<turn|>`, roles (system/user/model) follow the opening token inline, e.g. `<|turn>user\\n[Prompt]<turn|>\\n<|turn>model`. `<turn|>` is the assistant-turn terminator. Gemma 4 also natively supports the `system` role (a change from Gemma 3) and enables thinking by placing `<|think|>` at the start of the system prompt, with thought wrapped as `<|channel>thought\\n...<channel|>`.",
+        "confidence": "high",
+        "vote": "3-0 (claims 0, 7[2-1], 8, 16)",
+        "sources": [
+          "https://ai.google.dev/gemma/docs/core/model_card_4",
+          "https://ai.google.dev/gemma/docs/core/prompt-formatting-gemma4",
+          "https://ai.google.dev/gemma/docs/capabilities/thinking",
+          "https://unsloth.ai/docs/models/gemma-4"
+        ],
+        "evidence": "Google's official prompt-formatting doc defines verbatim: begin-turn `<|turn>`, end-turn `<turn|>`, with multi-turn examples `<|turn>system ... <turn|>`, `<|turn>user ... <turn|>`, `<|turn>model`. The thinking doc shows the Thinking-OFF E2B/E4B template `<|turn>user\\n[Prompt]<turn|>\\n<|turn>model`. The model card confirms standard system/assistant/user roles, native `system` role as a change from Gemma 3, the `<|think|>` thinking trigger, and `<|channel>thought\\n...<channel|>` wrapping. Unsloth docs corroborate `End of Sentence token: <turn|>`. This is the asymmetric `<|turn>`/`<turn|>` pair the user observed; it replaces Gemma 2/3's `<start_of_turn>`/`<end_of_turn>`. Search results claiming Gemma 4 uses `<start_of_turn>`/`<end_of_turn>` are conflations with Gemma 2/3 and are overridden by the dedicated Gemma-4 primary docs."
+      },
+      {
+        "claim": "Gemma 4's native function-calling format uses paired special tokens: the model EMITS calls as `<|tool_call>call:FUNCTION_NAME{param:<|\"|>value<|\"|>}<tool_call|>` and tool RESULTS are fed back as `<|tool_response>response:FUNCTION_NAME{key:value,...}<tool_response|>`. Keys are bare/unquoted, numeric values are NOT wrapped, and STRING values are wrapped in the single `<|\"|>` string-delimiter token rather than standard JSON quotes. `<|tool_response>` also acts as a stop sequence.",
+        "confidence": "high",
+        "vote": "3-0 (claims 2, 3, 4)",
+        "sources": [
+          "https://ai.google.dev/gemma/docs/capabilities/text/function-calling-gemma4",
+          "https://ai.google.dev/gemma/docs/core/prompt-formatting-gemma4"
+        ],
+        "evidence": "The official function-calling doc shows verbatim `<|tool_call>call:get_current_weather{location:<|\"|>Tokyo, JP<|\"|>}<tool_call|>` and the response pair `<|tool_response>response:get_current_weather{temperature:15,weather:<|\"|>sunny<|\"|>}<tool_response|>`. The prompt-formatting doc independently states 'A single token, <|\"|>, is used as a delimiter for all string values within the structured data blocks' and lists both token pairs, noting `<|tool_response>` acts as a stop sequence. Independent engineering evidence (llama.cpp issue #21384 showing the `<|\"|>` token leaking into real output; vLLM Gemma 4 recipe with a dedicated `tool_chat_template_gemma4.jinja`; mlx-lm #1096) confirms this is the actual emitted format, not a draft. This directly matches the `<|tool_call>call:NAME{...}<tool_call|>` / `<|tool_response>` syntax the user observed."
+      },
+      {
+        "claim": "EOS handling differs from Gemma 2/3: the assistant turn ends with `<turn|>` (token id 106), NOT `<eos>` (token id 1). config.json sets `eos_token_id` to the LIST [1, 106] (bos_token_id=2), and generation_config.json adds token 50 giving [1, 106, 50] — a multi-token EOS where any of those IDs terminates generation. The single most common cause of a Unsloth merge/EOS bug is the merged model silently rewriting `eos_token` from `<turn|>` to `<eos>`, breaking stop detection.",
+        "confidence": "high",
+        "vote": "3-0 (claims 6, 16; corroborated by 8, 9, 14)",
+        "sources": [
+          "https://huggingface.co/google/gemma-4-E2B-it",
+          "https://huggingface.co/google/gemma-4-E2B-it/raw/main/config.json",
+          "https://huggingface.co/google/gemma-4-E2B-it/raw/main/generation_config.json",
+          "https://github.com/unslothai/unsloth/issues/5386"
+        ],
+        "evidence": "Two independent fetches of the model's own config.json returned `eos_token_id: [1, 106]`, `bos_token_id: 2`; generation_config.json returned `eos_token_id: [1, 106, 50]`. HF transformers treats a list eos_token_id as a set of stop tokens (any one ends generation). Unsloth GitHub issue #5386 independently maps `<turn|>` = token id 106 and `<eos>` = token id 1, and documents that `save_pretrained_merged(merged_16bit)` on Gemma 4 silently overwrites tokenizer `eos_token` from `<turn|>` to `<eos>`, breaking stop detection in tool-call mode (10-12x latency) — marked Fixed via PR #5451. Token 50's identity is out of scope (search suggested `<|tool_response>` but unverified). For training, the assistant turn should be terminated by `<turn|>`/id 106 to match the chat-tuned model's behavior."
+      },
+      {
+        "claim": "For Gemma 4 LoRA, the correct target_modules approach is Unsloth's `target_modules=\"all-linear\"` (rather than an explicit module list), combined with the exposed flags `finetune_vision_layers`, `finetune_language_layers`, `finetune_attention_modules`, `finetune_mlp_modules`. This routes around Gemma 4's custom `Gemma4ClippableLinear` layer, which raw PEFT explicitly rejects. For a text-only E2B tool-call fine-tune, an explicit list `[q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj]` also works because Gemma4ClippableLinear lives in the vision/audio towers, not the language layers.",
+        "confidence": "high",
+        "vote": "2-1 (claim 11); custom-layer fix 3-0 (claim 12)",
+        "sources": [
+          "https://unsloth.ai/docs/models/gemma-4/train",
+          "https://github.com/huggingface/peft/issues/3129",
+          "https://github.com/unslothai/unsloth/discussions/4921"
+        ],
+        "evidence": "Unsloth's train page shows verbatim `FastVisionModel.get_peft_model(model, finetune_vision_layers=True, finetune_language_layers=True, finetune_attention_modules=True, finetune_mlp_modules=True, ..., target_modules=\"all-linear\")` and annotates target_modules as 'Optional now! Can specify a list if needed.' HF PEFT issue #3129 confirms raw PEFT rejects `Gemma4ClippableLinear` ('not supported. Currently, only the following modules are supported: torch.nn.Linear...') because it inherits nn.Module not nn.Linear; `all-linear` recursively scans and wraps nested linear layers without breaking the clipping logic. CAVEAT: the 'routes around custom layers' causal framing comes from PEFT #3129/blogs, not the Unsloth page itself. Gemma4ClippableLinear lives in vision/audio towers (~112+120 modules), so for a language-only E2B tool-call FT the custom-layer issue is largely irrelevant and an explicit module list works (gemma4.dev guide). Note `all-linear` is NOT a universal fix — it misses MoE experts on the 26B A4B variant (Unsloth issue #4907/PR #4913), a different model than E2B."
+      },
+      {
+        "claim": "Gemma 4 ships a custom layer `Gemma4ClippableLinear` that raw PEFT cannot handle (QLoRA fails); Unsloth patched this in the loader/checkpoint export path. The actual code patch is in unsloth-zoo's `get_peft_regex`, which detects `Gemma4ClippableLinear` (a wrapper exposing nn.Linear as a `.linear` child) and adds `name + '.linear'`. Shipped in Unsloth release v0.1.36-beta ('Gemma 4 Fixes').",
+        "confidence": "high",
+        "vote": "3-0 (claim 12)",
+        "sources": [
+          "https://github.com/unslothai/unsloth/discussions/4921",
+          "https://github.com/huggingface/peft/issues/3129",
+          "https://github.com/unslothai/unsloth/releases/tag/v0.1.36-beta"
+        ],
+        "evidence": "Unsloth discussion #4921 ('Gemma 4 Fixes', Apr 8 2026) contains 'fix: patch PEFT for Gemma4ClippableLinear in loader checkpoint path (fixes export)'. HF PEFT issue #3129 (opened Apr 2 2026, CLOSED) confirms the raw-PEFT rejection and root cause (inherits nn.Module not nn.Linear). Code-level confirmation: unsloth-zoo/unsloth_zoo/peft_utils.py get_peft_regex contains `from transformers.models.gemma4.modeling_gemma4 import Gemma4ClippableLinear ... if isinstance(module, Gemma4ClippableLinear): linear_modules.append(name + '.linear')` with comment 'Gemma4 ClippableLinear wraps nn.Linear as .linear child'. All sources dated April 2026, contemporaneous with release. Minor imprecision: the patch lives in get_peft_regex (target-module selection) rather than literally the 'loader/checkpoint path', but the substance is fully verified."
+      },
+      {
+        "claim": "The most credible root cause of gibberish/corrupted output after training or export is a chat-template/EOS-token mismatch at inference — Unsloth states the SAME chat template (and correct EOS) used during training must be reused in the target runtime (llama.cpp/Ollama). A distinct, training-time root cause also exists: Gemma 4 E2B/E4B share KV state across layers (num_kv_shared_layers=20 for E2B), and with `use_cache=False` (the training default) the KV-shared layers recompute K/V locally, producing garbage logits and diverging loss — Unsloth fixed this to give bit-exact parity between use_cache True/False.",
+        "confidence": "high",
+        "vote": "3-0 (claims 9, 13); 2-1 (claim 10)",
+        "sources": [
+          "https://unsloth.ai/docs/basics/troubleshooting-and-faqs",
+          "https://unsloth.ai/docs/models/gemma-4/train",
+          "https://github.com/unslothai/unsloth/discussions/4921",
+          "https://huggingface.co/google/gemma-4-E2B-it/raw/main/config.json"
+        ],
+        "evidence": "Unsloth troubleshooting docs state verbatim 'The most common cause of this error is using an incorrect chat template. It's essential to use the SAME chat template that was used when training... and later when you run it in another framework, such as llama.cpp or Ollama.' The Gemma 4 train page repeats this as the #1 export-failure cause (wrong chat template / EOS token). For the KV-sharing bug, Unsloth docs state 'Gemma-4 E2B and E4B share KV state across layers (num_kv_shared_layers = 20 and 18)' and with use_cache=False 'the logits become garbage and training loss diverges', with the fix giving 'max_abs_logit_diff: 0.000000 (bit-exact parity)'. The architectural fact is independently confirmed by the official config.json (num_kv_shared_layers=20, num_hidden_layers=35) and corroborated by sglang #22277, onnxruntime-genai #2062, vLLM. CAVEAT: the use_cache bug is a TRAINING-time corruption, distinct from the merge step; one secondary blog wrongly claimed E2B/E4B have no shared KV (refuted by official config + 4 implementation sources)."
+      },
+      {
+        "claim": "Regarding the user's specific observation that `save_pretrained_merged(save_method=\"merged_16bit\")` produces gibberish while PEFT `merge_and_unload` works: Unsloth DOES document `save_pretrained_merged(..., save_method=\"merged_16bit\")` as its standard 16-bit merge method, AND there are CONFIRMED Gemma-4-specific bugs in that exact path — notably issue #5386 (silent eos_token rewrite <turn|>->`<eos>`, fixed PR #5451) and PEFT rejection of Gemma4ClippableLinear during merge (fixed). The official Gemma 4 train guide notably steers toward `save_pretrained_gguf` directly. A 'merged_16bit corruption is a known Unsloth+Gemma4 bug' claim is PLAUSIBLE and consistent with the evidence but was NOT directly confirmed as the merge producing literal gibberish; the confirmed merge failures are the eos rewrite and the ClippableLinear PEFT error.",
+        "confidence": "medium",
+        "vote": "save_pretrained_merged is the documented method: 2-1 (claim 14); merge-corruption-as-gibberish unconfirmed",
+        "sources": [
+          "https://unsloth.ai/docs/basics/troubleshooting-and-faqs",
+          "https://unsloth.ai/docs/basics/inference-and-deployment/saving-to-gguf",
+          "https://github.com/unslothai/unsloth/issues/5386"
+        ],
+        "evidence": "`model.save_pretrained_merged(\"merged_model\", tokenizer, save_method=\"merged_16bit\")` appears verbatim across multiple official Unsloth docs as the standard 16-bit merge method. Issue #5386 confirms a Gemma-4 merge bug: merged_16bit silently overwrites eos_token from <turn|> (id 106) to <eos> (id 1), breaking stop detection (10-12x latency) — Fixed via PR #5451. The Gemma4ClippableLinear PEFT-merge rejection (issue #4820/#3129) is a different failure mode (a hard error, not corrupted output). I could NOT directly confirm that merged_16bit produces literal gibberish OUTPUT for Gemma 4; the documented 'gibberish' findings trace to chat-template/EOS mismatch or the use_cache=False training bug. The user's empirical workaround (PEFT merge_and_unload on the unsloth-loaded bf16 model works) is consistent with avoiding the eos-rewrite path. Recommendation: upgrade Unsloth to >= v0.1.36-beta / a version including PR #5451, verify the merged tokenizer's eos_token is <turn|>, and reuse the exact training chat template."
+      },
+      {
+        "claim": "Correct GGUF conversion of Gemma 4 requires a current llama.cpp build (Unsloth v0.1.36-beta bundles updated llama.cpp binaries with five Gemma-4-specific fixes): (1) add_bos == True, (2) byte-token handling in the BPE detokenizer, (3) a Gemma 4 specialized parser, (4) reading final_logit_softcapping, (5) a custom newline split. The documented conversion paths are one-step `model.save_pretrained_gguf(directory, tokenizer, quantization_method=\"q4_k_m\")` OR two-step `save_pretrained_merged(merged_16bit)` then `python llama.cpp/convert_hf_to_gguf.py merged_model --outfile model-F16.gguf --outtype f16`. Build llama.cpp from github.com/ggml-org/llama.cpp; ready-made E2B GGUFs exist at unsloth/gemma-4-E2B-it-GGUF.",
+        "confidence": "high",
+        "vote": "3-0 (claims 15, 17, 18)",
+        "sources": [
+          "https://github.com/unslothai/unsloth/releases/tag/v0.1.36-beta",
+          "https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/discussions/4",
+          "https://github.com/ggml-org/llama.cpp/pull/21390",
+          "https://unsloth.ai/docs/basics/inference-and-deployment/saving-to-gguf",
+          "https://unsloth.ai/docs/models/gemma-4"
+        ],
+        "evidence": "Unsloth v0.1.36-beta release notes list all five fixes verbatim: 'convert : set \"add bos\" == True for Gemma 4'; 'vocab : add byte token handling to BPE detokenizer for Gemma4'; 'common : add gemma 4 specialized parser'; 'llama-model: read final_logit_softcapping for Gemma 4'; 'llama: add custom newline split for Gemma 4', plus 'Llama.cpp binaries updated to use latest version which includes all Gemma 4 Fixes.' Corroborated by the HF GGUF model-card discussion #4 (same five fixes) and merged llama.cpp PR #21390 (final_logit_softcapping, merged 2026-04-04). The saving-to-gguf doc documents both the one-step save_pretrained_gguf (q4_k_m 'Recommended') and the two-step merged_16bit -> convert_hf_to_gguf.py --outtype f16 path. The gemma-4 run-locally page shows building from ggml-org/llama.cpp with targets llama-cli/llama-mtmd-cli/llama-server/llama-gguf-split and links ready-made E2B GGUFs (full quant table UD-IQ2_M 2.29GB ... BF16 9.31GB). Minor caveat: final_logit_softcapping read is optional with a 30.0f fallback, so 'requires' is slightly strong for that one item."
+      },
+      {
+        "claim": "Gemma 4 E2B-it uses model_type \"gemma4\", architecture class Gemma4ForConditionalGeneration, and requires transformers >= 5.5.0 (config records transformers_version 5.5.0.dev0).",
+        "confidence": "high",
+        "vote": "3-0 (claim 5)",
+        "sources": [
+          "https://huggingface.co/google/gemma-4-E2B-it/raw/main/config.json",
+          "https://github.com/vllm-project/vllm/issues/39216",
+          "https://github.com/vllm-project/llm-compressor/issues/2562"
+        ],
+        "evidence": "The model's own config.json contains verbatim model_type 'gemma4', architectures 'Gemma4ForConditionalGeneration', transformers_version '5.5.0.dev0'. The >=5.5.0 floor (debatable since transformers_version normally records save-time version) is corroborated by two downstream issues: vllm #39216 ('Gemma 4 support requires transformers>=5.5.0') and llm-compressor #2562 ('Gemma 4 support requires transformers >= 5.5.0'). A '4.56+' figure from an AI-summarized search conflated Gemma 3/general config support with the new gemma4 model_type. NOTE: a separate claim that Unsloth specifically requires transformers PINNED to exactly 5.5.0 (stable/v5.5-release branch) was REFUTED (vote 0-3) — the floor is >=5.5.0, not a hard pin."
+      }
+    ],
+    "caveats": "RECOMMENDED HYPERPARAMETERS ARE UNCONFIRMED — the single most directly actionable item the user asked for (question 4) could NOT be answered with confidence. The specific candidate values (r=32, alpha=32, dropout=0, lr=2e-4 reducible to 2e-5, batch=1 x grad_accum=4, adamw_8bit, weight_decay=0.001, 1 epoch / max_steps=60) were REFUTED by adversarial vote (0-3); the Unsloth train page also shows a SMALLER config in places (r=8, lora_alpha=8, lr=2e-4, max_steps=60) which is a demo/smoke value, not a production tool-call FT recommendation. There is therefore NO verified Unsloth recommendation for catastrophic-forgetting-safe multilingual + tool-call LoRA hyperparameters for E2B — treat any specific numbers as hypotheses and tune empirically, especially given this project's documented prior FT regression where ES coherence degraded (sample_weight + 3 epochs + EN openers).\n\nMERGE-CORRUPTION CAUSALITY IS PARTIALLY UNRESOLVED — the user's empirical finding that save_pretrained_merged(merged_16bit) yields gibberish while PEFT merge_and_unload works is PLAUSIBLE and consistent with confirmed Gemma-4 merge bugs (eos_token silent rewrite, issue #5386; ClippableLinear PEFT rejection), but the literal 'merged_16bit produces gibberish output' was NOT directly confirmed as a documented Unsloth+Gemma4 bug. The confirmed merge failures are (a) the eos rewrite and (b) a hard PEFT error, not necessarily corrupted text. The user's own observation remains the strongest evidence for their specific environment; the safest path is upgrading to a current Unsloth (>= v0.1.36-beta, including PR #5451) and verifying the merged tokenizer's eos_token is <turn|>.\n\nVERSION/TIME SENSITIVITY — All sources are April-June 2026 and tied to a fast-moving release (Gemma 4 ~April 2026). Unsloth and llama.cpp fixes were landing in real time; exact behavior depends heavily on the installed Unsloth/unsloth-zoo/transformers/llama.cpp versions. Pin and record versions for reproducibility. Token 50 in the generation_config eos list was not identified. Several corroborating items (the 'all-linear routes around custom layers' framing, hyperparameter context) come from PEFT issues, GGUF discussions, and the gemma4.dev guide rather than the primary Unsloth page; the gemma4.dev guide is blog-quality.\n\nSPLIT VOTES — Findings on target_modules flags (claim 11) and the use_cache=False KV-sharing root cause (claim 10) passed only 2-1, indicating some verifier disagreement; treat the KV-sharing-as-gibberish-cause and the flag-list completeness as well-supported but not unanimous.",
+    "openQuestions": [
+      "What are the verified, production-grade LoRA hyperparameters (rank, alpha, dropout, learning rate, epochs, batch/grad-accum, optimizer, weight decay) for an E2B tool-call + multilingual fine-tune that avoids catastrophic forgetting of multilingual ability? No source confirmed these; given this project's prior ES-degradation regression, this needs empirical tuning against a diverse held-out set.",
+      "Does save_pretrained_merged(merged_16bit) on a CURRENT Unsloth (>= v0.1.36-beta, including PR #5451) still produce gibberish for Gemma 4 E2B, or was the user's failure caused by an older Unsloth with the eos-rewrite bug? Re-test on the latest version before adopting PEFT merge_and_unload as the permanent workaround.",
+      "What token does id 50 (the third entry in generation_config.json eos_token_id [1,106,50]) correspond to, and should it be treated as an EOS/stop token during training and inference? Search suggested <|tool_response> but this was unverified.",
+      "For a TEXT-ONLY E2B tool-call fine-tune, is target_modules=\"all-linear\" actually preferable to an explicit list [q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj], given Gemma4ClippableLinear lives only in the vision/audio towers? The explicit list may avoid touching modality towers entirely and reduce trainable params — needs a measured comparison."
+    ],
+    "refuted": [
+      {
+        "claim": "Unsloth's recommended Gemma 4 E2B LoRA hyperparameters are rank r=32, lora_alpha=32, lora_dropout=0, learning_rate=2e-4 (reduce to 2e-5 for long runs), per_device_train_batch_size=1 with gradient_accumulation_steps=4, optim=adamw_8bit, weight_decay=0.001, and num_train_epochs=1 (max_steps=60 in the demo).",
+        "vote": "0-3",
+        "source": "https://unsloth.ai/docs/models/gemma-4/train"
+      },
+      {
+        "claim": "Unsloth confirms a Gemma 4 bug where use_cache=False produces gibberish/garbage output for the E2B and E4B variants due to corrupted attention computation, directly relevant to the user's observation of corrupted merged output.",
+        "vote": "1-2",
+        "source": "https://github.com/unslothai/unsloth/discussions/4921"
+      },
+      {
+        "claim": "Gemma 4 fine-tuning/inference in Unsloth requires transformers pinned to version 5.5.0 (stable / v5.5-release branch).",
+        "vote": "0-3",
+        "source": "https://github.com/unslothai/unsloth/discussions/4800"
+      },
+      {
+        "claim": "Unsloth v0.1.36-beta patches PEFT for the Gemma4ClippableLinear custom layer in the loader/checkpoint path to fix model export, and explicitly enables exporting and saving of Gemma 4 models — directly bearing on the reported save/merge corruption for Gemma 4.",
+        "vote": "0-3",
+        "source": "https://github.com/unslothai/unsloth/releases/tag/v0.1.36-beta"
+      },
+      {
+        "claim": "Before this release, Gemma 4 E2B and E4B produced gibberish output when use_cache=False, which is the kind of corruption observed during/after merging; this release fixes that gibberish.",
+        "vote": "0-3",
+        "source": "https://github.com/unslothai/unsloth/releases/tag/v0.1.36-beta"
+      },
+      {
+        "claim": "Unsloth attributes gibberish/corrupted generation after GGUF export primarily to chat-template and EOS-token mismatch, not to a merge bug; it states you must use the same chat template used during training and the correct eos token or you get gibberish on longer generations.",
+        "vote": "0-3",
+        "source": "https://unsloth.ai/docs/basics/inference-and-deployment/saving-to-gguf"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ai.google.dev/gemma/docs/core/model_card_4",
+        "quality": "primary",
+        "angle": "broad/primary — official Gemma 4 + chat template/tokens",
+        "claimCount": 5
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/capabilities/text/function-calling-gemma4",
+        "quality": "primary",
+        "angle": "broad/primary — official Gemma 4 + chat template/tokens",
+        "claimCount": 5
+      },
+      {
+        "url": "https://huggingface.co/google/gemma-4-E2B-it",
+        "quality": "primary",
+        "angle": "broad/primary — official Gemma 4 + chat template/tokens",
+        "claimCount": 5
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/capabilities/thinking",
+        "quality": "primary",
+        "angle": "broad/primary — official Gemma 4 + chat template/tokens",
+        "claimCount": 4
+      },
+      {
+        "url": "https://unsloth.ai/docs/models/gemma-4/train",
+        "quality": "primary",
+        "angle": "practitioner/implementation — Unsloth Gemma 4 LoRA",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/unslothai/unsloth/issues/5386",
+        "quality": "forum",
+        "angle": "practitioner/implementation — Unsloth Gemma 4 LoRA",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/unslothai/unsloth/discussions/4921",
+        "quality": "primary",
+        "angle": "practitioner/implementation — Unsloth Gemma 4 LoRA",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/unslothai/unsloth/discussions/4800",
+        "quality": "primary",
+        "angle": "practitioner/implementation — Unsloth Gemma 4 LoRA",
+        "claimCount": 4
+      },
+      {
+        "url": "https://unsloth.ai/docs/basics/troubleshooting-and-faqs",
+        "quality": "primary",
+        "angle": "practitioner/implementation — Unsloth Gemma 4 LoRA",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/unslothai/unsloth/issues/4820",
+        "quality": "forum",
+        "angle": "bug/contrarian — merge corruption issue",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/unslothai/unsloth/issues/1267",
+        "quality": "forum",
+        "angle": "bug/contrarian — merge corruption issue",
+        "claimCount": 4
+      },
+      {
+        "url": "https://github.com/unslothai/unsloth/releases/tag/v0.1.36-beta",
+        "quality": "primary",
+        "angle": "bug/contrarian — merge corruption issue",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/ggml-org/llama.cpp/issues/21371",
+        "quality": "forum",
+        "angle": "bug/contrarian — merge corruption issue",
+        "claimCount": 4
+      },
+      {
+        "url": "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/discussions/11",
+        "quality": "forum",
+        "angle": "technical — llama.cpp GGUF conversion for gemma4",
+        "claimCount": 4
+      },
+      {
+        "url": "https://unsloth.ai/docs/models/gemma-4",
+        "quality": "primary",
+        "angle": "technical — llama.cpp GGUF conversion for gemma4",
+        "claimCount": 5
+      },
+      {
+        "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF",
+        "quality": "primary",
+        "angle": "technical — llama.cpp GGUF conversion for gemma4",
+        "claimCount": 3
+      },
+      {
+        "url": "https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF",
+        "quality": "primary",
+        "angle": "technical — llama.cpp GGUF conversion for gemma4",
+        "claimCount": 3
+      },
+      {
+        "url": "https://unsloth.ai/docs/basics/inference-and-deployment/saving-to-gguf",
+        "quality": "primary",
+        "angle": "technical — llama.cpp GGUF conversion for gemma4",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/ggml-org/llama.cpp/blob/master/convert_hf_to_gguf.py",
+        "quality": "primary",
+        "angle": "technical — llama.cpp GGUF conversion for gemma4",
+        "claimCount": 1
+      },
+      {
+        "url": "https://unsloth.ai/docs/get-started/fine-tuning-llms-guide/lora-hyperparameters-guide",
+        "quality": "primary",
+        "angle": "tuning/tradeoffs — hyperparameters + catastrophic forgetting",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/pdf/2405.09673",
+        "quality": "primary",
+        "angle": "tuning/tradeoffs — hyperparameters + catastrophic forgetting",
+        "claimCount": 5
+      }
+    ],
+    "stats": {
+      "angles": 5,
+      "sourcesFetched": 21,
+      "claimsExtracted": 92,
+      "claimsVerified": 25,
+      "confirmed": 19,
+      "killed": 6,
+      "afterSynthesis": 9,
+      "urlDupes": 5,
+      "budgetDropped": 4,
+      "agentCalls": 103
+    }
+  }
+}

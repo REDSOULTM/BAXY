@@ -75,6 +75,25 @@ class TestExecuteContract(unittest.TestCase):
         self.assertIn("RuntimeError", str(out.get("error", "")))
         self.assertIn("simulated handler crash", str(out.get("error", "")))
 
+    def test_handler_returning_non_dict_is_normalized_not_raised(self):
+        # BUG real #busca_teclados (2026-06-04): un handler que devuelve un NO-dict
+        # (list/None/str) hacía crashear el turno entero con "'list' object has no
+        # attribute 'setdefault'" en _normalize_tool_result, y el AttributeError
+        # escapaba al try/except de execute(). El dispatcher DEBE degradar a un
+        # error honesto, nunca lanzar. (La invariante que el docstring ya promete.)
+        tmp = Path(tempfile.mkdtemp(prefix="gemma4_contract_"))
+        memory = MemoryStore(tmp / "mem.json")
+        state = AgentState(tmp / "data" / "state.json")
+        reg = ToolRegistry(memory, tmp / "captures", state=state, safety_enabled=False)
+        for bad in ([{"title": "x"}], None, "oops", 42):
+            reg._impls["system"] = lambda _a, _b=bad: _b
+            out = reg.execute("system", {"action": "time"})
+            self.assertIsInstance(out, dict, f"non-dict {type(bad).__name__} not normalized")
+            self.assertFalse(out.get("ok"))
+            self.assertEqual(out.get("status"), "failed")
+            self.assertEqual(out.get("tool"), "system")
+            self.assertIn("non-dict", str(out.get("error", "")))
+
     def test_invalid_args_short_circuit_with_validation_errors(self):
         reg = _make_registry()
         # window only accepts a fixed set of actions per schema; an arbitrary

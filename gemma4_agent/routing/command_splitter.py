@@ -318,9 +318,16 @@ def is_dependent_open(clause: str) -> bool:
 # tool app.open SÍ resuelve todos (calc.exe etc.). Detector
 # estructural -> el caller INTENTA app.open(nombre); si resuelve a una app, listo;
 # si no (carpeta/URL/chat), cae al flujo normal (la tool es la guarda de precisión).
+# SOLO verbos de ABRIR-APP. NO "ejecutar/run/start": "ejecuta pytest"/"run pytest"
+# es un COMANDO (terminal), no abrir-app — incluirlos hacía que el short-circuit
+# secuestrara 42 comandos shell del dataset y, peor, "ejecuta pytest" caía al
+# fallback web de app.open (pytest→pytest.org) y MENTÍA "Listo, abrí pytest" (BUG
+# real medido eval run2, 2026-06-04). "ejecutar X" llega ahora al router+LLM, que
+# ya ofrecen terminal/developer y desambiguan bien (verificado en vivo). El único
+# "ejecuta <app>" del dataset (taskkill) ya cae por _NON_APP_MARK (tiene '/').
 _APP_OPEN_VERB = re.compile(
-    r"^\s*(?:abr[íi]\w*|abre|abrir|abrime|lanz[áa]\w*|ejecut[áa]\w*|"             # es
-    r"open|launch|start|run|"                                                     # en
+    r"^\s*(?:abr[íi]\w*|abre|abrir|abrime|lanz[áa]\w*|"                           # es
+    r"open|launch|"                                                               # en
     r"abra|ouvre|lance|[öo]ffne|starte|apri|avvia)\s+",                           # pt/fr/de/it
     re.IGNORECASE)
 # marcadores de NO-app: chat/canal (in-app), carpeta (filesystem), URL/sitio (browser).
@@ -416,6 +423,15 @@ _MSG_BODY_LEAD = re.compile(
 # "en <app>" al final del contacto, para pelarlo. App = una palabra (no frase).
 _MSG_APP_TAIL = re.compile(
     r"\s+(?:en|in|on|im|su|no|dans)\s+\w+\s*$", re.IGNORECASE)
+# Apps de MENSAJERÍA con UI propia (set cerrado y finito + fonéticas de Whisper).
+# Solo se usan para decidir si pelar un "en <app>" residual del CUERPO de un
+# mensaje (no para routing). Cerrado = seguro: no toca palabras comunes ("casa",
+# "bar", "10 minutos"). Incluye WhatsApp porque "a Ana en WhatsApp que ..." cae
+# en el mismo PASO 1-fallback.
+_MSG_KNOWN_APP_RE = re.compile(
+    r"(?:whatsapp|wsp|wpp|wasap|guasap|discord|telegram|slack|teams|signal|"
+    r"messenger|instagram|insta|skype|sms)",
+    re.IGNORECASE)
 
 
 def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | None:
@@ -501,6 +517,24 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
         contact = contact[:mapp.start()].strip(" ,:")
         if tail and not body:                    # mensaje pegado tras "en app"
             body = tail
+    # PASO 2b: el "en <app>" puede haber quedado al FINAL del CUERPO, no del
+    # contacto, cuando el "que" precede al "en app" ("a Juan QUE voy ... EN
+    # Discord" -> PASO 1 dejó body="que voy ... en Discord"). Pelarlo del body
+    # SOLO si la última palabra es una APP DE MENSAJERÍA conocida — distingue
+    # "en Discord" (app) de "en casa"/"en 10 minutos" (lugar/tiempo legítimos del
+    # mensaje). MEDIDO: el pelado ciego rompía "te espero en casa"->"te espero"
+    # y AppResol(fuzzy) matcheaba "casa" como app (CLAUDE.md: medí, no celebré).
+    # Las apps de mensajería son un set CERRADO y finito -> cobertura segura,
+    # multi-idioma, sin tocar palabras comunes. (Si la app está en el app_hint
+    # del SO, también vale.)
+    if body:
+        mtail = _MSG_APP_TAIL.search(body)
+        if mtail:
+            tail_word = re.findall(r"\w+", mtail.group(0))[-1].lower()  # palabra tras "en"
+            _is_app = bool(_MSG_KNOWN_APP_RE.fullmatch(tail_word)) or (
+                bool(app_hint) and tail_word in app_hint.lower())
+            if _is_app:
+                body = _MSG_APP_TAIL.sub("", body).strip(" ,:")
     # PASO 3 (fallback): si NO hubo conector ni "en app" y el contacto tiene varias
     # palabras, la 1ª es el contacto y el resto el mensaje ("CbaYeah hola como va",
     # "juan hola"). Conservador: el contacto suele ser UNA palabra (handle/nombre).
@@ -768,7 +802,11 @@ _AA_TYPE_VERB = re.compile(
 # Localizadores preferidos (en/in/on...) y de respaldo (a/al). "a" es ambiguo
 # ("a las 5") -> se prueba SOLO si no hay un "en". 2 pasadas.
 _AA_LOC_PREF = r"en|in|into|on|sobre|dentro\s+de|dans|im|su"
-_AA_NAV_RE = re.compile(r"\b(?:" + _AA_NAV + r")\b\s+(?:" + _AA_PREP + r")?\s*", re.IGNORECASE)
+# La preposición opcional se ancla a PALABRA COMPLETA (\b...\b): sin el word-boundary
+# de cierre, "open No" matcheaba (n[oa] de _AA_PREP comía el "No" de "Notepad") ->
+# parse_type_action devolvía app="tepad" -> focus_app("tepad") fallaba (BUG real eval
+# run3, "open Notepad and type X"). Con \b la prep solo se consume si es token entero.
+_AA_NAV_RE = re.compile(r"\b(?:" + _AA_NAV + r")\b\s+(?:(?:" + _AA_PREP + r")\b\s+)?", re.IGNORECASE)
 _AA_CONN_RE = re.compile(r"\s+(?:" + _AA_CONN + r")\s+(?:luego\s+|despu[ée]s\s+|then\s+)?", re.IGNORECASE)
 
 
@@ -836,6 +874,19 @@ def parse_type_action(clause: str) -> dict | None:
 # (solo SEPARA verbo de label) -> stems multi-idioma. Universal.
 _CLICK_VERB_STEM = re.compile(
     r"^\s*(?:"
+    # PERÍFRASIS OPCIONAL "hacé/haz/hagá/dale/dá click", "make/do/give a click",
+    # "faz/fai/mach ... click" (BUG real #click_boton, 2026-06-04: "hace click en
+    # el botón rojo" no matcheaba -> el 4B respondía cualquier cosa). El lookahead
+    # (?=...click...) hace que la perífrasis SOLO se consuma si el sustantivo que
+    # sigue ES click/clic -> "hacé la tarea"/"haz que suene rock" NO matchean
+    # (sin sobre-captura, sin listas por idioma). Mide la FORMA.
+    r"(?:hac[eéê]?r?|haz|hag[áa]|dale|d[áa]|"                             # es
+    r"mak(?:e|é)|do|give|"                                                # en
+    r"fa(?:zer|z|ça)|fai(?:re|s)|mach(?:e|en)?)"                          # pt/fr/de
+    r"\s+(?:un[ao]?\s+|a\s+|the\s+|el\s+)?"                               # artículo opcional
+    r"(?=cl[íi]?c|click|klick|clic|clicc)"                                # lookahead: SÍ es click
+    r")?\s*"
+    r"(?:"
     r"apret[áa]\w*|clicke[áa]\w*|click\w*|toc[áa]\w*|toca\w*|"            # es
     r"seleccion[áa]\w*|elegí|elige|elig[ée]\w*|presion[áa]\w*|"          # es
     r"click|press|tap|select|choose|hit|"                                # en

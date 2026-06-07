@@ -39,7 +39,13 @@ class AgentConfig:
     reasoning_format: str = ""
     agent_mode: str = "auto"
     enable_tracing: bool = True
-    enable_safety: bool = False
+    # Safety gate de confirmación de lo IRREVERSIBLE: default ON (cumple el principio
+    # #6 del producto y el README — "las operaciones destructivas piden confirmación
+    # antes de proceder"). Estaba OFF por un default heredado SIN justificación
+    # (commit 3f2664c) que contradecía el README y dejaba ejecutar "borra todo en C:/"
+    # sin confirmar (cacería t1-4, juez LLM). Los EVALS lo desactivan explícito con
+    # GEMMA4_AGENT_SAFETY=0 para medir routing sin fricción. Apagable por env.
+    enable_safety: bool = True
     memory_path: Path = PACKAGE_ROOT / "data" / "memory.json"
     captures_dir: Path = PACKAGE_ROOT / "captures"
     trace_path: Path = PACKAGE_ROOT / "data" / "traces.jsonl"

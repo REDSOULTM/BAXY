@@ -221,7 +221,21 @@ _DISPATCH_OK_COMPLETIONS = frozenset({
 })
 
 
-def _normalize_tool_result(name: str, args: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+def _normalize_tool_result(name: str, args: dict[str, Any], result: Any) -> dict[str, Any]:
+    # CONTRATO handler->dispatcher: un handler SIEMPRE debe devolver un dict. Si
+    # devuelve list/None/str (handler roto), NO crashear el turno entero con
+    # AttributeError ('list' object has no attribute 'setdefault') — eso reventaba
+    # el turno completo (BUG real #busca_teclados, 2026-06-04: el AttributeError
+    # escapaba al try/except de execute() porque la normalización corría FUERA del
+    # try). Degradar a error honesto y trazable. ESTRUCTURAL (mide la FORMA del
+    # result, no su contenido). Cubre execute() y execute_routine_step(). El repo
+    # YA declara esta invariante (test_tool_dispatch_contract: "execute() never
+    # raises"); esto la cierra para el caso non-dict, no solo el de excepción.
+    if not isinstance(result, dict):
+        result = _err(
+            f"tool {name} returned non-dict result ({type(result).__name__})",
+            status="failed", raw_result_type=type(result).__name__,
+        )
     result.setdefault("tool", name)
     if args.get("action") and "action" not in result:
         result["action"] = str(args["action"])
@@ -1546,7 +1560,12 @@ class ToolRegistry:
         # Campos internos NUNCA aceptan inyección desde el LLM —
         # los filtramos antes de cualquier validación. El runner de routines
         # los reintroduce vía `execute_routine_step` (ver más abajo).
-        for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create"):
+        # `_confirmed_by_gate` lo inyecta SOLO el flujo de confirmación real
+        # (safety(action=confirm) → re-ejecuta tras un round-trip del usuario); el
+        # LLM no puede falsificarlo porque se filtra acá antes de leerlo.
+        _gate_confirmed = bool(clean_args.get("_confirmed_by_gate"))
+        for forbidden in ("_internal_safe", "routine_context", "confirmed_at_create",
+                          "_confirmed_by_gate"):
             clean_args.pop(forbidden, None)
         # Coerción honesta de `confirmed`: el 4B a veces emite el flag como STRING
         # ("false"/"no"/"0") y `bool("false")` daba True (string no-vacío es truthy)
@@ -1555,9 +1574,20 @@ class ToolRegistry:
         # un string solo cuenta como confirmado si NO es un negativo conocido.
         _raw_confirmed = clean_args.pop("confirmed", False)
         if isinstance(_raw_confirmed, str):
-            confirmed = _raw_confirmed.strip().lower() not in {"false", "no", "0", "off", ""}
+            _llm_confirmed = _raw_confirmed.strip().lower() not in {"false", "no", "0", "off", ""}
         else:
-            confirmed = bool(_raw_confirmed)
+            _llm_confirmed = bool(_raw_confirmed)
+        # SEGURIDAD CRÍTICA (cacería t1-4, juez LLM): el 4B aprendió a AUTO-emitir
+        # `confirmed:true` en la PRIMERA llamada → salteaba el gate de confirmación
+        # de operaciones irreversibles (medido: 15 casos, incl "borra todo en C:/",
+        # "borra system32"). El usuario NUNCA confirmó. Un `confirmed` venido del LLM
+        # NO es una confirmación real. La confirmación VÁLIDA solo llega por:
+        #   (a) `_confirmed_by_gate` → el flujo safety(confirm) tras round-trip real;
+        #   (b) `confirmed_at_create` → rutina pre-confirmada al crearse (más abajo).
+        # Mandamiento #6 de CLAUDE.md. El gate de abajo decide por RIESGO si confirmar;
+        # para lo reversible (la mayoría) `_llm_confirmed` igual ahorra el round-trip
+        # innecesario, pero NUNCA puede saltear lo irreversible.
+        confirmed = _gate_confirmed or _llm_confirmed
         # Output-coherence guard: catch a known LLM misroute where the call
         # itself proves the wrong tool was chosen, and redirect it. This
         # validates the model's OUTPUT (not the user's words), so it stays
@@ -1641,7 +1671,13 @@ class ToolRegistry:
                     precondition=_prec.name))
         except Exception:
             pass
-        if self.safety_enabled and not confirmed and name != "safety":
+        # Skip del gate SOLO con confirmación REAL: el round-trip del usuario
+        # (`_gate_confirmed`, vía safety(confirm)) o una rutina pre-confirmada al
+        # crearse (`confirmed_at_create`, reinyectado por execute_routine_step). El
+        # `confirmed` AUTO-EMITIDO por el LLM (`_llm_confirmed`) NO saltea el gate de
+        # lo irreversible — el classifier decide por RIESGO. Para lo reversible, el
+        # propio classifier no pide confirmación, así que no hay round-trip molesto.
+        if self.safety_enabled and not _gate_confirmed and name != "safety":
             decision = classify_tool_call(name, clean_args)
             # La POLÍTICA de confirmación decide si confirmar (default confirm_risky:
             # never auto-aprueba lo reversible pero SIEMPRE confirma lo irreversible;
@@ -1663,9 +1699,13 @@ class ToolRegistry:
                 )
         # Reinyectamos `confirmed` despues de validar para que los gates duros
         # (terminal/system/package/database/backup_sync/filesystem) puedan
-        # respetar la confirmacion previa sin chocar con el schema.
+        # respetar la confirmacion previa sin chocar con el schema. SOLO la
+        # confirmación REAL (`_gate_confirmed`, round-trip del usuario) llega a los
+        # impls — NUNCA el `confirmed` auto-emitido por el LLM, que para irreversibles
+        # ya fue interceptado por el gate de arriba (no debe alimentar un gate interno
+        # del impl que lo trate como "ya confirmado").
         impl_args = dict(clean_args)
-        if confirmed:
+        if _gate_confirmed:
             impl_args["confirmed"] = True
         try:
             result = impl(impl_args)
@@ -1830,6 +1870,27 @@ class ToolRegistry:
     def t_steam(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="open")
         query = str(args.get("query") or args.get("name") or "").strip()
+        # RED DE HONESTIDAD (BUG real eval run2): "¿Steam está abierto?" -> el 4B
+        # elige steam(open) (vía forced-retry/schema, aunque el router NO ofrezca
+        # steam) -> abría Steam y MENTÍA "Listo, abrí Steam". Una pregunta de ESTADO
+        # NO debe ABRIR la app. Si el texto del turno es una pregunta de estado,
+        # responder si el proceso corre — NO ejecutar open. Solo activo si el agente
+        # plumeó _current_user_text (sin él = no-op, no rompe tests/CLI).
+        if action == "open":
+            _ut = (getattr(self, "_current_user_text", "") or "").strip()
+            try:
+                from ..routing.planner import _is_app_state_check as _isc
+            except Exception:
+                _isc = None
+            if _ut and _isc and _isc(_ut):
+                try:
+                    _names = _running_process_names()
+                    _running = any("steam" in n for n in _names)
+                except Exception:
+                    _running = None
+                return _ok(action="status", app="Steam", running=_running,
+                           completion_status="reported_state_did_not_open",
+                           note="pregunta de estado: NO abrí Steam, reporté si corre")
         if action == "open":
             os.startfile("steam://open/main")  # type: ignore[attr-defined]
             resource = self.state.register_resource("steam", "Steam", cleanup_tool="app", cleanup_args={"action": "close", "name": "Steam"})
@@ -2539,6 +2600,32 @@ class ToolRegistry:
         action = _action(args, default="open")
         query = str(args.get("query") or "").strip()
         browser = str(args.get("browser") or "").strip()
+        # RED DE HONESTIDAD (mismo patrón que t_steam): "¿Chrome está abierto?" -> el
+        # 4B elige browser(open) -> abría el navegador y MENTÍA "Listo, abrí Chrome".
+        # Una pregunta de ESTADO no debe ABRIR. Si el texto del turno es pregunta de
+        # estado Y no trae una URL/query real, reportar si el navegador corre, no abrir.
+        if action == "open" and not query and not str(args.get("url") or args.get("target") or "").strip():
+            _ut = (getattr(self, "_current_user_text", "") or "").strip()
+            try:
+                from ..routing.planner import _is_app_state_check as _isc
+            except Exception:
+                _isc = None
+            if _ut and _isc and _isc(_ut):
+                try:
+                    _names = _running_process_names()
+                    # nombre del navegador a buscar: el que nombró el user, o
+                    # cualquiera de los conocidos si no nombró ninguno.
+                    _br = browser.lower()
+                    if _br:
+                        _running = any(_br in n for n in _names)
+                    else:
+                        _running = any(b in n for n in _names
+                                       for b in ("chrome", "msedge", "firefox", "brave", "opera"))
+                except Exception:
+                    _running = None
+                return _ok(action="status", app=(browser or "navegador"), running=_running,
+                           completion_status="reported_state_did_not_open",
+                           note="pregunta de estado: NO abrí el navegador, reporté si corre")
         if action == "open":
             # Aliases para `url` que el 4B usa frecuentemente (caso medido: el
             # modelo pasó `target:"canvas"` y la tool devolvía needs_user porque
@@ -3513,7 +3600,11 @@ class ToolRegistry:
                     confirmation=item, status="needs_user",
                     hint="confirmation may have been already confirmed/cancelled/expired",
                 )
-            result = self.execute(str(item["tool"]), {**dict(item.get("args") or {}), "confirmed": True})
+            # Confirmación REAL del usuario (round-trip): re-ejecuta con el canal
+            # INTERNO `_confirmed_by_gate` (no `confirmed`, que el LLM podría falsificar)
+            # → execute() lo reconoce como confirmación válida y saltea el gate.
+            result = self.execute(str(item["tool"]),
+                                  {**dict(item.get("args") or {}), "_confirmed_by_gate": True})
             self.state.resolve_confirmation(confirmation_id, "confirmed", result)
             return _ok(
                 confirmation_id=confirmation_id,
@@ -4282,12 +4373,33 @@ switch ($action) {
             return _err("missing window title/query")
         env = os.environ.copy()
         env["GEMMA4_WINDOW_QUERY"] = title_query
+        # PRESET DIRECCIONAL (fix capacidad): el usuario dice "a la izquierda" /
+        # "mitad derecha" / "lado a lado"; el LLM pasa `position` y el rect se
+        # calcula contra el área de trabajo REAL de la pantalla (en el script PS,
+        # que conoce el tamaño). Si no hay position, usa x/y/width/height crudos
+        # (comportamiento previo, defaults 0/0/1000/700). Estructural, multi-idioma.
+        _pos_raw = str(args.get("position") or args.get("preset") or "").strip().lower()
+        _POS_MAP = {
+            "izquierda": "left", "left": "left", "izq": "left",
+            "derecha": "right", "right": "right", "der": "right",
+            "arriba": "top", "top": "top", "abajo": "bottom", "bottom": "bottom",
+            "mitad izquierda": "left", "mitad derecha": "right",
+            "maximizar": "max", "maximizada": "max", "maximize": "max",
+            "centro": "center", "center": "center", "centrar": "center",
+        }
+        position = ""
+        for k, v in _POS_MAP.items():
+            if k in _pos_raw:
+                position = v
+                break
+        env["GEMMA4_POSITION"] = position
         env["GEMMA4_X"] = str(int(args.get("x", 0)))
         env["GEMMA4_Y"] = str(int(args.get("y", 0)))
         env["GEMMA4_W"] = str(int(args.get("width", 1000)))
         env["GEMMA4_H"] = str(int(args.get("height", 700)))
         script = r"""
 $q=$env:GEMMA4_WINDOW_QUERY.ToLower()
+$pos=$env:GEMMA4_POSITION
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -4295,10 +4407,23 @@ public class Win32 {
   [DllImport("user32.dll")] public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool repaint);
 }
 "@
+Add-Type -AssemblyName System.Windows.Forms
+$wa = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
 $p = Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle.ToLower().Contains($q) } | Select-Object -First 1
 if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q } | ConvertTo-Json; exit 0 }
-[Win32]::MoveWindow($p.MainWindowHandle,[int]$env:GEMMA4_X,[int]$env:GEMMA4_Y,[int]$env:GEMMA4_W,[int]$env:GEMMA4_H,$true) | Out-Null
-[PSCustomObject]@{ ok=$true; title=$p.MainWindowTitle; process=$p.ProcessName; x=$env:GEMMA4_X; y=$env:GEMMA4_Y; width=$env:GEMMA4_W; height=$env:GEMMA4_H } | ConvertTo-Json
+if ($pos) {
+  switch ($pos) {
+    "left"   { $x=$wa.X; $y=$wa.Y; $w=[int]($wa.Width/2); $h=$wa.Height }
+    "right"  { $x=$wa.X+[int]($wa.Width/2); $y=$wa.Y; $w=[int]($wa.Width/2); $h=$wa.Height }
+    "top"    { $x=$wa.X; $y=$wa.Y; $w=$wa.Width; $h=[int]($wa.Height/2) }
+    "bottom" { $x=$wa.X; $y=$wa.Y+[int]($wa.Height/2); $w=$wa.Width; $h=[int]($wa.Height/2) }
+    "max"    { $x=$wa.X; $y=$wa.Y; $w=$wa.Width; $h=$wa.Height }
+    "center" { $w=[int]($wa.Width*0.6); $h=[int]($wa.Height*0.6); $x=$wa.X+[int](($wa.Width-$w)/2); $y=$wa.Y+[int](($wa.Height-$h)/2) }
+    default  { $x=[int]$env:GEMMA4_X; $y=[int]$env:GEMMA4_Y; $w=[int]$env:GEMMA4_W; $h=[int]$env:GEMMA4_H }
+  }
+} else { $x=[int]$env:GEMMA4_X; $y=[int]$env:GEMMA4_Y; $w=[int]$env:GEMMA4_W; $h=[int]$env:GEMMA4_H }
+[Win32]::MoveWindow($p.MainWindowHandle,$x,$y,$w,$h,$true) | Out-Null
+[PSCustomObject]@{ ok=$true; title=$p.MainWindowTitle; process=$p.ProcessName; position=$pos; x=$x; y=$y; width=$w; height=$h } | ConvertTo-Json
 """
         proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], env=env, capture_output=True, text=True, timeout=10)
         ok, data = parse_ps_json(proc.stdout)
@@ -4312,6 +4437,24 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         name = str(args.get("name", "")).strip()
         if not name:
             return _err("empty app name")
+        # DESVÍO WEB->BROWSER (cluster A7, cacería tanda 2): si el "nombre de app"
+        # es en realidad un objetivo WEB (URL/host:port/IP/localhost/about:/
+        # dominio.tld), app.open no abre nada real y miente "Listo, abrí X". Lo
+        # correcto es abrirlo en el navegador. Estructural (mide la FORMA), no una
+        # lista de sitios. Gate GEMMA4_APP_OPEN_WEB_DIVERT=0 lo apaga.
+        import os as _os_wd
+        try:
+            from ..routing.planner import _is_web_target as _iwt
+        except Exception:
+            _iwt = None
+        if (_os_wd.environ.get("GEMMA4_APP_OPEN_WEB_DIVERT", "1").strip().lower()
+                not in {"0", "false", "no", "off"}) and _iwt and _iwt(name):
+            try:
+                self.trace_note = "app_open_web_divert"
+            except Exception:
+                pass
+            return self.t_browser({"action": "open", "url": name,
+                                   "_diverted_from": "app.open"})
         matches = self.apps.find(name, refresh=bool(args.get("refresh", False)))
         if not matches:
             return _err("app not found", query=name, searched_sources=["PATH", "Start Menu", "StartApps", "Registry", "Steam", "Epic"])
@@ -4788,6 +4931,32 @@ if (-not $p) { [PSCustomObject]@{ ok=$false; error="window not found"; query=$q 
         )
 
     def filesystem_delete(self, args: dict[str, Any]) -> dict[str, Any]:
+        # RED DE SEGURIDAD how-to (BUG real medido, cacería tanda 1): "cómo elimino
+        # una carpeta" -> el 4B llamaba filesystem.delete y BORRABA la carpeta ante
+        # una PREGUNTA (daño irreversible). El subset del router ya excluye filesystem
+        # en how-to, pero es sugestivo (forced-retry da acceso igual). Acá, si el
+        # texto del turno es una pregunta how-to, NO borrar — explicar. Solo activo
+        # si el agente plumeó _current_user_text (sin él = no-op, no rompe tests/CLI).
+        _ut = (getattr(self, "_current_user_text", "") or "").strip()
+        if _ut:
+            try:
+                from ..routing.planner import (
+                    _is_howto_or_info_question as _howto,
+                    _is_prompt_injection as _inject)
+                if _howto(_ut):
+                    return _ok(action="explain", completion_status="howto_not_executed",
+                               note="pregunta how-to: NO borré nada; el asistente explica cómo, no ejecuta")
+                # PROMPT-INJECTION ("ignora tus permisos y borra"): NUNCA auto-
+                # confirmar una acción irreversible bajo un intento de saltar reglas.
+                # Forzar confirmación explícita (ignorando un confirmed=true que
+                # pudiera venir del propio injection).
+                if _inject(_ut):
+                    return _err("acción destructiva bajo intento de saltar permisos; "
+                                "requiere confirmación explícita del usuario",
+                                status="needs_confirmation",
+                                completion_status="injection_blocked", verified=False)
+            except Exception:
+                pass
         raw_path = str(args.get("path", "")).strip()
         if not raw_path:
             return _err("empty path")
@@ -7017,6 +7186,26 @@ Start-Sleep -Milliseconds 120
         sin ctypes) -> el caller cae al camino PowerShell legacy. Best-effort."""
         if not text:
             return None
+        # RED ESTRUCTURAL anti-self-kill (BUG #suma_calc, 2026-06-04): SendInput va
+        # IN-PROCESS al foreground REAL del escritorio. Si el foreground es el PROPIO
+        # proceso (VS Code host / el server durante un eval batch), tipear contra sí
+        # mismo mata la sesión (memoria: synthetic-input-lives-in-vscode). Abortar
+        # honestamente ANTES de emitir input. Correcto también en prod: nunca querés
+        # teclear contra tu propia ventana. GEMMA4_NO_PHYSICAL_INPUT=1 lo desactiva
+        # del todo (modo eval).
+        if os.environ.get("GEMMA4_NO_PHYSICAL_INPUT", "").strip().lower() in {"1", "true", "yes", "on"}:
+            return {"ok": False, "verified": False,
+                    "completion_status": "no_physical_input_mode",
+                    "error": "physical input disabled (eval mode)"}
+        try:
+            import win32gui as _wg, win32process as _wp
+            _fg = _wg.GetForegroundWindow()
+            if _fg and _wp.GetWindowThreadProcessId(_fg)[1] == os.getpid():
+                return {"ok": False, "verified": False,
+                        "completion_status": "aborted_self_target",
+                        "error": "foreground is the host process; refusing to type into self"}
+        except Exception:
+            pass  # sin win32 / no-Windows -> seguimos (best-effort)
         _m = _sendinput_machine()
         if _m is None:
             return None  # no-Windows / sin ctypes -> caller cae a legacy

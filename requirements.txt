@@ -100,3 +100,11 @@ openwakeword>=0.6
 # into the ctranslate2 package dir on Windows (where they're actually found).
 nvidia-cublas-cu12>=12.9         # provides cublas64_12.dll + cublasLt64_12.dll
 nvidia-cudnn-cu12>=9.0           # provides cudnn64_9.dll + cudnn_* DLLs
+
+# --- Detección de idioma para el reply post-tool (fix "language confusion") ---
+# py3langid: clasificador estadístico de idioma pura-Python (~2MB, sin deps
+# pesadas). Restringido a {en,es,pt,fr,de,it} detecta el idioma de comandos
+# imperativos CORTOS donde el detector por stopwords _guess_lang fallaba (daba
+# 'es' por default). Usado por _detect_lang para decidir si regenerar el reply
+# post-acción en el idioma del usuario. Ver documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md §4.
+py3langid>=0.3

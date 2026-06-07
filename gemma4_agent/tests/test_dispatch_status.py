@@ -258,9 +258,11 @@ class TestSummarizeVerifiersSilent(unittest.TestCase):
         self.assertEqual(summarize_verifiers(outs), "")
 
     def test_emits_when_any_failed(self):
+        # Footer ahora en PROSA honesta (no marker "[N no confirmada(s)]").
         outs = [VerifierOutcome("app", False, "app crashed")]
         f = summarize_verifiers(outs)
-        self.assertIn("1 no confirmada", f)
+        self.assertIn("no pude confirmar", f.lower())
+        self.assertNotIn("[", f)
 
     def test_emits_full_breakdown_when_failed_plus_other(self):
         outs = [
@@ -269,9 +271,10 @@ class TestSummarizeVerifiersSilent(unittest.TestCase):
             VerifierOutcome("media", None, "no_verifier"),
         ]
         f = summarize_verifiers(outs)
-        self.assertIn("1 verificada", f)
-        self.assertIn("1 no confirmada", f)
-        self.assertIn("1 no verificable", f)
+        # solo el failed se surfacea (en prosa); verificada/no-verificable no
+        # ensucian el reply hablado.
+        self.assertIn("no pude confirmar", f.lower())
+        self.assertNotIn("[", f)
 
 
 class TestDispatchCompletionsSet(unittest.TestCase):

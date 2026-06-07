@@ -166,6 +166,102 @@ class AgentReply:
     tts_streamed: bool = False
 
 
+_LANGID_SET = ("en", "es", "pt", "fr", "de", "it")
+
+# Verbos IMPERATIVOS de comando por idioma — desempate para inputs CORTOS donde
+# el clasificador estadístico falla (medido: py3langid da "open spotify"/"close
+# chrome"/"open notepad" -> 'de' porque Spotify/Chrome son nombres propios
+# internacionales sin señal de idioma). NO son respuestas enlatadas ni deciden la
+# respuesta — solo desambiguan el IDIOMA del comando (mide la FORMA verbal, lo que
+# el CLAUDE.md permite como guarda estructural). El reply lo sigue generando el LLM.
+# Medido: detector híbrido 15/16 vs py3langid solo 8/14.
+_IMPERATIVE_VERBS = (
+    ("en", (" open ", " close ", " play ", " mute ", " unmute ", " set ", " take ",
+            " show ", " turn ", " stop ", " start ", " search ", " lower ", " raise ",
+            " maximize ", " minimize ", " lock ", " pause ", " skip ", " next ")),
+    ("it", (" apri ", " chiudi ", " imposta ", " riproduci ", " metti ", " cerca ",
+            " abbassa ", " alza ", " disattiva ", " attiva ")),
+    ("fr", (" ouvre ", " ferme ", " mets ", " fais ", " lance ", " cherche ",
+            " baisse ", " monte ", " coupe ", " active ")),
+    ("de", (" öffne ", " schließe ", " schliesse ", " stell ", " spiele ", " starte ",
+            " suche ", " mach ", " schalte ", " erhöhe ")),
+    ("pt", (" abre ", " fecha ", " coloca ", " tira ", " toca ", " procura ",
+            " abaixa ", " aumenta ", " silencia ", " liga ")),
+    ("es", (" abrí ", " cerrá ", " poné ", " subí ", " bajá ", " buscá ", " cerra ",
+            " silenciá ", " mostrá ", " sacá ", " pausá ")),
+)
+
+
+_SPANISH_LEAK_MARKERS = (
+    # marcas ES INEQUÍVOCAS en confirmaciones post-acción (el reply leakeado típico).
+    # Verbos ES 1ª persona pretérito (con tilde — distinguen de pt "fechei"/it/fr) +
+    # variantes con diptongo ("cierré", "minimicé") + frases ES que NO coinciden
+    # token-a-token en pt/fr/de/it + el caveat ES de soften_unverified_launch. NO
+    # incluye "Listo," solo (el modelo lo prefija a un cuerpo PT correcto -> falso+).
+    # Mide la FORMA, no decide la respuesta: solo señala que el reply quedó en ES.
+    # Lista deliberadamente amplia en variantes verbales (el 4B escribe "cerré"/
+    # "cierré"); ampliarla es legítimo (detector de FORMA, no tabla de respuestas).
+    "abrí", "cerré", "cierré", "saqué", "silencié", "minimicé", "maximicé",
+    "ajusté", "configuré", "dejé el volumen", "lo hice", "lo que pediste",
+    " pediste", "está abierto", "la captura", "la pantalla", "verifiqué",
+    "el trabajo de impresión", "puse lo que", "tomé la captura", "se tomó",
+    "el volumen está", "el volumen a", "el volumen en", "la ventana que",
+    "que me indicaste", "no pude confirmar", "que se completara", "cola de impresión",
+)
+
+
+def _looks_spanish(text: str) -> bool:
+    """True si `text` tiene marcadores INEQUÍVOCOS de español (para detectar que un
+    reply post-acción leakeó a ES cuando el user pidió otro idioma). Robusto donde
+    py3langid falla (un "Listo, cerré Chrome" corto se mis-detecta como fr). Mide la
+    FORMA (verbos ES 1ª persona + "Listo,"), no decide la respuesta. Conservador:
+    requiere una marca ES fuerte — no se dispara con texto en/pt/fr/de/it."""
+    if not text:
+        return False
+    low = f" {text.lower()} "
+    return any(m in low for m in _SPANISH_LEAK_MARKERS)
+
+
+def _detect_lang(text: str) -> str:
+    """Detecta el idioma de `text` entre los 6 soportados, robusto en comandos
+    CORTOS. Estrategia híbrida (medida 15/16): (1) verbo imperativo distintivo del
+    comando (desempate de FORMA para inputs de 2 palabras donde lo estadístico
+    falla), (2) py3langid restringido a nuestros idiomas, (3) fallback `_guess_lang`
+    si py3langid no está. SOLO para decidir el idioma del reply post-tool (no decide
+    intención — eso es el router por embeddings).
+
+    Por qué la lista de verbos: py3langid manda "open spotify"/"close chrome" a
+    'de' (nombres propios internacionales sin señal); el verbo imperativo es la
+    única señal de idioma fiable en esos casos. Es desambiguación de idioma por la
+    FORMA verbal, NO una tabla de respuestas — el reply lo genera el LLM."""
+    t = (text or "").strip()
+    if not t:
+        return "es"
+    # (1) verbo imperativo distintivo (señal fuerte en comandos cortos)
+    s = f" {t.lower()} "
+    for lang, verbs in _IMPERATIVE_VERBS:
+        if any(v in s for v in verbs):
+            return lang
+    # (2) py3langid restringido
+    try:
+        import py3langid as _langid
+        try:
+            _langid.set_languages(list(_LANGID_SET))
+        except Exception:
+            pass
+        lang, _conf = _langid.classify(t)
+        if lang in _LANGID_SET:
+            return lang
+    except Exception:
+        pass
+    # (3) fallback keyword
+    try:
+        from ..safety_pkg.reply_validator import _guess_lang as _gl
+        return _gl(t)
+    except Exception:
+        return "es"
+
+
 def _stream_tts_enabled() -> bool:
     """Stream the reply to TTS sentence by sentence (GEMMA4_STREAM_TTS).
     Default ON — validado en vivo por escucha (sin cortes); veracidad validada
@@ -1158,6 +1254,86 @@ class Gemma4Agent:
         content = user_content(text, images=images, audios=audios)
         return self.run_content(content, progress=progress, tts_sink=tts_sink)
 
+    def _describe_events_for_reply(self, events: "list[ToolEvent]") -> str:
+        """Resume los tool events ejecutados en una frase NEUTRA en inglés, para
+        que `_llm_action_reply` la confirme en el idioma del usuario sin arrastrar
+        el español del contexto. Describe la FORMA (tool+action+target), no inventa
+        resultados. Si no hay nada claro, frase genérica."""
+        parts: list[str] = []
+        for ev in (events or [])[-3:]:
+            name = getattr(ev, "name", "") or ""
+            args = getattr(ev, "args", {}) or {}
+            action = str(args.get("action") or "").replace("_", " ").strip()
+            target = str(args.get("name") or args.get("app") or args.get("browser")
+                         or args.get("url") or args.get("target") or args.get("query")
+                         or args.get("level") or "").strip()
+            seg = " ".join(p for p in (action, name, target) if p) or name
+            if seg:
+                parts.append(seg)
+        return ("performed: " + "; ".join(parts)) if parts else "the requested action was completed"
+
+    def _llm_action_reply(self, user_text: str, did: str, fallback: str,
+                          target_lang: str | None = None) -> str:
+        """Genera la confirmación POST-ACCIÓN con el LLM, en el IDIOMA del usuario.
+
+        Reemplaza los short-circuits que devolvían "Listo, abrí X" hardcodeado en
+        español (violaba CLAUDE.md "el LLM responde" + rompía multi-idioma: el FT
+        multilingüe nunca veía estos replies → 0/5 idioma en vivo aunque el modelo
+        respondía 6/7 en smoke). `did` describe la acción ejecutada (en inglés
+        neutro, p.ej. "opened the app Notepad") para que el LLM la confirme en el
+        idioma del usuario. `target_lang` (código ISO: en/pt/fr/de/it/es) FUERZA el
+        idioma explícitamente — MEDIDO necesario: con comandos cortos ("chiudi
+        chrome") el LLM infería mal el idioma (→ inglés) si solo veía el comando;
+        pasarle el idioma ya detectado por py3langid lo clava. Fallback = el string
+        ES previo (si el LLM falla/tarda, no rompemos el turno). Gate
+        GEMMA4_LLM_ACTION_REPLY=0.
+
+        Latencia: 1 pass corto del LLM (max_tokens chico, sin thinking). Los
+        short-circuits existían para AHORRAR este pass; medido ~0.1s (prefix cache).
+        """
+        import os as _os_lar
+        if _os_lar.environ.get("GEMMA4_LLM_ACTION_REPLY", "1").strip().lower() \
+                in {"0", "false", "no", "off"}:
+            return fallback
+        try:
+            _LANG_NAMES = {"en": "English", "es": "Spanish", "pt": "Portuguese",
+                           "fr": "French", "de": "German", "it": "Italian"}
+            if target_lang and target_lang in _LANG_NAMES:
+                _lang_rule = (f"Reply ONLY in {_LANG_NAMES[target_lang]} "
+                              f"(the user's language). ")
+            else:
+                _lang_rule = ("Reply in the SAME language the user wrote their "
+                              "message in. ")
+            sys_p = (
+                "You are Baxy, a local Windows voice assistant. An action was just "
+                "performed successfully. Reply with ONE very short sentence confirming "
+                f"it was done. {_lang_rule}"
+                "Plain text, no markdown, no emojis. Just the confirmation."
+            )
+            usr_p = f"User said: {user_text[:300]}\nAction performed: {did}\nConfirmation:"
+            # GOTCHA (memoria): el model default "gemma-4" NO existe en el server
+            # (sirve 'vram4-text') → 400. resolve_turn_model da el id correcto.
+            _model = self._router_model_for(
+                [{"role": "user", "content": usr_p}])
+            resp = self.client.chat(
+                [{"role": "system", "content": sys_p},
+                 {"role": "user", "content": usr_p}],
+                tools=None, enable_thinking=False, parallel_tool_calls=False,
+                max_tokens=40, timeout_s=12.0, model=_model,
+            )
+            choices = resp.get("choices") or []
+            raw = str((choices[0].get("message") or {}).get("content") or "").strip() if choices else ""
+            raw = sanitize_text(raw)
+            return raw or fallback
+        except Exception as _exc:
+            try:
+                self.trace.event("agent", "silent_fallback",
+                                 component="llm_action_reply",
+                                 error=f"{type(_exc).__name__}: {_exc}")
+            except Exception:
+                pass
+            return fallback
+
     def _decide_turn(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> TurnDecision:
         """Decide phase of a turn.
 
@@ -1335,10 +1511,43 @@ class Gemma4Agent:
             try:
                 from ..routing.command_splitter import (
                     extract_app_action, split_command, parse_type_action,
-                    parse_keypress_action)
+                    parse_keypress_action, extract_message_to)
                 _aa = extract_app_action(content)
             except Exception:
                 _aa = None
+            # PRECEDENCIA: un ENVÍO-A-CONTACTO ("escribíLE a Juan que voy ... en
+            # Discord") tiene FORMA de mensajería, no de tecleo-en-app. La red de
+            # app-action lo secuestraría (gate verify_app pasa porque "Discord" está
+            # en títulos de ventana) y parse_type_action metería "a Juan que voy ..."
+            # como payload literal -> tipea el destinatario DENTRO del mensaje (BUG
+            # real, log turno 7). ESTRUCTURAL: extract_message_to ya exige clítico
+            # dativo -le o "a <quién>" (7d07cff); el tecleo legítimo ("escribí 2+2 en
+            # la calc") da None y NO se desvía (MEDIDO: 4/4 None).
+            #   - Mensajería a WhatsApp o SIN app nombrada -> cedé a la red de
+            #     mensajería (reply-net abajo), que separa destinatario/cuerpo y abre
+            #     WhatsApp con auto_send=False -> _aa=None.
+            #   - Mensajería a OTRA app (Discord/Slack/Teams): se queda en app-action
+            #     PERO con goal=content (computer_use descompone la frase entera —
+            #     "escribile a pedro en discord que llego tarde" es su ejemplo
+            #     canónico), NUNCA el plan parse_type_action (que rompe el payload).
+            #     Marcamos _aa para forzar goal-only.
+            if _aa is not None:
+                try:
+                    _emt = extract_message_to(content)
+                except Exception:
+                    _emt = None
+                if _emt:
+                    _is_wa = False
+                    try:
+                        from ..routing.planner import _looks_like_whatsapp as _llw
+                        _is_wa = bool(_llw(content))
+                    except Exception:
+                        _is_wa = False
+                    if _is_wa:
+                        _aa = None              # -> reply-net (WhatsApp tool)
+                    else:
+                        # mensajería a app no-WhatsApp -> cu(goal), sin plan steps roto
+                        _aa["_force_goal_only"] = True
             if _aa is not None:
                 if _aa.get("pattern") == "nav_action":
                     _aa_route = True                       # "abrí X y escribí Y" = goal coherente
@@ -1368,7 +1577,19 @@ class Gemma4Agent:
                                                 "", _hint, flags=_re_aa.IGNORECASE).strip() or _hint
                             try:
                                 from ..tools_pkg.app_resolver import AppResolver
-                                _aa_route = bool(AppResolver().find(_hint2))
+                                from ..tools_pkg.tools import _score as _app_score
+                                from pathlib import Path as _Path
+                                # EXIGIR match FUERTE (>=85), no cualquier resultado fuzzy.
+                                # bool(find(...)) aceptaba basura: "Google: diodo zener para
+                                # que sirve" matcheaba "Registro de telemetría Office" score 45
+                                # -> falso computer_use sobre una BÚSQUEDA web (BUG real eval
+                                # run2). Apps legítimas dan 90-100; query-garbage <=55. Mismo
+                                # patrón que app_resolver:107.
+                                _cands = AppResolver().find(_hint2)
+                                _aa_route = bool(_cands) and max(
+                                    _app_score(_hint2, _cands[0].name),
+                                    _app_score(_hint2, _Path(_cands[0].launch).stem),
+                                ) >= 85
                             except Exception:
                                 _aa_route = False
                     except Exception:
@@ -1394,10 +1615,17 @@ class Gemma4Agent:
                         # del 4B planner (que MEDIDO daba plan vacío en "abrí calc y
                         # escribí 5+5" o metía toda la frase como texto en "poné R a las
                         # 5 en notepad"). Para nav multi-paso/otros cae al planner.
-                        try:
-                            _tp = parse_type_action(content)   # import arriba (bloque app-action)
-                        except Exception:
+                        # EXCEPCIÓN (BUG A): un ENVÍO-A-CONTACTO a una app no-WhatsApp
+                        # ("escribíle a Juan ... en Discord") NO debe usar el plan
+                        # parse_type_action (metería "a Juan ..." como payload). Pasa
+                        # como goal entero -> cu descompone destinatario/cuerpo/canal.
+                        if _aa.get("_force_goal_only"):
                             _tp = None
+                        else:
+                            try:
+                                _tp = parse_type_action(content)   # import arriba (bloque app-action)
+                            except Exception:
+                                _tp = None
                         if _tp:
                             # limpiar artículo inicial ("el bloque de notas" ->
                             # "bloque de notas") para que app.open resuelva mejor el
@@ -1417,7 +1645,7 @@ class Gemma4Agent:
                         # así NO le roba a click_button ('apretá enviar') ni a media ('tocá
                         # una canción'). Solo si parse_type_action NO armó plan (verbos
                         # disjuntos: type vs press; el guard evita doble-plan).
-                        if not _aa_args.get("steps"):
+                        if not _aa_args.get("steps") and not _aa.get("_force_goal_only"):
                             try:
                                 _kp = parse_keypress_action(content)
                             except Exception:
@@ -1443,6 +1671,22 @@ class Gemma4Agent:
                     _aa_msg = (_aa_res.get("reply") if isinstance(_aa_res, dict) else None) \
                         or ("Listo, saqué la captura." if _aa.get("pattern") == "screen"
                             else "Listo.")
+                    # IDIOMA: si NO vino reply del tool y el user escribió en otro
+                    # idioma, generar la confirmación con el LLM en su idioma (no el
+                    # hardcode ES). Este early_reply salta _finalize_turn (donde está
+                    # el repair central), así que lo hacemos acá. Ok=True gate aparte.
+                    if (not (isinstance(_aa_res, dict) and _aa_res.get("reply"))
+                            and isinstance(content, str) and content.strip()):
+                        _aa_lang = _detect_lang(content)
+                        if _aa_lang != "es":
+                            _aa_did = ("took a screenshot" if _aa.get("pattern") == "screen"
+                                       else self._describe_events_for_reply([_aa_ev]))
+                            _aa_fixed = self._llm_action_reply(content, did=_aa_did,
+                                                               fallback=_aa_msg, target_lang=_aa_lang)
+                            # aceptar si NO quedó en español (mismo guard robusto que el
+                            # repair central — no depender de detectar bien el reply corto)
+                            if _aa_fixed and _aa_fixed.strip() and not _looks_spanish(_aa_fixed):
+                                _aa_msg = _aa_fixed
                     self._last_turn_ts = time.time()
                     # Honestidad: este early_reply SALTA _finalize_turn;
                     # pasamos el content por el MISMO guard de honestidad que el flujo normal
@@ -1492,9 +1736,18 @@ class Gemma4Agent:
                     # Honestidad: early_reply salta _finalize_turn. El
                     # guard respeta el tri-estado de app.open: launch confirmado/preexistente
                     # (verified=True) o despachado (status=dispatched, launch_requested) ->
-                    # "Listo, abrí X" intacto; verified=False -> nota honesta.
+                    # confirmación intacta; verified=False -> nota honesta.
+                    # IDIOMA: el reply lo genera el LLM en el idioma del usuario (no
+                    # hardcode ES) — fallback al ES previo si el LLM falla. target_lang
+                    # detectado con py3langid (clava el idioma en comandos cortos).
+                    _ao_utext = content if isinstance(content, str) else _ao_name
+                    _ao_reply = self._llm_action_reply(
+                        _ao_utext,
+                        did=f"opened the application {_ao_name}",
+                        fallback=f"Listo, abrí {_ao_name}.",
+                        target_lang=_detect_lang(_ao_utext))
                     return TurnDecision(early_reply=agent_guards.honest_action_reply(
-                        AgentReply(content=f"Listo, abrí {_ao_name}.",
+                        AgentReply(content=_ao_reply,
                                    tool_events=[_ao_ev], mission=None)))
                 # no resolvió a una app -> sigue el flujo normal (carpeta/URL/chat)
         # RESPONDER MENSAJE — short-circuit determinista PRE-LLM.
@@ -2562,7 +2815,7 @@ class Gemma4Agent:
         # breaker, vision_not_found, no_progress). Two-tier escalation: warning -> critical.
         # Vive por-turn (un user request); se evita carry-over que confunda al
         # LLM entre preguntas distintas.
-        from ..safety_pkg.loop_detection import LoopState
+        from ..safety_pkg.loop_detection import LoopState, GLOBAL_CIRCUIT_BREAKER as _LOOP_CIRCUIT_BREAKER
         loop_state = LoopState()
         loop_aborted = False  # se setea True si detectamos critical
 
@@ -2863,6 +3116,28 @@ class Gemma4Agent:
             msg = sanitize_assistant_message(raw_msg)
             assistant_content = msg.get("content") or ""
             raw_tool_calls = msg.get("tool_calls") or []
+            # DEDUP DE BATCH DEGENERADO (bug Gemma 4 lmstudio #1756, medido en
+            # cacería tanda 1): el 4B emite el MISMO tool_call decenas de veces en
+            # UNA respuesta, ignorando parallel_tool_calls=false. "Investiga en
+            # internet que es el h2o" -> 72 calls que colapsan a 5 únicos; ~30s de
+            # decode + re-alimentación del history. Colapsamos duplicados exactos
+            # y capamos a MAX_TOOL_CALLS_PER_RESPONSE distintas ANTES de ejecutar,
+            # cortando la amplificación del loop. Estructural (mide la FORMA, no el
+            # contenido). Gate GEMMA4_BATCH_DEDUP_OFF=1 lo apaga. Sincronizamos msg
+            # para que el history que va al LLM refleje lo realmente ejecutado.
+            if len(raw_tool_calls) > 1:
+                from ..safety_pkg.loop_detection import dedup_degenerate_batch
+                _deduped, _dd_info = dedup_degenerate_batch(raw_tool_calls)
+                if _dd_info["kept"] < _dd_info["original"]:
+                    raw_tool_calls = _deduped
+                    msg["tool_calls"] = _deduped
+                    self.trace.event(
+                        turn_id, "batch_dedup",
+                        original=_dd_info["original"],
+                        kept=_dd_info["kept"],
+                        dropped_duplicates=_dd_info["dropped_duplicates"],
+                        dropped_over_cap=_dd_info["dropped_over_cap"],
+                    )
             # Extract optional <intent> tag from content (validator). The tag
             # is stripped from the visible reply but kept on the side so the
             # tool-selection validator can compare declared intent vs chosen
@@ -3419,6 +3694,20 @@ class Gemma4Agent:
                 err_str = str(result.get("error") or "")
                 tool_exists = not err_str.startswith("unknown tool:")
                 loop_state.record(name, args, exists=tool_exists, result=result)
+
+                # RED DE SEGURIDAD batch-aware (BUG real medido): un 4B puede emitir
+                # un batch DEGENERADO de 100+ tool_calls en UNA sola respuesta. El
+                # detect_stuck() de abajo corre UNA vez por turno (tras el batch) ->
+                # las 140 ya se ejecutaron antes de que el circuit breaker mire. Acá
+                # cortamos el batch en cuanto el contador global cruza el umbral, así
+                # un solo response no puede disparar 100+ acciones físicas. break del
+                # batch -> el detect_stuck post-loop ve el critical y aborta el turn.
+                if loop_state.global_count >= _LOOP_CIRCUIT_BREAKER:
+                    self.trace.event(turn_id, "batch_circuit_breaker",
+                                     executed=loop_state.global_count,
+                                     batch_size=len(prepared))
+                    loop_aborted = True
+                    break
 
                 # Verifier estructural per-tool (TIER 1 #2): mide el efecto real
                 # post-ejecucion. confirmed=True/False/None. Si trae
@@ -4005,6 +4294,9 @@ class Gemma4Agent:
         assistant_content = self._guard_grounded_action_claim(
             assistant_content, events, turn_id,
         )
+        assistant_content = self._repair_media_fabricated_inline(
+            assistant_content, raw_text_early, events, turn_id,
+        )
         # Defensa: si el LLM emitio en el reply mismo un footer estilo
         # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
         # historial), lo strippeamos antes de pegar el nuestro. Sino,
@@ -4289,6 +4581,97 @@ class Gemma4Agent:
                     "role": "system",
                     "content": _UNVERIFIED_CLAIM_HINT,
                 })
+            # GUARD CRUZADO intención↔dominio (DEFAULT-ON tras medición): el reply
+            # afirma una operación de VENTANA pero la tool exitosa fue de dominio-
+            # ARCHIVO (mentira medida "moví Notepad y lo renombré a Notepad_Left.txt").
+            # is_unverified_claim NO lo atrapa porque la tool (equivocada) "tuvo
+            # éxito". ACTIVADO por default: medido sobre los 6162 turnos reales del
+            # dataset -> flagea 1 (la mentira real), 0 falsos positivos; stress 21/21.
+            # GEMMA4_INTENT_DOMAIN_GUARD=0 lo desactiva si algo apareciera en prod.
+            elif _os.environ.get("GEMMA4_INTENT_DOMAIN_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        intent_domain_mismatch as _idm,
+                        INTENT_DOMAIN_MISMATCH_HINT as _idm_hint)
+                    if _idm(getattr(self, "_current_user_text", "") or "",
+                            assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="intent_domain_mismatch")
+                        self.history.append({"role": "system", "content": _idm_hint})
+                except Exception:
+                    pass
+            # MEDIA FABRICADO (honestidad, DEFAULT-ON): el reply nombra un TÍTULO/
+            # PLATAFORMA de streaming ("Stranger Things en Netflix") que el user NO
+            # pidió y ningún tool de media devolvió. BUG medido: ante ruido ("7.63")
+            # o cualquier pedido de media el 4B fabrica el mismo título/servicio (58
+            # casos/tanda 1). Independiente de los guards de arriba (puede co-ocurrir).
+            # Medido 4/4 + 6/6, 0 falsos+ sobre la tanda. GEMMA4_MEDIA_FABRICATED_GUARD=0 apaga.
+            if _os.environ.get("GEMMA4_MEDIA_FABRICATED_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        media_fabricated_claim as _mfc,
+                        MEDIA_FABRICATED_HINT as _mfc_hint)
+                    if _mfc(getattr(self, "_current_user_text", "") or "",
+                            assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="media_fabricated")
+                        self.history.append({"role": "system", "content": _mfc_hint})
+                except Exception:
+                    pass
+            # CLICK FABRICADO (honestidad, DEFAULT-ON): el reply afirma "cliqueé/
+            # presioné X" pero ninguna tool capaz de click corrió (uia/vision FIND
+            # localizan, no clickean). BUG medido (tanda 1, A3): "encontré y cliqueé
+            # el botón Comprar" con solo uia.find. Medido 4/4 + 6/6, 2 mentiras reales
+            # en la tanda, 0 falsos+. GEMMA4_CLICK_CLAIM_GUARD=0 apaga.
+            if _os.environ.get("GEMMA4_CLICK_CLAIM_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        click_claim_without_click as _ccc,
+                        CLICK_CLAIM_HINT as _ccc_hint)
+                    if _ccc(assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="click_claim_no_click")
+                        self.history.append({"role": "system", "content": _ccc_hint})
+                except Exception:
+                    pass
+            # TESTS PASARON SIN EVIDENCIA (honestidad, DEFAULT-ON): el reply afirma
+            # "los tests pasaron/exitoso" pero el ToolResult no trae conteo pass/fail
+            # real. CLAUDE.md prohíbe declarar éxito sin un número. BUG medido (tanda
+            # 1, A2): 8 casos. GEMMA4_TESTS_EVIDENCE_GUARD=0 apaga.
+            if _os.environ.get("GEMMA4_TESTS_EVIDENCE_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        tests_passed_without_evidence as _tpe,
+                        TESTS_PASSED_HINT as _tpe_hint)
+                    if _tpe(assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="tests_passed_no_evidence")
+                        self.history.append({"role": "system", "content": _tpe_hint})
+                except Exception:
+                    pass
+            # GUARDA DESTRUCTIVO-SIN-EVIDENCIA (cacería tanda 2, cluster A1, ~28
+            # CRÍTICO): el reply afirma haber EJECUTADO (y a veces verificado) una
+            # acción destructiva/de-seguridad sobre un blanco peligroso (borrar
+            # todo/formatear/wipe registry/desactivar Defender-firewall/cifrar) pero
+            # ninguna tool destructiva corrió con éxito real (gateada por
+            # confirmación, solo-lectura, o ausente). Mentira más peligrosa: el user
+            # cree que pasó algo irreversible que no pasó. GEMMA4_DESTRUCTIVE_CLAIM_GUARD=0 apaga.
+            if _os.environ.get("GEMMA4_DESTRUCTIVE_CLAIM_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        destructive_claim_without_evidence as _dce,
+                        DESTRUCTIVE_CLAIM_HINT as _dce_hint)
+                    if _dce(assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="destructive_claim_no_evidence")
+                        self.history.append({"role": "system", "content": _dce_hint})
+                except Exception:
+                    pass
             # MOVILIDAD (B3): si el modo manos-libres está activo y el
             # reply le PIDIÓ al usuario una acción manual (clic/tecla/
             # typeo), inyectar la corrección — el agente debe ACTUAR, no
@@ -4333,8 +4716,17 @@ class Gemma4Agent:
             # Aplica a CUALQUIER tarea (no solo compras): el usuario de
             # estos modos no puede revisar/elegir/clickear. Gateado a los
             # dos modos donde el usuario no puede intervenir a mano.
-            if (_hands_free or _narrate) and _reply_delegates_task(
-                assistant_content or ""):
+            # GUARD (mismo bug-class que el a11y_continue_nudge, 3953-3979): una
+            # pregunta META/charla ("¿qué podés hacer?", "¿quién sos?") donde el
+            # router ABSTUVO (subset sin dominio) y NO corrió acción NO es una
+            # tarea delegada — la respuesta DESCRIBE capacidades. Reusamos el
+            # _cont_actionable ya computado (estado del router/ejecución, no
+            # contenido). Sin esto, una respuesta de capacidades con un cierre
+            # invitador ("...decime qué necesitás") cruza el margen del detector
+            # y se marca falso-positivo task_delegated_to_user.
+            if ((_hands_free or _narrate) and _cont_actionable
+                    and not _only_web_search
+                    and _reply_delegates_task(assistant_content or "")):
                 self.trace.event(
                     turn_id, "reply_anti_pattern_detected",
                     pattern="task_delegated_to_user",
@@ -4386,6 +4778,42 @@ class Gemma4Agent:
         # during generation, speak only the post-guard tail (an appended hedge or
         # footer). For a clean success this is empty. Truthful by construction
         # (see _feed_tts_tail / SPRINT_streaming_tts_truthful.md).
+        # IDIOMA post-tool (language confusion — investigación 2026-06-06): el
+        # summary pass se ancla al idioma del CONTEXTO (schemas/results/historia en
+        # ES) por encima del system prompt y devuelve el reply de acción en español
+        # aunque el user escribió en otro idioma (medido: 15/21 leaks). Mitigación
+        # con EVIDENCIA (EMNLP 2024 §6.3 + Anthropic context-engineering): regenerar
+        # el reply con CONTEXTO LIMPIO (sin el contexto ES que arrastra). Dispara
+        # cuando (a) hubo tool ejecutado, (b) el user NO escribió en ES, (c) el reply
+        # leakeó al idioma equivocado. DECISIÓN (medido + user 2026-06-06): el idioma
+        # del INPUT lo detecta el híbrido _detect_lang FIABLEMENTE (27/27); el del
+        # REPLY corto NO (un "Listo, cerré Chrome" se mis-detecta como fr, y perseguir
+        # cada variante verbal ES con una lista de marcadores es interminable — el 4B
+        # siempre inventa otra). Por eso NO condicionamos el disparo a detectar el
+        # reply: si el user escribió en un idioma NO-es y hubo acción, REGENERAMOS
+        # SIEMPRE el reply con el LLM (contexto limpio, target_lang explícito). Cubre
+        # el 100% de los leaks sin el juego de variantes. Costo: ~0.1s extra SOLO en
+        # turnos noES (minoría; ES→ES no entra). Guard de seguridad: aceptar el _fixed
+        # solo si NO quedó en español (si el LLM fallara y devolviera ES, mantenemos
+        # el original). NO se toca si ya se streameó por TTS. Gate GEMMA4_LLM_ACTION_REPLY=0.
+        if (events and assistant_content
+                and not getattr(self, "_tts_streamed", False)):
+            try:
+                _utext = raw_text_early or _extract_user_text(content) or ""
+                _user_lang = _detect_lang(_utext)
+                if _user_lang != "es" and _utext.strip():
+                    _did = self._describe_events_for_reply(events)
+                    _fixed = self._llm_action_reply(_utext, did=_did, fallback=assistant_content,
+                                                    target_lang=_user_lang)
+                    # aceptar solo si mejora: el _fixed NO está en español (o el
+                    # original SÍ lo estaba — siempre vale reemplazar un leak ES).
+                    if _fixed and _fixed.strip() and not _looks_spanish(_fixed):
+                        self.trace.event(turn_id, "posttool_lang_repair",
+                                         user_lang=_user_lang,
+                                         before=assistant_content[:40], after=_fixed[:40])
+                        assistant_content = _fixed
+            except Exception:
+                pass
         if getattr(self, "_tts_streamed", False):
             self._feed_tts_tail(assistant_content, turn_id)
         return AgentReply(content=assistant_content, tool_events=events, mission=mission,
@@ -5964,6 +6392,18 @@ class Gemma4Agent:
             self._fallback_streak = new_streak
             self._last_fallback_user_text = new_last
         return out
+
+    def _repair_media_fabricated_inline(
+        self,
+        content: str,
+        user_text: str,
+        events: list[ToolEvent],
+        turn_id: str,
+    ) -> str:
+        from .agent_guards import repair_media_fabricated_inline
+        return repair_media_fabricated_inline(
+            content, user_text, list(events), turn_id, trace=self.trace,
+        )
 
     def _guard_plan_status(self, content: str) -> str:
         from .agent_guards import guard_plan_status

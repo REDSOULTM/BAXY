@@ -64,12 +64,16 @@ class A11yContinueMetaGuardTest(unittest.TestCase):
 
     def test_action_turn_that_delegates_STILL_nudges(self):
         # Anti-regresión: el gate _cont_actionable NO debe matar el caso legítimo.
-        # Un turno de ACCIÓN (corre una tool de dominio) cuya respuesta DELEGA
-        # ("revisá los resultados") SÍ debe disparar el nudge para que el agente
-        # siga actuando él mismo. Mockeamos: 1ª pasada -> tool_call web.search;
-        # 2ª -> prosa que delega; 3ª -> cierre. web_search stubeado (sin red).
-        self.ag.tools.web_search = lambda *a, **k: [
-            {"title": "A", "url": "http://a"}, {"title": "B", "url": "http://b"}]
+        # Un turno de ACCIÓN FÍSICA (corre una tool de dominio que NO es una mera
+        # búsqueda web informacional) cuya respuesta DELEGA ("revisá... y elegí")
+        # SÍ debe disparar el nudge para que el agente siga actuando él mismo.
+        # Usamos una acción de window (listar ventanas) — NO web/browser.search,
+        # porque _only_web_search suprime correctamente el nudge cuando lo único
+        # que corrió fue una búsqueda web (evita el reply vacío, #busca_teclados).
+        # El handler devuelve un DICT (contrato real; nunca una lista).
+        self.ag.tools.window_list = lambda *a, **k: {
+            "ok": True, "status": "done", "verified": True, "action": "list",
+            "windows": [{"title": "A"}, {"title": "B"}]}
         calls = {"n": 0}
 
         def fake_chat(msgs, **k):
@@ -77,11 +81,11 @@ class A11yContinueMetaGuardTest(unittest.TestCase):
             if calls["n"] == 1:
                 return {"choices": [{"message": {"content": "", "tool_calls": [
                     {"id": "c1", "type": "function", "function": {
-                        "name": "web",
-                        "arguments": '{"action":"search","query":"teclados"}'}}]}}]}
+                        "name": "window",
+                        "arguments": '{"action":"list"}'}}]}}]}
             if calls["n"] == 2:
-                return _prose("Revisá los resultados y elegí cuál abrir.")
-            return _prose("Listo, abrí el primero.")
+                return _prose("Revisá las ventanas y elegí cuál enfocar.")
+            return _prose("Listo, enfoqué la primera.")
 
         seen = {"nudge": False}
         orig = self.ag.trace.event
@@ -96,7 +100,7 @@ class A11yContinueMetaGuardTest(unittest.TestCase):
              mock.patch.object(rv, "reply_delegates_task",
                                side_effect=lambda t: "evisá" in t), \
              mock.patch.object(self.ag.client, "chat", side_effect=fake_chat):
-            self.ag.run_content("busca teclados y abri el mejor")
+            self.ag.run_content("listá las ventanas y enfocá la mejor")
         self.assertTrue(seen["nudge"],
                         "el nudge NO se disparó en un turno de acción que delega")
 

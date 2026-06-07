@@ -1,4 +1,4 @@
-# Contribuir a Carter Agent
+# Contribuir a Baxy
 
 ¡Gracias por tu interés! Este proyecto es un asistente de voz local con un fuerte
 énfasis en **honestidad, reproducibilidad y privacidad**. Estas pautas mantienen

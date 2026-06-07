@@ -460,6 +460,23 @@ class TestGemmaSpecialTokenStrip(unittest.TestCase):
         self.assertEqual(sanitize_text("El intento de hoy salió bien."),
                          "El intento de hoy salió bien.")
 
+    def test_bare_action_syntax_with_special_tokens_stripped(self):
+        """BUG real (cacería tanda 3, caso 2300): el 4B emite la sintaxis de acción
+        como TEXTO sin wrapper <|tool_call|>, con tokens especiales embebidos:
+        'memory{action:<|"|>list<|"|>}'. Debe limpiarse del reply visible."""
+        out = sanitize_text('Usé la acción memory{action:<|"|>list<|"|>} para consultar.')
+        self.assertNotIn("<|", out)
+        self.assertNotIn("memory{", out)
+        self.assertIn("para consultar", out)
+        # token suelto <|"|> también se limpia
+        self.assertNotIn("<|", sanitize_text('El token <|"|> suelto.'))
+
+    def test_braces_in_normal_prose_preserved(self):
+        """No sobre-strippear: prosa con llaves SIN tokens especiales (p. ej. un set
+        de Python {1, 2, 3}) NO se toca."""
+        txt = "Para crear un set en Python usás {1, 2, 3}."
+        self.assertEqual(sanitize_text(txt), txt)
+
 
 class TestActionNameRescue(unittest.TestCase):
     """El 4B leakea la ACCIÓN como tool standalone (`mute(state: true)`, con

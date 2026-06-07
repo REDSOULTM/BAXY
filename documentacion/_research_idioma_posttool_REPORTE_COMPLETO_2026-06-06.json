@@ -1,0 +1,339 @@
+{
+  "summary": "Deep research harness — fan-out web searches, fetch sources, adversarially verify claims, synthesize a cited report.",
+  "agentCount": 102,
+  "logs": [
+    "Q: How to make a small instruction-tuned LLM (Google Gemma 4 E2B-it, ~2B active par…",
+    "Decomposed into 5 angles: academic/primary — failure mode & causes, evidence-ranked mitigations — prompt position & data balance, Gemma-4 official docs — multilingual & function calling, practitioner/architecture — post-tool summary context design, implementation — cheap language enforcement & latency",
+    "academic/primary — failure mode & causes: 6 results",
+    "Gemma-4 official docs — multilingual & function calling: 6 results",
+    "practitioner/architecture — post-tool summary context design: 6 results",
+    "practitioner/architecture — post-tool summary context design: 3 novel (3 filtered)",
+    "evidence-ranked mitigations — prompt position & data balance: 6 results",
+    "evidence-ranked mitigations — prompt position & data balance: 1 novel (5 filtered)",
+    "implementation — cheap language enforcement & latency: 6 results",
+    "implementation — cheap language enforcement & latency: 4 novel (2 filtered)",
+    "Fetched 20 sources → 93 claims → verifying top 25",
+    "\"Language confusion is a documented, named failure …\": 3-0 ✓",
+    "\"Language confusion can be PARTIALLY mitigated via …\": 3-0 ✓",
+    "\"The paper defines and names the failure mode 'lang…\": 3-0 ✓",
+    "\"English-centric instruct models (and base models) …\": 0-3 ✗",
+    "\"Base models and English-centric instruction-tuned …\": 1-2 ✗",
+    "\"English-centric instruction tuning (SFT and Englis…\": 3-0 ✓",
+    "\"Whether a monolingually-tuned model responds in th…\": 3-0 ✓",
+    "\"Few-shot prompting with target-language demonstrat…\": 2-1 ✓",
+    "\"Language confusion in English-centric LLMs is mech…\": 3-0 ✓",
+    "\"A model can be made to respond in the same languag…\": 3-0 ✓",
+    "\"The root cause is English-centric pretraining, not…\": 0-3 ✗",
+    "\"Language confusion — responses partially or entire…\": 3-0 ✓",
+    "\"Adding a preference-optimization penalty (ORPO) on…\": 1-2 ✗",
+    "\"A primary cause of language confusion is that conv…\": 3-0 ✓",
+    "\"LLMs systematically fail to prioritize a high-prio…\": 1-2 ✗",
+    "\"Explicitly prepending an instruction-priority/hier…\": 0-3 ✗",
+    "\"The instruction hierarchy ranks priority from high…\": 0-3 ✗",
+    "\"The relative scale between model size and fine-tun…\": 2-1 ✓",
+    "\"Ability to resolve instruction conflicts does NOT …\": 0-3 ✗",
+    "\"Gemma 4 supports the native `system` role for stru…\": 3-0 ✓",
+    "\"Parameter-efficient fine-tuning (e.g. LoRA) offers…\": 0-3 ✗",
+    "\"The model card documents NO guidance on controllin…\": 3-0 ✓",
+    "\"Gemma 4's official function-calling documentation …\": 3-0 ✓",
+    "\"A model's instruction-following ability is more cr…\": 0-3 ✗",
+    "\"The official Gemma 4 function-calling documentatio…\": 3-0 ✓",
+    "Verify done: 25 claims → 15 confirmed, 10 killed"
+  ],
+  "result": {
+    "question": "How to make a small instruction-tuned LLM (Google Gemma 4 E2B-it, ~2B active params, MatFormer, fine-tuned with LoRA via Unsloth, served via llama.cpp GGUF Q4_K_M) reliably reply in the SAME language the user wrote, SPECIFICALLY for the short confirmation message generated AFTER a tool/function call runs (the \"summary pass\" / post-tool reply). CONCRETE PROBLEM I measured: the system prompt explicitly says \"ALWAYS reply in the SAME language the user wrote\" and the model DOES follow it in plain chat and even in a clean single-purpose prompt (smoke test: English in → \"Notepad is open.\", French → \"Bloc-notes ouvert.\"), BUT in the real multi-turn agent the post-tool confirmation comes out in Spanish regardless of input language (\"close chrome\" → \"Listo, cerré Chrome\", \"set volume to 30\" → \"Listo, subí el volumen a 30\"). The conversation context (tool schemas, prior turns, tool results) is mostly Spanish, and the small model appears to anchor to the language of the surrounding context rather than the system instruction. QUESTIONS needing answers from authoritative/primary sources: (1) Is this a known failure mode — small LLMs ignoring a system-prompt language instruction and instead copying the language of the in-context examples / conversation history / tool definitions? What is it called (language confusion, code-switching, context-anchoring) and what does the research literature (e.g. the \"Language Confusion\" benchmark / Cohere LCB, papers on multilingual instruction following, catastrophic forgetting of language) say about its causes and fixes? (2) What are the EVIDENCE-BASED mitigations, ranked: (a) where in the prompt to put the language directive (system vs last user message vs an explicit per-turn reminder right before generation) — does recency/position matter for small models? (b) does few-shot demonstration in the target language fix it? (c) does the language of the tool/function schemas and tool RESULTS in context cause the drift, and does translating or neutralizing them help? (d) fine-tuning data balance: how much target-language post-tool data is needed, and does the dominant-language attractor in SFT data cause exactly this? (3) Gemma 4 / Gemma-specific: does Google's official Gemma documentation or model card say anything about multilingual replies, the recommended way to control output language, function-calling + multilingual interaction, or known language-drift in tool-use mode? (4) Practical agent-framework guidance (LangChain/llama.cpp/Unsloth/OpenAI function-calling docs): is it recommended to generate the post-tool natural-language summary with the SAME large context (which carries the drift) or with a SEPARATE minimal prompt? Is \"minimal clean context for the summarization step\" an established pattern? (5) Latency-quality tradeoff: any documented technique to enforce output language cheaply (logit bias, grammar/GBNF constraint, a tiny dedicated second call) without a full extra reasoning pass. Prioritize 2024-2026 sources: peer-reviewed/arXiv papers on multilingual instruction following and language confusion, Cohere's Language Confusion Benchmark, official Google Gemma 4 docs (ai.google.dev/gemma), Unsloth docs, and well-supported engineering write-ups. Clearly separate what is EVIDENCE-BACKED from what is folklore.",
+    "summary": "The problem is a documented, named failure mode called \"language confusion\" (Cohere/EMNLP 2024, arXiv:2406.20052) — the inability of an LLM to consistently generate in the user's desired/contextually-appropriate language — and the user's specific case (post-tool reply drifting to Spanish despite an English/French request) is a context/code-switching-induced instance of it. The strongest evidence-backed root cause for THIS pipeline is the fine-tuning data: English/dominant-language SFT exacerbates monolingual language confusion (the model has no objective-level pressure against drifting to the wrong language), and small models on a narrow/dominant-language dataset are structurally prone to forgetting under-emphasized languages. The strongest evidence-backed mitigation is data-side: as little as ~1% multilingual SFT (≈40 examples spread across many languages) can make a model reply in the prompt's language across many languages, and few-shot demonstrations in the TARGET language sharply reduce (near-eliminate, monolingually) confusion — but both are PARTIAL fixes and few-shot in a non-target language can actively hurt, which directly implicates the Spanish tool schemas/results/history in context as a drift source. CRITICAL CAVEATS: (1) Google's official Gemma 4 model card and function-calling docs give ZERO guidance on controlling output language and do NOT acknowledge language drift; the canonical function-calling flow Google documents feeds the tool result back into the SAME full conversation history (the very context carrying the Spanish drift), and a \"separate minimal clean context for the summary step\" is neither recommended nor forbidden — it is undocumented. (2) The popular \"instruction-hierarchy\" framing (system > user > history > tool outputs, and that small models can't resolve such conflicts) FAILED adversarial verification here, so do not rely on \"system prompt should win\" as a settled mechanism. (3) The mechanistic \"late-layer English-bias\" cause is established only for ENGLISH-CENTRIC models; Gemma 4 is multilingually pre-trained (140+ languages), so that specific mechanism applies only indirectly. Net: prioritize (a) adding/rebalancing target-language post-tool examples in the SFT set, (b) target-language few-shot at generation time, and (c) neutralizing or reducing the dominant-language content in the summary-step context — and treat prompt-only \"reply in same language\" reminders as low-confidence on a 2B model.",
+    "findings": [
+      {
+        "claim": "The phenomenon is a documented, named failure mode: 'language confusion' — an LLM's inability to consistently generate text in the user's desired/contextually-appropriate language. It occurs at full-response, line, and word levels, is framed as erroneous (not natural code-switching), and degrades UX especially in low-resource settings. The user's Spanish post-tool replies despite an English/French request are an instance of this documented phenomenon.",
+        "confidence": "high",
+        "vote": "3-0 (merged from claims 0, 2, 8)",
+        "sources": [
+          "https://arxiv.org/abs/2406.20052",
+          "https://aclanthology.org/2024.emnlp-main.380.pdf",
+          "https://arxiv.org/abs/2505.19116"
+        ],
+        "evidence": "Cohere/EMNLP 2024 (Marchisio et al., the Language Confusion Benchmark paper) coins the term verbatim: 'We call this category of error \"language confusion\"' and defines it as LLMs 'unable to consistently generate text in the user's desired language, or the appropriate language given the context,' explicitly distinguishing it from natural code-switching ('an erroneous behaviour rather than natural alternations'). It identifies three levels (full-response, line-level, word-level). arXiv 2505.19116 (Lee et al., 2025) independently restates it as 'responses are partially or entirely generated in unintended languages... critically degrades the user experience, especially in low-resource settings.' Multiple 2024-2025 follow-ups treat the term as standard. NUANCE: the user's exact sub-case (anchoring to the surrounding SPANISH context/tool schemas rather than full English collapse) is a plausible context-anchoring instance the papers do not name explicitly, but it falls squarely within the named phenomenon."
+      },
+      {
+        "claim": "A primary, evidence-backed cause for THIS pipeline is the fine-tuning recipe: English/dominant-language SFT (and English-only preference tuning) exacerbates monolingual language confusion, because conventional SFT only maximizes correct-token likelihood and provides NO explicit penalty against cross-lingual mixing — i.e., standard SFT exerts no pressure against drifting to the dominant language. A controlled ablation (same base model, varying only tuning data) confirms causation, not just correlation.",
+        "confidence": "high",
+        "vote": "3-0 (merged from claims 3, 9)",
+        "sources": [
+          "https://aclanthology.org/2024.emnlp-main.380.pdf",
+          "https://arxiv.org/abs/2505.19116"
+        ],
+        "evidence": "EMNLP 2024 §6.4 (verbatim): 'English-only tuning (both SFT and pref. tuning) exacerbates language confusion monolingually... English-only preference tuning has a strong negative impact on word-level confusion.' This is backed by a controlled ablation (Table 11, Command R Base held fixed): English SFT -> monolingual LPR 77.8 vs Multilingual SFT (90%EN/10%multi) -> 98.3; English pref. tuning -> 74.3 — isolating the tuning DATA as the cause. arXiv 2505.19116 supplies the objective-level mechanism (verbatim): conventional fine-tuning 'optimize[s] the likelihood of correct tokens without explicitly penalizing undesired outputs such as cross-lingual mixing,' with loss-trajectory analysis (SmolLM2, OLMo2) showing 'models do not learn to disfavor confused generations.' CAVEAT: the Llama-Instruct attribution is hedged ('likely') and the ablation is on Command R, not Gemma; the objective-level account is labeled a hypothesis (though empirically supported)."
+      },
+      {
+        "claim": "Small models are structurally prone to this when fine-tuned on a narrow/dominant-language dataset: the relative scale between model capacity and fine-tuning data volume is a primary determinant of catastrophic forgetting, with SMALLER models fine-tuned on LARGER/narrow datasets most vulnerable to losing performance on under-emphasized languages.",
+        "confidence": "medium",
+        "vote": "2-1 (claim 10)",
+        "sources": [
+          "https://arxiv.org/abs/2510.19546"
+        ],
+        "evidence": "Liu & Niehues, 'Conditions for Catastrophic Forgetting in Multilingual Translation' (MRL 2025 / ACL Anthology 2025.mrl-main.23): 'the relative scale between model and data size is a primary determinant of forgetting,' with controlled experiments (175M-8B params) showing 'smaller models fine-tuned on larger datasets being most vulnerable.' CAVEATS (why medium, split vote): the testbed is machine translation directions, so generalizing to broad instruction-following 'reply in same language' is a reasonable but loose paraphrase; an apparently-contradicting literature (arXiv 2401.05605, 2308.08747) finds LARGER models forget more, but that isolates model size at the fine-tuning-loss frontier rather than the model-to-data RATIO, so it is not a true contradiction. Single primary source for the ratio framing."
+      },
+      {
+        "claim": "The strongest evidence-backed DATA-side mitigation: a tiny fraction of target-language SFT data fixes cross-lingual instruction following. Replacing just ~1% of English SFT examples (~40 examples spread across 11 non-English languages) substantially improves multilingual instruction-following in both seen and unseen languages; ~10% multilingual SFT nearly eliminates monolingual line-level confusion.",
+        "confidence": "high",
+        "vote": "3-0 (merged from claims 5, and the SFT half of 1)",
+        "sources": [
+          "https://arxiv.org/abs/2401.01854",
+          "https://arxiv.org/abs/2406.20052",
+          "https://aclanthology.org/2024.emnlp-main.380.pdf"
+        ],
+        "evidence": "Shaham et al. (Google Research, ACL 2024 Findings, arXiv:2401.01854): 'replacing only 1% of the English examples by multilingual ones, which translates to 40 examples' (evenly across all 11 non-English languages) 'substantially improve[s] multilingual instruction-following, both in seen and unseen languages.' EMNLP 2024 corroborates that ~10% multilingual SFT 'almost eliminates line-level confusion' and that 'language confusion can be partially mitigated via... multilingual SFT.' IMPORTANT TRANSFERABILITY CAVEAT: Shaham's base is PaLM 2-S, heavily multilingually pre-trained; the paper's own limitations note 'results may vary with different LLMs,' so whether the 1%/40-example effect transfers to Gemma 4 E2B (~2B active) is NOT established. The fix is PARTIAL — even the strongest models still fail to be fully consistent."
+      },
+      {
+        "claim": "Few-shot demonstrations in the TARGET language sharply reduce (near-eliminate, monolingually) language confusion — and conversely, demonstrations/context in a NON-target language are harder for the model and can HURT. This is direct evidence that the language of in-context exemplars drives output language, implicating the Spanish tool schemas / tool results / prior turns as a concrete drift source in the user's case.",
+        "confidence": "high",
+        "vote": "merged: 3-0 (claim 1) + 2-1 (claim 4)",
+        "sources": [
+          "https://aclanthology.org/2024.emnlp-main.380.pdf",
+          "https://arxiv.org/abs/2406.20052"
+        ],
+        "evidence": "EMNLP 2024 §6.3 (verbatim): 'Few-shot prompting greatly reduces Command R Base's language confusion and almost completely eliminates the problem in the monolingual setting. While one-shot prompting with Command R is detrimental monolingually—indicating a difficulty of dealing with demonstrations in other languages—it enables the model to better follow the cross-lingual instructions.' This establishes the mechanism: exemplar/context language drives output language. Direct implication for the agent: Spanish-language tool schemas, tool results, and prior turns act as (harmful) non-target 'demonstrations' that pull the post-tool reply to Spanish — so neutralizing/translating that context, or supplying target-language few-shot at the summary step, is the on-mechanism fix. CAVEATS: near-elimination shown specifically on Command R Base with translated exemplars; few-shot is officially a PARTIAL mitigation; one-shot in the wrong language can backfire (the claim respects these hedges)."
+      },
+      {
+        "claim": "Whether a monolingually-tuned model replies in the prompt's language depends heavily on the BASE model's pre-training: multilingually pre-trained models (PaLM 2) reply in the prompt's language regardless of tuning language, explicitly contrasting English-centric LLaMA where this fails. Gemma 4 is multilingually pre-trained (140+ languages, 35+ out-of-the-box), which is favorable but does not guarantee consistency under multi-turn dominant-language context.",
+        "confidence": "high",
+        "vote": "3-0 (claim 6) + supported by official model card (claims 11/12)",
+        "sources": [
+          "https://arxiv.org/abs/2401.01854",
+          "https://ai.google.dev/gemma/docs/core/model_card_4"
+        ],
+        "evidence": "Shaham et al. (verbatim): 'tuned models consistently respond in the same language as their instruction, regardless of the language they were instruction-tuned on, in contrast with findings in previous work,' attributed (as a hypothesis) to 'the multilingual nature of PaLM 2s' pre-training, compared to the more English-centric LLaMA.' The Gemma 4 model card confirms Gemma is multilingually pre-trained ('over 140 languages', 'out-of-the-box support for 35+ languages'). CAVEAT: the pre-training causation is the authors' hypothesis (the behavior itself is a finding); this is analogical evidence (PaLM 2, not Gemma). It explains why Gemma follows the directive in clean prompts yet can still drift under a heavy Spanish multi-turn context — favorable pretraining is necessary but not sufficient against in-context anchoring."
+      },
+      {
+        "claim": "Mechanistic account (scope-limited): in ENGLISH-CENTRIC LLMs, language confusion arises from transition failures in the FINAL layers — the model processes in a latent English-biased conceptual space and fails to convert to the target surface form at the last stage. This is the mainstream mechanistic finding but applies only INDIRECTLY to Gemma 4 (multilingual), so it should not be treated as the cause of the user's specific drift.",
+        "confidence": "medium",
+        "vote": "3-0 for the scoped claim (claim 7); but the broader 'pretraining is THE cause, not in-context examples' version was REFUTED 0-3",
+        "sources": [
+          "https://arxiv.org/html/2505.16538v2"
+        ],
+        "evidence": "Nie et al. (May 2025, mechanistic interpretability on Llama3-8B): 'confusion typically arises from transition failures in the final layers, where latent conceptual representations are mapped to surface forms in the target language'; corroborated by independent work placing language-specific transformations in upper/final layers. CRITICAL SCOPE NOTE: the paper studies ENGLISH-CENTRIC models; Gemma 4 is multilingual, so this mechanism is only indirectly relevant. The stronger sibling claim — that the root cause is English-centric pretraining 'NOT in-context examples or conversation history' — was REFUTED (0-3) in verification, which is significant: it means the evidence does NOT support dismissing in-context/context-anchoring as a cause; the few-shot/exemplar-language findings (Finding above) point the other way for the user's scenario."
+      },
+      {
+        "claim": "Gemma-specific official guidance: Google's Gemma 4 model card documents the native `system` role for structured/controllable conversations (the mechanism for placing a language directive) but gives ZERO guidance on controlling output language and lists NO language-confusion/code-switching limitation. So the user's post-tool drift is not an officially acknowledged failure mode and Google provides no official mitigation in the card.",
+        "confidence": "high",
+        "vote": "3-0 (merged from claims 11, 12)",
+        "sources": [
+          "https://ai.google.dev/gemma/docs/core/model_card_4"
+        ],
+        "evidence": "Model card (verbatim): 'Gemma 4 introduces native support for the system role, enabling more structured and controllable conversations.' The Limitations section contains exactly five categories (Training Data, Context and Task Complexity, Language Ambiguity and Nuance, Factual Accuracy, Common Sense); the only language item, 'Language Ambiguity and Nuance,' concerns sarcasm/figurative language — NOT language confusion, code-switching, drift, or output-language control. Multilingual support is stated as a capability ('140+ languages') with no mechanism to force reply language. (Third-party work, e.g. arXiv 2507.14894 SASFT and GitHub issue #460, shows code-switching IS a real studied issue in Gemma, corroborating that the official card simply omits it.)"
+      },
+      {
+        "claim": "Gemma's official function-calling documentation generates the post-tool reply by feeding the tool execution result back into the SAME full conversation history (re-running apply_chat_template over the entire updated message list), NOT via a separate minimal prompt — and it contains NO guidance on multilingual replies or output-language control in tool-use mode. A 'minimal clean context for the summary step' is neither recommended nor forbidden; it is simply undocumented.",
+        "confidence": "high",
+        "vote": "3-0 (merged from claims 13, 14)",
+        "sources": [
+          "https://ai.google.dev/gemma/docs/capabilities/text/function-calling-gemma4"
+        ],
+        "evidence": "Function-calling doc (verbatim): 'The model processes the tool's execution result to generate a final, natural language answer for the user.' The code appends the tool result to the same message list (message.append({'role':'assistant','tool_calls':[...],'tool_responses':results})) then re-runs apply_chat_template over the FULL updated history. There is NO mention of context stripping, prompt reduction, a separate summary prompt, or output-language control; secondary guides (MachineLearningMastery, AnalyticsVidhya) describe the identical full-history-reinvoke pattern. IMPLICATION for the user's mitigation (5): the documented default flow is exactly the one that carries the Spanish drift into the summary step; using a separate minimal/neutralized context for the post-tool reply is a reasonable engineering pattern but is the user's own design choice, not a Google-documented recommendation."
+      },
+      {
+        "claim": "Prompt-position / instruction-hierarchy mitigations are LOW-confidence for a small model: the claim that LLMs reliably prioritize a system-message language directive over in-context content, that a per-turn priority reminder fixes it, and that conflict-resolution scales (or inversely scales) with model size — ALL failed adversarial verification here. Do not rely on 'the system prompt should win' or a superficial 'reply in same language' reminder as a settled fix.",
+        "confidence": "medium",
+        "vote": "REFUTED (0-3 and 1-2 across several instruction-hierarchy sub-claims)",
+        "sources": [
+          "https://arxiv.org/pdf/2502.08745"
+        ],
+        "evidence": "Several instruction-hierarchy claims from arXiv:2502.08745 were REFUTED in verification: (a) that models systematically fail system>context conflicts at <50% (1-2), (b) that prepending a hierarchy directive does NOT help — i.e. arguing reminders are useless (0-3), (c) that hierarchy ranks system>user>history>tool-outputs with tool outputs as drift source (0-3), and (d) that conflict-resolution doesn't scale with size / inversely scales (0-3). The NET takeaway is epistemic caution: the literature here did NOT survive verification, so neither 'just put the directive in the system prompt and it will win' NOR 'reminders definitely don't work' is supported. Treat prompt-position and per-turn reminders as UNVERIFIED on a 2B model — test empirically rather than assuming, and prefer the data-side/context-neutralization levers that DID survive verification."
+      }
+    ],
+    "caveats": "TRANSFERABILITY IS THE BIGGEST UNCERTAINTY. The two strongest mitigation results come from models that are NOT Gemma 4 E2B: the '~1% / 40-example' multilingual-SFT fix (arXiv:2401.01854) is on PaLM 2-S (heavily multilingual pretraining, and the paper explicitly warns 'results may vary with different LLMs'), and the few-shot near-elimination result (EMNLP 2024) is on Command R Base. Whether these dosages transfer to a ~2B-active model fine-tuned via LoRA is not established by any source — per CLAUDE.md rule 3, this must be MEASURED on your own held-out, not assumed. SCOPE MISMATCH: the mechanistic late-layer cause (arXiv:2505.16538) is for English-centric models; Gemma 4 is multilingual, so that specific mechanism is only indirect. EVIDENCE-BACKED vs FOLKLORE: evidence-backed = (i) language confusion is real and named, (ii) English/dominant-language SFT exacerbates it, (iii) SFT has no objective-level penalty against language mixing, (iv) target-language SFT data and target-language few-shot are partial fixes, (v) non-target-language in-context exemplars/context can hurt. FOLKLORE / UNVERIFIED HERE = the instruction-hierarchy framing ('system prompt wins', 'put the directive last for recency', 'per-turn reminders fix it / don't fix it'), and any claim that small size deterministically dooms conflict resolution — these came from arXiv:2502.08745 and largely FAILED verification, so do not present them as fact. NO OFFICIAL GEMMA GUIDANCE exists for output-language control or for a separate-minimal-context summary step; that pattern is sound engineering but is your design decision, not a documented Google recommendation. TIME-SENSITIVITY: sources span 2024-2025 and are current as of the 2026-06 cutoff; the Gemma 4 model card and function-calling docs are live pages that may be updated. CONFIDENCE ON MITIGATION (5) LATENCY-CHEAP ENFORCEMENT: the question asked about logit-bias / GBNF grammar / tiny dedicated call to enforce language cheaply — NO source in the verified set directly evaluates these for language enforcement, so any recommendation there is engineering inference, not evidence-backed; treat as hypothesis to test.",
+    "openQuestions": [
+      "Does the '~1% / ~40-example' multilingual-SFT dosage (validated on PaLM 2-S) transfer to a ~2B-active Gemma 4 E2B model fine-tuned with LoRA, and specifically to the post-tool SUMMARY turn? This must be measured against a diverse held-out (English, French, Spanish, etc.) — no source answers it for this model class.",
+      "Is the drift caused more by the Spanish FINE-TUNING data (a dominant-language attractor learned in SFT) or by the Spanish IN-CONTEXT content (tool schemas/results/history) at inference time? The verified evidence supports BOTH pathways but does not quantify their relative contribution for this pipeline — a controlled A/B (neutralize/translate context vs. rebalance SFT data) would isolate it.",
+      "Do latency-cheap inference-time enforcement techniques — logit bias toward target-language tokens, a GBNF/grammar constraint, or a tiny dedicated second call with minimal clean context — actually enforce output language without degrading reply quality on a 2B model? No verified source evaluates these for language control; they are untested engineering options.",
+      "Does generating the post-tool reply from a SEPARATE minimal/neutralized prompt (vs. Google's documented full-history reinvoke) reliably remove the Spanish anchor without losing the tool-result grounding needed for an accurate confirmation? This is plausible from the exemplar-language mechanism but is undocumented and unmeasured for Gemma."
+    ],
+    "refuted": [
+      {
+        "claim": "English-centric instruct models (and base models) are MORE prone to language confusion, and it is aggravated by complex prompts and high sampling temperatures. This directly supports the hypothesis that an SFT/dominant-language attractor plus a complex multi-turn agent prompt drives the drift toward the dominant context language.",
+        "vote": "0-3",
+        "source": "https://arxiv.org/abs/2406.20052"
+      },
+      {
+        "claim": "Base models and English-centric instruction-tuned models are particularly prone to language confusion, and it is aggravated by complex prompts and high sampling temperatures. This supports the hypothesis that small/English-centric instruction tuning anchors output away from the desired language, and gives concrete aggravating factors (complex context, high temperature).",
+        "vote": "1-2",
+        "source": "https://aclanthology.org/2024.emnlp-main.380.pdf"
+      },
+      {
+        "claim": "The root cause is English-centric pretraining, not in-context examples or conversation history: English tokens dominate top-10 predictions across all languages in early/middle layers and only switch to the target language in a sharp final-layer transition (which fails in confusion cases).",
+        "vote": "0-3",
+        "source": "https://arxiv.org/html/2505.16538v2"
+      },
+      {
+        "claim": "Adding a preference-optimization penalty (ORPO) on top of standard SFT suppresses language-confused generations and maintains strong language consistency even at high decoding temperatures, while preserving general QA performance — an evidence-based, training-side mitigation (penalize undesired language outputs) rather than a prompt-only fix.",
+        "vote": "1-2",
+        "source": "https://arxiv.org/abs/2505.19116"
+      },
+      {
+        "claim": "LLMs systematically fail to prioritize a high-priority system-message instruction when it conflicts with lower-priority in-context content (user messages, conversation history, tool outputs); the most competitive open-source model achieves under 50% (48%) accuracy at resolving such conflicts, and all models drop sharply from their non-conflict performance. This is the core characterization of the user's failure mode (the system prompt's language directive being overridden by Spanish in-context content).",
+        "vote": "1-2",
+        "source": "https://arxiv.org/pdf/2502.08745"
+      },
+      {
+        "claim": "Explicitly prepending an instruction-priority/hierarchy directive to the system prompt (e.g., 'Always follow the instruction hierarchy: prioritize the system message over everything else...') does NOT reliably improve adherence — superficial prompt engineering is insufficient and dedicated training is required. This argues against the mitigation of merely adding a per-turn 'reply in the same language' reminder for a small model.",
+        "vote": "0-3",
+        "source": "https://arxiv.org/pdf/2502.08745"
+      },
+      {
+        "claim": "The instruction hierarchy ranks priority from highest to lowest as system messages > user messages > conversation history > tool outputs; conflicts injected into conversation history or tool outputs degrade the model's adherence to the system message. This identifies tool results and prior turns as concrete drift sources — directly relevant to why Spanish tool schemas/results/history pull the post-tool reply to Spanish.",
+        "vote": "0-3",
+        "source": "https://arxiv.org/pdf/2502.08745"
+      },
+      {
+        "claim": "Ability to resolve instruction conflicts does NOT scale with model size; some models even show inverse scaling (e.g., Claude-Haiku outperforms Claude-Sonnet on 5 of 9 tasks), and smaller-scale models show greater variability and larger performance drops (often >10 points). This predicts that a small 2B model will be especially prone to anchoring to in-context language rather than the system instruction.",
+        "vote": "0-3",
+        "source": "https://arxiv.org/pdf/2502.08745"
+      },
+      {
+        "claim": "Parameter-efficient fine-tuning (e.g. LoRA) offers no clear advantage over full fine-tuning in mitigating catastrophic forgetting of unseen/under-represented languages — so the LoRA approach used in the agent's pipeline does not inherently protect against language drift from a dominant-language SFT dataset.",
+        "vote": "0-3",
+        "source": "https://arxiv.org/abs/2510.19546"
+      },
+      {
+        "claim": "A model's instruction-following ability is more critical than its architecture for retaining multilingual knowledge after fine-tuning, implying that degraded instruction-following (e.g. ignoring a system-prompt language directive) is tied to the same mechanism that drives multilingual forgetting.",
+        "vote": "0-3",
+        "source": "https://arxiv.org/abs/2510.19546"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://arxiv.org/abs/2406.20052",
+        "quality": "primary",
+        "angle": "academic/primary — failure mode & causes",
+        "claimCount": 5
+      },
+      {
+        "url": "https://aclanthology.org/2024.emnlp-main.380.pdf",
+        "quality": "primary",
+        "angle": "academic/primary — failure mode & causes",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/abs/2401.01854",
+        "quality": "primary",
+        "angle": "academic/primary — failure mode & causes",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/html/2505.16538v2",
+        "quality": "primary",
+        "angle": "academic/primary — failure mode & causes",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/abs/2505.19116",
+        "quality": "primary",
+        "angle": "academic/primary — failure mode & causes",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/pdf/2502.08745",
+        "quality": "primary",
+        "angle": "academic/primary — failure mode & causes",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/abs/2510.19546",
+        "quality": "primary",
+        "angle": "evidence-ranked mitigations — prompt position & data balance",
+        "claimCount": 5
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/core/model_card_4",
+        "quality": "primary",
+        "angle": "Gemma-4 official docs — multilingual & function calling",
+        "claimCount": 5
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/capabilities/text/function-calling-gemma4",
+        "quality": "primary",
+        "angle": "Gemma-4 official docs — multilingual & function calling",
+        "claimCount": 4
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/functiongemma/model_card",
+        "quality": "primary",
+        "angle": "Gemma-4 official docs — multilingual & function calling",
+        "claimCount": 5
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/functiongemma/formatting-and-best-practices",
+        "quality": "primary",
+        "angle": "Gemma-4 official docs — multilingual & function calling",
+        "claimCount": 4
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/core/model_card_3",
+        "quality": "primary",
+        "angle": "Gemma-4 official docs — multilingual & function calling",
+        "claimCount": 5
+      },
+      {
+        "url": "https://ai.google.dev/gemma/docs/functiongemma/full-function-calling-sequence-with-functiongemma",
+        "quality": "primary",
+        "angle": "Gemma-4 official docs — multilingual & function calling",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.philschmid.de/context-engineering-part-2",
+        "quality": "blog",
+        "angle": "practitioner/architecture — post-tool summary context design",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+        "quality": "primary",
+        "angle": "practitioner/architecture — post-tool summary context design",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/html/2511.22729v1",
+        "quality": "primary",
+        "angle": "practitioner/architecture — post-tool summary context design",
+        "claimCount": 3
+      },
+      {
+        "url": "https://github.com/ggml-org/llama.cpp/blob/master/grammars/README.md",
+        "quality": "primary",
+        "angle": "implementation — cheap language enforcement & latency",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.statpan.com/2025/04/how-to-control-language-in-llamacpp.html",
+        "quality": "blog",
+        "angle": "implementation — cheap language enforcement & latency",
+        "claimCount": 4
+      },
+      {
+        "url": "https://www.lmsys.org/blog/2024-02-05-compressed-fsm/",
+        "quality": "primary",
+        "angle": "implementation — cheap language enforcement & latency",
+        "claimCount": 4
+      },
+      {
+        "url": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+        "quality": "primary",
+        "angle": "implementation — cheap language enforcement & latency",
+        "claimCount": 4
+      }
+    ],
+    "stats": {
+      "angles": 5,
+      "sourcesFetched": 20,
+      "claimsExtracted": 93,
+      "claimsVerified": 25,
+      "confirmed": 15,
+      "killed": 10,
+      "afterSynthesis": 10,
+      "urlDupes": 3,
+      "budgetDropped": 7,
+      "agentCalls": 102
+    }
+  }
+}

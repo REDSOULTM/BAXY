@@ -72,6 +72,88 @@ def _detector_enabled() -> bool:
     return raw not in {"1", "true", "yes", "on"}
 
 
+# Tope de tool_calls DISTINTAS que honramos de UNA sola respuesta del LLM. El
+# batch circuit-breaker (global_count >= 30) corta la EJECUCIÓN, pero un batch de
+# 70 duplicados ya se decodificó (~30s) Y, peor, sus 70 results vuelven al
+# history -> la SIGUIENTE respuesta también es gigante (amplificación del loop).
+# Capar el batch al parsear corta esa amplificación. 8 cubre cualquier research
+# paralelo legítimo (medido: research útil usa 2-4 calls; el patrón degenerado
+# colapsa a ~5 (name,action) únicos repetidos ~14x cada uno).
+MAX_TOOL_CALLS_PER_RESPONSE = 8
+
+
+def _dedup_enabled() -> bool:
+    """Opt-out del dedup de batch degenerado. Default ON."""
+    raw = (os.environ.get("GEMMA4_BATCH_DEDUP_OFF") or "").strip().lower()
+    return raw not in {"1", "true", "yes", "on"}
+
+
+def _call_signature(raw_call: dict) -> str:
+    """Firma (name, arguments) de un tool_call crudo del LLM. NUNCA lanza
+    (alimenta una red de seguridad). El `id` se ignora a propósito: el bug
+    Gemma 4 #1756 emite duplicados EXACTOS donde solo cambia el id."""
+    try:
+        fn = raw_call.get("function") or {}
+        name = str(fn.get("name") or "")
+        raw_args = fn.get("arguments", "")
+        if isinstance(raw_args, str):
+            args_key = raw_args.strip()
+        else:
+            try:
+                args_key = json.dumps(raw_args, sort_keys=True, ensure_ascii=False, default=str)
+            except Exception:
+                args_key = repr(raw_args)
+        return f"{name}::{args_key}"
+    except Exception:
+        return repr(raw_call)
+
+
+def dedup_degenerate_batch(
+    raw_tool_calls: list[dict],
+    *,
+    max_calls: int = MAX_TOOL_CALLS_PER_RESPONSE,
+) -> tuple[list[dict], dict]:
+    """Colapsa el batch degenerado de tool_calls de UNA respuesta del LLM.
+
+    Bug Gemma 4 (lmstudio #1756, medido en cacería tanda 1): el 4B emite el MISMO
+    tool_call decenas de veces en una sola respuesta ignorando
+    `parallel_tool_calls: false`. Caso real: "Investiga en internet que es el
+    h2o" -> 72 tool_calls que colapsan a 5 (name,args) únicos. Decodificar eso
+    cuesta ~30s y sus results re-alimentan el history.
+
+    Estrategia ESTRUCTURAL (mide la FORMA, no el contenido — multi-idioma,
+    sin keywords): (1) quitar duplicados EXACTOS (misma name+args, conservando
+    el PRIMERO de cada uno), (2) capar el total de calls DISTINTAS a `max_calls`.
+
+    Devuelve (calls_filtrados, info) donde info={original, after_dedup, kept,
+    dropped_duplicates, dropped_over_cap} para trazar (NUNCA truncar en silencio).
+    """
+    info = {
+        "original": len(raw_tool_calls),
+        "after_dedup": len(raw_tool_calls),
+        "kept": len(raw_tool_calls),
+        "dropped_duplicates": 0,
+        "dropped_over_cap": 0,
+    }
+    if not _dedup_enabled() or not raw_tool_calls or len(raw_tool_calls) <= 1:
+        return raw_tool_calls, info
+    seen: set[str] = set()
+    unique: list[dict] = []
+    for call in raw_tool_calls:
+        sig = _call_signature(call)
+        if sig in seen:
+            continue
+        seen.add(sig)
+        unique.append(call)
+    info["after_dedup"] = len(unique)
+    info["dropped_duplicates"] = len(raw_tool_calls) - len(unique)
+    if len(unique) > max_calls:
+        info["dropped_over_cap"] = len(unique) - max_calls
+        unique = unique[:max_calls]
+    info["kept"] = len(unique)
+    return unique, info
+
+
 def _result_signature(result: dict | None) -> str:
     """Hash compacto del result para distinguir polling legítimo de loops.
 

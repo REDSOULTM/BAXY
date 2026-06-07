@@ -1,5 +1,10 @@
 # SPIKE — sherpa-onnx + Parakeet-TDT-0.6B-v3 int8 (medido en la máquina, 2026-05-23)
 
+> **Nota de nomenclatura:** la wake word del producto es hoy **"Baxy"**. Donde
+> este documento dice "Hey Gemma" / "Gemma", es el texto medido de los
+> experimentos ASR de esa época; se preserva tal cual porque son mediciones de
+> cómo el reconocedor oye esa palabra puntual, no el nombre del producto.
+
 > Eje VIABILIDAD. NO es producción. Verifica la ruta que la investigación de
 > RED recomendó como GANADORA. Medido contra clips reales+sintéticos existentes.
 >

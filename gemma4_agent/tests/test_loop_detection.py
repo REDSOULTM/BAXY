@@ -14,6 +14,7 @@ import sys
 
 from ..safety_pkg.loop_detection import (
     GLOBAL_CIRCUIT_BREAKER,
+    MAX_TOOL_CALLS_PER_RESPONSE,
     PING_PONG_WINDOW,
     REPEAT_CRITICAL,
     REPEAT_WARNING,
@@ -23,6 +24,7 @@ from ..safety_pkg.loop_detection import (
     StuckSignal,
     _hash_tool_call,
     _result_signature,
+    dedup_degenerate_batch,
 )
 
 
@@ -313,6 +315,107 @@ def test_no_progress_unverifiable_reads_exempt() -> None:
 
 
 # ============================================================================
+# dedup_degenerate_batch (bug Gemma 4 #1756)
+# ============================================================================
+def _call(name: str, args: dict | str) -> dict:
+    """Construye un tool_call crudo estilo OpenAI con un id único."""
+    import json as _json
+    arguments = args if isinstance(args, str) else _json.dumps(args)
+    return {"id": f"call_{id(args)}_{name}", "type": "function",
+            "function": {"name": name, "arguments": arguments}}
+
+
+def test_dedup_collapses_exact_duplicates() -> None:
+    """Bug #1756: 72 calls que colapsan a 5 únicos -> quedan los 5 (capados a 8)."""
+    # 5 (name,action) únicos, cada uno repetido ~14 veces, mismo args.
+    bases = [("web", {"action": "search", "q": "h2o"}),
+             ("web", {"action": "research", "q": "h2o"}),
+             ("web", {"action": "read", "q": "h2o"}),
+             ("web", {"action": "open", "q": "h2o"}),
+             ("knowledge", {"action": "search", "q": "h2o"})]
+    raw = []
+    for _ in range(14):
+        for n, a in bases:
+            raw.append(_call(n, a))
+    kept, info = dedup_degenerate_batch(raw)
+    assert info["original"] == 70
+    assert info["after_dedup"] == 5
+    assert info["dropped_duplicates"] == 65
+    assert len(kept) == 5  # 5 únicos < cap 8 -> sin recorte por cap
+
+
+def test_dedup_caps_distinct_over_limit() -> None:
+    """Si hay MÁS de MAX_TOOL_CALLS_PER_RESPONSE únicos, capar al límite."""
+    raw = [_call("web", {"action": "search", "q": f"q{i}"})
+           for i in range(MAX_TOOL_CALLS_PER_RESPONSE + 5)]
+    kept, info = dedup_degenerate_batch(raw)
+    assert info["dropped_duplicates"] == 0  # todos distintos
+    assert info["dropped_over_cap"] == 5
+    assert len(kept) == MAX_TOOL_CALLS_PER_RESPONSE
+
+
+def test_dedup_keeps_first_occurrence_order() -> None:
+    """Conserva el PRIMER ocurrencia de cada único, en orden."""
+    raw = [_call("a", {"x": 1}), _call("b", {"y": 2}), _call("a", {"x": 1}),
+           _call("c", {"z": 3}), _call("b", {"y": 2})]
+    kept, info = dedup_degenerate_batch(raw)
+    names = [c["function"]["name"] for c in kept]
+    assert names == ["a", "b", "c"]
+    assert info["dropped_duplicates"] == 2
+
+
+def test_dedup_legit_parallel_untouched() -> None:
+    """Research genuino: 4 calls DISTINTAS pasan intactas (no es degenerado)."""
+    raw = [_call("web", {"action": "search", "q": "clima hoy"}),
+           _call("web", {"action": "search", "q": "pronostico"}),
+           _call("web", {"action": "open", "q": "accuweather"}),
+           _call("knowledge", {"action": "search", "q": "buenos aires"})]
+    kept, info = dedup_degenerate_batch(raw)
+    assert len(kept) == 4
+    assert info["dropped_duplicates"] == 0
+    assert info["dropped_over_cap"] == 0
+
+
+def test_dedup_single_call_noop() -> None:
+    raw = [_call("app", {"action": "open", "name": "Steam"})]
+    kept, info = dedup_degenerate_batch(raw)
+    assert kept == raw and info["kept"] == 1
+
+
+def test_dedup_empty_noop() -> None:
+    kept, info = dedup_degenerate_batch([])
+    assert kept == [] and info["original"] == 0
+
+
+def test_dedup_disabled_via_env() -> None:
+    raw = [_call("web", {"q": 1}), _call("web", {"q": 1}), _call("web", {"q": 1})]
+    os.environ["GEMMA4_BATCH_DEDUP_OFF"] = "1"
+    try:
+        kept, info = dedup_degenerate_batch(raw)
+        assert len(kept) == 3  # apagado -> sin cambios
+        assert info["dropped_duplicates"] == 0
+    finally:
+        del os.environ["GEMMA4_BATCH_DEDUP_OFF"]
+
+
+def test_dedup_string_args_duplicates() -> None:
+    """Los arguments del LLM llegan como STRING JSON crudo; dups exactos colapsan."""
+    raw = [_call("web", '{"action":"search","q":"x"}'),
+           _call("web", '{"action":"search","q":"x"}'),
+           _call("web", '{"action":"search","q":"y"}')]
+    kept, info = dedup_degenerate_batch(raw)
+    assert len(kept) == 2
+    assert info["dropped_duplicates"] == 1
+
+
+def test_dedup_never_raises_on_garbage() -> None:
+    """Red de seguridad: input malformado NO debe lanzar."""
+    raw = [{"function": None}, {"nope": 1}, _call("a", {"x": 1})]
+    kept, info = dedup_degenerate_batch(raw)
+    assert isinstance(kept, list) and isinstance(info, dict)
+
+
+# ============================================================================
 # Runner standalone
 # ============================================================================
 TESTS = [
@@ -340,6 +443,15 @@ TESTS = [
     test_no_progress_resets_on_evidence,
     test_no_progress_below_threshold_returns_none,
     test_no_progress_unverifiable_reads_exempt,
+    test_dedup_collapses_exact_duplicates,
+    test_dedup_caps_distinct_over_limit,
+    test_dedup_keeps_first_occurrence_order,
+    test_dedup_legit_parallel_untouched,
+    test_dedup_single_call_noop,
+    test_dedup_empty_noop,
+    test_dedup_disabled_via_env,
+    test_dedup_string_args_duplicates,
+    test_dedup_never_raises_on_garbage,
 ]
 
 

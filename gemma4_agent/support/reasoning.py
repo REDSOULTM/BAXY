@@ -66,6 +66,13 @@ TOOL_CALL_LEAK_PATTERNS = (
     # Closing tag huerfano
     re.compile(r"</?tool_call\|>", re.IGNORECASE),
     re.compile(r"<\|tool_call\|>", re.IGNORECASE),
+    # Forma SIN wrapper <|tool_call|>: el 4B emite la sintaxis de acción como texto
+    # con tokens especiales embebidos: `memory{action:<|"|>list<|"|>}`,
+    # `browser{action:<|"|>open<|"|>, url:...}` (cacería tanda 3, caso 2300). Mide la
+    # FORMA: <ident>{...<|...|>...}. Borra el bloque entero del reply visible.
+    re.compile(r"\b[a-z_][a-z0-9_]*\s*\{[^{}]*<\|[^{}]*\}", re.IGNORECASE),
+    # Tokens sueltos <|"|> / <|...|> que queden tras los strips anteriores.
+    re.compile(r"<\|[^|>]*\|>"),
 )
 
 # FR-CoT (opt-in GEMMA4_FRCOT): guarda ESTRUCTURAL. Si el modelo FILTRA el formato

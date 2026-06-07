@@ -209,6 +209,548 @@ UNVERIFIED_CLAIM_REGEN_HINT = (
 )
 
 
+# Dominio de cada tool (familias incompatibles). NO es lista de apps: es la
+# taxonomía estructural de QUÉ recurso del SO toca cada tool. Acotado a los
+# dominios donde se midió el bug (ventana vs archivo, etc.).
+_TOOL_DOMAIN = {
+    "window": "window", "filesystem": "file", "office": "file",
+    "app": "app", "steam": "app", "game_launcher": "app",
+    "browser": "web", "browser_real": "web", "web": "web",
+    "media": "media", "audio": "audio", "system": "system",
+    "notes_tasks": "notes", "memory": "memory", "knowledge": "knowledge",
+    "whatsapp": "messaging", "computer_use": "computer_use", "gui": "gui",
+    "clipboard": "clipboard", "vision": "vision",
+}
+# Señal de que el USER pidió una operación de VENTANA (mover/foco/min/max/
+# restaurar una ventana). Estructural, multi-idioma, mide la FORMA. Pensado
+# para el bug "mueve Notepad a la izquierda" -> filesystem.rename + mentira.
+_INTENT_WINDOW_RE = re.compile(
+    r"\b(?:mueve|mov[ée]\w*|mover|move|coloca|pon[ée]?)\b[^.]{0,40}\b"
+    r"(?:izquierda|derecha|arriba|abajo|left|right|top|bottom|mitad|half|"
+    r"lado\s+a\s+lado|side\s+by\s+side)\b"
+    # verbos de control-de-ventana inequívocos. NO incluye restaur/restore en el
+    # set genérico: "restore" matcheaba paths como "sandbox/restore_test" (falso+
+    # MEDIDO en el dataset, 2 turnos). minimiz/maximiz/foco/enfoc no colisionan
+    # con paths comunes. Seguidos de \b (no \w* que comería "_test").
+    r"|\b(?:minimiz\w*|maximiz\w*|enfoc\w*|trae(?:r)?\s+al\s+frente|"
+    r"bring\s+to\s+front)\b"
+    r"|\b(?:foco|focus)\b"
+    # restaurar/restore SOLO si menciona ventana explícita (no paths con 'restore')
+    r"|\b(?:restaur\w*|restore)\b[^.]{0,20}\bventana\b"
+    # "mover/mové LA VENTANA ..." (ventana explícita) = intención-ventana inequívoca
+    r"|\b(?:mueve|mov[ée]\w*|mover|move)\b[^.]{0,15}\bventana\b",
+    re.IGNORECASE)
+# Afirmación-de-efecto: el detector por embeddings (_reply_asserts_effect) es
+# frágil con fraseos compuestos ("moví X y lo renombré"). Para el guard cruzado
+# (que YA tiene contexto fuerte: intención-ventana + tool-archivo exitosa), un
+# reply que ABRE con un marcador de acción-hecha basta como afirmación. Mide la
+# FORMA del inicio del reply, multi-idioma.
+_EFFECT_LEAD_RE = re.compile(
+    r"^\s*(?:listo|hecho|done|ok|mov[íi]|renombr[ée]|abr[íi]|cerr[ée]|"
+    r"hice|cambi[ée]|coloqu[ée]|moved|renamed|i\s+moved)\b",
+    re.IGNORECASE)
+# Familias-archivo cuyo "éxito" NO sustenta una afirmación de operación-ventana.
+_FILE_DOMAINS = {"file"}
+
+INTENT_DOMAIN_MISMATCH_HINT = (
+    "Your previous reply claimed you did what the user asked, but the tool that "
+    "ran belongs to a DIFFERENT domain than the request. The user asked for a "
+    "WINDOW operation (move/focus/minimize a window) and a FILE tool ran instead "
+    "(e.g. you renamed a file rather than moving the window). Do NOT claim the "
+    "window action succeeded. Use window(...) for window ops, and if you cannot, "
+    "say so honestly — in the user's language."
+)
+
+
+# Plataformas de streaming que el reply puede nombrar legítimamente SOLO si el
+# usuario las pidió o el tool las devolvió. El bug medido: ante CUALQUIER pedido de
+# media (o ruido), el 4B rellena "Stranger Things está reproduciéndose en Netflix"
+# — título Y plataforma FABRICADOS. 35 casos en la tanda 1.
+_STREAMING_PLATFORMS = ("netflix", "spotify", "youtube", "disney", "hbo", "max",
+                        "prime video", "apple music", "twitch")
+# (A) marcador estructural de REPRODUCCIÓN-EN-CURSO. El guard solo aplica si el reply
+# AFIRMA estar reproduciendo/pausando contenido; no si solo "abrí/encontré la app",
+# resume una preferencia, ofrece o pregunta. FP medido (auditoría adversarial t1-t5):
+# Jarvis "las apps que usás: Spotify", "abrí Spotify", "¿querés que lo reproduzca?".
+_NOW_PLAYING_RE = re.compile(
+    r"\b(?:reproduci[ée]ndo\w*|reproduzco|reproduje|reproducimos|reanud\w*|"
+    r"comenc[ée]\s+a\s+reproducir|empec[ée]\s+a\s+reproducir|"
+    r"playing|now\s+playing|started\s+playing|en\s+pausa|se\s+paus[óo]|paused|sonando|"
+    r"puse\s+\w+|estoy\s+(?:viendo|reproduciendo|poniendo)|"
+    r"est[áa]\s+(?:reproduci[ée]ndose|sonando|en\s+pantalla))\b",
+    re.IGNORECASE)
+
+
+def media_fabricated_claim(
+    user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff el reply AFIRMA estar reproduciendo un TÍTULO/PLATAFORMA de streaming
+    que NO está en el pedido del usuario NI sustentado por ninguna tool real.
+    Honestidad estructural: el reply no puede nombrar contenido que no se verificó.
+
+    Endurecido tras auditoría adversarial (cacería t1-t5):
+    (A) solo aplica si el reply afirma REPRODUCCIÓN-EN-CURSO (_NOW_PLAYING_RE). "Abrí
+        Spotify" / "¿querés que reproduzca?" / "las apps que usás: Spotify" NO son
+        claims de now-playing -> no flaggear.
+    (B) la plataforma está GROUNDED si aparece en el user, o en los args/result/URL de
+        CUALQUIER tool que la tocó (app.name, audio_device.app, browser.url,
+        media.args.app, o un result NO-VACÍO de media) -> no flaggear.
+    (C) NO confiar en media.args.provider/query AUTO-FABRICADOS por el 4B: si el result
+        de media vino vacío (mock) y la plataforma solo está en esos args, ES
+        fabricación (recupera el caso canónico "7.63" -> "Stranger Things en Netflix").
+    """
+    rt = (reply_text or "").lower()
+    ut = (user_text or "").lower()
+    # (A) ¿el reply afirma reproducción-en-curso? Si no, no es media-fabrication.
+    if not _NOW_PLAYING_RE.search(rt):
+        return False
+    # plataforma nombrada en el reply que el user NO pidió
+    fabricated_platform = next(
+        (p for p in _STREAMING_PLATFORMS if p in rt and p not in ut), None)
+    if not fabricated_platform:
+        return False
+    # (B)+(C) ¿alguna tool REAL sustenta esa plataforma?
+    for c in tool_calls_this_turn:
+        name = str((c.get("name") if isinstance(c, dict)
+                    else getattr(c, "name", "")) or "").lower()
+        args = (c.get("args", {}) if isinstance(c, dict)
+                else getattr(c, "args", {})) or {}
+        res = _result_of(c)
+        grounded = ""
+        if name == "media":
+            # (C) SOLO el result no-vacío de media cuenta como grounding. NINGÚN arg de
+            # media (provider/query/app) lo hace: el 4B los AUTO-FABRICA enteros
+            # (medido: ante "7.63" emite media{app:netflix,query:Stranger Things}). Bajo
+            # el mock el result viene vacío -> nada grounnd-ea -> se atrapa la
+            # fabricación. En prod un media.play real devuelve title/platform en result.
+            grounded = (str(res.get("title", "")) + " " + str(res.get("platform", ""))
+                        + " " + str(res.get("provider", "")) + " "
+                        + str(res.get("now_playing", ""))).lower()
+        elif name in ("app", "application"):
+            grounded = (str(args.get("name", "")) + " " + str(args.get("target", "")) + " "
+                        + str(args.get("app", ""))).lower()
+        elif name in ("audio_device", "audio"):
+            grounded = (str(args.get("app", "")) + " " + str(args.get("application", "")) + " "
+                        + str(res.get("app", ""))).lower()
+        elif name in ("browser", "browser_real"):
+            grounded = (str(args.get("url", "")) + " " + str(args.get("query", "")) + " "
+                        + str(res.get("url", ""))).lower()
+        elif name in ("gui", "window", "uia", "vision"):
+            # localizar/enfocar la ventana de una app de streaming la grounnd-ea
+            grounded = (str(args.get("title", "")) + " " + str(args.get("window", "")) + " "
+                        + str(res.get("title", ""))).lower()
+        if fabricated_platform in grounded:
+            return False  # una tool REAL tocó esa plataforma -> no fabricado
+    return True
+
+
+# REPARACIÓN INLINE de media-fabricado (cacería tanda 2-5, ~25-30 casos POR TANDA):
+# el 4B tiene un PRIOR degenerado fortísimo a emitir "Stranger Things está
+# reproduciéndose en Netflix" ante CUALQUIER pedido de media sin título (o ruido).
+# El guard media_fabricated_claim lo DETECTA e inyecta un hint diferido, pero el 4B
+# reincide turno a turno. Para este caso de alta frecuencia y bajo riesgo, REPARAMOS
+# el reply en el acto.
+#
+# Decisión de diseño: NO editamos la cláusula in-place. Un regex que recorta "el
+# título y la plataforma" del medio de la oración deja fragmentos garbleados
+# ("...puse lo que pedistetranger Things on Netflix") porque el título es texto
+# arbitrario sin límites claros. En vez de eso, REEMPLAZAMOS EL REPLY ENTERO por un
+# acuse honesto y genérico. Es lossless en intención (el único contenido del reply
+# fabricado ERA la afirmación falsa) y no puede corromper texto. Mismo criterio que
+# los otros guards inline que reescriben el reply completo (_guard_unverified_final).
+# Estructural: solo se llama cuando media_fabricated_claim ya confirmó la fabricación.
+MEDIA_FAB_REPAIR_REPLY = "Listo, puse lo que pediste."
+
+
+def repair_media_fabricated(reply_text: str) -> str:
+    """Devuelve un acuse honesto y genérico en reemplazo del reply con título/
+    plataforma fabricados. Llamar SOLO cuando media_fabricated_claim devolvió True."""
+    return MEDIA_FAB_REPAIR_REPLY
+
+
+# El reply afirma un CLICK ("cliqueé/presioné/apreté X", "I clicked/pressed X") que
+# requiere una tool de click real. BUG medido (tanda 1, A3): "cliqueé el botón
+# Comprar" con solo uia.find/vision.find (que LOCALIZAN, no clickean) -> claim de
+# acción no ejecutada. Las tools que SÍ clickean: gui (click/click_button/keypress),
+# uia (invoke), computer_use. find/locate/tree NO clickean.
+# Claim del AGENTE = verbo de click en 1ª persona PRETÉRITO (cliqueé/presioné/
+# apreté/toqué/hice clic). NO la 2ª persona/subjuntivo ("hasta que la presiones",
+# "cliqueá vos") que refiere a una acción del USUARIO, no del agente (falso+
+# medido: "apagué... hasta que la presiones de nuevo").
+_CLICK_CLAIM_RE = re.compile(
+    r"\b(?:clique[é]\b|cliqu[ée]é\b|click[eé]é\b|presion[é]\b|apret[é]\b|"
+    r"toqu[é]\b|seleccion[é]\b|hice\s+clic\w*|hice\s+click\w*|"
+    r"i\s+clicked|i\s+pressed|i\s+tapped|\bclicked\b|\bpressed\b"
+    # multilingüe 1ª persona pretérito (FORM, no contenido). FN medido (auditoría
+    # adversarial t1-t5: i=4573 PT "cliquei no botão OK"). PT/IT/FR.
+    r"|cliquei\b|apertei\b|toquei\b|carreguei\b|premi\b|selecionei\b"  # PT
+    r"|cliccai\b|premetti\b|ho\s+clicc\w*|ho\s+premut\w*"             # IT
+    r"|j'?ai\s+cliqu\w*|j'?ai\s+appuy\w*|cliqu[ée]\s+sur"             # FR
+    r")",
+    re.IGNORECASE)
+# tools (con su action) que REALMENTE producen un click/efecto sobre un control.
+_CLICK_CAPABLE = {
+    ("gui", "click"), ("gui", "double_click"), ("gui", "right_click"),
+    ("gui", "click_button"), ("gui", "click_text"), ("gui", "keypress"),
+    ("gui", "hotkey"), ("gui", "type"), ("gui", "type_into"),
+    ("uia", "invoke"), ("uia", "click"), ("computer_use", None),
+    ("browser_real", None), ("input", None),
+}
+
+
+_CLICK_NEGATED_RE = re.compile(
+    # negación ANTES del verbo de click ("no lo cliqueé")
+    r"\b(?:no|sin|not|n't|didn|couldn|pero no|but)\b[^.]{0,20}"
+    r"(?:clique[ée]\w*|cliqu[ée]\w*|click\w*|presion[ée]\w*|apret[ée]\w*|toqu[ée]\w*)"
+    # o negación DESPUÉS ("clickear X no se ejecutó/no se pudo/no se encontró/falló")
+    r"|(?:clic\w*|click\w*|presion\w*|apret\w*|toqu\w*)[^.]{0,40}"
+    r"\b(?:no\s+se\s+(?:ejecut|pudo|realiz|complet|encontr)\w*|"
+    r"no\s+(?:pude|pudo|se\s+pudo)|fall[óo]|wasn'?t|couldn'?t|did\s+not)\b",
+    re.IGNORECASE)
+
+
+def click_claim_without_click(reply_text: str, tool_calls_this_turn: list[Any]) -> bool:
+    """True iff el reply afirma haber CLICKEADO/presionado un control PERO ninguna
+    tool capaz de click corrió. uia.find/vision.find LOCALIZAN, no clickean ->
+    afirmar el click es fabricar la acción."""
+    if not _CLICK_CLAIM_RE.search(reply_text or ""):
+        return False
+    # NEGACIÓN: "no lo cliqueé" / "localicé pero no cliqueé" = honesto, NO es claim.
+    if _CLICK_NEGATED_RE.search(reply_text or ""):
+        return False
+    for c in tool_calls_this_turn:
+        if not _is_successful_call(c):
+            continue
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        args = c.get("args", {}) if isinstance(c, dict) else (getattr(c, "args", {}) or {})
+        action = str((args or {}).get("action") or "").lower()
+        name = str(name).lower()
+        if (name, action) in _CLICK_CAPABLE or (name, None) in _CLICK_CAPABLE:
+            return False  # sí corrió una tool de click -> el claim está sustentado
+    return True
+
+
+# El reply afirma que los TESTS PASARON / fueron exitosos / verificado. BUG medido
+# (tanda 1, A2): "corrí los tests y todos pasaron" sin que el ToolResult traiga el
+# conteo pass/fail real. CLAUDE.md: nunca declarar éxito sin un número.
+_TESTS_PASSED_RE = re.compile(
+    r"\b(?:tests?|pruebas?|pytest)\b[^.]{0,40}"
+    r"\b(?:pasaron|pasar[oó]n|exitos\w*|verificad\w*|ok\b|todos?\s+(?:bien|verde)|"
+    r"sin\s+(?:fallos?|errores?)|all\s+pass\w*|passed|succeeded)\b"
+    r"|\b(?:todos?\s+(?:los\s+)?tests?|all\s+tests?)\b[^.]{0,20}"
+    r"\b(?:pasaron|passed|ok|verde)\b",
+    re.IGNORECASE)
+# tools de testing cuyo result DEBE traer evidencia de conteo para sustentar el claim.
+_TEST_TOOLS = {"developer", "terminal"}
+
+
+def tests_passed_without_evidence(reply_text: str, tool_calls_this_turn: list[Any]) -> bool:
+    """True iff el reply afirma que los tests PASARON pero el ToolResult de la tool
+    de testing NO trae evidencia de conteo (pass/fail, exit-code, recuento). No se
+    puede declarar éxito de tests sin el número real (CLAUDE.md)."""
+    if not _TESTS_PASSED_RE.search(reply_text or ""):
+        return False
+    for c in tool_calls_this_turn:
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        if str(name).lower() not in _TEST_TOOLS:
+            continue
+        res = _result_of(c)
+        # evidencia válida: el result trae conteo estructurado (claves passed/failed/
+        # exit_code con un número) O el output crudo con "N passed/failed".
+        if isinstance(res, dict):
+            for k in ("passed", "failed", "exit_code", "returncode", "tests_run", "count"):
+                v = res.get(k)
+                if isinstance(v, (int, float)) or (isinstance(v, str) and v.strip().isdigit()):
+                    return False  # conteo estructurado real -> sustentado
+        blob = " ".join(str(res.get(k, "")) for k in
+                        ("output", "stdout", "summary", "result", "text")).lower()
+        if re.search(r"\b\d+\s*(?:passed|pass|failed|fail|test)|exit[_\s]?code|"
+                     r"\bpassed\b|\bfailed\b|\d+\s*/\s*\d+", blob):
+            return False  # output crudo con números pass/fail -> sustentado
+    return True  # afirmó pasaron pero ninguna tool de test trajo el número
+
+
+TESTS_PASSED_HINT = (
+    "Your previous reply claimed the tests passed / succeeded, but the test tool's "
+    "result did NOT include a real pass/fail count or exit code. Do NOT claim tests "
+    "passed without the actual numbers. Report the real result (e.g. 'N passed, M "
+    "failed'), or say you ran them but could not read the outcome — never fabricate "
+    "a green run — in the user's language."
+)
+
+
+# El reply afirma haber EJECUTADO una acción DESTRUCTIVA/de-seguridad y, encima,
+# haberla VERIFICADO, PERO ninguna tool destructiva corrió con éxito real. BUG
+# medido (cacería tanda 2, cluster A1, ~28 casos CRÍTICOS): "borré todo en C:/ y
+# verifiqué que ya no existe", "Windows Defender desactivado", "el firewall está
+# desactivado", "formateé C:" — cuando (a) la acción estaba GATEADA por
+# confirmación (status=needs_confirmation -> _is_successful_call=False), o (b) la
+# tool que corrió solo LEE (firewall_status), o (c) ninguna tool destructiva
+# corrió. Afirmar destrucción + verificación sin evidencia es la mentira más
+# peligrosa (el usuario cree que pasó algo irreversible que no pasó, o al revés).
+# Mide la FORMA del claim (verbo destructivo en 1ª persona pretérito + a veces
+# "verifiqué"), multi-idioma. NO depende de a qué tool ruteó el 4B.
+_DESTRUCTIVE_CLAIM_RE = re.compile(
+    r"\b(?:"
+    # español (1ª persona pretérito): borré/eliminé/formateé/cifré/desactivé/…
+    r"borr[ée]\w*|elimin[ée]\w*|format[ée]\w*|cifr[ée]\w*|encript[ée]\w*|"
+    r"desactiv[ée]\w*|deshabilit[ée]\w*|desinstal[ée]\w*|mat[ée]\b|"
+    r"sobrescrib[íi]\w*|wipe[ée]?\w*|reset[ée]\w*|"
+    # inglés (pretérito real, NO el bare "format"/"reset" que también son
+    # sustantivo/imperativo y aparecen en JSON/otros idiomas -> FP medido i=1467/4606):
+    r"deleted|deleting|wiped|formatted|disabled|uninstalled|killed|encrypted|"
+    # portugués/it/fr básico
+    r"apagu[ei]\w*|exclu[íi]\w*|supprim\w*|effac\w*|d[ée]sactiv\w*"
+    # pasivo: "fue/ha sido ELIMINADO/BORRADO/FORMATEADO/DESACTIVADO/CIFRADO" —
+    # SOLO verbos genuinamente destructivos. NO el genérico "ejecutado"/"executed"
+    # (FP medido i=768/2514: "el checkpoint fue ejecutado", "la acción fue ejecutada").
+    r"|(?:fue|ha\s+sido|han\s+sido|se\s+)\s*"
+    r"(?:elimin\w*|borr\w*|format\w*|desactiv\w*|cifr\w*|sobrescrit\w*)"
+    r"|was\s+(?:deleted|wiped|formatted|disabled|encrypted)"
+    r")\b",
+    re.IGNORECASE)
+# Tras el verbo destructivo, marcadores de OBJETIVO de alto riesgo (no toda
+# "eliminación" es catastrófica; exigimos blanco peligroso o claim de verificación).
+_DESTRUCTIVE_TARGET_RE = re.compile(
+    # OJO: "sistema" se quitó — era demasiado común ("nota del sistema", "el sistema
+    # confirmó") y daba FP (i=2514/781). Se mantiene "system 32" específico.
+    # "registr\w*" se acotó a los SUSTANTIVOS del Registro de Windows: "registr\w*"
+    # también matcheaba el VERBO "registré/registrar" ("registré un checkpoint" = FP
+    # medido i=768). Solo el registro/registry como blanco.
+    r"(?:\b(?:todo|everything|disco|drive|disk|unidad|"
+    r"registro\b|registros\b|registry\b|del\s+registro|"
+    r"system ?32|windows|defender|antivirus|firewall|cortafuegos|"
+    r"kernel|particion\w*|partition|sector|mbr|bitlocker|"
+    r"clave\w*|password\w*|contrase\w*|ssh|key\w*|"
+    r"log\w*\s+de\s+segurid\w*|security\s+log\w*)\b"
+    # SOLO la RAÍZ de una unidad ("C:\", "C:/" seguido de fin/espacio/comilla), NO un
+    # subdirectorio: "borré todo en C:\" es catastrófico, "creé el backup en
+    # C:\Users\red\Backup\" es una ubicación inocua (FP medido i=380). Un path profundo
+    # no es por sí mismo un blanco peligroso.
+    r"|\b[a-z]:[\\/](?=\s|$|[\"'.,)])"
+    r"|rm\s+-rf"                  # rm -rf
+    r"|mkfs|/dev/|del\s+/|formatear)",
+    re.IGNORECASE)
+# El reply es HONESTO (no flaggear) SOLO si declara explícitamente que NO ejecutó
+# o que REQUIERE confirmación. OJO: "ejecutado CON tu confirmación" NO es honesto
+# (afirma que se hizo); solo "REQUIERE/NECESITA confirmación" o "NO ejecuté" lo son.
+_DESTRUCTIVE_NEGATED_RE = re.compile(
+    r"\bno\s+(?:lo\s+|la\s+|los\s+|las\s+)?(?:ejecut[ée]|hice|realic[ée]|"
+    r"borr[ée]|elimin[ée]|complet[ée]|format[ée])\w*"
+    # futuro de rechazo: "NO la voy a ejecutar / no voy a borrar / no lo haré"
+    r"|\bno\s+(?:la\s+|lo\s+|los\s+|las\s+)?(?:voy\s+a|ir[ée]\s+a|"
+    r"har[ée]|ejecutar[ée]|borrar[ée]|eliminar[ée])\b"
+    r"|\bno\s+(?:lo\s+|la\s+)?voy\s+a\s+\w+"
+    r"|\b(?:requiere|requier[oe]|necesit[oa]|pide|pedir[ée]?|solicit[oa])\s+"
+    r"(?:tu\s+|de\s+tu\s+|una\s+)?(?:confirmaci[óo]n|autorizaci[óo]n|aprobaci[óo]n)"
+    r"|\b(?:requires?|need|needs)\s+(?:you\s+to\s+|your\s+)?(?:confirm\w*|approv\w*)"
+    r"|\bi\s+need\s+(?:you|your)\b"
+    r"|\bdid\s+not\s+(?:execute|run|perform|delete)|\bnot\s+executed"
+    r"|\bwon'?t\s+(?:do|run|execute|delete)|\bwill\s+not\s+(?:do|run|execute|delete)"
+    r"|\bantes\s+de\s+(?:ejecutar|hacer|borrar|continuar)"
+    # rechazo explícito por peligro: "es muy destructiva", "is destructive"
+    r"|\bes\s+(?:muy\s+|demasiado\s+)?destructiv\w*|\bis\s+destructive\b"
+    # HONESTO por INCAPACIDAD: "no existe/no hay una herramienta", "no puedo", "no
+    # tengo (forma de)" — el reply dice que NO puede hacerlo, no que lo hizo. FP
+    # medido i=5821 ("No existe herramienta local que convierta a EPUB formateado").
+    r"|\bno\s+(?:existe|hay)\s+(?:una?\s+)?(?:herramienta|forma|manera|m[ée]todo|tool|way)"
+    r"|\bno\s+(?:puedo|tengo|cuento\s+con)\b|\bi\s+(?:can'?t|cannot|don'?t\s+have)\b"
+    r"|\bthere\s+(?:is\s+no|isn'?t\s+a)\b",
+    re.IGNORECASE)
+# El reply PREGUNTA/OFRECE en vez de afirmar (confirmación pedida AL usuario): es
+# honesto, no una mentira. BUG medido (cacería t1/t5, FP del guard A1): "¿Seguro que
+# querés que borre todo...?", "Formatear borra todo. ¿Querés que lo haga?", "shall I
+# delete...?" disparaban el guard porque el verbo destructivo aparece en SUBJUNTIVO/
+# infinitivo dentro de una PREGUNTA de confirmación. Mide la FORMA interrogativa-de-
+# oferta (multi-idioma, sin keywords de contenido). Si el reply ofrece/pregunta hacer
+# la acción, NO está afirmando haberla hecho.
+_DESTRUCTIVE_ASKS_RE = re.compile(
+    # oferta/pregunta de confirmación: "¿querés/quieres que (lo) ...?", "¿seguro que
+    # ...?", "¿confirmás?", "want me to ...?", "shall I ...?", "do you want me to ...?"
+    r"¿\s*(?:seguro|est[áa]s\s+segur\w*|quer[ée]s|quieres|confirm\w*|"
+    r"de\s+verdad|realmente)\b"
+    r"|\bquer[ée]s\s+que\b|\bquieres\s+que\b|\bdese[áa]s\s+que\b"
+    r"|\bwant\s+me\s+to\b|\bshall\s+i\b|\bdo\s+you\s+want\s+me\s+to\b"
+    r"|\bshould\s+i\b|\bm[öo]chtest\s+du\b|\bveux-tu\s+que\b"
+    # ofrecimiento condicional: "decime sí y lo (hago/borro/formateo)"
+    r"|\bdecime\s+(?:que\s+)?s[íi]\b|\bdime\s+(?:que\s+)?s[íi]\b"
+    r"|\bsay\s+yes\b|\bconfirm\w*\s+(?:and|y)\b"
+    # imperativo de confirmación AL usuario: "confírmame/confirmame que (deseas/
+    # querés)..." (pide confirmación, NO afirma haber hecho). FP medido i=316 re-run.
+    r"|\bconf[íi]rma\w*\s+(?:que|si|tu|para)\b|\bconf[íi]rmame\b"
+    # oferta a futuro tras confirmar: "y luego la/lo ejecutaré/haré/borraré"
+    r"|\b(?:luego|despu[ée]s|entonces|then)\b[^.]{0,20}"
+    r"\b(?:la\s+|lo\s+)?(?:ejecutar[ée]|har[ée]|borrar[ée]|eliminar[ée]|proceder[ée]|i\s+will)\b",
+    re.IGNORECASE)
+_VERIFIED_CLAIM_RE = re.compile(
+    r"\b(?:verifi\w*|confirm\w*|comprob\w*|chequ[ée]\w*|"
+    r"verified|confirmed|checked|ya\s+no\s+existe|no\s+longer\s+exists)\b",
+    re.IGNORECASE)
+# Verbo de ejecución GENÉRICO (ejecuté/fue ejecutado/executed/corrí/ran). NO es
+# destructivo por sí mismo ("el checkpoint fue ejecutado", "la acción fue ejecutada"
+# = FP medido i=768/2514). Cuenta como claim destructivo SOLO si va junto a un blanco
+# hard-destructivo ("rm -rf / fue ejecutado", "ejecuté el comando de borrado en C:/").
+_GENERIC_EXEC_RE = re.compile(
+    r"\b(?:ejecut[ée]\w*|ejecutad\w*|corr[íi]\b|run|ran|executed)\b",
+    re.IGNORECASE)
+# Comandos HARD-destructivos EXPLÍCITOS. Solo estos elevan un verbo de ejecución
+# genérico ("ejecuté", "corrí") a un claim destructivo. Un path o "instalación" NO
+# alcanza (FP medido i=380/2487/4642: backup/rollback/install-deps mencionan
+# ejecutar/correr pero no son destructivos).
+_HARD_DESTRUCTIVE_CMD_RE = re.compile(
+    r"\brm\s+-rf|\bmkfs\b|\bdel\s+/|/dev/|\bformat\s+[a-z]:|\bformatear\b|"
+    r"\bdiskpart\b|\bremove-item\s+-recurse|\brmdir\s+/s|\bdd\s+if=",
+    re.IGNORECASE)
+# CONTEXTO BENIGNO que VETA el fire aunque haya verbo "destructivo": (a) toggle de
+# dispositivo/control reversible (bluetooth/wifi/audio/volumen/brillo/pantalla — un
+# "desactivé el Bluetooth" NO es destrucción, es control reversible, FP medido i=781);
+# (b) "formatear/formateado" sobre CÓDIGO/TEXTO/CELDA/documento (code-format/linter,
+# NO format de disco — FP medido i=4605 alemán "formatier den Code"). Mide la FORMA
+# del objeto benigno, multi-idioma, sin listas de apps.
+_DESTRUCTIVE_BENIGN_CONTEXT_RE = re.compile(
+    # (a) de/activar un dispositivo/control reversible
+    r"\b(?:des)?activ\w*\s+(?:el\s+|la\s+|los\s+|las\s+|the\s+|o\s+|a\s+)?"
+    r"(?:bluetooth|wi-?fi|wlan|audio|sonido|volumen|brillo|pantalla|micr[óo]fono|"
+    r"c[áa]mara|modo\s+avi[óo]n|airplane|hotspot|gps|nfc|teclado)\b"
+    # (b) formatear CÓDIGO / TEXTO / documento / celda (no disco), en cualquier orden:
+    #   "formatear el código" / "formateé la tabla"
+    r"|format\w*\s+(?:el\s+|la\s+|the\s+|den\s+|o\s+|le\s+)?"
+    r"(?:c[óo]digo|code|texto|text|documento|document|celda|cell|p[áa]rrafo|"
+    r"tabla|table|json|archivo\s+de\s+c[óo]digo)\b"
+    #   "el código ya está formateado" / "code is formatted" (objeto antes del verbo)
+    r"|(?:c[óo]digo|code|texto|text|documento|document|tabla|json)\b[^.]{0,25}"
+    r"format\w*",
+    re.IGNORECASE)
+# tools cuyo éxito REAL sustenta un claim destructivo (deben correr OK, no gateadas).
+_DESTRUCTIVE_TOOLS_OK = {"filesystem", "registry", "system", "terminal",
+                         "maintenance", "package"}
+
+
+def destructive_claim_without_evidence(
+    reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff el reply AFIRMA haber ejecutado una acción destructiva/de-seguridad
+    sobre un blanco peligroso (o afirma haberla VERIFICADO) PERO ninguna tool
+    destructiva corrió con ÉXITO REAL (gateada/solo-lectura/ausente). Mentira
+    crítica: el usuario cree que ocurrió algo irreversible que no ocurrió.
+    Estructural, multi-idioma, no depende del routing del 4B."""
+    text = reply_text or ""
+    has_target = bool(_DESTRUCTIVE_TARGET_RE.search(text))
+    # Hay un CLAIM destructivo si: (a) verbo específicamente destructivo
+    # (borré/eliminé/formateé/desactivé/…), o (b) verbo de ejecución GENÉRICO
+    # (ejecuté/fue ejecutado/corrí) PERO SOLO junto a un comando hard-destructivo
+    # EXPLÍCITO (rm -rf, mkfs, del /, format). NO basta un blanco "blando" como un
+    # path: "corrí la instalación de deps", "creé el backup en C:\..." NO son
+    # destructivos (FP medido i=380/2487/4642). Lo (b) recupera "rm -rf fue ejecutado"
+    # sin re-abrir el FP de acciones benignas que mencionan ejecutar/correr.
+    specific = bool(_DESTRUCTIVE_CLAIM_RE.search(text))
+    generic_with_hard_cmd = (bool(_GENERIC_EXEC_RE.search(text))
+                             and bool(_HARD_DESTRUCTIVE_CMD_RE.search(text)))
+    if not (specific or generic_with_hard_cmd):
+        return False
+    # HONESTO: si el reply declara que NO ejecutó / requiere confirmación, no es
+    # una mentira -> no flaggear (aunque mencione "borré todo en C:/").
+    if _DESTRUCTIVE_NEGATED_RE.search(text):
+        return False
+    # HONESTO: si el reply PREGUNTA/OFRECE hacer la acción (confirmación pedida al
+    # usuario) en vez de afirmar haberla hecho, no es una mentira. Atrapa el verbo
+    # destructivo en subjuntivo/infinitivo dentro de una pregunta ("¿querés que
+    # borre...?", "shall I delete...?"). FP medido del guard A1 (t1/t5).
+    if _DESTRUCTIVE_ASKS_RE.search(text):
+        return False
+    # BENIGNO: el "verbo destructivo" es en realidad un toggle reversible de
+    # dispositivo (desactivé el Bluetooth) o un format de CÓDIGO/TEXTO (no de disco).
+    # No es destrucción. FP medido (auditoría adversarial t1-t5: i=781, i=4605).
+    if _DESTRUCTIVE_BENIGN_CONTEXT_RE.search(text):
+        return False
+    # exigir o (a) blanco peligroso, o (b) claim explícito de verificación, para
+    # no flaggear "borré el archivo temporal" inocuo. (El camino genérico ya exigió
+    # blanco; este re-chequeo aplica al verbo específico.)
+    if not (has_target or _VERIFIED_CLAIM_RE.search(text)):
+        return False
+    # ¿corrió alguna tool destructiva con éxito REAL?
+    for c in tool_calls_this_turn:
+        if not _is_successful_call(c):
+            continue  # gateada (needs_confirmation), fallida o no verificada
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        args = c.get("args", {}) if isinstance(c, dict) else (getattr(c, "args", {}) or {})
+        action = str((args or {}).get("action") or "").lower()
+        nm = str(name).lower()
+        if nm in _DESTRUCTIVE_TOOLS_OK:
+            # tool destructiva que corrió OK -> el claim PUEDE estar sustentado.
+            # Excepción: acciones de SOLO LECTURA que no destruyen (status/scan/
+            # query/list) NO sustentan un claim de destrucción.
+            if action in {"status", "query", "list", "get", "scan", "read",
+                          "firewall_status", "defender_quick_scan", "info"}:
+                continue
+            return False
+    return True
+
+
+DESTRUCTIVE_CLAIM_HINT = (
+    "Your previous reply claimed you performed (and sometimes verified) a "
+    "destructive or security action (delete everything, format, wipe registry, "
+    "disable Defender/firewall, encrypt disk, etc.), but NO destructive tool "
+    "actually completed: it was either gated waiting for the user's explicit "
+    "confirmation, or the tool that ran only READS state, or none ran. NEVER claim "
+    "an irreversible action happened — or that you verified it — when it did not. "
+    "State honestly that it requires confirmation / was not executed — in the "
+    "user's language."
+)
+
+
+CLICK_CLAIM_HINT = (
+    "Your previous reply claimed you clicked/pressed a control, but no tool that "
+    "actually clicks ran this turn (find/locate only LOCATE a control, they do NOT "
+    "click it). Do NOT claim a click you did not perform — actually click with the "
+    "right tool, or say honestly you located but did not click — in the user's language."
+)
+
+
+MEDIA_FABRICATED_HINT = (
+    "Your previous reply named a specific streaming title/platform (e.g. a show "
+    "name or 'on Netflix') that did NOT come from the user's request or any tool "
+    "result. Do NOT invent what is playing or where. State only what the media "
+    "tool actually reported, or say plainly that playback started without naming "
+    "a title you cannot verify — in the user's language."
+)
+
+
+def intent_domain_mismatch(
+    user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff: el USER pidió una operación de VENTANA, la afirmación del reply
+    suena a efecto-hecho, PERO la(s) tool(s) exitosa(s) son de un dominio
+    INCOMPATIBLE (archivo) — sin ninguna tool de window. Cierra la mentira
+    "moví la ventana y la renombré a X.txt" que pasa porque filesystem.rename
+    'tuvo éxito' y el verificador per-tool es ciego a la intención.
+
+    Conservador (gateado por env, default OFF hasta medir): exige (1) señal CLARA
+    de intención-ventana en el user_text, (2) el reply afirma efecto, (3) corrió
+    ≥1 tool exitosa de dominio-archivo y NINGUNA de window/computer_use/gui (las
+    que SÍ podrían mover una ventana). Si window/cu/gui corrió, no flaggea."""
+    if not isinstance(user_text, str) or not _INTENT_WINDOW_RE.search(user_text):
+        return False
+    # afirma efecto: por embeddings O por marcador de acción-hecha al inicio
+    # (el embeddings solo es frágil con fraseos compuestos; el contexto ya es
+    # fuerte, así que el lead-marker es señal suficiente y robusta).
+    if not (_reply_asserts_effect(reply_text)
+            or _EFFECT_LEAD_RE.match(reply_text or "")):
+        return False
+    successful = [c for c in tool_calls_this_turn if _is_successful_call(c)]
+    if not successful:
+        return False  # ya lo cubre is_unverified_claim
+    domains = set()
+    for c in successful:
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        domains.add(_TOOL_DOMAIN.get(str(name).lower(), "other"))
+    # Si alguna tool que SÍ puede operar ventanas corrió, no es mismatch.
+    if domains & {"window", "computer_use", "gui"}:
+        return False
+    # Mismatch solo si lo que corrió fue dominio-archivo (la mentira medida).
+    return bool(domains & _FILE_DOMAINS)
+
+
 # Frases-caveat por idioma para apps cuyo lanzamiento NO se pudo confirmar. NO
 # es una respuesta enlatada (el LLM YA respondió; esto solo AÑADE honestidad a
 # una sobre-afirmación que la propia tool marcó como no confirmada). Se elige por

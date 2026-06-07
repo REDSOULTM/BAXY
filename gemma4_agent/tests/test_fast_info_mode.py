@@ -59,6 +59,19 @@ class TestFastInfoMode(unittest.TestCase):
         for q in ["hola", "gracias", "si"]:
             self.assertEqual(_infer_mode(q), "fast_action")
 
+    def test_actual_window_command_not_research(self):
+        # BUG real medido (cacería tanda 1): " actual " (la palabra ES más común
+        # para 'current/este') matcheaba research_markers -> comandos como "minimiza
+        # la ventana actual" iban a modo research (parallel + 2048 tok) -> el 4B
+        # emitía un batch DEGENERADO de ~140 tool_calls -> 30s/turno. Estos comandos
+        # NO son research; ya no deben rutear ahí (la verificación final de mode +
+        # el batch circuit-breaker cierran el bug).
+        for q in ["minimiza la ventana actual", "maximiza la ventana actual",
+                  "cierra la pestaña actual", "recarga la pagina actual",
+                  "pon la cancion actual", "cierra la ventana actual"]:
+            self.assertNotEqual(_infer_mode(q), "research",
+                                f"{q!r} es un COMANDO, no research")
+
 
 if __name__ == "__main__":
     unittest.main()

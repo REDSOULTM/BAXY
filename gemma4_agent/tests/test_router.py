@@ -131,6 +131,185 @@ def test_open_browser_not_abstained() -> None:
         assert not domain, f"{q!r} should abstain, got {sorted(domain)}"
 
 
+def test_local_state_question_offers_window_not_only_session() -> None:
+    """BUG real (log voz turnos 13/14, 2026-06-03): "¿qué juego estoy jugando?"
+    -> el abstain_head trató la pregunta de ESTADO LOCAL como smalltalk (FP frágil
+    a mayúscula/?/wake-leak) y el fallback devolvía solo ['session'] -> el 4B
+    forzaba session.cancel_turn ante una PREGUNTA. La responde window(action=
+    'active'). El router debe ofrecer `window` y NUNCA dejar SOLO ['session']."""
+    for q in ("Bixby, ¿qué juego estoy jugando?",   # wake-leak + acento + ?
+              "Max ¿qué juego estoy jugando?",
+              "¿qué juego estoy jugando?",
+              "Que juego estoy jugando?",            # May + ? sin ¿ (caía a session)
+              "qué aplicación está abierta",
+              "qué ventana está activa",
+              "what game am I playing"):
+        subset = select_tool_names(q, plan_mission(q), safety_enabled=False)
+        assert "window" in subset, f"{q!r} must offer window, got {subset}"
+        assert subset != ["session"], f"{q!r} fell back to only session"
+
+    # ANTI-REGRESIÓN: el detector NO debe robar acciones ni smalltalk genuino.
+    # Una ACCIÓN ("cerrá la ventana") sigue su ruta (window por keyword, no por
+    # el fallback de estado-local); smalltalk real NO debe traer window por esto.
+    for q in ("hola qué tal", "gracias", "contame un chiste"):
+        subset = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        assert "window" not in subset, f"{q!r} should not offer window, got {sorted(subset)}"
+
+
+def test_app_state_check_offers_system_not_app_tool() -> None:
+    """BUG real (eval dataset run2, 2026-06-04): "¿Steam está abierto?" ofrecía
+    `steam` (cuyo default es ABRIR) -> el 4B abría Steam y MENTÍA "Listo, abrí
+    Steam". Una pregunta de ESTADO read-only la responde system(processes)/window;
+    el router debe RETIRAR steam/browser/app e inyectar system/window."""
+    for q in ("revisa si Steam está abierto", "Steam está cerrado?",
+              "revisa si Chrome está abierto", "is Discord running?"):
+        subset = select_tool_names(q, plan_mission(q), safety_enabled=False)
+        assert "system" in subset or "window" in subset, f"{q!r} -> {subset}"
+        assert "steam" not in subset and "browser" not in subset, (
+            f"{q!r} no debe ofrecer la tool de la app (abre, no chequea): {subset}")
+
+    # ANTI-REGRESIÓN: una ACCIÓN sobre la app NO debe ser tratada como chequeo.
+    s_open = select_tool_names("abrí Steam", plan_mission("abrí Steam"))
+    assert "steam" in s_open or "app" in s_open, f"'abrí Steam' debe ofrecer steam/app: {s_open}"
+    # "si X está abierto, cerralo" lleva acción -> NO retirar (debe quedar window/app)
+    s_cond = select_tool_names("si Chrome está abierto cierralo",
+                               plan_mission("si Chrome está abierto cierralo"))
+    assert "window" in s_cond or "app" in s_cond, f"condicional-acción: {s_cond}"
+
+
+def test_howto_question_suppresses_destructive_tools() -> None:
+    """BUG real (cacería tanda 1): "cómo elimino una carpeta" -> filesystem.delete
+    BORRÓ la carpeta ante una PREGUNTA (daño irreversible). Una pregunta how-to/info
+    pide EXPLICACIÓN, no ejecución: el router retira las tools destructivas."""
+    from ..routing.planner import _is_howto_or_info_question
+    # detector: how-to/info = True, imperativo = False
+    for q in ("cómo elimino una carpeta de pruebas", "cómo cierro Spotify",
+              "qué es Python", "para qué sirve pytest", "how do I delete a folder"):
+        assert _is_howto_or_info_question(q), f"{q!r} debe ser how-to"
+    for q in ("elimina la carpeta de pruebas", "cerrá Spotify",
+              "borra mi carpeta Documentos", "como siempre abrí Discord",
+              "ordená como quieras"):
+        assert not _is_howto_or_info_question(q), f"{q!r} NO es how-to"
+
+    # routing: how-to no ofrece destructivas; imperativo sí.
+    DESTRUCTIVE = {"filesystem", "system", "package", "developer"}
+    s_howto = set(select_tool_names("cómo elimino una carpeta de pruebas",
+                                    plan_mission("cómo elimino una carpeta de pruebas")))
+    assert not (s_howto & DESTRUCTIVE), f"how-to no debe ofrecer destructivas: {s_howto}"
+    s_imp = set(select_tool_names("elimina la carpeta de pruebas",
+                                  plan_mission("elimina la carpeta de pruebas")))
+    assert "filesystem" in s_imp, f"imperativo SÍ debe ofrecer filesystem: {s_imp}"
+
+
+def test_conceptual_question_answers_from_knowledge() -> None:
+    """BUG real (cacería tanda 2, cluster A6 ~22): preguntas conceptuales ('qué es
+    un closure', 'explica MVC', 'cómo funciona Dijkstra') ruteaban a
+    vision.describe_screen / web / browser ('capturé la pantalla y te la describo')
+    en vez de RESPONDER DE SU CONOCIMIENTO. El router suprime también las tools de
+    percepción/búsqueda del mundo ante una pregunta info/how-to."""
+    PERCEIVE = {"vision", "web", "browser", "browser_real", "knowledge",
+                "computer_use", "source_manager"}
+    for q in ("qué es un closure", "explica programación funcional",
+              "cómo funciona Dijkstra", "what is the observer pattern",
+              "qué significa polimorfismo", "para qué sirve un índice"):
+        s = set(select_tool_names(q, plan_mission(q)))
+        assert not (s & PERCEIVE), (
+            f"pregunta conceptual {q!r} no debe percibir/buscar el mundo: {sorted(s)}")
+    # research GENUINO ('buscá info actual', 'investiga noticias') NO matchea how-to
+    # -> SÍ conserva web (no lo afecta este gate).
+    s_research = set(select_tool_names("buscá información actual sobre el clima",
+                                       plan_mission("buscá información actual sobre el clima")))
+    assert "web" in s_research, f"research genuino debe ofrecer web: {sorted(s_research)}"
+
+
+def test_web_target_detector() -> None:
+    """BUG real (cacería tanda 2, cluster A7 ~14): 'abre pivigames'/'localhost:8080'/
+    'about:blank' ruteaban a app.open (no abre nada, miente 'Listo'). _is_web_target
+    detecta la FORMA web para desviar a browser; NO matchea nombres de app."""
+    from ..routing.planner import _is_web_target
+    for t in ("localhost:8080", "127.0.0.1", "about:blank", "python.org",
+              "https://github.com", "pivigames.com", "portal.uniej.cl",
+              "192.168.1.1:3000", "google.com/search"):
+        assert _is_web_target(t), f"{t!r} es target web"
+    for t in ("Spotify", "Word", "Discord", "Visual Studio Code", "Steam",
+              "pivigames", "portal uniej", "Notepad", "Excel", "app.exe", "v1.2.3"):
+        assert not _is_web_target(t), f"{t!r} es nombre de app, NO web"
+
+
+def test_preference_or_personal_suppresses_action() -> None:
+    """BUG real (cacería tanda 2, cluster A8 ~10): 'responde en inglés'/'tuteame'/
+    'trabajo en Microsoft'/'mi email es X' disparaban media.play/gui.type/app.open/
+    email.update. Una PREFERENCIA de estilo o un DATO PERSONAL no es un comando de
+    acción: el router retira las tools de acción y deja memory/infra."""
+    from ..routing.planner import _is_preference_or_personal as pref
+    for q in ("responde en inglés", "respond in English from now on", "tuteame",
+              "responde en mayúsculas", "responde en formato lista", "usa emojis",
+              "sé más formal", "trabajo en Microsoft", "i work at Google",
+              "mi email es test@x.com", "me llamo Pedro", "mi color favorito es azul"):
+        assert pref(q), f"{q!r} es preferencia/dato personal"
+    for q in ("abrí Spotify", "poné música", "subí el volumen", "buscá noticias",
+              "qué hora es", "mandale un mensaje a Pedro", "borrá la carpeta tmp"):
+        assert not pref(q), f"{q!r} es comando real, NO preferencia"
+    # routing: preferencia/dato -> sin tools de acción
+    ACTION = {"media", "gui", "app", "email", "whatsapp", "developer", "browser",
+              "filesystem", "audio"}
+    for q in ("responde en inglés", "trabajo en Microsoft", "mi email es x@y.com"):
+        s = set(select_tool_names(q, plan_mission(q)))
+        assert not (s & ACTION), f"preferencia/dato {q!r} no debe ofrecer acción: {sorted(s)}"
+
+
+def test_trigger_declaration_routes_to_routine_not_action() -> None:
+    """BUG real (cacería tanda 1, B2): "cuando diga X quiero que hagas Y" debe CREAR
+    una rutina, NO ejecutar Y ahora. "cuando diga pantallazo saca captura" sacaba la
+    captura YA. El detector retira las tools de acción y deja routine."""
+    from ..routing.planner import _is_trigger_declaration
+    for q in ("cuando diga pantallazo quiero que saques una captura",
+              "cuando te diga tiempo apretá la tecla",
+              "cada vez que diga siguiente apretá next",
+              "when I say next press the key"):
+        assert _is_trigger_declaration(q), f"{q!r} es declaración de trigger"
+    for q in ("sacá una captura", "abrí Spotify", "cuando llegues a casa avisame",
+              "cuando termine el proceso cerralo"):
+        assert not _is_trigger_declaration(q), f"{q!r} NO es trigger"
+
+    # routing: trigger -> routine, sin la tool de acción inmediata
+    s = set(select_tool_names("cuando diga pantallazo quiero que saques una captura",
+                              plan_mission("cuando diga pantallazo quiero que saques una captura")))
+    assert "routine" in s, f"trigger debe ofrecer routine: {s}"
+    assert not (s & {"gui", "media", "audio"}), f"trigger no debe ofrecer acción: {s}"
+
+
+def test_low_signal_noise_abstains() -> None:
+    """BUG real (cacería tanda 1, B3): un número/medición suelto ("2.14s", "7.63",
+    "12.66") no es un comando — el router lo ruteaba a window.active/media.play
+    arbitrariamente ("Listo, abrí Steam" ante ruido). El gate de ruido abstiene
+    para que el LLM pida aclaración. ESTRUCTURAL, mide la FORMA."""
+    from ..routing.planner import _is_low_signal_noise
+    # POSITIVOS: número/medida puro = ruido.
+    for q in ("2.14s", "7.63", "12.66", "11.22s", "100%", "64 GB", "60fps", "12,66"):
+        assert _is_low_signal_noise(q), f"{q!r} es ruido (número/medida suelto)"
+    # NEGATIVOS: comando con número, o texto con palabras = NO ruido.
+    for q in ("pon el volumen al 50", "abre 3 pestañas", "sube el volumen al 80",
+              "minimiza la ventana", "abre steam", "que hora es", "el tercero"):
+        assert not _is_low_signal_noise(q), f"{q!r} NO es ruido"
+    # GUARDA pending_intent: un número es la RESPUESTA esperada, no ruido.
+    assert not _is_low_signal_noise("50", has_pending_intent=True), (
+        "número con pending_intent es la respuesta, no ruido")
+
+    # routing: ruido -> abstención (NO window/media/app), solo session.
+    for q in ("2.14s", "7.63", "12.66"):
+        s = set(select_tool_names(q, plan_mission(q)))
+        assert not (s & {"window", "media", "app", "audio", "browser", "job_manager"}), (
+            f"ruido {q!r} no debe rutear a acción: {s}")
+    # con pending_intent un número NO se gatea (debe poder routear normal).
+    s_pending = set(select_tool_names(
+        "50", plan_mission("50"),
+        pending_intent={"tool": "audio", "args": {}, "asks_for": "volume"}))
+    # el gate no disparó -> el subset NO es solo el abstain base.
+    assert "audio" in s_pending or s_pending != {"session"}, (
+        f"número con pending no debe gatearse a abstain: {s_pending}")
+
+
 def test_browser_real_collapsed_on_simple_nav() -> None:
     """S3d (2026-05-30) precision. browser_real (fine CDP control) was offered
     on EVERY browser turn as noise (measured: 78 noise rows vs 2 that truly need

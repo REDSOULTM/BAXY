@@ -158,14 +158,27 @@ class TestSafetyGate(unittest.TestCase):
         self.assertEqual(out["ok"], False)
         self.assertIn("confirmation", out)
 
-    def test_safety_on_passes_with_confirmed_true(self) -> None:
+    def test_safety_on_llm_confirmed_still_gated(self) -> None:
+        # FIX #2 (cacería t1-4): un `confirmed:True` AUTO-EMITIDO por el LLM NO
+        # saltea el gate de una acción que requiere confirmación (app.close es
+        # disruptivo). El 4B aprendió a auto-confirmar; el gate lo ignora y pide
+        # confirmación real. Antes procedía (bypass que cerraba apps sin confirmar).
         reg = _make_registry(safety_enabled=True)
         out = reg.execute(
             "app",
             {"action": "close", "name": "nonexistent_app_xyz", "confirmed": True},
         )
-        # Reached the handler — status MAY still be failed (the app doesn't
-        # exist) but it must not be "needs_confirmation".
+        self.assertEqual(out.get("status"), "needs_confirmation")
+
+    def test_safety_on_passes_with_real_gate_confirmation(self) -> None:
+        # La confirmación REAL (canal interno `_confirmed_by_gate`, vía safety(confirm)
+        # tras round-trip del usuario) SÍ saltea el gate. No falsificable por el LLM.
+        reg = _make_registry(safety_enabled=True)
+        out = reg.execute(
+            "app",
+            {"action": "close", "name": "nonexistent_app_xyz", "_confirmed_by_gate": True},
+        )
+        # Llegó al handler (puede fallar porque la app no existe) pero NO está gateado.
         self.assertNotEqual(out.get("status"), "needs_confirmation")
 
     def test_safety_tool_itself_is_never_gated(self) -> None:

@@ -372,13 +372,33 @@ class FuzzyCorrector:
     def strip_wake_phrase(self, transcript: str) -> str:
         """Remove a leading wake phrase from the transcript.
 
-        The wake detector fires when 'hey gemma' is heard. Whisper then
+        The wake detector fires when the wake word is heard. The STT then
         often transcribes the wake phrase too (because the audio clip
         captured by the state machine includes the wake). The LLM
         downstream doesn't need it as input.
 
-        Returns the transcript with wake-word prefix stripped, if found
-        in the first ~3 tokens. Otherwise returns the transcript intact.
+        Two-stage match on the first 1-3 tokens:
+
+          1. EXACT (normalised) — any known wake phrase. Cheap, certain.
+          2. PHONETIC (fuzzy) — the wake word "baxy" is an invented word
+             OUTSIDE the STT vocabulary, so Parakeet maps it to the nearest
+             REAL word: "Bixby", "Paxi", "Max", "Vaxi"... Exact match misses
+             those, leaking the mis-heard name into the command ("Bixby,
+             ¿qué juego...?" confuses the LLM). We compare the FIRST token's
+             dual ES/EN Metaphone code against each wake word and strip it if
+             the phonetic similarity is high. Thresholds are MEASURED
+             (scripts/_diag/_diag_wake_strip_threshold.py):
+               - ≥ 80 with NO trailing punctuation: 0 false positives over
+                 20 real command openers ("busca"=67, "máximo"=60 stay below).
+               - ≥ 72 IF the token ends in a comma — the comma is the pause
+                 after the wake ("Paxi, va a...", "Bixby, ¿qué..."), strong
+                 evidence of wake; no command opener appears comma-terminated.
+             This is safe ONLY because strip_wake_phrase runs strictly AFTER
+             a wake fired (pipeline.py), so the first token is a strong wake
+             candidate by construction. We never fuzzy-strip beyond token 1.
+
+        Returns the transcript with the wake-word prefix stripped, if matched.
+        Otherwise returns the transcript intact.
         """
         wake_words = self._inventory.get("wake_words", [])
         if not wake_words:
@@ -386,13 +406,51 @@ class FuzzyCorrector:
         tokens = transcript.split()
         if not tokens:
             return ""
-        # Try to match the first 1-3 tokens against any known wake phrase.
+        # Stage 1: EXACT match on the first 1-3 tokens (covers "hey baxy",
+        # "baxy", "baxi", "backsy" — anything spelled as a known variant).
         for ngram in (3, 2, 1):
             if ngram > len(tokens):
                 continue
-            prefix = " ".join(tokens[:ngram])
-            prefix_norm = _normalise(prefix)
+            prefix_norm = _normalise(" ".join(tokens[:ngram]))
             for wake in wake_words:
                 if _normalise(wake) == prefix_norm:
                     return " ".join(tokens[ngram:])
+        # Stage 2: PHONETIC fuzzy match on the FIRST token only. Catches the
+        # STT mis-hearings of the invented wake word.
+        first_raw = tokens[0]
+        # A trailing comma is the post-wake pause -> stronger evidence -> laxer
+        # threshold. Detect it on the RAW token, before normalisation strips it.
+        has_pause = first_raw.rstrip().endswith((",", ";", ":"))
+        threshold = 72 if has_pause else 80
+        first_norm = _normalise(first_raw)
+        if first_norm and self._phonetic_wake_match(first_norm, wake_words, threshold):
+            return " ".join(tokens[1:])
         return transcript
+
+    def _phonetic_wake_match(
+        self, token_norm: str, wake_words: Sequence[str], threshold: float
+    ) -> bool:
+        """True if the normalised token is a phonetic match for any single-word
+        wake word, at or above `threshold`. Uses the same dual ES/EN Metaphone
+        + RapidFuzz machinery as correct(); falls back to text ratio if the
+        phonetic backend is unavailable. Only single-word wake words are
+        considered (multi-word phrases are handled by the exact stage)."""
+        try:
+            from rapidfuzz import fuzz
+        except Exception:
+            return False
+        for wake in wake_words:
+            w = _normalise(wake)
+            if not w or " " in w:  # single-word wakes only here
+                continue
+            text_score = fuzz.ratio(token_norm, w)
+            en = _metaphone(token_norm), _metaphone(w)
+            es = _metaphone_es(token_norm), _metaphone_es(w)
+            phon = 0.0
+            if en[0] and en[1]:
+                phon = max(phon, fuzz.ratio(en[0], en[1]))
+            if es[0] and es[1]:
+                phon = max(phon, fuzz.ratio(es[0], es[1]))
+            if max(text_score, phon) >= threshold:
+                return True
+        return False
