@@ -2744,9 +2744,13 @@ class ToolRegistry:
                     _sld, _tld = _reg
                     _dom = f"{_sld}.{_tld}"
                     _ut_low = (getattr(self, "_current_user_text", "") or "").lower()
-                    # ADIVINADO si: NO es un dominio obviamente real (allowlist) Y el
-                    # dominio completo NO aparece en el texto del user (no lo dictó).
-                    if _sld not in _KNOWN_REAL_DOMAINS and _dom not in _ut_low:
+                    # ADIVINADO si el dominio completo NO aparece en el texto del user
+                    # (no lo dictó/pegó) -> el 4B le puso el .com. Decisión del user
+                    # 2026-06-07: GOOGLEAR TODO (incluso google/youtube) para resolver
+                    # SIEMPRE al sitio real por ranking de búsqueda, en vez de confiar
+                    # en un dominio adivinado. (Si el user SÍ escribió el dominio, va
+                    # directo: cero latencia, es su intención explícita.)
+                    if _dom not in _ut_low:
                         _guessed_domain = True
                         _lookup = _sld   # buscar por el nombre, sin el TLD inventado
             if url and (_bare_name or _guessed_domain):
@@ -5272,8 +5276,13 @@ if ($pos) {
                 return False
             return any(h in host for h in self._NON_SITE_HOSTS)
 
-        cands: list[tuple[int, int, int, str]] = []  # (match_rank, path_len, host_len, url)
-        for res in results:
+        # (match_rank, google_pos, path_len, host_len, url). google_pos = posición
+        # original en los resultados de búsqueda: el #0 es el MÁS relevante/visitado
+        # (lo que el user pediría: "el de siempre"). 2026-06-07: a igual relevancia
+        # de nombre, se RESPETA el ranking de Google (antes desempataba por host_len,
+        # que ignoraba qué sitio es realmente el principal). Pedido del user.
+        cands: list[tuple[int, int, int, int, str]] = []
+        for _idx, res in enumerate(results):
             u = str((res or {}).get("url") or "").strip()
             if not u.startswith(("http://", "https://")):
                 continue
@@ -5296,22 +5305,29 @@ if ($pos) {
                 match_rank = 0
             path = urlparse(u).path or "/"
             path_len = len([p for p in path.split("/") if p])  # 0 = homepage
-            cands.append((match_rank, path_len, len(host), u))
+            cands.append((match_rank, _idx, path_len, len(host), u))
         if not cands:
-            # todo era agregador: último recurso, primer resultado http válido tal cual.
-            for res in results:
-                u = str((res or {}).get("url") or "").strip()
-                if u.startswith(("http://", "https://")):
-                    return u
+            # todo era agregador / sin candidato con el nombre en el dominio.
+            # NO abrir basura (2026-06-07: 'github' devolvía support.google.com/...
+            # como #0 -> abrir eso era una página equivocada). Error honesto: que el
+            # llamador reporte "no encontré el sitio de X" en vez de abrir cualquier
+            # cosa. CLAUDE.md: nunca mentir/abrir el resultado equivocado.
             return None
-        # ordenar: match_rank DESC, path_len ASC (homepage), host_len ASC (canónico).
-        cands.sort(key=lambda c: (-c[0], c[1], c[2]))
-        best_rank, _, _, best_url = cands[0]
-        # si el ganador matchea el dominio, abrir su RAÍZ (homepage), no la subpágina.
-        if best_rank >= 1:
-            p = urlparse(best_url)
-            return f"{p.scheme}://{p.netloc}/"
-        return best_url
+        # ordenar: match_rank DESC (el dominio que contiene el nombre gana), luego
+        # google_pos ASC (el que Google rankeó primero = más visitado/oficial), luego
+        # path_len ASC (homepage), host_len ASC (canónico). El ranking de Google
+        # decide ENTRE candidatos igual de relevantes por nombre.
+        cands.sort(key=lambda c: (-c[0], c[1], c[2], c[3]))
+        best_rank, _, _, _, best_url = cands[0]
+        # GUARD ANTI-BASURA: si NINGÚN resultado tiene el nombre en su dominio
+        # (best_rank==0), la búsqueda no encontró "el sitio de X" — devolvió algo
+        # tangencial. NO abrirlo a ciegas: error honesto (None). El _site_resolution_
+        # relevant del llamador es una 2da red, pero acá ya cortamos el caso github.
+        if best_rank == 0:
+            return None
+        # el ganador matchea el dominio: abrir su RAÍZ (homepage), no la subpágina.
+        p = urlparse(best_url)
+        return f"{p.scheme}://{p.netloc}/"
 
     def _open_url_in_browser(self, browser: str, url: str) -> dict[str, Any] | None:
         """Abre `url` en el NAVEGADOR `browser` (honra "pon X en Opera"). Resuelve
