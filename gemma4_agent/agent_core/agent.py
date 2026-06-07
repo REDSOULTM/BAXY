@@ -1273,6 +1273,60 @@ class Gemma4Agent:
         content = user_content(text, images=images, audios=audios)
         return self.run_content(content, progress=progress, tts_sink=tts_sink)
 
+    # marcadores "en el navegador" multi-idioma (mide la FORMA, no apps). El
+    # destino se resuelve por browser.open (ddgs -> dominio real).
+    _IN_BROWSER_RE = __import__("re").compile(
+        r"\ben\s+(?:el\s+|tu\s+|mi\s+)?(?:navegador|browser|chrome|opera(?:\s*gx)?|"
+        r"firefox|edge|brave|safari)\b"
+        r"|\bin\s+(?:the\s+|my\s+|your\s+)?(?:browser|chrome|firefox|edge)\b"
+        r"|\bno\s+navegador\b|\bdans\s+le\s+navigateur\b|\bim\s+browser\b",
+        __import__("re").IGNORECASE)
+    # verbo de abrir/ir (para el caso con destino explícito en el MISMO mensaje)
+    _OPEN_VERB_RE = __import__("re").compile(
+        r"^\s*(?:abr[ií]\w*|abre\w*|abrilo|abrelo|ábrelo|ponlo|pon[ée]lo|llev[áa]me|"
+        r"open|launch|go\s+to|navigate|ouvre|öffne|apri)\b", __import__("re").IGNORECASE)
+
+    def _extract_open_in_browser(self, content: str) -> str | None:
+        """Si el turno pide 'abrir <X> EN EL NAVEGADOR', devuelve <X> (el sitio a
+        abrir en browser). <X> puede estar EN el mensaje ('abrí pivigames en el
+        navegador') o ser un FOLLOW-UP ('abrelo en el navegador') cuyo referente
+        ('lo') es el último sitio que el user pidió abrir en el turno anterior.
+        None si no aplica. Mide la FORMA; el destino lo resuelve browser.open."""
+        t = (content or "").strip()
+        if not t or not self._IN_BROWSER_RE.search(t):
+            return None   # no menciona "en el navegador" -> no es este caso
+        if not self._OPEN_VERB_RE.search(t):
+            return None   # no es un imperativo de abrir/ir
+        # ¿hay un destino EXPLÍCITO en el mensaje? "abrí <X> en el navegador":
+        # tomar lo que va entre el verbo y el "en el navegador".
+        _m = __import__("re").search(
+            r"^\s*\S+\s+(.+?)\s+(?:en|in|no|dans|im)\s+(?:el\s+|tu\s+|mi\s+|the\s+|my\s+|le\s+)?"
+            r"(?:navegador|browser|chrome|opera|firefox|edge|brave|safari|navigateur)",
+            t, __import__("re").IGNORECASE)
+        if _m:
+            dest = _m.group(1).strip()
+            # filtrar pronombres ("lo/eso/esto") -> son follow-up, resolver abajo
+            if dest.lower() not in {"lo", "eso", "esto", "la", "él", "el", "it", "that", "this"}:
+                return dest
+        # FOLLOW-UP ("abrelo en el navegador"): el referente es el último sitio que
+        # el user pidió abrir. Buscar en history el último user-msg con un nombre.
+        try:
+            from ..routing.command_splitter import extract_app_open
+            for msg in reversed(self.history):
+                if msg.get("role") != "user":
+                    continue
+                prev = msg.get("content")
+                prev_txt = prev if isinstance(prev, str) else " ".join(
+                    p.get("text", "") for p in prev if isinstance(p, dict))
+                if not prev_txt or prev_txt.strip() == t:
+                    continue
+                ref = extract_app_open(prev_txt)
+                if ref:
+                    return ref   # el nombre del sitio del turno anterior
+        except Exception:
+            pass
+        return None
+
     def _describe_events_for_reply(self, events: "list[ToolEvent]") -> str:
         """Resume los tool events ejecutados en una frase NEUTRA en inglés, para
         que `_llm_action_reply` la confirme en el idioma del usuario sin arrastrar
@@ -1733,6 +1787,35 @@ class Gemma4Agent:
         # URL/chat la tool da ok=False), caer al flujo normal (la tool es la guarda de
         # precisión). NO gateado por _splitting (sub-cláusulas de "abrí X y abrí Y"
         # también). Gate GEMMA4_APP_OPEN_NET=0.
+        # ABRIR EN EL NAVEGADOR (follow-up) — bug medido 2026-06-07 (screenshot):
+        # "abre pivigames" -> no instalado -> Baxy ofrece "¿lo abro en el navegador?"
+        # -> user dice "abrelo en el navegador" -> el 4B IGNORABA "en el navegador" y
+        # reusaba app(open/search) (la tool del turno previo) -> fallaba. Detector
+        # estructural: si el turno actual pide "abrir <algo> EN EL NAVEGADOR/CHROME/.."
+        # (o es un follow-up "abrelo/abrilo en el navegador" cuyo referente está en el
+        # turno anterior), rutear DIRECTO a browser.open (que resuelve el dominio real
+        # vía ddgs). Multi-idioma; mide la FORMA. Gate GEMMA4_OPEN_IN_BROWSER=0.
+        import os as _os_ob
+        if isinstance(content, str) and content.strip() \
+                and _os_ob.environ.get("GEMMA4_OPEN_IN_BROWSER", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+            _ob_target = self._extract_open_in_browser(content)
+            if _ob_target:
+                try:
+                    self.trace.event(turn_id, "open_in_browser_shortcircuit", target=_ob_target[:40])
+                except Exception:
+                    pass
+                _ob_res = self.tools.t_browser({"action": "open", "url": _ob_target})
+                _ob_ev = ToolEvent(name="browser", args={"action": "open", "url": _ob_target},
+                                   result=_ob_res if isinstance(_ob_res, dict) else {})
+                self._last_turn_ts = time.time()
+                _ob_lang = _detect_lang(content)
+                _ob_reply = self._llm_action_reply(
+                    content, did=f"opened {_ob_target} in the web browser",
+                    fallback=f"Listo, abrí {_ob_target} en el navegador.",
+                    target_lang=_ob_lang if _ob_lang != "es" else None)
+                return TurnDecision(early_reply=agent_guards.honest_action_reply(
+                    AgentReply(content=_ob_reply, tool_events=[_ob_ev], mission=None)))
         import os as _os_ao
         if isinstance(content, str) and content.strip() \
                 and _os_ao.environ.get("GEMMA4_APP_OPEN_NET", "1").strip().lower() \
