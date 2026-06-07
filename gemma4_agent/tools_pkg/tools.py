@@ -851,6 +851,48 @@ def _score(query: str, candidate: str) -> int:
 from .app_resolver import AppCandidate, AppResolver, _SITE_REQUEST_FILLERS, _site_resolution_relevant  # noqa: E402,F401
 
 
+# Dominios obviamente REALES que NO necesitan resolución por búsqueda (evita
+# latencia + falsos en sitios universales). NO es una lista de routing — es un
+# allowlist de "esto seguro existe, abrilo directo". Cualquier dominio fuera de
+# acá que parezca adivinado por el LLM (1 etiqueta + TLD, sin path) se verifica.
+_KNOWN_REAL_DOMAINS = frozenset({
+    "google", "youtube", "gmail", "github", "wikipedia", "facebook", "twitter",
+    "x", "instagram", "reddit", "amazon", "netflix", "spotify", "twitch",
+    "whatsapp", "linkedin", "tiktok", "discord", "stackoverflow", "chatgpt",
+    "openai", "microsoft", "apple", "yahoo", "bing", "duckduckgo", "outlook",
+    "live", "office", "steampowered", "epicgames", "ebay", "mercadolibre",
+    "paypal", "dropbox", "drive", "maps", "translate", "wordpress", "medium",
+})
+
+
+def _is_probably_guessed_domain(url: str) -> bool:
+    """True si `url` parece un dominio ADIVINADO por el LLM (le pegó .com a un
+    nombre) y conviene VERIFICARLO por búsqueda antes de abrirlo, en vez de a
+    ciegas. Señal estructural (no lista de sitios): UNA sola etiqueta + TLD
+    genérico, SIN path, SIN subdominio (www incluido = explícito del user/real),
+    y la etiqueta NO está en el allowlist de dominios obviamente reales.
+
+    Ejemplos: 'pivigames.com' -> True (verificar; el real es .blog);
+              'google.com' -> False (allowlist); 'foo.com/bar' -> False (tiene
+              path = URL deliberada); 'www.x.com' -> False (subdominio explícito)."""
+    u = (url or "").strip().lower()
+    if not u or "/" in u or " " in u:
+        return False
+    # sin esquema; debe ser etiqueta.tld exacto (2 partes, sin subdominio)
+    u = u.split("//")[-1]
+    if "/" in u:
+        return False
+    parts = u.split(".")
+    if len(parts) != 2:
+        return False   # subdominio (www.x.com) o multi-nivel -> respetar
+    label, tld = parts
+    if not label or label in _KNOWN_REAL_DOMAINS:
+        return False
+    # TLDs genéricos que el modelo suele adivinar a ciegas
+    _GUESSABLE_TLDS = {"com", "net", "org", "io", "co", "app"}
+    return tld in _GUESSABLE_TLDS and label.isalnum() and len(label) >= 3
+
+
 def _acf_value(text: str, key: str) -> str | None:
     match = re.search(rf'"{re.escape(key)}"\s+"([^"]+)"', text)
     return match.group(1) if match else None
@@ -2648,12 +2690,28 @@ class ToolRegistry:
             # REAL — NO adivinamos el TLD (CLAUDE.md: resolver por lookup). Guardamos
             # el nombre original para el reporte; `url` queda con la URL resuelta.
             _resolved_from = None
-            if url and not url.startswith(("http://", "https://")) and "." not in url \
-                    and "/" not in url and len(url) >= 3 and len(url.split()) <= 4:
-                resolved = self._resolve_site_by_search(url)
+            # ¿el target es algo que hay que RESOLVER por búsqueda (no abrir a ciegas)?
+            # Dos casos (bug medido 2026-06-07 "ve a pivigames" -> abrió pivigames.com
+            # INVENTADO; el real es pivigames.blog):
+            #   (a) nombre PELADO ("pivigames", sin punto) — el caso original;
+            #   (b) DOMINIO ADIVINADO por el 4B ("pivigames.com"): una sola etiqueta
+            #       + TLD genérico, SIN path ni subdominio. El modelo le pega ".com"
+            #       a cualquier nombre; no es prueba de que el dominio exista. Lo
+            #       verificamos por búsqueda igual. NO tocamos: URLs con path, con
+            #       www/subdominio, ni dominios obviamente reales (allowlist corta).
+            _bare_name = (url and not url.startswith(("http://", "https://"))
+                          and "." not in url and "/" not in url
+                          and len(url) >= 3 and len(url.split()) <= 4)
+            _guessed_domain = False
+            if url and not _bare_name:
+                _guessed_domain = _is_probably_guessed_domain(url)
+            if url and (_bare_name or _guessed_domain):
+                _lookup = url if _bare_name else url.split("//")[-1].split("/")[0]
+                _lookup = _lookup.rsplit(".", 1)[0] if _guessed_domain else _lookup
+                resolved = self._resolve_site_by_search(_lookup)
                 # Mismo guard de honestidad que app.open: aceptar el sitio resuelto
                 # solo si guarda relación estructural con el nombre (ver la función).
-                if resolved and _site_resolution_relevant(url, resolved):
+                if resolved and _site_resolution_relevant(_lookup, resolved):
                     _resolved_from, url = url, resolved
                 # sin resultado fiable -> url queda como estaba (error honesto).
             # ABRIR EN UN NAVEGADOR ESPECÍFICO (2026-05-27): "pon X en Opera" trae
