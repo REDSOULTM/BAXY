@@ -44,6 +44,22 @@ logger = logging.getLogger(__name__)
 def _enabled() -> bool:
     if (os.environ.get("GEMMA4_JARVIS") or "1").strip().lower() in {"0", "false", "no", "off"}:
         return False
+    # NO grabar en entornos de TEST/DIAGNÓSTICO: pruebas en vivo del agente
+    # (scripts/_diag/*, pytest) abren Paint/Calc/Notepad y disparan media de prueba
+    # — el observador los grababa en la DB REAL del usuario (usuario.db) como si
+    # fueran su uso, contaminando el perfil de gustos y generando correlaciones
+    # ESPURIAS ("abrís Spotify -> abrís Disney"). Causa raíz medida 2026-06-07.
+    # Señales de entorno no-productivo (cualquiera basta):
+    #   - pytest cargado en el proceso;
+    #   - GEMMA4_AGENT_SAFETY=0 (lo setean TODOS los harnesses de diag; prod nunca).
+    # Override explícito para tests que SÍ quieran ejercitar el observador:
+    # GEMMA4_AMBIENT_FORCE=1.
+    if (os.environ.get("GEMMA4_AMBIENT_FORCE") or "").strip().lower() not in {"1", "true", "yes", "on"}:
+        import sys as _sys
+        if "pytest" in _sys.modules:
+            return False
+        if (os.environ.get("GEMMA4_AGENT_SAFETY") or "").strip().lower() in {"0", "false", "no", "off"}:
+            return False
     raw = (os.environ.get("GEMMA4_AMBIENT_OBSERVER") or "1").strip().lower()
     return raw not in {"0", "false", "no", "off"}
 

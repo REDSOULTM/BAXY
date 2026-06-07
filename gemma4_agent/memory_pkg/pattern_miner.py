@@ -130,8 +130,8 @@ def jarvis_phrase(lang: str, key: str) -> str:
 def mine_simple_patterns(
     events: list[dict],
     *,
-    min_count: int = 5,
-    min_consistency: float = 0.6,
+    min_count: int = 8,
+    min_consistency: float = 0.75,
     window_days: int = 7,
     delta_max_s: int = 120,
 ) -> list[PatternCandidate]:
@@ -155,21 +155,33 @@ def mine_simple_patterns(
 
     # un evento es "trigger" si es boot o app_open; el "target" es el siguiente
     # evento accionable dentro de la ventana.
+    # BUG FIX (2026-06-07): contar cada par (trigger->target) UNA SOLA VEZ por
+    # ocurrencia del trigger. Antes el loop interno sumaba +1 por CADA aparición
+    # del target en la ventana de 2 min -> si tras abrir X el usuario abría Y dos
+    # veces (o Y figuraba 2x), pair_count[X->Y] crecía más que trigger_total[X] y
+    # la consistencia daba >100% (medido: 1100%). Eso hacía que correlaciones
+    # ESPURIAS ("abrís Spotify -> abrís Disney") superaran el umbral 60% y Baxy
+    # ofreciera automatizarlas. Con dedup por-trigger, consistency ∈ [0,1] real.
     for i, ev in enumerate(events):
         if ev["kind"] not in ("boot", "app_open"):
             continue
         trig = (ev["kind"], ev["key"])
         trigger_total[trig] += 1
-        # buscar targets dentro de delta_max
+        # targets ÚNICOS vistos en ESTA ventana (dedup: 1 voto por trigger).
+        seen_targets: dict[tuple, float] = {}
         for j in range(i + 1, len(events)):
             nxt = events[j]
             dt = nxt["ts"] - ev["ts"]
             if dt > delta_max_ms:
                 break
             if nxt["kind"] in ("app_close", "app_open", "cmd") and nxt["key"] != ev["key"]:
-                pair = (trig, (nxt["kind"], nxt["key"]))
-                pair_count[pair] += 1
-                pair_deltas[pair].append(dt / 1000.0)
+                tgt = (nxt["kind"], nxt["key"])
+                if tgt not in seen_targets:           # primer (= más cercano) delta
+                    seen_targets[tgt] = dt / 1000.0
+        for tgt, dt_s in seen_targets.items():
+            pair = (trig, tgt)
+            pair_count[pair] += 1                     # +1 por trigger, no por aparición
+            pair_deltas[pair].append(dt_s)
 
     out: list[PatternCandidate] = []
     for (trig, target), cnt in pair_count.items():
