@@ -2,6 +2,6 @@
   "base": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
   "epochs": 3,
   "batch": 64,
-  "n_pairs": 8123,
+  "n_pairs": 12715,
   "note": "student trained on synthetic Tool2Vec queries + dev real rows; holdout excluded by stable hash."
 }
