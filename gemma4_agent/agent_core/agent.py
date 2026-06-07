@@ -539,7 +539,24 @@ class Gemma4Agent:
             if self.behavior is not None:
                 try:
                     from ..memory_pkg.ambient_observer import AmbientObserver
-                    self.ambient_observer = AmbientObserver(self.behavior)
+                    # JARVIS PROACTIVO (gate GEMMA4_JARVIS_PROACTIVE, default OFF):
+                    # handler que, en cada transición de app, chequea si se completó
+                    # un patrón conocido y sugiere automatizarlo por toast/voz — sin
+                    # que el user escriba. Corre en el daemon (no toca el chat).
+                    _transition_handler = None
+                    try:
+                        import os as _os_jp
+                        if (_os_jp.environ.get("GEMMA4_JARVIS_PROACTIVE") or "").strip().lower() \
+                                in {"1", "true", "yes", "on"}:
+                            from ..memory_pkg.jarvis_proactive import (
+                                make_transition_handler, build_routine_from_candidate)
+                            _transition_handler = make_transition_handler(
+                                self.behavior,
+                                create_routine=lambda c: build_routine_from_candidate(self.tools, c))
+                    except Exception:
+                        _transition_handler = None
+                    self.ambient_observer = AmbientObserver(
+                        self.behavior, on_app_transition=_transition_handler)
                     self.ambient_observer.start()
                 except Exception:
                     self.ambient_observer = None
@@ -5620,11 +5637,11 @@ class Gemma4Agent:
         if not rt:
             return AgentReply(content=_jp(_lang, "build_fail"),
                               tool_events=[], mission=None)
-        label = f"auto: {cand.describe('es')}"[:60]
+        label = f"jarvis: {cand.describe('es')}"[:60]
         trigger = {"type": rt["trigger_type"]}
         if rt["trigger_type"] in ("on_app_open", "on_app_close") and rt.get("trigger_key"):
             trigger["process"] = rt["trigger_key"]
-        routine_args = {"action": "create", "name": label,
+        routine_args = {"action": "create", "name": label, "created_by": "jarvis",
                         "trigger": trigger, "steps": [rt["action"]]}
         try:
             res = self.tools.execute("routine", routine_args)
@@ -5749,9 +5766,19 @@ class Gemma4Agent:
         intrusivo (síntoma reportado: "apenas abro la app actúa"). Solo ofrecemos en
         turnos conversacionales (charla/pregunta, sin tool ejecutado este turno).
 
-        Cabe en vram4: la minería es código determinista, no usa el LLM."""
+        Cabe en vram4: la minería es código determinista, no usa el LLM.
+
+        OFF por default (2026-06-07): el user quiere las sugerencias por el canal
+        PROACTIVO (toast/voz mientras usa la PC), NO pegadas a una respuesta del
+        chat. Esta vía queda gateada con GEMMA4_JARVIS_CHAT_OFFER=1 (default OFF)
+        para no meter ruido en el chat. El canal real vive en el daemon (ver
+        memory_pkg/proactive_notifier.py)."""
         if self.behavior is None:
             return ""
+        import os as _os_jco
+        if (_os_jco.environ.get("GEMMA4_JARVIS_CHAT_OFFER") or "").strip().lower() \
+                not in {"1", "true", "yes", "on"}:
+            return ""   # oferta-en-chat desactivada -> el proactivo es el canal
         # gate breakpoint: no ofrecer si el turno ejecutó acciones (user en tarea)
         if turn_events:
             return ""

@@ -325,6 +325,12 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
     if action == "list":
         resources = state.list_resources(include_closed=bool(args.get("include_closed", False))).get("resources", [])
         routines = [_enrich_routine_resource(r) for r in resources if r.get("kind") == "routine"]
+        # filtro opcional por origen: "qué automatizaste vos" -> created_by=jarvis.
+        # Permite al user revisar/apagar SOLO lo que Jarvis creó (reversibilidad).
+        _cb = str(args.get("created_by") or "").strip().casefold()
+        if _cb:
+            routines = [r for r in routines
+                        if str((r.get("metadata") or {}).get("created_by") or "user").casefold() == _cb]
         return _ok(routines=routines, count=len(routines))
     if action == "import":
         source = str(args.get("source") or "triggercmd").strip().casefold()
@@ -420,6 +426,11 @@ def routine_tool(args: dict[str, Any], state: AgentState, executor: Executor | N
                 "task_name": task_name,
                 "watcher_id": None,
                 "steps": steps,
+                # origen de la rutina: "jarvis" = creada proactivamente por la capa
+                # Jarvis (vs creación manual del user). Permite list/disable/delete
+                # filtrado y que el user apague TODO lo de Jarvis (reversibilidad,
+                # pedido 2026-06-07). Default "user".
+                "created_by": str(args.get("created_by") or "user"),
             },
         )
         # Attach a process watcher for on_app_open/on_app_close.

@@ -108,3 +108,10 @@ nvidia-cudnn-cu12>=9.0           # provides cudnn64_9.dll + cudnn_* DLLs
 # 'es' por default). Usado por _detect_lang para decidir si regenerar el reply
 # post-acción en el idioma del usuario. Ver documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md §4.
 py3langid>=0.3
+
+# --- Jarvis proactivo: toast nativo de Windows (sugerencia sin turno del user) ---
+# windows-toasts: notificaciones toast de Windows 10/11 con botones (Sí/No) para
+# que Baxy sugiera automatizar rutinas por iniciativa propia. MIT, liviana, sin deps
+# pesadas. Gateado OFF (GEMMA4_JARVIS_PROACTIVE). Ver
+# documentacion/DISENO_jarvis_proactivo_2026-06-07.md.
+windows-toasts>=1.1

@@ -142,7 +142,8 @@ def _now_playing() -> Optional[tuple[str, str]]:
 class AmbientObserver:
     """Thread daemon que muestrea foco de app + media y registra transiciones."""
 
-    def __init__(self, behavior_log, *, poll_s: float = 5.0, min_dwell_s: float = 8.0):
+    def __init__(self, behavior_log, *, poll_s: float = 5.0, min_dwell_s: float = 8.0,
+                 on_app_transition=None):
         self.log = behavior_log
         self.poll_s = max(1.0, float(poll_s))
         self.min_dwell_s = float(min_dwell_s)
@@ -151,6 +152,12 @@ class AmbientObserver:
         self._cur_app: Optional[str] = None
         self._app_start = 0.0
         self._last_media: Optional[str] = None
+        # JARVIS PROACTIVO (2026-06-07): callback opcional que el runner inyecta.
+        # Se llama (app_que_se_acaba_de_enfocar, foreground_proc, now) en cada
+        # transición de app — ahí el runner chequea si se completó un patrón y, si
+        # sí, emite el toast/voz. Best-effort: corre en el daemon (no toca el chat);
+        # cualquier excepción se traga (nunca rompe el observador). None -> no-op.
+        self._on_app_transition = on_app_transition
 
     def start(self) -> bool:
         if not _enabled():
@@ -196,6 +203,14 @@ class AmbientObserver:
                     self._flush_app(now)
                     self._cur_app = app
                     self._app_start = now
+                    # JARVIS PROACTIVO: una transición de app es el momento de
+                    # chequear si se completó un patrón conocido -> sugerir. Corre
+                    # en el daemon (no toca el chat); best-effort.
+                    if self._on_app_transition is not None:
+                        try:
+                            self._on_app_transition(app, app, now)
+                        except Exception:
+                            pass
             except Exception:
                 pass
             # --- media (cambio de canción) ---
