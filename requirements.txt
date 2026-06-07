@@ -115,3 +115,11 @@ py3langid>=0.3
 # pesadas. Gateado OFF (GEMMA4_JARVIS_PROACTIVE). Ver
 # documentacion/DISENO_jarvis_proactivo_2026-06-07.md.
 windows-toasts>=1.1
+
+# --- Búsqueda web metasearch (resolver sitios al dominio REAL) 2026-06-07 ---
+# ddgs: metasearch (Google/Brave/Bing/DuckDuckGo/Mojeek/Startpage...) sin API key
+# ni Docker. Reemplaza el scraper DuckDuckGo-HTML como primario: DDG indexaba peor
+# sitios chicos (medido: 've a pivigames' abría pivigames.wordpress en vez del real
+# pivigames.blog). Con ddgs (backend google) el #0 coincide con el navegador del
+# user. Degradación limpia a DDG-HTML/Bing si ddgs falla. Ver tools.py::_ddgs_search.
+ddgs>=9.0

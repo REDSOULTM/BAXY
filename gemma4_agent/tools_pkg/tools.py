@@ -1324,6 +1324,44 @@ def _decode_duckduckgo_href(href: str) -> str:
     return href
 
 
+def _ddgs_search(query: str, limit: int = 6) -> list[dict[str, str]]:
+    """Búsqueda vía la librería `ddgs` (metasearch: agrega Google/Brave/Bing/DDG/
+    Mojeek/Startpage...). 2026-06-07: reemplaza el scraper DDG-HTML como primario
+    porque DDG indexa peor sitios chicos (medido: 've a pivigames' abría
+    pivigames.wordpress en vez de pivigames.blog que el user ve en Google) y
+    rate-limitea (a veces vacío). Con backend='google' el #0 coincide con lo que
+    el user ve en su navegador. Gratis, sin API key, sin Docker (pip install ddgs).
+    Fallback de backends: google -> brave -> el default (mezcla) si uno falla."""
+    try:
+        from ddgs import DDGS
+    except ImportError:
+        return []   # sin ddgs -> el provider cae a DDG-HTML/Bing (no rompe)
+    for backend in ("google", "brave", "auto"):
+        try:
+            kw: dict[str, object] = {"max_results": limit}
+            if backend != "auto":
+                kw["backend"] = backend
+            raw = DDGS().text(query, **kw) or []
+        except Exception:
+            raw = []
+        if raw:
+            out: list[dict[str, str]] = []
+            for r in raw:
+                url = str(r.get("href") or r.get("url") or "").strip()
+                if not url:
+                    continue
+                item = {"title": str(r.get("title") or "")[:300], "url": url}
+                _sn = r.get("body") or r.get("snippet")
+                if _sn:
+                    item["snippet"] = str(_sn)[:700]
+                out.append(item)
+                if len(out) >= limit:
+                    break
+            if out:
+                return out
+    return []
+
+
 def _duckduckgo_search(query: str, limit: int = 6) -> list[dict[str, str]]:
     page = _http_get_text(f"https://html.duckduckgo.com/html/?q={quote_plus(query)}", timeout=12)["text"]
     results: list[dict[str, str]] = []
@@ -1395,19 +1433,29 @@ def _web_fallback_enabled() -> bool:
 
 def _web_search_provider(query: str, limit: int = 6) -> tuple[str, list[dict[str, str]]]:
     provider = os.environ.get("GEMMA4_WEB_SEARCH_PROVIDER", DEFAULT_WEB_SEARCH_PROVIDER).strip().casefold()
+    # PRIMARIO: ddgs (metasearch con Google/Brave/... — 2026-06-07). Da los mismos
+    # resultados que el user ve en su navegador (medido: pivigames.blog es #0). Si
+    # ddgs no está o falla -> DDG-HTML -> Bing (degradación limpia, nunca rompe).
+    # Override del primario con GEMMA4_WEB_SEARCH_PROVIDER (p.ej. 'duckduckgo' para
+    # forzar el scraper viejo).
+    if provider in {"ddgs", "metasearch", "duckduckgo", "duckduckgo_html", "ddg", DEFAULT_WEB_SEARCH_PROVIDER}:
+        try:
+            results = _ddgs_search(query, limit=limit) or []
+            if results:
+                return "ddgs", results
+        except Exception:
+            pass
     if not _web_fallback_enabled():
-        # Comportamiento ORIGINAL (sin fallback) — default, sin cambio.
-        if provider in {"duckduckgo", "duckduckgo_html", "ddg"}:
+        # Comportamiento ORIGINAL (sin fallback dual) si ddgs no trajo nada.
+        if provider in {"ddgs", "metasearch", "duckduckgo", "duckduckgo_html", "ddg", DEFAULT_WEB_SEARCH_PROVIDER}:
             return "duckduckgo_html", _duckduckgo_search(query, limit=limit)
         return provider or DEFAULT_WEB_SEARCH_PROVIDER, []
-    # Con fallback dual. DDG primario; si falla/vacío -> Bing (independiente).
-    name, results = (provider or DEFAULT_WEB_SEARCH_PROVIDER), []
-    if provider in {"duckduckgo", "duckduckgo_html", "ddg"}:
-        try:
-            results = _duckduckgo_search(query, limit=limit) or []
-            name = "duckduckgo_html"
-        except Exception:
-            results = []
+    # Fallback dual: DDG-HTML -> Bing (independientes), si ddgs vino vacío.
+    name, results = "duckduckgo_html", []
+    try:
+        results = _duckduckgo_search(query, limit=limit) or []
+    except Exception:
+        results = []
     if not results:
         try:
             bing = _bing_search(query, limit=limit)
