@@ -546,8 +546,10 @@ class Gemma4Agent:
                     _transition_handler = None
                     try:
                         import os as _os_jp
-                        if (_os_jp.environ.get("GEMMA4_JARVIS_PROACTIVE") or "").strip().lower() \
-                                in {"1", "true", "yes", "on"}:
+                        # ON por default (user 2026-06-07): se apaga con
+                        # GEMMA4_JARVIS_PROACTIVE=0.
+                        if (_os_jp.environ.get("GEMMA4_JARVIS_PROACTIVE") or "1").strip().lower() \
+                                not in {"0", "false", "no", "off"}:
                             from ..memory_pkg.jarvis_proactive import (
                                 make_transition_handler, build_routine_from_candidate)
                             _transition_handler = make_transition_handler(

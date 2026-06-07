@@ -5,8 +5,10 @@
 > `memory_pkg/jarvis_proactive.py` (orquestador disparo-en-vivo + create/reject),
 > `ambient_observer.py` (callback `on_app_transition`), `domain_tools/routine.py`
 > (`created_by` + list filtrable), cableado en `agent.py`. Tests: `test_jarvis_proactive.py`
-> 6/6 + suite Jarvis 61/61. Gates: `GEMMA4_JARVIS_PROACTIVE`, `GEMMA4_JARVIS_PROACTIVE_TTS`,
-> `GEMMA4_JARVIS_CHAT_OFFER` (todos default OFF). Para activar: `GEMMA4_JARVIS_PROACTIVE=1`.
+> 6/6 + suite Jarvis 61/61. Gates: `GEMMA4_JARVIS_PROACTIVE` **ON por default**
+> (toast, no-invasivo; apagar con `=0`); `GEMMA4_JARVIS_PROACTIVE_TTS` OFF (voz,
+> opt-in); `GEMMA4_JARVIS_CHAT_OFFER` OFF. Decisión del user 2026-06-07: proactivo
+> activo por default (el toast es no-invasivo + anti-molestia + cooldowns).
 > **Qué resuelve:** hoy la sugerencia de rutina se ANEXA a una respuesta de Baxy
 > (necesita que el user le escriba). El user quiere lo opuesto: estar usando la PC
 > NORMAL (sin chatear) y que Baxy, **por iniciativa propia**, le sugiera automatizar
@@ -128,8 +130,9 @@ para las rutinas de Jarvis y hacerlo VISIBLE/FÁCIL.
 - Confirmar lo irreversible: DELETE pide confirmación; DISABLE no (es recuperable).
 - El LLM resuelve "apagá la de Discord" por embeddings al label, no por keywords.
 
-## Gates (todos default OFF para no sorprender)
-- `GEMMA4_JARVIS_PROACTIVE=1` — activa el disparo en vivo + toast.
+## Gates
+- `GEMMA4_JARVIS_PROACTIVE` — disparo en vivo + toast. **ON por default** (user
+  2026-06-07; el toast es no-invasivo). Apagar con `GEMMA4_JARVIS_PROACTIVE=0`.
 - `GEMMA4_JARVIS_PROACTIVE_TTS=1` — además habla por voz.
 - Hereda los gates existentes: `GEMMA4_JARVIS`, `GEMMA4_AMBIENT_OBSERVER`.
 

@@ -37,8 +37,10 @@ _DO_NOT_DISTURB_PROCS = frozenset({
 
 
 def _proactive_enabled() -> bool:
-    return (os.environ.get("GEMMA4_JARVIS_PROACTIVE") or "").strip().lower() \
-        in {"1", "true", "yes", "on"}
+    # ON por default (decisión del user 2026-06-07): el toast proactivo es no-invasivo
+    # (anti-molestia + cooldowns). Se apaga explícito con GEMMA4_JARVIS_PROACTIVE=0.
+    return (os.environ.get("GEMMA4_JARVIS_PROACTIVE") or "1").strip().lower() \
+        not in {"0", "false", "no", "off"}
 
 
 def _tts_enabled() -> bool:

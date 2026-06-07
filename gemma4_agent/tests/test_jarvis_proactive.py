@@ -37,19 +37,20 @@ class NotifierTest(unittest.TestCase):
         for k in ("GEMMA4_JARVIS_PROACTIVE", "GEMMA4_JARVIS_PROACTIVE_TTS"):
             os.environ.pop(k, None)
 
-    def test_off_by_default(self):
-        # sin el gate, NO emite (default OFF, no sorprende al user)
-        tm = _MockToaster()
-        self.assertFalse(notifier.notify_suggestion(_CAND, toaster=tm))
-        self.assertEqual(tm.shown, [])
-
-    def test_emits_when_enabled(self):
-        os.environ["GEMMA4_JARVIS_PROACTIVE"] = "1"
+    def test_on_by_default(self):
+        # ON por default (decisión del user): emite sin setear el gate.
         tm = _MockToaster()
         ok = notifier.notify_suggestion(_CAND, foreground_proc="notepad.exe", toaster=tm)
         self.assertTrue(ok)
         self.assertEqual(len(tm.shown), 1)
         self.assertIn("discord", tm.shown[0].lower())
+
+    def test_off_when_disabled_explicitly(self):
+        # se apaga SOLO con GEMMA4_JARVIS_PROACTIVE=0.
+        os.environ["GEMMA4_JARVIS_PROACTIVE"] = "0"
+        tm = _MockToaster()
+        self.assertFalse(notifier.notify_suggestion(_CAND, foreground_proc="notepad.exe", toaster=tm))
+        self.assertEqual(tm.shown, [])
 
     def test_do_not_disturb_in_call(self):
         # en una videollamada (discord/zoom en foco) NO molesta
