@@ -194,9 +194,30 @@ editar.
 4. **Commits.** Solo cuando el usuario lo pide o el trabajo está
    verificado. Mensajes con el porqué + métricas. Cerrá con
    `Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>`.
-5. **Memoria.** Lo no-obvio (gotchas, decisiones de producto, baselines)
+5. **DOS REPOS ESPEJO — toda operación de git va a LOS DOS.** Este proyecto
+   se publica en **dos remotos que deben quedar IDÉNTICOS**:
+   - `origin` → `https://github.com/REDSOULTM/Baxy.git`
+   - `asistia` → `https://github.com/202610-8016-PORTAFOLIODEPROYECTOS/asistIA.git`
+     (repo de portafolio de la organización).
+
+   **Regla dura:** cada commit/push/merge/tag se hace en AMBOS, en las MISMAS
+   ramas (`main` y `Dev`), de modo que `git rev-parse main` coincida en
+   `origin/main` y `asistia/main` (y lo mismo para `Dev`). Nunca pushees a uno
+   solo. Si `asistia` no está como remoto en un checkout nuevo:
+   `git remote add asistia https://github.com/202610-8016-PORTAFOLIODEPROYECTOS/asistIA.git`.
+   Patrón estándar tras un commit en `main`:
+   ```
+   git push origin main && git push asistia main
+   git checkout Dev && git merge main --ff-only
+   git push origin Dev && git push asistia Dev
+   git checkout main
+   ```
+   `Dev` es la rama de pruebas; cuando pasa todo, se mergea a `main`. Ambas ramas
+   viven en ambos repos. Verificá la sincronía con los tres `rev-parse` antes de
+   dar por cerrado un push.
+6. **Memoria.** Lo no-obvio (gotchas, decisiones de producto, baselines)
    va a la memoria persistente, no se pierde entre sesiones.
-6. **Procesos largos en background**, con throttle si tocan CPU/GPU, y
+7. **Procesos largos en background**, con throttle si tocan CPU/GPU, y
    estimación de tiempo comunicada al usuario.
 
 ---
