@@ -4077,7 +4077,7 @@ class Gemma4Agent:
         _scr = self._screen_description_reply(events)
         if _scr:
             final = _scr
-        final = (final or "") + self._maybe_proactive_suffix()
+        final = (final or "") + self._maybe_proactive_suffix(events)
         return AgentReply(content=final, tool_events=events, mission=mission)
 
     # Bodies moved to :mod:`.agent_dispatch`. The wrappers
@@ -4763,7 +4763,11 @@ class Gemma4Agent:
         _scr = self._screen_description_reply(events)
         if _scr:
             assistant_content = _scr
-        assistant_content = (assistant_content or "") + self._maybe_proactive_suffix()
+        # La oferta proactiva SOLO en un breakpoint genuino: si el user acaba de
+        # ejecutar una acción (events>0) está EN TAREA — colgar "por cierto, querés
+        # que automatice X?" es intrusivo (auditoría 2026-06-07: "apenas abro la app
+        # actúa"). Ofrecer solo en turnos conversacionales (sin tool ejecutado).
+        assistant_content = (assistant_content or "") + self._maybe_proactive_suffix(events)
         # If we streamed an INFO pass but the turn then ran a tool (the model
         # emitted a web-call as text that the RESCUE executed -> a post-prose
         # tool+summary), the streamed knowledge prose was superseded by a verified
@@ -5733,20 +5737,33 @@ class Gemma4Agent:
                 return desc
         return None
 
-    def _maybe_proactive_suffix(self) -> str:
-        """JARVIS (inv 5): en un BREAKPOINT (fin de turno), si el miner detectó
-        una rutina del usuario y la suggestion_queue la libera (cooldowns OK),
-        devuelve un OFRECIMIENTO corto para anexar al reply. Conservador: solo
-        sugiere, NO crea la rutina (eso es un turno futuro con el sí del usuario).
+    def _maybe_proactive_suffix(self, turn_events: "list[Any] | None" = None) -> str:
+        """JARVIS (inv 5): en un BREAKPOINT genuino (fin de turno CONVERSACIONAL),
+        si el miner detectó una rutina del usuario y la suggestion_queue la libera
+        (cooldowns OK), devuelve un OFRECIMIENTO corto para anexar al reply.
+        Conservador: solo sugiere, NO crea la rutina (turno futuro con el sí).
         Best-effort: cualquier fallo -> string vacío (no rompe el turno).
+
+        NO INTRUSIVO (auditoría 2026-06-07): si el user ACABA de ejecutar una acción
+        (turn_events no vacío) está EN TAREA — colgar "por cierto, ¿automatizo X?" es
+        intrusivo (síntoma reportado: "apenas abro la app actúa"). Solo ofrecemos en
+        turnos conversacionales (charla/pregunta, sin tool ejecutado este turno).
 
         Cabe en vram4: la minería es código determinista, no usa el LLM."""
         if self.behavior is None:
             return ""
+        # gate breakpoint: no ofrecer si el turno ejecutó acciones (user en tarea)
+        if turn_events:
+            return ""
         try:
             from ..memory_pkg.pattern_miner import mine_simple_patterns
             from ..memory_pkg.suggestion_queue import SuggestionQueue
-            events = self.behavior.events()
+            # ventana reciente (latencia + recencia): minar solo los últimos ~30 días
+            # en vez de TODO el historial cada turno (auditoría: O(n) por turno). El
+            # miner exige >=7 días de span igual; 30d da margen sin cargar años.
+            import time as _t
+            _since = int((_t.time() - 30 * 86400) * 1000)
+            events = self.behavior.events(since_ms=_since)
             if len(events) < 10:  # poca señal -> ni minar (barato salir)
                 return ""
             cands = mine_simple_patterns(events)

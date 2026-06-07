@@ -55,10 +55,13 @@ def _enabled() -> bool:
     # Override explícito para tests que SÍ quieran ejercitar el observador:
     # GEMMA4_AMBIENT_FORCE=1.
     if (os.environ.get("GEMMA4_AMBIENT_FORCE") or "").strip().lower() not in {"1", "true", "yes", "on"}:
-        import sys as _sys
-        if "pytest" in _sys.modules:
+        # señal DEDICADA de test/diag (no acoplar a safety, que es un toggle de
+        # PRODUCTO que el user puede apagar legítimamente — auditoría 2026-06-07).
+        # PYTEST_CURRENT_TEST es la señal robusta (precedente domain_tools); el
+        # módulo pytest puede estar cargado por torch/transformers sin estar testeando.
+        if os.environ.get("PYTEST_CURRENT_TEST"):
             return False
-        if (os.environ.get("GEMMA4_AGENT_SAFETY") or "").strip().lower() in {"0", "false", "no", "off"}:
+        if (os.environ.get("GEMMA4_DIAG") or "").strip().lower() in {"1", "true", "yes", "on"}:
             return False
     raw = (os.environ.get("GEMMA4_AMBIENT_OBSERVER") or "1").strip().lower()
     return raw not in {"0", "false", "no", "off"}

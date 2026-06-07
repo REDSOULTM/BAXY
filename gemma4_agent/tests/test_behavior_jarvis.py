@@ -101,13 +101,24 @@ class PatternMinerTest(unittest.TestCase):
         self.assertEqual(p.count, 8)
         self.assertGreaterEqual(p.consistency, 0.6)
 
-    def test_maps_to_routine_trigger(self):
+    def test_boot_trigger_not_offered(self):
+        # HONESTIDAD (auditoría 2026-06-07): no hay trigger de logon real -> boot
+        # NO debe mapear a una rutina (mapearlo a cron daba daily@09:00, mentira).
         pats = mine_simple_patterns(self._events_red_case())
         p = [p for p in pats if p.target_key == "discord.exe"][0]
+        self.assertEqual(p.trigger_kind, "boot")
+        self.assertIsNone(p.to_routine_trigger(),
+                          "boot no se puede automatizar fielmente -> None")
+
+    def test_maps_app_open_trigger(self):
+        # un patrón app_open->app_open SÍ mapea (on_app_open existe y es fiel).
+        from gemma4_agent.memory_pkg.pattern_miner import PatternCandidate as _PC
+        p = _PC("app_open", "steam.exe", "app_open", "discord.exe", 8, 0.8, 30.0)
         r = p.to_routine_trigger()
         self.assertIsNotNone(r)
+        self.assertEqual(r["trigger_type"], "on_app_open")
         self.assertEqual(r["action"]["tool"], "app")
-        self.assertEqual(r["action"]["args"]["action"], "close")
+        self.assertEqual(r["action"]["args"]["action"], "open")
 
     def test_conservative_below_thresholds(self):
         # solo 3 de 10 -> consistencia 0.3 < 0.6 -> NO sugiere
@@ -133,8 +144,10 @@ class SuggestionQueueTest(unittest.TestCase):
         import tempfile
         from gemma4_agent.memory_pkg.suggestion_queue import SuggestionQueue
         self.q = SuggestionQueue(user="t", dir_path=Path(tempfile.mkdtemp()))
-        self.c1 = PatternCandidate("boot", "pc", "app_close", "discord.exe", 8, 0.8, 30.0)
-        self.c2 = PatternCandidate("boot", "pc", "app_open", "chrome.exe", 10, 1.0, 50.0)
+        # app_open triggers (cumplibles: on_app_open existe). boot ya NO se ofrece
+        # (auditoría 2026-06-07: sin trigger de logon real -> to_routine_trigger None).
+        self.c1 = PatternCandidate("app_open", "steam.exe", "app_close", "discord.exe", 8, 0.8, 30.0)
+        self.c2 = PatternCandidate("app_open", "spotify.exe", "app_open", "chrome.exe", 10, 1.0, 50.0)
         self.now = time.time()
 
     def test_offers_best_candidate_first(self):
@@ -157,7 +170,7 @@ class SuggestionQueueTest(unittest.TestCase):
     def test_rejected_reoffered_if_count_doubles(self):
         self.q.mark_rejected(self.c1, now=self.now)
         # count subió de 8 a 16 (duplicó) -> se puede re-ofrecer aunque < 30d
-        stronger = PatternCandidate("boot", "pc", "app_close", "discord.exe", 16, 0.9, 30.0)
+        stronger = PatternCandidate("app_open", "steam.exe", "app_close", "discord.exe", 16, 0.9, 30.0)
         self.assertIsNotNone(self.q.next_suggestion([stronger], now=self.now + 3601))
 
 
@@ -170,7 +183,7 @@ class PendingSuggestionHandlerTest(unittest.TestCase):
                 self.last = (name, args); return {"ok": True}
         ag.tools = _T()
         ag._pending_suggestion = PatternCandidate(
-            "boot", "agent", "app_close", "discord.exe", 8, 0.8, 30.0)
+            "app_open", "steam.exe", "app_close", "discord.exe", 8, 0.8, 30.0)
         return ag
 
     def test_yes_creates_routine(self):

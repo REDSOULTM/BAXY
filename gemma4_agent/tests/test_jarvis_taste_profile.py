@@ -68,14 +68,21 @@ class TestTasteProfile(unittest.TestCase):
         self.assertTrue(build_profile(self.log).is_empty())
         self.assertIn("Todavía no", inspect_text(self.log))
 
-    def test_forget_does_not_touch_agent_events(self):
-        # forget borra app_focus/media_play (ambient), NO boot/app_open del agente.
+    def test_forget_borra_todo_el_comportamiento(self):
+        # PRIVACIDAD (fix auditoría 2026-06-07): "olvidate de todo" debe borrar TODO
+        # el comportamiento observado del usuario — incluido app_open/app_close/boot.
+        # Antes solo borraba app_focus/media_play y el pattern_miner SEGUÍA minando
+        # rutinas del user tras un olvido confirmado (viola privacidad + honestidad).
         self.log.record("boot", "agent")
+        self.log.record("app_open", "spotify.exe", context={"source": "agent"})
+        self.log.record("app_close", "chrome.exe", context={"source": "agent"})
         for _ in range(10):
             _seed(self.log, "app_focus", "code.exe", "mañana", dwell_s=400)
-        forget(self.log)
-        boots = [e for e in self.log.events() if e["kind"] == "boot"]
-        self.assertEqual(len(boots), 1, "forget no debe borrar el boot del agente")
+        n = forget(self.log)
+        self.assertGreater(n, 0)
+        remaining = self.log.events()
+        self.assertEqual(len(remaining), 0,
+                         f"forget debe borrar TODO el comportamiento, quedaron: {remaining}")
 
 
 class TestProfileIntent(unittest.TestCase):

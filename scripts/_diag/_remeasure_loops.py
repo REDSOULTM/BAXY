@@ -16,6 +16,7 @@ try:
 except Exception:
     pass
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 
 DATASET = ROOT / "dataset_finetune" / "curated" / "curated.jsonl"
 OUT = ROOT / "scripts" / "_diag" / "_remeasure_loops.jsonl"

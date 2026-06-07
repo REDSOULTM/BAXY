@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.abspath("."))
 try: sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 except Exception: pass
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 os.environ.setdefault("GEMMA4_AGENT_SAFETY", "0")
 from gemma4_agent.infra.profiles import get_active_profile, apply_profile_to_env
 from gemma4_agent.infra.llama_server import get_shared_manager

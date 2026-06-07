@@ -63,10 +63,16 @@ class PatternCandidate:
 
     def to_routine_trigger(self) -> dict[str, Any] | None:
         """Mapea el patrón a un trigger del routine_tool existente (traducción
-        1-a-1). None si no hay mapping claro."""
+        1-a-1). None si no hay mapping FIEL."""
         if self.trigger_kind == "boot":
-            tt = "cron"  # boot ≈ tarea al inicio de sesión
-        elif self.trigger_kind == "app_open":
+            # HONESTIDAD (auditoría 2026-06-07): NO existe trigger de logon/startup
+            # real en routine.py (solo manual/cron/once/on_app_*). Mapear boot->cron
+            # caía a daily@09:00 -> "cuando arrancás la PC, abro X" se programaba para
+            # las 9 AM, NO al arranque. Mentira funcional. Hasta que exista un trigger
+            # AtLogOn, NO ofrecemos automatizar patrones de boot (no prometer lo que no
+            # se cumple). El miner los puede detectar, pero no se ofrecen.
+            return None
+        if self.trigger_kind == "app_open":
             tt = "on_app_open"
         elif self.trigger_kind == "app_close":
             tt = "on_app_close"

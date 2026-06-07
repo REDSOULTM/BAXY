@@ -91,6 +91,12 @@ class SuggestionQueue:
         accepted = set(state.get("accepted", []))
 
         for cand in candidates:
+            # NO ofrecer lo que no se puede automatizar FIELMENTE (auditoría
+            # 2026-06-07): si to_routine_trigger devuelve None (p.ej. patrones de
+            # boot, que no tienen trigger de logon real), ofrecerlo llevaría a un
+            # "sí" del user seguido de build_fail. Filtrar antes de ofrecer.
+            if cand.to_routine_trigger() is None:
+                continue
             pid = _pattern_id(cand)
             if pid in accepted:
                 continue  # ya es rutina

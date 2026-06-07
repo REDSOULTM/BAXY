@@ -22,6 +22,7 @@ except Exception:
     pass
 
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 # Safety OFF: que no pida confirmacion (no hay nada irreversible, todo mockeado).
 os.environ.setdefault("GEMMA4_ENABLE_SAFETY", "0")
 

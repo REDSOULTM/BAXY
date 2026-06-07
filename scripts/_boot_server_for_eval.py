@@ -12,6 +12,9 @@ sys.path.insert(0, str(ROOT))
 
 # Router mode ON (lazy-vision, el path de prod) y perfil vram4.
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+# DIAG: que el observador de ambiente NO grabe en la DB real del usuario durante
+# las pruebas (auditoría 2026-06-07: las apps/media de test contaminaban el perfil).
+os.environ.setdefault("GEMMA4_DIAG", "1")
 
 from gemma4_agent.infra.profiles import get_active_profile, apply_profile_to_env
 from gemma4_agent.infra.llama_server import get_shared_manager

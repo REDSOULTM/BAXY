@@ -26,6 +26,7 @@ try:
 except Exception:
     pass
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 
 LIMIT = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1] else 1000000
 OFFSET = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2] else 0

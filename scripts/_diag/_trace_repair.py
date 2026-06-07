@@ -3,6 +3,7 @@ sys.path.insert(0, os.path.abspath("."))
 try: sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 except Exception: pass
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 os.environ.setdefault("GEMMA4_AGENT_SAFETY", "0")
 # 1) probar _guess_lang en los inputs que fallan
 from gemma4_agent.safety_pkg.reply_validator import _guess_lang

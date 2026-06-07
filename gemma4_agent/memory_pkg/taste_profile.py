@@ -59,6 +59,7 @@ def invalidate_block_cache() -> None:
 _WINDOW_DAYS = 30
 _MIN_APP_DWELL_S = 600.0     # 10 min totales en una app para que cuente
 _MIN_MEDIA_PLAYS = 3         # 3 reproducciones de un artista para "te gusta"
+_MIN_MUSIC_SLOT_SESSIONS = 3  # 3 sesiones en una franja para llamarla "hábito"
 _TOP_APPS = 4
 _TOP_ARTISTS = 4
 
@@ -160,11 +161,18 @@ def build_profile(behavior_log, *, window_days: int = _WINDOW_DAYS) -> TasteProf
                      if s >= _MIN_APP_DWELL_S] if hasattr(app_dwell, "most_common") else \
         [(a, round(s / 3600.0, 1))
          for a, s in Counter(app_dwell).most_common(_TOP_APPS) if s >= _MIN_APP_DWELL_S]
+    # apps_by_slot: el dominante de cada franja DEBE superar el umbral anti-ruido
+    # (auditoría 2026-06-07: una app abierta 1 vez por segundos declaraba un "ritmo
+    # diario" falso que el LLM tomaba como verdad -> "a la tarde solés estar en X").
     prof.apps_by_slot = {slot: c.most_common(1)[0][0]
-                         for slot, c in slot_app_dwell.items() if c}
+                         for slot, c in slot_app_dwell.items()
+                         if c and c.most_common(1)[0][1] >= _MIN_APP_DWELL_S}
     prof.top_artists = [(a, p) for a, p in artist_plays.most_common(_TOP_ARTISTS)
                         if p >= _MIN_MEDIA_PLAYS]
-    prof.music_slots = [s for s, _ in music_slot_count.most_common(2)]
+    # music_slots: una franja es un HÁBITO solo con varias sesiones, no con una
+    # sola (auditoría: 1 sesión declaraba "suele escuchar música a la <franja>").
+    prof.music_slots = [s for s, c in music_slot_count.most_common(2)
+                        if c >= _MIN_MUSIC_SLOT_SESSIONS]
     return prof
 
 
@@ -279,16 +287,21 @@ def inspect_text(behavior_log) -> str:
 
 
 def forget(behavior_log) -> int:
-    """Borra los datos de comportamiento AMBIENTE (privacidad: borrable).
-    Devuelve cuántos eventos borró. NO toca el chat ni la experiencia."""
+    """Borra TODO el comportamiento observado del usuario (privacidad: ley).
+    Devuelve cuántos eventos borró. NO toca el chat ni la experiencia.
+
+    CRÍTICO (auditoría 2026-06-07): antes borraba SOLO app_focus/media_play y
+    dejaba app_open/app_close/boot — el pattern_miner seguía minando rutinas del
+    usuario ("cuando abrís X, abrís Y") tras un "olvidate de todo" confirmado.
+    Eso viola la privacidad (es ley) y la honestidad (afirmaba olvidar sin
+    hacerlo). Ahora borra TODO el behavior del usuario; el meta (schema) queda."""
     try:
         conn = behavior_log._open()
         if conn is None:
             return 0
-        cur = conn.execute(
-            "SELECT COUNT(*) FROM behavior_events WHERE kind IN ('app_focus','media_play')")
+        cur = conn.execute("SELECT COUNT(*) FROM behavior_events")
         n = cur.fetchone()[0]
-        conn.execute("DELETE FROM behavior_events WHERE kind IN ('app_focus','media_play')")
+        conn.execute("DELETE FROM behavior_events")
         conn.commit()
         invalidate_block_cache()  # el borrado debe reflejarse YA en el prompt (privacidad)
         return int(n)

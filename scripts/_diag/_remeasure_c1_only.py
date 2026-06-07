@@ -14,6 +14,7 @@ try:
 except Exception:
     pass
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 
 # (label, user_text). Los 2 loopers + research genuino de control.
 CASES = [

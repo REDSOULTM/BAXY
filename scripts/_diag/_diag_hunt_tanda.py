@@ -20,6 +20,7 @@ try:
 except Exception:
     pass
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 # El eval mide ROUTING sin fricción: con safety ON (ahora default), toda op
 # destructiva daría needs_confirmation y ensuciaría la medición de qué tool eligió el
 # 4B. Lo desactivamos SOLO acá (el harness), no en producción. La confirmación real

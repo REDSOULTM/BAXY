@@ -20,6 +20,7 @@ except Exception:
     pass
 import os
 os.environ.setdefault("GEMMA4_DEFAULT_PROFILE", "vram4")
+os.environ.setdefault("GEMMA4_DIAG", "1")  # no contaminar la DB de Jarvis en pruebas
 os.environ.setdefault("GEMMA4_AGENT_SAFETY", "0")  # medir routing sin fricción de gate
 
 from gemma4_agent.infra.profiles import get_active_profile, apply_profile_to_env

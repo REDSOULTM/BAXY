@@ -106,10 +106,31 @@ class BehaviorLog:
             # CORRUPTION RECOVERY (mismo patrón que experience.py): cuarentena +
             # recrear una vez. El log degrada a "empieza de cero", no brickea.
             logger.warning("behavior DB unusable (%s); quarantining %s", exc, self.path)
+            # CRÍTICO (auditoría 2026-06-07): en Windows hay que CERRAR el handle
+            # SQLite fallido ANTES de renombrar — si no, el archivo queda bloqueado
+            # (WinError 32), el rename falla, y _disabled=True deja la DB BRICKEADA
+            # (Jarvis muerto sin recuperarse). El conn de la línea 88 sigue vivo.
+            try:
+                if conn is not None:
+                    conn.close()
+            except Exception:
+                pass
             try:
                 bad = self.path.with_suffix(f".corrupt.{int(time.time())}")
                 if self.path.exists():
                     self.path.rename(bad)
+                # mover también los sidecars WAL/SHM: una recreación con -wal viejo
+                # de una DB corrupta puede re-corromper la nueva (auditoría, LOW).
+                for _sfx in ("-wal", "-shm"):
+                    _side = self.path.with_name(self.path.name + _sfx)
+                    if _side.exists():
+                        try:
+                            _side.rename(bad.with_name(bad.name + _sfx))
+                        except OSError:
+                            try:
+                                _side.unlink()
+                            except OSError:
+                                pass
             except OSError:
                 self._disabled = True
                 return None
