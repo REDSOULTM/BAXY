@@ -37,6 +37,51 @@ RING_BUFFER_CHUNKS = (RING_BUFFER_SECONDS * 1000) // CHUNK_MS  # ~156
 ChunkCallback = Callable[[np.ndarray], None]
 
 
+def _wasapi_enabled() -> bool:
+    """Captura por WASAPI (default ON). Kill-switch GEMMA4_VOICE_WASAPI=0 vuelve al
+    método viejo (device=None directo a 16kHz). Motivo del default ON (medido
+    2026-06-07): el default de PortAudio en Windows suele ser MME, que NO soporta
+    16kHz nativo y DEVUELVE CEROS (el mic 'no capta'). WASAPI respeta el default
+    real del sistema y captura a su tasa nativa (48k) -> resampleamos a 16k."""
+    import os
+    return (os.environ.get("GEMMA4_VOICE_WASAPI", "1") or "1").strip().lower() \
+        not in {"0", "false", "no", "off"}
+
+
+def _resolve_wasapi_input() -> "tuple[int, int] | None":
+    """(device_index, native_samplerate) del mic default vía WASAPI, o None si no
+    hay WASAPI / no se puede. WASAPI = el default real del sistema (regla del user:
+    SIEMPRE el default)."""
+    try:
+        import sounddevice as sd
+        for h in sd.query_hostapis():
+            if "WASAPI" in h.get("name", ""):
+                di = h.get("default_input_device", -1)
+                if di is not None and di >= 0:
+                    sr = int(sd.query_devices(di)["default_samplerate"])
+                    return di, sr
+    except Exception as exc:
+        logger.debug("WASAPI resolve failed: %s", exc)
+    return None
+
+
+def _resample_to_16k(audio: np.ndarray, src_sr: int) -> np.ndarray:
+    """int16 mono src_sr -> 16000. scipy (anti-alias) si está, si no interp lineal.
+    Probado 2026-06-07: 48k->16k preserva el nivel."""
+    if src_sr == SAMPLE_RATE or audio.size == 0:
+        return audio.astype(np.int16, copy=False)
+    try:
+        from math import gcd
+        from scipy.signal import resample_poly
+        g = gcd(int(src_sr), SAMPLE_RATE)
+        return resample_poly(audio.astype(np.float64),
+                             SAMPLE_RATE // g, int(src_sr) // g).astype(np.int16)
+    except Exception:
+        n_out = int(round(audio.size * SAMPLE_RATE / src_sr))
+        idx = np.linspace(0, audio.size - 1, max(1, n_out))
+        return np.interp(idx, np.arange(audio.size), audio).astype(np.int16)
+
+
 class AudioCapture:
     """Wraper de sounddevice.InputStream con ring buffer integrado.
 
@@ -64,6 +109,16 @@ class AudioCapture:
     ) -> None:
         self._on_chunk = on_chunk
         self._device = device
+        # WASAPI: capturar del default real del sistema a su tasa nativa y
+        # resamplear a 16k. Solo si el caller no fijó un device explícito y el
+        # kill-switch está ON. Si no se resuelve -> método viejo (device, 16k).
+        self._native_sr = SAMPLE_RATE          # tasa de captura real
+        self._needs_resample = False
+        if device is None and _wasapi_enabled():
+            _w = _resolve_wasapi_input()
+            if _w is not None:
+                self._device, self._native_sr = _w
+                self._needs_resample = (self._native_sr != SAMPLE_RATE)
         self._stream = None  # type: ignore[assignment]
         self._ring: deque[np.ndarray] = deque(maxlen=RING_BUFFER_CHUNKS)
         self._lock = threading.Lock()
@@ -92,10 +147,15 @@ class AudioCapture:
             target=self._pump_loop, daemon=True, name="AudioPump",
         )
         self._pump_thread.start()
+        # blocksize a la tasa NATIVA: capturamos CHUNK_SAMPLES "equivalentes a 16k"
+        # (1536 a 48k = 512 a 16k tras resamplear) -> downstream sigue viendo 512@16k
+        # exactos, que es lo que Silero VAD v5 exige.
+        cap_sr = self._native_sr
+        cap_block = int(round(CHUNK_SAMPLES * cap_sr / SAMPLE_RATE))
         try:
             self._stream = sd.InputStream(
-                samplerate=SAMPLE_RATE,
-                blocksize=CHUNK_SAMPLES,
+                samplerate=cap_sr,
+                blocksize=cap_block,
                 dtype="int16",
                 channels=1,
                 device=self._device,
@@ -105,11 +165,32 @@ class AudioCapture:
             self.running = True
             self.last_error = None
             logger.info(
-                "AudioCapture started (device=%s, chunk=%d samples / %dms)",
-                self._device, CHUNK_SAMPLES, CHUNK_MS,
+                "AudioCapture started (device=%s, capture=%dHz block=%d -> 16kHz "
+                "chunk=%d/%dms, resample=%s)",
+                self._device, cap_sr, cap_block, CHUNK_SAMPLES, CHUNK_MS,
+                self._needs_resample,
             )
             return True
         except Exception as exc:
+            # FALLBACK: si WASAPI/tasa nativa falla, reintentar el método viejo
+            # (device default a 16k). Nunca dejar la voz rota por el cambio.
+            logger.warning("WASAPI capture failed (%s); fallback a 16k directo", exc)
+            if self._needs_resample or self._device is not None:
+                try:
+                    self._device = None
+                    self._native_sr = SAMPLE_RATE
+                    self._needs_resample = False
+                    self._stream = sd.InputStream(
+                        samplerate=SAMPLE_RATE, blocksize=CHUNK_SAMPLES,
+                        dtype="int16", channels=1, device=None,
+                        callback=self._sd_callback)
+                    self._stream.start()
+                    self.running = True
+                    self.last_error = None
+                    logger.info("AudioCapture started (fallback 16k directo)")
+                    return True
+                except Exception as exc2:
+                    exc = exc2
             self.last_error = f"audio stream failed: {type(exc).__name__}: {exc}"
             logger.error(self.last_error)
             self._stream = None
@@ -212,6 +293,14 @@ class AudioCapture:
                 chunk = self._pending.get(timeout=0.1)
             except queue_mod.Empty:
                 continue
+            # RESAMPLE a 16k (off-callback, acá sí se puede): el chunk crudo viene a
+            # la tasa nativa del mic (48k). Resamplear a 16k da los 512 samples que
+            # Silero VAD v5 + el resto del pipeline esperan.
+            if self._needs_resample:
+                try:
+                    chunk = _resample_to_16k(chunk, self._native_sr)
+                except Exception as exc:
+                    logger.debug("resample failed, passing raw: %s", exc)
             # Update ring buffer (off-callback)
             with self._lock:
                 self._ring.append(chunk)

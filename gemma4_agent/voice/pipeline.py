@@ -270,6 +270,18 @@ class VoicePipeline:
         # Cooldown timer (set when entering COOLDOWN state).
         self._cooldown_until: float = 0.0
 
+        # AUTO-CALIBRACIÓN del piso de ruido del micrófono (2026-06-07). El gate de
+        # silencio fijo (MIN_CAPTURE_RMS=350) no es universal: en un mic ruidoso
+        # queda por debajo del ambiente -> "oye voces donde no hay". Calibramos el
+        # umbral al ruido REAL de cada mic (como Discord). Si el user fijó
+        # GEMMA4_VOICE_MIN_CAPTURE_RMS a mano, lo RESPETAMOS y no calibramos.
+        from .noise_calibration import NoiseFloorCalibrator
+        self._noise_cal = NoiseFloorCalibrator()
+        self._cal_window_rms: list[float] = []   # RMS de chunks IDLE para calibrar
+        self._manual_rms_override = "GEMMA4_VOICE_MIN_CAPTURE_RMS" in _os.environ
+        # nº de ventanas de ambiente a juntar antes de la 1ª calibración (~1.5s).
+        self._cal_target = max(8, int(1.5 * SAMPLE_RATE / CHUNK_SAMPLES))
+
         self._loaded: bool = False
         self.last_error: str | None = None
 
@@ -334,6 +346,19 @@ class VoicePipeline:
         if not ok:
             self.last_error = f"Audio start failed: {self._audio.last_error}"
             return False
+        # AVISO si el mic default está MUTEADO en Windows (causa real 2026-06-07:
+        # el user reportó "no oye" y su mic estaba silenciado a nivel sistema ->
+        # captura ceros y parece STT roto). Solo avisamos; no podemos desmutearlo
+        # sin tocar el audio del user. Best-effort (None si no se puede leer).
+        try:
+            from .noise_calibration import microphone_muted
+            if microphone_muted() is True:
+                logger.warning(
+                    "MICRÓFONO DEFAULT MUTEADO en Windows: Baxy no oirá nada hasta "
+                    "que lo desmutees (Sonido > Entrada > Volumen).")
+                self._emit_state("MIC_MUTED")
+        except Exception:
+            pass
         logger.info("VoicePipeline started (state=IDLE)")
         return True
 
@@ -403,6 +428,30 @@ class VoicePipeline:
         detection during CAPTURE) where it belongs.
         """
         self._preroll.append(chunk)
+        # AUTO-CALIBRACIÓN: en IDLE no hay comando activo -> los chunks son AMBIENTE.
+        # Acumulamos su RMS para estimar el piso de ruido del mic. La 1ª calibración
+        # ocurre tras juntar ~1.5s; luego, cada chunk IDLE re-ajusta lento (EMA) por
+        # si el ambiente cambia. No toca el chunk (solo lo mide) -> no afecta al wake.
+        # Se omite si el user fijó el umbral a mano (override explícito). getattr con
+        # default seguro: tests que construyen el pipeline por __new__ (sin __init__)
+        # no tienen estos atributos -> se comportan como antes (gate fijo).
+        if not getattr(self, "_manual_rms_override", True) and \
+                getattr(self, "_noise_cal", None) is not None:
+            try:
+                _rms = _buffer_rms(chunk)
+                if not self._noise_cal.calibrated:
+                    self._cal_window_rms.append(_rms)
+                    if len(self._cal_window_rms) >= self._cal_target:
+                        if self._noise_cal.calibrate(self._cal_window_rms):
+                            logger.info(
+                                "noise-floor calibrado: piso=%.0f -> umbral=%.0f "
+                                "(mic auto-cal; era fijo %.0f)",
+                                self._noise_cal.noise_floor or 0,
+                                self._noise_cal.threshold or 0, MIN_CAPTURE_RMS)
+                else:
+                    self._noise_cal.observe_silence(_rms)
+            except Exception:
+                pass  # calibración best-effort: nunca rompe la escucha
         # Software-mute: pause wake detection while TTS is speaking.
         # Without echo cancellation, hearing 'gemma' in TTS output
         # would self-trigger via the mic. Logged on TRANSITION (not per
@@ -474,6 +523,33 @@ class VoicePipeline:
         Runs inside _handle_idle via wake._predict_window; we hold no
         lock here (the caller is single-threaded by design).
         """
+        # GATE DE ENERGÍA ANTI-FALSO-WAKE (2026-06-07): el wake recibe TODOS los
+        # chunks sin gate (para no perder recall), y su threshold 0.25 a veces
+        # dispara en SILENCIO/ruido (bug medido: transcribió 'Yeah'/'We've got' sin
+        # que el user hablara). Decir "Baxy" SIEMPRE produce energía; el silencio
+        # NUNCA. Validamos que el preroll (que contiene la frase de wake) tenga
+        # energía sobre el piso calibrado del mic. Si no -> es un falso positivo:
+        # rechazar el wake, seguir en IDLE. NO baja el recall (un wake real tiene
+        # energía); mata los falsos en silencio. Universal (usa el piso por-mic).
+        try:
+            if self._preroll:
+                _wake_rms = peak_window_rms(
+                    np.concatenate(list(self._preroll)),
+                    int(_RMS_WINDOW_S * SAMPLE_RATE))
+                _gate = MIN_CAPTURE_RMS
+                _cal = getattr(self, "_noise_cal", None)
+                if not getattr(self, "_manual_rms_override", True) and \
+                        _cal is not None and _cal.threshold is not None:
+                    _gate = _cal.threshold
+                if _wake_rms < _gate:
+                    logger.info(
+                        "wake RECHAZADO: preroll peak_rms=%.0f < %.0f -> falso "
+                        "positivo en silencio (phrase=%s score=%.3f)",
+                        _wake_rms, _gate, phrase, score)
+                    self._wake.reset()
+                    return
+        except Exception:
+            pass  # gate best-effort: ante error, dejar pasar (no romper el wake)
         with self._state_lock:
             if self._state != State.IDLE:
                 logger.debug("wake during state=%s, ignoring", self._state.value)
@@ -513,10 +589,17 @@ class VoicePipeline:
         # (woke on noise, or user said nothing). Measured as peak windowed RMS
         # so the trailing EOS-silence padding doesn't dilute a short command.
         peak_rms = peak_window_rms(audio, int(_RMS_WINDOW_S * SAMPLE_RATE))
-        if peak_rms < MIN_CAPTURE_RMS:
+        # Umbral EFECTIVO: el auto-calibrado al mic si calibró (y no hay override
+        # manual), si no el fijo MIN_CAPTURE_RMS. Así el gate se adapta al ruido real.
+        _gate = MIN_CAPTURE_RMS
+        _cal = getattr(self, "_noise_cal", None)
+        if not getattr(self, "_manual_rms_override", True) and \
+                _cal is not None and _cal.threshold is not None:
+            _gate = _cal.threshold
+        if peak_rms < _gate:
             logger.info(
                 "silence gate: peak_rms=%.0f < %.0f -> skip transcribe "
-                "(reason=%s dur=%.2fs)", peak_rms, MIN_CAPTURE_RMS, reason, dur,
+                "(reason=%s dur=%.2fs)", peak_rms, _gate, reason, dur,
             )
             # Tell the UI we heard nothing usable, so a user who DID try to speak
             # gets feedback instead of the HUD silently dropping back to idle

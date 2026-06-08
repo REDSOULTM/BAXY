@@ -147,6 +147,39 @@ def _encoder_health() -> tuple[bool, str]:
     return True, f"numpy {_np.__version__}, sentence-transformers OK"
 
 
+def _stt_engine_status() -> tuple[str, str]:
+    """¿Qué motor STT se usaría en runtime? Reporta 'parakeet' u 'whisper
+    (FALLBACK)' SIN arrancar el pipeline de voz (no toca micrófono).
+
+    El pipeline elige Parakeet por default pero cae a Whisper SILENCIOSO si
+    sherpa-onnx falta o el modelo Parakeet no está. Lo hacemos VISIBLE acá para
+    no usar Whisper sin saberlo (mismo patrón que el health del encoder)."""
+    import os as _os
+    from pathlib import Path as _Path
+    engine = (_os.environ.get("GEMMA4_STT_ENGINE", "parakeet") or "parakeet").lower()
+    if engine != "parakeet":
+        return engine, f"GEMMA4_STT_ENGINE={engine} (forzado)"
+    # Parakeet pedido: ¿se cumplen sus precondiciones? (sherpa-onnx + modelo)
+    try:
+        import importlib.util as _ilu
+        has_sherpa = _ilu.find_spec("sherpa_onnx") is not None
+    except Exception:
+        has_sherpa = False
+    bundle = "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
+    prod = _Path.home() / ".gemma4" / "models" / bundle / "encoder.int8.onnx"
+    repo = (_Path(__file__).resolve().parent.parent.parent
+            / "data" / "stt_eval" / "sherpa" / bundle / "encoder.int8.onnx")
+    has_model = prod.exists() or repo.exists()
+    if has_sherpa and has_model:
+        return "parakeet", "Parakeet-TDT-v3 (sherpa-onnx, modelo presente)"
+    missing = []
+    if not has_sherpa:
+        missing.append("sherpa-onnx no instalado")
+    if not has_model:
+        missing.append("modelo Parakeet ausente")
+    return "whisper-fallback", "; ".join(missing) + " -> caería a Whisper"
+
+
 def print_status(args: argparse.Namespace) -> int:
     config = config_with_args(args)
     print_banner()
@@ -181,6 +214,28 @@ def print_status(args: argparse.Namespace) -> int:
         print(color("dim",
             "     Fix: pip install \"numpy==1.26.4\"  (o reinstalá con "
             "-c constraints.txt). Ver requirements.txt."))
+    # MOTOR STT activo (2026-06-07): el pipeline cae a Whisper SILENCIOSO si
+    # Parakeet no está -> lo hacemos VISIBLE para no usar el fallback sin saberlo.
+    _stt_engine, _stt_detail = _stt_engine_status()
+    _stt_ok = _stt_engine == "parakeet"
+    _stt_text = color("ok", "parakeet") if _stt_ok else color("warn", _stt_engine)
+    print(f"{'stt engine':<18} {_stt_text:<20} {_stt_detail}")
+    if not _stt_ok:
+        print(color("warn",
+            "  -> NO estás usando Parakeet. Para restaurarlo: instalá sherpa-onnx "
+            "y/o descargá el modelo Parakeet a ~/.gemma4/models/."))
+    # MIC default muteado en Windows -> Baxy no oye nada (causa real 2026-06-07).
+    try:
+        from ..voice.noise_calibration import microphone_muted as _mic_muted
+        _muted = _mic_muted()
+    except Exception:
+        _muted = None
+    if _muted is True:
+        print(f"{'mic (default)':<18} {color('error', 'MUTEADO'):<20} "
+              "el micrófono default está silenciado en Windows -> Baxy no oirá nada")
+        print(color("dim", "     Fix: Sonido > Entrada > Volumen (desmutear)."))
+    elif _muted is False:
+        print(f"{'mic (default)':<18} {color('ok', 'ok'):<20} no muteado")
     print()
     if not health:
         print(color("dim", "Tip: python -m gemma4_agent.infra.launcher chat  # levanta llama-server si hace falta"))
