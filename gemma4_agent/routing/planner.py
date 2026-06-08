@@ -846,6 +846,19 @@ def select_tool_names(
             if "media" not in names and _media_score >= _SEM_PEAK_KEEP:
                 names.insert(0, "media")
 
+            # VISION force-include por SEÑAL SEMÁNTICA (no keyword). Mismo patrón que
+            # `media`/`mcp` arriba: si el encoder pone `vision` con score FUERTE
+            # (>=_SEM_PEAK_KEEP), la garantizamos en el subset para que sobreviva el
+            # cap. Esto resuelve el bug "describí la pantalla" sin meter vision por la
+            # keyword "pantalla" (que la metía hasta en pedidos de CLICK -> el 4B
+            # describía en vez de actuar). El encoder distingue solo y multilingüe:
+            # PERCEPCIÓN ("describí/qué ves/leé la pantalla", "what do you see") da
+            # vision≈0.85; ACCIÓN ("apretá/click el primero", "klicke") la deja en
+            # ≈0.48 < bar -> NO entra. Sin listas de verbos por idioma. (Bug 2026-06-07.)
+            _vision_score = next((s for t, s in scored if t == "vision"), 0.0)
+            if "vision" not in names and _vision_score >= _SEM_PEAK_KEEP:
+                names.insert(0, "vision")
+
             # MCP promotion: las tools MCP enroladas SOLO viven en la lista
             # semántica `sem`, que se descarta cuando una keyword nativa ya llenó
             # `names` (rama `if not names` abajo). Resultado MEDIDO: para "qué clima
@@ -1554,10 +1567,18 @@ def _suggest_tools(step: str) -> list[str]:
                  r"open|close|launch|quit|exit|kill|program|application|game)\b",
                  low) and "steam" not in low:
         tools.append("app")
-    # gui/uia/vision: click/type/screen
+    # gui/uia: click/type/screen — los MECANISMOS de interacción con la pantalla.
+    # NO agregamos `vision` acá (bug medido 2026-06-07: "en mi PANTALLA apretá el
+    # primer título" metía vision por la palabra "pantalla", el 4B eligió
+    # describe_screen y DESCRIBIÓ —encima alucinando— en vez de CLICKEAR). vision
+    # es PERCEPCIÓN (describir), no acción. Y el encoder semántico YA la distingue
+    # solo, multilingüe, sin keywords: mide vision≈0.85 para "describí/qué ves en
+    # pantalla" y la deja FUERA del top para "apretá/click el primero" (en es/en/de).
+    # Así que dejamos que el ENCODER decida si vision entra; este keyword solo
+    # garantiza el stack de interacción (gui/uia). No hardcode de verbos por idioma.
     if re.search(r"\b(click|clic|teclea|teclear|escribe en pantalla|pantalla|boton|"
                  r"type|screen|button)\b", low):
-        tools.extend(["uia", "gui", "vision"])
+        tools.extend(["uia", "gui"])
     if re.search(r"\b(registro|registry|regedit)\b", low):
         tools.append("registry")
     if re.search(r"\b(variable de entorno|environment variable|env var|\benv\b)\b", low):

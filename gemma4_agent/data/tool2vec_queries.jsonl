@@ -7840,3 +7840,35 @@
 {"tool": "app", "q": "open Slack for me"}
 {"tool": "app", "q": "open Microsoft Teams"}
 {"tool": "app", "q": "open OBS"}
+{"tool": "computer_use", "q": "apretá el primer título que veas en pantalla"}
+{"tool": "computer_use", "q": "aprieta el primer titulo que veas"}
+{"tool": "computer_use", "q": "clickeá el primero que aparezca en la lista"}
+{"tool": "computer_use", "q": "hacé click en el primer resultado que veas"}
+{"tool": "computer_use", "q": "seleccioná el primer elemento de la pantalla"}
+{"tool": "gui", "q": "click en el primer item de la lista"}
+{"tool": "gui", "q": "tocá el primer botón que veas"}
+{"tool": "computer_use", "q": "presioná el primero de arriba"}
+{"tool": "computer_use", "q": "abrí el primer juego que aparezca en pantalla"}
+{"tool": "computer_use", "q": "elegí la primera opción que veas"}
+{"tool": "gui", "q": "clic en el segundo resultado de la lista"}
+{"tool": "computer_use", "q": "apretá el último de la lista que ves"}
+{"tool": "computer_use", "q": "dale click al primero que salga"}
+{"tool": "gui", "q": "selecciona el primer enlace en pantalla"}
+{"tool": "computer_use", "q": "click the first title you see on screen"}
+{"tool": "computer_use", "q": "tap the first item in the list"}
+{"tool": "gui", "q": "click the first result you can see"}
+{"tool": "computer_use", "q": "press the first one at the top"}
+{"tool": "computer_use", "q": "select the first option on the screen"}
+{"tool": "computer_use", "q": "open the first game shown on screen"}
+{"tool": "gui", "q": "click the second link in the list"}
+{"tool": "computer_use", "q": "click whatever shows up first"}
+{"tool": "computer_use", "q": "clique no primeiro título que você vê na tela"}
+{"tool": "computer_use", "q": "aperte o primeiro item da lista"}
+{"tool": "gui", "q": "clique no primeiro resultado que aparecer"}
+{"tool": "computer_use", "q": "clique sur le premier titre que tu vois à l'écran"}
+{"tool": "computer_use", "q": "appuie sur le premier élément de la liste"}
+{"tool": "gui", "q": "clique sur le premier résultat que tu vois"}
+{"tool": "computer_use", "q": "klicke auf den ersten Titel, den du auf dem Bildschirm siehst"}
+{"tool": "computer_use", "q": "drücke auf das erste Element in der Liste"}
+{"tool": "computer_use", "q": "clicca sul primo titolo che vedi sullo schermo"}
+{"tool": "computer_use", "q": "premi il primo elemento della lista"}

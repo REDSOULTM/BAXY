@@ -2564,9 +2564,22 @@ class ToolRegistry:
                 return _attach_screenshot(result, shot)
             shot["note"] = "No target text was provided; screenshot captured for Gemma 4 native visual reasoning."
             return shot
-        shot = self.gui_screenshot(args)
+        # MONITOR ACTIVO por default para describir (default "all" = panorámica
+        # multi-monitor que el 2B aluvina). El user puede pedir uno explícito.
+        _shot_args = dict(args)
+        if not str(args.get("monitor") or "").strip():
+            _shot_args["monitor"] = "active"
+        shot = self.gui_screenshot(_shot_args)
         shot["vision_action"] = action
         shot["target"] = args.get("target") or args.get("text")
+        # ANCLA OCR: texto real (sin alucinar) como verdad factual. Best-effort.
+        _ocr_text = ""
+        try:
+            _osh = self.t_vision({"action": "ocr", "image_path": shot.get("image_path")})
+            if isinstance(_osh, dict) and _osh.get("ok"):
+                _ocr_text = str(_osh.get("text") or "")[:800]
+        except Exception:
+            _ocr_text = ""
         # DESCRIBE DIRECTO (crítico para accesibilidad no-vidente): en vez de
         # devolver solo el screenshot y confiar en que el loop del agente lo describa (el
         # 4B débil fumblea: re-llama vision o cancela), hacemos AQUÍ una llamada
@@ -2575,7 +2588,8 @@ class ToolRegistry:
         # Si no se puede (sin agente/visión), caemos al re-inject clásico.
         described = self._describe_image_directly(
             shot.get("image_path"),
-            str(args.get("target") or args.get("text") or "").strip())
+            str(args.get("target") or args.get("text") or "").strip(),
+            ocr_text=_ocr_text)
         if described:
             shot["description"] = described
             shot["completion_status"] = "screen_described"
@@ -2584,44 +2598,11 @@ class ToolRegistry:
             shot["note"] = "Screenshot captured and re-injected as Gemma 4 image input for native visual reasoning."
         return shot
 
-    def _describe_image_directly(self, image_path: Any, focus: str = "") -> str | None:
-        """Llamada de visión LIMPIA: describe la captura en texto. thinking OFF,
-        sin tools, budget amplio (lo que evita el finish=length vacío del 4B).
-        Devuelve la descripción o None si no se puede (sin agente/visión/error)."""
-        agent = getattr(self, "parent_agent", None)
-        if agent is None or not image_path:
-            return None
-        from pathlib import Path as _P
-        p = _P(str(image_path))
-        if not p.exists():
-            return None
-        try:
-            from .multimodal import image_part
-            from ..infra.llama_server import resolve_turn_model
-            _vision_model = None
-            try:
-                _vision_model = resolve_turn_model(has_image=True)  # '<perfil>-vision'
-            except Exception:
-                _vision_model = None
-            instr = (
-                "Describí en 2-4 frases, en español claro, qué se ve en esta "
-                "captura de pantalla: la app/ventana principal al frente, el "
-                "contenido relevante y las opciones o acciones visibles. De "
-                "arriba a abajo, lo más importante primero. No inventes lo que "
-                "no se ve."
-            )
-            if focus:
-                instr += f" Prestá atención especial a: {focus}."
-            msgs = [{"role": "user", "content": [
-                image_part(p), {"type": "text", "text": instr}]}]
-            resp = agent.client.chat(
-                msgs, tools=None, enable_thinking=False, max_tokens=400,
-                timeout_s=90.0, model=_vision_model)
-            txt = (((resp or {}).get("choices") or [{}])[0]
-                   .get("message") or {}).get("content") or ""
-            return txt.strip() or None
-        except Exception:
-            return None
+    def _describe_image_directly(self, image_path: Any, focus: str = "",
+                                 ocr_text: str = "") -> str | None:
+        from .vision_describe import describe_image  # extraído 2026-06-07
+        return describe_image(getattr(self, "parent_agent", None),
+                              image_path, focus, ocr_text)
 
     def t_browser(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="open")
@@ -5901,10 +5882,12 @@ if ($action -eq "set_value") {
             mode = "primary"
         elif monitor_raw == "all":
             mode = "all"
+        elif monitor_raw in {"active", "focused", "current"}:
+            mode = "active"  # ventana en foco; evita la panorámica que el 2B aluvina
         elif monitor_raw.isdigit():
             mode = f"index:{int(monitor_raw)}"
         else:
-            return _err("invalid monitor; use primary|all|<index>", monitor=monitor_raw, status="needs_user")
+            return _err("invalid monitor; use primary|all|active|<index>", monitor=monitor_raw, status="needs_user")
         name = f"screenshot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         path = self.captures_dir / name
         env = os.environ.copy()
@@ -5936,6 +5919,23 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 if ($mode -eq 'primary') {
   $screen = [System.Windows.Forms.Screen]::PrimaryScreen
+  $bounds = $screen.Bounds
+} elseif ($mode -eq 'active') {
+  # Monitor que contiene la ventana en FOCO (GetForegroundWindow). Si no se puede
+  # resolver (sin ventana en foco), cae al primario. Reduce densidad multi-monitor.
+  Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class GemmaFg { [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow(); }
+"@
+  try {
+    $hwnd = [GemmaFg]::GetForegroundWindow()
+    if ($hwnd -ne [IntPtr]::Zero) {
+      $screen = [System.Windows.Forms.Screen]::FromHandle($hwnd)
+    } else {
+      $screen = [System.Windows.Forms.Screen]::PrimaryScreen
+    }
+  } catch { $screen = [System.Windows.Forms.Screen]::PrimaryScreen }
   $bounds = $screen.Bounds
 } elseif ($mode.StartsWith('index:')) {
   $idx = [int]$mode.Substring(6)

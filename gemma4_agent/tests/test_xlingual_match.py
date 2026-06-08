@@ -30,19 +30,35 @@ class XLingualEmbedTest(unittest.TestCase):
         self.assertGreater(sim_pair, 0.75)
         self.assertGreater(sim_pair - sim_distractor, 0.10)
 
-    def test_low_confidence_pairs_below_threshold(self):
-        # HONESTO: no todos los pares cross-lingual son fáciles. "open"↔"Abrir"
-        # (palabra suelta capitalizada) NO supera el umbral 0.75 en este encoder
-        # (medido: open~Abrir=0.369, open~Cerrar=0.548). El matcher DEBE ABSTENERSE
-        # en esos casos (margen/umbral) en vez de clickear mal -> es el fallback
-        # seguro. Este test fija que el umbral 0.75 efectivamente filtra el caso
-        # ambiguo (no que el embed acierte el par).
+    def test_unrelated_label_below_threshold(self):
+        # HONESTO: el matcher DEBE ABSTENERSE cuando el label NO tiene un botón
+        # relacionado (en vez de clickear el menos-malo). 2026-06-07: tras
+        # reentrenar el encoder con ejemplos de acción multilingües, "open"↔"Abrir"
+        # AHORA sí matchea con margen seguro (open~Abrir=0.849 vs Cerrar=0.639 ->
+        # mejora real: clickea el botón correcto). Así que el test del fallback
+        # seguro usa un label SIN destino plausible: una palabra ajena a los
+        # botones (no es una traducción de ninguno) debe quedar bajo el umbral
+        # 0.75 -> el matcher se abstiene en vez de clickear cualquier cosa.
         if not self.available:
             self.skipTest("encoder multilingüe no disponible")
-        op = self.embed("open")
+        op = self.embed("xyzzy")  # palabra sin sentido: no es ningún botón
         top = max(_cos(op, self.embed(w)) for w in ("Abrir", "Cerrar", "Minimizar"))
         from gemma4_agent.tools_pkg.tools import ToolRegistry
         self.assertLess(top, ToolRegistry._XLING_SIM_MIN)  # abstiene -> seguro
+
+    def test_open_now_matches_abrir_with_margin(self):
+        # Mejora del reentreno (2026-06-07): el encoder ahora relaciona "open" con
+        # "Abrir" por encima del umbral Y con margen claro sobre los distractores
+        # (Cerrar/Minimizar) -> el matcher clickea el botón correcto en vez de
+        # abstenerse. Antes el encoder no lo lograba (se abstenía). Esto fija la
+        # capacidad ganada sin perder la seguridad del margen.
+        if not self.available:
+            self.skipTest("encoder multilingüe no disponible")
+        op = self.embed("open")
+        sims = sorted((_cos(op, self.embed(w)) for w in ("Abrir", "Cerrar", "Minimizar")), reverse=True)
+        from gemma4_agent.tools_pkg.tools import ToolRegistry
+        self.assertGreater(sims[0], ToolRegistry._XLING_SIM_MIN)        # Abrir supera el umbral
+        self.assertGreater(sims[0] - sims[1], ToolRegistry._XLING_MARGIN)  # con margen sobre el 2do
 
 
 class XLingualGateTest(unittest.TestCase):

@@ -92,7 +92,20 @@ STATIC_INVENTORY: dict[str, list[str]] = {
     # Wake word ACTIVA = "Baxy" (modelo baxy.onnx, recall held-out 0.872). SOLO las
     # variantes de Baxy: gemma/jarvis se quitaron para evitar falsos positivos (no son
     # la wake word activa). "carter" también fuera (su modelo falló el gate).
-    "wake_words": ["baxy", "baxi", "backsy", "hey baxy"],
+    #
+    # STT MIS-HEARINGS de "Baxy" (2026-06-07): "Baxy" es una palabra INVENTADA fuera
+    # del vocabulario del STT, que la mapea a la palabra REAL más cercana. Bug medido:
+    # el user dijo "Baxy" y Whisper transcribió "Maxi." -> el strip fonético NO lo
+    # atrapa (score 67 < umbral 72, e igualar a 67 colisionaría con el comando "busca"
+    # =67) -> el 4B tomó "Maxi" como el OBJETO del comando ("clic en el elemento
+    # 'Maxi'"). Estas variantes (maxi/paxi/vaxi/naxi/faxi/max/bixby) son las
+    # transcripciones fonéticamente cercanas a "baxy" VERIFICADAS que NO son verbos/
+    # comandos en es/en -> seguras en el stage EXACTO (no por score). NO es una lista
+    # arbitraria: es el conjunto medido de homófonos del wake que el STT confunde.
+    "wake_words": [
+        "baxy", "baxi", "backsy", "hey baxy",
+        "maxi", "paxi", "vaxi", "naxi", "faxi", "max", "bixby",
+    ],
 }
 
 

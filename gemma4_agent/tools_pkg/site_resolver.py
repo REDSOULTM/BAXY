@@ -204,7 +204,7 @@ def resolve_site_by_search(
     *,
     web_search: Callable[[dict[str, Any]], dict[str, Any]],
     non_site_hosts: tuple[str, ...],
-    fillers: set[str],
+    fillers: "frozenset[str] | set[str]",
     search_all_backends: Callable[[str, int], list[dict[str, str]]] | None = None,
 ) -> str | None:
     """Resuelve el NOMBRE de un sitio ('pivigames') a la URL del SITIO vía
