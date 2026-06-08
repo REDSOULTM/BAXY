@@ -10,21 +10,28 @@ from ..tools_pkg import tools as T
 
 
 class _Patch:
-    """Monkeypatch DDG/Bing + el flag, restaurando al salir."""
+    """Monkeypatch ddgs/DDG/Bing + el flag, restaurando al salir.
+
+    2026-06-07: el provider primario ahora es `_ddgs_search` (metasearch). Estos
+    tests prueban la LÓGICA de fallback DDG-HTML -> Bing, así que neutralizamos
+    ddgs (-> []) para que la cascada llegue a las capas que se están testeando."""
     def __init__(self, ddg, bing, fallback=True):
         self.ddg, self.bing, self.fallback = ddg, bing, fallback
         self._saved = {}
 
     def __enter__(self):
+        self._saved["ddgs"] = T._ddgs_search
         self._saved["ddg"] = T._duckduckgo_search
         self._saved["bing"] = T._bing_search
         self._saved["env"] = os.environ.get("GEMMA4_WEB_FALLBACK")
+        T._ddgs_search = lambda q, limit=6: []   # primario fuera: aislar DDG->Bing
         T._duckduckgo_search = self.ddg
         T._bing_search = self.bing
         os.environ["GEMMA4_WEB_FALLBACK"] = "1" if self.fallback else "0"
         return self
 
     def __exit__(self, *exc):
+        T._ddgs_search = self._saved["ddgs"]
         T._duckduckgo_search = self._saved["ddg"]
         T._bing_search = self._saved["bing"]
         if self._saved["env"] is None:

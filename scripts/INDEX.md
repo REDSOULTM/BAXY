@@ -57,6 +57,8 @@ automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 | `router_tool2vec_build.py` | Construye centroides tool2vec. |
 | `router_tool2vec_generate.py` | Genera embeddings tool2vec. |
 | `router_tool2vec_generate_deictic.py` | Genera queries tool2vec cortas/deícticas multilingües (LLM local) para el cluster short-imperative. |
+| `router_tool2vec_from_llm_dataset.py` | Alimenta el corpus del encoder con el dataset del LLM (train.jsonl, sin holdout): aprende text→tool por embeddings (sin hardcode). |
+| `router_tool2vec_browser_followup.py` | Agrega ejemplos browser/navegador + follow-ups al corpus del encoder. |
 | `train_abstain_head.py` | Entrena la cabeza de abstención. |
 | `train_hey_gemma_v8.py` | Entrenamiento wake v8 (legacy). |
 | `train_hey_gemma_v9.py` | Entrenamiento wake v9 (legacy, hoy se usa LiveKit). |
@@ -191,6 +193,7 @@ de migración).
 | `guided_commands_set2.py` | Set-2 comandos guiados. |
 | `router_diag.py` | Diagnostic del router (output verbose). |
 | `watch.py` | Watch de cambios + auto-reload. |
+| `publish_model_hf.py` | Publica el GGUF fine-tuneado (texto + mmproj) a HuggingFace Hub (REDSOULTM/baxy-gemma4-E2B-GGUF). |
 
 ## Categoría L — Latencia / streaming / validación en vivo (2026-05-28/29)
 

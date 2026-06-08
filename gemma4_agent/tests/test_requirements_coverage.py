@@ -61,6 +61,8 @@ _IMPORT_TO_DIST = {
     "win32gui": "pywin32", "win32process": "pywin32", "pythoncom": "pywin32",
     "win32clipboard": "pywin32", "win32event": "pywin32",
     "winsdk": "winsdk", "jiwer": "jiwer",
+    "ddgs": "ddgs", "py3langid": "py3langid",
+    "windows_toasts": "windows-toasts",
 }
 
 # Import names that are intentionally NOT in requirements.txt.
