@@ -56,6 +56,25 @@ def registrable_label(url: str):
     return labels[-2], labels[-1]
 
 
+def user_requested_open(url: str, user_text: str) -> bool:
+    """¿El user pidió ABRIR/VER esta URL (dictó su dominio), o el 4B la eligió para
+    'mostrar' una respuesta? True si la raíz del host aparece en el texto del user
+    -> intención explícita de abrir. False si no la dictó (web.open de conocimiento
+    -> conviene leer el contenido y responder, no abrir un tab). Sin user_text ->
+    True (no inferir; abrir normal en CLI/tests). PROCEDENCIA, no keywords."""
+    ut = (user_text or "").strip().lower()
+    if not ut:
+        return True
+    try:
+        host = (urlparse(url if "//" in url else "//" + url).hostname or "").lower()
+    except Exception:
+        return True
+    root = host[4:] if host.startswith("www.") else host
+    if not root:
+        return True
+    return root in ut
+
+
 def is_probably_guessed_domain(url: str) -> bool:
     """True si `url` parece un dominio ADIVINADO por el LLM (le pegó .com a un
     nombre) y conviene VERIFICARLO por búsqueda antes de abrirlo. Señal estructural:

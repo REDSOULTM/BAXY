@@ -13,16 +13,25 @@ from typing import Any
 
 
 def describe_image(agent: Any, image_path: Any, focus: str = "",
-                   ocr_text: str = "") -> str | None:
+                   ocr_text: str = "", ocr_fn: Any = None) -> str | None:
     """Describe la captura en texto vía el modelo de visión. thinking OFF, sin
     tools, budget amplio (evita el finish=length vacío del 4B). `ocr_text`: texto
-    real leído por OCR, se inyecta como ancla factual contra la alucinación.
+    real leído por OCR como ancla factual contra la alucinación. `ocr_fn`: callable
+    (t_vision) para LEER el OCR acá si no se pasó ocr_text (best-effort).
     Devuelve la descripción o None si no se puede (sin agente/visión/error)."""
     if agent is None or not image_path:
         return None
     p = Path(str(image_path))
     if not p.exists():
         return None
+    # ANCLA OCR: si no vino el texto pero hay ocr_fn, leerlo (el OCR no alucina).
+    if not ocr_text and ocr_fn is not None:
+        try:
+            _o = ocr_fn({"action": "ocr", "image_path": str(p)})
+            if isinstance(_o, dict) and _o.get("ok"):
+                ocr_text = str(_o.get("text") or "")[:800]
+        except Exception:
+            ocr_text = ""
     try:
         from .multimodal import image_part
         from ..infra.llama_server import resolve_turn_model

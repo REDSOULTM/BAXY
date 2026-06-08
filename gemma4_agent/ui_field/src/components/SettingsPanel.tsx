@@ -64,6 +64,7 @@ export interface SettingsConfig {
   kvType: string;              // GEMMA4_LLAMA_KV_TYPE ("" | "f16" | "q8_0" | "q4_0")
   specDraftModel: string;      // GEMMA4_SPEC_DRAFT_MODEL (path)
   llamaApiKey: string;         // GEMMA4_LLAMA_API_KEY
+  voiceLang: string;           // GEMMA4_VOICE_LANG ("" = auto | es/en/pt/fr/de/it)
   // paths
   memoryJson: string; stateJson: string; traceJsonl: string;
   sessionsDir: string; timelineDir: string;
@@ -91,7 +92,7 @@ const DEFAULTS: SettingsConfig = {
   autoLoadCtx: false, persistentSessions: true, toolTimeline: true,
   summarization: true, tracing: true,
   disablePrewarm: false, telemetry: false, kvType: '',
-  specDraftModel: '', llamaApiKey: '',
+  specDraftModel: '', llamaApiKey: '', voiceLang: '',
   memoryJson: '~/gemma4/data/memory.json', stateJson: '~/gemma4/data/state.json',
   traceJsonl: '~/gemma4/data/traces.jsonl', sessionsDir: '~/.gemma4/sessions',
   timelineDir: '~/.gemma4/timeline',
@@ -547,6 +548,22 @@ function VoiceTab({ c, set }: { c: SettingsConfig; set: Setter }) {
   return (
     <STSection>
       <STTip>local voice — LiveKit wake + Parakeet STT + Piper TTS. all cpu.</STTip>
+      <Field label="idioma" hint="fija el idioma de TODO (transcripción + respuesta). 'automático' = detecta por turno.">
+        <Select
+          value={c.voiceLang || 'auto'}
+          onChange={(v) => set('voiceLang')(v === 'auto' ? '' : v)}
+          options={[
+            { value: 'auto', label: 'automático (detecta)' },
+            { value: 'es', label: 'Español' },
+            { value: 'en', label: 'English' },
+            { value: 'pt', label: 'Português' },
+            { value: 'fr', label: 'Français' },
+            { value: 'de', label: 'Deutsch' },
+            { value: 'it', label: 'Italiano' },
+          ]}
+          ariaLabel="idioma"
+        />
+      </Field>
       <Field label=" "><STCheck value={c.voiceEnabled} onChange={set('voiceEnabled')} label="enable voice" hint="master switch" /></Field>
       <Field label="wake words" hint="custom LiveKit model; transcript cleanup also strips short wake variants">
         <span className="muted mono">baxy</span>

@@ -2564,32 +2564,18 @@ class ToolRegistry:
                 return _attach_screenshot(result, shot)
             shot["note"] = "No target text was provided; screenshot captured for Gemma 4 native visual reasoning."
             return shot
-        # MONITOR ACTIVO por default para describir (default "all" = panorámica
-        # multi-monitor que el 2B aluvina). El user puede pedir uno explícito.
+        # monitor ACTIVO por default (default "all"=panorámica que el 2B aluvina).
         _shot_args = dict(args)
         if not str(args.get("monitor") or "").strip():
             _shot_args["monitor"] = "active"
         shot = self.gui_screenshot(_shot_args)
         shot["vision_action"] = action
         shot["target"] = args.get("target") or args.get("text")
-        # ANCLA OCR: texto real (sin alucinar) como verdad factual. Best-effort.
-        _ocr_text = ""
-        try:
-            _osh = self.t_vision({"action": "ocr", "image_path": shot.get("image_path")})
-            if isinstance(_osh, dict) and _osh.get("ok"):
-                _ocr_text = str(_osh.get("text") or "")[:800]
-        except Exception:
-            _ocr_text = ""
-        # DESCRIBE DIRECTO (crítico para accesibilidad no-vidente): en vez de
-        # devolver solo el screenshot y confiar en que el loop del agente lo describa (el
-        # 4B débil fumblea: re-llama vision o cancela), hacemos AQUÍ una llamada
-        # de visión LIMPIA y enfocada (thinking off, sin tools, prompt único) —
-        # exactamente lo que SÍ funciona — y devolvemos la descripción como texto.
-        # Si no se puede (sin agente/visión), caemos al re-inject clásico.
+        # describe directo con ancla OCR (vision_describe.py); ocr_fn lee el OCR allí.
         described = self._describe_image_directly(
             shot.get("image_path"),
             str(args.get("target") or args.get("text") or "").strip(),
-            ocr_text=_ocr_text)
+            ocr_fn=self.t_vision)
         if described:
             shot["description"] = described
             shot["completion_status"] = "screen_described"
@@ -2599,10 +2585,10 @@ class ToolRegistry:
         return shot
 
     def _describe_image_directly(self, image_path: Any, focus: str = "",
-                                 ocr_text: str = "") -> str | None:
+                                 ocr_text: str = "", ocr_fn: Any = None) -> str | None:
         from .vision_describe import describe_image  # extraído 2026-06-07
-        return describe_image(getattr(self, "parent_agent", None),
-                              image_path, focus, ocr_text)
+        return describe_image(getattr(self, "parent_agent", None), image_path,
+                              focus, ocr_text, ocr_fn=ocr_fn)
 
     def t_browser(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="open")
@@ -2866,8 +2852,22 @@ class ToolRegistry:
                 return _err("web.search requires non-empty query", status="needs_user")
             return self.web_search(args)
         if action == "open":
-            if not str(args.get("url") or "").strip():
+            _open_url = str(args.get("url") or "").strip()
+            if not _open_url:
                 return _err("web.open requires url", status="needs_user")
+            # GUARD conocimiento-vs-abrir (2026-06-08): "háblame de X" -> web.open de un
+            # tab fallido en vez de RESPONDER -> si el user no dictó el dominio, leer y responder (PROCEDENCIA, site_resolver.user_requested_open).
+            try:
+                from .site_resolver import user_requested_open as _uro
+                _ut = getattr(self, "_current_user_text", "") or ""
+                if not _uro(_open_url, _ut):
+                    _rr = self.web_read({"url": _open_url})
+                    if isinstance(_rr, dict):
+                        _rr.setdefault("redirected_from", "web.open")
+                        _rr["note"] = "web.open sin pedido de VER -> leí el contenido."
+                    return _rr
+            except Exception:
+                pass
             return self.web_open_url(args)
         if action == "read":
             if not str(args.get("url") or "").strip():

@@ -419,6 +419,11 @@ _OPTIM_STRING_ENV_MAP: dict[str, str] = {
     "kvType":         "GEMMA4_LLAMA_KV_TYPE",
     "specDraftModel": "GEMMA4_SPEC_DRAFT_MODEL",
     "llamaApiKey":    "GEMMA4_LLAMA_API_KEY",
+    # Idioma del usuario (2026-06-07): "" = Automático (auto-detecta por turno,
+    # comportamiento actual); "es"/"en"/"pt"/"fr"/"de"/"it" = FIJA ese idioma en
+    # todo el stack (transcripción + respuesta del LLM). String vacío -> borra la
+    # var -> Automático. Ver lang_profiles.resolve_lang + agent._reply_lang.
+    "voiceLang":      "GEMMA4_VOICE_LANG",
 }
 
 

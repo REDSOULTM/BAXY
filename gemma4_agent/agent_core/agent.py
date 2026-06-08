@@ -262,6 +262,24 @@ def _detect_lang(text: str) -> str:
         return "es"
 
 
+_FIXED_LANGS = frozenset({"es", "en", "pt", "fr", "de", "it"})
+
+
+def _reply_lang(text: str) -> str:
+    """Idioma del reply, respetando el SELECTOR de idioma del usuario (2026-06-07).
+
+    Si el user fijó un idioma en settings (GEMMA4_VOICE_LANG = es/en/pt/fr/de/it),
+    se usa ESE — sin auto-detectar (clava el idioma, elimina el drift a otro idioma).
+    Si está vacío / 'auto' -> _detect_lang (comportamiento Automático actual). NO
+    modifica _detect_lang; solo lo saltea cuando hay idioma fijo."""
+    import os as _os_lang
+    fixed = (_os_lang.environ.get("GEMMA4_VOICE_LANG") or "").strip().lower()
+    fixed = fixed.replace("_", "-").split("-")[0]   # 'es-419' -> 'es'
+    if fixed in _FIXED_LANGS:
+        return fixed
+    return _detect_lang(text)
+
+
 def _stream_tts_enabled() -> bool:
     """Stream the reply to TTS sentence by sentence (GEMMA4_STREAM_TTS).
     Default ON — validado en vivo por escucha (sin cortes); veracidad validada
@@ -1696,7 +1714,7 @@ class Gemma4Agent:
                     # el repair central), así que lo hacemos acá. Ok=True gate aparte.
                     if (not (isinstance(_aa_res, dict) and _aa_res.get("reply"))
                             and isinstance(content, str) and content.strip()):
-                        _aa_lang = _detect_lang(content)
+                        _aa_lang = _reply_lang(content)
                         if _aa_lang != "es":
                             _aa_did = ("took a screenshot" if _aa.get("pattern") == "screen"
                                        else self._describe_events_for_reply([_aa_ev]))
@@ -1764,7 +1782,7 @@ class Gemma4Agent:
                         _ao_utext,
                         did=f"opened the application {_ao_name}",
                         fallback=f"Listo, abrí {_ao_name}.",
-                        target_lang=_detect_lang(_ao_utext))
+                        target_lang=_reply_lang(_ao_utext))
                     return TurnDecision(early_reply=agent_guards.honest_action_reply(
                         AgentReply(content=_ao_reply,
                                    tool_events=[_ao_ev], mission=None)))
@@ -4823,7 +4841,7 @@ class Gemma4Agent:
                 and not getattr(self, "_tts_streamed", False)):
             try:
                 _utext = raw_text_early or _extract_user_text(content) or ""
-                _user_lang = _detect_lang(_utext)
+                _user_lang = _reply_lang(_utext)
                 if _user_lang != "es" and _utext.strip():
                     _did = self._describe_events_for_reply(events)
                     _fixed = self._llm_action_reply(_utext, did=_did, fallback=assistant_content,
