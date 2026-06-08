@@ -237,19 +237,37 @@ def _detect_lang(text: str) -> str:
     t = (text or "").strip()
     if not t:
         return "es"
+    tl = t.lower()
+    # (0) SIGNOS/LETRAS EXCLUSIVOS del español: ¿ ¡ ñ no existen en en/fr/de/it; el
+    # pt usa ñ raramente (não, mas no ñ). Señal ESTRUCTURAL inequívoca (un carácter
+    # del idioma, no una keyword de contenido) que py3langid IGNORA: medido,
+    # clasificaba "¿Qué es Mortal Kombat?" como 'fr' por los acentos + nombre propio.
+    # (Bug 2026-06-08.) Esto NO es hardcode de respuestas: es ortografía del idioma.
+    if any(ch in tl for ch in ("¿", "¡", "ñ")):
+        return "es"
     # (1) verbo imperativo distintivo (señal fuerte en comandos cortos)
-    s = f" {t.lower()} "
+    s = f" {tl} "
     for lang, verbs in _IMPERATIVE_VERBS:
         if any(v in s for v in verbs):
             return lang
-    # (2) py3langid restringido
+    # (2) py3langid restringido. ANTES de clasificar, quitamos los NOMBRES PROPIOS
+    # (palabras Capitalizadas no-iniciales: 'Mortal', 'Kombat', 'Chrome') porque
+    # dominan la clasificación de frases cortas y la desvían (medido: 'háblame de
+    # Mortal Kombat' -> 'fr' por el nombre extranjero). Sin ellos, py3langid ve las
+    # palabras FUNCIONALES del idioma (háblame, de, qué...). Señal estructural
+    # (capitalización), no keywords. Si quedan pocas palabras, usamos el texto crudo.
     try:
         import py3langid as _langid
         try:
             _langid.set_languages(list(_LANGID_SET))
         except Exception:
             pass
-        lang, _conf = _langid.classify(t)
+        _words = t.split()
+        _funcional = " ".join(
+            [w for i, w in enumerate(_words)
+             if i == 0 or not w[:1].isupper()]) if len(_words) >= 2 else t
+        _clf_text = _funcional if len(_funcional.split()) >= 2 else t
+        lang, _conf = _langid.classify(_clf_text)
         if lang in _LANGID_SET:
             return lang
     except Exception:
@@ -265,19 +283,68 @@ def _detect_lang(text: str) -> str:
 _FIXED_LANGS = frozenset({"es", "en", "pt", "fr", "de", "it"})
 
 
-def _reply_lang(text: str) -> str:
-    """Idioma del reply, respetando el SELECTOR de idioma del usuario (2026-06-07).
+def _os_ui_lang() -> str | None:
+    """Idioma de la UI del SISTEMA OPERATIVO (es/en/pt/fr/de/it) o None. En Windows
+    es lo que el user configuró como su idioma -> es su idioma real, igual que
+    Discord/Spotify defaultean a él. Robusto: GetUserDefaultUILanguage + locale."""
+    code = None
+    try:
+        import ctypes
+        import locale as _loc
+        _id = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+        code = (_loc.windows_locale.get(_id) or "")
+    except Exception:
+        code = None
+    if not code:
+        try:
+            import locale as _loc
+            code = (_loc.getdefaultlocale()[0] or "")
+        except Exception:
+            code = ""
+    pref = (code or "").strip().lower().replace("_", "-").split("-")[0]
+    return pref if pref in _FIXED_LANGS else None
 
-    Si el user fijó un idioma en settings (GEMMA4_VOICE_LANG = es/en/pt/fr/de/it),
-    se usa ESE — sin auto-detectar (clava el idioma, elimina el drift a otro idioma).
-    Si está vacío / 'auto' -> _detect_lang (comportamiento Automático actual). NO
-    modifica _detect_lang; solo lo saltea cuando hay idioma fijo."""
+
+def _reply_lang(text: str) -> str:
+    """Idioma del reply (2026-06-08). Jerarquía: (1) SELECTOR explícito del user
+    (GEMMA4_VOICE_LANG fijo) -> ese idioma, sin auto-detectar. (2) Modo Automático:
+    anclar al idioma del SO (es_MX -> es) y solo cambiar si el texto es CLARAMENTE
+    de otro idioma (la capa de signos/verbos de _detect_lang lo desambigua fuerte).
+    Esto evita el drift a fr/pt en frases cortas con nombres propios (medido: "háblame
+    de Mortal Kombat" -> fr): el SO del user es español, así que ancla a es. (3) Sin
+    SO detectable -> _detect_lang puro. NO modifica _detect_lang."""
     import os as _os_lang
     fixed = (_os_lang.environ.get("GEMMA4_VOICE_LANG") or "").strip().lower()
     fixed = fixed.replace("_", "-").split("-")[0]   # 'es-419' -> 'es'
     if fixed in _FIXED_LANGS:
         return fixed
-    return _detect_lang(text)
+    detected = _detect_lang(text)
+    os_lang = _os_ui_lang()
+    if os_lang is None:
+        return detected
+    # ancla al SO salvo que el detector tenga una señal FUERTE de otro idioma.
+    # Señal fuerte = char/verbo exclusivos (capa 0/1 de _detect_lang, alta precisión);
+    # esos retornan rápido y son confiables. Si _detect_lang cae a la estadística
+    # (py3langid, la frágil) y discrepa del SO -> preferimos el SO (el idioma del user).
+    if detected == os_lang:
+        return detected
+    if _detect_lang_is_strong(text, detected):
+        return detected
+    return os_lang
+
+
+def _detect_lang_is_strong(text: str, detected: str) -> bool:
+    """¿La detección de idioma vino de una señal FUERTE (char/verbo exclusivo) y no
+    de la estadística frágil? Reusa las capas 0/1 de _detect_lang: si el texto tiene
+    ¿¡ñ -> es fuerte; si tiene un verbo imperativo del idioma detectado -> fuerte."""
+    tl = (text or "").lower()
+    if detected == "es" and any(ch in tl for ch in ("¿", "¡", "ñ")):
+        return True
+    s = f" {tl} "
+    for lang, verbs in _IMPERATIVE_VERBS:
+        if lang == detected and any(v in s for v in verbs):
+            return True
+    return False
 
 
 def _stream_tts_enabled() -> bool:

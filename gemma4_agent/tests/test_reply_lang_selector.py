@@ -37,21 +37,27 @@ class ReplyLangSelectorTest(unittest.TestCase):
         self.assertEqual(_reply_lang("hello world"), "pt")
 
     def test_empty_is_auto_detect(self):
-        # vacío = Automático -> delega en _detect_lang (sin tocarlo).
+        # vacío = Automático -> ancla al idioma del SO; un idioma CLARO igual se
+        # detecta (señal fuerte). 2026-06-08: el modo auto ya NO es _detect_lang
+        # puro (que erraba con frases cortas) — ancla al SO salvo señal fuerte.
+        from gemma4_agent.agent_core.agent import _os_ui_lang
         os.environ["GEMMA4_VOICE_LANG"] = ""
-        self.assertEqual(_reply_lang("hello there my friend"),
-                         _detect_lang("hello there my friend"))
+        # un comando inglés CLARO (verbo imperativo 'open') -> en, pese al SO.
+        self.assertEqual(_reply_lang("open Chrome please"), "en")
+        # sin señal fuerte -> ancla al SO si lo hay; si no, _detect_lang.
+        _os = _os_ui_lang()
+        if _os is not None:
+            self.assertEqual(_reply_lang("xyzzy plugh foo bar"), _os)
 
-    def test_unset_is_auto_detect(self):
+    def test_unset_anchors_to_os_or_detect(self):
+        # un idioma CLARO se respeta aunque el SO sea otro (señal fuerte: verbo fr).
         os.environ.pop("GEMMA4_VOICE_LANG", None)
-        txt = "bonjour le monde comment ça va aujourd'hui"
-        self.assertEqual(_reply_lang(txt), _detect_lang(txt))
+        self.assertEqual(_reply_lang("ouvre Spotify maintenant"), "fr")
 
     def test_invalid_value_falls_back_to_auto(self):
-        # un código no soportado -> auto (no rompe).
+        # un código no soportado -> modo auto (ancla SO / detección), no rompe.
         os.environ["GEMMA4_VOICE_LANG"] = "xx"
-        txt = "hello there my friend"
-        self.assertEqual(_reply_lang(txt), _detect_lang(txt))
+        self.assertEqual(_reply_lang("open Chrome please"), "en")  # señal fuerte EN
 
 
 if __name__ == "__main__":
