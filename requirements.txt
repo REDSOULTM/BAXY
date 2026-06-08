@@ -13,6 +13,16 @@
 # --- LLM / embeddings stack ---
 sentence-transformers==5.3.0
 torch==2.10.0
+# CRÍTICO — NO subir a numpy 2.x. pandas==1.5.3 fue compilado contra numpy 1.x;
+# con numpy 2.x falla al importar ("numpy.dtype size changed, binary incompat")
+# y ARRASTRA a sentence-transformers (sklearn->pandas) -> EL ENCODER DEL ROUTER
+# NO CARGA -> routing degradado SILENCIOSO (medido 2026-06-07: "cuanta RAM"->
+# cancel_turn). `py3langid` declara numpy>=2.0.0 pero funciona perfecto con 1.26.4
+# (verificado: clasifica es/en/fr OK) -> su pin es excesivo. Para que pip NO suba
+# numpy resolviendo py3langid, instalá con el constraints file (tope DURO):
+#   pip install -r requirements.txt -c constraints.txt
+# Si igual se coló numpy 2.x: pip install "numpy==1.26.4". El launcher status avisa
+# si el encoder no carga ("router encoder: BROKEN").
 numpy==1.26.4
 scipy==1.11.4
 onnxruntime==1.23.2            # livekit_runtime serves wake-word ONNX in pure ORT (no livekit dep)
@@ -107,6 +117,10 @@ nvidia-cudnn-cu12>=9.0           # provides cudnn64_9.dll + cudnn_* DLLs
 # imperativos CORTOS donde el detector por stopwords _guess_lang fallaba (daba
 # 'es' por default). Usado por _detect_lang para decidir si regenerar el reply
 # post-acción en el idioma del usuario. Ver documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md §4.
+# OJO: py3langid declara numpy>=2.0.0 (excesivo — funciona con 1.26.4). Para que
+# pip NO suba numpy y rompa pandas/encoder, este repo trae constraints.txt con
+# numpy==1.26.4. Instalá con: pip install -r requirements.txt -c constraints.txt
+# (el launcher/setup ya lo hacen). Si igual se coló numpy 2.x: pip install "numpy==1.26.4".
 py3langid>=0.3
 
 # --- Jarvis proactivo: toast nativo de Windows (sugerencia sin turno del user) ---

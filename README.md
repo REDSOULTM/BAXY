@@ -239,10 +239,12 @@ cd Baxy
 py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -U pip
-pip install -r requirements.txt
-# (opcional) voz y cámara:
-pip install -r requirements-voice.txt
-pip install -r requirements-camera.txt
+# -c constraints.txt fija numpy==1.26.4 (TOPE DURO): py3langid pide numpy>=2 pero
+# numpy 2.x rompe pandas y, con él, el encoder del router. El constraint gana siempre.
+pip install -r requirements.txt -c constraints.txt
+# (opcional) voz y cámara — el mismo constraint protege el stack:
+pip install -r requirements-voice.txt -c constraints.txt
+pip install -r requirements-camera.txt -c constraints.txt
 
 # 3. CUDA runtime para faster-whisper (stage de las DLLs cuBLAS; idempotente)
 python scripts\setup_cuda_runtime.py

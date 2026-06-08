@@ -130,6 +130,23 @@ def health_status(config: AgentConfig, timeout_s: float = 2.0) -> bool:
     return LLMClient(config).health(timeout_s=timeout_s)
 
 
+def _encoder_health() -> tuple[bool, str]:
+    """¿Carga el encoder de embeddings del router? Falla -> routing degradado.
+
+    La causa típica es numpy fuera de pin (2.x rompe pandas -> arrastra
+    sentence-transformers vía sklearn). Devuelve (ok, detalle) para el status.
+    """
+    try:
+        import numpy as _np
+    except Exception as exc:  # pragma: no cover - numpy siempre debería estar
+        return False, f"numpy no importa: {exc}"
+    try:
+        from sentence_transformers import SentenceTransformer  # noqa: F401
+    except Exception as exc:
+        return False, f"numpy {_np.__version__}; sentence-transformers roto ({type(exc).__name__})"
+    return True, f"numpy {_np.__version__}, sentence-transformers OK"
+
+
 def print_status(args: argparse.Namespace) -> int:
     config = config_with_args(args)
     print_banner()
@@ -150,6 +167,20 @@ def print_status(args: argparse.Namespace) -> int:
     print(f"{'state':<18} {config.state_path}")
     print(f"{'trace':<18} {config.trace_path}")
     print(f"{'captures':<18} {config.captures_dir}")
+    print()
+    # HEALTH del stack numérico/encoder (2026-06-07): un numpy fuera de pin
+    # (2.x) rompe pandas y arrastra a sentence-transformers -> el ENCODER DEL
+    # ROUTER no carga y el routing se degrada SILENCIOSO. Lo hacemos VISIBLE acá.
+    _enc_ok, _enc_detail = _encoder_health()
+    _enc_text = color("ok", "ok") if _enc_ok else color("error", "BROKEN")
+    print(f"{'router encoder':<18} {_enc_text:<20} {_enc_detail}")
+    if not _enc_ok:
+        print(color("error",
+            "  -> El encoder del router NO carga: el routing está DEGRADADO "
+            "(ofrecerá web/knowledge para casi todo)."))
+        print(color("dim",
+            "     Fix: pip install \"numpy==1.26.4\"  (o reinstalá con "
+            "-c constraints.txt). Ver requirements.txt."))
     print()
     if not health:
         print(color("dim", "Tip: python -m gemma4_agent.infra.launcher chat  # levanta llama-server si hace falta"))

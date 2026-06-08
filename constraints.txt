@@ -1,0 +1,17 @@
+# Constraints de pip — TOPES DUROS que ningún dependiente puede pisar.
+#
+# Uso: pip install -r requirements.txt -c constraints.txt
+#
+# A diferencia de un pin en requirements.txt (que pip PUEDE sobrescribir al
+# resolver una dep transitiva), un constraint es un TECHO/PISO inviolable: pip
+# jamás instalará una versión fuera de lo que acá se declara, venga el pedido de
+# donde venga.
+#
+# numpy: CRÍTICO. pandas==1.5.3 se compiló contra numpy 1.x; con numpy 2.x falla
+# al importar ("numpy.dtype size changed, binary incompatibility") y ARRASTRA a
+# sentence-transformers (sklearn->pandas) -> el ENCODER DEL ROUTER no carga ->
+# routing degradado SILENCIOSO (medido 2026-06-07: "cuanta RAM tengo"->cancel_turn
+# en vez de system). La dep `py3langid>=0.3` declara numpy>=2.0.0 pero funciona
+# perfecto con 1.26.4 (verificado: clasifica es/en/fr OK). Este constraint hace
+# que el pin gane SIEMPRE, sin importar el orden de instalación.
+numpy==1.26.4
