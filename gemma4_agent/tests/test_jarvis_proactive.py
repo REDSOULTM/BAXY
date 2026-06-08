@@ -9,6 +9,7 @@ import os
 import tempfile
 import time
 import unittest
+from unittest import mock
 from pathlib import Path
 
 from ..memory_pkg.behavior_log import BehaviorLog
@@ -36,6 +37,16 @@ class NotifierTest(unittest.TestCase):
         # limpiar gates entre tests
         for k in ("GEMMA4_JARVIS_PROACTIVE", "GEMMA4_JARVIS_PROACTIVE_TTS"):
             os.environ.pop(k, None)
+        # AISLAR el estado del SO (fix flaky 2026-06-07): notify_suggestion llama
+        # _is_fullscreen_foreground() que lee la VENTANA EN FOCO REAL del escritorio
+        # (GetForegroundWindow). Si al correr la suite hay algo en fullscreen (un
+        # video, la consola maximizada), el notifier se autosuprime (do-not-disturb)
+        # y los tests que esperan emisión fallaban de forma NO-DETERMINISTA. Un test
+        # no debe depender del escritorio: forzamos "no fullscreen".
+        self._dnd_patch = mock.patch.object(
+            notifier, "_is_fullscreen_foreground", return_value=False)
+        self._dnd_patch.start()
+        self.addCleanup(self._dnd_patch.stop)
 
     def test_on_by_default(self):
         # ON por default (decisión del user): emite sin setear el gate.
