@@ -52,12 +52,25 @@ documentos son históricos (lo avisan en su cabecera).
 
 ---
 
-## Datos rápidos del proyecto (estado vigente)
+## Datos rápidos del proyecto (estado vigente — 2026-06-09)
 
 - **Modelo:** Gemma 4 E2B-FT (GGUF Q4_K_M), fine-tune local.
 - **Contexto:** 12288 tokens (perfil `vram4`, único perfil real).
-- **VRAM target:** 4 GB (visión residente; fallback CPU gated).
+- **VRAM target:** 4 GB. **Visión (mmproj) RESIDENTE por default** (`GEMMA4_VISION_ALWAYS=1`):
+  medido que NO penaliza el cache de texto (llama.cpp #21133) y evita la carga
+  on-demand de la imagen; toggle en settings para volver al lazy. Fallback CPU gated.
 - **UI:** web (`ui_field`, React + pywebview). La GUI PyQt6 vieja fue **eliminada**.
-- **Voz:** STT Whisper int8 CPU (Parakeet por flag), wake-word LiveKit, TTS Piper streaming. Todo en CPU (0 VRAM).
-- **Router:** `gemma4_agent/routing/planner.py` (encoder FT + abstain head + per-tool head + Tool2Vec).
-- **Regla de oro (CLAUDE.md):** nada se da por hecho sin un número contra un gate; el LLM responde (sin enlatados); todo OSS y gratis; universal (multi-idioma/acento).
+- **Voz:** STT Whisper int8 CPU (Parakeet por flag), wake-word LiveKit, TTS Piper
+  streaming. Mic **WASAPI** + resample a 16k + auto-calibración de ruido relativa.
+  Todo en CPU (0 VRAM).
+- **Idioma:** **selector en settings** (`GEMMA4_VOICE_LANG`; "" = Automático) que fija
+  todo el stack; reparación universal de mismatch de idioma del reply.
+- **Router:** `gemma4_agent/routing/planner.py` (encoder FT + abstain head + per-tool
+  head + Tool2Vec). Familia de **guardas de honestidad** estructurales default-ON
+  (cacería 6162 cerrada). Resolución de sitios "ve a X" por señal estructural +
+  popularidad + DNS (sin lista hardcoded).
+- **Regla de oro (CLAUDE.md):** nada se da por hecho sin un número contra un gate; el
+  LLM responde (sin enlatados); todo OSS y gratis; universal (multi-idioma/acento).
+
+> **El changelog detallado del 2026-06-03 → 2026-06-09 está en
+> [`_backlog/BACKLOG_MAESTRO.md`](_backlog/BACKLOG_MAESTRO.md) §9–§16.**

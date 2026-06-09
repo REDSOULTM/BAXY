@@ -1,4 +1,4 @@
-# Mapa de descomposición — archivos-dios (2026-06-01)
+# Mapa de descomposición — archivos-dios (2026-06-01, **act. 2026-06-09**)
 
 Continúa la auditoría arquitectural (commit a18dc63) y la serie R1–R8. Las extracciones
 **seguras** ya se hicieron (R2 dejó 38 módulos hermanos en `domain_tools/`). Lo que queda
@@ -6,14 +6,42 @@ en los archivos-dios es lo **mock-acoplado / disperso / de clase**, que exige ex
 **supervisada** (no se hace de noche a ciegas: romper audio/whatsapp no se atrapa con los
 tests actuales y no se puede probar físicamente sin cerrar VS Code).
 
-## Estado (LOC producción)
+## Extracciones nuevas (2026-06-07 → 2026-06-09) — ✅ HECHAS
+
+Cada feature reciente que habría engrosado un dios se extrajo a un hermano (el ratchet lo
+fuerza). Módulos NUEVOS:
+
+| Módulo hermano | Extraído de | Qué | Commit |
+|----------------|-------------|-----|--------|
+| `agent_core/agent_helpers.py` | `agent.py` | helpers libres del agente | `e2b7c79` |
+| `tools_pkg/site_resolver.py` | `tools.py` | resolución de sitios "ve a X" | `1cae3b1` |
+| `tools_pkg/vision_describe.py` | `tools.py` | describe_screen con ancla OCR | tanda visión |
+| `tools_pkg/web_search.py` | `tools.py` | scrapers DDG/Bing + selector de proveedor | `808df2a` |
+| `tools_pkg/web_source_quality.py` | `tools.py` | calidad de fuentes (foro vs estándar) | `808df2a` |
+| `tools_pkg/visual_click_redirect.py` | `tools.py` | redirección click-visual → gui | `808df2a` |
+| `agent_core/reply_repair.py` | `agent.py` | reparación de idioma + info-followup + observación de media | `808df2a` |
+| `domain_tools/media_current.py` | `domain_tools/__init__.py` | resume del video/media actual | `808df2a` |
+
+**Caveat honesto (deuda registrada):** `agent.py` subió su techo +296 LOC (en el comentario
+de `CEILINGS` de `test_god_object_size_ceiling.py`) por un bloque INLINE **irreducible**: el
+prefetch de info-followup (~94 LOC que muta los locales del loop del turno — `events`,
+`verifier_outcomes`, `mission_goal`, `selected_*`, `mode` — sin frontera de función limpia).
+Lo extraíble se extrajo a `reply_repair.py`; ese bloque queda cableado al hot-path. Mismo
+patrón que los bumps previos documentados en el comentario del techo.
+
+## Estado (LOC producción, **medido 2026-06-09**)
 
 | archivo | LOC | naturaleza | riesgo de partir |
 |---|---|---|---|
-| `tools_pkg/tools.py` | 7.6k | **clase** `ToolRegistry` con métodos `t_*` + workers PowerShell | ALTO (métodos de clase, no funciones-módulo → mixin/delegación) |
-| `agent_core/agent.py` | 6.4k | el agente (run_content ya partido en 3 fases R1) | ALTO (núcleo; cada fase cruza estado) |
-| `domain_tools/__init__.py` | 4.5k | media/streaming + whatsapp + audio-devices | MEDIO (patrón sibling+shim ya existe) |
-| `tools_pkg/ops_tools.py` | 2.2k | OCR + screenshot + helpers | MEDIO |
+| `tools_pkg/tools.py` | ~8.0k | **clase** `ToolRegistry` con métodos `t_*` + workers PowerShell | ALTO (métodos de clase, no funciones-módulo → mixin/delegación) |
+| `agent_core/agent.py` | ~7.3k | el agente (run_content ya partido en 3 fases R1) | ALTO (núcleo; cada fase cruza estado) |
+| `domain_tools/__init__.py` | ~3.3k | media/streaming + whatsapp + audio-devices (bajó tras extraer `media_current.py`) | MEDIO (patrón sibling+shim ya existe) |
+| `tools_pkg/ops_tools.py` | ~2.3k | OCR + screenshot + helpers | MEDIO |
+
+> Nota: las cifras crecen y bajan con cada feature/extracción; el número exacto que
+> importa es el **techo** en `test_god_object_size_ceiling.py` (la verdad enforced).
+> `domain_tools` bajó (3.3k) tras extraer `media_current.py`; `tools.py` se mantuvo
+> bajo techo extrayendo `web_search`/`web_source_quality`/`visual_click_redirect`.
 
 ## Áreas extraíbles de `domain_tools/__init__.py` (con el patrón R2)
 

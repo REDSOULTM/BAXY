@@ -5,8 +5,11 @@ IDEAS_research_backlog, BACKLOG_competidores, router/06_PENDIENTE, BACKLOG_resea
 en un solo lugar, con el estado de CADA ítem **verificado contra el código real** (no contra
 lo que cada doc decía de sí mismo — varios estaban desactualizados).
 
-Última verificación: **2026-06-02** (3 auditores cruzaron 50+ ítems contra `gemma4_agent/`).
-Rama de trabajo: `Dev`.
+Última verificación de la base histórica: **2026-06-02** (3 auditores cruzaron 50+ ítems
+contra `gemma4_agent/`). **Estado vivo extendido al 2026-06-09** (ver §9–§16 abajo:
+cacería de honestidad, idioma multilingüe, Jarvis proactivo, resolución de sitios,
+voz/mic, visión residente, descomposición de archivos-dios).
+Rama de trabajo: `Dev` (espejada en `main`; ambos remotos `origin` Baxy + `asistia` asistIA).
 
 Leyenda: ✅ APLICADO (verificado en código) · 🔲 PENDIENTE-REAL · ⏸️ BLOQUEADO (con bloqueador)
 · ❌ RECHAZADO (medido, no re-litigar) · 🔨 EN PROGRESO esta sesión
@@ -221,3 +224,163 @@ PENDIENTES MÁS GRANDES (5-8, dejados a propósito para después):
 
 NOTA: el usuario tiene un "feature gigante" para pedir DESPUÉS de estos 4. Priorizar terminar los 4
 ROI-bajo (1,3,4 listos; 2 con cautela) cuando resetee la cuota, luego el feature grande.
+
+---
+
+# ESTADO VIVO EXTENDIDO (2026-06-03 → 2026-06-09)
+
+Todo lo de aquí abajo es POSTERIOR a la verificación base del 2026-06-02 y está
+**commiteado en `main` + `Dev` (ambos remotos)**, salvo donde se diga lo contrario.
+Verificado contra el código real.
+
+## 9. CACERÍA DE HONESTIDAD (dataset 6162 casos, tandas 1–6) — ✅ CERRADA
+
+El usuario pidió correr los 6162 ejemplos del dataset de fine-tuning contra el LLM
+real, juzgar cada caso (juez LLM Opus), hallar la causa raíz y arreglar TODOS. Se
+corrió en 6 tandas. Resultado: una familia de **guardas de honestidad ESTRUCTURALES**
+(miden la FORMA del reply/turno, no el contenido — no hay listas por idioma) en
+`safety_pkg/reply_validator.py` + detectores de routing en `routing/planner.py`.
+
+| Guard / fix | Qué bloquea | Evidencia |
+|-------------|-------------|-----------|
+| media-fabricado (INLINE-REPAIR + A/B/C) | "Stranger Things en Netflix" inventado sin tool real | `reply_validator.py` (`13ef80f`, `03822b1`) |
+| destructive-claim endurecido (8× menos FP) | afirmar que borró/destruyó algo sin la acción | capas en `reply_validator.py` (`8fbff58`, `0e74913`, `a374b6c`) |
+| how-to ≠ acción | "cómo elimino una carpeta" ya no BORRA la carpeta | planner `_is_howto` (`bdcceda`) |
+| anti prompt-injection en acción destructiva | instrucción embebida no dispara borrado | planner `_is_prompt_injection` (`340280d`) |
+| click-claim multilingüe | "cliqueé X" sin tool que clickee | `reply_validator.py` (`cc36214`) |
+| tests-passed | "los tests pasaron" sin el conteo real | `reply_validator.py` (`4405211`) |
+| footer del verifier en prosa | "[N no confirmada(s)]" crudo → prosa | `c8ac105` |
+| loop 'actual'/'la ventana actual' (30s→3s) | batch degenerado de 140 tool_calls (Gemma 4 #1756) | `b000ff7`, `c84551e` (dedup_degenerate_batch + cap research 2048→768) |
+| ruido número/medición no se ejecuta | "B3" — input de bajo señal abstiene | planner `_is_low_signal_noise` (`a65dd4e`) |
+| intent↔domain cruzado (default ON) | guard cruzado de intención vs dominio | `18ca9b5`, `3c8fe15` |
+| "cuando diga X haz Y" crea rutina, no ejecuta | B2 — trigger declaration | `51345ea` |
+| perfil Jarvis no se vuelca como comando | A5 — charla emocional/identidad/system-query | `14c314d`, `3ad96dc`, `510ec04` |
+
+Toggles `GEMMA4_*_GUARD` (default-ON). Re-run final 6162/6162 medido en 4 corridas.
+**Aprendizaje clave (memoria):** una guarda nueva DEBE pasar auditoría adversarial
+sobre data CRUDA (el guard destructivo inicial tenía 8/9 FP). Harness:
+`scripts/_diag/_diag_hunt_tanda.py`. DESCARTADOS por medición=artefacto-del-mock:
+cifras/whatsapp/gate-ya-existente (el mock `execute→ok:True` inventa cifras que el
+tool REAL devuelve bien — NO son bugs de prod).
+
+## 10. IDIOMA MULTILINGÜE — ✅ APLICADO (selector + reparación)
+
+| Fix | Qué | Evidencia |
+|-----|-----|-----------|
+| **Selector de idioma en settings** | fija el idioma de todo el stack; "" = Automático | `GEMMA4_VOICE_LANG`, GUI VoiceTab `<Select>`, `agent._reply_lang` |
+| reply post-tool multilingüe 0/5→5/5 | el reply post-tool salía en ES aunque el user escribiera en otro idioma ("language confusion", contexto ES arrastra) | contexto LIMPIO para el summary (`_llm_action_reply`) + `reply_repair.py` |
+| francés con selector en Automático | drift de py3langid | `bf146d2` |
+| bloque "Reply language for this turn" en el prompt | el idioma detectado no llegaba al prompt normal | `reply_repair.turn_language_instruction` |
+| guarda universal de mismatch de idioma | reescribe preservando significado, sin enlatado | `reply_repair.repair_reply_language_if_needed` |
+
+Research de respaldo (deep-research, REFUTÓ folklore): es "language confusion"
+(Cohere EMNLP 2024), no "el system prompt gana". Doc:
+`GEMMA4_modelo_finetune_idioma_2026-06-06.md`.
+
+## 11. JARVIS PROACTIVO — ✅ IMPLEMENTADO (toast ON, TTS/chat-offer opt-in)
+
+Jarvis que usa la PC normal (sin chatear) y de repente sugiere automatizar una
+rutina detectada, con REVERSIBILIDAD total. `proactive_notifier.py` (toast
+windows-toasts + anti-molestia: no avisa en zoom/teams/discord/fullscreen) +
+`jarvis_proactive.py` (orquestador en cada transición de app). `GEMMA4_JARVIS_PROACTIVE`
+ON por default (toast no-invasivo); `_TTS` y `_CHAT_OFFER` opt-in. Apagar todo con
+`GEMMA4_JARVIS_PROACTIVE=0`. Auditoría adversarial (42 agentes, 33 hallazgos, 7
+arreglados): CRIT corruption-recovery no cerraba handle→DB brickeada (fix); HIGH
+forget() borra TODO (privacidad=ley). commits `ad2443d`, `8d4e4c7`, `f6222d2`,
+`832c4d5`. Ver `DISENO_jarvis_proactivo_2026-06-07.md` + `_JARVIS_auditoria_2026-06-07.md`.
+
+## 12. RESOLUCIÓN DE SITIOS ("ve a X") — ✅ ESTRUCTURAL + POPULARIDAD + DNS
+
+Evolución completa del resolvedor `tools_pkg/site_resolver.py` (extraído del
+archivo-dios). NO adivina el TLD — lookup real por búsqueda web.
+
+| Etapa | Qué | Evidencia |
+|-------|-----|-----------|
+| dominio REAL por búsqueda, no el adivinado por el 4B | "ve a pivigames" → pivigames.blog (no .com) | `f732e68`, `2a675d6` (procedencia) |
+| metasearch ddgs (Google/Brave) | trae el sitio que el user ve en su navegador | `f0b15c1` |
+| homónimos por país del SO (ccTLD) | UNIEJ existe CL/PE/CO/SV → gana el del user | `7e8f98f` (GetUserGeoID, no idioma) |
+| **señal estructural anti-agregador** (reemplaza lista hardcoded `_NON_SITE_HOSTS`) | el nombre debe ser LABEL COMPLETO del dominio, no substring (insta⊄instagram); descarta perfiles de tercero sin lista — universal (cubre VK/Weibo/Naver) | `47e6c14` |
+| **popularidad** | un PREFIJO de label en resultado TOP del buscador gana al lookalike nicho enterrado ('insta'→instagram.com, no insta.com.br). SLD canónica gana siempre | `3bcfdc4` |
+| **DNS** | no devuelve dominios que no existen (getaddrinfo, fail-open ante timeout); si ninguno resuelve → None | `3bcfdc4` |
+
+Medido en `scripts/_diag/_diag_non_site_hosts.py`. La lista hardcoded se ELIMINÓ
+(`non_site_hosts` queda como param deprecado sin efecto). +test_site_resolver_structural_aggregator.
+
+## 13. VOZ / MIC — ✅ WASAPI + calibración de ruido + anti-falso-wake
+
+"Oye voces donde no hay". RAÍZ: gate fijo (350) no-universal + `device=None` usaba
+MME que NO soporta 16 kHz y DEVUELVE CEROS. Fix: WASAPI (default real, 48k nativo)
++ resample a 16k (`audio_io.py`, kill-switch `GEMMA4_VOICE_WASAPI`); auto-calibración
+RELATIVA del umbral (`noise_calibration.py`: ruido×1.6, sin piso absoluto);
+detección de mic muteado (pycaw + CoInitialize). Verificado en vivo: voz 1050 vs
+ruido 4. commit `25de1c2`. Wake-word: añadidos `maxi/paxi/vaxi/...` (Whisper oye
+"Baxy"→"Maxi"); strip fonético en `pipeline.py`. Vocalizaciones no-léxicas
+("mmh/mhhh") → NO_SPEECH (no disparan cancel_turn). commit voz de la tanda Codex.
+
+## 14. VISIÓN — ✅ 3 bugs de click/describe + mmproj SIEMPRE RESIDENTE
+
+**(a) 3 bugs (2026-06-07):** "apretá el primer título que veas" describía/alucinaba.
+#1 routing (keyword "pantalla"→vision aunque sea acción) → quitar vision del keyword
++ force-include por score + reentrenar encoder (32 ej. 6 idiomas, gate 0.99/0.98
+intacto). #2 visión (monitor=all 3840×2160 alucina) → monitor="active"
+(GetForegroundWindow) + ancla OCR (Tesseract). #3 STT ("Baxy"→"Maxi"). commit `6e6bf90`.
+
+**(b) Steam click dead-end + OCR-echo (2026-06-08):** "apretá el icono de Mortal
+Kombat" (visible en Steam) → `steam(click)` enum inválido → reintentaba launch_game
+→ callejón. Fix: `visual_click_redirect.py` redirige el verbo de click visual no-válido
+a `gui(click_text)` (OCR localiza y clickea); `uia/browser(click)` válidos NO se
+secuestran. La descripción de visión volcaba el OCR crudo (`<<<...>>>`) al reply →
+`_strip_ocr_echo` en `vision_describe.py`. commit `808df2a`.
+
+**(c) mmproj SIEMPRE RESIDENTE (2026-06-09):** `GEMMA4_VISION_ALWAYS` **default ON**
+→ el proyector de visión queda cargado, una imagen NO paga la carga on-demand (~2-5s
+del router-mode lazy). MEDIDO (build llama.cpp 9090, flags de prod): el mmproj
+residente NO penaliza el cache de texto (issue ggml-org/llama.cpp #21133 ya fixeado;
+turno warm re-evaluó 10 tok/21 ms). `vision_always_enabled()` desactiva el router-mode
+(mutuamente excluyentes). Toggle GUI "modo visión siempre activo". Apagar →
+router-mode lazy. commit `b848d82`. Harness `scripts/_diag/_measure_mmproj_text_cache.py`.
+**Esto SUPERA la nota histórica "router mode lazy vision"**: el lazy ya no tiene
+ventaja en builds nuevos de llama.cpp, solo la desventaja de la latencia de carga.
+
+## 15. WEB: buscaba pero no respondía — ✅ resume + guard
+
+"háblame de Mortal Kombat" → web.search (snippets buenos) + web.open de un tab
+fallido en vez de RESUMIR. Fix: schema de web reescrito (tras search RESPONDÉ con
+snippets; open solo si el user quiere VER) + guard en `t_web`/`t_browser`: open sin
+que el user dicte el dominio → redirige a web.read (contenido para responder), no tab;
+web.read con query → research. `site_resolver.user_requested_open`. Calidad de fuentes:
+`web_source_quality.py` clasifica foro/discusión vs estándar por FORMA (no allowlist
+de dominios). Media: resume del VIDEO/MEDIA ACTUAL sin inventar query de YouTube
+(`media_current.py`). commit `808df2a` (tanda Codex, revisada y validada).
+
+## 16. DESCOMPOSICIÓN DE ARCHIVOS-DIOS (ratchet) — ✅ 7 módulos hermanos nuevos
+
+El ratchet anti-archivos-dios (`test_god_object_size_ceiling.py`) fuerza extraer a
+módulos hermanos en vez de crecer el techo. Extracciones de estas sesiones:
+
+| Módulo nuevo | Extraído de | Qué |
+|--------------|-------------|-----|
+| `agent_core/agent_helpers.py` | `agent.py` | helpers libres (`e2b7c79`) |
+| `tools_pkg/site_resolver.py` | `tools.py` | resolución de sitios (`1cae3b1`) |
+| `tools_pkg/vision_describe.py` | `tools.py` | describe_screen con ancla OCR |
+| `tools_pkg/web_search.py` | `tools.py` | scrapers DDG/Bing + selector de proveedor |
+| `tools_pkg/web_source_quality.py` | `tools.py` | calidad de fuentes (foro vs estándar) |
+| `tools_pkg/visual_click_redirect.py` | `tools.py` | redirección click-visual → gui |
+| `agent_core/reply_repair.py` | `agent.py` | reparación de idioma + info-followup + observación de media |
+| `domain_tools/media_current.py` | `domain_tools/__init__.py` | resume del video/media actual |
+
+Caveat honesto: `agent.py` subió su techo +296 (deuda registrada en el comentario
+de `CEILINGS`) por un bloque INLINE irreducible (info-followup prefetch ~94 LOC que
+muta los locales del loop del turno); el resto se extrajo. Mapa:
+`documentacion/01_arquitectura/` (MAPA_descomposicion_archivos_dios).
+
+---
+
+### Datos de estado actualizados (2026-06-09)
+- **Suite de tests:** ~2917 passed, 0 failed (creció con los tests de las tandas).
+- **Visión:** mmproj RESIDENTE por default (`GEMMA4_VISION_ALWAYS=1`); router-mode lazy
+  disponible como fallback (apagar el toggle).
+- **Idioma:** selector en settings (`GEMMA4_VOICE_LANG`); "" = Automático.
+- **Resolución de sitios:** señal estructural + popularidad (posición del buscador) +
+  validación DNS; sin lista hardcoded de dominios.
+- **Honestidad:** familia de guardas estructurales default-ON (cacería 6162 cerrada).

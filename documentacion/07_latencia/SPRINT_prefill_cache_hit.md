@@ -45,7 +45,20 @@ antes (sin penalidad, sin runaway).
 ## Config de server (confirmado por research, sin cambios necesarios)
 Mantener `--flash-attn off` (estabilidad, mata el crash #22527 en E2B) + `--swa-full`
 (hace funcionar el prefix-reuse para SWA + saltea el checkpoint-restore buggy, PR
-#21749). NO `--cache-reuse`. NO KV-quant (necesita FA). mmproj lazy. `-np 1`.
+#21749). NO `--cache-reuse`. NO KV-quant (necesita FA). `-np 1`.
+
+> **ACTUALIZACIÓN 2026-06-09 — mmproj RESIDENTE por default (antes "lazy").**
+> La nota original decía "mmproj lazy" (router-mode: el proyector de visión se
+> cargaba on-demand al llegar una imagen, ~2-5 s la 1ra vez, para no apagar el
+> prompt-cache de texto). Ese tradeoff **ya no existe** en builds recientes de
+> llama.cpp (issue ggml-org/llama.cpp **#21133**: el cache reuse vuelve para
+> turnos text-only aunque el mmproj esté cargado). MEDIDO en el binario de prod
+> (build 9090, con los flags de arriba): turno de texto warm con mmproj residente
+> re-evaluó **10 tok / 21 ms** (cache hit pleno). Por eso ahora `GEMMA4_VISION_ALWAYS`
+> es **default ON** (mmproj residente, router-mode lazy desactivado): el texto
+> sigue rápido Y la imagen no paga la carga on-demand. Toggle en settings ("modo
+> visión siempre activo") para volver al lazy si se corre un llama.cpp viejo.
+> Harness: `scripts/_diag/_measure_mmproj_text_cache.py`.
 
 ## Descartado por el research (confirmado, no refutado)
 prefill `<|tool_call|>` (assistant-prefill incompatible con thinking, #21889/#20861;

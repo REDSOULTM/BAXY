@@ -84,6 +84,20 @@ Plan maestro original (vivo): [`PLAN_MAESTRO_router.md`](PLAN_MAESTRO_router.md)
 - ES/EN/PT/FR/IT: bien. **DE (alemán): límite del encoder base** — documentado
   en [06_PENDIENTE_Y_NO_FORZADO.md](06_PENDIENTE_Y_NO_FORZADO.md).
 
+### Actualizaciones de routing (2026-06-05 → 2026-06-09)
+- **Encoder reentrenado** con corpus `train.jsonl` (SOLO train, sin holdout
+  contaminado): aprende `text→tool` del dataset del LLM, sin hardcode — p.ej.
+  "en el navegador" rutea a browser. Artefactos regenerados (`2dede36`, `8068279`).
+- **`cancel_turn` espurio arreglado:** "ve a X" / "desmutea" ya no caían a
+  session-only (`a0d23c3`).
+- **web responde con lo buscado:** "háblame de X" buscaba pero abría un tab en vez
+  de resumir → guard que tras `search` responde con los snippets; `open` solo si
+  el user quiere VER (`50038cb`, `808df2a`). Calidad de fuentes por FORMA
+  (foro/discusión vs estándar), sin allowlist de dominios.
+- **Detectores de honestidad en el planner** (cacería): `_is_howto`,
+  `_is_prompt_injection`, `_is_trigger_declaration`, `_is_low_signal_noise` — ver
+  §9 del [BACKLOG_MAESTRO](../_backlog/BACKLOG_MAESTRO.md).
+
 ---
 
 ## ⚠️ Aviso sobre el research histórico (OBSOLETO en parte)
