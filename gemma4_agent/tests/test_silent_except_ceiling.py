@@ -20,7 +20,12 @@ from pathlib import Path
 # el subsistema de cámara, que tiene su propio ciclo de vida). NO subir sin
 # justificar: si tu cambio agrega un `except ...: pass` alrededor de LÓGICA, logueá el
 # error (trace/logger) en vez de tragarlo. La observabilidad atrapa bugs silenciosos.
-SILENT_LOGIC_CEILING = 358
+# 2026-06-09: 358 -> 359 (+1). Fast-paths de latencia (cpu_ram_gpu/screenshot/
+# audio): best-effort REALES donde tragar es correcto — p.ej. el set de DPI-
+# awareness (si falla, la captura igual funciona) y nvidia-smi ausente (cae al
+# marcador honesto). Loguearlos sería ruido (no son bugs, son fallbacks). +1
+# justificado, mismo patrón que los bumps previos del techo.
+SILENT_LOGIC_CEILING = 359
 
 
 def _load_audit():

@@ -423,6 +423,14 @@ class AgentRunner:
                         user_text="warmup",
                         route_context=True,
                     )
+                # Cache de apps instaladas: el 1er "abre/busca <app>" paga ~0.8s
+                # escaneando PATH/registry/start-apps/steam. Lo precalentamos en
+                # boot (costo aceptado) -> la 1ra acción de app es instantánea
+                # (~0.1s, cache caliente). Best-effort; no bloquea el ready.
+                try:
+                    self._agent.tools.apps.find("notepad", limit=1)
+                except Exception:
+                    pass
                 emit_stage(BUS.publish, "prompt_warmup",
                            "prompt templates ready", progress=100.0)
             except Exception as exc:

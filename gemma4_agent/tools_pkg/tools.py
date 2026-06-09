@@ -3756,24 +3756,13 @@ class ToolRegistry:
         return _ok(windows=windows, source="powershell")
 
     def system_cpu_ram_gpu(self, args: dict[str, Any]) -> dict[str, Any]:
-        script = r"""
-$cpu = Get-CimInstance Win32_Processor | Select-Object -First 1 Name,LoadPercentage
-$os = Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize,FreePhysicalMemory
-$gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,DriverVersion
-[PSCustomObject]@{ cpu=$cpu; os=$os; gpu=$gpu } | ConvertTo-Json -Depth 4
-"""
-        # timeout 20 -> 10s. CIM Win32_VideoController es el mas lento (1-3s
-        # en sistemas con varios GPUs/displays); 10s da headroom 3x. Si tarda
-        # mas hay algo serio mal en WMI.
-        try:
-            proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=10)
-        except (OSError, subprocess.TimeoutExpired):
-            return _err("system_cpu_ram_gpu timeout", reason="powershell_cim_timeout")
-        # CC-103: parse defensivo.
-        ok, info = parse_ps_json(proc.stdout)
-        if not ok:
-            return _err("system_cpu_ram_gpu invalid JSON", stdout=info, stderr=_truncate(proc.stderr, 1000), exit_code=proc.returncode)
-        return _ok(info=info, exit_code=proc.returncode)
+        # psutil+nvidia-smi ~57ms vs ~2.4s WMI -> system_info_fast.py (ratchet dios).
+        from .system_info_fast import cpu_ram_gpu as _cpu_ram_gpu
+        res = _cpu_ram_gpu()
+        if res.get("ok"):
+            return _ok(info=res["info"], source=res.get("source"))
+        return _err(str(res.get("error") or "system_cpu_ram_gpu failed"),
+                    **{k: v for k, v in res.items() if k not in ("ok", "error")})
 
     def system_disk(self, args: dict[str, Any]) -> dict[str, Any]:
         # Preferir psutil.disk_partitions + usage (~5ms, in-process). El CIM
@@ -4035,8 +4024,15 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
         return cast(interface, POINTER(IAudioEndpointVolume))
 
     def audio_devices(self, args: dict[str, Any]) -> dict[str, Any]:
+        # LATENCIA (MEDIDO 2026-06-09): `Get-PnpDevice` PowerShell ~1.5s. Cache TTL
+        # 60s (los dispositivos no cambian seguido); `refresh=True` revalida.
+        _ttl = 60.0
+        _now = time.time()
+        if not args.get("refresh"):
+            _c = getattr(self, "_audio_devices_cache", None)
+            if _c and (_now - _c[0]) < _ttl:
+                return _ok(devices=_c[1], source="cache", cached=True)
         script = "Get-PnpDevice -Class AudioEndpoint | Select-Object FriendlyName,Status,InstanceId | ConvertTo-Json -Depth 3"
-        # timeout 15 -> 8s + try/except (antes una excepcion subia y mataba el turn).
         try:
             proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
         except (OSError, subprocess.TimeoutExpired):
@@ -4048,6 +4044,7 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
             return _err("audio_devices invalid JSON", stdout=_truncate(raw, 1000), stderr=_truncate(proc.stderr, 1000))
         if isinstance(data, dict):
             data = [data]
+        self._audio_devices_cache = (_now, data)
         return _ok(devices=data, exit_code=proc.returncode)
 
     def audio_set_default(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -5859,6 +5856,13 @@ if ($action -eq "set_value") {
     def uia_set_value(self, args: dict[str, Any]) -> dict[str, Any]:
         return self._uia_run(args, "set_value")
 
+    def _screenshot_mss(self, mode: str, path: "Path") -> "dict[str, Any] | None":
+        """Wrapper thin sobre screenshot_fast.capture (extraído 2026-06-09, ratchet
+        archivo-dios). Devuelve el dict _ok() o None (→ caller cae al PowerShell)."""
+        from .screenshot_fast import capture as _capture
+        data = _capture(mode, path)
+        return _ok(**data) if isinstance(data, dict) else None
+
     def gui_screenshot(self, args: dict[str, Any]) -> dict[str, Any]:
         # T3-gui-screenshot-virtual-screen-011: param `monitor=primary|all|<index>`.
         # Default sigue siendo `all` (VirtualScreen) por compatibilidad.
@@ -5875,6 +5879,17 @@ if ($action -eq "set_value") {
             return _err("invalid monitor; use primary|all|active|<index>", monitor=monitor_raw, status="needs_user")
         name = f"screenshot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         path = self.captures_dir / name
+        # LATENCIA (MEDIDO 2026-06-09): la captura por PowerShell compila C#
+        # (Add-Type, DPI+GDI) en CADA llamada → ~1.1s. `mss` es captura pura-Python
+        # in-process (~30-130ms, 8-35x). PRESERVA el contrato (path,width,height,
+        # left,top — el left/top traduce coords OCR→pantalla para el click) y la
+        # DPI-awareness (clave en pantallas escaladas: capturar en píxeles FÍSICOS
+        # = misma escala que el click). Fallback al script PowerShell si mss falla
+        # o no está. Kill-switch GEMMA4_SCREENSHOT_MSS=0.
+        if os.environ.get("GEMMA4_SCREENSHOT_MSS", "1").strip().lower() not in {"0", "false", "no", "off"}:
+            _fast = self._screenshot_mss(mode, path)
+            if _fast is not None:
+                return _fast
         env = os.environ.copy()
         env["GEMMA4_SCREENSHOT_PATH"] = str(path)
         env["GEMMA4_SCREENSHOT_MODE"] = mode

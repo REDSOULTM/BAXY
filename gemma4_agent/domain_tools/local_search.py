@@ -62,9 +62,18 @@ def local_search_tool(args: dict[str, Any]) -> dict[str, Any]:
                 if time.time() > deadline:
                     break
                 try:
+                    # LATENCIA (MEDIDO 2026-06-09): el `is_file()`+`stat()` por CADA
+                    # archivo visitado dominaba el costo (~6× el del walk puro:
+                    # 256ms walk vs 1489ms walk+stat por 20k). Para una búsqueda por
+                    # NOMBRE, el 99% de los paths NO matchean → no necesitan stat.
+                    # Chequeamos el name-match PRIMERO (solo string, 0 syscalls) y
+                    # solo stateamos los candidatos (≤limit). Con content-search sí
+                    # necesitamos stat de los name-hits para leerlos.
                     name_hit = query in path.name.casefold() if query else True
                     content_hit = False
                     snippet = ""
+                    if not name_hit and not include_content:
+                        continue  # ni nombre ni contenido a chequear -> sin stat
                     is_file = path.is_file()
                     file_size = path.stat().st_size if is_file else None
                     # BINARY GUARD: si include_content + archivo > max_bytes
