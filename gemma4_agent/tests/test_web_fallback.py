@@ -6,13 +6,21 @@ Bing matchee el HTML real) es batcheada — es segura igual: si Bing no matchea 
 import os
 import unittest
 
-from ..tools_pkg import tools as T
+# 2026-06-08: los scrapers + el selector de proveedor se extrajeron de tools.py a
+# web_search.py (ratchet archivo-dios). `_web_search_provider` ahora vive ahí y
+# llama a `duckduckgo_search`/`bing_search` DENTRO de su módulo, y a `ddgs_search`
+# importado de site_resolver -> los mocks van sobre esos módulos, no sobre tools.
+from ..tools_pkg import web_search as WS
+from ..tools_pkg import site_resolver as SR
+
+# `_web_search_provider` sigue re-exportado desde tools para compat de imports.
+from ..tools_pkg import tools as T  # noqa: F401
 
 
 class _Patch:
     """Monkeypatch ddgs/DDG/Bing + el flag, restaurando al salir.
 
-    2026-06-07: el provider primario ahora es `_ddgs_search` (metasearch). Estos
+    2026-06-07: el provider primario ahora es `ddgs_search` (metasearch). Estos
     tests prueban la LÓGICA de fallback DDG-HTML -> Bing, así que neutralizamos
     ddgs (-> []) para que la cascada llegue a las capas que se están testeando."""
     def __init__(self, ddg, bing, fallback=True):
@@ -20,20 +28,20 @@ class _Patch:
         self._saved = {}
 
     def __enter__(self):
-        self._saved["ddgs"] = T._ddgs_search
-        self._saved["ddg"] = T._duckduckgo_search
-        self._saved["bing"] = T._bing_search
+        self._saved["ddgs"] = SR.ddgs_search
+        self._saved["ddg"] = WS.duckduckgo_search
+        self._saved["bing"] = WS.bing_search
         self._saved["env"] = os.environ.get("GEMMA4_WEB_FALLBACK")
-        T._ddgs_search = lambda q, limit=6: []   # primario fuera: aislar DDG->Bing
-        T._duckduckgo_search = self.ddg
-        T._bing_search = self.bing
+        SR.ddgs_search = lambda q, limit=6: []   # primario fuera: aislar DDG->Bing
+        WS.duckduckgo_search = self.ddg
+        WS.bing_search = self.bing
         os.environ["GEMMA4_WEB_FALLBACK"] = "1" if self.fallback else "0"
         return self
 
     def __exit__(self, *exc):
-        T._ddgs_search = self._saved["ddgs"]
-        T._duckduckgo_search = self._saved["ddg"]
-        T._bing_search = self._saved["bing"]
+        SR.ddgs_search = self._saved["ddgs"]
+        WS.duckduckgo_search = self._saved["ddg"]
+        WS.bing_search = self._saved["bing"]
         if self._saved["env"] is None:
             os.environ.pop("GEMMA4_WEB_FALLBACK", None)
         else:

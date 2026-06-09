@@ -47,6 +47,33 @@ class WebOpenKnowledgeGuardTest(unittest.TestCase):
         self.assertEqual(self.opened, ["https://wikipedia.org"])
         self.assertEqual(self.read, [])
 
+    def test_navigation_by_name_opens_resolved_url(self):
+        # el user pidió navegar por nombre; el dominio resuelto no aparece literal,
+        # pero la forma del pedido sí es navegación.
+        self.reg._current_user_text = "ve a portal uniej"
+        self.reg.t_web({"action": "open", "url": "https://portal2.uniej.cl/"})
+        self.assertEqual(self.opened, ["https://portal2.uniej.cl/"])
+        self.assertEqual(self.read, [])
+
+    def test_browser_open_from_info_question_redirects_to_read(self):
+        self.reg._current_user_text = "Quien es Batman"
+        r = self.reg.t_browser({
+            "action": "open",
+            "browser": "Chrome",
+            "url": "https://dc.fandom.com/wiki/Batman_(Bruce_Wayne)",
+        })
+        self.assertEqual(self.opened, [])
+        self.assertEqual(len(self.read), 1)
+        self.assertEqual(r.get("redirected_from"), "browser.open")
+        self.assertEqual(r.get("action"), "read")
+        self.assertFalse(r.get("opened"))
+
+    def test_browser_open_keeps_explicit_navigation(self):
+        self.reg._current_user_text = "ve a portal uniej"
+        self.reg.t_browser({"action": "open", "url": "https://portal2.uniej.cl/login"})
+        self.assertEqual(self.opened, ["https://portal2.uniej.cl/login"])
+        self.assertEqual(self.read, [])
+
     def test_open_without_user_text_opens(self):
         # sin _current_user_text (CLI/tests) -> no rompe: abre normal.
         self.reg._current_user_text = ""

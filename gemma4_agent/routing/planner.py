@@ -1280,6 +1280,24 @@ def select_tool_names(
         _filtered = [t for t in expanded if t not in _drop]
         if any(t in _filtered for t in ("browser", "browser_real", "computer_use")):
             expanded = _filtered
+    # Pregunta informativa/de mundo: `web` puede ser correcto para investigar,
+    # pero `browser`/`browser_real` son navegacion visible. Si el texto no pide
+    # explicitamente IR/ABRIR una pagina, no se las ofrecemos al LLM en el pase 1.
+    # No dependemos solo de _web_nav_intent: el clasificador de tienda/web puede
+    # dar falsos positivos cuando una entidad informativa tambien existe como
+    # producto, marca, pelicula, juego o pagina.
+    try:
+        from .intent_router import wants_knowledge as _wk_info
+        _info_lookup = _wk_info(raw_text)
+    except Exception:
+        _info_lookup = False
+    try:
+        from ..tools_pkg.site_resolver import user_requested_web_navigation as _lex_web_nav
+        _explicit_visible_nav = bool(_lex_web_nav(raw_text))
+    except Exception:
+        _explicit_visible_nav = False
+    if _info_lookup and not _explicit_visible_nav:
+        expanded = [t for t in expanded if t not in {"browser", "browser_real"}]
     # Colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
     # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario: el 4B
     # no necesita las 3 variantes del mismo dominio. `keep` protege las tools que

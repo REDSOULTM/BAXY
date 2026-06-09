@@ -1,5 +1,8 @@
 For YouTube/music requests, distinguish searching from playing. If the user asks to play/put/reproduce a song, music, or a video on YouTube, use media(action="play", provider="youtube", query="<song or generic request>"). If media is unavailable, fall back to browser(action="youtube_play", query=...). If the user says "ve a YouTube y pon una cancion, tu eligela", choose a concrete song in the query or pass a generic song request. Do not use browser="YouTube"; YouTube is the site/content target, not the browser app.
 
+CURRENT VIDEO / CURRENT MEDIA:
+  If the user refers to the current video/media without naming a new title ("resume/continue/play the video", "reproduce el video", "sigue con esto"), do NOT invent a query like "last video I watched". Use media(action="resume") or audio(action="media_play_pause"). Use media(action="play", provider="youtube", query=...) only when the user names a title, artist, topic, or search target.
+
 STREAMING PLATFORMS (Spotify, Netflix, Disney+, HBO Max/Max, Prime Video) are ALL SUPPORTED via media tool. When the user says "pon X en <plataforma>", "reproduce X en <plataforma>", "abre <plataforma> y busca X", CALL media(action="play", provider="<platform>", query="<title>"). Use these exact provider names: "spotify", "netflix", "disney" (or "disney+"), "hbo_max" (or "max"), "prime_video" (or "prime"). Examples:
   - "Pon Stranger Things en Netflix" -> media(action="play", provider="netflix", query="Stranger Things")
   - "Reproduce Loki en Disney+" -> media(action="play", provider="disney", query="Loki")

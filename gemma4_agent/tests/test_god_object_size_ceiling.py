@@ -63,7 +63,20 @@ CEILINGS = {
     # repair_media_fabricated_inline, ~40 LOC); acá solo queda el método wrapper
     # thin + el call-site en _finalize_turn — mismo patrón que los otros _guard_*.
     # Irreducible. Número exacto, sin buffer.
-    "agent_core/agent.py": 6687,
+    # 2026-06-08: 6687 -> 6983 (+296). Tanda de fixes de idioma/media (sesión
+    # Codex + visual-click): reparación de idioma del reply, prefetch de
+    # info-followup, observación/resume de media. Lo EXTRAÍBLE se extrajo a
+    # reply_repair.py (sibling, ~270 LOC: funciones puras de idioma/eventos +
+    # los pases LLM de observación y reescritura, con wrappers thin en la clase).
+    # El RESTO es INLINE irreducible en el loop de ejecución del turno: el bloque
+    # de prefetch de info-followup (~94 LOC) muta los locales del loop (events,
+    # verifier_outcomes, mission_goal, selected_*, mode) y no tiene frontera de
+    # función limpia; el resto son inserciones chicas en run_content/_decide_turn/
+    # _finalize_turn (instrucción de idioma por turno, deícticos, gates). Mismo
+    # patrón que los bumps previos: la lógica que se puede partir se partió, el
+    # cableado al hot-path queda. Número exacto, sin buffer. Deuda registrada:
+    # documentacion/MAPA_descomposicion_archivos_dios.md.
+    "agent_core/agent.py": 6983,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

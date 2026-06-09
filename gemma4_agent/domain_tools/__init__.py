@@ -1060,6 +1060,17 @@ def _is_generic_music_query(query: str) -> bool:
     return True
 
 
+# Detección y reanudación de VIDEO/MEDIA ACTUAL extraída a media_current.py
+# (2026-06-08, ratchet archivo-dios). Re-exportadas con los nombres privados que
+# el resto del paquete y agent.py esperan.
+from .media_current import (  # noqa: E402
+    fold_media_words as _fold_media_words,
+    is_generic_video_query as _is_generic_video_query,
+    looks_like_current_video_resume_request as _looks_like_current_video_resume_request,
+    maybe_resume_current_video as _maybe_resume_current_video,
+)
+
+
 def _get_spotify_username(state: AgentState | None) -> str | None:
     """Lee el username de Spotify guardado (para deeplink de Liked Songs).
     Reusa el store de streaming_preference con provider='spotify_user'."""
@@ -2561,6 +2572,14 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         action = "play"
         args = {**args, "action": "play"}
     if action == "status":
+        _status_provider = str(args.get("provider") or args.get("app") or "browser").casefold()
+        _user_text = str(args.get("_user_text") or "").strip()
+        if _looks_like_current_video_resume_request(_user_text):
+            current = _maybe_resume_current_video(_status_provider, _user_text, executor)
+            if current is not None:
+                current = dict(current)
+                current["redirected_from"] = "media.status"
+                return current
         streaming = {}
         for canonical, spec in _STREAMING_PLATFORMS.items():
             app_info = _find_streaming_app(spec)
@@ -2570,7 +2589,7 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
                 "has_deeplink": spec.get("deeplink") is not None,
                 "web_url_template": spec.get("web_url"),
             }
-        return _ok(
+        result = _ok(
             backends=["browser_youtube", "windows_media_keys", "local_file",
                        "vlc_cli", "winrt_smtc",
                        "spotify", "netflix", "disney", "hbo_max", "prime_video"],
@@ -2579,6 +2598,9 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
             streaming_platforms=streaming,
             note="now_playing uses Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager via PowerShell. Streaming platforms launch desktop app if installed (with deeplink) else open web search URL.",
         )
+        if any(args.get(k) for k in ("app", "provider", "query", "include_now_playing")):
+            result["now_playing"] = _media_now_playing()
+        return result
     if action == "play":
         query = str(args.get("query") or args.get("song") or args.get("title") or "").strip()
         path = str(args.get("path") or "").strip()
@@ -2599,6 +2621,14 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
         if _resolve_streaming_provider(provider):
             return _media_play_streaming(provider, query, args, executor=executor, state=state)
         if provider in {"youtube", "yt", "browser"}:
+            _user_text = str(args.get("_user_text") or "").strip()
+            current = None
+            if _looks_like_current_video_resume_request(_user_text):
+                current = _maybe_resume_current_video(provider, _user_text, executor)
+            if current is None:
+                current = _maybe_resume_current_video(provider, query, executor)
+            if current is not None:
+                return current
             return executor("browser", {"action": "youtube_play", "query": query or "musica"})
         if provider == "vlc":
             vlc = _find_vlc_executable()
@@ -2636,6 +2666,15 @@ def media_tool(args: dict[str, Any], executor: Executor, state: AgentState | Non
             return _err("missing path")
         return _media_play_local(path, args)
     if action in {"pause", "resume", "play_pause"}:
+        if action in {"resume", "play_pause"}:
+            _user_text = str(args.get("_user_text") or "").strip()
+            if _looks_like_current_video_resume_request(_user_text):
+                _provider = str(args.get("provider") or args.get("app") or "youtube").casefold()
+                current = _maybe_resume_current_video(_provider, _user_text, executor)
+                if current is not None:
+                    current = dict(current)
+                    current["redirected_from"] = f"media.{action}"
+                    return current
         return executor("audio", {"action": "media_play_pause"})
     if action == "stop":
         return executor("audio", {"action": "media_stop"})

@@ -80,6 +80,13 @@ class TestNoSpeechFeedback(unittest.TestCase):
         self.assertIn("NO_SPEECH", p.states)
         self.assertEqual(p.commands, [])
 
+    def test_filler_only_emits_no_speech(self):
+        # Real energy but STT returns a non-lexical vocalization -> drop.
+        p = _make_pipeline("Mm-mm.", _speech(0.8))
+        p._finish_capture(reason="eos_silence")
+        self.assertIn("NO_SPEECH", p.states)
+        self.assertEqual(p.commands, [])
+
     def test_real_command_emits_command_not_no_speech(self):
         p = _make_pipeline("abre Steam", _speech(0.8))
         p._finish_capture(reason="eos_silence")

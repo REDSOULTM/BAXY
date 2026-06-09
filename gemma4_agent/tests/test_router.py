@@ -25,7 +25,7 @@ class Case:
 
 CASES: list[Case] = [
     # Casual / no PC action
-    Case("quien es batman", must_include=(), must_exclude=("steam", "filesystem", "browser_real")),
+    Case("quien es batman", must_include=(), must_exclude=("steam", "filesystem", "browser", "browser_real")),
     Case("hola", must_include=(), must_exclude=("steam", "media", "filesystem")),
 
     # Apps / Steam
@@ -220,6 +220,20 @@ def test_conceptual_question_answers_from_knowledge() -> None:
     s_research = set(select_tool_names("buscá información actual sobre el clima",
                                        plan_mission("buscá información actual sobre el clima")))
     assert "web" in s_research, f"research genuino debe ofrecer web: {sorted(s_research)}"
+
+
+def test_world_info_does_not_offer_visible_browser() -> None:
+    """World-info turns may use web research, but should not expose visible
+    browser navigation unless the user asked to open/go to a page."""
+    for q in ("quien es batman", "quien es el joker", "Hablame de Mortal Kombat",
+              "investiga noticias del mercado cripto con fuentes"):
+        s = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        assert "browser" not in s and "browser_real" not in s, (
+            f"info query {q!r} should not offer visible browser tools: {sorted(s)}")
+    for q in ("ve a portal uniej", "abre Chrome y busca el clima de hoy en Google"):
+        s = set(select_tool_names(q, plan_mission(q), safety_enabled=False))
+        assert "browser" in s, (
+            f"navigation query {q!r} should keep browser: {sorted(s)}")
 
 
 def test_web_target_detector() -> None:

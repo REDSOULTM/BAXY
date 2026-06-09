@@ -1255,13 +1255,17 @@ def _clean_html_text(text: str, limit: int = 12000) -> str:
     return _truncate(text.strip(), limit)
 
 
-def _decode_duckduckgo_href(href: str) -> str:
-    href = html.unescape(href)
-    parsed = urlparse(href)
-    query = parse_qs(parsed.query)
-    if "uddg" in query and query["uddg"]:
-        return unquote(query["uddg"][0])
-    return href
+# Scrapers HTML de búsqueda web (DDG/Bing) + selector de proveedor extraídos a
+# web_search.py (2026-06-08, ratchet archivo-dios). Re-exportados con los nombres
+# privados que el resto de tools.py espera.
+from .web_search import (  # noqa: E402
+    decode_duckduckgo_href as _decode_duckduckgo_href,
+    duckduckgo_search as _duckduckgo_search,
+    bing_decode_redirect as _bing_decode_redirect,
+    bing_search as _bing_search,
+    web_fallback_enabled as _web_fallback_enabled,
+    web_search_provider as _web_search_provider,
+)
 
 
 # Búsqueda web (ddgs) + resolución de sitio extraídas a site_resolver.py (2026-06-07).
@@ -1271,110 +1275,6 @@ from .site_resolver import (  # noqa: E402
     resolve_site_by_search as _resolve_site_by_search_impl,
     user_country_code as _user_country_code,
 )
-
-
-def _duckduckgo_search(query: str, limit: int = 6) -> list[dict[str, str]]:
-    page = _http_get_text(f"https://html.duckduckgo.com/html/?q={quote_plus(query)}", timeout=12)["text"]
-    results: list[dict[str, str]] = []
-    for link in re.finditer(r"(?is)<a[^>]+class=\"result__a\"[^>]+href=\"([^\"]+)\"[^>]*>(.*?)</a>", page):
-        chunk = page[link.end(): link.end() + 3000]
-        snippet = re.search(r"(?is)<a[^>]+class=\"result__snippet\"[^>]*>(.*?)</a>", chunk)
-        url = _decode_duckduckgo_href(link.group(1))
-        title = _clean_html_text(link.group(2), limit=300)
-        item = {"title": title, "url": url}
-        if snippet:
-            item["snippet"] = _clean_html_text(snippet.group(1), limit=700)
-        results.append(item)
-        if len(results) >= limit:
-            break
-    return results
-
-
-def _bing_decode_redirect(href: str) -> str:
-    """Bing envuelve el URL real en un redirect de tracking
-    (`.../ck/a?...&u=a1<base64>`). Desenvuelve el `u=a1<base64>` al URL real.
-    Si no es un redirect (link directo), devuelve el href tal cual. Verificado
-    contra HTML real de Bing."""
-    m = re.search(r"[?&]u=a1([A-Za-z0-9_\-]+)", href)
-    if not m:
-        return href
-    import base64
-    raw = m.group(1).replace("-", "+").replace("_", "/")
-    raw += "=" * (-len(raw) % 4)
-    try:
-        dec = base64.b64decode(raw).decode("utf-8", "replace")
-        return dec if dec.startswith("http") else href
-    except Exception:
-        return href
-
-
-def _bing_search(query: str, limit: int = 6) -> list[dict[str, str]]:
-    """Búsqueda fallback vía Bing HTML — motor INDEPENDIENTE de DDG. Best-effort
-    scraping; si el HTML no matchea el regex, devuelve [] (sin daño: ya veníamos
-    en blanco). Sólo se usa cuando DDG falló/vino vacío. Regex verificado contra
-    el HTML real de Bing: <h2 class=""><a href="redirect base64">."""
-    page = _http_get_text(f"https://www.bing.com/search?q={quote_plus(query)}", timeout=12)["text"]
-    results: list[dict[str, str]] = []
-    for block in re.finditer(r"(?is)<li class=\"b_algo\".*?(?=<li class=\"b_algo\"|</ol>|$)", page):
-        chunk = block.group(0)
-        a = re.search(r"(?is)<h2[^>]*>\s*<a[^>]+href=\"([^\"]+)\"[^>]*>(.*?)</a>", chunk)
-        if not a:
-            continue
-        url = _bing_decode_redirect(html.unescape(a.group(1)))
-        if not url.startswith("http") or "/ck/a" in url:  # redirect no resuelto -> descartar
-            continue
-        title = _clean_html_text(a.group(2), limit=300)
-        item = {"title": title, "url": url}
-        snip = re.search(r"(?is)<p[^>]*>(.*?)</p>", chunk)
-        if snip:
-            item["snippet"] = _clean_html_text(snip.group(1), limit=700)
-        results.append(item)
-        if len(results) >= limit:
-            break
-    return results
-
-
-def _web_fallback_enabled() -> bool:
-    """Fallback dual de web search (DDG -> Bing). DEFAULT ON.
-    Kill-switch GEMMA4_WEB_FALLBACK=0. Seguro: sólo actúa cuando DDG ya falló/vació
-    -> nunca regresión (peor caso = sigue en blanco; si Bing cambia su HTML -> [] -> sin daño)."""
-    return (os.environ.get("GEMMA4_WEB_FALLBACK", "1") or "1").strip().lower() not in {
-        "0", "false", "no", "off"}
-
-
-def _web_search_provider(query: str, limit: int = 6) -> tuple[str, list[dict[str, str]]]:
-    provider = os.environ.get("GEMMA4_WEB_SEARCH_PROVIDER", DEFAULT_WEB_SEARCH_PROVIDER).strip().casefold()
-    # PRIMARIO: ddgs (metasearch con Google/Brave/... — 2026-06-07). Da los mismos
-    # resultados que el user ve en su navegador (medido: pivigames.blog es #0). Si
-    # ddgs no está o falla -> DDG-HTML -> Bing (degradación limpia, nunca rompe).
-    # Override del primario con GEMMA4_WEB_SEARCH_PROVIDER (p.ej. 'duckduckgo' para
-    # forzar el scraper viejo).
-    if provider in {"ddgs", "metasearch", "duckduckgo", "duckduckgo_html", "ddg", DEFAULT_WEB_SEARCH_PROVIDER}:
-        try:
-            results = _ddgs_search(query, limit=limit) or []
-            if results:
-                return "ddgs", results
-        except Exception:
-            pass
-    if not _web_fallback_enabled():
-        # Comportamiento ORIGINAL (sin fallback dual) si ddgs no trajo nada.
-        if provider in {"ddgs", "metasearch", "duckduckgo", "duckduckgo_html", "ddg", DEFAULT_WEB_SEARCH_PROVIDER}:
-            return "duckduckgo_html", _duckduckgo_search(query, limit=limit)
-        return provider or DEFAULT_WEB_SEARCH_PROVIDER, []
-    # Fallback dual: DDG-HTML -> Bing (independientes), si ddgs vino vacío.
-    name, results = "duckduckgo_html", []
-    try:
-        results = _duckduckgo_search(query, limit=limit) or []
-    except Exception:
-        results = []
-    if not results:
-        try:
-            bing = _bing_search(query, limit=limit)
-            if bing:
-                return "bing_html_fallback", bing
-        except Exception:
-            pass
-    return name, results
 
 
 def _pretty_exe_name(path: Path) -> str:
@@ -1671,6 +1571,21 @@ class ToolRegistry:
                         name = fixed
             if not impl:
                 return _normalize_tool_result(name, clean_args, _err(f"unknown tool: {name}"))
+        # REDIRECCIÓN de CLICK VISUAL: "apretá el icono X" que el 4B mandó a una
+        # tool de app (steam/app/window) con action='click' -> rutear a
+        # gui(click_text) para que el OCR localice y clickee el elemento VISIBLE.
+        # Estructural (verbo de acción + objetivo de texto, sin coords), gate por
+        # env. Sin esto: 'click' rebota del enum y el 4B cae en un callejón
+        # (capturas 2026-06-08: steam click -> launch_game -> nada).
+        import os as _os_vc
+        if _os_vc.environ.get("GEMMA4_VISUAL_CLICK_REDIRECT", "1").strip().lower() \
+                not in {"0", "false", "no", "off"}:
+            from .visual_click_redirect import maybe_redirect_visual_click
+            _redir = maybe_redirect_visual_click(name, clean_args, ACTION_ENUMS.get(name))
+            if _redir is not None and self._impls.get("gui"):
+                name = "gui"
+                impl = self._impls["gui"]
+                clean_args = _redir
         clean_args, validation_errors = _coerce_and_validate_tool_args(name, clean_args)
         if validation_errors:
             return _invalid_args_result(name, clean_args, validation_errors)
@@ -2693,6 +2608,23 @@ class ToolRegistry:
                         attempted_name=_lookup, attempted_url=url,
                         completion_status="site_not_resolved")
                 # _bare_name sin resolver (no adivinado) -> url queda como estaba.
+            if url.startswith(("http://", "https://")):
+                try:
+                    from .site_resolver import user_requested_open as _uro
+                    _ut = getattr(self, "_current_user_text", "") or ""
+                    if not _uro(url, _ut):
+                        _rr = self.web_read({"url": url})
+                        if isinstance(_rr, dict):
+                            _rr.setdefault("redirected_from", "browser.open")
+                            _rr["action"] = "read"
+                            _rr["opened"] = False
+                            _rr["note"] = (
+                                "browser.open sin pedido de VER -> no abrí navegador; "
+                                "leí el contenido para responder."
+                            )
+                        return _rr
+                except Exception:
+                    pass
             # ABRIR EN UN NAVEGADOR ESPECÍFICO (2026-05-27): "pon X en Opera" trae
             # browser="Opera"+url -> lanzar ESE navegador con la URL y verificar su
             # ventana. Si no se resuelve -> default con nota honesta (no fingir).
@@ -2864,13 +2796,30 @@ class ToolRegistry:
                     _rr = self.web_read({"url": _open_url})
                     if isinstance(_rr, dict):
                         _rr.setdefault("redirected_from", "web.open")
-                        _rr["note"] = "web.open sin pedido de VER -> leí el contenido."
+                        _rr["action"] = "read"
+                        _rr["opened"] = False
+                        _rr["note"] = "web.open sin pedido de VER -> no abrí navegador; leí el contenido."
                     return _rr
             except Exception:
                 pass
             return self.web_open_url(args)
         if action == "read":
             if not str(args.get("url") or "").strip():
+                _read_query = str(args.get("query") or "").strip()
+                if _read_query:
+                    _rr = self.web_research({
+                        "query": _read_query,
+                        "search_limit": args.get("search_limit", args.get("limit", 6)),
+                        "read_limit": args.get("read_limit", 3),
+                        "per_page_chars": args.get("per_page_chars", args.get("max_chars", 4500)),
+                    })
+                    if isinstance(_rr, dict):
+                        _rr.setdefault("redirected_from", "web.read")
+                        _rr["note"] = (
+                            "web.read requiere url; vino query, así que ejecuté "
+                            "web.research para buscar y leer fuentes."
+                        )
+                    return _rr
                 return _err("web.read requires url", status="needs_user")
             return self.web_read(args)
         if action == "research":
@@ -3331,7 +3280,9 @@ class ToolRegistry:
 
     def t_media(self, args: dict[str, Any]) -> dict[str, Any]:
         # open_local is a documented alias for play(provider=local_file, path=...)
-        return media_tool(args, self.execute, self.state)
+        enriched = dict(args)
+        enriched["_user_text"] = getattr(self, "_current_user_text", "") or ""
+        return media_tool(enriched, self.execute, self.state)
 
     def t_source_manager(self, args: dict[str, Any]) -> dict[str, Any]:
         return source_manager_tool(args, self.state)
@@ -5282,10 +5233,21 @@ if ($pos) {
             return _err("missing query")
         limit = max(1, min(10, int(args.get("limit", 6))))
         provider, results = _web_search_provider(query, limit=limit)
+        from .web_source_quality import annotate_web_results, primary_web_results
+        results = annotate_web_results(results)
+        primary_results = primary_web_results(results)
         return _ok(
             query=query,
             engine=provider,
             results=results,
+            primary_results=primary_results,
+            answer_guidance=(
+                "For factual answers, prefer primary_results and top-ranked "
+                "non-discussion sources. Treat source_kind='discussion' as "
+                "opinion/speculation unless the user asked for discussion. "
+                "If sources disagree, state the uncertainty instead of merging "
+                "uncorroborated claims."
+            ),
             count=len(results),
             status="done" if results else "needs_verification",
             verified=bool(results),
@@ -5351,9 +5313,22 @@ if ($pos) {
         per_page_chars = max(1000, min(12000, int(args.get("per_page_chars", 4500))))
         search = self.web_search({"query": query, "limit": search_limit})
         results = search.get("results", [])
+        allow_discussion = bool(re.search(
+            r"\b(foro|forum|opinion|opiniones|discussion|discusion|"
+            r"comentarios|comments|comunidad|community|social)\b",
+            query.casefold(),
+        ))
+        read_candidates = list(results)
+        if not allow_discussion:
+            non_discussion = [
+                item for item in read_candidates
+                if isinstance(item, dict) and item.get("source_kind") != "discussion"
+            ]
+            if non_discussion:
+                read_candidates = non_discussion
         sources = []
         failures = []
-        for item in results[:read_limit]:
+        for item in read_candidates[:read_limit]:
             url = str(item.get("url") or "")
             try:
                 page = self.web_read({"url": url, "max_chars": per_page_chars})
@@ -5361,6 +5336,7 @@ if ($pos) {
                     "title": page.get("title") or item.get("title"),
                     "url": page.get("url") or url,
                     "search_snippet": item.get("snippet"),
+                    "source_kind": item.get("source_kind"),
                     "excerpt": page.get("text"),
                     "content_type": page.get("content_type"),
                     "status_code": page.get("status_code"),

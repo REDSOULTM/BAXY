@@ -29,6 +29,12 @@ class TestFastInfoMode(unittest.TestCase):
                   "que es la fotosintesis", "por que el cielo es azul"]:
             self.assertEqual(_infer_mode(q), "fast_info", f"{q!r} -> fast_info")
 
+    def test_question_mark_without_action_routes_to_fast_info(self):
+        self.assertEqual(_infer_mode("Con ha hecho collab?"), "fast_info")
+
+    def test_question_mark_action_stays_action(self):
+        self.assertNotEqual(_infer_mode("puedes abrir chrome?"), "fast_info")
+
     def test_win_is_profile_agnostic(self):
         """El big win (thinking OFF en preguntas) NO debe depender del perfil. La
         única entrada que varía por perfil en choose_mode es base_max_tokens. A/B

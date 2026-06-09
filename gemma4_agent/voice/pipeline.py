@@ -154,6 +154,43 @@ def _is_silence_hallucination(text: str) -> bool:
     return folded in _SILENCE_HALLUCINATIONS
 
 
+def _is_nonlexical_vocalization_token(token: str) -> bool:
+    """True for a token whose shape is only a filler vocalization.
+
+    This is deliberately structural, not a command/intent keyword list: a real
+    utterance survives as soon as any lexical token appears.
+    """
+    t = (token or "").strip()
+    if not t or any(ch.isdigit() for ch in t):
+        return False
+    chars = set(t)
+
+    # Nasal hums: "mm", "mmm", "mmh", "mhm", "hmm", "nnn".
+    if chars <= {"m", "n", "h"} and any(ch in t for ch in ("m", "n")):
+        return True
+
+    # Breath/vowel fillers: "uh", "eh", "ah", "oh", plus "um"/"em"/"uhm".
+    if len(t) >= 2 and t[0] in {"a", "e", "o", "u"}:
+        rest = t[1:]
+        if set(rest) <= {"h"}:
+            return True
+        if t[0] in {"e", "u"} and set(rest) <= {"m", "h"} and "m" in rest:
+            return True
+
+    return False
+
+
+def _is_filler_only_transcript(text: str) -> bool:
+    """True when the whole transcript has no lexical content.
+
+    Examples: "Mm-mm.", "mmh", "uh". False for "mm abre steam" or "no".
+    """
+    folded = _fold_for_match(text)
+    if not folded:
+        return False
+    return all(_is_nonlexical_vocalization_token(tok) for tok in folded.split())
+
+
 def peak_window_rms(audio: "np.ndarray", window_samples: int) -> float:
     """Return the maximum RMS over non-overlapping windows of `audio`.
 
@@ -665,6 +702,17 @@ class VoicePipeline:
                 # el video", "you"...). Drop it — it is not a real command.
                 logger.info(
                     "silence hallucination dropped: raw=%r corrected=%r",
+                    raw_text[:60], corrected[:60],
+                )
+                self._emit_state("NO_SPEECH")
+            elif (
+                _is_filler_only_transcript(raw_text)
+                or _is_filler_only_transcript(corrected)
+            ):
+                # Voiced non-speech passes the energy gate and can be
+                # transcribed as "Mm-mm."; it is still not a command.
+                logger.info(
+                    "filler-only transcript dropped: raw=%r corrected=%r",
                     raw_text[:60], corrected[:60],
                 )
                 self._emit_state("NO_SPEECH")

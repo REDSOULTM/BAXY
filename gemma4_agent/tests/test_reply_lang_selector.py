@@ -8,9 +8,16 @@ GEMMA4_VOICE_LANG: si está fijo (es/en/pt/fr/de/it) usa ESE sin auto-detectar
 from __future__ import annotations
 
 import os
+import types
 import unittest
 
-from gemma4_agent.agent_core.agent import _reply_lang, _detect_lang
+from gemma4_agent.agent_core.agent import (
+    Gemma4Agent,
+    _detect_lang,
+    _reply_lang,
+    _reply_language_mismatch,
+    _turn_language_instruction,
+)
 
 
 class ReplyLangSelectorTest(unittest.TestCase):
@@ -58,6 +65,67 @@ class ReplyLangSelectorTest(unittest.TestCase):
         # un código no soportado -> modo auto (ancla SO / detección), no rompe.
         os.environ["GEMMA4_VOICE_LANG"] = "xx"
         self.assertEqual(_reply_lang("open Chrome please"), "en")  # señal fuerte EN
+
+    def test_turn_prompt_carries_selected_reply_language(self):
+        os.environ["GEMMA4_VOICE_LANG"] = "es"
+        hint = _turn_language_instruction("Quien eres")
+        self.assertIn("Selected conversation language: Spanish (es)", hint)
+        self.assertIn("Reply ONLY in Spanish", hint)
+        self.assertIn("prior assistant replies", hint)
+
+    def test_reply_language_mismatch_detects_english_reply_to_spanish_turn(self):
+        os.environ["GEMMA4_VOICE_LANG"] = "es"
+        needs, target, reply_lang = _reply_language_mismatch(
+            "Quien eres",
+            "I am Baxy, your local Windows voice assistant powered by Gemma 4.",
+        )
+        self.assertTrue(needs)
+        self.assertEqual(target, "es")
+        self.assertEqual(reply_lang, "en")
+
+    def test_reply_language_repair_uses_llm_rewrite(self):
+        os.environ["GEMMA4_VOICE_LANG"] = "es"
+
+        class _Trace:
+            def __init__(self):
+                self.events = []
+
+            def event(self, *args, **kwargs):
+                self.events.append((args, kwargs))
+
+        class _Client:
+            def __init__(self):
+                self.calls = []
+
+            def chat(self, messages, **kwargs):
+                self.calls.append((messages, kwargs))
+                return {"choices": [{"message": {
+                    "content": "Soy Baxy, tu asistente local de voz para Windows."
+                }}]}
+
+        class _Self:
+            pass
+
+        fake = _Self()
+        fake.client = _Client()
+        fake.trace = _Trace()
+        fake._router_model_for = lambda messages: None
+        fake._tts_streamed = True
+        fake._tts_streamed_text = "I am Baxy"
+        fake._tts_info_stream = True
+        fake._llm_rewrite_reply_language = types.MethodType(
+            Gemma4Agent._llm_rewrite_reply_language, fake)
+
+        fixed, repaired = Gemma4Agent._repair_reply_language_if_needed(
+            fake,
+            "Quien eres",
+            "I am Baxy, your local Windows voice assistant powered by Gemma 4.",
+            "turn-test",
+        )
+        self.assertTrue(repaired)
+        self.assertEqual(_detect_lang(fixed), "es")
+        self.assertEqual(len(fake.client.calls), 1)
+        self.assertFalse(fake._tts_streamed)
 
 
 if __name__ == "__main__":

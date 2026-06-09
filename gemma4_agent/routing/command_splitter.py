@@ -252,6 +252,19 @@ _LEADING_FILLER_RE = re.compile(
     re.IGNORECASE)
 
 
+def _drop_leading_non_action_clause(parts: list[str]) -> list[str]:
+    """Drop a short conversational lead-in before a real action clause."""
+    out = list(parts)
+    while len(out) > 1:
+        head = out[0].strip(" ,.;:")
+        if not head or len(head.split()) > 1:
+            break
+        if re.search(_IMPERATIVE, head, re.IGNORECASE):
+            break
+        out.pop(0)
+    return out
+
+
 def split_command(utterance: str) -> list[str]:
     """Parte un enunciado en cláusulas de acción. Devuelve [utterance] si no hay
     multi-intent claro (caso normal). Nunca lanza.
@@ -269,6 +282,9 @@ def split_command(utterance: str) -> list[str]:
     # CAPA 1: regex español (exacta, barata, ya validada).
     parts = [p.strip(" ,.;") for p in _SPLIT_RE.split(utterance) if p and p.strip(" ,.;")]
     if len(parts) > 1:
+        parts = _drop_leading_non_action_clause(parts)
+        if len(parts) <= 1:
+            return parts or [utterance]
         # NO PARTIR cuando la 1ra cláusula es un "ir/entrar a <app>" puro: es un
         # PREFIJO DE CONTEXTO de lo que sigue, no una acción aparte. Bug que cura:
         # "Ve a discord y pon el chat de cbayeah" se partía en

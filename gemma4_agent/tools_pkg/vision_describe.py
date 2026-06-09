@@ -48,11 +48,22 @@ def describe_image(agent: Any, image_path: Any, focus: str = "",
         )
         # ANCLA OCR: el texto REAL de la pantalla. Anclar al modelo en él evita
         # que un 2B aluvine sobre pantallas densas (caso 'Mortal Kombat').
+        #
+        # CRÍTICO (bug 2026-06-08): el 2B repetía el ANCLA crudo dentro de su
+        # respuesta visible ("El OCR leyó '<<<0 a_ox @ chatgpt.com...'") — el
+        # usuario lee prosa, NO el volcado garbled del OCR ni los marcadores
+        # <<< >>>. La instrucción debe dejar claro que el OCR es referencia
+        # SILENCIOSA de fondo: se usa para identificar bien la app, NUNCA se
+        # cita, transcribe ni menciona en la descripción.
         if ocr_text and ocr_text.strip():
             instr += (
-                " El texto que el OCR leyó EN ESTA pantalla (es la verdad, "
-                "usalo para identificar la app/sitio y NO contradecirlo): "
-                f"<<<{ocr_text.strip()}>>>"
+                " Como referencia interna y SILENCIOSA (NO la menciones, NO la "
+                "cites, NO la transcribas, NO escribas 'el OCR' ni los símbolos "
+                "<<< >>> en tu respuesta), un OCR leyó este texto de la pantalla "
+                "para que identifiques bien la app/sitio sin contradecirlo: "
+                f"<<<{ocr_text.strip()}>>>. "
+                "Tu respuesta debe ser prosa limpia describiendo lo que se ve, "
+                "sin rastro de ese texto crudo."
             )
         if focus:
             instr += f" Prestá atención especial a: {focus}."
@@ -63,9 +74,40 @@ def describe_image(agent: Any, image_path: Any, focus: str = "",
             timeout_s=90.0, model=_vision_model)
         txt = (((resp or {}).get("choices") or [{}])[0]
                .get("message") or {}).get("content") or ""
-        return txt.strip() or None
+        return _strip_ocr_echo(txt.strip()) or None
     except Exception:
         return None
+
+
+def _strip_ocr_echo(text: str) -> str:
+    """Guarda ESTRUCTURAL: el 2B a veces ignora la instrucción y vuelca el
+    ancla OCR cruda en la descripción ("El OCR leyó '<<<...>>>'"). El usuario
+    lee prosa, no el dump garbled. Limpiamos por FORMA (no contenido):
+
+    1. Quitamos cualquier segmento envuelto en los marcadores <<< >>> (el ancla
+       literal si se filtró).
+    2. Si una FRASE menciona el OCR de forma meta ("el OCR leyó/dice/detectó…"),
+       la descartamos entera: es ruido sobre el OCR, no descripción de pantalla.
+
+    Sin hardcode de idioma de CONTENIDO: solo detecta la auto-referencia al OCR
+    (un término técnico universal) y los marcadores que NOSOTROS inyectamos.
+    """
+    if not text:
+        return text
+    import re
+    # 1. Marcadores literales <<< ... >>> (incl. multilínea).
+    text = re.sub(r"<<<.*?>>>", "", text, flags=re.DOTALL)
+    # Marcador huérfano sin cierre (el modelo cortó a la mitad).
+    text = re.sub(r"<<<.*$", "", text, flags=re.DOTALL)
+    # 2. Frases meta-OCR ("el OCR leyó …", "OCR detected …", "le texte OCR …").
+    #    Partimos en frases y descartamos las que se refieren al OCR.
+    sentences = re.split(r"(?<=[.!?。])\s+", text)
+    kept = [s for s in sentences
+            if not re.search(r"\bO\.?C\.?R\.?\b", s, flags=re.IGNORECASE)]
+    cleaned = " ".join(kept).strip() if kept else ""
+    # Si limpiar dejó todo vacío (la respuesta ERA solo el dump), devolvemos lo
+    # que quede tras quitar marcadores — mejor algo que None silencioso.
+    return (cleaned or text).strip()
 
 
 __all__ = ["describe_image"]

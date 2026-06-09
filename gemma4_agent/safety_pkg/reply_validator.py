@@ -1107,6 +1107,83 @@ DELEGATE_REGEN_HINT = (
 )
 
 
+_POST_ACTION_CLARIFY_MARGIN = float(
+    __import__("os").environ.get("GEMMA4_POST_ACTION_CLARIFY_MARGIN", "0.04"))
+_POST_ACTION_CLARIFY_ANCHORS = [
+    "no entendi que querias que hiciera", "decime claramente que accion queres",
+    "necesito que aclares la accion", "no se a que te referis",
+    "I did not understand what you wanted me to do",
+    "please clarify what action you want", "which action did you mean",
+    "je n'ai pas compris l'action", "nao entendi a acao", "ich habe die aktion nicht verstanden",
+]
+_POST_ACTION_DONE_ANCHORS = [
+    "listo, reanude el video", "listo, hice lo que pediste",
+    "ya continue la reproduccion", "la accion quedo hecha",
+    "done, I resumed the video", "done, I completed the action",
+    "j'ai repris la video", "pronto, retomei o video", "fertig, ich habe das video fortgesetzt",
+]
+
+
+class _PostActionClarifyCentroids:
+    __slots__ = ("ready", "clarify", "done")
+
+    def __init__(self) -> None:
+        self.ready = False
+        self.clarify = None
+        self.done = None
+
+
+_PAC = _PostActionClarifyCentroids()
+
+
+def _ensure_post_action_clarify_centroids() -> bool:
+    if _PAC.ready:
+        return _PAC.clarify is not None
+    try:
+        from .. import semantic_router as sr
+        if not sr._ensure_loaded():
+            _PAC.ready = True
+            return False
+        import numpy as np
+        model = sr._STATE.model
+
+        def _centroid(anchors):
+            e = model.encode(anchors, normalize_embeddings=True).mean(0)
+            return np.asarray(e / (np.linalg.norm(e) or 1.0), dtype="float32")
+
+        _PAC.clarify = _centroid(_POST_ACTION_CLARIFY_ANCHORS)
+        _PAC.done = _centroid(_POST_ACTION_DONE_ANCHORS)
+        _PAC.ready = True
+        return True
+    except Exception:
+        _PAC.ready = True
+        return False
+
+
+def post_action_clarification_conflict(
+    reply_text: str,
+    tool_calls_this_turn: list[Any],
+) -> bool:
+    """True when a successful action reply still asks for clarification."""
+    txt = (reply_text or "").strip()
+    if len(txt) < 12:
+        return False
+    if not any(_is_successful_call(c) for c in tool_calls_this_turn or []):
+        return False
+    if not _ensure_post_action_clarify_centroids() or _PAC.clarify is None:
+        return False
+    try:
+        from .. import semantic_router as sr
+        import numpy as np
+        q = sr.embed(txt)
+        if q is None:
+            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
+        q = np.asarray(q, dtype="float32")
+        return (float(q @ _PAC.clarify) - float(q @ _PAC.done)) >= _POST_ACTION_CLARIFY_MARGIN
+    except Exception:
+        return False
+
+
 # ---------------------------------------------------------------------------
 # Anti-respuesta-muda (MODO NO VIDENTE). Un usuario que no ve necesita que
 # el resultado de una acción se le DIGA: una respuesta como "Listo." tras abrir

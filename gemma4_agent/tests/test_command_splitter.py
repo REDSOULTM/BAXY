@@ -741,6 +741,8 @@ class DisfluencyStripTest(unittest.TestCase):
         self.assertEqual(split_command("ah, subí el volumen"), ["subí el volumen"])
         self.assertEqual(split_command("gemma, reproduce el video"),
                          ["reproduce el video"])
+        self.assertEqual(split_command("Dale, reanuda lo que estaba viendo."),
+                         ["reanuda lo que estaba viendo"])
 
     def test_does_not_eat_real_word_prefixes(self):
         # 'ahora' NO es 'ah'+'ora'; 'umbral' NO es 'um'+'bral'; 'este'/'a ver' = contenido

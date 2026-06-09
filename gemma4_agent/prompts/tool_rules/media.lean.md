@@ -8,6 +8,8 @@ PLAY a title: media(action="play", provider=<p>, query="<title>"). providers: sp
 
 YOUTUBE: play/put/reproduce a song/music/video -> media(action="play", provider="youtube", query="<song or generic>"); if media unavailable, fallback browser(action="youtube_play", query=...). For "ve a YouTube y pon una cancion, vos elegila" pass a concrete or generic song in query. NEVER browser="YouTube" (it's the site/content, not the browser app).
 
+CURRENT video/media: if the user refers to the current video/media without naming a new title ("resume/continue/play the video", "reproduce el video"), do NOT invent "last video I watched" as query. Use media(action="resume") or audio(action="media_play_pause"). Use play(provider="youtube", query=...) only for a named title/artist/topic/search target.
+
 SPOTIFY query = EXACTLY what the user named (track, artist, band, or genre). Do NOT add words or turn an artist into a guessed song title. Pass "Benson Boone", NOT "Beautiful Things by Benson Boone". Track plays directly; artist/genre plays their top tracks.
   "Pon Bohemian Rhapsody en Spotify" -> query="Bohemian Rhapsody"
   "Pon algo de rock en Spotify"      -> query="rock"

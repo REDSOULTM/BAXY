@@ -20,6 +20,7 @@ Fuentes/incidentes: 've a pivigames' (pivigames.blog no .com), 've a portal unie
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Any, Callable
 from urllib.parse import urlparse
 
@@ -34,6 +35,36 @@ _KNOWN_REAL_DOMAINS = frozenset({
     "live", "office", "steampowered", "epicgames", "ebay", "mercadolibre",
     "paypal", "dropbox", "drive", "maps", "translate", "wordpress", "medium",
 })
+
+
+_WEB_NAVIGATION_PATTERNS = (
+    r"\babr(?:e|i|ir|ime|eme)\b",
+    r"\b(?:and(?:a|ate)|ve|entra|entrar|visita|visitar|navega|navegar)\s+(?:a|al|la|el|un|una|en)\b",
+    r"\b(?:lleva|llevame|ponme|poneme)\s+(?:a|al|en)\b",
+    r"\bgo\s+to\b",
+    r"\bnavigate\s+to\b",
+    r"\bopen\b",
+    r"\bvisit\b",
+    r"\btake\s+me\s+to\b",
+)
+
+
+def _fold_user_text(text: str) -> str:
+    n = unicodedata.normalize("NFKD", (text or "").casefold())
+    return "".join(ch for ch in n if not unicodedata.combining(ch))
+
+
+def user_requested_web_navigation(user_text: str) -> bool:
+    """True when the user's text asks to navigate/open a web page.
+
+    This is an intent-shape guard for tool preconditions, not a target list:
+    factual prompts such as "quien es X" should read/synthesize, while
+    navigation prompts such as "ve a X" or "open X" may open a visible browser.
+    """
+    folded = _fold_user_text(user_text)
+    if not folded:
+        return False
+    return any(re.search(pat, folded) for pat in _WEB_NAVIGATION_PATTERNS)
 
 
 def registrable_label(url: str):
@@ -64,6 +95,8 @@ def user_requested_open(url: str, user_text: str) -> bool:
     True (no inferir; abrir normal en CLI/tests). PROCEDENCIA, no keywords."""
     ut = (user_text or "").strip().lower()
     if not ut:
+        return True
+    if user_requested_web_navigation(ut):
         return True
     try:
         host = (urlparse(url if "//" in url else "//" + url).hostname or "").lower()
@@ -333,5 +366,6 @@ def resolve_site_by_search(
 __all__ = [
     "user_country_code", "ddgs_search", "ddgs_search_all_backends",
     "resolve_site_by_search", "registrable_label", "is_probably_guessed_domain",
+    "user_requested_open", "user_requested_web_navigation",
     "_KNOWN_REAL_DOMAINS",
 ]

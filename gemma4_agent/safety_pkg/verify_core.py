@@ -217,6 +217,9 @@ def summarize_verifiers(outcomes: list[VerifierOutcome]) -> str:
     """
     if not outcomes:
         return ""
+    outcomes = _without_superseded_web_failures(outcomes)
+    if not outcomes:
+        return ""
     failed = sum(1 for o in outcomes if o.confirmed is False)
     if failed == 0:
         return ""
@@ -229,6 +232,29 @@ def summarize_verifiers(outcomes: list[VerifierOutcome]) -> str:
     if failed == 1:
         return " (aunque no pude confirmar que se completara)"
     return f" (aunque no pude confirmar {failed} de las acciones)"
+
+
+def _without_superseded_web_failures(
+    outcomes: list[VerifierOutcome],
+) -> list[VerifierOutcome]:
+    """Drop intermediate web retrieval failures superseded by later web evidence.
+
+    Web search/read/research calls are read-only retrieval steps. Small models
+    sometimes make a bad intermediate web call, then recover with successful web
+    evidence in the same turn. The user-facing footer should reflect the final
+    evidence state. Action tools are not filtered here.
+    """
+    later_web_success = False
+    kept_reversed: list[VerifierOutcome] = []
+    for outcome in reversed(outcomes):
+        is_web = outcome.tool_name == "web"
+        if is_web and outcome.confirmed is False and later_web_success:
+            continue
+        kept_reversed.append(outcome)
+        if is_web and outcome.confirmed is True:
+            later_web_success = True
+    kept_reversed.reverse()
+    return kept_reversed
 
 
 def collect_evidence_keys(outcomes: list[VerifierOutcome]) -> list[str]:

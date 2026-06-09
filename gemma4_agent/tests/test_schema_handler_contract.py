@@ -210,8 +210,19 @@ def _get_handler_source(registry: Any, tool_name: str) -> str | None:
     #   `return self.<method>(args)`     — method on same registry
     import re as _re
     chunks = [method_src]
-    # Function delegates (module-level)
-    for m in _re.finditer(r"return\s+([a-z_][a-z0-9_]*_tool|[a-z_][a-z0-9_]*)\s*\(args[,)]", method_src):
+    # Variables derivadas de `args` (p.ej. `enriched = dict(args)` para inyectar
+    # `_user_text` antes de delegar). El handler sigue pasando TODAS las keys del
+    # schema al delegate, solo con un nombre de variable distinto -> las tratamos
+    # como equivalentes a `args` para seguir la delegación.
+    arg_aliases = {"args"}
+    for m in _re.finditer(r"([a-z_][a-z0-9_]*)\s*=\s*dict\(\s*args\s*\)", method_src):
+        arg_aliases.add(m.group(1))
+    alias_re = "|".join(_re.escape(a) for a in sorted(arg_aliases))
+    # Function delegates (module-level): `return <name>_tool(<args-alias>, ...)`
+    for m in _re.finditer(
+        rf"return\s+([a-z_][a-z0-9_]*_tool|[a-z_][a-z0-9_]*)\s*\((?:{alias_re})[,)]",
+        method_src,
+    ):
         target_name = m.group(1)
         target = _find_function_anywhere(target_name)
         if target is not None:

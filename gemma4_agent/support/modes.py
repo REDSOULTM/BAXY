@@ -331,15 +331,25 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
     )
     action_markers = (
         " abre ",
+        " abrir ",
         " ve a ",
         " busca ",
+        " buscar ",
         " pon ",
         " escribe ",
+        " escribir ",
         " instala ",
+        " instalar ",
         " mueve ",
+        " mover ",
         " copia ",
+        " copiar ",
         " crea ",
+        " crear ",
         " ejecuta ",
+        " ejecutar ",
+        " cierra ",
+        " cerrar ",
     )
     sequence_score = sum(1 for marker in sequencing_markers if marker in low)
     action_score = sum(1 for marker in action_markers if marker in low)
@@ -352,6 +362,10 @@ def _infer_mode(content: str | list[dict[str, Any]]) -> str:
     # fast_action.
     if action_score >= 1:
         return "quick_action"
+
+    if "?" in text or "¿" in text or "؟" in text or "？" in text:
+        if len(text.split()) >= 3:
+            return "fast_info"
 
     # Queries informativas (explicaciones, comparaciones, listas, cronologias)
     # necesitan budget grande. fast_action con max_tokens=384 trunca

@@ -12,8 +12,12 @@ Verifies:
 """
 from __future__ import annotations
 
+import dataclasses
+import tempfile
 import time
 import unittest
+from pathlib import Path
+from unittest import mock
 
 from ._src_helpers import agent_method_src  # robusto: lee agent.py de disco (no flakea)
 
@@ -22,7 +26,10 @@ from gemma4_agent.agent_core.agent import (
     INHERIT_TTL_SEC,
     Gemma4Agent,
     _GUI_CONTEXT_TOOLS,
+    _contextual_info_query,
+    _is_info_followup_question,
 )
+from gemma4_agent.infra.config import AgentConfig
 
 
 class TestInheritToolsSafety(unittest.TestCase):
@@ -197,6 +204,103 @@ class TestKnowledgeReleaseDiscriminator(unittest.TestCase):
         wk = self._wk()
         # texto vacío / no-pregunta no debe soltar GUI espuriamente
         self.assertFalse(wk(""))
+
+
+class TestInfoFollowupAfterResearch(unittest.TestCase):
+    """A short follow-up after web/research must stay in the information domain.
+
+    Regression from live trace 20260608_162255_880a3ae3:
+    "quien es kai cenat" used web, then "Con ha hecho collab?" was classified as
+    fast_action and memory widened the subset to app/system. Forced retry could
+    only call app.search, which opens/searches local apps instead of researching.
+    """
+
+    def test_short_question_after_web_is_info_followup(self):
+        self.assertTrue(_is_info_followup_question("Con ha hecho collab?", ["web"]))
+        self.assertTrue(_is_info_followup_question("con quien ha hecho collab?", ["web"]))
+
+    def test_requires_previous_info_tool(self):
+        self.assertFalse(_is_info_followup_question("Con ha hecho collab?", ["app"]))
+        self.assertFalse(_is_info_followup_question("Con ha hecho collab?", []))
+
+    def test_does_not_steal_identity_or_next_step_questions(self):
+        self.assertFalse(_is_info_followup_question("quien eres", ["web"]))
+        self.assertFalse(_is_info_followup_question("que hago ahora?", ["web"]))
+
+    def test_contextual_info_query_uses_previous_user_turn(self):
+        history = [
+            {"role": "user", "content": "quien es kai cenat"},
+            {"role": "assistant", "content": "Kai Cenat es un streamer."},
+            {"role": "user", "content": "Con ha hecho collab?"},
+        ]
+        self.assertEqual(
+            _contextual_info_query("Con ha hecho collab?", history),
+            "quien es kai cenat Con ha hecho collab?",
+        )
+
+    def test_decide_turn_rewrites_action_memory_subset_to_info_tools(self):
+        tmp = Path(tempfile.mkdtemp(prefix="gemma4-info-followup-"))
+        cfg = dataclasses.replace(
+            AgentConfig.from_env(),
+            memory_path=tmp / "memory.json",
+            captures_dir=tmp / "captures",
+            trace_path=tmp / "traces.jsonl",
+            state_path=tmp / "state.json",
+            enable_tracing=False,
+            enable_safety=False,
+        )
+        agent = Gemma4Agent(cfg)
+        agent._last_executed_tools = ["web"]
+        fake_select = mock.MagicMock(return_value=["session", "safety", "app", "system"])
+        fake_select._last_fallback_used = False
+        with mock.patch("gemma4_agent.agent_core.agent.select_tool_names", fake_select):
+            decision = agent._decide_turn("Con ha hecho collab?")
+        self.assertIn("web", decision.selected_tool_names)
+        self.assertIn("source_manager", decision.selected_tool_names)
+        self.assertIn("knowledge", decision.selected_tool_names)
+        self.assertNotIn("app", decision.selected_tool_names)
+        self.assertNotIn("system", decision.selected_tool_names)
+        self.assertEqual(decision.mode.name, "research")
+        self.assertIn("Information follow-up", agent._info_followup_note)
+
+    def test_run_content_prefetches_web_for_info_followup(self):
+        tmp = Path(tempfile.mkdtemp(prefix="gemma4-info-prefetch-"))
+        cfg = dataclasses.replace(
+            AgentConfig.from_env(),
+            memory_path=tmp / "memory.json",
+            captures_dir=tmp / "captures",
+            trace_path=tmp / "traces.jsonl",
+            state_path=tmp / "state.json",
+            enable_tracing=True,
+            enable_safety=False,
+        )
+        agent = Gemma4Agent(cfg)
+        agent.history = [
+            {"role": "user", "content": "quien es kai cenat"},
+            {"role": "assistant", "content": "Kai Cenat es un streamer."},
+        ]
+        agent._last_executed_tools = ["web"]
+        fake_select = mock.MagicMock(return_value=["session"])
+        fake_select._last_fallback_used = False
+        agent.client.chat = mock.MagicMock(return_value={"choices": [{
+            "message": {"role": "assistant", "content": "Respuesta desde fuente.", "tool_calls": []},
+            "finish_reason": "stop",
+        }]})
+        agent.tools.execute = mock.MagicMock(return_value={
+            "ok": True,
+            "status": "done",
+            "verified": True,
+            "content_verified": True,
+            "completion_status": "search_results_extracted",
+            "results": [{"title": "x", "url": "https://example.com", "snippet": "x"}],
+            "count": 1,
+        })
+        with mock.patch("gemma4_agent.agent_core.agent.select_tool_names", fake_select):
+            reply = agent.run_content("Con ha hecho collab?")
+        self.assertEqual(reply.content, "Respuesta desde fuente.")
+        agent.tools.execute.assert_called_once_with(
+            "web", {"action": "search", "query": "quien es kai cenat Con ha hecho collab?"})
+        self.assertEqual([ev.name for ev in reply.tool_events], ["web"])
 
 
 class TestAgentInheritState(unittest.TestCase):

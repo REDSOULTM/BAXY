@@ -74,6 +74,20 @@ class TestNormalizeDispatched(unittest.TestCase):
         self.assertEqual(r["status"], "dispatched")
         self.assertIsNone(r["verified"])
 
+    def test_web_failure_footer_suppressed_after_later_web_success(self):
+        footer = summarize_verifiers([
+            VerifierOutcome("web", False, "web read failed"),
+            VerifierOutcome("web", True, "research returned 2 sources"),
+        ])
+        self.assertEqual(footer, "")
+
+    def test_web_failure_footer_not_suppressed_by_other_tool_success(self):
+        footer = summarize_verifiers([
+            VerifierOutcome("web", False, "web read failed"),
+            VerifierOutcome("app", True, "app opened"),
+        ])
+        self.assertIn("no pude confirmar", footer)
+
     def test_app_open_launch_requested_becomes_dispatched(self):
         r = _normalize_tool_result(
             "app", {"action": "open"},
@@ -201,6 +215,22 @@ class TestGuardUnverifiedFinal(unittest.TestCase):
         self.assertIn("Nota:", out)
         self.assertIn("no dejo evidencia suficiente", out.lower())
         self.assertNotIn("no pude confirmar el efecto", out.lower())
+
+    def test_false_open_claim_replaced_on_measured_failure(self):
+        event = self._event(
+            "app", {"action": "search", "query": "Kai Cenat collab"},
+            {
+                "ok": True,
+                "verified": False,
+                "status": "needs_verification",
+                "completion_status": "low_confidence_local_app_search",
+                "evidence": "tool_result",
+            },
+        )
+        out = self.agent._guard_unverified_final("Listo, abri Chrome.", [event])
+        self.assertNotIn("abri Chrome", out)
+        self.assertIn("No pude completar", out)
+        self.assertIn("Nota:", out)
 
     def test_soft_note_for_unmeasured_steps(self):
         # TRI-ESTADO (2026-06-01): un plan computer_use con steps NO medibles

@@ -69,9 +69,21 @@ class TestPromiseWithoutActionGuard(unittest.TestCase):
         out = self._run("Voy a buscar esa información en internet.", [])
         self.assertNotIn("voy a buscar", out.lower())
 
+    def test_replaces_estoy_buscando(self):
+        out = self._run("Estoy buscando información sobre el Joker ahora.", [])
+        self.assertNotIn("estoy buscando", out.lower())
+
+    def test_replaces_intentando_buscar(self):
+        out = self._run("Intentando buscar informacion sobre el Joker ahora.", [])
+        self.assertNotIn("intentando buscar", out.lower())
+
     def test_english_promises(self):
         out = self._run("I'll search that for you.", [])
         self.assertNotIn("i'll search", out.lower())
+
+    def test_english_progressive_search_claim(self):
+        out = self._run("I'm searching for his biggest enemy now.", [])
+        self.assertNotIn("i'm searching", out.lower())
 
     def test_does_nothing_when_tool_ran(self):
         events = [MagicMock(name="web_result")]

@@ -47,11 +47,21 @@ class FillerDispatchTest(unittest.TestCase):
         self.vr._on_command = self.got.append
         os.environ.pop("GEMMA4_VOICE_FILLER", None)
 
-    def test_command_dispatched_after_filler(self):
+    def test_command_dispatched_without_filler_by_default(self):
         self.vr._tts = _FakeTTS()
         self.vr._handle_command("abre Steam", 1.0, "abre Steam")
         self.assertEqual(self.got, ["abre Steam"])
-        self.assertTrue(self.vr._tts.spoke)  # habló el filler
+        self.assertFalse(self.vr._tts.spoke)
+
+    def test_flag_on_speaks_filler(self):
+        os.environ["GEMMA4_VOICE_FILLER"] = "1"
+        try:
+            self.vr._tts = _FakeTTS()
+            self.vr._handle_command("abre Steam", 1.0, "abre Steam")
+            self.assertEqual(self.got, ["abre Steam"])
+            self.assertTrue(self.vr._tts.spoke)
+        finally:
+            os.environ.pop("GEMMA4_VOICE_FILLER", None)
 
     def test_no_tts_does_not_break_dispatch(self):
         self.vr._tts = None

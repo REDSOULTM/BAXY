@@ -15,6 +15,7 @@ import numpy as np
 from gemma4_agent.voice.pipeline import (
     MIN_CAPTURE_RMS,
     _buffer_rms,
+    _is_filler_only_transcript,
     _is_silence_hallucination,
 )
 from gemma4_agent.voice import tts as tts_mod
@@ -61,6 +62,24 @@ class TestSilenceHallucination(unittest.TestCase):
     def test_empty_not_flagged(self):
         self.assertFalse(_is_silence_hallucination(""))
         self.assertFalse(_is_silence_hallucination("   "))
+
+
+class TestFillerOnlyTranscript(unittest.TestCase):
+    def test_filler_only_is_flagged(self):
+        for txt in (
+            "Mm-mm.", "mmh", "mhhh", "hmm", "mhm", "uh", "umm", "ehm",
+        ):
+            self.assertTrue(_is_filler_only_transcript(txt), f"missed: {txt!r}")
+
+    def test_lexical_content_is_not_flagged(self):
+        for txt in (
+            "abre Steam", "mm abre Steam", "no", "si", "ok", "mueve ventana",
+        ):
+            self.assertFalse(_is_filler_only_transcript(txt), f"false positive: {txt!r}")
+
+    def test_empty_not_flagged(self):
+        self.assertFalse(_is_filler_only_transcript(""))
+        self.assertFalse(_is_filler_only_transcript("   "))
 
 
 class TestTtsBusyGrace(unittest.TestCase):

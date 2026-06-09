@@ -94,3 +94,10 @@ for _schema in COMPOUND_TOOL_SCHEMAS:
             "browser and then clicking a bookmark/favorite/link/result/control; "
             "pass the full natural-language goal."
         )
+    elif _fn.get("name") == "media":
+        _fn["description"] += (
+            "\nCurrent media: when the user asks to resume/continue/play the "
+            "current video or media without naming a new title/search target, "
+            "use action='resume' or play_pause. Do not invent a YouTube query "
+            "such as the last watched video; query is for named content."
+        )

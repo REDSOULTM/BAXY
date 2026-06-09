@@ -12,10 +12,13 @@ from gemma4_agent.safety_pkg.reply_validator import (
     is_unverified_claim,
     UNVERIFIED_CLAIM_REGEN_HINT,
     _ensure_claim_centroids,
+    _ensure_post_action_clarify_centroids,
+    post_action_clarification_conflict,
     soften_unverified_launch,
 )
 
 _HAS_ENCODER = _ensure_claim_centroids()
+_HAS_CLARIFY_ENCODER = _ensure_post_action_clarify_centroids()
 
 
 class ListoValidatorTest(unittest.TestCase):
@@ -147,6 +150,24 @@ class SoftenUnverifiedLaunchTest(unittest.TestCase):
     def test_non_effect_reply_untouched(self):
         r = "¿Querés que abra algo más?"
         self.assertEqual(soften_unverified_launch(r, self._UNCONF), r)
+
+
+class PostActionClarificationConflictTest(unittest.TestCase):
+    _OK = [{"tool": "media", "result": {"ok": True, "status": "dispatched"}}]
+
+    def test_no_successful_tool_never_flags(self):
+        reply = "No entendi que querias que hiciera. Listo, reanude el video."
+        self.assertFalse(post_action_clarification_conflict(reply, []))
+
+    @unittest.skipUnless(_HAS_CLARIFY_ENCODER, "encoder multilingue no disponible")
+    def test_clarification_plus_done_after_action_flags(self):
+        reply = "No entendi que querias que hiciera. Listo, reanude el video."
+        self.assertTrue(post_action_clarification_conflict(reply, self._OK))
+
+    @unittest.skipUnless(_HAS_CLARIFY_ENCODER, "encoder multilingue no disponible")
+    def test_clean_done_after_action_does_not_flag(self):
+        reply = "Listo, reanude el video que estabas viendo."
+        self.assertFalse(post_action_clarification_conflict(reply, self._OK))
 
 
 if __name__ == "__main__":

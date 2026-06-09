@@ -42,6 +42,9 @@ _FALSE_CONFIRMATION_PATTERNS = (
 )
 _PROMISE_PATTERNS = (
     "buscare", "buscaré", "voy a buscar", "voy a investigar",
+    "buscando informacion", "buscando información",
+    "estoy buscando", "estoy investigando",
+    "intentando buscar", "intentando investigar",
     "voy a consultar", "voy a revisar", "voy a chequear",
     "te proporcionare", "te proporcionaré", "te dire", "te diré",
     "te respondere", "te responderé", "te informare", "te informaré",
@@ -51,7 +54,10 @@ _PROMISE_PATTERNS = (
     "te aviso", "te confirmo", "te paso", "te mando", "te muestro",
     "lo reviso", "lo verifico", "déjame ver", "dejame ver",
     "ahora te traigo", "ya te digo", "te explico", "ya mismo",
-    "i'll search", "i'll look", "let me search", "let me check",
+    "i'll search", "i will search", "i'm searching", "i am searching",
+    "i’m searching", "searching for",
+    "i'll look", "i will look", "i'm looking", "i am looking",
+    "i’m looking", "let me search", "let me check",
     "i will find", "i'll find", "i'll get",
 )
 
@@ -298,7 +304,10 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
     # La señal tri-estado real vive en steps[*]; _has_measured_failure la lee.
     if _has_measured_failure(last):
         evidence = last.get("evidence") or last.get("completion_status") or status or "sin evidencia"
-        return content.rstrip() + _NOTE_MEASURED_FAIL.format(
+        base = content.rstrip()
+        if _asserts_physical_effect:
+            base = "No pude completar esa accion con evidencia suficiente."
+        return base + _NOTE_MEASURED_FAIL.format(
             status=status or "desconocido", verified=verified, evidence=evidence)
     return content.rstrip() + _NOTE_UNMEASURED
 

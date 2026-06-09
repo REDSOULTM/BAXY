@@ -281,6 +281,8 @@ def _detect_lang(text: str) -> str:
 
 
 _FIXED_LANGS = frozenset({"es", "en", "pt", "fr", "de", "it"})
+_LANG_NAMES = {"en": "English", "es": "Spanish", "pt": "Portuguese",
+               "fr": "French", "de": "German", "it": "Italian"}
 
 
 def _os_ui_lang() -> str | None:
@@ -349,14 +351,14 @@ def _detect_lang_is_strong(text: str, detected: str) -> bool:
 
 def _stream_tts_enabled() -> bool:
     """Stream the reply to TTS sentence by sentence (GEMMA4_STREAM_TTS).
-    Default ON — validado en vivo por escucha (sin cortes); veracidad validada
-    0-violaciones (voiced es prefijo del reply final). Kill-switch:
-    GEMMA4_STREAM_TTS=0. SOLO afecta modo voz: _stream_this exige _active_tts_sink
-    (texto/GUI/CLI pasan tts_sink=None -> no-op)."""
+    Default OFF: voice must match the final chat reply unless this experimental
+    low-latency path is explicitly enabled. Solo afecta modo voz:
+    _stream_this exige _active_tts_sink (texto/GUI/CLI pasan tts_sink=None ->
+    no-op)."""
     import os as _os_stream
     return (
-        _os_stream.environ.get("GEMMA4_STREAM_TTS", "1") or "1"
-    ).strip().lower() not in {"0", "false", "no", "off"}
+        _os_stream.environ.get("GEMMA4_STREAM_TTS", "0") or "0"
+    ).strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _summary_keep_tools_enabled() -> bool:
@@ -675,6 +677,11 @@ class Gemma4Agent:
         # de accesibilidad por voz: el LLM la usa para CONFIRMAR el cambio con
         # sus propias palabras (no hay frase enlatada). Se limpia tras el turno.
         self._a11y_switch_note: str = ""
+        # Nota transitoria (un turno) para preguntas cortas que continúan un
+        # turno informativo/research real. No responde por el LLM; solo fija el
+        # contrato conversacional para que resuelva la elipsis desde el historial.
+        self._info_followup_note: str = ""
+        self._info_followup_prefetch_query: str = ""
         # Contador (por turno) de re-prompts forzados en movilidad/no_vidente
         # cuando el LLM DELEGABA la tarea en vez de seguir actuando. Acotado para
         # "avanzar lo más posible y después parar honesto", sin colgarse.
@@ -950,6 +957,7 @@ class Gemma4Agent:
         selected_tool_names: list[str] | None = None,
         user_text: str | None = None,
     ) -> dict[str, str]:
+        language_section = _turn_language_instruction(user_text)
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
         persona_hint = f"\n\n{self._persona.system_hint}" if self._persona.system_hint else ""
@@ -969,6 +977,8 @@ class Gemma4Agent:
         # voz — el LLM la usa para confirmar el cambio. Va en la cola VARIABLE.
         a11y_switch_note = (f"\n\n{self._a11y_switch_note}"
                             if getattr(self, "_a11y_switch_note", "") else "")
+        info_followup_note = (f"\n\n{self._info_followup_note}"
+                              if getattr(self, "_info_followup_note", "") else "")
         from ..memory_pkg.experience import format_recall_for_prompt
         from ..mission.explicit_plan import format_for_prompt as _format_explicit_plan
         from ..memory_pkg.project_context import format_for_prompt as _format_project_context
@@ -1130,7 +1140,7 @@ class Gemma4Agent:
             stable_b = f"{persona_hint}{accessibility_hint}{skills_critical}{skills_menu}"
             # VARIABLE al final: mode-hint, tool-schemas (filtrados por subset
             # por ahora), project/plan/recall/phrase/microagents/intent/memoria.
-            variable = (f"{mode_hint}{a11y_switch_note}{tools_section}"
+            variable = (f"{language_section}{mode_hint}{a11y_switch_note}{info_followup_note}{tools_section}"
                         f"{project_section}{profile_section}{plan_hint}{explicit_section}"
                         f"{recall_section}{phrase_section}{microagents_section}"
                         f"{intent_hint}\n\n# Persistent memory\n"
@@ -1142,7 +1152,7 @@ class Gemma4Agent:
             tool_rules_tail = build_tool_rules_tail(selected_tool_names)
             tool_rules_section = f"\n\n{tool_rules_tail}" if tool_rules_tail else ""
             stable = f"{core_stable}{persona_hint}{accessibility_hint}{skills_critical}{skills_menu}"
-            variable = (f"{mode_hint}{a11y_switch_note}{tool_rules_section}{tools_section}"
+            variable = (f"{language_section}{mode_hint}{a11y_switch_note}{info_followup_note}{tool_rules_section}{tools_section}"
                         f"{project_section}{profile_section}{plan_hint}{explicit_section}"
                         f"{recall_section}{phrase_section}{microagents_section}"
                         f"{intent_hint}\n\n# Persistent memory\n"
@@ -1150,7 +1160,7 @@ class Gemma4Agent:
             return {"role": "system", "content": stable + variable}
         return {
             "role": "system",
-            "content": f"{prompt_base}{mode_hint}{a11y_switch_note}{tools_section}{persona_hint}{accessibility_hint}{project_section}{profile_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_autoinject}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
+            "content": f"{prompt_base}{language_section}{mode_hint}{a11y_switch_note}{info_followup_note}{tools_section}{persona_hint}{accessibility_hint}{project_section}{profile_section}{plan_hint}{explicit_section}{recall_section}{phrase_section}{microagents_section}{skills_autoinject}{skills_critical}{skills_menu}{intent_hint}\n\n# Persistent memory\n{self.memory.prompt_summary_for(user_text)}",
         }
 
     def _tool_schemas_hint(self, selected_tool_names: list[str] | None = None) -> str:
@@ -1358,19 +1368,48 @@ class Gemma4Agent:
         content = user_content(text, images=images, audios=audios)
         return self.run_content(content, progress=progress, tts_sink=tts_sink)
 
+    # Selección de eventos relevantes para el reply extraída a reply_repair.py
+    # (2026-06-08, ratchet archivo-dios). Wrappers delgados para no tocar los
+    # call-sites internos (self._event_* / self._focused_events_*).
+    @staticmethod
+    def _event_args_for_reply(ev: "ToolEvent") -> dict[str, Any]:
+        return _reply_repair.event_args_for_reply(ev)
+
+    @staticmethod
+    def _event_result_for_reply(ev: "ToolEvent") -> dict[str, Any]:
+        return _reply_repair.event_result_for_reply(ev)
+
+    @staticmethod
+    def _event_successful_for_reply(ev: "ToolEvent") -> bool:
+        return _reply_repair.event_successful_for_reply(ev)
+
+    @staticmethod
+    def _event_auxiliary_for_reply(ev: "ToolEvent") -> bool:
+        return _reply_repair.event_auxiliary_for_reply(ev)
+
+    @staticmethod
+    def _focused_events_for_action_reply(events: "list[ToolEvent]") -> "list[ToolEvent]":
+        return _reply_repair.focused_events_for_action_reply(events)
+
     def _describe_events_for_reply(self, events: "list[ToolEvent]") -> str:
         """Resume los tool events ejecutados en una frase NEUTRA en inglés, para
         que `_llm_action_reply` la confirme en el idioma del usuario sin arrastrar
         el español del contexto. Describe la FORMA (tool+action+target), no inventa
         resultados. Si no hay nada claro, frase genérica."""
         parts: list[str] = []
-        for ev in (events or [])[-3:]:
+        for ev in self._focused_events_for_action_reply(events):
             name = getattr(ev, "name", "") or ""
-            args = getattr(ev, "args", {}) or {}
-            action = str(args.get("action") or "").replace("_", " ").strip()
-            target = str(args.get("name") or args.get("app") or args.get("browser")
-                         or args.get("url") or args.get("target") or args.get("query")
-                         or args.get("level") or "").strip()
+            args = self._event_args_for_reply(ev)
+            result = self._event_result_for_reply(ev)
+            action = str(result.get("action") or args.get("action") or "").replace("_", " ").strip()
+            now = result.get("now_playing") if isinstance(result.get("now_playing"), dict) else {}
+            playback_type = str(now.get("playback_type") or "").strip().casefold()
+            if (str(result.get("provider") or "").casefold() == "current_media") or now:
+                target = "current video" if playback_type == "video" else "current media"
+            else:
+                target = str(args.get("name") or args.get("app") or args.get("browser")
+                             or args.get("url") or args.get("target") or args.get("query")
+                             or args.get("level") or "").strip()
             seg = " ".join(p for p in (action, name, target) if p) or name
             if seg:
                 parts.append(seg)
@@ -1400,8 +1439,6 @@ class Gemma4Agent:
                 in {"0", "false", "no", "off"}:
             return fallback
         try:
-            _LANG_NAMES = {"en": "English", "es": "Spanish", "pt": "Portuguese",
-                           "fr": "French", "de": "German", "it": "Italian"}
             if target_lang and target_lang in _LANG_NAMES:
                 _lang_rule = (f"Reply ONLY in {_LANG_NAMES[target_lang]} "
                               f"(the user's language). ")
@@ -1411,7 +1448,8 @@ class Gemma4Agent:
             sys_p = (
                 "You are Baxy, a local Windows voice assistant. An action was just "
                 "performed successfully. Reply with ONE very short sentence confirming "
-                f"it was done. {_lang_rule}"
+                "it is completed, using completed-action wording. Do not repeat the "
+                f"user's command as an instruction. {_lang_rule}"
                 "Plain text, no markdown, no emojis. Just the confirmation."
             )
             usr_p = f"User said: {user_text[:300]}\nAction performed: {did}\nConfirmation:"
@@ -1437,6 +1475,32 @@ class Gemma4Agent:
             except Exception:
                 pass
             return fallback
+
+    # Pases LLM de observación / reparación de idioma extraídos a reply_repair.py
+    # (2026-06-08, ratchet archivo-dios). Wrappers delgados: el agente se pasa a
+    # las funciones del módulo; los call-sites internos no cambian.
+    def _llm_observation_reply(self, user_text: str, evidence: dict[str, Any],
+                               fallback: str, target_lang: str | None = None) -> str:
+        return _reply_repair.llm_observation_reply(
+            self, user_text, evidence, fallback, target_lang=target_lang)
+
+    def _repair_media_status_reply_if_needed(
+        self, user_text: str, assistant_text: str,
+        events: "list[ToolEvent]", turn_id: str,
+    ) -> str:
+        return _reply_repair.repair_media_status_reply_if_needed(
+            self, user_text, assistant_text, events, turn_id)
+
+    def _llm_rewrite_reply_language(self, user_text: str, assistant_text: str,
+                                    target_lang: str) -> str:
+        return _reply_repair.llm_rewrite_reply_language(
+            self, user_text, assistant_text, target_lang)
+
+    def _repair_reply_language_if_needed(self, user_text: str, assistant_text: str,
+                                         turn_id: str,
+                                         target_lang: str | None = None) -> tuple[str, bool]:
+        return _reply_repair.repair_reply_language_if_needed(
+            self, user_text, assistant_text, turn_id, target_lang=target_lang)
 
     def _decide_turn(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None) -> TurnDecision:
         """Decide phase of a turn.
@@ -1465,11 +1529,10 @@ class Gemma4Agent:
                             str(p.get("text", "")) for p in content
                             if isinstance(p, dict) and p.get("type") == "text")
                     gui_safety.set_turn_goal(_goal_txt)
-                    # idioma del turno (la oferta proactiva va en el idioma
-                    # del usuario). Heurística por stopwords, fallback es.
+                    # Turn language uses the same selector as the prompt and
+                    # final reply repair, so router-adjacent state cannot drift.
                     try:
-                        from ..safety_pkg.reply_validator import _guess_lang as _gl2
-                        self._turn_lang = _gl2(_goal_txt) if _goal_txt else "es"
+                        self._turn_lang = _reply_lang(_goal_txt) if _goal_txt else "es"
                     except Exception:
                         self._turn_lang = "es"
                 except Exception:
@@ -1479,6 +1542,8 @@ class Gemma4Agent:
         # Reset de la nota transitoria de cambio-de-modo (un turno). Va ANTES de
         # cualquier short-circuit para que no filtre de un turno al siguiente.
         self._a11y_switch_note = ""
+        self._info_followup_note = ""
+        self._info_followup_prefetch_query = ""
         self._a11y_continue_count = 0  # re-prompts de accesibilidad usados este turno
         # Si el turno anterior ofreció automatizar una rutina y
         # el usuario responde sí/no, resolverlo ACÁ (antes del LLM) — es un
@@ -2296,6 +2361,44 @@ class Gemma4Agent:
             if _routed != list(selected_tool_names):
                 self.trace.event(turn_id, "file_routing_override", subset=_routed)
                 selected_tool_names = _routed
+        # Follow-up after an information turn: memory recall can widen the subset
+        # with action tools from superficially similar past turns. If the previous
+        # turn actually used information tools and the current turn is a short
+        # question, keep this in the information domain so the LLM can continue
+        # the same topic instead of searching local apps.
+        _info_followup = _is_info_followup_question(
+            raw_text_early or "", self._last_executed_tools)
+        if _info_followup:
+            before = list(selected_tool_names)
+            meta = [t for t in before if t in _META_TOOLS]
+            selected_tool_names = []
+            for tool_name in ("web", "source_manager", "knowledge", *meta):
+                if tool_name not in selected_tool_names:
+                    selected_tool_names.append(tool_name)
+            self.trace.event(
+                turn_id, "info_followup_tools_from_context",
+                previous_tools=list(self._last_executed_tools),
+                before=before,
+                after=selected_tool_names,
+            )
+            self._info_followup_note = (
+                "# Information follow-up\n"
+                "The current user message is a short follow-up to the previous "
+                "information/research turn. Resolve omitted entities from the "
+                "immediately preceding conversation and tool results. If the "
+                "answer needs external, recent, or source-backed facts, call an "
+                "available information tool instead of asking the user for the "
+                "same context again. Answer in the user's selected language."
+            )
+            self._info_followup_prefetch_query = _contextual_info_query(
+                raw_text_early or "", self.history)
+            if mode.name in {"fast_action", "fast_info"}:
+                mode = choose_mode(raw_text_early or "research", "research", self.config.max_tokens)
+                self.trace.event(
+                    turn_id, "info_followup_mode_research",
+                    previous_tools=list(self._last_executed_tools),
+                    mode=mode.name,
+                )
         # If a phrase-trigger routine already fired this turn, drop
         # session.cancel_turn from the subset. The user's phrase was
         # claimed by their saved routine; the LLM should confirm what
@@ -2370,7 +2473,7 @@ class Gemma4Agent:
                             # still inherit the prior tool.
                             # umbral POR IDIOMA (auditoría §7.5): el del turno si
                             # hay calibración propia, si no el global (threshold_for
-                            # cae solo). _turn_lang lo setea run_content vía _guess_lang.
+                            # cae solo). _turn_lang viene del selector _reply_lang.
                             _lang = getattr(self, "_turn_lang", None)
                             _thr = (_ahm.threshold_for(_lang)
                                     if hasattr(_ahm, "threshold_for") else _ahm.threshold)
@@ -2913,6 +3016,9 @@ class Gemma4Agent:
         events: list[ToolEvent] = []
         failure_log: list[dict[str, Any]] = []
         replan_done = False
+        research_fallback_answer_only = False
+        self._research_fallback_answer_pending = False
+        self._research_fallback_answer_reprompted = False
 
         # Loop detector: registra cada tool execution con result canonicalizado y
         # detecta 6 patrones de stuck (repeat, unknown_tool, ping_pong, circuit
@@ -2968,6 +3074,100 @@ class Gemma4Agent:
             # Direct constructor — can't re-run the regex path that just failed.
             mission_goal = _MissionGoal(user_text="", expected=[])
         validator_retries_used = 0
+
+        _prefetch_query = (getattr(self, "_info_followup_prefetch_query", "") or "").strip()
+        if (
+            _prefetch_query
+            and _research_tool_fallback_enabled()
+            and "web" in selected_tool_names
+        ):
+            _call_id = f"info_followup_prefetch_{turn_id}"
+            _prefetch_args = {"action": "search", "query": _prefetch_query}
+            _prefetch_call = {
+                "id": _call_id,
+                "type": "function",
+                "function": {
+                    "name": "web",
+                    "arguments": json.dumps(_prefetch_args, ensure_ascii=False),
+                },
+            }
+            self.history.append({
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [_prefetch_call],
+            })
+            self.trace.event(
+                turn_id, "info_followup_prefetch",
+                tool="web", action="search", query=_prefetch_query[:220],
+            )
+            self.trace.event(
+                turn_id, "tool_call",
+                name="web", args=_prefetch_args, in_subset=True, parse_error=None,
+            )
+            _progress(progress, "tool_start", name="web", index=1)
+            try:
+                _prefetch_result = self.tools.execute("web", _prefetch_args)
+            except Exception as _prefetch_exc:  # noqa: BLE001
+                _prefetch_result = {
+                    "ok": False,
+                    "status": "failed",
+                    "verified": False,
+                    "error": f"{type(_prefetch_exc).__name__}: {_prefetch_exc}",
+                    "completion_status": "failed",
+                }
+            if not isinstance(_prefetch_result, dict):
+                _prefetch_result = {
+                    "ok": False,
+                    "status": "failed",
+                    "verified": False,
+                    "error": "web prefetch returned non-dict result",
+                    "completion_status": "failed",
+                }
+            _prefetch_event = ToolEvent(
+                name="web", args=_prefetch_args, result=_prefetch_result)
+            events.append(_prefetch_event)
+            self.trace.event(turn_id, "tool_result", name="web", result=_prefetch_result)
+            _v_prefetch = _verify("web", _prefetch_args, _prefetch_result)
+            verifier_outcomes.append(_v_prefetch)
+            mission_goal.update_with_tool(
+                "web", _prefetch_args, bool(_prefetch_result.get("ok")))
+            self.trace.event(
+                turn_id, "verifier",
+                tool="web",
+                confirmed=_v_prefetch.confirmed,
+                reason=_v_prefetch.reason,
+                evidence_keys=_v_prefetch.evidence_keys,
+            )
+            _progress(
+                progress,
+                "tool_end",
+                name="web",
+                ok=bool(_prefetch_result.get("ok")),
+                status=str(_prefetch_result.get("status") or ""),
+                verified=_prefetch_result.get("verified"),
+                index=len(events),
+            )
+            self.history.append({
+                "role": "tool",
+                "tool_call_id": _call_id,
+                "content": json.dumps(
+                    _compact_tool_result("web", _prefetch_args, _prefetch_result),
+                    ensure_ascii=False,
+                ),
+            })
+            self.history.append({
+                "role": "user",
+                "content": (
+                    "[system note] You already have the search results for this "
+                    "information follow-up. Answer now from the returned tool "
+                    "evidence in the user's selected language. Do not acknowledge "
+                    "the search; give the factual answer. Do not call more tools."
+                ),
+            })
+            selected_tool_names = []
+            selected_schemas = []
+            mode = choose_mode(raw_text_early or "", "fast_info", self.config.max_tokens)
+            self._research_fallback_answer_pending = True
 
         # prompt_built_tokens — emit ONCE per turn (before the
         # retry loop) so we can track p50/p95 of input size. Estimation is
@@ -3259,6 +3459,15 @@ class Gemma4Agent:
                 self.trace.event(turn_id, "intent_tag_extracted",
                                  intent_type=intent_tag.intent_type,
                                  target=intent_tag.target[:120])
+            if raw_tool_calls and assistant_content:
+                self.trace.event(
+                    turn_id,
+                    "pre_tool_content_discarded",
+                    content=(assistant_content or "")[:200],
+                    tool_call_count=len(raw_tool_calls),
+                )
+                assistant_content = ""
+                msg["content"] = ""
             # RESCUE: a veces Gemma emite el tool call como TEXTO plano en
             # vez de via el mecanismo nativo (bug del template/decoder). Si
             # no hubo tool_calls y el content matchea "<tool>(args...)",
@@ -3346,7 +3555,8 @@ class Gemma4Agent:
                 # here wastes a full second LLM pass (measured ~11.8s) to return
                 # nothing. The forced retry stays for ACTION tools (open/play/send)
                 # where prose-without-a-call means a skipped action.
-                _answered_in_prose = len((assistant_content or "").strip()) >= 12
+                _fallback_reply = (assistant_content or "").strip()
+                _answered_in_prose = len(_fallback_reply) >= 12
                 _only_info_tools = bool(_domain_now) and all(
                     t in _INFO_RETRIEVAL_TOOLS for t in _domain_now
                 )
@@ -3356,7 +3566,13 @@ class Gemma4Agent:
                 # forced-retry quemaba 10.8s en cx5 para no llamar nada
                 # (forced_tool_retry_empty). El forced-retry sigue para turnos de
                 # ACCIÓN (fast_action/quick_action) con prosa-sin-llamada.
-                _info_answered = (mode.name == "fast_info") and _answered_in_prose
+                from .agent_guards import reply_claims_action
+                _claims_action = reply_claims_action(_fallback_reply)
+                _info_answered = (
+                    (mode.name == "fast_info")
+                    and _answered_in_prose
+                    and not _claims_action
+                )
                 # SEMANTIC-FALLBACK guard (mined from traces).
                 # When the router had LOW confidence it grabs a generic grab-bag
                 # subset (memory/web/smart_home/terminal...) and flags it
@@ -3377,17 +3593,38 @@ class Gemma4Agent:
                 # _answered_in_prose bar — short smalltalk replies ("Hola.",
                 # "Salud.") are valid chat answers to a low-confidence fallback
                 # turn, and forcing a tool on them is the wasted pass we measured.
-                from .agent_guards import reply_claims_action
-                _fallback_reply = (assistant_content or "").strip()
                 _fallback_chat = (
                     semantic_fallback
                     and len(_fallback_reply) >= 3
-                    and not reply_claims_action(_fallback_reply)
+                    and not _claims_action
                 )
+                _det_media_ev = None
+                if "media" in _domain_now:
+                    _det_media_ev = self._deterministic_media_resume(raw_text_early)
+                    if _det_media_ev is not None:
+                        events.append(_det_media_ev)
+                        _det_ok = bool((_det_media_ev.result or {}).get("ok"))
+                        self.trace.event(
+                            turn_id, "deterministic_media_resume",
+                            ok=_det_ok,
+                            completion_status=(_det_media_ev.result or {}).get("completion_status"),
+                        )
+                        if _det_ok:
+                            _did = self._describe_events_for_reply([_det_media_ev])
+                            assistant_content = self._llm_action_reply(
+                                raw_text_early or "",
+                                _did,
+                                "Listo, continue la reproduccion.",
+                                target_lang=_reply_lang(raw_text_early or ""),
+                            )
+                            raw_msg = {}
+                _info_tools_optional = mode.name != "research"
                 _skip_forced = (
-                    (_only_info_tools and _answered_in_prose)
+                    (_only_info_tools and _info_tools_optional
+                     and _answered_in_prose and not _claims_action)
                     or _info_answered
                     or _fallback_chat
+                    or _det_media_ev is not None
                 )
                 if _domain_now and _fallback_chat:
                     # Telemetry only: count how often the fallback-chat guard
@@ -3486,6 +3723,39 @@ class Gemma4Agent:
                                              tool=tc_f[0].get("function", {}).get("name"))
                         else:
                             self.trace.event(turn_id, "forced_tool_retry_empty")
+                            if (
+                                mode.name == "research"
+                                and _research_tool_fallback_enabled()
+                                and _only_info_tools
+                                and "web" in selected_tool_names
+                            ):
+                                _fallback_query = _contextual_info_query(
+                                    raw_text_early or "", self.history)
+                                if _fallback_query:
+                                    raw_tool_calls = [{
+                                        "id": f"research_fallback_{turn_id}",
+                                        "type": "function",
+                                        "function": {
+                                            "name": "web",
+                                            "arguments": json.dumps({
+                                                "action": "search",
+                                                "query": _fallback_query,
+                                            }, ensure_ascii=False),
+                                        },
+                                    }]
+                                    assistant_content = ""
+                                    msg = {
+                                        "role": "assistant",
+                                        "content": "",
+                                        "tool_calls": raw_tool_calls,
+                                    }
+                                    research_fallback_answer_only = True
+                                    self.trace.event(
+                                        turn_id, "research_tool_fallback",
+                                        tool="web",
+                                        action="search",
+                                        query=_fallback_query[:220],
+                                    )
                             # RED DETERMINISTA EMAIL (backstop). MEDIDO:
                             # el 4B SÍ emite el tool-call de email de forma fiable
                             # (3/3 en vivo), así que el camino NORMAL ya lo cubre vía
@@ -3502,7 +3772,7 @@ class Gemma4Agent:
                             # abrimos el chat pre-rellenado (NO auto-send: enviar es
                             # irreversible y el SendInput va a la ventana enfocada;
                             # el usuario revisa y manda). Va PRIMERO (lo más específico).
-                            _reply_ev = self._deterministic_reply(raw_text_early)
+                            _reply_ev = None if raw_tool_calls else self._deterministic_reply(raw_text_early)
                             if _reply_ev is not None:
                                 events.append(_reply_ev)
                                 _rc = (_reply_ev.result or {}).get("reply_contact") or ""
@@ -3513,7 +3783,7 @@ class Gemma4Agent:
                                         "Revisalo y decime si lo envío.")
                                     raw_msg = {}
                                     raw_tool_calls = []
-                            _mail_ev = (None if _reply_ev is not None
+                            _mail_ev = (None if (raw_tool_calls or _reply_ev is not None)
                                         else self._deterministic_email(raw_text_early))
                             if _mail_ev is not None:
                                 events.append(_mail_ev)
@@ -3534,7 +3804,7 @@ class Gemma4Agent:
                             # estado, NO respuesta enlatada (el LLM redacta la
                             # confirmación después, con el resultado en contexto).
                             # Solo como ÚLTIMO recurso (el 4B ya probó que no llama).
-                            _nav_ev = (None if (_mail_ev is not None or _reply_ev is not None)
+                            _nav_ev = (None if (raw_tool_calls or _mail_ev is not None or _reply_ev is not None)
                                        else self._deterministic_navigate(raw_text_early))
                             if _nav_ev is not None:
                                 events.append(_nav_ev)
@@ -4094,9 +4364,27 @@ class Gemma4Agent:
             # la búsqueda fue EXITOSA y trajo items (si vino vacía, el honesty
             # guard de arriba ya maneja el "no encontré nada").
             chain_hint = self._chaining_nudge(raw_tool_calls, events)
-            if chain_hint:
+            if chain_hint and not research_fallback_answer_only:
                 self.history.append({"role": "user", "content": chain_hint})
                 self.trace.event(turn_id, "chaining_nudge_injected", hint=chain_hint[:120])
+
+            if research_fallback_answer_only:
+                selected_tool_names = []
+                selected_schemas = []
+                mode = choose_mode(raw_text_early or "", "fast_info", self.config.max_tokens)
+                self.history.append({
+                    "role": "user",
+                    "content": (
+                        "[system note] You already have the search results for "
+                        "this research follow-up. Answer now from the returned "
+                        "tool evidence in the user's selected language. Do not "
+                        "acknowledge the search; give the factual answer. Do not "
+                        "call more tools."
+                    ),
+                })
+                self.trace.event(turn_id, "research_fallback_answer_only")
+                self._research_fallback_answer_pending = True
+                research_fallback_answer_only = False
 
             # Loop detector check: si critical, abort el outer for y produci un
             # reply honesto. Si warning, inyecta el mensaje al historial para que
@@ -4222,6 +4510,27 @@ class Gemma4Agent:
             compute_mission_outcome as _compute_mission_outcome,
             mission_footer as _mission_footer,
         )
+        if (
+            getattr(self, "_research_fallback_answer_pending", False)
+            and not getattr(self, "_research_fallback_answer_reprompted", False)
+            and reply_validator.is_listo_on_no_tool_turn(assistant_content or "", [])
+        ):
+            self._research_fallback_answer_reprompted = True
+            self.history.append({
+                "role": "user",
+                "content": (
+                    "[system note] Your previous reply was only a post-tool "
+                    "acknowledgement. The user asked an information question. "
+                    "Answer the question now using the immediately preceding "
+                    "web.search result. Do not say only 'Listo'/'Done'; do "
+                    "not call tools."
+                ),
+            })
+            self.trace.event(
+                turn_id, "research_fallback_ack_reprompt",
+                reply_preview=(assistant_content or "")[:80],
+            )
+            return _FINALIZE_CONTINUE
         # REDES DETERMINISTAS (fallback final). Las redes de
         # responder-mensaje / email / navegación son detectores de ALTA
         # precisión (verbo + 'a <destinatario>' + cuerpo; o URL/sitio
@@ -4401,6 +4710,51 @@ class Gemma4Agent:
         assistant_content = self._repair_media_fabricated_inline(
             assistant_content, raw_text_early, events, turn_id,
         )
+        lang_repaired = False
+        assistant_content, lang_repaired = self._repair_reply_language_if_needed(
+            raw_text_early, assistant_content, turn_id,
+        )
+        assistant_content = self._repair_media_status_reply_if_needed(
+            raw_text_early or _extract_user_text(content) or "",
+            assistant_content,
+            events,
+            turn_id,
+        )
+        try:
+            from ..safety_pkg.reply_validator import post_action_clarification_conflict
+            _focused_reply_events = self._focused_events_for_action_reply(events)
+            _needs_refocus = bool(
+                events
+                and _focused_reply_events
+                and len(_focused_reply_events) < len(events)
+            )
+            _needs_clarify_repair = bool(
+                events
+                and post_action_clarification_conflict(assistant_content or "", list(events))
+            )
+            if _needs_refocus or _needs_clarify_repair:
+                _utext = raw_text_early or _extract_user_text(content) or ""
+                _did = self._describe_events_for_reply(_focused_reply_events or events)
+                _fixed = self._llm_action_reply(
+                    _utext,
+                    did=_did,
+                    fallback="Listo.",
+                    target_lang=_reply_lang(_utext),
+                )
+                if _fixed and _fixed.strip():
+                    if post_action_clarification_conflict(_fixed, list(_focused_reply_events or events)):
+                        _fixed = "Listo."
+                    self.trace.event(
+                        turn_id,
+                        "post_action_reply_refocused" if _needs_refocus else "post_action_clarification_repaired",
+                        before=(assistant_content or "")[:120],
+                        after=_fixed[:120],
+                        focused_events=len(_focused_reply_events or []),
+                        total_events=len(events or []),
+                    )
+                    assistant_content = _fixed
+        except Exception:
+            pass
         # Defensa: si el LLM emitio en el reply mismo un footer estilo
         # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
         # historial), lo strippeamos antes de pegar el nuestro. Sino,
@@ -4872,6 +5226,12 @@ class Gemma4Agent:
         # que automatice X?" es intrusivo (auditoría 2026-06-07: "apenas abro la app
         # actúa"). Ofrecer solo en turnos conversacionales (sin tool ejecutado).
         assistant_content = (assistant_content or "") + self._maybe_proactive_suffix(events)
+        assistant_content, _late_lang_repaired = self._repair_reply_language_if_needed(
+            raw_text_early or _extract_user_text(content) or "",
+            assistant_content,
+            turn_id,
+        )
+        lang_repaired = lang_repaired or _late_lang_repaired
         # If we streamed an INFO pass but the turn then ran a tool (the model
         # emitted a web-call as text that the RESCUE executed -> a post-prose
         # tool+summary), the streamed knowledge prose was superseded by a verified
@@ -4905,6 +5265,7 @@ class Gemma4Agent:
         # solo si NO quedó en español (si el LLM fallara y devolviera ES, mantenemos
         # el original). NO se toca si ya se streameó por TTS. Gate GEMMA4_LLM_ACTION_REPLY=0.
         if (events and assistant_content
+                and not lang_repaired
                 and not getattr(self, "_tts_streamed", False)):
             try:
                 _utext = raw_text_early or _extract_user_text(content) or ""
@@ -5533,6 +5894,35 @@ class Gemma4Agent:
         except Exception as exc:
             result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
         return ToolEvent(name="browser", args=args, result=result if isinstance(result, dict) else {})
+
+    def _deterministic_media_resume(self, text: str) -> "ToolEvent | None":
+        """Backstop for clear current-media resume commands when the LLM skips.
+
+        It asks media.status to resolve against OS media state. The media tool
+        resumes only if a current paused video session exists, no-ops if already
+        playing, and does not open a new YouTube search.
+        """
+        if not isinstance(text, str) or not text.strip():
+            return None
+        try:
+            from ..domain_tools import _looks_like_current_video_resume_request
+            if not _looks_like_current_video_resume_request(text):
+                return None
+        except Exception:
+            return None
+        args = {"action": "status", "provider": "youtube"}
+        try:
+            result = self.tools.execute("media", args)
+        except Exception as exc:
+            result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        if not isinstance(result, dict):
+            result = {}
+        if result.get("completion_status") not in {
+            "resumed_current_media",
+            "current_media_already_playing",
+        }:
+            return None
+        return ToolEvent(name="media", args=args, result=result)
 
     @staticmethod
     def _extract_email_fields(text: str) -> dict[str, str] | None:
@@ -6579,3 +6969,15 @@ from .agent_helpers import (  # noqa: E402,F401
     _looks_like_context_overflow, _FOOTER_PATTERNS, _strip_trailing_footers,
     _parse_args, _progress,
 )
+
+# Reparación/observación del reply (idioma, info-followup, eventos del summary)
+# extraída a reply_repair.py (2026-06-08, ratchet archivo-dios: bajar agent.py
+# bajo su techo tras la tanda de idioma/media). Importado como módulo para los
+# wrappers de la clase; re-exporto las funciones puras con sus nombres privados
+# previos para no tocar los call-sites internos.
+from . import reply_repair as _reply_repair  # noqa: E402
+_turn_language_instruction = _reply_repair.turn_language_instruction
+_reply_language_mismatch = _reply_repair.reply_language_mismatch
+_is_info_followup_question = _reply_repair.is_info_followup_question
+_research_tool_fallback_enabled = _reply_repair.research_tool_fallback_enabled
+_contextual_info_query = _reply_repair.contextual_info_query

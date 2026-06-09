@@ -219,7 +219,9 @@ class VoiceRunner:
         # confirmación corta YA, mientras el LLM piensa+ejecuta (~3-7s). Baja la
         # latencia PERCIBIDA 1-2s sin tocar el modelo. Patrón Vapi/Stream/Sierra.
         # Solo para COMANDOS de acción (no preguntas info, que se responden rápido
-        # y un filler sonaría raro). Gate GEMMA4_VOICE_FILLER=0 lo desactiva.
+        # y un filler sonaria raro). Default OFF: por defecto la voz debe
+        # coincidir con el reply final visible en el chat. Gate
+        # GEMMA4_VOICE_FILLER=1 lo activa explicitamente.
         self._maybe_speak_filler(text)
         try:
             cb(text)
@@ -230,8 +232,8 @@ class VoiceRunner:
         """Emite un filler corto por TTS si el comando es de ACCIÓN (no pregunta).
         Best-effort: cualquier fallo es silencioso (no debe romper el turno)."""
         import os
-        if os.environ.get("GEMMA4_VOICE_FILLER", "1").strip().lower() in {
-                "0", "false", "no", "off"}:
+        if os.environ.get("GEMMA4_VOICE_FILLER", "0").strip().lower() not in {
+                "1", "true", "yes", "on"}:
             return
         if self._tts is None or not self._tts.is_loaded():
             return

@@ -36,12 +36,13 @@ class TestForcedRetryInfoGuard(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp(prefix="gemma4_retry_"))
         self.agent = _make_agent(self.tmp)
+        self.reply = "La capital de Francia es Paris."
 
         # The LLM always answers in prose, never calls a tool.
         def _chat(messages, **kw):
             return {"choices": [{
                 "message": {"role": "assistant",
-                            "content": "La capital de Francia es Paris.",
+                            "content": self.reply,
                             "tool_calls": []},
                 "finish_reason": "stop",
             }]}
@@ -83,6 +84,19 @@ class TestForcedRetryInfoGuard(unittest.TestCase):
             self._forced(["web", "knowledge", "memory", "source_manager"],
                          "cual es la capital de Francia?"),
             "info turn answered in prose must NOT trigger the forced retry")
+
+    def test_research_mode_info_tools_with_prose_answer_forces_retry(self):
+        self.assertTrue(
+            self._forced(["web", "knowledge", "memory", "source_manager"],
+                         "investiga cual es la capital de Francia"),
+            "research mode must not treat info tools as optional")
+
+    def test_info_only_tools_with_search_claim_forces_retry(self):
+        self.reply = "Estoy buscando informacion sobre el Joker ahora."
+        self.assertTrue(
+            self._forced(["web", "knowledge", "memory", "source_manager"],
+                         "quien es el joker?"),
+            "a search claim is not a factual prose answer; retry must fire")
 
     def test_action_tool_offered_still_forces_retry(self):
         # An ACTION tool (app/window) on an ACTION command + prose-without-call =
