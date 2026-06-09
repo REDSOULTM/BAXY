@@ -58,6 +58,7 @@ export interface SettingsConfig {
   factExtraction: boolean; crossEncoderRerank: boolean; parallelToolExec: boolean;
   autoLoadCtx: boolean; persistentSessions: boolean; toolTimeline: boolean;
   summarization: boolean; tracing: boolean;
+  visionAlways: boolean;       // GEMMA4_VISION_ALWAYS (mmproj residente, default ON)
   // optim (roadmap Gemma 4 — palancas avanzadas)
   disablePrewarm: boolean;     // GEMMA4_DISABLE_PREWARM
   telemetry: boolean;          // GEMMA4_TELEMETRY
@@ -91,6 +92,7 @@ const DEFAULTS: SettingsConfig = {
   factExtraction: false, crossEncoderRerank: true, parallelToolExec: false,
   autoLoadCtx: false, persistentSessions: true, toolTimeline: true,
   summarization: true, tracing: true,
+  visionAlways: true,
   disablePrewarm: false, telemetry: false, kvType: '',
   specDraftModel: '', llamaApiKey: '', voiceLang: '',
   memoryJson: '~/gemma4/data/memory.json', stateJson: '~/gemma4/data/state.json',
@@ -806,6 +808,8 @@ const TOGGLES: ToggleSpec[] = [
   { key: 'toolTimeline',       label: 'tool timeline jsonl export',               env: 'GEMMA4_AGENT_TIMELINE' },
   { key: 'summarization',      label: 'llm-summarization compaction',             env: 'GEMMA4_AGENT_SUMMARIZATION' },
   { key: 'tracing',            label: 'tracing to jsonl (trace.jsonl)',           env: 'GEMMA4_AGENT_TRACING' },
+  { key: 'visionAlways',       label: 'modo visión siempre activo',               env: 'GEMMA4_VISION_ALWAYS',
+    sub: 'mantiene el modelo de visión (mmproj) cargado todo el tiempo, así una imagen no paga ~2-5s de carga. medido: no ralentiza el texto. apagalo solo si tu llama.cpp es viejo.' },
 ];
 
 function TogglesTab({ c, set }: { c: SettingsConfig; set: Setter }) {

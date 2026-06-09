@@ -405,6 +405,12 @@ _TOGGLE_ENV_MAP: dict[str, str] = {
     "toolTimeline":       "GEMMA4_AGENT_TIMELINE",
     "summarization":      "GEMMA4_AGENT_SUMMARIZATION",
     "tracing":            "GEMMA4_AGENT_TRACING",
+    # Visión SIEMPRE cargada (2026-06-09): el mmproj queda RESIDENTE en vez de
+    # cargarse lazy al llegar una imagen (router-mode). Default ON — medido que NO
+    # penaliza el texto en builds recientes de llama.cpp (#21133); ahorra los ~2-5s
+    # de carga on-demand del proyector en la 1ra imagen. Apagar -> vuelve el router-
+    # mode lazy. Requiere reiniciar el llama-server (cambia el comando de arranque).
+    "visionAlways":       "GEMMA4_VISION_ALWAYS",
 }
 
 # OPTIM tab — palancas low-level del roadmap Gemma 4. Mismo concepto que

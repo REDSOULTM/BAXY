@@ -643,7 +643,32 @@ ROUTER_TEXT_SUFFIX = "-text"
 ROUTER_VISION_SUFFIX = "-vision"
 
 
+def vision_always_enabled() -> bool:
+    """¿Mantener el mmproj (visión) cargado RESIDENTE siempre? DEFAULT ON.
+
+    Por qué default ON (MEDIDO 2026-06-09, build llama.cpp 9090): el router-mode
+    (lazy vision) existía para evitar que el mmproj residente APAGARA el prompt-
+    cache de los turnos de texto. Ese problema YA NO existe en builds recientes
+    (issue ggml-org/llama.cpp #21133: el cache reuse vuelve para turnos text-only
+    aunque el mmproj esté cargado). Medición en este binario: turno de texto warm
+    con mmproj residente re-evaluó 10 tokens / 28 ms (= cache hit pleno). Entonces
+    tener la visión SIEMPRE cargada es estrictamente mejor: texto sigue rápido Y
+    las imágenes NO pagan la carga on-demand del proyector (~2-5 s la 1ra vez del
+    router-mode). El usuario puede volver al lazy/router con GEMMA4_VISION_ALWAYS=0
+    (toggle en settings) — útil si corre un build viejo de llama.cpp sin el fix.
+    Ver scripts/_diag/_measure_mmproj_text_cache.py para re-medir."""
+    raw = (os.environ.get("GEMMA4_VISION_ALWAYS") or "").strip().casefold()
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return True
+
+
 def router_mode_enabled() -> bool:
+    # Visión-siempre tiene prioridad: si el mmproj va RESIDENTE, NO usamos router
+    # mode (que separa text/vision en dos presets para cargar visión lazy). Son
+    # mutuamente excluyentes; vision_always gana.
+    if vision_always_enabled():
+        return False
     raw = (os.environ.get("GEMMA4_ROUTER_MODE") or "").strip().casefold()
     if raw in {"0", "false", "no", "off"}:
         return False
