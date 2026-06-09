@@ -5118,16 +5118,12 @@ if ($pos) {
         os.startfile(str(path.resolve()))  # type: ignore[attr-defined]
         return _ok(path=str(path.resolve()))
 
-    # Dominios que NO son "el sitio" sino agregadores/redes/estado-de-sitio: si el
-    # usuario dice "andá a pivigames", NO quiere su Instagram ni un check de uptime.
-    # Genérico (no per-sitio): son plataformas de terceros, no el sitio en sí.
-    _NON_SITE_HOSTS = (
-        "reddit.com", "instagram.com", "facebook.com", "twitter.com", "x.com",
-        "threads.com", "threads.net", "t.me", "telegram.me", "youtube.com",
-        "tiktok.com", "linktr.ee", "patreon.com", "ipaddress.com", "downornot",
-        "notopening.com", "shapes.inc", "pinterest.com", "linkedin.com",
-        "wikipedia.org", "play.google.com", "apps.apple.com",
-    )
+    # NOTA (2026-06-09): la vieja lista _NON_SITE_HOSTS (reddit/instagram/…) se
+    # eliminó. resolve_site_by_search ahora descarta agregadores/redes/perfiles de
+    # tercero por SEÑAL ESTRUCTURAL (el nombre debe ser un LABEL COMPLETO del
+    # dominio, no un substring parcial) — universal, sin lista de dominios. Medido
+    # en scripts/_diag/_diag_non_site_hosts.py: cubre insta/reddi/face y los
+    # agregadores no-occidentales (VK/Weibo/Naver) que la lista no contemplaba.
 
     def _site_search_all_backends(self, name: str, limit: int = 12) -> list[dict[str, str]]:
         # Wrapper-método sobre ddgs_search_all_backends: punto mockeable para que
@@ -5140,7 +5136,6 @@ if ($pos) {
         return _resolve_site_by_search_impl(
             name,
             web_search=self.web_search,
-            non_site_hosts=self._NON_SITE_HOSTS,
             fillers=_SITE_REQUEST_FILLERS,
             search_all_backends=lambda q, lim=12: self._site_search_all_backends(q, limit=lim),
         )

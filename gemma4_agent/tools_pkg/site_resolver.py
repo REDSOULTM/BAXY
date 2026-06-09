@@ -255,14 +255,17 @@ def resolve_site_by_search(
     name: str,
     *,
     web_search: Callable[[dict[str, Any]], dict[str, Any]],
-    non_site_hosts: tuple[str, ...],
     fillers: "frozenset[str] | set[str]",
     search_all_backends: Callable[[str, int], list[dict[str, str]]] | None = None,
+    non_site_hosts: tuple[str, ...] = (),  # DEPRECATED: ya no se usa (señal estructural)
 ) -> str | None:
     """Resuelve el NOMBRE de un sitio ('pivigames') a la URL del SITIO vía
     búsqueda web. NO adivina el TLD (lookup real, CLAUDE.md). Heurística para
     no abrir el resultado equivocado:
-      1. Filtrar agregadores/redes/estado-de-sitio (no son el sitio).
+      1. Descartar agregadores/redes/perfiles de tercero por SEÑAL ESTRUCTURAL:
+         el nombre debe ser un LABEL COMPLETO del dominio, no un substring parcial
+         (reemplaza la vieja lista _NON_SITE_HOSTS; universal, sin hardcode de
+         dominios). `non_site_hosts` quedó como param DEPRECADO sin efecto.
       2. PREFERIR resultados cuyo DOMINIO contiene el nombre buscado.
       3. Entre esos, preferir PATH más corto (homepage) y NORMALIZAR a la raíz.
       4. DESEMPATAR homónimos por el ccTLD del país del usuario.
@@ -295,13 +298,6 @@ def resolve_site_by_search(
         except Exception:
             return ""
 
-    def _is_agg(host: str, sld_norm: str) -> bool:
-        # Es agregador SOLO si NO es el destino pedido (youtube.com para "youtube"
-        # NO es agregador -> no filtrar).
-        if tok and tok == sld_norm:
-            return False
-        return any(h in host for h in non_site_hosts)
-
     # país del usuario (estado del SO) para DESEMPATAR sitios homónimos.
     cc = (user_country_code() or "").lower()
 
@@ -317,15 +313,34 @@ def resolve_site_by_search(
             labels = host.split(".")
             sld = labels[-2] if len(labels) >= 2 else (labels[0] if labels else "")
             sld_norm = re.sub(r"[^a-z0-9]", "", sld)
-            host_norm = re.sub(r"[^a-z0-9]", "", host)
-            if _is_agg(host, sld_norm):
-                continue
-            all_toks = bool(name_toks) and all(t in host_norm for t in name_toks)
+            # labels normalizados del host (sin TLD-only: cada etiqueta del dominio).
+            labels_norm = [re.sub(r"[^a-z0-9]", "", lab) for lab in labels]
+            # SEÑAL ESTRUCTURAL anti-agregador (2026-06-09, reemplaza la lista
+            # _NON_SITE_HOSTS): un nombre pedido identifica AL SITIO solo si es un
+            # LABEL COMPLETO del dominio (pivigames == label de pivigames.blog), NO
+            # un substring PARCIAL de un label (insta ⊂ 'instagram', reddi ⊂
+            # 'reddit', face ⊂ 'facebook'). Esto descarta perfiles/redes de tercero
+            # SIN una lista de dominios — universal (cubre VK/Weibo/Naver y lo que
+            # se invente). El path con el nombre (instagram.com/foo) ya cae solo:
+            # 'foo' no está en NINGÚN label de instagram.com -> match_rank 0. Ver
+            # scripts/_diag/_diag_non_site_hosts.py para la medición.
+            tok_is_label = bool(tok) and tok in labels_norm
+            # CADA token de contenido (post-filler) debe ser un LABEL COMPLETO del
+            # host. Esto:
+            #  - cubre 'portal uniej' -> portal.uniej.edu.sv (si 'portal' es filler,
+            #    queda ['uniej'] y 'uniej' ES un label) y 'portal'+'uniej' explícitos;
+            #  - DESCARTA el fragmento de red: 'insta' (1 token) NO es label de
+            #    instagram.com (el label es 'instagram') -> no califica; 'insta' SÍ
+            #    es label de insta.com.br. Antes el substring-sobre-host-entero
+            #    dejaba colar 'insta' ⊂ 'instagramcom'.
+            # Universal y sin lista de dominios.
+            toks_are_labels = bool(name_toks) and all(t in labels_norm for t in name_toks)
             if tok and tok == sld_norm:
                 match_rank = 2          # el token ES la SLD (youtube.com) — fuerte
-            elif (tok and tok in host_norm) or all_toks:
-                # el nombre aparece en el host: concatenado o por tokens -> MISMO
-                # rango para que el país desempate entre homónimos (.cl vs .pe).
+            elif tok_is_label or toks_are_labels:
+                # el nombre concatenado es un LABEL completo del host (subdominio/
+                # SLD), o cada token de contenido es un label -> MISMO rango para
+                # que el país desempate entre homónimos (.cl vs .pe).
                 match_rank = 1
             else:
                 match_rank = 0
