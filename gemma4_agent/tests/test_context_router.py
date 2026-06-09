@@ -59,7 +59,6 @@ class SafeFallbackTest(unittest.TestCase):
         finally:
             cr._C.ready, cr._C.dependent, cr._C.self_contained = saved
 
-
 @unittest.skipUnless(_HAS_ENCODER, "encoder multilingüe no disponible")
 class MultilingualSemanticTest(unittest.TestCase):
     """Con encoder: la decisión generaliza a varios idiomas (no es es-céntrica)."""

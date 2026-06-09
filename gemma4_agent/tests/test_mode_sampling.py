@@ -21,8 +21,14 @@ class ModeSamplingValuesTest(unittest.TestCase):
         fa = choose_mode("x", "fast_action", 512)
         self.assertEqual(fa.temperature, 0.4)
 
+    def test_research_uses_low_latency_sampling(self):
+        research = choose_mode("x", "research", 512)
+        self.assertEqual(research.temperature, 0.4)
+        self.assertEqual(research.top_p, 0.9)
+        self.assertEqual(research.top_k, 40)
+
     def test_reasoning_modes_keep_defaults(self):
-        for m in ("research", "deep_action", "quick_action", "vision_action"):
+        for m in ("deep_action", "quick_action", "vision_action"):
             self.assertIsNone(choose_mode("x", m, 512).temperature, m)
 
 

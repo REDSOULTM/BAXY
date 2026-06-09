@@ -9,7 +9,10 @@ informativas rutean acá y no a research (thinking ON)."""
 from __future__ import annotations
 
 import unittest
+from unittest import mock
 
+from gemma4_agent.agent_core.agent import Gemma4Agent
+from gemma4_agent.infra.config import AgentConfig
 from gemma4_agent.support.modes import choose_mode, _infer_mode
 
 
@@ -27,6 +30,12 @@ class TestFastInfoMode(unittest.TestCase):
         for q in ["cuando salio GTA 5", "quien escribio el Quijote",
                   "cuantos planetas hay", "cual es la capital de Francia",
                   "que es la fotosintesis", "por que el cielo es azul"]:
+            self.assertEqual(_infer_mode(q), "fast_info", f"{q!r} -> fast_info")
+
+    def test_tell_me_about_routes_to_fast_info(self):
+        for q in ["hablame de Mortal Kombat", "háblame de Bruno Mars",
+                  "contame sobre la segunda guerra mundial",
+                  "dime sobre la fotosintesis", "que sabes de Steam"]:
             self.assertEqual(_infer_mode(q), "fast_info", f"{q!r} -> fast_info")
 
     def test_question_mark_without_action_routes_to_fast_info(self):
@@ -77,6 +86,20 @@ class TestFastInfoMode(unittest.TestCase):
                   "pon la cancion actual", "cierra la ventana actual"]:
             self.assertNotEqual(_infer_mode(q), "research",
                                 f"{q!r} es un COMANDO, no research")
+
+
+class TestFastInfoNoTools(unittest.TestCase):
+    def test_agent_suppresses_speculative_tools_for_fast_info(self):
+        ag = Gemma4Agent(AgentConfig.from_env())
+        with (
+            mock.patch.object(ag.experience, "recall", return_value=[]),
+            mock.patch("gemma4_agent.agent_core.agent.select_tool_names",
+                       return_value=["web", "browser", "session"]),
+        ):
+            decision = ag._decide_turn("hablame de Mortal Kombat")
+        self.assertEqual(decision.mode.name, "fast_info")
+        self.assertEqual(decision.selected_tool_names, [])
+        self.assertEqual(decision.selected_schemas, [])
 
 
 if __name__ == "__main__":

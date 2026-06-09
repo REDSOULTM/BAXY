@@ -831,8 +831,17 @@ def select_tool_names(
             word_count >= 2 or "?" in raw_text or "¿" in raw_text
             or len(raw_text.split()) == 1  # single-word imperatives count
         ):
-            from .semantic_router import suggest_tools_scored
-            scored = suggest_tools_scored(raw_text, k=12)
+            from . import semantic_router as _sr_sem
+            _semantic_loaded = bool(_sr_sem.status().get("model_loaded"))
+            _semantic_cold_load = (
+                _os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
+                in {"1", "true", "yes", "on"}
+            )
+            scored = (
+                _sr_sem.suggest_tools_scored(raw_text, k=12)
+                if (_semantic_loaded or _semantic_cold_load)
+                else []
+            )
             top_score = scored[0][1] if scored else 0.0
             confident = top_score >= _SEM_CONFIDENT_SCORE
             # MULTILINGUAL media-play: el force-include de play por keyword
@@ -1022,11 +1031,17 @@ def select_tool_names(
                 if _th_on():
                     _th = _th_load()
                     if _th is not None:
-                        from .semantic_router import embed as _emb
-                        _qv = _emb(raw_text)
-                        if _qv is not None:
-                            _head_fired = [(t, m) for t, m in _th.fire(_qv)
-                                           if m >= _HEAD_MIN_MARGIN][:_HEAD_TOP_N]
+                        from . import semantic_router as _sr_head
+                        _semantic_loaded = bool(_sr_head.status().get("model_loaded"))
+                        _semantic_cold_load = (
+                            _os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
+                            in {"1", "true", "yes", "on"}
+                        )
+                        if _semantic_loaded or _semantic_cold_load:
+                            _qv = _sr_head.embed(raw_text)
+                            if _qv is not None:
+                                _head_fired = [(t, m) for t, m in _th.fire(_qv)
+                                               if m >= _HEAD_MIN_MARGIN][:_HEAD_TOP_N]
             except Exception:
                 _head_fired = []
             # If the head's strongest firing is a KNOWLEDGE tool (web/knowledge),
@@ -1296,6 +1311,17 @@ def select_tool_names(
         _explicit_visible_nav = bool(_lex_web_nav(raw_text))
     except Exception:
         _explicit_visible_nav = False
+    # 2026-06-09: NO exigimos `not _web_nav_intent` acá. _web_nav_intent viene del
+    # clasificador SEMÁNTICO de tienda/navegación (wants_web_store/wants_web_navigation),
+    # que da FALSO-POSITIVO cuando la entidad informativa también existe como
+    # producto/marca/película/franquicia ("quien es batman", "hablame de Mortal
+    # Kombat" → wants_web_store=True por 'batman'/'kombat'). En esos casos el turno
+    # ES una pregunta de conocimiento (wants_knowledge=True) SIN pedido EXPLÍCITO de
+    # ir/abrir una página (user_requested_web_navigation=False, señal LÉXICA fuerte).
+    # La señal fuerte (nav explícita) manda sobre la débil (store semántico): si el
+    # user pregunta "quién es X" y NO dijo "andá a/abrí X", no le ofrecemos browser
+    # visible en el pase 1. La nav explícita ("ve a portal uniej") SÍ conserva browser
+    # porque _explicit_visible_nav=True. Cierra el gap documentado del backlog §4.
     if _info_lookup and not _explicit_visible_nav:
         expanded = [t for t in expanded if t not in {"browser", "browser_real"}]
     # Colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
@@ -1304,8 +1330,17 @@ def select_tool_names(
     # el keyword disparó (señal fuerte de intención) para no colapsar una que el
     # usuario pidió explícito.
     try:
-        from .semantic_router import suggest_tools_scored as _sts
-        _collapse_scored = dict(_sts(raw_text, k=20))
+        from . import semantic_router as _sr_collapse
+        _semantic_loaded = bool(_sr_collapse.status().get("model_loaded"))
+        _semantic_cold_load = (
+            _os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
+            in {"1", "true", "yes", "on"}
+        )
+        _collapse_scored = (
+            dict(_sr_collapse.suggest_tools_scored(raw_text, k=20))
+            if (_semantic_loaded or _semantic_cold_load)
+            else {}
+        )
     except Exception:
         _collapse_scored = {}
     # _kw_hits son las tools que el keyword disparó: señal fuerte de intención
@@ -1369,7 +1404,11 @@ def select_tool_names(
     # Guarda: si hay pending_intent (el dato responde a una pregunta previa), NO
     # gatear (el flujo normal ya lo maneja).
     try:
-        if not pending_intent and _is_preference_or_personal(raw_text):
+        if (
+            not pending_intent
+            and "whatsapp" not in expanded
+            and _is_preference_or_personal(raw_text)
+        ):
             _keep_pref = {"memory", "session", "safety", "verify", "routine"}
             expanded = [t for t in expanded if t in _keep_pref]
             if "memory" not in expanded:

@@ -103,6 +103,22 @@ def _enabled() -> bool:
     return raw not in {"0", "false", "no", "off"}
 
 
+def _cold_load_enabled() -> bool:
+    raw = (
+        os.environ.get("GEMMA4_CONTEXT_COLD_LOAD")
+        or os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD")
+        or "0"
+    ).strip().casefold()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _semantic_ready(sr) -> bool:
+    try:
+        return bool(sr.status().get("model_loaded")) or _cold_load_enabled()
+    except Exception:
+        return _cold_load_enabled()
+
+
 class _Centroids:
     __slots__ = ("ready", "dependent", "self_contained")
 
@@ -122,6 +138,8 @@ def _ensure_centroids() -> bool:
         return _C.dependent is not None
     try:
         from . import semantic_router as sr
+        if not _semantic_ready(sr):
+            return False
         if not sr._ensure_loaded():
             _C.ready = True
             return False

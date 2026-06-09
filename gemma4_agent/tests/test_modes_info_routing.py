@@ -67,7 +67,7 @@ class TestInfoQueriesRoutedToResearch(unittest.TestCase):
     def test_resumeme_routes_to_fast_info(self):
         self._assert_fast_info("resumime el paper de Gemma 3n")
 
-    # ---- Retrieval queries STILL go to research (thinking ON, web tools) ----
+    # ---- Retrieval queries STILL go to research (web tools, no thinking loop) ----
 
     def test_buscame_info_actual_routes_to_research(self):
         self._assert_research("buscame informacion actual sobre el dolar")

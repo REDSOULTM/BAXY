@@ -5227,7 +5227,12 @@ if ($pos) {
         if not query:
             return _err("missing query")
         limit = max(1, min(10, int(args.get("limit", 6))))
-        provider, results = _web_search_provider(query, limit=limit)
+        timeout_arg = args.get("timeout_sec")
+        try:
+            timeout_sec = int(timeout_arg) if timeout_arg not in (None, "") else None
+        except Exception:
+            timeout_sec = None
+        provider, results = _web_search_provider(query, limit=limit, timeout_sec=timeout_sec)
         from .web_source_quality import annotate_web_results, primary_web_results
         results = annotate_web_results(results)
         primary_results = primary_web_results(results)
@@ -5306,7 +5311,15 @@ if ($pos) {
         search_limit = max(2, min(10, int(args.get("search_limit", args.get("limit", 6)))))
         read_limit = max(1, min(5, int(args.get("read_limit", 3))))
         per_page_chars = max(1000, min(12000, int(args.get("per_page_chars", 4500))))
-        search = self.web_search({"query": query, "limit": search_limit})
+        # LATENCIA con red mala (MEDIDO 2026-06-09, datos móviles): web_research
+        # encadena search + N reads de página completa; sin cota cada uno puede
+        # colgar ~10-12 s. Acotamos: la búsqueda interna hereda el timeout del
+        # turno (default agresivo) y cada lectura de página tiene un tope corto.
+        # Override GEMMA4_WEB_READ_TIMEOUT (default 6 s/página).
+        _search_to = args.get("timeout_sec")
+        _read_to = max(2, min(12, int(os.environ.get("GEMMA4_WEB_READ_TIMEOUT", "6") or "6")))
+        search = self.web_search({"query": query, "limit": search_limit,
+                                  "timeout_sec": _search_to})
         results = search.get("results", [])
         allow_discussion = bool(re.search(
             r"\b(foro|forum|opinion|opiniones|discussion|discusion|"
@@ -5326,7 +5339,8 @@ if ($pos) {
         for item in read_candidates[:read_limit]:
             url = str(item.get("url") or "")
             try:
-                page = self.web_read({"url": url, "max_chars": per_page_chars})
+                page = self.web_read({"url": url, "max_chars": per_page_chars,
+                                      "timeout_sec": _read_to})
                 sources.append({
                     "title": page.get("title") or item.get("title"),
                     "url": page.get("url") or url,

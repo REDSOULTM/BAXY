@@ -426,8 +426,14 @@ def _default_embed_fn():
     """Encoder multilingüe del proyecto (mismo que skills/router). None si no
     carga (fallback seguro: el selector cae a léxico word-boundary)."""
     try:
-        from ..routing.semantic_router import embed
-        return embed
+        from ..routing import semantic_router as sr
+        cold_load = (
+            os.environ.get("GEMMA4_MICROAGENTS_COLD_LOAD", "0").strip().lower()
+            in {"1", "true", "yes", "on"}
+        )
+        if not sr.status().get("model_loaded") and not cold_load:
+            return None
+        return sr.embed
     except Exception:
         return None
 

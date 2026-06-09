@@ -32,6 +32,39 @@ from gemma4_agent.agent_core.agent import (
 from gemma4_agent.infra.config import AgentConfig
 
 
+# 2026-06-09: la optimización de latencia (Codex) hace que los clasificadores
+# semánticos (intent_router.classify_intent/wants_knowledge, context_router) NO
+# cold-loadeen sentence-transformers en el turno FOREGROUND por default
+# (GEMMA4_*_COLD_LOAD=0); el encoder lo carga el warmup de boot. En PRODUCCIÓN el
+# encoder está caliente, así que el camino SEMÁNTICO está disponible. Varios tests
+# de este archivo verifican ESE camino (info-followup, wants_knowledge), por lo que
+# habilitamos el cold-load a nivel de MÓDULO para reproducir fielmente el
+# encoder-caliente de prod (sin esto, el fallback seguro devuelve False y el test
+# mide el camino degradado, no el real).
+_COLD_LOAD_ENVS = (
+    "GEMMA4_INTENT_COLD_LOAD",
+    "GEMMA4_CONTEXT_COLD_LOAD",
+    "GEMMA4_SEMANTIC_COLD_LOAD",
+)
+_PREV_COLD_ENV: dict[str, str | None] = {}
+
+
+def setUpModule():
+    import os
+    for k in _COLD_LOAD_ENVS:
+        _PREV_COLD_ENV[k] = os.environ.get(k)
+        os.environ[k] = "1"
+
+
+def tearDownModule():
+    import os
+    for k, v in _PREV_COLD_ENV.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+
+
 class TestInheritToolsSafety(unittest.TestCase):
     """The inherit-tools path must respect TTL and blacklist."""
 

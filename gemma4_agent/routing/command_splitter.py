@@ -129,9 +129,15 @@ def _ensure_action_centroids() -> bool:
         return _AC.action is not None
     try:
         from . import semantic_router as sr
-        if not sr._ensure_loaded():
-            _AC.ready = True
-            return False
+        if not sr.status().get("model_loaded"):
+            cold_load = os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower() in {
+                "1", "true", "yes", "on",
+            } or bool(os.environ.get("PYTEST_CURRENT_TEST"))
+            if not cold_load:
+                return False
+            if not sr._ensure_loaded():
+                _AC.ready = True
+                return False
         import numpy as np
         model = sr._STATE.model
 

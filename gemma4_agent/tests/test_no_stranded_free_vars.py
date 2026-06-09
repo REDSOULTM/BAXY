@@ -113,9 +113,25 @@ def _bound_in_func(fn: ast.AST) -> set[str]:
             bound.add(c.name)
         elif isinstance(c, (ast.FunctionDef, ast.AsyncFunctionDef)):
             bound.add(c.name)
-        elif isinstance(c, ast.Lambda):
-            for a in c.args.args:
+            # Los PARÁMETROS de una función anidada (p.ej. el helper de tracing
+            # `_mark_decide_phase(phase, **payload)`) están bindeados en SU scope;
+            # como recorremos el árbol entero de la función externa, hay que
+            # contarlos para no marcarlos como free-vars falsos.
+            for a in (list(c.args.posonlyargs) + list(c.args.args)
+                      + list(c.args.kwonlyargs)):
                 bound.add(a.arg)
+            if c.args.vararg:
+                bound.add(c.args.vararg.arg)
+            if c.args.kwarg:
+                bound.add(c.args.kwarg.arg)
+        elif isinstance(c, ast.Lambda):
+            for a in (list(c.args.posonlyargs) + list(c.args.args)
+                      + list(c.args.kwonlyargs)):
+                bound.add(a.arg)
+            if c.args.vararg:
+                bound.add(c.args.vararg.arg)
+            if c.args.kwarg:
+                bound.add(c.args.kwarg.arg)
         elif isinstance(c, ast.Name) and isinstance(c.ctx, (ast.Store, ast.Del)):
             bound.add(c.id)
         elif isinstance(c, (ast.Global, ast.Nonlocal)):

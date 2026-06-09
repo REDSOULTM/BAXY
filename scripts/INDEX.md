@@ -42,6 +42,7 @@ automáticamente por `gemma4_agent/test_scripts_inventory.py`.
 | `eval_profile_actions.py` | Eval acciones por VRAM-profile. |
 | `router_canary_eval.py` | Canary del router (subset de oro). |
 | `router_eval.py` | Eval completo del router (split train/dev/test). |
+| `latency_trace_summary.py` | Resumen de latencia por turno (cola → decide → llm_start → llama timings) desde traces.jsonl. |
 | `voice_pipeline_e2e_test.py` | E2E voz: wake → STT → agent → TTS. |
 | `validate_profiles.py` | Sanity check de los perfiles VRAM. |
 

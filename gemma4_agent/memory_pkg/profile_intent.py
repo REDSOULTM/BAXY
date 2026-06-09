@@ -138,9 +138,15 @@ def _ensure_centroids() -> bool:
         return bool(_C.by_class)
     try:
         from ..routing import semantic_router as sr
-        if not sr._ensure_loaded():
-            _C.ready = True
-            return False
+        if not sr.status().get("model_loaded"):
+            cold_load = os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower() in {
+                "1", "true", "yes", "on",
+            }
+            if not cold_load:
+                return False
+            if not sr._ensure_loaded():
+                _C.ready = True
+                return False
         import numpy as np
         model = sr._STATE.model
 

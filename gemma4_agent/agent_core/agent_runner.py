@@ -17,6 +17,7 @@ import logging
 import queue
 import sys
 import threading
+import time
 import uuid
 from pathlib import Path
 from typing import Any
@@ -36,11 +37,11 @@ logger = logging.getLogger(__name__)
 import os as _os
 
 # Tope de espera del join del router antes de abrir la casilla en modo léxico
-# degradado. Cubre _ensure_loaded (6-8s, BertModel + N embeddings de tools) +
-# intent centroids (~14s en frío) + reranker first-load (~13s) con margen, sin
-# dejar la casilla colgada si el router se cuelga en red (HF download sin
-# local_files_only, ver semantic_router). Env-overridable.
-ROUTER_JOIN_TIMEOUT_S = float(_os.environ.get("GEMMA4_ROUTER_JOIN_TIMEOUT_S", "45"))
+# degradado. La latencia útil se mide con router/centroides calientes; por eso
+# el boot puede pagar _ensure_loaded, embeddings de tools, centroids de routers
+# auxiliares, validators y reranker antes de liberar input. Env-overridable para
+# hardware lento o diagnósticos.
+ROUTER_JOIN_TIMEOUT_S = float(_os.environ.get("GEMMA4_ROUTER_JOIN_TIMEOUT_S", "90"))
 
 
 def _ts() -> str:
@@ -151,6 +152,7 @@ class AgentRunner:
             text=text,
             images=images or [],
             audios=audios or [],
+            enqueued_perf_s=time.perf_counter(),
         ))
 
     def agent_ready(self) -> bool:
@@ -380,6 +382,51 @@ class AgentRunner:
             n_tools = len(self._agent.tools.schemas)
             _publish_activity("SYSTEM", f"agent ready · {n_tools} tools loaded")
             BUS.publish({"type": "agent", "built": True, "healthy": False, "ready": False})
+            try:
+                _publish_activity("BOOT", "warming prompt templates · no-tool hot path")
+                emit_stage(BUS.publish, "prompt_warmup",
+                           "warming prompt templates · no-tool hot path")
+                from ..routing.planner import plan_mission
+                from ..support.modes import choose_mode
+                mode = choose_mode("warmup", "auto", getattr(cfg, "max_tokens", 512))
+                self._agent._messages(
+                    mode,
+                    plan_mission("warmup"),
+                    selected_tool_names=[],
+                    user_text="warmup",
+                    route_context=True,
+                )
+                try:
+                    from .agent import _reply_lang
+                    _reply_lang("warmup query")
+                    _reply_lang("open warmup")
+                except Exception:
+                    pass
+                # Hot prompt variants: pay Python/import/schema cache costs at
+                # boot, not on the first real user turn. Startup latency is an
+                # accepted wait; per-turn latency is the user-visible budget.
+                for _subset in (
+                    ("session", "safety"),
+                    ("web", "browser", "session"),
+                    ("vision", "uia", "gui", "computer_use", "session"),
+                    ("app", "window", "gui", "uia", "session", "safety"),
+                ):
+                    _names = list(_subset)
+                    try:
+                        self._agent.tools.schemas_for_names(_names)
+                    except Exception:
+                        pass
+                    self._agent._messages(
+                        mode,
+                        plan_mission("warmup"),
+                        selected_tool_names=_names,
+                        user_text="warmup",
+                        route_context=True,
+                    )
+                emit_stage(BUS.publish, "prompt_warmup",
+                           "prompt templates ready", progress=100.0)
+            except Exception as exc:
+                logger.warning("prompt template warmup failed: %s", exc)
         except Exception as exc:
             logger.exception("agent init failed")
             _publish_activity("SYSTEM", f"agent init failed: {exc}")
@@ -395,13 +442,10 @@ class AgentRunner:
         # user thinks the agent is thinking — i.e. the BertModel LOAD REPORT
         # and "loading weights 199/199" land AFTER the first message is sent.
         #
-        # PERF: el _ensure_loaded toma 6-8s (BertModel + 62 embeddings). Antes
-        # era SECUENCIAL con el health check + warmup del llama-server (los
-        # 6.3s gap voice_ready -> warming_up del log). Ahora lo lanzamos en
-        # un thread separado para que corra en paralelo con el llama-server
-        # warmup. Si el thread termina antes que el warmup, el agente tiene
-        # el router listo. Si tarda mas, el primer turn cae al keyword
-        # routing como fallback (que ya existe) hasta que el router termine.
+        # PERF: el _ensure_loaded toma 6-8s (BertModel + embeddings de tools) y
+        # los centroids/heads auxiliares agregan costo de primera vez. Lo
+        # lanzamos en paralelo con el llama-server warmup y lo joineamos antes
+        # de ready para que el usuario no pague ese trabajo en el primer turno.
         try:
             from .. import semantic_router
         except Exception as exc:
@@ -435,8 +479,82 @@ class AgentRunner:
                     try:
                         from .. import intent_router as _ir
                         _ir._ensure_centroids()
+                        try:
+                            _ir._ensure_shop_centroids()
+                            _ir._ensure_nav_centroids()
+                            _ir._ensure_email_centroids()
+                        except Exception:
+                            pass
                         _ir.is_conversational("warmup")
                         semantic_router.embed("warmup")
+                        try:
+                            from ..routing import context_router as _cr
+                            _cr._ensure_centroids()
+                            _cr.needs_history("warmup", has_history=True)
+                        except Exception:
+                            pass
+                        try:
+                            from ..routing import command_splitter as _cs
+                            _cs._ensure_action_centroids()
+                        except Exception:
+                            pass
+                        try:
+                            from ..routing import exemplar_router as _er
+                            _er.match("warmup")
+                        except Exception:
+                            pass
+                        try:
+                            from ..computer_use_pkg import accessibility_voice as _av
+                            _av._ensure_centroids()
+                        except Exception:
+                            pass
+                        try:
+                            from ..memory_pkg import profile_intent as _pi
+                            _pi._ensure_centroids()
+                        except Exception:
+                            pass
+                        try:
+                            from ..memory_pkg import microagents as _ma
+                            _ma.select_microagents(
+                                "warmup",
+                                _ma.load_microagents(),
+                                embed_fn=_ma._default_embed_fn(),
+                            )
+                        except Exception:
+                            pass
+                        try:
+                            from ..tools_pkg import skills_registry as _skills
+                            _skills.autoinject_skill(
+                                "warmup",
+                                _skills.scan_skills(),
+                                embed_fn=semantic_router.embed,
+                            )
+                        except Exception:
+                            pass
+                        try:
+                            from ..domain_tools import active_phrase_triggers
+                            if self._agent is not None:
+                                list(active_phrase_triggers(self._agent.state))
+                        except Exception:
+                            pass
+                        try:
+                            if self._agent is not None:
+                                self._agent.experience.recall(
+                                    "warmup query",
+                                    embed_fn=semantic_router.embed,
+                                    k=1,
+                                    max_distance=0.9,
+                                )
+                        except Exception:
+                            pass
+                        try:
+                            from ..safety_pkg import reply_validator as _rv
+                            _rv._ensure_claim_centroids()
+                            _rv._ensure_hands_free_centroids()
+                            _rv._ensure_delegate_centroids()
+                            _rv._ensure_post_action_clarify_centroids()
+                        except Exception:
+                            pass
                         # HEALTH-CHECK ruidoso: si el encoder no cargó, el router
                         # clasifica/rutea MAL en silencio (síntoma observado:
                         # "¿qué es X?" creó un documento en vez de responder).
@@ -521,12 +639,12 @@ class AgentRunner:
             BUS.publish({"type": "agent", "built": True, "healthy": False, "ready": False})
             return
 
-        # Warmup: tiny completion that forces llama-server to finish load_tensors
-        # before responding. We give it a generous 180s timeout because the
-        # first call on a freshly-spawned server has to load all the weights
-        # into VRAM, which on a Q6_K E4B takes ~30-90s. Subsequent restarts
-        # are much faster because the GGUF stays in OS file cache.
-        _publish_activity("BOOT", "warming up llama-server · first completion")
+        # Warmup: 1-token completion using the real no-tool prompt template.
+        # This both forces llama-server to finish load_tensors and primes the
+        # llama.cpp prefix cache for the common fast_info/chat path. A bare "."
+        # warms VRAM but leaves the first real turn paying the full system-prompt
+        # prefill.
+        _publish_activity("BOOT", "warming up llama-server · real prompt prefix")
         emit_stage(BUS.publish, "llama_warmup",
                    "warming up llama-server · first completion may take 30-90s")
         warmup_ok = False
@@ -550,8 +668,22 @@ class AgentRunner:
         except Exception:
             _warm_model = None
         try:
+            _warm_messages = [{"role": "user", "content": "."}]
+            try:
+                from ..routing.planner import plan_mission
+                from ..support.modes import choose_mode
+                _warm_mode = choose_mode("warmup", "auto", getattr(cfg, "max_tokens", 512))
+                _warm_messages = self._agent._messages(
+                    _warm_mode,
+                    plan_mission("warmup"),
+                    selected_tool_names=[],
+                    user_text="warmup",
+                    route_context=True,
+                )
+            except Exception:
+                pass
             resp = self._agent.client.chat(
-                messages=[{"role": "user", "content": "."}],
+                messages=_warm_messages,
                 max_tokens=1,
                 timeout_s=180.0,
                 model=_warm_model,
@@ -708,6 +840,14 @@ class AgentRunner:
             path = payload.get("path") or ""
             if path:
                 _publish_activity("CONTEXT", f"image · {path}")
+        elif event == "llm_start":
+            try:
+                ms = float(payload.get("since_turn_start_ms") or 0.0)
+            except (TypeError, ValueError):
+                ms = 0.0
+            tools = int(payload.get("tools_sent") or 0)
+            mode = payload.get("mode") or "auto"
+            _publish_activity("LLM", f"start · {ms:.0f} ms · {tools} tools · {mode}")
         elif event == "final":
             BUS.publish({"type": "state", "value": "speaking"})
         elif event == "max_turns":
@@ -792,6 +932,24 @@ class AgentRunner:
                 continue
 
             try:
+                _queue_wait_ms = None
+                if getattr(req, "enqueued_perf_s", 0.0):
+                    _queue_wait_ms = round(
+                        (time.perf_counter() - float(req.enqueued_perf_s)) * 1000.0,
+                        3,
+                    )
+                try:
+                    self._agent.trace.event(
+                        "runner",
+                        "runner_turn_start",
+                        queue_wait_ms=_queue_wait_ms,
+                        inbox_size=self._inbox.qsize(),
+                        text=req.text[:160],
+                        has_images=bool(req.images),
+                        has_audios=bool(req.audios),
+                    )
+                except Exception:
+                    pass
                 _publish_activity("YOU", req.text)
                 BUS.publish({"type": "state", "value": "thinking"})
 

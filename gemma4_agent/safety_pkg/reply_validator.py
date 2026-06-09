@@ -14,7 +14,24 @@ LLM's own reply and the structural tool_call activity this turn.
 from __future__ import annotations
 
 import re
+import os
 from typing import Any
+
+
+def _validator_cold_load_enabled() -> bool:
+    raw = (
+        os.environ.get("GEMMA4_REPLY_VALIDATOR_COLD_LOAD")
+        or os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD")
+        or "0"
+    ).strip().casefold()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _semantic_ready_for_validator(sr: Any) -> bool:
+    try:
+        return bool(sr.status().get("model_loaded")) or _validator_cold_load_enabled()
+    except Exception:
+        return _validator_cold_load_enabled()
 
 
 # 'Listo' is the Spanish marker the fast_action prompt teaches
@@ -148,6 +165,8 @@ def _ensure_claim_centroids() -> bool:
         return _CC.claim is not None
     try:
         from .. import semantic_router as sr
+        if not _semantic_ready_for_validator(sr):
+            return False
         if not sr._ensure_loaded():
             _CC.ready = True
             return False
@@ -924,6 +943,8 @@ def _ensure_hands_free_centroids() -> bool:
         return _HF.manual is not None
     try:
         from .. import semantic_router as sr
+        if not _semantic_ready_for_validator(sr):
+            return False
         if not sr._ensure_loaded():
             _HF.ready = True
             return False
@@ -1052,6 +1073,8 @@ def _ensure_delegate_centroids() -> bool:
         return _DG.delegate is not None
     try:
         from .. import semantic_router as sr
+        if not _semantic_ready_for_validator(sr):
+            return False
         if not sr._ensure_loaded():
             _DG.ready = True
             return False
@@ -1141,6 +1164,8 @@ def _ensure_post_action_clarify_centroids() -> bool:
         return _PAC.clarify is not None
     try:
         from .. import semantic_router as sr
+        if not _semantic_ready_for_validator(sr):
+            return False
         if not sr._ensure_loaded():
             _PAC.ready = True
             return False

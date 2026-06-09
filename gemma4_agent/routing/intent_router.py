@@ -332,11 +332,31 @@ class _Centroids:
 _C = _Centroids()
 
 
+def _cold_load_enabled() -> bool:
+    raw = (os.environ.get("GEMMA4_INTENT_COLD_LOAD") or "0").strip().casefold()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _semantic_ready_for_intent(sr: Any) -> bool:
+    """True when semantic intent checks may use/load the encoder.
+
+    By default, intent classifiers must not cold-load sentence-transformers on
+    the user's foreground turn. Background warmup can load it later; once it is
+    loaded these classifiers keep using the semantic path.
+    """
+    try:
+        return bool(sr.status().get("model_loaded")) or _cold_load_enabled()
+    except Exception:
+        return _cold_load_enabled()
+
+
 def _ensure_centroids() -> bool:
     if _C.ready:
         return _C.info is not None
     try:
         from . import semantic_router as sr
+        if not _semantic_ready_for_intent(sr):
+            return False
         if not sr._ensure_loaded():
             _C.ready = True
             return False
@@ -577,6 +597,8 @@ def _ensure_shop_centroids() -> bool:
         return _SHOP.shop is not None
     try:
         from . import semantic_router as sr
+        if not _semantic_ready_for_intent(sr):
+            return False
         if not sr._ensure_loaded():
             _SHOP.ready = True
             return False
@@ -667,6 +689,8 @@ def _ensure_nav_centroids() -> bool:
         return _NAV.nav is not None
     try:
         from . import semantic_router as sr
+        if not _semantic_ready_for_intent(sr):
+            return False
         if not sr._ensure_loaded():
             _NAV.ready = True
             return False
@@ -749,6 +773,8 @@ def _ensure_email_centroids() -> bool:
         return _EMAIL.em is not None
     try:
         from . import semantic_router as sr
+        if not _semantic_ready_for_intent(sr):
+            return False
         if not sr._ensure_loaded():
             _EMAIL.ready = True
             return False

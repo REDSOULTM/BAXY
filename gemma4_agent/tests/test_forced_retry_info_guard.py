@@ -74,8 +74,19 @@ class TestForcedRetryInfoGuard(unittest.TestCase):
         with mock.patch("gemma4_agent.planner.select_tool_names", fake), \
              mock.patch("gemma4_agent.agent.select_tool_names", fake):
             self._events.clear()
-            self.agent.run_content(text)
+            self._last_reply = self.agent.run_content(text)
         return "forced_tool_retry" in self._events
+
+    def _final_reply_text(self, tool_names, text) -> str:
+        """Como _forced pero devuelve el TEXTO final que vería el usuario."""
+        from unittest.mock import MagicMock
+        fake = MagicMock(return_value=list(tool_names))
+        fake._last_fallback_used = False
+        with mock.patch("gemma4_agent.planner.select_tool_names", fake), \
+             mock.patch("gemma4_agent.agent.select_tool_names", fake):
+            self._events.clear()
+            reply = self.agent.run_content(text)
+        return (getattr(reply, "content", "") or "")
 
     def test_info_only_tools_with_prose_answer_does_not_force_retry(self):
         # web/knowledge/memory are optional grounding; a prose answer is fine.
@@ -91,12 +102,22 @@ class TestForcedRetryInfoGuard(unittest.TestCase):
                          "investiga cual es la capital de Francia"),
             "research mode must not treat info tools as optional")
 
-    def test_info_only_tools_with_search_claim_forces_retry(self):
+    def test_search_claim_never_reaches_user_as_final_reply(self):
+        # INVARIANTE (honestidad): un reply tipo "estoy buscando… ahora" NO es una
+        # respuesta factual; el usuario NUNCA debe verlo como reply final.
+        # 2026-06-09: el MECANISMO cambió — antes esto disparaba un forced_tool_retry;
+        # ahora, con la supresión de tools en fast_info por latencia
+        # (GEMMA4_FAST_INFO_NO_TOOLS), el claim falso lo atrapa la capa de honestidad
+        # del reply y lo reemplaza por un fallback honesto ("no agarré bien el
+        # pedido…"). Lo que importa es el RESULTADO, no el mecanismo: el claim de
+        # búsqueda-en-progreso no se entrega como respuesta.
         self.reply = "Estoy buscando informacion sobre el Joker ahora."
-        self.assertTrue(
-            self._forced(["web", "knowledge", "memory", "source_manager"],
-                         "quien es el joker?"),
-            "a search claim is not a factual prose answer; retry must fire")
+        final = self._final_reply_text(
+            ["web", "knowledge", "memory", "source_manager"], "quien es el joker?")
+        self.assertNotIn("buscando", final.casefold(),
+                         "un claim de búsqueda-en-progreso no debe ser el reply final")
+        self.assertNotIn("ahora", final.casefold(),
+                         "el reply final no debe prometer una búsqueda futura")
 
     def test_action_tool_offered_still_forces_retry(self):
         # An ACTION tool (app/window) on an ACTION command + prose-without-call =

@@ -10,6 +10,8 @@ from gemma4_agent.safety_pkg.reply_validator import (
     LISTO_REGEN_HINT,
     is_listo_on_no_tool_turn,
     is_unverified_claim,
+    asks_user_manual_action,
+    reply_delegates_task,
     UNVERIFIED_CLAIM_REGEN_HINT,
     _ensure_claim_centroids,
     _ensure_post_action_clarify_centroids,

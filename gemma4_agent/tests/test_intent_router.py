@@ -13,7 +13,14 @@ from __future__ import annotations
 
 import unittest
 
-from ..routing.intent_router import classify_intent, wants_knowledge, is_conversational
+from ..routing.intent_router import (
+    classify_intent,
+    is_conversational,
+    wants_knowledge,
+    wants_send_email,
+    wants_web_navigation,
+    wants_web_store,
+)
 
 
 def _model_available() -> bool:

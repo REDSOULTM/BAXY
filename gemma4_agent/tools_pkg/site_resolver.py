@@ -19,6 +19,7 @@ Fuentes/incidentes: 've a pivigames' (pivigames.blog no .com), 've a portal unie
 """
 from __future__ import annotations
 
+import os
 import re
 import socket
 import unicodedata
@@ -195,21 +196,36 @@ def user_country_code() -> str | None:
     return _USER_COUNTRY_CACHE[0]
 
 
-def ddgs_search(query: str, limit: int = 6) -> list[dict[str, str]]:
+def _ddgs_timeout() -> int:
+    """Timeout (s) POR backend de ddgs. La librería default a 10 s/petición y
+    `ddgs_search` prueba HASTA 3 backends → peor caso 30 s. MEDIDO (2026-06-09,
+    con datos móviles/red mala): ese encadenamiento daba 17-32 s y el 2do pase del
+    LLM no podía empezar hasta que la búsqueda terminara (lo que el usuario siente
+    como 'tarda mucho en arrancar'). Con un timeout corto el peor caso se acota y
+    el backend que responde rápido gana. Override `GEMMA4_DDGS_TIMEOUT` (default 5)."""
+    try:
+        return max(2, min(10, int(os.environ.get("GEMMA4_DDGS_TIMEOUT", "5") or "5")))
+    except (TypeError, ValueError):
+        return 5
+
+
+def ddgs_search(query: str, limit: int = 6, timeout: int | None = None) -> list[dict[str, str]]:
     """Búsqueda vía la librería `ddgs` (metasearch: Google/Brave/Bing/DDG/...).
     2026-06-07: primario sobre el scraper DDG-HTML (DDG indexa peor sitios chicos
     y rate-limitea). Con backend='google' el #0 coincide con el navegador del user.
-    Gratis, sin API key. Fallback de backends google->brave->auto si uno falla."""
+    Gratis, sin API key. Fallback de backends google->brave->auto si uno falla.
+    `timeout` (s) por backend acota la espera con red mala (default `_ddgs_timeout`)."""
     try:
         from ddgs import DDGS
     except ImportError:
         return []   # sin ddgs -> el provider cae a DDG-HTML/Bing (no rompe)
+    _to = timeout if timeout is not None else _ddgs_timeout()
     for backend in ("google", "brave", "auto"):
         try:
             kw: dict[str, object] = {"max_results": limit}
             if backend != "auto":
                 kw["backend"] = backend
-            raw = DDGS().text(query, **kw) or []
+            raw = DDGS(timeout=_to).text(query, **kw) or []
         except Exception:
             raw = []
         if raw:
@@ -245,6 +261,7 @@ def ddgs_search_all_backends(query: str, limit: int = 8) -> list[dict[str, str]]
         from ddgs import DDGS
     except ImportError:
         return []
+    _to = _ddgs_timeout()   # timeout por backend (red mala: acota el peor caso)
     seen_hosts: set[str] = set()
     merged: list[dict[str, str]] = []
     # backends que ddgs expone (NO 'bing' — no existe en ddgs; sí duckduckgo/brave/
@@ -254,7 +271,7 @@ def ddgs_search_all_backends(query: str, limit: int = 8) -> list[dict[str, str]]
             kw: dict[str, object] = {"max_results": limit}
             if backend != "auto":
                 kw["backend"] = backend
-            raw = DDGS().text(query, **kw) or []
+            raw = DDGS(timeout=_to).text(query, **kw) or []
         except Exception:
             raw = []
         for r in raw:

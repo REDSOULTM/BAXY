@@ -74,6 +74,22 @@ def is_enabled() -> bool:
     return raw not in {"0", "false", "no", "off"}
 
 
+def _cold_load_enabled() -> bool:
+    raw = (
+        os.environ.get("GEMMA4_EXEMPLAR_COLD_LOAD")
+        or os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD")
+        or "0"
+    ).strip().casefold()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _semantic_ready(sr: Any) -> bool:
+    try:
+        return bool(sr.status().get("model_loaded")) or _cold_load_enabled()
+    except Exception:
+        return _cold_load_enabled()
+
+
 def match(text: str) -> ExemplarMatch | None:
     """Return a high-confidence historical semantic match, if any."""
     if not is_enabled() or not text.strip():
@@ -88,9 +104,11 @@ def match(text: str) -> ExemplarMatch | None:
 
     try:
         import numpy as np
-        from .semantic_router import embed
+        from . import semantic_router as sr
 
-        qv = embed(text)
+        if not _semantic_ready(sr):
+            return None
+        qv = sr.embed(text)
         if qv is None:
             return None
         scores = idx.embeddings @ np.asarray(qv, dtype=np.float32)
@@ -154,9 +172,11 @@ def has_tool_conflict(text: str) -> bool:
         return False
     try:
         import numpy as np
-        from .semantic_router import embed
+        from . import semantic_router as sr
 
-        qv = embed(text)
+        if not _semantic_ready(sr):
+            return False
+        qv = sr.embed(text)
         if qv is None:
             return False
         scores = idx.embeddings @ np.asarray(qv, dtype=np.float32)

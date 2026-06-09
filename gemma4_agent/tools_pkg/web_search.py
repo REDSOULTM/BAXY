@@ -31,9 +31,12 @@ def decode_duckduckgo_href(href: str) -> str:
     return href
 
 
-def duckduckgo_search(query: str, limit: int = 6) -> list[dict[str, str]]:
+def duckduckgo_search(query: str, limit: int = 6, timeout: int | None = None) -> list[dict[str, str]]:
     from .tools import _http_get_text, _clean_html_text
-    page = _http_get_text(f"https://html.duckduckgo.com/html/?q={quote_plus(query)}", timeout=12)["text"]
+    page = _http_get_text(
+        f"https://html.duckduckgo.com/html/?q={quote_plus(query)}",
+        timeout=max(1, min(int(timeout or 12), 12)),
+    )["text"]
     results: list[dict[str, str]] = []
     for link in re.finditer(r"(?is)<a[^>]+class=\"result__a\"[^>]+href=\"([^\"]+)\"[^>]*>(.*?)</a>", page):
         chunk = page[link.end(): link.end() + 3000]
@@ -66,13 +69,16 @@ def bing_decode_redirect(href: str) -> str:
         return href
 
 
-def bing_search(query: str, limit: int = 6) -> list[dict[str, str]]:
+def bing_search(query: str, limit: int = 6, timeout: int | None = None) -> list[dict[str, str]]:
     """Búsqueda fallback vía Bing HTML — motor INDEPENDIENTE de DDG. Best-effort
     scraping; si el HTML no matchea el regex, devuelve [] (sin daño: ya veníamos
     en blanco). Sólo se usa cuando DDG falló/vino vacío. Regex verificado contra
     el HTML real de Bing: <h2 class=""><a href="redirect base64">."""
     from .tools import _http_get_text, _clean_html_text
-    page = _http_get_text(f"https://www.bing.com/search?q={quote_plus(query)}", timeout=12)["text"]
+    page = _http_get_text(
+        f"https://www.bing.com/search?q={quote_plus(query)}",
+        timeout=max(1, min(int(timeout or 12), 12)),
+    )["text"]
     results: list[dict[str, str]] = []
     for block in re.finditer(r"(?is)<li class=\"b_algo\".*?(?=<li class=\"b_algo\"|</ol>|$)", page):
         chunk = block.group(0)
@@ -101,9 +107,29 @@ def web_fallback_enabled() -> bool:
         "0", "false", "no", "off"}
 
 
-def web_search_provider(query: str, limit: int = 6) -> tuple[str, list[dict[str, str]]]:
+def web_search_provider(
+    query: str,
+    limit: int = 6,
+    timeout_sec: int | None = None,
+) -> tuple[str, list[dict[str, str]]]:
     from .site_resolver import ddgs_search as _ddgs_search
     provider = os.environ.get("GEMMA4_WEB_SEARCH_PROVIDER", DEFAULT_WEB_SEARCH_PROVIDER).strip().casefold()
+    timeout = max(1, min(int(timeout_sec or 12), 12))
+    if timeout <= int(os.environ.get("GEMMA4_WEB_SEARCH_FAST_TIMEOUT", "4") or "4"):
+        name, results = "duckduckgo_html_fast", []
+        try:
+            results = duckduckgo_search(query, limit=limit, timeout=timeout) or []
+        except Exception:
+            results = []
+        if results or not web_fallback_enabled():
+            return name, results
+        try:
+            bing = bing_search(query, limit=limit, timeout=timeout)
+            if bing:
+                return "bing_html_fast_fallback", bing
+        except Exception:
+            pass
+        return name, results
     # PRIMARIO: ddgs (metasearch con Google/Brave/... — 2026-06-07). Da los mismos
     # resultados que el user ve en su navegador (medido: pivigames.blog es #0). Si
     # ddgs no está o falla -> DDG-HTML -> Bing (degradación limpia, nunca rompe).

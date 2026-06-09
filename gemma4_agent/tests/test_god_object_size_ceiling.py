@@ -76,7 +76,16 @@ CEILINGS = {
     # patrón que los bumps previos: la lógica que se puede partir se partió, el
     # cableado al hot-path queda. Número exacto, sin buffer. Deuda registrada:
     # documentacion/MAPA_descomposicion_archivos_dios.md.
-    "agent_core/agent.py": 6983,
+    # 2026-06-09: 6983 -> 7347 (+364). Tanda de LATENCIA (Codex + cierre): warmup
+    # de rutas calientes en boot, instrumentacion de fases (_mark_decide_phase /
+    # decide_phase / llm_call_start) y routing fast_info/research de baja latencia.
+    # Lo EXTRAIBLE se extrajo a latency_helpers.py (sibling: gates fast_info/
+    # research/experience + senal de idioma rapida + decision research-profunda).
+    # El RESTO es INLINE irreducible: las marcas de fase y la logica fast_info/
+    # research viven DENTRO de _decide_turn/_execute_turn (mutan los locales del
+    # loop: mode, selected_*, events) y el contador de tiempo por turno no tiene
+    # frontera de funcion limpia. Mismo patron que los bumps previos. Numero exacto.
+    "agent_core/agent.py": 7341,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

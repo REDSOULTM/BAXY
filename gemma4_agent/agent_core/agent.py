@@ -237,6 +237,9 @@ def _detect_lang(text: str) -> str:
     t = (text or "").strip()
     if not t:
         return "es"
+    strong = _detect_lang_strong_signal(t)
+    if strong:
+        return strong
     tl = t.lower()
     # (0) SIGNOS/LETRAS EXCLUSIVOS del español: ¿ ¡ ñ no existen en en/fr/de/it; el
     # pt usa ñ raramente (não, mas no ñ). Señal ESTRUCTURAL inequívoca (un carácter
@@ -320,19 +323,13 @@ def _reply_lang(text: str) -> str:
     fixed = fixed.replace("_", "-").split("-")[0]   # 'es-419' -> 'es'
     if fixed in _FIXED_LANGS:
         return fixed
-    detected = _detect_lang(text)
+    strong = _detect_lang_strong_signal(text)
+    if strong:
+        return strong
     os_lang = _os_ui_lang()
-    if os_lang is None:
-        return detected
-    # ancla al SO salvo que el detector tenga una señal FUERTE de otro idioma.
-    # Señal fuerte = char/verbo exclusivos (capa 0/1 de _detect_lang, alta precisión);
-    # esos retornan rápido y son confiables. Si _detect_lang cae a la estadística
-    # (py3langid, la frágil) y discrepa del SO -> preferimos el SO (el idioma del user).
-    if detected == os_lang:
-        return detected
-    if _detect_lang_is_strong(text, detected):
-        return detected
-    return os_lang
+    if os_lang is not None:
+        return os_lang
+    return _detect_lang(text)
 
 
 def _detect_lang_is_strong(text: str, detected: str) -> bool:
@@ -342,6 +339,9 @@ def _detect_lang_is_strong(text: str, detected: str) -> bool:
     tl = (text or "").lower()
     if detected == "es" and any(ch in tl for ch in ("¿", "¡", "ñ")):
         return True
+    strong = _detect_lang_strong_signal(text)
+    if strong:
+        return detected == strong
     s = f" {tl} "
     for lang, verbs in _IMPERATIVE_VERBS:
         if lang == detected and any(v in s for v in verbs):
@@ -379,6 +379,19 @@ def _summary_keep_tools_enabled() -> bool:
     return (
         _os_skt.environ.get("GEMMA4_SUMMARY_KEEP_TOOLS", "1") or "1"
     ).strip().lower() not in {"0", "false", "no", "off"}
+
+
+# Gates de latencia (fast_info/research/experience) + señal de idioma rápida +
+# decisión research-profunda extraídos a latency_helpers.py (2026-06-09, ratchet
+# archivo-dios: la tanda de latencia los habría engrosado en agent.py). Re-export
+# con los nombres privados que el resto del módulo usa.
+from .latency_helpers import (  # noqa: E402
+    detect_lang_strong_signal as _detect_lang_strong_signal,
+    fast_info_no_tools_enabled as _fast_info_no_tools_enabled,
+    research_fast_search_enabled as _research_fast_search_enabled,
+    experience_cold_load_enabled as _experience_cold_load_enabled,
+    should_keep_full_web_research as _should_keep_full_web_research,
+)
 
 
 def _error_recovery_enabled() -> bool:
@@ -1083,14 +1096,15 @@ class Gemma4Agent:
         if _skills_autoinject_enabled():
             try:
                 from ..tools_pkg.skills_registry import autoinject_skill, scan_skills
-                from ..routing.semantic_router import embed as _emb_sk
-                _sk_name, _sk_body = autoinject_skill(
-                    user_text or "", scan_skills(), embed_fn=_emb_sk)
-                if _sk_name:
-                    skills_autoinject = (
-                        f"\n# SKILL ACTIVADA — seguí esta receta paso a paso\n"
-                        f"## {_sk_name}\n{_sk_body}\n")
-                    self.trace.event("agent", "skill_autoinjected", skill=_sk_name)
+                from ..routing import semantic_router as _sr_sk
+                if _sr_sk.status().get("model_loaded"):
+                    _sk_name, _sk_body = autoinject_skill(
+                        user_text or "", scan_skills(), embed_fn=_sr_sk.embed)
+                    if _sk_name:
+                        skills_autoinject = (
+                            f"\n# SKILL ACTIVADA — seguí esta receta paso a paso\n"
+                            f"## {_sk_name}\n{_sk_body}\n")
+                        self.trace.event("agent", "skill_autoinjected", skill=_sk_name)
             except Exception:
                 pass
         # Validator hint: when the subset crosses an ambiguous pair (audio vs
@@ -1143,7 +1157,7 @@ class Gemma4Agent:
             variable = (f"{language_section}{mode_hint}{a11y_switch_note}{info_followup_note}{tools_section}"
                         f"{project_section}{profile_section}{plan_hint}{explicit_section}"
                         f"{recall_section}{phrase_section}{microagents_section}"
-                        f"{intent_hint}\n\n# Persistent memory\n"
+                        f"{skills_autoinject}{intent_hint}\n\n# Persistent memory\n"
                         f"{self.memory.prompt_summary_for(user_text)}")
             return {"role": "system", "content": stable_a + stable_b + variable}
         if _v2_on:
@@ -1155,7 +1169,7 @@ class Gemma4Agent:
             variable = (f"{language_section}{mode_hint}{a11y_switch_note}{info_followup_note}{tool_rules_section}{tools_section}"
                         f"{project_section}{profile_section}{plan_hint}{explicit_section}"
                         f"{recall_section}{phrase_section}{microagents_section}"
-                        f"{intent_hint}\n\n# Persistent memory\n"
+                        f"{skills_autoinject}{intent_hint}\n\n# Persistent memory\n"
                         f"{self.memory.prompt_summary_for(user_text)}")
             return {"role": "system", "content": stable + variable}
         return {
@@ -1512,6 +1526,25 @@ class Gemma4Agent:
         re-dispatch, reply-message shortcut, explicit-plan only).
         """
         self._turn_counter += 1
+        turn_id = self.trace.new_turn_id()
+        _decide_t0 = time.perf_counter()
+        _decide_last = _decide_t0
+
+        def _mark_decide_phase(phase: str, **payload: Any) -> None:
+            nonlocal _decide_last
+            now = time.perf_counter()
+            try:
+                self.trace.event(
+                    turn_id,
+                    "decide_phase",
+                    phase=phase,
+                    delta_ms=round((now - _decide_last) * 1000.0, 3),
+                    since_start_ms=round((now - _decide_t0) * 1000.0, 3),
+                    **payload,
+                )
+            except Exception:
+                pass
+            _decide_last = now
         # Resetear el presupuesto de acciones físicas GUI al EMPEZAR un turno
         # top-level (no por cláusula — las cláusulas de un multi-intent comparten
         # el presupuesto del turno). Acota cuántos clicks/types a ciegas puede
@@ -1539,6 +1572,7 @@ class Gemma4Agent:
                     pass
             except Exception:
                 pass
+        _mark_decide_phase("early_gui_lang")
         # Reset de la nota transitoria de cambio-de-modo (un turno). Va ANTES de
         # cualquier short-circuit para que no filtre de un turno al siguiente.
         self._a11y_switch_note = ""
@@ -1551,6 +1585,7 @@ class Gemma4Agent:
         _jarvis_reply = self._handle_pending_suggestion(content)
         if _jarvis_reply is not None:
             return TurnDecision(early_reply=_jarvis_reply)
+        _mark_decide_phase("pending_suggestion")
         # PERFIL DE GUSTOS — privacidad inspectable/borrable.
         # "¿qué sabés de mí?" / "olvidate de mis datos" tienen respuesta DETERMINISTA
         # (mostrar/borrar el perfil). MEDIDO: el router las clasifica como acción y el
@@ -1559,6 +1594,7 @@ class Gemma4Agent:
         _profile_reply = self._handle_profile_intent(content)
         if _profile_reply is not None:
             return TurnDecision(early_reply=_profile_reply)
+        _mark_decide_phase("profile_intent")
         # ACCESIBILIDAD: si el usuario PIDE cambiar de modo de accesibilidad
         # ("activá modo no vidente", "no puedo usar las manos", "volvé a normal"),
         # lo detectamos por EMBEDDINGS multilingües (no keywords) y lo aplicamos/
@@ -1586,6 +1622,7 @@ class Gemma4Agent:
                         pass
             except Exception:
                 pass
+        _mark_decide_phase("a11y_switch_check")
         # COMPUTER-USE ES UNA TOOL (pedido de RED): operar dentro
         # de una app abierta ya NO es un short-circuit pre-LLM que secuestraba turnos
         # (causaba: "abre steam"->enfoca/minimiza, WhatsApp->escribe en la caja
@@ -1593,7 +1630,6 @@ class Gemma4Agent:
         # tool más del registry: el router la ofrece y el LLM la llama como cualquier
         # otra, con sus parámetros. Su impl (tools.t_computer_use) corre el plan
         # executor internamente. Sin gate frágil, sin secuestro — unificado.
-        turn_id = self.trace.new_turn_id()
         # ARITMÉTICA: el 4B chico improvisa cálculos y FALLA (MEDIDO en vivo:
         # "cuánto es 47 por 8" -> "58.5", es 376). Si el texto reduce a una expresión
         # aritmética PURA, la computamos DETERMINISTA (AST seguro, sin eval/exec — respeta
@@ -1618,6 +1654,7 @@ class Gemma4Agent:
                         tool_events=[ToolEvent(name="calc", args={"expr": content[:80]},
                                                result={"ok": True, "result": _arith})],
                         mission=None))
+        _mark_decide_phase("arithmetic_check")
         # CALC-EN-APP: "suma 2+2 en la calculadora" -> el 4B tipeaba
         # `gui.type("2+2")` SIN enfocar la Calc; el sendinput iba a la ventana equivocada
         # (reporta ok:True igual) -> el verifier no encontraba "2+2" en la Calc
@@ -1658,6 +1695,7 @@ class Gemma4Agent:
                     # NO afirme éxito si el tool no confirmó (verified=False/None).
                     return TurnDecision(early_reply=agent_guards.honest_action_reply(
                         AgentReply(content=_calc_msg, tool_events=[_calc_ev], mission=None)))
+        _mark_decide_phase("calc_action_check")
         # ACCIÓN-EN-APP / META (ACCESIBILIDAD, núcleo del producto).
         # MEDIDO en vivo: los pedidos "escribí/hacé X en app Y", "en Y escribí X" y
         # "andá a Y y escribí X" casi nunca llegaban al orquestador computer_use
@@ -1862,6 +1900,7 @@ class Gemma4Agent:
                     # (verified=False/None -> nota honesta; verified=True -> intacto).
                     return TurnDecision(early_reply=agent_guards.honest_action_reply(
                         AgentReply(content=_aa_msg, tool_events=[_aa_ev], mission=None)))
+        _mark_decide_phase("app_action_net_check")
         # MULTI-INTENT (inv 7): "abrí Spotify y bajá el volumen" son 2 acciones.
         # Un 4B causal colapsa el multi-intent; lo partimos con regex ANTES del
         # LLM y corremos cada cláusula como su propio turno (serializado si la
@@ -1875,6 +1914,7 @@ class Gemma4Agent:
                 _clauses = split_command(content)
                 if len(_clauses) > 1:
                     return TurnDecision(early_reply=self._run_multi_intent(_clauses, progress=progress))
+        _mark_decide_phase("multi_intent_check")
         # OPEN PELADO de app: "abrí la calculadora"/"abrí discord". MEDIDO
         # (físico, PC del user): el router/4B NO rutea ciertos nombres a app.open de
         # forma CONSISTENTE ("abrí la calculadora"/"abrí discord" -> NADA 3/3, aunque
@@ -1929,6 +1969,7 @@ class Gemma4Agent:
         # usuario confirma) y el LLM redacta la confirmación con el resultado en
         # contexto. Solo dispara con destinatario+cuerpo CLAROS (None -> sigue el
         # flujo normal y el LLM pregunta a quién). Gate GEMMA4_REPLY_NET=0.
+        _mark_decide_phase("app_open_net_check")
         import os as _os_rn
         if isinstance(content, str) and content.strip() \
                 and not getattr(self, "_splitting", False) \
@@ -1950,10 +1991,13 @@ class Gemma4Agent:
                 return TurnDecision(early_reply=AgentReply(content=_msg, tool_events=[_reply_sc], mission=None))
         # Allow ONE forced tool-call retry per user turn (reset here; consumed
         # in the agent loop when a domain tool was expected but none was called).
+        _mark_decide_phase("reply_net_check")
+        _mark_decide_phase("pre_llm_shortcuts")
         self._forced_tool_retry_done = False
         self._det_nets_tried = False  # redes deterministas (reply/email/nav) por turno
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
+        _mark_decide_phase("mode_plan", mode=mode.name, steps=len(plan.steps))
         # turn_id ya se generó arriba (antes del macro de navegación-en-app).
         # Router mode (lazy vision): pick the per-turn router preset. vision
         # only when this turn actually has an image (mode==vision_action) — so
@@ -2208,6 +2252,7 @@ class Gemma4Agent:
                                      timeouts=sum(1 for r in step_results if r.get("timed_out")))
             except Exception as exc:
                 self.trace.event(turn_id, "phrase_trigger_error", error=str(exc))
+        _mark_decide_phase("phrase_triggers", fires=len(self._phrase_fires or []))
 
         # Frase-sola → ejecutar y CORTAR el turno sin LLM. Cuando el usuario
         # dijo solo la palabra-frase (no una oración que la contiene), la
@@ -2238,15 +2283,23 @@ class Gemma4Agent:
         self._recent_recalls = []
         raw_text = raw_text_early
         try:
-            from ..routing.semantic_router import embed as _embed_text
+            from ..routing import semantic_router as _semantic_router
             if raw_text and len(raw_text.split()) >= 2:
                 # Anti-degradation: tighter than the permissive
                 # default (1.2 ≈ cos 0.4). 0.9 ≈ cos 0.55 — only inject a past
                 # turn that is genuinely similar. A weak match just adds prompt
                 # tokens (latency) and can mislead with loosely-related
                 # precedent. k stays 3 but most turns now recall 0–2.
-                self._recent_recalls = self.experience.recall(
-                    raw_text, embed_fn=_embed_text, k=3, max_distance=0.9)
+                _semantic_ready = bool(_semantic_router.status().get("model_loaded"))
+                if not _semantic_ready and not _experience_cold_load_enabled():
+                    self.trace.event(
+                        turn_id,
+                        "experience_recall_skipped",
+                        reason="semantic_encoder_cold",
+                    )
+                else:
+                    self._recent_recalls = self.experience.recall(
+                        raw_text, embed_fn=_semantic_router.embed, k=3, max_distance=0.9)
                 if self._recent_recalls:
                     self.trace.event(turn_id, "experience_recall",
                                      query=raw_text[:200],
@@ -2255,6 +2308,10 @@ class Gemma4Agent:
                                      distances=[r["distance"] for r in self._recent_recalls])
         except Exception as exc:
             self.trace.event(turn_id, "experience_recall_failed", error=str(exc))
+        _mark_decide_phase(
+            "experience_recall",
+            recalls=len(getattr(self, "_recent_recalls", []) or []),
+        )
 
         # Explicit Planner -> Executor (Goose-style). Only spend the extra LLM
         # call when the request is multi-step or the user asked for a plan.
@@ -2296,6 +2353,10 @@ class Gemma4Agent:
                 self.trace.event(turn_id, "explicit_plan_error", error=str(exc))
         else:
             self._explicit_plan_status = {"state": "disabled", "reason": "env_var_off"}
+        _mark_decide_phase(
+            "explicit_plan",
+            state=(self._explicit_plan_status or {}).get("state"),
+        )
         _progress(
             progress,
             "start",
@@ -2334,11 +2395,20 @@ class Gemma4Agent:
             self.state.get_pending_intent(self._turn_counter)
             if hasattr(self.state, "get_pending_intent") else None
         )
+        _mark_decide_phase(
+            "pre_select_context",
+            has_last_assistant=bool(last_assistant_text),
+            has_pending_intent=bool(pending_intent),
+        )
         selected_tool_names = select_tool_names(
             content, plan,
             safety_enabled=self.config.enable_safety,
             last_assistant_text=last_assistant_text,
             pending_intent=pending_intent,
+        )
+        _mark_decide_phase(
+            "select_tool_names",
+            tools=list(selected_tool_names or []),
         )
         # B2 (competidores): memory-guided tool-picking. Si turnos PASADOS con
         # intención similar tuvieron ÉXITO usando ciertas tools, las agregamos al
@@ -2454,14 +2524,26 @@ class Gemma4Agent:
                         _ahm = _ah_load()
                         if _ahm is not None:
                             from ..routing.intent_router import classify_intent as _ci
-                            from ..routing.semantic_router import suggest_tools_scored as _sts
+                            from ..routing import semantic_router as _sr_short
                             _isc = None
                             try:
                                 _isc = _ci(raw_text)
                             except Exception:
                                 _isc = None
+                            _scored = []
+                            try:
+                                import os as _os_sem
+                                _semantic_ready = bool(_sr_short.status().get("model_loaded"))
+                                _semantic_cold = (
+                                    _os_sem.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
+                                    in {"1", "true", "yes", "on"}
+                                )
+                                if _semantic_ready or _semantic_cold:
+                                    _scored = _sr_short.suggest_tools_scored(raw_text, k=12)
+                            except Exception:
+                                _scored = []
                             _f = _ah_feats(raw_text, intent=_isc,
-                                           scored=_sts(raw_text, k=12),
+                                           scored=_scored,
                                            keyword_fired=False)
                             # A no-tool probability at/above the routing
                             # threshold means "really conversational" — skip
@@ -2614,6 +2696,11 @@ class Gemma4Agent:
                             user_text=raw_text[:60],
                         )
         semantic_fallback = bool(getattr(select_tool_names, "_last_fallback_used", False))
+        _mark_decide_phase(
+            "post_select_adjustments",
+            tools=list(selected_tool_names or []),
+            semantic_fallback=semantic_fallback,
+        )
         # router_v2 (BM25+RRF hybrid) was removed. All four router
         # research reports agreed it was structurally wrong for short voice
         # queries (TF collapses to 1; RRF amplifies the degenerate lexical
@@ -2697,6 +2784,30 @@ class Gemma4Agent:
             self.trace.event(turn_id, "tool_prefix_stabilized",
                              router_picks=_router_picks,
                              stabilized=selected_tool_names)
+        if mode.name == "fast_info" and _fast_info_no_tools_enabled() and selected_tool_names:
+            _suppressed = list(selected_tool_names)
+            selected_tool_names = []
+            self.trace.event(
+                turn_id,
+                "fast_info_tools_suppressed",
+                dropped=_suppressed,
+                reason="parametric_info_low_latency",
+            )
+        if mode.name == "research":
+            _research_orig = list(selected_tool_names)
+            _research_keep = {"web", "knowledge", "source_manager", "session"}
+            selected_tool_names = [
+                t for t in selected_tool_names if t in _research_keep
+            ]
+            if "web" not in selected_tool_names:
+                selected_tool_names.insert(0, "web")
+            if selected_tool_names != _research_orig:
+                self.trace.event(
+                    turn_id,
+                    "research_subset_slimmed",
+                    dropped=[t for t in _research_orig if t not in selected_tool_names],
+                    kept=list(selected_tool_names),
+                )
         # HARD CAP FINAL despues de persona+a11y+carry+stabilize.
         # MEDIDO: a11y mode `no_vidente` agrega 5 tools (vision/uia/gui/
         # computer_use/browser_real) DESPUES del cap del planner; suma puede
@@ -2723,6 +2834,11 @@ class Gemma4Agent:
         selected_schemas = self.tools.schemas_for_names(selected_tool_names)
         self.trace.event(turn_id, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas), semantic_fallback=semantic_fallback, persona=self._persona.name)
         _progress(progress, "tool_subset", tools=selected_tool_names, schema_count=len(selected_schemas))
+        _mark_decide_phase(
+            "schemas_and_caps",
+            tools=list(selected_tool_names or []),
+            schema_count=len(selected_schemas),
+        )
 
         # Reasoning-for-tools upgrade (9da4fd3). If a DOMAIN tool is in the subset
         # and the picked mode has thinking OFF, upgrade to quick_action
@@ -2761,7 +2877,7 @@ class Gemma4Agent:
                 # aplica salvo que los tools sean sólo info-retrieval.
                 _only_info = bool(_dom) and all(
                     t in _INFO_RETRIEVAL_TOOLS for t in _dom)
-                _skip_upgrade = (mode.name == "fast_info") or (
+                _skip_upgrade = (mode.name in {"fast_info", "research"}) or (
                     _only_info and mode.name == "fast_action")
                 if _dom and not _skip_upgrade:
                     # choose_mode ya top-level (línea 18).
@@ -2842,6 +2958,7 @@ class Gemma4Agent:
                     pass
         except Exception:
             self._eager_cache = None
+        _mark_decide_phase("decide_done")
         return TurnDecision(
             turn_id=turn_id,
             mode=mode,
@@ -3176,6 +3293,7 @@ class Gemma4Agent:
         # call will see; subsequent retry iterations may shrink the subset
         # but the FIRST attempt dominates the latency budget.
         try:
+            _prompt_build_t0 = time.perf_counter()
             _initial_messages = self._messages(
                 mode, plan,
                 selected_tool_names=selected_tool_names,
@@ -3200,6 +3318,11 @@ class Gemma4Agent:
                 total_chars=_total_chars,
                 estimated_tokens=_total_chars // 4,
                 schemas_count=len(selected_schemas),
+                wall_ms=round((time.perf_counter() - _prompt_build_t0) * 1000.0, 3),
+                since_turn_start_ms=round(
+                    (time.perf_counter() - getattr(self, "_turn_perf_t0", time.perf_counter())) * 1000.0,
+                    3,
+                ),
             )
         except Exception:
             # Telemetry must never break the agent.
@@ -3219,8 +3342,10 @@ class Gemma4Agent:
             # it on roughly DOUBLES the turn latency (a second reasoning pass on
             # a 4B CPU model). So enable thinking only while no tool has run yet.
             _think_now = mode.enable_thinking and len(events) == 0
+            _messages_build_t0 = time.perf_counter()
             _msgs = self._messages(mode, plan, selected_tool_names=selected_tool_names,
                                     user_text=raw_text_early, route_context=(len(events) == 0))
+            _messages_build_ms = round((time.perf_counter() - _messages_build_t0) * 1000.0, 3)
             # Re-resolve the router model per call: a tool may have injected an
             # image (e.g. screenshot) into history mid-turn, which forces the
             # vision preset even on a text-mode turn. See _messages_have_image.
@@ -3252,9 +3377,23 @@ class Gemma4Agent:
             # tools y damos budget amplio para que narre. Es el camino que hace
             # la lectura de pantalla funcionar para alguien que no ve.
             _is_describe_pass = (len(events) > 0 and _messages_have_image(_msgs))
+            # RESEARCH answer pass: after one evidence/search tool returned,
+            # answer from that evidence instead of giving the model another
+            # tool catalog. This keeps ordinary lookups inside the voice
+            # latency budget and prevents weak-model tool loops, without
+            # hardcoding any language or query.
+            _is_research_answer_pass = (
+                len(events) > 0
+                and mode.name == "research"
+                and not _messages_have_image(_msgs)
+            )
             if _is_describe_pass:
                 _pass_tools = None          # forzar respuesta en texto (descripción)
                 _pass_max = max(mode.max_tokens, 512)
+                _keep_summary_tools = False
+            elif _is_research_answer_pass:
+                _pass_tools = None
+                _pass_max = min(mode.max_tokens, 320)
                 _keep_summary_tools = False
             else:
                 # SUMMARY slimming dropped tools to save ~1.5k prompt
@@ -3321,6 +3460,44 @@ class Gemma4Agent:
                 and (_is_summary_pass or (len(events) == 0 and mode.name == "fast_info"))
             )
             try:
+                _messages_chars = sum(len(str(m.get("content") or "")) for m in _msgs)
+                _tools_chars = sum(len(json.dumps(s)) for s in (_pass_tools or []))
+                _since_llm_start_ms = round(
+                    (time.perf_counter() - getattr(self, "_turn_perf_t0", time.perf_counter())) * 1000.0,
+                    3,
+                )
+                self.trace.event(
+                    turn_id,
+                    "llm_call_start",
+                    turn=_turn + 1,
+                    model=_call_model,
+                    mode=mode.name,
+                    events=len(events),
+                    tools_sent=len(_pass_tools or []),
+                    messages_chars=_messages_chars,
+                    tools_chars=_tools_chars,
+                    messages_build_ms=_messages_build_ms,
+                    thinking=bool(_pass_enable_thinking),
+                    thinking_budget=_pass_thinking_budget,
+                    max_tokens=_pass_max,
+                    summary_pass=bool(_is_summary_pass),
+                    describe_pass=bool(_is_describe_pass),
+                    research_answer_pass=bool(_is_research_answer_pass),
+                    stream=bool(_stream_this),
+                    since_turn_start_ms=_since_llm_start_ms,
+                )
+                _progress(
+                    progress,
+                    "llm_start",
+                    since_turn_start_ms=_since_llm_start_ms,
+                    tools_sent=len(_pass_tools or []),
+                    messages_chars=_messages_chars,
+                    mode=mode.name,
+                )
+            except Exception:
+                pass
+            _llm_wall_t0 = time.perf_counter()
+            try:
                 if _stream_this:
                     try:
                         resp = self._chat_streaming(
@@ -3376,6 +3553,16 @@ class Gemma4Agent:
                         timeout_s=mode.request_timeout_s,
                     )
             except Exception as exc:
+                try:
+                    self.trace.event(
+                        turn_id,
+                        "llm_call_error",
+                        turn=_turn + 1,
+                        wall_ms=round((time.perf_counter() - _llm_wall_t0) * 1000.0, 3),
+                        error=f"{type(exc).__name__}: {exc}",
+                    )
+                except Exception:
+                    pass
                 if _looks_like_context_overflow(str(exc)):
                     _progress(progress, "context_retry", error=str(exc), tools=len(events))
                     self.trace.event(turn_id, "context_retry", error=str(exc), tool_events=len(events))
@@ -3415,6 +3602,7 @@ class Gemma4Agent:
                     self._last_turn_ts = time.time()
                     return AgentReply(content="", tool_events=events, error=str(exc))
 
+            _llm_wall_ms = round((time.perf_counter() - _llm_wall_t0) * 1000.0, 3)
             choice = (resp.get("choices") or [{}])[0]
             raw_msg = choice.get("message") or {}
             msg = sanitize_assistant_message(raw_msg)
@@ -3832,6 +4020,9 @@ class Gemma4Agent:
             # con bit-a-bit diff de dos turnos consecutivos).
             _timings = (resp.get("timings") if isinstance(resp, dict) else None) or {}
             _usage = (resp.get("usage") if isinstance(resp, dict) else None) or {}
+            _server_ms = None
+            if _timings.get("prompt_ms") is not None or _timings.get("predicted_ms") is not None:
+                _server_ms = float(_timings.get("prompt_ms") or 0) + float(_timings.get("predicted_ms") or 0)
             self.trace.event(
                 turn_id,
                 "llm_response",
@@ -3847,6 +4038,12 @@ class Gemma4Agent:
                 predicted_ms=_timings.get("predicted_ms"),
                 prompt_tokens=_usage.get("prompt_tokens"),
                 cached_tokens=(_usage.get("prompt_tokens_details") or {}).get("cached_tokens"),
+                wall_ms=_llm_wall_ms,
+                server_ms=round(_server_ms, 3) if _server_ms is not None else None,
+                client_overhead_ms=(
+                    round(_llm_wall_ms - _server_ms, 3) if _server_ms is not None else None
+                ),
+                messages_build_ms=_messages_build_ms,
             )
             _progress(
                 progress,
@@ -3864,7 +4061,7 @@ class Gemma4Agent:
                 _fin_result = self._finalize_turn(
                     content, assistant_content, events, msg,
                     raw_text_early, turn_id, verifier_outcomes, mission_goal,
-                    plan, selected_tool_names, progress,
+                    plan, selected_tool_names, progress, mode=mode,
                 )
                 if _fin_result is _FINALIZE_CONTINUE:
                     continue
@@ -3933,6 +4130,24 @@ class Gemma4Agent:
                         self.trace.event(turn_id, "path_autorepaired",
                                          tool=name, path=repaired)
                         args = {**args, "path": repaired}
+                    if (
+                        mode.name == "research"
+                        and name == "web"
+                        and str(args.get("action") or "").casefold() == "research"
+                        and _research_fast_search_enabled()
+                        and not _should_keep_full_web_research(raw_text_early, args)
+                    ):
+                        args = {
+                            **args,
+                            "action": "search",
+                            "limit": int(args.get("limit", 3) or 3),
+                            "timeout_sec": int(args.get("timeout_sec", 4) or 4),
+                        }
+                        self.trace.event(
+                            turn_id,
+                            "web_research_fast_search",
+                            query=str(args.get("query") or "")[:160],
+                        )
                 in_subset = name in subset_set
                 self.trace.event(turn_id, "tool_call", name=name, args=args, in_subset=in_subset, parse_error=parse_error)
                 # B3b: earcon de progreso NO-VERBAL antes de una tool LENTA (web/visión/
@@ -4025,11 +4240,19 @@ class Gemma4Agent:
             # Phase 2: execute. Parallel when enabled, multiple valid calls
             # and the LLM did not request a strict order.
             parallel_ok = _parallel_tools_enabled() and sum(1 for p in prepared if not p["parse_error"]) >= 2
+            _tools_batch_t0 = time.perf_counter()
             if parallel_ok:
                 self.trace.event(turn_id, "tools_parallel_start", count=len(prepared))
                 self._execute_calls_parallel(prepared, progress, len(events), turn_id=turn_id)
             else:
                 self._execute_calls_sequential(prepared, progress, len(events), turn_id=turn_id)
+            self.trace.event(
+                turn_id,
+                "tools_batch_done",
+                count=len(prepared),
+                parallel=bool(parallel_ok),
+                wall_ms=round((time.perf_counter() - _tools_batch_t0) * 1000.0, 3),
+            )
 
             # Phase 3: apply results in original order to events, history,
             # traces, failure log, image collection.
@@ -4386,6 +4609,84 @@ class Gemma4Agent:
                 self._research_fallback_answer_pending = True
                 research_fallback_answer_only = False
 
+            # FAST PATH lectura de pantalla: vision.describe_screen ya hizo la
+            # llamada visual y devolvio texto en result.description. Pedirle al
+            # LLM otro pass solo para resumir esa descripcion agrega segundos y,
+            # en modo no-vidente, puede disparar nudges extra. Cerramos el turno
+            # directo solo si el ULTIMO evento es vision con descripcion.
+            direct_screen_reply = self._screen_description_reply(events[-1:])
+            if direct_screen_reply:
+                mission_outcome = None
+                try:
+                    _tool_records_for_outcome = _build_tool_records(events, verifier_outcomes)
+                    mission_outcome = _compute_mission_outcome(
+                        mission_goal, _tool_records_for_outcome, direct_screen_reply,
+                    )
+                    self.trace.event(
+                        turn_id, "mission_outcome",
+                        status=mission_outcome.status.value,
+                        summary=mission_outcome.summary,
+                        confirmed=mission_outcome.confirmed_count,
+                        failed=mission_outcome.failed_count,
+                        unverified=mission_outcome.unverified_count,
+                        expected_total=mission_outcome.expected_total,
+                        expected_satisfied=mission_outcome.expected_satisfied,
+                    )
+                except Exception as _mo_exc:  # noqa: BLE001
+                    import logging as _logging
+                    _logging.getLogger(__name__).warning(
+                        "mission outcome direct screen failed: %s", _mo_exc)
+                    try:
+                        self.trace.event(turn_id, "mission_outcome_error",
+                                         error=f"{type(_mo_exc).__name__}: {_mo_exc}")
+                    except Exception:
+                        pass
+                mission = evaluate_mission(events, direct_screen_reply, plan)
+                if isinstance(mission, dict) and mission_outcome is not None:
+                    mission["mission_goal_status"] = mission_outcome.status.value
+                    mission["mission_goal_summary"] = mission_outcome.summary
+                    mission["mission_goal_progress"] = [
+                        mission_outcome.expected_satisfied,
+                        mission_outcome.expected_total,
+                    ]
+                self.history.append({"role": "assistant", "content": direct_screen_reply})
+                used_tools = {e.name for e in events}
+                self.trace.event(
+                    turn_id, "screen_description_direct_final",
+                    content_chars=len(direct_screen_reply),
+                    saved_followup_llm=True,
+                )
+                self.trace.event(
+                    turn_id, "router_stats",
+                    subset_size=len(selected_tool_names),
+                    used_count=len(used_tools),
+                    unused_count=len(set(selected_tool_names) - used_tools),
+                    used=sorted(used_tools),
+                    unused=sorted(set(selected_tool_names) - used_tools),
+                )
+                self.trace.event(
+                    turn_id, "final",
+                    content=direct_screen_reply,
+                    tool_events=len(events),
+                    mission=mission,
+                )
+                self._record_experience_turn(
+                    content=content,
+                    assistant_content=direct_screen_reply,
+                    events=events,
+                    mission=mission,
+                    turn_id=turn_id,
+                )
+                self._compact_completed_history()
+                _progress(progress, "final", tools=len(events), mission=mission)
+                self._last_turn_ts = time.time()
+                self._remember_executed_tools(events)
+                return AgentReply(
+                    content=direct_screen_reply,
+                    tool_events=events,
+                    mission=mission,
+                )
+
             # Loop detector check: si critical, abort el outer for y produci un
             # reply honesto. Si warning, inyecta el mensaje al historial para que
             # el LLM lo vea en el proximo client.chat() y corrija solo.
@@ -4476,6 +4777,49 @@ class Gemma4Agent:
     # below adapt the agent's positional progress callback to the
     # progress_emit(event, payload) callable the pure functions take.
 
+    def _record_experience_turn(
+        self,
+        *,
+        content: str | list[dict[str, Any]],
+        assistant_content: str,
+        events: list[ToolEvent],
+        mission: dict[str, Any] | None,
+        turn_id: str,
+    ) -> None:
+        """Persist a completed turn into semantic experience memory."""
+        try:
+            from ..routing import semantic_router as _semantic_router
+            _semantic_ready = bool(_semantic_router.status().get("model_loaded"))
+            if not _semantic_ready and not _experience_cold_load_enabled():
+                self.trace.event(
+                    turn_id,
+                    "experience_record_skipped",
+                    reason="semantic_encoder_cold",
+                )
+                return
+            raw_text = _extract_user_text(content)
+            used_tools = sorted({e.name for e in events})
+            mission_status = (mission or {}).get("mission_status") if isinstance(mission, dict) else None
+            outcome_code = _derive_outcome_code(mission_status, events)
+            capability_label = None
+            args_signature = _derive_args_signature(events)
+            rec = self.experience.record(
+                turn_id=turn_id,
+                user_input=raw_text,
+                tools_used=used_tools,
+                outcome=assistant_content[:1000],
+                mission_status=mission_status,
+                summary=assistant_content[:400],
+                embed_fn=_semantic_router.embed,
+                outcome_code=outcome_code,
+                capability_label=capability_label,
+                args_signature=args_signature,
+            )
+            if rec.get("ok"):
+                self.trace.event(turn_id, "experience_recorded", id=rec.get("id"))
+        except Exception as exc:
+            self.trace.event(turn_id, "experience_record_failed", error=str(exc))
+
     def _finalize_turn(
         self,
         content: str | list[dict[str, Any]],
@@ -4489,8 +4833,13 @@ class Gemma4Agent:
         plan: dict[str, Any] | None,
         selected_tool_names: list[str],
         progress: ProgressCallback | None = None,
+        mode: Any = None,
     ) -> "AgentReply | _FinalizeContinue":
         """Finalize phase of a turn.
+
+        `mode` (AgentMode del turno) se usa para NO aplicar la reparación
+        post-acción a turnos research/info (que ya respondieron con evidencia).
+        Default None -> el guard `_is_research_mode` lo trata como no-research.
 
         Runs ONLY when the LLM finished without emitting a tool call
         (the natural success path). Applies post-processing:
@@ -4723,13 +5072,25 @@ class Gemma4Agent:
         try:
             from ..safety_pkg.reply_validator import post_action_clarification_conflict
             _focused_reply_events = self._focused_events_for_action_reply(events)
+            _event_names_for_reply = {
+                str(getattr(ev, "name", "") or "").casefold()
+                for ev in (events or [])
+            }
+            _info_only_events = bool(_event_names_for_reply) and all(
+                name in _INFO_RETRIEVAL_TOOLS for name in _event_names_for_reply
+            )
+            _mode_name = str(getattr(mode, "name", "") or "")
             _needs_refocus = bool(
                 events
+                and _mode_name != "research"
+                and not _info_only_events
                 and _focused_reply_events
                 and len(_focused_reply_events) < len(events)
             )
             _needs_clarify_repair = bool(
                 events
+                and _mode_name != "research"
+                and not _info_only_events
                 and post_action_clarification_conflict(assistant_content or "", list(events))
             )
             if _needs_refocus or _needs_clarify_repair:
@@ -4856,34 +5217,13 @@ class Gemma4Agent:
         # never blocks). Best-effort: failure is logged and swallowed.
         # Bug 2: also persist provenance fields so future RAG hits
         # can be formatted as policy hints (not reply templates).
-        try:
-            from ..routing.semantic_router import embed as _embed_text
-            raw_text = _extract_user_text(content)
-            used_tools = sorted({e.name for e in events})
-            mission_status = (mission or {}).get("mission_status") if isinstance(mission, dict) else None
-            # Derive outcome_code (more specific than mission_status).
-            outcome_code = _derive_outcome_code(mission_status, events)
-            # capability_label was sourced from the NLI classifier
-            # (since removed). Future RAG rows go in with
-            # capability_label=None until an alternative is wired.
-            capability_label = None
-            args_signature = _derive_args_signature(events)
-            rec = self.experience.record(
-                turn_id=turn_id,
-                user_input=raw_text,
-                tools_used=used_tools,
-                outcome=assistant_content[:1000],
-                mission_status=mission_status,
-                summary=assistant_content[:400],
-                embed_fn=_embed_text,
-                outcome_code=outcome_code,
-                capability_label=capability_label,
-                args_signature=args_signature,
-            )
-            if rec.get("ok"):
-                self.trace.event(turn_id, "experience_recorded", id=rec.get("id"))
-        except Exception as exc:
-            self.trace.event(turn_id, "experience_record_failed", error=str(exc))
+        self._record_experience_turn(
+            content=content,
+            assistant_content=assistant_content,
+            events=events,
+            mission=mission,
+            turn_id=turn_id,
+        )
         # Fact extraction: opt-in via env. Cooldown so we do not call
         # the LLM every turn. Skips short / trivial turns.
         # LATENCIA: este es un 2º LLM call (~200 tok) que NO aporta al
@@ -5290,6 +5630,8 @@ class Gemma4Agent:
 
     def run_content(self, content: str | list[dict[str, Any]], progress: ProgressCallback | None = None,
                     *, tts_sink: "Callable[[str], int | None] | None" = None) -> AgentReply:
+        _turn_perf_t0 = time.perf_counter()
+        self._turn_perf_t0 = _turn_perf_t0
         # Per-turn TTS streaming sink (GEMMA4_STREAM_TTS, default off). _execute_turn
         # streams the summary-pass prose into this sink as it generates; _finalize_turn
         # feeds the post-guard tail. None in text/GUI mode -> no streaming (the
@@ -5316,19 +5658,35 @@ class Gemma4Agent:
         # que no hay más).
         _decision = self._decide_turn(content, progress)
         if _decision.early_reply is not None:
+            self._emit_decide_timing(_decision, _turn_perf_t0, early=True)
             return self._ensure_nonempty_reply(_decision.early_reply)
-        turn_id = _decision.turn_id
-        mode = _decision.mode
-        plan = _decision.plan
-        raw_text_early = _decision.raw_text_early
-        pending_intent = _decision.pending_intent
-        selected_tool_names = _decision.selected_tool_names
-        semantic_fallback = _decision.semantic_fallback
-        selected_schemas = _decision.selected_schemas
+        self._emit_decide_timing(_decision, _turn_perf_t0, early=False)
         # La fase execute vivía inline acá (LLM loop
         # iterativo + tool dispatch + post-procesamiento). Extraída a
         # _execute_turn que devuelve el AgentReply terminal del turno.
         return self._ensure_nonempty_reply(self._execute_turn(content, _decision, progress))
+
+    def _emit_decide_timing(self, decision: "TurnDecision", t0: float,
+                            *, early: bool) -> None:
+        """Traza el wall-time de la fase decide (instrumentación de latencia,
+        2026-06-09). Best-effort; no afecta la lógica del turno. Vive fuera de
+        run_content para que el orquestador quede thin (ratchet R1)."""
+        try:
+            if early:
+                self.trace.event(
+                    decision.turn_id or "turn", "turn_timing", phase="decide_early",
+                    wall_ms=round((time.perf_counter() - t0) * 1000.0, 3))
+                return
+            self.trace.event(
+                decision.turn_id, "turn_timing", phase="decide",
+                wall_ms=round((time.perf_counter() - t0) * 1000.0, 3),
+                mode=getattr(decision.mode, "name", None),
+                tools=list(decision.selected_tool_names or []),
+                schema_count=len(decision.selected_schemas or []),
+                semantic_fallback=bool(decision.semantic_fallback),
+            )
+        except Exception:
+            pass
 
     def _ensure_nonempty_reply(self, reply: "AgentReply | None") -> "AgentReply | None":
         """Net UNIVERSAL de empty-reply: el user NUNCA recibe

@@ -147,6 +147,7 @@ class TurnRequest:
     text: str
     images: list[str]
     audios: list[str]
+    enqueued_perf_s: float = 0.0
 
 
 def fmt_tool_args(args: Any, max_chars: int = 120) -> str:

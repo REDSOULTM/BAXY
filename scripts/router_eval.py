@@ -31,6 +31,7 @@ import hashlib
 import json
 import re
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -138,6 +139,37 @@ def run_router(q: str, prev: str | None = None) -> set[str]:
         q, plan_mission(q), safety_enabled=True,
         prev_user_text=prev,
     ))
+
+
+def _warm_router_for_eval() -> None:
+    """Mirror production readiness: evaluate the hot semantic router, not the
+    degraded fallback used only if boot warmup fails."""
+    t0 = time.perf_counter()
+    try:
+        from gemma4_agent.routing import semantic_router
+        if semantic_router.is_enabled():
+            semantic_router._ensure_loaded()
+        from gemma4_agent.routing import intent_router
+        intent_router._ensure_centroids()
+        intent_router._ensure_shop_centroids()
+        intent_router._ensure_nav_centroids()
+        intent_router._ensure_email_centroids()
+        try:
+            from gemma4_agent.routing import exemplar_router
+            exemplar_router.match("warmup")
+        except Exception:
+            pass
+        try:
+            from gemma4_agent.safety_pkg import abstain_head, tool_head
+            if abstain_head.is_enabled():
+                abstain_head.load_model()
+            if tool_head.is_enabled():
+                tool_head.load()
+        except Exception:
+            pass
+        print(f"  (warmup: semantic router hot in {(time.perf_counter() - t0):.2f}s)")
+    except Exception as exc:
+        print(f"  (warmup warning: semantic router not hot: {type(exc).__name__}: {exc})")
 
 
 # ---- runtime inherit_tools simulation -------------------------------------
@@ -337,6 +369,9 @@ def main() -> int:
     ap.add_argument("--split", choices=["dev", "holdout", "all", "both"],
                     default="both")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--skip-warmup", action="store_true",
+                    help="measure degraded/no-warmup router path instead of "
+                         "the production hot path")
     ap.add_argument("--use-prev", action="store_true",
                     help="pass the previous user turn (realistic production "
                          "context) so deictic continuations can resolve")
@@ -361,6 +396,8 @@ def main() -> int:
     print(f"Router eval — {args.corpus.name}  ({len(rows)} rows; "
           f"dev={len(dev)} holdout={len(hold)})")
     print("=" * 70)
+    if not args.skip_warmup:
+        _warm_router_for_eval()
 
     targets = []
     if args.split in ("dev", "both"):
