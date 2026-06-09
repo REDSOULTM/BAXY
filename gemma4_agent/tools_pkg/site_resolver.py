@@ -20,9 +20,34 @@ Fuentes/incidentes: 've a pivigames' (pivigames.blog no .com), 've a portal unie
 from __future__ import annotations
 
 import re
+import socket
 import unicodedata
 from typing import Any, Callable
 from urllib.parse import urlparse
+
+
+def _dns_host_resolves(host: str) -> bool:
+    """¿El host existe (DNS resuelve)? Evita abrir un dominio muerto que matcheó
+    el nombre pero no existe (incidente real: 'insta' -> insta.com.br, DNS
+    ERR_NAME_NOT_RESOLVED). Best-effort y rápido: ante CUALQUIER duda devuelve
+    True (fail-open — no descartar un sitio bueno por un timeout de red). Solo un
+    NXDOMAIN claro (gaierror) cuenta como 'no existe'."""
+    host = (host or "").strip().lower()
+    if not host:
+        return False
+    try:
+        old = socket.getdefaulttimeout()
+        socket.setdefaulttimeout(2.5)
+        try:
+            socket.getaddrinfo(host, None)
+            return True
+        finally:
+            socket.setdefaulttimeout(old)
+    except socket.gaierror:
+        return False        # NXDOMAIN / nombre no resoluble -> no existe
+    except Exception:
+        return True         # timeout/otro -> fail-open (no penalizar por la red)
+
 
 # Allowlist de dominios que SEGURO existen -> abrir directo sin verificar (evita
 # latencia + falsos en sitios universales). NO es routing — es "esto existe,
@@ -257,22 +282,27 @@ def resolve_site_by_search(
     web_search: Callable[[dict[str, Any]], dict[str, Any]],
     fillers: "frozenset[str] | set[str]",
     search_all_backends: Callable[[str, int], list[dict[str, str]]] | None = None,
+    dns_resolves: Callable[[str], bool] | None = None,
     non_site_hosts: tuple[str, ...] = (),  # DEPRECATED: ya no se usa (señal estructural)
 ) -> str | None:
     """Resuelve el NOMBRE de un sitio ('pivigames') a la URL del SITIO vía
     búsqueda web. NO adivina el TLD (lookup real, CLAUDE.md). Heurística para
     no abrir el resultado equivocado:
       1. Descartar agregadores/redes/perfiles de tercero por SEÑAL ESTRUCTURAL:
-         el nombre debe ser un LABEL COMPLETO del dominio, no un substring parcial
-         (reemplaza la vieja lista _NON_SITE_HOSTS; universal, sin hardcode de
-         dominios). `non_site_hosts` quedó como param DEPRECADO sin efecto.
-      2. PREFERIR resultados cuyo DOMINIO contiene el nombre buscado.
-      3. Entre esos, preferir PATH más corto (homepage) y NORMALIZAR a la raíz.
+         el nombre debe ser un LABEL COMPLETO del dominio (o, en un resultado TOP
+         del buscador, PREFIJO de un label = popularidad), no aparecer solo en el
+         path. Reemplaza la vieja lista _NON_SITE_HOSTS (universal, sin hardcode).
+      2. POPULARIDAD: entre candidatos válidos, la POSICIÓN del buscador manda
+         (insta -> instagram.com #0 le gana a insta.com.br #1, sitio nicho).
+      3. PATH más corto (homepage) y NORMALIZAR a la raíz.
       4. DESEMPATAR homónimos por el ccTLD del país del usuario.
-      5. Si nada matchea el dominio -> None (error honesto, no abrir basura).
+      5. NO devolver un dominio que no EXISTE (DNS no resuelve): cae al siguiente.
+      6. Si nada matchea el dominio -> None (error honesto, no abrir basura).
 
-    `web_search` y `search_all_backends` se inyectan (el llamador pasa los suyos,
-    así los tests pueden mockearlos sin red). None si no hay nada fiable."""
+    `web_search`/`search_all_backends`/`dns_resolves` se inyectan (el llamador pasa
+    los suyos, así los tests mockean sin red). None si no hay nada fiable."""
+    if dns_resolves is None:
+        dns_resolves = _dns_host_resolves
     name = (name or "").strip()
     if not name:
         return None
@@ -330,17 +360,34 @@ def resolve_site_by_search(
             #  - cubre 'portal uniej' -> portal.uniej.edu.sv (si 'portal' es filler,
             #    queda ['uniej'] y 'uniej' ES un label) y 'portal'+'uniej' explícitos;
             #  - DESCARTA el fragmento de red: 'insta' (1 token) NO es label de
-            #    instagram.com (el label es 'instagram') -> no califica; 'insta' SÍ
-            #    es label de insta.com.br. Antes el substring-sobre-host-entero
-            #    dejaba colar 'insta' ⊂ 'instagramcom'.
+            #    instagram.com (el label es 'instagram') -> no califica como label
+            #    exacto; 'insta' SÍ es label de insta.com.br.
             # Universal y sin lista de dominios.
             toks_are_labels = bool(name_toks) and all(t in labels_norm for t in name_toks)
+            # POPULARIDAD (2026-06-09): el nombre es PREFIJO de un label del host
+            # (insta ⊂ 'instagram', face ⊂ 'facebook') Y ese host está en el TOP
+            # del ranking del buscador. Señal de popularidad PURA (posición del
+            # motor, no una lista de dominios): si pedís 'insta' e instagram.com
+            # sale #0, casi seguro querés Instagram, no un sitio nicho 'insta.com.br'
+            # enterrado (que además puede estar muerto). Exigimos PREFIJO de label
+            # (no substring en cualquier parte) para no premiar coincidencias
+            # accidentales, y TOP del ranking para que sea el canónico que la gente
+            # busca. NO aplica al nombre en el PATH (instagram.com/foo): 'foo' no es
+            # prefijo de NINGÚN label del host -> sigue cayendo a match_rank 0.
+            _TOP_RANK_FOR_POPULARITY = 3   # primeros N resultados del buscador
+            tok_prefixes_label = bool(tok) and any(
+                lab.startswith(tok) and lab != tok for lab in labels_norm)
             if tok and tok == sld_norm:
-                match_rank = 2          # el token ES la SLD (youtube.com) — fuerte
+                match_rank = 3          # el token ES la SLD (youtube.com) — fuerte
             elif tok_is_label or toks_are_labels:
                 # el nombre concatenado es un LABEL completo del host (subdominio/
-                # SLD), o cada token de contenido es un label -> MISMO rango para
-                # que el país desempate entre homónimos (.cl vs .pe).
+                # SLD), o cada token de contenido es un label -> país desempata
+                # homónimos (.cl vs .pe).
+                match_rank = 2
+            elif tok_prefixes_label and _idx < _TOP_RANK_FOR_POPULARITY:
+                # PREFIJO de un label en un resultado TOP -> popularidad: compite,
+                # pero por DEBAJO del label exacto (un label exacto top le gana; un
+                # prefijo-top le gana a un label exacto ENTERRADO abajo).
                 match_rank = 1
             else:
                 match_rank = 0
@@ -370,12 +417,27 @@ def resolve_site_by_search(
     if not cands:
         # nada matchea el nombre en su dominio -> NO abrir basura. Error honesto.
         return None
-    # match_rank DESC, country_bonus DESC (ccTLD del user desempata homónimos),
-    # google_pos ASC (ranking), path_len ASC (homepage), host_len ASC (canónico).
-    cands.sort(key=lambda c: (-c[0], -c[1], c[2], c[3], c[4]))
-    best_url = cands[0][5]
-    p = urlparse(best_url)
-    return f"{p.scheme}://{p.netloc}/"
+    # ORDEN:
+    #  1. country_bonus DESC: el ccTLD del país del user desempata homónimos.
+    #  2. is_sld DESC: si el nombre ES la SLD (youtube -> youtube.com), ese es EL
+    #     sitio canónico y gana SIEMPRE — la popularidad NO lo invierte (no quiero
+    #     que blog.youtube #0 le gane a youtube.com).
+    #  3. google_pos ASC: POPULARIDAD entre los demás. 'insta' -> instagram.com #0
+    #     (prefijo, popular) le gana a insta.com.br #1 (label exacto pero nicho).
+    #  4. match_rank DESC: a igual posición, label exacto > prefijo.
+    #  5. path_len ASC (homepage) -> host_len ASC (canónico).
+    cands.sort(key=lambda c: (-c[1], -(c[0] == 3), c[2], -c[0], c[3], c[4]))
+    # NO devolver un dominio que no EXISTE: recorremos los candidatos en orden y
+    # devolvemos el PRIMERO cuyo host resuelve por DNS (incidente real: 'insta' ->
+    # insta.com.br, ERR_NAME_NOT_RESOLVED). dns_resolves hace fail-open ante
+    # timeouts -> solo descarta un NXDOMAIN claro. Si NINGÚN candidato resuelve
+    # (todos son dominios muertos), devolvemos None: error honesto, NO abrir una
+    # página rota. El user pidió explícitamente que no ganen páginas que no existen.
+    for c in cands:
+        p = urlparse(c[5])
+        if dns_resolves(p.hostname or ""):
+            return f"{p.scheme}://{p.netloc}/"
+    return None
 
 
 __all__ = [

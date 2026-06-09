@@ -21,12 +21,14 @@ def _mk_search(urls):
     return lambda args: {"ok": True, "results": [{"url": u} for u in urls]}
 
 
-def _resolve(name, urls):
+def _resolve(name, urls, dns=None):
+    # dns por defecto: TODO resuelve (los tests no deben pegar a la red real).
     return resolve_site_by_search(
         name,
         web_search=_mk_search(urls),
         fillers=_FILLERS,
         search_all_backends=lambda q, lim=12: [],
+        dns_resolves=dns if dns is not None else (lambda h: True),
     )
 
 
@@ -35,18 +37,18 @@ class StructuralAggregatorSignalTest(unittest.TestCase):
         # instagram.com/foo -> 'foo' está en el PATH, no en el dominio -> None.
         self.assertIsNone(_resolve("foo", ["https://www.instagram.com/foo/"]))
 
-    def test_partial_fragment_of_famous_network_is_discarded(self):
-        # 'insta' es substring de 'instagram' pero NO un label completo -> prefiere
-        # el sitio real cuyo label ES 'insta'.
+    def test_popular_prefix_beats_buried_lookalike(self):
+        # POPULARIDAD (2026-06-09): 'insta' -> instagram.com está #0 (prefijo de
+        # 'instagram', sitio MUY popular) -> le gana a insta.com.br #1 (label exacto
+        # pero sitio nicho). El user pidió que lo popular gane al lookalike random.
         got = _resolve("insta", ["https://www.instagram.com/",
                                  "https://insta.com.br/"])
-        self.assertIsNotNone(got)
-        self.assertIn("insta.com.br", got)
+        self.assertIn("instagram.com", got)
 
-    def test_fragment_with_no_real_site_returns_none(self):
-        # 'reddi' ⊂ 'reddit' pero no es label -> y no hay sitio 'reddi' -> None
-        # (honesto: no abrir reddit.com que el user no pidió).
-        self.assertIsNone(_resolve("reddi", ["https://www.reddit.com/"]))
+    def test_prefix_only_in_path_is_still_discarded(self):
+        # popularidad NO reactiva el nombre-en-PATH: 'foo' va en instagram.com/foo
+        # (no es prefijo de un LABEL) -> sigue None.
+        self.assertIsNone(_resolve("foo", ["https://www.instagram.com/foo/"]))
 
     def test_asking_the_network_itself_resolves(self):
         # pedir 'youtube'/'instagram' EN SÍ -> el token ES la SLD -> sí resuelve.
@@ -80,6 +82,29 @@ class StructuralAggregatorSignalTest(unittest.TestCase):
     def test_long_exact_sld_resolves(self):
         got = _resolve("mercadolibre", ["https://www.mercadolibre.com.ar/"])
         self.assertIn("mercadolibre", got)
+
+    def test_sld_match_beats_subdomain_regardless_of_position(self):
+        # 'youtube' -> youtube.com (SLD canónica) gana SIEMPRE, aunque
+        # blog.youtube esté #0: la popularidad NO invierte el sitio canónico.
+        got = _resolve("youtube", ["https://blog.youtube/news/",
+                                   "https://www.youtube.com/"])
+        self.assertIn("youtube.com", got)
+
+    # ---- DNS: no devolver dominios que no existen -------------------------
+
+    def test_dead_domain_falls_back_to_live_one(self):
+        # incidente real: 'insta' -> insta.com.br da ERR_NAME_NOT_RESOLVED. Si el
+        # mejor candidato no resuelve por DNS, caer al siguiente que SÍ exista.
+        dns = lambda h: "insta.com.br" not in h    # noqa: E731
+        got = _resolve("insta", ["https://insta.com.br/",
+                                 "https://www.instagram.com/"], dns=dns)
+        self.assertIn("instagram.com", got)
+
+    def test_all_candidates_dead_returns_none(self):
+        # si NINGÚN candidato resuelve DNS -> None (no abrir una página rota).
+        got = _resolve("insta", ["https://insta.com.br/"],
+                       dns=lambda h: False)
+        self.assertIsNone(got)
 
 
 if __name__ == "__main__":

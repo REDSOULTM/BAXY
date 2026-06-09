@@ -24,6 +24,8 @@ import gemma4_agent.tools_pkg.tools as T
 _FAKE = {
     "pivigames": ["https://www.instagram.com/pivigames/", "https://pivigames.blog/"],
     "nasa": ["https://twitter.com/nasa", "https://www.nasa.gov/"],
+    # POPULARIDAD: 'insta' -> instagram (popular, #0) gana al nicho insta.com.br.
+    "insta": ["https://www.instagram.com/", "https://insta.com.br/"],
 }
 _orig_ws = T.ToolRegistry.web_search
 def _web_search(self, args):
@@ -43,7 +45,7 @@ T.ToolRegistry.web_open_url = _web_open_url
 
 from gemma4_agent.agent_core.agent import Gemma4Agent
 
-PHRASES = ["ve a pivigames", "andá a la página de pivigames", "abrí nasa"]
+PHRASES = ["ve a pivigames", "andá a la página de pivigames", "abrí insta"]
 print("\n=== resolvedor de sitios SIN lista (señal estructural) ===", flush=True)
 for ph in PHRASES:
     agent = Gemma4Agent()
