@@ -37,14 +37,19 @@ __all__ = [
 
 
 def printer_scanner_tool(args: dict[str, Any]) -> dict[str, Any]:
-    from .helpers import _powershell_json, _ps_quote
+    from .helpers import _powershell_json, _powershell_json_cached, _ps_quote
     action = str(args.get("action") or "printers_list").casefold()
     if action == "status":
         return _ok(powershell=bool(shutil.which("powershell")), backend="Windows PrintManagement")
+    # LECTURAS cacheadas (las impresoras no cambian seguido). `refresh=True` evita
+    # el cache. Las print_queue/acciones mutantes NO se cachean (estado en vivo).
+    _fresh = bool(args.get("refresh"))
     if action in {"printers_list", "list"}:
-        return _powershell_json("Get-Printer | Select-Object Name,DriverName,PortName,PrinterStatus,Default | ConvertTo-Json -Depth 3", "printers")
+        _scr = "Get-Printer | Select-Object Name,DriverName,PortName,PrinterStatus,Default | ConvertTo-Json -Depth 3"
+        return _powershell_json(_scr, "printers") if _fresh else _powershell_json_cached(_scr, "printers")
     if action == "printer_default_get":
-        return _powershell_json("Get-Printer | Where-Object Default -eq $true | Select-Object Name,DriverName,PortName,PrinterStatus,Default | ConvertTo-Json -Depth 3", "printer")
+        _scr = "Get-Printer | Where-Object Default -eq $true | Select-Object Name,DriverName,PortName,PrinterStatus,Default | ConvertTo-Json -Depth 3"
+        return _powershell_json(_scr, "printer") if _fresh else _powershell_json_cached(_scr, "printer")
     if action == "print_queue":
         name = str(args.get("name") or args.get("printer") or "").strip()
         script = f"Get-PrintJob -PrinterName '{_ps_quote(name)}' | Select-Object ID,DocumentName,JobStatus,SubmittedTime | ConvertTo-Json -Depth 3" if name else "Get-Printer | ForEach-Object { Get-PrintJob -PrinterName $_.Name -ErrorAction SilentlyContinue } | Select-Object ID,PrinterName,DocumentName,JobStatus,SubmittedTime | ConvertTo-Json -Depth 3"

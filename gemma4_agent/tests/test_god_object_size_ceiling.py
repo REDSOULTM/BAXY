@@ -44,7 +44,12 @@ CEILINGS = {
     # irreversibles) del canal interno `_confirmed_by_gate` (confirmación real). Es el
     # gate mismo, IRREDUCIBLE — no se puede extraer a un sibling sin partir el
     # dispatcher. Número exacto, sin buffer. Verificado en vivo 5/5 + 359 tests.
-    "tools_pkg/tools.py": 8039,
+    # 2026-06-09: 8039 -> 8060 (+21). Tanda de LATENCIA de tools no-web: la LÓGICA
+    # pesada se extrajo a 4 siblings (system_info_fast, screenshot_fast, uia_fast +
+    # cpu_ram_gpu); en tools.py queda SOLO el cableado fast-path→fallback (el
+    # dispatch de uia_fast con su mapeo de args, irreducible: es el punto donde se
+    # decide python-vs-PowerShell con kill-switch). Número exacto.
+    "tools_pkg/tools.py": 8060,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Esta sesión sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la

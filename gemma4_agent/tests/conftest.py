@@ -73,6 +73,30 @@ def _no_real_os_side_effects():
 
 
 @pytest.fixture(autouse=True)
+def _clear_latency_caches():
+    """Los fast-paths de latencia (2026-06-09) cachean lecturas de PowerShell con
+    TTL (printers, bluetooth, juegos, audio). Entre tests hay que LIMPIARLAS: si un
+    test cachea un éxito y el siguiente mockea un FALLO de PowerShell, leería el
+    éxito cacheado y fallaría (cross-contaminación). Limpiamos ANTES de cada test."""
+    try:
+        from gemma4_agent.domain_tools import helpers as _h
+        _h._PS_CACHE.clear()
+    except Exception:
+        pass
+    try:
+        from gemma4_agent.domain_tools import bluetooth as _bt
+        _bt._BT_CACHE.clear()
+    except Exception:
+        pass
+    try:
+        from gemma4_agent.domain_tools import game_launcher as _gl
+        _gl._DISCOVER_CACHE.clear()
+    except Exception:
+        pass
+    yield
+
+
+@pytest.fixture(autouse=True)
 def _stop_leaked_mock_patches():
     yield
     try:

@@ -89,6 +89,22 @@ def accessibility_tool(args: dict[str, Any], state: AgentState) -> dict[str, Any
 
 
 def _process_running(exe_name: str) -> bool:
+    # LATENCIA (MEDIDO 2026-06-09): `Get-Process` via PowerShell ~0.3s POR llamada
+    # (status hace 2). psutil enumera procesos in-process (~ms). Fallback a
+    # PowerShell solo si psutil no está.
+    stem = Path(exe_name).stem.casefold()
+    try:
+        import psutil
+        for p in psutil.process_iter(["name"]):
+            try:
+                nm = str(p.info.get("name") or "")
+                if Path(nm).stem.casefold() == stem:
+                    return True
+            except Exception:
+                continue
+        return False
+    except Exception:
+        pass
     from .helpers import _ps_quote
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-Command", f"if (Get-Process -Name '{_ps_quote(Path(exe_name).stem)}' -ErrorAction SilentlyContinue) {{ 1 }} else {{ 0 }}"],

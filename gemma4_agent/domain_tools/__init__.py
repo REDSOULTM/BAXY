@@ -2749,12 +2749,22 @@ def _media_play_vlc(vlc: str, target: str) -> dict[str, Any]:
     return _ok(action="play", provider="vlc", target=target, pid=proc.pid, verified=False, status="attempted", note="VLC launched; verify via now_playing or window list.")
 
 
+# now_playing in-process (winsdk) extraído a media_now_playing_fast.py (2026-06-09,
+# ratchet archivo-dios). ~10ms vs ~1.9s del PowerShell.
+from .media_now_playing_fast import media_now_playing_winsdk as _media_now_playing_winsdk  # noqa: E402
+
+
 def _media_now_playing() -> dict[str, Any]:
     """Query Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager.
 
-    Pattern from Fleex (2018) and Microsoft Q&A; uses System.WindowsRuntimeSystemExtensions.AsTask
-    to convert IAsyncOperation<T> to a Task<T> so PowerShell can wait synchronously.
+    2026-06-09: prefiere `winsdk` (in-process, ~10ms) y cae al PowerShell+WinRT
+    (~1.9s) solo si winsdk no está/falla. Kill-switch GEMMA4_NOWPLAYING_WINSDK=0.
     """
+    import os as _os_np
+    if _os_np.environ.get("GEMMA4_NOWPLAYING_WINSDK", "1").strip().lower() not in {"0", "false", "no", "off"}:
+        _fast = _media_now_playing_winsdk()
+        if _fast is not None:
+            return _fast
     script = r"""
 $ErrorActionPreference = 'Stop'
 try {

@@ -5533,6 +5533,27 @@ if ($pos) {
         return _ok(wrote_chars=len(text), exit_code=proc.returncode, stderr=_truncate(proc.stderr.strip(), 1000), source="powershell")
 
     def _uia_run(self, args: dict[str, Any], action: str) -> dict[str, Any]:
+        # FAST-PATH in-process (uia_fast.py con `uiautomation`): evita el spawn de
+        # PowerShell + Add-Type C# (~600ms/llamada). Misma UIAutomationCore.dll que
+        # el .NET del PS -> misma calidad de clicks/patterns (verificado en fuentes).
+        # Fallback al PowerShell si uiautomation no está o devuelve None. Kill-switch
+        # GEMMA4_UIA_PYTHON=0 (revierte 100% al camino PS validado).
+        if os.environ.get("GEMMA4_UIA_PYTHON", "1").strip().lower() not in {"0", "false", "no", "off"}:
+            try:
+                from .uia_fast import run as _uia_py
+                _r = _uia_py(
+                    action,
+                    str(args.get("query") or args.get("text") or args.get("target") or ""),
+                    str(args.get("window") or args.get("title") or ""),
+                    str(args.get("value") or args.get("text_value") or ""),
+                    int(args.get("limit", 60)),
+                )
+                if isinstance(_r, dict):
+                    return _ok(**_r) if _r.get("ok") else _err(
+                        str(_r.get("error") or "uia failed"),
+                        **{k: v for k, v in _r.items() if k not in ("ok", "error")})
+            except Exception:
+                pass  # cae al PowerShell
         env = os.environ.copy()
         env["GEMMA4_UIA_ACTION"] = action
         env["GEMMA4_UIA_QUERY"] = str(args.get("query") or args.get("text") or args.get("target") or "")

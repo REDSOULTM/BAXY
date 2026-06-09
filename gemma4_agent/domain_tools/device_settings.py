@@ -77,7 +77,7 @@ def device_settings_tool(args: dict[str, Any], state: AgentState) -> dict[str, A
     if action == "wifi_disconnect":
         return _device_wifi_disconnect()
     if action == "bluetooth_status":
-        return _device_bluetooth_status()
+        return _device_bluetooth_status(refresh=bool(args.get("refresh")))
     if action == "display_list":
         return _device_display_list()
     if action in {"power_plan_list", "power_plans"}:

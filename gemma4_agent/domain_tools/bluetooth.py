@@ -22,7 +22,27 @@ __all__ = ["_device_bluetooth_status"]
 
 # Handler migrado a ToolResult (con  para back-compat). Comportamiento
 # idéntico al _ok/_err anterior.
-def _device_bluetooth_status() -> dict[str, Any]:
+_BT_CACHE: "dict[str, tuple]" = {}
+
+
+def _device_bluetooth_status(refresh: bool = False) -> dict[str, Any]:
+    # LATENCIA (MEDIDO 2026-06-09): hace DOS spawns de PowerShell (Get-PnpDevice +
+    # Get-Service) ~2s. El estado BT no cambia seguido -> cache TTL 60s; `refresh`
+    # lo revalida. Solo lectura (status), no toca el adaptador.
+    import time as _t
+    _now = _t.time()
+    if not refresh:
+        _c = _BT_CACHE.get("status")
+        if _c and (_now - _c[0]) < 60.0:
+            _r = dict(_c[1]); _r["cached"] = True
+            return _r
+    res = _device_bluetooth_status_uncached()
+    if isinstance(res, dict) and res.get("ok") is not False:
+        _BT_CACHE["status"] = (_now, res)
+    return res
+
+
+def _device_bluetooth_status_uncached() -> dict[str, Any]:
     script = (
         "Get-PnpDevice -Class Bluetooth -ErrorAction SilentlyContinue | "
         "Select-Object FriendlyName,Status,Class,InstanceId | ConvertTo-Json -Depth 3"

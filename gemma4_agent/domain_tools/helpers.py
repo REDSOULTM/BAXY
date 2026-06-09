@@ -219,6 +219,27 @@ def _powershell_json(script: str, field: str) -> dict[str, Any]:
     return _ok(**{field: data, "count": len(data) if isinstance(data, list) else (1 if data else 0)})
 
 
+# Cache TTL para LECTURAS de PowerShell que no cambian seguido (printers,
+# bluetooth devices, juegos). LATENCIA (MEDIDO 2026-06-09): cada Get-Printer/
+# Get-PnpDevice spawnea PowerShell (~1-2s). El resultado es estable dentro de una
+# sesión, así que la 1ra consulta paga y las siguientes (dentro del TTL) son
+# instantáneas. Solo para LECTURAS idempotentes — NUNCA para acciones mutantes.
+_PS_CACHE: dict[str, tuple[float, dict[str, Any]]] = {}
+
+
+def _powershell_json_cached(script: str, field: str, ttl_s: float = 60.0) -> dict[str, Any]:
+    import time as _t
+    _now = _t.time()
+    _hit = _PS_CACHE.get(script)
+    if _hit and (_now - _hit[0]) < ttl_s:
+        _r = dict(_hit[1]); _r["cached"] = True
+        return _r
+    res = _powershell_json(script, field)
+    if isinstance(res, dict) and res.get("ok") is not False:
+        _PS_CACHE[script] = (_now, res)
+    return res
+
+
 def _ps_quote(text: str) -> str:
     return text.replace("'", "''")
 

@@ -23,9 +23,15 @@ from pathlib import Path
 # 2026-06-09: 358 -> 359 (+1). Fast-paths de latencia (cpu_ram_gpu/screenshot/
 # audio): best-effort REALES donde tragar es correcto — p.ej. el set de DPI-
 # awareness (si falla, la captura igual funciona) y nvidia-smi ausente (cae al
-# marcador honesto). Loguearlos sería ruido (no son bugs, son fallbacks). +1
-# justificado, mismo patrón que los bumps previos del techo.
-SILENT_LOGIC_CEILING = 359
+# marcador honesto). Loguearlos sería ruido (no son bugs, son fallbacks).
+# 2026-06-09: 359 -> 376 (+17). uia_fast.py (UIA in-process). Cada acceso a una
+# propiedad/pattern de un AutomationElement (Name, GetClickablePoint, Invoke/
+# Toggle/ValuePattern, IsPassword…) PUEDE tirar COMException por elemento (igual
+# que el script PowerShell, que envuelve CADA acceso en try{}catch{}). Tragar acá
+# es correcto: un elemento que no expone una propiedad NO es un bug, se omite y se
+# sigue. El módulo entero cae al PowerShell si algo grave falla (run() devuelve
+# None). +17 = el costo estructural de la API UIA, no lógica perdida en silencio.
+SILENT_LOGIC_CEILING = 376
 
 
 def _load_audit():

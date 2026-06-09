@@ -137,8 +137,22 @@ def _riot_install_db() -> Path | None:
     return None
 
 
+_DISCOVER_CACHE: "dict[str, tuple]" = {}
+
+
 def _game_launcher_discover(args: dict[str, Any]) -> dict[str, Any]:
     launcher = str(args.get("launcher") or "").casefold()
+    # LATENCIA (MEDIDO 2026-06-09): el discover de Xbox usa Get-StartApps
+    # (PowerShell) -> ~0.8s. Los juegos instalados no cambian seguido; cache TTL
+    # 60s por filtro de launcher. `refresh=True` revalida.
+    import time as _t
+    _now = _t.time()
+    _key = launcher or "_all"
+    if not args.get("refresh"):
+        _c = _DISCOVER_CACHE.get(_key)
+        if _c and (_now - _c[0]) < 60.0:
+            _r = dict(_c[1]); _r["cached"] = True
+            return _r
     results: dict[str, list[dict[str, Any]]] = {"epic": [], "gog": [], "xbox": [], "riot": []}
     if not launcher or launcher == "epic":
         results["epic"] = _discover_epic_games()
@@ -149,7 +163,9 @@ def _game_launcher_discover(args: dict[str, Any]) -> dict[str, Any]:
     if not launcher or launcher == "riot":
         results["riot"] = _discover_riot_games()
     total = sum(len(v) for v in results.values())
-    return _ok(games=results, total=total, launcher_filter=launcher or None)
+    _res = _ok(games=results, total=total, launcher_filter=launcher or None)
+    _DISCOVER_CACHE[_key] = (_now, _res)
+    return _res
 
 
 def _discover_epic_games() -> list[dict[str, Any]]:
