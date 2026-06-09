@@ -1324,6 +1324,18 @@ def select_tool_names(
     # porque _explicit_visible_nav=True. Cierra el gap documentado del backlog §4.
     if _info_lookup and not _explicit_visible_nav:
         expanded = [t for t in expanded if t not in {"browser", "browser_real"}]
+    # NOTA (bug "J Balvin" 2026-06-09): intenté SACAR `media` de las preguntas
+    # culturales ("¿has escuchado canciones de X?") para que no confundieran al 4B.
+    # DESCARTADO tras medir: wants_knowledge tiene falsos-positivos en comandos de
+    # reproducción ("quiero ver daredevil", "pon stranger things en Netflix") por
+    # los anchors de "¿has visto películas de X?", y cualquier media-drop basado en
+    # esa señal sacaba media de comandos REALES (recall holdout 0.9784->0.9676). El
+    # arreglo real vive en 2 capas que SÍ son seguras: (1) los _INFO_ANCHORS de
+    # "¿conocés/has escuchado canciones de X?" -> el encoder ofrece web/knowledge
+    # (media queda pero ya no es lo único); (2) el guard de honestidad
+    # (guard_unverified_final) que en un turno de 0-events impide que el 4B mienta
+    # "ya lo hice"/"revisé la música". El media-drop limpio exige el encoder
+    # re-entrenado (sin el falso-positivo). NO re-introducir sin medir recall.
     # Colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
     # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario: el 4B
     # no necesita las 3 variantes del mismo dominio. `keep` protege las tools que

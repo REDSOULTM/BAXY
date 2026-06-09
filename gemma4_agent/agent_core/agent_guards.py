@@ -39,6 +39,14 @@ _FALSE_CONFIRMATION_PATTERNS = (
     "hecho:", "hecho,", "listo,", "listo:",
     "ejecuté", "ejecute", "registré", "registre",
     "agendé", "agende", "envié", "envie", "mandé", "mande",
+    # 2026-06-09 (bug "J Balvin"): el 4B afirmaba haber HECHO/REVISADO algo sin que
+    # ningún tool corriera ("ya lo hice", "revisé qué música suena", "I checked the
+    # music"). Son claims de acción COMPLETADA en 1ª persona pasado -> si no hubo
+    # tool, es mentira. Estructural (forma verbal de consumación), multilingüe.
+    "ya lo hice", "lo hice", "ya está hecho", "ya esta hecho",
+    "revisé", "revise ", "chequeé", "cheque ", "verifiqué", "comprobé", "comprobe",
+    "i checked", "i've checked", "i have checked", "i did it", "i've done", "i have done",
+    "i already did", "done.",
 )
 _PROMISE_PATTERNS = (
     "buscare", "buscaré", "voy a buscar", "voy a investigar",
@@ -223,6 +231,16 @@ def _has_measured_failure(last: dict[str, Any]) -> bool:
 def guard_unverified_final(content: str, events: list[Any]) -> str:
     """See :meth:`gemma4_agent.agent.Gemma4Agent._guard_unverified_final`."""
     if not events:
+        # 0 events: normalmente no hay nada que verificar (charla / respuesta de
+        # conocimiento). PERO un reply que AFIRMA una acción COMPLETADA sin que
+        # ningún tool corriera es una MENTIRA (bug "J Balvin" 2026-06-09: el 4B
+        # alucinó media(playback_status) y dijo "revisé qué música suena" / la
+        # lang-repair lo volvió "Ya lo hice."). Si el reply reclama acción y NO
+        # hubo evidencia, no lo dejamos pasar: lo reemplazamos por una nota honesta.
+        # Estructural (reply_claims_action mide la FORMA verbal, no el contenido).
+        if reply_claims_action(content):
+            return ("No llegué a ejecutar ninguna acción para esto. "
+                    "¿Querés que lo intente, o te respondo con lo que sé?")
         return content
     last = events[-1].result
     status = str(last.get("status") or "")

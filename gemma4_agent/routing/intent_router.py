@@ -160,6 +160,22 @@ _INFO_ANCHORS = [
     "contame de un evento historico", "me podes contar sobre algo o alguien",
     "que sabes de este personaje", "dame datos sobre un personaje conocido",
     "contame quien es este futbolista o artista",
+    # "¿has escuchado/conocés canciones de X?" / "¿conocés a X?" — PREGUNTA por
+    # CONOCIMIENTO CULTURAL de un artista/obra (charla informativa sobre el mundo),
+    # NO un comando de reproducir/controlar media. Bug medido 2026-06-09 ("J
+    # Balvin"): sin estos, "has escuchado canciones de X" embebía cerca de chitchat
+    # o de media-action -> el 4B alucinaba media(playback_status). Multilingüe ->
+    # generaliza, NO es lista de keywords (es la FORMA "pregunta + entidad + verbo
+    # de consumo cultural"). El verbo de CONSUMO (escuchar/ver/leer/conocer) en una
+    # PREGUNTA es info; el verbo de COMANDO (poné/reproducí) sigue siendo action.
+    "has escuchado canciones de este artista",
+    "conoces canciones de este cantante", "conoces a este artista o banda",
+    "has visto peliculas de este director o actor",
+    "sabes quien canta esta cancion", "que opinas de este artista famoso",
+    "have you heard songs by this artist", "do you know this singer or band",
+    "do you know any songs by this musician",
+    "voce conhece musicas desse artista", "connais tu des chansons de cet artiste",
+    "kennst du lieder von diesem kunstler", "conosci canzoni di questo artista",
     # English/Spanish — searching the INTERNET for external info (prices,
     # news, images, how-to) as opposed to searching local files.
     "search the internet for something", "look up prices online",
