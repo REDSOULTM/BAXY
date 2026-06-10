@@ -193,6 +193,46 @@ def _claims_consummated_action(text: str) -> bool:
     return False
 
 
+# Estado-RESULTADO de ventana que el 4B afirma SIN haber actuado ("Calculator is
+# now in front", "la calcolatrice è ora in primo piano"). No es aux+participio:
+# es copula + estado-de-resultado. mission-eval 2026-06-10 (run9): medido 25% de
+# las corridas 0-events de "traer al frente/maximizar". La señal discriminante
+# (medida contra adversarial): marcador "AHORA" (now/ora/agora/ya) o opener de
+# completitud + estado-de-ventana. El conocimiento/oferta NUNCA dice "ahora está
+# <estado>" (dice "para maximizar…", "puedo traerla… si querés").
+_RESULT_STATE_TOKENS = (
+    "in front", "in primo piano", "primer plano", "primeiro plano", "im vordergrund",
+    "au premier plan", "maximiz", "minimiz", "massimizz", "ridotto a icona",
+    "in den vordergrund",
+)
+_NOW_MARKERS = (" now ", " ahora ", " ora ", " agora ", " ya ", " adesso ",
+                " jetzt ", " maintenant ", "now.", "ahora.", "ora.")
+_COMPLETION_OPENERS = ("done", "listo", "hecho", "perfetto", "fatto", "fertig",
+                       "pronto", "c'est fait", "voila", "ecco", "alles klar",
+                       "va bene", "ok,", "okay,", "certo", "claro,")
+
+
+def _claims_result_state_without_action(text: str) -> bool:
+    """True si el reply AFIRMA un estado-resultado de ventana ("ahora está al
+    frente/maximizada") que en 0-events es necesariamente falso. Conservador:
+    exige (marcador 'ahora' O opener de completitud) + estado-de-ventana, para
+    no marcar conocimiento ("para maximizar…") ni ofertas ("puedo traerla…").
+    """
+    if not text:
+        return False
+    low = _fold(text.strip())
+    has_state = any(s in low for s in _RESULT_STATE_TOKENS)
+    if not has_state:
+        return False
+    has_now = any(m in low for m in _NOW_MARKERS)
+    has_opener = any(low.startswith(o) for o in _COMPLETION_OPENERS)
+    # ofertas/preguntas/condicionales NO son afirmación de estado consumado.
+    is_offer = any(w in low for w in ("?", " si quer", " se vuoi", " if you",
+                                      " puedo ", " posso ", " si tu ", " se quiser",
+                                      " quer que", " veux-tu", " möchtest"))
+    return (has_now or has_opener) and not is_offer
+
+
 def _fold(text: str) -> str:
     """lowercase + strip diacritics for tolerant matching."""
     n = unicodedata.normalize("NFKD", text.casefold())
@@ -404,6 +444,10 @@ def detect_action_claim_without_evidence(
         # perfecto compuesto / presente continuo ("he reproducido", "estoy
         # escuchando") — pretérito que _starts_with_action_claim no cubre.
         claim = "consummated"
+    if not claim and _claims_result_state_without_action(reply):
+        # estado-resultado de ventana afirmado sin actuar ("ahora está al
+        # frente/maximizada") — copula+estado, no aux+participio (run9).
+        claim = "result_state"
     if not claim:
         return GroundingVerdict(should_replace=False, reason="no_claim_signal")
     return GroundingVerdict(

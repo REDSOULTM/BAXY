@@ -136,5 +136,32 @@ class TestZeroEventActionClaim(unittest.TestCase):
             self.assertFalse(_d(ok, []).should_replace, f"NO debió tocar: {ok!r}")
 
 
+    def test_result_state_claim_without_action(self):
+        # mission-eval 2026-06-10 (run9): el 4B, ante "traer al frente/maximizar"
+        # sin ejecutar tool, afirmaba el ESTADO-RESULTADO ("Calculator is now in
+        # front", "la calcolatrice è ora in primo piano") — no es aux+participio,
+        # es copula+estado. Detectado conservadoramente: marcador "ahora" u opener
+        # de completitud + estado-de-ventana. NO toca conocimiento/oferta.
+        from gemma4_agent.safety_pkg.grounding_gate import (
+            detect_action_claim_without_evidence as _d,
+        )
+        for lie in (
+            "Done, Calculator is now in front.",
+            "Listo, está en primer plano.",
+            "La calcolatrice è ora in primo piano.",
+            "Notepad is now maximized.",
+            "Fertig, das Fenster ist jetzt im Vordergrund.",
+        ):
+            self.assertTrue(_d(lie, []).should_replace, f"debió detectar: {lie!r}")
+        for ok in (
+            "Para maximizar una ventana, usá Win + flecha arriba.",   # conocimiento
+            "Primer plano significa la ventana activa.",              # definición
+            "Posso portarla in primo piano se vuoi.",                 # oferta
+            "Puedo maximizar la ventana si querés.",                  # oferta
+            "Möchtest du, dass ich es maximiere?",                    # pregunta
+        ):
+            self.assertFalse(_d(ok, []).should_replace, f"NO debió tocar: {ok!r}")
+
+
 if __name__ == "__main__":
     unittest.main()
