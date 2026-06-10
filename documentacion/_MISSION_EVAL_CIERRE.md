@@ -5,6 +5,21 @@
 > prompts, para cazar fallas de calidad/latencia, hallar su causa raíz y
 > arreglarlas. Objetivo: "dejar un Baxy perfecto".
 
+> **REENTRENO DEL ENCODER (run10, aprobado por el usuario).** Tras revisar el
+> historial (el re-FT del LLM E2B ya falló 2× y es irreducible en el 2B; el
+> idioma post-tool ya se resolvió por runtime), se reentrenó el **encoder del
+> router** (bajo riesgo, no degrada español) para consolidar los 4 huecos de
+> corpus en el encoder mismo, no solo como exemplars. **v1:** huecos 25/25 pero
+> holdout 0.9800→0.9767 (1 caso ES browser "buscar en sitio" sub-representado).
+> Causa raíz medida (no era regresión de idioma): los 6 misses del viejo
+> idénticos, +1 browser. **v2:** +28 ejemplos browser "buscar/comprar en sitio"
+> (6 idiomas) → **holdout 0.9800 recuperado + huecos 25/25 + mismos 6 misses que
+> el viejo (cero regresión)**. Promovido. El encoder (449 MB) NO se versiona
+> (gitignored, regla >10 MB); la receta (`tool2vec_queries.jsonl`) + artefactos
+> chicos sí; regeneración documentada en `gemma4_agent/data/README.md`. GOTCHA:
+> el browser "buscar en sitio" sigue inconsistente en algunos fraseos (cola
+> larga) — PERO el viejo fallaba igual, no es regresión.
+
 ## Qué se construyó
 
 `scripts/_diag/_mission_eval.py` — harness que:

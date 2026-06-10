@@ -43,7 +43,13 @@ CORPUS = ROOT / "gemma4_agent" / "data" / "router_eval_corpus.curated.jsonl"
 # CORREGIDA). Misma forma {q, expected}; holdout excluido por _split_of. Fuente NUEVA, aditiva.
 CORPUS_FT = ROOT / "gemma4_agent" / "data" / "router_corpus_curated_ft.jsonl"
 TOOL_DESC_OUT = ROOT / "gemma4_agent" / "data" / "router_encoder_meta.json"
-OUT_DIR = ROOT / "gemma4_agent" / "data" / "router_encoder_ft"
+# OUT_DIR override (2026-06-10): entrenar a un dir TEMP y hacer swap atómico evita
+# el WinError 1224 si el agente tiene el encoder mapeado, y deja el encoder en prod
+# intacto si el training falla a mitad. Default = in-place (compat).
+OUT_DIR = Path(os.environ.get(
+    "GEMMA4_ENCODER_OUT_DIR",
+    str(ROOT / "gemma4_agent" / "data" / "router_encoder_ft"),
+))
 _HOLDOUT_SALT = "router-eval-2026-05-20"
 _BASE = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 

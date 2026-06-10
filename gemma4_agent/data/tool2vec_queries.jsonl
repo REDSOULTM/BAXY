@@ -8047,3 +8047,159 @@
 {"tool": "gui", "q": "click the \"cancel\" button"}
 {"tool": "gui", "q": "click the \"minimize\" button"}
 {"tool": "gui", "q": "click the \"accept\" button"}
+{"tool": "audio", "q": "déjalo casi sin sonido"}
+{"tool": "audio", "q": "déjalo sin sonido"}
+{"tool": "audio", "q": "déjalo mudo"}
+{"tool": "audio", "q": "dejalo en silencio"}
+{"tool": "audio", "q": "ponlo casi mudo"}
+{"tool": "audio", "q": "que quede casi sin sonido"}
+{"tool": "audio", "q": "bájalo a casi nada"}
+{"tool": "audio", "q": "deixa quase sem som"}
+{"tool": "audio", "q": "deixa sem som"}
+{"tool": "audio", "q": "deixa quase mudo"}
+{"tool": "audio", "q": "deixa no mudo"}
+{"tool": "audio", "q": "deixa quase no zero"}
+{"tool": "audio", "q": "põe quase sem som"}
+{"tool": "audio", "q": "deixa o som bem baixo"}
+{"tool": "audio", "q": "leave it almost silent"}
+{"tool": "audio", "q": "leave it without sound"}
+{"tool": "audio", "q": "make it almost mute"}
+{"tool": "audio", "q": "leave it muted"}
+{"tool": "audio", "q": "turn it down to almost nothing"}
+{"tool": "audio", "q": "keep it nearly silent"}
+{"tool": "audio", "q": "lascialo quasi senza suono"}
+{"tool": "audio", "q": "lascialo senza audio"}
+{"tool": "audio", "q": "lascialo quasi muto"}
+{"tool": "audio", "q": "mettilo quasi muto"}
+{"tool": "audio", "q": "lascialo quasi a zero"}
+{"tool": "audio", "q": "mach es fast lautlos"}
+{"tool": "audio", "q": "lass es fast stumm"}
+{"tool": "audio", "q": "mach es fast stumm"}
+{"tool": "audio", "q": "lass es ohne ton"}
+{"tool": "audio", "q": "dreh es auf fast null"}
+{"tool": "audio", "q": "laisse-le presque sans son"}
+{"tool": "audio", "q": "laisse-le sans son"}
+{"tool": "audio", "q": "mets-le presque muet"}
+{"tool": "audio", "q": "laisse-le quasiment muet"}
+{"tool": "audio", "q": "baisse-le à presque rien"}
+{"tool": "reminder", "q": "recordame sacar la basura mañana"}
+{"tool": "reminder", "q": "recuérdame comprar pan"}
+{"tool": "reminder", "q": "recordame comprar pan a las 6"}
+{"tool": "reminder", "q": "recuérdame llamar a mamá en una hora"}
+{"tool": "reminder", "q": "ponme un recordatorio para las 3 de la tarde"}
+{"tool": "reminder", "q": "recuérdame la reunión a las 9"}
+{"tool": "reminder", "q": "recordame tomar el remedio en 10 minutos"}
+{"tool": "reminder", "q": "avísame en 20 minutos"}
+{"tool": "reminder", "q": "lembra-me de tomar o remédio"}
+{"tool": "reminder", "q": "lembra-me de comprar pão às 6"}
+{"tool": "reminder", "q": "me lembra de ligar pra mãe"}
+{"tool": "reminder", "q": "me avisa daqui a 10 minutos"}
+{"tool": "reminder", "q": "põe um lembrete para as 3"}
+{"tool": "reminder", "q": "remind me to call mom tomorrow"}
+{"tool": "reminder", "q": "remind me to buy bread at 5"}
+{"tool": "reminder", "q": "remind me to take out the trash"}
+{"tool": "reminder", "q": "set a reminder for 3pm"}
+{"tool": "reminder", "q": "remind me about the meeting at 9"}
+{"tool": "reminder", "q": "alert me in 15 minutes"}
+{"tool": "reminder", "q": "ricordami di comprare il pane"}
+{"tool": "reminder", "q": "ricordami di chiamare la mamma tra un'ora"}
+{"tool": "reminder", "q": "ricordami di portare fuori la spazzatura domani"}
+{"tool": "reminder", "q": "mettimi un promemoria per le 3"}
+{"tool": "reminder", "q": "erinnere mich daran, Brot zu kaufen"}
+{"tool": "reminder", "q": "erinnere mich, Mama anzurufen"}
+{"tool": "reminder", "q": "erinnere mich in 10 Minuten"}
+{"tool": "reminder", "q": "stell mir eine Erinnerung für 15 Uhr"}
+{"tool": "reminder", "q": "rappelle-moi d'acheter du pain"}
+{"tool": "reminder", "q": "rappelle-moi d'appeler maman dans une heure"}
+{"tool": "reminder", "q": "rappelle-moi de sortir la poubelle demain"}
+{"tool": "reminder", "q": "mets-moi un rappel pour 15h"}
+{"tool": "device_settings", "q": "sube el brillo"}
+{"tool": "device_settings", "q": "baja el brillo"}
+{"tool": "device_settings", "q": "baja el brillo de la pantalla"}
+{"tool": "device_settings", "q": "atenúa la pantalla"}
+{"tool": "device_settings", "q": "sube el brillo de la pantalla"}
+{"tool": "device_settings", "q": "pon la pantalla más brillante"}
+{"tool": "device_settings", "q": "oscurece la pantalla"}
+{"tool": "device_settings", "q": "aumenta o brilho"}
+{"tool": "device_settings", "q": "diminui o brilho"}
+{"tool": "device_settings", "q": "diminui o brilho um pouco"}
+{"tool": "device_settings", "q": "abaixa o brilho da tela"}
+{"tool": "device_settings", "q": "deixa a tela mais clara"}
+{"tool": "device_settings", "q": "escurece a tela"}
+{"tool": "device_settings", "q": "turn up the brightness"}
+{"tool": "device_settings", "q": "lower the brightness"}
+{"tool": "device_settings", "q": "dim the screen"}
+{"tool": "device_settings", "q": "make the screen brighter"}
+{"tool": "device_settings", "q": "increase screen brightness"}
+{"tool": "device_settings", "q": "reduce the brightness"}
+{"tool": "device_settings", "q": "aumenta la luminosità"}
+{"tool": "device_settings", "q": "abbassa la luminosità"}
+{"tool": "device_settings", "q": "riduci la luminosità dello schermo"}
+{"tool": "device_settings", "q": "rendi lo schermo più luminoso"}
+{"tool": "device_settings", "q": "mach den Bildschirm heller"}
+{"tool": "device_settings", "q": "mach den Bildschirm dunkler"}
+{"tool": "device_settings", "q": "erhöhe die Helligkeit"}
+{"tool": "device_settings", "q": "verringere die Helligkeit"}
+{"tool": "device_settings", "q": "monte la luminosité"}
+{"tool": "device_settings", "q": "baisse la luminosité"}
+{"tool": "device_settings", "q": "augmente la luminosité de l'écran"}
+{"tool": "device_settings", "q": "rends l'écran plus lumineux"}
+{"tool": "app", "q": "restart Spotify"}
+{"tool": "app", "q": "reinicia Discord"}
+{"tool": "app", "q": "reinicia Spotify"}
+{"tool": "app", "q": "redémarre Chrome"}
+{"tool": "app", "q": "riavvia Spotify"}
+{"tool": "app", "q": "starte Discord neu"}
+{"tool": "app", "q": "reinicia o Discord"}
+{"tool": "app", "q": "restart Discord"}
+{"tool": "app", "q": "encerra o Word agora"}
+{"tool": "app", "q": "Quitte Chrome maintenant"}
+{"tool": "app", "q": "cierra Word"}
+{"tool": "app", "q": "cierra Excel"}
+{"tool": "app", "q": "close Word"}
+{"tool": "app", "q": "close Chrome"}
+{"tool": "app", "q": "ferme Word"}
+{"tool": "app", "q": "chiudi Word"}
+{"tool": "app", "q": "schließe Chrome"}
+{"tool": "app", "q": "fecha o Word"}
+{"tool": "app", "q": "fecha o Excel"}
+{"tool": "window", "q": "porta in primo piano Calculator"}
+{"tool": "window", "q": "bring Calculator to the front"}
+{"tool": "window", "q": "trae Calculadora al frente"}
+{"tool": "window", "q": "trae Chrome al frente"}
+{"tool": "window", "q": "enfoca la ventana de Discord"}
+{"tool": "window", "q": "focus the Spotify window"}
+{"tool": "window", "q": "mets Chrome au premier plan"}
+{"tool": "window", "q": "bring Discord to the foreground"}
+{"tool": "window", "q": "porta Discord in primo piano"}
+{"tool": "window", "q": "hol das Fenster nach vorne"}
+{"tool": "window", "q": "traz o Chrome para a frente"}
+{"tool": "window", "q": "pon Discord en primer plano"}
+{"tool": "browser", "q": "busca en MercadoLibre auriculares"}
+{"tool": "browser", "q": "busca en Amazon una notebook"}
+{"tool": "browser", "q": "busca Batman en Google"}
+{"tool": "browser", "q": "busca en YouTube un tutorial"}
+{"tool": "browser", "q": "compra en Amazon un mouse"}
+{"tool": "browser", "q": "busca zapatillas en MercadoLibre"}
+{"tool": "browser", "q": "busca en Google las noticias de hoy"}
+{"tool": "browser", "q": "busca en Wikipedia la revolución francesa"}
+{"tool": "browser", "q": "search on Amazon for headphones"}
+{"tool": "browser", "q": "search Batman on Google"}
+{"tool": "browser", "q": "look up a tutorial on YouTube"}
+{"tool": "browser", "q": "buy a mouse on Amazon"}
+{"tool": "browser", "q": "search for shoes on eBay"}
+{"tool": "browser", "q": "find news on Google"}
+{"tool": "browser", "q": "busca no Mercado Livre fones de ouvido"}
+{"tool": "browser", "q": "procura no Google as notícias"}
+{"tool": "browser", "q": "busca um tutorial no YouTube"}
+{"tool": "browser", "q": "compra um mouse na Amazon"}
+{"tool": "browser", "q": "cerca su Amazon delle cuffie"}
+{"tool": "browser", "q": "cerca Batman su Google"}
+{"tool": "browser", "q": "cerca un tutorial su YouTube"}
+{"tool": "browser", "q": "compra un mouse su Amazon"}
+{"tool": "browser", "q": "suche auf Amazon nach Kopfhörern"}
+{"tool": "browser", "q": "suche Batman bei Google"}
+{"tool": "browser", "q": "such ein Tutorial auf YouTube"}
+{"tool": "browser", "q": "cherche des écouteurs sur Amazon"}
+{"tool": "browser", "q": "cherche Batman sur Google"}
+{"tool": "browser", "q": "cherche un tutoriel sur YouTube"}

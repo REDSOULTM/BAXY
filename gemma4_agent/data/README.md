@@ -67,3 +67,25 @@ Para cualquier `.npz` / `.bin` / `.pkl` nuevo que entre acá:
 2. El script de generación va en `scripts/` con prefijo del área.
 3. Si el archivo es grande (>10 MB), considerar `.gitignore` + script de
    generación on-demand en lugar de versionar.
+
+### Encoder del router (`router_encoder_ft/`) — NO versionado (449 MB)
+
+El encoder fine-tuned vive en `router_encoder_ft/` y está **gitignored** (regla 3
+arriba: >10 MB). El runtime cae al base model
+(`paraphrase-multilingual-MiniLM-L12-v2`) si no existe. Los artefactos derivados
+(`tool2vec_centroids.npz`, `router_exemplars.npz`, `abstain_head.json`) SÍ se
+versionan porque son chicos — pero están embebidos con el encoder FT, así que en
+un clone fresco hay que **regenerar el encoder primero** para que coincidan:
+
+```
+# 1. reentrenar el encoder (seed fijo 42 = reproducible bit-a-bit, ~3 min en GPU)
+GEMMA4_TRAIN_SEED=42 .venv_router_train/Scripts/python.exe scripts/train_router_encoder.py --epochs 3
+# 2. regenerar TODOS los artefactos derivados con ESE encoder
+GEMMA4_TRAIN_SEED=42 .venv_router_train/Scripts/python.exe scripts/router_ft_pipeline.py
+```
+
+La receta (qué ejemplos entrenan el encoder) ES `tool2vec_queries.jsonl`
+(versionado). Override del dir de salida: `GEMMA4_ENCODER_OUT_DIR` (para entrenar
+a temp + swap atómico sin romper el encoder en prod si falla a mitad).
+Reentreno mission 2026-06-10 (4 huecos de corpus + reanclaje browser): +156
+ejemplos a `tool2vec_queries.jsonl`, holdout 0.9800 mantenido, 4 huecos 25/25.
