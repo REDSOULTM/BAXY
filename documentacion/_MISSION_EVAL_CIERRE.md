@@ -165,6 +165,45 @@ capacidad central sin ningún ejemplo de anclaje. Vale inspeccionar los
 `tool_mismatch` con `exp` de una tool concreta (no `[]`) buscando huecos de
 corpus.
 
+## Addendum 2026-06-10 (run6) — brillo multilingüe + método de barrido de huecos
+
+Sistematicé la cacería: `scripts/_diag/_probe_router_gaps.py` mide
+`select_tool_names` **sin LLM** (determinista) para separar huecos reales del
+router del no-determinismo del 4B. Barriendo las tools `exp` que el router no
+ofrecía, encontré el tercer hueco real.
+
+**BUG `aff4044`: brillo no se ruteaba.** «Diminui o brilho» / «monte la
+luminosité» / «mach den Bildschirm heller» / «aumenta o brilho» caían a
+`session`; «abbassa la luminosità» caía a **`audio`** (confusión volumen/brillo).
+El router solo ofrecía la tool de brillo para fraseos ES/EN directos con %.
+
+**Causa raíz:** el corpus tenía **2 ejemplos** de brillo, ambos ES con %.
+**Fix:** +31 exemplars subir/bajar/atenuar en 6 idiomas → `device_settings`.
+Routing **2/10 → 9/10**; en vivo **0/6 → 4/6** ajustan (los 2 que no, honestos);
+holdout **mejoró a 0.9795**, sin contaminar (hora→system, volumen→audio).
+
+**Lección de diseño (importante): NO etiquetar contra el diseño.** Antes de
+agregar exemplars verifiqué qué tool **implementa** y **documenta** la acción:
+- Brillo es **`device_settings`** (su schema dice `brightness_up/down` "for
+  'subí/bajá el brillo'"), aunque el dataset FT a veces lo marca `system`. Ambas
+  implementan brillo, pero device_settings es la canónica → etiqueté esa.
+- WiFi/Bluetooth son **`device_settings`** por diseño; el dataset los marcaba
+  `system` (etiqueta mala). El router ya los ruteaba bien → **no se tocaron**.
+  Si hubiera "arreglado" contra el dataset, habría roto routing correcto.
+
+## Estado de la cacería de huecos de corpus (3 cerrados)
+
+| run | hueco | fix | en vivo |
+|-----|-------|-----|---------|
+| run4 | volumen perifrástico («dejar sin sonido») | +35 exemplars → audio | 5/7 rutean |
+| run5 | recordatorios (0 ejemplos reminder/notif) | +31 exemplars → reminder | 0/5→3/5 ejecutan |
+| run6 | brillo multilingüe (2 ejemplos, solo ES%) | +31 exemplars → device_settings | 0/6→4/6 ajustan |
+
+Patrón común: capacidad real con **corpus vacío o monolingüe** → el encoder no la
+ofrece → el 4B improvisa (miente o loopea). Fix de datos, reproducible, holdout
+intacto. **Residual recurrente** (PT bajo umbral + el 4B no siempre elige la tool
+aunque se ofrezca) es del **modelo** → reentreno (requiere OK del usuario).
+
 ## Fuentes
 
 - Cohere, *"The Language Confusion Benchmark"*, EMNLP 2024 — base del
