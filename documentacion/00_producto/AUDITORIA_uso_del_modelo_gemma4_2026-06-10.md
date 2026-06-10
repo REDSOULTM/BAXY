@@ -74,6 +74,33 @@ Q4 (degrada), forzar FA on (crash), prefill agresivo (el few-shot ya da el lift)
 - **Visión/audio nativos:** visión SÍ (mmproj residente); audio nativo NO se usa
   (Whisper/Parakeet en CPU es mejor WER + 0 VRAM — DECISION_MAESTRA lo midió).
 
+## Implementación de los candidatos (2026-06-10)
+
+**#1 KV-cache K q8_0 — APLICADO (con caveat de medición).**
+`--cache-type-k q8_0` en `llama_server.py`, GPU-only, kill-switch
+`GEMMA4_KV_CACHE_K`. CLAVE descubierta investigando: **solo se cuantiza K, NO V**
+— el V cache cuantizado EXIGE flash-attn ("V cache quantization requires
+flash_attn", llama.cpp #21450/#19036) y tenemos FA OFF por el crash #22527.
+Cuantizar V rompería el arranque; cuantizar solo K es seguro sin FA. Verificado:
+el cmd arma `--cache-type-k q8_0` y NO `--cache-type-v`. Suite server/config/
+profile 141/141. CAVEAT HONESTO: no se pudo medir el ahorro de VRAM en vivo (el
+sandbox no deja arrancar un server de prueba con el binario); el ahorro (~la
+mitad del KV de la capa K) se confirmará al reiniciar el server. Bajo riesgo y
+reversible.
+
+**#3 FR-CoT brief template — DESCARTADO por medición.** Medí la latencia por
+turno: el thinking CALIENTE ya es 1.4-3.0s (chico, por el gateo de modos). El
+outlier observado ("qué hora es" 18-20s en la 1ª corrida, 1.4-3s en las
+siguientes) NO es overthinking — es **cold-start del prefix-cache** (re-prefill
+del prompt en la 1ª llamada). FR-CoT NO arregla cold-start (es ortogonal). El
+lift sería marginal y solo en quick/deep_action, que ya tienen thinking acotado.
+No vale la complejidad. Confirma la sospecha de la auditoría.
+
+**#2 TTS paralelo / confirm filler — PENDIENTE (válido, UX).** No tocado aún.
+Sigue siendo el candidato de UX (enmascara latencia percibida, incluido el
+cold-start de prefill que SÍ existe). El flag `GEMMA4_STREAM_TTS` existe (OFF).
+Es trabajo de orquestación TTS, sesión dedicada.
+
 ## Fuentes
 
 - [Gemma 4 model card (oficial Google)](https://ai.google.dev/gemma/docs/core/model_card_4)

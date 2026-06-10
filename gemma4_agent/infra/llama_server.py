@@ -449,6 +449,16 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
     # al de antes (vram4 tiene ngl=99 → recibe las tres flags).
     if int(profile.n_gpu_layers) > 0:
         cmd.extend(["--ctx-checkpoints", "0", "--cache-ram", "0", "--no-cache-idle-slots"])
+        # KV-cache K cuantizado a q8_0 (2026-06-10): libera ~la mitad del KV de la
+        # capa K (~0.25-0.5 GB @ ctx 16384) con impacto de calidad ~nulo (q8 es
+        # casi lossless). SOLO el cache K: el V cuantizado EXIGE flash-attn (error
+        # "V cache quantization requires flash_attn", llama.cpp #21450/#19036) y
+        # nosotros tenemos FA OFF por el crash CUDA #22527 -> cuantizar V rompería
+        # el arranque. Cuantizar solo K es seguro sin FA. El margen liberado da
+        # holgura a la visión residente en 4GB. Kill-switch GEMMA4_KV_CACHE_K.
+        _kv_k = (os.environ.get("GEMMA4_KV_CACHE_K", "q8_0") or "").strip()
+        if _kv_k and _kv_k.lower() not in {"0", "off", "false", "no", "f16"}:
+            cmd.extend(["--cache-type-k", _kv_k])
 
     # RAM-frugality: SOLO el perfil CPU (ngl=0). Limita threads + baja la
     # prioridad para no robarle CPU al juego/app pesada que motiva el fallback a
