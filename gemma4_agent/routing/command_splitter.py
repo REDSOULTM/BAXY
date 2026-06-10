@@ -419,6 +419,18 @@ _FIRST_PERSON_RECIPIENTS = frozenset({
     "mim",                                       # pt (a mim)
     # it usa "mi/me" ya cubiertos
 })
+# Conjunciones / pronombres que NO son nombres de contacto. "decile QUE ya le
+# mandé el mensaje" = "decí: que ..." (el 'que' es conjunción, no destinatario) ->
+# el detector lo tomaba como contacto "que" y abría WhatsApp. Mismo con "dile que
+# sí". Estructural: estas palabras-función nunca son un nombre propio de contacto.
+_NON_CONTACT_WORDS = frozenset({
+    "que", "lo", "le", "les", "la", "las", "los", "eso", "esto", "esa",
+    "this", "that", "it", "them", "him", "her",
+    "ca", "cela", "lui", "leur",                  # fr (ça folded -> ca)
+    "das", "ihm", "ihr", "ihnen",                 # de
+    "isso", "lhe", "lhes",                        # pt
+    "cio", "gli",                                 # it (ciò folded -> cio)
+})
 
 
 def _fold(text: str) -> str:
@@ -604,6 +616,10 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
     # parseaba como mandar "the time" al contacto "me" -> abría WhatsApp. Estructural
     # (pronombres de 1ª persona en los 6 idiomas), no una lista de nombres.
     if _fold(contact) in _FIRST_PERSON_RECIPIENTS:
+        return None
+    # El "contacto" es una conjunción/pronombre, no un nombre ("decile QUE ya le
+    # mandé..." -> contacto "que"). No es un destinatario -> None.
+    if _fold(contact) in _NON_CONTACT_WORDS:
         return None
     return (contact, body)
 

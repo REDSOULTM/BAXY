@@ -235,6 +235,18 @@ _CHITCHAT_ANCHORS = [
     "thank you so much", "muchas gracias", "danke schon", "danke sehr",
     "merci beaucoup", "muito obrigado", "grazie mille", "mil gracias",
     "buenas", "buenas que tal", "todo bien", "tudo bem",
+    # DESAHOGO / FRUSTRACIÓN emocional (mission-eval 2026-06-10): "Ptdr arrête
+    # j'en peux plus" ruteaba a terminal/maintenance y entraba en loop. Son charla
+    # emocional (el asistente responde con empatía), NO comandos. El "arrête/stop/
+    # basta" sin objeto concreto es desahogo, no "matá el proceso X".
+    "no puedo más", "no aguanto más", "estoy harto", "ya no doy más",
+    "basta ya", "qué cansancio", "estoy agotado", "me rindo",
+    "i can't anymore", "i'm so done", "i give up", "i'm exhausted",
+    "ugh", "i'm so tired of this", "this is too much",
+    "j'en peux plus", "j'en ai marre", "je suis fatigué", "j'abandonne",
+    "ich kann nicht mehr", "ich bin so müde", "ich gebe auf",
+    "não aguento mais", "estou cansado", "chega", "desisto",
+    "non ne posso più", "sono stanco", "basta", "mi arrendo",
 ]
 
 # Questions about the ASSISTANT ITSELF or its policy ("quién eres", "qué

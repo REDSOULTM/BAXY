@@ -70,6 +70,23 @@ class MessageToExtractTest(unittest.TestCase):
         for q in ("que hora es", "abre discord", "andá al canal general"):
             self.assertIsNone(extract_message_to(q), msg=q)
 
+    def test_first_person_recipient_is_not_a_send(self):
+        # mission-eval 2026-06-10: "tell me X" = pedirle al asistente, NO enviar a
+        # un contacto "me". El destinatario de 1ª persona -> None (no mensajería).
+        for q in ("tell me the time", "tell me a joke", "decime la hora",
+                  "dis-moi l'heure"):
+            self.assertIsNone(extract_message_to(q), msg=q)
+
+    def test_conjunction_pronoun_is_not_a_contact(self):
+        # mission-eval 2026-06-10: "decile QUE ya le mandé el mensaje" -> el 'que'
+        # es conjunción, no un contacto -> abría WhatsApp con contacto "que".
+        for q in ("decile que ya le mandé el mensaje", "dile que sí",
+                  "dis-lui que je suis là"):
+            self.assertIsNone(extract_message_to(q), msg=q)
+        # pero CON un nombre real sigue siendo envío:
+        self.assertEqual(extract_message_to("decile a GordoFriki que sí"),
+                         ("GordoFriki", "que sí"))
+
     def test_bare_send_verb_without_recipient_is_none(self):
         # BUG REPORTADO EN VIVO (2026-05-30): "manda un mensaje por wsp" (SIN
         # destinatario) -> el stem PELADO `manda` hacía implies_recipient=True, no
