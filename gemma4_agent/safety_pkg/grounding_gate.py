@@ -42,6 +42,44 @@ _ACTION_STEMS_HINT = frozenset({
     "salud", "marqu", "asign", "asisti", "atendi",
 })
 
+# Stems de verbos cuya FORMA "he <participio>" / "estoy <gerundio>" en un turno
+# de 0-events es una mentira (el asistente afirma haber EJECUTADO/CONSUMIDO algo
+# sin que ninguna tool corriera). Incluye consumo sensorial (escuchar/ver/
+# reproducir) que un asistente de TEXTO no puede hacer. Usado por
+# _claims_consummated_action (perfecto compuesto + presente continuo), que
+# complementa _starts_with_action_claim (pretérito simple). NO incluye verbos de
+# CONOCIMIENTO ("conoc", "sé", "oí hablar") → "conozco a X" NO es mentira.
+_CONSUMMATED_STEMS = frozenset({
+    "reproduc", "escuch", "puesto", "abiert", "envia", "envi", "busc",
+    "encontr", "mostr", "ejecut", "agend", "registr", "naveg", "guard",
+    "borr", "elimin", "cerr", "edit", "modific", "actualiz", "consult",
+    "verific", "confirm", "vist", "vie", "mir", "le",  # visto/viendo/mirado/leído
+})
+_AUX_PERFECT = ("he ", "hemos ", "ya he ", "he estado ")
+_AUX_CONTINUOUS = ("estoy ", "estoy ahora ", "estuve ")
+
+
+def _claims_consummated_action(text: str) -> bool:
+    """True si el reply afirma una acción CONSUMADA via 'he <participio>' o
+    'estoy <gerundio>' de un verbo de acción/consumo. Estructural (auxiliar +
+    raíz), NO una lista de frases. Para 0-events (donde es necesariamente falso).
+    """
+    if not text:
+        return False
+    low = _fold(text.strip())
+    # buscar el auxiliar y mirar la palabra que le sigue
+    for aux in _AUX_PERFECT + _AUX_CONTINUOUS:
+        aux_f = _fold(aux)
+        idx = low.find(aux_f)
+        while idx != -1:
+            rest = low[idx + len(aux_f):].lstrip()
+            nxt = rest.split()[0] if rest.split() else ""
+            # participio (-ado/-ido) o gerundio (-ando/-iendo) o forma irregular
+            if nxt and any(nxt.startswith(s) for s in _CONSUMMATED_STEMS):
+                return True
+            idx = low.find(aux_f, idx + 1)
+    return False
+
 
 def _fold(text: str) -> str:
     """lowercase + strip diacritics for tolerant matching."""
@@ -208,6 +246,10 @@ def detect_action_claim_without_evidence(
     if not reply:
         return GroundingVerdict(should_replace=False, reason="empty_reply")
     claim = _starts_with_action_claim(reply)
+    if not claim and _claims_consummated_action(reply):
+        # perfecto compuesto / presente continuo ("he reproducido", "estoy
+        # escuchando") — pretérito que _starts_with_action_claim no cubre.
+        claim = "consummated"
     if not claim:
         return GroundingVerdict(should_replace=False, reason="no_claim_signal")
     return GroundingVerdict(

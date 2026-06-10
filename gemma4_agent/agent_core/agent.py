@@ -1490,6 +1490,11 @@ class Gemma4Agent:
                 pass
             return fallback
 
+    def _llm_knowledge_reply(self, user_text: str, fallback: str,
+                             target_lang: str | None = None) -> str:
+        return _reply_repair.llm_knowledge_reply(
+            self, user_text, fallback, target_lang=target_lang)
+
     # Pases LLM de observación / reparación de idioma extraídos a reply_repair.py
     # (2026-06-08, ratchet archivo-dios). Wrappers delgados: el agente se pasa a
     # las funciones del módulo; los call-sites internos no cambian.
@@ -2116,6 +2121,9 @@ class Gemma4Agent:
         raw_text_early = _extract_user_text(content)
         # Track current user text for the fallback-streak detector.
         self._current_user_text = (raw_text_early or "").strip().lower()
+        # Texto ORIGINAL (sin lowercase) para regenerar replies con el LLM
+        # (knowledge_reply): el casing importa para nombres propios.
+        self._current_user_text_raw = (raw_text_early or "").strip()
         # Plumbear el texto del turno al ToolRegistry: las tools que necesitan
         # GROUNDING DE PROCEDENCIA (p.ej. whatsapp: ¿el user DICTÓ este número, o
         # el 4B lo alucinó?) lo leen de ahí. Sin esto el registry no ve el mensaje
@@ -3004,24 +3012,16 @@ class Gemma4Agent:
         """
         from ..support.reasoning import sanitize_text as _san
         sink = getattr(self, "_active_tts_sink", None)
-        _detectors = None
-        if guard_check:
-            from ..safety_pkg.grounding_gate import detect_action_claim_without_evidence
-            from .agent_guards import reply_claims_action
-            _detectors = (detect_action_claim_without_evidence, reply_claims_action)
+        _guard_check = bool(guard_check)
 
         def _guard_fires(text: str) -> bool:
-            if not _detectors or not text:
+            if not _guard_check or not text:
                 return False
-            claim_d, promise_d = _detectors
             try:
-                if claim_d(text, []).should_replace:
-                    return True
-                if promise_d(text):
-                    return True
+                from .agent_guards import zero_event_claim_is_lie
+                return zero_event_claim_is_lie(text)
             except Exception:  # noqa: BLE001
                 return False
-            return False
 
         acc_raw = ""
         fed = ""  # sanitized prose already handed to the sink (what was voiced)
@@ -7199,8 +7199,8 @@ class Gemma4Agent:
     # need and persist any mutated streak/last-text back on self.
 
     def _guard_unverified_final(self, content: str, events: list[ToolEvent]) -> str:
-        from .agent_guards import guard_unverified_final
-        return guard_unverified_final(content, events)
+        from .agent_guards import guard_unverified_final_with_knowledge_regen
+        return guard_unverified_final_with_knowledge_regen(self, content, events)
 
     def _guard_phrase_confirm(self, content: str) -> str:
         from .agent_guards import guard_phrase_confirm

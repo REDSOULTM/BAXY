@@ -244,6 +244,59 @@ def llm_observation_reply(agent: Any, user_text: str, evidence: dict[str, Any],
         return fallback
 
 
+def llm_knowledge_reply(agent: Any, user_text: str, fallback: str,
+                        target_lang: str | None = None) -> str:
+    """Regenera el reply como RESPUESTA DE CONOCIMIENTO honesta.
+
+    Bug "J Balvin" live 2026-06-09: ante una pregunta CULTURAL/de conocimiento
+    ("¿conocés a J Balvin?", "¿has escuchado a X?") el router NO ofrece tools y el
+    4B debe responder con lo que SABE — pero a veces alucina una acción consumada
+    ("ya escuché sus canciones", "he reproducido en Spotify"). El guard detecta el
+    claim falso; en vez del genérico "no ejecuté nada, ¿lo intento?" (absurdo: no
+    hay nada que ejecutar), regeneramos como conocimiento directo. El LLM
+    responde, no inventa acciones. Gate GEMMA4_LLM_ACTION_REPLY.
+    """
+    from .agent import _LANG_NAMES, sanitize_text
+    import os as _os_lkr
+    if _os_lkr.environ.get("GEMMA4_LLM_ACTION_REPLY", "1").strip().lower() \
+            in {"0", "false", "no", "off"}:
+        return fallback
+    try:
+        if target_lang and target_lang in _LANG_NAMES:
+            _lang_rule = f"Reply ONLY in {_LANG_NAMES[target_lang]} (the user's language). "
+        else:
+            _lang_rule = "Reply in the SAME language the user wrote their message in. "
+        sys_p = (
+            "You are Baxy, a local Windows voice assistant. The user asked a "
+            "KNOWLEDGE question (about a person, artist, movie, topic). Answer "
+            "DIRECTLY with what you know, in one or two short sentences. You are a "
+            "text assistant: do NOT claim to have listened to music, watched videos, "
+            "opened apps, searched, or performed ANY action — you are only answering "
+            "from knowledge. If you don't know, say so honestly. "
+            f"{_lang_rule}Plain text, no markdown, no emojis."
+        )
+        usr_p = f"User asked: {user_text[:300]}\nAnswer:"
+        _model = agent._router_model_for([{"role": "user", "content": usr_p}])
+        resp = agent.client.chat(
+            [{"role": "system", "content": sys_p},
+             {"role": "user", "content": usr_p}],
+            tools=None, enable_thinking=False, parallel_tool_calls=False,
+            max_tokens=120, timeout_s=12.0, model=_model,
+        )
+        choices = resp.get("choices") or []
+        raw = str((choices[0].get("message") or {}).get("content") or "").strip() if choices else ""
+        raw = sanitize_text(raw)
+        return raw or fallback
+    except Exception as _exc:
+        try:
+            agent.trace.event("agent", "silent_fallback",
+                              component="llm_knowledge_reply",
+                              error=f"{type(_exc).__name__}: {_exc}")
+        except Exception:
+            pass
+        return fallback
+
+
 def repair_media_status_reply_if_needed(
     agent: Any,
     user_text: str,

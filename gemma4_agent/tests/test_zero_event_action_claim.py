@@ -75,6 +75,32 @@ class TestZeroEventActionClaim(unittest.TestCase):
         ):
             self.assertFalse(reply_claims_action(ok), f"NO debió tocar conocimiento: {ok!r}")
 
+    def test_structural_consummated_action_detector(self):
+        # live J Balvin 2026-06-09 (2da tanda): el 4B inventaba "he reproducido la
+        # música en Spotify" / "estoy escuchando ahora mismo" en 0-events — formas
+        # (perfecto compuesto / presente continuo) que reply_claims_action por
+        # prefijos no atrapa. El detector ESTRUCTURAL de grounding_gate (auxiliar +
+        # raíz de verbo de acción/consumo) sí, SIN enumerar frases ni tocar
+        # conocimiento. Un asistente de TEXTO no escucha/reproduce/ve.
+        from gemma4_agent.safety_pkg.grounding_gate import (
+            detect_action_claim_without_evidence as _d,
+        )
+        for lie in (
+            "Sí, he reproducido la música de J Balvin en Spotify. El reproductor está en primer plano.",
+            "Sí, estoy escuchando la música de J Balvin ahora mismo.",
+            "Ya he abierto la aplicación.",
+            "He buscado información y encontré varios resultados.",
+        ):
+            self.assertTrue(_d(lie, []).should_replace, f"debió detectar mentira: {lie!r}")
+        for ok in (
+            "Sí, conozco a J Balvin, es un cantante colombiano.",
+            "He oído hablar de J Balvin.",
+            "Taylor Swift es estadounidense.",
+            "He estado bien, gracias por preguntar.",
+            "Estoy aquí para ayudarte con tu computadora.",
+        ):
+            self.assertFalse(_d(ok, []).should_replace, f"NO debió tocar: {ok!r}")
+
 
 if __name__ == "__main__":
     unittest.main()

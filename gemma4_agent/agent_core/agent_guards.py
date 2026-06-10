@@ -18,6 +18,13 @@ import re
 import unicodedata
 from typing import Any, TYPE_CHECKING
 
+# Top-level (no lazy): grounding_gate NO importa agent_guards → sin ciclo. Lo usan
+# zero_event_claim_is_lie (detector estructural) y el regen de conocimiento (idioma).
+from ..safety_pkg.grounding_gate import (
+    detect_action_claim_without_evidence,
+    detect_reply_language,
+)
+
 if TYPE_CHECKING:
     # NO importar `ToolEvent` desde `.agent`: este módulo no lo usa y ese
     # import crea el ciclo agent ↔ agent_guards.
@@ -64,6 +71,16 @@ _SEARCH_DONE_PATTERNS = (
     "te leeré el primer", "te leere el primer", "te muestro los resultados",
     "i searched for", "i've searched", "i have searched", "i found several",
     "i found some", "here are the results", "i found the following",
+    # CONSUMO SENSORIAL alucinado: un asistente de TEXTO no escucha música ni ve
+    # videos. "he estado escuchando su música" / "he escuchado varias canciones
+    # recientemente" / "vi ese video" son mentiras (no tiene oídos/ojos). NO
+    # confundir con conocimiento ("conozco canciones de X", "he oído HABLAR de X"
+    # = rumor, legítimo) — por eso frases específicas de consumo activo.
+    "he estado escuchando", "estoy escuchando su", "he escuchado varias canciones",
+    "he escuchado algunas canciones", "escuché sus canciones", "escuche sus canciones",
+    "ya escuché", "ya escuche", "he visto ese video", "vi ese video",
+    "i've been listening", "i have been listening", "i listened to",
+    "i've watched", "i watched that video",
 )
 _PROMISE_PATTERNS = (
     "buscare", "buscaré", "voy a buscar", "voy a investigar",
@@ -104,6 +121,54 @@ def reply_claims_action(content: str) -> bool:
     if any(p in low for p in _SEARCH_DONE_PATTERNS):
         return True
     return any(p in low for p in _PROMISE_PATTERNS)
+
+
+def guard_unverified_final_with_knowledge_regen(
+    agent: Any, content: str, events: list[Any],
+) -> str:
+    """guard_unverified_final + regeneración de conocimiento en 0-events.
+
+    Si el guard base no reemplazó pero en 0-events el reply afirma una acción
+    consumada (incluido perfecto compuesto / presente continuo: "he reproducido",
+    "estoy escuchando", que el guard de prefijos no atrapa), regenera la respuesta
+    como CONOCIMIENTO honesto (el LLM responde con lo que sabe en vez del genérico
+    "no ejecuté nada, ¿lo intento?", absurdo para una pregunta). Bug "J Balvin"
+    live 2026-06-09: el 4B inventaba "he reproducido la música en Spotify".
+    """
+    new_content = guard_unverified_final(content, events)
+    if new_content != content:
+        return new_content  # el guard base ya reemplazó
+    if not (events == [] and zero_event_claim_is_lie(content)):
+        return content
+    _utext = (getattr(agent, "_current_user_text_raw", "")
+              or getattr(agent, "_current_user_text", "") or "")
+    if _utext:
+        # idioma del reply: detect_reply_language (grounding_gate, top-level, sin
+        # ciclo) sobre el texto del usuario. None deja que el LLM infiera.
+        _tlang = detect_reply_language(_utext) or None
+        _know = agent._llm_knowledge_reply(_utext, fallback="", target_lang=_tlang)
+        if _know and _know.strip() and not zero_event_claim_is_lie(_know):
+            return _know
+    return new_content
+
+
+def zero_event_claim_is_lie(content: str) -> bool:
+    """True si en un turno de 0-events el reply afirma una acción que NO ocurrió.
+
+    Combina la detección por prefijos/strings (``reply_claims_action``) con el
+    detector ESTRUCTURAL morfológico de grounding_gate (perfecto compuesto /
+    presente continuo: "he reproducido", "estoy escuchando" — formas que los
+    strings no cubren). Solo para 0-events, donde cualquier claim de acción es
+    necesariamente falso (ninguna tool corrió). Bug "J Balvin" live 2026-06-09.
+    """
+    if not content:
+        return False
+    if reply_claims_action(content):
+        return True
+    try:
+        return bool(detect_action_claim_without_evidence(content, []).should_replace)
+    except Exception:
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -538,8 +603,6 @@ def guard_grounded_action_claim(
         return content, fallback_streak, last_fallback_user_text
     if phrase_fires:
         return content, fallback_streak, last_fallback_user_text
-    from ..safety_pkg.grounding_gate import detect_action_claim_without_evidence
-
     verdict = detect_action_claim_without_evidence(content, events)
     if not verdict.should_replace:
         return content, fallback_streak, last_fallback_user_text

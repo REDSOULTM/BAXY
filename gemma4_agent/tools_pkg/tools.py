@@ -7797,9 +7797,8 @@ LEAN_DESCRIPTIONS: dict[str, str] = {
         "open/close tabs, wait/scroll/click-by-name/type. Pass the user's FULL goal in "
         "natural language (any language) in `goal`; the tool decomposes it (focus_app, "
         "open_chat, open_voice, type, send, open_url, click, keypress, scroll, "
-        "discord_control) and verifies by OS state. Ex: 'andá a discord al chat de juan y "
-        "escribile hola' -> computer_use(goal='andá a discord al chat de juan y escribile "
-        "hola'). NOT for: opening/closing/focusing a whole app (use app/window), WhatsApp "
+        "discord_control) and verifies by OS state. Pass ONLY what the user asked: if they just want to GO to a chat (no message), the goal is only to go — do NOT add a text like 'escribile hola' they didn't dictate. Ex (go): 'andá al chat de juan en discord'. Ex (msg): 'escribile a juan que llego tarde'. "
+        "NOT for: opening/closing/focusing a whole app (use app/window), WhatsApp "
         "(use whatsapp), system volume/media keys (use audio). USE when the command is "
         "operating inside an already-open app that has no dedicated tool."
     ),

@@ -147,6 +147,9 @@ PLANNER_SYSTEM = (
     "'mandale hola a juan en discord' -> "
     '[{"op":"focus_app","arg":"discord"},{"op":"open_chat","arg":"juan"},'
     '{"op":"type","arg":"hola"},{"op":"send","arg":""}]\n'
+    # SOLO ir al chat (sin mensaje): NO inventes type/send si el goal no trae texto.
+    "'andá al chat de juan en discord' -> "
+    '[{"op":"focus_app","arg":"discord"},{"op":"open_chat","arg":"juan"}]\n'
     "'escribí hola en el editor' -> "
     '[{"op":"focus_app","arg":"editor"},{"op":"type","arg":"hola"}]\n'
     "'entra al canal de voz musica en discord' -> "
