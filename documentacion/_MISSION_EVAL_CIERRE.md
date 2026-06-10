@@ -255,10 +255,48 @@ falsos positivos** (conocimiento/charla/oferta/estado respetados en 6 idiomas);
 morfológico atrapa verbos no-enumerados con 0 FP. Suite honestidad **64/64**.
 Test de regresión multilingüe añadido.
 
-**Pendiente (clase distinta):** afirmar el **estado-resultado** sin actuar («la
-calcolatrice è in primo piano» con 0 tools) — no es aux+participio, es
-copula+estado; más sutil (afirmar estado a veces es legítimo) → análisis
-dedicado para no arriesgar FP.
+**Pendiente (clase distinta):** afirmar el **estado-resultado** sin actuar →
+**resuelto en run9 ↓.**
+
+## Addendum 2026-06-10 (run9) — estado-resultado afirmado sin actuar
+
+La otra mitad del bug de honestidad. El 4B, ante «traer al frente / maximizar»
+sin ejecutar tool, afirmaba el **estado-resultado** en vez de la acción:
+«Calculator is now in front», «la calcolatrice è ora in primo piano», «Notepad
+is now maximized». No es aux+participio (el detector de run8 no lo cubría): es
+**copula + estado**. Medido en vivo: ~25% de las corridas 0-events.
+
+**Fix `a8e8cce` — `_claims_result_state_without_action`, CONSERVADOR.** Señal
+discriminante (medida contra adversarial): marcador «ahora» (now/ora/agora/ya/
+jetzt/adesso/maintenant) **O** opener de completitud (Done/Listo/Perfetto/Fertig)
++ estado-de-ventana (in front/primo piano/primer plano/maximiz/minimiz). Excluye
+ofertas/preguntas/condicionales. **8/8 mentiras detectadas en 6 idiomas, 0 FP**
+(conocimiento/definición/oferta respetados); suite 65/65; en vivo **25% → ~12%**.
+
+**Decisión conservadora (regla: no arriesgar FP):** NO se marca el estado-resultado
+**pelado** sin «ahora»/opener («La X está en primer plano» a secas) porque
+colisiona con definiciones de conocimiento («primer plano significa…»). Ese
+residual cae en el **reentreno** (enseñar al 4B a no afirmar lo no verificado),
+no en heurística frágil.
+
+## Resumen de la misión (runs 4–9)
+
+| run | hallazgo | tipo | resultado |
+|-----|----------|------|-----------|
+| 1–3 | 8 fixes del sesgo-al-español (lang_drift, WhatsApp, desahogo, close-app, fallbacks…) | pipeline | issues 140→117, lang_drift 63→10 |
+| 4 | volumen perifrástico | hueco de corpus | 5/7 rutean |
+| 5 | recordatorios (capacidad central rota) | hueco de corpus | 0/5→3/5 ejecutan |
+| 6 | brillo multilingüe | hueco de corpus | 0/6→4/6 ajustan |
+| 7 | cerrar/reiniciar app + focus ventana | hueco de corpus | routing 5/9→9/9, 0/3→3/3 |
+| 8 | **honestidad: detector solo-español** | guard | cobertura 1/10→10/10, 0 FP |
+| 9 | honestidad: estado-resultado | guard | 8/8, 25%→12% en vivo |
+
+**Hilo conductor:** TODO era el mismo **sesgo-al-español** — en el modelo, en el
+corpus del router, y en los guards de honestidad. Cada fix lo ataca en el
+**pipeline** (datos/estructura), reproducible y con holdout intacto. El residual
+recurrente (el 4B no siempre elige la tool aunque se ofrezca; afirmaciones peladas
+de estado) es del **modelo** → la cura de fondo es el **reentreno con rebalanceo
+SFT**, que requiere OK del usuario.
 
 ## Fuentes
 
