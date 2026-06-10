@@ -77,31 +77,39 @@ en sesión dedicada (con medición en vivo, regla #3.5):
 - P2: anti-invención de appid + liderar steam en "página de Steam de X" +
   honestidad post-fallo.
 
-## Hallazgo adicional (2026-06-10): "qué hora es" tarda ~20s — loop de 8 llamadas
+## Hallazgo adicional (2026-06-10): el outlier de ~20s = cold-start del encoder (NO un loop)
 
-Al ir a implementar el TTS paralelo (#2 de la auditoría del modelo), midiendo la
-latencia se destapó un BUG distinto: "qué hora es" tarda **18-22s** consistente
-(vs "qué fecha es" 4s, "cuánta RAM" 3s — todos `system`, todos similares). Por qué:
+Al ir a implementar el TTS paralelo (#2 de la auditoría), midiendo la latencia
+apareció un outlier: "qué hora es" tardaba **12-22s** la PRIMERA vez (vs 0.9-2s
+después). Tras profiling EXHAUSTIVO la causa quedó clara — y NO es un bug:
 
-- El LLM puro es ~3.8s, el tool `system.time` 0.01s, el eager NO bloquea (threads
-  daemon), `is_eager_safe` 0.00s. NINGUNO explica los 18s.
-- CAUSA REAL: el turno hace **8 llamadas al LLM** (3.62 + 7×~0.5s), no 2. Es un
-  **loop de reintentos** específico de "qué hora es" — el 4B llama system, algo no
-  converge (¿forced-tool-retry? ¿re-verificación del resultado?) y reintenta 6-7
-  veces. Suma ~7s de LLM + overhead del pipeline = ~18s.
-- "qué fecha es" / "cuánta RAM" NO loopean (2 llamadas) -> es ALGO específico de
-  la combinación "hora" + system.time + el summary/verify.
+- Descartado capa por capa: el LLM puro ~0.7s (warm), el tool `system.time`
+  0.01s, el eager NO bloquea (threads daemon), `is_eager_safe` 0.00s.
+- El "8 llamadas al LLM" que sugerí ANTES era un **artefacto de medición**
+  (tests creando `Gemma4Agent()` pelado SIN el `agent_runner`). En realidad son
+  2 llamadas; el patrón largo era el primer turno.
+- **CAUSA REAL: cold-start del encoder del router.** `semantic_router._ensure_
+  loaded()` tarda **~8-11s la PRIMERA vez** (carga el sentence-transformer +
+  re-embebe ~80 anchors). Eso es el grueso del outlier, NO el LLM.
+- **YA está mitigado en producción:** `agent_runner._bg_warmup_router()` (L478)
+  precarga el encoder + centroides EN BACKGROUND al arrancar, fuera del path del
+  usuario. Comentario textual: "This is the bulk of the ~14s cold start phase ...
+  paid here in the background instead." Medido CON warmup: 1er turno baja de
+  12.9s a ~3.3s (LLM 0.7s + 2.6s prefill/estructuras, normal); 2do ~1s.
 
-PENDIENTE (sesión dedicada): instrumentar por qué "qué hora es" entra en 8
-llamadas (probablemente el verifier/forced-retry no acepta el resultado de
-system.time y reintenta). Es un bug de LATENCIA real (peor outlier medido) +
-posible loop. NO es el TTS paralelo; el TTS lo enmascararía pero la cura es cortar
-el loop. Harness: instrumentar `LLMClient.chat` con contador por turno (n=8 para
-"qué hora es" vs n=2 normal).
+**Conclusión: el sistema YA está bien diseñado para el cold-start.** El outlier
+solo aparece en tests sin runner o si el usuario habla en los primeros ~10s tras
+arrancar (antes de que el warmup termine). NO es un loop ni un bug de "qué hora
+es" en particular — es el cold-start universal del encoder, ya cubierto.
+
+MEJORA MENOR posible (ROI bajo, futura): bloquear el primer turno hasta que el
+warmup termine, o mostrar "iniciando…", para el caso "usuario habla a los 3s de
+arrancar". Solo afecta el 1er comando en frío.
 
 ## Estado de la auditoría del modelo (candidatos #1-3)
 - #1 KV-cache K q8_0: APLICADO (commit b7fba61).
 - #3 FR-CoT: DESCARTADO por medición (thinking caliente ya 1.4-3s).
-- #2 TTS paralelo: al medirlo se destapó el loop de "qué hora es" (arriba). El #2
-  sigue pendiente como UX; pero la latencia real se cura cortando el loop, no
-  enmascarándola.
+- #2 TTS paralelo: al medirlo se destapó que el outlier de latencia NO es un bug
+  (cold-start del encoder, ya mitigado por el warmup). El #2 sigue pendiente como
+  mejora de UX general, pero NO hay un bug de latencia que arreglar — el sistema
+  ya maneja el cold-start. ROI del TTS paralelo revisado a la baja.
