@@ -1797,3 +1797,34 @@
 {"q": "rappelle-moi d'appeler maman dans une heure", "expected": ["reminder"], "source": "mission_eval_2026-06-10/reminder_action", "label_origin": "hand"}
 {"q": "rappelle-moi de sortir la poubelle demain", "expected": ["reminder"], "source": "mission_eval_2026-06-10/reminder_action", "label_origin": "hand"}
 {"q": "mets-moi un rappel pour 15h", "expected": ["reminder"], "source": "mission_eval_2026-06-10/reminder_action", "label_origin": "hand"}
+{"q": "sube el brillo", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "baja el brillo", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "baja el brillo de la pantalla", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "atenúa la pantalla", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "sube el brillo de la pantalla", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "pon la pantalla más brillante", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "oscurece la pantalla", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "aumenta o brilho", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "diminui o brilho", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "diminui o brilho um pouco", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "abaixa o brilho da tela", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "deixa a tela mais clara", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "escurece a tela", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "turn up the brightness", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "lower the brightness", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "dim the screen", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "make the screen brighter", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "increase screen brightness", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "reduce the brightness", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "aumenta la luminosità", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "abbassa la luminosità", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "riduci la luminosità dello schermo", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "rendi lo schermo più luminoso", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "mach den Bildschirm heller", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "mach den Bildschirm dunkler", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "erhöhe die Helligkeit", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "verringere die Helligkeit", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "monte la luminosité", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "baisse la luminosité", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "augmente la luminosité de l'écran", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "rends l'écran plus lumineux", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
