@@ -21,6 +21,15 @@ fuerza). Módulos NUEVOS:
 | `tools_pkg/visual_click_redirect.py` | `tools.py` | redirección click-visual → gui | `808df2a` |
 | `agent_core/reply_repair.py` | `agent.py` | reparación de idioma + info-followup + observación de media | `808df2a` |
 | `domain_tools/media_current.py` | `domain_tools/__init__.py` | resume del video/media actual | `808df2a` |
+| `tools_pkg/steam_store.py` | `tools.py` | helpers de Steam (AppID/URIs/store search) | 2026-06-10 |
+| `domain_tools/audio_devices.py` | `domain_tools/__init__.py` | dispositivos de audio (endpoints, set/restore default, SoundVolumeView) | 2026-06-10 |
+
+**Consolidación 2026-06-10:** dos extracciones limpias (contiguas, sin ciclo, con
+tests verdes) bajaron los techos de verdad: `tools.py` 8060→8023 (-42, Steam) y
+`domain_tools/__init__.py` 3370→3070 (-300, audio). Ambas con el patrón sibling+shim;
+audio importa `_ok/_err` de `_shared` y `_find_soundvolumeview/_powershell_json` de
+`helpers` (no de `__init__`), evitando el ciclo. El alias back-compat
+`gemma4_agent.domain_tools_audio_devices` se registró en `__init__._alias_domain_tools_shims`.
 
 **Caveat honesto (deuda registrada):** `agent.py` subió su techo +296 LOC (en el comentario
 de `CEILINGS` de `test_god_object_size_ceiling.py`) por un bloque INLINE **irreducible**: el

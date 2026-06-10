@@ -156,7 +156,7 @@ def _alias_domain_tools_shims() -> None:
     import sys as _sys
 
     domain_areas = (
-        "accessibility", "backup_sync", "bluetooth", "calendar", "contacts",
+        "accessibility", "audio_devices", "backup_sync", "bluetooth", "calendar", "contacts",
         "container", "creative_local", "data_analysis", "database",
         "dependency", "desktop_layout", "developer", "device_settings",
         "document", "fact_check", "file_process", "form_filler", "game_launcher",

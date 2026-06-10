@@ -54,7 +54,10 @@ CEILINGS = {
     # 0 -> el gate de app-action no resolvía -> "en la calculadora apretá el 5" no
     # armaba el plan keypress (test rojo). IRREDUCIBLE: `_score` tiene 24 call-sites,
     # extraerla con sus deps es más riesgo que valor; el fix son 3 líneas en su sitio.
-    "tools_pkg/tools.py": 8063,
+    # 2026-06-10: 8063 -> 8023 (-40). EXTRACCIÓN: los 7 helpers de Steam (AppID/URIs/
+    # store search) salieron a steam_store.py (sibling+shim). El techo BAJA con la
+    # partición. Número exacto.
+    "tools_pkg/tools.py": 8023,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Se sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
@@ -99,7 +102,11 @@ CEILINGS = {
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).
-    "domain_tools/__init__.py": 3370,
+    # 2026-06-10: 3370 -> 3070 (-300). EXTRACCIÓN: los 9 helpers de dispositivos de
+    # audio (endpoints, set/restore default, SoundVolumeView) salieron a
+    # audio_devices.py (sibling+shim, sin ciclo: _ok/_err de _shared,
+    # _find_soundvolumeview/_powershell_json de helpers). El techo baja al partir.
+    "domain_tools/__init__.py": 3070,
     "tools_pkg/ops_tools.py": 2300,
 }
 
