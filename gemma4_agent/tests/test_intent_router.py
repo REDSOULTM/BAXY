@@ -204,5 +204,25 @@ class TestIntentRouter(unittest.TestCase):
     # gate flag, which is only one of several signals.
 
 
+class TestLocalDatetime(unittest.TestCase):
+    """2026-06-10: fecha/hora LOCAL ("qué día es hoy") la responde `system`, NO
+    web. El per-tool head disparaba web con margen débil evadiendo la guarda que
+    solo vivía en _suggest_tools. El helper _is_local_datetime se aplica en AMBOS
+    (head + _suggest_tools). Multilingüe."""
+
+    def test_detects_local_datetime_multilang(self):
+        from ..routing.planner import _is_local_datetime
+        for q in ["qué día es hoy", "what day is today", "qué fecha es",
+                  "qué hora es", "what time is it", "que horas são",
+                  "che ora è", "quel jour sommes-nous"]:
+            self.assertTrue(_is_local_datetime(q), f"local datetime: {q!r}")
+
+    def test_world_questions_are_not_local_datetime(self):
+        from ..routing.planner import _is_local_datetime
+        for q in ["quién es Einstein", "qué pasó en 1969", "de qué trata Batman",
+                  "qué es python", "abrí Spotify"]:
+            self.assertFalse(_is_local_datetime(q), f"NO local datetime: {q!r}")
+
+
 if __name__ == "__main__":
     unittest.main()

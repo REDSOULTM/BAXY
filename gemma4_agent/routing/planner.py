@@ -249,6 +249,22 @@ def _antiprimacy_order(
 # (weak just-over-bar firings are noise), and at most this many head tools.
 _HEAD_MIN_MARGIN = float(_os.environ.get("GEMMA4_HEAD_MIN_MARGIN", "0.05"))
 _HEAD_TOP_N = int(_os.environ.get("GEMMA4_HEAD_TOP_N", "3"))
+
+# Fecha/hora LOCAL ("qué día es hoy", "qué fecha", "what time is it") = dato del
+# SISTEMA, NO pregunta del mundo -> system la responde, sin pile-on de web. Helper
+# module-level (2026-06-10) para aplicar la MISMA guarda en _suggest_tools Y en el
+# per-tool head: el head disparaba `web` con margen débil (0.05-0.10) evadiendo la
+# guarda que solo vivía en _suggest_tools -> "qué día es hoy" arrastraba
+# web+source_manager de ruido (canario del backlog #2). Folded en el call-site.
+_LOCAL_DATETIME_RE = re.compile(
+    r"\b(que dia es|qu[eé] dia es|que fecha|qu[eé] fecha|fecha de hoy|"
+    r"what day is|what'?s the date|todays date|today'?s date|"
+    r"que hora|qu[eé] hora|what time|che ora|quel jour|welcher tag|que horas)\b")
+
+
+def _is_local_datetime(text: str) -> bool:
+    """True si el turno pide fecha/hora LOCAL (la responde `system`, no web)."""
+    return bool(text) and bool(_LOCAL_DATETIME_RE.search(_fold_text(text)))
 # Cross-encoder rescue only when the abstain head's P(no_tool) is below this
 # (i.e. NOT a confident smalltalk/no-tool turn) — so we rescue real intents but
 # don't resurrect tools on "hola"/"gracias".
@@ -1110,6 +1126,12 @@ def select_tool_names(
                              and not pending_intent and not streaming_hint_media
                              and not confident_peak)
             head_tools: list[str] = [] if _abstain_veto else [t for t, _ in _head_fired]
+            # GUARDA local-datetime también en el HEAD (2026-06-10): "qué día es
+            # hoy" hacía que el head disparara `web` con margen débil, evadiendo la
+            # guarda que solo vivía en _suggest_tools -> web+source_manager de ruido
+            # (canario backlog #2). La fecha/hora local la responde `system`.
+            if head_tools and _is_local_datetime(raw_text):
+                head_tools = [t for t in head_tools if t not in ("web", "knowledge")]
             _cu_score = 0.0
             try:
                 _cu_score = max((s for t, s in scored if t == "computer_use"),
@@ -2109,11 +2131,9 @@ def _suggest_tools(step: str) -> list[str]:
                        "device_settings", "network", "clipboard"}
         # Local date/time ("qué día es hoy", "qué fecha", "what day is today")
         # is a LOCAL fact the system answers, not a world question — route it to
-        # system (added here) and skip the web/knowledge pile-on.
-        _local_datetime = re.search(
-            r"\b(que dia es|qu[eé] dia es|que fecha|qu[eé] fecha|fecha de hoy|"
-            r"what day is|what'?s the date|todays date|today'?s date|"
-            r"que hora|qu[eé] hora|what time)\b", low)
+        # system (added here) and skip the web/knowledge pile-on. Helper compartido
+        # con el head (_is_local_datetime) para que la guarda sea consistente.
+        _local_datetime = _is_local_datetime(step)
         if _local_datetime and "system" not in tools:
             tools.append("system")
         if (wants_knowledge(step) and not (set(tools) & _LOCAL_FACT)
