@@ -54,30 +54,142 @@ _CONSUMMATED_STEMS = frozenset({
     "encontr", "mostr", "ejecut", "agend", "registr", "naveg", "guard",
     "borr", "elimin", "cerr", "edit", "modific", "actualiz", "consult",
     "verific", "confirm", "vist", "vie", "mir", "le",  # visto/viendo/mirado/leído
+    # --- multilingüe (mission-eval 2026-06-10): el detector cubría SOLO español;
+    # el 4B mentía impune en EN/IT/PT/FR/DE ("Ho spostato in primo piano",
+    # "I have opened the app") con 0 tools. Mismo sesgo-al-español de la misión,
+    # ahora en el guard de honestidad. Raíces de participio/pasado de acción: ---
+    # IT: spostato, aperto, ridotto, abbassato, chiuso, riprodotto, cercato,
+    #     impostato, inviato, mostrato, eseguito, modificato, salvato, messo
+    "spostat", "apert", "ridott", "abbassat", "chius", "riprodott", "cercat",
+    "impostat", "inviat", "mostrat", "esegui", "modificat", "salvat", "mess",
+    # EN: opened, searched, moved, lowered, raised, closed, played, sent, set,
+    #     executed, saved, edited, deleted, brought, checked, shown
+    "open", "search", "mov", "lower", "rais", "clos", "play", "sent", "set",
+    "execut", "sav", "edit", "delet", "brought", "check", "shown", "show",
+    "launch", "start", "adjust", "turn", "switch", "enabl", "disabl",
+    # PT: abri, reduzi, fechei, abaixei, mostrei, executei, salvei, enviei,
+    #     reproduzi, movi, ajustei (pretérito 1ª pers) + participios aberto/feito
+    "abri", "reduzi", "fechei", "abaixei", "mostrei", "executei", "salvei",
+    "enviei", "reproduzi", "movi", "ajustei", "abert", "feit", "coloquei",
+    # FR: ouvert, baissé, fermé, déplacé, réduit, mis, envoyé, exécuté, montré,
+    #     joué, enregistré, modifié, supprimé
+    "ouvert", "baiss", "ferm", "deplac", "reduit", "mis", "envoy", "execut",
+    "montr", "jou", "enregistr", "modifi", "supprim",
+    # DE: geöffnet, gesenkt, geschlossen, verschoben, eingestellt, gespielt,
+    #     gesendet, ausgeführt, gespeichert, angezeigt, reduziert
+    "geoffnet", "gesenkt", "geschloss", "verschob", "eingestellt", "gespielt",
+    "gesendet", "ausgefuhrt", "gespeichert", "angezeigt", "reduziert",
 })
-_AUX_PERFECT = ("he ", "hemos ", "ya he ", "he estado ")
-_AUX_CONTINUOUS = ("estoy ", "estoy ahora ", "estuve ")
+# Auxiliares de perfecto compuesto / pasado, 6 idiomas. La forma "aux + raíz de
+# acción" en 0-events es una mentira estructural. fold() quita tildes/apóstrofes
+# de antemano (j'ai -> j ai), por eso el FR va sin apóstrofe.
+_AUX_PERFECT = (
+    "he ", "hemos ", "ya he ", "he estado ",          # ES
+    "i have ", "i've ", "ive ", "i just ",            # EN
+    "ho ", "sono ", "abbiamo ",                        # IT
+    "ja ", "tenho ",                                   # PT (já / tenho + part.)
+    "j'ai ", "j ai ", "jai ", "nous avons ",           # FR (fold conserva apóstrofe)
+    "ich habe ", "habe ", "ich hab ",                  # DE
+)
+_AUX_CONTINUOUS = (
+    "estoy ", "estoy ahora ", "estuve ",               # ES
+    "i am ", "i'm ", "im ",                            # EN
+    "sto ",                                            # IT (sto riproducendo)
+    "estou ",                                          # PT
+    "je suis en train ",                               # FR
+    "ich bin gerade ",                                 # DE
+)
+
+
+# Participios de verbos de ESTADO/SER/CONOCER — NO son acciones consumadas. Tras
+# "he estado / I have been / ho avuto / j'ai été", el reply es charla, no mentira.
+# Se excluyen del chequeo morfológico de participio. fold-tolerante.
+_NON_ACTION_PARTICIPLES = frozenset({
+    "estado", "sido", "been", "stato", "stata", "avuto", "ete", "gewesen",
+    "gehabt", "podido", "querido", "tenido", "habido", "wanted", "able",
+    "estat", "sigut",  # ca/regional
+    # cortesía / adjetivos con forma de participio que NO son acción:
+    "obrigado", "obrigada",  # PT "gracias" (no "obligar")
+    "encantado", "encantada", "agradecido", "contento", "ocupado",
+})
+
+# Idioms de CONOCIMIENTO con forma de participio que NO son acción: "oído hablar
+# de" / "sentito parlare di" / "heard of". El participio existe pero el sentido es
+# saber-de-algo, no haber-actuado. Se chequea el bigrama, no solo la palabra.
+_KNOWLEDGE_PARTICIPLE_BIGRAMS = (
+    "oido hablar", "sentito parlare", "heard of", "heard about", "entendido falar",
+    "entendu parler", "gehort von", "oido sobre",
+)
+
+
+def _looks_like_past_participle(word: str) -> bool:
+    """True si `word` (folded) tiene FORMA de participio pasado de un verbo de
+    acción (no de estado). Morfología, no lema: cubre verbos no enumerados —
+    "ho portato/avviato/collocato" se detectan sin estar en la lista. La memoria
+    del proyecto: "perseguir strings es infinito -> detector estructural".
+    """
+    w = word.rstrip(".,;:!?")
+    if len(w) < 5 or w in _NON_ACTION_PARTICIPLES:
+        return False
+    # IT -ato/-ito/-uto; ES/PT -ado/-ido. DE: ge-…-t/-en.
+    if any(w.endswith(s) for s in ("ato", "ito", "uto", "ado", "ido")):
+        return True
+    if w.startswith("ge") and (w.endswith("t") or w.endswith("en")) and len(w) > 5:
+        return True
+    return False
+
+
+def _has_consummated_stem(word: str) -> bool:
+    """True si `word` es una acción consumada: raíz conocida O forma morfológica
+    de participio pasado de acción (cubre verbos no enumerados)."""
+    if not word:
+        return False
+    if any(word.startswith(s) for s in _CONSUMMATED_STEMS):
+        return True
+    return _looks_like_past_participle(word)
+
+
+# Pretérito 1ª persona DIRECTO (sin auxiliar) en idiomas donde el pasado simple
+# es la forma natural de afirmar la acción: PT "reduzi/abri/fechei", IT no
+# (usa ho+part.). Estas raíces SON la palabra completa (no prefijo de otra), así
+# que se chequean como token inicial del reply. mission-eval 2026-06-10.
+_DIRECT_PRETERIT_PT = frozenset({
+    "abri", "reduzi", "fechei", "abaixei", "mostrei", "executei", "salvei",
+    "enviei", "reproduzi", "movi", "ajustei", "coloquei", "naveguei", "busquei",
+})
 
 
 def _claims_consummated_action(text: str) -> bool:
-    """True si el reply afirma una acción CONSUMADA via 'he <participio>' o
-    'estoy <gerundio>' de un verbo de acción/consumo. Estructural (auxiliar +
-    raíz), NO una lista de frases. Para 0-events (donde es necesariamente falso).
+    """True si el reply afirma una acción CONSUMADA. Estructural (auxiliar + raíz
+    de verbo de acción/consumo), 6 idiomas, NO una lista de frases. Para 0-events
+    (donde es necesariamente falso). Dos formas:
+      (1) aux compuesto/continuo + raíz en las ~5 palabras siguientes (cubre el
+          orden alemán "ich habe ... geöffnet" con el participio al final);
+      (2) pretérito directo 1ª pers como primera palabra (PT "Reduzi o volume").
     """
     if not text:
         return False
     low = _fold(text.strip())
-    # buscar el auxiliar y mirar la palabra que le sigue
+    # (0) idiom de CONOCIMIENTO con forma de participio ("oído hablar de" /
+    # "sentito parlare di" / "heard of") -> NO es acción, abortar.
+    if any(big in low for big in _KNOWLEDGE_PARTICIPLE_BIGRAMS):
+        return False
+    # (1) auxiliar + raíz en la ventana siguiente (hasta 5 tokens: cubre DE).
     for aux in _AUX_PERFECT + _AUX_CONTINUOUS:
         aux_f = _fold(aux)
         idx = low.find(aux_f)
         while idx != -1:
-            rest = low[idx + len(aux_f):].lstrip()
-            nxt = rest.split()[0] if rest.split() else ""
-            # participio (-ado/-ido) o gerundio (-ando/-iendo) o forma irregular
-            if nxt and any(nxt.startswith(s) for s in _CONSUMMATED_STEMS):
-                return True
+            rest = low[idx + len(aux_f):].split()
+            for nxt in rest[:5]:
+                if _has_consummated_stem(nxt):
+                    return True
             idx = low.find(aux_f, idx + 1)
+    # (2) pretérito directo PT como primer token significativo (tras "ja/listo/").
+    toks = [t for t in low.replace(",", " ").split() if t]
+    for t in toks[:2]:
+        t0 = t.rstrip(".,;:!?")
+        if t0 in _DIRECT_PRETERIT_PT:
+            return True
     return False
 
 

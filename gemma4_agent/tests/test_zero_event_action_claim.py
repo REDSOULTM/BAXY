@@ -102,5 +102,39 @@ class TestZeroEventActionClaim(unittest.TestCase):
             self.assertFalse(_d(ok, []).should_replace, f"NO debió tocar: {ok!r}")
 
 
+    def test_structural_detector_is_multilingual(self):
+        # mission-eval 2026-06-10: el detector estructural cubría SOLO español;
+        # el 4B mentía impune en EN/IT/PT/FR/DE ("Ho spostato in primo piano",
+        # "I have opened the app") con 0 tools — mismo sesgo-al-español de la
+        # misión, ahora en el guard de honestidad. Cobertura 6 idiomas por
+        # MORFOLOGÍA de participio (no enumeración de verbos): "ho portato" /
+        # "ho avviato" (no enumerados) se atrapan por -ato/-ito/-uto.
+        from gemma4_agent.safety_pkg.grounding_gate import (
+            detect_action_claim_without_evidence as _d,
+        )
+        for lie in (
+            "I have opened the application.",
+            "Ho spostato la Calcolatrice in primo piano.",
+            "Ho portato la finestra davanti.",        # verbo NO enumerado
+            "Ho avviato Spotify.",                     # verbo NO enumerado
+            "Já abri o aplicativo.",
+            "Reduzi o volume pela metade.",
+            "J'ai ouvert l'application.",
+            "Ich habe die Anwendung geöffnet.",
+        ):
+            self.assertTrue(_d(lie, []).should_replace, f"debió detectar: {lie!r}")
+        # conocimiento / charla / cortesía / oferta en los 6 idiomas -> NO tocar.
+        for ok in (
+            "I have heard of J Balvin.",
+            "Ho sentito parlare di J Balvin.",         # oído hablar = conocimiento
+            "Sono stato bene, grazie.",                # estado, no acción
+            "Estou bem, obrigado por perguntar.",      # cortesía PT (obrigado)
+            "J'ai été ravi de t'aider.",               # été = estado
+            "Möchtest du, dass ich Spotify öffne?",    # oferta/futuro
+            "Conheço muitas músicas da Shakira.",
+        ):
+            self.assertFalse(_d(ok, []).should_replace, f"NO debió tocar: {ok!r}")
+
+
 if __name__ == "__main__":
     unittest.main()
