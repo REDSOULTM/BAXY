@@ -104,6 +104,51 @@ class TestSummaryStreaming(unittest.TestCase):
         self.assertEqual(resp["choices"][0]["message"]["content"], "Listo.")
 
 
+class TestMarkupGuard(unittest.TestCase):
+    """El 4B a veces emite la sintaxis de tool-call como TEXTO en el content.
+    Los patrones de sanitize_text son de bloque COMPLETO: en el stream
+    incremental el markup llegaba de a pedazos y se VOCABA antes de que el
+    patrón cerrara (medido en vivo: '<|tool_call>call:window{action:maximize'
+    crudo al sink). El markup guard aborta ante '<|' confirmado y RETIENE un
+    sufijo que puede ser una apertura a medio llegar."""
+
+    def test_toolcall_markup_never_voiced(self):
+        # el split EXACTO del leak en vivo: el delta corta ANTES del '>' — ahí
+        # ningún patrón de sanitize matchea todavía (todos exigen el '>' o el
+        # cierre) y el texto se vocaba crudo. El guard aborta en el '<|'.
+        s, fed, _ = _run_stream(["<|tool_call", ">call:window{action:maximize"])
+        voiced = "".join(fed)
+        self.assertNotIn("<|", voiced)
+        self.assertNotIn("tool_call", voiced)
+        self.assertFalse(s._tts_streamed)
+
+    def test_piecemeal_opener_held_then_aborted(self):
+        # la apertura llega carácter a carácter: '<' solo es ambiguo (se
+        # retiene), '<|' confirma markup (aborta). Nada se voca jamás.
+        s, fed, _ = _run_stream(["<", "|tool_call>call:window{a", "ction:max"])
+        self.assertEqual("".join(fed), "")
+        self.assertFalse(s._tts_streamed)
+
+    def test_markup_after_prose_never_voices_markup(self):
+        # prosa limpia + markup en un delta COMPLETO: sanitize lo come entero
+        # (patrón de bloque) -> lo vocado queda "Listo." == final sanitizado
+        # (el invariante voiced==final se sostiene; no hace falta abortar).
+        s, fed, _ = _run_stream(["Listo. ", "<|tool_call>call:app{"])
+        voiced = "".join(fed)
+        self.assertNotIn("<|", voiced)
+        self.assertEqual(voiced, "Listo.")
+        # y si el markup llega PARTIDO tras la prosa, el guard aborta:
+        s2, fed2, _ = _run_stream(["Listo. ", "<|tool_call", ">call:app{"])
+        self.assertNotIn("<|", "".join(fed2))
+        self.assertFalse(s2._tts_streamed)
+
+    def test_legit_less_than_sign_released(self):
+        # '<' legítimo en prosa ('2 < 3') se retiene UN delta y se libera.
+        s, fed, _ = _run_stream(["2 ", "< ", "3 es verdad."])
+        self.assertEqual("".join(fed), sanitize_text("2 < 3 es verdad."))
+        self.assertTrue(s._tts_streamed)
+
+
 class TestInfoGuardCheck(unittest.TestCase):
     """Info turns (guard_check=True, NO tool ran) where the content-replacing
     guards CAN fire: clean prose streams; a claim/promise ABORTS before it is

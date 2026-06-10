@@ -363,6 +363,16 @@ def _detect_lang_is_strong(text: str, detected: str) -> bool:
     return False
 
 
+# Sufijo del buffer sanitizado que PUEDE ser la apertura de un token especial
+# Gemma a medio llegar ('<', '<|', '<|tool_ca', '<unus'): el streamer TTS lo
+# retiene hasta que el próximo delta lo desambigüe — markup confirmado ('<|')
+# aborta el feed; prosa legítima ('2 < 3') se libera intacta. Ver el markup
+# guard en _chat_streaming (2026-06-10).
+import re as _re_tts_markup
+_TTS_MARKUP_OPENER_TAIL_RE = _re_tts_markup.compile(r"<[|a-z_]*$",
+                                                    _re_tts_markup.IGNORECASE)
+
+
 def _stream_tts_enabled() -> bool:
     """Stream the reply to TTS sentence by sentence (GEMMA4_STREAM_TTS).
     Default OFF: voice must match the final chat reply unless this experimental
@@ -3070,13 +3080,31 @@ class Gemma4Agent:
                     self.trace.event(turn_id, "tts_stream_guard_abort", san=san[:120])
                     continue
                 new = san[len(fed):]
+                # MARKUP GUARD (2026-06-10): los patrones de sanitize_text son de
+                # bloque COMPLETO (exigen el tag de cierre o un \n) — en el stream
+                # incremental el markup llega DE A PEDAZOS y se vocaba antes de
+                # que el patrón cerrara (MEDIDO en vivo: '<|tool_call>call:window
+                # {action:maximize' vocado crudo al sink). Estructural: un '<|'
+                # confirmado en lo NUEVO = el modelo emite sintaxis de tool-call
+                # como texto -> abortar el feed (el runner voca el reply final,
+                # que sí pasa por sanitize completo). Un sufijo que PUEDE ser una
+                # apertura ('<', '<|too', '<unus') se RETIENE hasta que el próximo
+                # delta lo desambigüe (prosa legítima '2 < 3' se libera intacta).
+                if "<|" in new:
+                    aborted = True
+                    self.trace.event(turn_id, "tts_stream_markup_abort",
+                                     san=san[-120:])
+                    continue
+                _m_tail = _TTS_MARKUP_OPENER_TAIL_RE.search(new)
+                if _m_tail:
+                    new = new[:_m_tail.start()]
                 if new:
                     try:
                         sink(new)
                     except Exception:  # noqa: BLE001
                         aborted = True
                         continue
-                    fed = san
+                    fed = fed + new
             elif etype == "final":
                 final_content = ev.get("content") or acc_raw
                 final_tool_calls = ev.get("tool_calls") or []
