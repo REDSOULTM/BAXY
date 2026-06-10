@@ -89,6 +89,24 @@ def _to_symbols(t: str) -> str | None:
     """Convierte operadores NL a símbolos y valida que sea aritmética PURA.
     Devuelve la expresión normalizada ('2 + 2') o None si no es aritmética."""
     t = t.strip(" ?¿.!¡:")
+    # MÚLTIPLOS/FRACCIONES en lenguaje natural ANTES de words_to_digits (si no,
+    # "un cuarto" -> "1 cuarto" y el patrón no matchea) y ANTES de los operadores
+    # (2026-06-10: "el doble de 8"/"la mitad de 10"/"raíz de 16" caían a None -> el
+    # 4B respondía mal o "no pude"). "el/la X de N" -> N <op> k. Multilingüe es/en.
+    # El número puede ser dígito o palabra (\w por _words_to_digits posterior); acá
+    # aceptamos dígitos (lo común tras ASR) y el gate de pureza valida el resultado.
+    t = re.sub(r"\b(?:el\s+)?doble\s+de\s+(\d+(?:\.\d+)?)", r"\1 * 2", t)
+    t = re.sub(r"\b(?:el\s+)?triple\s+de\s+(\d+(?:\.\d+)?)", r"\1 * 3", t)
+    t = re.sub(r"\b(?:el\s+)?cu[áa]druple\s+de\s+(\d+(?:\.\d+)?)", r"\1 * 4", t)
+    t = re.sub(r"\b(?:la\s+)?mitad\s+de\s+(\d+(?:\.\d+)?)", r"\1 / 2", t)
+    t = re.sub(r"\b(?:un\s+)?tercio\s+de\s+(\d+(?:\.\d+)?)", r"\1 / 3", t)
+    t = re.sub(r"\b(?:un\s+)?cuarto\s+de\s+(\d+(?:\.\d+)?)", r"\1 / 4", t)
+    t = re.sub(r"\bdouble\s+(?:of\s+)?(\d+(?:\.\d+)?)", r"\1 * 2", t)
+    t = re.sub(r"\bhalf\s+(?:of\s+)?(\d+(?:\.\d+)?)", r"\1 / 2", t)
+    # RAÍZ cuadrada: "raíz (cuadrada) de N" / "square root of N" -> N ** 0.5
+    t = re.sub(r"\b(?:la\s+)?ra[íi]z(?:\s+cuadrada)?\s+de\s+(\d+(?:\.\d+)?)",
+               r"\1 ** 0.5", t)
+    t = re.sub(r"\bsquare\s+root\s+of\s+(\d+(?:\.\d+)?)", r"\1 ** 0.5", t)
     t = _words_to_digits(t)
     # potencias ANTES de la multiplicación
     t = re.sub(r"\bal\s+cuadrado\b", " ** 2", t)

@@ -71,6 +71,25 @@ class ArithExprForCalcTest(unittest.TestCase):
         for q in ("abrí la calculadora", "poné hola", "anotá la reunión", ""):
             self.assertIsNone(ec(q), msg=q)
 
+    def test_natural_language_multiples_and_roots(self):
+        # 2026-06-10 (logs): "el doble de 8"/"la mitad de 10"/"raíz de 16" caían a
+        # None -> el 4B respondía mal o "no pude". Ahora se computan directo.
+        cases = {
+            "el doble de 8": "16", "el triple de 5": "15", "el cuádruple de 3": "12",
+            "la mitad de 10": "5", "un tercio de 9": "3", "un cuarto de 20": "5",
+            "raíz de 16": "4", "raíz cuadrada de 25": "5",
+            "double of 8": "16", "half of 30": "15", "square root of 9": "3",
+            "cuánto es el doble de 7": "14", "cuánto es la mitad de 100": "50",
+        }
+        for q, exp in cases.items():
+            self.assertEqual(f(q), exp, msg=q)
+
+    def test_multiples_not_false_positive(self):
+        # "el doble de N" exige un NÚMERO -> no se confunde con frases idiomáticas.
+        for q in ("el doble sentido", "la mitad del equipo", "un cuarto de hotel",
+                  "raíz del problema", "el triple salto"):
+            self.assertIsNone(f(q), msg=q)
+
 
 if __name__ == "__main__":
     unittest.main()
