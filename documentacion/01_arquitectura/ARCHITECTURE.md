@@ -167,6 +167,50 @@ try/except, o recovery. Eso es lo que mantiene los tres ejes en el camino feliz.
 
 ---
 
+## Adiciones recientes (2026-06-07 → 2026-06-10) — ancladas a su capa
+
+Cambios posteriores a la auditoría base, ubicados en el mapa de capas. Ninguno
+movió un invariante; varios añadieron módulos hermanos (el ratchet anti-archivo-dios
+lo fuerza).
+
+**Hot-path / routing**
+- **Encoder del router reentrenado** con seed fija (reproducible) + ejemplos de
+  preguntas culturales→web. Resolvió que "¿conocés a X?" se rutee a conocimiento
+  en vez de a `media`. Recall holdout sin degradar (0.9820). Gate por idioma.
+- **Honestidad reforzada**: el guard de turno-sin-acción regenera una respuesta de
+  conocimiento (en vez de mentir "ya lo hice") y el detector estructural cubre el
+  perfecto compuesto / presente continuo ("he reproducido", "estoy escuchando").
+- **Geometría de ventana**: "maximiza/minimiza la app X" retira la tool homónima
+  (steam/browser/app) del subset y deja `window` — antes el LLM inventaba un
+  action inexistente.
+
+**Latencia (fast-paths in-process, reemplazan spawns de PowerShell/WMI)**
+- `system_info_fast`, `screenshot_fast`, `uia_fast`, `media_now_playing_fast`:
+  lecturas de estado del SO por psutil/ctypes/winsdk/registro en vez de
+  `subprocess` (1-2.5s → ms). Caches TTL para lo estable; warmup en boot para lo
+  caro-en-frío. Búsqueda web con timeout duro.
+
+**Módulos extraídos del hot-path (mismo patrón sibling+shim)**
+- `agent_core/reply_repair.py`, `agent_core/agent_helpers.py`,
+  `agent_core/latency_helpers.py`, `tools_pkg/site_resolver.py`,
+  `tools_pkg/web_search.py`, `tools_pkg/web_source_quality.py`,
+  `tools_pkg/visual_click_redirect.py`, `domain_tools/media_current.py`.
+
+**Seguridad / configuración**
+- **Política de confirmación** ampliada: `GEMMA4_CONFIRMATION_POLICY` ∈
+  {confirm_risky (default), never, always, **all** (permisivo total)}. Toggle en
+  settings. El invariante "irreversible se confirma bajo cualquier política" lo
+  rompe a propósito SOLO el modo `all` (opt-in explícito).
+- **STT solo-Parakeet**: `GEMMA4_STT_NO_FALLBACK` apaga el fallback a Whisper en
+  los dos puntos del pipeline — si Parakeet no carga, la voz falla limpio.
+
+**Tooling de tests**
+- **Guard de suite global**: conftest RAÍZ del repo + `_suite_guards` neutralizan
+  os.startfile/webbrowser/subprocess-de-apertura para que NINGÚN test abra apps,
+  desde cualquier dir, sin flag. Las lecturas pasan reales.
+
+---
+
 ## Tabla de correcciones acumuladas (27 bugs + 1 perf)
 
 | ronda | fix | eje | invariante que protege |

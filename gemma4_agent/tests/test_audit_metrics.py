@@ -91,11 +91,16 @@ class TestAuditMetrics(unittest.TestCase):
 
     def test_metric_zero_top_level_cycles(self):
         """0 ciclos top-level. Verificado via _arch_dep_graph.py."""
+        import os
         import subprocess, sys
+        # Forzar UTF-8 en el hijo: el script imprime un '→' y, sin esto, en una
+        # consola Windows con codepage cp1252 la salida se corrompe y el parse
+        # devolvía -1 (falso rojo) en vez del '0' real.
+        env = dict(os.environ, PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
         result = subprocess.run(
             [sys.executable, "scripts/_arch_dep_graph.py"],
             capture_output=True, text=True, errors="replace",
-            cwd=REPO,
+            cwd=REPO, env=env,
         )
         cycle_line = next(
             (l for l in result.stdout.splitlines() if "CICLOS detectados" in l),
@@ -103,7 +108,10 @@ class TestAuditMetrics(unittest.TestCase):
         )
         # Format: "# CICLOS detectados: N"
         match = re.search(r"detectados:\s*(\d+)", cycle_line)
-        n = int(match.group(1)) if match else -1
+        self.assertIsNotNone(
+            match,
+            f"no se pudo leer la línea de ciclos del script; stdout:\n{result.stdout[-400:]}")
+        n = int(match.group(1))
         self.assertEqual(n, 0, f"R3: {n} ciclos top-level detectados")
 
     def test_metric_lazy_imports_under_525(self):

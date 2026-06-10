@@ -67,11 +67,17 @@ def install() -> dict[str, list]:
         # `cmd /c start ...` (deeplinks, abrir apps)
         if "start" in low and (" /c " in low or low.startswith("cmd")):
             return True
-        # invocar un .exe/.lnk directo (no powershell/cmd de lectura)
+        # invocar un .exe/.lnk directo "de usuario". Se EXCLUYEN los intérpretes y
+        # herramientas de dev (python/node/git/...): un test puede lanzar un
+        # subprocess de Python legítimo (p.ej. correr un script de auditoría) y eso
+        # NO es "abrir una app a la cara del usuario" — bloquearlo rompería el test
+        # devolviéndole stdout vacío.
+        _DEV_TOOLS = ("python", "pythonw", "\\py.exe", "/py.exe", "node", "npm",
+                      "npx", "git", "pip", "powershell", "pwsh", "cmd", "conhost")
         if isinstance(cmd, (list, tuple)) and cmd:
             head = str(cmd[0]).lower()
             if (head.endswith(".exe") or head.endswith(".lnk")) and not any(
-                    p in head for p in ("powershell", "pwsh", "cmd", "conhost")):
+                    p in head for p in _DEV_TOOLS):
                 return True
         return False
 
