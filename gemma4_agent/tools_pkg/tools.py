@@ -1569,7 +1569,11 @@ class ToolRegistry:
         # Gated GEMMA4_PRECONDITIONS (default off). 0 overhead si off.
         try:
             from ..safety_pkg.preconditions import ensure_preconditions
-            _prec = ensure_preconditions(name, clean_args)
+            # ctx: el check de app reusa ESTE resolver (warm + memos). Un fresco
+            # acá costaba ~10s por execute(app.open) — ver _app_is_resolvable.
+            _prec = ensure_preconditions(
+                name, clean_args,
+                ctx={"app_resolver": getattr(self, "apps", None)})
             if _prec is not None:
                 return _normalize_tool_result(name, clean_args, _err(
                     _prec.detail, status="needs_user",
@@ -5120,12 +5124,25 @@ if ($pos) {
     def _resolve_site_by_search(self, name: str) -> str | None:
         # Delega en site_resolver.resolve_site_by_search (extraído 2026-06-07),
         # inyectando las deps de ESTA registry. None si nada matchea (no abre basura).
-        return _resolve_site_by_search_impl(
+        # CACHE TTL por nombre (2026-06-10, incluye el None): la resolución son
+        # 1-2 pases de red (MEDIDO 8.6-11s en red móvil) y el miss de app.open la
+        # repagaba ENTERA cuando el 4B re-llamaba la tool en el mismo turno. Un
+        # sitio no cambia de dominio en minutos; el None (nombre sin sitio) menos.
+        key = (name or "").strip().lower()
+        cache: dict[str, tuple[float, str | None]] = getattr(
+            self, "_site_resolve_cache", None) or {}
+        self._site_resolve_cache = cache
+        hit = cache.get(key)
+        if hit is not None and time.monotonic() - hit[0] < 600.0:
+            return hit[1]
+        url = _resolve_site_by_search_impl(
             name,
             web_search=self.web_search,
             fillers=_SITE_REQUEST_FILLERS,
             search_all_backends=lambda q, lim=12: self._site_search_all_backends(q, limit=lim),
         )
+        cache[key] = (time.monotonic(), url)
+        return url
 
     def _open_url_in_browser(self, browser: str, url: str) -> dict[str, Any] | None:
         """Abre `url` en el NAVEGADOR `browser` (honra "pon X en Opera"). Resuelve

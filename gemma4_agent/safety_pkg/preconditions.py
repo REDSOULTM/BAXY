@@ -46,12 +46,14 @@ class PreconditionResult:
     detail: str = ""          # mensaje accionable (para needs_user)
 
 
-# check(args) -> bool | None  (True=cumple, False=no, None=no medible)
+# check(args, ctx=None) -> bool | None  (True=cumple, False=no, None=no medible)
+#   ctx: recursos COMPARTIDOS del llamador (p.ej. ctx["app_resolver"] = la
+#   instancia warm de la registry) — evita reconstruir estado caro por chequeo.
 # repair(args) -> bool        (True si la reparó)
 @dataclass
 class Precondition:
     name: str
-    check: Callable[[dict[str, Any]], bool | None]
+    check: Callable[..., bool | None]
     repair: Callable[[dict[str, Any]], bool] | None = None
     fail_message: str = "precondición no cumplida"
 
@@ -67,22 +69,32 @@ def preconditions_enabled() -> bool:
 
 # --- Checks estructurales concretos (leen estado del SO, no keywords) --------
 
-def _app_is_resolvable(args: dict[str, Any]) -> bool | None:
+def _app_is_resolvable(args: dict[str, Any], ctx: dict[str, Any] | None = None) -> bool | None:
     """¿La app pedida existe en el sistema (PATH/StartMenu/registry/Steam)?
 
-    Reusa el AppResolver — la MISMA resolución que usaría app.open. Si no se puede
-    construir el resolver (entorno raro), devuelve None (no bloquear sin evidencia)."""
+    Reusa el AppResolver COMPARTIDO de la registry si el llamador lo pasa por
+    ctx["app_resolver"] — la MISMA instancia (fuentes warm + memo del deep scan)
+    que usaría app.open. CAUSA RAÍZ medida (2026-06-10): construir acá un
+    AppResolver() fresco recargaba TODAS las fuentes (~5s, 2 spawns PowerShell)
+    + deep scan sin memo (~4s) EN CADA chequeo -> ~10s por execute(app.open),
+    pagados DOS VECES por turno (open-net en decide + re-llamada del 4B) = el
+    grueso de los 20-31s del turno "abrí <app inexistente>". Sin ctx (tests,
+    llamadores viejos) cae al fresco; si nada se puede construir, None
+    (no bloquear sin evidencia)."""
     name = str(args.get("name") or "").strip()
     if not name:
         return None
     try:
-        from ..tools_pkg.app_resolver import AppResolver
-        return bool(AppResolver().find(name))
+        resolver = (ctx or {}).get("app_resolver")
+        if resolver is None:
+            from ..tools_pkg.app_resolver import AppResolver
+            resolver = AppResolver()
+        return bool(resolver.find(name))
     except Exception:
         return None
 
 
-def _whatsapp_installed(args: dict[str, Any]) -> bool | None:
+def _whatsapp_installed(args: dict[str, Any], ctx: dict[str, Any] | None = None) -> bool | None:
     """¿WhatsApp Desktop está instalado? Reusa _find_whatsapp_app (Get-AppxPackage).
     None si la detección falla (no bloquear)."""
     try:
@@ -124,13 +136,15 @@ _ACTIONS_THAT_ACT: dict[str, frozenset[str]] = {
 }
 
 
-def ensure_preconditions(tool_name: str, args: dict[str, Any]) -> PreconditionResult | None:
+def ensure_preconditions(tool_name: str, args: dict[str, Any],
+                         ctx: dict[str, Any] | None = None) -> PreconditionResult | None:
     """Evalúa las precondiciones de una tool ANTES de ejecutarla.
 
     Devuelve:
       - None  -> no hay precondiciones, o todas OK/unknown -> SEGUIR (fail-open).
       - PreconditionResult(needs_user) -> bloquear con mensaje accionable.
 
+    `ctx`: recursos compartidos del llamador para los checks (ver Precondition).
     Gated por GEMMA4_PRECONDITIONS. Best-effort: cualquier excepción -> None (seguir)."""
     if not preconditions_enabled():
         return None
@@ -143,7 +157,7 @@ def ensure_preconditions(tool_name: str, args: dict[str, Any]) -> PreconditionRe
         if gate is not None and action and action not in gate:
             return None  # acción de solo-lectura: no chequear
         for prec in precs:
-            verdict = prec.check(args)
+            verdict = prec.check(args, ctx)
             if verdict is True or verdict is None:
                 continue  # cumple, o no medible (fail-open: no bloquear)
             # verdict is False -> intentar reparar

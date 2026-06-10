@@ -93,6 +93,7 @@ class AppResolver:
         if refresh:
             self._cache = []
             self._loaded_sources = set()
+            self._deep_scan_memo = {}
 
         for source_name, loader in (
             ("path", self._from_path),
@@ -102,6 +103,12 @@ class AppResolver:
             ("steam", self._from_steam),
             ("epic", self._from_epic),
         ):
+            # Si la fuente ya está cargada el cache no cambió: re-rankear acá es
+            # puro repago (MEDIDO ~1.2s: 6 ranks fuzzy sobre ~2800 candidatos en
+            # cada find() warm). El rank final de abajo cubre el caso all-warm
+            # con resultado idéntico (el rank es determinista sobre el cache).
+            if source_name in self._loaded_sources:
+                continue
             self._load_source(source_name, loader)
             matches = self._rank(query, self._cache, limit)
             if matches and max(_score(query, matches[0].name), _score(query, Path(matches[0].launch).stem)) >= 90:
@@ -368,6 +375,17 @@ $items | ConvertTo-Json -Depth 3
             return []
 
         pattern = "*" + "*".join(words) + "*.exe"
+        # MEMO por query (2026-06-10): el deep scan es disco puro (no abre nada)
+        # y el MISS se repagaba entero en el mismo turno — el app-open net lo
+        # corre en decide y el 4B suele re-llamar app.open en execute (MEDIDO
+        # 8s + 8s en "abrí jitomatador"). El disco no cambia en segundos: TTL
+        # corto. find(refresh=True) lo limpia junto con el cache de fuentes.
+        memo: dict[str, tuple[float, list[AppCandidate]]] = getattr(
+            self, "_deep_scan_memo", None) or {}
+        self._deep_scan_memo = memo
+        hit = memo.get(joined)
+        if hit is not None and time.monotonic() - hit[0] < 300.0:
+            return list(hit[1])
         roots = [
             Path(os.environ.get("ProgramFiles", "C:/Program Files")),
             Path(os.environ.get("ProgramFiles(x86)", "C:/Program Files (x86)")),
@@ -381,46 +399,82 @@ $items | ConvertTo-Json -Depth 3
         ]
 
         # Budget total para evitar que esta fase domine el wall-clock.
-        # 9 roots x 5s = 45s en el peor caso anterior; con 8s total cubrimos
-        # ~3-4 roots completos antes de aceptar la derrota. Esto convierte
-        # "app not found" de 45s -> 8s en el peor caso.
+        # 9 roots x 5s = 45s en el peor caso secuencial original; el budget de
+        # 8s lo capeaba pero el scan AGOTABA los 8s en cada miss (MEDIDO: el
+        # root más profundo —APPDATA— tarda más que el budget entero). Los
+        # where.exe son procesos independientes I/O-bound -> EN PARALELO todos
+        # los roots corren A LA VEZ y el wall = min(budget, root más lento).
+        # Default 4s: con paralelismo da MÁS cobertura que el 8s secuencial
+        # (que solo alcanzaba ~3 roots) con la mitad del wall. MEDIDO en
+        # _diag_app_open_miss.py; el miss completo de t_app 24.6s -> ~4-6s.
         try:
-            budget_s = float(os.environ.get("GEMMA4_APP_SCAN_BUDGET_S") or "8.0")
+            budget_s = float(os.environ.get("GEMMA4_APP_SCAN_BUDGET_S") or "4.0")
         except ValueError:
-            budget_s = 8.0
+            budget_s = 4.0
         budget_s = max(1.0, min(budget_s, 30.0))
-        deadline = time.monotonic() + budget_s
-        per_root_s = max(1.0, budget_s / 3.0)
 
-        out = []
+        live_roots: list[Path] = []
         seen: set[Path] = set()
         for root in roots:
-            if not root.is_dir() or root in seen:
-                continue
-            seen.add(root)
-            remaining = deadline - time.monotonic()
-            if remaining <= 0.2:
-                break  # budget agotado
+            if root.is_dir() and root not in seen:
+                seen.add(root)
+                live_roots.append(root)
+        if not live_roots:
+            memo[joined] = (time.monotonic(), [])
+            return []
+
+        def _scan_root(root: Path) -> list[str]:
             try:
                 proc = subprocess.run(
                     ["where.exe", "/R", str(root), pattern],
                     capture_output=True,
                     text=True,
-                    timeout=min(per_root_s, remaining),
+                    timeout=budget_s,
                 )
-                for line in proc.stdout.splitlines():
-                    exe = Path(line.strip())
-                    if not exe.is_file() or _looks_like_uninstaller(exe):
-                        continue
-                    pretty = _pretty_exe_name(exe)
-                    score = max(_score(query, pretty), _score(query, exe.stem), _score(query, str(exe.parent)))
-                    if score <= 0:
-                        continue
-                    out.append(AppCandidate(pretty, "exe_scan", str(exe), "file", exe.name))
-                    if len(out) >= max_matches:
-                        return out
-            except (OSError, subprocess.TimeoutExpired):
-                continue
+                return proc.stdout.splitlines()
+            except subprocess.TimeoutExpired as exc:
+                # SALVAR el stdout parcial: where.exe imprime a medida que
+                # encuentra. Los roots grandes (Program Files 15-23s MEDIDO)
+                # NUNCA terminan dentro del budget — descartar el parcial
+                # significaba que jamás aportaron un solo candidato.
+                out_part = exc.stdout
+                if isinstance(out_part, bytes):
+                    out_part = out_part.decode("utf-8", errors="replace")
+                return (out_part or "").splitlines()
+            except OSError:
+                return []
+
+        from concurrent.futures import (
+            ThreadPoolExecutor, as_completed, TimeoutError as _FutTimeout)
+        out: list[AppCandidate] = []
+        full = False
+        # sin `with`: __exit__ haría join de los stragglers y rompería el budget.
+        # shutdown(wait=False) suelta el pool; los where.exe pendientes mueren
+        # solos por su propio timeout (≤ budget).
+        ex = ThreadPoolExecutor(max_workers=min(8, len(live_roots)))
+        try:
+            futs = [ex.submit(_scan_root, root) for root in live_roots]
+            try:
+                for fut in as_completed(futs, timeout=budget_s):
+                    for line in fut.result():
+                        exe = Path(line.strip())
+                        if not exe.is_file() or _looks_like_uninstaller(exe):
+                            continue
+                        pretty = _pretty_exe_name(exe)
+                        score = max(_score(query, pretty), _score(query, exe.stem), _score(query, str(exe.parent)))
+                        if score <= 0:
+                            continue
+                        out.append(AppCandidate(pretty, "exe_scan", str(exe), "file", exe.name))
+                        if len(out) >= max_matches:
+                            full = True
+                            break
+                    if full:
+                        break
+            except _FutTimeout:
+                pass  # budget agotado: devolvemos lo juntado hasta acá
+        finally:
+            ex.shutdown(wait=False, cancel_futures=True)
+        memo[joined] = (time.monotonic(), list(out))
         return out
 
     def _from_steam(self) -> list[AppCandidate]:

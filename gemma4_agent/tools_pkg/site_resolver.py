@@ -266,14 +266,26 @@ def ddgs_search_all_backends(query: str, limit: int = 8) -> list[dict[str, str]]
     merged: list[dict[str, str]] = []
     # backends que ddgs expone (NO 'bing' — no existe en ddgs; sí duckduckgo/brave/
     # google). Cada uno indexa distinto -> juntamos para no perder el dominio real.
-    for backend in ("google", "brave", "duckduckgo", "auto"):
+    # PARALELO (2026-06-10): los 4 backends son requests HTTP independientes; en
+    # serie el peor caso es 4×timeout (MEDIDO 8.6-11s en red móvil, y app.open lo
+    # repagaba en cada miss delegado a sitio). En paralelo el wall ≈ el backend
+    # más lento (≤1×timeout). El MERGE preserva el orden secuencial (google
+    # primero = el ranking que el user ve) y la dedup por host es idéntica.
+    backends = ("google", "brave", "duckduckgo", "auto")
+
+    def _one_backend(backend: str) -> list:
         try:
             kw: dict[str, object] = {"max_results": limit}
             if backend != "auto":
                 kw["backend"] = backend
-            raw = DDGS(timeout=_to).text(query, **kw) or []
+            return DDGS(timeout=_to).text(query, **kw) or []
         except Exception:
-            raw = []
+            return []
+
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=len(backends)) as _ex:
+        raws = list(_ex.map(_one_backend, backends))
+    for raw in raws:
         for r in raw:
             url = str(r.get("href") or r.get("url") or "").strip()
             if not url:

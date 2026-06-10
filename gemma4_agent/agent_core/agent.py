@@ -1802,7 +1802,6 @@ class Gemma4Agent:
                             _hint2 = _re_aa.sub(r"^(?:el|la|los|las|the|mi|mis|un|una)\s+",
                                                 "", _hint, flags=_re_aa.IGNORECASE).strip() or _hint
                             try:
-                                from ..tools_pkg.app_resolver import AppResolver
                                 from ..tools_pkg.tools import _score as _app_score
                                 from pathlib import Path as _Path
                                 # EXIGIR match FUERTE (>=85), no cualquier resultado fuzzy.
@@ -1811,7 +1810,10 @@ class Gemma4Agent:
                                 # -> falso computer_use sobre una BÚSQUEDA web (BUG real eval
                                 # run2). Apps legítimas dan 90-100; query-garbage <=55. Mismo
                                 # patrón que app_resolver:107.
-                                _cands = AppResolver().find(_hint2)
+                                # Resolver COMPARTIDO de la registry (2026-06-10): un
+                                # AppResolver() fresco acá recargaba TODAS las fuentes
+                                # (~5s, 2 spawns de PowerShell) en plena fase decide.
+                                _cands = self.tools.apps.find(_hint2)
                                 _aa_route = bool(_cands) and max(
                                     _app_score(_hint2, _cands[0].name),
                                     _app_score(_hint2, _Path(_cands[0].launch).stem),
