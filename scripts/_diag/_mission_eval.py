@@ -129,8 +129,28 @@ KNOWN = {s["function"]["name"] for s in COMPOUND_TOOL_SCHEMAS
          if isinstance(s, dict) and isinstance(s.get("function"), dict)}
 
 executed: list = []
+# Acciones IRREVERSIBLES que el tool REAL nunca completa solo: devuelve
+# needs_confirmation y espera el OK del usuario (apagar/reiniciar/bloquear PC,
+# enviar mensaje, borrar). Si el mock las da por "hechas" ({ok:True}), el 4B
+# reintenta sin saber qué hacer -> LOOP FALSO en el eval (medido 2026-06-10:
+# spegni/bloqueia/shutdown daban loop_genuine(8) en el mock plano pero en vivo
+# con needs_confirmation responden en 1 turno pidiendo confirmación). El mock
+# debe replicar ese contrato para no inflar loops.
+_DESTRUCTIVE_ACTIONS = (
+    "shutdown", "restart", "reboot", "lock", "sleep", "hibernate",
+    "log_off", "logoff", "power_off", "poweroff", "sign_out",
+)
+def _is_destructive(n, a):
+    if n not in ("system", "safety"):
+        return False
+    blob = str(a).lower()
+    return any(d in blob for d in _DESTRUCTIVE_ACTIONS)
 def _mock_execute(self, n, a):
     executed.append(n)
+    if _is_destructive(n, a):
+        return {"ok": False, "status": "needs_confirmation", "verified": False,
+                "message": "Acción irreversible: requiere confirmación del usuario.",
+                "_eval_mock": True}
     return {"ok": True, "status": "ok", "verified": True, "_eval_mock": True}
 ToolRegistry.execute = _mock_execute
 if hasattr(ToolRegistry, "t_computer_use"):
