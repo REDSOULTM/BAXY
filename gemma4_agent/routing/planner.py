@@ -684,6 +684,30 @@ def _is_window_geometry_action(text: str) -> bool:
     return bool(_WINDOW_GEOM_VERB.search(text))
 
 
+# CERRAR una app nombrada: BUG real (mission-eval 2026-06-10): "Ferme Steam" (FR) /
+# "Chiudi Steam" (IT) -> el router ofrecía app+window+steam; el 4B eligió la tool
+# homónima `steam` (que NO cierra: solo open/library/store/...) -> falló. Cerrar una
+# app es `app(action=close)`, NUNCA la tool homónima de la app. Retiramos la
+# homónima (steam/browser) y dejamos `app` al frente. SOLO el verbo CERRAR-imperativo
+# (no el participio "cerrado/closed", que es estado de una pregunta). Multi-idioma.
+_CLOSE_APP_VERB = re.compile(
+    r"^\s*(?:cierr[ae]\w*|cerr[áa]\b|cerrar\b|cerra\b|"          # es
+    r"close\b|quit\b|"                                            # en
+    r"ferme\w*|fermer\b|"                                         # fr
+    r"chiud\w*|"                                                  # it (chiudi)
+    r"schlie[ßs]\w*|beend\w*|"                                    # de (schließe/beende)
+    r"fech\w*)\b",                                                # pt (fecha/fechar)
+    re.IGNORECASE)
+
+
+def _is_close_app_action(text: str) -> bool:
+    """True si el comando es CERRAR una app (imperativo al inicio). Cerrar la hace
+    `app(close)`, no la tool homónima (steam/browser). ESTRUCTURAL, multi-idioma."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    return bool(_CLOSE_APP_VERB.search(text))
+
+
 def plan_mission(content: str | list[dict[str, Any]]) -> MissionPlan:
     text = _content_text(content)
     parts = _split_steps(text)
@@ -1423,6 +1447,14 @@ def select_tool_names(
                     if t not in {"steam", "browser", "browser_real", "app"}]
         if "window" not in expanded:
             expanded.insert(0, "window")
+    # CERRAR una app nombrada (bug "Ferme/Chiudi Steam" 2026-06-10): retirar la tool
+    # homónima (steam/browser) que NO cierra; cerrar la hace `app(close)`. Dejar
+    # `app` al frente. Regex puro, sin I/O.
+    elif _is_close_app_action(raw_text):
+        expanded = [t for t in expanded
+                    if t not in {"steam", "browser", "browser_real"}]
+        if "app" not in expanded:
+            expanded.insert(0, "app")
     # PREGUNTA HOW-TO/INFO (BUG real medido, cacería tanda 1): "cómo elimino una
     # carpeta" -> filesystem.delete BORRÓ la carpeta (daño irreversible ante una
     # PREGUNTA); "qué es Python" -> abrió el navegador. El user pide EXPLICACIÓN, no

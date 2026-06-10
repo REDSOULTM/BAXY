@@ -40,6 +40,31 @@ class TestWindowGeometryDetector(unittest.TestCase):
             self.assertFalse(_is_window_geometry_action(q), f"NO debió detectar: {q!r}")
 
 
+class TestCloseAppDetector(unittest.TestCase):
+    """mission-eval 2026-06-10: "Ferme Steam"/"Chiudi Steam" -> el 4B elegía la tool
+    homónima `steam` (que no cierra). Cerrar es app(close). El detector retira la
+    homónima y deja `app`."""
+
+    def test_detects_close_app_multilang(self):
+        from gemma4_agent.routing.planner import _is_close_app_action
+        for q in ("cierra Steam", "cerrá Discord", "close Steam", "Ferme Steam",
+                  "Chiudi Steam", "schließe Steam", "fecha o Steam"):
+            self.assertTrue(_is_close_app_action(q), f"debió detectar cerrar: {q!r}")
+
+    def test_open_is_NOT_close(self):
+        from gemma4_agent.routing.planner import _is_close_app_action
+        for q in ("abrí Steam", "open Steam", "steam library", "maximiza Steam"):
+            self.assertFalse(_is_close_app_action(q), f"NO es cerrar: {q!r}")
+
+    def test_close_app_removes_homonym_tool(self):
+        # "Ferme Steam" -> el subset NO debe incluir la tool homónima `steam`.
+        from gemma4_agent.routing.planner import select_tool_names, plan_mission
+        for q in ("Ferme Steam", "Chiudi Steam", "cierra Steam"):
+            sub = select_tool_names(q, plan_mission(q))
+            self.assertNotIn("steam", sub, f"{q!r}: steam no debe estar (cerrar=app)")
+            self.assertIn("app", sub, f"{q!r}: app debe estar (app.close)")
+
+
 class TestNeedsConfirmationHonesty(unittest.TestCase):
     def test_false_completed_claim_becomes_confirmation_question(self):
         # "Listo, cerré WhatsApp" sobre un needs_confirmation -> MENTIRA -> se
