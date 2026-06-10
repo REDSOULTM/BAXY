@@ -34,8 +34,33 @@ decrecientes: cada lote de corpus expone más huecos).
 
 ## 2. Lo que quedó A MEDIAS (continuar acá)
 
-### 2.1 Confirm filler con personalidad — WIP (`c254b8d`)
-**El módulo está LISTO y testeado (5/5); FALTA cablearlo.**
+### 2.1 Confirm filler con personalidad — ✅ CABLEADO Y MEDIDO EN VIVO (2026-06-10)
+**CERRADO.** `_voice_action_filler` en `run_content` (entre decide y execute),
+validado en vivo con `scripts/_validate_action_filler.py` (4 rondas):
+- GENÉRICO en verde: filler a 0.03-0.11s vs reply ~3.5s en acciones window;
+  rotación varía; cuando el turno FALLA el genérico no contradice; interplay
+  con GEMMA4_STREAM_TTS ok (filler precede al stream, sin double-speak).
+- Gates MEDIDOS: solo modo `*_action` + tools de DOMINIO (la charla recibe
+  `['session','safety']` solo-meta → sin filler); es/en (otros idiomas en
+  silencio); los "abrí <app resoluble>" salen por el app-open net en ~1s
+  (early, sin filler — no hay silencio que enmascarar).
+- **INTENT-AWARE quedó OPT-IN (`GEMMA4_FILLER_INTENT`, default OFF), medido:**
+  el subset de opens que llega al LLM es el que el net NO resolvió → "Abriendo
+  jitomatador." → "No llegué a ejecutar ninguna acción" = contradice. Para
+  activarlo con seguridad falta plumbear el outcome del net al filler.
+- Tests: 14/14 filler + 157/158 regresión run_content (el 1 rojo es
+  pre-existente: test_session847 detect_reply_language de→es, test stale).
+
+**Hallazgos NUEVOS para backlog (destapados por el eval):**
+- "abrí <app inexistente>": decide tarda ~14s (scan del app-open net en el
+  miss) y el turno total llega a 20-31s (a veces el 4B re-llama app.open =
+  2º scan). El filler sale recién post-decide → 14s de silencio igual que
+  antes. Atacar el costo del miss en app.open / cachear el scan.
+- GEMMA4_STREAM_TTS (experimental, OFF): una corrida vocó sintaxis cruda de
+  tool-call (`<|tool_call>call:window{...`) — sanitize no la filtra en el
+  stream incremental. Arreglar antes de promover el flag.
+
+#### (texto WIP original, para contexto)
 - `gemma4_agent/agent_core/action_filler.py`: `pick_filler()` + `intent_target_for_filler()`.
   Dos niveles: GENÉRICO seguro ("Dame un segundo", "calentando motores" si tarda)
   con personalidad de Baxy; INTENT-AWARE ("Abriendo Spotify") SOLO con alta
@@ -84,7 +109,8 @@ decrecientes: cada lote de corpus expone más huecos).
 
 Ordenado por valor/accionabilidad:
 
-1. **Cablear el confirm filler** (2.1 arriba) — el más cercano a listo.
+1. ~~**Cablear el confirm filler**~~ ✅ HECHO 2026-06-10 (ver 2.1). Derivados
+   nuevos: latencia del miss en app.open (~14s) y sanitize del stream TTS.
 2. **Residual del gate de abstención** (impedimento documentado): "what is the CPU
    usage" (EN) → [] aunque _suggest_tools ofrece system; lo borra el pipeline
    head→abstain→semantic→web-nav. Requiere instrumentar `select_tool_names`

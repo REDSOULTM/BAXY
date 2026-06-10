@@ -22,6 +22,13 @@ también -> el usuario oye "Dame un segundo… [pausa] Listo, abrí Spotify".
 Gate: GEMMA4_ACTION_FILLER=0 desactiva. Default ON (solo modo voz; texto/GUI no
 tienen sink). Variedad por índice de turno (sin Math.random, que rompe resume):
 se rota el banco por un contador de instancia.
+
+CABLEADO en agent.run_content via _voice_action_filler (2026-06-10). El nivel
+INTENT-AWARE quedó OPT-IN (GEMMA4_FILLER_INTENT, default OFF): MEDIDO en vivo
+que los opens fáciles los resuelve el app-open net en decide (early_reply ~1s,
+sin filler) — al LLM llega el subset que el net NO resolvió, así que "Abriendo
+X" dispara sesgado hacia fallos y contradice ("Abriendo jitomatador." -> "No
+llegué a ejecutar ninguna acción"). Ver scripts/_validate_action_filler.py.
 """
 from __future__ import annotations
 

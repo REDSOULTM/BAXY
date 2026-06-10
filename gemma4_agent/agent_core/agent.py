@@ -5695,6 +5695,10 @@ class Gemma4Agent:
             self._emit_decide_timing(_decision, _turn_perf_t0, early=True)
             return self._ensure_nonempty_reply(_decision.early_reply)
         self._emit_decide_timing(_decision, _turn_perf_t0, early=False)
+        # Confirm filler (modo voz): preámbulo hablado INMEDIATO mientras
+        # _execute_turn corre el LLM (p50 2.2s de silencio en turnos de acción).
+        # El reply REAL sale después; el filler nunca lo reemplaza.
+        self._voice_action_filler(content, _decision)
         # La fase execute vivía inline acá (LLM loop
         # iterativo + tool dispatch + post-procesamiento). Extraída a
         # _execute_turn que devuelve el AgentReply terminal del turno.
@@ -5720,6 +5724,67 @@ class Gemma4Agent:
                 semantic_fallback=bool(decision.semantic_fallback),
             )
         except Exception:
+            pass
+
+    def _voice_action_filler(self, content: str | list[dict[str, Any]],
+                             decision: "TurnDecision") -> None:
+        """Confirm filler (2026-06-10): voca un preámbulo corto con personalidad
+        apenas la fase decide eligió tools de acción, mientras _execute_turn corre
+        el LLM. Enmascara el silencio percibido (~2-4s medidos) sin tocar la
+        latencia computacional. HONESTIDAD: el filler nunca promete nada que el
+        resultado pueda contradecir (intent-aware solo con target claro + tool
+        openable; ante duda, genérico — ver action_filler.py). El reply REAL se
+        voca después por el camino normal; esto es un preámbulo, no un reemplazo.
+
+        Gates (MEDIDOS en vivo, scripts/_validate_action_filler.py 2026-06-10):
+        - sink no-None (texto/CLI pasan None; en el runner feed_tts no-opea sin
+          TTS cargado).
+        - modo *_action: en turnos info/chat el router puede OFRECER tools pero
+          el 4B charla (medido: "qué linda mañana" -> reply 1.8s sin tool); el
+          filler ahí es ruido. El modo de ACCIÓN es la señal estructural de que
+          viene un tool-call lento. Info largo ya lo cubre el streaming TTS.
+        - tools de DOMINIO elegidas: session/safety son meta-tools que acompañan
+          a TODO turno (medido: charla "qué linda mañana" -> ['session',
+          'safety'] en modo fast_action; acción real -> dominio + helpers). Un
+          set solo-meta = charla, sin filler.
+        - idioma con banco (es/en — en otros idiomas mejor silencio que vocar
+          español).
+        - intent-aware OPT-IN (GEMMA4_FILLER_INTENT=1, default OFF): medido que
+          los "abrí X" fáciles salen por el app-open net en decide (~1s, early,
+          sin filler) — al LLM llegan los que el net NO resolvió, así que el
+          "Abriendo X" dispara sesgado hacia fallos (live: "Abriendo
+          jitomatador." -> "No llegué a ejecutar ninguna acción" = contradice).
+          Hasta plumbear el outcome del net, genérico siempre (nunca miente).
+        Rotación por contador de instancia, sin random (rompe resume).
+        Best-effort: un fallo acá jamás afecta el turno."""
+        sink = getattr(self, "_active_tts_sink", None)
+        tool_names = list(decision.selected_tool_names or [])
+        mode_name = getattr(decision.mode, "name", "") or ""
+        if (sink is None or "action" not in mode_name
+                or not any(t not in ("session", "safety") for t in tool_names)):
+            return
+        try:
+            from .action_filler import pick_filler, intent_target_for_filler
+            utext = decision.raw_text_early or _extract_user_text(content) or ""
+            lang = _reply_lang(utext)
+            if lang not in ("es", "en"):
+                return
+            target = tool = None
+            import os as _os_fil
+            if (_os_fil.environ.get("GEMMA4_FILLER_INTENT", "0").strip().lower()
+                    in {"1", "true", "yes", "on"}):
+                target, tool = intent_target_for_filler(utext, tool_names)
+            rotate = int(getattr(self, "_filler_rotate", 0))
+            self._filler_rotate = rotate + 1
+            text = pick_filler(lang=lang, rotate=rotate,
+                               intent_target=target, intent_tool=tool)
+            if not text:
+                return
+            sink(text + " ")
+            self.trace.event(decision.turn_id or "turn", "action_filler",
+                             text=text, lang=lang, intent_aware=bool(target),
+                             mode=mode_name, tools=tool_names)
+        except Exception:  # noqa: BLE001
             pass
 
     def _ensure_nonempty_reply(self, reply: "AgentReply | None") -> "AgentReply | None":
