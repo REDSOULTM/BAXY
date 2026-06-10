@@ -1828,3 +1828,34 @@
 {"q": "baisse la luminosité", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
 {"q": "augmente la luminosité de l'écran", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
 {"q": "rends l'écran plus lumineux", "expected": ["device_settings"], "source": "mission_eval_2026-06-10/brightness_multiling", "label_origin": "hand"}
+{"q": "restart Spotify", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "reinicia Discord", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "reinicia Spotify", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "redémarre Chrome", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "riavvia Spotify", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "starte Discord neu", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "reinicia o Discord", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "restart Discord", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "encerra o Word agora", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "Quitte Chrome maintenant", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "cierra Word", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "cierra Excel", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "close Word", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "close Chrome", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "ferme Word", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "chiudi Word", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "schließe Chrome", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "fecha o Word", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "fecha o Excel", "expected": ["app"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "porta in primo piano Calculator", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "bring Calculator to the front", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "trae Calculadora al frente", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "trae Chrome al frente", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "enfoca la ventana de Discord", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "focus the Spotify window", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "mets Chrome au premier plan", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "bring Discord to the foreground", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "porta Discord in primo piano", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "hol das Fenster nach vorne", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "traz o Chrome para a frente", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "pon Discord en primer plano", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}

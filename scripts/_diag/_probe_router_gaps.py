@@ -16,6 +16,10 @@ de diseño: WiFi/BT/brillo son `device_settings` (su schema documenta
 brightness_up/down "for 'subí/bajá el brillo'"), NO `system`, aunque el dataset
 FT a veces etiqueta system; ambas implementan brillo pero device_settings es la
 canónica.
+
+Foco run7: CERRAR/REINICIAR apps (app.close, su descripción dice "abrir, cerrar
+o encontrar un programa") y FOCUS de ventana (window: "focus"). El router los
+mandaba a office/browser/session.
 """
 import os
 os.environ["GEMMA4_VOICE_LANG"] = ""
@@ -26,20 +30,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from gemma4_agent.routing.planner import select_tool_names, plan_mission
 
 PROBES = [
-    # BRILLO -> system (la descripción de system lo reclama)
-    ("system", "Diminui o brilho um pouco"),
-    ("system", "sube el brillo"),
-    ("system", "lower the brightness"),
-    ("system", "baja el brillo de la pantalla"),
-    ("system", "atenúa la pantalla"),
-    ("system", "aumenta o brilho"),
-    ("system", "monte la luminosité"),
-    ("system", "abbassa la luminosità"),
-    ("system", "mach den Bildschirm heller"),
-    # CONTROL: WiFi/BT son device_settings (NO deben volverse system)
-    ("device_settings", "Ativa o Wi-Fi"),
-    ("device_settings", "Liga o Bluetooth"),
-    ("device_settings", "turn on wifi"),
+    # CERRAR apps -> app (su descripción: "abrir, cerrar o encontrar un programa")
+    ("app", "encerra o Word agora"),
+    ("app", "Quitte Chrome maintenant"),
+    ("app", "restart Spotify"),
+    ("app", "chiudi Spotify"),
+    ("app", "schließe Word"),
+    ("app", "ferme le navigateur"),
+    ("app", "reinicia Discord"),
+    ("app", "fecha o Chrome"),
+    # FOCUS ventana -> window ("list windows, focus, ...")
+    ("window", "porta in primo piano Calculator"),
+    ("window", "bring Calculator to the front"),
+    ("window", "trae Calculadora al frente"),
+    # CONTROL: abrir app sigue app; crear doc sigue office
+    ("app", "abre Chrome"),
+    ("office", "crea un PowerPoint"),
 ]
 
 
@@ -53,7 +59,7 @@ def main():
         g[0] += 1 if has else 0
         g[1] += 1
         tag = "OK " if has else "GAP"
-        print(f"  {tag} exp={exp:16} {q!r:38} -> {sub}")
+        print(f"  {tag} exp={exp:14} {q!r:38} -> {sub}")
     print("\n=== resumen por tool ===")
     for t, (ok, n) in gaps.items():
         print(f"  {t}: {ok}/{n} ofrecidos")
