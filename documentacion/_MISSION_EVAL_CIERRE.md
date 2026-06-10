@@ -224,9 +224,41 @@ window **0/3→3/3**; holdout **0.9800**, control intacto.
 
 **Pendiente real encontrado (no del router):** el guard de honestidad no atrapa
 «ho spostato X in primo piano» (IT) cuando el 4B ejecutó 0 tools → miente 2/4
-corridas. Es un detector **estructural** del guard, no del corpus. Candidato a su
-propia iteración (medir la cobertura actual del guard antes de tocar; no
-perseguir strings — registrado en memoria del proyecto).
+corridas. Es un detector **estructural** del guard, no del corpus. **Resuelto en
+run8 ↓.**
+
+## Addendum 2026-06-10 (run8) — BUG DE HONESTIDAD: detector solo-español
+
+El hallazgo de **mayor impacto** de la misión. Al medir la cobertura del guard
+de honestidad estructural (`detect_action_claim_without_evidence`) en 6 idiomas:
+**1/10 — solo español.** El 4B podía **mentir impune** en EN/IT/PT/FR/DE
+afirmando acciones que no ejecutó: «I have opened the app», «Ho spostato la
+Calcolatrice in primo piano», «J'ai ouvert», «Ich habe … geöffnet» con 0 tools
+pasaban como verdad. La honestidad estructural es un **principio central** del
+producto → este era un agujero grave. Mismo sesgo-al-español de toda la misión,
+ahora en el guard.
+
+**Causa raíz:** `_AUX_PERFECT/_CONTINUOUS` y `_CONSUMMATED_STEMS` eran solo ES.
+
+**Fix `2578290` (estructural, no enumeración):**
+- Auxiliares de perfecto/continuo en 6 idiomas.
+- **Detección MORFOLÓGICA de participio** (-ato/-ito/-uto/-ado/-ido, ge-…-t/-en):
+  atrapa verbos NO enumerados. Aprendizaje clave: añadí 50 raíces y el 4B usó la
+  #51 («ho **portato**») → la señal correcta es la **morfología**, no el lema
+  (confirma la memoria «perseguir strings es infinito → detector estructural»).
+- Guardas anti-FP: participios de estado/ser (stato/été/been), cortesía
+  (obrigado/encantado), idiom de conocimiento («oído hablar de» / «sentito
+  parlare di» / «heard of»).
+
+**Verificado:** cobertura **1/10 → 10/10**; **auditoría adversarial 25/25 sin
+falsos positivos** (conocimiento/charla/oferta/estado respetados en 6 idiomas);
+morfológico atrapa verbos no-enumerados con 0 FP. Suite honestidad **64/64**.
+Test de regresión multilingüe añadido.
+
+**Pendiente (clase distinta):** afirmar el **estado-resultado** sin actuar («la
+calcolatrice è in primo piano» con 0 tools) — no es aux+participio, es
+copula+estado; más sutil (afirmar estado a veces es legítimo) → análisis
+dedicado para no arriesgar FP.
 
 ## Fuentes
 
