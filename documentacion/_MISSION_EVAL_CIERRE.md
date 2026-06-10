@@ -95,6 +95,45 @@ Esto **viola el principio de universalidad** del producto (multi-idioma).
   cura de fondo del sesgo (ver memoria de re-finetuning v2); este cierre ataca
   el sesgo en el **pipeline**, no en los pesos.
 
+## Addendum 2026-06-10 (run4) — los "loops genuinos" eran del mock + hueco de volumen perifrástico
+
+Segunda pasada para cazar los 2 clusters reales que quedaron (4 loop_genuine,
+5 slow). **Hallazgo medido en vivo: ninguno era bug de Baxy.**
+
+- **Los 4 loop_genuine eran falsos positivos del mock.** El mock daba `{ok:True}`
+  para acciones IRREVERSIBLES (apagar/bloquear/reiniciar PC) que en producción
+  devuelven `needs_confirmation`. El 4B recibía "hecho" y reintentaba → loop
+  falso. **Fix `39c72f3`:** el mock replica `needs_confirmation` para
+  shutdown/restart/lock/sleep/hibernate/log_off. Verificado en vivo:
+  *spegni il computer* → pide confirmación en italiano; *bloqueia o computador*
+  → en portugués; *pausa o que está tocando* → pausa media; desahogo FR
+  *"j'en peux plus"* → empatía en francés. **0 loops, 0 drift, latencia 0.6–1.7s.**
+- **El fix #3 (desahogo→session) es robusto:** verificado 6/6 idiomas
+  (FR/ES/EN/IT/PT/DE) → empatía en el idioma correcto, 0 tools peligrosas.
+- **run4 con el mock corregido: lang_drift 50 → 10** (el fix #8 de verbos cortos
+  rindió fuerte); issues 129 → 117. Router holdout intacto (recall 0.979).
+
+**Hueco real encontrado (parcial):** la construcción *perifrástica* de volumen
+(«dejar/leave + sin/casi sin sonido», sin verbo de volumen explícito) no estaba
+en el corpus del router → no se ruteaba a `audio` en NINGÚN idioma salvo algunos
+fraseos ES. Agregué 35 exemplars en 6 idiomas a
+`router_eval_corpus.curated.jsonl` y regeneré `router_exemplars.npz`. Resultado:
+5/7 fraseos ahora rutean a audio (ES/EN/IT/DE/FR), router holdout sin regresión.
+
+**Residual honesto (queda para el reentreno):**
+- PT «Deixa sem som» sigue bajo el umbral exemplar (sim 0.81 < 0.92) → no lo
+  rescata. Bajar el umbral global arriesga falsos positivos en todo el router.
+- Aun ruteando audio, el **4B no siempre lo elige** (no-determinismo) y mostró
+  un drift puntual ES→FR en «déjalo mudo». Eso es del **modelo**, no del
+  pipeline → cae en el reentreno del encoder+modelo (operación de horas, requiere
+  OK del usuario), no en más exemplars.
+- **Nota de versionado:** `router_exemplars.npz` y
+  `router_eval_corpus.curated.jsonl` están en `.gitignore` (data/) y NO se
+  trackearon — el cambio de exemplars es **local**, no propagado a los repos.
+  Force-trackear binarios a dos repos es decisión de infra que conviene avalar
+  junto con el reentreno. El fix del mock (`39c72f3`) SÍ está commiteado y
+  sincronizado en los 4 refs.
+
 ## Fuentes
 
 - Cohere, *"The Language Confusion Benchmark"*, EMNLP 2024 — base del
