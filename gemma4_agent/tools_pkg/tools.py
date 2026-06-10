@@ -6913,11 +6913,11 @@ Start-Sleep -Milliseconds 120
                 or {"x": best.get("bounds", {}).get("x"),
                     "y": best.get("bounds", {}).get("y")}}
 
-    # Umbrales del matcher cross-lingual (R7, del informe claude.ai): aceptar solo
-    # si la similitud top-1 supera el umbral Y le saca margen al segundo (evita
-    # falsos positivos entre etiquetas cortas ambiguas).
-    _XLING_SIM_MIN = 0.75
-    _XLING_MARGIN = 0.10
+    # Matcher cross-lingual (R7): aceptar si top-1 supera SIM_MIN Y le saca MARGIN al
+    # 2º (el margin es la salvaguarda real). SIM_MIN bajado 0.75→0.55 (2026-06-09): el
+    # 0.75 venía de un entreno sin seed (open↔Abrir=0.849 por suerte; seed fijo→~0.63).
+    _XLING_SIM_MIN = float(os.environ.get("GEMMA4_XLING_SIM_MIN", "0.55"))
+    _XLING_MARGIN = float(os.environ.get("GEMMA4_XLING_MARGIN", "0.10"))
 
     def _uia_find_clickable_semantic(self, label: str, window: str) -> dict[str, Any] | None:
         """R7 — match CROSS-LINGUAL del label contra los Names de los controles

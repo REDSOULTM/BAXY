@@ -115,7 +115,13 @@ _ANCHORS: dict[str, list[str]] = {
 
 # Tuneado conservador: ante la duda, NO short-circuiteamos (dejamos seguir el turno).
 _MARGIN = float(os.environ.get("GEMMA4_PROFILE_INTENT_MARGIN", "0.08"))
-_FLOOR = float(os.environ.get("GEMMA4_PROFILE_INTENT_FLOOR", "0.42"))
+# _FLOOR subido 0.42→0.60 (2026-06-09, reentreno encoder J Balvin): el reentreno
+# movió la geometría y "Você acha que sou uma boa pessoa?" (charla emocional PT)
+# trepó a inspect=0.562, sobre el piso 0.42 → FP (volcaba el perfil ante una
+# pregunta emocional). MEDIDO: las preguntas REALES de memoria viven en [0.630,
+# 0.669] (qué datos guardas / qué recordás / mostrame mi perfil) y el FP en 0.562
+# → piso 0.60 corta el FP y conserva las legítimas (margen ~0.03 a cada lado).
+_FLOOR = float(os.environ.get("GEMMA4_PROFILE_INTENT_FLOOR", "0.60"))
 # FORGET es IRREVERSIBLE (borra datos) → piso/margen más altos que inspect. Un FP de
 # inspect solo muestra el perfil (inocuo); un FP de forget borraría datos. Asimetría
 # deliberada (CLAUDE.md: rigor extra ante lo irreversible). Además forget PIDE

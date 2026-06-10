@@ -56,6 +56,25 @@ class TestZeroEventActionClaim(unittest.TestCase):
         self.assertFalse(reply_claims_action("Sí, conozco a Michael Jackson."))
         self.assertFalse(reply_claims_action("J Balvin es un cantante."))
 
+    def test_reply_claims_action_covers_consummated_search(self):
+        # live J Balvin 2026-06-09: "have you heard Taylor Swift?" → el 4B decía
+        # "He buscado canciones de Taylor Swift y encontré varios resultados. Te
+        # leeré el primero" con 0 tools (mentira: ninguna búsqueda corrió). El
+        # detector ahora atrapa la BÚSQUEDA CONSUMADA en pasado SIN tocar las
+        # respuestas de conocimiento (que NO dicen "busqué/encontré resultados").
+        for lie in (
+            "He buscado canciones de Taylor Swift y encontré varios resultados. Te leeré el primero.",
+            "Busqué información sobre eso y encontré los siguientes datos.",
+            "I searched for songs and found several results.",
+        ):
+            self.assertTrue(reply_claims_action(lie), f"debió detectar mentira: {lie!r}")
+        for ok in (
+            "Sí, conozco muchas canciones de Shakira como 'Waka Waka'.",
+            "Taylor Swift es una cantante estadounidense muy conocida.",
+            "No tengo información sobre eso.",
+        ):
+            self.assertFalse(reply_claims_action(ok), f"NO debió tocar conocimiento: {ok!r}")
+
 
 if __name__ == "__main__":
     unittest.main()

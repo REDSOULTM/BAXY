@@ -47,11 +47,15 @@ class XLingualEmbedTest(unittest.TestCase):
         self.assertLess(top, ToolRegistry._XLING_SIM_MIN)  # abstiene -> seguro
 
     def test_open_now_matches_abrir_with_margin(self):
-        # Mejora del reentreno (2026-06-07): el encoder ahora relaciona "open" con
-        # "Abrir" por encima del umbral Y con margen claro sobre los distractores
-        # (Cerrar/Minimizar) -> el matcher clickea el botón correcto en vez de
-        # abstenerse. Antes el encoder no lo lograba (se abstenía). Esto fija la
-        # capacidad ganada sin perder la seguridad del margen.
+        # El encoder relaciona "open" con "Abrir" por encima del umbral Y con margen
+        # claro sobre los distractores (Cerrar/Minimizar) -> clickea el botón correcto.
+        # 2026-06-09 (reentreno J Balvin con SEED fijo): el entreno no fijaba seed, así
+        # que el encoder de prod tenía open↔Abrir=0.849 por una corrida "afortunada"
+        # (no reproducible). Con seed fijo el valor reproducible es ~0.63, y el umbral
+        # _XLING_SIM_MIN se bajó 0.75→0.55 para que los verbos canónicos sigan haciendo
+        # CLICK mientras los ajenos (xyzzy/banana/42) se abstienen (lo verifica
+        # test_unrelated_label_below_threshold). Afirmamos contra el umbral ACTUAL
+        # (no un valor absoluto frágil al reentreno).
         if not self.available:
             self.skipTest("encoder multilingüe no disponible")
         op = self.embed("open")

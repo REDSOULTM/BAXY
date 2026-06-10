@@ -45,14 +45,19 @@ _SEM_CONF_BAND = float(_os.environ.get("GEMMA4_SEM_CONF_BAND", "0.12"))
 # real command even if the abstain head leans no-tool (e.g. "mutea"→audio).
 # Tuned for the fine-tuned encoder's higher cosine scale (dev).
 # Bar set to 0.50 (not 0.60): the abstain head misfires on short keyword-less
-# commands ("cuál es mi ip"→network 0.55 gap 0.19) that 0.60 wiped to
-# ['session'] (lost the top-1 semantic tool). Measured: smalltalk peaks flat
-# (gap<0.15: "hola" 0.54/gap.08, "qué tal" 0.52/gap.07, "qué es pytest"
-# 0.42/gap.02) so the _SEM_PEAK_GAP=0.15 AND-condition keeps gating chitchat —
-# only PEAKED commands (gap>=0.15) escape. Validated against test_router_corpus
-# accuracy gate (no regression).
+# commands ("cuál es mi ip"→network) that 0.60 wiped to ['session'] (lost the
+# top-1 semantic tool). El que REALMENTE separa comando de chitchat es
+# _SEM_PEAK_KEEP=0.50 (el top del smalltalk nunca llega: "hola" 0.46, "cómo
+# estás" 0.47, "buenos días" 0.48 — todos <0.50); el gap es secundario.
+# _SEM_PEAK_GAP bajado 0.15→0.13 (2026-06-09, reentreno encoder J Balvin): el
+# reentreno comprimió las cosines ~0.03 y "cuál es mi ip" pasó de gap 0.172 a
+# 0.143, cayendo bajo 0.15 → se silenciaba a ['session']. MEDIDO que 0.13 lo
+# rescata SIN dejar escapar chitchat: el peor caso "cómo estás" (gap 0.133≥0.13)
+# igual queda gateado por el AND con _SEM_PEAK_KEEP (top 0.47<0.50). El umbral
+# 0.15 estaba calibrado a la geometría EXACTA del encoder viejo (frágil al
+# reentreno, como advertía este propio comentario). Override GEMMA4_SEM_PEAK_GAP.
 _SEM_PEAK_KEEP = float(_os.environ.get("GEMMA4_SEM_PEAK_KEEP", "0.50"))
-_SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.15"))
+_SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.13"))
 # Bar PROPIO para promover una tool MCP. Las MCP usan descripciones crudas de
 # servidores externos (no el encoder FT entrenado con las nativas), así que viven
 # en un rango de cosine MÁS BAJO que el bar nativo 0.50. Un bar propio más bajo
@@ -1324,18 +1329,21 @@ def select_tool_names(
     # porque _explicit_visible_nav=True. Cierra el gap documentado del backlog §4.
     if _info_lookup and not _explicit_visible_nav:
         expanded = [t for t in expanded if t not in {"browser", "browser_real"}]
-    # NOTA (bug "J Balvin" 2026-06-09): intenté SACAR `media` de las preguntas
-    # culturales ("¿has escuchado canciones de X?") para que no confundieran al 4B.
-    # DESCARTADO tras medir: wants_knowledge tiene falsos-positivos en comandos de
-    # reproducción ("quiero ver daredevil", "pon stranger things en Netflix") por
-    # los anchors de "¿has visto películas de X?", y cualquier media-drop basado en
-    # esa señal sacaba media de comandos REALES (recall holdout 0.9784->0.9676). El
-    # arreglo real vive en 2 capas que SÍ son seguras: (1) los _INFO_ANCHORS de
-    # "¿conocés/has escuchado canciones de X?" -> el encoder ofrece web/knowledge
-    # (media queda pero ya no es lo único); (2) el guard de honestidad
-    # (guard_unverified_final) que en un turno de 0-events impide que el 4B mienta
-    # "ya lo hice"/"revisé la música". El media-drop limpio exige el encoder
-    # re-entrenado (sin el falso-positivo). NO re-introducir sin medir recall.
+    # NOTA (bug "J Balvin" 2026-06-09): ante "¿has escuchado canciones de X?" el
+    # encoder VIEJO ofrecía `media` (cos media=0.242 > web=0.161) -> el 4B alucinaba
+    # un media(playback_status) y mentía "ya lo hice". RESUELTO DE RAÍZ con un
+    # RE-ENTRENO del encoder (+144 pares cultura->web en tool2vec_queries.jsonl, 6
+    # idiomas, música/cine/series). MEDIDO post-reentreno: en preguntas culturales el
+    # router ya ofrece SOLO web (J Balvin -> web:0.38, media NI aparece en top-5), y
+    # los comandos de reproducción siguen liderando media (pon stranger things ->
+    # media:0.55; reproducí J Balvin -> media:0.53). Gate de recall INTACTO (holdout
+    # 0.9784, lang:es 0.982 antes y después; ningún subgrupo degradó). Por eso NO hay
+    # media-drop manual acá: el encoder separa cultura/comando en ORIGEN, que es más
+    # robusto que un drop heurístico (el intento previo basado en wants_knowledge
+    # degradaba recall 0.9784->0.9676 por falsos-positivos en play-commands). Quedan
+    # 2 capas de honestidad como defensa-en-profundidad: (1) _INFO_ANCHORS de cultura
+    # en intent_router; (2) guard_unverified_final (en 0-events impide "ya lo hice").
+    # Baseline + receta: documentacion/_BASELINE_encoder_retrain_2026-06-09.md.
     # Colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
     # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario: el 4B
     # no necesita las 3 variantes del mismo dominio. `keep` protege las tools que

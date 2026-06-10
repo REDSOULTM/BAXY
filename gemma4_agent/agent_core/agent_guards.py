@@ -48,6 +48,23 @@ _FALSE_CONFIRMATION_PATTERNS = (
     "i checked", "i've checked", "i have checked", "i did it", "i've done", "i have done",
     "i already did", "done.",
 )
+# Claims de BÚSQUEDA CONSUMADA (pasado) sin tool: "he buscado X y encontré
+# resultados, te leeré el primero". (live J Balvin 2026-06-09: "have you heard
+# Taylor Swift?" → el 4B respondía "He buscado canciones de Taylor Swift y
+# encontré varios resultados. Te leeré el primero" con 0 tools — mentira: ninguna
+# búsqueda corrió.) Estos verbos de búsqueda-hecha NO aparecen en una respuesta de
+# CONOCIMIENTO honesta ("Shakira es...", "conozco a..."), así que son seguros como
+# señal de mentira. Multilingüe, sub-string (no solo prefijo) porque suelen ir
+# precedidos de un "Sí, ". Se chequean en reply_claims_action.
+_SEARCH_DONE_PATTERNS = (
+    "he buscado", "busqué", "busque ", "he encontrado", "encontré varios",
+    "encontre varios", "encontré los siguientes", "encontré algunos",
+    "encontré información", "encontre informacion", "aquí están los resultados",
+    "aqui estan los resultados", "estos son los resultados", "los resultados que encontré",
+    "te leeré el primer", "te leere el primer", "te muestro los resultados",
+    "i searched for", "i've searched", "i have searched", "i found several",
+    "i found some", "here are the results", "i found the following",
+)
 _PROMISE_PATTERNS = (
     "buscare", "buscaré", "voy a buscar", "voy a investigar",
     "buscando informacion", "buscando información",
@@ -83,6 +100,8 @@ def reply_claims_action(content: str) -> bool:
     low = content.lower()
     stripped_low = low.lstrip()
     if any(stripped_low.startswith(p) for p in _FALSE_CONFIRMATION_PATTERNS):
+        return True
+    if any(p in low for p in _SEARCH_DONE_PATTERNS):
         return True
     return any(p in low for p in _PROMISE_PATTERNS)
 

@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -72,8 +73,26 @@ def main() -> int:
     )
     from torch.utils.data import DataLoader
 
+    # REPRODUCIBILIDAD (2026-06-09): sin seed fijo, la init de la cabeza de
+    # pooling + el shuffle del DataLoader hacían que dos corridas de la MISMA
+    # receta dieran encoders distintos (p.ej. open↔Abrir variaba 0.62↔0.85
+    # entre corridas), y un test calibrado a una corrida "afortunada" se
+    # volvía frágil. Fijar la seed hace el artefacto regenerable bit-a-bit.
+    # Override con GEMMA4_TRAIN_SEED.
+    import random as _random
+    _seed = int(os.environ.get("GEMMA4_TRAIN_SEED", "42"))
+    _random.seed(_seed)
+    torch.manual_seed(_seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(_seed)
+    try:
+        import numpy as _np
+        _np.random.seed(_seed)
+    except Exception:
+        pass
+
     print(f"CUDA: {torch.cuda.is_available()}  device: "
-          f"{torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'cpu'}")
+          f"{torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'cpu'}  seed={_seed}")
 
     from gemma4_agent.routing.semantic_router import TOOL_DESCRIPTIONS
 
