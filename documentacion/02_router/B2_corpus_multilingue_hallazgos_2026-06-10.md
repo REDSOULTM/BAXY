@@ -104,6 +104,37 @@ Aktion"), no miente. Residual del MODELO (techo 2B), no del router.
 Distribución DESPUÉS de vol2: es 76%, pt 10%, fr 8%, en 2%, it/de ~1%. EN/IT/DE
 pasaron de 8-9/15 a cobertura completa de las tools clave.
 
+## Residual del gate de abstención (INTENTADO, no resuelto — impedimento)
+
+"what is the CPU usage" / "what is the battery level" (EN) → `[]` aunque
+`_suggest_tools` SÍ ofrece `system`. Diagnóstico profundo (2026-06-10):
+
+- `_suggest_tools('what is the CPU usage')` = `['system']` ✓ (la guarda
+  concepto-vs-métrica funciona).
+- Pero `select_tool_names` FINAL = `[]`: el `system` se borra entre medio.
+- Causa: `wants_knowledge('what is the CPU usage')` = True → el router lo trata
+  como pregunta del mundo y el `system` no sobrevive al pipeline
+  head→abstain→semantic-fallback→web-nav-filter.
+
+INTENTADO (5 ediciones, REVERTIDAS): helper `_is_local_system_metric` +
+protegerlo en `_kw_protect` + forzarlo a `names` antes de `expanded`. NINGUNA
+funcionó: el `system` se borra en una capa que NO se logró localizar sin
+instrumentar el flujo COMPLETO. `names` se reasigna en ~6 puntos entre el abstain
+y el return (L1104/1116/1119/1249/1345/1356), y el bloque final web-nav/
+info-lookup (L1402-1448) puede quitarlo de nuevo. Parchear capa-por-capa SIN
+mapear el flujo entero viola el mandamiento #4 (causa raíz antes de parchear) y
+arriesga el router → REVERTIDO al estado bueno (acc4a74), 25/25 huecos intactos.
+
+**IMPEDIMENTO declarado:** este residual es un bug de ARQUITECTURA multi-capa del
+router (no de corpus ni de un gate único). Requiere una sesión dedicada que
+instrumente `select_tool_names` end-to-end (loguear `names` tras cada reasignación
+para una query métrica-local) y decida UN punto canónico donde proteger los
+datos-locales del veto de conocimiento — probablemente unificando `_is_local_
+datetime` + `_is_local_system_metric` + `_is_local_state_question` en una sola
+guarda "LOCAL-FACT" aplicada al final del pipeline. Workaround actual: el caso ES
+("cuánto uso de CPU") SÍ rutea bien; solo el frame EN "what is the X" cae. En vivo
+el guard de honestidad evita que el 4B mienta (responde sin inventar).
+
 ## Conclusión: B2 base sólida establecida (ítem grande, multi-sesión)
 
 B2 cumplió su objetivo CENTRAL: el corpus de eval pasó de **medir solo español**
