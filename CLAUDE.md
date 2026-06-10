@@ -194,6 +194,18 @@ editar.
 4. **Commits.** Solo cuando el usuario lo pide o el trabajo está
    verificado. Mensajes con el porqué + métricas. Cerrá con
    `Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>`.
+   **PRIVACIDAD DEL MENSAJE (repos PÚBLICOS):** los dos remotos son públicos
+   (uno es el portafolio de la organización). El mensaje de commit NO debe
+   exponer la CONVERSACIÓN ni el proceso interno de trabajo: nada de "el usuario
+   pidió X", "aprobado por el usuario", "el user notó", "medí en vivo y", "tras
+   un fallo del usuario", referencias a sesiones de chat, a /loop, a agentes, o
+   a quién decidió qué. Describí el CAMBIO y su PORQUÉ TÉCNICO en voz impersonal,
+   como si lo escribiera un dev del repo sin contexto de chat: "se reentrena el
+   encoder porque…", no "el usuario aprobó reentrenar". El término "usuario" SÍ
+   es válido cuando se refiere al END-USER del producto (Baxy) como concepto
+   técnico ("el OK del usuario ante una acción irreversible", "el idioma del
+   user_text"); lo prohibido es referenciar al INTERLOCUTOR de esta conversación.
+   Lo mismo aplica a comentarios de código y nombres de archivos/docs versionados.
 5. **DOS REPOS ESPEJO — toda operación de git va a LOS DOS.** Este proyecto
    se publica en **dos remotos que deben quedar IDÉNTICOS**:
    - `origin` → `https://github.com/REDSOULTM/Baxy.git`
