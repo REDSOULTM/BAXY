@@ -102,6 +102,24 @@ class TestIntentRouter(unittest.TestCase):
                 f"chitchat {q!r} should not request web",
             )
 
+    def test_wh_exclamations_are_not_questions(self):
+        # 2026-06-10: "qué linda mañana" / "qué tal" / "cómo va" empiezan con
+        # qué/cómo pero son EXCLAMACIONES/SALUDOS, no preguntas-info -> el gate
+        # léxico las mandaba a web (over-firing medido en vivo). El filtro
+        # estructural (wh + adjetivo evaluativo / saludo-fórmula, sin verbo info)
+        # las excluye, SIN romper preguntas reales.
+        from gemma4_agent.routing.intent_router import is_question_lexical
+        for excl in ["qué linda mañana", "qué lindo día", "qué tal", "hola cómo va",
+                     "qué bueno", "qué genial", "cómo va todo", "qué hermoso",
+                     "que rico", "qué bien"]:
+            isq, _ = is_question_lexical(excl)
+            self.assertFalse(isq, f"exclamación/saludo {excl!r} NO es pregunta-info")
+        # preguntas REALES (verbo info o dato) siguen siendo preguntas.
+        for q in ["qué es python", "qué hora es", "quién es Einstein",
+                  "cómo funciona esto", "qué significa esto", "what is bitcoin"]:
+            isq, _ = is_question_lexical(q)
+            self.assertTrue(isq, f"pregunta real {q!r} debe seguir siendo pregunta")
+
     def test_conversational_questions_are_knowledge(self):
         # Questions phrased conversationally (close to chitchat in
         # embedding space) must still count as world-knowledge.

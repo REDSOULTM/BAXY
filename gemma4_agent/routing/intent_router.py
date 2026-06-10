@@ -96,6 +96,55 @@ _ACTION_VERBS = frozenset(_fold(v) for v in {
 })
 
 
+# EXCLAMACIÓN / SALUDO con forma de wh-word, que NO es pregunta-info (2026-06-10).
+# "qué linda mañana" / "qué tal" / "cómo va" empiezan con qué/cómo pero son
+# exclamaciones o saludos-fórmula, no preguntas reales -> el gate las mandaba a
+# web/knowledge (over-firing medido en vivo). Señal ESTRUCTURAL (no lista de
+# frases): wh-word seguido de un adjetivo EVALUATIVO o un saludo-fórmula, SIN
+# verbo informativo. Las preguntas reales tienen verbo ("qué ES", "cómo FUNCIONA")
+# o piden un dato ("qué hora/día"). Folded (sin tilde).
+_EVAL_ADJ = frozenset({
+    # adjetivos/adverbios evaluativos tras "qué" → exclamación ("qué LINDA mañana")
+    "linda", "lindo", "lindos", "lindas", "bueno", "buena", "buenos", "buenas",
+    "genial", "hermoso", "hermosa", "bonito", "bonita", "rico", "rica", "bien",
+    "mal", "feo", "fea", "horrible", "tremendo", "increible", "espectacular",
+    "lovely", "nice", "great", "beautiful", "wonderful", "cool", "awesome",
+    "bello", "bella", "bom", "boa", "otimo", "otima", "beau", "belle",
+})
+# saludos-fórmula que empiezan o contienen wh pero son charla pura.
+_GREETING_FORMULAS = (
+    "que tal", "como va", "como andas", "como andan", "como estas", "como esta",
+    "como te va", "como vas", "que onda", "que hubo", "que mas", "how are you",
+    "how is it going", "how's it going", "what's up", "whats up", "come va",
+    "comment ca va", "wie gehts", "tudo bem", "como vai",
+)
+# verbos INFORMATIVOS: si aparecen, ES pregunta real, no exclamación.
+_INFO_VERBS = frozenset({
+    "es", "son", "esta", "estan", "fue", "fueron", "era", "significa", "funciona",
+    "hace", "hizo", "sirve", "trata", "pasa", "paso", "hay", "tiene", "queda",
+    "is", "are", "was", "were", "means", "does", "did", "works", "happened",
+    "e", "sao", "significa", "serve", "funciona",  # pt/it
+})
+
+
+def _is_wh_exclamation_or_greeting(folded: str, toks: list[str]) -> bool:
+    """True si la frase tiene forma de wh-word pero es exclamación/saludo, no
+    pregunta-info. Estructural: wh + adjetivo evaluativo (sin verbo info) o
+    saludo-fórmula. NO una lista de frases completas."""
+    # saludo-fórmula (substring, cubre "hola como va")
+    if any(g in folded for g in _GREETING_FORMULAS):
+        return True
+    # si hay un verbo informativo en la frase, es pregunta real -> no excluir.
+    if any(v in _INFO_VERBS for v in toks):
+        return False
+    # "que/como + ... + adjetivo evaluativo" SIN verbo info -> exclamación.
+    # (frase corta; el adjetivo puede no ser el token inmediato: "qué linda mañana")
+    if toks and toks[0] in ("que", "como", "what", "how") and len(toks) <= 4:
+        if any(tk in _EVAL_ADJ for tk in toks):
+            return True
+    return False
+
+
 def is_question_lexical(text: str) -> tuple[bool, float]:
     """(es_pregunta_informativa, confianza) por léxico puro. Sin ML, sub-ms.
 
@@ -120,6 +169,11 @@ def is_question_lexical(text: str) -> tuple[bool, float]:
     # _ACTION_VERBS también está plegado, así que comparan limpio.
     toks = re.findall(r"[a-z]+", t)
     if any(v in _ACTION_VERBS for v in toks[:3]):
+        return (False, 0.0)
+    # EXCLAMACIÓN / SALUDO con forma de wh ("qué linda mañana", "qué tal", "cómo
+    # va") -> NO es pregunta-info (over-firing a web/knowledge). Solo si NO hay
+    # signo de pregunta explícito (conservador: "qué es esto?" con ? es pregunta).
+    if not has_q and _is_wh_exclamation_or_greeting(t, toks):
         return (False, 0.0)
     if has_wh and has_q:
         return (True, 0.95)
