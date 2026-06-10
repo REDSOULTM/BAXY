@@ -76,3 +76,32 @@ en sesión dedicada (con medición en vivo, regla #3.5):
 - P1: política STT idioma-fijo→Whisper (o equivalente).
 - P2: anti-invención de appid + liderar steam en "página de Steam de X" +
   honestidad post-fallo.
+
+## Hallazgo adicional (2026-06-10): "qué hora es" tarda ~20s — loop de 8 llamadas
+
+Al ir a implementar el TTS paralelo (#2 de la auditoría del modelo), midiendo la
+latencia se destapó un BUG distinto: "qué hora es" tarda **18-22s** consistente
+(vs "qué fecha es" 4s, "cuánta RAM" 3s — todos `system`, todos similares). Por qué:
+
+- El LLM puro es ~3.8s, el tool `system.time` 0.01s, el eager NO bloquea (threads
+  daemon), `is_eager_safe` 0.00s. NINGUNO explica los 18s.
+- CAUSA REAL: el turno hace **8 llamadas al LLM** (3.62 + 7×~0.5s), no 2. Es un
+  **loop de reintentos** específico de "qué hora es" — el 4B llama system, algo no
+  converge (¿forced-tool-retry? ¿re-verificación del resultado?) y reintenta 6-7
+  veces. Suma ~7s de LLM + overhead del pipeline = ~18s.
+- "qué fecha es" / "cuánta RAM" NO loopean (2 llamadas) -> es ALGO específico de
+  la combinación "hora" + system.time + el summary/verify.
+
+PENDIENTE (sesión dedicada): instrumentar por qué "qué hora es" entra en 8
+llamadas (probablemente el verifier/forced-retry no acepta el resultado de
+system.time y reintenta). Es un bug de LATENCIA real (peor outlier medido) +
+posible loop. NO es el TTS paralelo; el TTS lo enmascararía pero la cura es cortar
+el loop. Harness: instrumentar `LLMClient.chat` con contador por turno (n=8 para
+"qué hora es" vs n=2 normal).
+
+## Estado de la auditoría del modelo (candidatos #1-3)
+- #1 KV-cache K q8_0: APLICADO (commit b7fba61).
+- #3 FR-CoT: DESCARTADO por medición (thinking caliente ya 1.4-3s).
+- #2 TTS paralelo: al medirlo se destapó el loop de "qué hora es" (arriba). El #2
+  sigue pendiente como UX; pero la latencia real se cura cortando el loop, no
+  enmascarándola.
