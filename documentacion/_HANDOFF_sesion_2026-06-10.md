@@ -68,9 +68,19 @@ validado en vivo con `scripts/_validate_action_filler.py` (4 rondas):
 - ✅ **Test stale de idioma** (`95740ca`): detect_reply_language detecta DE
   desde `3a6f3d0` (fallbacks honestos FR/IT/DE/PT) — el test esperaba el
   recorte viejo a es+en; actualizado al contrato real.
-- 🔴 NUEVO (chip pendiente): tras un needs_user/error de tool, el 4B a veces
-  responde "Listo, estoy abriendo X" (presente-continuo) — el detector de
-  acción-consumada no cubre ese tiempo verbal con result fallido.
+- ✅ **Claims con tools todas-fallidas** (`035ad42`): el detector ya cubría
+  "estoy abriendo" pero solo en 0-events. Gate extendido por STATUS del
+  result: todos ok=False (needs_user/needs_confirmation/error/parse-fail) →
+  claim consumado/en-curso = mentira → fallback honesto. Fail-open ante
+  result desconocido; dispatch async ok intacto ("Abrí Steam." se respeta).
+  Live 5/5 sin falsos positivos; +8 tests grounding_gate. El stream TTS
+  guard-checkea el summary cuando todo falló (voiced==final se mantiene).
+- 🔴 NUEVOS (chips pendientes): (a) app.open fuzzy abre CUALQUIER candidato
+  score>0 — "abre jitomatador por favor" abrió otra app (medir piso de score
+  sin romper typos/alias); (b) test pre-existente rojo
+  `test_window_geom_and_confirm_honesty::test_reply_that_already_asks_passes_
+  through` (guard_unverified_final pisa un reply que YA pide confirmación,
+  verificado pre-existente con stash).
 
 #### (texto WIP original, para contexto)
 - `gemma4_agent/agent_core/action_filler.py`: `pick_filler()` + `intent_target_for_filler()`.
