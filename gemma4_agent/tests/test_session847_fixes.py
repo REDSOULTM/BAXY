@@ -174,12 +174,20 @@ class TestLanguageAwareFallback(unittest.TestCase):
     def test_detects_english(self):
         self.assertEqual(detect_reply_language("Done, I opened YouTube for you"), "en")
 
-    def test_unknown_language_falls_back_to_spanish(self):
-        # _LANG_HINTS is trimmed to es+en (PT/IT/DE never appeared in real
-        # traces). Inputs in other languages fall through to the ES default,
-        # which is the safe choice for the Spanish-by-default agent.
+    def test_expanded_language_with_clear_hints_detected(self):
+        # _LANG_HINTS cubre FR/IT/DE/PT desde 3a6f3d0 (fallbacks honestos por
+        # idioma — antes el user no-ES recibía el fallback en español). Una
+        # señal clara del set ("öffne" ⊂ "geöffnet") detecta el idioma y
+        # _FALLBACKS_BY_LANG tiene tabla para él.
+        self.assertEqual(detect_reply_language("Fertig, ich habe YouTube geöffnet"), "de")
+        self.assertIn("de", _FALLBACKS_BY_LANG)
+
+    def test_ambiguous_reply_falls_back_to_spanish(self):
+        # Sin NINGUNA señal del set, gana el default seguro ES (proyecto
+        # Spanish-by-default): "Fatto, ho aperto YouTube" no contiene hints
+        # IT del set actual ("apri" no ⊂ "aperto") -> ES, no una adivinanza.
         self.assertEqual(detect_reply_language("Fatto, ho aperto YouTube"), "es")
-        self.assertEqual(detect_reply_language("Fertig, ich habe YouTube geöffnet"), "es")
+        self.assertEqual(detect_reply_language("zzz 123"), "es")
 
     def test_format_in_english(self):
         out = format_fallback(reason="generic", reply_lang_hint="en", rejected_reply="")
