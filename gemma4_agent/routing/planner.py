@@ -1592,9 +1592,25 @@ def _suggest_tools(step: str) -> list[str]:
     # antes (bug medido 2026-06-07: "desmutea el pc" caía a ['session'] -> el 4B
     # forzaba cancel_turn por no tener tool de audio). "mute" con \b no captura
     # "desMUTEa" (letras pegadas) -> agregamos las raíces de des/un-mute explícitas.
-    if re.search(r"\b(volumen|mute|mutea\w*|desmute\w*|unmute\w*|silenci\w*|audio|sonido|"
-                 r"volume|silence|sound|sub[íi]\s+el\s+volumen|baj[áa]\s+el\s+volumen)\b", low):
+    # +FR/IT/DE/PT (mission-eval 2026-06-10): "Baisse le son de Spotify" daba un
+    # subset ANCHO (audio+media+audio_device+device_settings) y el 4B alternaba entre
+    # ellas en LOOP. El término de volumen multilingüe ahora dispara el force-audio.
+    _is_volume = bool(re.search(
+        r"\b(volumen|mute|mutea\w*|desmute\w*|unmute\w*|silenci\w*|audio|sonido|"
+        r"volume|silence|sound|sub[íi]\s+el\s+volumen|baj[áa]\s+el\s+volumen|"
+        r"baisse\w*|monte\s+le\s+son|le\s+son\b|"                  # fr (baisse/monte le son)
+        r"alza\s+il\s+volume|abbassa\w*|"                          # it
+        r"lautst[äa]rke|leiser|lauter|"                            # de
+        r"volume\s+do|abaixa\w*|aumenta\s+o\s+volume)\b", low))    # pt
+    if _is_volume:
         tools.append("audio")
+        # COLAPSO anti-loop: si es volumen, retirar las tools redundantes que el
+        # encoder ofrece en idiomas no-ES (media/audio_device/device_settings) —
+        # el 4B alternaba entre ellas. Volumen lo hace `audio`. No tocar si el
+        # comando también pide explícitamente un dispositivo (audio_device ya lo
+        # detecta abajo por su propio regex).
+        tools[:] = [t for t in tools
+                    if t not in {"media", "device_settings"}]
     # audio_device
     if re.search(r"\b(dispositivo de audio|salida de audio|entrada de audio|altavoz|altavoces|microfono|"
                  r"focusrite|aux|realtek|hyperx|scarlett|"
