@@ -32,6 +32,28 @@ def _steam_appid_from_launch(launch: str) -> str | None:
     return match.group(1) if match else None
 
 
+def _is_placeholder_appid(appid: str) -> bool:
+    """True si `appid` parece INVENTADO por el LLM (no un AppID real de Steam).
+    El 4B alucina placeholders cuando no conoce el appid real en vez de pasar la
+    query (medido 2026-06-10: "1234567890" para Spider-Man 2). Señales: no-dígito,
+    secuencia ascendente/repetida obvia ("1234567890", "123456789", "111111111"),
+    o longitud absurda. Los AppID reales de Steam son enteros sin patrón obvio,
+    típicamente 4-7 dígitos (los más nuevos llegan a 7). ESTRUCTURAL, no una lista.
+    """
+    a = (appid or "").strip()
+    if not a.isdigit():
+        return True
+    # secuencia ascendente "123456789(0)" o un solo dígito repetido "1111..."
+    if a in ("1234567890", "123456789", "12345678", "1234567", "0123456789"):
+        return True
+    if len(set(a)) == 1:  # "1111111111", "0000000"
+        return True
+    # appid real de Steam: 1..7 dígitos plausibles; >7 es casi seguro inventado.
+    if len(a) > 7 or len(a) < 1:
+        return True
+    return False
+
+
 def _steam_store_uri(appid: str) -> str:
     return f"steam://store/{appid}"
 

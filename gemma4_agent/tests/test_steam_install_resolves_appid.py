@@ -236,5 +236,37 @@ class SteamInstallResolvesAppidTest(unittest.TestCase):
         self.assertNotIn("download is now running", r.get("note", ""))
 
 
+class PlaceholderAppidTest(unittest.TestCase):
+    """Bug medido (2026-06-10, logs): "ve a la página de Steam de Spider-Man 2" ->
+    el 4B INVENTÓ appid='1234567890' (placeholder) en vez de pasar query -> abría
+    steam://store/<basura> -> "steam failed". Fix: _is_placeholder_appid descarta
+    el appid inventado -> store_page resuelve por query (confiable)."""
+
+    def test_detector_distinguishes_placeholder_from_real(self):
+        from gemma4_agent.tools_pkg.steam_store import _is_placeholder_appid
+        for fake in ("1234567890", "123456789", "12345678", "1111111111",
+                     "0000000", "abc", "", "99999999999", "12.5"):
+            self.assertTrue(_is_placeholder_appid(fake), f"placeholder: {fake!r}")
+        for real in ("2651280", "730", "570", "1245620", "271590", "413150"):
+            self.assertFalse(_is_placeholder_appid(real), f"AppID real: {real!r}")
+
+    def test_t_steam_drops_placeholder_appid(self):
+        # t_steam con appid inventado: la guarda lo descarta -> resuelve por query.
+        reg = SteamInstallResolvesAppidTest()._registry()
+        captured = {}
+
+        def _fake_store_page(args, query):
+            captured["appid_in_args"] = args.get("appid")
+            captured["query"] = query
+            return {"ok": True, "status": "ok"}
+
+        with mock.patch.object(reg, "steam_store_page", _fake_store_page):
+            reg.t_steam({"action": "store_page", "query": "Marvel Spider-Man 2",
+                         "appid": "1234567890"})
+        # el appid inventado fue descartado antes de llegar a store_page.
+        self.assertNotEqual(captured.get("appid_in_args"), "1234567890")
+        self.assertEqual(captured.get("query"), "Marvel Spider-Man 2")
+
+
 if __name__ == "__main__":
     unittest.main()

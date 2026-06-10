@@ -1339,6 +1339,20 @@ def select_tool_names(
                 names.insert(0, _bt)
     except Exception:
         pass
+    # INTENCIÓN STEAM-STORE (2026-06-10): "página/tienda de Steam de X" se abre con
+    # `steam` (store_page resuelve appid y abre steam://store/<appid> en el cliente).
+    # Si steam ya está y el texto pide explícitamente la tienda/página DE STEAM,
+    # quitamos browser/browser_real/web/computer_use del subset: con 4 tools de
+    # navegación el 4B encadena steam->browser->browser y se pierde (medido: el
+    # caso Spider-Man 2 ofrecía steam+browser_real+browser+web -> falló). Steam es
+    # el camino correcto y único acá. NO toca otros usos de steam (library, launch).
+    if "steam" in names and re.search(
+            r"\b(steam)\b", _fold_text(raw_text)) and re.search(
+            r"\b(pagina|page|tienda|store|ficha)\b", _fold_text(raw_text)):
+        names = [n for n in names
+                 if n not in ("browser", "browser_real", "web", "computer_use", "game_launcher")]
+        if "steam" not in names:
+            names.insert(0, "steam")
     expanded: list[str] = []
     _rel_budget = _RELATED_BUDGET
     for name in _dedupe(names):

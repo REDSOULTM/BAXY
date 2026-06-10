@@ -874,6 +874,7 @@ from .steam_store import (  # noqa: E402,F401
     _steam_openurl_uri,
     _steam_store_url,
     _steam_store_first_result,
+    _is_placeholder_appid,
 )
 
 
@@ -1775,6 +1776,14 @@ class ToolRegistry:
     def t_steam(self, args: dict[str, Any]) -> dict[str, Any]:
         action = _action(args, default="open")
         query = str(args.get("query") or args.get("name") or "").strip()
+        # ANTI-APPID-INVENTADO (2026-06-10, red estructural): el 4B alucina appids
+        # placeholder ("1234567890") en CUALQUIER action, no solo store_page. Si el
+        # appid parece inventado, lo descartamos de los args -> la action resuelve
+        # por query (confiable) en vez de abrir una página rota. El schema ya pide
+        # NO inventar appid, pero el 4B es no-determinista; esta es la red dura.
+        _appid_in = str(args.get("appid") or "").strip()
+        if _appid_in and _is_placeholder_appid(_appid_in):
+            args = {k: v for k, v in args.items() if k != "appid"}
         # RED DE HONESTIDAD (BUG real eval run2): "¿Steam está abierto?" -> el 4B
         # elige steam(open) (vía forced-retry/schema, aunque el router NO ofrezca
         # steam) -> abría Steam y MENTÍA "Listo, abrí Steam". Una pregunta de ESTADO
@@ -2949,6 +2958,25 @@ class ToolRegistry:
         appid = str(args.get("appid") or "").strip()
         matched: dict[str, Any] | None = None
         source = "explicit_appid" if appid else ""
+
+        # ANTI-APPID-INVENTADO (2026-06-10): el 4B a veces alucina un appid
+        # placeholder ("1234567890", "123456789") en vez de pasar la query ->
+        # store_page abría steam://store/<basura> -> "steam failed". Si HAY query,
+        # la resolución por nombre (biblioteca local -> store real) es CONFIABLE;
+        # el appid del LLM NO. Regla: con query presente, RESOLVER por query y usar
+        # ese appid; el del LLM solo se honra si coincide o si no hay query. Además
+        # se descarta un appid que parezca inventado (placeholder evidente).
+        if appid and (_is_placeholder_appid(appid) or query):
+            resolved = self._resolve_steam_appid(query) if query else None
+            if resolved:
+                # query resolvió: ese appid manda (el del LLM era inventado o redundante).
+                appid = resolved["appid"]
+                matched = resolved.get("match")
+                source = resolved.get("source", "")
+            elif _is_placeholder_appid(appid):
+                # sin resolución y el appid es claramente basura -> tratarlo como ausente.
+                appid = ""
+                source = ""
 
         if not appid:
             resolved = self._resolve_steam_appid(query)
