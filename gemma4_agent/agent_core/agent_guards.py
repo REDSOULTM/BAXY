@@ -334,8 +334,19 @@ def guard_unverified_final(content: str, events: list[Any]) -> str:
         return content
     if status == "dispatched":
         return content
+    if status == "needs_confirmation":
+        # BUG real (capturas 2026-06-09): "cierra WhatsApp" -> app.close devuelve
+        # needs_confirmation (NO cerró nada, espera el OK del user), pero el 4B
+        # respondió "Listo, cerré la aplicación WhatsApp" — MENTIRA (la acción está
+        # PENDIENTE, no hecha). Si el reply AFIRMA la acción como completada en vez
+        # de PEDIR confirmación, lo reemplazamos por la pregunta honesta. Estructural
+        # (reply_claims_action mide la forma verbal de consumación).
+        if reply_claims_action(content) or zero_event_claim_is_lie(content):
+            return ("Esa acción necesita tu confirmación antes de ejecutarla. "
+                    "¿Querés que la haga?")
+        return content
     if status in {"needs_user", "needs_dependency", "needs_permission",
-                  "needs_confirmation", "needs_verification_async"}:
+                  "needs_verification_async"}:
         return content
     # Hueco adversarial: una tool READ-ONLY (verified=None: ej. source_manager
     # status, que devuelve ok=True sin cambiar nada) NO debe sustentar un reply que

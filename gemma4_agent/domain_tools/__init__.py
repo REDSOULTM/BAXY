@@ -993,7 +993,7 @@ def _is_valid_profile_name(name: str) -> bool:
     return True
 
 
-# Query "generica" = el user pidio musica/una cancion SIN nombrar un titulo.
+# Query "generica" = pedido de musica/una cancion SIN un titulo nombrado.
 # Detector de query "generica" (pidio musica SIN nombrar titulo/artista).
 #
 # DISEÑO (minimo hardcode, regla de uso universal): NO enumeramos frases. Un

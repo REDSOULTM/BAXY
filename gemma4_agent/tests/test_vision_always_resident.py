@@ -1,7 +1,7 @@
 """Modo visión SIEMPRE activo (mmproj residente) — 2026-06-09.
 
-Pedido del usuario: que la visión esté siempre cargada salvo que la apague, para
-que una imagen NO pague la carga on-demand del mmproj (~2-5s del router-mode lazy).
+La visión queda siempre cargada salvo que se apague, para que una imagen NO pague
+la carga on-demand del mmproj (~2-5s del router-mode lazy).
 MEDIDO en build llama.cpp 9090: el mmproj residente NO penaliza el cache de texto
 (issue ggml-org #21133 ya fixeado; turno warm re-evaluó 10 tok/22ms con flags de
 prod). Por eso el default es ON.

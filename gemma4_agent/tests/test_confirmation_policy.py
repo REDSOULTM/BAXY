@@ -57,6 +57,18 @@ class TestPolicyBehaviour(unittest.TestCase):
         self.assertFalse(should_confirm(d, NEVER_CONFIRM))
         self.assertTrue(should_confirm(d, ALWAYS_CONFIRM))   # auditoría: confirma todo
 
+    def test_all_permissive_never_confirms_even_irreversible(self):
+        # modo 'all' (permisivo TOTAL): NADA confirma, ni lo irreversible. Cerrar
+        # apps Y borrar archivos Y apagar -> sin fricción.
+        from ..safety_pkg.confirmation_policy import ALL_PERMISSIVE
+        for tool, action in [("app", "close"), ("filesystem", "delete"),
+                             ("system", "shutdown"), ("terminal", "run"),
+                             ("package", "install"), ("email", "send")]:
+            d = _decision(tool, action)
+            self.assertFalse(
+                should_confirm(d, ALL_PERMISSIVE),
+                f"modo 'all' NO debe confirmar {tool}.{action} (permisivo total)")
+
     def test_confirm_risky_equals_historic_behaviour(self):
         # DEFAULT debe ser IDÉNTICO a la conducta histórica (requires_confirmation).
         for tool, action in [("email", "send"), ("filesystem", "delete"),

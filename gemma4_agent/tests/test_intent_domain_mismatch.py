@@ -75,7 +75,7 @@ class MediaFabricatedClaimTest(unittest.TestCase):
             self.assertTrue(mfc(u, r, [_call("media")]), msg=u)
 
     def test_no_flag_when_user_named_platform(self):
-        # El user pidió la plataforma -> nombrarla NO es fabricar.
+        # La plataforma fue nombrada -> nombrarla NO es fabricar.
         self.assertFalse(mfc("pon Stranger Things en Netflix",
                              "Listo, reproduzco Stranger Things en Netflix.", [_call("media")]))
         self.assertFalse(mfc("pon música en Spotify",

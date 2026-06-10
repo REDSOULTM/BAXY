@@ -449,7 +449,7 @@ def resolve_site_by_search(
     # insta.com.br, ERR_NAME_NOT_RESOLVED). dns_resolves hace fail-open ante
     # timeouts -> solo descarta un NXDOMAIN claro. Si NINGÚN candidato resuelve
     # (todos son dominios muertos), devolvemos None: error honesto, NO abrir una
-    # página rota. El user pidió explícitamente que no ganen páginas que no existen.
+    # página rota. Las páginas que no existen no deben ganar.
     for c in cands:
         p = urlparse(c[5])
         if dns_resolves(p.hostname or ""):

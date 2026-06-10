@@ -1,4 +1,4 @@
-"""Bug medido (2026-05-31, captura del user): el usuario dijo "instalame doom
+"""Bug medido (2026-05-31, captura): comando "instalame doom
 eternal en steam" y el agente SOLO abrió la página de la TIENDA del juego, NUNCA
 disparó la instalación.
 
@@ -176,7 +176,7 @@ class SteamInstallResolvesAppidTest(unittest.TestCase):
         reg = self._registry()
         self.assertIsNone(reg._resolve_steam_appid(""))
 
-    # ---- AUTO-CONFIRM (el user pidió que INSTALE, no que deje el diálogo) ----
+    # ---- AUTO-CONFIRM (se pide INSTALAR, no que deje el diálogo) ----
     def test_high_confidence_autoconfirms_and_reports_download_started(self):
         # appid explícito = alta confianza -> auto-confirma el diálogo.
         reg = self._registry(autoconfirm=True)

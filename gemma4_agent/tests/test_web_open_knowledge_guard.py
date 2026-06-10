@@ -48,7 +48,7 @@ class WebOpenKnowledgeGuardTest(unittest.TestCase):
         self.assertEqual(self.read, [])
 
     def test_navigation_by_name_opens_resolved_url(self):
-        # el user pidió navegar por nombre; el dominio resuelto no aparece literal,
+        # se navega por nombre; el dominio resuelto no aparece literal,
         # pero la forma del pedido sí es navegación.
         self.reg._current_user_text = "ve a portal uniej"
         self.reg.t_web({"action": "open", "url": "https://portal2.uniej.cl/"})

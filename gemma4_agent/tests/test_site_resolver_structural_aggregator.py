@@ -40,7 +40,7 @@ class StructuralAggregatorSignalTest(unittest.TestCase):
     def test_popular_prefix_beats_buried_lookalike(self):
         # POPULARIDAD (2026-06-09): 'insta' -> instagram.com está #0 (prefijo de
         # 'instagram', sitio MUY popular) -> le gana a insta.com.br #1 (label exacto
-        # pero sitio nicho). El user pidió que lo popular gane al lookalike random.
+        # pero sitio nicho). Lo popular debe ganar al lookalike random.
         got = _resolve("insta", ["https://www.instagram.com/",
                                  "https://insta.com.br/"])
         self.assertIn("instagram.com", got)

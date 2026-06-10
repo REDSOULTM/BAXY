@@ -6058,7 +6058,7 @@ class Gemma4Agent:
                                            f"{_clause_idx + 2} en adelante. Decime si reintento.")
                         break
                     continue
-                # CHAIN read-screen (FLAGSHIP del user): tras navegar a una
+                # CHAIN read-screen (FLAGSHIP): tras navegar a una
                 # PÁGINA (browser), "mostrame/leeme/ve las tareas" debe LEER la pantalla
                 # por VISIÓN (describe_screen), NO la tool LOCAL (notes_tasks). Caso real:
                 # "entrá a Canvas y mostrame las tareas" -> "las tareas" caía a notes_tasks

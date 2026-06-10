@@ -132,13 +132,19 @@ def _starts_with_action_claim(text: str) -> str | None:
     # Common patterns: "Listo, X" / "Listo, hecho, X" / "Hecho: X" / etc.
     import re as _re
     parts = _re.split(r"[,:;]", stripped)
+    # adverbios/partículas que suelen PRECEDER al verbo sin ser el claim ("ya
+    # cerré", "ahora abrí", "también mandé"). Si el 1er word es uno de estos,
+    # también miramos el 2º. accent-fold para tolerar "ya"/"ahora".
+    _LEAD_ADV = {"ya", "ahora", "tambien", "también", "recien", "recién", "listo"}
     for cand in parts[:4]:
         words = cand.strip().split()
         if not words:
             continue
-        first_word = words[0]
-        if _looks_like_first_person_preterit(first_word):
-            return first_word
+        if _looks_like_first_person_preterit(words[0]):
+            return words[0]
+        if len(words) >= 2 and _fold(words[0]) in {_fold(a) for a in _LEAD_ADV} \
+                and _looks_like_first_person_preterit(words[1]):
+            return words[1]
     return None
 
 

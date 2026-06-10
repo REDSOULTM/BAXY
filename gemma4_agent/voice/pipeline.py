@@ -325,6 +325,17 @@ class VoicePipeline:
     # ----- internal helpers --------------------------------------------
 
     @staticmethod
+    def _whisper_disabled() -> bool:
+        """True si Whisper está apagado (GEMMA4_STT_NO_FALLBACK / DISABLE_WHISPER):
+        SOLO Parakeet, sin fallback. Si Parakeet no carga, la voz falla limpio en vez
+        de caer a Whisper silenciosamente."""
+        import os as _os_wd
+        for _k in ("GEMMA4_STT_NO_FALLBACK", "GEMMA4_DISABLE_WHISPER"):
+            if (_os_wd.environ.get(_k) or "").strip().lower() in {"1", "true", "yes", "on"}:
+                return True
+        return False
+
+    @staticmethod
     def _build_stt(engine: str):
         """Construye el motor STT elegido. 'parakeet' -> ParakeetSTT; cualquier
         otra cosa -> Whisper STT. La carga (y el fallback) se hace en load()."""
@@ -333,7 +344,12 @@ class VoicePipeline:
                 from .parakeet_stt import ParakeetSTT
                 logger.info("STT engine: Parakeet-TDT-v3")
                 return ParakeetSTT()
-            except Exception as exc:  # import roto -> Whisper
+            except Exception as exc:  # import roto
+                if VoicePipeline._whisper_disabled():
+                    # Whisper apagado: NO caemos a Whisper, propagamos el fallo.
+                    logger.error("ParakeetSTT no disponible (%s) y Whisper está "
+                                 "DESHABILITADO (GEMMA4_STT_NO_FALLBACK)", exc)
+                    raise
                 logger.warning("ParakeetSTT no disponible (%s); usando Whisper", exc)
         return STT()
 
@@ -355,7 +371,9 @@ class VoicePipeline:
             # FALLBACK: si Parakeet no carga (modelo ausente en esta máquina),
             # caemos a Whisper para que la voz NUNCA quede rota: el código
             # garantiza sus precondiciones, sin descargar setup en el usuario.
-            if self._stt_engine == "parakeet":
+            # SALVO que Whisper esté apagado (GEMMA4_STT_NO_FALLBACK): entonces
+            # falla limpio, SOLO Parakeet.
+            if self._stt_engine == "parakeet" and not self._whisper_disabled():
                 logger.warning(
                     "Parakeet STT no cargó (%s); fallback a Whisper-small",
                     self._stt.last_error,
@@ -363,7 +381,10 @@ class VoicePipeline:
                 self._stt = STT()
                 self._stt_engine = "whisper"
             if not self._stt.load():
-                self.last_error = f"STT load failed: {self._stt.last_error}"
+                self.last_error = (
+                    f"STT load failed (Parakeet, Whisper deshabilitado): {self._stt.last_error}"
+                    if self._whisper_disabled()
+                    else f"STT load failed: {self._stt.last_error}")
                 logger.error(self.last_error)
                 return False
         self._loaded = True
@@ -383,10 +404,9 @@ class VoicePipeline:
         if not ok:
             self.last_error = f"Audio start failed: {self._audio.last_error}"
             return False
-        # AVISO si el mic default está MUTEADO en Windows (causa real 2026-06-07:
-        # el user reportó "no oye" y su mic estaba silenciado a nivel sistema ->
-        # captura ceros y parece STT roto). Solo avisamos; no podemos desmutearlo
-        # sin tocar el audio del user. Best-effort (None si no se puede leer).
+        # AVISO si el mic default está MUTEADO en Windows: un mic silenciado a
+        # nivel sistema captura ceros y parece STT roto. Solo avisamos; no podemos
+        # desmutearlo sin tocar el audio del usuario. Best-effort (None si no se lee).
         try:
             from .noise_calibration import microphone_muted
             if microphone_muted() is True:

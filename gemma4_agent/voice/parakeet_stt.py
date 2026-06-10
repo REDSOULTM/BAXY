@@ -76,7 +76,7 @@ def _blank_penalty() -> float:
 def _optimal_threads() -> int:
     """min(4, cores físicos). El speed-up de FastConformer en CPU se satura
     entre 2-4 hilos físicos; los lógicos (hyperthread) degradan por contención
-    de unidades vectoriales (guía ORT + medición del usuario: nt=4 óptimo)."""
+    de unidades vectoriales (guía ORT + medición: nt=4 óptimo)."""
     physical = None
     try:
         import psutil

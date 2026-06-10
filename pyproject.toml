@@ -29,6 +29,10 @@ exclude = ["gemma4_agent.docs*", "gemma4_agent.captures*", "gemma4_agent.logs*"]
 dependencies = { file = ["requirements.txt"] }
 
 [tool.pytest.ini_options]
+# testpaths: dónde busca pytest cuando se invoca SIN argumentos. Incluye los dos
+# árboles de tests del repo para que el conftest RAÍZ (guards de seguridad: la
+# suite NUNCA abre apps) cubra ambos sin que nadie tenga que apuntarlos a mano.
+testpaths = ["gemma4_agent/tests", "gemma4_agent/voice/tests"]
 # Registered so @pytest.mark.slow / @pytest.mark.gpu don't warn. These ONLY
 # tag tests for selection (`-m "not slow"` to skip heavy perf/model tests);
 # they do not change default collection — every test still runs by default.

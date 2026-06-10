@@ -1,4 +1,4 @@
-"""Bug medido (2026-05-27, captura del user): browser(action=open, target='canvas')
+"""Bug medido (2026-05-27, captura): browser(action=open, target='canvas')
 devolvía needs_user porque el handler t_browser solo leía url/query, IGNORANDO
 `target` aunque el schema lo declara como propiedad legítima. Inconsistencia
 schema↔handler — el 4B eligió la clave correcta según el schema pero la tool la
@@ -30,7 +30,7 @@ class BrowserOpenTargetAliasTest(unittest.TestCase):
         return reg
 
     def test_target_resolves_when_no_url(self):
-        # Caso EXACTO de la captura del user: browser.open con target='canvas'.
+        # Caso EXACTO de la captura: browser.open con target='canvas'.
         reg = self._registry()
         r = reg.t_browser({"action": "open", "target": "canvas"})
         self.assertTrue(r.get("ok"), r)

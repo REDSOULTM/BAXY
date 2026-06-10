@@ -411,6 +411,9 @@ _TOGGLE_ENV_MAP: dict[str, str] = {
     # de carga on-demand del proyector en la 1ra imagen. Apagar -> vuelve el router-
     # mode lazy. Requiere reiniciar el llama-server (cambia el comando de arranque).
     "visionAlways":       "GEMMA4_VISION_ALWAYS",
+    # SOLO Parakeet: apaga el fallback a Whisper. Si Parakeet no carga, la voz
+    # falla limpio en vez de caer a Whisper silenciosamente.
+    "sttParakeetOnly":    "GEMMA4_STT_NO_FALLBACK",
 }
 
 # OPTIM tab — palancas low-level del roadmap Gemma 4. Mismo concepto que
@@ -430,6 +433,11 @@ _OPTIM_STRING_ENV_MAP: dict[str, str] = {
     # todo el stack (transcripción + respuesta del LLM). String vacío -> borra la
     # var -> Automático. Ver lang_profiles.resolve_lang + agent._reply_lang.
     "voiceLang":      "GEMMA4_VOICE_LANG",
+    # Política de confirmación: "" = default (confirm_risky, confirma lo riesgoso);
+    # "never" = auto-aprueba lo reversible, confirma solo lo destructivo; "all" =
+    # PERMISIVO TOTAL, nada confirma (incl. irreversible); "always" = confirma todo
+    # (auditoría). Ver safety_pkg/confirmation_policy.
+    "confirmationPolicy": "GEMMA4_CONFIRMATION_POLICY",
 }
 
 

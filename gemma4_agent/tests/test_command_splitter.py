@@ -157,7 +157,7 @@ class AppActionExtractTest(unittest.TestCase):
         self.assertIn("claude", (r["app_hint"] or "").lower())
 
     def test_a_preposition_app_target(self):
-        # Caso REAL del user: "escribile sigue A claude code" (con "a", no "en").
+        # Caso REAL: "escribile sigue A claude code" (con "a", no "en").
         # Dispara act_in_app (verify_app) -> el OS-check decide (claude code abierto
         # -> cu; 'a juan' -> no es ventana -> cae a whatsapp).
         r = self.A("escribile sigue a claude code")
@@ -197,7 +197,7 @@ class AppActionExtractTest(unittest.TestCase):
         self.assertIsNone(self.A("abrí WhatsApp y mandale a juan hola"))
 
     def test_accented_imperative_escribele(self):
-        # BUG real del user (voz): "escríbele/escríbe" (acento en la 1ra i) debe
+        # BUG real (voz): "escríbele/escríbe" (acento en la 1ra i) debe
         # matchear. Antes 'escrib[íie]' lo perdía -> el comando iba a notes_tasks.
         self.assertIsNotNone(self.A("Abre el bloque de notas y escríbele Hola Mundo"))
         self.assertIsNotNone(self.A("escríbele hola en notepad"))
@@ -370,7 +370,7 @@ class IsBareInappNavTest(unittest.TestCase):
 class ReadScreenRequestTest(unittest.TestCase):
     """is_read_screen_request: pedir LEER/MOSTRAR la pantalla ('mostrame las tareas')
     para el chain-context-read (tras navegar a una página, leer su contenido por visión,
-    no la tool local). FLAGSHIP del user: 'entrá a Canvas y mostrame las tareas'."""
+    no la tool local). FLAGSHIP: 'entrá a Canvas y mostrame las tareas'."""
     def setUp(self):
         from ..routing.command_splitter import is_read_screen_request
         self.R = is_read_screen_request

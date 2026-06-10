@@ -49,6 +49,7 @@ export interface SettingsConfig {
   wakeWord: string; wakeWordEnabled: boolean;
   // voice
   voiceEnabled: boolean; wakeBeep: boolean; wakeHudBlink: boolean; wakeTts: boolean;
+  sttParakeetOnly: boolean;    // GEMMA4_STT_NO_FALLBACK (solo Parakeet, sin Whisper)
   inputDevice: string; followUpWindow: number; followUpClosePhrases: string; muteTts: boolean;
   // profiles
   autoSwitch: boolean; autoSwitchGame: boolean; autoSwitchGpu: boolean; autoSwitchRam: boolean;
@@ -66,6 +67,7 @@ export interface SettingsConfig {
   specDraftModel: string;      // GEMMA4_SPEC_DRAFT_MODEL (path)
   llamaApiKey: string;         // GEMMA4_LLAMA_API_KEY
   voiceLang: string;           // GEMMA4_VOICE_LANG ("" = auto | es/en/pt/fr/de/it)
+  confirmationPolicy: string;  // GEMMA4_CONFIRMATION_POLICY ("" = confirm_risky | never | all | always)
   // paths
   memoryJson: string; stateJson: string; traceJsonl: string;
   sessionsDir: string; timelineDir: string;
@@ -83,6 +85,7 @@ const DEFAULTS: SettingsConfig = {
   ttsProvider: 'piper (local)', ttsVoice: 'es_MX-claude-high', ttsRate: 1.0,
   wakeWord: 'baxy', wakeWordEnabled: true,
   voiceEnabled: true, wakeBeep: true, wakeHudBlink: true, wakeTts: false,
+  sttParakeetOnly: true,
   inputDevice: 'system default',
   followUpWindow: 5, followUpClosePhrases: 'gracias\nlisto\nya está\ncancelar', muteTts: false,
   autoSwitch: false, autoSwitchGame: true, autoSwitchGpu: false, autoSwitchRam: false,
@@ -94,7 +97,7 @@ const DEFAULTS: SettingsConfig = {
   summarization: true, tracing: true,
   visionAlways: true,
   disablePrewarm: false, telemetry: false, kvType: '',
-  specDraftModel: '', llamaApiKey: '', voiceLang: '',
+  specDraftModel: '', llamaApiKey: '', voiceLang: '', confirmationPolicy: '',
   memoryJson: '~/gemma4/data/memory.json', stateJson: '~/gemma4/data/state.json',
   traceJsonl: '~/gemma4/data/traces.jsonl', sessionsDir: '~/.gemma4/sessions',
   timelineDir: '~/.gemma4/timeline',
@@ -376,9 +379,25 @@ function AgentTab({ c, set }: { c: SettingsConfig; set: Setter }) {
       <Field label=" ">
         <STCheck value={c.safetyFilter} onChange={set('safetyFilter')} label="safety filter on" />
       </Field>
+      <Field label="confirmaciones" hint="cuándo Baxy te pide confirmar antes de actuar">
+        <Select
+          value={c.confirmationPolicy || 'confirm_risky'}
+          onChange={(v) => set('confirmationPolicy')(v === 'confirm_risky' ? '' : v)}
+          options={[
+            { value: 'confirm_risky', label: 'normal (confirma lo riesgoso)', hint: 'default' },
+            { value: 'never', label: 'permisivo (solo confirma lo destructivo)', hint: 'cerrar apps, settings → sin confirmar' },
+            { value: 'all', label: 'TODO permisivo (nada confirma)', hint: '⚠ ejecuta hasta borrar/apagar sin preguntar' },
+            { value: 'always', label: 'estricto (confirma todo)', hint: 'auditoría' },
+          ]}
+          ariaLabel="confirmation policy"
+        />
+      </Field>
       <STTip warn>
         safety <b className="carmine">off</b> means destructive tools run <b className="carmine">without</b> confirmation.
         recommended on for unattended sessions; off only if you trust every prompt you give and you watch every turn.
+        {c.confirmationPolicy === 'all' && (
+          <> <b className="carmine">modo TODO permisivo activo</b>: Baxy ejecuta cualquier acción (incl. borrar archivos, apagar, desinstalar) sin pedirte confirmación.</>
+        )}
       </STTip>
     </STSection>
   );
@@ -567,6 +586,7 @@ function VoiceTab({ c, set }: { c: SettingsConfig; set: Setter }) {
         />
       </Field>
       <Field label=" "><STCheck value={c.voiceEnabled} onChange={set('voiceEnabled')} label="enable voice" hint="master switch" /></Field>
+      <Field label=" "><STCheck value={c.sttParakeetOnly} onChange={set('sttParakeetOnly')} label="solo Parakeet (sin Whisper)" hint="apaga el fallback a Whisper; si Parakeet no carga, la voz falla limpio" /></Field>
       <Field label="wake words" hint="custom LiveKit model; transcript cleanup also strips short wake variants">
         <span className="muted mono">baxy</span>
       </Field>

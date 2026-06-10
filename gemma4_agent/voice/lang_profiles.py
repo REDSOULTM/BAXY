@@ -1,7 +1,7 @@
 """Per-language STT profiles for Whisper.
 
-WHY (2026-05-22, pedido del user): el `initial_prompt` y el `language` de
-Whisper estaban hardcodeados a español ("español rioplatense"). Un usuario que
+WHY: el `initial_prompt` y el `language` de Whisper estaban hardcodeados a
+español ("español rioplatense"). Un usuario que
 habla inglés u otro idioma se topaba con un prompt español que lo perjudicaba.
 Gemma 4 es multi-usuario / multi-idioma (regla de uso universal), así que la
 config de STT debe ser POR IDIOMA.

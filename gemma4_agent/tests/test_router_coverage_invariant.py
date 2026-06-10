@@ -1,8 +1,8 @@
 """Invariante de ROBUSTEZ del router (S5, 2026-05-30).
 
-Pedido del usuario: "un router que funciona y no se desconfigure porque el día
-de mañana decida meter más tools o MCPs". Estos tests son la red que atrapa esa
-desconfiguración ANTES de que llegue a producción.
+El router debe seguir funcionando y no desconfigurarse cuando se agreguen más
+tools o MCPs. Estos tests son la red que atrapa esa desconfiguración ANTES de que
+llegue a producción.
 
 La fragilidad real: el router decide el subset por VARIAS capas (keyword regex,
 per-tool head, tool2vec, descripciones semánticas). Una tool de DOMINIO nueva que
@@ -81,7 +81,7 @@ class TestRouterCoverageInvariant(unittest.TestCase):
     def test_every_domain_tool_has_router_coverage(self) -> None:
         """Una tool de dominio sin NINGUNA capa (head/sem/t2v) es invisible: el
         router jamás la ofrecería. Esto atrapa el "agregué una tool y el router
-        no la conoce" — la desconfiguración exacta que el usuario teme."""
+        no la conoce" — la desconfiguración exacta que este invariante previene."""
         domain = _all_tool_names() - _EXEMPT
         covered = _tool_head_tools() | _semantic_described() | _tool2vec_tools()
         orphaned = sorted(domain - covered)
@@ -141,8 +141,8 @@ class TestRouterCoverageInvariant(unittest.TestCase):
 
 class TestAddingToolsDoesNotRegress(unittest.TestCase):
     """ROBUSTEZ dinámica: enrolar tools/MCPs nuevas NO debe quitarle a una
-    query nativa la tool que ya le correspondía. Esta es la garantía exacta que
-    el usuario pidió ("no se desconfigure cuando meta más tools o MCPs")."""
+    query nativa la tool que ya le correspondía. Esta es la garantía exacta del
+    invariante: no desconfigurarse al meter más tools o MCPs."""
 
     def _subset(self, q: str):
         from ..routing.planner import select_tool_names, plan_mission

@@ -1,8 +1,8 @@
 """Per-language STT profiles: el initial_prompt y el whisper_language deben
 derivar del perfil de idioma, no estar hardcodeados a español.
 
-Pedido del user 2026-05-22: un usuario en inglés/otro idioma NO debe quedar con
-config española. Config por idioma + default es (Spanglish).
+Un usuario en inglés/otro idioma NO debe quedar con config española. Config por
+idioma + default es (Spanglish).
 """
 from __future__ import annotations
 

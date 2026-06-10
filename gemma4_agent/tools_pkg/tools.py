@@ -1137,7 +1137,7 @@ def _looks_like_music_request(query: str) -> bool:
 
 
 def _is_generic_song_query(query: str) -> bool:
-    """El user pidió música SIN nombrar un título → reproducir algo genérico.
+    """Pedido de música SIN un título nombrado → reproducir algo genérico.
     Delega en el detector estructural multilingüe de domain_tools (raíces por
     prefijo + filler de función), que NO enumera frases por idioma y cubre
     es/en/it/pt/fr/de. Reemplaza la vieja tabla de 10 frases es/en (ley #1/#3)."""
@@ -2572,7 +2572,7 @@ class ToolRegistry:
             # PROCEDENCIA (fix 2026-06-07, approach B): el 4B emite la URL COMPLETA
             # "https://www.pivigames.com/" adivinando el .com. No se puede distinguir
             # de un dominio real POR LA FORMA (google.com y pivigames.com son iguales).
-            # La señal de adivinanza es la PROCEDENCIA: el user dijo "ve a pivigames"
+            # La señal de adivinanza es la PROCEDENCIA: si el comando fue "ve a pivigames"
             # (el NOMBRE) pero NUNCA dijo "pivigames.com" -> el dominio+TLD NO aparece
             # en su texto -> el modelo lo inventó -> resolver por búsqueda. Si el user
             # SÍ tipeó/dictó el dominio ("andá a lanacion.com") -> abrir directo (cero
@@ -3337,7 +3337,7 @@ class ToolRegistry:
         # GROUNDING DE PROCEDENCIA DEL TELÉFONO (C1 "destinatario equivocado =
         # daño irreversible", 2026-05-30). Cuando el user NO da destinatario
         # ("manda un mensaje por wsp") el 4B a veces ALUCINA un número placeholder
-        # (caso REAL del user: phone='+34 123456' -> WhatsApp abre y muestra "el
+        # (caso real: phone='+34 123456' -> WhatsApp abre y muestra "el
         # número +34 123456 no está en WhatsApp"). El 4B NO tiene la base de
         # contactos: un `phone=` que emite es, o bien lo que el user DICTÓ, o bien
         # inventado. Guarda ESTRUCTURAL que mide la FORMA (no keyword-lists ni
@@ -7641,7 +7641,7 @@ Start-Sleep -Milliseconds 120
     # título de la ventana del navegador casi nunca contiene el dominio
     # crudo (lleva el title de la pestaña activa). Antes esto daba found=False
     # aunque la URL hubiera cargado bien — el agente narraba "no pude verificar"
-    # tras un browser.open exitoso (incidente 2026-05-27, capturas del user).
+    # tras un browser.open exitoso (incidente 2026-05-27, capturas).
     _BROWSER_PROCS: tuple[str, ...] = (
         "chrome.exe", "msedge.exe", "firefox.exe", "opera.exe", "operagx.exe",
         "brave.exe", "vivaldi.exe", "iexplore.exe",

@@ -1,4 +1,4 @@
-"""Bug medido (2026-05-27, capturas del user): verify_window_exists con un DOMINIO
+"""Bug medido (2026-05-27, capturas): verify_window_exists con un DOMINIO
 ("portal2.uniej.cl") devolvía found=False aunque el navegador SÍ estuviera abierto
 con esa URL, porque el título de la ventana del navegador casi nunca contiene el
 dominio crudo (lleva el title de la pestaña activa). El agente terminaba narrando

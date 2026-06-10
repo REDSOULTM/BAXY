@@ -128,7 +128,7 @@ class TestRestartIsSimple(unittest.TestCase):
     hasta 10s + _kill_server_on_port. Esto sumaba ~11s de pausa cierta antes
     de cada restart. Revertido al diseño del 27-may (commit 7b2377d) que
     apenas hace stop->start: el restart promedio queda en ~3-5s, percibible
-    pero NO disruptivo. El user reporto que ese diseño "no se notaba"."""
+    pero NO disruptivo. Ese diseño "no se notaba"."""
 
     def test_restart_calls_stop_then_start(self):
         mgr = LlamaServerManager(AgentConfig.from_env())

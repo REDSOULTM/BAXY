@@ -658,6 +658,32 @@ def _is_app_state_check(text: str) -> bool:
     return bool(_APP_STATE_CHECK_RE.search(text))
 
 
+# Acción de VENTANA (maximizar/minimizar/restaurar/mover/redimensionar) sobre una
+# app nombrada. BUG real (capturas 2026-06-09): "maximiza la aplicación de Steam"
+# -> el router ofrecía steam+window+app; el 4B eligió steam(action=maximize) — pero
+# `steam` NO tiene 'maximize' (solo open/library/store/...) -> falló y reintentó en
+# loop. La tool homónima de la app (steam/browser) la arrastra el NOMBRE, pero
+# maximizar/minimizar una VENTANA es `window`. Retiramos la homónima y dejamos
+# window al frente. ESTRUCTURAL (verbo de ventana, NO de la app), multi-idioma.
+# NO incluye 'abrir/cerrar' (eso SÍ es app.open/close legítimo) ni 'focus' (también
+# window). Solo geometría de ventana, que ninguna tool-de-app implementa.
+_WINDOW_GEOM_VERB = re.compile(
+    r"\b(?:maximiz\w*|minimiz\w*|restaur\w*|maximize\b|minimize\b|restore\b|"
+    r"redimension\w*|resize\b|mov[ée]\w*|mueve\b|move\b|"
+    r"vergr[öo]ßer\w*|verklein\w*|agrand\w*|achic\w*|"
+    r"ingrandi\w*|riduci\w*|agrandi\w*|r[ée]dui\w*|maximis\w*|minimis\w*)\b",
+    re.IGNORECASE)
+
+
+def _is_window_geometry_action(text: str) -> bool:
+    """True si el comando es una acción de GEOMETRÍA de ventana (maximizar/
+    minimizar/restaurar/mover/redimensionar). Esas las hace `window`, no la tool
+    homónima de la app nombrada. ESTRUCTURAL, multi-idioma."""
+    if not isinstance(text, str) or not text.strip():
+        return False
+    return bool(_WINDOW_GEOM_VERB.search(text))
+
+
 def plan_mission(content: str | list[dict[str, Any]]) -> MissionPlan:
     text = _content_text(content)
     parts = _split_steps(text)
@@ -1386,6 +1412,17 @@ def select_tool_names(
                     expanded.insert(0, _t)
     except Exception:
         pass
+    # ACCIÓN DE GEOMETRÍA DE VENTANA sobre app nombrada (bug "maximiza Steam"
+    # 2026-06-09): retirar la tool homónima (steam/browser/app) que NO implementa
+    # maximizar/minimizar -> el 4B inventaba steam(maximize) y entraba en loop.
+    # Dejar `window` al frente (la única que hace geometría de ventana).
+    # _is_window_geometry_action es un regex puro sobre el texto (sin I/O ni
+    # encoder): no necesita guarda de excepción.
+    if _is_window_geometry_action(raw_text):
+        expanded = [t for t in expanded
+                    if t not in {"steam", "browser", "browser_real", "app"}]
+        if "window" not in expanded:
+            expanded.insert(0, "window")
     # PREGUNTA HOW-TO/INFO (BUG real medido, cacería tanda 1): "cómo elimino una
     # carpeta" -> filesystem.delete BORRÓ la carpeta (daño irreversible ante una
     # PREGUNTA); "qué es Python" -> abrió el navegador. El user pide EXPLICACIÓN, no

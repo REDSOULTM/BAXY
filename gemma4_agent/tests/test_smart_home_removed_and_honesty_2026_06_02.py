@@ -1,5 +1,5 @@
-"""Regresión 2026-06-02: smart_home ELIMINADA (pedido del usuario) + la guarda
-anti-mentira-física que la validación EN VIVO destapó.
+"""Regresión 2026-06-02: smart_home ELIMINADA + la guarda anti-mentira-física que
+la validación EN VIVO destapó.
 
 Contexto (cazado por validación en vivo, regla #3.5):
   BUG A — tras borrar la tool smart_home (schema/handler/dataset/router-data),

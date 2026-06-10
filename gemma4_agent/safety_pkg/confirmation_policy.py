@@ -26,7 +26,12 @@ from typing import Any
 CONFIRM_RISKY = "confirm_risky"
 ALWAYS_CONFIRM = "always"
 NEVER_CONFIRM = "never"
-_VALID = (CONFIRM_RISKY, ALWAYS_CONFIRM, NEVER_CONFIRM)
+# `all` (permisivo TOTAL): auto-aprueba TODO, incluso lo IRREVERSIBLE (borrar
+# archivos, taskkill, apagar, desinstalar, email a terceros). Cero fricción, máximo
+# riesgo. Toggle OFF por default. NO confundir con `never`, que sigue confirmando
+# lo destructivo.
+ALL_PERMISSIVE = "all"
+_VALID = (CONFIRM_RISKY, ALWAYS_CONFIRM, NEVER_CONFIRM, ALL_PERMISSIVE)
 
 # Categorías de `SafetyDecision.risk` (ver safety_pkg/safety.py) consideradas
 # IRREVERSIBLES o de alto daño: aunque la política sea `never`, estas SIEMPRE se
@@ -76,15 +81,19 @@ def is_irreversible(decision: Any) -> bool:
 def should_confirm(decision: Any, policy: str | None = None) -> bool:
     """¿Pedir confirmación para esta acción, dada la política?
 
+    - `all`          → NUNCA confirma (permisivo total, incl. irreversible). Opt-in.
     - `never`        → solo si es IRREVERSIBLE (garantía dura); lo reversible se auto-aprueba.
-    - `always`       → SIEMPRE (incluso lecturas; modo auditoría, opt-in del usuario).
+    - `always`       → SIEMPRE (incluso lecturas; modo auditoría).
     - `confirm_risky`→ si `classify_tool_call` la marcó riesgosa (= conducta actual). DEFAULT.
 
-    Invariante: una acción IRREVERSIBLE se confirma bajo CUALQUIER política
-    (never→is_irreversible; confirm_risky→requires_confirmation⊇irreversible; always→True).
+    Invariante (salvo `all`): una acción IRREVERSIBLE se confirma bajo CUALQUIER
+    política (never→is_irreversible; confirm_risky→requires_confirmation⊇irreversible;
+    always→True). El modo `all` ROMPE el invariante a propósito: nada confirma.
     """
     if policy is None:
         policy = get_policy()
+    if policy == ALL_PERMISSIVE:
+        return False   # permisivo total: nada confirma, ni lo irreversible
     if policy == NEVER_CONFIRM:
         return is_irreversible(decision)
     if policy == ALWAYS_CONFIRM:

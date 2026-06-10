@@ -138,7 +138,7 @@ class AntiJunkFilterTest(unittest.TestCase):
         self.assertEqual(len(r["added"]), 3)
 
     def test_explicit_save_not_filtered(self):
-        # el user pidió guardar esto explícitamente -> NO se filtra aunque sea raro
+        # guardar esto fue explícito -> NO se filtra aunque sea raro
         from gemma4_agent.memory_pkg.memory import _is_junk_value
         self.assertTrue(_is_junk_value("test"))  # sería junk en auto_save
         r = self.store.save("recordatorio", "test")  # pero explícito pasa
