@@ -3453,6 +3453,26 @@ class Gemma4Agent:
             # decisión de tool-call con baja entropía, más fiable sin reasoning.
             # En summary-pass / conversación NO greedy (necesita lenguaje natural).
             _greedy = bool(_pass_tools) and len(events) == 0 and not _is_summary_pass
+            # FEW-SHOT DINÁMICO de acción (2026-06-10): en el turno de acción
+            # (greedy), antepone 1-2 pares (user ejemplo -> assistant tool_call) de
+            # las tools que el router ofrece, en formato nativo. Ataca el
+            # "first-token misalignment" que causa el residual de tool-call (~75%
+            # en vivo): sesga el primer token a DISPARAR la tool en vez de narrar.
+            # Mensajes OpenAI normales (el chat_template los renderiza a nativo).
+            # NO es respuesta enlatada: el LLM sigue decidiendo. Inserta antes del
+            # último user (el pedido real). Gate GEMMA4_ACTION_FEWSHOT=0.
+            # Ver routing/action_fewshot.py + research/1_toolcalling.md.
+            if _greedy:
+                try:
+                    from gemma4_agent.routing.action_fewshot import build_action_fewshot
+                    _fewshot = build_action_fewshot(selected_tool_names)
+                    if _fewshot:
+                        _ins = len(_msgs)
+                        while _ins > 0 and _msgs[_ins - 1].get("role") == "user":
+                            _ins -= 1
+                        _msgs = _msgs[:_ins] + _fewshot + _msgs[_ins:]
+                except Exception:
+                    pass
             # STREAMING TTS (GEMMA4_STREAM_TTS, default off). Two safe cases:
             #  - SUMMARY pass (events>0): the content-REPLACING guards are provably
             #    pass-through (grounding_gate.py:206, agent_guards.py:253) -> stream
