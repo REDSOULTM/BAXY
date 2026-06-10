@@ -85,6 +85,38 @@ clipboard) en 6 idiomas → reentreno del encoder (seed 42). Resultado:
    (bajo umbral) — "find the X" embebe lejos de "abre X". Necesita más ejemplos
    o ajuste de umbral. Hueco de COBERTURA aún parcial.
 
+## Vol2 — completar cobertura de tools en EN/IT/DE
+
+Medido tras el primer lote: fr/pt YA bien (14-15/15 tools), el gap real era
+EN/IT/DE (8-9/15). +59 ejemplos de eval para las tools faltantes (filesystem,
+terminal, window, memory, gui) + corrección de etiquetas demasiado estrictas
+(click/type aceptan gui|uia|computer_use por diseño). Validación expuso más
+huecos (filesystem/terminal DE→[], window IT→computer_use); +20 al training →
+reentreno consolidado.
+
+Resultado: huecos vol2 **6/6 arreglados** en routing determinista ("erstelle
+einen Ordner"→filesystem, "führe diesen Befehl"→terminal, "vai alla finestra
+precedente"→window). Holdout 0.9813→0.9788 = medir más verdad (más casos EN/IT/DE
+difíciles que ahora se cuentan). En vivo: el routing mejora pero el 4B no siempre
+ELIGE la tool en DE (idioma de poca masa en su FT) — responde HONESTO ("keine
+Aktion"), no miente. Residual del MODELO (techo 2B), no del router.
+
+Distribución DESPUÉS de vol2: es 76%, pt 10%, fr 8%, en 2%, it/de ~1%. EN/IT/DE
+pasaron de 8-9/15 a cobertura completa de las tools clave.
+
+## Conclusión: B2 base sólida establecida (ítem grande, multi-sesión)
+
+B2 cumplió su objetivo CENTRAL: el corpus de eval pasó de **medir solo español**
+(holdout 0.9800 sesgado) a **medir y mejorar EN/IT/DE** (holdout multilingüe
+honesto ~0.978, con los huecos reales contándose). Destapó ~13 huecos del router
+ocultos por el sesgo; cerró la mayoría de raíz vía reentreno.
+
+PATRÓN observado: cada lote de corpus expone más huecos → más datos → reentreno.
+Rendimientos decrecientes. B2 es un ítem **grande de varias sesiones**, no se
+cierra de una. Lo que queda es trabajo incremental: más volumen, atacar el
+residual del gate de abstención (head↔suggest↔abstain), y B1/B4 (reentreno con
+corpus balanceado + calibración por idioma) que ahora SÍ tienen base.
+
 ## Estado
 
 - Corpus B2 commiteado (etiquetas curadas; "who is X"→web corregido).

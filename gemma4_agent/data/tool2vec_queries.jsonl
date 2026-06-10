@@ -8265,3 +8265,23 @@
 {"tool": "clipboard", "q": "pegá eso"}
 {"tool": "clipboard", "q": "cola isso"}
 {"tool": "clipboard", "q": "cola aqui"}
+{"tool": "filesystem", "q": "erstelle einen Ordner namens Arbeit"}
+{"tool": "filesystem", "q": "lösche diese Datei"}
+{"tool": "filesystem", "q": "benenne dieses Dokument um"}
+{"tool": "filesystem", "q": "crea una cartella chiamata lavoro"}
+{"tool": "filesystem", "q": "elimina quel file"}
+{"tool": "filesystem", "q": "rinomina questo documento"}
+{"tool": "filesystem", "q": "create a folder called work"}
+{"tool": "filesystem", "q": "delete that file"}
+{"tool": "filesystem", "q": "rename this document"}
+{"tool": "terminal", "q": "führe diesen Befehl aus"}
+{"tool": "terminal", "q": "führe npm install aus"}
+{"tool": "terminal", "q": "öffne PowerShell"}
+{"tool": "terminal", "q": "esegui questo comando"}
+{"tool": "terminal", "q": "esegui ls nel terminale"}
+{"tool": "terminal", "q": "run this command in terminal"}
+{"tool": "window", "q": "vai alla finestra precedente"}
+{"tool": "window", "q": "lege Editor und Chrome nebeneinander"}
+{"tool": "window", "q": "wechsle zum vorherigen Fenster"}
+{"tool": "window", "q": "metti due finestre affiancate"}
+{"tool": "window", "q": "put two windows side by side"}

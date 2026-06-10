@@ -2000,3 +2000,62 @@
 {"q": "was für ein schöner tag", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
 {"q": "wer ist Einstein", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
 {"q": "was ist python", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "create a folder called work", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "delete that file", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "list the files in Downloads", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "rename this document", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "run ls in the terminal", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "open powershell", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "execute this command", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "run npm install", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "remember that I prefer dark mode", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "remember my name is Alex", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "what do you remember about me", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "forget that setting", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "minimize all windows", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "put Notepad and Chrome side by side", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "switch to the previous window", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "click the OK button", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "type my email here", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "scroll down on the page", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "crea una cartella chiamata lavoro", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "elimina quel file", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "elenca i file in Download", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "rinomina questo documento", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "esegui ls nel terminale", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "apri powershell", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "esegui questo comando", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "esegui npm install", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "quanto spazio libero ho sul disco", "expected": ["system"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "quanti processi sono in esecuzione", "expected": ["system"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "livello della batteria", "expected": ["system"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "chiudi il processo bloccato", "expected": ["system"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "minimizza tutte le finestre", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "metti Blocco note e Chrome affiancati", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "vai alla finestra precedente", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "ricorda che preferisco il tema scuro", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "ricorda che mi chiamo Alex", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "cosa ricordi di me", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "clicca sul pulsante OK", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "scrivi la mia email qui", "expected": ["gui", "uia", "computer_use", "email"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "scorri verso il basso", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "erstelle einen Ordner namens Arbeit", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "lösche diese Datei", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "liste die Dateien in Downloads auf", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "benenne dieses Dokument um", "expected": ["filesystem"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "führe ls im Terminal aus", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "öffne PowerShell", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "führe diesen Befehl aus", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "führe npm install aus", "expected": ["terminal"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "minimiere alle Fenster", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "lege Editor und Chrome nebeneinander", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "wechsle zum vorherigen Fenster", "expected": ["window"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "merke dir dass ich den dunklen Modus bevorzuge", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "merke dir dass ich Alex heiße", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "was weißt du über mich", "expected": ["memory"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "erinnere mich morgen an den Mülltermin", "expected": ["reminder"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "erinnere mich um 15 Uhr", "expected": ["reminder"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "setze eine Erinnerung für später", "expected": ["reminder"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "klicke auf den OK Button", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "tippe meine E-Mail hier ein", "expected": ["gui", "uia", "computer_use", "email"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "scrolle nach unten", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
