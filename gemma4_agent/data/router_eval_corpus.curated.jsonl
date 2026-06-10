@@ -1859,3 +1859,144 @@
 {"q": "hol das Fenster nach vorne", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
 {"q": "traz o Chrome para a frente", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
 {"q": "pon Discord en primer plano", "expected": ["window"], "source": "mission_eval_2026-06-10/app_restart_close_window_focus", "label_origin": "hand"}
+{"q": "close Logitech G Hub", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "open Discord", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "quit Spotify", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "find Photoshop", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "restart Steam", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "minimize Opera", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "maximize the window", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "bring Chrome to the front", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "close the window", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "set the pc volume to 20", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "turn up the volume", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "mute the sound", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "lower the volume", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "how much disk space do I have left", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "how much RAM is used", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "what is the CPU usage", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "battery level", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "resume the video I was watching", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "pause what is playing", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "play some music", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "skip this song", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "did you see the new Michael Jackson movie", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "find out if that new film is any good", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "search for today news", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "open google.com", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "search Amazon for bluetooth headphones", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "go to youtube", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "set the monitor refresh rate to 144hz", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "turn on wifi", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "raise the brightness", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "connect bluetooth", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "remind me to take out the trash tomorrow", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "remind me to buy bread", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "set a reminder for 3pm", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "look at the screen again", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "read what is on the screen", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "what do you see on screen", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "copy this", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "what is in the clipboard", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "paste it", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "hello there", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "thank you so much", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "how are you", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "lol", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "what a nice day", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "who is Einstein", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "what is python", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "en"}
+{"q": "chiudi Logitech G Hub", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "apri Discord", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "esci da Spotify", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "trova Photoshop", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "riavvia Steam", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "minimizza Opera", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "massimizza la finestra", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "porta Chrome in primo piano", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "chiudi la finestra", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "imposta il volume del pc a 20", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "alza il volume", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "silenzia l audio", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "abbassa il volume", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "quanto spazio mi resta sul disco", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "quanta RAM è in uso", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "qual è l uso della CPU", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "livello batteria", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "riprendi il video che stavo guardando", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "metti in pausa", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "metti un po di musica", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "salta questa canzone", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "hai visto il nuovo film di Michael Jackson", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "cerca se quel nuovo film è buono", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "cerca le notizie di oggi", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "apri google.com", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "cerca su Amazon delle cuffie bluetooth", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "vai su youtube", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "imposta la frequenza del monitor a 144hz", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "attiva il wifi", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "aumenta la luminosità", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "connetti il bluetooth", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "ricordami di portare fuori la spazzatura domani", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "ricordami di comprare il pane", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "metti un promemoria per le 3", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "guarda di nuovo lo schermo", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "leggi cosa c è sullo schermo", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "cosa vedi sullo schermo", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "copia questo", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "cosa c è negli appunti", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "incollalo", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "ciao", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "grazie mille", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "come stai", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "ahah", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "che bella giornata", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "chi è Einstein", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "cosa è python", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "it"}
+{"q": "schließe Logitech G Hub", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "öffne Discord", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "beende Spotify", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "finde Photoshop", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "starte Steam neu", "expected": ["app"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "minimiere Opera", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "maximiere das Fenster", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "hol Chrome nach vorne", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "schließe das Fenster", "expected": ["window"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "stell die pc lautstärke auf 20", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "mach lauter", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "schalte den ton stumm", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "mach leiser", "expected": ["audio"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "wie viel speicherplatz habe ich noch", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "wie viel RAM wird benutzt", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "wie ist die CPU auslastung", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "akkustand", "expected": ["system"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "setze das video fort das ich gesehen habe", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "pausiere die wiedergabe", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "spiel etwas musik", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "überspring dieses lied", "expected": ["media"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "hast du den neuen Michael Jackson film gesehen", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "finde heraus ob der neue film gut ist", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "suche die nachrichten von heute", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "öffne google.com", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "suche auf Amazon nach bluetooth kopfhörern", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "geh zu youtube", "expected": ["browser"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "stell die bildwiederholrate auf 144hz", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "schalte wlan ein", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "erhöhe die helligkeit", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "verbinde bluetooth", "expected": ["device_settings"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "erinnere mich daran morgen den müll rauszubringen", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "erinnere mich brot zu kaufen", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "stell eine erinnerung für 15 uhr", "expected": ["reminder"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "schau nochmal auf den bildschirm", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "lies was auf dem bildschirm steht", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "was siehst du auf dem bildschirm", "expected": ["vision"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "kopiere das", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "was ist in der zwischenablage", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "füg es ein", "expected": ["clipboard"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "hallo", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "vielen dank", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "wie geht es dir", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "haha", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "was für ein schöner tag", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "wer ist Einstein", "expected": ["web"], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "was ist python", "expected": [], "source": "b2_multilingual_eval_2026-06-10", "label_origin": "hand", "lang": "de"}
