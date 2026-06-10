@@ -7,7 +7,7 @@ runtime usa para garantizar invariantes que un usuario con discapacidad
 necesita — p. ej. que TODA acción se confirme por voz para alguien no vidente,
 o que el control sea 100% por voz para alguien con discapacidad motriz.
 
-Diseño (alineado a CLAUDE.md):
+Diseño (alineado a las reglas del proyecto):
 - NADA de respuestas enlatadas ni keywords por idioma: el `system_hint` describe
   el COMPORTAMIENTO esperado; el LLM responde. Las garantías duras (narrar,
   confirmar) son guardas ESTRUCTURALES que miden la forma del turno, no su
@@ -145,7 +145,7 @@ def _atomic_write_text(path: Path, text: str) -> None:
 def get_active_mode() -> AccessibilityMode:
     """Modo activo. Orden: env GEMMA4_ACCESSIBILITY_MODE > archivo persistido >
     'normal'. El env NO pisa el archivo (no lo escribe); sólo manda en runtime
-    para esta sesión, útil en tests/automation."""
+    para la sesión actual, útil en tests/automation."""
     env = (os.environ.get("GEMMA4_ACCESSIBILITY_MODE") or "").strip().casefold()
     if env in MODES:
         return MODES[env]

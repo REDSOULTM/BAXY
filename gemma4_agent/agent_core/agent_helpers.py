@@ -105,7 +105,7 @@ def _strip_for_phrase_only(text: str) -> str:
 def _phrase_fire_ok(fire: dict[str, Any]) -> bool:
     """¿La rutina disparada por frase corrió TODOS sus pasos con éxito?
 
-    Honestidad (CLAUDE.md #3 + invariante "no fingir éxito"): un paso con
+    Honestidad: un paso con
     ok=False, timeout o excepción significa que la rutina NO se completó —
     el mensaje al usuario debe decirlo, no afirmar "Se ejecutó". Una rutina
     sin pasos (results vacío) se considera fallida (no hizo nada).

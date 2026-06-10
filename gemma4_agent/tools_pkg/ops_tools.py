@@ -1351,7 +1351,7 @@ def _attach_visible_browser(args: dict[str, Any], session_id: str, state: AgentS
     # Probe the endpoint first.
     if not _cdp_endpoint_alive(endpoint):
         # The code guarantees its precondition instead of asking the user to run
-        # a flag (CLAUDE.md §5): launch a DEDICATED CDP instance (separate
+        # a flag: launch a DEDICATED CDP instance (separate
         # user-data-dir — the only thing that works on Chrome 136+; the real
         # profile silently ignores the debug port). We never close the user's
         # window. If launching fails, degrade to needs_user with instructions.
@@ -1444,8 +1444,7 @@ def _launch_cdp_instance(browser: str, port: int, *, wait_s: float = 12.0) -> di
     reading cookies/passwords over CDP. So debugging the real profile is simply
     impossible; a dedicated data dir is the only path that produces an endpoint.
     Source: https://developer.chrome.com/blog/remote-debugging-port (Chrome 136,
-    2025-04). This also means we never touch or close the user's window/tabs
-    (CLAUDE.md §6). The dedicated profile is visible to the user.
+    2025-04). This also means we never touch or close the user's window/tabs. The dedicated profile is visible to the user.
     """
     exe = _resolve_browser_exe(browser)
     if not exe:
@@ -1626,7 +1625,7 @@ def ocr_image(image_path: Path, *, lang: str = "spa+eng", min_conf: int = 35, ps
     # Con text=True, Python decodifica el stdout TSV de Tesseract con la
     # code-page de consola (cp1252 en Windows ES) y CRASHEA en bytes no-ASCII
     # (texto acentuado en la UI) -> el OCR devuelve 0 líneas silenciosamente.
-    # Mismo gotcha que espeak-ng/gui_type (CLAUDE.md). FIX: capturar BYTES y
+    # Mismo gotcha que espeak-ng/gui_type. FIX: capturar BYTES y
     # decodificar utf-8 con errors=replace.
     proc = subprocess.run(cmd, capture_output=True, timeout=60)
     if proc.returncode != 0:

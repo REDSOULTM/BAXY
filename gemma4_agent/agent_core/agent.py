@@ -173,7 +173,7 @@ _LANGID_SET = ("en", "es", "pt", "fr", "de", "it")
 # chrome"/"open notepad" -> 'de' porque Spotify/Chrome son nombres propios
 # internacionales sin señal de idioma). NO son respuestas enlatadas ni deciden la
 # respuesta — solo desambiguan el IDIOMA del comando (mide la FORMA verbal, lo que
-# el CLAUDE.md permite como guarda estructural). El reply lo sigue generando el LLM.
+# el se permite como guarda estructural). El reply lo sigue generando el LLM.
 # Medido: detector híbrido 15/16 vs py3langid solo 8/14.
 _IMPERATIVE_VERBS = (
     ("en", (" open ", " close ", " play ", " mute ", " unmute ", " set ", " take ",
@@ -824,7 +824,7 @@ class Gemma4Agent:
         """True si el título de la ventana de la app refleja el target (= el chat/
         canal activo es el pedido). Señal de estado del SO, robusta al robo de foco
         post-click. Cuenta como éxito tanto si CAMBIÓ al target como si YA estaba en
-        él (el usuario pidió abrir un chat que ya estaba activo: igual está hecho)."""
+        él (abrir un chat que ya estaba activo: igual está hecho)."""
         import re as _re_m
         after = self._app_window_title(win_hint)
         if not after:
@@ -1434,7 +1434,7 @@ class Gemma4Agent:
         """Genera la confirmación POST-ACCIÓN con el LLM, en el IDIOMA del usuario.
 
         Reemplaza los short-circuits que devolvían "Listo, abrí X" hardcodeado en
-        español (violaba CLAUDE.md "el LLM responde" + rompía multi-idioma: el FT
+        español (violaba las reglas del proyecto "el LLM responde" + rompía multi-idioma: el FT
         multilingüe nunca veía estos replies → 0/5 idioma en vivo aunque el modelo
         respondía 6/7 en smoke). `did` describe la acción ejecutada (en inglés
         neutro, p.ej. "opened the app Notepad") para que el LLM la confirme en el
@@ -1704,13 +1704,13 @@ class Gemma4Agent:
         # ACCIÓN-EN-APP / META (ACCESIBILIDAD, núcleo del producto).
         # MEDIDO en vivo: los pedidos "escribí/hacé X en app Y", "en Y escribí X" y
         # "andá a Y y escribí X" casi nunca llegaban al orquestador computer_use
-        # (~1/10) — el 4B charlaba ("escribí sigue en claude code"->"Sigo en Claude
+        # (~1/10) — el 4B respondía como charla ("escribí 'sigo' en Slack"->"Sigo en Slack
         # Code"), respondía la pregunta en vez de tipearla, o el router los mandaba a
         # notes_tasks/local_search/browser/whatsapp/nada. Toda la cascada UIA→OCR→
         # visión quedaba INALCANZABLE. Detector ESTRUCTURAL (extract_app_action:
         # gramática multi-idioma, mide la FORMA, NO listas de apps/intenciones —
-        # CLAUDE.md (b)) + cierre de precisión por ESTADO DEL SO (el target debe ser
-        # una app/ventana REAL — CLAUDE.md (c)): así 'poné X en mi lista' NO se
+        # las reglas del proyecto (b)) + cierre de precisión por ESTADO DEL SO (el target debe ser
+        # una app/ventana REAL)): así 'poné X en mi lista' NO se
         # hijackea (no es ventana) -> sigue a notes. Va ANTES del split (así "andá a
         # X y escribí Y" va ENTERO a cu, no se parte mal) y antes del reply-net (así
         # "escribile X a <app-abierta>" no se confunde con WhatsApp). NO gateado por
@@ -1969,7 +1969,7 @@ class Gemma4Agent:
         # (sin tool), a veces llama gui/session (tool equivocada), CASI NUNCA
         # whatsapp. Un detector ESTRUCTURAL de alta precisión (extract_message_to:
         # verbo + 'a <destinatario>' + cuerpo; mide la FORMA, no el contenido —
-        # CLAUDE.md (b)) resuelve esto sin depender del 4B. NO es respuesta
+        # las reglas del proyecto (b)) resuelve esto sin depender del 4B. NO es respuesta
         # enlatada: abre el chat pre-rellenado (auto_send=False, no envía; el
         # usuario confirma) y el LLM redacta la confirmación con el resultado en
         # contexto. Solo dispara con destinatario+cuerpo CLAROS (None -> sigue el
@@ -4951,7 +4951,7 @@ class Gemma4Agent:
             _cont_active = False
             _cont_delegates = False
         # GUARD (bug medido): el nudge "ejecutá vos el siguiente
-        # paso" SOLO tiene sentido en un turno de ACCIÓN (el usuario pidió
+        # paso" SOLO tiene sentido en un turno de ACCIÓN (cuando el comando pidió
         # HACER algo). En una pregunta META/charla ("¿qué podés hacer?",
         # "¿quién eres?") el router ABSTUVO (subset sin tools de dominio) y
         # no corrió ninguna acción: la respuesta DESCRIBE capacidades, no
@@ -5437,7 +5437,7 @@ class Gemma4Agent:
                     pass
             # TESTS PASARON SIN EVIDENCIA (honestidad, DEFAULT-ON): el reply afirma
             # "los tests pasaron/exitoso" pero el ToolResult no trae conteo pass/fail
-            # real. CLAUDE.md prohíbe declarar éxito sin un número. BUG medido (tanda
+            # real. no se permite declarar éxito sin un número. BUG medido (tanda
             # 1, A2): 8 casos. GEMMA4_TESTS_EVIDENCE_GUARD=0 apaga.
             if _os.environ.get("GEMMA4_TESTS_EVIDENCE_GUARD", "1").strip().lower() \
                     not in {"0", "false", "no", "off"}:
@@ -5590,7 +5590,7 @@ class Gemma4Agent:
         # summary pass se ancla al idioma del CONTEXTO (schemas/results/historia en
         # ES) por encima del system prompt y devuelve el reply de acción en español
         # aunque el user escribió en otro idioma (medido: 15/21 leaks). Mitigación
-        # con EVIDENCIA (EMNLP 2024 §6.3 + Anthropic context-engineering): regenerar
+        # con EVIDENCIA (EMNLP 2024 §6.3 + context-engineering): regenerar
         # el reply con CONTEXTO LIMPIO (sin el contexto ES que arrastra). Dispara
         # cuando (a) hubo tool ejecutado, (b) el user NO escribió en ES, (c) el reply
         # leakeó al idioma equivocado. DECISIÓN (medido + user 2026-06-06): el idioma
@@ -6349,7 +6349,7 @@ class Gemma4Agent:
             return None
         # Delegar en la tool email (action=send). Sin token arma+abre la compose
         # URL; con token enviaría — pero como esto es un backstop determinista y
-        # enviar es irreversible (CLAUDE.md #6), forzamos el modo compose para que
+        # enviar es irreversible, forzamos el modo compose para que
         # NUNCA mande sin que el usuario lo confirme: pasamos el destinatario/
         # asunto/cuerpo y la tool, sin token, abre el redactor. (Si hubiera token,
         # el camino normal del LLM ya habría enviado; acá preferimos la vía segura.)
@@ -6405,7 +6405,7 @@ class Gemma4Agent:
         if not contact or not body:
             return None
         # auto_send=False: SOLO abre el chat con el texto puesto. Enviar es
-        # irreversible y el Enter va a la ventana enfocada (CLAUDE.md #6) -> lo
+        # irreversible y el Enter va a la ventana enfocada -> lo
         # confirma el usuario. Resuelve el contacto contra el store si existe.
         args = {"action": "send_message", "contact": contact,
                 "text": body, "auto_send": False}
@@ -6496,7 +6496,7 @@ class Gemma4Agent:
         """Perfil de gustos — privacidad inspectable/borrable.
         Short-circuit determinista para "¿qué sabés de mí?" (inspect) y "olvidate de
         mis datos" (forget). Detección por EMBEDDINGS (profile_intent, no keywords).
-        forget PIDE CONFIRMACIÓN antes de borrar (irreversible, CLAUDE.md #6).
+        forget PIDE CONFIRMACIÓN antes de borrar (irreversible, las reglas del proyecto #6).
         Devuelve AgentReply o None (sigue el turno normal)."""
         if self.behavior is None:
             return None

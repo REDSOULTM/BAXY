@@ -121,8 +121,8 @@ def _fake_sendinput_machine():
     """Maquina SendInput de mentira: cuenta eventos pero NO toca el teclado real.
 
     CRITICO (2026-05-25): _keypress_via_sendinput llama user32.SendInput de VERDAD
-    via ctypes. Como Claude Code corre como TERMINAL DE VS CODE, un combo real como
-    'alt+f4' o 'ctrl+w' cierra VS Code (Claude se mata a si mismo y el user pierde
+    via ctypes. Un combo real como 'alt+f4' o 'ctrl+w' enviado al foreground puede
+    cerrar la ventana/app activa (se pierde
     su trabajo). Pasó >=3 veces. Estos tests verifican la CONSTRUCCION de los eventos,
     NUNCA su emisión: mockeamos _sendinput_machine para que SendInput sea un no-op.
     """
@@ -152,7 +152,7 @@ class KeypressComboTest(unittest.TestCase):
     tecla base. None solo si algún token no se puede mapear (cae a SendKeys).
 
     SEGURIDAD: _sendinput_machine SIEMPRE mockeado -> SendInput jamás emite teclas
-    reales (si no, 'alt+f4' cierra VS Code; ver _fake_sendinput_machine)."""
+    reales (si no, 'alt+f4' cerraría la app en foco; ver _fake_sendinput_machine)."""
 
     def setUp(self):
         self.reg = ToolRegistry.__new__(ToolRegistry)

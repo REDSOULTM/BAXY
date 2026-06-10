@@ -4,7 +4,7 @@
 notification/reminder POR ENCIMA de memory; "recordame que [HECHO/preferencia]"
 (recordame que prefiero el café) debe rankear memory por encima de notification.
 El discriminador es ACCIÓN+TIEMPO vs HECHO, codificado multilingüemente en las
-TOOL_DESCRIPTIONS del semantic_router (mecanismo aprobado CLAUDE.md §3 — NO
+TOOL_DESCRIPTIONS del semantic_router (mecanismo aprobado NO
 keyword-list). Test determinista (encoder fijo, CPU); el efecto en vivo lo valida
 scripts/_validate_reminder_routing_live.py.
 

@@ -124,7 +124,7 @@ _MARGIN = float(os.environ.get("GEMMA4_PROFILE_INTENT_MARGIN", "0.08"))
 _FLOOR = float(os.environ.get("GEMMA4_PROFILE_INTENT_FLOOR", "0.60"))
 # FORGET es IRREVERSIBLE (borra datos) → piso/margen más altos que inspect. Un FP de
 # inspect solo muestra el perfil (inocuo); un FP de forget borraría datos. Asimetría
-# deliberada (CLAUDE.md: rigor extra ante lo irreversible). Además forget PIDE
+# deliberada (rigor extra ante lo irreversible). Además forget PIDE
 # confirmación antes de borrar (ver agent: _pending_profile_forget).
 _FORGET_MARGIN = float(os.environ.get("GEMMA4_PROFILE_FORGET_MARGIN", "0.14"))
 _FORGET_FLOOR = float(os.environ.get("GEMMA4_PROFILE_FORGET_FLOOR", "0.50"))

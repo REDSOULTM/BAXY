@@ -10,11 +10,11 @@ If found, the file is read (capped at ~6000 chars) and the content
 is rendered as a system-prompt block. The block is regenerated each
 turn so the user can edit the file mid-session without restarting.
 
-NOTE (2026-05-20): CLAUDE.md / AGENTS.md / .cursorrules / .gemini were
+NOTE (2026-05-20): las reglas del proyecto / .cursorrules / .gemini were
 REMOVED from the candidate list. Those are CODING-AGENT instruction files
-(Claude Code, Cursor, Gemini CLI, etc.) — meta-rules about how a dev tool
+(editores y asistentes de dev) — meta-rules about how a dev tool
 should edit the repo. They are NOT a voice-agent persona. Worse, this very
-repo's CLAUDE.md (instructions for the coding agent) was being injected into
+repo's las reglas del proyecto was being injected into
 the Gemma4 runtime prompt — ~1,500 tokens of irrelevant content that, on a
 small-context profile, helped push a plain "hola" past the context limit
 (400 exceed_context_size). Only GEMMA4.md / JARVIS.md (product persona files

@@ -1,6 +1,6 @@
 """Activación por VOZ de los modos de accesibilidad — multilingüe, por embeddings.
 
-CLAUDE.md prohíbe regex/keywords por idioma para clasificar intención. Igual que
+no se permite regex/keywords por idioma para clasificar intención. Igual que
 intent_router.py, esto compara el embedding del turno contra CENTROIDES de anclas
 en varios idiomas: una clase por cada switch ("activar modo no vidente",
 "activar modo manos libres", "volver a normal") MÁS una clase `none` que captura

@@ -9,7 +9,7 @@ parse_keypress_action en command_splitter + cableo en _decide_turn que arma el p
 [focus_app(app), keypress(key)] saltando el planner del 4B.
 
 Mock-only: NO LLM, NO GUI/SendInput. Mockeamos tools.t_computer_use para capturar el
-plan SIN ejecutar input físico (que cerraría VS Code).
+plan SIN ejecutar input físico (que afectaría la ventana en foco).
 """
 from __future__ import annotations
 

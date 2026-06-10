@@ -24,7 +24,7 @@ Optimizaciones Etapa 0 (plan_sherpa_parakeet_cpu_optimizacion.md §Axis 2):
   - thread spinning: sherpa-onnx no expone allow_spinning en from_transducer;
     se mitiga con OMP_NUM_THREADS y el techo de hilos (idle CPU bajo).
 
-Restricciones (CLAUDE.md): CPU only (GPU es del LLM), OSS gratis, multi-usuario
+Restricciones: CPU only (GPU es del LLM), OSS gratis, multi-usuario
 (NO overfit a una voz), open-vocab. El modelo es CC-BY-4.0.
 """
 from __future__ import annotations

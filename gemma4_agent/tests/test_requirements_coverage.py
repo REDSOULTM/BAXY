@@ -9,7 +9,7 @@ This test makes that drift a RED instead of a runtime surprise.
 
 Scope (matches the project's reproducibility rule — "nada sin su receta"):
   - Scans NON-TEST .py files under gemma4_agent/ (tests pull pytest etc.).
-  - SKIPS gemma4_agent/vision_input/ (owned by Codex — CLAUDE.md PROHIBIDO).
+  - SKIPS gemma4_agent/vision_input/ (owned by Codex).
   - Excludes the stdlib and the package's own modules.
   - torchvision is deliberately EXCLUDED: it is imported ONLY by a health
     test that asserts it must be absent/aligned (test_router_load_health.py),
@@ -79,7 +79,7 @@ def _iter_runtime_py() -> list[Path]:
     files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(_PKG_ROOT):
         norm = dirpath.replace("\\", "/")
-        # Codex-owned, off-limits:
+        # workstream de cámara/gestos, fuera del alcance de este chequeo:
         if "/vision_input" in norm or norm.endswith("/vision_input"):
             continue
         if "/node_modules" in norm or "/dist" in norm:

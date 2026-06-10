@@ -19,8 +19,8 @@ from pathlib import Path
 # d9f776b-era cuando tools.py era ~7759 y quedó por debajo del HEAD real:
 # commits POSTERIORES de la auditoría (c8efd5b "6 fixes" cruzó 7700),
 # honesty tri-estado (brightness/click) y perf (cache schemas_for_names)
-# lo llevaron a 7853 — deuda HEREDADA de esos commits, NO de esta sesión.
-# Esta sesión de hecho lo BAJÓ -6 (eliminó smart_home). El número correcto
+# lo llevaron a 7853 — deuda HEREDADA de esos commits.
+# Después se bajó -6 (eliminó smart_home). El número correcto
 # para la deuda real de HEAD es 7847; techo 7850 (+3 buffer mínimo). Sigue
 # vigente la regla: para una FEATURE nueva, extraé un hermano, no engroses.
 CEILINGS = {
@@ -52,7 +52,7 @@ CEILINGS = {
     "tools_pkg/tools.py": 8060,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
-    # Esta sesión sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
+    # Se sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
     # deuda silent-except 360->358 a cambio de +4 LOC — buen trade: traza > LOC).
     # 2026-06-04: reconciliado 6495 -> 6653. Deuda heredada del rebrand+cacería
     # (6565->6631) + el cableado del dedup de batch degenerado (Gemma 4 #1756, +22:
@@ -69,7 +69,7 @@ CEILINGS = {
     # thin + el call-site en _finalize_turn — mismo patrón que los otros _guard_*.
     # Irreducible. Número exacto, sin buffer.
     # 2026-06-08: 6687 -> 6983 (+296). Tanda de fixes de idioma/media (sesión
-    # Codex + visual-click): reparación de idioma del reply, prefetch de
+    # + visual-click): reparación de idioma del reply, prefetch de
     # info-followup, observación/resume de media. Lo EXTRAÍBLE se extrajo a
     # reply_repair.py (sibling, ~270 LOC: funciones puras de idioma/eventos +
     # los pases LLM de observación y reescritura, con wrappers thin en la clase).
@@ -81,7 +81,7 @@ CEILINGS = {
     # patrón que los bumps previos: la lógica que se puede partir se partió, el
     # cableado al hot-path queda. Número exacto, sin buffer. Deuda registrada:
     # documentacion/MAPA_descomposicion_archivos_dios.md.
-    # 2026-06-09: 6983 -> 7347 (+364). Tanda de LATENCIA (Codex + cierre): warmup
+    # 2026-06-09: 6983 -> 7347 (+364). Tanda de LATENCIA (warmup hot-path
     # de rutas calientes en boot, instrumentacion de fases (_mark_decide_phase /
     # decide_phase / llm_call_start) y routing fast_info/research de baja latencia.
     # Lo EXTRAIBLE se extrajo a latency_helpers.py (sibling: gates fast_info/

@@ -7,7 +7,7 @@ el tail variable no se cachea). El historial sólo importa cuando el turno tiene
 anáfora/deixis ("ábrelo", "open it", "abre isso", "mach das auf") o es una
 continuación/corrección corta ("sí", "yes", "no, better at 11").
 
-PRINCIPIO UNIVERSAL (CLAUDE.md): la app la usa cualquier hablante, en cualquier
+PRINCIPIO UNIVERSAL: la app la usa cualquier hablante, en cualquier
 idioma. Por eso la deixis NO se detecta con regex en español (rompería a un
 angloparlante: "open it" no matchearía y se le droparía el historial, perdiendo
 el referente). Se detecta por SIMILITUD SEMÁNTICA contra anclas multi-idioma,

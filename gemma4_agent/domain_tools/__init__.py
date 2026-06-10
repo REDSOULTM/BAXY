@@ -2271,7 +2271,7 @@ def _launch_streaming(
             qmatch = auto_play_info.get("query_match") if auto_play_info else None
             # Si played=True pero query_match=False, no marcamos verified=True.
             # El LLM debe saber que el Enter funciono pero el track tocando
-            # probablemente no es lo que el user pidio.
+            # probablemente no es lo solicitado.
             verified = played and qmatch is not False
             if not played:
                 completion_status = "opened_search_results_pending_play"

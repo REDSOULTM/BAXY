@@ -8,7 +8,7 @@ efecto, p.ej. un toggle que no repinta el ROI).
 
 SEGURIDAD: SetWinEventHook es OBSERVACIÓN PURA (un listener async out-of-context,
 WINEVENT_OUTOFCONTEXT). NO emite SendInput. Por eso es seguro correr en el
-terminal de VS Code (a diferencia de gui.{type,click,keypress} físicos, que lo
+la ventana/app en foco (a diferencia de gui.{type,click,keypress} físicos, que la
 matarían — ver feedback_never_run_synthetic_input). Este módulo solo LEE eventos.
 
 DISEÑO: un thread dedicado con CoInitialize + message-pump (GetMessage/Dispatch),

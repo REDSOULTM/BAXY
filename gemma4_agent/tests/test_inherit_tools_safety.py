@@ -32,7 +32,7 @@ from gemma4_agent.agent_core.agent import (
 from gemma4_agent.infra.config import AgentConfig
 
 
-# 2026-06-09: la optimización de latencia (Codex) hace que los clasificadores
+# 2026-06-09: la optimización de latencia hace que los clasificadores
 # semánticos (intent_router.classify_intent/wants_knowledge, context_router) NO
 # cold-loadeen sentence-transformers en el turno FOREGROUND por default
 # (GEMMA4_*_COLD_LOAD=0); el encoder lo carga el warmup de boot. En PRODUCCIÓN el
@@ -210,7 +210,7 @@ class TestKnowledgeReleaseDiscriminator(unittest.TestCase):
             self.assertTrue(wk(q), f"{q!r} debería ser wants_knowledge=True (soltar GUI)")
 
     def test_weather_is_borderline_not_released(self):
-        # HONESTIDAD (CLAUDE.md): "qué tiempo hace en Madrid" NO dispara
+        # HONESTIDAD: "qué tiempo hace en Madrid" NO dispara
         # wants_knowledge — el encoder embebe "hace" hacia ACTION (action 0.16 >
         # info 0.04). El guard es conservador (el alcance que eligió el usuario):
         # suelta solo lo info-claro; el clima sigue heredando GUI. NO es

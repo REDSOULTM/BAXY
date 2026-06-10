@@ -8,7 +8,7 @@ confirmación**, sea cual sea la política.
 
 Es una GUARDA ESTRUCTURAL (mide la FORMA de la acción —¿es riesgosa? ¿irreversible?—
 vía `SafetyDecision`, no el contenido ni el idioma), del tipo explícitamente
-permitido por CLAUDE.md §3. Determinista, sin LLM, sin listas de keywords.
+permitido por las reglas del proyecto §3. Determinista, sin LLM, sin listas de keywords.
 
 Políticas (env `GEMMA4_CONFIRMATION_POLICY`):
   - `confirm_risky` (DEFAULT): confirmar lo que `classify_tool_call` marca riesgoso.

@@ -181,7 +181,7 @@ class BrowserRealAccessibleTest(unittest.TestCase):
 
 class AttachVisibleAutoLaunchTest(unittest.TestCase):
     """attach_visible debe AUTO-LANZAR una instancia CDP dedicada cuando ningún
-    navegador escucha el puerto (CLAUDE.md §5: el código garantiza su
+    navegador escucha el puerto (el código garantiza su
     precondición). Todo mockeado: nunca lanza un navegador real."""
 
     def test_auto_launches_dedicated_instance_when_no_endpoint(self):

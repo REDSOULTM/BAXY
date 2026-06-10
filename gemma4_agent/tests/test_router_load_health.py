@@ -7,7 +7,7 @@ sentence-transformers. Resultado: semantic_router._ensure_loaded() crasheaba con
 devolvía [], así que CADA query se mis-ruteaba (ej. '¿qué es Mortal Kombat?'
 terminó creando un documento en vez de buscar en la web).
 
-Mismo tipo de breakage que optimum/tensorflow (CLAUDE.md: 'NO instalar optimum/
+Mismo tipo de breakage que optimum/tensorflow ('NO instalar optimum/
 tensorflow en runtime 3.10 — rompe ST->router vacío'). Estos tests fallan si el
 router no puede clasificar/rutear, dando una señal temprana.
 """

@@ -109,7 +109,7 @@ LISTO_REGEN_HINT = (
 #  - Mide la FORMA + la actividad de tools del turno, nunca inventa contenido.
 #  - FALLBACK SEGURO: sin encoder o margen ambiguo -> NO flaggea (jamás molesta
 #    en un reply legítimo). Conservador a propósito.
-#  - Determinista permitido (CLAUDE.md): embeddings + guarda estructural.
+#  - Determinista permitido: embeddings + guarda estructural.
 # ---------------------------------------------------------------------------
 
 # Margen mínimo (claim - conv) para considerar que el reply AFIRMA un efecto.
@@ -240,7 +240,7 @@ _TOOL_DOMAIN = {
     "whatsapp": "messaging", "computer_use": "computer_use", "gui": "gui",
     "clipboard": "clipboard", "vision": "vision",
 }
-# Señal de que el USER pidió una operación de VENTANA (mover/foco/min/max/
+# Señal de que el comando es una operación de VENTANA (mover/foco/min/max/
 # restaurar una ventana). Estructural, multi-idioma, mide la FORMA. Pensado
 # para el bug "mueve Notepad a la izquierda" -> filesystem.rename + mentira.
 _INTENT_WINDOW_RE = re.compile(
@@ -451,7 +451,7 @@ def click_claim_without_click(reply_text: str, tool_calls_this_turn: list[Any]) 
 
 # El reply afirma que los TESTS PASARON / fueron exitosos / verificado. BUG medido
 # (tanda 1, A2): "corrí los tests y todos pasaron" sin que el ToolResult traiga el
-# conteo pass/fail real. CLAUDE.md: nunca declarar éxito sin un número.
+# conteo pass/fail real. nunca declarar éxito sin un número.
 _TESTS_PASSED_RE = re.compile(
     r"\b(?:tests?|pruebas?|pytest)\b[^.]{0,40}"
     r"\b(?:pasaron|pasar[oó]n|exitos\w*|verificad\w*|ok\b|todos?\s+(?:bien|verde)|"
@@ -466,7 +466,7 @@ _TEST_TOOLS = {"developer", "terminal"}
 def tests_passed_without_evidence(reply_text: str, tool_calls_this_turn: list[Any]) -> bool:
     """True iff el reply afirma que los tests PASARON pero el ToolResult de la tool
     de testing NO trae evidencia de conteo (pass/fail, exit-code, recuento). No se
-    puede declarar éxito de tests sin el número real (CLAUDE.md)."""
+    puede declarar éxito de tests sin el número real."""
     if not _TESTS_PASSED_RE.search(reply_text or ""):
         return False
     for c in tool_calls_this_turn:
@@ -738,7 +738,7 @@ MEDIA_FABRICATED_HINT = (
 def intent_domain_mismatch(
     user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
 ) -> bool:
-    """True iff: el USER pidió una operación de VENTANA, la afirmación del reply
+    """True iff: el comando es una operación de VENTANA, la afirmación del reply
     suena a efecto-hecho, PERO la(s) tool(s) exitosa(s) son de un dominio
     INCOMPATIBLE (archivo) — sin ninguna tool de window. Cierra la mentira
     "moví la ventana y la renombré a X.txt" que pasa porque filesystem.rename
@@ -882,7 +882,7 @@ def soften_unverified_launch(reply_text: str, tool_calls_this_turn: list[Any]) -
 # ---------------------------------------------------------------------------
 
 # Margen mínimo (manual - ok) para considerar que el reply PIDE input manual.
-# CONSERVADOR a propósito (CLAUDE.md §3): preferimos un falso-NEGATIVO ocasional
+# CONSERVADOR a propósito: preferimos un falso-NEGATIVO ocasional
 # (una instrucción manual que se cuela) antes que un falso-POSITIVO (regen
 # espurio sobre un reply legítimo, p.ej. una pregunta aclaratoria). El system_hint
 # de movilidad es la defensa primaria; esta guarda es el backstop estructural.

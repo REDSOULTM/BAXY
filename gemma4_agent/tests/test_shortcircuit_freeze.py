@@ -2,7 +2,7 @@
 
 `_decide_turn` tiene 6 short-circuits que bypassean el LLM (arithmetic, calc, app_action,
 app_open, deterministic_reply, phrase_trigger). Cada uno nació de un bug medido, pero
-acumularlos pelea con CLAUDE.md regla (b) ("el LLM responde"). Este guard exige que un
+acumularlos pelea con las reglas del proyecto regla (b) ("el LLM responde"). Este guard exige que un
 short-circuit NUEVO venga con medición + suba el techo a propósito. Ver
 documentacion/ADR_short_circuits_freeze.md.
 """

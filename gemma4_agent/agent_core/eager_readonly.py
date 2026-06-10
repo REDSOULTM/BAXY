@@ -27,7 +27,7 @@ declarativa dedicada (en vez de inyectar una clave ``read_only`` en
      contract-tests vigilan.
   2. Es ESTRUCTURAL igual: una declaración única, por (tool, action),
      verificada entrada-por-entrada — NO una lista de keywords por idioma
-     ni lógica if/else dispersa (CLAUDE.md (b)/(c)).
+     ni lógica if/else dispersa/(c)).
 
 DEFENSA EN PROFUNDIDAD
 ======================
@@ -91,7 +91,7 @@ EAGER_READONLY_CALLS: frozenset[tuple[str, str]] = frozenset({
 # Señal de discriminación: el TEXTO del turno comparado por EMBEDDINGS
 # MULTILINGÜES contra una descripción de intent por acción (mismo mecanismo
 # sancionado que TOOL_DESCRIPTIONS del semantic_router — NO una lista de
-# keywords por idioma; es-only está PROHIBIDO por CLAUDE.md). El encoder es
+# keywords por idioma; es-only está PROHIBIDO por las reglas del proyecto). El encoder es
 # el mismo ``embed()`` ya cargado por el router (sin 2º modelo) y el turno ya
 # fue embebido ese turno (cache-hit, costo ~0). Disparamos SOLO la(s) read
 # cuya similitud supera un umbral; si ninguna lo supera -> 0 reads.
@@ -162,7 +162,7 @@ def is_enabled() -> bool:
 
 # BARRERA ESTRUCTURAL sobre la FORMA del nombre de la acción (no listas por
 # idioma del usuario: son verbos del PROTOCOLO de las tools, identificadores en
-# inglés del schema — guarda sobre la forma del identificador, CLAUDE.md (b)).
+# inglés del schema — guarda sobre la forma del identificador, las reglas del proyecto (b)).
 #
 # IMPORTANTE: el clasificador de seguridad
 # (safety.classify_tool_call) NO sirve como barrera read-only — sólo decide
@@ -260,7 +260,7 @@ def _intent_filter(
 
     Estructural y multilingüe: usa el MISMO encoder del router (``embed``),
     reusa el embedding del turno (cache-hit), y compara contra anclas de intent
-    (NO una lista de keywords es-only). CLAUDE.md (a)."""
+    (NO una lista de keywords es-only). las reglas del proyecto (a)."""
     text = (turn_text or "").strip()
     if not text:
         return None

@@ -138,7 +138,7 @@ class AppActionExtractTest(unittest.TestCase):
     def test_act_in_app_needs_verify(self):
         # "escribí X en <app>" -> act_in_app con verify_app=True (el caller confirma
         # por estado del SO que <app> es ventana real).
-        for q in ("escribí sigue en claude code",
+        for q in ("escribí 'sigo' en Slack",
                   "escribí hola mundo en el bloc de notas",
                   "poné reunión a las 5 en notepad",
                   "type hello world in notepad",
@@ -150,23 +150,23 @@ class AppActionExtractTest(unittest.TestCase):
 
     def test_in_app_act_app_first(self):
         # "en <app> escribí X" (app primero) tambien -> verify_app.
-        r = self.A("en claude code escribí quién eres")
+        r = self.A("en Slack escribí quién eres")
         self.assertIsNotNone(r)
         self.assertEqual(r["pattern"], "in_app_act")
         self.assertTrue(r["verify_app"])
-        self.assertIn("claude", (r["app_hint"] or "").lower())
+        self.assertIn("slack", (r["app_hint"] or "").lower())
 
     def test_a_preposition_app_target(self):
-        # Caso REAL: "escribile sigue A claude code" (con "a", no "en").
-        # Dispara act_in_app (verify_app) -> el OS-check decide (claude code abierto
+        # Caso REAL: "escribile sigue a Slack" (con "a", no "en").
+        # Dispara act_in_app (verify_app) -> el OS-check decide (Slack abierto
         # -> cu; 'a juan' -> no es ventana -> cae a whatsapp).
-        r = self.A("escribile sigue a claude code")
+        r = self.A("escribile sigue a Slack")
         self.assertIsNotNone(r)
         self.assertTrue(r["verify_app"])
 
     def test_nav_action_no_verify(self):
         # "andá a <app> y <acción>" -> nav_action, sin OS-check (gramática basta).
-        for q in ("andá a Claude Code y escribí continuá",
+        for q in ("andá a Slack y escribí continuá",
                   "andá a notepad y escribí mi nombre",
                   "abrí el word y guardá"):
             r = self.A(q)
@@ -229,9 +229,9 @@ class ParseTypeActionTest(unittest.TestCase):
         self.assertEqual(r["payload"], "reunión a las 5")
 
     def test_a_locator_fallback(self):
-        # Sin 'en', usa 'a' (caso real "escribile sigue a claude code").
-        r = self.P("escribile sigue a claude code")
-        self.assertEqual(r["app"], "claude code")
+        # Sin 'en', usa 'a' (caso real "escribile sigue a Slack").
+        r = self.P("escribile sigue a Slack")
+        self.assertEqual(r["app"], "Slack")
         self.assertEqual(r["payload"], "sigue")
 
     def test_in_app_first(self):
@@ -240,7 +240,7 @@ class ParseTypeActionTest(unittest.TestCase):
         self.assertEqual(r["payload"], "mi nombre")
 
     def test_nav_then_type(self):
-        for q, pay in [("andá a Claude Code y escribí continuá", "continuá"),
+        for q, pay in [("andá a Slack y escribí continuá", "continuá"),
                        ("abrí la calculadora y escribí 5+5", "5+5"),
                        ("Abre el bloque de notas y escríbele Hola Mundo", "Hola Mundo")]:
             r = self.P(q)
@@ -666,7 +666,7 @@ _HAS_ENCODER = _ensure_action_centroids()
 class MultilingualSplitTest(unittest.TestCase):
     """CAPA 2: parte multi-intent en CUALQUIER idioma (no solo español), por
     embeddings. Sustantivos coordinados ('Tom and Jerry') NO parten. Principio
-    universal del proyecto (CLAUDE.md): nada de regex es-only."""
+    universal del proyecto: nada de regex es-only."""
 
     def setUp(self):
         os.environ["GEMMA4_SPLIT_MULTILANG"] = "1"

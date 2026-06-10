@@ -1511,7 +1511,7 @@ class ToolRegistry:
         # NO es una confirmación real. La confirmación VÁLIDA solo llega por:
         #   (a) `_confirmed_by_gate` → el flujo safety(confirm) tras round-trip real;
         #   (b) `confirmed_at_create` → rutina pre-confirmada al crearse (más abajo).
-        # Mandamiento #6 de CLAUDE.md. El gate de abajo decide por RIESGO si confirmar;
+        # la regla de confirmar lo irreversible. El gate de abajo decide por RIESGO si confirmar;
         # para lo reversible (la mayoría) `_llm_confirmed` igual ahorra el round-trip
         # innecesario, pero NUNCA puede saltear lo irreversible.
         confirmed = _gate_confirmed or _llm_confirmed
@@ -2236,7 +2236,7 @@ class ToolRegistry:
             return self.window_control(action, str(args.get("title") or args.get("query") or ""))
         if action == "move_resize":
             return self.window_move_resize(args)
-        # AUTO-DELEGACIÓN (CLAUDE.md §5: la tool garantiza su precondición). El 4B
+        # AUTO-DELEGACIÓN (la tool garantiza su precondición). El 4B
         # a veces llama window(action='open', query='<sitio>') para "abrir una
         # página" — pero `window` no abre páginas (no tiene 'open'). En vez de un
         # error duro (que en movilidad/no_vidente deja la tarea trabada), si el
@@ -2554,7 +2554,7 @@ class ToolRegistry:
             # SITE-NAME -> RESOLVER POR BÚSQUEDA (2026-05-27): "ve a la página de
             # pivigames" da un NOMBRE de sitio, no una URL. Si el target es una
             # palabra suelta (sin punto ni esquema), lo resolvemos con una búsqueda
-            # REAL — NO adivinamos el TLD (CLAUDE.md: resolver por lookup). Guardamos
+            # REAL — NO adivinamos el TLD (resolver por lookup). Guardamos
             # el nombre original para el reporte; `url` queda con la URL resuelta.
             _resolved_from = None
             # ¿el target es algo que hay que RESOLVER por búsqueda (no abrir a ciegas)?
@@ -2654,8 +2654,7 @@ class ToolRegistry:
                 # En vez de devolver needs_user (que el modelo convierte en "no
                 # puedo abrir Chrome sin URL"), delegamos a app.open: hacemos la
                 # acción real. No es un hardcode de routing ni una respuesta
-                # enlatada — es la tool garantizando su precondición (CLAUDE.md
-                # #5) cuando el arg nombra una app y falta el url. La regla en
+                # enlatada — es la tool garantizando su precondición cuando el arg nombra una app y falta el url. La regla en
                 # prompts/tool_rules/browser.md enseña la forma correcta
                 # (app.open); esto es la red de seguridad determinista.
                 app_name = (browser or str(args.get("name") or "")).strip()
@@ -2742,7 +2741,7 @@ class ToolRegistry:
                 # ANTES (bug 2026-05-27): abría el navegador y tecleaba la URL con
                 # gui_keypress/gui_type (SendInput) — FRÁGIL (race de foco -> "stuck
                 # at attempted") y PELIGROSO (el SendInput va a la ventana enfocada;
-                # cerró VS Code en dev). Ahora lanzamos el navegador CON la URL como
+                # cerraba la app en foco). Ahora lanzamos el navegador CON la URL como
                 # argumento (navega ahí, sin SendInput) vía _open_url_in_browser, que
                 # además verifica la ventana. Si no se puede, default honesto.
                 b = self._open_url_in_browser(browser, url)
@@ -4289,7 +4288,7 @@ $p=Get-Process -Id $pid32 -ErrorAction SilentlyContinue
                     # vivo, el bug clase-Carter). Polleamos hasta ~1.5s a que el
                     # hwnd deje de ser ventana válida/visible. NO forzamos kill
                     # (taskkill sobre trabajo sin guardar sería destructivo,
-                    # CLAUDE.md #6); si no cierra, lo reportamos honestamente.
+                    # las reglas del proyecto #6); si no cierra, lo reportamos honestamente.
                     applied = False
                     _close_deadline = time.time() + 1.5
                     while time.time() < _close_deadline:
@@ -7336,7 +7335,7 @@ Start-Sleep -Milliseconds 120
         # BUG tilde (2026-05-23): SendKeys vía stdin pierde acentos. El stdin de
         # PowerShell se decodifica con la code-page de consola (cp1252/OEM en
         # Windows ES), NO UTF-8, así que "mamá" llegaba como "mam?". Mismo gotcha
-        # que espeak-ng (CLAUDE.md). Además SendKeys tiene límites con Unicode.
+        # que espeak-ng. Además SendKeys tiene límites con Unicode.
         # FIX: si el texto tiene caracteres NO-ASCII (acentos, ñ, emoji), tipear
         # por CLIPBOARD-PASTE (tkinter es UTF-8-safe), guardando y restaurando el
         # portapapeles del usuario. ASCII puro -> SendKeys (no toca el clipboard).

@@ -1374,7 +1374,7 @@ def select_tool_names(
     # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario: el 4B
     # no necesita las 3 variantes del mismo dominio. `keep` protege las tools que
     # el keyword disparó (señal fuerte de intención) para no colapsar una que el
-    # usuario pidió explícito.
+    # el comando las nombró explícito.
     try:
         from . import semantic_router as _sr_collapse
         _semantic_loaded = bool(_sr_collapse.status().get("model_loaded"))

@@ -1,6 +1,6 @@
-"""Skills registry — Anthropic Agent Skills spec con extensiones locales.
+"""Skills registry — Agent Skills spec con extensiones locales.
 
-Pattern: Anthropic Agent Skills. Cada skill es una carpeta con SKILL.md.
+Pattern: Agent Skills. Cada skill es una carpeta con SKILL.md.
 Frontmatter YAML declara name + description + priority + requires.
 
 Boot flow:
@@ -18,7 +18,7 @@ Diferencia vs microagents:
   - skill: receta lazy on-demand. El LLM ve un MENU (name + description) y
     decide SEMANTICAMENTE cual cargar via skill_load(). Sin keyword matching.
 
-`priority` extension (no esta en spec oficial Anthropic):
+`priority` extension (no esta en el spec oficial):
   - critical: eager-loaded full body en cada turn. Reservado para safety/
     honestidad universales (e.g. purchase-guard).
   - high/medium/low: solo aparecen en el menu (lazy). Cap por profile de
@@ -132,7 +132,7 @@ _VALID_NAME_RE = re.compile(r"^[a-z0-9]([a-z0-9-]{0,62}[a-z0-9])?$")
 
 
 def _is_valid_skill_name(name: str) -> bool:
-    """Anthropic Agent Skills: lowercase letters/digits/hyphens, max 64,
+    """Agent Skills: lowercase letters/digits/hyphens, max 64,
     no leading/trailing hyphen.
     """
     return bool(_VALID_NAME_RE.match(name)) and len(name) <= 64
@@ -248,7 +248,7 @@ def _parse_yaml_simple(text: str) -> dict:
 def _extract_meta_list(meta_dict: dict, key: str) -> tuple[str, ...]:
     """Lee una sub-lista (`examples`, `when_to_use`, `limitations`) del
     frontmatter, tolerante a las variantes del parser simple:
-      - `metadata: {<key>: [a, b]}`  (estándar Anthropic, dict)  ← caso actual
+      - `metadata: {<key>: [a, b]}`  (estándar Agent Skills, dict)  ← caso actual
       - `<key>: [a, b]` top-level (legacy)
       - SOLO para `examples`: `metadata:` aplanado a lista por parsers viejos.
     Devuelve tupla de strings no vacíos."""
@@ -411,7 +411,7 @@ def scan_skills(skills_dir: Optional[Path] = None) -> list[SkillMeta]:
             requires_raw = meta_dict.get("requires") or {}
             requires = dict(requires_raw) if isinstance(requires_raw, dict) else {}
             # examples: fraseos de ejemplo multilingües para el auto-inject
-            # multi-vector. Estándar Anthropic Agent Skills: campos custom van bajo
+            # multi-vector. Estándar Agent Skills: campos custom van bajo
             # `metadata:`. Aceptamos `metadata.examples` (estándar) o `examples`
             # top-level (legacy). El parser simple aplana `metadata:\n examples:\n
             # - a\n - b` a una lista directa -> también lo tomamos.

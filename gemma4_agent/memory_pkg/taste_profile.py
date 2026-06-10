@@ -7,7 +7,7 @@ para que el modelo te conozca y dé una mejor experiencia.
 Diseño respaldado por investigación verificada:
   - Generative Agents (arXiv:2304.03442): observación → reflexión → insight. Acá la
     reflexión es DETERMINISTA (agregación por conteo/tiempo) en vez de LLM, porque:
-    (a) es barata y confiable (el 4B es ruidoso para esto), (b) CLAUDE.md prohíbe
+    (a) es barata y confiable (el 4B es ruidoso para esto), (b) las reglas del proyecto prohíbe
     depender del LLM para clasificar gustos sin necesidad. La síntesis del PÁRRAFO
     final sí puede pasar por el LLM (opt-in), pero los insights base son medidos.
   - Guided Profile Generation (arXiv:2409.13093, +37%): inyectar un PÁRRAFO en

@@ -115,7 +115,7 @@ class BrowserOpenSiteNameTest(unittest.TestCase):
 
     def test_all_aggregators_returns_none_no_garbage(self):
         # si TODO es agregador (sitio sin web propia indexada), NO abrir basura:
-        # error honesto (None). Cambio 2026-06-07 (guard anti-basura + CLAUDE.md):
+        # error honesto (None). Cambio 2026-06-07 (guard anti-basura + las reglas del proyecto):
         # antes abría el primer agregador (instagram.com/foo) = página equivocada.
         # El 2do pase (todos los backends) también mockeado vacío -> no pega a la red.
         results = [{"url": "https://www.instagram.com/foo/", "title": "ig"}]
@@ -298,7 +298,7 @@ class OpenInSpecificBrowserTest(unittest.TestCase):
 
     def test_search_in_named_browser_uses_no_sendinput(self):
         # BUG 2026-05-27: browser.search con browser= TECLEABA la URL con
-        # gui_keypress/gui_type (SendInput) -> frágil + cerró VS Code en dev.
+        # gui_keypress/gui_type (SendInput) -> frágil + puede cerrar la app en foco.
         # Ahora lanza el navegador con la URL como arg (0 SendInput).
         sendinput = []
         self.ag.tools.gui_keypress = lambda a: (sendinput.append("kp"), {"ok": True})[1]

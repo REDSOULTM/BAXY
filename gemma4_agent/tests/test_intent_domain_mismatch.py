@@ -204,7 +204,7 @@ class ClickClaimWithoutClickTest(unittest.TestCase):
 
 
 class TestsPassedWithoutEvidenceTest(unittest.TestCase):
-    """Honestidad (CLAUDE.md: no declarar éxito sin un número): afirmar que los
+    """Honestidad (no declarar éxito sin un número): afirmar que los
     tests pasaron sin conteo pass/fail real es fabricar. BUG medido (tanda 1, A2)."""
 
     def _dc(self, **res):

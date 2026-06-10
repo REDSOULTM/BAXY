@@ -1,6 +1,6 @@
 """Tests del router de contexto multi-turno MULTILINGÜE (investigación 4).
 
-PRINCIPIO (CLAUDE.md): uso universal — cualquier hablante, cualquier idioma. La
+PRINCIPIO: uso universal — cualquier hablante, cualquier idioma. La
 deixis se detecta por embeddings multilingües, NO por regex en español. Estos
 tests verifican: (1) atómicos en varios idiomas droppean historial, (2) deixis
 en varios idiomas lo conservan, (3) FALLBACK SEGURO sin encoder (nunca droppea).

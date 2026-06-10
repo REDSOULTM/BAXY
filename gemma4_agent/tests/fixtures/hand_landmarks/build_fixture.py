@@ -1,6 +1,6 @@
 """Regenerate the kinivi hand-landmark gesture fixture from the upstream source.
 
-Reproducibility recipe (CLAUDE.md: never ship an artifact without its recipe).
+Reproducibility recipe (never ship an artifact without its recipe).
 Downloads kinivi/hand-gesture-recognition-mediapipe keypoint.csv (Apache-2.0) and
 writes a balanced subset (N per class, deterministic = first N) used as the
 offline validation fixture for the geometric gesture recognizer.

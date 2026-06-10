@@ -8,7 +8,7 @@ arma el plan [focus_app(calc), type(expr), keypress(enter)] -> abre/enfoca ANTES
 tipear, el type aterriza y el verifier confirma.
 
 Mock-only: NO LLM, NO GUI/SendInput. Mockeamos tools.t_computer_use para capturar el
-plan SIN ejecutar input físico (que cerraría VS Code).
+plan SIN ejecutar input físico (que afectaría la ventana en foco).
 """
 from __future__ import annotations
 

@@ -7,7 +7,7 @@ observaciones agregadas por el 4B LOCAL para inferir gustos de MÁS ALTO NIVEL
 observación→reflexión→insight de Generative Agents (arXiv:2304.03442), ahora con el
 paso de reflexión por LLM como reservaba el diseño.
 
-POR QUÉ gateado + medido (CLAUDE.md): el 4B es RUIDOSO clasificando gustos. Reglas
+POR QUÉ gateado + medido: el 4B es RUIDOSO clasificando gustos. Reglas
 de diseño, todas verificables:
   - **Gate default OFF** (`GEMMA4_TASTE_LLM_REFLECTION`): opt-in. Sin él, el perfil
     determinista manda intacto. Esta capa AUMENTA, nunca reemplaza la base medida.

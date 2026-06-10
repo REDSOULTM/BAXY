@@ -7,7 +7,7 @@ or contradicts ("el agente no miente"); the gate is honored.
 
 End-to-end eligibility (only summary-pass / tool-turn / no-routine) + TTFA are
 validated LIVE in scripts/_validate_stream_tts.py — the 4B is non-deterministic,
-so the live run is the real gate (CLAUDE.md #3.5). See
+so the live run is the real gate. See
 documentacion/SPRINT_streaming_tts_truthful.md.
 """
 import os

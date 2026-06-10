@@ -5,7 +5,7 @@ Cuando dispara el wake-word y se entra en CAPTURA, el volumen del sistema baja
 Al dejar de hablar (transcribe / no-speech / idle) se RESTAURA al valor exacto
 que tenías. Es el comportamiento clásico tipo Alexa que el operador recordaba.
 
-Diseño robusto (CLAUDE.md: no dejar el PC en mal estado):
+Diseño robusto (no dejar el PC en mal estado):
 - RESTAURA SIEMPRE ante cualquier fallo. Si algo explota a mitad, el volumen
   vuelve; nunca te deja el PC mudo.
 - Guarda el nivel previo SOLO al primer duck (idempotente): si ya está duckeado,

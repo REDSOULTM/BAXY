@@ -1,6 +1,6 @@
 """Computer-use UNIVERSAL — ejecutor de planes (NO un macro por intención).
 
-Diseño (decidido por medición, gates en CLAUDE.md):
+Diseño (decidido por medición, gates en las reglas del proyecto):
   - El 4B NO encadena acciones solo (medido 2/10: hace focus_app y para).
   - El 4B SÍ emite un PLAN de primitivas (medido 10/10 parseable, 7/10 correcto).
   -> El LLM da el OBJETIVO crudo (cualquier idioma/fraseo). Un PLANIFICADOR (el
@@ -278,7 +278,7 @@ def _discord_control_human(action: str) -> str:
 
 def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
     """Resumen humano y HONESTO del resultado de ejecutar un plan. Reporta lo que el
-    estado del SO confirma — sin afirmar lo que no se verificó (CLAUDE.md §3)."""
+    estado del SO confirma — sin afirmar lo que no se verificó."""
     steps = result.get("steps") or []
     app = result.get("focused_app") or ""
     if not result.get("ok"):

@@ -545,7 +545,7 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
     # SOLO si la última palabra es una APP DE MENSAJERÍA conocida — distingue
     # "en Discord" (app) de "en casa"/"en 10 minutos" (lugar/tiempo legítimos del
     # mensaje). MEDIDO: el pelado ciego rompía "te espero en casa"->"te espero"
-    # y AppResol(fuzzy) matcheaba "casa" como app (CLAUDE.md: medí, no celebré).
+    # y AppResol(fuzzy) matcheaba "casa" como app (medí, no celebré).
     # Las apps de mensajería son un set CERRADO y finito -> cobertura segura,
     # multi-idioma, sin tocar palabras comunes. (Si la app está en el app_hint
     # del SO, también vale.)
@@ -601,9 +601,9 @@ def extract_write_payload(clause: str) -> str | None:
 # --- Detección de ACCIÓN-EN-APP / META para el orquestador computer_use -------
 # ACCESIBILIDAD (núcleo del producto): el usuario dicta y el agente debe ACTUAR en
 # una app/pantalla — escribir, clickear, o "andá a X y hacé Y". MEDIDO: estos
-# pedidos casi NUNCA llegaban a computer_use — el 4B charlaba
-# ("escribí sigue en claude code"→"Sigo en Claude Code"), respondía la pregunta
-# ("en claude code escribí quién eres"→la contestaba), o el router los mandaba a
+# pedidos casi NUNCA llegaban a computer_use — el 4B respondía como charla
+# ("escribí 'sigo' en Slack"→"Sigo en Slack"), respondía la pregunta
+# ("en Slack escribí quién eres"→la contestaba), o el router los mandaba a
 # notes_tasks/local_search/browser/whatsapp/nada. Solo ~1/10 llegaba al orquestador.
 # Este detector ESTRUCTURAL (gramática multi-idioma, NO listas de apps ni de
 # intenciones) reconoce la FORMA "acción dirigida a una app". NO es un macro
@@ -665,7 +665,7 @@ _AA_NAV_IN_APP = re.compile(
     r"(?P<dest>.+?)\s+(?:en|in|into|dentro\s+de|dans|im|su)\s+(?P<app>\S.*)$",
     re.IGNORECASE)
 # B: "<acción> <payload> en|a <app>" — ambiguo -> verify_app. Incluye "a" (caso
-# real "escribile sigue A claude code") pero SIEMPRE gateado por el OS-check del
+# real "escribile 'sigo' a Slack") pero SIEMPRE gateado por el OS-check del
 # caller: 'escribile a juan' -> app_hint='juan' no es ventana -> NO dispara cu
 # (sigue a whatsapp). Solo 'a <app-abierta>' rutea al orquestador.
 _AA_ACT_IN_APP = re.compile(

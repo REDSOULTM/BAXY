@@ -3,7 +3,7 @@
 network.py NO tenía test propio: el único ejercicio era el smoke
 `{action:status}` de test_r4_all_handlers_smoke.py. Este archivo cubre
 los caminos REALES de cada acción de diagnóstico de red, con TODO subprocess
-y red mockeados (CLAUDE.md: nada de efectos físicos / red real en tests).
+y red mockeados (nada de efectos físicos / red real en tests).
 
 Cada test afirma una propiedad verificada contra el código fuente:
   - honestidad: reachable/verified reflejan returncode, no se inventan

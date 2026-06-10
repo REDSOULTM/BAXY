@@ -2,7 +2,7 @@
 
 maintenance.py NO tenía test propio (solo el smoke {action:status}).
 Cubre las acciones de diagnóstico Windows con TODO subprocess mockeado
-(CLAUDE.md: nada de PowerShell/Defender/servicios reales en tests).
+(nada de PowerShell/Defender/servicios reales en tests).
 
 Propiedades afirmadas contra el código fuente:
   - honestidad: verified refleja returncode; returncode!=0 -> ok:False

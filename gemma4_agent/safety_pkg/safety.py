@@ -71,7 +71,7 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
 # del usuario (eso sí está prohibido): los nombres de tools MCP son identificadores
 # del PROTOCOLO, siempre en inglés por convención del spec (read_file/write_file/
 # delete/create_issue/...). Es una guarda ESTRUCTURAL sobre la FORMA del nombre del
-# tool externo, no sobre el contenido del pedido del usuario. Fuente: spec MCP de
+# tool externo, no sobre el contenido del mensaje de entrada. Fuente: spec MCP de
 # tool naming + tool annotations (readOnlyHint/destructiveHint).
 _MCP_MUTATION_VERBS = (
     "write", "delete", "remove", "create", "update", "edit", "modify", "move",

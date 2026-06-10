@@ -15,7 +15,7 @@ Núcleo del comportamiento (NO hardcode — mide la FORMA, estado del SO):
   - NUNCA abrir basura: si nada matchea el nombre -> None (error honesto).
 
 Fuentes/incidentes: 've a pivigames' (pivigames.blog no .com), 've a portal uniej'
-(portal2.uniej.cl, no portalunab.mx ni el .pe). Ver CLAUDE.md (resolver por lookup).
+(portal2.uniej.cl, no portalunab.mx ni el .pe). Ver las reglas del proyecto (resolver por lookup).
 """
 from __future__ import annotations
 
@@ -114,7 +114,7 @@ def registrable_label(url: str):
 
 
 def user_requested_open(url: str, user_text: str) -> bool:
-    """¿El user pidió ABRIR/VER esta URL (dictó su dominio), o el 4B la eligió para
+    """¿El comando pide ABRIR/VER esta URL (con el dominio dictado), o el 4B la eligió para
     'mostrar' una respuesta? True si la raíz del host aparece en el texto del user
     -> intención explícita de abrir. False si no la dictó (web.open de conocimiento
     -> conviene leer el contenido y responder, no abrir un tab). Sin user_text ->
@@ -303,7 +303,7 @@ def resolve_site_by_search(
     non_site_hosts: tuple[str, ...] = (),  # DEPRECATED: ya no se usa (señal estructural)
 ) -> str | None:
     """Resuelve el NOMBRE de un sitio ('pivigames') a la URL del SITIO vía
-    búsqueda web. NO adivina el TLD (lookup real, CLAUDE.md). Heurística para
+    búsqueda web. NO adivina el TLD (lookup real, las reglas del proyecto). Heurística para
     no abrir el resultado equivocado:
       1. Descartar agregadores/redes/perfiles de tercero por SEÑAL ESTRUCTURAL:
          el nombre debe ser un LABEL COMPLETO del dominio (o, en un resultado TOP

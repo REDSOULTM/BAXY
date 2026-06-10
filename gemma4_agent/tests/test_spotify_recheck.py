@@ -39,7 +39,7 @@ class TestSpotifyAutoPlayRecheck(unittest.TestCase):
                 call_count["active"] += 1
                 if call_count["active"] == 1:
                     return {"ok": True, "active": {"title": "Spotify Premium"}}
-                # 2nd call (recheck) — user switched to VS Code
+                # 2nd call (recheck) — foreground app changed
                 return {"ok": True, "active": {"title": "agent.py - VS Code"}}
             if name == "gui" and args.get("action") == "keypress":
                 return {"ok": True}

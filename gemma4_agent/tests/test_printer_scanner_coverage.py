@@ -2,7 +2,7 @@
 
 printer_scanner.py NO tenía test propio (solo el smoke {action:status}).
 Cubre imprimir/escanear/listar con TODO subprocess (PowerShell + WIA) mockeado
-— jamás se toca una impresora/escáner real ni se imprime nada (CLAUDE.md).
+— jamás se toca una impresora/escáner real ni se imprime nada.
 
 Detalle de mocking: printer_scanner enruta varias acciones por
 helpers._powershell_json / helpers._json_or_none. Verificado que

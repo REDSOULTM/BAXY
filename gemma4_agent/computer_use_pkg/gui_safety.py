@@ -1,7 +1,7 @@
 """Guardas de seguridad para acciones GUI (computer-use).
 
 Dos protecciones estructurales, deterministas, que miden la FORMA/el ESTADO del
-SO (no el contenido) — alineadas con CLAUDE.md (#6 respetar recursos del usuario;
+SO (no el contenido) — alineadas con las reglas del proyecto (#6 respetar recursos del usuario;
 guardas estructurales permitidas):
 
 1. USER-ACTIVITY (GetLastInputInfo): no pelear el mouse/teclado con el usuario.
