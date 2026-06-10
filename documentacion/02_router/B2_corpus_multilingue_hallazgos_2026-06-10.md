@@ -56,6 +56,35 @@ artificialmente alto por el sesgo; el 0.9751 es el recall multilingüe REAL** �
 más honesto. Cualquier mejora futura a los huecos hallados subirá este número de
 verdad. No revertir el corpus para "recuperar" el 0.9800: sería esconder la cabeza.
 
+## Hallazgo colateral: leakage parcial training↔eval (744 textos)
+
+Al construir B2 se midió: **744 textos están en AMBOS** `tool2vec_queries.jsonl`
+(training del encoder) y `router_eval_corpus.curated.jsonl` (holdout). El holdout
+se asigna por hash del texto, así que ~20% de esos 744 caen en holdout siendo
+"vistos en training" → el holdout NO es 100% honesto (recall ligeramente
+optimista). Es PRE-EXISTENTE (el corpus curado alimenta ambos pipelines), no
+introducido por B2. Mejora futura: filtrar del training los textos que caen en
+holdout (split-aware), o derivar el training de una fuente disjunta del eval.
+No bloquea B2; se anota para que el número de holdout se lea con ese caveat.
+
+## Ataque a los huecos (reentreno del encoder)
+
++62 ejemplos a `tool2vec_queries.jsonl` (find-app, salir-de-app, system-metric,
+clipboard) en 6 idiomas → reentreno del encoder (seed 42). Resultado:
+
+- **holdout 0.9751 → 0.9813** (subió: el encoder mejoró, no solo cerró huecos).
+- huecos B2: **~6/16 → 10/16**. En vivo 3/3 verificados (find Photoshop→app,
+  esci da Spotify→app.close, incollalo→clipboard).
+- huecos previos de la misión: **25/25** intactos. Control sin romper.
+
+**Residual diagnosticado (2 causas distintas, no de corpus):**
+1. `what is the CPU usage`/`battery level` → [] AUNQUE el exemplar lo tiene como
+   `system` a 1.000. Lo veta una capa POSTERIOR (abstención por "what is" / gate
+   de pregunta), no el encoder. Es un problema de GATE, no de datos.
+2. `find the calculator`/`finde Discord` → el exemplar de "find X" quedó a ~0.57
+   (bajo umbral) — "find the X" embebe lejos de "abre X". Necesita más ejemplos
+   o ajuste de umbral. Hueco de COBERTURA aún parcial.
+
 ## Estado
 
 - Corpus B2 commiteado (etiquetas curadas; "who is X"→web corregido).

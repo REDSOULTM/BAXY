@@ -8203,3 +8203,65 @@
 {"tool": "browser", "q": "cherche des écouteurs sur Amazon"}
 {"tool": "browser", "q": "cherche Batman sur Google"}
 {"tool": "browser", "q": "cherche un tutoriel sur YouTube"}
+{"tool": "app", "q": "find Photoshop"}
+{"tool": "app", "q": "find Discord"}
+{"tool": "app", "q": "find the calculator"}
+{"tool": "app", "q": "find Spotify"}
+{"tool": "app", "q": "find Chrome"}
+{"tool": "app", "q": "trova Photoshop"}
+{"tool": "app", "q": "trova Discord"}
+{"tool": "app", "q": "trova la calcolatrice"}
+{"tool": "app", "q": "trova Spotify"}
+{"tool": "app", "q": "finde Photoshop"}
+{"tool": "app", "q": "finde Discord"}
+{"tool": "app", "q": "finde den Rechner"}
+{"tool": "app", "q": "finde Spotify"}
+{"tool": "app", "q": "trouve Photoshop"}
+{"tool": "app", "q": "trouve Discord"}
+{"tool": "app", "q": "encontrá Photoshop"}
+{"tool": "app", "q": "encontrá la calculadora"}
+{"tool": "app", "q": "encontra o Photoshop"}
+{"tool": "app", "q": "procura o Discord"}
+{"tool": "app", "q": "esci da Spotify"}
+{"tool": "app", "q": "esci da Chrome"}
+{"tool": "app", "q": "esci da Discord"}
+{"tool": "app", "q": "esci dall app"}
+{"tool": "app", "q": "exit Spotify"}
+{"tool": "app", "q": "exit Chrome"}
+{"tool": "app", "q": "quit out of Discord"}
+{"tool": "app", "q": "beende Spotify"}
+{"tool": "app", "q": "verlasse Chrome"}
+{"tool": "app", "q": "sors de Spotify"}
+{"tool": "app", "q": "quitte Chrome"}
+{"tool": "app", "q": "sai do Spotify"}
+{"tool": "app", "q": "fecha o Chrome"}
+{"tool": "system", "q": "what is the CPU usage"}
+{"tool": "system", "q": "what is the battery level"}
+{"tool": "system", "q": "what is the memory usage"}
+{"tool": "system", "q": "what is the disk usage"}
+{"tool": "system", "q": "what is my CPU temperature"}
+{"tool": "system", "q": "qual è l uso della CPU"}
+{"tool": "system", "q": "qual è il livello della batteria"}
+{"tool": "system", "q": "quanta memoria si usa"}
+{"tool": "system", "q": "wie ist die CPU auslastung"}
+{"tool": "system", "q": "wie ist der akkustand"}
+{"tool": "system", "q": "wie viel speicher wird benutzt"}
+{"tool": "system", "q": "quel est l'usage du processeur"}
+{"tool": "system", "q": "quel est le niveau de batterie"}
+{"tool": "system", "q": "qual é o uso da CPU"}
+{"tool": "system", "q": "qual é o nível da bateria"}
+{"tool": "clipboard", "q": "incollalo"}
+{"tool": "clipboard", "q": "incolla qui"}
+{"tool": "clipboard", "q": "copia questo negli appunti"}
+{"tool": "clipboard", "q": "paste it"}
+{"tool": "clipboard", "q": "paste that here"}
+{"tool": "clipboard", "q": "paste from clipboard"}
+{"tool": "clipboard", "q": "füg es ein"}
+{"tool": "clipboard", "q": "füge das hier ein"}
+{"tool": "clipboard", "q": "aus der zwischenablage einfügen"}
+{"tool": "clipboard", "q": "colle-le"}
+{"tool": "clipboard", "q": "colle ça ici"}
+{"tool": "clipboard", "q": "colá esto"}
+{"tool": "clipboard", "q": "pegá eso"}
+{"tool": "clipboard", "q": "cola isso"}
+{"tool": "clipboard", "q": "cola aqui"}
