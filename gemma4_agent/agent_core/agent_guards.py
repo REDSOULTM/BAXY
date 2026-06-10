@@ -199,8 +199,14 @@ def build_user_facing_fallback(
     """
     from ..safety_pkg.grounding_gate import detect_reply_language, format_fallback
 
-    lang_hint = detect_reply_language(rejected_reply)
+    # Idioma del fallback: del USER TEXT (lo que el usuario escribió), no del reply
+    # rechazado — ese puede venir mezclado o en español (language confusion). Así el
+    # fallback honesto sale en el idioma del usuario. mission-eval 2026-06-10.
     current = current_user_text or ""
+    lang_hint = detect_reply_language(current) if current else None
+    if not lang_hint or lang_hint == "es":
+        # si el user_text no dio señal clara, mirar el reply como respaldo.
+        lang_hint = detect_reply_language(rejected_reply)
     if last_fallback_user_text and last_fallback_user_text == current and current:
         new_streak = fallback_streak + 1
     else:

@@ -182,19 +182,55 @@ _FALLBACKS_BY_LANG: dict[str, dict[str, str]] = {
         "partial":  "I'm missing info to complete this: {missing}. Can you tell me?",
         "retry":    "I'm not catching that. Try rephrasing — close options: {hints}.",
     },
+    # FR/IT/DE/PT añadidos (mission-eval 2026-06-10): el dataset multilingüe SÍ
+    # ejerce estos idiomas; sin su rama, el fallback honesto caía a español y el
+    # reply mezclaba idiomas ("ouvre le bloc-notes..." -> respuesta en ES).
+    "fr": {
+        "generic":  "Je n'ai pas pu terminer ça. On réessaie ?",
+        "no_tool":  "Je n'ai pas d'outil pour ça. On essaie autre chose ?",
+        "partial":  "Il me manque des infos pour finir : {missing}. Tu peux me les donner ?",
+        "retry":    "Je n'ai pas bien saisi. Reformule — options proches : {hints}.",
+    },
+    "it": {
+        "generic":  "Non sono riuscito a completarlo. Riproviamo?",
+        "no_tool":  "Non ho uno strumento per questo. Proviamo altro?",
+        "partial":  "Mi mancano info per completarlo: {missing}. Me le dai?",
+        "retry":    "Non ho capito bene. Riformula — opzioni vicine: {hints}.",
+    },
+    "de": {
+        "generic":  "Das konnte ich nicht abschließen. Nochmal versuchen?",
+        "no_tool":  "Dafür habe ich kein Werkzeug. Etwas anderes versuchen?",
+        "partial":  "Mir fehlen Infos dafür: {missing}. Kannst du sie mir geben?",
+        "retry":    "Ich habe das nicht verstanden. Formuliere um — nahe Optionen: {hints}.",
+    },
+    "pt": {
+        "generic":  "Não consegui completar isso. Tentamos de novo?",
+        "no_tool":  "Não tenho uma ferramenta para isso. Tentamos outra coisa?",
+        "partial":  "Falta informação para completar: {missing}. Pode me passar?",
+        "retry":    "Não entendi bem. Reformule — opções próximas: {hints}.",
+    },
 }
-
-
-# Tables trimmed from 6 langs to es+en. PT/FR/IT/DE branches
-# were never observed in 5 days of traces and the CORE_PROMPT commits
-# the agent to Spanish output by default.
 _LANG_HINTS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    # (lang_code, list of bigram/word hints — accent-insensitive, lower)
+    # (lang_code, list of bigram/word hints — accent-insensitive, lower). Para
+    # FR/IT/DE/PT: palabras-función frecuentes + verbos imperativos que el dataset
+    # multilingüe ejercita ("ouvre", "apri", "öffne", "abre/abra"). mission-eval
+    # 2026-06-10: sin estos, el user_text en FR/IT/DE/PT no se detectaba y el
+    # fallback honesto caía a ES.
     ("en", ("the ", " i ", " you ", "i'll", "i've", "i couldn", "let me",
-            "done", "got it", "okay", "all right")),
+            "done", "got it", "okay", "all right", "please", "open ", "close ")),
+    ("fr", (" le ", " la ", " et ", " un ", " une ", " sur ", " mon ", " tu ",
+            "ouvre", "ferme", "écris", "ecris", "baisse", "s'il", "j'en",
+            "n'ai", "réessaie", "peux")),
+    ("it", (" il ", " lo ", " un ", " su ", " mio ", " e vai", "apri", "chiudi",
+            "abbassa", "scrivi", "non ", "riprov", " gli ", " che ")),
+    ("de", (" der ", " die ", " das ", " und ", " ein ", " mir ", "öffne",
+            "schließe", "mach ", "leiser", "lauter", "lautstärke", "nicht",
+            "bitte")),
+    ("pt", (" o ", " a ", " e ", " um ", " uma ", " meu ", " você", "abra ",
+            "abre ", "feche", "manda", "procura", "não", "obrigado")),
     # ES is the default; only listed for completeness.
     ("es", (" el ", " la ", " ya ", "listo", "abrí", "cerré", "puse",
-            "ejecut", "hecho")),
+            "ejecut", "hecho", "¿", "¡", "ñ")),
 )
 
 
