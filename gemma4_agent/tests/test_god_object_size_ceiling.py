@@ -49,7 +49,12 @@ CEILINGS = {
     # cpu_ram_gpu); en tools.py queda SOLO el cableado fast-path→fallback (el
     # dispatch de uia_fast con su mapeo de args, irreducible: es el punto donde se
     # decide python-vs-PowerShell con kill-switch). Número exacto.
-    "tools_pkg/tools.py": 8060,
+    # 2026-06-10: 8060 -> 8063 (+3). BUGFIX en la primitiva `_score`: un nombre largo
+    # del usuario contra el nombre corto del .exe ("calculadora"->"calc") daba score
+    # 0 -> el gate de app-action no resolvía -> "en la calculadora apretá el 5" no
+    # armaba el plan keypress (test rojo). IRREDUCIBLE: `_score` tiene 24 call-sites,
+    # extraerla con sus deps es más riesgo que valor; el fix son 3 líneas en su sitio.
+    "tools_pkg/tools.py": 8063,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Se sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la

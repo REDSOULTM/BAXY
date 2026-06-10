@@ -29,11 +29,31 @@ import asyncio
 import json
 import logging
 import os
+import subprocess
+import sys
 import threading
 from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
+
+
+def _patch_popen_subscriptable() -> None:
+    """Compat Python 3.10: la lib `mcp` (mcp/os/win32/utilities.py) anota
+    `subprocess.Popen[bytes]` en una firma evaluada en runtime SIN
+    `from __future__ import annotations`. En 3.10 `Popen` no es subscriptable y el
+    import del módulo crashea con `TypeError: 'type' object is not subscriptable`,
+    tirando abajo TODO el cliente MCP (y su test). Le agregamos `__class_getitem__`
+    (no-op que devuelve la clase) cuando falta. Idempotente; no toca el venv.
+    """
+    if sys.version_info >= (3, 11):
+        return
+    if not hasattr(subprocess.Popen, "__class_getitem__"):
+        subprocess.Popen.__class_getitem__ = classmethod(  # type: ignore[attr-defined]
+            lambda cls, _item: cls)
+
+
+_patch_popen_subscriptable()
 
 _CONFIG_PATH = Path.home() / ".gemma4" / "mcp_servers.json"
 _TOOLS_CACHE: list[dict[str, Any]] | None = None   # [{server,name,description,schema}]

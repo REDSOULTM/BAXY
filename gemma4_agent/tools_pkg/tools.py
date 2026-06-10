@@ -784,6 +784,11 @@ def _score(query: str, candidate: str) -> int:
         return 100
     if c.startswith(q):
         return 90
+    # QUERY empieza con CANDIDATO ("calculadora" -> exe "calc"): nombre largo vs
+    # nombre corto del .exe, misma app. Candidato >=4 chars y query de 1 palabra
+    # (evita "ch"->chrome y "hola mundo..."->app espuria).
+    if len(c) >= 4 and " " not in q and q.startswith(c):
+        return 88
     if q in c:
         return 75
     q_words = set(q.split())
