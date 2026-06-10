@@ -127,12 +127,43 @@ fraseos ES. Agregué 35 exemplars en 6 idiomas a
   un drift puntual ES→FR en «déjalo mudo». Eso es del **modelo**, no del
   pipeline → cae en el reentreno del encoder+modelo (operación de horas, requiere
   OK del usuario), no en más exemplars.
-- **Nota de versionado:** `router_exemplars.npz` y
-  `router_eval_corpus.curated.jsonl` están en `.gitignore` (data/) y NO se
-  trackearon — el cambio de exemplars es **local**, no propagado a los repos.
-  Force-trackear binarios a dos repos es decisión de infra que conviene avalar
-  junto con el reentreno. El fix del mock (`39c72f3`) SÍ está commiteado y
-  sincronizado en los 4 refs.
+- **Nota de versionado (RESUELTA en run5):** `router_exemplars.npz` y
+  `router_eval_corpus.curated.jsonl` estaban gitignored. En run5 se
+  force-trackearon (`git add -f`) siguiendo el precedente del repo
+  (`router_eval_corpus.jsonl` + `tool2vec_centroids.npz` ya estaban así). Receta
+  (corpus texto) + artefacto (npz) = reproducible con
+  `scripts/router_exemplar_build.py`. Commit `d1861a3`, sincronizado en 4 refs.
+
+## Addendum 2026-06-10 (run5) — BUG REAL: recordatorios 100% rotos en el router
+
+El hallazgo más significativo de la misión. En el eval, `tool_mismatch`
+escondía un bug real (no del mock): **«recordame sacar la basura mañana» /
+«recuérdame comprar pan» / «remind me to call mom» no se ruteaban a `reminder`
+ni `notification`** — iban a session/memory.
+
+**Síntoma en vivo (medido):**
+- ES: ejecutaba solo `session` y **MENTÍA** "Listo, te recordé sacar la basura"
+  sin crear nada (bug de honestidad).
+- EN: elegía `memory`×5 → **LOOP genuino** "límite de turnos".
+
+**Causa raíz:** el corpus del router tenía **0 ejemplos** de `reminder` y **0**
+de `notification`. La descripción de `notification` ya listaba estos fraseos
+exactos, pero sin ejemplos que la anclen el encoder nunca ofrecía la tool. Una
+**capacidad central** (recordatorios) era invisible para el router.
+
+**Fix `d1861a3` (datos, no keywords):** +31 exemplars de recordatorio-de-acción
+en 6 idiomas, etiqueta primaria `reminder` (como el dataset FT:
+`correct=[reminder] also_valid=[notification]`). Regenerado el npz.
+
+**Verificado:** routing 8/8 ofrece reminder/notification (antes **0/8**); en vivo
+**3/5 crean el recordatorio de verdad (antes 0/5**, mentía siempre); router
+holdout intacto (recall 0.9792, over-offers 0). Residual 2/5 (PT loop, FR
+no-elige) = el 4B no elige la tool aunque se ofrezca → reentreno.
+
+**Lección:** `tool_mismatch` no es siempre artefacto del mock — acá escondía una
+capacidad central sin ningún ejemplo de anclaje. Vale inspeccionar los
+`tool_mismatch` con `exp` de una tool concreta (no `[]`) buscando huecos de
+corpus.
 
 ## Fuentes
 
