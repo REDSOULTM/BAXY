@@ -1952,11 +1952,21 @@ def _suggest_tools(step: str) -> list[str]:
 
     # system info (processes, CPU/RAM/GPU/disk/battery usage, time). But NOT
     # when it's a CONCEPT question — "qué es una GPU" / "what is a CPU" asks for
-    # an explanation, not this machine's stats. A "what is / qué es" frame in
-    # front of the hardware word means knowledge, not a system query.
-    if re.search(r"\b(proceso|process|cpu|ram|gpu|disco|disk|bateria|battery|hora|time)\b", low) \
-       and not re.search(r"\b(que es|qu[eé] es|what is|what'?s|que significa|"
-                         r"what does|explica|explicame|explain)\b", low):
+    # an explanation, not this machine's stats. La exclusión es por ARTÍCULO
+    # INDEFINIDO (un/una/a/an = concepto), NO por "what is" a secas: "what is THE
+    # cpu USAGE" / "qué es EL USO de CPU" / "what is the battery LEVEL" son MÉTRICAS
+    # LOCALES (system), no conceptos (2026-06-10: B2 expuso "what is the CPU usage"
+    # → [] porque la exclusión vieja por "what is" las tragaba). Señal de métrica:
+    # usage/uso/level/nivel/percentage/temperatura, o "how much/cuánto/wie viel".
+    _hw = re.search(r"\b(proceso|process|cpu|ram|gpu|disco|disk|bateria|battery|"
+                    r"memoria|memory|hora|time)\b", low)
+    _concept = re.search(r"\b(que es (una?|el|la)|qu[eé] es (una?|el|la)|"
+                         r"what is an? |what'?s an? |que significa|what does|"
+                         r"explica|explicame|explain)\b", low)
+    _metric = re.search(r"\b(usage|uso|level|nivel|percentage|porcentaje|"
+                        r"temperatura|temperature|how much|cuanto|cu[aá]nto|"
+                        r"wie viel|quanto|combien|libre|free|disponible|available)\b", low)
+    if _hw and (not _concept or _metric):
         tools.append("system")
     if re.search(r"\b(portapapeles|clipboard|copiar al portapapeles|pega|paste|"
                  r"area de transferencia)\b", low):

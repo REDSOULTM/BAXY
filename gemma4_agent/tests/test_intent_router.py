@@ -224,5 +224,24 @@ class TestLocalDatetime(unittest.TestCase):
             self.assertFalse(_is_local_datetime(q), f"NO local datetime: {q!r}")
 
 
+class TestSystemMetricVsConcept(unittest.TestCase):
+    """2026-06-10 (B2): "what is the CPU usage" / "cuánto uso de CPU" es una
+    MÉTRICA LOCAL (system), pero la exclusión vieja por "what is" la tragaba como
+    concepto. La distinción es ARTÍCULO INDEFINIDO ("what is A cpu"=concepto) o
+    palabra de métrica (usage/uso/level/cuánto). Se testea vía _suggest_tools."""
+
+    def test_local_metric_offers_system(self):
+        from ..routing.planner import _suggest_tools
+        for q in ["cuánto uso de CPU tengo", "cuánta RAM me queda",
+                  "cuánto espacio libre en disco", "nivel de batería"]:
+            self.assertIn("system", _suggest_tools(q), f"métrica local: {q!r}")
+
+    def test_concept_does_not_offer_system(self):
+        from ..routing.planner import _suggest_tools
+        for q in ["qué es una GPU", "qué es un CPU", "what is a CPU",
+                  "explícame qué es la RAM"]:
+            self.assertNotIn("system", _suggest_tools(q), f"concepto: {q!r}")
+
+
 if __name__ == "__main__":
     unittest.main()
