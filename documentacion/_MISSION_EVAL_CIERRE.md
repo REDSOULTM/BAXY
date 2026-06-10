@@ -198,11 +198,35 @@ agregar exemplars verifiqué qué tool **implementa** y **documenta** la acción
 | run4 | volumen perifrástico («dejar sin sonido») | +35 exemplars → audio | 5/7 rutean |
 | run5 | recordatorios (0 ejemplos reminder/notif) | +31 exemplars → reminder | 0/5→3/5 ejecutan |
 | run6 | brillo multilingüe (2 ejemplos, solo ES%) | +31 exemplars → device_settings | 0/6→4/6 ajustan |
+| run7 | cerrar/reiniciar app + focus ventana no-ES | +31 exemplars → app/window | routing 5/9→9/9, 0/3→3/3 |
 
 Patrón común: capacidad real con **corpus vacío o monolingüe** → el encoder no la
 ofrece → el 4B improvisa (miente o loopea). Fix de datos, reproducible, holdout
-intacto. **Residual recurrente** (PT bajo umbral + el 4B no siempre elige la tool
-aunque se ofrezca) es del **modelo** → reentreno (requiere OK del usuario).
+intacto (subió **0.9792 → 0.9800** acumulado en runs 5–7). **Residual recurrente**
+(PT bajo umbral + el 4B no siempre elige la tool aunque se ofrezca) es del
+**modelo** → reentreno (requiere OK del usuario).
+
+## Addendum 2026-06-10 (run7) — cerrar/reiniciar app + focus de ventana (4º hueco)
+
+Barrido determinista con `_probe_router_gaps.py`: «encerra o Word»→`office`,
+«Quitte Chrome»→`browser` (la app-de-tipo homónima secuestraba el cierre);
+«restart Spotify»/«reinicia Discord»→`session`; «porta in primo piano» / «bring
+to the front» / «trae al frente»→`session` (focus de ventana sin rutear).
+
+**Diseño verificado:** `app` = "abrir, **cerrar** o encontrar un programa";
+`window` = "list windows, **focus**, …"; `office` solo **crea** documentos (no
+cierra Word). Etiqueté contra el diseño, no contra el dataset.
+
+**Causa raíz:** cobertura multilingüe escasa — restart tenía 8 ejemplos (todos
+ES), focus solo 4 (poco diversos). **Fix `78b9a34`:** +19 app (restart 6-idiomas
++ cerrar Word/Chrome/Excel) +12 window (focus 6-idiomas). Routing app **5/9→9/9**,
+window **0/3→3/3**; holdout **0.9800**, control intacto.
+
+**Pendiente real encontrado (no del router):** el guard de honestidad no atrapa
+«ho spostato X in primo piano» (IT) cuando el 4B ejecutó 0 tools → miente 2/4
+corridas. Es un detector **estructural** del guard, no del corpus. Candidato a su
+propia iteración (medir la cobertura actual del guard antes de tocar; no
+perseguir strings — registrado en memoria del proyecto).
 
 ## Fuentes
 
