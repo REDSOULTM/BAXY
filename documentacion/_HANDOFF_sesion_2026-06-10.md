@@ -51,14 +51,26 @@ validado en vivo con `scripts/_validate_action_filler.py` (4 rondas):
 - Tests: 14/14 filler + 157/158 regresión run_content (el 1 rojo es
   pre-existente: test_session847 detect_reply_language de→es, test stale).
 
-**Hallazgos NUEVOS para backlog (destapados por el eval):**
-- "abrí <app inexistente>": decide tarda ~14s (scan del app-open net en el
-  miss) y el turno total llega a 20-31s (a veces el 4B re-llama app.open =
-  2º scan). El filler sale recién post-decide → 14s de silencio igual que
-  antes. Atacar el costo del miss en app.open / cachear el scan.
-- GEMMA4_STREAM_TTS (experimental, OFF): una corrida vocó sintaxis cruda de
-  tool-call (`<|tool_call>call:window{...`) — sanitize no la filtra en el
-  stream incremental. Arreglar antes de promover el flag.
+**Hallazgos derivados — CERRADOS en la misma sesión:**
+- ✅ **Miss de app.open** (`219afff`): CAUSA RAÍZ = `preconditions._app_is_resolvable`
+  construía un `AppResolver()` FRESCO por chequeo (~10s: fuentes frías + deep
+  scan sin memo), ×2 por turno. Fix: ctx con el resolver compartido + deep scan
+  paralelo con salvage del stdout parcial (los roots grandes 15-23s NUNCA
+  aportaron nada antes) + memo TTL + backends ddgs en paralelo + cache del
+  site-resolve. Tool-level 24.6s→5.8s/0.34s. RESIDUAL: el turno vivo del miss
+  sigue 17-21s porque lo dominan 2-3 pasadas del LLM (2-6s c/u según carga) —
+  ya no es el scan. Harness: `_diag_app_open_miss.py`,
+  `_diag_app_miss_turn_breakdown.py`, `_validate_app_open_miss.py`.
+- ✅ **Markup guard del stream TTS** (`17a83fe`): el leak era estructural — los
+  patrones de sanitize son de bloque completo y el markup llega de a pedazos.
+  Guard: `<|` confirmado aborta el feed; sufijo ambiguo (`<`, `<|too`) se
+  retiene un delta. 19/19 tests.
+- ✅ **Test stale de idioma** (`95740ca`): detect_reply_language detecta DE
+  desde `3a6f3d0` (fallbacks honestos FR/IT/DE/PT) — el test esperaba el
+  recorte viejo a es+en; actualizado al contrato real.
+- 🔴 NUEVO (chip pendiente): tras un needs_user/error de tool, el 4B a veces
+  responde "Listo, estoy abriendo X" (presente-continuo) — el detector de
+  acción-consumada no cubre ese tiempo verbal con result fallido.
 
 #### (texto WIP original, para contexto)
 - `gemma4_agent/agent_core/action_filler.py`: `pick_filler()` + `intent_target_for_filler()`.
