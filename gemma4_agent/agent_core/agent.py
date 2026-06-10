@@ -323,13 +323,24 @@ def _reply_lang(text: str) -> str:
     fixed = fixed.replace("_", "-").split("-")[0]   # 'es-419' -> 'es'
     if fixed in _FIXED_LANGS:
         return fixed
+    # Señal FUERTE (char/verbo exclusivo) -> gana siempre.
     strong = _detect_lang_strong_signal(text)
     if strong:
         return strong
+    # Detección ROBUSTA (py3langid + verbos + quita nombres propios). Si da un
+    # idioma del set, lo respetamos: anclar al SO sobre una detección clara rompía
+    # a TODOS los usuarios no-español ("tell me the time"/"druck mir das PDF" ->
+    # respuesta en ES). _detect_lang YA protege el caso de drift por nombre propio
+    # ("háblame de Mortal Kombat" -> es), así que confiar en él es seguro. El ancla
+    # al SO queda solo como desempate cuando _detect_lang no concluye (frase vacía/
+    # ambigua) — bug de "language confusion" cazado en la mission-eval 2026-06-10.
+    detected = _detect_lang(text)
+    if detected in _FIXED_LANGS:
+        return detected
     os_lang = _os_ui_lang()
     if os_lang is not None:
         return os_lang
-    return _detect_lang(text)
+    return detected
 
 
 def _detect_lang_is_strong(text: str, detected: str) -> bool:

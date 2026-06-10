@@ -408,6 +408,26 @@ _WRITE_VERB_STEM = re.compile(
 )
 
 
+# Pronombres de 1ª persona (el propio usuario) en los 6 idiomas: si el
+# "destinatario" de un verbo de envío es uno de estos, NO es enviar a un tercero
+# ("tell me X" = pedirle al asistente), así que no es mensajería. Estructural, no
+# una lista de nombres.
+_FIRST_PERSON_RECIPIENTS = frozenset({
+    "me", "mi", "yo", "mí", "myself",          # es/en
+    "moi", "me-meme", "moimeme",                 # fr (moi)
+    "mir", "mich",                               # de
+    "mim",                                       # pt (a mim)
+    # it usa "mi/me" ya cubiertos
+})
+
+
+def _fold(text: str) -> str:
+    """lower + strip de acentos, para comparar pronombres sin tildes."""
+    import unicodedata
+    t = unicodedata.normalize("NFKD", (text or "").strip().lower())
+    return "".join(ch for ch in t if not unicodedata.combining(ch))
+
+
 # --- Extracción de MENSAJE-A-CONTACTO (computer-use en apps de chat) ----------
 # "escribe/mandale/decile A <contacto> [en <app>] [y dile/que] <mensaje>". A
 # diferencia de extract_nav_target (que solo ABRE un chat), esto separa el
@@ -576,6 +596,14 @@ def extract_message_to(clause: str, *, app_hint: str = "") -> tuple[str, str] | 
     contact = contact.strip(" ,:\"'«»")
     body = body.strip(" \"'«»")
     if not contact or len(contact) < 2:
+        return None
+    # El "destinatario" es un PRONOMBRE de 1ª persona (me/mí/yo/myself/moi/mir/...):
+    # NO es enviar a un tercero, es el usuario pidiéndole al asistente ("tell me the
+    # time" = "decime la hora", "tell me a joke"). Devolver None -> el flujo normal
+    # responde. Bug cazado en mission-eval 2026-06-10: "tell me the time" se
+    # parseaba como mandar "the time" al contacto "me" -> abría WhatsApp. Estructural
+    # (pronombres de 1ª persona en los 6 idiomas), no una lista de nombres.
+    if _fold(contact) in _FIRST_PERSON_RECIPIENTS:
         return None
     return (contact, body)
 

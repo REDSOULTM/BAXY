@@ -44,17 +44,20 @@ class ReplyLangSelectorTest(unittest.TestCase):
         self.assertEqual(_reply_lang("hello world"), "pt")
 
     def test_empty_is_auto_detect(self):
-        # vacío = Automático -> ancla al idioma del SO; un idioma CLARO igual se
-        # detecta (señal fuerte). 2026-06-08: el modo auto ya NO es _detect_lang
-        # puro (que erraba con frases cortas) — ancla al SO salvo señal fuerte.
-        from gemma4_agent.agent_core.agent import _os_ui_lang
+        # vacío = Automático. Un idioma CLARO se respeta (no se ancla al SO).
+        # 2026-06-10 (mission-eval): el modo auto vuelve a CONFIAR en _detect_lang
+        # (robusto: py3langid + verbos + quita nombres propios). Anclar al SO sobre
+        # una detección clara rompía a TODOS los usuarios no-español ("tell me the
+        # time"/"druck mir das PDF" -> respuesta en ES). _detect_lang ya protege el
+        # drift por nombre propio ("háblame de Mortal Kombat" -> es).
         os.environ["GEMMA4_VOICE_LANG"] = ""
         # un comando inglés CLARO (verbo imperativo 'open') -> en, pese al SO.
         self.assertEqual(_reply_lang("open Chrome please"), "en")
-        # sin señal fuerte -> ancla al SO si lo hay; si no, _detect_lang.
-        _os = _os_ui_lang()
-        if _os is not None:
-            self.assertEqual(_reply_lang("xyzzy plugh foo bar"), _os)
+        # un pedido inglés claro ("tell me the time") -> en (antes drifteaba a es).
+        self.assertEqual(_reply_lang("tell me the time"), "en")
+        # texto sin idioma reconocible -> el reply NUNCA queda sin idioma válido.
+        self.assertIn(_reply_lang("xyzzy plugh foo bar"),
+                      {"es", "en", "pt", "fr", "de", "it"})
 
     def test_unset_anchors_to_os_or_detect(self):
         # un idioma CLARO se respeta aunque el SO sea otro (señal fuerte: verbo fr).
