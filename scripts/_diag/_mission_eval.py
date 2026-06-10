@@ -208,10 +208,24 @@ def find_issues(reply, passes, exe, dt, err, row):
             issues.append(f"lang_drift(exp={row['lang']})")
     if len(r) > MAXLEN:
         issues.append(f"reply_too_long({len(r)})")
+    # LOOP GENUINO vs multi-tool inflado por el mock: el mock de execute devuelve
+    # siempre {ok:True simulated}, lo que hace que el 4B reintente acciones que en
+    # PRODUCCIÓN (tool real con resultado concreto) completaría en 1 pase. Verificado
+    # en vivo: "génère une image", "mach leiser", "Baisse le son" loopeaban en el
+    # eval pero NO en producción. Solo es loop REAL si el anti-loop guard tuvo que
+    # cortar (el reply lo dice). El resto de many_passes/slow se marca como inflado
+    # por el mock para no contarlo como bug.
+    _genuine_loop = ("limite de turnos" in r.lower()
+                     or "límite de turnos" in r.lower()
+                     or "repitiendo la misma" in r.lower()
+                     or "sin avanzar" in r.lower())
     if passes >= 4:
-        issues.append(f"many_passes({passes})")
+        issues.append(f"loop_genuine({passes})" if _genuine_loop
+                      else f"many_passes_mock({passes})")
     if dt > SLOW_S:
-        issues.append(f"slow({dt:.1f}s)")
+        # un slow que viene de un multi-tool/loop NO es latencia genuina del turno
+        issues.append(f"slow({dt:.1f}s)" if passes < 4
+                      else f"slow_from_passes({dt:.1f}s)")
     return issues
 
 
