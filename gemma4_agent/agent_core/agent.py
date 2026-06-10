@@ -3563,6 +3563,8 @@ class Gemma4Agent:
             _llm_wall_t0 = time.perf_counter()
             try:
                 if _stream_this:
+                    from ..safety_pkg.grounding_gate import (
+                        all_events_blocked_or_failed as _all_events_blocked_or_failed)
                     try:
                         resp = self._chat_streaming(
                             # tools=None: a streamed pass is PURE PROSE. For the
@@ -3578,7 +3580,14 @@ class Gemma4Agent:
                             greedy=_greedy,
                             sampling={"temperature": mode.temperature,
                                       "top_p": mode.top_p, "top_k": mode.top_k},
-                            guard_check=(len(events) == 0),
+                            # guard-check también cuando TODOS los events del
+                            # turno fallaron/bloquearon (needs_user, error): ahí
+                            # el guard de claims SÍ puede reemplazar el reply en
+                            # finalize ("estoy abriendo X" tras needs_user,
+                            # 2026-06-10) — sin esto el stream vocaría la mentira
+                            # antes del reemplazo (rompe voiced==final).
+                            guard_check=(len(events) == 0
+                                         or _all_events_blocked_or_failed(events)),
                         )
                     except Exception as _stream_exc:  # noqa: BLE001
                         # Streaming failed mid-flight -> fall back to the blocking

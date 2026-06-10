@@ -424,18 +424,62 @@ def format_fallback(
     return template.format(missing=missing or "—", hints=hints or "—")
 
 
+def _event_result(ev: Any) -> dict[str, Any]:
+    """Result dict de un tool event (dataclass ToolEvent o dict), tolerante."""
+    if isinstance(ev, dict):
+        r = ev.get("result")
+    else:
+        r = getattr(ev, "result", None)
+    return r if isinstance(r, dict) else {}
+
+
+def all_events_blocked_or_failed(tool_events: list[Any]) -> bool:
+    """True si TODOS los tool results del turno quedaron en bloqueo/fallo SIN
+    ejecución consumada: ok=False (error, needs_user por precondición,
+    needs_confirmation del gate, tool-call que ni parseó). En ese turno un
+    claim de acción consumada O EN CURSO ("estoy abriendo X") es
+    necesariamente falso — la propia tool reportó que NO pasó (MEDIDO en vivo
+    2026-06-10: app.open needs_user "No encuentro esa aplicación" y el reply
+    decía "Listo, estoy abriendo jitomatador").
+
+    Un solo result ok=True hace False — incluye los dispatch async honestos
+    (status=dispatched / launch_requested, verified=None): ahí "estoy
+    abriendo Steam" SÍ es honesto y NO se toca. Gate por el STATUS del
+    result, no por el verbo. FAIL-OPEN: un event sin result dict (estado
+    desconocido, p.ej. construido ad-hoc) NO cuenta como fallo — solo se
+    flagea con fallo MEDIDO en todos los events."""
+    if not tool_events:
+        return False
+    saw_failed = False
+    for ev in tool_events:
+        res = _event_result(ev)
+        if not res:
+            return False  # resultado desconocido -> no afirmar fallo sin evidencia
+        if res.get("ok"):
+            return False
+        saw_failed = True
+    return saw_failed
+
+
 def detect_action_claim_without_evidence(
     reply: str, tool_events: list[Any],
 ) -> GroundingVerdict:
     """Inline (no NLI) check: if the reply opens with a 1st-person past-tense
-    action verb AND `tool_events` is empty, flag it.
+    action verb AND no tool actually did anything, flag it.
+
+    Two evidence-free cases (same claim detectors, distinct telemetry):
+      - `tool_events == []` (nothing ran at all);
+      - every event's result is blocked/failed ok=False (needs_user,
+        needs_confirmation, error, unparseable call) -> the tools THEMSELVES
+        say nothing happened, so a consummated/in-progress claim contradicts
+        the evidence (2026-06-10).
 
     Does NOT depend on a hardcoded verb list — uses morphological pattern.
     Conservative by design: only flags clear cases starting the reply, so
     legitimate replies like "Encontré la respuesta: ..." (after a real web
-    tool ran) are untouched because tool_events is non-empty.
+    tool ran) are untouched because some tool event is ok=True.
     """
-    if tool_events:
+    if tool_events and not all_events_blocked_or_failed(tool_events):
         return GroundingVerdict(should_replace=False, reason="tool_events_nonempty")
     if not reply:
         return GroundingVerdict(should_replace=False, reason="empty_reply")
@@ -452,7 +496,8 @@ def detect_action_claim_without_evidence(
         return GroundingVerdict(should_replace=False, reason="no_claim_signal")
     return GroundingVerdict(
         should_replace=True,
-        reason="action_claim_without_evidence",
+        reason=("action_claim_all_events_failed" if tool_events
+                else "action_claim_without_evidence"),
         claim_word=claim,
         fallback=_HONEST_FALLBACK,
     )
@@ -460,6 +505,7 @@ def detect_action_claim_without_evidence(
 
 __all__ = [
     "GroundingVerdict",
+    "all_events_blocked_or_failed",
     "detect_action_claim_without_evidence",
     "detect_reply_language",
     "format_fallback",

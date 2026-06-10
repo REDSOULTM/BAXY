@@ -14,8 +14,18 @@ from gemma4_agent.safety_pkg.grounding_gate import (
     GroundingVerdict,
     _looks_like_first_person_preterit,
     _starts_with_action_claim,
+    all_events_blocked_or_failed,
     detect_action_claim_without_evidence,
 )
+
+
+class _Ev:
+    """ToolEvent mínimo (name/args/result) para los tests del gate."""
+
+    def __init__(self, ok: bool | None, **res):
+        self.name = res.pop("name", "app")
+        self.args = res.pop("args", {})
+        self.result = None if ok is None else {"ok": ok, **res}
 
 
 class TestPreteritMorphology(unittest.TestCase):
@@ -107,6 +117,72 @@ class TestInlineGate(unittest.TestCase):
         self.assertTrue(v.should_replace)
         self.assertTrue(v.fallback)
         self.assertIn("No alcancé", v.fallback)
+
+
+class TestAllEventsFailedGate(unittest.TestCase):
+    """Claims de acción con events SOLO fallidos/bloqueados (2026-06-10):
+    needs_user (precondición), needs_confirmation, error, tool-call que no
+    parseó. La propia tool reportó que NADA pasó -> "estoy abriendo X" /
+    "busqué X" contradicen la evidencia igual que en 0-events. Gate por el
+    STATUS del result, no por el verbo."""
+
+    def test_progressive_claim_after_needs_user_flagged(self):
+        # el caso MEDIDO en vivo: precondición bloqueó (la app no existe) y el
+        # reply afirma la acción EN CURSO.
+        ev = _Ev(False, status="needs_user", error="app not found")
+        v = detect_action_claim_without_evidence(
+            "Listo, estoy abriendo jitomatador. Puede tardar unos segundos.", [ev])
+        self.assertTrue(v.should_replace)
+        self.assertEqual(v.reason, "action_claim_all_events_failed")
+
+    def test_preterit_claim_after_needs_user_flagged(self):
+        # también medido: "busqué X en la tienda" sin que nada corriera.
+        ev = _Ev(False, status="needs_user")
+        v = detect_action_claim_without_evidence(
+            "Listo, busqué jitomatador en la tienda de Windows.", [ev])
+        self.assertTrue(v.should_replace)
+
+    def test_claim_after_needs_confirmation_flagged(self):
+        ev = _Ev(False, status="needs_confirmation")
+        v = detect_action_claim_without_evidence(
+            "Listo, borré los archivos temporales.", [ev])
+        self.assertTrue(v.should_replace)
+
+    def test_honest_failure_reply_passes(self):
+        ev = _Ev(False, status="needs_user", error="app not found")
+        v = detect_action_claim_without_evidence(
+            "No encuentro jitomatador instalado. ¿Está bien escrito el nombre?", [ev])
+        self.assertFalse(v.should_replace)
+
+    def test_async_dispatch_ok_is_honest_progressive(self):
+        # launch despachado ok (status=dispatched, verified=None): "estoy
+        # abriendo Steam" ES honesto -> NO se toca.
+        ev = _Ev(True, status="dispatched", completion_status="launch_requested",
+                 verified=None)
+        v = detect_action_claim_without_evidence(
+            "Estoy abriendo Steam, puede tardar unos segundos.", [ev])
+        self.assertFalse(v.should_replace)
+        self.assertEqual(v.reason, "tool_events_nonempty")
+
+    def test_mixed_results_pass_through(self):
+        # un solo ok=True en el turno -> el claim puede ser legítimo, no flagear.
+        evs = [_Ev(False, status="needs_user"), _Ev(True, status="done")]
+        v = detect_action_claim_without_evidence("Listo, abrí la calculadora.", evs)
+        self.assertFalse(v.should_replace)
+
+    def test_unknown_result_fails_open(self):
+        # event sin result dict (estado desconocido) -> fail-open, no flagear.
+        evs = [_Ev(None)]
+        self.assertFalse(all_events_blocked_or_failed(evs))
+        v = detect_action_claim_without_evidence("Listo, abrí la calculadora.", evs)
+        self.assertFalse(v.should_replace)
+
+    def test_all_events_blocked_helper(self):
+        self.assertFalse(all_events_blocked_or_failed([]))
+        self.assertTrue(all_events_blocked_or_failed(
+            [_Ev(False, status="needs_user"), _Ev(False, error="boom")]))
+        self.assertFalse(all_events_blocked_or_failed(
+            [_Ev(False, status="needs_user"), _Ev(True)]))
 
 
 if __name__ == "__main__":
