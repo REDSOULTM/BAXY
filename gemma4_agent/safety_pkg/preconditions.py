@@ -1,9 +1,8 @@
 """Catálogo declarativo de PRECONDICIONES.
 
 Ley del proyecto #5: "el código garantiza sus precondiciones". La verificación
-de precondiciones vive ad-hoc por tool (app_open verifica `apps.find`; whatsapp
-verifica instalación). Este módulo centraliza el patrón en un catálogo reusable
-+ testeable:
+de precondiciones vive ad-hoc por tool (whatsapp verifica instalación). Este
+módulo centraliza el patrón en un catálogo reusable + testeable:
 
     tool -> [Precondition(name, check, repair)]
 
@@ -46,14 +45,16 @@ class PreconditionResult:
     detail: str = ""          # mensaje accionable (para needs_user)
 
 
-# check(args, ctx=None) -> bool | None  (True=cumple, False=no, None=no medible)
-#   ctx: recursos COMPARTIDOS del llamador (p.ej. ctx["app_resolver"] = la
-#   instancia warm de la registry) — evita reconstruir estado caro por chequeo.
+# check(args) -> bool | None  (True=cumple, False=no, None=no medible)
 # repair(args) -> bool        (True si la reparó)
+# OJO si se agrega un check nuevo: NO construir recursos caros por chequeo
+# (un AppResolver() fresco acá costó ~10s por execute, medido 2026-06-10) y
+# NO bloquear un caso que la tool resuelve mejor aguas abajo (el check de app
+# mataba el site-fallback de t_app).
 @dataclass
 class Precondition:
     name: str
-    check: Callable[..., bool | None]
+    check: Callable[[dict[str, Any]], bool | None]
     repair: Callable[[dict[str, Any]], bool] | None = None
     fail_message: str = "precondición no cumplida"
 
@@ -69,32 +70,20 @@ def preconditions_enabled() -> bool:
 
 # --- Checks estructurales concretos (leen estado del SO, no keywords) --------
 
-def _app_is_resolvable(args: dict[str, Any], ctx: dict[str, Any] | None = None) -> bool | None:
-    """¿La app pedida existe en el sistema (PATH/StartMenu/registry/Steam)?
-
-    Reusa el AppResolver COMPARTIDO de la registry si el llamador lo pasa por
-    ctx["app_resolver"] — la MISMA instancia (fuentes warm + memo del deep scan)
-    que usaría app.open. CAUSA RAÍZ medida (2026-06-10): construir acá un
-    AppResolver() fresco recargaba TODAS las fuentes (~5s, 2 spawns PowerShell)
-    + deep scan sin memo (~4s) EN CADA chequeo -> ~10s por execute(app.open),
-    pagados DOS VECES por turno (open-net en decide + re-llamada del 4B) = el
-    grueso de los 20-31s del turno "abrí <app inexistente>". Sin ctx (tests,
-    llamadores viejos) cae al fresco; si nada se puede construir, None
-    (no bloquear sin evidencia)."""
-    name = str(args.get("name") or "").strip()
-    if not name:
-        return None
-    try:
-        resolver = (ctx or {}).get("app_resolver")
-        if resolver is None:
-            from ..tools_pkg.app_resolver import AppResolver
-            resolver = AppResolver()
-        return bool(resolver.find(name))
-    except Exception:
-        return None
+# NOTA (2026-06-10): la precondición `app_resolvable` se RETIRÓ del catálogo.
+# Bloqueaba execute(app.open) con needs_user cuando find() no resolvía — y eso
+# corre ANTES de t_app, así que MATABA el fallback a sitio web de t_app
+# ("abrí pivigames" -> app not found -> resolver el sitio -> abrirlo, fix
+# medido 47e6c14). MEDIDO: find("pivigames")=[] -> bloqueo, el sitio nunca se
+# resolvía por la ruta app. Su valor de honestidad hoy lo cubren capas mejor
+# ubicadas: el piso de apertura de app_open (GEMMA4_APP_OPEN_MIN_SCORE, no
+# abre matches débiles) + el guard de claims con tools-fallidas (el reply no
+# puede afirmar la acción) — ambos DESPUÉS del web-divert y el site-fallback,
+# que es el orden correcto. Además el chequeo construía un AppResolver()
+# fresco (~10s por execute, 2x por turno) — causa raíz del turno de 20-31s.
 
 
-def _whatsapp_installed(args: dict[str, Any], ctx: dict[str, Any] | None = None) -> bool | None:
+def _whatsapp_installed(args: dict[str, Any]) -> bool | None:
     """¿WhatsApp Desktop está instalado? Reusa _find_whatsapp_app (Get-AppxPackage).
     None si la detección falla (no bloquear)."""
     try:
@@ -105,19 +94,11 @@ def _whatsapp_installed(args: dict[str, Any], ctx: dict[str, Any] | None = None)
         return None
 
 
-# --- Catálogo: solo las 2 tools de mayor flake (Fase A) ----------------------
-# app_open: si la app no resuelve, app.open igual fallaría -> atrapar antes con un
-#   mensaje claro. repair=None (NO instalamos winget a ciegas: sería acción no pedida).
-# whatsapp: si no está instalado, el envío fallaría -> needs_user honesto.
+# --- Catálogo. whatsapp: si no está instalado, el envío fallaría (o peor,
+#   actuaría a medias) -> needs_user honesto ANTES de actuar. repair=None (NO
+#   instalamos a ciegas: sería acción no pedida). app_resolvable se retiró —
+#   ver la nota de arriba (mataba el site-fallback de t_app).
 PRECONDITIONS_CATALOG: dict[str, list[Precondition]] = {
-    "app": [
-        Precondition(
-            name="app_resolvable",
-            check=_app_is_resolvable,
-            repair=None,
-            fail_message="No encuentro esa aplicación en el sistema. ¿Está instalada y escrita igual?",
-        ),
-    ],
     "whatsapp": [
         Precondition(
             name="whatsapp_installed",
@@ -131,20 +112,17 @@ PRECONDITIONS_CATALOG: dict[str, list[Precondition]] = {
 
 # Qué acciones de cada tool requieren el check (no chequear en status/list/etc).
 _ACTIONS_THAT_ACT: dict[str, frozenset[str]] = {
-    "app": frozenset({"open"}),
     "whatsapp": frozenset({"send_message", "send", "open_chat"}),
 }
 
 
-def ensure_preconditions(tool_name: str, args: dict[str, Any],
-                         ctx: dict[str, Any] | None = None) -> PreconditionResult | None:
+def ensure_preconditions(tool_name: str, args: dict[str, Any]) -> PreconditionResult | None:
     """Evalúa las precondiciones de una tool ANTES de ejecutarla.
 
     Devuelve:
       - None  -> no hay precondiciones, o todas OK/unknown -> SEGUIR (fail-open).
       - PreconditionResult(needs_user) -> bloquear con mensaje accionable.
 
-    `ctx`: recursos compartidos del llamador para los checks (ver Precondition).
     Gated por GEMMA4_PRECONDITIONS. Best-effort: cualquier excepción -> None (seguir)."""
     if not preconditions_enabled():
         return None
@@ -157,7 +135,7 @@ def ensure_preconditions(tool_name: str, args: dict[str, Any],
         if gate is not None and action and action not in gate:
             return None  # acción de solo-lectura: no chequear
         for prec in precs:
-            verdict = prec.check(args, ctx)
+            verdict = prec.check(args)
             if verdict is True or verdict is None:
                 continue  # cumple, o no medible (fail-open: no bloquear)
             # verdict is False -> intentar reparar

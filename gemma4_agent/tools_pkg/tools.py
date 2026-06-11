@@ -1569,11 +1569,7 @@ class ToolRegistry:
         # Gated GEMMA4_PRECONDITIONS (default off). 0 overhead si off.
         try:
             from ..safety_pkg.preconditions import ensure_preconditions
-            # ctx: el check de app reusa ESTE resolver (warm + memos). Un fresco
-            # acá costaba ~10s por execute(app.open) — ver _app_is_resolvable.
-            _prec = ensure_preconditions(
-                name, clean_args,
-                ctx={"app_resolver": getattr(self, "apps", None)})
+            _prec = ensure_preconditions(name, clean_args)
             if _prec is not None:
                 return _normalize_tool_result(name, clean_args, _err(
                     _prec.detail, status="needs_user",

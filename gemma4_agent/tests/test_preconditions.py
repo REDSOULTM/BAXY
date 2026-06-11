@@ -1,8 +1,14 @@
 """Catálogo de precondiciones.
 
-Antes de actuar, chequear estado del SO (app instalable, whatsapp presente). Un
-False MEDIDO bloquea con needs_user; None/unknown NO bloquea (fail-open). Gated
-GEMMA4_PRECONDITIONS. Checks ESTRUCTURALES (resolver/Get-AppxPackage), no keywords.
+Antes de actuar, chequear estado del SO (whatsapp presente). Un False MEDIDO
+bloquea con needs_user; None/unknown NO bloquea (fail-open). Gated
+GEMMA4_PRECONDITIONS. Checks ESTRUCTURALES (Get-AppxPackage), no keywords.
+
+La precondición de app (`app_resolvable`) se RETIRÓ (2026-06-10): bloqueaba
+execute(app.open) ANTES de t_app y mataba su fallback a sitio web ("abrí
+pivigames" nunca resolvía el sitio). Su rol de honestidad lo cubren el piso
+de apertura de app_open (GEMMA4_APP_OPEN_MIN_SCORE) y el guard de claims con
+tools-fallidas — un test acá lo fija para que no vuelva.
 """
 from __future__ import annotations
 
@@ -25,33 +31,14 @@ class _Gate(unittest.TestCase):
             os.environ["GEMMA4_PRECONDITIONS"] = self._prev
 
 
-class AppPreconditionTest(_Gate):
-    def test_missing_app_blocks(self):
-        with mock.patch("gemma4_agent.tools_pkg.app_resolver.AppResolver") as AR:
-            AR.return_value.find.return_value = []
-            r = PC.ensure_preconditions("app", {"action": "open", "name": "ZZZ"})
-        self.assertIsNotNone(r)
-        self.assertEqual(r.status, PC.RESULT_NEEDS_USER)
-        self.assertEqual(r.name, "app_resolvable")
-
-    def test_present_app_passes(self):
-        with mock.patch("gemma4_agent.tools_pkg.app_resolver.AppResolver") as AR:
-            AR.return_value.find.return_value = [object()]
-            r = PC.ensure_preconditions("app", {"action": "open", "name": "Spotify"})
-        self.assertIsNone(r)
-
-    def test_resolver_error_is_fail_open(self):
-        # check devuelve None (no medible) -> NO bloquear.
-        with mock.patch("gemma4_agent.tools_pkg.app_resolver.AppResolver",
-                        side_effect=RuntimeError("boom")):
-            r = PC.ensure_preconditions("app", {"action": "open", "name": "X"})
-        self.assertIsNone(r)
-
-    def test_non_open_action_skipped(self):
-        # app.search no actúa -> no se chequea (aunque la app no resuelva).
-        with mock.patch("gemma4_agent.tools_pkg.app_resolver.AppResolver") as AR:
-            AR.return_value.find.return_value = []
-            r = PC.ensure_preconditions("app", {"action": "search", "name": "ZZZ"})
+class AppHasNoPreconditionTest(_Gate):
+    def test_app_open_is_not_blocked_upstream(self):
+        # FIJA la remoción: app.open NO debe bloquearse acá aunque la app no
+        # resuelva — t_app decide aguas abajo (web-divert / site-fallback /
+        # piso de apertura). Volver a agregar 'app' al catálogo revive el bug
+        # "abrí pivigames muere en needs_user sin resolver el sitio".
+        self.assertNotIn("app", PC.PRECONDITIONS_CATALOG)
+        r = PC.ensure_preconditions("app", {"action": "open", "name": "pivigames"})
         self.assertIsNone(r)
 
 
@@ -71,15 +58,31 @@ class WhatsappPreconditionTest(_Gate):
                 "whatsapp", {"action": "send_message", "contact": "x", "text": "y"})
         self.assertIsNone(r)
 
+    def test_detection_error_is_fail_open(self):
+        # check devuelve None (no medible) -> NO bloquear.
+        with mock.patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                        side_effect=RuntimeError("boom")):
+            r = PC.ensure_preconditions(
+                "whatsapp", {"action": "send_message", "contact": "x", "text": "y"})
+        self.assertIsNone(r)
+
+    def test_read_only_action_skipped(self):
+        # whatsapp.status no actúa -> no se chequea (aunque no esté instalado).
+        with mock.patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                        return_value={"kind": None}):
+            r = PC.ensure_preconditions("whatsapp", {"action": "status"})
+        self.assertIsNone(r)
+
 
 class GateTest(unittest.TestCase):
     def test_gate_off_is_noop(self):
         prev = os.environ.get("GEMMA4_PRECONDITIONS")
         os.environ["GEMMA4_PRECONDITIONS"] = "0"
         try:
-            with mock.patch("gemma4_agent.tools_pkg.app_resolver.AppResolver") as AR:
-                AR.return_value.find.return_value = []
-                r = PC.ensure_preconditions("app", {"action": "open", "name": "ZZZ"})
+            with mock.patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                            return_value={"kind": None}):
+                r = PC.ensure_preconditions(
+                    "whatsapp", {"action": "send_message", "contact": "x", "text": "y"})
             self.assertIsNone(r)  # off -> no chequea
         finally:
             if prev is None:
@@ -96,18 +99,19 @@ class GateTest(unittest.TestCase):
 
 
 class DispatchIntegrationTest(_Gate):
-    def test_dispatch_blocks_missing_app(self):
+    def test_dispatch_blocks_missing_whatsapp(self):
         # El dispatcher real consulta ensure_preconditions antes de ejecutar.
         from gemma4_agent.tools_pkg.tools import ToolRegistry
         reg = ToolRegistry.__new__(ToolRegistry)
-        reg._impls = {"app": lambda a: {"ok": True, "opened": True}}
+        reg._impls = {"whatsapp": lambda a: {"ok": True, "sent": True}}
         reg.state = mock.MagicMock()
         reg.safety_enabled = False
-        with mock.patch("gemma4_agent.tools_pkg.app_resolver.AppResolver") as AR, \
+        with mock.patch("gemma4_agent.domain_tools._find_whatsapp_app",
+                        return_value={"kind": None}), \
              mock.patch("gemma4_agent.tools_pkg.tools._coerce_and_validate_tool_args",
                         side_effect=lambda n, a: (a, None)):
-            AR.return_value.find.return_value = []
-            r = reg.execute("app", {"action": "open", "name": "NoExisteZZZ"})
+            r = reg.execute("whatsapp", {"action": "send_message",
+                                         "contact": "x", "text": "y"})
         self.assertFalse(r["ok"])
         self.assertEqual(r.get("status"), "needs_user")
 
