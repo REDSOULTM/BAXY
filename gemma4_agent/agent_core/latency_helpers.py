@@ -45,6 +45,29 @@ def detect_lang_strong_signal(text: str) -> str | None:
     words = {w.strip(".,;:!?\"'()") for w in tl.split()}
     if words & _ES_INTERROGATIVES:
         return "es"
+    # ß solo existe en alemán (de los 6 soportados): "weiß", "schließe".
+    if "ß" in tl:
+        return "de"
+    # PORTUGUÉS frase corta (MEDIDO 2026-06-11: "quem é você?"→fr en py3langid
+    # — el gate de identidad pt respondía "Je suis Baxy"). Cerrada exclusiva:
+    # "quem" (es: quién; fr: qui) y "você" acentuado (it "voce" sin acento es
+    # otra palabra).
+    if words & {"quem", "você", "vocês"}:
+        return "pt"
+    # ITALIANO en frases cortas (MEDIDO 2026-06-11: py3langid manda
+    # "chi sei?"→de y "perché?"→fr; el repair de idioma respondía identidad
+    # en ALEMÁN a una pregunta italiana). Señales estructurales:
+    #  - "è" como PALABRA suelta: verbo essere — pt usa "é", fr nunca lo
+    #    escribe suelto;
+    #  - elisiones con apóstrofo exclusivas (cos'è, dov'è, c'è — fr elide
+    #    c'est/d'où pero nunca con è);
+    #  - interrogativo "chi" SOLO al inicio (evita el FP inglés "tai chi");
+    #  - "perché/poiché" (el participio fr "perché" existe pero jamás como
+    #    interrogativa suelta en este dominio).
+    if ("è" in words or "cos'" in tl or "dov'" in tl or "c'è" in tl
+            or tl.lstrip().startswith("chi ")
+            or words & {"perché", "poiché", "perchè"}):
+        return "it"
     s = f" {tl} "
     for lang, verbs in _IMPERATIVE_VERBS:
         if any(v in s for v in verbs):
