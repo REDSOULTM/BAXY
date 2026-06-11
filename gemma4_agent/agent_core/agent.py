@@ -5148,10 +5148,24 @@ class Gemma4Agent:
         assistant_content = self._repair_unfounded_time_claim_inline(
             assistant_content, raw_text_early, events, turn_id,
         )
+        # Valor fabricado (gates FT v3 2026-06-11): mismo bug-class que la hora
+        # ("Battery level is 78%" con has_battery:false delante) — mismo flujo.
+        assistant_content = self._repair_unfounded_value_claim_inline(
+            assistant_content, raw_text_early, events, turn_id,
+        )
         lang_repaired = False
         assistant_content, lang_repaired = self._repair_reply_language_if_needed(
             raw_text_early, assistant_content, turn_id,
         )
+        # SEGUNDO pase del guard de valores: el rewriter de idioma puede
+        # RE-fabricar la medida que el primer pase reparó (gotcha medido
+        # 2026-06-11: "Ecco la risposta in italiano: La batteria è al 78 per
+        # cento." salió del rewrite con el 78 inventado — mismo bug-class que
+        # "el rewrite de idioma inventa horas"). Idempotente y barato.
+        if lang_repaired:
+            assistant_content = self._repair_unfounded_value_claim_inline(
+                assistant_content, raw_text_early, events, turn_id,
+            )
         assistant_content = self._repair_media_status_reply_if_needed(
             raw_text_early or _extract_user_text(content) or "",
             assistant_content,
@@ -5531,6 +5545,29 @@ class Gemma4Agent:
                                          error=f"{type(_ctc_exc).__name__}: {_ctc_exc}")
                     except Exception:
                         pass
+            # VALOR FABRICADO (honestidad, DEFAULT-ON): el reply afirmó una
+            # medida (%/GB) que ninguna evidencia del turno sustenta (gates FT
+            # v3 2026-06-11: "Battery level is 78%" con has_battery:false). El
+            # repair INLINE corrigió ESTE turno; este hint corrige reincidencia.
+            # Mismo gate que el inline: GEMMA4_VALUE_CLAIM_GUARD=0 apaga ambos.
+            if _os.environ.get("GEMMA4_VALUE_CLAIM_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        system_value_claim_unfounded as _svc,
+                        UNFOUNDED_VALUE_HINT as _svc_hint)
+                    if _svc(getattr(self, "_current_user_text", "") or "",
+                            assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="unfounded_value_claim_residual")
+                        self.history.append({"role": "system", "content": _svc_hint})
+                except Exception as _svc_exc:
+                    try:
+                        self.trace.event(turn_id, "silent_fallback",
+                                         component="value_claim_hint",
+                                         error=f"{type(_svc_exc).__name__}: {_svc_exc}")
+                    except Exception:
+                        pass
             # CLICK FABRICADO (honestidad, DEFAULT-ON): el reply afirma "cliqueé/
             # presioné X" pero ninguna tool capaz de click corrió (uia/vision FIND
             # localizan, no clickean). BUG medido (tanda 1, A3): "encontré y cliqueé
@@ -5746,6 +5783,26 @@ class Gemma4Agent:
                                              error=f"{type(_ctcu_exc).__name__}: {_ctcu_exc}")
                         except Exception:
                             pass
+                    # ANTI-FABRICACIÓN de VALORES (gates FT v3 2026-06-11): el
+                    # mismo regen inventaba "Battery level is 75%." con
+                    # has_battery:false delante — las 3 fabricaciones residuales
+                    # del gate eran TODAS de turnos noES, o sea de ESTE camino.
+                    # Mismo rechazo que el de hora, con el detector de medidas.
+                    try:
+                        from ..safety_pkg.reply_validator import (
+                            system_value_claim_unfounded as _svcu_post)
+                        if _fixed and _svcu_post(_utext, _fixed, list(events)):
+                            self.trace.event(turn_id, "posttool_lang_repair_rejected",
+                                             reason="unfounded_value_claim",
+                                             candidate=(_fixed or "")[:80])
+                            _fixed = ""
+                    except Exception as _svcu_exc:
+                        try:
+                            self.trace.event(turn_id, "silent_fallback",
+                                             component="posttool_value_check",
+                                             error=f"{type(_svcu_exc).__name__}: {_svcu_exc}")
+                        except Exception:
+                            pass
                     # aceptar solo si mejora: el _fixed NO está en español (o el
                     # original SÍ lo estaba — siempre vale reemplazar un leak ES).
                     if _fixed and _fixed.strip() and not _looks_spanish(_fixed):
@@ -5755,6 +5812,16 @@ class Gemma4Agent:
                         assistant_content = _fixed
             except Exception:
                 pass
+        # ÚLTIMO pase del guard de valores (gates FT v3 2026-06-11): el reply
+        # final puede venir de VARIOS caminos (regen de idioma, repairs, pantalla)
+        # y parchear cada uno fue whack-a-mole medido — 3 corridas del gate, 3
+        # mezclas distintas de fabricaciones. Este choke-point único garantiza
+        # que NINGÚN camino entregue una medida (%/GB) sin evidencia del turno.
+        assistant_content = self._repair_unfounded_value_claim_inline(
+            assistant_content,
+            raw_text_early or _extract_user_text(content) or "",
+            events, turn_id,
+        )
         if getattr(self, "_tts_streamed", False):
             self._feed_tts_tail(assistant_content, turn_id)
         return AgentReply(content=assistant_content, tool_events=events, mission=mission,
@@ -7509,6 +7576,35 @@ class Gemma4Agent:
             content, _utext, _events, turn_id,
             regen_action=_regen_action, regen_knowledge=_regen_knowledge,
             trace=self.trace,
+        )
+
+    def _repair_unfounded_value_claim_inline(
+        self,
+        content: str,
+        user_text: str,
+        events: list[ToolEvent],
+        turn_id: str,
+    ) -> str:
+        """Repara INLINE el claim de valor fabricado (%/GB sin evidencia —
+        ver agent_guards). Misma regeneración clean-context que el de hora."""
+        from .agent_guards import repair_unfounded_value_claim_inline
+        _utext = user_text or ""
+        _events = list(events)
+
+        def _regen_action() -> str:
+            _focused = self._focused_events_for_action_reply(_events) or _events
+            _did = self._describe_events_for_reply(_focused)
+            return self._llm_action_reply(
+                _utext, did=_did, fallback="", target_lang=_reply_lang(_utext))
+
+        def _regen_knowledge() -> str:
+            return self._llm_knowledge_reply(
+                _utext, fallback="", target_lang=_reply_lang(_utext))
+
+        return repair_unfounded_value_claim_inline(
+            content, _utext, _events, turn_id,
+            regen_action=_regen_action, regen_knowledge=_regen_knowledge,
+            trace=self.trace, lang=_reply_lang(_utext),
         )
 
     def _guard_plan_status(self, content: str) -> str:

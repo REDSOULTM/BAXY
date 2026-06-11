@@ -226,7 +226,23 @@ cobertura 67/67 tools × 6 idiomas, historial COMPLETO del proyecto (5.023
 turnos) contabilizado: lo entrenable cubierto por familia, lo no-entrenable
 (garble/dev/roleplay/corrupto) excluido y justificado.
 
-## Criterios de papers cubiertos (fuentes)
+## Iteración 7: auditoría pre-entrenamiento contra el MOTOR REAL (2026-06-11)
+
+Ver `_AUDITORIA_FT_V3_2026-06-11.md` (tabla completa afirmación→fuente→veredicto).
+Lo esencial:
+
+- **ROJO corregido — args nativos**: el render de training pasaba `arguments`
+  como string JSON y el jinja lo volcaba crudo (`call:audio{{"action":...}}`);
+  el llama-server de prod (minja) parsea el string a objeto y renderiza el
+  formato NATIVO (`action:<|"|>set_volume<|"|>,level:20`). Medido con
+  `/apply-template` del server real: tras pasar `arguments` como dict,
+  **5/5 filas bit-idénticas** (single/multi/history/ok:false/no-tool).
+  v1/v2 entrenaron con este defecto (candidato a causa de fondo de args→`_raw`).
+- **Ronda 3 de auditoría semántica** (36 filas estratificadas a mano): 5 clases
+  de incoherencia medidas sobre el 100% y cerradas con fixes + gates G15-G19:
+  pausa→play (42 reales), captura→click, steam reply-en-result-name (86),
+  result-que-narra-el-turno en multi-tool (53), search+ack (31, DROP).
+- Dataset: 6.907 → **6.877 filas**, **24 gates TODOS PASS**, máscara re-PASS.
 
 - APIGen (arXiv:2406.18518): verificación format ✓(G4/G6) + execution-shape
   ✓(shapes calcados de ejecuciones reales) + semántica ✓(auditoría muestral

@@ -828,6 +828,102 @@ def repair_unfounded_time_claim_inline(
         return content
 
 
+def repair_unfounded_value_claim_inline(
+    content: str,
+    user_text: str,
+    events: list[Any],
+    turn_id: str,
+    *,
+    regen_action: Any | None = None,
+    regen_knowledge: Any | None = None,
+    trace: Any | None = None,
+    lang: str | None = None,
+) -> str:
+    """Reparación INLINE del claim de VALOR fabricado (gates FT v3 2026-06-11:
+    "Battery level is 78%" con has_battery:false del tool real, "CPU usage is
+    15 percent" ignorando el LoadPercentage real, o el valor afirmado SIN tool).
+
+    Mismo bug-class y mismo flujo que repair_unfounded_time_claim_inline: el
+    2B arrastra un atractor de valores-típicos; el detector estructural
+    (system_value_claim_unfounded: dígitos-con-unidad del reply ⊄ evidencia
+    del turno, scopeado a turnos con system o sin tools) lo caza y se regenera
+    el reply con CONTEXTO LIMPIO; si la regeneración también viene fabricada,
+    se quitan las oraciones con la medida sin sustento (último recurso).
+
+    Gate GEMMA4_VALUE_CLAIM_GUARD=0 apaga. Falla-segura: excepción → intacto.
+    """
+    import os
+    if os.environ.get("GEMMA4_VALUE_CLAIM_GUARD", "1").strip().lower() \
+            in {"0", "false", "no", "off"}:
+        return content
+    try:
+        from ..safety_pkg.reply_validator import (
+            system_value_claim_unfounded, strip_unfounded_value_sentences)
+        if not system_value_claim_unfounded(user_text or "", content or "", list(events)):
+            return content
+        if trace is not None:
+            try:
+                trace.event(turn_id, "reply_anti_pattern_detected",
+                            pattern="unfounded_value_claim",
+                            reply_preview=(content or "")[:120])
+            except Exception:
+                pass
+        regen = regen_action if events else regen_knowledge
+        fixed = ""
+        if regen is not None:
+            try:
+                fixed = str(regen() or "").strip()
+            except Exception as _regen_exc:
+                fixed = ""
+                if trace is not None:
+                    try:
+                        trace.event(turn_id, "silent_fallback",
+                                    component="value_claim_regen",
+                                    error=f"{type(_regen_exc).__name__}: {_regen_exc}")
+                    except Exception:
+                        pass
+        if fixed and not system_value_claim_unfounded(user_text or "", fixed, list(events)):
+            if trace is not None:
+                try:
+                    trace.event(turn_id, "reply_repaired_inline",
+                                pattern="unfounded_value_claim", after=fixed[:120])
+                except Exception:
+                    pass
+            return fixed
+        stripped = strip_unfounded_value_sentences(content or "", user_text or "",
+                                                   list(events))
+        # Fallback del último recurso: con events un ack es honesto; SIN events
+        # devolver el original sería entregar la fabricación intacta (medido:
+        # "i7-12700H, 14 núcleos, 45W" inventado sin tool) — mejor una línea
+        # honesta de no-tengo-el-dato (excepción de honestidad, mismo precedente
+        # que repair_media_fabricated).
+        if stripped:
+            repaired = stripped
+        elif events:
+            repaired = "Listo."
+        else:
+            from ..safety_pkg.reply_validator import VALUE_GUARD_FALLBACK
+            repaired = VALUE_GUARD_FALLBACK.get(lang or "es",
+                                                VALUE_GUARD_FALLBACK["es"])
+        if trace is not None and repaired != content:
+            try:
+                trace.event(turn_id, "reply_repaired_inline",
+                            pattern="unfounded_value_claim_stripped",
+                            after=repaired[:120])
+            except Exception:
+                pass
+        return repaired
+    except Exception as _guard_exc:
+        if trace is not None:
+            try:
+                trace.event(turn_id, "silent_fallback",
+                            component="value_claim_guard",
+                            error=f"{type(_guard_exc).__name__}: {_guard_exc}")
+            except Exception:
+                pass
+        return content
+
+
 __all__ = [
     "build_user_facing_fallback",
     "guard_unverified_final",

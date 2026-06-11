@@ -805,6 +805,133 @@ UNFOUNDED_TIME_HINT = (
 )
 
 
+# CLAIM DE VALOR-DE-SISTEMA SIN EVIDENCIA (gates FT v3 2026-06-11): mismo
+# bug-class que la hora fabricada pero con porcentajes/medidas — "Battery level
+# is 78%" con el tool real devolviendo has_battery:false (desktop), "CPU usage
+# is 15 percent" ignorando el LoadPercentage real, o el valor afirmado SIN
+# llamar ninguna tool. Medido en vivo: 7-10/53 prompts de valor fabricaban.
+# Detector ESTRUCTURAL (forma, no contenido): número pegado a una unidad de
+# medida (% / palabras-porciento multilingües / GB / MB) cuyos dígitos NO
+# aparecen en (user_text ∪ args ∪ results del turno). Misma doctrina que el
+# invariante G1 del dataset v3, aplicada en runtime.
+_VALUE_CLAIM_RE = re.compile(
+    r"(\d+(?:[.,]\d+)?)\s*(?:%|por\s?cien(?:to)?|percent|por\s?cento|"
+    r"pour\s?cent|prozent|per\s?cento|gigabytes?|megabytes?|\bgb\b|\bmb\b|"
+    r"\bgo\b|\bmo\b|n[úu]cleos?|\bcores?\b|\bthreads?\b|\bkerne\b|"
+    r"\bw\b|\bwatts?\b|\bghz\b|\bmhz\b)", re.IGNORECASE)
+_NUM_TOKEN_RE = re.compile(r"\d+(?:[.,]\d+)?")
+
+
+def _value_claims(text: str) -> set[str]:
+    """Tokens numéricos afirmados como medida (con unidad pegada)."""
+    out: set[str] = set()
+    for m in _VALUE_CLAIM_RE.finditer(text or ""):
+        out.add(m.group(1))
+    return out
+
+
+def _num_grounded(claim: str, ev_tokens: set[str]) -> bool:
+    """Token EXACTO o redondeo legítimo (±0.5) contra algún token numérico de
+    la evidencia."""
+    c_norm = claim.replace(",", ".")
+    if c_norm in ev_tokens:
+        return True
+    try:
+        c_val = float(c_norm)
+    except ValueError:
+        return False
+    for t in ev_tokens:
+        try:
+            if abs(c_val - float(t)) <= 0.5:
+                return True
+        except ValueError:
+            continue
+    return False
+
+
+def _evidence_blob(user_text: str, tool_calls_this_turn: list[Any]) -> str:
+    parts = [user_text or ""]
+    for c in tool_calls_this_turn or []:
+        args = c.get("args", {}) if isinstance(c, dict) else (getattr(c, "args", {}) or {})
+        res = _result_of(c)
+        try:
+            parts.append(json.dumps(args, ensure_ascii=False, default=str))
+            parts.append(json.dumps(res, ensure_ascii=False, default=str))
+        except Exception:
+            parts.append(str(args))
+            parts.append(str(res))
+    return " ".join(parts)
+
+
+def system_value_claim_unfounded(
+    user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff el reply afirma una MEDIDA (n+unidad) cuyos dígitos no están en
+    ninguna evidencia del turno, y el turno es de dominio-sistema:
+      (a) corrió system (el modelo tuvo el estado real del SO y lo contradijo), o
+      (b) no corrió NINGUNA tool (el valor salió de la nada).
+    Si corrieron otras tools (web/knowledge/...), no flaggea: sus payloads ya
+    son la evidencia y el caso queda fuera del bug-class medido."""
+    claimed = _value_claims(reply_text or "")
+    if not claimed:
+        return False
+    evidence = _evidence_blob(user_text, tool_calls_this_turn)
+    # match por TOKEN numérico, no substring (medido en vivo 2026-06-11: "15%"
+    # fabricado pasaba como grounded porque "15" aparece DENTRO de
+    # FreePhysicalMemory=14410756 — los results reales son ricos en dígitos y
+    # el substring siempre encuentra carambola). Tolerancia ±0.5 para el
+    # redondeo legítimo (psutil da percent=84.96 y el modelo dice "85%").
+    ev_tokens = {t.replace(",", ".") for t in _NUM_TOKEN_RE.findall(evidence)}
+    unfounded = {n for n in claimed if not _num_grounded(n, ev_tokens)}
+    if not unfounded:
+        return False
+    names = set()
+    for c in tool_calls_this_turn or []:
+        name = (c.get("name") if isinstance(c, dict) else getattr(c, "name", "")) or ""
+        names.add(str(name).lower())
+    if "system" in names:
+        return True
+    return not names  # sin tools: medida afirmada de la nada
+
+
+def strip_unfounded_value_sentences(reply_text: str, user_text: str,
+                                    tool_calls_this_turn: list[Any]) -> str:
+    """Quita las oraciones cuyas medidas no tienen sustento. Último recurso del
+    repair inline cuando la regeneración también vino mal."""
+    ev_tokens = {t.replace(",", ".") for t in _NUM_TOKEN_RE.findall(
+        _evidence_blob(user_text, tool_calls_this_turn))}
+    parts = re.split(r"(?<=[.!?…])\s+", (reply_text or "").strip())
+    kept = []
+    for p in parts:
+        bad = any(not _num_grounded(n, ev_tokens) for n in _value_claims(p))
+        if p and not bad:
+            kept.append(p)
+    return " ".join(kept).strip()
+
+
+# Último recurso del value-guard SIN tools (la regeneración y el strip
+# fallaron): línea honesta de no-tengo-el-dato. Excepción de honestidad
+# (precedente: repair_media_fabricated) — NO un short-circuit: el LLM ya
+# respondió y su respuesta era una fabricación medida.
+VALUE_GUARD_FALLBACK = {
+    "es": "No tengo esa medición a mano. ¿Querés que la consulte ahora?",
+    "en": "I don't have that reading at hand. Want me to check it now?",
+    "pt": "Não tenho essa medição à mão. Quer que eu verifique agora?",
+    "fr": "Je n'ai pas cette mesure sous la main. Tu veux que je vérifie ?",
+    "de": "Ich habe diesen Messwert gerade nicht. Soll ich nachsehen?",
+    "it": "Non ho quella misurazione a portata di mano. Vuoi che controlli?",
+}
+
+
+UNFOUNDED_VALUE_HINT = (
+    "Your previous reply stated a measured value (a percentage or memory size) "
+    "that did NOT come from any tool result or from the user's message. Never "
+    "invent battery/CPU/RAM readings. Report ONLY the values present in the tool "
+    "result — if the result says there is no battery, say exactly that — in the "
+    "user's language."
+)
+
+
 def intent_domain_mismatch(
     user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
 ) -> bool:
