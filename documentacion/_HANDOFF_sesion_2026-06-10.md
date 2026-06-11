@@ -75,12 +75,22 @@ validado en vivo con `scripts/_validate_action_filler.py` (4 rondas):
   result desconocido; dispatch async ok intacto ("Abrí Steam." se respeta).
   Live 5/5 sin falsos positivos; +8 tests grounding_gate. El stream TTS
   guard-checkea el summary cuando todo falló (voiced==final se mantiene).
-- 🔴 NUEVOS (chips pendientes): (a) app.open fuzzy abre CUALQUIER candidato
-  score>0 — "abre jitomatador por favor" abrió otra app (medir piso de score
-  sin romper typos/alias); (b) test pre-existente rojo
+- ✅ **Piso de score en app.open** (`9fe4e55`): distribución MEDIDA — typos
+  46-88, basura ≤40 (word-pair de 1 token = 40 exacto por fórmula) → piso 45
+  (`GEMMA4_APP_OPEN_MIN_SCORE`). "abrí morktul" ya NO abre Mortal Kombat; el
+  site-fallback (label exacto) sigue: morktul→morktul.bandcamp.com es SU
+  contrato. `canonical_query/top_match_score` extraídos (el score debe usar
+  el alias traducido). Live 5/5; 298 regresión.
+- 🔴 PENDIENTES (chips): (a) test pre-existente rojo
   `test_window_geom_and_confirm_honesty::test_reply_that_already_asks_passes_
-  through` (guard_unverified_final pisa un reply que YA pide confirmación,
-  verificado pre-existente con stash).
+  through` (guard_unverified_final pisa un reply que YA pide confirmación);
+  (b) la PRECONDICIÓN de app bloquea ANTES del site-fallback de t_app —
+  "abrí pivigames" vía app.open muere en needs_user (find()=[] → bloqueo) y
+  nunca llega a resolver el sitio; "ve a pivigames" (browser) sigue OK.
+- 🟡 Residuales observados en los evals (clase language-confusion/honestidad,
+  sin chip aún): replies en PT ante input ES ("Aplicativo jitomatador
+  aberto", "Bloco de Notas aberto") y la forma participio-sin-auxiliar
+  ("Aplicativo X aberto") que el claim-guard no cubre cuando todo falló.
 
 #### (texto WIP original, para contexto)
 - `gemma4_agent/agent_core/action_filler.py`: `pick_filler()` + `intent_target_for_filler()`.
