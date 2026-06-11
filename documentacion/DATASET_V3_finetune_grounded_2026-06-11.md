@@ -182,9 +182,49 @@ DELIBERADA: el pedido de contenido ofensivo ("di que el migue es...") no se
 entrena — eso es del safety de runtime, y los triggers de rutinas ("tiempo")
 son configuración, no comportamiento del modelo.
 
-Estado final: **6.806 filas, 19 gates TODOS PASS**, máscara tool_response
-PASS, cobertura 67/67 tools × 6 idiomas, historial real 110/110 contabilizado
-(94 directo + 16 justificado).
+Estado final iter-5: 6.806 filas, cobertura 67/67 tools × 6 idiomas, historial
+recorder 110/110 (94 directo + 16 justificado).
+
+## Iteración 6: HISTORIAL COMPLETO del proyecto (5.023 turnos, era Carter incl.)
+
+El recorder de junio era solo la punta. Se minaron TODAS las fuentes desde el
+inicio (script `_audit_full_history_coverage.py`):
+- `raw/history_raw.jsonl` (3.697 — la extracción original)
+- `gemma4_agent/data/router_corpus_real_logs.jsonl` (1.071 queries reales)
+- `~/.gemma4/sessions/*.json` (sesiones GUI de mayo)
+- recorder de junio (ya auditado en iter-5)
+
+Cobertura inicial: 2.802 match exacto / 227 sin match (6,3%). Tras 3 rondas de
+familias nuevas (build_v3.py bloques F–K), 2.834 exacto + cientos por familia,
+**165 sin match directo (4,6%)** — y ese residual está clasificado
+(`_classify_uncovered.py`):
+
+| Clase del residual | N | Tratamiento |
+|---|---|---|
+| garble STT / habla lateral | ~38 | cubierto por FAMILIA garble (clarificar breve) — el fuzzy no matchea el string exacto pero el comportamiento está enseñado |
+| dev/eval harness ("ejecuta smoke", "tool-call JSON inválido", "mide latencia") | ~20 | EXCLUSIÓN deliberada: son prompts de test, no de usuario |
+| términos internos míos ("qué es mission_status/VerifiedOutcome") | ~7 | EXCLUSIÓN: un usuario no los pregunta; vinieron de testing |
+| roleplay / contenido ofensivo-bait | varios | hate → familia de rechazo honesto; roleplay → no se entrena |
+| encoding corrupto ("CÃ¡mara", "utuytuytuy") | varios | EXCLUSIÓN: ruido de archivo |
+
+Familias de comportamiento agregadas en esta iteración (todas grounded,
+multilingües donde aplica): conceptos técnicos sin tool; info del sistema
+(disco/RAM/procesos/ventanas/audio/wifi/IP/adaptadores/versión); consulta de
+memoria; operaciones de archivo (mover/renombrar/append/crear/mkdir);
+web-facts (mundial/película/Rust/Arkriders/precio/H2O); estilo y persona;
+acción peligrosa→CONFIRMAR (apagar PC, rm -rf) e imposible→honesto (borrar
+cuenta Google, exportar SSH); rechazo de odio; **capacidad/identidad** (qué
+podés hacer, sos local, Gemma 4 = el modelo y Baxy = el asistente);
+clima directo; notas/alarmas; guardar nombre ("mi nombre es X");
+type-into-app y nav-en-app (computer_use); steam por nombre y lista de
+instalados; how-to (PowerShell); forget/privacidad; decline de capacidad
+ausente (luces). Exclusión documentada: aritmética ("calcula 2+2") va por el
+parser determinista pre-LLM del agente, no por el modelo.
+
+Estado final: **6.907 filas, 19 gates TODOS PASS**, máscara tool_response PASS,
+cobertura 67/67 tools × 6 idiomas, historial COMPLETO del proyecto (5.023
+turnos) contabilizado: lo entrenable cubierto por familia, lo no-entrenable
+(garble/dev/roleplay/corrupto) excluido y justificado.
 
 ## Criterios de papers cubiertos (fuentes)
 
