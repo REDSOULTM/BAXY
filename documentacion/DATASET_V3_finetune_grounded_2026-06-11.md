@@ -59,7 +59,40 @@ alta precisión; actions clampeadas a los enums REALES de los schemas.
     python train_ft.py --smoke      # 200 ej, valida pipeline + VRAM
     python train_ft.py              # full (usa train_v3.jsonl automáticamente)
 
-## Gates (estado: TODOS PASS sobre train_v3.jsonl, 6656 filas)
+## Iteración 2 (mismo día): auditoría semántica estilo APIGen + papers
+
+La verificación semántica muestral (etapa 3 de APIGen, arXiv:2406.18518) sobre
+la primera build cazó 8 clases de incoherencias en la SÍNTESIS — todas
+arregladas y re-validadas:
+
+1. Guesses por-default que recreaban el atractor ("activa el modo avión" →
+   system(time) → "Son las 12:24."). REGLA DE ORO nueva: nunca sintetizar un
+   reply de valor desde un guess por-default; sin señal clara → result genérico
+   + reply curado.
+2. Acciones equivocadas ("cerrá la ventana de X"/"borra la carpeta" caían a
+   `list` con reply non-sequitur) → guesses multilingües por familia con
+   close/min/max ANTES de list, y filesystem delete/read/mkdir/search.
+3. Preguntas respondidas con ack ("¿qué alarmas tengo?" → "Hecho.") → 95 filas
+   DROPPED (calidad > cantidad, LIMA) + gate G8 que lo impide a futuro.
+4. "está instalado X" caía a open ("abrí X" = mentira) → familia search +
+   reply instalado/no-instalado grounded en matches.
+5. Nombres multi-palabra rotos ("Visual" por "Visual Studio Code") → extracción
+   de capitalizados consecutivos.
+6. Replies de valor pisando filas multi-tool → kind='value' explícito.
+7. Volumen sin número inventaba un nivel → solo con número extraído.
+8. media play ahora incluye ~25% estado ATTEMPTED real (Spotify no auto-play)
+   con reply honesto "abrí la búsqueda; tocá el primer resultado" — el
+   overclaim residual medido en vivo 2026-06-11.
+
+Augmentations (ToolMind arXiv:2511.15718 / FunReason-MT arXiv:2510.24645:
+multi-turno + clarificación; el bug en vivo: artista-sin-título):
+- 48 filas artista-sin-título 6 idiomas (query=ARTISTA, mitad attempted).
+- 54 filas DOS-TURNOS con history (pedido ambiguo → el asistente pregunta →
+  el user completa → tool con args correctos).
+- 12 filas de clarificación pura (preguntar, NO adivinar ni llamar tool).
+- Dedup exacto (17) y drop pregunta+ack (95): 6656 → 6658 filas netas.
+
+## Gates (estado: TODOS PASS sobre train_v3.jsonl, 6658 filas)
 
 | Gate | Qué mide | Estado |
 |------|----------|--------|
@@ -67,9 +100,28 @@ alta precisión; actions clampeadas a los enums REALES de los schemas.
 | G2 identidad | 0 Carter / "Soy Gemma 4" como asistente | PASS |
 | G3 anti-atractor | ningún reply idéntico >80 veces (antes: 924 "Listo.") | PASS |
 | G4 vocabulario | tools y actions existen en los schemas reales | PASS |
-| G5 balance | peso efectivo es = 58.5% (rango 52-62) | PASS |
+| G5 balance | peso efectivo es = 57.6% (rango 52-62) | PASS |
 | G6 render | muestra renderiza por el jinja real, bloques = results | PASS |
 | G7 no-vacíos | 0 final_reply vacíos | PASS |
+| G8 pregunta+ack | 0 preguntas respondidas con "Hecho."/"Listo." | PASS |
+| G9 estados honestos | ≥30 attempted (39) y ≥30 ok:false (33) | PASS |
+| G10 trayectorias | ≥50 multi-turno (54) y ≥10 clarificaciones (388) | PASS |
+
+Longitudes finales: p50=93, p99=219, máx 551 tokens (MAX_SEQ 2048, 0 truncados).
+
+## Criterios de papers cubiertos (fuentes)
+
+- APIGen (arXiv:2406.18518): verificación format ✓(G4/G6) + execution-shape
+  ✓(shapes calcados de ejecuciones reales) + semántica ✓(auditoría muestral
+  estratificada, 2 rondas; G1/G8 automatizan los hallazgos).
+- ToolMind (arXiv:2511.15718) / FunReason-MT (arXiv:2510.24645): multi-turno,
+  clarificaciones, trayectorias con estado ✓(G10); diversidad de dominios
+  ✓(67 tools, 22 categorías).
+- "Failure Makes the Agent Stronger" (arXiv:2509.18847): resultados de fallo
+  con reporte honesto ✓(G9, 33 ok:false + 39 attempted).
+- Language confusion (EMNLP 2024, ya en docs del repo): balance es 57.6%
+  efectivo + replies SIEMPRE en el idioma de la fila ✓(G5 + tablas por idioma).
+- LIMA (calidad>cantidad): drop de filas que enseñaban a no-responder ✓.
 
 ## Presupuesto del retrain (medido en corridas previas, 4060 Ti 16GB)
 
