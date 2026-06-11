@@ -134,7 +134,25 @@ Medido contra los 67 schemas reales:
   audio+media, gui+vision...), 500 con n_steps>1, los 6 idiomas presentes.
   Los results por-paso siguen genéricos (backlog v4).
 
-Estado final: **6.686 filas, 18 gates TODOS PASS**, máscara tool_response PASS.
+## Iteración 4: cobertura TOTAL + formato secuencial de deploy
+
+- **Render SECUENCIAL** (fix de fidelidad importante): deploy corre con
+  `parallel_tool_calls=False` — el modelo emite UNA llamada por pase, ve su
+  result y recién entonces la siguiente. El render anterior emitía
+  call,call→response,response (orden que el runtime jamás produce); ahora es
+  call→response→call→response (verificado contra el jinja: un solo turno
+  model, bloques intercalados, igual al re-feed real).
+- **67/67 tools cubiertas**: +12 filas para las 5 nicho que faltaban
+  (file_process, mcp, skill_load, subagent, watcher), calcadas de sus schemas
+  reales (params/actions) con results coherentes y replies grounded. Gate G12
+  ahora SIN whitelist.
+- **Trayectorias error→reintento** (+12, arXiv:2509.18847): fallo real →
+  verificación/reintento → reporte honesto (app not found → search vacío →
+  "no lo encontré instalado"; web timeout → retry → respuesta del snippet).
+  Gate G14 ≥10.
+
+Estado final: **6.710 filas, 19 gates TODOS PASS**, máscara tool_response
+PASS, máx 632 tokens, cobertura 67/67 tools × 6 idiomas (tools ≥20 ej).
 
 ## Criterios de papers cubiertos (fuentes)
 
