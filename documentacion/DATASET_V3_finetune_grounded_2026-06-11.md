@@ -151,8 +151,40 @@ Medido contra los 67 schemas reales:
   "no lo encontré instalado"; web timeout → retry → respuesta del snippet).
   Gate G14 ≥10.
 
-Estado final: **6.710 filas, 19 gates TODOS PASS**, máscara tool_response
-PASS, máx 632 tokens, cobertura 67/67 tools × 6 idiomas (tools ≥20 ej).
+## Iteración 5: auditoría del HISTORIAL REAL de uso (los 110 turnos, uno a uno)
+
+Corpus: 165 turnos reales usuario→Baxy de ~/.gemma4/logs (110 user_texts
+únicos), revisados TODOS manualmente (no muestreo). Cada familia nueva corrige
+un fallo OBSERVADO en producción:
+
+| Fallo observado (verbatim del log) | Filas nuevas (aug_v3_hist_*) |
+|---|---|
+| "pon despacito en spotify" → media **PAUSE** + query basura | playtitle: título→play query exacta, 6 idiomas |
+| "reproduce el video" → query inventada "el último video que vi" | resume: media(action=resume), 6 idiomas |
+| "maximiza Steam" → steam(maximize) action inválida | maximize: window(maximize,title), 6 idiomas |
+| store_page con appid INVENTADO "1234567890" | store: store_page por QUERY, 6 idiomas |
+| "¿qué juego estoy jugando?" → cancel_turn / app(search,"jugando") | playing: window(active)→título, 6 idiomas |
+| "desmutea el pc" → rechazo falso "por seguridad" | unmute: audio(mute,state=off), 6 idiomas |
+| "MI ciudad es curico" → diserta en vez de GUARDAR; "¿dónde vivo?" falla | memsave/memrecall pares, 6 idiomas |
+| "Perfecto" → safety(status) espuria + reply con internals "estado 'done'" | courtesy: SIN tool, ack cálido |
+| "We've got."/"I guess it." → "De nada." / tools espurias | garble: clarificar breve EN EL IDIOMA, sin tool |
+| "¿quién es su mayor enemigo?" → repite la respuesta anterior | followup con history: responder del contexto |
+| "apretá el icono/primer título que veas" (4 ocurrencias) → steam(click)/media inventados | visclick: computer_use(goal), 4 idiomas |
+| "y sí, lánzalo" → pierde el referente | deictic con history: launch del juego del contexto |
+| "¿has escuchado a J Balvin?" → "no tengo historial de música" robótico | heardof: honesto + ofrecer reproducir |
+| "¿con quién ha hecho collabs?" → app(search) absurdo | ctxsearch con history: query contextual + web |
+| "escríbele a Juan en Discord" → tipeaba "a Juan..." como cuerpo | appmsg: cu con goal completo chat+texto |
+
+Cross-check de cobertura (fuzzy ≥0.62 sobre user_text normalizado, sin
+wake-words): **94/110 match directo**; los 16 restantes son (a) cubiertos por
+FAMILIA con otra frase (garble/cortesía/web/vision), o (b) exclusión
+DELIBERADA: el pedido de contenido ofensivo ("di que el migue es...") no se
+entrena — eso es del safety de runtime, y los triggers de rutinas ("tiempo")
+son configuración, no comportamiento del modelo.
+
+Estado final: **6.806 filas, 19 gates TODOS PASS**, máscara tool_response
+PASS, cobertura 67/67 tools × 6 idiomas, historial real 110/110 contabilizado
+(94 directo + 16 justificado).
 
 ## Criterios de papers cubiertos (fuentes)
 
