@@ -410,28 +410,98 @@ class VoicePipeline:
             return None  # con contexto largo el LID de Parakeet es excelente
         if not self._looks_english_not_target(raw_text):
             return None
-        whisper = self._whisper_rescue_stt()
-        if whisper is None:
-            return None
         t0 = time.time()
-        try:
-            text = whisper.transcribe(
-                audio, initial_prompt=self._initial_prompt,
-                language=self._lang_profile.whisper_language,
-            )
-        except Exception as exc:
-            logger.warning("lid_rescue transcribe failed: %s", exc)
-            return None
+        mode = self._lid_rescue_mode()
+        if mode == "subprocess":
+            text = self._rescue_via_subprocess(audio)
+        else:
+            whisper = self._whisper_rescue_stt()
+            if whisper is None:
+                return None
+            try:
+                text = whisper.transcribe(
+                    audio, initial_prompt=self._initial_prompt,
+                    language=self._lang_profile.whisper_language,
+                )
+            except Exception as exc:
+                logger.warning("lid_rescue transcribe failed: %s", exc)
+                return None
         text = (text or "").strip()
         logger.info(
-            "LID RESCUE (%.2fs extra): parakeet=%r -> whisper[%s]=%r",
-            time.time() - t0, raw_text[:60],
+            "LID RESCUE [%s] (%.2fs extra): parakeet=%r -> whisper[%s]=%r",
+            mode, time.time() - t0, raw_text[:60],
             self._lang_profile.whisper_language, text[:60],
         )
         return text or None
 
+    @staticmethod
+    def _lid_rescue_mode() -> str:
+        """resident | subprocess. El target de producto es 8 GB de RAM y
+        Whisper-small residente cuesta ~686 MB (MEDIDO 2026-06-11; el unload
+        in-process aún retiene ~418 MB en el allocator). `auto`: residente solo
+        con RAM holgada; en el target, subproceso EFÍMERO (RAM permanente 0,
+        ~5-7 s solo en el turno rescatado). Override GEMMA4_STT_LID_RESCUE_MODE.
+        tiny DESCARTADO por medición: WER 0.897 en comandos reales (basura)."""
+        import os as _os_m
+        mode = (_os_m.environ.get("GEMMA4_STT_LID_RESCUE_MODE", "auto")
+                or "auto").strip().lower()
+        if mode in ("resident", "subprocess"):
+            return mode
+        try:
+            import psutil
+            total_gb = psutil.virtual_memory().total / 1e9
+        except Exception:
+            total_gb = 0.0
+        try:
+            floor = float(_os_m.environ.get("GEMMA4_STT_LID_RESIDENT_MIN_GB", "12"))
+        except (TypeError, ValueError):
+            floor = 12.0
+        return "resident" if total_gb >= floor else "subprocess"
+
+    def _rescue_via_subprocess(self, audio: "np.ndarray") -> str | None:
+        """Transcribe el buffer en un worker efímero (_lid_rescue_worker.py):
+        el SO recupera TODA la RAM al terminar. Para el target de 8 GB."""
+        import subprocess
+        import sys as _sys
+        import tempfile
+        import wave
+        from pathlib import Path
+        worker = Path(__file__).resolve().parent / "_lid_rescue_worker.py"
+        tmp = None
+        try:
+            a16 = audio if audio.dtype == np.int16 else (
+                np.clip(audio.astype(np.float32), -1.0, 1.0) * 32767).astype(np.int16)
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+                tmp = Path(f.name)
+            with wave.open(str(tmp), "wb") as w:
+                w.setnchannels(1)
+                w.setsampwidth(2)
+                w.setframerate(SAMPLE_RATE)
+                w.writeframes(a16.tobytes())
+            proc = subprocess.run(
+                [_sys.executable, "-X", "utf8", str(worker), str(tmp),
+                 self._lang_profile.whisper_language],
+                capture_output=True, timeout=30,
+            )
+            if proc.returncode != 0:
+                logger.warning("lid_rescue worker exit=%s stderr=%s",
+                               proc.returncode,
+                               proc.stderr.decode("utf-8", "replace")[:120])
+                return None
+            return proc.stdout.decode("utf-8", "replace").strip() or None
+        except Exception as exc:
+            logger.warning("lid_rescue subprocess falló: %s", exc)
+            return None
+        finally:
+            try:
+                if tmp is not None:
+                    tmp.unlink(missing_ok=True)
+            except Exception:
+                pass
+
     def _whisper_rescue_stt(self):
-        """Whisper-small residente para el rescate, cargado LAZY al primer uso."""
+        """Whisper-small residente para el rescate (solo modo resident:
+        máquinas con RAM holgada), cargado LAZY al primer uso."""
         cached = getattr(self, "_whisper_rescue", None)
         if cached is not None:
             return cached if cached is not False else None

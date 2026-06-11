@@ -104,6 +104,31 @@ Gate `GEMMA4_STT_LID_RESCUE=0`. Log instrumentado: "LID RESCUE".
   truncado, 0/84 mic truncado): requiere el garble/ruido de sesión viva — el
   log "LID RESCUE" acumulará la evidencia en uso real.
 
+**Modo adaptativo por RAM (2026-06-11) — el target es 8 GB de RAM:**
+
+Whisper-small residente cuesta RAM que el target NO tiene: **+673 MB** al
+cargar (3.7 s) y el unload in-process **retiene 418 MB** en el allocator
+(medido con `scripts/_diag/_measure_whisper_rss.py`). whisper-**tiny** como
+rescatador queda DESCARTADO por medición: WER 0.8974 sobre los 84 comandos
+reales (vs 0.5016 de small) — basura inutilizable aunque pese 75 MB.
+
+Solución: `GEMMA4_STT_LID_RESCUE_MODE = auto | resident | subprocess` (default
+`auto`, umbral `GEMMA4_STT_LID_RESIDENT_MIN_GB`, default 12):
+- **resident** (RAM ≥ 12 GB, p.ej. máquina de desarrollo): Whisper queda
+  cargado tras el primer rescate → rescate p50 ≈ 1.46 s.
+- **subprocess** (target 8 GB): cada rescate corre en un worker EFÍMERO
+  (`voice/_lid_rescue_worker.py`: wav temp → faster-whisper small int8 →
+  stdout → muere). El SO recupera el 100 % de la RAM al terminar. Costo
+  medido end-to-end (spawn + import + carga + transcripción, clip real
+  1.2 s): **≈ 7.1–7.4 s**, SOLO en el turno rescatado (raro); el camino
+  normal sigue en 0 ms extra. El worker comparte `download_root`
+  (`~/.gemma4/models/whisper`) y los DECODE_KWARGS anti-alucinación de
+  `stt.py` — sin re-descarga ni red.
+
+Verificación: `scripts/_diag/_verify_lid_rescue_modes.py` PASS (resolución de
+modos, camino subprocess completo con texto correcto, no-disparo 0 ms);
+suite voz 298/298; eval rescate 0 falsos disparos / WER intacto.
+
 **Etapa 3 (fp32) cerrada como NO-FACTIBLE hoy:** sherpa-onnx solo publica v3 en
 int8 (el fp16 existente es v2, English-only — inútil para 6 idiomas);
 sherpa-onnx 1.13.2 es la última versión (13-may-2026) y v3 el último modelo.
