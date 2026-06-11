@@ -74,22 +74,38 @@ class AppResolver:
         self._cache: list[AppCandidate] = []
         self._loaded_sources: set[str] = set()
 
-    def find(self, query: str, limit: int = 8, refresh: bool = False, deep_fallback: bool = True) -> list[AppCandidate]:
-        # Lazy import: avoids a top-level cycle with tools.py.
-        from .tools import _score, _fold
-        # Translate a localized OS-builtin name ("bloc-notes", "Editor",
-        # "calculatrice") to its canonical binary BEFORE discovery — discovery
-        # only knows the English binary name, so the foreign label fuzzy-scores 0.
-        # See _BUILTIN_ALIASES. Strip a leading article the LLM may keep ("el/le/
-        # den/o/il/la/lo/the") so "ouvre LE bloc-notes" still matches.
+    def canonical_query(self, query: str) -> str:
+        """Query EFECTIVA con la que find() rankea: artículo inicial fuera +
+        traducción de alias builtin localizado ("la calculadora" -> "calc").
+        Compartida por find() y por el chequeo de score de app_open — un score
+        calculado sobre el nombre ORIGINAL rompería los alias (score(
+        "calculadora","calc")=0 aunque el match sea el canónico)."""
+        from .tools import _fold
         folded = _fold(query)
         for _art in ("el ", "la ", "lo ", "le ", "den ", "der ", "das ", "o ", "a ", "il ", "the "):
             if folded.startswith(_art):
                 folded = folded[len(_art):]
                 break
         canonical = _BUILTIN_ALIASES.get(folded)
-        if canonical is not None:
-            query = canonical
+        return canonical if canonical is not None else query
+
+    def top_match_score(self, query: str, candidate: "AppCandidate") -> int:
+        """Score de `candidate` para `query` con la MISMA semántica del ranking
+        de find() (query canónica, max sobre nombre y stem del launch). Lo usa
+        el piso de apertura de app_open."""
+        from .tools import _score
+        q = self.canonical_query(query)
+        return max(_score(q, candidate.name), _score(q, Path(candidate.launch).stem))
+
+    def find(self, query: str, limit: int = 8, refresh: bool = False, deep_fallback: bool = True) -> list[AppCandidate]:
+        # Lazy import: avoids a top-level cycle with tools.py.
+        from .tools import _score
+        # Translate a localized OS-builtin name ("bloc-notes", "Editor",
+        # "calculatrice") to its canonical binary BEFORE discovery — discovery
+        # only knows the English binary name, so the foreign label fuzzy-scores 0.
+        # See _BUILTIN_ALIASES. Strip a leading article the LLM may keep ("el/le/
+        # den/o/il/la/lo/the") so "ouvre LE bloc-notes" still matches.
+        query = self.canonical_query(query)
         if refresh:
             self._cache = []
             self._loaded_sources = set()

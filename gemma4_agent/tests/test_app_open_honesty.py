@@ -31,6 +31,8 @@ def _reg_with(open_ok=True, verify_found_sequence=None, preexisting_found=False)
     reg.apps = MagicMock()
     reg.apps.find.return_value = [cand]
     reg.apps.open.return_value = {"ok": open_ok, "error": None if open_ok else "boom"}
+    # match legítimo de score alto (el piso de apertura no debe interferir acá)
+    reg.apps.top_match_score.return_value = 100
 
     reg.state = MagicMock()
     reg.state.register_resource.return_value = {"resource": {"id": "r1"}}
@@ -100,6 +102,74 @@ class AppOpenHonestyTest(unittest.TestCase):
         r = _normalize_tool_result("app", {"action": "open", "name": "Discord"}, r)
         self.assertFalse(_has_unverified_signal(r),
                          "launch_requested + verified=None no es unverified-signal")
+
+
+class AppOpenScoreFloorTest(unittest.TestCase):
+    """Piso de apertura (2026-06-10): app_open NO abre matches[0] si su score
+    queda bajo GEMMA4_APP_OPEN_MIN_SCORE (default 45, MEDIDO: typos legítimos
+    46-88, basura fuzzy <=40 — "abre jitomatador por favor" abría una app
+    aleatoria). Bajo el piso -> "app not found" honesto (mismo error que activa
+    el fallback a sitio de t_app)."""
+
+    def test_weak_match_blocked_honest(self):
+        reg = _reg_with()
+        reg.apps.top_match_score.return_value = 40  # banda word-pair fuzzy
+        r = reg.app_open({"name": "jitomatador por favor"})
+        self.assertFalse(r["ok"])
+        self.assertEqual(r["error"], "app not found")
+        self.assertEqual(r["weak_match"]["score"], 40)
+        reg.apps.open.assert_not_called()
+
+    def test_typo_band_opens(self):
+        # 46 = el typo más débil medido ("stema" -> Steam): DEBE abrir.
+        reg = _reg_with(verify_found_sequence=[True])
+        reg.apps.top_match_score.return_value = 46
+        r = reg.app_open({"name": "stema"})
+        self.assertTrue(r["ok"])
+        reg.apps.open.assert_called_once()
+
+    def test_floor_env_override(self):
+        import os
+        reg = _reg_with(verify_found_sequence=[True])
+        reg.apps.top_match_score.return_value = 46
+        os.environ["GEMMA4_APP_OPEN_MIN_SCORE"] = "60"
+        try:
+            r = reg.app_open({"name": "stema"})
+            self.assertFalse(r["ok"])  # piso subido -> 46 ya no alcanza
+        finally:
+            os.environ.pop("GEMMA4_APP_OPEN_MIN_SCORE", None)
+
+    def test_floor_zero_disables(self):
+        import os
+        reg = _reg_with(verify_found_sequence=[True])
+        reg.apps.top_match_score.return_value = 5
+        os.environ["GEMMA4_APP_OPEN_MIN_SCORE"] = "0"
+        try:
+            r = reg.app_open({"name": "x"})
+            self.assertTrue(r["ok"])  # kill-switch: comportamiento previo
+        finally:
+            os.environ.pop("GEMMA4_APP_OPEN_MIN_SCORE", None)
+
+
+class CanonicalQueryScoreTest(unittest.TestCase):
+    """canonical_query/top_match_score: la MISMA semántica del ranking de find()
+    (alias builtin + artículo fuera) — un piso sobre el nombre ORIGINAL
+    rompería los alias localizados."""
+
+    def test_alias_translates(self):
+        from gemma4_agent.tools_pkg.app_resolver import AppResolver
+        r = AppResolver()
+        self.assertEqual(r.canonical_query("la calculadora"), "calc")
+        self.assertEqual(r.canonical_query("bloc de notas"), "notepad")
+        self.assertEqual(r.canonical_query("Spotify"), "Spotify")  # sin alias: intacta
+
+    def test_alias_scores_against_canonical(self):
+        from gemma4_agent.tools_pkg.app_resolver import AppResolver, AppCandidate
+        r = AppResolver()
+        calc = AppCandidate("calc", "PATH", r"C:\Windows\System32\calc.exe", "file", "calc.exe")
+        # score("calculadora","calc")=88 vía query-startswith; con la traducción
+        # del alias el match canónico da 100 — el piso jamás lo toca.
+        self.assertEqual(r.top_match_score("la calculadora", calc), 100)
 
 
 class AppOpenFalsePositiveGateTest(unittest.TestCase):

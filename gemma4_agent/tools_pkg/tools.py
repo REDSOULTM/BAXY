@@ -4448,6 +4448,32 @@ if ($pos) {
         if not matches:
             return _err("app not found", query=name, searched_sources=["PATH", "Start Menu", "StartApps", "Registry", "Steam", "Epic"])
         best = matches[0]
+        # PISO DE APERTURA (2026-06-10, MEDIDO en _diag_app_open_score_floor.py):
+        # abrir matches[0] con cualquier score>0 ABRÍA una app aleatoria ante un
+        # nombre inexistente (vivo: "abre jitomatador por favor" -> ok=True de
+        # otra app). Distribución medida con la query CANÓNICA (alias builtin
+        # traducido, mismo ranking de find): legítimos exactos/alias=100, typos
+        # con primera letra conservada=46-88 ("stema"->Steam 46, "discrod" 53);
+        # basura=<=40 (la banda word-pair-fuzzy de 1 token da exactamente 40 por
+        # fórmula; el resto ni matchea). Piso 45: corta TODA la banda débil sin
+        # tocar los typos medidos. Bajo el piso -> "app not found" HONESTO (el
+        # mismo error activa el fallback a sitio web de t_app, que es el camino
+        # correcto para "abrí <sitio>"). GEMMA4_APP_OPEN_MIN_SCORE lo ajusta.
+        try:
+            _floor = int(os.environ.get("GEMMA4_APP_OPEN_MIN_SCORE") or "45")
+        except ValueError:
+            _floor = 45
+        if _floor > 0:
+            _best_score = self.apps.top_match_score(name, best)
+            if _best_score < _floor:
+                return _err(
+                    "app not found", query=name,
+                    searched_sources=["PATH", "Start Menu", "StartApps", "Registry", "Steam", "Epic"],
+                    weak_match={**best.as_dict(), "score": _best_score},
+                    note=(f"el mejor candidato ('{best.name}', score {_best_score}) "
+                          f"queda bajo el piso de apertura ({_floor}): no abro una "
+                          "app que probablemente no es la pedida."),
+                )
         preexisting = self.verify_app_opened({"name": name})
         open_result = self.apps.open(best)
         if not open_result.get("ok"):
