@@ -51,3 +51,25 @@ ninguno de los benchmarks disponibles lo puede confirmar hoy.
 
 Artefactos previos en `gemma4_agent/data/*.bak_pre_v3corpus_2026-06-11`
 (encoder ST + ONNX + exemplars + centroids + abstain + meta + corpus).
+
+---
+
+# Sesión causa-raíz: los "16 canarios rotos" → 63/63 (2026-06-11)
+
+Diagnóstico con descomposición por etapa (kw/exemplar/semántica/intent/
+abstain/tool_head) + `sys.settrace` sobre `select_tool_names` para cazar la
+línea exacta de cada mutación. CUATRO causas raíz, todas medidas:
+
+| # | Causa | Evidencia | Fix |
+|---|---|---|---|
+| 1 | El harness corría el planner FRÍO: sin warmup, `semantic_router.status().model_loaded=False` → `scored=[]` → semántica apagada. Medía un router degradado que en prod no existe (el agente calienta al boot) | 47/63 frío vs 58/63 caliente, mismos artefactos | warmup en `router_canary_eval.py` (espejo de `router_eval._warm_router_for_eval`; tool_head importado de tools_pkg — el import de router_eval desde safety_pkg falla silencioso) |
+| 2 | 3 labels anteriores a la política how-to/info del 2026-06-04 (bdcceda: "cómo elimino una carpeta" BORRÓ la carpeta → pregunta conceptual = el LLM responde, sin tools). Los canarios (2026-05-21) esperaban web\|knowledge para "que es una GPU/API/CPU" | cronología git + traza: L1508 `_is_howto_or_info_question` retira las tools por diseño | labels → `expect_empty` con nota de política |
+| 3 | Guarda local-fact INCOMPLETA en el tool_head: `_suggest_tools` no apila web/knowledge si una tool local matcheó, pero el union del head (L1196) solo tenía la versión datetime → "cuanta RAM tengo" arrastraba `web` débil | settrace: `L1196 names ['system']→['system','web']` | guarda del head ampliada al set compartido `_LOCAL_FACT_TOOLS` |
+| 4 | `contacts` fuera del set local-fact + flip frío/caliente de `wants_knowledge` (1ª llamada centroides sin cargar → False; 2ª → True): "tengo el numero de Juan" apilaba web/knowledge — la agenda es LOCAL | `plan_mission` mismo proceso: antes `['contacts']`, después de un select `['contacts','web','knowledge']` | `contacts` en `_LOCAL_FACT_TOOLS` |
+
+**Resultado: canarios 47/63 → 63/63 (100%).** Anti-regresión: eval congelado
+IDÉNTICO (dev 0.9832/keep 0.9974; holdout 0.9788/keep 1.0000), ruido dev
+1.35→1.34 extra/turno (turnos ruidosos 58→56), suite routing 196 passed.
+
+Gotcha de paso: `Set-Content -Encoding utf8` de PS 5.1 mete BOM y rompe el
+json.loads del harness — re-escribir con python utf-8 sin BOM.

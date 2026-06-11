@@ -30,6 +30,40 @@ def main() -> int:
 
     import warnings
     warnings.filterwarnings("ignore")
+    # WARMUP (causa raíz medida 2026-06-11): sin calentar, el planner corre con
+    # la etapa semántica APAGADA (status().model_loaded=False -> scored=[]) y
+    # este harness medía un router DEGRADADO que en prod no existe (el agente
+    # calienta al boot): 47/63 frío vs 58/63 caliente — 11 "fallos" eran
+    # artefacto del harness, no señal. Mismo warmup que router_eval
+    # (_warm_router_for_eval, inlineado: scripts/ no es paquete importable acá).
+    try:
+        from gemma4_agent.routing import semantic_router
+        if semantic_router.is_enabled():
+            semantic_router._ensure_loaded()
+        from gemma4_agent.routing import intent_router
+        intent_router._ensure_centroids()
+        intent_router._ensure_shop_centroids()
+        intent_router._ensure_nav_centroids()
+        intent_router._ensure_email_centroids()
+        try:
+            from gemma4_agent.routing import exemplar_router
+            exemplar_router.match("warmup")
+        except Exception:
+            pass
+        try:
+            from gemma4_agent.safety_pkg import abstain_head
+            if abstain_head.is_enabled():
+                abstain_head.load_model()
+            # tool_head vive en tools_pkg (el import de router_eval desde
+            # safety_pkg falla SILENCIOSO en su try/except — acá lo correcto).
+            from gemma4_agent.tools_pkg import tool_head
+            if tool_head.is_enabled():
+                tool_head.load()
+        except Exception:
+            pass
+        print("  (warmup: router hot)")
+    except Exception as exc:
+        print(f"  (warmup warning: {type(exc).__name__}: {exc})")
     from gemma4_agent.routing.planner import select_tool_names, plan_mission
 
     rows = [json.loads(l) for l in CANARIES.read_text(encoding="utf-8").splitlines() if l.strip()]

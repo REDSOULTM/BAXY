@@ -70,6 +70,17 @@ _SEM_PEAK_GAP = float(_os.environ.get("GEMMA4_SEM_PEAK_GAP", "0.13"))
 # (margen 0.10) y conserva todas las relevantes (margen 0.055 bajo la más baja).
 # Override GEMMA4_MCP_PEAK_KEEP.
 _MCP_PEAK_KEEP = float(_os.environ.get("GEMMA4_MCP_PEAK_KEEP", "0.40"))
+# Tools que responden HECHOS LOCALES de esta máquina (hora/RAM/batería/agenda
+# de contactos/portapapeles...). Cuando una de estas matcheó por keyword, una
+# pregunta "informacional" es sobre ESTA máquina, no sobre el mundo: ni
+# _suggest_tools (pile-on de wants_knowledge) ni el tool_head deben sumar
+# web/knowledge. Compartido por ambas guardas (canarios 2026-06-11: "cuanta RAM
+# tengo" arrastraba web por el head; "tengo el numero de Juan" arrastraba
+# web/knowledge porque contacts no estaba en el set — la agenda es local).
+_LOCAL_FACT_TOOLS = frozenset({
+    "system", "app", "media", "audio", "audio_device", "device_settings",
+    "network", "clipboard", "contacts",
+})
 # When one tool clearly dominates ("abre steam"->steam 0.74), keep only tools
 # within this band of it (drops the noisy tail -> small subset). Recall-safe:
 # the labeled tool IS the dominant peak in these crisp single-intent commands.
@@ -1130,7 +1141,12 @@ def select_tool_names(
             # hoy" hacía que el head disparara `web` con margen débil, evadiendo la
             # guarda que solo vivía en _suggest_tools -> web+source_manager de ruido
             # (canario backlog #2). La fecha/hora local la responde `system`.
-            if head_tools and _is_local_datetime(raw_text):
+            # AMPLIADA a TODO hecho-local por keyword (canarios 2026-06-11):
+            # "cuanta RAM tengo" matcheaba `system` por keyword pero el head
+            # igualmente sumaba `web` débil — la guarda de _suggest_tools y la
+            # del head deben mirar el MISMO set (_LOCAL_FACT_TOOLS).
+            if head_tools and (_is_local_datetime(raw_text)
+                               or (set(_kw_hits) & _LOCAL_FACT_TOOLS)):
                 head_tools = [t for t in head_tools if t not in ("web", "knowledge")]
             _cu_score = 0.0
             try:
@@ -2151,8 +2167,11 @@ def _suggest_tools(step: str) -> list[str]:
         # (info>action) and used to drag web+knowledge in, but the `system` tool
         # answers them locally — no web lookup needed. When a strong local tool
         # already matched, the question is about THIS machine, not the world.
-        _LOCAL_FACT = {"system", "app", "media", "audio", "audio_device",
-                       "device_settings", "network", "clipboard"}
+        # set COMPARTIDO con la guarda del tool_head (canarios 2026-06-11):
+        # incluye `contacts` — "tengo el numero de Juan" es la agenda LOCAL,
+        # no una pregunta de mundo (wants_knowledge da falso-positivo borderline
+        # en el texto folded y apilaba web+knowledge sobre contacts).
+        _LOCAL_FACT = _LOCAL_FACT_TOOLS
         # Local date/time ("qué día es hoy", "qué fecha", "what day is today")
         # is a LOCAL fact the system answers, not a world question — route it to
         # system (added here) and skip the web/knowledge pile-on. Helper compartido

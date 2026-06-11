@@ -6,13 +6,13 @@
 {"q": "que hora es", "expect_any": ["system"], "forbid": ["web", "knowledge"]}
 {"q": "que dia es hoy", "expect_any": ["system", "local_calendar"], "forbid": ["web", "knowledge"]}
 {"q": "cuanta RAM tengo", "expect_any": ["system"], "forbid": ["web", "knowledge"]}
-{"q": "que es una GPU", "expect_any": ["web", "knowledge"], "forbid": ["system"]}
-{"q": "que es una API", "expect_any": ["web", "knowledge"], "forbid": ["system", "developer"]}
+{"q": "que es una GPU", "expect_empty": true, "note": "politica 2026-06-04 (bdcceda): pregunta conceptual -> el LLM responde de su conocimiento, sin tools (antes esperaba web|knowledge)"}
+{"q": "que es una API", "expect_empty": true, "note": "politica 2026-06-04 (bdcceda): pregunta conceptual -> el LLM responde, sin tools"}
 {"q": "de que trata Dune", "expect_any": ["web", "knowledge"], "forbid": ["media", "notes_tasks"]}
 {"q": "de que trata la pelicula Dune", "expect_any": ["web", "knowledge"], "forbid": ["media"]}
 {"q": "who directed Oppenheimer", "expect_any": ["web", "knowledge"], "forbid": ["app"]}
 {"q": "who is Batman", "expect_any": ["web", "knowledge"], "forbid": []}
-{"q": "what is a CPU", "expect_any": ["web", "knowledge"], "forbid": ["system"]}
+{"q": "what is a CPU", "expect_empty": true, "note": "politica 2026-06-04 (bdcceda): pregunta conceptual -> el LLM responde, sin tools"}
 {"q": "quien es batman", "expect_any": ["web", "knowledge"], "forbid": []}
 {"q": "hablame de superman", "expect_any": ["web", "knowledge"], "forbid": []}
 {"q": "cuando sale gta 6", "expect_any": ["web"], "forbid": []}
