@@ -81,12 +81,18 @@ validado en vivo con `scripts/_validate_action_filler.py` (4 rondas):
   site-fallback (label exacto) sigue: morktul→morktul.bandcamp.com es SU
   contrato. `canonical_query/top_match_score` extraídos (el score debe usar
   el alias traducido). Live 5/5; 298 regresión.
-- 🔴 PENDIENTES (chips): (a) test pre-existente rojo
-  `test_window_geom_and_confirm_honesty::test_reply_that_already_asks_passes_
-  through` (guard_unverified_final pisa un reply que YA pide confirmación);
-  (b) la PRECONDICIÓN de app bloquea ANTES del site-fallback de t_app —
-  "abrí pivigames" vía app.open muere en needs_user (find()=[] → bloqueo) y
-  nunca llega a resolver el sitio; "ve a pivigames" (browser) sigue OK.
+- ✅ **Test rojo de confirm-honesty** (`ed2ceb8`): era una REGRESIÓN del
+  detector multilingüe (49bbb3b) — el aux "sto " (IT) matcheaba por substring
+  DENTRO de "eSTO requiere CONFIRMación" → falso claim → el canned pisaba un
+  reply que ya pedía confirmación. Fix: frontera de palabra al inicio del
+  aux. 35/35 + smoke vivo (el camino mentiroso sigue reemplazándose).
+- 🔴 PENDIENTE (chip): la PRECONDICIÓN de app bloquea ANTES del site-fallback
+  de t_app — "abrí pivigames" vía app.open muere en needs_user (find()=[] →
+  bloqueo) y nunca llega a resolver el sitio; "ve a pivigames" (browser) OK.
+- 🟡 Test flaky por carga: `test_fact_extraction_offpath::test_reply_returns_
+  before_extraction_finishes` (cap 2.0s; con la máquina cargada el encoder
+  tarda 19-21s en frío y lo revienta — pasó con el MISMO código minutos
+  antes; ajeno a los cambios de hoy).
 - 🟡 Residuales observados en los evals (clase language-confusion/honestidad,
   sin chip aún): replies en PT ante input ES ("Aplicativo jitomatador
   aberto", "Bloco de Notas aberto") y la forma participio-sin-auxiliar
