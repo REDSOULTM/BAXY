@@ -677,6 +677,106 @@ _NOSHOP_ANCHORS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# INFO ACTUAL-DEL-MUNDO vs PARAMÉTRICA/ATEMPORAL (tripwire del benchmark
+# 2026-06-11: "what's the weather like in London" matcheaba el gate how-to/info
+# del planner — política A6: pregunta conceptual → el LLM responde sin tools —
+# y se quedaba SIN web, pero el clima/precios/noticias son información ACTUAL
+# que el LLM no tiene). Embeddings multilingües (patrón _SHOP), sin listas de
+# keywords por idioma. Conservador: FP = re-agregar web a una conceptual
+# (over-offer); FN = comportamiento de hoy (abstención).
+_CURRENT_INFO_ANCHORS = [
+    # clima
+    "qué clima hace hoy", "va a llover mañana", "what's the weather like today",
+    "wie ist das Wetter heute", "che tempo fa oggi", "como está o tempo hoje",
+    "quel temps fait-il aujourd'hui",
+    # precios / cotizaciones
+    "a cuánto está el dólar hoy", "precio actual del bitcoin",
+    "current price of gold", "cuánto cuesta el euro ahora",
+    "wie hoch ist der bitcoin kurs", "quanto custa o dólar hoje",
+    # noticias / eventos en curso
+    "últimas noticias de hoy", "latest news today", "qué pasó hoy en el mundo",
+    "le notizie di oggi", "die nachrichten von heute",
+    # resultados / estado actual
+    "cómo va el partido", "what's the score of the game right now",
+    "quién va ganando las elecciones",
+]
+_TIMELESS_INFO_ANCHORS = [
+    # definiciones / conceptos
+    "qué es una GPU", "what is an API", "qué significa HTTP",
+    "cos'è una variabile", "o que é um algoritmo", "was ist ein Compiler",
+    "qu'est-ce qu'une fonction", "qué es la fotosíntesis",
+    # how-to / explicaciones
+    "cómo funciona un closure", "explain how TCP works", "explícame MVC",
+    "cómo elimino una carpeta", "how do I close an app",
+    "para qué sirve Docker", "wie funktioniert verschlüsselung",
+    # hechos atemporales
+    "quién pintó la Mona Lisa", "who wrote Don Quixote",
+    "cuál es la capital de Francia",
+]
+
+
+class _CurrentInfoCentroids:
+    current: Any = None
+    timeless: Any = None
+    ready: bool = False
+
+
+_CURRENT = _CurrentInfoCentroids()
+# Margen (current - timeless): solo dispara cuando la actualidad es clara.
+# Calibrado abajo con casos medidos (clima 6 idiomas vs qué-es-X).
+_CURRENT_INFO_MARGIN = float(os.environ.get("GEMMA4_CURRENT_INFO_MARGIN", "0.05"))
+
+
+def _ensure_current_centroids() -> bool:
+    if _CURRENT.ready:
+        return _CURRENT.current is not None
+    try:
+        from . import semantic_router as sr
+        if not _semantic_ready_for_intent(sr):
+            return False
+        if not sr._ensure_loaded():
+            _CURRENT.ready = True
+            return False
+        import numpy as np
+        model = sr._STATE.model
+
+        def _centroid(anchors: list[str]) -> Any:
+            e = model.encode(anchors, normalize_embeddings=True).mean(0)
+            return np.asarray(e / (np.linalg.norm(e) or 1.0), dtype="float32")
+
+        _CURRENT.current = _centroid(_CURRENT_INFO_ANCHORS)
+        _CURRENT.timeless = _centroid(_TIMELESS_INFO_ANCHORS)
+        _CURRENT.ready = True
+        return True
+    except Exception:
+        _CURRENT.ready = True
+        return False
+
+
+def is_current_world_info(text: str) -> bool:
+    """True si la pregunta pide información ACTUAL del mundo (clima, precios,
+    noticias, resultados) que el LLM no puede responder de su conocimiento —
+    necesita web aunque tenga forma de pregunta conceptual. Multilingüe por
+    embeddings. Fallback seguro: sin encoder → False (comportamiento de hoy)."""
+    txt = (text or "").strip()
+    if len(txt) < 3:
+        return False
+    if not _ensure_current_centroids() or _CURRENT.current is None:
+        return False
+    try:
+        from . import semantic_router as sr
+        import numpy as np
+        q = sr.embed(txt)
+        if q is None:
+            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
+        q = np.asarray(q, dtype="float32")
+        return (float(q @ _CURRENT.current)
+                - float(q @ _CURRENT.timeless)) >= _CURRENT_INFO_MARGIN
+    except Exception:
+        return False
+
+
 class _ShopCentroids:
     shop: Any = None
     noshop: Any = None

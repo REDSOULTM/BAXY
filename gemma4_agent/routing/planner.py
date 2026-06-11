@@ -1521,7 +1521,21 @@ def select_tool_names(
             # gui/cu) para que el LLM RESPONDA DE SU CONOCIMIENTO en vez de capturar
             # pantalla o buscar (cluster A6, tanda 2). Lo que queda (si algo) es
             # infra (session/safety/verify) que no actúa.
-            expanded = [t for t in expanded if t not in _INFO_SUPPRESS_TOOLS]
+            # EXCEPCIÓN info-ACTUAL (tripwire del benchmark 2026-06-11): "what's
+            # the weather like in London" matchea la FORMA conceptual (what's X)
+            # pero pide información ACTUAL que el LLM no tiene — conservar
+            # web/knowledge (solo esas dos: percepción/destructivas siguen
+            # fuera). Clasificador por embeddings actual-vs-atemporal
+            # (intent_router.is_current_world_info); sin encoder → strip normal.
+            _keep_current: set[str] = set()
+            try:
+                from .intent_router import is_current_world_info as _icwi
+                if _icwi(raw_text):
+                    _keep_current = {"web", "knowledge"}
+            except Exception:
+                _keep_current = set()
+            expanded = [t for t in expanded
+                        if t not in _INFO_SUPPRESS_TOOLS or t in _keep_current]
     except Exception:
         pass
     # DECLARACIÓN DE TRIGGER (BUG real tanda 1): "cuando diga X quiero que hagas Y"
