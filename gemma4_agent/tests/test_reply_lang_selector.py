@@ -131,5 +131,54 @@ class ReplyLangSelectorTest(unittest.TestCase):
         self.assertFalse(fake._tts_streamed)
 
 
+class ShortClosureMismatchTest(unittest.TestCase):
+    """Gate corto de reply_language_mismatch (bug en vivo 2026-06-10:
+    "I guess it." → "De nada."). py3langid es inservible en acks de <12 chars
+    alfabéticos (medido: "Listo."→en, "Con gusto."→de), así que el gate corto
+    matchea fórmulas de cierre conocidas contra su set de idiomas."""
+
+    def setUp(self):
+        self._prev = os.environ.get("GEMMA4_VOICE_LANG")
+        os.environ.pop("GEMMA4_VOICE_LANG", None)
+
+    def tearDown(self):
+        if self._prev is None:
+            os.environ.pop("GEMMA4_VOICE_LANG", None)
+        else:
+            os.environ["GEMMA4_VOICE_LANG"] = self._prev
+
+    def test_live_bug_de_nada_to_english_user_fires(self):
+        needs, target, reply_lang = _reply_language_mismatch(
+            "I guess it.", "De nada.")
+        self.assertTrue(needs)
+        self.assertEqual(target, "en")
+        self.assertEqual(reply_lang, "es/pt")
+
+    def test_listo_to_spanish_user_passes(self):
+        # hot-path: NO gastar un rewrite por turno de acción es
+        needs, _, _ = _reply_language_mismatch("abre Spotify", "Listo.")
+        self.assertFalse(needs)
+
+    def test_listo_to_english_user_fires(self):
+        needs, target, _ = _reply_language_mismatch("open Spotify", "Listo.")
+        self.assertTrue(needs)
+        self.assertEqual(target, "en")
+
+    def test_de_rien_to_french_user_passes(self):
+        os.environ["GEMMA4_VOICE_LANG"] = "fr"
+        needs, _, _ = _reply_language_mismatch("merci beaucoup", "De rien.")
+        self.assertFalse(needs)
+
+    def test_de_nada_to_portuguese_user_passes(self):
+        # "de nada" es válido en pt — el set comparte idiomas
+        os.environ["GEMMA4_VOICE_LANG"] = "pt"
+        needs, _, _ = _reply_language_mismatch("obrigado", "De nada.")
+        self.assertFalse(needs)
+
+    def test_unknown_short_reply_keeps_old_skip(self):
+        needs, _, _ = _reply_language_mismatch("open Spotify", "Hmm ok.")
+        self.assertFalse(needs)
+
+
 if __name__ == "__main__":
     unittest.main()

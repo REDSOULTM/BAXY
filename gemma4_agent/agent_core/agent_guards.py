@@ -744,6 +744,90 @@ def repair_media_fabricated_inline(
         return content
 
 
+def repair_unfounded_time_claim_inline(
+    content: str,
+    user_text: str,
+    events: list[Any],
+    turn_id: str,
+    *,
+    regen_action: Any | None = None,
+    regen_knowledge: Any | None = None,
+    trace: Any | None = None,
+) -> str:
+    """Reparación INLINE del claim de hora fabricada (bug en vivo 2026-06-10:
+    media→attempted respondió "Es las 10:42 de la mañana." a las 21:56).
+
+    El FT entrenó "decir la hora" como atractor (ver nota en reply_validator.
+    clock_time_claim_unfounded) → ante un turno sin grounding el modelo emite
+    una hora plausible que NINGUNA tool produjo. El hint deferido corregiría el
+    PRÓXIMO turno; la mentira de ESTE turno se repara acá: regenerar el reply
+    con CONTEXTO LIMPIO (la mitigación verificada del language-confusion /
+    context-anchoring) vía el callable que pasa el agente — regen_action
+    (_llm_action_reply, turnos con tools) o regen_knowledge
+    (_llm_knowledge_reply, turnos sin tools). Si la regeneración también viene
+    con hora sin evidencia, se quitan las oraciones con hora (último recurso).
+
+    Gate GEMMA4_TIME_CLAIM_GUARD=0 apaga. Falla-segura: excepción → reply intacto.
+    """
+    import os
+    if os.environ.get("GEMMA4_TIME_CLAIM_GUARD", "1").strip().lower() \
+            in {"0", "false", "no", "off"}:
+        return content
+    try:
+        from ..safety_pkg.reply_validator import (
+            clock_time_claim_unfounded, strip_unfounded_time_sentences)
+        if not clock_time_claim_unfounded(user_text or "", content or "", list(events)):
+            return content
+        if trace is not None:
+            try:
+                trace.event(turn_id, "reply_anti_pattern_detected",
+                            pattern="unfounded_time_claim",
+                            reply_preview=(content or "")[:120])
+            except Exception:
+                pass
+        regen = regen_action if events else regen_knowledge
+        fixed = ""
+        if regen is not None:
+            try:
+                fixed = str(regen() or "").strip()
+            except Exception as _regen_exc:
+                fixed = ""
+                if trace is not None:
+                    try:
+                        trace.event(turn_id, "silent_fallback",
+                                    component="time_claim_regen",
+                                    error=f"{type(_regen_exc).__name__}: {_regen_exc}")
+                    except Exception:
+                        pass
+        if fixed and not clock_time_claim_unfounded(user_text or "", fixed, list(events)):
+            if trace is not None:
+                try:
+                    trace.event(turn_id, "reply_repaired_inline",
+                                pattern="unfounded_time_claim", after=fixed[:120])
+                except Exception:
+                    pass
+            return fixed
+        stripped = strip_unfounded_time_sentences(content or "")
+        repaired = stripped or ("Listo." if events else (content or ""))
+        if trace is not None and repaired != content:
+            try:
+                trace.event(turn_id, "reply_repaired_inline",
+                            pattern="unfounded_time_claim_stripped",
+                            after=repaired[:120])
+            except Exception:
+                pass
+        return repaired
+    except Exception as _guard_exc:
+        if trace is not None:
+            try:
+                trace.event(turn_id, "silent_fallback",
+                            component="time_claim_guard",
+                            error=f"{type(_guard_exc).__name__}: {_guard_exc}")
+            except Exception:
+                pass
+        return content
+
+
 __all__ = [
     "build_user_facing_fallback",
     "guard_unverified_final",
@@ -753,4 +837,5 @@ __all__ = [
     "guard_grounded_action_claim",
     "guard_plan_status",
     "repair_media_fabricated_inline",
+    "repair_unfounded_time_claim_inline",
 ]

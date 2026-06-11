@@ -13,17 +13,37 @@ import os
 from typing import Any
 
 
+# Interrogativos ACENTUADOS exclusivos del español: el pt usa que/como/onde/
+# quando/quem/qual/quanto (sin tilde; "quê" solo final con circunflejo) y fr/it/
+# de no tienen estas formas. Ortografía del idioma (misma clase que ¿¡ñ), no
+# keywords de contenido. MEDIDO 2026-06-11: sin esto, py3langid manda "qué hora
+# es"→pt y "dime la hora"→fr, y el repair de idioma REESCRIBE replies correctos
+# es→pt/fr (visto en vivo: "La hora actual es 00:04..." → "O horário atual...").
+_ES_INTERROGATIVES = frozenset({
+    "qué", "cómo", "dónde", "adónde", "cuándo", "quién", "quiénes",
+    "cuál", "cuáles", "cuánto", "cuánta", "cuántos", "cuántas",
+})
+
+
 def detect_lang_strong_signal(text: str) -> str | None:
     """Señal de idioma rápida y de alta precisión para el hot-path.
 
     Cubre SOLO señales estructurales baratas y fiables: puntuación/letra
-    exclusiva del español y verbos imperativos distintivos. La clasificación
-    estadística (py3langid) queda para `_detect_lang()` (uso frío/fallback)."""
+    exclusiva del español o portugués, interrogativos acentuados del español y
+    verbos imperativos distintivos. La clasificación estadística (py3langid)
+    queda para `_detect_lang()` (uso frío/fallback)."""
     from .agent import _IMPERATIVE_VERBS
     tl = (text or "").lower()
     if not tl:
         return None
     if any(ch in tl for ch in ("¿", "¡", "ñ")):
+        return "es"
+    # ã/õ no existen en es/en/fr/de/it (de los 6 soportados, solo pt): "não",
+    # "ações", "amanhã" → pt inequívoco.
+    if any(ch in tl for ch in ("ã", "õ")):
+        return "pt"
+    words = {w.strip(".,;:!?\"'()") for w in tl.split()}
+    if words & _ES_INTERROGATIVES:
         return "es"
     s = f" {tl} "
     for lang, verbs in _IMPERATIVE_VERBS:

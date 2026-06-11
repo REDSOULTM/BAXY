@@ -40,6 +40,59 @@ def turn_language_instruction(user_text: str | None) -> str:
     )
 
 
+# Fórmulas de CIERRE/CORTESÍA cortas → set de idiomas al que pertenecen.
+# Identificación de idioma por la FORMA de la fórmula (mismo precedente que
+# _IMPERATIVE_VERBS en agent.py: desambiguación ortográfica, NO una tabla de
+# respuestas — el reply lo generó el LLM; acá solo decidimos si su idioma
+# contradice el del usuario). MEDIDO (2026-06-11): py3langid es inservible en
+# acks de <12 chars alfabéticos ("Listo."→en, "Con gusto."→de, "De rien."→en),
+# por eso el gate corto NO puede usar _detect_lang sin falsos repairs en el
+# hot-path. Formas compartidas entre idiomas llevan el set completo ("de nada"
+# es es Y pt): solo hay mismatch si el idioma del usuario NO está en el set.
+_SHORT_CLOSURE_LANGS: dict[str, frozenset[str]] = {
+    "de nada": frozenset({"es", "pt"}),
+    "por nada": frozenset({"es", "pt"}),
+    "con gusto": frozenset({"es"}),
+    "a la orden": frozenset({"es"}),
+    "listo": frozenset({"es"}),
+    "hecho": frozenset({"es"}),
+    "vale": frozenset({"es"}),
+    "claro": frozenset({"es", "pt"}),
+    "you're welcome": frozenset({"en"}),
+    "youre welcome": frozenset({"en"}),
+    "no problem": frozenset({"en"}),
+    "my pleasure": frozenset({"en"}),
+    "anytime": frozenset({"en"}),
+    "all set": frozenset({"en"}),
+    "done": frozenset({"en"}),
+    "sure": frozenset({"en"}),
+    "de rien": frozenset({"fr"}),
+    "je t'en prie": frozenset({"fr"}),
+    "avec plaisir": frozenset({"fr"}),
+    "d'accord": frozenset({"fr"}),
+    "bitte": frozenset({"de"}),
+    "gern geschehen": frozenset({"de"}),
+    "gerne": frozenset({"de"}),
+    "erledigt": frozenset({"de"}),
+    "prego": frozenset({"it"}),
+    "di niente": frozenset({"it"}),
+    "figurati": frozenset({"it"}),
+    "fatto": frozenset({"it"}),
+    "pronto": frozenset({"pt", "it"}),
+    "feito": frozenset({"pt"}),
+}
+
+
+def _short_closure_lang_set(reply_text: str) -> frozenset[str] | None:
+    """Set de idiomas de un reply-fórmula corto, o None si no es una fórmula
+    conocida. Normaliza: casefold + colapsa espacios + strip de puntuación de
+    borde. Solo matchea el reply COMPLETO (un reply con contenido extra no es
+    una fórmula de cierre y queda fuera del gate corto)."""
+    t = " ".join((reply_text or "").casefold().split())
+    t = t.strip(".,;:!? ¡¿\"'()")
+    return _SHORT_CLOSURE_LANGS.get(t)
+
+
 def reply_language_mismatch(
     user_text: str | None,
     reply_text: str | None,
@@ -53,9 +106,19 @@ def reply_language_mismatch(
     target = target_lang if target_lang in _LANG_NAMES else _reply_lang(utext)
     if target not in _LANG_NAMES:
         return False, "", ""
-    # Very short acknowledgements can be language-neutral ("OK", "Done", "Si").
-    # Do not spend an LLM rewrite on strings without enough alphabetic signal.
+    # Very short acknowledgements can be language-neutral ("OK", "Done", "Si")
+    # and _detect_lang is unreliable there (measured). Repair ONLY when the
+    # reply is a KNOWN closure formula whose language set excludes the target
+    # (bug real 2026-06-10: "I guess it." -> "De nada."). Unknown short
+    # replies keep the old skip — no LLM rewrite without reliable signal.
+    # es↔pt comparten imperativos cortos ("abre Spotify" detecta pt, medido):
+    # el target se expande a su grupo confusable para no reescribir "Listo."
+    # de un usuario hispano cuyo comando detectó pt.
     if sum(1 for ch in rtext if ch.isalpha()) < 12:
+        langs = _short_closure_lang_set(rtext)
+        confusable = {"es", "pt"} if target in {"es", "pt"} else {target}
+        if langs and not (langs & confusable):
+            return True, target, "/".join(sorted(langs))
         return False, target, ""
     reply_lang = _detect_lang(rtext)
     return reply_lang != target, target, reply_lang
@@ -399,7 +462,28 @@ def repair_reply_language_if_needed(agent: Any, user_text: str, assistant_text: 
     # Método del agente (no la función del módulo) para respetar monkeypatch.
     fixed = agent._llm_rewrite_reply_language(user_text, assistant_text, target)
     fixed = sanitize_text(fixed)
+    # ANTI-FABRICACIÓN (medido en vivo 2026-06-11): el rewrite del 2B parafraseó
+    # "It is 00:04:33 on June 11, 2026." → "The current time is 10:30 AM."
+    # (inventó la hora pese al "preserve the same facts"). Un rewrite de idioma
+    # NUNCA puede introducir tokens de hora que el original no tenía.
+    try:
+        from ..safety_pkg.reply_validator import _clock_pairs
+        if fixed and (_clock_pairs(fixed) - _clock_pairs(assistant_text)):
+            fixed = ""
+    except Exception as _cp_exc:
+        try:
+            agent.trace.event("agent", "silent_fallback",
+                              component="lang_rewrite_clock_check",
+                              error=f"{type(_cp_exc).__name__}: {_cp_exc}")
+        except Exception:
+            pass
     fixed_lang = _detect_lang(fixed) if fixed else ""
+    # Aceptación: _detect_lang es poco fiable en rewrites cortos ("De rien."→en,
+    # medido) — si el rewrite es una fórmula de cierre conocida cuyo set incluye
+    # el target, eso ES confirmación de idioma (misma tabla que el gate corto).
+    _fixed_closure = _short_closure_lang_set(fixed) if fixed else None
+    if _fixed_closure and target in _fixed_closure:
+        fixed_lang = target
     if fixed and fixed.strip() and fixed_lang == target:
         try:
             agent.trace.event(

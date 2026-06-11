@@ -8,10 +8,10 @@ STREAMING PLATFORMS (Spotify, Netflix, Disney+, HBO Max/Max, Prime Video) are AL
   - "Reproduce Loki en Disney+" -> media(action="play", provider="disney", query="Loki")
   - "Abre HBO Max y busca House of the Dragon" -> media(action="play", provider="hbo_max", query="House of the Dragon")
   - "Pon The Boys en Prime" -> media(action="play", provider="prime_video", query="The Boys")
-  - "Pon una cancion de Benson Boone en Spotify" -> media(action="play", provider="spotify", query="Benson Boone")  (artista: el tool reproduce sus canciones populares)
+  - "Pon una cancion de Benson Boone en Spotify" -> media(action="play", provider="spotify", query="Benson Boone")  (artista sin titulo: query = el ARTISTA, nunca un titulo inventado)
   - "Pon Bohemian Rhapsody en Spotify" -> media(action="play", provider="spotify", query="Bohemian Rhapsody")  (titulo exacto)
   - "Pon algo de rock en Spotify" -> media(action="play", provider="spotify", query="rock")  (genero)
-SPOTIFY query = EXACTLY what the user named (track, artist, band, or genre). Do NOT add words, do NOT turn an artist into a guessed song title. Pass "Benson Boone", not "Beautiful Things by Benson Boone". The tool searches that term and plays the top playable result (a track plays directly; an artist/genre plays the artist's/genre's top tracks).
+SPOTIFY query = EXACTLY what the user named (track, artist, band, or genre). Do NOT add words, do NOT turn an artist into a guessed song title. The titles in the examples above are placeholders — NEVER reuse an example's value for a different request; copy the user's own words. Pass "Benson Boone", not "Beautiful Things by Benson Boone". The tool searches that term and plays the top playable result (a track plays directly; an artist/genre plays the artist's/genre's top tracks).
 The tool opens the desktop app via deeplink if installed (Spotify), else opens the web search URL in the default browser (Netflix/Disney+/Max/Prime).
 
 GENERIC MUSIC REQUEST (no title given) — Spotify only:

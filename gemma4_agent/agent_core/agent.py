@@ -191,7 +191,10 @@ _IMPERATIVE_VERBS = (
     ("pt", (" abre ", " fecha ", " coloca ", " tira ", " toca ", " procura ",
             " abaixa ", " aumenta ", " silencia ", " liga ")),
     ("es", (" abrí ", " cerrá ", " poné ", " subí ", " bajá ", " buscá ", " cerra ",
-            " silenciá ", " mostrá ", " sacá ", " pausá ")),
+            " silenciá ", " mostrá ", " sacá ", " pausá ",
+            # tuteo frecuente exclusivo es (pt: diz-me/me diga, dá-me; it: dimmi):
+            # MEDIDO 2026-06-11 "dime la hora" → py3langid fr → rewrite roto.
+            " dime ", " decime ", " dame ", " muéstrame ", " dimelo ", " dímelo ")),
 )
 
 
@@ -1449,6 +1452,13 @@ class Gemma4Agent:
                              or args.get("url") or args.get("target") or args.get("query")
                              or args.get("level") or "").strip()
             seg = " ".join(p for p in (action, name, target) if p) or name
+            # Valor legible del result (system.time → human="00:04:33 11/06/2026"):
+            # sin él, el reply regenerado con contexto limpio INVENTA el dato
+            # (medido en vivo 2026-06-11: "The current time is 10:30 AM." para una
+            # lectura real de 00:04). Solo escalares cortos — no inventa, CITA.
+            _human = str(result.get("human") or "").strip()
+            if _human and len(_human) <= 80:
+                seg = f"{seg} -> {_human}" if seg else _human
             if seg:
                 parts.append(seg)
         return ("performed: " + "; ".join(parts)) if parts else "the requested action was completed"
@@ -5132,6 +5142,12 @@ class Gemma4Agent:
         assistant_content = self._repair_media_fabricated_inline(
             assistant_content, raw_text_early, events, turn_id,
         )
+        # Hora fabricada (bug 2026-06-10): ANTES del repair de idioma, así la
+        # regeneración clean-context (ya en el idioma del usuario) pasa igual
+        # por el resto del embudo.
+        assistant_content = self._repair_unfounded_time_claim_inline(
+            assistant_content, raw_text_early, events, turn_id,
+        )
         lang_repaired = False
         assistant_content, lang_repaired = self._repair_reply_language_if_needed(
             raw_text_early, assistant_content, turn_id,
@@ -5491,6 +5507,30 @@ class Gemma4Agent:
                         self.history.append({"role": "system", "content": _mfc_hint})
                 except Exception:
                     pass
+            # HORA FABRICADA (honestidad, DEFAULT-ON): el reply afirmó una hora
+            # de reloj que ninguna tool produjo (bug en vivo 2026-06-10, "Es las
+            # 10:42 de la mañana." tras media→attempted). El repair INLINE ya
+            # corrigió ESTE turno (más arriba); este hint corrige la REINCIDENCIA
+            # (el atractor del FT reaparece turno a turno). Mismo gate que el
+            # inline: GEMMA4_TIME_CLAIM_GUARD=0 apaga ambos.
+            if _os.environ.get("GEMMA4_TIME_CLAIM_GUARD", "1").strip().lower() \
+                    not in {"0", "false", "no", "off"}:
+                try:
+                    from ..safety_pkg.reply_validator import (
+                        clock_time_claim_unfounded as _ctc,
+                        UNFOUNDED_TIME_HINT as _ctc_hint)
+                    if _ctc(getattr(self, "_current_user_text", "") or "",
+                            assistant_content or "", list(events)):
+                        self.trace.event(turn_id, "reply_anti_pattern_detected",
+                                         pattern="unfounded_time_claim_residual")
+                        self.history.append({"role": "system", "content": _ctc_hint})
+                except Exception as _ctc_exc:
+                    try:
+                        self.trace.event(turn_id, "silent_fallback",
+                                         component="time_claim_hint",
+                                         error=f"{type(_ctc_exc).__name__}: {_ctc_exc}")
+                    except Exception:
+                        pass
             # CLICK FABRICADO (honestidad, DEFAULT-ON): el reply afirma "cliqueé/
             # presioné X" pero ninguna tool capaz de click corrió (uia/vision FIND
             # localizan, no clickean). BUG medido (tanda 1, A3): "encontré y cliqueé
@@ -5687,6 +5727,25 @@ class Gemma4Agent:
                     _did = self._describe_events_for_reply(events)
                     _fixed = self._llm_action_reply(_utext, did=_did, fallback=assistant_content,
                                                     target_lang=_user_lang)
+                    # ANTI-FABRICACIÓN (medido en vivo 2026-06-11): el regen
+                    # inventó "The current time is 10:30 AM." reemplazando un
+                    # reply correcto grounded. Rechazar el _fixed si afirma una
+                    # hora que ningún tool-result/user_text del turno sustenta.
+                    try:
+                        from ..safety_pkg.reply_validator import (
+                            clock_time_claim_unfounded as _ctcu_post)
+                        if _fixed and _ctcu_post(_utext, _fixed, list(events)):
+                            self.trace.event(turn_id, "posttool_lang_repair_rejected",
+                                             reason="unfounded_time_claim",
+                                             candidate=(_fixed or "")[:80])
+                            _fixed = ""
+                    except Exception as _ctcu_exc:
+                        try:
+                            self.trace.event(turn_id, "silent_fallback",
+                                             component="posttool_clock_check",
+                                             error=f"{type(_ctcu_exc).__name__}: {_ctcu_exc}")
+                        except Exception:
+                            pass
                     # aceptar solo si mejora: el _fixed NO está en español (o el
                     # original SÍ lo estaba — siempre vale reemplazar un leak ES).
                     if _fixed and _fixed.strip() and not _looks_spanish(_fixed):
@@ -7420,6 +7479,36 @@ class Gemma4Agent:
         from .agent_guards import repair_media_fabricated_inline
         return repair_media_fabricated_inline(
             content, user_text, list(events), turn_id, trace=self.trace,
+        )
+
+    def _repair_unfounded_time_claim_inline(
+        self,
+        content: str,
+        user_text: str,
+        events: list[ToolEvent],
+        turn_id: str,
+    ) -> str:
+        """Repara INLINE el claim de hora fabricada (ver agent_guards). La
+        regeneración usa CONTEXTO LIMPIO: _llm_action_reply (turnos con tools)
+        o _llm_knowledge_reply (sin tools), en el idioma del usuario."""
+        from .agent_guards import repair_unfounded_time_claim_inline
+        _utext = user_text or ""
+        _events = list(events)
+
+        def _regen_action() -> str:
+            _focused = self._focused_events_for_action_reply(_events) or _events
+            _did = self._describe_events_for_reply(_focused)
+            return self._llm_action_reply(
+                _utext, did=_did, fallback="", target_lang=_reply_lang(_utext))
+
+        def _regen_knowledge() -> str:
+            return self._llm_knowledge_reply(
+                _utext, fallback="", target_lang=_reply_lang(_utext))
+
+        return repair_unfounded_time_claim_inline(
+            content, _utext, _events, turn_id,
+            regen_action=_regen_action, regen_knowledge=_regen_knowledge,
+            trace=self.trace,
         )
 
     def _guard_plan_status(self, content: str) -> str:

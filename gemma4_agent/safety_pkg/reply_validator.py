@@ -13,6 +13,7 @@ LLM's own reply and the structural tool_call activity this turn.
 """
 from __future__ import annotations
 
+import json
 import re
 import os
 from typing import Any
@@ -732,6 +733,75 @@ MEDIA_FABRICATED_HINT = (
     "result. Do NOT invent what is playing or where. State only what the media "
     "tool actually reported, or say plainly that playback started without naming "
     "a title you cannot verify — in the user's language."
+)
+
+
+# CLAIM DE HORA SIN EVIDENCIA (bug en vivo 2026-06-10): tras media→attempted el
+# reply fue "Es las 10:42 de la mañana." — non-sequitur con hora FABRICADA (eran
+# las 21:56). Causa raíz: el FT entrenó "decir la hora" como atractor (113
+# replies-placeholder 'Son las HH:MM.' neutralizados a 'Listo.' + ~30 horas
+# concretas entrenadas VERBATIM, y el formato de training no incluye tool-result
+# en el ejemplo) → ante un turno confuso el modelo emite una hora plausible.
+# Mismo patrón ya observado en eval 2026-05-24 ("ton an" → "La hora actual es la
+# una y veintinueve..."). Detector ESTRUCTURAL: el reply afirma una hora-de-reloj
+# (dígitos HH:MM + marcador de hora-del-día) cuyos dígitos NO aparecen en ningún
+# tool-result del turno ni en el texto del usuario. Los marcadores son auxiliares
+# multilingües de FORMA (mismo enfoque que el claim-guard de acciones
+# consumadas), no keywords de contenido.
+_CLOCK_TIME_RE = re.compile(r"\b([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?\b")
+_CLOCK_MARKER_RE = re.compile(
+    r"(?:\b[ap]\.?\s?m\.?\b|\bde\s+la\s+(?:ma[ñn]ana|tarde|noche|madrugada)\b|"
+    r"\b(?:son|es)\s+las?\b|\bit(?:'s|\s+is)\b|\bo'?clock\b|"
+    r"\bhora\s+actual\b|\bla\s+hora\b|\bthe\s+time\b|\bsono\s+le\b|"
+    r"\bes\s+ist\b|\buhr\b|\bil\s+est\b|\bheures?\b|"
+    r"\bs[aã]o\s+as\b|\bé\s+[aà]s?\b)",
+    re.IGNORECASE)
+
+
+def _clock_pairs(text: str) -> set[tuple[int, str]]:
+    """Pares (hora%12, minutos) de cada token HH:MM del texto. El módulo-12
+    permite que '21:56' del tool sustente un '9:56 PM' honesto del modelo."""
+    return {(int(h) % 12, m) for h, m in _CLOCK_TIME_RE.findall(text or "")}
+
+
+def clock_time_claim_unfounded(
+    user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
+) -> bool:
+    """True iff el reply afirma una hora-de-reloj que NO está sustentada por
+    ningún tool-result del turno ni por el propio texto del usuario."""
+    reply = reply_text or ""
+    if not _CLOCK_MARKER_RE.search(reply):
+        return False
+    claimed = _clock_pairs(reply)
+    if not claimed:
+        return False
+    evidence_parts = [user_text or ""]
+    for c in tool_calls_this_turn or []:
+        args = c.get("args", {}) if isinstance(c, dict) else (getattr(c, "args", {}) or {})
+        res = _result_of(c)
+        try:
+            evidence_parts.append(json.dumps(args, ensure_ascii=False, default=str))
+            evidence_parts.append(json.dumps(res, ensure_ascii=False, default=str))
+        except Exception:
+            evidence_parts.append(str(args))
+            evidence_parts.append(str(res))
+    grounded = _clock_pairs(" ".join(evidence_parts))
+    return bool(claimed - grounded)
+
+
+def strip_unfounded_time_sentences(reply_text: str) -> str:
+    """Quita las oraciones del reply que contienen un token de hora-de-reloj.
+    Último recurso del repair inline cuando la regeneración también vino mal."""
+    parts = re.split(r"(?<=[.!?…])\s+", (reply_text or "").strip())
+    kept = [p for p in parts if p and not _CLOCK_TIME_RE.search(p)]
+    return " ".join(kept).strip()
+
+
+UNFOUNDED_TIME_HINT = (
+    "Your previous reply stated a clock time that did NOT come from any tool "
+    "result or from the user's message. Never invent the current time. If the "
+    "user wants the time, call the system tool; otherwise reply about the action "
+    "actually performed — in the user's language."
 )
 
 
