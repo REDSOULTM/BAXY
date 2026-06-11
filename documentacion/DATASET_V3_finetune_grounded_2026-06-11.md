@@ -107,7 +107,34 @@ multi-turno + clarificación; el bug en vivo: artista-sin-título):
 | G9 estados honestos | ≥30 attempted (39) y ≥30 ok:false (33) | PASS |
 | G10 trayectorias | ≥50 multi-turno (54) y ≥10 clarificaciones (388) | PASS |
 
-Longitudes finales: p50=93, p99=219, máx 551 tokens (MAX_SEQ 2048, 0 truncados).
+Longitudes finales: p50≈93, p99≈219, máx 632 tokens (MAX_SEQ 2048, 0 truncados).
+
+## Iteración 3: auditoría de COBERTURA (tools / idiomas / computer_use / multi-step)
+
+Medido contra los 67 schemas reales:
+
+- **computer_use, defecto serio corregido**: 304/305 filas enseñaban args `{}`
+  — y su schema tiene UN parámetro (`goal`). En producción los args reales
+  degeneran a JSON basura (`_raw` con loops, familia del bug #1756): el modelo
+  nunca vio el patrón. v3: `goal` := el pedido del usuario (grounded, todos los
+  idiomas). Gate G11: 0 filas de cu sin goal.
+- **session (la tool más usada en prod, 996 cancel_turn en traces) tenía CERO
+  ejemplos** → +13 filas de cancelación EXPLÍCITA en 6 idiomas con el result
+  real (turn_cancelled). Solo pedidos explícitos: el cancel_turn
+  sobre-disparado es un bug conocido y no se le enseña a cancelar ambigüedad.
+- **Huecos de idioma** en tools ≥20 ejemplos (device_settings sin pt; uia sin
+  fr/de; notification sin pt/de; network sin de/it) → +14 filas con args
+  válidos por enum y replies grounded. Gate G13: toda tool ≥20 ejemplos tiene
+  los 6 idiomas.
+- **Cobertura total**: 62/67 tools con ejemplos. Whitelist de huecos ACEPTADOS
+  (gate G12): file_process, mcp, skill_load, subagent, watcher — nicho/dev,
+  el router casi nunca las ofrece y sintetizar data que no podemos
+  caracterizar es peor que nada (quedan cubiertas por schema-following).
+- **Multi-step**: 250 filas multi-tool (combos routine+system, browser+web,
+  audio+media, gui+vision...), 500 con n_steps>1, los 6 idiomas presentes.
+  Los results por-paso siguen genéricos (backlog v4).
+
+Estado final: **6.686 filas, 18 gates TODOS PASS**, máscara tool_response PASS.
 
 ## Criterios de papers cubiertos (fuentes)
 
