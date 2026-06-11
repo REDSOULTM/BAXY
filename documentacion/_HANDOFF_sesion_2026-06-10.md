@@ -2,9 +2,11 @@
 
 Resumen de TODO lo hecho esta sesión, qué quedó listo, qué quedó a medias, y qué
 falta. Leé esto primero, después el backlog (`_backlog/BACKLOG_MAESTRO.md`).
+**Los próximos pasos accionables están en §4 (ítems 1-3 = residuales medidos
+de esta sesión, con harness y datos listos para arrancar).**
 
 > **Estado git:** todo commiteado y sincronizado en los 4 refs (origin+asistia,
-> main+Dev). HEAD = `c254b8d`. Verificá con los 3 rev-parse antes de empezar.
+> main+Dev). HEAD = `57d7df5`. Verificá con los rev-parse antes de empezar.
 > **Regla de privacidad NUEVA (CLAUDE.md):** los repos son PÚBLICOS — los mensajes
 > de commit, comentarios y docs NO deben exponer la conversación ("el usuario
 > pidió", "aprobado por", referencias a chat/loop/agentes). Voz impersonal.
@@ -32,7 +34,7 @@ decrecientes: cada lote de corpus expone más huecos).
 
 ---
 
-## 2. Lo que quedó A MEDIAS (continuar acá)
+## 2. Lo que quedó A MEDIAS — ✅ TODO CERRADO (continuar por §4)
 
 ### 2.1 Confirm filler con personalidad — ✅ CABLEADO Y MEDIDO EN VIVO (2026-06-10)
 **CERRADO.** `_voice_action_filler` en `run_content` (entre decide y execute),
@@ -149,22 +151,54 @@ validado en vivo con `scripts/_validate_action_filler.py` (4 rondas):
 
 ## 4. Lo que FALTA (backlog, para sesiones dedicadas)
 
-Ordenado por valor/accionabilidad:
+Ordenado por valor/accionabilidad. **Los ítems 1-3 son los residuales MEDIDOS
+de esta sesión (2026-06-10) — tienen harness y datos listos; arrancá por acá.**
 
-1. ~~**Cablear el confirm filler**~~ ✅ HECHO 2026-06-10 (ver 2.1). Derivados
-   nuevos: latencia del miss en app.open (~14s) y sanitize del stream TTS.
-2. **Residual del gate de abstención** (impedimento documentado): "what is the CPU
+1. **Turno del miss de app.open sigue ~12-17s: ahora lo dominan las pasadas
+   del LLM, no el scan.** El lado-tool ya quedó en ~5.8s primera / 0.34s
+   repetida (`219afff`); el desglose instrumentado
+   (`scripts/_diag_app_miss_turn_breakdown.py`) muestra que el resto son 2-3
+   pasadas del LLM de 2-6s c/u (decide-net falla → pass-1 con tools → re-call
+   del 4B → summary). Vectores a medir: (a) ¿el turno fallido necesita las 3
+   pasadas? — tras un "app not found" definitivo el summary podría salir de la
+   pass-1; (b) el forced-retry/re-call del 4B sobre el MISMO nombre ya
+   memoizado aporta 0 información; (c) prefix-cache de las pasadas (ver
+   GEMMA4_SUMMARY_KEEP_TOOLS, mismo patrón). OJO: el server lo comparte el
+   user — medir con la máquina tranquila para no confundir carga con código.
+   Harness listos: `_validate_app_open_miss.py` (gate <8s, hoy FAIL honesto).
+2. **Replies en PORTUGUÉS ante input español** (language-confusion conocida,
+   doc `GEMMA4_modelo_finetune_idioma_2026-06-06`): medido repetido en los
+   evals de hoy — "Aplicativo jitomatador aberto.", "Bloco de Notas aberto.",
+   "Aplicação jitomatador aberta." ante comandos 100% ES. Sale del camino
+   `_llm_action_reply`/early-reply de app (el repair central de idioma no
+   corre en esos early_reply — ver agent.py ~1900, ya hay un parche parcial
+   ahí). Además la forma PARTICIPIO-SIN-AUXILIAR ("Aplicativo X aberto") no
+   la cubre `_claims_consummated_action` cuando todo falló (sí cubre
+   aux+participio y pretérito inicial). Dos sub-tareas: (a) repair de idioma
+   en los early-reply de app-open net; (b) evaluar extender el detector a
+   sustantivo+participio SOLO con events todos-fallidos (FP-riesgo: medir
+   contra data cruda antes, lección de la cacería).
+3. **Test flaky por carga:** `test_fact_extraction_offpath::test_reply_
+   returns_before_extraction_finishes` (cap 2.0s) revienta cuando la máquina
+   está cargada (el encoder tarda 19-21s en frío bajo carga; el MISMO código
+   pasó minutos antes). Opciones: cap relativo (medir el warm-turn y exigir
+   <N× eso), o marcar el assert de timing como skip-bajo-carga. No es bug del
+   feature (la extracción SÍ va off-path); es el assert de tiempo absoluto.
+4. **Residual del gate de abstención** (impedimento documentado): "what is the CPU
    usage" (EN) → [] aunque _suggest_tools ofrece system; lo borra el pipeline
    head→abstain→semantic→web-nav. Requiere instrumentar `select_tool_names`
    end-to-end + unificar las guardas LOCAL-FACT en un punto canónico. ES anda;
    solo el frame EN cae. Doc `02_router/B2_corpus_multilingue_hallazgos`.
-3. **B2 más volumen** (EN/IT/DE) + atacar los huecos que cada lote expone
+5. **B2 más volumen** (EN/IT/DE) + atacar los huecos que cada lote expone
    (find-app, salir-de-app IT, etc.). Ítem grande.
-4. **B1/B4** (reentreno encoder + calibración abstain por idioma) — ahora con base
+6. **B1/B4** (reentreno encoder + calibración abstain por idioma) — ahora con base
    gracias a B2.
-5. **Mejora menor cold-start:** bloquear el 1er turno hasta que el warmup termine,
+7. **Mejora menor cold-start:** bloquear el 1er turno hasta que el warmup termine,
    o "iniciando…", para el caso "usuario habla a los 3s de arrancar". ROI bajo.
-6. **Bloqueados por recursos:** E4B (VRAM 4GB), binario CPU/Vulkan (mercado),
+8. **Intent-aware del filler** (`GEMMA4_FILLER_INTENT`, hoy OFF medido): para
+   activarlo con seguridad hay que plumbear el outcome del app-open net al
+   filler (que "Abriendo X" solo se voque cuando el net YA resolvió X).
+9. **Bloqueados por recursos:** E4B (VRAM 4GB), binario CPU/Vulkan (mercado),
    corpus multilingüe a paridad total.
 
 ---
@@ -191,3 +225,19 @@ Ordenado por valor/accionabilidad:
 - **Commits a AMBOS repos** (origin+asistia, main+Dev, 4 refs) SIEMPRE. Patrón:
   push main x2, checkout Dev, merge --ff-only, push Dev x2, checkout main.
   (Stashear los cambios M de Codex antes de cambiar de rama; pop al volver.)
+- **`agent.py` NO tiene `import os` ni `import re` a nivel módulo** (solo
+  aliases `_os_*`/`_re_*`): un `os.environ` dentro de un try best-effort es un
+  NameError SILENCIOSO que mata la feature sin error visible. Import local.
+- **`ToolRegistry.execute` despacha por `self._impls`** (refs capturadas en
+  init): monkeypatchear `tools.t_app` NO afecta el dispatch — para instrumentar,
+  envolver `tools._impls["app"]` o las capas internas (`self.app_open` sí es
+  lookup dinámico). El costo de un tool puede vivir en los PRE-dispatch de
+  execute (preconditions/safety), no en el impl: instrumentar por CAPAS.
+- **PS 5.1 + `git commit -m` con comillas dobles embebidas** rompe el paso de
+  args a git (el mensaje se parte) → usar `git commit -F <archivo>`.
+- **Los aux multilingües cortos del claim-guard ("sto", "ho", "im", "ja")**
+  SIEMPRE con frontera de palabra — substring pelado colisiona con palabras
+  comunes de otros idiomas ("sto " ⊂ "esto", regresión real `ed2ceb8`).
+- **`where.exe /R` con `subprocess.run(timeout=)`** descarta el stdout parcial
+  al expirar — salvarlo de `exc.stdout` (los roots grandes 15-23s nunca
+  aportaron nada por esto).
