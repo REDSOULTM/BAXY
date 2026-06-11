@@ -125,9 +125,19 @@ Solución: `GEMMA4_STT_LID_RESCUE_MODE = auto | resident | subprocess` (default
   (`~/.gemma4/models/whisper`) y los DECODE_KWARGS anti-alucinación de
   `stt.py` — sin re-descarga ni red.
 
+**Evidencia persistente del disparo:** la línea `LID RESCUE` de logging muere
+en la consola y `full.log` solo graba eventos del BUS — sin más, la zona del
+flip (que solo aparece en uso vivo) no dejaría rastro auditable. Cada disparo
+se persiste como JSONL en `~/.gemma4/logs/stt_lid_rescue.jsonl` (respeta
+`GEMMA4_AGENT_LOGS_DIR`): ts, modo, latencia extra, duración del audio,
+idioma, texto Parakeet y texto Whisper. El no-disparo no escribe nada y un
+fallo de escritura jamás rompe la transcripción. Revisión: leer ese archivo
+tras días de uso real.
+
 Verificación: `scripts/_diag/_verify_lid_rescue_modes.py` PASS (resolución de
-modos, camino subprocess completo con texto correcto, no-disparo 0 ms);
-suite voz 298/298; eval rescate 0 falsos disparos / WER intacto.
+modos, camino subprocess completo con texto correcto, evidencia JSONL escrita
+con todos los campos, no-disparo 0 ms y sin evidencia espuria); suite voz
+298/298; eval rescate 0 falsos disparos / WER intacto.
 
 **Etapa 3 (fp32) cerrada como NO-FACTIBLE hoy:** sherpa-onnx solo publica v3 en
 int8 (el fp16 existente es v2, English-only — inútil para 6 idiomas);

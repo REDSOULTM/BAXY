@@ -432,7 +432,39 @@ class VoicePipeline:
             mode, time.time() - t0, raw_text[:60],
             self._lang_profile.whisper_language, text[:60],
         )
+        self._persist_lid_rescue({
+            "mode": mode,
+            "extra_s": round(time.time() - t0, 2),
+            "audio_s": round(audio.size / SAMPLE_RATE, 2),
+            "lang": self._lang_profile.whisper_language,
+            "parakeet": raw_text,
+            "whisper": text or None,
+        })
         return text or None
+
+    @staticmethod
+    def _persist_lid_rescue(payload: dict) -> None:
+        """Evidencia PERSISTENTE de cada disparo del rescate. La línea de
+        logging muere en la consola y full.log solo graba eventos del BUS,
+        así que sin esto la zona del flip (que solo aparece en uso vivo) no
+        deja rastro auditable. JSONL dedicado en el árbol de logs: sobrevive
+        a todos los modos de ejecución (server, standalone) y el disparo es
+        raro, así que el archivo queda diminuto. Nunca rompe la transcripción."""
+        import datetime as _dt
+        import json as _json
+        import os as _os_p
+        from pathlib import Path as _Path
+        try:
+            root = _os_p.environ.get("GEMMA4_AGENT_LOGS_DIR")
+            base = (_Path(root).expanduser() if root
+                    else _Path.home() / ".gemma4" / "logs")
+            base.mkdir(parents=True, exist_ok=True)
+            row = {"ts": _dt.datetime.now().isoformat(timespec="seconds"),
+                   **payload}
+            with (base / "stt_lid_rescue.jsonl").open("a", encoding="utf-8") as f:
+                f.write(_json.dumps(row, ensure_ascii=False) + "\n")
+        except Exception as exc:
+            logger.debug("lid_rescue: no se pudo persistir evidencia: %s", exc)
 
     @staticmethod
     def _lid_rescue_mode() -> str:

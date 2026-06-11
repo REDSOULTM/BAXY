@@ -1,7 +1,11 @@
-"""Verifica EN VIVO la resolución de modo del rescate LID y el camino
-subprocess completo desde pipeline._lid_rescue (wav temp → worker → texto)."""
+"""Verifica EN VIVO la resolución de modo del rescate LID, el camino
+subprocess completo desde pipeline._lid_rescue (wav temp → worker → texto)
+y la persistencia de evidencia en stt_lid_rescue.jsonl (aislada en un dir
+temporal para no contaminar la evidencia real de ~/.gemma4/logs)."""
+import json
 import os
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -38,6 +42,9 @@ print("modos:", "OK" if ok1 else "FAIL")
 # --- 2. camino subprocess completo desde _lid_rescue ---
 os.environ.pop("GEMMA4_STT_LID_RESIDENT_MIN_GB", None)
 os.environ["GEMMA4_STT_LID_RESCUE_MODE"] = "subprocess"
+# evidencia aislada: NO contaminar ~/.gemma4/logs/stt_lid_rescue.jsonl real
+_tmp_logs = Path(tempfile.mkdtemp(prefix="lid_rescue_verify_"))
+os.environ["GEMMA4_AGENT_LOGS_DIR"] = str(_tmp_logs)
 mic = ROOT / "data" / "stt_eval" / "real_mic"
 rows = [l.split("\t") for l in (mic / "manifest.tsv").read_text(encoding="utf-8").splitlines()]
 wav = None
@@ -65,13 +72,27 @@ dt = time.time() - t0
 print(f"rescate subprocess: {dt:.2f}s -> {rescued!r}")
 ok2 = bool(rescued) and "steam" in rescued.lower()
 
-# --- 3. no-disparo (texto ya en es) NO paga subprocess ---
+# --- 3. evidencia persistida en stt_lid_rescue.jsonl ---
+ev_file = _tmp_logs / "stt_lid_rescue.jsonl"
+rows_ev = [json.loads(l) for l in ev_file.read_text(encoding="utf-8").splitlines()] \
+    if ev_file.exists() else []
+print(f"evidencia jsonl: {len(rows_ev)} fila(s) -> "
+      f"{rows_ev[-1] if rows_ev else 'NADA'}")
+ok_ev = (len(rows_ev) == 1 and rows_ev[0].get("mode") == "subprocess"
+         and rows_ev[0].get("whisper") and rows_ev[0].get("parakeet")
+         and rows_ev[0].get("ts"))
+
+# --- 4. no-disparo (texto ya en es) NO paga subprocess ni deja evidencia ---
 t0 = time.time()
 none = pipe._lid_rescue(audio, "abre steam por favor")
 dt3 = time.time() - t0
-print(f"no-disparo (texto es): {dt3 * 1000:.0f}ms -> {none!r}")
-ok3 = none is None and dt3 < 0.05
+n_after = len(ev_file.read_text(encoding="utf-8").splitlines()) \
+    if ev_file.exists() else 0
+print(f"no-disparo (texto es): {dt3 * 1000:.0f}ms -> {none!r} "
+      f"(evidencia sigue en {n_after})")
+ok3 = none is None and dt3 < 0.05 and n_after == len(rows_ev)
 
 os.environ.pop("GEMMA4_STT_LID_RESCUE_MODE", None)
-print("RESULTADO:", "PASS" if (ok1 and ok2 and ok3) else "FAIL")
-sys.exit(0 if (ok1 and ok2 and ok3) else 1)
+os.environ.pop("GEMMA4_AGENT_LOGS_DIR", None)
+print("RESULTADO:", "PASS" if (ok1 and ok2 and ok_ev and ok3) else "FAIL")
+sys.exit(0 if (ok1 and ok2 and ok_ev and ok3) else 1)
