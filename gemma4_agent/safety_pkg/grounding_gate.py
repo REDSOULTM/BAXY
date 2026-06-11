@@ -175,14 +175,23 @@ def _claims_consummated_action(text: str) -> bool:
     if any(big in low for big in _KNOWLEDGE_PARTICIPLE_BIGRAMS):
         return False
     # (1) auxiliar + raíz en la ventana siguiente (hasta 5 tokens: cubre DE).
+    # FRONTERA DE PALABRA en el inicio del auxiliar (2026-06-10): el find() por
+    # substring hacía que los aux cortos multilingües matchearan DENTRO de
+    # palabras de otro idioma — "sto " (IT) dentro de "eSTO requiere
+    # confirmación" + stem "confirm" a <5 tokens = falso claim que pisaba un
+    # reply legítimo que YA pedía confirmación (test_window_geom_and_confirm_
+    # honesty, regresión de la expansión multilingüe 49bbb3b). Mismo riesgo:
+    # "ho " (IT) ⊂ "hecho ", "im " (EN) ⊂ "...im ". El aux solo cuenta si
+    # arranca el texto o lo precede un no-alfanumérico.
     for aux in _AUX_PERFECT + _AUX_CONTINUOUS:
         aux_f = _fold(aux)
         idx = low.find(aux_f)
         while idx != -1:
-            rest = low[idx + len(aux_f):].split()
-            for nxt in rest[:5]:
-                if _has_consummated_stem(nxt):
-                    return True
+            if idx == 0 or not low[idx - 1].isalnum():
+                rest = low[idx + len(aux_f):].split()
+                for nxt in rest[:5]:
+                    if _has_consummated_stem(nxt):
+                        return True
             idx = low.find(aux_f, idx + 1)
     # (2) pretérito directo PT como primer token significativo (tras "ja/listo/").
     toks = [t for t in low.replace(",", " ").split() if t]

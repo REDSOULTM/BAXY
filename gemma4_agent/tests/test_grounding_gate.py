@@ -119,6 +119,32 @@ class TestInlineGate(unittest.TestCase):
         self.assertIn("No alcancé", v.fallback)
 
 
+class TestAuxWordBoundary(unittest.TestCase):
+    """Los auxiliares multilingües cortos solo cuentan en FRONTERA de palabra
+    (regresión 2026-06-10): "sto " (IT) matcheaba DENTRO de "eSTO requiere
+    confirmación" y con el stem "confirm" a <5 tokens producía un falso claim
+    que pisaba un reply legítimo que YA pedía confirmación."""
+
+    def test_spanish_esto_does_not_trigger_italian_sto(self):
+        v = detect_action_claim_without_evidence(
+            "Esto requiere confirmación, ¿lo hago?", [])
+        self.assertFalse(v.should_replace)
+
+    def test_embedded_aux_with_participle_does_not_fire(self):
+        # mecanismo exacto de la regresión: aux embebido ("sto " ⊂ "esto") +
+        # forma de participio a <5 tokens — con la frontera ya NO dispara.
+        v = detect_action_claim_without_evidence(
+            "Esto quedó confirmado para más tarde.", [])
+        self.assertFalse(v.should_replace)
+
+    def test_aux_at_boundary_still_fires(self):
+        # control positivo: el continuo legítimo sigue detectándose.
+        v = detect_action_claim_without_evidence("Estoy abriendo Spotify.", [])
+        self.assertTrue(v.should_replace)
+        v2 = detect_action_claim_without_evidence("Listo, he abierto la app.", [])
+        self.assertTrue(v2.should_replace)
+
+
 class TestAllEventsFailedGate(unittest.TestCase):
     """Claims de acción con events SOLO fallidos/bloqueados (2026-06-10):
     needs_user (precondición), needs_confirmation, error, tool-call que no
