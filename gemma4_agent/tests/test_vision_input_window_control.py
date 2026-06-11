@@ -16,26 +16,31 @@ from gemma4_agent.vision_input.monitors import MonitorInfo, MonitorRect, Virtual
 from gemma4_agent.vision_input.pointer import HeadPointerEstimate
 from gemma4_agent.vision_input.hand_quality import GestureStateFilter, HandIdentityTracker, HandQualityGate
 from gemma4_agent.vision_input.landmarks import HandSample, LandmarkFrame, NormalizedPoint
-from gemma4_agent.vision_input.window_control import (
+# Refactor 2026-06-11: la lógica de calibración salió de window_control a
+# calibration_flow (máquina de estados propia); window_control conserva el
+# runner/acciones. _frame_point_from_head fue eliminada (el overlay vive en
+# renderer.py) y su test se retiró con ella.
+from gemma4_agent.vision_input.calibration_flow import (
     _average_features,
-    _action_block_reason,
-    _action_status_text,
     _bad_validation_targets,
-    _candidate_window,
-    _control_hands,
-    _desktop_point,
     _feature_jitter,
-    _frame_point_from_head,
     _handle_calibration_keys,
     _has_capture_key,
     _make_validation_sample,
     _merge_calibration_samples,
-    _parse_args,
     _save_calibration_debug_capture,
     _sample_from_click_history,
-    _smooth_point,
     _validation_summary,
     _validation_summary_passes,
+)
+from gemma4_agent.vision_input.window_control import (
+    _action_block_reason,
+    _action_status_text,
+    _candidate_window,
+    _control_hands,
+    _desktop_point,
+    _parse_args,
+    _smooth_point,
 )
 from gemma4_agent.vision_input.window_target import WindowRect, WindowTarget, WindowTargetStabilizer
 
@@ -103,70 +108,102 @@ def test_window_target_stabilizer_requires_dwell() -> None:
     assert stabilizer.update(target, 10.4) == target
 
 
-def test_fist_grabs_and_moves_window_in_safe_mode() -> None:
+# Rediseño 2026-06-11 (suite de handlers): el arrastre directo con fist fue
+# REEMPLAZADO por HybridSwipeGesture (fist sostenido ≥0.15s + target →
+# swipe-a-monitor), palm pasó de scroll a MEDIA (dwell 0.55s, anti-falso-
+# positivo), el scroll vive en PinchScrollGesture (pinch cerrado <0.20) y la
+# activación pasa por el estado ARMED (anti-acción-accidental, HCI doc §2).
+# Los tests del contrato viejo (grab/move/snap/palm-scroll) se retiraron con
+# la feature; estos cubren los contratos NUEVOS de activación.
+
+
+def test_first_frame_arms_does_not_act() -> None:
     controller = _controller()
     target = _target()
-
     first = controller.update(
         timestamp_s=1.0,
         target=target,
         hands=(HandControlPose(0.5, 0.5, "fist"),),
         pointer_xy=(500, 400),
     )
-    second = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(HandControlPose(0.6, 0.55, "fist"),),
-        pointer_xy=(500, 400),
-    )
-
-    assert first.state == CameraControlState.DRAGGING
-    assert first.events[0].name == "grab_window"
-    assert second.events[0].name == "move_window"
-    assert second.events[0].executed is False
+    assert first.state == CameraControlState.ARMED
+    assert first.events == ()
 
 
-def test_open_palm_ends_drag() -> None:
+def test_sustained_fist_with_target_activates_swipe_handler() -> None:
     controller = _controller()
     target = _target()
-
     controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(HandControlPose(0.5, 0.5, "fist"),),
-        pointer_xy=(500, 400),
+        timestamp_s=1.0, target=target,
+        hands=(HandControlPose(0.5, 0.5, "fist"),), pointer_xy=(500, 400),
+    )
+    # dwell de 0.15s: el segundo frame con el fist sostenido activa el handler
+    out = controller.update(
+        timestamp_s=1.2, target=target,
+        hands=(HandControlPose(0.5, 0.5, "fist"),), pointer_xy=(500, 400),
+    )
+    assert out.state == CameraControlState.DRAGGING
+
+
+def test_fist_without_target_stays_armed() -> None:
+    controller = _controller()
+    controller.update(
+        timestamp_s=1.0, target=None,
+        hands=(HandControlPose(0.5, 0.5, "fist"),), pointer_xy=(500, 400),
     )
     out = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(HandControlPose(0.5, 0.5, "palm"),),
+        timestamp_s=1.2, target=None,
+        hands=(HandControlPose(0.5, 0.5, "fist"),), pointer_xy=(500, 400),
+    )
+    assert out.state == CameraControlState.ARMED
+
+
+def test_loose_pinch_does_not_scroll_tight_pinch_does() -> None:
+    target = _target()
+    loose = _controller()
+    loose.update(
+        timestamp_s=1.0, target=target,
+        hands=(HandControlPose(0.5, 0.5, "palm"),), pointer_xy=(500, 400),
+    )
+    out = loose.update(
+        timestamp_s=1.1, target=target,
+        hands=(HandControlPose(0.5, 0.5, "pinch", pinch_distance=0.5),),
         pointer_xy=(500, 400),
     )
+    assert out.state == CameraControlState.ARMED  # pinch flojo: no activa
 
-    assert out.state == CameraControlState.ARMED
-    assert out.events[0].name == "drop_window"
+    tight = _controller()
+    tight.update(
+        timestamp_s=1.0, target=target,
+        hands=(HandControlPose(0.5, 0.5, "palm"),), pointer_xy=(500, 400),
+    )
+    out = tight.update(
+        timestamp_s=1.1, target=target,
+        hands=(HandControlPose(0.5, 0.5, "pinch", pinch_distance=0.1),),
+        pointer_xy=(500, 400),
+    )
+    assert out.state == CameraControlState.DRAGGING  # pinch cerrado: scroll activo
 
 
-def test_two_hands_zoom_content() -> None:
+def test_palm_requires_dwell_before_media_toggle() -> None:
+    # El dwell de 0.55s exige frames CONTINUOS (gap >0.2s resetea el timer —
+    # anti-falso-positivo de una palma que pasa frente a la cámara).
     controller = _controller()
     target = _target()
-
-    start = controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(HandControlPose(0.4, 0.5, "palm"), HandControlPose(0.6, 0.5, "palm")),
-        pointer_xy=(500, 400),
+    # frames por índice entero (un while con t+=0.15 acumula drift de float y
+    # mete una iteración de más justo sobre el umbral)
+    out = None
+    for i in range(4):  # t = 1.00, 1.15, 1.30, 1.45 -> 0.45s sostenidos
+        out = controller.update(
+            timestamp_s=1.0 + 0.15 * i, target=target,
+            hands=(HandControlPose(0.5, 0.5, "palm"),), pointer_xy=(500, 400),
+        )
+    assert out is not None and out.state == CameraControlState.ARMED  # <0.55s
+    out = controller.update(  # t = 1.60 -> 0.60s sostenidos: cruza el dwell
+        timestamp_s=1.0 + 0.15 * 4, target=target,
+        hands=(HandControlPose(0.5, 0.5, "palm"),), pointer_xy=(500, 400),
     )
-    zoomed = controller.update(
-        timestamp_s=1.3,
-        target=target,
-        hands=(HandControlPose(0.3, 0.5, "palm"), HandControlPose(0.7, 0.5, "palm")),
-        pointer_xy=(500, 400),
-    )
-
-    assert start.state == CameraControlState.RESIZING
-    assert start.events[0].name == "two_hand_start"
-    assert any(event.name == "zoom_in" for event in zoomed.events)
+    assert out.state == CameraControlState.DRAGGING  # dwell cumplido: activa
 
 
 def test_two_hands_do_not_move_window_with_center_motion() -> None:
@@ -190,82 +227,43 @@ def test_two_hands_do_not_move_window_with_center_motion() -> None:
     assert not any(event.name == "move_window" for event in moved.events)
 
 
-def test_fist_drag_snaps_to_left_monitor_half() -> None:
+def test_point_activates_click_handler_immediately() -> None:
+    # PointClickGesture activa sin dwell (bajo riesgo: el click real exige
+    # el air-tap en z después). El contrato viejo de point_armed/point_click
+    # por eventos se retiró con el rediseño.
     controller = _controller()
     target = _target()
-
     controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(HandControlPose(0.5, 0.5, "fist"),),
-        pointer_xy=(500, 400),
+        timestamp_s=1.0, target=target,
+        hands=(HandControlPose(0.5, 0.5, "palm"),), pointer_xy=(500, 400),
     )
-    moved = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(HandControlPose(-0.2, 0.5, "fist"),),
-        pointer_xy=(500, 400),
+    out = controller.update(
+        timestamp_s=1.1, target=target,
+        hands=(_point_pose(-0.18),), pointer_xy=(500, 400),
     )
-
-    assert moved.events[0].name == "move_window"
-    assert moved.events[0].detail.startswith("snap left move to 0,0 960x1080")
+    assert out.state == CameraControlState.DRAGGING
 
 
-def test_point_gesture_clicks_once_until_released() -> None:
+def test_hand_lost_briefly_keeps_state_then_idles() -> None:
+    # Tolerancia de 0.2s a pérdida de tracking antes de abortar (anti-flicker).
     controller = _controller()
     target = _target()
-
-    armed = controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(_point_pose(-0.18),),
-        pointer_xy=(500, 400),
+    controller.update(
+        timestamp_s=1.0, target=target,
+        hands=(HandControlPose(0.5, 0.5, "fist"),), pointer_xy=(500, 400),
     )
-    clicked = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(_point_pose(0.00),),
-        pointer_xy=(500, 400),
+    controller.update(
+        timestamp_s=1.2, target=target,
+        hands=(HandControlPose(0.5, 0.5, "fist"),), pointer_xy=(500, 400),
     )
-    held = controller.update(
-        timestamp_s=1.3,
-        target=target,
-        hands=(_point_pose(0.02),),
-        pointer_xy=(500, 400),
+    brief = controller.update(
+        timestamp_s=1.3, target=target, hands=(), pointer_xy=(500, 400),
     )
-    retracted = controller.update(
-        timestamp_s=1.4,
-        target=target,
-        hands=(_point_pose(-0.17),),
-        pointer_xy=(500, 400),
+    assert brief.state != CameraControlState.IDLE  # tolerancia
+    gone = controller.update(
+        timestamp_s=1.6, target=target, hands=(), pointer_xy=(500, 400),
     )
-
-    assert armed.events[0].name == "point_armed"
-    assert clicked.events[0].name == "point_click"
-    assert clicked.events[0].executed is False
-    assert held.events == ()
-    assert retracted.events == ()
-
-
-def test_point_gesture_has_priority_over_non_two_hand_combo() -> None:
-    controller = _controller()
-    target = _target()
-
-    armed = controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(HandControlPose(0.2, 0.5, "palm"), _point_pose(-0.18)),
-        pointer_xy=(500, 400),
-    )
-    clicked = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(HandControlPose(0.2, 0.5, "palm"), _point_pose(0.00)),
-        pointer_xy=(500, 400),
-    )
-
-    assert armed.events[0].name == "point_armed"
-    assert clicked.events[0].name == "point_click"
+    assert gone.state == CameraControlState.IDLE
 
 
 def test_two_hand_requires_manipulation_labels() -> None:
@@ -311,113 +309,6 @@ def test_control_hands_applies_gesture_enter_hysteresis() -> None:
     assert first[0].raw_label == "point"
     assert first[0].label == "none"
     assert second[0].label == "point"
-
-
-def test_palm_vertical_motion_scrolls_window() -> None:
-    controller = _controller()
-    target = _target()
-
-    start = controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(HandControlPose(0.5, 0.5, "palm"),),
-        pointer_xy=(500, 400),
-    )
-    scroll = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(HandControlPose(0.5, 0.44, "palm"),),
-        pointer_xy=(500, 400),
-    )
-
-    assert start.events[0].name == "scroll_start"
-    assert scroll.events[0].name == "scroll_window"
-    assert "wheel -" in scroll.events[0].detail
-
-
-def test_palm_scroll_ignores_clutch_return_motion() -> None:
-    controller = _controller()
-    target = _target()
-
-    controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(HandControlPose(0.5, 0.5, "palm"),),
-        pointer_xy=(500, 400),
-    )
-    first_stroke = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(HandControlPose(0.5, 0.56, "palm"),),
-        pointer_xy=(500, 400),
-    )
-    return_motion = controller.update(
-        timestamp_s=1.2,
-        target=target,
-        hands=(HandControlPose(0.5, 0.44, "palm"),),
-        pointer_xy=(500, 400),
-    )
-    second_stroke = controller.update(
-        timestamp_s=1.3,
-        target=target,
-        hands=(HandControlPose(0.5, 0.50, "palm"),),
-        pointer_xy=(500, 400),
-    )
-
-    assert first_stroke.events[0].name == "scroll_window"
-    assert "wheel " in first_stroke.events[0].detail
-    assert "-" not in first_stroke.events[0].detail
-    assert return_motion.events == ()
-    assert second_stroke.events[0].name == "scroll_window"
-    assert "-" not in second_stroke.events[0].detail
-
-
-def test_drag_holds_position_when_fist_tracking_flickers_unknown() -> None:
-    controller = _controller()
-    target = _target()
-
-    controller.update(
-        timestamp_s=1.0,
-        target=target,
-        hands=(HandControlPose(0.5, 0.5, "fist"),),
-        pointer_xy=(500, 400),
-    )
-    flicker = controller.update(
-        timestamp_s=1.1,
-        target=target,
-        hands=(HandControlPose(0.8, 0.8, "unknown"),),
-        pointer_xy=(500, 400),
-    )
-    moved = controller.update(
-        timestamp_s=1.2,
-        target=target,
-        hands=(HandControlPose(0.65, 0.55, "fist"),),
-        pointer_xy=(500, 400),
-    )
-
-    assert flicker.state == CameraControlState.DRAGGING
-    assert flicker.events == ()
-    assert moved.events[0].name == "move_window"
-
-
-def test_frame_point_from_head_clamps_bounds() -> None:
-    frame = np.zeros((480, 640, 3), dtype=np.uint8)
-    head = HeadPointerEstimate(
-        yaw=0.0,
-        pitch=0.0,
-        raw_x=10.0,
-        raw_y=20.0,
-        filtered_x=10.0,
-        filtered_y=20.0,
-        monitor=MonitorInfo(0, MonitorRect(0, 0, 100, 100)),
-        region="middle-center",
-        source="head+iris",
-        local_x=1.2,
-        local_y=-0.2,
-        gaze=IrisGazeEstimate(0.0, 0.0, 1.0),
-    )
-    assert _frame_point_from_head(frame, head) == (639, 0)
-    assert _frame_point_from_head(frame, None) is None
 
 
 def test_desktop_point_falls_back_when_model_returns_nan() -> None:

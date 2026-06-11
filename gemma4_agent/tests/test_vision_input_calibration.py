@@ -206,7 +206,9 @@ def test_default_calibration_targets_generate_per_monitor_grid() -> None:
 
     targets = default_calibration_targets(canvas)
 
-    assert len(targets) == 18  # 9 points per monitor
+    # Rediseño 2026-06-11: 5 puntos por monitor (centro + 4 esquinas) en vez
+    # de la grilla 3x3 — calibración más corta con cobertura de extremos.
+    assert len(targets) == 10  # 5 points per monitor
     assert all(-1920 <= x <= 1919 for x, _ in targets)
     assert all(0 <= y <= 1079 for _, y in targets)
 

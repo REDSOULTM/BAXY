@@ -171,9 +171,9 @@ class MediaPipeLandmarkDetector:
             base_options=BaseOptions(model_asset_path=str(paths["hand"])),
             running_mode=running_mode,
             num_hands=self.num_hands,
-            min_hand_detection_confidence=self.min_confidence,
-            min_hand_presence_confidence=self.min_confidence,
-            min_tracking_confidence=self.min_confidence,
+            min_hand_detection_confidence=max(0.7, self.min_confidence),
+            min_hand_presence_confidence=max(0.7, self.min_confidence),
+            min_tracking_confidence=max(0.7, self.min_confidence),
         )
         face_options = vision.FaceLandmarkerOptions(
             base_options=BaseOptions(model_asset_path=str(paths["face"])),

@@ -1527,13 +1527,11 @@ def select_tool_names(
             # web/knowledge (solo esas dos: percepción/destructivas siguen
             # fuera). Clasificador por embeddings actual-vs-atemporal
             # (intent_router.is_current_world_info); sin encoder → strip normal.
-            _keep_current: set[str] = set()
-            try:
-                from .intent_router import is_current_world_info as _icwi
-                if _icwi(raw_text):
-                    _keep_current = {"web", "knowledge"}
-            except Exception:
-                _keep_current = set()
+            # (sin try propio: el bloque A6 entero ya está envuelto en un
+            # try/except, y is_current_world_info se auto-protege → False)
+            from .intent_router import is_current_world_info as _icwi
+            _keep_current: set[str] = (
+                {"web", "knowledge"} if _icwi(raw_text) else set())
             expanded = [t for t in expanded
                         if t not in _INFO_SUPPRESS_TOOLS or t in _keep_current]
     except Exception:

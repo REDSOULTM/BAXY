@@ -6427,7 +6427,11 @@ class Gemma4Agent:
                         else:
                             replies.append(_honest)
                         try:
-                            self.trace.event(turn_id, "chain_step_unverified",
+                            # FIX latente: `turn_id` no existía en este scope —
+                            # el NameError moría en el except y este evento
+                            # JAMÁS se emitió. El id de turno de esta función
+                            # es el literal "multi_intent" (como el resto).
+                            self.trace.event("multi_intent", "chain_step_unverified",
                                              clause=clause[:60])
                         except Exception:
                             pass

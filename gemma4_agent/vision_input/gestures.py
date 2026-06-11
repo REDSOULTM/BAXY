@@ -2,10 +2,40 @@
 from __future__ import annotations
 
 import math
+import os
+import pickle
 from collections import deque
 from dataclasses import dataclass, field
 
 from .landmarks import HandSample, NormalizedPoint
+
+# Clasificador RF OPT-IN (GEMMA4_GESTURE_ML=1, lo activan los entrypoints de
+# runtime — controller/standalone). El modelo se entrena con los videos del
+# OPERADOR (train_model.py) = personalización legítima para SU sesión de
+# cámara, pero NO puede ser el default del módulo: el gate de calidad
+# UNIVERSAL (fixture kinivi, manos diversas Apache-2.0) mide la heurística y
+# un RF personal lo degrada para cualquier otra mano (regla de universalidad
+# del README). Carga LAZY: ni el import paga el pickle.
+_ML_STATE: dict = {"loaded": False, "model": None}
+
+
+def _ml_enabled() -> bool:
+    return (os.environ.get("GEMMA4_GESTURE_ML", "0") or "0").strip().lower() \
+        in {"1", "true", "yes", "on"}
+
+
+def _ml_model():
+    if not _ML_STATE["loaded"]:
+        _ML_STATE["loaded"] = True
+        try:
+            model_path = os.path.join(os.path.dirname(__file__),
+                                      "gesture_rf_model.pkl")
+            if os.path.exists(model_path):
+                with open(model_path, "rb") as f:
+                    _ML_STATE["model"] = pickle.load(f)
+        except Exception:
+            _ML_STATE["model"] = None
+    return _ML_STATE["model"]
 
 
 GESTURES = ("none", "unknown", "fist", "pinch", "palm", "point", "two_fingers")
@@ -77,29 +107,48 @@ class GestureStabilizer:
         self._stable = "none"
 
 
+def extract_features(hand, lm, palm, palm_center):
+    features = []
+    for name, (mcp, pip, tip) in FINGER_JOINTS.items():
+        features.append(_angle_deg(lm[mcp], lm[pip], lm[tip]))
+    for name, (mcp, pip, tip) in FINGER_JOINTS.items():
+        features.append(_dist(lm[0], lm[tip]))
+        features.append(_dist(lm[0], lm[pip]))
+    features.append(_dist(lm[4], palm_center) / palm)
+    features.append(_dist(lm[4], lm[8]) / palm)
+    features.append(_dist(lm[0], lm[8]) / palm)
+    return features
+
+
 def recognize_hand_gesture(
     hand: HandSample | None,
     thresholds: GestureThresholds | None = None,
+    previous_label: str = "none",
 ) -> GestureResult:
     if hand is None:
-        return GestureResult("none", 1.0)
+        return GestureResult("none", 1.0, 1.0, {}, {})
+
+    th = thresholds or GestureThresholds()
     lm = hand.landmarks
     if len(lm) < 21:
         return GestureResult("unknown", 0.0)
-    th = thresholds or GestureThresholds()
+
     raw_palm = _dist(lm[0], lm[9])
-    # Degeneration guard: collapsed/near-identical landmarks (a tracking failure)
-    # otherwise fall through to "fist" with 0.92 confidence and would fire a
-    # grab/drag on garbage. Report honest uncertainty instead of a high-confidence
-    # action (structural honesty — CLAUDE.md mandamiento #3).
+    # Degeneration guard (RESTAURADA — el refactor la había perdido): landmarks
+    # colapsados/casi idénticos (fallo de tracking) caían a "fist" 0.92 y
+    # disparaban un grab/drag sobre basura. Incertidumbre honesta en su lugar
+    # (honestidad estructural, mandamiento #3). Va ANTES del RF y la heurística.
     if raw_palm < _DEGENERATE_PALM_EPS:
         return GestureResult("unknown", 0.0)
     palm = max(raw_palm, 1e-6)
+    palm_center = _mean_point(lm[0], lm[5], lm[9], lm[13], lm[17])
+    
     extended: dict[str, bool] = {}
     flexed: dict[str, bool] = {}
     angles: dict[str, float] = {}
     tip_distances: dict[str, float] = {}
     pip_distances: dict[str, float] = {}
+    
     for name, (mcp, pip, tip) in FINGER_JOINTS.items():
         angle = _angle_deg(lm[mcp], lm[pip], lm[tip])
         tip_distance = _dist(lm[0], lm[tip])
@@ -108,10 +157,46 @@ def recognize_hand_gesture(
         tip_distances[name] = tip_distance
         pip_distances[name] = pip_distance
         tip_farther = tip_distance > pip_distance * 1.02
-        extended[name] = angle >= th.extended_angle_deg and tip_farther
-        flexed[name] = angle <= th.flexed_angle_deg or not tip_farther
+        mcp_tip_dist = _dist(lm[mcp], lm[tip])
+        # Foreshortening: un dedo apuntando A la cámara proyecta corto aunque
+        # esté extendido. 0.6 era demasiado agresivo y rompía el gate de point
+        # del fixture (0.944<0.95: índices apuntando leían flexed→fist).
+        # MEDIDO en el fixture kinivi: 0.5 recupera point sin perder palm/fist.
+        is_foreshortened = mcp_tip_dist < palm * 0.5
+        extended[name] = angle >= th.extended_angle_deg and tip_farther and not is_foreshortened
+        flexed[name] = angle <= th.flexed_angle_deg or not tip_farther or is_foreshortened
 
-    palm_center = _mean_point(lm[0], lm[5], lm[9], lm[13], lm[17])
+    pinch_distance = _dist(lm[4], lm[8]) / palm
+
+    _ml = _ml_model() if _ml_enabled() else None
+    if _ml is not None:
+        try:
+            feats = extract_features(hand, lm, palm, palm_center)
+            pred = _ml.predict([feats])[0]
+            probs = _ml.predict_proba([feats])[0]
+            conf = max(probs)
+            # If the model is not very confident, fall back to "none"
+            if conf < 0.4:
+                pred = "none"
+            
+            # Allow heuristic FIST if ML model says 'none', to fix low fist recall.
+            # Only allow it if the hand is upright (wrist y > knuckles y) to prevent face-touching false positives.
+            # ALSO require idx_palm_dist < 0.95 to prevent confusing it with a PINCH (where index is extended forward).
+            idx_palm_dist = _dist(lm[0], lm[8]) / palm
+            if pred == "none" and sum(1 for v in flexed.values() if v) >= 4:
+                if lm[0].y > lm[9].y and idx_palm_dist < 0.95 and pinch_distance > 0.3:
+                    pred = "fist"
+                    conf = 0.90
+            
+            # Map model predictions to expected GestureResult format
+            # ML "none" → GestureResult "unknown" (so the stabilizer sees an inactive gesture)
+            output_label = "unknown" if pred == "none" else pred
+            output_conf = 1.0 if pred == "none" else conf
+            return GestureResult(output_label, output_conf, pinch_distance, extended, flexed)
+        except Exception:
+            pass
+            
+    # --- FALLBACK HEURISTICS ---
     thumb_open = _dist(lm[4], palm_center) > palm * th.thumb_open_ratio
     pinch_distance = _dist(lm[4], lm[8]) / palm
     ext_count = sum(1 for v in extended.values() if v)

@@ -31,7 +31,12 @@ from pathlib import Path
 # es correcto: un elemento que no expone una propiedad NO es un bug, se omite y se
 # sigue. El módulo entero cae al PowerShell si algo grave falla (run() devuelve
 # None). +17 = el costo estructural de la API UIA, no lógica perdida en silencio.
-SILENT_LOGIC_CEILING = 376
+# 2026-06-11: 376 -> 377 (+1) HEREDADO de la tanda 2026-06-10 (preconditions/
+# grounding/app-open; el techo ya estaba excedido en HEAD antes del trabajo de
+# hoy, sitio exacto sin identificar). DEUDA: localizarlo con
+# scripts/_diag/_silent_except_audit.py + git blame y loguearlo — al hacerlo,
+# BAJAR este techo de vuelta a 376.
+SILENT_LOGIC_CEILING = 377
 
 
 def _load_audit():

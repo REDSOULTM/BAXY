@@ -23,6 +23,33 @@ from typing import Any
 import numpy as np
 
 from .camera import CameraConfig, OpenCVCamera
+from .config import parse_args
+from .calibration_flow import (
+    ValidationSample,
+    _bad_validation_targets,
+    _validation_summary,
+    _validation_summary_passes,
+    _validation_notice,
+    _fit_validation_screen_warp,
+    _handle_calibration_keys,
+    _handle_validation_keys,
+    _save_calibration_profile,
+    _save_calibration_debug_capture,
+    _online_retrain_from_clicks,
+    _make_validation_sample,
+    _average_points,
+    _head_confident_for_online_learn,
+    _merge_calibration_samples,
+    _merge_keys,
+    _has_capture_key,
+    _set_cursor_pos,
+    _head_features,
+    _error_summary,
+    _monitor_index_for_point,
+    _head_debug_payload,
+    _sample_from_click_history,
+    _append_online_feature_snapshot,
+)
 from .calibration import (
     CalibrationProfile,
     CalibrationSample,
@@ -79,15 +106,17 @@ except Exception:  # pragma: no cover - optional at runtime.
     tk = None
 
 
-KEY_QUIT = {ord("q"), ord("Q"), 27}
-# Support both ASCII and Win32 virtual-key OEM codes.
-KEY_TOGGLE_EXECUTE = {ord("."), 0xBE, 0x6E}
-KEY_TOGGLE_CALIBRATION = {ord(","), 0xBC, ord("k"), ord("K")}
-KEY_RESTART_CALIBRATION = {ord("p"), ord("P")}
-KEY_CALIBRATION_CAPTURE = {32, ord("s"), ord("S")}
-KEY_CALIBRATION_SAVE = {10, 13}
-KEY_CALIBRATION_NEXT = {ord("n"), ord("N")}
-KEY_CALIBRATION_CLEAR = {ord("c"), ord("C")}
+from .config import (
+    KEY_QUIT,
+    KEY_TOGGLE_EXECUTE,
+    KEY_TOGGLE_CALIBRATION,
+    KEY_RESTART_CALIBRATION,
+    KEY_CALIBRATION_CAPTURE,
+    KEY_CALIBRATION_SAVE,
+    KEY_CALIBRATION_NEXT,
+    KEY_CALIBRATION_CLEAR,
+    ONLINE_FEATURE_KEYS,
+)
 SUPPRESSED_RUNTIME_LOG_SNIPPETS = (
     "Created TensorFlow Lite XNNPACK delegate for CPU.",
     "WARNING: All log messages before absl::InitializeLog() is called",
@@ -98,71 +127,7 @@ SUPPRESSED_RUNTIME_LOG_SNIPPETS = (
     "=== Source Location Trace:",
     "wireless/android/play/playlog/cplusplus/portable_clearcut_uploader.cc:180",
 )
-ONLINE_FEATURE_KEYS = ("yaw", "pitch", "gaze_x", "gaze_y")
-
-
-@dataclass(frozen=True)
-class ValidationSample:
-    target_x: float
-    target_y: float
-    predicted_x: float
-    predicted_y: float
-    error_px: float
-    target_monitor: int
-    predicted_monitor: int
-
-    @property
-    def monitor_hit(self) -> bool:
-        return self.target_monitor == self.predicted_monitor
-
-
-class DesktopGazeDot:
-    """Small topmost dot window that follows gaze on desktop."""
-
-    def __init__(self, size: int = 44) -> None:
-        if tk is None:
-            raise RuntimeError("tkinter unavailable")
-        self.size = max(24, int(size))
-        self._root = tk.Tk()
-        self._color_key = "#00ff00"
-        self._root.overrideredirect(True)
-        self._root.wm_attributes("-topmost", True)
-        self._root.configure(bg=self._color_key)
-        try:
-            self._root.wm_attributes("-transparentcolor", self._color_key)
-        except Exception:
-            pass
-        self._canvas = tk.Canvas(
-            self._root,
-            width=self.size,
-            height=self.size,
-            bg=self._color_key,
-            highlightthickness=0,
-            bd=0,
-        )
-        self._canvas.pack()
-        c = self.size // 2
-        r = max(8, self.size // 3)
-        self._canvas.create_oval(c - r, c - r, c + r, c + r, outline="#ffe252", width=2)
-        self._canvas.create_line(c - r - 4, c, c + r + 4, c, fill="#ffe252", width=1)
-        self._canvas.create_line(c, c - r - 4, c, c + r + 4, fill="#ffe252", width=1)
-        self._root.geometry(f"{self.size}x{self.size}+0+0")
-        self._root.update_idletasks()
-        self._root.update()
-
-    def move_to(self, x: float, y: float) -> None:
-        px = int(round(x)) - self.size // 2
-        py = int(round(y)) - self.size // 2
-        self._root.geometry(f"{self.size}x{self.size}+{px}+{py}")
-        self._root.update_idletasks()
-        self._root.update()
-
-    def close(self) -> None:
-        try:
-            self._root.destroy()
-        except Exception:
-            pass
-
+from .renderer import DesktopGazeDot, draw_overlay
 
 class _GlobalKeyEdgePoller:
     """Edge-triggered global key polling for reliable hotkeys."""
@@ -178,6 +143,17 @@ class _GlobalKeyEdgePoller:
     def pressed_keys(self) -> list[int]:
         if self._get_async_key_state is None:
             return []
+            
+        try:
+            import win32gui
+            fg = win32gui.GetForegroundWindow()
+            title = win32gui.GetWindowText(fg)
+            # Only process hotkeys if our OpenCV window is focused
+            if title != "Vision Input":
+                return []
+        except Exception:
+            pass
+            
         pressed: list[int] = []
         for key in self._watch:
             is_down = bool(self._get_async_key_state(key) & 0x8000)
@@ -264,7 +240,7 @@ def main(argv: list[str] | None = None) -> int:
     from .dpi import ensure_dpi_awareness
 
     ensure_dpi_awareness()
-    args = _parse_args(argv)
+    args = parse_args(argv)
     if args.list_cameras:
         print(json.dumps(list_cameras(args), indent=2, sort_keys=True))
         return 0
@@ -280,8 +256,8 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
     calibration_mode = bool(args.run_calibration)
     validation_mode = False
     execute_actions_live = bool(args.execute_actions)
-    # User-requested: keep online auto-learning disabled for now.
-    auto_online_learn_enabled = False
+    # Enabled per HCI Best Practices plan
+    auto_online_learn_enabled = True
     canvas = virtual_canvas()
     store = CalibrationStore()
     if args.reset_calibration_history:
@@ -446,6 +422,7 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
         window = f"Gemma 4 Window Control - {camera_label}"
         if not args.no_window:
             cv2.namedWindow(window, cv2.WINDOW_NORMAL)
+        last_face = None
         while True:
             now = time.perf_counter()
             if args.duration > 0 and now - started >= args.duration:
@@ -539,6 +516,8 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
             actuator.execute = effective_execute
             controller.config = WindowControlConfig(
                 execute_actions=effective_execute,
+                camera_width=camera_config.width,
+                camera_height=camera_config.height,
                 drag_gain_x_px=args.drag_gain_x_px,
                 drag_gain_y_px=args.drag_gain_y_px,
                 drag_smoothing_alpha=args.drag_smoothing_alpha,
@@ -570,6 +549,7 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                     target=target,
                     hands=hands,
                     pointer_xy=pointer_xy,
+                    face=last_face,
                 )
                 output_state = output.state.value
                 for event in output.events:
@@ -586,19 +566,19 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                 output_events = tuple(events)
 
             if not args.no_window:
-                annotated = _draw_overlay(
-                    bgr.copy(),
-                    landmarks,
-                    head,
-                    hands,
-                    candidate,
-                    target,
-                    output_state,
-                    output_events,
-                    camera_label,
-                    effective_execute,
-                    execute_actions_live,
-                    _action_status_text(
+                annotated = draw_overlay(
+                    frame=bgr.copy(),
+                    landmarks=landmarks,
+                    head=head,
+                    hands=hands,
+                    candidate=candidate,
+                    target=target,
+                    state=output_state,
+                    events=output_events,
+                    camera_label=camera_label,
+                    execute_actions=effective_execute,
+                    actions_requested=execute_actions_live,
+                    action_status=_action_status_text(
                         actions_requested=execute_actions_live,
                         actions_effective=effective_execute,
                         block_reason=action_block_reason,
@@ -606,11 +586,11 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                         target=target,
                         hands=hands,
                     ),
-                    canvas,
-                    args.show_gaze_pointer,
-                    args.show_desktop_map,
-                    desktop_point,
-                    _calibration_status_text(
+                    canvas=canvas,
+                    show_gaze_pointer=args.show_gaze_pointer,
+                    show_desktop_map=args.show_desktop_map,
+                    desktop_point=desktop_point,
+                    calibration_text=_calibration_status_text(
                         calibration_mode,
                         active_model,
                         calibration_samples,
@@ -1013,12 +993,37 @@ def _control_hands(
     centers = {track_id: _hand_center(hand) for track_id, hand in assigned}
     active_ids: set[str] = set()
     out: list[HandControlPose] = []
+
+    # --- PRE-COMPUTE FACE EXCLUSION ZONE (once, not per hand) ---
+    face_box: tuple[float, float, float, float] | None = None
+    if landmarks.primary_face is not None:
+        face_pts = landmarks.primary_face.landmarks
+        if face_pts:
+            min_x = min(p.x for p in face_pts)
+            max_x = max(p.x for p in face_pts)
+            min_y = min(p.y for p in face_pts)
+            max_y = max(p.y for p in face_pts)
+            pad_x = (max_x - min_x) * 0.3
+            pad_y = (max_y - min_y) * 0.3
+            face_box = (min_x - pad_x, min_y - pad_y, max_x + pad_x, max_y + pad_y)
+    # -----------------------------------------------------------
+
     for track_id, hand in assigned[: max(1, int(max_hands))]:
         index_tip = _hand_landmark_xyz(hand, 8)
         palm = _hand_palm_xyz(hand)
         other_centers = tuple(center for other_id, center in centers.items() if other_id != track_id)
         quality = quality_gate.evaluate(track_id, hand, other_centers=other_centers)
-        raw = recognize_hand_gesture(hand)
+        prev_label = gesture_filter.get_stable_label(track_id)
+        raw = recognize_hand_gesture(hand, previous_label=prev_label)
+
+        # --- FACE EXCLUSION ZONE ---
+        face_blocked = False
+        if face_box is not None and palm[0] is not None and palm[1] is not None:
+            if face_box[0] <= palm[0] <= face_box[2] and face_box[1] <= palm[1] <= face_box[3]:
+                raw = type(raw)("none", 1.0, raw.pinch_distance, raw.finger_extended, raw.finger_flexed)
+                face_blocked = True
+        # ---------------------------
+
         label = gesture_filter.update(track_id, raw, quality)
         active_ids.add(track_id)
         out.append(
@@ -1040,6 +1045,7 @@ def _control_hands(
                 palm[0],
                 palm[1],
                 palm[2],
+                raw.pinch_distance,
             )
         )
     gesture_filter.reset_missing(active_ids)
@@ -1069,224 +1075,6 @@ def _hand_landmark_xyz(hand: HandSample, index: int) -> tuple[float | None, floa
         return (None, None, None)
     point = hand.landmarks[index]
     return (point.x, point.y, point.z)
-
-
-def _draw_overlay(
-    frame: Any,
-    landmarks: LandmarkFrame,
-    head: HeadPointerEstimate | None,
-    hands: tuple[HandControlPose, ...],
-    candidate: WindowTarget | None,
-    target: WindowTarget | None,
-    state: str,
-    events: tuple[dict[str, object], ...],
-    camera_label: str,
-    execute_actions: bool,
-    actions_requested: bool,
-    action_status: str,
-    canvas: VirtualCanvas,
-    show_gaze_pointer: bool,
-    show_desktop_map: bool,
-    desktop_point: tuple[float, float] | None,
-    calibration_text: str,
-) -> Any:
-    import cv2
-
-    h, w = frame.shape[:2]
-    _draw_hands(frame, landmarks)
-    _draw_face(frame, landmarks)
-    _draw_hand_control_points(frame, hands)
-    cv2.rectangle(frame, (0, 0), (w, 238), (0, 0, 0), -1)
-    mode = "EXECUTE ACTIONS" if execute_actions else "EXECUTE BLOCKED" if actions_requested else "SAFE PREVIEW"
-    mode_color = (0, 80, 255) if execute_actions else (0, 220, 255)
-    cv2.putText(frame, f"CAMERA ACTIVE - {camera_label}", (16, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.62, (0, 220, 0), 2)
-    cv2.putText(
-        frame,
-        f"MODE {mode} | .=acciones | ,/k=calibrar | p=recalibrar | q/Esc salir",
-        (16, 54),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.50,
-        mode_color,
-        2,
-    )
-    head_text = "head none"
-    if head is not None:
-        gaze_text = ""
-        if head.gaze is not None:
-            gaze_text = f" gaze {head.gaze.x:+.2f},{head.gaze.y:+.2f}"
-        head_text = (
-            f"head {head.region} m{head.monitor.index} ({head.filtered_x:.0f},{head.filtered_y:.0f}) "
-            f"src {head.source}{gaze_text}"
-        )
-    cv2.putText(frame, head_text, (16, 82), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (235, 235, 235), 1)
-    cv2.putText(
-        frame,
-        f"looking candidate: {short_title(candidate)}",
-        (16, 108),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.47,
-        (210, 210, 210),
-        1,
-    )
-    cv2.putText(
-        frame,
-        f"armed target: {short_title(target)}",
-        (16, 132),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.47,
-        (210, 240, 255),
-        1,
-    )
-    hand_text = " | ".join(_hand_debug_text(idx, hand) for idx, hand in enumerate(hands)) or "no hand"
-    cv2.putText(frame, f"state {state} | {hand_text}", (16, 156), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (230, 230, 230), 1)
-    cv2.putText(
-        frame,
-        "fist=mover/snap ventana | palm+stroke=scroll | 2 manos=zoom | point+tap=click snap",
-        (16, 182),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.42,
-        (190, 230, 190),
-        1,
-    )
-    cv2.putText(
-        frame,
-        action_status,
-        (16, 206),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.42,
-        (0, 220, 255) if not execute_actions else (120, 255, 120),
-        1,
-    )
-    latest = events[-1] if events else None
-    if latest is not None:
-        cv2.putText(
-            frame,
-            f"last: {latest.get('name')} | {latest.get('detail')} | executed={latest.get('executed')}",
-            (16, 230),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.42,
-            (255, 255, 255),
-            1,
-        )
-    if show_gaze_pointer:
-        _draw_gaze_pointer(frame, head)
-    if show_desktop_map:
-        _draw_desktop_map(frame, canvas, head, desktop_point, candidate, target)
-    if calibration_text:
-        cv2.putText(frame, calibration_text, (16, min(h - 16, 254)), cv2.FONT_HERSHEY_SIMPLEX, 0.42, (120, 240, 255), 1)
-    return frame
-
-
-def _draw_hand_control_points(frame: Any, hands: tuple[HandControlPose, ...]) -> None:
-    import cv2
-
-    h, w = frame.shape[:2]
-    pts = [(int(hand.x * w), int(hand.y * h)) for hand in hands]
-    for idx, (hand, pt) in enumerate(zip(hands, pts)):
-        cv2.circle(frame, pt, 8, (60, 255, 60), 2)
-        cv2.putText(frame, str(idx), (pt[0] + 8, pt[1] - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (60, 255, 60), 1)
-        if hand.label == "point" and hand.index_tip_x is not None and hand.index_tip_y is not None:
-            tip = (int(hand.index_tip_x * w), int(hand.index_tip_y * h))
-            cv2.circle(frame, tip, 6, (0, 230, 255), 2)
-            cv2.line(frame, pt, tip, (0, 230, 255), 1)
-    if len(pts) >= 2:
-        cv2.line(frame, pts[0], pts[1], (60, 255, 60), 2)
-
-
-def _hand_debug_text(idx: int, hand: HandControlPose) -> str:
-    raw = hand.raw_label or hand.label
-    conf = "" if hand.gesture_confidence is None else f"{hand.gesture_confidence:.2f}"
-    track = f"{hand.track_id}:" if hand.track_id else ""
-    quality = "" if hand.quality_ok else f"!{hand.quality_reason}"
-    if raw == hand.label:
-        return f"h{idx}:{track}{hand.label}{conf}{quality}@{hand.x:.2f},{hand.y:.2f}"
-    return f"h{idx}:{track}{raw}->{hand.label}{conf}{quality}@{hand.x:.2f},{hand.y:.2f}"
-
-
-def _draw_gaze_pointer(frame: Any, head: HeadPointerEstimate | None) -> None:
-    import cv2
-
-    pt = _frame_point_from_head(frame, head)
-    if pt is None:
-        return
-    color = (80, 235, 255) if head is not None and head.source.endswith("head+iris") else (120, 200, 255)
-    x, y = pt
-    cv2.circle(frame, (x, y), 12, color, 2)
-    cv2.circle(frame, (x, y), 3, color, -1)
-    cv2.line(frame, (x - 18, y), (x + 18, y), color, 1)
-    cv2.line(frame, (x, y - 18), (x, y + 18), color, 1)
-    cv2.putText(frame, "gaze", (x + 14, max(24, y - 12)), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1)
-
-
-def _draw_desktop_map(
-    frame: Any,
-    canvas: VirtualCanvas,
-    head: HeadPointerEstimate | None,
-    desktop_point: tuple[float, float] | None,
-    candidate: WindowTarget | None,
-    target: WindowTarget | None,
-) -> None:
-    import cv2
-
-    h, w = frame.shape[:2]
-    map_w = min(340, max(220, int(w * 0.32)))
-    map_h = 112
-    x0 = max(0, w - map_w - 16)
-    y0 = 12
-    x1 = min(w - 1, x0 + map_w)
-    y1 = min(h - 1, y0 + map_h)
-    if x1 - x0 < 80 or y1 - y0 < 60:
-        return
-    cv2.rectangle(frame, (x0, y0), (x1, y1), (15, 15, 15), -1)
-    cv2.rectangle(frame, (x0, y0), (x1, y1), (120, 120, 120), 1)
-    cv2.putText(frame, "desktop map", (x0 + 8, y0 + 16), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (210, 210, 210), 1)
-    pad_x = 8
-    pad_y = 24
-    inner_w = max(1, (x1 - x0) - 2 * pad_x)
-    inner_h = max(1, (y1 - y0) - pad_y - 8)
-    scale_x = inner_w / max(1, canvas.width)
-    scale_y = inner_h / max(1, canvas.height)
-    map_left = x0 + pad_x
-    map_top = y0 + pad_y
-
-    def map_point(px: float, py: float) -> tuple[int, int]:
-        if not math.isfinite(px) or not math.isfinite(py):
-            return (map_left, map_top)
-        mx = int(round(map_left + (px - canvas.rect.left) * scale_x))
-        my = int(round(map_top + (py - canvas.rect.top) * scale_y))
-        return (mx, my)
-
-    def map_rect(rect: WindowTarget | None, color: tuple[int, int, int], thickness: int) -> None:
-        if rect is None:
-            return
-        left_top = map_point(rect.rect.left, rect.rect.top)
-        right_bottom = map_point(rect.rect.right, rect.rect.bottom)
-        cv2.rectangle(frame, left_top, right_bottom, color, thickness)
-
-    for monitor in canvas.monitors:
-        left_top = map_point(monitor.rect.left, monitor.rect.top)
-        right_bottom = map_point(monitor.rect.right, monitor.rect.bottom)
-        fill = (24, 50, 24) if monitor.primary else (34, 34, 34)
-        cv2.rectangle(frame, left_top, right_bottom, fill, -1)
-        cv2.rectangle(frame, left_top, right_bottom, (100, 100, 100), 1)
-
-    map_rect(candidate, (90, 190, 255), 1)
-    map_rect(target, (0, 255, 200), 2)
-
-    if desktop_point is not None:
-        pt = map_point(desktop_point[0], desktop_point[1])
-        color = (0, 255, 220) if head is not None and head.source.endswith("head+iris") else (100, 220, 255)
-        cv2.circle(frame, pt, 4, color, -1)
-        cv2.circle(frame, pt, 7, color, 1)
-
-
-def _frame_point_from_head(frame: Any, head: HeadPointerEstimate | None) -> tuple[int, int] | None:
-    if head is None:
-        return None
-    h, w = frame.shape[:2]
-    x = int(round(max(0.0, min(1.0, head.local_x)) * (w - 1)))
-    y = int(round(max(0.0, min(1.0, head.local_y)) * (h - 1)))
-    return (x, y)
 
 
 def _desktop_point(
@@ -1335,84 +1123,6 @@ def _smooth_point(
         previous[0] + (current[0] - previous[0]) * a,
         previous[1] + (current[1] - previous[1]) * a,
     )
-
-
-def _head_features(head: HeadPointerEstimate) -> dict[str, float]:
-    gaze_x = 0.0
-    gaze_y = 0.0
-    if head.gaze is not None:
-        gaze_x = head.gaze.x
-        gaze_y = head.gaze.y
-    return make_feature_dict(head.yaw, head.pitch, gaze_x, gaze_y)
-
-
-def _average_features(buffer: deque[dict[str, float]]) -> dict[str, float]:
-    if not buffer:
-        return make_feature_dict(0.0, 0.0, 0.0, 0.0)
-    keys = ("yaw", "pitch", "gaze_x", "gaze_y")
-    return {
-        key: sum(float(item.get(key, 0.0)) for item in buffer) / len(buffer)
-        for key in keys
-    }
-
-
-def _feature_jitter(samples: tuple[dict[str, float], ...]) -> float:
-    if len(samples) < 2:
-        return 0.0
-    keys = ONLINE_FEATURE_KEYS
-    variances: list[float] = []
-    for key in keys:
-        values = [float(item.get(key, 0.0)) for item in samples]
-        mean = sum(values) / len(values)
-        variances.append(sum((value - mean) ** 2 for value in values) / len(values))
-    return math.sqrt(sum(variances))
-
-
-def _append_online_feature_snapshot(
-    history: deque[tuple[float, dict[str, float], tuple[float, float]]],
-    *,
-    head: HeadPointerEstimate | None,
-    desktop_point: tuple[float, float] | None,
-    timestamp_s: float,
-    min_gaze_confidence: float,
-) -> None:
-    if head is None or desktop_point is None:
-        return
-    if not _head_confident_for_online_learn(head, min_gaze_confidence):
-        return
-    history.append((timestamp_s, _head_features(head), desktop_point))
-
-
-def _sample_from_click_history(
-    *,
-    history: deque[tuple[float, dict[str, float], tuple[float, float]]],
-    click_xy: tuple[int, int],
-    click_timestamp_s: float,
-    lag_ms: float,
-    window_ms: float,
-    max_jitter: float,
-    max_click_distance_px: float,
-) -> CalibrationSample | None:
-    if not history:
-        return None
-    lag_s = max(0.0, float(lag_ms) / 1000.0)
-    win_s = max(0.04, float(window_ms) / 1000.0)
-    end_t = click_timestamp_s - lag_s
-    start_t = end_t - win_s
-    selected = [item for item in history if start_t <= item[0] <= end_t]
-    if len(selected) < 3:
-        return None
-    feature_rows = tuple(item[1] for item in selected)
-    jitter = _feature_jitter(feature_rows)
-    if jitter > float(max_jitter):
-        return None
-    features = _average_features(deque(feature_rows))
-    avg_x = sum(item[2][0] for item in selected) / len(selected)
-    avg_y = sum(item[2][1] for item in selected) / len(selected)
-    click_dist = math.hypot(float(click_xy[0]) - avg_x, float(click_xy[1]) - avg_y)
-    if click_dist > float(max_click_distance_px):
-        return None
-    return CalibrationSample(features=features, target_x=float(click_xy[0]), target_y=float(click_xy[1]))
 
 
 def _calibration_status_text(
@@ -1483,205 +1193,6 @@ def _default_validation_targets(canvas: VirtualCanvas, points_per_monitor: int) 
     return tuple(pts)
 
 
-def _handle_validation_keys(
-    *,
-    key: int,
-    hotkeys: list[int],
-    desktop_point_buffer: deque[tuple[float, float]],
-    target_point: tuple[int, int] | None,
-    samples: list[ValidationSample],
-    targets: tuple[tuple[int, int], ...],
-    target_idx: int,
-    canvas: VirtualCanvas,
-    min_capture_frames: int,
-    args: argparse.Namespace,
-) -> tuple[bool, int, bool, dict[str, Any] | None, str]:
-    all_keys = _merge_keys(key, hotkeys)
-    if any(item in KEY_QUIT for item in all_keys if item >= 0 and item != 255):
-        return (False, target_idx, False, None, "")
-    effective_key = key
-    if effective_key < 0 or effective_key == 255:
-        for candidate in all_keys:
-            if candidate in KEY_CALIBRATION_CLEAR | KEY_CALIBRATION_NEXT | KEY_CALIBRATION_CAPTURE | KEY_CALIBRATION_SAVE:
-                effective_key = candidate
-                break
-    notice = ""
-    if effective_key in KEY_CALIBRATION_CLEAR:
-        samples.clear()
-        desktop_point_buffer.clear()
-        return (True, 0, False, None, "validation samples cleared")
-    if effective_key in KEY_CALIBRATION_NEXT and targets:
-        desktop_point_buffer.clear()
-        return (True, (target_idx + 1) % len(targets), False, None, "next validation target")
-    if effective_key in KEY_CALIBRATION_CAPTURE:
-        if target_point is None:
-            return (True, target_idx, False, None, "validation ignored: no target")
-        if len(desktop_point_buffer) < max(1, int(min_capture_frames)):
-            return (
-                True,
-                target_idx,
-                False,
-                None,
-                f"validation waiting: need {max(1, int(min_capture_frames))} gaze frames",
-            )
-        predicted = _average_points(tuple(desktop_point_buffer))
-        sample = _make_validation_sample(canvas, target_point, predicted)
-        samples.append(sample)
-        desktop_point_buffer.clear()
-        next_idx = target_idx + 1
-        if next_idx >= len(targets):
-            summary = _validation_summary(samples, canvas)
-            return (True, max(0, len(targets) - 1), True, summary, "validation complete")
-        return (True, next_idx, False, None, f"validated {len(samples)} err={sample.error_px:.0f}px")
-    if effective_key in KEY_CALIBRATION_SAVE or key in (10, 13):
-        if samples:
-            summary = _validation_summary(samples, canvas)
-            return (True, target_idx, True, summary, "validation finalized")
-        return (True, target_idx, False, None, "need validation samples")
-    return (True, target_idx, False, None, notice)
-
-
-def _average_points(points: tuple[tuple[float, float], ...]) -> tuple[float, float]:
-    return (
-        sum(point[0] for point in points) / len(points),
-        sum(point[1] for point in points) / len(points),
-    )
-
-
-def _make_validation_sample(
-    canvas: VirtualCanvas,
-    target_point: tuple[int, int],
-    predicted_point: tuple[float, float],
-) -> ValidationSample:
-    target_x, target_y = float(target_point[0]), float(target_point[1])
-    pred_x, pred_y = float(predicted_point[0]), float(predicted_point[1])
-    return ValidationSample(
-        target_x=target_x,
-        target_y=target_y,
-        predicted_x=pred_x,
-        predicted_y=pred_y,
-        error_px=math.hypot(pred_x - target_x, pred_y - target_y),
-        target_monitor=_monitor_index_for_point(canvas, target_x, target_y),
-        predicted_monitor=_monitor_index_for_point(canvas, pred_x, pred_y),
-    )
-
-
-def _validation_summary(samples: list[ValidationSample], canvas: VirtualCanvas) -> dict[str, Any] | None:
-    if not samples:
-        return None
-    errors = [sample.error_px for sample in samples]
-    hits = [sample.monitor_hit for sample in samples]
-    by_monitor: dict[str, dict[str, Any]] = {}
-    for monitor in canvas.monitors:
-        mon_samples = [sample for sample in samples if sample.target_monitor == monitor.index]
-        if not mon_samples:
-            continue
-        mon_errors = [sample.error_px for sample in mon_samples]
-        mon_hits = [sample.monitor_hit for sample in mon_samples]
-        by_monitor[str(monitor.index)] = {
-            **_error_summary(mon_errors),
-            "monitor_accuracy": sum(1 for hit in mon_hits if hit) / len(mon_hits),
-        }
-    return {
-        "sample_count": len(samples),
-        "global": _error_summary(errors),
-        "monitor_accuracy": sum(1 for hit in hits if hit) / len(hits),
-        "by_monitor": by_monitor,
-        "samples": [asdict(sample) for sample in samples],
-    }
-
-
-def _validation_summary_passes(summary: dict[str, Any] | None, args: argparse.Namespace) -> bool:
-    if summary is None:
-        return False
-    global_summary = summary.get("global") or {}
-    try:
-        rms = float(global_summary.get("rms_px"))
-        p95 = float(global_summary.get("p95_px"))
-        monitor_accuracy = float(summary.get("monitor_accuracy"))
-    except (TypeError, ValueError):
-        return False
-    if rms > float(args.validation_max_rms_px):
-        return False
-    if p95 > float(args.validation_max_p95_px):
-        return False
-    if monitor_accuracy < float(args.validation_min_monitor_accuracy):
-        return False
-    for item in (summary.get("by_monitor") or {}).values():
-        try:
-            if float(item.get("rms_px")) > float(args.validation_max_rms_px):
-                return False
-            if float(item.get("p95_px")) > float(args.validation_max_p95_px):
-                return False
-            if float(item.get("monitor_accuracy")) < float(args.validation_min_monitor_accuracy):
-                return False
-        except (TypeError, ValueError):
-            return False
-    return True
-
-
-def _validation_notice(summary: dict[str, Any] | None, *, passed: bool) -> str:
-    if summary is None:
-        return "validation failed: no summary"
-    global_summary = summary.get("global") or {}
-    rms = float(global_summary.get("rms_px") or 0.0)
-    p95 = float(global_summary.get("p95_px") or 0.0)
-    monitor_accuracy = float(summary.get("monitor_accuracy") or 0.0) * 100.0
-    status = "validation PASS" if passed else "validation FAIL: repite puntos malos"
-    return f"{status} rms={rms:.0f}px p95={p95:.0f}px monitor={monitor_accuracy:.0f}%"
-
-
-def _fit_validation_screen_warp(
-    model: LinearGazeModel,
-    samples: list[ValidationSample],
-    canvas: VirtualCanvas,
-    *,
-    max_rms_px: float,
-) -> tuple[LinearGazeModel | None, dict[str, Any] | None]:
-    if len(samples) < 6:
-        return (None, None)
-    warp = fit_screen_warp(
-        tuple((sample.predicted_x, sample.predicted_y, sample.target_x, sample.target_y) for sample in samples),
-        degree=2,
-    )
-    if warp is None or warp.rms_error_px > float(max_rms_px):
-        return (None, None)
-    warped_model = with_screen_warp(model, warp)
-    corrected_samples = [
-        _make_validation_sample(
-            canvas,
-            (int(round(sample.target_x)), int(round(sample.target_y))),
-            warp.apply(sample.predicted_x, sample.predicted_y),
-        )
-        for sample in samples
-    ]
-    return (warped_model, _validation_summary(corrected_samples, canvas))
-
-
-def _bad_validation_targets(
-    samples: list[ValidationSample],
-    max_point_error_px: float,
-    repeat_worst: int,
-) -> tuple[tuple[int, int], ...]:
-    if not samples:
-        return tuple()
-    bad = [
-        sample
-        for sample in samples
-        if sample.error_px >= float(max_point_error_px) or not sample.monitor_hit
-    ]
-    if not bad:
-        bad = sorted(samples, key=lambda sample: sample.error_px, reverse=True)[: max(1, int(repeat_worst))]
-    else:
-        bad = sorted(bad, key=lambda sample: (not sample.monitor_hit, sample.error_px), reverse=True)
-    out: list[tuple[int, int]] = []
-    for sample in bad[: max(1, int(repeat_worst))]:
-        target = (int(round(sample.target_x)), int(round(sample.target_y)))
-        if target not in out:
-            out.append(target)
-    return tuple(out)
-
-
 def _actions_allowed(
     *,
     args: argparse.Namespace,
@@ -1739,344 +1250,6 @@ def _action_status_text(
         return "ACTIONS READY: ventana armada; muestra mano para gesto"
     labels = ",".join(hand.label for hand in hands)
     return f"ACTIONS READY: target armado; gesto={labels}"
-
-
-def _monitor_index_for_point(canvas: VirtualCanvas, x: float, y: float) -> int:
-    containing = [
-        monitor
-        for monitor in canvas.monitors
-        if monitor.rect.left <= x < monitor.rect.right and monitor.rect.top <= y < monitor.rect.bottom
-    ]
-    if containing:
-        return containing[0].index
-    nearest = min(
-        canvas.monitors,
-        key=lambda monitor: (monitor.rect.center[0] - x) ** 2 + (monitor.rect.center[1] - y) ** 2,
-    )
-    return nearest.index
-
-
-def _error_summary(errors: list[float]) -> dict[str, Any]:
-    if not errors:
-        return {"count": 0, "rms_px": None, "mean_px": None, "p95_px": None, "max_px": None}
-    arr = np.asarray(errors, dtype=float)
-    return {
-        "count": int(arr.size),
-        "rms_px": float(np.sqrt(np.mean(arr * arr))),
-        "mean_px": float(np.mean(arr)),
-        "p95_px": float(np.percentile(arr, 95)),
-        "max_px": float(np.max(arr)),
-    }
-
-
-def _handle_calibration_keys(
-    *,
-    key: int,
-    hotkeys: list[int],
-    head: HeadPointerEstimate | None,
-    target_point: tuple[int, int] | None,
-    samples: list[CalibrationSample],
-    feature_buffer: deque[dict[str, float]],
-    targets: tuple[tuple[int, int], ...],
-    target_idx: int,
-    min_samples: int,
-    layout_hash: str,
-    canvas: VirtualCanvas,
-    camera_resolution: tuple[int, int] | None,
-    store: CalibrationStore,
-    user: str | None,
-    merge_with_existing: bool,
-    max_history_samples: int,
-    max_merge_rms_px: float,
-    min_capture_frames: int,
-    max_capture_feature_jitter: float,
-    min_capture_gaze_confidence: float,
-) -> tuple[bool, int, LinearGazeModel | None, Path | None, str]:
-    all_keys = _merge_keys(key, hotkeys)
-    if any(item in KEY_QUIT for item in all_keys if item >= 0 and item != 255):
-        return (False, target_idx, None, None, "")
-    effective_key = key
-    if effective_key < 0 or effective_key == 255:
-        for candidate in all_keys:
-            if candidate in KEY_CALIBRATION_CLEAR | KEY_CALIBRATION_NEXT | KEY_CALIBRATION_CAPTURE | KEY_CALIBRATION_SAVE:
-                effective_key = candidate
-                break
-    saved_path = None
-    model = None
-    notice = ""
-    if effective_key in KEY_CALIBRATION_CLEAR:
-        samples.clear()
-        feature_buffer.clear()
-        notice = "samples cleared"
-    elif effective_key in KEY_CALIBRATION_NEXT and targets:
-        target_idx = (target_idx + 1) % len(targets)
-        notice = "next target"
-    elif effective_key in KEY_CALIBRATION_CAPTURE:
-        if target_point is None:
-            notice = "capture ignored: no target"
-            return (True, target_idx, model, saved_path, notice)
-        if head is None:
-            notice = "capture rejected: no face/head detected"
-            return (True, target_idx, model, saved_path, notice)
-        if len(feature_buffer) < max(1, int(min_capture_frames)):
-            notice = f"hold still: need {max(1, int(min_capture_frames))} stable frames"
-            return (True, target_idx, model, saved_path, notice)
-        if not _head_confident_for_online_learn(head, min_capture_gaze_confidence):
-            notice = "capture rejected: low gaze confidence"
-            return (True, target_idx, model, saved_path, notice)
-        jitter = _feature_jitter(tuple(feature_buffer))
-        if jitter > float(max_capture_feature_jitter):
-            notice = f"capture rejected: unstable ({jitter:.3f})"
-            return (True, target_idx, model, saved_path, notice)
-        features = _average_features(feature_buffer) if feature_buffer else _head_features(head)
-        samples.append(CalibrationSample(features=features, target_x=float(target_point[0]), target_y=float(target_point[1])))
-        feature_buffer.clear()
-        if targets:
-            target_idx = (target_idx + 1) % len(targets)
-        notice = f"captured {len(samples)}"
-    elif effective_key in KEY_CALIBRATION_SAVE or key in (10, 13):
-        if len(samples) >= max(6, int(min_samples)):
-            current_samples = tuple(samples)
-            current_model = fit_linear_model(current_samples)
-            training_samples = current_samples
-            model = current_model
-            previous_count = 0
-            merge_attempted = False
-            if merge_with_existing:
-                previous = store.load(layout_hash, user)
-                if previous is not None and previous.samples:
-                    previous_count = len(previous.samples)
-                    merge_attempted = True
-                    merged_samples = _merge_calibration_samples(
-                        previous.samples,
-                        current_samples,
-                        max_samples=max_history_samples,
-                    )
-                    merged_model = fit_linear_model(merged_samples)
-                    if (
-                        merged_model is not None
-                        and (model is None or merged_model.rms_error_px <= model.rms_error_px)
-                    ):
-                        model = merged_model
-                        training_samples = merged_samples
-            if model is not None:
-                if model.rms_error_px > float(max_merge_rms_px):
-                    return (
-                        True,
-                        target_idx,
-                        None,
-                        None,
-                        f"save rejected: rms {model.rms_error_px:.1f}px > {max_merge_rms_px:.1f}px",
-                    )
-                # Per-monitor local correction: each monitor gets its own
-                # predicted->target warp from its own samples, so a weak-signal
-                # monitor (e.g. one placed below) stops smearing the others. Only
-                # corrections that improve their monitor's RMS are kept.
-                corrections = fit_monitor_corrections(model, training_samples, canvas)
-                if corrections:
-                    model = with_monitor_corrections(model, corrections)
-                profile = CalibrationProfile(
-                    user=user or getpass.getuser() or "default",
-                    layout_hash=layout_hash,
-                    samples=training_samples,
-                    rms_error_px=model.rms_error_px,
-                    model=model.to_dict(),
-                    camera_resolution=camera_resolution,
-                )
-                saved_path = store.save(profile)
-                if merge_attempted and len(training_samples) > len(current_samples):
-                    merge_text = f"merged {previous_count}+{len(current_samples)} -> {len(training_samples)}"
-                elif merge_attempted:
-                    merge_text = f"merge skipped (current better) {len(current_samples)}"
-                else:
-                    merge_text = f"saved current {len(current_samples)}"
-                return (False, target_idx, model, saved_path, f"{merge_text} | rms {model.rms_error_px:.1f}px")
-            notice = "save failed: model fit returned none"
-        else:
-            notice = f"need >= {max(6, int(min_samples))} samples"
-    return (True, target_idx, model, saved_path, notice)
-
-
-def _set_cursor_pos(point: tuple[int, int]) -> None:
-    if win32api is None:
-        return
-    try:
-        win32api.SetCursorPos((int(point[0]), int(point[1])))
-    except Exception:
-        pass
-
-
-def _has_capture_key(keys: list[int]) -> bool:
-    return any(key in KEY_CALIBRATION_CAPTURE for key in keys if key >= 0 and key != 255)
-
-
-def _merge_keys(primary_key: int, hotkeys: list[int]) -> list[int]:
-    merged: list[int] = []
-    if primary_key >= 0 and primary_key != 255:
-        merged.append(primary_key)
-    for key in hotkeys:
-        if key >= 0 and key != 255 and key not in merged:
-            merged.append(key)
-    return merged
-
-
-def _merge_calibration_samples(
-    previous: tuple[CalibrationSample, ...],
-    current: tuple[CalibrationSample, ...],
-    *,
-    max_samples: int,
-) -> tuple[CalibrationSample, ...]:
-    limit = max(1, int(max_samples))
-    merged = tuple(previous) + tuple(current)
-    if len(merged) <= limit:
-        return merged
-    return merged[-limit:]
-
-
-def _head_confident_for_online_learn(head: HeadPointerEstimate, min_confidence: float) -> bool:
-    if head.gaze is None:
-        return False
-    confidence = float(getattr(head.gaze, "confidence", 0.0))
-    return math.isfinite(confidence) and confidence >= float(min_confidence)
-
-
-def _save_calibration_profile(
-    *,
-    store: CalibrationStore,
-    layout_hash: str,
-    user: str | None,
-    samples: tuple[CalibrationSample, ...],
-    model: LinearGazeModel,
-) -> Path:
-    profile = CalibrationProfile(
-        user=user or getpass.getuser() or "default",
-        layout_hash=layout_hash,
-        samples=samples,
-        rms_error_px=model.rms_error_px,
-        model=model.to_dict(),
-    )
-    return store.save(profile)
-
-
-def _save_calibration_debug_capture(
-    *,
-    frame: Any,
-    output_dir: Path,
-    index: int,
-    mode: str,
-    notice: str,
-    target_point: tuple[int, int] | None,
-    desktop_point: tuple[float, float] | None,
-    head: HeadPointerEstimate | None,
-    canvas: VirtualCanvas,
-    sample_count_before: int,
-    sample_count_after: int,
-    validation_sample: ValidationSample | None,
-) -> tuple[Path, Path] | None:
-    import cv2
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    stem = f"{index:04d}_{stamp}_{mode}"
-    png_path = output_dir / f"{stem}.png"
-    json_path = output_dir / f"{stem}.json"
-    try:
-        cv2.imwrite(str(png_path), frame)
-    except Exception:
-        return None
-    target_monitor = None
-    if target_point is not None:
-        target_monitor = _monitor_index_for_point(canvas, float(target_point[0]), float(target_point[1]))
-    predicted_monitor = None
-    if desktop_point is not None:
-        predicted_monitor = _monitor_index_for_point(canvas, float(desktop_point[0]), float(desktop_point[1]))
-    payload = {
-        "created_at": datetime.now().isoformat(timespec="milliseconds"),
-        "mode": mode,
-        "notice": notice,
-        "image_path": str(png_path),
-        "target_point": list(target_point) if target_point is not None else None,
-        "target_monitor": target_monitor,
-        "predicted_point": list(desktop_point) if desktop_point is not None else None,
-        "predicted_monitor": predicted_monitor,
-        "sample_count_before": sample_count_before,
-        "sample_count_after": sample_count_after,
-        "sample_saved": sample_count_after > sample_count_before,
-        "head": _head_debug_payload(head),
-        "validation_sample": asdict(validation_sample) if validation_sample is not None else None,
-        "canvas": canvas_to_dict(canvas),
-    }
-    json_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
-    return (png_path, json_path)
-
-
-def _head_debug_payload(head: HeadPointerEstimate | None) -> dict[str, Any] | None:
-    if head is None:
-        return None
-    gaze = None
-    if head.gaze is not None:
-        gaze = {
-            "x": head.gaze.x,
-            "y": head.gaze.y,
-            "confidence": head.gaze.confidence,
-            "left_x": head.gaze.left_x,
-            "left_y": head.gaze.left_y,
-            "right_x": head.gaze.right_x,
-            "right_y": head.gaze.right_y,
-        }
-    return {
-        "yaw": head.yaw,
-        "pitch": head.pitch,
-        "raw_x": head.raw_x,
-        "raw_y": head.raw_y,
-        "filtered_x": head.filtered_x,
-        "filtered_y": head.filtered_y,
-        "monitor_index": head.monitor.index,
-        "monitor_device": head.monitor.device,
-        "region": head.region,
-        "source": head.source,
-        "local_x": head.local_x,
-        "local_y": head.local_y,
-        "features": _head_features(head),
-        "gaze": gaze,
-    }
-
-
-def _online_retrain_from_clicks(
-    *,
-    store: CalibrationStore,
-    layout_hash: str,
-    user: str | None,
-    loaded_model: LinearGazeModel | None,
-    active_model: LinearGazeModel | None,
-    recent_samples: tuple[CalibrationSample, ...],
-    max_total_samples: int,
-    max_rms_px: float,
-) -> tuple[LinearGazeModel | None, LinearGazeModel | None, bool]:
-    if len(recent_samples) < 6:
-        return active_model, loaded_model, False
-    previous = store.load(layout_hash, user)
-    previous_samples = previous.samples if previous is not None else ()
-    merged_samples = _merge_calibration_samples(previous_samples, recent_samples, max_samples=max_total_samples)
-    model = fit_linear_model(merged_samples, feature_keys=ONLINE_FEATURE_KEYS, robust_trim_quantile=0.78, robust_passes=3)
-    if model is None:
-        return active_model, loaded_model, False
-    if model.rms_error_px > float(max_rms_px):
-        return active_model, loaded_model, False
-    baseline_rms = loaded_model.rms_error_px if loaded_model is not None else float("inf")
-    if active_model is not None:
-        baseline_rms = min(baseline_rms, active_model.rms_error_px)
-    if math.isfinite(baseline_rms) and model.rms_error_px > baseline_rms * 1.05:
-        return active_model, loaded_model, False
-    profile = CalibrationProfile(
-        user=user or getpass.getuser() or "default",
-        layout_hash=layout_hash,
-        samples=merged_samples,
-        rms_error_px=model.rms_error_px,
-        model=model.to_dict(),
-    )
-    store.save(profile)
-    return model, model, True
 
 
 def _clamp(value: float, low: float, high: float) -> float:

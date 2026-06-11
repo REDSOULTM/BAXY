@@ -2,8 +2,19 @@
 from __future__ import annotations
 
 import math
+from collections import deque
 from dataclasses import dataclass
 from enum import Enum
+
+def play_sound(filename: str):
+    try:
+        import winsound
+        import os
+        sound_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'sounds', filename)
+        if os.path.exists(sound_path):
+            winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+    except Exception:
+        pass
 
 from .monitors import MonitorRect
 from .window_target import WindowRect, WindowTarget
@@ -15,6 +26,7 @@ class CameraControlState(str, Enum):
     DRAGGING = "DRAGGING"
     SCROLLING = "SCROLLING"
     RESIZING = "RESIZING"
+    COOLDOWN = "COOLDOWN"
 
 
 TWO_HAND_CONTROL_LABELS = {"palm", "pinch"}
@@ -69,6 +81,7 @@ class HandControlPose:
     palm_x: float | None = None
     palm_y: float | None = None
     palm_z: float | None = None
+    pinch_distance: float | None = None
 
 
 @dataclass(frozen=True)
@@ -90,11 +103,14 @@ class WindowControlOutput:
 @dataclass(frozen=True)
 class WindowControlConfig:
     execute_actions: bool = False
+    camera_width: int = 1280
+    camera_height: int = 720
     drag_gain_x_px: float = 2600.0
     drag_gain_y_px: float = 1500.0
     drag_min_px: int = 8
     drag_smoothing_alpha: float = 0.45
     drag_max_step_px: int = 180
+    swipe_threshold_norm: float = 0.035
     scroll_threshold_norm: float = 0.035
     scroll_gain: float = 3600.0
     scroll_rearm_threshold_norm: float = 0.012
@@ -115,8 +131,8 @@ class WindowControlConfig:
     # (measured), so the snap must scan at least that far to find the real button;
     # a radius smaller than the tracking error leaves the target outside the scan.
     point_snap_radius_px: int = 320
-    point_tap_threshold_norm: float = 0.14
-    point_tap_release_norm: float = 0.055
+    point_tap_threshold_norm: float = 0.075
+    point_tap_release_norm: float = 0.045
     window_snap_enabled: bool = True
     window_snap_edge_px: int = 72
 
@@ -135,6 +151,130 @@ class WindowActuator:
         self.desktop_rect = desktop_rect
         self.monitors = tuple(monitors)
 
+    def move_to_next_monitor(self, target: WindowTarget, direction: str) -> bool:
+        if not self.execute or target is None:
+            return False
+        try:
+            import win32gui
+            import win32con
+
+            # Make sure we're moving the top-level application window, not a child UI element
+            root_hwnd = win32gui.GetAncestor(target.hwnd, win32con.GA_ROOT)
+            is_zoomed = win32gui.GetWindowPlacement(root_hwnd)[1] == win32con.SW_SHOWMAXIMIZED
+            
+            if is_zoomed:
+                win32gui.ShowWindow(root_hwnd, win32con.SW_RESTORE)
+                
+            # Get dimensions AFTER restoring so we don't incorrectly apply maximized bounds
+            # to a restored window (which breaks Windows' maximization tracking)
+            l, t, r, b = win32gui.GetWindowRect(root_hwnd)
+            w = r - l
+            h = b - t
+            
+            current_monitor = _monitor_for_window_center(l, t, w, h, self.monitors)
+            cx = current_monitor.left + (current_monitor.right - current_monitor.left) / 2
+            cy = current_monitor.top + (current_monitor.bottom - current_monitor.top) / 2
+            
+            candidates = []
+            for m in self.monitors:
+                if m == current_monitor:
+                    continue
+                mcx = m.left + (m.right - m.left) / 2
+                mcy = m.top + (m.bottom - m.top) / 2
+                
+                if direction == "left" and mcx < cx:
+                    candidates.append(m)
+                elif direction == "right" and mcx > cx:
+                    candidates.append(m)
+                elif direction == "up" and mcy < cy:
+                    candidates.append(m)
+                elif direction == "down" and mcy > cy:
+                    candidates.append(m)
+            
+            if not candidates:
+                if len(self.monitors) <= 1:
+                    if is_zoomed:
+                        win32gui.ShowWindow(root_hwnd, win32con.SW_SHOWMAXIMIZED)
+                    return False
+                # Wrap-around logic
+                def monitor_cx(m): return m.left + (m.right - m.left) / 2
+                def monitor_cy(m): return m.top + (m.bottom - m.top) / 2
+                
+                if direction == "left":
+                    next_monitor = max(self.monitors, key=monitor_cx)
+                elif direction == "right":
+                    next_monitor = min(self.monitors, key=monitor_cx)
+                elif direction == "up":
+                    next_monitor = max(self.monitors, key=monitor_cy)
+                elif direction == "down":
+                    next_monitor = min(self.monitors, key=monitor_cy)
+                else:
+                    if is_zoomed:
+                        win32gui.ShowWindow(root_hwnd, win32con.SW_SHOWMAXIMIZED)
+                    return False
+                
+                if next_monitor == current_monitor:
+                    if is_zoomed:
+                        win32gui.ShowWindow(root_hwnd, win32con.SW_SHOWMAXIMIZED)
+                    return False
+            else:
+                # Pick the best candidate using directional weighting
+                def dist(m):
+                    mcx = m.left + (m.right - m.left) / 2
+                    mcy = m.top + (m.bottom - m.top) / 2
+                    dx = abs(mcx - cx)
+                    dy = abs(mcy - cy)
+                    if direction in ("left", "right"):
+                        return dx + dy * 10
+                    else:
+                        return dy + dx * 10
+                    
+                next_monitor = min(candidates, key=dist)
+            
+            rel_x = l - current_monitor.left
+            rel_y = t - current_monitor.top
+            
+            # If the window was maximized, we want to center its restored size on the new monitor
+            # instead of applying the relative position (since restored pos might be off-screen)
+            if is_zoomed:
+                new_left = next_monitor.left + int((next_monitor.right - next_monitor.left - w) / 2)
+                new_top = next_monitor.top + int((next_monitor.bottom - next_monitor.top - h) / 2)
+            else:
+                new_left = next_monitor.left + rel_x
+                new_top = next_monitor.top + rel_y
+            
+            flags = win32con.SWP_SHOWWINDOW
+            win32gui.SetWindowPos(root_hwnd, win32con.HWND_TOP, new_left, new_top, w, h, flags)
+            
+            if is_zoomed:
+                win32gui.ShowWindow(root_hwnd, win32con.SW_SHOWMAXIMIZED)
+            
+            # Force window to foreground reliably using AttachThreadInput
+            try:
+                import win32process
+                foreground_hwnd = win32gui.GetForegroundWindow()
+                if foreground_hwnd and foreground_hwnd != root_hwnd:
+                    foreground_thread, _ = win32process.GetWindowThreadProcessId(foreground_hwnd)
+                    target_thread, _ = win32process.GetWindowThreadProcessId(root_hwnd)
+                    if foreground_thread != target_thread:
+                        win32process.AttachThreadInput(foreground_thread, target_thread, True)
+                        win32gui.SetForegroundWindow(root_hwnd)
+                        win32gui.BringWindowToTop(root_hwnd)
+                        win32process.AttachThreadInput(foreground_thread, target_thread, False)
+                    else:
+                        win32gui.SetForegroundWindow(root_hwnd)
+                        win32gui.BringWindowToTop(root_hwnd)
+                else:
+                    win32gui.SetForegroundWindow(root_hwnd)
+                    win32gui.BringWindowToTop(root_hwnd)
+            except Exception as fe:
+                print(f"[ACTUATOR] foreground exception: {fe}")
+                
+            return True
+        except Exception as e:
+            print(f"[ACTUATOR] move_to_next_monitor exception: {e}")
+            return False
+
     def move_resize(self, target: WindowTarget, left: int, top: int, width: int, height: int) -> bool:
         left, top, width, height = self._bounded_geometry(left, top, width, height)
         if not self.execute:
@@ -145,7 +285,8 @@ class WindowActuator:
 
             win32gui.ShowWindow(target.hwnd, win32con.SW_RESTORE)
             flags = win32con.SWP_NOZORDER | win32con.SWP_NOACTIVATE
-            return bool(win32gui.SetWindowPos(target.hwnd, 0, left, top, width, height, flags))
+            win32gui.SetWindowPos(target.hwnd, 0, left, top, width, height, flags)
+            return True
         except Exception:
             return False
 
@@ -252,353 +393,553 @@ class WindowActuator:
         )
 
 
-class FixedGestureWindowController:
-    """Fixed deterministic grammar for the first window-control phase.
-
-    - Fist grabs the looked-at window and moves it with the hand.
-    - Open palm scrolls the looked-at window.
-    - Two hands zoom content by changing hand distance.
-    - Point clicks the nearest interactable control near gaze within the looked-at window.
-    """
-
+class BaseGestureHandler:
+    """Interface for modular gestures."""
     def __init__(self, config: WindowControlConfig, actuator: WindowActuator) -> None:
         self.config = config
         self.actuator = actuator
-        self.state = CameraControlState.IDLE
+
+    def check_activation(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> bool:
+        """Returns True if the gesture condition is met and it should take over."""
+        return False
+
+    def process(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> tuple[CameraControlState, float, list[ActionEvent]]:
+        """Returns (new_state, cooldown_end_s, events).
+        Return CameraControlState.ARMED or IDLE to relinquish control.
+        cooldown_end_s specifies if the system should enter COOLDOWN after this gesture.
+        """
+        return CameraControlState.IDLE, 0.0, []
+
+    def on_deactivate(self, target: WindowTarget | None) -> list[ActionEvent]:
+        """Cleanup logic when gesture is interrupted or finished."""
+        return []
+
+    def _event(self, name: str, target: WindowTarget | None, detail: str, executed: bool) -> ActionEvent:
+        return ActionEvent(name, target.title if target else "", target.hwnd if target else 0, detail, executed)
+
+
+class HybridSwipeGesture(BaseGestureHandler):
+    """Fist 2.0: Swipe-to-Monitor Launcher with Dynamic Anchor and short-window velocity."""
+    
+    def __init__(self, config: WindowControlConfig, actuator: WindowActuator) -> None:
+        super().__init__(config, actuator)
         self._drag_target: WindowTarget | None = None
-        self._drag_start_hand: tuple[float, float] | None = None
-        self._drag_start_rect: WindowRect | None = None
-        self._last_drag_rect: tuple[int, int, int, int] | None = None
-        self._drag_filtered_pos: tuple[float, float] | None = None
+        self._anchor_hand_x: float | None = None
+        self._anchor_hand_y: float | None = None
+        self._drag_start_time: float | None = None
+        self._hand_history: deque[tuple[float, float, float]] = deque(maxlen=3)
+        self._fist_start_time: float | None = None
+        self._fist_lost_time: float | None = None
+
+    def check_activation(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> bool:
+        primary = hands[0]
+        if primary.label == "fist":
+            if self._fist_start_time is None:
+                self._fist_start_time = timestamp_s
+            
+            if timestamp_s - self._fist_start_time >= 0.15:
+                if target is not None:
+                    print(f"[CONTROLLER] ARMED -> DRAGGING (fist detected on target: {target.title[:20]})")
+                    self._start_swipe(target, primary, timestamp_s)
+                    return True
+                else:
+                    print("[CONTROLLER] ARMED -> ignoring fist (NO TARGET SELECTED)")
+        else:
+            self._fist_start_time = None
+        return False
+
+    def process(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> tuple[CameraControlState, float, list[ActionEvent]]:
+        primary = hands[0]
+        events = []
+        self._hand_history.append((timestamp_s, primary.x, primary.y))
+        
+        if primary.label == "fist":
+            self._fist_lost_time = None
+            state, cooldown, evts = self._update_swipe(primary, timestamp_s)
+            events.extend(evts)
+            return state, cooldown, events
+        else:
+            if self._fist_lost_time is None:
+                self._fist_lost_time = timestamp_s
+            
+            if timestamp_s - self._fist_lost_time < 0.25:
+                # Grace period for label drop (motion blur)
+                state, cooldown, evts = self._update_swipe(primary, timestamp_s)
+                events.extend(evts)
+                return state, cooldown, events
+                
+            print(f"[CONTROLLER] DRAGGING -> ARMED (fist released, label is {primary.label})", flush=True)
+            events.append(self._event("drop_window", self._drag_target, "fist released", False))
+            return CameraControlState.ARMED, 0.0, events
+
+    def on_deactivate(self, target: WindowTarget | None) -> list[ActionEvent]:
+        self._fist_start_time = None
+        self._fist_lost_time = None
+        self._hand_history.clear()
+        events = []
+        if self._drag_target is not None:
+            events.append(self._event("drop_window", self._drag_target, "gesture interrupted", False))
+            self._drag_target = None
+        return events
+
+    def _start_swipe(self, target: WindowTarget, hand: HandControlPose, timestamp_s: float) -> None:
+        self._drag_target = target
+        self._anchor_hand_x = hand.x
+        self._anchor_hand_y = hand.y
+        self._drag_start_time = timestamp_s
+        self._fist_lost_time = None
+        self._hand_history.clear()
+        self._hand_history.append((timestamp_s, hand.x, hand.y))
+        print(f"[CONTROLLER] swipe start anchor X: {self._anchor_hand_x:.3f}, Y: {self._anchor_hand_y:.3f}", flush=True)
+        
+        try:
+            import winsound
+            import os
+            sound_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'sounds', '47_Toque_en_madera.wav')
+            if os.path.exists(sound_path):
+                winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+        except Exception as exc:
+            # feedback de audio es best-effort, pero el fallo se LOGUEA
+            # (techo de silent-except: no tragar sin rastro).
+            print(f"[CONTROLLER] swipe sound failed: {type(exc).__name__}", flush=True)
+
+    def _update_swipe(self, hand: HandControlPose, timestamp_s: float) -> tuple[CameraControlState, float, list[ActionEvent]]:
+        if self._anchor_hand_x is None or self._anchor_hand_y is None or self._drag_start_time is None:
+            return CameraControlState.DRAGGING, 0.0, []
+            
+        if len(self._hand_history) < 2:
+            return CameraControlState.DRAGGING, 0.0, []
+            
+        oldest_t, oldest_x, oldest_y = self._hand_history[0]
+        dt_history = timestamp_s - oldest_t
+        if dt_history <= 0:
+            return CameraControlState.DRAGGING, 0.0, []
+            
+        aspect_ratio = float(self.config.camera_width) / float(max(1, self.config.camera_height))
+        dx_total_phys = (hand.x - self._anchor_hand_x) * aspect_ratio
+        dy_total_phys = hand.y - self._anchor_hand_y
+
+        dx_hist_phys = (hand.x - oldest_x) * aspect_ratio
+        dy_hist_phys = hand.y - oldest_y
+        
+        vx_current = dx_hist_phys / dt_history
+        vy_current = dy_hist_phys / dt_history
+        
+        velocity_threshold = 0.45
+        min_distance = 0.05
+
+        if abs(dx_total_phys) > min_distance or abs(dy_total_phys) > min_distance:
+            print(f"[CONTROLLER] flicking... dx_tot: {dx_total_phys:.3f}, vx_cur: {vx_current:.3f}, vy_cur: {vy_current:.3f}", flush=True)
+
+            def play_feedback_local(success: bool):
+                if success:
+                    play_sound('3_success_arpeggio.wav')
+                else:
+                    play_sound('45_Thump_rapido.wav')
+
+            if abs(vx_current) > abs(vy_current):
+                if vx_current > velocity_threshold:
+                    print(f"[CONTROLLER] SWIPE RIGHT TRIGGERED! vx={vx_current:.3f}", flush=True)
+                    executed = self.actuator.move_to_next_monitor(self._drag_target, "right")
+                    play_feedback_local(executed)
+                    return CameraControlState.COOLDOWN, timestamp_s + 1.5, [self._event("swipe_window", self._drag_target, "swiped right", executed)]
+                elif vx_current < -velocity_threshold:
+                    print(f"[CONTROLLER] SWIPE LEFT TRIGGERED! vx={vx_current:.3f}")
+                    executed = self.actuator.move_to_next_monitor(self._drag_target, "left")
+                    play_feedback_local(executed)
+                    return CameraControlState.COOLDOWN, timestamp_s + 1.5, [self._event("swipe_window", self._drag_target, "swiped left", executed)]
+            else:
+                if vy_current > velocity_threshold:
+                    print(f"[CONTROLLER] SWIPE DOWN TRIGGERED! vy={vy_current:.3f}")
+                    executed = self.actuator.move_to_next_monitor(self._drag_target, "down")
+                    play_feedback_local(executed)
+                    return CameraControlState.COOLDOWN, timestamp_s + 1.5, [self._event("swipe_window", self._drag_target, "swiped down", executed)]
+                elif vy_current < -velocity_threshold:
+                    print(f"[CONTROLLER] SWIPE UP TRIGGERED! vy={vy_current:.3f}")
+                    executed = self.actuator.move_to_next_monitor(self._drag_target, "up")
+                    play_feedback_local(executed)
+                    return CameraControlState.COOLDOWN, timestamp_s + 1.5, [self._event("swipe_window", self._drag_target, "swiped up", executed)]
+
+        return CameraControlState.DRAGGING, 0.0, []
+
+
+class PinchScrollGesture(BaseGestureHandler):
+    """Pinch and drag up/down to scroll."""
+    def __init__(self, config: WindowControlConfig, actuator: WindowActuator) -> None:
+        super().__init__(config, actuator)
         self._scroll_target: WindowTarget | None = None
         self._scroll_anchor_y: float | None = None
         self._scroll_last_y: float | None = None
-        self._scroll_direction: int | None = None
-        self._resize_target: WindowTarget | None = None
-        self._resize_start_distance: float | None = None
-        self._resize_start_rect: WindowRect | None = None
-        self._resize_filtered_ratio: float | None = None
-        self._last_resize_rect: tuple[int, int, int, int] | None = None
-        self._last_zoom_step = 0
-        self._last_zoom_s = 0.0
-        self._resize_started_s = 0.0
-        self._resize_max_sent = False
-        self._resize_restore_sent = False
-        self._point_down = False
-        self._point_anchor: tuple[float, float, float] | None = None
-        self._point_wait_release = False
-        self._last_point_click_s = -9999.0
+        self._pinch_lost_time: float | None = None
 
-    def update(
-        self,
-        *,
-        timestamp_s: float,
-        target: WindowTarget | None,
-        hands: tuple[HandControlPose, ...],
-        pointer_xy: tuple[int, int] | None,
-    ) -> WindowControlOutput:
-        events: list[ActionEvent] = []
-        if not hands:
-            if self.state in {CameraControlState.DRAGGING, CameraControlState.SCROLLING, CameraControlState.RESIZING}:
-                events.append(self._event("release", self._active_target(), "hand lost", False))
-            self._reset_interaction()
-            self.state = CameraControlState.IDLE
-            return WindowControlOutput(self.state, tuple(events), target)
+    def check_activation(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> bool:
+        primary = hands[0]
+        if primary.label == "pinch":
+            # ONLY activate scroll if fingers are actually touching (distance < 20% of palm size)
+            if primary.pinch_distance is not None and primary.pinch_distance > 0.20:
+                return False
+                
+            self._scroll_target = target
+            self._scroll_anchor_y = primary.y
+            self._scroll_last_y = primary.y
+            self._pinch_lost_time = None
+            print(f"[CONTROLLER] Pinch detected, starting scroll on {target.title[:20] if target else 'None'}", flush=True)
+            play_sound('8_scifi_chirp.wav')
+            return True
+        return False
 
-        if self.state == CameraControlState.DRAGGING:
-            events.extend(self._update_drag(hands[0]))
-            return WindowControlOutput(self.state, tuple(events), self._drag_target or target)
-
-        if self.state == CameraControlState.RESIZING:
-            events.extend(self._update_resize(timestamp_s, hands))
-            return WindowControlOutput(self.state, tuple(events), self._resize_target or target)
-
-        if self.state == CameraControlState.SCROLLING:
-            primary = hands[0]
-            if primary.label == "palm" and self._scroll_target is not None:
-                events.extend(self._update_scroll(self._scroll_target, primary, pointer_xy))
-                return WindowControlOutput(self.state, tuple(events), self._scroll_target)
-            events.append(self._event("scroll_end", self._scroll_target, "palm released", False))
-            self._reset_scroll()
-            self.state = CameraControlState.ARMED
-            return WindowControlOutput(self.state, tuple(events), target)
-
-        if len(hands) >= 2 and target is not None and _two_hand_control_ready(hands):
-            events.extend(self._update_resize(timestamp_s, hands, target=target))
-            return WindowControlOutput(self.state, tuple(events), target)
-
-        primary = _primary_action_hand(hands)
-        if self.state == CameraControlState.IDLE:
-            self.state = CameraControlState.ARMED
-        if primary.label != "point":
-            self._reset_point()
-
-        if primary.label == "fist" and target is not None:
-            events.extend(self._start_drag(target, primary))
-        elif primary.label == "palm" and target is not None:
-            events.extend(self._update_scroll(target, primary, pointer_xy))
-        elif primary.label == "point" and target is not None:
-            events.extend(self._update_point_click(timestamp_s, target, primary, pointer_xy))
+    def process(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> tuple[CameraControlState, float, list[ActionEvent]]:
+        primary = hands[0]
+        
+        # Determine if the pinch is still held tightly enough to scroll
+        is_holding_pinch = False
+        if primary.label == "pinch":
+            if primary.pinch_distance is not None:
+                is_holding_pinch = primary.pinch_distance <= 0.35  # Allows some looseness while dragging
+            else:
+                is_holding_pinch = True
+                
+        if is_holding_pinch:
+            self._pinch_lost_time = None
         else:
-            if self.state == CameraControlState.SCROLLING:
-                events.append(self._event("scroll_end", self._scroll_target, "palm released", False))
-            self._scroll_target = None
-            self._scroll_anchor_y = None
-            self._reset_point()
-            self.state = CameraControlState.ARMED
+            if self._pinch_lost_time is None:
+                self._pinch_lost_time = timestamp_s
+            
+            if timestamp_s - self._pinch_lost_time < 0.3:
+                # Grace period for motion blur
+                pass
+            else:
+                return CameraControlState.ARMED, 0.0, []
 
-        return WindowControlOutput(self.state, tuple(events), target)
+        if self._scroll_anchor_y is None or self._scroll_last_y is None:
+            return CameraControlState.ARMED, 0.0, []
 
-    def _start_drag(self, target: WindowTarget, hand: HandControlPose) -> list[ActionEvent]:
-        if self.state != CameraControlState.DRAGGING:
-            self.state = CameraControlState.DRAGGING
-            self._drag_target = target
-            self._drag_start_hand = (hand.x, hand.y)
-            self._drag_start_rect = target.rect
-            self._last_drag_rect = None
-            self._drag_filtered_pos = None
-            return [self._event("grab_window", target, "fist", self.actuator.execute)]
+        dy = primary.y - self._scroll_last_y
+        events = []
+        if abs(dy) > self.config.scroll_threshold_norm:
+            wheel_delta = int(round(dy * self.config.scroll_gain))
+            min_delta = max(1, int(self.config.scroll_min_wheel_delta))
+            max_delta = max(min_delta, int(self.config.scroll_max_wheel_delta))
+            
+            if abs(wheel_delta) < min_delta:
+                wheel_delta = min_delta if wheel_delta > 0 else -min_delta
+            wheel_delta = max(-max_delta, min(max_delta, wheel_delta))
+            
+            x, y = target.rect.center if target else (0, 0)
+            executed = self.actuator.scroll(self._scroll_target, x, y, wheel_delta)
+            self._scroll_last_y = primary.y
+            events.append(self._event("scroll_window", self._scroll_target, f"wheel {wheel_delta}", executed))
+
+        return CameraControlState.DRAGGING, 0.0, events
+
+    def on_deactivate(self, target: WindowTarget | None) -> list[ActionEvent]:
+        self._scroll_target = None
+        self._scroll_anchor_y = None
+        self._scroll_last_y = None
+        self._pinch_lost_time = None
         return []
 
-    def _update_drag(self, hand: HandControlPose) -> list[ActionEvent]:
-        if hand.label == "palm":
-            target = self._drag_target
-            self._reset_interaction()
-            self.state = CameraControlState.ARMED
-            return [self._event("drop_window", target, "open palm", self.actuator.execute)]
-        if hand.label != "fist":
-            return []
-        if self._drag_target is None or self._drag_start_hand is None or self._drag_start_rect is None:
-            self._reset_interaction()
-            self.state = CameraControlState.ARMED
-            return []
-        dx = (hand.x - self._drag_start_hand[0]) * self.config.drag_gain_x_px
-        dy = (hand.y - self._drag_start_hand[1]) * self.config.drag_gain_y_px
-        desired_left = float(self._drag_start_rect.left + dx)
-        desired_top = float(self._drag_start_rect.top + dy)
-        if self._drag_filtered_pos is None:
-            filtered_left, filtered_top = desired_left, desired_top
+
+class PointClickGesture(BaseGestureHandler):
+    """Point and air-tap to click."""
+    def __init__(self, config: WindowControlConfig, actuator: WindowActuator) -> None:
+        super().__init__(config, actuator)
+        self._point_anchor: tuple[float, float, float] | None = None
+        self._point_wait_release: bool = False
+        self._last_point_click_s: float = 0.0
+        self._point_lost_time: float | None = None
+
+    def check_activation(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> bool:
+        if hands[0].label == "point":
+            self._point_lost_time = None
+            return True
+        return False
+
+    def process(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> tuple[CameraControlState, float, list[ActionEvent]]:
+        primary = hands[0]
+        if primary.label == "point":
+            self._point_lost_time = None
         else:
-            filtered_left, filtered_top = self._drag_filtered_pos
-            alpha = _clamp_float(self.config.drag_smoothing_alpha, 0.05, 1.0)
-            step_x = (desired_left - filtered_left) * alpha
-            step_y = (desired_top - filtered_top) * alpha
-            max_step = max(1.0, float(self.config.drag_max_step_px))
-            mag = math.hypot(step_x, step_y)
-            if mag > max_step:
-                scale = max_step / mag
-                step_x *= scale
-                step_y *= scale
-            filtered_left += step_x
-            filtered_top += step_y
-        self._drag_filtered_pos = (filtered_left, filtered_top)
-        left = int(round(filtered_left))
-        top = int(round(filtered_top))
-        width = self._drag_start_rect.width
-        height = self._drag_start_rect.height
-        snap_detail = ""
-        if self.config.window_snap_enabled:
-            left, top, width, height, snap_detail = _snap_window_rect(
-                left,
-                top,
-                width,
-                height,
-                self.actuator.monitors,
-                edge_px=self.config.window_snap_edge_px,
-            )
-        rect_key = (left, top, width, height)
-        if self._last_drag_rect is not None:
-            moved = math.hypot(left - self._last_drag_rect[0], top - self._last_drag_rect[1])
-            if moved < self.config.drag_min_px:
-                return []
-        self._last_drag_rect = rect_key
-        executed = self.actuator.move_resize(self._drag_target, left, top, width, height)
-        detail = f"{snap_detail}move to {left},{top} {width}x{height}"
-        return [self._event("move_window", self._drag_target, detail, executed)]
+            if self._point_lost_time is None:
+                self._point_lost_time = timestamp_s
+            
+            if timestamp_s - self._point_lost_time < 0.3:
+                pass
+            else:
+                return CameraControlState.ARMED, 0.0, []
+            
+        tip = (primary.index_tip_x, primary.index_tip_y, primary.index_tip_z) if primary.index_tip_x is not None else None
+        if tip is None:
+            return CameraControlState.DRAGGING, 0.0, []
 
-    def _update_scroll(
-        self,
-        target: WindowTarget,
-        hand: HandControlPose,
-        pointer_xy: tuple[int, int] | None,
-    ) -> list[ActionEvent]:
-        if self.state != CameraControlState.SCROLLING or self._scroll_target is None:
-            self.state = CameraControlState.SCROLLING
-            self._scroll_target = target
-            self._scroll_anchor_y = hand.y
-            self._scroll_last_y = hand.y
-            self._scroll_direction = None
-            return [self._event("scroll_start", target, "open palm", self.actuator.execute)]
-        if self._scroll_anchor_y is None or self._scroll_last_y is None:
-            self._scroll_anchor_y = hand.y
-            self._scroll_last_y = hand.y
-            return []
-        dy = hand.y - self._scroll_last_y
-        if self._scroll_direction is None:
-            dy = hand.y - self._scroll_anchor_y
-            if abs(dy) < self.config.scroll_threshold_norm:
-                return []
-            self._scroll_direction = 1 if dy > 0 else -1
-        elif abs(dy) < self.config.scroll_rearm_threshold_norm:
-            return []
-        elif (dy > 0 and self._scroll_direction < 0) or (dy < 0 and self._scroll_direction > 0):
-            # Clutch return: keep palm open, move the hand back, but do not send reverse scroll.
-            self._scroll_last_y = hand.y
-            return []
-        wheel_delta = int(round(dy * self.config.scroll_gain))
-        min_delta = max(1, int(self.config.scroll_min_wheel_delta))
-        max_delta = max(min_delta, int(self.config.scroll_max_wheel_delta))
-        if abs(wheel_delta) < min_delta:
-            wheel_delta = min_delta if wheel_delta > 0 else -min_delta
-        wheel_delta = max(-max_delta, min(max_delta, wheel_delta))
-        x, y = pointer_xy or target.rect.center
-        executed = self.actuator.scroll(self._scroll_target, x, y, wheel_delta)
-        self._scroll_last_y = hand.y
-        return [self._event("scroll_window", self._scroll_target, f"wheel {wheel_delta}", executed)]
+        if self._point_anchor is None:
+            self._point_anchor = tip
+            return CameraControlState.DRAGGING, 0.0, [self._event("point_armed", target, "air tap ready", False)]
 
-    def _update_resize(
-        self,
-        timestamp_s: float,
-        hands: tuple[HandControlPose, ...],
-        *,
-        target: WindowTarget | None = None,
-    ) -> list[ActionEvent]:
-        if len(hands) < 2 or not _two_hand_control_ready(hands):
-            target = self._resize_target
-            self._reset_interaction()
-            self.state = CameraControlState.ARMED
-            return [self._event("resize_end", target, "two hands released", False)]
-        left, right = hands[0], hands[1]
-        distance = _hand_distance(left, right)
-        if distance < self.config.two_hand_min_distance:
-            return []
-        if self.state != CameraControlState.RESIZING:
-            if target is None:
-                return []
-            self.state = CameraControlState.RESIZING
+        motion_y = tip[1] - self._point_anchor[1]
+        motion_z = tip[2] - self._point_anchor[2]
+        tap_motion = max(motion_y, abs(motion_z) * 1.8)
+
+        if self._point_wait_release:
+            if tap_motion <= self.config.point_tap_release_norm:
+                self._point_anchor = tip
+                self._point_wait_release = False
+            return CameraControlState.DRAGGING, 0.0, []
+
+        # Lower tap threshold to 0.08 for better sensitivity
+        if tap_motion < 0.08:
+            return CameraControlState.DRAGGING, 0.0, []
+
+        if timestamp_s - self._last_point_click_s < max(0.0, self.config.point_click_cooldown_s):
+            return CameraControlState.DRAGGING, 0.0, []
+
+        x, y = target.rect.center if target else (0, 0)
+        executed, detail = False, "No target"
+        if target:
+            executed, detail = self.actuator.click_near(target, x, y, self.config.point_snap_radius_px)
+            
+        self._point_wait_release = True
+        self._last_point_click_s = timestamp_s
+        print(f"[CONTROLLER] CLICK TRIGGERED! tap_motion={tap_motion:.2f}", flush=True)
+        if executed:
+            play_sound('1_pop.wav')
+        else:
+            play_sound('9_Tap_seco.wav')
+        # Add a 1.5s cooldown so the user has time to lower their hand or move without triggering another click
+        return CameraControlState.DRAGGING, timestamp_s + 1.5, [self._event("point_click", target, f"air_tap {tap_motion:.2f} {detail}", executed)]
+
+    def on_deactivate(self, target: WindowTarget | None) -> list[ActionEvent]:
+        self._point_anchor = None
+        self._point_wait_release = False
+        self._point_lost_time = None
+        return []
+
+
+class PalmMediaGesture(BaseGestureHandler):
+    """Open palm to Pause/Play media."""
+    def __init__(self, config: WindowControlConfig, actuator: WindowActuator) -> None:
+        super().__init__(config, actuator)
+        self._palm_start_time: float | None = None
+        self._palm_wait_release = False
+
+    def check_activation(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> bool:
+        if len(hands) > 1:
+            self._palm_start_time = None
+            self._palm_wait_release = False
+            return False
+
+        if getattr(self, "_palm_last_checked_time", 0.0) and timestamp_s - self._palm_last_checked_time > 0.2:
+            self._palm_start_time = None
+            self._palm_wait_release = False
+
+        self._palm_last_checked_time = timestamp_s
+
+        primary = hands[0]
+        if primary.label == "palm":
+            if self._palm_start_time is None:
+                self._palm_start_time = timestamp_s
+            
+            if not self._palm_wait_release and timestamp_s - self._palm_start_time > 0.55:
+                return True
+            if self._palm_wait_release:
+                return True
+        else:
+            self._palm_start_time = None
+            self._palm_wait_release = False
+        return False
+
+    def process(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> tuple[CameraControlState, float, list[ActionEvent]]:
+        if self._palm_wait_release:
+            # Already triggered, just wait for the user to close their hand
+            return CameraControlState.DRAGGING, 0.0, []
+
+        self._palm_wait_release = True
+        print("[CONTROLLER] PALM detected -> Toggling Media Play/Pause", flush=True)
+        play_sound('2_double_blip.wav')
+        # honestidad del evento: si el keypress falla, executed=False (antes el
+        # except silencioso dejaba el evento mintiendo "toggled media" True).
+        _toggled = False
+        try:
+            import win32api
+            import win32con
+            if self.actuator.execute:
+                win32api.keybd_event(0xB3, 0, win32con.KEYEVENTF_EXTENDEDKEY, 0)
+                win32api.keybd_event(0xB3, 0, win32con.KEYEVENTF_EXTENDEDKEY | win32con.KEYEVENTF_KEYUP, 0)
+                _toggled = True
+        except Exception as exc:
+            print(f"[CONTROLLER] media toggle FAILED: {type(exc).__name__}: {exc}",
+                  flush=True)
+        return CameraControlState.DRAGGING, timestamp_s + 1.0, [
+            self._event("media_toggle", None,
+                        "toggled media" if _toggled else "media toggle failed",
+                        _toggled)]
+
+    def on_deactivate(self, target: WindowTarget | None) -> list[ActionEvent]:
+        self._palm_start_time = None
+        self._palm_wait_release = False
+        return []
+
+
+class TwoHandResizeGesture(BaseGestureHandler):
+    """Pinch with two hands to zoom/resize."""
+    def __init__(self, config: WindowControlConfig, actuator: WindowActuator) -> None:
+        super().__init__(config, actuator)
+        self._resize_target: WindowTarget | None = None
+        self._resize_start_distance: float | None = None
+        self._resize_filtered_ratio: float | None = None
+        self._last_zoom_step: int = 0
+        self._last_zoom_s: float = 0.0
+        self._twohand_lost_time: float | None = None
+
+    def check_activation(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> bool:
+        if len(hands) >= 2 and hands[0].label == "pinch" and hands[1].label == "pinch":
             self._resize_target = target
-            self._resize_start_distance = distance
-            self._resize_start_rect = target.rect
+            self._resize_start_distance = _hand_distance(hands[0], hands[1])
             self._resize_filtered_ratio = 1.0
-            self._last_resize_rect = None
             self._last_zoom_step = 0
             self._last_zoom_s = timestamp_s
-            self._resize_started_s = timestamp_s
-            self._resize_max_sent = False
-            self._resize_restore_sent = False
-            return [self._event("two_hand_start", target, "two hands", self.actuator.execute)]
+            self._twohand_lost_time = None
+            print(f"[CONTROLLER] TwoHand Pinch detected -> Zooming {target.title[:20] if target else 'None'}", flush=True)
+            play_sound('5_soft_bell.wav')
+            return True
+        return False
 
-        if (
-            self._resize_target is None
-            or self._resize_start_distance is None
-            or self._resize_start_rect is None
-        ):
-            self._reset_interaction()
-            self.state = CameraControlState.ARMED
-            return []
+    def process(self, target: WindowTarget | None, hands: tuple[HandControlPose, ...], timestamp_s: float) -> tuple[CameraControlState, float, list[ActionEvent]]:
+        if len(hands) >= 2 and hands[0].label == "pinch" and hands[1].label == "pinch":
+            self._twohand_lost_time = None
+        else:
+            if self._twohand_lost_time is None:
+                self._twohand_lost_time = timestamp_s
+            if timestamp_s - self._twohand_lost_time < 0.4:
+                pass # Grace period for losing one hand
+            else:
+                return CameraControlState.ARMED, 0.0, []
+            
+        if self._resize_target is None or self._resize_start_distance is None or len(hands) < 2:
+            return CameraControlState.ARMED, 0.0, []
 
-        events: list[ActionEvent] = []
+        distance = _hand_distance(hands[0], hands[1])
         raw_ratio = distance / max(1e-6, self._resize_start_distance)
+        
         if self._resize_filtered_ratio is None:
             self._resize_filtered_ratio = raw_ratio
         else:
             alpha = _clamp_float(self.config.resize_ratio_smoothing_alpha, 0.05, 1.0)
             self._resize_filtered_ratio += (raw_ratio - self._resize_filtered_ratio) * alpha
+            
         ratio = self._resize_filtered_ratio
-        events.extend(self._update_two_hand_zoom(timestamp_s, ratio))
-        return events
-
-    def _update_two_hand_zoom(self, timestamp_s: float, ratio: float) -> list[ActionEvent]:
-        if self._resize_target is None:
-            return []
+        
         step_size = max(0.03, float(self.config.two_hand_zoom_step_ratio))
         step = int(math.trunc((ratio - 1.0) / step_size))
-        if step == self._last_zoom_step:
-            return []
-        if timestamp_s - self._last_zoom_s < max(0.0, self.config.two_hand_zoom_cooldown_s):
-            return []
-        direction = 1 if step > self._last_zoom_step else -1
-        self._last_zoom_step += direction
-        self._last_zoom_s = timestamp_s
-        x, y = self._resize_target.rect.center
-        executed = self.actuator.zoom(self._resize_target, x, y, direction)
-        name = "zoom_in" if direction > 0 else "zoom_out"
-        return [self._event(name, self._resize_target, f"ratio {ratio:.2f}", executed)]
+        
+        events = []
+        if step != self._last_zoom_step and timestamp_s - self._last_zoom_s >= max(0.0, self.config.two_hand_zoom_cooldown_s):
+            direction = 1 if step > self._last_zoom_step else -1
+            self._last_zoom_step += direction
+            self._last_zoom_s = timestamp_s
+            x, y = self._resize_target.rect.center if self._resize_target else (0,0)
+            executed = self.actuator.zoom(self._resize_target, x, y, direction)
+            name = "zoom_in" if direction > 0 else "zoom_out"
+            events.append(self._event(name, self._resize_target, f"ratio {ratio:.2f}", executed))
 
-    def _update_point_click(
-        self,
-        timestamp_s: float,
-        target: WindowTarget,
-        hand: HandControlPose,
-        pointer_xy: tuple[int, int] | None,
-    ) -> list[ActionEvent]:
-        tip = _point_tip_vector(hand)
-        if tip is None:
-            self._reset_point()
-            return []
-        if self._point_anchor is None:
-            self._point_anchor = tip
-            return [self._event("point_armed", target, "air tap ready", False)]
-        motion_y = tip[1] - self._point_anchor[1]
-        motion_z = tip[2] - self._point_anchor[2]
-        tap_motion = max(motion_y, abs(motion_z) * 1.8)
-        if self._point_wait_release:
-            if tap_motion <= self.config.point_tap_release_norm:
-                self._point_anchor = tip
-                self._point_wait_release = False
-                self._point_down = False
-            return []
-        if tap_motion < self.config.point_tap_threshold_norm:
-            return []
-        if timestamp_s - self._last_point_click_s < max(0.0, self.config.point_click_cooldown_s):
-            return []
-        x, y = pointer_xy or target.rect.center
-        executed, detail = self.actuator.click_near(target, x, y, self.config.point_snap_radius_px)
-        self._point_down = True
-        self._point_wait_release = True
-        self._last_point_click_s = timestamp_s
-        return [self._event("point_click", target, f"air_tap {tap_motion:.2f} {detail}", executed)]
+        return CameraControlState.DRAGGING, 0.0, events
 
-    def _active_target(self) -> WindowTarget | None:
-        return self._drag_target or self._scroll_target or self._resize_target
-
-    def _reset_interaction(self) -> None:
-        self._drag_target = None
-        self._drag_start_hand = None
-        self._drag_start_rect = None
-        self._last_drag_rect = None
-        self._drag_filtered_pos = None
-        self._reset_scroll()
+    def on_deactivate(self, target: WindowTarget | None) -> list[ActionEvent]:
         self._resize_target = None
         self._resize_start_distance = None
-        self._resize_start_rect = None
         self._resize_filtered_ratio = None
-        self._last_resize_rect = None
-        self._last_zoom_step = 0
-        self._last_zoom_s = 0.0
-        self._resize_max_sent = False
-        self._resize_restore_sent = False
-        self._reset_point()
+        self._twohand_lost_time = None
+        return []
 
-    def _reset_scroll(self) -> None:
-        self._scroll_target = None
-        self._scroll_anchor_y = None
-        self._scroll_last_y = None
-        self._scroll_direction = None
 
-    def _reset_point(self) -> None:
-        self._point_down = False
-        self._point_anchor = None
-        self._point_wait_release = False
+class FixedGestureWindowController:
+    """Gesture Router that delegates to active strategies."""
 
-    def _event(self, name: str, target: WindowTarget | None, detail: str, executed: bool) -> ActionEvent:
-        return ActionEvent(
-            name=name,
-            target_title=target.title if target is not None else "",
-            target_hwnd=target.hwnd if target is not None else None,
-            detail=detail,
-            executed=bool(executed),
-        )
+    def __init__(self, config: WindowControlConfig, actuator: WindowActuator) -> None:
+        self.config = config
+        self.actuator = actuator
+        self.state = CameraControlState.IDLE
+        self._cooldown_end_s: float = 0.0
+        self._hand_lost_time: float | None = None
+        
+        # Register available gestures here (Priority Order)
+        self._handlers: list[BaseGestureHandler] = [
+            PalmMediaGesture(config, actuator),
+            TwoHandResizeGesture(config, actuator),
+            HybridSwipeGesture(config, actuator),
+            PinchScrollGesture(config, actuator),
+            PointClickGesture(config, actuator),
+        ]
+        self._active_handler: BaseGestureHandler | None = None
+
+    def update(
+        self,
+        timestamp_s: float,
+        target: WindowTarget | None,
+        hands: tuple[HandControlPose, ...],
+        pointer_xy: tuple[float, float],
+        face: Any | None = None,
+    ) -> WindowControlOutput:
+        events: list[ActionEvent] = []
+
+        if timestamp_s < self._cooldown_end_s:
+            if not hands:
+                self.state = CameraControlState.IDLE
+            else:
+                self.state = CameraControlState.COOLDOWN
+            return WindowControlOutput(self.state, tuple(events), target)
+
+        if not hands:
+            if self.state != CameraControlState.IDLE:
+                if self._hand_lost_time is None:
+                    self._hand_lost_time = timestamp_s
+                
+                # Allow 0.2s of tracking loss before aborting
+                if timestamp_s - self._hand_lost_time > 0.2:
+                    if self._active_handler:
+                        events.extend(self._active_handler.on_deactivate(target))
+                        self._active_handler = None
+                    self.state = CameraControlState.IDLE
+                    print("[CONTROLLER] state -> IDLE (hand lost)", flush=True)
+            return WindowControlOutput(self.state, tuple(events), target)
+
+        self._hand_lost_time = None
+        primary = hands[0]
+
+        if self.state == CameraControlState.IDLE:
+            print(f"[CONTROLLER] IDLE -> ARMED (hand detected: {primary.label})")
+            self.state = CameraControlState.ARMED
+
+        if self.state == CameraControlState.COOLDOWN:
+            if primary.label != "fist" and timestamp_s >= self._cooldown_end_s:
+                print(f"[CONTROLLER] COOLDOWN -> ARMED (hand opened, label is {primary.label})")
+                self.state = CameraControlState.ARMED
+            return WindowControlOutput(self.state, tuple(events), target)
+
+        # Let the active handler process the frame
+        if self._active_handler is not None:
+            new_state, cooldown, handler_events = self._active_handler.process(target, hands, timestamp_s)
+            events.extend(handler_events)
+            self.state = new_state
+            if cooldown > 0:
+                self._cooldown_end_s = cooldown
+            
+            if self.state in (CameraControlState.IDLE, CameraControlState.ARMED, CameraControlState.COOLDOWN):
+                self._active_handler.on_deactivate(target)
+                self._active_handler = None
+                
+            return WindowControlOutput(self.state, tuple(events), target)
+
+        # If no active handler, see if any gesture wants to start (in priority order)
+        if self.state == CameraControlState.ARMED:
+            for handler in self._handlers:
+                if handler.check_activation(target, hands, timestamp_s):
+                    self._active_handler = handler
+                    self.state = CameraControlState.DRAGGING # Base state when a gesture is active
+                    break
+
+        return WindowControlOutput(self.state, tuple(events), target)
+
 
 
 def _hand_distance(a: HandControlPose, b: HandControlPose) -> float:
@@ -692,3 +1033,4 @@ def _clamp_float(value: float, low: float, high: float) -> float:
 
 def _make_long(low: int, high: int) -> int:
     return (int(low) & 0xFFFF) | ((int(high) & 0xFFFF) << 16)
+

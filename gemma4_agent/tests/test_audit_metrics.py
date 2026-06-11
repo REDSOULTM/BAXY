@@ -145,6 +145,13 @@ class TestAuditMetrics(unittest.TestCase):
         snap/monitors, poc/window_control<->camera/dpi, pointer<->gaze): TODOS son imports
         diferidos dentro de funciones para cortar ciclos internos del paquete y evitar
         cargar cv2/mediapipe (deps pesadas opt-in) al importar el subpaquete. Techo 545→555.
+        VISION_INPUT refactor handler-suite (2026-06-11) suma +17 del MISMO patrón
+        ya justificado el 2026-06-01: la descomposición (calibration_flow/renderer/
+        filters/config/standalone) difiere los imports intra-paquete dentro de
+        funciones para cortar ciclos internos y NO cargar cv2/mediapipe/win32 al
+        importar el subpaquete (deps pesadas opt-in del subsistema de cámara, que
+        tiene ciclo de vida propio — misma política que el techo de silent-except).
+        Techo 555→575.
         Si crece mucho MÁS, alguien introdujo lazy en vez de top-level sin justificación."""
         total = 0
         for p in _iter_prod_py():
@@ -154,8 +161,8 @@ class TestAuditMetrics(unittest.TestCase):
                 continue
             total += len(re.findall(r"^\s+from \.", src, re.M))
         self.assertLess(
-            total, 555,
-            f"R3: {total} lazy imports en producción (techo 555)"
+            total, 575,
+            f"R3: {total} lazy imports en producción (techo 575)"
         )
 
     # ----- R4: ToolResult disponible -----

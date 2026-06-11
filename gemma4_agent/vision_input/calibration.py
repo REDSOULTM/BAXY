@@ -593,11 +593,8 @@ def default_calibration_targets(canvas: VirtualCanvas, margin: float = 0.12) -> 
         top = monitor.rect.top
         width = max(1, monitor.rect.width)
         height = max(1, monitor.rect.height)
-        xs = (m, 0.5, 1.0 - m)
-        ys = (m, 0.5, 1.0 - m)
-        for ny in ys:
-            for nx in xs:
-                pts.append((int(round(left + nx * width)), int(round(top + ny * height))))
+        for nx, ny in ((0.5, 0.5), (m, m), (1.0 - m, m), (m, 1.0 - m), (1.0 - m, 1.0 - m)):
+            pts.append((int(round(left + nx * width)), int(round(top + ny * height))))
     return tuple(pts)
 
 

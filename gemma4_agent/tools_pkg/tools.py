@@ -6945,8 +6945,13 @@ Start-Sleep -Milliseconds 120
     # Matcher cross-lingual (R7): aceptar si top-1 supera SIM_MIN Y le saca MARGIN al
     # 2º (el margin es la salvaguarda real). SIM_MIN bajado 0.75→0.55 (2026-06-09): el
     # 0.75 venía de un entreno sin seed (open↔Abrir=0.849 por suerte; seed fijo→~0.63).
+    # MARGIN 0.10→0.05 (2026-06-11, encoder corpus-v3): la geometría nueva comprime
+    # los márgenes (open vs Abrir/Cerrar/Minimizar: margen 0.070, antes >0.10). MEDIDO
+    # (_recalibrate_xling_margin.py): los candidatos INCORRECTOS quedan bloqueados por
+    # SIM_MIN (tops 0.29-0.48 < 0.55) — el margin actúa como defensa secundaria entre
+    # candidatos que ya superan el piso; 0.05 conserva el caso correcto medido.
     _XLING_SIM_MIN = float(os.environ.get("GEMMA4_XLING_SIM_MIN", "0.55"))
-    _XLING_MARGIN = float(os.environ.get("GEMMA4_XLING_MARGIN", "0.10"))
+    _XLING_MARGIN = float(os.environ.get("GEMMA4_XLING_MARGIN", "0.05"))
 
     def _uia_find_clickable_semantic(self, label: str, window: str) -> dict[str, Any] | None:
         """R7 — match CROSS-LINGUAL del label contra los Names de los controles
