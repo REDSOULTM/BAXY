@@ -86,9 +86,13 @@ validado en vivo con `scripts/_validate_action_filler.py` (4 rondas):
   DENTRO de "eSTO requiere CONFIRMación" → falso claim → el canned pisaba un
   reply que ya pedía confirmación. Fix: frontera de palabra al inicio del
   aux. 35/35 + smoke vivo (el camino mentiroso sigue reemplazándose).
-- 🔴 PENDIENTE (chip): la PRECONDICIÓN de app bloquea ANTES del site-fallback
-  de t_app — "abrí pivigames" vía app.open muere en needs_user (find()=[] →
-  bloqueo) y nunca llega a resolver el sitio; "ve a pivigames" (browser) OK.
+- ✅ **Precondición de app RETIRADA** (`b5748cc`): bloqueaba antes de t_app y
+  mataba el site-fallback ("abrí pivigames" moría en needs_user; después:
+  pivigames.blog abre, delegated_from=app.open). Su honestidad la cubren el
+  piso de apertura + el claim-guard de tools-fallidas (capas DESPUÉS del
+  divert/site-fallback = orden correcto). Catálogo queda solo whatsapp; un
+  test fija la remoción. Live 4/5 (el quinto, "abrí gmail.com", falla
+  HONESTO cuando el 4B reescribe a "Gmail" — igual que antes, no regresión).
 - 🟡 Test flaky por carga: `test_fact_extraction_offpath::test_reply_returns_
   before_extraction_finishes` (cap 2.0s; con la máquina cargada el encoder
   tarda 19-21s en frío y lo revienta — pasó con el MISMO código minutos
