@@ -319,8 +319,10 @@ _SELF_ANCHORS = [
     "cual es tu proposito", "cual es tu prioridad", "eres una ia",
     "tienes sentimientos", "que?", "que quieres decir", "quien sos",
     # Portuguese / French / German / Italian
-    "quem es voce", "qui es tu", "wer bist du", "chi sei",
-    "que peux tu faire", "was kannst du",
+    # (typo histórico corregido 2026-06-11: era "quem es voce" — mezcla es/pt —
+    # y el fallback léxico frío no matcheaba la forma real "quem é você")
+    "quem e voce", "quem es voce", "qui es tu", "wer bist du", "chi sei",
+    "que peux tu faire", "was kannst du", "cosa puoi fare",
 ]
 
 # META-DIRECTIVES: the user is instructing the agent about HOW to behave or
@@ -558,6 +560,19 @@ def wants_knowledge(text: str) -> bool:
     s = classify_intent(text)
     if s is None:
         # Router degradado: confiar en el léxico para no mis-rutear preguntas.
+        # AUTO-REFERENCIA léxica (canarios 2026-06-11): "chi sei?" durante la
+        # ventana de warm-up (centroides sin cargar) caía acá como
+        # pregunta-info → el planner apilaba web/knowledge y el 4B "buscaba
+        # quién sos" en las noticias. Reusa los MISMOS anchors del centroide
+        # selfref (inventario existente, no una lista nueva): match exacto, o
+        # prefijo para anchors multi-palabra ("quien eres" cubre "quien eres
+        # tu"; los de 1 palabra como "que?" solo igualdad exacta para no
+        # tragarse "que es X").
+        folded = _fold(text).strip().strip("?!¿¡.,;: ")
+        for a in _SELF_ANCHORS:
+            af = _fold(a).strip().strip("?!¿¡.,;: ")
+            if folded == af or (" " in af and folded.startswith(af + " ")):
+                return False
         is_q, conf = is_question_lexical(text)
         return is_q and conf >= 0.80
     return _wants_knowledge_scores(s)

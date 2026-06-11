@@ -2059,3 +2059,44 @@
 {"q": "klicke auf den OK Button", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
 {"q": "tippe meine E-Mail hier ein", "expected": ["gui", "uia", "computer_use", "email"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
 {"q": "scrolle nach unten", "expected": ["gui", "uia", "computer_use"], "source": "b2_multilingual_eval_vol2_2026-06-10", "label_origin": "hand", "lang": "de"}
+{"q": "turn the volume down to 15", "expected": ["audio"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "skip this track please", "expected": ["media"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "minimize all my windows", "expected": ["window"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "how much disk space is left", "expected": ["system"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "send a whatsapp to my mom saying I arrived", "expected": ["whatsapp"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "what's the weather like in London", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "who painted the Mona Lisa", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "thanks a lot mate", "expected": [], "source": "curated_noes_2026-06-11", "label_origin": "hand_none"}
+{"q": "open the calculator app", "expected": ["app"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "take a screenshot of my screen", "expected": ["gui", "vision"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "abaixa o volume para 25", "expected": ["audio"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "pula essa música", "expected": ["media"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "quanto espaço livre tem no disco", "expected": ["system"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "manda um whatsapp pro meu irmão dizendo que cheguei", "expected": ["whatsapp"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "como está o tempo em Lisboa", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "quem pintou a Mona Lisa", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "valeu, muito obrigado", "expected": [], "source": "curated_noes_2026-06-11", "label_origin": "hand_none"}
+{"q": "abre a calculadora", "expected": ["app"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "baisse le volume à 30", "expected": ["audio"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "combien d'espace disque il reste", "expected": ["system"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "envoie un whatsapp à ma mère disant que je suis arrivé", "expected": ["whatsapp"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "quel temps fait-il à Paris", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "qui a peint la Joconde", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "merci beaucoup c'est gentil", "expected": [], "source": "curated_noes_2026-06-11", "label_origin": "hand_none"}
+{"q": "ouvre la calculatrice", "expected": ["app"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "fais une capture d'écran", "expected": ["gui", "vision"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "stell die Lautstärke auf 35", "expected": ["audio"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "spring zum nächsten Lied", "expected": ["media"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "wie viel Speicherplatz ist frei", "expected": ["system"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "schick eine WhatsApp an Papa dass ich angekommen bin", "expected": ["whatsapp"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "wie ist das Wetter in Berlin", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "wer hat die Mona Lisa gemalt", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "danke dir, sehr nett", "expected": [], "source": "curated_noes_2026-06-11", "label_origin": "hand_none"}
+{"q": "mach einen Screenshot vom Bildschirm", "expected": ["gui", "vision"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "abbassa il volume a 40", "expected": ["audio"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "riduci tutte le finestre", "expected": ["window"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "quanto spazio libero c'è sul disco", "expected": ["system"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "manda un whatsapp a mamma che sono arrivato", "expected": ["whatsapp"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "che tempo fa a Roma", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "chi ha dipinto la Gioconda", "expected": ["web", "knowledge"], "source": "curated_noes_2026-06-11", "label_origin": "hand"}
+{"q": "grazie mille, gentilissimo", "expected": [], "source": "curated_noes_2026-06-11", "label_origin": "hand_none"}

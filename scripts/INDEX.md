@@ -212,6 +212,14 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `_validate_b1_b2.py` | B1 (error-recovery) + B2 (memory-tools) en vivo. |
 | `_validate_reminder_schedule.py` | B8: valida que reminder con hora crea un Scheduled Task real en el SO (+ cleanup). |
 | `_validate_b4_b6_direct.py` | B4/B6 capacidad (sin LLM): data_analysis sobre CSV + document sobre PDF funcionan. |
+| `_validate_action_filler.py` | Validación EN VIVO del confirm filler (action_filler + _voice_action_filler). |
+| `_validate_app_open_floor.py` | Validación EN VIVO del piso de apertura de app.open (GEMMA4_APP_OPEN_MIN_SCORE). |
+| `_validate_app_open_miss.py` | Validación EN VIVO de la latencia del miss de app.open (fix 2026-06-10). |
+| `_validate_failed_claim_guard.py` | Validación EN VIVO del guard de claims con events todos-fallidos (2026-06-10). |
+| `_validate_precondition_removal.py` | Validación EN VIVO: retiro de la precondición app_resolvable. |
+| `router_eval_add_noes_2026_06_11.py` | Refuerzo noES del eval congelado del router (+41 filas curadas, dedup vs training). |
+| `calibrate.py` | Calibración de gestos de cámara (WIP sesión vision_input). |
+| `extract_calib.py` | Extracción de datos de calibración de cámara (WIP sesión vision_input). |
 | `_validate_b4_b6_live.py` | B4/B6 conexión: ¿el 4B elige data_analysis/document en vivo? (gap de routing medido). |
 | `_gen_product_doc.py` | Genera el Word de producto (riesgos+mitigaciones + comparativa competencia) con python-docx. |
 | `_validate_skills_live.py` | ¿el 4B emite skill_load cuando el pedido matchea una skill? (medir el skill_load inerte). |

@@ -73,3 +73,45 @@ IDÉNTICO (dev 0.9832/keep 0.9974; holdout 0.9788/keep 1.0000), ruido dev
 
 Gotcha de paso: `Set-Content -Encoding utf8` de PS 5.1 mete BOM y rompe el
 json.loads del harness — re-escribir con python utf-8 sin BOM.
+
+---
+
+# Batch de backlog (2026-06-11, tarde)
+
+1. **Residuo identidad→knowledge cerrado**: el camino CALIENTE ya era correcto
+   (selfref 0.866 ≫ info 0.556 para "chi sei?") — el desvío venía del fallback
+   LÉXICO de `wants_knowledge` durante la ventana de warm-up (centroides sin
+   cargar → "pregunta clara = info" → pile-on web/knowledge → el 4B "buscaba
+   quién sos en las noticias"). Fix: el fallback frío reconoce auto-referencia
+   reusando los `_SELF_ANCHORS` del centroide (match exacto; prefijo solo para
+   anchors multi-palabra — "que?" no se traga "que es X"). De paso: typo
+   histórico en el anchor pt ("quem **es** voce" → "quem e voce") + "cosa puoi
+   fare". Frío medido: chi sei/quien eres/who are you/wer bist du/quem é
+   você → False; "quien es batman"/"que es una GPU" → True. Caliente intacto.
+   Canarios 63/63 y eval congelado idénticos post-fix. 208 tests intent/router.
+2. **Eval congelado reforzado con noES**: +41 filas curadas a mano
+   (en/pt/fr/de/it: acción/estado-local/conocimiento/no-tool), DEDUP contra
+   TODO lo que entrena (9 frases descartadas por estar en training). Receta:
+   `scripts/router_eval_add_noes_2026_06_11.py`. **NUEVO baseline** (los
+   números pre/post de esta fecha no son comparables): dev 1258/1280=0.9828 /
+   keep 0.9975; holdout 327/334=0.9790 / keep 1.0000. CAVEAT: el tagger de
+   idioma del eval (heurística de hints) etiqueta la mayoría de filas nuevas
+   como "es" — miden recall multilingüe real pero las slices `lang:` lo
+   subreportan.
+3. **Hallazgo nuevo del benchmark (1 miss, NO parcheado a propósito)**:
+   "what's the weather like in London" → subset vacío. Tensión de diseño real:
+   el gate how-to/info (política A6: pregunta conceptual → el LLM responde)
+   sobre-matchea preguntas de información ACTUAL (clima/precios) que el LLM no
+   puede responder sin web. Las variantes pt/fr/de/it pasan (el regex del gate
+   es más angosto ahí). Próximo frente: distinguir paramétrico-atemporal de
+   actual-mundo en ese gate. Queda como tripwire medido en el benchmark.
+4. **Higiene**: 4 `_diag_*.py` top-level movidos a `scripts/_diag/` (git mv) +
+   entradas INDEX.md para los 5 `_validate_*` + receta noES + 2 scripts de la
+   sesión de cámara (WIP ajeno, documentados sin tocarlos).
+   `test_scripts_inventory` verde. Los 2 fallos restantes de audit_metrics son
+   del WIP de cámara sin commitear (`vision_input/train_model.py:80`
+   bare-except) — pertenecen a esa sesión.
+5. MEMORY.md podado 75,5KB → 23,5KB (truncado a borde de palabra; el detalle
+   vive en los archivos de memoria linkeados).
+6. Pendientes diferidos a pedido: medición de guards en traces (necesita días
+   de uso) y dataset v4. Vigilar llama.cpp #22243 (PLE) sigue abierto.
