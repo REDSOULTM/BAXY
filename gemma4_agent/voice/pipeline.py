@@ -335,6 +335,122 @@ class VoicePipeline:
                 return True
         return False
 
+    # ----- rescate LID frase-corta (Parakeet v3) ------------------------
+    # Palabras funcionales inglesas (clase cerrada) para detectar que la
+    # SALIDA quedó en inglés. No es keyword-de-contenido: es la firma
+    # estructural del idioma, igual que los marcadores fuertes es/pt/it del
+    # agente. Conservador: exige ≥2 hits y CERO marcadores del idioma del
+    # perfil para disparar.
+    _EN_FUNCTION_WORDS = frozenset({
+        "the", "is", "was", "are", "were", "it", "it's", "i", "i'm", "you",
+        "let's", "don't", "isn't", "this", "that", "what", "what's", "really",
+        "just", "up", "out", "worth", "see", "got", "we've", "guess",
+    })
+    # Marcadores del idioma objetivo (ortografía + funcionales cerradas).
+    _TARGET_MARKERS = {
+        # " en "/" sí " incluidos (2026-06-11): el caso code-switching MEDIDO
+        # ("reproduce The Last of Us en HBO Max") conserva el conector "en" y
+        # NO debe dispararse el rescate (whisper-es destruyó el título).
+        "es": ("¿", "¡", "ñ", "á", "é", "í", "ó", "ú", " el ", " la ", " que ",
+               " de ", " y ", " un ", " una ", " es ", " está ", " para ",
+               " en ", " sí ", " con ", " mi "),
+        "pt": ("ã", "õ", "ç", " o ", " a ", " que ", " de ", " é ", " um ",
+               " uma ", " não ", " para "),
+        "fr": (" le ", " la ", " est ", " je ", " tu ", " que ", " une ",
+               " pas ", " c'est ", " à "),
+        "de": ("ß", "ä", "ö", "ü", " der ", " die ", " das ", " ist ",
+               " ich ", " du ", " nicht ", " ein "),
+        "it": (" il ", " lo ", " la ", " è ", " che ", " di ", " un ",
+               " una ", " non ", " per "),
+    }
+
+    def _looks_english_not_target(self, text: str) -> bool:
+        """True si la transcripción parece INGLÉS y no tiene NI UN marcador
+        del idioma del perfil — la firma del LID equivocado de Parakeet.
+        Conservadora a propósito: el code-switching legítimo ("reproduce The
+        Last of Us en HBO Max") conserva conectores del idioma ("en") y NO
+        debe rescatarse — forzar es con Whisper destruye el título (MEDIDO
+        2026-06-11 en el clip real: → "el ácido fós en HVOM")."""
+        profile = getattr(self, "_lang_profile", None)
+        if profile is None:
+            return False
+        low = f" {text.strip().lower()} "
+        for marker in self._TARGET_MARKERS.get(profile.code, ()):
+            if marker in low:
+                return False
+        words = [w.strip(".,;:!?\"'") for w in low.split()]
+        hits = sum(1 for w in words if w in self._EN_FUNCTION_WORDS)
+        return hits >= 2
+
+    def _lid_rescue(self, audio: "np.ndarray", raw_text: str) -> str | None:
+        """Re-transcribe con Whisper(language=fijo) cuando Parakeet cayó al
+        inglés en una frase corta. Devuelve el texto rescatado o None.
+
+        Gate GEMMA4_STT_LID_RESCUE=0 apaga. Whisper se carga LAZY al primer
+        rescate (en el camino normal Parakeet carga solo) y queda residente.
+        """
+        import os as _os_lr
+        if (_os_lr.environ.get("GEMMA4_STT_LID_RESCUE", "1") or "1").strip().lower() \
+                in {"0", "false", "no", "off"}:
+            return None
+        # getattr defensivo: los tests construyen pipelines parciales sin estos
+        # atributos — el rescate degrada a no-op, jamás rompe la transcripción.
+        if getattr(self, "_stt_engine", "") != "parakeet":
+            return None
+        profile = getattr(self, "_lang_profile", None)
+        if profile is None or profile.code == "en":
+            return None  # el "fallo" sería el idioma correcto
+        if not (raw_text or "").strip():
+            return None
+        try:
+            max_s = float(_os_lr.environ.get("GEMMA4_STT_LID_RESCUE_MAX_S", "3.0"))
+        except (TypeError, ValueError):
+            max_s = 3.0
+        if audio.size > int(max_s * SAMPLE_RATE):
+            return None  # con contexto largo el LID de Parakeet es excelente
+        if not self._looks_english_not_target(raw_text):
+            return None
+        whisper = self._whisper_rescue_stt()
+        if whisper is None:
+            return None
+        t0 = time.time()
+        try:
+            text = whisper.transcribe(
+                audio, initial_prompt=self._initial_prompt,
+                language=self._lang_profile.whisper_language,
+            )
+        except Exception as exc:
+            logger.warning("lid_rescue transcribe failed: %s", exc)
+            return None
+        text = (text or "").strip()
+        logger.info(
+            "LID RESCUE (%.2fs extra): parakeet=%r -> whisper[%s]=%r",
+            time.time() - t0, raw_text[:60],
+            self._lang_profile.whisper_language, text[:60],
+        )
+        return text or None
+
+    def _whisper_rescue_stt(self):
+        """Whisper-small residente para el rescate, cargado LAZY al primer uso."""
+        cached = getattr(self, "_whisper_rescue", None)
+        if cached is not None:
+            return cached if cached is not False else None
+        try:
+            t0 = time.time()
+            w = STT()
+            if not w.load():
+                logger.warning("lid_rescue: Whisper no cargó (%s)", w.last_error)
+                self._whisper_rescue = False
+                return None
+            logger.info("lid_rescue: Whisper cargado en %.1fs (residente)",
+                        time.time() - t0)
+            self._whisper_rescue = w
+            return w
+        except Exception as exc:
+            logger.warning("lid_rescue: Whisper init falló: %s", exc)
+            self._whisper_rescue = False
+            return None
+
     @staticmethod
     def _build_stt(engine: str):
         """Construye el motor STT elegido. 'parakeet' -> ParakeetSTT; cualquier
@@ -695,6 +811,16 @@ class VoicePipeline:
             language=self._lang_profile.whisper_language,
             hotwords=self._hotwords,
         )
+        # RESCATE LID frase-corta (research 2026-06-10, implementado 2026-06-11):
+        # el LID interno de Parakeet v3 NO se puede forzar y en frases cortas sin
+        # contexto cae a INGLÉS (limitación OFICIAL de la model card: "not
+        # recommended for word-for-word / incomplete sentences"). Si el perfil
+        # del usuario es no-EN, el audio es corto y la salida parece inglés,
+        # re-transcribimos ESE buffer con Whisper (que SÍ fija idioma). Paga
+        # latencia solo en el caso malo; el 95% normal conserva Parakeet.
+        rescued = self._lid_rescue(audio, raw_text)
+        if rescued is not None:
+            raw_text = rescued
         # Strip wake phrase + fuzzy correct.
         stripped = self._corrector.strip_wake_phrase(raw_text)
         corrected = self._corrector.correct(stripped)

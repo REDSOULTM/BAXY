@@ -81,6 +81,35 @@ idioma-fijo=ES y el output parece EN). Aprovecha que Whisper SÍ fija idioma,
 paga latencia solo en el caso malo, y conserva la calidad superior de Parakeet
 en el 95% normal. MEDIR en vivo (regla #3.5) antes de declarar.
 
+## IMPLEMENTADO (2026-06-11): rescate LID frase-corta — medido
+
+La opción 1 (+ el espíritu de la 2 vía idioma-fijo del perfil) quedó implementada
+en `pipeline.py::_lid_rescue`: si el motor es Parakeet, el perfil es no-EN, el
+audio dura ≤3 s (env `GEMMA4_STT_LID_RESCUE_MAX_S`) y la salida PARECE inglés
+puro (≥2 funcionales EN y CERO marcadores del idioma del perfil), se
+re-transcribe ESE buffer con Whisper(language=fijo), cargado LAZY y residente.
+Gate `GEMMA4_STT_LID_RESCUE=0`. Log instrumentado: "LID RESCUE".
+
+**Mediciones (todo voz real):**
+- Validación textual sobre los fallos EN reales de los logs: 8/8 (los 4 flips
+  disparan; "Abre Steam"/code-switching/"But sí" NO).
+- Falsos positivos: **0 en 408 casos** (84 comandos RED + 84 truncados a 0.7s +
+  60 FLEURS truncados a 1.2s + 180 terceros). WER del corpus RED IDÉNTICO con
+  el rescate activo (0.3676 = 0.3676): el camino normal no se toca.
+- Latencia extra SOLO en el caso malo: p50 ≈ 1.46 s (Whisper-small CPU).
+- GOTCHA medido: el code-switching legítimo ("reproduce The Last of Us en HBO
+  Max") NO debe rescatarse — Whisper-es destruyó el título ("el ácido fós en
+  HVOM"); por eso " en "/" sí "/" con "/" mi " están en los marcadores ES.
+- La zona del flip NO se reproduce offline con audio limpio (0/60 FLEURS
+  truncado, 0/84 mic truncado): requiere el garble/ruido de sesión viva — el
+  log "LID RESCUE" acumulará la evidencia en uso real.
+
+**Etapa 3 (fp32) cerrada como NO-FACTIBLE hoy:** sherpa-onnx solo publica v3 en
+int8 (el fp16 existente es v2, English-only — inútil para 6 idiomas);
+sherpa-onnx 1.13.2 es la última versión (13-may-2026) y v3 el último modelo.
+fp32 exigiría export propio desde NeMo (~2.4 GB + pipeline de export) contra
+fusiones ya diagnosticadas como estructurales del encoder — ROI no justificado.
+
 ## Fuentes
 
 - [Model card nvidia/parakeet-tdt-0.6b-v3 (HuggingFace)](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3)

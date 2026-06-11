@@ -221,6 +221,8 @@ mediciones one-shot. Muchos requieren el LLM en `:8080`.
 | `calibrate.py` | Calibración de gestos de cámara (WIP sesión vision_input). |
 | `extract_calib.py` | Extracción de datos de calibración de cámara (WIP sesión vision_input). |
 | `generate_ui_sounds.py` | Genera los wav de feedback de sounds/ (sintetizados — la receta del artefacto). |
+| `stt_lid_rescue_eval.py` | Mide el rescate LID frase-corta (Parakeet→Whisper) sobre voz real: disparos, WER antes/después, anti-FP en terceros. |
+| `stt_lid_shortzone_eval.py` | Zona corta del LID: FLEURS truncado a 1.2s — tasa de flips EN y efecto del rescate. |
 | `_validate_b4_b6_live.py` | B4/B6 conexión: ¿el 4B elige data_analysis/document en vivo? (gap de routing medido). |
 | `_gen_product_doc.py` | Genera el Word de producto (riesgos+mitigaciones + comparativa competencia) con python-docx. |
 | `_validate_skills_live.py` | ¿el 4B emite skill_load cuando el pedido matchea una skill? (medir el skill_load inerte). |
