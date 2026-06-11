@@ -65,12 +65,33 @@ def _blank_penalty() -> float:
     Combate el modo de fallo TDT de Parakeet: se SALTA sílabas/tokens y se come
     nombres cortos ("Zoom"->"su", "Outlook"->"o"). La research lo marca verificado
     y gratis (0 latencia/RAM); rango 0.5-1.0, >2.5 inserta. Env-tunable; 0 lo apaga.
-    Fuente: parakeet_beam_nombres_propios_decoding.md (Issue #2605)."""
+    Fuente: parakeet_beam_nombres_propios_decoding.md (Issue #2605).
+    NOTA 2026-06-11: solo aplica a greedy. Con modified_beam_search EMPEORA
+    (beam ya explora alternativas al blank-skip; medido: beam 0.3116 vs
+    beam+bp0.8 0.3255 sobre los 84 comandos RED)."""
     try:
         v = float(os.environ.get("GEMMA4_PARAKEET_BLANK_PENALTY", "0.8"))
     except (TypeError, ValueError):
         v = 0.8
     return max(0.0, min(2.5, v))
+
+
+def _decoding_method() -> str:
+    """greedy_search por defecto — decidido por la medición END-TO-END
+    (2026-06-11). Sobre CLIPS AISLADOS el beam gana:
+      greedy+bp0.8 : WER RED 0.3339, terceros 0.0321, p50  84 ms
+      beam         : WER RED 0.3116, terceros 0.0322, p50  97 ms
+    PERO sobre la CADENA REAL (scripts/voice_chain_eval.py: buffer compuesto
+    preroll+wake+pausa+comando, 84 casos) el beam PIERDE: emitidos 81→73,
+    WER de cadena 0.235→0.275, exactos 41→36 — produce transcripts vacíos en
+    capturas que greedy resuelve. La métrica de cadena es la que vive el
+    usuario, así que gobierna. hotwords NO viable (tokens.txt NeMo es subword;
+    sherpa no codifica palabras enteras). Override:
+    GEMMA4_PARAKEET_DECODING=modified_beam_search para re-evaluar a futuro."""
+    v = (os.environ.get("GEMMA4_PARAKEET_DECODING", "greedy_search")
+         or "greedy_search").strip()
+    return v if v in ("greedy_search", "modified_beam_search") \
+        else "greedy_search"
 
 
 def _optimal_threads() -> int:
@@ -129,6 +150,7 @@ class ParakeetSTT:
         os.environ.setdefault("OMP_NUM_THREADS", str(self._num_threads))
         try:
             t0 = time.time()
+            method = _decoding_method()
             self._rec = sherpa_onnx.OfflineRecognizer.from_transducer(
                 encoder=str(md / "encoder.int8.onnx"),
                 decoder=str(md / "decoder.int8.onnx"),
@@ -136,8 +158,11 @@ class ParakeetSTT:
                 tokens=str(md / "tokens.txt"),
                 num_threads=self._num_threads,
                 model_type="nemo_transducer",
-                decoding_method="greedy_search",
-                blank_penalty=_blank_penalty(),
+                decoding_method=method,
+                # blank_penalty SOLO con greedy (con beam empeora, ver
+                # _decoding_method); 0.0 lo neutraliza.
+                blank_penalty=_blank_penalty()
+                if method == "greedy_search" else 0.0,
             )
             elapsed = time.time() - t0
             self._loaded = True

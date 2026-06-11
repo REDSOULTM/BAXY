@@ -70,6 +70,18 @@ COOLDOWN_S = 0.4                 # post-transcribe wait
 WAKE_GATE_THRESHOLD = 0.3        # let speech-y audio reach wake; reject ambient
 EOS_VAD_THRESHOLD = 0.5          # stricter for end-of-speech
 
+# EOS HÍBRIDO (2026-06-11): con audio de fondo (película/otras voces) el VAD ve
+# speech CONTINUO y el fin-de-habla JAMÁS dispara — medido con el harness de
+# cadena (scripts/voice_chain_eval.py): a SNR 5 dB, 75/84 capturas nunca
+# cerraron → en prod, timeout de 8 s por comando + segundos de diálogo ajeno
+# al LLM. La evidencia de que el USUARIO sigue hablando exige energía SOBRE el
+# piso ambiente calibrado además del VAD: su voz sobre el fondo da ≥1.41× el
+# piso incluso a SNR 0 (mezcla = √(1+10^(SNR/10))); cuando calla, el chunk
+# vuelve a ≈1.0× piso aunque la peli siga. 1.25 separa ambos casos con margen.
+# En sala silenciosa converge al comportamiento anterior (la voz supera el
+# piso por mucho y el VAD ya decidía bien). Solo activo con piso calibrado.
+_EOS_ENERGY_FACTOR = float(_os.environ.get("GEMMA4_VOICE_EOS_ENERGY_FACTOR", "1.25"))
+
 # --- Silence gate before transcription -------------------------------------
 # Whisper HALLUCINATES on silence/near-silence: trained on YouTube captions,
 # it emits artifacts like "¡Suscríbete!" / "Gracias por ver el video" / "..."
@@ -189,6 +201,32 @@ def _is_filler_only_transcript(text: str) -> bool:
     if not folded:
         return False
     return all(_is_nonlexical_vocalization_token(tok) for tok in folded.split())
+
+
+def _energy_trim(audio: "np.ndarray", rms_threshold: float,
+                 window_s: float = 0.05, pad_s: float = 0.15) -> "np.ndarray | None":
+    """Recorta `audio` (int16) al sobre [primera..última] ventana cuyo RMS
+    supera `rms_threshold`, con `pad_s` de margen a cada lado.
+
+    Análogo a vad.trim_silence pero por ENERGÍA relativa al piso ambiente:
+    funciona donde el VAD no puede (fondo hablado = todo es "speech" para el
+    VAD, pero la voz del usuario es lo único que SUPERA el piso). None si
+    ninguna ventana supera el umbral."""
+    if audio is None or audio.size == 0:
+        return None
+    w = max(1, int(window_s * SAMPLE_RATE))
+    n = audio.size // w
+    if n == 0:
+        return audio
+    x = audio[: n * w].astype(np.float64).reshape(n, w)
+    rms = np.sqrt(np.mean(x * x, axis=1))
+    above = np.flatnonzero(rms > rms_threshold)
+    if above.size == 0:
+        return None
+    pad = int(pad_s * SAMPLE_RATE)
+    start = max(0, int(above[0]) * w - pad)
+    end = min(audio.size, (int(above[-1]) + 1) * w + pad)
+    return audio[start:end]
 
 
 def peak_window_rms(audio: "np.ndarray", window_samples: int) -> float:
@@ -761,9 +799,31 @@ class VoicePipeline:
         # right after "hey gemma" cutting off before the command is said.
         if elapsed < MIN_CAPTURE_S:
             return
-        # End-of-speech via trailing silence.
+        # End-of-speech via trailing silence — TRI-ESTADO (2026-06-11).
+        # Con fondo hablado (película/voces) el VAD oye "speech" para siempre y
+        # el EOS binario jamás dispara (medido: 75/84 capturas atascadas a SNR 5
+        # → timeout 8 s + diálogo ajeno al LLM). Decidimos contra el NIVEL
+        # TÍPICO del fondo (p75-EMA del calibrador):
+        #   - chunk QUIETO  (VAD-silencio  O  rms ≤ fondo×1.10): cuenta para EOS
+        #   - evidencia de USUARIO (VAD-speech Y rms > fondo×1.25): resetea
+        #   - zona GRIS (fluctuación del fondo): ni cuenta ni resetea — así una
+        #     ráfaga de la película no reinicia el contador eternamente.
+        # La voz sobre el fondo da ≥1.41× el nivel incluso a SNR 0; al callar,
+        # el chunk vuelve a ~1.0×. En sala silenciosa el fondo es ínfimo y esto
+        # converge al comportamiento clásico por VAD. Solo con auto-calibración.
         is_speech = self._vad.is_speech(chunk, threshold=EOS_VAD_THRESHOLD)
-        if not is_speech:
+        _bg = None
+        if not getattr(self, "_manual_rms_override", True):
+            _cal = getattr(self, "_noise_cal", None)
+            _bg = getattr(_cal, "background_level", None) if _cal is not None else None
+        if _bg:
+            _rms = _buffer_rms(chunk)
+            quiet_chunk = (not is_speech) or _rms <= _bg * 1.10
+            user_evidence = is_speech and _rms > _bg * _EOS_ENERGY_FACTOR
+        else:
+            quiet_chunk = not is_speech
+            user_evidence = is_speech
+        if quiet_chunk:
             self._eos_silence_count += 1
             if self._eos_silence_count >= self._eos_silence_chunks_needed:
                 logger.info(
@@ -771,8 +831,9 @@ class VoicePipeline:
                     elapsed,
                 )
                 self._finish_capture(reason="eos_silence")
-        else:
+        elif user_evidence:
             self._eos_silence_count = 0
+        # zona gris: el contador se mantiene (no suma ni resetea)
 
     def _handle_cooldown(self, chunk: np.ndarray) -> None:
         """In COOLDOWN, just keep preroll updated. No wake detection."""
@@ -832,6 +893,9 @@ class VoicePipeline:
             self._state = State.CAPTURE
         self._capture_start_ts = time.monotonic()
         self._eos_silence_count = 0
+        # Cada wake nuevo trae su propia segunda-oportunidad (ver
+        # _maybe_second_chance); el flag anti-loop se limpia acá.
+        self._second_chance = False
         # Seed capture buffer with preroll (so we don't lose the wake
         # phrase itself + any tail leakage).
         self._capture_buf = list(self._preroll)
@@ -888,6 +952,25 @@ class VoicePipeline:
             self._emit_state("IDLE_LISTENING")
             return
 
+        # ENERGY TRIM (2026-06-11): con fondo hablado (película/voces) el VAD no
+        # puede recortar nada (todo el buffer es "speech") y el STT transcribe
+        # también el diálogo ajeno ANTES y DESPUÉS de la voz del usuario que
+        # quedó dentro de la ventana (preroll + cola EOS). La voz del usuario
+        # vive donde la energía supera piso×factor — recortamos a ese sobre.
+        # En sala silenciosa el piso es ínfimo y esto es no-op (el VAD trim de
+        # abajo sigue haciendo su trabajo de siempre).
+        if not getattr(self, "_manual_rms_override", True):
+            _cal = getattr(self, "_noise_cal", None)
+            _bg = getattr(_cal, "background_level", None) if _cal is not None else None
+            if _bg:
+                etrimmed = _energy_trim(audio, _bg * _EOS_ENERGY_FACTOR)
+                if etrimmed is not None and \
+                        etrimmed.size >= int(0.15 * SAMPLE_RATE) and \
+                        etrimmed.size < audio.size:
+                    logger.debug("energy trim: %.2fs -> %.2fs", dur,
+                                 etrimmed.size / SAMPLE_RATE)
+                    audio = etrimmed
+
         # VAD TRIM: recortar silencio lateral antes de Whisper.
         # El silencio al inicio/final es la causa #1 de alucinación en clips
         # cortos. Reseteamos el estado RNN del VAD (la detección de EOS ya lo
@@ -941,10 +1024,22 @@ class VoicePipeline:
         self._vad.reset()
         # Emit the command (callback may do heavy work; we're already
         # in COOLDOWN so re-wakes are gated until it completes).
+        # Los drops de alucinación aplican solo a texto producido por WHISPER
+        # (motor primario whisper o rescate LID): la lista viene de su modo de
+        # fallo en silencio (YouTube-captions). Parakeet NO alucina en silencio
+        # (medido, ver parakeet_stt.py) — con él, "gracias"/"okay" son palabras
+        # REALES del usuario y deben llegar al LLM (regla de producto: el LLM
+        # responde; descartarlas dejaba al usuario sin "de nada").
+        whisper_text = (getattr(self, "_stt_engine", "whisper") != "parakeet"
+                        or rescued is not None)
         try:
             if not corrected.strip():
+                if self._maybe_second_chance(reason):
+                    return
                 logger.info("empty transcript, no command emitted")
-            elif _is_silence_hallucination(raw_text) or _is_silence_hallucination(corrected):
+            elif whisper_text and (
+                    _is_silence_hallucination(raw_text)
+                    or _is_silence_hallucination(corrected)):
                 # Audio passed the RMS gate but Whisper still produced one of its
                 # canonical silence artifacts ("¡Suscríbete!", "Gracias por ver
                 # el video", "you"...). Drop it — it is not a real command.
@@ -968,6 +1063,34 @@ class VoicePipeline:
                 self._on_command(corrected, dur, raw_text)
         except Exception as exc:
             logger.exception("on_command callback raised: %s", exc)
+
+    def _maybe_second_chance(self, finish_reason: str) -> bool:
+        """SEGUNDA OPORTUNIDAD (2026-06-11, paridad Alexa): el usuario dijo solo
+        "Baxy" y se quedó pensando — la captura cierra con transcript VACÍO tras
+        el strip del wake y antes esto se descartaba EN SILENCIO (el usuario
+        veía que el HUD volvía a idle sin escucharlo). Alexa mantiene la ventana
+        de escucha abierta unos segundos. Reabrimos UNA vez la captura (flag
+        anti-loop), re-emitimos el beep/estado LISTENING, y si tampoco dice nada
+        la segunda ventana muere por gate de silencio como siempre. Solo para
+        cierres por EOS (no para timeouts: ahí el usuario YA habló 8 s)."""
+        if finish_reason != "eos_silence" or getattr(self, "_second_chance", False):
+            self._second_chance = False
+            return False
+        self._second_chance = True
+        with self._state_lock:
+            self._state = State.CAPTURE
+        self._capture_start_ts = time.monotonic()
+        self._eos_silence_count = 0
+        self._capture_buf = []
+        logger.info("wake-solo: transcript vacío tras strip -> segunda "
+                    "ventana de escucha")
+        if self._on_wake_event is not None:
+            try:
+                self._on_wake_event()
+            except Exception:
+                pass
+        self._emit_state("LISTENING")
+        return True
 
     def _reset_to_idle(self, reason: str) -> None:
         with self._state_lock:

@@ -76,13 +76,19 @@ class NoiseFloorCalibrator:
         ...
         if cal.threshold and peak_rms < cal.threshold: skip   # gate
         ...
-        cal.observe_silence(window_rms)     # en silencios: re-ajuste lento
+        cal.observe(window_rms)             # cada chunk IDLE: re-ajuste robusto
     """
 
     def __init__(self) -> None:
         self._floor: float | None = None
+        self._bg: float | None = None     # nivel típico del fondo (p75-EMA)
         self.threshold: float | None = None
         self.calibrated: bool = False
+        # Ventana rodante de RMS por chunk para la estimación ROBUSTA del piso
+        # (~5 s a 31 chunks/s). Ver observe().
+        from collections import deque
+        self._recent: deque[float] = deque(maxlen=int(
+            os.environ.get("GEMMA4_VOICE_NOISE_WIN_CHUNKS", "150") or 150))
 
     def calibrate(self, window_rms: list[float] | np.ndarray) -> bool:
         """Calibración inicial desde una ventana de ambiente. True si calibró."""
@@ -94,17 +100,52 @@ class NoiseFloorCalibrator:
         self.calibrated = True
         return True
 
-    def observe_silence(self, window_rms: float) -> None:
-        """Re-ajuste lento (EMA) del piso durante un silencio confirmado. Solo
-        baja/sube despacio; un ruido puntual no mueve el umbral de golpe."""
-        if window_rms is None or window_rms < 0 or self._floor is None:
+    def observe(self, window_rms: float) -> None:
+        """Re-ajuste lento del piso con TODOS los chunks IDLE, robusto a ráfagas
+        de habla (2026-06-11). El EMA directo sobre cada chunk era un BUG: la
+        propia frase de wake (~20 chunks de voz, α=0.05) movía el piso ~64%
+        hacia el nivel de voz → el gate del wake y el EOS-híbrido quedaban
+        calibrados contra la VOZ, no contra el ambiente (medido con el harness
+        de cadena: cortes a mitad de comando en sala silenciosa). El piso real
+        es el PERCENTIL BAJO de una ventana rodante (~5 s): el habla es a
+        ráfagas y los huecos entre ellas SÍ son ambiente — p25 los encuentra
+        aunque el VAD diga "speech" continuo (película de fondo: p25 ≈ sus
+        momentos quietos, que es el piso correcto para detectar la voz del
+        usuario POR ENCIMA)."""
+        if window_rms is None or window_rms < 0:
             return
-        self._floor = (1.0 - _EMA_ALPHA) * self._floor + _EMA_ALPHA * float(window_rms)
+        self._recent.append(float(window_rms))
+        if self._floor is None or len(self._recent) < 24:   # ~0.75 s mínimo
+            return
+        arr = np.asarray(self._recent)
+        target = float(np.percentile(arr, 25))
+        self._floor = (1.0 - _EMA_ALPHA) * self._floor + _EMA_ALPHA * target
         self.threshold = threshold_from_floor(self._floor)
+        # Nivel TÍPICO del fondo (p75): el estadístico para el EOS-híbrido.
+        # p25 (piso) y p75 (nivel) son trabajos distintos: el gate anti-falso
+        # quiere el ambiente entre ráfagas; "el usuario dejó de hablar" se
+        # decide contra lo que el fondo SUELE medir (una película promedia
+        # mucho más que sus huecos).
+        bg_target = float(np.percentile(arr, 75))
+        if self._bg is None:
+            self._bg = bg_target
+        else:
+            self._bg = (1.0 - _EMA_ALPHA) * self._bg + _EMA_ALPHA * bg_target
+
+    def observe_silence(self, window_rms: float) -> None:
+        """Compat: delega en observe() (la versión robusta a ráfagas de habla).
+        El nombre histórico asumía que el caller solo pasaba silencios — en la
+        práctica recibía TODOS los chunks IDLE, ver observe()."""
+        self.observe(window_rms)
 
     @property
     def noise_floor(self) -> float | None:
         return self._floor
+
+    @property
+    def background_level(self) -> float | None:
+        """Nivel típico (p75-EMA) del fondo reciente. None hasta tener ventana."""
+        return self._bg
 
 
 def microphone_muted() -> bool | None:
