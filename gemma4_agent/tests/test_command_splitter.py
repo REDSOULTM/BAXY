@@ -803,6 +803,23 @@ class ExtractAppActionNavInAppTest(unittest.TestCase):
         self.assertIsNone(extract_app_action("abrí Spotify"))          # app-open puro
         self.assertIsNone(extract_app_action("gemma reproduce el video"))
 
+    def test_media_provider_not_hijacked_by_act_in_app(self):
+        # "poné <título> en <provider>" es PLAY (media tiene tool dedicada), NO
+        # una misión GUI dentro de la app. MEDIDO 2026-06-12: act_in_app se lo
+        # comía -> cu focus_app fallaba (14.5s) y media nunca corría.
+        for q in ("Pone Bohemian Rhapsody en Spotify",
+                  "poné rock en spotify",
+                  "pon stranger things en Netflix",
+                  "poné la película en Disney+",
+                  "pon mi playlist en YouTube Music",
+                  "en spotify poné jazz"):
+            self.assertIsNone(extract_app_action(q), msg=q)
+
+    def test_media_provider_guard_no_overreach(self):
+        # apps NO-provider siguen ruteando a computer_use como siempre
+        self.assertEqual(extract_app_action("poné hola en notepad")["pattern"], "act_in_app")
+        self.assertEqual(extract_app_action("escribile sigo en Slack")["pattern"], "act_in_app")
+
 
 if __name__ == "__main__":
     unittest.main()

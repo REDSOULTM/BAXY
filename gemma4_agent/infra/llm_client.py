@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -56,6 +57,31 @@ _PROXY_ZOMBIE_MARKERS = (
     "failedtoreadconnection",        # "Failed to read connection"
     "proxyerror",                    # "proxy error: ..."
 )
+
+
+# CORRUPCION SILENCIOSA del KV (b9090, misma familia que el crash CUDA #22527 /
+# memory_seq_rm intra-batch). MEDIDO 2026-06-11 con replay byte-identico: tras
+# cierta secuencia de requests el server queda en un estado donde CUALQUIER
+# prompt largo (~>2K tok, incluso texto neutro) genera SOLO tokens <unusedN>
+# (320/320 con finish=length), con HTTP 200 y /health OK — ni el recovery de
+# zombies ni el health-check lo ven, y cada turno muere en el empty-reply
+# fallback hasta reiniciar el server. Mismo body contra server fresco: respuesta
+# correcta. Deteccion conservadora: >=8 tokens <unusedN> Y nada de texto real
+# Y sin tool_calls — un reply legitimo nunca tiene esa forma.
+_UNUSED_TOKEN_RE = re.compile(r"<unused\d+>")
+_DEGEN_MIN_UNUSED = 8
+
+
+def _degenerate_unused_reply(content: str | None, tool_calls: list | None) -> bool:
+    """True si el contenido es una corrida degenerada de <unusedN> sin texto real
+    ni tool_calls — la firma del KV corrupto del server."""
+    if tool_calls:
+        return False
+    if not content:
+        return False
+    if len(_UNUSED_TOKEN_RE.findall(content)) < _DEGEN_MIN_UNUSED:
+        return False
+    return not _UNUSED_TOKEN_RE.sub("", content).strip()
 
 
 def _is_proxy_zombie_error(exc: Exception) -> bool:
@@ -450,7 +476,52 @@ class LLMClient:
             except Exception:
                 pass
         response = self._post_chat_with_recovery(body, timeout=effective_timeout)
+        response = self._recover_if_degenerate(body, response, timeout=effective_timeout)
         return _normalize_response_tool_calls(response)
+
+    def _recover_if_degenerate(
+        self, body: dict[str, Any], response: dict[str, Any], *, timeout: float
+    ) -> dict[str, Any]:
+        """Recovery del KV corrupto: HTTP 200 cuyo content son SOLO tokens
+        <unusedN> (ver _degenerate_unused_reply). Restart del server gestionado
+        + 1 reintento del mismo body (inferencia pura, sin efectos — reintentar
+        es seguro). Si el restart o el retry fallan, devuelve la respuesta
+        original (el empty-reply fallback del agente la maneja, como hasta
+        ahora) — nunca empeora el comportamiento previo.
+        Gate: GEMMA4_DEGEN_RECOVERY=0 desactiva."""
+        try:
+            if os.environ.get("GEMMA4_DEGEN_RECOVERY", "1").strip().lower() in {"0", "false", "no", "off"}:
+                return response
+            ch = ((response or {}).get("choices") or [{}])[0]
+            msg = ch.get("message") or {}
+            if not _degenerate_unused_reply(msg.get("content"), msg.get("tool_calls")):
+                return response
+        except Exception:
+            return response
+        logger.warning(
+            "llm degenerate reply (solo <unusedN>, KV del server corrupto); "
+            "reiniciando server gestionado y reintentando una vez")
+        try:
+            restarted = _try_restart_managed_server()
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("degen-recovery: restart lanzo %s; devuelvo respuesta original", exc)
+            return response
+        if not restarted:
+            logger.warning("degen-recovery: restart fallo; devuelvo respuesta original")
+            return response
+        try:
+            retry = self._post_chat_with_recovery(body, timeout=timeout)
+        except RuntimeError as exc:
+            logger.warning("degen-recovery: retry fallo (%s); devuelvo respuesta original", exc)
+            return response
+        try:
+            ch2 = ((retry or {}).get("choices") or [{}])[0]
+            msg2 = ch2.get("message") or {}
+            if _degenerate_unused_reply(msg2.get("content"), msg2.get("tool_calls")):
+                logger.warning("degen-recovery: reply SIGUE degenerado tras restart (no reintento de nuevo)")
+        except Exception:
+            pass
+        return retry
 
     def _post_chat_with_recovery(self, body: dict[str, Any], *, timeout: float) -> dict[str, Any]:
         """Wrapper de _post_chat que recupera de:
@@ -735,6 +806,19 @@ class LLMClient:
         # serializa como JSON string en vez de array, mitigado por
         # normalize_tool_call_arguments).
         raw_tool_calls = [tool_calls_acc[k] for k in sorted(tool_calls_acc.keys())]
+        # KV corrupto tambien en el path de streaming: el turno actual ya se
+        # consumio (cae al empty-reply fallback como antes), pero el restart
+        # acá sana los turnos SIGUIENTES en vez de dejar el server envenenado.
+        if (_degenerate_unused_reply(accumulated_content, raw_tool_calls)
+                and os.environ.get("GEMMA4_DEGEN_RECOVERY", "1").strip().lower()
+                not in {"0", "false", "no", "off"}):
+            logger.warning(
+                "llm stream degenerado (solo <unusedN>, KV corrupto); "
+                "reiniciando server gestionado para sanar turnos siguientes")
+            try:
+                _try_restart_managed_server()
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("degen-recovery (stream): restart lanzo %s", exc)
         yield {
             "type": "final",
             "finish_reason": final_finish or "stop",

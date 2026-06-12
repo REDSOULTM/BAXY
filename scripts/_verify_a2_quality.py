@@ -52,6 +52,40 @@ def wrapped_chat(self, messages, **kw):
 
 llm_client.LLMClient.chat = wrapped_chat
 
+# chat_stream (pasada con TTS sink / streaming) emite tool_calls que el hook de
+# arriba NO ve. Capturamos los eventos finales del stream tambien.
+orig_chat_stream = llm_client.LLMClient.chat_stream
+
+
+def wrapped_chat_stream(self, messages, **kw):
+    for ev in orig_chat_stream(self, messages, **kw):
+        try:
+            for tc in (ev.get("tool_calls") or []):
+                fn = (tc.get("function") or {}).get("name")
+                if fn:
+                    _turn_tool_calls.append(fn + "*")  # * = via stream
+        except Exception:
+            pass
+        yield ev
+
+
+llm_client.LLMClient.chat_stream = wrapped_chat_stream
+
+# Ground truth: que tool EJECUTO realmente (independiente del path LLM que la
+# emitio). Observador pasivo, no mockea nada — las tools corren de verdad.
+from gemma4_agent.tools_pkg.tools import ToolRegistry
+
+_turn_tools_exec: list[str] = []
+_orig_execute = ToolRegistry.execute
+
+
+def _observed_execute(self, name, args):
+    _turn_tools_exec.append(str(name))
+    return _orig_execute(self, name, args)
+
+
+ToolRegistry.execute = _observed_execute
+
 print("[verify] cargando agente...", flush=True)
 agent = Gemma4Agent()
 
@@ -70,6 +104,7 @@ CASES = [
 print("=" * 90, flush=True)
 for i, (cmd, expected) in enumerate(CASES, 1):
     _turn_tool_calls.clear()
+    _turn_tools_exec.clear()
     t0 = time.time()
     try:
         reply = agent.run_content(cmd)
@@ -80,7 +115,8 @@ for i, (cmd, expected) in enumerate(CASES, 1):
         err = "exc"
     dt = time.time() - t0
     tools = ",".join(_turn_tool_calls) if _turn_tool_calls else "(NINGUNO)"
+    execd = ",".join(_turn_tools_exec) if _turn_tools_exec else "(NINGUNO)"
     print(f"[{i}] {cmd!r}", flush=True)
-    print(f"    esperado~={expected} | tool_calls={tools} | dt={dt:.2f}s | err={err}", flush=True)
+    print(f"    esperado~={expected} | tool_calls={tools} | exec={execd} | dt={dt:.2f}s | err={err}", flush=True)
     print(f"    reply: {content!r}", flush=True)
     print("-" * 90, flush=True)

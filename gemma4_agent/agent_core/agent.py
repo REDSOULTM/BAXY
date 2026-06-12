@@ -194,7 +194,14 @@ _IMPERATIVE_VERBS = (
             " silenciá ", " mostrá ", " sacá ", " pausá ",
             # tuteo frecuente exclusivo es (pt: diz-me/me diga, dá-me; it: dimmi):
             # MEDIDO 2026-06-11 "dime la hora" → py3langid fr → rewrite roto.
-            " dime ", " decime ", " dame ", " muéstrame ", " dimelo ", " dímelo ")),
+            " dime ", " decime ", " dame ", " muéstrame ", " dimelo ", " dímelo ",
+            # imperativos tú/neutro SIN tilde (voz/teclado descuidado). MEDIDO
+            # 2026-06-12: "pone rock en spotify" → py3langid fr → repair
+            # reescribió un reply es CORRECTO al francés; "Abri Spotify y pone
+            # rock" → en ("Done, I put some rock..."). "pon"/"pone"/"abri" no
+            # son palabra funcional de los otros 5 idiomas soportados (it
+            # "pone"=3ª persona de porre, no imperativo de comando).
+            " pon ", " pone ", " abri ")),
 )
 
 
@@ -2828,15 +2835,56 @@ class Gemma4Agent:
             self.trace.event(turn_id, "tool_prefix_stabilized",
                              router_picks=_router_picks,
                              stabilized=selected_tool_names)
+        # Flag por turno: la pregunta fast_info es de ESTADO LOCAL (pantalla/
+        # sistema). Lo consume el gate del forced-retry: prosa sin tool en estas
+        # preguntas = fabricacion, no respuesta parametrica valida.
+        self._fast_info_local_state = False
         if mode.name == "fast_info" and _fast_info_no_tools_enabled() and selected_tool_names:
-            _suppressed = list(selected_tool_names)
-            selected_tool_names = []
-            self.trace.event(
-                turn_id,
-                "fast_info_tools_suppressed",
-                dropped=_suppressed,
-                reason="parametric_info_low_latency",
-            )
+            # Solo se suprimen los schemas ESPECULATIVOS (web/knowledge/...):
+            # eran los que causaban loops y outliers en info parametrica
+            # ('hablame de Mortal Kombat'). Las tools de ESTADO LOCAL que el
+            # router eligio se MANTIENEN: "que hay en la pantalla" / "que hora
+            # es" no son parametricas — el core ordena gui+vision/system(time)
+            # y con subset vacio el modelo queda ciego y responde inventando
+            # (MEDIDO 2026-06-11: subset vacio + core pidiendo screenshot →
+            # reply roto; misma mecanica que la hora fabricada).
+            _local_state_keep = {"gui", "uia", "vision", "system", "window",
+                                 "audio", "device_settings"}
+            _kept = [t for t in selected_tool_names if t in _local_state_keep]
+            _suppressed = [t for t in selected_tool_names if t not in _local_state_keep]
+            # El mission plan tambien sugiere tools por paso. Si sugirio una de
+            # estado local que el subset NO trajo (p.ej. encoder frio → fallback
+            # generico sin gui), la sumamos al final (el orden del router manda):
+            # sin esto, "que hay en la pantalla" queda sin el schema que el core
+            # ordena usar y el modelo responde inventando.
+            _plan_local: set[str] = set()
+            try:
+                for _step in (plan.steps or []):
+                    for _t in (getattr(_step, "suggested_tools", None) or []):
+                        if _t in _local_state_keep:
+                            _plan_local.add(_t)
+                            if _t not in _kept:
+                                _kept.append(_t)
+            except Exception:
+                pass
+            _kept = _kept[:5]
+            # El discriminador es el PLAN (MEDIDO 2026-06-12): "que hay en la
+            # pantalla"/"que hora es"/"cuanta RAM tengo" → el planner sugiere
+            # uia/gui/system (estado local: prosa sin tool = FABRICADA); "que es
+            # la RAM"/"cual es la capital de Francia" → sugiere web/knowledge
+            # (parametrica valida — forzar tool ahi quemaba ~10.8s medidos).
+            # needs_pc_action NO sirve (True en ambos casos); y el subset puede
+            # traer tools locales inyectadas post-select que no implican nada.
+            self._fast_info_local_state = bool(_kept) and bool(_plan_local)
+            if _suppressed:
+                selected_tool_names = _kept
+                self.trace.event(
+                    turn_id,
+                    "fast_info_tools_suppressed",
+                    dropped=_suppressed,
+                    kept=_kept,
+                    reason="parametric_info_low_latency",
+                )
         if mode.name == "research":
             _research_orig = list(selected_tool_names)
             _research_keep = {"web", "knowledge", "source_manager", "session"}
@@ -3890,10 +3938,25 @@ class Gemma4Agent:
                             )
                             raw_msg = {}
                 _info_tools_optional = mode.name != "research"
-                _skip_forced = (
+                _prose_skip = (
                     (_only_info_tools and _info_tools_optional
                      and _answered_in_prose and not _claims_action)
                     or _info_answered
+                )
+                # Pregunta de ESTADO LOCAL (fast_info mantuvo gui/uia/vision/
+                # system y el plan marca needs_pc_action): la prosa sin tool no
+                # puede estar fundada — NO skipear el forced-retry. MEDIDO
+                # 2026-06-12: "Que hay en la pantalla?" → "Veo una ventana de
+                # Discord" FABRICADO 2/2; unverified_claim lo detectaba pero el
+                # reply salia igual (el hint solo corrige el turno siguiente).
+                if _prose_skip and getattr(self, "_fast_info_local_state", False):
+                    _prose_skip = False
+                    self.trace.event(
+                        turn_id, "forced_retry_local_state_override",
+                        reply_preview=(assistant_content or "")[:120],
+                    )
+                _skip_forced = (
+                    _prose_skip
                     or _fallback_chat
                     or _det_media_ev is not None
                 )
@@ -5066,9 +5129,27 @@ class Gemma4Agent:
         except Exception:
             _cont_actionable = True  # ante la duda, no bloquear el nudge
             _only_web_search = False
+        # En fast_info, si este turno YA corrió una lectura VISUAL exitosa
+        # (gui screenshot / vision), el nudge es redundante por definición: su
+        # texto pide "capturá la pantalla con vision si necesitás leer" y eso
+        # acaba de pasar — la descripción ES la respuesta. MEDIDO 2026-06-12:
+        # "Que hay en la pantalla?" → screenshot real + descripción fundada
+        # ("Veo la ventana de Discord…") y el nudge (falso-positivo de
+        # delegación sobre la descripción) re-prompteaba 2-3 veces hasta
+        # degradar el reply a "Listo.". Un turno de ACCIÓN que delega sin
+        # lectura visual (p.ej. window.list + "revisá y elegí") SÍ nudgea.
+        _cont_info_question = (
+            str(getattr(mode, "name", "") or "") == "fast_info"
+            and any(
+                getattr(e, "name", "") in {"gui", "vision"}
+                and isinstance(getattr(e, "result", None), dict)
+                and (e.result or {}).get("ok") is True
+                for e in events)
+        )
         if (_cont_active
                 and _cont_actionable
                 and not _only_web_search
+                and not _cont_info_question
                 and self._a11y_continue_count < _A11Y_MAX_CONTINUES
                 and _cont_delegates):
             self._a11y_continue_count += 1

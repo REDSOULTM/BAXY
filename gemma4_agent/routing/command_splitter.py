@@ -704,6 +704,17 @@ _AA_NAV_ACTION = re.compile(
 _BROWSER_APP_RE = re.compile(
     r"^(?:el\s+|la\s+|mi\s+)?(?:navegador|browser|chrome|opera(?:\s*gx)?|firefox|"
     r"edge|safari|brave|chromium|explorer|naveg\w*)\b", re.IGNORECASE)
+# Providers de STREAMING con tool dedicada (media.play / t_streaming: spotify,
+# netflix, disney+, hbo_max, prime_video, youtube — el contrato de la tool, ver
+# domain_tools t_streaming y media.lean.md). "poné <título> en <provider>" NO es
+# una misión GUI dentro de la app: es PLAY, y media ya sabe abrir/enfocar/buscar.
+# Mismo principio que _BROWSER_APP_RE (la tool dedicada gana sobre computer_use).
+# MEDIDO 2026-06-12: 'Pone Bohemian Rhapsody en Spotify' caía en act_in_app ->
+# cu focus_app fallaba (3 retries, 14.5s) y media nunca corría.
+_MEDIA_PROVIDER_RE = re.compile(
+    r"^(?:el\s+|la\s+|mi\s+)?(?:spotify|netflix|disney(?:\s*\+|\s*plus)?|hbo(?:\s*max)?|max|"
+    r"prime(?:\s*video)?|youtube(?:\s*music)?)\b",
+    re.IGNORECASE)
 _AA_NAV_IN_APP = re.compile(
     r"^\s*(?:" + _AA_NAV + r")\b\s+(?:(?:a|al|hacia|to|into|para|hasta)\s+)?"
     r"(?P<dest>.+?)\s+(?:en|in|into|dentro\s+de|dans|im|su)\s+(?P<app>\S.*)$",
@@ -758,11 +769,18 @@ def extract_app_action(clause: str) -> dict | None:
                     "verify_app": True, "pattern": "nav_in_app"}
     m = _AA_IN_APP_ACT.search(c)
     if m:
-        return {"goal": c, "app_hint": m.group("app").strip(" .,:\"'«»"),
+        _app = m.group("app").strip(" .,:\"'«»")
+        # provider de streaming -> es PLAY (media), no misión GUI.
+        if _MEDIA_PROVIDER_RE.match(_app):
+            return None
+        return {"goal": c, "app_hint": _app,
                 "verify_app": True, "pattern": "in_app_act"}
     m = _AA_ACT_IN_APP.search(c)
     if m:
-        return {"goal": c, "app_hint": m.group("app").strip(" .,:\"'«»"),
+        _app = m.group("app").strip(" .,:\"'«»")
+        if _MEDIA_PROVIDER_RE.match(_app):
+            return None
+        return {"goal": c, "app_hint": _app,
                 "verify_app": True, "pattern": "act_in_app"}
     return None
 

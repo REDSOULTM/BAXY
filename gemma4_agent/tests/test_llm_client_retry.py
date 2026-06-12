@@ -297,5 +297,102 @@ class TestSmokeProbeChat(unittest.TestCase):
             self.assertTrue(lc._smoke_probe_chat(timeout_s=1.0))
 
 
+class TestDegenerateUnusedRecovery(unittest.TestCase):
+    """Deteccion + recovery del KV corrupto del server (b9090, familia #22527).
+
+    MEDIDO 2026-06-11: tras cierta secuencia de requests, el server responde
+    HTTP 200 con content = SOLO tokens <unusedN> (320/320, finish=length) para
+    cualquier prompt largo (incluso texto neutro), con /health OK. El replay
+    byte-identico contra un server fresco responde bien -> es estado del
+    server, y solo un restart lo sana. Ni el zombie-recovery (exige un 500) ni
+    el health-check lo veian: cada turno moria en el empty-reply fallback.
+    """
+
+    def setUp(self):
+        from ..infra.llm_client import _degenerate_unused_reply
+        self._degen = _degenerate_unused_reply
+        self.client = LLMClient(AgentConfig.from_env())
+        self.body = {"messages": [{"role": "user", "content": "hola"}]}
+
+    # --- detector ---
+
+    def test_degenerate_320_unused(self):
+        self.assertTrue(self._degen("<unused24>" * 320, None))
+
+    def test_threshold_8_si_7_no(self):
+        self.assertTrue(self._degen("<unused24>" * 8, None))
+        self.assertFalse(self._degen("<unused24>" * 7, None))
+
+    def test_unused_mas_texto_real_no_es_degenerado(self):
+        # Si hay texto real, el reply sobrevive al strip -> no reiniciar.
+        self.assertFalse(self._degen("<unused24>" * 50 + "Listo, abri Spotify.", None))
+
+    def test_con_tool_calls_no_es_degenerado(self):
+        tcs = [{"function": {"name": "gui", "arguments": "{}"}}]
+        self.assertFalse(self._degen("<unused24>" * 320, tcs))
+
+    def test_reply_normal_y_vacio(self):
+        self.assertFalse(self._degen("Listo, lo hice.", None))
+        self.assertFalse(self._degen("", None))
+        self.assertFalse(self._degen(None, None))
+
+    def test_unused_con_whitespace_intercalado(self):
+        self.assertTrue(self._degen("<unused24> <unused24>\n" * 10, None))
+
+    # --- recovery ---
+
+    @staticmethod
+    def _resp(content, tool_calls=None):
+        msg = {"content": content}
+        if tool_calls is not None:
+            msg["tool_calls"] = tool_calls
+        return {"choices": [{"message": msg}]}
+
+    def test_respuesta_sana_no_reinicia(self):
+        ok = self._resp("hola")
+        with patch("gemma4_agent.infra.llm_client._try_restart_managed_server") as mock_restart:
+            out = self.client._recover_if_degenerate(self.body, ok, timeout=30.0)
+        self.assertIs(out, ok)
+        mock_restart.assert_not_called()
+
+    def test_degenerado_reinicia_y_reintenta(self):
+        degen = self._resp("<unused24>" * 320)
+        clean = self._resp("hola")
+        with patch("gemma4_agent.infra.llm_client._try_restart_managed_server",
+                   return_value=True) as mock_restart, \
+             patch.object(self.client, "_post_chat_with_recovery",
+                          return_value=clean) as mock_retry:
+            out = self.client._recover_if_degenerate(self.body, degen, timeout=30.0)
+        self.assertIs(out, clean)
+        mock_restart.assert_called_once()
+        mock_retry.assert_called_once()
+
+    def test_restart_falla_devuelve_original(self):
+        degen = self._resp("<unused24>" * 320)
+        with patch("gemma4_agent.infra.llm_client._try_restart_managed_server",
+                   return_value=False), \
+             patch.object(self.client, "_post_chat_with_recovery") as mock_retry:
+            out = self.client._recover_if_degenerate(self.body, degen, timeout=30.0)
+        self.assertIs(out, degen)
+        mock_retry.assert_not_called()
+
+    def test_retry_lanza_devuelve_original(self):
+        degen = self._resp("<unused24>" * 320)
+        with patch("gemma4_agent.infra.llm_client._try_restart_managed_server",
+                   return_value=True), \
+             patch.object(self.client, "_post_chat_with_recovery",
+                          side_effect=RuntimeError("llm_timeout: 30s")):
+            out = self.client._recover_if_degenerate(self.body, degen, timeout=30.0)
+        self.assertIs(out, degen)
+
+    def test_gate_off_no_reinicia(self):
+        degen = self._resp("<unused24>" * 320)
+        with patch.dict("os.environ", {"GEMMA4_DEGEN_RECOVERY": "0"}), \
+             patch("gemma4_agent.infra.llm_client._try_restart_managed_server") as mock_restart:
+            out = self.client._recover_if_degenerate(self.body, degen, timeout=30.0)
+        self.assertIs(out, degen)
+        mock_restart.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
