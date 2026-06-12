@@ -7159,13 +7159,51 @@ Start-Sleep -Milliseconds 120
                             t = b.value.lower()
                             if self._chen_sub in t or t in self._chen_sub:
                                 self._chen_found.append(h)
+                            else:
+                                # candidatos para el fallback por PROCESO (solo
+                                # ventanas visibles con título, como el match).
+                                self._chen_others.append(h)
                     return True
                 # mismo tipo que se pasó a EnumWindows.argtypes (c_void_p lParam).
                 self._chen_enum_cb = _WNDENUMPROC(_cb_impl)  # PERSISTENTE
             user32 = self._chen_u32
             self._chen_sub = title_substr.lower()
             self._chen_found.clear()
+            self._chen_others = []
             user32.EnumWindows(self._chen_enum_cb, 0)
+            if not self._chen_found:
+                # FALLBACK POR NOMBRE DE PROCESO (MEDIDO 2026-06-12): las apps de
+                # título DINÁMICO nunca contienen su propio nombre — Spotify
+                # reproduciendo se titula "Artista - Canción", el navegador se
+                # titula con la página, el editor con el archivo. focus_app
+                # fallaba con la app ABIERTA (3 reintentos, ~14.5s) y la misión
+                # moría. El nombre del PROCESO (Spotify.exe) es estable e
+                # independiente del idioma/contenido -> match estructural
+                # universal. Solo corre cuando el título no matcheó (sin costo
+                # en el hot-path feliz).
+                try:
+                    import win32process  # type: ignore
+                    import psutil  # type: ignore
+                    sub_tok = re.sub(r"[^a-z0-9]+", "", self._chen_sub)
+                    if len(sub_tok) >= 3:
+                        _pid_name: dict[int, str] = {}
+                        for h in self._chen_others:
+                            try:
+                                _, pid = win32process.GetWindowThreadProcessId(h)
+                                name = _pid_name.get(pid)
+                                if name is None:
+                                    name = psutil.Process(pid).name().lower()
+                                    name = re.sub(r"\.exe$", "", name)
+                                    name = re.sub(r"[^a-z0-9]+", "", name)
+                                    _pid_name[pid] = name
+                                if name and (name == sub_tok
+                                             or name.startswith(sub_tok)
+                                             or sub_tok.startswith(name)):
+                                    self._chen_found.append(h)
+                            except Exception:
+                                continue
+                except Exception:
+                    pass
             if not self._chen_found:
                 return False
             hwnd = self._chen_found[0]
@@ -7210,9 +7248,22 @@ Start-Sleep -Milliseconds 120
             # callback) pueden diferir en TIPO aunque sean el mismo handle -> el ==
             # directo daba False aunque el foco SÍ se logró (bug medido). int() de
             # ambos lo resuelve. None (top desconocido) -> caer a comparación laxa.
+            #
+            # POLL (MEDIDO 2026-06-12): aun tras el WM_NULL, el switch de foreground
+            # aterriza ASÍNCRONO unos cientos de ms después (el ping volvió en ~30ms,
+            # GetForegroundWindow aún devolvía la ventana vieja, y 300ms después el
+            # target SÍ estaba al frente). El compare inmediato daba falso negativo
+            # en focos EXITOSOS -> un retry de regalo en cada focus_app. Pollear
+            # hasta ~700ms antes de concluir.
             try:
-                _fg = user32.GetForegroundWindow()
-                return int(_fg or 0) == int(hwnd or 0)
+                _deadline = time.monotonic() + 0.7
+                while True:
+                    _fg = user32.GetForegroundWindow()
+                    if int(_fg or 0) == int(hwnd or 0):
+                        return True
+                    if time.monotonic() >= _deadline:
+                        return False
+                    time.sleep(0.05)
             except Exception:
                 return True  # enfocamos; no pudimos verificar -> asumir OK
         except Exception:

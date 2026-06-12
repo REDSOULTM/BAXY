@@ -385,3 +385,28 @@ muta los locales del loop del turno); el resto se extrajo. Mapa:
 - **Resolución de sitios:** señal estructural + popularidad (posición del buscador) +
   validación DNS; sin lista hardcoded de dominios.
 - **Honestidad:** familia de guardas estructurales default-ON (cacería 6162 cerrada).
+
+
+---
+
+## 10. COMPUTER-USE — ROADMAP DE MEJORA (2026-06-12, priorizado, NO iniciado)
+
+Contexto: la arquitectura cu (UIA-first + executor determinista + verify por estado
+del SO + LLM solo-goal) es el patron SOTA para <=4GB VRAM (pure-vision tipo UI-TARS
+pide 7B+ en GPU; OmniParser v2 = 39.5% ScreenSpot Pro, medido-inviable aca). Las
+primitivas de foco quedaron sanas el 2026-06-12 (fallback por PROCESO en
+_focus_window_chen + poll del verify async; vivo 3/3, 109 tests). Lo que sigue, en
+orden de ROI:
+
+| # | Item | Que da | Costo |
+|---|------|--------|-------|
+| CU-1 | Re-correr el eval GUI (110 misiones) post-fixes de foco | SR actualizada (baseline run7 93.3%) + clases de fallo vivas para elegir con datos | ~1h GPU local |
+| CU-2 | Set-of-marks con la vision residente: anotar screenshot con marcas numeradas (rects UIA + cajas OCR) y que Gemma-vision ELIJA el numero (no coordenadas) | Desbloquea widgets sin a11y (Steam/CEF dead-end documentado) con 0 VRAM extra | medio |
+| CU-3 | OCR CPU (Tesseract, OSS) como experto textual para apps custom sin arbol | Cajas de texto clickeables donde UIA da cero; alimenta CU-2 | bajo (CPU/RAM) |
+| CU-4 | Escaleras de fallback por paso: uia click -> click visual set-of-marks -> teclado, con verify entre intentos | Cada primitiva 93%->97% multiplica en cadenas (5 pasos: ~70%->~86%) | medio |
+| CU-5 | Memoria de UI por app (path de elemento exitoso, estructural — NO macro por intencion) | Salta discovery en misiones repetidas; velocidad + estabilidad | bajo |
+| CU-6 | Primitivas faltantes: menu contextual (click derecho + nav), drag&drop, dialogos comunes de archivo, multi-monitor | Cobertura (familia del bug pivigames 3-monitores) | medio |
+
+Techo REAL por hardware (no atacable con 4GB): grounding visual de pixeles
+arbitrarios en apps sin texto ni a11y (juegos/canvas puro) — pide modelo de
+grounding 7B+. Todo lo demas es alcanzable con la vision residente + CPU.
