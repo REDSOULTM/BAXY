@@ -764,16 +764,85 @@ def _clock_pairs(text: str) -> set[tuple[int, str]]:
     return {(int(h) % 12, m) for h, m in _CLOCK_TIME_RE.findall(text or "")}
 
 
+# HORA EN PALABRAS (MEDIDO 2026-06-12): el atractor de hora del FT la emitió
+# DELETREADA — "Es las dos de la madrugada." como reply a un play de media (ni
+# pedida ni correcta: eran la 01:49) — y _clock_pairs (solo HH:MM en dígitos)
+# no la veía: el claim fabricado llegaba al usuario. Detección de la FORMA
+# "decir la hora" en los 6 idiomas soportados: cópula + numeral 1-12 +
+# complemento horario OBLIGATORIO (daypart / "y media" / "en punto" / "heures"
+# / "Uhr") — el complemento evita falsos positivos tipo "son las dos caras de
+# la moneda" o "è l'una o l'altra". Misma familia estructural-multilingüe que
+# el click-claim guard.
+_WORDED_HOUR_NUM: dict[str, int] = {
+    # es
+    "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6,
+    "siete": 7, "ocho": 8, "nueve": 9, "diez": 10, "once": 11, "doce": 12,
+    # en
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+    "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+    # pt (los que difieren de es)
+    "uma": 1, "duas": 2, "três": 3, "sete": 7, "oito": 8, "nove": 9,
+    "dez": 10, "onze": 11, "doze": 12,
+    # fr
+    "une": 1, "deux": 2, "trois": 3, "quatre": 4, "cinq": 5, "sept": 7,
+    "huit": 8, "neuf": 9, "dix": 10, "douze": 12, "midi": 12, "minuit": 12,
+    # de
+    "ein": 1, "eins": 1, "zwei": 2, "drei": 3, "vier": 4, "fünf": 5,
+    "funf": 5, "sechs": 6, "sieben": 7, "acht": 8, "neun": 9, "zehn": 10,
+    "elf": 11, "zwölf": 12, "zwolf": 12,
+    # it (los que difieren)
+    "due": 2, "tre": 3, "quattro": 4, "cinque": 5, "sei": 6, "sette": 7,
+    "otto": 8, "dieci": 10, "undici": 11, "dodici": 12,
+}
+_WH_ES = "una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce"
+_WH_EN = "one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
+_WH_PT = "uma|duas|três|tres|quatro|cinco|seis|sete|oito|nove|dez|onze|doze"
+_WH_FR = "une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze"
+_WH_DE = "ein|eins|zwei|drei|vier|fünf|funf|sechs|sieben|acht|neun|zehn|elf|zwölf|zwolf"
+_WH_IT = "due|tre|quattro|cinque|sei|sette|otto|nove|dieci|undici|dodici"
+_WORDED_TIME_RES = [re.compile(p, re.IGNORECASE) for p in (
+    # es: "es/son la(s) dos ... de la madrugada/mañana/tarde/noche"
+    rf"\b(?:es|son)\s+l(?:a|as)\s+(?P<h>{_WH_ES})\b(?:\s+y\s+(?:media|cuarto))?"
+    rf"\s+de\s+la\s+(?:madrugada|mañana|manana|tarde|noche)\b",
+    # es: "son las dos y media / en punto" (sin daypart pero con cue horario)
+    rf"\b(?:es|son)\s+l(?:a|as)\s+(?P<h>{_WH_ES})\s+(?:y\s+(?:media|cuarto)|en\s+punto)\b",
+    # en: "it's two o'clock / in the morning / at night"
+    rf"\bit\s*(?:'s|\s+is)\s+(?P<h>{_WH_EN})\s+(?:o'?clock\b|in\s+the\s+(?:morning|afternoon|evening)\b|at\s+night\b)",
+    # pt: "são duas (horas) da madrugada / em ponto / e meia"
+    rf"\b(?:é|são|sao)\s+(?P<h>{_WH_PT})\s+(?:horas?\s+)?(?:da\s+(?:madrugada|manhã|manha|tarde|noite)|em\s+ponto|e\s+meia)\b",
+    # fr: "il est deux heures" (heures ES el cue) / "il est midi|minuit"
+    rf"\bil\s+est\s+(?P<h>{_WH_FR})\s+heures?\b",
+    r"\bil\s+est\s+(?P<h>midi|minuit)\b",
+    # de: "es ist zwei Uhr" (Uhr ES el cue)
+    rf"\bes\s+ist\s+(?P<h>{_WH_DE})\s+uhr\b",
+    # it: "sono le due di notte / e mezza / in punto", "è l'una di notte"
+    rf"\bsono\s+le\s+(?P<h>{_WH_IT})\s+(?:di\s+notte|del\s+mattino|di\s+pomeriggio|di\s+sera|e\s+mezza|in\s+punto)\b",
+    r"\bè\s+l'(?P<h>una)\s+(?:di\s+notte|del\s+mattino|di\s+pomeriggio|di\s+sera|e\s+mezza|in\s+punto)\b",
+)]
+
+
+def _worded_clock_hours(text: str) -> set[int]:
+    """Horas (mod 12) afirmadas EN PALABRAS en `text` (forma 'decir la hora')."""
+    hours: set[int] = set()
+    t = text or ""
+    for rx in _WORDED_TIME_RES:
+        for m in rx.finditer(t):
+            w = (m.groupdict().get("h") or "").lower()
+            if w in _WORDED_HOUR_NUM:
+                hours.add(_WORDED_HOUR_NUM[w] % 12)
+    return hours
+
+
 def clock_time_claim_unfounded(
     user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
 ) -> bool:
-    """True iff el reply afirma una hora-de-reloj que NO está sustentada por
-    ningún tool-result del turno ni por el propio texto del usuario."""
+    """True iff el reply afirma una hora-de-reloj (en dígitos O en palabras) que
+    NO está sustentada por ningún tool-result del turno ni por el texto del
+    usuario."""
     reply = reply_text or ""
-    if not _CLOCK_MARKER_RE.search(reply):
-        return False
-    claimed = _clock_pairs(reply)
-    if not claimed:
+    claimed = _clock_pairs(reply) if _CLOCK_MARKER_RE.search(reply) else set()
+    claimed_worded = _worded_clock_hours(reply)
+    if not claimed and not claimed_worded:
         return False
     evidence_parts = [user_text or ""]
     for c in tool_calls_this_turn or []:
@@ -785,15 +854,25 @@ def clock_time_claim_unfounded(
         except Exception:
             evidence_parts.append(str(args))
             evidence_parts.append(str(res))
-    grounded = _clock_pairs(" ".join(evidence_parts))
-    return bool(claimed - grounded)
+    evidence = " ".join(evidence_parts)
+    grounded = _clock_pairs(evidence)
+    if claimed - grounded:
+        return True
+    # Palabras vs evidencia: comparar a nivel HORA (los minutos rara vez se
+    # deletrean con precisión). "las dos" queda sustentada por un "02:xx" o
+    # "14:xx" del tool, o por la misma forma deletreada en el texto del user.
+    grounded_hours = {h for h, _m in grounded} | _worded_clock_hours(evidence)
+    return bool(claimed_worded - grounded_hours)
 
 
 def strip_unfounded_time_sentences(reply_text: str) -> str:
-    """Quita las oraciones del reply que contienen un token de hora-de-reloj.
-    Último recurso del repair inline cuando la regeneración también vino mal."""
+    """Quita las oraciones del reply que contienen un token de hora-de-reloj
+    (en dígitos o deletreada). Último recurso del repair inline cuando la
+    regeneración también vino mal."""
     parts = re.split(r"(?<=[.!?…])\s+", (reply_text or "").strip())
-    kept = [p for p in parts if p and not _CLOCK_TIME_RE.search(p)]
+    kept = [p for p in parts
+            if p and not _CLOCK_TIME_RE.search(p)
+            and not any(rx.search(p) for rx in _WORDED_TIME_RES)]
     return " ".join(kept).strip()
 
 

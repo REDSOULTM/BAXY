@@ -1,9 +1,12 @@
 """Spotify random playback: 'pon una cancion' sin titulo NO busca la palabra
 literal, sino que reproduce algo aleatorio.
 
-Decision del user (2026-05-22):
+Contrato:
   - con username -> Liked Songs en shuffle (deeplink spotify:user:<u>:collection)
-  - sin username -> Play global (media_play_pause)
+  - sin username -> reproducir DENTRO de Spotify (UIA sobre la vista actual,
+    deeplink pelado spotify:). NUNCA la media key global: VK_MEDIA_PLAY_PAUSE
+    va a la ultima sesion SMTC del SISTEMA (MEDIDO 2026-06-12: reanudaba un
+    video de YouTube pausado en el navegador y reportaba "en Spotify").
 
 Bug original (trace #847): query="cancion" -> spotify:search:cancion ->
 post_play_title="Spotify Premium", query_match=False (no sono nada util).
@@ -61,19 +64,48 @@ class TestGenericQueryDetector(unittest.TestCase):
 
 
 class TestSpotifyRandomNoUsername(unittest.TestCase):
-    def test_global_play_key_when_no_username(self):
+    def test_in_app_play_when_no_username(self):
+        # Sin username: reproducir DENTRO de Spotify (UIA en la vista actual),
+        # nunca la media key global (reanudaba media de OTRA app).
         state = _fresh_state()
+        uia = _mock_uia_run({"ok": True, "chosen": "Reproducir Daily Mix 1",
+                              "matched_query": False,
+                              "title_before": "Spotify Premium",
+                              "title_after": "Some Track - Some Artist"})
         with patch("time.sleep"), \
-             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+             patch("gemma4_agent.domain_tools.os.name", "nt"), \
+             patch("gemma4_agent.domain_tools.os.unlink"), \
+             patch("gemma4_agent.domain_tools.subprocess.run", uia), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen") as popen:
             r = _media_play_streaming(
                 "spotify", "una cancion", {"action": "play"},
                 executor=_spotify_exec, state=state,
             )
         self.assertTrue(r.get("random_playback"))
-        self.assertEqual(r.get("random_mode"), "global_play_key")
+        self.assertEqual(r.get("random_mode"), "in_app_play")
         self.assertTrue(r.get("played"))
-        # NO debe haber buscado la palabra "cancion".
+        self.assertTrue(r.get("verified"))
+        # Abrió Spotify (deeplink pelado), NO buscó la palabra "cancion".
+        launched = " ".join(str(c) for c in popen.call_args_list)
+        self.assertIn("spotify:", launched)
         self.assertNotIn("search:cancion", str(r))
+
+    def test_no_username_uia_fails_reports_honest(self):
+        # Si la vista no tiene nada reproducible -> played=False honesto + hint.
+        state = _fresh_state()
+        uia = _mock_uia_run({"ok": False, "error": "no play button"})
+        with patch("time.sleep"), \
+             patch("gemma4_agent.domain_tools.os.name", "nt"), \
+             patch("gemma4_agent.domain_tools.os.unlink"), \
+             patch("gemma4_agent.domain_tools.subprocess.run", uia), \
+             patch("gemma4_agent.domain_tools.subprocess.Popen"):
+            r = _media_play_streaming(
+                "spotify", "una cancion", {"action": "play"},
+                executor=_spotify_exec, state=state,
+            )
+        self.assertFalse(r.get("played"))
+        self.assertFalse(r.get("verified"))
+        self.assertIn("usuario de Spotify", str(r.get("note") or ""))
 
 
 def _mock_uia_run(payload):

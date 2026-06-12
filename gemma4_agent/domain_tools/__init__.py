@@ -1963,23 +1963,34 @@ def _spotify_play_random(
         ap["deeplink"] = deeplink
         ap["username"] = username
         return ap
-    # Sin username -> Play global.
+    # Sin username -> reproducir DENTRO de Spotify: abrir/enfocar la app
+    # (deeplink pelado spotify:) y clickear via UIA el primer boton
+    # "Reproducir" de la vista actual/Home (mismo camino query=None que usa
+    # liked_songs), con verificacion por window-title. NUNCA la media key
+    # global: VK_MEDIA_PLAY_PAUSE va a la ultima sesion SMTC activa del
+    # SISTEMA, no a Spotify — MEDIDO 2026-06-12: con un video de YouTube
+    # pausado en el navegador, "pon una cancion en Spotify" reanudaba el
+    # VIDEO de la otra app y el resultado reportaba played=True ("una cancion
+    # en Spotify" = claim falso). Si la vista no tiene nada reproducible, se
+    # reporta honesto (played=False) + hint del username.
+    _hint = (
+        "Para reproducir tus 'Me Gusta' aleatorias directamente, decime "
+        "tu usuario de Spotify una vez (ej. 'mi usuario de Spotify es "
+        "ema123') y lo recuerdo."
+    )
     try:
-        r = executor("audio", {"action": "media_play_pause"})
-        ok = bool(isinstance(r, dict) and r.get("ok", True))
-        return {
-            "played": ok,
-            "mode": "global_play_key",
-            "abort_reason": None if ok else "media_play_pause returned not-ok",
-            "needs_username_hint": (
-                "Para reproducir tus 'Me Gusta' aleatorias directamente, decime "
-                "tu usuario de Spotify una vez (ej. 'mi usuario de Spotify es "
-                "ema123') y lo recuerdo."
-            ),
-        }
-    except Exception as exc:
-        return {"played": False, "mode": "global_play_key",
-                "abort_reason": f"media_play_pause failed: {exc}"}
+        subprocess.Popen(
+            ["cmd", "/c", "start", "", "spotify:"],
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+    except (OSError, FileNotFoundError) as exc:
+        return {"played": False, "mode": "in_app_play",
+                "abort_reason": f"spotify launch failed: {exc}",
+                "needs_username_hint": _hint}
+    ap = _spotify_auto_play(executor, max(auto_play_wait, 2.5), query=None)
+    ap["mode"] = "in_app_play"
+    ap["needs_username_hint"] = _hint
+    return ap
 
 
 def _is_spotify_track_title(title: str) -> bool:
@@ -2474,12 +2485,13 @@ def _media_play_streaming(
                 f"(usuario '{rnd.get('username')}')."
             )
             completion = "media_playing"
-        elif played and mode == "global_play_key":
+        elif played and mode == "in_app_play":
             note = (
-                "spotify: Play global enviado — reanudando lo que tenías "
-                "cargado. " + str(rnd.get("needs_username_hint") or "")
+                "spotify: reproduciendo dentro de Spotify (primer elemento "
+                "reproducible de tu vista). "
+                + str(rnd.get("needs_username_hint") or "")
             )
-            completion = "media_playing_unverified"
+            completion = "media_playing"
         else:
             note = (
                 "spotify: no pude iniciar reproducción aleatoria"
@@ -2497,7 +2509,8 @@ def _media_play_streaming(
             played=played,
             auto_play_attempted=True,
             auto_play_info=rnd,
-            verified=played and mode == "liked_songs",
+            # in_app_play verifica por window-title igual que liked_songs.
+            verified=played and mode in {"liked_songs", "in_app_play"},
             status="dispatched" if played else "attempted",
             completion_status=completion,
             note=note.strip(),

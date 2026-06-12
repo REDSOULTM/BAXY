@@ -128,5 +128,65 @@ class RepairInlineTest(unittest.TestCase):
             os.environ.pop("GEMMA4_TIME_CLAIM_GUARD", None)
 
 
+class WordedClockTimeClaimTest(unittest.TestCase):
+    """Hora DELETREADA (bug en vivo 2026-06-12: media→dispatched respondió
+    "Es las dos de la madrugada." a las 01:49 — ni pedida ni correcta; el
+    detector de dígitos no la veía)."""
+
+    # --- el bug real, verbatim ---
+    def test_live_bug_worded_time_after_media_fires(self) -> None:
+        events = [_ev("media", {"ok": True, "status": "dispatched",
+                                "query": "pon una canción"})]
+        self.assertTrue(clock_time_claim_unfounded(
+            "Pon una canción en Spotify",
+            "Es las dos de la madrugada.", events))
+
+    def test_worded_time_no_tool_fires(self) -> None:
+        self.assertTrue(clock_time_claim_unfounded(
+            "hola", "Son las tres de la tarde.", []))
+
+    def test_worded_time_multilang_fires(self) -> None:
+        for reply in ("It's two in the morning.",
+                      "Il est deux heures.",
+                      "Es ist zwei Uhr.",
+                      "São duas da madrugada.",
+                      "Sono le due di notte."):
+            self.assertTrue(
+                clock_time_claim_unfounded("play a song", reply, []),
+                msg=reply)
+
+    # --- sustento legítimo ---
+    def test_worded_time_grounded_by_system_tool_passes(self) -> None:
+        events = [_ev("system", {"ok": True, "time": "02:04:11"})]
+        self.assertFalse(clock_time_claim_unfounded(
+            "qué hora es", "Son las dos de la madrugada.", events))
+
+    def test_worded_time_grounded_pm_mod12_passes(self) -> None:
+        events = [_ev("system", {"ok": True, "time": "14:30:00"})]
+        self.assertFalse(clock_time_claim_unfounded(
+            "qué hora es", "Son las dos y media de la tarde.", events))
+
+    def test_worded_time_echoed_from_user_passes(self) -> None:
+        self.assertFalse(clock_time_claim_unfounded(
+            "recordame que es las dos de la tarde la reunión",
+            "Listo, la reunión es las dos de la tarde.",
+            [_ev("notifications", {"ok": True})]))
+
+    # --- falsos positivos que NO deben disparar ---
+    def test_idiom_dos_caras_passes(self) -> None:
+        self.assertFalse(clock_time_claim_unfounded(
+            "qué opinás", "Son las dos caras de la misma moneda.", []))
+
+    def test_counting_things_passes(self) -> None:
+        self.assertFalse(clock_time_claim_unfounded(
+            "cuántas ventanas hay", "Veo dos ventanas abiertas.", []))
+
+    # --- strip de oraciones deletreadas ---
+    def test_strip_removes_worded_time_sentence(self) -> None:
+        out = strip_unfounded_time_sentences(
+            "Listo, puse la música. Es las dos de la madrugada.")
+        self.assertEqual(out, "Listo, puse la música.")
+
+
 if __name__ == "__main__":
     unittest.main()
