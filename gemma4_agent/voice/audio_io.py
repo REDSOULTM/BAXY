@@ -82,6 +82,102 @@ def _resample_to_16k(audio: np.ndarray, src_sr: int) -> np.ndarray:
         return np.interp(idx, np.arange(audio.size), audio).astype(np.int16)
 
 
+def _aec_enabled() -> bool:
+    """AEC con referencia loopback (P1, 2026-06-12). Default OFF hasta que la
+    medición EN VIVO (parlantes+mic reales) lo valide — la simulación offline
+    está en scripts/wake_aec_sim_eval.py. GEMMA4_VOICE_AEC=1 lo enciende."""
+    import os
+    return (os.environ.get("GEMMA4_VOICE_AEC", "0") or "0").strip().lower() \
+        in {"1", "true", "yes", "on"}
+
+
+class LoopbackReference:
+    """Captura lo que el PC REPRODUCE (loopback WASAPI del output default)
+    como señal de referencia para el AEC. Requiere pyaudiowpatch (el
+    PortAudio de sounddevice no expone loopback — verificado 2026-06-12).
+
+    Mantiene un ring de samples a 16 kHz; `latest(n)` devuelve los últimos n
+    (el DelayEstimator del AEC absorbe el desfase mic↔loopback). Si no hay
+    loopback disponible, `start()` devuelve False y el AEC queda en bypass
+    (nunca rompe la captura del mic)."""
+
+    def __init__(self) -> None:
+        self._pa = None
+        self._stream = None
+        self._sr = 48000
+        self._ring = np.zeros(SAMPLE_RATE * 2, dtype=np.int16)  # 2 s @16k
+        self._lock = threading.Lock()
+        self.last_error: str | None = None
+
+    def start(self) -> bool:
+        try:
+            import pyaudiowpatch as pa
+        except ImportError as exc:
+            self.last_error = f"pyaudiowpatch no instalado: {exc}"
+            logger.warning(self.last_error)
+            return False
+        try:
+            self._pa = pa.PyAudio()
+            wasapi = self._pa.get_host_api_info_by_type(pa.paWASAPI)
+            out = self._pa.get_device_info_by_index(
+                int(wasapi["defaultOutputDevice"]))
+            # buscar el dispositivo loopback del output default por nombre
+            lb = None
+            for i in range(self._pa.get_device_count()):
+                d = self._pa.get_device_info_by_index(i)
+                if d.get("isLoopbackDevice") and \
+                        str(out["name"]) in str(d["name"]):
+                    lb = d
+                    break
+            if lb is None:
+                self.last_error = "sin dispositivo loopback para el output default"
+                logger.warning(self.last_error)
+                return False
+            self._sr = int(lb["defaultSampleRate"])
+
+            def _cb(in_data, frame_count, time_info, status):
+                try:
+                    x = np.frombuffer(in_data, dtype=np.int16)
+                    ch = max(1, int(lb["maxInputChannels"]))
+                    if ch > 1:
+                        x = x.reshape(-1, ch).mean(axis=1).astype(np.int16)
+                    x16 = _resample_to_16k(x, self._sr)
+                    with self._lock:
+                        n = x16.size
+                        self._ring = np.concatenate([self._ring[n:], x16])
+                except Exception:
+                    pass
+                return (None, pa.paContinue)
+
+            self._stream = self._pa.open(
+                format=pa.paInt16, channels=int(lb["maxInputChannels"]),
+                rate=self._sr, input=True,
+                input_device_index=int(lb["index"]),
+                frames_per_buffer=int(self._sr * 0.032),
+                stream_callback=_cb)
+            self._stream.start_stream()
+            logger.info("LoopbackReference activo: %s @%dHz", lb["name"], self._sr)
+            return True
+        except Exception as exc:
+            self.last_error = f"loopback start falló: {exc}"
+            logger.warning(self.last_error)
+            return False
+
+    def latest(self, n: int) -> np.ndarray:
+        with self._lock:
+            return self._ring[-n:].copy()
+
+    def stop(self) -> None:
+        try:
+            if self._stream is not None:
+                self._stream.stop_stream()
+                self._stream.close()
+            if self._pa is not None:
+                self._pa.terminate()
+        except Exception:
+            pass
+
+
 class AudioCapture:
     """Wraper de sounddevice.InputStream con ring buffer integrado.
 
@@ -129,6 +225,10 @@ class AudioCapture:
         self._pump_stop = threading.Event()
         self._pump_thread: threading.Thread | None = None
         self._drop_count: int = 0
+        # AEC opcional (GEMMA4_VOICE_AEC=1): referencia loopback + cancelador.
+        # Se arman en start(); si el loopback no está, quedan None (bypass).
+        self._aec = None
+        self._loopback: LoopbackReference | None = None
         self.last_error: str | None = None
         self.running: bool = False
 
@@ -140,6 +240,18 @@ class AudioCapture:
             self.last_error = f"sounddevice not installed: {exc}"
             logger.error(self.last_error)
             return False
+        # AEC opcional: referencia loopback + cancelador NLMS. Best-effort:
+        # si el loopback no arranca, el mic sigue limpio sin AEC.
+        if _aec_enabled() and self._loopback is None:
+            try:
+                from .aec import EchoCanceller
+                lb = LoopbackReference()
+                if lb.start():
+                    self._loopback = lb
+                    self._aec = EchoCanceller()
+                    logger.info("AEC activo (referencia loopback)")
+            except Exception as exc:
+                logger.warning("AEC no disponible: %s", exc)
         # Arrancar el pump thread ANTES del stream para que la queue no
         # se llene si el primer chunk llega rapido.
         self._pump_stop.clear()
@@ -301,6 +413,16 @@ class AudioCapture:
                     chunk = _resample_to_16k(chunk, self._native_sr)
                 except Exception as exc:
                     logger.debug("resample failed, passing raw: %s", exc)
+            # AEC: restar lo que el PC reproduce (referencia loopback). El
+            # DelayEstimator interno absorbe el desfase entre streams. Si el
+            # chunk no es del tamaño esperado, bypass (nunca romper captura).
+            if self._aec is not None and self._loopback is not None \
+                    and chunk.size == CHUNK_SAMPLES:
+                try:
+                    ref = self._loopback.latest(CHUNK_SAMPLES)
+                    chunk = self._aec.process(chunk, ref)
+                except Exception as exc:
+                    logger.debug("aec process falló (bypass): %s", exc)
             # Update ring buffer (off-callback)
             with self._lock:
                 self._ring.append(chunk)

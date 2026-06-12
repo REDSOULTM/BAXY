@@ -1,10 +1,10 @@
-# gemma4_agent runtime requirements
+﻿# gemma4_agent runtime requirements
 # Generated from real top-level imports in gemma4_agent/*.py (Sprint 0.1, 2026-05-16).
 # Reconciled against the live runtime env (Ola 4 housekeeping, 2026-06-01): an
 # AST scan of every non-test import found 10 packages that had drifted out of
 # this list (onnxruntime, sherpa-onnx, rapidfuzz, jellyfish, mss, uiautomation,
 # dateparser, mcp). They were added below with the versions the env reports
-# (importlib.metadata). torchvision is intentionally NOT listed — it's imported
+# (importlib.metadata). torchvision is intentionally NOT listed â€” it's imported
 # only by a health test that asserts it must be absent. The invariant is now
 # locked by gemma4_agent/tests/test_requirements_coverage.py.
 # Pinned versions match the active virtualenv (importlib.metadata / pip freeze)
@@ -13,15 +13,15 @@
 # --- LLM / embeddings stack ---
 sentence-transformers==5.3.0
 torch==2.10.0
-# CRÍTICO — NO subir a numpy 2.x. pandas==1.5.3 fue compilado contra numpy 1.x;
+# CRÃTICO â€” NO subir a numpy 2.x. pandas==1.5.3 fue compilado contra numpy 1.x;
 # con numpy 2.x falla al importar ("numpy.dtype size changed, binary incompat")
 # y ARRASTRA a sentence-transformers (sklearn->pandas) -> EL ENCODER DEL ROUTER
 # NO CARGA -> routing degradado SILENCIOSO (medido 2026-06-07: "cuanta RAM"->
 # cancel_turn). `py3langid` declara numpy>=2.0.0 pero funciona perfecto con 1.26.4
 # (verificado: clasifica es/en/fr OK) -> su pin es excesivo. Para que pip NO suba
-# numpy resolviendo py3langid, instalá con el constraints file (tope DURO):
+# numpy resolviendo py3langid, instalÃ¡ con el constraints file (tope DURO):
 #   pip install -r requirements.txt -c constraints.txt
-# Si igual se coló numpy 2.x: pip install "numpy==1.26.4". El launcher status avisa
+# Si igual se colÃ³ numpy 2.x: pip install "numpy==1.26.4". El launcher status avisa
 # si el encoder no carga ("router encoder: BROKEN").
 numpy==1.26.4
 scipy==1.11.4
@@ -33,12 +33,12 @@ silero-vad==6.2.1
 vosk==0.3.45
 piper-tts==1.4.2
 sounddevice==0.5.5
-sherpa-onnx==1.13.2            # parakeet_stt.py — Parakeet STT + hotword biasing
-rapidfuzz==3.14.5             # voice/corrector.py — fuzzy proper-name correction
-jellyfish==1.2.1             # voice/corrector.py + domain_tools/contacts.py — phonetic match
+sherpa-onnx==1.13.2            # parakeet_stt.py â€” Parakeet STT + hotword biasing
+rapidfuzz==3.14.5             # voice/corrector.py â€” fuzzy proper-name correction
+jellyfish==1.2.1             # voice/corrector.py + domain_tools/contacts.py â€” phonetic match
 
 # --- UI desktop (native webview launcher) ---
-# PyQt6 eliminado 2026-06-03: la GUI vieja PyQt6 (gemma4_agent/ui/) se borró;
+# PyQt6 eliminado 2026-06-03: la GUI vieja PyQt6 (gemma4_agent/ui/) se borrÃ³;
 # la UI default es la web ui_field/ servida en una ventana pywebview.
 pywebview==6.2.1
 
@@ -51,11 +51,11 @@ pydantic==2.12.5
 playwright==1.55.0
 
 # --- Computer-use / screen + window control (Windows-only) ---
-mss==10.2.0                   # gui_verify.py — fast screenshot grabs for GUI verification
-uiautomation==2.0.29          # win_focus.py + tools.py — UIA tree read/focus (accessibility)
+mss==10.2.0                   # gui_verify.py â€” fast screenshot grabs for GUI verification
+uiautomation==2.0.29          # win_focus.py + tools.py â€” UIA tree read/focus (accessibility)
 
 # --- NL date parsing (reminders / calendar slots) ---
-dateparser==1.1.8             # support/datetime_parse.py — multilingual relative-date parsing
+dateparser==1.1.8             # support/datetime_parse.py â€” multilingual relative-date parsing
 
 # --- MCP client (tools_pkg/mcp_client.py; default-OFF, gated catalog) ---
 mcp==1.27.1
@@ -90,7 +90,7 @@ pywin32==311                    # provides win32api / win32con / win32gui / win3
 comtypes==1.4.16
 pycaw==20251023
 psutil==6.1.1
-winsdk==1.0.0b10                 # SMTC (Windows.Media.Control) — ambient observer "now playing" (R-Jarvis)
+winsdk==1.0.0b10                 # SMTC (Windows.Media.Control) â€” ambient observer "now playing" (R-Jarvis)
 nvidia-ml-py>=12.560            # imported as `pynvml` (only used in server.py for GPU stats)
 
 # --- Offline ground-truth tooling (Sprint N, used by scripts/testaudio_groundtruth.py) ---
@@ -111,29 +111,30 @@ openwakeword>=0.6
 nvidia-cublas-cu12>=12.9         # provides cublas64_12.dll + cublasLt64_12.dll
 nvidia-cudnn-cu12>=9.0           # provides cudnn64_9.dll + cudnn_* DLLs
 
-# --- Detección de idioma para el reply post-tool (fix "language confusion") ---
-# py3langid: clasificador estadístico de idioma pura-Python (~2MB, sin deps
+# --- DetecciÃ³n de idioma para el reply post-tool (fix "language confusion") ---
+# py3langid: clasificador estadÃ­stico de idioma pura-Python (~2MB, sin deps
 # pesadas). Restringido a {en,es,pt,fr,de,it} detecta el idioma de comandos
 # imperativos CORTOS donde el detector por stopwords _guess_lang fallaba (daba
 # 'es' por default). Usado por _detect_lang para decidir si regenerar el reply
-# post-acción en el idioma del usuario. Ver documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md §4.
-# OJO: py3langid declara numpy>=2.0.0 (excesivo — funciona con 1.26.4). Para que
+# post-acciÃ³n en el idioma del usuario. Ver documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md Â§4.
+# OJO: py3langid declara numpy>=2.0.0 (excesivo â€” funciona con 1.26.4). Para que
 # pip NO suba numpy y rompa pandas/encoder, este repo trae constraints.txt con
-# numpy==1.26.4. Instalá con: pip install -r requirements.txt -c constraints.txt
-# (el launcher/setup ya lo hacen). Si igual se coló numpy 2.x: pip install "numpy==1.26.4".
+# numpy==1.26.4. InstalÃ¡ con: pip install -r requirements.txt -c constraints.txt
+# (el launcher/setup ya lo hacen). Si igual se colÃ³ numpy 2.x: pip install "numpy==1.26.4".
 py3langid>=0.3
 
 # --- Jarvis proactivo: toast nativo de Windows (sugerencia sin turno del user) ---
-# windows-toasts: notificaciones toast de Windows 10/11 con botones (Sí/No) para
+# windows-toasts: notificaciones toast de Windows 10/11 con botones (SÃ­/No) para
 # que Baxy sugiera automatizar rutinas por iniciativa propia. MIT, liviana, sin deps
 # pesadas. Gateado OFF (GEMMA4_JARVIS_PROACTIVE). Ver
 # documentacion/DISENO_jarvis_proactivo_2026-06-07.md.
 windows-toasts>=1.1
 
-# --- Búsqueda web metasearch (resolver sitios al dominio REAL) 2026-06-07 ---
+# --- BÃºsqueda web metasearch (resolver sitios al dominio REAL) 2026-06-07 ---
 # ddgs: metasearch (Google/Brave/Bing/DuckDuckGo/Mojeek/Startpage...) sin API key
 # ni Docker. Reemplaza el scraper DuckDuckGo-HTML como primario: DDG indexaba peor
-# sitios chicos (medido: 've a pivigames' abría pivigames.wordpress en vez del real
+# sitios chicos (medido: 've a pivigames' abrÃ­a pivigames.wordpress en vez del real
 # pivigames.blog). Con ddgs (backend google) el #0 coincide con el navegador del
-# user. Degradación limpia a DDG-HTML/Bing si ddgs falla. Ver tools.py::_ddgs_search.
+# user. DegradaciÃ³n limpia a DDG-HTML/Bing si ddgs falla. Ver tools.py::_ddgs_search.
 ddgs>=9.0
+pyaudiowpatch==0.2.12.8

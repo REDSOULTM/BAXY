@@ -47,3 +47,4 @@ huggingface_hub>=0.24
 # load_silero_vad helper imports torch for thread tuning).
 torch>=2.0,<3.0; platform_system != "Darwin"
 torch>=2.0,<3.0; platform_system == "Darwin"
+pyaudiowpatch>=0.2.12  # AEC: captura loopback WASAPI (referencia de lo que el PC reproduce)
