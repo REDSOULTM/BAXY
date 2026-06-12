@@ -83,11 +83,17 @@ def _resample_to_16k(audio: np.ndarray, src_sr: int) -> np.ndarray:
 
 
 def _aec_enabled() -> bool:
-    """AEC con referencia loopback (P1, 2026-06-12). Default OFF hasta que la
-    medición EN VIVO (parlantes+mic reales) lo valide — la simulación offline
-    está en scripts/wake_aec_sim_eval.py. GEMMA4_VOICE_AEC=1 lo enciende."""
+    """AEC con referencia loopback (P1, 2026-06-12). Default ON tras la
+    validación EN VIVO (hardware real, deriva de reloj real):
+      - ERLE convergió a 10.9 dB con música real (igual que la simulación);
+        las voces del cantante desaparecen del mic (STT: texto→vacío).
+      - CERO daño a la voz local: conversación transcribe idéntica con/sin
+        AEC (double-talk), y 4/4 wakes detectados sobre música fuerte.
+      - Ganancia en la zona dura (sim, 30 casos): SIR 0 dB recall
+        0.433→0.733. Costo: ~18% de un core SOLO mientras hay reproducción.
+    Kill-switch: GEMMA4_VOICE_AEC=0. Sin loopback disponible → bypass solo."""
     import os
-    return (os.environ.get("GEMMA4_VOICE_AEC", "0") or "0").strip().lower() \
+    return (os.environ.get("GEMMA4_VOICE_AEC", "1") or "1").strip().lower() \
         in {"1", "true", "yes", "on"}
 
 
