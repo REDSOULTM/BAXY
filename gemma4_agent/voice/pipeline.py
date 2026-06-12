@@ -964,9 +964,30 @@ class VoicePipeline:
             _bg = getattr(_cal, "background_level", None) if _cal is not None else None
             if _bg:
                 etrimmed = _energy_trim(audio, _bg * _EOS_ENERGY_FACTOR)
-                if etrimmed is not None and \
-                        etrimmed.size >= int(0.15 * SAMPLE_RATE) and \
-                        etrimmed.size < audio.size:
+                # SIN EVIDENCIA DE USUARIO (MEDIDO 2026-06-12): si NINGUNA
+                # ventana del buffer supera fondo×factor, la captura es PURO
+                # fondo (música/película tras un fake-wake). El STT transcribe
+                # ese audio ajeno FIELMENTE — no es alucinación de silencio,
+                # es audio real de otra fuente, así que la lista de
+                # alucinaciones no aplica (y con Parakeet está exenta): un
+                # fake-wake con Spotify de fondo produjo "Thank you." y llegó
+                # al LLM como turno fantasma. La voz del usuario da ≥1.41× el
+                # fondo incluso a SNR 0 (ver tri-estado EOS); si nada superó
+                # 1.25×, no habló nadie → NO_SPEECH. Estructural, sin listas.
+                if etrimmed is None or etrimmed.size < int(0.15 * SAMPLE_RATE):
+                    logger.info(
+                        "no-user-evidence gate: ninguna ventana > fondo*%.2f "
+                        "(bg=%.0f reason=%s dur=%.2fs) -> NO_SPEECH",
+                        _EOS_ENERGY_FACTOR, _bg, reason, dur)
+                    self._emit_state("NO_SPEECH")
+                    self._cooldown_until = time.monotonic() + COOLDOWN_S
+                    with self._state_lock:
+                        self._state = State.COOLDOWN
+                    self._wake.reset()
+                    self._vad.reset()
+                    self._emit_state("IDLE_LISTENING")
+                    return
+                if etrimmed.size < audio.size:
                     logger.debug("energy trim: %.2fs -> %.2fs", dur,
                                  etrimmed.size / SAMPLE_RATE)
                     audio = etrimmed
