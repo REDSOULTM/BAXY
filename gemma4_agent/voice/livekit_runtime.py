@@ -60,6 +60,8 @@ class LiveKitWakeRuntime:
         self._emb_input: str = ""
         self._clf: Any = None
         self._clf_input: str = ""
+        # Clasificadores EXTRA (fusión dual): stem -> (session, input_name).
+        self._extra_clfs: dict[str, tuple[Any, str]] = {}
         self._loaded = False
         self.last_error: str | None = None
 
@@ -117,13 +119,25 @@ class LiveKitWakeRuntime:
         # openWakeWord normalization (matches LiveKit feature_extractor).
         return mel / 10.0 + 2.0
 
-    def predict(self, audio_chunk: np.ndarray) -> float:
-        """Score a ~2 s audio chunk. Returns float 0..1.
+    def add_classifier(self, stem: str) -> bool:
+        """Carga un clasificador EXTRA que comparte el frontend mel+embedding.
 
-        Accepts int16 or float32. Shorter-than-window chunks return 0.0.
-        """
-        if not self._loaded:
-            return 0.0
+        Fusión dual (2026-06-12): el costo de inferencia lo domina el
+        frontend; una cabeza extra agrega solo su pasada (~sub-ms). Permite
+        correr el modelo limpio Y el modelo robusto-a-ruido en paralelo y
+        disparar por OR con umbrales independientes (ver wake.py)."""
+        try:
+            sess = self._make_session(self._dir / f"{stem}.onnx")
+            self._extra_clfs[stem] = (sess, sess.get_inputs()[0].name)
+            logger.info("LiveKitWakeRuntime: clasificador extra '%s' cargado", stem)
+            return True
+        except Exception as exc:
+            logger.warning("clasificador extra '%s' no cargó: %s", stem, exc)
+            return False
+
+    def _classifier_input(self, audio_chunk: np.ndarray) -> "np.ndarray | None":
+        """audio (~2 s) -> tensor (1,16,96) para los clasificadores, o None
+        si la ventana es corta. UNA pasada de mel+embedding para N cabezas."""
         if audio_chunk.dtype == np.int16:
             audio = audio_chunk.astype(np.float32) / 32768.0
         else:
@@ -132,7 +146,7 @@ class LiveKitWakeRuntime:
 
         mel = self._mel_features(audio)
         if mel.shape[0] < EMBEDDING_WINDOW:
-            return 0.0
+            return None
 
         embeddings = []
         for start in range(0, mel.shape[0] - EMBEDDING_WINDOW + 1, EMBEDDING_STRIDE):
@@ -142,9 +156,36 @@ class LiveKitWakeRuntime:
             embeddings.append(emb.squeeze())  # (96,)
 
         if len(embeddings) < MIN_EMBEDDINGS:
-            return 0.0
-
+            return None
         emb_seq = np.stack(embeddings[-MIN_EMBEDDINGS:], axis=0)
-        clf_in = emb_seq[np.newaxis, :, :].astype(np.float32)  # (1,16,96)
+        return emb_seq[np.newaxis, :, :].astype(np.float32)  # (1,16,96)
+
+    def predict(self, audio_chunk: np.ndarray) -> float:
+        """Score a ~2 s audio chunk. Returns float 0..1.
+
+        Accepts int16 or float32. Shorter-than-window chunks return 0.0.
+        """
+        if not self._loaded:
+            return 0.0
+        clf_in = self._classifier_input(audio_chunk)
+        if clf_in is None:
+            return 0.0
         out = self._clf.run(None, {self._clf_input: clf_in})[0]
         return float(out[0, 0])
+
+    def predict_multi(self, audio_chunk: np.ndarray) -> dict[str, float]:
+        """Scores de TODOS los clasificadores (primario + extras) con UNA
+        pasada de frontend. Claves: stem de cada clasificador."""
+        if not self._loaded:
+            return {}
+        clf_in = self._classifier_input(audio_chunk)
+        if clf_in is None:
+            return {}
+        scores = {self._classifier_stem: float(
+            self._clf.run(None, {self._clf_input: clf_in})[0][0, 0])}
+        for stem, (sess, inp_name) in self._extra_clfs.items():
+            try:
+                scores[stem] = float(sess.run(None, {inp_name: clf_in})[0][0, 0])
+            except Exception as exc:
+                logger.debug("clf extra %s falló: %s", stem, exc)
+        return scores

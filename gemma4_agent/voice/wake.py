@@ -87,6 +87,18 @@ LIVEKIT_MODEL_PATH = (
     Path(__file__).resolve().parent / "models" / "livekit" / f"{LIVEKIT_MODEL_STEM}.onnx"
 )
 
+# FUSIÓN DUAL (2026-06-12): segunda cabeza clasificadora opcional sobre el
+# MISMO frontend (mel+embedding compartidos → costo extra ~0). Diseño: el
+# modelo limpio (recall 0.820 en silencio) + el robusto-a-ruido (entrenado
+# con MUSAN) corren en paralelo; dispara el OR con umbrales INDEPENDIENTES.
+# El umbral de la cabeza de ruido se calibra con scripts/wake_dual_or_eval.py
+# (sweep de pares vs recall/confusables/fp-hr). Apagado por defecto hasta
+# fijar el par medido: GEMMA4_LIVEKIT_NOISE_STEM=baxy_noise +
+# GEMMA4_LIVEKIT_NOISE_THRESHOLD=<medido>.
+LIVEKIT_NOISE_STEM = (os.environ.get("GEMMA4_LIVEKIT_NOISE_STEM", "") or "").strip()
+LIVEKIT_NOISE_THRESHOLD = float(
+    os.environ.get("GEMMA4_LIVEKIT_NOISE_THRESHOLD", "0.5"))
+
 # ----- openWakeWord backend (fallback) -------------------------------
 
 OWW_WINDOW_SAMPLES = 1280   # 80 ms @ 16 kHz
@@ -163,6 +175,16 @@ class WakeDetector:
                 if rt.load():
                     self._livekit_model = rt
                     self._livekit_score_key = LIVEKIT_MODEL_PATH.stem
+                    # Cabeza dual opcional (ver LIVEKIT_NOISE_STEM arriba).
+                    self._noise_head = ""
+                    if LIVEKIT_NOISE_STEM and \
+                            LIVEKIT_NOISE_STEM != LIVEKIT_MODEL_PATH.stem:
+                        if rt.add_classifier(LIVEKIT_NOISE_STEM):
+                            self._noise_head = LIVEKIT_NOISE_STEM
+                            logger.info(
+                                "WakeDetector dual: %s@%.2f OR %s@%.2f",
+                                LIVEKIT_MODEL_PATH.stem, LIVEKIT_THRESHOLD,
+                                LIVEKIT_NOISE_STEM, LIVEKIT_NOISE_THRESHOLD)
                     self._backend = "livekit"
                     self.using_custom_model = True
                     self._loaded = True
@@ -277,9 +299,24 @@ class WakeDetector:
         self._lk_chunk_count += 1
         if self._lk_chunk_count % LIVEKIT_PREDICT_EVERY_N_CHUNKS != 0:
             return
+        noise_head = getattr(self, "_noise_head", "")
         try:
-            # LiveKitWakeRuntime.predict() returns a float directly.
-            score = float(self._livekit_model.predict(self._lk_ring))
+            if noise_head:
+                # FUSIÓN DUAL: una pasada de frontend, dos cabezas. Dispara
+                # el OR: cada cabeza contra SU umbral. Normalizamos el score
+                # al margen sobre su umbral para que _evaluate_score (que
+                # compara contra LIVEKIT_THRESHOLD) decida con una sola vara.
+                scores = self._livekit_model.predict_multi(self._lk_ring)
+                s_main = scores.get(self._livekit_score_key, 0.0)
+                s_noise = scores.get(noise_head, 0.0)
+                ratio = max(
+                    s_main / max(1e-6, LIVEKIT_THRESHOLD),
+                    s_noise / max(1e-6, LIVEKIT_NOISE_THRESHOLD),
+                )
+                score = ratio * LIVEKIT_THRESHOLD
+            else:
+                # LiveKitWakeRuntime.predict() returns a float directly.
+                score = float(self._livekit_model.predict(self._lk_ring))
         except Exception as exc:
             logger.warning("LiveKit predict failed: %s", exc)
             return
