@@ -164,11 +164,16 @@ NEW_AUGDIR = '''def _augment_directory(
       r0 = limpio alineado (EQ/RIR si, sin fondo)
       r1 = fondo a SNR uniforme(5, 15) dB
       r2 = fondo a SNR uniforme(0, 10) dB
+    Plan configurable por env GEMMA4_AUG_SNR_PLAN (palanca de iteracion sin
+    tocar codigo): lista por ronda separada por ';', cada item 'clean' o
+    'lo-hi'. Ej "clean;clean;5-15;0-10" = 4 rondas con 50% limpio (sube
+    recall limpio a costa de robustez). Default = el plan v2 medido.
     Cada ronda parte SIEMPRE del clip ORIGINAL; se alinea PRIMERO (positivos
     Y negativos al FINAL: centrar negativos ensena el atajo posicional
     "contenido al final = wake" — 66-71% fake-fires medidos) y se mezcla
     DESPUES (el fondo cubre la ventana completa, como la vida real).
     """
+    import os
     import re
 
     import soundfile as sf
@@ -179,6 +184,14 @@ NEW_AUGDIR = '''def _augment_directory(
     wav_files = sorted(p for p in clip_dir.glob("*.wav") if _src_re.match(p.name))
 
     snr_by_round = {1: (5.0, 15.0), 2: (0.0, 10.0)}
+    _plan = (os.environ.get("GEMMA4_AUG_SNR_PLAN") or "").strip()
+    if _plan:
+        snr_by_round = {}
+        for _i, _item in enumerate(_plan.split(";")):
+            _item = _item.strip().lower()
+            if _item and _item != "clean" and "-" in _item:
+                _lo, _hi = _item.split("-", 1)
+                snr_by_round[_i] = (float(_lo), float(_hi))
 
     for wav_path in tqdm(wav_files, desc=f"Augmenting {clip_dir.name} r{round_idx}", unit="clip"):
         audio, sr = sf.read(str(wav_path))
