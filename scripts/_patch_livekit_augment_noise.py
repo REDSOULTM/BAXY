@@ -204,35 +204,83 @@ PATCHES = [
     (OLD_AUGDIR, NEW_AUGDIR),
 ]
 
+# --- patch adicional: synthesis.py — voces SINGLE-SPEAKER (P2 multi-idioma) ---
+# El pipeline de síntesis asume multi-speaker (LibriTTS-904) y accede a
+# model.emb_g incondicionalmente; un checkpoint single-speaker (pl/ru/pt/nl/
+# zh nativos) no TIENE tabla de speakers → 'SynthesizerTrn' object has no
+# attribute 'emb_g' (medido 2026-06-12 en pl_PL-mc_speech). VITS soporta
+# g=None con gin_channels=0 — sin SLERP, la diversidad la aportan los
+# noise/length scales.
+SYNTH_TARGET = (ROOT / ".venv_livekit" / "Lib" / "site-packages" / "livekit"
+                / "wakeword" / "data" / "piper" / "synthesis.py")
+SYNTH_BAK = SYNTH_TARGET.with_suffix(".py.orig_pre_noise_patch")
+SYNTH_MARKER = "[gemma4 singlespeaker-patch v1]"
+
+SYNTH_OLD = """    x_enc, m_p_orig, logs_p_orig, x_mask = model.enc_p(x, x_lengths)
+    emb0 = model.emb_g(speaker_1)
+    emb1 = model.emb_g(speaker_2)
+    g = slerp(emb0, emb1, slerp_weight).unsqueeze(-1)"""
+
+SYNTH_NEW = """    x_enc, m_p_orig, logs_p_orig, x_mask = model.enc_p(x, x_lengths)
+    # [gemma4 singlespeaker-patch v1] un checkpoint single-speaker no tiene
+    # tabla emb_g (gin_channels=0); VITS acepta g=None y la diversidad la
+    # ponen noise/length scales. Sin esto, las voces nativas P2 crashean.
+    if getattr(model, "emb_g", None) is not None:
+        emb0 = model.emb_g(speaker_1)
+        emb1 = model.emb_g(speaker_2)
+        g = slerp(emb0, emb1, slerp_weight).unsqueeze(-1)
+    else:
+        g = None"""
+
 
 def apply() -> int:
     text = TARGET.read_text(encoding="utf-8")
     if MARKER in text:
         print("ya parcheado v2 (idempotente, no-op)")
+    else:
+        if not BAK.exists():
+            shutil.copy2(TARGET, BAK)
+        missing = [old for old, _ in PATCHES if old not in text]
+        if missing:
+            print("FALLO: no encuentro estos bloques (¿version distinta del "
+                  "paquete? ¿quedo el patch v1 aplicado? correr --revert):")
+            for m in missing:
+                print("---\n" + m[:300])
+            return 1
+        for old, new in PATCHES:
+            text = text.replace(old, new, 1)
+        TARGET.write_text(text, encoding="utf-8")
+        print(f"patch v2 aplicado a {TARGET} (backup en {BAK.name})")
+
+    stext = SYNTH_TARGET.read_text(encoding="utf-8")
+    if SYNTH_MARKER in stext:
+        print("synthesis ya parcheado (idempotente, no-op)")
         return 0
-    if not BAK.exists():
-        shutil.copy2(TARGET, BAK)
-    missing = [old for old, _ in PATCHES if old not in text]
-    if missing:
-        print("FALLO: no encuentro estos bloques (¿version distinta del paquete?"
-              " ¿quedo el patch v1 aplicado? correr --revert primero):")
-        for m in missing:
-            print("---\n" + m[:300])
+    if SYNTH_OLD not in stext:
+        print("FALLO: bloque de synthesis no encontrado (¿version distinta?)")
         return 1
-    for old, new in PATCHES:
-        text = text.replace(old, new, 1)
-    TARGET.write_text(text, encoding="utf-8")
-    print(f"patch v2 aplicado a {TARGET} (backup en {BAK.name})")
+    if not SYNTH_BAK.exists():
+        shutil.copy2(SYNTH_TARGET, SYNTH_BAK)
+    SYNTH_TARGET.write_text(stext.replace(SYNTH_OLD, SYNTH_NEW, 1),
+                            encoding="utf-8")
+    print(f"patch single-speaker aplicado a {SYNTH_TARGET.name} "
+          f"(backup en {SYNTH_BAK.name})")
     return 0
 
 
 def revert() -> int:
+    rc = 1
     if BAK.exists():
         shutil.copy2(BAK, TARGET)
-        print("revertido desde", BAK.name)
-        return 0
-    print("no hay backup; nada que revertir")
-    return 1
+        print("augment revertido desde", BAK.name)
+        rc = 0
+    if SYNTH_BAK.exists():
+        shutil.copy2(SYNTH_BAK, SYNTH_TARGET)
+        print("synthesis revertido desde", SYNTH_BAK.name)
+        rc = 0
+    if rc:
+        print("no hay backups; nada que revertir")
+    return rc
 
 
 if __name__ == "__main__":

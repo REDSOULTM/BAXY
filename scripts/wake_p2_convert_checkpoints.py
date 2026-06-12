@@ -49,6 +49,8 @@ P2_VOICES = [
     ("pt_BR-cadu", "pt/pt_BR/cadu"),
     ("nl_NL-pim", "nl/nl_NL/pim"),
     ("zh_CN-xiao_ya", "zh/zh_CN/xiao_ya"),
+    # candidato alternativo zh (xiao_ya falló el gate de contenido 2026-06-12)
+    ("zh_CN-chaowen", "zh/zh_CN/chaowen"),
 ]
 
 
