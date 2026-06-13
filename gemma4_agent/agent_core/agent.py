@@ -288,12 +288,9 @@ def _detect_lang(text: str) -> str:
             return lang
     except Exception:
         pass
-    # (3) fallback keyword
-    try:
-        from ..safety_pkg.reply_validator import _guess_lang as _gl
-        return _gl(t)
-    except Exception:
-        return "es"
+    # (3) fallback: sin keyword-guesser (reply_validator removido en
+    # Experimentando) -> default es. El idioma del reply lo elige el LLM nativo.
+    return "es"
 
 
 _FIXED_LANGS = frozenset({"es", "en", "pt", "fr", "de", "it"})
@@ -2595,13 +2592,9 @@ class Gemma4Agent:
         _guard_check = bool(guard_check)
 
         def _guard_fires(text: str) -> bool:
-            if not _guard_check or not text:
-                return False
-            try:
-                from .agent_guards import zero_event_claim_is_lie
-                return zero_event_claim_is_lie(text)
-            except Exception:  # noqa: BLE001
-                return False
+            # Rama Experimentando: sin honesty-guard sobre el stream. Nunca
+            # aborta el streaming por "claim sin evidencia".
+            return False
 
         acc_raw = ""
         fed = ""  # sanitized prose already handed to the sink (what was voiced)
@@ -5495,9 +5488,8 @@ class Gemma4Agent:
         # HIZO LA OFERTA (un "no"/"sí" pelado del próximo turno no da señal de
         # idioma fiable); si no lo tenemos, inferir del propio mensaje.
         try:
-            from ..safety_pkg.reply_validator import _guess_lang as _gl
             from ..memory_pkg.pattern_miner import jarvis_phrase as _jp
-            _lang = getattr(self, "_pending_suggestion_lang", "") or _gl(text or "")
+            _lang = getattr(self, "_pending_suggestion_lang", "") or "es"
         except Exception:
             _lang = "es"
             _jp = lambda l, k: ""  # noqa: E731
