@@ -5222,101 +5222,11 @@ class Gemma4Agent:
                     )
                 except Exception:
                     pass
+        # Rama Experimentando: SIN guards de comportamiento ni repairs ni
+        # forzado de idioma. sanitize_text se conserva porque es DECODIFICACIÓN
+        # de salida (strippea el canal <think>/<|tool_call> del texto visible),
+        # no un guard de comportamiento. El reply del LLM pasa tal cual.
         assistant_content = sanitize_text(assistant_content)
-        assistant_content = self._guard_unverified_final(assistant_content, events)
-        assistant_content = self._guard_phrase_confirm(assistant_content)
-        assistant_content = self._guard_plan_status(assistant_content)
-        assistant_content = self._guard_promise_without_action(
-            assistant_content, events,
-        )
-        # Bug 3: grounding gate. Inline morphological check catches
-        # "Abrí X" / "busqué Y" / "agendé Z" claims when tool_events
-        # is empty — same family as promise guard but for past-tense
-        # action claims (vs future-tense promises). Async NLI check
-        # also fires to feed the lesson store for future RAG hits.
-        assistant_content = self._guard_grounded_action_claim(
-            assistant_content, events, turn_id,
-        )
-        assistant_content = self._repair_media_fabricated_inline(
-            assistant_content, raw_text_early, events, turn_id,
-        )
-        # Hora fabricada (bug 2026-06-10): ANTES del repair de idioma, así la
-        # regeneración clean-context (ya en el idioma del usuario) pasa igual
-        # por el resto del embudo.
-        assistant_content = self._repair_unfounded_time_claim_inline(
-            assistant_content, raw_text_early, events, turn_id,
-        )
-        # Valor fabricado (gates FT v3 2026-06-11): mismo bug-class que la hora
-        # ("Battery level is 78%" con has_battery:false delante) — mismo flujo.
-        assistant_content = self._repair_unfounded_value_claim_inline(
-            assistant_content, raw_text_early, events, turn_id,
-        )
-        lang_repaired = False
-        assistant_content, lang_repaired = self._repair_reply_language_if_needed(
-            raw_text_early, assistant_content, turn_id,
-        )
-        # SEGUNDO pase del guard de valores: el rewriter de idioma puede
-        # RE-fabricar la medida que el primer pase reparó (gotcha medido
-        # 2026-06-11: "Ecco la risposta in italiano: La batteria è al 78 per
-        # cento." salió del rewrite con el 78 inventado — mismo bug-class que
-        # "el rewrite de idioma inventa horas"). Idempotente y barato.
-        if lang_repaired:
-            assistant_content = self._repair_unfounded_value_claim_inline(
-                assistant_content, raw_text_early, events, turn_id,
-            )
-        assistant_content = self._repair_media_status_reply_if_needed(
-            raw_text_early or _extract_user_text(content) or "",
-            assistant_content,
-            events,
-            turn_id,
-        )
-        try:
-            from ..safety_pkg.reply_validator import post_action_clarification_conflict
-            _focused_reply_events = self._focused_events_for_action_reply(events)
-            _event_names_for_reply = {
-                str(getattr(ev, "name", "") or "").casefold()
-                for ev in (events or [])
-            }
-            _info_only_events = bool(_event_names_for_reply) and all(
-                name in _INFO_RETRIEVAL_TOOLS for name in _event_names_for_reply
-            )
-            _mode_name = str(getattr(mode, "name", "") or "")
-            _needs_refocus = bool(
-                events
-                and _mode_name != "research"
-                and not _info_only_events
-                and _focused_reply_events
-                and len(_focused_reply_events) < len(events)
-            )
-            _needs_clarify_repair = bool(
-                events
-                and _mode_name != "research"
-                and not _info_only_events
-                and post_action_clarification_conflict(assistant_content or "", list(events))
-            )
-            if _needs_refocus or _needs_clarify_repair:
-                _utext = raw_text_early or _extract_user_text(content) or ""
-                _did = self._describe_events_for_reply(_focused_reply_events or events)
-                _fixed = self._llm_action_reply(
-                    _utext,
-                    did=_did,
-                    fallback="Listo.",
-                    target_lang=_reply_lang(_utext),
-                )
-                if _fixed and _fixed.strip():
-                    if post_action_clarification_conflict(_fixed, list(_focused_reply_events or events)):
-                        _fixed = "Listo."
-                    self.trace.event(
-                        turn_id,
-                        "post_action_reply_refocused" if _needs_refocus else "post_action_clarification_repaired",
-                        before=(assistant_content or "")[:120],
-                        after=_fixed[:120],
-                        focused_events=len(_focused_reply_events or []),
-                        total_events=len(events or []),
-                    )
-                    assistant_content = _fixed
-        except Exception:
-            pass
         # Defensa: si el LLM emitio en el reply mismo un footer estilo
         # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
         # historial), lo strippeamos antes de pegar el nuestro. Sino,
@@ -5814,12 +5724,8 @@ class Gemma4Agent:
         # que automatice X?" es intrusivo (auditoría 2026-06-07: "apenas abro la app
         # actúa"). Ofrecer solo en turnos conversacionales (sin tool ejecutado).
         assistant_content = (assistant_content or "") + self._maybe_proactive_suffix(events)
-        assistant_content, _late_lang_repaired = self._repair_reply_language_if_needed(
-            raw_text_early or _extract_user_text(content) or "",
-            assistant_content,
-            turn_id,
-        )
-        lang_repaired = lang_repaired or _late_lang_repaired
+        # Rama Experimentando: SIN repair de idioma post-tool. El reply del LLM
+        # queda en el idioma que el modelo eligió nativamente.
         # If we streamed an INFO pass but the turn then ran a tool (the model
         # emitted a web-call as text that the RESCUE executed -> a post-prose
         # tool+summary), the streamed knowledge prose was superseded by a verified
@@ -5831,95 +5737,9 @@ class Gemma4Agent:
             self._tts_streamed_text = ""
             self.trace.event(turn_id, "tts_info_stream_superseded", tools=len(events))
         # STREAMING TTS: if the prose was already voiced sentence-by-sentence
-        # during generation, speak only the post-guard tail (an appended hedge or
-        # footer). For a clean success this is empty. Truthful by construction
-        # (see _feed_tts_tail / SPRINT_streaming_tts_truthful.md).
-        # IDIOMA post-tool (language confusion — investigación 2026-06-06): el
-        # summary pass se ancla al idioma del CONTEXTO (schemas/results/historia en
-        # ES) por encima del system prompt y devuelve el reply de acción en español
-        # aunque el user escribió en otro idioma (medido: 15/21 leaks). Mitigación
-        # con EVIDENCIA (EMNLP 2024 §6.3 + context-engineering): regenerar
-        # el reply con CONTEXTO LIMPIO (sin el contexto ES que arrastra). Dispara
-        # cuando (a) hubo tool ejecutado, (b) el user NO escribió en ES, (c) el reply
-        # leakeó al idioma equivocado. DECISIÓN (medido + user 2026-06-06): el idioma
-        # del INPUT lo detecta el híbrido _detect_lang FIABLEMENTE (27/27); el del
-        # REPLY corto NO (un "Listo, cerré Chrome" se mis-detecta como fr, y perseguir
-        # cada variante verbal ES con una lista de marcadores es interminable — el 4B
-        # siempre inventa otra). Por eso NO condicionamos el disparo a detectar el
-        # reply: si el user escribió en un idioma NO-es y hubo acción, REGENERAMOS
-        # SIEMPRE el reply con el LLM (contexto limpio, target_lang explícito). Cubre
-        # el 100% de los leaks sin el juego de variantes. Costo: ~0.1s extra SOLO en
-        # turnos noES (minoría; ES→ES no entra). Guard de seguridad: aceptar el _fixed
-        # solo si NO quedó en español (si el LLM fallara y devolviera ES, mantenemos
-        # el original). NO se toca si ya se streameó por TTS. Gate GEMMA4_LLM_ACTION_REPLY=0.
-        if (events and assistant_content
-                and not lang_repaired
-                and not getattr(self, "_tts_streamed", False)):
-            try:
-                _utext = raw_text_early or _extract_user_text(content) or ""
-                _user_lang = _reply_lang(_utext)
-                if _user_lang != "es" and _utext.strip():
-                    _did = self._describe_events_for_reply(events)
-                    _fixed = self._llm_action_reply(_utext, did=_did, fallback=assistant_content,
-                                                    target_lang=_user_lang)
-                    # ANTI-FABRICACIÓN (medido en vivo 2026-06-11): el regen
-                    # inventó "The current time is 10:30 AM." reemplazando un
-                    # reply correcto grounded. Rechazar el _fixed si afirma una
-                    # hora que ningún tool-result/user_text del turno sustenta.
-                    try:
-                        from ..safety_pkg.reply_validator import (
-                            clock_time_claim_unfounded as _ctcu_post)
-                        if _fixed and _ctcu_post(_utext, _fixed, list(events)):
-                            self.trace.event(turn_id, "posttool_lang_repair_rejected",
-                                             reason="unfounded_time_claim",
-                                             candidate=(_fixed or "")[:80])
-                            _fixed = ""
-                    except Exception as _ctcu_exc:
-                        try:
-                            self.trace.event(turn_id, "silent_fallback",
-                                             component="posttool_clock_check",
-                                             error=f"{type(_ctcu_exc).__name__}: {_ctcu_exc}")
-                        except Exception:
-                            pass
-                    # ANTI-FABRICACIÓN de VALORES (gates FT v3 2026-06-11): el
-                    # mismo regen inventaba "Battery level is 75%." con
-                    # has_battery:false delante — las 3 fabricaciones residuales
-                    # del gate eran TODAS de turnos noES, o sea de ESTE camino.
-                    # Mismo rechazo que el de hora, con el detector de medidas.
-                    try:
-                        from ..safety_pkg.reply_validator import (
-                            system_value_claim_unfounded as _svcu_post)
-                        if _fixed and _svcu_post(_utext, _fixed, list(events)):
-                            self.trace.event(turn_id, "posttool_lang_repair_rejected",
-                                             reason="unfounded_value_claim",
-                                             candidate=(_fixed or "")[:80])
-                            _fixed = ""
-                    except Exception as _svcu_exc:
-                        try:
-                            self.trace.event(turn_id, "silent_fallback",
-                                             component="posttool_value_check",
-                                             error=f"{type(_svcu_exc).__name__}: {_svcu_exc}")
-                        except Exception:
-                            pass
-                    # aceptar solo si mejora: el _fixed NO está en español (o el
-                    # original SÍ lo estaba — siempre vale reemplazar un leak ES).
-                    if _fixed and _fixed.strip() and not _looks_spanish(_fixed):
-                        self.trace.event(turn_id, "posttool_lang_repair",
-                                         user_lang=_user_lang,
-                                         before=assistant_content[:40], after=_fixed[:40])
-                        assistant_content = _fixed
-            except Exception:
-                pass
-        # ÚLTIMO pase del guard de valores (gates FT v3 2026-06-11): el reply
-        # final puede venir de VARIOS caminos (regen de idioma, repairs, pantalla)
-        # y parchear cada uno fue whack-a-mole medido — 3 corridas del gate, 3
-        # mezclas distintas de fabricaciones. Este choke-point único garantiza
-        # que NINGÚN camino entregue una medida (%/GB) sin evidencia del turno.
-        assistant_content = self._repair_unfounded_value_claim_inline(
-            assistant_content,
-            raw_text_early or _extract_user_text(content) or "",
-            events, turn_id,
-        )
+        # during generation, speak only the post-guard tail. For a clean success
+        # this is empty. (Rama Experimentando: sin regen de idioma post-tool ni
+        # guards de valor/hora — el reply nativo del LLM se entrega tal cual.)
         if getattr(self, "_tts_streamed", False):
             self._feed_tts_tail(assistant_content, turn_id)
         return AgentReply(content=assistant_content, tool_events=events, mission=mission,
