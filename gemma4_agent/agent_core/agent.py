@@ -3726,39 +3726,10 @@ class Gemma4Agent:
                     loop_aborted = True
                     break
 
-                # Verifier estructural per-tool (TIER 1 #2): mide el efecto real
-                # post-ejecucion. confirmed=True/False/None. Si trae
-                # evidence_keys (e.g. "app:Steam") los inyectamos al loop_state
-                # para que reset el warning_count en progreso real.
-                v_outcome = _verify(name, args, result)
-                verifier_outcomes.append(v_outcome)
-                # TIER 2 #5: mission_goal tracking — marca el primer expected
-                # outcome cuyo kind matchee esta call (segun action/args).
-                # Pasa ok del result; el confirmed real lo decide el verifier
-                # arriba y se combina en compute_mission_outcome.
+                # Rama Experimentando: SIN verifiers estructurales (no se mide el
+                # efecto post-ejecución ni se infla mission con confirmed). Solo se
+                # actualiza el tracking de misión por el ok crudo del result.
                 mission_goal.update_with_tool(name, args, bool(result.get("ok")))
-                self.trace.event(
-                    turn_id, "verifier",
-                    tool=name,
-                    confirmed=v_outcome.confirmed,
-                    reason=v_outcome.reason,
-                    evidence_keys=v_outcome.evidence_keys,
-                )
-                if v_outcome.confirmed is True:
-                    for ek in (v_outcome.evidence_keys or []):
-                        loop_state.record_evidence(ek)
-                elif v_outcome.confirmed is None:
-                    # No verificable (read-only / sin verifier): no es "no
-                    # progresar". No penalizar para no falsos-positivos de
-                    # no_progress en turnos read-heavy (búsquedas, knowledge).
-                    loop_state.note_unverifiable()
-                # Si la tool reporto ok=True pero el verifier dice confirmed=False,
-                # algo es inconsistente — vale la pena loggearlo para debug.
-                if v_outcome.confirmed is False and result.get("ok"):
-                    self.trace.event(
-                        turn_id, "verifier_disagrees",
-                        tool=name, reason=v_outcome.reason,
-                    )
                 if not result.get("ok"):
                     status_norm = str(result.get("status") or "").casefold()
                     completion = str(result.get("completion_status") or "").casefold()
