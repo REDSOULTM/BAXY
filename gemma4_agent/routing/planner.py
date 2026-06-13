@@ -736,17 +736,21 @@ def _is_close_app_action(text: str) -> bool:
 
 
 def plan_mission(content: str | list[dict[str, Any]]) -> MissionPlan:
+    # Rama Experimentando: descomposición ESTRUCTURAL en pasos (split por
+    # conectores), SIN keyword routing. Los pasos NO traen suggested_tools: el
+    # router semántico (select_tool_names) decide las tools por turno, y el LLM
+    # decide el plan. Multi-paso = más de un segmento; un solo segmento no es
+    # "misión" (lo maneja el turno normal).
     text = _content_text(content)
     parts = _split_steps(text)
     steps = [
-        MissionStep(index=i + 1, text=part, suggested_tools=_suggest_tools(part), verification_hint=_verify_hint(part))
+        MissionStep(index=i + 1, text=part, suggested_tools=[], verification_hint="")
         for i, part in enumerate(parts)
     ]
-    cleanup_expected = bool(re.search(r"\b(limpia|limpiar|cleanup|cierra todo lo que abriste|cerrar al final)\b", text, re.IGNORECASE))
-    needs_pc_action = any(step.suggested_tools for step in steps)
-    if len(steps) == 1 and not needs_pc_action:
+    needs_pc_action = len(steps) > 1
+    if len(steps) == 1:
         steps = []
-    return MissionPlan(goal=text[:500], steps=steps, cleanup_expected=cleanup_expected, needs_pc_action=needs_pc_action)
+    return MissionPlan(goal=text[:500], steps=steps, cleanup_expected=False, needs_pc_action=needs_pc_action)
 
 
 def select_tool_names(
@@ -770,605 +774,117 @@ def select_tool_names(
        multilingual sentence embeddings (semantic_router.suggest_tools_semantic).
     4. If everything came up empty, return [] (or ["safety"] when enabled).
     """
+    # ── Router 100% SEMÁNTICO (rama Experimentando) ──────────────────────────
+    # SOLO componentes entrenados / embeddings: exemplar memory, abstain head,
+    # per-tool logit head y encoder multilingüe. SIN keywords, SIN regex de
+    # intención, SIN reordenamientos heurísticos por dominio. Acá únicamente se
+    # elige QUÉ tools OFRECER por similitud semántica; el LLM nativo decide qué
+    # hacer con ellas. (La capa keyword `_suggest_tools` + las guardas `_is_*`
+    # fueron removidas en este experimento de comportamiento nativo.)
+    import os as _os
     original_text = _content_text(content)
-    # Expand colloquial shorthand ("vol"→"volumen", "wsp"→"whatsapp") so
-    # abbreviated queries route by meaning. Universal normalization, not a
-    # keyword→tool map. Applied before BOTH keyword and embedding paths.
-    raw_text = _expand_abbreviations(original_text)
+    raw_text = original_text
     text = _fold_text(raw_text)
-    # GATE DE RUIDO (BUG real medido, cacería tanda 1): un número/medición suelto
-    # ("2.14s", "7.63", "12.66") no es un comando — el router lo ruteaba a
-    # window.active / media.play arbitrariamente. Sin intención accionable,
-    # abstener para que el LLM pida aclaración. Guarda: si hay pending_intent, un
-    # número ES la respuesta esperada ("¿qué volumen?" -> "50") -> NO gatear.
-    # Estructural, va PRIMERO (antes del exemplar/encoder). Gate GEMMA4_NOISE_GATE_OFF.
+    names: list[str] = []
+    exemplar_tools: list[str] = []
+    semantic_fallback_used = False
+
+    # 1. Exemplar memory (embeddings sobre ejemplos curados del histórico).
     try:
-        import os as _os_ng
-        if (_os_ng.environ.get("GEMMA4_NOISE_GATE_OFF", "0").strip().lower()
-                not in {"1", "true", "yes", "on"}
-                and _is_low_signal_noise(
-                    original_text, has_pending_intent=bool(pending_intent))):
+        from .exemplar_router import match as _exemplar_match
+        _exemplar = _exemplar_match(original_text)
+        if _exemplar is not None:
+            if _exemplar.abstain and not pending_intent:
+                base = ["session"]
+                if safety_enabled:
+                    base.append("safety")
+                select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
+                return base
+            exemplar_tools = list(_exemplar.tools)
+            names.extend(exemplar_tools)
+    except Exception:
+        exemplar_tools = []
+
+    for step in plan.steps:
+        names.extend(step.suggested_tools)
+
+    # 2. Encoder multilingüe + abstain head + per-tool logit head.
+    scored: list[tuple[str, float]] = []
+    if raw_text.strip():
+        from . import semantic_router as _sr_sem
+        _loaded = bool(_sr_sem.status().get("model_loaded")) or (
+            _os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
+            in {"1", "true", "yes", "on"})
+        scored = _sr_sem.suggest_tools_scored(raw_text, k=12) if _loaded else []
+        top_score = scored[0][1] if scored else 0.0
+        peak_gap = (scored[0][1] - scored[1][1]) if len(scored) >= 2 else top_score
+        confident_peak = top_score >= _SEM_PEAK_KEEP and peak_gap >= _SEM_PEAK_GAP
+
+        # Force-include de clusters tight (media/vision) y MCP por SCORE del
+        # encoder (no keyword): si el encoder los pone fuerte, garantizarlos.
+        for _t in ("media", "vision"):
+            _s = next((s for nm, s in scored if nm == _t), 0.0)
+            if _t not in names and _s >= _SEM_PEAK_KEEP:
+                names.insert(0, _t)
+        _best_mcp = next(((t, s) for t, s in scored if t.startswith("mcp__")), None)
+        if (_best_mcp is not None and _best_mcp[1] >= _MCP_PEAK_KEEP
+                and not any(t.startswith("mcp__") for t in names)):
+            names.insert(0, _best_mcp[0])
+
+        # Abstain head (clasificador entrenado): chitchat vs tool.
+        abstain = None
+        abstain_p = 0.0
+        try:
+            from ..safety_pkg.abstain_head import (
+                load_model, build_features, is_enabled as _ah_on)
+            if _ah_on():
+                _m = load_model()
+                if _m is not None:
+                    _feats = build_features(
+                        raw_text, intent=None, scored=scored, keyword_fired=False)
+                    abstain = _m.should_abstain(_feats)
+                    abstain_p = _m.p_no_tool(_feats)
+        except Exception:
+            abstain = None
+        do_abstain = (abstain is True)
+
+        # Per-tool logit head (entrenado): cada tool tiene su propio umbral.
+        _head_fired: list[tuple[str, float]] = []
+        try:
+            from ..tools_pkg.tool_head import load as _th_load, is_enabled as _th_on
+            if _th_on() and _loaded:
+                _th = _th_load()
+                if _th is not None:
+                    _qv = _sr_sem.embed(raw_text)
+                    if _qv is not None:
+                        _head_fired = [(t, m) for t, m in _th.fire(_qv)
+                                       if m >= _HEAD_MIN_MARGIN][:_HEAD_TOP_N]
+        except Exception:
+            _head_fired = []
+
+        # Veto de abstención sobre el head: turno conversacional confiable -> nada.
+        _abstain_veto = (do_abstain and abstain_p >= _VETO_P
+                         and not pending_intent and not confident_peak)
+        head_tools = [] if _abstain_veto else [t for t, _ in _head_fired]
+        names.extend(head_tools)
+
+        # Abstención dura: head dice conversacional, sin pico confiable ni head
+        # firings -> solo infra (el LLM responde sin tools).
+        if (do_abstain and not pending_intent and not confident_peak
+                and not head_tools and not exemplar_tools):
             base = ["session"]
             if safety_enabled:
                 base.append("safety")
             select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
             return base
-    except Exception:
-        pass
-    names: list[str] = []
-    exemplar_tools: list[str] = []
-    try:
-        from .exemplar_router import match as _exemplar_match
-        _exemplar = _exemplar_match(original_text)
-        if _exemplar is None and raw_text != original_text:
-            _exemplar = _exemplar_match(raw_text)
-        if _exemplar is not None:
-            if _exemplar.abstain and not pending_intent:
-                _exemplar_can_abstain = True
-                try:
-                    from .intent_router import wants_knowledge as _ex_wants_knowledge
-                    from .exemplar_router import has_tool_conflict as _ex_has_tool_conflict
-                    _exemplar_can_abstain = not (
-                        _ex_wants_knowledge(original_text)
-                        and _ex_has_tool_conflict(original_text)
-                    )
-                except Exception:
-                    _exemplar_can_abstain = True
-                if _exemplar_can_abstain:
-                    base = ["session"]
-                    if safety_enabled:
-                        base.append("safety")
-                    select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
-                    return base
-            exemplar_tools = list(_exemplar.tools)
-            names.extend(exemplar_tools)
-    except Exception:
-        exemplar_tools = []
-    for step in plan.steps:
-        names.extend(step.suggested_tools)
-    _kw_hits = _suggest_tools(text)
-    if not names:
-        names.extend(_kw_hits)
-    # MUSIC-PLAY force-include: _suggest_tools (que agrega `media` ante
-    # "pon/reproducí una canción/música") SOLO corría como fallback (if not
-    # names). Si el exemplar/plan ya puso otras tools, un pedido de reproducir
-    # música perdía `media` y el LLM caía a `web` -> abría una URL random (bug
-    # medido: "Pon una canción en Spotify" -> web search). Si el keyword router
-    # detecta media-play, aseguramos `media` en el subset (el LLM decide si la usa).
-    # Targeted: SOLO `media`; no cambia el resto del ruteo.
-    elif "media" not in names and "media" in _kw_hits:
-        names.insert(0, "media")
 
-    # Continuation hint: si el agente preguntó por perfil de streaming en
-    # el turn anterior y este turn parece una respuesta corta (no es un
-    # comando nuevo), forzar media en el subset. El LLM decide si llamar
-    # media o no — pero sin la tool en el subset no podría.
-    streaming_hint_media = False
-    if last_assistant_text and "media" not in names:
-        prev_low = _fold_text(last_assistant_text)
-        is_streaming_question = (
-            ("perfil" in prev_low or "profile" in prev_low)
-            and re.search(
-                r"\b(netflix|disney|hbo|max|prime|amazon|spotify)\b",
-                prev_low,
-            )
-        )
-        if is_streaming_question:
-            # Solo añadir media si el user no acaba de pedir algo
-            # claramente distinto (ya cubierto por _suggest_tools, names != []).
-            if not names or len(raw_text.split()) <= 6:
-                names.insert(0, "media")
-                streaming_hint_media = True
+        # Fallback semántico: si NADA disparó, usar el top-k del encoder (no
+        # regresar a vacío en una query real pero difícil).
+        if not names and scored:
+            semantic_fallback_used = True
+            names.extend([t for t, _ in scored[:_SEM_TOPN]])
 
-    semantic_fallback_used = False
-    if raw_text.strip():
-        # The semantic router runs ALWAYS, not only when keywords come up
-        # empty. Keyword matching is precise for action verbs but blind to
-        # intent expressed in wording our regex doesn't cover — especially
-        # informational questions in any language ("quién es X", "who is X",
-        # "de qué trata X"). The embedding model (paraphrase-multilingual,
-        # 50+ languages) covers that universally. We UNION the semantic
-        # suggestions onto the keyword names: keywords guarantee the action
-        # tools stay (no regression), semantics add the knowledge/intent
-        # tools keywords miss. Smalltalk/greetings still short-circuit to no
-        # tools.
-        word_count = len(raw_text.split())
-        casual = re.search(
-            r"^\s*(hola|hello|hi|hey|hola!|buenos dias|buenas tardes|buenas noches|buen dia|"
-            r"good morning|good afternoon|good evening|"
-            r"ola|bom dia|boa tarde|boa noite|"
-            r"bonjour|bonsoir|salut|"
-            r"ciao|buongiorno|buonasera|"
-            r"gracias|thanks|thank you|obrigado|merci|grazie|"
-            r"que tal|how are you|como estas|como estan|tudo bem|ca va|come stai)\b",
-            _fold_text(raw_text),
-        )
-        # Semantic abstention gate: the semantic router returns its top-k for
-        # ANY input above a low cosine floor, so on conversational turns
-        # (smalltalk, "quién eres", "no entiendo") it
-        # over-offers domain tools the user never requested — the dominant
-        # source of NO-TOOL over-offers in the eval. is_conversational()
-        # decides PURELY by intent (chitchat/selfref outrank action/info)
-        # whether the turn is "talking" rather than "do X" / "tell me about
-        # the world". When it is, we skip the semantic union. Keyword hits
-        # (precise action verbs) and wants_knowledge (real questions) still
-        # stand, so this can't silence a genuine command or question.
-        conversational = False
-        try:
-            from .intent_router import is_conversational
-            conversational = is_conversational(raw_text)
-        except Exception:
-            conversational = False
-        # Run semantics unless it's pure smalltalk. We compute the scored
-        # matches first so a CONFIDENT top-1 can override the conversational
-        # gate: a one-word imperative ("mutea", "pausa", "minimiza") reads
-        # as conversational by intent (chitchat edges action on contentless
-        # tokens) yet lands squarely on one tool's meaning (audio 0.51,
-        # media 0.45, window 0.36). True chitchat/self-reference spreads
-        # thin and low (~0.27 on catch-all tools). So we abstain ONLY when
-        # the turn is conversational AND no tool match is confident — both
-        # signals must agree it's "just talking". Pure semantic confidence,
-        # no keywords.
-        if not casual and (
-            word_count >= 2 or "?" in raw_text or "¿" in raw_text
-            or len(raw_text.split()) == 1  # single-word imperatives count
-        ):
-            from . import semantic_router as _sr_sem
-            _semantic_loaded = bool(_sr_sem.status().get("model_loaded"))
-            _semantic_cold_load = (
-                _os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
-                in {"1", "true", "yes", "on"}
-            )
-            scored = (
-                _sr_sem.suggest_tools_scored(raw_text, k=12)
-                if (_semantic_loaded or _semantic_cold_load)
-                else []
-            )
-            top_score = scored[0][1] if scored else 0.0
-            confident = top_score >= _SEM_CONFIDENT_SCORE
-            # MULTILINGUAL media-play: el force-include de play por keyword
-            # (_kw_hits arriba) es ES+EN. Para CUALQUIER idioma usamos la
-            # señal SEMÁNTICA (embeddings 50+ idiomas): si `media` es un match
-            # FUERTE, lo agregamos a names — queda protegido por _kw_protect (abajo)
-            # y sobrevive el cap, igual que el regex. Así "mets une chanson",
-            # "spiel ein Lied", "toca uma música" ofrecen `media` como "pon una
-            # canción". No es lista de keywords por idioma: es el encoder multilingüe.
-            _media_score = next((s for t, s in scored if t == "media"), 0.0)
-            if "media" not in names and _media_score >= _SEM_PEAK_KEEP:
-                names.insert(0, "media")
-
-            # VISION force-include por SEÑAL SEMÁNTICA (no keyword). Mismo patrón que
-            # `media`/`mcp` arriba: si el encoder pone `vision` con score FUERTE
-            # (>=_SEM_PEAK_KEEP), la garantizamos en el subset para que sobreviva el
-            # cap. Esto resuelve el bug "describí la pantalla" sin meter vision por la
-            # keyword "pantalla" (que la metía hasta en pedidos de CLICK -> el 4B
-            # describía en vez de actuar). El encoder distingue solo y multilingüe:
-            # PERCEPCIÓN ("describí/qué ves/leé la pantalla", "what do you see") da
-            # vision≈0.85; ACCIÓN ("apretá/click el primero", "klicke") la deja en
-            # ≈0.48 < bar -> NO entra. Sin listas de verbos por idioma. (Bug 2026-06-07.)
-            _vision_score = next((s for t, s in scored if t == "vision"), 0.0)
-            if "vision" not in names and _vision_score >= _SEM_PEAK_KEEP:
-                names.insert(0, "vision")
-
-            # MCP promotion: las tools MCP enroladas SOLO viven en la lista
-            # semántica `sem`, que se descarta cuando una keyword nativa ya llenó
-            # `names` (rama `if not names` abajo). Resultado MEDIDO: para "qué clima
-            # hace en X" la keyword mete `web` -> sem se tira -> el 4B nunca ve
-            # mcp__weather__* -> elige `web` (familiar). 0/3 en vivo.
-            # Fix (mismo patrón que `media` arriba, research-aligned tight-cluster):
-            # promover la MEJOR MCP de `scored` a names[0] si supera el bar calibrado
-            # — COLLAPSE del cluster a 1 representante (no las 4-5 variantes near-tie),
-            # language-agnostic (decide por embedding, no keywords), SIN tocar la
-            # keyword nativa (web sigue como fallback -> gate nativo verde). Respeta
-            # el cap (inserta 1). Gate `GEMMA4_MCP` ya filtró el enrolamiento.
-            _best_mcp = next(((t, s) for t, s in scored if t.startswith("mcp__")), None)
-            if (_best_mcp is not None and _best_mcp[1] >= _MCP_PEAK_KEEP
-                    and not any(t.startswith("mcp__") for t in names)):
-                names.insert(0, _best_mcp[0])
-
-            # CALIBRATED abstention head. NO-TOOL keep (0.51) is the weak
-            # spot, and the fix is a learned reject option over cheap
-            # query-comparable features, not another raw-cosine threshold.
-            # The head sees the 5 intent-centroid scores, the semantic-cosine
-            # shape, length and a keyword-fired flag (trained on dev only;
-            # weights in data/abstain_head.json). It REPLACES the old
-            # "conversational AND not confident" heuristic when available.
-            abstain = None
-            abstain_p = 0.0  # P(no_tool) from the head, for the veto strength
-            try:
-                from ..safety_pkg.abstain_head import load_model, build_features, is_enabled as _ah_on
-                if _ah_on():
-                    _m = load_model()
-                    if _m is not None:
-                        _scored_intent = None
-                        try:
-                            from .intent_router import classify_intent
-                            _scored_intent = classify_intent(raw_text)
-                        except Exception:
-                            _scored_intent = None
-                        _feats = build_features(
-                            raw_text, intent=_scored_intent, scored=scored,
-                            keyword_fired=bool(names),
-                        )
-                        abstain = _m.should_abstain(_feats)
-                        abstain_p = _m.p_no_tool(_feats)
-            except Exception:
-                abstain = None
-
-            # ONE authoritative abstention decision: abstention must be a single
-            # calibrated decision, not a residual that survives only if every
-            # tool-adding path happens to miss. The CALIBRATED head decides;
-            # two narrow escapes protect real commands the head over-suppresses.
-            #
-            # Confident-peak escape: a crisp imperative like "mutea" reads as
-            # short/contentless to the head (p_no_tool ~0.70) yet lands squarely
-            # on ONE tool (audio 0.65, wide gap to #2). Keep just that peak. The
-            # bar is high (_SEM_PEAK_KEEP) because the FT encoder's cosines run
-            # higher; true smalltalk/knowledge spreads flatter and never clears
-            # it. The other escapes (pending_intent, streaming hint) are explicit
-            # prior-turn continuation signals, handled at the wipe below.
-            peak_gap = (scored[0][1] - scored[1][1]) if len(scored) >= 2 else top_score
-            confident_peak = (top_score >= _SEM_PEAK_KEEP
-                              and peak_gap >= _SEM_PEAK_GAP)
-
-            head_available = abstain is not None
-            # Effective abstain: the learned head when present, else the prior
-            # conversational heuristic. Confident commands stay either way.
-            do_abstain = (abstain is True) if head_available else bool(conversational)
-
-            # Protect keyword-matched action tools from the abstain wipe UNLESS
-            # the turn is informational. "reproduce daddy yankee" fires the media
-            # keyword but its OOV object makes the semantic list empty, fooling
-            # the head into abstaining — the keyword is the true signal there.
-            # But a keyword firing on a knowledge question ("que es pytest" ->
-            # developer) is a false positive that SHOULD abstain.
-            _kw_protect: list[str] = []
-            if names:
-                _is_knowledge = False
-                try:
-                    from .intent_router import wants_knowledge as _wk, classify_intent as _ci2
-                    _is_knowledge = _wk(raw_text)
-                    if not _is_knowledge:
-                        # Looser knowledge guard for the keyword-protection only:
-                        # a "what is X" frame scores high INFO even when chitchat
-                        # edges it ("qué es pytest": info 0.64, chitchat 0.66).
-                        # wants_knowledge stays strict (used elsewhere); here we
-                        # also block protection when info is high in absolute
-                        # terms, so a spurious keyword on a knowledge question
-                        # ("pytest"->developer) doesn't survive the abstain wipe.
-                        _si = _ci2(raw_text)
-                        if _si is not None and _si.info >= _KW_PROTECT_INFO_BLOCK:
-                            _is_knowledge = True
-                except Exception:
-                    _is_knowledge = False
-                if not _is_knowledge:
-                    _kw_protect = list(names)
-                for _tool in exemplar_tools:
-                    if _tool not in _kw_protect:
-                        _kw_protect.append(_tool)
-
-            # A genuine WORLD-KNOWLEDGE question ("de qué trata Dune", "who
-            # directed Oppenheimer") must NOT be abstained — it needs web/
-            # knowledge to look the answer up. wants_knowledge() already added
-            # those to `names`; protect them through the abstain gate (the
-            # abstain head's high p_no_tool on these is a false positive — they
-            # ARE no-PC-action, but they're a web lookup, not silence).
-            _is_world_q = False
-            try:
-                from .intent_router import wants_knowledge as _wk2
-                _is_world_q = _wk2(raw_text)
-            except Exception:
-                _is_world_q = False
-            # PRIORIDAD del estado-local sobre world-q (bug 2026-06-06): "qué
-            # aplicación está abierta" / "qué ventana tengo activa" son preguntas
-            # del SO LOCAL (window.active), NO de mundo/web — pero wants_knowledge
-            # las marcaba como world-q y mantenía web/knowledge, tapando el bloque
-            # local_state de abajo (que solo corre con names vacío). Si es estado
-            # local, NO es world-q -> el local_state gana y ofrece window.
-            if _is_world_q and _is_local_state_question(raw_text):
-                _is_world_q = False
-                names = [n for n in names
-                         if n not in {"web", "knowledge", "source_manager"}]
-            _knowledge_keep = [n for n in names if n in {"web", "knowledge",
-                               "source_manager"}] if _is_world_q else []
-
-            if do_abstain and not pending_intent and not streaming_hint_media:
-                if confident_peak or (not head_available and confident):
-                    # Keep only the dominant peak (+near ties) + protected kw.
-                    cut = top_score - _SEM_CONF_BAND
-                    scored = [p for p in scored if p[1] >= cut]
-                    _keep = ({nm for nm, _ in scored} | set(_kw_protect)
-                             | set(_knowledge_keep))
-                    names = [n for n in names if n in _keep]
-                else:
-                    scored = []
-                    names = list(_kw_protect) + [n for n in _knowledge_keep
-                                                 if n not in _kw_protect]
-            # PER-TOOL LOGIT HEAD — anti-bloat architecture. Instead of taking
-            # the semantic top-k / a band (which drags a flat-distribution
-            # cluster like "pausa"->media,app,study,
-            # accessibility into the subset), each tool has its OWN calibrated
-            # threshold; the subset is only the tools that individually clear
-            # their bar. "pausa" fires {media}; "abre steam" fires {steam,app};
-            # "que es pytest" fires {} — small and precise BY CONSTRUCTION.
-            # We UNION the head's firings with the keyword hits (keyword is the
-            # high-precision recall floor that catches OOV objects like
-            # "reproduce daddy yankee" the encoder can't place), and fall back to
-            # the semantic top-k only when BOTH come up empty (so we never regress
-            # to nothing on a real but hard query).
-            # The abstain head VETOES the tool head on a clear no-tool turn:
-            # if the calibrated abstain decision says "conversational" AND no
-            # precise keyword fired AND it's not a parked continuation, we do
-            # not let the per-tool head pull anything. This is what keeps
-            # knowledge questions / smalltalk at zero domain tools even though a
-            # tool's logit might marginally clear its bar. A keyword hit
-            # (_kw_protect) or a confident command bypasses the veto.
-            # Veto only when the abstain head is CONFIDENT (p >= _VETO_P), so a
-            # borderline real command the head is unsure about still reaches the
-            # tool head. Tuned on dev to balance no-tool keep vs recall.
-            # Compute the head firings FIRST (always), then decide the veto.
-            _head_fired: list[tuple[str, float]] = []
-            try:
-                from ..tools_pkg.tool_head import load as _th_load, is_enabled as _th_on
-                if _th_on():
-                    _th = _th_load()
-                    if _th is not None:
-                        from . import semantic_router as _sr_head
-                        _semantic_loaded = bool(_sr_head.status().get("model_loaded"))
-                        _semantic_cold_load = (
-                            _os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
-                            in {"1", "true", "yes", "on"}
-                        )
-                        if _semantic_loaded or _semantic_cold_load:
-                            _qv = _sr_head.embed(raw_text)
-                            if _qv is not None:
-                                _head_fired = [(t, m) for t, m in _th.fire(_qv)
-                                               if m >= _HEAD_MIN_MARGIN][:_HEAD_TOP_N]
-            except Exception:
-                _head_fired = []
-            # If the head's strongest firing is a KNOWLEDGE tool (web/knowledge),
-            # the turn is a lookup ("who directed Oppenheimer") — never veto it,
-            # even when wants_knowledge missed the phrasing and p_no_tool is high.
-            _head_knows = bool(_head_fired) and _head_fired[0][0] in {"web", "knowledge"}
-
-            _abstain_veto = (do_abstain and abstain_p >= _VETO_P
-                             and not _kw_protect
-                             and not _is_world_q and not _head_knows
-                             and not pending_intent and not streaming_hint_media
-                             and not confident_peak)
-            head_tools: list[str] = [] if _abstain_veto else [t for t, _ in _head_fired]
-            # GUARDA local-datetime también en el HEAD (2026-06-10): "qué día es
-            # hoy" hacía que el head disparara `web` con margen débil, evadiendo la
-            # guarda que solo vivía en _suggest_tools -> web+source_manager de ruido
-            # (canario backlog #2). La fecha/hora local la responde `system`.
-            # AMPLIADA a TODO hecho-local por keyword (canarios 2026-06-11):
-            # "cuanta RAM tengo" matcheaba `system` por keyword pero el head
-            # igualmente sumaba `web` débil — la guarda de _suggest_tools y la
-            # del head deben mirar el MISMO set (_LOCAL_FACT_TOOLS).
-            if head_tools and (_is_local_datetime(raw_text)
-                               or (set(_kw_hits) & _LOCAL_FACT_TOOLS)):
-                head_tools = [t for t in head_tools if t not in ("web", "knowledge")]
-            _cu_score = 0.0
-            try:
-                _cu_score = max((s for t, s in scored if t == "computer_use"),
-                                default=0.0)
-            except Exception:
-                _cu_score = 0.0
-            _cu_sem_rescue = (
-                _cu_score >= _COMPUTER_USE_SEM_RESCUE
-                and not _abstain_veto
-                and not _is_world_q
-                and not streaming_hint_media
-                and "whatsapp" not in names
-            )
-            if _cu_sem_rescue:
-                # If there was no precise keyword, prefer the operational
-                # in-app tool over weak thematic head firings. With a keyword
-                # hit, keep both signals but put computer_use first so the LLM
-                # sees the right affordance before generic fallbacks.
-                if "computer_use" not in names:
-                    names.insert(0, "computer_use")
-                if not _kw_protect:
-                    head_tools = ["computer_use"]
-                elif "computer_use" not in head_tools:
-                    head_tools.insert(0, "computer_use")
-
-            # GOAL-MISSION STRUCTURAL BOOST: el patrón "ve/andá/entrá a X
-            # y/después/luego a Y" es UNA misión con GOAL FINAL (X = ruta/medio,
-            # Y = destino), NO una cadena de dos
-            # acciones independientes — el splitter NO la parte y el agente
-            # debería ejecutarla con computer_use(goal=frase completa) que
-            # descompone en pasos. Pero el encoder semántico da cu_score~0.40
-            # (debajo de _COMPUTER_USE_SEM_RESCUE=0.44) porque sus anchors
-            # enfatizan Discord/Slack, no navegación-en-sitio multi-paso. Red
-            # determinista estructural (gramática, no contenido): cuando el
-            # patrón aparece, forzar computer_use al frente del subset.
-            # Multilingüe (verbos nav + conectores en es/en/pt/it/fr/de).
-            _GOAL_MISSION_RE = re.compile(
-                # 1ra cláusula: verbo de nav + dest (cualquier nombre).
-                r"\b(?:ve|and[áa]|entr[áa]|naveg[áa]|dirig[íi]te|"
-                r"go|navigate|head|vai|va|entre)\s+(?:a|al|to|para|au|in|n[oa]|su)\s+"
-                r"\S+.*?"
-                # conector secuencial
-                r"\s+(?:y|e|and|then|or|ou|et|puis|und|dann|poi)\s+"
-                r"(?:luego\s+|despu[ée]s\s+|then\s+|after\s+that\s+|"
-                r"depois\s+|ensuite\s+|danach\s+|poi\s+)?"
-                # 2da cláusula: prep direccional + nombre (la meta)
-                r"(?:a|al|to|para|au|aux|in|nel|su)\s+\S+",
-                re.IGNORECASE,
-            )
-            if (_GOAL_MISSION_RE.search(raw_text) and "computer_use" not in names
-                    and not _abstain_veto and not _is_world_q):
-                names.insert(0, "computer_use")
-
-            sem = [name for name, _ in scored]
-            if head_tools:
-                # Head fired: it is the precise primary. Union with keyword hits
-                # (both high-precision); do NOT dump the semantic top-k tail.
-                existing = set(names)
-                for t in head_tools:
-                    if t not in existing:
-                        names.append(t)
-                        existing.add(t)
-                if not names:
-                    semantic_fallback_used = True
-            elif sem:
-                # Head fired nothing. Keep keyword hits; only fall back to the
-                # semantic list when keywords ALSO came up empty (a hard query
-                # the head couldn't score but the encoder still placed).
-                if not names:
-                    names = list(sem[:_SEM_TOPN])
-                    semantic_fallback_used = True
-                # else: keyword hits stand alone (precise); no semantic flood.
-
-    # NOTE: continuation resolution via prev_user_text was tried and abandoned:
-    # on this corpus the previous-user-turn rarely carries the deictic's
-    # referent ("mutea" ← prev "saca pantallazo";
-    # "ciérralo" ← prev "ponlo bajito"; many have prev=None). The real
-    # continuation signal is the actually-executed tool of the prior turn,
-    # which the AGENT inherits from real history (agent.py) — not derivable
-    # from the prev user text. The param is kept for API symmetry but the
-    # planner does not guess from it.
-
-    # CROSS-ENCODER RESCUE (Stage E, research-recommended). When the primary
-    # router found NO domain tool but the turn is NOT a confident abstention
-    # (the abstain head wasn't sure it's smalltalk), a short/ambiguous query may
-    # have a real intent the bi-encoder placed too weakly ("who directed
-    # Oppenheimer", "cuántas pestañas tengo"). A cross-encoder reads the (query,
-    # tool-description) pair JOINTLY and resolves these. Fires on a small
-    # fraction of turns (only the empty-but-not-smalltalk band), so the common
-    # path pays nothing. Fully optional (GEMMA4_RERANKER=0).
-    if not names and raw_text.strip():
-        try:
-            _ab = None
-            try:
-                from ..safety_pkg.abstain_head import load_model as _al, build_features as _af, is_enabled as _ae
-                if _ae():
-                    _m = _al()
-                    if _m is not None:
-                        from .intent_router import classify_intent as _ci
-                        _ab = _m.p_no_tool(_af(raw_text, intent=_ci(raw_text),
-                                               scored=None, keyword_fired=False))
-            except Exception:
-                _ab = None
-            # only rescue when the head is NOT confident it's no-tool
-            if _ab is None or _ab < _RERANK_ABSTAIN_MAX:
-                from .reranker import rerank as _rerank, is_enabled as _ron
-                if _ron():
-                    from .semantic_router import TOOL_DESCRIPTIONS as _TD
-                    cands = [(t, d) for t, d in _TD.items()
-                             if t not in {"session", "safety", "state", "verify"}]
-                    picked = _rerank(raw_text, cands)
-                    if picked:
-                        names = picked
-                        semantic_fallback_used = True
-        except Exception:
-            pass
-
-    if not names:
-        # BUG real (log turnos 13/14): una PREGUNTA de estado local del SO ("¿qué
-        # juego estoy jugando?") caía acá (el abstain_head la trató como smalltalk)
-        # y devolvía solo ["session"] -> el 4B forzaba session.cancel_turn ante una
-        # pregunta. La responde window(action=active). Ofrecé `window` (estructural,
-        # antes de session) para que el LLM tenga la tool correcta. Análogo a cómo
-        # _is_world_q protege web/knowledge.
-        if _is_local_state_question(raw_text):
-            base = ["window", "session"]
-            if safety_enabled:
-                base.append("safety")
-            select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
-            return base
-        # Pregunta de estado de app NOMBRADA ("is Discord running?", "¿Steam está
-        # cerrado?") que ninguna keyword/encoder agarró -> NO dejar solo session
-        # (el 4B no podría responder). system(processes)+window(list) la responden.
-        if _is_app_state_check(raw_text):
-            base = ["system", "window", "session"]
-            if safety_enabled:
-                base.append("safety")
-            select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
-            return base
-        # Even on a "smalltalk" turn the user can ask to cancel ("tiempo",
-        # "stop", "espera"). Expose session.cancel_turn so the LLM can pick
-        # it without falling back to a generic reply.
-        base = ["session"]
-        if safety_enabled:
-            base.append("safety")
-        # A parked tool (prior turn returned needs_user) must survive even when
-        # THIS reply is smalltalk-shaped. The classic case:
-        # media asks "what's your Disney profile?" and the user replies
-        # "Mi perfil es Ema" (no keyword → names empty). Without this, the
-        # pending intent was dropped here (before the injection below) and
-        # the profile never reached media → infinite "need disney profile"
-        # loop. Inject the parked tool at the head.
-        if pending_intent:
-            pi_tool = str((pending_intent or {}).get("tool") or "")
-            if pi_tool and pi_tool not in base:
-                base.insert(0, pi_tool)
-        select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
-        return base
-
-    # Same negative anchor as in _suggest_tools: if the user mentioned "perfil"
-    # / "profile" but NO email-specific keyword, semantic fallback sometimes
-    # bubbles email to the top. Drop it. Keeps the rest of the subset intact.
-    if "email" in names and re.search(r"\b(perfil|profile)\b", text) and not re.search(
-        r"\b(mail|email|correo|courriel|posta|messaggio)\b", text,
-    ):
-        names = [n for n in names if n != "email"]
-
-    # memory-read vs reminder confusion: "qué recuerdas de mí" is a MEMORY read,
-    # but the encoder head weakly adds `reminder` (recordar~recordatorio). When
-    # the turn is a memory-read frame and memory is present, drop the stray
-    # reminder (a real reminder/alarm query says "recordatorio"/"alarma", caught
-    # separately and not matched here).
-    if "memory" in names and "reminder" in names and re.search(
-        r"\b(recuerdas|recordas|sabes de mi|sabes sobre mi|que recuerdas|"
-        r"what do you (remember|know) about me)\b", text,
-    ) and not re.search(r"\b(recordatorio|alarma|reminder|alarm|avisame)\b", text):
-        names = [n for n in names if n != "reminder"]
-
-    # Related-tools deps, BUDGETED across the whole subset. The unconditional
-    # fan-out (every app/media tool dragging in gui/uia/vision/window/browser/
-    # audio) was the second bloat engine behind the "11 tools" complaint.
-    # Directly-matched tools are always kept; deps fill only up to the budget.
-    # NAVEGACIÓN/COMPRA WEB UNIFICADA: "andá a la página de X" / "comprá en
-    # Instant Gaming" / "entrá a youtube" ruteaban INCONSISTENTE — a veces
-    # browser.open (bien), a veces web-search-a-Google,
-    # a veces computer_use — porque el subset ofrecía 4 tools de navegación y el
-    # 4B elegía mal, o game_launcher ganaba por la colisión de marca ("Gaming").
-    # Cuando la intención es NAVEGAR a una web o COMPRAR en una tienda web
-    # (clasificadores multilingües por embeddings):
-    #   (a) lideramos con browser_real + browser (camino que prefiere CDP);
-    #   (b) SACAMOS web y game_launcher del subset — son para PREGUNTAR (web) o
-    #       lanzar instalado (game_launcher), NUNCA para navegar; ofrecerlos
-    #       confunde al 4B (eligió web=Google). Los clasificadores ya excluyen
-    #       preguntas/launches, así que sacar web acá no rompe búsquedas reales.
-    # Fallback seguro: sin encoder -> ambos False -> no cambia nada.
-    _web_nav_intent = False
-    try:
-        from .intent_router import (wants_web_store as _wants_store,
-                                    wants_web_navigation as _wants_nav)
-        if _wants_store(raw_text) or _wants_nav(raw_text):
-            _web_nav_intent = True
-            for _bt in ("browser_real", "browser"):
-                if _bt in names:
-                    names.remove(_bt)
-                names.insert(0, _bt)
-    except Exception:
-        pass
-    # INTENCIÓN STEAM-STORE (2026-06-10): "página/tienda de Steam de X" se abre con
-    # `steam` (store_page resuelve appid y abre steam://store/<appid> en el cliente).
-    # Si steam ya está y el texto pide explícitamente la tienda/página DE STEAM,
-    # quitamos browser/browser_real/web/computer_use del subset: con 4 tools de
-    # navegación el 4B encadena steam->browser->browser y se pierde (medido: el
-    # caso Spider-Man 2 ofrecía steam+browser_real+browser+web -> falló). Steam es
-    # el camino correcto y único acá. NO toca otros usos de steam (library, launch).
-    if "steam" in names and re.search(
-            r"\b(steam)\b", _fold_text(raw_text)) and re.search(
-            r"\b(pagina|page|tienda|store|ficha)\b", _fold_text(raw_text)):
-        names = [n for n in names
-                 if n not in ("browser", "browser_real", "web", "computer_use", "game_launcher")]
-        if "steam" not in names:
-            names.insert(0, "steam")
+    # 3. Related-tools deps (budget), cleanup state, safety.
     expanded: list[str] = []
     _rel_budget = _RELATED_BUDGET
     for name in _dedupe(names):
@@ -1380,222 +896,32 @@ def select_tool_names(
                 break
             expanded.append(rel)
             _rel_budget -= 1
-    if plan.cleanup_expected or re.search(r"\b(cleanup|limpia|limpiar|cierra todo lo que abriste|rollback|restaura|deshacer)\b", text):
+    if plan.cleanup_expected:
         expanded.append("state")
     if safety_enabled:
         expanded.append("safety")
-    # Navegación/compra web: SACAR web y game_launcher DESPUÉS de la expansión
-    # (si los quitábamos antes, _related_tools los re-agregaba). web=preguntar,
-    # game_launcher=lanzar instalado; ninguno navega -> confunden al 4B. Pero
-    # NUNCA sacamos browser (el camino correcto) ni dejamos el subset vacío, y
-    # NUNCA sacamos `web` si el turno TAMBIÉN es una pregunta de conocimiento
-    # ("busca información de X en internet" SÍ necesita web — falso-positivo del
-    # clasificador de navegación que evitamos con wants_knowledge).
-    if _web_nav_intent:
-        _is_knowledge_q = False
-        try:
-            from .intent_router import wants_knowledge as _wk_nav
-            _is_knowledge_q = _wk_nav(raw_text)
-        except Exception:
-            _is_knowledge_q = False
-        _drop = ("game_launcher",) if _is_knowledge_q else ("web", "game_launcher")
-        _filtered = [t for t in expanded if t not in _drop]
-        if any(t in _filtered for t in ("browser", "browser_real", "computer_use")):
-            expanded = _filtered
-    # Pregunta informativa/de mundo: `web` puede ser correcto para investigar,
-    # pero `browser`/`browser_real` son navegacion visible. Si el texto no pide
-    # explicitamente IR/ABRIR una pagina, no se las ofrecemos al LLM en el pase 1.
-    # No dependemos solo de _web_nav_intent: el clasificador de tienda/web puede
-    # dar falsos positivos cuando una entidad informativa tambien existe como
-    # producto, marca, pelicula, juego o pagina.
-    try:
-        from .intent_router import wants_knowledge as _wk_info
-        _info_lookup = _wk_info(raw_text)
-    except Exception:
-        _info_lookup = False
-    try:
-        from ..tools_pkg.site_resolver import user_requested_web_navigation as _lex_web_nav
-        _explicit_visible_nav = bool(_lex_web_nav(raw_text))
-    except Exception:
-        _explicit_visible_nav = False
-    # 2026-06-09: NO exigimos `not _web_nav_intent` acá. _web_nav_intent viene del
-    # clasificador SEMÁNTICO de tienda/navegación (wants_web_store/wants_web_navigation),
-    # que da FALSO-POSITIVO cuando la entidad informativa también existe como
-    # producto/marca/película/franquicia ("quien es batman", "hablame de Mortal
-    # Kombat" → wants_web_store=True por 'batman'/'kombat'). En esos casos el turno
-    # ES una pregunta de conocimiento (wants_knowledge=True) SIN pedido EXPLÍCITO de
-    # ir/abrir una página (user_requested_web_navigation=False, señal LÉXICA fuerte).
-    # La señal fuerte (nav explícita) manda sobre la débil (store semántico): si el
-    # user pregunta "quién es X" y NO dijo "andá a/abrí X", no le ofrecemos browser
-    # visible en el pase 1. La nav explícita ("ve a portal uniej") SÍ conserva browser
-    # porque _explicit_visible_nav=True. Cierra el gap documentado del backlog §4.
-    if _info_lookup and not _explicit_visible_nav:
-        expanded = [t for t in expanded if t not in {"browser", "browser_real"}]
-    # NOTA (bug "J Balvin" 2026-06-09): ante "¿has escuchado canciones de X?" el
-    # encoder VIEJO ofrecía `media` (cos media=0.242 > web=0.161) -> el 4B alucinaba
-    # un media(playback_status) y mentía "ya lo hice". RESUELTO DE RAÍZ con un
-    # RE-ENTRENO del encoder (+144 pares cultura->web en tool2vec_queries.jsonl, 6
-    # idiomas, música/cine/series). MEDIDO post-reentreno: en preguntas culturales el
-    # router ya ofrece SOLO web (J Balvin -> web:0.38, media NI aparece en top-5), y
-    # los comandos de reproducción siguen liderando media (pon stranger things ->
-    # media:0.55; reproducí J Balvin -> media:0.53). Gate de recall INTACTO (holdout
-    # 0.9784, lang:es 0.982 antes y después; ningún subgrupo degradó). Por eso NO hay
-    # media-drop manual acá: el encoder separa cultura/comando en ORIGEN, que es más
-    # robusto que un drop heurístico (el intento previo basado en wants_knowledge
-    # degradaba recall 0.9784->0.9676 por falsos-positivos en play-commands). Quedan
-    # 2 capas de honestidad como defensa-en-profundidad: (1) _INFO_ANCHORS de cultura
-    # en intent_router; (2) guard_unverified_final (en 0-events impide "ya lo hice").
-    # Baseline + receta: documentacion/_BASELINE_encoder_retrain_2026-06-09.md.
-    # Colapsar clusters de dominio (browser+browser_real, app+window, ...) a su
-    # representante de mayor score ANTES del cap. Ofrecer SOLO lo necesario: el 4B
-    # no necesita las 3 variantes del mismo dominio. `keep` protege las tools que
-    # el keyword disparó (señal fuerte de intención) para no colapsar una que el
-    # el comando las nombró explícito.
+
+    # 4. Collapse de clusters de dominio (estructural, por score del encoder) +
+    #    cap + anti-primacy + pending_intent + session.
     try:
         from . import semantic_router as _sr_collapse
-        _semantic_loaded = bool(_sr_collapse.status().get("model_loaded"))
-        _semantic_cold_load = (
-            _os.environ.get("GEMMA4_SEMANTIC_COLD_LOAD", "0").strip().lower()
-            in {"1", "true", "yes", "on"}
-        )
         _collapse_scored = (
             dict(_sr_collapse.suggest_tools_scored(raw_text, k=20))
-            if (_semantic_loaded or _semantic_cold_load)
-            else {}
-        )
+            if bool(_sr_collapse.status().get("model_loaded")) else {})
     except Exception:
         _collapse_scored = {}
-    # _kw_hits son las tools que el keyword disparó: señal fuerte de intención
-    # explícita -> nunca colapsarlas (el usuario las pidió).
-    expanded = _collapse_domain_clusters(_dedupe(expanded), _collapse_scored, set(_kw_hits))
-    # Collapse jerárquico simple↔avanzado: quita la tool de control fino
-    # (browser_real) cuando el turno pide la versión simple (browser). Va ANTES
-    # del cap para que el cap no recorte señal por culpa del ruido. Recall-neutral
-    # medido en ambos corpus.
-    expanded = _collapse_hierarchical(_dedupe(expanded), _collapse_scored, set(_kw_hits))
-    # ESTADO-DE-APP-NOMBRADA (BUG real eval run2): "¿Steam está abierto?" ->
-    # _suggest_tools antepone `steam`/`browser` (tool homónima de la app), cuyo
-    # default es ABRIR -> el 4B abría Steam y MENTÍA "Listo, abrí Steam". Una
-    # pregunta de estado read-only la responde system(processes)/window(list).
-    # Medido: reordenar no basta (el 2B elige la tool homónima igual) -> RETIRAR
-    # steam/browser/app del subset e inyectar system+window al frente. El detector
-    # excluye verbos de acción ("si X está abierto, cerralo" NO dispara -> es acción).
-    try:
-        if _is_app_state_check(raw_text):
-            expanded = [t for t in expanded if t not in {"steam", "browser", "browser_real", "app"}]
-            for _t in ("window", "system"):
-                if _t not in expanded:
-                    expanded.insert(0, _t)
-    except Exception:
-        pass
-    # ACCIÓN DE GEOMETRÍA DE VENTANA sobre app nombrada (bug "maximiza Steam"
-    # 2026-06-09): retirar la tool homónima (steam/browser/app) que NO implementa
-    # maximizar/minimizar -> el 4B inventaba steam(maximize) y entraba en loop.
-    # Dejar `window` al frente (la única que hace geometría de ventana).
-    # _is_window_geometry_action es un regex puro sobre el texto (sin I/O ni
-    # encoder): no necesita guarda de excepción.
-    if _is_window_geometry_action(raw_text):
-        expanded = [t for t in expanded
-                    if t not in {"steam", "browser", "browser_real", "app"}]
-        if "window" not in expanded:
-            expanded.insert(0, "window")
-    # CERRAR una app nombrada (bug "Ferme/Chiudi Steam" 2026-06-10): retirar la tool
-    # homónima (steam/browser) que NO cierra; cerrar la hace `app(close)`. Dejar
-    # `app` al frente. Regex puro, sin I/O.
-    elif _is_close_app_action(raw_text):
-        expanded = [t for t in expanded
-                    if t not in {"steam", "browser", "browser_real"}]
-        if "app" not in expanded:
-            expanded.insert(0, "app")
-    # PREGUNTA HOW-TO/INFO (BUG real medido, cacería tanda 1): "cómo elimino una
-    # carpeta" -> filesystem.delete BORRÓ la carpeta (daño irreversible ante una
-    # PREGUNTA); "qué es Python" -> abrió el navegador. El user pide EXPLICACIÓN, no
-    # ejecución. Retiramos las tools DESTRUCTIVAS/de-acción del subset para que el
-    # LLM responda en texto, no actúe. Si tras retirarlas no queda dominio, el LLM
-    # responde de su conocimiento (lo correcto para how-to/qué-es). NO toca preguntas
-    # de estado (_is_app_state_check ya las maneja arriba).
-    try:
-        if _is_howto_or_info_question(raw_text):
-            # Pregunta conceptual/how-to: además de las destructivas, retirar las
-            # tools de PERCEPCIÓN/BÚSQUEDA del mundo (vision/web/browser/knowledge/
-            # gui/cu) para que el LLM RESPONDA DE SU CONOCIMIENTO en vez de capturar
-            # pantalla o buscar (cluster A6, tanda 2). Lo que queda (si algo) es
-            # infra (session/safety/verify) que no actúa.
-            # EXCEPCIÓN info-ACTUAL (tripwire del benchmark 2026-06-11): "what's
-            # the weather like in London" matchea la FORMA conceptual (what's X)
-            # pero pide información ACTUAL que el LLM no tiene — conservar
-            # web/knowledge (solo esas dos: percepción/destructivas siguen
-            # fuera). Clasificador por embeddings actual-vs-atemporal
-            # (intent_router.is_current_world_info); sin encoder → strip normal.
-            # (sin try propio: el bloque A6 entero ya está envuelto en un
-            # try/except, y is_current_world_info se auto-protege → False)
-            from .intent_router import is_current_world_info as _icwi
-            _keep_current: set[str] = (
-                {"web", "knowledge"} if _icwi(raw_text) else set())
-            expanded = [t for t in expanded
-                        if t not in _INFO_SUPPRESS_TOOLS or t in _keep_current]
-    except Exception:
-        pass
-    # DECLARACIÓN DE TRIGGER (BUG real tanda 1): "cuando diga X quiero que hagas Y"
-    # crea una RUTINA, NO ejecuta Y ahora. El detector ya agrega `routine`, pero
-    # dejaba las tools de acción (media/audio/gui) -> el 4B ejecutaba Y. Retiramos
-    # las tools de ACCIÓN inmediata y dejamos routine (+ session) para que el LLM
-    # registre la rutina en vez de dispararla. Conservador: solo con la forma
-    # condicional-temporal clara.
-    try:
-        if _is_trigger_declaration(raw_text):
-            _keep = {"routine", "session", "safety", "verify"}
-            expanded = [t for t in expanded if t in _keep]
-            if "routine" not in expanded:
-                expanded.insert(0, "routine")
-    except Exception:
-        pass
-    # PREFERENCIA/DATO PERSONAL (cluster A8, tanda 2): "responde en inglés",
-    # "tuteame", "trabajo en Microsoft", "mi email es X" disparaban media/gui/app/
-    # email. NO son comandos de acción: el LLM debe acusar/recordar. Retiramos las
-    # tools de ACCIÓN; dejamos memory (para persistir el dato/preferencia) + infra.
-    # Guarda: si hay pending_intent (el dato responde a una pregunta previa), NO
-    # gatear (el flujo normal ya lo maneja).
-    try:
-        if (
-            not pending_intent
-            and "whatsapp" not in expanded
-            and _is_preference_or_personal(raw_text)
-        ):
-            _keep_pref = {"memory", "session", "safety", "verify", "routine"}
-            expanded = [t for t in expanded if t in _keep_pref]
-            if "memory" not in expanded:
-                expanded.insert(0, "memory")
-    except Exception:
-        pass
+    expanded = _collapse_domain_clusters(_dedupe(expanded), _collapse_scored, set())
+    expanded = _collapse_hierarchical(_dedupe(expanded), _collapse_scored, set())
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)
-    # pending_intent injection. If a previous turn left a tool waiting on user
-    # input (status='needs_user'), inject the tool at the head so it survives
-    # the cap. Language-agnostic: the slot is set on a STRUCTURAL tool result,
-    # never inferred from user text.
-    pi_tool = ""
-    if pending_intent:
-        pi_tool = str((pending_intent or {}).get("tool") or "")
-    # ANTI-PRIMACY: el cap ya decidió QUÉ tools entran; este reorden solo cambia
-    # el ORDEN de las de DOMINIO, poniendo la de mayor confianza primero (los
-    # LLMs atienden más a lo primero del prompt). Preserva invariantes:
-    # pending_intent primero (pin_first), infra (session/safety/state/verify/
-    # dependency) al final. _collapse_scored = suggest_tools_scored, ya calculado
-    # arriba para los collapses -> reusamos esos scores, no hay que threadear
-    # nada nuevo. set(antes)==set(después).
-    capped = _antiprimacy_order(capped, _collapse_scored,
-                                pin_first=(pi_tool or None))
+    pi_tool = str((pending_intent or {}).get("tool") or "") if pending_intent else ""
+    capped = _antiprimacy_order(capped, _collapse_scored, pin_first=(pi_tool or None))
     if pi_tool and pi_tool not in capped:
         capped.insert(0, pi_tool)
-    # session.cancel_turn is always reachable so the LLM can interrupt the
-    # current turn in any language without depending on a keyword list. We
-    # append it AFTER the cap so it cannot be dropped — its description is
-    # small (~330 tokens) and the LLM ignores it when not applicable.
     if "session" not in capped:
         capped.append("session")
-    # Stash signal on the function so the agent can record it in traces.
     select_tool_names._last_fallback_used = semantic_fallback_used  # type: ignore[attr-defined]
     return capped
+
 
 
 # Default attribute, overwritten on each call.
