@@ -1004,7 +1004,10 @@ class Gemma4Agent:
         selected_tool_names: list[str] | None = None,
         user_text: str | None = None,
     ) -> dict[str, str]:
-        language_section = _turn_language_instruction(user_text)
+        # Rama Experimentando: SIN forzado de idioma. No se inyecta la
+        # instrucción "Reply ONLY in <lang>" — el LLM responde en el idioma que
+        # elija nativamente a partir del mensaje del usuario.
+        language_section = ""
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
         persona_hint = f"\n\n{self._persona.system_hint}" if self._persona.system_hint else ""
@@ -1141,14 +1144,9 @@ class Gemma4Agent:
                         self.trace.event("agent", "skill_autoinjected", skill=_sk_name)
             except Exception:
                 pass
-        # Validator hint: when the subset crosses an ambiguous pair (audio vs
-        # window/browser/app/media), ask the LLM to emit an <intent> tag so
-        # the dispatcher can reject obvious mismatches before they ship.
+        # Rama Experimentando: SIN intent-tag forcing (intent_validator removido).
+        # El LLM no emite <intent>; el dispatcher no rechaza por mismatch.
         intent_hint = ""
-        if selected_tool_names:
-            from ..safety_pkg.intent_validator import INTENT_TAG_INSTRUCTION, needs_intent_tag
-            if needs_intent_tag(selected_tool_names):
-                intent_hint = INTENT_TAG_INSTRUCTION
         # LAYOUT cache-friendly (medido):
         # el system prompt diverge al ~28% porque las TOOL_RULES (variables por
         # subset del router) iban temprano -> cambiar de dominio de tools
