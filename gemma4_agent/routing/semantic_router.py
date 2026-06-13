@@ -42,7 +42,17 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
         "system info, processes and power: current time and date, qué hora "
         "es, qué fecha es hoy; list running processes, kill or force-close a "
         "process, taskkill, mata procesos colgados, lista procesos, cierra "
-        "un proceso; CPU RAM GPU disk; SCREEN/display brightness up/down — "
+        "un proceso; CPU RAM GPU disk; "
+        # Uso/cantidad de MEMORIA del sistema (RAM) — fraseos naturales
+        # multilingües para que el encoder rankee `system` por ENCIMA de la tool
+        # `memory` (recuerdos personales) cuando la palabra ambigua "memoria"
+        # aparece en una consulta de RECURSOS, no de recuerdo. Ver
+        # planner.py (keyword pelado "memoria" removido a propósito).
+        "how much memory/RAM do I have, free memory, memory usage, RAM usage, "
+        "cuánta memoria tengo, cuánta memoria RAM libre tengo, uso de memoria, "
+        "memoria del sistema, quanta memória tenho, quanto di memoria ho, "
+        "wie viel Arbeitsspeicher habe ich, combien de mémoire RAM; "
+        "SCREEN/display brightness up/down — "
         "subir/bajar el brillo de la pantalla, atenuar la pantalla, set screen "
         "brightness; battery level, shutdown restart sleep"
     ),

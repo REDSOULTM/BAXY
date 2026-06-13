@@ -1812,9 +1812,19 @@ def _suggest_tools(step: str) -> list[str]:
     if re.search(r"\b(descarga|descargar|download|sha256|hash|firma)\b", low):
         tools.append("download")
 
-    if re.search(r"\b(recuerda|recorda|recuerdas|recordas|guarda en memoria|memoria|"
+    # NOTA: NO se incluye la palabra PELADA "memoria"/"memory" acá a propósito.
+    # "memoria"/"memory" es ambigua: en español "cuánta memoria tengo" = RAM
+    # (tool `system`), no recuerdos personales (tool `memory`). El token pelado
+    # forzaba `memory` al subset junto a `system` en consultas de RAM, y el 4B
+    # confundía las dos tools emitiendo un tool-call anidado corrupto
+    # (system(action="memory{action:")). La desambiguación de la palabra suelta
+    # queda en manos del encoder multilingüe (TOOL_DESCRIPTIONS["system"] cubre
+    # el sentido RAM/uso-de-memoria; "memory" personal sigue ganando para los
+    # fraseos de recuerdo). Acá solo quedan fraseos con INTENCIÓN explícita de
+    # recuerdo/guardado, que no chocan con métricas del sistema.
+    if re.search(r"\b(recuerda|recorda|recuerdas|recordas|guarda en memoria|"
                  r"sabes de mi|sabes sobre mi|que sabes de|datos mios|"
-                 r"remember|remind me|save to memory|memory|"
+                 r"remember|remind me|save to memory|"
                  r"what do you (remember|know) about me)\b", low):
         tools.append("memory")
         # memory-read ("qué recuerdas de mí") and reminder are a known confusion
