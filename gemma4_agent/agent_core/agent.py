@@ -2688,26 +2688,9 @@ class Gemma4Agent:
         # estructural + clasificador de seguridad); NUNCA dispara una escritura.
         # Fail-safe: ante cualquier error, el cache queda None y el dispatch corre
         # la tool normal.
+        # Rama Experimentando: SIN eager_readonly (no se pre-ejecutan tools
+        # read-only antes del LLM). El LLM pide las tools que necesita.
         self._eager_cache = None
-        try:
-            from . import eager_readonly as _eager
-            # Pasar el texto del turno para AFINAR por intent (embeddings
-            # multilingües): dispara SOLO la(s) read que el turno sugiere, no
-            # las 4 de `system` siempre. Sin texto/encoder -> fallback al
-            # comportamiento previo (todas). El turno ya está embebido por el
-            # router este turno (cache-hit, costo ~0).
-            _cands = _eager.eager_candidates(selected_tool_names, raw_text_early)
-            if _cands:
-                _cache = _eager.EagerReadOnlyCache(self.tools.execute)
-                _cache.fire(_cands)
-                self._eager_cache = _cache
-                try:
-                    self.trace.event(turn_id, "eager_readonly_fired",
-                                     calls=[f"{t}.{a}" for (t, a) in _cache.fired])
-                except Exception:
-                    pass
-        except Exception:
-            self._eager_cache = None
         _mark_decide_phase("decide_done")
         return TurnDecision(
             turn_id=turn_id,
