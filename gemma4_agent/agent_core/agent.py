@@ -3589,43 +3589,9 @@ class Gemma4Agent:
                 # dispatcher skips the real call. When safety is
                 # off, only the trace event fires.
                 _pre_dispatch_result: dict[str, Any] | None = None
-                try:
-                    from ..safety_pkg.safety_hook import evaluate_tool_call
-                    _action_for_hook = ""
-                    if isinstance(args, dict):
-                        _action_for_hook = str(args.get("action") or "")
-                    _verdict = evaluate_tool_call(
-                        tool_name=name,
-                        action=_action_for_hook,
-                        args=args if isinstance(args, dict) else {},
-                    )
-                    if _verdict.get("block"):
-                        self.trace.event(
-                            turn_id, "safety_hook_match",
-                            tool=name,
-                            pattern=_verdict.get("pattern"),
-                            reason=_verdict.get("reason"),
-                            enforced=bool(self.config.enable_safety),
-                        )
-                        if self.config.enable_safety:
-                            _pre_dispatch_result = {
-                                "ok": False,
-                                "status": "needs_confirmation",
-                                "verified": False,
-                                "error": "purchase_guard",
-                                "reason": _verdict.get("reason"),
-                                "tool": name,
-                                "evidence": "safety_hook_block",
-                            }
-                except Exception as _exc:  # noqa: BLE001
-                    try:
-                        self.trace.event(
-                            turn_id, "silent_fallback",
-                            component="safety_hook",
-                            error=f"{type(_exc).__name__}: {_exc}",
-                        )
-                    except Exception:
-                        pass
+                # Rama Experimentando: SIN safety_hook (no se bloquean compras/
+                # acciones-pagas pre-dispatch). _pre_dispatch_result queda None ->
+                # la tool se ejecuta sin gate de confirmación.
                 # EAGER read-only (opt-in): si pre-ejecutamos esta lectura en
                 # background (en _decide_turn, en paralelo al pase-1) y el LLM la
                 # pidió tal cual (read-only, sin args con efectos), servimos el
