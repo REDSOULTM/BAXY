@@ -1361,7 +1361,7 @@ class Gemma4Agent:
             except Exception:
                 # Si algo falla, dejar history sin modificar (fallback seguro).
                 pass
-        return [
+        msgs = [
             self._system_message(
                 mode, plan,
                 selected_tool_names=selected_tool_names,
@@ -1369,6 +1369,23 @@ class Gemma4Agent:
             ),
             *history,
         ]
+        # PREFIX-REWARM (latencia): stash del system de ESTE turno + flag de
+        # thinking del modo, para que _prefix_rewarm_async pueda re-calentar el
+        # slot del server en el idle post-turno. Los pases utilitarios cortos
+        # (_llm_action_reply, repairs) usan un system propio de ~100 tok que
+        # REEMPLAZA el KV del slot único (--parallel 1): el turno siguiente
+        # matchea ~4 tokens y re-prefilea ~6K (~1.1s, medido en vivo con
+        # _probe_cache_divergence). El rewarm repone el prefijo grande fuera
+        # del camino crítico. Best-effort.
+        try:
+            _sys_c = msgs[0].get("content")
+            if isinstance(_sys_c, str) and _sys_c:
+                self._rewarm_system = _sys_c
+                self._rewarm_thinking = (
+                    bool(mode.enable_thinking) if mode is not None else True)
+        except Exception:
+            pass
+        return msgs
 
     def _history_for_turn(self, user_text: str | None) -> list[dict[str, Any]]:
         """Router de contexto (inv 4): la mayoría de los comandos de voz son
@@ -5948,7 +5965,12 @@ class Gemma4Agent:
         # La fase execute vivía inline acá (LLM loop
         # iterativo + tool dispatch + post-procesamiento). Extraída a
         # _execute_turn que devuelve el AgentReply terminal del turno.
-        return self._ensure_nonempty_reply(self._execute_turn(content, _decision, progress))
+        _reply = self._ensure_nonempty_reply(self._execute_turn(content, _decision, progress))
+        # PREFIX-REWARM: reponer el prefijo grande en el KV del slot DESPUÉS de
+        # devolver el reply (thread daemon; el TTS/UI no espera). Ver
+        # _prefix_rewarm_async para la causa raíz medida.
+        self._prefix_rewarm_async()
+        return _reply
 
     def _emit_decide_timing(self, decision: "TurnDecision", t0: float,
                             *, early: bool) -> None:
@@ -5971,6 +5993,88 @@ class Gemma4Agent:
             )
         except Exception:
             pass
+
+    def _prefix_rewarm_async(self) -> None:
+        """Re-calienta el prefix-cache del slot del server en el IDLE post-turno.
+
+        CAUSA RAÍZ (medida en vivo, scripts/_diag/_probe_cache_divergence.py
+        2026-06-12): el server corre con --parallel 1 (un solo slot de KV). Los
+        pases utilitarios de fin de turno (_llm_action_reply, repairs de idioma,
+        knowledge regen) usan un system propio de ~100 tokens — correcto para su
+        función (contexto limpio anti-arrastre), pero REEMPLAZAN el KV del slot.
+        El primer LLM-call del turno siguiente matchea solo ~4 tokens (el render
+        diverge en el system) y re-prefilea ~6K tokens: ~1.1s extra de TTFT en
+        el 77% de los turnos de prod (835 turnos auditados en traces.jsonl).
+
+        FIX: tras devolver el reply (el usuario está escuchando el TTS), un
+        thread daemon manda UNA request de prefill (max_tokens=1) con el system
+        de ESTE turno. El slot queda cargado con el prefijo grande; el próximo
+        turno diverge recién en la cola variable del system (~90%, layout V3) →
+        prefill ~0.4s en vez de ~1.1s. El trabajo no desaparece: se corre en
+        idle, fuera del camino crítico. No toca NINGÚN prompt que genere texto
+        visible (cero riesgo de calidad).
+
+        Guardas:
+        - enable_thinking del MODO del turno (el render inyecta <|think|> en el
+          token ~4; un flip ahí invalida todo el prefijo — medido).
+        - stale-check: si ya arrancó otro turno cuando el thread despierta, se
+          aborta (no compite con una request real; peor caso si pierde la
+          carrera: la request real espera ~0.7s en cola, menos de lo que ahorra).
+        - solo perfiles GPU (ngl>0): en CPU el prefill idle competiría con el
+          TTS/STT que también corren en CPU.
+        Gate: GEMMA4_PREFIX_REWARM=0 lo desactiva.
+        """
+        import os as _os_rw
+        if _os_rw.environ.get("GEMMA4_PREFIX_REWARM", "1").strip().lower() \
+                in {"0", "false", "no", "off"}:
+            return
+        sys_content = getattr(self, "_rewarm_system", "") or ""
+        if not sys_content:
+            return
+        try:
+            from ..infra.profiles import get_active_profile
+            if int(get_active_profile().n_gpu_layers) <= 0:
+                return
+        except Exception:
+            pass
+        if getattr(self, "_rewarm_inflight", False):
+            return
+        self._rewarm_inflight = True
+        thinking = bool(getattr(self, "_rewarm_thinking", True))
+        turn_marker = getattr(self, "_turn_perf_t0", None)
+        t_sched = time.perf_counter()
+
+        def _go() -> None:
+            try:
+                # Stale-check: si run_content volvió a arrancar, abortar.
+                if getattr(self, "_turn_perf_t0", None) is not turn_marker:
+                    return
+                _model = self._router_model_for([{"role": "user", "content": "."}])
+                resp = self.client.chat(
+                    [{"role": "system", "content": sys_content},
+                     {"role": "user", "content": "."}],
+                    tools=None, enable_thinking=thinking,
+                    parallel_tool_calls=False, max_tokens=1,
+                    thinking_budget=0, timeout_s=20.0, model=_model,
+                )
+                timings = (resp or {}).get("timings") or {}
+                self.trace.event(
+                    "agent", "prefix_rewarm",
+                    thinking=thinking,
+                    cache_n=timings.get("cache_n"),
+                    prompt_n=timings.get("prompt_n"),
+                    wall_ms=round((time.perf_counter() - t_sched) * 1000.0, 1),
+                )
+            except Exception:
+                pass  # best-effort puro: nunca afecta el turno
+            finally:
+                self._rewarm_inflight = False
+
+        try:
+            import threading as _threading
+            _threading.Thread(target=_go, daemon=True, name="prefix-rewarm").start()
+        except Exception:
+            self._rewarm_inflight = False
 
     def _voice_action_filler(self, content: str | list[dict[str, Any]],
                              decision: "TurnDecision") -> None:
