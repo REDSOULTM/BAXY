@@ -3259,9 +3259,76 @@ class Gemma4Agent:
                 )
                 assistant_content = ""
                 msg["content"] = ""
-            # Rama Experimentando: SIN leaked-call rescue, SIN forced_tool_retry,
-            # SIN redes deterministas (reply/email/navigate). Si el LLM no emite
-            # un tool-call nativo, su prosa es la respuesta (comportamiento nativo).
+            # RESCATE ESTRUCTURAL de leaked-call (forma, no keyword): el modelo a veces
+            # emite el tool-call como TEXTO Python-style `name(action="val")` en vez del
+            # formato nativo <|tool_call> que el parser extrae -> el call se pierde
+            # (medido: ~1% del under-action es esto). detect_leaked_tool_call lo re-parsea
+            # a un tool-call real. Barato y estructural; va ANTES del forced-retry.
+            if not raw_tool_calls and assistant_content:
+                try:
+                    from ..tools_pkg.tools import COMPOUND_TOOL_SCHEMAS as _CTS, ACTION_ENUMS as _AE
+                    _known = {s["function"]["name"] for s in _CTS
+                              if isinstance(s, dict) and isinstance(s.get("function"), dict)
+                              and isinstance(s["function"].get("name"), str)}
+                    _amap = build_action_to_tool(_known, _AE)
+                    _rescued = detect_leaked_tool_call(assistant_content, known_tool_names=_known,
+                                                       action_to_tool=_amap)
+                    if _rescued is not None:
+                        raw_tool_calls = [_rescued]
+                        assistant_content = ""
+                        msg = {"role": "assistant", "content": "", "tool_calls": raw_tool_calls}
+                        self.trace.event(turn_id, "tool_call_rescued",
+                                         tool=_rescued["function"]["name"])
+                except Exception:
+                    pass
+            # HÍBRIDO (rama Experimentando, conclusión del experimento): se removió
+            # TODO el guard-stack salvo este forced_tool_retry MÍNIMO. Medido: el FT
+            # NO cubre el under-action (~12% es; oversample no lo mueve, techo del E2B),
+            # pero ESTE retry sí (era load-bearing — al sacarlo apareció el under-action).
+            # NÚCLEO solo: si el LLM no emitió tool-call y había tool de DOMINIO ofrecida
+            # y no se ejecutó nada aún -> UN reintento con tool_choice=required. SIN las
+            # heurísticas del guard original (deterministic nets, info-skip, semantic-
+            # fallback, leaked-call rescue): solo el núcleo que la medición justificó.
+            # Gate GEMMA4_FORCED_TOOL_RETRY=0.
+            import os as _os_fr0
+            if (not raw_tool_calls and selected_schemas and len(events) == 0
+                    and not getattr(self, "_forced_tool_retry_done", False)
+                    and _os_fr0.environ.get("GEMMA4_FORCED_TOOL_RETRY", "1").strip().lower()
+                        not in {"0", "false", "no", "off"}):
+                try:
+                    from .agent_helpers import _domain_subset
+                    _domain_now = _domain_subset(list(selected_tool_names))
+                except Exception:
+                    _domain_now = [t for t in selected_tool_names
+                                   if t not in ("session", "safety", "state", "verify")]
+                if _domain_now:
+                    self._forced_tool_retry_done = True
+                    self.trace.event(turn_id, "forced_tool_retry", domain_subset=_domain_now,
+                                     skipped_reply=(assistant_content or "")[:120])
+                    _progress(progress, "forced_tool_retry", tools=len(events))
+                    try:
+                        _msgs_fr = self._messages(mode, plan, selected_tool_names=selected_tool_names,
+                                                  user_text=raw_text_early)
+                        _cap = mode.max_tokens
+                        if isinstance(_cap, int):
+                            _cap = min(_cap, 128)  # cap anti-ramble (medido en el guard original)
+                        _resp_fr = self.client.chat(
+                            _msgs_fr, tools=selected_schemas, enable_thinking=mode.enable_thinking,
+                            thinking_budget=mode.thinking_budget, model=self._router_model_for(_msgs_fr),
+                            parallel_tool_calls=mode.parallel_tool_calls, max_tokens=_cap,
+                            timeout_s=mode.request_timeout_s, force_tool=True)
+                        _msg_fr = sanitize_assistant_message((_resp_fr.get("choices") or [{}])[0].get("message") or {})
+                        _tc_fr = _msg_fr.get("tool_calls") or []
+                        if _tc_fr:
+                            raw_tool_calls = _tc_fr
+                            msg = _msg_fr
+                            assistant_content = ""
+                            self.trace.event(turn_id, "forced_tool_retry_success", tools=len(_tc_fr))
+                        else:
+                            self.trace.event(turn_id, "forced_tool_retry_empty")
+                    except Exception as _fr_exc:
+                        self.trace.event(turn_id, "forced_tool_retry_error",
+                                         error=f"{type(_fr_exc).__name__}: {_fr_exc}")
 
             # PERF instrumentation (research/latency/prefill_*.md
             # Punto 1 "Como medir"): el campo timings.cache_n / prompt_n del
@@ -4247,11 +4314,25 @@ class Gemma4Agent:
                     )
                 except Exception:
                     pass
-        # Rama Experimentando: SIN guards de comportamiento ni repairs ni
-        # forzado de idioma. sanitize_text se conserva porque es DECODIFICACIÓN
-        # de salida (strippea el canal <think>/<|tool_call> del texto visible),
-        # no un guard de comportamiento. El reply del LLM pasa tal cual.
+        # Rama Experimentando: SIN repairs ni forzado de idioma. sanitize_text es
+        # DECODIFICACIÓN de salida (strippea el canal <think>/<|tool_call>), no un guard.
         assistant_content = sanitize_text(assistant_content)
+        # HONESTIDAD (ÚNICO guard de comportamiento conservado — medido load-bearing):
+        # el E2B confabula éxito ~12% de las veces ("Listo, hice X" SIN ninguna tool
+        # verificada — el experimento descartó FT/E4B/formato para ese piso). Este
+        # guard ESTRUCTURAL (detect_action_claim_without_evidence: mide la FORMA, claim
+        # sin evidencia — NO listas de keywords) reescribe la mentira a una forma
+        # honesta. No es sobreingeniería: compensa un límite intrínseco del modelo chico.
+        # Pase 1: cero-eventos / verificación fallida — caza "Listo, abrí Gmail" con
+        # exec=[] (la confabulación de navegación/open que el grounded-claim no ve, porque
+        # no hay tool que inspeccionar). Estructural (reply_claims_action = forma verbal).
+        try:
+            from .agent_guards import guard_unverified_final as _guf
+            assistant_content = _guf(assistant_content, events)
+        except Exception:
+            pass
+        # Pase 2: claim de acción sin evidencia sobre una tool que SÍ corrió.
+        assistant_content = self._guard_grounded_action_claim(assistant_content, events, turn_id)
         # Defensa: si el LLM emitio en el reply mismo un footer estilo
         # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
         # historial), lo strippeamos antes de pegar el nuestro. Sino,
@@ -5591,6 +5672,29 @@ class Gemma4Agent:
                         "(apps, música, hábitos)? Es irreversible. Decime sí o no.",
                 tool_events=[], mission=None)
         return None
+
+    def _guard_grounded_action_claim(self, content: str, events: "list[ToolEvent]",
+                                     turn_id: str) -> str:
+        """Honestidad (load-bearing, medido): reescribe un claim de acción que
+        ninguna tool verificada sustenta. Estructural (mide la FORMA). Único guard
+        de comportamiento conservado tras el experimento de eliminación."""
+        try:
+            from .agent_guards import guard_grounded_action_claim
+            out, new_streak, new_last = guard_grounded_action_claim(
+                content, events, turn_id,
+                phrase_fires=getattr(self, "_phrase_fires", None),
+                trace=self.trace,
+                current_user_text=getattr(self, "_current_user_text", "") or "",
+                last_fallback_user_text=getattr(self, "_last_fallback_user_text", ""),
+                fallback_streak=getattr(self, "_fallback_streak", 0),
+                last_router_subset=getattr(self, "_last_router_subset", []) or [],
+            )
+            if out != content:
+                self._fallback_streak = new_streak
+                self._last_fallback_user_text = new_last
+            return out
+        except Exception:
+            return content
 
     def _screen_description_reply(self, events: list["ToolEvent"]) -> str | None:
         """Si una tool de visión produjo una DESCRIPCIÓN de pantalla
