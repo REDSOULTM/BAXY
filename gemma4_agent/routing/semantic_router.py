@@ -194,7 +194,7 @@ _CUT_TOOLS_LEAN_SR = {
     "habit_tracker", "study", "photo_library", "media_edit", "creative_local",
     "fact_check", "form_filler", "game_launcher", "data_analysis", "document",
     "source_manager", "office", "local_calendar", "reminder", "env", "download",
-    "audio_device", "input", "clipboard", "routine",
+    "audio_device", "input", "clipboard", "routine", "browser_real",
 }
 if _os_lean_sr.environ.get("GEMMA4_LEAN_TOOLS", "1").strip().lower() not in {"0", "false", "no", "off"}:
     for _ct in _CUT_TOOLS_LEAN_SR:
