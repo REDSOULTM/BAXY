@@ -182,6 +182,24 @@ TOOL_DESCRIPTIONS["computer_use"] = (
     "favoritos, marcador, abrir un navegador y clickear un favorito"
 )
 
+# LEAN TOOLS (rama Experimentando, gate GEMMA4_LEAN_TOOLS, default ON): el encoder
+# no rutea a las tools aspiracionales sin uso. Mismo set que tool_schemas.CUT_TOOLS_LEAN.
+# El re-finetuneo del encoder se hace sobre este TOOL_DESCRIPTIONS reducido (ahí
+# está la mejora real de routing). GEMMA4_LEAN_TOOLS=0 restaura las 67.
+import os as _os_lean_sr
+_CUT_TOOLS_LEAN_SR = {
+    "registry", "network", "maintenance", "container", "database",
+    "printer_scanner", "peripheral", "backup_sync", "developer", "file_process",
+    "job_manager", "watcher", "desktop_layout", "local_search", "notes_tasks",
+    "habit_tracker", "study", "photo_library", "media_edit", "creative_local",
+    "fact_check", "form_filler", "game_launcher", "data_analysis", "document",
+    "source_manager", "office", "local_calendar", "reminder", "env", "download",
+    "audio_device", "input", "clipboard", "routine",
+}
+if _os_lean_sr.environ.get("GEMMA4_LEAN_TOOLS", "1").strip().lower() not in {"0", "false", "no", "off"}:
+    for _ct in _CUT_TOOLS_LEAN_SR:
+        TOOL_DESCRIPTIONS.pop(_ct, None)
+
 
 @dataclass
 class _State:

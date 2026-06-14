@@ -910,6 +910,25 @@ def select_tool_names(
             if bool(_sr_collapse.status().get("model_loaded")) else {})
     except Exception:
         _collapse_scored = {}
+    # LEAN TOOLS (rama Experimentando, gated GEMMA4_LEAN_TOOLS para A/B): saca del
+    # routing las ~30 tools aspiracionales NUNCA usadas (puro distractor del encoder;
+    # parte del tool_mismatch medido venía de colisiones entre tools parecidas). No
+    # pierde capacidad: ninguna es target real en uso; la cola larga la cubren
+    # terminal/computer_use. NO incluye device_settings/browser_real (esos son MERGES
+    # con capacidad a mover, paso aparte).
+    import os as _os_lean
+    if _os_lean.environ.get("GEMMA4_LEAN_TOOLS", "0").strip().lower() in {"1", "true", "yes", "on"}:
+        _CUT_TOOLS = {
+            "registry", "network", "maintenance", "container", "database",
+            "printer_scanner", "peripheral", "backup_sync", "developer",
+            "file_process", "job_manager", "watcher", "desktop_layout",
+            "local_search", "notes_tasks", "habit_tracker", "study",
+            "photo_library", "media_edit", "creative_local", "fact_check",
+            "form_filler", "game_launcher", "data_analysis", "document",
+            "source_manager", "office", "local_calendar", "reminder", "env",
+            "download", "audio_device", "input", "clipboard", "routine",
+        }
+        expanded = [t for t in expanded if t not in _CUT_TOOLS]
     expanded = _collapse_domain_clusters(_dedupe(expanded), _collapse_scored, set())
     expanded = _collapse_hierarchical(_dedupe(expanded), _collapse_scored, set())
     capped = _cap_tools(_dedupe(expanded), MAX_SELECTED_TOOLS)

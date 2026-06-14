@@ -101,3 +101,26 @@ for _schema in COMPOUND_TOOL_SCHEMAS:
             "use action='resume' or play_pause. Do not invent a YouTube query "
             "such as the last watched video; query is for named content."
         )
+
+# LEAN TOOLS (rama Experimentando, gate GEMMA4_LEAN_TOOLS, default ON aquí): se
+# reduce el registro de 67 a ~17+infra. Las cortadas son aspiracionales sin uso
+# real; la cola larga la cubren terminal/computer_use. Los HANDLERS quedan en
+# ToolRegistry (execute por nombre) — solo se dejan de OFRECER/rutear. El encoder
+# se re-finetunea sobre el set reducido (ahí se ve la mejora real de routing; el
+# A/B en inferencia con el encoder viejo no era representativo). GEMMA4_LEAN_TOOLS=0
+# restaura las 67 (para comparar / re-FT A/B).
+import os as _os_lean
+CUT_TOOLS_LEAN: frozenset = frozenset({
+    "registry", "network", "maintenance", "container", "database",
+    "printer_scanner", "peripheral", "backup_sync", "developer", "file_process",
+    "job_manager", "watcher", "desktop_layout", "local_search", "notes_tasks",
+    "habit_tracker", "study", "photo_library", "media_edit", "creative_local",
+    "fact_check", "form_filler", "game_launcher", "data_analysis", "document",
+    "source_manager", "office", "local_calendar", "reminder", "env", "download",
+    "audio_device", "input", "clipboard", "routine",
+})
+if _os_lean.environ.get("GEMMA4_LEAN_TOOLS", "1").strip().lower() not in {"0", "false", "no", "off"}:
+    COMPOUND_TOOL_SCHEMAS = [
+        s for s in COMPOUND_TOOL_SCHEMAS
+        if (s.get("function") or {}).get("name") not in CUT_TOOLS_LEAN
+    ]
