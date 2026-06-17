@@ -79,12 +79,27 @@ LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
 #             (el "Baxy" limpio puntúa muy por encima de 0.5; los falsos del habla
 #              de fondo se agrupan en 0.35-0.45, así que 0.5 los corta casi gratis)
 #   thr 0.55: 15% falsos; recall ~0.86
-# 0.50 es el mejor punto: corta ~3x los falsos sin tocar el recall limpio. NO los
-# elimina (el modelo es poco discriminativo de raíz — fires de fondo llegan a
-# ~0.52); la cura estructural es el reentreno (ver _RUNBOOK_REENTRENO_WAKE).
+#
+# RE-CALIBRADO 2026-06-17 #2 (0.50 -> 0.65) con monitoreo EN VIVO (mic real, el
+# usuario hablando + videos sin decir Baxy). A 0.50 los falsos seguían en
+# ~1-2/min (scores observados 0.50-0.71). El análisis de TRAYECTORIA
+# (scripts/_diag/_wake_trajectory_test.py) mostró que el modelo SÍ separa:
+#   - Baxy real: peak p50=0.91 (banda 0.85-0.97)
+#   - falsos (habla/video del usuario): peak ≤0.72
+# El umbral 0.50 caía DENTRO de la banda de falsos. Tradeoff medido
+# (_wake_false_fire_test, voz real del usuario):
+#   thr 0.65: 6% falsos (bloquea ~80% de los falsos vivos ≤0.71); recall 0.833
+#   thr 0.70: 6% falsos; recall 0.800
+#   thr 0.75: bloquea todos los vivos; recall 0.717 (cae demasiado)
+# 0.65 es el punto: ~80% menos falsos con recall 0.83. Descartados como palancas
+# (medidos): trigger_level (el pico del Baxy es angosto, run 2-4, no separa) y el
+# verificador STT post-wake (mata recall: 46-60% de Baxy reales sobreviven). Un
+# residuo de falsos puntúa tan alto como un Baxy real (solape inherente) -> esos
+# solo los cura el reentreno (ver _RUNBOOK_REENTRENO_WAKE). Sube/baja con
+# GEMMA4_LIVEKIT_THRESHOLD (0.60 = más sensible, 0.70 = menos falsos).
 # --- tabla vieja (modelo/eval anterior, fp/hr sobre LibriSpeech, NO real-utterance):
 #   thr 0.25: recall 0.744, fp/hr 0.000 (era el elegido)
-LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.50"))
+LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.65"))
 
 # Stem del modelo LiveKit, configurable por env. Wake word = "Baxy" (el nombre del
 # asistente). El modelo baxy.onnx PASÓ el gate: recall held-out 0.872 global, 1.00 en
