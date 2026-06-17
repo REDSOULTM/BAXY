@@ -236,10 +236,13 @@ PROFILES: dict[str, Profile] = {
         # con LEAN_TOOLS=0 aún recibe schemas -> prompt real ~4.8k. 6144 lo cubre con
         # aire (el ctx 12288 era de la era monolítica). KV chico en un 2B.
         context_size=6144,
-        # QAT base (NO el FT): en el split FunctionGemma hace las tools, el E2B solo
-        # habla. Modelo 1223 MiB (vs 1416 del FT) + idioma multilingüe MEJOR que el FT
-        # (validado: el FT tenía sesgo español en acción). Persona por prompt.
-        model_path=_E2B_QAT_Q4,
+        # Modelo FT Q4_K_M (NO el QAT base). MEDIDO 2026-06-17: el QAT base, sin el FT,
+        # CONFABULA descripciones de "pantalla" a nivel TEXTO en turnos de conocimiento/
+        # multi-turno (con o sin mmproj) — failure mode que SOLO el FT suprime; sin un FT
+        # del QAT (punto #4) no se cura. El FT da 0 confab (validado). El split sigue: FG
+        # hace las tools, el E2B (FT) solo narra/conversa (su FT de tools es redundante pero
+        # inocuo). Las palancas de RAM/VRAM son model-independientes (abajo).
+        model_path=_E2B_Q4_K_M,
         mmproj_path=_MMPROJ_E2B,  # _resolve_mmproj_path ya prefiere el Q8 si existe
         vision_enabled=True,
         rerank_enabled=False,
@@ -249,21 +252,24 @@ PROFILES: dict[str, Profile] = {
         voice_enabled=True,
         camera_enabled=False,
         n_gpu_layers=99,
-        # Palancas VRAM medidas: batch chico (compute buffer 515->140, -0.4 GB) +
-        # visión a CPU (-0.6-0.8 GB). Resultante: ~1.5 GB VRAM (vs 2.9 de vram4).
+        # Batch: ubatch=320 (NO 128). MEDIDO: con visión, una imagen de Gemma 4 son ~264
+        # tokens y llama.cpp exige n_ubatch >= n_tokens (GGML_ASSERT non-causal); -ub 128
+        # CRASHEA al procesar el screenshot de verificación. 320 es vision-safe y conserva
+        # parte del ahorro del compute buffer. Visión a CPU (-0.6-0.8 GB GPU del mmproj).
         n_batch=512,
-        n_ubatch=128,
+        n_ubatch=320,
         mmproj_on_cpu=True,
         # Flags de cliente del split (reversibles vía apply_profile_to_env):
         encoder_onnx=True,   # encoder en onnxruntime int8 -> suelta torch (-379 MB RAM)
         fg_router=True,      # FunctionGemma hace las tools (+ fuerza LEAN_TOOLS=0)
         description=(
-            "GPU 4GB LEAN (split). E2B QAT base (sin FT, FunctionGemma hace tools) + "
-            "batch chico + visión en CPU -> ~1.5 GB VRAM (vs 2.9 de vram4). Encoder en "
-            "ONNX int8 (suelta torch, -379 MB RAM). Reversible: GEMMA4_DEFAULT_PROFILE=vram4 "
-            "para volver. Validar amplio antes de hacerlo default."
+            "GPU 4GB LEAN (split). E2B FT Q4_K_M (el QAT base confabula 'pantalla' sin el FT) "
+            "+ ubatch 320 (vision-safe) + visión en CPU -> ~2.0 GB VRAM (vs 2.9 de vram4). "
+            "Encoder + VAD en ONNX (suelta torch, ~-550 MB RAM) + schema-removal. Reversible: "
+            "GEMMA4_DEFAULT_PROFILE=vram4 para volver. NO default aún: FG (270M) mis-rutea "
+            "long-tail de queries de conocimiento a tools de acción (residual handoff §6)."
         ),
-        est_vram_mb=1500,
+        est_vram_mb=2000,
     ),
     "cpu": Profile(
         name="cpu",

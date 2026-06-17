@@ -165,10 +165,25 @@ def _load_tool_rules() -> dict[str, str]:
     # ARREGLA bugs de routing del baseline — menos dilución de atención en el E2B
     # débil). GEMMA4_LEAN_RULES=0 para opt-out (volver a .md full).
     _lean = (_os_lean.environ.get("GEMMA4_LEAN_RULES", "1") or "1").strip().lower() not in {"0", "false", "no", "off"}
+    # GEMMA4_LEAN_TOOLS (rama Experimentando, default ON): las tools cortadas del
+    # catálogo (tool_schemas.CUT_TOOLS_LEAN) tampoco deben aportar su TOOL_RULE.
+    # tool_schemas ya filtra los SCHEMAS, pero build_system_prompt(None) (camino
+    # fallback / legacy) recorría TODAS las reglas igual -> medido: el catálogo
+    # fallback no bajaba aunque los schemas sí. Filtrar acá hace que el fallback
+    # baje en serio. Import lazy: tool_schemas no importa agent_core (no circular).
+    _lean_tools = _os_lean.environ.get("GEMMA4_LEAN_TOOLS", "1").strip().lower() not in {"0", "false", "no", "off"}
+    _cut: frozenset = frozenset()
+    if _lean_tools:
+        try:
+            from ..tools_pkg.tool_schemas import CUT_TOOLS_LEAN as _cut  # type: ignore
+        except Exception:
+            _cut = frozenset()
     for md_path in sorted(_TOOL_RULES_DIR.iterdir()):
         if md_path.suffix != ".md" or md_path.name.endswith(".lean.md"):
             continue
         canonical = md_path.stem
+        if canonical in _cut:
+            continue
         src = md_path
         if _lean:
             lean_path = md_path.with_name(canonical + ".lean.md")
@@ -183,6 +198,8 @@ def _load_tool_rules() -> dict[str, str]:
         if canonical_text is None:
             continue
         for alias in aliases:
+            if alias in _cut:
+                continue
             rules[alias] = canonical_text
     return rules
 
@@ -334,6 +351,21 @@ def build_system_prompt(selected_tool_names: list[str] | None = None) -> str:
     chars) en cada turn, forzando full prompt reprocessing.
     """
     _core = _core_for_profile()
+    # Anti vision-confab (split / QAT): el modelo de habla QAT base (sin el FT que lo suprimía),
+    # con el mmproj de visión residente, A VECES describe una "pantalla" inventada en turnos de
+    # SOLO TEXTO (conocimiento/multi-turno) en vez de responder — failure mode conocido de los VLM
+    # (alucinan descripciones sin imagen; arXiv 2308.06394 / 2603.05465). Una instrucción explícita
+    # lo corta SIN perder la descripción legítima (la cláusula "salvo que haya imagen en este turno"
+    # deja intacto el camino vision/describe_screen). Gated por el split (GEMMA4_FG_ROUTER): solo
+    # se agrega cuando el E2B es el talker del split; inocuo si además es el FT.
+    import os as _os_pf
+    if (_os_pf.environ.get("GEMMA4_FG_ROUTER") or "0").strip().lower() in {"1", "true", "yes", "on"}:
+        _core = _core + (
+            "\n\nEntrada de este turno: SOLO TEXTO, salvo que se te entregue una imagen "
+            "explícitamente en este mismo turno. NO describas pantallas, capturas ni imágenes "
+            "si no se te dio una imagen en este turno: respondé la pregunta del usuario "
+            "directamente. Solo describí una imagen cuando realmente se te haya entregado una."
+        )
     if selected_tool_names is None:
         # Legacy: incluir todas las reglas, deduplicadas, en orden estable.
         seen: set[int] = set()
