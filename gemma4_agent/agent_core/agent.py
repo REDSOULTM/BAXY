@@ -43,7 +43,13 @@ _GUARDS_ON = _os_guards.environ.get("GEMMA4_GUARDS", "0").strip().lower() in {"1
 # CONVERSA; FunctionGemma solo elige tool+args. Requiere GEMMA4_LEAN_TOOLS=0 (el router
 # jerárquico usa las 67 familias) + el server FG en 127.0.0.1:8082. Default OFF (drop-in
 # reversible). Ver gemma4_agent/routing/fg_router.py + FunctionGemma/INTEGRATION_HANDOFF.md.
-_FG_ROUTER_ON = _os_guards.environ.get("GEMMA4_FG_ROUTER", "0").strip().lower() in {"1", "true", "yes", "on"}
+#
+# FUNCIÓN (no constante de módulo): apply_profile_to_env() escribe GEMMA4_FG_ROUTER al
+# ACTIVAR un perfil (p.ej. vram4_lean), lo que puede pasar DESPUÉS de importar este módulo
+# (orden del launcher). Si fuera constante leída al import, el flag quedaría viejo y el perfil
+# lean NO activaría el router. Leyendo el env en cada llamada, funciona sin importar el orden.
+def _fg_router_on() -> bool:
+    return _os_guards.environ.get("GEMMA4_FG_ROUTER", "0").strip().lower() in {"1", "true", "yes", "on"}
 
 
 # Inherit-tools safety knobs.
@@ -806,7 +812,7 @@ class Gemma4Agent:
         # el server :8082 + construye el router) para que esté listo antes del 1er
         # turno sin bloquear el arranque. El 270M botea en ~2-3s. Daemon: no estorba
         # el shutdown. Idempotente (ensure_fg_server reusa si :8082 ya está vivo).
-        if _FG_ROUTER_ON:
+        if _fg_router_on():
             def _prewarm_fg() -> None:
                 try:
                     from ..routing.fg_router import fg_emit
@@ -1256,7 +1262,7 @@ class Gemma4Agent:
         # (menos KV+compute, prefill más rápido, y menos "Context Rot" -> mejor calidad). El E2B
         # sólo conversa y narra resultados de tools, lo cual no requiere los schemas. Validado en
         # la composición vram4_lean (ctx 6144, FG on): persona/idioma/grounding OK sin schemas.
-        if _FG_ROUTER_ON:
+        if _fg_router_on():
             return ""
         env_mode = (_os.environ.get("GEMMA4_TOOL_SCHEMAS_HINT_MODE") or "auto").strip().lower()
         # legacy opt-out kept for backward compat
@@ -3258,7 +3264,7 @@ class Gemma4Agent:
             #   no_tool        -> abstención: raw_tool_calls=[] (responde el E2B conversacional).
             #   tool elegido   -> raw_tool_calls=[ese] (traducido a tool COMPUESTO de Baxy).
             #   FG no resolvió -> se queda la decisión del E2B (fallback). Gate GEMMA4_FG_ROUTER.
-            if _FG_ROUTER_ON and not events and not getattr(self, "_fg_router_done", False):
+            if _fg_router_on() and not events and not getattr(self, "_fg_router_done", False):
                 self._fg_router_done = True
                 try:
                     from ..routing.fg_router import fg_emit
