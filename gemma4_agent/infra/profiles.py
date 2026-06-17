@@ -680,6 +680,9 @@ def apply_profile_to_env(profile: Profile) -> None:
     # perfil (proceso fresco -> apply(vram4) no setea -> vuelven a su default OFF).
     if profile.encoder_onnx:
         os.environ["GEMMA4_ENCODER_ONNX"] = "1"
+        # El perfil torch-free completa el drop también en VOZ: el VAD en onnxruntime crudo
+        # (si no, silero_vad reintroduce torch ~174 MB en modo voz). Mismo gate de "go ONNX".
+        os.environ["GEMMA4_VAD_ONNX"] = "1"
     if profile.fg_router:
         os.environ["GEMMA4_FG_ROUTER"] = "1"
         os.environ["GEMMA4_LEAN_TOOLS"] = "0"  # FunctionGemma necesita las 67 familias
