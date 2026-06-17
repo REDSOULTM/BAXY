@@ -232,17 +232,25 @@ PROFILES: dict[str, Profile] = {
     "vram4_lean": Profile(
         name="vram4_lean",
         display_name="VRAM 4GB (lean/split)",
-        # ctx 6144: en el split el E2B no decide tools (lo hace FunctionGemma), pero
-        # con LEAN_TOOLS=0 aún recibe schemas -> prompt real ~4.8k. 6144 lo cubre con
-        # aire (el ctx 12288 era de la era monolítica). KV chico en un 2B.
+        # ctx 6144 (MEDIDO 2026-06-17): bajo FG el modelo que habla NO recibe schemas
+        # (tools=None), NI reglas de uso de tools (redundantes, FG rutea), Y usa el CORE
+        # LEAN (~1160 tok vs ~3000 del full; vram4_lean está en _LEAN_PROFILES). El prompt
+        # base cae a ~2.5k y el máximo medido (pass de RESUMEN) es ~3.3k. 6144 deja ~2.8k de
+        # aire para turnos de web/research (tool-results grandes) + historial multi-turno;
+        # el context-retry compacta como backstop. KV (q8_0 K) ~118 MiB. El compute buffer
+        # NO depende del ctx. El piso del prompt (~2.5k) es core lean + persona + memoria +
+        # template: irreducible sin tocar identidad/honestidad.
         context_size=6144,
-        # Modelo FT Q4_K_M (NO el QAT base). MEDIDO 2026-06-17: el QAT base, sin el FT,
-        # CONFABULA descripciones de "pantalla" a nivel TEXTO en turnos de conocimiento/
-        # multi-turno (con o sin mmproj) — failure mode que SOLO el FT suprime; sin un FT
-        # del QAT (punto #4) no se cura. El FT da 0 confab (validado). El split sigue: FG
-        # hace las tools, el E2B (FT) solo narra/conversa (su FT de tools es redundante pero
-        # inocuo). Las palancas de RAM/VRAM son model-independientes (abajo).
-        model_path=_E2B_Q4_K_M,
+        # Modelo QAT base (NO el FT). En el split FG hace las tools, así que el FT de
+        # tool-calling del E2B es REDUNDANTE: el E2B solo narra/conversa. El QAT base es
+        # más chico (1224 MiB GPU vs 1416 del FT, ~-190 MiB) y es la build oficial de
+        # Google/Unsloth (sin la deriva de un FT propio). El QAT da persona/idioma por
+        # prompt (validado). NOTA anti-confab: una corrida previa atribuyó al QAT un confab
+        # de "pantalla" a nivel texto, pero la causa real medida fue el MIS-ROUTE de FG
+        # (conocimiento->tool de acción), hoy gateado por el KVA gate (data/fg/kva_gate.json).
+        # El QAT vuelve a ser el modelo del perfil lean; re-validar el confab en vivo con el
+        # KVA gate activo antes de declararlo default.
+        model_path=_E2B_QAT_Q4,
         mmproj_path=_MMPROJ_E2B,  # _resolve_mmproj_path ya prefiere el Q8 si existe
         vision_enabled=True,
         rerank_enabled=False,
@@ -263,13 +271,12 @@ PROFILES: dict[str, Profile] = {
         encoder_onnx=True,   # encoder en onnxruntime int8 -> suelta torch (-379 MB RAM)
         fg_router=True,      # FunctionGemma hace las tools (+ fuerza LEAN_TOOLS=0)
         description=(
-            "GPU 4GB LEAN (split). E2B FT Q4_K_M (el QAT base confabula 'pantalla' sin el FT) "
-            "+ ubatch 320 (vision-safe) + visión en CPU -> ~2.0 GB VRAM (vs 2.9 de vram4). "
-            "Encoder + VAD en ONNX (suelta torch, ~-550 MB RAM) + schema-removal. Reversible: "
-            "GEMMA4_DEFAULT_PROFILE=vram4 para volver. NO default aún: FG (270M) mis-rutea "
-            "long-tail de queries de conocimiento a tools de acción (residual handoff §6)."
+            "GPU 4GB LEAN (split). E2B QAT base (FG hace las tools; el FT del E2B es "
+            "redundante) + ubatch 320 (vision-safe) + visión en CPU -> ~1.8 GB VRAM (vs 2.9 "
+            "de vram4). Encoder + VAD en ONNX (suelta torch, ~-550 MB RAM) + schema-removal "
+            "+ KVA gate (conocimiento->no_tool). Reversible: GEMMA4_DEFAULT_PROFILE=vram4."
         ),
-        est_vram_mb=2000,
+        est_vram_mb=1830,
     ),
     "cpu": Profile(
         name="cpu",

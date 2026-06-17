@@ -269,7 +269,18 @@ def _parse_call(text: str) -> tuple[str | None, dict[str, Any]]:
     return nm.group(1), args
 
 
-def _ask(query: str, subset: list[dict[str, Any]], timeout_s: float = 20.0) -> tuple[str | None, dict[str, Any]]:
+def _tool_name(t: dict[str, Any]) -> str | None:
+    return t.get("function", {}).get("name") or t.get("name")
+
+
+def _tool_props(t: dict[str, Any] | None) -> dict[str, Any]:
+    if not t:
+        return {}
+    fn = t.get("function", t)
+    return (fn.get("parameters") or {}).get("properties") or {}
+
+
+def _call_fg(query: str, subset: list[dict[str, Any]], timeout_s: float) -> tuple[str | None, dict[str, Any]]:
     body = json.dumps({
         "messages": [{"role": "developer", "content": _DEV}, {"role": "user", "content": query}],
         "tools": subset, "temperature": 0.0, "max_tokens": 160, "stop": ["<end_function_call>"],
@@ -287,6 +298,26 @@ def _ask(query: str, subset: list[dict[str, Any]], timeout_s: float = 20.0) -> t
             except Exception:
                 a = {}
         args = a
+    return name, args
+
+
+def _ask(query: str, subset: list[dict[str, Any]], timeout_s: float = 20.0) -> tuple[str | None, dict[str, Any]]:
+    name, args = _call_fg(query, subset, timeout_s)
+    # FG-270M DROPEA args cuando el subset es grande y está dominado por una familia de
+    # tools similares (MEDIDO 2026-06-17: "abre Steam" con 11 tools steam/app/launch ->
+    # app_open{} VACÍO -> el tool falla sin target; con [app_open,no_tool] -> name:Steam).
+    # Si el tool elegido ACEPTA args pero vino vacío, re-preguntamos ENFOCADO (ese tool +
+    # no_tool): FG deja de competir entre tools hermanos y completa el arg. No hardcodea
+    # nada — es el mismo FG con un subset mínimo. Si el tool no toma args (steam_open{},
+    # get_volume{}) el reintento queda vacío también (inocuo).
+    if name and name != "no_tool" and not args:
+        chosen = next((t for t in subset if _tool_name(t) == name), None)
+        if _tool_props(chosen):
+            minimal = [chosen] + [t for t in subset if _tool_name(t) == "no_tool"]
+            if len(minimal) < len(subset):  # solo si de verdad achicamos
+                n2, a2 = _call_fg(query, minimal, timeout_s)
+                if n2 == name and a2:
+                    args = a2
     return name, args
 
 

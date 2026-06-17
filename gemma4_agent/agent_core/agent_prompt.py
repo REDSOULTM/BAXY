@@ -52,13 +52,14 @@ _TOOL_RULES_DIR = _PROMPTS_DIR / "tool_rules"
 # profiles get the FULL core (~2900 tok) with all the nuance. Env override:
 # GEMMA4_CORE_TIER=lean|full.
 #
-# El único perfil operante es vram4 (E2B-Q4) -> LEAN core (~920 tok): es el tier
-# más chico y más sensible a latencia (voz en GPU modesta), donde el prompt corto
-# es a la vez más rápido (menos prefill) y más preciso (menos dilución de
-# atención). Validado en vivo (tool-call): 7/7 correcto y más rápido con lean.
-# standby no corre server (su tier es irrelevante). Override manual:
-# GEMMA4_CORE_TIER=lean|full.
-_LEAN_PROFILES = {"vram4"}
+# Los perfiles GPU operantes (vram4 y vram4_lean) usan el LEAN core (~1160 tok vs
+# ~3000 del full): son los tiers más chicos y más sensibles a latencia (voz en GPU
+# modesta), donde el prompt corto es a la vez más rápido (menos prefill) y más
+# preciso (menos dilución de atención). Validado en vivo (tool-call): 7/7 correcto y
+# más rápido con lean. vram4_lean además NO recibe reglas de uso de tools (FG las
+# hace), así que el core lean le alcanza de sobra. standby no corre server (tier
+# irrelevante). Override manual: GEMMA4_CORE_TIER=lean|full.
+_LEAN_PROFILES = {"vram4", "vram4_lean"}
 _FULL_PROFILES = {"standby"}
 
 

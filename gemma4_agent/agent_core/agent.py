@@ -1210,15 +1210,17 @@ class Gemma4Agent:
                 build_tool_rules_extras_for_user_msg,
             )
             core_stable = build_core_only()
-            # CORE tool rules (15 tools fijos): SIEMPRE en el system, bytes
-            # identicos. Las extras se inyectaran al user msg desde
-            # _decide_turn / _execute_turn (no aca).
-            core_tool_rules = build_core_tool_rules_stable()
-            # Tool-schemas: idealmente tambien estables, pero por ahora dejamos
-            # los del subset (refactor futuro: build_core_tool_schemas_stable).
-            # El cambio que mas pesa es tool_rules (~10K chars en turn comun).
-            stable_a = (f"{core_stable}\n\n# Core tool usage rules\n"
-                        f"{core_tool_rules}\n\n")
+            # Split (FunctionGemma router): las reglas de uso de tools son REDUNDANTES —
+            # FG hace el ruteo y el modelo que habla solo conversa/narra. Sacarlas baja el
+            # prompt ~1150 tok (MEDIDO 2026-06-17). Sin FG van SIEMPRE (15 tools fijos,
+            # bytes estables turno-a-turno para el cache-hit del prefijo; las extras se
+            # inyectan al user msg desde _decide_turn / _execute_turn).
+            if _fg_router_on():
+                stable_a = f"{core_stable}\n\n"
+            else:
+                core_tool_rules = build_core_tool_rules_stable()
+                stable_a = (f"{core_stable}\n\n# Core tool usage rules\n"
+                            f"{core_tool_rules}\n\n")
             stable_b = f"{persona_hint}{accessibility_hint}{skills_critical}{skills_menu}"
             # VARIABLE al final: mode-hint, tool-schemas (filtrados por subset
             # por ahora), project/plan/recall/phrase/microagents/intent/memoria.
@@ -1231,7 +1233,8 @@ class Gemma4Agent:
         if _v2_on:
             from .agent_prompt import build_core_only, build_tool_rules_tail
             core_stable = build_core_only()
-            tool_rules_tail = build_tool_rules_tail(selected_tool_names)
+            # Split FG: reglas de uso de tools redundantes (FG rutea) -> fuera bajo FG.
+            tool_rules_tail = "" if _fg_router_on() else build_tool_rules_tail(selected_tool_names)
             tool_rules_section = f"\n\n{tool_rules_tail}" if tool_rules_tail else ""
             stable = f"{core_stable}{persona_hint}{accessibility_hint}{skills_critical}{skills_menu}"
             variable = (f"{language_section}{mode_hint}{a11y_switch_note}{info_followup_note}{tool_rules_section}{tools_section}"
@@ -3047,6 +3050,14 @@ class Gemma4Agent:
                 )
                 _pass_tools = None if (_is_summary_pass and not _keep_summary_tools) else selected_schemas
                 _pass_max = 160 if _is_summary_pass else mode.max_tokens
+            # Split (FunctionGemma router): el E2B NO recibe los schemas nativos —
+            # FG decide la tool, el E2B (QAT) solo conversa/narra. Pasarle tools=[] al
+            # E2B solo infla el prompt ~1.7k tokens (schemas vía --jinja) y lo desborda
+            # del ctx (MEDIDO 2026-06-17: "abre Steam" 7002 > 6144 -> 400; con tools=None
+            # el prompt de acción cae a ~base ~5.3k y entra). El _greedy/few-shot de
+            # tool-call quedan inertes a propósito: el tool-call lo hace FG, no el E2B.
+            if _fg_router_on() and _pass_tools is not None:
+                _pass_tools = None
             # CACHE-HIT (research compass): keeping the tools is NOT enough
             # to hit the prefix cache — pass-1 rendered the prompt with
             # enable_thinking=mode.enable_thinking, and if the summary TOGGLES it the
@@ -3230,7 +3241,7 @@ class Gemma4Agent:
                     try:
                         resp = self.client.chat(
                             _msgs_r,
-                            tools=selected_schemas,
+                            tools=(None if _fg_router_on() else selected_schemas),
                             enable_thinking=mode.enable_thinking,
                             thinking_budget=mode.thinking_budget,
                             model=self._router_model_for(_msgs_r),
