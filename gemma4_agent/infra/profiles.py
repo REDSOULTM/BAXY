@@ -467,7 +467,10 @@ def recommend_profile(vram_mb: int | None) -> str:
     autocpu = (os.environ.get("GEMMA4_NO_GPU_AUTOCPU", "1") or "1").strip().casefold()
     if autocpu not in {"0", "false", "no", "off"} and not has_usable_cuda_gpu():
         return "cpu"
-    return "vram4"
+    # RAMA vram4_lean: default = perfil lean del split (FT + ubatch320 + visión-CPU +
+    # encoder/VAD-ONNX + schema-removal, ~2.0 GB VRAM). En la rama Experimentando esto es
+    # "vram4". Blocker conocido (no default en main): FG mis-rutea long-tail conocimiento→acción.
+    return "vram4_lean"
 
 
 def get_active_profile() -> Profile:
@@ -486,7 +489,7 @@ def get_active_profile() -> Profile:
     universal). NO pisa un active_profile.txt ya existente (el usuario manda si ya
     eligió). Sirve para fijar vram4 default aunque la GPU tenga 16 GB.
     """
-    _DEFAULT = "vram4"
+    _DEFAULT = "vram4_lean"  # RAMA vram4_lean (en Experimentando esto es "vram4")
     _env_default = (os.environ.get("GEMMA4_DEFAULT_PROFILE") or "").strip().casefold()
     if _env_default:
         _env_default = _resolve_alias(_env_default)
