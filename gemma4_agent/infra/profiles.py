@@ -42,7 +42,7 @@ from ..memory_pkg.state import atomic_write_json
 # se conserva porque apaga llama-server y la UI lo necesita. Cualquier nombre
 # viejo (vram3/6/8/.../performance/balanced/light) resuelve a vram4 vía
 # _LEGACY_ALIASES para no romper un ~/.gemma4/active_profile.txt preexistente.
-PROFILE_NAMES = ("vram4", "standby")
+PROFILE_NAMES = ("vram4", "vram4_lean", "standby")
 
 ACTIVE_PROFILE_PATH = Path.home() / ".gemma4" / "active_profile.txt"
 PROFILES_OVERRIDES_PATH = Path.home() / ".gemma4" / "profiles.json"
@@ -97,6 +97,23 @@ class Profile:
     # b9090+ existen -t y --prio; --keep-alive/idle-unload NO -> no se promete
     # unload-on-idle.
     cpu_threads: int | None = None
+    # ── Campos del perfil LEAN del split (vram4_lean) ────────────────────────
+    # Batch/ubatch del llama-server. MEDIDO: el compute buffer escala con el ubatch
+    # (default 512 -> ~515-571 MiB). Con n_ubatch=128 baja a ~140 MiB (-0.4 GB VRAM)
+    # sin afectar calidad (solo el prefill es un poco más lento). None = default de
+    # llama.cpp. Solo vram4_lean los setea.
+    n_batch: int | None = None
+    n_ubatch: int | None = None
+    # Visión (mmproj) en CPU: --no-mmproj-offload. Saca el encoder de visión de la
+    # GPU (-0.6-0.8 GB VRAM) a cambio de RAM + turnos de visión más lentos. El target
+    # del split (4 GB) prioriza VRAM para el LLM de habla.
+    mmproj_on_cpu: bool = False
+    # Flags de CLIENTE del split (apply_profile_to_env los escribe a env, reversible):
+    #   encoder_onnx -> GEMMA4_ENCODER_ONNX (encoder en onnxruntime int8, suelta torch)
+    #   fg_router    -> GEMMA4_FG_ROUTER + fuerza GEMMA4_LEAN_TOOLS=0 (FunctionGemma
+    #                   hace las tools; el router necesita las 67 familias)
+    encoder_onnx: bool = False
+    fg_router: bool = False
 
 
 # Defaults — copiados aqui para que sean editables sin tocar profiles.json.
@@ -116,6 +133,10 @@ _E2B = _PROJECT_ROOT / "models" / "E2B"
 # disco (models/E4B, models/26B-A4B) por si se reintroduce un perfil vía
 # profiles.json override o GEMMA4_MODEL_PATH.
 _E2B_Q4_K_M  = str(_E2B / "gemma-4-E2B-it-Q4_K_M.gguf")      # 2.16 novis / 3.36 +vis @4K
+# QAT base (NO fine-tuneado) para el split: FunctionGemma hace las tools, el E2B solo
+# habla -> no se necesita el FT. Modelo 1223 MiB GPU (vs 1416 del FT). Persona/idioma por
+# prompt (validado). Lo usa vram4_lean.
+_E2B_QAT_Q4  = str(_PROJECT_ROOT / "models" / "E2B-QAT" / "gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf")
 
 
 def _resolve_mmproj_path(model_dir: Path) -> str:
@@ -207,6 +228,42 @@ PROFILES: dict[str, Profile] = {
             "completo en 4 GB."
         ),
         est_vram_mb=3360,
+    ),
+    "vram4_lean": Profile(
+        name="vram4_lean",
+        display_name="VRAM 4GB (lean/split)",
+        # ctx 6144: en el split el E2B no decide tools (lo hace FunctionGemma), pero
+        # con LEAN_TOOLS=0 aún recibe schemas -> prompt real ~4.8k. 6144 lo cubre con
+        # aire (el ctx 12288 era de la era monolítica). KV chico en un 2B.
+        context_size=6144,
+        # QAT base (NO el FT): en el split FunctionGemma hace las tools, el E2B solo
+        # habla. Modelo 1223 MiB (vs 1416 del FT) + idioma multilingüe MEJOR que el FT
+        # (validado: el FT tenía sesgo español en acción). Persona por prompt.
+        model_path=_E2B_QAT_Q4,
+        mmproj_path=_MMPROJ_E2B,  # _resolve_mmproj_path ya prefiere el Q8 si existe
+        vision_enabled=True,
+        rerank_enabled=False,
+        parallel_tools=False,
+        fact_extraction=False,
+        server_running=True,
+        voice_enabled=True,
+        camera_enabled=False,
+        n_gpu_layers=99,
+        # Palancas VRAM medidas: batch chico (compute buffer 515->140, -0.4 GB) +
+        # visión a CPU (-0.6-0.8 GB). Resultante: ~1.5 GB VRAM (vs 2.9 de vram4).
+        n_batch=512,
+        n_ubatch=128,
+        mmproj_on_cpu=True,
+        # Flags de cliente del split (reversibles vía apply_profile_to_env):
+        encoder_onnx=True,   # encoder en onnxruntime int8 -> suelta torch (-379 MB RAM)
+        fg_router=True,      # FunctionGemma hace las tools (+ fuerza LEAN_TOOLS=0)
+        description=(
+            "GPU 4GB LEAN (split). E2B QAT base (sin FT, FunctionGemma hace tools) + "
+            "batch chico + visión en CPU -> ~1.5 GB VRAM (vs 2.9 de vram4). Encoder en "
+            "ONNX int8 (suelta torch, -379 MB RAM). Reversible: GEMMA4_DEFAULT_PROFILE=vram4 "
+            "para volver. Validar amplio antes de hacerlo default."
+        ),
+        est_vram_mb=1500,
     ),
     "cpu": Profile(
         name="cpu",
@@ -614,6 +671,18 @@ def apply_profile_to_env(profile: Profile) -> None:
         if candidate.is_file():
             os.environ["GEMMA4_MODEL_PATH"] = str(candidate)
         # else: silencio. Caller (UI) debe verificar con light_model_missing().
+
+    # Flags de CLIENTE del split (vram4_lean). Solo se FUERZAN ON desde el perfil; NO se
+    # escriben en "0" para otros perfiles. Razón: apply_profile_to_env corre en muchos
+    # lugares (config.from_env, agent_runner, server, ...) con el perfil ACTIVO; si vram4
+    # escribiera "0" clobbearía un GEMMA4_ENCODER_ONNX=1 manual (rompería el gate del flag
+    # y el A/B independiente). La reversibilidad la da el RESTART del worker al cambiar de
+    # perfil (proceso fresco -> apply(vram4) no setea -> vuelven a su default OFF).
+    if profile.encoder_onnx:
+        os.environ["GEMMA4_ENCODER_ONNX"] = "1"
+    if profile.fg_router:
+        os.environ["GEMMA4_FG_ROUTER"] = "1"
+        os.environ["GEMMA4_LEAN_TOOLS"] = "0"  # FunctionGemma necesita las 67 familias
 
 
 def requires_server_restart(old: Profile | None, new: Profile) -> bool:

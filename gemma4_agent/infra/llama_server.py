@@ -617,17 +617,24 @@ def llama_command(config: AgentConfig, profile: Profile) -> list[str]:
             mmproj_path = Path(mmproj_env).expanduser() if mmproj_env else config.mmproj_path
             if mmproj_path.is_file():
                 cmd.extend(["--mmproj", str(mmproj_path.resolve())])
-                # --no-mmproj-offload cuando VRAM efectiva es tight (perfiles
-                # con --no-mmap suelen ser los de 6 GB o menos). Mitiga la
-                # interaccion con issue #19980 (--fit no contabiliza VRAM del
-                # mmproj).
-                if profile.name in _VRAM_TIGHT:
+                # --no-mmproj-offload: visión en CPU (libera -0.6-0.8 GB VRAM). Se
+                # activa para perfiles VRAM-tight o cuando el perfil lo pide explícito
+                # (vram4_lean: mmproj_on_cpu=True). Mitiga además issue #19980.
+                if profile.name in _VRAM_TIGHT or getattr(profile, "mmproj_on_cpu", False):
                     cmd.append("--no-mmproj-offload")
             else:
                 logger.warning(
                     "mmproj path %s does not exist; loading server without vision",
                     mmproj_path,
                 )
+
+    # Batch/ubatch del perfil (vram4_lean): el compute buffer en GPU escala con el
+    # ubatch. MEDIDO: ubatch 512->128 baja el compute buffer ~515->140 MiB (-0.4 GB
+    # VRAM), a costa de un prefill un poco más lento. None = default de llama.cpp.
+    if getattr(profile, "n_batch", None):
+        cmd.extend(["--batch-size", str(int(profile.n_batch))])
+    if getattr(profile, "n_ubatch", None):
+        cmd.extend(["--ubatch-size", str(int(profile.n_ubatch))])
 
     return cmd
 
