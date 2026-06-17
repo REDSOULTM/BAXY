@@ -1,7 +1,13 @@
-"""When a capture is dropped (silence below RMS floor, or a Whisper silence
-hallucination), the pipeline must emit a NO_SPEECH state so the UI can tell the
-user "no te entendí" instead of silently dropping back to idle ("the mic
-ignored me" — see memory project_voice_silent_rejects).
+"""When a capture is dropped (silence below RMS floor, or a non-lexical filler),
+the pipeline must emit a NO_SPEECH state so the UI can tell the user "no te
+entendí" instead of silently dropping back to idle ("the mic ignored me" — see
+memory project_voice_silent_rejects).
+
+NOTA (Parakeet-only 2026-06-17): el drop por "alucinación de silencio" (lista de
+artefactos de Whisper) se ELIMINÓ con Whisper. Parakeet no alucina texto en
+silencio, así que un texto que antes era artefacto ("¡Suscríbete!") ahora es una
+palabra REAL del usuario y debe llegar al LLM. Solo se filtran silencio (gate de
+energía) y vocalizaciones no-léxicas ("Mm-mm").
 
 Drives _finish_capture directly with stubbed STT/corrector; no audio hardware."""
 from __future__ import annotations
@@ -73,12 +79,14 @@ class TestNoSpeechFeedback(unittest.TestCase):
         self.assertIn("NO_SPEECH", p.states)
         self.assertEqual(p.commands, [])
 
-    def test_hallucination_emits_no_speech(self):
-        # Real energy but Whisper returns a canonical silence artifact -> drop.
+    def test_former_whisper_artifact_now_emitted(self):
+        # Parakeet-only: el ex-artefacto de Whisper ("¡Suscríbete!") ya NO se
+        # dropea — Parakeet no alucina en silencio, así que con energía real es
+        # una palabra del usuario y debe llegar al LLM (no NO_SPEECH).
         p = _make_pipeline("¡Suscríbete!", _speech(0.8))
         p._finish_capture(reason="eos_silence")
-        self.assertIn("NO_SPEECH", p.states)
-        self.assertEqual(p.commands, [])
+        self.assertEqual(p.commands, ["¡Suscríbete!"])
+        self.assertNotIn("NO_SPEECH", p.states)
 
     def test_filler_only_emits_no_speech(self):
         # Real energy but STT returns a non-lexical vocalization -> drop.

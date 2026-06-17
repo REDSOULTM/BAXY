@@ -1,51 +1,41 @@
-"""Deshabilitar Whisper: SOLO Parakeet.
+"""Invariante de la reescritura Parakeet-only (2026-06-17): Whisper está
+ELIMINADO del pipeline de voz. No hay fallback, ni rescate LID, ni selección de
+motor por env. `_build_stt()` devuelve siempre ParakeetSTT y el código del
+pipeline no importa ni referencia Whisper/STT.
 
-GEMMA4_STT_NO_FALLBACK (o GEMMA4_DISABLE_WHISPER) apaga el fallback a Whisper en
-VoicePipeline: si Parakeet no carga, la voz falla limpio en vez de caer a Whisper.
-Este test fija el detector del flag (no carga modelos reales).
+Este test es un gate de NO-REGRESIÓN: si alguien re-introduce Whisper en el
+pipeline de voz, falla acá.
 """
 from __future__ import annotations
 
-import os
+import inspect
 import unittest
 
+from gemma4_agent.voice import pipeline
 from gemma4_agent.voice.pipeline import VoicePipeline
 
 
-class TestWhisperDisabledFlag(unittest.TestCase):
-    def setUp(self):
-        self._saved = {
-            k: os.environ.get(k)
-            for k in ("GEMMA4_STT_NO_FALLBACK", "GEMMA4_DISABLE_WHISPER")
-        }
-        for k in self._saved:
-            os.environ.pop(k, None)
+class TestParakeetOnly(unittest.TestCase):
+    def test_build_stt_returns_parakeet(self):
+        stt = VoicePipeline._build_stt()
+        self.assertEqual(type(stt).__name__, "ParakeetSTT")
 
-    def tearDown(self):
-        for k, v in self._saved.items():
-            if v is None:
-                os.environ.pop(k, None)
-            else:
-                os.environ[k] = v
+    def test_no_whisper_fallback_api_remains(self):
+        # Las APIs del fallback a Whisper fueron eliminadas.
+        for attr in ("_whisper_disabled", "_lid_rescue", "_whisper_rescue_stt",
+                     "_rescue_via_subprocess"):
+            self.assertFalse(hasattr(VoicePipeline, attr),
+                             f"{attr} debería estar eliminado")
 
-    def test_default_allows_whisper_fallback(self):
-        # sin el flag, el fallback a Whisper sigue disponible (comportamiento previo).
-        self.assertFalse(VoicePipeline._whisper_disabled())
-
-    def test_flag_disables_whisper(self):
-        for val in ("1", "true", "on", "yes"):
-            os.environ["GEMMA4_STT_NO_FALLBACK"] = val
-            self.assertTrue(VoicePipeline._whisper_disabled(), f"flag={val!r}")
-            os.environ.pop("GEMMA4_STT_NO_FALLBACK", None)
-
-    def test_alias_disable_whisper(self):
-        os.environ["GEMMA4_DISABLE_WHISPER"] = "1"
-        self.assertTrue(VoicePipeline._whisper_disabled())
-
-    def test_falsey_values_keep_fallback(self):
-        for val in ("0", "false", "off", ""):
-            os.environ["GEMMA4_STT_NO_FALLBACK"] = val
-            self.assertFalse(VoicePipeline._whisper_disabled(), f"flag={val!r}")
+    def test_pipeline_source_has_no_whisper_import(self):
+        src = inspect.getsource(pipeline)
+        # No imports/usos de Whisper STT en el pipeline de voz.
+        self.assertNotIn("from .stt import", src)
+        self.assertNotIn("_SILENCE_HALLUCINATIONS", src)
+        # El módulo voice.stt ya no debe existir (Whisper eliminado del repo).
+        import importlib.util
+        self.assertIsNone(importlib.util.find_spec("gemma4_agent.voice.stt"),
+                          "voice/stt.py (Whisper) debería estar eliminado")
 
 
 if __name__ == "__main__":

@@ -94,6 +94,17 @@ def _decoding_method() -> str:
         else "greedy_search"
 
 
+# BIASING CONTEXTUAL (hotwords) — INVESTIGADO Y DESCARTADO (2026-06-17).
+# sherpa-onnx PR #3077 (2026-02-05) habilitó modified_beam_search + hotwords para
+# transducers NeMo (Parakeet TDT). Se probó para rescatar nombres propios que el
+# greedy fonetiza. Medido con scripts/voice_chain_eval.py (n=60): NET-NEGATIVO —
+# WER 0.2152 -> 0.2854, exactos 33/58 -> 29/56, con basura ("15.", "Yeah.") y
+# vacíos por la inestabilidad del MBS de NeMo (sherpa Issue #3267). NO se adopta:
+# los nombres propios se rescatan con el corrector fonético downstream
+# (corrector.py). Re-evaluar SOLO si una versión futura de sherpa estabiliza el
+# MBS de NeMo. Detalle en documentacion/_BASELINE_VOZ_2026-06-17.md.
+
+
 def _optimal_threads() -> int:
     """min(4, cores físicos). El speed-up de FastConformer en CPU se satura
     entre 2-4 hilos físicos; los lógicos (hyperthread) degradan por contención
@@ -189,19 +200,11 @@ class ParakeetSTT:
         except Exception:
             pass
 
-    def transcribe(
-        self,
-        audio: np.ndarray,
-        initial_prompt: str | None = None,   # ignorado (compat con STT)
-        language: str | None = None,         # ignorado (Parakeet es multilingüe)
-        hotwords: str | None = None,         # ignorado en greedy (ver Etapa 2)
-    ) -> str:
+    def transcribe(self, audio: np.ndarray) -> str:
         """Transcribe un buffer int16 mono 16 kHz. Devuelve texto crudo.
 
-        Acepta los kwargs de stt.STT por compatibilidad de interfaz, pero
-        Parakeet greedy no los usa (es multilingüe sin prompt, y hotwords
-        requiere modified_beam_search — ver Etapa 2 del plan). El corrector se
-        aplica DOWNSTREAM, igual que con Whisper."""
+        Parakeet es multilingüe y auto-detecta el idioma: no recibe prompt ni
+        language. El corrector fonético se aplica DOWNSTREAM (corrector.py)."""
         if not self._loaded or self._rec is None:
             return ""
         if audio is None or audio.size < int(0.08 * SAMPLE_RATE):

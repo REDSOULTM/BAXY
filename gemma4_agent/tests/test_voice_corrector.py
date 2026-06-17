@@ -9,9 +9,7 @@ from __future__ import annotations
 import unittest
 
 from gemma4_agent.voice.corrector import FuzzyCorrector, _normalise
-from gemma4_agent.voice.inventory import (
-    STATIC_INVENTORY, build_initial_prompt, get_inventory,
-)
+from gemma4_agent.voice.inventory import STATIC_INVENTORY, get_inventory
 
 
 SMALL_INV = {
@@ -171,15 +169,7 @@ class InventoryTest(unittest.TestCase):
         for cat in ("apps", "verbs", "wake_words", "music_artists", "music_songs"):
             self.assertIn(cat, inv)
 
-    def test_build_initial_prompt_contains_app_names(self):
-        prompt = build_initial_prompt()
-        self.assertIn("Chrome", prompt)
-        self.assertIn("Spotify", prompt)
-
-    def test_build_initial_prompt_under_token_cap(self):
-        # ~220 tokens hard limit. We use a conservative ~880-char cap.
-        prompt = build_initial_prompt()
-        self.assertLessEqual(len(prompt), 900)
+    # build_initial_prompt() (artefacto de Whisper) se eliminó — Parakeet-only.
 
 
 class PhoneticCorrectionTest(unittest.TestCase):

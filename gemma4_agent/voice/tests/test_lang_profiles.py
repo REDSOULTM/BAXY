@@ -1,15 +1,14 @@
-"""Per-language STT profiles: el initial_prompt y el whisper_language deben
-derivar del perfil de idioma, no estar hardcodeados a español.
+"""Perfil de idioma del usuario (Parakeet-only 2026-06-17).
 
-Un usuario en inglés/otro idioma NO debe quedar con config española. Config por
-idioma + default es (Spanglish).
+El perfil ya NO configura a Whisper (eliminado): es solo la identidad de idioma
+del usuario (code/label) que la voz pasa como hint al agente. Se resuelve desde
+GEMMA4_VOICE_LANG o el default 'es'.
 """
 from __future__ import annotations
 
 import unittest
 from unittest.mock import patch
 
-from gemma4_agent.voice.inventory import build_initial_prompt
 from gemma4_agent.voice import lang_profiles as lp
 
 
@@ -34,45 +33,25 @@ class ResolveLangTest(unittest.TestCase):
         self.assertEqual(lp.resolve_lang(""), "es")
 
     def test_env_var_used_when_no_explicit(self):
-        import os
         with patch.dict("os.environ", {"GEMMA4_VOICE_LANG": "en"}):
             self.assertEqual(lp.resolve_lang(), "en")
 
 
-class PerLanguagePromptTest(unittest.TestCase):
-    def test_spanish_prompt_is_spanish_with_bilingual_seed(self):
-        p = build_initial_prompt(lang="es")
-        self.assertIn("español", p)
-        self.assertIn("abre Chrome", p)
-        self.assertIn("open Chrome", p)  # seed bilingüe anti-anglicismo
+class ProfileShapeTest(unittest.TestCase):
+    def test_profile_exposes_code_and_label(self):
+        p = lp.get_profile("es")
+        self.assertEqual(p.code, "es")
+        self.assertTrue(p.label)
 
-    def test_english_prompt_is_english_not_spanish(self):
-        p = build_initial_prompt(lang="en")
-        self.assertIn("English", p)
-        self.assertIn("open Chrome", p)
-        self.assertNotIn("español", p)
-        self.assertNotIn("Conversación", p)
+    def test_no_whisper_legacy_fields(self):
+        # El legado de Whisper (whisper_language, frame) se eliminó.
+        p = lp.get_profile("en")
+        self.assertFalse(hasattr(p, "whisper_language"))
+        self.assertFalse(hasattr(p, "frame"))
 
-    def test_portuguese_prompt_is_portuguese(self):
-        p = build_initial_prompt(lang="pt")
-        self.assertIn("português", p)
-        self.assertNotIn("español", p)
-
-    def test_all_profiles_under_cap(self):
-        for code in lp.PROFILES:
-            p = build_initial_prompt(lang=code)
-            self.assertLessEqual(len(p), lp.PROMPT_CHAR_CAP)
-
-    def test_proper_nouns_present_in_every_language(self):
-        # Apps son agnósticas del idioma -> deben aparecer en todos.
-        for code in lp.PROFILES:
-            p = build_initial_prompt(lang=code)
-            self.assertIn("Spotify", p, f"Spotify missing in {code} prompt")
-
-    def test_whisper_language_matches_profile(self):
-        self.assertEqual(lp.get_profile("es").whisper_language, "es")
-        self.assertEqual(lp.get_profile("en").whisper_language, "en")
-        self.assertEqual(lp.get_profile("pt").whisper_language, "pt")
+    def test_get_profile_resolves_variants(self):
+        self.assertEqual(lp.get_profile("pt-BR").code, "pt")
+        self.assertEqual(lp.get_profile("xx").code, "es")  # fallback
 
 
 if __name__ == "__main__":

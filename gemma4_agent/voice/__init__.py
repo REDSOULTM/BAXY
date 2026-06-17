@@ -1,33 +1,33 @@
-"""Voice pipeline v2 — clean rebuild (2026-05-19).
+"""Subsistema de voz — reescritura Parakeet-only (2026-06-17).
 
-Architecture (per docs/architecture/voice_pipeline_redesign_research_report.md):
+Cadena:
 
-    mic stream (16 kHz mono, 20 ms frames)
-      → Silero VAD (gate)
-      → openWakeWord (wake-word detection)
-      → command capture state machine (end-of-speech via VAD)
-      → faster-whisper small int8 (STT)
-      → RapidFuzz post-correction against domain inventory
-      → text out to LLM
+    mic (16 kHz mono, frames de 512 samples / 32 ms)
+      → captura WASAPI + resample + AEC loopback (audio_io)
+      → Silero VAD (gate de ruido + fin-de-habla)
+      → wake-word LiveKit "Baxy" (runtime ONNX puro, livekit_runtime)
+      → máquina de estados de captura (EOS tri-estado, gates de energía)
+      → Parakeet-TDT-v3 int8 CPU (parakeet_stt) — ÚNICO motor STT
+      → corrector fonético contra inventario de dominio (corrector)
+      → texto al LLM (con hint de idioma del perfil)
 
-Module map:
-    audio_io      — mic capture + ring buffer + frame primitives
-    vad           — Silero VAD wrapper
-    wake          — openWakeWord wrapper (stock + custom model paths)
-    stt           — faster-whisper streaming wrapper
-    inventory     — domain vocab loader (apps, contacts, songs)
-    corrector     — RapidFuzz fuzzy-match post-corrector
-    pipeline      — orchestrator: composes the above into a state machine
-    tts           — Piper TTS (kept from v1, unchanged)
+Mapa de módulos:
+    audio_io      — captura de mic + ring buffer + AEC + resample
+    vad           — wrapper Silero VAD (gate + trim)
+    wake          — detector LiveKit (+ fallback openWakeWord)
+    livekit_runtime — inferencia LiveKit en onnxruntime puro (Py 3.10)
+    parakeet_stt  — STT Parakeet-TDT-v3 (sherpa-onnx, único motor)
+    inventory     — vocabulario de dominio (apps, contactos, canciones)
+    corrector     — corrector fonético dual ES/EN (RapidFuzz + Metaphone)
+    lang_profiles — perfil de idioma del usuario (hint al agente)
+    pipeline      — orquestador: compone todo en la máquina de estados
+    tts           — Piper TTS
 
-Wake phrase: "Hey Gemma" (planned via custom training).
-Until the custom hey_gemma.onnx exists, the pipeline falls back to
-the stock `hey_jarvis` openWakeWord model so the system is usable
-during development. The fallback is logged loud and clear.
+Wake word: "Baxy" (modelo baxy.onnx; elegido por generalización cross-idioma).
+STT: Parakeet-TDT-0.6b-v3 int8 en CPU. Whisper ELIMINADO (reescritura 2026-06-17):
+Parakeet es ~20x más rápido y no alucina en silencio; el LID no es forzable, así
+que el idioma se mitiga con contexto + hint al agente (ver lang_profiles).
 
-OS support: Windows + macOS arm64 + Linux x86_64. All deps have
-pre-built wheels for Python 3.10-3.12.
-
-Models: downloaded on first use to ~/.gemma4/models/{whisper,oww}/.
-Total disk: ~490 MB.
+Modelos en ~/.gemma4/models/{sherpa-onnx-nemo-parakeet...,piper}/ + el wake
+ONNX en voice/models/livekit/.
 """

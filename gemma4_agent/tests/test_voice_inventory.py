@@ -5,9 +5,7 @@ import unittest
 from unittest.mock import patch
 
 from gemma4_agent.voice import inventory
-from gemma4_agent.voice.inventory import (
-    STATIC_INVENTORY, build_initial_prompt, get_inventory,
-)
+from gemma4_agent.voice.inventory import STATIC_INVENTORY, get_inventory
 
 
 class GetInventoryTest(unittest.TestCase):
@@ -58,31 +56,8 @@ class GetInventoryTest(unittest.TestCase):
                 )
 
 
-class BuildInitialPromptTest(unittest.TestCase):
-    def setUp(self):
-        inventory._DISCOVERY_CACHE = None
-
-    def test_prompt_contains_bilingual_wake_seed(self):
-        prompt = build_initial_prompt()
-        self.assertIn("Hey Gemma", prompt)
-        self.assertIn("abre Chrome", prompt)
-        self.assertIn("open Chrome", prompt)
-
-    def test_prompt_caps_under_900_chars(self):
-        # Sanity: the prompt fits under Whisper's 224-token budget
-        # (conservative ~880 chars).
-        prompt = build_initial_prompt()
-        self.assertLessEqual(len(prompt), 900)
-
-    def test_prompt_caps_even_with_huge_discovery(self):
-        # 100 random app names should not blow the cap.
-        many_apps = [f"App{i}" for i in range(100)]
-        with patch.object(
-            inventory, "_discover_installed_apps", return_value=many_apps,
-        ):
-            inv = get_inventory(include_discovery=True)
-            prompt = build_initial_prompt(inv)
-        self.assertLessEqual(len(prompt), 900)
+# NOTA (Parakeet-only 2026-06-17): BuildInitialPromptTest se eliminó —
+# build_initial_prompt() era un artefacto del prompt de Whisper, removido con él.
 
 
 class AppDiscoverySafetyTest(unittest.TestCase):

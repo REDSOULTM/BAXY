@@ -199,50 +199,8 @@ def get_inventory(include_discovery: bool = True) -> dict[str, list[str]]:
     return merged
 
 
-def build_hotwords(inv: dict[str, list[str]] | None = None) -> str:
-    """Lista de nombres propios (apps + artistas) separados por espacio para el
-    parámetro `hotwords` de faster-whisper. Sesga el decoder hacia ellos.
-    Medido: rescata casos que el initial_prompt solo no ("te liera"
-    ->Telegram) sin dañar habla real. Cap a ~40 nombres para no inflar el prompt
-    (hotwords comparte el budget de 224 tokens)."""
-    if inv is None:
-        inv = get_inventory()
-    names: list[str] = []
-    for cat in ("apps", "music_artists"):
-        names.extend(inv.get(cat, []))
-    # Dedup preservando orden, cap conservador.
-    seen, out = set(), []
-    for n in names:
-        k = n.lower()
-        if k not in seen:
-            seen.add(k)
-            out.append(n)
-        if len(out) >= 40:
-            break
-    return " ".join(out)
-
-
-def build_initial_prompt(
-    inv: dict[str, list[str]] | None = None,
-    lang: str | None = None,
-) -> str:
-    """Build the Whisper initial_prompt from the inventory, PER LANGUAGE.
-
-    El idioma-matriz determina el framing del prompt (ver lang_profiles.py):
-    español-Spanglish, inglés, portugués, francés, ... Los nombres propios
-    (apps/artistas/canciones) son agnósticos del idioma y se inyectan igual.
-    `lang` None -> se resuelve por env GEMMA4_VOICE_LANG, default 'es'.
-
-    Cap ~880 chars (<224 tokens de Whisper).
-    """
-    from .lang_profiles import PROMPT_CHAR_CAP, get_profile
-    if inv is None:
-        inv = get_inventory()
-    apps = inv.get("apps", [])[:25]
-    artists = inv.get("music_artists", [])[:10]
-    songs = inv.get("music_songs", [])[:6]
-    profile = get_profile(lang)
-    prompt = profile.frame(apps, artists, songs)
-    if len(prompt) > PROMPT_CHAR_CAP:
-        prompt = prompt[:PROMPT_CHAR_CAP - 3] + "..."
-    return prompt
+# NOTA (Parakeet-only 2026-06-17): build_hotwords() y build_initial_prompt() se
+# eliminaron junto con Whisper. Eran artefactos del decoder de Whisper
+# (initial_prompt = continuación de estilo + hotwords del budget de 224 tokens).
+# Parakeet es multilingüe, auto-detecta el idioma y no recibe prompt; los nombres
+# propios se rescatan con el corrector fonético downstream (corrector.py).

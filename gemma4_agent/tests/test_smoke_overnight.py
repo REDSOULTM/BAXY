@@ -135,10 +135,11 @@ class SmokeVoice(unittest.TestCase):
         self.assertIn("os.replace", src)
 
     def test_stt_rejects_empty_audio(self):
-        """FIABILIDAD: STT returns '' for empty/degenerate audio (no decode)."""
-        from gemma4_agent.voice.stt import STT
-        s = STT()
-        # Not loaded -> '' ; and the size guard short-circuits a tiny buffer.
+        """FIABILIDAD: el STT (Parakeet, único motor) devuelve '' para audio
+        vacío/degenerado (no decodifica)."""
+        from gemma4_agent.voice.parakeet_stt import ParakeetSTT
+        s = ParakeetSTT()
+        # Sin cargar -> '' ; y el size-guard corta un buffer minúsculo.
         self.assertEqual(s.transcribe(np.zeros(10, dtype=np.int16)), "")
 
     def test_no_speech_state_mapped(self):

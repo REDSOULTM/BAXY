@@ -29,8 +29,7 @@ import numpy as np
 
 from .audio_io import AudioCapture, CHUNK_SAMPLES, SAMPLE_RATE
 from .corrector import FuzzyCorrector
-from .inventory import build_hotwords, build_initial_prompt, get_inventory
-from .stt import STT
+from .inventory import get_inventory
 from .vad import SileroVAD
 from .wake import WakeDetector
 
@@ -114,35 +113,13 @@ def _buffer_rms(audio: "np.ndarray") -> float:
     return float(np.sqrt(np.mean(x * x)))
 
 
-# Whisper hallucination artifacts on silence (trained on YouTube captions). If
-# the transcript is ONLY one of these (or trivially so), it's almost certainly
-# a silent/near-silent capture, not a real command — drop it. Matched against
-# the accent-folded, lowercased, punctuation-stripped transcript so "¡Suscríbete!"
-# and "SUSCRÍBETE" both hit. Kept as whole-string equality (not substring) so a
-# real command CONTAINING one of these words ("suscríbete a este canal",
-# "gracias, ahora pon música") is NOT dropped.
-# Lista ampliada con la "Bag-of-Hallucinations" publicada (Barański et al.,
-# AGH Kraków, arXiv 2501.11378) + Calm-Whisper fig.1 + outros típicos de
-# YouTube en es/en. Whole-string match (folded) para no tocar comandos que
-# CONTENGAN una de estas palabras.
-_SILENCE_HALLUCINATIONS = frozenset({
-    # --- original ---
-    "suscribete", "suscribete a", "gracias por ver", "gracias por ver el video",
-    "gracias por ver el vídeo", "subtitulos realizados por la comunidad de amara org",
-    "subtitulos por la comunidad de amara org", "thanks for watching", "subscribe",
-    "you", "thank you", "gracias", "subtitulos", "amara org",
-    "subtitles by the amara org community",
-    # --- español: outros / subtítulos ---
-    "no olvides darle like", "dale like", "hasta la proxima", "hasta el proximo video",
-    "subtitulos creados por la comunidad", "subtitulado por", "subtitulos por aegisub",
-    "aegisub", "hola a todos", "bienvenidos a este canal", "bienvenidos al canal",
-    "que tal amigos", "buenos dias a todos", "musica", "aplausos", "risas",
-    "gracias por su atencion", "nos vemos en el proximo video",
-    # --- inglés ---
-    "thanks for watching!", "please subscribe", "like and subscribe",
-    "see you next time", "music", "applause", "laughter", "i",
-    "bye", "okay", "the end",
-})
+# NOTA (reescritura Parakeet-only 2026-06-17): la lista de "alucinaciones de
+# Whisper en silencio" se eliminó junto con Whisper. Parakeet NO alucina texto
+# en silencio (medido, ver parakeet_stt.py): los gates de energía estructurales
+# (silence-gate por RMS + no-user-evidence) ya evitan transcribir audio sin voz,
+# sin necesidad de una lista de strings por-idioma. Lo único que sigue siendo
+# necesario es el drop de vocalizaciones no-léxicas ("mm"/"uh"), que es
+# estructural y agnóstico del motor (_is_filler_only_transcript, abajo).
 
 
 def _fold_for_match(text: str) -> str:
@@ -153,17 +130,6 @@ def _fold_for_match(text: str) -> str:
     # keep letters/digits/spaces only; collapse runs of space
     t = "".join(ch if (ch.isalnum() or ch.isspace()) else " " for ch in t)
     return " ".join(t.split())
-
-
-def _is_silence_hallucination(text: str) -> bool:
-    """True if `text` is (only) a known Whisper-on-silence artifact.
-
-    Empty/whitespace -> False (handled separately as 'empty transcript'). A real
-    command that merely contains one of these words is NOT flagged."""
-    folded = _fold_for_match(text)
-    if not folded:
-        return False
-    return folded in _SILENCE_HALLUCINATIONS
 
 
 def _is_nonlexical_vocalization_token(token: str) -> bool:
@@ -290,26 +256,20 @@ class VoicePipeline:
         self._on_wake_event = on_wake_event
         self._vad = SileroVAD()
         self._wake = WakeDetector(on_wake=self._on_wake)
-        # Motor STT por env GEMMA4_STT_ENGINE. DEFAULT: parakeet (sherpa-onnx
-        # Parakeet-TDT-v3). MEDIDO sobre voz real: Parakeet+corrector EntRecall
-        # comandos 81% [70,89] vs Whisper 70%, WER 0.26 vs 0.90, p50 78ms vs
-        # 1593ms (21x), 0 regresión en voz de terceros, robusto a música de
-        # fondo (88% @20dB SNR). Ambos exponen load()+transcribe(int16,...) ->
-        # drop-in. GEMMA4_STT_ENGINE=whisper fuerza el motor viejo. La carga real
-        # (con fallback a Whisper si el modelo Parakeet falta/falla) ocurre en
-        # load() -> voz nunca queda rota.
-        import os as _os
-        self._stt_engine = _os.environ.get("GEMMA4_STT_ENGINE", "parakeet").lower()
-        self._stt = self._build_stt(self._stt_engine)
+        # STT: Parakeet-TDT-v3 (sherpa-onnx, CPU int8) es el ÚNICO motor. Whisper
+        # se eliminó del pipeline de voz (reescritura 2026-06-17): Parakeet es
+        # ~20x más rápido y NO alucina en silencio; medido sobre voz real
+        # comandos 81% [70,89] WER 0.26, p50 78ms. La carga ocurre en load(); si
+        # Parakeet no carga, la voz falla LIMPIO (sin fallback silencioso).
+        self._stt = self._build_stt()
         inv = get_inventory()
         self._corrector = FuzzyCorrector(inv)
-        # Idioma-matriz del STT (env GEMMA4_VOICE_LANG, default 'es'). El prompt
-        # y el `language` de Whisper se derivan del MISMO perfil para que un
-        # usuario en otro idioma no quede con config española. Ver lang_profiles.
+        # Perfil de idioma del usuario (env GEMMA4_VOICE_LANG, default 'es'). Ya
+        # NO configura a Whisper (eliminado): Parakeet auto-detecta el idioma y no
+        # admite forzarlo. El perfil sobrevive como FUENTE del idioma del usuario
+        # para el hint al agente (Fase 2). Ver lang_profiles.
         from .lang_profiles import get_profile
         self._lang_profile = get_profile()
-        self._initial_prompt = build_initial_prompt(inv, lang=self._lang_profile.code)
-        self._hotwords = build_hotwords(inv)
         self._audio: AudioCapture | None = None
 
         # State machine state.
@@ -363,251 +323,15 @@ class VoicePipeline:
     # ----- internal helpers --------------------------------------------
 
     @staticmethod
-    def _whisper_disabled() -> bool:
-        """True si Whisper está apagado (GEMMA4_STT_NO_FALLBACK / DISABLE_WHISPER):
-        SOLO Parakeet, sin fallback. Si Parakeet no carga, la voz falla limpio en vez
-        de caer a Whisper silenciosamente."""
-        import os as _os_wd
-        for _k in ("GEMMA4_STT_NO_FALLBACK", "GEMMA4_DISABLE_WHISPER"):
-            if (_os_wd.environ.get(_k) or "").strip().lower() in {"1", "true", "yes", "on"}:
-                return True
-        return False
+    def _build_stt():
+        """Construye el motor STT — Parakeet-TDT-v3, único motor.
 
-    # ----- rescate LID frase-corta (Parakeet v3) ------------------------
-    # Palabras funcionales inglesas (clase cerrada) para detectar que la
-    # SALIDA quedó en inglés. No es keyword-de-contenido: es la firma
-    # estructural del idioma, igual que los marcadores fuertes es/pt/it del
-    # agente. Conservador: exige ≥2 hits y CERO marcadores del idioma del
-    # perfil para disparar.
-    _EN_FUNCTION_WORDS = frozenset({
-        "the", "is", "was", "are", "were", "it", "it's", "i", "i'm", "you",
-        "let's", "don't", "isn't", "this", "that", "what", "what's", "really",
-        "just", "up", "out", "worth", "see", "got", "we've", "guess",
-    })
-    # Marcadores del idioma objetivo (ortografía + funcionales cerradas).
-    _TARGET_MARKERS = {
-        # " en "/" sí " incluidos (2026-06-11): el caso code-switching MEDIDO
-        # ("reproduce The Last of Us en HBO Max") conserva el conector "en" y
-        # NO debe dispararse el rescate (whisper-es destruyó el título).
-        "es": ("¿", "¡", "ñ", "á", "é", "í", "ó", "ú", " el ", " la ", " que ",
-               " de ", " y ", " un ", " una ", " es ", " está ", " para ",
-               " en ", " sí ", " con ", " mi "),
-        "pt": ("ã", "õ", "ç", " o ", " a ", " que ", " de ", " é ", " um ",
-               " uma ", " não ", " para "),
-        "fr": (" le ", " la ", " est ", " je ", " tu ", " que ", " une ",
-               " pas ", " c'est ", " à "),
-        "de": ("ß", "ä", "ö", "ü", " der ", " die ", " das ", " ist ",
-               " ich ", " du ", " nicht ", " ein "),
-        "it": (" il ", " lo ", " la ", " è ", " che ", " di ", " un ",
-               " una ", " non ", " per "),
-    }
-
-    def _looks_english_not_target(self, text: str) -> bool:
-        """True si la transcripción parece INGLÉS y no tiene NI UN marcador
-        del idioma del perfil — la firma del LID equivocado de Parakeet.
-        Conservadora a propósito: el code-switching legítimo ("reproduce The
-        Last of Us en HBO Max") conserva conectores del idioma ("en") y NO
-        debe rescatarse — forzar es con Whisper destruye el título (MEDIDO
-        2026-06-11 en el clip real: → "el ácido fós en HVOM")."""
-        profile = getattr(self, "_lang_profile", None)
-        if profile is None:
-            return False
-        low = f" {text.strip().lower()} "
-        for marker in self._TARGET_MARKERS.get(profile.code, ()):
-            if marker in low:
-                return False
-        words = [w.strip(".,;:!?\"'") for w in low.split()]
-        hits = sum(1 for w in words if w in self._EN_FUNCTION_WORDS)
-        return hits >= 2
-
-    def _lid_rescue(self, audio: "np.ndarray", raw_text: str) -> str | None:
-        """Re-transcribe con Whisper(language=fijo) cuando Parakeet cayó al
-        inglés en una frase corta. Devuelve el texto rescatado o None.
-
-        Gate GEMMA4_STT_LID_RESCUE=0 apaga. Whisper se carga LAZY al primer
-        rescate (en el camino normal Parakeet carga solo) y queda residente.
-        """
-        import os as _os_lr
-        if (_os_lr.environ.get("GEMMA4_STT_LID_RESCUE", "1") or "1").strip().lower() \
-                in {"0", "false", "no", "off"}:
-            return None
-        # getattr defensivo: los tests construyen pipelines parciales sin estos
-        # atributos — el rescate degrada a no-op, jamás rompe la transcripción.
-        if getattr(self, "_stt_engine", "") != "parakeet":
-            return None
-        profile = getattr(self, "_lang_profile", None)
-        if profile is None or profile.code == "en":
-            return None  # el "fallo" sería el idioma correcto
-        if not (raw_text or "").strip():
-            return None
-        try:
-            max_s = float(_os_lr.environ.get("GEMMA4_STT_LID_RESCUE_MAX_S", "3.0"))
-        except (TypeError, ValueError):
-            max_s = 3.0
-        if audio.size > int(max_s * SAMPLE_RATE):
-            return None  # con contexto largo el LID de Parakeet es excelente
-        if not self._looks_english_not_target(raw_text):
-            return None
-        t0 = time.time()
-        mode = self._lid_rescue_mode()
-        if mode == "subprocess":
-            text = self._rescue_via_subprocess(audio)
-        else:
-            whisper = self._whisper_rescue_stt()
-            if whisper is None:
-                return None
-            try:
-                text = whisper.transcribe(
-                    audio, initial_prompt=self._initial_prompt,
-                    language=self._lang_profile.whisper_language,
-                )
-            except Exception as exc:
-                logger.warning("lid_rescue transcribe failed: %s", exc)
-                return None
-        text = (text or "").strip()
-        logger.info(
-            "LID RESCUE [%s] (%.2fs extra): parakeet=%r -> whisper[%s]=%r",
-            mode, time.time() - t0, raw_text[:60],
-            self._lang_profile.whisper_language, text[:60],
-        )
-        self._persist_lid_rescue({
-            "mode": mode,
-            "extra_s": round(time.time() - t0, 2),
-            "audio_s": round(audio.size / SAMPLE_RATE, 2),
-            "lang": self._lang_profile.whisper_language,
-            "parakeet": raw_text,
-            "whisper": text or None,
-        })
-        return text or None
-
-    @staticmethod
-    def _persist_lid_rescue(payload: dict) -> None:
-        """Evidencia PERSISTENTE de cada disparo del rescate. La línea de
-        logging muere en la consola y full.log solo graba eventos del BUS,
-        así que sin esto la zona del flip (que solo aparece en uso vivo) no
-        deja rastro auditable. JSONL dedicado en el árbol de logs: sobrevive
-        a todos los modos de ejecución (server, standalone) y el disparo es
-        raro, así que el archivo queda diminuto. Nunca rompe la transcripción."""
-        import datetime as _dt
-        import json as _json
-        import os as _os_p
-        from pathlib import Path as _Path
-        try:
-            root = _os_p.environ.get("GEMMA4_AGENT_LOGS_DIR")
-            base = (_Path(root).expanduser() if root
-                    else _Path.home() / ".gemma4" / "logs")
-            base.mkdir(parents=True, exist_ok=True)
-            row = {"ts": _dt.datetime.now().isoformat(timespec="seconds"),
-                   **payload}
-            with (base / "stt_lid_rescue.jsonl").open("a", encoding="utf-8") as f:
-                f.write(_json.dumps(row, ensure_ascii=False) + "\n")
-        except Exception as exc:
-            logger.debug("lid_rescue: no se pudo persistir evidencia: %s", exc)
-
-    @staticmethod
-    def _lid_rescue_mode() -> str:
-        """resident | subprocess. El target de producto es 8 GB de RAM y
-        Whisper-small residente cuesta ~686 MB (MEDIDO 2026-06-11; el unload
-        in-process aún retiene ~418 MB en el allocator). `auto`: residente solo
-        con RAM holgada; en el target, subproceso EFÍMERO (RAM permanente 0,
-        ~5-7 s solo en el turno rescatado). Override GEMMA4_STT_LID_RESCUE_MODE.
-        tiny DESCARTADO por medición: WER 0.897 en comandos reales (basura)."""
-        import os as _os_m
-        mode = (_os_m.environ.get("GEMMA4_STT_LID_RESCUE_MODE", "auto")
-                or "auto").strip().lower()
-        if mode in ("resident", "subprocess"):
-            return mode
-        try:
-            import psutil
-            total_gb = psutil.virtual_memory().total / 1e9
-        except Exception:
-            total_gb = 0.0
-        try:
-            floor = float(_os_m.environ.get("GEMMA4_STT_LID_RESIDENT_MIN_GB", "12"))
-        except (TypeError, ValueError):
-            floor = 12.0
-        return "resident" if total_gb >= floor else "subprocess"
-
-    def _rescue_via_subprocess(self, audio: "np.ndarray") -> str | None:
-        """Transcribe el buffer en un worker efímero (_lid_rescue_worker.py):
-        el SO recupera TODA la RAM al terminar. Para el target de 8 GB."""
-        import subprocess
-        import sys as _sys
-        import tempfile
-        import wave
-        from pathlib import Path
-        worker = Path(__file__).resolve().parent / "_lid_rescue_worker.py"
-        tmp = None
-        try:
-            a16 = audio if audio.dtype == np.int16 else (
-                np.clip(audio.astype(np.float32), -1.0, 1.0) * 32767).astype(np.int16)
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-                tmp = Path(f.name)
-            with wave.open(str(tmp), "wb") as w:
-                w.setnchannels(1)
-                w.setsampwidth(2)
-                w.setframerate(SAMPLE_RATE)
-                w.writeframes(a16.tobytes())
-            proc = subprocess.run(
-                [_sys.executable, "-X", "utf8", str(worker), str(tmp),
-                 self._lang_profile.whisper_language],
-                capture_output=True, timeout=30,
-            )
-            if proc.returncode != 0:
-                logger.warning("lid_rescue worker exit=%s stderr=%s",
-                               proc.returncode,
-                               proc.stderr.decode("utf-8", "replace")[:120])
-                return None
-            return proc.stdout.decode("utf-8", "replace").strip() or None
-        except Exception as exc:
-            logger.warning("lid_rescue subprocess falló: %s", exc)
-            return None
-        finally:
-            try:
-                if tmp is not None:
-                    tmp.unlink(missing_ok=True)
-            except Exception:
-                pass
-
-    def _whisper_rescue_stt(self):
-        """Whisper-small residente para el rescate (solo modo resident:
-        máquinas con RAM holgada), cargado LAZY al primer uso."""
-        cached = getattr(self, "_whisper_rescue", None)
-        if cached is not None:
-            return cached if cached is not False else None
-        try:
-            t0 = time.time()
-            w = STT()
-            if not w.load():
-                logger.warning("lid_rescue: Whisper no cargó (%s)", w.last_error)
-                self._whisper_rescue = False
-                return None
-            logger.info("lid_rescue: Whisper cargado en %.1fs (residente)",
-                        time.time() - t0)
-            self._whisper_rescue = w
-            return w
-        except Exception as exc:
-            logger.warning("lid_rescue: Whisper init falló: %s", exc)
-            self._whisper_rescue = False
-            return None
-
-    @staticmethod
-    def _build_stt(engine: str):
-        """Construye el motor STT elegido. 'parakeet' -> ParakeetSTT; cualquier
-        otra cosa -> Whisper STT. La carga (y el fallback) se hace en load()."""
-        if engine == "parakeet":
-            try:
-                from .parakeet_stt import ParakeetSTT
-                logger.info("STT engine: Parakeet-TDT-v3")
-                return ParakeetSTT()
-            except Exception as exc:  # import roto
-                if VoicePipeline._whisper_disabled():
-                    # Whisper apagado: NO caemos a Whisper, propagamos el fallo.
-                    logger.error("ParakeetSTT no disponible (%s) y Whisper está "
-                                 "DESHABILITADO (GEMMA4_STT_NO_FALLBACK)", exc)
-                    raise
-                logger.warning("ParakeetSTT no disponible (%s); usando Whisper", exc)
-        return STT()
+        La carga real ocurre en load(); acá solo se instancia. Si el import del
+        módulo falla (sherpa-onnx ausente), se propaga: la voz falla limpio en
+        vez de caer a un fallback inexistente."""
+        from .parakeet_stt import ParakeetSTT
+        logger.info("STT engine: Parakeet-TDT-v3 (único motor)")
+        return ParakeetSTT()
 
     # ----- public API --------------------------------------------------
 
@@ -624,30 +348,17 @@ class VoicePipeline:
             logger.error(self.last_error)
             return False
         if not self._stt.load():
-            # FALLBACK: si Parakeet no carga (modelo ausente en esta máquina),
-            # caemos a Whisper para que la voz NUNCA quede rota: el código
-            # garantiza sus precondiciones, sin descargar setup en el usuario.
-            # SALVO que Whisper esté apagado (GEMMA4_STT_NO_FALLBACK): entonces
-            # falla limpio, SOLO Parakeet.
-            if self._stt_engine == "parakeet" and not self._whisper_disabled():
-                logger.warning(
-                    "Parakeet STT no cargó (%s); fallback a Whisper-small",
-                    self._stt.last_error,
-                )
-                self._stt = STT()
-                self._stt_engine = "whisper"
-            if not self._stt.load():
-                self.last_error = (
-                    f"STT load failed (Parakeet, Whisper deshabilitado): {self._stt.last_error}"
-                    if self._whisper_disabled()
-                    else f"STT load failed: {self._stt.last_error}")
-                logger.error(self.last_error)
-                return False
+            # Parakeet es el único motor: si no carga (modelo ausente, sherpa
+            # roto), la voz falla LIMPIO con mensaje claro. No hay fallback a
+            # Whisper (eliminado en la reescritura 2026-06-17).
+            self.last_error = f"STT (Parakeet) load failed: {self._stt.last_error}"
+            logger.error(self.last_error)
+            return False
         self._loaded = True
         logger.info(
             "VoicePipeline ready: wake=%s, model=%s",
             "custom" if self._wake.using_custom_model else "stock_hey_jarvis",
-            getattr(self._stt, "_model_size", type(self._stt).__name__),
+            type(self._stt).__name__,
         )
         return True
 
@@ -1012,21 +723,10 @@ class VoicePipeline:
             reason, audio.size / SAMPLE_RATE, peak_rms,
         )
         t0 = time.time()
-        raw_text = self._stt.transcribe(
-            audio, initial_prompt=self._initial_prompt,
-            language=self._lang_profile.whisper_language,
-            hotwords=self._hotwords,
-        )
-        # RESCATE LID frase-corta (research 2026-06-10, implementado 2026-06-11):
-        # el LID interno de Parakeet v3 NO se puede forzar y en frases cortas sin
-        # contexto cae a INGLÉS (limitación OFICIAL de la model card: "not
-        # recommended for word-for-word / incomplete sentences"). Si el perfil
-        # del usuario es no-EN, el audio es corto y la salida parece inglés,
-        # re-transcribimos ESE buffer con Whisper (que SÍ fija idioma). Paga
-        # latencia solo en el caso malo; el 95% normal conserva Parakeet.
-        rescued = self._lid_rescue(audio, raw_text)
-        if rescued is not None:
-            raw_text = rescued
+        # Parakeet auto-detecta idioma y es multilingüe sin prompt: transcribe
+        # solo recibe el audio. El idioma del usuario viaja como hint al agente
+        # (ver _lang_profile + el on_command), no al STT.
+        raw_text = self._stt.transcribe(audio)
         # Strip wake phrase + fuzzy correct.
         stripped = self._corrector.strip_wake_phrase(raw_text)
         corrected = self._corrector.correct(stripped)
@@ -1045,30 +745,18 @@ class VoicePipeline:
         self._vad.reset()
         # Emit the command (callback may do heavy work; we're already
         # in COOLDOWN so re-wakes are gated until it completes).
-        # Los drops de alucinación aplican solo a texto producido por WHISPER
-        # (motor primario whisper o rescate LID): la lista viene de su modo de
-        # fallo en silencio (YouTube-captions). Parakeet NO alucina en silencio
-        # (medido, ver parakeet_stt.py) — con él, "gracias"/"okay" son palabras
-        # REALES del usuario y deben llegar al LLM (regla de producto: el LLM
-        # responde; descartarlas dejaba al usuario sin "de nada").
-        whisper_text = (getattr(self, "_stt_engine", "whisper") != "parakeet"
-                        or rescued is not None)
+        # NOTA (Parakeet-only 2026-06-17): NO hay drop por "alucinación de
+        # silencio" — esa lista era específica del modo de fallo de Whisper
+        # (YouTube-captions). Parakeet NO alucina en silencio (medido), y los
+        # gates de energía estructurales de arriba (silence-gate + no-user-
+        # evidence) ya evitan transcribir audio sin voz. Con Parakeet,
+        # "gracias"/"okay" son palabras REALES del usuario y deben llegar al LLM
+        # (regla de producto: el LLM responde). Solo se filtra lo no-léxico.
         try:
             if not corrected.strip():
                 if self._maybe_second_chance(reason):
                     return
                 logger.info("empty transcript, no command emitted")
-            elif whisper_text and (
-                    _is_silence_hallucination(raw_text)
-                    or _is_silence_hallucination(corrected)):
-                # Audio passed the RMS gate but Whisper still produced one of its
-                # canonical silence artifacts ("¡Suscríbete!", "Gracias por ver
-                # el video", "you"...). Drop it — it is not a real command.
-                logger.info(
-                    "silence hallucination dropped: raw=%r corrected=%r",
-                    raw_text[:60], corrected[:60],
-                )
-                self._emit_state("NO_SPEECH")
             elif (
                 _is_filler_only_transcript(raw_text)
                 or _is_filler_only_transcript(corrected)

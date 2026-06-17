@@ -1,10 +1,12 @@
-"""Tests for the 2026-05-20 self-hearing / silence-hallucination fixes.
+"""Tests for the self-hearing / energy-gate / filler guards.
 
-Diagnosed from ~/.gemma4/logs/_pre_session/full.log (session 21:41-21:45):
-the agent's TTS reply was re-transcribed as the next "command" (self-hearing),
-and Whisper hallucinated "¡Suscríbete!"/"hola" on near-silence after a profile
-swap. These guards are pure functions on the captured buffer + transcript, so
-they're testable without audio hardware or the Whisper/Piper models.
+NOTA (Parakeet-only 2026-06-17): el guard de "alucinación de silencio"
+(_is_silence_hallucination, lista de artefactos de Whisper) se ELIMINÓ con
+Whisper — Parakeet no alucina texto en silencio, así que la lista por-idioma ya
+no aplica. Lo que queda son guards estructurales agnósticos del motor: el gate
+de energía (_buffer_rms) y el filtro de vocalizaciones no-léxicas
+(_is_filler_only_transcript). Son funciones puras sobre el buffer/transcript,
+testeables sin hardware ni modelos.
 """
 from __future__ import annotations
 
@@ -16,7 +18,6 @@ from gemma4_agent.voice.pipeline import (
     MIN_CAPTURE_RMS,
     _buffer_rms,
     _is_filler_only_transcript,
-    _is_silence_hallucination,
 )
 from gemma4_agent.voice import tts as tts_mod
 
@@ -35,33 +36,6 @@ class TestBufferRms(unittest.TestCase):
         t = np.arange(16000)
         buf = (3000 * np.sin(2 * np.pi * 200 * t / 16000)).astype(np.int16)
         self.assertGreater(_buffer_rms(buf), MIN_CAPTURE_RMS)
-
-
-class TestSilenceHallucination(unittest.TestCase):
-    def test_known_artifacts_flagged(self):
-        for txt in (
-            "¡Suscríbete!", "Suscríbete", "Gracias por ver",
-            "Gracias por ver el video", "Subtítulos realizados por la comunidad de Amara.org",
-            "Thanks for watching", "Subscribe", "you",
-        ):
-            self.assertTrue(_is_silence_hallucination(txt), f"missed: {txt!r}")
-
-    def test_accents_and_case_insensitive(self):
-        self.assertTrue(_is_silence_hallucination("SUSCRÍBETE"))
-        self.assertTrue(_is_silence_hallucination("gracias por ver el video."))
-
-    def test_real_commands_not_flagged(self):
-        for txt in (
-            "abre Steam", "pon el volumen al 30", "hey gemma abre la calculadora",
-            "gracias, ahora pon música",  # "gracias" as substring of a real cmd
-            "suscríbete a este canal de YouTube",  # real multi-word request
-            "reproduce la siguiente canción",
-        ):
-            self.assertFalse(_is_silence_hallucination(txt), f"false positive: {txt!r}")
-
-    def test_empty_not_flagged(self):
-        self.assertFalse(_is_silence_hallucination(""))
-        self.assertFalse(_is_silence_hallucination("   "))
 
 
 class TestFillerOnlyTranscript(unittest.TestCase):

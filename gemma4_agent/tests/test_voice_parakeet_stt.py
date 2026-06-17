@@ -97,25 +97,13 @@ class ParakeetSTTInterfaceTest(unittest.TestCase):
 
 
 class EngineSelectionTest(unittest.TestCase):
-    """El pipeline elige Parakeet por default (prod 2026-05-23) y cae a Whisper
-    si Parakeet no está disponible. Voz nunca queda rota."""
+    """Parakeet es el ÚNICO motor (reescritura Parakeet-only 2026-06-17).
+    Whisper se eliminó: no hay selección por env ni fallback."""
 
-    def test_default_engine_is_parakeet(self):
-        import os
+    def test_only_engine_is_parakeet(self):
         from gemma4_agent.voice.pipeline import VoicePipeline
-        old = os.environ.pop("GEMMA4_STT_ENGINE", None)
-        try:
-            stt = VoicePipeline._build_stt(
-                os.environ.get("GEMMA4_STT_ENGINE", "parakeet").lower())
-            self.assertEqual(type(stt).__name__, "ParakeetSTT")
-        finally:
-            if old is not None:
-                os.environ["GEMMA4_STT_ENGINE"] = old
-
-    def test_whisper_engine_explicit(self):
-        from gemma4_agent.voice.pipeline import VoicePipeline
-        stt = VoicePipeline._build_stt("whisper")
-        self.assertEqual(type(stt).__name__, "STT")
+        stt = VoicePipeline._build_stt()
+        self.assertEqual(type(stt).__name__, "ParakeetSTT")
 
     def test_prod_model_dir_under_gemma4_home(self):
         from gemma4_agent.voice.parakeet_stt import PROD_MODEL_DIR
