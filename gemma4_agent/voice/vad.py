@@ -17,6 +17,7 @@ References:
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 import numpy as np
@@ -25,6 +26,35 @@ logger = logging.getLogger(__name__)
 
 SAMPLE_RATE = 16000
 SILERO_FRAME_SAMPLES = 512  # MANDATORY for v5; other sizes degrade
+SILERO_CONTEXT = 64         # v5 @16k prepende 64 samples de contexto a cada frame
+
+
+def _vad_onnx_enabled() -> bool:
+    """VAD en onnxruntime CRUDO (sin torch) en vez del paquete silero_vad (que importa
+    torch ~174 MB). Gated GEMMA4_VAD_ONNX (default OFF). El modelo corre igual en ONNX en
+    ambos caminos; la diferencia es que el crudo NO trae torch -> en modo voz se suelta torch
+    por completo (junto con el encoder→ONNX). Paridad de speech_prob VERIFICADA exacta
+    (max abs-diff 0.0, scripts/_ab_vad_onnx.py). Fallback seguro al wrapper torch ante fallo."""
+    return (os.environ.get("GEMMA4_VAD_ONNX") or "0").strip().casefold() in {"1", "true", "yes", "on"}
+
+
+def _find_silero_onnx() -> str | None:
+    """Ubica silero_vad.onnx del paquete instalado SIN importarlo (find_spec NO ejecuta el
+    módulo -> no trae torch). Override: GEMMA4_VAD_ONNX_MODEL apunta a un modelo copiado."""
+    env = (os.environ.get("GEMMA4_VAD_ONNX_MODEL") or "").strip()
+    if env and os.path.isfile(env):
+        return env
+    try:
+        import importlib.util
+        from pathlib import Path
+        spec = importlib.util.find_spec("silero_vad")
+        for loc in (spec.submodule_search_locations or []) if spec else []:
+            cands = list(Path(loc).rglob("silero_vad.onnx"))
+            if cands:
+                return str(cands[0])
+    except Exception:
+        pass
+    return None
 
 
 class SileroVAD:
@@ -41,12 +71,21 @@ class SileroVAD:
         self._loaded: bool = False
         self._failed: bool = False
         self.last_error: str | None = None
+        # Backend onnxruntime crudo (sin torch). Si _raw_sess != None, speech_prob/reset
+        # usan este camino; si no, el wrapper torch (_model).
+        self._raw_sess: Any = None
+        self._raw_in: set[str] = set()
+        self._raw_state: np.ndarray | None = None
+        self._raw_ctx: np.ndarray | None = None
 
     def load(self) -> bool:
         if self._loaded:
             return True
         if self._failed:
             return False
+        # Camino ONNX crudo (sin torch), gated. Ante cualquier fallo cae al wrapper torch.
+        if _vad_onnx_enabled() and self._load_raw_onnx():
+            return True
         try:
             import torch  # noqa: F401
             from silero_vad import load_silero_vad
@@ -71,6 +110,45 @@ class SileroVAD:
             logger.warning(self.last_error)
             return False
 
+    def _load_raw_onnx(self) -> bool:
+        """Carga el modelo Silero en onnxruntime CRUDO (sin torch). Replica el OnnxWrapper
+        de silero_vad: estado LSTM [2,1,128] + contexto de 64 samples prepended por frame
+        (paridad exacta verificada). Best-effort: False -> el caller cae al wrapper torch."""
+        model = _find_silero_onnx()
+        if not model:
+            self.last_error = "VAD ONNX model no encontrado (silero_vad.onnx)"
+            return False
+        try:
+            import onnxruntime as ort
+            so = ort.SessionOptions()
+            so.intra_op_num_threads = 1
+            so.inter_op_num_threads = 1
+            self._raw_sess = ort.InferenceSession(
+                model, sess_options=so, providers=["CPUExecutionProvider"])
+            self._raw_in = {i.name for i in self._raw_sess.get_inputs()}
+            self._raw_state = np.zeros((2, 1, 128), dtype=np.float32)
+            self._raw_ctx = np.zeros((1, SILERO_CONTEXT), dtype=np.float32)
+            self._loaded = True
+            logger.info("SileroVAD loaded (raw onnxruntime, sin torch)")
+            return True
+        except Exception as exc:
+            self._raw_sess = None
+            self.last_error = f"VAD raw-onnx init failed: {exc}"
+            logger.warning(self.last_error)
+            return False
+
+    def _raw_prob(self, chunk: np.ndarray) -> float:
+        """Forward del Silero en onnxruntime crudo (replica OnnxWrapper.__call__)."""
+        audio_f = (chunk.astype(np.float32) / 32768.0).reshape(1, -1)
+        x = np.concatenate([self._raw_ctx, audio_f], axis=1).astype(np.float32)  # (1, 64+512)
+        feed: dict[str, Any] = {"input": x, "state": self._raw_state}
+        if "sr" in self._raw_in:
+            feed["sr"] = np.array(SAMPLE_RATE, dtype=np.int64)
+        out, new_state = self._raw_sess.run(None, feed)
+        self._raw_state = new_state
+        self._raw_ctx = x[:, -SILERO_CONTEXT:]
+        return float(np.asarray(out).reshape(-1)[0])
+
     def speech_prob(self, chunk: np.ndarray) -> float:
         """Return P(speech in chunk) ∈ [0, 1].
 
@@ -90,6 +168,8 @@ class SileroVAD:
             else:
                 chunk = chunk[:SILERO_FRAME_SAMPLES]
         try:
+            if self._raw_sess is not None:
+                return self._raw_prob(chunk)
             audio_f = chunk.astype(np.float32) / 32768.0
             t = self._torch.from_numpy(audio_f)
             return float(self._model(t, SAMPLE_RATE).item())
@@ -156,9 +236,14 @@ class SileroVAD:
 
     def reset(self) -> None:
         """Reset the internal RNN state. Call between commands."""
-        if not self._loaded or self._model is None:
+        if not self._loaded:
             return
         try:
-            self._model.reset_states()
+            if self._raw_sess is not None:
+                # Backend crudo: estado LSTM + contexto a ceros (= OnnxWrapper.reset_states).
+                self._raw_state = np.zeros((2, 1, 128), dtype=np.float32)
+                self._raw_ctx = np.zeros((1, SILERO_CONTEXT), dtype=np.float32)
+            elif self._model is not None:
+                self._model.reset_states()
         except Exception:
             pass
