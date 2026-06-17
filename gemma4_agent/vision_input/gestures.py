@@ -67,6 +67,18 @@ class GestureThresholds:
     # Max non-index fingers allowed flexed for a pinch (a real pinch keeps the
     # other fingers extended; a fist flexes them all). Measured: 14->0 fist->pinch.
     pinch_max_flex: int = 1
+    # Pinch "natural" con los demás dedos FLEXIONADOS (así lo hace gente real:
+    # medido en los videos de scroll del operador, donde la regla pinch_max_flex
+    # lo leía como fist y el scroll universal daba accuracy 0.0). Tres señales:
+    # contacto casi cerrado (más estricto que pinch_palm_ratio), pulgar en la
+    # PUNTA del índice (no en su PIP, donde cruza en el puño), y el índice
+    # alcanzando AL FRENTE para formar el anillo — en el puño el índice se
+    # curva HACIA la palma. Separación MEDIDA: fists kinivi que se fugaban
+    # tienen wrist->index_tip <= 0.88·palm; el pinch real del operador da
+    # p5 = 1.09 (scroll) / 1.40 (zoom). Gate kinivi: fist->pinch sigue en 0.
+    pinch_flexed_max_ratio: float = 0.25
+    pinch_tip_vs_pip_ratio: float = 0.8
+    pinch_index_reach_min: float = 1.0
     # Point gesture: index must out-reach the longest other finger by this factor
     # and ALL three other fingers must be folded/short. Measured on the kinivi
     # fixture: palm accuracy 0.928 -> 0.992 (kills the open-palm->point confusion).
@@ -107,7 +119,9 @@ class GestureStabilizer:
         self._stable = "none"
 
 
-def extract_features(hand, lm, palm, palm_center):
+def extract_features(lm, palm, palm_center):
+    # ORDEN DE FEATURES = contrato del RF (train_model.py extrae el mismo vector
+    # al entrenar; cambiarlo invalida gesture_rf_model.pkl).
     features = []
     for name, (mcp, pip, tip) in FINGER_JOINTS.items():
         features.append(_angle_deg(lm[mcp], lm[pip], lm[tip]))
@@ -123,7 +137,6 @@ def extract_features(hand, lm, palm, palm_center):
 def recognize_hand_gesture(
     hand: HandSample | None,
     thresholds: GestureThresholds | None = None,
-    previous_label: str = "none",
 ) -> GestureResult:
     if hand is None:
         return GestureResult("none", 1.0, 1.0, {}, {})
@@ -171,7 +184,7 @@ def recognize_hand_gesture(
     _ml = _ml_model() if _ml_enabled() else None
     if _ml is not None:
         try:
-            feats = extract_features(hand, lm, palm, palm_center)
+            feats = extract_features(lm, palm, palm_center)
             pred = _ml.predict([feats])[0]
             probs = _ml.predict_proba([feats])[0]
             conf = max(probs)
@@ -180,11 +193,15 @@ def recognize_hand_gesture(
                 pred = "none"
             
             # Allow heuristic FIST if ML model says 'none', to fix low fist recall.
-            # Only allow it if the hand is upright (wrist y > knuckles y) to prevent face-touching false positives.
-            # ALSO require idx_palm_dist < 0.95 to prevent confusing it with a PINCH (where index is extended forward).
+            # Require idx_palm_dist < 0.95 to prevent confusing it with a PINCH
+            # (where index is extended forward). La condición de mano vertical
+            # (wrist y > knuckles y) se retiró: era un anti-falso de caras, pero
+            # mataba el latigazo real (la mano ROTA durante el flick — medido:
+            # el RF perdía la misión en Latigazo.mp4) y la zona de exclusión
+            # facial con memoria es ahora el guard correcto para caras.
             idx_palm_dist = _dist(lm[0], lm[8]) / palm
             if pred == "none" and sum(1 for v in flexed.values() if v) >= 4:
-                if lm[0].y > lm[9].y and idx_palm_dist < 0.95 and pinch_distance > 0.3:
+                if idx_palm_dist < 0.95 and pinch_distance > 0.3:
                     pred = "fist"
                     conf = 0.90
             
@@ -198,7 +215,6 @@ def recognize_hand_gesture(
             
     # --- FALLBACK HEURISTICS ---
     thumb_open = _dist(lm[4], palm_center) > palm * th.thumb_open_ratio
-    pinch_distance = _dist(lm[4], lm[8]) / palm
     ext_count = sum(1 for v in extended.values() if v)
     flex_count = sum(1 for v in flexed.values() if v)
 
@@ -211,6 +227,18 @@ def recognize_hand_gesture(
     if pinch_distance <= th.pinch_palm_ratio and flex_count <= th.pinch_max_flex:
         confidence = max(0.55, min(0.99, 1.0 - pinch_distance))
         return GestureResult("pinch", confidence, pinch_distance, extended, flexed)
+    # Pinch flexionado (ver GestureThresholds.pinch_flexed_max_ratio): contacto
+    # casi cerrado + pulgar en el TIP del índice (no en el PIP, como en el puño)
+    # + índice alcanzando al frente (en el puño se curva hacia la palma).
+    if pinch_distance <= th.pinch_flexed_max_ratio:
+        thumb_to_index_pip = _dist(lm[4], lm[6]) / palm
+        index_reach = _dist(lm[0], lm[8]) / palm
+        if (
+            pinch_distance < thumb_to_index_pip * th.pinch_tip_vs_pip_ratio
+            and index_reach >= th.pinch_index_reach_min
+        ):
+            confidence = max(0.55, min(0.95, 1.0 - pinch_distance))
+            return GestureResult("pinch", confidence, pinch_distance, extended, flexed)
     if flex_count >= 4:
         return GestureResult("fist", 0.92, pinch_distance, extended, flexed)
     if _looks_like_point(extended, flexed, angles, tip_distances, pip_distances, th):

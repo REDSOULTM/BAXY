@@ -7,7 +7,6 @@ safe by default; real Win32 actions require --execute-actions.
 from __future__ import annotations
 
 import argparse
-import getpass
 import io
 import json
 import math
@@ -15,19 +14,15 @@ import os
 import sys
 import time
 from collections import deque
-from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-
-import numpy as np
 
 from .camera import CameraConfig, OpenCVCamera
 from .config import parse_args
 from .calibration_flow import (
     ValidationSample,
     _bad_validation_targets,
-    _validation_summary,
     _validation_summary_passes,
     _validation_notice,
     _fit_validation_screen_warp,
@@ -36,34 +31,20 @@ from .calibration_flow import (
     _save_calibration_profile,
     _save_calibration_debug_capture,
     _online_retrain_from_clicks,
-    _make_validation_sample,
-    _average_points,
-    _head_confident_for_online_learn,
-    _merge_calibration_samples,
     _merge_keys,
     _has_capture_key,
     _set_cursor_pos,
     _head_features,
-    _error_summary,
-    _monitor_index_for_point,
-    _head_debug_payload,
     _sample_from_click_history,
     _append_online_feature_snapshot,
 )
 from .calibration import (
-    CalibrationProfile,
     CalibrationSample,
     CalibrationStore,
     LinearGazeModel,
     default_calibration_targets,
     evaluate_calibration_model,
-    fit_linear_model,
-    fit_monitor_corrections,
-    fit_screen_warp,
-    with_monitor_corrections,
-    make_feature_dict,
     profile_model,
-    with_screen_warp,
 )
 from .controller import (
     FixedGestureWindowController,
@@ -82,28 +63,17 @@ from .hand_quality import (
 from .landmarks import CAMERA_DATA_DIR, HandSample, LandmarkFrame, MediaPipeLandmarkDetector
 from .monitors import VirtualCanvas, canvas_to_dict, virtual_canvas
 from .poc import (
-    DEFAULT_CAMERA_BACKEND,
-    DEFAULT_CAMERA_HEIGHT,
-    DEFAULT_CAMERA_INDEX,
-    DEFAULT_CAMERA_WIDTH,
     _camera_backend_value,
     _camera_label,
-    _draw_face,
-    _draw_hands,
     list_cameras,
 )
 from .pointer import HeadPointerEstimate, HeadPointerMapper, OneEuroFilter
-from .window_target import WindowTarget, WindowTargetStabilizer, WindowTargeter, short_title
+from .window_target import WindowTarget, WindowTargetStabilizer, WindowTargeter
 
 try:
     import win32api
 except Exception:  # pragma: no cover - optional on non-Windows test envs.
     win32api = None
-
-try:
-    import tkinter as tk
-except Exception:  # pragma: no cover - optional at runtime.
-    tk = None
 
 
 from .config import (
@@ -115,7 +85,6 @@ from .config import (
     KEY_CALIBRATION_SAVE,
     KEY_CALIBRATION_NEXT,
     KEY_CALIBRATION_CLEAR,
-    ONLINE_FEATURE_KEYS,
 )
 SUPPRESSED_RUNTIME_LOG_SNIPPETS = (
     "Created TensorFlow Lite XNNPACK delegate for CPU.",
@@ -234,6 +203,13 @@ def _install_runtime_log_filter(*, enabled: bool) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     _set_runtime_log_env_defaults()
+    # Throttle de CPU para MediaPipe (P7): limita threads/afinidad/prioridad del
+    # proceso de cámara para no matar de hambre a Whisper/el LLM. Debe correr
+    # ANTES de importar cv2/mediapipe (los env vars de XNNPACK/TFLite se leen
+    # al importar). Misma política que scripts/_ort_throttle para el STT.
+    from . import _mp_throttle
+
+    _mp_throttle.apply()
     # Declare DPI awareness BEFORE any window/monitor work so calibration dots and
     # win32 monitor rects use the same physical pixels on mixed-scaling multi-monitor
     # setups (otherwise dots on a differently-scaled monitor land shifted / miss the corners).
@@ -248,6 +224,35 @@ def main(argv: list[str] | None = None) -> int:
     report = run_window_control(args)
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0
+
+
+def _control_config(
+    args: argparse.Namespace,
+    *,
+    execute: bool,
+    camera_width: int,
+    camera_height: int,
+) -> WindowControlConfig:
+    """Single source for the controller config (before: 4 hand-copied 25-kwarg
+    constructions that drifted from each other and from the handlers)."""
+    return WindowControlConfig(
+        execute_actions=execute,
+        camera_width=int(camera_width),
+        camera_height=int(camera_height),
+        swipe_velocity_threshold=args.swipe_velocity_threshold,
+        swipe_min_distance_norm=args.swipe_min_distance_norm,
+        scroll_threshold_norm=args.scroll_threshold_norm,
+        scroll_gain=args.scroll_gain,
+        scroll_min_wheel_delta=args.scroll_min_wheel_delta,
+        scroll_max_wheel_delta=args.scroll_max_wheel_delta,
+        resize_ratio_smoothing_alpha=args.resize_ratio_smoothing_alpha,
+        two_hand_zoom_step_ratio=args.two_hand_zoom_step_ratio,
+        two_hand_zoom_cooldown_s=args.two_hand_zoom_cooldown_s,
+        point_click_cooldown_s=args.point_click_cooldown_s,
+        point_snap_radius_px=args.point_snap_radius_px,
+        point_tap_threshold_norm=args.point_tap_threshold_norm,
+        point_tap_release_norm=args.point_tap_release_norm,
+    )
 
 
 def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
@@ -329,34 +334,31 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
         desktop_rect=canvas.rect,
         monitors=tuple(monitor.rect for monitor in canvas.monitors),
     )
-    controller = FixedGestureWindowController(
-        WindowControlConfig(
-            execute_actions=execute_actions_live,
-            drag_gain_x_px=args.drag_gain_x_px,
-            drag_gain_y_px=args.drag_gain_y_px,
-            drag_smoothing_alpha=args.drag_smoothing_alpha,
-            drag_max_step_px=args.drag_max_step_px,
-            scroll_threshold_norm=args.scroll_threshold_norm,
-            scroll_gain=args.scroll_gain,
-            scroll_rearm_threshold_norm=args.scroll_rearm_threshold_norm,
-            scroll_min_wheel_delta=args.scroll_min_wheel_delta,
-            scroll_max_wheel_delta=args.scroll_max_wheel_delta,
-            resize_ratio_smoothing_alpha=args.resize_ratio_smoothing_alpha,
-            resize_step_px=args.resize_step_px,
-            maximize_ratio=args.maximize_ratio,
-            restore_ratio=args.restore_ratio,
-            two_hand_zoom_step_ratio=args.two_hand_zoom_step_ratio,
-            two_hand_zoom_cooldown_s=args.two_hand_zoom_cooldown_s,
-            point_click_cooldown_s=args.point_click_cooldown_s,
-            point_snap_radius_px=args.point_snap_radius_px,
-            point_tap_threshold_norm=args.point_tap_threshold_norm,
-            point_tap_release_norm=args.point_tap_release_norm,
-            window_snap_enabled=args.window_snap,
-            window_snap_edge_px=args.window_snap_edge_px,
-        ),
-        actuator,
+    camera_config = CameraConfig(
+        args.camera_index,
+        args.width,
+        args.height,
+        args.camera_fps,
+        backend=_camera_backend_value(args.camera_backend),
     )
+
+    def _fresh_controller(execute: bool) -> FixedGestureWindowController:
+        # Reconstruir el controller resetea el estado de TODOS los handlers
+        # (se usa al entrar/salir de calibración). El config llega a los
+        # handlers vía ControlContext, así que un solo sitio de construcción.
+        return FixedGestureWindowController(
+            _control_config(
+                args,
+                execute=execute,
+                camera_width=camera_config.width,
+                camera_height=camera_config.height,
+            ),
+            actuator,
+        )
+
+    controller = _fresh_controller(execute_actions_live)
     hand_tracker = HandIdentityTracker(max_jump_norm=args.hand_max_jump_norm)
+    face_exclusion = FaceExclusionTracker()
     hand_quality_gate = HandQualityGate(
         HandQualityConfig(
             min_score=args.hand_min_score,
@@ -404,13 +406,6 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
         except Exception:
             desktop_dot = None
 
-    camera_config = CameraConfig(
-        args.camera_index,
-        args.width,
-        args.height,
-        args.camera_fps,
-        backend=_camera_backend_value(args.camera_backend),
-    )
     with OpenCVCamera(camera_config) as camera, MediaPipeLandmarkDetector(
         model_dir=args.model_dir,
         download_models=args.download_models,
@@ -503,7 +498,14 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                 fallback_foreground=args.target_foreground_fallback,
             )
             target = target_stabilizer.update(candidate, frame.timestamp_s)
-            hands = _control_hands(landmarks, hand_tracker, hand_quality_gate, gesture_filter, max_hands=args.num_hands)
+            hands = _control_hands(
+                landmarks,
+                hand_tracker,
+                hand_quality_gate,
+                gesture_filter,
+                max_hands=args.num_hands,
+                face_box=face_exclusion.update(landmarks.primary_face, frame.timestamp_s),
+            )
             output_state = "calibrating" if calibration_mode else "validating" if validation_mode else "idle"
             action_block_reason = _action_block_reason(
                 args=args,
@@ -513,33 +515,10 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                 calibration_validated=calibration_validated,
             )
             effective_execute = execute_actions_live and action_block_reason is None
+            # El actuator es la única compuerta de ejecución real (los handlers
+            # leen config vía ControlContext y nada consume config.execute_actions
+            # en runtime), así que el refresh por frame es solo este bool.
             actuator.execute = effective_execute
-            controller.config = WindowControlConfig(
-                execute_actions=effective_execute,
-                camera_width=camera_config.width,
-                camera_height=camera_config.height,
-                drag_gain_x_px=args.drag_gain_x_px,
-                drag_gain_y_px=args.drag_gain_y_px,
-                drag_smoothing_alpha=args.drag_smoothing_alpha,
-                drag_max_step_px=args.drag_max_step_px,
-                scroll_threshold_norm=args.scroll_threshold_norm,
-                scroll_gain=args.scroll_gain,
-                scroll_rearm_threshold_norm=args.scroll_rearm_threshold_norm,
-                scroll_min_wheel_delta=args.scroll_min_wheel_delta,
-                scroll_max_wheel_delta=args.scroll_max_wheel_delta,
-                resize_ratio_smoothing_alpha=args.resize_ratio_smoothing_alpha,
-                resize_step_px=args.resize_step_px,
-                maximize_ratio=args.maximize_ratio,
-                restore_ratio=args.restore_ratio,
-                two_hand_zoom_step_ratio=args.two_hand_zoom_step_ratio,
-                two_hand_zoom_cooldown_s=args.two_hand_zoom_cooldown_s,
-                point_click_cooldown_s=args.point_click_cooldown_s,
-                point_snap_radius_px=args.point_snap_radius_px,
-                point_tap_threshold_norm=args.point_tap_threshold_norm,
-                point_tap_release_norm=args.point_tap_release_norm,
-                window_snap_enabled=args.window_snap,
-                window_snap_edge_px=args.window_snap_edge_px,
-            )
             if calibration_mode or validation_mode:
                 output_events: tuple[dict[str, object], ...] = ()
             else:
@@ -549,7 +528,6 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                     target=target,
                     hands=hands,
                     pointer_xy=pointer_xy,
-                    face=last_face,
                 )
                 output_state = output.state.value
                 for event in output.events:
@@ -633,33 +611,7 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                 calibration_validated = False
                 active_model = None
                 calibration_notice = "calibration restarted"
-                controller = FixedGestureWindowController(
-                    WindowControlConfig(
-                        execute_actions=execute_actions_live,
-                        drag_gain_x_px=args.drag_gain_x_px,
-                        drag_gain_y_px=args.drag_gain_y_px,
-                        drag_smoothing_alpha=args.drag_smoothing_alpha,
-                        drag_max_step_px=args.drag_max_step_px,
-                        scroll_threshold_norm=args.scroll_threshold_norm,
-                        scroll_gain=args.scroll_gain,
-                        scroll_rearm_threshold_norm=args.scroll_rearm_threshold_norm,
-                        scroll_min_wheel_delta=args.scroll_min_wheel_delta,
-                        scroll_max_wheel_delta=args.scroll_max_wheel_delta,
-                        resize_ratio_smoothing_alpha=args.resize_ratio_smoothing_alpha,
-                        resize_step_px=args.resize_step_px,
-                        maximize_ratio=args.maximize_ratio,
-                        restore_ratio=args.restore_ratio,
-                        two_hand_zoom_step_ratio=args.two_hand_zoom_step_ratio,
-                        two_hand_zoom_cooldown_s=args.two_hand_zoom_cooldown_s,
-                        point_click_cooldown_s=args.point_click_cooldown_s,
-                        point_snap_radius_px=args.point_snap_radius_px,
-                        point_tap_threshold_norm=args.point_tap_threshold_norm,
-                        point_tap_release_norm=args.point_tap_release_norm,
-                        window_snap_enabled=args.window_snap,
-                        window_snap_edge_px=args.window_snap_edge_px,
-                    ),
-                    actuator,
-                )
+                controller = _fresh_controller(execute_actions_live)
                 continue
             if any(k in KEY_TOGGLE_EXECUTE for k in all_keys if k >= 0 and k != 255):
                 execute_actions_live = not execute_actions_live
@@ -682,33 +634,7 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                     if args.use_calibration:
                         active_model = loaded_model
                     calibration_notice = ""
-                controller = FixedGestureWindowController(
-                    WindowControlConfig(
-                        execute_actions=execute_actions_live,
-                        drag_gain_x_px=args.drag_gain_x_px,
-                        drag_gain_y_px=args.drag_gain_y_px,
-                        drag_smoothing_alpha=args.drag_smoothing_alpha,
-                        drag_max_step_px=args.drag_max_step_px,
-                        scroll_threshold_norm=args.scroll_threshold_norm,
-                        scroll_gain=args.scroll_gain,
-                        scroll_rearm_threshold_norm=args.scroll_rearm_threshold_norm,
-                        scroll_min_wheel_delta=args.scroll_min_wheel_delta,
-                        scroll_max_wheel_delta=args.scroll_max_wheel_delta,
-                        resize_ratio_smoothing_alpha=args.resize_ratio_smoothing_alpha,
-                        resize_step_px=args.resize_step_px,
-                        maximize_ratio=args.maximize_ratio,
-                        restore_ratio=args.restore_ratio,
-                        two_hand_zoom_step_ratio=args.two_hand_zoom_step_ratio,
-                        two_hand_zoom_cooldown_s=args.two_hand_zoom_cooldown_s,
-                        point_click_cooldown_s=args.point_click_cooldown_s,
-                        point_snap_radius_px=args.point_snap_radius_px,
-                        point_tap_threshold_norm=args.point_tap_threshold_norm,
-                        point_tap_release_norm=args.point_tap_release_norm,
-                        window_snap_enabled=args.window_snap,
-                        window_snap_edge_px=args.window_snap_edge_px,
-                    ),
-                    actuator,
-                )
+                controller = _fresh_controller(execute_actions_live)
             if calibration_mode:
                 should_debug_capture = args.save_calibration_debug_captures and _has_capture_key(all_keys)
                 debug_target_point = calibration_targets[calibration_target_idx] if calibration_targets else None
@@ -839,6 +765,7 @@ def run_window_control(args: argparse.Namespace) -> dict[str, Any]:
                                 user=args.calibration_user,
                                 samples=tuple(calibration_samples),
                                 model=warped_model,
+                                camera_resolution=(int(args.width), int(args.height)),
                             )
                     if _validation_summary_passes(validation_summary, args):
                         validation_mode = False
@@ -978,6 +905,54 @@ def _pointer_xy(desktop_point: tuple[float, float] | None) -> tuple[int, int] | 
     return (int(round(desktop_point[0])), int(round(desktop_point[1])))
 
 
+class FaceExclusionTracker:
+    """Bounding box facial con memoria corta para la zona de exclusión.
+
+    La exclusión fallaba JUSTO cuando más se necesita: la mano que tapa la
+    cara hace que MediaPipe pierda la cara → sin box → el gesto sobre la cara
+    dispara acciones (medido en el video de tocaciones: 4-5 swipes/clicks
+    falsos). La cara no se teletransporta: si se vio hace <ttl_s, el último
+    box sigue valiendo como zona de exclusión.
+    """
+
+    def __init__(self, ttl_s: float = 2.0, pad_ratio: float = 0.3, neck_pad_ratio: float = 0.9) -> None:
+        self.ttl_s = float(ttl_s)
+        self.pad_ratio = float(pad_ratio)
+        # El borde INFERIOR se extiende más: el cuello/garganta es zona de
+        # auto-toque típica (medido: mano en el cuello quedaba FUERA del box y
+        # su palm leía media_toggle falso). Cubrir hacia abajo no compite con
+        # los gestos reales, que se hacen al costado o frente al pecho.
+        self.neck_pad_ratio = float(neck_pad_ratio)
+        self._box: tuple[float, float, float, float] | None = None
+        self._seen_ts: float | None = None
+
+    def update(self, face, timestamp_s: float) -> tuple[float, float, float, float] | None:
+        if face is not None and face.landmarks:
+            pts = face.landmarks
+            min_x = min(p.x for p in pts)
+            max_x = max(p.x for p in pts)
+            min_y = min(p.y for p in pts)
+            max_y = max(p.y for p in pts)
+            pad_x = (max_x - min_x) * self.pad_ratio
+            face_h = max_y - min_y
+            self._box = (
+                min_x - pad_x,
+                min_y - face_h * self.pad_ratio,
+                max_x + pad_x,
+                max_y + face_h * self.neck_pad_ratio,
+            )
+            self._seen_ts = timestamp_s
+        elif self._seen_ts is not None and timestamp_s - self._seen_ts > self.ttl_s:
+            self._box = None
+            self._seen_ts = None
+        return self._box
+
+
+# Sentinel: distingue "no me pasaron face_box" (computar del frame, compat con
+# tests/POC) de "el tracker dice que no hay caja" (None real).
+_COMPUTE_FACE_BOX = object()
+
+
 def _control_hands(
     landmarks: LandmarkFrame,
     tracker: HandIdentityTracker,
@@ -985,6 +960,7 @@ def _control_hands(
     gesture_filter: GestureStateFilter,
     *,
     max_hands: int,
+    face_box: object = _COMPUTE_FACE_BOX,
 ) -> tuple[HandControlPose, ...]:
     assigned = tracker.assign(landmarks.hands)
     if not assigned:
@@ -994,18 +970,24 @@ def _control_hands(
     active_ids: set[str] = set()
     out: list[HandControlPose] = []
 
-    # --- PRE-COMPUTE FACE EXCLUSION ZONE (once, not per hand) ---
-    face_box: tuple[float, float, float, float] | None = None
-    if landmarks.primary_face is not None:
-        face_pts = landmarks.primary_face.landmarks
-        if face_pts:
+    # --- FACE EXCLUSION ZONE (el runner pasa el box con memoria del
+    # FaceExclusionTracker; sin caller explícito se computa del frame) ---
+    box: tuple[float, float, float, float] | None
+    if face_box is _COMPUTE_FACE_BOX:
+        box = None
+        if landmarks.primary_face is not None and landmarks.primary_face.landmarks:
+            face_pts = landmarks.primary_face.landmarks
             min_x = min(p.x for p in face_pts)
             max_x = max(p.x for p in face_pts)
             min_y = min(p.y for p in face_pts)
             max_y = max(p.y for p in face_pts)
             pad_x = (max_x - min_x) * 0.3
             pad_y = (max_y - min_y) * 0.3
-            face_box = (min_x - pad_x, min_y - pad_y, max_x + pad_x, max_y + pad_y)
+            box = (min_x - pad_x, min_y - pad_y, max_x + pad_x, max_y + pad_y)
+    else:
+        from typing import cast
+
+        box = cast("tuple[float, float, float, float] | None", face_box)
     # -----------------------------------------------------------
 
     for track_id, hand in assigned[: max(1, int(max_hands))]:
@@ -1013,15 +995,12 @@ def _control_hands(
         palm = _hand_palm_xyz(hand)
         other_centers = tuple(center for other_id, center in centers.items() if other_id != track_id)
         quality = quality_gate.evaluate(track_id, hand, other_centers=other_centers)
-        prev_label = gesture_filter.get_stable_label(track_id)
-        raw = recognize_hand_gesture(hand, previous_label=prev_label)
+        raw = recognize_hand_gesture(hand)
 
         # --- FACE EXCLUSION ZONE ---
-        face_blocked = False
-        if face_box is not None and palm[0] is not None and palm[1] is not None:
-            if face_box[0] <= palm[0] <= face_box[2] and face_box[1] <= palm[1] <= face_box[3]:
+        if box is not None and palm[0] is not None and palm[1] is not None:
+            if box[0] <= palm[0] <= box[2] and box[1] <= palm[1] <= box[3]:
                 raw = type(raw)("none", 1.0, raw.pinch_distance, raw.finger_extended, raw.finger_flexed)
-                face_blocked = True
         # ---------------------------
 
         label = gesture_filter.update(track_id, raw, quality)
@@ -1268,154 +1247,6 @@ def _write_report(report: dict[str, Any], report_path: Path | None) -> None:
     base.parent.mkdir(parents=True, exist_ok=True)
     json_path = base if base.suffix.lower() == ".json" else base.with_suffix(".json")
     json_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
-
-
-def _parse_args(argv: list[str] | None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Gemma 4 camera window-control Phase 1 POC")
-    parser.add_argument("--camera-index", type=int, default=DEFAULT_CAMERA_INDEX)
-    parser.add_argument("--camera-backend", choices=("any", "dshow", "msmf"), default=DEFAULT_CAMERA_BACKEND)
-    parser.add_argument("--quiet-runtime-logs", dest="quiet_runtime_logs", action="store_true", default=True)
-    parser.add_argument("--verbose-runtime-logs", dest="quiet_runtime_logs", action="store_false")
-    parser.add_argument("--list-cameras", action="store_true")
-    parser.add_argument("--camera-scan-limit", type=int, default=8)
-    parser.add_argument("--width", type=int, default=DEFAULT_CAMERA_WIDTH)
-    parser.add_argument("--height", type=int, default=DEFAULT_CAMERA_HEIGHT)
-    parser.add_argument("--camera-fps", type=int, default=30)
-    # The cursor follows the HEAD, so the face model must run every frame here —
-    # face_every_n>1 only updated the cursor every Nth frame (the dominant cause
-    # of "laggy/steppy" tracking: at ~15 FPS, n=4 refreshed the cursor ~4x/sec).
-    # The POC (measurement-only) can still skip frames; window control should not.
-    parser.add_argument("--face-every-n", type=int, default=1)
-    parser.add_argument("--iris-refine", dest="iris_refine", action="store_true", default=True)
-    parser.add_argument("--no-iris-refine", dest="iris_refine", action="store_false")
-    parser.add_argument("--gaze-gain-x", type=float, default=0.62)
-    parser.add_argument("--gaze-gain-y", type=float, default=0.42)
-    parser.add_argument("--gaze-deadzone", type=float, default=0.025)
-    parser.add_argument("--no-auto-center", action="store_true", help="Disable adaptive center for camera placement.")
-    parser.add_argument("--auto-center-alpha", type=float, default=0.03)
-    # Responsiveness of the cursor. alpha is the EMA catch-up fraction per frame
-    # (higher = snappier, lower = smoother but laggier); max-step caps per-frame
-    # travel before the EMA. The old 0.16 / 180px felt sluggish: at ~15 FPS the
-    # cursor needed many frames to reach a new target and was speed-capped across
-    # the desktop. 0.45 / 600px tracks the head with little perceptible lag while
-    # the one-euro filter upstream still absorbs jitter.
-    parser.add_argument("--gaze-smooth-alpha", type=float, default=0.45)
-    parser.add_argument("--gaze-max-step-px", type=float, default=600.0)
-    parser.add_argument("--use-calibration", dest="use_calibration", action="store_true", default=True)
-    parser.add_argument("--no-use-calibration", dest="use_calibration", action="store_false")
-    parser.add_argument("--reset-calibration-history", action="store_true")
-    parser.add_argument("--run-calibration", action="store_true", help="Collect gaze samples and save a calibrated model.")
-    parser.add_argument("--control-after-calibration", dest="control_after_calibration", action="store_true", default=True)
-    parser.add_argument("--no-control-after-calibration", dest="control_after_calibration", action="store_false")
-    parser.add_argument("--merge-calibration-history", dest="merge_calibration_history", action="store_true", default=True)
-    parser.add_argument("--no-merge-calibration-history", dest="merge_calibration_history", action="store_false")
-    parser.add_argument("--calibration-history-max-samples", type=int, default=1200)
-    parser.add_argument("--calibration-min-samples", type=int, default=18)
-    parser.add_argument("--calibration-avg-frames", type=int, default=8)
-    parser.add_argument("--calibration-min-capture-frames", type=int, default=4)
-    parser.add_argument("--calibration-max-feature-jitter", type=float, default=0.040)
-    parser.add_argument("--calibration-min-gaze-confidence", type=float, default=0.60)
-    parser.add_argument("--calibration-max-rms-px", type=float, default=350.0)
-    parser.add_argument("--calibration-user", type=str, default=None)
-    parser.add_argument("--validate-after-calibration", dest="validate_after_calibration", action="store_true", default=True)
-    parser.add_argument("--no-validate-after-calibration", dest="validate_after_calibration", action="store_false")
-    parser.add_argument("--require-validation-for-actions", dest="require_validation_for_actions", action="store_true", default=True)
-    parser.add_argument("--no-require-validation-for-actions", dest="require_validation_for_actions", action="store_false")
-    parser.add_argument("--validation-points-per-monitor", type=int, choices=(5, 9), default=5)
-    parser.add_argument("--validation-avg-frames", type=int, default=8)
-    parser.add_argument("--validation-min-capture-frames", type=int, default=4)
-    parser.add_argument("--validation-max-rms-px", type=float, default=220.0)
-    parser.add_argument("--validation-max-p95-px", type=float, default=380.0)
-    parser.add_argument("--validation-min-monitor-accuracy", type=float, default=0.95)
-    parser.add_argument("--validation-max-point-error-px", type=float, default=520.0)
-    parser.add_argument("--validation-repeat-worst", type=int, default=8)
-    parser.add_argument(
-        "--validation-max-retries",
-        type=int,
-        default=1,
-        help="How many failed validation rounds can send you back to repeat bad points before falling back to SAFE mode.",
-    )
-    parser.add_argument("--fine-screen-warp", dest="fine_screen_warp", action="store_true", default=True)
-    parser.add_argument("--no-fine-screen-warp", dest="fine_screen_warp", action="store_false")
-    parser.add_argument("--fine-screen-warp-max-rms-px", type=float, default=180.0)
-    parser.add_argument(
-        "--save-calibration-debug-captures",
-        action="store_true",
-        help="Opt-in privacy debug: save one camera PNG + JSON metadata for each Space/s calibration or validation capture.",
-    )
-    parser.add_argument("--debug-capture-dir", type=Path, default=Path("test") / "eye_tracking_captures")
-    parser.add_argument("--auto-online-learn", action="store_true", help="Disabled/no-op for now; kept only for CLI compatibility.")
-    parser.add_argument("--online-learn-min-gaze-confidence", type=float, default=0.62)
-    parser.add_argument("--online-learn-min-samples", type=int, default=18)
-    parser.add_argument("--online-learn-retrain-every", type=int, default=8)
-    parser.add_argument("--online-learn-max-new-samples", type=int, default=240)
-    parser.add_argument("--online-learn-click-lag-ms", type=float, default=130.0)
-    parser.add_argument("--online-learn-window-ms", type=float, default=180.0)
-    parser.add_argument("--online-learn-max-feature-jitter", type=float, default=0.050)
-    parser.add_argument("--online-learn-max-click-distance-px", type=float, default=340.0)
-    parser.add_argument("--online-learn-history-max-frames", type=int, default=120)
-    parser.add_argument("--duration", type=float, default=0.0, help="Seconds to run; 0 means until q/esc.")
-    parser.add_argument("--no-window", action="store_true")
-    parser.add_argument("--mirror", dest="mirror", action="store_true", default=True)
-    parser.add_argument("--no-mirror", dest="mirror", action="store_false")
-    parser.add_argument("--download-models", action="store_true")
-    parser.add_argument("--model-dir", type=Path, default=None)
-    parser.add_argument("--num-hands", type=int, default=2)
-    parser.add_argument("--min-confidence", type=float, default=0.5)
-    parser.add_argument("--stabilizer-window", type=int, default=3, help=argparse.SUPPRESS)
-    parser.add_argument("--gesture-enter-frames", type=int, default=2)
-    parser.add_argument("--gesture-exit-frames", type=int, default=2)
-    parser.add_argument("--gesture-min-confidence", type=float, default=0.50)
-    parser.add_argument("--hand-min-score", type=float, default=0.45)
-    parser.add_argument("--hand-edge-margin", type=float, default=0.035)
-    parser.add_argument("--hand-max-jump-norm", type=float, default=0.28)
-    parser.add_argument("--hand-min-palm-size", type=float, default=0.035)
-    parser.add_argument("--hand-max-palm-size", type=float, default=0.55)
-    parser.add_argument("--hand-min-two-hand-distance", type=float, default=0.085)
-    parser.add_argument("--target-stable-ms", type=int, default=350)
-    parser.add_argument("--target-search-radius-px", type=int, default=220)
-    parser.add_argument("--target-foreground-fallback", dest="target_foreground_fallback", action="store_true", default=True)
-    parser.add_argument("--no-target-foreground-fallback", dest="target_foreground_fallback", action="store_false")
-    parser.add_argument("--execute-actions", action="store_true")
-    parser.add_argument("--drag-gain-x-px", type=float, default=2600.0)
-    parser.add_argument("--drag-gain-y-px", type=float, default=1500.0)
-    parser.add_argument("--drag-smoothing-alpha", type=float, default=0.45)
-    parser.add_argument("--drag-max-step-px", type=int, default=180)
-    parser.add_argument("--scroll-threshold-norm", type=float, default=0.035)
-    parser.add_argument("--scroll-gain", type=float, default=3600.0)
-    parser.add_argument("--scroll-rearm-threshold-norm", type=float, default=0.012)
-    parser.add_argument("--scroll-min-wheel-delta", type=int, default=120)
-    parser.add_argument("--scroll-max-wheel-delta", type=int, default=360)
-    parser.add_argument("--resize-ratio-smoothing-alpha", type=float, default=0.30)
-    parser.add_argument("--resize-step-px", type=int, default=24)
-    parser.add_argument("--maximize-ratio", type=float, default=1.55)
-    parser.add_argument("--restore-ratio", type=float, default=0.65)
-    parser.add_argument("--two-hand-zoom-step-ratio", type=float, default=0.12)
-    parser.add_argument("--two-hand-zoom-cooldown-s", type=float, default=0.22)
-    parser.add_argument("--point-click-cooldown-s", type=float, default=0.70)
-    parser.add_argument("--point-snap-radius-px", type=int, default=320)
-    parser.add_argument("--point-tap-threshold-norm", type=float, default=0.14)
-    parser.add_argument("--point-tap-release-norm", type=float, default=0.055)
-    parser.add_argument("--window-snap", dest="window_snap", action="store_true", default=True)
-    parser.add_argument("--no-window-snap", dest="window_snap", action="store_false")
-    parser.add_argument("--window-snap-edge-px", type=int, default=72)
-    parser.add_argument("--event-log-size", type=int, default=80)
-    parser.add_argument("--show-gaze-pointer", dest="show_gaze_pointer", action="store_true", default=True)
-    parser.add_argument("--no-gaze-pointer", dest="show_gaze_pointer", action="store_false")
-    parser.add_argument("--show-desktop-map", dest="show_desktop_map", action="store_true", default=True)
-    parser.add_argument("--no-desktop-map", dest="show_desktop_map", action="store_false")
-    parser.add_argument("--show-desktop-gaze-dot", dest="show_desktop_gaze_dot", action="store_true", default=True)
-    parser.add_argument("--no-desktop-gaze-dot", dest="show_desktop_gaze_dot", action="store_false")
-    parser.add_argument("--desktop-gaze-dot-size", type=int, default=44)
-    parser.add_argument("--show-system-gaze-pointer", dest="show_system_gaze_pointer", action="store_true", default=False)
-    parser.add_argument("--no-system-gaze-pointer", dest="show_system_gaze_pointer", action="store_false")
-    parser.add_argument(
-        "--global-hotkeys",
-        action="store_true",
-        help="Listen for q/Esc globally even if OpenCV window is unfocused.",
-    )
-    parser.add_argument("--report-path", type=Path, default=None)
-    return parser.parse_args(argv)
 
 
 if __name__ == "__main__":

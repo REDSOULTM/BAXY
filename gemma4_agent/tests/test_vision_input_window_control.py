@@ -33,13 +33,16 @@ from gemma4_agent.vision_input.calibration_flow import (
     _validation_summary,
     _validation_summary_passes,
 )
+# parse_args vive en config (única fuente de verdad de defaults); la copia
+# muerta window_control._parse_args —con defaults DIVERGENTES que estos tests
+# validaban mientras el runtime usaba otros— se eliminó.
+from gemma4_agent.vision_input.config import parse_args
 from gemma4_agent.vision_input.window_control import (
     _action_block_reason,
     _action_status_text,
     _candidate_window,
     _control_hands,
     _desktop_point,
-    _parse_args,
     _smooth_point,
 )
 from gemma4_agent.vision_input.window_target import WindowRect, WindowTarget, WindowTargetStabilizer
@@ -57,7 +60,7 @@ def _target() -> WindowTarget:
 
 
 def _controller() -> FixedGestureWindowController:
-    config = WindowControlConfig(execute_actions=False, drag_gain_x_px=1000.0, drag_gain_y_px=1000.0)
+    config = WindowControlConfig(execute_actions=False)
     actuator = WindowActuator(
         execute=False,
         desktop_rect=MonitorRect(0, 0, 1920, 1080),
@@ -358,7 +361,7 @@ def test_average_features_smooths_buffer() -> None:
 
 
 def test_window_control_args_enable_desktop_pointer_defaults() -> None:
-    args = _parse_args([])
+    args = parse_args([])
     assert args.quiet_runtime_logs is True
     assert args.merge_calibration_history is True
     assert args.reset_calibration_history is False
@@ -367,6 +370,9 @@ def test_window_control_args_enable_desktop_pointer_defaults() -> None:
     assert args.control_after_calibration is True
     assert args.calibration_min_capture_frames == 4
     assert args.calibration_max_feature_jitter == 0.040
+    # 350 (no 3000): un RMS de entrenamiento >350px es un perfil basura y el
+    # gate debe rechazarlo en guardado/carga/online-learn.
+    assert args.calibration_max_rms_px == 350.0
     assert args.validate_after_calibration is True
     assert args.require_validation_for_actions is True
     assert args.validation_points_per_monitor == 5
@@ -385,16 +391,27 @@ def test_window_control_args_enable_desktop_pointer_defaults() -> None:
     assert args.hand_max_jump_norm == 0.28
     assert args.two_hand_zoom_step_ratio == 0.12
     assert args.point_snap_radius_px == 320
-    assert args.point_tap_threshold_norm == 0.14
+    # 0.08 = el umbral que el handler usaba EN VIVO (el flag viejo decía 0.14
+    # pero estaba pisado por un hardcode; ahora el config es la única verdad).
+    assert args.point_tap_threshold_norm == 0.08
     assert args.point_tap_release_norm == 0.055
-    assert args.window_snap is True
-    assert args.window_snap_edge_px == 72
+    assert args.swipe_velocity_threshold == 0.45
+    assert args.swipe_min_distance_norm == 0.05
+    assert args.download_models is True
     assert args.online_learn_click_lag_ms == 130.0
     assert args.online_learn_window_ms == 180.0
 
 
+def test_standalone_marker_flag_parses() -> None:
+    # El entrypoint standalone inyecta --standalone; antes el flag no existía y
+    # argparse abortaba con SystemExit(2) (entrypoint roto).
+    args = parse_args(["--standalone"])
+    assert args.standalone is True
+    assert parse_args([]).standalone is False
+
+
 def test_action_block_reason_explains_validation_gate() -> None:
-    args = _parse_args(["--execute-actions"])
+    args = parse_args(["--execute-actions"])
     model = LinearGazeModel(
         feature_keys=("yaw", "pitch", "gaze_x", "gaze_y"),
         coeffs_x=(0.0, 1.0, 1.0, 1.0, 1.0),
@@ -676,7 +693,7 @@ def test_validation_summary_passes_and_fails_by_thresholds() -> None:
         _make_validation_sample(canvas, (800, 600), (790.0, 590.0)),
     ]
     summary = _validation_summary(samples, canvas)
-    args = _parse_args([])
+    args = parse_args([])
 
     assert _validation_summary_passes(summary, args)
 
@@ -708,3 +725,152 @@ def test_bad_validation_targets_prefers_large_errors_and_monitor_misses() -> Non
 
     assert (1200, 200) in targets
     assert len(targets) == 2
+
+
+# ---------------------------------------------------------------------------
+# Regresiones del perfeccionamiento 2026-06-12 (suite de gestos/camara):
+# contexto compartido, click en el punto de mirada, throttle, perfil completo.
+# ---------------------------------------------------------------------------
+
+
+class _SpyActuator(WindowActuator):
+    """Actuator que registra el punto de click sin tocar win32."""
+
+    def __init__(self) -> None:
+        super().__init__(execute=False, desktop_rect=MonitorRect(0, 0, 1920, 1080))
+        self.clicks: list[tuple[int, int, int]] = []
+
+    def click_near(self, target, screen_x, screen_y, radius_px):
+        self.clicks.append((int(screen_x), int(screen_y), int(radius_px)))
+        return (True, "spy")
+
+
+def test_controller_config_propagates_to_handlers() -> None:
+    # El config se reasigna en runtime (toggle de acciones, recalibracion); los
+    # handlers deben ver el valor NUEVO via ControlContext, no una copia stale.
+    controller = _controller()
+    new_config = WindowControlConfig(execute_actions=True, point_snap_radius_px=99)
+    controller.config = new_config
+    assert controller.config.point_snap_radius_px == 99
+    for handler in controller._handlers:
+        assert handler.config is new_config
+
+
+def _drive_point_click(controller, target, pointer):
+    # palm arma sin activar handler de click; luego point activa; anchor; tap.
+    controller.update(timestamp_s=1.0, target=target,
+                      hands=(HandControlPose(0.5, 0.5, "unknown"),), pointer_xy=pointer)
+    controller.update(timestamp_s=1.1, target=target,
+                      hands=(_point_pose(0.0),), pointer_xy=pointer)   # activa handler
+    controller.update(timestamp_s=1.2, target=target,
+                      hands=(_point_pose(0.0),), pointer_xy=pointer)   # fija anchor
+    return controller.update(timestamp_s=1.3, target=target,
+                             hands=(_point_pose(0.10),), pointer_xy=pointer)  # tap 0.10 > 0.08
+
+
+def test_point_click_lands_at_gaze_pointer_not_window_center() -> None:
+    # El gaze pointer ELIGIO la ventana; el click debe caer donde el usuario
+    # mira (antes siempre iba al centro de la ventana e ignoraba pointer_xy).
+    actuator = _SpyActuator()
+    controller = FixedGestureWindowController(WindowControlConfig(), actuator)
+    target = _target()  # rect (100,100,900,700) -> centro (500,400)
+    out = _drive_point_click(controller, target, pointer=(850, 650))
+    assert any(e.name == "point_click" for e in out.events)
+    assert actuator.clicks and actuator.clicks[0][:2] == (850, 650)
+
+
+def test_point_click_clamps_pointer_into_target_and_falls_back_to_center() -> None:
+    actuator = _SpyActuator()
+    controller = FixedGestureWindowController(WindowControlConfig(), actuator)
+    target = _target()
+    _drive_point_click(controller, target, pointer=(2000, 50))  # fuera del rect
+    assert actuator.clicks and actuator.clicks[0][:2] == (899, 100)  # clamp al borde
+
+    actuator2 = _SpyActuator()
+    controller2 = FixedGestureWindowController(WindowControlConfig(), actuator2)
+    _drive_point_click(controller2, target, pointer=None)  # sin gaze -> centro
+    assert actuator2.clicks and actuator2.clicks[0][:2] == (500, 400)
+
+
+def test_point_tap_threshold_comes_from_config() -> None:
+    # El umbral del air-tap estaba hardcodeado en 0.08 pisando el config.
+    actuator = _SpyActuator()
+    strict = WindowControlConfig(point_tap_threshold_norm=0.2)
+    controller = FixedGestureWindowController(strict, actuator)
+    out = _drive_point_click(controller, _target(), pointer=(500, 400))
+    assert not any(e.name == "point_click" for e in out.events)  # 0.10 < 0.2
+    assert actuator.clicks == []
+
+
+def test_set_cursor_pos_does_not_raise_without_win32api(monkeypatch) -> None:
+    # _set_cursor_pos referenciaba win32api sin importarlo (NameError en vivo
+    # con --show-system-gaze-pointer). Ahora el modulo lo importa con guard.
+    from gemma4_agent.vision_input import calibration_flow
+
+    assert hasattr(calibration_flow, "win32api")
+    monkeypatch.setattr(calibration_flow, "win32api", None)
+    calibration_flow._set_cursor_pos((10, 10))  # no-op, no debe lanzar
+
+
+def test_mp_throttle_picks_last_cores() -> None:
+    # El STT (_ort_throttle) se pinea a los PRIMEROS cores; la camara debe ir a
+    # los ULTIMOS para no pelear por los mismos.
+    from gemma4_agent.vision_input._mp_throttle import _pick_cores
+
+    assert _pick_cores(24, 2) == [21, 22, 23]
+    assert _pick_cores(4, 2) == [1, 2, 3]
+    assert _pick_cores(1, 2) == [0]
+
+
+def test_fit_with_loo_ridge_returns_model_on_synthetic_grid() -> None:
+    # P13 restaurado: el guardado usa ridge elegido por LOO-CV. Con datos
+    # lineales limpios el modelo debe ajustar con error chico.
+    from gemma4_agent.vision_input.calibration_flow import _fit_with_loo_ridge
+
+    samples = tuple(
+        CalibrationSample(
+            features={"yaw": x, "pitch": y, "gaze_x": x * 0.1, "gaze_y": y * 0.1},
+            target_x=960.0 + x * 900.0,
+            target_y=540.0 + y * 500.0,
+        )
+        for x in (-0.4, -0.2, 0.0, 0.2, 0.4)
+        for y in (-0.4, 0.0, 0.4)
+    )
+    model = _fit_with_loo_ridge(samples)
+    assert model is not None
+    assert model.rms_error_px < 30.0
+
+
+def test_save_calibration_profile_keeps_camera_resolution(tmp_path) -> None:
+    # El re-guardado del fine-warp perdia camera_resolution y el warning de
+    # "resolucion distinta a la calibrada" quedaba muerto para esos perfiles.
+    from gemma4_agent.vision_input.calibration import CalibrationStore, LinearGazeModel
+    from gemma4_agent.vision_input.calibration_flow import _save_calibration_profile
+
+    store = CalibrationStore(base_dir=tmp_path)
+    model = LinearGazeModel(
+        feature_keys=("yaw", "pitch", "gaze_x", "gaze_y"),
+        coeffs_x=(0.0, 1.0, 0.0, 0.0, 0.0),
+        coeffs_y=(0.0, 0.0, 1.0, 0.0, 0.0),
+        rms_error_px=10.0,
+    )
+    _save_calibration_profile(
+        store=store, layout_hash="layout", user="tester",
+        samples=(), model=model, camera_resolution=(1280, 720),
+    )
+    loaded = store.load("layout", "tester")
+    assert loaded is not None
+    assert loaded.camera_resolution == (1280, 720)
+
+
+def test_landmark_detector_prefers_tasks_api(monkeypatch) -> None:
+    # El orden viejo prefería mp.solutions (deprecada, sin transformation
+    # matrix) si existía; ahora Tasks API va primero y solutions es fallback.
+    from gemma4_agent.vision_input.landmarks import MediaPipeLandmarkDetector
+
+    detector = MediaPipeLandmarkDetector()
+    called = {"tasks": 0, "legacy": 0}
+    monkeypatch.setattr(detector, "_start_tasks", lambda mp: called.__setitem__("tasks", called["tasks"] + 1))
+    monkeypatch.setattr(detector, "_start_legacy_solutions", lambda mp: called.__setitem__("legacy", called["legacy"] + 1))
+    detector.start()
+    assert called == {"tasks": 1, "legacy": 0}

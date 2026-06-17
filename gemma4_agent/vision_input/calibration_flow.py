@@ -1,6 +1,6 @@
 """Calibration state machine and validation utilities."""
 from __future__ import annotations
-import argparse, math, json, os, getpass
+import argparse, math, json, getpass
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from collections import deque
@@ -9,11 +9,19 @@ from typing import Any
 import numpy as np
 from .calibration import (
     CalibrationProfile, CalibrationSample, CalibrationStore, LinearGazeModel,
-    fit_linear_model, fit_monitor_corrections, fit_screen_warp, with_monitor_corrections, with_screen_warp, make_feature_dict
+    fit_linear_model, fit_monitor_corrections, fit_screen_warp, select_ridge_by_loo,
+    with_monitor_corrections, with_screen_warp, make_feature_dict
 )
 from .pointer import HeadPointerEstimate
 from .monitors import VirtualCanvas, canvas_to_dict
 from .config import KEY_QUIT, KEY_CALIBRATION_CLEAR, KEY_CALIBRATION_NEXT, KEY_CALIBRATION_CAPTURE, KEY_CALIBRATION_SAVE, ONLINE_FEATURE_KEYS
+
+# _set_cursor_pos referenciaba win32api SIN importarlo (NameError en cada frame
+# con --show-system-gaze-pointer). Import opcional, como en window_control.
+try:
+    import win32api
+except Exception:  # pragma: no cover - optional on non-Windows test envs.
+    win32api = None
 
 def _head_features(head: HeadPointerEstimate) -> dict[str, float]:
     gaze_x = 0.0
@@ -400,7 +408,7 @@ def _handle_calibration_keys(
     elif effective_key in KEY_CALIBRATION_SAVE or key in (10, 13):
         if len(samples) >= max(6, int(min_samples)):
             current_samples = tuple(samples)
-            current_model = fit_linear_model(current_samples)
+            current_model = _fit_with_loo_ridge(current_samples)
             training_samples = current_samples
             model = current_model
             previous_count = 0
@@ -415,7 +423,7 @@ def _handle_calibration_keys(
                         current_samples,
                         max_samples=max_history_samples,
                     )
-                    merged_model = fit_linear_model(merged_samples)
+                    merged_model = _fit_with_loo_ridge(merged_samples)
                     if (
                         merged_model is not None
                         and (model is None or merged_model.rms_error_px <= model.rms_error_px)
@@ -458,6 +466,28 @@ def _handle_calibration_keys(
         else:
             notice = f"need >= {max(6, int(min_samples))} samples"
     return (True, target_idx, model, saved_path, notice)
+
+
+def _fit_with_loo_ridge(
+    samples: tuple[CalibrationSample, ...],
+    *,
+    max_loo_samples: int = 160,
+) -> LinearGazeModel | None:
+    """fit_linear_model con ridge elegido por LOO-CV (plan P13, restaurado).
+
+    El rms_error_px del modelo es residual de ENTRENAMIENTO (sobre-optimista);
+    seleccionar el ridge por error held-out (leave-one-out) generaliza mejor
+    (la literatura de calibración de gaze por webcam encontró ~1e-2 robusto,
+    PMC10966887). Solo en el guardado interactivo y con tope de muestras: LOO
+    refittea N×candidatos veces y a tamaños de historial grandes no es gratis.
+    """
+    if len(samples) <= max_loo_samples:
+        selected = select_ridge_by_loo(samples)
+        if selected is not None:
+            model = fit_linear_model(samples, ridge=selected[0])
+            if model is not None:
+                return model
+    return fit_linear_model(samples)
 
 
 def _set_cursor_pos(point: tuple[int, int]) -> None:
@@ -510,13 +540,18 @@ def _save_calibration_profile(
     user: str | None,
     samples: tuple[CalibrationSample, ...],
     model: LinearGazeModel,
+    camera_resolution: tuple[int, int] | None = None,
 ) -> Path:
+    # camera_resolution viaja con el perfil: sin él, el re-guardado del fine-warp
+    # borraba el dato y el warning de "resolución distinta a la calibrada" del
+    # arranque dejaba de poder dispararse.
     profile = CalibrationProfile(
         user=user or getpass.getuser() or "default",
         layout_hash=layout_hash,
         samples=samples,
         rms_error_px=model.rms_error_px,
         model=model.to_dict(),
+        camera_resolution=camera_resolution,
     )
     return store.save(profile)
 

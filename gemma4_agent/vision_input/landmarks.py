@@ -140,10 +140,33 @@ class MediaPipeLandmarkDetector:
         import mediapipe as mp
 
         self._mp = mp
+        # Preferir SIEMPRE la Tasks API: es la soportada (las legacy solutions
+        # terminaron soporte en marzo 2023), usa los .task pineados/auditados
+        # por sha256 y es la ÚNICA que emite la facial transformation matrix
+        # (sin ella el head-pose cae al heurístico 2D, medido mucho más débil
+        # en monitores laterales — ver pointer.estimate_head_pose). El orden
+        # viejo prefería solutions si existía, dejando la matriz siempre en None.
+        tasks_error: Exception | None = None
+        try:
+            self._start_tasks(mp)
+            return
+        except FileNotFoundError:
+            # Modelos .task ausentes y sin download: error accionable, no caer
+            # en silencio a la API deprecada con otros modelos.
+            raise
+        except Exception as exc:
+            tasks_error = exc
         if getattr(mp, "solutions", None) is not None:
+            print(
+                f"[landmarks] Tasks API failed ({type(tasks_error).__name__}: {tasks_error}); "
+                "falling back to legacy mp.solutions (no transformation matrix).",
+                flush=True,
+            )
             self._start_legacy_solutions(mp)
             return
-        self._start_tasks(mp)
+        raise RuntimeError(
+            f"MediaPipe Tasks API failed and no legacy fallback is available: {tasks_error}"
+        )
 
     def detect(self, bgr_frame: Any, timestamp_ms: int, *, run_face: bool = True) -> LandmarkFrame:
         if self._mp is None:
