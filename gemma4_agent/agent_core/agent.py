@@ -1251,6 +1251,13 @@ class Gemma4Agent:
         Cache a nivel-instancia porque los schemas son estaticos.
         """
         import os as _os
+        # Split (FunctionGemma router): el E2B NO decide tools — lo hace FunctionGemma. Por eso
+        # NO necesita los schemas en el prompt. Suprimirlos baja el prompt ~4800->~1.5-2k tokens
+        # (menos KV+compute, prefill más rápido, y menos "Context Rot" -> mejor calidad). El E2B
+        # sólo conversa y narra resultados de tools, lo cual no requiere los schemas. Validado en
+        # la composición vram4_lean (ctx 6144, FG on): persona/idioma/grounding OK sin schemas.
+        if _FG_ROUTER_ON:
+            return ""
         env_mode = (_os.environ.get("GEMMA4_TOOL_SCHEMAS_HINT_MODE") or "auto").strip().lower()
         # legacy opt-out kept for backward compat
         legacy_off = (_os.environ.get("GEMMA4_DISABLE_TOOL_SCHEMAS_HINT") or "").strip().lower()
