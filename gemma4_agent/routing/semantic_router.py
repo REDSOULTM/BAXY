@@ -34,6 +34,56 @@ _MODEL_NAME_DEFAULT = (
     _FT_MODEL_DIR if os.path.isdir(_FT_MODEL_DIR) else _BASE_MODEL_NAME
 )
 
+
+def _encoder_onnx_enabled() -> bool:
+    """ONNX int8 encoder en vez de PyTorch (gated GEMMA4_ENCODER_ONNX, default OFF).
+
+    El encoder es el ÚNICO consumidor de PyTorch del runtime; cargarlo en onnxruntime int8
+    suelta torch entero (~250-330 MB RAM menos, medido) + inferencia 3-5x más rápida en CPU.
+    Validado 2026-06-17: routing top-1 19/20 vs torch, tokenización exacta. Receta:
+    scripts/export_encoder_onnx.py -> data/router_encoder_ft/model_int8.onnx."""
+    raw = (os.environ.get("GEMMA4_ENCODER_ONNX") or "0").strip().casefold()
+    return raw in {"1", "true", "yes", "on"}
+
+
+class _OnnxEncoder:
+    """Encoder MiniLM-FT vía onnxruntime + tokenizers (SIN torch). Duck-type de
+    SentenceTransformer para el router: expone .encode(texts, normalize_embeddings=True).
+    Mean-pooling enmascarado (1_Pooling/config.json: pooling_mode_mean_tokens) + L2-norm,
+    idéntico a sentence-transformers (verificado: tokenización y ranking en paridad)."""
+
+    def __init__(self, model_dir: str) -> None:
+        import numpy as _np
+        import onnxruntime as _ort
+        from tokenizers import Tokenizer as _Tok
+        self._np = _np
+        self._tok = _Tok.from_file(os.path.join(model_dir, "tokenizer.json"))
+        self._tok.enable_padding(pad_id=1, pad_token="<pad>")  # XLM-R <pad>=1
+        self._tok.enable_truncation(max_length=128)
+        so = _ort.SessionOptions()
+        so.intra_op_num_threads = int(os.environ.get("GEMMA4_ENCODER_ONNX_THREADS", "3"))
+        so.inter_op_num_threads = 1
+        so.enable_cpu_mem_arena = False  # ONNX docs: ahorro de RAM en modelos chicos
+        self._sess = _ort.InferenceSession(
+            os.path.join(model_dir, "model_int8.onnx"), sess_options=so,
+            providers=["CPUExecutionProvider"])
+
+    def encode(self, texts, normalize_embeddings: bool = True,
+               show_progress_bar: bool = False, **kw):
+        np = self._np
+        single = isinstance(texts, str)
+        batch = [texts] if single else list(texts)
+        encs = self._tok.encode_batch(batch)
+        ids = np.asarray([e.ids for e in encs], dtype=np.int64)
+        mask = np.asarray([e.attention_mask for e in encs], dtype=np.int64)
+        hidden = self._sess.run(None, {"input_ids": ids, "attention_mask": mask})[0]
+        m = mask[..., None].astype(np.float32)
+        vec = (hidden * m).sum(1) / np.clip(m.sum(1), 1e-9, None)  # mean pooling enmascarado
+        if normalize_embeddings:
+            vec = vec / np.clip(np.linalg.norm(vec, axis=1, keepdims=True), 1e-12, None)
+        return vec[0] if single else vec
+
+
 # Short, intent-style description for each tool. These are what the embedding
 # model sees, NOT the full JSON schema description. Keep them concrete and
 # free of brand keywords so semantic search works across languages.
@@ -290,6 +340,32 @@ def _ensure_loaded_locked(known_tool_names: list[str] | None) -> bool:
         return False
     _STATE.attempt_count += 1
     _STATE.last_attempt_ts = now
+
+    # ONNX int8 encoder (gated): suelta torch del runtime (~250-330 MB RAM, medido).
+    # Solo si el flag está ON y el artefacto int8 existe; ante CUALQUIER fallo cae al
+    # camino PyTorch (cero regresión). Ver _OnnxEncoder + scripts/export_encoder_onnx.py.
+    if _encoder_onnx_enabled():
+        _ft_dir = os.environ.get("GEMMA4_SEMANTIC_MODEL") or _FT_MODEL_DIR
+        _int8 = os.path.join(_ft_dir, "model_int8.onnx")
+        if os.path.isfile(_int8):
+            try:
+                model = _OnnxEncoder(_ft_dir)
+                names = known_tool_names or list(TOOL_DESCRIPTIONS.keys())
+                descriptions = [TOOL_DESCRIPTIONS.get(name, name) for name in names]
+                embeddings = model.encode(descriptions, normalize_embeddings=True)
+                _STATE.model = model
+                _STATE.tool_names = names
+                _STATE.tool_embeddings = embeddings
+                # Mismo blend Tool2Vec que el camino PyTorch (si no, el ranking difiere).
+                _STATE.tool2vec = _load_tool2vec(names)
+                if _STATE.tool2vec is not None and _TOOL2VEC_ALPHA > 0.0:
+                    _STATE.tool_embeddings = _blend_embeddings(
+                        embeddings, _STATE.tool2vec, _TOOL2VEC_ALPHA)
+                _STATE.last_error = ""
+                return True
+            except Exception as exc:  # noqa: BLE001 -> fallback a PyTorch
+                _STATE.last_error = f"ONNX encoder failed, falling back to torch: {exc}"
+
     try:
         from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
     except ImportError as exc:
