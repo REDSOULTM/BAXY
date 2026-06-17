@@ -122,13 +122,22 @@ def ensure_fg_server(timeout_s: float = 90.0) -> bool:
         exe = Path(r"C:\llamacpp-cuda\bin\llama-server.exe")
     if not Path(exe).is_file():
         return False
-    # Contrato handoff §2: --jinja, -ngl 99 (auto-offload PLE a CPU), -c 4096, sin webui.
+    # FunctionGemma corre en CPU por DEFAULT (split arch: el LLM de habla es el ÚNICO en
+    # GPU; en un target de 4GB la GPU es para el E2B). MEDIDO: en CPU el 270M decide en
+    # ~70-150ms — sobra para el budget de voz (4-5s). GOTCHA MEDIDO: con el build CUDA de
+    # llama-server, `-ngl 0` NO basta — igual reserva ~0.9GB de compute buffer en la GPU;
+    # hay que OCULTAR la GPU (CUDA_VISIBLE_DEVICES=-1) para 0 VRAM. GEMMA4_FG_GPU=1 lo
+    # pone en GPU (-ngl 99, contrato handoff §2) si sobra VRAM y se quiere algo más rápido.
+    fg_gpu = os.environ.get("GEMMA4_FG_GPU", "0").strip().lower() in {"1", "true", "yes", "on"}
     cmd = [str(Path(exe).resolve()), "-m", str(_FG_GGUF.resolve()),
            "--host", host, "--port", str(port),
-           "--jinja", "-ngl", "99", "-c", "4096", "--no-webui"]
+           "--jinja", "-ngl", ("99" if fg_gpu else "0"), "-c", "4096", "--no-webui"]
+    env = os.environ.copy()
+    if not fg_gpu:
+        env["CUDA_VISIBLE_DEVICES"] = "-1"  # CPU real: oculta la GPU -> 0 VRAM (medido)
     try:
         _FG_PROC = subprocess.Popen(
-            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env)
     except Exception:
         return False
     atexit.register(_stop_fg)

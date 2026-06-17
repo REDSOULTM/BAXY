@@ -94,6 +94,25 @@ pre-existente de la poda de tools de Experimentando — verificado con y sin est
 - Prewarm en **background** al startup del agente (gated): listo antes del turno 1, sin bloquear.
 - Desactivable con `GEMMA4_FG_AUTOBOOT=0` (si se gestiona el server por fuera).
 
+## VRAM / recursos (MEDIDO en RTX 4060 Ti, config prod vram4)
+
+Medición por diferencia controlada desde baseline limpia (1859 MiB = solo escritorio).
+
+| Config | VRAM de Baxy |
+|---|---|
+| E2B Q4_K_M + mmproj Q8 (habla+visión, GPU) | ~2907 MiB ≈ 2.84 GB |
+| + FunctionGemma en GPU (`-ngl 99`) | +960 MiB → **3.78 GB total** |
+| + FunctionGemma en **CPU** (default) | +0 MiB → **2.84 GB total** |
+
+FunctionGemma corre **CPU-only por default** (`CUDA_VISIBLE_DEVICES=-1`): en CPU el 270M
+decide en ~70-150ms (medido, sobra para el budget de voz) y libera la GPU para el E2B.
+**GOTCHA medido:** con el build CUDA de llama-server, `-ngl 0` NO da 0 VRAM — igual reserva
+~0.9 GB de compute buffer en la GPU; hay que OCULTAR la GPU. `GEMMA4_FG_GPU=1` lo pone en GPU.
+
+No se usa la iGPU (Intel UHD) porque: el build de llama.cpp es CUDA-only (sin Vulkan/SYCL),
+la iGPU usa la misma RAM del sistema (no ahorra nada extra), y el CPU (i9-12900HX) le gana a
+esa iGPU para un 270M. Desglose por buffer en el cuerpo del doc / logs de llama.cpp.
+
 ## Cómo activar
 
 ```
