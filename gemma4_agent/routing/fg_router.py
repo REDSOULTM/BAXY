@@ -1,0 +1,280 @@
+# -*- coding: utf-8 -*-
+"""FunctionGemma (run9) como router de tool-calling de Baxy.
+
+Pieza del split: FunctionGemma-270M SOLO elige tool+args (o `no_tool` para abstenerse);
+NO conversa (eso lo sigue haciendo el E2B). Reemplaza la emisión de tool-calls del E2B
+cuando GEMMA4_FG_ROUTER está activo.
+
+Flujo (router jerárquico, reusa el encoder MiniLM-FT de Baxy):
+  query --[encoder FT]--> top-F familias compuestas (suggest_tools_scored)
+        --> hijos individuales (tool_categories.json)
+        --[encoder FT, coseno]--> top-K hijos  (+ no_tool SIEMPRE)
+        --[FunctionGemma :8082]--> call:NOMBRE{args}  (o no_tool)
+        --[bridge]--> (tool COMPUESTO de Baxy, {action, **args})  para ToolRegistry.execute
+
+CONTRATO (coincide con el training run9 — NO cambiar):
+  - cliente a 127.0.0.1:8082 (NO localhost: en Windows IPv6 suma ~2s de timeout. Medido.)
+  - developer role + user query + tools=slim-subset; greedy; stop=["<end_function_call>"]
+  - parseo re.DOTALL (valores multilínea).
+Fuente: FunctionGemma/INTEGRATION_HANDOFF.md (2026-06-17).
+"""
+from __future__ import annotations
+
+import atexit
+import hashlib
+import json
+import os
+import re
+import socket
+import subprocess
+import time
+import urllib.request
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+
+_HERE = Path(__file__).resolve().parent
+_DATA = _HERE.parent / "data" / "fg"
+_SLIM = _DATA / "tool_schemas_slim.json"
+_CATS = _DATA / "tool_categories.json"
+_ACTION_MAP = _DATA / "tool_action_map.json"
+_EMB_CACHE = _DATA / "fg_tool_emb.npy"
+# GGUF de FunctionGemma (run9). El server se botea contra este archivo (ver ensure_fg_server).
+_FG_GGUF = _HERE.parent.parent / "models" / "FunctionGemma" / "functiongemma-ft-270m-it-Q8_0.gguf"
+
+# ⚡ 127.0.0.1, NO localhost (IPv6 timeout ~2s en Windows; medido fg_bench.py).
+FG_SERVER = os.environ.get("GEMMA4_FG_SERVER", "http://127.0.0.1:8082/v1/chat/completions")
+_DEV = "You are a model that can do function calling with the following functions"
+
+# Gate acción-vs-conversación (umbral del pico top-1 del encoder FT).
+# FunctionGemma (270M) es excelente eligiendo tool+args pero MAL abstenedor: con un
+# subset "tentador" elige una tool aunque el turno sea chitchat (eager invocation;
+# SimpleToolHalluBench arXiv 2510.22977, When2Call arXiv 2504.18851). El no_tool inyectado
+# en el subset NO basta cuando el subset está dominado por una familia (medido en vivo).
+# Solución MEDIDA (regla #3.5, batería 24 casos es/en/fr/pt): NO llamamos a FunctionGemma
+# salvo que el turno sea accionable, y eso se decide con DOS señales independientes en OR:
+#   (a) pico del encoder FT: top-1 de familia ≥ FG_ACT_PEAK. Separación medida: chitchat
+#       top-1 ≤ 0.485, acción ≥ 0.565 (es/en/fr/pt) -> umbral 0.52 con margen a ambos lados.
+#   (b) el E2B emitió un tool-call. El E2B es abstenedor PERFECTO en chitchat (7/7 medido)
+#       pero PIERDE acciones no-españolas (sesgo medido); el pico (a) las rescata.
+# Chitchat requiere que fallen AMBAS (encoder<0.52 Y E2B abstuvo) -> no pasa. Es clasificación
+# por embeddings multilingües con fallback seguro (permitido por CLAUDE.md), no keywords.
+FG_ACT_PEAK = float(os.environ.get("GEMMA4_FG_PEAK", "0.52"))
+
+_R: "_FGRouter | None" = None
+_FG_PROC: "subprocess.Popen | None" = None
+
+
+def _parse_host_port(url: str) -> tuple[str, int]:
+    """Extrae (host, port) de la URL del server FunctionGemma."""
+    m = re.search(r"https?://([^:/]+):(\d+)", url)
+    return (m.group(1), int(m.group(2))) if m else ("127.0.0.1", 8082)
+
+
+def _port_in_use(host: str, port: int, timeout: float = 0.3) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+def _stop_fg() -> None:
+    """atexit: termina el server que botéamos (en Windows el child NO muere con
+    el padre — sin esto queda orphan ocupando :8082 y VRAM). Best-effort."""
+    global _FG_PROC
+    p = _FG_PROC
+    _FG_PROC = None
+    if p is None or p.poll() is not None:
+        return
+    try:
+        p.terminate()
+        try:
+            p.wait(timeout=5)
+        except Exception:
+            p.kill()
+    except Exception:
+        pass
+
+
+def ensure_fg_server(timeout_s: float = 90.0) -> bool:
+    """Garantiza que el server de FunctionGemma escuche en :8082 (contrato handoff §2).
+
+    Idempotente: si el puerto ya está en uso (server externo o ya booteado) NO hace
+    nada y devuelve True. Si no, lo lanza con el GGUF run9 y espera health. Best-effort:
+    nunca lanza — si falla, devuelve False y fg_emit caerá a su manejo de error (el
+    caller conserva la decisión del E2B). Cumple CLAUDE.md regla #5 (el código garantiza
+    sus precondiciones, sin pasarle setup al usuario). Desactivable con GEMMA4_FG_AUTOBOOT=0.
+    """
+    global _FG_PROC
+    host, port = _parse_host_port(FG_SERVER)
+    if _port_in_use(host, port):
+        return True
+    if os.environ.get("GEMMA4_FG_AUTOBOOT", "1").strip().lower() in {"0", "false", "no", "off"}:
+        return False
+    if not _FG_GGUF.is_file():
+        return False
+    try:
+        from ..infra.config import AgentConfig
+        exe = AgentConfig.from_env().llama_server_exe
+    except Exception:
+        exe = Path(r"C:\llamacpp-cuda\bin\llama-server.exe")
+    if not Path(exe).is_file():
+        return False
+    # Contrato handoff §2: --jinja, -ngl 99 (auto-offload PLE a CPU), -c 4096, sin webui.
+    cmd = [str(Path(exe).resolve()), "-m", str(_FG_GGUF.resolve()),
+           "--host", host, "--port", str(port),
+           "--jinja", "-ngl", "99", "-c", "4096", "--no-webui"]
+    try:
+        _FG_PROC = subprocess.Popen(
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        return False
+    atexit.register(_stop_fg)
+    # Esperar a que el MODELO esté listo (/health==200), no solo a que el puerto abra:
+    # el puerto abre antes de cargar el GGUF y un _ask temprano daría 503.
+    health = f"http://{host}:{port}/health"
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        if _FG_PROC.poll() is not None:  # murió en el arranque
+            return False
+        try:
+            if urllib.request.urlopen(health, timeout=2).getcode() == 200:
+                return True
+        except Exception:
+            pass
+        time.sleep(0.5)
+    return False
+
+
+def _norm(v: np.ndarray) -> np.ndarray:
+    n = np.linalg.norm(v)
+    return v / n if n else v
+
+
+class _FGRouter:
+    def __init__(self) -> None:
+        ensure_fg_server()  # contrato: si el router existe, el server :8082 está garantizado
+        from . import semantic_router as sr
+        self.sr = sr
+        sr.embed("warmup")  # carga el encoder FT (lazy)
+
+        self.tools = json.loads(_SLIM.read_text(encoding="utf-8"))
+        self.by_name = {t["function"]["name"]: t for t in self.tools}
+        self.names = [t["function"]["name"] for t in self.tools]
+        self.idx = {n: i for i, n in enumerate(self.names)}
+        self.cats = json.loads(_CATS.read_text(encoding="utf-8"))
+
+        # bridge individual -> (compuesto, action). tool_action_map = {compuesto::action: individual}
+        amap = json.loads(_ACTION_MAP.read_text(encoding="utf-8"))
+        self.rev: dict[str, tuple[str, str]] = {}
+        for k, indiv in amap.items():
+            comp, _, act = k.partition("::")
+            self.rev[indiv] = (comp, act)
+
+        self._emb = self._tool_embeddings()
+
+    def _tool_embeddings(self) -> np.ndarray:
+        texts = [f"{t['function']['name']}: {t['function']['description']}" for t in self.tools]
+        sig = hashlib.md5(("FT||" + "||".join(texts)).encode()).hexdigest()
+        try:
+            data = np.load(_EMB_CACHE, allow_pickle=True).item()
+            if data.get("sig") == sig:
+                return np.asarray(data["emb"], dtype=np.float32)
+        except Exception:
+            pass
+        emb = np.stack([_norm(np.asarray(self.sr.embed(t), dtype=np.float32)) for t in texts])
+        try:
+            np.save(_EMB_CACHE, {"sig": sig, "emb": emb})
+        except Exception:
+            pass
+        return emb
+
+    def subset(self, query: str, fam_k: int = 3, tool_k: int = 10) -> list[dict[str, Any]]:
+        """Stage1 familias -> hijos -> Stage2 top-K coseno (+ no_tool siempre)."""
+        fams = [f for f, _ in self.sr.suggest_tools_scored(query, k=fam_k)]
+        cand: list[str] = []
+        for fam in fams:
+            cand.extend(self.cats.get(fam, []))
+        cand = [n for n in cand if n in self.idx]
+        if not cand:
+            cand = list(self.names)
+        qv = _norm(np.asarray(self.sr.embed(query), dtype=np.float32))
+        rows = [self.idx[n] for n in cand]
+        sims = self._emb[rows] @ qv
+        order = np.argsort(-sims)[:tool_k]
+        ranked = [cand[i] for i in order]
+        # FIX no_tool: SIEMPRE en el subset, si no el chitchat fuerza una tool (eager invocation).
+        if "no_tool" in self.idx and "no_tool" not in ranked:
+            ranked.append("no_tool")
+        return [self.by_name[n] for n in ranked]
+
+    def to_baxy(self, indiv: str, args: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+        """Traduce un tool individual de FunctionGemma a un call de Baxy (compuesto o standalone)."""
+        if indiv in self.rev:
+            comp, act = self.rev[indiv]
+            return comp, {"action": act, **(args or {})}
+        # standalone (computer_use, skill_load, file_process): es un tool de Baxy directo.
+        return indiv, dict(args or {})
+
+
+def _parse_call(text: str) -> tuple[str | None, dict[str, Any]]:
+    """call:NOMBRE{k:<escape>v<escape>,...}. re.S por valores multilínea (vCard/ICS)."""
+    nm = re.search(r"call:([a-zA-Z0-9_]+)", text or "")
+    if not nm:
+        return None, {}
+    args = dict(re.findall(r"([a-zA-Z0-9_]+):<escape>(.*?)<escape>", text, re.S))
+    return nm.group(1), args
+
+
+def _ask(query: str, subset: list[dict[str, Any]], timeout_s: float = 20.0) -> tuple[str | None, dict[str, Any]]:
+    body = json.dumps({
+        "messages": [{"role": "developer", "content": _DEV}, {"role": "user", "content": query}],
+        "tools": subset, "temperature": 0.0, "max_tokens": 160, "stop": ["<end_function_call>"],
+    }).encode("utf-8")
+    req = urllib.request.Request(FG_SERVER, data=body, headers={"Content-Type": "application/json"})
+    m = json.loads(urllib.request.urlopen(req, timeout=timeout_s).read())["choices"][0]["message"]
+    name, args = _parse_call(m.get("content") or "")
+    if not name and m.get("tool_calls"):  # fallback: server devolvió tool_calls estructurado
+        tc = m["tool_calls"][0]["function"]
+        name = tc.get("name")
+        a = tc.get("arguments") or {}
+        if isinstance(a, str):
+            try:
+                a = json.loads(a)
+            except Exception:
+                a = {}
+        args = a
+    return name, args
+
+
+def fg_emit(query: str, *, e2b_emitted: bool = False,
+            fam_k: int = 3, tool_k: int = 10) -> tuple[str | None, dict[str, Any] | None]:
+    """Devuelve el tool-call de Baxy elegido por FunctionGemma para `query`.
+      ("no_tool", None)        -> abstención: turno conversacional, que responda el LLM.
+      (baxy_tool_name, args)   -> ejecutar via ToolRegistry.execute(name, args).
+      (None, None)             -> FunctionGemma no resolvió (caller conserva la decisión del E2B).
+
+    `e2b_emitted`: True si el E2B ya emitió un tool-call este turno (señal (b) del gate).
+    """
+    global _R
+    if _R is None:
+        _R = _FGRouter()
+
+    # Gate acción-vs-conversación (ver FG_ACT_PEAK). Solo consultamos a FunctionGemma
+    # si el turno es accionable; si no, no_tool y que responda el E2B (ahorra latencia
+    # en chitchat y evita el eager-invocation de FunctionGemma).
+    scored = _R.sr.suggest_tools_scored(query, k=12)
+    top1 = scored[0][1] if scored else 0.0
+    if not (top1 >= FG_ACT_PEAK or e2b_emitted):
+        return "no_tool", None
+
+    subset = _R.subset(query, fam_k=fam_k, tool_k=tool_k)
+    name, args = _ask(query, subset)
+    if not name or name == "no_tool":
+        # FunctionGemma abstuvo en un turno que el gate marcó accionable: no forzamos
+        # no_tool (perderíamos la acción) — devolvemos None para conservar la del E2B.
+        return None, None
+    comp, baxy_args = _R.to_baxy(name, args)
+    return comp, baxy_args

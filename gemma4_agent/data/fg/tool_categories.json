@@ -1,0 +1,663 @@
+{
+  "system": [
+    "time",
+    "processes",
+    "get_system_resources",
+    "disk",
+    "battery",
+    "get_brightness",
+    "set_brightness",
+    "shutdown",
+    "system_restart",
+    "sleep"
+  ],
+  "audio": [
+    "get_volume",
+    "set_volume",
+    "mute",
+    "devices",
+    "audio_set_default",
+    "media_play_pause",
+    "audio_media_stop",
+    "audio_next",
+    "audio_previous"
+  ],
+  "app": [
+    "app_search",
+    "app_open",
+    "app_close",
+    "app_uninstall"
+  ],
+  "steam": [
+    "steam_open",
+    "library",
+    "store",
+    "list_games",
+    "launch_game",
+    "search_library",
+    "search_store",
+    "store_page",
+    "steam_install"
+  ],
+  "window": [
+    "window_list",
+    "active",
+    "window_focus",
+    "window_close",
+    "minimize",
+    "maximize",
+    "window_restore",
+    "move_resize"
+  ],
+  "gui": [
+    "gui_screenshot",
+    "gui_click",
+    "double_click",
+    "right_click",
+    "type",
+    "type_into",
+    "click_button",
+    "keypress",
+    "hotkey",
+    "scroll",
+    "drag",
+    "wait_for",
+    "locate_text",
+    "gui_click_text",
+    "locate_image"
+  ],
+  "computer_use": [
+    "computer_use"
+  ],
+  "vision": [
+    "describe_screen",
+    "find_element",
+    "ocr",
+    "compare_before_after"
+  ],
+  "browser": [
+    "browser_open",
+    "browser_search",
+    "youtube_play",
+    "media_pause",
+    "browser_media_stop",
+    "active_tab_title",
+    "browser_click",
+    "browser_find",
+    "browser_research"
+  ],
+  "web": [
+    "web_search",
+    "web_read",
+    "web_research",
+    "web_open"
+  ],
+  "uia": [
+    "tree",
+    "uia_find",
+    "uia_click",
+    "uia_focus",
+    "set_value"
+  ],
+  "filesystem": [
+    "filesystem_list",
+    "filesystem_read",
+    "filesystem_write",
+    "filesystem_search",
+    "filesystem_delete",
+    "copy",
+    "move",
+    "rename",
+    "mkdir",
+    "diff",
+    "archive",
+    "unarchive",
+    "filesystem_open"
+  ],
+  "state": [
+    "resources",
+    "cleanup_plan",
+    "cleanup",
+    "checkpoint",
+    "checkpoints",
+    "rollback_plan",
+    "rollback",
+    "note"
+  ],
+  "input": [
+    "language_list",
+    "keyboard_layouts",
+    "current_keyboard",
+    "set_language_list",
+    "switch_keyboard"
+  ],
+  "env": [
+    "env_get",
+    "set",
+    "env_delete",
+    "env_list"
+  ],
+  "registry": [
+    "registry_query",
+    "export",
+    "registry_import",
+    "registry_add",
+    "registry_delete",
+    "backup"
+  ],
+  "download": [
+    "fetch",
+    "hash",
+    "signature"
+  ],
+  "email": [
+    "email_status",
+    "draft",
+    "email_send"
+  ],
+  "reminder": [
+    "reminder_status",
+    "reminder_create",
+    "reminder_list",
+    "reminder_delete"
+  ],
+  "browser_real": [
+    "browser_real_status",
+    "browser_real_open",
+    "goto",
+    "tabs",
+    "browser_real_click",
+    "click_accessible",
+    "toggle_accessible",
+    "fill",
+    "press",
+    "type_text",
+    "text",
+    "browser_real_screenshot",
+    "evaluate",
+    "connect_cdp",
+    "browser_real_close",
+    "attach_visible",
+    "active_tab",
+    "tab_open",
+    "tab_close",
+    "tab_focus",
+    "browser_real_click_text",
+    "extract",
+    "wait_for_download",
+    "set_download_path"
+  ],
+  "knowledge": [
+    "knowledge_status",
+    "ingest",
+    "knowledge_search",
+    "knowledge_list",
+    "knowledge_delete"
+  ],
+  "office": [
+    "office_status",
+    "create_presentation",
+    "edit_presentation",
+    "create_document",
+    "edit_document",
+    "create_spreadsheet",
+    "edit_spreadsheet",
+    "export_pdf",
+    "office_inspect",
+    "office_open"
+  ],
+  "audio_device": [
+    "audio_device_status",
+    "audio_device_list",
+    "audio_device_set_default",
+    "set_default_communications",
+    "set_app_route",
+    "get_app_routes",
+    "audio_device_snapshot",
+    "audio_device_restore"
+  ],
+  "notification": [
+    "notification_status",
+    "toast_now",
+    "toast_schedule",
+    "timer_start",
+    "timer_cancel",
+    "timer_update",
+    "timer_list",
+    "alarm_create",
+    "alarm_cancel",
+    "alarm_update",
+    "alarm_list",
+    "reminder_create_2",
+    "reminder_update",
+    "reminder_delete_2",
+    "reminder_list_2",
+    "notification_update",
+    "notify_sound",
+    "notification_delete",
+    "notification_list",
+    "notification_history"
+  ],
+  "routine": [
+    "routine_status",
+    "routine_create",
+    "routine_list",
+    "enable",
+    "disable",
+    "routine_delete",
+    "run_now",
+    "simulate",
+    "routine_history",
+    "routine_import"
+  ],
+  "media": [
+    "media_status",
+    "play",
+    "pause",
+    "resume",
+    "play_pause",
+    "media_stop",
+    "media_next",
+    "media_previous",
+    "queue_add",
+    "queue_clear",
+    "queue_list",
+    "now_playing",
+    "volume_for_app",
+    "open_local",
+    "search_local_library",
+    "cast_lan"
+  ],
+  "source_manager": [
+    "source_manager_status",
+    "source_manager_save",
+    "source_manager_add",
+    "source_manager_list",
+    "sources",
+    "source_manager_search",
+    "source_manager_read",
+    "source_manager_get",
+    "source_manager_delete",
+    "snapshot_file"
+  ],
+  "dependency": [
+    "dependency_status",
+    "dependency_list",
+    "dependency_verify",
+    "explain_missing",
+    "dependency_install",
+    "repair"
+  ],
+  "contacts": [
+    "contacts_status",
+    "contacts_create",
+    "contacts_add",
+    "contacts_list",
+    "contacts_search",
+    "contacts_delete",
+    "update",
+    "import_vcard",
+    "export_vcard",
+    "resolve_recipient"
+  ],
+  "whatsapp": [
+    "whatsapp_status",
+    "send_message",
+    "whatsapp_send",
+    "open_chat",
+    "whatsapp_read",
+    "read_message",
+    "read_messages",
+    "read_chat",
+    "last_message",
+    "unread",
+    "list_messages",
+    "get_messages"
+  ],
+  "notes_tasks": [
+    "notes_tasks_status",
+    "note_create",
+    "create_note",
+    "note_list",
+    "notes",
+    "note_search",
+    "note_update",
+    "note_delete",
+    "task_create",
+    "create_task",
+    "task_list",
+    "tasks",
+    "task_search",
+    "task_complete",
+    "task_update",
+    "task_delete",
+    "notes_tasks_search",
+    "notes_tasks_list",
+    "notes_tasks_delete"
+  ],
+  "local_calendar": [
+    "local_calendar_status",
+    "event_create",
+    "event_list",
+    "event_update",
+    "event_delete",
+    "ics_export",
+    "ics_import",
+    "local_calendar_list",
+    "local_calendar_delete"
+  ],
+  "habit_tracker": [
+    "habit_tracker_status",
+    "habit_tracker_create",
+    "habit_tracker_list",
+    "habit_tracker_log",
+    "habit_tracker_stats",
+    "habit_tracker_delete"
+  ],
+  "local_search": [
+    "local_search_status",
+    "local_search_search",
+    "recent"
+  ],
+  "printer_scanner": [
+    "printer_scanner_status",
+    "printers_list",
+    "printer_default_get",
+    "printer_default_set",
+    "print_queue",
+    "print_file",
+    "cancel_job",
+    "scanners_list",
+    "scan_document",
+    "printer_scanner_list"
+  ],
+  "desktop_layout": [
+    "desktop_layout_status",
+    "windows",
+    "list_windows",
+    "displays",
+    "desktop_layout_snapshot",
+    "desktop_layout_restore"
+  ],
+  "backup_sync": [
+    "backup_sync_status",
+    "backup_create",
+    "backup_sync_list",
+    "backup_sync_restore",
+    "dedupe",
+    "backup_sync_verify"
+  ],
+  "document": [
+    "document_status",
+    "extract_text",
+    "extract_tables",
+    "extract_images",
+    "ocr_pdf",
+    "summarize",
+    "ingest_to_knowledge",
+    "compare_documents"
+  ],
+  "developer": [
+    "developer_status",
+    "project_detect",
+    "run_tests",
+    "run_lint",
+    "run_format",
+    "git_status",
+    "git_diff",
+    "git_log",
+    "git_commit",
+    "git_push",
+    "start_dev_server",
+    "stop_dev_server",
+    "list_dev_servers"
+  ],
+  "device_settings": [
+    "device_settings_status",
+    "wifi_status",
+    "wifi_list",
+    "wifi_profiles",
+    "wifi_scan",
+    "wifi_connect",
+    "wifi_disconnect",
+    "wifi_add_profile",
+    "wifi_delete_profile",
+    "bluetooth_status",
+    "bluetooth_toggle",
+    "bluetooth_pair",
+    "device_settings_brightness_get",
+    "device_settings_brightness_set",
+    "brightness_up",
+    "brightness_down",
+    "display_list",
+    "display_set_resolution",
+    "display_set_scale",
+    "power_plan_list",
+    "power_plans",
+    "power_plan_get",
+    "power_plan_set",
+    "night_light",
+    "wifi_set_profile"
+  ],
+  "game_launcher": [
+    "game_launcher_status",
+    "game_launcher_discover",
+    "game_launcher_list",
+    "discover_games",
+    "launch",
+    "open_store_page",
+    "open_library_page"
+  ],
+  "media_edit": [
+    "media_edit_status",
+    "probe",
+    "trim",
+    "concat",
+    "extract_audio",
+    "subtitles_extract",
+    "normalize",
+    "thumbnail",
+    "transcode"
+  ],
+  "maintenance": [
+    "maintenance_status",
+    "windows_update_status",
+    "defender_status",
+    "defender_quick_scan",
+    "firewall_status",
+    "event_logs_query",
+    "services_list",
+    "services",
+    "service_status",
+    "service_start",
+    "service_stop",
+    "disk_cleanup_describe",
+    "restore_point_create"
+  ],
+  "watcher": [
+    "watcher_status",
+    "watcher_list",
+    "watch_file",
+    "watch_url",
+    "watcher_check",
+    "watcher_delete"
+  ],
+  "job_manager": [
+    "job_manager_status",
+    "job_manager_start",
+    "job_manager_list",
+    "job_manager_log",
+    "status_of",
+    "info",
+    "job_manager_cancel",
+    "job_manager_stop",
+    "kill"
+  ],
+  "network": [
+    "network_status",
+    "ping",
+    "traceroute",
+    "dns_get",
+    "dns_set",
+    "dns_resolve",
+    "resolve",
+    "port_check",
+    "connections",
+    "public_ip",
+    "firewall_allow",
+    "firewall_block",
+    "firewall_remove"
+  ],
+  "data_analysis": [
+    "data_analysis_status",
+    "csv_profile",
+    "csv_describe",
+    "csv_query",
+    "csv_head",
+    "csv_to_xlsx",
+    "plot_histogram",
+    "plot_scatter",
+    "plot_line"
+  ],
+  "file_process": [
+    "file_process"
+  ],
+  "fact_check": [
+    "fact_check_status",
+    "fact_check_check",
+    "compare"
+  ],
+  "photo_library": [
+    "photo_library_status",
+    "scan",
+    "exif",
+    "group_by_date",
+    "thumbnails",
+    "find_by_date"
+  ],
+  "container": [
+    "container_status",
+    "ps",
+    "ps_all",
+    "images",
+    "container_inspect",
+    "logs",
+    "container_start",
+    "container_stop",
+    "container_restart",
+    "exec",
+    "compose_up",
+    "compose_down",
+    "compose_ps"
+  ],
+  "database": [
+    "database_status",
+    "list_tables",
+    "schema",
+    "database_query",
+    "execute",
+    "export_csv"
+  ],
+  "creative_local": [
+    "creative_local_status",
+    "creative_local_submit",
+    "result",
+    "wait",
+    "queue",
+    "interrupt",
+    "models"
+  ],
+  "form_filler": [
+    "form_filler_status",
+    "form_filler_discover",
+    "plan",
+    "apply",
+    "form_filler_submit"
+  ],
+  "peripheral": [
+    "peripheral_status",
+    "usb_list",
+    "hid_list",
+    "controller_status",
+    "device_manager_problems",
+    "problems",
+    "device_disable",
+    "device_enable",
+    "rgb_profile_set",
+    "rgb_list",
+    "rgb_set_color"
+  ],
+  "accessibility": [
+    "accessibility_status",
+    "magnifier_start",
+    "magnifier_stop",
+    "narrator_start",
+    "narrator_stop",
+    "dictation_status",
+    "settings_panel",
+    "open_settings",
+    "high_contrast_on",
+    "high_contrast_off",
+    "high_contrast_toggle"
+  ],
+  "study": [
+    "study_status",
+    "deck_create",
+    "deck_list",
+    "deck_delete",
+    "card_add",
+    "card_list",
+    "card_delete",
+    "due",
+    "review",
+    "study_stats"
+  ],
+  "subagent": [
+    "subagent_status",
+    "subagent_run"
+  ],
+  "safety": [
+    "safety_status",
+    "pending",
+    "confirm",
+    "safety_cancel"
+  ],
+  "package": [
+    "package_list",
+    "package_search",
+    "package_install",
+    "package_uninstall"
+  ],
+  "clipboard": [
+    "clipboard_read",
+    "clipboard_write"
+  ],
+  "terminal": [
+    "terminal_run"
+  ],
+  "memory": [
+    "memory_save",
+    "recall",
+    "memory_list",
+    "memory_delete"
+  ],
+  "verify": [
+    "app_opened",
+    "file_exists",
+    "window_exists",
+    "clipboard_contains"
+  ],
+  "skill_load": [
+    "skill_load"
+  ],
+  "mcp": [
+    "mcp_list",
+    "call"
+  ],
+  "session": [
+    "cancel_turn"
+  ],
+  "_meta": [
+    "no_tool"
+  ]
+}

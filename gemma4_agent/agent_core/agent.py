@@ -27,6 +27,25 @@ from ..infra.tracing import TraceLogger, summarize_content
 ProgressCallback = Callable[[str, dict[str, Any]], None]
 
 
+# ── "BAXY NETO" (rama Experimentando) ────────────────────────────────────────
+# GEMMA4_GUARDS=0 (DEFAULT acá) DESACTIVA todos los guards de COMPORTAMIENTO del
+# turn-path para ver al modelo crudo: honestidad (unverified_final + grounded_action_
+# claim), forced_tool_retry, leaked-call rescue, redes deterministas y empty-reply net.
+# Para RESTAURARLOS: GEMMA4_GUARDS=1. NOTA: sanitize_text NO es un guard (es
+# decodificación de salida) y queda SIEMPRE activo. Con el split (FunctionGemma=tools,
+# Q4 QAT=habla) estos guards eran compensación del E2B; se sacan para probar neto.
+import os as _os_guards
+_GUARDS_ON = _os_guards.environ.get("GEMMA4_GUARDS", "0").strip().lower() in {"1", "true", "yes", "on"}
+
+# ── FunctionGemma run9 como ROUTER DE TOOL-CALLING (split) ───────────────────
+# GEMMA4_FG_ROUTER=1 → FunctionGemma-270M (:8082) decide el tool-call en vez del E2B;
+# `no_tool` (abstención) → responde el E2B conversacional. El E2B sigue siendo el que
+# CONVERSA; FunctionGemma solo elige tool+args. Requiere GEMMA4_LEAN_TOOLS=0 (el router
+# jerárquico usa las 67 familias) + el server FG en 127.0.0.1:8082. Default OFF (drop-in
+# reversible). Ver gemma4_agent/routing/fg_router.py + FunctionGemma/INTEGRATION_HANDOFF.md.
+_FG_ROUTER_ON = _os_guards.environ.get("GEMMA4_FG_ROUTER", "0").strip().lower() in {"1", "true", "yes", "on"}
+
+
 # Inherit-tools safety knobs.
 # TTL: si pasaron mas de 5 min entre turns, NO heredar tools del turno
 # previo (el contexto del usuario pudo cambiar tras un hueco largo).
@@ -782,6 +801,20 @@ class Gemma4Agent:
         # huggingface_hub" errors on STT init. The classifier loads the NLI
         # model lazy-on-first-use; the first capability check pays the cold
         # load cost (~14s once per process), subsequent ones hit the cache.
+
+        # FunctionGemma router: si está activo, pre-calentamos en BACKGROUND (botea
+        # el server :8082 + construye el router) para que esté listo antes del 1er
+        # turno sin bloquear el arranque. El 270M botea en ~2-3s. Daemon: no estorba
+        # el shutdown. Idempotente (ensure_fg_server reusa si :8082 ya está vivo).
+        if _FG_ROUTER_ON:
+            def _prewarm_fg() -> None:
+                try:
+                    from ..routing.fg_router import fg_emit
+                    fg_emit("warmup")  # construye router (-> ensure_fg_server) + 1 pasada
+                except Exception:
+                    pass
+            import threading as _thr
+            _thr.Thread(target=_prewarm_fg, daemon=True, name="fg-prewarm").start()
 
     def _window_title_in_text(self, text: str) -> str | None:
         """Si alguna VENTANA ABIERTA tiene un token significativo de su título
@@ -1553,6 +1586,7 @@ class Gemma4Agent:
         _mark_decide_phase("pre_llm_shortcuts")
         self._forced_tool_retry_done = False
         self._det_nets_tried = False  # redes deterministas (reply/email/nav) por turno
+        self._fg_router_done = False  # FunctionGemma router: 1 decisión de tool por turno
         mode = choose_mode(content, self.config.agent_mode, self.config.max_tokens)
         plan = plan_mission(content)
         _mark_decide_phase("mode_plan", mode=mode.name, steps=len(plan.steps))
@@ -3211,6 +3245,31 @@ class Gemma4Agent:
             msg = sanitize_assistant_message(raw_msg)
             assistant_content = msg.get("content") or ""
             raw_tool_calls = msg.get("tool_calls") or []
+            # FunctionGemma run9 como router de tool-calling: si está activo, FunctionGemma
+            # (270M, :8082) decide el tool-call en vez del E2B. El E2B ya corrió arriba (su
+            # content queda para el caso conversacional); acá OVERRIDE-amos su DECISIÓN de tool.
+            #   no_tool        -> abstención: raw_tool_calls=[] (responde el E2B conversacional).
+            #   tool elegido   -> raw_tool_calls=[ese] (traducido a tool COMPUESTO de Baxy).
+            #   FG no resolvió -> se queda la decisión del E2B (fallback). Gate GEMMA4_FG_ROUTER.
+            if _FG_ROUTER_ON and not events and not getattr(self, "_fg_router_done", False):
+                self._fg_router_done = True
+                try:
+                    from ..routing.fg_router import fg_emit
+                    # e2b_emitted: 2ª señal del gate (el E2B abstiene perfecto en chitchat;
+                    # si emitió tool, el turno es accionable aunque el encoder no pique).
+                    _fg_name, _fg_args = fg_emit(raw_text_early, e2b_emitted=bool(raw_tool_calls))
+                    self.trace.event(turn_id, "fg_router", tool=_fg_name, args=_fg_args)
+                    if _fg_name == "no_tool":
+                        raw_tool_calls = []
+                    elif _fg_name:
+                        raw_tool_calls = [{"id": "fg1", "type": "function", "function": {
+                            "name": _fg_name,
+                            "arguments": json.dumps(_fg_args or {}, ensure_ascii=False)}}]
+                        msg = {"role": "assistant", "content": "", "tool_calls": raw_tool_calls}
+                        assistant_content = ""
+                except Exception as _fg_exc:
+                    self.trace.event(turn_id, "fg_router_error",
+                                     error=f"{type(_fg_exc).__name__}: {_fg_exc}")
             # DEDUP DE BATCH DEGENERADO (bug Gemma 4 lmstudio #1756, medido en
             # cacería tanda 1): el 4B emite el MISMO tool_call decenas de veces en
             # UNA respuesta, ignorando parallel_tool_calls=false. "Investiga en
@@ -3264,7 +3323,7 @@ class Gemma4Agent:
             # formato nativo <|tool_call> que el parser extrae -> el call se pierde
             # (medido: ~1% del under-action es esto). detect_leaked_tool_call lo re-parsea
             # a un tool-call real. Barato y estructural; va ANTES del forced-retry.
-            if not raw_tool_calls and assistant_content:
+            if _GUARDS_ON and not raw_tool_calls and assistant_content:
                 try:
                     from ..tools_pkg.tools import COMPOUND_TOOL_SCHEMAS as _CTS, ACTION_ENUMS as _AE
                     _known = {s["function"]["name"] for s in _CTS
@@ -3291,7 +3350,7 @@ class Gemma4Agent:
             # fallback, leaked-call rescue): solo el núcleo que la medición justificó.
             # Gate GEMMA4_FORCED_TOOL_RETRY=0.
             import os as _os_fr0
-            if (not raw_tool_calls and selected_schemas and len(events) == 0
+            if (_GUARDS_ON and not raw_tool_calls and selected_schemas and len(events) == 0
                     and not getattr(self, "_forced_tool_retry_done", False)
                     and _os_fr0.environ.get("GEMMA4_FORCED_TOOL_RETRY", "1").strip().lower()
                         not in {"0", "false", "no", "off"}):
@@ -4147,7 +4206,7 @@ class Gemma4Agent:
         # (len(events)==0) y el forced-retry no las probó ya. Cada red es
         # conservadora (None si no hay match claro) -> no roba turnos de
         # charla. Fallback seguro: error -> seguimos al flujo normal.
-        if (len(events) == 0
+        if (_GUARDS_ON and len(events) == 0
                 and not getattr(self, "_det_nets_tried", False)):
             self._det_nets_tried = True
             try:
@@ -4326,13 +4385,14 @@ class Gemma4Agent:
         # Pase 1: cero-eventos / verificación fallida — caza "Listo, abrí Gmail" con
         # exec=[] (la confabulación de navegación/open que el grounded-claim no ve, porque
         # no hay tool que inspeccionar). Estructural (reply_claims_action = forma verbal).
-        try:
-            from .agent_guards import guard_unverified_final as _guf
-            assistant_content = _guf(assistant_content, events)
-        except Exception:
-            pass
-        # Pase 2: claim de acción sin evidencia sobre una tool que SÍ corrió.
-        assistant_content = self._guard_grounded_action_claim(assistant_content, events, turn_id)
+        if _GUARDS_ON:
+            try:
+                from .agent_guards import guard_unverified_final as _guf
+                assistant_content = _guf(assistant_content, events)
+            except Exception:
+                pass
+            # Pase 2: claim de acción sin evidencia sobre una tool que SÍ corrió.
+            assistant_content = self._guard_grounded_action_claim(assistant_content, events, turn_id)
         # Defensa: si el LLM emitio en el reply mismo un footer estilo
         # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
         # historial), lo strippeamos antes de pegar el nuestro. Sino,
@@ -4409,7 +4469,7 @@ class Gemma4Agent:
         # tools = pedir reformular. Es una GUARDA estructural de último recurso (la
         # forma es "reply vacío", no una respuesta enlatada a una query) + queda el
         # event para diagnóstico de la causa de fondo.
-        if not (assistant_content or "").strip():
+        if _GUARDS_ON and not (assistant_content or "").strip():
             assistant_content = ("Listo." if events
                                  else "Perdón, no pude generar una respuesta. ¿La reformulás?")
             content_for_history = assistant_content
