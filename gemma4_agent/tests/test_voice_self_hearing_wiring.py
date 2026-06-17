@@ -3,10 +3,11 @@ de VoicePipeline._handle_idle / ._on_wake y VoiceRunner._handle_state — sin HW
 de audio (vía __new__ + fakes mínimos, no carga VAD/wake/STT/Piper).
 
 Cubre el flujo que el usuario reportó como "desconectado":
-  - Mientras Gemma habla (tts_busy), el pipeline NO alimenta el wake (no se
-    auto-dispara escuchándose a sí misma).
-  - Al despertar (wake -> LISTENING) el volumen se duckea; el wake se reanuda
-    cuando el TTS termina.
+  - Mientras Gemma habla (tts_busy), el wake se alimenta con predict=False: el
+    ring de 2 s se mantiene CALIENTE pero NO dispara (anti-eco sin hueco muerto,
+    fix 2026-06-17 del bug "tras decir Baxy varias veces deja de funcionar").
+  - Al despertar (wake -> LISTENING) el volumen se duckea; el wake vuelve a
+    PREDECIR cuando el TTS termina.
 """
 from __future__ import annotations
 
@@ -19,10 +20,13 @@ import numpy as np
 
 class _FakeWake:
     def __init__(self) -> None:
-        self.feeds = 0
+        self.feeds = 0          # feeds totales (ring caliente)
+        self.predict_feeds = 0  # feeds que PUEDEN disparar (predict=True)
 
-    def feed(self, chunk) -> None:  # noqa: ANN001
+    def feed(self, chunk, predict=True) -> None:  # noqa: ANN001
         self.feeds += 1
+        if predict:
+            self.predict_feeds += 1
 
 
 def _idle_pipe(busy: bool):
@@ -42,17 +46,21 @@ class EchoGatePausesWake(unittest.TestCase):
     def test_wake_fed_when_tts_idle(self):
         p = _idle_pipe(busy=False)
         p._handle_idle(np.zeros(160, dtype=np.int16))
-        self.assertEqual(p._wake.feeds, 1, "con TTS en silencio el wake DEBE escuchar")
+        self.assertEqual(p._wake.predict_feeds, 1, "con TTS en silencio el wake DEBE predecir")
 
-    def test_wake_paused_while_gemma_speaks(self):
+    def test_wake_warm_but_no_predict_while_gemma_speaks(self):
+        # NUEVO comportamiento: durante el TTS el ring se mantiene CALIENTE
+        # (feed) pero SIN predecir/disparar (anti-eco sin hueco muerto).
         p = _idle_pipe(busy=True)
         for _ in range(5):
             p._handle_idle(np.zeros(160, dtype=np.int16))
-        self.assertEqual(p._wake.feeds, 0, "el wake NO debe escuchar mientras Gemma habla")
+        self.assertEqual(p._wake.feeds, 5, "el ring DEBE mantenerse caliente durante el TTS")
+        self.assertEqual(p._wake.predict_feeds, 0,
+                         "el wake NO debe DISPARAR mientras Gemma habla")
         self.assertTrue(p._wake_paused_for_tts)
 
-    def test_wake_resumes_after_tts(self):
-        # Empieza ocupado (pausa), luego se libera -> reanuda.
+    def test_wake_resumes_predicting_after_tts(self):
+        # Empieza ocupado (caliente, sin predecir), luego se libera -> predice.
         from gemma4_agent.voice.pipeline import State, VoicePipeline
         p = VoicePipeline.__new__(VoicePipeline)
         p._preroll = deque(maxlen=10)
@@ -62,11 +70,12 @@ class EchoGatePausesWake(unittest.TestCase):
         p._wake_paused_for_tts = False
         busy = {"v": True}
         p._tts_busy_fn = (lambda: busy["v"])
-        p._handle_idle(np.zeros(160, dtype=np.int16))  # ocupado -> pausa
-        self.assertEqual(p._wake.feeds, 0)
-        busy["v"] = False
-        p._handle_idle(np.zeros(160, dtype=np.int16))  # libre -> reanuda + alimenta
+        p._handle_idle(np.zeros(160, dtype=np.int16))  # ocupado -> caliente sin predecir
         self.assertEqual(p._wake.feeds, 1)
+        self.assertEqual(p._wake.predict_feeds, 0)
+        busy["v"] = False
+        p._handle_idle(np.zeros(160, dtype=np.int16))  # libre -> vuelve a predecir
+        self.assertEqual(p._wake.predict_feeds, 1)
         self.assertFalse(p._wake_paused_for_tts)
 
 

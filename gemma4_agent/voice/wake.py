@@ -273,8 +273,16 @@ class WakeDetector:
 
     # ----- inference ---------------------------------------------------
 
-    def feed(self, chunk: np.ndarray) -> None:
-        """Append `chunk` (int16, mono, 16 kHz, any size) and predict."""
+    def feed(self, chunk: np.ndarray, predict: bool = True) -> None:
+        """Append `chunk` (int16, mono, 16 kHz, any size) and (si predict) puntúa.
+
+        predict=False mantiene el ring rodante de 2 s CALIENTE sin puntuar ni
+        disparar. Lo usa el pipeline durante el TTS (anti-eco): si en vez de
+        DEJAR DE alimentar el wake mientras Gemma habla, lo alimentamos sin
+        disparar, el ring queda lleno al terminar el TTS y el siguiente "Baxy"
+        se detecta de inmediato — sin el hueco muerto de ~2 s + duración-TTS que
+        hacía "tras decir Baxy varias veces deja de funcionar" (medido 2026-06-17,
+        scripts/_diag/_wake_repeated_test.py: 7/15 -> 15/15)."""
         if not self._loaded:
             return
         try:
@@ -286,18 +294,21 @@ class WakeDetector:
             return
 
         if self._backend == "livekit":
-            self._feed_livekit(chunk_i16)
+            self._feed_livekit(chunk_i16, predict=predict)
         else:
-            self._feed_oww(chunk_i16)
+            self._feed_oww(chunk_i16, predict=predict)
 
     # ----- LiveKit path -----------------------------------------------
 
-    def _feed_livekit(self, chunk: np.ndarray) -> None:
+    def _feed_livekit(self, chunk: np.ndarray, predict: bool = True) -> None:
         # Maintain rolling 2-second buffer. IMPORTANT: append EVERY chunk so the
         # window is always current — only the predict() CALL is throttled below.
         self._lk_ring = np.concatenate([self._lk_ring, chunk])
         if self._lk_ring.size > LIVEKIT_WINDOW_SAMPLES:
             self._lk_ring = self._lk_ring[-LIVEKIT_WINDOW_SAMPLES:]
+        # predict=False: ring caliente, sin puntuar ni disparar (anti-eco TTS).
+        if not predict:
+            return
         # Wait until we have enough audio for a meaningful score.
         if self._lk_ring.size < LIVEKIT_WINDOW_SAMPLES:
             return
@@ -335,10 +346,16 @@ class WakeDetector:
 
     # ----- OWW path ---------------------------------------------------
 
-    def _feed_oww(self, chunk: np.ndarray) -> None:
+    def _feed_oww(self, chunk: np.ndarray, predict: bool = True) -> None:
         if self._oww_model is None:
             return
         self._oww_buf = np.concatenate([self._oww_buf, chunk])
+        # predict=False: drenar el buffer SIN puntuar (mantener acotado durante
+        # el TTS, sin disparar). Conserva solo la última ventana.
+        if not predict:
+            if self._oww_buf.size > OWW_WINDOW_SAMPLES:
+                self._oww_buf = self._oww_buf[-OWW_WINDOW_SAMPLES:]
+            return
         while self._oww_buf.size >= OWW_WINDOW_SAMPLES:
             window = self._oww_buf[:OWW_WINDOW_SAMPLES]
             self._oww_buf = self._oww_buf[OWW_WINDOW_SAMPLES:]

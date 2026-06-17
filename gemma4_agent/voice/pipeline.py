@@ -489,6 +489,14 @@ class VoicePipeline:
                 if not self._wake_paused_for_tts:
                     self._wake_paused_for_tts = True
                     logger.info("wake paused (Gemma hablando — anti-eco)")
+                # ANTI-ECO sin hueco muerto (2026-06-17): alimentamos el wake
+                # con predict=False — el ring rodante de 2 s se mantiene CALIENTE
+                # pero NO dispara mientras Gemma habla. Así, al terminar el TTS,
+                # el siguiente "Baxy" se detecta de inmediato en vez de perderse
+                # durante los ~2 s que tardaba el ring en rellenarse (bug "tras
+                # decir Baxy varias veces deja de funcionar"; el AEC + umbral 0.5
+                # ya evitan que el residual del TTS dispare). Ver _wake_repeated_test.
+                self._wake.feed(chunk, predict=False)
                 return
             if self._wake_paused_for_tts:
                 self._wake_paused_for_tts = False
