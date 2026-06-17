@@ -40,6 +40,7 @@ _SLIM = _DATA / "tool_schemas_slim.json"
 _CATS = _DATA / "tool_categories.json"
 _ACTION_MAP = _DATA / "tool_action_map.json"
 _EMB_CACHE = _DATA / "fg_tool_emb.npy"
+_KVA_GATE = _DATA / "kva_gate.json"  # gate conocimiento-vs-acción (corre ANTES de FG)
 # GGUF de FunctionGemma (run9). El server se botea contra este archivo (ver ensure_fg_server).
 _FG_GGUF = _HERE.parent.parent / "models" / "FunctionGemma" / "functiongemma-ft-270m-it-Q8_0.gguf"
 
@@ -162,6 +163,29 @@ def _norm(v: np.ndarray) -> np.ndarray:
     return v / n if n else v
 
 
+class _KVAGate:
+    """Gate CONOCIMIENTO-vs-ACCIÓN: regresión logística calibrada sobre el embedding del MISMO
+    encoder MiniLM-L12-FT del router. Corre ANTES de FunctionGemma; si la query es CONOCIMIENTO
+    con alta confianza (P(conocimiento) ≥ threshold) → no_tool, sin invocar FG. Cascada con
+    deferral: ante la duda DEFIERE a FG (que abstiene ~96%). threshold 0.87 = cost-optimal
+    (preserva acción ≥99%). Sub-ms (un dot product de 384d). Artefacto data/fg/kva_gate.json
+    (regenerable con FunctionGemma/build_kva_gate.py). Ver FunctionGemma/KVA_GATE_HANDOFF.md."""
+
+    def __init__(self, path: Path) -> None:
+        d = json.loads(path.read_text(encoding="utf-8"))
+        self.coef = np.asarray(d["coef"], dtype=np.float32)   # coef de clase 1 (ACCIÓN)
+        self.intercept = float(d["intercept"])
+        self.thr = float(d["threshold_p_knowledge"])
+
+    def p_knowledge(self, emb_normalized: np.ndarray) -> float:
+        # P(acción)=sigmoid(logit); P(conocimiento)=1-P(acción)=sigmoid(-logit)
+        logit = float(np.dot(self.coef, np.asarray(emb_normalized, dtype=np.float32)) + self.intercept)
+        return 1.0 / (1.0 + np.exp(logit))
+
+    def is_knowledge(self, emb_normalized: np.ndarray) -> bool:
+        return self.p_knowledge(emb_normalized) >= self.thr
+
+
 class _FGRouter:
     def __init__(self) -> None:
         ensure_fg_server()  # contrato: si el router existe, el server :8082 está garantizado
@@ -174,6 +198,14 @@ class _FGRouter:
         self.names = [t["function"]["name"] for t in self.tools]
         self.idx = {n: i for i, n in enumerate(self.names)}
         self.cats = json.loads(_CATS.read_text(encoding="utf-8"))
+
+        # Gate conocimiento-vs-acción (opcional; ausente -> sin gate, fallback seguro).
+        self.kva: "_KVAGate | None" = None
+        try:
+            if _KVA_GATE.is_file():
+                self.kva = _KVAGate(_KVA_GATE)
+        except Exception:
+            self.kva = None
 
         # bridge individual -> (compuesto, action). tool_action_map = {compuesto::action: individual}
         amap = json.loads(_ACTION_MAP.read_text(encoding="utf-8"))
@@ -271,7 +303,21 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     if _R is None:
         _R = _FGRouter()
 
-    # Gate acción-vs-conversación (ver FG_ACT_PEAK). Solo consultamos a FunctionGemma
+    # 1) GATE CONOCIMIENTO-vs-ACCIÓN (ANTES de FunctionGemma): si la query es CONOCIMIENTO con
+    # alta confianza -> no_tool, sin invocar FG. Corta el mis-route conocimiento→acción de las
+    # trampas family-dominated que FG no abstiene aunque no_tool esté en el subset ("contame de
+    # Roma"→contacts, "what is a linked list"→vision, "y cuánto mide"→data_analysis). Usa el
+    # embedding del MISMO encoder del router, normalizado (contrato del gate). Cascada con
+    # deferral: ante la duda DEFIERE a FG. Fallback seguro: si no hay gate o falla, sigue el flujo.
+    if _R.kva is not None:
+        try:
+            q_emb = _norm(np.asarray(_R.sr.embed(query), dtype=np.float32))
+            if _R.kva.is_knowledge(q_emb):
+                return "no_tool", None
+        except Exception:
+            pass
+
+    # 2) Gate acción-vs-conversación (ver FG_ACT_PEAK). Solo consultamos a FunctionGemma
     # si el turno es accionable; si no, no_tool y que responda el E2B (ahorra latencia
     # en chitchat y evita el eager-invocation de FunctionGemma).
     scored = _R.sr.suggest_tools_scored(query, k=12)
