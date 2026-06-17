@@ -36,6 +36,12 @@ class _LeanEnv:
 
     def __enter__(self):
         self.prev = os.environ.get("GEMMA4_LEAN_RULES")
+        # Este test cubre la DENSIDAD de reglas (GEMMA4_LEAN_RULES), no el corte de
+        # tools (GEMMA4_LEAN_TOOLS, default ON, que filtra reglas de tools cortadas
+        # como `routine`). Aislarlo: forzar el corte OFF para que TODAS las reglas
+        # de CRITICAL carguen y la prueba mida solo lean.md vs .md.
+        self.prev_tools = os.environ.get("GEMMA4_LEAN_TOOLS")
+        os.environ["GEMMA4_LEAN_TOOLS"] = "0"
         if self.on:
             os.environ["GEMMA4_LEAN_RULES"] = "1"
         else:
@@ -47,6 +53,10 @@ class _LeanEnv:
             os.environ.pop("GEMMA4_LEAN_RULES", None)
         else:
             os.environ["GEMMA4_LEAN_RULES"] = self.prev
+        if self.prev_tools is None:
+            os.environ.pop("GEMMA4_LEAN_TOOLS", None)
+        else:
+            os.environ["GEMMA4_LEAN_TOOLS"] = self.prev_tools
 
 
 class TestLeanRules(unittest.TestCase):

@@ -1,6 +1,6 @@
 app(action="open", name="<user-facing name>") for apps/games. The runtime discovers installed apps dynamically (Windows sources, Start Menu, PATH, registry, Steam, Epic) — no hardcoded exe unless the user gives one.
 
-SCOPE — INSTALLED APPS ONLY: app (incl app.search) operates on programs/games ALREADY INSTALLED on this PC. NOT for searching/buying a product in a WEB STORE (Instant Gaming, Steam store online, Epic, GOG, Amazon). "comprá/buscá un juego en <tienda>" = navigate that store with browser/browser_real, NOT app.search.
+SCOPE — INSTALLED APPS ONLY: app (incl app.search) operates on programs/games ALREADY INSTALLED on this PC. NOT for searching/buying a product in a WEB STORE (Instant Gaming, Steam store online, Epic, GOG, Amazon). "comprá/buscá un juego en <tienda>" = navigate that store with browser, NOT app.search.
 
 NOT for "what's open NOW": app.search finds an installed app BY NAME to open it. "¿qué juego estoy jugando?" / "what app is open" = window(action='active'), NOT app.search. The question's verb ('jugando'/'playing') is NOT an app name — never pass it as query.
 

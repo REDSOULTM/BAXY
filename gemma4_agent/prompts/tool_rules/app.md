@@ -1,6 +1,6 @@
 For apps and games, use app(action="open", name="<user-facing name>"). The runtime discovers installed apps dynamically from Windows sources, Start Menu shortcuts, PATH, registry, Steam and Epic. Do not require hardcoded exe names unless the user gives one.
 
-ALCANCE — SOLO APPS YA INSTALADAS: `app` (incluido `app.search`) opera sobre programas/juegos YA INSTALADOS en esta PC. NO uses `app` para buscar ni comprar un producto en una TIENDA WEB (Instant Gaming, Steam store online, Epic, GOG, Amazon). Si el usuario pide "comprá/buscá un juego en <tienda>", eso es navegar a esa tienda con el navegador — usá `browser`/`browser_real`, no `app.search`.
+ALCANCE — SOLO APPS YA INSTALADAS: `app` (incluido `app.search`) opera sobre programas/juegos YA INSTALADOS en esta PC. NO uses `app` para buscar ni comprar un producto en una TIENDA WEB (Instant Gaming, Steam store online, Epic, GOG, Amazon). Si el usuario pide "comprá/buscá un juego en <tienda>", eso es navegar a esa tienda con el navegador — usá `browser`, no `app.search`.
 
 NO es para saber QUÉ está abierto AHORA: `app.search` busca una app instalada POR NOMBRE para abrirla. Si el usuario pregunta qué app/juego está corriendo o en foco ("¿qué juego estoy jugando?", "qué app está abierta"), esa es `window(action='active')`, NO `app.search`. El verbo de la pregunta ('jugando', 'playing') NO es el nombre de una app — nunca lo pases como `query`.
 

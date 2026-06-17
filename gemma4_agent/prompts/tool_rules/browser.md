@@ -8,7 +8,7 @@ Browser tool actions are limited to: open, search, youtube_play, media_pause, me
 ANTI-URL-FABRICATION: browser(action='open', url=...) opens an EXACT URL.
 The URL must come from one of these sources:
 1. The user typed it explicitly in this conversation.
-2. A previous web(action='search' | 'research') or browser_real
+2. A previous web(action='search' | 'research')
    extract returned it in this same turn or a recent turn.
 3. A TOP-tier well-known site root, and ONLY these exact ones:
    google.com, youtube.com, github.com, wikipedia.org, gmail.com,
@@ -32,4 +32,4 @@ are not 100% certain of its exact domain, do this instead:
 This applies to ALL deep URLs (paths longer than the root domain).
 For the user's typed URLs, pass them through unchanged.
 
-COMPRAR/BUSCAR EN UNA TIENDA WEB: si el usuario pide buscar o comprar un producto o juego en una TIENDA online (Instant Gaming, Steam store, Epic, GOG, Amazon...), eso se hace NAVEGANDO a esa tienda con el navegador (browser/browser_real), NO con `app`/`steam`/`game_launcher` (esos son para apps/juegos YA INSTALADOS en la PC). NO adivines el dominio de la tienda (le vas a errar el TLD, p.ej. .net vs .com): primero web(action='search', query='<tienda> <producto>') para obtener la URL REAL del resultado, y recién ahí browser.open con esa URL. La COMPRA es irreversible y toca dinero: llevá al usuario hasta la pantalla de pago y DETENETE ahí — pedí confirmación hablada (sí/no) antes de cualquier click que confirme el cobro. No completes el pago sin esa confirmación.
+COMPRAR/BUSCAR EN UNA TIENDA WEB: si el usuario pide buscar o comprar un producto o juego en una TIENDA online (Instant Gaming, Steam store, Epic, GOG, Amazon...), eso se hace NAVEGANDO a esa tienda con el navegador (browser), NO con `app`/`steam`/`game_launcher` (esos son para apps/juegos YA INSTALADOS en la PC). NO adivines el dominio de la tienda (le vas a errar el TLD, p.ej. .net vs .com): primero web(action='search', query='<tienda> <producto>') para obtener la URL REAL del resultado, y recién ahí browser.open con esa URL. La COMPRA es irreversible y toca dinero: llevá al usuario hasta la pantalla de pago y DETENETE ahí — pedí confirmación hablada (sí/no) antes de cualquier click que confirme el cobro. No completes el pago sin esa confirmación.
