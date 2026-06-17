@@ -148,18 +148,12 @@ def _encoder_health() -> tuple[bool, str]:
 
 
 def _stt_engine_status() -> tuple[str, str]:
-    """¿Qué motor STT se usaría en runtime? Reporta 'parakeet' u 'whisper
-    (FALLBACK)' SIN arrancar el pipeline de voz (no toca micrófono).
-
-    El pipeline elige Parakeet por default pero cae a Whisper SILENCIOSO si
-    sherpa-onnx falta o el modelo Parakeet no está. Lo hacemos VISIBLE acá para
-    no usar Whisper sin saberlo (mismo patrón que el health del encoder)."""
-    import os as _os
+    """¿Está listo el STT (Parakeet, único motor) para runtime? Verifica sus
+    precondiciones (sherpa-onnx + modelo) SIN arrancar el pipeline de voz (no
+    toca micrófono). Whisper se eliminó (reescritura 2026-06-17): si Parakeet no
+    está, la voz falla limpio — lo hacemos VISIBLE acá (patrón del health del
+    encoder) para que la falta de precondiciones no sorprenda en vivo."""
     from pathlib import Path as _Path
-    engine = (_os.environ.get("GEMMA4_STT_ENGINE", "parakeet") or "parakeet").lower()
-    if engine != "parakeet":
-        return engine, f"GEMMA4_STT_ENGINE={engine} (forzado)"
-    # Parakeet pedido: ¿se cumplen sus precondiciones? (sherpa-onnx + modelo)
     try:
         import importlib.util as _ilu
         has_sherpa = _ilu.find_spec("sherpa_onnx") is not None
@@ -177,7 +171,7 @@ def _stt_engine_status() -> tuple[str, str]:
         missing.append("sherpa-onnx no instalado")
     if not has_model:
         missing.append("modelo Parakeet ausente")
-    return "whisper-fallback", "; ".join(missing) + " -> caería a Whisper"
+    return "parakeet-no-listo", "; ".join(missing) + " -> la voz fallará limpio"
 
 
 def print_status(args: argparse.Namespace) -> int:
@@ -214,8 +208,8 @@ def print_status(args: argparse.Namespace) -> int:
         print(color("dim",
             "     Fix: pip install \"numpy==1.26.4\"  (o reinstalá con "
             "-c constraints.txt). Ver requirements.txt."))
-    # MOTOR STT activo (2026-06-07): el pipeline cae a Whisper SILENCIOSO si
-    # Parakeet no está -> lo hacemos VISIBLE para no usar el fallback sin saberlo.
+    # MOTOR STT (2026-06-17, Parakeet-only tras la reescritura): NO hay fallback a
+    # Whisper -> si Parakeet no está, la voz falla limpio; lo hacemos VISIBLE acá.
     _stt_engine, _stt_detail = _stt_engine_status()
     _stt_ok = _stt_engine == "parakeet"
     _stt_text = color("ok", "parakeet") if _stt_ok else color("warn", _stt_engine)
