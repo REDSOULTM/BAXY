@@ -821,7 +821,26 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
         # become turns.
         if ok:
             from ..agent_core.agent_runner import RUNNER
-            VOICE.set_on_command(lambda text: RUNNER.submit(text))
+
+            def _submit_voice(text: str) -> None:
+                # GATE DE BOOT (2026-06-18): no actuar sobre wakes mientras el
+                # agente/router todavía cargan. Durante el arranque la CPU/GPU
+                # están saturadas (embeddings, prewarm) y la captura de audio
+                # puede glitchear -> el wake dispara por un transitorio y, peor,
+                # el turno se ENCOLA y se ejecuta segundos después, STALE y fuera
+                # de contexto. Medido: un falso "Thank you" disparó a mitad del
+                # boot (router aún cargando) y se procesó 22s tarde. El mismo
+                # gate que habilita la casilla de chat (ready = built ∧ warmed ∧
+                # healthy ∧ router) aplica a la voz: si no está listo, se
+                # DESCARTA (no se encola).
+                if not (RUNNER.agent_ready() and RUNNER.is_router_ready()):
+                    logger.info(
+                        "voice command dropped: agente no listo (boot) text=%r",
+                        text[:80])
+                    return
+                RUNNER.submit(text)
+
+            VOICE.set_on_command(_submit_voice)
         return {"ok": ok, **VOICE.status()}
 
     @app.post("/voice/stop")
