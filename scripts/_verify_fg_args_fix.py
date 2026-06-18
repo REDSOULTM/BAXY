@@ -28,7 +28,7 @@ CASES = [
     ("qué hora es", None, None),
 ]
 for q, fam, arg in CASES:
-    name, args = fg.fg_emit(q, e2b_emitted=False)
+    name, args, _missing = fg.fg_emit(q, e2b_emitted=False)
     has = bool(args) and (arg is None or arg in (args or {}))
     flag = "OK " if (name and name != "no_tool" and (arg is None or has)) else ("no_tool" if name == "no_tool" else "MISS-ARG")
     print(f"  [{flag:8s}] {q!r:42s} -> {name} {args}")

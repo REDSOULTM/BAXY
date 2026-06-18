@@ -321,12 +321,31 @@ def _ask(query: str, subset: list[dict[str, Any]], timeout_s: float = 20.0) -> t
     return name, args
 
 
+def _missing_value_field(fg_tool: str, args: dict[str, Any] | None) -> str | None:
+    """Campo de VALOR que FunctionGemma debió completar para `fg_tool` pero no.
+
+    Se deriva del slim-schema del tool (data/fg/tool_schemas_slim.json): sus args sin 'action'
+    son los valores que el tool necesita (name/level/query/url/...). Si el schema declara alguno
+    y FG no devolvió NINGUNO, el primero es el faltante. NO es lista hardcoded: sale del schema.
+    Devuelve None si el tool no toma valores (steam.store, system.time) o si ya viene completo.
+    """
+    schema = _R.by_name.get(fg_tool) if _R is not None else None
+    value_props = [p for p in _tool_props(schema) if p != "action"]
+    if value_props and not any(p in (args or {}) for p in value_props):
+        return value_props[0]
+    return None
+
+
 def fg_emit(query: str, *, e2b_emitted: bool = False,
-            fam_k: int = 3, tool_k: int = 10) -> tuple[str | None, dict[str, Any] | None]:
-    """Devuelve el tool-call de Baxy elegido por FunctionGemma para `query`.
-      ("no_tool", None)        -> abstención: turno conversacional, que responda el LLM.
-      (baxy_tool_name, args)   -> ejecutar via ToolRegistry.execute(name, args).
-      (None, None)             -> FunctionGemma no resolvió (caller conserva la decisión del E2B).
+            fam_k: int = 3, tool_k: int = 10) -> tuple[str | None, dict[str, Any] | None, str | None]:
+    """Devuelve (baxy_tool, args, missing_field) para `query`.
+      ("no_tool", None, None)      -> abstención: turno conversacional, que responda el LLM.
+      (baxy_tool, args, missing)   -> ejecutar via ToolRegistry.execute(tool, args); `missing` es
+                                      el campo de valor que FG dejó vacío (o None si está completo).
+                                      El caller puede pedirle al LLM de habla que lo complete desde
+                                      el texto del usuario (FG-270M a veces dropea args con subsets
+                                      grandes — MEDIDO: "abre Steam" -> app.open sin name).
+      (None, None, None)           -> FunctionGemma no resolvió (caller conserva la decisión del E2B).
 
     `e2b_emitted`: True si el E2B ya emitió un tool-call este turno (señal (b) del gate).
     """
@@ -344,7 +363,7 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
         try:
             q_emb = _norm(np.asarray(_R.sr.embed(query), dtype=np.float32))
             if _R.kva.is_knowledge(q_emb):
-                return "no_tool", None
+                return "no_tool", None, None
         except Exception:
             pass
 
@@ -354,13 +373,14 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     scored = _R.sr.suggest_tools_scored(query, k=12)
     top1 = scored[0][1] if scored else 0.0
     if not (top1 >= FG_ACT_PEAK or e2b_emitted):
-        return "no_tool", None
+        return "no_tool", None, None
 
     subset = _R.subset(query, fam_k=fam_k, tool_k=tool_k)
     name, args = _ask(query, subset)
     if not name or name == "no_tool":
         # FunctionGemma abstuvo en un turno que el gate marcó accionable: no forzamos
         # no_tool (perderíamos la acción) — devolvemos None para conservar la del E2B.
-        return None, None
+        return None, None, None
+    missing = _missing_value_field(name, args)
     comp, baxy_args = _R.to_baxy(name, args)
-    return comp, baxy_args
+    return comp, baxy_args, missing

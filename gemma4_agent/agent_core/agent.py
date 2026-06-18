@@ -2605,6 +2605,38 @@ class Gemma4Agent:
             selected_schemas=selected_schemas,
         )
 
+    def _fg_complete_arg(self, user_text: str, tool: str, action: str, field: str) -> str | None:
+        """El LLM de habla (QAT) extrae el valor que FunctionGemma dejó vacío, del texto del
+        usuario. Devuelve el valor, o None si el usuario NO lo especificó (entonces NO se completa
+        y el tool pide aclaración — honestidad: jamás se inventa). No usa regex ni listas por idioma:
+        el LLM lo decide con el contexto del turno. Llamada corta y greedy (latencia acotada)."""
+        prompt = (
+            f"El usuario dijo: \"{(user_text or '').strip()}\"\n"
+            f"Se va a ejecutar la acción '{action}' pero falta el dato '{field}'. "
+            f"¿Cuál es el '{field}' EXACTO según lo que dijo el usuario? Respondé SOLO ese valor "
+            f"(en el idioma del usuario), sin comillas ni explicación. Si el usuario NO lo "
+            f"especificó, respondé exactamente: NINGUNO"
+        )
+        try:
+            resp = self.client.chat(
+                [{"role": "user", "content": prompt}],
+                tools=None, enable_thinking=False, parallel_tool_calls=False,
+                max_tokens=24, greedy=True,
+                sampling={"temperature": 0.0, "top_p": 1.0, "top_k": 1},
+                timeout_s=20.0,
+            )
+            choice = (resp.get("choices") or [{}])[0]
+            val = ((choice.get("message") or {}).get("content") or "").strip().strip("\"'").strip()
+            if not val or len(val) > 60:
+                return None  # vacío o rambling -> no es un valor limpio
+            # sentinel "no especificado" (multilingüe defensivo): el LLM responde en el idioma del
+            # user, pero le pedimos la palabra fija NINGUNO; aceptamos variantes obvias.
+            if val.split()[0].upper().strip(".,:;!?") in {"NINGUNO", "NONE", "NADA", "N/A", "NA"}:
+                return None
+            return val
+        except Exception:
+            return None
+
     def _chat_streaming(
         self,
         msgs: list[dict[str, Any]],
@@ -3281,7 +3313,21 @@ class Gemma4Agent:
                     from ..routing.fg_router import fg_emit
                     # e2b_emitted: 2ª señal del gate (el E2B abstiene perfecto en chitchat;
                     # si emitió tool, el turno es accionable aunque el encoder no pique).
-                    _fg_name, _fg_args = fg_emit(raw_text_early, e2b_emitted=bool(raw_tool_calls))
+                    _fg_name, _fg_args, _fg_missing = fg_emit(raw_text_early, e2b_emitted=bool(raw_tool_calls))
+                    # COMPLETAR ARG FALTANTE con el LLM de habla: FG-270M a veces devuelve el tool
+                    # sin su valor (MEDIDO: "abre Steam" -> app.open sin name, ~18/105 acciones). El
+                    # QAT (2B, con TODO el contexto del turno) lo extrae del texto del usuario. Si el
+                    # usuario NO lo dijo ("abre" a secas), el QAT devuelve None y NO se completa: el
+                    # tool pide aclaración (honestidad: no se inventa el valor). Solo corre cuando hay
+                    # un faltante real (~10-20% de acciones) -> latencia acotada.
+                    if (_fg_name and _fg_name != "no_tool" and _fg_missing
+                            and isinstance(_fg_args, dict) and not _fg_args.get(_fg_missing)):
+                        _val = self._fg_complete_arg(
+                            raw_text_early, _fg_name, str(_fg_args.get("action") or ""), _fg_missing)
+                        if _val:
+                            _fg_args[_fg_missing] = _val
+                            self.trace.event(turn_id, "fg_arg_completed",
+                                             tool=_fg_name, field=_fg_missing, value=_val)
                     self.trace.event(turn_id, "fg_router", tool=_fg_name, args=_fg_args)
                     if _fg_name == "no_tool":
                         raw_tool_calls = []
