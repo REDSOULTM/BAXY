@@ -62,6 +62,14 @@ class LiveKitWakeRuntime:
         self._clf_input: str = ""
         # Clasificadores EXTRA (fusión dual): stem -> (session, input_name).
         self._extra_clfs: dict[str, tuple[Any, str]] = {}
+        # VERIFICADOR opcional (openWakeWord custom_verifier): regresión logística
+        # sobre el MISMO embedding (1,16,96). Filtra los falsos del modelo base
+        # (entrenado con los fakes reales + Baxy real/sintético). Si carga, predict
+        # devuelve también su score para que wake.py gatee el disparo.
+        self._verif_coef: np.ndarray | None = None
+        self._verif_intercept: float = 0.0
+        self.verifier_threshold: float = 0.5
+        self.last_verifier_score: float = 1.0
         self._loaded = False
         self.last_error: str | None = None
 
@@ -97,6 +105,7 @@ class LiveKitWakeRuntime:
             self._emb_input = self._emb.get_inputs()[0].name
             self._clf = self._make_session(clf_p)
             self._clf_input = self._clf.get_inputs()[0].name
+            self._load_verifier()
             self._loaded = True
             logger.info(
                 "LiveKitWakeRuntime loaded (classifier=%s)",
@@ -171,7 +180,36 @@ class LiveKitWakeRuntime:
         if clf_in is None:
             return 0.0
         out = self._clf.run(None, {self._clf_input: clf_in})[0]
+        # Verificador (si cargó): puntúa el MISMO embedding. wake.py lo lee de
+        # last_verifier_score para gatear el disparo (filtra falsos del base).
+        if self._verif_coef is not None:
+            z = float(np.dot(self._verif_coef, clf_in.reshape(-1))
+                      + self._verif_intercept)
+            self.last_verifier_score = 1.0 / (1.0 + np.exp(-z))
         return float(out[0, 0])
+
+    def _load_verifier(self) -> None:
+        """Carga el verificador (baxy_verifier.json) si existe: regresión
+        logística sobre el embedding (1536). Sin archivo -> sin verificador
+        (no-op, el wake funciona como siempre)."""
+        import json
+        vp = self._dir / "baxy_verifier.json"
+        if not vp.exists():
+            return
+        try:
+            d = json.loads(vp.read_text(encoding="utf-8"))
+            self._verif_coef = np.asarray(d["coef"], dtype=np.float64)
+            self._verif_intercept = float(d["intercept"])
+            self.verifier_threshold = float(d.get("threshold", 0.5))
+            import os as _os
+            _env = (_os.environ.get("GEMMA4_WAKE_VERIFIER_THRESHOLD") or "").strip()
+            if _env:   # override para calibrar end-to-end sin re-entrenar
+                self.verifier_threshold = float(_env)
+            logger.info("LiveKit verificador cargado (thr=%.2f, dim=%d)",
+                        self.verifier_threshold, self._verif_coef.size)
+        except Exception as exc:
+            logger.warning("verificador no cargó: %s", exc)
+            self._verif_coef = None
 
     def predict_multi(self, audio_chunk: np.ndarray) -> dict[str, float]:
         """Scores de TODOS los clasificadores (primario + extras) con UNA

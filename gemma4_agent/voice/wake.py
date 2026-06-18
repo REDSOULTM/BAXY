@@ -123,6 +123,13 @@ LIVEKIT_NOISE_STEM = (os.environ.get("GEMMA4_LIVEKIT_NOISE_STEM", "") or "").str
 LIVEKIT_NOISE_THRESHOLD = float(
     os.environ.get("GEMMA4_LIVEKIT_NOISE_THRESHOLD", "0.5"))
 
+# Verificador post-disparo (openWakeWord custom_verifier): filtra los falsos del
+# modelo base con un clasificador entrenado sobre los falsos REALES + Baxy
+# real/sintético (models/livekit/baxy_verifier.json). Default ON; se apaga con
+# GEMMA4_WAKE_VERIFIER=0. Si el archivo del verificador no existe, es no-op.
+_VERIFIER_ENABLED = (os.environ.get("GEMMA4_WAKE_VERIFIER", "1") or "1").strip().lower() \
+    not in {"0", "false", "no", "off"}
+
 # ----- openWakeWord backend (fallback) -------------------------------
 
 OWW_WINDOW_SAMPLES = 1280   # 80 ms @ 16 kHz
@@ -355,6 +362,27 @@ class WakeDetector:
         except Exception as exc:
             logger.warning("LiveKit predict failed: %s", exc)
             return
+        # VERIFICADOR (openWakeWord custom_verifier, 2026-06-18): si el base
+        # dispararía pero el verificador —regresión logística sobre el mismo
+        # embedding, entrenada con los falsos REALES capturados + Baxy real (5
+        # voces ES) + sintético ES, con features extraídas igual que el runtime
+        # (ventana de pico)— dice "no es Baxy", se SUPRIME. MEDIDO end-to-end:
+        # falsos de video reales 8.1%->1.2% (~85% menos) SIN tocar el recall de
+        # las voces reales (0.858 con y sin). Es ES-céntrico (foco actual del
+        # producto); rechaza voces no entrenadas/no-ES. Solo single-head;
+        # gated GEMMA4_WAKE_VERIFIER (default ON si cargó el verificador).
+        if (_VERIFIER_ENABLED and not noise_head
+                and score >= LIVEKIT_THRESHOLD
+                and getattr(self._livekit_model, "_verif_coef", None) is not None):
+            vs = float(getattr(self._livekit_model, "last_verifier_score", 1.0))
+            if vs < self._livekit_model.verifier_threshold:
+                now = time.monotonic()
+                if now - self._last_partial_at >= SAME_PHRASE_COOLDOWN_S:
+                    self._last_partial_at = now
+                    logger.info("wake VERIFICADOR rechazó falso: base=%.3f "
+                                "verif=%.3f < %.2f", score, vs,
+                                self._livekit_model.verifier_threshold)
+                return
         self._evaluate_score(score, backend="livekit",
                              threshold=LIVEKIT_THRESHOLD,
                              partial=LIVEKIT_THRESHOLD * 0.5)
