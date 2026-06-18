@@ -114,7 +114,12 @@ LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
 # vale para el base nuevo; el base viejo @0.30 dispara con TODO (su banda de
 # falsos llega a 1.0). Sube/baja con GEMMA4_LIVEKIT_THRESHOLD (el verificador
 # mantiene falsos=0 en toda la banda 0.25-0.35, hay margen para subir recall).
-LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.30"))
+# 2026-06-18 it.6 (0.30 -> 0.35): reentreno con silencio + falsos reales
+# capturados como hard-negatives. Bajó el piso del modelo sobre silencio (clips
+# que flotaban 0.5-0.81 ahora caen 0.14-0.28) y los "Yeah" fuertes a ~0.32. A
+# 0.35 esos "Yeah" se rechazan y el recall real se mantiene en 0.94 (medido,
+# _eval_wake_combined). El piso de energía (pipeline.py) cubre el ambiente bajo.
+LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.35"))
 
 # Stem del modelo LiveKit, configurable por env. Wake word = "Baxy" (el nombre del
 # asistente). El modelo baxy.onnx PASÓ el gate: recall held-out 0.872 global, 1.00 en
