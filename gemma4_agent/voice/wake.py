@@ -97,9 +97,24 @@ LIVEKIT_PREDICT_EVERY_N_CHUNKS = max(1, int(
 # residuo de falsos puntúa tan alto como un Baxy real (solape inherente) -> esos
 # solo los cura el reentreno (ver _RUNBOOK_REENTRENO_WAKE). Sube/baja con
 # GEMMA4_LIVEKIT_THRESHOLD (0.60 = más sensible, 0.70 = menos falsos).
-# --- tabla vieja (modelo/eval anterior, fp/hr sobre LibriSpeech, NO real-utterance):
-#   thr 0.25: recall 0.744, fp/hr 0.000 (era el elegido)
-LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.65"))
+# RE-CALIBRADO 2026-06-18 (0.65 -> 0.30): MODELO BASE REENTRENADO (el reentreno
+# que el comentario de arriba anticipaba como única cura del solape de falsos).
+# El nuevo base (medium, neg_w=1, + 169 falsos REALES capturados como
+# hard-negatives + voces reales del usuario; receta = recipe probado de
+# hey_gemma) tiene una distribución de scores CORRIDA HACIA ABAJO: el "baxy"
+# real puntúa ~0.30-0.95 y los falsos quedan muy por debajo. Medido por PICO
+# sobre las grabaciones reales (scripts/_diag/_eval_wake_combined.py), base+
+# verificador:
+#   base_thr 0.25: recall real 0.940, falsos 0.000, confusables 0.037
+#   base_thr 0.30: recall real 0.933, falsos 0.000, confusables 0.029  <- elegido
+#   base_thr 0.35: recall real 0.893, falsos 0.000, confusables 0.029
+# vs el base ANTERIOR (prod) @0.65: recall 0.858, falsos 0.012, confus ~0.21.
+# El reentreno ELIMINA los falsos (los hard-negatives reales curaron el solape)
+# Y SUBE el recall. El verificador los lleva a 0 exacto. OJO: este umbral SOLO
+# vale para el base nuevo; el base viejo @0.30 dispara con TODO (su banda de
+# falsos llega a 1.0). Sube/baja con GEMMA4_LIVEKIT_THRESHOLD (el verificador
+# mantiene falsos=0 en toda la banda 0.25-0.35, hay margen para subir recall).
+LIVEKIT_THRESHOLD = float(os.environ.get("GEMMA4_LIVEKIT_THRESHOLD", "0.30"))
 
 # Stem del modelo LiveKit, configurable por env. Wake word = "Baxy" (el nombre del
 # asistente). El modelo baxy.onnx PASÓ el gate: recall held-out 0.872 global, 1.00 en
