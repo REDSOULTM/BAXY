@@ -59,14 +59,28 @@ class WakeEnergyGateTest(unittest.TestCase):
         p._on_wake("baxy", 0.30)
         self.assertEqual(p._state, State.CAPTURE)
 
-    def test_calibrated_threshold_used_when_available(self):
-        # con un calibrador (mic de baja ganancia, umbral ~100), una voz de ~150
-        # PASA aunque esté por debajo del gate fijo viejo (350).
-        p = _make_pipeline(_speech(0.6, amp=150))
+    def test_calibration_raises_gate_for_noisy_mic(self):
+        # En un mic RUIDOSO la calibración SUBE el gate por encima del default:
+        # un sonido de ~424 RMS (que pasaría el 350 fijo) es RECHAZADO si el
+        # ruido del mic calibró el gate a 600.
+        p = _make_pipeline(_speech(0.6, amp=600))   # RMS ≈ 424
         p._manual_rms_override = False
-        p._noise_cal = type("C", (), {"threshold": 100.0})()
+        p._noise_cal = type("C", (), {"threshold": 600.0})()
         p._on_wake("baxy", 0.30)
-        self.assertEqual(p._state, State.CAPTURE)
+        self.assertEqual(p._state, State.IDLE)      # 424 < 600 -> rechazado
+
+    def test_calibration_below_default_is_floored(self):
+        # 2026-06-18: la calibración NUNCA baja el gate por debajo del piso
+        # seguro (MIN_CAPTURE_RMS=350). En cuarto silencioso calibraba a ~20 y
+        # dejaba pasar ambiente de bajo nivel (~134 RMS) que Parakeet alucina
+        # como "Yeah"/"Thank you". Con el piso, ese ambiente se RECHAZA aunque
+        # la calibración lo pusiera en 20. (Mics de muy baja ganancia: usar
+        # GEMMA4_VOICE_MIN_CAPTURE_RMS manual, que setea override y evita el piso.)
+        p = _make_pipeline(_speech(0.6, amp=190))   # RMS ≈ 134 (como el FP real)
+        p._manual_rms_override = False
+        p._noise_cal = type("C", (), {"threshold": 20.0})()
+        p._on_wake("baxy", 0.30)
+        self.assertEqual(p._state, State.IDLE)      # 134 < piso 350 -> rechazado
 
 
 if __name__ == "__main__":

@@ -595,7 +595,14 @@ class VoicePipeline:
                 _cal = getattr(self, "_noise_cal", None)
                 if not getattr(self, "_manual_rms_override", True) and \
                         _cal is not None and _cal.threshold is not None:
-                    _gate = _cal.threshold
+                    # La calibración puede SUBIR el gate (mic ruidoso) pero NUNCA
+                    # bajarlo por debajo del piso seguro. Medido 2026-06-18: en
+                    # cuarto silencioso calibraba a <20 y dejaba pasar ambiente de
+                    # bajo nivel (peak_rms 20-134 int16) que Parakeet alucina como
+                    # "Yeah"/"Thank you" -> falsos aceptados. El Baxy real está en
+                    # 1140+; el piso 350 rechaza esas alucinaciones con 8x de
+                    # margen y preserva la adaptación hacia ARRIBA de mics ruidosos.
+                    _gate = max(MIN_CAPTURE_RMS, _cal.threshold)
                 if _wake_rms < _gate:
                     logger.info(
                         "wake RECHAZADO: preroll peak_rms=%.0f < %.0f -> falso "
@@ -653,7 +660,10 @@ class VoicePipeline:
         _cal = getattr(self, "_noise_cal", None)
         if not getattr(self, "_manual_rms_override", True) and \
                 _cal is not None and _cal.threshold is not None:
-            _gate = _cal.threshold
+            # Mismo piso que el gate de wake: la calibración nunca baja el gate
+            # por debajo del default seguro (si no, ambiente de bajo nivel pasa
+            # y Parakeet alucina sobre él). Solo sube para mics ruidosos.
+            _gate = max(MIN_CAPTURE_RMS, _cal.threshold)
         if peak_rms < _gate:
             logger.info(
                 "silence gate: peak_rms=%.0f < %.0f -> skip transcribe "
