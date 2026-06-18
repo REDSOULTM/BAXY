@@ -816,32 +816,54 @@ def create_app(config: AgentConfig | None = None) -> FastAPI:
 
         VOICE.set_on_state(_on_voice_state)
         VOICE.set_on_wake_event(_on_voice_wake)
-        ok = VOICE.enable()
-        # Wire on_command to the agent runner so transcribed commands
-        # become turns.
-        if ok:
-            from ..agent_core.agent_runner import RUNNER
 
-            def _submit_voice(text: str) -> None:
-                # GATE DE BOOT (2026-06-18): no actuar sobre wakes mientras el
-                # agente/router todavía cargan. Durante el arranque la CPU/GPU
-                # están saturadas (embeddings, prewarm) y la captura de audio
-                # puede glitchear -> el wake dispara por un transitorio y, peor,
-                # el turno se ENCOLA y se ejecuta segundos después, STALE y fuera
-                # de contexto. Medido: un falso "Thank you" disparó a mitad del
-                # boot (router aún cargando) y se procesó 22s tarde. El mismo
-                # gate que habilita la casilla de chat (ready = built ∧ warmed ∧
-                # healthy ∧ router) aplica a la voz: si no está listo, se
-                # DESCARTA (no se encola).
-                if not (RUNNER.agent_ready() and RUNNER.is_router_ready()):
-                    logger.info(
-                        "voice command dropped: agente no listo (boot) text=%r",
-                        text[:80])
-                    return
-                RUNNER.submit(text)
+        from ..agent_core.agent_runner import RUNNER
 
-            VOICE.set_on_command(_submit_voice)
-        return {"ok": ok, **VOICE.status()}
+        def _agent_ready() -> bool:
+            # Mismo gate que habilita la casilla de chat: built ∧ warmed ∧
+            # healthy ∧ router. is_router_ready() cubre warmed+healthy+router.
+            return RUNNER.agent_ready() and RUNNER.is_router_ready()
+
+        def _submit_voice(text: str) -> None:
+            # Defensa en profundidad: aunque el mic ya no se toma hasta ready,
+            # si por una carrera llega un comando con el agente no listo, se
+            # descarta (no se encola un turno STALE).
+            if not _agent_ready():
+                logger.info("voice command dropped: agente no listo text=%r",
+                            text[:80])
+                return
+            RUNNER.submit(text)
+
+        def _enable_and_wire() -> bool:
+            ok = VOICE.enable()
+            if ok:
+                VOICE.set_on_command(_submit_voice)
+            return ok
+
+        # GATE DE BOOT (2026-06-18): NO activar el wake / tomar el mic hasta que
+        # el agente esté listo. En el arranque la CPU/GPU están saturadas
+        # (embeddings + prewarm del LLM) y la captura de audio glitchea; además
+        # el modelo de wake "flota" ~0.42 sobre silencio (por encima del umbral
+        # 0.30) -> dispara sobre la nada. Medido: al abrir la app, un falso
+        # "Thank you" disparó a mitad del boot y se procesó 22s tarde. Si el
+        # agente aún no está listo, diferimos el enable a un hilo que espera a
+        # ready y recién ahí toma el mic -> el wake nunca se activa en el boot.
+        if _agent_ready():
+            ok = _enable_and_wire()
+            return {"ok": ok, **VOICE.status()}
+
+        def _deferred_enable() -> None:
+            for _ in range(240):  # tope ~120s; luego habilita igual (fallback)
+                if _agent_ready():
+                    break
+                time.sleep(0.5)
+            _enable_and_wire()
+            logger.info("voice habilitado tras esperar a 'ready' (gate de boot)")
+
+        threading.Thread(target=_deferred_enable, name="voice-deferred-enable",
+                         daemon=True).start()
+        return {"ok": True, "deferred": True,
+                "reason": "agente no listo; la voz se activa al estar ready"}
 
     @app.post("/voice/stop")
     def voice_stop() -> Any:
