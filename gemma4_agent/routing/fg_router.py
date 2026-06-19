@@ -346,6 +346,35 @@ def _missing_value_fields(fg_tool: str, args: dict[str, Any] | None, cap: int = 
     return [p for p in value_props if not a.get(p)][:cap]
 
 
+# Marcadores de FORMA INTERROGATIVA (palabra-WH inicial, accent-folded). Igual que
+# _IMPERATIVE_VERBS desambigua el IDIOMA por la forma verbal, esto desambigua la
+# INTENCIÓN por la forma de la oración: una PREGUNTA sobre media ("qué suena") es LEER,
+# una ORDEN ("poné música") es REPRODUCIR. Mide la FORMA gramatical, NO contenido.
+_INTERROGATIVE_FIRST = frozenset({
+    "que", "cual", "como", "quien", "cuanto", "cuanta", "donde",   # es
+    "what", "which", "who", "how", "where", "whose", "whats",       # en
+    "quel", "quelle", "quels", "quelles", "qui", "comment",         # fr
+    "wie", "welche", "welcher", "wer", "wann", "wieviel",           # de
+    "che", "cosa", "chi", "quale", "quali",                         # it
+    "qual", "quais", "quem",                                        # pt
+})
+
+
+def _is_interrogative(query: str) -> bool:
+    """¿La query tiene FORMA de pregunta? Signo (¿/?) o primer token = palabra-WH
+    (accent-folded). Las ÓRDENES ("poné/play/abrí") nunca arrancan con WH -> no
+    matchean. Señal estructural multilingüe, no lista de keywords de contenido."""
+    q = (query or "").strip().lower()
+    if not q:
+        return False
+    if "?" in q or "¿" in q:
+        return True
+    import unicodedata
+    first = q.split()[0].strip(".,;:!¡")
+    first = "".join(c for c in unicodedata.normalize("NFKD", first) if not unicodedata.combining(c))
+    return first in _INTERROGATIVE_FIRST
+
+
 def fg_emit(query: str, *, e2b_emitted: bool = False,
             fam_k: int = 3, tool_k: int = 10) -> tuple[str | None, dict[str, Any] | None, list[str]]:
     """Devuelve (baxy_tool, args, missing_fields) para `query`.
@@ -364,6 +393,20 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     if _R is None:
         _R = _FGRouter()
 
+    scored = _R.sr.suggest_tools_scored(query, k=12)
+    # GUARDA ESTRUCTURAL DE FORMA (va ANTES de los gates). Causa raíz del mis-route
+    # "qué suena"->play/mute/no_tool: el encoder y el FG-270M confunden LEER (now_playing)
+    # con REPRODUCIR (play) porque "canción/música" aparece en AMBAS intenciones; la señal
+    # que las separa es la FORMA gramatical (pregunta vs orden), que los embeddings y un
+    # modelo de 270M capturan mal. Si el encoder rutea a MEDIA y la query es una PREGUNTA,
+    # la intención es LEER qué suena -> now_playing (sin provider: lee la sesión activa).
+    # Mismo patrón sancionado que _IMPERATIVE_VERBS (mide la FORMA, no keywords de
+    # contenido). Va antes del KVA gate porque éste a veces marca "qué música hay" como
+    # conocimiento (no lo es: es una acción de lectura). Las ÓRDENES ("poné/pon/reproducí")
+    # no arrancan con palabra-WH -> quedan intactas (siguen al flujo normal -> play).
+    if scored and scored[0][0] == "media" and _is_interrogative(query):
+        return "media", {"action": "now_playing"}, []
+
     # 1) GATE CONOCIMIENTO-vs-ACCIÓN (ANTES de FunctionGemma): si la query es CONOCIMIENTO con
     # alta confianza -> no_tool, sin invocar FG. Corta el mis-route conocimiento→acción de las
     # trampas family-dominated que FG no abstiene aunque no_tool esté en el subset ("contame de
@@ -381,7 +424,6 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     # 2) Gate acción-vs-conversación (ver FG_ACT_PEAK). Solo consultamos a FunctionGemma
     # si el turno es accionable; si no, no_tool y que responda el E2B (ahorra latencia
     # en chitchat y evita el eager-invocation de FunctionGemma).
-    scored = _R.sr.suggest_tools_scored(query, k=12)
     top1 = scored[0][1] if scored else 0.0
     if not (top1 >= FG_ACT_PEAK or e2b_emitted):
         return "no_tool", None, []
