@@ -63,6 +63,8 @@ _IMPORT_TO_DIST = {
     "winsdk": "winsdk", "jiwer": "jiwer",
     "ddgs": "ddgs", "py3langid": "py3langid",
     "windows_toasts": "windows-toasts",
+    "pyaudiowpatch": "pyaudiowpatch",  # WASAPI loopback mic (reescritura de voz)
+    "tokenizers": "tokenizers",        # import directo en semantic_router (Tokenizer)
 }
 
 # Import names that are intentionally NOT in requirements.txt.
