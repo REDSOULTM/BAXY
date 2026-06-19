@@ -15,14 +15,9 @@ from typing import Any
 from urllib.parse import urlparse
 
 from ..safety_pkg.ssrf_guard import _is_private_host, _SSRFGuardRedirectHandler
+from .text_utils import _truncate  # de-dup: era una copia local del mismo one-liner
 
 WEB_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gemma4Agent/1.0"
-
-
-def _truncate(text: str, limit: int) -> str:
-    # Copia local (1 línea) para que web_text NO dependa de tools.py (evitaría el
-    # ciclo: tools.py importa de acá). Idéntico al _truncate de tools.py/ops_tools.py.
-    return text if len(text) <= limit else text[:limit] + f"...<truncated {len(text) - limit} chars>"
 
 
 def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000, allow_private: bool = False) -> dict[str, Any]:

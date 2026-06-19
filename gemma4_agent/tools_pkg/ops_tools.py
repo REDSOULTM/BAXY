@@ -2235,8 +2235,7 @@ def _string_list(value: Any) -> list[str]:
     return []
 
 
-def _truncate(text: str, limit: int) -> str:
-    return text if len(text) <= limit else text[:limit] + f"...<truncated {len(text) - limit} chars>"
+from .text_utils import _truncate  # noqa: E402,F401  (de-dup: estaba copiado en 3 sitios)
 
 
 # Cleanup atexit para _BROWSER_SESSIONS. Sin esto, los Chromium spawned via
