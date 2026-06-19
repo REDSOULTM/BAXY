@@ -22,7 +22,6 @@ from typing import Any, TYPE_CHECKING
 # zero_event_claim_is_lie (detector estructural) y el regen de conocimiento (idioma).
 from ..safety_pkg.grounding_gate import (
     detect_action_claim_without_evidence,
-    detect_reply_language,
 )
 
 if TYPE_CHECKING:
@@ -121,35 +120,6 @@ def reply_claims_action(content: str) -> bool:
     if any(p in low for p in _SEARCH_DONE_PATTERNS):
         return True
     return any(p in low for p in _PROMISE_PATTERNS)
-
-
-def guard_unverified_final_with_knowledge_regen(
-    agent: Any, content: str, events: list[Any],
-) -> str:
-    """guard_unverified_final + regeneración de conocimiento en 0-events.
-
-    Si el guard base no reemplazó pero en 0-events el reply afirma una acción
-    consumada (incluido perfecto compuesto / presente continuo: "he reproducido",
-    "estoy escuchando", que el guard de prefijos no atrapa), regenera la respuesta
-    como CONOCIMIENTO honesto (el LLM responde con lo que sabe en vez del genérico
-    "no ejecuté nada, ¿lo intento?", absurdo para una pregunta). Bug "J Balvin"
-    live 2026-06-09: el 4B inventaba "he reproducido la música en Spotify".
-    """
-    new_content = guard_unverified_final(content, events)
-    if new_content != content:
-        return new_content  # el guard base ya reemplazó
-    if not (events == [] and zero_event_claim_is_lie(content)):
-        return content
-    _utext = (getattr(agent, "_current_user_text_raw", "")
-              or getattr(agent, "_current_user_text", "") or "")
-    if _utext:
-        # idioma del reply: detect_reply_language (grounding_gate, top-level, sin
-        # ciclo) sobre el texto del usuario. None deja que el LLM infiera.
-        _tlang = detect_reply_language(_utext) or None
-        _know = agent._llm_knowledge_reply(_utext, fallback="", target_lang=_tlang)
-        if _know and _know.strip() and not zero_event_claim_is_lie(_know):
-            return _know
-    return new_content
 
 
 def zero_event_claim_is_lie(content: str) -> bool:

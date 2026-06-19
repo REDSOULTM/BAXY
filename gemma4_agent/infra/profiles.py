@@ -763,8 +763,6 @@ def model_missing(profile_name: str) -> bool:
 
 
 # Compat: nombre viejo usado por la UI/launcher para el perfil de menor VRAM.
-def light_model_configured() -> str | None:
-    return _profile_with_overrides(PROFILES["vram4"]).model_path
 
 
 def light_model_missing() -> bool:

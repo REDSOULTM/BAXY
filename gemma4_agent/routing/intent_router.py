@@ -754,29 +754,6 @@ def _ensure_current_centroids() -> bool:
         return False
 
 
-def is_current_world_info(text: str) -> bool:
-    """True si la pregunta pide información ACTUAL del mundo (clima, precios,
-    noticias, resultados) que el LLM no puede responder de su conocimiento —
-    necesita web aunque tenga forma de pregunta conceptual. Multilingüe por
-    embeddings. Fallback seguro: sin encoder → False (comportamiento de hoy)."""
-    txt = (text or "").strip()
-    if len(txt) < 3:
-        return False
-    if not _ensure_current_centroids() or _CURRENT.current is None:
-        return False
-    try:
-        from . import semantic_router as sr
-        import numpy as np
-        q = sr.embed(txt)
-        if q is None:
-            q = sr._STATE.model.encode([txt], normalize_embeddings=True)[0]
-        q = np.asarray(q, dtype="float32")
-        return (float(q @ _CURRENT.current)
-                - float(q @ _CURRENT.timeless)) >= _CURRENT_INFO_MARGIN
-    except Exception:
-        return False
-
-
 class _ShopCentroids:
     shop: Any = None
     noshop: Any = None

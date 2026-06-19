@@ -57,9 +57,6 @@ class PatternCandidate:
         act = act_map.get(self.target_kind, f"{self.target_kind} {self.target_key}").format(k=self.target_key)
         return frame.format(trig=trig, act=act)
 
-    def describe_es(self) -> str:
-        """Alias retrocompat (es)."""
-        return self.describe("es")
 
     def to_routine_trigger(self) -> dict[str, Any] | None:
         """Mapea el patrón a un trigger del routine_tool existente (traducción

@@ -250,16 +250,6 @@ def event_auxiliary_for_reply(ev: Any) -> bool:
     return action in read_actions
 
 
-def focused_events_for_action_reply(events: Any) -> list:
-    successful = [ev for ev in (events or []) if event_successful_for_reply(ev)]
-    effectful = [ev for ev in successful if not event_auxiliary_for_reply(ev)]
-    if effectful:
-        return effectful[-3:]
-    if successful:
-        return successful[-3:]
-    return list(events or [])[-3:]
-
-
 # ----------------------------------------------------------------------------
 # Pases LLM de observación / reescritura de idioma (necesitan el agente)
 # ----------------------------------------------------------------------------
@@ -358,97 +348,6 @@ def llm_knowledge_reply(agent: Any, user_text: str, fallback: str,
         except Exception:
             pass
         return fallback
-
-
-def repair_media_status_reply_if_needed(
-    agent: Any,
-    user_text: str,
-    assistant_text: str,
-    events: Any,
-    turn_id: str,
-) -> str:
-    from .agent import _reply_lang
-    current = None
-    for ev in reversed(events or []):
-        if str(getattr(ev, "name", "") or "").casefold() != "media":
-            continue
-        args = event_args_for_reply(ev)
-        result = event_result_for_reply(ev)
-        action = str(result.get("action") or args.get("action") or "").casefold()
-        now = result.get("now_playing") if isinstance(result.get("now_playing"), dict) else None
-        if action == "status" and now and str(now.get("title") or "").strip():
-            current = now
-            break
-    if not current:
-        return assistant_text
-    title = str(current.get("title") or "").strip()
-    if not title or title.casefold() in (assistant_text or "").casefold():
-        return assistant_text
-    evidence = {
-        "current_media_title": title,
-        "playback_status": current.get("playback_status"),
-        "playback_type": current.get("playback_type"),
-        "source_app": current.get("source_app"),
-    }
-    fallback = f"Estas viendo {title}."
-    # Llamamos al MÉTODO del agente (no la función del módulo) para que un
-    # monkeypatch de tests sobre agent._llm_observation_reply siga aplicando.
-    fixed = agent._llm_observation_reply(
-        user_text, evidence, fallback, target_lang=_reply_lang(user_text)
-    )
-    if fixed and fixed.strip():
-        try:
-            agent.trace.event(
-                turn_id, "media_status_reply_repaired",
-                before=(assistant_text or "")[:120], after=fixed[:120],
-            )
-        except Exception:
-            pass
-        return fixed
-    return assistant_text
-
-
-def llm_rewrite_reply_language(agent: Any, user_text: str, assistant_text: str,
-                               target_lang: str) -> str:
-    """Ask the LLM to preserve the reply but rewrite it in target_lang."""
-    from .agent import _LANG_NAMES, sanitize_text
-    import os as _os_lrr
-    if _os_lrr.environ.get("GEMMA4_REPLY_LANG_REPAIR", "1").strip().lower() \
-            in {"0", "false", "no", "off"}:
-        return assistant_text
-    lang_name = _LANG_NAMES.get(target_lang)
-    if not lang_name or not (assistant_text or "").strip():
-        return assistant_text
-    try:
-        sys_p = (
-            "You rewrite assistant replies into the required language. "
-            f"Output ONLY in {lang_name}. Preserve the same facts, meaning, "
-            "tone, and brevity. Do not add new claims, do not claim actions, "
-            "do not use markdown, and do not explain the rewrite."
-        )
-        usr_p = (
-            f"User message:\n{(user_text or '')[:500]}\n\n"
-            f"Assistant reply to rewrite:\n{(assistant_text or '')[:2000]}\n\n"
-            "Rewritten reply:"
-        )
-        _model = agent._router_model_for([{"role": "user", "content": usr_p}])
-        resp = agent.client.chat(
-            [{"role": "system", "content": sys_p},
-             {"role": "user", "content": usr_p}],
-            tools=None, enable_thinking=False, parallel_tool_calls=False,
-            max_tokens=160, timeout_s=12.0, model=_model,
-        )
-        choices = resp.get("choices") or []
-        raw = str((choices[0].get("message") or {}).get("content") or "").strip() if choices else ""
-        return sanitize_text(raw) or assistant_text
-    except Exception as _exc:
-        try:
-            agent.trace.event("agent", "silent_fallback",
-                              component="llm_reply_lang_rewrite",
-                              error=f"{type(_exc).__name__}: {_exc}")
-        except Exception:
-            pass
-        return assistant_text
 
 
 def repair_reply_language_if_needed(agent: Any, user_text: str, assistant_text: str,

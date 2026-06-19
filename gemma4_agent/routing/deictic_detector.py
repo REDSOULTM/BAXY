@@ -92,10 +92,6 @@ def _embed_pool(pool, cache_name):
         return None
 
 
-def _exemplar_embeddings():  # compat: tests viejos pueden llamarla
-    return _embed_pool(_DEICTIC_POS, "_pos_emb_cache")
-
-
 def needs_deictic_context(user_text: str) -> bool:
     """¿El turno es una referencia deíctica corta a algo previo?
 

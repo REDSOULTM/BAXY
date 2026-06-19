@@ -163,39 +163,6 @@ def match(text: str) -> ExemplarMatch | None:
         return None
 
 
-def has_tool_conflict(text: str) -> bool:
-    """True when a no-tool exact exemplar has a near-identical tool neighbor."""
-    if not is_enabled() or not text.strip():
-        return False
-    idx = _load()
-    if idx is None:
-        return False
-    try:
-        import numpy as np
-        from . import semantic_router as sr
-
-        if not _semantic_ready(sr):
-            return False
-        qv = sr.embed(text)
-        if qv is None:
-            return False
-        scores = idx.embeddings @ np.asarray(qv, dtype=np.float32)
-        if scores.size == 0:
-            return False
-        top = np.argsort(-scores)[: max(8, _TOP_K)]
-        for raw_i in top:
-            i = int(raw_i)
-            if idx.queries[i] == text:
-                continue
-            if float(scores[i]) < _CONFLICT_SCORE:
-                continue
-            if idx.labels[i]:
-                return True
-        return False
-    except Exception:
-        return False
-
-
 def _load() -> _Index | None:
     global _INDEX, _TRIED
     if _INDEX is not None:

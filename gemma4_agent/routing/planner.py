@@ -942,7 +942,6 @@ def select_tool_names(
     return capped
 
 
-
 # Default attribute, overwritten on each call.
 select_tool_names._last_fallback_used = False  # type: ignore[attr-defined]
 
@@ -1558,21 +1557,6 @@ def _suggest_tools(step: str) -> list[str]:
         pass
 
     return _dedupe(tools)
-
-
-def _verify_hint(step: str) -> str:
-    low = _fold_text(step)
-    if "steam" in low:
-        return "steam result, window focus, screenshot if GUI state is unclear"
-    if "youtube" in low or "video" in low or "musica" in low:
-        return "direct URL plus screenshot; playback may remain unverified"
-    if "archivo" in low or "carpeta" in low:
-        return "verify(action='file_exists') or filesystem diff/list"
-    if "navegador" in low or "google" in low or "web" in low:
-        return "browser_real/web content for reading; browser result only for navigation"
-    if "cierra" in low or "cerrar" in low:
-        return "verify app/window/process no longer exists"
-    return "tool status/evidence"
 
 
 def _related_tools(name: str, text: str) -> list[str]:

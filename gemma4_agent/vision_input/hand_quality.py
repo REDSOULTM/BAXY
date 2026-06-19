@@ -117,8 +117,6 @@ class GestureStateFilter:
         self._candidate_count: dict[str, int] = {}
         self._missing_count: dict[str, int] = {}
 
-    def get_stable_label(self, track_id: str) -> str:
-        return self._state.get(track_id, "none")
 
     def update(self, track_id: str, raw: GestureResult, quality: HandQuality) -> str:
         current = self._state.get(track_id, "none")

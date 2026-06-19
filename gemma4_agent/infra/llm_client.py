@@ -223,43 +223,6 @@ def _try_erase_slot(slot_id: int = 0, timeout_s: float = 1.0) -> bool:
         return False
 
 
-def _maybe_circuit_break_restart_async(*, risk_weight: int = 1) -> bool:
-    """Version async del circuit breaker: si llega al threshold, dispara el
-    restart en un thread daemon para no bloquear el caller. El proximo chat
-    encuentra el server fresh sin pausa visible al usuario.
-
-    Devuelve True si se programo el restart. False si counter no llego.
-    """
-    import threading
-    global _CB_REQUEST_COUNTER
-    threshold_raw = os.environ.get("GEMMA4_CIRCUIT_BREAKER_THRESHOLD", "0")
-    try:
-        threshold = int(threshold_raw)
-    except ValueError:
-        threshold = 0
-    if threshold <= 0:
-        return False
-    with _CB_LOCK:
-        _CB_REQUEST_COUNTER += max(1, int(risk_weight))
-        if _CB_REQUEST_COUNTER < threshold:
-            return False
-        _CB_REQUEST_COUNTER = 0
-
-    def _bg_restart() -> None:
-        logger.info(
-            "circuit breaker (async): reached threshold, restarting in bg")
-        try:
-            if not _try_erase_slot():
-                _try_restart_managed_server()
-        except Exception as exc:
-            logger.warning("circuit breaker bg restart failed: %s", exc)
-
-    t = threading.Thread(target=_bg_restart, name="cb-bg-restart",
-                          daemon=True)
-    t.start()
-    return True
-
-
 def _maybe_circuit_break_restart(*, risk_weight: int = 1) -> bool:
     """Incrementa el counter y limpia el slot (o reinicia el server) al
     llegar al threshold. Devuelve True si se hizo algo.

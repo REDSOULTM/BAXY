@@ -118,16 +118,6 @@ def snap_click_target_near(
     return candidates[0][1]
 
 
-def ocr_find_text_near(*_: object, **__: object) -> None:
-    """Placeholder for Phase 4 OCR snap.
-
-    The actual OCR primitive already exists at
-    gemma4_agent.tools_pkg.ops_tools.ocr_find_text. Phase 0 does not call it
-    because no screen grounding or clicking is performed.
-    """
-    return None
-
-
 def _scan_points(x: int, y: int, radius: int) -> tuple[tuple[int, int], ...]:
     if radius <= 0:
         return ((x, y),)
