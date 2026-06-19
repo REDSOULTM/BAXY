@@ -33,6 +33,7 @@ from __future__ import annotations
 import logging
 import os
 import time
+from collections import deque
 from pathlib import Path
 from typing import Any, Callable
 
@@ -145,10 +146,30 @@ LIVEKIT_NOISE_THRESHOLD = float(
 
 # Verificador post-disparo (openWakeWord custom_verifier): filtra los falsos del
 # modelo base con un clasificador entrenado sobre los falsos REALES + Baxy
-# real/sintético (models/livekit/baxy_verifier.json). Default ON; se apaga con
-# GEMMA4_WAKE_VERIFIER=0. Si el archivo del verificador no existe, es no-op.
-_VERIFIER_ENABLED = (os.environ.get("GEMMA4_WAKE_VERIFIER", "1") or "1").strip().lower() \
+# real/sintético (models/livekit/baxy_verifier.json).
+# 2026-06-18 DEFAULT OFF — MEDIDO INSERVIBLE/DAÑINO: el verificador es
+# anti-discriminativo. Sobre 18 capturas reales + 3 falsos en vivo (instrumentado
+# por-ventana, scripts/_diag/_verif_separation.py) dio verif PICO 0.992 a un "Oh."
+# falso y 0.155 a ambiente, pero 0.023-0.092 a "Baxy" REALES ("Sí. Gracias.").
+# El falso tiene MÁS verif que varios reales -> NINGÚN umbral los separa, a ninguna
+# ventana de suavizado (pico6≈12≈16). Suprimirlo costaba recall sin matar falsos.
+# El gate de ENERGÍA (piso por-mic, pipeline) sí separa los falsos de ambiente
+# (región wake-word REAL min 1007 vs FP max 455). Se deja el código (gated) por si
+# un verificador re-entrenado discrimina mejor; HOY off. Prender: GEMMA4_WAKE_VERIFIER=1.
+_VERIFIER_ENABLED = (os.environ.get("GEMMA4_WAKE_VERIFIER", "0") or "0").strip().lower() \
     not in {"0", "false", "no", "off"}
+# Nº de ventanas (~125ms c/u a 8Hz) sobre las que se toma el PICO del verificador.
+# ~6 cubre la duración de un "Baxy" (~0.5-0.75s) sin arrastrar de un wake a otro
+# (se limpia en reset()).
+_VERIF_SMOOTH_WINDOWS = int(os.environ.get("GEMMA4_WAKE_VERIF_SMOOTH", "6"))
+# Umbral aplicado al PICO del verificador (no a una ventana suelta). Es más bajo
+# que el umbral por-ventana del json (0.10) a propósito: el pico-sobre-N-ventanas
+# es una señal MUCHO más robusta que una ventana aislada, así que un umbral menor
+# da margen de recall sin reabrir falsos. Medido en vivo (2026-06-18): silencio/
+# ambiente da verif=0.00 en TODAS las ventanas (pico 0.00); el "Baxy" real más
+# débil tuvo pico 0.107. Con 0.05 hay ~2x de margen sobre el peor real y sigue
+# infinitamente por encima del 0.00 del silencio.
+_VERIF_PEAK_THR = float(os.environ.get("GEMMA4_WAKE_VERIF_PEAK_THR", "0.05"))
 
 # ----- openWakeWord backend (fallback) -------------------------------
 
@@ -194,6 +215,8 @@ class WakeDetector:
         self._lk_ring: np.ndarray = np.zeros(0, dtype=np.int16)
         # Predict-throttle counter (see LIVEKIT_PREDICT_EVERY_N_CHUNKS).
         self._lk_chunk_count: int = 0
+        # Verificador SUAVIZADO: pico del verif sobre las últimas ventanas.
+        self._recent_verif: deque[float] = deque(maxlen=_VERIF_SMOOTH_WINDOWS)
 
         # ---- OWW state ----
         self._oww_model: Any = None
@@ -300,11 +323,21 @@ class WakeDetector:
             self._loaded = False
             return False
 
+    def last_window(self) -> np.ndarray:
+        """El ring de 2 s que el modelo LiveKit acaba de puntuar (int16).
+
+        Es el audio REAL sobre el que se calculó el score del wake — a diferencia
+        del preroll del pipeline, NO se limpia entre turnos. El gate de energía lo
+        usa para no rechazar un "Baxy" real dicho justo después de un turno (cuando
+        el preroll quedó vacío por el reset-a-IDLE). Copia defensiva."""
+        return self._lk_ring.copy() if self._lk_ring.size else np.zeros(0, dtype=np.int16)
+
     def reset(self) -> None:
         """Clear buffers and cooldowns."""
         self._lk_ring = np.zeros(0, dtype=np.int16)
         self._oww_buf = np.zeros(0, dtype=np.int16)
         self._lk_chunk_count = 0
+        self._recent_verif.clear()
         self._last_fire_at = 0.0
         self._last_partial_at = 0.0
         if self._oww_model is not None:
@@ -382,26 +415,26 @@ class WakeDetector:
         except Exception as exc:
             logger.warning("LiveKit predict failed: %s", exc)
             return
-        # VERIFICADOR (openWakeWord custom_verifier, 2026-06-18): si el base
-        # dispararía pero el verificador —regresión logística sobre el mismo
-        # embedding, entrenada con los falsos REALES capturados + Baxy real (5
-        # voces ES) + sintético ES, con features extraídas igual que el runtime
-        # (ventana de pico)— dice "no es Baxy", se SUPRIME. MEDIDO end-to-end:
-        # falsos de video reales 8.1%->1.2% (~85% menos) SIN tocar el recall de
-        # las voces reales (0.858 con y sin). Es ES-céntrico (foco actual del
-        # producto); rechaza voces no entrenadas/no-ES. Solo single-head;
-        # gated GEMMA4_WAKE_VERIFIER (default ON si cargó el verificador).
+        # VERIFICADOR (openWakeWord custom_verifier): clasificador logístico sobre el
+        # embedding del wake. DEFAULT OFF (GEMMA4_WAKE_VERIFIER): medido sobre las
+        # captures reales que es anti-discriminativo — le daba verif PICO alto a
+        # falsos vocales ("Oh." 0.992) y bajo a "Baxy" reales (0.023), sin separación
+        # a ninguna ventana de suavizado. La discriminación de falsos de AMBIENTE la
+        # hace el gate de ENERGÍA (pipeline _on_wake). Se deja el código (gated, con
+        # suavizado por PICO sobre las últimas _VERIF_SMOOTH_WINDOWS, que es la mejor
+        # forma SI se re-activa) por si un verificador re-entrenado discrimina mejor.
         if (_VERIFIER_ENABLED and not noise_head
-                and score >= LIVEKIT_THRESHOLD
                 and getattr(self._livekit_model, "_verif_coef", None) is not None):
             vs = float(getattr(self._livekit_model, "last_verifier_score", 1.0))
-            if vs < self._livekit_model.verifier_threshold:
+            self._recent_verif.append(vs)
+            vpeak = max(self._recent_verif)
+            if score >= LIVEKIT_THRESHOLD and vpeak < _VERIF_PEAK_THR:
                 now = time.monotonic()
                 if now - self._last_partial_at >= SAME_PHRASE_COOLDOWN_S:
                     self._last_partial_at = now
                     logger.info("wake VERIFICADOR rechazó falso: base=%.3f "
-                                "verif=%.3f < %.2f", score, vs,
-                                self._livekit_model.verifier_threshold)
+                                "verif_pico=%.3f < %.2f", score, vpeak,
+                                _VERIF_PEAK_THR)
                 return
         self._evaluate_score(score, backend="livekit",
                              threshold=LIVEKIT_THRESHOLD,

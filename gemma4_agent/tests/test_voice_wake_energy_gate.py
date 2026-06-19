@@ -27,7 +27,7 @@ def _speech(seconds, amp=3000, freq=200):
     return (amp * np.sin(2 * np.pi * freq * t)).astype(np.int16)
 
 
-def _make_pipeline(preroll_audio):
+def _make_pipeline(preroll_audio, ring_audio=None):
     p = VoicePipeline.__new__(VoicePipeline)
     p._state = State.IDLE
     p._state_lock = threading.RLock()
@@ -37,8 +37,12 @@ def _make_pipeline(preroll_audio):
     p._capture_buf = []
     p._capture_start_ts = 0.0
     p._eos_silence_count = 0
-    p._wake = type("W", (), {"reset": lambda self: None})()
-    p._manual_rms_override = True   # usa el gate fijo MIN_CAPTURE_RMS (350)
+    # _wake.last_window() devuelve el ring de 2 s del modelo (lo que el gate usa
+    # como respaldo cuando el preroll está vacío). Por defecto vacío (no disponible).
+    _ring = ring_audio if ring_audio is not None else np.zeros(0, dtype=np.int16)
+    p._wake = type("W", (), {"reset": lambda self: None,
+                             "last_window": lambda self, _r=_ring: _r})()
+    p._manual_rms_override = True   # usa el gate fijo MIN_CAPTURE_RMS
     p._noise_cal = None
     p._on_wake_event = None
     p.states = []
@@ -81,6 +85,25 @@ class WakeEnergyGateTest(unittest.TestCase):
         p._noise_cal = type("C", (), {"threshold": 20.0})()
         p._on_wake("baxy", 0.30)
         self.assertEqual(p._state, State.IDLE)      # 134 < piso 350 -> rechazado
+
+
+    def test_empty_preroll_uses_wake_ring(self):
+        # 2026-06-18: _reset_to_idle limpia el preroll tras cada turno. Un "Baxy"
+        # dicho ENSEGUIDA llega con preroll VACÍO, pero el ring de 2 s del modelo
+        # wake (que NO se limpia entre turnos) SÍ tiene el audio que disparó. El
+        # gate debe usar ese ring y ACEPTAR — no rechazar como silencio. Bug medido:
+        # scores 0.77-0.97 reales rechazados con preroll_rms 0-218 en uso rápido.
+        p = _make_pipeline(_silence(0), ring_audio=_speech(2.0, amp=3000))
+        p._on_wake("baxy", 0.95)
+        self.assertEqual(p._state, State.CAPTURE)   # aceptado por el ring
+
+    def test_empty_preroll_and_silent_ring_rejects(self):
+        # Preroll vacío Y ring lleno pero SILENCIOSO (falso real en silencio): el
+        # ring es una medición válida -> se rechaza. (No confundir con ring vacío
+        # = sin medición, que sí deja pasar por confiar en el score del wake.)
+        p = _make_pipeline(_silence(0), ring_audio=_silence(2.0))
+        p._on_wake("baxy", 0.95)
+        self.assertEqual(p._state, State.IDLE)      # silencio en ambos -> rechazado
 
 
 if __name__ == "__main__":

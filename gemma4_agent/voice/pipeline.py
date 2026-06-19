@@ -91,13 +91,48 @@ _EOS_ENERGY_FACTOR = float(_os.environ.get("GEMMA4_VOICE_EOS_ENERGY_FACTOR", "1.
 # We use PEAK windowed RMS (not whole-clip RMS) so a brief command surrounded
 # by the trailing-silence padding (EOS, ~0.8s) isn't diluted below the floor.
 # int16 reference levels (16 kHz mic): quiet room RMS ~50-250, ambient/typing
-# ~200-500, normal speech peaks ~800-4000. Default floor 350 sits above room
-# noise / fan / keyboard but well below conversational speech. Env-tunable so
-# the operator can raise it in a loud room or lower it for a quiet mic.
-MIN_CAPTURE_RMS = float(_os.environ.get("GEMMA4_VOICE_MIN_CAPTURE_RMS", "350"))
+# ~200-500, normal speech peaks ~800-4000. Env-tunable so the operator can raise
+# it in a loud room or lower it for a quiet mic.
+# 2026-06-18: floor subido 350->600. Medido en vivo (18 capturas reales + 3 falsos
+# instrumentados): los falsos del modelo base sobre AMBIENTE pasaban el piso 350
+# (preroll peak ~455) mientras que la región wake-word de un "Baxy" real intencional
+# mide >=1007 (mínimo sobre 18). 600 corta el ambiente (455) con margen y deja pasar
+# el real más débil (1007) con 400+ de holgura. Sigue por debajo del habla normal,
+# así que es razonablemente universal (un wake intencional se dice claro). NO corta
+# los falsos VOCALES de alta energía ("Oh." @ 6561) — eso es discriminación del
+# modelo base (requiere reentreno con esos hard-negatives, no un gate de energía).
+MIN_CAPTURE_RMS = float(_os.environ.get("GEMMA4_VOICE_MIN_CAPTURE_RMS", "600"))
+# Techo del gate de energía calibrado: la auto-calibración de ruido puede SUBIR el
+# gate en un mic ruidoso, pero no por encima de esto. Medido 2026-06-18: en una
+# conversación, el calibrador observaba colas de HABLA como "ambiente" e inflaba el
+# umbral a ~4461, rechazando "Baxy" reales (preroll/ring ~1007-3013 < 4461). El cap
+# (< mínimo real medido 1007) acota ese daño y deja pasar el wake real. Env-tunable.
+_CAL_GATE_CAP = float(_os.environ.get("GEMMA4_VOICE_CAL_GATE_CAP", "900"))
 # Window over which peak RMS is measured (seconds). 0.20s ~ a syllable; long
 # enough to be robust to single-sample spikes, short enough to catch one word.
 _RMS_WINDOW_S = float(_os.environ.get("GEMMA4_VOICE_RMS_WINDOW_S", "0.20"))
+
+# RECORTE DE WAKE WORD ANTES DEL STT — DESACTIVADO por default (2026-06-18).
+# La idea era no darle el "Baxy" (que sesga la auto-detección de Parakeet a
+# inglés). PERO se MIDIÓ que el recorte DEGRADA el audio: cortar el arranque del
+# comando rompe el STT — vacía a Canary (test causal: un clip que transcribía
+# pasó a '' al recortarlo) y probablemente empeora los flips de Parakeet. El
+# strip de TEXTO (corrector.strip_wake_phrase) ya saca la wake word igual, sin
+# tocar el audio. Se puede re-activar con GEMMA4_VOICE_TRIM_WAKE=1.
+_TRIM_WAKE = (_os.environ.get("GEMMA4_VOICE_TRIM_WAKE", "0") or "0").strip().lower() \
+    not in {"0", "false", "no", "off"}
+_WAKE_TAIL_KEEP_S = float(_os.environ.get("GEMMA4_VOICE_WAKE_TAIL_KEEP_S", "0.12"))
+
+# TRANSCRIBIR EL AUDIO COMPLETO (2026-06-18, "simular modo offline"): MEDIDO que
+# el doble-trim energía+VAD que se aplica antes del STT DEGRADA a Parakeet —
+# re-transcribir el MISMO clip SIN ese trim (offline) da el comando correcto
+# ('¿qué es Windows?') donde el live recortado daba basura ('Okay.'). Esos trims
+# eran de la era WHISPER (que alucinaba en silencio); Parakeet NO los necesita
+# (los gates de silencio/no-evidencia siguen activos para DESCARTAR capturas
+# vacías, pero el STT recibe el audio completo con contexto). Reversible:
+# GEMMA4_VOICE_STT_FULL_AUDIO=0.
+_STT_FULL_AUDIO = (_os.environ.get("GEMMA4_VOICE_STT_FULL_AUDIO", "1") or "1").strip().lower() \
+    not in {"0", "false", "no", "off"}
 
 
 def _buffer_rms(audio: "np.ndarray") -> float:
@@ -587,10 +622,36 @@ class VoicePipeline:
         # rechazar el wake, seguir en IDLE. NO baja el recall (un wake real tiene
         # energía); mata los falsos en silencio. Universal (usa el piso por-mic).
         try:
+            # Energía del wake = MÁXIMO entre el preroll del pipeline y el ring de
+            # 2 s del propio modelo wake. El preroll se LIMPIA en el reset-a-IDLE
+            # (~línea 922): un "Baxy" dicho justo tras un turno lo encuentra vacío
+            # -> peak_rms~0 -> FALSO rechazo (medido 2026-06-18: scores 0.77-0.97
+            # reales rechazados con preroll_rms 0-218 en uso rápido/conversacional).
+            # El ring del wake NO se limpia entre turnos y contiene el audio que de
+            # hecho disparó -> da la energía real aunque el preroll esté vacío. El FP
+            # de ambiente es de baja energía en AMBOS; el "Baxy" real tiene energía
+            # en el ring. Por eso el máximo recupera recall sin reabrir falsos.
+            _ew = int(_RMS_WINDOW_S * SAMPLE_RATE)
+            _have_measure = False
+            _preroll_rms = 0.0
             if self._preroll:
-                _wake_rms = peak_window_rms(
-                    np.concatenate(list(self._preroll)),
-                    int(_RMS_WINDOW_S * SAMPLE_RATE))
+                _preroll_rms = peak_window_rms(
+                    np.concatenate(list(self._preroll)), _ew)
+                _have_measure = True
+            _ring_rms = 0.0
+            try:
+                _ring = self._wake.last_window()
+                if _ring.size >= _ew:
+                    _ring_rms = peak_window_rms(_ring, _ew)
+                    _have_measure = True
+            except Exception:
+                pass
+            _wake_rms = max(_preroll_rms, _ring_rms)
+            # Aplicar el gate SOLO si tenemos una medición real (preroll o ring). Si
+            # no hay ninguna (caso raro de arranque: ring aún sin llenarse y preroll
+            # vacío), confiamos en el score del wake y dejamos pasar. Un ring lleno
+            # pero SILENCIOSO (rms 0) SÍ es medición -> se rechaza (falso en silencio).
+            if _have_measure:
                 _gate = MIN_CAPTURE_RMS
                 _cal = getattr(self, "_noise_cal", None)
                 if not getattr(self, "_manual_rms_override", True) and \
@@ -600,14 +661,18 @@ class VoicePipeline:
                     # cuarto silencioso calibraba a <20 y dejaba pasar ambiente de
                     # bajo nivel (peak_rms 20-134 int16) que Parakeet alucina como
                     # "Yeah"/"Thank you" -> falsos aceptados. El Baxy real está en
-                    # 1140+; el piso 350 rechaza esas alucinaciones con 8x de
-                    # margen y preserva la adaptación hacia ARRIBA de mics ruidosos.
-                    _gate = max(MIN_CAPTURE_RMS, _cal.threshold)
+                    # 1007+; el piso 600 rechaza esas alucinaciones (FP ~455) y
+                    # preserva la adaptación hacia ARRIBA de mics ruidosos. CAP: la
+                    # calibración no puede empujar el gate por encima de _CAL_GATE_CAP
+                    # (< mínimo real medido 1007) — si no, en una conversación el
+                    # calibrador come las colas de habla y lo infla (visto 4461),
+                    # rechazando "Baxy" reales. Ver _CAL_GATE_CAP.
+                    _gate = max(MIN_CAPTURE_RMS, min(float(_cal.threshold), _CAL_GATE_CAP))
                 if _wake_rms < _gate:
                     logger.info(
-                        "wake RECHAZADO: preroll peak_rms=%.0f < %.0f -> falso "
-                        "positivo en silencio (phrase=%s score=%.3f)",
-                        _wake_rms, _gate, phrase, score)
+                        "wake RECHAZADO: wake_rms=%.0f (preroll=%.0f ring=%.0f) "
+                        "< %.0f -> falso positivo en silencio (phrase=%s score=%.3f)",
+                        _wake_rms, _preroll_rms, _ring_rms, _gate, phrase, score)
                     self._wake.reset()
                     return
         except Exception:
@@ -625,6 +690,9 @@ class VoicePipeline:
         # Seed capture buffer with preroll (so we don't lose the wake
         # phrase itself + any tail leakage).
         self._capture_buf = list(self._preroll)
+        # Cuántas muestras del buffer son PREROLL (la wake word vive acá). Se usa
+        # para recortar la wake word antes del STT (ver _finish_capture).
+        self._preroll_samples = sum(int(c.size) for c in self._capture_buf)
         logger.info(
             "wake -> CAPTURE (phrase=%s score=%.3f preroll_chunks=%d)",
             phrase, score, len(self._capture_buf),
@@ -648,6 +716,23 @@ class VoicePipeline:
                  if self._capture_buf else np.zeros(0, dtype=np.int16))
         dur = audio.size / SAMPLE_RATE
         self._capture_buf = []
+        # Audio COMPLETO para el STT (ver _STT_FULL_AUDIO): se preserva ANTES de
+        # los trims energía/VAD (que degradan a Parakeet). Los gates de abajo
+        # siguen decidiendo sobre el audio recortado; el STT recibe éste.
+        _audio_full = audio
+
+        # RECORTE DE WAKE WORD antes del STT (ver constantes arriba). Quita el
+        # preroll (la wake word "Baxy") dejando un colchón corto, para que Parakeet
+        # vea SOLO el comando: no es parte del comando Y el "Baxy" inicial sesga la
+        # detección de idioma de Parakeet a inglés en comandos cortos. El bare-"Baxy"
+        # (sin comando) queda ~vacío -> lo atrapa el silence-gate de abajo. El wake
+        # ya disparó; esto NO lo toca.
+        if _TRIM_WAKE and audio.size:
+            _cut = max(0, int(getattr(self, "_preroll_samples", 0))
+                       - int(_WAKE_TAIL_KEEP_S * SAMPLE_RATE))
+            if 0 < _cut < audio.size:
+                audio = audio[_cut:]
+                dur = audio.size / SAMPLE_RATE
 
         # SILENCE GATE: skip Whisper entirely if the buffer has no real speech
         # energy. Prevents the "¡Suscríbete!" hallucination on silent captures
@@ -744,7 +829,11 @@ class VoicePipeline:
         # Parakeet auto-detecta idioma y es multilingüe sin prompt: transcribe
         # solo recibe el audio. El idioma del usuario viaja como hint al agente
         # (ver _lang_profile + el on_command), no al STT.
-        raw_text = self._stt.transcribe(audio)
+        # _STT_FULL_AUDIO: darle el audio COMPLETO (pre-trim) mejora a Parakeet
+        # ("simular modo offline" — medido: live recortado='Okay', full='¿qué es
+        # Windows?'). Los gates de arriba ya descartaron las capturas vacías.
+        _stt_audio = _audio_full if (_STT_FULL_AUDIO and _audio_full.size) else audio
+        raw_text = self._stt.transcribe(_stt_audio)
         # Strip wake phrase + fuzzy correct.
         stripped = self._corrector.strip_wake_phrase(raw_text)
         corrected = self._corrector.correct(stripped)
