@@ -38,6 +38,26 @@ def gpu_info_fast() -> Any:
     return {"Name": "no NVIDIA GPU detected (or nvidia-smi unavailable)"}
 
 
+def _augment_ram_gb(os_block: dict[str, Any]) -> dict[str, Any]:
+    """Agrega ram_total_gb / ram_available_gb legibles a partir de los campos KB.
+
+    CAUSA RAÍZ del bug "7.770.644 MB": TotalVisibleMemorySize/FreePhysicalMemory
+    están en KB (convención WMI), pero el LLM no infiere la unidad y los narra como
+    MB -> número ~1000x absurdo. En vez de un parche de fraseo, le damos el dato en
+    GB con el nombre AUTO-DESCRIPTIVO (la unidad está en la clave), así narra bien
+    sin adivinar. Los campos KB se conservan (consumidores/tests + paridad WMI)."""
+    try:
+        kb_total = os_block.get("TotalVisibleMemorySize")
+        kb_free = os_block.get("FreePhysicalMemory")
+        if kb_total:
+            os_block["ram_total_gb"] = round(int(kb_total) / (1024 * 1024), 1)
+        if kb_free:
+            os_block["ram_available_gb"] = round(int(kb_free) / (1024 * 1024), 1)
+    except (TypeError, ValueError):
+        pass
+    return os_block
+
+
 def cpu_ram_gpu() -> dict[str, Any]:
     """Devuelve {'ok': True, 'info': {...}, 'source': ...} o {'error': ...}."""
     info: dict[str, Any] = {}
@@ -56,11 +76,11 @@ def cpu_ram_gpu() -> dict[str, Any]:
         except Exception:
             _cpu_name = ""
         info["cpu"] = {"Name": _cpu_name, "LoadPercentage": round(_cpu_pct)}
-        # WMI reporta KB; mantenemos KB para no cambiar la interpretación previa.
-        info["os"] = {
+        # WMI reporta KB; mantenemos KB (consumidores/tests) + GB legible para el LLM.
+        info["os"] = _augment_ram_gb({
             "TotalVisibleMemorySize": int(_vm.total / 1024),
             "FreePhysicalMemory": int(_vm.available / 1024),
-        }
+        })
         fast_ok = True
     except Exception:
         fast_ok = False
@@ -85,6 +105,8 @@ $gpu = Get-CimInstance Win32_VideoController | Select-Object Name,AdapterRAM,Dri
     ok, info_wmi = parse_ps_json(proc.stdout)
     if not ok:
         return {"error": "system_cpu_ram_gpu invalid JSON", "stdout": info_wmi}
+    if isinstance(info_wmi, dict) and isinstance(info_wmi.get("os"), dict):
+        _augment_ram_gb(info_wmi["os"])
     return {"ok": True, "info": info_wmi, "source": "wmi"}
 
 

@@ -726,10 +726,17 @@ class Gemma4Agent:
         selected_tool_names: list[str] | None = None,
         user_text: str | None = None,
     ) -> dict[str, str]:
-        # Rama Experimentando: SIN forzado de idioma. No se inyecta la
-        # instrucción "Reply ONLY in <lang>" — el LLM responde en el idioma que
-        # elija nativamente a partir del mensaje del usuario.
+        # Forzado de idioma POR TURNO (causa raíz del bug "what time is it" -> reply
+        # en español): el Gemma 4 E2B es ESPAÑOL-DOMINANTE en turnos de acción (medido,
+        # native_audit_lang_bias: ~86% responde en español aunque el user escriba en otro
+        # idioma). La rama Experimentando había vaciado language_section apostando a que el
+        # modelo respondería nativamente en el idioma del input — no lo hace. La detección
+        # (_reply_lang, estructural) acierta; acá la USAMOS. Solo forzamos cuando el idioma
+        # NO es español (el default nativo del modelo): el hot-path español queda lean (sin
+        # tokens extra ni romper el prefix-cache) y el reply no-español deja de salir en es.
         language_section = ""
+        if user_text and user_text.strip() and _reply_lang(user_text) != "es":
+            language_section = _turn_language_instruction(user_text)
         mode_hint = f"\n\n# Current mode\n{mode.system_hint}" if mode else ""
         plan_hint = f"\n\n{plan.prompt_hint()}" if plan and plan.prompt_hint() else ""
         persona_hint = f"\n\n{self._persona.system_hint}" if self._persona.system_hint else ""
