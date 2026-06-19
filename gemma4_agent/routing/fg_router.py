@@ -61,7 +61,15 @@ _DEV = "You are a model that can do function calling with the following function
 #       pero PIERDE acciones no-españolas (sesgo medido); el pico (a) las rescata.
 # Chitchat requiere que fallen AMBAS (encoder<0.52 Y E2B abstuvo) -> no pasa. Es clasificación
 # por embeddings multilingües con fallback seguro (permitido por CLAUDE.md), no keywords.
-FG_ACT_PEAK = float(os.environ.get("GEMMA4_FG_PEAK", "0.52"))
+# 2026-06-18: re-medido para el encoder reentrenado (router_encoder_ft, retrain con +149 now-playing/status).
+# El retrain corrió el espacio de scores: la acción del clúster nuevo subió (top1 p50 0.487->0.581).
+# 0.50 (NO 0.44): VERIFICADO en vivo end-to-end. A 0.44 entraban más acciones del borde a FunctionGemma,
+# pero "qué suena" (encoder media 0.49) llegaba a FG y FG-270M elegía audio.mute (MUTEA la música = regresión,
+# error de FG no del encoder). A 0.50 "qué suena" vuelve a no_tool (inofensivo) y se conservan TODAS las
+# ganancias (qué canción es esta / qué música / qué estoy escuchando -> media; batería -> system; monitores
+# -> device_settings). El end-to-end de las queries cortas/inglesas depende de reentrenar FG (techo del run).
+# Anterior (encoder viejo): 0.52. Override: GEMMA4_FG_PEAK.
+FG_ACT_PEAK = float(os.environ.get("GEMMA4_FG_PEAK", "0.50"))
 
 _R: "_FGRouter | None" = None
 _FG_PROC: "subprocess.Popen | None" = None

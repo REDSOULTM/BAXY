@@ -8285,3 +8285,152 @@
 {"tool": "window", "q": "wechsle zum vorherigen Fenster"}
 {"tool": "window", "q": "metti due finestre affiancate"}
 {"tool": "window", "q": "put two windows side by side"}
+{"q": "qué suena", "tool": "media"}
+{"q": "qué está sonando", "tool": "media"}
+{"q": "qué canción suena", "tool": "media"}
+{"q": "qué canción está sonando", "tool": "media"}
+{"q": "qué música está sonando", "tool": "media"}
+{"q": "qué música suena ahora", "tool": "media"}
+{"q": "qué canción es esta", "tool": "media"}
+{"q": "cómo se llama esta canción", "tool": "media"}
+{"q": "qué tema está sonando", "tool": "media"}
+{"q": "qué estoy escuchando", "tool": "media"}
+{"q": "cuál es esta canción", "tool": "media"}
+{"q": "qué canción está puesta", "tool": "media"}
+{"q": "qué suena ahora", "tool": "media"}
+{"q": "qué se está reproduciendo", "tool": "media"}
+{"q": "de quién es esta canción", "tool": "media"}
+{"q": "quién canta esto", "tool": "media"}
+{"q": "qué artista suena", "tool": "media"}
+{"q": "decime qué canción es esta", "tool": "media"}
+{"q": "what's playing", "tool": "media"}
+{"q": "what song is this", "tool": "media"}
+{"q": "what song is playing", "tool": "media"}
+{"q": "what's this song", "tool": "media"}
+{"q": "what am I listening to", "tool": "media"}
+{"q": "what music is playing", "tool": "media"}
+{"q": "name this song", "tool": "media"}
+{"q": "what's currently playing", "tool": "media"}
+{"q": "who sings this", "tool": "media"}
+{"q": "what artist is playing", "tool": "media"}
+{"q": "which song is this", "tool": "media"}
+{"q": "what's on right now", "tool": "media"}
+{"q": "que música está tocando", "tool": "media"}
+{"q": "qual é essa música", "tool": "media"}
+{"q": "o que está tocando", "tool": "media"}
+{"q": "que canção é essa", "tool": "media"}
+{"q": "quem canta isso", "tool": "media"}
+{"q": "como se chama essa música", "tool": "media"}
+{"q": "che canzone è questa", "tool": "media"}
+{"q": "cosa sta suonando", "tool": "media"}
+{"q": "che musica è questa", "tool": "media"}
+{"q": "come si chiama questa canzone", "tool": "media"}
+{"q": "chi canta questa", "tool": "media"}
+{"q": "cosa sto ascoltando", "tool": "media"}
+{"q": "quelle chanson est-ce", "tool": "media"}
+{"q": "qu'est-ce qui joue", "tool": "media"}
+{"q": "quelle musique joue", "tool": "media"}
+{"q": "c'est quoi cette chanson", "tool": "media"}
+{"q": "qui chante ça", "tool": "media"}
+{"q": "comment s'appelle cette chanson", "tool": "media"}
+{"q": "welches Lied ist das", "tool": "media"}
+{"q": "was läuft gerade", "tool": "media"}
+{"q": "welche Musik spielt", "tool": "media"}
+{"q": "wie heißt dieses Lied", "tool": "media"}
+{"q": "wer singt das", "tool": "media"}
+{"q": "cuánta batería tengo", "tool": "system"}
+{"q": "cuánta batería me queda", "tool": "system"}
+{"q": "cuánta RAM tengo", "tool": "system"}
+{"q": "cuánta memoria tengo usada", "tool": "system"}
+{"q": "cuánta memoria estoy usando", "tool": "system"}
+{"q": "cuánto disco me queda", "tool": "system"}
+{"q": "cuánto espacio libre tengo", "tool": "system"}
+{"q": "cómo está el CPU", "tool": "system"}
+{"q": "cuál es el uso del procesador", "tool": "system"}
+{"q": "qué temperatura tiene el CPU", "tool": "system"}
+{"q": "cuántos procesos hay corriendo", "tool": "system"}
+{"q": "está corriendo ComfyUI", "tool": "system"}
+{"q": "qué programas están abiertos", "tool": "system"}
+{"q": "how much battery do I have", "tool": "system"}
+{"q": "how much battery is left", "tool": "system"}
+{"q": "how much RAM do I have", "tool": "system"}
+{"q": "how much memory is used", "tool": "system"}
+{"q": "how much disk space is left", "tool": "system"}
+{"q": "what's my CPU usage", "tool": "system"}
+{"q": "how much free space do I have", "tool": "system"}
+{"q": "is ComfyUI running", "tool": "system"}
+{"q": "what processes are running", "tool": "system"}
+{"q": "quanta bateria eu tenho", "tool": "system"}
+{"q": "quanta RAM eu tenho", "tool": "system"}
+{"q": "quanto disco me resta", "tool": "system"}
+{"q": "quanta memória está sendo usada", "tool": "system"}
+{"q": "qual é o uso da CPU", "tool": "system"}
+{"q": "quanta batteria ho", "tool": "system"}
+{"q": "quanta RAM ho", "tool": "system"}
+{"q": "quanto spazio su disco ho", "tool": "system"}
+{"q": "quanta memoria sto usando", "tool": "system"}
+{"q": "il generatore di immagini locale è attivo", "tool": "system"}
+{"q": "combien de batterie il me reste", "tool": "system"}
+{"q": "combien de mémoire vive est utilisée", "tool": "system"}
+{"q": "combien d'espace disque il me reste", "tool": "system"}
+{"q": "quelle est l'utilisation du CPU", "tool": "system"}
+{"q": "le serveur ComfyUI est lancé", "tool": "system"}
+{"q": "wie viel Akku habe ich", "tool": "system"}
+{"q": "wie viel RAM habe ich", "tool": "system"}
+{"q": "wie viel Speicherplatz ist frei", "tool": "system"}
+{"q": "wie viel Arbeitsspeicher wird benutzt", "tool": "system"}
+{"q": "läuft ComfyUI", "tool": "system"}
+{"q": "cuántos monitores tengo", "tool": "device_settings"}
+{"q": "cuántos monitores tengo conectados", "tool": "device_settings"}
+{"q": "qué brillo tengo", "tool": "device_settings"}
+{"q": "cuántas pantallas hay conectadas", "tool": "device_settings"}
+{"q": "qué resolución tengo", "tool": "device_settings"}
+{"q": "how many monitors do I have", "tool": "device_settings"}
+{"q": "how many displays are connected", "tool": "device_settings"}
+{"q": "what's my brightness", "tool": "device_settings"}
+{"q": "what resolution am I using", "tool": "device_settings"}
+{"q": "quantos monitores eu tenho", "tool": "device_settings"}
+{"q": "qual é o meu brilho", "tool": "device_settings"}
+{"q": "quanti monitor ho", "tool": "device_settings"}
+{"q": "qual è la mia luminosità", "tool": "device_settings"}
+{"q": "combien de moniteurs ai-je", "tool": "device_settings"}
+{"q": "quelle est ma luminosité", "tool": "device_settings"}
+{"q": "wie viele Monitore habe ich", "tool": "device_settings"}
+{"q": "wie hell ist mein Bildschirm", "tool": "device_settings"}
+{"q": "Kannst du Word starten?", "tool": "app"}
+{"q": "öffne den Rechner", "tool": "app"}
+{"q": "schließe Outlook", "tool": "app"}
+{"q": "starte Chrome", "tool": "app"}
+{"q": "mach den Taschenrechner auf", "tool": "app"}
+{"q": "beende Spotify", "tool": "app"}
+{"q": "Tu peux quitter Outlook ?", "tool": "app"}
+{"q": "ouvre la calculatrice", "tool": "app"}
+{"q": "ferme Chrome", "tool": "app"}
+{"q": "lance Spotify", "tool": "app"}
+{"q": "démarre le navigateur", "tool": "app"}
+{"q": "peux-tu ouvrir Word", "tool": "app"}
+{"q": "apri la calcolatrice", "tool": "app"}
+{"q": "chiudi Spotify", "tool": "app"}
+{"q": "avvia Chrome", "tool": "app"}
+{"q": "puoi aprire Word", "tool": "app"}
+{"q": "chiudi il navigatore", "tool": "app"}
+{"q": "abre a calculadora", "tool": "app"}
+{"q": "fecha o Chrome", "tool": "app"}
+{"q": "abre o app de configurações", "tool": "app"}
+{"q": "inicia o Spotify", "tool": "app"}
+{"q": "podes abrir o Word", "tool": "app"}
+{"q": "qué notas tengo guardadas", "tool": "notes_tasks"}
+{"q": "mostrame mis notas", "tool": "notes_tasks"}
+{"q": "qué tareas tengo pendientes", "tool": "notes_tasks"}
+{"q": "what notes do I have saved", "tool": "notes_tasks"}
+{"q": "show me my notes", "tool": "notes_tasks"}
+{"q": "what tasks do I have", "tool": "notes_tasks"}
+{"q": "quantos cartões eu tenho para revisar", "tool": "notes_tasks"}
+{"q": "que notas eu tenho guardadas", "tool": "notes_tasks"}
+{"q": "regresá a la página anterior", "tool": "browser"}
+{"q": "volvé atrás en el navegador", "tool": "browser"}
+{"q": "andá a la pestaña anterior", "tool": "browser"}
+{"q": "riapri l'ultima scheda chiusa", "tool": "browser"}
+{"q": "torna alla pagina precedente", "tool": "browser"}
+{"q": "reviens à la page précédente", "tool": "browser"}
+{"q": "rouvre le dernier onglet fermé", "tool": "browser"}
