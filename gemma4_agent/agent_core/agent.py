@@ -3390,10 +3390,15 @@ class Gemma4Agent:
                 msg["content"] = ""
             # RESCATE ESTRUCTURAL de leaked-call (forma, no keyword): el modelo a veces
             # emite el tool-call como TEXTO Python-style `name(action="val")` en vez del
-            # formato nativo <|tool_call> que el parser extrae -> el call se pierde
-            # (medido: ~1% del under-action es esto). detect_leaked_tool_call lo re-parsea
-            # a un tool-call real. Barato y estructural; va ANTES del forced-retry.
-            if _GUARDS_ON and not raw_tool_calls and assistant_content:
+            # formato nativo <|tool_call> que el parser extrae -> el call se pierde y el
+            # TEXTO leakea como respuesta hablada (MEDIDO en vivo 2026-06-18: "qué día es"
+            # garbleado -> FG abstiene -> el QAT con tools=None escupe `system(action='time')`
+            # y eso quedaba como reply). detect_leaked_tool_call lo re-parsea a un tool-call
+            # real (solo dispara si el nombre es un tool conocido). SIEMPRE activo, también en
+            # modo neto: es ESTRUCTURAL (mide la forma, no el contenido) — CLAUDE.md permite
+            # guardas estructurales aun con GEMMA4_GUARDS=0; el neto saca los guards de
+            # COMPORTAMIENTO, no la recuperación de un tool-call malformado.
+            if not raw_tool_calls and assistant_content:
                 try:
                     from ..tools_pkg.tools import COMPOUND_TOOL_SCHEMAS as _CTS, ACTION_ENUMS as _AE
                     _known = {s["function"]["name"] for s in _CTS
