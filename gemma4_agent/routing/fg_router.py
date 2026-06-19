@@ -375,6 +375,29 @@ def _is_interrogative(query: str) -> bool:
     return first in _INTERROGATIVE_FIRST
 
 
+# Clasificación ESTRUCTURAL de acciones por su NOMBRE (no por contenido): de LECTURA
+# (consultan estado) vs MUTANTES/físicas (modifican el SO / mandan input). Se usa para
+# la guarda "una PREGUNTA no dispara una escritura" (generaliza el caso media de #1 a
+# cualquier familia: qué ves->gui.click, qué brillo->brightness_up). Por subcadena del
+# nombre de acción/tool, que el catálogo nombra consistente (status/get/list vs set/up/play).
+_READ_ACTION_HINTS = ("now_playing", "status", "_list", "list_", "_get", "get_",
+                      "describe", "displays", "_info", "info_", "stats", "history", "current")
+_MUTATING_ACTION_HINTS = ("click", "type", "press", "scroll", "drag", "_up", "_down",
+                          "set_", "_set", "play", "resume", "open", "close", "create",
+                          "delete", "start", "stop", "move", "send", "install", "uninstall",
+                          "launch", "restart", "shutdown", "kill", "resolution", "_scale")
+
+
+def _is_read_action_name(name: str) -> bool:
+    n = (name or "").lower()
+    return any(h in n for h in _READ_ACTION_HINTS)
+
+
+def _is_mutating_action(action: str) -> bool:
+    a = (action or "").lower()
+    return any(h in a for h in _MUTATING_ACTION_HINTS)
+
+
 def fg_emit(query: str, *, e2b_emitted: bool = False,
             fam_k: int = 3, tool_k: int = 10) -> tuple[str | None, dict[str, Any] | None, list[str]]:
     """Devuelve (baxy_tool, args, missing_fields) para `query`.
@@ -436,4 +459,17 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
         return None, None, []
     missing = _missing_value_fields(name, args)
     comp, baxy_args = _R.to_baxy(name, args)
+    # GUARDA GENERAL read-vs-write (generaliza el caso media de #1 a TODAS las familias):
+    # una PREGUNTA no debe disparar una acción MUTANTE/física. Si FG eligió un write para
+    # una pregunta interrogativa, preferimos la 1ra acción de LECTURA del subset (el encoder
+    # ya la rankeó primero); si no hay ninguna, ABSTENEMOS (no_tool) en vez de ejecutar el
+    # write -> nunca clickear / cambiar brillo / reproducir por una pregunta. Caza medido:
+    # "qué ves"->gui.click, "qué brillo tengo"->brightness_up, "qué resolución"->set_resolution.
+    if _is_interrogative(query) and _is_mutating_action(baxy_args.get("action", "")):
+        for _t in subset:
+            _tn = _t.get("function", {}).get("name", "")
+            if _is_read_action_name(_tn):
+                _rc, _ra = _R.to_baxy(_tn, {})
+                return _rc, _ra, []
+        return "no_tool", None, []
     return comp, baxy_args, missing
