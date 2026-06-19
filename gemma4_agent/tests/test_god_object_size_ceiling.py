@@ -61,7 +61,9 @@ CEILINGS = {
     # resolución de YouTube (youtube_search.py) y matching de nombres _fold/_score
     # (name_match.py) salieron a módulos leaf de solo stdlib (re-exportados; se quitaron
     # 3 hacks de lazy-import desde el archivo-dios). El techo baja al partir. Número exacto.
-    "tools_pkg/tools.py": 7964,
+    # 2026-06-19 (cont.): 7964 -> 7818 (-146). EXTRACCIÓN: maquinaria de teclado de bajo
+    # nivel (SendInput ctypes + traducción a SendKeys) a sendinput.py. Número exacto.
+    "tools_pkg/tools.py": 7818,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Se sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
