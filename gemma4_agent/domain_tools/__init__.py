@@ -6,14 +6,10 @@ import importlib.util
 import json
 import os
 import re
-import shutil
 import subprocess
-import sys
-import time
 import unicodedata
 import webbrowser
-import zipfile
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
 
@@ -584,45 +580,9 @@ from .routine import active_phrase_triggers  # noqa: F401, E402
 # routine_tool entry-point block above.
 
 
-def _find_vlc_executable() -> str | None:
-    """Localiza vlc.exe en PATH o en las rutas tipicas de instalacion Windows.
-
-    winget install VideoLAN.VLC no agrega vlc al PATH por default, asi que
-    shutil.which("vlc") falla aunque este instalado. Probamos las rutas
-    estandar como fallback.
-    """
-    vlc = shutil.which("vlc") or shutil.which("vlc.exe")
-    if vlc:
-        return vlc
-    # Rutas standard de VLC en Windows
-    candidates = [
-        r"C:\Program Files\VideoLAN\VLC\vlc.exe",
-        r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe",
-    ]
-    for c in candidates:
-        if Path(c).is_file():
-            return c
-    return None
-
-
-def _find_spotify_executable() -> str | None:
-    """Localiza Spotify.exe. Spotify desktop instala en %APPDATA%\\Spotify\\
-    por default (Microsoft Store version usa shell:AppsFolder).
-    """
-    spotify = shutil.which("spotify") or shutil.which("spotify.exe")
-    if spotify:
-        return spotify
-    candidates = [
-        Path.home() / "AppData" / "Roaming" / "Spotify" / "Spotify.exe",
-        Path("C:/Program Files/WindowsApps") / "Spotify.exe",  # raro pero posible
-    ]
-    for c in candidates:
-        try:
-            if c.is_file():
-                return str(c)
-        except OSError:
-            continue
-    return None
+# Localización de ejecutables de media (VLC/Spotify) extraída a media_apps.py
+# (split archivo-dios 2026-06-19). Re-importada acá para los handlers de media.
+from .media_apps import _find_spotify_executable, _find_vlc_executable  # noqa: F401
 
 
 # Streaming platforms — central registry of each platform.
