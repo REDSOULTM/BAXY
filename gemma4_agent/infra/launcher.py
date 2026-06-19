@@ -411,11 +411,13 @@ def run_ui(args: argparse.Namespace) -> int:
     # con el (no hay traceback de Python: es un crash nativo, vuelve al prompt).
     # Forzamos compositing por CPU para que la UI NUNCA compita por la GPU; el
     # grafo neuronal + el borde viajero corren bien en CPU. Debe setearse ANTES
-    # de crear la ventana (WebView2 lee la env var al inicializar).
+    # de crear la ventana (WebView2 lee la env var al inicializar). Sumamos
+    # --disable-gpu-watchdog: bajo GPU saturada el watchdog de Chromium MATA el
+    # proceso de GPU al detectar un "hang" (el gatillo exacto del crash de arriba).
     _wv2_args = os.environ.get("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "")
     if "--disable-gpu" not in _wv2_args:
         os.environ["WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"] = (
-            f"{_wv2_args} --disable-gpu --disable-gpu-compositing".strip()
+            f"{_wv2_args} --disable-gpu --disable-gpu-compositing --disable-gpu-watchdog".strip()
         )
 
     print(color("ok", f"abriendo ventana · {url}"))
@@ -444,6 +446,10 @@ def run_ui(args: argparse.Namespace) -> int:
         def __init__(self) -> None:
             self._window = None  # set below; underscore = NOT introspected
             self._maximized = False
+            # True solo si el usuario cerró con NUESTRA X (win_close). Si
+            # webview.start() vuelve con esto en False, la ventana murió sola
+            # (crash nativo de WebView2/GPU) -> caemos al browser, no matamos la app.
+            self._user_closed = False
 
         def win_minimize(self):
             if self._window is not None:
@@ -464,6 +470,7 @@ def run_ui(args: argparse.Namespace) -> int:
             return self._maximized
 
         def win_close(self):
+            self._user_closed = True  # cierre deliberado, no un crash
             if self._window is not None:
                 self._window.destroy()
 
@@ -501,11 +508,30 @@ def run_ui(args: argparse.Namespace) -> int:
         # webview.start() blocks on the main thread until the window closes.
         # http_server=False because uvicorn already serves the dist/ bundle.
         webview.start(http_server=False)
-    finally:
-        # tell uvicorn to wind down. daemon=True would kill it on exit too,
-        # but a clean shutdown gives the WS connections a chance to close.
-        server.should_exit = True
-        server_thread.join(timeout=3.0)
+    except Exception:  # noqa: BLE001 — un crash nativo de WebView2 puede burbujear
+        pass
+
+    # RECUPERACIÓN: si start() volvió SIN que el usuario apretara la X, la ventana
+    # nativa se murió sola (crash de GPU de WebView2 bajo carga — documentado arriba;
+    # Python sobrevive y start() retorna, por eso esto corre). En vez de dejar caer
+    # TODA la app (matar uvicorn + salir), reabrimos en el browser del sistema:
+    # es un proceso aparte, inmune al crash de GPU de WebView2, así el usuario sigue
+    # trabajando sin re-lanzar nada. uvicorn (y el agente) siguen vivos.
+    if not controls._user_closed:
+        print(color("warn", "la ventana nativa se cerró sola (WebView2/GPU); reabriendo en el browser…"))
+        import webbrowser
+        webbrowser.open(url)
+        print(color("dim", f"  {url} · ctrl-c para detener"))
+        try:
+            server_thread.join()
+        except KeyboardInterrupt:
+            pass
+
+    # cierre limpio (X del usuario, o ctrl-c tras el fallback al browser): bajamos
+    # uvicorn. daemon=True lo mataría igual al salir, pero el shutdown ordenado le
+    # da a las conexiones WS la chance de cerrar.
+    server.should_exit = True
+    server_thread.join(timeout=3.0)
     return 0
 
 
