@@ -3314,20 +3314,23 @@ class Gemma4Agent:
                     # e2b_emitted: 2ª señal del gate (el E2B abstiene perfecto en chitchat;
                     # si emitió tool, el turno es accionable aunque el encoder no pique).
                     _fg_name, _fg_args, _fg_missing = fg_emit(raw_text_early, e2b_emitted=bool(raw_tool_calls))
-                    # COMPLETAR ARG FALTANTE con el LLM de habla: FG-270M a veces devuelve el tool
-                    # sin su valor (MEDIDO: "abre Steam" -> app.open sin name, ~18/105 acciones). El
-                    # QAT (2B, con TODO el contexto del turno) lo extrae del texto del usuario. Si el
-                    # usuario NO lo dijo ("abre" a secas), el QAT devuelve None y NO se completa: el
-                    # tool pide aclaración (honestidad: no se inventa el valor). Solo corre cuando hay
-                    # un faltante real (~10-20% de acciones) -> latencia acotada.
-                    if (_fg_name and _fg_name != "no_tool" and _fg_missing
-                            and isinstance(_fg_args, dict) and not _fg_args.get(_fg_missing)):
-                        _val = self._fg_complete_arg(
-                            raw_text_early, _fg_name, str(_fg_args.get("action") or ""), _fg_missing)
-                        if _val:
-                            _fg_args[_fg_missing] = _val
-                            self.trace.event(turn_id, "fg_arg_completed",
-                                             tool=_fg_name, field=_fg_missing, value=_val)
+                    # COMPLETAR ARGS FALTANTES con el LLM de habla: FG-270M a veces devuelve el tool
+                    # sin uno o VARIOS de sus valores (MEDIDO: "abre Steam"->app.open sin name; "pon X
+                    # en spotify"->play sin query NI provider — perdía la plataforma). El QAT (2B, con
+                    # TODO el contexto del turno) extrae cada campo del texto del usuario. Si el usuario
+                    # NO lo dijo ("abre" a secas, "poné una canción" sin título), el QAT devuelve None
+                    # por ese campo y NO se completa: honestidad, no se inventa el valor. Solo corre
+                    # sobre los faltantes reales (cap 3 en fg_emit) -> latencia acotada.
+                    if (_fg_name and _fg_name != "no_tool" and _fg_missing and isinstance(_fg_args, dict)):
+                        _action = str(_fg_args.get("action") or "")
+                        for _field in _fg_missing:
+                            if _fg_args.get(_field):
+                                continue
+                            _val = self._fg_complete_arg(raw_text_early, _fg_name, _action, _field)
+                            if _val:
+                                _fg_args[_field] = _val
+                                self.trace.event(turn_id, "fg_arg_completed",
+                                                 tool=_fg_name, field=_field, value=_val)
                     self.trace.event(turn_id, "fg_router", tool=_fg_name, args=_fg_args)
                     if _fg_name == "no_tool":
                         raw_tool_calls = []

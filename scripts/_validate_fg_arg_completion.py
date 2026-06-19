@@ -57,15 +57,16 @@ def main():
         from gemma4_agent.routing import fg_router as fg
         fg.fg_emit("warmup")  # construye _R + boota FG
 
-        print("\n=== (1) _missing_value_field (desde slim-schema, sin LLM) ===")
+        print("\n=== (1) _missing_value_fields (desde slim-schema, sin LLM) ===")
         for tool, args, exp in [
-            ("app_open", {}, "name"), ("app_open", {"name": "Steam"}, None),
-            ("set_volume", {}, "level"), ("system_time", {}, None),
-            ("web_search", {}, "query"),
+            ("app_open", {}, ["name"]), ("app_open", {"name": "Steam"}, []),
+            ("set_volume", {}, ["level"]), ("system_time", {}, []),
+            ("web_search", {}, ["query"]), ("play", {}, ["query", "provider"]),
+            ("play", {"query": "rock"}, ["provider"]),
         ]:
-            got = fg._missing_value_field(tool, args)
+            got = fg._missing_value_fields(tool, args)
             ok = "OK " if got == exp else "FAIL"
-            print(f"  [{ok}] {tool}{args} -> falta={got!r} (esperado {exp!r})")
+            print(f"  [{ok}] {tool}{args} -> faltan={got!r} (esperado {exp!r})")
 
         from gemma4_agent.agent_core.agent import Gemma4Agent
         a = Gemma4Agent()
