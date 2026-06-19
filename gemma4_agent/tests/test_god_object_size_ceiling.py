@@ -63,7 +63,10 @@ CEILINGS = {
     # 3 hacks de lazy-import desde el archivo-dios). El techo baja al partir. Número exacto.
     # 2026-06-19 (cont.): 7964 -> 7818 (-146). EXTRACCIÓN: maquinaria de teclado de bajo
     # nivel (SendInput ctypes + traducción a SendKeys) a sendinput.py. Número exacto.
-    "tools_pkg/tools.py": 7818,
+    # 2026-06-19 (cont.): 7818 -> 7622 (-196). UNTANGLE + EXTRACCIÓN: helpers compartidos
+    # (_truncate->text_utils, _pretty_exe_name/_looks_like_uninstaller->app_paths) y el
+    # cluster app/process (->app_process.py). Número exacto.
+    "tools_pkg/tools.py": 7622,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Se sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
