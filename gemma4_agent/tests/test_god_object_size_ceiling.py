@@ -66,7 +66,11 @@ CEILINGS = {
     # 2026-06-19 (cont.): 7818 -> 7622 (-196). UNTANGLE + EXTRACCIÓN: helpers compartidos
     # (_truncate->text_utils, _pretty_exe_name/_looks_like_uninstaller->app_paths) y el
     # cluster app/process (->app_process.py). Número exacto.
-    "tools_pkg/tools.py": 7622,
+    # 2026-06-19 (cont.): 7622 -> 7623 (+1). BUGFIX de unidad: system.disk narraba bytes
+    # ("222301667328 bytes"); la conversión a GB vive en el hermano system_info_fast
+    # (_augment_disks_gb, junto a la de RAM), pero el handler system_disk está en tools.py
+    # -> 1 línea de import lazy irreducible. No es feature; cableado de un fix.
+    "tools_pkg/tools.py": 7623,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Se sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
@@ -116,7 +120,11 @@ CEILINGS = {
     # 2026-06-19 (cont.): 6254 -> 6190 (-64). EXTRACCIÓN: lectores de feature-flags
     # (_stream_tts/_summary_keep_tools/_error_recovery/_memory_tools/_skills_autoinject)
     # a feature_flags.py. Número exacto.
-    "agent_core/agent.py": 6190,
+    # 2026-06-19 (cont.): 6190 -> 6193 (+3). BUGFIX de idioma: la rama Experimentando había
+    # vaciado language_section ("") y el reply salía en español; se re-inyecta la instrucción
+    # de idioma por turno (usando _reply_lang) para no-es. Cableado irreducible del hot-path
+    # de _system_message; no es feature. Número exacto.
+    "agent_core/agent.py": 6193,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

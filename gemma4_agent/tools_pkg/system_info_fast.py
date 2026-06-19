@@ -58,6 +58,23 @@ def _augment_ram_gb(os_block: dict[str, Any]) -> dict[str, Any]:
     return os_block
 
 
+def _augment_disks_gb(disks: list) -> list:
+    """Agrega size_gb / free_gb legibles a cada disco. Misma causa raíz que la RAM:
+    Size/FreeSpace vienen en BYTES (psutil y WMI) y el LLM los narra crudos
+    ("222301667328 bytes"). Le damos GB con la unidad en la clave. Bytes conservados."""
+    for d in disks or []:
+        if not isinstance(d, dict):
+            continue
+        try:
+            if d.get("Size"):
+                d["size_gb"] = round(int(d["Size"]) / (1024 ** 3), 1)
+            if d.get("FreeSpace"):
+                d["free_gb"] = round(int(d["FreeSpace"]) / (1024 ** 3), 1)
+        except (TypeError, ValueError):
+            pass
+    return disks
+
+
 def cpu_ram_gpu() -> dict[str, Any]:
     """Devuelve {'ok': True, 'info': {...}, 'source': ...} o {'error': ...}."""
     info: dict[str, Any] = {}

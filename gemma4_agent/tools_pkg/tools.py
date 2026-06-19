@@ -3235,6 +3235,7 @@ class ToolRegistry:
                     **{k: v for k, v in res.items() if k not in ("ok", "error")})
 
     def system_disk(self, args: dict[str, Any]) -> dict[str, Any]:
+        from .system_info_fast import _augment_disks_gb  # size_gb/free_gb legibles
         # Preferir psutil.disk_partitions + usage (~5ms, in-process). El CIM
         # query normalmente tarda <1s pero spawn de PowerShell paga ~300ms
         # de cold-start. psutil es 60x mas rapido y no spawnea procesos.
@@ -3254,7 +3255,7 @@ class ToolRegistry:
                 except (PermissionError, OSError):
                     continue
             if disks:
-                return _ok(disks=disks, source="psutil")
+                return _ok(disks=_augment_disks_gb(disks), source="psutil")
         except Exception:
             pass
 
@@ -3271,7 +3272,7 @@ class ToolRegistry:
             data = []
         if isinstance(data, dict):
             data = [data]
-        return _ok(disks=data, exit_code=proc.returncode, source="powershell")
+        return _ok(disks=_augment_disks_gb(data), exit_code=proc.returncode, source="powershell")
 
     def system_battery(self, args: dict[str, Any]) -> dict[str, Any]:
         # psutil.sensors_battery (~0.1ms) > Get-CimInstance (~500ms). Y

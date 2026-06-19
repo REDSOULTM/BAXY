@@ -70,6 +70,13 @@ _DEV = "You are a model that can do function calling with the following function
 # -> device_settings). El end-to-end de las queries cortas/inglesas depende de reentrenar FG (techo del run).
 # Anterior (encoder viejo): 0.52. Override: GEMMA4_FG_PEAK.
 FG_ACT_PEAK = float(os.environ.get("GEMMA4_FG_PEAK", "0.50"))
+# Piso de actionabilidad para PREGUNTAS (forma interrogativa): un status-question sobre
+# una familia de acción ("cuánto disco me queda", "qué día es hoy") es accionable aunque
+# el encoder no llegue al peak (proper nouns / fraseo ambiguo bajan el score a ~0.42-0.49).
+# La FORMA (pregunta) es la señal que el score crudo no captura. Seguro porque: el
+# conocimiento ya lo corta el KVA gate ANTES, y un eventual write mal-elegido lo ataja la
+# read-guard. Solo aplica a interrogativas -> no abre la puerta al eager-invocation de chitchat.
+FG_ACT_FLOOR = float(os.environ.get("GEMMA4_FG_ACT_FLOOR", "0.40"))
 
 _R: "_FGRouter | None" = None
 _FG_PROC: "subprocess.Popen | None" = None
@@ -448,7 +455,12 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     # si el turno es accionable; si no, no_tool y que responda el E2B (ahorra latencia
     # en chitchat y evita el eager-invocation de FunctionGemma).
     top1 = scored[0][1] if scored else 0.0
-    if not (top1 >= FG_ACT_PEAK or e2b_emitted):
+    # Accionable si: (a) el encoder pica fuerte (>=peak), (b) el E2B ya emitió tool, o
+    # (c) es una PREGUNTA con familia de acción decente (>=floor) — un status-question
+    # cuyo score quedó sub-peak por proper-nouns/fraseo, pero la FORMA interrogativa lo
+    # delata como accionable. El conocimiento ya se cortó arriba (KVA gate).
+    actionable_question = _is_interrogative(query) and top1 >= FG_ACT_FLOOR
+    if not (top1 >= FG_ACT_PEAK or e2b_emitted or actionable_question):
         return "no_tool", None, []
 
     subset = _R.subset(query, fam_k=fam_k, tool_k=tool_k)

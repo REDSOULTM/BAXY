@@ -726,14 +726,10 @@ class Gemma4Agent:
         selected_tool_names: list[str] | None = None,
         user_text: str | None = None,
     ) -> dict[str, str]:
-        # Forzado de idioma POR TURNO (causa raíz del bug "what time is it" -> reply
-        # en español): el Gemma 4 E2B es ESPAÑOL-DOMINANTE en turnos de acción (medido,
-        # native_audit_lang_bias: ~86% responde en español aunque el user escriba en otro
-        # idioma). La rama Experimentando había vaciado language_section apostando a que el
-        # modelo respondería nativamente en el idioma del input — no lo hace. La detección
-        # (_reply_lang, estructural) acierta; acá la USAMOS. Solo forzamos cuando el idioma
-        # NO es español (el default nativo del modelo): el hot-path español queda lean (sin
-        # tokens extra ni romper el prefix-cache) y el reply no-español deja de salir en es.
+        # Forzado de idioma POR TURNO (fix "what time is it"->reply en español): el E2B es
+        # español-dominante en acción (native_audit_lang_bias ~86%); la rama Experimentando
+        # vació language_section apostando a comportamiento nativo que no existe. _reply_lang
+        # (estructural) acierta -> la usamos, solo si el idioma != es (hot-path español lean).
         language_section = ""
         if user_text and user_text.strip() and _reply_lang(user_text) != "es":
             language_section = _turn_language_instruction(user_text)
