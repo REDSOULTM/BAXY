@@ -57,7 +57,11 @@ CEILINGS = {
     # 2026-06-10: 8063 -> 8023 (-40). EXTRACCIÓN: los 7 helpers de Steam (AppID/URIs/
     # store search) salieron a steam_store.py (sibling+shim). El techo BAJA con la
     # partición. Número exacto.
-    "tools_pkg/tools.py": 8023,
+    # 2026-06-19: 8023 -> 7964 (-59). EXTRACCIÓN: HTTP fetch + HTML→texto (web_text.py),
+    # resolución de YouTube (youtube_search.py) y matching de nombres _fold/_score
+    # (name_match.py) salieron a módulos leaf de solo stdlib (re-exportados; se quitaron
+    # 3 hacks de lazy-import desde el archivo-dios). El techo baja al partir. Número exacto.
+    "tools_pkg/tools.py": 7964,
     # 2026-06-02: agent.py reconciliado a 6495. El techo 6450 ya estaba violado
     # en HEAD (git=6488, deuda heredada de commits previos de computer-use/honesty).
     # Se sumó +4 al CONVERTIR 2 silent-except en logging trazado (baja la
@@ -106,7 +110,9 @@ CEILINGS = {
     # audio (endpoints, set/restore default, SoundVolumeView) salieron a
     # audio_devices.py (sibling+shim, sin ciclo: _ok/_err de _shared,
     # _find_soundvolumeview/_powershell_json de helpers). El techo baja al partir.
-    "domain_tools/__init__.py": 3070,
+    # 2026-06-19: 3070 -> 3040 (-30). EXTRACCIÓN: finders de ejecutables de media
+    # (VLC/Spotify) a media_apps.py + poda de imports stdlib muertos. Número exacto.
+    "domain_tools/__init__.py": 3040,
     "tools_pkg/ops_tools.py": 2300,
 }
 
