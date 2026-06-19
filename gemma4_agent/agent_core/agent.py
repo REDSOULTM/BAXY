@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -22,6 +23,8 @@ from ..support.reasoning import build_action_to_tool, detect_leaked_tool_call, s
 from ..memory_pkg.state import AgentState
 from ..tools_pkg.tools import ToolRegistry
 from ..infra.tracing import TraceLogger, summarize_content
+
+logger = logging.getLogger(__name__)
 
 
 ProgressCallback = Callable[[str, dict[str, Any]], None]

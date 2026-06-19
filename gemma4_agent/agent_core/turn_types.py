@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, Any
 # acá en vez de importarlo.
 if TYPE_CHECKING:
     from ..support.modes import AgentMode  # solo modes — no agent
+    from .agent import AgentReply  # solo type-check; no corre en runtime (sin ciclo)
 
 
 @dataclass
