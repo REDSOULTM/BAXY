@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import csv
 import difflib
-import html
 import json
 import logging
 import os
@@ -87,7 +86,6 @@ DEFAULT_YOUTUBE_SONGS = [
     {"title": "Major Lazer & DJ Snake - Lean On", "video_id": "YqeW9_5kURI"},
 ]
 
-WEB_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gemma4Agent/1.0"
 DEFAULT_WEB_SEARCH_PROVIDER = "duckduckgo_html"
 
 
@@ -1166,55 +1164,16 @@ def _youtube_title_near_video_id(text: str, video_id: str) -> str | None:
 from ..safety_pkg.ssrf_guard import _is_private_host, _SSRFGuardRedirectHandler  # noqa: E402,F401
 
 
-def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000, allow_private: bool = False) -> dict[str, Any]:
-    # SSRF guard pre-request y en redirects.
-    host = urlparse(url).hostname or ""
-    if not allow_private and _is_private_host(host):
-        raise urllib.error.URLError(f"refused: target host is private/loopback ({host}); pass allow_private=True to override")
-    req = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": WEB_USER_AGENT,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5",
-            "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-        },
-    )
-    opener = urllib.request.build_opener(_SSRFGuardRedirectHandler()) if not allow_private else urllib.request.build_opener()
-    with opener.open(req, timeout=timeout) as resp:
-        raw = resp.read(max_bytes)
-        content_type = resp.headers.get("content-type", "")
-        charset_match = re.search(r"charset=([^;\s]+)", content_type, re.I)
-        charset = charset_match.group(1) if charset_match else "utf-8"
-        text = raw.decode(charset, errors="replace")
-        return {
-            "url": resp.geturl(),
-            "status_code": getattr(resp, "status", None),
-            "content_type": content_type,
-            "text": text,
-        }
-
-
-def _extract_title(markup: str) -> str:
-    match = re.search(r"<title[^>]*>(.*?)</title>", markup, re.I | re.S)
-    if not match:
-        return ""
-    return _clean_html_text(match.group(1), limit=300)
-
-
-def _html_to_text(markup: str, limit: int = 12000) -> str:
-    markup = re.sub(r"(?is)<(script|style|noscript|svg|canvas).*?</\1>", " ", markup)
-    markup = re.sub(r"(?i)<br\s*/?>", "\n", markup)
-    markup = re.sub(r"(?i)</(p|div|section|article|header|footer|li|h[1-6]|tr)>", "\n", markup)
-    return _clean_html_text(markup, limit=limit)
-
-
-def _clean_html_text(text: str, limit: int = 12000) -> str:
-    text = re.sub(r"<[^>]+>", " ", text)
-    text = html.unescape(text)
-    text = re.sub(r"[ \t\r\f\v]+", " ", text)
-    text = re.sub(r"\n\s+", "\n", text)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return _truncate(text.strip(), limit)
+# HTTP fetch + HTML→texto extraídos a web_text.py (split archivo-dios 2026-06-19).
+# Re-exportados acá para los métodos de esta clase y para steam_store/web_search,
+# que históricamente los importaban lazy desde tools.py.
+from .web_text import (  # noqa: E402,F401
+    WEB_USER_AGENT,
+    _clean_html_text,
+    _extract_title,
+    _html_to_text,
+    _http_get_text,
+)
 
 
 # Scrapers HTML de búsqueda web (DDG/Bing) + selector de proveedor extraídos a

@@ -7,9 +7,9 @@ proveedor con su degradación limpia (ddgs -> DDG-HTML -> Bing). Los scrapers so
 best-effort: si el HTML no matchea el regex devuelven [] (sin daño, ya veníamos
 en blanco). Regex verificados contra el HTML real de cada motor.
 
-Las utilidades HTTP/HTML (`_http_get_text`, `_clean_html_text`) siguen en
-tools.py (las usan muchos otros handlers); se importan a nivel de función para no
-crear un ciclo de import en tiempo de carga.
+Las utilidades HTTP/HTML (`_http_get_text`, `_clean_html_text`) viven en
+web_text.py (módulo de bajo nivel, sin dependencias del paquete); se importan a
+nivel de función por consistencia histórica.
 """
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ def decode_duckduckgo_href(href: str) -> str:
 
 
 def duckduckgo_search(query: str, limit: int = 6, timeout: int | None = None) -> list[dict[str, str]]:
-    from .tools import _http_get_text, _clean_html_text
+    from .web_text import _http_get_text, _clean_html_text
     page = _http_get_text(
         f"https://html.duckduckgo.com/html/?q={quote_plus(query)}",
         timeout=max(1, min(int(timeout or 12), 12)),
@@ -74,7 +74,7 @@ def bing_search(query: str, limit: int = 6, timeout: int | None = None) -> list[
     scraping; si el HTML no matchea el regex, devuelve [] (sin daño: ya veníamos
     en blanco). Sólo se usa cuando DDG falló/vino vacío. Regex verificado contra
     el HTML real de Bing: <h2 class=""><a href="redirect base64">."""
-    from .tools import _http_get_text, _clean_html_text
+    from .web_text import _http_get_text, _clean_html_text
     page = _http_get_text(
         f"https://www.bing.com/search?q={quote_plus(query)}",
         timeout=max(1, min(int(timeout or 12), 12)),

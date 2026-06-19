@@ -2,7 +2,7 @@
 
 Extraído de tools.py (ratchet anti-archivo-dios, patrón sibling+shim). Funciones
 puras de parsing/formateo + una búsqueda HTTP en la store. `_http_get_text` y
-`_clean_html_text` siguen en tools.py y se importan lazy para no ciclar.
+`_clean_html_text` viven en web_text.py (módulo de bajo nivel).
 """
 from __future__ import annotations
 
@@ -70,8 +70,7 @@ def _steam_store_url(appid: str, name: str | None = None) -> str:
 
 
 def _steam_store_first_result(query: str) -> dict[str, str] | None:
-    # lazy: _http_get_text / _clean_html_text viven en tools.py (evita ciclo).
-    from .tools import _http_get_text, _clean_html_text
+    from .web_text import _http_get_text, _clean_html_text
     url = f"https://store.steampowered.com/search/?term={quote_plus(query)}"
     try:
         html_text = _http_get_text(url, timeout=12)["text"]
