@@ -111,7 +111,9 @@ CEILINGS = {
     # del reply (_detect_lang/_reply_lang/_looks_spanish/... + constantes) a
     # lang_detect.py, MÁS el slack heredado real (el archivo ya estaba en ~6506, muy
     # por debajo del techo viejo). El techo baja al floor medido. Número exacto.
-    "agent_core/agent.py": 6317,
+    # 2026-06-19 (cont.): 6317 -> 6254 (-63). EXTRACCIÓN: ruteo de archivos por
+    # extensión (_route_file_by_extension + gates) a file_routing.py. Número exacto.
+    "agent_core/agent.py": 6254,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).
