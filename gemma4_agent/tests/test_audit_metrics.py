@@ -281,7 +281,7 @@ class TestAuditMetrics(unittest.TestCase):
                             )
         self.assertEqual(
             offenders, [],
-            f"Mutable default args (pickled state across calls):\n  "
+            "Mutable default args (pickled state across calls):\n  "
             + "\n  ".join(offenders[:10])
         )
 
@@ -308,7 +308,7 @@ class TestAuditMetrics(unittest.TestCase):
                             trivial.append(f"{p.relative_to(PKG.parent)}:{node.lineno} {node.name}")
         self.assertEqual(
             trivial, [],
-            f"Trivial tests (pass-only or docstring-only):\n  "
+            "Trivial tests (pass-only or docstring-only):\n  "
             + "\n  ".join(trivial[:10])
         )
 

@@ -6,10 +6,8 @@ tool call in `_run_with_timeout` so no tool can block the turn forever.
 """
 from __future__ import annotations
 
-import os
 import time
 import unittest
-from unittest.mock import MagicMock, patch
 
 from gemma4_agent.agent_core.agent import _run_with_timeout
 

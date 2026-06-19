@@ -33,7 +33,6 @@ llegué a ejecutar ninguna acción"). Ver scripts/_validate_action_filler.py.
 from __future__ import annotations
 
 import os
-from typing import Any
 
 # Banco de fillers GENÉRICOS con PERSONALIDAD (Baxy/Maxi). Cortos (~1-1.5s de
 # audio), informales, nunca prometen una acción concreta. Multi-idioma por el

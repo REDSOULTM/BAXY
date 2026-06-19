@@ -9,7 +9,7 @@ from collections import Counter
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from gemma4_agent.vision_input.landmarks import MediaPipeLandmarkDetector
-from gemma4_agent.vision_input.gestures import recognize_hand_gesture, GestureStabilizer, GestureThresholds, _dist, _mean_point
+from gemma4_agent.vision_input.gestures import recognize_hand_gesture, GestureStabilizer, _dist, _mean_point
 
 def process_video(video_path, detector):
     cap = cv2.VideoCapture(video_path)

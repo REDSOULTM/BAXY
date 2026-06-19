@@ -9,8 +9,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
-from . import agent_guards  # sibling en agent_core/
-from ..routing import command_splitter
 from ..safety_pkg import reply_validator
 from ..infra.config import AgentConfig
 from ..support.evaluator import evaluate_mission
@@ -1210,7 +1208,6 @@ class Gemma4Agent:
             from .agent_prompt import (
                 build_core_only,
                 build_core_tool_rules_stable,
-                build_tool_rules_extras_for_user_msg,
             )
             core_stable = build_core_only()
             # Split (FunctionGemma router): las reglas de uso de tools son REDUNDANTES —
@@ -2829,7 +2826,7 @@ class Gemma4Agent:
         # warning_count en progreso real (integration con TIER 1 #1).
         from .. import verifiers as _verifiers_registry  # noqa: F401  registra via decorators
         from ..safety_pkg.verify_core import (
-            verify as _verify, summarize_verifiers, VerifierOutcome,
+            VerifierOutcome,
             classify_failure as _classify_failure,
             retry_budget_for as _retry_budget_for,
             ERR_MISSING_PRECONDITION, ERR_PARAM_MISMATCH, ERR_TRANSIENT,
@@ -2852,7 +2849,6 @@ class Gemma4Agent:
         from ..mission.mission_goal import MissionGoal as _MissionGoal
         from ..mission.mission_outcome import (
             compute_mission_outcome as _compute_mission_outcome,
-            mission_footer as _mission_footer,
             build_tool_records as _build_tool_records,
         )
         # from_user_text runs regex intent-detection on the user text. A bug

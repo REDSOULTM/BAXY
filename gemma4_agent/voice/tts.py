@@ -23,7 +23,6 @@ from pathlib import Path
 from queue import Empty, Queue
 from typing import Callable
 
-import numpy as np
 
 logger = logging.getLogger(__name__)
 

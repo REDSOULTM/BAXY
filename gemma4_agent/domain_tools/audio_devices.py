@@ -13,7 +13,7 @@ from typing import Any
 
 from .._shared import _ok, _err
 from ..memory_pkg.state import AgentState
-from .helpers import _find_soundvolumeview, _powershell_json
+from .helpers import _find_soundvolumeview
 
 def _audio_endpoints() -> list[dict[str, Any]]:
     script = "Get-PnpDevice -Class AudioEndpoint | Select-Object FriendlyName,Status,InstanceId | ConvertTo-Json -Depth 3"

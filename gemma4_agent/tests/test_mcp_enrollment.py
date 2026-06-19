@@ -10,7 +10,6 @@ servidor real está en scripts/_live_verify_mcp_e2e.py).
 """
 from __future__ import annotations
 
-import os
 import unittest
 from unittest import mock
 

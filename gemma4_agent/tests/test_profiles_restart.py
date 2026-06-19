@@ -11,7 +11,7 @@ from __future__ import annotations
 import unittest
 from dataclasses import replace
 
-from ..infra.profiles import PROFILES, Profile, requires_server_restart
+from ..infra.profiles import PROFILES, requires_server_restart
 
 
 class TestRequiresServerRestart(unittest.TestCase):

@@ -408,7 +408,7 @@ def summarize_result(goal: str, plan: list[dict], result: dict) -> str:
     if _unmeasurable:
         # ejecuté lo pedido pero el efecto no fue medible -> honesto, NO "Hecho.".
         return "Lo hice, aunque no pude confirmar el efecto."
-    return f"Listo." if app else "Hecho."
+    return "Listo." if app else "Hecho."
 
 
 class PlanExecutor:

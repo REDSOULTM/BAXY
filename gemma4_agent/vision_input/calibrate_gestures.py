@@ -1,6 +1,5 @@
 """Interactive calibration script to personalize gesture thresholds."""
 import time
-import math
 import cv2
 import numpy as np
 
@@ -193,9 +192,9 @@ def main():
     print(f"    flexed_angle_deg: float = {rec_flex_angle:.1f}")
     print(f"    pinch_palm_ratio: float = {rec_pinch_ratio:.2f}")
     print(f"    thumb_open_ratio: float = {rec_thumb_ratio:.2f}")
-    print(f"    pinch_max_flex: int = 1")
+    print("    pinch_max_flex: int = 1")
     print(f"    point_index_dominance: float = {rec_point_dom:.2f}")
-    print(f"    point_min_folded_others: int = 3")
+    print("    point_min_folded_others: int = 3")
     print("="*50 + "\n")
 
 if __name__ == "__main__":

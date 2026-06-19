@@ -17,7 +17,6 @@ import unittest
 
 import numpy as np
 
-from gemma4_agent.voice import pipeline as pl
 from gemma4_agent.voice.pipeline import State, VoicePipeline, SAMPLE_RATE
 
 

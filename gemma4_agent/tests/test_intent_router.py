@@ -17,9 +17,6 @@ from ..routing.intent_router import (
     classify_intent,
     is_conversational,
     wants_knowledge,
-    wants_send_email,
-    wants_web_navigation,
-    wants_web_store,
 )
 
 

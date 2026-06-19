@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from ..tools_pkg.tools import _translate_keys_to_sendkeys
 

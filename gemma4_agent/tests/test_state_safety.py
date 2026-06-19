@@ -21,7 +21,6 @@ from pathlib import Path
 os.environ.setdefault("GEMMA4_LLAMA_AUTO_START", "0")
 
 from ..domain_tools import (
-    _INVALID_PROFILE_NAMES,
     _is_valid_profile_name,
     _set_streaming_preference,
     _get_streaming_preference,

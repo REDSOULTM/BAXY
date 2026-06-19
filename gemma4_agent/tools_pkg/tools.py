@@ -18,11 +18,10 @@ import urllib.error
 import urllib.request
 import webbrowser
 import zipfile
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import parse_qs, quote_plus, unquote, urlparse
+from urllib.parse import quote_plus, urlparse
 
 from ..domain_tools import (
     audio_device_tool,
@@ -179,7 +178,7 @@ def _prevalidate_backup_sync(args: dict[str, Any]) -> dict[str, Any] | None:
                         dst=str(dst),
                         bad_entry=entry.filename,
                     )
-    except (zipfile.BadZipFile, OSError) as exc:
+    except (zipfile.BadZipFile, OSError):
         # No es nuestro trabajo aquí; deja que el flujo principal lo reporte.
         return None
     return None
@@ -1169,7 +1168,6 @@ from ..safety_pkg.ssrf_guard import _is_private_host, _SSRFGuardRedirectHandler 
 
 def _http_get_text(url: str, timeout: int = 12, max_bytes: int = 2_000_000, allow_private: bool = False) -> dict[str, Any]:
     # SSRF guard pre-request y en redirects.
-    from urllib.parse import urlparse
     host = urlparse(url).hostname or ""
     if not allow_private and _is_private_host(host):
         raise urllib.error.URLError(f"refused: target host is private/loopback ({host}); pass allow_private=True to override")
@@ -1223,21 +1221,14 @@ def _clean_html_text(text: str, limit: int = 12000) -> str:
 # web_search.py (2026-06-08, ratchet archivo-dios). Re-exportados con los nombres
 # privados que el resto de tools.py espera.
 from .web_search import (  # noqa: E402
-    decode_duckduckgo_href as _decode_duckduckgo_href,
-    duckduckgo_search as _duckduckgo_search,
-    bing_decode_redirect as _bing_decode_redirect,
-    bing_search as _bing_search,
-    web_fallback_enabled as _web_fallback_enabled,
     web_search_provider as _web_search_provider,
 )
 
 
 # Búsqueda web (ddgs) + resolución de sitio extraídas a site_resolver.py (2026-06-07).
 from .site_resolver import (  # noqa: E402
-    ddgs_search as _ddgs_search,
     ddgs_search_all_backends as _ddgs_search_all_backends,
     resolve_site_by_search as _resolve_site_by_search_impl,
-    user_country_code as _user_country_code,
 )
 
 
@@ -5221,7 +5212,6 @@ if ($pos) {
         # VALIDACION: parsear y verificar que tiene host. Sin esto, urls
         # como "https:// " o "https://hola mundo" pasan a webbrowser.open
         # que las ejecuta como query del default browser.
-        from urllib.parse import urlparse
         parsed = urlparse(url)
         if not parsed.hostname:
             return _err(
@@ -6199,7 +6189,6 @@ Start-Sleep -Milliseconds 120
         normal más arriba en el z-order. Devuelve True si enfocó algo."""
         try:
             import win32gui
-            import win32process
         except Exception:
             return False
         # Si hay hint, usar window_control(focus) que ya resuelve título/proceso

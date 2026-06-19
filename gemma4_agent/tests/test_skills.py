@@ -14,7 +14,6 @@ import tempfile
 from pathlib import Path
 
 from gemma4_agent.tools_pkg.skills_registry import (
-    CAP_PER_PROFILE,
     SkillMeta,
     _is_valid_skill_name,
     _parse_yaml_simple,

@@ -15,7 +15,6 @@ Hot-path runtime modules (whitelist explícita):
 """
 from __future__ import annotations
 
-import re
 import pathlib
 import unittest
 

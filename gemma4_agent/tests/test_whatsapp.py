@@ -6,7 +6,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from ..infra.config import AgentConfig
 from ..domain_tools import (
     _normalize_phone_for_whatsapp,
     _resolve_whatsapp_recipient,

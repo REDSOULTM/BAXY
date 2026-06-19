@@ -16,7 +16,6 @@ confident first), so the caller can keep the strongest and cap if needed.
 from __future__ import annotations
 
 import json
-import math
 import os
 from dataclasses import dataclass
 from pathlib import Path

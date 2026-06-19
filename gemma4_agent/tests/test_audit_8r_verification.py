@@ -204,7 +204,7 @@ class TestAudit8R(unittest.TestCase):
                 offenders.append(str(py.relative_to(PKG.parent)))
         self.assertEqual(
             offenders, [],
-            f"Files con type hints modernos pero sin `from __future__ import annotations`:\n  "
+            "Files con type hints modernos pero sin `from __future__ import annotations`:\n  "
             + "\n  ".join(offenders[:10]),
         )
 

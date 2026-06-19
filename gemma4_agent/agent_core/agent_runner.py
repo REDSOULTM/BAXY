@@ -226,7 +226,7 @@ class AgentRunner:
         listening → health) instead of an opaque placeholder."""
         try:
             from ..infra.config import PACKAGE_ROOT
-            from ..infra.llama_server import LlamaServerManager, port_in_use
+            from ..infra.llama_server import port_in_use
             from ..infra.profiles import apply_profile_to_env, get_active_profile
         except Exception as exc:
             _publish_activity("SYSTEM", f"autostart imports failed: {exc}")

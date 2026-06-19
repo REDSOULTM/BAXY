@@ -10,7 +10,7 @@ from pathlib import Path
 
 from ..memory_pkg.behavior_log import BehaviorLog
 from ..memory_pkg.taste_profile import (
-    build_profile, profile_text, build_profile_block, inspect_text, forget)
+    build_profile, build_profile_block, inspect_text, forget)
 
 
 def _seed(log, kind, key, slot, **ctx):

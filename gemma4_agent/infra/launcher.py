@@ -17,7 +17,7 @@ from typing import Sequence
 
 from .. import __version__
 from .config import AgentConfig, PACKAGE_ROOT, PROJECT_ROOT
-from .llama_server import LlamaServerManager, port_in_use
+from .llama_server import port_in_use
 from .llm_client import LLMClient
 from .profiles import apply_profile_to_env, get_active_profile
 from ..tools_pkg.tools import COMPOUND_TOOL_SCHEMAS

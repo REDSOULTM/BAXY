@@ -17,7 +17,6 @@ from ..tools_pkg.mcp_server import (
     _handle_initialize,
     _handle_request,
     _handle_tools_call,
-    _handle_tools_list,
 )
 
 

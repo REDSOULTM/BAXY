@@ -16,7 +16,6 @@ perfil que ve Gemma4. Estos tests fijan las causas-raíz arregladas:
 
 NO ejercita input sintético GUI (seguro). BehaviorLog temporal.
 """
-import sqlite3
 import tempfile
 import time
 import unittest

@@ -6,7 +6,6 @@ Pure concurrency test — no real models. We monkeypatch the load body to count
 invocations and widen the race window with a tiny sleep."""
 from __future__ import annotations
 
-import threading
 import time
 import unittest
 from concurrent.futures import ThreadPoolExecutor

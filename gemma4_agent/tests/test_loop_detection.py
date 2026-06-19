@@ -21,7 +21,6 @@ from ..safety_pkg.loop_detection import (
     UNKNOWN_TOOL_LIMIT,
     VISION_NOT_FOUND_LIMIT,
     LoopState,
-    StuckSignal,
     _hash_tool_call,
     _result_signature,
     dedup_degenerate_batch,

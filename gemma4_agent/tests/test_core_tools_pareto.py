@@ -13,7 +13,6 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
 
 from gemma4_agent.agent_core import core_tools_pareto as ctp
 

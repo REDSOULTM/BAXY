@@ -174,7 +174,7 @@ def main() -> int:
                     f"testid={pb['data-testid']!r}  visible={pb['visible']}",
                     file=sys.stderr)
         if not r.get("play_buttons"):
-            print(f"  PLAY: NONE FOUND", file=sys.stderr)
+            print("  PLAY: NONE FOUND", file=sys.stderr)
     print(f"\nJSON: {out}", file=sys.stderr)
     return 0
 

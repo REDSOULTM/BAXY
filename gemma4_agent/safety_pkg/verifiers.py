@@ -34,7 +34,6 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Any
 
 from .verify_core import (
     VerifierOutcome, register_verifier,
@@ -221,7 +220,7 @@ def verify_steam(args: dict, result: dict) -> VerifierOutcome:
         if _proc_matches("steam", procs):
             return _ok_evidence(
                 "steam", f"Steam client running; {action} dispatched",
-                keys=[f"app:Steam"],
+                keys=["app:Steam"],
                 detail={"action": action, "via": "deeplink"},
             )
         return _unverifiable(
@@ -238,7 +237,7 @@ def verify_steam(args: dict, result: dict) -> VerifierOutcome:
         matched = result.get("matched_game") or {}
         return _unverifiable(
             "steam",
-            f"launch dispatched; verificar proceso del juego no automatizado",
+            "launch dispatched; verificar proceso del juego no automatizado",
             detail={"matched_game": matched.get("name") if isinstance(matched, dict) else None},
         )
 
@@ -507,7 +506,7 @@ def verify_terminal(args: dict, result: dict) -> VerifierOutcome:
     if exit_code == 0:
         return _ok_evidence(
             "terminal", "exit_code=0",
-            keys=[f"terminal:exit0"],
+            keys=["terminal:exit0"],
             detail={"command": result.get("command")},
         )
     return _failed(

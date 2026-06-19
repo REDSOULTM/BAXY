@@ -6,7 +6,6 @@ formato de salida estable + el fallback sigue disponible.
 from __future__ import annotations
 
 import tempfile
-import time
 import unittest
 from pathlib import Path
 

@@ -616,7 +616,7 @@ def _build_routine_trigger_ps(trigger: dict[str, Any]) -> str | None:
             days_str = ",".join(safe_days)
             return f"New-ScheduledTaskTrigger -Weekly -DaysOfWeek {days_str} -At '{at}'"
         if cadence == "hourly":
-            return f"New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Hours 1)"
+            return "New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Hours 1)"
         if cadence == "minutes":
             try:
                 n = int(trigger.get("interval_minutes", 5))

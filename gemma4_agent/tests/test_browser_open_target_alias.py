@@ -11,7 +11,6 @@ Mock-only: no dispara el browser real. Stubeamos web_open_url y _resolve_site_by
 from __future__ import annotations
 
 import unittest
-from unittest import mock
 
 
 class BrowserOpenTargetAliasTest(unittest.TestCase):

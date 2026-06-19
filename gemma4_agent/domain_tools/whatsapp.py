@@ -24,7 +24,6 @@ import os
 import re
 import subprocess
 import unicodedata
-import webbrowser
 from pathlib import Path
 from typing import Any, Callable
 

@@ -19,7 +19,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from gemma4_agent.support import vram_watchdog as vw
 
 from gemma4_agent.agent_core.agent import Gemma4Agent, AgentReply
 from gemma4_agent.infra.config import AgentConfig

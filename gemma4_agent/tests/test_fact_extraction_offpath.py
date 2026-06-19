@@ -16,7 +16,6 @@ import threading
 import time
 import unittest
 from pathlib import Path
-from unittest import mock
 
 from gemma4_agent.agent_core.agent import AgentReply, Gemma4Agent
 from gemma4_agent.infra.config import AgentConfig

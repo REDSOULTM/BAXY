@@ -2,8 +2,6 @@ import cv2
 import sys
 import glob
 import os
-import json
-import numpy as np
 from pathlib import Path
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split

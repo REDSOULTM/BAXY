@@ -11,7 +11,6 @@ simultaneamente). Solo verifica el flow hasta `clicked_first_result`.
 from __future__ import annotations
 
 import json
-import os
 import sys
 import tempfile
 import time
@@ -22,7 +21,6 @@ REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO))
 
 from gemma4_agent.domain_tools import (  # noqa: E402
-    _STREAMING_PLATFORMS,
     _set_streaming_preference,
     media_tool,
 )

@@ -16,7 +16,6 @@ bien-manejados (`with patch()` / `@patch` / start+stop en tearDown) YA están de
 cuando esto corre, así que es no-op para ellos: SOLO limpia leaks. Garantiza que
 ningún patch leakeado cruce a otro test (incluida la corrupción de getsource).
 """
-import os
 import pytest
 
 

@@ -23,7 +23,6 @@ class TestDispatchContainsBlastRadius(unittest.TestCase):
     (el caller) también captura Exception."""
 
     def test_tool_exception_becomes_error_result(self):
-        from gemma4_agent.infra.config import AgentConfig
         from gemma4_agent.tools_pkg.tools import ToolRegistry
         reg = ToolRegistry.__new__(ToolRegistry)
         # Minimal: inject a bomb impl and the validation helpers it needs.

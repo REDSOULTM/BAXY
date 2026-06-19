@@ -11,7 +11,6 @@ import unittest
 from unittest.mock import MagicMock
 
 from gemma4_agent.safety_pkg.grounding_gate import (
-    GroundingVerdict,
     _looks_like_first_person_preterit,
     _starts_with_action_claim,
     all_events_blocked_or_failed,

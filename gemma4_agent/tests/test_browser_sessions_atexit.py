@@ -3,7 +3,6 @@ to avoid lingering Chromium handles/sockets in long runs.
 """
 from __future__ import annotations
 
-import atexit
 import unittest
 from unittest.mock import MagicMock
 

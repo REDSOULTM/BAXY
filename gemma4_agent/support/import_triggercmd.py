@@ -115,7 +115,7 @@ def _dry_run(entries: list[dict]) -> int:
             continue
         suffix = " + off-routine" if entry.get("offCommand") else ""
         would_import.append(f"{label!r:40s} phrase='{voice}'{suffix}")
-    print(f"\n[dry-run] No changes written.\n")
+    print("\n[dry-run] No changes written.\n")
     print(f"Would import: {len(would_import)}")
     print(f"Would skip:   {len(would_skip)}\n")
     for line in would_import:
