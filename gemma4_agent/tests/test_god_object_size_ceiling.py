@@ -113,7 +113,10 @@ CEILINGS = {
     # por debajo del techo viejo). El techo baja al floor medido. Número exacto.
     # 2026-06-19 (cont.): 6317 -> 6254 (-63). EXTRACCIÓN: ruteo de archivos por
     # extensión (_route_file_by_extension + gates) a file_routing.py. Número exacto.
-    "agent_core/agent.py": 6254,
+    # 2026-06-19 (cont.): 6254 -> 6190 (-64). EXTRACCIÓN: lectores de feature-flags
+    # (_stream_tts/_summary_keep_tools/_error_recovery/_memory_tools/_skills_autoinject)
+    # a feature_flags.py. Número exacto.
+    "agent_core/agent.py": 6190,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).
