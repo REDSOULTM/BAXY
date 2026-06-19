@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gemma4_agent"
-version = "0.1.0"
+version = "0.9.2"
 description = "Local voice-first agent runtime (Gemma 4 / Gemma 3n) with a web UI (FastAPI + pywebview)."
 # Runtime interpreter is CPython 3.10 (verified: 3.10.11). The 3.11-only
 # training stack (livekit-wakeword) lives in the isolated .venv_livekit and

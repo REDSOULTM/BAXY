@@ -16,7 +16,7 @@ from __future__ import annotations
 
 __all__ = ["__version__"]
 
-__version__ = "0.1.0"
+__version__ = "0.9.2"
 
 
 # --- Back-compat sys.modules aliasing (reorg 2026-05-28) ---
