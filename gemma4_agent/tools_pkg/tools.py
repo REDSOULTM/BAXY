@@ -1223,12 +1223,20 @@ class ToolRegistry:
             is_domain = "." in nm and " " not in nm  # "gmail.com", "pivigames.blog"
             weak_match = False
             if res.get("ok") and len(nm.split()) >= 2:  # solo multi-palabra
-                matched_name = str((res.get("opened") or {}).get("name") or "")
-                if matched_name:
-                    try:
-                        weak_match = _app_score(nm, matched_name) < 70
-                    except Exception:
-                        weak_match = False
+                # Preferir el score CONFIABLE de app_open (alias-aware, canónico): un
+                # _score crudo contra el nombre del exe da 0 para aliases cross-idioma
+                # ("la calculadora"->calc) y disparaba un FALSO weak_match -> fallback
+                # web a un sitio de calculadora. Fallback al _score crudo si no vino.
+                _ms = res.get("match_score")
+                if _ms is not None:
+                    weak_match = _ms < 70
+                else:
+                    matched_name = str((res.get("opened") or {}).get("name") or "")
+                    if matched_name:
+                        try:
+                            weak_match = _app_score(nm, matched_name) < 70
+                        except Exception:
+                            weak_match = False
             if site_shaped and (not_found or is_domain or weak_match):
                 try:
                     resolved = self._resolve_site_by_search(nm)
@@ -4039,6 +4047,11 @@ if ($pos) {
         return _ok(
             query=name,
             opened=best.as_dict(),
+            # Score CONFIABLE del match (alias-aware, canónico, maneja artículos):
+            # "la calculadora"->calc=100. t_app lo usa para el weak-match en vez de un
+            # _score crudo contra el nombre del exe (que da 0 cross-idioma y disparaba
+            # un falso fallback a sitio web). Ver t_app.
+            match_score=self.apps.top_match_score(name, best),
             alternatives=[m.as_dict() for m in matches[1:5]],
             preexisting=bool(preexisting.get("found")),
             resource=resource,
