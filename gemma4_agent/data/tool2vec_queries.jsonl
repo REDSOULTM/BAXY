@@ -8434,3 +8434,104 @@
 {"q": "torna alla pagina precedente", "tool": "browser"}
 {"q": "reviens à la page précédente", "tool": "browser"}
 {"q": "rouvre le dernier onglet fermé", "tool": "browser"}
+{"tool": "system", "q": "cuánta memoria tengo"}
+{"tool": "system", "q": "cuánta memoria me queda"}
+{"tool": "system", "q": "cuánta memoria libre tengo"}
+{"tool": "system", "q": "cuánta memoria está usando la pc"}
+{"tool": "system", "q": "qué memoria tengo disponible"}
+{"tool": "system", "q": "tirame cuánta memoria tengo"}
+{"tool": "system", "q": "cuánta memoria ram tengo"}
+{"tool": "system", "q": "fijate cuánta memoria queda"}
+{"tool": "system", "q": "cuánta memoria está libre"}
+{"tool": "system", "q": "decime cuánta memoria tengo"}
+{"tool": "system", "q": "how much memory do I have"}
+{"tool": "system", "q": "how much memory is free"}
+{"tool": "system", "q": "what's my memory usage"}
+{"tool": "system", "q": "quanta memória eu tenho"}
+{"tool": "system", "q": "quanta memória livre tem"}
+{"tool": "system", "q": "combien de mémoire j'ai"}
+{"tool": "system", "q": "quanta memoria ho"}
+{"tool": "system", "q": "wie viel Speicher habe ich"}
+{"tool": "memory", "q": "guardá en tu memoria que uso Windows"}
+{"tool": "memory", "q": "recordá que prefiero respuestas cortas"}
+{"tool": "memory", "q": "acordate que mi nombre es Emmanuel"}
+{"tool": "memory", "q": "guardá en memoria mi preferencia de idioma"}
+{"tool": "memory", "q": "anotá en tu memoria que trabajo de noche"}
+{"tool": "memory", "q": "remember that I use Windows"}
+{"tool": "memory", "q": "save to your memory that I prefer short answers"}
+{"tool": "window", "q": "tengo discord abierto"}
+{"tool": "window", "q": "está abierto el chrome"}
+{"tool": "window", "q": "tengo el navegador abierto"}
+{"tool": "window", "q": "está abierta la calculadora"}
+{"tool": "window", "q": "tengo spotify abierto"}
+{"tool": "window", "q": "está abierto el explorador"}
+{"tool": "window", "q": "tengo abierto el vs code"}
+{"tool": "window", "q": "está abierta alguna ventana de steam"}
+{"tool": "window", "q": "is discord open"}
+{"tool": "window", "q": "is chrome open"}
+{"tool": "window", "q": "do I have spotify open"}
+{"tool": "window", "q": "is the calculator open"}
+{"tool": "window", "q": "o discord está aberto"}
+{"tool": "browser", "q": "andá a youtube"}
+{"tool": "browser", "q": "ve a youtube"}
+{"tool": "browser", "q": "llevame a youtube"}
+{"tool": "browser", "q": "entrá a youtube"}
+{"tool": "browser", "q": "abrí youtube en el navegador"}
+{"tool": "browser", "q": "andá a spotify web"}
+{"tool": "browser", "q": "llevame a github"}
+{"tool": "browser", "q": "entrá a wikipedia"}
+{"tool": "browser", "q": "go to youtube"}
+{"tool": "browser", "q": "take me to youtube"}
+{"tool": "browser", "q": "open youtube in the browser"}
+{"tool": "media", "q": "poné rock en youtube"}
+{"tool": "media", "q": "reproducí despacito en youtube"}
+{"tool": "media", "q": "poné música en youtube"}
+{"tool": "media", "q": "play some rock on youtube"}
+{"tool": "system", "q": "qué fecha es"}
+{"tool": "system", "q": "qué día es hoy"}
+{"tool": "system", "q": "en qué fecha estamos"}
+{"tool": "system", "q": "decime la fecha de hoy"}
+{"tool": "system", "q": "qué día es"}
+{"tool": "system", "q": "a qué fecha estamos"}
+{"tool": "system", "q": "qué fecha tenemos"}
+{"tool": "system", "q": "what's the date"}
+{"tool": "system", "q": "what day is it today"}
+{"tool": "system", "q": "que dia é hoje"}
+{"tool": "system", "q": "quelle est la date"}
+{"tool": "network", "q": "cuál es mi ip"}
+{"tool": "network", "q": "mi dirección ip"}
+{"tool": "network", "q": "qué ip tengo"}
+{"tool": "network", "q": "tirame mi ip"}
+{"tool": "network", "q": "cuál es mi dirección ip pública"}
+{"tool": "network", "q": "decime mi ip"}
+{"tool": "network", "q": "show my ip address"}
+{"tool": "reminder", "q": "recordame en 5 minutos tomar agua"}
+{"tool": "reminder", "q": "avisame en una hora"}
+{"tool": "reminder", "q": "recordame en diez minutos"}
+{"tool": "reminder", "q": "avisame dentro de media hora"}
+{"tool": "reminder", "q": "recordame en 20 minutos estirar"}
+{"tool": "reminder", "q": "recordame esta tarde llamar al banco"}
+{"tool": "reminder", "q": "avisame en 15 minutos"}
+{"tool": "reminder", "q": "remind me in 5 minutes to drink water"}
+{"tool": "reminder", "q": "remind me in an hour"}
+{"tool": "app", "q": "che abrime el chrome"}
+{"tool": "app", "q": "abrime el spotify dale"}
+{"tool": "app", "q": "che, abrí firefox"}
+{"tool": "device_settings", "q": "qué onda con el wifi"}
+{"tool": "device_settings", "q": "cómo viene el wifi"}
+{"tool": "device_settings", "q": "qué onda la conexión"}
+{"tool": "window", "q": "mostrame qué tengo abierto"}
+{"tool": "window", "q": "tirame qué ventanas tengo"}
+{"tool": "window", "q": "qué tengo abierto ahora"}
+{"tool": "web", "q": "pasame el clima"}
+{"tool": "web", "q": "qué onda el clima"}
+{"tool": "web", "q": "tirame el clima de hoy"}
+{"tool": "system", "q": "qué onda con la batería"}
+{"tool": "system", "q": "cómo viene la batería"}
+{"tool": "app", "q": "abrime el bloc de notas"}
+{"tool": "app", "q": "abrí notepad"}
+{"tool": "email", "q": "abrí mis mails"}
+{"tool": "email", "q": "revisá mis correos"}
+{"tool": "email", "q": "abrí el correo"}
+{"tool": "email", "q": "fijate mis mails"}
+{"tool": "email", "q": "check my emails"}
