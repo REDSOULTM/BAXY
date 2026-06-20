@@ -238,13 +238,13 @@ TOOL_DESCRIPTIONS["computer_use"] = (
 # está la mejora real de routing). GEMMA4_LEAN_TOOLS=0 restaura las 67.
 import os as _os_lean_sr
 _CUT_TOOLS_LEAN_SR = {
-    "registry", "network", "maintenance", "container", "database",
+    "registry", "maintenance", "container", "database",
     "printer_scanner", "peripheral", "backup_sync", "developer", "file_process",
     "job_manager", "watcher", "desktop_layout", "local_search",
     "habit_tracker", "study", "photo_library", "media_edit", "creative_local",
     "fact_check", "form_filler", "game_launcher", "data_analysis", "document",
     "source_manager", "office", "local_calendar", "reminder", "env", "download",
-    "audio_device", "input", "clipboard", "routine", "browser_real",
+    "audio_device", "input", "routine", "browser_real",
 }
 if _os_lean_sr.environ.get("GEMMA4_LEAN_TOOLS", "1").strip().lower() not in {"0", "false", "no", "off"}:
     for _ct in _CUT_TOOLS_LEAN_SR:

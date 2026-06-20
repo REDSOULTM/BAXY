@@ -111,13 +111,13 @@ for _schema in COMPOUND_TOOL_SCHEMAS:
 # restaura las 67 (para comparar / re-FT A/B).
 import os as _os_lean
 CUT_TOOLS_LEAN: frozenset = frozenset({
-    "registry", "network", "maintenance", "container", "database",
+    "registry", "maintenance", "container", "database",
     "printer_scanner", "peripheral", "backup_sync", "developer", "file_process",
     "job_manager", "watcher", "desktop_layout", "local_search",
     "habit_tracker", "study", "photo_library", "media_edit", "creative_local",
     "fact_check", "form_filler", "game_launcher", "data_analysis", "document",
     "source_manager", "office", "local_calendar", "reminder", "env", "download",
-    "audio_device", "input", "clipboard", "routine", "browser_real",
+    "audio_device", "input", "routine", "browser_real",
 })
 if _os_lean.environ.get("GEMMA4_LEAN_TOOLS", "1").strip().lower() not in {"0", "false", "no", "off"}:
     COMPOUND_TOOL_SCHEMAS = [

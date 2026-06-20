@@ -8602,3 +8602,44 @@
 {"tool": "notes_tasks", "q": "meine To-do-Liste"}
 {"tool": "notes_tasks", "q": "mach eine Notiz"}
 {"tool": "notes_tasks", "q": "füge eine Aufgabe hinzu"}
+{"tool": "clipboard", "q": "qué hay en el portapapeles"}
+{"tool": "clipboard", "q": "qué copié"}
+{"tool": "clipboard", "q": "qué tengo copiado"}
+{"tool": "clipboard", "q": "mostrame el portapapeles"}
+{"tool": "clipboard", "q": "copiá esto al portapapeles"}
+{"tool": "clipboard", "q": "copiá este texto"}
+{"tool": "clipboard", "q": "pegá lo que copié"}
+{"tool": "clipboard", "q": "pegá del portapapeles"}
+{"tool": "clipboard", "q": "limpiá el portapapeles"}
+{"tool": "clipboard", "q": "vaciá el portapapeles"}
+{"tool": "clipboard", "q": "what did I copy"}
+{"tool": "clipboard", "q": "copy this to clipboard"}
+{"tool": "clipboard", "q": "clear the clipboard"}
+{"tool": "clipboard", "q": "o que está na área de transferência"}
+{"tool": "clipboard", "q": "copie isto"}
+{"tool": "clipboard", "q": "cole o que copiei"}
+{"tool": "clipboard", "q": "qu'y a-t-il dans le presse-papiers"}
+{"tool": "clipboard", "q": "copie ceci"}
+{"tool": "clipboard", "q": "colle ce que j'ai copié"}
+{"tool": "clipboard", "q": "cosa c'è negli appunti"}
+{"tool": "clipboard", "q": "copia questo"}
+{"tool": "clipboard", "q": "was ist in der zwischenablage"}
+{"tool": "clipboard", "q": "kopiere das"}
+{"tool": "network", "q": "cuál es mi ip pública"}
+{"tool": "network", "q": "mi ip local"}
+{"tool": "network", "q": "estoy conectado a internet"}
+{"tool": "network", "q": "tengo internet"}
+{"tool": "network", "q": "qué red estoy usando"}
+{"tool": "network", "q": "cómo está mi conexión"}
+{"tool": "network", "q": "qué velocidad de internet tengo"}
+{"tool": "network", "q": "estado de la red"}
+{"tool": "network", "q": "what is my ip address"}
+{"tool": "network", "q": "am I connected to the internet"}
+{"tool": "network", "q": "what's my network status"}
+{"tool": "network", "q": "qual é o meu ip"}
+{"tool": "network", "q": "estou conectado à internet"}
+{"tool": "network", "q": "quelle est mon adresse ip"}
+{"tool": "network", "q": "suis-je connecté à internet"}
+{"tool": "network", "q": "sono connesso a internet"}
+{"tool": "network", "q": "wie lautet meine ip"}
+{"tool": "network", "q": "bin ich mit dem internet verbunden"}
