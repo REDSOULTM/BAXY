@@ -44,8 +44,16 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
     # correo" es correcto para comunicación externa, y el redactor abre DESPUÉS.
     if tool == "email" and action == "send":
         return SafetyDecision(True, "external_message_send", "email.send delivers an irreversible message to third parties")
-    if tool == "notification" and action not in {"status", "list", "timer_list", "alarm_list", "reminder_list"}:
-        return SafetyDecision(True, "scheduled_notification", f"notification.{action} can create/cancel local scheduled tasks")
+    # CREAR/disparar un recordatorio/timer/alarma/toast local es BENIGNO y REVERSIBLE
+    # (se cancela con *_cancel) -> tier-Alexa: NO se confirma (la propia confirmation_policy
+    # clasifica "recordatorios/alarmas" como bajo-impacto auto-aprobable). Confirmar
+    # "recordame en 5 min" era fricción anti-Alexa y, al narrar mal ese needs_confirmation,
+    # el E2B confabulaba un motivo falso ("no aceptó la duración"). CANCELAR/BORRAR/EDITAR
+    # sí toca algo que el usuario fijó -> se mantiene la confirmación.
+    _NOTIF_CONFIRM = {"timer_cancel", "alarm_cancel", "reminder_delete", "delete",
+                      "timer_update", "alarm_update", "reminder_update", "notification_update"}
+    if tool == "notification" and action in _NOTIF_CONFIRM:
+        return SafetyDecision(True, "scheduled_notification", f"notification.{action} cancels/edits a scheduled task the user set")
     if tool == "routine" and action in {"create", "enable", "disable", "delete", "run_now"}:
         return SafetyDecision(True, "automation", f"routine.{action} can run or persist multi-step automation")
     if tool in {"contacts", "notes_tasks", "local_calendar", "habit_tracker", "source_manager"} and action not in {"status", "list", "search", "read", "get", "sources", "notes", "tasks", "event_list", "stats"}:
