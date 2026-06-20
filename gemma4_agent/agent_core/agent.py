@@ -1279,6 +1279,34 @@ class Gemma4Agent:
             except Exception:
                 pass
         _mark_decide_phase("a11y_switch_check")
+        # MULTI-INTENT: "abrí chrome y poné música" = DOS acciones. Un 4B causal
+        # colapsa el multi-intent (MIDLM/COLING 2025); la cura es PARTIR en cláusulas
+        # ANTES del LLM y correr cada una como su propio turno (cada cláusula rutea por
+        # FG y ejecuta; _run_multi_intent combina las respuestas + honesty-de-cadena).
+        # El splitter es CONSERVADOR: confirma por embeddings que tras la conjunción hay
+        # una ACCIÓN ("abrí X y poné Y" parte; "Tom and Jerry"/"sal y pimienta" NO).
+        # _splitting evita re-partir en los sub-turnos. (El call-site se perdió en el
+        # refactor R1 run_content->_decide_turn; _run_multi_intent ya existía completo.)
+        # Va DESPUÉS de los handshakes deterministas (jarvis/profile/a11y) y ANTES del
+        # routing. Gate GEMMA4_MULTI_INTENT=0.
+        import os as _os_mi
+        if (isinstance(content, str) and content.strip()
+                and not getattr(self, "_splitting", False)
+                and _os_mi.environ.get("GEMMA4_MULTI_INTENT", "1").strip().lower()
+                    not in {"0", "false", "no", "off"}):
+            try:
+                from ..routing.command_splitter import split_command as _split_cmd
+                _clauses = _split_cmd(content)
+            except Exception:
+                _clauses = [content]
+            if len(_clauses) > 1:
+                try:
+                    self.trace.event(turn_id, "multi_intent_split", clauses=_clauses)
+                except Exception:
+                    pass
+                return TurnDecision(
+                    early_reply=self._run_multi_intent(_clauses, progress=progress))
+        _mark_decide_phase("multi_intent_split")
         # COMPUTER-USE ES UNA TOOL (pedido de RED): operar dentro
         # de una app abierta ya NO es un short-circuit pre-LLM que secuestraba turnos
         # (causaba: "abre steam"->enfoca/minimiza, WhatsApp->escribe en la caja
