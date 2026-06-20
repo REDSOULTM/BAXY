@@ -355,6 +355,10 @@ def main() -> int:
     except Exception:
         pass
     ap = argparse.ArgumentParser()
+    ap.add_argument("--prod-exemplars", action="store_true",
+                    help="usar el exemplar store COMPLETO (incl. holdout). Default: "
+                         "se EXCLUYE el holdout del store (eval honesto — el holdout "
+                         "no se matchea contra sí mismo, que inflaba el recall a 100%).")
     ap.add_argument("--show-fails", action="store_true")
     ap.add_argument("--by-tool", action="store_true")
     ap.add_argument("--slices", action="store_true",
@@ -398,6 +402,18 @@ def main() -> int:
     print("=" * 70)
     if not args.skip_warmup:
         _warm_router_for_eval()
+
+    # EVAL HONESTO: excluir el holdout del exemplar store -> el holdout no se matchea
+    # contra sí mismo (memorización). El store de PRODUCCIÓN no se toca. --prod-exemplars
+    # vuelve al comportamiento viejo (store completo, recall inflado a 100%).
+    if not args.prod_exemplars:
+        try:
+            from gemma4_agent.routing import exemplar_router as _exr
+            _exr.set_exclude({r["q"] for r in hold})
+            print(f"  [eval honesto] exemplar store SIN holdout ({len(hold)} queries "
+                  f"excluidas); el recall de holdout es generalización real, no memoria.")
+        except Exception as _exc:
+            print(f"  WARN: no se pudo excluir el holdout del exemplar: {_exc}")
 
     targets = []
     if args.split in ("dev", "both"):

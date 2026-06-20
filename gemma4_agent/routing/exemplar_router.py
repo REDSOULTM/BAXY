@@ -67,6 +67,16 @@ class _Index:
 _INDEX: _Index | None = None
 _TRIED = False
 _LOCK = threading.Lock()
+# Textos de query a EXCLUIR del store al matchear (solo para el EVAL honesto del
+# holdout; en producción queda vacío). Ver match() + scripts/router_eval.py.
+_EXCLUDE: frozenset[str] = frozenset()
+
+
+def set_exclude(queries) -> None:
+    """Setea el set de exclusión (lowercased). Lo usa el eval para no contar
+    auto-matches del holdout contra el store (memorización). Producción: set vacío."""
+    global _EXCLUDE
+    _EXCLUDE = frozenset((q or "").strip().lower() for q in (queries or ()))
 
 
 def is_enabled() -> bool:
@@ -98,9 +108,15 @@ def match(text: str) -> ExemplarMatch | None:
     if idx is None:
         return None
 
-    exact = idx.exact.get(text)
-    if exact is not None:
-        return ExemplarMatch(tools=exact, score=1.0, source="exact")
+    # EVAL HONESTO (no producción): _EXCLUDE trae los textos del split de holdout para
+    # que una query de holdout NO se matchee contra SÍ MISMA (ni contra otra holdout)
+    # en el store — eso inflaba el recall a 100% (memorización, no generalización). En
+    # producción _EXCLUDE está vacío -> overhead cero. Se aplica al exact Y al semántico.
+    _excl = _EXCLUDE
+    if not (_excl and text.strip().lower() in _excl):
+        exact = idx.exact.get(text)
+        if exact is not None:
+            return ExemplarMatch(tools=exact, score=1.0, source="exact")
 
     try:
         import numpy as np
@@ -114,7 +130,13 @@ def match(text: str) -> ExemplarMatch | None:
         scores = idx.embeddings @ np.asarray(qv, dtype=np.float32)
         if scores.size == 0:
             return None
-        top = np.argsort(-scores)[: max(1, _TOP_K)]
+        if _excl:
+            top = [i for i in np.argsort(-scores).tolist()
+                   if idx.queries[i].strip().lower() not in _excl][: max(1, _TOP_K)]
+            if not top:
+                return None
+        else:
+            top = np.argsort(-scores)[: max(1, _TOP_K)]
         best_i = int(top[0])
         best_score = float(scores[best_i])
         if best_score < _MIN_SCORE:
