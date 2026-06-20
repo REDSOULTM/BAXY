@@ -37,6 +37,12 @@ ProgressCallback = Callable[[str, dict[str, Any]], None]
 # Q4 QAT=habla) estos guards eran compensación del E2B; se sacan para probar neto.
 import os as _os_guards
 _GUARDS_ON = _os_guards.environ.get("GEMMA4_GUARDS", "0").strip().lower() in {"1", "true", "yes", "on"}
+# EXCEPCIÓN: el guard de HONESTIDAD (unverified_final + grounded_action_claim) es
+# ESTRUCTURAL (mide la FORMA verbal del claim, no listas de contenido) -> compatible con
+# el neto, que solo saca guards de CONTENIDO/enlatados. El E2B confabula éxito ~12%
+# ("Listo, cerré las pestañas" SIN tool) y los notes piden "honesty conviene re-agregar":
+# queda SIEMPRE activo salvo override explícito. verified=True pasa intacto -> sin regresión.
+_HONESTY_ON = _os_guards.environ.get("GEMMA4_HONESTY_GUARD", "1").strip().lower() not in {"0", "false", "no", "off"}
 
 # ── FunctionGemma run9 como ROUTER DE TOOL-CALLING (split) ───────────────────
 # GEMMA4_FG_ROUTER=1 → FunctionGemma-270M (:8082) decide el tool-call en vez del E2B;
@@ -4176,7 +4182,7 @@ class Gemma4Agent:
         # Pase 1: cero-eventos / verificación fallida — caza "Listo, abrí Gmail" con
         # exec=[] (la confabulación de navegación/open que el grounded-claim no ve, porque
         # no hay tool que inspeccionar). Estructural (reply_claims_action = forma verbal).
-        if _GUARDS_ON:
+        if _GUARDS_ON or _HONESTY_ON:
             try:
                 from .agent_guards import guard_unverified_final as _guf
                 assistant_content = _guf(assistant_content, events)

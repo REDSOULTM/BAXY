@@ -137,7 +137,12 @@ CEILINGS = {
     # Una orden NEGADA ("no abras X") ejecutaba la acción (medido 14/16); fg_emit la corta en
     # la 1ª pasada pero el E2B la re-emite en pasadas posteriores (fuera del _fg_router_done
     # gate). Se filtran tools MUTANTES cuando _is_negated_command(user). Cableado irreducible. Exacto.
-    "agent_core/agent.py": 6219,
+    # 2026-06-20 (cont.): 6219 -> 6225 (+6). HONESTIDAD: el guard estructural de confab
+    # (unverified_final + grounded_action_claim, mide la FORMA verbal) estaba gateado por
+    # _GUARDS_ON (OFF en neto) -> el E2B confabulaba éxito ~12% ("Listo, cerré las pestañas"
+    # sin tool). Se separa _HONESTY_ON (default ON, override GEMMA4_HONESTY_GUARD=0); verified=True
+    # pasa intacto. Estructural -> compatible con neto. Número exacto.
+    "agent_core/agent.py": 6225,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).
