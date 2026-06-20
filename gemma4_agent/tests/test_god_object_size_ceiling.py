@@ -129,7 +129,11 @@ CEILINGS = {
     # (system/device_settings/network) y re-prompteaba, pisando "Tienes tres monitores" con
     # filler ("listo, lo dejo"). Se agrega _only_status_readout (terminal, como _only_web_search)
     # al gate del nudge. Cableado irreducible del finalize hot-path. Número exacto.
-    "agent_core/agent.py": 6201,
+    # 2026-06-20 (cont.): 6201 -> 6206 (+5). MISMO bug en tools dual-use (window/app/package):
+    # "qué ventanas tengo" (readout) disparaba el nudge -> filler. Se gatea el nudge con
+    # not _is_interrogative(user): una PREGUNTA es readout (no hay paso físico que delegar);
+    # un IMPERATIVO ("listá y enfocá") sí nudgea. Generaliza _only_status_readout. Exacto.
+    "agent_core/agent.py": 6206,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

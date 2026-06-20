@@ -4086,10 +4086,15 @@ class Gemma4Agent:
                 and (e.result or {}).get("ok") is True
                 for e in events)
         )
+        # Una PREGUNTA (forma interrogativa) es readout: la respuesta ES el entregable,
+        # no hay paso físico que delegar. Generaliza _only_status_readout a tools dual-use
+        # (window/app/package): "qué ventanas tengo" no nudgea, "listá y enfocá" (imperativo) sí.
+        from ..routing.fg_router import _is_interrogative as _is_interrog
         if (_cont_active
                 and _cont_actionable
                 and not _only_web_search
                 and not _only_status_readout
+                and not _is_interrog(raw_text_early or "")
                 and not _cont_info_question
                 and self._a11y_continue_count < _A11Y_MAX_CONTINUES
                 and _cont_delegates):
