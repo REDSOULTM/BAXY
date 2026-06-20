@@ -133,7 +133,11 @@ CEILINGS = {
     # "qué ventanas tengo" (readout) disparaba el nudge -> filler. Se gatea el nudge con
     # not _is_interrogative(user): una PREGUNTA es readout (no hay paso físico que delegar);
     # un IMPERATIVO ("listá y enfocá") sí nudgea. Generaliza _only_status_readout. Exacto.
-    "agent_core/agent.py": 6206,
+    # 2026-06-20 (cont.): 6206 -> 6219 (+13). SAFETY: red de negación en la capa de ejecución.
+    # Una orden NEGADA ("no abras X") ejecutaba la acción (medido 14/16); fg_emit la corta en
+    # la 1ª pasada pero el E2B la re-emite en pasadas posteriores (fuera del _fg_router_done
+    # gate). Se filtran tools MUTANTES cuando _is_negated_command(user). Cableado irreducible. Exacto.
+    "agent_core/agent.py": 6219,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

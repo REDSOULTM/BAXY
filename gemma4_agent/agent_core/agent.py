@@ -3248,6 +3248,19 @@ class Gemma4Agent:
                         chosen_action=v.chosen_action,
                     )
 
+            # RED DE SEGURIDAD DE NEGACIÓN: una orden NEGADA ("no abras X") nunca debe
+            # ejecutar una acción MUTANTE, aunque el E2B la emita en una pasada fuera del
+            # FG-gate (fg_emit solo corre en la 1ª). Las lecturas pasan; "no me..." ya
+            # queda excluido en _is_negated_command. Cierra el bypass multi-pasada.
+            if raw_tool_calls:
+                from ..routing.fg_router import _is_negated_command as _isneg, _is_mutating_action as _ima
+                if _isneg(raw_text_early or ""):
+                    _keep = [tc for tc in raw_tool_calls if not _ima(
+                        (_parse_args((tc.get("function") or {}).get("arguments", {}))[0] or {}).get("action", ""))]
+                    if len(_keep) != len(raw_tool_calls):
+                        self.trace.event(turn_id, "negation_suppressed_tools", dropped=len(raw_tool_calls) - len(_keep))
+                        raw_tool_calls = _keep
+                        msg["tool_calls"] = _keep
             self.history.append(msg)
 
             image_results: list[tuple[Path, dict[str, Any], str]] = []

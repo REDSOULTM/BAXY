@@ -410,6 +410,32 @@ def _is_interrogative(query: str) -> bool:
     return False
 
 
+# Negadores iniciales de una ORDEN ("no abras X", "don't open Y", "mejor no pongas Z").
+# El encoder/FG ignoran el "no" (token chico) y rutean igual que la orden afirmativa ->
+# ejecutaban lo CONTRARIO de lo pedido. FORM gramatical multilingüe (no contenido).
+_NEGATORS = frozenset({"no", "dont", "not", "non", "nicht", "nao", "nunca", "never", "kein"})
+# Clíticos: "no me/te/se/le..." NIEGA un sentimiento/cláusula, no la orden ("no me gusta,
+# poné otra") -> NO es orden-negada. Si tras el negador viene un clítico, no gateamos.
+_CLITICS = frozenset({"me", "te", "se", "le", "lo", "la", "les", "los", "las", "nos", "os"})
+
+
+def _is_negated_command(query: str) -> bool:
+    """¿La query NIEGA una orden? Negador en los 2 primeros tokens seguido de algo que
+    NO es clítico ("no abras X" sí; "no me gusta..." no). El caller lo gatea a acciones
+    MUTANTES -> nunca afecta lecturas ni no_tool. FORM gramatical, no por contenido."""
+    import unicodedata
+    toks = [
+        "".join(c for c in unicodedata.normalize("NFKD", t.strip(".,;:!¡¿?'\"").replace("'", "").replace("’", ""))
+                if not unicodedata.combining(c))
+        for t in (query or "").strip().lower().split()
+    ]
+    for i in (0, 1):
+        if i < len(toks) and toks[i] in _NEGATORS:
+            nxt = toks[i + 1] if i + 1 < len(toks) else ""
+            return bool(nxt) and nxt not in _CLITICS
+    return False
+
+
 # Clasificación ESTRUCTURAL de acciones por su NOMBRE (no por contenido): de LECTURA
 # (consultan estado) vs MUTANTES/físicas (modifican el SO / mandan input). Se usa para
 # la guarda "una PREGUNTA no dispara una escritura" (generaliza el caso media de #1 a
@@ -494,6 +520,16 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     # delata como accionable. El conocimiento ya se cortó arriba (KVA gate).
     actionable_question = _is_interrogative(query) and top1 >= FG_ACT_FLOOR
     if not (top1 >= FG_ACT_PEAK or e2b_emitted or actionable_question):
+        return "no_tool", None, []
+
+    # GUARDA DE NEGACIÓN: una ORDEN NEGADA ("no abras X", "don't open Y", "no pongas
+    # música") NO debe ejecutar la acción. El encoder/FG ignoran el "no" (token chico) y
+    # rutean igual que la afirmativa -> se ejecutaba lo CONTRARIO de lo pedido (medido
+    # 14/16). Va ANTES de consultar FG y devuelve no_tool, así también OVERRIDEA el tool
+    # que el E2B haya emitido (si FG abstiene, el caller conservaría el del E2B = bypass).
+    # "no <verbo>" = no lo hagas (read o write) -> suprime cualquier acción; el clítico
+    # ("no me gusta...") ya queda excluido en _is_negated_command. FORM, no contenido.
+    if _is_negated_command(query):
         return "no_tool", None, []
 
     subset = _R.subset(query, fam_k=fam_k, tool_k=tool_k)
