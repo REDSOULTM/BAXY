@@ -56,7 +56,17 @@ def classify_tool_call(tool: str, args: dict[str, Any]) -> SafetyDecision:
         return SafetyDecision(True, "scheduled_notification", f"notification.{action} cancels/edits a scheduled task the user set")
     if tool == "routine" and action in {"create", "enable", "disable", "delete", "run_now"}:
         return SafetyDecision(True, "automation", f"routine.{action} can run or persist multi-step automation")
-    if tool in {"contacts", "notes_tasks", "local_calendar", "habit_tracker", "source_manager"} and action not in {"status", "list", "search", "read", "get", "sources", "notes", "tasks", "event_list", "stats"}:
+    # Las acciones de LECTURA de estos tools locales (note_list, task_list, note_search,
+    # notes_tasks_status, contact_search, habit_stats...) NO deben confirmar. El set exacto
+    # anterior solo eximía "list"/"search" PELADOS y dejaba pasar los nombres PREFIJADOS
+    # (note_list, task_list) -> "qué notas tengo" pedía confirmación para LISTAR (medido).
+    # Exento si la acción contiene un token de lectura; las escrituras (create/update/delete/
+    # add/complete) no lo tienen -> siguen confirmando. Desconocido -> confirma (conservador).
+    _LOCAL_READ_TOKENS = {"status", "list", "search", "read", "get", "stats", "sources",
+                          "view", "show", "count", "find"}
+    if tool in {"contacts", "notes_tasks", "local_calendar", "habit_tracker", "source_manager"} \
+            and action not in {"notes", "tasks"} \
+            and not (set(action.lower().replace("-", "_").split("_")) & _LOCAL_READ_TOKENS):
         return SafetyDecision(True, "local_state_change", f"{tool}.{action} changes local agent state")
     if tool == "backup_sync" and action in {"backup_create", "restore", "dedupe"}:
         return SafetyDecision(True, "backup_or_restore", f"backup_sync.{action} can create or restore file backups")

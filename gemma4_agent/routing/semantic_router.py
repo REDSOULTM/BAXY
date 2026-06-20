@@ -240,7 +240,7 @@ import os as _os_lean_sr
 _CUT_TOOLS_LEAN_SR = {
     "registry", "network", "maintenance", "container", "database",
     "printer_scanner", "peripheral", "backup_sync", "developer", "file_process",
-    "job_manager", "watcher", "desktop_layout", "local_search", "notes_tasks",
+    "job_manager", "watcher", "desktop_layout", "local_search",
     "habit_tracker", "study", "photo_library", "media_edit", "creative_local",
     "fact_check", "form_filler", "game_launcher", "data_analysis", "document",
     "source_manager", "office", "local_calendar", "reminder", "env", "download",

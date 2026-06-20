@@ -8535,3 +8535,70 @@
 {"tool": "email", "q": "abrí el correo"}
 {"tool": "email", "q": "fijate mis mails"}
 {"tool": "email", "q": "check my emails"}
+{"tool": "notes_tasks", "q": "qué notas tengo"}
+{"tool": "notes_tasks", "q": "mis notas"}
+{"tool": "notes_tasks", "q": "listá mis notas"}
+{"tool": "notes_tasks", "q": "qué notas guardé"}
+{"tool": "notes_tasks", "q": "ver mis notas"}
+{"tool": "notes_tasks", "q": "mostrame las notas que tengo"}
+{"tool": "notes_tasks", "q": "qué anotaciones tengo"}
+{"tool": "notes_tasks", "q": "qué tareas tengo"}
+{"tool": "notes_tasks", "q": "mis tareas"}
+{"tool": "notes_tasks", "q": "mis pendientes"}
+{"tool": "notes_tasks", "q": "mostrame mis tareas"}
+{"tool": "notes_tasks", "q": "listá mis tareas"}
+{"tool": "notes_tasks", "q": "qué tengo pendiente"}
+{"tool": "notes_tasks", "q": "ver mi lista de tareas"}
+{"tool": "notes_tasks", "q": "qué cosas tengo anotadas para hacer"}
+{"tool": "notes_tasks", "q": "anotá que compre pan"}
+{"tool": "notes_tasks", "q": "tomá nota de esto"}
+{"tool": "notes_tasks", "q": "anotame que llame al dentista"}
+{"tool": "notes_tasks", "q": "guardá una nota"}
+{"tool": "notes_tasks", "q": "creá una nota"}
+{"tool": "notes_tasks", "q": "apuntá esto"}
+{"tool": "notes_tasks", "q": "anotá una idea"}
+{"tool": "notes_tasks", "q": "agregá una tarea"}
+{"tool": "notes_tasks", "q": "añadí a mi lista de tareas comprar leche"}
+{"tool": "notes_tasks", "q": "creá una tarea"}
+{"tool": "notes_tasks", "q": "poné una tarea nueva"}
+{"tool": "notes_tasks", "q": "what notes do I have"}
+{"tool": "notes_tasks", "q": "show my notes"}
+{"tool": "notes_tasks", "q": "list my notes"}
+{"tool": "notes_tasks", "q": "my notes"}
+{"tool": "notes_tasks", "q": "my tasks"}
+{"tool": "notes_tasks", "q": "my to-dos"}
+{"tool": "notes_tasks", "q": "list my to-do list"}
+{"tool": "notes_tasks", "q": "add a note"}
+{"tool": "notes_tasks", "q": "make a note"}
+{"tool": "notes_tasks", "q": "note this down"}
+{"tool": "notes_tasks", "q": "add a task"}
+{"tool": "notes_tasks", "q": "create a task"}
+{"tool": "notes_tasks", "q": "add to my to-do list"}
+{"tool": "notes_tasks", "q": "minhas notas"}
+{"tool": "notes_tasks", "q": "quais notas eu tenho"}
+{"tool": "notes_tasks", "q": "mostre minhas notas"}
+{"tool": "notes_tasks", "q": "minhas tarefas"}
+{"tool": "notes_tasks", "q": "minha lista de tarefas"}
+{"tool": "notes_tasks", "q": "anote isto"}
+{"tool": "notes_tasks", "q": "criar uma nota"}
+{"tool": "notes_tasks", "q": "adicionar uma tarefa"}
+{"tool": "notes_tasks", "q": "mes notes"}
+{"tool": "notes_tasks", "q": "quelles notes ai-je"}
+{"tool": "notes_tasks", "q": "affiche mes notes"}
+{"tool": "notes_tasks", "q": "mes tâches"}
+{"tool": "notes_tasks", "q": "ma liste de tâches"}
+{"tool": "notes_tasks", "q": "prends une note"}
+{"tool": "notes_tasks", "q": "ajoute une tâche"}
+{"tool": "notes_tasks", "q": "le mie note"}
+{"tool": "notes_tasks", "q": "quali note ho"}
+{"tool": "notes_tasks", "q": "mostra le mie note"}
+{"tool": "notes_tasks", "q": "i miei compiti"}
+{"tool": "notes_tasks", "q": "la mia lista di cose da fare"}
+{"tool": "notes_tasks", "q": "prendi una nota"}
+{"tool": "notes_tasks", "q": "aggiungi un'attività"}
+{"tool": "notes_tasks", "q": "meine Notizen"}
+{"tool": "notes_tasks", "q": "zeig meine Notizen"}
+{"tool": "notes_tasks", "q": "meine Aufgaben"}
+{"tool": "notes_tasks", "q": "meine To-do-Liste"}
+{"tool": "notes_tasks", "q": "mach eine Notiz"}
+{"tool": "notes_tasks", "q": "füge eine Aufgabe hinzu"}
