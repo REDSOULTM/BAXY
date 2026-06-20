@@ -46,6 +46,20 @@ class TestInterrogative:
                   "tienes que reiniciar"]:
             assert not _is_interrogative(q), q
 
+    def test_declarative_plus_imperative_is_not_a_question(self):
+        # ADVERSARIAL: un declarativo que ARRANCA con cópula pero CONTIENE un
+        # imperativo afirmativo ("es tarde bajá el volumen") es un COMANDO -> el
+        # veto _has_imperative evita que el read/write guard lo lea/bloquee.
+        for q in ["tengo hambre poné música", "es tarde bajá el volumen",
+                  "son las tres abrí la calculadora", "estoy cansado subí el brillo"]:
+            assert not _is_interrogative(q), q
+
+    def test_english_open_adjective_stays_a_question(self):
+        # "is chrome open" -> "open" es ADJETIVO, no el imperativo EN (excluido del
+        # veto) -> la pregunta SÍ/NO se preserva.
+        assert _is_interrogative("is chrome open")
+        assert _is_interrogative("is the window open")
+
 
 class TestNegatedCommand:
     def test_negated_commands(self):
@@ -69,6 +83,14 @@ class TestNegatedCommand:
 
     def test_bare_no_is_not_a_command(self):
         assert not _is_negated_command("no")
+
+    def test_correction_with_affirmative_imperative_is_not_negation(self):
+        # ADVERSARIAL: "no, mejor abrí firefox" = CORRECCIÓN (no + imperativo
+        # afirmativo) -> NO es orden negada; debe ejecutarse. El veto _has_imperative
+        # lo distingue de "no abras X" (subjuntivo, sí negado).
+        for q in ["no, mejor abrí firefox", "no mejor poné otra cosa",
+                  "no, subí el volumen"]:
+            assert not _is_negated_command(q), q
 
 
 class TestReadRequest:

@@ -385,6 +385,25 @@ _YESNO_LEADING = frozenset({
 _TENER_FORMS = frozenset({"tengo", "tenes", "tienes", "tiene", "tem", "tenho"})
 
 
+def _has_imperative(query: str) -> bool:
+    """¿La query CONTIENE un imperativo afirmativo de acción ("poné/abrí/bajá/pon/
+    open/play...")? Reusa _IMPERATIVE_VERBS (formas afirmativas; NO los subjuntivos
+    negados "abras/subas"). Sirve para VETAR la detección de pregunta/negación cuando
+    hay un comando real ("tengo hambre poné música", "no, mejor abrí firefox") — un
+    declarativo+comando o una corrección NO es una pregunta ni una orden negada."""
+    # EXCLUYE inglés: en EN el imperativo coincide con adjetivo/infinitivo (" open " en
+    # "is chrome open" / "do not open" = NO comando) -> falsos vetos. Los romance/de
+    # son formas verbales distintivas (abrí/poné/apri/ouvre) que no colisionan con los
+    # adjetivos de las preguntas. Los yes/no-leaders EN (is/are/do) arrancan PREGUNTAS,
+    # no declarativos+comando, así que el inglés no necesita el veto.
+    try:
+        from ..agent_core.lang_detect import _IMPERATIVE_VERBS
+    except Exception:
+        return False
+    low = f" {(query or '').lower()} "
+    return any(v in low for _lang, verbs in _IMPERATIVE_VERBS if _lang != "en" for v in verbs)
+
+
 def _is_interrogative(query: str) -> bool:
     """¿La query tiene FORMA de pregunta? Signo (¿/?), primer token = palabra-WH, o
     pregunta SÍ/NO (cópula/auxiliar inicial por inversión). Las ÓRDENES ("poné/play/
@@ -394,6 +413,10 @@ def _is_interrogative(query: str) -> bool:
         return False
     if "?" in q or "¿" in q:
         return True
+    # Veto: un IMPERATIVO afirmativo de acción ("tengo hambre poné música", "es tarde
+    # bajá el volumen") es un COMANDO, no una pregunta -> que no lo capture el yes/no.
+    if _has_imperative(q):
+        return False
     import unicodedata
 
     def _fold(w: str) -> str:
@@ -423,6 +446,11 @@ def _is_negated_command(query: str) -> bool:
     """¿La query NIEGA una orden? Negador en los 2 primeros tokens seguido de algo que
     NO es clítico ("no abras X" sí; "no me gusta..." no). El caller lo gatea a acciones
     MUTANTES -> nunca afecta lecturas ni no_tool. FORM gramatical, no por contenido."""
+    # Veto: si hay un imperativo AFIRMATIVO ("no, mejor abrí firefox" = corrección),
+    # NO es una orden negada -> que se ejecute. Los subjuntivos negados ("no abras/
+    # subas/pongas") NO están en _IMPERATIVE_VERBS, así que "no abras X" sigue negada.
+    if _has_imperative(query):
+        return False
     import unicodedata
     toks = [
         "".join(c for c in unicodedata.normalize("NFKD", t.strip(".,;:!¡¿?'\"").replace("'", "").replace("’", ""))
