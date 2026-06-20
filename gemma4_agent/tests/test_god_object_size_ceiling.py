@@ -124,7 +124,12 @@ CEILINGS = {
     # vaciado language_section ("") y el reply salía en español; se re-inyecta la instrucción
     # de idioma por turno (usando _reply_lang) para no-es. Cableado irreducible del hot-path
     # de _system_message; no es feature. Número exacto.
-    "agent_core/agent.py": 6193,
+    # 2026-06-20: 6193 -> 6201 (+8). BUGFIX de narración: el a11y continue-nudge (hands-free)
+    # falseaba "delegación" sobre la narración de un readout READ-ONLY de estado
+    # (system/device_settings/network) y re-prompteaba, pisando "Tienes tres monitores" con
+    # filler ("listo, lo dejo"). Se agrega _only_status_readout (terminal, como _only_web_search)
+    # al gate del nudge. Cableado irreducible del finalize hot-path. Número exacto.
+    "agent_core/agent.py": 6201,
     # 2026-06-01: WhatsApp (~1311 LOC) extraído a domain_tools/whatsapp.py
     # (patrón R2 sibling+shim) al arreglar C1/C2/H8. El techo baja con la
     # extracción (4560 -> 3370, +1% buffer sobre 3336 medido).

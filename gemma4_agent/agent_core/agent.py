@@ -4059,9 +4059,16 @@ class Gemma4Agent:
                 and "search" in str((e.result or {}).get("action") or "").casefold()
                 for e in _dom_events
             )
+            # Readout READ-ONLY de estado (system/device_settings/network) es
+            # terminal como _only_web_search: el readout YA es la respuesta, no hay
+            # paso físico que delegar. Sin esto, reply_delegates_task falsea
+            # delegación y el continue-nudge pisa la narración con filler (MEDIDO).
+            _only_status_readout = _dom_ran and all(
+                e.name in {"system", "device_settings", "network"} for e in _dom_events)
         except Exception:
             _cont_actionable = True  # ante la duda, no bloquear el nudge
             _only_web_search = False
+            _only_status_readout = False
         # En fast_info, si este turno YA corrió una lectura VISUAL exitosa
         # (gui screenshot / vision), el nudge es redundante por definición: su
         # texto pide "capturá la pantalla con vision si necesitás leer" y eso
@@ -4082,6 +4089,7 @@ class Gemma4Agent:
         if (_cont_active
                 and _cont_actionable
                 and not _only_web_search
+                and not _only_status_readout
                 and not _cont_info_question
                 and self._a11y_continue_count < _A11Y_MAX_CONTINUES
                 and _cont_delegates):
