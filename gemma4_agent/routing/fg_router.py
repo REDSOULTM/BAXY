@@ -367,20 +367,47 @@ _INTERROGATIVE_FIRST = frozenset({
     "qual", "quais", "quem",                                        # pt
 })
 
+# Preguntas SÍ/NO: no arrancan con palabra-WH sino con CÓPULA/AUXILIAR/EXISTENCIAL
+# por inversión verbo-sujeto ("está corriendo X", "is X running", "hay Y abierta").
+# Sin "?" (vienen de STT) caían sub-peak -> no_tool -> confab ("Spotify está corriendo"
+# sin verificar). Señal de FORMA gramatical (como _INTERROGATIVE_FIRST), no keywords de
+# contenido. Los IMPERATIVOS ("abrí/poné/subí") no arrancan con cópula -> intactos.
+_YESNO_LEADING = frozenset({
+    "esta", "estan", "estas", "estoy", "es", "son", "hay", "anda", "funciona",
+    "sigue", "tengo", "tenes", "tienes", "tiene",                   # es
+    "is", "are", "am", "was", "were", "do", "does", "did", "can",
+    "could", "have", "has", "will", "would", "should",             # en
+    "est", "sont", "ist", "sind", "sono", "estao", "estou", "sao",
+    "tem", "tenho",                                                 # fr/de/it/pt
+})
+# "tener QUE <verbo>" es perífrasis de OBLIGACIÓN (afirmación: "tengo que apagar"),
+# no una pregunta -> no debe contar como interrogativa (si no, bloquearía la acción).
+_TENER_FORMS = frozenset({"tengo", "tenes", "tienes", "tiene", "tem", "tenho"})
+
 
 def _is_interrogative(query: str) -> bool:
-    """¿La query tiene FORMA de pregunta? Signo (¿/?) o primer token = palabra-WH
-    (accent-folded). Las ÓRDENES ("poné/play/abrí") nunca arrancan con WH -> no
-    matchean. Señal estructural multilingüe, no lista de keywords de contenido."""
+    """¿La query tiene FORMA de pregunta? Signo (¿/?), primer token = palabra-WH, o
+    pregunta SÍ/NO (cópula/auxiliar inicial por inversión). Las ÓRDENES ("poné/play/
+    abrí") no arrancan con WH ni cópula -> no matchean. FORM estructural multilingüe."""
     q = (query or "").strip().lower()
     if not q:
         return False
     if "?" in q or "¿" in q:
         return True
     import unicodedata
-    first = q.split()[0].strip(".,;:!¡")
-    first = "".join(c for c in unicodedata.normalize("NFKD", first) if not unicodedata.combining(c))
-    return first in _INTERROGATIVE_FIRST
+
+    def _fold(w: str) -> str:
+        return "".join(c for c in unicodedata.normalize("NFKD", w) if not unicodedata.combining(c))
+    toks = q.split()
+    first = _fold(toks[0].strip(".,;:!¡"))
+    if first in _INTERROGATIVE_FIRST:
+        return True
+    if first in _YESNO_LEADING:
+        second = _fold(toks[1].strip(".,;:!¡")) if len(toks) > 1 else ""
+        if first in _TENER_FORMS and second == "que":
+            return False
+        return True
+    return False
 
 
 # Clasificación ESTRUCTURAL de acciones por su NOMBRE (no por contenido): de LECTURA
