@@ -259,8 +259,28 @@ class _FGRouter:
         qv = _norm(np.asarray(self.sr.embed(query), dtype=np.float32))
         rows = [self.idx[n] for n in cand]
         sims = self._emb[rows] @ qv
-        order = np.argsort(-sims)[:tool_k]
-        ranked = [cand[i] for i in order]
+        full_order = np.argsort(-sims)
+        ranked = [cand[i] for i in full_order[:tool_k]]
+        # GARANTÍA DE ACCIÓN PRIMARIA: una familia con muchas variantes operate-on-existing
+        # (timer_cancel/update/list, alarm_cancel/list...) copaba el top-k por coseno y su
+        # acción de CREAR (timer_start/alarm_create) caía fuera -> FG abstenía y el E2B
+        # confabulaba ("avisame en 30 minutos"). Para cada COMPUESTO representado SIN una
+        # acción primaria en el top-k, se inyecta su mejor primaria por coseno (de la lista
+        # completa). FORM (verbo de la acción), no contenido; acotado por _PRIMARY_GUARANTEE_CAP.
+        in_ranked = set(ranked)
+        comp_of = lambda n: self.rev.get(n, (n, ""))[0]
+        covered = {comp_of(n) for n in ranked if _is_primary_action_name(n)}
+        added = 0
+        for i in full_order[tool_k:]:
+            if added >= _PRIMARY_GUARANTEE_CAP:
+                break
+            n = cand[int(i)]
+            if n in in_ranked or not _is_primary_action_name(n):
+                continue
+            comp = comp_of(n)
+            if comp in covered:
+                continue
+            ranked.append(n); in_ranked.add(n); covered.add(comp); added += 1
         # FIX no_tool: SIEMPRE en el subset, si no el chitchat fuerza una tool (eager invocation).
         if "no_tool" in self.idx and "no_tool" not in ranked:
             ranked.append("no_tool")
@@ -512,6 +532,26 @@ _MUTATING_TOKENS = frozenset({
 def _is_read_action_name(name: str) -> bool:
     n = (name or "").lower()
     return any(h in n for h in _READ_ACTION_HINTS)
+
+
+# Acciones que operan sobre algo YA EXISTENTE (cancelar/borrar/editar/listar/estado).
+# Una acción SIN ninguno de estos tokens es PRIMARIA (crear/iniciar/disparar). Sirve
+# para garantizar que una familia copada por sus variantes operate-on-existing igual
+# aporte su acción de CREAR al subset (ver _FGRouter.subset). FORM (verbo), no contenido.
+_SECONDARY_ACTION_TOKENS = frozenset({
+    "cancel", "delete", "remove", "update", "list", "stop", "status", "get",
+    "history", "clear", "close", "off", "disable", "dismiss", "end", "edit",
+})
+
+
+def _is_primary_action_name(name: str) -> bool:
+    toks = re.split(r"[^a-z0-9]+", (name or "").lower())
+    return not any(t in _SECONDARY_ACTION_TOKENS for t in toks)
+
+
+# Cuántas acciones primarias garantizadas se pueden inyectar al subset (acotado:
+# FG-270M dropea args en subsets grandes; ver _ask).
+_PRIMARY_GUARANTEE_CAP = 3
 
 
 def _is_mutating_action(action: str) -> bool:
