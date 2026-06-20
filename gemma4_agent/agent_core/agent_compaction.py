@@ -219,6 +219,20 @@ def json_len(value: Any) -> int:
 
 
 def compact_tool_result(name: str, args: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+    # VISTA LLM: system.disk trae Size/FreeSpace en BYTES junto a size_gb/free_gb;
+    # el 2B narraba el campo de nombre tentador en crudo ("184080207872 bytes")
+    # en vez del GB legible. Se quitan los bytes de la VISTA (sólo si existe el _gb
+    # hermano); el result REAL devuelto a consumers/tests queda intacto. Mismo
+    # criterio que ram_*_gb. FORM (campo redundante en unidad cruda), no contenido.
+    if isinstance(result, dict) and isinstance(result.get("disks"), list):
+        _disks = []
+        for _d in result["disks"]:
+            if isinstance(_d, dict):
+                _d = {k: v for k, v in _d.items()
+                      if not (k == "Size" and "size_gb" in _d)
+                      and not (k == "FreeSpace" and "free_gb" in _d)}
+            _disks.append(_d)
+        result = {**result, "disks": _disks}
     compacted = compact_json(result, max_items=5, max_string=700)
     if json_len(compacted) <= TOOL_RESULT_LIMIT:
         return compacted if isinstance(compacted, dict) else {"value": compacted}
