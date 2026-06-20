@@ -358,7 +358,8 @@ def _missing_value_fields(fg_tool: str, args: dict[str, Any] | None, cap: int = 
 # INTENCIÓN por la forma de la oración: una PREGUNTA sobre media ("qué suena") es LEER,
 # una ORDEN ("poné música") es REPRODUCIR. Mide la FORMA gramatical, NO contenido.
 _INTERROGATIVE_FIRST = frozenset({
-    "que", "cual", "como", "quien", "cuanto", "cuanta", "donde",   # es
+    "que", "cual", "cuales", "como", "quien", "quienes", "cuanto", "cuanta",
+    "cuantos", "cuantas", "donde",                                  # es (incl. plurales)
     "what", "which", "who", "how", "where", "whose", "whats",       # en
     "quel", "quelle", "quels", "quelles", "qui", "comment",         # fr
     "wie", "welche", "welcher", "wer", "wann", "wieviel",           # de
@@ -389,10 +390,16 @@ def _is_interrogative(query: str) -> bool:
 # nombre de acción/tool, que el catálogo nombra consistente (status/get/list vs set/up/play).
 _READ_ACTION_HINTS = ("now_playing", "status", "_list", "list_", "_get", "get_",
                       "describe", "displays", "_info", "info_", "stats", "history", "current")
-_MUTATING_ACTION_HINTS = ("click", "type", "press", "scroll", "drag", "_up", "_down",
-                          "set_", "_set", "play", "resume", "open", "close", "create",
-                          "delete", "start", "stop", "move", "send", "install", "uninstall",
-                          "launch", "restart", "shutdown", "kill", "resolution", "_scale")
+# Verbos MUTANTES/físicos como TOKENS (no substrings): "now_playing"/"display_list"
+# contienen 'play' pero NO son escrituras -> el match por token (split en _ y no-alfa)
+# los excluye, evitando que la read-guard misfire sobre acciones de lectura.
+_MUTATING_TOKENS = frozenset({
+    "click", "type", "press", "scroll", "drag", "up", "down", "set", "open", "close",
+    "create", "delete", "add", "start", "stop", "play", "resume", "pause", "next",
+    "previous", "move", "send", "install", "uninstall", "launch", "restart", "shutdown",
+    "kill", "write", "enable", "disable", "toggle", "mute", "unmute", "connect",
+    "disconnect", "pair", "maximize", "minimize", "snap",
+})
 
 
 def _is_read_action_name(name: str) -> bool:
@@ -401,8 +408,7 @@ def _is_read_action_name(name: str) -> bool:
 
 
 def _is_mutating_action(action: str) -> bool:
-    a = (action or "").lower()
-    return any(h in a for h in _MUTATING_ACTION_HINTS)
+    return any(t in _MUTATING_TOKENS for t in re.split(r"[^a-z0-9]+", (action or "").lower()))
 
 
 def fg_emit(query: str, *, e2b_emitted: bool = False,
