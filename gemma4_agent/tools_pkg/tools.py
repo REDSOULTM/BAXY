@@ -3362,7 +3362,20 @@ class ToolRegistry:
                 base = 50  # monitor sin DDC/CI: arrancamos de un punto medio
             level = max(0, min(100, base + delta))
         else:
-            level = max(0, min(100, int(args.get("level", 50))))
+            _lvl_raw = args.get("level", 50)
+            try:
+                level = max(0, min(100, int(_lvl_raw)))
+            except (TypeError, ValueError):
+                # Nivel NO numérico (el modelo mandó "un toque"/"un poco" como level en
+                # vez de un entero o un delta direccional). No crasheamos con un
+                # "no es un número entero" feo: pedido honesto. (La dirección NO se
+                # infiere del user_text — sería keyword-list por idioma; el camino
+                # correcto es que el modelo emita brightness_up/down -> delta.)
+                return _err(
+                    "brightness level is not a number",
+                    value=_lvl_raw, status="needs_user",
+                    hint="decí un nivel 0-100 (p.ej. 'brillo al 40') o 'subí/bajá el brillo'",
+                )
         script = f"(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightnessMethods).WmiSetBrightness(1,{level})"
         try:
             proc = subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True, text=True, timeout=8)
