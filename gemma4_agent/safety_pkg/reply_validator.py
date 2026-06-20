@@ -893,11 +893,15 @@ UNFOUNDED_TIME_HINT = (
 # medida (% / palabras-porciento multilingües / GB / MB) cuyos dígitos NO
 # aparecen en (user_text ∪ args ∪ results del turno). Misma doctrina que el
 # invariante G1 del dataset v3, aplicada en runtime.
+# El \b INICIAL de las unidades cortas (gb/mb/...) se omite a propósito: la unidad
+# SIEMPRE viene tras (\d+)\s*, y un \b inicial FALLA cuando el número está PEGADO
+# ("16GB": no hay boundary entre '6' y 'G") -> el confab "16GB de RAM" se colaba.
+# El \b FINAL se conserva para no matchear "gb" dentro de palabras ("thumbnail").
 _VALUE_CLAIM_RE = re.compile(
     r"(\d+(?:[.,]\d+)?)\s*(?:%|por\s?cien(?:to)?|percent|por\s?cento|"
-    r"pour\s?cent|prozent|per\s?cento|gigabytes?|megabytes?|\bgb\b|\bmb\b|"
-    r"\bgo\b|\bmo\b|n[úu]cleos?|\bcores?\b|\bthreads?\b|\bkerne\b|"
-    r"\bw\b|\bwatts?\b|\bghz\b|\bmhz\b)", re.IGNORECASE)
+    r"pour\s?cent|prozent|per\s?cento|gigabytes?|megabytes?|gb\b|mb\b|"
+    r"go\b|mo\b|n[úu]cleos?|cores?\b|threads?\b|kerne\b|"
+    r"watts?\b|\bw\b|ghz\b|mhz\b)", re.IGNORECASE)
 _NUM_TOKEN_RE = re.compile(r"\d+(?:[.,]\d+)?")
 
 
@@ -942,6 +946,13 @@ def _evidence_blob(user_text: str, tool_calls_this_turn: list[Any]) -> str:
     return " ".join(parts)
 
 
+# Tools cuyo payload NO puede contener una medida real del SO. Si el único tool del
+# turno fue uno de estos, una medida de recurso afirmada queda sin fundamento (store,
+# recordatorios, etc. no leen RAM/disco/batería). Las demás (web/knowledge/...) sí
+# pueden traer el número y la verificación por dígitos confirma el match.
+_NON_GROUNDING_FOR_SYSTEM = frozenset({"memory", "reminder", "notification", "scheduler"})
+
+
 def system_value_claim_unfounded(
     user_text: str, reply_text: str, tool_calls_this_turn: list[Any]
 ) -> bool:
@@ -970,7 +981,17 @@ def system_value_claim_unfounded(
         names.add(str(name).lower())
     if "system" in names:
         return True
-    return not names  # sin tools: medida afirmada de la nada
+    if not names:
+        return True  # sin tools: medida afirmada de la nada
+    # Tools que NO pueden producir una medida del SO: si el ÚNICO tool corrido fue
+    # uno de estos, una medida de recurso afirmada SIGUE sin fundamento (medido
+    # 2026-06-20: "cuánta memoria"->memory podía recordar/fabricar una cifra de RAM
+    # que el store nunca debió contener). Las demás tools (web/knowledge/...) SÍ
+    # eximen: sus payloads pueden traer el número y la verificación por dígitos de
+    # arriba ya confirma el match.
+    if names.issubset(_NON_GROUNDING_FOR_SYSTEM):
+        return True
+    return False
 
 
 def strip_unfounded_value_sentences(reply_text: str, user_text: str,

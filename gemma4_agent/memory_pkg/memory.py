@@ -85,6 +85,42 @@ def _is_junk_value(value: str) -> bool:
     return bool(_JUNK_VALUE_RE.match(v))
 
 
+# Una LECTURA VOLÁTIL del SO (RAM/disco/CPU/batería libre/usado, %) NO es un hecho
+# DURABLE: cambia a cada segundo y, guardada como memoria, envenena el recall.
+# CAUSA RAÍZ medida 2026-06-20: una "free_memory: 14410756 MB" rancia (guardada el
+# 2026-06-11 por un save del modelo) hacía que "cuánta memoria tengo" recordara ese
+# dato viejo en vez de consultar el system tool en vivo -> respuesta confabulada.
+# Señal ESTRUCTURAL (FORMA del valor), no lista de contenido: el valor es una MEDIDA
+# PELADA (número + unidad de sistema, sin texto descriptivo) Y la key/valor refiere
+# un recurso volátil (free/used/libre/usado/memoria/ram/disco/cpu/batería...). Un
+# hecho durable DESCRIBE ("mi PC tiene 16 GB de RAM"); no es "14410756 MB" a secas.
+# Universal (unidades y marcadores cubren es/en/pt/fr/it). Conservador: si el valor
+# trae texto descriptivo, NO se bloquea (sólo la medida pelada de un recurso volátil).
+_BARE_MEASURE_RE = re.compile(
+    r"^\s*[\d]+(?:[.,]\d+)?\s*"
+    r"(?:%|b|kb|mb|gb|tb|pb|hz|khz|mhz|ghz|mbps|kbps|mb/s|kb/s|rpm|°?c)\s*$",
+    re.IGNORECASE,
+)
+_VOLATILE_RESOURCE_RE = re.compile(
+    r"free|used|usag|available|current|libre|usad|\buso\b|disponible|nivel|carga|level|"
+    r"memor|\bram\b|disk|disco|\bcpu\b|\bgpu\b|swap|bater|batter|storage|almacenamiento|"
+    r"temperatur|\btemp\b|fan|ventilador|clock|frecuenc",
+    re.IGNORECASE,
+)
+
+
+def _is_volatile_system_reading(key: str, value: str) -> bool:
+    """True si (key, value) es una lectura volátil del SO disfrazada de hecho durable:
+    el valor es una medida pelada (número+unidad) Y el contexto refiere un recurso
+    volátil. NO bloquea valores descriptivos ni hechos sin unidad de sistema."""
+    v = (value or "").strip()
+    if not _BARE_MEASURE_RE.match(v):
+        return False
+    # underscore es word-char y rompe los \b (p.ej. "cpu_usage"): normalizar a espacio.
+    ctx = f"{key} {value}".replace("_", " ")
+    return bool(_VOLATILE_RESOURCE_RE.search(ctx))
+
+
 def _sanitize_key(raw: str) -> str:
     """Normaliza una key: strip + colapsar whitespace + drop control chars."""
     if not raw:
@@ -145,6 +181,17 @@ class MemoryStore:
                 "status": "needs_user",
                 "hint": "split the fact into smaller pieces or use knowledge.ingest for documents",
             }
+        # No persistir lecturas VOLÁTILES del SO como hechos durables (envenenan el
+        # recall con datos rancios). Aplica también al save explícito porque el
+        # modelo a veces "cachea" una lectura del system tool acá por error.
+        if _is_volatile_system_reading(clean_key, clean_value):
+            return {
+                "ok": False,
+                "error": "volatile system reading, not a durable fact",
+                "status": "needs_user",
+                "hint": ("RAM/disk/CPU/battery readings change constantly; query them "
+                         "live with the system tool instead of storing them as memory"),
+            }
         with self._lock:
             data = self._load()
             items = data.setdefault("items", {})
@@ -196,6 +243,9 @@ class MemoryStore:
                 # con basura de pruebas. El save explícito no pasa por acá.
                 if _is_junk_value(value):
                     skipped.append({"reason": "junk_value", "fact": fact})
+                    continue
+                if _is_volatile_system_reading(key, value):
+                    skipped.append({"reason": "volatile_reading", "fact": fact})
                     continue
                 stamped_key = key if key.startswith("auto:") else f"auto:{key}"
                 # conservar salience si el hecho ya existía (uso previo lo subió).

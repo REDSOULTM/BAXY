@@ -862,19 +862,26 @@ def repair_unfounded_value_claim_inline(
             return fixed
         stripped = strip_unfounded_value_sentences(content or "", user_text or "",
                                                    list(events))
-        # Fallback del último recurso: con events un ack es honesto; SIN events
-        # devolver el original sería entregar la fabricación intacta (medido:
-        # "i7-12700H, 14 núcleos, 45W" inventado sin tool) — mejor una línea
-        # honesta de no-tengo-el-dato (excepción de honestidad, mismo precedente
-        # que repair_media_fabricated).
+        # Fallback del último recurso: con un tool de ACCIÓN real un ack es honesto;
+        # pero si el único tool fue uno que NO puede medir el SO (memory/reminder —
+        # típico misroute de "cuánta memoria"->memory) la PREGUNTA de dato no se sirvió:
+        # "Listo." sería absurdo. SIN events o solo-no-grounding -> línea honesta de
+        # no-tengo-el-dato (excepción de honestidad, precedente repair_media_fabricated).
         if stripped:
             repaired = stripped
-        elif events:
-            repaired = "Listo."
         else:
-            from ..safety_pkg.reply_validator import VALUE_GUARD_FALLBACK
-            repaired = VALUE_GUARD_FALLBACK.get(lang or "es",
-                                                VALUE_GUARD_FALLBACK["es"])
+            from ..safety_pkg.reply_validator import (
+                VALUE_GUARD_FALLBACK, _NON_GROUNDING_FOR_SYSTEM)
+            _names = set()
+            for _e in (events or []):
+                _n = _e.get("name") if isinstance(_e, dict) else getattr(_e, "name", "")
+                _names.add(str(_n or "").lower())
+            _real_action = bool(_names - _NON_GROUNDING_FOR_SYSTEM)
+            if events and _real_action:
+                repaired = "Listo."
+            else:
+                repaired = VALUE_GUARD_FALLBACK.get(lang or "es",
+                                                    VALUE_GUARD_FALLBACK["es"])
         if trace is not None and repaired != content:
             try:
                 trace.event(turn_id, "reply_repaired_inline",

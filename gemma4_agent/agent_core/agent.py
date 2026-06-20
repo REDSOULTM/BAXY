@@ -4190,6 +4190,19 @@ class Gemma4Agent:
                 pass
             # Pase 2: claim de acción sin evidencia sobre una tool que SÍ corrió.
             assistant_content = self._guard_grounded_action_claim(assistant_content, events, turn_id)
+            # Pase 3: claim de VALOR sin fundamento (el análogo de DATO del confab de
+            # acción). El E2B confabula MEDIDAS del SO ("Tienes 16 GB de RAM") cuando
+            # rutea mal una pregunta de recurso a memory/reminder (que no leen el SO) o
+            # sin tool. Estructural (system_value_claim_unfounded: dígitos+unidad del
+            # reply ⊄ evidencia del turno) — gap que el confab de ACCIÓN no cubre. Sin
+            # regen: stripea la medida o cae a la línea honesta de no-tengo-el-dato.
+            try:
+                from .agent_guards import repair_unfounded_value_claim_inline as _ruvc
+                _vlang = getattr(self, "_turn_lang", None) or _reply_lang(raw_text_early or "")
+                assistant_content = _ruvc(assistant_content, raw_text_early or "", list(events),
+                                          turn_id, trace=self.trace, lang=_vlang)
+            except Exception:
+                pass
         # Defensa: si el LLM emitio en el reply mismo un footer estilo
         # "[N verificada(s)]" o "[misión: ...]" (porque vio uno en el
         # historial), lo strippeamos antes de pegar el nuestro. Sino,
