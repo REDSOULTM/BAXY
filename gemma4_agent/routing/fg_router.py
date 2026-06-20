@@ -647,6 +647,19 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
         return None, None, []
     missing = _missing_value_fields(name, args)
     comp, baxy_args = _R.to_baxy(name, args)
+    # CLICK POR NOMBRE -> accesibilidad (uia), no OCR (gui). Para "clic en el botón X"
+    # el encoder rankea uia_click arriba pero FG-270M elige gui(click_text) (OCR). uia.click
+    # prueba el árbol de accesibilidad (más fiable en elementos nombrados) y YA cae a OCR si
+    # no halla el elemento (t_uia.click) -> estrictamente >= gui, nunca regresa. Solo si el
+    # encoder ofreció uia_click en el subset y hay un target de texto (no coords). FORM
+    # (click por nombre), no contenido. Medido: "clic en el botón Aceptar" FG->gui aunque
+    # uia_click era el #1 del subset.
+    if (comp == "gui" and str(baxy_args.get("action") or "") in {"click_text", "click", "click_button"}
+            and baxy_args.get("x") is None and baxy_args.get("y") is None):  # no coords = click por nombre
+        _tgt = str(baxy_args.get("text") or baxy_args.get("target")
+                   or baxy_args.get("query") or baxy_args.get("label") or "").strip()
+        if _tgt and any(_tool_name(t) == "uia_click" for t in subset):
+            return "uia", {"action": "click", "text": _tgt}, []
     # GUARDA GENERAL read-vs-write (generaliza el caso media de #1 a TODAS las familias):
     # una PREGUNTA no debe disparar una acción MUTANTE/física. Si FG eligió un write para
     # una pregunta interrogativa, preferimos la 1ra acción de LECTURA del subset (el encoder
