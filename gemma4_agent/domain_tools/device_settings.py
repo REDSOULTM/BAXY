@@ -126,7 +126,12 @@ $ctrls = Get-CimInstance -ClassName Win32_VideoController | Select-Object Name,C
         data = json.loads(proc.stdout) if proc.stdout.strip() else {}
     except json.JSONDecodeError:
         return _err("display_list returned invalid JSON", raw=proc.stdout[:500])
-    return _ok(data=data)
+    # Conteo legible para "¿cuántos monitores tengo?": el LLM no infiere el total
+    # de una lista anidada -> se lo damos explícito (Win32_DesktopMonitor puede
+    # devolver dict único en vez de lista cuando hay un solo monitor).
+    mons = data.get("monitors") if isinstance(data, dict) else None
+    monitor_count = len(mons) if isinstance(mons, list) else (1 if isinstance(mons, dict) else 0)
+    return _ok(data=data, monitor_count=monitor_count)
 
 
 def _device_power_plan_list() -> dict[str, Any]:

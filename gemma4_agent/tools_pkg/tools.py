@@ -3128,7 +3128,7 @@ class ToolRegistry:
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     continue
             if items:
-                return _ok(processes=items, source="psutil")
+                return _ok(processes=items, count=len(psutil.pids()), source="psutil")
         except Exception:
             pass
 
@@ -3148,7 +3148,7 @@ class ToolRegistry:
                 items.append({"name": row[0], "pid": row[1]})
             if len(items) >= limit:
                 break
-        return _ok(processes=items, exit_code=proc.returncode, source="tasklist")
+        return _ok(processes=items, count=len(proc.stdout.strip().splitlines()), exit_code=proc.returncode, source="tasklist")
 
     def list_windows(self, args: dict[str, Any]) -> dict[str, Any]:
         limit = int(args.get("limit", 30))
