@@ -436,6 +436,28 @@ def _is_negated_command(query: str) -> bool:
     return False
 
 
+# Pedidos imperativos de LECTURA ("mostrame el volumen", "decime el brillo"): forma de
+# ORDEN pero intención de LEER (la respuesta es el dato). El "-me/-melo" ("mostraME",
+# "deciME") marca "decime/mostrame A MÍ" = leer. Sin esto, el encoder/FG ruteaban a un
+# WRITE ("mostrame el volumen"->set_volume): el read/write guard solo miraba interrogativas.
+_READ_REQUEST_LEADING = frozenset({
+    "mostrame", "muestrame", "decime", "dime", "ensename", "contame",
+    "muestreme", "show", "tell",
+})
+
+
+def _is_read_request(query: str) -> bool:
+    """¿Pedido imperativo de LECTURA ("mostrame/decime/show me X")? Primer token (folded).
+    FORM gramatical; el caller lo gatea a acciones MUTANTES -> nunca bloquea writes reales."""
+    import unicodedata
+    q = (query or "").strip().lower()
+    if not q:
+        return False
+    first = q.split()[0].strip(".,;:!¡¿?'\"")
+    first = "".join(c for c in unicodedata.normalize("NFKD", first) if not unicodedata.combining(c))
+    return first in _READ_REQUEST_LEADING
+
+
 # Clasificación ESTRUCTURAL de acciones por su NOMBRE (no por contenido): de LECTURA
 # (consultan estado) vs MUTANTES/físicas (modifican el SO / mandan input). Se usa para
 # la guarda "una PREGUNTA no dispara una escritura" (generaliza el caso media de #1 a
@@ -546,7 +568,7 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     # ya la rankeó primero); si no hay ninguna, ABSTENEMOS (no_tool) en vez de ejecutar el
     # write -> nunca clickear / cambiar brillo / reproducir por una pregunta. Caza medido:
     # "qué ves"->gui.click, "qué brillo tengo"->brightness_up, "qué resolución"->set_resolution.
-    if _is_interrogative(query) and _is_mutating_action(baxy_args.get("action", "")):
+    if (_is_interrogative(query) or _is_read_request(query)) and _is_mutating_action(baxy_args.get("action", "")):
         for _t in subset:
             _tn = _t.get("function", {}).get("name", "")
             if _is_read_action_name(_tn):
