@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -196,6 +197,35 @@ class AgentReply:
     # sentence-by-sentence during generation (GEMMA4_STREAM_TTS). The voice
     # runner uses this to avoid re-feeding `content` (which would double-speak).
     tts_streamed: bool = False
+
+
+# SUMMARIZE-PÁGINA (feature CDP 2026-06-20): "resumime esta página" = resumir la
+# PESTAÑA web abierta, no un archivo. El tool `summarize` pide ruta de archivo y el
+# `document` está cut en lean -> caía a knowledge/document y fallaba ("necesito una
+# ruta"). FORM gate multilingüe: verbo-resumir + referencia-a-página-web, y NO un
+# archivo (.pdf/.docx). Se DISPARA solo si hay un browser Playwright ADJUNTO (estado
+# de sesión, lever (c) de CLAUDE.md); si no, cae al flujo normal. La extracción la
+# hace browser_real(text) y el LLM resume (no enlatado).
+_SUMMARIZE_VERB_RE = re.compile(
+    r"\b(resum[ií]\w*|res[uú]me\w*|sintetiz\w*|summar(?:ize|ise|y)|sum\s+up|"
+    r"r[ée]sum\w*|riassum\w*|riassunto|zusammenfass\w*|fasse\s+zusammen|resumir|resumo)\b",
+    re.IGNORECASE)
+_PAGE_REF_RE = re.compile(
+    r"\b(p[áa]gina(?:\s+web)?|p[áa]g\.|sitio(?:\s+web)?|esta\s+web|this\s+page|"
+    r"the\s+page|current\s+page|cette\s+page|questa\s+pagina|diese\s+seite|"
+    r"a\s+p[áa]gina|esta\s+p[áa]gina|el\s+art[íi]culo|this\s+article|lo\s+que\s+"
+    r"(?:estoy\s+)?(?:viendo|leyendo))\b",
+    re.IGNORECASE)
+_FILE_EXT_RE = re.compile(r"\.(?:pdf|docx?|xlsx?|pptx?|txt|csv|md|rtf|odt)\b", re.IGNORECASE)
+
+
+def _is_summarize_page_request(text: str) -> bool:
+    """FORM: verbo-resumir + referencia a una PÁGINA web (no un archivo). Gate previo
+    al chequeo de estado (browser adjunto). Multilingüe, conservador."""
+    t = (text or "").strip()
+    if not t or _FILE_EXT_RE.search(t):
+        return False
+    return bool(_SUMMARIZE_VERB_RE.search(t) and _PAGE_REF_RE.search(t))
 
 
 # Detección de idioma del reply post-tool extraída a lang_detect.py (split
@@ -1251,6 +1281,13 @@ class Gemma4Agent:
         if _profile_reply is not None:
             return TurnDecision(early_reply=_profile_reply)
         _mark_decide_phase("profile_intent")
+        # SUMMARIZE-PÁGINA (feature CDP): "resumime esta página" con un browser Playwright
+        # adjunto -> extraer el texto de la pestaña activa y que el LLM lo resuma. Sin
+        # browser adjunto devuelve None y sigue el flujo normal. Estado + FORM, no enlatado.
+        _sumpage_reply = self._handle_summarize_page(content)
+        if _sumpage_reply is not None:
+            return TurnDecision(early_reply=_sumpage_reply)
+        _mark_decide_phase("summarize_page")
         # ACCESIBILIDAD: si el usuario PIDE cambiar de modo de accesibilidad
         # ("activá modo no vidente", "no puedo usar las manos", "volvé a normal"),
         # lo detectamos por EMBEDDINGS multilingües (no keywords) y lo aplicamos/
@@ -5490,6 +5527,55 @@ class Gemma4Agent:
                               tool_events=[], mission=None)
         return AgentReply(content=_jp(_lang, "create_fail"),
                           tool_events=[], mission=None)
+
+    def _handle_summarize_page(self, content: Any) -> "AgentReply | None":
+        """Feature CDP: "resumime esta página" -> si hay un browser Playwright ADJUNTO,
+        extrae el texto de la pestaña activa (browser_real.text) y el LLM lo resume.
+        Sin browser adjunto -> None (sigue el flujo normal: web_read / fallo honesto).
+        El LLM produce el resumen (no enlatado). Gate GEMMA4_SUMMARIZE_PAGE=0."""
+        import os as _os_sp
+        if _os_sp.environ.get("GEMMA4_SUMMARIZE_PAGE", "1").strip().lower() in {"0", "false", "no", "off"}:
+            return None
+        if not isinstance(content, str) or not _is_summarize_page_request(content):
+            return None
+        # ESTADO (lever c): ¿hay un browser Playwright adjunto con sesión viva?
+        try:
+            st = self.tools.execute("browser_real", {"action": "status"})
+        except Exception:
+            return None
+        if not (isinstance(st, dict) and st.get("available") and (st.get("sessions") or [])):
+            return None  # sin browser adjunto -> flujo normal (web_read / honesto)
+        # Extraer el texto de la pestaña activa.
+        try:
+            res = self.tools.execute("browser_real", {"action": "text", "max_chars": 8000})
+        except Exception:
+            return None
+        text = (res.get("text") if isinstance(res, dict) else "") or ""
+        if not (isinstance(res, dict) and res.get("ok") and text.strip()):
+            return None  # no se pudo extraer -> flujo normal
+        # El LLM RESUME el texto extraído, en el idioma del usuario (no enlatado).
+        lang = getattr(self, "_turn_lang", None) or "es"
+        try:
+            resp = self.client.chat(
+                [{"role": "system",
+                  "content": (f"Resumí el siguiente contenido de una página web de forma "
+                              f"concisa (3-5 oraciones), con tus palabras, en el idioma del "
+                              f"usuario ({lang}). No inventes nada que no esté en el texto.")},
+                 {"role": "user", "content": text[:8000]}],
+                tools=None, enable_thinking=False, parallel_tool_calls=False,
+                max_tokens=400, timeout_s=45.0)
+            summary = (((resp.get("choices") or [{}])[0].get("message") or {}).get("content") or "").strip()
+        except Exception:
+            return None
+        if not summary:
+            return None
+        try:
+            self.trace.event("summarize_page", "ok", chars=len(text))
+        except Exception:
+            pass
+        return AgentReply(
+            content=summary,
+            tool_events=[ToolEvent(name="browser_real", args={"action": "text"}, result=res)])
 
     def _handle_profile_intent(self, content: Any) -> "AgentReply | None":
         """Perfil de gustos — privacidad inspectable/borrable.
