@@ -492,7 +492,11 @@ def _is_read_request(query: str) -> bool:
 # cualquier familia: qué ves->gui.click, qué brillo->brightness_up). Por subcadena del
 # nombre de acción/tool, que el catálogo nombra consistente (status/get/list vs set/up/play).
 _READ_ACTION_HINTS = ("now_playing", "status", "_list", "list_", "_get", "get_",
-                      "describe", "displays", "_info", "info_", "stats", "history", "current")
+                      "describe", "displays", "_info", "info_", "stats", "history", "current",
+                      # state-check reads ("¿está abierto/corriendo X?"): preguntan ESTADO,
+                      # no mutan. 'opened'/'exists'/'running'/'processes' no aparecen en
+                      # tokens de escritura ('open'!='opened'), así que no misfirean.
+                      "opened", "exists", "running", "processes")
 # Verbos MUTANTES/físicos como TOKENS (no substrings): "now_playing"/"display_list"
 # contienen 'play' pero NO son escrituras -> el match por token (split en _ y no-alfa)
 # los excluye, evitando que la read-guard misfire sobre acciones de lectura.
@@ -585,8 +589,21 @@ def fg_emit(query: str, *, e2b_emitted: bool = False,
     subset = _R.subset(query, fam_k=fam_k, tool_k=tool_k)
     name, args = _ask(query, subset)
     if not name or name == "no_tool":
-        # FunctionGemma abstuvo en un turno que el gate marcó accionable: no forzamos
-        # no_tool (perderíamos la acción) — devolvemos None para conservar la del E2B.
+        # FunctionGemma abstuvo en un turno que el gate marcó accionable. Si es una
+        # PREGUNTA de estado (interrogativa/read-request) y el subset tiene una acción
+        # de LECTURA, RESCATAMOS esa lectura: si devolvemos None, el E2B free-runnea y
+        # CONFABULA el estado ("el firewall está activo", "sí, Chrome está abierto") sin
+        # verificar nada (medido en vivo 2026-06-20: "está abierto el chrome"->E2B->
+        # maintenance/firewall). Mismo espíritu que el guard read-vs-write de abajo,
+        # para el caso abstain. FORM (interrogativa + disponibilidad de lectura), no
+        # contenido. Las preguntas NO-accionables ya salieron por el act-gate/KVA arriba.
+        if _is_interrogative(query) or _is_read_request(query):
+            for _t in subset:
+                _tn = _t.get("function", {}).get("name", "")
+                if _is_read_action_name(_tn):
+                    _rc, _ra = _R.to_baxy(_tn, {})
+                    return _rc, _ra, []
+        # turno accionable no-pregunta (o sin lectura en el subset): conservar la del E2B.
         return None, None, []
     missing = _missing_value_fields(name, args)
     comp, baxy_args = _R.to_baxy(name, args)
