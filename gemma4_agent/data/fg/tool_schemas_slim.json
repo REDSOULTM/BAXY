@@ -2692,7 +2692,7 @@
   "type": "function",
   "function": {
    "name": "reminder_create",
-   "description": "create [reminder tool]",
+   "description": "create a reminder with a task. USE para 'recordame/acordame X', 'recordame que tengo que X', 'avisame que X', 'remind me to X', 'me lembre de X'. [reminder tool]",
    "parameters": {
     "type": "object",
     "properties": {
@@ -4003,7 +4003,7 @@
   "type": "function",
   "function": {
    "name": "toast_schedule",
-   "description": "toast schedule [local notification/timer/alarm/reminder tool]",
+   "description": "avisar/notificar en N (notificación programada). 'notificame/avisame en N minutos/horas', 'programá una notificación', 'schedule a notification in N'. [local notification/timer/alarm/reminder tool]",
    "parameters": {
     "type": "object",
     "properties": {
@@ -4036,7 +4036,7 @@
   "type": "function",
   "function": {
    "name": "timer_start",
-   "description": "timer start [local notification/timer/alarm/reminder tool]",
+   "description": "avisar/notificar en N minutos u horas — poner un temporizador/timer que avisa al terminar. 'avisame/despertame/recordame en N minutos/horas', 'ponme un timer de N', 'set a timer', 'remind/alert/wake me in N minutes'. [local notification/timer/alarm/reminder tool]",
    "parameters": {
     "type": "object",
     "properties": {
@@ -4153,7 +4153,7 @@
   "type": "function",
   "function": {
    "name": "alarm_create",
-   "description": "alarm create [local notification/timer/alarm/reminder tool]",
+   "description": "alarm create — crear una alarma a una hora concreta. USE para 'ponme/poné una alarma', 'despertame a las X', 'avisame a la(s) X', 'set/create an alarm at X', 'wake me at X'. [local notification/timer/alarm/reminder tool]",
    "parameters": {
     "type": "object",
     "properties": {
@@ -4288,7 +4288,7 @@
   "type": "function",
   "function": {
    "name": "reminder_create_2",
-   "description": "reminder create [local notification/timer/alarm/reminder tool]",
+   "description": "reminder create — crear un recordatorio con una tarea/hora. USE para 'recordame/acordame X en N', 'avisame que tengo que X', 'remind me to X in N'. [local notification/timer/alarm/reminder tool]",
    "parameters": {
     "type": "object",
     "properties": {
