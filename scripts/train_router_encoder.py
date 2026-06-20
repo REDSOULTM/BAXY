@@ -97,6 +97,22 @@ def main() -> int:
     except Exception:
         pass
 
+    # DETERMINISMO DURO (2026-06-20): la seed sola NO bastaba — dos corridas de la
+    # MISMA receta movían el coverage de queries-frontera (cuDNN/cuBLAS eligen
+    # kernels no-deterministas por defecto). Sin esto, un fix de coverage podía ser
+    # un "run con suerte" no regenerable (viola reproducibilidad). cudnn.deterministic
+    # + benchmark off + algoritmos deterministas (warn_only: cae a det. donde puede,
+    # avisa donde no, sin abortar). CUBLAS_WORKSPACE_CONFIG=:4096:8 se fija en el env
+    # de lanzamiento (debe estar ANTES de init de CUDA). Activable con GEMMA4_TRAIN_DETERM=0.
+    if (os.environ.get("GEMMA4_TRAIN_DETERM", "1").strip().lower() not in {"0", "false", "no", "off"}):
+        try:
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+            torch.use_deterministic_algorithms(True, warn_only=True)
+            print("  determinismo: cudnn.deterministic+benchmark off, use_deterministic_algorithms(warn_only)")
+        except Exception as _e:
+            print(f"  determinismo parcial (no fatal): {_e}")
+
     print(f"CUDA: {torch.cuda.is_available()}  device: "
           f"{torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'cpu'}  seed={_seed}")
 
