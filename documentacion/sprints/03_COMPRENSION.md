@@ -213,9 +213,35 @@ decisión con cero candidatos.** Hoy llegan con hasta veintiocho. «Pide un taxi
 para las ocho» no puede tener veintiocho operaciones delante esperando a que el
 modelo elija una.
 
+## Y no sólo acierto: el reloj entra en la medición
+
+Esto lo midió el goal 01 y cambia el goal. El decisor heredado gasta **200–400
+tokens de *thinking* antes de cada respuesta**, y eso son **6,3–11,4 segundos por
+turno** — contra un listón de **3 segundos de silencio** que el dueño puso como el
+punto en el que cierra la ventana y lo hace a mano.
+
+O sea: un decisor que acierte el 95 % y tarde nueve segundos **no cierra este
+goal**. La medición tiene que traer las dos columnas, acierto y **latencia hasta la
+primera señal**, o el número no significa nada.
+
+Aviso pagado con una corrida: **`--reasoning-budget 0` no quita el *thinking*** en
+llama.cpp b9980 con la plantilla de Gemma 4. Deja de separarlo, y el borrador en
+inglés pasa a ser la respuesta visible. No es la palanca.
+
+Y una cosa que conviene que sepas antes de defender lo que hay: **el decisor de hoy
+es heredado, no elegido**. Gemma-4-E2B-it QAT Q4_K_XL está puesto porque estaba, y
+el propio `assets.manifest.json` lista Qwen3-4B por delante. La ley 1 aplica con
+todas sus letras.
+
 ## Antes de investigar nada: esto ya se ha resuelto aquí
 
 **No empieces este goal diseñando.** Empiézalo buscando.
+
+Los goals 01 y 02 ya corrieron. Empieza por lo que dejaron:
+`documentacion/herencia/00_MAPA.md` y las filas ya rellenas de
+`documentacion/03_COSTURAS.md` —LLM decisor, recuperador, forma del catálogo—, que
+traen medición, candidato y fecha. **Cuatro de las filas que te tocan ya tienen
+datos: no vuelvas a medir lo que está ahí.**
 
 Este problema —llevar lenguaje libre a la operación correcta— se ha abordado en
 **cada una de las cuatro escrituras de BAXY**, y en varias se resolvió. Hay routers
@@ -237,8 +263,25 @@ construyes — diciendo en el cierre por qué ninguna servía.
 ## El catálogo: máxima cobertura, mínimo número
 
 El catálogo creció por acumulación y nadie decidió el crecimiento: 67 herramientas
-→ 31 en el set lean → **16 en Carter v4** → **158 operaciones hoy**. Carter midió
-que consolidar a 16 daba **−68 % de tokens sin perder calidad**.
+→ 31 en el set lean → **16 en Carter v4** → hoy **~170 operaciones en 31 familias**
+(`ProductCatalog.cs`; el goal 02 lo vio pasar de 157 a 158 al reconciliar sellos).
+
+**Aquí hay dos mediciones que parecen contradecirse y no lo hacen. Léelas juntas
+antes de decidir nada.**
+
+- **Carter midió −68 % de tokens al consolidar a 16, «sin perder calidad».** Eso
+  era una medición de **tokens**.
+- **El goal 01 midió el mismo movimiento end-to-end y salió caro: 75,93 % → 62,96 %
+  de pass-rate, con los fallos cuadruplicados.** El daño no estaba repartido: se
+  concentró en **follow-ups, multilingüe y peticiones encadenadas**.
+
+No se contradicen porque no miden lo mismo. Consolidar sí ahorra tokens; lo que
+cuesta es la expresividad que se pierde aguas abajo. Y hay un tercer dato que
+acota dónde **no** está el problema: el recuperador midió **0,9521 con 67 y 0,9521
+con 31** — idéntico. **Reducir el catálogo no cuesta recuperación.**
+
+Conclusión operativa: el riesgo de consolidar no vive en encontrar la herramienta,
+vive en lo que pasa después. Mide ahí.
 
 La decisión del dueño, en sus dos partes:
 
@@ -297,6 +340,13 @@ mejora, es la misma pérdida en otro sitio.
 ## Lo que ya se midió — no lo pagues dos veces
 
 Cada línea de aquí costó una corrida. Están en el registro con su evidencia.
+
+**Pero todas se midieron en el repositorio anterior, no en éste.** El goal 02 ya
+descubrió lo que pasa al asumir lo contrario: el diagnóstico heredado hablaba de
+quince pruebas rojas y aquí había cuarenta y cuatro fallos y siete errores, porque
+al crear este repositorio se podaron 453 ficheros que el anterior sí versionaba.
+Trata lo que sigue como **mecanismo entendido, no como cifra vigente**: los
+mecanismos siguen valiendo, los números vuelve a sacarlos tú.
 
 **Dónde se pierde.** De 21 filas servibles: la recuperación ofreció la esperada en
 8, la decisión cruda eligió bien en 7, la decisión final conservó 1. De las 20
@@ -382,6 +432,11 @@ acreditar.
 ## Criterios de cierre
 
 - [ ] ≥ 90 % sobre paráfrasis frescas, con la tasa **partida por causa**.
+- [ ] **La latencia hasta la primera señal, medida junto al acierto.** Un decisor
+      que acierta y tarda nueve segundos no cierra este goal.
+- [ ] El pass-rate end-to-end publicado **antes y después** de tocar el catálogo —
+      ahí es donde consolidar hizo daño la última vez (75,93 % → 62,96 %), y no en
+      la recuperación.
 - [ ] Las peticiones fuera de catálogo llegan a la decisión con **cero candidatos**.
 - [ ] **Cobertura y cuenta publicadas juntas**, con la cobertura medida antes y
       después: no bajó.
