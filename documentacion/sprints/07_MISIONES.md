@@ -31,7 +31,7 @@ tocar nada**. No son preferencias: son decisiones tomadas por el dueño con los
 cuatro intentos anteriores del proyecto sobre la mesa. Si un diseño tuyo las
 contradice, el que cambia eres tú.
 
-## Las cuatro leyes
+## Las cinco leyes
 
 Gobiernan este goal y los otros diez. Están por encima de cualquier preferencia
 técnica tuya.
@@ -81,7 +81,39 @@ dos opciones que cumplen gana la más ligera, contando RAM, disco, CPU en reposo
 arranque en frío. El ahorro se detiene donde BAXY deja de entender a la primera,
 de no mentir o de no dejar silencio muerto.
 
-## Y una consigna que une las cuatro
+**5. Cada pieza sustituible, y ninguna más.** BAXY no se termina. Dentro de dos
+meses saldrá un STT mejor o un modelo más pequeño que entiende igual, y hay que
+poder cambiarlo sin reescribir el producto: **el código de hoy no tiene por qué ser
+el de mañana**.
+
+Pero «que todo sea intercambiable» es la puerta directa a la sobreingeniería que
+prohíbe la ley 2 —interfaces con un solo implementador, registros de plugins,
+configuración infinita—, y así murieron las cuatro versiones anteriores. La regla
+que resuelve las dos: **una costura por pieza que de verdad se vaya a sustituir, y
+ninguna más.** La lista está cerrada y vive en `documentacion/03_COSTURAS.md`; no
+la amplías sobre la marcha.
+
+Y una costura no es una interfaz. Son tres cosas, y sin las tres la pieza no es
+sustituible:
+
+1. **Un borde que nombra qué hace, no cómo.** El kernel no sabe que Windows existe;
+   ése es el modelo, y ya funciona en este repositorio.
+2. **La medición que decide si el candidato es mejor.** Esto es lo que de verdad
+   hace sustituible una pieza: con un corpus y un número, cambiar de motor es una
+   tarde; con una interfaz y sin número no puedes decidir, así que no lo cambias
+   nunca.
+3. **Que instalar lo nuevo incluya retirar lo viejo.**
+
+**Cero código muerto.** Una pieza sustituida se borra: no se queda detrás de una
+bandera «por si acaso». Dos implementaciones vivas de lo mismo son la acumulación
+otra vez, con otro nombre.
+
+Si este goal toca una pieza del registro, **rellena su fila antes de cerrar**: qué
+medición decide un sustituto, qué elegiste y por qué, y la fecha. La fecha importa
+— una medición de hace ocho meses decidió entre candidatos que hoy ya no son los
+mejores.
+
+## Y una consigna que une las cinco
 
 Ésta es la **quinta** escritura de BAXY, y tiene que ser **la más rápida de las
 cinco**. No porque haga menos —es la definitiva— sino porque **no vuelve a

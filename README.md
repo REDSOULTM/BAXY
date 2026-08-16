@@ -52,10 +52,10 @@ goal 01.
 | 10 | El uso diario | BAXY se usa todos los días y no decepciona |
 | 11 | La validación y el cierre | Aguanta cuando algo va mal — producto terminado |
 
-Los once llevan dentro las mismas **cuatro leyes**: apuntar al estado del arte una
-sola vez y sin perseguirlo, nada de sobreingeniería, arreglar sólo lo que bloquea,
-y quedarse siempre con la opción más ligera que cumpla. Están explicadas en el
-índice.
+Los once llevan dentro las mismas **cinco leyes**: heredar antes que construir,
+nada de sobreingeniería, arreglar sólo lo que bloquea, quedarse con la opción más
+ligera que cumpla, y dejar cada pieza sustituible —pero sólo las que de verdad se
+van a sustituir. Están explicadas en el índice.
 
 ## De dónde viene este repositorio
 
@@ -121,6 +121,9 @@ asistente.
   entendido.
 - [`documentacion/02_COMPETIDORES.md`](documentacion/02_COMPETIDORES.md) — contra
   qué compite BAXY y en qué se diferencia.
+- [`documentacion/03_COSTURAS.md`](documentacion/03_COSTURAS.md) — las piezas que
+  se pueden sustituir y **qué medición decide** el cambio. Es lo que hace que
+  mejorar BAXY dentro de dos meses sea una tarde y no una reescritura.
 
 ## Compuerta
 

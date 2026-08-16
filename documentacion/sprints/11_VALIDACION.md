@@ -30,7 +30,7 @@ Aquí tiene además un uso extra: **la identidad es la lista de comprobación fi
 Recórrela entera contra el producto terminado. Cada decisión que hay escrita ahí o
 está cumplida, o está declarada como limitación con su causa.
 
-## Las leyes, con una invertida
+## Las cinco leyes, con una invertida
 
 **1. Hereda primero, estado del arte después, construye al final.** Si algo sigue
 flojo, mira antes si un BAXY anterior ya lo resolvió, y luego si está resuelto ahí
@@ -53,7 +53,16 @@ cobra esa deuda.**
 defensa que dobla el consumo para cubrir un caso que ocurre una vez al año no es
 una mejora del producto.
 
-Y la consigna que une las cuatro: ésta es la **quinta** escritura de BAXY y tiene
+**5. Cada pieza sustituible, y ninguna más.** Aquí te toca la parte de cobrar:
+`documentacion/03_COSTURAS.md` no puede quedar con una fila vacía. Cada pieza del
+registro necesita la medición que decide su sustituto, lo elegido hoy y la fecha.
+Ése es el documento que permite mejorar BAXY dentro de dos meses sin reescribirlo.
+
+Y **cero código muerto**, que en este goal es un frente entero: una pieza
+sustituida se borra, no se queda detrás de una bandera. Dos implementaciones vivas
+de lo mismo son la acumulación con otro nombre.
+
+Y la consigna que une las cinco: ésta es la **quinta** escritura de BAXY y tiene
 que ser **la más rápida de las cinco**. No porque haga menos —es la definitiva—
 sino porque no vuelve a descubrir nada que ya se descubrió.
 
@@ -125,6 +134,11 @@ limpia y el purge en cuenta desechable, y el certificado de firma.
 - [ ] Menos código, menos capas y menos ficheros que al empezar — o la explicación
       de por qué no.
 - [ ] `00_IDENTIDAD.md` recorrida entera: cada decisión, cumplida o declarada.
+- [ ] **`03_COSTURAS.md` sin una sola fila vacía**: cada pieza con su medición, lo
+      elegido hoy y la fecha. Es lo que permite mejorar BAXY dentro de dos meses sin
+      reescribirlo.
+- [ ] Cero código muerto, cero implementaciones dobles de lo mismo, cero banderas
+      que guardan una versión anterior «por si acaso».
 - [ ] El documento de cierre escrito.
 
 ## Cuando lo cumplas

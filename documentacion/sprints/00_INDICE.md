@@ -57,7 +57,7 @@ por generador— y se hereda arreglando tres deficiencias concretas que el goal 
 detalla: los adaptadores por aplicación, `MainWindowViewModel` (3.678 líneas) y los
 ocho constructores de `MissionEngine`.
 
-## Las cuatro leyes
+## Las cinco leyes
 
 Van dentro de los once prompts, idénticas. Son lo que evita que este intento acabe
 como los cuatro anteriores.
@@ -85,7 +85,20 @@ en frío incluidos—. El ahorro se detiene donde BAXY deja de entender a la pri
 de no mentir o de no dejar silencio muerto. La máquina de desarrollo tiene 16 GB de
 VRAM: eso es holgura para trabajar, no el presupuesto del producto.
 
-**Y la consigna que une las cuatro:** ésta es la **quinta** escritura de BAXY y
+**5. Cada pieza sustituible, y ninguna más.** BAXY no se termina: dentro de dos
+meses saldrá algo mejor y hay que poder cambiarlo sin reescribir el producto. Pero
+«que todo sea intercambiable» es la puerta a la sobreingeniería que prohíbe la
+ley 2, así que la regla es **una costura por pieza que de verdad se vaya a
+sustituir, y ninguna más** — la lista está cerrada en
+[`documentacion/03_COSTURAS.md`](../03_COSTURAS.md).
+
+Y una costura no es una interfaz: es un borde que nombra qué hace y no cómo, **la
+medición que decide si el candidato es mejor**, y que instalar lo nuevo incluya
+retirar lo viejo. Lo del medio es lo que de verdad hace sustituible una pieza —
+con un corpus y un número, cambiar de motor es una tarde; sin número no puedes
+decidir, así que no lo cambias nunca. **Cero código muerto.**
+
+**Y la consigna que une las cinco:** ésta es la **quinta** escritura de BAXY y
 tiene que ser **la más rápida de las cinco**. No porque haga menos —es la
 definitiva— sino porque **no vuelve a descubrir nada que ya se descubrió**. Cada
 hora gastada re-derivando algo ya medido en estos repositorios es una hora que el

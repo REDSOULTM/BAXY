@@ -221,6 +221,35 @@ Sobre las palabras inventadas que arrastra el BAXY actual —«cuecer», «verti
 Se mide. FunctionGemma es una pista fuerte (Q2 rompe la prosa, Q4_K_XL QAT la
 arregla en ~1,5 GB), no una conclusión heredada.
 
+## BAXY no se termina — se cambia por piezas
+
+Esto es una decisión de producto, no de ingeniería, y por eso está aquí:
+
+> Imagínate que BAXY está listo y de repente me da por mejorarlo, o construyo algo
+> este mes y en dos meses veo que salieron cosas nuevas. **El código de hoy no
+> tiene por qué ser el de mañana** si mañana salieron tecnologías que ayuden a
+> BAXY.
+
+Un asistente local vive sobre piezas que se mueven rápido: el modelo, la
+cuantización, el motor de voz, el reconocedor. Si mejorar una obliga a reescribir
+el producto, el producto se abandona. Ya pasó cuatro veces.
+
+Pero **«que todo sea intercambiable» es la trampa**, no la solución: interfaces con
+un solo implementador, registros de plugins y configuración infinita son la misma
+acumulación con mejor nombre. La regla es más estrecha:
+
+**Una costura por pieza que de verdad se vaya a sustituir, y ninguna más.** La
+lista está cerrada y vive en [`03_COSTURAS.md`](03_COSTURAS.md).
+
+Y lo que hace sustituible a una pieza no es la interfaz — es **la medición que
+decide si el candidato es mejor**. Con un corpus y un número, cambiar de motor de
+STT es una tarde. Con una interfaz preciosa y sin número, no puedes decidir, así
+que no lo cambias nunca. Por eso cada fila del registro lleva su medición y su
+fecha: la fecha es lo que avisa de que una decisión ha caducado.
+
+**Cero código muerto.** Una pieza sustituida se borra en el mismo cambio. Dos
+implementaciones vivas de lo mismo son la acumulación otra vez.
+
 ## Por qué esta vez no hay una quinta reescritura
 
 El dueño reconoció el diagnóstico de Carter y lo explicó:
