@@ -13,6 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from local_evidence import require_runtime_turn_evidence
 from baxy_mind.public_turn_corpus import (
     PUBLIC_RECORD_SCHEMA_VERSION,
     SourceMap,
@@ -179,7 +180,7 @@ def test_reviewed_source_maps_cannot_introduce_a_baxy_family() -> None:
 
 def test_promoted_runtime_corpus_is_large_but_contains_only_evidence_fields() -> None:
     root = Path(__file__).resolve().parents[1]
-    corpus = root / "tests" / "data" / "turn_evidence_runtime.v1.jsonl"
+    corpus = require_runtime_turn_evidence(root)
     rows = [json.loads(line) for line in corpus.read_text(encoding="utf-8").splitlines()]
 
     assert len(rows) >= 20_000
@@ -195,7 +196,7 @@ def test_promoted_holdout_has_no_exact_text_seen_by_runtime() -> None:
     root = Path(__file__).resolve().parents[1]
     runtime = [
         json.loads(line)
-        for line in (root / "tests" / "data" / "turn_evidence_runtime.v1.jsonl")
+        for line in require_runtime_turn_evidence(root)
         .read_text(encoding="utf-8")
         .splitlines()
     ]

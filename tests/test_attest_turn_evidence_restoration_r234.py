@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+from local_evidence import require_runtime_turn_evidence
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "experiments/mind_router_spike/attest_turn_evidence_restoration_r234.py"
@@ -18,6 +20,7 @@ def _module():
 
 
 def test_r234_attests_canonical_input_without_measuring_a_model() -> None:
+    require_runtime_turn_evidence(ROOT)
     report = _module().build()
     assert report["runtime_corpus"]["rows"] == 25_156
     assert report["runtime_corpus"]["sha256"] == report["sources"]["policy_runtime_source_sha256"]
@@ -26,6 +29,7 @@ def test_r234_attests_canonical_input_without_measuring_a_model() -> None:
 
 
 def test_r234_published_attestation_matches_builder() -> None:
+    require_runtime_turn_evidence(ROOT)
     module = _module()
     output = ROOT / "artifacts/audit/turn_evidence_restoration_r234.json"
     assert json.loads(output.read_text(encoding="utf-8")) == module.build()

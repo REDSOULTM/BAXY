@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from local_evidence import require_runtime_turn_evidence
 from experiments.mind_router_spike import build_veto_reach_v8 as builder
 from experiments.mind_router_spike import run_veto_reach_v8 as runner
 from experiments.mind_router_spike import score_veto_reach_v8 as scoring
@@ -135,6 +136,7 @@ def test_scoring_counts_safety_and_honesty_failures_independently() -> None:
 
 
 def test_population_is_fresh_paired_and_can_refute_guards_and_pruning() -> None:
+    require_runtime_turn_evidence(builder.REPO)
     builder.validate_population()
     rows = builder.build_population_rows()
 
@@ -159,6 +161,7 @@ def test_preregistration_has_binary_thresholds_one_sided_prediction_and_hashes(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    require_runtime_turn_evidence(builder.REPO)
     corpus = tmp_path / "v8.jsonl"
     preregistration = tmp_path / "v8.preregistration.json"
     output_root = builder.REPO / ".tmp" / f"v8-test-{tmp_path.name}"

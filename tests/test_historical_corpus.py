@@ -13,7 +13,9 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from local_evidence import require_inherited_repository
 from scripts.build_historical_corpus import (
+    ROOTS,
     Collector,
     acceptance_scope_key,
     build_acceptance_scope_oracle,
@@ -366,6 +368,9 @@ class HistoricalCorpusUnitTests(unittest.TestCase):
         )
 
     def test_target_language_game_launch_and_install_oracles(self) -> None:
+        # The language-scope oracle behind these polarities is built from the
+        # FunctionGemma checkout beside this repository.
+        require_inherited_repository(ROOTS["functiongemma"])
         launch_cases = (
             "Abre Counter Strike",
             "launch Hollow Knight",
