@@ -85,18 +85,24 @@ en frío incluidos—. El ahorro se detiene donde BAXY deja de entender a la pri
 de no mentir o de no dejar silencio muerto. La máquina de desarrollo tiene 16 GB de
 VRAM: eso es holgura para trabajar, no el presupuesto del producto.
 
-**5. Cada pieza sustituible, y ninguna más.** BAXY no se termina: dentro de dos
-meses saldrá algo mejor y hay que poder cambiarlo sin reescribir el producto. Pero
-«que todo sea intercambiable» es la puerta a la sobreingeniería que prohíbe la
-ley 2, así que la regla es **una costura por pieza que de verdad se vaya a
-sustituir, y ninguna más** — la lista está cerrada en
-[`documentacion/03_COSTURAS.md`](../03_COSTURAS.md).
+**5. Arquitectura modular: cada pieza sustituible.** BAXY no se termina — dentro de
+dos meses saldrá algo mejor y hay que poder cambiarlo sin reescribir el producto.
+Va en **dos niveles**, y confundirlos es lo que produce sobreingeniería:
 
-Y una costura no es una interfaz: es un borde que nombra qué hace y no cómo, **la
-medición que decide si el candidato es mejor**, y que instalar lo nuevo incluya
-retirar lo viejo. Lo del medio es lo que de verdad hace sustituible una pieza —
-con un corpus y un número, cambiar de motor es una tarde; sin número no puedes
-decidir, así que no lo cambias nunca. **Cero código muerto.**
+- **Nivel 1, la forma — aplica a todo BAXY y no cuesta nada.** Una responsabilidad
+  por pieza, nadie conoce las tripas de nadie, las dependencias apuntan hacia
+  dentro, nada global y mutable, **cero código muerto**. Sin esto nada es
+  sustituible jamás; con esto, todo lo es.
+- **Nivel 2, el mecanismo de cambio — cuesta trabajo, así que se le pone a las
+  piezas que de verdad se van a comparar** contra un candidato: la **medición que
+  decide** y la declaración en el manifiesto. Están en
+  [`documentacion/03_COSTURAS.md`](../03_COSTURAS.md).
+
+La medición es la parte que suele faltar y la que de verdad importa: con un corpus
+y un número, cambiar de motor es una tarde; con una interfaz preciosa y sin número
+no puedes decidir si mejoraste, así que no lo cambias nunca. Lo que **no** se
+escribe: interfaces con un solo implementador «por si acaso», registros de plugins,
+configuración para elegir entre implementaciones que no existen.
 
 **Y la consigna que une las cinco:** ésta es la **quinta** escritura de BAXY y
 tiene que ser **la más rápida de las cinco**. No porque haga menos —es la

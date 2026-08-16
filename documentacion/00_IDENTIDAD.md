@@ -234,12 +234,36 @@ Un asistente local vive sobre piezas que se mueven rápido: el modelo, la
 cuantización, el motor de voz, el reconocedor. Si mejorar una obliga a reescribir
 el producto, el producto se abandona. Ya pasó cuatro veces.
 
-Pero **«que todo sea intercambiable» es la trampa**, no la solución: interfaces con
-un solo implementador, registros de plugins y configuración infinita son la misma
-acumulación con mejor nombre. La regla es más estrecha:
+**BAXY entero es modular**, no sólo la pila del modelo: la memoria, la
+verificación, la automatización de aplicaciones, la capa visual, el journal. Cada
+pieza se cambia una por una.
 
-**Una costura por pieza que de verdad se vaya a sustituir, y ninguna más.** La
-lista está cerrada y vive en [`03_COSTURAS.md`](03_COSTURAS.md).
+Pero eso va en **dos niveles**, y confundirlos es lo que produce la sobreingeniería
+que mató a las cuatro versiones anteriores:
+
+- **La forma** —una responsabilidad por pieza, nadie conoce las tripas de nadie,
+  dependencias hacia dentro, nada global y mutable— **aplica a todo y no cuesta
+  nada**. Es escribirlo bien, y es lo que hace que cualquier pieza se pueda cambiar.
+- **El mecanismo de cambio** —la medición que decide y la declaración en el
+  manifiesto— **sí cuesta trabajo**, así que lo llevan las piezas que de verdad se
+  van a comparar contra un candidato. Están en [`03_COSTURAS.md`](03_COSTURAS.md).
+
+Lo que **no** se escribe nunca: una interfaz con un solo implementador «por si
+algún día», un registro de plugins, o configuración para elegir entre
+implementaciones que no existen. Eso no es modularidad, es peso.
+
+La arquitectura es modular por tres bordes, no por un sistema de plugins:
+
+- **El LLM, el STT, el wake word y el TTS viven fuera del proceso**, detrás de un
+  protocolo versionado. Cambiar el modelo no recompila nada: se apunta a otro
+  binario, se mide, y entra.
+- **La verificación, los providers y la operación de apps** viven detrás de
+  `Contracts` y `Kernel`, que no dependen de nada.
+- **El catálogo y los corpus son datos**, no código.
+
+Y ninguna pieza cambia en silencio: cada una se declara en el manifiesto de runtime
+con su nombre y su SHA-256, y un binario distinto del declarado pone la compuerta
+en rojo. Puedes cambiarlo todo; no puedes cambiar nada sin decirlo.
 
 Y lo que hace sustituible a una pieza no es la interfaz — es **la medición que
 decide si el candidato es mejor**. Con un corpus y un número, cambiar de motor de

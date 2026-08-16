@@ -86,27 +86,37 @@ meses saldrá un STT mejor o un modelo más pequeño que entiende igual, y hay q
 poder cambiarlo sin reescribir el producto: **el código de hoy no tiene por qué ser
 el de mañana**.
 
-Pero «que todo sea intercambiable» es la puerta directa a la sobreingeniería que
-prohíbe la ley 2 —interfaces con un solo implementador, registros de plugins,
-configuración infinita—, y así murieron las cuatro versiones anteriores. La regla
-que resuelve las dos: **una costura por pieza que de verdad se vaya a sustituir, y
-ninguna más.** La lista está cerrada y vive en `documentacion/03_COSTURAS.md`; no
-la amplías sobre la marcha.
+Esto va en **dos niveles**, y confundirlos es el error que lleva a la
+sobreingeniería que prohíbe la ley 2.
 
-Y una costura no es una interfaz. Son tres cosas, y sin las tres la pieza no es
-sustituible:
+**Nivel 1 — la forma, y aplica a todo lo que escribas.** No cuesta nada: es
+escribirlo bien.
 
-1. **Un borde que nombra qué hace, no cómo.** El kernel no sabe que Windows existe;
-   ése es el modelo, y ya funciona en este repositorio.
-2. **La medición que decide si el candidato es mejor.** Esto es lo que de verdad
-   hace sustituible una pieza: con un corpus y un número, cambiar de motor es una
-   tarde; con una interfaz y sin número no puedes decidir, así que no lo cambias
-   nunca.
-3. **Que instalar lo nuevo incluya retirar lo viejo.**
+- **Una responsabilidad por pieza.** Si describirla necesita la palabra «y» tres
+  veces, son tres piezas. `MainWindowViewModel`, con 3.678 líneas y 169 miembros,
+  es el contraejemplo y está en este repositorio.
+- **Nadie conoce las tripas de nadie.** Se depende del qué, no del cómo. Si cambiar
+  el interior de A obliga a tocar B, no hay borde entre A y B.
+- **Las dependencias apuntan hacia dentro.** `Contracts` no depende de nada,
+  `Kernel` sólo de `Contracts`. Nunca al revés.
+- **Nada global y mutable.**
+- **Cero código muerto.** Lo sustituido se borra en el mismo cambio; dos
+  implementaciones vivas de lo mismo son la acumulación con otro nombre.
 
-**Cero código muerto.** Una pieza sustituida se borra: no se queda detrás de una
-bandera «por si acaso». Dos implementaciones vivas de lo mismo son la acumulación
-otra vez, con otro nombre.
+**Nivel 2 — el mecanismo de cambio, y sí cuesta trabajo.** Por eso lo llevan las
+piezas del registro de `documentacion/03_COSTURAS.md`: las que de verdad se van a
+comparar contra un candidato. Son tres cosas y sin las tres la pieza no es
+sustituible de verdad: el borde del nivel 1, **la medición que decide si el
+candidato es mejor**, y la declaración en el manifiesto para que el cambio no pueda
+ser silencioso.
+
+Lo del medio es lo que suele faltar y lo que de verdad importa: con un corpus y un
+número, cambiar de motor es una tarde; con una interfaz preciosa y sin número no
+puedes decidir si mejoraste, así que no lo cambias nunca.
+
+Lo que **no** se escribe: una interfaz con un solo implementador «por si algún
+día», un registro de plugins, o configuración para elegir entre implementaciones
+que no existen. Eso no es modularidad, es peso.
 
 Si este goal toca una pieza del registro, **rellena su fila antes de cerrar**: qué
 medición decide un sustituto, qué elegiste y por qué, y la fecha. La fecha importa
@@ -247,10 +257,29 @@ Y los invariantes siguen: lo que se transcribe mal no se ejecuta a ciegas. Una
 transcripción dudosa es una petición dudosa, y el sitio de eso es una pregunta, no
 un efecto.
 
+## Las tres piezas van detrás de la frontera de proceso
+
+Wake word, STT y TTS son tres de las piezas más volátiles del producto: en dos
+meses habrá algo mejor. Las tres se montan **fuera del proceso de la aplicación**,
+detrás del protocolo versionado, y se declaran en el manifiesto de runtime con su
+nombre y su SHA-256 — igual que el LLM.
+
+Eso significa que sustituir cualquiera de las tres más adelante es apuntar a otro
+binario, correr la medición y actualizar el manifiesto. **Sin recompilar la
+aplicación.** Si tu diseño acaba con el motor de STT dentro del proceso .NET, has
+ganado unos milisegundos y has perdido la sustituibilidad: no lo hagas sin medir
+las dos cosas y decirlo.
+
+Y rellena las tres filas de `documentacion/03_COSTURAS.md` antes de cerrar: qué
+corpus y qué número deciden un sustituto. Ésa es la parte que hace que el próximo
+cambio sea una tarde.
+
 ## Criterios de cierre
 
 - [ ] Wake, transcripción y habla funcionando en esta máquina, medidos sobre voces
       diversas y audio real.
+- [ ] Las tres detrás de la frontera de proceso, declaradas en el manifiesto con su
+      hash, y sus tres filas de `03_COSTURAS.md` rellenas.
 - [ ] Falsas activaciones medidas sobre horas de audio que no le hablan a BAXY.
 - [ ] De fin de habla a primera señal, p50 ≤ 1,5 s, y nunca 3 s en silencio.
 - [ ] Se le puede interrumpir a media frase.

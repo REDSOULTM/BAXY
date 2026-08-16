@@ -86,27 +86,37 @@ meses saldrá un STT mejor o un modelo más pequeño que entiende igual, y hay q
 poder cambiarlo sin reescribir el producto: **el código de hoy no tiene por qué ser
 el de mañana**.
 
-Pero «que todo sea intercambiable» es la puerta directa a la sobreingeniería que
-prohíbe la ley 2 —interfaces con un solo implementador, registros de plugins,
-configuración infinita—, y así murieron las cuatro versiones anteriores. La regla
-que resuelve las dos: **una costura por pieza que de verdad se vaya a sustituir, y
-ninguna más.** La lista está cerrada y vive en `documentacion/03_COSTURAS.md`; no
-la amplías sobre la marcha.
+Esto va en **dos niveles**, y confundirlos es el error que lleva a la
+sobreingeniería que prohíbe la ley 2.
 
-Y una costura no es una interfaz. Son tres cosas, y sin las tres la pieza no es
-sustituible:
+**Nivel 1 — la forma, y aplica a todo lo que escribas.** No cuesta nada: es
+escribirlo bien.
 
-1. **Un borde que nombra qué hace, no cómo.** El kernel no sabe que Windows existe;
-   ése es el modelo, y ya funciona en este repositorio.
-2. **La medición que decide si el candidato es mejor.** Esto es lo que de verdad
-   hace sustituible una pieza: con un corpus y un número, cambiar de motor es una
-   tarde; con una interfaz y sin número no puedes decidir, así que no lo cambias
-   nunca.
-3. **Que instalar lo nuevo incluya retirar lo viejo.**
+- **Una responsabilidad por pieza.** Si describirla necesita la palabra «y» tres
+  veces, son tres piezas. `MainWindowViewModel`, con 3.678 líneas y 169 miembros,
+  es el contraejemplo y está en este repositorio.
+- **Nadie conoce las tripas de nadie.** Se depende del qué, no del cómo. Si cambiar
+  el interior de A obliga a tocar B, no hay borde entre A y B.
+- **Las dependencias apuntan hacia dentro.** `Contracts` no depende de nada,
+  `Kernel` sólo de `Contracts`. Nunca al revés.
+- **Nada global y mutable.**
+- **Cero código muerto.** Lo sustituido se borra en el mismo cambio; dos
+  implementaciones vivas de lo mismo son la acumulación con otro nombre.
 
-**Cero código muerto.** Una pieza sustituida se borra: no se queda detrás de una
-bandera «por si acaso». Dos implementaciones vivas de lo mismo son la acumulación
-otra vez, con otro nombre.
+**Nivel 2 — el mecanismo de cambio, y sí cuesta trabajo.** Por eso lo llevan las
+piezas del registro de `documentacion/03_COSTURAS.md`: las que de verdad se van a
+comparar contra un candidato. Son tres cosas y sin las tres la pieza no es
+sustituible de verdad: el borde del nivel 1, **la medición que decide si el
+candidato es mejor**, y la declaración en el manifiesto para que el cambio no pueda
+ser silencioso.
+
+Lo del medio es lo que suele faltar y lo que de verdad importa: con un corpus y un
+número, cambiar de motor es una tarde; con una interfaz preciosa y sin número no
+puedes decidir si mejoraste, así que no lo cambias nunca.
+
+Lo que **no** se escribe: una interfaz con un solo implementador «por si algún
+día», un registro de plugins, o configuración para elegir entre implementaciones
+que no existen. Eso no es modularidad, es peso.
 
 Si este goal toca una pieza del registro, **rellena su fila antes de cerrar**: qué
 medición decide un sustituto, qué elegiste y por qué, y la fecha. La fecha importa
@@ -161,6 +171,18 @@ Hay además un defecto de reproducibilidad que conviene cerrar de paso: un test
 .NET reescribe un artefacto versionado a partir de un fichero que `.gitignore`
 excluye, así que sus números dependen del estado local de la máquina.
 
+## Y una cosa más, pequeña y con consecuencias grandes
+
+El manifiesto de runtime tiene hoy **`manifestIsVersioned: false`**. Ese manifiesto
+es lo que declara qué LLM, qué binario de inferencia y qué configuración están
+corriendo, con sus SHA-256 — y es la pieza que convierte un cambio silencioso de
+modelo en una compuerta roja. Es también el mecanismo con el que se sustituye
+cualquier motor sin reescribir nada (ver `documentacion/03_COSTURAS.md`).
+
+Sin versionar, esa declaración no sobrevive a un cambio de esquema. **Vérsionalo en
+este goal.** Es poco trabajo aquí y sostiene la modularidad de todo lo que viene
+después.
+
 ## Dos avisos que ahorran horas
 
 **Los finales de línea ya rompieron esta compuerta una vez.** `core.autocrlf` con
@@ -188,6 +210,8 @@ seguro es que hay una capa vieja que sobra.
 - [ ] Ningún rojo se cerró con `skip`, `xfail`, umbral relajado ni fallback.
 - [ ] El artefacto .NET dependiente del estado local ya no lo es, o está declarado
       con su causa.
+- [ ] El manifiesto de runtime está **versionado**, y un binario distinto del
+      declarado pone la compuerta en rojo.
 - [ ] Registro de qué cambiaste y por qué, prueba por prueba.
 
 ## Cuando lo cumplas
