@@ -32,10 +32,11 @@ está cumplida, o está declarada como limitación con su causa.
 
 ## Las leyes, con una invertida
 
-**1. Apunta al estado del arte, una sola vez.** Si algo sigue flojo y hay una
-solución conocida ahí fuera, impleméntala en vez de inventar la tuya. Que BAXY ya
-lo haga de una manera no es razón para conservarla. Pero es una pasada, no una
-persecución: este goal **cierra** el producto, no lo reabre.
+**1. Hereda primero, estado del arte después, construye al final.** Si algo sigue
+flojo, mira antes si un BAXY anterior ya lo resolvió, y luego si está resuelto ahí
+fuera; construir es el último recurso. Que BAXY ya lo haga de una manera no es
+razón para conservarla. Pero es una pasada, no una persecución: este goal
+**cierra** el producto, no lo reabre.
 
 **2. Nada de sobreingeniería.** Sigue en pie, y aquí es la más importante de todas.
 Este goal persigue lo hipotético, y ése es exactamente el terreno donde se generan
@@ -51,6 +52,10 @@ cobra esa deuda.**
 **4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Y una
 defensa que dobla el consumo para cubrir un caso que ocurre una vez al año no es
 una mejora del producto.
+
+Y la consigna que une las cuatro: ésta es la **quinta** escritura de BAXY y tiene
+que ser **la más rápida de las cinco**. No porque haga menos —es la definitiva—
+sino porque no vuelve a descubrir nada que ya se descubrió.
 
 ---
 

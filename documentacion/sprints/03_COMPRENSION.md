@@ -36,12 +36,22 @@ contradice, el que cambia eres tú.
 Gobiernan este goal y los otros diez. Están por encima de cualquier preferencia
 técnica tuya.
 
-**1. Apunta al estado del arte, una sola vez.** Antes de escribir código para un
-problema, averigua si ya está resuelto ahí fuera: papers, documentación,
-repositorios, la respuesta de alguien que se topó con lo mismo. Si hay una
-solución conocida y buena, **impleméntala** en vez de inventar la tuya. Y al
-revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La vara
-es «¿es la mejor opción conocida hoy?», no «¿es lo que había?».
+**1. Hereda primero, estado del arte después, construye al final.** En ese orden,
+y sin saltarte pasos:
+
+1. **¿Ya está resuelto en un BAXY anterior?** Este proyecto se ha escrito cuatro
+   veces y muchos problemas ya cayeron. Trae esa solución — o la **mejor
+   combinación** de las que hay, que muchas veces es lo que gana. El goal 01 dejó
+   el mapa de qué existe y dónde.
+2. **¿Está resuelto ahí fuera?** Papers, documentación, repositorios, la respuesta
+   de alguien que se topó con lo mismo. Si hay una solución conocida y buena,
+   **impleméntala** en vez de inventar la tuya.
+3. **Sólo si ninguna de las dos**, constrúyelo. Y entonces di en el cierre por qué
+   ninguna servía.
+
+Y al revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La
+vara es «¿es la mejor opción conocida hoy?», no «¿es lo que había?». Heredar es
+traer lo que funciona, no conservar lo que estaba.
 
 Es una pasada, no una persecución. En cuanto tengas algo que cumple el objetivo,
 deja de buscar mejor: perseguir el estado del arte sin parar es una carrera sin
@@ -71,6 +81,16 @@ dos opciones que cumplen gana la más ligera, contando RAM, disco, CPU en reposo
 arranque en frío. El ahorro se detiene donde BAXY deja de entender a la primera,
 de no mentir o de no dejar silencio muerto.
 
+## Y una consigna que une las cuatro
+
+Ésta es la **quinta** escritura de BAXY, y tiene que ser **la más rápida de las
+cinco**. No porque haga menos —es la definitiva— sino porque **no vuelve a
+descubrir nada que ya se descubrió**.
+
+Cada hora que gastes re-derivando algo que ya está medido en estos repositorios es
+una hora que este proyecto ya pagó una vez. Si te encuentras diseñando desde cero
+algo que suena a que alguien ya resolvió, para y ve a buscarlo primero.
+
 ---
 
 ## El objetivo
@@ -96,34 +116,81 @@ decisión con cero candidatos.** Hoy llegan con hasta veintiocho. «Pide un taxi
 para las ocho» no puede tener veintiocho operaciones delante esperando a que el
 modelo elija una.
 
-## El catálogo es palanca tuya — y ésta ya la decidió el dueño
+## Antes de investigar nada: esto ya se ha resuelto aquí
+
+**No empieces este goal diseñando.** Empiézalo buscando.
+
+Este problema —llevar lenguaje libre a la operación correcta— se ha abordado en
+**cada una de las cuatro escrituras de BAXY**, y en varias se resolvió. Hay routers
+entrenados, corpus reales, catálogos consolidados y torneos ya corridos en
+`Probando Gemma 4`, `FunctionGemma` y `Carter OS AI`. El goal 01 dejó el mapa.
+
+La instrucción del dueño es literal:
+
+> Este problema ha sido abordado en cada BAXY, y muchas veces solucionado; sólo se
+> debe exportar la mejor solución **o la mejor combinación de soluciones**.
+
+Lo segundo importa tanto como lo primero. Puede que el mejor recuperador esté en un
+repositorio, el mejor decisor en otro, y el corpus de evaluación en un tercero.
+Combinarlos es una respuesta válida y probablemente la buena.
+
+Sólo cuando hayas agotado eso, mira el estado del arte de fuera. Y sólo si tampoco,
+construyes — diciendo en el cierre por qué ninguna servía.
+
+## El catálogo: máxima cobertura, mínimo número
 
 El catálogo creció por acumulación y nadie decidió el crecimiento: 67 herramientas
 → 31 en el set lean → **16 en Carter v4** → **158 operaciones hoy**. Carter midió
 que consolidar a 16 daba **−68 % de tokens sin perder calidad**.
 
-La decisión tomada, literal:
+La decisión del dueño, en sus dos partes:
 
 > Un set consolidado que cubra el máximo de casos, sin herramientas que no tienen
 > sentido. Una herramienta hace una cosa. Y lo que no se logra con una, se logra
 > con misiones compuestas: «Abre Steam y ve a la biblioteca» → `Open App` →
 > `Click X`.
 
+> Tienen que haber las máximas herramientas para cubrir todo el uso del PC de un
+> usuario, pero éstas tienen que ser las mínimas posibles. **No reducir cobertura:
+> hacer más con menos.**
+
+**Eso no es un mandato de consolidar: es una función objetivo con dos términos, y
+el orden importa.**
+
+1. **La cobertura no baja.** Si una operación desaparece y con ella desaparece algo
+   que el usuario podía hacer, es una pérdida, no un ahorro — ni siquiera si sube
+   el acierto. Recortar el catálogo para que el decisor acierte más es hacer trampa
+   en este goal.
+2. **Con la cobertura intacta, gana siempre el número menor.**
+
+Por eso **publicas dos números, no uno: cobertura y cuenta.** Un catálogo de 16 que
+cubre menos que el de 158 no ha cumplido. Uno de 40 que cubre lo mismo, sí.
+
+Necesitas por tanto una **medida de cobertura** definida antes de tocar el catálogo
+—qué puede hacer el usuario hoy, enumerado— para poder demostrar que no bajó. Si no
+la defines antes, no vas a poder distinguir consolidar de amputar.
+
+Y hay una tercera vía que no gasta ninguno de los dos términos: **encadenar**. Lo
+que no cabe en una herramienta no se resuelve añadiendo otra, se resuelve con una
+misión compuesta, y eso amplía cobertura sin añadir una entrada al catálogo. Es la
+palanca principal de «hacer más con menos», y por eso este goal y el 07 se deciden
+juntos: si consolidar te deja un hueco, comprueba primero si lo cierra una cadena.
+
 El criterio de qué entra, también decidido: **cubrir el PC, no las apps**. Todo lo
 que Windows permite hacer —ventanas, audio, ficheros, aplicaciones, sistema—; nada
-específico de una aplicación concreta. Cero listas de apps a mano: fue un
-antipatrón que Carter se documentó a sí mismo, contra su propio valor declarado.
+específico de una aplicación concreta. Y aquí hay trabajo real, no teoría: el BAXY
+actual tiene **190 menciones de Steam y 94 de Spotify** en `src/`, con adaptadores
+dedicados (`SpotifyDesktopAdapter`, `SteamLocalAdapter`, `YouTubeMpvAdapter`,
+`WindowsCalculatorOpenProvider`) y scripts `.ps1` por aplicación. Eso es cobertura
+falsa: cubre cuatro apps, no el PC. Sustituirlo por capacidad genérica es a la vez
+menos catálogo y más cobertura — exactamente lo que pide este goal.
 
 Lo que decides **tú, midiendo**:
 
-- **El número.** Cuántas operaciones quedan.
+- **El número**, sujeto a que la cobertura no baje.
 - **La forma.** Paramétrica (`audio.control(accion, valor)`) contra específica
-  (`subir_volumen`, `bajar_volumen`, `silenciar`). Compara ambas con datos reales
-  y quédate con la que más acierte por token.
-
-Lo que hoy no cabe en una operación **no se resuelve añadiendo una operación**: se
-resuelve encadenando, y de eso vive el goal 07. Si consolidar te deja un hueco,
-comprueba primero si lo cierra una cadena.
+  (`subir_volumen`, `bajar_volumen`, `silenciar`). Compara ambas con datos reales y
+  quédate con la que más acierte por token **a igual cobertura**.
 
 Y una trampa: consolidar sube el acierto de la decisión y baja la expresividad del
 argumento. Si mueves trabajo del catálogo al relleno de parámetros, mídelo también
@@ -219,12 +286,14 @@ acreditar.
 
 - [ ] ≥ 90 % sobre paráfrasis frescas, con la tasa **partida por causa**.
 - [ ] Las peticiones fuera de catálogo llegan a la decisión con **cero candidatos**.
-- [ ] El catálogo consolidado, con su número y su forma **justificados midiendo**,
-      no eligiendo.
+- [ ] **Cobertura y cuenta publicadas juntas**, con la cobertura medida antes y
+      después: no bajó.
+- [ ] El número y la forma del catálogo **justificados midiendo**, no eligiendo.
 - [ ] El acierto de argumentos medido aparte, para que la ganancia no se haya
       mudado de sitio.
 - [ ] Los tres ceros intactos.
-- [ ] Publicado qué opción del estado del arte adoptaste, o por qué ninguna encajaba.
+- [ ] Publicado **qué heredaste y de dónde** — y sólo si no heredaste nada, por qué
+      ninguna de las soluciones anteriores servía.
 
 ## Cuando lo cumplas
 

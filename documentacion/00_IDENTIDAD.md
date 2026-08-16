@@ -78,7 +78,7 @@ el dueño resolviendo su propia tensión entre dos respuestas:
 Lo que esto prohíbe: construir el producto y **añadir** accesibilidad después. Eso
 es precisamente la acumulación que mató a las cuatro versiones anteriores.
 
-## El catálogo
+## El catálogo — máxima cobertura, mínimo número
 
 Ni consolidar por consolidar ni conservar las 158 operaciones de hoy:
 
@@ -87,14 +87,39 @@ Ni consolidar por consolidar ni conservar las 158 operaciones de hoy:
 > con **misiones compuestas**: «Abre Steam y ve a la biblioteca» → `Open App` →
 > `Click X`.
 
+El dueño afinó después el criterio, y así queda:
+
+> Tienen que haber las máximas herramientas para cubrir todo el uso del PC de un
+> usuario, pero éstas tienen que ser las mínimas posibles. **No reducir cobertura:
+> hacer más con menos.**
+
+Eso no es «consolidar». Es una función objetivo con dos términos, y el orden entre
+ellos importa:
+
+1. **La cobertura no baja.** Si una operación desaparece y con ella desaparece algo
+   que el usuario podía hacer, eso es una pérdida, no un ahorro. Ni siquiera si
+   sube el acierto.
+2. **Con la cobertura intacta, gana siempre el número menor.** Dos herramientas que
+   cubren lo mismo que una son una de más.
+
+El resultado se mide con dos números a la vez —**cobertura y cuenta**—, nunca con
+uno solo. Un catálogo de 16 que cubre menos que el de 158 no ha cumplido; uno de
+40 que cubre lo mismo que 158, sí.
+
+Y hay una tercera vía que no consume ninguno de los dos términos: lo que no cabe en
+una herramienta **se encadena**. Encadenar amplía la cobertura sin añadir una sola
+entrada al catálogo. Ésa es la palanca para «hacer más con menos», y por eso el
+goal 07 es parte de esta decisión y no un goal aparte.
+
 **El criterio de qué entra: cubrir el PC, no las apps.** Todo lo que Windows
 permite hacer —ventanas, audio, ficheros, aplicaciones, sistema—; nada específico
 de una app concreta. Cero listas de apps hardcodeadas: ése fue un antipatrón
-documentado de Carter contra su propio valor.
+documentado de Carter contra su propio valor, y el BAXY actual lo repite —190
+menciones de Steam y 94 de Spotify en el código, con adaptadores dedicados.
 
 **El número y la forma los mide el goal 03**, no los decide una preferencia.
 Paramétrica («controla el audio») contra específica («sube volumen») se compara
-con datos reales y gana la que más acierte por token.
+con datos reales y gana la que más acierte por token **a igual cobertura**.
 
 Contexto que el goal 03 hereda: 67 → 31 → 16 → 158 fue crecimiento por
 acumulación que nadie decidió, y Carter midió **−68 % de tokens sin perder

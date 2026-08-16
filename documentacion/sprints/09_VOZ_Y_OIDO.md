@@ -36,12 +36,22 @@ contradice, el que cambia eres tú.
 Gobiernan este goal y los otros diez. Están por encima de cualquier preferencia
 técnica tuya.
 
-**1. Apunta al estado del arte, una sola vez.** Antes de escribir código para un
-problema, averigua si ya está resuelto ahí fuera: papers, documentación,
-repositorios, la respuesta de alguien que se topó con lo mismo. Si hay una
-solución conocida y buena, **impleméntala** en vez de inventar la tuya. Y al
-revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La vara
-es «¿es la mejor opción conocida hoy?», no «¿es lo que había?».
+**1. Hereda primero, estado del arte después, construye al final.** En ese orden,
+y sin saltarte pasos:
+
+1. **¿Ya está resuelto en un BAXY anterior?** Este proyecto se ha escrito cuatro
+   veces y muchos problemas ya cayeron. Trae esa solución — o la **mejor
+   combinación** de las que hay, que muchas veces es lo que gana. El goal 01 dejó
+   el mapa de qué existe y dónde.
+2. **¿Está resuelto ahí fuera?** Papers, documentación, repositorios, la respuesta
+   de alguien que se topó con lo mismo. Si hay una solución conocida y buena,
+   **impleméntala** en vez de inventar la tuya.
+3. **Sólo si ninguna de las dos**, constrúyelo. Y entonces di en el cierre por qué
+   ninguna servía.
+
+Y al revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La
+vara es «¿es la mejor opción conocida hoy?», no «¿es lo que había?». Heredar es
+traer lo que funciona, no conservar lo que estaba.
 
 Es una pasada, no una persecución. En cuanto tengas algo que cumple el objetivo,
 deja de buscar mejor: perseguir el estado del arte sin parar es una carrera sin
@@ -70,6 +80,16 @@ para vaciar esa lista, así que nada se pierde por anotarlo.
 dos opciones que cumplen gana la más ligera, contando RAM, disco, CPU en reposo y
 arranque en frío. El ahorro se detiene donde BAXY deja de entender a la primera,
 de no mentir o de no dejar silencio muerto.
+
+## Y una consigna que une las cuatro
+
+Ésta es la **quinta** escritura de BAXY, y tiene que ser **la más rápida de las
+cinco**. No porque haga menos —es la definitiva— sino porque **no vuelve a
+descubrir nada que ya se descubrió**.
+
+Cada hora que gastes re-derivando algo que ya está medido en estos repositorios es
+una hora que este proyecto ya pagó una vez. Si te encuentras diseñando desde cero
+algo que suena a que alguien ya resolvió, para y ve a buscarlo primero.
 
 ---
 

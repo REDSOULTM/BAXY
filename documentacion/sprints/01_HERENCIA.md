@@ -36,12 +36,22 @@ contradice, el que cambia eres tú.
 Gobiernan este goal y los otros diez. Están por encima de cualquier preferencia
 técnica tuya.
 
-**1. Apunta al estado del arte, una sola vez.** Antes de escribir código para un
-problema, averigua si ya está resuelto ahí fuera: papers, documentación,
-repositorios, la respuesta de alguien que se topó con lo mismo. Si hay una
-solución conocida y buena, **impleméntala** en vez de inventar la tuya. Y al
-revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La vara
-es «¿es la mejor opción conocida hoy?», no «¿es lo que había?».
+**1. Hereda primero, estado del arte después, construye al final.** En ese orden,
+y sin saltarte pasos:
+
+1. **¿Ya está resuelto en un BAXY anterior?** Este proyecto se ha escrito cuatro
+   veces y muchos problemas ya cayeron. Trae esa solución — o la **mejor
+   combinación** de las que hay, que muchas veces es lo que gana. El goal 01 dejó
+   el mapa de qué existe y dónde.
+2. **¿Está resuelto ahí fuera?** Papers, documentación, repositorios, la respuesta
+   de alguien que se topó con lo mismo. Si hay una solución conocida y buena,
+   **impleméntala** en vez de inventar la tuya.
+3. **Sólo si ninguna de las dos**, constrúyelo. Y entonces di en el cierre por qué
+   ninguna servía.
+
+Y al revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La
+vara es «¿es la mejor opción conocida hoy?», no «¿es lo que había?». Heredar es
+traer lo que funciona, no conservar lo que estaba.
 
 Es una pasada, no una persecución. En cuanto tengas algo que cumple el objetivo,
 deja de buscar mejor: perseguir el estado del arte sin parar es una carrera sin
@@ -70,6 +80,16 @@ para vaciar esa lista, así que nada se pierde por anotarlo.
 dos opciones que cumplen gana la más ligera, contando RAM, disco, CPU en reposo y
 arranque en frío. El ahorro se detiene donde BAXY deja de entender a la primera,
 de no mentir o de no dejar silencio muerto.
+
+## Y una consigna que une las cuatro
+
+Ésta es la **quinta** escritura de BAXY, y tiene que ser **la más rápida de las
+cinco**. No porque haga menos —es la definitiva— sino porque **no vuelve a
+descubrir nada que ya se descubrió**.
+
+Cada hora que gastes re-derivando algo que ya está medido en estos repositorios es
+una hora que este proyecto ya pagó una vez. Si te encuentras diseñando desde cero
+algo que suena a que alguien ya resolvió, para y ve a buscarlo primero.
 
 ---
 
@@ -117,6 +137,68 @@ Pistas de dónde mirar primero: `Probando Gemma 4` tiene `captures/`,
 `checkpoints/` y entornos de LiveKit y de entrenamiento de router; `FunctionGemma`
 tiene `speech_model/` y `router/`; `Carter OS AI` tiene un `carter_v5` completo
 con documentación. No te limites a esas tres.
+
+## La infraestructura .NET se conserva — y ya está auditada
+
+Esto no lo tienes que evaluar: **ya se auditó y la decisión está tomada**. La capa
+.NET del BAXY actual se conserva. Compila en Release con **0 advertencias** bajo
+`TreatWarningsAsErrors`, `Nullable enable`, analizadores en `latest-recommended` y
+`EnforceCodeStyleInBuild`; y pasa **3.865 pruebas, 0 fallos, 0 omitidas**.
+
+Lo que la hace buena, para que no la degrades sin darte cuenta:
+
+- **Dirección de dependencias limpia y sin ciclos:** `Contracts` (sin ninguna
+  dependencia) ← `Kernel` ← `Providers.Windows` ← `Core`/`App`. El kernel no sabe
+  que Windows existe. Es el invariante «la mente propone, el kernel autoriza, el
+  provider ejecuta» hecho estructura.
+- **Preparada para el presupuesto de recursos:** `IsAotCompatible` en las
+  librerías, `PublishAot` en `Core` y `Setup`,
+  `JsonSerializerIsReflectionEnabledByDefault=false` (JSON por generador, sin
+  reflexión), `global.json` con `rollForward: disable`, `Deterministic` y `/Brepro`.
+  Compilaciones reproducibles byte a byte.
+- **Interop modernizado:** 134 `LibraryImport` contra 24 `DllImport`.
+- **`MissionEngine` es el mejor fichero del repositorio:** idempotencia por huella
+  de la petición, asiento en el journal antes del efecto, confirmación ligada a la
+  invocación exacta, y el invariante de reintentabilidad forzado lanzando en vez de
+  confiado a la disciplina.
+
+**Se conserva sin tocar:** `Baxy.Contracts`, `Baxy.Kernel`, `Baxy.Security.Windows`
+y la configuración de compilación entera (`Directory.Build.props`,
+`Directory.Packages.props`, `global.json`, `.editorconfig`).
+
+### Y se hereda arreglando tres deficiencias medidas
+
+Las tres están localizadas. No las investigues: arréglalas al traerlas.
+
+**1. Los adaptadores por aplicación se sustituyen por capacidad genérica.** En
+`src/` hay **190 menciones de Steam, 94 de Spotify, 47 de YouTube**, con ficheros
+dedicados —`SpotifyDesktopAdapter.cs`, `SteamLocalAdapter.cs`,
+`YouTubeMpvAdapter.cs`, `WindowsCalculatorOpenProvider.cs`— y scripts
+`SpotifyDesktopAutomation.ps1` y `SpotifyMediaControl.ps1`. Y **un solo fichero
+toca UI Automation** (`WindowsDeviceControlAdapter.cs`).
+
+Eso contradice de frente la decisión «cubrir el PC, no las apps», y es el mismo
+antipatrón que Carter se documentó a sí mismo contra su propio valor «sin hacks por
+app». No es sólo deuda estética: es **cobertura falsa** —cubre cuatro aplicaciones,
+no el PC— y sustituirla por la cascada UIA → OCR → visión da a la vez menos
+catálogo y más cobertura. Aquí sólo lo inventarías; el goal 07 lo construye. Tu
+trabajo es dejar dicho **qué exactamente hay que sustituir, fichero por fichero**.
+
+**2. `MainWindowViewModel.cs` se descompone.** 3.678 líneas y 169 miembros. Es el
+`agent.py` de Carter otra vez —el que llegó a 1.397 líneas contra su propio
+objetivo de 400— pero 2,6 veces más grande. La capa de abajo está bien; ésta ya se
+apiló. Déjala descompuesta por responsabilidad, no repartida en ficheros con el
+mismo acoplamiento.
+
+**3. `MissionEngine` pasa de ocho constructores a uno con opciones.** Es el mejor
+fichero del repositorio y aun así lleva el patrón de acumulación en miniatura: cada
+dependencia opcional nueva duplica las combinaciones, y la siguiente traería
+dieciséis. Un objeto de opciones lo cierra, y son minutos.
+
+Un aviso sobre el resto: `Baxy.Setup` son **13.122 líneas de producción y 9.996 de
+pruebas** para el instalador, y la instalación certificada está **fuera de alcance**
+por decisión del dueño. No lo tires —funciona— pero mide su proporción y dilo en el
+mapa antes de que alguien lo arrastre entero.
 
 ## La documentación se hereda igual que el código
 
@@ -166,6 +248,12 @@ Marca cada punto. Mientras quede uno sin marcar y tengas una vía razonable, sig
       a medias, con evidencia en cada caso.
 - [ ] El inventario de **preguntas ya respondidas y dónde**, separando lo vigente
       de lo caducado.
+- [ ] Las **soluciones al problema de comprensión** que hay en los cuatro
+      repositorios, listadas y comparables — el goal 03 arranca de ahí y no de cero.
+- [ ] La lista, fichero por fichero, de los **adaptadores por aplicación** que hay
+      que sustituir por capacidad genérica.
+- [ ] `MainWindowViewModel` descompuesto y `MissionEngine` con un solo constructor,
+      con la compuerta .NET verde después: 3.865 pruebas, 0 advertencias.
 
 ## Cuando lo cumplas
 

@@ -43,23 +43,32 @@ Tres de esas decisiones cambian goals concretos:
 - **La accesibilidad es central en el motor y modo en la interfaz.** Todo lo que
   BAXY hace se puede pedir por voz, y BAXY narra lo que hace. No se construye el
   producto y se le añade accesibilidad después.
-- **El catálogo se consolida** —una herramienta hace una cosa, lo demás se
-  encadena— y el criterio es **cubrir el PC, no las apps**. El número y la forma
-  los mide el goal 03; los huecos los cierra el 07.
+- **El catálogo: máxima cobertura con el mínimo número de herramientas.** No es
+  consolidar: la cobertura no baja nunca, y con la cobertura intacta gana el número
+  menor. Se publican **dos números, no uno**. El criterio de qué entra es **cubrir
+  el PC, no las apps**; lo que no cabe en una herramienta se **encadena**, que
+  amplía cobertura sin añadir catálogo. Lo mide el goal 03 junto con el 07.
 - **Buscar en la web está permitido**; enviar contenido del usuario, no.
+
+Y una decisión ya tomada que ahorra un goal entero de deliberación: **la
+infraestructura .NET se conserva**. Está auditada —0 advertencias con
+`TreatWarningsAsErrors`, 3.865 pruebas verdes, dependencias sin ciclos, AOT y JSON
+por generador— y se hereda arreglando tres deficiencias concretas que el goal 01
+detalla: los adaptadores por aplicación, `MainWindowViewModel` (3.678 líneas) y los
+ocho constructores de `MissionEngine`.
 
 ## Las cuatro leyes
 
 Van dentro de los once prompts, idénticas. Son lo que evita que este intento acabe
 como los cuatro anteriores.
 
-**1. Apunta al estado del arte, una sola vez.** Antes de escribir código para un
-problema, averigua si ya está resuelto ahí fuera —papers, documentación,
-repositorios, la respuesta de alguien que se topó con lo mismo— y si hay una
-solución conocida y buena, impleméntala. Y al revés: **que BAXY ya lo haga de una
-manera no es razón para conservarla**; la vara es «¿es la mejor opción conocida
-hoy?». Pero es una pasada, no una persecución: en cuanto algo cumple el objetivo,
-se deja de buscar mejor.
+**1. Hereda primero, estado del arte después, construye al final.** En ese orden:
+¿lo resolvió ya un BAXY anterior? — entonces trae esa solución, o la **mejor
+combinación** de las que hay. ¿Está resuelto ahí fuera? — entonces impleméntalo en
+vez de inventarlo. Construir es el último recurso, y hay que decir por qué. Y al
+revés: **que BAXY ya lo haga de una manera no es razón para conservarla**; heredar
+es traer lo que funciona, no conservar lo que estaba. Es una pasada, no una
+persecución: en cuanto algo cumple, se deja de buscar mejor.
 
 **2. Nada de sobreingeniería.** El mínimo código que cumpla, y que se active sólo
 el necesario. Nada de capa sobre capa, ni abstracciones para un segundo caso que no
@@ -75,6 +84,12 @@ dos opciones que cumplen gana la más ligera —RAM, disco, CPU en reposo y arra
 en frío incluidos—. El ahorro se detiene donde BAXY deja de entender a la primera,
 de no mentir o de no dejar silencio muerto. La máquina de desarrollo tiene 16 GB de
 VRAM: eso es holgura para trabajar, no el presupuesto del producto.
+
+**Y la consigna que une las cuatro:** ésta es la **quinta** escritura de BAXY y
+tiene que ser **la más rápida de las cinco**. No porque haga menos —es la
+definitiva— sino porque **no vuelve a descubrir nada que ya se descubrió**. Cada
+hora gastada re-derivando algo ya medido en estos repositorios es una hora que el
+proyecto ya pagó una vez.
 
 ## Las reglas de conducta
 
