@@ -77,15 +77,21 @@ def _dotnet_executable() -> str:
     pytest.skip("A compatible .NET SDK is not available.")
 
 
+def _powershell_literal(value: Path) -> str:
+    return "'" + str(value).replace("'", "''") + "'"
+
+
 def _run_powershell_layout(repository: Path) -> subprocess.CompletedProcess[str]:
     if POWERSHELL is None:
         pytest.skip("PowerShell is not available.")
     helper = ROOT / "scripts" / "build_layout.ps1"
+    # powershell.exe -Command joins the remaining arguments with spaces and
+    # reparses them, so positional paths split on any space in the repository
+    # path. Quote them into the command instead.
     command = (
-        "& { param($Helper, $Repository) "
-        ". $Helper; "
-        "Get-BaxyBuildLayout -RepositoryRoot $Repository "
-        "| ConvertTo-Json -Compress }"
+        f". {_powershell_literal(helper)}; "
+        f"Get-BaxyBuildLayout -RepositoryRoot {_powershell_literal(repository)} "
+        "| ConvertTo-Json -Compress"
     )
     return subprocess.run(
         [
@@ -95,8 +101,6 @@ def _run_powershell_layout(repository: Path) -> subprocess.CompletedProcess[str]
             "-NonInteractive",
             "-Command",
             command,
-            str(helper),
-            str(repository),
         ],
         cwd=ROOT,
         text=True,

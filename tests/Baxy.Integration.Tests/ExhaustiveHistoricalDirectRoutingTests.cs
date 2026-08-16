@@ -10,11 +10,6 @@ namespace Baxy.Integration.Tests;
 [NonParallelizable]
 public sealed class ExhaustiveHistoricalDirectRoutingTests
 {
-    private static readonly JsonSerializerOptions IndentedJson = new()
-    {
-        WriteIndented = true,
-    };
-
     [Test]
     public void EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline()
     {
@@ -123,36 +118,46 @@ public sealed class ExhaustiveHistoricalDirectRoutingTests
         }
         File.Move(temporary, output, overwrite: true);
 
-        string summaryPath = Path.Combine(
-            repository,
-            "artifacts",
-            "historical_exhaustive",
-            "runtime_app_route_gate_summary.json");
-        var summary = new
-        {
-            schemaVersion = 1,
-            scope = "every_exact_runtime_message_real_gui_input_pipeline_no_effect",
-            uniqueRuntimeCases = runtimeCases,
-            allCasesAccounted = accounted == runtimeCases && runtimeCases == oracle.Count,
-            sourceCaseSha256 = FileSha256(ledger),
-            sourceOracleSha256 = FileSha256(oraclePath),
-            statusCounts = counts.OrderBy(static item => item.Key).ToDictionary(),
-            directFailures = failures.Count,
-            toolsExecuted = 0,
-            failureCases = failures.Take(200).ToArray(),
-        };
-        File.WriteAllText(
-            summaryPath,
-            JsonSerializer.Serialize(summary, IndentedJson).Replace("\r\n", "\n") + "\n",
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        // The summary is a versioned artifact and this test audits it; it does
+        // not regenerate it. Rewriting it from a ledger that .gitignore excludes
+        // made the published numbers depend on whatever the local machine held.
+        using JsonDocument published = JsonDocument.Parse(
+            File.ReadAllBytes(Path.Combine(
+                repository,
+                "artifacts",
+                "historical_exhaustive",
+                "runtime_app_route_gate_summary.json")));
+        JsonElement summary = published.RootElement;
 
         Assert.Multiple(() =>
         {
-            Assert.That(runtimeCases, Is.EqualTo(14_845));
+            // Same inputs as the published run, or the comparison means nothing.
+            Assert.That(
+                FileSha256(ledger),
+                Is.EqualTo(summary.GetProperty("sourceCaseSha256").GetString()));
+            Assert.That(
+                FileSha256(oraclePath),
+                Is.EqualTo(summary.GetProperty("sourceOracleSha256").GetString()));
+            Assert.That(
+                runtimeCases,
+                Is.EqualTo(summary.GetProperty("uniqueRuntimeCases").GetInt32()));
             Assert.That(accounted, Is.EqualTo(runtimeCases));
             Assert.That(oracle, Has.Count.EqualTo(runtimeCases));
+            Assert.That(
+                counts.OrderBy(static item => item.Key).ToDictionary(),
+                Is.EqualTo(PublishedCounts(summary)));
             Assert.That(failures, Is.Empty, JsonSerializer.Serialize(failures.Take(20)));
         });
+    }
+
+    private static Dictionary<string, int> PublishedCounts(JsonElement summary)
+    {
+        var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (JsonProperty property in summary.GetProperty("statusCounts").EnumerateObject())
+        {
+            counts.Add(property.Name, property.Value.GetInt32());
+        }
+        return counts;
     }
 
     private static string Assess(OracleRow oracle, string? operation, string decision)

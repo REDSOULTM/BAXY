@@ -125,9 +125,12 @@ que corre no es el declarado, la compuerta se pone roja. Eso es lo que hace que 
 modularidad no se convierta en caos: puedes cambiarlo todo, pero no puedes cambiar
 nada sin decirlo.
 
-*Pendiente conocido:* hoy el manifiesto tiene `manifestIsVersioned: false`. Que sea
-versionado es trabajo del goal 02, y sin eso la declaración no sobrevive a un
-cambio de esquema.
+**El manifiesto está versionado** desde el goal 02. Declara su esquema
+(`baxy-mind-runtime-v1`) y la expectativa publicada lo registra junto a la
+identidad de cada pieza, así que un cambio de esquema no puede pasar por un campo
+que falta. `tests/test_registered_runtime_expectation_r281.py` compara el
+manifiesto vivo contra lo publicado —esquema, GGUF y `llama-server`, nombre y
+SHA-256— y se pone rojo si alguno cambió.
 
 ## El registro
 

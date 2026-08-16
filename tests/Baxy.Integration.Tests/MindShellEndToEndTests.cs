@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -526,7 +527,7 @@ public sealed class MindShellEndToEndTests
             "tests",
             "fixtures",
             "mind_turn_contract");
-        string python = FindPython(repositoryRoot);
+        string python = FindPython();
         string dataRoot = PrivateDataRootTestSupport.NewPath("mind-shell-contract");
         string tracePath = Path.Combine(dataRoot, "mind-contract-trace.jsonl");
         using var environment = new EnvironmentVariableScope(MindEnvironmentVariables);
@@ -919,31 +920,68 @@ public sealed class MindShellEndToEndTests
         throw new DirectoryNotFoundException("Could not locate the BAXY repository root.");
     }
 
-    private static string FindPython(string repositoryRoot)
+    private static string FindPython()
     {
-        string embedded = Path.Combine(
-            repositoryRoot,
-            "experiments",
-            "mind_router_spike",
-            ".venv",
-            "Scripts",
-            "python.exe");
-        if (File.Exists(embedded))
+        // The turn contract fixture under tests/fixtures is stdlib only, so any
+        // Python 3 runs it. Look where Windows actually keeps one instead of at
+        // a single fixed path that exists only on the machine that made it.
+        foreach (string candidate in PythonCandidates())
         {
-            return embedded;
+            if (File.Exists(candidate) && ReportsPython3(candidate))
+            {
+                return candidate;
+            }
         }
 
-        string launcher = Path.Combine(
+        Assert.Ignore(
+            "environment: no Python 3 interpreter is available (Windows launcher "
+            + "or PATH), so the deterministic mind contract cannot run on this "
+            + "machine. Missing prerequisite, not a regression.");
+        throw new InvalidOperationException("Assert.Ignore did not end the test.");
+    }
+
+    private static IEnumerable<string> PythonCandidates()
+    {
+        yield return Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.Windows),
             "py.exe");
-        if (File.Exists(launcher))
+        foreach (string directory in (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+            .Split(
+                Path.PathSeparator,
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            return launcher;
+            yield return Path.Combine(directory, "python.exe");
         }
+    }
 
-        throw new FileNotFoundException(
-            "The deterministic mind contract test requires Python.",
-            embedded);
+    private static bool ReportsPython3(string executable)
+    {
+        // The Microsoft Store app alias sits on PATH by default and is not an
+        // interpreter, so a candidate has to prove it runs before it is used.
+        try
+        {
+            using Process? process = Process.Start(new ProcessStartInfo(executable)
+            {
+                Arguments = "-c \"import sys; print(sys.version_info.major)\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+            });
+            if (process is null)
+            {
+                return false;
+            }
+
+            string reported = process.StandardOutput.ReadToEnd().Trim();
+            return process.WaitForExit(10_000)
+                && process.ExitCode == 0
+                && reported == "3";
+        }
+        catch (Exception exception)
+            when (exception is System.ComponentModel.Win32Exception or IOException)
+        {
+            return false;
+        }
     }
 
     private static void DeleteOwnedDataRoot(string path)

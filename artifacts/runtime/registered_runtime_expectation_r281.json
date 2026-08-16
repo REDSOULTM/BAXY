@@ -18,8 +18,9 @@
     "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
     "wakeOnStart": false
   },
-  "manifestIsVersioned": false,
+  "manifestIsVersioned": true,
   "manifestPresent": true,
+  "manifestSchema": "baxy-mind-runtime-v1",
   "overall_goal_met": false,
   "schema": "baxy.registered-runtime-expectation.r281.v1",
   "section_7_met": false,

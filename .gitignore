@@ -153,6 +153,10 @@ data/exemplar_candidates.json
 *.pth
 *.bin
 *.npz
+# Excepción: los pesos del clasificador de familias y del árbitro semántico son
+# datos de runtime del producto, no un modelo descargable. `.gitattributes` fija
+# sus bytes, así que el árbol los versiona.
+!src/baxy_mind/data/*.npz
 *.exe
 *.dll
 *.pdb
@@ -169,6 +173,9 @@ data/exemplar_candidates.json
 /legacy/
 **/target/
 **/dist/
+# Excepción: el bundle compilado de la GUI histórica está sellado por
+# MainWindowShellContractTests y forma parte del árbol reproducible.
+!src/Baxy.FieldUi/dist/
 **/build/
 **/TestResults/
 **/packages/

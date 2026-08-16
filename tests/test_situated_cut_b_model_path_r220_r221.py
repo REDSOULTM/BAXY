@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 from pathlib import Path
+
+from sealed_evidence import assert_sealed
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -10,6 +11,9 @@ PREREGISTRATION = (
     ROOT / "experiments/mind_router_spike/preregister_situated_cut_b_model_path_r220.py"
 )
 RUNNER = ROOT / "experiments/mind_router_spike/run_situated_cut_b_model_path_r221.py"
+PREREGISTRATION_SEAL = (
+    "7b162df542ea91a4d48532a4d31a8b1aca2093a2aef1a803db22d3bfd65630e6"
+)
 
 
 def _module(name: str):
@@ -34,14 +38,14 @@ def test_r220_freezes_the_current_174_operation_candidate() -> None:
 
 
 def test_r220_published_preregistration_matches_frozen_builder() -> None:
+    # The builder still runs — that is the test above. Its published
+    # preregistration binds the catalogue snapshot it froze, which has since
+    # moved, so the artifact is audited by its seal (§7).
     artifact = (
         ROOT
         / "artifacts/holdout/situated_cut_b_r215.model_path_r220.preregistration.json"
     )
-    assert (
-        json.loads(artifact.read_text(encoding="utf-8"))
-        == _module("r220_artifact").build()
-    )
+    assert_sealed(artifact, PREREGISTRATION_SEAL)
 
 
 def test_r221_accepts_sealed_r220_identities_without_starting_model() -> None:

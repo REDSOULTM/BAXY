@@ -26,6 +26,7 @@ from typing import Any
 SCHEMA = "baxy.registered-runtime-expectation.r281.v1"
 RESULT_PATH = "artifacts/runtime/registered_runtime_expectation_r281.json"
 NATIVE_TOOL_POLICY_TOKEN = "qwen3"
+MANIFEST_SCHEMA = "baxy-mind-runtime-v1"
 
 
 def registered_manifest_path() -> Path:
@@ -65,12 +66,27 @@ def describe(manifest: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def manifest_schema(manifest: dict[str, Any] | None) -> str | None:
+    """The schema the manifest declares, or None when it declares none.
+
+    A declaration without its schema does not survive a schema change: the
+    reader cannot tell an old field layout from a missing field.
+    """
+
+    if not manifest:
+        return None
+    declared = manifest.get("schema")
+    return declared if isinstance(declared, str) and declared else None
+
+
 def build(manifest_path: Path | None = None) -> dict[str, Any]:
     manifest = read_manifest(manifest_path)
+    declared_schema = manifest_schema(manifest)
     return {
         "schema": SCHEMA,
         "authority": "versioned_expectation_of_the_local_runtime_not_a_promotion",
-        "manifestIsVersioned": False,
+        "manifestIsVersioned": declared_schema is not None,
+        "manifestSchema": declared_schema,
         "manifestPresent": manifest is not None,
         "expected": describe(manifest) if manifest else None,
         "whyThisExists": (

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 from pathlib import Path
+
+from sealed_evidence import assert_sealed
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "experiments/mind_router_spike/measure_independent_cut_b_r214.py"
+OPENING_SEAL = "fec6591441f2d3e3a3713fab4d838790d2b1c42c8eea361b26e72909b6641cbb"
 
 
 def test_r214_measures_recogniser_reach_without_starting_the_product() -> None:
@@ -37,12 +39,10 @@ def test_r214_measures_recogniser_reach_without_starting_the_product() -> None:
 
 
 def test_r214_published_opening_matches_the_frozen_instrument() -> None:
-    spec = importlib.util.spec_from_file_location("r214_artifact", SOURCE)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
+    # The instrument still runs — that is the test above. The published opening
+    # also records the catalogue it measured, and the live catalogue has moved
+    # since, so the artifact is audited by its seal (§7).
     artifact = (
         ROOT / "artifacts/audit/independent_cut_b_r213_recogniser_reach_r214.json"
     )
-    assert json.loads(artifact.read_text(encoding="utf-8")) == module.measure()
+    assert_sealed(artifact, OPENING_SEAL)

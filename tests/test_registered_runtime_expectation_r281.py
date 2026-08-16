@@ -25,7 +25,10 @@ def _module():
 def test_the_expectation_is_published_and_names_a_model() -> None:
     published = json.loads(EXPECTATION.read_text(encoding="utf-8"))
     assert published["schema"] == "baxy.registered-runtime-expectation.r281.v1"
-    assert published["manifestIsVersioned"] is False
+    # The declaration carries the schema it was written against, so a schema
+    # change cannot pass as a missing field.
+    assert published["manifestIsVersioned"] is True
+    assert published["manifestSchema"] == "baxy-mind-runtime-v1"
     expected = published["expected"]
     assert expected is not None
     assert expected["ggufName"]
@@ -38,13 +41,29 @@ def test_local_manifest_matches_the_published_expectation() -> None:
     if manifest is None:
         pytest.skip("no registered runtime manifest on this machine")
 
-    published = json.loads(EXPECTATION.read_text(encoding="utf-8"))["expected"]
+    published = json.loads(EXPECTATION.read_text(encoding="utf-8"))
     observed = module.describe(manifest)
 
-    # A model swap changes these; the tree must not stay silent about it.
-    assert observed["ggufName"] == published["ggufName"]
-    assert observed["ggufSha256"] == published["ggufSha256"]
-    assert observed["nativeToolPolicyEnabled"] == published["nativeToolPolicyEnabled"]
+    # A schema change or a binary swap changes these; the tree must not stay
+    # silent about either.
+    assert module.manifest_schema(manifest) == published["manifestSchema"]
+    assert observed["ggufName"] == published["expected"]["ggufName"]
+    assert observed["ggufSha256"] == published["expected"]["ggufSha256"]
+    assert observed["llamaServerName"] == published["expected"]["llamaServerName"]
+    assert observed["llamaServerSha256"] == published["expected"]["llamaServerSha256"]
+    assert (
+        observed["nativeToolPolicyEnabled"]
+        == published["expected"]["nativeToolPolicyEnabled"]
+    )
+
+
+def test_a_manifest_without_a_schema_is_not_versioned() -> None:
+    module = _module()
+    assert module.manifest_schema({"schema": "baxy-mind-runtime-v1"}) == (
+        "baxy-mind-runtime-v1"
+    )
+    assert module.manifest_schema({"gguf": "C:/m/model.gguf"}) is None
+    assert module.manifest_schema(None) is None
 
 
 def test_the_native_tool_policy_flag_tracks_the_model_name() -> None:

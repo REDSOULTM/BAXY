@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import ast
 import importlib.util
-import json
 from pathlib import Path
+
+from sealed_evidence import assert_sealed
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +24,7 @@ ARTIFACT = (
     ROOT
     / "artifacts/development/independent_clarification_cut_b_r275.model-path.preregistration.json"
 )
+ARTIFACT_SEAL = "5e819988a23ff12357581e557f2329932a1e2c3f87a00b7be8f394b583a8544c"
 
 
 def _module():
@@ -86,4 +88,7 @@ def test_r276_scorer_requires_an_effect_free_natural_missing_fact_clarification(
 
 
 def test_r275_artifact_matches_the_current_sealed_contract() -> None:
-    assert json.loads(ARTIFACT.read_text(encoding="utf-8")) == _sealed_report()
+    # The builder still runs and still states the sealed contract — that is the
+    # first test above. The published artifact also records the catalogue it
+    # sealed, which has since moved, so it is audited by its seal (§7).
+    assert_sealed(ARTIFACT, ARTIFACT_SEAL)

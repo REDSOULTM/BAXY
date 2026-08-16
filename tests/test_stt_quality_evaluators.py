@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -70,6 +72,24 @@ def test_blind_stt_verdict_rejects_without_reusing_the_holdout() -> None:
         "baxy_stt_blind_campaign_summary",
         "experiments/stt_quality/summarize_blind_stt_campaign.py",
     )
+
+    # The campaign binds each of its inputs by SHA-256; that binding is what
+    # stops a blind partition being reopened, and it is checkable here.
+    bound = summary.EXPECTED_INPUTS
+    assert len(bound) == 7
+    assert all(len(entry["sha256"]) == 64 for entry in bound.values())
+
+    missing = sorted(
+        entry["path"]
+        for entry in bound.values()
+        if not (ROOT / entry["path"]).is_file()
+    )
+    if missing:
+        # The six blind partition results live under artifacts/validation/,
+        # which .gitignore excludes on purpose so a consumed blind result
+        # cannot be read back for tuning. Without them only the binding above
+        # is checkable.
+        pytest.skip(f"environment: blind campaign inputs absent ({len(missing)})")
 
     verdict = summary.build_verdict(ROOT)
 

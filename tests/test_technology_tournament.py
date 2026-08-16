@@ -521,13 +521,22 @@ class RoundBFinalScorecardTests(unittest.TestCase):
                 )
 
     def test_complete_official_wpf_tree_matches_both_reproducible_trees(self) -> None:
-        self.assertTrue(ROUND_B_OFFICIAL_WPF_SC_PATH.is_dir())
-        official = tree_inventory(ROUND_B_OFFICIAL_WPF_SC_PATH)
-        self.assertEqual(official["file_count"], 6)
         reproduced = self.reproducibility["comparisons"]["wpf_self_contained"]
+        # Auditable from the tree on any machine: the two recorded runs agree.
+        self.assertEqual(reproduced["run_01"]["file_count"], 6)
+        self.assertEqual(reproduced["run_01"], reproduced["run_02"])
+        self.assertIs(reproduced["primary_artifact"]["equal"], True)
+        if not ROUND_B_OFFICIAL_WPF_SC_PATH.is_dir():
+            # The official build output is 69 MB and versioned in no repository
+            # of this project: **/build/ excludes it on purpose. Without it only
+            # the published inventories above can be checked.
+            self.skipTest(
+                "environment: the official Round B WPF build tree is not on "
+                "this machine"
+            )
+        official = tree_inventory(ROUND_B_OFFICIAL_WPF_SC_PATH)
         self.assertEqual(official, reproduced["run_01"])
         self.assertEqual(official, reproduced["run_02"])
-        self.assertIs(reproduced["primary_artifact"]["equal"], True)
 
     def test_same_host_reproducibility_is_scored_conservatively_one_of_two(self) -> None:
         self.assertTrue(self.reproducibility["passed"])

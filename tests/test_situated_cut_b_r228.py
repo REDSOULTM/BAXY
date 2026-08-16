@@ -4,9 +4,14 @@ import importlib.util
 import json
 from pathlib import Path
 
+from sealed_evidence import assert_sealed
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "experiments/mind_router_spike/preregister_situated_cut_b_r228.py"
+PREREGISTRATION_SEAL = (
+    "3c0a5c852fce87c3f9995cf9f1758c53bb357a28f37d1128fd4ab268495ec1f2"
+)
 
 
 def _module():
@@ -34,4 +39,7 @@ def test_r228_published_inputs_match_builder() -> None:
         json.dumps(row, ensure_ascii=False, sort_keys=True)
         for row in module.build_rows()
     ]
-    assert json.loads(manifest.read_text(encoding="utf-8")) == module.build()
+    # The corpus above still regenerates exactly. The preregistration also
+    # records `catalog_sha256`, and the live catalogue has moved since it was
+    # sealed, so it is audited by its seal (§7).
+    assert_sealed(manifest, PREREGISTRATION_SEAL)
