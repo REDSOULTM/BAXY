@@ -5,7 +5,7 @@ producto el 2026-08-16, respondiendo una por una las 52 preguntas de
 [`00_IDENTIDAD_PREGUNTAS.md`](00_IDENTIDAD_PREGUNTAS.md), con los intentos
 anteriores del proyecto sobre la mesa.
 
-Léelo antes de empezar tu sprint. Si una decisión de diseño tuya contradice algo
+Léelo antes de empezar tu goal. Si una decisión de diseño tuya contradice algo
 de aquí, la que cambia es la tuya. Si crees que una decisión de aquí está mal,
 **no la ignores en silencio**: anótalo en `APLAZADOS.md` con el motivo y sigue.
 
@@ -92,11 +92,11 @@ permite hacer —ventanas, audio, ficheros, aplicaciones, sistema—; nada espec
 de una app concreta. Cero listas de apps hardcodeadas: ése fue un antipatrón
 documentado de Carter contra su propio valor.
 
-**El número y la forma los mide el sprint 03**, no los decide una preferencia.
+**El número y la forma los mide el goal 03**, no los decide una preferencia.
 Paramétrica («controla el audio») contra específica («sube volumen») se compara
 con datos reales y gana la que más acierte por token.
 
-Contexto que el sprint 03 hereda: 67 → 31 → 16 → 158 fue crecimiento por
+Contexto que el goal 03 hereda: 67 → 31 → 16 → 158 fue crecimiento por
 acumulación que nadie decidió, y Carter midió **−68 % de tokens sin perder
 calidad** al consolidar a 16.
 
@@ -176,7 +176,7 @@ resolviendo lo que el modelo local no puede.
 - Muestra **el resultado**, con el detalle a un clic si se pide.
 
 Que arranque siempre y escuche siempre choca de frente con el presupuesto de
-recursos: es el problema real del sprint 08 y del 10, y no se resuelve
+recursos: es el problema real del goal 08 y del 10, y no se resuelve
 recortando la presencia.
 
 **Escucha siempre**, con wake word local, **y se puede apagar** con un interruptor
@@ -205,19 +205,19 @@ El dueño reconoció el diagnóstico de Carter y lo explicó:
 > tantos routers: uno para solucionar el anterior, y así. La idea es aprender de
 > todos los errores y lograr un BAXY en su estado puro.
 
-Dos consecuencias que obligan a todos los sprints:
+Dos consecuencias que obligan a todos los goals:
 
 **1. La línea roja es que vuelva a apilarse.** Nada se añade encima de algo que
-ya no sirve. Si tu sprint necesita una capa nueva, **retira la que sustituye** en
-el mismo sprint. Un router que arregla el caso que el router anterior falló es la
+ya no sirve. Si tu goal necesita una capa nueva, **retira la que sustituye** en
+el mismo goal. Un router que arregla el caso que el router anterior falló es la
 señal exacta de fracaso.
 
 **2. Lo que evita la quinta versión es que el producto se use.** Un año después,
-el éxito es *«que lo use a diario sin pensarlo»*. Eso hace del sprint 10 —uso
+el éxito es *«que lo use a diario sin pensarlo»*. Eso hace del goal 10 —uso
 diario— una prueba del producto, no un adorno final.
 
 El momento en que el dueño dijo «esto no va» fue **cuando no acertaba la
-herramienta**. Ése es el fallo que el sprint 03 tiene que cerrar, y es el mismo
+herramienta**. Ése es el fallo que el goal 03 tiene que cerrar, y es el mismo
 que hoy sigue abierto: la decisión ve hasta 28 candidatos y elige mal.
 
 ## Lo que justifica el proyecto entero

@@ -1,44 +1,79 @@
-# Sprint 09 — Voz y oído
+# Goal 09 — La voz y el oído
 
-## Cómo trabajas
+> **Esto es un goal, no una tarea.** Se lanza y corre hasta cumplirse. No pares a
+> mitad a pedir aprobación ni a preguntar: ante una duda, elige la opción más
+> razonable, anótala y sigue. Acabas cuando los criterios de cierre estén
+> marcados, o cuando hayas medido que uno es inalcanzable y publicado la evidencia
+> que lo demuestra. No hay una tercera forma de acabar.
 
-Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:
-`C:\Users\usuario\Desktop\ETC\Programacion\BAXY`.
+## Dónde trabajas
+
+Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY`. Modelo: GPT-5.6 Sol,
+`reasoning.effort: high`.
 
 Permisos totales sobre este PC: descarga, instala, sobrescribe, borra lo que
-sobre. **No preguntes.** Ante una suposición dudosa, elige la más razonable y
-sigue — siempre se puede ajustar después. Para sólo si vas a tocar datos
-personales del usuario u otros proyectos de la carpeta `Programacion`.
-
-Criterio único: **lo mejor para BAXY como producto final**. Entre dos opciones
-que cumplen, gana la más ligera.
-
-Arregla lo que bloquea. Lo que *podría* fallar y nadie ha visto fallar lo anotas
-en una línea en `documentacion/APLAZADOS.md` y sigues — el sprint 11 existe para
-vaciar esa lista.
+sobre. **No preguntes.** Para sólo si vas a tocar datos personales del usuario u
+otros proyectos de la carpeta `Programacion`.
 
 No recopiles contexto exhaustivo antes de empezar: lee lo justo para dar el paso
 siguiente. Si algo ya está documentado en estos repositorios, decide con eso.
 
-## Empieza por lo que ya existe
+## Qué es BAXY
 
-**Esto es lo primero que haces, antes de escribir una línea.**
+Un compañero que vive en el PC de una persona y hace lo que le pide —tipo Jarvis,
+local y privado—. Tiene carácter propio, es un «él», tutea, y confirma lo que hizo
+comprobándolo: *«Listo, Spotify está abierto y sonando»*. Cuando falla lo dice
+plano y con la causa. Nunca inventa que hizo algo, nunca actúa sin que se lo
+pidan, nunca manda datos del usuario fuera.
 
-En `C:\Users\usuario\Desktop\ETC\Programacion` hay varios intentos anteriores de
-este mismo asistente —Carter, Agent Gemma, Jarvis, versiones previas de BAXY— y
-**algunos tienen wake word y transcripción que ya funcionaban de verdad**. El
-sprint 01 dejó un mapa de qué hay y dónde; léelo.
+Todo está en `documentacion/00_IDENTIDAD.md`, y **es lectura obligatoria antes de
+tocar nada**. No son preferencias: son decisiones tomadas por el dueño con los
+cuatro intentos anteriores del proyecto sobre la mesa. Si un diseño tuyo las
+contradice, el que cambia eres tú.
 
-Rehacer desde cero lo que ya funciona es la peor decisión posible aquí. Trae lo
-que sirva, mídelo en esta máquina, y construye encima. Si el mapa del sprint 01
-resulta incompleto o desactualizado, vuelve tú a mirar: la carpeta es la fuente,
-el mapa es una ayuda.
+## Las cuatro leyes
 
-Vale lo mismo para la documentación: si ya hay una comparativa de motores de STT
-o un torneo de wake words, decide con ella en vez de repetirla. Sólo vuelve a
-medir lo que cambió desde entonces.
+Gobiernan este goal y los otros diez. Están por encima de cualquier preferencia
+técnica tuya.
 
-## El resultado que cuenta
+**1. Apunta al estado del arte, una sola vez.** Antes de escribir código para un
+problema, averigua si ya está resuelto ahí fuera: papers, documentación,
+repositorios, la respuesta de alguien que se topó con lo mismo. Si hay una
+solución conocida y buena, **impleméntala** en vez de inventar la tuya. Y al
+revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La vara
+es «¿es la mejor opción conocida hoy?», no «¿es lo que había?».
+
+Es una pasada, no una persecución. En cuanto tengas algo que cumple el objetivo,
+deja de buscar mejor: perseguir el estado del arte sin parar es una carrera sin
+final, y este producto tiene que salir.
+
+**2. Nada de sobreingeniería.** Escribe el mínimo código que cumpla, y que se
+active sólo el necesario. Nada de capa sobre capa, ni abstracciones para un
+segundo caso que no existe, ni opciones que nadie pidió, ni defensas para fallos
+que nadie ha visto ocurrir.
+
+No es estética: es la causa de muerte documentada de las cuatro versiones
+anteriores de este mismo proyecto. Carter se diagnosticó a sí mismo —*«el proyecto
+crece por acumulación, no por reemplazo»*— con tres routers en serie, ocho capas
+de reescritura y un `agent.py` de 1.397 líneas contra su propio objetivo de 400.
+Diez de sus dieciséis segundos por turno eran sobrecarga suya.
+
+**Si añades una capa, retira la que sustituye, en este mismo goal.** Un goal que
+cierra con menos código del que encontró y el objetivo cumplido es mejor goal.
+
+**3. Sólo se arregla lo que bloquea.** Un fallo que impide usar BAXY o avanzar
+este goal se arregla. Una fragilidad teórica o un camino de error que nadie ha
+recorrido: una línea en `documentacion/APLAZADOS.md` y sigues. El goal 11 existe
+para vaciar esa lista, así que nada se pierde por anotarlo.
+
+**4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Entre
+dos opciones que cumplen gana la más ligera, contando RAM, disco, CPU en reposo y
+arranque en frío. El ahorro se detiene donde BAXY deja de entender a la primera,
+de no mentir o de no dejar silencio muerto.
+
+---
+
+## El objetivo
 
 **BAXY oye su nombre, entiende lo que le dicen y contesta hablando.** En español,
 inglés y spanglish, con acento real, en la habitación real de la persona.
@@ -46,26 +81,24 @@ inglés y spanglish, con acento real, en la habitación real de la persona.
 Tres piezas:
 
 - **Wake word** — se activa cuando le llamas y no cuando no. Las falsas
-  activaciones son peores que los fallos de cobertura: un asistente que se
-  despierta solo es un asistente que se apaga.
-- **Transcripción** — lo que la persona dijo, no lo que el modelo esperaba oír.
-  Con acentos reales, ruido de fondo real, y el cambio de idioma a media frase que
-  todo el mundo hace.
-- **Habla** — BAXY contesta con voz, y la persona puede interrumpirle. Si no
-  puede cortarle a media frase, es un contestador, no un asistente.
+  activaciones son peores que los fallos de cobertura: un asistente que se despierta
+  solo es un asistente que se apaga.
+- **Transcripción** — lo que la persona dijo, no lo que el modelo esperaba oír. Con
+  acentos reales, ruido de fondo real, y el cambio de idioma a media frase que todo
+  el mundo hace.
+- **Habla** — BAXY contesta con voz, y la persona puede interrumpirle. Si no puede
+  cortarle a media frase, es un contestador, no un asistente.
 
 Y el reloj: de **fin de habla a primera señal, p50 ≤ 1,5 s**. El listón crudo del
 dueño es **3 s sin señal**: pasado eso, se levanta y lo hace a mano.
 
 ## Lo que el dueño ya decidió — no lo re-derives
 
-Está en `documentacion/00_IDENTIDAD.md`. Lo que te toca a ti:
-
 - **Se llama BAXY y sólo BAXY.** Una palabra. Entrena la wake word para ésa; no
   gastes en variantes ni en nombre configurable.
 - **Escucha siempre, y se puede apagar.** Wake word local permanente, con un
-  interruptor visible. Que la escucha permanente cueste CPU en reposo es tu
-  problema a resolver, no una razón para cambiarla por un atajo.
+  interruptor visible. Que la escucha permanente cueste CPU en reposo es tu problema
+  a resolver, no una razón para cambiarla por un atajo.
 - **Habla siempre.** Toda respuesta se dice en voz alta, escriba o hable la
   persona. La voz no es el modo de salida de la entrada por voz: es la salida.
 - **Voz con carácter, español neutro.** Ni la voz del sistema ni un doblaje.
@@ -73,84 +106,111 @@ Está en `documentacion/00_IDENTIDAD.md`. Lo que te toca a ti:
   usaba un holdout de 25 voces en 13 idiomas; eso es más de lo que este producto
   necesita. Voces diversas sí, trece idiomas no.
 
-Y una que cambia el orden del trabajo: **la accesibilidad es central en el
-motor**. Todo lo que BAXY hace se puede pedir por voz, y BAXY narra lo que hace.
-Este sprint es donde eso se vuelve real — no es un modo que alguien añade después.
-Si al terminar queda una sola capacidad que exija ver la pantalla o usar el ratón,
-el sprint no está cerrado.
+Y una que cambia el orden del trabajo: **la accesibilidad es central en el motor**.
+Todo lo que BAXY hace se puede pedir por voz, y BAXY narra lo que hace. Este goal es
+donde eso se vuelve real — no es un modo que alguien añade después. Si al terminar
+queda una sola capacidad que exija ver la pantalla o usar el ratón, el goal no está
+cerrado.
 
-## Lo que ya se sabe en este repositorio
+## Empieza por lo que ya existe
+
+**Esto es lo primero que haces, antes de escribir una línea.**
+
+En `C:\Users\usuario\Desktop\ETC\Programacion` hay varios intentos anteriores de este
+mismo asistente y **algunos tienen wake word y transcripción que ya funcionaban de
+verdad**. El goal 01 dejó un mapa de qué hay y dónde; léelo.
+
+Rehacer desde cero lo que ya funciona es la peor decisión posible aquí. Trae lo que
+sirva, mídelo en esta máquina, y construye encima. Si el mapa resulta incompleto o
+desactualizado, vuelve tú a mirar: la carpeta es la fuente, el mapa es una ayuda.
+
+**Pero heredar no es conservar.** Aplica la ley 1 antes de adoptar: la voz local se
+mueve rápido y una elección de motor de hace un año puede estar superada. La pila
+que monta hoy todo el mundo —reconocimiento local, LLM local, síntesis local— está
+documentada hasta el aburrimiento; cópiala donde encaje en vez de diseñar la tuya, y
+comprueba cuál es el mejor motor **hoy** para español con acento latino, no cuál lo
+era cuando se eligió.
+
+Vale lo mismo para la documentación: si ya hay una comparativa de motores de STT o
+un torneo de wake words, decide con ella en vez de repetirla. Sólo vuelve a medir lo
+que cambió desde entonces — que, en este campo, es bastante.
+
+## Lo que ya se rechazó en este repositorio
 
 Se ha intentado mucho aquí y casi todo se rechazó. Léelo antes de repetirlo — la
 lista completa está en `documentacion/00_META_VIGENTE.md`, pero en resumen:
 
 - Una compuerta física de wake se abrió una vez y quedó **rechazada**: 46/48
-  positivos, 0/96 falsas activaciones. Falló sólo por dos candidatos acústicos
-  que la verificación léxica rechazó.
+  positivos, 0/96 falsas activaciones. Falló sólo por dos candidatos acústicos que la
+  verificación léxica rechazó.
 - Sobre un corpus confusable distinto, la misma cascada produjo **10/96 falsas
   activaciones** — seis por interpretar «vas y…» como alias dividido.
 - **HyperSpotter** (Conformer y Whisper) se midió y se rechazó: o cobertura o
   seguridad, nunca las dos.
 - **Clasificadores acústicos propios** —prosodia aislada, representación fonética
-  Wav2Vec2, ramas combinadas— todos rechazados por inestabilidad o por no
-  preservar seguridad y cobertura a la vez.
+  Wav2Vec2, ramas combinadas— todos rechazados por inestabilidad o por no preservar
+  seguridad y cobertura a la vez.
 - **Dos confirmaciones CTC** limitadas a la ruta del alias dividido: rechazadas.
 
-Eso es una advertencia sobre esta línea, no sobre la voz. Un componente que ya
-funciona en otro proyecto no arrastra estos rechazos — mídelo por su cuenta.
+Eso es una advertencia sobre **esta línea**, no sobre la voz. Un componente que ya
+funciona en otro proyecto, o uno del estado del arte de hoy, no arrastra estos
+rechazos — mídelo por su cuenta.
 
-Los corpus físicos ya abiertos están consumidos: no sirven para promover nada.
-Si necesitas acreditar un candidato, hace falta captura fresca.
+Los corpus físicos ya abiertos están consumidos: no sirven para promover nada. Si
+necesitas acreditar un candidato, hace falta captura fresca.
 
 ## Cómo eliges
 
-Elige **el más ligero que cumpla**. Voz y STT van en CPU, para no comerse la VRAM
-que necesita el decisor, y son lo que está escuchando todo el día: un wake word
-que consume CPU en reposo se nota en la batería y en el ventilador, y acaba
-desinstalado. Un STT excelente que pide GPU dedicada no sirve para este producto.
+Voz y STT van en CPU, para no comerse la VRAM que necesita el decisor, y son lo que
+está escuchando todo el día: un wake word que consume CPU en reposo se nota en la
+batería y en el ventilador, y acaba desinstalado. Un STT excelente que pide GPU
+dedicada no sirve para este producto.
 
-Si una pieza hace el mismo trabajo con la mitad de memoria o sin acelerador, ésa
-es la correcta. El límite del ahorro es que siga entendiendo acentos reales en
-una habitación real — un modelo diminuto que sólo funciona en audio de
-laboratorio no ahorra recursos, no funciona.
+Si una pieza hace el mismo trabajo con la mitad de memoria o sin acelerador, ésa es
+la correcta. El límite del ahorro es que siga entendiendo acentos reales en una
+habitación real — un modelo diminuto que sólo funciona en audio de laboratorio no
+ahorra recursos: no funciona.
 
-Investiga qué existe hoy, no lo que recuerdas — este campo se mueve rápido. Y
-mide en esta máquina: un benchmark ajeno no autoriza nada.
+Mide en esta máquina: un benchmark ajeno no autoriza nada.
 
 ## Cómo mides
 
-Contra **voces diversas en holdout**, no contra la voz de quien desarrolla. Un
-wake word afinado con una sola voz funciona para una sola persona.
+Contra **voces diversas en holdout**, no contra la voz de quien desarrolla. Un wake
+word afinado con una sola voz funciona para una sola persona.
 
-Con audio real: la sala real, el ruido real, el micrófono real. Y para wake,
-mide las falsas activaciones sobre horas de audio que no le hablan a BAXY —
-televisión, conversación, música.
+Con audio real: la sala real, el ruido real, el micrófono real. Y para wake, mide las
+falsas activaciones sobre horas de audio que no le hablan a BAXY — televisión,
+conversación, música.
 
 No ajustes umbrales después de abrir un corpus de evaluación. Si el resultado no
 llega, la respuesta es un candidato mejor, no un umbral más laxo.
 
 ## Lo que no puedes romper
 
-Todo local. Sin nube, sin APIs de pago, sin enviar audio a ningún lado. El audio
-de una persona en su casa no sale de su máquina.
+Todo local. Sin nube, sin APIs de pago, sin enviar audio a ningún lado. El audio de
+una persona en su casa no sale de su máquina — y esto no tiene la excepción de la
+búsqueda web: eso es información entrando, el audio sería contenido saliendo.
 
-Y los invariantes siguen: lo que se transcribe mal no se ejecuta a ciegas — una
-transcripción dudosa es una petición dudosa, y el sitio de eso es una pregunta,
-no un efecto.
+Y los invariantes siguen: lo que se transcribe mal no se ejecuta a ciegas. Una
+transcripción dudosa es una petición dudosa, y el sitio de eso es una pregunta, no
+un efecto.
 
-## Qué entregas
+## Criterios de cierre
 
-Wake, transcripción y habla funcionando en esta máquina, con las mediciones sobre
-voces diversas. Y la lista de lo que heredaste, de dónde, y qué tuviste que
-cambiar para traerlo.
+- [ ] Wake, transcripción y habla funcionando en esta máquina, medidos sobre voces
+      diversas y audio real.
+- [ ] Falsas activaciones medidas sobre horas de audio que no le hablan a BAXY.
+- [ ] De fin de habla a primera señal, p50 ≤ 1,5 s, y nunca 3 s en silencio.
+- [ ] Se le puede interrumpir a media frase.
+- [ ] **Ninguna capacidad de BAXY exige ver la pantalla o usar el ratón.**
+- [ ] Publicado qué heredaste, de dónde, qué cambiaste — y qué descartaste porque el
+      estado del arte lo dejó atrás.
+- [ ] Consumo en reposo medido, con la escucha permanente encendida.
 
-## Cuándo has terminado
+## Cuando lo cumplas
 
-Cuando puedas llamar a BAXY desde el otro lado de la habitación, pedirle algo a
-media lengua mezclando idiomas, y que lo haga.
+Poder llamar a BAXY desde el otro lado de la habitación, pedirle algo a media lengua
+mezclando idiomas, y que lo haga.
 
-## Cierra
-
-Publica el resultado aunque no sea perfecto, siempre que no mienta. Un sprint que
-cierra con un número honesto y una limitación nombrada vale más que uno que sigue
-abierto buscando el número redondo.
+Y anota en `documentacion/APLAZADOS.md`, en una línea cada cosa, lo que viste y no
+perseguiste.

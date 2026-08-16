@@ -26,36 +26,42 @@ falla una, no hay producto:
 Quién es BAXY, cómo habla, qué nunca hace y qué se decidió sobre catálogo, voz,
 accesibilidad y privacidad está en
 [`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md). Es lectura
-obligatoria antes de cualquier sprint.
+obligatoria antes de cualquier goal.
 
 ## Por dónde se empieza
 
-El trabajo está organizado en **once sprints**, uno por prompt, en
-[`documentacion/sprints/`](documentacion/sprints/). Cada uno se lanza en una
-sesión nueva con un agente nuevo; cuando entrega, se lanza el siguiente.
+El trabajo está organizado en **once goals**, uno por prompt, en
+[`documentacion/sprints/`](documentacion/sprints/). Cada uno se pega entero en una
+sesión nueva y **se deja correr hasta que se cumple**; cuando entrega, se lanza el
+siguiente.
 
 Empieza por [`00_INDICE.md`](documentacion/sprints/00_INDICE.md) y luego por el
-sprint 01.
+goal 01.
 
-| # | Sprint | Qué entrega |
+| # | Goal | Cumplido cuando |
 |---|---|---|
-| 01 | Herencia | Mapa de los BAXY anteriores y qué se trae de cada uno |
-| 02 | Base reproducible | Compuerta verde en un clon limpio |
-| 03 | Comprensión | La petición llega a la operación o a una pregunta útil |
-| 04 | Honestidad | Cero efectos no pedidos, cero éxitos falsos, cero frases fijas |
-| 05 | Ejecución verificada | Lo que dice que pasó, pasó |
-| 06 | Voz del producto | Todo lo que la persona lee lo formula el modelo |
-| 07 | Misiones compuestas | Varias operaciones encadenadas |
-| 08 | Primera señal | Nunca hay silencio muerto |
-| 09 | Voz y oído | Wake word, transcripción y habla |
-| 10 | Uso diario | BAXY usable de verdad |
-| 11 | Validación y cierre | BAXY aguanta cuando algo va mal |
+| 01 | La herencia | Sabes qué hay construido ya, qué funciona y qué se trae |
+| 02 | La base reproducible | La compuerta pasa entera, también en un clon limpio |
+| 03 | La comprensión | La petición llega a la operación correcta, o a una pregunta útil |
+| 04 | La honestidad | Cero efectos no pedidos, cero éxitos falsos, cero frases fijas |
+| 05 | La ejecución verificada | Lo que dice que pasó, pasó — y algo independiente lo comprueba |
+| 06 | La voz del producto | Todo lo que la persona lee lo formula el modelo |
+| 07 | Las misiones compuestas | Lo que ninguna operación sola logra, encadenando |
+| 08 | La primera señal | Nunca hay silencio muerto |
+| 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
+| 10 | El uso diario | BAXY se usa todos los días y no decepciona |
+| 11 | La validación y el cierre | Aguanta cuando algo va mal — producto terminado |
+
+Los once llevan dentro las mismas **cuatro leyes**: apuntar al estado del arte una
+sola vez y sin perseguirlo, nada de sobreingeniería, arreglar sólo lo que bloquea,
+y quedarse siempre con la opción más ligera que cumpla. Están explicadas en el
+índice.
 
 ## De dónde viene este repositorio
 
 BAXY no empieza de cero. Es la continuación del intento más avanzado, con años de
 trabajo previo detrás en otros nombres —Carter, Agent Gemma, Jarvis— que viven en
-la misma carpeta y de los que el sprint 01 hereda lo que valga.
+la misma carpeta y de los que el goal 01 hereda lo que valga.
 
 Lo que se trajo: el código, las pruebas, los programas de experimento, la
 documentación y la evidencia viva (el ledger, las auditorías, los sellos ciegos
@@ -105,7 +111,7 @@ asistente.
 - [`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md) — qué es BAXY.
   Decisiones tomadas, no preferencias. Léelo primero.
 - [`documentacion/sprints/`](documentacion/sprints/) — los once prompts.
-- [`documentacion/APLAZADOS.md`](documentacion/APLAZADOS.md) — lo que los sprints
+- [`documentacion/APLAZADOS.md`](documentacion/APLAZADOS.md) — lo que los goals
   01–10 ven y no persiguen; el 11 lo vacía.
 - [`documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md`](documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md)
   — qué se mide ahora y qué se difiere.

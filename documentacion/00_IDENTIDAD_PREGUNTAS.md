@@ -3,7 +3,7 @@
 Este documento existe para resolver **qué es BAXY** antes de que once agentes se
 pongan a construirlo. Las respuestas se escriben aquí mismo, debajo de cada
 pregunta, y cuando esté completo se convierte en el documento de identidad que
-todos los sprints leen.
+todos los goals leen.
 
 Están numeradas para poder responder por número, en el orden que quieras y en
 varias sesiones.
@@ -388,7 +388,7 @@ y un modo *bypass* sin frenos.
 cubra el máximo de casos, una herramienta = una cosa**, y lo que no cabe en una
 herramienta se resuelve **encadenando** (`Open App` → `Click X`).
 
-**49.** La forma exacta —paramétrica o específica— **la mide el sprint 03**.
+**49.** La forma exacta —paramétrica o específica— **la mide el goal 03**.
 
 ### D. Velocidad
 

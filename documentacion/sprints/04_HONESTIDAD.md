@@ -1,26 +1,79 @@
-# Sprint 04 — Honestidad
+# Goal 04 — La honestidad
 
-## Cómo trabajas
+> **Esto es un goal, no una tarea.** Se lanza y corre hasta cumplirse. No pares a
+> mitad a pedir aprobación ni a preguntar: ante una duda, elige la opción más
+> razonable, anótala y sigue. Acabas cuando los criterios de cierre estén
+> marcados, o cuando hayas medido que uno es inalcanzable y publicado la evidencia
+> que lo demuestra. No hay una tercera forma de acabar.
 
-Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:
-`C:\Users\usuario\Desktop\ETC\Programacion\BAXY`.
+## Dónde trabajas
+
+Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY`. Modelo: GPT-5.6 Sol,
+`reasoning.effort: high`.
 
 Permisos totales sobre este PC: descarga, instala, sobrescribe, borra lo que
-sobre. **No preguntes.** Ante una suposición dudosa, elige la más razonable y
-sigue — siempre se puede ajustar después. Para sólo si vas a tocar datos
-personales del usuario u otros proyectos de la carpeta `Programacion`.
-
-Criterio único: **lo mejor para BAXY como producto final**. Entre dos opciones
-que cumplen, gana la más ligera.
-
-Arregla lo que bloquea. Lo que *podría* fallar y nadie ha visto fallar lo anotas
-en una línea en `documentacion/APLAZADOS.md` y sigues — el sprint 11 existe para
-vaciar esa lista.
+sobre. **No preguntes.** Para sólo si vas a tocar datos personales del usuario u
+otros proyectos de la carpeta `Programacion`.
 
 No recopiles contexto exhaustivo antes de empezar: lee lo justo para dar el paso
 siguiente. Si algo ya está documentado en estos repositorios, decide con eso.
 
-## El resultado que cuenta
+## Qué es BAXY
+
+Un compañero que vive en el PC de una persona y hace lo que le pide —tipo Jarvis,
+local y privado—. Tiene carácter propio, es un «él», tutea, y confirma lo que hizo
+comprobándolo: *«Listo, Spotify está abierto y sonando»*. Cuando falla lo dice
+plano y con la causa. Nunca inventa que hizo algo, nunca actúa sin que se lo
+pidan, nunca manda datos del usuario fuera.
+
+Todo está en `documentacion/00_IDENTIDAD.md`, y **es lectura obligatoria antes de
+tocar nada**. No son preferencias: son decisiones tomadas por el dueño con los
+cuatro intentos anteriores del proyecto sobre la mesa. Si un diseño tuyo las
+contradice, el que cambia eres tú.
+
+## Las cuatro leyes
+
+Gobiernan este goal y los otros diez. Están por encima de cualquier preferencia
+técnica tuya.
+
+**1. Apunta al estado del arte, una sola vez.** Antes de escribir código para un
+problema, averigua si ya está resuelto ahí fuera: papers, documentación,
+repositorios, la respuesta de alguien que se topó con lo mismo. Si hay una
+solución conocida y buena, **impleméntala** en vez de inventar la tuya. Y al
+revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La vara
+es «¿es la mejor opción conocida hoy?», no «¿es lo que había?».
+
+Es una pasada, no una persecución. En cuanto tengas algo que cumple el objetivo,
+deja de buscar mejor: perseguir el estado del arte sin parar es una carrera sin
+final, y este producto tiene que salir.
+
+**2. Nada de sobreingeniería.** Escribe el mínimo código que cumpla, y que se
+active sólo el necesario. Nada de capa sobre capa, ni abstracciones para un
+segundo caso que no existe, ni opciones que nadie pidió, ni defensas para fallos
+que nadie ha visto ocurrir.
+
+No es estética: es la causa de muerte documentada de las cuatro versiones
+anteriores de este mismo proyecto. Carter se diagnosticó a sí mismo —*«el proyecto
+crece por acumulación, no por reemplazo»*— con tres routers en serie, ocho capas
+de reescritura y un `agent.py` de 1.397 líneas contra su propio objetivo de 400.
+Diez de sus dieciséis segundos por turno eran sobrecarga suya.
+
+**Si añades una capa, retira la que sustituye, en este mismo goal.** Un goal que
+cierra con menos código del que encontró y el objetivo cumplido es mejor goal.
+
+**3. Sólo se arregla lo que bloquea.** Un fallo que impide usar BAXY o avanzar
+este goal se arregla. Una fragilidad teórica o un camino de error que nadie ha
+recorrido: una línea en `documentacion/APLAZADOS.md` y sigues. El goal 11 existe
+para vaciar esa lista, así que nada se pierde por anotarlo.
+
+**4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Entre
+dos opciones que cumplen gana la más ligera, contando RAM, disco, CPU en reposo y
+arranque en frío. El ahorro se detiene donde BAXY deja de entender a la primera,
+de no mentir o de no dejar silencio muerto.
+
+---
+
+## El objetivo
 
 **BAXY nunca miente y nunca hace algo que no le pidieron.** Da igual lo que la
 persona escriba, y da igual que caiga completamente fuera de lo que BAXY sabe
@@ -33,74 +86,84 @@ Tres ceros, sin margen:
 - **0 respuestas visibles fijas.** Ninguna constante en pantalla.
 
 Cuando la petición cae fuera de lo que BAXY puede hacer: se abstiene o pregunta
-algo útil, formulado por el modelo. Nunca una operación inventada, nunca un
-efecto «parecido», nunca un «un momento…» de plantilla.
+algo útil, formulado por el modelo. Nunca una operación inventada, nunca un efecto
+«parecido», nunca un «un momento…» de plantilla.
 
 Esto no se mide por acierto. Se mide por honestidad, y no admite margen.
 
-## Por qué es su propio sprint
+## Por qué es su propio goal
 
 Porque es el criterio que más fácil se pierde persiguiendo exactitud. Una mejora
-que sube el acierto y reabre un efecto no solicitado es un rechazo, no una
-mejora — ya pasó una vez: relajar dos reglas curadas recuperó 6 propuestas
-correctas y reabrió 5 efectos no pedidos. Se rechazó, y con razón.
+que sube el acierto y reabre un efecto no solicitado es un rechazo, no una mejora
+— ya pasó una vez: relajar dos reglas curadas recuperó 6 propuestas correctas y
+reabrió 5 efectos no pedidos. Se rechazó, y con razón.
 
-El sprint 03 empuja para que BAXY entienda más. Este comprueba que al empujar no
-se rompió lo único que no puede romperse.
+El goal 03 empuja para que BAXY entienda más. Éste comprueba que al empujar no se
+rompió lo único que no puede romperse.
 
-Y porque el dueño lo ató a un hecho, no a un principio abstracto: **BAXY actúa
-sobre su PC**. *«Si sólo hablara daría igual; como toca cosas de verdad, mentir es
+Y el dueño lo ató a un hecho, no a un principio abstracto: **BAXY actúa sobre su
+PC**. *«Si sólo hablara daría igual; como toca cosas de verdad, mentir es
 peligroso.»*
 
-## Tres cosas que este sprint tiene que resolver bien, no sólo medir
+## Tres cosas que hay que resolver, no sólo medir
 
-Vienen de `documentacion/00_IDENTIDAD.md` y afectan a cómo se implementa la
-honestidad, no sólo a cómo se verifica.
+Vienen de `00_IDENTIDAD.md` y afectan a cómo se implementa la honestidad, no sólo
+a cómo se verifica.
 
 **1. Responder pronto sin mentir.** El dueño pidió que BAXY *responda y verifique
 después*, corrigiéndose solo si no cuadra. Eso convive con «nada se afirma sin
-verificar» de una sola manera: lo temprano **no afirma un resultado** —dice que
-entendió y está en ello—; la afirmación llega verificada, siempre; y si la
-verificación desmiente lo dicho, **BAXY se corrige solo**, sin esperar a que se lo
-pregunten. Esa autocorrección es parte del sprint: un sistema que sólo calla
-cuando se equivoca no cumple.
+verificar» de una sola manera:
+
+- Lo temprano **no afirma un resultado**: dice que entendió y está en ello.
+- La afirmación de que algo pasó **llega verificada**, siempre.
+- Si la verificación desmiente lo dicho, **BAXY se corrige solo**, sin esperar a
+  que se lo pregunten.
+
+Esa autocorrección es parte de este goal: un sistema que sólo calla cuando se
+equivoca no cumple.
 
 **2. Los dos modos.** El modo normal confirma **sólo si se destruyen datos**
 —borrar, sobrescribir, cerrar sin guardar—; apagar o cerrar sesión van directos.
 El modo *bypass* no confirma nada y se activa con un ajuste consciente que sigue
-encendido hasta que se apague. La confirmación sigue ligada a la invocación
-exacta, y el modo **nunca** relaja los otros dos ceros: bypass significa *no
-pregunta*, no *puede mentir* ni *puede ejecutar lo que no le pidieron*.
+encendido hasta que se apague.
+
+La confirmación sigue ligada a la invocación exacta. Y el modo **nunca** relaja los
+otros dos ceros: bypass significa *no pregunta*, no *puede mentir* ni *puede
+ejecutar lo que no le pidieron*.
+
+Ley 2 aplicada aquí: dos modos son dos valores de un ajuste, no dos caminos de
+código. Si te encuentras duplicando la ruta de ejecución, lo estás haciendo mal.
 
 **3. Abstenerse tiene una forma concreta.** BAXY dice que no **sólo a lo que no
 sabe hacer** —«eso no lo hago»— y, cuando no entiende, **pregunta lo justo**: una
 pregunta corta y concreta, no un interrogatorio y no adivinar. Si se equivoca de
 interpretación, lo dice y reintenta.
 
-## Lo que ya se sabe
+## Lo que ya se midió — no lo pagues dos veces
 
-**Los vetos hacen su trabajo.** De 31 vetos publicados, 25 retiraron una
-propuesta equivocada. El problema nunca fue que fueran severos.
+**Los vetos hacen su trabajo.** De 31 vetos publicados, 25 retiraron una propuesta
+equivocada. El problema nunca fue que fueran severos.
 
-**Pero la puerta de dominio está invertida en paráfrasis.** `_curated_domain_is_grounded`
-está documentada como unilateral, pero para las familias que cubre está escrita
-como lista blanca positiva: devuelve `False` para toda superficie ausente de la
-lista, incluidas las correctas. Sobre ocho ejecuciones, rechazó la operación
-buscada en las siete que fallaron. Y deja 49 de 158 operaciones sin ninguna regla
-curada.
+**Pero la puerta de dominio está invertida en paráfrasis.**
+`_curated_domain_is_grounded` está documentada como unilateral, pero para las
+familias que cubre está escrita como lista blanca positiva: devuelve `False` para
+toda superficie ausente de la lista, incluidas las correctas. Sobre ocho
+ejecuciones, rechazó la operación buscada en las siete que fallaron. Y deja 49 de
+158 operaciones sin ninguna regla curada.
 
-**Cinco diseños de puerta sobre tres fuentes de vocabulario están rechazados.**
-No escribas un sexto gate léxico. La palanca no es una puerta más.
+**Cinco diseños de puerta sobre tres fuentes de vocabulario están rechazados.** No
+escribas un sexto gate léxico. La palanca no es una puerta más — y una puerta más
+sería justo la acumulación que la ley 2 prohíbe.
 
 **Hay prosa inventada en el texto visible.** Palabras que no existen, formadas a
 partir de raíces plausibles: «cuecer», «vertir», «tiender», «cosear»,
-«Descalzica», «Inflata», «alredad». El guardián por terminaciones no las
-detecta. Eso es una forma de mentir aunque la decisión contractual sea correcta.
+«Descalzica», «Inflata», «alredad». El guardián por terminaciones no las detecta.
+Eso es una forma de mentir aunque la decisión contractual sea correcta.
 
-**Un falso positivo conocido del detector léxico:** una referencia a una imagen
-que la persona había enviado se contó como afirmación de éxito. Al construir
-scorers, prevé la auditoría manual del texto visible desde el diseño — el scorer
-de una medición anterior se equivocó en 3 de 4 en el único criterio revisado.
+**Un falso positivo conocido del detector léxico:** una referencia a una imagen que
+la persona había enviado se contó como afirmación de éxito. Al construir scorers,
+prevé la auditoría manual del texto visible desde el diseño — el scorer de una
+medición anterior se equivocó en 3 de 4 en el único criterio revisado.
 
 ## Cómo mides
 
@@ -109,29 +172,32 @@ que cae fuera del catálogo. Instrumenta el crudo —qué se ofreció y qué se 
 antes de cualquier veto— y **lee los textos visibles uno por uno**. Una decisión
 contractual correcta puede acompañar una respuesta inservible.
 
-`V9` es el único sello ciego sin consumir. Si lo abres, que sea con el scorer y
-el código de medición cerrados y hasheados antes, sin edición posterior, y con la
+`V9` es el único sello ciego sin consumir. Si lo abres, que sea con el scorer y el
+código de medición cerrados y hasheados antes, sin edición posterior, y con la
 auditoría manual prevista desde el diseño.
 
-## Defectos
+## Cómo se arreglan los defectos
 
-Lo que bloquea se arregla de verdad: nada de bajar el umbral que lo detectó,
-marcar `skip`/`xfail`, mover a pendientes ni envolverlo en un fallback. Lo que
-nadie ha visto ocurrir se anota y se sigue.
+De verdad: nada de bajar el umbral que lo detectó, marcar `skip`/`xfail`, mover a
+pendientes ni envolverlo en un fallback.
 
-## Qué entregas
+## Criterios de cierre
+
+- [ ] Los tres ceros, sobre población abierta, con el texto visible **auditado a
+      mano**.
+- [ ] La autocorrección funciona: una afirmación desmentida por la verificación se
+      corrige sola, y hay una traza que lo demuestra.
+- [ ] Los dos modos funcionan, y el *bypass* no relaja ni el cero de efectos no
+      pedidos ni el de éxitos no verificados.
+- [ ] La puerta de dominio ya no rechaza operaciones correctas por ausencia de
+      lista — o está retirada y sustituida por algo que no herede el defecto.
+- [ ] Ninguna capa nueva sin retirar la que sustituye.
+
+## Cuando lo cumplas
 
 La medición sobre población abierta, con los tres ceros y el texto visible
 auditado a mano. Si alguno de los tres no está en cero, publica dónde se rompe y
 por qué — un cero falso es peor que un uno honesto.
 
-## Cuándo has terminado
-
-Cuando puedas escribirle a BAXY cualquier disparate y no haga nada raro, no
-invente nada, y te conteste algo escrito para ti y no para nadie.
-
-## Cierra
-
-Publica el resultado aunque no sea perfecto, siempre que no mienta. Un sprint que
-cierra con un número honesto y una limitación nombrada vale más que uno que sigue
-abierto buscando el número redondo.
+Y anota en `documentacion/APLAZADOS.md`, en una línea cada cosa, lo que viste y no
+perseguiste.

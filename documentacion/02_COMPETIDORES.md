@@ -1,6 +1,6 @@
 # Contra qué compite BAXY
 
-Estado: agosto de 2026. Este documento existe para que ningún sprint reinvente lo
+Estado: agosto de 2026. Este documento existe para que ningún goal reinvente lo
 que el mercado ya resolvió, y para que nadie confunda lo que BAXY hace distinto
 con lo que simplemente hace igual que los demás.
 
@@ -82,7 +82,7 @@ Estas están resueltas. Copiar el estándar y seguir:
 
 - **Chat local con modelo descargable** — Jan.ai y LM Studio ya lo hacen bien.
 - **La pila de voz** — whisper.cpp / Piper / Ollama es un estándar de facto que
-  funciona. El sprint 09 hereda antes de inventar.
+  funciona. El goal 09 hereda antes de inventar.
 - **RAG sobre ficheros locales** — resuelto en todas partes.
 - **Cifrado local de conversaciones** — es higiene, no ventaja.
 
@@ -92,5 +92,5 @@ Antes de adoptar una pieza, pregunta si el mercado ya la resolvió. Si la
 respuesta es sí, cópiala y gasta el tiempo en lo que sí diferencia.
 
 Los cuatro diferenciadores de arriba son donde el trabajo tiene sentido, y son
-justo lo que los sprints 03 a 08 atacan. El resto es infraestructura: que
+justo lo que los goals 03 a 08 atacan. El resto es infraestructura: que
 funcione, que pese poco, y a otra cosa.

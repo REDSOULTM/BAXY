@@ -1,73 +1,131 @@
-# Sprint 07 — Misiones compuestas
+# Goal 07 — Las misiones compuestas
 
-## Cómo trabajas
+> **Esto es un goal, no una tarea.** Se lanza y corre hasta cumplirse. No pares a
+> mitad a pedir aprobación ni a preguntar: ante una duda, elige la opción más
+> razonable, anótala y sigue. Acabas cuando los criterios de cierre estén
+> marcados, o cuando hayas medido que uno es inalcanzable y publicado la evidencia
+> que lo demuestra. No hay una tercera forma de acabar.
 
-Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:
-`C:\Users\usuario\Desktop\ETC\Programacion\BAXY`.
+## Dónde trabajas
+
+Repositorio: `C:\Users\usuario\Desktop\ETC\Programacion\BAXY`. Modelo: GPT-5.6 Sol,
+`reasoning.effort: high`.
 
 Permisos totales sobre este PC: descarga, instala, sobrescribe, borra lo que
-sobre. **No preguntes.** Ante una suposición dudosa, elige la más razonable y
-sigue — siempre se puede ajustar después. Para sólo si vas a tocar datos
-personales del usuario u otros proyectos de la carpeta `Programacion`.
-
-Criterio único: **lo mejor para BAXY como producto final**. Entre dos opciones
-que cumplen, gana la más ligera.
-
-Arregla lo que bloquea. Lo que *podría* fallar y nadie ha visto fallar lo anotas
-en una línea en `documentacion/APLAZADOS.md` y sigues — el sprint 11 existe para
-vaciar esa lista.
+sobre. **No preguntes.** Para sólo si vas a tocar datos personales del usuario u
+otros proyectos de la carpeta `Programacion`.
 
 No recopiles contexto exhaustivo antes de empezar: lee lo justo para dar el paso
 siguiente. Si algo ya está documentado en estos repositorios, decide con eso.
 
-## El resultado que cuenta
+## Qué es BAXY
+
+Un compañero que vive en el PC de una persona y hace lo que le pide —tipo Jarvis,
+local y privado—. Tiene carácter propio, es un «él», tutea, y confirma lo que hizo
+comprobándolo: *«Listo, Spotify está abierto y sonando»*. Cuando falla lo dice
+plano y con la causa. Nunca inventa que hizo algo, nunca actúa sin que se lo
+pidan, nunca manda datos del usuario fuera.
+
+Todo está en `documentacion/00_IDENTIDAD.md`, y **es lectura obligatoria antes de
+tocar nada**. No son preferencias: son decisiones tomadas por el dueño con los
+cuatro intentos anteriores del proyecto sobre la mesa. Si un diseño tuyo las
+contradice, el que cambia eres tú.
+
+## Las cuatro leyes
+
+Gobiernan este goal y los otros diez. Están por encima de cualquier preferencia
+técnica tuya.
+
+**1. Apunta al estado del arte, una sola vez.** Antes de escribir código para un
+problema, averigua si ya está resuelto ahí fuera: papers, documentación,
+repositorios, la respuesta de alguien que se topó con lo mismo. Si hay una
+solución conocida y buena, **impleméntala** en vez de inventar la tuya. Y al
+revés: **que BAXY ya lo haga de una manera no es razón para conservarla.** La vara
+es «¿es la mejor opción conocida hoy?», no «¿es lo que había?».
+
+Es una pasada, no una persecución. En cuanto tengas algo que cumple el objetivo,
+deja de buscar mejor: perseguir el estado del arte sin parar es una carrera sin
+final, y este producto tiene que salir.
+
+**2. Nada de sobreingeniería.** Escribe el mínimo código que cumpla, y que se
+active sólo el necesario. Nada de capa sobre capa, ni abstracciones para un
+segundo caso que no existe, ni opciones que nadie pidió, ni defensas para fallos
+que nadie ha visto ocurrir.
+
+No es estética: es la causa de muerte documentada de las cuatro versiones
+anteriores de este mismo proyecto. Carter se diagnosticó a sí mismo —*«el proyecto
+crece por acumulación, no por reemplazo»*— con tres routers en serie, ocho capas
+de reescritura y un `agent.py` de 1.397 líneas contra su propio objetivo de 400.
+Diez de sus dieciséis segundos por turno eran sobrecarga suya.
+
+**Si añades una capa, retira la que sustituye, en este mismo goal.** Un goal que
+cierra con menos código del que encontró y el objetivo cumplido es mejor goal.
+
+**3. Sólo se arregla lo que bloquea.** Un fallo que impide usar BAXY o avanzar
+este goal se arregla. Una fragilidad teórica o un camino de error que nadie ha
+recorrido: una línea en `documentacion/APLAZADOS.md` y sigues. El goal 11 existe
+para vaciar esa lista, así que nada se pierde por anotarlo.
+
+**4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Entre
+dos opciones que cumplen gana la más ligera, contando RAM, disco, CPU en reposo y
+arranque en frío. El ahorro se detiene donde BAXY deja de entender a la primera,
+de no mentir o de no dejar silencio muerto.
+
+---
+
+## El objetivo
 
 **La persona pide algo que ninguna operación sola puede lograr, y BAXY lo
-consigue.** Encadena varias, en el orden que hace falta, pasando lo que produce
-una a la siguiente, y comprueba cada paso.
+consigue.** Encadena varias, en el orden que hace falta, pasando lo que produce una
+a la siguiente, y comprueba cada paso.
 
 Apunta a **≥ 90 %** de planes completos y verificados, sin un solo paso huérfano.
 
-Un plan parcial que se ejecuta a medias es peor que no empezarlo: la persona
-acaba con el sistema en un estado que no pidió y que no sabe deshacer.
+Un plan parcial que se ejecuta a medias es peor que no empezarlo: la persona acaba
+con el sistema en un estado que no pidió y que no sabe deshacer.
 
-**Este sprint carga con más peso del que parece.** Al decidir el catálogo, el
-dueño eligió consolidar —una herramienta hace una cosa— y dijo dónde va todo lo
-demás:
+## Este goal carga con más peso del que parece
+
+Al decidir el catálogo, el dueño eligió consolidar —una herramienta hace una
+cosa— y dijo dónde va todo lo demás:
 
 > Lo que no se logra con una herramienta, se logra con misiones compuestas: «Abre
 > Steam y ve a la biblioteca» → `Open App` → `Click X`.
 
-Es decir: **cada hueco que el sprint 03 deja al consolidar lo cierras tú
+Es decir: **cada hueco que el goal 03 deja al consolidar lo cierras tú
 encadenando.** Y esa misma frase es una de las tres pruebas que, según el dueño,
 justifican el proyecto entero: *abrir un juego y llegar adentro*. Pruébalo con esa
 misión literal, sobre Steam de verdad, en esta máquina.
 
 Eso apoya el segundo paso sobre **operar la aplicación abierta** —la cascada
-UIA → OCR → visión—, que el dueño declaró **núcleo, no extra**. Sin ella, `Click X`
-no existe y las misiones compuestas se quedan en encadenar operaciones del
-sistema. Y sin listas de apps a mano: fue un antipatrón que Carter se documentó a
-sí mismo, contra su propio valor declarado.
+UIA → OCR → visión—, que el dueño declaró **núcleo, no extra**. Sin ella `Click X`
+no existe y las misiones compuestas se quedan en encadenar operaciones del sistema.
 
-## Qué cubre
+Y sin listas de apps a mano: fue un antipatrón que Carter se documentó a sí mismo,
+contra su propio valor declarado. Una lista de apps es la forma más rápida de que
+este goal parezca cumplido y no lo esté.
 
-Objetivos reales encadenados. La forma típica: una cláusula depende de otra —
-«busca X y guárdalo en una nota», «abre Y y súbele el volumen», «mira si tengo Z
-y si no, créalo». En español, inglés y spanglish, con las dependencias
-implícitas que la gente usa al hablar.
+## Dónde mirar el estado del arte, aquí
 
-Ejecutadas **end-to-end en esta máquina**, abriendo el producto y verificando
-efectos reales. Por texto: la voz es el sprint 09.
+Dos piezas de este goal son problemas resueltos fuera y conviene no reinventarlas:
+
+- **La planificación y ejecución de pasos encadenados con verificación por paso.**
+  Hay mucho escrito y mucho probado. Trae el patrón que funcione y que quepa en la
+  ley 2 — un plan es una lista de pasos, no un motor de workflows.
+- **Operar una aplicación por accesibilidad.** UI Automation de Windows, la
+  cascada a OCR cuando el árbol no expone el control, y visión como último
+  recurso. El Baxy anterior ya lo tenía declarado; averigua qué implementó de
+  verdad (el goal 01 lo dejó mapeado) y compáralo con lo que se usa hoy.
 
 ## Lo que ya se sabe
 
 **Ya cerró una vez, 6/6 misiones y 25/25 pasos verificados**, sobre un oráculo
-disjunto y con cero efectos ambiguos. Pero fue sobre un árbol anterior, y el
-primer intento sobre ese mismo árbol había cerrado 2 de 6.
+disjunto y con cero efectos ambiguos. Pero fue sobre un árbol anterior, y el primer
+intento sobre ese mismo árbol había cerrado 2 de 6.
 
-**La causa de aquel 2/6 está aislada y reparada:** una cláusula dependiente
-perdía la cabeza de su cláusula gobernante. Ese es el fallo característico aquí —
-la segunda mitad de la petición se queda sin el sujeto de la primera.
+**La causa de aquel 2/6 está aislada y reparada:** una cláusula dependiente perdía
+la cabeza de su cláusula gobernante. Ése es el fallo característico aquí — la
+segunda mitad de la petición se queda sin el sujeto de la primera.
 
 **Se cerraron dos pérdidas de conservación** que habrían ejecutado un subconjunto
 silencioso de la misión pedida. Búscalas de nuevo: es el modo de fallo que más se
@@ -76,44 +134,42 @@ repite y el más difícil de ver, porque el sistema informa éxito.
 **No reutilices el oráculo que ya se abrió.** Si mides sobre el corpus que se usó
 para reparar, el número no significa nada.
 
-## Cómo mides
+## Qué cubre
 
-Sobre misiones frescas, con las dependencias reales. Verifica **cada paso**, no
-sólo el resultado final: una misión que acaba bien por casualidad, con un paso
-intermedio que falló y nadie miró, no cuenta como completa.
+Objetivos reales encadenados. La forma típica: una cláusula depende de otra —
+«busca X y guárdalo en una nota», «abre Y y súbele el volumen», «mira si tengo Z y
+si no, créalo». En español, inglés y spanglish, con las dependencias implícitas que
+la gente usa al hablar.
 
-Comprueba que ningún paso queda huérfano — sin ejecutar, sin verificar, o
-ejecutado fuera del plan.
+Ejecutadas **end-to-end en esta máquina**, abriendo el producto y verificando
+efectos reales. Por texto: la voz es el goal 09.
 
 ## Lo que no puedes romper
 
-Los tres ceros del corte D siguen en pie durante toda la misión: ningún paso
-ejecuta un efecto que no se pidió, ninguno se declara hecho sin verificar,
-ninguna narración es una constante.
+Los tres ceros siguen en pie durante toda la misión: ningún paso ejecuta un efecto
+que no se pidió, ninguno se declara hecho sin verificar, ninguna narración es una
+constante.
 
-Y la narración durante la misión importa: si BAXY trabaja más de unos segundos
-sin salida visible, la persona no sabe si está vivo. Eso conecta con el sprint
-08, pero aquí ya se nota.
+Y la narración durante la misión importa: si BAXY trabaja más de unos segundos sin
+salida visible, la persona no sabe si está vivo. El listón del dueño es **3 s sin
+señal**. Eso conecta con el goal 08, pero aquí ya se nota.
 
-## Defectos
+## Criterios de cierre
 
-Lo que bloquea se arregla de verdad: nada de bajar el umbral que lo detectó,
-marcar `skip`/`xfail`, mover a pendientes ni envolverlo en un fallback. Lo que
-nadie ha visto ocurrir se anota y se sigue.
+- [ ] ≥ 90 % de misiones completas y verificadas sobre misiones frescas, con **cada
+      paso** verificado — no sólo el resultado final.
+- [ ] Cero pasos huérfanos: sin ejecutar, sin verificar, o ejecutados fuera del plan.
+- [ ] «Abre Steam y ve a la biblioteca» funciona sobre Steam de verdad, en esta
+      máquina.
+- [ ] La cascada UIA → OCR → visión funciona sin una sola app codificada a mano.
+- [ ] Ninguna misión pasa más de 3 s sin salida visible.
+- [ ] Los tres ceros intactos durante toda la misión.
 
-## Qué entregas
+## Cuando lo cumplas
 
 Las misiones ejecutadas de verdad en esta máquina, con cada paso verificado y el
 resultado publicado. Si alguna no se puede completar, di exactamente dónde se
 rompió la cadena y por qué.
 
-## Cuándo has terminado
-
-Cuando puedas pedirle a BAXY algo que requiera tres cosas seguidas, en spanglish,
-y las haga las tres, en orden, y te lo cuente en una frase.
-
-## Cierra
-
-Publica el resultado aunque no sea perfecto, siempre que no mienta. Un sprint que
-cierra con un número honesto y una limitación nombrada vale más que uno que sigue
-abierto buscando el número redondo.
+Y anota en `documentacion/APLAZADOS.md`, en una línea cada cosa, lo que viste y no
+perseguiste.
